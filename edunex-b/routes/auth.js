@@ -497,12 +497,13 @@ async function sendMobileOtpHandler(req, res) {
     if (!result.ok) {
       return res.status(400).json({ error: result.error });
     }
-    const isDevelopmentProvider = result.provider === 'development';
+    const isDevelopmentProvider = ['development', 'demo'].includes(result.provider);
+    const otpLabel = result.provider === 'demo' ? 'Demo' : 'Development';
 
     res.status(200).json({
       message: result.provider === 'msg91'
         ? 'OTP sent to your mobile number'
-        : `Development OTP: ${result.devOtp}`,
+        : `${otpLabel} OTP: ${result.devOtp}`,
       provider: result.provider,
       devOtp: isDevelopmentProvider ? result.devOtp : undefined,
       developmentAutofill: isDevelopmentProvider,

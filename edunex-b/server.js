@@ -73,8 +73,8 @@ if (isProduction && process.env.AUTO_VERIFY_OTP === 'true') {
   process.exit(1);
 }
 
-if (isProduction && ['development', 'dev', 'mock', 'temp', 'temporary'].includes(OTP_PROVIDER)) {
-  console.error('OTP_PROVIDER must not be development/temp/mock in production.');
+if (isProduction && ['development', 'dev', 'demo', 'mock', 'temp', 'temporary'].includes(OTP_PROVIDER)) {
+  console.error('OTP_PROVIDER must not be development/demo/temp/mock in production.');
   process.exit(1);
 }
 

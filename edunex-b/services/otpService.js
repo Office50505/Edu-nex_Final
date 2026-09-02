@@ -5,12 +5,12 @@ const OTP_TTL_MS = 5 * 60 * 1000;
 const pendingOtps = new Map();
 const isProduction = process.env.NODE_ENV === 'production';
 const MSG91_BASE_URL = String(process.env.MSG91_BASE_URL || 'https://control.msg91.com/api/v5').replace(/\/+$/, '');
-const OTP_PROVIDER = String(process.env.OTP_PROVIDER || (isProduction ? 'msg91' : 'development'))
+const OTP_PROVIDER = String(process.env.OTP_PROVIDER || (isProduction ? 'msg91' : 'demo'))
   .trim()
   .toLowerCase();
 
 function shouldUseDevelopmentOtp() {
-  return !isProduction && ['development', 'dev', 'mock', 'temp', 'temporary'].includes(OTP_PROVIDER);
+  return !isProduction && ['development', 'dev', 'demo', 'mock', 'temp', 'temporary'].includes(OTP_PROVIDER);
 }
 
 function normalizeMobileNumber(mobileNumber) {
@@ -233,7 +233,7 @@ async function sendMobileOtp(mobileNumber, options = {}) {
   if (!isProduction && (options.forceDevelopment || shouldUseDevelopmentOtp())) {
     return {
       ok: true,
-      provider: 'development',
+      provider: OTP_PROVIDER === 'demo' ? 'demo' : 'development',
       devOtp: otp,
     };
   }
