@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Course Management | EduNex</title>
+  <link rel="stylesheet" href="auth.css">
+  <link rel="stylesheet" href="motion.css">
+  <script src="motion.js" defer></script>
+  <link rel="stylesheet" href="premium-nav.css">
+  <link rel="stylesheet" href="admin-theme.css">
+  <script src="admin-env.js"></script>
+  <script src="admin-common.js"></script>
+  <script src="premium-nav.js" defer></script>
+</head>
+<body class="premium-nav-page premium-nav-admin">
+  <nav class="premium-site-nav" data-premium-nav>
+    <div class="premium-nav-panel">
+      <a aria-label="EduNex admin home" class="premium-brand" href="admin-dashboard.html">
+        <span class="premium-brand-mark" aria-hidden="true"></span>
+        <span class="premium-brand-name">Edu<span>Nex</span></span>
+      </a>
+      <div class="premium-nav-links"></div>
+      <div class="premium-nav-actions"></div>
+    </div>
+  </nav>
+
+  <main class="app-shell courses-shell">
+    <header class="app-header courses-header">
+      <div>
+        <div class="brand-mark">E</div>
+        <h1 class="app-title">Course Management</h1>
+        <p class="app-subtitle">Review, publish, update, and remove EduNex courses.</p>
+      </div>
+      <nav class="toolbar-actions" aria-label="Admin navigation">
+        <a class="toolbar-button" href="admin-dashboard.html">Analytics</a>
+        <a class="toolbar-button" href="admin-users.html">Users</a>
+        <a class="toolbar-button" href="course-posting.html">Upload course</a>
+        <button class="toolbar-button" id="refreshButton" type="button">Refresh</button>
+        <button class="toolbar-button" id="logoutButton" type="button">Log out</button>
+      </nav>
+    </header>
+
+    <div class="message" id="message" role="status"></div>
+
+    <form class="controls-panel" id="filtersForm">
+      <div>
+        <label for="searchInput">Search</label>
+        <input id="searchInput" type="search" placeholder="Title, slug, category">
+      </div>
+      <div>
+        <label for="statusFilter">Status</label>
+        <select id="statusFilter">
+          <option value="all">All statuses</option>
+          <option value="published">Published</option>
+          <option value="draft">Draft</option>
+        </select>
+      </div>
+      <button class="toolbar-button" id="clearButton" type="button">Clear</button>
+    </form>
+
+    <section class="courses-panel" aria-label="Courses">
+      <div class="courses-head">
+        <span>Course</span>
+        <span>Status</span>
+        <span>Category</span>
+        <span>Videos</span>
+        <span>Actions</span>
+      </div>
+      <div id="coursesList">
+        <div class="loading-state">Loading courses...</div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    AdminPanel.requireAdmin();
+
+    const message = document.getElementById('message');
+    const coursesList = document.getElementById('coursesList');
+    const searchInput = document.getElementById('searchInput');
+    const statusFilter = document.getElementById('statusFilter');
+    let courses = [];
+
+    document.getElementById('logoutButton').addEventListener('click', AdminPanel.logout);
+    document.getElementById('refreshButton').addEventListener('click', loadCourses);
+    document.getElementById('clearButton').addEventListener('click', () => {
+      searchInput.value = '';
+      statusFilter.value = 'all';
+      renderCourses();
+    });
+    searchInput.addEventListener('input', renderCourses);
+    statusFilter.addEventListener('change', renderCourses);
+
+    function statusClass(status) {
+      if (status === 'published') return 'good';
+      if (status === 'draft') return 'draft';
+      return 'warn';
+    }
+
+    function categoryName(course) {
+      return course.category?.name || course.categoryName || 'Uncategorized';
+    }
+
+    function filteredCourses() {
+      const term = searchInput.value.trim().toLowerCase();
+      const status = statusFilter.value;
+      return courses.filter((course) => {
+        const haystack = [course.title, course.slug, categoryName(course)].join(' ').toLowerCase();
+        const matchesSearch = !term || haystack.includes(term);
+        const matchesStatus = status === 'all' || course.status === status;
+        return matchesSearch && matchesStatus;
+      });
+    }
+
+    function renderCourses() {
+      const rows = filteredCourses();
+      if (!rows.length) {
+        coursesList.innerHTML = '<div class="empty-state">No courses found.</div>';
+        return;
+      }
+
+      coursesList.innerHTML = rows.map((course) => `
+        <article class="course-card" data-course-id="${AdminPanel.escapeHtml(course._id)}">
+          <div class="course-row">
+            <div class="course-title-cell">
+              <div class="course-thumb">${course.thumbnailUrl ? `<img src="${AdminPanel.escapeHtml(course.thumbnailUrl)}" alt="">` : '<span>No image</span>'}</div>
+              <div>
+                <strong>${AdminPanel.escapeHtml(course.title || 'Untitled course')}</strong>
+                <span>${AdminPanel.escapeHtml(course.slug || course._id || '')}</span>
+              </div>
+            </div>
+            <span><span class="badge ${statusClass(course.status)}">${AdminPanel.escapeHtml(course.status || 'draft')}</span></span>
+            <span>${AdminPanel.escapeHtml(categoryName(course))}</span>
+            <span>${AdminPanel.formatNumber(course.videoCount || course.videos?.length || 0)}</span>
+            <div class="course-actions">
+              <button class="secondary-button toggle-status-button" type="button">${course.status === 'published' ? 'Move to draft' : 'Publish'}</button>
+              <button class="secondary-button danger delete-course-button" type="button">Delete</button>
+            </div>
+          </div>
+        </article>
+      `).join('');
+    }
+
+    async function loadCourses() {
+      AdminPanel.showMessage(message, '', 'success');
+      coursesList.innerHTML = '<div class="loading-state">Loading courses...</div>';
+      try {
+        const response = await AdminPanel.request('/api/admin/courses');
+        const data = await response.json();
+        if (!response.ok) throw new Error(AdminPanel.errorMessage(data, 'Unable to load courses.'));
+        courses = Array.isArray(data) ? data : [];
+        renderCourses();
+      } catch (error) {
+        coursesList.innerHTML = '<div class="empty-state">Unable to load courses.</div>';
+        AdminPanel.showMessage(message, error.message || 'Unable to load courses.', 'error');
+      }
+    }
+
+    async function updateStatus(course) {
+      const nextStatus = course.status === 'published' ? 'draft' : 'published';
+      try {
+        const response = await AdminPanel.request(`/api/admin/courses/${encodeURIComponent(course._id)}`, {
+          method: 'PATCH',
+          body: JSON.stringify({ status: nextStatus }),
+        });
+        const data = await response.json();
+        if (!response.ok) throw new Error(AdminPanel.errorMessage(data, 'Unable to update course.'));
+        courses = courses.map((item) => String(item._id) === String(course._id) ? data : item);
+        renderCourses();
+        AdminPanel.showMessage(message, `Course moved to ${nextStatus}.`, 'success');
+      } catch (error) {
+        AdminPanel.showMessage(message, error.message || 'Unable to update course.', 'error');
+      }
+    }
+
+    async function deleteCourse(course) {
+      if (!window.confirm(`Delete ${course.title || 'this course'} and its related learning records?`)) return;
+      try {
+        const response = await AdminPanel.request(`/api/admin/courses/${encodeURIComponent(course._id)}`, { method: 'DELETE' });
+        const data = await response.json();
+        if (!response.ok) throw new Error(AdminPanel.errorMessage(data, 'Unable to delete course.'));
+        courses = courses.filter((item) => String(item._id) !== String(course._id));
+        renderCourses();
+        AdminPanel.showMessage(message, data.message || 'Course deleted.', 'success');
+      } catch (error) {
+        AdminPanel.showMessage(message, error.message || 'Unable to delete course.', 'error');
+      }
+    }
+
+    coursesList.addEventListener('click', (event) => {
+      const card = event.target.closest('.course-card');
+      if (!card) return;
+      const course = courses.find((item) => String(item._id) === String(card.dataset.courseId));
+      if (!course) return;
+      if (event.target.closest('.toggle-status-button')) updateStatus(course);
+      if (event.target.closest('.delete-course-button')) deleteCourse(course);
+    });
+
+    loadCourses();
+  </script>
+</body>
+</html>

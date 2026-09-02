@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Login | EduNex</title>
+  <link rel="stylesheet" href="auth.css">
+  <link rel="stylesheet" href="motion.css">
+  <link rel="stylesheet" href="premium-nav.css">
+  <link rel="stylesheet" href="admin-theme.css">
+  <script src="admin-env.js"></script>
+  <script src="admin-common.js"></script>
+</head>
+<body>
+  <main class="auth-shell compact-auth">
+    <section class="brand-panel" aria-label="EduNex admin access">
+      <div class="brand-top">
+        <div class="brand-mark">E</div>
+        <div class="brand-name">EduNex Admin</div>
+      </div>
+      <div class="brand-copy-wrap">
+        <span class="eyebrow">Secure operations</span>
+        <h1>Manage learners, courses, revenue, and platform health.</h1>
+        <p class="brand-copy">Sign in with your DB-backed admin account. Shared passwords and learner accounts are not accepted here.</p>
+        <div class="proof-grid">
+          <div class="proof"><strong>Users</strong><span>CRM-style learner records</span></div>
+          <div class="proof"><strong>Courses</strong><span>Catalog and publishing control</span></div>
+          <div class="proof"><strong>Analytics</strong><span>Revenue and learning signals</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="auth-card">
+      <h2>Admin Login</h2>
+      <p class="form-intro">Use your approved EduNex admin credentials.</p>
+      <form id="adminLoginForm" novalidate>
+        <div class="field">
+          <label for="adminEmail">Email</label>
+          <input id="adminEmail" name="email" type="email" autocomplete="username" placeholder="admin@example.com" required>
+        </div>
+        <div class="field">
+          <label for="adminPassword">Password</label>
+          <div class="password-field">
+            <input id="adminPassword" name="password" type="password" autocomplete="current-password" required>
+            <button class="icon-button" id="togglePassword" type="button" aria-label="Show password">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12Z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+            </button>
+          </div>
+        </div>
+        <div class="form-options">
+          <label class="checkbox-field"><input id="rememberAdmin" type="checkbox"> Keep me signed in</label>
+        </div>
+        <button class="submit-button" id="loginButton" type="submit">Sign in</button>
+        <div class="message" id="loginMessage" role="status" aria-live="polite"></div>
+      </form>
+      <p class="switch-link">Need access? Ask a super admin to bootstrap or activate your admin account.</p>
+    </section>
+  </main>
+
+  <script>
+    const form = document.getElementById('adminLoginForm');
+    const emailInput = document.getElementById('adminEmail');
+    const passwordInput = document.getElementById('adminPassword');
+    const rememberInput = document.getElementById('rememberAdmin');
+    const loginButton = document.getElementById('loginButton');
+    const message = document.getElementById('loginMessage');
+    const togglePassword = document.getElementById('togglePassword');
+
+    togglePassword.addEventListener('click', () => {
+      const isHidden = passwordInput.type === 'password';
+      passwordInput.type = isHidden ? 'text' : 'password';
+      togglePassword.setAttribute('aria-label', isHidden ? 'Hide password' : 'Show password');
+    });
+
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const email = emailInput.value.trim();
+      const password = passwordInput.value;
+
+      if (!email || !password) {
+        AdminPanel.showMessage(message, 'Enter your admin email and password.', 'error');
+        return;
+      }
+
+      loginButton.disabled = true;
+      loginButton.textContent = 'Signing in...';
+      AdminPanel.showMessage(message, '', 'success');
+
+      try {
+        const response = await fetch(AdminPanel.api('/api/admin/login'), {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password }),
+        });
+        const data = await response.json().catch(() => ({}));
+
+        if (!response.ok) {
+          throw new Error(data.error || 'Invalid admin credentials.');
+        }
+
+        AdminPanel.saveSession(data, rememberInput.checked);
+        AdminPanel.showMessage(message, 'Signed in. Opening admin dashboard...', 'success');
+        const params = new URLSearchParams(window.location.search);
+        window.location.href = params.get('next') || 'admin-dashboard.html';
+      } catch (error) {
+        AdminPanel.showMessage(message, error.message || 'Unable to sign in right now.', 'error');
+      } finally {
+        loginButton.disabled = false;
+        loginButton.textContent = 'Sign in';
+      }
+    });
+  </script>
+</body>
+</html>

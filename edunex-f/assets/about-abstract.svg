@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 1100" role="img" aria-labelledby="title desc">
+  <title id="title">Abstract blue EduNex pattern</title>
+  <desc id="desc">A cream background with rounded blue abstract question-mark inspired shapes.</desc>
+  <rect width="900" height="1100" fill="#f3ecdf"/>
+  <g fill="none" stroke="#1168ad" stroke-width="78" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M-48 58c104 84 44 174-58 222"/>
+    <path d="M152-18c-20 74 70 98 98 36 24-54-36-96-86-66"/>
+    <path d="M405-4c66 72 36 154-28 196"/>
+    <path d="M650 24c82 12 122 60 106 126"/>
+    <path d="M845 20c-96 42-102 126-20 176"/>
+    <path d="M98 168c130 36 124 174 2 224"/>
+    <path d="M370 246c-108-18-140 96-54 136 70 32 140-18 126-88"/>
+    <path d="M602 244c-96 64-80 178 38 170"/>
+    <path d="M772 330c104-34 154 64 88 138"/>
+    <path d="M-40 482c92-34 154 18 158 112"/>
+    <path d="M260 528c-104 76-70 198 62 204"/>
+    <path d="M510 520c130 24 142 142 42 192"/>
+    <path d="M750 576c-84 34-100 122-38 188"/>
+    <path d="M72 742c116 12 144 106 74 194"/>
+    <path d="M386 836c68 76 46 154-56 186"/>
+    <path d="M604 810c-84 78-50 190 72 184"/>
+    <path d="M874 804c-120 42-126 142-38 206"/>
+    <path d="M-26 1020c92-18 158 14 192 96"/>
+    <path d="M252 1042c106-82 202-52 254 44"/>
+  </g>
+  <g fill="#1168ad">
+    <circle cx="238" cy="306" r="34"/>
+    <circle cx="552" cy="414" r="28"/>
+    <circle cx="724" cy="236" r="32"/>
+    <circle cx="204" cy="716" r="30"/>
+    <circle cx="432" cy="654" r="24"/>
+    <circle cx="820" cy="704" r="34"/>
+    <circle cx="126" cy="1016" r="30"/>
+  </g>
+</svg>

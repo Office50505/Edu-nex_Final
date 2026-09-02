@@ -1,0 +1,1289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Start Learning | EduNex</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="/main.css">
+  <style>
+    :root { --font-body: "Manrope", ui-sans-serif, system-ui, sans-serif; --font-display: "Fraunces", Georgia, serif; }
+    body, button, input, textarea, select { font-family: var(--font-body); }
+    h1, h2, .hero-title, .section-title, .auth-brand, .library-hero h1, .welcome-left h1, .market-right h2, .trial-left h2, .team-header-row h2, .cta-section h2, .section-head h2, .lp-title, .sp-title, .payment-choice-title { font-family: var(--font-display); font-weight: 600; letter-spacing: 0; }
+
+    body { background: #f8fafc; }
+
+    /* ── Top nav (minimal) ─────────────────────────────── */
+    .pay-nav {
+      background: #fff;
+      border-bottom: 1px solid var(--line);
+      height: 64px;
+      display: flex;
+      align-items: center;
+      padding: 0 32px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .pay-nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 19px;
+      font-weight: 900;
+      color: var(--text);
+      text-decoration: none;
+    }
+    .pay-nav-logo {
+      width: 34px;
+      height: 34px;
+      border-radius: 9px;
+      background: var(--cyan);
+      color: #fff;
+      display: grid;
+      place-items: center;
+      font-size: 16px;
+      font-weight: 900;
+    }
+    .pay-nav-secure {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--success);
+    }
+
+    /* ── Page layout ───────────────────────────────────── */
+    .pay-page {
+      min-height: calc(100vh - 64px);
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 48px 20px 80px;
+    }
+    .pay-grid {
+      display: grid;
+      grid-template-columns: 1fr 420px;
+      gap: 32px;
+      width: 100%;
+      max-width: 960px;
+      align-items: start;
+    }
+
+    /* ── Course preview card ───────────────────────────── */
+    .course-preview {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+    .cp-recommended {
+      padding: 14px 18px 0;
+      color: var(--cyan);
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+    .cp-thumb {
+      aspect-ratio: 16/9;
+      background: var(--cyan);
+      position: relative;
+      overflow: hidden;
+      margin: 10px 18px 0;
+      border-radius: 16px;
+    }
+    .cp-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .cp-body { padding: 28px; }
+    .cp-cat {
+      display: inline-block;
+      background: var(--primary-lt);
+      color: var(--primary);
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      padding: 4px 12px;
+      border-radius: 100px;
+      margin-bottom: 14px;
+    }
+    .cp-title {
+      font-size: 22px;
+      font-weight: 900;
+      line-height: 1.25;
+      color: var(--text);
+      margin-bottom: 10px;
+    }
+    .cp-desc {
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.7;
+      margin-bottom: 20px;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .cp-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 18px;
+      padding-top: 18px;
+      border-top: 1px solid var(--line);
+    }
+    .cp-meta-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--muted);
+    }
+    .cp-meta-item .icon { font-size: 16px; }
+
+    /* ── Includes list ─────────────────────────────────── */
+    .cp-includes {
+      padding: 20px 28px;
+      background: var(--surface-alt);
+      border-top: 1px solid var(--line);
+    }
+    .cp-includes p {
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .07em;
+      color: var(--muted);
+      margin-bottom: 12px;
+    }
+    .cp-includes ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .cp-includes li {
+      font-size: 13px;
+      color: var(--text-soft);
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .cp-includes li::before {
+      content: '✓';
+      color: var(--success);
+      font-weight: 900;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+
+    /* ── Checkout card ─────────────────────────────────── */
+    .checkout-card {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(53,156,87,.1);
+      position: sticky;
+      top: 84px;
+    }
+    .checkout-header {
+      background: var(--cyan);
+      padding: 24px 28px;
+      color: #fff;
+      text-align: center;
+    }
+    .checkout-header h1,
+    .checkout-header h2 {
+      font-size: 20px;
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: 4px;
+    }
+    .checkout-header p {
+      font-size: 13px;
+      color: rgba(255,255,255,.75);
+      margin: 0;
+    }
+    .checkout-body { padding: 28px; }
+
+    /* Plan selector */
+    .plan-selector { display: flex; flex-direction: column; gap: 12px; margin-bottom: 24px; }
+    .plan-option {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 16px 18px;
+      border: 2px solid var(--line);
+      border-radius: 14px;
+      cursor: pointer;
+      transition: border-color .2s, background .2s;
+      position: relative;
+    }
+    .plan-option:hover { border-color: var(--primary); }
+    .plan-option.selected {
+      border-color: var(--primary);
+      background: var(--primary-lt);
+    }
+    .plan-option.disabled,
+    .plan-option[aria-disabled="true"] {
+      cursor: not-allowed;
+      opacity: .62;
+    }
+    .plan-option.disabled:hover,
+    .plan-option[aria-disabled="true"]:hover {
+      border-color: var(--line);
+    }
+    .plan-option input[type="radio"] { display: none; }
+    .plan-radio {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      border: 2px solid var(--line);
+      flex-shrink: 0;
+      transition: border-color .2s, background .2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .plan-option.selected .plan-radio {
+      border-color: var(--primary);
+      background: var(--primary);
+    }
+    .plan-option.selected .plan-radio::after {
+      content: '';
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #fff;
+    }
+    .plan-info { flex: 1; }
+    .plan-name {
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--text);
+      margin-bottom: 2px;
+    }
+    .plan-desc { font-size: 12px; color: var(--muted); }
+    .plan-price {
+      text-align: right;
+      flex-shrink: 0;
+    }
+    .plan-price .amount {
+      font-size: 22px;
+      font-weight: 900;
+      color: var(--primary);
+      line-height: 1;
+    }
+    .plan-price .per {
+      font-size: 11px;
+      color: var(--muted);
+      display: block;
+      margin-top: 2px;
+    }
+    .plan-badge {
+      position: absolute;
+      top: -1px;
+      right: 14px;
+      background: var(--cyan);
+      color: #fff;
+      font-size: 10px;
+      font-weight: 800;
+      padding: 3px 10px;
+      border-radius: 0 0 8px 8px;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+    }
+
+    /* Pay button */
+    .pay-btn {
+      width: 100%;
+      height: 52px;
+      border-radius: 14px;
+      background: var(--cyan);
+      color: #fff;
+      font-size: 16px;
+      font-weight: 800;
+      border: none;
+      cursor: pointer;
+      transition: transform .2s, box-shadow .2s, opacity .2s;
+      box-shadow: 0 6px 24px rgba(53,156,87,.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    .pay-btn:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 36px rgba(53,156,87,.5);
+    }
+    .pay-btn:disabled { opacity: .65; cursor: not-allowed; transform: none; }
+
+    .login-cta-btn {
+      width: 100%;
+      height: 52px;
+      border-radius: 14px;
+      background: var(--cyan);
+      color: #fff;
+      font-size: 16px;
+      font-weight: 800;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 6px 24px rgba(53,156,87,.35);
+      text-decoration: none;
+      transition: transform .2s, box-shadow .2s;
+      margin-bottom: 16px;
+    }
+    .login-cta-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 36px rgba(53,156,87,.5); }
+
+    .pay-btn-secondary {
+      width: 100%;
+      height: 44px;
+      border-radius: 12px;
+      background: transparent;
+      border: 1.5px solid var(--line);
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: border-color .2s, color .2s;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .pay-btn-secondary:hover { border-color: var(--primary); color: var(--primary); }
+
+    .pay-msg { margin-bottom: 16px; }
+
+    /* Security row */
+    .pay-security {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 600;
+      margin-top: 16px;
+    }
+    .pay-security span { font-size: 15px; }
+
+    /* Divider */
+    .pay-divider {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 16px 0;
+    }
+    .pay-divider::before,
+    .pay-divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--line);
+    }
+    .pay-divider span { font-size: 12px; color: var(--muted); font-weight: 700; white-space: nowrap; }
+
+    /* Already subscribed state */
+    .subscribed-banner {
+      background: var(--cyan);
+      border: 1px solid #a7f3d0;
+      border-radius: 14px;
+      padding: 18px 20px;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .subscribed-banner .icon { font-size: 28px; margin-bottom: 6px; }
+    .subscribed-banner h3 { font-size: 15px; font-weight: 800; color: #15803d; margin-bottom: 4px; }
+    .subscribed-banner p { font-size: 13px; color: #166534; margin: 0; }
+
+    /* ── Post-payment choice modal ─────────────────────── */
+    .payment-choice-modal {
+      position: fixed;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background: rgba(15, 23, 42, .55);
+      backdrop-filter: blur(8px);
+      z-index: 2000;
+    }
+    .payment-choice-modal.is-open {
+      display: flex;
+    }
+    .payment-choice-card {
+      width: min(100%, 440px);
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      box-shadow: 0 24px 80px rgba(15, 23, 42, .24);
+      overflow: hidden;
+    }
+    .payment-choice-head {
+      padding: 24px 24px 18px;
+      background: var(--cyan);
+      border-bottom: 1px solid rgba(21, 128, 61, .12);
+    }
+    .payment-choice-kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: #15803d;
+      margin-bottom: 10px;
+    }
+    .payment-choice-title {
+      font-size: 22px;
+      line-height: 1.25;
+      font-weight: 900;
+      color: var(--text);
+      margin: 0 0 8px;
+    }
+    .payment-choice-copy {
+      font-size: 14px;
+      line-height: 1.7;
+      color: var(--muted);
+      margin: 0;
+    }
+    .payment-choice-body {
+      padding: 20px 24px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .payment-choice-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .payment-choice-btn {
+      min-height: 48px;
+      border-radius: 14px;
+      border: 1.5px solid var(--line);
+      font-size: 14px;
+      font-weight: 800;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      text-decoration: none;
+      cursor: pointer;
+      transition: transform .2s, box-shadow .2s, border-color .2s;
+    }
+    .payment-choice-btn:hover {
+      transform: translateY(-1px);
+    }
+    .payment-choice-btn.primary {
+      background: var(--cyan);
+      color: #fff;
+      border-color: transparent;
+      box-shadow: 0 10px 26px rgba(53,156,87,.28);
+    }
+    .payment-choice-btn.secondary {
+      background: #fff;
+      color: var(--text);
+    }
+    .payment-choice-meta {
+      font-size: 12px;
+      color: var(--muted);
+      text-align: center;
+      line-height: 1.6;
+    }
+
+    /* Skeleton loader */
+    .cp-title-skel  { height: 28px; border-radius: 8px; margin-bottom: 10px; }
+    .cp-desc-skel   { height: 60px; border-radius: 8px; margin-bottom: 20px; }
+
+    /* ── Responsive ─────────────────────────────────────── */
+    @media (max-width: 768px) {
+      .pay-grid { grid-template-columns: 1fr; }
+      .checkout-card { position: static; }
+      .pay-page { padding: 24px 16px 60px; }
+    }
+
+    /* New EduNex noir/cyan checkout theme */
+    :root {
+      --cyan: #C58B2A;
+      --cyan-dim: rgba(197,139,42,.10);
+      --cyan-border: rgba(197,139,42,.28);
+      --bg: #000;
+      --card: #0d0d0d;
+      --card2: #111318;
+      --border: rgba(255,255,255,.08);
+      --text: #fff;
+      --text-soft: #d1d5db;
+      --muted: #8b949e;
+      --line: rgba(255,255,255,.10);
+      --surface-alt: #111318;
+      --primary: var(--cyan);
+      --primary-lt: var(--cyan-dim);
+      --success: var(--cyan);
+      --shadow: 0 24px 80px rgba(0,0,0,.45);
+    }
+    body { background: #000; color: var(--text); font-family: "Manrope", ui-sans-serif, system-ui, sans-serif; }
+    .navbar {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 999;
+      background: var(--nav-bg, rgba(0,0,0,0.92));
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      padding: 16px 0;
+    }
+    .nav-inner { max-width: 1200px; margin: 0 auto; padding: 0 24px; display: flex; align-items: center; gap: 32px; }
+    .nav-logo { font-size: 1.2rem; font-weight: 700; color: var(--text); white-space: nowrap; flex-shrink: 0; text-decoration: none; }
+    .nav-logo span { color: var(--cyan); }
+    .nav-links { display: flex; align-items: center; gap: 4px; flex: 1; justify-content: center; list-style: none; margin: 0; padding: 0; }
+    .nav-links a { padding: 8px 14px; font-size: .9rem; font-weight: 500; color: var(--text2, #9ca3af); transition: color .2s; position: relative; text-decoration: none; }
+    .nav-links a:hover { color: var(--text); }
+    .nav-links a.active { color: var(--text); font-weight: 600; }
+    .nav-links a.active::after { content: ''; position: absolute; bottom: 0; left: 14px; right: 14px; height: 2px; background: var(--cyan); border-radius: 2px; }
+    .nav-right { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
+    .nav-login { font-size: .9rem; font-weight: 500; color: var(--text2, #9ca3af); transition: color .2s; text-decoration: none; }
+    .nav-login:hover { color: var(--cyan); }
+    .nav-avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--card2); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: .85rem; color: var(--gray, #888); cursor: pointer; transition: border-color .2s; text-decoration: none; }
+    .nav-avatar:hover { border-color: var(--cyan); color: var(--cyan); }
+    .nav-hamburger { display: none; flex-direction: column; gap: 5px; background: none; border: none; cursor: pointer; padding: 4px; }
+    .nav-hamburger span { display: block; width: 22px; height: 2px; background: var(--text); border-radius: 2px; transition: .3s; }
+    @media (max-width: 840px) { .nav-links, .nav-right { display: none; } .nav-hamburger { display: flex; margin-left: auto; } }
+    .pay-page { padding-top: 112px; }
+    .course-preview,
+    .checkout-card {
+      background: rgba(13,13,13,.94);
+      border-color: var(--border);
+      box-shadow: var(--shadow);
+      border-radius: 18px;
+    }
+    .cp-recommended,
+    .cp-cat,
+    .plan-price .amount {
+      color: var(--cyan);
+    }
+    .cp-cat {
+      background: var(--cyan-dim);
+      border: 1px solid var(--cyan-border);
+    }
+    .cp-title,
+    .plan-name,
+    .payment-choice-title {
+      color: var(--text);
+    }
+    .cp-desc,
+    .plan-desc,
+    .pay-security,
+    .payment-choice-copy,
+    .payment-choice-meta {
+      color: var(--muted);
+    }
+    .cp-thumb {
+      background: #111318;
+      border: 1px solid var(--border);
+    }
+    .checkout-header,
+    .plan-badge,
+    .pay-btn,
+    .login-cta-btn,
+    .payment-choice-btn.primary {
+      background: var(--cyan);
+      color: #000;
+      box-shadow: 0 14px 34px rgba(197,139,42,.18);
+    }
+    .checkout-header h1,
+    .checkout-header h2,
+    .checkout-header p {
+      color: #000;
+    }
+    .checkout-body,
+    .cp-includes {
+      background: transparent;
+    }
+    .plan-option {
+      background: var(--card2);
+      border-color: var(--border);
+    }
+    .plan-option:hover,
+    .plan-option.selected {
+      border-color: var(--cyan);
+      background: rgba(197,139,42,.08);
+    }
+    .plan-option.selected .plan-radio {
+      border-color: var(--cyan);
+      background: var(--cyan);
+    }
+    .pay-btn-secondary,
+    .payment-choice-btn.secondary {
+      background: transparent;
+      color: var(--text);
+      border-color: var(--border);
+    }
+    .pay-btn-secondary:hover,
+    .payment-choice-btn.secondary:hover {
+      border-color: var(--cyan);
+      color: var(--cyan);
+    }
+    .subscribed-banner,
+    .payment-choice-card {
+      background: var(--card);
+      border-color: var(--border);
+    }
+    .payment-choice-head {
+      background: var(--card2);
+      border-color: var(--border);
+    }
+    .payment-choice-modal {
+      background: rgba(0,0,0,.72);
+    }
+    .cp-thumb {
+      background: #111318 !important;
+      border: 1px solid var(--border) !important;
+    }
+    .cp-thumb img {
+      width: 100% !important;
+      height: 100% !important;
+      object-fit: cover !important;
+      display: block !important;
+      border: 0 !important;
+      border-radius: 0 !important;
+      box-shadow: none !important;
+      position: static !important;
+    }
+    .checkout-header,
+    .plan-badge,
+    .pay-btn,
+    .login-cta-btn,
+    .payment-choice-btn.primary {
+      background: var(--cyan) !important;
+      color: #000 !important;
+    }
+    .subscribed-banner,
+    .payment-choice-head {
+      background: var(--cyan-dim) !important;
+      border-color: var(--cyan-border) !important;
+    }
+    .subscribed-banner h3,
+    .subscribed-banner p,
+    .payment-choice-kicker {
+      color: var(--cyan) !important;
+    }
+    .pay-btn:hover:not(:disabled),
+    .login-cta-btn:hover,
+    .payment-choice-btn.primary:hover {
+      box-shadow: 0 12px 32px rgba(197,139,42,.28) !important;
+    }
+  </style>
+</head>
+<body>
+<nav class="navbar">
+  <div class="nav-inner">
+    <a href="/index.html" class="nav-logo">EduNex <span>AI</span></a>
+    <ul class="nav-links">
+      <li><a href="/index.html">Home</a></li>
+      <li><a href="/courses.html">Courses</a></li>
+      <li><a href="/dashboard.html">Dashboard</a></li>
+      <li><a href="/about.html">About</a></li>
+    </ul>
+    <div class="nav-right">
+      <a href="/login.html" class="nav-login">Login</a>
+      <a href="/profile.html" class="nav-avatar" title="Profile Settings"><i class="fas fa-user"></i></a>
+    </div>
+    <button class="nav-hamburger" id="hamburger" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+<div id="mobileMenu" style="display:none;position:fixed;top:65px;left:0;right:0;z-index:998;background:var(--nav-bg,rgba(0,0,0,.92));border-bottom:1px solid var(--border);padding:16px 24px;flex-direction:column;gap:4px">
+  <a href="/index.html" style="padding:12px 0;font-size:.95rem;color:var(--text);border-bottom:1px solid var(--border);display:block;text-decoration:none">Home</a>
+  <a href="/courses.html" style="padding:12px 0;font-size:.95rem;color:var(--text2);border-bottom:1px solid var(--border);display:block;text-decoration:none">Courses</a>
+  <a href="/dashboard.html" style="padding:12px 0;font-size:.95rem;color:var(--text2);border-bottom:1px solid var(--border);display:block;text-decoration:none">Dashboard</a>
+  <a href="/about.html" style="padding:12px 0;font-size:.95rem;color:var(--text2);display:block;text-decoration:none">About</a>
+</div>
+<div class="pay-page">
+  <div class="pay-grid">
+
+    <!-- LEFT — course preview -->
+    <div class="course-preview" id="coursePreview">
+      <!-- Skeleton while loading -->
+      <div class="cp-thumb skeleton"></div>
+      <div class="cp-body">
+        <div class="skeleton cp-title-skel"></div>
+        <div class="skeleton cp-desc-skel"></div>
+      </div>
+    </div>
+
+    <!-- RIGHT — checkout -->
+    <div class="checkout-card">
+      <div class="checkout-header">
+        <h1 style="display:flex;align-items:center;gap:8px;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;flex-shrink:0"><path d="M22 10v6M2 10l10-5 10 5-10 5-10-5z"/><path d="M6 12v5c0 1.66 2.69 3 6 3s6-1.34 6-3v-5"/></svg> Get Full Access</h1>
+        <p>Unlimited courses · Cancel anytime</p>
+      </div>
+      <div class="checkout-body">
+
+        <!-- Shown while checking auth -->
+        <div id="loadingState" style="text-align:center;padding:24px 0;color:var(--muted);font-size:14px;">
+          Checking your account…
+        </div>
+
+        <!-- Login prompt (not logged in) -->
+        <div id="loginState" style="display:none;">
+          <p style="font-size:14px;color:var(--muted);text-align:center;margin-bottom:20px;line-height:1.6;">
+            Create a free account to continue — it only takes 30 seconds.
+          </p>
+          <a id="loginBtn" href="/login.html" class="login-cta-btn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;flex-shrink:0"><circle cx="7.5" cy="15.5" r="5.5"/><path d="M21 2l-9.6 9.6M15.5 7.5L19 11"/></svg> Log In to Continue</a>
+          <div class="pay-divider"><span>New here?</span></div>
+          <a id="signupBtn" href="/signup.html" class="pay-btn-secondary"><svg width="14" height="14" viewBox="0 0 24 24" fill="#f59e0b" style="vertical-align:middle;flex-shrink:0"><path d="M12 2l2.4 7.3H22l-6.2 4.5 2.4 7.3L12 17.2l-6.2 4.4 2.4-7.3L2 9.3h7.6z"/></svg> Create Free Account</a>
+          <div class="pay-security"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;flex-shrink:0"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg> Your data is safe with us</div>
+        </div>
+
+        <!-- Already subscribed -->
+        <div id="subscribedState" style="display:none;">
+          <div class="subscribed-banner">
+            <div class="icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#DAB77A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;flex-shrink:0"><polyline points="20 6 9 17 4 12"/></svg></div>
+            <h3>You're already subscribed!</h3>
+            <p>Enjoy unlimited access to all EduNex courses.</p>
+          </div>
+          <a id="watchNowBtn" href="/courses.html" class="login-cta-btn">Continue in App</a>
+          <a href="/courses.html" class="pay-btn-secondary" style="margin-top:10px;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;flex-shrink:0"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg> Browse All Courses</a>
+        </div>
+
+        <!-- Payment form -->
+        <div id="payState" style="display:none;">
+          <div class="plan-selector" id="planSelector">
+
+            <label class="plan-option selected" id="planTrial">
+              <input type="radio" name="plan" value="trial" checked>
+              <div class="plan-radio"></div>
+              <div class="plan-info">
+                <div class="plan-name">1-Day Trial</div>
+                <div class="plan-desc">Full access · Cancel before day 1</div>
+              </div>
+              <div class="plan-price">
+                <div class="amount">₹1</div>
+                <span class="per">one time</span>
+              </div>
+              <div class="plan-badge">Most Popular</div>
+            </label>
+
+            <label class="plan-option" id="planMonthly">
+              <input type="radio" name="plan" value="monthly">
+              <div class="plan-radio"></div>
+              <div class="plan-info">
+                <div class="plan-name">Monthly Plan</div>
+                <div class="plan-desc">Unlimited access · Billed monthly</div>
+              </div>
+              <div class="plan-price">
+                <div class="amount">₹1</div>
+                <span class="per">/ month</span>
+              </div>
+            </label>
+
+          </div>
+
+          <div class="msg pay-msg" id="payMsg" role="status"></div>
+
+          <button class="pay-btn" id="payBtn" type="button">
+            <span id="payBtnIcon"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:middle;flex-shrink:0"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></span>
+            <span id="payBtnText">Start ₹1 Trial</span>
+          </button>
+          <div class="pay-divider"><span>or</span></div>
+          <a href="/courses.html" class="pay-btn-secondary">← Back to Courses</a>
+
+          <div class="pay-security" style="margin-top:18px;flex-direction:column;gap:8px;">
+            <div style="display:flex;align-items:center;gap:6px;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;flex-shrink:0"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg> Secured by PhonePe
+            </div>
+            <div style="display:flex;gap:12px;font-size:11px;">
+              <span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#DAB77A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;flex-shrink:0"><polyline points="20 6 9 17 4 12"/></svg> Cancel anytime</span>
+              <span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#DAB77A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;flex-shrink:0"><polyline points="20 6 9 17 4 12"/></svg> Instant access</span>
+              <span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#DAB77A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;flex-shrink:0"><polyline points="20 6 9 17 4 12"/></svg> All courses</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="payment-choice-modal" id="paymentChoiceModal" aria-hidden="true">
+  <div class="payment-choice-card" role="dialog" aria-modal="true" aria-labelledby="paymentChoiceTitle">
+    <div class="payment-choice-head">
+      <div class="payment-choice-kicker"><i class="fas fa-check-circle" aria-hidden="true"></i> Payment complete</div>
+      <h2 class="payment-choice-title" id="paymentChoiceTitle">Choose where to continue</h2>
+      <p class="payment-choice-copy">You can keep learning in the browser or jump straight into the app.</p>
+    </div>
+    <div class="payment-choice-body">
+      <div class="payment-choice-actions">
+        <a class="payment-choice-btn secondary" id="continueWebBtn" href="/courses.html">
+          <i class="fas fa-globe" aria-hidden="true"></i>
+          Continue on Web
+        </a>
+        <a class="payment-choice-btn primary" id="continueAppBtn" href="/courses.html">
+          <i class="fas fa-mobile-screen-button" aria-hidden="true"></i>
+          Continue on App
+        </a>
+      </div>
+      <div class="payment-choice-meta">If the app does not open, tap Continue on Web and finish there.</div>
+    </div>
+  </div>
+</div>
+
+<script src="js/edunex-api.js"></script>
+<script>
+const params = new URLSearchParams(location.search);
+const courseId = params.get('courseId');
+const merchantTransactionId = params.get('merchantTransactionId');
+const paymentStatus = params.get('payment') || params.get('status');
+const APP_DEEP_LINK_BASE = 'com.example.protectedvideo://payment-success';
+const checkoutCourseCacheKey = `edunexCheckoutCourse:${courseId || 'featured'}`;
+const CHECKOUT_COURSE_CACHE_TTL = 10 * 60 * 1000;
+const CHECKOUT_COURSE_CACHE_MAX_BYTES = 2 * 1024 * 1024;
+
+let token = localStorage.getItem('edunexAccessToken') || sessionStorage.getItem('edunexAccessToken');
+const sessionStore = localStorage.getItem('edunexAccessToken') ? localStorage : sessionStorage;
+
+function esc(v){ return String(v||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function buildWebContinueLink(){
+  return '/courses.html';
+}
+function buildAppDeepLink(){
+  if(!APP_DEEP_LINK_BASE || !merchantTransactionId) return '';
+  const separator = APP_DEEP_LINK_BASE.includes('?') ? '&' : '?';
+  return `${APP_DEEP_LINK_BASE}${separator}merchantTransactionId=${encodeURIComponent(merchantTransactionId)}`;
+}
+function openAppWithWebFallback(appLink, webLink){
+  if(!appLink){
+    window.location.href = webLink;
+    return;
+  }
+
+  let didLeave = false;
+  const markLeft = () => { didLeave = true; };
+  const cleanup = () => {
+    document.removeEventListener('visibilitychange', onVisibilityChange);
+    window.removeEventListener('pagehide', markLeft);
+    window.removeEventListener('blur', markLeft);
+  };
+  const onVisibilityChange = () => {
+    if(document.hidden) markLeft();
+  };
+
+  document.addEventListener('visibilitychange', onVisibilityChange);
+  window.addEventListener('pagehide', markLeft, { once: true });
+  window.addEventListener('blur', markLeft, { once: true });
+  window.location.href = appLink;
+
+  setTimeout(() => {
+    cleanup();
+    if(!didLeave) window.location.href = webLink;
+  }, 1400);
+}
+function configureAppOpenButton(){
+  const watchBtn = document.getElementById('watchNowBtn');
+  const appLink = buildAppDeepLink();
+  const webLink = buildWebContinueLink();
+
+  if(appLink){
+    watchBtn.href = appLink;
+    watchBtn.textContent = 'Open EduNex App';
+    watchBtn.addEventListener('click', (event) => {
+      event.preventDefault();
+      openAppWithWebFallback(appLink, webLink);
+    }, { once: true });
+  } else if(courseId){
+    watchBtn.href = webLink;
+    watchBtn.textContent = 'Continue on Web';
+  } else {
+    watchBtn.href = webLink;
+    watchBtn.textContent = 'Open Video Library';
+  }
+}
+function openPaymentChoice(){
+  const modal = document.getElementById('paymentChoiceModal');
+  const continueWebBtn = document.getElementById('continueWebBtn');
+  const continueAppBtn = document.getElementById('continueAppBtn');
+  const appLink = buildAppDeepLink();
+  const webLink = buildWebContinueLink();
+
+  continueWebBtn.href = webLink;
+  continueAppBtn.href = appLink || webLink;
+  continueAppBtn.onclick = (event) => {
+    event.preventDefault();
+    openAppWithWebFallback(appLink, webLink);
+  };
+
+  modal.classList.add('is-open');
+  modal.setAttribute('aria-hidden', 'false');
+  setTimeout(() => continueWebBtn.focus(), 0);
+}
+function closePaymentChoice(){
+  const modal = document.getElementById('paymentChoiceModal');
+  modal.classList.remove('is-open');
+  modal.setAttribute('aria-hidden', 'true');
+  document.getElementById('payBtn')?.focus();
+}
+function markLocalCourseAccess(){
+  localStorage.setItem('edunexHasCourseAccess', JSON.stringify({ active: true, savedAt: Date.now() }));
+}
+function driveImageSrc(url){
+  const rawUrl = String(url || '').trim();
+  if(!rawUrl) return '';
+  const proxy = (value) => {
+    if(!value || /^(data|blob):/i.test(value)) return value;
+    try{
+      const parsed = new URL(value, window.location.origin);
+      if(parsed.origin === window.location.origin) return `${parsed.pathname}${parsed.search}${parsed.hash}`;
+      return `/api/image-proxy?url=${encodeURIComponent(parsed.href)}`;
+    }catch(_){
+      return value;
+    }
+  };
+
+  try{
+    const parsed = new URL(rawUrl);
+    const isDriveHost = /(^|\.)drive\.google\.com$/i.test(parsed.hostname);
+    if(!isDriveHost) return proxy(rawUrl);
+
+    const fileMatch = parsed.pathname.match(/\/file\/d\/([^/]+)/);
+    const fileId = fileMatch?.[1] || parsed.searchParams.get('id');
+    return proxy(fileId ? `https://drive.google.com/thumbnail?id=${encodeURIComponent(fileId)}&sz=w1200` : rawUrl);
+  }catch(_){
+    return rawUrl;
+  }
+}
+function courseThumbnailSrc(course){
+  const image = course?.thumbnailHorizontal || course?.thumbnail || course?.thumbnailVertical || course?.videos?.[0]?.thumbnail;
+  if(image?.data){
+    return `data:${image.mimeType || image.contentType || 'image/jpeg'};base64,${image.data}`;
+  }
+  return window.EduNex?.normalizeImageSrc?.(course?.thumbnailUrl || course?.thumbnailVerticalUrl || course?.videos?.[0]?.thumbnailUrl || '') ||
+    driveImageSrc(course?.thumbnailUrl || course?.thumbnailVerticalUrl || course?.videos?.[0]?.thumbnailUrl || '');
+}
+function fallbackCoursePreview(){
+  return {
+    title: 'EduNex Course Library',
+    description: 'Start your trial and choose from the real EduNex courses available in your course catalogue.',
+    category: { name: 'EduNex AI' },
+    averageRating: 4.8,
+    videoCount: 0
+  };
+}
+async function loadFallbackCourseFromCatalog(){
+  try {
+    const courses = await EduNex.request('/api/courses');
+    const list = Array.isArray(courses) ? courses : [];
+    return list.find(course => courseThumbnailSrc(course)) || list[0] || null;
+  } catch(_) {
+    return null;
+  }
+}
+function readCachedCheckoutCourse(){
+  try {
+    const cached = JSON.parse(localStorage.getItem(checkoutCourseCacheKey) || 'null');
+    if(!cached?.course || Date.now() - cached.savedAt > CHECKOUT_COURSE_CACHE_TTL) return null;
+    return cached.course;
+  } catch(_) {
+    return null;
+  }
+}
+function writeCachedCheckoutCourse(course){
+  try {
+    const payload = JSON.stringify({ savedAt: Date.now(), course });
+    if(payload.length <= CHECKOUT_COURSE_CACHE_MAX_BYTES){
+      localStorage.setItem(checkoutCourseCacheKey, payload);
+    }
+  } catch(_) {}
+}
+function showPayMsg(text, type){
+  const m = document.getElementById('payMsg');
+  m.textContent = text;
+  m.className = 'msg pay-msg ' + type;
+}
+
+async function safeJson(res){
+  const text = await res.text();
+  if(!text) return null;
+  try {
+    return JSON.parse(text);
+  } catch(_) {
+    return null;
+  }
+}
+
+async function refreshAccessToken(){
+  const rt = sessionStore.getItem('edunexRefreshToken');
+  if(!rt) throw new Error('Please log in');
+  const r = await fetch('/api/auth/refresh',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({refreshToken:rt})});
+  const d = await safeJson(r) || {};
+  if(!r.ok) throw new Error(d.error || d.message || 'Session expired');
+  token = d.accessToken;
+  sessionStore.setItem('edunexAccessToken', token);
+  return token;
+}
+
+async function authFetch(url, opts={}){
+  const run = t => fetch(url,{...opts,headers:{...opts.headers,Authorization:`Bearer ${t}`}});
+  let res = await run(token);
+  if(res.status===401){ token = await refreshAccessToken(); res = await run(token); }
+  return res;
+}
+
+/* ── Render course preview ── */
+function renderPreview(course){
+  course = course || fallbackCoursePreview();
+  const cat = course.category?.name || 'Course';
+  const vids = course.videoCount ?? course.videos?.length ?? 0;
+  const rating = course.averageRating || 4.8;
+
+  const thumbnailSrc = courseThumbnailSrc(course) || EduNex.placeholderImage(course.title || 'EduNex');
+  const thumbHTML = `<img src="${esc(thumbnailSrc)}" alt="${esc(course.title)}" onerror="this.onerror=null;this.src=EduNex.placeholderImage(this.alt||'EduNex')">`;
+
+  document.getElementById('coursePreview').innerHTML = `
+    <div class="cp-recommended">Recommended</div>
+    <div class="cp-thumb">
+      ${thumbHTML}
+    </div>
+    <div class="cp-body">
+      <div class="cp-cat">${esc(cat)}</div>
+      <div class="cp-title">${esc(course.title)}</div>
+      <p class="cp-desc">${esc(course.description||'')}</p>
+      <div class="cp-meta">
+        <div class="cp-meta-item"><span class="icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="#f59e0b" style="vertical-align:middle;flex-shrink:0"><path d="M12 2l2.4 7.3H22l-6.2 4.5 2.4 7.3L12 17.2l-6.2 4.4 2.4-7.3L2 9.3h7.6z"/></svg></span>${rating.toFixed(1)} Rating</div>
+        ${vids ? `<div class="cp-meta-item"><span class="icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;flex-shrink:0"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8" fill="currentColor" stroke="none"/></svg></span>${vids} Lessons</div>` : ''}
+        ${course.instructor ? `<div class="cp-meta-item"><span class="icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;flex-shrink:0"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>${esc(course.instructor)}</div>` : ''}
+        <div class="cp-meta-item"><span class="icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;flex-shrink:0"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg></span>All Devices</div>
+      </div>
+    </div>
+    <div class="cp-includes">
+      <p>What you get</p>
+      <ul>
+        <li>Unlimited access to all ${vids||'all'} lessons</li>
+        <li>Download &amp; watch offline in the app</li>
+        <li>Certificate of completion</li>
+        <li>Access to 200+ other premium courses</li>
+        <li>New courses added every month</li>
+      </ul>
+    </div>`;
+}
+
+/* ── Show correct checkout state ── */
+function showState(name){
+  ['loadingState','loginState','subscribedState','payState'].forEach(id=>{
+    document.getElementById(id).style.display = id===name ? '' : 'none';
+  });
+}
+
+async function loadCoursePreview(){
+  const cachedCourse = readCachedCheckoutCourse();
+  let rendered = false;
+  if(cachedCourse){
+    renderPreview(cachedCourse);
+    rendered = true;
+    document.getElementById('watchNowBtn').href = `/videos.html?courseId=${encodeURIComponent(cachedCourse._id)}&video=0`;
+  }
+
+  try {
+    const summaryUrl = courseId
+      ? `/api/courses/checkout-summary?courseId=${encodeURIComponent(courseId)}`
+      : '/api/courses/checkout-summary';
+    const res = await fetch(summaryUrl, { cache: 'force-cache' });
+    if(res.ok){
+      const course = await safeJson(res);
+      if(course && (course._id || course.title || courseThumbnailSrc(course))){
+        writeCachedCheckoutCourse(course);
+        renderPreview(course);
+        rendered = true;
+        if(course._id){
+          document.getElementById('watchNowBtn').href = `/videos.html?courseId=${encodeURIComponent(course._id)}&video=0`;
+        }
+      }
+    }
+  } catch(_) {}
+
+  if(!rendered){
+    const fallbackCourse = await loadFallbackCourseFromCatalog();
+    renderPreview(fallbackCourse || fallbackCoursePreview());
+    if(fallbackCourse?._id){
+      document.getElementById('watchNowBtn').href = `/videos.html?courseId=${encodeURIComponent(fallbackCourse._id)}&video=0`;
+    }
+  }
+}
+
+/* ── Plan toggle ── */
+let selectedPlan = 'trial';
+let trialEligible = true;
+function syncPlanSelection(){
+  const trial = document.getElementById('planTrial');
+  const monthly = document.getElementById('planMonthly');
+  if(!trialEligible && selectedPlan === 'trial'){
+    selectedPlan = 'monthly';
+  }
+  trial.classList.toggle('selected', selectedPlan === 'trial');
+  monthly.classList.toggle('selected', selectedPlan === 'monthly');
+  trial.classList.toggle('disabled', !trialEligible);
+  trial.querySelector('input').checked = selectedPlan === 'trial';
+  trial.querySelector('input').disabled = !trialEligible;
+  monthly.querySelector('input').checked = selectedPlan === 'monthly';
+  trial.setAttribute('aria-checked', String(selectedPlan === 'trial'));
+  trial.setAttribute('aria-disabled', String(!trialEligible));
+  monthly.setAttribute('aria-checked', String(selectedPlan === 'monthly'));
+  document.getElementById('payBtnText').textContent = selectedPlan==='trial' ? 'Start ₹1 Trial' : 'Subscribe — ₹1/mo';
+}
+document.getElementById('planTrial').addEventListener('click', ()=>{
+  if(!trialEligible){
+    showPayMsg("You've already used your ₹1 trial. Monthly access is still available.", 'info');
+    return;
+  }
+  selectedPlan = 'trial';
+  syncPlanSelection();
+  document.getElementById('payBtnIcon').innerHTML = '<i class="fas fa-bolt"></i>';
+  window.EduNex?.refreshIcons?.(document.getElementById('payBtnIcon'));
+});
+document.getElementById('planMonthly').addEventListener('click', ()=>{
+  selectedPlan = 'monthly';
+  syncPlanSelection();
+  document.getElementById('payBtnIcon').innerHTML = '<i class="fas fa-arrow-up"></i>';
+  window.EduNex?.refreshIcons?.(document.getElementById('payBtnIcon'));
+});
+['planTrial','planMonthly'].forEach(id => {
+  document.getElementById(id).addEventListener('keydown', event => {
+    if(event.key === 'Enter' || event.key === ' '){
+      event.preventDefault();
+      event.currentTarget.click();
+    }
+  });
+});
+syncPlanSelection();
+
+/* ── Pay button ── */
+document.getElementById('payBtn').addEventListener('click', async ()=>{
+  const btn = document.getElementById('payBtn');
+  btn.disabled = true;
+  document.getElementById('payBtnText').textContent = 'Redirecting to payment…';
+  showPayMsg('', '');
+  try {
+    const res = await authFetch('/api/payment/initiate-trial',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ paymentType: selectedPlan })
+    });
+    const data = await safeJson(res) || {};
+    if(res.status === 409){
+      if(data.error){
+        showPayMsg(data.error, 'error');
+        if(selectedPlan === 'trial'){
+          trialEligible = false;
+          selectedPlan = 'monthly';
+          syncPlanSelection();
+        }
+        btn.disabled = false;
+        return;
+      }
+      markLocalCourseAccess();
+      configureAppOpenButton();
+      showState('subscribedState');
+      return;
+    }
+    if(!res.ok) {
+      throw new Error(data.error || data.message || `Payment initiation failed (${res.status})`);
+    }
+    if(data.redirectUrl){
+      window.location.href = data.redirectUrl;
+    } else {
+      throw new Error('No redirect URL received from payment gateway');
+    }
+  } catch(err){
+    showPayMsg(err.message, 'error');
+    btn.disabled = false;
+    document.getElementById('payBtnText').textContent = selectedPlan==='trial' ? 'Start ₹1 Trial' : 'Subscribe — ₹1/mo';
+  }
+});
+
+document.getElementById('paymentChoiceModal').addEventListener('click', (event) => {
+  if(event.target.id === 'paymentChoiceModal'){
+    closePaymentChoice();
+  }
+});
+document.addEventListener('keydown', event => {
+  if(event.key === 'Escape' && document.getElementById('paymentChoiceModal').classList.contains('is-open')){
+    closePaymentChoice();
+  }
+});
+
+const hamburger = document.getElementById('hamburger');
+const mobileMenu = document.getElementById('mobileMenu');
+if (hamburger && mobileMenu) {
+  hamburger.addEventListener('click', () => {
+    const open = mobileMenu.style.display === 'flex';
+    mobileMenu.style.display = open ? 'none' : 'flex';
+  });
+  document.addEventListener('click', event => {
+    if (!hamburger.contains(event.target) && !mobileMenu.contains(event.target)) {
+      mobileMenu.style.display = 'none';
+    }
+  });
+}
+
+/* ── Init: load course + check subscription ── */
+async function init(){
+  // Set login/signup links with redirect back here
+  const returnUrl = encodeURIComponent(location.href);
+  document.getElementById('loginBtn').href = `/login.html?next=${returnUrl}`;
+  document.getElementById('signupBtn').href = `/signup.html?next=${returnUrl}`;
+
+  loadCoursePreview();
+
+  if(paymentStatus === 'success' && merchantTransactionId){
+    markLocalCourseAccess();
+    openPaymentChoice();
+    showState('subscribedState');
+    return;
+  }
+
+  // Not logged in
+  if(!token){ showState('loginState'); return; }
+
+  // Check subscription status
+  try {
+    const res = await authFetch('/api/payment/subscription-status');
+    const data = await safeJson(res) || {};
+    trialEligible = data.trialEligible !== false;
+    if(!trialEligible && selectedPlan === 'trial'){
+      selectedPlan = 'monthly';
+    }
+    syncPlanSelection();
+    const activeStatuses = ['active','subscribed','1rs trial','trial','trial_active','paid_active'];
+    if(data.hasActiveAccess === true || activeStatuses.includes(data.status)){
+      markLocalCourseAccess();
+      configureAppOpenButton();
+      showState('subscribedState');
+    } else {
+      showState('payState');
+    }
+  } catch(_){
+    showState('payState');
+  }
+}
+
+init();
+</script>
+</body>
+</html>

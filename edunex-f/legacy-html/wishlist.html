@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EduNex AI — My Wishlist</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="css/animations.css">
+  <style>
+    :root { --font-body: "Manrope", ui-sans-serif, system-ui, sans-serif; --font-display: "Fraunces", Georgia, serif; }
+    body, button, input, textarea, select { font-family: var(--font-body); }
+    h1, h2, .hero-title, .section-title, .auth-brand, .library-hero h1, .welcome-left h1, .market-right h2, .trial-left h2, .team-header-row h2, .cta-section h2, .section-head h2, .lp-title, .sp-title, .payment-choice-title { font-family: var(--font-display); font-weight: 600; letter-spacing: 0; }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { overflow-x: hidden; }
+    body { font-family: "Manrope", ui-sans-serif, system-ui, sans-serif; background: var(--bg, #000); color: var(--text, #fff); min-height: 100vh; }
+    a { text-decoration: none; color: inherit; }
+    img { display: block; max-width: 100%; }
+
+    :root {
+      --bg: #000000;
+      --text: #ffffff;
+      --text2: #9ca3af;
+      --nav-bg: rgba(0,0,0,0.95);
+      --cyan: #C58B2A;
+      --cyan-dim: rgba(197,139,42,0.1);
+      --cyan-border: rgba(197,139,42,0.22);
+      --card: #0d0d0d;
+      --border: rgba(255,255,255,0.07);
+      --border2: rgba(255,255,255,0.1);
+      --gray: #6b7280;
+      --light: #9ca3af;
+    }
+
+    .navbar {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 999;
+      background: var(--nav-bg); backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border); padding: 16px 0;
+    }
+    .nav-inner { max-width: 1100px; margin: 0 auto; padding: 0 24px; display: flex; align-items: center; gap: 40px; }
+    .nav-logo { font-size: 1.2rem; font-weight: 700; color: var(--text); }
+    .nav-logo span { color: var(--cyan); }
+    .nav-links { display: flex; align-items: center; gap: 8px; flex: 1; justify-content: center; list-style: none; }
+    .nav-links a { padding: 8px 16px; font-size: .9rem; font-weight: 500; color: var(--text2); transition: color .2s; }
+    .nav-links a:hover { color: var(--text); }
+    .nav-right { display: flex; align-items: center; gap: 16px; }
+    .nav-login { font-size: .9rem; font-weight: 500; color: var(--text2); }
+    .nav-login:hover { color: var(--cyan); }
+    .nav-avatar {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: var(--card); border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: .85rem; color: #888; cursor: pointer; transition: border-color .2s;
+    }
+    .nav-avatar:hover { border-color: var(--cyan); color: var(--cyan); }
+
+    .page { max-width: 1000px; margin: 0 auto; padding: 96px 24px 60px; }
+
+    .back-row { display: flex; align-items: center; gap: 10px; margin-bottom: 28px; }
+    .back-btn {
+      width: 34px; height: 34px; border-radius: 9px;
+      background: var(--card); border: 1px solid var(--border2);
+      display: flex; align-items: center; justify-content: center;
+      color: #888; font-size: .78rem; cursor: pointer; transition: all .2s;
+    }
+    .back-btn:hover { border-color: var(--cyan-border); color: var(--cyan); }
+    .back-title { font-size: 1.2rem; font-weight: 800; }
+
+    /* Summary row */
+    .wl-summary {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 24px; flex-wrap: wrap; gap: 12px;
+    }
+    .wl-count { font-size: .84rem; color: var(--light); }
+    .wl-count span { color: var(--text); font-weight: 700; }
+    .wl-clear-btn {
+      padding: 7px 16px; border-radius: 9px;
+      background: rgba(255,255,255,.04); border: 1px solid var(--border2);
+      font-family: "Manrope", ui-sans-serif, system-ui, sans-serif; font-size: .76rem; font-weight: 700;
+      color: var(--gray); cursor: pointer; transition: all .2s;
+    }
+    .wl-clear-btn:hover { border-color: rgba(179,106,76,.45); color: #B36A4C; }
+
+    /* Sort row */
+    .wl-sort-row { display: flex; gap: 8px; margin-bottom: 22px; flex-wrap: wrap; }
+    .wl-sort-btn {
+      padding: 6px 14px; border-radius: 100px;
+      background: var(--card); border: 1px solid var(--border2);
+      font-family: "Manrope", ui-sans-serif, system-ui, sans-serif; font-size: .74rem; font-weight: 600;
+      color: var(--light); cursor: pointer; transition: all .2s;
+    }
+    .wl-sort-btn.active { background: var(--cyan); border-color: var(--cyan); color: #000; }
+
+    /* Grid */
+    .wl-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+
+    /* Course card */
+    .wl-card {
+      background: var(--card); border: 1px solid var(--border2);
+      border-radius: 16px; overflow: hidden;
+      transition: all .22s; position: relative;
+    }
+    .wl-card:hover { border-color: var(--cyan-border); transform: translateY(-4px); box-shadow: 0 12px 32px rgba(0,0,0,.5); }
+
+    /* Remove button */
+    .wl-remove {
+      position: absolute; top: 10px; right: 10px; z-index: 2;
+      width: 30px; height: 30px; border-radius: 50%;
+      background: rgba(0,0,0,.7); border: 1px solid rgba(255,255,255,.15);
+      display: flex; align-items: center; justify-content: center;
+      color: #B36A4C; font-size: .72rem; cursor: pointer;
+      transition: all .2s; opacity: 0;
+    }
+    .wl-card:hover .wl-remove { opacity: 1; }
+    .wl-remove:hover { background: rgba(179,106,76,.15); border-color: rgba(179,106,76,.45); }
+
+    /* Thumbnail */
+    .wl-thumb-wrap { position: relative; overflow: hidden; }
+    .wl-thumb { width: 100%; height: 150px; object-fit: cover; background: #111; transition: transform .3s; }
+    .wl-card:hover .wl-thumb { transform: scale(1.04); }
+    .wl-badge {
+      position: absolute; top: 10px; left: 10px;
+      padding: 3px 9px; border-radius: 100px;
+      font-size: .58rem; font-weight: 800; text-transform: uppercase; letter-spacing: .05em;
+    }
+    .badge-cyan { background: rgba(197,139,42,.15); border: 1px solid rgba(197,139,42,.4); color: var(--cyan); }
+    .badge-green { background: rgba(169,111,24,.12); border: 1px solid rgba(169,111,24,.35); color: #A96F18; }
+    .badge-purple { background: rgba(168,85,247,.12); border: 1px solid rgba(168,85,247,.35); color: #c084fc; }
+    .badge-orange { background: rgba(251,146,60,.12); border: 1px solid rgba(251,146,60,.35); color: #fb923c; }
+
+    /* Card body */
+    .wl-body { padding: 14px 16px; }
+    .wl-title { font-size: .88rem; font-weight: 700; color: var(--text); line-height: 1.35; margin-bottom: 6px; }
+    .wl-instructor {
+      display: flex; align-items: center; gap: 5px;
+      font-size: .72rem; color: var(--gray); margin-bottom: 8px;
+    }
+    .wl-rating { display: flex; align-items: center; gap: 5px; margin-bottom: 10px; }
+    .wl-stars { color: #f59e0b; font-size: .72rem; }
+    .wl-rating-val { font-size: .72rem; font-weight: 700; color: var(--text); }
+    .wl-rating-count { font-size: .68rem; color: var(--gray); }
+    .wl-meta { display: flex; gap: 10px; font-size: .7rem; color: var(--gray); margin-bottom: 12px; }
+    .wl-meta span { display: flex; align-items: center; gap: 4px; }
+    .wl-footer {
+      display: flex; align-items: center; justify-content: space-between;
+      border-top: 1px solid var(--border); padding-top: 12px;
+    }
+    .wl-price { font-size: 1rem; font-weight: 800; color: var(--cyan); }
+    .wl-enroll-btn {
+      padding: 8px 16px; border-radius: 9px;
+      background: var(--cyan); border: none;
+      font-family: "Manrope", ui-sans-serif, system-ui, sans-serif; font-size: .76rem; font-weight: 800;
+      color: #000; cursor: pointer; transition: all .2s;
+    }
+    .wl-enroll-btn:hover { background: #A96F18; box-shadow: 0 4px 14px rgba(197,139,42,.3); }
+
+    /* Empty state */
+    .wl-empty {
+      display: none; text-align: center; padding: 80px 20px;
+      color: var(--gray); grid-column: 1/-1;
+    }
+    .wl-empty i,
+    .wl-empty .enx-icon {
+      font-size: 2.7rem;
+      margin-bottom: 16px;
+      opacity: .72;
+      color: #C58B2A;
+    }
+    .wl-empty h3 { font-size: 1rem; color: var(--text); margin-bottom: 8px; }
+    .wl-empty p { font-size: .84rem; }
+    .wl-browse-btn {
+      display: inline-block; margin-top: 18px;
+      padding: 10px 24px; background: var(--cyan); color: #000;
+      font-family: "Manrope", ui-sans-serif, system-ui, sans-serif; font-size: .84rem; font-weight: 800;
+      border-radius: 10px; transition: all .2s;
+    }
+    .wl-browse-btn:hover { background: #A96F18; }
+
+    .nav-hamburger { display: none; flex-direction: column; gap: 5px; background: none; border: none; cursor: pointer; padding: 4px; }
+    .nav-hamburger span { display: block; width: 22px; height: 2px; background: var(--text); border-radius: 2px; }
+    @media (max-width: 900px) { .nav-links { display: none; } .nav-hamburger { display: flex; } }
+    @media (max-width: 800px) { .wl-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 540px) { .wl-grid { grid-template-columns: 1fr; } }
+    @media (max-width: 480px) { .container { padding: 0 16px; } }
+  </style>
+  <script>(function(){var t=localStorage.getItem('enx-theme')||'noir';var L={'--bg':'#f3f4f6','--card':'#ffffff','--card2':'#f9fafb','--border':'rgba(0,0,0,0.08)','--border2':'rgba(0,0,0,0.12)','--text':'#332820','--text2':'#756A60','--nav-bg':'rgba(255,255,255,0.95)'};var N={'--bg':'#000000','--card':'#0d0d0d','--card2':'#111318','--border':'rgba(255,255,255,0.07)','--border2':'rgba(255,255,255,0.10)','--text':'#ffffff','--text2':'#9ca3af','--nav-bg':'rgba(0,0,0,0.92)'};var v=t==='light'?L:(t==='system'?(window.matchMedia('(prefers-color-scheme:dark)').matches?N:L):N);var r=document.documentElement;Object.keys(v).forEach(function(k){r.style.setProperty(k,v[k]);});r.style.background=v['--bg'];document.addEventListener('DOMContentLoaded',function(){document.body.style.background=v['--bg'];document.body.style.color=v['--text'];});})();</script>
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">EduNex <span>AI</span></a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="courses.html">Courses</a></li>
+      <li><a href="dashboard.html">Dashboard</a></li>
+      <li><a href="about.html">About</a></li>
+    </ul>
+    <div class="nav-right">
+      <a href="login.html" class="nav-login">Login</a>
+      <a href="profile.html" class="nav-avatar" title="Profile"><i class="fas fa-user"></i></a>
+    </div>
+  </div>
+</nav>
+
+<div class="page">
+
+  <div class="back-row">
+    <div class="back-btn" onclick="history.back()"><i class="fas fa-arrow-left"></i></div>
+    <h1 class="back-title">My Wishlist</h1>
+  </div>
+
+  <div class="wl-summary">
+    <div class="wl-count"><span id="wlCountNum">5</span> courses saved</div>
+    <button class="wl-clear-btn" onclick="clearAll()"><i class="fas fa-trash-alt" style="margin-right:5px"></i>Clear All</button>
+  </div>
+
+  <div class="wl-sort-row">
+    <button class="wl-sort-btn active">Recently Added</button>
+    <button class="wl-sort-btn">Price: Low to High</button>
+    <button class="wl-sort-btn">Highest Rated</button>
+  </div>
+
+  <div class="wl-grid" id="wlGrid">
+    <div class="wl-card" style="padding:20px">Loading your saved real courses...</div>
+  </div>
+
+</div>
+
+<script src="js/edunex-api.js"></script>
+<script src="assets/bot-avatars/manifest.js"></script>
+<script src="js/nex-ai-widget.js"></script>
+<script src="js/animations.js" defer></script>
+<script>
+  let wishlistCourses = [];
+
+  function escapeWishHtml(value) {
+    return String(value ?? '').replace(/[&<>"']/g, char => ({
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#39;'
+    }[char]));
+  }
+
+  function renderWishlist(courses) {
+    const grid = document.getElementById('wlGrid');
+    document.getElementById('wlCountNum').textContent = courses.length;
+    if (!courses.length) {
+      grid.innerHTML = `
+        <div class="wl-empty" style="display:block">
+          <i class="far fa-bookmark"></i>
+          <h2>Your wishlist is empty</h2>
+          <p>Browse real courses and tap the heart icon to save them here.</p>
+          <a href="courses.html" class="wl-browse-btn">Browse Courses</a>
+        </div>`;
+      return;
+    }
+
+    grid.innerHTML = courses.map(course => {
+      const videos = Array.isArray(course.videos) ? course.videos.length : 0;
+      const category = typeof course.category === 'string' ? course.category : (course.category?.name || 'Course');
+      return `
+        <div class="wl-card" id="course-${escapeWishHtml(course._id)}">
+          <button class="wl-remove" onclick="removeCourse('${escapeWishHtml(course._id)}')" aria-label="Remove course"><i class="fas fa-times"></i></button>
+          <div class="wl-thumb-wrap">
+            <img class="wl-thumb" src="${escapeWishHtml(EduNex.courseImage(course))}" alt="${escapeWishHtml(course.title)}" onerror="this.onerror=null;this.src=EduNex.placeholderImage(this.alt||'EduNex')">
+            <span class="wl-badge badge-cyan">${escapeWishHtml(category)}</span>
+          </div>
+          <div class="wl-body">
+            <h3 class="wl-title">${escapeWishHtml(course.title || 'Untitled course')}</h3>
+            <div class="wl-instructor"><i class="fas fa-play-circle"></i> ${videos} videos</div>
+            <div class="wl-rating">
+              <div class="wl-stars"><i class="fas fa-star"></i></div>
+              <span class="wl-rating-val">${escapeWishHtml(course.averageRating || 'New')}</span>
+              <span class="wl-rating-count">backend course</span>
+            </div>
+            <div class="wl-meta">
+              <span><i class="fas fa-layer-group"></i> ${videos} lessons</span>
+              <span><i class="fas fa-signal"></i> Published</span>
+            </div>
+            <div class="wl-footer">
+              <span class="wl-price">REAL COURSE</span>
+              <button class="wl-enroll-btn" onclick="EduNex.openCourseDetails({ _id: '${escapeWishHtml(course._id)}' })">Open</button>
+            </div>
+          </div>
+        </div>`;
+    }).join('');
+  }
+
+  async function removeCourse(courseId) {
+    const localIds = new Set(JSON.parse(localStorage.getItem('edunexWishlistLocal') || '[]').map(String));
+    localIds.delete(String(courseId));
+    localStorage.setItem('edunexWishlistLocal', JSON.stringify(Array.from(localIds)));
+    try {
+      await EduNex.authRequest('/api/wishlist/toggle', {
+        method: 'POST',
+        body: JSON.stringify({ courseId })
+      });
+      wishlistCourses = wishlistCourses.filter(course => course._id !== courseId);
+      renderWishlist(wishlistCourses);
+    } catch (error) {
+      alert(error.message || 'Could not update wishlist.');
+    }
+  }
+
+  async function clearAll() {
+    const ids = wishlistCourses.map(course => course._id);
+    await Promise.all(ids.map(id => removeCourse(id)));
+  }
+
+  async function loadWishlist() {
+    const grid = document.getElementById('wlGrid');
+    if (!EduNex.getAccessToken()) {
+      try {
+        const localIds = new Set(JSON.parse(localStorage.getItem('edunexWishlistLocal') || '[]').map(String));
+        const courses = await EduNex.request('/api/courses');
+        wishlistCourses = (Array.isArray(courses) ? courses : []).filter(course => localIds.has(String(course._id)));
+        renderWishlist(wishlistCourses);
+      } catch (error) {
+        grid.innerHTML = '<div class="wl-card" style="padding:20px">Log in to sync your saved courses.</div>';
+        document.getElementById('wlCountNum').textContent = 0;
+      }
+      return;
+    }
+    try {
+      const localIds = new Set(JSON.parse(localStorage.getItem('edunexWishlistLocal') || '[]').map(String));
+      const [wishlist, courses] = await Promise.all([
+        EduNex.authRequest('/api/wishlist'),
+        EduNex.request('/api/courses')
+      ]);
+      const savedIds = new Set([...(wishlist.courses || []).map(String), ...localIds]);
+      wishlistCourses = (Array.isArray(courses) ? courses : []).filter(course => savedIds.has(String(course._id)));
+      renderWishlist(wishlistCourses);
+    } catch (error) {
+      grid.innerHTML = `<div class="wl-card" style="padding:20px">Could not load wishlist: ${escapeWishHtml(error.message)}</div>`;
+    }
+  }
+
+  loadWishlist();
+</script>
+</body>
+</html>

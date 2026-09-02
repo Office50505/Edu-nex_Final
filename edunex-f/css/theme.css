@@ -1,0 +1,374 @@
+/* ===================================================
+   EduNex AI — Light Theme Overrides
+   Applied when <html data-theme="light">
+   =================================================== */
+
+html[data-theme="light"] body {
+  background: #f3f4f6 !important;
+  color: #332820 !important;
+}
+
+/* ---- Base text elements ---- */
+html[data-theme="light"] h1,
+html[data-theme="light"] h2,
+html[data-theme="light"] h3,
+html[data-theme="light"] h4,
+html[data-theme="light"] h5,
+html[data-theme="light"] h6 { color: #332820 !important; }
+
+html[data-theme="light"] p,
+html[data-theme="light"] span,
+html[data-theme="light"] li,
+html[data-theme="light"] div { color: inherit; }
+
+html[data-theme="light"] a { color: #332820; }
+html[data-theme="light"] label { color: #374151 !important; }
+
+/* ---- Navbar ---- */
+html[data-theme="light"] .navbar {
+  background: rgba(255,255,255,0.96) !important;
+  border-bottom-color: rgba(0,0,0,0.1) !important;
+}
+html[data-theme="light"] .nav-logo { color: #332820 !important; }
+html[data-theme="light"] .nav-logo span { color: #C58B2A !important; }
+html[data-theme="light"] .nav-links a { color: #374151 !important; }
+html[data-theme="light"] .nav-links a:hover { color: #332820 !important; }
+html[data-theme="light"] .nav-links a.active { color: #332820 !important; }
+html[data-theme="light"] .nav-login { color: #374151 !important; }
+html[data-theme="light"] .nav-avatar {
+  background: #fff !important;
+  border-color: rgba(0,0,0,0.12) !important;
+  color: #6b7280 !important;
+}
+
+/* ---- Cards ---- */
+html[data-theme="light"] .pf-card,
+html[data-theme="light"] .ep-card,
+html[data-theme="light"] .cert-card,
+html[data-theme="light"] .wl-card,
+html[data-theme="light"] .hist-card,
+html[data-theme="light"] .rec-card,
+html[data-theme="light"] .activity-card,
+html[data-theme="light"] .streak-card,
+html[data-theme="light"] .stat-pill,
+html[data-theme="light"] .cert-stat {
+  background: #ffffff !important;
+  border-color: rgba(0,0,0,0.10) !important;
+}
+
+/* ---- Text on cards ---- */
+html[data-theme="light"] .pf-card-heading,
+html[data-theme="light"] .pf-list-label,
+html[data-theme="light"] .back-title,
+html[data-theme="light"] .sec-title,
+html[data-theme="light"] .hist-title,
+html[data-theme="light"] .rec-title,
+html[data-theme="light"] .cert-course-name,
+html[data-theme="light"] .wl-title,
+html[data-theme="light"] .ep-card-title,
+html[data-theme="light"] .cert-visual-title,
+html[data-theme="light"] .welcome-left h1,
+html[data-theme="light"] .activity-head span,
+html[data-theme="light"] .streak-head span,
+html[data-theme="light"] .astat-value,
+html[data-theme="light"] .stat-pill-value,
+html[data-theme="light"] .cert-stat-value {
+  color: #332820 !important;
+}
+
+html[data-theme="light"] .pf-list-hint,
+html[data-theme="light"] .pf-version-note,
+html[data-theme="light"] .pf-theme-label,
+html[data-theme="light"] .sec-link,
+html[data-theme="light"] .hist-meta,
+html[data-theme="light"] .hist-time,
+html[data-theme="light"] .rec-meta-row,
+html[data-theme="light"] .cert-meta,
+html[data-theme="light"] .wl-rating-count,
+html[data-theme="light"] .wl-meta,
+html[data-theme="light"] .wl-instructor,
+html[data-theme="light"] .welcome-left p,
+html[data-theme="light"] .astat-label,
+html[data-theme="light"] .stat-pill-label,
+html[data-theme="light"] .cert-stat-label,
+html[data-theme="light"] .ep-label,
+html[data-theme="light"] .chart-day,
+html[data-theme="light"] .wl-count {
+  color: #6b7280 !important;
+}
+
+/* ---- Profile page specifics ---- */
+html[data-theme="light"] .pf-profile-card {
+  background: #ffffff !important;
+  border-color: rgba(0,0,0,0.1) !important;
+}
+html[data-theme="light"] .pf-name { color: #332820 !important; }
+html[data-theme="light"] .pf-email { color: #6b7280 !important; }
+html[data-theme="light"] .pf-list-item {
+  border-color: rgba(0,0,0,0.06) !important;
+}
+html[data-theme="light"] .pf-list-item:hover {
+  background: rgba(0,0,0,0.03) !important;
+}
+html[data-theme="light"] .pf-list-icon {
+  background: rgba(0,0,0,0.05) !important;
+  border-color: rgba(0,0,0,0.08) !important;
+  color: #6b7280 !important;
+}
+html[data-theme="light"] .pf-list-chevron { color: #9ca3af !important; }
+html[data-theme="light"] .pf-theme-opt { border-color: rgba(0,0,0,0.1) !important; }
+html[data-theme="light"] .pf-theme-opt .pf-theme-preview {
+  border-color: rgba(0,0,0,0.1) !important;
+}
+html[data-theme="light"] .pf-badge-gray {
+  background: rgba(0,0,0,0.07) !important;
+  color: #374151 !important;
+  border-color: rgba(0,0,0,0.1) !important;
+}
+html[data-theme="light"] .pf-edit-btn {
+  background: rgba(0,0,0,0.05) !important;
+  border-color: rgba(0,0,0,0.1) !important;
+  color: #374151 !important;
+}
+html[data-theme="light"] .pf-edit-btn:hover { color: #332820 !important; }
+
+/* ---- Inputs ---- */
+html[data-theme="light"] input,
+html[data-theme="light"] textarea,
+html[data-theme="light"] select,
+html[data-theme="light"] .ep-input,
+html[data-theme="light"] .sp-profile-input {
+  background: #f9fafb !important;
+  border-color: rgba(0,0,0,0.12) !important;
+  color: #332820 !important;
+}
+html[data-theme="light"] input::placeholder,
+html[data-theme="light"] textarea::placeholder { color: #9ca3af !important; }
+
+/* ---- Buttons (non-primary) ---- */
+html[data-theme="light"] .back-btn,
+html[data-theme="light"] .filter-tab,
+html[data-theme="light"] .cert-tab,
+html[data-theme="light"] .wl-sort-btn,
+html[data-theme="light"] .wl-clear-btn,
+html[data-theme="light"] .cert-action-btn,
+html[data-theme="light"] .cart-btn,
+html[data-theme="light"] .wl-enroll-btn + .cert-action-btn,
+html[data-theme="light"] .activity-more {
+  background: rgba(0,0,0,0.05) !important;
+  border-color: rgba(0,0,0,0.1) !important;
+  color: #374151 !important;
+}
+html[data-theme="light"] .filter-tab.active,
+html[data-theme="light"] .cert-tab.active,
+html[data-theme="light"] .wl-sort-btn.active {
+  background: #C58B2A !important;
+  color: #FFFDF8 !important;
+}
+
+/* ---- Hist/course card thumbnails ---- */
+html[data-theme="light"] .hist-info,
+html[data-theme="light"] .rec-body,
+html[data-theme="light"] .wl-body { background: #fff !important; }
+
+html[data-theme="light"] .wl-footer {
+  border-top-color: rgba(0,0,0,0.08) !important;
+}
+
+/* ---- Bar chart bars ---- */
+html[data-theme="light"] .bar { background: #e5e7eb !important; }
+html[data-theme="light"] .bar.bar-active { background: #C58B2A !important; }
+html[data-theme="light"] .streak-dot { background: #e5e7eb !important; }
+html[data-theme="light"] .streak-dot.done,
+html[data-theme="light"] .streak-dot.today { background: #C58B2A !important; }
+html[data-theme="light"] .streak-num { color: #C58B2A !important; }
+html[data-theme="light"] .streak-sub { color: #6b7280 !important; }
+
+/* ---- Dashboard orbs (hide on light) ---- */
+html[data-theme="light"] .orb-tl,
+html[data-theme="light"] .orb-br { display: none !important; }
+
+/* ---- Section dividers & borders ---- */
+html[data-theme="light"] .footer-wrap,
+html[data-theme="light"] .sp-footer { background: #e5e7eb !important; border-top-color: rgba(0,0,0,0.1) !important; }
+html[data-theme="light"] .footer-bottom { border-top-color: rgba(0,0,0,0.08) !important; }
+html[data-theme="light"] .footer-bottom p,
+html[data-theme="light"] .footer-desc,
+html[data-theme="light"] .footer-links a { color: #6b7280 !important; }
+html[data-theme="light"] .footer-links a:hover { color: #C58B2A !important; }
+html[data-theme="light"] .footer-col h4 { color: #332820 !important; }
+html[data-theme="light"] .footer-brand { color: #C58B2A !important; }
+html[data-theme="light"] .footer-icon {
+  background: rgba(0,0,0,0.05) !important;
+  border-color: rgba(0,0,0,0.1) !important;
+  color: #6b7280 !important;
+}
+
+/* ---- Certificates page ---- */
+html[data-theme="light"] .cert-visual {
+  background: linear-gradient(135deg, #F3E4C8, #FFFDF8) !important;
+  border-bottom-color: rgba(0,0,0,0.08) !important;
+}
+html[data-theme="light"] .cert-visual-org { color: #A96F18 !important; }
+html[data-theme="light"] .cert-visual-title { color: #332820 !important; }
+html[data-theme="light"] .cert-visual-name { color: #6b7280 !important; }
+html[data-theme="light"] .cert-card.wip .cert-visual { background: #f3f4f6 !important; }
+
+/* ---- Upgrade card always stays colored ---- */
+html[data-theme="light"] .upgrade-card { background: linear-gradient(135deg, #C58B2A, #A96F18) !important; }
+html[data-theme="light"] .upgrade-card .upgrade-label,
+html[data-theme="light"] .upgrade-card .upgrade-title { color: #FFFDF8 !important; }
+
+/* ---- Page/section backgrounds ---- */
+html[data-theme="light"] .dash-page,
+html[data-theme="light"] .page { background: transparent; }
+
+/* Warm premium light-theme palette. Palette-only override; no layout changes. */
+html[data-theme="light"] {
+  --bg: #FAF7F1;
+  --card: #FFFDF8;
+  --card2: #FFFCF6;
+  --panel: #F3EBDD;
+  --panel2: #F6F0E7;
+  --border: #E2D6C6;
+  --border2: #E6DACB;
+  --text: #332820;
+  --text2: #756A60;
+  --nav-bg: #FBF8F2;
+  --gray: #9A8E82;
+  --light: #756A60;
+  --cyan: #C58B2A;
+  --cyan-dim: rgba(197,139,42,.10);
+  --cyan-border: rgba(197,139,42,.26);
+  --accent: #B9853E;
+  --gold: #C58B2A;
+}
+
+html[data-theme="light"],
+html[data-theme="light"] body {
+  background: #FAF7F1 !important;
+  color: #332820 !important;
+}
+
+html[data-theme="light"] :where(h1, h2, h3, h4, h5, h6, .hero-title, .sec-title, .section-title, .card-title, .course-title, .pf-name, .pf-card-heading, .ep-card-title, .cert-visual-title, .welcome-left h1, .stat-pill-value, .hist-title, .rec-title, .astat-value) {
+  color: #2B211A !important;
+}
+
+html[data-theme="light"] :where(p, .text-on-surface-variant, .hero-sub, .section-head p, .tile-body p, .tile-meta, .pf-email, .pf-list-hint, .hist-meta, .hist-time, .rec-meta-row, .cert-meta, .wl-meta, .wl-instructor, .stat-pill-label, .astat-label, .chart-day, .footer-desc, .footer-links a, .footer-bottom p) {
+  color: #756A60 !important;
+}
+
+html[data-theme="light"] :where(.navbar, .premium-site-nav, .enx-navbar, .pay-nav, .edunex-mobile-menu, .index2-mobile-menu, .premium-mobile-menu) {
+  background: #FBF8F2 !important;
+  border-color: #E2D6C6 !important;
+}
+
+html[data-theme="light"] :where(.nav-logo, .premium-logo, .footer-brand, .enx-nav-logo, .enx-footer-brand) {
+  color: #2B211A !important;
+}
+
+html[data-theme="light"] :where(.nav-logo span, .premium-logo span, .enx-nav-logo span, .enx-footer-brand span span, .nav-links a.active, .premium-nav-links a.active, .enx-nav-links a.active, .nav-login:hover, .enx-nav-login:hover, .nav-avatar:hover, .enx-nav-avatar:hover, .premium-avatar:hover, .footer-links a:hover, .enx-footer-links a:hover, .enx-footer-cta > a, .sec-link, .course-price, .wl-price, .cp-price, .hero-card-price strong, .hero-card-action) {
+  color: #C58B2A !important;
+}
+
+html[data-theme="light"] :where(.bar.bar-active, .streak-dot.done, .streak-dot.today, .tile-progress span, .hist-progress-track span, .hero-progress-track span) {
+  background: #C58B2A !important;
+}
+
+html[data-theme="light"] .nav-links a.active::after,
+html[data-theme="light"] .premium-nav-links a.active::after,
+html[data-theme="light"] .enx-nav-links a.active::after {
+  background: #C58B2A !important;
+}
+
+html[data-theme="light"] :where(.glass-card, .card-traditional, .directive-card, .team-card, .trial-card, .hero-stat-card, .library-summary, .course-tile, .lesson-sidebar, .empty-state, .pf-card, .pf-profile-card, .ep-card, .cert-card, .wl-card, .hist-card, .rec-card, .activity-card, .streak-card, .stat-pill, .checkout-card, .course-preview, .payment-choice-card, .course-card, .library-shell, .watch-shell, .video-shell, .lp-form-box, .lp-test-card, .sp-profile-card, .sp-form-panel, .legal-card, .hero-course-card, .hero-search-form, .hero-trust-item, .hero-topic, .hero-carousel-btn) {
+  background: #FFFDF8 !important;
+  border-color: #E2D6C6 !important;
+  box-shadow: 0 8px 24px rgba(88,65,34,.06) !important;
+}
+
+html[data-theme="light"] :where(.checkout-body, .payment-choice-body, .cp-includes, .plan-option, .pay-btn-secondary, .payment-choice-btn.secondary, .library-tabs, .library-search, .summary-subline, .lesson-item, .pf-list-icon, .pf-edit-btn, .filter-tab, .library-tab, .cert-tab, .back-btn, .btn-ghost, .hero-cta-secondary, .hero-btn-secondary) {
+  background: #FFFCF6 !important;
+  border-color: #E2D6C6 !important;
+  color: #C58B2A !important;
+}
+
+html[data-theme="light"] :where(input, textarea, select, .ep-input, .sp-profile-input, .library-search input, .hero-search-field input) {
+  background: #FAF5ED !important;
+  border-color: #E2D6C6 !important;
+  color: #332820 !important;
+}
+
+html[data-theme="light"] :where(input, textarea, select):focus {
+  border-color: #C58B2A !important;
+  outline-color: #C58B2A !important;
+}
+
+html[data-theme="light"] input::placeholder,
+html[data-theme="light"] textarea::placeholder {
+  color: #9A8E82 !important;
+}
+
+html[data-theme="light"] :where(.hero-cta-primary, .hero-search-btn, .btn-cyan, .btn-trial, .trial-btn, .cta-big-btn, .login-cta-btn, .footer-contact-link, .lp-signin-btn, .sp-primary-btn, .sp-complete-btn, .payment-choice-btn.primary, .pay-btn-primary, .wl-enroll-btn, .cart-btn, .upgrade-card) {
+  background: #C58B2A !important;
+  border-color: #C58B2A !important;
+  color: #FFFDF8 !important;
+  box-shadow: 0 8px 24px rgba(88,65,34,.10) !important;
+}
+
+html[data-theme="light"] :where(.hero-cta-primary:hover, .hero-search-btn:hover, .btn-cyan:hover, .btn-trial:hover, .trial-btn:hover, .cta-big-btn:hover, .login-cta-btn:hover, .footer-contact-link:hover, .lp-signin-btn:hover, .sp-primary-btn:hover, .sp-complete-btn:hover, .payment-choice-btn.primary:hover, .pay-btn-primary:hover, .wl-enroll-btn:hover, .cart-btn:hover) {
+  background: #A96F18 !important;
+  border-color: #A96F18 !important;
+}
+
+html[data-theme="light"] :where(.hero-card-badge, .bg-black\/80, .pf-badge-teal, .pf-badge-gray, .filter-tab.active, .cert-tab.active, .wl-sort-btn.active) {
+  background: #F3E4C8 !important;
+  border-color: #C58B2A !important;
+  color: #C58B2A !important;
+}
+
+html[data-theme="light"] :where(.fa-star, .wl-rating, .rating, .cert-visual-org, .streak-num) {
+  color: #C58B2A !important;
+}
+
+html[data-theme="light"] :where(.page-grid, #page-grid-global) {
+  background-image:
+    linear-gradient(rgba(197,139,42,.055) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(197,139,42,.055) 1px, transparent 1px) !important;
+}
+
+html[data-theme="light"] :where(.grid-dot-global) {
+  background: rgba(185,144,85,.78) !important;
+  box-shadow: 0 0 8px 2px rgba(185,144,85,.28) !important;
+}
+
+html[data-theme="light"] :where(.site-footer, .footer, .footer-wrap, .sp-footer, .enx-footer, .enx-footer-cta, .enx-footer-trust-row span, .enx-footer-support a) {
+  background: #F6F0E7 !important;
+  border-color: #E2D6C6 !important;
+}
+
+html[data-theme="light"] :where(.hero-cta-secondary, .hero-btn-secondary, .btn-ghost, .pay-btn-secondary, .payment-choice-btn.secondary, .back-btn, .pf-edit-btn) {
+  background: #FFFDF8 !important;
+  border-color: #DAB77A !important;
+  color: #9A681F !important;
+}
+
+html[data-theme="light"] :where(.hero-topic, .topic-chip, .filter-tab, .library-tab, .cert-tab) {
+  background: #FAF5ED !important;
+  border-color: #E2D6C6 !important;
+  color: #5F534A !important;
+}
+
+html[data-theme="light"] :where(.hero-topic i, .topic-chip i, .filter-tab i, .library-tab i, .cert-tab i) {
+  color: #B9853E !important;
+}
+
+html[data-theme="light"] :where(.hero-card-badge, .bg-black\/80, .pf-badge-teal, .pf-badge-gray, .filter-tab.active, .cert-tab.active, .wl-sort-btn.active, .hero-topic:hover, .topic-chip:hover) {
+  background: #F3E4C8 !important;
+  border-color: #DAB77A !important;
+  color: #8E621D !important;
+}
+
+html[data-theme="light"] :where(.navbar i, .premium-site-nav i, .enx-navbar i, .pay-nav i, .hero-trust-item i, .hero-trust-item .material-symbols-outlined) {
+  color: #8B6A37 !important;
+}

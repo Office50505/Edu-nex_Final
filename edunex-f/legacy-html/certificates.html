@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EduNex AI — My Certificates</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="css/animations.css">
+  <style>
+    :root { --font-body: "Manrope", ui-sans-serif, system-ui, sans-serif; --font-display: "Fraunces", Georgia, serif; }
+    body, button, input, textarea, select { font-family: var(--font-body); }
+    h1, h2, .hero-title, .section-title, .auth-brand, .library-hero h1, .welcome-left h1, .market-right h2, .trial-left h2, .team-header-row h2, .cta-section h2, .section-head h2, .lp-title, .sp-title, .payment-choice-title { font-family: var(--font-display); font-weight: 600; letter-spacing: 0; }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { overflow-x: hidden; }
+    body { font-family: "Manrope", ui-sans-serif, system-ui, sans-serif; background: var(--bg, #000); color: var(--text, #fff); min-height: 100vh; }
+    a { text-decoration: none; color: inherit; }
+
+    :root {
+      --bg: #000000;
+      --text: #ffffff;
+      --text2: #9ca3af;
+      --nav-bg: rgba(0,0,0,0.95);
+      --cyan: #C58B2A;
+      --cyan-dim: rgba(197,139,42,0.1);
+      --cyan-border: rgba(197,139,42,0.22);
+      --card: #0d0d0d;
+      --border: rgba(255,255,255,0.07);
+      --border2: rgba(255,255,255,0.1);
+      --gray: #6b7280;
+      --light: #9ca3af;
+    }
+
+    .navbar {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 999;
+      background: var(--nav-bg); backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border); padding: 16px 0;
+    }
+    .nav-inner { max-width: 1100px; margin: 0 auto; padding: 0 24px; display: flex; align-items: center; gap: 40px; }
+    .nav-logo { font-size: 1.2rem; font-weight: 700; color: var(--text); }
+    .nav-logo span { color: var(--cyan); }
+    .nav-links { display: flex; align-items: center; gap: 8px; flex: 1; justify-content: center; list-style: none; }
+    .nav-links a { padding: 8px 16px; font-size: .9rem; font-weight: 500; color: var(--text2); transition: color .2s; }
+    .nav-links a:hover { color: var(--text); }
+    .nav-right { display: flex; align-items: center; gap: 16px; }
+    .nav-login { font-size: .9rem; font-weight: 500; color: var(--text2); }
+    .nav-login:hover { color: var(--cyan); }
+    .nav-avatar {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: var(--card); border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: .85rem; color: #888; cursor: pointer; transition: border-color .2s;
+    }
+    .nav-avatar:hover { border-color: var(--cyan); color: var(--cyan); }
+
+    .page { max-width: 1000px; margin: 0 auto; padding: 96px 24px 60px; }
+
+    .back-row { display: flex; align-items: center; gap: 10px; margin-bottom: 28px; }
+    .back-btn {
+      width: 34px; height: 34px; border-radius: 9px;
+      background: var(--card); border: 1px solid var(--border2);
+      display: flex; align-items: center; justify-content: center;
+      color: #888; font-size: .78rem; cursor: pointer; transition: all .2s;
+    }
+    .back-btn:hover { border-color: var(--cyan-border); color: var(--cyan); }
+    .back-title { font-size: 1.2rem; font-weight: 800; }
+
+    /* Stats row */
+    .cert-stats {
+      display: flex; gap: 14px; margin-bottom: 32px; flex-wrap: wrap;
+    }
+    .cert-stat {
+      background: var(--card); border: 1px solid var(--border2);
+      border-radius: 12px; padding: 14px 20px; min-width: 130px;
+    }
+    .cert-stat-label {
+      font-size: .6rem; font-weight: 800; text-transform: uppercase;
+      letter-spacing: .08em; color: var(--gray); margin-bottom: 4px;
+      display: flex; align-items: center; gap: 5px;
+    }
+    .cert-stat-label i { color: var(--cyan); }
+    .cert-stat-value { font-size: 1.4rem; font-weight: 900; color: var(--text); }
+
+    /* Filter tabs */
+    .cert-tabs { display: flex; gap: 8px; margin-bottom: 24px; }
+    .cert-tab {
+      padding: 7px 18px; border-radius: 100px;
+      background: var(--card); border: 1px solid var(--border2);
+      font-family: "Manrope", ui-sans-serif, system-ui, sans-serif; font-size: .78rem; font-weight: 600;
+      color: var(--light); cursor: pointer; transition: all .2s;
+    }
+    .cert-tab:hover { border-color: rgba(255,255,255,.2); color: var(--text); }
+    .cert-tab.active { background: var(--cyan); border-color: var(--cyan); color: #000; }
+
+    /* Grid */
+    .cert-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+
+    /* Certificate card */
+    .cert-card {
+      background: var(--card); border: 1px solid var(--border2);
+      border-radius: 16px; overflow: hidden;
+      transition: all .22s; cursor: pointer;
+    }
+    .cert-card:hover { border-color: var(--cyan-border); transform: translateY(-4px); box-shadow: 0 12px 32px rgba(0,0,0,.5); }
+
+    /* Certificate visual */
+    .cert-visual {
+      background: linear-gradient(135deg, #071820, #0d2535);
+      border-bottom: 1px solid var(--border2);
+      padding: 24px 20px; text-align: center; position: relative;
+      overflow: hidden;
+    }
+    .cert-visual::before {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(circle at 70% 30%, rgba(197,139,42,.08) 0%, transparent 60%);
+    }
+    .cert-visual-seal {
+      width: 56px; height: 56px; border-radius: 50%;
+      border: 2px solid var(--cyan); background: rgba(197,139,42,.08);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.4rem; color: var(--cyan); margin: 0 auto 10px;
+      box-shadow: 0 0 16px rgba(197,139,42,.2);
+    }
+    .cert-visual-org {
+      font-size: .6rem; font-weight: 800; text-transform: uppercase;
+      letter-spacing: .12em; color: var(--cyan); margin-bottom: 4px;
+    }
+    .cert-visual-title {
+      font-size: .82rem; font-weight: 700; color: var(--text); line-height: 1.35;
+      margin-bottom: 8px;
+    }
+    .cert-visual-name {
+      font-size: .72rem; color: var(--light);
+    }
+    .cert-visual-ribbon {
+      position: absolute; top: 14px; right: -22px;
+      background: var(--cyan); color: #000;
+      font-size: .52rem; font-weight: 900; letter-spacing: .08em;
+      padding: 4px 28px; transform: rotate(40deg);
+      text-transform: uppercase;
+    }
+
+    /* Card body */
+    .cert-body { padding: 14px 16px; }
+    .cert-course-name { font-size: .84rem; font-weight: 700; color: var(--text); margin-bottom: 5px; }
+    .cert-meta {
+      display: flex; align-items: center; gap: 8px;
+      font-size: .7rem; color: var(--gray); margin-bottom: 12px; flex-wrap: wrap;
+    }
+    .cert-meta .dot { font-size: .45rem; }
+    .cert-actions { display: flex; gap: 8px; }
+    .cert-action-btn {
+      flex: 1; padding: 8px; border-radius: 9px;
+      background: rgba(255,255,255,.04); border: 1px solid var(--border2);
+      font-family: "Manrope", ui-sans-serif, system-ui, sans-serif; font-size: .72rem; font-weight: 700;
+      color: var(--light); cursor: pointer; transition: all .2s;
+      display: flex; align-items: center; justify-content: center; gap: 5px;
+    }
+    .cert-action-btn:hover { border-color: var(--cyan-border); color: var(--cyan); }
+    .cert-action-btn.primary { background: var(--cyan-dim); border-color: var(--cyan-border); color: var(--cyan); }
+    .cert-action-btn.primary:hover { background: rgba(197,139,42,.18); }
+
+    /* In-progress card */
+    .cert-card.wip .cert-visual {
+      background: linear-gradient(135deg, #0f0f0f, #1a1a1a);
+    }
+    .cert-card.wip .cert-visual-seal { border-color: #555; background: rgba(255,255,255,.04); color: #555; }
+    .cert-card.wip .cert-visual-org { color: var(--gray); }
+    .cert-card.wip .cert-visual-ribbon { background: #333; color: #aaa; }
+    .cert-progress-wrap { margin-bottom: 12px; }
+    .cert-progress-label {
+      display: flex; justify-content: space-between;
+      font-size: .68rem; color: var(--gray); margin-bottom: 5px;
+    }
+    .cert-progress-bar {
+      height: 4px; border-radius: 2px; background: rgba(255,255,255,.07);
+    }
+    .cert-progress-fill {
+      height: 100%; border-radius: 2px; background: var(--cyan);
+    }
+
+    /* Empty state */
+    .cert-empty {
+      display: none; text-align: center; padding: 60px 20px;
+      color: var(--gray);
+    }
+    .cert-empty i { font-size: 2.5rem; margin-bottom: 14px; opacity: .3; }
+    .cert-empty p { font-size: .88rem; }
+
+    .nav-hamburger { display: none; flex-direction: column; gap: 5px; background: none; border: none; cursor: pointer; padding: 4px; }
+    .nav-hamburger span { display: block; width: 22px; height: 2px; background: var(--text); border-radius: 2px; }
+    @media (max-width: 900px) { .nav-links { display: none; } .nav-hamburger { display: flex; } }
+    @media (max-width: 800px) { .cert-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 540px) { .cert-grid { grid-template-columns: 1fr; } }
+    @media (max-width: 480px) { .container { padding: 0 16px; } }
+  </style>
+  <script>(function(){var t=localStorage.getItem('enx-theme')||'noir';var L={'--bg':'#f3f4f6','--card':'#ffffff','--card2':'#f9fafb','--border':'rgba(0,0,0,0.08)','--border2':'rgba(0,0,0,0.12)','--text':'#332820','--text2':'#756A60','--nav-bg':'rgba(255,255,255,0.95)'};var N={'--bg':'#000000','--card':'#0d0d0d','--card2':'#111318','--border':'rgba(255,255,255,0.07)','--border2':'rgba(255,255,255,0.10)','--text':'#ffffff','--text2':'#9ca3af','--nav-bg':'rgba(0,0,0,0.92)'};var v=t==='light'?L:(t==='system'?(window.matchMedia('(prefers-color-scheme:dark)').matches?N:L):N);var r=document.documentElement;Object.keys(v).forEach(function(k){r.style.setProperty(k,v[k]);});r.style.background=v['--bg'];document.addEventListener('DOMContentLoaded',function(){document.body.style.background=v['--bg'];document.body.style.color=v['--text'];});})();</script>
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">EduNex <span>AI</span></a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="courses.html">Courses</a></li>
+      <li><a href="dashboard.html">Dashboard</a></li>
+      <li><a href="about.html">About</a></li>
+    </ul>
+    <div class="nav-right">
+      <a href="login.html" class="nav-login">Login</a>
+      <a href="profile.html" class="nav-avatar" title="Profile"><i class="fas fa-user"></i></a>
+    </div>
+  </div>
+</nav>
+
+<div class="page">
+
+  <div class="back-row">
+    <div class="back-btn" onclick="history.back()"><i class="fas fa-arrow-left"></i></div>
+    <h1 class="back-title">My Certificates</h1>
+  </div>
+
+  <!-- Stats -->
+  <div class="cert-stats">
+    <div class="cert-stat">
+      <div class="cert-stat-label"><i class="fas fa-certificate"></i> Earned</div>
+      <div class="cert-stat-value" id="earnedCount">0</div>
+    </div>
+    <div class="cert-stat">
+      <div class="cert-stat-label"><i class="fas fa-spinner"></i> In Progress</div>
+      <div class="cert-stat-value" id="inProgressCount">0</div>
+    </div>
+    <div class="cert-stat">
+      <div class="cert-stat-label"><i class="fas fa-star"></i> Avg Score</div>
+      <div class="cert-stat-value" id="avgScore">--</div>
+    </div>
+  </div>
+
+  <!-- Filter tabs -->
+  <div class="cert-tabs">
+    <button class="cert-tab active" onclick="filterCerts('all', this)">All</button>
+    <button class="cert-tab" onclick="filterCerts('earned', this)">Earned</button>
+    <button class="cert-tab" onclick="filterCerts('in-progress', this)">In Progress</button>
+  </div>
+
+  <!-- Grid -->
+  <div class="cert-grid" id="certGrid">
+    <div class="cert-empty" style="display:block;grid-column:1/-1;padding:36px 20px;">Loading certificates...</div>
+  </div>
+
+  <div class="cert-empty" id="certEmpty">
+    <i class="fas fa-certificate"></i>
+    <p>No certificates found in this category.</p>
+  </div>
+
+</div>
+
+<script src="js/edunex-api.js"></script>
+<script src="assets/bot-avatars/manifest.js"></script>
+<script src="js/nex-ai-widget.js"></script>
+<script src="js/animations.js" defer></script>
+<script>
+  let certificateRows = [];
+  let activeCertificateFilter = 'all';
+
+  function escapeHtml(value) {
+    return String(value ?? '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
+
+  function formatDate(value) {
+    if (!value) return 'Date unavailable';
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return 'Date unavailable';
+    return date.toLocaleDateString('en-IN', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+    });
+  }
+
+  function certificateVerifyUrl(certificate) {
+    return `${window.location.origin}/api/certificates/verify/${encodeURIComponent(certificate.certificateId)}`;
+  }
+
+  function certificateCard(certificate) {
+    const title = escapeHtml(certificate.courseTitle || 'Completed Course');
+    const learner = escapeHtml(certificate.learnerName || 'EduNex Learner');
+    const certificateId = escapeHtml(certificate.certificateId || '');
+    const issuedAt = escapeHtml(formatDate(certificate.issuedAt));
+    const lessons = Number(certificate.totalLessons || certificate.completedLessons || 0);
+
+    return `
+      <article class="cert-card" data-status="earned" data-certificate-id="${certificateId}">
+        <div class="cert-visual">
+          <div class="cert-visual-ribbon">Verified</div>
+          <div class="cert-visual-seal"><i class="fas fa-certificate"></i></div>
+          <div class="cert-visual-org">EduNex AI</div>
+          <div class="cert-visual-title">${title}</div>
+          <div class="cert-visual-name">${learner}</div>
+        </div>
+        <div class="cert-body">
+          <h3 class="cert-course-name">${title}</h3>
+          <div class="cert-meta">
+            <span>Issued ${issuedAt}</span>
+            <span class="dot">●</span>
+            <span>${lessons ? `${lessons} lessons` : 'Verified completion'}</span>
+          </div>
+          <div class="cert-meta">ID: ${certificateId}</div>
+          <div class="cert-actions">
+            <button class="cert-action-btn primary" type="button" data-cert-action="download" data-certificate-id="${certificateId}">
+              <i class="fas fa-download"></i> Download
+            </button>
+            <button class="cert-action-btn" type="button" data-cert-action="share" data-certificate-id="${certificateId}">
+              <i class="fas fa-share"></i> Share
+            </button>
+            <button class="cert-action-btn" type="button" data-cert-action="verify" data-certificate-id="${certificateId}">
+              <i class="fas fa-shield-halved"></i> Verify
+            </button>
+          </div>
+        </div>
+      </article>
+    `;
+  }
+
+  function updateCertificateStats() {
+    document.getElementById('earnedCount').textContent = String(certificateRows.length);
+    document.getElementById('inProgressCount').textContent = '0';
+    document.getElementById('avgScore').textContent = '--';
+  }
+
+  function setCertificateMessage(message, showRetry = false) {
+    const certGrid = document.getElementById('certGrid');
+    certGrid.innerHTML = `
+      <div class="cert-empty" style="display:block;grid-column:1/-1;padding:36px 20px;">
+        <i class="fas fa-certificate"></i>
+        <p>${escapeHtml(message)}</p>
+        ${showRetry ? '<button class="cert-action-btn primary" type="button" data-cert-action="retry" style="max-width:140px;margin:16px auto 0;">Retry</button>' : ''}
+      </div>
+    `;
+    document.getElementById('certEmpty').style.display = 'none';
+    window.EduNex?.refreshIcons?.(certGrid);
+  }
+
+  function renderCertificates(status = activeCertificateFilter) {
+    activeCertificateFilter = status;
+    updateCertificateStats();
+
+    const certGrid = document.getElementById('certGrid');
+    const certEmpty = document.getElementById('certEmpty');
+    const visibleRows = status === 'in-progress'
+      ? []
+      : certificateRows.filter((certificate) => status === 'all' || certificate.status === 'active');
+
+    certGrid.innerHTML = visibleRows.map(certificateCard).join('');
+    certEmpty.style.display = visibleRows.length ? 'none' : 'block';
+
+    if (!visibleRows.length && status === 'in-progress') {
+      certEmpty.querySelector('p').textContent = 'Certificates appear here after verified course completion.';
+    } else if (!visibleRows.length) {
+      certEmpty.querySelector('p').textContent = 'No certificates found in this category.';
+    }
+
+    window.EduNex?.refreshIcons?.(certGrid);
+  }
+
+  function filterCerts(status, btn) {
+    document.querySelectorAll('.cert-tab').forEach(t => t.classList.remove('active'));
+    btn.classList.add('active');
+    renderCertificates(status);
+  }
+
+  async function loadCertificates() {
+    if (!window.EduNex?.getAccessToken?.()) {
+      certificateRows = [];
+      updateCertificateStats();
+      setCertificateMessage('Log in to view your earned certificates.');
+      return;
+    }
+
+    setCertificateMessage('Loading certificates...');
+
+    try {
+      const data = await window.EduNex.authRequest('/api/certificates');
+      certificateRows = Array.isArray(data?.certificates) ? data.certificates : [];
+      renderCertificates(activeCertificateFilter);
+    } catch (error) {
+      console.error('[certificates] Failed to load certificates', error);
+      setCertificateMessage("We couldn't load your certificates right now. Please try again in a moment.", true);
+    }
+  }
+
+  function findCertificate(certificateId) {
+    return certificateRows.find((certificate) => certificate.certificateId === certificateId);
+  }
+
+  function downloadCertificate(certificate) {
+    const text = [
+      'EduNex AI Certificate',
+      '',
+      `Certificate ID: ${certificate.certificateId}`,
+      `Learner: ${certificate.learnerName || 'EduNex Learner'}`,
+      `Course: ${certificate.courseTitle || 'Completed Course'}`,
+      certificate.instructorName ? `Instructor: ${certificate.instructorName}` : null,
+      `Issued: ${formatDate(certificate.issuedAt)}`,
+      `Verify: ${certificateVerifyUrl(certificate)}`,
+    ].filter(Boolean).join('\n');
+    const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `${certificate.certificateId}.txt`;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(link.href);
+  }
+
+  async function shareCertificate(certificate) {
+    const url = certificateVerifyUrl(certificate);
+    if (navigator.share) {
+      await navigator.share({
+        title: 'EduNex AI Certificate',
+        text: `${certificate.learnerName || 'EduNex Learner'} completed ${certificate.courseTitle || 'a course'} on EduNex AI.`,
+        url,
+      });
+      return;
+    }
+    await navigator.clipboard.writeText(url);
+    alert('Certificate verification link copied.');
+  }
+
+  document.addEventListener('click', async function handleCertificateAction(event) {
+    const actionButton = event.target.closest('[data-cert-action]');
+    if (!actionButton) return;
+
+    const action = actionButton.dataset.certAction;
+    if (action === 'retry') {
+      loadCertificates();
+      return;
+    }
+
+    const certificate = findCertificate(actionButton.dataset.certificateId);
+    if (!certificate) return;
+
+    if (action === 'verify') {
+      window.open(certificateVerifyUrl(certificate), '_blank', 'noopener');
+    } else if (action === 'download') {
+      downloadCertificate(certificate);
+    } else if (action === 'share') {
+      try {
+        await shareCertificate(certificate);
+      } catch (error) {
+        if (error?.name !== 'AbortError') {
+          console.error('[certificates] Share failed', error);
+          alert('Unable to share certificate right now.');
+        }
+      }
+    }
+  });
+
+  loadCertificates();
+</script>
+</body>
+</html>

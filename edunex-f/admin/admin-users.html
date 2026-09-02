@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<!-- This site is hosted on Netlify. Anyone can build and deploy a site
+     like this one for free: https://netlify.new/?utm_campaign=ai-legible&utm_source=comment&utm_medium=referral&utm_id=c52315e1-9e9a-4145-8c27-0be0006d0db4
+     Netlify hosting facts for this site: static/SSR served via Netlify Edge. -->
+<meta name="hosting-provider" content="Netlify">
+<meta name="netlify-deploy" content="https://netlify.new/?utm_campaign=ai-legible&amp;utm_source=meta&amp;utm_medium=referral&amp;utm_id=c52315e1-9e9a-4145-8c27-0be0006d0db4">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Management | EduNex</title>
+  <link rel="stylesheet" href="auth.css">
+  <style>
+    body {
+      background:
+        linear-gradient(180deg, #f4f8f5 0%, #f8fafc 42%, #f6fbf7 100%);
+    }
+
+    .users-shell {
+      width: min(1480px, calc(100% - 32px));
+      padding-top: 26px;
+      padding-bottom: 44px;
+    }
+
+    .users-header {
+      align-items: flex-start;
+      padding: 22px;
+      border: 1px solid rgba(226, 232, 240, 0.95);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.92);
+      box-shadow: 0 18px 45px rgba(15, 23, 42, 0.08);
+    }
+
+    .users-header .brand-mark {
+      margin-bottom: 18px;
+      border-radius: 8px;
+      box-shadow: none;
+    }
+
+    .users-header > div:first-child {
+      max-width: 640px;
+    }
+
+    .app-title {
+      font-size: 32px;
+      letter-spacing: 0;
+    }
+
+    .app-subtitle {
+      max-width: 760px;
+      color: #667085;
+    }
+
+    .toolbar-button {
+      min-width: auto;
+      border-color: #dbe7df;
+      background: #fff;
+    }
+
+    .toolbar-button:hover {
+      background: #fbfefc;
+    }
+
+    .controls-panel {
+      display: grid;
+      grid-template-columns: minmax(220px, 1fr) 190px 150px;
+      gap: 10px;
+      align-items: end;
+      margin-top: 18px;
+      padding: 14px;
+      border: 1px solid #dbe7df;
+      border-radius: 8px;
+      background: #fbfefc;
+    }
+
+    .controls-panel label {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .controls-panel input,
+    .controls-panel select {
+      width: 100%;
+      height: 42px;
+      padding: 0 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      color: var(--text);
+      font: inherit;
+      font-weight: 700;
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 22px;
+    }
+
+    .summary-card,
+    .users-panel {
+      border: 1px solid rgba(226, 232, 240, 0.95);
+      border-radius: 8px;
+      background: #fff;
+      box-shadow: 0 12px 30px rgba(15, 23, 42, 0.055);
+    }
+
+    .summary-card {
+      min-height: 104px;
+      padding: 16px;
+    }
+
+    .summary-card strong {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 900;
+      line-height: 1.3;
+    }
+
+    .summary-card span {
+      display: block;
+      margin-top: 12px;
+      color: var(--text);
+      font-size: 28px;
+      font-weight: 900;
+      line-height: 1;
+    }
+
+    .users-panel {
+      margin-top: 22px;
+      overflow: hidden;
+    }
+
+    .users-head,
+    .user-row {
+      display: grid;
+      grid-template-columns: minmax(240px, 1.15fr) minmax(170px, 0.75fr) minmax(150px, 0.65fr) minmax(220px, 1fr) 118px;
+      gap: 14px;
+      align-items: center;
+    }
+
+    .users-head {
+      padding: 13px 18px;
+      border-bottom: 1px solid var(--line);
+      background: #f0f7f2;
+      color: #344054;
+      font-size: 12px;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    .user-card {
+      border-bottom: 1px solid var(--line);
+    }
+
+    .user-card:last-child {
+      border-bottom: 0;
+    }
+
+    .user-row {
+      width: 100%;
+      padding: 16px 18px;
+      border: 0;
+      background: #fff;
+      color: inherit;
+      font: inherit;
+      text-align: left;
+      transition: background 0.18s ease;
+    }
+
+    .user-row:hover {
+      background: #fbfefc;
+    }
+
+    .user-row strong,
+    .user-row span,
+    .progress-row strong,
+    .progress-row span {
+      display: block;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .user-row span,
+    .progress-row span {
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .user-row strong,
+    .progress-row strong {
+      color: #102a1b;
+      font-size: 14px;
+    }
+
+    .mini-stats {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .row-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+
+    .pill,
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 28px;
+      padding: 4px 9px;
+      border-radius: 999px;
+      background: #eef8f1;
+      color: #344054;
+      font-size: 12px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .action-button {
+      min-width: 66px;
+      min-height: 30px;
+      padding: 4px 10px;
+      border: 1px solid #dbe7df;
+      border-radius: 999px;
+      background: #fff;
+      color: #344054;
+      cursor: pointer;
+      font: inherit;
+      font-size: 12px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .action-button:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    .action-button.danger {
+      border-color: #fecdca;
+      background: #fff7f7;
+      color: var(--danger);
+    }
+
+    .action-button.danger:hover {
+      border-color: var(--danger);
+      background: #fff1f0;
+    }
+
+    .badge.good {
+      background: #ecfdf3;
+      color: var(--success);
+    }
+
+    .badge.warn {
+      background: #fff7e6;
+      color: #a15c00;
+    }
+
+    .badge.bad {
+      background: #fff1f0;
+      color: var(--danger);
+    }
+
+    .progress-panel {
+      display: none;
+      padding: 0 18px 18px;
+      background: #fff;
+    }
+
+    .user-card.is-open .progress-panel {
+      display: block;
+    }
+
+    .progress-list {
+      display: grid;
+      gap: 8px;
+      padding-top: 2px;
+    }
+
+    .progress-row {
+      display: grid;
+      grid-template-columns: minmax(220px, 1fr) minmax(170px, 0.7fr) minmax(180px, 0.8fr);
+      gap: 12px;
+      align-items: center;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fbfefc;
+    }
+
+    .progress-meter {
+      height: 8px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: #e8f2eb;
+    }
+
+    .progress-fill {
+      height: 100%;
+      border-radius: inherit;
+      background: var(--primary);
+    }
+
+    .empty-state,
+    .loading-state {
+      padding: 28px;
+      color: var(--muted);
+      font-weight: 800;
+      text-align: center;
+    }
+
+    @media (max-width: 1180px) {
+      .summary-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 980px) {
+      .summary-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .controls-panel,
+      .users-head,
+      .user-row,
+      .progress-row {
+        grid-template-columns: 1fr;
+      }
+
+      .row-actions {
+        justify-content: flex-start;
+      }
+
+      .users-head {
+        display: none;
+      }
+    }
+
+    @media (max-width: 620px) {
+      .summary-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .users-header {
+        flex-direction: column;
+      }
+    }
+  </style>
+  <link rel="stylesheet" href="motion.css">
+  <script src="motion.js" defer></script>
+  <link rel="stylesheet" href="premium-nav.css">
+  <link rel="stylesheet" href="admin-theme.css">
+<script src="admin-env.js"></script>
+  <script src="premium-nav.js" defer></script>
+</head>
+<body class="premium-nav-page premium-nav-admin">
+  <nav class="premium-site-nav" data-premium-nav>
+    <div class="premium-nav-panel">
+      <a aria-label='EduNex admin home' class='premium-brand' href='admin-dashboard.html'>
+        <span class="premium-brand-mark" aria-hidden="true"></span>
+        <span class="premium-brand-name">Edu<span>Nex</span></span>
+      </a>
+      <div class="premium-nav-links">
+      <a data-nav-path='admin-dashboard.html' href='admin-dashboard.html'>Analytics</a>
+      <a data-nav-path='admin-users.html' href='admin-users.html'>Users</a>
+      <a data-nav-path='admin-courses.html' href='admin-courses.html'>Courses</a>
+      <a data-nav-path='course-posting.html' href='course-posting.html'>Upload</a>
+    </div>
+      <div class="premium-nav-actions">
+      <a class='premium-nav-login-btn' data-nav-path='admin-login.html' href='admin-login.html'>Admin Login</a>
+        <button class="premium-menu-toggle" type="button" aria-label="Open menu" aria-expanded="false">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <main class="app-shell users-shell">
+    <header class="app-header users-header">
+      <div>
+        <div class="brand-mark">E</div>
+        <h1 class="app-title">User Management</h1>
+        <p class="app-subtitle">CRM-style learner records with subscription status, verification health, engagement, and course progress.</p>
+      </div>
+      <nav class="toolbar-actions" aria-label="Admin navigation">
+        <a class='toolbar-button' href='admin-dashboard.html'>Analytics</a>
+        <a class='toolbar-button' href='admin-courses.html'>Course Management</a>
+        <a class='toolbar-button' href='course-posting.html'>Upload course</a>
+        <button class="toolbar-button" id="refreshButton" type="button">Refresh</button>
+        <button class="toolbar-button" id="logoutButton" type="button">Log out</button>
+      </nav>
+    </header>
+
+    <div class="message" id="message" role="status"></div>
+
+    <form class="controls-panel" id="filtersForm">
+      <div>
+        <label for="searchInput">Search</label>
+        <input id="searchInput" type="search" placeholder="Name, email, mobile, course">
+      </div>
+      <div>
+        <label for="statusFilter">Status</label>
+        <select id="statusFilter">
+          <option value="all">All statuses</option>
+          <option value="active">Active</option>
+          <option value="subscribed">Subscribed</option>
+          <option value="1rs trial">1rs trial</option>
+          <option value="trial">Trial</option>
+          <option value="none">None</option>
+          <option value="cancelled">Cancelled</option>
+          <option value="expired">Expired</option>
+        </select>
+      </div>
+      <div>
+        <label for="sortFilter">Sort</label>
+        <select id="sortFilter">
+          <option value="newest">Newest first</option>
+          <option value="progress">Highest progress</option>
+          <option value="courses">Most courses</option>
+          <option value="name">Name A-Z</option>
+        </select>
+      </div>
+      <button class="toolbar-button" id="clearButton" type="button">Clear</button>
+    </form>
+
+    <div class="crm-segments" aria-label="CRM segments">
+      <button class="crm-segment is-active" type="button" data-segment="all">All learners</button>
+      <button class="crm-segment" type="button" data-segment="paying">Paying</button>
+      <button class="crm-segment" type="button" data-segment="trial">Trials</button>
+      <button class="crm-segment" type="button" data-segment="needs_attention">Needs attention</button>
+      <button class="crm-segment" type="button" data-segment="engaged">Engaged</button>
+    </div>
+
+    <section class="summary-grid" id="summaryGrid"></section>
+
+    <div class="crm-results-bar">
+      <div>
+        <strong>Learner pipeline</strong>
+        <span id="resultsLabel">Loading users...</span>
+      </div>
+      <button class="toolbar-button" id="exportButton" type="button">Export CSV</button>
+    </div>
+
+    <section class="users-panel" aria-label="Users">
+      <div class="users-head">
+        <span>Contact</span>
+        <span>Lifecycle</span>
+        <span>Verification</span>
+        <span>Engagement</span>
+        <span>Actions</span>
+      </div>
+      <div id="usersList">
+        <div class="loading-state">Loading users...</div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const adminToken = sessionStorage.getItem('edunexAdminToken');
+    const message = document.getElementById('message');
+    const refreshButton = document.getElementById('refreshButton');
+    const logoutButton = document.getElementById('logoutButton');
+    const searchInput = document.getElementById('searchInput');
+    const statusFilter = document.getElementById('statusFilter');
+    const sortFilter = document.getElementById('sortFilter');
+    const clearButton = document.getElementById('clearButton');
+    const exportButton = document.getElementById('exportButton');
+    const resultsLabel = document.getElementById('resultsLabel');
+    const summaryGrid = document.getElementById('summaryGrid');
+    const usersList = document.getElementById('usersList');
+    const segmentButtons = document.querySelectorAll('.crm-segment');
+
+    let users = [];
+    let activeSegment = 'all';
+
+    if (!adminToken) {
+      window.location.href = 'admin-login.html';
+    }
+
+    function clearAdminSession() {
+      sessionStorage.removeItem('edunexAdminToken');
+      sessionStorage.removeItem('edunexAdmin');
+    }
+
+    async function adminFetch(url, options = {}) {
+      const response = await fetch(url, {
+        ...options,
+        headers: {
+          ...options.headers,
+          Authorization: `Bearer ${adminToken}`,
+        },
+      });
+
+      if (response.status === 401 || response.status === 403) {
+        clearAdminSession();
+        window.location.href = 'admin-login.html';
+      }
+
+      return response;
+    }
+
+    function showMessage(text, type) {
+      message.textContent = text;
+      message.className = `message ${type}`;
+    }
+
+    function clearMessage() {
+      message.textContent = '';
+      message.className = 'message';
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    function formatNumber(value) {
+      return new Intl.NumberFormat('en-IN').format(Number(value || 0));
+    }
+
+    function formatDate(value) {
+      if (!value) return 'No date';
+      return new Date(value).toLocaleDateString('en-IN', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric',
+      });
+    }
+
+    function statusBadgeClass(status) {
+      if (['active', 'subscribed'].includes(status)) return 'good';
+      if (['1rs trial', 'trial'].includes(status)) return 'warn';
+      if (['cancelled', 'expired'].includes(status)) return 'bad';
+      return '';
+    }
+
+    function formatGender(value) {
+      const gender = String(value || '').trim().toLowerCase();
+      if (!gender) return 'Not provided';
+      return gender.charAt(0).toUpperCase() + gender.slice(1);
+    }
+
+    function formatAge(value) {
+      const age = Number(value);
+      return Number.isFinite(age) && age > 0 ? `${formatNumber(age)} years` : 'Age not provided';
+    }
+
+    function initials(user) {
+      const source = user.fullName || user.email || user.mobileNumber || 'Learner';
+      const parts = String(source).trim().split(/\s+/).filter(Boolean);
+      if (!parts.length) return 'L';
+      if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+      return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
+    }
+
+    function contactLines(user) {
+      const email = user.email || 'No email';
+      const phone = user.mobileNumber || 'No mobile';
+      return { email, phone };
+    }
+
+    function progressAverage(user) {
+      return Number(user.progressSummary?.averageProgress || 0);
+    }
+
+    function totalCourses(user) {
+      return Number(user.progressSummary?.totalCourses || 0);
+    }
+
+    function completedCourses(user) {
+      return Number(user.progressSummary?.completedCourses || 0);
+    }
+
+    function engagementLabel(user) {
+      const average = progressAverage(user);
+      const courses = totalCourses(user);
+      if (average >= 75 || completedCourses(user) > 0) return 'Highly engaged';
+      if (average >= 35 || courses >= 2) return 'Active learner';
+      if (courses > 0) return 'Started learning';
+      return 'No activity';
+    }
+
+    function lifecycleLabel(user) {
+      const status = user.subscriptionStatus || 'none';
+      if (['active', 'subscribed'].includes(status)) return 'Customer';
+      if (['1rs trial', 'trial'].includes(status)) return 'Trial learner';
+      if (['cancelled', 'expired'].includes(status)) return 'Retention';
+      return 'Lead';
+    }
+
+    function isVerified(user) {
+      return Boolean(user.isMobileVerified && user.isEmailVerified);
+    }
+
+    function matchesSegment(user) {
+      const status = user.subscriptionStatus || 'none';
+      if (activeSegment === 'paying') return ['active', 'subscribed'].includes(status);
+      if (activeSegment === 'trial') return ['1rs trial', 'trial'].includes(status);
+      if (activeSegment === 'needs_attention') return !isVerified(user) || ['cancelled', 'expired', 'none'].includes(status) || totalCourses(user) === 0;
+      if (activeSegment === 'engaged') return progressAverage(user) >= 35 || completedCourses(user) > 0;
+      return true;
+    }
+
+    function userSearchText(user) {
+      return [
+        user.fullName,
+        user.email,
+        user.mobileNumber,
+        user.subscriptionStatus,
+        user.gender,
+        user.age,
+        ...(user.progressCourses || []).map((course) => course.courseTitle),
+      ].filter(Boolean).join(' ').toLowerCase();
+    }
+
+    function getFilteredUsers() {
+      const query = searchInput.value.trim().toLowerCase();
+      const status = statusFilter.value;
+
+      const rows = users.filter((user) => {
+        const matchesStatus = status === 'all' || user.subscriptionStatus === status;
+        const matchesQuery = !query || userSearchText(user).includes(query);
+        return matchesStatus && matchesQuery && matchesSegment(user);
+      });
+
+      return rows.sort((a, b) => {
+        if (sortFilter.value === 'progress') return progressAverage(b) - progressAverage(a);
+        if (sortFilter.value === 'courses') return totalCourses(b) - totalCourses(a);
+        if (sortFilter.value === 'name') return String(a.fullName || a.email || '').localeCompare(String(b.fullName || b.email || ''));
+        return new Date(b.createdAt || 0) - new Date(a.createdAt || 0);
+      });
+    }
+
+    function renderSummary(rows) {
+      const totalProgressCourses = rows.reduce((sum, user) => sum + Number(user.progressSummary?.totalCourses || 0), 0);
+      const activeUsers = rows.filter((user) => user.isActive).length;
+      const subscribedUsers = rows.filter((user) => ['active', 'subscribed'].includes(user.subscriptionStatus)).length;
+      const completedCourses = rows.reduce((sum, user) => sum + Number(user.progressSummary?.completedCourses || 0), 0);
+      const usersWithAge = rows.filter((user) => Number.isFinite(Number(user.age)));
+      const averageAge = usersWithAge.length
+        ? Math.round(usersWithAge.reduce((sum, user) => sum + Number(user.age || 0), 0) / usersWithAge.length)
+        : 0;
+
+      summaryGrid.innerHTML = [
+        { label: 'Users', value: formatNumber(rows.length) },
+        { label: 'Active Users', value: formatNumber(activeUsers) },
+        { label: 'Paid Subscribers', value: formatNumber(subscribedUsers) },
+        { label: 'Average Age', value: usersWithAge.length ? `${formatNumber(averageAge)} years` : 'No age' },
+        { label: 'Progress Courses', value: `${formatNumber(totalProgressCourses)} / ${formatNumber(completedCourses)}` },
+      ].map((item) => `
+        <div class="summary-card">
+          <strong>${escapeHtml(item.label)}</strong>
+          <span>${escapeHtml(item.value)}</span>
+        </div>
+      `).join('');
+
+      resultsLabel.textContent = `${formatNumber(rows.length)} shown from ${formatNumber(users.length)} total users`;
+    }
+
+    function renderProgress(course) {
+      const percent = Math.max(0, Math.min(100, Number(course.progressPercent || 0)));
+
+      return `
+        <div class="progress-row">
+          <div>
+            <strong>${escapeHtml(course.courseTitle || 'Untitled course')}</strong>
+            <span>${escapeHtml(course.courseId || 'No course id')}</span>
+          </div>
+          <div>
+            <strong>${formatNumber(course.completedCount)} / ${formatNumber(course.totalVideos)} videos</strong>
+            <span>Updated ${formatDate(course.updatedAt)}</span>
+          </div>
+          <div>
+            <strong>${formatNumber(percent)}% progress</strong>
+            <div class="progress-meter" aria-hidden="true">
+              <div class="progress-fill" style="width: ${percent}%"></div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderDetailStat(label, value) {
+      return `
+        <div class="crm-detail-stat">
+          <span>${escapeHtml(label)}</span>
+          <strong>${escapeHtml(value)}</strong>
+        </div>
+      `;
+    }
+
+    function renderUsers() {
+      const rows = getFilteredUsers();
+      renderSummary(rows);
+
+      if (!rows.length) {
+        usersList.innerHTML = '<div class="empty-state">No users found.</div>';
+        return;
+      }
+
+      usersList.innerHTML = rows.map((user, index) => {
+        const progress = user.progressCourses || [];
+        const summary = user.progressSummary || {};
+        const contact = contactLines(user);
+        const average = Math.max(0, Math.min(100, progressAverage(user)));
+        const status = user.subscriptionStatus || 'none';
+        const progressMarkup = progress.length
+          ? progress.map(renderProgress).join('')
+          : '<div class="empty-state">No course progress yet.</div>';
+
+        return `
+          <article class="user-card" data-user-index="${index}">
+            <div class="user-row">
+              <div class="crm-contact-cell">
+                <div class="crm-avatar" aria-hidden="true">${escapeHtml(initials(user))}</div>
+                <div>
+                  <strong>${escapeHtml(user.fullName || 'Learner')}</strong>
+                  <span>${escapeHtml(contact.email)}</span>
+                  <span>${escapeHtml(contact.phone)}</span>
+                </div>
+              </div>
+              <div>
+                <strong>${escapeHtml(lifecycleLabel(user))}</strong>
+                <span><span class="badge ${statusBadgeClass(status)}">${escapeHtml(status)}</span></span>
+                <span>Joined ${formatDate(user.createdAt)}</span>
+              </div>
+              <div>
+                <strong>${isVerified(user) ? 'Verified account' : 'Verification pending'}</strong>
+                <span>${user.isMobileVerified ? 'Mobile verified' : 'Mobile pending'}</span>
+                <span>${user.isEmailVerified ? 'Email verified' : 'Email pending'}</span>
+              </div>
+              <div class="crm-engagement-cell">
+                <strong>${escapeHtml(engagementLabel(user))}</strong>
+                <div class="progress-meter" aria-hidden="true">
+                  <div class="progress-fill" style="width: ${average}%"></div>
+                </div>
+                <div class="mini-stats">
+                  <span class="pill">${formatNumber(summary.totalCourses)} courses</span>
+                  <span class="pill">${formatNumber(summary.completedCourses)} done</span>
+                  <span class="pill">${formatNumber(summary.averageProgress)}% avg</span>
+                </div>
+              </div>
+              <div class="row-actions">
+                <button class="action-button open-user-button" type="button" aria-expanded="false">Open</button>
+                <button class="action-button danger delete-user-button" type="button" data-user-id="${escapeHtml(user._id)}" data-user-name="${escapeHtml(user.fullName || user.email || user.mobileNumber || 'Learner')}">Delete</button>
+              </div>
+            </div>
+            <div class="progress-panel">
+              <div class="crm-detail-grid">
+                ${renderDetailStat('Gender', formatGender(user.gender))}
+                ${renderDetailStat('Age', formatAge(user.age))}
+                ${renderDetailStat('Courses started', formatNumber(summary.totalCourses))}
+                ${renderDetailStat('Completed courses', formatNumber(summary.completedCourses))}
+                ${renderDetailStat('Average progress', `${formatNumber(summary.averageProgress)}%`)}
+                ${renderDetailStat('User ID', user._id || 'No ID')}
+              </div>
+              <div class="crm-detail-section">
+                <div class="crm-detail-head">
+                  <strong>Course progress</strong>
+                  <span>${formatNumber(progress.length)} records</span>
+                </div>
+                <div class="progress-list">${progressMarkup}</div>
+              </div>
+            </div>
+          </article>
+        `;
+      }).join('');
+    }
+
+    async function loadUsers() {
+      clearMessage();
+      usersList.innerHTML = '<div class="loading-state">Loading users...</div>';
+
+      try {
+        const response = await adminFetch(adminApi('/api/admin/user-management'));
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || 'Unable to load users');
+        }
+
+        users = Array.isArray(data) ? data : [];
+        renderUsers();
+      } catch (error) {
+        usersList.innerHTML = '<div class="empty-state">Unable to load users.</div>';
+        showMessage(error.message, 'error');
+      }
+    }
+
+    async function deleteUser(userId, userName) {
+      const confirmed = window.confirm(`Delete ${userName} entirely? This removes the user and their progress, orders, subscriptions, sessions, reviews, notes, wishlists, and related records.`);
+      if (!confirmed) return;
+
+      clearMessage();
+
+      try {
+        const response = await adminFetch(adminApi(`/api/admin/users/${encodeURIComponent(userId)}`), {
+          method: 'DELETE',
+        });
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || 'Unable to delete user');
+        }
+
+        users = users.filter((user) => String(user._id) !== String(userId));
+        renderUsers();
+        showMessage(`Deleted user: ${userName}`, 'success');
+      } catch (error) {
+        showMessage(error.message, 'error');
+      }
+    }
+
+    function csvEscape(value) {
+      return `"${String(value ?? '').replace(/"/g, '""')}"`;
+    }
+
+    function exportUsersCsv() {
+      const rows = getFilteredUsers();
+      const headers = ['Name', 'Email', 'Mobile', 'Lifecycle', 'Subscription', 'Verified', 'Gender', 'Age', 'Courses', 'Completed', 'Average Progress'];
+      const csvRows = [
+        headers.map(csvEscape).join(','),
+        ...rows.map((user) => [
+          user.fullName || 'Learner',
+          user.email || '',
+          user.mobileNumber || '',
+          lifecycleLabel(user),
+          user.subscriptionStatus || 'none',
+          isVerified(user) ? 'yes' : 'no',
+          formatGender(user.gender),
+          Number(user.age || 0) || '',
+          totalCourses(user),
+          completedCourses(user),
+          `${progressAverage(user)}%`,
+        ].map(csvEscape).join(',')),
+      ];
+
+      const blob = new Blob([csvRows.join('\n')], { type: 'text/csv;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `edunex-users-${new Date().toISOString().slice(0, 10)}.csv`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+    }
+
+    usersList.addEventListener('click', (event) => {
+      const deleteButton = event.target.closest('.delete-user-button');
+      if (deleteButton) {
+        deleteUser(deleteButton.dataset.userId, deleteButton.dataset.userName);
+        return;
+      }
+
+      const openButton = event.target.closest('.open-user-button');
+      if (!openButton) return;
+
+      const card = openButton.closest('.user-card');
+      const isOpen = card.classList.toggle('is-open');
+      openButton.setAttribute('aria-expanded', String(isOpen));
+      openButton.textContent = isOpen ? 'Close' : 'Open';
+    });
+
+    searchInput.addEventListener('input', renderUsers);
+    statusFilter.addEventListener('change', renderUsers);
+    sortFilter.addEventListener('change', renderUsers);
+    clearButton.addEventListener('click', () => {
+      searchInput.value = '';
+      statusFilter.value = 'all';
+      sortFilter.value = 'newest';
+      activeSegment = 'all';
+      segmentButtons.forEach((button) => button.classList.toggle('is-active', button.dataset.segment === activeSegment));
+      renderUsers();
+    });
+    segmentButtons.forEach((button) => {
+      button.addEventListener('click', () => {
+        activeSegment = button.dataset.segment || 'all';
+        segmentButtons.forEach((segmentButton) => {
+          segmentButton.classList.toggle('is-active', segmentButton === button);
+        });
+        renderUsers();
+      });
+    });
+    exportButton.addEventListener('click', exportUsersCsv);
+    refreshButton.addEventListener('click', loadUsers);
+    logoutButton.addEventListener('click', () => {
+      clearAdminSession();
+      window.location.href = 'admin-login.html';
+    });
+
+    loadUsers();
+  </script>
+</body>
+</html>

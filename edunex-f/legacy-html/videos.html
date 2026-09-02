@@ -1,0 +1,2575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Course Player | EduNex</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="css/animations.css">
+  <link rel="stylesheet" href="/main.css">
+  <style>
+    :root { --font-body: "Manrope", ui-sans-serif, system-ui, sans-serif; --font-display: "Fraunces", Georgia, serif; }
+    body, button, input, textarea, select { font-family: var(--font-body); }
+    h1, h2, .hero-title, .section-title, .auth-brand, .library-hero h1, .welcome-left h1, .market-right h2, .trial-left h2, .team-header-row h2, .cta-section h2, .section-head h2, .lp-title, .sp-title, .payment-choice-title { font-family: var(--font-display); font-weight: 600; letter-spacing: 0; }
+
+    :root {
+      --library-bg: #f7fbf8;
+      --library-ink: #102719;
+      --library-soft: #52616b;
+      --library-line: #dbe7df;
+      --library-green: #359c57;
+      --library-green-dark: #2f7f48;
+      --library-blue: #2563eb;
+      --library-amber: #b7791f;
+      --library-card: #ffffff;
+      --library-shadow: 0 18px 48px rgba(16, 39, 25, .1);
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        linear-gradient(180deg, #ffffff 0%, var(--library-bg) 42%, #ffffff 100%);
+      color: var(--library-ink);
+      font-family: "Manrope", ui-sans-serif, system-ui, sans-serif;
+    }
+    a { color: inherit; text-decoration: none; }
+    button, input { font: inherit; }
+    button { cursor: pointer; }
+
+    .library-shell {
+      width: min(1180px, calc(100% - 40px));
+      margin: 0 auto;
+    }
+    .library-hero {
+      padding: 118px 0 30px;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 320px;
+      gap: 32px;
+      align-items: end;
+    }
+    .library-kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      margin: 0 0 14px;
+      color: var(--library-green-dark);
+      font-size: 12px;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+    .library-kicker::before {
+      content: "";
+      width: 22px;
+      height: 2px;
+      background: var(--library-green);
+      border-radius: 999px;
+    }
+    .library-hero h1 {
+      max-width: 760px;
+      margin: 0;
+      font-family: "Fraunces", Georgia, serif;
+      font-size: clamp(42px, 6vw, 76px);
+      line-height: .98;
+      letter-spacing: 0;
+    }
+    .library-hero p {
+      max-width: 650px;
+      margin: 18px 0 0;
+      color: var(--library-soft);
+      font-size: 17px;
+      line-height: 1.75;
+    }
+    .library-search {
+      margin-top: 24px;
+      display: flex;
+      gap: 10px;
+      max-width: 620px;
+    }
+    .library-search input {
+      width: 100%;
+      min-height: 50px;
+      border: 1px solid var(--library-line);
+      border-radius: 8px;
+      padding: 0 16px;
+      color: var(--library-ink);
+      background: #fff;
+      outline: none;
+      box-shadow: 0 8px 22px rgba(16, 39, 25, .04);
+    }
+    .library-search input:focus {
+      border-color: rgba(53, 156, 87, .58);
+      box-shadow: 0 0 0 4px rgba(53, 156, 87, .1);
+    }
+    .library-search button,
+    .back-library,
+    .lesson-action {
+      min-height: 50px;
+      border: 0;
+      border-radius: 8px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 0 18px;
+      color: #fff;
+      background: var(--library-green);
+      font-weight: 900;
+      white-space: nowrap;
+      transition: transform .2s ease, background .2s ease;
+    }
+    .library-search button:hover,
+    .back-library:hover,
+    .lesson-action:hover {
+      transform: translateY(-1px);
+      background: var(--library-green-dark);
+    }
+    .library-summary {
+      min-height: 220px;
+      padding: 20px;
+      border: 1px solid rgba(219, 231, 223, .9);
+      border-radius: 8px;
+      background:
+        linear-gradient(135deg, rgba(255,255,255,.88), rgba(238,248,241,.92)),
+        url("data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20width=%27900%27%20height=%27600%27%20viewBox=%270%200%20900%20600%27%3E%3Crect%20width=%27900%27%20height=%27600%27%20fill=%27%23000000%27/%3E%3Crect%20x=%271%27%20y=%271%27%20width=%27898%27%20height=%27598%27%20rx=%2732%27%20fill=%27%230d0d0d%27%20stroke=%27%23C58B2A%27%20stroke-opacity=%27.35%27/%3E%3Ctext%20x=%27450%27%20y=%27312%27%20text-anchor=%27middle%27%20fill=%27%23C58B2A%27%20font-family=%27Arial%27%20font-size=%2748%27%20font-weight=%27800%27%3EEduNex%3C/text%3E%3C/svg%3E") center/cover;
+      box-shadow: var(--library-shadow);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .summary-pill {
+      width: max-content;
+      padding: 7px 10px;
+      border-radius: 8px;
+      background: #fff;
+      color: var(--library-green-dark);
+      font-size: 11px;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+    .summary-number {
+      display: block;
+      font-family: "Fraunces", Georgia, serif;
+      font-size: 42px;
+      line-height: 1;
+      font-weight: 900;
+    }
+    .summary-label {
+      color: var(--library-soft);
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .library-tabs {
+      display: flex;
+      gap: 8px;
+      margin: 6px 0 24px;
+      overflow-x: auto;
+      padding-bottom: 2px;
+    }
+    .library-tab {
+      min-height: 38px;
+      border: 1px solid var(--library-line);
+      border-radius: 8px;
+      padding: 0 14px;
+      background: #fff;
+      color: var(--library-soft);
+      font-size: 13px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+    .library-tab.is-active {
+      background: var(--library-ink);
+      border-color: var(--library-ink);
+      color: #fff;
+    }
+
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: end;
+      gap: 18px;
+      margin: 28px 0 16px;
+    }
+    .section-head h2 {
+      margin: 0;
+      font-family: "Fraunces", Georgia, serif;
+      font-size: 30px;
+      letter-spacing: 0;
+    }
+    .section-head p {
+      margin: 6px 0 0;
+      color: var(--library-soft);
+      font-size: 14px;
+    }
+    .status-line {
+      color: var(--library-soft);
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .continue-grid,
+    .course-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+    }
+    .course-tile {
+      min-width: 0;
+      border: 1px solid var(--library-line);
+      border-radius: 8px;
+      background: var(--library-card);
+      overflow: hidden;
+      box-shadow: 0 10px 26px rgba(16, 39, 25, .06);
+      transition: transform .22s ease, box-shadow .22s ease, border-color .22s ease;
+    }
+    .course-tile:hover {
+      transform: translateY(-3px);
+      border-color: rgba(53, 156, 87, .42);
+      box-shadow: var(--library-shadow);
+    }
+    .tile-media {
+      position: relative;
+      aspect-ratio: 16 / 9;
+      overflow: hidden;
+      background: #332820;
+    }
+    .tile-media img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform .3s ease;
+    }
+    .course-tile:hover .tile-media img { transform: scale(1.04); }
+    .tile-badge {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      max-width: calc(100% - 20px);
+      min-height: 26px;
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 8px;
+      border-radius: 8px;
+      background: rgba(255,255,255,.94);
+      color: var(--library-ink);
+      font-size: 11px;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+    .tile-body {
+      padding: 16px;
+    }
+    .tile-body h3 {
+      min-height: 54px;
+      margin: 0;
+      font-family: "Fraunces", Georgia, serif;
+      font-size: 23px;
+      line-height: 1.15;
+      letter-spacing: 0;
+    }
+    .tile-body p {
+      margin: 9px 0 14px;
+      min-height: 45px;
+      color: var(--library-soft);
+      font-size: 13px;
+      line-height: 1.55;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .tile-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      color: var(--library-soft);
+      font-size: 12px;
+      font-weight: 800;
+    }
+    .tile-progress {
+      height: 7px;
+      margin-top: 14px;
+      border-radius: 999px;
+      background: #e8efe9;
+      overflow: hidden;
+    }
+    .tile-progress span {
+      display: block;
+      width: var(--progress, 0%);
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--library-green), var(--library-blue));
+    }
+
+    .watch-page {
+      width: min(1320px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 98px 0 46px;
+    }
+    .watch-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 14px;
+    }
+    .back-library {
+      min-height: 42px;
+      padding: 0 14px;
+      font-size: 13px;
+    }
+    .watch-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 380px;
+      gap: 20px;
+      align-items: start;
+    }
+    .player-wrap {
+      min-width: 0;
+    }
+    .player-frame {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      border-radius: 8px;
+      overflow: hidden;
+      background: #0b1117;
+      box-shadow: 0 22px 62px rgba(11, 17, 23, .18);
+    }
+    .player-frame iframe,
+    .player-frame video {
+      width: 100%;
+      height: 100%;
+      border: 0;
+      display: block;
+      background: #0b1117;
+    }
+    .player-placeholder {
+      width: 100%;
+      height: 100%;
+      display: grid;
+      place-items: center;
+      padding: 28px;
+      color: rgba(255,255,255,.82);
+      text-align: center;
+    }
+    .player-placeholder strong {
+      display: block;
+      color: #fff;
+      font-family: "Fraunces", Georgia, serif;
+      font-size: 30px;
+      line-height: 1.1;
+      margin-bottom: 8px;
+    }
+    .lesson-info {
+      padding: 20px 2px 0;
+    }
+    .lesson-info h1 {
+      margin: 0;
+      font-family: "Fraunces", Georgia, serif;
+      font-size: clamp(30px, 4vw, 46px);
+      line-height: 1.04;
+      letter-spacing: 0;
+    }
+    .lesson-info p {
+      max-width: 840px;
+      margin: 10px 0 0;
+      color: var(--library-soft);
+      font-size: 15px;
+      line-height: 1.75;
+    }
+    .lesson-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 9px;
+      margin-top: 14px;
+    }
+    .lesson-meta span {
+      min-height: 30px;
+      display: inline-flex;
+      align-items: center;
+      padding: 5px 9px;
+      border: 1px solid var(--library-line);
+      border-radius: 8px;
+      color: var(--library-soft);
+      background: #fff;
+      font-size: 12px;
+      font-weight: 900;
+    }
+    .lesson-sidebar {
+      border: 1px solid var(--library-line);
+      border-radius: 8px;
+      background: #fff;
+      overflow: hidden;
+      box-shadow: 0 12px 32px rgba(16, 39, 25, .07);
+      max-height: calc(100vh - 116px);
+      display: flex;
+      flex-direction: column;
+    }
+    .sidebar-head {
+      padding: 16px;
+      border-bottom: 1px solid var(--library-line);
+    }
+    .sidebar-head h2 {
+      margin: 0;
+      font-family: "Fraunces", Georgia, serif;
+      font-size: 24px;
+      letter-spacing: 0;
+    }
+    .sidebar-head p {
+      margin: 5px 0 0;
+      color: var(--library-soft);
+      font-size: 12px;
+      font-weight: 800;
+    }
+    .lesson-list {
+      overflow: auto;
+      padding: 8px;
+    }
+    .lesson-item {
+      width: 100%;
+      min-height: 86px;
+      display: grid;
+      grid-template-columns: 112px minmax(0, 1fr);
+      gap: 11px;
+      border: 1px solid transparent;
+      border-radius: 8px;
+      padding: 8px;
+      background: transparent;
+      text-align: left;
+      color: inherit;
+    }
+    .lesson-item:hover,
+    .lesson-item.is-active {
+      background: #f4faf6;
+      border-color: rgba(53, 156, 87, .18);
+    }
+    .lesson-thumb {
+      width: 112px;
+      aspect-ratio: 16 / 9;
+      border-radius: 8px;
+      overflow: hidden;
+      background: #0b1117;
+      position: relative;
+    }
+    .lesson-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .lesson-number {
+      position: absolute;
+      right: 6px;
+      bottom: 6px;
+      padding: 2px 6px;
+      border-radius: 6px;
+      background: rgba(0,0,0,.72);
+      color: #fff;
+      font-size: 10px;
+      font-weight: 900;
+    }
+    .lesson-copy {
+      min-width: 0;
+      align-self: center;
+    }
+    .lesson-copy strong {
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      font-size: 13px;
+      line-height: 1.35;
+    }
+    .lesson-copy span {
+      display: block;
+      margin-top: 6px;
+      color: var(--library-soft);
+      font-size: 11px;
+      font-weight: 800;
+    }
+    .empty-state {
+      padding: 28px;
+      border: 1px dashed var(--library-line);
+      border-radius: 8px;
+      background: #fff;
+      color: var(--library-soft);
+      font-weight: 800;
+    }
+    .continue-grid > .empty-state,
+    .course-grid > .empty-state {
+      grid-column: 1 / -1;
+    }
+
+    [hidden] { display: none !important; }
+
+    @media (max-width: 960px) {
+      .library-hero,
+      .watch-layout {
+        grid-template-columns: 1fr;
+      }
+      .library-summary { min-height: 170px; }
+      .continue-grid,
+      .course-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+      .lesson-sidebar {
+        max-height: none;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .library-shell,
+      .watch-page {
+        width: min(100% - 28px, 1180px);
+      }
+      .library-hero {
+        padding-top: 104px;
+      }
+      .library-search {
+        flex-direction: column;
+      }
+      .continue-grid,
+      .course-grid {
+        grid-template-columns: 1fr;
+      }
+      .section-head,
+      .watch-top {
+        align-items: start;
+        flex-direction: column;
+      }
+      .lesson-item {
+        grid-template-columns: 96px minmax(0, 1fr);
+      }
+      .lesson-thumb { width: 96px; }
+    }
+
+    /* ===== Lesson page theme applied to the real library/player ===== */
+    :root {
+      --cyan: #C58B2A;
+      --cyan-dim: rgba(197,139,42,0.1);
+      --cyan-border: rgba(197,139,42,0.25);
+      --panel: #141820;
+      --panel2: #1a1f2e;
+      --card: #0e1118;
+      --border: rgba(255,255,255,0.08);
+      --gray: #6b7280;
+      --light: #9ca3af;
+      --library-bg: #0a0c12;
+      --library-ink: #ffffff;
+      --library-soft: #9ca3af;
+      --library-line: rgba(255,255,255,0.08);
+      --library-green: var(--cyan);
+      --library-green-dark: #A96F18;
+      --library-blue: var(--cyan);
+      --library-amber: var(--cyan);
+      --library-card: #141820;
+      --library-shadow: 0 24px 70px rgba(0,0,0,.34);
+    }
+
+    html, body { min-height: 100%; }
+    body {
+      background: #0a0c12;
+      color: #fff;
+      font-family: "Manrope", ui-sans-serif, system-ui, sans-serif;
+      overflow-x: hidden;
+    }
+
+    .premium-site-nav {
+      background: rgba(10,12,18,.74);
+      backdrop-filter: blur(18px);
+      border-bottom: 1px solid var(--border);
+    }
+    .premium-nav-panel {
+      background: transparent;
+      border-color: transparent;
+      box-shadow: none;
+    }
+
+    .library-shell {
+      width: min(1180px, calc(100% - 32px));
+    }
+    .library-hero {
+      padding: 112px 0 24px;
+      grid-template-columns: minmax(0, 1fr) 280px;
+      align-items: stretch;
+    }
+    .library-kicker {
+      color: var(--cyan);
+      letter-spacing: .12em;
+      font-size: .68rem;
+    }
+    .library-kicker::before {
+      background: var(--cyan);
+      box-shadow: 0 0 18px rgba(197,139,42,.45);
+    }
+    .library-hero h1 {
+      font-family: "Manrope", ui-sans-serif, system-ui, sans-serif;
+      font-size: clamp(2rem, 5vw, 4.2rem);
+      line-height: 1.02;
+      max-width: 780px;
+    }
+    .library-hero p {
+      color: var(--light);
+      font-size: .96rem;
+      max-width: 650px;
+    }
+    .library-search {
+      max-width: 640px;
+    }
+    .library-search input {
+      min-height: 48px;
+      border-color: var(--border);
+      background: var(--card);
+      color: #fff;
+      box-shadow: none;
+    }
+    .library-search input::placeholder {
+      color: var(--gray);
+    }
+    .library-search input:focus {
+      border-color: var(--cyan-border);
+      box-shadow: 0 0 0 4px rgba(197,139,42,.09);
+    }
+    .library-search button,
+    .back-library,
+    .lesson-action {
+      min-height: 42px;
+      border-radius: 11px;
+      background: var(--cyan);
+      color: #000;
+      font-size: .8rem;
+      font-weight: 800;
+      box-shadow: none;
+    }
+    .library-search button:hover,
+    .back-library:hover,
+    .lesson-action:hover {
+      background: #A96F18;
+      box-shadow: 0 4px 18px rgba(197,139,42,.38);
+    }
+
+    .library-summary,
+    .course-tile,
+    .empty-state {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      box-shadow: none;
+    }
+    .library-summary {
+      min-height: 210px;
+      overflow: hidden;
+      background:
+        linear-gradient(180deg, rgba(20,24,32,.80), rgba(20,24,32,.96)),
+        var(--panel);
+    }
+    .summary-pill,
+    .tile-badge {
+      border-radius: 999px;
+      background: var(--cyan-dim);
+      border: 1px solid var(--cyan-border);
+      color: var(--cyan);
+      letter-spacing: .08em;
+    }
+    .summary-number {
+      color: #fff;
+      font-family: "Manrope", ui-sans-serif, system-ui, sans-serif;
+    }
+    .summary-label,
+    .section-head p,
+    .status-line,
+    .tile-body p,
+    .tile-meta,
+    .empty-state {
+      color: var(--light);
+    }
+
+    .library-tabs {
+      gap: 8px;
+      margin-top: 8px;
+    }
+    .library-tab {
+      min-height: 36px;
+      border-radius: 999px;
+      border-color: var(--border);
+      background: rgba(255,255,255,.04);
+      color: var(--light);
+      font-size: .75rem;
+      letter-spacing: .03em;
+    }
+    .library-tab.is-active {
+      background: var(--cyan-dim);
+      border-color: var(--cyan-border);
+      color: var(--cyan);
+    }
+
+    .section-head {
+      margin: 28px 0 14px;
+    }
+    .section-head h2,
+    .tile-body h3 {
+      color: #fff;
+      font-family: "Manrope", ui-sans-serif, system-ui, sans-serif;
+    }
+    .continue-grid,
+    .course-grid {
+      gap: 14px;
+    }
+    .course-tile {
+      overflow: hidden;
+      transition: transform .22s ease, border-color .22s ease, background .22s ease;
+    }
+    .course-tile:hover {
+      transform: translateY(-3px);
+      border-color: var(--cyan-border);
+      background: var(--panel2);
+      box-shadow: none;
+    }
+    .tile-media {
+      background: #050710;
+    }
+    .tile-body h3 {
+      min-height: 46px;
+      font-size: 1rem;
+      font-weight: 700;
+    }
+    .tile-progress {
+      height: 4px;
+      background: rgba(255,255,255,.1);
+    }
+    .tile-progress span {
+      background: var(--cyan);
+      box-shadow: 0 0 12px rgba(197,139,42,.4);
+    }
+
+    .watch-page {
+      width: auto;
+      min-height: 100vh;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+    .watch-top {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 0;
+      padding: 0 4px 14px;
+    }
+    .back-library {
+      padding: 6px 12px;
+      min-height: 34px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border);
+      color: var(--light);
+      box-shadow: none;
+    }
+    .back-library:hover {
+      color: #fff;
+      background: rgba(255,255,255,0.08);
+      border-color: rgba(255,255,255,0.15);
+      box-shadow: none;
+    }
+    #watchStatus {
+      margin-left: auto;
+      padding: 4px 12px;
+      border-radius: 999px;
+      background: var(--cyan-dim);
+      border: 1px solid var(--cyan-border);
+      color: var(--cyan);
+      font-size: .7rem;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+    .watch-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .watch-tool-btn,
+    .notes-modal-close,
+    .notes-open-link {
+      min-height: 34px;
+      padding: 0 12px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,.05);
+      color: var(--light);
+      font-size: .74rem;
+      font-weight: 800;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      text-decoration: none;
+    }
+    .watch-tool-btn:hover,
+    .notes-modal-close:hover,
+    .notes-open-link:hover {
+      border-color: rgba(197,139,42,.34);
+      color: var(--cyan);
+      background: rgba(197,139,42,.08);
+    }
+    .back-bar-title {
+      min-width: 0;
+      color: var(--light);
+      font-size: .85rem;
+      font-weight: 600;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .watch-layout {
+      display: flex;
+      gap: 14px;
+      flex: 1;
+      align-items: stretch;
+      min-height: calc(100vh - 80px);
+    }
+    .player-wrap {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+    }
+    .player-frame {
+      flex: 1;
+      aspect-ratio: auto;
+      min-height: 480px;
+      border-radius: 22px;
+      overflow: hidden;
+      position: relative;
+      background: #050710;
+      box-shadow: none;
+    }
+    .player-frame iframe,
+    .player-frame video {
+      width: 100%;
+      height: 100%;
+      border: 0;
+      display: block;
+      background: #050710;
+    }
+    .custom-video-player {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      background: #050710;
+      overflow: hidden;
+    }
+    .custom-video-player video {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+    .custom-video-player iframe {
+      width: 100%;
+      height: 100%;
+      border: 0;
+      display: block;
+      background: #050710;
+    }
+    .tap-zone {
+      position: absolute;
+      top: 0;
+      bottom: 74px;
+      width: 50%;
+      border: 0;
+      background: transparent;
+      z-index: 2;
+      display: grid;
+      place-items: center;
+      color: rgba(255,255,255,.9);
+      font-weight: 900;
+      pointer-events: auto;
+      user-select: none;
+    }
+    .tap-zone-left { left: 0; }
+    .tap-zone-right { right: 0; }
+    .tap-hint {
+      opacity: 0;
+      transform: scale(.88);
+      padding: 12px 14px;
+      border-radius: 999px;
+      background: rgba(0,0,0,.55);
+      border: 1px solid rgba(255,255,255,.16);
+      transition: opacity .18s ease, transform .18s ease;
+    }
+    .tap-zone.show .tap-hint {
+      opacity: 1;
+      transform: scale(1);
+    }
+    .custom-video-controls {
+      position: absolute;
+      left: 14px;
+      right: 14px;
+      bottom: 14px;
+      z-index: 4;
+      display: grid;
+      grid-template-columns: auto minmax(96px, 150px) minmax(0, 1fr) 58px;
+      gap: 8px;
+      align-items: center;
+      padding: 12px;
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 16px;
+      background: rgba(5,7,16,.78);
+      backdrop-filter: blur(18px);
+      box-shadow: 0 18px 40px rgba(0,0,0,.32);
+    }
+    .video-control-btn {
+      width: 38px;
+      height: 38px;
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 999px;
+      display: grid;
+      place-items: center;
+      background: rgba(255,255,255,.06);
+      color: #fff;
+      font-size: .9rem;
+    }
+    .video-control-btn:hover {
+      border-color: rgba(197,139,42,.38);
+      color: var(--cyan);
+    }
+    .video-volume {
+      min-height: 38px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 999px;
+      padding: 4px 10px 4px 4px;
+      background: rgba(255,255,255,.06);
+      flex-shrink: 0;
+      min-width: 0;
+    }
+    .video-volume .video-control-btn {
+      width: 30px;
+      height: 30px;
+      border: 0;
+      background: transparent;
+      font-size: .8rem;
+    }
+    .video-volume-slider {
+      width: clamp(48px, 7vw, 78px);
+      accent-color: var(--cyan);
+      cursor: pointer;
+    }
+    .video-volume-value {
+      width: 30px;
+      color: rgba(255,255,255,.72);
+      font-size: .68rem;
+      font-weight: 900;
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+    }
+    .video-timeline-wrap {
+      display: grid;
+      gap: 7px;
+      min-width: 0;
+    }
+    .video-time-row {
+      display: flex;
+      justify-content: space-between;
+      color: rgba(255,255,255,.72);
+      font-size: .72rem;
+      font-weight: 800;
+      font-variant-numeric: tabular-nums;
+    }
+    .video-seek {
+      width: 100%;
+      accent-color: var(--cyan);
+      cursor: pointer;
+    }
+    .video-speed {
+      min-height: 38px;
+      display: inline-flex;
+      align-items: center;
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 999px;
+      padding: 0;
+      background: rgba(255,255,255,.06);
+      flex-shrink: 0;
+      width: 58px;
+      justify-content: center;
+    }
+    .video-speed-btn {
+      all: unset;
+      width: 100%;
+      height: 38px;
+      display: grid;
+      place-items: center;
+      color: #fff;
+      font-size: .78rem;
+      font-weight: 900;
+      cursor: pointer;
+      text-align: center;
+      font-variant-numeric: tabular-nums;
+    }
+    .video-speed:hover {
+      border-color: rgba(197,139,42,.38);
+    }
+    .video-speed:hover .video-speed-btn {
+      color: var(--cyan);
+    }
+    .video-screen-btn {
+      position: absolute;
+      top: 14px;
+      z-index: 5;
+      min-height: 38px;
+      padding: 0 13px;
+      border: 1px solid rgba(255,255,255,.14);
+      border-radius: 999px;
+      background: rgba(5,7,16,.72);
+      color: #fff;
+      backdrop-filter: blur(14px);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-size: .75rem;
+      font-weight: 900;
+      box-shadow: 0 12px 30px rgba(0,0,0,.28);
+    }
+    .video-screen-btn:hover {
+      border-color: rgba(197,139,42,.38);
+      background: rgba(197,139,42,.14);
+      color: var(--cyan);
+    }
+    .video-ai-screen-btn {
+      right: 14px;
+    }
+    .video-fullscreen-btn {
+      right: 84px;
+      width: 38px;
+      padding: 0;
+    }
+    .player-placeholder {
+      background: #050710;
+    }
+    .player-placeholder strong {
+      color: #fff;
+      font-family: "Manrope", ui-sans-serif, system-ui, sans-serif;
+      font-size: clamp(1.2rem, 2.5vw, 1.6rem);
+    }
+    .lesson-info {
+      padding: 16px 4px 0;
+    }
+    .lesson-info h1 {
+      color: #fff;
+      font-family: "Fraunces", Georgia, serif;
+      font-size: clamp(1.25rem, 2.6vw, 1.8rem);
+      font-weight: 800;
+      line-height: 1.2;
+    }
+    .lesson-info p {
+      color: rgba(255,255,255,.58);
+      font-size: .92rem;
+      line-height: 1.65;
+      letter-spacing: 0;
+    }
+    .lesson-meta span {
+      min-height: 28px;
+      border-color: var(--border);
+      border-radius: 999px;
+      background: rgba(255,255,255,.05);
+      color: var(--light);
+      font-size: .68rem;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+    }
+
+    .lesson-sidebar {
+      flex: 0 0 292px;
+      max-height: none;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      background: var(--panel);
+      box-shadow: none;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .sidebar-head {
+      padding: 20px 16px 14px;
+      border-bottom: 1px solid var(--border);
+    }
+    .sidebar-head h2 {
+      margin: 0;
+      color: var(--cyan);
+      font-family: "Manrope", ui-sans-serif, system-ui, sans-serif;
+      font-size: .68rem;
+      font-weight: 800;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+    .sidebar-head p {
+      color: var(--gray);
+      font-size: .72rem;
+      font-weight: 700;
+    }
+    .sidebar-top-row {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .auto-next-toggle {
+      flex: 0 0 auto;
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      min-height: 34px;
+      padding: 5px 6px 5px 10px;
+      border: 1px solid rgba(197,139,42,.16);
+      border-radius: 999px;
+      background: rgba(197,139,42,.06);
+      color: rgba(255,255,255,.74);
+      font-size: .66rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+      user-select: none;
+      cursor: pointer;
+      transition: border-color .2s, background .2s, color .2s;
+    }
+    .auto-next-toggle input {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
+    .auto-next-switch {
+      width: 42px;
+      height: 22px;
+      padding: 3px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.12);
+      border: 1px solid rgba(255,255,255,.1);
+      display: inline-flex;
+      align-items: center;
+      transition: background .2s, border-color .2s;
+    }
+    .auto-next-switch::before {
+      content: "";
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: rgba(255,255,255,.78);
+      box-shadow: 0 2px 8px rgba(0,0,0,.22);
+      transition: transform .2s, background .2s;
+    }
+    .auto-next-toggle:has(input:checked) {
+      border-color: rgba(197,139,42,.38);
+      background: rgba(197,139,42,.12);
+      color: #fff;
+    }
+    .auto-next-toggle:has(input:checked) .auto-next-switch {
+      background: var(--cyan);
+      border-color: var(--cyan);
+    }
+    .auto-next-toggle:has(input:checked) .auto-next-switch::before {
+      transform: translateX(18px);
+      background: #001015;
+    }
+    .lesson-list {
+      padding: 10px;
+      overflow: auto;
+    }
+    .lesson-list::-webkit-scrollbar { width: 3px; }
+    .lesson-list::-webkit-scrollbar-track { background: transparent; }
+    .lesson-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,.12); border-radius: 2px; }
+    .lesson-item {
+      min-height: 64px;
+      grid-template-columns: 44px minmax(0, 1fr);
+      gap: 10px;
+      padding: 10px;
+      border-radius: 11px;
+      color: #fff;
+      background: transparent;
+      position: relative;
+      transition: all .18s;
+    }
+    .lesson-item:hover,
+    .lesson-item.is-active {
+      background: rgba(197,139,42,0.07);
+      border-color: rgba(197,139,42,0.15);
+    }
+    .lesson-item.is-active::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 8px;
+      bottom: 8px;
+      width: 3px;
+      border-radius: 2px;
+      background: var(--cyan);
+    }
+    .lesson-thumb {
+      width: 44px;
+      height: 34px;
+      border-radius: 8px;
+      background: #1a1e28;
+    }
+    .lesson-number {
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      display: grid;
+      place-items: center;
+      padding: 0;
+      border-radius: inherit;
+      background: rgba(10,12,18,.52);
+      color: #fff;
+      font-size: .7rem;
+      font-weight: 800;
+    }
+    .lesson-copy strong {
+      color: #fff;
+      font-size: .8rem;
+      font-weight: 600;
+      line-height: 1.35;
+      -webkit-line-clamp: 1;
+    }
+    .lesson-copy span {
+      color: var(--gray);
+      font-size: .68rem;
+      font-weight: 700;
+    }
+    .course-notes-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 9992;
+      display: grid;
+      place-items: center;
+      padding: 18px;
+      background: rgba(0,0,0,.72);
+      backdrop-filter: blur(10px);
+    }
+    .course-notes-card {
+      width: min(720px, 100%);
+      max-height: min(760px, 90vh);
+      overflow: auto;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      background: var(--panel);
+      color: var(--light);
+      box-shadow: 0 28px 90px rgba(0,0,0,.42);
+    }
+    .notes-modal-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 18px 20px;
+      border-bottom: 1px solid var(--border);
+    }
+    .notes-modal-head h2 {
+      margin: 0;
+      color: #fff;
+      font-size: 1rem;
+      font-weight: 900;
+    }
+    .notes-modal-body {
+      padding: 20px;
+      display: grid;
+      gap: 16px;
+      color: rgba(255,255,255,.74);
+      line-height: 1.65;
+    }
+    .notes-empty {
+      padding: 18px;
+      border: 1px dashed rgba(255,255,255,.16);
+      border-radius: 14px;
+      color: var(--gray);
+      font-weight: 700;
+    }
+
+    [hidden] { display: none !important; }
+
+    @media (max-width: 960px) {
+      .library-hero {
+        grid-template-columns: 1fr;
+      }
+      .watch-layout {
+        flex-direction: column;
+      }
+      .lesson-sidebar {
+        flex: 0 0 auto;
+      }
+      .player-frame {
+        min-height: 360px;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .library-shell {
+        width: min(100% - 24px, 1180px);
+      }
+      .watch-page {
+        padding: 10px;
+      }
+      .watch-top {
+        flex-wrap: wrap;
+      }
+      #watchStatus {
+        margin-left: 0;
+      }
+      .watch-actions {
+        width: 100%;
+      }
+      .watch-tool-btn {
+        flex: 1;
+      }
+      .library-hero {
+        padding-top: 92px;
+      }
+      .player-frame {
+        min-height: 260px;
+        border-radius: 18px;
+      }
+      .tap-zone {
+        bottom: 116px;
+      }
+      .custom-video-controls {
+        left: 8px;
+        right: 8px;
+        bottom: 8px;
+        grid-template-columns: auto minmax(84px, 130px) minmax(0, 1fr) 58px;
+        gap: 8px;
+        padding: 10px;
+      }
+      .video-screen-btn span {
+        display: none;
+      }
+      .video-fullscreen-btn {
+        right: 62px;
+      }
+      .lesson-item {
+        grid-template-columns: 44px minmax(0, 1fr);
+      }
+      .lesson-thumb {
+        width: 44px;
+      }
+    }
+    @media (max-width: 520px) {
+      .custom-video-controls {
+        grid-template-columns: auto minmax(0, 1fr) 58px;
+      }
+      .video-volume {
+        grid-column: 1 / -1;
+        width: 100%;
+      }
+      .video-volume-slider {
+        flex: 1;
+        width: auto;
+      }
+    }
+  </style>
+  <link rel="stylesheet" href="/motion.css">
+  <script src="/motion.js" defer></script>
+</head>
+<body>
+<nav class="navbar">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">EduNex <span>AI</span></a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="courses.html">Courses</a></li>
+      <li><a href="dashboard.html">Dashboard</a></li>
+      <li><a href="about.html">About</a></li>
+    </ul>
+    <div class="nav-right">
+      <a href="login.html" class="nav-login">Login</a>
+      <a href="profile.html" class="nav-avatar" title="Profile Settings"><i class="fas fa-user"></i></a>
+    </div>
+    <button class="nav-hamburger" id="hamburger" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<main id="libraryView" hidden>
+  <section class="library-hero library-shell">
+    <div>
+      <p class="library-kicker">EduNex Library</p>
+      <h1>Your courses, progress, and next lessons in one place.</h1>
+      <p>See the courses currently in motion, continue from your latest lesson, or open any course into a focused watch page with the full playlist beside the video.</p>
+      <form class="library-search" role="search" id="librarySearch">
+        <input id="searchInput" type="search" placeholder="Search your courses" autocomplete="off">
+        <button type="submit"><i class="fas fa-search"></i> Search</button>
+      </form>
+      <div class="library-quick-stats" aria-label="Library stats">
+        <span><strong id="courseTotalStat">0</strong> courses</span>
+        <span><strong id="videoTotalStat">0</strong> videos</span>
+        <span><strong id="progressTotalStat">0</strong> in progress</span>
+      </div>
+    </div>
+    <aside class="library-summary" aria-label="Library summary">
+      <span class="summary-pill">Continue watching</span>
+      <div>
+        <strong class="summary-number" id="activeCount">0</strong>
+        <span class="summary-label">courses available in your library</span>
+        <span class="summary-subline" id="summaryVideoCount">0 playable videos synced</span>
+      </div>
+    </aside>
+  </section>
+
+  <section class="library-shell">
+    <div class="library-tabs" aria-label="Library filters">
+      <button class="library-tab is-active" type="button" data-filter="all">All courses</button>
+      <button class="library-tab" type="button" data-filter="active">In progress</button>
+      <button class="library-tab" type="button" data-filter="new">Not started</button>
+      <button class="library-tab" type="button" data-filter="complete">Completed</button>
+    </div>
+  </section>
+
+  <section class="library-shell" id="continueSection">
+    <div class="section-head">
+      <div>
+        <h2>Continue Watching</h2>
+        <p>Jump back into the next lesson from your recent courses.</p>
+      </div>
+      <span class="status-line" id="loadStatus">Loading library...</span>
+    </div>
+    <div class="continue-grid" id="continueGrid"></div>
+  </section>
+
+  <section class="library-shell" style="padding-bottom: 70px;">
+    <div class="section-head">
+      <div>
+        <h2>All Courses</h2>
+        <p>Open a course to view the video player and playlist.</p>
+      </div>
+    </div>
+    <div class="course-grid" id="courseGrid"></div>
+    <div class="empty-state" id="emptyState" hidden>No matching courses found.</div>
+  </section>
+</main>
+
+<main class="watch-page" id="watchView">
+  <div class="watch-top">
+    <a class="back-library" href="/courses.html"><i class="fas fa-arrow-left"></i> Courses</a>
+    <span class="back-bar-title" id="watchCourseTitle">Course playlist</span>
+    <span class="status-line" id="watchStatus">Preparing course...</span>
+    <div class="watch-actions">
+      <button class="watch-tool-btn" type="button" id="openNotesBtn"><i class="fas fa-file-lines"></i> Notes</button>
+    </div>
+  </div>
+  <section class="watch-layout">
+    <div class="player-wrap">
+      <div class="player-frame" id="playerFrame"></div>
+      <div class="lesson-info">
+        <h1 id="lessonTitle">Select a lesson</h1>
+        <p id="lessonDescription">Choose a video from the playlist to begin watching.</p>
+        <div class="lesson-meta" id="lessonMeta"></div>
+      </div>
+    </div>
+    <aside class="lesson-sidebar" aria-label="Course playlist">
+      <div class="sidebar-head">
+        <div class="sidebar-top-row">
+          <h2 id="sidebarCourseTitle">Course playlist</h2>
+          <label class="auto-next-toggle" title="Automatically open the next lesson when the current video ends">
+            <input type="checkbox" id="autoNextToggle">
+            <span>Auto next</span>
+            <span class="auto-next-switch" aria-hidden="true"></span>
+          </label>
+        </div>
+        <p id="sidebarCourseMeta">Videos will appear here.</p>
+      </div>
+      <div class="lesson-list" id="lessonList"></div>
+    </aside>
+  </section>
+</main>
+
+<div class="course-notes-modal" id="courseNotesModal" hidden>
+  <div class="course-notes-card" role="dialog" aria-modal="true" aria-labelledby="notesTitle">
+    <div class="notes-modal-head">
+      <h2 id="notesTitle">Course notes</h2>
+      <button class="notes-modal-close" type="button" id="closeNotesBtn"><i class="fas fa-arrow-left"></i> Back</button>
+    </div>
+    <div class="notes-modal-body" id="notesBody"></div>
+  </div>
+</div>
+
+<script src="js/edunex-api.js"></script>
+<script src="assets/bot-avatars/manifest.js"></script>
+<script src="js/nex-ai-widget.js"></script>
+<script>
+  const API_BASE_URL = (() => {
+    return "";
+  })();
+
+  const state = {
+    courses: [],
+    filter: "all",
+    search: "",
+    activeCourse: null,
+    activeLessonIndex: 0,
+    volume: Number(localStorage.getItem("edunexVideoVolume") || 1),
+    muted: localStorage.getItem("edunexVideoMuted") === "true"
+  };
+
+  const params = new URLSearchParams(window.location.search);
+  const selectedCourseId = params.get("courseId") || params.get("course") || params.get("id");
+  const selectedVideo = Number(params.get("video") || 0);
+
+  const libraryView = document.getElementById("libraryView");
+  const watchView = document.getElementById("watchView");
+  const courseGrid = document.getElementById("courseGrid");
+  const continueGrid = document.getElementById("continueGrid");
+  const emptyState = document.getElementById("emptyState");
+  const loadStatus = document.getElementById("loadStatus");
+  const activeCount = document.getElementById("activeCount");
+  const courseTotalStat = document.getElementById("courseTotalStat");
+  const videoTotalStat = document.getElementById("videoTotalStat");
+  const progressTotalStat = document.getElementById("progressTotalStat");
+  const summaryVideoCount = document.getElementById("summaryVideoCount");
+  const searchInput = document.getElementById("searchInput");
+  const openNotesBtn = document.getElementById("openNotesBtn");
+  const closeNotesBtn = document.getElementById("closeNotesBtn");
+  const courseNotesModal = document.getElementById("courseNotesModal");
+  const notesBody = document.getElementById("notesBody");
+  const notesTitle = document.getElementById("notesTitle");
+  const autoNextToggle = document.getElementById("autoNextToggle");
+  const autoNextStorageKey = "edunexAutoNextVideo";
+
+  autoNextToggle.checked = localStorage.getItem(autoNextStorageKey) === "true";
+
+  function token() {
+    return localStorage.getItem("edunexAccessToken") || sessionStorage.getItem("edunexAccessToken") || "";
+  }
+
+  function headers() {
+    const accessToken = token();
+    return accessToken ? { Authorization: `Bearer ${accessToken}` } : {};
+  }
+
+  function clearAuthStorage() {
+    ["edunexAccessToken", "edunexRefreshToken", "edunexUser"].forEach((key) => {
+      localStorage.removeItem(key);
+      sessionStorage.removeItem(key);
+    });
+  }
+
+  function paymentUrlForCourse(courseId) {
+    const paymentUrl = new URL("/payment.html", window.location.origin);
+    if (courseId) paymentUrl.searchParams.set("courseId", courseId);
+    paymentUrl.searchParams.set("next", window.location.pathname + window.location.search);
+    return paymentUrl.pathname + paymentUrl.search;
+  }
+
+  function normalizeSubscriptionStatus(status) {
+    return String(status || "none").trim().toLowerCase();
+  }
+
+  function hasCourseAccess(subscriptionData) {
+    if (typeof subscriptionData?.hasActiveAccess === "boolean") {
+      return subscriptionData.hasActiveAccess;
+    }
+    const status = normalizeSubscriptionStatus(
+      subscriptionData?.subscriptionDocStatus ||
+      subscriptionData?.status ||
+      subscriptionData?.subscriptionStatus
+    );
+    const now = Date.now();
+
+    if (status === "trial_active" || status === "paid_active") {
+      return true;
+    }
+
+    if (status === "trial" || status === "1rs trial") {
+      return !subscriptionData?.trialExpiresAt || new Date(subscriptionData.trialExpiresAt).getTime() > now;
+    }
+
+    if (status === "active" || status === "subscribed") {
+      return !subscriptionData?.currentPeriodEnd || new Date(subscriptionData.currentPeriodEnd).getTime() > now;
+    }
+
+    return false;
+  }
+
+  async function ensureCourseAccess(courseId) {
+    const accessToken = token();
+    if (!accessToken) {
+      window.location.href = `/login.html?next=${encodeURIComponent(window.location.pathname + window.location.search)}`;
+      return false;
+    }
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/payment/subscription-status`, {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      });
+
+      if (response.status === 401) {
+        clearAuthStorage();
+        window.location.href = `/login.html?next=${encodeURIComponent(window.location.pathname + window.location.search)}`;
+        return false;
+      }
+
+      const data = response.ok ? await response.json() : null;
+      if (data && hasCourseAccess(data)) return true;
+    } catch (_) {}
+
+    window.location.href = paymentUrlForCourse(courseId);
+    return false;
+  }
+
+  function googleDriveImageUrl(url) {
+    const value = String(url || "").trim();
+    if (!value.includes("drive.google.com")) return value;
+
+    const patterns = [
+      /\/file\/d\/([^/]+)/,
+      /[?&]id=([^&]+)/,
+      /\/uc\?export=(?:download|view)&id=([^&]+)/
+    ];
+    const match = patterns.map((pattern) => value.match(pattern)).find(Boolean);
+    const id = match?.[1];
+    return id ? `https://drive.google.com/thumbnail?id=${encodeURIComponent(id)}&sz=w1200` : value;
+  }
+
+  function proxyImageUrl(url) {
+    const value = googleDriveImageUrl(url);
+    if (!value || /^(data|blob):/i.test(value)) return value;
+
+    try {
+      const parsed = new URL(value, window.location.origin);
+      if (parsed.origin === window.location.origin) return `${parsed.pathname}${parsed.search}${parsed.hash}`;
+      return `/api/image-proxy?url=${encodeURIComponent(parsed.href)}`;
+    } catch (_) {
+      return value;
+    }
+  }
+
+  function courseImage(course) {
+    const embedded = course.thumbnailHorizontal || course.thumbnail || course.thumbnailVertical || course.videos?.[0]?.thumbnail;
+    if (embedded?.data && embedded?.mimeType) return `data:${embedded.mimeType};base64,${embedded.data}`;
+    if (course.thumbnailUrl) return proxyImageUrl(course.thumbnailUrl);
+    if (course.thumbnailVerticalUrl) return proxyImageUrl(course.thumbnailVerticalUrl);
+    if (course.videos?.[0]?.thumbnailUrl) return proxyImageUrl(course.videos[0].thumbnailUrl);
+    if (course.videos?.[0]?.youtubeId) return proxyImageUrl(`https://img.youtube.com/vi/${course.videos[0].youtubeId}/hqdefault.jpg`);
+    return "data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20width=%27900%27%20height=%27600%27%20viewBox=%270%200%20900%20600%27%3E%3Crect%20width=%27900%27%20height=%27600%27%20fill=%27%23000000%27/%3E%3Crect%20x=%271%27%20y=%271%27%20width=%27898%27%20height=%27598%27%20rx=%2732%27%20fill=%27%230d0d0d%27%20stroke=%27%23C58B2A%27%20stroke-opacity=%27.35%27/%3E%3Ctext%20x=%27450%27%20y=%27312%27%20text-anchor=%27middle%27%20fill=%27%23C58B2A%27%20font-family=%27Arial%27%20font-size=%2748%27%20font-weight=%27800%27%3EEduNex%3C/text%3E%3C/svg%3E";
+  }
+
+  function lessonImage(course, lesson) {
+    if (lesson.thumbnail?.data && lesson.thumbnail?.mimeType) return `data:${lesson.thumbnail.mimeType};base64,${lesson.thumbnail.data}`;
+    if (lesson.thumbnailUrl) return proxyImageUrl(lesson.thumbnailUrl);
+    if (lesson.youtubeId) return proxyImageUrl(`https://img.youtube.com/vi/${lesson.youtubeId}/mqdefault.jpg`);
+    return courseImage(course);
+  }
+
+  function fallbackImage(label = "EduNex") {
+    const clean = String(label || "EduNex").replace(/[&<>"']/g, "").slice(0, 32);
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="900" height="600" viewBox="0 0 900 600"><rect width="900" height="600" fill="#050710"/><rect x="1" y="1" width="898" height="598" rx="32" fill="#0d0d0d" stroke="#C58B2A" stroke-opacity=".35"/><text x="450" y="300" text-anchor="middle" fill="#C58B2A" font-family="Arial" font-size="42" font-weight="800">${clean}</text></svg>`;
+    return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
+  }
+
+  function courseProgress(course) {
+    const saved = JSON.parse(localStorage.getItem(`edunexCourseProgress:${course._id}`) || "{}");
+    const total = Math.max(course.videos?.length || 0, 1);
+    const index = Math.min(Number(saved.lessonIndex || 0), total - 1);
+    const completed = Number(saved.completed || 0);
+    const percent = saved.percent ?? Math.round((completed / total) * 100);
+    return { index, completed, percent: Math.max(0, Math.min(100, percent)) };
+  }
+
+  function formatDuration(seconds) {
+    const value = Number(seconds || 0);
+    if (!value) return "Video";
+    const minutes = Math.max(1, Math.round(value / 60));
+    return `${minutes} min`;
+  }
+
+  function formatVideoTime(seconds) {
+    const value = Math.max(0, Number(seconds || 0));
+    const hrs = Math.floor(value / 3600);
+    const mins = Math.floor((value % 3600) / 60);
+    const secs = Math.floor(value % 60);
+    return hrs
+      ? `${hrs}:${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`
+      : `${mins}:${String(secs).padStart(2, "0")}`;
+  }
+
+  function normalizeCourse(course) {
+    return {
+      ...course,
+      _id: String(course._id || course.id || course.slug || course.title),
+      videos: Array.isArray(course.videos) ? course.videos : []
+    };
+  }
+
+  function escapeHtml(value) {
+    return String(value ?? "").replace(/[&<>"']/g, (char) => ({
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#39;"
+    }[char]));
+  }
+
+  function matchesFilter(course) {
+    const progress = courseProgress(course);
+    if (state.filter === "active") return progress.percent > 0 && progress.percent < 100;
+    if (state.filter === "new") return progress.percent === 0;
+    if (state.filter === "complete") return progress.percent >= 100;
+    return true;
+  }
+
+  function matchesSearch(course) {
+    const q = state.search.trim().toLowerCase();
+    if (!q) return true;
+    const haystack = `${course.title || ""} ${course.description || ""} ${course.category?.name || ""}`.toLowerCase();
+    return haystack.includes(q);
+  }
+
+  function courseCard(course, isContinue) {
+    const progress = courseProgress(course);
+    const nextLesson = course.videos?.[progress.index] || course.videos?.[0] || {};
+    const href = `/videos.html?courseId=${encodeURIComponent(course._id)}&video=${progress.index}`;
+    const lessonCount = course.videos?.length || 0;
+    const badge = isContinue && progress.percent > 0 ? "Continue" : lessonCount ? `${lessonCount} videos` : "Course";
+    return `
+      <a class="course-tile" href="${escapeHtml(href)}" data-course-id="${escapeHtml(course._id)}">
+        <div class="tile-media">
+          <img src="${escapeHtml(courseImage(course))}" alt="${escapeHtml(course.title || "EduNex course")}" onerror="this.onerror=null;this.src=fallbackImage(this.alt||'EduNex')">
+          <span class="tile-badge">${escapeHtml(badge)}</span>
+        </div>
+        <div class="tile-body">
+          <h3>${escapeHtml(course.title || "Untitled course")}</h3>
+          <p>${escapeHtml(isContinue ? `Next: ${nextLesson.title || "Start course"}` : (course.description || "Open this course to watch the full playlist."))}</p>
+          <div class="tile-meta">
+            <span>${escapeHtml(lessonCount || "No")} lessons</span>
+            <span>${escapeHtml(course.averageRating ? `${Number(course.averageRating).toFixed(1)} rating` : "EduNex course")}</span>
+          </div>
+          <div class="tile-progress" style="--progress:${progress.percent}%"><span></span></div>
+        </div>
+      </a>
+    `;
+  }
+
+  function renderLibrary() {
+    const courses = state.courses.filter((course) => matchesFilter(course) && matchesSearch(course));
+    const continueCourses = state.courses
+      .filter((course) => course.videos?.length)
+      .sort((a, b) => courseProgress(b).percent - courseProgress(a).percent)
+      .slice(0, 3);
+    const videoCount = state.courses.reduce((count, course) => count + (course.videos?.length || 0), 0);
+    const inProgressCount = state.courses.filter((course) => {
+      const progress = courseProgress(course);
+      return progress.percent > 0 && progress.percent < 100;
+    }).length;
+
+    activeCount.textContent = state.courses.length;
+    courseTotalStat.textContent = state.courses.length;
+    videoTotalStat.textContent = videoCount;
+    progressTotalStat.textContent = inProgressCount;
+    summaryVideoCount.textContent = `${videoCount} playable videos synced`;
+    continueGrid.innerHTML = continueCourses.length
+      ? continueCourses.map((course) => courseCard(course, true)).join("")
+      : `<div class="empty-state">No courses with videos are available yet.</div>`;
+    courseGrid.innerHTML = courses.map((course) => courseCard(course, false)).join("");
+    emptyState.hidden = courses.length > 0;
+  }
+
+  async function loadCourses() {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/courses`, { headers: headers() });
+      if (!response.ok) throw new Error("Course API unavailable");
+      const courses = await response.json();
+      state.courses = courses.map(normalizeCourse);
+      loadStatus.textContent = state.courses.length
+        ? "Synced with EduNex courses"
+        : "No published courses found";
+    } catch (error) {
+      state.courses = [];
+      loadStatus.textContent = "Could not load courses from the database";
+    }
+    renderLibrary();
+  }
+
+  async function loadCourse(courseId) {
+    const localCourse = state.courses.find((course) => course._id === courseId);
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/courses/${encodeURIComponent(courseId)}/lessons`, { headers: headers() });
+      if (!response.ok) throw new Error("Protected course unavailable");
+      return normalizeCourse(await response.json());
+    } catch (error) {
+      if (localCourse) return localCourse;
+      throw error;
+    }
+  }
+
+  function renderWatchError(message) {
+    document.getElementById("watchStatus").textContent = "Course unavailable";
+    document.getElementById("watchCourseTitle").textContent = "Course unavailable";
+    document.getElementById("playerFrame").innerHTML = `<div class="player-placeholder"><div><strong>Could not open this course</strong><span>${escapeHtml(message)}</span></div></div>`;
+    document.getElementById("lessonTitle").textContent = "Course unavailable";
+    document.getElementById("lessonDescription").textContent = message;
+    document.getElementById("lessonMeta").innerHTML = "";
+    document.getElementById("sidebarCourseTitle").textContent = "Course playlist";
+    document.getElementById("sidebarCourseMeta").textContent = "No videos loaded";
+    document.getElementById("lessonList").innerHTML = `<div class="empty-state">${escapeHtml(message)}</div>`;
+  }
+
+  function noteValue(course) {
+    return course?.notesUrl || course?.notesURL || course?.notesLink || course?.courseNotesUrl || course?.notes || course?.courseNotes || "";
+  }
+
+  function isLikelyUrl(value) {
+    return /^https?:\/\//i.test(String(value || "").trim()) || /^\/[^/]/.test(String(value || "").trim());
+  }
+
+  function openCourseNotes() {
+    const course = state.activeCourse;
+    const value = String(noteValue(course)).trim();
+
+    if (!value) {
+      notesTitle.textContent = course?.title ? `${course.title} notes` : "Course notes";
+      notesBody.innerHTML = `<div class="notes-empty">No notes are attached to this course yet.</div>`;
+      courseNotesModal.hidden = false;
+    } else if (isLikelyUrl(value)) {
+      window.location.href = value;
+    } else {
+      notesTitle.textContent = course?.title ? `${course.title} notes` : "Course notes";
+      notesBody.innerHTML = `<div>${escapeHtml(value).replace(/\n/g, "<br>")}</div>`;
+      courseNotesModal.hidden = false;
+    }
+  }
+
+  function closeCourseNotes() {
+    courseNotesModal.hidden = true;
+  }
+
+  function embedUrl(lesson) {
+    if (lesson.embedUrl) return lesson.embedUrl;
+    if (lesson.youtubeId) return `https://www.youtube.com/embed/${lesson.youtubeId}?rel=0&autoplay=0`;
+    if (lesson.videoUrl) return lesson.videoUrl;
+    return "";
+  }
+
+  function isBunnyEmbedUrl(value) {
+    return /player\.mediadelivery\.net\/embed|iframe\.mediadelivery\.net\/embed/i.test(String(value || ""));
+  }
+
+  function directVideoUrl(lesson) {
+    const value = String(lesson.videoUrl || "").trim();
+    if (!value) return "";
+    if (/\.(mp4|webm|ogg|mov|m4v|m3u8)(\?|#|$)/i.test(value)) return value;
+    return "";
+  }
+
+  function bunnyStreamUrl(lesson) {
+    const explicit = String(lesson.hlsUrl || lesson.playlistUrl || lesson.streamUrl || "").trim();
+    if (explicit) return explicit;
+    return "";
+  }
+
+  function loadHlsJs() {
+    if (window.Hls) return Promise.resolve(window.Hls);
+    if (window.__edunexHlsPromise) return window.__edunexHlsPromise;
+    window.__edunexHlsPromise = new Promise((resolve, reject) => {
+      const script = document.createElement("script");
+      script.src = "https://cdn.jsdelivr.net/npm/hls.js@1/dist/hls.min.js";
+      script.async = true;
+      script.onload = () => resolve(window.Hls);
+      script.onerror = () => reject(new Error("HLS player unavailable"));
+      document.head.appendChild(script);
+    });
+    return window.__edunexHlsPromise;
+  }
+
+  function customControlsMarkup() {
+    return `
+      <button class="video-screen-btn video-fullscreen-btn" type="button" data-action="fullscreen" aria-label="Fullscreen"><i class="fas fa-expand"></i></button>
+      <button class="video-screen-btn video-ai-screen-btn" type="button" data-action="ai"><i class="fas fa-bolt"></i><span>AI</span></button>
+      <button class="tap-zone tap-zone-left" type="button" aria-label="Rewind 10 seconds"><span class="tap-hint">-10s</span></button>
+      <button class="tap-zone tap-zone-right" type="button" aria-label="Forward 10 seconds"><span class="tap-hint">+10s</span></button>
+      <div class="custom-video-controls">
+        <button class="video-control-btn" type="button" data-action="toggle" aria-label="Play"><i class="fas fa-play"></i></button>
+        <div class="video-volume" aria-label="Volume control">
+          <button class="video-control-btn" type="button" data-action="mute" aria-label="Mute"><i class="fas fa-volume-high"></i></button>
+          <input class="video-volume-slider" type="range" min="0" max="100" value="100" step="1" aria-label="Volume">
+          <span class="video-volume-value">100%</span>
+        </div>
+        <div class="video-timeline-wrap">
+          <input class="video-seek" type="range" min="0" max="1000" value="0" step="1" aria-label="Video progress">
+          <div class="video-time-row"><span data-current-time>0:00</span><span data-duration>Remaining 0:00</span></div>
+        </div>
+        <div class="video-speed" aria-label="Playback speed">
+          <button class="video-speed-btn" type="button" data-rate="1" aria-label="Playback speed">1x</button>
+        </div>
+      </div>`;
+  }
+
+  function normalizedVolume(value) {
+    const numeric = Number(value);
+    if (!Number.isFinite(numeric)) return 1;
+    return Math.max(0, Math.min(1, numeric));
+  }
+
+  state.volume = normalizedVolume(state.volume);
+
+  function volumeIcon(volume, muted) {
+    if (muted || volume <= 0) return "fa-volume-xmark";
+    if (volume < 0.5) return "fa-volume-low";
+    return "fa-volume-high";
+  }
+
+  function updateVolumeControls(root, volume = state.volume, muted = state.muted) {
+    const slider = root?.querySelector(".video-volume-slider");
+    const value = root?.querySelector(".video-volume-value");
+    const muteBtn = root?.querySelector('[data-action="mute"]');
+    if (slider) slider.value = String(Math.round(normalizedVolume(volume) * 100));
+    if (value) value.textContent = `${Math.round(normalizedVolume(volume) * 100)}%`;
+    if (muteBtn) {
+      muteBtn.innerHTML = `<i class="fas ${volumeIcon(volume, muted)}"></i>`;
+      muteBtn.setAttribute("aria-label", muted || volume <= 0 ? "Unmute" : "Mute");
+    }
+  }
+
+  function saveVolume(volume = state.volume, muted = state.muted) {
+    state.volume = normalizedVolume(volume);
+    state.muted = Boolean(muted);
+    localStorage.setItem("edunexVideoVolume", String(state.volume));
+    localStorage.setItem("edunexVideoMuted", state.muted ? "true" : "false");
+  }
+
+  function maybeAdvanceToNextLesson() {
+    if (!autoNextToggle.checked || !state.activeCourse) return;
+    const lessons = state.activeCourse.videos || [];
+    const nextIndex = state.activeLessonIndex + 1;
+    if (nextIndex < lessons.length) {
+      const wasFullscreen = Boolean(document.fullscreenElement);
+      renderPlayer(state.activeCourse, nextIndex, { autoplay: true, keepFullscreen: wasFullscreen });
+    }
+  }
+
+  function openVideoAi() {
+    const container = document.fullscreenElement || document.querySelector(".custom-video-player") || document.body;
+    if (window.NexAIWidget?.open) window.NexAIWidget.open(container);
+    else document.getElementById("nai-float-btn")?.click();
+  }
+
+  function requestPlayerFullscreen(player) {
+    const target = document.getElementById("playerFrame") || player;
+    if (!target) return;
+    if (document.fullscreenElement) {
+      document.exitFullscreen?.();
+      return;
+    }
+    target.requestFullscreen?.().catch?.(() => {});
+  }
+
+  function keepPlayerFullscreen() {
+    const target = document.getElementById("playerFrame");
+    if (!target || document.fullscreenElement) return;
+    target.requestFullscreen?.().catch?.(() => {});
+  }
+
+  function setSpeedControl(player, rate) {
+    const button = player?.querySelector(".video-speed-btn");
+    if (!button) return;
+    button.dataset.rate = String(rate);
+    button.textContent = `${rate}x`;
+    button.title = `Playback speed: ${rate}x`;
+  }
+
+  function nextPlaybackRate(rate) {
+    const rates = [1, 1.5, 2, 0.5];
+    const current = Number(rate) || 1;
+    const index = rates.findIndex((value) => value === current);
+    return rates[(index + 1) % rates.length];
+  }
+
+  function renderEmbedPlayer(playerFrame, course, lesson, url, options = {}) {
+    playerFrame.innerHTML = `
+      <div class="custom-video-player" data-embed-player tabindex="-1">
+        <iframe src="${escapeHtml(url)}" title="${escapeHtml(lesson.title || course.title)}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+        ${customControlsMarkup()}
+      </div>`;
+    setupEmbeddedVideoControls(playerFrame, options);
+  }
+
+  function renderPlayer(course, index, options = {}) {
+    const lessons = course.videos || [];
+    const lesson = lessons[index] || lessons[0] || {};
+    const url = embedUrl(lesson);
+    const directUrl = directVideoUrl(lesson) || bunnyStreamUrl(lesson);
+    const playerFrame = document.getElementById("playerFrame");
+    const lessonTitle = document.getElementById("lessonTitle");
+    const lessonDescription = document.getElementById("lessonDescription");
+    const lessonMeta = document.getElementById("lessonMeta");
+
+    state.activeLessonIndex = index;
+    localStorage.setItem(`edunexCourseProgress:${course._id}`, JSON.stringify({
+      lessonIndex: index,
+      completed: Math.min(index, Math.max(lessons.length - 1, 0)),
+      percent: lessons.length ? Math.round((index / lessons.length) * 100) : 0
+    }));
+
+    if (directUrl) {
+      playerFrame.innerHTML = `
+        <div class="custom-video-player" data-custom-player tabindex="-1">
+          <video src="${escapeHtml(directUrl)}" poster="${escapeHtml(lessonImage(course, lesson))}" playsinline preload="metadata"></video>
+          ${customControlsMarkup()}
+        </div>`;
+      setupCustomVideoPlayer(playerFrame, directUrl, () => {
+        if (url) renderEmbedPlayer(playerFrame, course, lesson, url, options);
+      }, options);
+    } else if (isBunnyEmbedUrl(url)) {
+      renderEmbedPlayer(playerFrame, course, lesson, url, options);
+    } else if (url) {
+      playerFrame.innerHTML = `<iframe src="${escapeHtml(url)}" title="${escapeHtml(lesson.title || course.title)}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>`;
+    } else {
+      playerFrame.innerHTML = `<div class="player-placeholder"><div><strong>Video source coming soon</strong><span>This lesson is in the playlist, but no playable source is attached yet.</span></div></div>`;
+    }
+
+    lessonTitle.textContent = lesson.title || course.title || "Course lesson";
+    lessonDescription.textContent = lesson.description || course.description || "Continue watching this EduNex course.";
+    lessonMeta.innerHTML = `
+      <span>${escapeHtml(course.title || "EduNex course")}</span>
+      <span>Lesson ${escapeHtml(index + 1)} of ${escapeHtml(Math.max(lessons.length, 1))}</span>
+      <span>${escapeHtml(formatDuration(lesson.duration))}</span>
+    `;
+
+    document.querySelectorAll(".lesson-item").forEach((item) => {
+      item.classList.toggle("is-active", Number(item.dataset.index) === index);
+    });
+
+    const urlState = new URL(window.location.href);
+    urlState.searchParams.set("courseId", course._id);
+    urlState.searchParams.set("video", index);
+    history.replaceState(null, "", urlState.pathname + urlState.search);
+
+    if (options.keepFullscreen) setTimeout(keepPlayerFullscreen, 0);
+  }
+
+  function setupCustomVideoPlayer(scope, sourceUrl = "", onPlaybackError = null, options = {}) {
+    const player = scope.querySelector("[data-custom-player]");
+    const video = player?.querySelector("video");
+    if (!player || !video) return;
+
+    const toggleBtn = player.querySelector('[data-action="toggle"]');
+    const seek = player.querySelector(".video-seek");
+    const muteBtn = player.querySelector('[data-action="mute"]');
+    const volumeSlider = player.querySelector(".video-volume-slider");
+    const currentTime = player.querySelector("[data-current-time]");
+    const durationTime = player.querySelector("[data-duration]");
+    const speedButton = player.querySelector(".video-speed-btn");
+    const leftZone = player.querySelector(".tap-zone-left");
+    const rightZone = player.querySelector(".tap-zone-right");
+    const fullscreenBtn = player.querySelector('[data-action="fullscreen"]');
+    const aiBtn = player.querySelector('[data-action="ai"]');
+    let clickTimer = null;
+    let selectedRate = 1;
+
+    const applyVolume = (volume = state.volume, muted = state.muted) => {
+      const nextVolume = normalizedVolume(volume);
+      video.volume = nextVolume;
+      video.muted = Boolean(muted || nextVolume <= 0);
+      saveVolume(nextVolume, video.muted);
+      updateVolumeControls(player, state.volume, state.muted);
+    };
+
+    const applyPlaybackRate = (rate) => {
+      selectedRate = rate;
+      video.defaultPlaybackRate = rate;
+      video.playbackRate = rate;
+      setSpeedControl(player, rate);
+    };
+
+    if (/\.m3u8(\?|#|$)/i.test(sourceUrl) && !video.canPlayType("application/vnd.apple.mpegurl")) {
+      video.removeAttribute("src");
+      video.load();
+      loadHlsJs().then((Hls) => {
+        if (!Hls?.isSupported?.()) return;
+        const hls = new Hls({ enableWorker: true });
+        hls.loadSource(sourceUrl);
+        hls.attachMedia(video);
+        hls.on(Hls.Events.MANIFEST_PARSED, () => applyPlaybackRate(selectedRate));
+        hls.on(Hls.Events.ERROR, (_, data) => {
+          if (data?.fatal && typeof onPlaybackError === "function") onPlaybackError();
+        });
+      }).catch(() => {
+        if (typeof onPlaybackError === "function") onPlaybackError();
+        else scope.innerHTML = `<div class="player-placeholder"><div><strong>Video player unavailable</strong><span>This browser could not load the secure video stream. Please refresh and try again.</span></div></div>`;
+      });
+    }
+
+    const togglePlayback = () => {
+      if (video.paused) video.play().catch(() => {});
+      else video.pause();
+    };
+    window.__edunexActiveVideoToggle = togglePlayback;
+    const setPlayIcon = () => {
+      toggleBtn.innerHTML = video.paused ? '<i class="fas fa-play"></i>' : '<i class="fas fa-pause"></i>';
+      toggleBtn.setAttribute("aria-label", video.paused ? "Play" : "Pause");
+    };
+    const updateTime = () => {
+      const duration = Number.isFinite(video.duration) ? video.duration : 0;
+      seek.value = duration ? String(Math.round((video.currentTime / duration) * 1000)) : "0";
+      currentTime.textContent = formatVideoTime(video.currentTime);
+      durationTime.textContent = duration ? `Remaining ${formatVideoTime(Math.max(duration - video.currentTime, 0))}` : "Remaining 0:00";
+    };
+    const seekBy = (seconds, zone) => {
+      const duration = Number.isFinite(video.duration) ? video.duration : 0;
+      video.currentTime = Math.max(0, Math.min(duration || video.currentTime + seconds, video.currentTime + seconds));
+      updateTime();
+      zone?.classList.add("show");
+      setTimeout(() => zone?.classList.remove("show"), 360);
+    };
+    window.__edunexActiveVideoSeek = (seconds) => seekBy(seconds, seconds < 0 ? leftZone : rightZone);
+    const scheduleTogglePlayback = () => {
+      clearTimeout(clickTimer);
+      clickTimer = setTimeout(togglePlayback, 320);
+    };
+    const cancelScheduledToggle = () => {
+      clearTimeout(clickTimer);
+      clickTimer = null;
+    };
+
+    player.focus({ preventScroll: true });
+    applyVolume();
+    toggleBtn.addEventListener("click", togglePlayback);
+    seek.addEventListener("input", () => {
+      const duration = Number.isFinite(video.duration) ? video.duration : 0;
+      if (duration) video.currentTime = (Number(seek.value) / 1000) * duration;
+      updateTime();
+    });
+    volumeSlider?.addEventListener("input", () => {
+      const nextVolume = normalizedVolume(Number(volumeSlider.value) / 100);
+      applyVolume(nextVolume, false);
+    });
+    muteBtn?.addEventListener("click", () => {
+      const shouldMute = !video.muted && state.volume > 0;
+      const nextVolume = shouldMute ? state.volume : (state.volume > 0 ? state.volume : 1);
+      applyVolume(nextVolume, shouldMute);
+    });
+    speedButton?.addEventListener("click", () => {
+      applyPlaybackRate(nextPlaybackRate(selectedRate));
+    });
+    fullscreenBtn.addEventListener("click", () => requestPlayerFullscreen(player));
+    aiBtn.addEventListener("click", openVideoAi);
+    leftZone.addEventListener("click", scheduleTogglePlayback);
+    rightZone.addEventListener("click", scheduleTogglePlayback);
+    leftZone.addEventListener("dblclick", () => {
+      cancelScheduledToggle();
+      seekBy(-10, leftZone);
+    });
+    rightZone.addEventListener("dblclick", () => {
+      cancelScheduledToggle();
+      seekBy(10, rightZone);
+    });
+    leftZone.addEventListener("touchend", (event) => {
+      event.preventDefault();
+      const now = Date.now();
+      if (now - Number(leftZone.dataset.lastTap || 0) < 320) {
+        cancelScheduledToggle();
+        seekBy(-10, leftZone);
+      } else {
+        scheduleTogglePlayback();
+      }
+      leftZone.dataset.lastTap = String(now);
+    });
+    rightZone.addEventListener("touchend", (event) => {
+      event.preventDefault();
+      const now = Date.now();
+      if (now - Number(rightZone.dataset.lastTap || 0) < 320) {
+        cancelScheduledToggle();
+        seekBy(10, rightZone);
+      } else {
+        scheduleTogglePlayback();
+      }
+      rightZone.dataset.lastTap = String(now);
+    });
+    video.addEventListener("click", scheduleTogglePlayback);
+    video.addEventListener("loadedmetadata", () => {
+      applyPlaybackRate(selectedRate);
+      applyVolume();
+      updateTime();
+      if (options.autoplay) video.play().catch(() => {});
+    });
+    video.addEventListener("timeupdate", updateTime);
+    video.addEventListener("play", setPlayIcon);
+    video.addEventListener("pause", setPlayIcon);
+    video.addEventListener("ratechange", () => setSpeedControl(player, Number(video.playbackRate) || 1));
+    video.addEventListener("error", () => {
+      if (typeof onPlaybackError === "function") onPlaybackError();
+    });
+    video.addEventListener("ended", () => {
+      setPlayIcon();
+      maybeAdvanceToNextLesson();
+    });
+
+    updateTime();
+    setPlayIcon();
+    if (video.readyState >= 1) {
+      applyPlaybackRate(selectedRate);
+      applyVolume();
+      if (options.autoplay) video.play().catch(() => {});
+    }
+  }
+
+  function loadPlayerJs() {
+    if (window.playerjs?.Player) return Promise.resolve();
+    if (window.__edunexPlayerJsPromise) return window.__edunexPlayerJsPromise;
+    window.__edunexPlayerJsPromise = new Promise((resolve, reject) => {
+      const script = document.createElement("script");
+      script.src = "https://assets.mediadelivery.net/playerjs/player-0.1.0.min.js";
+      script.async = true;
+      script.onload = () => resolve();
+      script.onerror = () => reject(new Error("Player API unavailable"));
+      document.head.appendChild(script);
+    });
+    return window.__edunexPlayerJsPromise;
+  }
+
+  function setupEmbeddedVideoControls(scope, options = {}) {
+    const shell = scope.querySelector("[data-embed-player]");
+    const iframe = shell?.querySelector("iframe");
+    if (!shell || !iframe) return;
+
+    const toggleBtn = shell.querySelector('[data-action="toggle"]');
+    const seek = shell.querySelector(".video-seek");
+    const muteBtn = shell.querySelector('[data-action="mute"]');
+    const volumeSlider = shell.querySelector(".video-volume-slider");
+    const currentTime = shell.querySelector("[data-current-time]");
+    const durationTime = shell.querySelector("[data-duration]");
+    const speedButton = shell.querySelector(".video-speed-btn");
+    const leftZone = shell.querySelector(".tap-zone-left");
+    const rightZone = shell.querySelector(".tap-zone-right");
+    const fullscreenBtn = shell.querySelector('[data-action="fullscreen"]');
+    const aiBtn = shell.querySelector('[data-action="ai"]');
+    let player = null;
+    let duration = 0;
+    let current = 0;
+    let playing = false;
+    let playbackRate = 1;
+    let polling = null;
+    let clickTimer = null;
+
+    const sendIframePlaybackRate = (rate) => {
+      const messages = [
+        { context: "player.js", version: "0.0.11", event: "command", method: "setPlaybackRate", value: rate },
+        { context: "player.js", version: "0.0.11", event: "command", method: "playbackRate", value: rate },
+        { event: "command", func: "setPlaybackRate", args: [rate] },
+        { event: "command", func: "setSpeed", args: [rate] },
+        { method: "setPlaybackRate", value: rate },
+        { method: "setSpeed", value: rate },
+        { command: "setPlaybackRate", value: rate },
+        { command: "setSpeed", value: rate },
+        { type: "setPlaybackRate", value: rate },
+        { type: "setSpeed", value: rate }
+      ];
+      messages.forEach((message) => {
+        try { iframe.contentWindow?.postMessage(message, "*"); } catch (_) {}
+        try { iframe.contentWindow?.postMessage(JSON.stringify(message), "*"); } catch (_) {}
+      });
+    };
+
+    const sendIframeVolume = (volume, muted = state.muted) => {
+      const percent = Math.round(normalizedVolume(volume) * 100);
+      const messages = [
+        { context: "player.js", version: "0.0.11", event: "command", method: "setVolume", value: percent },
+        { context: "player.js", version: "0.0.11", event: "command", method: muted ? "mute" : "unmute" },
+        { event: "command", func: "setVolume", args: [percent] },
+        { event: "command", func: muted ? "mute" : "unMute", args: [] },
+        { method: "setVolume", value: percent },
+        { method: muted ? "mute" : "unmute" },
+        { command: "setVolume", value: percent },
+        { command: muted ? "mute" : "unmute" },
+        { type: "setVolume", value: percent },
+        { type: muted ? "mute" : "unmute" }
+      ];
+      messages.forEach((message) => {
+        try { iframe.contentWindow?.postMessage(message, "*"); } catch (_) {}
+        try { iframe.contentWindow?.postMessage(JSON.stringify(message), "*"); } catch (_) {}
+      });
+    };
+
+    const applyEmbeddedPlaybackRate = (rate) => {
+      playbackRate = rate;
+      setSpeedControl(shell, rate);
+      sendIframePlaybackRate(rate);
+      try { player?.setPlaybackRate?.(rate); } catch (_) {}
+      try { player?.setSpeed?.(rate); } catch (_) {}
+      try { player?.setPlaybackSpeed?.(rate); } catch (_) {}
+      try { player?.setRate?.(rate); } catch (_) {}
+    };
+
+    const applyEmbeddedVolume = (volume = state.volume, muted = state.muted) => {
+      const nextVolume = normalizedVolume(volume);
+      const nextMuted = Boolean(muted || nextVolume <= 0);
+      saveVolume(nextVolume, nextMuted);
+      updateVolumeControls(shell, state.volume, state.muted);
+      sendIframeVolume(state.volume, state.muted);
+      const percent = Math.round(state.volume * 100);
+      try { player?.setVolume?.(state.muted ? 0 : percent); } catch (_) {}
+      try { player?.mute?.(state.muted); } catch (_) {}
+      if (state.muted) {
+        try { player?.mute?.(); } catch (_) {}
+      } else {
+        try { player?.unmute?.(); } catch (_) {}
+        try { player?.unMute?.(); } catch (_) {}
+      }
+    };
+
+    const toggleEmbeddedPlayback = () => {
+      if (!player) return;
+      if (playing) {
+        player.pause?.();
+      } else {
+        player.play?.();
+      }
+    };
+    window.__edunexActiveVideoToggle = toggleEmbeddedPlayback;
+    const setPlayIcon = () => {
+      toggleBtn.innerHTML = playing ? '<i class="fas fa-pause"></i>' : '<i class="fas fa-play"></i>';
+      toggleBtn.setAttribute("aria-label", playing ? "Pause" : "Play");
+    };
+    const renderTime = () => {
+      seek.value = duration ? String(Math.round((current / duration) * 1000)) : "0";
+      currentTime.textContent = formatVideoTime(current);
+      durationTime.textContent = duration ? `Remaining ${formatVideoTime(Math.max(duration - current, 0))}` : "Remaining 0:00";
+    };
+    const refreshTime = () => {
+      if (!player) return;
+      try {
+        player.getCurrentTime?.((value) => {
+          current = Number(value || 0);
+          renderTime();
+        });
+        player.getDuration?.((value) => {
+          duration = Number(value || duration || 0);
+          renderTime();
+        });
+      } catch (_) {}
+    };
+    const seekTo = (value) => {
+      const next = Math.max(0, Math.min(duration || value, value));
+      current = next;
+      try { player?.setCurrentTime?.(next); } catch (_) {}
+      renderTime();
+    };
+    const seekBy = (seconds, zone) => {
+      refreshTime();
+      seekTo(current + seconds);
+      zone?.classList.add("show");
+      setTimeout(() => zone?.classList.remove("show"), 360);
+    };
+    window.__edunexActiveVideoSeek = (seconds) => seekBy(seconds, seconds < 0 ? leftZone : rightZone);
+    const scheduleTogglePlayback = () => {
+      clearTimeout(clickTimer);
+      clickTimer = setTimeout(toggleEmbeddedPlayback, 320);
+    };
+    const cancelScheduledToggle = () => {
+      clearTimeout(clickTimer);
+      clickTimer = null;
+    };
+
+    shell.focus({ preventScroll: true });
+    applyEmbeddedVolume();
+    loadPlayerJs().then(() => {
+      player = new window.playerjs.Player(iframe);
+      player.on?.("ready", () => {
+        refreshTime();
+        applyEmbeddedPlaybackRate(playbackRate);
+        applyEmbeddedVolume();
+        if (options.autoplay) player.play?.();
+        polling = setInterval(refreshTime, 750);
+      });
+      player.on?.("play", () => {
+        playing = true;
+        setPlayIcon();
+      });
+      player.on?.("pause", () => {
+        playing = false;
+        setPlayIcon();
+      });
+      player.on?.("ended", () => {
+        playing = false;
+        setPlayIcon();
+        maybeAdvanceToNextLesson();
+      });
+      player.on?.("timeupdate", (event) => {
+        current = Number(event?.seconds ?? event?.currentTime ?? current ?? 0);
+        duration = Number(event?.duration ?? duration ?? 0);
+        renderTime();
+      });
+      player.on?.("playbackratechange", (event) => {
+        const rate = Number(event?.playbackRate ?? event?.rate ?? event);
+        if (rate) {
+          playbackRate = rate;
+          setSpeedControl(shell, rate);
+        }
+      });
+    }).catch(() => {
+      shell.classList.add("embed-controls-unavailable");
+    });
+
+    toggleBtn.addEventListener("click", toggleEmbeddedPlayback);
+    seek.addEventListener("input", () => {
+      if (!duration) refreshTime();
+      if (duration) seekTo((Number(seek.value) / 1000) * duration);
+    });
+    volumeSlider?.addEventListener("input", () => {
+      applyEmbeddedVolume(normalizedVolume(Number(volumeSlider.value) / 100), false);
+    });
+    muteBtn?.addEventListener("click", () => {
+      const shouldMute = !state.muted && state.volume > 0;
+      const nextVolume = shouldMute ? state.volume : (state.volume > 0 ? state.volume : 1);
+      applyEmbeddedVolume(nextVolume, shouldMute);
+    });
+    speedButton?.addEventListener("click", () => {
+      applyEmbeddedPlaybackRate(nextPlaybackRate(playbackRate));
+    });
+    fullscreenBtn.addEventListener("click", () => requestPlayerFullscreen(shell));
+    aiBtn.addEventListener("click", openVideoAi);
+    leftZone.addEventListener("click", scheduleTogglePlayback);
+    rightZone.addEventListener("click", scheduleTogglePlayback);
+    leftZone.addEventListener("dblclick", () => {
+      cancelScheduledToggle();
+      seekBy(-10, leftZone);
+    });
+    rightZone.addEventListener("dblclick", () => {
+      cancelScheduledToggle();
+      seekBy(10, rightZone);
+    });
+    leftZone.addEventListener("touchend", (event) => {
+      event.preventDefault();
+      const now = Date.now();
+      if (now - Number(leftZone.dataset.lastTap || 0) < 320) {
+        cancelScheduledToggle();
+        seekBy(-10, leftZone);
+      } else {
+        scheduleTogglePlayback();
+      }
+      leftZone.dataset.lastTap = String(now);
+    });
+    rightZone.addEventListener("touchend", (event) => {
+      event.preventDefault();
+      const now = Date.now();
+      if (now - Number(rightZone.dataset.lastTap || 0) < 320) {
+        cancelScheduledToggle();
+        seekBy(10, rightZone);
+      } else {
+        scheduleTogglePlayback();
+      }
+      rightZone.dataset.lastTap = String(now);
+    });
+
+    iframe.addEventListener("load", () => setTimeout(refreshTime, 600));
+    window.addEventListener("beforeunload", () => {
+      if (polling) clearInterval(polling);
+    }, { once: true });
+    renderTime();
+    setPlayIcon();
+  }
+
+  function renderWatch(course, startIndex) {
+    state.activeCourse = course;
+    const lessons = course.videos || [];
+    document.getElementById("watchStatus").textContent = lessons.length ? "Course ready" : "No lessons yet";
+    document.getElementById("watchCourseTitle").textContent = course.title || "Course playlist";
+    document.getElementById("sidebarCourseTitle").textContent = course.title || "Course playlist";
+    document.getElementById("sidebarCourseMeta").textContent = `${lessons.length} videos in this course`;
+    document.getElementById("lessonList").innerHTML = lessons.length
+      ? lessons.map((lesson, index) => `
+          <button class="lesson-item" type="button" data-index="${index}">
+            <span class="lesson-thumb">
+              <img src="${escapeHtml(lessonImage(course, lesson))}" alt="${escapeHtml(lesson.title || course.title || "EduNex lesson")}" onerror="this.onerror=null;this.src=fallbackImage(this.alt||'EduNex')">
+              <span class="lesson-number">${index + 1}</span>
+            </span>
+            <span class="lesson-copy">
+              <strong>${escapeHtml(lesson.title || `Lesson ${index + 1}`)}</strong>
+              <span>${escapeHtml(formatDuration(lesson.duration))}</span>
+            </span>
+          </button>
+        `).join("")
+      : `<div class="empty-state">This course does not have videos attached yet.</div>`;
+
+    document.querySelectorAll(".lesson-item").forEach((item) => {
+      item.addEventListener("click", () => renderPlayer(course, Number(item.dataset.index)));
+    });
+
+    renderPlayer(course, Number.isFinite(startIndex) ? Math.max(0, Math.min(startIndex, Math.max(lessons.length - 1, 0))) : 0);
+  }
+
+  document.getElementById("librarySearch").addEventListener("submit", (event) => {
+    event.preventDefault();
+    state.search = searchInput.value;
+    renderLibrary();
+  });
+
+  searchInput.addEventListener("input", () => {
+    state.search = searchInput.value;
+    renderLibrary();
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if (event.defaultPrevented || event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
+    const target = event.target;
+    if (target?.closest?.("input, textarea, select, [contenteditable='true']")) return;
+    if (watchView.hidden) return;
+    if (event.key === " " || event.code === "Space") {
+      if (typeof window.__edunexActiveVideoToggle !== "function") return;
+      event.preventDefault();
+      window.__edunexActiveVideoToggle();
+    } else if (event.key === "ArrowLeft") {
+      if (typeof window.__edunexActiveVideoSeek !== "function") return;
+      event.preventDefault();
+      window.__edunexActiveVideoSeek(-10);
+    } else if (event.key === "ArrowRight") {
+      if (typeof window.__edunexActiveVideoSeek !== "function") return;
+      event.preventDefault();
+      window.__edunexActiveVideoSeek(10);
+    }
+  });
+
+  openNotesBtn.addEventListener("click", openCourseNotes);
+  closeNotesBtn.addEventListener("click", closeCourseNotes);
+  courseNotesModal.addEventListener("click", (event) => {
+    if (event.target === courseNotesModal) closeCourseNotes();
+  });
+  autoNextToggle.addEventListener("change", () => {
+    localStorage.setItem(autoNextStorageKey, autoNextToggle.checked ? "true" : "false");
+  });
+
+  document.querySelectorAll(".library-tab").forEach((button) => {
+    button.addEventListener("click", () => {
+      document.querySelectorAll(".library-tab").forEach((tab) => tab.classList.remove("is-active"));
+      button.classList.add("is-active");
+      state.filter = button.dataset.filter;
+      renderLibrary();
+    });
+  });
+
+  (async function boot() {
+    if (!selectedCourseId) {
+      window.location.replace("/courses.html");
+      return;
+    }
+
+    await loadCourses();
+    libraryView.hidden = true;
+    watchView.hidden = false;
+    const allowed = await ensureCourseAccess(selectedCourseId);
+    if (!allowed) return;
+    try {
+      const course = await loadCourse(selectedCourseId);
+      renderWatch(course, selectedVideo);
+    } catch (error) {
+      renderWatchError("This course was not found in the database, or your account does not currently have access to its videos.");
+    }
+  })();
+</script>
+</body>
+</html>

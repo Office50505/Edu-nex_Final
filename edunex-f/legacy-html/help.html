@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Help & Support — EduNex AI</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    :root { --font-body: "Manrope", ui-sans-serif, system-ui, sans-serif; --font-display: "Fraunces", Georgia, serif; }
+    body, button, input, textarea, select { font-family: var(--font-body); }
+    h1, h2, .hero-title, .section-title, .auth-brand, .library-hero h1, .welcome-left h1, .market-right h2, .trial-left h2, .team-header-row h2, .cta-section h2, .section-head h2, .lp-title, .sp-title, .payment-choice-title { font-family: var(--font-display); font-weight: 600; letter-spacing: 0; }
+
+    :root { --bg:#000; --card:#0d0d0d; --text:#fff; --text2:#9ca3af; --cyan:#C58B2A; --border:rgba(255,255,255,.08); }
+    * { box-sizing: border-box; }
+    body { margin:0; background:var(--bg); color:var(--text); font-family: "Manrope", ui-sans-serif, system-ui, sans-serif; }
+    .help-page { width:min(1100px, calc(100% - 32px)); margin:0 auto; padding:130px 0 72px; }
+    .help-kicker { color:var(--cyan); font-size:.78rem; font-weight:900; letter-spacing:.12em; text-transform:uppercase; }
+    h1 { margin:10px 0 14px; font-size:clamp(2rem, 7vw, 4rem); line-height:1.04; }
+    .help-intro { color:var(--text2); line-height:1.8; max-width:760px; }
+    .help-grid { display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:16px; margin-top:28px; }
+    .help-card { padding:22px; border:1px solid var(--border); border-radius:18px; background:var(--card); }
+    .help-card i { color:var(--cyan); margin-bottom:14px; }
+    h2 { margin:0 0 10px; font-size:1rem; }
+    p { color:var(--text2); line-height:1.75; font-size:.9rem; }
+    a { color:var(--cyan); text-decoration:none; font-weight:800; }
+    @media (max-width: 800px) { .help-grid { grid-template-columns:1fr; } }
+  </style>
+</head>
+<body>
+  <main class="help-page">
+    <div class="help-kicker">Support</div>
+    <h1>How can we help?</h1>
+    <p class="help-intro">Use these support paths for account access, videos, payments, courses, and profile issues.</p>
+    <section class="help-grid">
+      <article class="help-card">
+        <i class="fas fa-key"></i>
+        <h2>Login Or Profile</h2>
+        <p>If your login, OTP, avatar, or profile details do not sync, log out and sign in again. Then open <a href="profile.html">Profile</a>.</p>
+      </article>
+      <article class="help-card">
+        <i class="fas fa-video"></i>
+        <h2>Course Videos</h2>
+        <p>Video access requires an active trial or subscription. Open <a href="courses.html">Courses</a>, then choose View Course.</p>
+      </article>
+      <article class="help-card">
+        <i class="fas fa-receipt"></i>
+        <h2>Payments</h2>
+        <p>After payment, continue on web to return to courses. Subscription status can be checked from the Profile page.</p>
+      </article>
+      <article class="help-card">
+        <i class="fas fa-heart"></i>
+        <h2>Wishlist</h2>
+        <p>Tap the heart on a course card to save it. Logged-in accounts sync wishlist data when the backend is available.</p>
+      </article>
+      <article class="help-card">
+        <i class="fas fa-network-wired"></i>
+        <h2>Nex AI</h2>
+        <p>Use Nex AI inside the video player for summaries, study plans, project ideas, and lesson explanations.</p>
+      </article>
+      <article class="help-card">
+        <i class="fas fa-envelope"></i>
+        <h2>Contact</h2>
+        <p>Email support at <a href="mailto:support@edunex.ai">support@edunex.ai</a> with your mobile number and issue details.</p>
+      </article>
+    </section>
+  </main>
+</body>
+</html>

@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Upload Course | EduNex</title>
+  <link rel="stylesheet" href="auth.css">
+  <link rel="stylesheet" href="motion.css">
+  <script src="motion.js" defer></script>
+  <link rel="stylesheet" href="premium-nav.css">
+  <link rel="stylesheet" href="admin-theme.css">
+  <script src="admin-env.js"></script>
+  <script src="admin-common.js"></script>
+  <script src="premium-nav.js" defer></script>
+</head>
+<body class="premium-nav-page premium-nav-admin">
+  <nav class="premium-site-nav" data-premium-nav>
+    <div class="premium-nav-panel">
+      <a aria-label="EduNex admin home" class="premium-brand" href="admin-dashboard.html">
+        <span class="premium-brand-mark" aria-hidden="true"></span>
+        <span class="premium-brand-name">Edu<span>Nex</span></span>
+      </a>
+      <div class="premium-nav-links"></div>
+      <div class="premium-nav-actions"></div>
+    </div>
+  </nav>
+
+  <main class="app-shell course-upload-shell">
+    <header class="app-header course-upload-header">
+      <div>
+        <div class="brand-mark">E</div>
+        <h1 class="app-title">Upload Course</h1>
+        <p class="app-subtitle">Create a draft or published course with Bunny Stream video URLs.</p>
+      </div>
+      <nav class="toolbar-actions" aria-label="Admin navigation">
+        <a class="toolbar-button" href="admin-dashboard.html">Analytics</a>
+        <a class="toolbar-button" href="admin-users.html">Users</a>
+        <a class="toolbar-button" href="admin-courses.html">Courses</a>
+        <button class="toolbar-button" id="logoutButton" type="button">Log out</button>
+      </nav>
+    </header>
+
+    <section class="editor-panel">
+      <form class="course-form" id="courseForm">
+        <div class="form-grid">
+          <div class="field">
+            <label for="title">Course title</label>
+            <input id="title" name="title" required maxlength="120">
+          </div>
+          <div class="field">
+            <label for="slug">Slug</label>
+            <input id="slug" name="slug" required maxlength="120">
+          </div>
+          <div class="field span-2">
+            <label for="description">Description</label>
+            <textarea id="description" name="description" required maxlength="3000"></textarea>
+          </div>
+          <div class="field">
+            <label for="category">Category</label>
+            <select id="category" name="category" required>
+              <option value="">Loading categories...</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="status">Status</label>
+            <select id="status" name="status">
+              <option value="draft">Draft</option>
+              <option value="published">Published</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="thumbnailUrl">Horizontal thumbnail URL</label>
+            <input id="thumbnailUrl" name="thumbnailUrl" type="url" placeholder="https://...">
+          </div>
+          <div class="field">
+            <label for="thumbnailVerticalUrl">Vertical thumbnail URL</label>
+            <input id="thumbnailVerticalUrl" name="thumbnailVerticalUrl" type="url" placeholder="https://...">
+          </div>
+          <div class="field span-2">
+            <label for="notesUrl">Notes URL</label>
+            <input id="notesUrl" name="notesUrl" type="url" placeholder="https://...">
+          </div>
+        </div>
+
+        <div class="course-publish-panel">
+          <div class="section-heading">
+            <h2>Videos</h2>
+            <span>Every video must include a valid Bunny Stream URL.</span>
+          </div>
+          <div id="videoList" class="video-editor"></div>
+          <button class="secondary-button" id="addVideoButton" type="button">Add video</button>
+        </div>
+
+        <button class="submit-button" id="submitButton" type="submit">Create course</button>
+        <div class="message" id="message" role="status"></div>
+      </form>
+    </section>
+  </main>
+
+  <script>
+    AdminPanel.requireAdmin();
+
+    const form = document.getElementById('courseForm');
+    const message = document.getElementById('message');
+    const submitButton = document.getElementById('submitButton');
+    const categorySelect = document.getElementById('category');
+    const videoList = document.getElementById('videoList');
+    let videoCount = 0;
+
+    document.getElementById('logoutButton').addEventListener('click', AdminPanel.logout);
+    document.getElementById('title').addEventListener('input', (event) => {
+      const slugInput = document.getElementById('slug');
+      if (slugInput.dataset.touched === 'true') return;
+      slugInput.value = event.target.value.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+    });
+    document.getElementById('slug').addEventListener('input', (event) => {
+      event.target.dataset.touched = 'true';
+    });
+    document.getElementById('addVideoButton').addEventListener('click', () => addVideo());
+
+    function addVideo() {
+      videoCount += 1;
+      const id = videoCount;
+      const entry = document.createElement('article');
+      entry.className = 'video-entry';
+      entry.innerHTML = `
+        <div class="video-editor-head">
+          <strong>Video ${id}</strong>
+          <button class="action-button danger remove-video-button" type="button">Remove</button>
+        </div>
+        <div class="form-grid">
+          <div class="field">
+            <label for="videoTitle${id}">Title</label>
+            <input id="videoTitle${id}" class="video-title" required>
+          </div>
+          <div class="field">
+            <label for="videoDuration${id}">Duration seconds</label>
+            <input id="videoDuration${id}" class="video-duration" type="number" min="0" step="1">
+          </div>
+          <div class="field span-2">
+            <label for="videoUrl${id}">Bunny Stream URL</label>
+            <input id="videoUrl${id}" class="video-url" type="url" required placeholder="https://player.mediadelivery.net/embed/...">
+          </div>
+          <div class="field span-2">
+            <label for="videoDescription${id}">Description</label>
+            <textarea id="videoDescription${id}" class="video-description"></textarea>
+          </div>
+        </div>
+      `;
+      entry.querySelector('.remove-video-button').addEventListener('click', () => {
+        if (videoList.children.length > 1) entry.remove();
+      });
+      videoList.appendChild(entry);
+    }
+
+    async function loadCategories() {
+      try {
+        const response = await fetch(AdminPanel.api('/api/categories'));
+        const data = await response.json();
+        if (!response.ok) throw new Error(AdminPanel.errorMessage(data, 'Unable to load categories.'));
+        categorySelect.innerHTML = '<option value="">Choose category</option>' + (Array.isArray(data) ? data : []).map((category) => (
+          `<option value="${AdminPanel.escapeHtml(category._id)}">${AdminPanel.escapeHtml(category.name)}</option>`
+        )).join('');
+      } catch (error) {
+        categorySelect.innerHTML = '<option value="">Categories unavailable</option>';
+        AdminPanel.showMessage(message, error.message || 'Unable to load categories.', 'error');
+      }
+    }
+
+    function readVideos() {
+      return Array.from(videoList.querySelectorAll('.video-entry')).map((entry, index) => ({
+        title: entry.querySelector('.video-title').value.trim() || `Video ${index + 1}`,
+        description: entry.querySelector('.video-description').value.trim(),
+        duration: Number(entry.querySelector('.video-duration').value || 0),
+        videoUrl: entry.querySelector('.video-url').value.trim(),
+      }));
+    }
+
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      AdminPanel.showMessage(message, '', 'success');
+      const payload = {
+        title: document.getElementById('title').value.trim(),
+        slug: document.getElementById('slug').value.trim(),
+        description: document.getElementById('description').value.trim(),
+        category: categorySelect.value,
+        status: document.getElementById('status').value,
+        thumbnailUrl: document.getElementById('thumbnailUrl').value.trim(),
+        thumbnailVerticalUrl: document.getElementById('thumbnailVerticalUrl').value.trim(),
+        notesUrl: document.getElementById('notesUrl').value.trim(),
+        videos: readVideos(),
+      };
+
+      if (!payload.title || !payload.slug || !payload.description || !payload.category || payload.videos.some((video) => !video.videoUrl)) {
+        AdminPanel.showMessage(message, 'Complete the course details and at least one Bunny video URL.', 'error');
+        return;
+      }
+
+      submitButton.disabled = true;
+      submitButton.textContent = 'Creating...';
+      try {
+        const response = await AdminPanel.request('/api/courses', {
+          method: 'POST',
+          body: JSON.stringify(payload),
+        });
+        const data = await response.json();
+        if (!response.ok) throw new Error(AdminPanel.errorMessage(data, 'Unable to create course.'));
+        AdminPanel.showMessage(message, 'Course created successfully.', 'success');
+        form.reset();
+        videoList.innerHTML = '';
+        addVideo();
+      } catch (error) {
+        AdminPanel.showMessage(message, error.message || 'Unable to create course.', 'error');
+      } finally {
+        submitButton.disabled = false;
+        submitButton.textContent = 'Create course';
+      }
+    });
+
+    addVideo();
+    loadCategories();
+  </script>
+</body>
+</html>

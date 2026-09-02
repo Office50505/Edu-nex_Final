@@ -1,0 +1,2024 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EduNex AI — Best Platform to Empower Skills</title>
+  <meta name="description" content="Master the future of work with AI-driven personalized learning paths and expert-led certifications. Start your journey today for just ₹1.">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="css/theme.css">
+  <script>
+    (function () {
+      const saved = localStorage.getItem('enx-theme') || 'noir';
+      const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const resolved = saved === 'light' ? 'light' : (saved === 'system' ? (prefersDark ? 'noir' : 'light') : 'noir');
+      const vars = resolved === 'light'
+        ? {
+          '--bg': '#FAF7F1',
+          '--card': '#FFFDF8',
+          '--card2': '#FFFCF6',
+          '--border': '#E2D6C6',
+          '--border2': '#E6DACB',
+          '--text': '#332820',
+          '--text2': '#756A60',
+          '--nav-bg': '#FBF8F2',
+          '--gray': '#9A8E82',
+          '--light': '#756A60',
+          '--cyan': '#C58B2A',
+          '--cyan-dim': 'rgba(197,139,42,0.10)',
+          '--cyan-border': 'rgba(197,139,42,0.26)',
+          '--accent': '#B9853E',
+          '--gold': '#C58B2A'
+        }
+        : {
+          '--bg': '#000000',
+          '--card': '#0d0d0d',
+          '--card2': '#111318',
+          '--border': 'rgba(255,255,255,0.07)',
+          '--border2': 'rgba(255,255,255,0.10)',
+          '--text': '#ffffff',
+          '--text2': '#9ca3af',
+          '--nav-bg': 'rgba(0,0,0,0.92)',
+          '--gray': '#888888',
+          '--light': '#bbbbbb'
+        };
+      const root = document.documentElement;
+      root.dataset.theme = resolved;
+      root.classList.toggle('dark', resolved !== 'light');
+      Object.keys(vars).forEach(key => root.style.setProperty(key, vars[key]));
+      root.style.background = vars['--bg'];
+    })();
+  </script>
+<style>
+    :root { --font-body: "Manrope", ui-sans-serif, system-ui, sans-serif; --font-display: "Fraunces", Georgia, serif; }
+    body, button, input, textarea, select { font-family: var(--font-body); }
+    h1, h2, .hero-title, .section-title, .auth-brand, .library-hero h1, .welcome-left h1, .market-right h2, .trial-left h2, .team-header-row h2, .cta-section h2, .section-head h2, .lp-title, .sp-title, .payment-choice-title { font-family: var(--font-display); font-weight: 600; letter-spacing: 0; }
+
+    :root {
+      --cyan: #C58B2A;
+      --cyan-dim: rgba(197,139,42,0.1);
+      --cyan-border: rgba(197,139,42,0.25);
+      --accent: #B9853E;
+      --gold: #C58B2A;
+      --bg: #000000;
+      --card: #0d0d0d;
+      --card2: #111318;
+      --border2: rgba(255,255,255,0.10);
+      --border: rgba(255,255,255,0.08);
+      --text: #ffffff;
+      --text2: #9ca3af;
+      --nav-bg: rgba(0,0,0,0.95);
+      --gray: #888888;
+    }
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: "Manrope", ui-sans-serif, system-ui, sans-serif;
+      background:
+        radial-gradient(circle at 18% 12%, rgba(197,139,42,.10), transparent 30rem),
+        radial-gradient(circle at 86% 8%, rgba(197,139,42,.07), transparent 28rem),
+        var(--bg);
+    }
+    a { text-decoration: none; }
+    .material-symbols-outlined {
+      font-family: "Material Symbols Outlined" !important;
+      font-weight: normal !important;
+      font-style: normal !important;
+      line-height: 1;
+      letter-spacing: normal !important;
+      text-transform: none !important;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      white-space: nowrap;
+      word-wrap: normal;
+      direction: ltr;
+      -webkit-font-feature-settings: "liga";
+      -webkit-font-smoothing: antialiased;
+      font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+      vertical-align: middle;
+    }
+    .glass-card {
+      background: color-mix(in srgb, var(--card) 82%, transparent);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border);
+    }
+    .border-subtle { border: 1px solid var(--border); }
+    .page-grid {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: .22;
+      background-image:
+        linear-gradient(rgba(255,255,255,.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.04) 1px, transparent 1px);
+      background-size: 72px 72px;
+      mask-image: linear-gradient(to bottom, #000, transparent 72%);
+    }
+    .section-kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--cyan);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+    .section-kicker::before {
+      content: "";
+      width: 18px;
+      height: 2px;
+      border-radius: 999px;
+      background: var(--cyan);
+    }
+    .hero-panel-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      padding: 16px;
+      border-radius: 16px;
+      background: color-mix(in srgb, var(--card2) 70%, transparent);
+      border: 1px solid var(--border);
+    }
+    .hero-panel-meter {
+      height: 8px;
+      border-radius: 999px;
+      overflow: hidden;
+      background: var(--border);
+    }
+    .hero-panel-meter span {
+      display: block;
+      height: 100%;
+      border-radius: inherit;
+      background: var(--cyan);
+      box-shadow: 0 0 18px rgba(197,139,42,.36);
+    }
+    .professional-card {
+      transition: transform .22s ease, border-color .22s ease, background .22s ease;
+    }
+    .professional-card:hover {
+      transform: translateY(-3px);
+      border-color: rgba(197,139,42,.36);
+      background: color-mix(in srgb, var(--card2) 88%, transparent);
+    }
+    .hero-cta-primary,
+    .hero-cta-secondary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      min-height: 50px;
+      padding: 0 22px;
+      border-radius: 12px;
+      font-family: "Manrope", sans-serif;
+      font-size: clamp(15px, 1vw, 16px);
+      font-weight: 600;
+      transition: transform .18s ease, border-color .18s ease, background .18s ease;
+    }
+    .hero-cta-primary {
+      background: var(--cyan);
+      color: #001f26;
+      border: 1px solid var(--cyan);
+    }
+    .hero-cta-secondary {
+      color: var(--text);
+      background: color-mix(in srgb, var(--card2) 70%, transparent);
+      border: 1px solid var(--border2);
+    }
+    .hero-cta-primary:hover,
+    .hero-cta-secondary:hover {
+      transform: translateY(-1px);
+    }
+    .hero-cta-secondary:hover {
+      border-color: rgba(197,139,42,.38);
+      background: color-mix(in srgb, var(--card2) 88%, transparent);
+    }
+    .learning-hero {
+      position: relative;
+      max-width: none;
+      margin: 0 auto;
+      padding: clamp(50px, 5vw, 76px) 0 clamp(34px, 5vw, 58px);
+      overflow: hidden;
+    }
+    .learning-hero-copy {
+      position: relative;
+      z-index: 3;
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 0 clamp(16px, 5vw, 72px);
+      text-align: center;
+    }
+    .learning-hero-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 22px;
+      color: var(--cyan);
+      font-family: "Manrope", sans-serif;
+      font-size: clamp(13px, .95vw, 14px);
+      font-weight: 700;
+      letter-spacing: .08em;
+      line-height: 1.2;
+      text-transform: uppercase;
+    }
+    .learning-hero h1 {
+      max-width: 850px;
+      margin: 0 auto;
+      font-family: "Fraunces", serif;
+      font-size: clamp(42px, 5.9vw, 82px);
+      line-height: .98;
+      letter-spacing: 0;
+      font-weight: 600;
+      text-align: center;
+    }
+    .learning-hero-copy > p {
+      max-width: 720px;
+      margin: 22px auto 0;
+      color: var(--text2);
+      font-family: "Manrope", sans-serif;
+      font-size: clamp(16px, 1.38vw, 20px);
+      font-weight: 500;
+      line-height: 1.55;
+      text-align: center;
+    }
+    .learning-hero-actions {
+      position: relative;
+      z-index: 3;
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin: clamp(18px, 2.5vw, 28px) auto 0;
+      padding: 0 clamp(16px, 5vw, 72px);
+      flex-wrap: wrap;
+    }
+    .hero-tabs-wrap {
+      position: relative;
+      z-index: 3;
+      margin: clamp(18px, 3vw, 28px) auto -24px;
+      display: flex;
+      justify-content: center;
+    }
+    .home-hero-tabs {
+      display: inline-flex;
+      align-items: center;
+      gap: 24px;
+      border-bottom: 1px solid var(--border);
+    }
+    .home-hero-tab {
+      position: relative;
+      padding: 0 0 11px;
+      border: 0;
+      background: transparent;
+      color: var(--text2);
+      font-family: "Manrope", sans-serif;
+      font-size: clamp(15px, 1vw, 16px);
+      font-weight: 600;
+      line-height: 1.2;
+      cursor: pointer;
+    }
+    .home-hero-tab::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: -1px;
+      height: 2px;
+      border-radius: 999px;
+      background: transparent;
+    }
+    .home-hero-tab:hover,
+    .home-hero-tab.is-active {
+      color: var(--text);
+    }
+    .home-hero-tab.is-active::after {
+      background: var(--cyan);
+    }
+    .hero-carousel-shell {
+      position: relative;
+      z-index: 2;
+      width: 100%;
+      margin: clamp(24px, 3vw, 42px) auto 0;
+      padding: 12px 0 0;
+    }
+    .hero-carousel-viewport {
+      overflow-x: auto;
+      overflow-y: hidden;
+      scroll-snap-type: x mandatory;
+      scrollbar-width: none;
+      padding: 34px 0 24px;
+      cursor: grab;
+      touch-action: pan-x;
+    }
+    .hero-carousel-viewport::-webkit-scrollbar { display: none; }
+    .hero-carousel-viewport.is-dragging {
+      cursor: grabbing;
+      scroll-snap-type: none;
+    }
+    .hero-carousel-viewport.is-auto-moving {
+      scroll-snap-type: none;
+    }
+    .hero-carousel-track {
+      display: flex;
+      align-items: stretch;
+      gap: clamp(12px, 1.4vw, 22px);
+      min-height: clamp(270px, 21vw, 350px);
+    }
+    .hero-carousel-track.is-empty {
+      justify-content: center;
+      min-height: 220px;
+    }
+    .hero-carousel-track::before,
+    .hero-carousel-track::after {
+      content: "";
+      flex: 0 0 clamp(12px, 2.5vw, 40px);
+    }
+    .hero-carousel-track.is-empty::before,
+    .hero-carousel-track.is-empty::after {
+      display: none;
+    }
+    .hero-course-card {
+      font-family: "Manrope", sans-serif;
+      flex: 0 0 var(--hero-card-width, clamp(220px, 16.8vw, 286px));
+      height: var(--hero-card-height, clamp(270px, 20vw, 340px));
+      scroll-snap-align: center;
+      border-radius: 22px;
+      border: 1px solid var(--border);
+      background: color-mix(in srgb, var(--card) 88%, transparent);
+      overflow: hidden;
+      position: relative;
+      box-shadow: 0 18px 45px rgba(15,23,42,.10);
+      transform: none;
+      transition: border-color .35s ease, box-shadow .35s ease, background .35s ease;
+    }
+    .hero-course-card.is-center {
+      border-color: var(--cyan-border);
+      box-shadow: 0 18px 45px rgba(15,23,42,.10);
+      background: color-mix(in srgb, var(--card) 96%, transparent);
+    }
+    .hero-placeholder-card {
+      cursor: pointer;
+    }
+    .hero-course-card[data-hero-id],
+    .hero-course-card[data-hero-path] {
+      cursor: pointer;
+    }
+    .hero-course-card:focus-visible {
+      outline: 2px solid var(--cyan);
+      outline-offset: 4px;
+    }
+    .hero-card-media {
+      position: relative;
+      height: 100%;
+      overflow: hidden;
+      background: var(--card2);
+    }
+    .hero-card-media img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .hero-card-badge,
+    .hero-card-wish {
+      position: absolute;
+      top: 14px;
+    }
+    .hero-card-badge {
+      left: 14px;
+      max-width: calc(100% - 70px);
+      padding: 5px 10px;
+      border-radius: 999px;
+      background: rgba(0,0,0,.78);
+      border: 1px solid var(--cyan-border);
+      color: var(--cyan);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .hero-card-wish {
+      right: 14px;
+      width: 34px;
+      height: 34px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: color-mix(in srgb, var(--card) 86%, transparent);
+      color: var(--text2);
+      display: grid;
+      place-items: center;
+    }
+    .hero-card-media::after {
+      content: "";
+      position: absolute;
+      inset: 45% 0 0;
+      background: linear-gradient(180deg, transparent, color-mix(in srgb, var(--bg) 88%, rgba(0,0,0,.52)));
+      opacity: .86;
+    }
+    .hero-card-body {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 2;
+      padding: 18px;
+      opacity: 1;
+      transform: none;
+      transition: opacity .35s ease;
+    }
+    .hero-course-card.is-center .hero-card-body {
+      opacity: 1;
+      transform: none;
+    }
+    .hero-card-kicker {
+      color: var(--cyan);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      margin-bottom: 9px;
+    }
+    .hero-card-title {
+      color: var(--text);
+      font-size: clamp(.95rem, 1vw, 1.05rem);
+      line-height: 1.35;
+      font-weight: 600;
+      min-height: 0;
+      margin-bottom: 8px;
+    }
+    .hero-card-meta,
+    .hero-card-lesson {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 12px;
+      color: var(--text2);
+      font-size: .78rem;
+      font-weight: 500;
+      line-height: 1.5;
+    }
+    .hero-card-meta span,
+    .hero-card-lesson span {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .hero-card-price {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 16px;
+    }
+    .hero-card-price strong,
+    .hero-card-action {
+      color: var(--cyan);
+      font-weight: 600;
+    }
+    .hero-card-action {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border: 0;
+      background: transparent;
+      font-family: "Manrope", sans-serif;
+      font-size: .86rem;
+      cursor: pointer;
+    }
+    .hero-progress-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin: 14px 0 8px;
+      color: var(--text2);
+      font-family: "Manrope", sans-serif;
+      font-size: .78rem;
+      font-weight: 600;
+    }
+    .hero-progress-track {
+      height: 7px;
+      border-radius: 999px;
+      overflow: hidden;
+      background: var(--border);
+    }
+    .hero-progress-track span {
+      display: block;
+      height: 100%;
+      width: var(--progress, 0%);
+      background: var(--cyan);
+      border-radius: inherit;
+    }
+    .hero-skeleton {
+      display: block;
+      border-radius: 999px;
+      background: linear-gradient(90deg, color-mix(in srgb, var(--border) 65%, transparent), color-mix(in srgb, var(--card2) 88%, transparent), color-mix(in srgb, var(--border) 65%, transparent));
+      background-size: 220% 100%;
+      animation: heroSkeleton 1.7s ease-in-out infinite;
+    }
+    .hero-skeleton-media {
+      width: 100%;
+      height: 100%;
+      border-radius: 0;
+      background: linear-gradient(135deg, color-mix(in srgb, var(--card2) 84%, transparent), color-mix(in srgb, var(--border) 72%, transparent));
+      animation: none;
+    }
+    .hero-skeleton-kicker { width: 34%; height: 10px; margin-bottom: 14px; }
+    .hero-skeleton-title { width: 82%; height: 18px; margin-bottom: 10px; }
+    .hero-skeleton-title.short { width: 58%; }
+    .hero-skeleton-line { width: 100%; height: 10px; margin-top: 10px; }
+    .hero-skeleton-line.medium { width: 72%; }
+    .hero-placeholder-note {
+      color: var(--text2);
+      font-family: "Manrope", sans-serif;
+      font-size: .83rem;
+      line-height: 1.55;
+      margin-top: 14px;
+    }
+    @keyframes heroSkeleton {
+      0% { background-position: 120% 0; }
+      100% { background-position: -120% 0; }
+    }
+    .hero-carousel-empty {
+      flex: 0 0 min(92vw, 620px);
+      width: min(92vw, 620px);
+      margin: 24px auto 42px;
+      padding: 28px;
+      text-align: center;
+      border-radius: 22px;
+      border: 1px solid var(--border);
+      background: color-mix(in srgb, var(--card) 88%, transparent);
+      color: var(--text2);
+    }
+    .hero-carousel-empty strong {
+      display: block;
+      color: var(--text);
+      font-size: 1rem;
+      margin-bottom: 8px;
+    }
+    .hero-search-block {
+      font-family: "Manrope", sans-serif;
+      position: relative;
+      z-index: 3;
+      width: min(100%, 820px);
+      margin: clamp(18px, 2.4vw, 30px) auto 0;
+      padding: 0 clamp(16px, 5vw, 72px);
+    }
+    .hero-search-form {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      padding: 8px;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      background: color-mix(in srgb, var(--card) 86%, transparent);
+      box-shadow: 0 18px 45px rgba(15,23,42,.08);
+    }
+    .hero-search-field {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-height: 48px;
+      padding: 0 14px;
+      color: var(--text2);
+    }
+    .hero-search-field input {
+      width: 100%;
+      border: 0;
+      outline: 0;
+      background: transparent;
+      color: var(--text);
+      font-family: "Manrope", sans-serif;
+      font-size: .95rem;
+      font-weight: 500;
+    }
+    .hero-search-field input::placeholder {
+      font-family: "Manrope", sans-serif;
+      font-weight: 400;
+    }
+    .hero-search-btn {
+      border: 1px solid var(--cyan);
+      border-radius: 12px;
+      background: var(--cyan);
+      color: #001f26;
+      font-family: "Manrope", sans-serif;
+      font-size: clamp(15px, 1vw, 16px);
+      font-weight: 600;
+      padding: 0 20px;
+      cursor: pointer;
+    }
+    .hero-topics {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 14px;
+    }
+    .hero-topic {
+      color: var(--text2);
+      border: 1px solid var(--border);
+      background: color-mix(in srgb, var(--card2) 72%, transparent);
+      border-radius: 999px;
+      padding: 7px 12px;
+      font-family: "Manrope", sans-serif;
+      font-size: .82rem;
+      font-weight: 600;
+    }
+    .hero-topic:hover {
+      color: var(--cyan);
+      border-color: var(--cyan-border);
+    }
+    .hero-trust-strip {
+      font-family: "Manrope", sans-serif;
+      position: relative;
+      z-index: 3;
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 12px;
+      width: min(100%, 1080px);
+      margin: clamp(30px, 5vw, 52px) auto 0;
+    }
+    .hero-trust-item {
+      min-height: 84px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      background: color-mix(in srgb, var(--card) 86%, transparent);
+      color: var(--text2);
+      font-size: .8rem;
+      font-weight: 700;
+    }
+    .hero-trust-item strong {
+      display: block;
+      color: var(--text);
+      font-size: .92rem;
+      line-height: 1.25;
+    }
+    .hero-trust-item .material-symbols-outlined {
+      color: var(--cyan);
+      font-size: 21px;
+      flex: 0 0 auto;
+    }
+    .hero-mock-placeholder {
+      min-height: 430px;
+      border-radius: 22px;
+      border: 1px solid var(--border2);
+      background: linear-gradient(145deg, #05070d, #000);
+      overflow: visible;
+      position: relative;
+      display: grid;
+      place-items: center;
+      perspective: 1200px;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.03), 0 26px 80px rgba(0,0,0,.36);
+    }
+    .hero-mock-image {
+      width: min(100%, 430px);
+      height: min(72vh, 620px);
+      object-fit: contain;
+      object-position: center bottom;
+      transform: rotateY(-10deg) rotateZ(-2.5deg) translateY(8px);
+      transform-origin: 52% 70%;
+      filter: drop-shadow(26px 34px 46px rgba(0,0,0,.52)) drop-shadow(0 0 28px rgba(197,139,42,.12));
+      transition: transform .35s ease, filter .35s ease;
+      will-change: transform;
+    }
+    .hero-mock-placeholder:hover .hero-mock-image {
+      transform: rotateY(-7deg) rotateZ(-1.5deg) translateY(2px);
+      filter: drop-shadow(30px 38px 54px rgba(0,0,0,.56)) drop-shadow(0 0 34px rgba(197,139,42,.16));
+    }
+    .site-footer {
+      border-top: 1px solid var(--border);
+      background:
+        linear-gradient(180deg, color-mix(in srgb, var(--card) 55%, transparent), var(--bg)),
+        var(--bg);
+      padding: 64px clamp(16px, 5vw, 72px) 28px;
+    }
+    .footer-shell {
+      max-width: 1480px;
+      margin: 0 auto;
+    }
+    .footer-top {
+      display: grid;
+      grid-template-columns: minmax(280px, 1.4fr) repeat(3, minmax(140px, .65fr)) minmax(260px, .95fr);
+      gap: clamp(28px, 4vw, 56px);
+      align-items: start;
+    }
+    .footer-brand-mark {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--text);
+      font-size: 1.15rem;
+      font-weight: 800;
+      margin-bottom: 16px;
+    }
+    .footer-brand-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 11px;
+      display: grid;
+      place-items: center;
+      background: var(--cyan);
+      color: #001f26;
+      font-weight: 900;
+    }
+    .footer-brand-mark span:last-child {
+      color: var(--cyan);
+    }
+    .footer-copy {
+      color: var(--text2);
+      font-size: .9rem;
+      line-height: 1.75;
+      max-width: 360px;
+      margin-bottom: 22px;
+    }
+    .footer-trust-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .footer-trust-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 8px 11px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      color: var(--text2);
+      background: color-mix(in srgb, var(--card2) 76%, transparent);
+      font-size: .75rem;
+      font-weight: 700;
+    }
+    .footer-trust-chip .material-symbols-outlined {
+      color: var(--cyan);
+      font-size: 16px;
+    }
+    .footer-heading {
+      color: var(--text);
+      font-size: .75rem;
+      font-weight: 800;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+    .footer-links {
+      display: flex;
+      flex-direction: column;
+      gap: 11px;
+      color: var(--text2);
+      font-size: .88rem;
+    }
+    .footer-links a {
+      width: fit-content;
+      color: inherit;
+      transition: color .18s ease, transform .18s ease;
+    }
+    .footer-links a:hover {
+      color: var(--cyan);
+      transform: translateX(2px);
+    }
+    .footer-contact {
+      padding: 18px;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      background: color-mix(in srgb, var(--card2) 82%, transparent);
+    }
+    .footer-contact p {
+      color: var(--text2);
+      font-size: .86rem;
+      line-height: 1.65;
+      margin-bottom: 16px;
+    }
+    .footer-contact-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      color: var(--cyan);
+      font-weight: 800;
+      font-size: .88rem;
+    }
+    .footer-socials {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+    }
+    .footer-socials a {
+      width: 36px;
+      height: 36px;
+      display: grid;
+      place-items: center;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: color-mix(in srgb, var(--card2) 76%, transparent);
+      color: var(--text2);
+      transition: color .18s ease, border-color .18s ease, transform .18s ease;
+    }
+    .footer-socials a:hover {
+      color: var(--cyan);
+      border-color: var(--cyan-border);
+      transform: translateY(-1px);
+    }
+    .footer-bottom {
+      margin-top: 46px;
+      padding-top: 22px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      color: var(--text2);
+      font-size: .8rem;
+    }
+    .footer-bottom-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 18px;
+    }
+    .footer-bottom-links a {
+      color: inherit;
+    }
+    .footer-bottom-links a:hover {
+      color: var(--cyan);
+    }
+    @media (min-width: 1280px) {
+      .hero-mock-placeholder {
+        min-height: 520px;
+      }
+    }
+    @media (min-width: 1536px) {
+      .hero-mock-placeholder {
+        min-height: 590px;
+      }
+    }
+
+    /* Navbar copied from index.html */
+    .navbar {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 999;
+      background: var(--nav-bg);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      padding: 16px 0;
+    }
+    .nav-inner {
+      max-width: 1480px; margin: 0 auto; padding: 0 clamp(16px, 5vw, 72px);
+      display: flex; align-items: center; gap: 32px;
+    }
+    .nav-logo {
+      font-size: 1.2rem; font-weight: 700; color: var(--text);
+      white-space: nowrap; flex-shrink: 0;
+    }
+    .nav-logo span { color: var(--cyan); }
+    .nav-links {
+      display: flex; align-items: center; gap: 4px;
+      flex: 1; justify-content: center; list-style: none; margin: 0; padding: 0;
+    }
+    .nav-links a {
+      padding: 8px 14px; font-size: .9rem; font-weight: 500;
+      color: var(--text2); transition: color .2s; position: relative;
+    }
+    .nav-links a:hover { color: var(--text); }
+    .nav-links a.active { color: var(--text); font-weight: 600; }
+    .nav-links a.active::after {
+      content: ""; position: absolute; bottom: 0; left: 14px; right: 14px;
+      height: 2px; background: var(--cyan); border-radius: 2px;
+    }
+    .nav-right { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
+    .nav-login { font-size: .9rem; font-weight: 500; color: var(--text2); transition: color .2s; }
+    .nav-login:hover { color: var(--cyan); }
+    .nav-avatar {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: var(--card2); border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: .85rem; color: var(--gray); cursor: pointer;
+      transition: border-color .2s; overflow: hidden;
+    }
+    .nav-avatar:hover { border-color: var(--cyan); color: var(--cyan); }
+    .nav-hamburger {
+      display: none; flex-direction: column; gap: 5px;
+      background: none; border: none; cursor: pointer; padding: 4px;
+    }
+    .nav-hamburger span {
+      display: block; width: 22px; height: 2px;
+      background: var(--text); border-radius: 2px; transition: .3s;
+    }
+    .index2-mobile-menu {
+      display: none; position: fixed; top: 65px; left: 0; right: 0; z-index: 998;
+      background: var(--nav-bg); border-bottom: 1px solid var(--border);
+      padding: 16px 24px; flex-direction: column; gap: 4px;
+    }
+    .index2-mobile-menu a {
+      padding: 12px 0; font-size: .95rem; color: var(--text2);
+      border-bottom: 1px solid var(--border); display: block;
+    }
+    .index2-mobile-menu a.active { color: var(--text); }
+    @media (max-width: 900px) {
+      .nav-links, .nav-right { display: none; }
+      .nav-hamburger { display: flex; margin-left: auto; }
+      .footer-top {
+        grid-template-columns: 1fr 1fr;
+      }
+      .footer-top > :first-child,
+      .footer-contact {
+        grid-column: 1 / -1;
+      }
+      .footer-bottom {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+    }
+    @media (max-width: 560px) {
+      .footer-top {
+        grid-template-columns: 1fr;
+      }
+    }
+    html[data-theme="light"] body {
+      background:
+        radial-gradient(circle at 18% 12%, rgba(197,139,42,.16), transparent 30rem),
+        radial-gradient(circle at 86% 8%, rgba(197,139,42,.10), transparent 28rem),
+        var(--bg);
+    }
+    html[data-theme="light"] .page-grid {
+      opacity: .32;
+      background-image:
+        linear-gradient(rgba(15,23,42,.06) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(15,23,42,.06) 1px, transparent 1px);
+    }
+    html[data-theme="light"] .text-on-surface,
+    html[data-theme="light"] .text-white,
+    html[data-theme="light"] h1,
+    html[data-theme="light"] h2,
+    html[data-theme="light"] h3,
+    html[data-theme="light"] h4 {
+      color: #332820 !important;
+    }
+    html[data-theme="light"] .text-on-surface-variant,
+    html[data-theme="light"] footer p,
+    html[data-theme="light"] footer li,
+    html[data-theme="light"] footer span {
+      color: #756A60 !important;
+    }
+    html[data-theme="light"] .glass-card {
+      background: rgba(255,255,255,.82);
+      border-color: rgba(0,0,0,.08);
+      box-shadow: 0 18px 45px rgba(15,23,42,.08);
+    }
+    html[data-theme="light"] .hero-course-card,
+    html[data-theme="light"] .hero-carousel-empty,
+    html[data-theme="light"] .hero-search-form,
+    html[data-theme="light"] .hero-trust-item,
+    html[data-theme="light"] .hero-card-wish,
+    html[data-theme="light"] .hero-topic {
+      background: #FAF7F1;
+      border-color: rgba(0,0,0,.08);
+    }
+    html[data-theme="light"] .hero-mock-placeholder {
+      background:
+        linear-gradient(135deg, rgba(255,255,255,.86), rgba(241,245,249,.92)),
+        #ffffff;
+      box-shadow: 0 24px 70px rgba(15,23,42,.10);
+    }
+    html[data-theme="light"] .hero-mock-placeholder::before {
+      background-image:
+        linear-gradient(rgba(15,23,42,.055) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(15,23,42,.055) 1px, transparent 1px);
+    }
+    html[data-theme="light"] .hero-mock-placeholder::after {
+      background: rgba(255,255,255,.74);
+      border-color: rgba(0,0,0,.08);
+    }
+    html[data-theme="light"] .hero-cta-secondary,
+    html[data-theme="light"] .rounded-2xl.bg-white\/\[\.035\] {
+      background: rgba(255,255,255,.78) !important;
+      border-color: rgba(0,0,0,.09) !important;
+      color: #332820 !important;
+    }
+    html[data-theme="light"] .bg-black\/80 {
+      background: rgba(255,255,255,.92) !important;
+      color: #A96F18 !important;
+    }
+    html[data-theme="light"] footer {
+      background: rgba(255,255,255,.56) !important;
+      border-top-color: rgba(0,0,0,.08) !important;
+    }
+    html[data-theme="light"] .site-footer {
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.72), rgba(243,244,246,.94)),
+        var(--bg) !important;
+    }
+    html[data-theme="light"] .footer-contact,
+    html[data-theme="light"] .footer-trust-chip,
+    html[data-theme="light"] .footer-socials a {
+      background: rgba(255,255,255,.82);
+      border-color: rgba(0,0,0,.08);
+    }
+    @media (max-width: 1100px) {
+      .hero-trust-strip {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+      .hero-carousel-shell {
+        padding-inline: 0;
+      }
+      .learning-hero h1 {
+        font-size: clamp(58px, 6vw, 66px);
+        line-height: .98;
+      }
+      .learning-hero-copy > p {
+        font-size: clamp(17px, 1.7vw, 18px);
+        line-height: 1.55;
+      }
+    }
+    @media (max-width: 760px) {
+      .learning-hero {
+        padding-top: 86px;
+      }
+      .learning-hero h1 {
+        font-size: clamp(42px, 11.5vw, 48px);
+        line-height: 1;
+      }
+      .learning-hero-copy > p {
+        font-size: 16px;
+        line-height: 1.55;
+      }
+      .learning-hero-actions,
+      .hero-search-form {
+        grid-template-columns: 1fr;
+      }
+      .learning-hero-actions .hero-cta-primary,
+      .learning-hero-actions .hero-cta-secondary,
+      .hero-search-btn {
+        width: 100%;
+      }
+      .home-hero-tabs {
+        width: 100%;
+        justify-content: space-between;
+        gap: 10px;
+      }
+      .hero-carousel-shell {
+        width: calc(100% + 32px);
+        margin: 18px 0 0 -16px;
+        padding: 8px 0 0;
+      }
+      .hero-carousel-viewport {
+        padding: 18px 0 32px;
+      }
+      .hero-carousel-track {
+        min-height: 360px;
+      }
+      .hero-course-card {
+        flex-basis: min(78vw, 330px) !important;
+        height: min(86vw, 360px) !important;
+        transform: none;
+      }
+      .hero-trust-strip {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body class="selection:bg-primary selection:text-on-primary overflow-x-hidden">
+  <div class="page-grid"></div>
+  <nav class="navbar">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-logo">EduNex <span>AI</span></a>
+      <ul class="nav-links">
+        <li><a href="index.html" class="active">Home</a></li>
+        <li><a href="courses.html">Courses</a></li>
+        <li><a href="dashboard.html">Dashboard</a></li>
+        <li><a href="about.html">About</a></li>
+      </ul>
+      <div class="nav-right">
+        <a href="login.html" class="nav-login">Login</a>
+        <a href="profile.html" class="nav-avatar" title="Profile Settings"><i class="fas fa-user"></i></a>
+      </div>
+      <button class="nav-hamburger" id="hamburger" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <div id="mobileMenu" class="index2-mobile-menu">
+    <a href="index.html" class="active">Home</a>
+    <a href="courses.html">Courses</a>
+    <a href="dashboard.html">Dashboard</a>
+    <a href="about.html">About</a>
+    <div class="mt-4 flex gap-3">
+      <a href="login.html" class="flex-1 text-center rounded-lg border border-outline-variant">Login</a>
+      <a href="login.html" class="flex-1 text-center rounded-lg !text-[#FFFDF8] font-bold" style="background:#C58B2A">Get Started</a>
+    </div>
+  </div>
+
+  <main class="relative pt-16">
+    <section class="learning-hero" aria-labelledby="learningHeroTitle">
+      <div class="learning-hero-copy">
+        <div class="learning-hero-label">
+          LEARN WITH AI. EARN WITH AI.
+        </div>
+        <h1 id="learningHeroTitle">Build skills that turn<br>into opportunities.</h1>
+        <p>Learn practical AI, content, business and digital skills through short expert-led lessons designed for real-world results.</p>
+      </div>
+
+      <div class="hero-tabs-wrap">
+        <div class="home-hero-tabs" role="tablist" aria-label="Hero course sections">
+          <button class="home-hero-tab" type="button" role="tab" data-hero-tab="for-you">For You</button>
+          <button class="home-hero-tab" type="button" role="tab" data-hero-tab="my-courses">My Courses</button>
+          <button class="home-hero-tab" type="button" role="tab" data-hero-tab="trending">Trending</button>
+        </div>
+      </div>
+
+      <div class="hero-carousel-shell" id="homeHeroCarousel" aria-live="polite">
+        <div class="hero-carousel-viewport" tabindex="0">
+          <div class="hero-carousel-track" id="homeHeroCarouselTrack">
+            <div class="hero-course-card" aria-hidden="true">
+              <div class="hero-card-media skeleton"></div>
+              <div class="hero-card-body">
+                <div class="skeleton cp-title-skel"></div>
+                <div class="skeleton cp-desc-skel"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="learning-hero-actions">
+        <a href="courses.html" class="hero-cta-primary">
+          Explore Courses
+          <span class="material-symbols-outlined text-[19px]">arrow_forward</span>
+        </a>
+        <a href="payment.html" class="hero-cta-secondary">Start ₹1 Trial</a>
+      </div>
+
+      <div class="hero-search-block">
+        <form class="hero-search-form" id="homeHeroSearch">
+          <label class="hero-search-field">
+            <span class="material-symbols-outlined">search</span>
+            <input type="search" name="q" placeholder="What do you want to learn today?" aria-label="Search courses">
+          </label>
+          <button class="hero-search-btn" type="submit">Search</button>
+        </form>
+        <div class="hero-topics" aria-label="Popular learning topics">
+          <a class="hero-topic" href="courses.html?search=Video%20Editing">Video Editing</a>
+          <a class="hero-topic" href="courses.html?search=AI%20Tools">AI Tools</a>
+          <a class="hero-topic" href="courses.html?search=Freelancing">Freelancing</a>
+          <a class="hero-topic" href="courses.html?search=Digital%20Marketing">Digital Marketing</a>
+          <a class="hero-topic" href="courses.html?search=Web%20Development">Web Development</a>
+          <a class="hero-topic" href="courses.html?search=Business">Business</a>
+        </div>
+      </div>
+
+      <div class="hero-trust-strip" aria-label="EduNex platform trust indicators">
+        <div class="hero-trust-item"><span class="material-symbols-outlined">groups</span><span><strong>100K+ Learners</strong> Growing across India</span></div>
+        <div class="hero-trust-item"><span class="material-symbols-outlined">workspace_premium</span><span><strong>Expert-Led Courses</strong> Practical instructors</span></div>
+        <div class="hero-trust-item"><span class="material-symbols-outlined">play_lesson</span><span><strong>Short Vertical Lessons</strong> Built for momentum</span></div>
+        <div class="hero-trust-item"><span class="material-symbols-outlined">verified</span><span><strong>Recognised Certificates</strong> Career-ready proof</span></div>
+        <div class="hero-trust-item"><span class="material-symbols-outlined">devices</span><span><strong>Learn on Any Device</strong> Mobile and web</span></div>
+      </div>
+    </section>
+
+    <section class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop mb-24">
+      <div class="text-center max-w-2xl mx-auto mb-10">
+        <div class="section-kicker justify-center">Skill Areas</div>
+        <h2 class="text-3xl md:text-4xl font-bold mb-4">Top Categories</h2>
+        <p class="text-on-surface-variant leading-relaxed">Focused tracks that help learners move from curiosity to practical, portfolio-ready skills.</p>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-gutter" id="homeCategoriesGrid">
+        <div class="glass-card rounded-xl p-6">Loading real categories...</div>
+      </div>
+    </section>
+
+    <section class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop mb-24">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-gutter">
+        <div class="glass-card professional-card rounded-xl p-8 md:p-10">
+          <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-primary/30 bg-primary/10 text-primary text-xs font-semibold uppercase tracking-[.08em] mb-6">
+            <span class="material-symbols-outlined text-[16px]">bolt</span>
+            Limited Time Offer
+          </div>
+          <h2 class="text-3xl md:text-4xl font-bold mb-4">Unlock Full Access for Just <span class="text-primary">₹1</span> Trial</h2>
+          <p class="text-on-surface-variant leading-relaxed mb-8">Experience the power of AI-driven education. Get 7 days of unlimited access to premium courses, mentorship, and project tools for the cost of a candy.</p>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-8">
+            <div class="rounded-2xl bg-white/[.035] border border-white/[.07] p-3 text-sm text-on-surface-variant">Verified certificates</div>
+            <div class="rounded-2xl bg-white/[.035] border border-white/[.07] p-3 text-sm text-on-surface-variant">AI tutors 24/7</div>
+            <div class="rounded-2xl bg-white/[.035] border border-white/[.07] p-3 text-sm text-on-surface-variant">Cloud lab access</div>
+          </div>
+          <a href="login.html" class="inline-flex bg-primary !text-[#FFFDF8] px-6 py-3 rounded-full font-bold hover:shadow-[0_0_18px_rgba(197,139,42,.32)] transition-all">Claim Your Trial Now</a>
+        </div>
+        <div class="rounded-xl p-8 md:p-10 bg-primary text-[#332820]">
+          <div class="w-14 h-14 rounded-2xl bg-black/10 flex items-center justify-center mb-6">
+            <span class="material-symbols-outlined">rocket_launch</span>
+          </div>
+          <h2 class="text-3xl font-bold mb-4">AI Mentorship Engine</h2>
+          <p class="text-[#5F534A] leading-relaxed mb-8">Our neural engine maps your career goals to industry requirements, suggesting the exact skills you need to land your dream job.</p>
+          <a href="courses.html" class="font-bold inline-flex items-center gap-2">Explore Engine <span class="material-symbols-outlined">arrow_forward</span></a>
+        </div>
+      </div>
+    </section>
+
+    <section class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop mb-32">
+      <div class="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
+        <div>
+          <div class="section-kicker">Catalog</div>
+          <h2 class="text-3xl md:text-4xl font-bold mb-4">Popular Courses</h2>
+          <p class="text-on-surface-variant max-w-lg">Real EduNex courses from the backend, shown with the current learning catalog.</p>
+        </div>
+        <a class="text-primary flex items-center gap-2 font-semibold hover:gap-4 transition-all" href="courses.html">
+          View All Courses
+          <span class="material-symbols-outlined">trending_flat</span>
+        </a>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-gutter" id="homeCoursesGrid">
+        <div class="glass-card rounded-xl p-6">Loading real EduNex courses...</div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-shell">
+      <div class="footer-top">
+        <div>
+          <a href="index.html" class="footer-brand-mark" aria-label="EduNex AI home">
+            <span class="footer-brand-icon">E</span>
+            <span>EduNex <span>AI</span></span>
+          </a>
+          <p class="footer-copy">Practical, AI-powered learning for students who want structured courses, real projects, guided videos, and a clearer path into modern technical work.</p>
+          <div class="footer-trust-row">
+            <span class="footer-trust-chip"><span class="material-symbols-outlined">verified</span> Verified courses</span>
+            <span class="footer-trust-chip"><span class="material-symbols-outlined">workspace_premium</span> Certificates</span>
+            <span class="footer-trust-chip"><span class="material-symbols-outlined">psychology</span> AI tutor</span>
+          </div>
+        </div>
+
+        <div>
+          <h4 class="footer-heading">Learn</h4>
+          <ul class="footer-links">
+            <li><a href="courses.html">All Courses</a></li>
+            <li><a href="courses.html">Web Development</a></li>
+            <li><a href="courses.html">AI / ML</a></li>
+            <li><a href="courses.html">Data Science</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="footer-heading">Platform</h4>
+          <ul class="footer-links">
+            <li><a href="dashboard.html">Dashboard</a></li>
+            <li><a href="videos.html">Video Library</a></li>
+            <li><a href="profile.html">Profile</a></li>
+            <li><a href="payment.html">₹1 Trial</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="footer-heading">Company</h4>
+          <ul class="footer-links">
+            <li><a href="about.html">About</a></li>
+            <li><a href="signup.html">Create Account</a></li>
+            <li><a href="login.html">Login</a></li>
+            <li><a href="courses.html">Browse Catalog</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-contact">
+          <h4 class="footer-heading">Start Learning</h4>
+          <p>Begin with the ₹1 trial and unlock the current EduNex course catalog, videos, progress tracking, and AI-assisted learning tools.</p>
+          <a href="login.html" class="footer-contact-link">Claim Trial <span class="material-symbols-outlined text-[18px]">arrow_forward</span></a>
+          <div class="footer-socials" aria-label="EduNex social links">
+            <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+            <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+            <a href="#" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <span>© 2024 EduNex AI. All rights reserved.</span>
+        <div class="footer-bottom-links">
+          <a href="#">Privacy</a>
+          <a href="#">Terms</a>
+          <a href="about.html">About EduNex</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const hamburger = document.getElementById('hamburger');
+    const mobileMenu = document.getElementById('mobileMenu');
+    if (hamburger && mobileMenu) {
+      hamburger.addEventListener('click', () => {
+        mobileMenu.style.display = mobileMenu.style.display === 'flex' ? 'none' : 'flex';
+      });
+      document.addEventListener('click', event => {
+        if (!hamburger.contains(event.target) && !mobileMenu.contains(event.target)) {
+          mobileMenu.style.display = 'none';
+        }
+      });
+    }
+  </script>
+  <script src="js/edunex-api.js"></script>
+  <script>
+    function escapeHomeCourseHtml(value) {
+      return String(value ?? '').replace(/[&<>"']/g, char => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;'
+      }[char]));
+    }
+
+    function categoryName(course) {
+      return typeof course.category === 'string' ? course.category : (course.category?.name || course.category?.title || 'Course');
+    }
+
+    function categoryHref(category) {
+      return `courses.html?category=${encodeURIComponent(category)}`;
+    }
+
+    const heroState = {
+      courses: [],
+      activeTab: 'trending',
+      activeIndex: 0,
+      autoplay: null,
+      motionFrame: 0,
+      lastFrame: 0,
+      pauseAutoplay: false,
+      manualPauseTimer: null,
+      pointerDown: false,
+      pointerStartX: 0,
+      pointerStartY: 0,
+      pointerMoved: false,
+      suppressClickUntil: 0,
+      scrollRaf: 0
+    };
+
+    function homeCourseId(course) {
+      return String(course?._id || course?.id || '');
+    }
+
+    function fallbackHomeCourses() {
+      return [
+        {
+          _id: 'fallback-video-editing',
+          isFallback: true,
+          title: 'Video Editing Mastery',
+          category: 'Video Editing',
+          instructorName: 'EduNex Mentors',
+          language: 'Hindi + English',
+          duration: '22 lessons',
+          averageRating: '4.8',
+          learnerCount: 12500,
+          price: 499,
+          videos: Array.from({ length: 22 }, (_, index) => ({ title: `Lesson ${index + 1}` }))
+        },
+        {
+          _id: 'fallback-ai-tools',
+          isFallback: true,
+          title: 'AI Tools for Creators',
+          category: 'AI Tools',
+          instructorName: 'EduNex Mentors',
+          language: 'Hindi + English',
+          duration: '18 lessons',
+          averageRating: '4.7',
+          learnerCount: 9800,
+          price: 399,
+          videos: Array.from({ length: 18 }, (_, index) => ({ title: `Lesson ${index + 1}` }))
+        },
+        {
+          _id: 'fallback-freelancing',
+          isFallback: true,
+          title: 'Freelancing Blueprint',
+          category: 'Freelancing',
+          instructorName: 'EduNex Mentors',
+          language: 'Hindi + English',
+          duration: '20 lessons',
+          averageRating: '4.7',
+          learnerCount: 8700,
+          price: 399,
+          videos: Array.from({ length: 20 }, (_, index) => ({ title: `Lesson ${index + 1}` }))
+        },
+        {
+          _id: 'fallback-digital-marketing',
+          isFallback: true,
+          title: 'Digital Marketing Essentials',
+          category: 'Digital Marketing',
+          instructorName: 'EduNex Mentors',
+          language: 'Hindi + English',
+          duration: '24 lessons',
+          averageRating: '4.6',
+          learnerCount: 9300,
+          price: 499,
+          videos: Array.from({ length: 24 }, (_, index) => ({ title: `Lesson ${index + 1}` }))
+        },
+        {
+          _id: 'fallback-web-development',
+          isFallback: true,
+          title: 'Web Development Bootcamp',
+          category: 'Web Development',
+          instructorName: 'EduNex Mentors',
+          language: 'Hindi + English',
+          duration: '32 lessons',
+          averageRating: '4.8',
+          learnerCount: 15200,
+          price: 699,
+          videos: Array.from({ length: 32 }, (_, index) => ({ title: `Lesson ${index + 1}` }))
+        },
+        {
+          _id: 'fallback-business',
+          isFallback: true,
+          title: 'Business Growth Strategy',
+          category: 'Business',
+          instructorName: 'EduNex Mentors',
+          language: 'Hindi + English',
+          duration: '20 lessons',
+          averageRating: '4.7',
+          learnerCount: 6400,
+          price: 499,
+          videos: Array.from({ length: 20 }, (_, index) => ({ title: `Lesson ${index + 1}` }))
+        }
+      ];
+    }
+
+    function openHomeCourse(course) {
+      if (!course || !homeCourseId(course)) {
+        console.warn('[EduNex] Hero course card missing course id; navigation skipped.', course);
+        return;
+      }
+      EduNex.openCourseDetails(course);
+    }
+
+    function continueHomeCourse(course) {
+      if (!course || !homeCourseId(course)) {
+        console.warn('[EduNex] Hero continue action missing course id; navigation skipped.', course);
+        return;
+      }
+      EduNex.openCourse(course);
+    }
+
+    function openHomeCourseById(id) {
+      const course = heroState.courses.find(item => homeCourseId(item) === String(id || ''));
+      openHomeCourse(course);
+    }
+
+    function heroCardClickWasDrag() {
+      return heroState.pointerMoved || Date.now() < heroState.suppressClickUntil;
+    }
+
+    function openHeroPath(category) {
+      if (!category) return;
+      window.location.href = categoryHref(category);
+    }
+
+    function homeLessonCount(course) {
+      return Array.isArray(course?.videos) ? course.videos.length : 0;
+    }
+
+    function homeProgress(course) {
+      const id = homeCourseId(course);
+      let saved = {};
+      try {
+        saved = JSON.parse(localStorage.getItem(`edunexCourseProgress:${id}`) || '{}');
+      } catch (_) {
+        saved = {};
+      }
+      const total = Math.max(homeLessonCount(course), 1);
+      const completed = Number(saved.completed || 0);
+      const percent = Math.max(0, Math.min(100, Number(saved.percent ?? Math.round((completed / total) * 100))));
+      const lessonIndex = Math.max(0, Math.min(Number(saved.lessonIndex || 0), total - 1));
+      return { total, completed, percent, lessonIndex, hasProgress: Boolean(saved.percent || saved.completed || saved.lessonIndex) };
+    }
+
+    function homeInstructor(course) {
+      return course?.instructor?.name || course?.instructorName || course?.author || 'EduNex AI Mentors';
+    }
+
+    function homeLanguage(course) {
+      return course?.language || course?.courseLanguage || 'Hindi + English';
+    }
+
+    function homeDuration(course) {
+      return course?.duration || (homeLessonCount(course) ? `${homeLessonCount(course)} lessons` : 'Self paced');
+    }
+
+    function homeRating(course) {
+      return course?.averageRating || course?.rating || '4.8';
+    }
+
+    function homeLearners(course) {
+      const count = course?.learnerCount || course?.enrolledCount || course?.students || course?.studentsCount;
+      if (!count) return '100K+ learners';
+      return Number(count).toLocaleString('en-IN') + ' learners';
+    }
+
+    function homePrice(course) {
+      if (course?.price && Number(course.price) > 1) return '₹' + Number(course.price).toLocaleString('en-IN');
+      return '₹1 Trial';
+    }
+
+    function heroCourseHref(course, progress) {
+      const id = encodeURIComponent(homeCourseId(course));
+      if (progress?.hasProgress) return `videos.html?courseId=${id}&video=${progress.lessonIndex}`;
+      return `course.html?id=${id}`;
+    }
+
+    function enrolledHeroCourses() {
+      return heroState.courses
+        .map(course => ({ course, progress: homeProgress(course) }))
+        .filter(item => item.progress.hasProgress && item.progress.percent > 0)
+        .sort((a, b) => b.progress.percent - a.progress.percent);
+    }
+
+    function pathHeroItem() {
+      const grouped = new Map();
+      heroState.courses.forEach(course => {
+        const name = categoryName(course);
+        if (!grouped.has(name)) grouped.set(name, []);
+        grouped.get(name).push(course);
+      });
+      const best = Array.from(grouped.entries()).sort((a, b) => b[1].length - a[1].length)[0];
+      if (!best) return null;
+      return { type: 'path', category: best[0], courses: best[1], course: best[1][0] };
+    }
+
+    function heroItemsFor(tab) {
+      const enrolled = enrolledHeroCourses();
+      if (tab === 'my-courses') {
+        return enrolled.map(item => ({ type: 'enrolled', course: item.course, progress: item.progress }));
+      }
+      if (tab === 'for-you') {
+        const seen = new Set();
+        const items = [];
+        enrolled.slice(0, 2).forEach(item => {
+          seen.add(homeCourseId(item.course));
+          items.push({ type: 'enrolled', course: item.course, progress: item.progress });
+        });
+        heroState.courses.forEach((course, index) => {
+          if (items.length >= 4) return;
+          const id = homeCourseId(course);
+          if (seen.has(id)) return;
+          seen.add(id);
+          items.push({ type: index < 2 ? 'recommended' : 'popular', course });
+        });
+        const path = pathHeroItem();
+        if (path && !seen.has(homeCourseId(path.course))) items.push(path);
+        return items;
+      }
+      return heroState.courses.slice(0, 8).map(course => ({ type: 'trending', course }));
+    }
+
+    function defaultHeroTab() {
+      const user = EduNex.getUser?.();
+      if (!user) return 'trending';
+      return enrolledHeroCourses().length ? 'my-courses' : 'for-you';
+    }
+
+    function repeatedHeroItems(items, minimum = 7) {
+      if (!items.length) return { items: [], baseCount: 0 };
+      const baseCount = Math.max(minimum, items.length);
+      const base = Array.from({ length: baseCount }, (_, index) => items[index % items.length]);
+      return {
+        baseCount,
+        items: Array.from({ length: baseCount * 3 }, (_, index) => ({
+          ...base[index % baseCount],
+          loopIndex: index,
+          loopSourceIndex: index % baseCount
+        }))
+      };
+    }
+
+    function renderHeroEmpty(tab, message) {
+      const track = document.getElementById('homeHeroCarouselTrack');
+      if (!track) return;
+      track.classList.remove('is-empty');
+      document.querySelectorAll('[data-hero-tab]').forEach(button => {
+        const active = button.dataset.heroTab === tab;
+        button.classList.toggle('is-active', active);
+        button.setAttribute('aria-selected', active ? 'true' : 'false');
+      });
+      const title = message || (tab === 'my-courses' ? "You haven't started a course yet." : 'No courses available right now.');
+      const action = tab === 'my-courses' ? 'Explore Courses' : 'Browse Courses';
+      const baseCount = 7;
+      track.dataset.baseCount = String(baseCount);
+      track.dataset.looped = 'true';
+      track.innerHTML = Array.from({ length: baseCount * 3 }, (_, index) => {
+        const sourceIndex = index % baseCount;
+        const isMessageCard = sourceIndex === 3;
+        return `
+        <article class="hero-course-card hero-placeholder-card" role="link" tabindex="0" aria-label="Open courses page" data-hero-index="${index}" data-hero-placeholder="true">
+          <div class="hero-card-media">
+            <span class="hero-skeleton hero-skeleton-media"></span>
+            <span class="hero-card-badge">${isMessageCard ? 'Course grid' : 'EduNex'}</span>
+          </div>
+          <div class="hero-card-body">
+            ${isMessageCard
+              ? `<div class="hero-card-kicker">Courses</div><div class="hero-card-title">${escapeHomeCourseHtml(title)}</div><div class="hero-placeholder-note">Real EduNex courses will appear in this carousel as soon as the backend returns them.</div><div style="margin-top:16px"><a class="hero-card-action" href="courses.html">${action} <span class="material-symbols-outlined text-base">arrow_forward</span></a></div>`
+              : `<span class="hero-skeleton hero-skeleton-kicker"></span><span class="hero-skeleton hero-skeleton-title"></span><span class="hero-skeleton hero-skeleton-title short"></span><span class="hero-skeleton hero-skeleton-line"></span><span class="hero-skeleton hero-skeleton-line medium"></span>`}
+          </div>
+        </article>`;
+      }).join('');
+      heroState.activeIndex = baseCount + 3;
+      applyHeroArc();
+      requestAnimationFrame(() => scrollHeroTo(heroState.activeIndex, 'auto'));
+      track.querySelectorAll('[data-hero-placeholder]').forEach(card => {
+        card.addEventListener('click', event => {
+          if (event.target.closest('a, button')) return;
+          window.location.href = 'courses.html';
+        });
+        card.addEventListener('keydown', event => {
+          if (event.key !== 'Enter' && event.key !== ' ') return;
+          event.preventDefault();
+          window.location.href = 'courses.html';
+        });
+      });
+    }
+
+    function renderHeroCard(item, index) {
+      const course = item.course || {};
+      const progress = item.progress || homeProgress(course);
+      const id = homeCourseId(course);
+      const title = item.type === 'path' ? `${item.category} Learning Path` : (course.title || 'Untitled course');
+      const category = item.type === 'path' ? 'Learning Path' : categoryName(course);
+      const image = EduNex.courseImage(course);
+      const label = item.type === 'enrolled' ? 'Continue Learning' : (item.type === 'path' ? 'Suggested Path' : category);
+      const lessons = homeLessonCount(course);
+      const lessonTitle = course.videos?.[progress.lessonIndex]?.title || `Lesson ${progress.lessonIndex + 1} of ${progress.total}`;
+      const cardData = item.type === 'path'
+        ? `data-hero-path="${escapeHomeCourseHtml(item.category || category)}"`
+        : (id ? `data-hero-id="${escapeHomeCourseHtml(id)}"` : 'data-hero-disabled="true"');
+      const body = item.type === 'enrolled'
+        ? `<div class="hero-card-lesson"><span><i class="fas fa-play-circle"></i> ${escapeHomeCourseHtml(lessonTitle)}</span><span>Lesson ${progress.lessonIndex + 1} of ${progress.total}</span></div><div class="hero-progress-row"><span>${progress.percent}% Complete</span><span>Continue</span></div><div class="hero-progress-track" style="--progress:${progress.percent}%"><span></span></div><div class="hero-card-price"><strong>In progress</strong><button class="hero-card-action" type="button" data-hero-continue="${escapeHomeCourseHtml(id)}">Continue <span class="material-symbols-outlined text-base">arrow_forward</span></button></div>`
+        : item.type === 'path'
+          ? `<div class="hero-card-meta"><span><i class="fas fa-layer-group"></i> ${escapeHomeCourseHtml(item.courses?.length || 1)} courses</span><span><i class="fas fa-play-circle"></i> ${escapeHomeCourseHtml(lessons || 'Real')} lessons</span><span><i class="fas fa-language"></i> ${escapeHomeCourseHtml(homeLanguage(course))}</span></div><div class="hero-card-price"><strong>Learning path</strong><button class="hero-card-action" type="button" data-hero-path-open="${escapeHomeCourseHtml(item.category || category)}">Explore Path <span class="material-symbols-outlined text-base">arrow_forward</span></button></div>`
+        : `<div class="hero-card-meta"><span><i class="fas fa-user"></i> ${escapeHomeCourseHtml(homeInstructor(course))}</span><span><i class="fas fa-star"></i> ${escapeHomeCourseHtml(homeRating(course))}</span><span><i class="fas fa-users"></i> ${escapeHomeCourseHtml(homeLearners(course))}</span><span><i class="fas fa-play-circle"></i> ${escapeHomeCourseHtml(lessons || 'Real')} lessons</span><span><i class="fas fa-clock"></i> ${escapeHomeCourseHtml(homeDuration(course))}</span><span><i class="fas fa-language"></i> ${escapeHomeCourseHtml(homeLanguage(course))}</span></div><div class="hero-card-price"><strong>${escapeHomeCourseHtml(homePrice(course))}</strong><button class="hero-card-action" type="button" data-hero-open="${escapeHomeCourseHtml(id)}">Open Course <span class="material-symbols-outlined text-base">arrow_forward</span></button></div>`;
+
+      return `
+        <article class="hero-course-card" tabindex="0" role="link" data-hero-index="${index}" ${cardData} aria-label="${escapeHomeCourseHtml(title)}">
+          <div class="hero-card-media">
+            <img src="${escapeHomeCourseHtml(image)}" alt="${escapeHomeCourseHtml(title)}" onerror="this.onerror=null;this.src=EduNex.placeholderImage(this.alt||'EduNex')">
+            <span class="hero-card-badge">${escapeHomeCourseHtml(label)}</span>
+            <button class="hero-card-wish" type="button" aria-label="Save course"><i class="far fa-heart"></i></button>
+          </div>
+          <div class="hero-card-body">
+            <div class="hero-card-kicker">${escapeHomeCourseHtml(category)}</div>
+            <div class="hero-card-title">${escapeHomeCourseHtml(title)}</div>
+            ${body}
+          </div>
+        </article>`;
+    }
+
+    function applyHeroArc() {
+      const cards = Array.from(document.querySelectorAll('.hero-course-card[data-hero-index]'));
+      cards.forEach((card, index) => {
+        const isCenter = index === heroState.activeIndex;
+        card.style.setProperty('--hero-card-width', 'clamp(220px, 16.8vw, 286px)');
+        card.style.setProperty('--hero-card-height', 'clamp(270px, 20vw, 340px)');
+        card.classList.toggle('is-center', isCenter);
+        card.setAttribute('aria-current', isCenter ? 'true' : 'false');
+        if (card.classList.contains('hero-placeholder-card')) {
+          card.setAttribute('tabindex', isCenter ? '0' : '-1');
+        }
+      });
+    }
+
+    function normalizeHeroLoop() {
+      const track = document.getElementById('homeHeroCarouselTrack');
+      const baseCount = Number(track?.dataset.baseCount || 0);
+      const cards = Array.from(document.querySelectorAll('.hero-course-card[data-hero-index]'));
+      if (!baseCount || cards.length <= baseCount) return;
+      if (heroState.activeIndex < baseCount || heroState.activeIndex >= baseCount * 2) {
+        const normalized = baseCount + (heroState.activeIndex % baseCount);
+        scrollHeroTo(normalized, 'auto');
+      }
+    }
+
+    function normalizeHeroContinuousLoop() {
+      const track = document.getElementById('homeHeroCarouselTrack');
+      const viewport = document.querySelector('.hero-carousel-viewport');
+      const baseCount = Number(track?.dataset.baseCount || 0);
+      const cards = Array.from(document.querySelectorAll('.hero-course-card[data-hero-index]'));
+      if (!viewport || !baseCount || cards.length <= baseCount) return;
+      if (heroState.activeIndex >= baseCount && heroState.activeIndex < baseCount * 2) return;
+
+      const source = cards[heroState.activeIndex];
+      const normalized = baseCount + (((heroState.activeIndex % baseCount) + baseCount) % baseCount);
+      const target = cards[normalized];
+      if (!source || !target) return;
+
+      viewport.scrollLeft -= source.offsetLeft - target.offsetLeft;
+      heroState.activeIndex = normalized;
+      applyHeroArc();
+    }
+
+    function scrollHeroTo(index, behavior) {
+      const viewport = document.querySelector('.hero-carousel-viewport');
+      const cards = Array.from(document.querySelectorAll('.hero-course-card[data-hero-index]'));
+      if (!viewport || !cards.length) return;
+      heroState.activeIndex = Math.max(0, Math.min(index, cards.length - 1));
+      applyHeroArc();
+      const card = cards[heroState.activeIndex];
+      const left = card.offsetLeft - ((viewport.clientWidth - card.offsetWidth) / 2);
+      viewport.scrollTo({ left, behavior: behavior || 'smooth' });
+    }
+
+    function advanceHeroCarousel() {
+      const track = document.getElementById('homeHeroCarouselTrack');
+      const cards = Array.from(document.querySelectorAll('.hero-course-card[data-hero-index]'));
+      const baseCount = Number(track?.dataset.baseCount || 0);
+      if (cards.length < 2) return;
+      const nextIndex = heroState.activeIndex + 1;
+      scrollHeroTo(nextIndex >= cards.length ? 0 : nextIndex);
+      if (baseCount && cards.length > baseCount) {
+        window.setTimeout(normalizeHeroLoop, 650);
+      }
+    }
+
+    function syncHeroCenterFromScroll() {
+      const viewport = document.querySelector('.hero-carousel-viewport');
+      const cards = Array.from(document.querySelectorAll('.hero-course-card[data-hero-index]'));
+      if (!viewport || !cards.length) return;
+      const center = viewport.getBoundingClientRect().left + viewport.clientWidth / 2;
+      let nearest = 0;
+      let distance = Infinity;
+      cards.forEach((card, index) => {
+        const rect = card.getBoundingClientRect();
+        const cardCenter = rect.left + rect.width / 2;
+        const nextDistance = Math.abs(center - cardCenter);
+        if (nextDistance < distance) {
+          distance = nextDistance;
+          nearest = index;
+        }
+      });
+      if (nearest !== heroState.activeIndex) {
+        heroState.activeIndex = nearest;
+        applyHeroArc();
+      }
+      normalizeHeroContinuousLoop();
+    }
+
+    function pauseHeroMotion(ms = 900) {
+      heroState.pauseAutoplay = true;
+      window.clearTimeout(heroState.manualPauseTimer);
+      heroState.manualPauseTimer = window.setTimeout(() => {
+        if (!heroState.pointerDown && !document.hidden) heroState.pauseAutoplay = false;
+      }, ms);
+    }
+
+    function runHeroContinuousMotion(timestamp) {
+      const viewport = document.querySelector('.hero-carousel-viewport');
+      const cards = Array.from(document.querySelectorAll('.hero-course-card[data-hero-index]'));
+      if (!heroState.lastFrame) heroState.lastFrame = timestamp;
+      const delta = Math.min(64, timestamp - heroState.lastFrame);
+      heroState.lastFrame = timestamp;
+
+      if (viewport && cards.length > 1 && !heroState.pauseAutoplay && !document.hidden) {
+        viewport.classList.add('is-auto-moving');
+        viewport.scrollLeft += delta * 0.035;
+        syncHeroCenterFromScroll();
+      }
+
+      heroState.motionFrame = requestAnimationFrame(runHeroContinuousMotion);
+    }
+
+    function startHeroContinuousMotion() {
+      if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return;
+      cancelAnimationFrame(heroState.motionFrame);
+      heroState.lastFrame = 0;
+      heroState.motionFrame = requestAnimationFrame(runHeroContinuousMotion);
+    }
+
+    function renderHeroCarousel(tab) {
+      heroState.activeTab = tab;
+      const track = document.getElementById('homeHeroCarouselTrack');
+      if (!track) return;
+      document.querySelectorAll('[data-hero-tab]').forEach(button => {
+        const active = button.dataset.heroTab === tab;
+        button.classList.toggle('is-active', active);
+        button.setAttribute('aria-selected', active ? 'true' : 'false');
+      });
+
+      const items = heroItemsFor(tab);
+      if (!items.length) {
+        renderHeroEmpty(tab);
+        return;
+      }
+      const loop = repeatedHeroItems(items);
+      track.classList.remove('is-empty');
+      track.dataset.baseCount = String(loop.baseCount);
+      track.dataset.looped = 'true';
+      track.innerHTML = loop.items.map(renderHeroCard).join('');
+      heroState.activeIndex = loop.baseCount + (tab === 'my-courses' ? 0 : Math.min(3, loop.baseCount - 1));
+      applyHeroArc();
+      requestAnimationFrame(() => scrollHeroTo(heroState.activeIndex, 'auto'));
+      track.querySelectorAll('[data-hero-open]').forEach(button => {
+        button.addEventListener('click', event => {
+          event.stopPropagation();
+          if (heroCardClickWasDrag()) return;
+          const course = heroState.courses.find(item => homeCourseId(item) === button.dataset.heroOpen);
+          openHomeCourse(course);
+        });
+      });
+      track.querySelectorAll('[data-hero-continue]').forEach(button => {
+        button.addEventListener('click', event => {
+          event.stopPropagation();
+          if (heroCardClickWasDrag()) return;
+          const course = heroState.courses.find(item => homeCourseId(item) === button.dataset.heroContinue);
+          continueHomeCourse(course);
+        });
+      });
+      track.querySelectorAll('[data-hero-path-open]').forEach(button => {
+        button.addEventListener('click', event => {
+          event.stopPropagation();
+          if (heroCardClickWasDrag()) return;
+          openHeroPath(button.dataset.heroPathOpen);
+        });
+      });
+      track.querySelectorAll('.hero-card-wish').forEach(button => {
+        button.addEventListener('click', event => {
+          event.stopPropagation();
+        });
+      });
+      track.querySelectorAll('.hero-course-card[data-hero-id], .hero-course-card[data-hero-path]').forEach(card => {
+        card.addEventListener('click', event => {
+          if (event.target.closest('a, button')) return;
+          if (heroCardClickWasDrag()) return;
+          if (card.dataset.heroPath) {
+            openHeroPath(card.dataset.heroPath);
+            return;
+          }
+          const id = card.dataset.heroId;
+          const course = heroState.courses.find(item => homeCourseId(item) === id);
+          if (course) openHomeCourse(course);
+          else if (id) EduNex.openCourseDetails(id);
+        });
+        card.addEventListener('keydown', event => {
+          if (event.key !== 'Enter' && event.key !== ' ') return;
+          event.preventDefault();
+          if (card.dataset.heroPath) {
+            openHeroPath(card.dataset.heroPath);
+            return;
+          }
+          const id = card.dataset.heroId;
+          const course = heroState.courses.find(item => homeCourseId(item) === id);
+          if (course) openHomeCourse(course);
+          else if (id) EduNex.openCourseDetails(id);
+        });
+      });
+    }
+
+    function bindHeroCarousel() {
+      const shell = document.getElementById('homeHeroCarousel');
+      const viewport = shell?.querySelector('.hero-carousel-viewport');
+      if (!shell || !viewport || shell.dataset.bound === 'true') return;
+      shell.dataset.bound = 'true';
+
+      document.querySelectorAll('[data-hero-tab]').forEach(button => {
+        button.addEventListener('click', () => renderHeroCarousel(button.dataset.heroTab));
+      });
+      viewport.addEventListener('wheel', event => {
+        if (Math.abs(event.deltaY) <= Math.abs(event.deltaX)) return;
+        event.preventDefault();
+        pauseHeroMotion(1000);
+        viewport.scrollLeft += event.deltaY;
+        syncHeroCenterFromScroll();
+      }, { passive: false });
+      viewport.addEventListener('scroll', () => {
+        cancelAnimationFrame(heroState.scrollRaf);
+        heroState.scrollRaf = requestAnimationFrame(syncHeroCenterFromScroll);
+      });
+      viewport.addEventListener('keydown', event => {
+        if (event.key === 'ArrowLeft') {
+          event.preventDefault();
+          pauseHeroMotion(1200);
+          scrollHeroTo(heroState.activeIndex - 1);
+          window.setTimeout(normalizeHeroLoop, 650);
+        }
+        if (event.key === 'ArrowRight') {
+          event.preventDefault();
+          pauseHeroMotion(1200);
+          scrollHeroTo(heroState.activeIndex + 1);
+          window.setTimeout(normalizeHeroLoop, 650);
+        }
+      });
+      let startX = 0;
+      let startLeft = 0;
+      viewport.addEventListener('pointerdown', event => {
+        heroState.pointerDown = true;
+        heroState.pauseAutoplay = true;
+        heroState.pointerMoved = false;
+        heroState.pointerStartX = event.clientX;
+        heroState.pointerStartY = event.clientY;
+        startX = event.clientX;
+        startLeft = viewport.scrollLeft;
+        viewport.classList.add('is-dragging');
+        viewport.setPointerCapture?.(event.pointerId);
+      });
+      viewport.addEventListener('pointermove', event => {
+        if (!heroState.pointerDown) return;
+        const dx = Math.abs(event.clientX - heroState.pointerStartX);
+        const dy = Math.abs(event.clientY - heroState.pointerStartY);
+        if (dx > 8 || dy > 8) heroState.pointerMoved = true;
+        viewport.scrollLeft = startLeft - (event.clientX - startX);
+      });
+      ['pointerup', 'pointercancel', 'pointerleave'].forEach(type => {
+        viewport.addEventListener(type, () => {
+          if (heroState.pointerMoved) heroState.suppressClickUntil = Date.now() + 250;
+          heroState.pointerDown = false;
+          heroState.pauseAutoplay = false;
+          viewport.classList.remove('is-dragging');
+          window.setTimeout(() => { heroState.pointerMoved = false; }, 0);
+        });
+      });
+      document.addEventListener('visibilitychange', () => { heroState.pauseAutoplay = document.hidden; });
+      const search = document.getElementById('homeHeroSearch');
+      search?.addEventListener('submit', event => {
+        event.preventDefault();
+        const query = new FormData(search).get('q')?.toString().trim();
+        window.location.href = query ? 'courses.html?search=' + encodeURIComponent(query) : 'courses.html';
+      });
+
+      startHeroContinuousMotion();
+    }
+
+    function renderHomeCategories(courses) {
+      const grid = document.getElementById('homeCategoriesGrid');
+      if (!grid) return;
+
+      const grouped = new Map();
+      courses.forEach(course => {
+        const category = categoryName(course);
+        if (!grouped.has(category)) grouped.set(category, []);
+        grouped.get(category).push(course);
+      });
+
+      const categories = [...grouped.entries()].slice(0, 4);
+      grid.innerHTML = categories.length ? categories.map(([category, items]) => {
+        const course = items.find(item => EduNex.courseImage(item)) || items[0];
+        const videos = items.reduce((count, item) => count + (Array.isArray(item.videos) ? item.videos.length : 0), 0);
+        return `
+          <div class="glass-card professional-card rounded-xl overflow-hidden cursor-pointer" role="link" tabindex="0" onclick="openHomeCourseById('${escapeHomeCourseHtml(homeCourseId(course))}')" onkeydown="if(event.key === 'Enter' || event.key === ' '){ event.preventDefault(); openHomeCourseById('${escapeHomeCourseHtml(homeCourseId(course))}'); }">
+            <div class="h-44 relative overflow-hidden">
+              <img class="w-full h-full object-cover" src="${escapeHomeCourseHtml(EduNex.courseImage(course))}" alt="${escapeHomeCourseHtml(category)}" onerror="this.onerror=null;this.src=EduNex.placeholderImage(this.alt||'EduNex')">
+              <div class="absolute top-4 left-4 bg-black/80 border border-primary/30 text-primary px-3 py-1 rounded-full text-[10px] font-bold uppercase">${escapeHomeCourseHtml(items.length)} courses</div>
+            </div>
+            <div class="p-6">
+              <div class="text-primary text-xs font-semibold uppercase tracking-[.08em] mb-3">${escapeHomeCourseHtml(videos || 'Real')} Lessons</div>
+              <h3 class="font-bold text-on-surface mb-2 leading-snug min-h-[48px]">${escapeHomeCourseHtml(category)}</h3>
+              <p class="home-category-course text-on-surface-variant text-sm leading-relaxed mb-5">${escapeHomeCourseHtml(course?.title || 'Explore this EduNex track')}</p>
+              <a href="${escapeHomeCourseHtml(categoryHref(category))}" class="text-primary font-semibold inline-flex items-center gap-2">View More <span class="material-symbols-outlined text-base">arrow_forward</span></a>
+            </div>
+          </div>`;
+      }).join('') : '<div class="glass-card rounded-xl p-6">No course categories found.</div>';
+    }
+
+    function renderHomeCourses(courses) {
+      const grid = document.getElementById('homeCoursesGrid');
+      if (!grid) return;
+      const realCourses = courses.slice(0, 4);
+      grid.innerHTML = realCourses.length ? realCourses.map(course => {
+        const category = categoryName(course);
+        const videos = Array.isArray(course.videos) ? course.videos.length : 0;
+        return `
+          <div class="glass-card professional-card rounded-xl overflow-hidden">
+            <div class="h-44 relative overflow-hidden">
+              <img class="w-full h-full object-cover" src="${escapeHomeCourseHtml(EduNex.courseImage(course))}" alt="${escapeHomeCourseHtml(course.title)}" onerror="this.onerror=null;this.src=EduNex.placeholderImage(this.alt||'EduNex')">
+              <div class="absolute top-4 left-4 bg-black/80 border border-primary/30 text-primary px-3 py-1 rounded-full text-[10px] font-bold uppercase">${escapeHomeCourseHtml(category)}</div>
+            </div>
+            <div class="p-6">
+              <div class="text-primary text-xs font-semibold uppercase tracking-[.08em] mb-3">${videos} Lessons</div>
+              <h3 class="font-bold text-on-surface mb-5 leading-snug min-h-[48px]">${escapeHomeCourseHtml(course.title || 'Untitled course')}</h3>
+              <button class="text-primary font-semibold inline-flex items-center gap-2" onclick="event.stopPropagation(); openHomeCourseById('${escapeHomeCourseHtml(homeCourseId(course))}')">Open Course <span class="material-symbols-outlined text-base">arrow_forward</span></button>
+            </div>
+          </div>`;
+      }).join('') : '<div class="glass-card rounded-xl p-6">No published courses found.</div>';
+    }
+
+    async function loadHomeCatalog() {
+      bindHeroCarousel();
+      try {
+        const courses = await EduNex.request('/api/courses');
+        const realCourses = (Array.isArray(courses) ? courses : []).filter(course => course && course._id);
+        heroState.courses = realCourses;
+        renderHeroCarousel(defaultHeroTab());
+        renderHomeCategories(realCourses);
+        renderHomeCourses(realCourses);
+      } catch (error) {
+        const fallbackCourses = fallbackHomeCourses();
+        heroState.courses = fallbackCourses;
+        renderHeroCarousel(defaultHeroTab());
+        renderHomeCategories(fallbackCourses);
+        renderHomeCourses(fallbackCourses);
+      }
+    }
+
+    loadHomeCatalog();
+  </script>
+  <script src="assets/bot-avatars/manifest.js"></script>
+<script src="js/nex-ai-widget.js"></script>
+</body>
+</html>

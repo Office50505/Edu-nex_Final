@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EduNex AI — Lesson Player</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="css/animations.css">
+  <style>
+    :root { --font-body: "Manrope", ui-sans-serif, system-ui, sans-serif; --font-display: "Fraunces", Georgia, serif; }
+    body, button, input, textarea, select { font-family: var(--font-body); }
+    h1, h2, .hero-title, .section-title, .auth-brand, .library-hero h1, .welcome-left h1, .market-right h2, .trial-left h2, .team-header-row h2, .cta-section h2, .section-head h2, .lp-title, .sp-title, .payment-choice-title { font-family: var(--font-display); font-weight: 600; letter-spacing: 0; }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; }
+    body {
+      font-family: "Manrope", ui-sans-serif, system-ui, sans-serif;
+      background: #0a0c12;
+      color: #fff;
+      min-height: 100vh;
+    }
+    img { display: block; }
+    a { text-decoration: none; color: inherit; }
+
+    :root {
+      --cyan: #C58B2A;
+      --cyan-dim: rgba(197,139,42,0.1);
+      --cyan-border: rgba(197,139,42,0.25);
+      --panel: #141820;
+      --panel2: #1a1f2e;
+      --card: #0e1118;
+      --border: rgba(255,255,255,0.08);
+      --gray: #6b7280;
+      --light: #9ca3af;
+    }
+
+    /* ===== LAYOUT ===== */
+    .lesson-outer { width: 100%; max-width: 100%; padding: 16px; min-height: 100vh; display: flex; flex-direction: column; gap: 0; }
+
+    /* Minimal back bar */
+    .back-bar {
+      display: flex; align-items: center; gap: 12px;
+      padding: 0 4px 14px;
+      flex-wrap: wrap;
+      min-width: 0;
+    }
+    .back-btn {
+      display: flex; align-items: center; gap: 7px;
+      font-size: .8rem; color: var(--light); font-weight: 500;
+      padding: 6px 12px; border-radius: 8px;
+      background: rgba(255,255,255,0.05); border: 1px solid var(--border);
+      cursor: pointer; transition: all .2s;
+    }
+    .back-btn:hover { color: #fff; border-color: rgba(255,255,255,0.15); }
+    .back-bar-title { min-width: 0; overflow-wrap: anywhere; font-size: .85rem; font-weight: 600; color: var(--light); }
+    .back-bar-prog {
+      margin-left: auto; display: flex; align-items: center; gap: 8px;
+      font-size: .75rem; color: var(--gray);
+    }
+    .prog-pill {
+      padding: 4px 12px; border-radius: 100px;
+      background: var(--cyan-dim); border: 1px solid var(--cyan-border);
+      color: var(--cyan); font-size: .7rem; font-weight: 700;
+    }
+
+    .lesson-layout {
+      width: 100%;
+      max-width: 1440px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(236px, 280px);
+      gap: 14px;
+      flex: 1;
+      align-items: stretch;
+      min-height: calc(100vh - 80px);
+      min-width: 0;
+    }
+
+    /* ===== VIDEO PLAYER ===== */
+    .player-col { min-width: 0; display: flex; align-items: center; justify-content: center; }
+    .video-card {
+      flex: none;
+      width: auto;
+      height: min(760px, calc(100vh - 118px));
+      max-width: 100%;
+      aspect-ratio: 9 / 16;
+      border-radius: 22px;
+      overflow: hidden;
+      position: relative;
+      background: #050710;
+      min-height: 0;
+    }
+    .video-img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      object-position: center top;
+      display: block;
+      opacity: 0.9;
+    }
+
+    /* Top-right controls */
+    .vid-top-btns {
+      position: absolute; top: 18px; right: 18px;
+      display: flex; flex-direction: column; gap: 8px; z-index: 5;
+    }
+    .vid-ctrl-btn {
+      width: 38px; height: 38px; border-radius: 12px;
+      background: rgba(10,12,20,0.6);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255,255,255,0.14);
+      display: flex; align-items: center; justify-content: center;
+      color: rgba(255,255,255,0.8); font-size: .82rem;
+      cursor: pointer; transition: all .2s;
+    }
+    .vid-ctrl-btn:hover { background: rgba(197,139,42,0.15); border-color: var(--cyan-border); color: var(--cyan); }
+
+    /* Bottom overlay gradient */
+    .vid-bottom-overlay {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      padding: 60px 24px 22px;
+      background: linear-gradient(to top, rgba(5,7,16,0.98) 0%, rgba(5,7,16,0.75) 45%, transparent 100%);
+    }
+    .vid-meta-row {
+      display: flex; align-items: center; gap: 10px; margin-bottom: 10px;
+    }
+    .module-badge {
+      display: inline-flex; align-items: center;
+      padding: 4px 11px; border-radius: 100px;
+      background: rgba(255,255,255,0.12);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255,255,255,0.18);
+      font-size: .6rem; font-weight: 800; letter-spacing: .1em;
+      color: #fff;
+    }
+    .vid-dot { width: 3px; height: 3px; border-radius: 50%; background: rgba(255,255,255,0.3); }
+    .vid-timestamp { font-size: .75rem; color: rgba(255,255,255,0.55); font-weight: 500; }
+
+    .vid-title {
+      font-size: clamp(1.2rem, 2.5vw, 1.6rem);
+      font-weight: 800; line-height: 1.2; color: #fff;
+      margin-bottom: 7px;
+    }
+    .vid-subtitle { font-size: .8rem; color: rgba(255,255,255,0.5); line-height: 1.55; margin-bottom: 18px; }
+
+    /* Player controls row */
+    .vid-controls {
+      display: flex; align-items: center; gap: 12px;
+      flex-wrap: wrap;
+      min-width: 0;
+    }
+    .vid-play-btn {
+      width: 42px; height: 42px; border-radius: 11px;
+      background: rgba(255,255,255,0.92);
+      display: flex; align-items: center; justify-content: center;
+      color: #0a0c12; font-size: .8rem; font-family: "Manrope", ui-sans-serif, system-ui, sans-serif;
+      border: none; cursor: pointer; flex-shrink: 0;
+      transition: all .2s;
+    }
+    .vid-play-btn:hover { background: #fff; box-shadow: 0 4px 16px rgba(255,255,255,0.25); }
+    .vid-play-btn i { margin-left: 2px; }
+
+    .vid-scrubber {
+      flex: 1 1 130px; height: 4px;
+      min-width: 120px;
+      background: rgba(255,255,255,0.18);
+      border-radius: 100px; cursor: pointer;
+      position: relative;
+    }
+    .vid-scrubber-fill {
+      height: 100%; width: 28%; border-radius: 100px;
+      background: rgba(255,255,255,0.85);
+      position: relative;
+    }
+    .vid-scrubber-thumb {
+      position: absolute; right: -6px; top: 50%;
+      transform: translateY(-50%);
+      width: 12px; height: 12px; border-radius: 50%;
+      background: #fff; box-shadow: 0 0 8px rgba(255,255,255,0.5);
+    }
+
+    .ask-ai-btn {
+      display: flex; align-items: center; gap: 7px;
+      padding: 9px 18px; background: var(--cyan); color: #000;
+      font-size: .8rem; font-weight: 800; letter-spacing: .02em;
+      font-family: "Manrope", ui-sans-serif, system-ui, sans-serif;
+      border-radius: 11px; border: none; cursor: pointer;
+      flex-shrink: 0; transition: all .2s;
+    }
+    .ask-ai-btn:hover { background: #A96F18; box-shadow: 0 4px 18px rgba(197,139,42,.5); transform: translateY(-1px); }
+    .ask-ai-btn i { font-size: .78rem; }
+
+    /* ===== COURSE CONTENT ===== */
+    .content-col { min-width: 0; display: flex; flex-direction: column; }
+    .cc-card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 20px 16px;
+      flex: 1;
+      min-width: 0;
+      max-height: calc(100vh - 94px);
+      overflow-y: auto;
+    }
+    .cc-heading {
+      font-size: .62rem; font-weight: 800; letter-spacing: .12em;
+      text-transform: uppercase; color: var(--cyan);
+      margin-bottom: 18px;
+    }
+
+    .cc-list { display: flex; flex-direction: column; gap: 4px; }
+    .cc-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 10px; border-radius: 11px;
+      cursor: pointer; transition: all .18s;
+      position: relative;
+    }
+    .cc-item:hover { background: rgba(255,255,255,0.04); }
+    .cc-item.cc-active {
+      background: rgba(197,139,42,0.07);
+      border: 1px solid rgba(197,139,42,0.15);
+    }
+    .cc-item.cc-active::before {
+      content: '';
+      position: absolute; left: 0; top: 8px; bottom: 8px;
+      width: 3px; border-radius: 2px; background: var(--cyan);
+    }
+    .cc-item.cc-locked { opacity: 0.45; }
+
+    .cc-num {
+      width: 28px; height: 28px; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: .72rem; font-weight: 800;
+      background: rgba(255,255,255,0.06);
+      color: var(--light); flex-shrink: 0;
+    }
+    .cc-item.cc-active .cc-num { background: var(--cyan-dim); color: var(--cyan); }
+    .cc-item.cc-done .cc-num { color: var(--gray); }
+
+    .cc-thumb {
+      width: 46px; height: 34px; border-radius: 6px;
+      object-fit: cover; flex-shrink: 0; background: #1a1e28;
+    }
+
+    .cc-info { flex: 1; min-width: 0; }
+    .cc-title {
+      font-size: .8rem; font-weight: 600; color: #fff;
+      white-space: normal; overflow-wrap: anywhere;
+      margin-bottom: 2px;
+    }
+    .cc-item.cc-done .cc-title { color: var(--gray); }
+    .cc-meta-row {
+      display: flex; align-items: center; gap: 5px;
+      font-size: .68rem; color: var(--gray);
+    }
+    .cc-status-done { color: #34D399; }
+    .cc-status-active { color: var(--cyan); }
+    .cc-status-locked { color: var(--gray); }
+
+    /* ===== AI TUTOR CHAT PANEL ===== */
+    .ai-panel {
+      position: fixed;
+      top: 86px;
+      right: 16px;
+      bottom: 16px;
+      z-index: 1100;
+      width: min(360px, calc(100vw - 32px));
+      opacity: 0;
+      pointer-events: none;
+      visibility: hidden;
+      transform: translateX(calc(100% + 24px));
+      transition: transform .35s ease, opacity .3s ease, visibility .3s ease;
+      display: none;
+      flex-direction: column;
+      min-width: 0;
+    }
+    .ai-panel.open {
+      display: flex;
+      transform: translateX(0);
+      opacity: 1;
+      pointer-events: auto;
+      visibility: visible;
+    }
+
+    .ai-chat-card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      display: flex; flex-direction: column;
+      flex: 1; overflow: hidden;
+      width: 100%;
+      min-width: 0;
+      max-width: 100%;
+      min-height: 0;
+      box-shadow: 0 22px 70px rgba(0,0,0,.34);
+    }
+
+    /* Chat header */
+    .chat-header {
+      display: flex; align-items: center; gap: 12px;
+      padding: 16px 18px;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .chat-ai-icon {
+      width: 40px; height: 40px; border-radius: 12px;
+      background: var(--cyan);
+      display: flex; align-items: center; justify-content: center;
+      font-size: .9rem; color: #000; flex-shrink: 0;
+    }
+    .chat-header-text { flex: 1; min-width: 0; }
+    .chat-title { font-size: .92rem; font-weight: 700; color: #fff; }
+    .chat-synced {
+      display: flex; align-items: center; gap: 5px;
+      font-size: .65rem; font-weight: 700; color: var(--cyan);
+      letter-spacing: .04em; margin-top: 1px;
+      flex-wrap: wrap;
+    }
+    .synced-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--cyan); animation: blink 1.6s infinite; }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
+    .chat-close {
+      width: 32px; height: 32px; border-radius: 9px;
+      background: rgba(255,255,255,0.06); border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem; color: var(--gray); cursor: pointer;
+      transition: all .2s;
+    }
+    .chat-close:hover { background: rgba(255,255,255,0.1); color: #fff; }
+
+    /* Messages */
+    .chat-messages {
+      flex: 1; overflow-y: auto; padding: 18px;
+      display: flex; flex-direction: column; gap: 18px;
+      min-height: 0;
+    }
+    .chat-messages::-webkit-scrollbar { width: 3px; }
+    .chat-messages::-webkit-scrollbar-track { background: transparent; }
+    .chat-messages::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 2px; }
+
+    /* AI message */
+    .msg-ai { display: flex; flex-direction: column; align-items: flex-start; gap: 5px; }
+    .msg-ai-text {
+      font-size: .83rem; color: rgba(255,255,255,0.85);
+      line-height: 1.65; max-width: 100%;
+    }
+    .msg-ai-text strong { color: #fff; font-weight: 600; }
+    .msg-time-ai { font-size: .63rem; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: var(--gray); }
+
+    /* User message */
+    .msg-user { display: flex; flex-direction: column; align-items: flex-end; gap: 5px; }
+    .msg-user-bubble {
+      background: var(--cyan); color: #000;
+      padding: 11px 15px; border-radius: 14px 14px 4px 14px;
+      font-size: .83rem; font-weight: 500; line-height: 1.55;
+      max-width: 85%;
+    }
+    .msg-time-user { font-size: .63rem; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: var(--gray); }
+
+    /* Code block */
+    .code-block {
+      background: #070911; border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 10px; padding: 13px 15px;
+      font-family: 'Fira Code', 'Courier New', monospace;
+      font-size: .78rem; color: #c8e6ff;
+      margin-top: 10px; white-space: pre; line-height: 1.7;
+      overflow-x: auto;
+      max-width: 100%;
+    }
+
+    /* Input area */
+    .chat-input-section {
+      padding: 14px 16px 10px;
+      border-top: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .chat-input-row {
+      display: flex; align-items: center; gap: 8px;
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 12px; padding: 9px 9px 9px 14px;
+      margin-bottom: 10px;
+      transition: border-color .2s;
+      min-width: 0;
+    }
+    .chat-input-row:focus-within { border-color: var(--cyan-border); }
+    .chat-input {
+      flex: 1; background: none; border: none; outline: none;
+      font-size: .82rem; color: #fff; font-family: "Manrope", ui-sans-serif, system-ui, sans-serif;
+      min-width: 0;
+    }
+    .chat-input::placeholder { color: var(--gray); }
+    .chat-send {
+      width: 32px; height: 32px; border-radius: 9px;
+      background: var(--cyan); border: none;
+      display: flex; align-items: center; justify-content: center;
+      color: #000; font-size: .78rem; cursor: pointer;
+      flex-shrink: 0; transition: all .2s;
+    }
+    .chat-send:hover { background: #A96F18; box-shadow: 0 2px 12px rgba(197,139,42,.4); }
+
+    /* Quick actions */
+    .quick-actions { display: flex; gap: 6px; flex-wrap: wrap; padding-bottom: 4px; }
+    .qa-chip {
+      padding: 5px 11px; border-radius: 100px;
+      background: rgba(255,255,255,0.04); border: 1px solid var(--border);
+      font-size: .65rem; font-weight: 700; letter-spacing: .05em;
+      color: var(--light); cursor: pointer; font-family: "Manrope", ui-sans-serif, system-ui, sans-serif;
+      transition: all .2s; white-space: normal;
+    }
+    .qa-chip:hover { background: var(--cyan-dim); border-color: var(--cyan-border); color: var(--cyan); }
+
+    @media (min-width: 1500px) {
+      .lesson-layout.ai-open {
+        grid-template-columns: minmax(0, 1fr) minmax(248px, 280px) minmax(320px, 360px);
+      }
+      .ai-panel {
+        position: static;
+        width: auto;
+        transform: none;
+        visibility: hidden;
+        opacity: 0;
+        pointer-events: none;
+        min-width: 0;
+      }
+      .ai-panel.open {
+        visibility: visible;
+        opacity: 1;
+        pointer-events: auto;
+      }
+      .ai-chat-card {
+        max-height: calc(100vh - 94px);
+      }
+    }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 900px) {
+      .lesson-layout { grid-template-columns: 1fr; min-height: auto; }
+      .content-col { min-width: 0; }
+      .cc-card { max-height: none; }
+      .video-card {
+        width: min(100%, 430px);
+        height: auto;
+        aspect-ratio: 9 / 16;
+      }
+    }
+    @media (max-width: 600px) {
+      .lesson-outer { padding: 10px; }
+      .vid-title { font-size: 1.1rem; }
+      .back-bar-prog { margin-left: 0; flex-wrap: wrap; }
+      .vid-bottom-overlay { padding: 54px 16px 18px; }
+      .vid-controls { gap: 10px; }
+      .ask-ai-btn { flex: 1 1 100%; justify-content: center; }
+      .ai-panel {
+        top: auto;
+        left: 10px;
+        right: 10px;
+        bottom: 10px;
+        width: auto;
+        height: min(78vh, 620px);
+        transform: translateY(calc(100% + 20px));
+      }
+      .ai-panel.open { transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+<div class="lesson-outer">
+
+  <!-- Back bar -->
+  <div class="back-bar">
+    <a href="dashboard.html" class="back-btn">
+      <i class="fas fa-arrow-left"></i> Dashboard
+    </a>
+    <span class="back-bar-title">Neural Network Fundamentals</span>
+    <div class="back-bar-prog">
+      <span>Module 4 of 12</span>
+      <span class="prog-pill">68% Complete</span>
+    </div>
+  </div>
+
+  <!-- Main three-panel layout -->
+  <div class="lesson-layout">
+
+    <!-- ===== VIDEO PLAYER ===== -->
+    <div class="player-col">
+      <div class="video-card">
+        <img class="video-img"
+          src="data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20width=%27900%27%20height=%27600%27%20viewBox=%270%200%20900%20600%27%3E%3Crect%20width=%27900%27%20height=%27600%27%20fill=%27%23000000%27/%3E%3Crect%20x=%271%27%20y=%271%27%20width=%27898%27%20height=%27598%27%20rx=%2732%27%20fill=%27%230d0d0d%27%20stroke=%27%23C58B2A%27%20stroke-opacity=%27.35%27/%3E%3Ctext%20x=%27450%27%20y=%27312%27%20text-anchor=%27middle%27%20fill=%27%23C58B2A%27%20font-family=%27Arial%27%20font-size=%2748%27%20font-weight=%27800%27%3EEduNex%3C/text%3E%3C/svg%3E"
+          alt="Deep Dive: Neural Network Architectures">
+
+        <!-- Top-right action buttons -->
+        <div class="vid-top-btns">
+          <button class="vid-ctrl-btn" aria-label="Save lesson"><i class="fas fa-bookmark"></i></button>
+          <button class="vid-ctrl-btn" aria-label="Share lesson"><i class="fas fa-share-alt"></i></button>
+          <button class="vid-ctrl-btn" aria-label="Toggle captions"><i class="fas fa-closed-captioning"></i></button>
+        </div>
+
+        <!-- Bottom overlay -->
+        <div class="vid-bottom-overlay">
+          <div class="vid-meta-row">
+            <span class="module-badge">MODULE 4</span>
+            <span class="vid-dot"></span>
+            <span class="vid-timestamp">12:45 / 45:00</span>
+          </div>
+          <h1 class="vid-title">Deep Dive: Neural Network Architectures</h1>
+          <p class="vid-subtitle">Explaining backpropagation and ReLU activation layers with EduNex Mentor.</p>
+          <div class="vid-controls">
+            <button class="vid-play-btn" id="playBtn" aria-label="Play lesson">
+              <i class="fas fa-play" id="playIcon"></i>
+            </button>
+          <div class="vid-scrubber" id="scrubber" role="slider" tabindex="0" aria-label="Lesson progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+              <div class="vid-scrubber-fill" id="scrubFill">
+                <div class="vid-scrubber-thumb"></div>
+              </div>
+            </div>
+            <button class="ask-ai-btn" id="askAiBtn" aria-controls="aiPanel" aria-expanded="false">
+              <i class="fas fa-bolt"></i> Ask AI
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== COURSE CONTENT ===== -->
+    <div class="content-col">
+      <div class="cc-card">
+        <h2 class="cc-heading">Course Content</h2>
+        <div class="cc-list">
+
+          <!-- Lesson 01: Completed -->
+          <div class="cc-item cc-done">
+            <div class="cc-num">01</div>
+            <div class="cc-info">
+              <h3 class="cc-title">Intro to ML</h3>
+              <div class="cc-meta-row">
+                <span>08:22</span>
+                <span>·</span>
+                <span class="cc-status-done">Completed</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Lesson 02: In Progress (active) -->
+          <div class="cc-item cc-active" aria-current="step">
+            <div class="cc-num">02</div>
+            <img class="cc-thumb"
+              src="data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20width=%27900%27%20height=%27600%27%20viewBox=%270%200%20900%20600%27%3E%3Crect%20width=%27900%27%20height=%27600%27%20fill=%27%23000000%27/%3E%3Crect%20x=%271%27%20y=%271%27%20width=%27898%27%20height=%27598%27%20rx=%2732%27%20fill=%27%230d0d0d%27%20stroke=%27%23C58B2A%27%20stroke-opacity=%27.35%27/%3E%3Ctext%20x=%27450%27%20y=%27312%27%20text-anchor=%27middle%27%20fill=%27%23C58B2A%27%20font-family=%27Arial%27%20font-size=%2748%27%20font-weight=%27800%27%3EEduNex%3C/text%3E%3C/svg%3E"
+              alt="">
+            <div class="cc-info">
+              <h3 class="cc-title">Neural Architectures</h3>
+              <div class="cc-meta-row">
+                <span>45:00</span>
+                <span>·</span>
+                <span class="cc-status-active">In Progress</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Lesson 03: Locked -->
+          <div class="cc-item cc-locked">
+            <div class="cc-num">03</div>
+            <div class="cc-info">
+              <h3 class="cc-title">Deep Learning Labs</h3>
+              <div class="cc-meta-row">
+                <span>12:15</span>
+                <span>·</span>
+                <span class="cc-status-locked"><i class="fas fa-lock" style="font-size:.6rem"></i> Locked</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== AI TUTOR CHAT PANEL ===== -->
+    <div class="ai-panel" id="aiPanel" role="dialog" aria-modal="false" aria-labelledby="aiPanelTitle" aria-hidden="true">
+      <div class="ai-chat-card">
+
+        <!-- Header -->
+        <div class="chat-header">
+          <div class="chat-ai-icon"><i class="fas fa-bolt"></i></div>
+          <div class="chat-header-text">
+            <h2 class="chat-title" id="aiPanelTitle">Nex AI Tutor</h2>
+            <div class="chat-synced">
+              <div class="synced-dot"></div>
+              SYNCED TO LESSON
+            </div>
+          </div>
+          <button class="chat-close" id="chatClose" aria-label="Close Nex AI tutor"><i class="fas fa-times"></i></button>
+        </div>
+
+        <!-- Messages -->
+        <div class="chat-messages" id="chatMessages">
+
+          <!-- AI message 1 -->
+          <div class="msg-ai">
+            <div class="msg-ai-text">
+              EduNex Mentor is currently detailing <strong>ReLU (Rectified Linear Unit)</strong>. It's the most common activation function in deep learning today.
+            </div>
+            <div class="msg-time-ai">NEX AI &nbsp;·&nbsp; 12:44</div>
+          </div>
+
+          <!-- User message -->
+          <div class="msg-user">
+            <div class="msg-user-bubble">
+              Why is it better than Sigmoid for deep networks?
+            </div>
+            <div class="msg-time-user">YOU &nbsp;·&nbsp; 12:45</div>
+          </div>
+
+          <!-- AI message 2 with code -->
+          <div class="msg-ai">
+            <div class="msg-ai-text">
+              Unlike Sigmoid, ReLU doesn't saturate in the positive direction. This prevents the <strong>vanishing gradient problem</strong>, allowing deep networks to learn much faster.
+              <div class="code-block">f(x) = max(0, x)
+f'(x) = 1 if x > 0 else 0</div>
+            </div>
+            <div class="msg-time-ai">NEX AI &nbsp;·&nbsp; JUST NOW</div>
+          </div>
+
+        </div>
+
+        <!-- Input + Quick Actions -->
+        <div class="chat-input-section">
+          <div class="chat-input-row">
+            <input type="text" class="chat-input" placeholder="Type a message..." id="chatInput" aria-label="Message Nex AI tutor">
+            <button class="chat-send" id="sendBtn" aria-label="Send message">
+              <i class="fas fa-paper-plane" style="font-size:.72rem;transform:rotate(45deg)"></i>
+            </button>
+          </div>
+          <div class="quick-actions">
+            <button class="qa-chip">SUMMARY</button>
+            <button class="qa-chip">EXPLAIN FORMULA</button>
+            <button class="qa-chip">FLASHCARDS</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div><!-- /lesson-layout -->
+</div><!-- /lesson-outer -->
+
+<script>
+  const askAiBtn  = document.getElementById('askAiBtn');
+  const aiPanel   = document.getElementById('aiPanel');
+  const chatClose = document.getElementById('chatClose');
+  const chatInput = document.getElementById('chatInput');
+  const sendBtn   = document.getElementById('sendBtn');
+  const messages  = document.getElementById('chatMessages');
+  const playBtn   = document.getElementById('playBtn');
+  const playIcon  = document.getElementById('playIcon');
+  const scrubFill = document.getElementById('scrubFill');
+  const scrubber  = document.getElementById('scrubber');
+  const lessonLayout = document.querySelector('.lesson-layout');
+
+  // ── Ask AI toggle
+  function openAiPanel() {
+    aiPanel.classList.add('open');
+    lessonLayout?.classList.add('ai-open');
+    askAiBtn.setAttribute('aria-expanded', 'true');
+    aiPanel.setAttribute('aria-hidden', 'false');
+    setTimeout(() => chatInput.focus(), 350);
+  }
+
+  function closeAiPanel() {
+    aiPanel.classList.remove('open');
+    lessonLayout?.classList.remove('ai-open');
+    askAiBtn.setAttribute('aria-expanded', 'false');
+    aiPanel.setAttribute('aria-hidden', 'true');
+    askAiBtn.focus();
+  }
+
+  askAiBtn.addEventListener('click', () => {
+    if (aiPanel.classList.contains('open')) closeAiPanel();
+    else openAiPanel();
+  });
+  chatClose.addEventListener('click', closeAiPanel);
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && aiPanel.classList.contains('open')) closeAiPanel();
+  });
+
+  // ── Play/Pause toggle (cosmetic)
+  let playing = false;
+  playBtn.addEventListener('click', () => {
+    playing = !playing;
+    playIcon.className = playing ? 'fas fa-pause' : 'fas fa-play';
+    playBtn.setAttribute('aria-label', playing ? 'Pause lesson' : 'Play lesson');
+    if (playing) playIcon.style.marginLeft = '0';
+    else playIcon.style.marginLeft = '2px';
+  });
+
+  // ── Scrubber seek (cosmetic)
+  scrubber.addEventListener('click', (e) => {
+    const rect = scrubber.getBoundingClientRect();
+    const pct = Math.max(0, Math.min(100, ((e.clientX - rect.left) / rect.width) * 100));
+    scrubFill.style.width = pct + '%';
+    scrubber.setAttribute('aria-valuenow', String(Math.round(pct)));
+  });
+  scrubber.addEventListener('keydown', (event) => {
+    if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
+    event.preventDefault();
+    const current = Number(scrubber.getAttribute('aria-valuenow') || 0);
+    const next = event.key === 'Home' ? 0 : event.key === 'End' ? 100 : Math.max(0, Math.min(100, current + (event.key === 'ArrowRight' ? 5 : -5)));
+    scrubFill.style.width = next + '%';
+    scrubber.setAttribute('aria-valuenow', String(next));
+  });
+
+  // ── Send message
+  function sendMessage() {
+    const text = chatInput.value.trim();
+    if (!text) return;
+
+    // Add user bubble
+    const userDiv = document.createElement('div');
+    userDiv.className = 'msg-user';
+    userDiv.innerHTML = `<div class="msg-user-bubble">${text}</div><div class="msg-time-user">YOU &nbsp;·&nbsp; JUST NOW</div>`;
+    messages.appendChild(userDiv);
+    chatInput.value = '';
+    messages.scrollTop = messages.scrollHeight;
+
+    // Simulate AI typing response after a short delay
+    setTimeout(() => {
+      const aiDiv = document.createElement('div');
+      aiDiv.className = 'msg-ai';
+      aiDiv.innerHTML = `<div class="msg-ai-text">Great question! This is a key concept in modern deep learning. Let me pull the relevant section from the current lesson for you.</div><div class="msg-time-ai">NEX AI &nbsp;·&nbsp; JUST NOW</div>`;
+      messages.appendChild(aiDiv);
+      messages.scrollTop = messages.scrollHeight;
+    }, 900);
+  }
+
+  sendBtn.addEventListener('click', sendMessage);
+  chatInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') sendMessage(); });
+
+  // ── Quick action chips
+  document.querySelectorAll('.qa-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      chatInput.value = chip.textContent.trim().charAt(0) + chip.textContent.trim().slice(1).toLowerCase();
+      chatInput.focus();
+    });
+  });
+</script>
+<script src="js/edunex-api.js"></script>
+<script src="assets/bot-avatars/manifest.js"></script>
+<script src="js/nex-ai-widget.js"></script>
+<script src="js/animations.js" defer></script>
+</body>
+</html>

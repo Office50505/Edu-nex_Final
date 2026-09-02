@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EduNex — NEX AI Tutor</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="css/animations.css">
+  <style>
+    :root { --font-body: "Manrope", ui-sans-serif, system-ui, sans-serif; --font-display: "Fraunces", Georgia, serif; }
+    body, button, input, textarea, select { font-family: var(--font-body); }
+    h1, h2, .hero-title, .section-title, .auth-brand, .library-hero h1, .welcome-left h1, .market-right h2, .trial-left h2, .team-header-row h2, .cta-section h2, .section-head h2, .lp-title, .sp-title, .payment-choice-title { font-family: var(--font-display); font-weight: 600; letter-spacing: 0; }
+
+    body{padding-top:0;overflow:hidden}
+    .tutor-page{display:flex;flex-direction:column;height:100vh}
+    .tutor-top-bar{height:66px;background:rgba(7,7,14,.96);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 20px;gap:16px;flex-shrink:0}
+    .full-tutor{flex:1;display:flex;overflow:hidden}
+    .typing-dots{display:flex;gap:4px;align-items:center}
+    .typing-dots span{width:7px;height:7px;border-radius:50%;background:var(--accent);animation:typing 1.2s infinite}
+    .typing-dots span:nth-child(2){animation-delay:.2s}
+    .typing-dots span:nth-child(3){animation-delay:.4s}
+    @keyframes typing{0%,100%{opacity:.3;transform:scale(.8)}50%{opacity:1;transform:scale(1)}}
+    .topic-chip{padding:6px 14px;background:var(--bg-card);border:1px solid var(--border);border-radius:100px;font-size:.78rem;color:var(--text-secondary);cursor:pointer;transition:var(--ease);white-space:nowrap}
+    .topic-chip:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-dim)}
+    .topic-chip.active{border-color:var(--accent);color:var(--accent);background:var(--accent-dim)}
+    .auth-gate{position:fixed;inset:0;z-index:50;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(0,0,0,.78);backdrop-filter:blur(8px)}
+    .auth-gate.is-visible{display:flex}
+    .auth-gate-card{width:min(430px,100%);padding:28px;border-radius:16px;border:1px solid rgba(255,255,255,.1);background:#10141c;text-align:center;box-shadow:0 28px 90px rgba(0,0,0,.65)}
+    .auth-gate-card h2{margin-bottom:8px;font-size:1.35rem}
+    .ai-info h1{font-size:inherit;font-weight:inherit;line-height:inherit;margin:0}
+    .auth-gate-card p{color:var(--text-secondary);margin-bottom:22px}
+    .auth-gate-actions{display:flex;gap:10px}
+    .auth-gate-actions a{flex:1;justify-content:center}
+  </style>
+</head>
+<body>
+
+<div class="tutor-page">
+  <!-- Top bar -->
+  <div class="tutor-top-bar">
+    <a href="index.html" class="nav-logo" style="flex-shrink:0">
+      <div class="logo-mark">N</div>
+      <span class="logo-name">Edu<span>Nex</span></span>
+    </a>
+    <div style="flex:1"></div>
+    <a href="dashboard.html" class="btn btn-ghost btn-sm"><i class="fas fa-th-large"></i> Dashboard</a>
+    <a href="courses.html" class="btn btn-ghost btn-sm"><i class="fas fa-play-circle"></i> My Courses</a>
+    <img src="data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20width=%27900%27%20height=%27600%27%20viewBox=%270%200%20900%20600%27%3E%3Crect%20width=%27900%27%20height=%27600%27%20fill=%27%23000000%27/%3E%3Crect%20x=%271%27%20y=%271%27%20width=%27898%27%20height=%27598%27%20rx=%2732%27%20fill=%27%230d0d0d%27%20stroke=%27%23C58B2A%27%20stroke-opacity=%27.35%27/%3E%3Ctext%20x=%27450%27%20y=%27312%27%20text-anchor=%27middle%27%20fill=%27%23C58B2A%27%20font-family=%27Arial%27%20font-size=%2748%27%20font-weight=%27800%27%3EEduNex%3C/text%3E%3C/svg%3E" class="avatar avatar-sm" alt="">
+  </div>
+
+  <div class="full-tutor">
+    <!-- Sidebar: Chat history -->
+    <div class="tutor-sidebar">
+      <div style="margin-bottom:16px">
+        <button onclick="location.reload()" class="btn btn-primary" style="width:100%;justify-content:center">
+          <i class="fas fa-plus"></i> New Chat
+        </button>
+      </div>
+      <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text-muted);margin-bottom:10px;padding:0 4px">Recent Chats</div>
+
+      <div class="chat-history-item active">
+        <div class="chi-title">How to start AI freelancing?</div>
+        <div class="chi-preview">Today · 4 messages</div>
+      </div>
+      <div class="chat-history-item">
+        <div class="chi-title">Prompt engineering tips</div>
+        <div class="chi-preview">Yesterday · 12 messages</div>
+      </div>
+      <div class="chat-history-item">
+        <div class="chi-title">AI automation for clients</div>
+        <div class="chi-preview">2 days ago · 8 messages</div>
+      </div>
+      <div class="chat-history-item">
+        <div class="chi-title">ChatGPT vs Claude comparison</div>
+        <div class="chi-preview">3 days ago · 15 messages</div>
+      </div>
+      <div class="chat-history-item">
+        <div class="chi-title">Module 2 review — content</div>
+        <div class="chi-preview">4 days ago · 6 messages</div>
+      </div>
+      <div class="chat-history-item">
+        <div class="chi-title">Setting up Fiverr profile</div>
+        <div class="chi-preview">5 days ago · 9 messages</div>
+      </div>
+
+      <div style="flex:1"></div>
+      <div style="padding:12px 0;border-top:1px solid var(--border);margin-top:12px">
+        <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text-muted);margin-bottom:10px">Topics</div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px">
+          <span class="topic-chip active">AI Income</span>
+          <span class="topic-chip">Freelancing</span>
+          <span class="topic-chip">Automation</span>
+          <span class="topic-chip">Content</span>
+          <span class="topic-chip">Prompting</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Chat area -->
+    <div class="tutor-chat">
+      <!-- Chat header -->
+      <div class="chat-header">
+        <div class="ai-avatar">N</div>
+        <div class="ai-info">
+          <h1>NEX — Your AI Learning Tutor</h1>
+          <p>Powered by EduNex AI · Specialised in AI income strategies</p>
+        </div>
+        <div style="margin-left:auto;display:flex;align-items:center;gap:12px">
+          <span class="online-badge">Online</span>
+          <button class="btn btn-ghost btn-sm"><i class="fas fa-sliders-h"></i></button>
+        </div>
+      </div>
+
+      <!-- Messages -->
+      <div class="chat-messages" id="chatMessages">
+
+        <!-- Welcome message -->
+        <div style="text-align:center;padding:20px 0 10px">
+          <div style="width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent-green));display:flex;align-items:center;justify-content:center;font-size:1.5rem;font-weight:800;color:#000;margin:0 auto 12px">N</div>
+          <h2 style="margin-bottom:6px">Hello, Learner. I'm NEX.</h2>
+          <p style="font-size:.9rem;max-width:480px;margin:0 auto">I'm your personal AI learning tutor. I know everything in your EduNex curriculum and can help you apply it to earn real income. Ask me anything!</p>
+        </div>
+
+        <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;padding-bottom:12px">
+          <span class="quick-prompt" onclick="document.querySelector('.chat-input-wrap textarea').value=this.textContent;document.querySelector('.chat-input-wrap textarea').focus()">How do I start earning with AI?</span>
+          <span class="quick-prompt" onclick="document.querySelector('.chat-input-wrap textarea').value=this.textContent;document.querySelector('.chat-input-wrap textarea').focus()">Best AI tools for beginners?</span>
+          <span class="quick-prompt" onclick="document.querySelector('.chat-input-wrap textarea').value=this.textContent;document.querySelector('.chat-input-wrap textarea').focus()">How to find AI freelance clients?</span>
+          <span class="quick-prompt" onclick="document.querySelector('.chat-input-wrap textarea').value=this.textContent;document.querySelector('.chat-input-wrap textarea').focus()">Explain prompt engineering</span>
+        </div>
+
+        <div class="chat-bubble ai">
+          <div class="bub-avatar">N</div>
+          <div class="bub-content">
+            <p>Hi Learner. Based on your progress in <strong>Master the AI Economy</strong>, you're 68% through Module 2 on AI Content Creation. You're doing great.</p>
+            <p style="margin-top:8px">Want to continue where you left off, or is there something specific you'd like help with today?</p>
+            <div class="bub-time">10:32 AM</div>
+          </div>
+        </div>
+
+        <div class="chat-bubble user">
+          <div class="bub-content">
+            <p>How do I start earning with AI this week?</p>
+            <div class="bub-time">10:33 AM</div>
+          </div>
+          <div class="bub-avatar">A</div>
+        </div>
+
+        <div class="chat-bubble ai">
+          <div class="bub-avatar">N</div>
+          <div class="bub-content">
+            <p>Great question! Here are 3 ways you can start earning with AI <strong>this week</strong> — based on your current skill level:</p>
+            <p style="margin-top:10px"><strong style="color:var(--accent)">1. AI Content Writing (Fastest)</strong><br>Create a Fiverr/Upwork profile offering AI-assisted blog posts or product descriptions. You can charge $25–$75/article. Module 2 covers exactly how to do this.</p>
+            <p style="margin-top:10px"><strong style="color:var(--accent-green)">2. Social Media AI Content Packages</strong><br>Offer to manage a local business's social media using AI tools. Package for $300–$500/month. This is beginner-friendly.</p>
+            <p style="margin-top:10px"><strong style="color:#A78BFA">3. ChatGPT Consulting</strong><br>Many businesses don't know how to use ChatGPT. You can charge $50/hour to show them how. Your current knowledge is enough to start.</p>
+            <p style="margin-top:10px">Which of these sounds most interesting to you? I can walk you through the exact steps.</p>
+            <div class="bub-time">10:33 AM</div>
+          </div>
+        </div>
+
+        <div class="chat-bubble user">
+          <div class="bub-content">
+            <p>The Fiverr content writing sounds great. Can you help me set up my profile?</p>
+            <div class="bub-time">10:35 AM</div>
+          </div>
+          <div class="bub-avatar">A</div>
+        </div>
+
+        <div class="chat-bubble ai">
+          <div class="bub-avatar">N</div>
+          <div class="bub-content">
+            <p>Absolutely! Here's your Fiverr AI Content Writing profile setup checklist:</p>
+            <p style="margin-top:10px">✅ <strong>Profile Title:</strong> "AI-Powered Blog Writer | SEO Articles in 24hrs"</p>
+            <p style="margin-top:6px">✅ <strong>Gig Description:</strong> Emphasise speed, quality, and SEO optimization. I can write your full description — just say the word!</p>
+            <p style="margin-top:6px">✅ <strong>Pricing:</strong> Start with $25 for 500 words (competitive but profitable). Move to $50+ after 5 reviews.</p>
+            <p style="margin-top:6px">✅ <strong>Portfolio:</strong> Create 2-3 sample articles today using ChatGPT. I'll give you the prompts.</p>
+            <p style="margin-top:6px">✅ <strong>Tags:</strong> blog writing, AI content, SEO articles, copywriting, content creation</p>
+            <p style="margin-top:10px">Want me to write your full Fiverr gig description right now? 💪</p>
+            <div class="bub-time">10:35 AM</div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Quick prompts -->
+      <div class="quick-prompts">
+        <span class="quick-prompt">Write my Fiverr description</span>
+        <span class="quick-prompt">Give me portfolio article prompts</span>
+        <span class="quick-prompt">How to get first reviews?</span>
+        <span class="quick-prompt">What should I charge?</span>
+      </div>
+
+      <!-- Input area -->
+      <div class="chat-input-area">
+        <div class="chat-input-wrap">
+          <div class="input-actions">
+            <button class="input-btn" title="Attach file"><i class="fas fa-paperclip"></i></button>
+            <button class="input-btn" title="Voice message"><i class="fas fa-microphone"></i></button>
+          </div>
+          <textarea placeholder="Ask NEX anything about AI, your courses, or earning with AI..." rows="1"></textarea>
+        </div>
+        <button class="send-btn" onclick="sendMessage()" title="Send message">
+          <i class="fas fa-paper-plane"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="auth-gate" id="aiAuthGate">
+  <div class="auth-gate-card">
+    <h2>Login or sign up to use Nex AI</h2>
+    <p>Nex AI is available after you create an EduNex account or log in.</p>
+    <div class="auth-gate-actions">
+      <a id="aiGateLogin" class="btn btn-primary" href="login.html">Login</a>
+      <a id="aiGateSignup" class="btn btn-ghost" href="signup.html">Sign up</a>
+    </div>
+  </div>
+</div>
+
+<script src="js/edunex-api.js"></script>
+<script src="js/main.js"></script>
+<script>
+  if (!window.EduNex?.getAccessToken?.()) {
+    const next = encodeURIComponent(window.location.pathname + window.location.search);
+    document.getElementById('aiGateLogin').href = `login.html?next=${next}`;
+    document.getElementById('aiGateSignup').href = `signup.html?next=${next}`;
+    document.getElementById('aiAuthGate').classList.add('is-visible');
+  }
+
+  document.querySelectorAll('.topic-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      document.querySelectorAll('.topic-chip').forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+    });
+  });
+</script>
+<script src="js/animations.js" defer></script>
+</body>
+</html>

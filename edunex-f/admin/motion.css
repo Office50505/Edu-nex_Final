@@ -1,0 +1,286 @@
+/* EduNex shared motion layer */
+:root {
+  --motion-primary: #359c57;
+  --motion-primary-dark: #2f7f48;
+  --motion-primary-soft: #eef8f1;
+  --motion-primary-rgb: 53,156,87;
+  --motion-ease: cubic-bezier(.22, 1, .36, 1);
+  --edx-heading-font: "Adobe Caslon Pro", "Adobe Caslon", "Adobe Caslon Pro Display", "Libre Caslon Text", Georgia, serif;
+  --edx-copy-font: "Avenir Light", "Avenir Next", Avenir, "Helvetica Neue", Arial, sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--edx-copy-font);
+  font-weight: 300;
+}
+
+body :is(
+  h1, h2, h3, h4, h5, h6,
+  .hero-title,
+  .section-title,
+  .app-title,
+  .course-title,
+  .rec-card-title,
+  .course-card-title,
+  .about-text h1,
+  .contact-inner > h2,
+  .help-card h3,
+  .cta-title,
+  .login-card h1,
+  .signup-card h1,
+  .payment-title,
+  .admin-title
+) {
+  font-family: var(--edx-heading-font) !important;
+  font-weight: 600;
+  letter-spacing: 0;
+}
+
+body :is(
+  p,
+  .hero-desc,
+  .app-desc,
+  .section-sub,
+  .rec-card-desc,
+  .course-card-body p,
+  .cat-card-body p,
+  .review-text,
+  .about-text .sub,
+  .help-card-desc,
+  .footer-brand p,
+  .trial-text p,
+  .feat-card p,
+  .bs-feature-text p,
+  .course-description,
+  .login-subtitle,
+  .signup-subtitle
+) {
+  font-family: var(--edx-copy-font) !important;
+  font-weight: 300;
+  letter-spacing: 0;
+}
+
+nav svg,
+.footer-brand svg,
+.brand-logo svg,
+.auth-card svg {
+  overflow: visible;
+}
+
+body.motion-ready {
+  position: relative;
+  isolation: isolate;
+}
+
+body.motion-ready::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image:
+    linear-gradient(90deg, rgba(var(--motion-primary-rgb), .045) 1px, transparent 1px),
+    linear-gradient(0deg, rgba(var(--motion-primary-rgb), .035) 1px, transparent 1px);
+  background-size: 52px 52px;
+  mask-image: linear-gradient(to bottom, rgba(0,0,0,.34), rgba(0,0,0,.08) 44%, transparent 78%);
+  animation: edx-grid-drift 24s linear infinite;
+}
+
+body.motion-ready::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: linear-gradient(110deg, transparent 0 42%, rgba(var(--motion-primary-rgb), .06) 50%, transparent 58% 100%);
+  background-size: 220% 100%;
+  animation: edx-page-sheen 18s ease-in-out infinite;
+}
+
+@keyframes edx-grid-drift {
+  from { background-position: 0 0, 0 0; }
+  to { background-position: 52px 52px, 52px 52px; }
+}
+
+@keyframes edx-page-sheen {
+  0%, 35% { background-position: 140% 0; opacity: 0; }
+  52% { opacity: 1; }
+  72%, 100% { background-position: -80% 0; opacity: 0; }
+}
+
+nav,
+.nav {
+  transition: box-shadow .46s var(--motion-ease), background .46s var(--motion-ease), transform .46s var(--motion-ease), border-color .46s var(--motion-ease);
+}
+
+nav.motion-scrolled,
+.nav.motion-scrolled {
+  background: rgba(255,255,255,.86) !important;
+  border-bottom-color: rgba(var(--motion-primary-rgb), .18) !important;
+  box-shadow: 0 14px 40px rgba(15,23,42,.10);
+}
+
+.nav-links a,
+.mobile-menu a,
+.footer-col a {
+  position: relative;
+}
+
+.nav-links a::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  right: 50%;
+  bottom: -7px;
+  height: 2px;
+  border-radius: 999px;
+  background: currentColor;
+  opacity: 0;
+  transition: left .42s var(--motion-ease), right .42s var(--motion-ease), opacity .42s var(--motion-ease);
+}
+
+.nav-links a:hover::after,
+.nav-links a.active::after {
+  left: 0;
+  right: 0;
+  opacity: .8;
+}
+
+:is(.btn, .btn-login, .btn-main, .btn-submit, .btn-login-main, .try-btn, .subscribe-btn, .bs-enroll, .trial-btn, .btn-white, .login-cta-btn, .app-dl-card) {
+  position: relative;
+  overflow: hidden;
+  transform: translateZ(0);
+}
+
+:is(.btn, .btn-login, .btn-main, .btn-submit, .btn-login-main, .try-btn, .subscribe-btn, .bs-enroll, .trial-btn, .btn-white, .login-cta-btn, .app-dl-card)::after {
+  content: "";
+  position: absolute;
+  inset: -140% -50%;
+  pointer-events: none;
+  background: linear-gradient(115deg, transparent 35%, rgba(255,255,255,.38) 50%, transparent 65%);
+  transform: translateX(-130%) rotate(10deg);
+  transition: transform 1.08s var(--motion-ease);
+}
+
+:is(.btn, .btn-login, .btn-main, .btn-submit, .btn-login-main, .try-btn, .subscribe-btn, .bs-enroll, .trial-btn, .btn-white, .login-cta-btn, .app-dl-card):hover::after {
+  transform: translateX(130%) rotate(10deg);
+}
+
+:is(.btn, .btn-login, .btn-main, .btn-submit, .btn-login-main, .try-btn, .subscribe-btn, .bs-enroll, .trial-btn, .login-cta-btn):hover {
+  box-shadow: 0 14px 34px rgba(var(--motion-primary-rgb), .24);
+}
+
+.motion-reveal {
+  opacity: 0;
+  transform: translateY(28px) scale(.985);
+  transition:
+    opacity .98s var(--motion-ease),
+    transform .98s var(--motion-ease),
+    filter .98s var(--motion-ease);
+  transition-delay: var(--motion-delay, 0ms);
+  filter: blur(6px);
+}
+
+.motion-reveal.is-visible,
+.reveal.visible,
+.reveal-left.visible,
+.reveal-right.visible {
+  opacity: 1;
+  transform: translateY(0) translateX(0) scale(1);
+  filter: blur(0);
+}
+
+.motion-tilt {
+  transform-style: preserve-3d;
+  will-change: transform;
+  transition: transform .46s var(--motion-ease), box-shadow .46s var(--motion-ease), border-color .46s var(--motion-ease);
+}
+
+.motion-tilt:hover {
+  transform:
+    perspective(900px)
+    rotateX(var(--tilt-x, 0deg))
+    rotateY(var(--tilt-y, 0deg))
+    translateY(-7px);
+  box-shadow: 0 22px 55px rgba(15,23,42,.13), 0 10px 30px rgba(var(--motion-primary-rgb), .16);
+}
+
+:is(.course-card-img, .rec-card-img, .cat-card-img, .about-illustration-img) {
+  transition: transform 1.15s var(--motion-ease), filter 1.15s var(--motion-ease);
+}
+
+:is(.course-card, .rec-card, .cat-card, .related-card):hover :is(.course-card-img, .rec-card-img, .cat-card-img),
+.about-illustration:hover .about-illustration-img {
+  transform: scale(1.045);
+  filter: saturate(1.06) contrast(1.03);
+}
+
+.float-tag,
+.product-phone,
+.product-laptop,
+.stat-icon-circle,
+.dl-big-icon,
+.float-tag-icon,
+.help-card-icon {
+  animation: edx-soft-float 8.4s ease-in-out infinite;
+}
+
+.product-laptop,
+.float-bottom-left,
+.dl-big:nth-child(even) .dl-big-icon {
+  animation-delay: -2.4s;
+}
+
+.float-middle-right,
+.stat-item:nth-child(3) .stat-icon-circle {
+  animation-delay: -3.2s;
+}
+
+@keyframes edx-soft-float {
+  0%, 100% { translate: 0 0; }
+  50% { translate: 0 -8px; }
+}
+
+.stat-number.motion-counting {
+  color: var(--blue, var(--primary, var(--motion-primary)));
+}
+
+body.motion-ready .app-dl-bar {
+  background-image: linear-gradient(90deg, rgba(255,255,255,0), rgba(255,255,255,.55), rgba(255,255,255,0));
+  background-size: 220% 100%;
+  animation: edx-bar-sweep 3.2s ease-in-out infinite;
+}
+
+body.motion-ready .app-dl-card:nth-child(2) .app-dl-bar {
+  animation-delay: .22s;
+}
+
+@keyframes edx-bar-sweep {
+  0% { background-position: 120% 0; }
+  100% { background-position: -120% 0; }
+}
+
+body.motion-ready :is(.hero-title .blue, .app-title .blue, .section-tag, .rec-card-price, .course-price) {
+  text-shadow: 0 10px 32px rgba(var(--motion-primary-rgb), .16);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: .001ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: .001ms !important;
+  }
+
+  .motion-reveal {
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+}

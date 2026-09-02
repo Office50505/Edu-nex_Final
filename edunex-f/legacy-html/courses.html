@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EduNex AI — Explore Our Curriculum</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="css/animations.css">
+  <style>
+    :root { --font-body: "Manrope", ui-sans-serif, system-ui, sans-serif; --font-display: "Fraunces", Georgia, serif; }
+    body, button, input, textarea, select { font-family: var(--font-body); }
+    h1, h2, .hero-title, .section-title, .auth-brand, .library-hero h1, .welcome-left h1, .market-right h2, .trial-left h2, .team-header-row h2, .cta-section h2, .section-head h2, .lp-title, .sp-title, .payment-choice-title { font-family: var(--font-display); font-weight: 600; letter-spacing: 0; }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; overflow-x: hidden; }
+    body { font-family: "Manrope", ui-sans-serif, system-ui, sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; overflow-x: hidden; }
+    img { max-width: 100%; display: block; }
+    a { text-decoration: none; color: inherit; }
+    ul { list-style: none; }
+
+    :root {
+      --cyan: #C58B2A;
+      --cyan-dim: rgba(197,139,42,0.1);
+      --cyan-border: rgba(197,139,42,0.25);
+      /* dark-mode defaults — overridden by theme script at runtime */
+      --bg: #000000;
+      --card: #0D0D0D;
+      --card2: #111318;
+      --border: rgba(255,255,255,0.08);
+      --text: #ffffff;
+      --text2: #9ca3af;
+      --nav-bg: rgba(0,0,0,0.92);
+      --gray: #888888;
+      --light: #bbbbbb;
+    }
+
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+
+    /* ===== NAVBAR ===== */
+    .navbar {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 999;
+      background: var(--nav-bg); backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border); padding: 16px 0;
+    }
+    .nav-inner { max-width: 1200px; margin: 0 auto; padding: 0 24px; display: flex; align-items: center; gap: 40px; }
+    .nav-logo { font-size: 1.2rem; font-weight: 700; color: var(--text); white-space: nowrap; flex-shrink: 0; }
+    .nav-logo span { color: var(--cyan); }
+    .nav-links { display: flex; align-items: center; gap: 4px; flex: 1; justify-content: center; }
+    .nav-links a { padding: 8px 16px; font-size: .9rem; font-weight: 500; color: var(--text2); transition: color .2s; position: relative; }
+    .nav-links a:hover { color: var(--text); }
+    .nav-links a.active { color: var(--text); font-weight: 600; }
+    .nav-links a.active::after { content: ''; position: absolute; bottom: 0; left: 16px; right: 16px; height: 2px; background: var(--cyan); border-radius: 2px; }
+    .nav-right { display: flex; align-items: center; gap: 16px; flex-shrink: 0; }
+    .nav-login { font-size: .9rem; font-weight: 500; color: var(--text2); transition: color .2s; }
+    .nav-login:hover { color: var(--cyan); }
+    .nav-avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--card2); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: .85rem; color: var(--gray); cursor: pointer; }
+    .nav-hamburger { display: none; flex-direction: column; gap: 5px; background: none; border: none; cursor: pointer; padding: 4px; }
+    .nav-hamburger span { display: block; width: 22px; height: 2px; background: var(--text); border-radius: 2px; }
+
+    /* ===== SEARCH + FILTER ===== */
+    .search-section { padding: 100px 0 40px; }
+
+    /* ===== CATEGORY SECTIONS ===== */
+    .category-block { margin-bottom: 72px; }
+    .category-block:last-child { margin-bottom: 0; }
+    .badge-tech { color: #4ADE80; border: 1px solid rgba(74,222,128,.35); }
+    .badge-marketing { color: #F472B6; border: 1px solid rgba(244,114,182,.35); }
+    .search-bar-wrap {
+      display: flex; align-items: center; gap: 16px;
+      flex-wrap: wrap;
+    }
+    .search-input-wrap {
+      display: flex; align-items: center; gap: 10px;
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 10px; padding: 11px 16px;
+      width: 260px; flex-shrink: 0;
+      transition: border-color .2s;
+    }
+    .search-input-wrap:focus-within { border-color: var(--cyan-border); }
+    .search-input-wrap i { color: var(--gray); font-size: .85rem; }
+    .search-input-wrap input { background: none; border: none; outline: none; font-size: .85rem; color: var(--text); font-family: "Manrope", ui-sans-serif, system-ui, sans-serif; width: 100%; }
+    .search-input-wrap input::placeholder { color: var(--gray); }
+
+    .filter-pills { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .pill {
+      padding: 9px 18px;
+      border-radius: 100px;
+      font-size: .8rem; font-weight: 500;
+      cursor: pointer; border: 1px solid var(--border);
+      background: transparent; color: var(--gray);
+      font-family: "Manrope", ui-sans-serif, system-ui, sans-serif;
+      transition: all .2s; white-space: nowrap;
+    }
+    .pill:hover { border-color: var(--cyan-border); color: var(--cyan); }
+    .pill.active { background: var(--cyan); color: #000; font-weight: 700; border-color: var(--cyan); }
+
+    /* ===== CURRICULUM ===== */
+    .curriculum-section { padding: 0 0 90px; }
+    .section-header { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 32px; }
+    .section-header-left h2 { font-size: clamp(1.5rem, 2.5vw, 2rem); font-weight: 800; margin-bottom: 6px; }
+    .section-header-left p { font-size: .85rem; color: var(--gray); }
+    .nav-arrows { display: flex; gap: 8px; }
+    .arrow-btn {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: var(--card); border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: .8rem; color: var(--gray); cursor: pointer;
+      transition: all .2s;
+    }
+    .arrow-btn:hover { border-color: var(--cyan); color: var(--cyan); }
+
+    .courses-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; align-items: stretch; }
+
+    .course-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      overflow: hidden;
+      transition: all .25s;
+      cursor: pointer;
+      min-height: 430px;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+    .course-card:hover {
+      border-color: var(--cyan-border);
+      box-shadow: 0 0 40px rgba(197,139,42,.12);
+      transform: translateY(-5px);
+    }
+    .course-thumb-wrap {
+      position: relative;
+      flex: 0 0 auto;
+      aspect-ratio: 16 / 9;
+      overflow: hidden;
+      background: var(--card2);
+    }
+    .course-thumb {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      display: block;
+      background: var(--card2);
+    }
+    .course-cat-badge {
+      position: absolute; top: 12px; left: 12px;
+      padding: 3px 10px; background: rgba(0,0,0,.75);
+      backdrop-filter: blur(10px);
+      border-radius: 100px; font-size: .65rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: .06em;
+    }
+    .badge-agency { color: var(--cyan); border: 1px solid rgba(197,139,42,.35); }
+    .badge-freelancing { color: #A78BFA; border: 1px solid rgba(167,139,250,.35); }
+    .badge-content { color: #FB923C; border: 1px solid rgba(251,146,60,.35); }
+
+    .course-body { padding: 20px; flex: 1; display: flex; flex-direction: column; min-width: 0; }
+    .course-title-main {
+      font-size: 1rem;
+      font-weight: 700;
+      line-height: 1.4;
+      margin-bottom: 6px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .course-author-line { font-size: .78rem; color: var(--gray); margin-bottom: 12px; }
+    .course-author-line span { color: var(--text2); }
+    .course-stats { display: flex; align-items: center; gap: 16px; font-size: .78rem; color: var(--gray); margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+    .course-stats .stat-item { display: flex; align-items: center; gap: 5px; }
+    .course-stats i { font-size: .72rem; color: var(--cyan); }
+    .star-icon { color: #FFD700; }
+
+    .course-price-row {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 14px;
+      margin-top: auto;
+    }
+    .price-left { display: flex; align-items: baseline; gap: 8px; }
+    .price-original { font-size: .78rem; color: var(--gray); text-decoration: line-through; }
+    .price-trial { font-size: 1.2rem; font-weight: 800; color: var(--cyan); }
+    .price-off { font-size: .72rem; font-weight: 700; color: #A96F18; background: rgba(197,139,42,.1); border: 1px solid rgba(197,139,42,.25); padding: 2px 8px; border-radius: 100px; }
+
+    .btn-trial {
+      width: 100%; padding: 12px;
+      background: var(--cyan); color: #000;
+      font-weight: 700; font-size: .88rem;
+      font-family: "Manrope", ui-sans-serif, system-ui, sans-serif;
+      border: none; border-radius: 10px;
+      cursor: pointer; transition: all .2s;
+    }
+    .btn-trial:hover { background: #A96F18; box-shadow: 0 4px 18px rgba(197,139,42,.35); }
+    .course-card-actions {
+      display: grid;
+      grid-template-columns: 1fr 46px;
+      gap: 10px;
+      align-items: center;
+    }
+    .wishlist-btn {
+      width: 46px;
+      height: 46px;
+      border: 1px solid var(--border2);
+      border-radius: 12px;
+      background: rgba(255,255,255,.04);
+      color: var(--light);
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      transition: all .2s;
+    }
+    .wishlist-btn:hover,
+    .wishlist-btn.is-saved {
+      border-color: rgba(197,139,42,.34);
+      color: var(--cyan);
+      background: rgba(197,139,42,.08);
+    }
+    .course-card.has-access .price-left,
+    .course-card.has-access .price-off {
+      display: none;
+    }
+    .course-card.has-access .course-price-row {
+      justify-content: flex-start;
+    }
+    .course-card.has-access .course-price-row::before {
+      content: "Access active";
+      min-height: 28px;
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: rgba(197,139,42,.08);
+      color: var(--cyan);
+      font-size: .76rem;
+      font-weight: 900;
+    }
+
+    /* ===== PATH TO MASTERY ===== */
+    .path-section { padding: 90px 0; background: var(--bg); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+    .path-header { text-align: center; margin-bottom: 64px; }
+    .path-header h2 { font-size: clamp(1.5rem, 2.5vw, 2rem); font-weight: 800; margin-bottom: 12px; }
+    .path-header p { font-size: .9rem; color: var(--gray); max-width: 500px; margin: 0 auto; line-height: 1.7; }
+
+    .steps-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 32px; position: relative; }
+    .steps-grid::before {
+      content: ''; position: absolute;
+      top: 22px; left: 60px; right: 60px; height: 1px;
+      background: linear-gradient(90deg, var(--cyan-border), rgba(197,139,42,.05) 50%, var(--cyan-border));
+      pointer-events: none;
+    }
+    .step-item { text-align: center; position: relative; }
+    .step-num {
+      width: 48px; height: 48px;
+      background: var(--cyan);
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem; font-weight: 800; color: #000;
+      margin: 0 auto 18px;
+      position: relative; z-index: 1;
+    }
+    .step-item h4 { font-size: .95rem; font-weight: 700; margin-bottom: 10px; }
+    .step-item p { font-size: .8rem; color: var(--gray); line-height: 1.7; }
+
+    /* ===== TESTIMONIAL ===== */
+    .testimonial-section { padding: 90px 0; }
+    .testimonial-inner {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 64px; align-items: center;
+    }
+    .testimonial-mockup {
+      background: #fff;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0,0,0,.6);
+      transform: perspective(800px) rotateY(5deg);
+      transition: transform .4s;
+    }
+    .testimonial-mockup:hover { transform: perspective(800px) rotateY(0deg); }
+    .tm-inner { padding: 16px; background: #f8f9fa; }
+    .tm-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+    .tm-logo { font-size: .7rem; font-weight: 800; color: #000; }
+    .tm-logo span { color: var(--cyan); }
+    .tm-nav { display: flex; gap: 8px; }
+    .tm-nav span { font-size: .52rem; color: #777; }
+    .tm-hero { display: grid; grid-template-columns: 1fr auto; gap: 10px; margin-bottom: 10px; align-items: start; }
+    .tm-h-badge { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; background: rgba(197,139,42,.12); border: 1px solid rgba(197,139,42,.25); border-radius: 100px; font-size: .42rem; color: var(--cyan); margin-bottom: 4px; }
+    .tm-h-text h3 { font-size: .7rem; font-weight: 800; color: #111; line-height: 1.2; }
+    .tm-h-text h3 span { color: var(--cyan); }
+    .tm-h-text p { font-size: .42rem; color: #888; margin: 3px 0 5px; }
+    .tm-h-btn { padding: 3px 8px; background: var(--cyan); border-radius: 4px; font-size: .45rem; font-weight: 700; color: #000; display: inline-block; }
+    .tm-student { width: 72px; height: 72px; border-radius: 8px; object-fit: cover; }
+    .tm-categories { margin-bottom: 10px; }
+    .tm-cat-title { font-size: .55rem; font-weight: 700; color: #111; margin-bottom: 6px; text-align: center; }
+    .tm-cat-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 4px; }
+    .tm-cat { background: #efefef; border-radius: 4px; padding: 5px 3px; text-align: center; font-size: .38rem; color: #555; font-weight: 600; }
+    .tm-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+    .tm-mini-card { background: #f1f1f1; border-radius: 6px; padding: 6px; }
+    .tm-mini-card .mc-label { font-size: .38rem; color: var(--cyan); font-weight: 700; text-transform: uppercase; margin-bottom: 2px; }
+    .tm-mini-card .mc-title { font-size: .45rem; font-weight: 700; color: #111; line-height: 1.3; }
+    .tm-mini-card .mc-sub { font-size: .38rem; color: #888; margin: 2px 0; }
+    .tm-mini-card .mc-btn { padding: 2px 5px; background: var(--cyan); border-radius: 3px; font-size: .35rem; font-weight: 700; color: #000; display: inline-block; margin-top: 3px; }
+
+    .testimonial-content { padding-left: 16px; }
+    .stars { color: #FFD700; font-size: 1.1rem; letter-spacing: 2px; margin-bottom: 20px; }
+    .testimonial-quote {
+      font-size: clamp(1rem, 1.8vw, 1.2rem);
+      font-weight: 600; line-height: 1.65;
+      color: var(--text); font-style: italic; margin-bottom: 24px;
+    }
+    .testimonial-quote::before { content: '"'; color: var(--cyan); font-size: 1.4rem; line-height: 0; vertical-align: -6px; margin-right: 2px; }
+    .testimonial-quote::after { content: '"'; color: var(--cyan); font-size: 1.4rem; line-height: 0; vertical-align: -6px; margin-left: 2px; }
+    .testimonial-author { display: flex; align-items: center; gap: 14px; }
+    .ta-avatar { width: 48px; height: 48px; border-radius: 50%; object-fit: cover; border: 2px solid var(--cyan-border); }
+    .ta-name { font-size: .92rem; font-weight: 700; color: var(--text); }
+    .ta-role { font-size: .78rem; color: var(--gray); }
+
+    /* ===== FOOTER ===== */
+    .footer { background: var(--bg); border-top: 1px solid var(--border); padding: 60px 0 0; }
+    .footer-grid { display: grid; grid-template-columns: 1.6fr 1fr 1fr 1fr; gap: 40px; padding-bottom: 48px; }
+    .footer-brand-name { font-size: 1.1rem; font-weight: 800; color: var(--cyan); margin-bottom: 14px; }
+    .footer-desc { font-size: .82rem; color: var(--gray); line-height: 1.75; margin-bottom: 20px; max-width: 240px; }
+    .footer-socials { display: flex; gap: 10px; }
+    .social-icon { width: 34px; height: 34px; background: var(--card); border: 1px solid var(--border); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: .8rem; color: var(--gray); cursor: pointer; transition: all .2s; }
+    .social-icon:hover { border-color: var(--cyan); color: var(--cyan); }
+    .footer-col h4 { font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: var(--text); margin-bottom: 18px; }
+    .footer-links { display: flex; flex-direction: column; gap: 11px; }
+    .footer-links a { font-size: .85rem; color: var(--gray); transition: color .2s; }
+    .footer-links a:hover { color: var(--cyan); }
+
+    .footer-bottom {
+      border-top: 1px solid var(--border); padding: 16px 0;
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 12px;
+    }
+    .footer-bottom p { font-size: .78rem; color: var(--gray); }
+    .footer-bottom-right { display: flex; align-items: center; gap: 20px; }
+    .system-status { display: flex; align-items: center; gap: 6px; font-size: .75rem; color: var(--gray); }
+    .status-dot { width: 7px; height: 7px; border-radius: 50%; background: #C58B2A; box-shadow: 0 0 6px rgba(197,139,42,.6); }
+    .lang-badge { font-size: .75rem; color: var(--gray); display: flex; align-items: center; gap: 5px; }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 1024px) {
+      .courses-grid { grid-template-columns: repeat(2,1fr); }
+      .footer-grid { grid-template-columns: 1fr 1fr; gap: 32px; }
+      .steps-grid::before { display: none; }
+    }
+    @media (max-width: 900px) {
+      .nav-links { display: none; }
+      .nav-hamburger { display: flex; }
+      .testimonial-inner { grid-template-columns: 1fr; }
+      .testimonial-mockup { transform: none; }
+      .steps-grid { grid-template-columns: repeat(2,1fr); }
+    }
+    @media (max-width: 640px) {
+      .courses-grid { grid-template-columns: 1fr; }
+      .steps-grid { grid-template-columns: 1fr 1fr; }
+      .footer-grid { grid-template-columns: 1fr; }
+      .search-bar-wrap { flex-direction: column; align-items: flex-start; }
+      .search-input-wrap { width: 100%; }
+      .path-section { padding: 60px 0; }
+      .curriculum-section { padding: 0 0 60px; }
+      .category-block { margin-bottom: 48px; }
+    }
+    @media (max-width: 480px) {
+      .container { padding: 0 16px; }
+      .search-section { padding: 90px 0 32px; }
+      .section-header-left h2 { font-size: 1.3rem; }
+      .course-body { padding: 16px; }
+      .steps-grid { grid-template-columns: 1fr; }
+      .footer { padding: 40px 0 0; }
+    }
+  </style>
+  <script>(function(){var t=localStorage.getItem('enx-theme')||'noir';var L={'--bg':'#f3f4f6','--card':'#ffffff','--card2':'#f9fafb','--border':'rgba(0,0,0,0.08)','--border2':'rgba(0,0,0,0.12)','--text':'#332820','--text2':'#756A60','--nav-bg':'rgba(255,255,255,0.95)','--gray':'#6b7280','--light':'#374151'};var N={'--bg':'#000000','--card':'#0d0d0d','--card2':'#111318','--border':'rgba(255,255,255,0.07)','--border2':'rgba(255,255,255,0.10)','--text':'#ffffff','--text2':'#9ca3af','--nav-bg':'rgba(0,0,0,0.92)','--gray':'#888888','--light':'#bbbbbb'};var v=t==='light'?L:(t==='system'?(window.matchMedia('(prefers-color-scheme:dark)').matches?N:L):N);var r=document.documentElement;Object.keys(v).forEach(function(k){r.style.setProperty(k,v[k]);});r.style.background=v['--bg'];document.addEventListener('DOMContentLoaded',function(){document.body.style.background=v['--bg'];document.body.style.color=v['--text'];});})();</script>
+</head>
+<body>
+
+<!-- ===== NAVBAR ===== -->
+<nav class="navbar">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">EduNex <span>AI</span></a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="courses.html" class="active">Courses</a></li>
+      <li><a href="dashboard.html">Dashboard</a></li>
+      <li><a href="about.html">About</a></li>
+    </ul>
+    <div class="nav-right">
+      <a href="login.html" class="nav-login">Login</a>
+      <a href="profile.html" class="nav-avatar" title="Profile Settings"><i class="fas fa-user"></i></a>
+    </div>
+    <button class="nav-hamburger" id="hamburger">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- Mobile menu -->
+<div id="mobileMenu" style="display:none;position:fixed;top:65px;left:0;right:0;z-index:998;background:var(--nav-bg);border-bottom:1px solid var(--border);padding:16px 24px;flex-direction:column;gap:4px">
+  <a href="index.html" style="padding:12px 0;font-size:.95rem;color:var(--text2);border-bottom:1px solid var(--border);display:block">Home</a>
+  <a href="courses.html" style="padding:12px 0;font-size:.95rem;color:var(--text);border-bottom:1px solid var(--border);display:block">Courses</a>
+  <a href="dashboard.html" style="padding:12px 0;font-size:.95rem;color:var(--text2);border-bottom:1px solid var(--border);display:block">Dashboard</a>
+  <a href="about.html" style="padding:12px 0;font-size:.95rem;color:var(--text2);display:block">About</a>
+</div>
+
+<!-- ===== SEARCH + FILTER ===== -->
+<section class="search-section">
+  <div class="container">
+    <h1 class="sr-only">Explore Courses</h1>
+    <div class="search-bar-wrap">
+      <div class="search-input-wrap">
+        <i class="fas fa-search"></i>
+        <input type="text" placeholder="Search for AI skills...">
+      </div>
+      <div class="filter-pills">
+        <button class="pill active">All Courses</button>
+        <button class="pill">AI Freelancing</button>
+        <button class="pill">Prompt Engineering</button>
+        <button class="pill">Automation Agency</button>
+        <button class="pill">UGC Creation</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== COURSES BY CATEGORY ===== -->
+<section class="curriculum-section">
+  <div class="container">
+    <div class="category-block">
+      <div class="section-header">
+        <div class="section-header-left">
+          <h2>Loading courses...</h2>
+          <p>Fetching the real EduNex course catalogue from the backend.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== YOUR PATH TO MASTERY ===== -->
+<section class="path-section">
+  <div class="container">
+    <div class="path-header">
+      <h2>Your Path to Mastery</h2>
+      <p>We've simplified the journey from zero to AI-pro. Join thousands of Indians who have pivoted their careers in just 7 days.</p>
+    </div>
+    <div class="steps-grid">
+      <div class="step-item">
+        <div class="step-num">1</div>
+        <h3>Claim ₹1 Trial</h3>
+        <p>Get instant access to any foundation course for just ₹1. No hidden commitments.</p>
+      </div>
+      <div class="step-item">
+        <div class="step-num">2</div>
+        <h3>7-Day Sprint</h3>
+        <p>Complete the 'First Profit' framework and join our community of 12k+ achievers.</p>
+      </div>
+      <div class="step-item">
+        <div class="step-num">3</div>
+        <h3>Upgrade to Pro</h3>
+        <p>Unlock advanced scaling modules and 1-on-1 mentorship after your trial.</p>
+      </div>
+      <div class="step-item">
+        <div class="step-num">4</div>
+        <h3>Launch &amp; Earn</h3>
+        <p>Apply the skills to land your first high-ticket international client or automate your biz.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== TESTIMONIAL ===== -->
+<!-- ===== FOOTER ===== -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-brand-name">EduNex AI</div>
+        <p class="footer-desc">Empowering the next generation of Indian creators and entrepreneurs with professional-grade AI skills.</p>
+        <div class="footer-socials">
+          <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
+          <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4>Courses</h4>
+        <ul class="footer-links">
+          <li><a href="#">AI Freelancing</a></li>
+          <li><a href="#">Prompt Engineering</a></li>
+          <li><a href="#">Automation Agency</a></li>
+          <li><a href="#">UGC Mastery</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Company Info</h4>
+        <ul class="footer-links">
+          <li><a href="about.html">About Us</a></li>
+          <li><a href="#">Success Stories</a></li>
+          <li><a href="#">Careers</a></li>
+          <li><a href="#">Press Kit</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Resources</h4>
+        <ul class="footer-links">
+          <li><a href="#">Free AI Tools</a></li>
+          <li><a href="#">Newsletter</a></li>
+          <li><a href="#">Privacy Policy</a></li>
+          <li><a href="#">Terms of Service</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p>© 2024 EduNex AI. All rights reserved.</p>
+      <div class="footer-bottom-right">
+        <div class="system-status">
+          <div class="status-dot"></div>
+          System Status: All Systems Go
+        </div>
+        <div class="lang-badge">
+          <i class="fas fa-globe" style="font-size:.75rem"></i>
+          English (India)
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script src="js/edunex-api.js"></script>
+<script>
+  const courseState = { courses: [], filtered: [], hasAccess: false, wishlist: new Set(), loading: false };
+
+  function escapeHtml(value) {
+    return String(value ?? '').replace(/[&<>"']/g, char => ({
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#39;'
+    }[char]));
+  }
+
+  function normalizeCourse(course) {
+    return {
+      ...course,
+      id: EduNex.courseId(course),
+      title: course.title || 'Untitled course',
+      description: course.description || 'Build practical AI skills with guided lessons and projects.',
+      categoryName: EduNex.courseCategory(course),
+      image: EduNex.courseImage(course),
+      lessonCount: Array.isArray(course.videos) ? course.videos.length : 0,
+      rating: course.rating || course.averageRating || '4.8'
+    };
+  }
+
+  function hasLocalCourseAccess() {
+    try {
+      const marker = JSON.parse(localStorage.getItem('edunexHasCourseAccess') || 'null');
+      return Boolean(marker?.active && Date.now() - Number(marker.savedAt || 0) < 24 * 60 * 60 * 1000);
+    } catch (_) {
+      return false;
+    }
+  }
+
+  async function hydrateCourseAccess() {
+    const localAccess = hasLocalCourseAccess();
+    const token = EduNex.getAccessToken?.();
+    if (!token) {
+      courseState.hasAccess = localAccess;
+      return;
+    }
+    courseState.hasAccess = localAccess;
+    try {
+      const data = await EduNex.authRequest('/api/payment/subscription-status');
+      courseState.hasAccess = EduNex.hasCourseAccess?.(data) || localAccess;
+    } catch (_) {
+      courseState.hasAccess = localAccess;
+    }
+  }
+
+  async function hydrateWishlist() {
+    courseState.wishlist = new Set(JSON.parse(localStorage.getItem('edunexWishlistLocal') || '[]').map(String));
+    if (!EduNex.getAccessToken?.()) return;
+    try {
+      const data = await EduNex.authRequest('/api/wishlist');
+      (data?.courses || data?.courseIds || []).forEach(id => courseState.wishlist.add(String(id?._id || id)));
+      localStorage.setItem('edunexWishlistLocal', JSON.stringify(Array.from(courseState.wishlist)));
+    } catch (_) {}
+  }
+
+  function courseCard(course) {
+    const duration = course.duration || (course.lessonCount ? `${course.lessonCount} Lessons` : 'Self paced');
+    const ctaLabel = courseState.hasAccess ? 'View Course' : 'Start ₹1 Trial';
+    const saved = courseState.wishlist.has(String(course.id));
+    return `
+      <div class="course-card${courseState.hasAccess ? ' has-access' : ''}" data-course-card-id="${escapeHtml(course.id)}" data-title="${escapeHtml(course.title.toLowerCase())}" data-category="${escapeHtml(course.categoryName.toLowerCase())}">
+        <div class="course-thumb-wrap">
+          <img class="course-thumb" src="${escapeHtml(course.image)}" alt="${escapeHtml(course.title)}" onerror="this.onerror=null;this.src=EduNex.placeholderImage(this.alt||'EduNex')">
+          <span class="course-cat-badge badge-agency">${escapeHtml(course.categoryName)}</span>
+        </div>
+        <div class="course-body">
+          <h3 class="course-title-main">${escapeHtml(course.title)}</h3>
+          <div class="course-author-line">by <span>EduNex AI Mentors</span></div>
+          <div class="course-stats">
+            <div class="stat-item"><i class="fas fa-clock"></i> ${escapeHtml(duration)}</div>
+            <div class="stat-item"><i class="fas fa-star star-icon"></i> ${escapeHtml(course.rating)}</div>
+          </div>
+          <div class="course-price-row">
+            <div class="price-left">
+              <span class="price-original">₹4,999</span>
+              <span class="price-trial">₹1 Trial</span>
+            </div>
+            <span class="price-off">99% OFF</span>
+          </div>
+          <div class="course-card-actions">
+            <button class="btn-trial" data-course-id="${escapeHtml(course.id)}">${escapeHtml(ctaLabel)}</button>
+            <button class="wishlist-btn${saved ? ' is-saved' : ''}" type="button" data-wishlist-id="${escapeHtml(course.id)}" aria-label="${saved ? 'Remove from wishlist' : 'Save to wishlist'}"><i class="${saved ? 'fas' : 'far'} fa-heart"></i></button>
+          </div>
+        </div>
+      </div>`;
+  }
+
+  function renderCourses() {
+    const host = document.querySelector('.curriculum-section .container');
+    if (!host) return;
+    const search = document.querySelector('.search-input-wrap input')?.value.trim().toLowerCase() || '';
+    const activePill = document.querySelector('.pill.active')?.dataset.category || 'all';
+    const matches = courseState.courses.filter(course => {
+      const textMatch = !search || `${course.title} ${course.description} ${course.categoryName}`.toLowerCase().includes(search);
+      const categoryMatch = activePill === 'all' || course.categoryName.toLowerCase() === activePill;
+      return textMatch && categoryMatch;
+    });
+
+    if (!matches.length) {
+      host.innerHTML = '<div class="category-block"><div class="section-header"><div class="section-header-left"><h2>No courses found</h2><p>Try another search or check back after courses are published.</p></div></div></div>';
+      return;
+    }
+
+    const groups = new Map();
+    matches.forEach(course => {
+      const key = course.categoryName || 'AI Skills';
+      if (!groups.has(key)) groups.set(key, []);
+      groups.get(key).push(course);
+    });
+
+    host.innerHTML = Array.from(groups.entries()).map(([category, courses]) => `
+      <div class="category-block">
+        <div class="section-header">
+          <div class="section-header-left">
+            <h2>${escapeHtml(category)}</h2>
+            <p>Real courses published from the EduNex backend</p>
+          </div>
+        </div>
+        <div class="courses-grid">
+          ${courses.map(courseCard).join('')}
+        </div>
+      </div>`).join('');
+
+    host.querySelectorAll('[data-course-id]').forEach(button => {
+      button.addEventListener('click', (event) => {
+        event.stopPropagation();
+        const course = courseState.courses.find(item => item.id === button.dataset.courseId);
+        if (course) EduNex.openCourseDetails(course);
+      });
+    });
+    host.querySelectorAll('[data-course-card-id]').forEach(card => {
+      card.addEventListener('click', () => {
+        const course = courseState.courses.find(item => item.id === card.dataset.courseCardId);
+        if (course) EduNex.openCourseDetails(course);
+      });
+      card.setAttribute('role', 'link');
+      card.setAttribute('tabindex', '0');
+      card.addEventListener('keydown', (event) => {
+        if (event.key !== 'Enter' && event.key !== ' ') return;
+        event.preventDefault();
+        const course = courseState.courses.find(item => item.id === card.dataset.courseCardId);
+        if (course) EduNex.openCourseDetails(course);
+      });
+    });
+    host.querySelectorAll('[data-wishlist-id]').forEach(button => {
+      button.addEventListener('click', (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        toggleWishlist(button.dataset.wishlistId);
+      });
+    });
+  }
+
+  async function toggleWishlist(courseId) {
+    if (!courseId) return;
+    const id = String(courseId);
+    const currentlySaved = courseState.wishlist.has(id);
+    if (currentlySaved) courseState.wishlist.delete(id);
+    else courseState.wishlist.add(id);
+    localStorage.setItem('edunexWishlistLocal', JSON.stringify(Array.from(courseState.wishlist)));
+    renderCourses();
+    if (!EduNex.getAccessToken?.()) return;
+    try {
+      await EduNex.authRequest('/api/wishlist', {
+        method: currentlySaved ? 'DELETE' : 'POST',
+        body: JSON.stringify({ courseId: id })
+      });
+    } catch (_) {}
+  }
+
+  function renderPills() {
+    const host = document.querySelector('.filter-pills');
+    if (!host) return;
+    const categories = Array.from(new Set(courseState.courses.map(course => course.categoryName))).filter(Boolean);
+    host.innerHTML = [
+      '<button class="pill active" data-category="all">All Courses</button>',
+      ...categories.map(category => `<button class="pill" data-category="${escapeHtml(category.toLowerCase())}">${escapeHtml(category)}</button>`)
+    ].join('');
+    host.querySelectorAll('.pill').forEach(p => {
+      p.addEventListener('click', () => {
+        host.querySelectorAll('.pill').forEach(x => x.classList.remove('active'));
+        p.classList.add('active');
+        renderCourses();
+      });
+    });
+  }
+
+  async function loadBackendCourses() {
+    if (courseState.loading) return;
+    courseState.loading = true;
+    const host = document.querySelector('.curriculum-section .container');
+    if (host) {
+      host.innerHTML = '<div class="category-block"><div class="section-header"><div class="section-header-left"><h2>Loading courses...</h2><p>Fetching the latest EduNex catalogue.</p></div></div></div>';
+    }
+    try {
+      await Promise.all([hydrateCourseAccess(), hydrateWishlist()]);
+      const data = await EduNex.request('/api/courses');
+      courseState.courses = (Array.isArray(data) ? data : []).map(normalizeCourse);
+      renderPills();
+      renderCourses();
+    } catch (error) {
+      console.error('Courses API failed', error);
+      if (host) {
+        host.innerHTML = "<div class='category-block'><div class='section-header'><div class='section-header-left'><h2>We couldn't load courses right now.</h2><p>Please try again in a moment.</p><button class='btn-trial' type='button' id='coursesRetryBtn'>Retry</button></div></div></div>";
+        document.getElementById('coursesRetryBtn')?.addEventListener('click', loadBackendCourses);
+      }
+    } finally {
+      courseState.loading = false;
+    }
+  }
+
+  const hamburger = document.getElementById('hamburger');
+  const mobileMenu = document.getElementById('mobileMenu');
+  hamburger.addEventListener('click', () => {
+    const open = mobileMenu.style.display === 'flex';
+    mobileMenu.style.display = open ? 'none' : 'flex';
+  });
+
+  window.addEventListener('scroll', () => {
+    document.querySelector('.navbar').style.borderBottomColor =
+      window.scrollY > 20 ? 'rgba(255,255,255,.12)' : 'rgba(255,255,255,.08)';
+  });
+
+  document.querySelector('.search-input-wrap input')?.addEventListener('input', renderCourses);
+  window.addEventListener('pageshow', async () => {
+    if (!courseState.courses.length) return;
+    await hydrateCourseAccess();
+    renderCourses();
+  });
+  loadBackendCourses();
+</script>
+<script src="assets/bot-avatars/manifest.js"></script>
+<script src="js/nex-ai-widget.js"></script>
+<script src="js/animations.js" defer></script>
+</body>
+</html>

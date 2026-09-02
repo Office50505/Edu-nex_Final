@@ -1,0 +1,239 @@
+/* ===================================================
+   EduNex — Animation Library
+   =================================================== */
+
+/* ─── KEYFRAMES ─── */
+@keyframes fadeInUp    { from { opacity:0; transform:translateY(50px) }  to { opacity:1; transform:translateY(0) } }
+@keyframes fadeInDown  { from { opacity:0; transform:translateY(-35px) } to { opacity:1; transform:translateY(0) } }
+@keyframes fadeInLeft  { from { opacity:0; transform:translateX(-60px) } to { opacity:1; transform:translateX(0) } }
+@keyframes fadeInRight { from { opacity:0; transform:translateX(60px) }  to { opacity:1; transform:translateX(0) } }
+@keyframes scaleIn     { from { opacity:0; transform:scale(0.78) }       to { opacity:1; transform:scale(1) } }
+@keyframes slideInDown { from { opacity:0; transform:translateY(-100%) } to { opacity:1; transform:translateY(0) } }
+
+@keyframes float {
+  0%,100% { transform:translateY(0) rotate(0deg) }
+  33%     { transform:translateY(-14px) rotate(1.2deg) }
+  66%     { transform:translateY(-7px) rotate(-0.8deg) }
+}
+@keyframes floatSlow {
+  0%,100% { transform:translateY(0) }
+  50%     { transform:translateY(-10px) }
+}
+@keyframes pulseGlow {
+  0%,100% { box-shadow:0 0 20px rgba(197,139,42,.12),0 0 40px rgba(197,139,42,.04) }
+  50%     { box-shadow:0 0 48px rgba(197,139,42,.42),0 0 90px rgba(197,139,42,.14) }
+}
+@keyframes blobPulse {
+  0%,100% { transform:scale(1) translate(0,0);    opacity:.6 }
+  33%     { transform:scale(1.18) translate(20px,-20px); opacity:.85 }
+  66%     { transform:scale(.92) translate(-12px,14px);  opacity:.5 }
+}
+@keyframes shimmerText {
+  0%   { background-position:0% center }
+  100% { background-position:200% center }
+}
+@keyframes blinkCursor {
+  0%,100% { opacity:1 }
+  50%     { opacity:0 }
+}
+@keyframes ripple {
+  to { width:320px; height:320px; opacity:0 }
+}
+@keyframes ping {
+  75%,100% { transform:scale(2.2); opacity:0 }
+}
+@keyframes spinSlow {
+  to { transform:rotate(360deg) }
+}
+@keyframes gradientBar {
+  0%   { background-position:0% 50% }
+  50%  { background-position:100% 50% }
+  100% { background-position:0% 50% }
+}
+@keyframes countUp {
+  from { opacity:0; transform:translateY(12px) }
+  to   { opacity:1; transform:translateY(0) }
+}
+@keyframes borderGlow {
+  0%,100% { border-color:rgba(197,139,42,.2) }
+  50%     { border-color:rgba(197,139,42,.6) }
+}
+@keyframes slideProgress {
+  from { width:0% }
+}
+
+/* ─── NAVBAR ENTRY ─── */
+.navbar {
+  animation: slideInDown .65s cubic-bezier(.34,1.56,.64,1) both;
+  transition: transform .35s ease, background .3s ease, border-color .3s ease;
+}
+
+/* ─── HERO ENTRY SEQUENCE ─── */
+.hero-badge      { animation: fadeInDown .7s  .15s ease both }
+.hero h1         { animation: fadeInUp   .8s  .3s  ease both }
+.hero-sub        { animation: fadeInUp   .8s  .48s ease both }
+.hero-btns       { animation: fadeInUp   .8s  .62s ease both }
+.hero-tagline    { animation: fadeInUp   .8s  .76s ease both }
+.hero-right      { animation: fadeInRight 1s  .35s ease both }
+.hero-stats-card { animation: scaleIn   .7s  .85s cubic-bezier(.34,1.56,.64,1) both }
+
+/* ─── FLOAT ─── */
+.float-slow { animation: floatSlow 6s ease-in-out infinite }
+.float-med  { animation: float     4.5s ease-in-out infinite .5s }
+.float-fast { animation: float     3s   ease-in-out infinite 1s }
+
+/* ─── GLOW ─── */
+.pulse-glow   { animation: pulseGlow 3s ease-in-out infinite }
+.border-glow  { animation: borderGlow 2.5s ease-in-out infinite }
+
+/* ─── ANIMATED GRADIENT TEXT ─── */
+.gradient-animate {
+  background: linear-gradient(270deg, #C58B2A 0%, #DAB77A 40%, #C58B2A 80%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: shimmerText 3.5s linear infinite;
+}
+
+/* ─── SCROLL REVEAL SYSTEM ─── */
+.reveal {
+  opacity: 0;
+  transition: opacity .75s cubic-bezier(.4,0,.2,1), transform .75s cubic-bezier(.4,0,.2,1);
+  will-change: opacity, transform;
+}
+.reveal.from-bottom { transform: translateY(50px) }
+.reveal.from-top    { transform: translateY(-30px) }
+.reveal.from-left   { transform: translateX(-60px) }
+.reveal.from-right  { transform: translateX(60px) }
+.reveal.scale-in    { transform: scale(.83) }
+.reveal.fade-only   { transform: none }
+
+.reveal.visible { opacity:1; transform:none }
+
+.d1 { transition-delay:.08s  !important }
+.d2 { transition-delay:.16s  !important }
+.d3 { transition-delay:.24s  !important }
+.d4 { transition-delay:.32s  !important }
+.d5 { transition-delay:.40s  !important }
+.d6 { transition-delay:.48s  !important }
+.d7 { transition-delay:.56s  !important }
+.d8 { transition-delay:.64s  !important }
+
+/* ─── BUTTON RIPPLE WAVE ─── */
+.ripple-wave {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255,255,255,.32);
+  width: 0; height: 0;
+  transform: translate(-50%,-50%);
+  animation: ripple .6s ease-out forwards;
+  pointer-events: none;
+}
+
+/* ─── LIVE DOT ─── */
+.live-dot {
+  display: inline-block;
+  width: 8px; height: 8px;
+  background: #C58B2A;
+  border-radius: 50%;
+  position: relative;
+}
+.live-dot::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: inherit;
+  animation: ping 1.6s cubic-bezier(0,0,.2,1) infinite;
+}
+
+/* ─── TYPING CURSOR ─── */
+.typing-cursor {
+  display: inline-block;
+  width: 3px; height: 1em;
+  background: #C58B2A;
+  margin-left: 3px;
+  vertical-align: middle;
+  border-radius: 2px;
+  animation: blinkCursor .75s step-end infinite;
+}
+
+/* ─── SCROLL PROGRESS BAR ─── */
+#enx-scroll-bar {
+  position: fixed;
+  top: 0; left: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #C58B2A, #DAB77A, #C58B2A);
+  background-size: 200% 100%;
+  animation: gradientBar 3s linear infinite;
+  z-index: 10000;
+  width: 0%;
+  transition: width .12s linear;
+  border-radius: 0 2px 2px 0;
+}
+
+/* ─── PARTICLES CANVAS ─── */
+#enx-particles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ─── HERO BLOBS ─── */
+.hero-blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(90px);
+  pointer-events: none;
+  z-index: 0;
+}
+.hero-blob-1 {
+  width: 520px; height: 520px;
+  background: radial-gradient(circle, rgba(197,139,42,.08) 0%, transparent 70%);
+  top: -120px; right: -80px;
+  animation: blobPulse 9s ease-in-out infinite;
+}
+.hero-blob-2 {
+  width: 380px; height: 380px;
+  background: radial-gradient(circle, rgba(197,139,42,.05) 0%, transparent 70%);
+  bottom: 0; left: -60px;
+  animation: blobPulse 12s ease-in-out infinite 3s;
+}
+
+/* ─── CARD HOVER LIFT (extra) ─── */
+.course-card, .cat-card, .teacher-card, .promo-left {
+  transition: transform .3s cubic-bezier(.4,0,.2,1),
+              box-shadow .3s ease,
+              border-color .3s ease;
+}
+
+/* ─── ANIMATED PROGRESS BAR ─── */
+.progress-fill { animation: slideProgress 1.2s .2s cubic-bezier(.4,0,.2,1) both }
+
+/* ─── SHIMMER SKELETON ─── */
+.shimmer {
+  background: linear-gradient(90deg,
+    rgba(255,255,255,.03) 25%,
+    rgba(255,255,255,.09) 50%,
+    rgba(255,255,255,.03) 75%);
+  background-size: 200% 100%;
+  animation: shimmerText 1.6s infinite;
+}
+
+/* ─── DECORATIVE SPINNING RING ─── */
+.spin-ring {
+  border: 1px solid rgba(197,139,42,.2);
+  border-radius: 50%;
+  animation: spinSlow 18s linear infinite;
+}
+
+/* ─── REDUCE MOTION ─── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+}

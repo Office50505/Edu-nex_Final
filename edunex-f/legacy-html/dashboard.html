@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EduNex AI — Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="css/animations.css">
+  <style>
+    :root { --font-body: "Manrope", ui-sans-serif, system-ui, sans-serif; --font-display: "Fraunces", Georgia, serif; }
+    body, button, input, textarea, select { font-family: var(--font-body); }
+    h1, h2, .hero-title, .section-title, .auth-brand, .library-hero h1, .welcome-left h1, .market-right h2, .trial-left h2, .team-header-row h2, .cta-section h2, .section-head h2, .lp-title, .sp-title, .payment-choice-title { font-family: var(--font-display); font-weight: 600; letter-spacing: 0; }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { overflow-x: hidden; }
+    body { font-family: "Manrope", ui-sans-serif, system-ui, sans-serif; background: var(--bg, #000); color: var(--text, #fff); min-height: 100vh; overflow-x: hidden; }
+    img { display: block; max-width: 100%; }
+    a { text-decoration: none; color: inherit; }
+
+    :root {
+      --cyan: #C58B2A;
+      --cyan-dim: rgba(197,139,42,0.1);
+      --cyan-border: rgba(197,139,42,0.22);
+      --card: #0d0d0d;
+      --card2: #141414;
+      --border: rgba(255,255,255,0.07);
+      --border2: rgba(255,255,255,0.1);
+      --gray: #6b7280;
+      --light: #9ca3af;
+      --bg: #000000;
+      --text: #ffffff;
+      --text2: #9ca3af;
+      --nav-bg: rgba(0,0,0,0.95);
+    }
+
+    /* ===== ORBS ===== */
+    .orb-tl, .orb-br { position: fixed; border-radius: 50%; pointer-events: none; z-index: 0; }
+    .orb-tl {
+      width: 500px; height: 500px; top: -160px; left: -160px;
+      background: radial-gradient(circle, rgba(197,139,42,0.14) 0%, transparent 65%);
+      box-shadow: 0 0 0 40px rgba(197,139,42,0.05), 0 0 0 90px rgba(197,139,42,0.025), 0 0 0 160px rgba(197,139,42,0.01);
+    }
+    .orb-br {
+      width: 340px; height: 340px; bottom: 40px; right: -100px;
+      background: radial-gradient(circle, rgba(197,139,42,0.12) 0%, transparent 65%);
+    }
+
+    /* ===== NAVBAR ===== */
+    .navbar {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 999;
+      background: var(--nav-bg); backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border); padding: 16px 0;
+    }
+    .nav-inner { max-width: 1200px; margin: 0 auto; padding: 0 24px; display: flex; align-items: center; gap: 40px; }
+    .nav-logo { font-size: 1.2rem; font-weight: 700; color: var(--text); white-space: nowrap; flex-shrink: 0; }
+    .nav-logo span { color: var(--cyan); }
+    .nav-links { display: flex; align-items: center; gap: 8px; flex: 1; justify-content: center; list-style: none; }
+    .nav-links a { padding: 8px 16px; font-size: .9rem; font-weight: 500; color: var(--text2); transition: color .2s; position: relative; }
+    .nav-links a:hover { color: var(--text); }
+    .nav-links a.active { color: var(--text); font-weight: 600; }
+    .nav-links a.active::after { content: ''; position: absolute; bottom: 0; left: 16px; right: 16px; height: 2px; background: var(--cyan); border-radius: 2px; }
+    .nav-right { display: flex; align-items: center; gap: 16px; flex-shrink: 0; }
+    .nav-login { font-size: .9rem; font-weight: 500; color: var(--text2); transition: color .2s; }
+    .nav-login:hover { color: var(--cyan); }
+    .nav-avatar {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: var(--card); border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: .85rem; color: #888; cursor: pointer; transition: border-color .2s;
+    }
+    .nav-avatar:hover { border-color: var(--cyan); color: var(--cyan); }
+
+    .trial-gate {
+      position: fixed; inset: 0; z-index: 2000;
+      display: none; align-items: center; justify-content: center;
+      padding: 24px; background: rgba(0,0,0,.74); backdrop-filter: blur(12px);
+    }
+    .trial-gate.is-open { display: flex; }
+    .trial-gate-card {
+      width: min(420px, 100%);
+      background: var(--card2);
+      border: 1px solid var(--cyan-border);
+      border-radius: 18px;
+      padding: 26px;
+      box-shadow: 0 24px 80px rgba(0,0,0,.48);
+      text-align: center;
+    }
+    .trial-gate-icon {
+      width: 48px; height: 48px; margin: 0 auto 14px;
+      display: grid; place-items: center;
+      border-radius: 14px;
+      background: var(--cyan);
+      color: #000;
+      font-size: 1.1rem;
+    }
+    .trial-gate-card .trial-gate-title {
+      font-size: 1.35rem;
+      line-height: 1.2;
+      margin-bottom: 10px;
+    }
+    .trial-gate-card p {
+      color: var(--light);
+      font-size: .88rem;
+      line-height: 1.65;
+      margin-bottom: 18px;
+    }
+    .trial-gate-actions {
+      display: grid;
+      gap: 10px;
+    }
+    .trial-gate-btn {
+      min-height: 44px;
+      border-radius: 11px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background: var(--cyan);
+      color: #000;
+      font-size: .88rem;
+      font-weight: 800;
+    }
+    .trial-gate-btn.secondary {
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--border2);
+    }
+
+    /* ===== PAGE ===== */
+    .dash-page { position: relative; z-index: 1; max-width: 1200px; margin: 0 auto; padding: 90px 24px 48px; }
+
+    /* ===== WELCOME ROW ===== */
+    .welcome-row {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 20px; margin-bottom: 32px; flex-wrap: wrap;
+    }
+    .welcome-left h1 { font-size: 1.5rem; font-weight: 800; margin-bottom: 4px; }
+    .welcome-left p { font-size: .82rem; color: var(--light); }
+    .stats-row { display: flex; gap: 10px; }
+    .stat-pill {
+      background: var(--card); border: 1px solid var(--border2);
+      border-radius: 12px; padding: 10px 16px; min-width: 96px;
+    }
+    .stat-pill-label {
+      display: flex; align-items: center; gap: 5px;
+      font-size: .58rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: .08em; color: var(--gray); margin-bottom: 3px;
+    }
+    .stat-pill-label i { font-size: .6rem; color: var(--cyan); }
+    .stat-pill-value { font-size: .98rem; font-weight: 800; color: #fff; }
+
+    /* ===== SECTION HEADER ===== */
+    .sec-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 16px; flex-wrap: wrap; gap: 12px;
+    }
+    .sec-title { font-size: 1rem; font-weight: 700; color: #fff; }
+    .sec-link { font-size: .78rem; color: var(--cyan); font-weight: 600; }
+    .sec-link:hover { opacity: .8; }
+
+    /* ===== FILTER TABS ===== */
+    .filter-tabs { display: flex; gap: 8px; flex-wrap: wrap; }
+    .filter-tab {
+      padding: 6px 16px; border-radius: 100px;
+      background: var(--card); border: 1px solid var(--border2);
+      font-family: "Manrope", ui-sans-serif, system-ui, sans-serif; font-size: .78rem; font-weight: 600;
+      color: var(--light); cursor: pointer; transition: all .2s;
+    }
+    .filter-tab:hover { border-color: rgba(255,255,255,.2); color: #fff; }
+    .filter-tab.active { background: var(--cyan); border-color: var(--cyan); color: #000; }
+
+    /* ===== HISTORY GRID (YouTube-style) ===== */
+    .hist-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 18px;
+      margin-bottom: 40px;
+    }
+    .hist-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 14px; overflow: hidden;
+      cursor: pointer; transition: all .22s;
+    }
+    .hist-card:hover { border-color: var(--cyan-border); transform: translateY(-4px); box-shadow: 0 12px 32px rgba(0,0,0,.5); }
+    .hist-card[data-status="completed"] .hist-progress-fill { background: #DAB77A; }
+
+    /* Thumbnail */
+    .hist-thumb-wrap { position: relative; overflow: hidden; }
+    .hist-thumb { width: 100%; aspect-ratio: 16/9; object-fit: cover; background: #111; display: block; transition: transform .3s; }
+    .hist-card:hover .hist-thumb { transform: scale(1.04); }
+
+    /* YT-style progress bar at bottom of thumb */
+    .hist-progress-track {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      height: 3px; background: rgba(255,255,255,0.18);
+    }
+    .hist-progress-fill {
+      height: 100%; background: var(--cyan);
+      transition: width .3s;
+    }
+
+    /* Duration badge */
+    .hist-duration {
+      position: absolute; bottom: 8px; right: 8px;
+      background: rgba(0,0,0,0.82); padding: 2px 7px;
+      border-radius: 4px; font-size: .62rem; font-weight: 700; color: #fff;
+    }
+
+    /* Status badge */
+    .hist-status {
+      position: absolute; top: 8px; left: 8px;
+      padding: 3px 9px; border-radius: 100px;
+      font-size: .58rem; font-weight: 800; text-transform: uppercase; letter-spacing: .05em;
+    }
+    .status-progress { background: var(--cyan-dim); border: 1px solid var(--cyan-border); color: var(--cyan); }
+    .status-completed { background: rgba(169,111,24,.12); border: 1px solid rgba(169,111,24,.35); color: #A96F18; }
+    .status-new { background: rgba(255,255,255,0.07); border: 1px solid var(--border2); color: var(--light); }
+
+    /* Play overlay on hover */
+    .hist-play-overlay {
+      position: absolute; inset: 0;
+      background: rgba(0,0,0,0.4);
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; transition: opacity .22s;
+    }
+    .hist-card:hover .hist-play-overlay { opacity: 1; }
+    .hist-play-btn {
+      width: 44px; height: 44px; border-radius: 50%;
+      background: rgba(197,139,42,0.92); border: none;
+      display: flex; align-items: center; justify-content: center;
+      color: #000; font-size: .8rem; cursor: pointer;
+      transform: scale(0.85); transition: transform .2s;
+    }
+    .hist-card:hover .hist-play-btn { transform: scale(1); }
+
+    /* Card info */
+    .hist-info { padding: 12px 14px 14px; }
+    .hist-title {
+      font-size: .86rem; font-weight: 700; color: #fff;
+      line-height: 1.35; margin-bottom: 6px;
+      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+    }
+    .hist-meta {
+      display: flex; align-items: center; gap: 5px;
+      font-size: .72rem; color: var(--gray); margin-bottom: 8px;
+    }
+    .hist-meta .dot { font-size: .5rem; }
+    .hist-footer-row {
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .hist-pct { font-size: .72rem; font-weight: 700; color: var(--cyan); }
+    .hist-card[data-status="completed"] .hist-pct { color: #A96F18; }
+    .hist-time { font-size: .68rem; color: var(--gray); }
+    .hist-card[data-status="new"] .hist-pct { color: var(--light); }
+
+    /* ===== BOTTOM GRID ===== */
+    .dash-bottom {
+      display: grid;
+      grid-template-columns: 1fr 310px;
+      gap: 24px;
+    }
+
+    /* Recommended */
+    .rec-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .rec-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 14px; overflow: hidden;
+      transition: all .22s; cursor: pointer;
+    }
+    .rec-card:hover { border-color: var(--cyan-border); box-shadow: 0 0 24px rgba(197,139,42,.08); transform: translateY(-3px); }
+    .rec-thumb-wrap { position: relative; }
+    .rec-thumb { width: 100%; height: 120px; object-fit: cover; background: #111; }
+    .rec-badge {
+      position: absolute; top: 8px; left: 8px; padding: 3px 9px;
+      border-radius: 100px; font-size: .58rem; font-weight: 800;
+      text-transform: uppercase; letter-spacing: .05em;
+    }
+    .badge-mono { background: rgba(197,139,42,0.15); border: 1px solid rgba(197,139,42,.4); color: var(--cyan); }
+    .badge-green { background: rgba(52,211,153,0.15); border: 1px solid rgba(52,211,153,.4); color: #34D399; }
+    .badge-purple { background: rgba(168,85,247,0.15); border: 1px solid rgba(168,85,247,.4); color: #c084fc; }
+    .badge-orange { background: rgba(251,146,60,0.15); border: 1px solid rgba(251,146,60,.4); color: #fb923c; }
+    .rec-body { padding: 12px 14px; }
+    .rec-title { font-size: .84rem; font-weight: 700; color: #fff; line-height: 1.3; margin-bottom: 6px; }
+    .rec-meta-row { display: flex; align-items: center; gap: 10px; font-size: .7rem; color: var(--gray); margin-bottom: 10px; }
+    .rec-meta-row span { display: flex; align-items: center; gap: 4px; }
+    .rec-price-row { display: flex; align-items: center; justify-content: space-between; }
+    .rec-price { font-size: 1rem; font-weight: 800; color: var(--cyan); }
+    .cart-btn {
+      width: 28px; height: 28px; border-radius: 7px;
+      background: rgba(255,255,255,0.05); border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--gray); font-size: .72rem; cursor: pointer; transition: all .2s;
+    }
+    .cart-btn:hover { border-color: var(--cyan-border); color: var(--cyan); }
+
+    /* ===== ACTIVITY PANEL ===== */
+    .activity-panel { display: flex; flex-direction: column; gap: 14px; }
+    .activity-card {
+      background: var(--card); border: 1px solid var(--border2);
+      border-radius: 14px; padding: 18px;
+    }
+    .activity-head {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 18px;
+    }
+    .activity-head span { font-size: .88rem; font-weight: 700; color: #fff; }
+    .activity-more { font-size: .75rem; color: var(--gray); background: none; border: none; cursor: pointer; letter-spacing: 2px; }
+
+    /* Bar chart */
+    .chart-area { height: 90px; margin-bottom: 10px; }
+    .bars-wrap { display: flex; align-items: flex-end; gap: 6px; height: 100%; padding-top: 22px; }
+    .bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; position: relative; height: 100%; justify-content: flex-end; }
+    .bar { width: 100%; border-radius: 4px 4px 2px 2px; background: #222; transition: background .2s; }
+    .bar.bar-active { background: var(--cyan); }
+    .bar-tooltip {
+      position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+      background: #1a1a1a; border: 1px solid rgba(255,255,255,0.12);
+      padding: 2px 7px; border-radius: 5px;
+      font-size: .58rem; font-weight: 700; color: #fff; white-space: nowrap;
+    }
+    .bar-tooltip::after {
+      content: ''; position: absolute; bottom: -5px; left: 50%; transform: translateX(-50%);
+      border-left: 4px solid transparent; border-right: 4px solid transparent;
+      border-top: 5px solid rgba(255,255,255,0.12);
+    }
+    .chart-days { display: flex; gap: 6px; margin-bottom: 14px; }
+    .chart-day { flex: 1; text-align: center; font-size: .6rem; color: var(--gray); }
+    .activity-stats { display: flex; border-top: 1px solid var(--border); padding-top: 14px; }
+    .astat { flex: 1; text-align: center; }
+    .astat:first-child { border-right: 1px solid var(--border); }
+    .astat-label { font-size: .56rem; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--gray); margin-bottom: 4px; }
+    .astat-value { font-size: .98rem; font-weight: 800; color: #fff; }
+
+    /* Streak card */
+    .streak-card {
+      background: var(--card); border: 1px solid var(--border2);
+      border-radius: 14px; padding: 18px;
+    }
+    .streak-head {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 14px;
+    }
+    .streak-head span { font-size: .88rem; font-weight: 700; }
+    .streak-num { font-size: 2.2rem; font-weight: 900; color: var(--cyan); line-height: 1; margin-bottom: 2px; }
+    .streak-sub { font-size: .72rem; color: var(--gray); margin-bottom: 14px; }
+    .streak-dots { display: flex; gap: 6px; }
+    .streak-dot {
+      flex: 1; height: 6px; border-radius: 3px;
+      background: rgba(255,255,255,0.06);
+    }
+    .streak-dot.done { background: var(--cyan); }
+    .streak-dot.today { background: var(--cyan); box-shadow: 0 0 8px rgba(197,139,42,.5); }
+
+    /* Upgrade card */
+    .upgrade-card {
+      background: linear-gradient(135deg, #C58B2A, #A96F18);
+      border-radius: 14px; padding: 18px;
+    }
+    .upgrade-label { font-size: .58rem; font-weight: 800; text-transform: uppercase; letter-spacing: .1em; color: rgba(0,0,0,0.5); margin-bottom: 7px; }
+    .upgrade-title { font-size: .9rem; font-weight: 800; color: #000; line-height: 1.3; margin-bottom: 14px; }
+    .upgrade-btn {
+      padding: 8px 18px; background: #fff; border: none;
+      border-radius: 8px; font-size: .78rem; font-weight: 700;
+      font-family: "Manrope", ui-sans-serif, system-ui, sans-serif; color: #000;
+      cursor: pointer; transition: all .2s;
+    }
+    .upgrade-btn:hover { background: rgba(255,255,255,.88); box-shadow: 0 4px 14px rgba(0,0,0,.2); }
+
+    /* ===== FOOTER ===== */
+    .footer-wrap {
+      position: relative; z-index: 1;
+      background: var(--bg); border-top: 1px solid var(--border);
+      padding: 40px 40px 0;
+    }
+    .footer-grid { display: grid; grid-template-columns: 1.8fr 1fr 1fr; gap: 40px; padding-bottom: 32px; }
+    .footer-brand { font-size: 1.1rem; font-weight: 800; color: var(--cyan); margin-bottom: 10px; }
+    .footer-desc { font-size: .78rem; color: var(--gray); line-height: 1.75; max-width: 220px; }
+    .footer-col h4 { font-size: .65rem; font-weight: 800; text-transform: uppercase; letter-spacing: .1em; color: var(--text); margin-bottom: 12px; }
+    .footer-links { display: flex; flex-direction: column; gap: 9px; }
+    .footer-links a { font-size: .8rem; color: var(--gray); transition: color .2s; }
+    .footer-links a:hover { color: var(--cyan); }
+    .footer-bottom {
+      border-top: 1px solid var(--border); padding: 14px 0;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .footer-bottom p { font-size: .74rem; color: var(--gray); }
+    .footer-icons { display: flex; gap: 10px; }
+    .footer-icon {
+      width: 28px; height: 28px; border-radius: 7px;
+      background: rgba(255,255,255,0.04); border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: .72rem; color: var(--gray); cursor: pointer; transition: all .2s;
+    }
+    .footer-icon:hover { border-color: var(--cyan-border); color: var(--cyan); }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 1100px) { .hist-grid { grid-template-columns: repeat(3, 1fr); } }
+    @media (max-width: 900px) {
+      .hist-grid { grid-template-columns: repeat(2, 1fr); }
+      .dash-bottom { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 900px) {
+      .nav-links { display: none; }
+    }
+    @media (max-width: 600px) {
+      .hist-grid { grid-template-columns: 1fr; }
+      .rec-grid { grid-template-columns: 1fr; }
+      .footer-grid { grid-template-columns: 1fr; }
+      .footer-wrap { padding: 28px 20px 0; }
+    }
+    @media (max-width: 480px) {
+      .container { padding: 0 16px; }
+    }
+  </style>
+  <script>(function(){var t=localStorage.getItem('enx-theme')||'noir';var L={'--bg':'#f3f4f6','--card':'#ffffff','--card2':'#f9fafb','--border':'rgba(0,0,0,0.08)','--border2':'rgba(0,0,0,0.12)','--text':'#332820','--text2':'#756A60','--nav-bg':'rgba(255,255,255,0.95)'};var N={'--bg':'#000000','--card':'#0d0d0d','--card2':'#111318','--border':'rgba(255,255,255,0.07)','--border2':'rgba(255,255,255,0.10)','--text':'#ffffff','--text2':'#9ca3af','--nav-bg':'rgba(0,0,0,0.92)'};var v=t==='light'?L:(t==='system'?(window.matchMedia('(prefers-color-scheme:dark)').matches?N:L):N);var r=document.documentElement;Object.keys(v).forEach(function(k){r.style.setProperty(k,v[k]);});var isLight=v['--bg']!=='#000000';r.dataset.theme=isLight?'light':'noir';r.classList.toggle('dark',!isLight);r.style.background=v['--bg'];document.addEventListener('DOMContentLoaded',function(){document.body.style.background=v['--bg'];document.body.style.color=v['--text'];});})();</script>
+</head>
+<body>
+
+<div class="orb-tl"></div>
+<div class="orb-br"></div>
+
+<div class="trial-gate" id="trialGate" role="dialog" aria-modal="true" aria-labelledby="trialGateTitle">
+  <div class="trial-gate-card">
+    <div class="trial-gate-icon"><i class="fas fa-bolt"></i></div>
+    <div class="trial-gate-title" id="trialGateTitle">Start your 1 rs trial right now</div>
+    <p>Your dashboard unlocks after you start the trial or subscribe. Get instant access to your courses, videos, progress, and AI tutor.</p>
+    <div class="trial-gate-actions">
+      <a class="trial-gate-btn" href="payment.html"><i class="fas fa-arrow-right"></i> Start 1 rs Trial</a>
+      <a class="trial-gate-btn secondary" href="courses.html">Browse Courses</a>
+    </div>
+  </div>
+</div>
+
+<!-- ===== NAVBAR ===== -->
+<nav class="navbar">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">EduNex <span>AI</span></a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="courses.html">Courses</a></li>
+      <li><a href="dashboard.html" class="active">Dashboard</a></li>
+      <li><a href="about.html">About</a></li>
+    </ul>
+    <div class="nav-right">
+      <a href="login.html" class="nav-login">Login</a>
+      <a href="profile.html" class="nav-avatar" title="Profile Settings"><i class="fas fa-user"></i></a>
+    </div>
+  </div>
+</nav>
+
+<!-- ===== PAGE ===== -->
+<div class="dash-page">
+
+  <!-- Welcome Row -->
+  <div class="welcome-row">
+    <div class="welcome-left">
+      <h1>Welcome back</h1>
+      <p>You've completed 75% of your weekly learning goal. Keep it up!</p>
+    </div>
+    <div class="stats-row">
+      <div class="stat-pill">
+        <div class="stat-pill-label"><i class="fas fa-fire"></i> Day Streak</div>
+        <div class="stat-pill-value">Account</div>
+      </div>
+      <div class="stat-pill">
+        <div class="stat-pill-label"><i class="fas fa-bullseye"></i> Points</div>
+        <div class="stat-pill-value">0 Done</div>
+      </div>
+      <div class="stat-pill">
+        <div class="stat-pill-label"><i class="fas fa-graduation-cap"></i> Courses</div>
+        <div class="stat-pill-value">8</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== LEARNING HISTORY (YouTube-style) ===== -->
+  <div class="sec-header">
+    <div style="display:flex;align-items:center;gap:18px;flex-wrap:wrap">
+      <h2 class="sec-title">Learning History</h2>
+      <div class="filter-tabs">
+        <button class="filter-tab active" onclick="filterHistory('all', this)">All</button>
+        <button class="filter-tab" onclick="filterHistory('in-progress', this)">In Progress</button>
+        <button class="filter-tab" onclick="filterHistory('completed', this)">Completed</button>
+        <button class="filter-tab" onclick="filterHistory('new', this)">Not Started</button>
+      </div>
+    </div>
+    <a href="courses.html" class="sec-link">Browse Courses →</a>
+  </div>
+
+  <div class="hist-grid" id="histGrid">
+    <div class="hist-card" style="padding:22px;min-height:180px">Loading your real courses...</div>
+  </div>
+
+  <!-- ===== BOTTOM: RECOMMENDED + ACTIVITY ===== -->
+  <div class="dash-bottom">
+
+    <!-- Recommended Courses -->
+    <section>
+      <div class="sec-header">
+        <h2 class="sec-title">Recommended for You</h2>
+        <a href="courses.html" class="sec-link">View All →</a>
+      </div>
+      <div class="rec-grid" id="recGrid">
+        <div class="rec-card" style="padding:18px">Loading recommendations...</div>
+      </div>
+    </section>
+
+    <!-- Activity Panel -->
+    <div class="activity-panel">
+
+      <!-- Weekly Activity Chart -->
+      <div class="activity-card">
+        <div class="activity-head">
+          <span>Daily Activity</span>
+          <button class="activity-more">···</button>
+        </div>
+        <div class="chart-area">
+          <div class="bars-wrap">
+            <div class="bar-col"><div class="bar" style="height:22px"></div></div>
+            <div class="bar-col"><div class="bar" style="height:38px"></div></div>
+            <div class="bar-col" style="position:relative">
+              <div class="bar-tooltip">Wed</div>
+              <div class="bar bar-active" style="height:64px"></div>
+            </div>
+            <div class="bar-col"><div class="bar" style="height:44px"></div></div>
+            <div class="bar-col"><div class="bar" style="height:28px"></div></div>
+            <div class="bar-col"><div class="bar" style="height:52px"></div></div>
+            <div class="bar-col"><div class="bar" style="height:18px"></div></div>
+          </div>
+        </div>
+        <div class="chart-days">
+          <div class="chart-day">M</div>
+          <div class="chart-day">T</div>
+          <div class="chart-day" style="color:var(--cyan)">W</div>
+          <div class="chart-day">T</div>
+          <div class="chart-day">F</div>
+          <div class="chart-day">S</div>
+          <div class="chart-day">S</div>
+        </div>
+        <div class="activity-stats">
+          <div class="astat">
+            <div class="astat-label">Hours Spent</div>
+            <div class="astat-value">Synced</div>
+          </div>
+          <div class="astat">
+            <div class="astat-label">Completed</div>
+            <div class="astat-value">Real courses</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Streak card -->
+      <div class="streak-card">
+        <div class="streak-head">
+          <span>Learning Status</span>
+        </div>
+        <div class="streak-num">Live</div>
+        <div class="streak-sub">Based on backend course availability</div>
+        <div class="streak-dots">
+          <div class="streak-dot done"></div>
+          <div class="streak-dot done"></div>
+          <div class="streak-dot done"></div>
+          <div class="streak-dot done"></div>
+          <div class="streak-dot done"></div>
+          <div class="streak-dot done"></div>
+          <div class="streak-dot today"></div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+<!-- ===== FOOTER ===== -->
+<footer class="footer-wrap">
+  <div class="footer-grid">
+    <div>
+      <div class="footer-brand">EduNex AI</div>
+      <p class="footer-desc">Elevating human potential through neural-accelerated learning pathways and personalized AI mentorship.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Quick Links</h4>
+      <ul class="footer-links">
+        <li><a href="#">Student Guide</a></li>
+        <li><a href="#">Affiliate Program</a></li>
+        <li><a href="#">Privacy Policy</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Support</h4>
+      <ul class="footer-links">
+        <li><a href="#">Help Center</a></li>
+        <li><a href="#">Community Forum</a></li>
+        <li><a href="#">API Docs</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2024 EduNex AI Learning. All rights reserved.</p>
+    <div class="footer-icons">
+      <div class="footer-icon"><i class="fas fa-globe"></i></div>
+      <div class="footer-icon"><i class="fas fa-envelope"></i></div>
+      <div class="footer-icon"><i class="fas fa-share-alt"></i></div>
+    </div>
+  </div>
+</footer>
+
+<script src="js/edunex-api.js"></script>
+<script src="assets/bot-avatars/manifest.js"></script>
+<script src="js/nex-ai-widget.js"></script>
+<script src="js/animations.js" defer></script>
+<script>
+  function escapeDashHtml(value) {
+    return String(value ?? '').replace(/[&<>"']/g, char => ({
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#39;'
+    }[char]));
+  }
+
+  function dashCourseProgress(course) {
+    const saved = JSON.parse(localStorage.getItem(`edunexCourseProgress:${course._id}`) || '{}');
+    const total = Math.max(Array.isArray(course.videos) ? course.videos.length : 0, 1);
+    const completed = Number(saved.completed || 0);
+    const percent = Math.max(0, Math.min(100, Number(saved.percent ?? Math.round((completed / total) * 100))));
+    const lessonIndex = Math.max(0, Math.min(Number(saved.lessonIndex || 0), total - 1));
+    return { total, completed, percent, lessonIndex };
+  }
+
+  function dashStatus(percent) {
+    if (percent >= 100) return { key: 'completed', label: 'Completed', cls: 'status-completed' };
+    if (percent > 0) return { key: 'in-progress', label: 'In Progress', cls: 'status-progress' };
+    return { key: 'new', label: 'Not Started', cls: 'status-new' };
+  }
+
+  function renderHistoryCard(course) {
+    const progress = dashCourseProgress(course);
+    const status = dashStatus(progress.percent);
+    const video = course.videos?.[progress.lessonIndex] || course.videos?.[0] || {};
+    const title = video.title || course.title || 'Untitled lesson';
+    const duration = video.duration ? `${Math.max(1, Math.round(Number(video.duration) / 60))} min` : `${progress.total} videos`;
+    const href = `videos.html?courseId=${encodeURIComponent(course._id)}&video=${progress.lessonIndex}`;
+    return `
+      <div class="hist-card" data-status="${status.key}" onclick="window.location.href='${href}'">
+        <div class="hist-thumb-wrap">
+          <img class="hist-thumb" src="${escapeDashHtml(EduNex.courseImage(course))}" alt="${escapeDashHtml(course.title || title)}" onerror="this.onerror=null;this.src=EduNex.placeholderImage(this.alt||'EduNex')">
+          <span class="hist-status ${status.cls}">${status.label}</span>
+          <span class="hist-duration">${escapeDashHtml(duration)}</span>
+          <div class="hist-progress-track"><div class="hist-progress-fill" style="width:${progress.percent}%"></div></div>
+          <div class="hist-play-overlay"><button class="hist-play-btn"><i class="fas fa-play" style="margin-left:2px"></i></button></div>
+        </div>
+        <div class="hist-info">
+          <div class="hist-title">${escapeDashHtml(title)}</div>
+          <div class="hist-meta"><span>${escapeDashHtml(course.title || 'EduNex course')}</span><span class="dot">·</span><span>Video ${progress.lessonIndex + 1} of ${progress.total}</span></div>
+          <div class="hist-footer-row"><span class="hist-pct">${progress.percent ? `${progress.percent}% complete` : 'Ready to start'}</span><span class="hist-time">Synced now</span></div>
+        </div>
+      </div>`;
+  }
+
+  function renderRecommendation(course) {
+    const videos = Array.isArray(course.videos) ? course.videos.length : 0;
+    const category = typeof course.category === 'string' ? course.category : (course.category?.name || 'Course');
+    return `
+      <div class="rec-card" onclick="EduNex.openCourseDetails({ _id: '${escapeDashHtml(course._id)}' })">
+        <div class="rec-thumb-wrap">
+          <img class="rec-thumb" src="${escapeDashHtml(EduNex.courseImage(course))}" alt="${escapeDashHtml(course.title)}" onerror="this.onerror=null;this.src=EduNex.placeholderImage(this.alt||'EduNex')">
+          <span class="rec-badge badge-mono">${escapeDashHtml(category)}</span>
+        </div>
+        <div class="rec-body">
+          <div class="rec-title">${escapeDashHtml(course.title || 'Untitled course')}</div>
+          <div class="rec-meta-row">
+            <span><i class="fas fa-play-circle"></i> ${videos} videos</span>
+            <span><i class="fas fa-star"></i> ${escapeDashHtml(course.averageRating || 'New')}</span>
+          </div>
+          <div class="rec-price-row"><span class="rec-price">REAL COURSE</span><button class="cart-btn" aria-label="Open course"><i class="fas fa-arrow-right"></i></button></div>
+        </div>
+      </div>`;
+  }
+
+  async function loadDashboardCourses() {
+    const user = EduNex.getUser();
+    const firstName = (user?.fullName || user?.email || user?.mobileNumber || 'Learner').split(/\s+/)[0];
+    document.querySelector('.welcome-left h1').textContent = `Welcome back, ${firstName}`;
+
+    const histGrid = document.getElementById('histGrid');
+    const recGrid = document.getElementById('recGrid');
+    try {
+      const courses = await EduNex.request('/api/courses');
+      const realCourses = (Array.isArray(courses) ? courses : []).filter(course => course && course._id);
+      const withVideos = realCourses.filter(course => Array.isArray(course.videos) && course.videos.length);
+      const shown = (withVideos.length ? withVideos : realCourses).slice(0, 8);
+
+      histGrid.innerHTML = shown.length
+        ? shown.map(renderHistoryCard).join('')
+        : '<div class="hist-card" style="padding:22px;min-height:180px">No published courses with videos are available yet.</div>';
+
+      recGrid.innerHTML = realCourses.slice(0, 4).length
+        ? realCourses.slice(0, 4).map(renderRecommendation).join('')
+        : '<div class="rec-card" style="padding:18px">No published recommendations yet.</div>';
+
+      const statValues = document.querySelectorAll('.stat-pill-value');
+      const completed = realCourses.filter(course => dashCourseProgress(course).percent >= 100).length;
+      statValues[0].textContent = user ? 'Active' : 'Guest';
+      statValues[1].textContent = `${completed} Done`;
+      statValues[2].textContent = `${realCourses.length}`;
+      document.querySelector('.welcome-left p').textContent = realCourses.length
+        ? `You have ${realCourses.length} real EduNex courses available. Continue from your latest saved lesson.`
+        : 'No published courses were found in the backend yet.';
+    } catch (error) {
+      histGrid.innerHTML = `<div class="hist-card" style="padding:22px;min-height:180px">Could not load backend courses: ${escapeDashHtml(error.message)}</div>`;
+      recGrid.innerHTML = '<div class="rec-card" style="padding:18px">Recommendations unavailable.</div>';
+    }
+  }
+
+  function filterHistory(status, btn) {
+    document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.hist-card').forEach(card => {
+      if (status === 'all' || card.dataset.status === status) {
+        card.style.display = '';
+      } else {
+        card.style.display = 'none';
+      }
+    });
+  }
+
+  window.addEventListener('scroll', () => {
+    document.querySelector('.navbar').style.borderBottomColor =
+      window.scrollY > 30 ? 'rgba(255,255,255,0.12)' : 'rgba(255,255,255,0.07)';
+  });
+
+  async function canOpenDashboard() {
+    const token = EduNex.getAccessToken();
+    if (!token) return false;
+    try {
+      const subscription = await EduNex.checkSubscription();
+      return EduNex.hasCourseAccess(subscription);
+    } catch (_) {
+      return false;
+    }
+  }
+
+  async function bootDashboard() {
+    const allowed = await canOpenDashboard();
+    if (!allowed) {
+      document.getElementById('trialGate').classList.add('is-open');
+      document.querySelector('.dash-page').style.filter = 'blur(6px)';
+      document.querySelector('.dash-page').style.pointerEvents = 'none';
+      return;
+    }
+    loadDashboardCourses();
+  }
+
+  bootDashboard();
+</script>
+</body>
+</html>

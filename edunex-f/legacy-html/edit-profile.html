@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EduNex AI — Edit Profile</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="css/animations.css">
+  <style>
+    :root { --font-body: "Manrope", ui-sans-serif, system-ui, sans-serif; --font-display: "Fraunces", Georgia, serif; }
+    body, button, input, textarea, select { font-family: var(--font-body); }
+    h1, h2, .hero-title, .section-title, .auth-brand, .library-hero h1, .welcome-left h1, .market-right h2, .trial-left h2, .team-header-row h2, .cta-section h2, .section-head h2, .lp-title, .sp-title, .payment-choice-title { font-family: var(--font-display); font-weight: 600; letter-spacing: 0; }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: "Manrope", ui-sans-serif, system-ui, sans-serif; background: #000; color: #fff; min-height: 100vh; }
+    a { text-decoration: none; color: inherit; }
+    img { display: block; max-width: 100%; }
+    a { text-decoration: none; color: inherit; }
+    ul { list-style: none; }
+
+    :root {
+      --cyan: #C58B2A;
+      --cyan-dim: rgba(197,139,42,0.1);
+      --cyan-border: rgba(197,139,42,0.25);
+      --card: #0D0D0D;
+      --card2: #111;
+      --border: rgba(255,255,255,0.08);
+      --gray: #888;
+      --light: #bbb;
+    }
+
+    /* ===== NAVBAR ===== */
+    .navbar {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 999;
+      background: rgba(0,0,0,0.96); backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border); padding: 16px 0;
+    }
+    .nav-inner { max-width: 1200px; margin: 0 auto; padding: 0 24px; display: flex; align-items: center; gap: 40px; }
+    .nav-logo { font-size: 1.2rem; font-weight: 700; color: #fff; white-space: nowrap; flex-shrink: 0; }
+    .nav-logo span { color: var(--cyan); }
+    .nav-links { display: flex; align-items: center; gap: 4px; flex: 1; justify-content: center; }
+    .nav-links a { padding: 8px 16px; font-size: .9rem; font-weight: 500; color: #bbb; transition: color .2s; position: relative; }
+    .nav-links a:hover { color: #fff; }
+    .nav-links a.active { color: #fff; font-weight: 600; }
+    .nav-links a.active::after { content: ''; position: absolute; bottom: 0; left: 16px; right: 16px; height: 2px; background: var(--cyan); border-radius: 2px; }
+    .nav-right { display: flex; align-items: center; gap: 16px; flex-shrink: 0; }
+    .nav-login { font-size: .9rem; font-weight: 500; color: #ccc; transition: color .2s; }
+    .nav-login:hover { color: var(--cyan); }
+    .nav-avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--card2); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: .85rem; color: #888; cursor: pointer; }
+    .nav-hamburger { display: none; flex-direction: column; gap: 5px; background: none; border: none; cursor: pointer; padding: 4px; }
+    .nav-hamburger span { display: block; width: 22px; height: 2px; background: #fff; border-radius: 2px; }
+    .nav-links li { display: flex !important; align-items: center; }
+
+    /* PAGE */
+    .page { max-width: 620px; margin: 0 auto; padding: 96px 24px 60px; }
+
+    /* BACK ROW */
+    .back-row {
+      display: flex; align-items: center; gap: 10px;
+      margin-bottom: 28px;
+    }
+    .back-btn {
+      width: 34px; height: 34px; border-radius: 9px;
+      background: var(--card); border: 1px solid var(--border2);
+      display: flex; align-items: center; justify-content: center;
+      color: #888; font-size: .78rem; cursor: pointer; transition: all .2s;
+    }
+    .back-btn:hover { border-color: var(--cyan-border); color: var(--cyan); }
+    .back-title { font-size: 1.2rem; font-weight: 800; }
+
+    /* AVATAR EDIT */
+    .ava-edit-wrap {
+      display: flex; flex-direction: column; align-items: center;
+      margin-bottom: 32px;
+    }
+    .ava-edit-circle {
+      width: 96px; height: 96px; border-radius: 50%;
+      border: 2.5px solid var(--cyan);
+      background: #111; overflow: hidden; position: relative;
+      cursor: pointer; margin-bottom: 10px;
+      box-shadow: 0 0 0 5px rgba(197,139,42,.1);
+      transition: box-shadow .2s;
+    }
+    .ava-edit-circle:hover { box-shadow: 0 0 0 8px rgba(197,139,42,.16); }
+    .ava-edit-circle img { width: 100%; height: 100%; object-fit: cover; }
+    .ava-edit-overlay {
+      position: absolute; inset: 0; background: rgba(0,0,0,.5);
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; transition: opacity .18s; color: var(--cyan); font-size: 1.2rem;
+    }
+    .ava-edit-circle:hover .ava-edit-overlay { opacity: 1; }
+    .ava-edit-name { font-size: .88rem; font-weight: 700; color: #fff; margin-bottom: 2px; }
+    .ava-edit-sub { font-size: .72rem; color: var(--gray); }
+    .ava-change-btn {
+      margin-top: 12px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(197,139,42,.28);
+      background: rgba(197,139,42,.08);
+      color: var(--cyan);
+      font-family: "Manrope", ui-sans-serif, system-ui, sans-serif;
+      font-size: .78rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: border-color .2s, background .2s;
+    }
+    .ava-change-btn:hover { border-color: var(--cyan); background: rgba(197,139,42,.14); }
+    .ava-picker {
+      width: 100%;
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 10px;
+    }
+    .ava-picker-note { color: var(--gray); font-size: .78rem; line-height: 1.5; margin: -6px 0 16px; }
+    .ava-choice {
+      width: 100%;
+      aspect-ratio: 1;
+      border-radius: 14px;
+      border: 1px solid var(--border2);
+      background: #111;
+      padding: 0;
+      overflow: hidden;
+      cursor: pointer;
+      transition: border-color .2s, box-shadow .2s, transform .2s;
+    }
+    .ava-choice:hover,
+    .ava-choice.selected {
+      border-color: var(--cyan);
+      box-shadow: 0 0 0 3px rgba(197,139,42,.12);
+      transform: translateY(-1px);
+    }
+    .ava-choice img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center top;
+    }
+    @media (max-width: 560px) {
+      .ava-picker { grid-template-columns: repeat(4, 1fr); }
+    }
+
+    /* CARD */
+    .ep-card {
+      background: var(--card); border: 1px solid var(--border2);
+      border-radius: 16px; padding: 24px;
+      margin-bottom: 16px;
+    }
+    .ep-card-title {
+      font-size: .72rem; font-weight: 800; text-transform: uppercase;
+      letter-spacing: .1em; color: var(--gray); margin-bottom: 18px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .ep-card-title i { color: var(--cyan); }
+
+    /* FIELDS */
+    .ep-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+    .ep-field { margin-bottom: 14px; }
+    .ep-field:last-child { margin-bottom: 0; }
+    .ep-label {
+      display: block; font-size: .72rem; font-weight: 700;
+      color: var(--light); margin-bottom: 6px; letter-spacing: .03em;
+    }
+    .ep-input {
+      width: 100%; padding: 12px 14px;
+      background: #111; border: 1px solid var(--border2);
+      border-radius: 10px; font-family: "Manrope", ui-sans-serif, system-ui, sans-serif;
+      font-size: .86rem; color: #fff; outline: none;
+      transition: border-color .2s;
+    }
+    .ep-input:focus { border-color: rgba(197,139,42,.4); }
+    .ep-input::placeholder { color: var(--gray); }
+    .ep-input-wrap { position: relative; }
+    .ep-input-wrap .ep-input { padding-left: 40px; }
+    .ep-input-wrap i {
+      position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+      color: var(--gray); font-size: .8rem; pointer-events: none;
+    }
+    .ep-prefix {
+      position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+      font-size: .82rem; font-weight: 700; color: #aaa;
+    }
+    .ep-input-prefix { padding-left: 48px; }
+
+    /* Phone field */
+    .ep-phone-wrap { display: flex; align-items: center; gap: 10px; }
+    .ep-country-code {
+      padding: 12px 14px; background: #111; border: 1px solid var(--border2);
+      border-radius: 10px; font-size: .86rem; color: #aaa; font-weight: 700;
+      font-family: "Manrope", ui-sans-serif, system-ui, sans-serif; white-space: nowrap;
+    }
+
+    /* Gender slider */
+    .ep-gender-slider {
+      background: #111; border: 1px solid var(--border2);
+      border-radius: 10px; padding: 5px;
+      display: flex; gap: 4px; position: relative;
+    }
+    .ep-gender-btn {
+      flex: 1; padding: 9px 8px; border: none; border-radius: 7px;
+      background: transparent; font-family: "Manrope", ui-sans-serif, system-ui, sans-serif;
+      font-size: .78rem; font-weight: 700; color: var(--light);
+      cursor: pointer; transition: all .22s; position: relative; z-index: 1;
+      display: flex; align-items: center; justify-content: center; gap: 5px;
+    }
+    .ep-gender-btn.selected { color: #000; }
+    .ep-gender-thumb {
+      position: absolute; top: 5px; bottom: 5px; left: 5px;
+      border-radius: 7px; background: var(--cyan);
+      transition: left .22s cubic-bezier(.4,0,.2,1), width .22s; z-index: 0;
+    }
+
+    /* Save button */
+    .ep-save-btn {
+      width: 100%; padding: 14px;
+      background: var(--cyan); color: #000;
+      font-family: "Manrope", ui-sans-serif, system-ui, sans-serif; font-size: .93rem; font-weight: 800;
+      border: none; border-radius: 12px; cursor: pointer; transition: all .2s;
+      margin-top: 8px;
+    }
+    .ep-save-btn:hover { background: #A96F18; box-shadow: 0 6px 22px rgba(197,139,42,.35); }
+    .ep-save-btn:disabled { opacity: .65; cursor: wait; box-shadow: none; }
+
+    /* Toast */
+    .ep-toast {
+      position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(20px);
+      background: #1a1a1a; border: 1px solid rgba(197,139,42,.3);
+      color: var(--cyan); padding: 12px 24px; border-radius: 100px;
+      font-size: .82rem; font-weight: 700;
+      opacity: 0; transition: all .3s; pointer-events: none; white-space: nowrap; z-index: 9999;
+    }
+    .ep-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+    .ep-status {
+      display: none;
+      margin-bottom: 16px;
+      padding: 12px 14px;
+      border-radius: 12px;
+      border: 1px solid rgba(197,139,42,.22);
+      background: rgba(197,139,42,.07);
+      color: var(--light);
+      font-size: .82rem;
+      line-height: 1.5;
+    }
+    .ep-status.show { display: block; }
+    .ep-status.error {
+      border-color: rgba(248,113,113,.35);
+      background: rgba(248,113,113,.08);
+      color: #A96F18;
+    }
+    .ep-status button {
+      margin-left: 10px;
+      border: 0;
+      background: transparent;
+      color: var(--cyan);
+      font: inherit;
+      font-weight: 800;
+      cursor: pointer;
+    }
+  </style>
+  <script>(function(){var t=localStorage.getItem('enx-theme')||'noir';var L={'--bg':'#f3f4f6','--card':'#ffffff','--card2':'#f9fafb','--border':'rgba(0,0,0,0.08)','--border2':'rgba(0,0,0,0.12)','--text':'#332820','--text2':'#756A60','--nav-bg':'rgba(255,255,255,0.95)'};var N={'--bg':'#000000','--card':'#0d0d0d','--card2':'#111318','--border':'rgba(255,255,255,0.07)','--border2':'rgba(255,255,255,0.10)','--text':'#ffffff','--text2':'#9ca3af','--nav-bg':'rgba(0,0,0,0.92)'};var v=t==='light'?L:(t==='system'?(window.matchMedia('(prefers-color-scheme:dark)').matches?N:L):N);var r=document.documentElement;Object.keys(v).forEach(function(k){r.style.setProperty(k,v[k]);});r.style.background=v['--bg'];document.addEventListener('DOMContentLoaded',function(){document.body.style.background=v['--bg'];document.body.style.color=v['--text'];});})();</script>
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">EduNex <span>AI</span></a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="courses.html">Courses</a></li>
+      <li><a href="dashboard.html">Dashboard</a></li>
+      <li><a href="about.html">About</a></li>
+    </ul>
+    <div class="nav-right">
+      <a href="login.html" class="nav-login">Login</a>
+      <a href="profile.html" class="nav-avatar" title="Profile"><i class="fas fa-user"></i></a>
+    </div>
+  </div>
+</nav>
+
+<div class="page">
+
+  <div class="back-row">
+    <div class="back-btn" onclick="history.back()"><i class="fas fa-arrow-left"></i></div>
+    <h1 class="back-title">Edit Profile</h1>
+  </div>
+  <div class="ep-status show" id="profileStatus">Loading your signup profile...</div>
+
+  <!-- Avatar -->
+  <div class="ava-edit-wrap">
+    <div class="ava-edit-circle">
+      <img id="avaImg" src="assets/male1.jpeg" alt="Avatar">
+      <div class="ava-edit-overlay"><i class="fas fa-user-check"></i></div>
+    </div>
+    <div class="ava-edit-name">EduNex Learner</div>
+    <div class="ava-edit-sub">This is the avatar saved from signup</div>
+    <button class="ava-change-btn" type="button" onclick="document.getElementById('avatarSelectionCard').scrollIntoView({ behavior: 'smooth', block: 'start' });">
+      <i class="fas fa-user-pen"></i> Change avatar
+    </button>
+  </div>
+
+  <!-- Avatar Selection -->
+  <div class="ep-card" id="avatarSelectionCard">
+    <h2 class="ep-card-title"><i class="fas fa-user-circle"></i> Avatar Selection</h2>
+    <p class="ava-picker-note">Your signup avatar is preselected. Pick another avatar here, then save your profile.</p>
+    <div class="ava-picker" id="avatarPicker"></div>
+  </div>
+
+  <!-- Personal Info -->
+  <div class="ep-card">
+    <h2 class="ep-card-title"><i class="fas fa-user"></i> Personal Information</h2>
+    <div class="ep-row-2">
+      <div>
+        <label class="ep-label" for="firstNameInput">First Name</label>
+        <input class="ep-input" id="firstNameInput" type="text" placeholder="First name">
+      </div>
+      <div>
+        <label class="ep-label" for="lastNameInput">Last Name</label>
+        <input class="ep-input" id="lastNameInput" type="text" placeholder="Last name">
+      </div>
+    </div>
+  </div>
+
+  <!-- Contact Info -->
+  <div class="ep-card">
+    <h2 class="ep-card-title"><i class="fas fa-address-card"></i> Contact Information</h2>
+    <div class="ep-field">
+      <label class="ep-label" for="emailInput">Email Address</label>
+      <div class="ep-input-wrap">
+        <i class="fas fa-envelope"></i>
+        <input class="ep-input" id="emailInput" type="email" placeholder="Email">
+      </div>
+    </div>
+    <div class="ep-field">
+      <label class="ep-label" for="mobileInput">Mobile Number</label>
+      <div class="ep-phone-wrap">
+        <span class="ep-country-code">+91</span>
+        <input class="ep-input" id="mobileInput" type="tel" placeholder="Mobile number" style="flex:1" disabled>
+      </div>
+    </div>
+  </div>
+
+  <!-- Identity -->
+  <div class="ep-card">
+    <h2 class="ep-card-title"><i class="fas fa-id-badge"></i> Identity</h2>
+    <div class="ep-field">
+      <label class="ep-label" for="ageInput">Age</label>
+      <input class="ep-input" id="ageInput" type="number" min="5" max="80" style="color:var(--cyan);font-weight:800">
+    </div>
+    <div class="ep-field" style="margin-bottom:0">
+      <label class="ep-label">Gender</label>
+      <div class="ep-gender-slider" id="epGenderSlider">
+        <div class="ep-gender-thumb" id="epGenderThumb"></div>
+        <button class="ep-gender-btn selected" data-g="male" onclick="epSelectGender(this)"><i class="fas fa-mars"></i> Male</button>
+        <button class="ep-gender-btn" data-g="female" onclick="epSelectGender(this)"><i class="fas fa-venus"></i> Female</button>
+        <button class="ep-gender-btn" data-g="other" onclick="epSelectGender(this)"><i class="fas fa-star"></i> Other</button>
+      </div>
+    </div>
+  </div>
+
+  <button class="ep-save-btn" id="saveProfileBtn" type="button" onclick="saveProfile()">Save Changes</button>
+
+</div>
+
+<div class="ep-toast" id="epToast"><i class="fas fa-check-circle" style="margin-right:7px"></i>Profile updated successfully!</div>
+
+<script src="js/edunex-api.js"></script>
+<script src="assets/bot-avatars/manifest.js"></script>
+<script src="js/nex-ai-widget.js"></script>
+<script src="js/animations.js" defer></script>
+<script>
+  var allowedAvatars = [
+    'assets/male1.jpeg',
+    'assets/male2.jpeg',
+    'assets/male3.jpeg',
+    'assets/male4.jpeg',
+    'assets/male5.jpeg',
+    'assets/male6.jpeg',
+    'assets/female1.jpeg',
+    'assets/female2.jpeg',
+    'assets/female3.jpeg',
+    'assets/female4.jpeg',
+    'assets/female5.jpeg',
+    'assets/female6.jpeg',
+  ];
+  var selectedProfileAvatar = allowedAvatars[0];
+
+  function storedUserTarget() {
+    return localStorage.getItem('edunexAccessToken') ? localStorage : sessionStorage;
+  }
+
+  function updateStoredUser(user) {
+    const target = storedUserTarget();
+    target.setItem('edunexUser', JSON.stringify(user));
+    localStorage.setItem('edunexSignupProfile', JSON.stringify(user));
+    if (target === localStorage) sessionStorage.removeItem('edunexUser');
+    if (target === sessionStorage) localStorage.removeItem('edunexUser');
+    EduNex.renderUserAvatar();
+  }
+
+  function escapeProfileText(value) {
+    return String(value ?? '').replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
+  }
+
+  function isAuthProfileError(error) {
+    return /401|invalid token|expired|log in|authorization/i.test(error?.message || '');
+  }
+
+  function userSafeProfileError(error, fallback) {
+    const message = error?.message || '';
+    if (!message || /request failed|failed to fetch|network|500|503/i.test(message)) return fallback;
+    return message;
+  }
+
+  function showProfileToast(message, ok = true) {
+    const toast = document.getElementById('epToast');
+    toast.innerHTML = `<i class="fas ${ok ? 'fa-check-circle' : 'fa-circle-exclamation'}" style="margin-right:7px"></i>${escapeProfileText(message)}`;
+    toast.style.color = ok ? 'var(--cyan)' : '#f87171';
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 2800);
+  }
+
+  function setProfileStatus(message = '', isError = false, retry = false) {
+    const status = document.getElementById('profileStatus');
+    if (!status) return;
+    status.classList.toggle('show', Boolean(message));
+    status.classList.toggle('error', Boolean(isError));
+    if (!message) {
+      status.innerHTML = '';
+      return;
+    }
+    status.innerHTML = `${escapeProfileText(message)}${retry ? ' <button type="button" id="editProfileRetryBtn">Retry</button>' : ''}`;
+    if (retry) document.getElementById('editProfileRetryBtn')?.addEventListener('click', loadProfileForm, { once: true });
+  }
+
+  function splitName(fullName = '') {
+    const parts = String(fullName || '').trim().split(/\s+/).filter(Boolean);
+    return {
+      first: parts.shift() || '',
+      last: parts.join(' '),
+    };
+  }
+
+  function fullNameFromInputs() {
+    return [document.getElementById('firstNameInput').value, document.getElementById('lastNameInput').value]
+      .map(value => value.trim())
+      .filter(Boolean)
+      .join(' ');
+  }
+
+  function readStoredProfileUser() {
+    const keys = ['edunexUser', 'edunexSignupProfile', 'user', 'currentUser', 'authUser'];
+    for (const storage of [localStorage, sessionStorage]) {
+      for (const key of keys) {
+        try {
+          const raw = storage.getItem(key);
+          if (!raw) continue;
+          const parsed = JSON.parse(raw);
+          const user = parsed?.user || parsed;
+          if (user && (user.fullName || user.email || user.mobileNumber || user.avatar)) {
+            return user;
+          }
+        } catch (_) {}
+      }
+    }
+    return null;
+  }
+
+  function currentGender() {
+    return document.querySelector('.ep-gender-btn.selected')?.dataset.g || null;
+  }
+
+  function setGender(value) {
+    const button = document.querySelector(`.ep-gender-btn[data-g="${value || 'other'}"]`) || document.querySelector('.ep-gender-btn');
+    if (button) epSelectGender(button);
+  }
+
+  function normalizedAvatarPath(value) {
+    const raw = String(value || '').trim();
+    if (!raw) return '';
+    try {
+      const parsed = new URL(raw, window.location.origin);
+      const path = parsed.pathname.replace(/^\/+/, '');
+      const assetIndex = path.lastIndexOf('assets/');
+      return assetIndex >= 0 ? path.slice(assetIndex) : raw;
+    } catch (_) {
+      const cleaned = raw.replace(/^\/+/, '');
+      const assetIndex = cleaned.lastIndexOf('assets/');
+      return assetIndex >= 0 ? cleaned.slice(assetIndex) : cleaned;
+    }
+  }
+
+  function selectProfileAvatar(path) {
+    const normalized = normalizedAvatarPath(path);
+    const chosen = allowedAvatars.includes(normalized) ? normalized : allowedAvatars[0];
+    selectedProfileAvatar = chosen;
+    document.getElementById('avaImg').src = chosen;
+    document.getElementById('avaImg').dataset.avatar = chosen;
+    document.querySelectorAll('.ava-choice').forEach(button => {
+      button.classList.toggle('selected', button.dataset.avatar === chosen);
+    });
+  }
+
+  function renderAvatarPicker(currentAvatar) {
+    const picker = document.getElementById('avatarPicker');
+    const current = allowedAvatars.includes(normalizedAvatarPath(currentAvatar))
+      ? normalizedAvatarPath(currentAvatar)
+      : allowedAvatars[0];
+
+    picker.innerHTML = allowedAvatars.map(path => `
+      <button class="ava-choice${path === current ? ' selected' : ''}" type="button" data-avatar="${path}" aria-label="Select avatar">
+        <img src="${path}" alt="">
+      </button>
+    `).join('');
+
+    picker.querySelectorAll('.ava-choice').forEach(button => {
+      button.addEventListener('click', () => selectProfileAvatar(button.dataset.avatar));
+    });
+    selectProfileAvatar(current);
+  }
+
+  function applyProfileUser(user) {
+    if (!user) {
+      window.location.href = `login.html?next=${encodeURIComponent('edit-profile.html')}`;
+      return;
+    }
+
+    const name = splitName(user.fullName);
+    const avatar = user.avatar || user.avatarUrl || user.photoUrl || user.photoURL;
+    renderAvatarPicker(avatar);
+    document.querySelector('.ava-edit-name').textContent = user.fullName || 'EduNex Learner';
+    document.getElementById('firstNameInput').value = name.first;
+    document.getElementById('lastNameInput').value = name.last;
+    document.getElementById('emailInput').value = user.email || '';
+    document.getElementById('mobileInput').value = user.mobileNumber || '';
+    document.getElementById('ageInput').value = user.age || '';
+    setGender(user.gender || 'other');
+  }
+
+  async function loadProfileForm() {
+    renderAvatarPicker(allowedAvatars[0]);
+    if (!EduNex.getAccessToken()) {
+      window.location.href = `login.html?next=${encodeURIComponent('edit-profile.html')}`;
+      return;
+    }
+
+    const cachedUser = EduNex.getUser() || readStoredProfileUser();
+    if (cachedUser) {
+      applyProfileUser(cachedUser);
+      setProfileStatus('Refreshing your latest profile details...');
+    }
+
+    try {
+      const data = await EduNex.authRequest('/api/auth/me');
+      updateStoredUser(data.user);
+      applyProfileUser(data.user);
+      setProfileStatus('');
+    } catch (error) {
+      if (isAuthProfileError(error)) {
+        EduNex.clearAuth();
+        window.location.href = `login.html?next=${encodeURIComponent('edit-profile.html')}`;
+        return;
+      }
+      const message = "We couldn't load your profile right now. Please try again in a moment.";
+      setProfileStatus(message, true, true);
+      showProfileToast(message, false);
+    }
+  }
+
+  function epSelectGender(btn) {
+    const slider = document.getElementById('epGenderSlider');
+    const thumb  = document.getElementById('epGenderThumb');
+    const btns   = slider.querySelectorAll('.ep-gender-btn');
+    btns.forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    const idx = Array.from(btns).indexOf(btn);
+    thumb.style.left  = (5 + idx * (btn.offsetWidth + 4)) + 'px';
+    thumb.style.width = btn.offsetWidth + 'px';
+  }
+
+  async function saveProfile() {
+    const saveButton = document.getElementById('saveProfileBtn');
+    const fullName = fullNameFromInputs();
+    if (!fullName) {
+      showProfileToast('Full name is required', false);
+      return;
+    }
+    if (fullName.length > 80) {
+      showProfileToast('Full name must be 80 characters or less', false);
+      return;
+    }
+
+    const email = document.getElementById('emailInput').value.trim();
+    if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      showProfileToast('Please enter a valid email address', false);
+      return;
+    }
+
+    const age = document.getElementById('ageInput').value;
+    if (age && (Number(age) < 5 || Number(age) > 80)) {
+      showProfileToast('Please select a valid age', false);
+      return;
+    }
+
+    const avatar = selectedProfileAvatar || normalizedAvatarPath(document.getElementById('avaImg').dataset.avatar);
+    if (!allowedAvatars.includes(avatar)) {
+      showProfileToast('Please choose one of the EduNex avatars', false);
+      return;
+    }
+
+    try {
+      saveButton.disabled = true;
+      saveButton.textContent = 'Saving...';
+      const data = await EduNex.authRequest('/api/auth/me', {
+        method: 'PATCH',
+        body: JSON.stringify({
+          fullName,
+          email,
+          avatar,
+          gender: currentGender(),
+          age,
+        }),
+      });
+      updateStoredUser(data.user);
+      document.querySelector('.ava-edit-name').textContent = data.user.fullName || 'EduNex Learner';
+      showProfileToast('Profile updated successfully!');
+    } catch (error) {
+      showProfileToast(userSafeProfileError(error, "We couldn't save your changes. Please try again."), false);
+    } finally {
+      saveButton.disabled = false;
+      saveButton.textContent = 'Save Changes';
+    }
+  }
+
+  function bootEditProfilePage() {
+    const slider = document.getElementById('epGenderSlider');
+    const firstBtn = slider?.querySelector('.ep-gender-btn');
+    const thumb = document.getElementById('epGenderThumb');
+    loadProfileForm();
+    if (firstBtn && thumb) {
+      thumb.style.left  = '5px';
+      thumb.style.width = firstBtn.offsetWidth + 'px';
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', bootEditProfilePage, { once: true });
+  } else {
+    bootEditProfilePage();
+  }
+</script>
+</body>
+</html>

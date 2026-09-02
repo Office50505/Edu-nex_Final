@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Course Details — EduNex AI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    :root { --font-body:"Manrope",ui-sans-serif,system-ui,sans-serif; --font-display:"Fraunces",Georgia,serif; --bg:#FAF7F1; --card:#FFFDF8; --card2:#FFFCF6; --panel:#F3EBDD; --border:#E2D6C6; --border2:#E6DACB; --text:#332820; --text2:#756A60; --gray:#9A8E82; --cyan:#C58B2A; }
+    *,*::before,*::after{box-sizing:border-box}
+    html,body{overflow-x:hidden}
+    body{margin:0;min-height:100vh;background:var(--bg);color:var(--text);font-family:var(--font-body)}
+    img{display:block;max-width:100%}
+    a{color:inherit;text-decoration:none}
+    h1,h2,h3{font-family:var(--font-display);font-weight:600;letter-spacing:0;margin:0;color:#2B211A}
+    p{margin:0;color:var(--text2)}
+    .course-detail-page{padding:104px 24px 80px}
+    .course-detail-shell{max-width:1180px;margin:0 auto}
+    .course-breadcrumb{display:flex;gap:8px;align-items:center;color:var(--text2);font-size:.88rem;margin-bottom:22px}
+    .course-breadcrumb a{color:#9A681F;font-weight:800}
+    .course-detail-grid{display:grid;grid-template-columns:minmax(0,1.22fr) minmax(320px,.78fr);gap:28px;align-items:start}
+    .course-hero-card,.course-side-card,.course-section-card,.course-state-card{background:var(--card);border:1px solid var(--border);border-radius:18px;box-shadow:0 8px 24px rgba(88,65,34,.06)}
+    .course-hero-card{overflow:hidden}
+    .course-cover{width:100%;aspect-ratio:16/9;object-fit:cover;background:var(--panel)}
+    .course-hero-body{padding:clamp(22px,3vw,34px)}
+    .course-kicker{display:inline-flex;align-items:center;gap:8px;color:#B07821;text-transform:uppercase;letter-spacing:.08em;font-size:.78rem;font-weight:800;margin-bottom:14px}
+    .course-title{font-size:clamp(2.4rem,5.2vw,4.7rem);line-height:.98;max-width:820px}
+    .course-desc{margin-top:18px;max-width:760px;font-size:clamp(1rem,1.45vw,1.16rem);line-height:1.68}
+    .course-meta-grid{display:flex;flex-wrap:wrap;gap:10px;margin-top:24px}
+    .course-meta-chip{display:inline-flex;align-items:center;gap:7px;min-height:34px;padding:7px 12px;border:1px solid var(--border);border-radius:999px;background:var(--card2);color:var(--text2);font-size:.86rem;font-weight:700}
+    .course-meta-chip i{color:var(--cyan)}
+    .course-side-card{position:sticky;top:92px;padding:22px}
+    .course-price{display:flex;align-items:baseline;gap:10px;margin-bottom:16px}
+    .course-price strong{font-size:1.95rem;color:#2B211A}
+    .course-price span{color:var(--gray);text-decoration:line-through;font-size:.95rem}
+    .course-primary-btn,.course-secondary-btn{width:100%;min-height:48px;display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:12px;font-family:var(--font-body);font-size:.96rem;font-weight:800;cursor:pointer;transition:background .2s,border-color .2s,transform .2s}
+    .course-primary-btn{border:1px solid #C58B2A;background:#C58B2A;color:#FFFDF8}
+    .course-primary-btn:hover{background:#A96F18;border-color:#A96F18;transform:translateY(-1px)}
+    .course-secondary-btn{margin-top:10px;border:1px solid #DAB77A;background:#FFFDF8;color:#9A681F}
+    .course-side-list{margin:20px 0 0;padding:18px 0 0;border-top:1px solid var(--border2);list-style:none;display:grid;gap:12px}
+    .course-side-list li{display:flex;justify-content:space-between;gap:16px;color:var(--text2);font-size:.9rem}
+    .course-side-list strong{color:var(--text);text-align:right}
+    .course-sections{display:grid;gap:18px;margin-top:22px}
+    .course-section-card{padding:clamp(20px,2.5vw,28px)}
+    .course-section-card h2{font-size:clamp(1.5rem,2.4vw,2.15rem);margin-bottom:14px}
+    .curriculum-list{display:grid;gap:10px;margin-top:10px}
+    .curriculum-item{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px 16px;border:1px solid var(--border2);border-radius:12px;background:var(--card2)}
+    .curriculum-item span{color:var(--text);font-weight:800}
+    .curriculum-item small{color:var(--text2);font-weight:700}
+    .course-state-wrap{min-height:52vh;display:grid;place-items:center;padding:120px 24px 80px}
+    .course-state-card{max-width:560px;width:100%;padding:34px;text-align:center}
+    .course-state-card h1{font-size:clamp(2rem,4vw,3rem);margin-bottom:12px}
+    .course-state-actions{display:flex;gap:12px;margin-top:24px;justify-content:center;flex-wrap:wrap}
+    .course-state-actions a,.course-state-actions button{min-height:44px;padding:0 18px;border-radius:11px;border:1px solid #DAB77A;background:#FFFDF8;color:#9A681F;font:800 .92rem var(--font-body);cursor:pointer}
+    .course-state-actions .primary{background:#C58B2A;border-color:#C58B2A;color:#FFFDF8}
+    .course-skeleton{min-height:12px;border-radius:999px;background:linear-gradient(90deg,rgba(197,139,42,.08),rgba(255,253,248,.88),rgba(197,139,42,.08));background-size:220% 100%;animation:courseShimmer 1.4s ease-in-out infinite}
+    @keyframes courseShimmer{to{background-position:-220% 0}}
+    @media(max-width:900px){.course-detail-page{padding:88px 18px 64px}.course-detail-grid{grid-template-columns:1fr}.course-side-card{position:static}}
+    @media(max-width:520px){.course-detail-page{padding-inline:14px}.course-hero-body,.course-side-card,.course-section-card{padding:18px;border-radius:16px}.course-title{font-size:clamp(2.15rem,14vw,3.25rem)}.course-meta-chip{width:100%;justify-content:center}.curriculum-item{align-items:flex-start;flex-direction:column}}
+  </style>
+</head>
+<body>
+  <main id="courseDetailRoot" class="course-state-wrap">
+    <section class="course-state-card" aria-live="polite">
+      <div class="course-skeleton" style="height:190px;border-radius:16px;margin-bottom:24px"></div>
+      <div class="course-skeleton" style="height:18px;width:34%;margin:0 auto 16px"></div>
+      <div class="course-skeleton" style="height:42px;width:80%;margin:0 auto 14px"></div>
+      <div class="course-skeleton" style="height:14px;width:66%;margin:0 auto"></div>
+    </section>
+  </main>
+  <script src="js/edunex-api.js"></script>
+  <script>
+    const root = document.getElementById('courseDetailRoot');
+    const params = new URLSearchParams(window.location.search);
+    const requestedId = params.get('id') || params.get('courseId') || params.get('course');
+    const requestedSlug = params.get('slug');
+
+    function escapeCourseHtml(value){return String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));}
+    function courseId(course){return EduNex.courseId?.(course)||course?._id||course?.id||'';}
+    function categoryName(course){return typeof course?.category==='string'?course.category:(course?.category?.name||course?.categoryName||'Course');}
+    function instructorName(course){return course?.instructor?.name||course?.instructorName||course?.author||'EduNex AI Mentors';}
+    function lessonCount(course){return Number(course?.videoCount||course?.lessonCount||(Array.isArray(course?.videos)?course.videos.length:0));}
+    function readableDuration(course){if(course?.duration)return course.duration;const count=lessonCount(course);return count?`${count} lessons`:'';}
+    function priceLabel(course){const value=Number(course?.price||0);return value>1?`₹${value.toLocaleString('en-IN')}`:'₹1 Trial';}
+    function originalPrice(course){const value=Number(course?.originalPrice||course?.compareAtPrice||0);return value>1?`₹${value.toLocaleString('en-IN')}`:'';}
+    function progressFor(id){try{const saved=JSON.parse(localStorage.getItem(`edunexCourseProgress:${id}`)||'{}');const percent=Math.max(0,Math.min(100,Number(saved.percent||0)));return{percent,hasProgress:percent>0||Number(saved.completed||0)>0||Number(saved.lessonIndex||0)>0};}catch(_){return{percent:0,hasProgress:false};}}
+    async function hasAccess(){let localMarker=false;try{const marker=JSON.parse(localStorage.getItem('edunexHasCourseAccess')||'null');localMarker=Boolean(marker?.active&&Date.now()-Number(marker.savedAt||0)<86400000);}catch(_){}if(!EduNex.getAccessToken?.())return localMarker;try{return Boolean(EduNex.hasCourseAccess?.(await EduNex.checkSubscription?.())||localMarker);}catch(error){console.warn('Course detail access check failed',error);return localMarker;}}
+
+    async function loadCourse(){
+      if(!requestedId&&!requestedSlug){renderNotFound();return;}
+      if(requestedId&&!requestedSlug&&!/^[a-f\d]{24}$/i.test(String(requestedId))){renderNotFound();return;}
+      try{
+        const [listResult,summaryResult]=await Promise.allSettled([
+          EduNex.request('/api/courses'),
+          requestedId?EduNex.request(`/api/courses/checkout-summary?courseId=${encodeURIComponent(requestedId)}`):Promise.reject(new Error('No id supplied'))
+        ]);
+        if(listResult.status==='rejected'&&summaryResult.status==='rejected'){
+          if(/not found|invalid course id/i.test(String(summaryResult.reason?.message||summaryResult.reason||''))){renderNotFound();return;}
+          console.error('Course detail API failed',{list:listResult.reason,summary:summaryResult.reason});renderApiError();return;
+        }
+        const courses=listResult.status==='fulfilled'&&Array.isArray(listResult.value)?listResult.value:[];
+        const fromList=courses.find(course=>{const id=String(courseId(course));const slug=String(course?.slug||'');return(requestedId&&id===String(requestedId))||(requestedSlug&&slug===String(requestedSlug));});
+        const fromSummary=summaryResult.status==='fulfilled'?summaryResult.value:null;
+        const course={...(fromList||{}),...(fromSummary||{})};
+        if(!courseId(course)){renderNotFound();return;}
+        renderCourse(course,await hasAccess());
+      }catch(error){console.error('Course detail unexpected failure',error);renderApiError();}
+    }
+
+    function ctaHref(course){const id=courseId(course);const next=`/videos.html?courseId=${encodeURIComponent(id)}&video=0`;return`payment.html?courseId=${encodeURIComponent(id)}&next=${encodeURIComponent(next)}`;}
+    function renderCourse(course,accessActive){
+      const id=courseId(course);
+      const title=course.title||'Untitled course';
+      const videos=Array.isArray(course.videos)?course.videos:[];
+      const progress=progressFor(id);
+      const primaryLabel=accessActive?(progress.hasProgress?'Continue Learning':'Start Course'):'Start ₹1 Trial';
+      const primaryAction=accessActive?`data-open-course="${escapeCourseHtml(id)}"`:`href="${escapeCourseHtml(ctaHref(course))}"`;
+      const primaryTag=accessActive?'button':'a';
+      const maybeOriginal=originalPrice(course);
+      root.className='course-detail-page';
+      root.innerHTML=`
+        <div class="course-detail-shell">
+          <nav class="course-breadcrumb" aria-label="Breadcrumb"><a href="courses.html">Courses</a><span>/</span><span>${escapeCourseHtml(title)}</span></nav>
+          <div class="course-detail-grid">
+            <article class="course-hero-card">
+              <img class="course-cover" src="${escapeCourseHtml(EduNex.courseImage(course))}" alt="${escapeCourseHtml(title)}" onerror="this.onerror=null;this.src=EduNex.placeholderImage(this.alt||'EduNex')">
+              <div class="course-hero-body">
+                <div class="course-kicker"><i class="fas fa-book-open"></i>${escapeCourseHtml(categoryName(course))}</div>
+                <h1 class="course-title">${escapeCourseHtml(title)}</h1>
+                ${course.description?`<p class="course-desc">${escapeCourseHtml(course.description)}</p>`:''}
+                <div class="course-meta-grid">
+                  <span class="course-meta-chip"><i class="fas fa-user"></i>${escapeCourseHtml(instructorName(course))}</span>
+                  ${course.averageRating||course.rating?`<span class="course-meta-chip"><i class="fas fa-star"></i>${escapeCourseHtml(course.averageRating||course.rating)} rating</span>`:''}
+                  ${lessonCount(course)?`<span class="course-meta-chip"><i class="fas fa-play-circle"></i>${lessonCount(course)} lessons</span>`:''}
+                  ${readableDuration(course)?`<span class="course-meta-chip"><i class="fas fa-clock"></i>${escapeCourseHtml(readableDuration(course))}</span>`:''}
+                  ${course.language?`<span class="course-meta-chip"><i class="fas fa-globe"></i>${escapeCourseHtml(course.language)}</span>`:''}
+                  ${course.level?`<span class="course-meta-chip"><i class="fas fa-signal"></i>${escapeCourseHtml(course.level)}</span>`:''}
+                  ${course.certificate||course.certificateIncluded?`<span class="course-meta-chip"><i class="fas fa-certificate"></i>Certificate</span>`:''}
+                </div>
+              </div>
+            </article>
+            <aside class="course-side-card">
+              <div class="course-price"><strong>${escapeCourseHtml(priceLabel(course))}</strong>${maybeOriginal?`<span>${escapeCourseHtml(maybeOriginal)}</span>`:''}</div>
+              <${primaryTag} class="course-primary-btn" ${primaryAction}>${escapeCourseHtml(primaryLabel)} <i class="fas fa-arrow-right"></i></${primaryTag}>
+              <a class="course-secondary-btn" href="courses.html">Back to Courses</a>
+              <ul class="course-side-list">
+                <li><span>Category</span><strong>${escapeCourseHtml(categoryName(course))}</strong></li>
+                ${lessonCount(course)?`<li><span>Lessons</span><strong>${lessonCount(course)}</strong></li>`:''}
+                ${course.totalStarted||course.learnerCount?`<li><span>Learners</span><strong>${Number(course.totalStarted||course.learnerCount).toLocaleString('en-IN')}</strong></li>`:''}
+                ${course.totalWishlisted?`<li><span>Wishlisted</span><strong>${Number(course.totalWishlisted).toLocaleString('en-IN')}</strong></li>`:''}
+                <li><span>Access</span><strong>${accessActive?'Active':'Trial available'}</strong></li>
+              </ul>
+            </aside>
+          </div>
+          <div class="course-sections">
+            ${videos.length?`<section class="course-section-card"><h2>Curriculum</h2><div class="curriculum-list">${videos.map((video,index)=>`<div class="curriculum-item"><span>${escapeCourseHtml(video.title||`Lesson ${index+1}`)}</span><small>${video.duration?`${Math.max(1,Math.round(Number(video.duration)/60))} min`:`Lesson ${index+1}`}</small></div>`).join('')}</div></section>`:''}
+            ${course.notesUrl?`<section class="course-section-card"><h2>Course Resources</h2><p>Downloadable notes are available for this course after access is active.</p></section>`:''}
+          </div>
+        </div>`;
+      root.querySelector('[data-open-course]')?.addEventListener('click',()=>EduNex.openCourse(course));
+      EduNex.refreshIcons?.(root);
+    }
+
+    function renderNotFound(){root.className='course-state-wrap';root.innerHTML=`<section class="course-state-card"><h1>Course not found</h1><p>This course may no longer be available or the link may be incorrect.</p><div class="course-state-actions"><button onclick="history.back()">Back to Courses</button><a class="primary" href="courses.html">Explore Courses</a></div></section>`;}
+    function renderApiError(){root.className='course-state-wrap';root.innerHTML=`<section class="course-state-card"><h1>We couldn't load this course right now.</h1><p>Please try again in a moment.</p><div class="course-state-actions"><button class="primary" type="button" id="courseRetryBtn">Retry</button><a href="courses.html">Back to Courses</a></div></section>`;document.getElementById('courseRetryBtn')?.addEventListener('click',loadCourse);}
+    loadCourse();
+  </script>
+  <script src="assets/bot-avatars/manifest.js"></script>
+  <script src="js/nex-ai-widget.js"></script>
+  <script src="js/animations.js" defer></script>
+</body>
+</html>

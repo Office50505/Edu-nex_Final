@@ -1,0 +1,1177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create Account — EduNex AI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="css/animations.css">
+  <style>
+    :root { --font-body: "Manrope", ui-sans-serif, system-ui, sans-serif; --font-display: "Fraunces", Georgia, serif; }
+    body, button, input, textarea, select { font-family: var(--font-body); }
+    h1, h2, .hero-title, .section-title, .auth-brand, .library-hero h1, .welcome-left h1, .market-right h2, .trial-left h2, .team-header-row h2, .cta-section h2, .section-head h2, .lp-title, .sp-title, .payment-choice-title { font-family: var(--font-display); font-weight: 600; letter-spacing: 0; }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; overflow-x: hidden; }
+    body { font-family: "Manrope", ui-sans-serif, system-ui, sans-serif; background: var(--bg, #000); color: var(--text, #fff); min-height: 100vh; display: flex; flex-direction: column; }
+    a { text-decoration: none; color: inherit; }
+    img { display: block; max-width: 100%; }
+
+    :root {
+      --bg: #000000;
+      --text: #ffffff;
+      --text2: #9ca3af;
+      --cyan: #C58B2A;
+      --cyan-dim: rgba(197,139,42,0.08);
+      --cyan-border: rgba(197,139,42,0.25);
+      --border: rgba(255,255,255,0.08);
+      --border2: rgba(255,255,255,0.12);
+      --card: #0d0f14;
+      --input: #111418;
+      --gray: #6b7280;
+      --light: #9ca3af;
+    }
+
+    /* ===== NAVBAR ===== */
+    .sp-nav {
+      position: sticky; top: 0; z-index: 200;
+      background: rgba(0,0,0,0.96);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      padding: 14px 0; flex-shrink: 0;
+    }
+    .sp-nav-inner {
+      max-width: 1160px; margin: 0 auto; padding: 0 28px;
+      display: flex; align-items: center; gap: 32px;
+    }
+    .sp-nav-logo {
+      font-size: 1.05rem; font-weight: 800; flex-shrink: 0;
+    }
+    .sp-nav-logo span { color: var(--cyan); }
+    .sp-nav-links {
+      display: flex; align-items: center; gap: 4px; flex: 1;
+    }
+    .sp-nav-links a {
+      padding: 7px 14px; font-size: .86rem; font-weight: 500;
+      color: var(--light); transition: color .2s; border-radius: 8px;
+    }
+    .sp-nav-links a:hover { color: #fff; }
+    .sp-nav-right { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+    .sp-btn-ghost {
+      padding: 8px 18px; border: 1px solid var(--border2);
+      border-radius: 10px; font-size: .84rem; font-weight: 600;
+      color: var(--light); transition: all .2s; cursor: pointer;
+      background: none; font-family: "Manrope", ui-sans-serif, system-ui, sans-serif;
+    }
+    .sp-btn-ghost:hover { color: #fff; border-color: rgba(255,255,255,.22); }
+    .sp-btn-cyan {
+      padding: 9px 20px; background: var(--cyan); border: none;
+      border-radius: 10px; font-size: .84rem; font-weight: 700;
+      color: #000; cursor: pointer; font-family: "Manrope", ui-sans-serif, system-ui, sans-serif;
+      transition: all .2s;
+    }
+    .sp-btn-cyan:hover { background: #A96F18; }
+
+    /* ===== MAIN SPLIT ===== */
+    .sp-main {
+      flex: 1; display: flex;
+      min-height: calc(100vh - 60px - 260px);
+    }
+
+    /* LEFT — photo panel */
+    .sp-photo {
+      flex: 0 0 42%;
+      position: relative;
+      overflow: hidden;
+      min-height: 600px;
+    }
+    .sp-photo img {
+      width: 100%; height: 100%;
+      object-fit: cover; object-position: center top;
+      filter: brightness(0.82);
+      display: block;
+    }
+    .sp-photo-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.3) 50%, transparent 75%);
+    }
+    .sp-photo-bottom {
+      position: absolute; bottom: 40px; left: 32px; right: 32px;
+    }
+    .sp-photo-heading {
+      font-size: 1.8rem; font-weight: 900;
+      line-height: 1.15; margin-bottom: 14px;
+      letter-spacing: 0;
+    }
+    .sp-photo-quote {
+      display: flex; align-items: flex-start; gap: 10px;
+      margin-bottom: 18px;
+    }
+    .sp-photo-quote i {
+      color: var(--cyan); font-size: .85rem; margin-top: 3px; flex-shrink: 0;
+    }
+    .sp-photo-quote p {
+      font-size: .82rem; color: #c8cdd4; line-height: 1.65;
+    }
+    .sp-photo-cta {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 10px 20px;
+      border: 1px solid rgba(197,139,42,0.4);
+      border-radius: 100px;
+      font-size: .82rem; font-weight: 600;
+      color: #fff; transition: all .2s;
+    }
+    .sp-photo-cta:hover { background: rgba(197,139,42,0.1); }
+    .sp-photo-cta i { color: var(--cyan); }
+
+    /* RIGHT — form panel */
+    .sp-form-panel {
+      flex: 1;
+      background: #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 52px 64px;
+    }
+
+    /* Form steps */
+    .sp-step { display: none; width: 100%; max-width: 360px; }
+    .sp-step.active { display: block; }
+
+    .sp-form-title {
+      font-size: 1.7rem; font-weight: 800;
+      letter-spacing: 0; margin-bottom: 5px;
+    }
+    .sp-form-sub {
+      font-size: .83rem; color: var(--light);
+      margin-bottom: 28px; line-height: 1.6;
+    }
+
+    .sp-field-label {
+      font-size: .8rem; font-weight: 600;
+      color: #d1d5db; display: block; margin-bottom: 6px;
+    }
+    .sp-input-row {
+      display: flex; align-items: center; gap: 0;
+      background: var(--input);
+      border: 1px solid var(--border2);
+      border-radius: 12px;
+      overflow: hidden;
+      transition: border-color .2s;
+      margin-bottom: 16px;
+    }
+    .sp-input-row:focus-within { border-color: var(--border2); }
+    .sp-prefix {
+      padding: 13px 14px;
+      font-size: .88rem; font-weight: 600;
+      color: var(--light); white-space: nowrap;
+      border-right: 1px solid var(--border2);
+    }
+    .sp-input-row input {
+      flex: 1; background: none; border: none; outline: none;
+      padding: 13px 16px;
+      font-size: .88rem; color: #fff;
+      font-family: "Manrope", ui-sans-serif, system-ui, sans-serif;
+    }
+    .sp-input-row input:focus {
+      border-color: transparent;
+      outline: none;
+      box-shadow: none;
+    }
+    .sp-input-row input::placeholder { color: var(--gray); }
+
+    /* Checkbox */
+    .sp-checkbox-row {
+      display: flex; align-items: center; gap: 9px;
+      font-size: .8rem; color: var(--light);
+      margin-bottom: 20px; cursor: pointer;
+    }
+    .sp-checkbox-row input {
+      width: 16px; height: 16px;
+      accent-color: var(--cyan); cursor: pointer; flex-shrink: 0;
+    }
+    .sp-checkbox-row a { color: var(--cyan); font-weight: 600; }
+    .sp-checkbox-row a:hover { opacity: .8; }
+
+    /* Primary button */
+    .sp-primary-btn {
+      width: 100%; padding: 14px;
+      background: var(--cyan); color: #000;
+      font-family: "Manrope", ui-sans-serif, system-ui, sans-serif;
+      font-size: .93rem; font-weight: 800;
+      border: none; border-radius: 12px;
+      cursor: pointer; transition: all .2s;
+      margin-bottom: 16px;
+    }
+    .sp-primary-btn:hover {
+      background: #A96F18;
+      box-shadow: 0 6px 22px rgba(197,139,42,.38);
+    }
+    .sp-primary-btn:disabled {
+      opacity: .5; cursor: not-allowed;
+    }
+
+    /* Login link */
+    .sp-login-row {
+      text-align: center; font-size: .82rem;
+      color: var(--light);
+    }
+    .sp-login-row a { color: var(--cyan); font-weight: 700; }
+    .sp-login-row a:hover { opacity: .8; }
+
+    /* ===== OTP BOXES ===== */
+    .sp-otp-label {
+      font-size: 1rem; font-weight: 700;
+      color: #fff; margin-bottom: 5px;
+    }
+    .sp-otp-desc {
+      font-size: .82rem; color: var(--light);
+      margin-bottom: 22px; line-height: 1.6;
+    }
+    .sp-otp-boxes {
+      display: flex; gap: 10px; margin-bottom: 22px;
+    }
+    .sp-otp-box {
+      flex: 1; aspect-ratio: 1/1;
+      max-width: 52px; max-height: 52px;
+      background: var(--input);
+      border: 1px solid var(--border2);
+      border-radius: 10px;
+      font-size: 1.3rem; font-weight: 700;
+      color: #fff; text-align: center;
+      font-family: "Manrope", ui-sans-serif, system-ui, sans-serif;
+      outline: none; transition: border-color .2s;
+    }
+    .sp-otp-box:focus {
+      border-color: var(--border2);
+      outline: none;
+      box-shadow: none;
+    }
+    .sp-resend {
+      text-align: center;
+      font-size: .8rem; color: var(--light);
+      margin-bottom: 22px;
+    }
+    .sp-resend a, .sp-resend span.link, .sp-resend button.link {
+      color: var(--cyan); font-weight: 700; cursor: pointer;
+      border: 0; background: transparent; padding: 0; font: inherit;
+    }
+
+    /* ===== PROFILE STEP (step 3 full-width) ===== */
+    .sp-profile-wrap {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      padding: 60px 28px;
+    }
+    .sp-profile-wrap.active { display: flex; flex: 1; }
+    .sp-profile-heading {
+      font-size: clamp(1.6rem, 3vw, 2rem);
+      font-weight: 800; color: var(--cyan);
+      text-align: center; margin-bottom: 8px;
+      letter-spacing: 0;
+    }
+    .sp-profile-sub {
+      font-size: .86rem; color: var(--light);
+      text-align: center; margin-bottom: 32px;
+      max-width: 380px; line-height: 1.65;
+    }
+    .sp-profile-card {
+      background: var(--card);
+      border: 1px solid var(--border2);
+      border-radius: 18px;
+      padding: 32px 28px;
+      width: 100%; max-width: 500px;
+    }
+
+    /* Avatar centered circle */
+    .sp-ava-center {
+      display: flex; flex-direction: column; align-items: center;
+      margin-bottom: 20px;
+    }
+    .sp-ava-circle {
+      width: 90px; height: 90px; border-radius: 50%;
+      border: 2.5px solid var(--cyan);
+      background: #111; overflow: hidden;
+      cursor: pointer; position: relative;
+      box-shadow: 0 0 0 4px rgba(197,139,42,.12);
+      transition: box-shadow .22s, transform .18s;
+    }
+    .sp-ava-circle:hover { box-shadow: 0 0 0 7px rgba(197,139,42,.18); transform: scale(1.04); }
+    .sp-ava-circle img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .sp-ava-circle-edit {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      background: rgba(197,139,42,.82); color: #000;
+      font-size: .58rem; font-weight: 800; text-align: center;
+      padding: 4px 0; letter-spacing: .05em;
+      opacity: 0; transition: opacity .18s;
+    }
+    .sp-ava-circle:hover .sp-ava-circle-edit { opacity: 1; }
+    .sp-ava-circle-name {
+      margin-top: 8px; font-size: .78rem; font-weight: 700; color: #fff;
+    }
+    .sp-ava-circle-hint { font-size: .68rem; color: var(--gray); margin-top: 2px; }
+
+    /* Avatar modal */
+    .sp-ava-modal-overlay {
+      display: none; position: fixed; inset: 0; z-index: 9999;
+      background: rgba(0,0,0,.72); backdrop-filter: blur(6px);
+      align-items: center; justify-content: center;
+    }
+    .sp-ava-modal-overlay.open { display: flex; }
+    .sp-ava-modal {
+      background: #0d0d0d; border: 1px solid rgba(255,255,255,.1);
+      border-radius: 20px; padding: 24px 22px;
+      width: 340px; max-width: 92vw;
+      animation: avaModalIn .22s cubic-bezier(.4,0,.2,1);
+    }
+    @keyframes avaModalIn { from { opacity:0; transform:translateY(18px) scale(.97); } to { opacity:1; transform:none; } }
+    .sp-ava-modal-head {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 16px;
+    }
+    .sp-ava-modal-title { font-size: .9rem; font-weight: 800; color: #fff; }
+    .sp-ava-modal-close {
+      width: 28px; height: 28px; border-radius: 8px;
+      background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.1);
+      color: #888; font-size: .78rem; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: all .18s;
+    }
+    .sp-ava-modal-close:hover { color: #fff; border-color: rgba(255,255,255,.2); }
+
+    /* Tabs inside modal */
+    .sp-avatar-tabs {
+      display: flex; gap: 6px; margin-bottom: 14px;
+    }
+    .sp-avatar-tab {
+      flex: 1; padding: 7px 10px;
+      background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.08);
+      border-radius: 8px; cursor: pointer;
+      font-family: "Manrope", ui-sans-serif, system-ui, sans-serif; font-size: .74rem; font-weight: 700;
+      color: var(--light); transition: all .2s;
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+    }
+    .sp-avatar-tab.active { background: var(--cyan-dim); border-color: var(--cyan); color: var(--cyan); }
+    .sp-avatar-tab.locked { opacity: .3; cursor: not-allowed; }
+
+    /* Grid inside modal */
+    .sp-avatar-grid {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;
+    }
+    .sp-ava-opt {
+      width: 100%; aspect-ratio: 1; border-radius: 10px;
+      border: 2px solid rgba(255,255,255,.08);
+      overflow: hidden; cursor: pointer; transition: all .2s;
+      background: #1a1a1a; position: relative;
+    }
+    .sp-ava-opt img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .sp-ava-opt:hover { border-color: rgba(197,139,42,.4); transform: scale(1.05); }
+    .sp-ava-opt.selected { border-color: var(--cyan); box-shadow: 0 0 0 3px rgba(197,139,42,.2); }
+    .sp-ava-opt.selected::after {
+      content: '';
+      position: absolute; bottom: 4px; right: 4px;
+      width: 16px; height: 16px; border-radius: 50%;
+      background: var(--cyan) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m5 12 4 4L19 6'/%3E%3C/svg%3E") center/11px 11px no-repeat; color: #000;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    /* Profile fields */
+    .sp-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px; }
+    .sp-profile-field { margin-bottom: 14px; }
+    .sp-profile-input {
+      width: 100%; padding: 12px 14px;
+      background: var(--input);
+      border: 1px solid var(--border2);
+      border-radius: 10px;
+      font-size: .86rem; color: #fff;
+      font-family: "Manrope", ui-sans-serif, system-ui, sans-serif; outline: none;
+      transition: border-color .2s;
+    }
+    .sp-profile-input:focus {
+      border-color: var(--border2);
+      outline: none;
+      box-shadow: none;
+    }
+    .sp-profile-input::placeholder { color: var(--gray); }
+
+    /* Age roller */
+    .sp-age-roller {
+      display: block;
+      background: var(--input); border: 1px solid var(--border2);
+      border-radius: 10px; overflow: hidden; height: 156px;
+      user-select: none;
+      position: relative;
+    }
+    .sp-age-roller::before,
+    .sp-age-roller::after {
+      content: "";
+      position: absolute; left: 0; right: 0; z-index: 2; height: 52px;
+      pointer-events: none;
+    }
+    .sp-age-roller::before { top: 0; background: linear-gradient(180deg, var(--input), transparent); }
+    .sp-age-roller::after { bottom: 0; background: linear-gradient(0deg, var(--input), transparent); }
+    .sp-roller-track {
+      height: 100%;
+      overflow-y: auto;
+      scroll-snap-type: y mandatory;
+      scrollbar-width: none;
+      padding: 52px 0;
+    }
+    .sp-roller-track::-webkit-scrollbar { display: none; }
+    .sp-roller-inner {
+      display: flex; flex-direction: column; align-items: stretch;
+    }
+    .sp-roller-item {
+      height: 52px; width: 100%; display: flex; align-items: center; justify-content: center;
+      flex: 0 0 52px;
+      scroll-snap-align: center;
+      font-size: 1rem; font-weight: 700; color: rgba(197,139,42,.32);
+      font-family: "Manrope", ui-sans-serif, system-ui, sans-serif;
+      transition: color .18s, font-size .18s;
+    }
+    .sp-roller-item.active { color: var(--cyan); font-size: 1.45rem; font-weight: 900; }
+
+    /* Gender slider */
+    .sp-gender-slider {
+      background: var(--input); border: 1px solid var(--border2);
+      border-radius: 10px; padding: 6px;
+      display: flex; gap: 4px; margin-bottom: 22px; position: relative;
+      overflow: hidden;
+    }
+    .sp-gender-slide-btn {
+      flex: 1; padding: 9px 6px; border: none; border-radius: 7px;
+      background: transparent;
+      font-family: "Manrope", ui-sans-serif, system-ui, sans-serif; font-size: .78rem; font-weight: 700;
+      color: var(--light); cursor: pointer; transition: all .22s;
+      display: flex; align-items: center; justify-content: center; gap: 5px;
+      position: relative; z-index: 1;
+    }
+    .sp-gender-slide-btn.selected { color: var(--cyan); }
+    .sp-gender-slider.ready .sp-gender-slide-btn.selected { color: #000; }
+    .sp-gender-slider-thumb {
+      position: absolute; top: 6px; bottom: 6px; left: 6px;
+      border-radius: 7px; background: var(--cyan);
+      transition: left .22s cubic-bezier(.4,0,.2,1), width .22s;
+      z-index: 0;
+    }
+
+    /* Profile primary btn */
+    .sp-complete-btn {
+      width: 100%; padding: 14px;
+      background: var(--cyan); color: #000;
+      font-family: "Manrope", ui-sans-serif, system-ui, sans-serif;
+      font-size: .93rem; font-weight: 800;
+      border: none; border-radius: 12px;
+      cursor: pointer; transition: all .2s;
+      margin-bottom: 12px;
+    }
+    .sp-complete-btn:hover {
+      background: #A96F18;
+      box-shadow: 0 6px 22px rgba(197,139,42,.38);
+    }
+    .sp-terms-note {
+      text-align: center; font-size: .72rem; color: var(--gray); line-height: 1.55;
+    }
+    .sp-terms-note a { color: var(--cyan); }
+
+    /* ===== FOOTER ===== */
+    .sp-footer {
+      background: #000;
+      border-top: 1px solid var(--border);
+      padding: 52px 0 0;
+      flex-shrink: 0;
+    }
+    .sp-footer-inner {
+      max-width: 1160px; margin: 0 auto; padding: 0 28px;
+    }
+    .sp-footer-top {
+      display: grid;
+      grid-template-columns: 1.5fr 1fr 1fr 1fr;
+      gap: 40px; padding-bottom: 48px;
+    }
+    .sp-footer-brand { font-size: 1.05rem; font-weight: 800; margin-bottom: 10px; }
+    .sp-footer-brand span { color: var(--cyan); }
+    .sp-footer-brand-desc {
+      font-size: .78rem; color: var(--gray);
+      line-height: 1.72; max-width: 200px; margin-bottom: 16px;
+    }
+    .sp-footer-icons { display: flex; gap: 10px; }
+    .sp-footer-icon {
+      width: 32px; height: 32px; border-radius: 8px;
+      background: var(--card); border: 1px solid var(--border2);
+      display: flex; align-items: center; justify-content: center;
+      font-size: .78rem; color: var(--light);
+      transition: all .2s; cursor: pointer;
+    }
+    .sp-footer-icon:hover { border-color: rgba(197,139,42,.3); color: var(--cyan); }
+    .sp-footer-col-title {
+      font-size: .62rem; font-weight: 800; letter-spacing: .12em;
+      text-transform: uppercase; color: #fff; margin-bottom: 14px;
+    }
+    .sp-footer-col-links { display: flex; flex-direction: column; gap: 10px; }
+    .sp-footer-col-links a {
+      font-size: .79rem; color: var(--gray); transition: color .2s;
+    }
+    .sp-footer-col-links a:hover { color: var(--cyan); }
+    .sp-footer-bottom {
+      border-top: 1px solid var(--border);
+      padding: 16px 0;
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 10px;
+    }
+    .sp-footer-bottom p { font-size: .74rem; color: var(--gray); }
+    .sp-footer-bottom-links { display: flex; gap: 18px; }
+    .sp-footer-bottom-links a {
+      font-size: .74rem; color: var(--gray); transition: color .2s;
+    }
+    .sp-footer-bottom-links a:hover { color: var(--light); }
+
+    /* Hide photo + show full width on profile step */
+    body.profile-mode .sp-photo { display: none; }
+    body.profile-mode .sp-form-panel { display: none; }
+    body.profile-mode .sp-main { display: block; }
+    body.profile-mode .sp-profile-wrap { display: flex; }
+
+    @media (max-width: 768px) {
+      .sp-photo { display: none; }
+      .sp-form-panel { padding: 40px 28px; }
+      .sp-footer-top { grid-template-columns: 1fr 1fr; }
+      .sp-nav-links { display: none; }
+      .sp-avatar-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 480px) {
+      .sp-footer-top { grid-template-columns: 1fr; }
+      .sp-avatar-grid { grid-template-columns: repeat(3, 1fr); }
+      .sp-form-panel { padding: 24px 16px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="sp-nav">
+  <div class="sp-nav-inner">
+    <a href="index.html" class="sp-nav-logo">EduNex <span>AI</span></a>
+    <div class="sp-nav-links">
+      <a href="courses.html">AI Courses</a>
+      <a href="index.html#features">Features</a>
+      <a href="index.html#testimonials">Success Stories</a>
+      <a href="index.html#pricing">Pricing</a>
+    </div>
+    <div class="sp-nav-right">
+      <button class="sp-btn-ghost" onclick="window.location.href='login.html'">Login</button>
+      <button class="sp-btn-cyan" onclick="window.location.href='signup.html'">Get Started</button>
+    </div>
+  </div>
+</nav>
+
+<!-- MAIN SPLIT (Steps 1 & 2) -->
+<div class="sp-main">
+
+  <!-- LEFT PHOTO -->
+  <div class="sp-photo">
+    <img src="assets/image.png" alt="Student learning AI with EduNex">
+    <div class="sp-photo-overlay"></div>
+    <div class="sp-photo-bottom">
+      <div class="sp-photo-heading">Join the AI Revolution</div>
+      <div class="sp-photo-quote">
+        <i class="fas fa-check-circle"></i>
+        <p>"The personalized AI pathways cut my learning time by 40%. The best investment for my career evolution."</p>
+      </div>
+      <a href="signup.html" class="sp-photo-cta">
+        <i class="fas fa-plus-circle"></i>
+        Start your journey today for just ₹1
+      </a>
+    </div>
+  </div>
+
+  <!-- RIGHT FORM -->
+  <div class="sp-form-panel">
+
+    <!-- STEP 1: Phone entry -->
+    <div class="sp-step active" id="step1">
+      <h1 class="sp-form-title">Create your account</h1>
+      <p class="sp-form-sub">Start your journey with a ₹1 trial.</p>
+
+      <label class="sp-field-label" for="phoneInput">Phone Number</label>
+      <div class="sp-input-row">
+        <span class="sp-prefix">+91</span>
+        <input type="tel" id="phoneInput" placeholder="98765 43210" maxlength="10" autocomplete="tel-national" aria-describedby="step1-err">
+      </div>
+
+      <label class="sp-checkbox-row">
+        <input type="checkbox" id="agreeCheck">
+        I agree to the <a href="terms.html">Terms</a> and <a href="privacy.html">Privacy Policy.</a>
+      </label>
+
+      <p class="sp-err" id="step1-err" style="font-size:.78rem;color:#f87171;margin-bottom:10px;display:none"></p>
+
+      <button class="sp-primary-btn" type="button" onclick="sendOTP()">Send OTP &amp; Start Trial</button>
+      <p class="sp-login-row">Already have an account? <a href="login.html">Log in</a></p>
+    </div>
+
+    <!-- STEP 2: OTP entry -->
+    <div class="sp-step" id="step2">
+      <h2 class="sp-form-title">Create your account</h2>
+      <p class="sp-form-sub">Start your journey with a ₹1 trial.</p>
+
+      <p class="sp-otp-label">Enter OTP</p>
+      <p class="sp-otp-desc">We've sent a 6-digit code to your phone.</p>
+
+      <div class="sp-otp-boxes">
+        <input class="sp-otp-box" type="text" maxlength="1" inputmode="numeric" placeholder="–" aria-label="OTP digit 1">
+        <input class="sp-otp-box" type="text" maxlength="1" inputmode="numeric" placeholder="–" aria-label="OTP digit 2">
+        <input class="sp-otp-box" type="text" maxlength="1" inputmode="numeric" placeholder="–" aria-label="OTP digit 3">
+        <input class="sp-otp-box" type="text" maxlength="1" inputmode="numeric" placeholder="–" aria-label="OTP digit 4">
+        <input class="sp-otp-box" type="text" maxlength="1" inputmode="numeric" placeholder="–" aria-label="OTP digit 5">
+        <input class="sp-otp-box" type="text" maxlength="1" inputmode="numeric" placeholder="–" aria-label="OTP digit 6">
+      </div>
+
+      <button class="sp-primary-btn" id="verifyBtn" type="button" onclick="verifyOTP()">Verify OTP</button>
+
+      <p class="sp-resend">
+        Didn't receive the code?&nbsp;
+        <button class="link" id="resendLink" type="button" onclick="resendOTP()">Resend Code (<span id="countdown">0:59</span>)</button>
+      </p>
+      <p class="sp-login-row">Already have an account? <a href="login.html">Log in</a></p>
+    </div>
+
+  </div>
+
+  <!-- PROFILE STEP (shown full-width) -->
+  <!-- AVATAR MODAL -->
+  <div class="sp-ava-modal-overlay" id="avaModal" onclick="closeAvaModalOutside(event)">
+    <div class="sp-ava-modal">
+      <div class="sp-ava-modal-head">
+        <span class="sp-ava-modal-title">Choose Your Avatar</span>
+        <button class="sp-ava-modal-close" onclick="closeAvaModal()" aria-label="Close avatar picker"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="sp-avatar-tabs">
+        <div class="sp-avatar-tab active" id="tabMale" onclick="switchAvaTab('male')"><i class="fas fa-mars"></i> Male</div>
+        <div class="sp-avatar-tab" id="tabFemale" onclick="switchAvaTab('female')"><i class="fas fa-venus"></i> Female</div>
+      </div>
+      <div class="sp-avatar-grid" id="avaGridMale">
+        <div class="sp-ava-opt selected" data-name="Avatar 1" data-gender="male" onclick="selectAvatar(this)">
+          <img src="assets/male1.jpeg" alt="">
+        </div>
+        <div class="sp-ava-opt" data-name="Avatar 2" data-gender="male" onclick="selectAvatar(this)">
+          <img src="assets/male2.jpeg" alt="">
+        </div>
+        <div class="sp-ava-opt" data-name="Avatar 3" data-gender="male" onclick="selectAvatar(this)">
+          <img src="assets/male3.jpeg" alt="">
+        </div>
+        <div class="sp-ava-opt" data-name="Avatar 4" data-gender="male" onclick="selectAvatar(this)">
+          <img src="assets/male4.jpeg" alt="">
+        </div>
+      </div>
+      <div class="sp-avatar-grid" id="avaGridFemale" style="display:none">
+        <div class="sp-ava-opt" data-name="Avatar 5" data-gender="female" onclick="selectAvatar(this)">
+          <img src="assets/female1.jpeg" alt="">
+        </div>
+        <div class="sp-ava-opt" data-name="Avatar 6" data-gender="female" onclick="selectAvatar(this)">
+          <img src="assets/female2.jpeg" alt="">
+        </div>
+        <div class="sp-ava-opt" data-name="Avatar 7" data-gender="female" onclick="selectAvatar(this)">
+          <img src="assets/female3.jpeg" alt="">
+        </div>
+        <div class="sp-ava-opt" data-name="Avatar 8" data-gender="female" onclick="selectAvatar(this)">
+          <img src="assets/female4.jpeg" alt="">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sp-profile-wrap" id="step3">
+    <h2 class="sp-profile-heading">Tell us about yourself</h2>
+    <p class="sp-profile-sub">Customize your learning experience with AI-driven personalization.</p>
+
+    <!-- Centered avatar circle -->
+    <div class="sp-ava-center">
+      <div class="sp-ava-circle" onclick="openAvaModal()">
+        <img id="avaCircleImg" src="assets/male1.jpeg" alt="Avatar">
+        <div class="sp-ava-circle-edit">CHANGE</div>
+      </div>
+      <div class="sp-ava-circle-name" id="avaCircleName">Learner</div>
+      <div class="sp-ava-circle-hint">Tap to change avatar</div>
+    </div>
+
+    <div class="sp-profile-card">
+
+      <!-- Gender slider -->
+      <div class="sp-profile-field">
+        <label class="sp-field-label">Gender Identity</label>
+        <div class="sp-gender-slider" id="genderSlider">
+          <div class="sp-gender-slider-thumb" id="genderThumb"></div>
+          <button class="sp-gender-slide-btn selected" data-gender="male" onclick="selectGenderSlide(this)"><i class="fas fa-mars"></i> Male</button>
+          <button class="sp-gender-slide-btn" data-gender="female" onclick="selectGenderSlide(this)"><i class="fas fa-venus"></i> Female</button>
+          <button class="sp-gender-slide-btn" data-gender="other" onclick="selectGenderSlide(this)"><i class="fas fa-star"></i> Other</button>
+        </div>
+      </div>
+
+      <!-- Name row -->
+      <div class="sp-row-2">
+        <div>
+          <label class="sp-field-label" for="firstNameInput">First Name</label>
+          <input class="sp-profile-input" id="firstNameInput" type="text" placeholder="e.g. Learner" autocomplete="given-name" aria-describedby="step3-err">
+        </div>
+        <div>
+          <label class="sp-field-label" for="lastNameInput">Last Name</label>
+          <input class="sp-profile-input" id="lastNameInput" type="text" placeholder="e.g. Rivers" autocomplete="family-name" aria-describedby="step3-err">
+        </div>
+      </div>
+
+      <!-- Email -->
+      <div class="sp-profile-field">
+        <label class="sp-field-label" for="emailInput">Email Address <span style="color:var(--gray);font-weight:600">(optional)</span></label>
+        <input class="sp-profile-input" id="emailInput" type="email" placeholder="e.g. alex@company.com" style="width:100%" autocomplete="email" aria-describedby="step3-err">
+      </div>
+
+      <div class="sp-profile-field">
+        <label class="sp-field-label" for="passwordInput">Password</label>
+        <input class="sp-profile-input" id="passwordInput" type="password" placeholder="Minimum 8 characters" style="width:100%" autocomplete="new-password" aria-describedby="step3-err">
+      </div>
+
+      <div class="sp-profile-field">
+        <label class="sp-field-label" for="confirmPasswordInput">Confirm Password</label>
+        <input class="sp-profile-input" id="confirmPasswordInput" type="password" placeholder="Repeat your password" style="width:100%" autocomplete="new-password" aria-describedby="step3-err">
+      </div>
+
+      <!-- Age roller -->
+      <div class="sp-profile-field">
+        <label class="sp-field-label">Your Age</label>
+        <div class="sp-age-roller">
+          <div class="sp-roller-track" id="ageScroller">
+            <div class="sp-roller-inner" id="rollerInner"></div>
+          </div>
+        </div>
+      </div>
+
+      <p class="sp-err" id="step3-err" style="font-size:.78rem;color:#f87171;margin-bottom:10px;display:none" role="alert" aria-live="assertive"></p>
+      <button class="sp-complete-btn" id="completeProfileBtn" type="button" onclick="completeProfile()">Complete My Profile</button>
+      <p class="sp-terms-note">By continuing, you agree to our <a href="terms.html">Terms of Personalized Learning.</a></p>
+    </div>
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<footer class="sp-footer">
+  <div class="sp-footer-inner">
+    <div class="sp-footer-top">
+      <div>
+        <div class="sp-footer-brand">EduNex <span>AI</span></div>
+        <p class="sp-footer-brand-desc">Empowering the next generation of professionals through AI-driven education and adaptive learning pathways.</p>
+        <div class="sp-footer-icons">
+          <div class="sp-footer-icon"><i class="fas fa-globe"></i></div>
+          <div class="sp-footer-icon"><i class="fas fa-at"></i></div>
+        </div>
+      </div>
+      <div>
+        <div class="sp-footer-col-title">Courses</div>
+        <ul class="sp-footer-col-links">
+          <li><a href="courses.html">Machine Learning</a></li>
+          <li><a href="courses.html">AI Product Management</a></li>
+          <li><a href="courses.html">Prompt Engineering</a></li>
+          <li><a href="courses.html">Data Science</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="sp-footer-col-title">Company Info</div>
+        <ul class="sp-footer-col-links">
+          <li><a href="about.html">About Us</a></li>
+          <li><a href="#">Careers</a></li>
+          <li><a href="#">Press Kit</a></li>
+          <li><a href="#">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="sp-footer-col-title">Resources</div>
+        <ul class="sp-footer-col-links">
+          <li><a href="#">Community</a></li>
+          <li><a href="#">AI Blog</a></li>
+          <li><a href="#">Free Guides</a></li>
+          <li><a href="help.html">Help Center</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="sp-footer-bottom">
+      <p>© 2024 EduNex AI. All rights reserved.</p>
+      <div class="sp-footer-bottom-links">
+        <a href="privacy.html">Privacy Policy</a>
+        <a href="terms.html">Terms of Service</a>
+        <a href="privacy.html#cookies">Cookie Settings</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script src="js/edunex-api.js"></script>
+<script src="assets/bot-avatars/manifest.js"></script>
+<script src="js/nex-ai-widget.js"></script>
+<script src="js/animations.js" defer></script>
+<script>
+  let timerInterval = null;
+  let timerSeconds = 59;
+  const signupState = { mobileNumber: '', signupToken: '' };
+
+  function setError(id, message) {
+    const err = document.getElementById(id);
+    if (!err) return;
+    err.textContent = message;
+    err.style.display = message ? 'block' : 'none';
+  }
+
+  async function sendOTP() {
+    const phone = document.getElementById('phoneInput').value.trim();
+    const agreed = document.getElementById('agreeCheck').checked;
+    const normalizedPhone = EduNex.normalizePhone(phone);
+    if (!/^\+91\d{10}$/.test(normalizedPhone.replace(/\s/g, ''))) {
+      setError('step1-err', 'Please enter a valid 10-digit phone number.');
+      return;
+    }
+    if (!agreed) {
+      setError('step1-err', 'Please agree to the Terms and Privacy Policy.');
+      return;
+    }
+    setError('step1-err', '');
+    const button = document.querySelector('#step1 .sp-primary-btn');
+    const original = button ? button.textContent : '';
+    if (button) {
+      button.disabled = true;
+      button.textContent = 'Sending...';
+    }
+    try {
+      const data = await EduNex.request('/api/auth/send-mobile-otp', {
+        method: 'POST',
+        body: JSON.stringify({ mobileNumber: normalizedPhone, forceDevelopmentOtp: true })
+      });
+      signupState.mobileNumber = normalizedPhone;
+      goToStep(2);
+      startCountdown();
+      if (data.devOtp) {
+        String(data.devOtp).split('').forEach((digit, index) => {
+          const box = document.querySelectorAll('.sp-otp-box')[index];
+          if (box) box.value = digit;
+        });
+      }
+    } catch (error) {
+      setError('step1-err', error.message || 'Could not send OTP.');
+    } finally {
+      if (button) {
+        button.disabled = false;
+        button.textContent = original;
+      }
+    }
+  }
+
+  async function verifyOTP() {
+    const boxes = document.querySelectorAll('.sp-otp-box');
+    const otp = Array.from(boxes).map(b => b.value).join('');
+    if (otp.length < 6) {
+      alert('Please enter all 6 digits.');
+      return;
+    }
+    const button = document.getElementById('verifyBtn');
+    const original = button ? button.textContent : '';
+    if (button) {
+      button.disabled = true;
+      button.textContent = 'Verifying...';
+    }
+    try {
+      const data = await EduNex.request('/api/auth/verify-mobile-otp', {
+        method: 'POST',
+        body: JSON.stringify({ mobileNumber: signupState.mobileNumber, mobileOtp: otp })
+      });
+      signupState.signupToken = data.signupToken;
+      goToStep(3);
+    } catch (error) {
+      alert(error.message || 'Invalid OTP. Please try again.');
+    } finally {
+      if (button) {
+        button.disabled = false;
+        button.textContent = original;
+      }
+    }
+  }
+
+  async function resendOTP() {
+    if (!signupState.mobileNumber) return;
+    try {
+      await EduNex.request('/api/auth/send-mobile-otp', {
+        method: 'POST',
+        body: JSON.stringify({ mobileNumber: signupState.mobileNumber, forceDevelopmentOtp: true })
+      });
+    } catch (error) {
+      alert(error.message || 'Could not resend OTP.');
+      return;
+    }
+    timerSeconds = 59;
+    clearInterval(timerInterval);
+    startCountdown();
+  }
+
+  function startCountdown() {
+    timerSeconds = 59;
+    const el = document.getElementById('countdown');
+    const link = document.getElementById('resendLink');
+    link.style.pointerEvents = 'none';
+    clearInterval(timerInterval);
+    timerInterval = setInterval(() => {
+      timerSeconds--;
+      const m = Math.floor(timerSeconds / 60);
+      const s = timerSeconds % 60;
+      el.textContent = m + ':' + (s < 10 ? '0' : '') + s;
+      if (timerSeconds <= 0) {
+        clearInterval(timerInterval);
+        link.style.pointerEvents = 'auto';
+        el.textContent = '0:00';
+      }
+    }, 1000);
+  }
+
+  function goToStep(n) {
+    if (n === 3) {
+      // switch to profile full-width mode
+      document.querySelector('.sp-main').style.display = 'block';
+      document.querySelector('.sp-photo').style.display = 'none';
+      document.querySelector('.sp-form-panel').style.display = 'none';
+      document.getElementById('step3').style.display = 'flex';
+      document.getElementById('step3').style.flexDirection = 'column';
+      document.getElementById('step3').style.alignItems = 'center';
+      document.getElementById('step3').style.flex = '1';
+      document.getElementById('step3').style.padding = '60px 28px';
+    } else {
+      document.querySelectorAll('.sp-step').forEach(el => el.classList.remove('active'));
+      document.getElementById('step' + n).classList.add('active');
+    }
+  }
+
+  // ---- Gender slider ----
+  let currentGender = 'male';
+  function selectGenderSlide(btn) {
+    const slider = document.getElementById('genderSlider');
+    const thumb  = document.getElementById('genderThumb');
+    if (!slider || !thumb || !btn) return;
+    const btns   = slider.querySelectorAll('.sp-gender-slide-btn');
+    btns.forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    currentGender = btn.dataset.gender;
+    // Move thumb
+    const sliderRect = slider.getBoundingClientRect();
+    const btnRect = btn.getBoundingClientRect();
+    thumb.style.left  = (btnRect.left - sliderRect.left) + 'px';
+    thumb.style.width = btnRect.width + 'px';
+    slider.classList.add('ready');
+    // Lock/unlock avatar tabs
+    updateAvatarTabLock();
+  }
+  function initGenderThumb() {
+    const slider = document.getElementById('genderSlider');
+    if (!slider) return;
+    const firstBtn = slider.querySelector('.sp-gender-slide-btn');
+    if (firstBtn) {
+      const thumb = document.getElementById('genderThumb');
+      if (!thumb) return;
+      const width = firstBtn.offsetWidth;
+      if (!width) {
+        window.requestAnimationFrame(initGenderThumb);
+        return;
+      }
+      const sliderRect = slider.getBoundingClientRect();
+      const btnRect = firstBtn.getBoundingClientRect();
+      thumb.style.left  = (btnRect.left - sliderRect.left) + 'px';
+      thumb.style.width = width + 'px';
+      slider.classList.add('ready');
+    }
+  }
+
+  // ---- Avatar tab lock logic ----
+  function updateAvatarTabLock() {
+    const tabMale   = document.getElementById('tabMale');
+    const tabFemale = document.getElementById('tabFemale');
+    if (!tabMale || !tabFemale) return;
+    if (currentGender === 'male') {
+      tabMale.classList.remove('locked');
+      tabFemale.classList.add('locked');
+      switchAvaTab('male');
+    } else if (currentGender === 'female') {
+      tabFemale.classList.remove('locked');
+      tabMale.classList.add('locked');
+      switchAvaTab('female');
+    } else {
+      // Other — unlock both
+      tabMale.classList.remove('locked');
+      tabFemale.classList.remove('locked');
+    }
+  }
+
+  function switchAvaTab(gender) {
+    const tabMale   = document.getElementById('tabMale');
+    const tabFemale = document.getElementById('tabFemale');
+    const gridMale  = document.getElementById('avaGridMale');
+    const gridFemale= document.getElementById('avaGridFemale');
+    // Respect lock
+    if (gender === 'female' && tabFemale.classList.contains('locked')) return;
+    if (gender === 'male'   && tabMale.classList.contains('locked'))   return;
+    tabMale.classList.toggle('active', gender === 'male');
+    tabFemale.classList.toggle('active', gender === 'female');
+    gridMale.style.display  = gender === 'male'   ? 'grid' : 'none';
+    gridFemale.style.display= gender === 'female' ? 'grid' : 'none';
+  }
+
+  function openAvaModal() {
+    document.getElementById('avaModal').classList.add('open');
+  }
+  function closeAvaModal() {
+    document.getElementById('avaModal').classList.remove('open');
+  }
+  function closeAvaModalOutside(e) {
+    if (e.target === document.getElementById('avaModal')) closeAvaModal();
+  }
+
+  function selectAvatar(el) {
+    const gender = el.dataset.gender;
+    const tab = gender === 'male' ? document.getElementById('tabMale') : document.getElementById('tabFemale');
+    if (tab && tab.classList.contains('locked')) return;
+    document.querySelectorAll('.sp-ava-opt').forEach(o => o.classList.remove('selected'));
+    el.classList.add('selected');
+    const src  = el.querySelector('img').src;
+    const name = el.dataset.name;
+    document.getElementById('avaCircleImg').src = src;
+    document.getElementById('avaCircleName').textContent = name;
+    setTimeout(closeAvaModal, 220);
+  }
+
+  // ---- Age roller ----
+  let currentAge = 24;
+  function buildAgeScroller() {
+    const inner = document.getElementById('rollerInner');
+    const scroller = document.getElementById('ageScroller');
+    if (!inner || !scroller || inner.dataset.ready === 'true') return;
+    inner.dataset.ready = 'true';
+    inner.innerHTML = Array.from({ length: 78 }, (_, index) => {
+      const age = 13 + index;
+      return `<div class="sp-roller-item" data-age="${age}">${age}</div>`;
+    }).join('');
+
+    const updateActiveAge = () => {
+      const index = Math.round(scroller.scrollTop / 52);
+      currentAge = Math.min(90, Math.max(13, 13 + index));
+      inner.querySelectorAll('.sp-roller-item').forEach(item => {
+        item.classList.toggle('active', Number(item.dataset.age) === currentAge);
+      });
+    };
+
+    scroller.addEventListener('scroll', () => {
+      window.requestAnimationFrame(updateActiveAge);
+    });
+    inner.querySelectorAll('.sp-roller-item').forEach(item => {
+      item.addEventListener('click', () => {
+        scroller.scrollTo({ top: (Number(item.dataset.age) - 13) * 52, behavior: 'smooth' });
+      });
+    });
+    scroller.scrollTop = (currentAge - 13) * 52;
+    updateActiveAge();
+  }
+
+  async function completeProfile() {
+    const firstName = document.getElementById('firstNameInput').value.trim();
+    const lastName = document.getElementById('lastNameInput').value.trim();
+    const email = document.getElementById('emailInput').value.trim();
+    const password = document.getElementById('passwordInput').value;
+    const confirmPassword = document.getElementById('confirmPasswordInput').value;
+    const avatar = normalizedSignupAvatarPath(document.getElementById('avaCircleImg').getAttribute('src'));
+    const fullName = [firstName, lastName].filter(Boolean).join(' ');
+    const signupProfile = {
+      fullName,
+      email,
+      mobileNumber: signupState.mobileNumber,
+      gender: currentGender,
+      age: currentAge,
+      avatar
+    };
+
+    if (!fullName) return setError('step3-err', 'Please enter your name.');
+    if (password.length < 8) return setError('step3-err', 'Password must be at least 8 characters.');
+    if (password !== confirmPassword) return setError('step3-err', 'Passwords do not match.');
+    if (!signupState.signupToken) return setError('step3-err', 'Please verify your mobile number first.');
+
+    setError('step3-err', '');
+    const button = document.getElementById('completeProfileBtn');
+    const original = button.textContent;
+    button.disabled = true;
+    button.textContent = 'Creating account...';
+
+    try {
+      const data = await EduNex.request('/api/auth/signup', {
+        method: 'POST',
+        body: JSON.stringify({
+          fullName: signupProfile.fullName,
+          email: signupProfile.email || undefined,
+          mobileNumber: signupProfile.mobileNumber,
+          password,
+          signupToken: signupState.signupToken,
+          gender: signupProfile.gender,
+          age: signupProfile.age,
+          avatar: signupProfile.avatar
+        })
+      });
+      EduNex.saveAuth(data, true);
+      localStorage.setItem('edunexSignupProfile', JSON.stringify(data.user || signupProfile));
+      window.location.href = 'dashboard.html';
+    } catch (error) {
+      setError('step3-err', error.message || 'Signup failed. Please try again.');
+    } finally {
+      button.disabled = false;
+      button.textContent = original;
+    }
+  }
+
+  function normalizedSignupAvatarPath(value) {
+    const raw = String(value || '').trim();
+    if (!raw) return 'assets/male1.jpeg';
+    try {
+      const parsed = new URL(raw, window.location.origin);
+      const path = parsed.pathname.replace(/^\/+/, '');
+      const assetIndex = path.lastIndexOf('assets/');
+      return assetIndex >= 0 ? path.slice(assetIndex) : raw;
+    } catch (_) {
+      const cleaned = raw.replace(/^\/+/, '');
+      const assetIndex = cleaned.lastIndexOf('assets/');
+      return assetIndex >= 0 ? cleaned.slice(assetIndex) : cleaned;
+    }
+  }
+
+  function initSignupControls() {
+    initGenderThumb();
+    buildAgeScroller();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initSignupControls, { once: true });
+  } else {
+    initSignupControls();
+  }
+
+  // OTP box auto-advance
+  document.querySelectorAll('.sp-otp-box').forEach((box, i, boxes) => {
+    box.addEventListener('input', () => {
+      if (box.value && i < boxes.length - 1) boxes[i + 1].focus();
+    });
+    box.addEventListener('keydown', (e) => {
+      if (e.key === 'Backspace' && !box.value && i > 0) boxes[i - 1].focus();
+    });
+    box.addEventListener('paste', (e) => {
+      e.preventDefault();
+      const text = e.clipboardData.getData('text').replace(/\D/g, '');
+      boxes.forEach((b, j) => { b.value = text[j] || ''; });
+      boxes[Math.min(text.length, boxes.length - 1)].focus();
+    });
+  });
+</script>
+</body>
+</html>
