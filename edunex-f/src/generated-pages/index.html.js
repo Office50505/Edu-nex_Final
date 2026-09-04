@@ -265,7 +265,10 @@ export const page = {
       padding: 34px 0 24px;
       cursor: grab;
       touch-action: pan-x;
+      -webkit-user-select: none;
+      user-select: none;
     }
+    .hero-carousel-viewport * { -webkit-user-drag: none; }
     .hero-carousel-viewport::-webkit-scrollbar { display: none; }
     .hero-carousel-viewport.is-dragging {
       cursor: grabbing;
@@ -526,7 +529,7 @@ export const page = {
       grid-template-columns: 1fr auto;
       gap: 10px;
       padding: 8px;
-      border: 1px solid var(--border);
+      border: 1px solid rgba(255, 255, 255, 0.3);
       border-radius: 18px;
       background: color-mix(in srgb, var(--card) 86%, transparent);
       box-shadow: 0 18px 45px rgba(15,23,42,.08);
@@ -1008,10 +1011,17 @@ export const page = {
       .hero-search-btn {
         width: 100%;
       }
+      .learning-hero-actions {
+        margin-top: 8px;
+      }
+      .hero-search-block {
+        margin-top: 56px;
+      }
       .home-hero-tabs {
-        width: 100%;
-        justify-content: space-between;
-        gap: 10px;
+        width: auto;
+        max-width: calc(100% - 32px);
+        justify-content: center;
+        gap: clamp(24px, 8vw, 36px);
       }
       .hero-carousel-shell {
         width: calc(100% + 32px);
@@ -1019,7 +1029,7 @@ export const page = {
         padding: 8px 0 0;
       }
       .hero-carousel-viewport {
-        padding: 18px 0 32px;
+        padding: 18px 0 16px;
       }
       .hero-carousel-track {
         min-height: 360px;

@@ -94,7 +94,7 @@ export function Navbar({ pageKey }) {
           <div className="enx-nav-right">
             {greeting ? <span className="enx-nav-greeting">{greeting}</span> : null}
             {!auth.token ? <a href={route("login.html")} className="enx-nav-login">Login</a> : null}
-            {auth.token ? <button type="button" className="enx-nav-logout" onClick={handleLogout}>Log out</button> : null}
+            {auth.token ? <button type="button" className="enx-nav-logout" onClick={handleLogout}><EnxIcon name="logout" className="enx-logout-icon" />Log out</button> : null}
             <a href={route("profile.html")} className={`enx-nav-avatar${current === "profile.html" ? " active" : ""}`} title={profileLabel} aria-label={profileLabel}>
               {auth.token && auth.user ? <img src={avatarSrc} alt={profileLabel} /> : <EnxIcon name="user" />}
             </a>
@@ -113,7 +113,7 @@ export function Navbar({ pageKey }) {
           {auth.token ? (
             <>
               <a href={route("profile.html")}>Profile</a>
-              <button type="button" onClick={handleLogout}>Log out</button>
+              <button type="button" onClick={handleLogout}><EnxIcon name="logout" className="enx-logout-icon" />Log out</button>
             </>
           ) : (
             <>

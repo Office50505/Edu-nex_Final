@@ -53,16 +53,28 @@ export function Footer() {
     <footer className="enx-footer">
       <div className="enx-footer-shell">
         <div className="enx-footer-top">
-          <div>
-            <a href={route("index.html")} className="enx-footer-brand" aria-label="EduNex AI home">
-              <span className="enx-footer-brand-icon">E</span>
-              <span>EduNex <span>AI</span></span>
-            </a>
-            <p className="enx-footer-copy">Practical AI-powered learning with real courses, guided videos, progress tracking, and focused tools for modern technical careers.</p>
-            <div className="enx-footer-trust-row">
-              <span><EnxIcon name="checkCircle" /> Verified courses</span>
-              <span><EnxIcon name="award" /> Certificates</span>
-              <span><EnxIcon name="sparkles" /> AI tutor</span>
+          <div className="enx-footer-intro">
+            <div className="enx-footer-about">
+              <a href={route("index.html")} className="enx-footer-brand" aria-label="EduNex AI home">
+                <span className="enx-footer-brand-icon">E</span>
+                <span>EduNex <span>AI</span></span>
+              </a>
+              <p className="enx-footer-copy">Practical AI-powered learning with real courses, guided videos, progress tracking, and focused tools for modern technical careers.</p>
+              <div className="enx-footer-trust-row">
+                <span><EnxIcon name="checkCircle" /> Verified courses</span>
+                <span><EnxIcon name="award" /> Certificates</span>
+                <span><EnxIcon name="sparkles" /> AI tutor</span>
+              </div>
+            </div>
+
+            <div className="enx-footer-cta">
+              <div className="enx-footer-heading">Need Help?</div>
+              <p>Use your dashboard to continue enrolled courses, open notes from lessons, or contact support if access does not look right.</p>
+              <a href={route("payment.html")}>Start ₹1 Trial <EnxIcon name="arrowRight" /></a>
+              <div className="enx-footer-support">
+                <a href="mailto:support@edunex.ai"><EnxIcon name="mail" /> support@edunex.ai</a>
+                <a href={route("about.html")}><EnxIcon name="info" /> About EduNex</a>
+              </div>
             </div>
           </div>
 
@@ -72,15 +84,6 @@ export function Footer() {
           <LinkList title="Company" links={companyLinks} />
           <LinkList title="Legal" links={legalLinks} />
 
-          <div className="enx-footer-cta">
-            <div className="enx-footer-heading">Need Help?</div>
-            <p>Use your dashboard to continue enrolled courses, open notes from lessons, or contact support if access does not look right.</p>
-            <a href={route("payment.html")}>Start ₹1 Trial <EnxIcon name="arrowRight" /></a>
-            <div className="enx-footer-support">
-              <a href="mailto:support@edunex.ai"><EnxIcon name="mail" /> support@edunex.ai</a>
-              <a href={route("about.html")}><EnxIcon name="info" /> About EduNex</a>
-            </div>
-          </div>
         </div>
 
         <div className="enx-footer-bottom">

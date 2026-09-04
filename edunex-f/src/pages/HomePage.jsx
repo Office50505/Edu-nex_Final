@@ -31,10 +31,36 @@ function courseId(course) {
   return String(course?._id || course?.id || "");
 }
 
+function courseVideoHref(course, videoIndex = 0) {
+  const id = courseId(course);
+  return id ? `videos.html?courseId=${encodeURIComponent(id)}&video=${Math.max(0, Number(videoIndex) || 0)}` : "courses.html";
+}
+
 function coursesArray(response) {
   if (Array.isArray(response)) return response;
   if (Array.isArray(response?.courses)) return response.courses;
   return [];
+}
+
+function localWishlist() {
+  try {
+    return new Set(JSON.parse(localStorage.getItem("edunexWishlistLocal") || "[]").map(String));
+  } catch (_) {
+    return new Set();
+  }
+}
+
+function saveLocalWishlist(ids) {
+  localStorage.setItem("edunexWishlistLocal", JSON.stringify(Array.from(ids)));
+}
+
+function hasLocalCourseAccess() {
+  try {
+    const marker = JSON.parse(localStorage.getItem("edunexHasCourseAccess") || "null");
+    return Boolean(marker?.active && Date.now() - Number(marker.savedAt || 0) < 24 * 60 * 60 * 1000);
+  } catch (_) {
+    return false;
+  }
 }
 
 function categoryName(course) {
@@ -158,6 +184,10 @@ function MaterialIcon({ children, className = "" }) {
   return <span className={`material-symbols-outlined${className ? ` ${className}` : ""}`}>{children}</span>;
 }
 
+function preventNativeDrag(event) {
+  event.preventDefault();
+}
+
 function HeroPlaceholderCard({ index, isCenter, tab }) {
   const sourceIndex = index % 7;
   const isMessageCard = sourceIndex === 3;
@@ -217,7 +247,7 @@ function HeroPlaceholderCard({ index, isCenter, tab }) {
   );
 }
 
-function HeroCourseCard({ item, index, isCenter, onOpen, onContinue, onPath, onSuppressibleClick }) {
+function HeroCourseCard({ item, index, isCenter, hasAccess, isSaved, onOpen, onContinue, onPath, onSuppressibleClick, onToggleWishlist }) {
   const course = item.course || {};
   const progress = item.progress || progressFor(course);
   const id = courseId(course);
@@ -229,8 +259,10 @@ function HeroCourseCard({ item, index, isCenter, onOpen, onContinue, onPath, onS
   const href = item.type === "path"
     ? categoryHref(item.category || category)
     : item.type === "enrolled"
-      ? `videos.html?courseId=${encodeURIComponent(id)}&video=${progress.lessonIndex}`
-      : `course.html?id=${encodeURIComponent(id)}`;
+      ? courseVideoHref(course, progress.lessonIndex)
+      : hasAccess
+        ? courseVideoHref(course)
+        : `course.html?id=${encodeURIComponent(id)}`;
 
   const openFromCard = () => {
     if (item.type === "path") onPath(item.category || category);
@@ -270,12 +302,8 @@ function HeroCourseCard({ item, index, isCenter, onOpen, onContinue, onPath, onS
           />
         </a>
         <span className="hero-card-badge">{label}</span>
-        <button className="hero-card-wish" type="button" aria-label="Save course" onClick={(event) => event.stopPropagation()}>
-          <i className="far fa-heart" aria-hidden="true"></i>
-        </button>
       </div>
       <div className="hero-card-body">
-        <div className="hero-card-kicker">{category}</div>
         <a className="hero-card-title" href={href} onClick={(event) => event.stopPropagation()}>{title}</a>
         {item.type === "enrolled" ? (
           <>
@@ -285,13 +313,26 @@ function HeroCourseCard({ item, index, isCenter, onOpen, onContinue, onPath, onS
             </div>
             <div className="hero-progress-row"><span>{progress.percent}% Complete</span><span>Continue</span></div>
             <div className="hero-progress-track" style={{ "--progress": `${progress.percent}%` }}><span></span></div>
-            <div className="hero-card-price">
-              <strong>In progress</strong>
-              <button className="hero-card-action" type="button" onClick={(event) => {
+            <div className="hero-card-price"><strong>In progress</strong></div>
+            <div className="hero-card-actions">
+              <button className="hero-card-primary" type="button" onClick={(event) => {
                 event.stopPropagation();
                 if (!onSuppressibleClick()) onContinue(course);
               }}>
-                Continue <MaterialIcon className="text-base">arrow_forward</MaterialIcon>
+                Continue Course
+              </button>
+              <button
+                className={`hero-card-wish${isSaved ? " is-saved" : ""}`}
+                type="button"
+                aria-label={isSaved ? "Remove from favourites" : "Add to favourites"}
+                aria-pressed={isSaved}
+                onClick={(event) => {
+                  event.preventDefault();
+                  event.stopPropagation();
+                  if (!onSuppressibleClick()) onToggleWishlist(course);
+                }}
+              >
+                <i className={`${isSaved ? "fas" : "far"} fa-heart`} aria-hidden="true"></i>
               </button>
             </div>
           </>
@@ -302,33 +343,46 @@ function HeroCourseCard({ item, index, isCenter, onOpen, onContinue, onPath, onS
               <span><i className="fas fa-play-circle" aria-hidden="true"></i> {lessonCount(course) || "Real"} lessons</span>
               <span><i className="fas fa-language" aria-hidden="true"></i> {languageLabel(course)}</span>
             </div>
-            <div className="hero-card-price">
-              <strong>Learning path</strong>
-              <button className="hero-card-action" type="button" onClick={(event) => {
+            <div className="hero-card-price"><strong>Learning path</strong></div>
+            <div className="hero-card-actions is-single">
+              <button className="hero-card-primary" type="button" onClick={(event) => {
                 event.stopPropagation();
                 if (!onSuppressibleClick()) onPath(item.category || category);
               }}>
-                Explore Path <MaterialIcon className="text-base">arrow_forward</MaterialIcon>
+                Explore Path
               </button>
             </div>
           </>
         ) : (
           <>
+            <div className="hero-card-author">by <span>{instructorName(course)}</span></div>
             <div className="hero-card-meta">
-              <span><i className="fas fa-user" aria-hidden="true"></i> {instructorName(course)}</span>
               <span><i className="fas fa-star" aria-hidden="true"></i> {ratingLabel(course)}</span>
               <span><i className="fas fa-users" aria-hidden="true"></i> {learnerLabel(course)}</span>
               <span><i className="fas fa-play-circle" aria-hidden="true"></i> {lessonCount(course) || "Real"} lessons</span>
               <span><i className="fas fa-clock" aria-hidden="true"></i> {durationLabel(course)}</span>
               <span><i className="fas fa-language" aria-hidden="true"></i> {languageLabel(course)}</span>
             </div>
-            <div className="hero-card-price">
-              <strong>{priceLabel(course)}</strong>
-              <button className="hero-card-action" type="button" onClick={(event) => {
+            <div className="hero-card-price"><strong>{priceLabel(course)}</strong></div>
+            <div className="hero-card-actions">
+              <button className="hero-card-primary" type="button" onClick={(event) => {
                 event.stopPropagation();
                 if (!onSuppressibleClick()) onOpen(course);
               }}>
-                Open Course <MaterialIcon className="text-base">arrow_forward</MaterialIcon>
+                {hasAccess ? "View Course" : "Start ₹1 Trial"}
+              </button>
+              <button
+                className={`hero-card-wish${isSaved ? " is-saved" : ""}`}
+                type="button"
+                aria-label={isSaved ? "Remove from favourites" : "Add to favourites"}
+                aria-pressed={isSaved}
+                onClick={(event) => {
+                  event.preventDefault();
+                  event.stopPropagation();
+                  if (!onSuppressibleClick()) onToggleWishlist(course);
+                }}
+              >
+                <i className={`${isSaved ? "fas" : "far"} fa-heart`} aria-hidden="true"></i>
               </button>
             </div>
           </>
@@ -340,6 +394,8 @@ function HeroCourseCard({ item, index, isCenter, onOpen, onContinue, onPath, onS
 
 export function HomePage() {
   const [courses, setCourses] = useState([]);
+  const [hasAccess, setHasAccess] = useState(() => hasLocalCourseAccess());
+  const [wishlist, setWishlist] = useState(() => localWishlist());
   const [activeTab, setActiveTab] = useState("trending");
   const [activeIndex, setActiveIndex] = useState(10);
   const [query, setQuery] = useState("");
@@ -349,6 +405,7 @@ export function HomePage() {
   const motionRef = useRef(0);
   const lastFrameRef = useRef(0);
   const pauseRef = useRef(false);
+  const directionRef = useRef(1);
   const pointerRef = useRef({ down: false, moved: false, startX: 0, startY: 0, startLeft: 0, suppressClickUntil: 0 });
   const runtimeReady = useEduNexRuntimeReady();
 
@@ -389,10 +446,44 @@ export function HomePage() {
     };
   }, [runtimeReady]);
 
+  useEffect(() => {
+    if (!runtimeReady) return undefined;
+    let cancelled = false;
+    const nextWishlist = localWishlist();
+    const localAccess = hasLocalCourseAccess();
+    const accessToken = window.EduNex?.getAccessToken?.();
+
+    if (!accessToken) {
+      setWishlist(nextWishlist);
+      setHasAccess(localAccess);
+      return undefined;
+    }
+
+    Promise.allSettled([
+      window.EduNex.authRequest("/api/wishlist"),
+      window.EduNex.authRequest("/api/payment/subscription-status"),
+    ]).then(([wishlistResult, accessResult]) => {
+      if (cancelled) return;
+      if (wishlistResult.status === "fulfilled") {
+        (wishlistResult.value?.courses || wishlistResult.value?.courseIds || []).forEach((id) => nextWishlist.add(String(id?._id || id)));
+        saveLocalWishlist(nextWishlist);
+      }
+      setWishlist(new Set(nextWishlist));
+      setHasAccess(accessResult.status === "fulfilled"
+        ? Boolean(window.EduNex?.hasCourseAccess?.(accessResult.value) || localAccess)
+        : localAccess);
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [runtimeReady]);
+
   const currentItems = useMemo(() => itemsForTab(activeTab, courses), [activeTab, courses]);
   const loop = useMemo(() => repeatedItems(currentItems), [currentItems]);
 
   useEffect(() => {
+    directionRef.current = 1;
     if (!loop.baseCount) {
       setActiveIndex(10);
       return;
@@ -445,20 +536,10 @@ export function HomePage() {
       cancelAnimationFrame(rafRef.current);
       rafRef.current = requestAnimationFrame(syncCenterFromScroll);
     };
-    const onWheel = (event) => {
-      if (Math.abs(event.deltaY) <= Math.abs(event.deltaX)) return;
-      event.preventDefault();
-      pauseRef.current = true;
-      viewport.scrollLeft += event.deltaY;
-      syncCenterFromScroll();
-      window.setTimeout(() => { pauseRef.current = false; }, 1000);
-    };
     viewport.addEventListener("scroll", onScroll, { passive: true });
-    viewport.addEventListener("wheel", onWheel, { passive: false });
     return () => {
       cancelAnimationFrame(rafRef.current);
       viewport.removeEventListener("scroll", onScroll);
-      viewport.removeEventListener("wheel", onWheel);
     };
   }, []);
 
@@ -471,7 +552,19 @@ export function HomePage() {
       lastFrameRef.current = timestamp;
       if (loop.rows.length > 1 && !pauseRef.current && !document.hidden) {
         viewport.classList.add("is-auto-moving");
-        viewport.scrollLeft += delta * 0.035;
+        const maxScrollLeft = Math.max(0, viewport.scrollWidth - viewport.clientWidth);
+        if (maxScrollLeft > 0) {
+          const step = delta * 0.035;
+          let nextScrollLeft = viewport.scrollLeft + (step * directionRef.current);
+          if (nextScrollLeft >= maxScrollLeft) {
+            nextScrollLeft = Math.max(0, maxScrollLeft - (nextScrollLeft - maxScrollLeft));
+            directionRef.current = -1;
+          } else if (nextScrollLeft <= 0) {
+            nextScrollLeft = Math.min(maxScrollLeft, -nextScrollLeft);
+            directionRef.current = 1;
+          }
+          viewport.scrollLeft = nextScrollLeft;
+        }
         syncCenterFromScroll();
       }
       motionRef.current = requestAnimationFrame(tick);
@@ -488,7 +581,8 @@ export function HomePage() {
   }, [loop.rows.length]);
 
   const handlePointerDown = (event) => {
-    if (event.target.closest?.("a, button, input, textarea, select")) return;
+    if (!event.isPrimary || event.button !== 0) return;
+    if (event.target.closest?.("input, textarea, select")) return;
     const viewport = viewportRef.current;
     if (!viewport) return;
     pointerRef.current = {
@@ -501,34 +595,68 @@ export function HomePage() {
     };
     pauseRef.current = true;
     viewport.classList.add("is-dragging");
-    viewport.setPointerCapture?.(event.pointerId);
   };
 
   const handlePointerMove = (event) => {
     const viewport = viewportRef.current;
     const pointer = pointerRef.current;
     if (!viewport || !pointer.down) return;
-    const dx = Math.abs(event.clientX - pointer.startX);
-    const dy = Math.abs(event.clientY - pointer.startY);
-    if (dx > 8 || dy > 8) pointer.moved = true;
-    viewport.scrollLeft = pointer.startLeft - (event.clientX - pointer.startX);
+    const deltaX = event.clientX - pointer.startX;
+    if (!pointer.moved && Math.abs(deltaX) <= 5) return;
+    pointer.moved = true;
+    if (!viewport.hasPointerCapture?.(event.pointerId)) viewport.setPointerCapture?.(event.pointerId);
+    event.preventDefault();
+    viewport.scrollLeft = pointer.startLeft - deltaX;
   };
 
-  const handlePointerEnd = () => {
+  const handlePointerEnd = (event) => {
     const viewport = viewportRef.current;
     const pointer = pointerRef.current;
     if (pointer.moved) pointer.suppressClickUntil = Date.now() + 250;
     pointer.down = false;
-    pauseRef.current = false;
+    if (viewport?.hasPointerCapture?.(event.pointerId)) viewport.releasePointerCapture(event.pointerId);
+    pauseRef.current = Boolean(viewport?.matches(":hover") || viewport?.contains(document.activeElement));
     viewport?.classList.remove("is-dragging");
     window.setTimeout(() => { pointerRef.current.moved = false; }, 0);
   };
 
+  const handlePointerLeave = () => {
+    const viewport = viewportRef.current;
+    const pointer = pointerRef.current;
+    if (!viewport || !pointer.down || pointer.moved) return;
+    pointer.down = false;
+    pauseRef.current = false;
+    viewport.classList.remove("is-dragging");
+  };
+
   const suppressibleClick = () => pointerRef.current.moved || Date.now() < pointerRef.current.suppressClickUntil;
-  const openCourse = (course) => window.EduNex?.openCourseDetails?.(course);
+  const openCourse = (course) => {
+    if (hasAccess) {
+      window.location.href = courseVideoHref(course);
+      return;
+    }
+    window.EduNex?.openCourseDetails?.(course);
+  };
   const continueCourse = (course) => window.EduNex?.openCourse?.(course);
   const openPath = (category) => {
     if (category) window.location.href = categoryHref(category);
+  };
+  const toggleWishlist = async (course) => {
+    const id = courseId(course);
+    if (!id) return;
+    const next = new Set(wishlist);
+    const currentlySaved = next.has(id);
+    if (currentlySaved) next.delete(id);
+    else next.add(id);
+    setWishlist(next);
+    saveLocalWishlist(next);
+    if (!window.EduNex?.getAccessToken?.()) return;
+    try {
+      await window.EduNex.authRequest("/api/wishlist", {
+        method: currentlySaved ? "DELETE" : "POST",
+        body: JSON.stringify({ courseId: id }),
+      });
+    } catch (_) {}
   };
 
   const handleSearch = (event) => {
@@ -552,28 +680,6 @@ export function HomePage() {
             <p>Learn practical AI, content, business and digital skills through short expert-led lessons designed for real-world results.</p>
           </div>
 
-          <div className="hero-tabs-wrap">
-            <div className="home-hero-tabs" role="tablist" aria-label="Hero course sections">
-              {[
-                ["for-you", "For You"],
-                ["my-courses", "My Courses"],
-                ["trending", "Trending"],
-              ].map(([value, label]) => (
-                <button
-                  className={`home-hero-tab${activeTab === value ? " is-active" : ""}`}
-                  type="button"
-                  role="tab"
-                  aria-selected={activeTab === value ? "true" : "false"}
-                  data-hero-tab={value}
-                  key={value}
-                  onClick={() => setActiveTab(value)}
-                >
-                  {label}
-                </button>
-              ))}
-            </div>
-          </div>
-
           <div className="hero-carousel-shell" id="homeHeroCarousel" aria-live="polite">
             <div
               className="hero-carousel-viewport"
@@ -591,11 +697,17 @@ export function HomePage() {
                   scrollToIndex(activeIndex + 1);
                 }
               }}
+              onDragStart={preventNativeDrag}
               onPointerDown={handlePointerDown}
               onPointerMove={handlePointerMove}
               onPointerUp={handlePointerEnd}
               onPointerCancel={handlePointerEnd}
-              onPointerLeave={handlePointerEnd}
+              onPointerLeave={handlePointerLeave}
+              onClickCapture={(event) => {
+                if (!suppressibleClick()) return;
+                event.preventDefault();
+                event.stopPropagation();
+              }}
               onMouseEnter={() => { pauseRef.current = true; }}
               onMouseLeave={() => { if (!pointerRef.current.down) pauseRef.current = false; }}
               onFocus={() => { pauseRef.current = true; }}
@@ -609,10 +721,13 @@ export function HomePage() {
                     item={item}
                     index={index}
                     isCenter={index === activeIndex}
+                    hasAccess={hasAccess}
+                    isSaved={wishlist.has(courseId(item.course))}
                     onOpen={openCourse}
                     onContinue={continueCourse}
                     onPath={openPath}
                     onSuppressibleClick={suppressibleClick}
+                    onToggleWishlist={toggleWishlist}
                     key={`${courseId(item.course)}-${item.type}-${index}`}
                   />
                 ))}
@@ -708,12 +823,22 @@ export function HomePage() {
               <a href="login.html" className="inline-flex bg-primary !text-[#FFFDF8] px-6 py-3 rounded-full font-bold hover:shadow-[0_0_18px_rgba(197,139,42,.32)] transition-all">Claim Your Trial Now</a>
             </div>
             <div className="rounded-xl p-8 md:p-10 bg-primary text-[#332820]">
-              <div className="w-14 h-14 rounded-2xl bg-black/10 flex items-center justify-center mb-6">
-                <MaterialIcon>rocket_launch</MaterialIcon>
-              </div>
-              <h2 className="text-3xl font-bold mb-4">AI Mentorship Engine</h2>
-              <p className="text-[#5F534A] leading-relaxed mb-8">Our neural engine maps your career goals to industry requirements, suggesting the exact skills you need to land your dream job.</p>
-              <a href="courses.html" className="font-bold inline-flex items-center gap-2">Explore Engine <MaterialIcon>arrow_forward</MaterialIcon></a>
+              <h2 className="ai-mentorship-heading font-bold mb-4">
+                <span className="flex items-center gap-1">
+                  <span className="text-[4rem] md:text-[5.25rem] leading-none">AI</span>
+                  <img
+                    className="-ml-2 h-20 w-20 md:h-24 md:w-24 object-contain"
+                    src="/assets/ai-bulb.png"
+                    alt=""
+                    aria-hidden="true"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                </span>
+                <span className="block mt-2 text-4xl md:text-5xl">Mentorship Engine</span>
+              </h2>
+              <p className="text-[1.05rem] text-[#5F534A] leading-relaxed mb-8">Our neural engine maps your career goals to industry requirements, suggesting the exact skills you need to land your dream job.</p>
+              <a href="ai-tutor.html" className="inline-flex items-center justify-center gap-2 rounded-full bg-black px-8 py-3.5 text-[1.05rem] font-bold !text-white transition-colors hover:bg-[#171717]">Explore Engine <MaterialIcon>arrow_forward</MaterialIcon></a>
             </div>
           </div>
         </section>

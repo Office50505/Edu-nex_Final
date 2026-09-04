@@ -109,7 +109,6 @@ export function WishlistPage() {
           <button className="back-btn" type="button" onClick={() => history.back()} aria-label="Go back">
             <i className="fas fa-arrow-left" aria-hidden="true"></i>
           </button>
-          <h1 className="back-title">My Wishlist</h1>
         </div>
 
         <div className="wl-summary">

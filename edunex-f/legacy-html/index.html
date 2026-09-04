@@ -313,7 +313,10 @@
       padding: 34px 0 24px;
       cursor: grab;
       touch-action: pan-x;
+      -webkit-user-select: none;
+      user-select: none;
     }
+    .hero-carousel-viewport * { -webkit-user-drag: none; }
     .hero-carousel-viewport::-webkit-scrollbar { display: none; }
     .hero-carousel-viewport.is-dragging {
       cursor: grabbing;
@@ -574,7 +577,7 @@
       grid-template-columns: 1fr auto;
       gap: 10px;
       padding: 8px;
-      border: 1px solid var(--border);
+      border: 1px solid rgba(255, 255, 255, 0.3);
       border-radius: 18px;
       background: color-mix(in srgb, var(--card) 86%, transparent);
       box-shadow: 0 18px 45px rgba(15,23,42,.08);
@@ -1056,10 +1059,17 @@
       .hero-search-btn {
         width: 100%;
       }
+      .learning-hero-actions {
+        margin-top: 8px;
+      }
+      .hero-search-block {
+        margin-top: 56px;
+      }
       .home-hero-tabs {
-        width: 100%;
-        justify-content: space-between;
-        gap: 10px;
+        width: auto;
+        max-width: calc(100% - 32px);
+        justify-content: center;
+        gap: clamp(24px, 8vw, 36px);
       }
       .hero-carousel-shell {
         width: calc(100% + 32px);
@@ -1067,7 +1077,7 @@
         padding: 8px 0 0;
       }
       .hero-carousel-viewport {
-        padding: 18px 0 32px;
+        padding: 18px 0 16px;
       }
       .hero-carousel-track {
         min-height: 360px;
@@ -1123,14 +1133,6 @@
         </div>
         <h1 id="learningHeroTitle">Build skills that turn<br>into opportunities.</h1>
         <p>Learn practical AI, content, business and digital skills through short expert-led lessons designed for real-world results.</p>
-      </div>
-
-      <div class="hero-tabs-wrap">
-        <div class="home-hero-tabs" role="tablist" aria-label="Hero course sections">
-          <button class="home-hero-tab" type="button" role="tab" data-hero-tab="for-you">For You</button>
-          <button class="home-hero-tab" type="button" role="tab" data-hero-tab="my-courses">My Courses</button>
-          <button class="home-hero-tab" type="button" role="tab" data-hero-tab="trending">Trending</button>
-        </div>
       </div>
 
       <div class="hero-carousel-shell" id="homeHeroCarousel" aria-live="polite">
@@ -1210,12 +1212,15 @@
           <a href="login.html" class="inline-flex bg-primary !text-[#FFFDF8] px-6 py-3 rounded-full font-bold hover:shadow-[0_0_18px_rgba(197,139,42,.32)] transition-all">Claim Your Trial Now</a>
         </div>
         <div class="rounded-xl p-8 md:p-10 bg-primary text-[#332820]">
-          <div class="w-14 h-14 rounded-2xl bg-black/10 flex items-center justify-center mb-6">
-            <span class="material-symbols-outlined">rocket_launch</span>
-          </div>
-          <h2 class="text-3xl font-bold mb-4">AI Mentorship Engine</h2>
-          <p class="text-[#5F534A] leading-relaxed mb-8">Our neural engine maps your career goals to industry requirements, suggesting the exact skills you need to land your dream job.</p>
-          <a href="courses.html" class="font-bold inline-flex items-center gap-2">Explore Engine <span class="material-symbols-outlined">arrow_forward</span></a>
+          <h2 class="ai-mentorship-heading font-bold mb-4">
+            <span class="flex items-center gap-1">
+              <span class="text-[4rem] md:text-[5.25rem] leading-none">AI</span>
+              <img class="-ml-2 h-20 w-20 md:h-24 md:w-24 object-contain" src="/assets/ai-bulb.png" alt="" aria-hidden="true" loading="lazy" decoding="async">
+            </span>
+            <span class="block mt-2 text-4xl md:text-5xl">Mentorship Engine</span>
+          </h2>
+          <p class="text-[1.05rem] text-[#5F534A] leading-relaxed mb-8">Our neural engine maps your career goals to industry requirements, suggesting the exact skills you need to land your dream job.</p>
+          <a href="ai-tutor.html" class="inline-flex items-center justify-center gap-2 rounded-full bg-black px-8 py-3.5 text-[1.05rem] font-bold !text-white transition-colors hover:bg-[#171717]">Explore Engine <span class="material-symbols-outlined">arrow_forward</span></a>
         </div>
       </div>
     </section>
@@ -1880,13 +1885,6 @@
       document.querySelectorAll('[data-hero-tab]').forEach(button => {
         button.addEventListener('click', () => renderHeroCarousel(button.dataset.heroTab));
       });
-      viewport.addEventListener('wheel', event => {
-        if (Math.abs(event.deltaY) <= Math.abs(event.deltaX)) return;
-        event.preventDefault();
-        pauseHeroMotion(1000);
-        viewport.scrollLeft += event.deltaY;
-        syncHeroCenterFromScroll();
-      }, { passive: false });
       viewport.addEventListener('scroll', () => {
         cancelAnimationFrame(heroState.scrollRaf);
         heroState.scrollRaf = requestAnimationFrame(syncHeroCenterFromScroll);
@@ -1907,6 +1905,7 @@
       });
       let startX = 0;
       let startLeft = 0;
+      viewport.addEventListener('dragstart', event => event.preventDefault());
       viewport.addEventListener('pointerdown', event => {
         heroState.pointerDown = true;
         heroState.pauseAutoplay = true;

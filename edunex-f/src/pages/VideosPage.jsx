@@ -6,6 +6,30 @@ import { useEduNexRuntimeReady } from "../hooks/useEduNexRuntimeReady.js";
 
 const FALLBACK_IMAGE = "data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20width=%27900%27%20height=%27600%27%20viewBox=%270%200%20900%20600%27%3E%3Crect%20width=%27900%27%20height=%27600%27%20fill=%27%23000000%27/%3E%3Crect%20x=%271%27%20y=%271%27%20width=%27898%27%20height=%27598%27%20rx=%2732%27%20fill=%27%230d0d0d%27%20stroke=%27%23C58B2A%27%20stroke-opacity=%27.35%27/%3E%3Ctext%20x=%27450%27%20y=%27312%27%20text-anchor=%27middle%27%20fill=%27%23C58B2A%27%20font-family=%27Arial%27%20font-size=%2748%27%20font-weight=%27800%27%3EEduNex%3C/text%3E%3C/svg%3E";
 const AUTO_NEXT_KEY = "edunexAutoNextVideo";
+const APP_FULLSCREEN_CLASS = "is-app-fullscreen";
+const BODY_FULLSCREEN_CLASS = "has-edunex-player-fullscreen";
+
+function nativeFullscreenElement() {
+  return document.fullscreenElement || document.webkitFullscreenElement || null;
+}
+
+function isPlayerFullscreen(frame) {
+  if (!frame) return false;
+  if (frame.classList.contains(APP_FULLSCREEN_CLASS)) return true;
+  const element = nativeFullscreenElement();
+  return Boolean(element && (
+    element === frame
+    || element.contains?.(frame)
+    || frame.contains?.(element)
+  ));
+}
+
+function setAppFullscreen(frame, active) {
+  if (!frame) return;
+  frame.classList.toggle(APP_FULLSCREEN_CLASS, active);
+  document.body.classList.toggle(BODY_FULLSCREEN_CLASS, active);
+  if (active) frame.focus?.({ preventScroll: true });
+}
 
 function queryParams() {
   return new URLSearchParams(window.location.search);
@@ -130,14 +154,27 @@ function normalizeCourse(course) {
 }
 
 function embedUrl(lesson) {
-  if (lesson?.embedUrl) return lesson.embedUrl;
-  if (lesson?.youtubeId) return `https://www.youtube.com/embed/${lesson.youtubeId}?rel=0&autoplay=0`;
-  if (lesson?.videoUrl) return lesson.videoUrl;
-  return "";
+  const value = lesson?.embedUrl
+    || (lesson?.youtubeId ? `https://www.youtube.com/embed/${lesson.youtubeId}?rel=0&autoplay=0` : "")
+    || lesson?.videoUrl
+    || "";
+  if (!isYoutubeEmbedUrl(value)) return value;
+  try {
+    const parsed = new URL(value);
+    parsed.searchParams.set("enablejsapi", "1");
+    parsed.searchParams.set("playsinline", "1");
+    return parsed.href;
+  } catch (_) {
+    return value;
+  }
 }
 
 function isBunnyEmbedUrl(value) {
   return /player\.mediadelivery\.net\/embed|iframe\.mediadelivery\.net\/embed/i.test(String(value || ""));
+}
+
+function isYoutubeEmbedUrl(value) {
+  return /(?:youtube(?:-nocookie)?\.com)\/embed\//i.test(String(value || ""));
 }
 
 function isHlsUrl(value) {
@@ -161,6 +198,27 @@ function loadHlsJs() {
     script.onerror = reject;
     document.head.appendChild(script);
   });
+}
+
+function loadEmbeddedPlayerApi() {
+  if (window.playerjs?.Player) return Promise.resolve();
+  if (window.__edunexPlayerJsPromise) return window.__edunexPlayerJsPromise;
+  window.__edunexPlayerJsPromise = new Promise((resolve, reject) => {
+    const existing = document.querySelector('script[data-edunex-playerjs="true"]');
+    if (existing) {
+      existing.addEventListener("load", resolve, { once: true });
+      existing.addEventListener("error", reject, { once: true });
+      return;
+    }
+    const script = document.createElement("script");
+    script.src = "https://assets.mediadelivery.net/playerjs/player-0.1.0.min.js";
+    script.async = true;
+    script.dataset.edunexPlayerjs = "true";
+    script.onload = resolve;
+    script.onerror = () => reject(new Error("Embedded player controls unavailable"));
+    document.head.appendChild(script);
+  });
+  return window.__edunexPlayerJsPromise;
 }
 
 function directVideoUrl(lesson) {
@@ -188,32 +246,55 @@ function nextPlaybackRate(rate) {
   return rates[(index + 1) % rates.length];
 }
 
-function VideoControls({ playing, volume, muted, rate, currentTime, duration, onToggle, onSeek, onVolume, onMute, onRate, onFullscreen, onAi, onTapLeft, onTapRight }) {
+function VideoControls({ playing, volume, muted, rate, currentTime, duration, onToggle, onSeek, onVolume, onRate, onFullscreen, onAi, onScreenTap }) {
+  const [volumeOpen, setVolumeOpen] = useState(false);
+  const volumeControlRef = useRef(null);
   const percent = duration ? Math.round((currentTime / duration) * 1000) : 0;
   const volumeIcon = muted || volume <= 0 ? "fa-volume-xmark" : volume < 0.5 ? "fa-volume-low" : "fa-volume-high";
+
+  useEffect(() => {
+    if (!volumeOpen) return undefined;
+    const closeOnOutsidePress = (event) => {
+      if (!volumeControlRef.current?.contains(event.target)) setVolumeOpen(false);
+    };
+    const closeOnEscape = (event) => {
+      if (event.key === "Escape") setVolumeOpen(false);
+    };
+    document.addEventListener("pointerdown", closeOnOutsidePress);
+    document.addEventListener("keydown", closeOnEscape);
+    return () => {
+      document.removeEventListener("pointerdown", closeOnOutsidePress);
+      document.removeEventListener("keydown", closeOnEscape);
+    };
+  }, [volumeOpen]);
+
   return (
     <>
-      <button className="video-screen-btn video-fullscreen-btn" type="button" data-action="fullscreen" aria-label="Fullscreen" onClick={onFullscreen}><i className="fas fa-expand" aria-hidden="true"></i></button>
       <button className="video-screen-btn video-ai-screen-btn" type="button" data-action="ai" onClick={onAi}><i className="fas fa-bolt" aria-hidden="true"></i><span>AI</span></button>
-      <button className="tap-zone tap-zone-left" type="button" aria-label="Rewind 10 seconds" onClick={onTapLeft}><span className="tap-hint">-10s</span></button>
-      <button className="tap-zone tap-zone-right" type="button" aria-label="Forward 10 seconds" onClick={onTapRight}><span className="tap-hint">+10s</span></button>
+      <button className="tap-zone tap-zone-left" type="button" tabIndex={-1} aria-label="Play or pause; double-click to rewind 10 seconds" onClick={() => onScreenTap("left")} onDoubleClick={(event) => event.preventDefault()}><span className="tap-hint">-10s</span></button>
+      <button className="tap-zone tap-zone-right" type="button" tabIndex={-1} aria-label="Play or pause; double-click to forward 10 seconds" onClick={() => onScreenTap("right")} onDoubleClick={(event) => event.preventDefault()}><span className="tap-hint">+10s</span></button>
       <div className="custom-video-controls">
-        <button className="video-control-btn" type="button" data-action="toggle" aria-label={playing ? "Pause" : "Play"} onClick={onToggle}>
+        <button className="video-control-btn video-play-control" type="button" data-action="toggle" aria-label={playing ? "Pause" : "Play"} onClick={onToggle}>
           <i className={`fas ${playing ? "fa-pause" : "fa-play"}`} aria-hidden="true"></i>
         </button>
-        <div className="video-volume" aria-label="Volume control">
-          <button className="video-control-btn" type="button" data-action="mute" aria-label={muted || volume <= 0 ? "Unmute" : "Mute"} onClick={onMute}>
-            <i className={`fas ${volumeIcon}`} aria-hidden="true"></i>
-          </button>
-          <input className="video-volume-slider" type="range" min="0" max="100" value={Math.round(volume * 100)} step="1" aria-label="Volume" onChange={(event) => onVolume(Number(event.target.value) / 100)} />
-          <span className="video-volume-value">{Math.round(volume * 100)}%</span>
-        </div>
         <div className="video-timeline-wrap">
           <input className="video-seek" type="range" min="0" max="1000" value={percent} step="1" aria-label="Video progress" onChange={(event) => onSeek(Number(event.target.value) / 1000)} />
           <div className="video-time-row"><span data-current-time="true">{formatVideoTime(currentTime)}</span><span data-duration="true">Remaining {formatVideoTime(Math.max((duration || 0) - currentTime, 0))}</span></div>
         </div>
-        <div className="video-speed" aria-label="Playback speed">
-          <button className="video-speed-btn" type="button" data-rate={rate} aria-label="Playback speed" onClick={onRate}>{rate}x</button>
+        <div className={`video-volume${volumeOpen ? " is-open" : ""}`} ref={volumeControlRef}>
+          <button className="video-control-btn video-volume-toggle" type="button" data-action="volume" aria-label={`Volume ${Math.round(volume * 100)} percent`} aria-expanded={volumeOpen} onClick={() => setVolumeOpen((open) => !open)}>
+            <i className={`fas ${volumeIcon}`} aria-hidden="true"></i>
+          </button>
+          <div className="video-volume-panel" aria-hidden={!volumeOpen}>
+            <span className="video-volume-value">{Math.round(volume * 100)}%</span>
+            <input className="video-volume-slider" type="range" min="0" max="100" value={Math.round(volume * 100)} step="1" aria-label="Volume" aria-orientation="vertical" onChange={(event) => onVolume(Number(event.target.value) / 100)} />
+          </div>
+        </div>
+        <div className="video-end-controls">
+          <div className="video-speed" aria-label="Playback speed">
+            <button className="video-speed-btn" type="button" data-rate={rate} aria-label="Playback speed" onClick={onRate}>{rate}x</button>
+          </div>
+          <button className="video-control-btn video-fullscreen-control" type="button" data-action="fullscreen" aria-label="Enter fullscreen" onClick={onFullscreen}><i className="fas fa-expand" aria-hidden="true"></i></button>
         </div>
       </div>
     </>
@@ -223,28 +304,40 @@ function VideoControls({ playing, volume, muted, rate, currentTime, duration, on
 function Player({ course, lesson, autoNext, onEnded }) {
   const videoRef = useRef(null);
   const iframeRef = useRef(null);
+  const embeddedPlayerRef = useRef(null);
   const shellRef = useRef(null);
   const [playing, setPlaying] = useState(false);
   const [volume, setVolume] = useState(() => Math.max(0, Math.min(1, Number(localStorage.getItem("edunexVideoVolume") || 1))));
   const [muted, setMuted] = useState(() => localStorage.getItem("edunexVideoMuted") === "true");
   const [rate, setRate] = useState(1);
   const [time, setTime] = useState({ current: 0, duration: 0 });
+  const playerStateRef = useRef({ autoNext, muted, onEnded, rate, volume });
+  const playingRef = useRef(false);
+  const screenTapRef = useRef({ side: "", at: 0 });
+  const screenToggleTimerRef = useRef(null);
+  const screenHintTimerRef = useRef(null);
 
   const url = embedUrl(lesson);
   const directUrl = directVideoUrl(lesson) || bunnyStreamUrl(lesson);
-  const hasEmbedControls = isBunnyEmbedUrl(url);
+  const isYoutubeEmbed = isYoutubeEmbedUrl(url);
+  const hasEmbedControls = isBunnyEmbedUrl(url) || isYoutubeEmbed;
   const needsHlsRuntime = Boolean(directUrl && isHlsUrl(directUrl));
+
+  const syncPlaying = useCallback((nextPlaying) => {
+    const next = Boolean(nextPlaying);
+    playingRef.current = next;
+    setPlaying(next);
+  }, []);
+
+  useEffect(() => {
+    playerStateRef.current = { autoNext, muted, onEnded, rate, volume };
+  }, [autoNext, muted, onEnded, rate, volume]);
 
   const postToEmbed = useCallback((payload) => {
     const frame = iframeRef.current;
     if (!frame?.contentWindow) return;
-    try {
-      frame.contentWindow.postMessage(JSON.stringify(payload), "*");
-    } catch (_) {
-      try {
-        frame.contentWindow.postMessage(payload, "*");
-      } catch (_) {}
-    }
+    try { frame.contentWindow.postMessage(payload, "*"); } catch (_) {}
+    try { frame.contentWindow.postMessage(JSON.stringify(payload), "*"); } catch (_) {}
   }, []);
 
   const persistVolume = useCallback((nextVolume, nextMuted) => {
@@ -257,22 +350,43 @@ function Player({ course, lesson, autoNext, onEnded }) {
       videoRef.current.volume = safeVolume;
       videoRef.current.muted = Boolean(nextMuted || safeVolume <= 0);
     }
+    const embeddedPlayer = embeddedPlayerRef.current;
+    const percent = Math.round(safeVolume * 100);
+    try { embeddedPlayer?.setVolume?.(nextMuted ? 0 : percent); } catch (_) {}
+    try {
+      if (nextMuted || safeVolume <= 0) embeddedPlayer?.mute?.();
+      else embeddedPlayer?.unmute?.();
+    } catch (_) {}
     postToEmbed({ event: "command", func: nextMuted || safeVolume <= 0 ? "mute" : "unMute", args: [] });
-    postToEmbed({ event: "command", func: "setVolume", args: [Math.round(safeVolume * 100)] });
+    postToEmbed({ event: "command", func: "setVolume", args: [percent] });
   }, [postToEmbed]);
 
   const togglePlayback = useCallback(() => {
     const video = videoRef.current;
     if (video) {
-      if (video.paused) video.play().catch(() => {});
-      else video.pause();
+      if (video.paused) {
+        syncPlaying(true);
+        video.play().catch(() => syncPlaying(false));
+      } else {
+        video.pause();
+        syncPlaying(false);
+      }
       return;
     }
-    const shouldPlay = !playing;
+    const shouldPlay = !playingRef.current;
+    const embeddedPlayer = embeddedPlayerRef.current;
+    syncPlaying(shouldPlay);
+    try {
+      if (shouldPlay) embeddedPlayer?.play?.();
+      else embeddedPlayer?.pause?.();
+    } catch (_) {
+      syncPlaying(!shouldPlay);
+    }
+    postToEmbed({ context: "player.js", version: "0.0.11", event: "command", method: shouldPlay ? "play" : "pause" });
+    postToEmbed({ event: "command", func: shouldPlay ? "playVideo" : "pauseVideo", args: [] });
     postToEmbed({ event: "command", func: shouldPlay ? "play" : "pause", args: [] });
     postToEmbed({ method: shouldPlay ? "play" : "pause" });
-    setPlaying(shouldPlay);
-  }, [playing, postToEmbed]);
+  }, [postToEmbed, syncPlaying]);
 
   const seekBy = useCallback((seconds) => {
     const video = videoRef.current;
@@ -284,9 +398,54 @@ function Player({ course, lesson, autoNext, onEnded }) {
     }
     const next = Math.max(0, time.current + seconds);
     setTime((current) => ({ ...current, current: next }));
+    try { embeddedPlayerRef.current?.setCurrentTime?.(next); } catch (_) {}
     postToEmbed({ event: "command", func: "seekTo", args: [next, true] });
     postToEmbed({ method: "seek", value: seconds });
   }, [postToEmbed, time.current]);
+
+  const clearPendingScreenToggle = useCallback(() => {
+    if (screenToggleTimerRef.current) window.clearTimeout(screenToggleTimerRef.current);
+    screenToggleTimerRef.current = null;
+    screenTapRef.current = { side: "", at: 0 };
+  }, []);
+
+  const showSeekHint = useCallback((side) => {
+    const shell = shellRef.current;
+    if (!shell) return;
+    shell.querySelectorAll(".tap-zone").forEach((zone) => zone.classList.remove("show"));
+    const zone = shell.querySelector(`.tap-zone-${side}`);
+    zone?.classList.add("show");
+    if (screenHintTimerRef.current) window.clearTimeout(screenHintTimerRef.current);
+    screenHintTimerRef.current = window.setTimeout(() => zone?.classList.remove("show"), 450);
+  }, []);
+
+  const handleScreenTap = useCallback((side) => {
+    const now = Date.now();
+    const previous = screenTapRef.current;
+    if (previous.side === side && now - previous.at <= 320) {
+      clearPendingScreenToggle();
+      seekBy(side === "left" ? -10 : 10);
+      showSeekHint(side);
+      return;
+    }
+    clearPendingScreenToggle();
+    screenTapRef.current = { side, at: now };
+    screenToggleTimerRef.current = window.setTimeout(() => {
+      screenToggleTimerRef.current = null;
+      screenTapRef.current = { side: "", at: 0 };
+      togglePlayback();
+    }, 320);
+  }, [clearPendingScreenToggle, seekBy, showSeekHint, togglePlayback]);
+
+  const handleControlToggle = useCallback(() => {
+    clearPendingScreenToggle();
+    togglePlayback();
+  }, [clearPendingScreenToggle, togglePlayback]);
+
+  useEffect(() => () => {
+    if (screenToggleTimerRef.current) window.clearTimeout(screenToggleTimerRef.current);
+    if (screenHintTimerRef.current) window.clearTimeout(screenHintTimerRef.current);
+  }, []);
 
   const openVideoAi = () => {
     const container = document.fullscreenElement || shellRef.current || document.body;
@@ -294,11 +453,21 @@ function Player({ course, lesson, autoNext, onEnded }) {
     else document.getElementById("nai-float-btn")?.click();
   };
 
-  const fullscreen = () => {
+  const fullscreen = async () => {
     const target = document.getElementById("playerFrame") || shellRef.current;
     if (!target) return;
-    if (document.fullscreenElement) document.exitFullscreen?.();
-    else target.requestFullscreen?.().catch?.(() => {});
+    if (target.classList.contains(APP_FULLSCREEN_CLASS)) {
+      setAppFullscreen(target, false);
+      return;
+    }
+
+    if (nativeFullscreenElement()) {
+      const exitFullscreen = document.exitFullscreen || document.webkitExitFullscreen;
+      if (exitFullscreen) {
+        try { await exitFullscreen.call(document); } catch (_) {}
+      }
+    }
+    setAppFullscreen(target, true);
   };
 
   useEffect(() => {
@@ -308,10 +477,10 @@ function Player({ course, lesson, autoNext, onEnded }) {
       current: video.currentTime || 0,
       duration: Number.isFinite(video.duration) ? video.duration : 0,
     });
-    const onPlay = () => setPlaying(true);
-    const onPause = () => setPlaying(false);
+    const onPlay = () => syncPlaying(true);
+    const onPause = () => syncPlaying(false);
     const onEnd = () => {
-      setPlaying(false);
+      syncPlaying(false);
       if (autoNext) onEnded?.();
     };
     video.volume = volume;
@@ -330,7 +499,103 @@ function Player({ course, lesson, autoNext, onEnded }) {
       video.removeEventListener("pause", onPause);
       video.removeEventListener("ended", onEnd);
     };
-  }, [autoNext, muted, onEnded, rate, volume]);
+  }, [autoNext, muted, onEnded, rate, syncPlaying, volume]);
+
+  useEffect(() => {
+    if (!hasEmbedControls) return undefined;
+    const iframe = iframeRef.current;
+    if (!iframe) return undefined;
+
+    if (isYoutubeEmbed) {
+      const handleYoutubeMessage = (event) => {
+        if (event.source !== iframe.contentWindow) return;
+        let data = event.data;
+        if (typeof data === "string") {
+          try { data = JSON.parse(data); } catch (_) { return; }
+        }
+        const playerState = data?.event === "onStateChange"
+          ? Number(data.info)
+          : Number(data?.info?.playerState);
+        if (playerState === 1) syncPlaying(true);
+        if (playerState === 0 || playerState === 2) syncPlaying(false);
+        if (data?.event === "infoDelivery" && data?.info) {
+          setTime((current) => ({
+            current: Number(data.info.currentTime ?? current.current) || 0,
+            duration: Number(data.info.duration ?? current.duration) || 0,
+          }));
+        }
+      };
+      const connectYoutubePlayer = () => {
+        postToEmbed({ event: "listening", id: "edunex-course-player" });
+        postToEmbed({ event: "command", func: "addEventListener", args: ["onStateChange"] });
+      };
+      window.addEventListener("message", handleYoutubeMessage);
+      iframe.addEventListener("load", connectYoutubePlayer);
+      connectYoutubePlayer();
+      return () => {
+        window.removeEventListener("message", handleYoutubeMessage);
+        iframe.removeEventListener("load", connectYoutubePlayer);
+      };
+    }
+
+    let cancelled = false;
+    let player = null;
+    let polling = null;
+    const refreshTime = () => {
+      if (!player) return;
+      try {
+        player.getCurrentTime?.((value) => {
+          setTime((current) => ({ ...current, current: Number(value) || 0 }));
+        });
+        player.getDuration?.((value) => {
+          setTime((current) => ({ ...current, duration: Number(value) || 0 }));
+        });
+      } catch (_) {}
+    };
+    const handlePlay = () => syncPlaying(true);
+    const handlePause = () => syncPlaying(false);
+    const handleEnded = () => {
+      syncPlaying(false);
+      if (playerStateRef.current.autoNext) playerStateRef.current.onEnded?.();
+    };
+    const handleTimeUpdate = (event) => {
+      setTime((current) => ({
+        current: Number(event?.seconds ?? event?.currentTime ?? current.current) || 0,
+        duration: Number(event?.duration ?? current.duration) || 0,
+      }));
+    };
+
+    loadEmbeddedPlayerApi().then(() => {
+      if (cancelled || !window.playerjs?.Player) return;
+      player = new window.playerjs.Player(iframe);
+      embeddedPlayerRef.current = player;
+      player.on?.("ready", () => {
+        const settings = playerStateRef.current;
+        const volumePercent = Math.round(settings.volume * 100);
+        try { player.setVolume?.(settings.muted ? 0 : volumePercent); } catch (_) {}
+        try { player.setPlaybackRate?.(settings.rate); } catch (_) {}
+        if (settings.muted) {
+          try { player.mute?.(); } catch (_) {}
+        }
+        refreshTime();
+        polling = window.setInterval(refreshTime, 750);
+      });
+      player.on?.("play", handlePlay);
+      player.on?.("pause", handlePause);
+      player.on?.("ended", handleEnded);
+      player.on?.("timeupdate", handleTimeUpdate);
+    }).catch(() => {});
+
+    return () => {
+      cancelled = true;
+      if (polling) window.clearInterval(polling);
+      if (embeddedPlayerRef.current === player) embeddedPlayerRef.current = null;
+      try { player?.off?.("play", handlePlay); } catch (_) {}
+      try { player?.off?.("pause", handlePause); } catch (_) {}
+      try { player?.off?.("ended", handleEnded); } catch (_) {}
+      try { player?.off?.("timeupdate", handleTimeUpdate); } catch (_) {}
+    };
+  }, [hasEmbedControls, isYoutubeEmbed, postToEmbed, syncPlaying]);
 
   useEffect(() => {
     const video = videoRef.current;
@@ -374,7 +639,7 @@ function Player({ course, lesson, autoNext, onEnded }) {
       rate={rate}
       currentTime={time.current}
       duration={time.duration}
-      onToggle={togglePlayback}
+      onToggle={handleControlToggle}
       onSeek={(fraction) => {
         const video = videoRef.current;
         if (video && Number.isFinite(video.duration)) {
@@ -383,21 +648,21 @@ function Player({ course, lesson, autoNext, onEnded }) {
         }
         const next = Math.max(0, fraction * (time.duration || 0));
         setTime((current) => ({ ...current, current: next }));
+        try { embeddedPlayerRef.current?.setCurrentTime?.(next); } catch (_) {}
         postToEmbed({ event: "command", func: "seekTo", args: [next, true] });
       }}
       onVolume={(next) => persistVolume(next, false)}
-      onMute={() => persistVolume(volume > 0 ? volume : 1, !muted && volume > 0)}
       onRate={() => {
         const next = nextPlaybackRate(rate);
         setRate(next);
         if (videoRef.current) videoRef.current.playbackRate = next;
+        try { embeddedPlayerRef.current?.setPlaybackRate?.(next); } catch (_) {}
         postToEmbed({ event: "command", func: "setPlaybackRate", args: [next] });
         postToEmbed({ method: "setPlaybackRate", value: next });
       }}
       onFullscreen={fullscreen}
       onAi={openVideoAi}
-      onTapLeft={() => seekBy(-10)}
-      onTapRight={() => seekBy(10)}
+      onScreenTap={handleScreenTap}
     />
   );
 
@@ -451,6 +716,8 @@ function NotesModal({ course, onClose }) {
 
 export function VideosPage() {
   const runtimeReady = useEduNexRuntimeReady();
+  const playerFrameRef = useRef(null);
+  const lessonSwipeRef = useRef({ active: false, pointerId: null, startX: 0, startY: 0, lastX: 0, lastY: 0, startedAt: 0, vertical: false, suppressClickUntil: 0 });
   const query = queryParams();
   const selectedCourseId = query.get("courseId") || query.get("course") || query.get("id");
   const selectedVideo = Number(query.get("video") || 0);
@@ -604,6 +871,181 @@ export function VideosPage() {
   const lessons = course?.videos || [];
   const lesson = lessons[activeIndex] || lessons[0] || {};
 
+  const changeLessonByNavigation = useCallback((direction) => {
+    setActiveIndex((index) => Math.max(0, Math.min(index + direction, Math.max(lessons.length - 1, 0))));
+  }, [lessons.length]);
+
+  useEffect(() => {
+    const frame = playerFrameRef.current;
+    if (!frame) return undefined;
+    const swipe = lessonSwipeRef.current;
+    let wheelDelta = 0;
+    let wheelResetTimer = 0;
+    let wheelLockedUntil = 0;
+    const resetSwipe = () => {
+      swipe.active = false;
+      swipe.vertical = false;
+      swipe.pointerId = null;
+    };
+    const ignoreSwipeTarget = (target) => Boolean(target?.closest?.(".custom-video-controls, .video-screen-btn, input, select, textarea, [contenteditable='true']"));
+    const canChangeLesson = (direction) => direction > 0 ? activeIndex < lessons.length - 1 : activeIndex > 0;
+    const beginSwipe = (clientX, clientY, pointerId = null) => {
+      swipe.active = true;
+      swipe.vertical = false;
+      swipe.pointerId = pointerId;
+      swipe.startX = clientX;
+      swipe.startY = clientY;
+      swipe.lastX = clientX;
+      swipe.lastY = clientY;
+      swipe.startedAt = performance.now();
+    };
+    const moveSwipe = (clientX, clientY, event) => {
+      if (!swipe.active || !isPlayerFullscreen(frame)) return;
+      swipe.lastX = clientX;
+      swipe.lastY = clientY;
+      const deltaX = swipe.lastX - swipe.startX;
+      const deltaY = swipe.lastY - swipe.startY;
+      if (!swipe.vertical && Math.abs(deltaY) > 10 && Math.abs(deltaY) > Math.abs(deltaX) * 1.1) {
+        swipe.vertical = true;
+      }
+      if (swipe.vertical && canChangeLesson(deltaY < 0 ? 1 : -1)) event.preventDefault();
+    };
+    const finishSwipe = (clientX, clientY, event) => {
+      if (!swipe.active) return;
+      const deltaX = clientX - swipe.startX;
+      const deltaY = clientY - swipe.startY;
+      const elapsed = Math.max(performance.now() - swipe.startedAt, 1);
+      const distanceThreshold = Math.min(96, Math.max(44, frame.clientHeight * 0.06));
+      const verticalSwipe = swipe.vertical && Math.abs(deltaY) > Math.abs(deltaX) * 1.1;
+      const intentionalSwipe = Math.abs(deltaY) >= distanceThreshold || (Math.abs(deltaY) >= 34 && Math.abs(deltaY) / elapsed >= 0.28);
+      const direction = deltaY < 0 ? 1 : -1;
+
+      if (isPlayerFullscreen(frame) && verticalSwipe && intentionalSwipe && canChangeLesson(direction)) {
+        event.preventDefault();
+        swipe.suppressClickUntil = Date.now() + 500;
+        changeLessonByNavigation(direction);
+      }
+      resetSwipe();
+    };
+
+    const onPointerDown = (event) => {
+      if (!isPlayerFullscreen(frame) || event.pointerType === "mouse" || event.isPrimary === false || ignoreSwipeTarget(event.target)) {
+        resetSwipe();
+        return;
+      }
+      beginSwipe(event.clientX, event.clientY, event.pointerId);
+    };
+    const onPointerMove = (event) => {
+      if (event.pointerId !== swipe.pointerId) return;
+      moveSwipe(event.clientX, event.clientY, event);
+    };
+    const onPointerUp = (event) => {
+      if (event.pointerId !== swipe.pointerId) return;
+      finishSwipe(event.clientX, event.clientY, event);
+    };
+
+    const onTouchStart = (event) => {
+      if (!isPlayerFullscreen(frame) || event.touches.length !== 1 || ignoreSwipeTarget(event.target)) {
+        resetSwipe();
+        return;
+      }
+      const touch = event.touches[0];
+      beginSwipe(touch.clientX, touch.clientY);
+    };
+
+    const onTouchMove = (event) => {
+      if (!swipe.active || event.touches.length !== 1) return;
+      const touch = event.touches[0];
+      moveSwipe(touch.clientX, touch.clientY, event);
+    };
+
+    const onTouchEnd = (event) => {
+      if (!swipe.active) return;
+      const touch = event.changedTouches[0];
+      finishSwipe(touch?.clientX ?? swipe.lastX, touch?.clientY ?? swipe.lastY, event);
+    };
+
+    const onWheel = (event) => {
+      if (!isPlayerFullscreen(frame) || ignoreSwipeTarget(event.target) || Math.abs(event.deltaY) <= Math.abs(event.deltaX)) return;
+      const direction = event.deltaY > 0 ? 1 : -1;
+      if (!canChangeLesson(direction)) return;
+      event.preventDefault();
+      if (Date.now() < wheelLockedUntil) return;
+
+      wheelDelta += event.deltaY;
+      window.clearTimeout(wheelResetTimer);
+      wheelResetTimer = window.setTimeout(() => { wheelDelta = 0; }, 180);
+      if (Math.abs(wheelDelta) < 52) return;
+
+      wheelLockedUntil = Date.now() + 650;
+      wheelDelta = 0;
+      changeLessonByNavigation(direction);
+    };
+
+    const onKeyDown = (event) => {
+      if (!isPlayerFullscreen(frame)) return;
+      if (event.key === "Escape" && frame.classList.contains(APP_FULLSCREEN_CLASS)) {
+        event.preventDefault();
+        setAppFullscreen(frame, false);
+        return;
+      }
+      if (event.repeat || event.altKey || event.ctrlKey || event.metaKey) return;
+      if (event.target?.closest?.("input, select, textarea, [contenteditable='true']")) return;
+      const direction = event.key === "ArrowDown" || event.key === "ArrowRight"
+        ? 1
+        : event.key === "ArrowUp" || event.key === "ArrowLeft"
+          ? -1
+          : 0;
+      if (!direction || !canChangeLesson(direction)) return;
+      event.preventDefault();
+      changeLessonByNavigation(direction);
+    };
+
+    const onFullscreenChange = () => {
+      resetSwipe();
+      if (isPlayerFullscreen(frame)) frame.focus?.({ preventScroll: true });
+    };
+
+    const supportsPointerEvents = "PointerEvent" in window;
+    if (supportsPointerEvents) {
+      frame.addEventListener("pointerdown", onPointerDown, { passive: true, capture: true });
+      document.addEventListener("pointermove", onPointerMove, { passive: false, capture: true });
+      document.addEventListener("pointerup", onPointerUp, { passive: false, capture: true });
+      document.addEventListener("pointercancel", resetSwipe, { passive: true, capture: true });
+    } else {
+      frame.addEventListener("touchstart", onTouchStart, { passive: true, capture: true });
+      frame.addEventListener("touchmove", onTouchMove, { passive: false, capture: true });
+      frame.addEventListener("touchend", onTouchEnd, { passive: false, capture: true });
+      frame.addEventListener("touchcancel", resetSwipe, { passive: true, capture: true });
+    }
+    frame.addEventListener("wheel", onWheel, { passive: false });
+    document.addEventListener("keydown", onKeyDown, true);
+    document.addEventListener("fullscreenchange", onFullscreenChange);
+    document.addEventListener("webkitfullscreenchange", onFullscreenChange);
+    return () => {
+      window.clearTimeout(wheelResetTimer);
+      if (supportsPointerEvents) {
+        frame.removeEventListener("pointerdown", onPointerDown, true);
+        document.removeEventListener("pointermove", onPointerMove, true);
+        document.removeEventListener("pointerup", onPointerUp, true);
+        document.removeEventListener("pointercancel", resetSwipe, true);
+      } else {
+        frame.removeEventListener("touchstart", onTouchStart, true);
+        frame.removeEventListener("touchmove", onTouchMove, true);
+        frame.removeEventListener("touchend", onTouchEnd, true);
+        frame.removeEventListener("touchcancel", resetSwipe, true);
+      }
+      frame.removeEventListener("wheel", onWheel);
+      document.removeEventListener("keydown", onKeyDown, true);
+      document.removeEventListener("fullscreenchange", onFullscreenChange);
+      document.removeEventListener("webkitfullscreenchange", onFullscreenChange);
+    };
+  }, [activeIndex, changeLessonByNavigation, lessons.length]);
+
+  useEffect(() => () => {
+    setAppFullscreen(playerFrameRef.current, false);
+  }, []);
+
   const openNotes = () => {
     const value = String(noteValue(course)).trim();
     if (value && isLikelyUrl(value)) {
@@ -717,7 +1159,18 @@ export function VideosPage() {
         </div>
         <section className="watch-layout">
           <div className="player-wrap">
-            <div className="player-frame" id="playerFrame">
+            <div
+              className="player-frame mobile-reel-player"
+              id="playerFrame"
+              ref={playerFrameRef}
+              tabIndex={-1}
+              aria-label="Course video player. In fullscreen, swipe vertically or use arrow keys to change lessons."
+              onClickCapture={(event) => {
+                if (Date.now() >= lessonSwipeRef.current.suppressClickUntil) return;
+                event.preventDefault();
+                event.stopPropagation();
+              }}
+            >
               {error ? (
                 <div className="player-placeholder"><div><strong>Could not open this course</strong><span>{error}</span></div></div>
               ) : course ? (

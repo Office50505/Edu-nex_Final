@@ -10,6 +10,7 @@ const ICON_PATHS = {
   heart: '<path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z"></path>',
   info: '<circle cx="12" cy="12" r="9"></circle><path d="M12 11v5"></path><path d="M12 8h.01"></path>',
   key: '<path d="M21 2l-2 2"></path><path d="m15.5 7.5 3-3"></path><circle cx="7.5" cy="16.5" r="5.5"></circle><path d="m12 12 7-7"></path>',
+  logout: '<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><path d="m16 17 5-5-5-5"></path><path d="M21 12H9"></path>',
   mail: '<rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="m3 7 9 6 9-6"></path>',
   map: '<path d="M14.5 4.5 9.5 2l-6 3v15l6-3 5 2.5 6-3v-15z"></path><path d="M9.5 2v15"></path><path d="M14.5 4.5v15"></path>',
   phone: '<rect x="7" y="2" width="10" height="20" rx="2"></rect><path d="M11 18h2"></path>',

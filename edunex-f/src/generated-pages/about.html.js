@@ -289,7 +289,7 @@ export const page = {
       padding: 30px 26px;
       border-radius: 10px;
       border: 1px solid var(--about-border);
-      background: var(--about-card);
+      background: var(--about-gold-soft);
       box-shadow: var(--about-shadow);
       text-align: center;
     }
@@ -319,7 +319,7 @@ export const page = {
       width: 78px;
       height: 78px;
       border-radius: 50%;
-      background: var(--about-card);
+      background: var(--about-gold-soft);
       margin-bottom: 18px;
     }
 

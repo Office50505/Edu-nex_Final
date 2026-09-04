@@ -54,6 +54,11 @@ function groupCourses(courses) {
   return Array.from(groups.entries());
 }
 
+function courseVideoHref(course) {
+  const id = String(course?.id || course?._id || "");
+  return id ? `/videos.html?courseId=${encodeURIComponent(id)}&video=0` : "/courses.html";
+}
+
 export function CoursesPage() {
   const [courses, setCourses] = useState([]);
   const [search, setSearch] = useState("");
@@ -162,7 +167,13 @@ export function CoursesPage() {
     } catch (_) {}
   };
 
-  const openCourse = (course) => window.EduNex?.openCourseDetails?.(course);
+  const openCourse = (course) => {
+    if (hasAccess) {
+      window.location.href = courseVideoHref(course);
+      return;
+    }
+    window.EduNex?.openCourseDetails?.(course);
+  };
 
   return (
     <div className="react-page-root" data-page="courses.html">

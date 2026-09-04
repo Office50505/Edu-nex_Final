@@ -591,6 +591,15 @@
     } catch (_) {}
   }
 
+  function openListedCourse(course) {
+    if (!course?.id) return;
+    if (courseState.hasAccess) {
+      window.location.href = `/videos.html?courseId=${encodeURIComponent(course.id)}&video=0`;
+      return;
+    }
+    EduNex.openCourseDetails(course);
+  }
+
   function courseCard(course) {
     const duration = course.duration || (course.lessonCount ? `${course.lessonCount} Lessons` : 'Self paced');
     const ctaLabel = courseState.hasAccess ? 'View Course' : 'Start ₹1 Trial';
@@ -663,13 +672,13 @@
       button.addEventListener('click', (event) => {
         event.stopPropagation();
         const course = courseState.courses.find(item => item.id === button.dataset.courseId);
-        if (course) EduNex.openCourseDetails(course);
+        if (course) openListedCourse(course);
       });
     });
     host.querySelectorAll('[data-course-card-id]').forEach(card => {
       card.addEventListener('click', () => {
         const course = courseState.courses.find(item => item.id === card.dataset.courseCardId);
-        if (course) EduNex.openCourseDetails(course);
+        if (course) openListedCourse(course);
       });
       card.setAttribute('role', 'link');
       card.setAttribute('tabindex', '0');
@@ -677,7 +686,7 @@
         if (event.key !== 'Enter' && event.key !== ' ') return;
         event.preventDefault();
         const course = courseState.courses.find(item => item.id === card.dataset.courseCardId);
-        if (course) EduNex.openCourseDetails(course);
+        if (course) openListedCourse(course);
       });
     });
     host.querySelectorAll('[data-wishlist-id]').forEach(button => {

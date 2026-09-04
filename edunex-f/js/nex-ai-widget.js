@@ -73,8 +73,9 @@
     #nai-float-btn {
       all: unset;
       position: fixed;
-      bottom: 28px;
-      right: 28px;
+      top: auto;
+      bottom: calc(28px + env(safe-area-inset-bottom, 0px));
+      right: calc(28px + env(safe-area-inset-right, 0px));
       left: auto;
       z-index: 9990;
       display: flex;
@@ -581,8 +582,17 @@
     @media (max-width: 768px) {
       #nai-sidebar { display: none; }
       #nai-modal { height: 90vh; max-height: none; border-radius: 16px; }
-      #nai-float-btn span { display: none; }
-      #nai-float-btn { display: flex; padding: 15px; border-radius: 50%; }
+      #nai-float-btn span { display: inline; }
+      #nai-float-btn {
+        display: flex;
+        bottom: calc(18px + env(safe-area-inset-bottom, 0px));
+        right: calc(18px + env(safe-area-inset-right, 0px));
+        padding: 12px 16px;
+        border-radius: 12px;
+      }
+    }
+    #nex-ai-widget-root.nai-fullscreen-hidden {
+      display: none !important;
     }
     html[data-theme="light"] #nai-modal,
     html[data-theme="light"] #nai-chat-area {
@@ -919,17 +929,47 @@
     floatBtn.setAttribute('aria-label', isLoggedIn ? 'Open Nex AI Tutor' : 'Login to use Nex AI');
   }
 
+  const mobileFullscreenViewport = window.matchMedia('(max-width: 768px), (pointer: coarse)');
+  let nativeVideoFullscreen = false;
+
+  function activeFullscreenElement() {
+    return document.fullscreenElement || document.webkitFullscreenElement || null;
+  }
+
+  function syncMobileFullscreenVisibility() {
+    const fullscreenActive = Boolean(activeFullscreenElement() || nativeVideoFullscreen);
+    const shouldHide = mobileFullscreenViewport.matches && fullscreenActive;
+    rootEl.classList.toggle('nai-fullscreen-hidden', shouldHide);
+    rootEl.toggleAttribute('inert', shouldHide);
+    rootEl.setAttribute('aria-hidden', shouldHide ? 'true' : 'false');
+
+    if (!fullscreenActive) mountWidget(document.body);
+  }
+
   floatBtn.addEventListener('click', () => {
     overlay.classList.contains('nai-open') ? closeChat() : openChat();
   });
   window.addEventListener('edunex:auth-changed', syncAuthButton);
   window.addEventListener('storage', syncAuthButton);
-  document.addEventListener('fullscreenchange', () => {
-    if (!document.fullscreenElement && !overlay.classList.contains('nai-open')) {
-      mountWidget(document.body);
-    }
-  });
+  document.addEventListener('fullscreenchange', syncMobileFullscreenVisibility);
+  document.addEventListener('webkitfullscreenchange', syncMobileFullscreenVisibility);
+  document.addEventListener('webkitbeginfullscreen', (event) => {
+    if (event.target?.tagName !== 'VIDEO') return;
+    nativeVideoFullscreen = true;
+    syncMobileFullscreenVisibility();
+  }, true);
+  document.addEventListener('webkitendfullscreen', (event) => {
+    if (event.target?.tagName !== 'VIDEO') return;
+    nativeVideoFullscreen = false;
+    syncMobileFullscreenVisibility();
+  }, true);
+  if (mobileFullscreenViewport.addEventListener) {
+    mobileFullscreenViewport.addEventListener('change', syncMobileFullscreenVisibility);
+  } else {
+    mobileFullscreenViewport.addListener(syncMobileFullscreenVisibility);
+  }
   syncAuthButton();
+  syncMobileFullscreenVisibility();
 
   window.NexAIWidget = {
     open: openChat,
