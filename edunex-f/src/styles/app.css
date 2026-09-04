@@ -1002,10 +1002,20 @@ html:has(.enx-page-loading) .enx-nav-hamburger span {
 @media (max-width: 900px) {
   .enx-footer-top {
     grid-template-columns: 1fr 1fr;
+    row-gap: 24px;
   }
 
   .enx-footer-intro {
     grid-column: 1 / -1;
+  }
+
+  .enx-footer-top > :nth-child(2),
+  .enx-footer-top > :nth-child(3) {
+    margin-top: 18px;
+  }
+
+  .enx-footer-links {
+    gap: 8px;
   }
 
   .enx-footer-bottom {
@@ -1027,6 +1037,7 @@ html:has(.enx-page-loading) .enx-nav-hamburger span {
   .enx-footer-top {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     column-gap: 24px;
+    row-gap: 22px;
   }
 
   .enx-footer-support {
@@ -1228,17 +1239,17 @@ html:has(.enx-page-loading) .enx-nav-hamburger span {
   .react-page-root[data-page="videos.html"] :where(.video-frame, .player-frame) {
     width: 100% !important;
     max-width: 100% !important;
-    aspect-ratio: 9 / 16 !important;
+    aspect-ratio: 16 / 9 !important;
     height: auto !important;
   }
 
   .react-page-root[data-page="videos.html"] .player-frame {
-    touch-action: manipulation;
-    overscroll-behavior: contain;
+    touch-action: pan-y;
+    overscroll-behavior: auto;
   }
 
   .react-page-root[data-page="videos.html"] .tap-zone {
-    touch-action: manipulation;
+    touch-action: pan-y;
   }
 
   .react-page-root[data-page="videos.html"] .lesson-info h1 {
@@ -1323,6 +1334,14 @@ html:has(.enx-page-loading) .enx-nav-hamburger span {
   .react-page-root[data-page="dashboard.html"] :where(.stat-pill) {
     min-width: 0 !important;
   }
+
+  .react-page-root[data-page="dashboard.html"] .dash-bottom {
+    row-gap: 38px !important;
+  }
+
+  .react-page-root[data-page="dashboard.html"] .dash-bottom > .activity-panel {
+    margin-top: 4px !important;
+  }
 }
 
 .react-page-root[data-page="videos.html"] {
@@ -1339,10 +1358,65 @@ html:has(.enx-page-loading) .enx-nav-hamburger span {
   -webkit-box-orient: vertical;
 }
 
+.react-page-root[data-page="index.html"] .hero-carousel-viewport {
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+  overscroll-behavior-inline: contain;
+  scroll-behavior: auto !important;
+  scrollbar-width: none;
+  touch-action: pan-y !important;
+  -webkit-overflow-scrolling: touch;
+}
+
+.react-page-root[data-page="index.html"] .hero-carousel-viewport::-webkit-scrollbar {
+  display: none;
+}
+
+.react-page-root[data-page="index.html"] .hero-carousel-viewport.is-user-scrolling,
+.react-page-root[data-page="index.html"] .hero-carousel-viewport.is-auto-moving,
+.react-page-root[data-page="index.html"] .hero-carousel-viewport.is-dragging {
+  scroll-snap-type: none !important;
+  scroll-behavior: auto !important;
+}
+
+.react-page-root[data-page="index.html"] .hero-carousel-control {
+  position: absolute;
+  top: 50%;
+  z-index: 6;
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--card) 88%, transparent);
+  color: var(--text);
+  box-shadow: 0 16px 34px rgba(0, 0, 0, .26);
+  cursor: pointer;
+  transform: translateY(-50%);
+  transition: background .18s ease, border-color .18s ease, color .18s ease, transform .18s ease;
+}
+
+.react-page-root[data-page="index.html"] .hero-carousel-control:hover {
+  border-color: rgba(197, 139, 42, .4);
+  color: var(--cyan);
+  transform: translateY(-50%) scale(1.04);
+}
+
+.react-page-root[data-page="index.html"] .hero-carousel-control-prev {
+  left: clamp(10px, 2vw, 26px);
+}
+
+.react-page-root[data-page="index.html"] .hero-carousel-control-next {
+  right: clamp(10px, 2vw, 26px);
+}
+
 /* Home carousel cards use the same clean media/body/action structure as the course catalogue. */
 .react-page-root[data-page="index.html"] .hero-course-card {
   flex: 0 0 clamp(300px, 22vw, 350px) !important;
   height: 460px !important;
+  backface-visibility: hidden;
+  contain: layout paint;
   display: flex;
   flex-direction: column;
   background: var(--card);
@@ -1480,11 +1554,39 @@ html:has(.enx-page-loading) .enx-nav-hamburger span {
 .react-page-root[data-page="index.html"] .hero-card-wish:hover,
 .react-page-root[data-page="index.html"] .hero-card-wish.is-saved {
   border-color: rgba(197, 139, 42, .34);
-  color: var(--cyan);
-  background: rgba(197, 139, 42, .08);
+  color: var(--text2);
+  background: rgba(255, 255, 255, .04);
+}
+
+.react-page-root :where(.wishlist-btn, .hero-card-wish) .wishlist-heart-icon {
+  width: 20px;
+  height: 20px;
+  color: currentColor;
+  pointer-events: none;
+  transition: color .18s ease, transform .18s ease;
+}
+
+.react-page-root :where(.wishlist-btn.is-saved, .hero-card-wish.is-saved) .wishlist-heart-icon {
+  color: var(--cyan, #C58B2A);
+  transform: scale(1.06);
+}
+
+.react-page-root[data-page="courses.html"] .wishlist-btn.is-saved {
+  border-color: rgba(197, 139, 42, .34);
+  color: var(--light, #f8fafc);
+  background: rgba(255, 255, 255, .04);
+}
+
+.react-page-root[data-page="wishlist.html"] .wl-footer {
+  justify-content: flex-end !important;
 }
 
 @media (max-width: 760px) {
+  .react-page-root[data-page="index.html"] .hero-carousel-control {
+    width: 38px;
+    height: 38px;
+  }
+
   .react-page-root[data-page="index.html"] .hero-course-card {
     flex-basis: min(86vw, 340px) !important;
     height: 446px !important;
@@ -1599,6 +1701,37 @@ html:has(.enx-page-loading) .enx-nav-hamburger span {
   border: 1px solid rgba(255,255,255,.08);
 }
 
+@media (min-width: 961px) {
+  body:not(.has-edunex-player-fullscreen) .react-page-root[data-page="videos.html"] .watch-layout.is-vertical-layout {
+    width: min(100%, 860px);
+    max-width: 860px;
+    gap: 12px;
+  }
+
+  body:not(.has-edunex-player-fullscreen) .react-page-root[data-page="videos.html"] .watch-layout.is-vertical-layout .player-wrap {
+    flex: 0 0 min(100%, clamp(340px, 34vw, 500px));
+    width: min(100%, clamp(340px, 34vw, 500px));
+    max-width: 500px;
+  }
+
+  body:not(.has-edunex-player-fullscreen) .react-page-root[data-page="videos.html"] .watch-layout.is-vertical-layout .lesson-sidebar {
+    flex: 0 0 292px;
+  }
+}
+
+body:not(.has-edunex-player-fullscreen) .react-page-root[data-page="videos.html"] #playerFrame.is-vertical-video {
+  width: min(100%, clamp(340px, 34vw, 500px)) !important;
+  aspect-ratio: 4 / 5 !important;
+  align-self: flex-start;
+  margin-inline: 0 auto;
+  background: #050710 !important;
+}
+
+body:not(.has-edunex-player-fullscreen) .react-page-root[data-page="videos.html"] #playerFrame.is-vertical-video .custom-video-player,
+body:not(.has-edunex-player-fullscreen) .react-page-root[data-page="videos.html"] #playerFrame.is-vertical-video .custom-video-player > :where(video, iframe) {
+  background: #050710 !important;
+}
+
 .react-page-root[data-page="videos.html"] :where(#playerFrame, .tap-zone):focus,
 .react-page-root[data-page="videos.html"] :where(#playerFrame, .tap-zone):focus-visible {
   outline: none !important;
@@ -1611,7 +1744,7 @@ html:has(.enx-page-loading) .enx-nav-hamburger span {
   max-width: none !important;
   aspect-ratio: auto !important;
   border-radius: 0 !important;
-  touch-action: none !important;
+  touch-action: pan-y !important;
   overscroll-behavior: none !important;
 }
 
@@ -1621,13 +1754,19 @@ html:has(.enx-page-loading) .enx-nav-hamburger span {
   max-width: none !important;
   aspect-ratio: auto !important;
   border-radius: 0 !important;
-  touch-action: none !important;
+  touch-action: pan-y !important;
   overscroll-behavior: none !important;
 }
 
 body.has-edunex-player-fullscreen {
   overflow: hidden !important;
   overscroll-behavior: none !important;
+}
+
+body.has-edunex-player-fullscreen :where(.enx-navbar, .navbar, .premium-site-nav, .react-navbar, .mobile-drawer),
+body.has-edunex-player-fullscreen #nex-ai-widget-root,
+body.has-edunex-player-fullscreen #nai-float-btn {
+  display: none !important;
 }
 
 .react-page-root[data-page="videos.html"] #playerFrame.is-app-fullscreen {
@@ -1642,12 +1781,18 @@ body.has-edunex-player-fullscreen {
   aspect-ratio: auto !important;
   border: 0 !important;
   border-radius: 0 !important;
-  touch-action: none !important;
+  touch-action: pan-y !important;
   overscroll-behavior: none !important;
 }
 
+.react-page-root[data-page="videos.html"] #playerFrame:fullscreen .video-ai-screen-btn,
+.react-page-root[data-page="videos.html"] #playerFrame:-webkit-full-screen .video-ai-screen-btn,
+.react-page-root[data-page="videos.html"] #playerFrame.is-app-fullscreen .video-ai-screen-btn {
+  display: none !important;
+}
+
 .react-page-root[data-page="videos.html"] #playerFrame:fullscreen .tap-zone {
-  touch-action: none !important;
+  touch-action: pan-y !important;
 }
 
 .react-page-root[data-page="videos.html"] #playerFrame:fullscreen .custom-video-player > :where(video, iframe) {
@@ -1655,7 +1800,7 @@ body.has-edunex-player-fullscreen {
 }
 
 .react-page-root[data-page="videos.html"] #playerFrame:-webkit-full-screen .tap-zone {
-  touch-action: none !important;
+  touch-action: pan-y !important;
 }
 
 .react-page-root[data-page="videos.html"] #playerFrame:-webkit-full-screen .custom-video-player > :where(video, iframe) {
@@ -1663,7 +1808,7 @@ body.has-edunex-player-fullscreen {
 }
 
 .react-page-root[data-page="videos.html"] #playerFrame.is-app-fullscreen .tap-zone {
-  touch-action: none !important;
+  touch-action: pan-y !important;
 }
 
 .react-page-root[data-page="videos.html"] #playerFrame.is-app-fullscreen .custom-video-player > :where(video, iframe) {
@@ -1673,6 +1818,15 @@ body.has-edunex-player-fullscreen {
 @media (max-width: 820px), (pointer: coarse) {
   body.has-edunex-player-fullscreen #nex-ai-widget-root {
     display: none !important;
+  }
+
+  .react-page-root[data-page="videos.html"] .custom-video-player {
+    touch-action: pan-y !important;
+  }
+
+  body:not(.has-edunex-player-fullscreen) .react-page-root[data-page="videos.html"] #playerFrame.is-vertical-video {
+    width: min(100%, 430px) !important;
+    aspect-ratio: 4 / 5 !important;
   }
 }
 

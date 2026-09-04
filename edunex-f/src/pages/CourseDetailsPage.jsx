@@ -42,11 +42,24 @@ function progressFor(id) {
     const percent = Math.max(0, Math.min(100, Number(saved.percent || 0)));
     return {
       percent,
-      hasProgress: percent > 0 || Number(saved.completed || 0) > 0 || Number(saved.lessonIndex || 0) > 0,
+      hasProgress: Boolean(saved.viewed || saved.lastViewedAt),
     };
   } catch (_) {
     return { percent: 0, hasProgress: false };
   }
+}
+
+function markCourseViewed(id) {
+  if (!id) return;
+  try {
+    const key = `edunexCourseProgress:${id}`;
+    const saved = JSON.parse(localStorage.getItem(key) || "{}");
+    localStorage.setItem(key, JSON.stringify({
+      ...saved,
+      viewed: true,
+      lastViewedAt: new Date().toISOString(),
+    }));
+  } catch (_) {}
 }
 
 function ctaHref(course) {
@@ -127,6 +140,7 @@ export function CourseDetailsPage() {
         setState({ loading: false, error: false, notFound: true, course: null, accessActive: false });
         return;
       }
+      markCourseViewed(courseId(course));
       setState({ loading: false, error: false, notFound: false, course, accessActive: await hasAccess() });
     } catch (error) {
       console.error("Course detail failed", error);

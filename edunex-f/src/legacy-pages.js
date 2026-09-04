@@ -11379,7 +11379,6 @@ function setStoredUser(user) {
               <span><i class="fas fa-signal"></i> Published</span>
             </div>
             <div class="wl-footer">
-              <span class="wl-price">REAL COURSE</span>
               <button class="wl-enroll-btn" onclick="EduNex.openCourse({ _id: '\${escapeWishHtml(course._id)}' })">Open</button>
             </div>
           </div>

@@ -2461,6 +2461,70 @@ app.get('/api/wishlist', protect, async (req, res) => {
   }
 });
 
+app.post('/api/wishlist', protect, async (req, res) => {
+  try {
+    const { courseId } = req.body;
+
+    if (!mongoose.Types.ObjectId.isValid(courseId)) {
+      return res.status(400).json({ error: 'Please select a valid course' });
+    }
+
+    const existingCourse = await Course.findById(courseId).select('_id');
+    if (!existingCourse) {
+      return res.status(404).json({ error: 'Course not found' });
+    }
+
+    let wishlist = await Wishlist.findOne({ user: req.user._id });
+    if (!wishlist) {
+      wishlist = await Wishlist.create({ user: req.user._id, courses: [] });
+    }
+
+    const alreadyWishlisted = wishlist.courses.some((id) => String(id) === String(courseId));
+    if (!alreadyWishlisted) {
+      wishlist.courses.push(courseId);
+      await Promise.all([
+        wishlist.save(),
+        Course.findByIdAndUpdate(courseId, { $inc: { totalWishlisted: 1 } }),
+      ]);
+    }
+
+    res.json({
+      wishlisted: true,
+      courses: wishlist.courses,
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.delete('/api/wishlist', protect, async (req, res) => {
+  try {
+    const { courseId } = req.body;
+
+    if (!mongoose.Types.ObjectId.isValid(courseId)) {
+      return res.status(400).json({ error: 'Please select a valid course' });
+    }
+
+    const wishlist = await Wishlist.findOne({ user: req.user._id });
+    const alreadyWishlisted = wishlist?.courses?.some((id) => String(id) === String(courseId));
+
+    if (wishlist && alreadyWishlisted) {
+      wishlist.courses = wishlist.courses.filter((id) => String(id) !== String(courseId));
+      await Promise.all([
+        wishlist.save(),
+        Course.findByIdAndUpdate(courseId, { $inc: { totalWishlisted: -1 } }),
+      ]);
+    }
+
+    res.json({
+      wishlisted: false,
+      courses: wishlist?.courses || [],
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 app.post('/api/wishlist/toggle', protect, async (req, res) => {
   try {
     const { courseId } = req.body;

@@ -86,12 +86,13 @@ export function WishlistPage() {
     const localIds = localWishlistIds();
     localIds.delete(String(courseId));
     setLocalWishlistIds(localIds);
+    setCourses((current) => current.filter((course) => course._id !== courseId));
+    if (!window.EduNex?.getAccessToken?.()) return;
     try {
-      await window.EduNex.authRequest("/api/wishlist/toggle", {
-        method: "POST",
+      await window.EduNex.authRequest("/api/wishlist", {
+        method: "DELETE",
         body: JSON.stringify({ courseId }),
       });
-      setCourses((current) => current.filter((course) => course._id !== courseId));
     } catch (error) {
       alert(error.message || "Could not update wishlist.");
     }
@@ -166,7 +167,6 @@ export function WishlistPage() {
                     <span><i className="fas fa-signal" aria-hidden="true"></i> Published</span>
                   </div>
                   <div className="wl-footer">
-                    <span className="wl-price">REAL COURSE</span>
                     <button className="wl-enroll-btn" type="button" onClick={() => window.EduNex?.openCourseDetails?.({ _id: course._id })}>Open</button>
                   </div>
                 </div>

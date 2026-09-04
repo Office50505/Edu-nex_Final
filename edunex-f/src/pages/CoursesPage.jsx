@@ -22,6 +22,25 @@ function saveLocalWishlist(ids) {
   localStorage.setItem("edunexWishlistLocal", JSON.stringify(Array.from(ids)));
 }
 
+function courseId(course) {
+  return String(course?._id || course?.id || window.EduNex?.courseId?.(course) || "");
+}
+
+function WishlistHeartIcon({ filled }) {
+  return (
+    <svg className="wishlist-heart-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+      <path
+        d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 1 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z"
+        fill={filled ? "currentColor" : "none"}
+        stroke="currentColor"
+        strokeWidth="1.9"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
 function hasLocalCourseAccess() {
   try {
     const marker = JSON.parse(localStorage.getItem("edunexHasCourseAccess") || "null");
@@ -32,9 +51,10 @@ function hasLocalCourseAccess() {
 }
 
 function normalizeCourse(course) {
+  const id = courseId(course);
   return {
     ...course,
-    id: window.EduNex?.courseId?.(course) || course._id || course.id,
+    id,
     title: course.title || "Untitled course",
     description: course.description || "Build practical AI skills with guided lessons and projects.",
     categoryName: window.EduNex?.courseCategory?.(course) || (typeof course.category === "string" ? course.category : course.category?.name) || "Course",
@@ -160,10 +180,15 @@ export function CoursesPage() {
     saveLocalWishlist(next);
     if (!window.EduNex?.getAccessToken?.()) return;
     try {
-      await window.EduNex.authRequest("/api/wishlist", {
+      const data = await window.EduNex.authRequest("/api/wishlist", {
         method: currentlySaved ? "DELETE" : "POST",
         body: JSON.stringify({ courseId: id }),
       });
+      if (Array.isArray(data?.courses)) {
+        const synced = new Set(data.courses.map(String));
+        setWishlist(synced);
+        saveLocalWishlist(synced);
+      }
     } catch (_) {}
   };
 
@@ -241,7 +266,7 @@ export function CoursesPage() {
               <div className="courses-grid">
                 {rows.map((course) => {
                   const duration = course.duration || (course.lessonCount ? `${course.lessonCount} Lessons` : "Self paced");
-                  const saved = wishlist.has(String(course.id));
+                  const saved = wishlist.has(course.id);
                   return (
                     <div
                       className={`course-card${hasAccess ? " has-access" : ""}`}
@@ -293,13 +318,16 @@ export function CoursesPage() {
                             type="button"
                             data-wishlist-id={course.id}
                             aria-label={saved ? "Remove from wishlist" : "Save to wishlist"}
+                            aria-pressed={saved}
+                            onPointerDown={(event) => event.stopPropagation()}
+                            onMouseDown={(event) => event.stopPropagation()}
                             onClick={(event) => {
                               event.preventDefault();
                               event.stopPropagation();
                               toggleWishlist(course.id);
                             }}
                           >
-                            <i className={`${saved ? "fas" : "far"} fa-heart`} aria-hidden="true"></i>
+                            <WishlistHeartIcon filled={saved} />
                           </button>
                         </div>
                       </div>

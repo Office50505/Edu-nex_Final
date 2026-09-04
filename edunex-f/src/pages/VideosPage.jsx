@@ -235,6 +235,16 @@ function noteValue(course) {
   return course?.notesUrl || course?.notesURL || course?.notesLink || course?.courseNotesUrl || course?.notes || course?.courseNotes || "";
 }
 
+function isVerticalLesson(lesson) {
+  const orientation = String(lesson?.orientation || lesson?.format || "").toLowerCase();
+  if (/vertical|portrait|reel|short/.test(orientation)) return true;
+
+  const aspect = String(lesson?.aspectRatio || lesson?.ratio || "").trim();
+  const parts = aspect.match(/^(\d+(?:\.\d+)?)\s*[:/]\s*(\d+(?:\.\d+)?)$/);
+  if (!parts) return false;
+  return Number(parts[1]) > 0 && Number(parts[2]) > 0 && Number(parts[1]) < Number(parts[2]);
+}
+
 function isLikelyUrl(value) {
   return /^https?:\/\//i.test(String(value || "").trim()) || /^\/[^/]/.test(String(value || "").trim());
 }
@@ -246,11 +256,121 @@ function nextPlaybackRate(rate) {
   return rates[(index + 1) % rates.length];
 }
 
-function VideoControls({ playing, volume, muted, rate, currentTime, duration, onToggle, onSeek, onVolume, onRate, onFullscreen, onAi, onScreenTap }) {
+function VideoControls({ playing, volume, muted, rate, currentTime, duration, onToggle, onSeek, onVolume, onRate, onFullscreen, onAi, onScreenTap, onScreenSwipe }) {
   const [volumeOpen, setVolumeOpen] = useState(false);
   const volumeControlRef = useRef(null);
+  const tapZoneSwipeRef = useRef({ active: false, pointerId: null, input: "", startX: 0, startY: 0, lastX: 0, lastY: 0, startedAt: 0, horizontal: false, suppressClickUntil: 0 });
   const percent = duration ? Math.round((currentTime / duration) * 1000) : 0;
   const volumeIcon = muted || volume <= 0 ? "fa-volume-xmark" : volume < 0.5 ? "fa-volume-low" : "fa-volume-high";
+
+  const claimTapZoneGesture = useCallback((event) => {
+    if (event?.cancelable) event.preventDefault();
+    event?.stopPropagation?.();
+  }, []);
+
+  const beginTapZoneSwipe = useCallback((clientX, clientY, pointerId, input) => {
+    if (typeof onScreenSwipe !== "function") return;
+    tapZoneSwipeRef.current = {
+      ...tapZoneSwipeRef.current,
+      active: true,
+      pointerId,
+      input,
+      startX: clientX,
+      startY: clientY,
+      lastX: clientX,
+      lastY: clientY,
+      startedAt: Date.now(),
+      horizontal: false,
+    };
+  }, [onScreenSwipe]);
+
+  const cancelTapZoneSwipe = useCallback(() => {
+    tapZoneSwipeRef.current = { ...tapZoneSwipeRef.current, active: false, pointerId: null, input: "", horizontal: false };
+  }, []);
+
+  const moveTapZoneSwipe = useCallback((clientX, clientY, event) => {
+    const swipe = tapZoneSwipeRef.current;
+    if (!swipe.active) return false;
+    swipe.lastX = clientX;
+    swipe.lastY = clientY;
+    const deltaX = clientX - swipe.startX;
+    const deltaY = clientY - swipe.startY;
+    const absX = Math.abs(deltaX);
+    const absY = Math.abs(deltaY);
+    if (!swipe.horizontal && absX > 10 && absX > absY * 1.15) swipe.horizontal = true;
+    if (swipe.horizontal) {
+      claimTapZoneGesture(event);
+      return true;
+    }
+    return false;
+  }, [claimTapZoneGesture]);
+
+  const finishTapZoneSwipe = useCallback((clientX, clientY, event) => {
+    const swipe = tapZoneSwipeRef.current;
+    if (!swipe.active) return false;
+    const deltaX = (Number.isFinite(clientX) ? clientX : swipe.lastX) - swipe.startX;
+    const deltaY = (Number.isFinite(clientY) ? clientY : swipe.lastY) - swipe.startY;
+    const absX = Math.abs(deltaX);
+    const absY = Math.abs(deltaY);
+    const shouldNavigate = typeof onScreenSwipe === "function" && swipe.horizontal && absX >= 46 && absX > Math.max(24, absY * 1.15);
+    tapZoneSwipeRef.current = {
+      ...swipe,
+      active: false,
+      pointerId: null,
+      input: "",
+      horizontal: false,
+      suppressClickUntil: shouldNavigate ? Date.now() + 500 : swipe.suppressClickUntil,
+    };
+    if (!shouldNavigate) return false;
+    claimTapZoneGesture(event);
+    onScreenSwipe(deltaX < 0 ? 1 : -1);
+    return true;
+  }, [claimTapZoneGesture, onScreenSwipe]);
+
+  const handleTapZoneClick = useCallback((event, side) => {
+    if (Date.now() < tapZoneSwipeRef.current.suppressClickUntil) {
+      claimTapZoneGesture(event);
+      return;
+    }
+    onScreenTap(side);
+  }, [claimTapZoneGesture, onScreenTap]);
+
+  const tapZoneSwipeHandlers = {
+    onPointerDown: (event) => {
+      if (event.button > 0 || event.isPrimary === false) return;
+      beginTapZoneSwipe(event.clientX, event.clientY, event.pointerId, "pointer");
+    },
+    onPointerMove: (event) => {
+      const swipe = tapZoneSwipeRef.current;
+      if (!swipe.active || swipe.input !== "pointer" || swipe.pointerId !== event.pointerId) return;
+      moveTapZoneSwipe(event.clientX, event.clientY, event);
+    },
+    onPointerUp: (event) => {
+      const swipe = tapZoneSwipeRef.current;
+      if (!swipe.active || swipe.input !== "pointer" || swipe.pointerId !== event.pointerId) return;
+      finishTapZoneSwipe(event.clientX, event.clientY, event);
+    },
+    onPointerCancel: cancelTapZoneSwipe,
+    onTouchStart: (event) => {
+      if (tapZoneSwipeRef.current.active && tapZoneSwipeRef.current.input === "pointer") return;
+      if (event.touches.length !== 1) return;
+      const touch = event.touches[0];
+      beginTapZoneSwipe(touch.clientX, touch.clientY, null, "touch");
+    },
+    onTouchMove: (event) => {
+      const swipe = tapZoneSwipeRef.current;
+      if (!swipe.active || swipe.input !== "touch" || event.touches.length !== 1) return;
+      const touch = event.touches[0];
+      moveTapZoneSwipe(touch.clientX, touch.clientY, event);
+    },
+    onTouchEnd: (event) => {
+      const swipe = tapZoneSwipeRef.current;
+      if (!swipe.active || swipe.input !== "touch") return;
+      const touch = event.changedTouches[0];
+      finishTapZoneSwipe(touch?.clientX, touch?.clientY, event);
+    },
+    onTouchCancel: cancelTapZoneSwipe,
+  };
 
   useEffect(() => {
     if (!volumeOpen) return undefined;
@@ -271,8 +391,8 @@ function VideoControls({ playing, volume, muted, rate, currentTime, duration, on
   return (
     <>
       <button className="video-screen-btn video-ai-screen-btn" type="button" data-action="ai" onClick={onAi}><i className="fas fa-bolt" aria-hidden="true"></i><span>AI</span></button>
-      <button className="tap-zone tap-zone-left" type="button" tabIndex={-1} aria-label="Play or pause; double-click to rewind 10 seconds" onClick={() => onScreenTap("left")} onDoubleClick={(event) => event.preventDefault()}><span className="tap-hint">-10s</span></button>
-      <button className="tap-zone tap-zone-right" type="button" tabIndex={-1} aria-label="Play or pause; double-click to forward 10 seconds" onClick={() => onScreenTap("right")} onDoubleClick={(event) => event.preventDefault()}><span className="tap-hint">+10s</span></button>
+      <button className="tap-zone tap-zone-left" type="button" tabIndex={-1} aria-label="Play or pause; double-click to rewind 10 seconds" onClick={(event) => handleTapZoneClick(event, "left")} onDoubleClick={(event) => event.preventDefault()} {...tapZoneSwipeHandlers}><span className="tap-hint">-10s</span></button>
+      <button className="tap-zone tap-zone-right" type="button" tabIndex={-1} aria-label="Play or pause; double-click to forward 10 seconds" onClick={(event) => handleTapZoneClick(event, "right")} onDoubleClick={(event) => event.preventDefault()} {...tapZoneSwipeHandlers}><span className="tap-hint">+10s</span></button>
       <div className="custom-video-controls">
         <button className="video-control-btn video-play-control" type="button" data-action="toggle" aria-label={playing ? "Pause" : "Play"} onClick={onToggle}>
           <i className={`fas ${playing ? "fa-pause" : "fa-play"}`} aria-hidden="true"></i>
@@ -301,7 +421,7 @@ function VideoControls({ playing, volume, muted, rate, currentTime, duration, on
   );
 }
 
-function Player({ course, lesson, autoNext, onEnded }) {
+function Player({ course, lesson, autoNext, onEnded, onNavigateLesson, onAspectChange }) {
   const videoRef = useRef(null);
   const iframeRef = useRef(null);
   const embeddedPlayerRef = useRef(null);
@@ -447,7 +567,18 @@ function Player({ course, lesson, autoNext, onEnded }) {
     if (screenHintTimerRef.current) window.clearTimeout(screenHintTimerRef.current);
   }, []);
 
+  const updateNaturalAspect = useCallback(() => {
+    const video = videoRef.current;
+    if (!video?.videoWidth || !video?.videoHeight) return;
+    onAspectChange?.({
+      width: video.videoWidth,
+      height: video.videoHeight,
+      portrait: video.videoHeight > video.videoWidth,
+    });
+  }, [onAspectChange]);
+
   const openVideoAi = () => {
+    if (isPlayerFullscreen(document.getElementById("playerFrame"))) return;
     const container = document.fullscreenElement || shellRef.current || document.body;
     if (window.NexAIWidget?.open) window.NexAIWidget.open(container);
     else document.getElementById("nai-float-btn")?.click();
@@ -473,10 +604,13 @@ function Player({ course, lesson, autoNext, onEnded }) {
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return undefined;
-    const refresh = () => setTime({
-      current: video.currentTime || 0,
-      duration: Number.isFinite(video.duration) ? video.duration : 0,
-    });
+    const refresh = () => {
+      setTime({
+        current: video.currentTime || 0,
+        duration: Number.isFinite(video.duration) ? video.duration : 0,
+      });
+      updateNaturalAspect();
+    };
     const onPlay = () => syncPlaying(true);
     const onPause = () => syncPlaying(false);
     const onEnd = () => {
@@ -499,7 +633,7 @@ function Player({ course, lesson, autoNext, onEnded }) {
       video.removeEventListener("pause", onPause);
       video.removeEventListener("ended", onEnd);
     };
-  }, [autoNext, muted, onEnded, rate, syncPlaying, volume]);
+  }, [autoNext, muted, onEnded, rate, syncPlaying, updateNaturalAspect, volume]);
 
   useEffect(() => {
     if (!hasEmbedControls) return undefined;
@@ -663,13 +797,14 @@ function Player({ course, lesson, autoNext, onEnded }) {
       onFullscreen={fullscreen}
       onAi={openVideoAi}
       onScreenTap={handleScreenTap}
+      onScreenSwipe={onNavigateLesson}
     />
   );
 
   if (directUrl) {
     return (
       <div className="custom-video-player" data-custom-player="true" tabIndex={-1} ref={shellRef}>
-        <video ref={videoRef} src={needsHlsRuntime ? undefined : directUrl} poster={lessonImage(course, lesson)} playsInline preload="metadata"></video>
+        <video ref={videoRef} src={needsHlsRuntime ? undefined : directUrl} poster={lessonImage(course, lesson)} playsInline preload="metadata" onLoadedMetadata={updateNaturalAspect}></video>
         {controls}
       </div>
     );
@@ -717,7 +852,7 @@ function NotesModal({ course, onClose }) {
 export function VideosPage() {
   const runtimeReady = useEduNexRuntimeReady();
   const playerFrameRef = useRef(null);
-  const lessonSwipeRef = useRef({ active: false, pointerId: null, startX: 0, startY: 0, lastX: 0, lastY: 0, startedAt: 0, vertical: false, suppressClickUntil: 0 });
+  const lessonSwipeRef = useRef({ active: false, pointerId: null, startX: 0, startY: 0, lastX: 0, lastY: 0, startedAt: 0, horizontal: false, vertical: false, suppressClickUntil: 0 });
   const query = queryParams();
   const selectedCourseId = query.get("courseId") || query.get("course") || query.get("id");
   const selectedVideo = Number(query.get("video") || 0);
@@ -730,6 +865,7 @@ export function VideosPage() {
   const [error, setError] = useState("");
   const [notesOpen, setNotesOpen] = useState(false);
   const [autoNext, setAutoNext] = useState(() => localStorage.getItem(AUTO_NEXT_KEY) === "true");
+  const [naturalVideoRatio, setNaturalVideoRatio] = useState("");
 
   usePageStyle("react-page-style-videos", videosPage.styles);
 
@@ -818,7 +954,17 @@ export function VideosPage() {
   useEffect(() => {
     if (!course) return;
     const lessons = course.videos || [];
-    localStorage.setItem(`edunexCourseProgress:${course._id}`, JSON.stringify({
+    const key = `edunexCourseProgress:${course._id}`;
+    let saved = {};
+    try {
+      saved = JSON.parse(localStorage.getItem(key) || "{}");
+    } catch (_) {
+      saved = {};
+    }
+    localStorage.setItem(key, JSON.stringify({
+      ...saved,
+      viewed: true,
+      lastViewedAt: new Date().toISOString(),
       lessonIndex: activeIndex,
       completed: Math.min(activeIndex, Math.max(lessons.length - 1, 0)),
       percent: lessons.length ? Math.round((activeIndex / lessons.length) * 100) : 0,
@@ -870,6 +1016,11 @@ export function VideosPage() {
 
   const lessons = course?.videos || [];
   const lesson = lessons[activeIndex] || lessons[0] || {};
+  const verticalPlayer = Boolean(naturalVideoRatio) || isVerticalLesson(lesson);
+
+  useEffect(() => {
+    setNaturalVideoRatio("");
+  }, [lesson?._id, lesson?.id, lesson?.videoUrl, lesson?.hlsUrl, lesson?.playlistUrl, lesson?.streamUrl, activeIndex]);
 
   const changeLessonByNavigation = useCallback((direction) => {
     setActiveIndex((index) => Math.max(0, Math.min(index + direction, Math.max(lessons.length - 1, 0))));
@@ -884,13 +1035,16 @@ export function VideosPage() {
     let wheelLockedUntil = 0;
     const resetSwipe = () => {
       swipe.active = false;
+      swipe.horizontal = false;
       swipe.vertical = false;
       swipe.pointerId = null;
     };
     const ignoreSwipeTarget = (target) => Boolean(target?.closest?.(".custom-video-controls, .video-screen-btn, input, select, textarea, [contenteditable='true']"));
     const canChangeLesson = (direction) => direction > 0 ? activeIndex < lessons.length - 1 : activeIndex > 0;
+    const canTrackPlayerSwipe = () => isPlayerFullscreen(frame) || window.matchMedia?.("(max-width: 820px), (pointer: coarse)")?.matches;
     const beginSwipe = (clientX, clientY, pointerId = null) => {
       swipe.active = true;
+      swipe.horizontal = false;
       swipe.vertical = false;
       swipe.pointerId = pointerId;
       swipe.startX = clientX;
@@ -900,36 +1054,55 @@ export function VideosPage() {
       swipe.startedAt = performance.now();
     };
     const moveSwipe = (clientX, clientY, event) => {
-      if (!swipe.active || !isPlayerFullscreen(frame)) return;
+      if (!swipe.active || !canTrackPlayerSwipe()) return;
       swipe.lastX = clientX;
       swipe.lastY = clientY;
       const deltaX = swipe.lastX - swipe.startX;
       const deltaY = swipe.lastY - swipe.startY;
-      if (!swipe.vertical && Math.abs(deltaY) > 10 && Math.abs(deltaY) > Math.abs(deltaX) * 1.1) {
+      const fullscreen = isPlayerFullscreen(frame);
+      const absX = Math.abs(deltaX);
+      const absY = Math.abs(deltaY);
+      if (!fullscreen && !swipe.horizontal && absY > 10 && absY > absX * 1.08) {
+        resetSwipe();
+        return;
+      }
+      if (!swipe.horizontal && absX > 10 && absX > absY * 1.1) {
+        swipe.horizontal = true;
+      }
+      if (!swipe.vertical && fullscreen && absY > 10 && absY > absX * 1.1) {
         swipe.vertical = true;
       }
-      if (swipe.vertical && canChangeLesson(deltaY < 0 ? 1 : -1)) event.preventDefault();
+      if (swipe.horizontal && canChangeLesson(deltaX < 0 ? 1 : -1)) event.preventDefault();
+      if (fullscreen && swipe.vertical && canChangeLesson(deltaY < 0 ? 1 : -1)) event.preventDefault();
     };
     const finishSwipe = (clientX, clientY, event) => {
       if (!swipe.active) return;
       const deltaX = clientX - swipe.startX;
       const deltaY = clientY - swipe.startY;
       const elapsed = Math.max(performance.now() - swipe.startedAt, 1);
-      const distanceThreshold = Math.min(96, Math.max(44, frame.clientHeight * 0.06));
+      const horizontalDistanceThreshold = Math.min(96, Math.max(44, frame.clientWidth * 0.14));
+      const verticalDistanceThreshold = Math.min(96, Math.max(44, frame.clientHeight * 0.06));
+      const horizontalSwipe = swipe.horizontal && Math.abs(deltaX) > Math.abs(deltaY) * 1.1;
       const verticalSwipe = swipe.vertical && Math.abs(deltaY) > Math.abs(deltaX) * 1.1;
-      const intentionalSwipe = Math.abs(deltaY) >= distanceThreshold || (Math.abs(deltaY) >= 34 && Math.abs(deltaY) / elapsed >= 0.28);
-      const direction = deltaY < 0 ? 1 : -1;
+      const intentionalHorizontalSwipe = Math.abs(deltaX) >= horizontalDistanceThreshold || (Math.abs(deltaX) >= 34 && Math.abs(deltaX) / elapsed >= 0.28);
+      const intentionalVerticalSwipe = Math.abs(deltaY) >= verticalDistanceThreshold || (Math.abs(deltaY) >= 34 && Math.abs(deltaY) / elapsed >= 0.28);
+      const horizontalDirection = deltaX < 0 ? 1 : -1;
+      const verticalDirection = deltaY < 0 ? 1 : -1;
 
-      if (isPlayerFullscreen(frame) && verticalSwipe && intentionalSwipe && canChangeLesson(direction)) {
+      if (canTrackPlayerSwipe() && horizontalSwipe && intentionalHorizontalSwipe && canChangeLesson(horizontalDirection)) {
         event.preventDefault();
         swipe.suppressClickUntil = Date.now() + 500;
-        changeLessonByNavigation(direction);
+        changeLessonByNavigation(horizontalDirection);
+      } else if (isPlayerFullscreen(frame) && verticalSwipe && intentionalVerticalSwipe && canChangeLesson(verticalDirection)) {
+        event.preventDefault();
+        swipe.suppressClickUntil = Date.now() + 500;
+        changeLessonByNavigation(verticalDirection);
       }
       resetSwipe();
     };
 
     const onPointerDown = (event) => {
-      if (!isPlayerFullscreen(frame) || event.pointerType === "mouse" || event.isPrimary === false || ignoreSwipeTarget(event.target)) {
+      if (!canTrackPlayerSwipe() || event.isPrimary === false || ignoreSwipeTarget(event.target)) {
         resetSwipe();
         return;
       }
@@ -945,7 +1118,7 @@ export function VideosPage() {
     };
 
     const onTouchStart = (event) => {
-      if (!isPlayerFullscreen(frame) || event.touches.length !== 1 || ignoreSwipeTarget(event.target)) {
+      if (!canTrackPlayerSwipe() || event.touches.length !== 1 || ignoreSwipeTarget(event.target)) {
         resetSwipe();
         return;
       }
@@ -1006,35 +1179,28 @@ export function VideosPage() {
       if (isPlayerFullscreen(frame)) frame.focus?.({ preventScroll: true });
     };
 
-    const supportsPointerEvents = "PointerEvent" in window;
-    if (supportsPointerEvents) {
-      frame.addEventListener("pointerdown", onPointerDown, { passive: true, capture: true });
-      document.addEventListener("pointermove", onPointerMove, { passive: false, capture: true });
-      document.addEventListener("pointerup", onPointerUp, { passive: false, capture: true });
-      document.addEventListener("pointercancel", resetSwipe, { passive: true, capture: true });
-    } else {
-      frame.addEventListener("touchstart", onTouchStart, { passive: true, capture: true });
-      frame.addEventListener("touchmove", onTouchMove, { passive: false, capture: true });
-      frame.addEventListener("touchend", onTouchEnd, { passive: false, capture: true });
-      frame.addEventListener("touchcancel", resetSwipe, { passive: true, capture: true });
-    }
+    frame.addEventListener("pointerdown", onPointerDown, { passive: true, capture: true });
+    document.addEventListener("pointermove", onPointerMove, { passive: false, capture: true });
+    document.addEventListener("pointerup", onPointerUp, { passive: false, capture: true });
+    document.addEventListener("pointercancel", resetSwipe, { passive: true, capture: true });
+    frame.addEventListener("touchstart", onTouchStart, { passive: true, capture: true });
+    document.addEventListener("touchmove", onTouchMove, { passive: false, capture: true });
+    document.addEventListener("touchend", onTouchEnd, { passive: false, capture: true });
+    document.addEventListener("touchcancel", resetSwipe, { passive: true, capture: true });
     frame.addEventListener("wheel", onWheel, { passive: false });
     document.addEventListener("keydown", onKeyDown, true);
     document.addEventListener("fullscreenchange", onFullscreenChange);
     document.addEventListener("webkitfullscreenchange", onFullscreenChange);
     return () => {
       window.clearTimeout(wheelResetTimer);
-      if (supportsPointerEvents) {
-        frame.removeEventListener("pointerdown", onPointerDown, true);
-        document.removeEventListener("pointermove", onPointerMove, true);
-        document.removeEventListener("pointerup", onPointerUp, true);
-        document.removeEventListener("pointercancel", resetSwipe, true);
-      } else {
-        frame.removeEventListener("touchstart", onTouchStart, true);
-        frame.removeEventListener("touchmove", onTouchMove, true);
-        frame.removeEventListener("touchend", onTouchEnd, true);
-        frame.removeEventListener("touchcancel", resetSwipe, true);
-      }
+      frame.removeEventListener("pointerdown", onPointerDown, true);
+      document.removeEventListener("pointermove", onPointerMove, true);
+      document.removeEventListener("pointerup", onPointerUp, true);
+      document.removeEventListener("pointercancel", resetSwipe, true);
+      frame.removeEventListener("touchstart", onTouchStart, true);
+      document.removeEventListener("touchmove", onTouchMove, true);
+      document.removeEventListener("touchend", onTouchEnd, true);
+      document.removeEventListener("touchcancel", resetSwipe, true);
       frame.removeEventListener("wheel", onWheel);
       document.removeEventListener("keydown", onKeyDown, true);
       document.removeEventListener("fullscreenchange", onFullscreenChange);
@@ -1157,14 +1323,15 @@ export function VideosPage() {
             <button className="watch-tool-btn" type="button" id="openNotesBtn" onClick={openNotes}><i className="fas fa-file-lines" aria-hidden="true"></i> Notes</button>
           </div>
         </div>
-        <section className="watch-layout">
+        <section className={`watch-layout${verticalPlayer ? " is-vertical-layout" : ""}`}>
           <div className="player-wrap">
             <div
-              className="player-frame mobile-reel-player"
+              className={`player-frame mobile-reel-player${verticalPlayer ? " is-vertical-video" : ""}`}
               id="playerFrame"
               ref={playerFrameRef}
+              style={verticalPlayer && naturalVideoRatio ? { "--natural-video-ratio": naturalVideoRatio } : undefined}
               tabIndex={-1}
-              aria-label="Course video player. In fullscreen, swipe vertically or use arrow keys to change lessons."
+              aria-label="Course video player. Swipe horizontally on mobile, or use arrow keys, to change lessons."
               onClickCapture={(event) => {
                 if (Date.now() >= lessonSwipeRef.current.suppressClickUntil) return;
                 event.preventDefault();
@@ -1174,7 +1341,15 @@ export function VideosPage() {
               {error ? (
                 <div className="player-placeholder"><div><strong>Could not open this course</strong><span>{error}</span></div></div>
               ) : course ? (
-                <Player course={course} lesson={lesson} autoNext={autoNext} onEnded={advanceNext} key={`${course._id}-${activeIndex}`} />
+                <Player
+                  course={course}
+                  lesson={lesson}
+                  autoNext={autoNext}
+                  onEnded={advanceNext}
+                  onNavigateLesson={changeLessonByNavigation}
+                  onAspectChange={({ width, height, portrait }) => setNaturalVideoRatio(portrait ? `${width} / ${height}` : "")}
+                  key={`${course._id}-${activeIndex}`}
+                />
               ) : (
                 <div className="player-placeholder"><div><strong>Preparing course</strong><span>Loading your EduNex course playlist...</span></div></div>
               )}

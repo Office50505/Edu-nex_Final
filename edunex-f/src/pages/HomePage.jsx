@@ -3,6 +3,7 @@ import { page as indexPage } from "../generated-pages/index.html.js";
 import { runLegacyPage } from "../legacyRuntime.js";
 import { usePageStyle } from "../hooks/usePageStyle.js";
 import { useEduNexRuntimeReady } from "../hooks/useEduNexRuntimeReady.js";
+import { route } from "../lib/routes.js";
 
 const FALLBACK_COURSES = [
   ["fallback-video-editing", "Video Editing Mastery", "Video Editing", 22, "4.8", 12500, 499],
@@ -31,9 +32,24 @@ function courseId(course) {
   return String(course?._id || course?.id || "");
 }
 
-function courseVideoHref(course, videoIndex = 0) {
+function WishlistHeartIcon({ filled }) {
+  return (
+    <svg className="wishlist-heart-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+      <path
+        d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 1 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z"
+        fill={filled ? "currentColor" : "none"}
+        stroke="currentColor"
+        strokeWidth="1.9"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+function courseDetailsHref(course) {
   const id = courseId(course);
-  return id ? `videos.html?courseId=${encodeURIComponent(id)}&video=${Math.max(0, Number(videoIndex) || 0)}` : "courses.html";
+  return id ? route(`course.html?id=${encodeURIComponent(id)}`) : route("courses.html");
 }
 
 function coursesArray(response) {
@@ -89,7 +105,8 @@ function progressFor(course) {
   const completed = Number(saved.completed || 0);
   const percent = Math.max(0, Math.min(100, Number(saved.percent ?? Math.round((completed / total) * 100))));
   const lessonIndex = Math.max(0, Math.min(Number(saved.lessonIndex || 0), total - 1));
-  return { total, completed, percent, lessonIndex, hasProgress: Boolean(saved.percent || saved.completed || saved.lessonIndex) };
+  const hasProgress = Boolean(saved.viewed || saved.lastViewedAt);
+  return { total, completed, percent, lessonIndex, hasProgress };
 }
 
 function instructorName(course) {
@@ -130,7 +147,7 @@ function groupedCategories(courses) {
 function enrolledItems(courses) {
   return courses
     .map((course) => ({ course, progress: progressFor(course) }))
-    .filter((item) => item.progress.hasProgress && item.progress.percent > 0)
+    .filter((item) => item.progress.hasProgress)
     .sort((a, b) => b.progress.percent - a.progress.percent);
 }
 
@@ -193,6 +210,10 @@ function HeroPlaceholderCard({ index, isCenter, tab }) {
   const isMessageCard = sourceIndex === 3;
   const title = tab === "my-courses" ? "You haven't started a course yet." : "No courses available right now.";
   const action = tab === "my-courses" ? "Explore Courses" : "Browse Courses";
+  const openFromCard = () => {
+    window.location.href = "courses.html";
+  };
+
   return (
     <article
       className={`hero-course-card hero-placeholder-card${isCenter ? " is-center" : ""}`}
@@ -203,12 +224,12 @@ function HeroPlaceholderCard({ index, isCenter, tab }) {
       data-hero-index={index}
       onClick={(event) => {
         if (event.target.closest("a, button")) return;
-        window.location.href = "courses.html";
+        openFromCard();
       }}
       onKeyDown={(event) => {
         if (event.key !== "Enter" && event.key !== " ") return;
         event.preventDefault();
-        window.location.href = "courses.html";
+        openFromCard();
       }}
     >
       <div className="hero-card-media" onClick={(event) => {
@@ -258,11 +279,7 @@ function HeroCourseCard({ item, index, isCenter, hasAccess, isSaved, onOpen, onC
   const lessonTitle = course.videos?.[progress.lessonIndex]?.title || `Lesson ${progress.lessonIndex + 1} of ${progress.total}`;
   const href = item.type === "path"
     ? categoryHref(item.category || category)
-    : item.type === "enrolled"
-      ? courseVideoHref(course, progress.lessonIndex)
-      : hasAccess
-        ? courseVideoHref(course)
-        : `course.html?id=${encodeURIComponent(id)}`;
+    : courseDetailsHref(course);
 
   const openFromCard = () => {
     if (item.type === "path") onPath(item.category || category);
@@ -315,24 +332,26 @@ function HeroCourseCard({ item, index, isCenter, hasAccess, isSaved, onOpen, onC
             <div className="hero-progress-track" style={{ "--progress": `${progress.percent}%` }}><span></span></div>
             <div className="hero-card-price"><strong>In progress</strong></div>
             <div className="hero-card-actions">
-              <button className="hero-card-primary" type="button" onClick={(event) => {
+              <a className="hero-card-primary" href={href} onClick={(event) => {
                 event.stopPropagation();
-                if (!onSuppressibleClick()) onContinue(course);
+                if (onSuppressibleClick()) event.preventDefault();
               }}>
                 Continue Course
-              </button>
+              </a>
               <button
                 className={`hero-card-wish${isSaved ? " is-saved" : ""}`}
                 type="button"
                 aria-label={isSaved ? "Remove from favourites" : "Add to favourites"}
                 aria-pressed={isSaved}
+                onPointerDown={(event) => event.stopPropagation()}
+                onMouseDown={(event) => event.stopPropagation()}
                 onClick={(event) => {
                   event.preventDefault();
                   event.stopPropagation();
                   if (!onSuppressibleClick()) onToggleWishlist(course);
                 }}
               >
-                <i className={`${isSaved ? "fas" : "far"} fa-heart`} aria-hidden="true"></i>
+                <WishlistHeartIcon filled={isSaved} />
               </button>
             </div>
           </>
@@ -365,24 +384,26 @@ function HeroCourseCard({ item, index, isCenter, hasAccess, isSaved, onOpen, onC
             </div>
             <div className="hero-card-price"><strong>{priceLabel(course)}</strong></div>
             <div className="hero-card-actions">
-              <button className="hero-card-primary" type="button" onClick={(event) => {
+              <a className="hero-card-primary" href={href} onClick={(event) => {
                 event.stopPropagation();
-                if (!onSuppressibleClick()) onOpen(course);
+                if (onSuppressibleClick()) event.preventDefault();
               }}>
-                {hasAccess ? "View Course" : "Start ₹1 Trial"}
-              </button>
+                View Course
+              </a>
               <button
                 className={`hero-card-wish${isSaved ? " is-saved" : ""}`}
                 type="button"
                 aria-label={isSaved ? "Remove from favourites" : "Add to favourites"}
                 aria-pressed={isSaved}
+                onPointerDown={(event) => event.stopPropagation()}
+                onMouseDown={(event) => event.stopPropagation()}
                 onClick={(event) => {
                   event.preventDefault();
                   event.stopPropagation();
                   if (!onSuppressibleClick()) onToggleWishlist(course);
                 }}
               >
-                <i className={`${isSaved ? "fas" : "far"} fa-heart`} aria-hidden="true"></i>
+                <WishlistHeartIcon filled={isSaved} />
               </button>
             </div>
           </>
@@ -403,10 +424,14 @@ export function HomePage() {
   const viewportRef = useRef(null);
   const rafRef = useRef(0);
   const motionRef = useRef(0);
+  const resumeCarouselTimerRef = useRef(0);
+  const smoothScrollRef = useRef({ frame: 0, target: 0 });
+  const userScrollTimerRef = useRef(0);
+  const wheelStepRef = useRef(0);
   const lastFrameRef = useRef(0);
   const pauseRef = useRef(false);
   const directionRef = useRef(1);
-  const pointerRef = useRef({ down: false, moved: false, startX: 0, startY: 0, startLeft: 0, suppressClickUntil: 0 });
+  const pointerRef = useRef({ down: false, moved: false, input: "", startX: 0, startY: 0, startLeft: 0, suppressClickUntil: 0 });
   const runtimeReady = useEduNexRuntimeReady();
 
   usePageStyle("react-page-style-index", indexPage.styles);
@@ -432,13 +457,13 @@ export function HomePage() {
         if (cancelled) return;
         const realCourses = coursesArray(response).filter((course) => course && course._id);
         setCourses(realCourses);
-        setActiveTab(window.EduNex?.getUser?.() && enrolledItems(realCourses).length ? "my-courses" : "trending");
+        setActiveTab("trending");
         setStatus("ready");
       })
       .catch(() => {
         if (cancelled) return;
         setCourses(FALLBACK_COURSES);
-        setActiveTab(window.EduNex?.getUser?.() && enrolledItems(FALLBACK_COURSES).length ? "my-courses" : "trending");
+        setActiveTab("trending");
         setStatus("fallback");
       });
     return () => {
@@ -491,16 +516,89 @@ export function HomePage() {
     setActiveIndex(loop.baseCount + (activeTab === "my-courses" ? 0 : Math.min(3, loop.baseCount - 1)));
   }, [activeTab, loop.baseCount]);
 
+  const setUserScrolling = () => {
+    const viewport = viewportRef.current;
+    viewport?.classList.add("is-user-scrolling");
+    if (userScrollTimerRef.current) window.clearTimeout(userScrollTimerRef.current);
+    userScrollTimerRef.current = window.setTimeout(() => {
+      userScrollTimerRef.current = 0;
+      if (!pointerRef.current.down) viewport?.classList.remove("is-user-scrolling");
+    }, 220);
+  };
+
+  const animateViewportTo = (left, duration = 430) => {
+    const viewport = viewportRef.current;
+    if (!viewport) return;
+    const maxScrollLeft = Math.max(0, viewport.scrollWidth - viewport.clientWidth);
+    const target = Math.max(0, Math.min(maxScrollLeft, left));
+    const start = viewport.scrollLeft;
+    const distance = target - start;
+    cancelAnimationFrame(smoothScrollRef.current.frame);
+    smoothScrollRef.current = { frame: 0, target };
+    if (Math.abs(distance) < 1) {
+      viewport.scrollLeft = target;
+      return;
+    }
+    setUserScrolling();
+    const startedAt = performance.now();
+    const animate = (timestamp) => {
+      const elapsed = Math.min(1, (timestamp - startedAt) / duration);
+      const eased = 1 - Math.pow(1 - elapsed, 3);
+      viewport.scrollLeft = start + distance * eased;
+      if (elapsed < 1) {
+        smoothScrollRef.current.frame = requestAnimationFrame(animate);
+      } else {
+        viewport.scrollLeft = target;
+        smoothScrollRef.current.frame = 0;
+      }
+    };
+    smoothScrollRef.current.frame = requestAnimationFrame(animate);
+  };
+
+  const carouselCards = () => {
+    const viewport = viewportRef.current;
+    return viewport ? Array.from(viewport.querySelectorAll(".hero-course-card[data-hero-index]")) : [];
+  };
+
+  const nearestCarouselIndex = () => {
+    const viewport = viewportRef.current;
+    const cards = carouselCards();
+    if (!viewport || !cards.length) return activeIndex;
+    const center = viewport.getBoundingClientRect().left + viewport.clientWidth / 2;
+    return cards.reduce((nearest, card, index) => {
+      const rect = card.getBoundingClientRect();
+      const distance = Math.abs(center - (rect.left + rect.width / 2));
+      return distance < nearest.distance ? { index, distance } : nearest;
+    }, { index: 0, distance: Infinity }).index;
+  };
+
   const scrollToIndex = (index, behavior = "smooth") => {
     const viewport = viewportRef.current;
     if (!viewport) return;
-    const cards = Array.from(viewport.querySelectorAll(".hero-course-card[data-hero-index]"));
+    const cards = carouselCards();
     if (!cards.length) return;
     const nextIndex = Math.max(0, Math.min(index, cards.length - 1));
     setActiveIndex(nextIndex);
     const card = cards[nextIndex];
     const left = card.offsetLeft - ((viewport.clientWidth - card.offsetWidth) / 2);
-    viewport.scrollTo({ left, behavior });
+    if (behavior === "auto") {
+      cancelAnimationFrame(smoothScrollRef.current.frame);
+      smoothScrollRef.current.frame = 0;
+      viewport.scrollLeft = left;
+      return;
+    }
+    animateViewportTo(left);
+  };
+
+  const settleCarousel = () => {
+    const nearest = nearestCarouselIndex();
+    scrollToIndex(nearest);
+  };
+
+  const stepCarousel = (direction) => {
+    pauseCarouselAfterInput();
+    directionRef.current = direction;
+    scrollToIndex(nearestCarouselIndex() + direction);
   };
 
   useEffect(() => {
@@ -510,10 +608,20 @@ export function HomePage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loop.rows.length]);
 
+  const pauseCarouselAfterInput = (duration = 2200) => {
+    pauseRef.current = true;
+    setUserScrolling();
+    if (resumeCarouselTimerRef.current) window.clearTimeout(resumeCarouselTimerRef.current);
+    resumeCarouselTimerRef.current = window.setTimeout(() => {
+      resumeCarouselTimerRef.current = 0;
+      if (!pointerRef.current.down) pauseRef.current = false;
+    }, duration);
+  };
+
   const syncCenterFromScroll = () => {
     const viewport = viewportRef.current;
     if (!viewport) return;
-    const cards = Array.from(viewport.querySelectorAll(".hero-course-card[data-hero-index]"));
+    const cards = carouselCards();
     if (!cards.length) return;
     const center = viewport.getBoundingClientRect().left + viewport.clientWidth / 2;
     let nearest = 0;
@@ -533,6 +641,7 @@ export function HomePage() {
     const viewport = viewportRef.current;
     if (!viewport) return undefined;
     const onScroll = () => {
+      if (viewport.classList.contains("is-auto-moving")) return;
       cancelAnimationFrame(rafRef.current);
       rafRef.current = requestAnimationFrame(syncCenterFromScroll);
     };
@@ -548,25 +657,26 @@ export function HomePage() {
     if (!viewport || window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return undefined;
     const tick = (timestamp) => {
       if (!lastFrameRef.current) lastFrameRef.current = timestamp;
-      const delta = Math.min(64, timestamp - lastFrameRef.current);
+      const delta = Math.min(32, timestamp - lastFrameRef.current);
       lastFrameRef.current = timestamp;
-      if (loop.rows.length > 1 && !pauseRef.current && !document.hidden) {
+
+      const maxScrollLeft = Math.max(0, viewport.scrollWidth - viewport.clientWidth);
+      if (maxScrollLeft > 1 && !pauseRef.current && !pointerRef.current.down && !smoothScrollRef.current.frame && !document.hidden) {
         viewport.classList.add("is-auto-moving");
-        const maxScrollLeft = Math.max(0, viewport.scrollWidth - viewport.clientWidth);
-        if (maxScrollLeft > 0) {
-          const step = delta * 0.035;
-          let nextScrollLeft = viewport.scrollLeft + (step * directionRef.current);
-          if (nextScrollLeft >= maxScrollLeft) {
-            nextScrollLeft = Math.max(0, maxScrollLeft - (nextScrollLeft - maxScrollLeft));
-            directionRef.current = -1;
-          } else if (nextScrollLeft <= 0) {
-            nextScrollLeft = Math.min(maxScrollLeft, -nextScrollLeft);
-            directionRef.current = 1;
-          }
-          viewport.scrollLeft = nextScrollLeft;
+        const speed = 0.075;
+        let nextLeft = viewport.scrollLeft + (delta * speed * directionRef.current);
+        if (nextLeft >= maxScrollLeft) {
+          nextLeft = maxScrollLeft;
+          directionRef.current = -1;
+        } else if (nextLeft <= 0) {
+          nextLeft = 0;
+          directionRef.current = 1;
         }
-        syncCenterFromScroll();
+        viewport.scrollLeft = nextLeft;
+      } else {
+        viewport.classList.remove("is-auto-moving");
       }
+
       motionRef.current = requestAnimationFrame(tick);
     };
     motionRef.current = requestAnimationFrame(tick);
@@ -574,6 +684,9 @@ export function HomePage() {
     document.addEventListener("visibilitychange", onVisibility);
     return () => {
       cancelAnimationFrame(motionRef.current);
+      cancelAnimationFrame(smoothScrollRef.current.frame);
+      if (resumeCarouselTimerRef.current) window.clearTimeout(resumeCarouselTimerRef.current);
+      if (userScrollTimerRef.current) window.clearTimeout(userScrollTimerRef.current);
       document.removeEventListener("visibilitychange", onVisibility);
       viewport.classList.remove("is-auto-moving");
       lastFrameRef.current = 0;
@@ -588,23 +701,35 @@ export function HomePage() {
     pointerRef.current = {
       down: true,
       moved: false,
+      input: "pointer",
       startX: event.clientX,
       startY: event.clientY,
       startLeft: viewport.scrollLeft,
       suppressClickUntil: pointerRef.current.suppressClickUntil,
     };
-    pauseRef.current = true;
-    viewport.classList.add("is-dragging");
+    pauseCarouselAfterInput();
   };
 
   const handlePointerMove = (event) => {
     const viewport = viewportRef.current;
     const pointer = pointerRef.current;
-    if (!viewport || !pointer.down) return;
+    if (!viewport || !pointer.down || pointer.input !== "pointer") return;
+    cancelAnimationFrame(smoothScrollRef.current.frame);
+    smoothScrollRef.current.frame = 0;
     const deltaX = event.clientX - pointer.startX;
-    if (!pointer.moved && Math.abs(deltaX) <= 5) return;
+    const deltaY = event.clientY - pointer.startY;
+    if (!pointer.moved) {
+      const absX = Math.abs(deltaX);
+      const absY = Math.abs(deltaY);
+      if (absX <= 6) return;
+      if (absX < Math.max(8, absY * 1.08)) {
+        pointer.down = false;
+        return;
+      }
+      viewport.classList.add("is-dragging");
+      try { viewport.setPointerCapture?.(event.pointerId); } catch (_) {}
+    }
     pointer.moved = true;
-    if (!viewport.hasPointerCapture?.(event.pointerId)) viewport.setPointerCapture?.(event.pointerId);
     event.preventDefault();
     viewport.scrollLeft = pointer.startLeft - deltaX;
   };
@@ -614,9 +739,11 @@ export function HomePage() {
     const pointer = pointerRef.current;
     if (pointer.moved) pointer.suppressClickUntil = Date.now() + 250;
     pointer.down = false;
+    pointer.input = "";
     if (viewport?.hasPointerCapture?.(event.pointerId)) viewport.releasePointerCapture(event.pointerId);
-    pauseRef.current = Boolean(viewport?.matches(":hover") || viewport?.contains(document.activeElement));
+    if (!resumeCarouselTimerRef.current) pauseRef.current = Boolean(viewport?.matches(":hover") || viewport?.contains(document.activeElement));
     viewport?.classList.remove("is-dragging");
+    if (pointer.moved) settleCarousel();
     window.setTimeout(() => { pointerRef.current.moved = false; }, 0);
   };
 
@@ -629,15 +756,104 @@ export function HomePage() {
     viewport.classList.remove("is-dragging");
   };
 
+  const handleTouchStart = (event) => {
+    if (event.touches.length !== 1) return;
+    if (event.target.closest?.("input, textarea, select")) return;
+    const viewport = viewportRef.current;
+    if (!viewport || pointerRef.current.down) return;
+    const touch = event.touches[0];
+    pointerRef.current = {
+      down: true,
+      moved: false,
+      input: "touch",
+      startX: touch.clientX,
+      startY: touch.clientY,
+      startLeft: viewport.scrollLeft,
+      suppressClickUntil: pointerRef.current.suppressClickUntil,
+    };
+    pauseCarouselAfterInput();
+  };
+
+  const handleTouchMove = (event) => {
+    const viewport = viewportRef.current;
+    const pointer = pointerRef.current;
+    if (!viewport || !pointer.down || pointer.input !== "touch" || event.touches.length !== 1) return;
+    cancelAnimationFrame(smoothScrollRef.current.frame);
+    smoothScrollRef.current.frame = 0;
+    const touch = event.touches[0];
+    const deltaX = touch.clientX - pointer.startX;
+    const deltaY = touch.clientY - pointer.startY;
+    if (!pointer.moved) {
+      const absX = Math.abs(deltaX);
+      const absY = Math.abs(deltaY);
+      if (absX <= 8) return;
+      if (absX < Math.max(10, absY * 1.08)) {
+        pointer.down = false;
+        return;
+      }
+      viewport.classList.add("is-dragging");
+    }
+    pointer.moved = true;
+    event.preventDefault();
+    viewport.scrollLeft = pointer.startLeft - deltaX;
+  };
+
+  const handleTouchEnd = () => {
+    const viewport = viewportRef.current;
+    const pointer = pointerRef.current;
+    if (pointer.input !== "touch") return;
+    if (pointer.moved) pointer.suppressClickUntil = Date.now() + 250;
+    pointer.down = false;
+    pointer.input = "";
+    if (!resumeCarouselTimerRef.current) pauseRef.current = Boolean(viewport?.matches(":hover") || viewport?.contains(document.activeElement));
+    viewport?.classList.remove("is-dragging");
+    if (pointer.moved) settleCarousel();
+    window.setTimeout(() => { pointerRef.current.moved = false; }, 0);
+  };
+
+  const handleWheel = (event) => {
+    const viewport = viewportRef.current;
+    if (!viewport) return;
+    const maxScrollLeft = Math.max(0, viewport.scrollWidth - viewport.clientWidth);
+    if (!maxScrollLeft) return;
+    const horizontalDelta = Math.abs(event.deltaX) >= Math.abs(event.deltaY) ? event.deltaX : event.deltaY;
+    if (!horizontalDelta) return;
+    event.preventDefault();
+    const now = performance.now();
+    if (now - wheelStepRef.current < 260) return;
+    wheelStepRef.current = now;
+    pauseCarouselAfterInput();
+    const direction = horizontalDelta >= 0 ? 1 : -1;
+    directionRef.current = direction;
+    scrollToIndex(nearestCarouselIndex() + direction);
+  };
+
+  useEffect(() => {
+    const viewport = viewportRef.current;
+    if (!viewport) return undefined;
+    viewport.addEventListener("wheel", handleWheel, { passive: false });
+    viewport.addEventListener("touchstart", handleTouchStart, { passive: true });
+    viewport.addEventListener("touchmove", handleTouchMove, { passive: false });
+    viewport.addEventListener("touchend", handleTouchEnd, { passive: true });
+    viewport.addEventListener("touchcancel", handleTouchEnd, { passive: true });
+    return () => {
+      viewport.removeEventListener("wheel", handleWheel);
+      viewport.removeEventListener("touchstart", handleTouchStart);
+      viewport.removeEventListener("touchmove", handleTouchMove);
+      viewport.removeEventListener("touchend", handleTouchEnd);
+      viewport.removeEventListener("touchcancel", handleTouchEnd);
+    };
+    // The handlers read mutable refs, so one native binding is enough for the carousel lifecycle.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const suppressibleClick = () => pointerRef.current.moved || Date.now() < pointerRef.current.suppressClickUntil;
   const openCourse = (course) => {
-    if (hasAccess) {
-      window.location.href = courseVideoHref(course);
-      return;
-    }
-    window.EduNex?.openCourseDetails?.(course);
+    window.location.href = courseDetailsHref(course);
   };
-  const continueCourse = (course) => window.EduNex?.openCourse?.(course);
+  const continueCourse = (course) => {
+    window.location.href = courseDetailsHref(course);
+  };
   const openPath = (category) => {
     if (category) window.location.href = categoryHref(category);
   };
@@ -652,10 +868,15 @@ export function HomePage() {
     saveLocalWishlist(next);
     if (!window.EduNex?.getAccessToken?.()) return;
     try {
-      await window.EduNex.authRequest("/api/wishlist", {
+      const data = await window.EduNex.authRequest("/api/wishlist", {
         method: currentlySaved ? "DELETE" : "POST",
         body: JSON.stringify({ courseId: id }),
       });
+      if (Array.isArray(data?.courses)) {
+        const synced = new Set(data.courses.map(String));
+        setWishlist(synced);
+        saveLocalWishlist(synced);
+      }
     } catch (_) {}
   };
 
@@ -681,6 +902,9 @@ export function HomePage() {
           </div>
 
           <div className="hero-carousel-shell" id="homeHeroCarousel" aria-live="polite">
+            <button className="hero-carousel-control hero-carousel-control-prev" type="button" aria-label="Previous courses" onClick={() => stepCarousel(-1)}>
+              <MaterialIcon>chevron_left</MaterialIcon>
+            </button>
             <div
               className="hero-carousel-viewport"
               tabIndex={0}
@@ -688,13 +912,11 @@ export function HomePage() {
               onKeyDown={(event) => {
                 if (event.key === "ArrowLeft") {
                   event.preventDefault();
-                  pauseRef.current = true;
-                  scrollToIndex(activeIndex - 1);
+                  stepCarousel(-1);
                 }
                 if (event.key === "ArrowRight") {
                   event.preventDefault();
-                  pauseRef.current = true;
-                  scrollToIndex(activeIndex + 1);
+                  stepCarousel(1);
                 }
               }}
               onDragStart={preventNativeDrag}
@@ -708,10 +930,6 @@ export function HomePage() {
                 event.preventDefault();
                 event.stopPropagation();
               }}
-              onMouseEnter={() => { pauseRef.current = true; }}
-              onMouseLeave={() => { if (!pointerRef.current.down) pauseRef.current = false; }}
-              onFocus={() => { pauseRef.current = true; }}
-              onBlur={() => { if (!pointerRef.current.down) pauseRef.current = false; }}
             >
               <div className={`hero-carousel-track${!currentItems.length ? " is-empty" : ""}`} id="homeHeroCarouselTrack" data-base-count={loop.baseCount || 7} data-looped="true">
                 {activeRows.map((item, index) => item.placeholder ? (
@@ -733,6 +951,9 @@ export function HomePage() {
                 ))}
               </div>
             </div>
+            <button className="hero-carousel-control hero-carousel-control-next" type="button" aria-label="Next courses" onClick={() => stepCarousel(1)}>
+              <MaterialIcon>chevron_right</MaterialIcon>
+            </button>
           </div>
 
           <div className="learning-hero-actions">
