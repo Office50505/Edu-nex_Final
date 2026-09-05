@@ -106,6 +106,21 @@ function DashboardMetrics({ data }) {
   );
 }
 
+function DashboardMetricsLoading() {
+  const labels = ["Total Users", "Active Users", "Subscribers", "Revenue", "Orders", "Courses", "Watch Time", "Completion"];
+  return (
+    <section className="analytics-grid" aria-label="Analytics loading">
+      {labels.map((label) => (
+        <div className="metric-card is-loading" key={label}>
+          <span aria-hidden="true" />
+          <strong>{label}</strong>
+          <small>Loading data</small>
+        </div>
+      ))}
+    </section>
+  );
+}
+
 function TrendChart({ rows }) {
   const series = Array.isArray(rows) ? rows : [];
   if (!series.length) return <div className="empty-state compact-empty">No trend data for this range.</div>;
@@ -242,7 +257,7 @@ export function AdminDashboardPage() {
         <span className="sync-status">{lastUpdated}</span>
       </form>
 
-      {loading && !data ? <section className="analytics-grid"><div className="loading-state">Loading analytics...</div></section> : null}
+      {loading && !data ? <DashboardMetricsLoading /> : null}
       {data ? <DashboardMetrics data={data} /> : null}
 
       <section className="dashboard-panel trend-panel" aria-label="Daily trend">
