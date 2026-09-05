@@ -1,2 +1,2 @@
-/api/*  https://api.pendulumblog.online/api/:splat  200!
+# Configure the /api proxy in production hosting after the live backend domain is set.
 /*  /index.html  200

@@ -19,6 +19,11 @@ const cleanRoutes = {
   "terms.html": "/terms",
   "videos.html": "/videos",
   "wishlist.html": "/wishlist",
+  "admin-login.html": "/admin/login",
+  "admin-dashboard.html": "/admin/dashboard",
+  "admin-users.html": "/admin/users",
+  "admin-courses.html": "/admin/courses",
+  "course-posting.html": "/admin/upload",
 };
 
 const routeAliases = Object.fromEntries(

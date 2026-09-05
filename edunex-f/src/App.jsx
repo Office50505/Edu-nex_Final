@@ -3,6 +3,7 @@ import { Navbar } from "./components/Navbar.jsx";
 import { Footer } from "./components/Footer.jsx";
 import { EnxIcon } from "./components/EnxIcon.jsx";
 import { pageKeyFromPath, route } from "./lib/routes.js";
+import { adminPageFromPath, canonicalAdminPath } from "./pages/admin/adminApi.js";
 
 const reactPageLoaders = {
   "about.html": lazy(() => import("./pages/AboutPage.jsx").then((module) => ({ default: module.AboutPage }))),
@@ -30,6 +31,8 @@ const reactPageLoaders = {
     default: () => <module.LegalPage type="privacy" />,
   }))),
 };
+
+const AdminApp = lazy(() => import("./pages/admin/AdminApp.jsx").then((module) => ({ default: module.AdminApp })));
 
 function goBackSafely() {
   if (window.history.length > 1 && document.referrer) {
@@ -77,17 +80,35 @@ function PageLoading() {
 }
 
 export default function App() {
+  const adminPage = adminPageFromPath(window.location.pathname);
   const pageKey = pageKeyFromPath(window.location.pathname);
   const ReactPage = reactPageLoaders[pageKey];
 
   useEffect(() => {
+    const adminCanonicalRoute = canonicalAdminPath(window.location.pathname);
+    if (adminCanonicalRoute) {
+      window.history.replaceState(
+        window.history.state,
+        "",
+        `${adminCanonicalRoute}${window.location.search}${window.location.hash}`
+      );
+      return;
+    }
     if (!window.location.pathname.endsWith(".html")) return;
     const canonicalRoute = route(`${pageKey}${window.location.search}${window.location.hash}`);
     const currentRoute = `${window.location.pathname}${window.location.search}${window.location.hash}`;
     if (canonicalRoute !== currentRoute) {
       window.history.replaceState(window.history.state, "", canonicalRoute);
     }
-  }, [pageKey]);
+  }, [adminPage, pageKey]);
+
+  if (adminPage) {
+    return (
+      <Suspense fallback={<PageLoading />}>
+        <AdminApp page={adminPage} />
+      </Suspense>
+    );
+  }
 
   if (!ReactPage) {
     document.title = "Page Not Found | EduNex";

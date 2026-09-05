@@ -7,7 +7,6 @@ const dist = path.join(root, "dist");
 
 const staticPaths = [
   "_redirects",
-  "admin",
   "assets",
   "css",
   "js",
@@ -18,6 +17,8 @@ const staticPaths = [
   "premium-nav.css",
   "premium-nav.js",
 ];
+
+fs.rmSync(path.join(dist, "admin"), { recursive: true, force: true });
 
 for (const item of staticPaths) {
   const from = path.join(root, item);

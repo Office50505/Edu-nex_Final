@@ -1,0 +1,111 @@
+.admin-auth-page {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 32px 16px;
+  background: #161511;
+}
+
+.admin-auth-card {
+  width: min(440px, 100%);
+  border: 1px solid rgba(214, 167, 70, 0.24);
+  border-radius: 8px;
+  padding: 32px;
+  background: #211f1a;
+  color: #f8f3e7;
+  box-shadow: 0 28px 80px rgba(0, 0, 0, 0.34);
+}
+
+.admin-auth-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.admin-auth-logo,
+.admin-auth-card .premium-brand-mark {
+  width: 42px;
+  height: 42px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #d9a336, #2f8f59);
+}
+
+.admin-auth-brand strong,
+.admin-auth-card h1 {
+  display: block;
+  color: #fff9ec;
+}
+
+.admin-auth-brand small,
+.admin-auth-card p {
+  color: rgba(248, 243, 231, 0.68);
+}
+
+.admin-auth-form {
+  display: grid;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.admin-auth-form input {
+  width: 100%;
+}
+
+.admin-auth-label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.admin-auth-label-row button {
+  border: 0;
+  background: transparent;
+  color: #d9a336;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.admin-auth-check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.admin-auth-check input {
+  width: auto;
+}
+
+.premium-nav-links a.is-active,
+.crm-segment.is-active {
+  color: #2f8f59;
+}
+
+.category-create {
+  display: none;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.category-create.is-visible {
+  display: flex;
+}
+
+.thumbnail-preview-card img,
+.course-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.course-actions,
+.row-actions,
+.form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.message:empty {
+  display: none;
+}
