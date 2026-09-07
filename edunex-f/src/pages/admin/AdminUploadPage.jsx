@@ -1,14 +1,13 @@
 import { useEffect, useMemo, useState } from "react";
 import { AdminShell, Message } from "./AdminShell.jsx";
-import { adminJson, formatNumber, requireAdmin, slugify } from "./adminApi.js";
+import { adminJson, adminRoutes, formatNumber, requireAdmin, slugify } from "./adminApi.js";
 
 function makeVideo(index = 0) {
-  return { title: "", description: "", duration: "", videoUrl: "", key: `${Date.now()}-${index}` };
+  return { title: "", description: "", duration: "", videoUrl: "", examplePrompt: "", key: `${Date.now()}-${index}` };
 }
 
-export function AdminUploadPage() {
-  const [categories, setCategories] = useState([]);
-  const [form, setForm] = useState({
+function emptyCourseForm() {
+  return {
     title: "",
     slug: "",
     description: "",
@@ -18,14 +17,58 @@ export function AdminUploadPage() {
     thumbnailVerticalUrl: "",
     notesUrl: "",
     videos: [makeVideo()],
-  });
-  const [slugTouched, setSlugTouched] = useState(false);
+  };
+}
+
+function courseIdFromLocation() {
+  return new URLSearchParams(window.location.search).get("courseId") || "";
+}
+
+function categoryId(course) {
+  return String(course?.category?._id || course?.category || "");
+}
+
+function courseVideo(video, index) {
+  return {
+    title: video?.title || `Video ${index + 1}`,
+    description: video?.description || "",
+    duration: String(video?.duration || ""),
+    videoUrl: video?.videoUrl || video?.url || "",
+    examplePrompt: video?.examplePrompt || video?.examplePromptText || video?.examplePromptUrl || video?.promptUrl || "",
+    key: `${video?._id || video?.videoUrl || Date.now()}-${index}`,
+  };
+}
+
+function courseForm(course) {
+  const videos = Array.isArray(course?.videos) && course.videos.length
+    ? course.videos.map(courseVideo)
+    : [makeVideo()];
+  return {
+    title: course?.title || "",
+    slug: course?.slug || "",
+    description: course?.description || "",
+    category: categoryId(course),
+    status: course?.status === "published" ? "published" : "draft",
+    thumbnailUrl: course?.thumbnailUrl || "",
+    thumbnailVerticalUrl: course?.thumbnailVerticalUrl || "",
+    notesUrl: course?.notesUrl || "",
+    videos,
+  };
+}
+
+export function AdminUploadPage() {
+  const [editCourseId] = useState(courseIdFromLocation);
+  const [categories, setCategories] = useState([]);
+  const [form, setForm] = useState(emptyCourseForm);
+  const [slugTouched, setSlugTouched] = useState(Boolean(editCourseId));
   const [newCategoryName, setNewCategoryName] = useState("");
   const [categoryOpen, setCategoryOpen] = useState(false);
   const [loadingCategories, setLoadingCategories] = useState(true);
+  const [loadingCourse, setLoadingCourse] = useState(Boolean(editCourseId));
   const [submitting, setSubmitting] = useState(false);
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState("success");
+  const isEditing = Boolean(editCourseId);
 
   async function loadCategories() {
     if (!requireAdmin()) return;
@@ -41,10 +84,30 @@ export function AdminUploadPage() {
     }
   }
 
+  async function loadCourseForEdit() {
+    if (!editCourseId || !requireAdmin()) return;
+    setLoadingCourse(true);
+    try {
+      const data = await adminJson("/api/admin/courses", {}, "Unable to load course.");
+      const course = (Array.isArray(data) ? data : []).find((item) => String(item?._id || item?.id || "") === editCourseId);
+      if (!course) throw new Error("Course not found.");
+      setForm(courseForm(course));
+      setSlugTouched(true);
+      setMessage("");
+    } catch (error) {
+      setMessageType("error");
+      setMessage(error.message || "Unable to load course.");
+    } finally {
+      setLoadingCourse(false);
+    }
+  }
+
   useEffect(() => {
-    document.title = "Upload Course | EduNex";
+    document.title = isEditing ? "Edit Course | EduNex" : "Upload Course | EduNex";
     loadCategories();
-  }, []);
+    loadCourseForEdit();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [editCourseId]);
 
   function updateField(field, value) {
     setForm((current) => {
@@ -125,6 +188,7 @@ export function AdminUploadPage() {
         description: video.description.trim(),
         duration: Number(video.duration || 0),
         videoUrl: video.videoUrl.trim(),
+        examplePrompt: String(video.examplePrompt || "").trim(),
       })),
     };
     if (!payload.title || !payload.slug || !payload.description || !payload.category || payload.videos.some((video) => !video.videoUrl)) {
@@ -136,14 +200,21 @@ export function AdminUploadPage() {
     setSubmitting(true);
     setMessage("");
     try {
-      await adminJson("/api/courses", { method: "POST", body: JSON.stringify(payload) }, "Unable to create course.");
+      const endpoint = isEditing ? `/api/admin/courses/${encodeURIComponent(editCourseId)}` : "/api/courses";
+      const method = isEditing ? "PATCH" : "POST";
+      const savedCourse = await adminJson(endpoint, { method, body: JSON.stringify(payload) }, isEditing ? "Unable to update course." : "Unable to create course.");
       setMessageType("success");
-      setMessage("Course created successfully.");
-      setForm({ title: "", slug: "", description: "", category: "", status: "draft", thumbnailUrl: "", thumbnailVerticalUrl: "", notesUrl: "", videos: [makeVideo()] });
-      setSlugTouched(false);
+      setMessage(isEditing ? "Course updated successfully." : "Course created successfully.");
+      if (isEditing) {
+        setForm(courseForm(savedCourse));
+        setSlugTouched(true);
+      } else {
+        setForm(emptyCourseForm());
+        setSlugTouched(false);
+      }
     } catch (error) {
       setMessageType("error");
-      setMessage(error.message || "Unable to create course.");
+      setMessage(error.message || (isEditing ? "Unable to update course." : "Unable to create course."));
     } finally {
       setSubmitting(false);
     }
@@ -153,10 +224,12 @@ export function AdminUploadPage() {
     <AdminShell
       activePage="upload"
       shellClass="course-upload-shell"
-      title="Upload Course"
-      subtitle="Create a draft or published course with Bunny Stream video URLs."
+      title={isEditing ? "Edit Course" : "Upload Course"}
+      subtitle={isEditing ? "Continue editing this course with the full upload layout." : "Create a draft or published course with Bunny Stream video URLs."}
+      actions={isEditing ? <a className="toolbar-button" href={adminRoutes.courses}>Back to courses</a> : null}
     >
       <section className="editor-panel">
+        {loadingCourse ? <div className="loading-state">Loading course editor...</div> : null}
         <form className="course-form" onSubmit={handleSubmit}>
           <div className="course-builder-grid">
             <div className="form-section">
@@ -201,6 +274,7 @@ export function AdminUploadPage() {
                     <div className="field"><label htmlFor={`videoTitle${index}`}>Title</label><input id={`videoTitle${index}`} value={video.title} required onChange={(event) => updateVideo(index, "title", event.target.value)} /></div>
                     <div className="field"><label htmlFor={`videoDuration${index}`}>Duration seconds</label><input id={`videoDuration${index}`} type="number" min="0" step="1" value={video.duration} onChange={(event) => updateVideo(index, "duration", event.target.value)} /></div>
                     <div className="field span-2"><label htmlFor={`videoUrl${index}`}>Bunny Stream URL</label><input id={`videoUrl${index}`} type="url" required placeholder="https://player.mediadelivery.net/embed/..." value={video.videoUrl} onChange={(event) => updateVideo(index, "videoUrl", event.target.value)} /></div>
+                    <div className="field span-2"><label htmlFor={`examplePrompt${index}`}>Example prompt</label><textarea id={`examplePrompt${index}`} placeholder="Example: Create a 30-second ad script for a local bakery using this framework." value={video.examplePrompt} onChange={(event) => updateVideo(index, "examplePrompt", event.target.value)} /></div>
                     <div className="field span-2"><label htmlFor={`videoDescription${index}`}>Description</label><textarea id={`videoDescription${index}`} value={video.description} onChange={(event) => updateVideo(index, "description", event.target.value)} /></div>
                   </div>
                 </article>
@@ -209,7 +283,7 @@ export function AdminUploadPage() {
             <button className="secondary-button" type="button" onClick={addVideo}>Add video</button>
           </div>
 
-          <button className="submit-button" type="submit" disabled={submitting}>{submitting ? "Creating..." : "Create course"}</button>
+          <button className="submit-button" type="submit" disabled={submitting || loadingCourse}>{submitting ? (isEditing ? "Saving..." : "Creating...") : (isEditing ? "Save changes" : "Create course")}</button>
           <Message text={message} type={messageType} />
         </form>
       </section>

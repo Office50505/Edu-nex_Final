@@ -162,6 +162,7 @@
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
+  align-items: center;
 }
 
 .message:empty {
@@ -509,7 +510,7 @@ body.premium-nav-admin .user-row {
 
 body.premium-nav-admin .courses-head,
 body.premium-nav-admin .course-row {
-  grid-template-columns: minmax(260px, 1.3fr) 120px minmax(150px, 0.75fr) 90px minmax(220px, 0.9fr) !important;
+  grid-template-columns: minmax(260px, 1.25fr) 120px minmax(150px, 0.7fr) 90px minmax(300px, 1fr) !important;
 }
 
 body.premium-nav-admin .users-head,
@@ -816,6 +817,10 @@ body.premium-nav-admin select option {
 body.premium-nav-admin .toolbar-button,
 body.premium-nav-admin .action-button,
 body.premium-nav-admin .secondary-button {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
   border-color: var(--admin-line) !important;
   background: var(--admin-card) !important;
   color: var(--admin-text) !important;
@@ -915,6 +920,17 @@ body.premium-nav-admin .form-section-head,
 body.premium-nav-admin .publish-panel-head,
 body.premium-nav-admin .crm-detail-head {
   gap: 10px;
+}
+
+body.premium-nav-admin .course-actions {
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+body.premium-nav-admin .course-actions .secondary-button {
+  width: 100%;
+  min-width: 240px;
+  min-height: 46px;
 }
 
 @media (max-width: 1180px) {

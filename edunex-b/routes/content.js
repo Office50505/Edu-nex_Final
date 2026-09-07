@@ -193,6 +193,7 @@ res.json({
          : null,
        videoDescription: videoData.description || '',
        transcriptUrl: videoData.transcriptUrl || null,
+       examplePrompt: videoData.examplePrompt || videoData.examplePromptUrl || '',
        duration: videoData.duration || 0,
        notesUrl: course.notesUrl || null,
        description: course.description,

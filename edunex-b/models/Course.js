@@ -71,6 +71,7 @@ videos: [
          },
          thumbnailUrl: { type: String, trim: true, default: null },
          transcriptUrl: { type: String, trim: true, default: null },
+         examplePrompt: { type: String, trim: true, maxlength: 4000, default: '' },
          duration: { type: Number, default: 0 },
          order: { type: Number, required: true },
        },

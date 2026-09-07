@@ -250,6 +250,7 @@ router.patch(
       'sourceType',
       'thumbnailUrl',
       'transcriptUrl',
+      'examplePrompt',
     ]);
     const normalizedBody = { ...req.body };
     if (normalizedBody.bunnyGuid && !normalizedBody.bunnyVideoId) {

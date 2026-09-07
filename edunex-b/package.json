@@ -6,6 +6,8 @@
   "scripts": {
     "start": "node server.js",
     "dev": "node --watch server.js",
+    "server": "npm run dev",
+    "derver": "npm run dev",
     "smoke:api": "node scripts/smoke-api.mjs",
     "smoke:api:local": "node scripts/smoke-api.mjs --start --allow-db-unavailable",
     "db:index:audit": "node scripts/audit-mongo-indexes.mjs",

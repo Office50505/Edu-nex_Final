@@ -777,6 +777,9 @@ function sanitizeCourseVideos(rawVideos) {
       const title = String(video.title || `Video ${index + 1}`).trim();
       const description = String(video.description || '').trim();
       const transcriptUrl = String(video.transcriptUrl || '').trim() || null;
+      const examplePrompt = String(
+        video.examplePrompt || video.examplePromptText || video.examplePromptUrl || video.promptUrl || ''
+      ).trim();
       const duration = Number(video.duration) || 0;
       const youtubeId = String(video.youtubeId || '').trim();
 
@@ -793,6 +796,7 @@ function sanitizeCourseVideos(rawVideos) {
           thumbnail: null,
           thumbnailUrl: null,
           transcriptUrl,
+          examplePrompt,
           duration,
           order: index + 1,
         };
@@ -811,6 +815,7 @@ function sanitizeCourseVideos(rawVideos) {
         thumbnail: null,
         thumbnailUrl: null,
         transcriptUrl,
+        examplePrompt,
         duration,
         order: index + 1,
       };
