@@ -235,16 +235,6 @@ function noteValue(course) {
   return course?.notesUrl || course?.notesURL || course?.notesLink || course?.courseNotesUrl || course?.notes || course?.courseNotes || "";
 }
 
-function isVerticalLesson(lesson) {
-  const orientation = String(lesson?.orientation || lesson?.format || "").toLowerCase();
-  if (/vertical|portrait|reel|short/.test(orientation)) return true;
-
-  const aspect = String(lesson?.aspectRatio || lesson?.ratio || "").trim();
-  const parts = aspect.match(/^(\d+(?:\.\d+)?)\s*[:/]\s*(\d+(?:\.\d+)?)$/);
-  if (!parts) return false;
-  return Number(parts[1]) > 0 && Number(parts[2]) > 0 && Number(parts[1]) < Number(parts[2]);
-}
-
 function isLikelyUrl(value) {
   return /^https?:\/\//i.test(String(value || "").trim()) || /^\/[^/]/.test(String(value || "").trim());
 }
@@ -421,7 +411,7 @@ function VideoControls({ playing, volume, muted, rate, currentTime, duration, on
   );
 }
 
-function Player({ course, lesson, autoNext, onEnded, onNavigateLesson, onAspectChange }) {
+function Player({ course, lesson, autoNext, onEnded, onNavigateLesson }) {
   const videoRef = useRef(null);
   const iframeRef = useRef(null);
   const embeddedPlayerRef = useRef(null);
@@ -567,16 +557,6 @@ function Player({ course, lesson, autoNext, onEnded, onNavigateLesson, onAspectC
     if (screenHintTimerRef.current) window.clearTimeout(screenHintTimerRef.current);
   }, []);
 
-  const updateNaturalAspect = useCallback(() => {
-    const video = videoRef.current;
-    if (!video?.videoWidth || !video?.videoHeight) return;
-    onAspectChange?.({
-      width: video.videoWidth,
-      height: video.videoHeight,
-      portrait: video.videoHeight > video.videoWidth,
-    });
-  }, [onAspectChange]);
-
   const openVideoAi = () => {
     if (isPlayerFullscreen(document.getElementById("playerFrame"))) return;
     const container = document.fullscreenElement || shellRef.current || document.body;
@@ -609,7 +589,6 @@ function Player({ course, lesson, autoNext, onEnded, onNavigateLesson, onAspectC
         current: video.currentTime || 0,
         duration: Number.isFinite(video.duration) ? video.duration : 0,
       });
-      updateNaturalAspect();
     };
     const onPlay = () => syncPlaying(true);
     const onPause = () => syncPlaying(false);
@@ -633,7 +612,7 @@ function Player({ course, lesson, autoNext, onEnded, onNavigateLesson, onAspectC
       video.removeEventListener("pause", onPause);
       video.removeEventListener("ended", onEnd);
     };
-  }, [autoNext, muted, onEnded, rate, syncPlaying, updateNaturalAspect, volume]);
+  }, [autoNext, muted, onEnded, rate, syncPlaying, volume]);
 
   useEffect(() => {
     if (!hasEmbedControls) return undefined;
@@ -804,7 +783,7 @@ function Player({ course, lesson, autoNext, onEnded, onNavigateLesson, onAspectC
   if (directUrl) {
     return (
       <div className="custom-video-player" data-custom-player="true" tabIndex={-1} ref={shellRef}>
-        <video ref={videoRef} src={needsHlsRuntime ? undefined : directUrl} poster={lessonImage(course, lesson)} playsInline preload="metadata" onLoadedMetadata={updateNaturalAspect}></video>
+        <video ref={videoRef} src={needsHlsRuntime ? undefined : directUrl} poster={lessonImage(course, lesson)} playsInline preload="metadata"></video>
         {controls}
       </div>
     );
@@ -865,7 +844,6 @@ export function VideosPage() {
   const [error, setError] = useState("");
   const [notesOpen, setNotesOpen] = useState(false);
   const [autoNext, setAutoNext] = useState(() => localStorage.getItem(AUTO_NEXT_KEY) === "true");
-  const [naturalVideoRatio, setNaturalVideoRatio] = useState("");
 
   usePageStyle("react-page-style-videos", videosPage.styles);
 
@@ -1016,11 +994,6 @@ export function VideosPage() {
 
   const lessons = course?.videos || [];
   const lesson = lessons[activeIndex] || lessons[0] || {};
-  const verticalPlayer = Boolean(naturalVideoRatio) || isVerticalLesson(lesson);
-
-  useEffect(() => {
-    setNaturalVideoRatio("");
-  }, [lesson?._id, lesson?.id, lesson?.videoUrl, lesson?.hlsUrl, lesson?.playlistUrl, lesson?.streamUrl, activeIndex]);
 
   const changeLessonByNavigation = useCallback((direction) => {
     setActiveIndex((index) => Math.max(0, Math.min(index + direction, Math.max(lessons.length - 1, 0))));
@@ -1323,13 +1296,12 @@ export function VideosPage() {
             <button className="watch-tool-btn" type="button" id="openNotesBtn" onClick={openNotes}><i className="fas fa-file-lines" aria-hidden="true"></i> Notes</button>
           </div>
         </div>
-        <section className={`watch-layout${verticalPlayer ? " is-vertical-layout" : ""}`}>
+        <section className="watch-layout">
           <div className="player-wrap">
             <div
-              className={`player-frame mobile-reel-player${verticalPlayer ? " is-vertical-video" : ""}`}
+              className="player-frame mobile-reel-player"
               id="playerFrame"
               ref={playerFrameRef}
-              style={verticalPlayer && naturalVideoRatio ? { "--natural-video-ratio": naturalVideoRatio } : undefined}
               tabIndex={-1}
               aria-label="Course video player. Swipe horizontally on mobile, or use arrow keys, to change lessons."
               onClickCapture={(event) => {
@@ -1347,7 +1319,6 @@ export function VideosPage() {
                   autoNext={autoNext}
                   onEnded={advanceNext}
                   onNavigateLesson={changeLessonByNavigation}
-                  onAspectChange={({ width, height, portrait }) => setNaturalVideoRatio(portrait ? `${width} / ${height}` : "")}
                   key={`${course._id}-${activeIndex}`}
                 />
               ) : (

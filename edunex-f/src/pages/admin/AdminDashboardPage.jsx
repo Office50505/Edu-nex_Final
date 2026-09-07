@@ -240,7 +240,9 @@ export function AdminDashboardPage() {
           <label htmlFor="rangePreset">Range</label>
           <select id="rangePreset" value={rangePreset} onChange={(event) => handlePresetChange(event.target.value)}>
             <option value="7">Last 7 days</option>
+            <option value="15">Last 15 days</option>
             <option value="30">Last 30 days</option>
+            <option value="45">Last 45 days</option>
             <option value="90">Last 90 days</option>
             <option value="custom">Custom dates</option>
           </select>

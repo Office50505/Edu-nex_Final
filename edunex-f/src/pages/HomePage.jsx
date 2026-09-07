@@ -427,7 +427,6 @@ export function HomePage() {
   const resumeCarouselTimerRef = useRef(0);
   const smoothScrollRef = useRef({ frame: 0, target: 0 });
   const userScrollTimerRef = useRef(0);
-  const wheelStepRef = useRef(0);
   const lastFrameRef = useRef(0);
   const pauseRef = useRef(false);
   const directionRef = useRef(1);
@@ -695,6 +694,7 @@ export function HomePage() {
 
   const handlePointerDown = (event) => {
     if (!event.isPrimary || event.button !== 0) return;
+    if (event.pointerType === "mouse") return;
     if (event.target.closest?.("input, textarea, select")) return;
     const viewport = viewportRef.current;
     if (!viewport) return;
@@ -812,20 +812,9 @@ export function HomePage() {
   };
 
   const handleWheel = (event) => {
-    const viewport = viewportRef.current;
-    if (!viewport) return;
-    const maxScrollLeft = Math.max(0, viewport.scrollWidth - viewport.clientWidth);
-    if (!maxScrollLeft) return;
-    const horizontalDelta = Math.abs(event.deltaX) >= Math.abs(event.deltaY) ? event.deltaX : event.deltaY;
-    if (!horizontalDelta) return;
+    const horizontalIntent = Math.abs(event.deltaX) > Math.abs(event.deltaY) || event.shiftKey;
+    if (!horizontalIntent) return;
     event.preventDefault();
-    const now = performance.now();
-    if (now - wheelStepRef.current < 260) return;
-    wheelStepRef.current = now;
-    pauseCarouselAfterInput();
-    const direction = horizontalDelta >= 0 ? 1 : -1;
-    directionRef.current = direction;
-    scrollToIndex(nearestCarouselIndex() + direction);
   };
 
   useEffect(() => {
@@ -908,6 +897,8 @@ export function HomePage() {
             <div
               className="hero-carousel-viewport"
               tabIndex={0}
+              role="region"
+              aria-label="Featured courses carousel. Use left and right arrow keys to scroll courses."
               ref={viewportRef}
               onKeyDown={(event) => {
                 if (event.key === "ArrowLeft") {

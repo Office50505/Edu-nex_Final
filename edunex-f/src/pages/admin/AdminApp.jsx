@@ -29,7 +29,7 @@ export function AdminApp({ page }) {
       window.history.replaceState(window.history.state, "", `${canonical}${window.location.search}${window.location.hash}`);
     }
     return () => {
-      document.body.classList.remove("premium-nav-page", "premium-nav-admin");
+      document.body.classList.remove("premium-nav-page", "premium-nav-admin", "admin-theme-light", "admin-theme-dark");
     };
   }, []);
 

@@ -311,7 +311,6 @@
       scroll-snap-type: x mandatory;
       scrollbar-width: none;
       padding: 34px 0 24px;
-      cursor: grab;
       touch-action: pan-x;
       -webkit-user-select: none;
       user-select: none;
@@ -319,7 +318,6 @@
     .hero-carousel-viewport * { -webkit-user-drag: none; }
     .hero-carousel-viewport::-webkit-scrollbar { display: none; }
     .hero-carousel-viewport.is-dragging {
-      cursor: grabbing;
       scroll-snap-type: none;
     }
     .hero-carousel-viewport.is-auto-moving {
@@ -1907,6 +1905,7 @@
       let startLeft = 0;
       viewport.addEventListener('dragstart', event => event.preventDefault());
       viewport.addEventListener('pointerdown', event => {
+        if (event.pointerType === 'mouse') return;
         heroState.pointerDown = true;
         heroState.pauseAutoplay = true;
         heroState.pointerMoved = false;
@@ -1924,6 +1923,10 @@
         if (dx > 8 || dy > 8) heroState.pointerMoved = true;
         viewport.scrollLeft = startLeft - (event.clientX - startX);
       });
+      viewport.addEventListener('wheel', event => {
+        const horizontalIntent = Math.abs(event.deltaX) > Math.abs(event.deltaY) || event.shiftKey;
+        if (horizontalIntent) event.preventDefault();
+      }, { passive: false });
       ['pointerup', 'pointercancel', 'pointerleave'].forEach(type => {
         viewport.addEventListener(type, () => {
           if (heroState.pointerMoved) heroState.suppressClickUntil = Date.now() + 250;

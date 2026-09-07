@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { adminRoutes, logout } from "./adminApi.js";
 
 const navItems = [
@@ -16,6 +17,18 @@ export function Message({ text, type = "success" }) {
 }
 
 export function AdminShell({ activePage, title, subtitle, children, actions = null, shellClass = "dashboard-shell" }) {
+  const [theme, setTheme] = useState(() => localStorage.getItem("edunexAdminTheme") || "dark");
+
+  useEffect(() => {
+    document.body.classList.toggle("admin-theme-light", theme === "light");
+    document.body.classList.toggle("admin-theme-dark", theme !== "light");
+    localStorage.setItem("edunexAdminTheme", theme);
+  }, [theme]);
+
+  function toggleTheme() {
+    setTheme((current) => (current === "light" ? "dark" : "light"));
+  }
+
   return (
     <>
       <nav className="premium-site-nav" data-premium-nav>
@@ -56,6 +69,10 @@ export function AdminShell({ activePage, title, subtitle, children, actions = nu
                   {label}
                 </a>
               ))}
+            <button className="toolbar-button theme-toggle-button" type="button" onClick={toggleTheme} aria-pressed={theme === "light"}>
+              <span className="theme-toggle-swatch" aria-hidden="true" />
+              {theme === "light" ? "Dark theme" : "Light theme"}
+            </button>
             {actions}
             <button className="toolbar-button" type="button" onClick={logout}>
               Log out

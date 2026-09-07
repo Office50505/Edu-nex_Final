@@ -263,7 +263,6 @@ export const page = {
       scroll-snap-type: x mandatory;
       scrollbar-width: none;
       padding: 34px 0 24px;
-      cursor: grab;
       touch-action: pan-x;
       -webkit-user-select: none;
       user-select: none;
@@ -271,7 +270,6 @@ export const page = {
     .hero-carousel-viewport * { -webkit-user-drag: none; }
     .hero-carousel-viewport::-webkit-scrollbar { display: none; }
     .hero-carousel-viewport.is-dragging {
-      cursor: grabbing;
       scroll-snap-type: none;
     }
     .hero-carousel-viewport.is-auto-moving {

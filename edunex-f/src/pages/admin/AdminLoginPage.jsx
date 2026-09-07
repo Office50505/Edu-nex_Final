@@ -80,17 +80,19 @@ export function AdminLoginPage() {
 
           <div className="admin-auth-label-row">
             <label htmlFor="adminPassword">Password</label>
+          </div>
+          <div className="admin-auth-password-field">
+            <input
+              id="adminPassword"
+              autoComplete="current-password"
+              type={showPassword ? "text" : "password"}
+              value={password}
+              onChange={(event) => setPassword(event.target.value)}
+            />
             <button type="button" onClick={() => setShowPassword((value) => !value)}>
               {showPassword ? "Hide" : "Show"}
             </button>
           </div>
-          <input
-            id="adminPassword"
-            autoComplete="current-password"
-            type={showPassword ? "text" : "password"}
-            value={password}
-            onChange={(event) => setPassword(event.target.value)}
-          />
 
           <label className="admin-auth-check">
             <input checked={remember} type="checkbox" onChange={(event) => setRemember(event.target.checked)} />

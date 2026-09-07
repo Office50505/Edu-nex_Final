@@ -1697,39 +1697,12 @@ html:has(.enx-page-loading) .enx-nav-hamburger span {
 }
 
 .react-page-root[data-page="videos.html"] .player-frame {
+  width: 100% !important;
+  max-width: 100% !important;
+  aspect-ratio: 16 / 9 !important;
+  height: auto !important;
   border-radius: 16px !important;
   border: 1px solid rgba(255,255,255,.08);
-}
-
-@media (min-width: 961px) {
-  body:not(.has-edunex-player-fullscreen) .react-page-root[data-page="videos.html"] .watch-layout.is-vertical-layout {
-    width: min(100%, 860px);
-    max-width: 860px;
-    gap: 12px;
-  }
-
-  body:not(.has-edunex-player-fullscreen) .react-page-root[data-page="videos.html"] .watch-layout.is-vertical-layout .player-wrap {
-    flex: 0 0 min(100%, clamp(340px, 34vw, 500px));
-    width: min(100%, clamp(340px, 34vw, 500px));
-    max-width: 500px;
-  }
-
-  body:not(.has-edunex-player-fullscreen) .react-page-root[data-page="videos.html"] .watch-layout.is-vertical-layout .lesson-sidebar {
-    flex: 0 0 292px;
-  }
-}
-
-body:not(.has-edunex-player-fullscreen) .react-page-root[data-page="videos.html"] #playerFrame.is-vertical-video {
-  width: min(100%, clamp(340px, 34vw, 500px)) !important;
-  aspect-ratio: 4 / 5 !important;
-  align-self: flex-start;
-  margin-inline: 0 auto;
-  background: #050710 !important;
-}
-
-body:not(.has-edunex-player-fullscreen) .react-page-root[data-page="videos.html"] #playerFrame.is-vertical-video .custom-video-player,
-body:not(.has-edunex-player-fullscreen) .react-page-root[data-page="videos.html"] #playerFrame.is-vertical-video .custom-video-player > :where(video, iframe) {
-  background: #050710 !important;
 }
 
 .react-page-root[data-page="videos.html"] :where(#playerFrame, .tap-zone):focus,
@@ -1822,11 +1795,6 @@ body.has-edunex-player-fullscreen #nai-float-btn {
 
   .react-page-root[data-page="videos.html"] .custom-video-player {
     touch-action: pan-y !important;
-  }
-
-  body:not(.has-edunex-player-fullscreen) .react-page-root[data-page="videos.html"] #playerFrame.is-vertical-video {
-    width: min(100%, 430px) !important;
-    aspect-ratio: 4 / 5 !important;
   }
 }
 
