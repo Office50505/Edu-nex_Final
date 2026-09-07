@@ -1,0 +1,60 @@
+{
+  "expo": {
+    "name": "EduNex",
+    "slug": "edunex",
+    "version": "1.0.0",
+    "description": "EduNex learning app",
+    "jsEngine": "jsc",
+    "scheme": "com.alihussainkhan.edunexfinal",
+    "icon": "./assets/icon.png",
+    "orientation": "default",
+    "userInterfaceStyle": "automatic",
+    "platforms": [
+      "ios",
+      "android"
+    ],
+    "android": {
+      "package": "com.example.protectedvideo",
+      "icon": "./assets/icon.png",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#FAF7F1"
+      },
+      "softwareKeyboardLayoutMode": "pan",
+      "userInterfaceStyle": "automatic"
+    },
+    "ios": {
+      "bundleIdentifier": "com.alihussainkhan.edunexfinal",
+      "buildNumber": "7",
+      "icon": "./assets/icon.png",
+      "supportsTablet": false,
+      "config": {
+        "usesNonExemptEncryption": false
+      },
+      "infoPlist": {
+        "CFBundleDisplayName": "EduNex",
+        "ITSAppUsesNonExemptEncryption": false,
+        "NSAppTransportSecurity": {
+          "NSAllowsArbitraryLoads": false,
+          "NSAllowsLocalNetworking": true,
+          "NSExceptionDomains": {
+            "15.206.129.125": {
+              "NSExceptionAllowsInsecureHTTPLoads": true,
+              "NSIncludesSubdomains": true
+            },
+            "43.205.171.165": {
+              "NSExceptionAllowsInsecureHTTPLoads": true,
+              "NSIncludesSubdomains": true
+            }
+          }
+        }
+      }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "38bd9afc-a582-4a1f-9579-1932429e61b8"
+      }
+    },
+    "owner": "niz10"
+  }
+}

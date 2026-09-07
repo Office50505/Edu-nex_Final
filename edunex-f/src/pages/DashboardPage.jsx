@@ -10,6 +10,12 @@ function coursesArray(response) {
   return [];
 }
 
+function recommendationsArray(response) {
+  if (Array.isArray(response)) return response;
+  if (Array.isArray(response?.recommendations)) return response.recommendations;
+  return coursesArray(response);
+}
+
 function dashCourseProgress(course) {
   try {
     const saved = JSON.parse(localStorage.getItem(`edunexCourseProgress:${course._id}`) || "{}");
@@ -36,7 +42,9 @@ function categoryName(course) {
 export function DashboardPage() {
   const [allowed, setAllowed] = useState(null);
   const [courses, setCourses] = useState([]);
+  const [recommendations, setRecommendations] = useState([]);
   const [loadError, setLoadError] = useState("");
+  const [recommendationError, setRecommendationError] = useState("");
   const [historyFilter, setHistoryFilter] = useState("all");
   const runtimeReady = useEduNexRuntimeReady();
   const user = window.EduNex?.getUser?.();
@@ -68,14 +76,28 @@ export function DashboardPage() {
   };
 
   const loadDashboardCourses = async () => {
-    try {
-      const data = await window.EduNex.request("/api/courses");
-      const realCourses = coursesArray(data).filter((course) => course && course._id);
+    const token = window.EduNex?.getAccessToken?.();
+    const recommendationOptions = token ? { headers: { Authorization: `Bearer ${token}` } } : {};
+    const [courseResult, recommendationResult] = await Promise.allSettled([
+      window.EduNex.request("/api/courses"),
+      window.EduNex.request("/api/recommendations/courses?limit=4", recommendationOptions),
+    ]);
+
+    if (courseResult.status === "fulfilled") {
+      const realCourses = coursesArray(courseResult.value).filter((course) => course && course._id);
       setCourses(realCourses);
       setLoadError("");
-    } catch (error) {
+    } else {
       setCourses([]);
-      setLoadError(error.message || "Could not load backend courses.");
+      setLoadError(courseResult.reason?.message || "Could not load backend courses.");
+    }
+
+    if (recommendationResult.status === "fulfilled") {
+      setRecommendations(recommendationsArray(recommendationResult.value).filter((course) => course && course._id));
+      setRecommendationError("");
+    } else {
+      setRecommendations([]);
+      setRecommendationError(recommendationResult.reason?.message || "Could not load recommendations.");
     }
   };
 
@@ -102,6 +124,7 @@ export function DashboardPage() {
     if (historyFilter === "all") return true;
     return dashStatus(dashCourseProgress(course).percent).key === historyFilter;
   });
+  const recommendedCourses = recommendations.length ? recommendations : realCourses.slice(0, 4);
 
   return (
     <div className="react-page-root" data-page="dashboard.html">
@@ -201,12 +224,17 @@ export function DashboardPage() {
             </div>
             <div className="rec-grid" id="recGrid">
               {allowed === null ? <div className="rec-card" style={{ padding: 18 }}>Loading recommendations...</div> : null}
-              {loadError ? <div className="rec-card" style={{ padding: 18 }}>Recommendations unavailable.</div> : null}
-              {!loadError && allowed && !realCourses.slice(0, 4).length ? <div className="rec-card" style={{ padding: 18 }}>No published recommendations yet.</div> : null}
-              {!loadError && allowed ? realCourses.slice(0, 4).map((course) => {
-                const videos = Array.isArray(course.videos) ? course.videos.length : 0;
+              {allowed && recommendationError && !recommendedCourses.length ? <div className="rec-card" style={{ padding: 18 }}>Recommendations unavailable.</div> : null}
+              {!recommendationError && allowed && !recommendedCourses.length ? <div className="rec-card" style={{ padding: 18 }}>No published recommendations yet.</div> : null}
+              {allowed ? recommendedCourses.map((course) => {
+                const videos = Number(course.videoCount || 0) || (Array.isArray(course.videos) ? course.videos.length : 0);
+                const reason = course.recommendation?.reason || "Recommended from the current EduNex catalog";
                 return (
-                  <div className="rec-card" key={course._id} onClick={() => window.EduNex?.openCourseDetails?.({ _id: course._id })} role="link" tabIndex={0}>
+                  <div className="rec-card" key={course._id} onClick={() => window.EduNex?.openCourseDetails?.(course)} role="link" tabIndex={0} onKeyDown={(event) => {
+                    if (event.key !== "Enter" && event.key !== " ") return;
+                    event.preventDefault();
+                    window.EduNex?.openCourseDetails?.(course);
+                  }}>
                     <div className="rec-thumb-wrap">
                       <img className="rec-thumb" src={window.EduNex?.courseImage?.(course)} alt={course.title} onError={(event) => {
                         event.currentTarget.onerror = null;
@@ -220,6 +248,7 @@ export function DashboardPage() {
                         <span><i className="fas fa-play-circle" aria-hidden="true"></i> {videos} videos</span>
                         <span><i className="fas fa-star" aria-hidden="true"></i> {course.averageRating || "New"}</span>
                       </div>
+                      <div className="rec-reason">{reason}</div>
                       <div className="rec-price-row"><span className="rec-price">REAL COURSE</span><button className="cart-btn" type="button" aria-label="Open course"><i className="fas fa-arrow-right" aria-hidden="true"></i></button></div>
                     </div>
                   </div>

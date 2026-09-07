@@ -1,0 +1,43 @@
+{
+  "cli": {
+    "version": "20.5.1"
+  },
+  "build": {
+    "railway": {
+      "distribution": "internal",
+      "android": {
+        "buildType": "apk",
+        "env": {
+          "EXPO_PUBLIC_API_BASE": "http://15.206.129.125:3001",
+          "EXPO_PUBLIC_AI_BASE": "http://43.205.171.165:3002"
+        }
+      }
+    },
+    "aws": {
+      "distribution": "internal",
+      "android": {
+        "buildType": "apk",
+        "env": {
+          "EXPO_PUBLIC_API_BASE": "http://15.206.129.125:3001",
+          "EXPO_PUBLIC_AI_BASE": "http://43.205.171.165:3002"
+        }
+      }
+    },
+    "testflight": {
+      "distribution": "store",
+      "ios": {
+        "env": {
+          "EXPO_PUBLIC_API_BASE": "http://15.206.129.125:3001",
+          "EXPO_PUBLIC_AI_BASE": "http://43.205.171.165:3002"
+        }
+      }
+    }
+  },
+  "submit": {
+    "testflight": {
+      "ios": {
+        "appleTeamId": "LJ48CVC23W"
+      }
+    }
+  }
+}

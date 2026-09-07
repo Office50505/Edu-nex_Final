@@ -6,6 +6,7 @@ const dns = require('dns').promises;
 const net = require('net');
 const path = require('path');
 const fs = require('fs');
+const helmet = require('helmet');
 const initialNodeEnv = process.env.NODE_ENV;
 require('dotenv').config({ path: path.join(__dirname, '.env') });
 if (initialNodeEnv !== 'production') {
@@ -13,9 +14,15 @@ if (initialNodeEnv !== 'production') {
 }
 
 const app = express();
+app.disable('x-powered-by');
+
 const PORT = process.env.PORT || 3000;
-const FRONTEND_SOURCE_DIR = path.join(__dirname, '..', '..', 'frontend', 'edunex-f');
-const FRONTEND_DIST_DIR = path.join(FRONTEND_SOURCE_DIR, 'dist');
+const FRONTEND_SOURCE_DIR = process.env.FRONTEND_DIR
+  ? path.resolve(process.env.FRONTEND_DIR)
+  : path.join(__dirname, '..', 'edunex-f');
+const FRONTEND_DIST_DIR = process.env.FRONTEND_DIST_DIR
+  ? path.resolve(process.env.FRONTEND_DIST_DIR)
+  : path.join(FRONTEND_SOURCE_DIR, 'dist');
 const FRONTEND_DIR = fs.existsSync(path.join(FRONTEND_DIST_DIR, 'index.html'))
   ? FRONTEND_DIST_DIR
   : FRONTEND_SOURCE_DIR;
@@ -24,6 +31,7 @@ const SERVE_FRONTEND = process.env.SERVE_FRONTEND !== 'false' && fs.existsSync(F
 const MONGODB_URI = process.env.MONGODB_URI || (isProduction ? '' : 'mongodb://localhost:27017/edunex');
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || (isProduction ? '' : 'Sdbc@123');
 const ADMIN_TOKEN_SECRET = process.env.ADMIN_TOKEN_SECRET || (isProduction ? '' : 'edunex-development-admin-secret');
+const ACCESS_TOKEN_SECRET = process.env.JWT_SECRET || (isProduction ? '' : 'edunex-development-access-secret');
 const FRONTEND_ORIGINS = [process.env.FRONTEND_ORIGIN, process.env.FRONTEND_ORIGINS]
   .filter(Boolean)
   .join(',')
@@ -130,6 +138,35 @@ const CHECKOUT_SUMMARY_CACHE_TTL_SECONDS = Math.ceil(CHECKOUT_SUMMARY_CACHE_TTL_
 const PUBLIC_READ_CACHE_TTL_SECONDS = Math.ceil(PUBLIC_READ_CACHE_TTL_MS / 1000);
 const PUBLIC_READ_CACHE_NAMESPACE = 'public-read';
 const CHECKOUT_SUMMARY_CACHE_NAMESPACE = 'checkout-summary';
+const RECOMMENDATION_LIMIT_DEFAULT = 4;
+const RECOMMENDATION_LIMIT_MAX = 12;
+
+const cspConnectSources = [...new Set(["'self'", 'https:', 'wss:', ...FRONTEND_ORIGINS])];
+
+app.use(helmet({
+  contentSecurityPolicy: {
+    useDefaults: true,
+    directives: {
+      defaultSrc: ["'self'"],
+      baseUri: ["'self'"],
+      objectSrc: ["'none'"],
+      scriptSrc: ["'self'"],
+      styleSrc: ["'self'", "'unsafe-inline'", 'https:'],
+      imgSrc: ["'self'", 'data:', 'blob:', 'https:'],
+      mediaSrc: ["'self'", 'blob:', 'https:'],
+      fontSrc: ["'self'", 'data:', 'https:'],
+      connectSrc: cspConnectSources,
+      frameAncestors: ["'none'"],
+      upgradeInsecureRequests: isProduction ? [] : null,
+    },
+  },
+  crossOriginResourcePolicy: { policy: 'cross-origin' },
+  hsts: isProduction
+    ? { maxAge: 15552000, includeSubDomains: true }
+    : false,
+  referrerPolicy: { policy: 'no-referrer' },
+  xFrameOptions: { action: 'deny' },
+}));
 
 async function getCachedPublicRead(key) {
   return getJsonCache(PUBLIC_READ_CACHE_NAMESPACE, key);
@@ -171,6 +208,281 @@ async function clearPublicCourseCaches() {
   await Promise.all([
     clearCheckoutSummaryCache(),
     clearPublicReadCache(),
+  ]);
+}
+
+function clampRecommendationLimit(value) {
+  const parsed = Number.parseInt(value, 10);
+  if (!Number.isFinite(parsed)) return RECOMMENDATION_LIMIT_DEFAULT;
+  return Math.max(1, Math.min(RECOMMENDATION_LIMIT_MAX, parsed));
+}
+
+function idString(value) {
+  if (!value) return '';
+  return String(value._id || value);
+}
+
+function isValidObjectId(value) {
+  return Boolean(value && mongoose.Types.ObjectId.isValid(value));
+}
+
+function addWeightedSignal(map, key, weight) {
+  if (!key || !Number.isFinite(weight) || weight <= 0) return;
+  map.set(key, (map.get(key) || 0) + weight);
+}
+
+function courseCategoryId(course) {
+  return idString(course?.category);
+}
+
+function courseCategoryName(course) {
+  if (typeof course?.category === 'string') return course.category;
+  return course?.category?.name || 'Course';
+}
+
+function recencyBoost(dateValue, maxBoost = 8) {
+  const time = new Date(dateValue || 0).getTime();
+  if (!Number.isFinite(time) || time <= 0) return 0;
+
+  const ageDays = Math.max(0, (Date.now() - time) / (24 * 60 * 60 * 1000));
+  if (ageDays <= 14) return maxBoost;
+  if (ageDays >= 180) return 0;
+  return Math.round(maxBoost * (1 - ((ageDays - 14) / 166)));
+}
+
+function publicCourseScore(course) {
+  const rating = Math.max(0, Math.min(5, Number(course.averageRating || 0)));
+  const totalStarted = Math.max(0, Number(course.totalStarted || 0));
+  const totalCompleted = Math.max(0, Number(course.totalCompleted || 0));
+  const totalWishlisted = Math.max(0, Number(course.totalWishlisted || 0));
+  const completionRate = Math.max(0, Math.min(100, Number(course.completionRate || 0)));
+
+  return (
+    rating * 8
+    + Math.log1p(totalStarted) * 6
+    + Math.log1p(totalCompleted) * 8
+    + Math.log1p(totalWishlisted) * 7
+    + completionRate * 0.12
+    + recencyBoost(course.publishedAt || course.createdAt, 6)
+  );
+}
+
+function recommendationReason(course, categoryWeights, personalized) {
+  const category = courseCategoryName(course);
+  const categoryId = courseCategoryId(course);
+  const rating = Number(course.averageRating || 0);
+
+  if (personalized && categoryWeights.has(categoryId)) {
+    return `Because you showed interest in ${category}`;
+  }
+
+  if (Number(course.totalWishlisted || 0) > 0) {
+    return 'Popular with learners saving courses';
+  }
+
+  if (rating >= 4.5) {
+    return 'Highly rated by EduNex learners';
+  }
+
+  if (Number(course.totalStarted || 0) > 0) {
+    return 'Trending in the current catalog';
+  }
+
+  return 'New from the EduNex catalog';
+}
+
+function rankRecommendationCandidates(candidates, signals, limit) {
+  const categoryWeights = signals.categoryWeights || new Map();
+  const personalized = categoryWeights.size > 0;
+
+  const ranked = candidates
+    .filter((course) => !signals.completedCourseIds.has(idString(course._id)))
+    .map((course) => {
+      const categoryWeight = categoryWeights.get(courseCategoryId(course)) || 0;
+      const score = publicCourseScore(course) + Math.min(72, categoryWeight * 12);
+      return {
+        ...course,
+        recommendation: {
+          score: Math.round(score),
+          reason: recommendationReason(course, categoryWeights, personalized),
+          personalized,
+        },
+      };
+    })
+    .sort((left, right) => {
+      const leftExcluded = signals.seenCourseIds.has(idString(left._id)) ? 1 : 0;
+      const rightExcluded = signals.seenCourseIds.has(idString(right._id)) ? 1 : 0;
+      if (leftExcluded !== rightExcluded) return leftExcluded - rightExcluded;
+      return right.recommendation.score - left.recommendation.score;
+    });
+
+  return ranked.slice(0, limit);
+}
+
+async function findOptionalRecommendationUser(req) {
+  try {
+    const token = req.headers.authorization?.split(' ')[1];
+    if (!token) return null;
+
+    const decoded = jwt.verify(token, ACCESS_TOKEN_SECRET);
+    const user = await User.findById(decoded.userId)
+      .select('+activeSessionId +activeSessions')
+      .lean();
+
+    if (!user || user.isActive === false) return null;
+
+    const sessionId = decoded.sessionId;
+    const activeSessions = Array.isArray(user.activeSessions) ? user.activeSessions.map(String) : [];
+    let isActive = sessionId && (
+      String(user.activeSessionId || '') === String(sessionId)
+      || activeSessions.includes(String(sessionId))
+    );
+
+    if (!isActive && sessionId) {
+      const session = await Session.findOne({
+        user: decoded.userId,
+        sessionId,
+        loggedOutAt: null,
+      }).select('_id').lean();
+      isActive = Boolean(session);
+    }
+
+    return isActive ? user : null;
+  } catch (_) {
+    return null;
+  }
+}
+
+async function loadRecommendationSignals(user) {
+  const emptySignals = {
+    categoryWeights: new Map(),
+    seenCourseIds: new Set(),
+    completedCourseIds: new Set(),
+  };
+
+  if (!user?._id) return emptySignals;
+
+  const userId = String(user._id);
+  const [wishlist, progressRows, courseProgressRows, reviewRows] = await Promise.all([
+    Wishlist.findOne({ user: user._id }).select('courses').lean(),
+    Progress.find({ user: user._id })
+      .select('course watchedSeconds completed lastWatchedAt')
+      .sort({ lastWatchedAt: -1 })
+      .limit(200)
+      .lean(),
+    CourseProgress.find({ userId })
+      .select('courseId progressPercent updatedAt')
+      .sort({ updatedAt: -1 })
+      .limit(100)
+      .lean(),
+    Review.find({ user: user._id })
+      .select('course rating')
+      .limit(100)
+      .lean(),
+  ]);
+
+  const signalIds = new Set();
+  (wishlist?.courses || []).forEach((courseId) => {
+    const id = idString(courseId);
+    if (isValidObjectId(id)) signalIds.add(id);
+  });
+  progressRows.forEach((row) => {
+    const id = idString(row.course);
+    if (isValidObjectId(id)) signalIds.add(id);
+  });
+  courseProgressRows.forEach((row) => {
+    const id = idString(row.courseId);
+    if (isValidObjectId(id)) signalIds.add(id);
+  });
+  reviewRows.forEach((row) => {
+    const id = idString(row.course);
+    if (isValidObjectId(id)) signalIds.add(id);
+  });
+
+  const signalCourses = signalIds.size
+    ? await Course.find({ _id: { $in: Array.from(signalIds) } }).select('category').lean()
+    : [];
+  const categoryByCourse = new Map(signalCourses.map((course) => [idString(course._id), courseCategoryId(course)]));
+  const categoryWeights = new Map();
+  const seenCourseIds = new Set();
+  const completedCourseIds = new Set();
+
+  (wishlist?.courses || []).forEach((courseId) => {
+    const id = idString(courseId);
+    seenCourseIds.add(id);
+    addWeightedSignal(categoryWeights, categoryByCourse.get(id), 5);
+  });
+
+  progressRows.forEach((row) => {
+    const id = idString(row.course);
+    if (!id) return;
+
+    seenCourseIds.add(id);
+    if (row.completed) completedCourseIds.add(id);
+
+    const watchedWeight = Math.min(6, Math.max(0, Number(row.watchedSeconds || 0)) / 600);
+    addWeightedSignal(categoryWeights, categoryByCourse.get(id), 3 + watchedWeight + recencyBoost(row.lastWatchedAt, 3));
+  });
+
+  courseProgressRows.forEach((row) => {
+    const id = idString(row.courseId);
+    if (!id) return;
+
+    seenCourseIds.add(id);
+    const progressPercent = Math.max(0, Math.min(100, Number(row.progressPercent || 0)));
+    if (progressPercent >= 95) completedCourseIds.add(id);
+    addWeightedSignal(categoryWeights, categoryByCourse.get(id), 2 + (progressPercent / 20) + recencyBoost(row.updatedAt, 2));
+  });
+
+  reviewRows.forEach((row) => {
+    const id = idString(row.course);
+    if (!id) return;
+
+    seenCourseIds.add(id);
+    addWeightedSignal(categoryWeights, categoryByCourse.get(id), Number(row.rating || 0) >= 4 ? 4 : 1);
+  });
+
+  return { categoryWeights, seenCourseIds, completedCourseIds };
+}
+
+async function getPublishedRecommendationCandidates() {
+  return Course.aggregate([
+    { $match: { status: 'published' } },
+    {
+      $lookup: {
+        from: 'categories',
+        localField: 'category',
+        foreignField: '_id',
+        as: 'category',
+      },
+    },
+    { $unwind: { path: '$category', preserveNullAndEmptyArrays: true } },
+    {
+      $project: {
+        title: 1,
+        slug: 1,
+        description: 1,
+        category: {
+          _id: '$category._id',
+          name: '$category.name',
+          slug: '$category.slug',
+          isActive: '$category.isActive',
+        },
+        thumbnail: 1,
+        thumbnailHorizontal: 1,
+        thumbnailVertical: 1,
+        thumbnailUrl: 1,
+        thumbnailVerticalUrl: 1,
+        averageRating: 1,
+        totalStarted: 1,
+        totalCompleted: 1,
+        totalWishlisted: 1,
+        completionRate: 1,
+        publishedAt: 1,
+        createdAt: 1,
+        videoCount: { $size: { $ifNull: ['$videos', []] } },
+      },
+    },
   ]);
 }
 
@@ -1911,7 +2223,8 @@ app.get('/api/admin/users', protectAdmin, async (req, res) => {
 
 app.get('/api/admin/user-management', protectAdmin, async (req, res) => {
   try {
-    const [users, progressRows] = await Promise.all([
+    const watchEventNames = ['video_start', 'video_progress', 'video_complete', 'video_watch'];
+    const [users, progressRows, progressWatchRows, analyticsWatchRows] = await Promise.all([
       User.find()
         .sort({ createdAt: -1 })
         .select('fullName email mobileNumber avatar gender age subscriptionStatus isMobileVerified isEmailVerified isActive marketingOptIn createdAt lastActiveAt')
@@ -1953,6 +2266,60 @@ app.get('/api/admin/user-management', protectAdmin, async (req, res) => {
         },
         { $sort: { updatedAt: -1, progressPercent: -1 } },
       ]),
+      Progress.aggregate([
+        {
+          $group: {
+            _id: '$user',
+            totalWatchSeconds: { $sum: { $ifNull: ['$watchedSeconds', 0] } },
+            watchedVideos: { $sum: { $cond: [{ $gt: [{ $ifNull: ['$watchedSeconds', 0] }, 0] }, 1, 0] } },
+            completedVideos: { $sum: { $cond: ['$completed', 1, 0] } },
+            lastWatchedAt: { $max: '$lastWatchedAt' },
+          },
+        },
+        {
+          $project: {
+            _id: 0,
+            userId: { $toString: '$_id' },
+            totalWatchSeconds: 1,
+            watchedVideos: 1,
+            completedVideos: 1,
+            lastWatchedAt: 1,
+          },
+        },
+      ]),
+      AnalyticsEvent.aggregate([
+        {
+          $match: {
+            event: { $in: watchEventNames },
+            userId: { $nin: [null, ''] },
+          },
+        },
+        {
+          $addFields: {
+            watchedSeconds: { $ifNull: ['$watchSeconds', { $ifNull: ['$watchedSeconds', '$durationSeconds'] }] },
+            watchedUserId: { $toString: '$userId' },
+          },
+        },
+        {
+          $group: {
+            _id: '$watchedUserId',
+            totalWatchSeconds: { $sum: { $ifNull: ['$watchedSeconds', 0] } },
+            watchedVideos: { $addToSet: '$videoId' },
+            completedVideos: { $sum: { $cond: [{ $eq: ['$event', 'video_complete'] }, 1, 0] } },
+            lastWatchedAt: { $max: '$createdAt' },
+          },
+        },
+        {
+          $project: {
+            _id: 0,
+            userId: '$_id',
+            totalWatchSeconds: 1,
+            watchedVideos: { $size: '$watchedVideos' },
+            completedVideos: 1,
+            lastWatchedAt: 1,
+          },
+        },
+      ]),
     ]);
 
     const progressByUser = progressRows.reduce((acc, row) => {
@@ -1961,8 +2328,24 @@ app.get('/api/admin/user-management', protectAdmin, async (req, res) => {
       return acc;
     }, {});
 
+    const progressWatchByUser = progressWatchRows.reduce((acc, row) => {
+      acc[row.userId] = row;
+      return acc;
+    }, {});
+    const analyticsWatchByUser = analyticsWatchRows.reduce((acc, row) => {
+      acc[row.userId] = row;
+      return acc;
+    }, {});
+    const preferAnalyticsWatch = analyticsWatchRows.length > 0;
+
     res.json(users.map((user) => {
       const userProgress = progressByUser[String(user._id)] || [];
+      const watch = (
+        preferAnalyticsWatch
+          ? analyticsWatchByUser[String(user._id)] || progressWatchByUser[String(user._id)]
+          : progressWatchByUser[String(user._id)]
+      ) || {};
+      const watchedMinutes = Math.round(Number(watch.totalWatchSeconds || 0) / 60);
       const completedCourses = userProgress.filter((course) => (
         Number(course.totalVideos || 0) > 0
           ? Number(course.completedCount || 0) >= Number(course.totalVideos || 0)
@@ -1979,6 +2362,13 @@ app.get('/api/admin/user-management', protectAdmin, async (req, res) => {
           averageProgress: userProgress.length
             ? Math.round(userProgress.reduce((sum, course) => sum + Number(course.progressPercent || 0), 0) / userProgress.length)
             : 0,
+        },
+        watchSummary: {
+          watchedMinutes,
+          watchedHours: Math.round((watchedMinutes / 60) * 10) / 10,
+          watchedVideos: Number(watch.watchedVideos || 0),
+          completedVideos: Number(watch.completedVideos || 0),
+          lastWatchedAt: watch.lastWatchedAt || null,
         },
       };
     }));
@@ -2122,6 +2512,49 @@ app.post('/api/categories', protectAdmin, async (req, res) => {
     }
 
     res.status(400).json({ error: error.message });
+  }
+});
+
+// Recommendation Routes
+app.get('/api/recommendations/courses', async (req, res) => {
+  try {
+    const limit = clampRecommendationLimit(req.query.limit);
+    const user = await findOptionalRecommendationUser(req);
+    const cacheKey = `recommendations:anonymous:${limit}`;
+
+    if (!user) {
+      const cached = await getCachedPublicRead(cacheKey);
+      if (cached) {
+        setPublicReadCacheHeaders(res, true);
+        return res.json(cached);
+      }
+    }
+
+    const [signals, candidates] = await Promise.all([
+      loadRecommendationSignals(user),
+      getPublishedRecommendationCandidates(),
+    ]);
+
+    const recommendations = rankRecommendationCandidates(candidates, signals, limit);
+    const response = {
+      recommendations,
+      meta: {
+        personalized: Boolean(user && signals.categoryWeights.size),
+        generatedAt: new Date().toISOString(),
+        limit,
+      },
+    };
+
+    if (!user) {
+      await setCachedPublicRead(cacheKey, response);
+      setPublicReadCacheHeaders(res, false);
+    } else {
+      res.set('Cache-Control', 'private, max-age=60');
+    }
+
+    res.json(response);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
 });
 

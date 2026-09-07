@@ -278,8 +278,9 @@ export const page = {
     .badge-orange { background: rgba(251,146,60,0.15); border: 1px solid rgba(251,146,60,.4); color: #fb923c; }
     .rec-body { padding: 12px 14px; }
     .rec-title { font-size: .84rem; font-weight: 700; color: #fff; line-height: 1.3; margin-bottom: 6px; }
-    .rec-meta-row { display: flex; align-items: center; gap: 10px; font-size: .7rem; color: var(--gray); margin-bottom: 10px; }
+    .rec-meta-row { display: flex; align-items: center; gap: 10px; font-size: .7rem; color: var(--gray); margin-bottom: 8px; }
     .rec-meta-row span { display: flex; align-items: center; gap: 4px; }
+    .rec-reason { min-height: 34px; margin-bottom: 10px; font-size: .7rem; line-height: 1.45; color: var(--light); }
     .rec-price-row { display: flex; align-items: center; justify-content: space-between; }
     .rec-price { font-size: 1rem; font-weight: 800; color: var(--cyan); }
     .cart-btn {
