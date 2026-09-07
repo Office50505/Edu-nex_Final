@@ -267,7 +267,7 @@ router.patch('/me', protect, async (req, res) => {
     if (Object.prototype.hasOwnProperty.call(req.body, 'avatar')) {
       const avatar = sanitizeProfileAvatar(req.body.avatar);
       if (avatar === undefined) {
-        return res.status(400).json({ error: 'Please choose one of the EduNex avatars' });
+        return res.status(400).json({ error: 'Please choose one of the Skillomate avatars' });
       }
       updates.avatar = avatar;
     }

@@ -265,16 +265,16 @@ export function ProfilePage() {
             <div className="pf-prefs-right">
               <button className="pf-logout-btn" type="button" onClick={logoutProfile}>
                 <i className="fas fa-arrow-right-from-bracket" aria-hidden="true"></i>
-                Logout from EduNex
+                Logout from Skillomate
               </button>
-              <p className="pf-version-text">Version 4.2.1-stable • EduNex <span>Cloud Sync Active</span></p>
+              <p className="pf-version-text">Version 4.2.1-stable • Skillomate <span>Cloud Sync Active</span></p>
             </div>
           </div>
         </div>
       </div>
 
       <div className="pf-watermark">
-        <div className="pf-watermark-main">EDUNEX</div>
+        <div className="pf-watermark-main">SKILLOMATE</div>
         <div className="pf-watermark-sub">T E C H N I C A L &nbsp; E L E G A N C E</div>
       </div>
 

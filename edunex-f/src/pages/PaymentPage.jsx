@@ -112,9 +112,9 @@ function courseThumbnailSrc(course) {
 
 function fallbackCoursePreview() {
   return {
-    title: "EduNex Course Library",
-    description: "Start your trial and choose from the real EduNex courses available in your course catalogue.",
-    category: { name: "EduNex AI" },
+    title: "Skillomate Course Library",
+    description: "Start your trial and choose from the real Skillomate courses available in your course catalogue.",
+    category: { name: "Skillomate AI" },
     averageRating: 4.8,
     videoCount: 0,
   };
@@ -178,7 +178,7 @@ function CoursePreview({ course }) {
   const cat = course.category?.name || "Course";
   const vids = course.videoCount ?? course.videos?.length ?? 0;
   const rating = Number(course.averageRating || 4.8);
-  const title = course.title || "EduNex";
+  const title = course.title || "Skillomate";
   const thumbnail = courseThumbnailSrc(course) || window.EduNex?.placeholderImage?.(title) || "";
 
   return (
@@ -190,7 +190,7 @@ function CoursePreview({ course }) {
           alt={title}
           onError={(event) => {
             event.currentTarget.onerror = null;
-            event.currentTarget.src = window.EduNex?.placeholderImage?.(event.currentTarget.alt || "EduNex") || "";
+            event.currentTarget.src = window.EduNex?.placeholderImage?.(event.currentTarget.alt || "Skillomate") || "";
           }}
         />
       </div>
@@ -270,7 +270,7 @@ export function PaymentPage() {
     const courseWatch = targetCourse?._id ? `/videos.html?courseId=${encodeURIComponent(targetCourse._id)}&video=0` : webLink;
     if (appLink) {
       setWatchHref(appLink);
-      setWatchText("Open EduNex App");
+      setWatchText("Open Skillomate App");
     } else if (courseId || targetCourse?._id) {
       setWatchHref(courseWatch);
       setWatchText("Continue on Web");
@@ -485,7 +485,7 @@ export function PaymentPage() {
                   <div className="subscribed-banner">
                     <div className="icon"><CheckIcon /></div>
                     <h3>You're already subscribed!</h3>
-                    <p>Enjoy unlimited access to all EduNex courses.</p>
+                    <p>Enjoy unlimited access to all Skillomate courses.</p>
                   </div>
                   <a
                     id="watchNowBtn"

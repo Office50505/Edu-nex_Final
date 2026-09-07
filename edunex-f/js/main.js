@@ -1,4 +1,4 @@
-/* EduNex — Main JavaScript */
+/* Skillomate — Main JavaScript */
 
 /* ===== Navbar scroll ===== */
 const navbar = document.querySelector('.navbar');

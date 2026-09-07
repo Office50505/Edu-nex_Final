@@ -3,7 +3,7 @@ import { page as homeBasedPage } from "../generated-pages/home-based.html.js";
 import { runLegacyPage } from "../legacyRuntime.js";
 import { usePageStyle } from "../hooks/usePageStyle.js";
 
-const mentorImage = "data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20width=%27900%27%20height=%27600%27%20viewBox=%270%200%20900%20600%27%3E%3Crect%20width=%27900%27%20height=%27600%27%20fill=%27%23000000%27/%3E%3Crect%20x=%271%27%20y=%271%27%20width=%27898%27%20height=%27598%27%20rx=%2732%27%20fill=%27%230d0d0d%27%20stroke=%27%23C58B2A%27%20stroke-opacity=%27.35%27/%3E%3Ctext%20x=%27450%27%20y=%27312%27%20text-anchor=%27middle%27%20fill=%27%23C58B2A%27%20font-family=%27Arial%27%20font-size=%2748%27%20font-weight=%27800%27%3EEduNex%3C/text%3E%3C/svg%3E";
+const mentorImage = "data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20width=%27900%27%20height=%27600%27%20viewBox=%270%200%20900%20600%27%3E%3Crect%20width=%27900%27%20height=%27600%27%20fill=%27%23000000%27/%3E%3Crect%20x=%271%27%20y=%271%27%20width=%27898%27%20height=%27598%27%20rx=%2732%27%20fill=%27%230d0d0d%27%20stroke=%27%23C58B2A%27%20stroke-opacity=%27.35%27/%3E%3Ctext%20x=%27450%27%20y=%27312%27%20text-anchor=%27middle%27%20fill=%27%23C58B2A%27%20font-family=%27Arial%27%20font-size=%2748%27%20font-weight=%27800%27%3ESkillomate%3C/text%3E%3C/svg%3E";
 
 const futureProof = [
   ["fa-pen-nib", "AI Content Creation", "Master ChatGPT, Claude, and Midjourney to produce professional content 10× faster. Freelance, create courses, or run your own content agency.", [["$50–$150/hr", "badge-teal"], ["Freelance", "badge-gray"]], "var(--accent)", "rgba(197,139,42,.12)"],
@@ -15,10 +15,10 @@ const futureProof = [
 ];
 
 const mentors = [
-  ["EduNex Learner", "AI Income Strategist", "10+ years in AI product development. Built 3 AI startups and now teaches students how to replicate his success from home.", ["fa-twitter", "fa-linkedin", "fa-youtube"], "EduNex Learner"],
-  ["EduNex Mentor", "AI Content Expert", "Former Google engineer turned AI content consultant. Earning $15K/month from AI-powered content businesses she built from scratch.", ["fa-twitter", "fa-linkedin", "fa-instagram"], "EduNex Mentor"],
-  ["EduNex Mentor", "AI Automation Specialist", "Built and sold two AI automation agencies. Now shares exactly how to replicate his $200K/year formula with students worldwide.", ["fa-twitter", "fa-linkedin", "fa-youtube"], "EduNex Mentor"],
-  ["EduNex Mentor", "AI Freelance Coach", "Top-rated AI freelancer on Upwork with $500K+ in earnings. Teaches her proven system for landing premium AI clients consistently.", ["fa-twitter", "fa-linkedin", "fa-instagram"], "EduNex Mentor"],
+  ["Skillomate Learner", "AI Income Strategist", "10+ years in AI product development. Built 3 AI startups and now teaches students how to replicate his success from home.", ["fa-twitter", "fa-linkedin", "fa-youtube"], "Skillomate Learner"],
+  ["Skillomate Mentor", "AI Content Expert", "Former Google engineer turned AI content consultant. Earning $15K/month from AI-powered content businesses she built from scratch.", ["fa-twitter", "fa-linkedin", "fa-instagram"], "Skillomate Mentor"],
+  ["Skillomate Mentor", "AI Automation Specialist", "Built and sold two AI automation agencies. Now shares exactly how to replicate his $200K/year formula with students worldwide.", ["fa-twitter", "fa-linkedin", "fa-youtube"], "Skillomate Mentor"],
+  ["Skillomate Mentor", "AI Freelance Coach", "Top-rated AI freelancer on Upwork with $500K+ in earnings. Teaches her proven system for landing premium AI clients consistently.", ["fa-twitter", "fa-linkedin", "fa-instagram"], "Skillomate Mentor"],
 ];
 
 function DisabledSocial({ icon }) {
@@ -65,7 +65,7 @@ export function HomeBasedPage() {
             <span className="gradient-text">AI Income</span>
           </h1>
           <p className="hero-sub reveal reveal-delay-2" style={{ margin: "0 auto 40px", textAlign: "center", maxWidth: 620 }}>
-            The AI economy is generating billions in new income opportunities every day. EduNex gives you the skills, tools, and mentorship to claim your share — from anywhere in the world.
+            The AI economy is generating billions in new income opportunities every day. Skillomate gives you the skills, tools, and mentorship to claim your share — from anywhere in the world.
           </p>
           <div className="hero-actions reveal reveal-delay-3" style={{ justifyContent: "center" }}>
             <a href="login.html" className="btn btn-primary btn-xl"><i className="fas fa-arrow-up" aria-hidden="true"></i> Start Earning With AI</a>

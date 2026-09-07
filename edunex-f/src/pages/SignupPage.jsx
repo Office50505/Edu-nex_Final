@@ -420,7 +420,7 @@ export function SignupPage() {
     <div className="react-page-root" data-page="signup.html">
       <main className="sp-main">
         <div className="sp-photo">
-          <img src="assets/image.png" alt="Student learning AI with EduNex" />
+          <img src="assets/image.png" alt="Student learning AI with Skillomate" />
           <div className="sp-photo-overlay"></div>
           <div className="sp-photo-bottom">
             <div className="sp-photo-heading">Join the AI Revolution</div>

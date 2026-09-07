@@ -106,7 +106,7 @@ async function createTrialPaymentRequest(userId) {
     },
     paymentFlow: {
       type: 'PG_CHECKOUT',
-      message: 'Start EduNex trial',
+      message: 'Start Skillomate trial',
       subscription: {
         type: 'RECURRING',
         startAmount: trialAmountPaise,

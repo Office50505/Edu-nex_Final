@@ -13,7 +13,7 @@ function categoryName(course) {
 }
 
 function instructorName(course) {
-  return course?.instructor?.name || course?.instructorName || course?.author || "EduNex AI Mentors";
+  return course?.instructor?.name || course?.instructorName || course?.author || "Skillomate AI Mentors";
 }
 
 function lessonCount(course) {
@@ -214,7 +214,7 @@ export function CourseDetailsPage() {
                 alt={title}
                 onError={(event) => {
                   event.currentTarget.onerror = null;
-                  event.currentTarget.src = window.EduNex?.placeholderImage?.(event.currentTarget.alt || "EduNex") || "";
+                  event.currentTarget.src = window.EduNex?.placeholderImage?.(event.currentTarget.alt || "Skillomate") || "";
                 }}
               />
               <div className="course-hero-body">

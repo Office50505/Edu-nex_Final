@@ -4,7 +4,7 @@ import { runLegacyPage } from "../legacyRuntime.js";
 import { usePageStyle } from "../hooks/usePageStyle.js";
 import { useEduNexRuntimeReady } from "../hooks/useEduNexRuntimeReady.js";
 
-const FALLBACK_IMAGE = "data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20width=%27900%27%20height=%27600%27%20viewBox=%270%200%20900%20600%27%3E%3Crect%20width=%27900%27%20height=%27600%27%20fill=%27%23000000%27/%3E%3Crect%20x=%271%27%20y=%271%27%20width=%27898%27%20height=%27598%27%20rx=%2732%27%20fill=%27%230d0d0d%27%20stroke=%27%23C58B2A%27%20stroke-opacity=%27.35%27/%3E%3Ctext%20x=%27450%27%20y=%27312%27%20text-anchor=%27middle%27%20fill=%27%23C58B2A%27%20font-family=%27Arial%27%20font-size=%2748%27%20font-weight=%27800%27%3EEduNex%3C/text%3E%3C/svg%3E";
+const FALLBACK_IMAGE = "data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20width=%27900%27%20height=%27600%27%20viewBox=%270%200%20900%20600%27%3E%3Crect%20width=%27900%27%20height=%27600%27%20fill=%27%23000000%27/%3E%3Crect%20x=%271%27%20y=%271%27%20width=%27898%27%20height=%27598%27%20rx=%2732%27%20fill=%27%230d0d0d%27%20stroke=%27%23C58B2A%27%20stroke-opacity=%27.35%27/%3E%3Ctext%20x=%27450%27%20y=%27312%27%20text-anchor=%27middle%27%20fill=%27%23C58B2A%27%20font-family=%27Arial%27%20font-size=%2748%27%20font-weight=%27800%27%3ESkillomate%3C/text%3E%3C/svg%3E";
 const AUTO_NEXT_KEY = "edunexAutoNextVideo";
 const APP_FULLSCREEN_CLASS = "is-app-fullscreen";
 const BODY_FULLSCREEN_CLASS = "has-edunex-player-fullscreen";
@@ -111,8 +111,8 @@ function lessonImage(course, lesson) {
   return courseImage(course);
 }
 
-function fallbackImage(label = "EduNex") {
-  const clean = String(label || "EduNex").replace(/[&<>"']/g, "").slice(0, 32);
+function fallbackImage(label = "Skillomate") {
+  const clean = String(label || "Skillomate").replace(/[&<>"']/g, "").slice(0, 32);
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="900" height="600" viewBox="0 0 900 600"><rect width="900" height="600" fill="#050710"/><rect x="1" y="1" width="898" height="598" rx="32" fill="#0d0d0d" stroke="#C58B2A" stroke-opacity=".35"/><text x="450" y="300" text-anchor="middle" fill="#C58B2A" font-family="Arial" font-size="42" font-weight="800">${clean}</text></svg>`;
   return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
 }
@@ -1207,9 +1207,9 @@ export function VideosPage() {
     return (
       <a className="course-tile" href={href} data-course-id={item._id} key={`${item._id}-${isContinue ? "continue" : "all"}`}>
         <div className="tile-media">
-          <img src={courseImage(item)} alt={item.title || "EduNex course"} onError={(event) => {
+          <img src={courseImage(item)} alt={item.title || "Skillomate course"} onError={(event) => {
             event.currentTarget.onerror = null;
-            event.currentTarget.src = fallbackImage(event.currentTarget.alt || "EduNex");
+            event.currentTarget.src = fallbackImage(event.currentTarget.alt || "Skillomate");
           }} />
           <span className="tile-badge">{badge}</span>
         </div>
@@ -1218,7 +1218,7 @@ export function VideosPage() {
           <p>{isContinue ? `Next: ${nextLesson.title || "Start course"}` : (item.description || "Open this course to watch the full playlist.")}</p>
           <div className="tile-meta">
             <span>{lessonCount || "No"} lessons</span>
-            <span>{item.averageRating ? `${Number(item.averageRating).toFixed(1)} rating` : "EduNex course"}</span>
+            <span>{item.averageRating ? `${Number(item.averageRating).toFixed(1)} rating` : "Skillomate course"}</span>
           </div>
           <div className="tile-progress" style={{ "--progress": `${progress.percent}%` }}><span></span></div>
         </div>
@@ -1231,7 +1231,7 @@ export function VideosPage() {
       <main id="libraryView" hidden={Boolean(selectedCourseId)}>
         <section className="library-hero library-shell">
           <div>
-            <p className="library-kicker">EduNex Library</p>
+            <p className="library-kicker">Skillomate Library</p>
             <h1>Your courses, progress, and next lessons in one place.</h1>
             <p>See the courses currently in motion, continue from your latest lesson, or open any course into a focused watch page with the full playlist beside the video.</p>
             <form className="library-search" role="search" id="librarySearch" onSubmit={(event) => event.preventDefault()}>
@@ -1271,7 +1271,7 @@ export function VideosPage() {
               <h2>Continue Watching</h2>
               <p>Jump back into the next lesson from your recent courses.</p>
             </div>
-            <span className="status-line" id="loadStatus">{courses.length ? "Synced with EduNex courses" : "Loading library..."}</span>
+            <span className="status-line" id="loadStatus">{courses.length ? "Synced with Skillomate courses" : "Loading library..."}</span>
           </div>
           <div className="continue-grid" id="continueGrid">{continueCourses.length ? continueCourses.map((item) => renderCourseTile(item, true)) : <div className="empty-state">No courses with videos are available yet.</div>}</div>
         </section>
@@ -1322,14 +1322,14 @@ export function VideosPage() {
                   key={`${course._id}-${activeIndex}`}
                 />
               ) : (
-                <div className="player-placeholder"><div><strong>Preparing course</strong><span>Loading your EduNex course playlist...</span></div></div>
+                <div className="player-placeholder"><div><strong>Preparing course</strong><span>Loading your Skillomate course playlist...</span></div></div>
               )}
             </div>
             <div className="lesson-info">
               <h1 id="lessonTitle">{error ? "Course unavailable" : (lesson.title || course?.title || "Select a lesson")}</h1>
               <p id="lessonDescription">{error || lesson.description || course?.description || "Choose a video from the playlist to begin watching."}</p>
               <div className="lesson-meta" id="lessonMeta">
-                {course ? <span>{course.title || "EduNex course"}</span> : null}
+                {course ? <span>{course.title || "Skillomate course"}</span> : null}
                 {course ? <span>Lesson {activeIndex + 1} of {Math.max(lessons.length, 1)}</span> : null}
                 {course ? <span>{formatDuration(lesson.duration)}</span> : null}
               </div>
@@ -1361,9 +1361,9 @@ export function VideosPage() {
               {!error && lessons.map((item, index) => (
                 <button className={`lesson-item${index === activeIndex ? " is-active" : ""}`} type="button" data-index={index} key={item._id || item.id || `${item.title}-${index}`} onClick={() => setActiveIndex(index)}>
                   <span className="lesson-thumb">
-                    <img src={lessonImage(course, item)} alt={item.title || course.title || "EduNex lesson"} onError={(event) => {
+                    <img src={lessonImage(course, item)} alt={item.title || course.title || "Skillomate lesson"} onError={(event) => {
                       event.currentTarget.onerror = null;
-                      event.currentTarget.src = fallbackImage(event.currentTarget.alt || "EduNex");
+                      event.currentTarget.src = fallbackImage(event.currentTarget.alt || "Skillomate");
                     }} />
                     <span className="lesson-number">{index + 1}</span>
                   </span>

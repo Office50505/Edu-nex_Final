@@ -1,5 +1,5 @@
 /* ===================================================
-   EduNex — Animation Engine  v1.0
+   Skillomate — Animation Engine  v1.0
    =================================================== */
 (function () {
   'use strict';

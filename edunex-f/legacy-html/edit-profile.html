@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>EduNex AI — Edit Profile</title>
+  <title>Skillomate AI — Edit Profile</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -265,7 +265,7 @@
 
 <nav class="navbar">
   <div class="nav-inner">
-    <a href="index.html" class="nav-logo">EduNex <span>AI</span></a>
+    <a href="index.html" class="nav-logo">Skillomate <span>AI</span></a>
     <ul class="nav-links">
       <li><a href="index.html">Home</a></li>
       <li><a href="courses.html">Courses</a></li>
@@ -293,7 +293,7 @@
       <img id="avaImg" src="assets/male1.jpeg" alt="Avatar">
       <div class="ava-edit-overlay"><i class="fas fa-user-check"></i></div>
     </div>
-    <div class="ava-edit-name">EduNex Learner</div>
+    <div class="ava-edit-name">Skillomate Learner</div>
     <div class="ava-edit-sub">This is the avatar saved from signup</div>
     <button class="ava-change-btn" type="button" onclick="document.getElementById('avatarSelectionCard').scrollIntoView({ behavior: 'smooth', block: 'start' });">
       <i class="fas fa-user-pen"></i> Change avatar
@@ -529,7 +529,7 @@
     const name = splitName(user.fullName);
     const avatar = user.avatar || user.avatarUrl || user.photoUrl || user.photoURL;
     renderAvatarPicker(avatar);
-    document.querySelector('.ava-edit-name').textContent = user.fullName || 'EduNex Learner';
+    document.querySelector('.ava-edit-name').textContent = user.fullName || 'Skillomate Learner';
     document.getElementById('firstNameInput').value = name.first;
     document.getElementById('lastNameInput').value = name.last;
     document.getElementById('emailInput').value = user.email || '';
@@ -605,7 +605,7 @@
 
     const avatar = selectedProfileAvatar || normalizedAvatarPath(document.getElementById('avaImg').dataset.avatar);
     if (!allowedAvatars.includes(avatar)) {
-      showProfileToast('Please choose one of the EduNex avatars', false);
+      showProfileToast('Please choose one of the Skillomate avatars', false);
       return;
     }
 
@@ -623,7 +623,7 @@
         }),
       });
       updateStoredUser(data.user);
-      document.querySelector('.ava-edit-name').textContent = data.user.fullName || 'EduNex Learner';
+      document.querySelector('.ava-edit-name').textContent = data.user.fullName || 'Skillomate Learner';
       showProfileToast('Profile updated successfully!');
     } catch (error) {
       showProfileToast(userSafeProfileError(error, "We couldn't save your changes. Please try again."), false);

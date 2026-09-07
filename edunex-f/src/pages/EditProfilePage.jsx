@@ -94,7 +94,7 @@ function profileFromUser(user) {
     avatar: ALLOWED_AVATARS.includes(normalizedAvatarPath(user?.avatar || user?.avatarUrl || user?.photoUrl || user?.photoURL))
       ? normalizedAvatarPath(user?.avatar || user?.avatarUrl || user?.photoUrl || user?.photoURL)
       : ALLOWED_AVATARS[0],
-    fullName: user?.fullName || "EduNex Learner",
+    fullName: user?.fullName || "Skillomate Learner",
   };
 }
 
@@ -192,7 +192,7 @@ export function EditProfilePage() {
       return;
     }
     if (!ALLOWED_AVATARS.includes(form.avatar)) {
-      showProfileToast("Please choose one of the EduNex avatars", false);
+      showProfileToast("Please choose one of the Skillomate avatars", false);
       return;
     }
 
@@ -209,7 +209,7 @@ export function EditProfilePage() {
         }),
       });
       updateStoredUser(data.user);
-      setForm((current) => ({ ...current, fullName: data.user.fullName || "EduNex Learner" }));
+      setForm((current) => ({ ...current, fullName: data.user.fullName || "Skillomate Learner" }));
       showProfileToast("Profile updated successfully!");
     } catch (error) {
       showProfileToast(userSafeProfileError(error, "We couldn't save your changes. Please try again."), false);
@@ -237,7 +237,7 @@ export function EditProfilePage() {
             <img id="avaImg" src={form.avatar} alt="Avatar" data-avatar={form.avatar} />
             <div className="ava-edit-overlay"><i className="fas fa-user-check" aria-hidden="true"></i></div>
           </div>
-          <div className="ava-edit-name">{form.fullName || fullName || "EduNex Learner"}</div>
+          <div className="ava-edit-name">{form.fullName || fullName || "Skillomate Learner"}</div>
           <div className="ava-edit-sub">This is the avatar saved from signup</div>
           <button className="ava-change-btn" type="button" onClick={() => avatarCardRef.current?.scrollIntoView({ behavior: "smooth", block: "start" })}>
             <i className="fas fa-user-pen" aria-hidden="true"></i> Change avatar

@@ -42,13 +42,14 @@ const buildVideos = () => Array.from({ length: 45 }, (_, index) => ({
   downloaded: index === 2 || index === 7,
 }));
 
-export const DEV_UI_QA_ENABLED = __DEV__ && process.env.EXPO_PUBLIC_EDUNEX_UI_QA_FIXTURES !== "0";
+const UI_QA_FLAG = String(process.env.EXPO_PUBLIC_EDUNEX_UI_QA_FIXTURES || "").toLowerCase();
+export const DEV_UI_QA_ENABLED = __DEV__ && ["1", "true"].includes(UI_QA_FLAG);
 
 export const UI_QA_COURSES = [
   {
     _id: "dev-ui-course-ai-automation",
     title: "AI Automation Agency Masterclass: Build, Sell & Scale AI Workflows for Businesses",
-    instructor: "EduNex Mentor With A Very Long Instructor Name",
+    instructor: "Skillomate Mentor With A Very Long Instructor Name",
     category: "AI Automation",
     description:
       "Learn how to identify business automation opportunities, design practical AI workflows, package your service, price retainers and deliver client-ready systems. This description is deliberately extended for Phase 3 UI QA so Course Details, Curriculum and Lesson Player screens can be stress-tested for wrapping, spacing and scroll reachability.",
@@ -67,7 +68,7 @@ export const UI_QA_COURSES = [
   {
     _id: "dev-ui-course-prompt-engineering",
     title: "Prompt Engineering for Career Growth and Freelance Client Work",
-    instructor: "EduNex Mentor",
+    instructor: "Skillomate Mentor",
     category: "AI Skills",
     description: "A practical course for using prompts in real professional workflows.",
     price: 499,
@@ -79,7 +80,7 @@ export const UI_QA_COURSES = [
   {
     _id: "dev-ui-course-missing-image",
     title: "Missing Image Course Fixture With A Long Title For Card Stress Testing",
-    instructor: "EduNex Mentor",
+    instructor: "Skillomate Mentor",
     category: "Freelancing",
     description: "This course intentionally omits artwork so fallback cards can be tested.",
     price: 499,
@@ -109,7 +110,7 @@ export const UI_QA_CERTIFICATES = [
     certificateId: "DEV-CERT-EDUNEX-0001",
     courseId: "dev-ui-course-ai-automation",
     courseTitle: "AI Automation Agency Masterclass: Build, Sell & Scale AI Workflows for Businesses",
-    userName: "Arslan Ali Mansoori With A Long Certificate Name",
+    userName: "UI QA Learner",
     issuedAt: new Date().toISOString(),
   },
 ];

@@ -11,7 +11,7 @@ export function AdminLoginPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
-    document.title = "Admin Login | EduNex";
+    document.title = "Admin Login | Skillomate";
     if (!getToken()) return;
     const params = new URLSearchParams(window.location.search);
     window.location.href = params.get("next") || adminRoutes.dashboard;
@@ -62,7 +62,7 @@ export function AdminLoginPage() {
         <div className="admin-auth-brand">
           <span className="admin-auth-logo" aria-hidden="true" />
           <div>
-            <strong>EduNex</strong>
+            <strong>Skillomate</strong>
             <small>Admin Workspace</small>
           </div>
         </div>

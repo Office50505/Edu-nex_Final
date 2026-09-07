@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Course Player | EduNex</title>
+  <title>Course Player | Skillomate</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -135,7 +135,7 @@
       border-radius: 8px;
       background:
         linear-gradient(135deg, rgba(255,255,255,.88), rgba(238,248,241,.92)),
-        url("data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20width=%27900%27%20height=%27600%27%20viewBox=%270%200%20900%20600%27%3E%3Crect%20width=%27900%27%20height=%27600%27%20fill=%27%23000000%27/%3E%3Crect%20x=%271%27%20y=%271%27%20width=%27898%27%20height=%27598%27%20rx=%2732%27%20fill=%27%230d0d0d%27%20stroke=%27%23C58B2A%27%20stroke-opacity=%27.35%27/%3E%3Ctext%20x=%27450%27%20y=%27312%27%20text-anchor=%27middle%27%20fill=%27%23C58B2A%27%20font-family=%27Arial%27%20font-size=%2748%27%20font-weight=%27800%27%3EEduNex%3C/text%3E%3C/svg%3E") center/cover;
+        url("data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20width=%27900%27%20height=%27600%27%20viewBox=%270%200%20900%20600%27%3E%3Crect%20width=%27900%27%20height=%27600%27%20fill=%27%23000000%27/%3E%3Crect%20x=%271%27%20y=%271%27%20width=%27898%27%20height=%27598%27%20rx=%2732%27%20fill=%27%230d0d0d%27%20stroke=%27%23C58B2A%27%20stroke-opacity=%27.35%27/%3E%3Ctext%20x=%27450%27%20y=%27312%27%20text-anchor=%27middle%27%20fill=%27%23C58B2A%27%20font-family=%27Arial%27%20font-size=%2748%27%20font-weight=%27800%27%3ESkillomate%3C/text%3E%3C/svg%3E") center/cover;
       box-shadow: var(--library-shadow);
       display: flex;
       flex-direction: column;
@@ -1427,7 +1427,7 @@
 <body>
 <nav class="navbar">
   <div class="nav-inner">
-    <a href="index.html" class="nav-logo">EduNex <span>AI</span></a>
+    <a href="index.html" class="nav-logo">Skillomate <span>AI</span></a>
     <ul class="nav-links">
       <li><a href="index.html">Home</a></li>
       <li><a href="courses.html">Courses</a></li>
@@ -1447,7 +1447,7 @@
 <main id="libraryView" hidden>
   <section class="library-hero library-shell">
     <div>
-      <p class="library-kicker">EduNex Library</p>
+      <p class="library-kicker">Skillomate Library</p>
       <h1>Your courses, progress, and next lessons in one place.</h1>
       <p>See the courses currently in motion, continue from your latest lesson, or open any course into a focused watch page with the full playlist beside the video.</p>
       <form class="library-search" role="search" id="librarySearch">
@@ -1704,7 +1704,7 @@
     if (course.thumbnailVerticalUrl) return proxyImageUrl(course.thumbnailVerticalUrl);
     if (course.videos?.[0]?.thumbnailUrl) return proxyImageUrl(course.videos[0].thumbnailUrl);
     if (course.videos?.[0]?.youtubeId) return proxyImageUrl(`https://img.youtube.com/vi/${course.videos[0].youtubeId}/hqdefault.jpg`);
-    return "data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20width=%27900%27%20height=%27600%27%20viewBox=%270%200%20900%20600%27%3E%3Crect%20width=%27900%27%20height=%27600%27%20fill=%27%23000000%27/%3E%3Crect%20x=%271%27%20y=%271%27%20width=%27898%27%20height=%27598%27%20rx=%2732%27%20fill=%27%230d0d0d%27%20stroke=%27%23C58B2A%27%20stroke-opacity=%27.35%27/%3E%3Ctext%20x=%27450%27%20y=%27312%27%20text-anchor=%27middle%27%20fill=%27%23C58B2A%27%20font-family=%27Arial%27%20font-size=%2748%27%20font-weight=%27800%27%3EEduNex%3C/text%3E%3C/svg%3E";
+    return "data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20width=%27900%27%20height=%27600%27%20viewBox=%270%200%20900%20600%27%3E%3Crect%20width=%27900%27%20height=%27600%27%20fill=%27%23000000%27/%3E%3Crect%20x=%271%27%20y=%271%27%20width=%27898%27%20height=%27598%27%20rx=%2732%27%20fill=%27%230d0d0d%27%20stroke=%27%23C58B2A%27%20stroke-opacity=%27.35%27/%3E%3Ctext%20x=%27450%27%20y=%27312%27%20text-anchor=%27middle%27%20fill=%27%23C58B2A%27%20font-family=%27Arial%27%20font-size=%2748%27%20font-weight=%27800%27%3ESkillomate%3C/text%3E%3C/svg%3E";
   }
 
   function lessonImage(course, lesson) {
@@ -1714,8 +1714,8 @@
     return courseImage(course);
   }
 
-  function fallbackImage(label = "EduNex") {
-    const clean = String(label || "EduNex").replace(/[&<>"']/g, "").slice(0, 32);
+  function fallbackImage(label = "Skillomate") {
+    const clean = String(label || "Skillomate").replace(/[&<>"']/g, "").slice(0, 32);
     const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="900" height="600" viewBox="0 0 900 600"><rect width="900" height="600" fill="#050710"/><rect x="1" y="1" width="898" height="598" rx="32" fill="#0d0d0d" stroke="#C58B2A" stroke-opacity=".35"/><text x="450" y="300" text-anchor="middle" fill="#C58B2A" font-family="Arial" font-size="42" font-weight="800">${clean}</text></svg>`;
     return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
   }
@@ -1788,7 +1788,7 @@
     return `
       <a class="course-tile" href="${escapeHtml(href)}" data-course-id="${escapeHtml(course._id)}">
         <div class="tile-media">
-          <img src="${escapeHtml(courseImage(course))}" alt="${escapeHtml(course.title || "EduNex course")}" onerror="this.onerror=null;this.src=fallbackImage(this.alt||'EduNex')">
+          <img src="${escapeHtml(courseImage(course))}" alt="${escapeHtml(course.title || "Skillomate course")}" onerror="this.onerror=null;this.src=fallbackImage(this.alt||'Skillomate')">
           <span class="tile-badge">${escapeHtml(badge)}</span>
         </div>
         <div class="tile-body">
@@ -1796,7 +1796,7 @@
           <p>${escapeHtml(isContinue ? `Next: ${nextLesson.title || "Start course"}` : (course.description || "Open this course to watch the full playlist."))}</p>
           <div class="tile-meta">
             <span>${escapeHtml(lessonCount || "No")} lessons</span>
-            <span>${escapeHtml(course.averageRating ? `${Number(course.averageRating).toFixed(1)} rating` : "EduNex course")}</span>
+            <span>${escapeHtml(course.averageRating ? `${Number(course.averageRating).toFixed(1)} rating` : "Skillomate course")}</span>
           </div>
           <div class="tile-progress" style="--progress:${progress.percent}%"><span></span></div>
         </div>
@@ -1835,7 +1835,7 @@
       const courses = await response.json();
       state.courses = courses.map(normalizeCourse);
       loadStatus.textContent = state.courses.length
-        ? "Synced with EduNex courses"
+        ? "Synced with Skillomate courses"
         : "No published courses found";
     } catch (error) {
       state.courses = [];
@@ -2098,9 +2098,9 @@
     }
 
     lessonTitle.textContent = lesson.title || course.title || "Course lesson";
-    lessonDescription.textContent = lesson.description || course.description || "Continue watching this EduNex course.";
+    lessonDescription.textContent = lesson.description || course.description || "Continue watching this Skillomate course.";
     lessonMeta.innerHTML = `
-      <span>${escapeHtml(course.title || "EduNex course")}</span>
+      <span>${escapeHtml(course.title || "Skillomate course")}</span>
       <span>Lesson ${escapeHtml(index + 1)} of ${escapeHtml(Math.max(lessons.length, 1))}</span>
       <span>${escapeHtml(formatDuration(lesson.duration))}</span>
     `;
@@ -2540,7 +2540,7 @@
       ? lessons.map((lesson, index) => `
           <button class="lesson-item" type="button" data-index="${index}">
             <span class="lesson-thumb">
-              <img src="${escapeHtml(lessonImage(course, lesson))}" alt="${escapeHtml(lesson.title || course.title || "EduNex lesson")}" onerror="this.onerror=null;this.src=fallbackImage(this.alt||'EduNex')">
+              <img src="${escapeHtml(lessonImage(course, lesson))}" alt="${escapeHtml(lesson.title || course.title || "Skillomate lesson")}" onerror="this.onerror=null;this.src=fallbackImage(this.alt||'Skillomate')">
               <span class="lesson-number">${index + 1}</span>
             </span>
             <span class="lesson-copy">

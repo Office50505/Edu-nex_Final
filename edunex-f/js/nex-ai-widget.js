@@ -37,7 +37,7 @@
           <button class="nai-auth-close" type="button" aria-label="Close">&times;</button>
           <div class="nai-auth-icon"><i class="fas fa-bolt"></i></div>
           <h3 id="nai-auth-title">Login or sign up to use Nex AI</h3>
-          <p>Nex AI is available after you create an EduNex account or log in.</p>
+          <p>Nex AI is available after you create an Skillomate account or log in.</p>
           <div class="nai-auth-actions">
             <a class="nai-auth-primary" href="${loginUrl()}">Login</a>
             <a class="nai-auth-secondary" href="${signupUrl()}">Sign up</a>
@@ -803,7 +803,7 @@
           <div class="nai-setup-card">
             <div class="nai-setup-kicker">First AI setup</div>
             <h3>Choose your AI companion</h3>
-            <p>Pick a refined icon and give your tutor a name. I will save it for your future EduNex sessions.</p>
+            <p>Pick a refined icon and give your tutor a name. I will save it for your future Skillomate sessions.</p>
             <label class="nai-setup-label" for="nai-setup-name">AI name</label>
             <input id="nai-setup-name" type="text" maxlength="24" value="${escAttr(savedBotName === 'Nex AI' ? '' : savedBotName)}" placeholder="Example: Nex, Nova, Mentor AI">
             <div class="nai-setup-label">AI icon</div>
@@ -1124,7 +1124,7 @@
       }),
     });
 
-    return data?.reply || 'I do not know from the EduNex website or course context I have.';
+    return data?.reply || 'I do not know from the Skillomate website or course context I have.';
   }
 
   async function sendMessage() {

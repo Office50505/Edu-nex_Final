@@ -17,10 +17,10 @@ function certificateVerifyUrl(certificate) {
 
 function downloadCertificate(certificate) {
   const text = [
-    "EduNex AI Certificate",
+    "Skillomate AI Certificate",
     "",
     `Certificate ID: ${certificate.certificateId}`,
-    `Learner: ${certificate.learnerName || "EduNex Learner"}`,
+    `Learner: ${certificate.learnerName || "Skillomate Learner"}`,
     `Course: ${certificate.courseTitle || "Completed Course"}`,
     certificate.instructorName ? `Instructor: ${certificate.instructorName}` : null,
     `Issued: ${formatDate(certificate.issuedAt)}`,
@@ -94,8 +94,8 @@ export function CertificatesPage() {
     const url = certificateVerifyUrl(certificate);
     if (navigator.share) {
       await navigator.share({
-        title: "EduNex AI Certificate",
-        text: `${certificate.learnerName || "EduNex Learner"} completed ${certificate.courseTitle || "a course"} on EduNex AI.`,
+        title: "Skillomate AI Certificate",
+        text: `${certificate.learnerName || "Skillomate Learner"} completed ${certificate.courseTitle || "a course"} on Skillomate AI.`,
         url,
       });
       return;
@@ -151,14 +151,14 @@ export function CertificatesPage() {
           ) : null}
           {!message ? visibleRows.map((certificate) => {
             const title = certificate.courseTitle || "Completed Course";
-            const learner = certificate.learnerName || "EduNex Learner";
+            const learner = certificate.learnerName || "Skillomate Learner";
             const lessons = Number(certificate.totalLessons || certificate.completedLessons || 0);
             return (
               <article className="cert-card" data-status="earned" data-certificate-id={certificate.certificateId} key={certificate.certificateId}>
                 <div className="cert-visual">
                   <div className="cert-visual-ribbon">Verified</div>
                   <div className="cert-visual-seal"><i className="fas fa-certificate" aria-hidden="true"></i></div>
-                  <div className="cert-visual-org">EduNex AI</div>
+                  <div className="cert-visual-org">Skillomate AI</div>
                   <div className="cert-visual-title">{title}</div>
                   <div className="cert-visual-name">{learner}</div>
                 </div>

@@ -83,7 +83,7 @@ export function Navbar({ pageKey }) {
     <>
       <nav className="enx-navbar react-navbar">
         <div className="enx-nav-inner">
-          <a href={route("index.html")} className="enx-nav-logo">EduNex <span>AI</span></a>
+          <a href={route("index.html")} className="enx-nav-logo">Skillomate <span>AI</span></a>
           <ul className="enx-nav-links">
             {navItems.map((item) => (
               <li key={item.href}>

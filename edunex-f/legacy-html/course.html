@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Course Details — EduNex AI</title>
+  <title>Course Details — Skillomate AI</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -81,7 +81,7 @@
     function escapeCourseHtml(value){return String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));}
     function courseId(course){return EduNex.courseId?.(course)||course?._id||course?.id||'';}
     function categoryName(course){return typeof course?.category==='string'?course.category:(course?.category?.name||course?.categoryName||'Course');}
-    function instructorName(course){return course?.instructor?.name||course?.instructorName||course?.author||'EduNex AI Mentors';}
+    function instructorName(course){return course?.instructor?.name||course?.instructorName||course?.author||'Skillomate AI Mentors';}
     function lessonCount(course){return Number(course?.videoCount||course?.lessonCount||(Array.isArray(course?.videos)?course.videos.length:0));}
     function readableDuration(course){if(course?.duration)return course.duration;const count=lessonCount(course);return count?`${count} lessons`:'';}
     function priceLabel(course){const value=Number(course?.price||0);return value>1?`₹${value.toLocaleString('en-IN')}`:'₹1 Trial';}
@@ -126,7 +126,7 @@
           <nav class="course-breadcrumb" aria-label="Breadcrumb"><a href="courses.html">Courses</a><span>/</span><span>${escapeCourseHtml(title)}</span></nav>
           <div class="course-detail-grid">
             <article class="course-hero-card">
-              <img class="course-cover" src="${escapeCourseHtml(EduNex.courseImage(course))}" alt="${escapeCourseHtml(title)}" onerror="this.onerror=null;this.src=EduNex.placeholderImage(this.alt||'EduNex')">
+              <img class="course-cover" src="${escapeCourseHtml(EduNex.courseImage(course))}" alt="${escapeCourseHtml(title)}" onerror="this.onerror=null;this.src=EduNex.placeholderImage(this.alt||'Skillomate')">
               <div class="course-hero-body">
                 <div class="course-kicker"><i class="fas fa-book-open"></i>${escapeCourseHtml(categoryName(course))}</div>
                 <h1 class="course-title">${escapeCourseHtml(title)}</h1>

@@ -12,6 +12,7 @@ import {
   Dimensions,
   FlatList,
   Image,
+  Keyboard,
   KeyboardAvoidingView,
   Linking,
   Modal,
@@ -56,8 +57,16 @@ const AI_ROBOT_IMAGES = {
   r8: require("./assets/ai-avatars/r8.jpg"),
   r9: require("./assets/ai-avatars/r9.jpg"),
 };
-const AI_ROBOT_AVATARS = Object.keys(AI_ROBOT_IMAGES).map(id => ({ id }));
+const AI_ROBOT_AVATARS = Object.keys(AI_ROBOT_IMAGES).map((id, index) => ({
+  id,
+  label: `Nex companion ${index + 1}`,
+}));
 const AI_AVATAR_STORAGE_KEY = "edunex_ai_avatar";
+
+function getQaCertificatesForUser(user) {
+  const learnerName = user?.fullName || user?.email || user?.mobileNumber || "Skillomate Learner";
+  return UI_QA_CERTIFICATES.map(certificate => ({ ...certificate, userName: learnerName }));
+}
 
 const AVATAR_IMAGES = {
   a1:  require("./assets/avatars/a1.jpeg"),
@@ -89,7 +98,7 @@ const AVATAR_IMAGES = {
   m5: require("./assets/avatars/a10.jpeg"),
   m6: require("./assets/avatars/a11.jpeg"),
 };
-const DEMO_AVATARS = Object.keys(AVATAR_IMAGES).map(id => ({ id }));
+const DEMO_AVATARS = Object.keys(AVATAR_IMAGES).map((id, index) => ({ id, label: `Profile avatar ${index + 1}` }));
 const HOME_ARTWORK_IMAGES = [
   AVATAR_IMAGES.a1,
   AVATAR_IMAGES.a2,
@@ -151,7 +160,9 @@ function getImageHost(url) {
 
 function traceImageFailure({ screen, courseId, imageUrl, fallbackUsed }) {
   if (!__DEV__) return;
-  console.warn("[EduNex:image-fail]", {
+  // Thumbnail failures are recoverable because every caller supplies a fallback.
+  // Keep the diagnostic in Metro without promoting it to a blocking LogBox warning.
+  console.info("[Skillomate:image-fail]", {
     screen,
     courseId: courseId || "unknown",
     resolvedImageUrl: sanitizeImageUrlForLog(imageUrl),
@@ -161,7 +172,7 @@ function traceImageFailure({ screen, courseId, imageUrl, fallbackUsed }) {
 }
 
 function PosterImage({ course, index = 0, vertical = true, style }) {
-  const fallbackTitle = course?.title || "EduNex";
+  const fallbackTitle = course?.title || "Skillomate";
   const [useLocalFallback, setUseLocalFallback] = useState(false);
   const uri = !useLocalFallback ? getCourseThumbnailUri(course, vertical) : null;
   const localSource = (vertical ? course?.thumbnailVerticalAsset : course?.thumbnailAsset) || course?.thumbnailAsset || HOME_ARTWORK_IMAGES[index % HOME_ARTWORK_IMAGES.length];
@@ -218,11 +229,11 @@ function HorizontalRail({ data, renderItem, contentContainerStyle, keyExtractor 
 function AvatarImage({ avatarId, size = 40, style }) {
   const src = AVATAR_IMAGES[avatarId];
   if (!src) return (
-    <View style={[{ width: size, height: size, borderRadius: size / 2, backgroundColor: EDUNEX_MOBILE_TOKENS.colors.light.accentSoft, alignItems: "center", justifyContent: "center", borderWidth: 1, borderColor: EDUNEX_MOBILE_TOKENS.colors.light.border }, style]}>
+    <View accessible={false} style={[{ width: size, height: size, borderRadius: size / 2, backgroundColor: EDUNEX_MOBILE_TOKENS.colors.light.accentSoft, alignItems: "center", justifyContent: "center", borderWidth: 1, borderColor: EDUNEX_MOBILE_TOKENS.colors.light.border }, style]}>
       <Text style={{ color: EDUNEX_MOBILE_TOKENS.colors.light.text, fontWeight: "800", fontSize: size * 0.4 }}>?</Text>
     </View>
   );
-  return <Image source={src} style={[{ width: size, height: size, borderRadius: size / 2 }, style]} resizeMode="cover" />;
+  return <Image accessible={false} source={src} style={[{ width: size, height: size, borderRadius: size / 2 }, style]} resizeMode="cover" />;
 }
 const DOWNLOADS_DIR = `${FileSystem.documentDirectory}edunex_dl/`;
 const DOWNLOADS_STORAGE_KEY = "edunex_downloads_v1";
@@ -254,6 +265,15 @@ const API_BASE = normalizeBaseUrl(process.env.EXPO_PUBLIC_API_BASE || DEFAULT_AP
 const AI_BASE = normalizeBaseUrl(process.env.EXPO_PUBLIC_AI_BASE || DEFAULT_AI_BASE);
 
 const SUBSCRIPTION_URL = "https://edunexmvp.netlify.app/payment";
+const WEB_APP_BASE = normalizeBaseUrl(process.env.EXPO_PUBLIC_WEB_APP_BASE || "https://edunexmvp.netlify.app");
+const TERMS_URL = `${WEB_APP_BASE}/terms`;
+const PRIVACY_URL = `${WEB_APP_BASE}/privacy`;
+
+function openAppLink(url, label) {
+  Linking.openURL(url).catch(() => {
+    Alert.alert(`${label} unavailable`, `Could not open ${label.toLowerCase()}. Check your connection and try again.`);
+  });
+}
 
 async function readJsonResponse(res) {
   const raw = await res.text();
@@ -358,7 +378,7 @@ const TYPE = {
 
 const ICON_FAMILY = "Ionicons";
 
-// EduNex mobile design tokens. Light mode follows the production website
+// Skillomate mobile design tokens. Light mode follows the production website
 // palette from app.css: warm cream surfaces, charcoal text, and muted gold.
 const EDUNEX_MOBILE_TOKENS = {
   colors: {
@@ -928,9 +948,14 @@ function getCourseThumbnailUris(course, preferVertical = false) {
 }
 
 function getCourseThumbnailAsset(course, preferVertical = false) {
-  return preferVertical
+  const configuredAsset = preferVertical
     ? course?.thumbnailVerticalAsset || course?.thumbnailAsset || null
     : course?.thumbnailAsset || course?.thumbnailVerticalAsset || null;
+  if (configuredAsset) return configuredAsset;
+
+  const key = String(course?._id || course?.id || course?.title || "edunex");
+  const hash = [...key].reduce((total, char) => ((total * 31) + char.charCodeAt(0)) >>> 0, 0);
+  return HOME_ARTWORK_IMAGES[hash % HOME_ARTWORK_IMAGES.length];
 }
 
 function getCourseThumbnailSource(course, preferVertical = false, uriIndex = 0) {
@@ -1003,7 +1028,7 @@ function RemoteThumbnailImage({ imageUrl, screen, courseId, borderRadius = 8 }) 
   );
 }
 
-function EduNexLogo({ size = "md" }) {
+function SkillomateLogo({ size = "md" }) {
   const iconSize = size === "lg" ? 44 : size === "sm" ? 28 : 36;
   const fontSize = size === "lg" ? 22 : size === "sm" ? 15 : 18;
   return (
@@ -1011,7 +1036,7 @@ function EduNexLogo({ size = "md" }) {
       <View style={[s.logoBox, { width: iconSize, height: iconSize, borderRadius: iconSize * 0.22 }]}>
         <Ionicons name="school" size={iconSize * 0.55} color={C.primary} />
       </View>
-      <Text style={[s.logoText, { fontSize }]}>EduNex</Text>
+      <Text style={[s.logoText, { fontSize }]}>Skillomate</Text>
     </View>
   );
 }
@@ -1051,14 +1076,17 @@ function FieldInput({ label, style, secureTextEntry, ...props }) {
         {label ? <FieldLabel label={label} /> : null}
         <View style={{ position: "relative" }}>
           <TextInput
-            style={[s.input, { paddingRight: 44 }, style]}
+            style={[s.input, { paddingRight: 52 }, style]}
             placeholderTextColor={C.textMuted}
             secureTextEntry={hidden}
             {...props}
           />
           <TouchableOpacity
             onPress={() => setHidden(h => !h)}
-            style={{ position: "absolute", right: 12, top: 0, bottom: 0, justifyContent: "center" }}
+            style={{ position: "absolute", right: 0, top: 0, bottom: 0, width: 48, alignItems: "center", justifyContent: "center" }}
+            accessibilityRole="button"
+            accessibilityLabel={hidden ? "Show password" : "Hide password"}
+            accessibilityState={{ expanded: !hidden }}
           >
             <Ionicons name={hidden ? "eye-outline" : "eye-off-outline"} size={20} color={C.textMuted} />
           </TouchableOpacity>
@@ -1084,6 +1112,9 @@ function PrimaryBtn({ title, onPress, loading, disabled, style, outline }) {
         (disabled || loading) && { opacity: 0.55 },
         style,
       ]}
+      accessibilityRole="button"
+      accessibilityLabel={title}
+      accessibilityState={{ disabled: Boolean(disabled || loading), busy: Boolean(loading) }}
     >
       {loading
         ? <ActivityIndicator color={outline ? C.primary : "#fff"} />
@@ -1093,7 +1124,107 @@ function PrimaryBtn({ title, onPress, loading, disabled, style, outline }) {
   );
 }
 
-const AGES = Array.from({ length: 96 }, (_, i) => i); // 0–95
+function PasswordResetModal({
+  visible,
+  step,
+  mobile,
+  onMobileChange,
+  otp,
+  onOtpChange,
+  newPassword,
+  onNewPasswordChange,
+  confirmPassword,
+  onConfirmPasswordChange,
+  error,
+  loading,
+  onRequest,
+  onConfirm,
+  onChangeMobile,
+  onClose,
+}) {
+  return (
+    <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={{ flex: 1, backgroundColor: "rgba(0,0,0,0.62)", justifyContent: "flex-end" }}
+      >
+        <View style={s.resetSheet} accessibilityViewIsModal>
+          <View style={s.resetHeader}>
+            <View style={{ flex: 1 }}>
+              <Text style={s.resetTitle}>{step === "request" ? "Reset password" : "Create a new password"}</Text>
+              <Text style={s.resetSubtitle}>
+                {step === "request"
+                  ? "We’ll send a one-time code to your registered mobile number."
+                  : `Enter the code sent to ${mobile}.`}
+              </Text>
+            </View>
+            <TouchableOpacity
+              onPress={onClose}
+              style={s.resetCloseButton}
+              accessibilityRole="button"
+              accessibilityLabel="Close password reset"
+            >
+              <Ionicons name="close" size={22} color={C.text} />
+            </TouchableOpacity>
+          </View>
+
+          {step === "request" ? (
+            <FieldInput
+              label="Registered mobile number"
+              placeholder="Enter 10-digit number"
+              value={mobile}
+              onChangeText={value => onMobileChange(value.replace(/[^0-9]/g, ""))}
+              keyboardType="phone-pad"
+              maxLength={10}
+              autoComplete="tel"
+              accessibilityLabel="Registered mobile number"
+            />
+          ) : (
+            <>
+              <FieldInput
+                label="Reset code"
+                placeholder="6-digit code"
+                value={otp}
+                onChangeText={value => onOtpChange(value.replace(/[^0-9]/g, ""))}
+                keyboardType="number-pad"
+                maxLength={6}
+                accessibilityLabel="Password reset code"
+              />
+              <FieldInput
+                label="New password"
+                placeholder="At least 8 characters"
+                value={newPassword}
+                onChangeText={onNewPasswordChange}
+                secureTextEntry
+                autoComplete="new-password"
+              />
+              <FieldInput
+                label="Confirm new password"
+                placeholder="Enter the new password again"
+                value={confirmPassword}
+                onChangeText={onConfirmPasswordChange}
+                secureTextEntry
+                autoComplete="new-password"
+              />
+            </>
+          )}
+
+          {!!error && <Text style={s.errorText} accessibilityRole="alert">{error}</Text>}
+          <PrimaryBtn
+            title={step === "request" ? "Send reset code" : "Update password"}
+            onPress={step === "request" ? onRequest : onConfirm}
+            loading={loading}
+          />
+          {step === "confirm" && (
+            <PrimaryBtn title="Use a different number" onPress={onChangeMobile} outline style={{ marginTop: 10 }} />
+          )}
+        </View>
+      </KeyboardAvoidingView>
+    </Modal>
+  );
+}
+
+const AGES = Array.from({ length: 76 }, (_, i) => i + 5); // backend accepts ages 5–80
 const AGE_ITEM_W = 60;
 
 function AgePicker({ value, onChange }) {
@@ -1309,7 +1440,7 @@ function NotificationPreviewModal({ visible, onClose, onOpenCourses, onOpenAI, o
           <View style={s.notificationHeader}>
             <View style={{ flex: 1 }}>
               <Text style={s.notificationTitle}>Notifications</Text>
-              <Text style={s.notificationSubtitle}>Preview of upcoming EduNex alerts</Text>
+              <Text style={s.notificationSubtitle}>Preview of upcoming Skillomate alerts</Text>
             </View>
             <TouchableOpacity onPress={onClose} style={s.notificationClose}>
               <Ionicons name="close" size={19} color={C.text} />
@@ -1347,7 +1478,7 @@ function BottomNav({ active, onHome, onCourses, onAI, onDownloads, onProfile, ai
   const tabs = [
     { key: "home", icon: "home", label: "Home", fn: onHome },
     { key: "courses", icon: "compass", label: "Explore", fn: onCourses },
-    { key: "downloads", icon: "play-circle", label: "My Learning", fn: onDownloads },
+    { key: "downloads", icon: "download", label: "Downloads", fn: onDownloads },
     { key: "ai", icon: "sparkles", label: "Nex AI", fn: onAI },
     { key: "profile", icon: "person", label: "Profile", fn: onProfile },
   ];
@@ -1360,6 +1491,7 @@ function BottomNav({ active, onHome, onCourses, onAI, onDownloads, onProfile, ai
           style={s.bottomTab}
           accessibilityRole="button"
           accessibilityLabel={t.label}
+          accessibilityState={{ selected: active === t.key }}
         >
           <View style={[s.bottomTabIcon, active === t.key && s.bottomTabIconActive]}>
             <Ionicons
@@ -1433,7 +1565,7 @@ function VideoItem({ video: videoProp, videoId: videoIdProp, isActive, height, o
       nextHtml = buildYoutubePlayerHtml(video?.youtubeId || video || "", PLAYER_ORIGIN);
     }
     if (__DEV__ && DEV_UI_QA_ENABLED) {
-      console.log("[EduNex LessonPlayer media]", {
+      console.log("[Skillomate LessonPlayer media]", {
         title: video?.title || "",
         provider,
         originalMedia,
@@ -2252,7 +2384,10 @@ function VideoListScreen({ course, onSelectVideo, onBack, onOpenCourseAi, downlo
       <SafeAreaView style={{ backgroundColor: C.white }}>
         <View style={s.pageHeader}>
           <TouchableOpacity onPress={onBack} style={s.iconBtn}
-            hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}>
+            hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+            accessibilityRole="button"
+            accessibilityLabel="Back to courses"
+          >
             <Ionicons name="arrow-back" size={22} color={C.text} />
           </TouchableOpacity>
           <Text style={s.pageTitle} numberOfLines={1}>{course.title}</Text>
@@ -2602,7 +2737,7 @@ function HomeScreen({ user, onGoToCourses, onGoToAI, onGoToDownloads, onGoToProf
           <View style={s.streamingHeaderInner}>
             <View>
               <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
-                <EduNexLogo size="sm" />
+                <SkillomateLogo size="sm" />
               </View>
               <Text style={s.streamingTagline}>Learn with AI. Earn with AI.</Text>
             </View>
@@ -2867,6 +3002,7 @@ function CourseListScreen({ onSelect, user, onGoToHome, onGoToAI, onGoToDownload
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [query, setQuery] = useState("");
+  const [searchFocused, setSearchFocused] = useState(false);
 
   const loadCourses = useCallback(() => {
     setLoading(true);
@@ -2894,6 +3030,22 @@ function CourseListScreen({ onSelect, user, onGoToHome, onGoToAI, onGoToDownload
   useEffect(() => {
     onRefreshProgress?.();
   }, [onRefreshProgress]);
+
+  useEffect(() => {
+    if (Platform.OS !== "android") return undefined;
+    const sub = BackHandler.addEventListener("hardwareBackPress", () => {
+      if (searchFocused) {
+        Keyboard.dismiss();
+        return true;
+      }
+      if (query.length > 0) {
+        setQuery("");
+        return true;
+      }
+      return false;
+    });
+    return () => sub.remove();
+  }, [query, searchFocused]);
 
   const filtered = useMemo(() => {
     const normalizedQuery = query.trim().toLowerCase();
@@ -2930,8 +3082,8 @@ function CourseListScreen({ onSelect, user, onGoToHome, onGoToAI, onGoToDownload
       <StatusBar barStyle={C.isDark ? "light-content" : "dark-content"} backgroundColor={C.white} />
       <SafeAreaView style={{ backgroundColor: C.white }}>
         <View style={s.pageHeader}>
-          <EduNexLogo size="sm" />
-          <Text style={[s.pageTitle, { marginLeft: 0, textAlign: "center" }]} numberOfLines={1}>Courses</Text>
+          <SkillomateLogo size="sm" />
+          <Text style={[s.pageTitle, { marginLeft: 0, textAlign: "center" }]} numberOfLines={1}>Explore</Text>
           <View style={{ width: 86 }} />
         </View>
       </SafeAreaView>
@@ -2943,9 +3095,19 @@ function CourseListScreen({ onSelect, user, onGoToHome, onGoToAI, onGoToDownload
           placeholderTextColor={C.textMuted}
           style={s.searchInput}
           value={query} onChangeText={setQuery}
+          onFocus={() => setSearchFocused(true)}
+          onBlur={() => setSearchFocused(false)}
+          returnKeyType="search"
+          accessibilityLabel="Search courses"
         />
         {query.length > 0 && (
-          <TouchableOpacity onPress={() => setQuery("")}>
+          <TouchableOpacity
+            style={s.searchClearButton}
+            onPress={() => setQuery("")}
+            accessibilityRole="button"
+            accessibilityLabel="Clear course search"
+            accessibilityHint="Shows all courses"
+          >
             <Ionicons name="close-circle" size={18} color={C.textMuted} />
           </TouchableOpacity>
         )}
@@ -2963,7 +3125,10 @@ function CourseListScreen({ onSelect, user, onGoToHome, onGoToAI, onGoToDownload
         keyboardShouldPersistTaps="handled"
         scrollEventThrottle={16}
         renderItem={({ item, index }) => {
-          const lessonCount = item.videos?.length ?? 0;
+          const declaredCount = Number(item.lessonCount ?? item.videoCount);
+          const lessonCount = Number.isFinite(declaredCount)
+            ? declaredCount
+            : Array.isArray(item.videos) ? item.videos.length : 0;
           const rating = COURSE_LIST_RATINGS[index % COURSE_LIST_RATINGS.length];
           const isWishlisted = wishlist.includes(item._id);
           const progressPct = getCourseProgressPercent(item, courseProgress);
@@ -2971,6 +3136,8 @@ function CourseListScreen({ onSelect, user, onGoToHome, onGoToAI, onGoToDownload
             <TouchableOpacity
               style={s.clCard}
               activeOpacity={0.93}
+              accessibilityRole="button"
+              accessibilityLabel={`${item.title}. ${lessonCount} ${lessonCount === 1 ? "lesson" : "lessons"}. ${progressPct}% complete`}
               onPress={() => {
                 if (!hasAccess) { setShowUpgrade(true); return; }
                 onSelect(item);
@@ -2989,7 +3156,16 @@ function CourseListScreen({ onSelect, user, onGoToHome, onGoToAI, onGoToDownload
                 </View>
 
                 {/* Wishlist */}
-                <TouchableOpacity style={s.clWishlistBtn} onPress={() => onToggleWishlist?.(item._id)}>
+                <TouchableOpacity
+                  style={s.clWishlistBtn}
+                  onPress={event => {
+                    event.stopPropagation?.();
+                    onToggleWishlist?.(item._id);
+                  }}
+                  accessibilityRole="button"
+                  accessibilityLabel={isWishlisted ? `Remove ${item.title} from wishlist` : `Add ${item.title} to wishlist`}
+                  accessibilityState={{ selected: isWishlisted }}
+                >
                   <Ionicons name={isWishlisted ? "heart" : "heart-outline"} size={15} color={isWishlisted ? C.primary : "#fff"} />
                 </TouchableOpacity>
 
@@ -3010,7 +3186,7 @@ function CourseListScreen({ onSelect, user, onGoToHome, onGoToAI, onGoToDownload
                   <Ionicons name="star" size={13} color={C.accent} />
                   <Text style={s.clRating}>{rating}</Text>
                   <Text style={s.clDot}>·</Text>
-                  <Text style={s.clLectures}>{lessonCount} lectures</Text>
+                  <Text style={s.clLectures}>{lessonCount} {lessonCount === 1 ? "lesson" : "lessons"}</Text>
                 </View>
 
                 {/* Progress */}
@@ -3028,7 +3204,20 @@ function CourseListScreen({ onSelect, user, onGoToHome, onGoToAI, onGoToDownload
         ListEmptyComponent={
           <View style={{ alignItems: "center", padding: 40 }}>
             <Ionicons name="search-outline" size={40} color={C.textMuted} />
-            <Text style={{ color: C.textSub, marginTop: 10 }}>No courses found</Text>
+            <Text style={{ color: C.text, fontSize: 17, fontWeight: "800", marginTop: 12 }}>
+              {query.trim() ? "No matching courses" : "No courses available yet"}
+            </Text>
+            <Text style={{ color: C.textSub, marginTop: 6, textAlign: "center" }}>
+              {query.trim() ? `Nothing matched “${query.trim()}”. Try another topic.` : "Check again soon for new learning content."}
+            </Text>
+            <TouchableOpacity
+              style={[s.btn, s.btnFill, { marginTop: 18, minWidth: 140 }]}
+              onPress={query.trim() ? () => setQuery("") : loadCourses}
+              accessibilityRole="button"
+              accessibilityLabel={query.trim() ? "Clear search" : "Reload courses"}
+            >
+              <Text style={s.btnText}>{query.trim() ? "Clear search" : "Reload"}</Text>
+            </TouchableOpacity>
           </View>
         }
       />
@@ -3067,7 +3256,10 @@ function WishlistScreen({ wishlist, onToggleWishlist, onSelect, onBack, user }) 
       <SafeAreaView style={{ backgroundColor: C.white }}>
         <View style={s.pageHeader}>
           <TouchableOpacity onPress={onBack} style={s.iconBtn}
-            hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}>
+            hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+            accessibilityRole="button"
+            accessibilityLabel="Back to profile"
+          >
             <Ionicons name="arrow-back" size={22} color={C.text} />
           </TouchableOpacity>
           <Text style={s.pageTitle}>My Wishlist</Text>
@@ -3166,7 +3358,7 @@ function buildCertificateHTML(cert) {
     <div class="meta-item">ID: ${cert.certificateId}</div>
   </div>
   <div class="brand">
-    <div class="brand-name">EduNex</div>
+    <div class="brand-name">Skillomate</div>
     <div class="brand-tag">LEARN · GROW · SUCCEED</div>
   </div>
 </div>
@@ -3216,7 +3408,7 @@ function CertificateCard({ cert, style, showDownload }) {
         <Text style={{ fontSize: 11, color: C.textMuted }}>ID: {cert.certificateId}</Text>
       </View>
       <View style={{ marginTop: 16, borderTopWidth: 1, borderTopColor: C.border, paddingTop: 10, alignItems: "center" }}>
-        <Text style={{ fontSize: 12, fontWeight: "700", color: C.primary }}>EduNex</Text>
+        <Text style={{ fontSize: 12, fontWeight: "700", color: C.primary }}>Skillomate</Text>
         <Text style={{ fontSize: 10, color: C.textMuted }}>Learn · Grow · Succeed</Text>
       </View>
       {showDownload && (
@@ -3272,7 +3464,7 @@ function CertificatesScreen({ certificates, onBack }) {
       <View style={[s.homeTopBar, { paddingBottom: 12, backgroundColor: C.white }]}>
         <SafeAreaView style={{ backgroundColor: C.white }}>
           <View style={s.homeTopBarInner}>
-            <TouchableOpacity onPress={onBack} style={s.iconBtn}>
+            <TouchableOpacity onPress={onBack} style={s.iconBtn} accessibilityRole="button" accessibilityLabel="Back to profile">
               <Ionicons name="arrow-back" size={22} color={C.text} />
             </TouchableOpacity>
             <View pointerEvents="none" style={{ position: "absolute", left: 0, right: 0, alignItems: "center" }}>
@@ -3342,7 +3534,7 @@ function SubscriptionDetailsScreen({ user, onBack }) {
       <View style={[s.homeTopBar, { paddingBottom: 12, backgroundColor: C.white }]}>
         <SafeAreaView style={{ backgroundColor: C.white }}>
           <View style={s.homeTopBarInner}>
-            <TouchableOpacity onPress={onBack} style={s.iconBtn}>
+            <TouchableOpacity onPress={onBack} style={s.iconBtn} accessibilityRole="button" accessibilityLabel="Back to profile">
               <Ionicons name="arrow-back" size={22} color={C.text} />
             </TouchableOpacity>
             <View pointerEvents="none" style={{ position: "absolute", left: 0, right: 0, alignItems: "center" }}>
@@ -3484,13 +3676,18 @@ function ProfileScreen({ user, onLogout, onGoToHome, onGoToCourses, onGoToAI, on
       <View style={[s.homeTopBar, { paddingBottom: 20, backgroundColor: C.white }]}>
         <SafeAreaView style={{ backgroundColor: C.white }}>
           <View style={s.homeTopBarInner}>
-            <EduNexLogo size="sm" />
+            <SkillomateLogo size="sm" />
             <Text style={{ flex: 1, color: C.text, fontWeight: "700", fontSize: 16, textAlign: "center" }} numberOfLines={1}>Profile</Text>
             <View style={{ width: 86 }} />
           </View>
         </SafeAreaView>
         <View style={{ alignItems: "center", marginTop: 8 }}>
-          <TouchableOpacity onPress={() => { setTempAvatar(user.avatar || "a1"); setShowAvatarPicker(true); }} style={{ position: "relative" }}>
+          <TouchableOpacity
+            onPress={() => { setTempAvatar(user.avatar || "a1"); setShowAvatarPicker(true); }}
+            style={{ position: "relative" }}
+            accessibilityRole="button"
+            accessibilityLabel="Change profile avatar"
+          >
             <View style={s.profileAvatarLg}>
               <AvatarImage avatarId={user.avatar || "a1"} size={90} style={{ borderRadius: 0 }} />
             </View>
@@ -3518,6 +3715,9 @@ function ProfileScreen({ user, onLogout, onGoToHome, onGoToCourses, onGoToAI, on
                       key={av.id}
                       onPress={() => setTempAvatar(av.id)}
                       style={[s.avatarPickerItem, tempAvatar === av.id && s.avatarPickerItemActive, { width: 64, height: 64, borderRadius: 32 }]}
+                      accessibilityRole="radio"
+                      accessibilityLabel={av.label}
+                      accessibilityState={{ selected: tempAvatar === av.id }}
                     >
                       <AvatarImage avatarId={av.id} size={60} style={{ borderRadius: 30 }} />
                       {tempAvatar === av.id && (
@@ -3542,6 +3742,9 @@ function ProfileScreen({ user, onLogout, onGoToHome, onGoToCourses, onGoToAI, on
                   }}
                   style={[s.btn, s.btnFill, { marginTop: 0 }]}
                   disabled={savingAvatar}
+                  accessibilityRole="button"
+                  accessibilityLabel="Save profile avatar"
+                  accessibilityState={{ disabled: savingAvatar, busy: savingAvatar }}
                 >
                   {savingAvatar
                     ? <ActivityIndicator color="#fff" />
@@ -3626,6 +3829,9 @@ function ProfileScreen({ user, onLogout, onGoToHome, onGoToCourses, onGoToAI, on
                   key={option.key}
                   style={[s.themeOption, selected && s.themeOptionActive]}
                   onPress={() => onThemeChange(option.key)}
+                  accessibilityRole="radio"
+                  accessibilityLabel={`${option.label} theme`}
+                  accessibilityState={{ selected }}
                 >
                   <Ionicons name={option.icon} size={16} color={selected ? "#fff" : C.textSub} />
                   <Text style={[s.themeOptionText, selected && s.themeOptionTextActive]}>{option.label}</Text>
@@ -3641,8 +3847,8 @@ function ProfileScreen({ user, onLogout, onGoToHome, onGoToCourses, onGoToAI, on
           { icon: "ribbon-outline", label: "My Certificates", badge: certificatesCount || 0, onPress: onGoToCertificates },
           { icon: "heart-outline", label: "My Wishlist", badge: wishlistCount || 0, onPress: onGoToWishlist },
           { icon: "help-circle-outline", label: "Help & Support", onPress: () => Linking.openURL("mailto:support@edunex.app") },
-          { icon: "document-text-outline", label: "Terms & Conditions", onPress: () => Linking.openURL("https://your-tandc-page.com") },
-          { icon: "shield-outline", label: "Privacy Policy", onPress: () => Linking.openURL("https://your-privacy-page.com") },
+          { icon: "document-text-outline", label: "Terms & Conditions", onPress: () => openAppLink(TERMS_URL, "Terms & Conditions") },
+          { icon: "shield-outline", label: "Privacy Policy", onPress: () => openAppLink(PRIVACY_URL, "Privacy Policy") },
         ].map((item, i) => (
           <TouchableOpacity key={i} style={s.menuItem} onPress={item.onPress}>
             <View style={s.menuIconBox}>
@@ -3660,10 +3866,12 @@ function ProfileScreen({ user, onLogout, onGoToHome, onGoToCourses, onGoToAI, on
 
         <TouchableOpacity
           style={s.logoutBtn}
-          onPress={() => Alert.alert("Logout", "Are you sure?", [
+          onPress={() => Alert.alert("Log out?", "Log out of Skillomate on this device? You’ll need to sign in again to access your courses and downloads.", [
             { text: "Cancel", style: "cancel" },
-            { text: "Logout", style: "destructive", onPress: onLogout },
+            { text: "Log out", style: "destructive", onPress: onLogout },
           ])}
+          accessibilityRole="button"
+          accessibilityLabel="Log out of Skillomate"
         >
           <Ionicons name="log-out-outline" size={18} color={C.danger} />
           <Text style={s.logoutText}>Logout</Text>
@@ -3727,18 +3935,19 @@ function findIndexedAiCourse(appCourse, indexedCourses) {
 function RobotAvatar({ robotId, size = 30 }) {
   const src = robotId ? AI_ROBOT_IMAGES[robotId] : null;
   if (!src) return (
-    <View style={{ width: size, height: size, borderRadius: size / 2, backgroundColor: C.primary, alignItems: "center", justifyContent: "center" }}>
+    <View accessible={false} style={{ width: size, height: size, borderRadius: size / 2, backgroundColor: C.primary, alignItems: "center", justifyContent: "center" }}>
       <Ionicons name="sparkles" size={size * 0.5} color="#fff" />
     </View>
   );
   return (
-    <Image source={src} style={{ width: size, height: size, borderRadius: size / 2 }} resizeMode="cover" />
+    <Image accessible={false} source={src} style={{ width: size, height: size, borderRadius: size / 2 }} resizeMode="cover" />
   );
 }
 
 function AiAssistantScreen({
   mode = "master",
   fixedCourse = null,
+  user,
   onBack,
   onGoToHome,
   onGoToCourses,
@@ -3786,14 +3995,32 @@ function AiAssistantScreen({
       return;
     }
 
-    fetch(`${AI_BASE}/api/ai/health`)
-      .then(res => res.json())
-      .then(data => setStatus(data.ok ? "online" : "offline"))
-      .catch(() => setStatus("offline"));
+    if (!user?._id || !user?.sessionId) {
+      setStatus("offline");
+      setCourseScopeReady(false);
+      setMessages([{
+        role: "assistant",
+        content: "Please log in again before using Nex AI.",
+      }]);
+      return;
+    }
 
-    fetch(`${AI_BASE}/api/ai/courses`)
-      .then(res => res.json())
-      .then(data => {
+    const authQuery = `userId=${encodeURIComponent(user._id)}&sessionId=${encodeURIComponent(user.sessionId)}`;
+
+    Promise.all([
+      fetch(`${AI_BASE}/api/ai/health?${authQuery}`).then(async res => {
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || "Could not check Nex AI");
+        return data;
+      }),
+      fetch(`${AI_BASE}/api/ai/courses?${authQuery}`).then(async res => {
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || "Could not load Nex AI courses");
+        return data;
+      }),
+    ])
+      .then(([health, data]) => {
+        setStatus(health.ok ? "online" : "offline");
         const nextCourses = Array.isArray(data) ? data : [];
         if (isCourseMode) {
           const matchedCourse = findIndexedAiCourse(fixedCourse, nextCourses);
@@ -3820,6 +4047,7 @@ function AiAssistantScreen({
         }
       })
       .catch(() => {
+        setStatus("offline");
         if (isCourseMode) {
           setCourseScopeReady(false);
           setMessages([
@@ -3830,7 +4058,7 @@ function AiAssistantScreen({
           ]);
         }
       });
-  }, [fixedCourse, isCourseMode]);
+  }, [fixedCourse, isCourseMode, user?._id, user?.sessionId]);
 
   useEffect(() => {
     setTimeout(() => listRef.current?.scrollToEnd?.({ animated: true }), 80);
@@ -3866,6 +4094,8 @@ function AiAssistantScreen({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           message: question,
+          userId: user?._id,
+          sessionId: user?.sessionId,
           ...(courseId ? { courseId } : {}),
         }),
       });
@@ -3874,7 +4104,7 @@ function AiAssistantScreen({
       try { data = raw ? JSON.parse(raw) : {}; } catch {}
       const serverError = data.error || data.message || (data.status ? `${data.status}: ${raw}` : "");
       const answer = res.ok
-        ? data.answer
+        ? data.answer || data.reply
         : serverError || "I could not reach the AI service.";
       setMessages(prev => [...prev, { role: "assistant", content: answer || "Try asking again." }]);
     } catch {
@@ -3883,7 +4113,7 @@ function AiAssistantScreen({
         ...prev,
         {
           role: "assistant",
-          content: `I could not reach the AI service${devTarget}. Check that the backend, Ollama, and MongoDB Atlas are reachable.`,
+          content: `I could not reach Nex AI${devTarget}. Check that the backend is reachable.`,
         },
       ]);
       setStatus("offline");
@@ -3899,7 +4129,10 @@ function AiAssistantScreen({
         <View style={s.pageHeader}>
           {onBack ? (
             <TouchableOpacity onPress={onBack} style={s.iconBtn}
-              hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}>
+              hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+              accessibilityRole="button"
+              accessibilityLabel="Back to course"
+            >
               <Ionicons name="arrow-back" size={22} color={C.text} />
             </TouchableOpacity>
           ) : null}
@@ -3920,7 +4153,11 @@ function AiAssistantScreen({
           padding: 14, borderRadius: 16,
           backgroundColor: C.cardBg, borderWidth: 1, borderColor: C.border,
         }}>
-          <TouchableOpacity onPress={() => setShowRobotPicker(true)}>
+          <TouchableOpacity
+            onPress={() => setShowRobotPicker(true)}
+            accessibilityRole="button"
+            accessibilityLabel={robotId ? "Change AI companion" : "Choose AI companion"}
+          >
             <View style={{ position: "relative" }}>
               <RobotAvatar robotId={robotId} size={50} />
               <View style={{
@@ -3937,7 +4174,7 @@ function AiAssistantScreen({
               <View style={[s.aiStatusDot, status === "online" ? s.aiStatusOnline : s.aiStatusOffline]} />
               <Text style={s.aiHeroSub}>
                 {status !== "online"
-                  ? "Local AI service offline"
+                  ? "Nex AI is unavailable"
                   : isCourseMode
                     ? courseScopeReady ? "Scoped to this course" : "Course not indexed"
                     : "Master search across all courses"}
@@ -3982,7 +4219,13 @@ function AiAssistantScreen({
         {!loading && (
           <View style={s.aiSuggestions}>
             {AI_SUGGESTIONS.map(prompt => (
-              <TouchableOpacity key={prompt} style={s.aiSuggestion} onPress={() => sendAiMessage(prompt)}>
+              <TouchableOpacity
+                key={prompt}
+                style={s.aiSuggestion}
+                onPress={() => sendAiMessage(prompt)}
+                accessibilityRole="button"
+                accessibilityLabel={`Ask Nex AI: ${prompt}`}
+              >
                 <Text style={s.aiSuggestionText}>{prompt}</Text>
               </TouchableOpacity>
             ))}
@@ -3998,11 +4241,15 @@ function AiAssistantScreen({
             placeholderTextColor={C.textMuted}
             editable={!loading}
             multiline
+            accessibilityLabel="Message Nex AI"
           />
           <TouchableOpacity
             style={[s.aiSend, (!input.trim() || loading) && s.aiSendDisabled]}
             onPress={() => sendAiMessage()}
             disabled={!input.trim() || loading}
+            accessibilityRole="button"
+            accessibilityLabel="Send message"
+            accessibilityState={{ disabled: !input.trim() || loading }}
           >
             <Ionicons name="send" size={18} color="#fff" />
           </TouchableOpacity>
@@ -4035,8 +4282,12 @@ function AiAssistantScreen({
                   key={bot.id}
                   onPress={() => setRobotId(bot.id)}
                   style={{ alignItems: "center", gap: 6 }}
+                  accessibilityRole="radio"
+                  accessibilityLabel={bot.label}
+                  accessibilityState={{ selected: robotId === bot.id }}
                 >
                   <Image
+                    accessible={false}
                     source={AI_ROBOT_IMAGES[bot.id]}
                     style={{ width: 72, height: 72, borderRadius: 36, borderWidth: robotId === bot.id ? 3 : 1.5, borderColor: robotId === bot.id ? C.primary : C.border }}
                     resizeMode="cover"
@@ -4047,11 +4298,16 @@ function AiAssistantScreen({
             </ScrollView>
             <TouchableOpacity
               onPress={() => {
+                if (!robotId) return;
                 AsyncStorage.setItem(AI_AVATAR_STORAGE_KEY, robotId).catch(() => {});
                 onRobotChange?.(robotId);
                 setShowRobotPicker(false);
               }}
-              style={[s.btn, s.btnFill]}
+              disabled={!robotId}
+              style={[s.btn, s.btnFill, !robotId && { opacity: 0.45 }]}
+              accessibilityRole="button"
+              accessibilityLabel="Confirm AI companion"
+              accessibilityState={{ disabled: !robotId }}
             >
               <Text style={s.btnText}>Confirm</Text>
             </TouchableOpacity>
@@ -4089,17 +4345,26 @@ export default function App() {
   const [password, setPassword] = useState("");
   const [loginError, setLoginError] = useState("");
   const [loginLoading, setLoginLoading] = useState(false);
+  const [resetVisible, setResetVisible] = useState(false);
+  const [resetStep, setResetStep] = useState("request");
+  const [resetMobile, setResetMobile] = useState("");
+  const [resetOtp, setResetOtp] = useState("");
+  const [resetNewPassword, setResetNewPassword] = useState("");
+  const [resetConfirmPassword, setResetConfirmPassword] = useState("");
+  const [resetLoading, setResetLoading] = useState(false);
+  const [resetError, setResetError] = useState("");
 
   const [screen, setScreen] = useState("login");
   const [mobile, setMobile] = useState("");
   const [otp, setOtp] = useState("");
   const [otpSent, setOtpSent] = useState(false);
+  const [signupToken, setSignupToken] = useState("");
   const [otpLoading, setOtpLoading] = useState(false);
   const [signupFullName, setSignupFullName] = useState("");
   const [signupEmail, setSignupEmail] = useState("");
   const [signupPassword, setSignupPassword] = useState("");
   const [signupGender, setSignupGender] = useState("");
-  const [signupAge, setSignupAge] = useState("0");
+  const [signupAge, setSignupAge] = useState("18");
   const [signupAvatar, setSignupAvatar] = useState("a1");
   const [signupLoading, setSignupLoading] = useState(false);
   const [signupError, setSignupError] = useState("");
@@ -4185,9 +4450,10 @@ export default function App() {
     if (Platform.OS !== "android") return undefined;
     const sub = BackHandler.addEventListener("hardwareBackPress", () => {
       if (!userRef.current) {
+        if (resetVisible) { closePasswordReset(); return true; }
         if (screen === "signup2") { setScreen("signup1"); setSignupError(""); return true; }
         if (screen === "signup1") {
-          if (otpSent) { setOtpSent(false); setOtp(""); setSignupError(""); return true; }
+          if (otpSent) { setOtpSent(false); setOtp(""); setSignupToken(""); setSignupError(""); return true; }
           resetSignup();
           return true;
         }
@@ -4236,7 +4502,7 @@ export default function App() {
       return true;
     });
     return () => sub.remove();
-  }, [screen, otpSent, courseAiTarget, certModal, showAppUpgrade, mainScreen, startIndex, selectedCourse, isPreviewOnly, loadCourseProgress]);
+  }, [screen, otpSent, resetVisible, courseAiTarget, certModal, showAppUpgrade, mainScreen, startIndex, selectedCourse, isPreviewOnly, loadCourseProgress]);
 
   // Load saved downloads on startup and verify files still exist
   useEffect(() => {
@@ -4335,29 +4601,29 @@ export default function App() {
     if (!DEV_UI_QA_ENABLED || !user?._id) return;
     setWishlist(prev => [...new Set([...(prev || []), ...UI_QA_WISHLIST])]);
     setCourseProgress(prev => ({ ...(prev || {}), ...UI_QA_PROGRESS }));
-    setCertificates(prev => prev?.length ? prev : UI_QA_CERTIFICATES);
+    setCertificates(prev => prev?.length ? prev : getQaCertificatesForUser(user));
     setDownloads(prev => ({ ...UI_QA_DOWNLOADS, ...(prev || {}) }));
-  }, [user?._id]);
+  }, [user?._id, user?.fullName, user?.email, user?.mobileNumber]);
 
   const loadCertificates = useCallback(async (u = userRef.current) => {
     if (!u?._id || !u?.sessionId) return;
     try {
       const res = await fetch(`${API_BASE}/api/user/${u._id}/certificates?sessionId=${encodeURIComponent(u.sessionId)}`);
       if (!res.ok) {
-        if (DEV_UI_QA_ENABLED) setCertificates(UI_QA_CERTIFICATES);
+        if (DEV_UI_QA_ENABLED) setCertificates(getQaCertificatesForUser(u));
         return;
       }
       const data = await res.json();
       const nextCertificates = data.certificates || [];
-      setCertificates(DEV_UI_QA_ENABLED && nextCertificates.length === 0 ? UI_QA_CERTIFICATES : nextCertificates);
+      setCertificates(DEV_UI_QA_ENABLED && nextCertificates.length === 0 ? getQaCertificatesForUser(u) : nextCertificates);
     } catch {
-      if (DEV_UI_QA_ENABLED) setCertificates(UI_QA_CERTIFICATES);
+      if (DEV_UI_QA_ENABLED) setCertificates(getQaCertificatesForUser(u));
     }
   }, []);
 
   useEffect(() => {
     if (user?._id && user?.sessionId) loadCertificates(user);
-    else setCertificates(DEV_UI_QA_ENABLED && user?._id ? UI_QA_CERTIFICATES : []);
+    else setCertificates(DEV_UI_QA_ENABLED && user?._id ? getQaCertificatesForUser(user) : []);
   }, [user?._id, user?.sessionId, loadCertificates]);
 
   const openCourse = useCallback(async (course, options = {}) => {
@@ -4606,9 +4872,89 @@ export default function App() {
         await AsyncStorage.setItem("user", JSON.stringify(authUser));
         setUser(authUser);
         setWishlist(authUser.wishlist || []);
+        clearLoginForm();
       }
     } catch { setLoginError("Cannot connect to server. Try again."); }
     finally { setLoginLoading(false); }
+  }
+
+  function closePasswordReset() {
+    setResetVisible(false);
+    setResetStep("request");
+    setResetOtp("");
+    setResetNewPassword("");
+    setResetConfirmPassword("");
+    setResetError("");
+    setResetLoading(false);
+  }
+
+  function openPasswordReset() {
+    const loginDigits = email.replace(/\D/g, "");
+    const localMobile = loginDigits.startsWith("91") && loginDigits.length === 12
+      ? loginDigits.slice(2)
+      : loginDigits;
+    setResetMobile(localMobile.length === 10 ? localMobile : "");
+    setResetStep("request");
+    setResetError("");
+    setResetVisible(true);
+  }
+
+  async function requestPasswordReset() {
+    const mobileNumber = resetMobile.replace(/\D/g, "");
+    if (mobileNumber.length !== 10) {
+      setResetError("Enter the 10-digit mobile number registered to your account.");
+      return;
+    }
+    setResetLoading(true);
+    setResetError("");
+    try {
+      const { res, data } = await postApiJson("/api/auth/password-reset/request", { mobileNumber });
+      if (!res?.ok) {
+        setResetError(data.error || "Could not send a reset code.");
+        return;
+      }
+      setResetStep("confirm");
+      if (data.developmentAutofill && data.devOtp) setResetOtp(String(data.devOtp));
+    } catch {
+      setResetError("Cannot connect to the server. Try again.");
+    } finally {
+      setResetLoading(false);
+    }
+  }
+
+  async function confirmPasswordReset() {
+    if (!/^\d{6}$/.test(resetOtp.trim())) {
+      setResetError("Enter the 6-digit reset code.");
+      return;
+    }
+    if (resetNewPassword.length < 8) {
+      setResetError("New password must be at least 8 characters.");
+      return;
+    }
+    if (resetNewPassword !== resetConfirmPassword) {
+      setResetError("The new passwords do not match.");
+      return;
+    }
+    setResetLoading(true);
+    setResetError("");
+    try {
+      const { res, data } = await postApiJson("/api/auth/password-reset/confirm", {
+        mobileNumber: resetMobile.replace(/\D/g, ""),
+        otp: resetOtp.trim(),
+        newPassword: resetNewPassword,
+      });
+      if (!res?.ok) {
+        setResetError(data.error || "Could not reset your password.");
+        return;
+      }
+      setPassword("");
+      closePasswordReset();
+      Alert.alert("Password updated", "Sign in with your new password.");
+    } catch {
+      setResetError("Cannot connect to the server. Try again.");
+    } finally {
+      setResetLoading(false);
+    }
   }
 
   async function sendOtp() {
@@ -4617,6 +4963,7 @@ export default function App() {
     if (DEV_UI_QA_ENABLED) {
       setTimeout(() => {
         setOtpSent(true);
+        setSignupToken("");
         setOtpLoading(false);
       }, 180);
       return;
@@ -4632,7 +4979,7 @@ export default function App() {
         return;
       }
       if (!res.ok) setSignupError(data.error || "Failed to send OTP.");
-      else { setOtpSent(true); }
+      else { setOtpSent(true); setSignupToken(""); }
     } catch { setSignupError("Cannot connect to server. Try again."); }
     finally { setOtpLoading(false); }
   }
@@ -4643,6 +4990,7 @@ export default function App() {
     if (DEV_UI_QA_ENABLED) {
       setTimeout(() => {
         if (otp.trim() === "000000") {
+          setSignupToken("ui-qa-signup-token");
           setScreen("signup2");
           setSignupError("");
         } else {
@@ -4664,7 +5012,15 @@ export default function App() {
         return;
       }
       if (!res.ok) setSignupError(data.error || "OTP verification failed.");
-      else { setScreen("signup2"); setSignupError(""); }
+      else {
+        if (!data.signupToken) {
+          setSignupError("Phone verified, but the signup token was missing. Request a new code.");
+          return;
+        }
+        setSignupToken(data.signupToken);
+        setScreen("signup2");
+        setSignupError("");
+      }
     } catch { setSignupError("Cannot connect to server. Try again."); }
     finally { setOtpLoading(false); }
   }
@@ -4672,7 +5028,8 @@ export default function App() {
   async function register() {
     if (!signupFullName.trim()) { setSignupError("Full name is required."); return; }
     if (mobile.trim().length !== 10) { setSignupError("Enter a valid 10-digit mobile number."); return; }
-    if (!signupPassword.trim() || signupPassword.length < 6) { setSignupError("Password must be at least 6 characters."); return; }
+    if (!signupPassword.trim() || signupPassword.length < 8) { setSignupError("Password must be at least 8 characters."); return; }
+    if (!signupToken && !DEV_UI_QA_ENABLED) { setSignupError("Please verify your mobile number again."); setScreen("signup1"); return; }
     setSignupLoading(true); setSignupError("");
     try {
       const mobileNumber = mobile.trim();
@@ -4686,9 +5043,10 @@ export default function App() {
         mobileNumber,
         mobile: mobileNumber,
         phone: mobileNumber,
-        gender: signupGender || null,
+        gender: signupGender ? signupGender.toLowerCase() : null,
         age: signupAge ? Number(signupAge) : null,
         avatar: signupAvatar,
+        signupToken,
       });
       if (!res) {
         setSignupError("Registration endpoint is not available on this server.");
@@ -4706,14 +5064,22 @@ export default function App() {
         setAiRobotId(null);
         setUser(authUser);
         setWishlist(authUser.wishlist || []);
+        clearLoginForm();
+        resetSignup();
       }
     } catch { setSignupError("Cannot connect to server. Try again."); }
     finally { setSignupLoading(false); }
   }
 
+  function clearLoginForm() {
+    setEmail("");
+    setPassword("");
+    setLoginError("");
+  }
+
   function resetSignup() {
-    setScreen("login"); setMobile(""); setOtp(""); setOtpSent(false);
-    setSignupFullName(""); setSignupEmail(""); setSignupPassword(""); setSignupGender(""); setSignupAge("0"); setSignupAvatar("a1"); setSignupError("");
+    setScreen("login"); setMobile(""); setOtp(""); setOtpSent(false); setSignupToken("");
+    setSignupFullName(""); setSignupEmail(""); setSignupPassword(""); setSignupGender(""); setSignupAge("18"); setSignupAvatar("a1"); setSignupError("");
   }
 
   function handleLogout() {
@@ -4722,6 +5088,8 @@ export default function App() {
     setAiRobotId(null);
     setWishlist([]);
     setCourseProgress({});
+    clearLoginForm();
+    resetSignup();
     setUser(null); setSelectedCourse(null); setStartIndex(null); setCourseAiTarget(null); setMainScreen("home");
   }
 
@@ -4742,7 +5110,7 @@ export default function App() {
   <View style={{ flex: 1, backgroundColor: C.bg }}>
     <StatusBar barStyle={C.isDark ? "light-content" : "dark-content"} backgroundColor={C.bg} />
     <SafeAreaView>
-      <TouchableOpacity onPress={resetSignup} style={{ padding: 16 }}>
+      <TouchableOpacity onPress={resetSignup} style={{ padding: 16 }} accessibilityRole="button" accessibilityLabel="Back to login">
         <Ionicons name="arrow-back" size={22} color={C.text} />
       </TouchableOpacity>
     </SafeAreaView>
@@ -4750,7 +5118,7 @@ export default function App() {
       <ScrollView contentContainerStyle={{ flexGrow: 1, paddingHorizontal: 24, paddingBottom: 40 }}>
         {/* Hero */}
         <View style={{ alignItems: "center", marginBottom: 32 }}>
-          <EduNexLogo size="lg" />
+          <SkillomateLogo size="lg" />
           <Text style={{ color: C.text, fontSize: 26, fontWeight: "900", marginTop: 20, textAlign: "center" }}>Join the AI Revolution</Text>
           <Text style={{ color: C.textSub, fontSize: 14, marginTop: 8, textAlign: "center", lineHeight: 20 }}>Learn the skills that turn AI into income.</Text>
         </View>
@@ -4791,12 +5159,25 @@ export default function App() {
           : <PrimaryBtn title="Verify Phone" onPress={verifyOtp} loading={otpLoading} />
         }
 
-        <Text style={[s.termsText, { marginTop: 20 }]}>
-          By joining, you agree to EduNex{" "}
-          <Text style={{ color: C.primary }}>Terms of Service</Text>
-          {" "}and{" "}
-          <Text style={{ color: C.primary }}>Privacy Policy</Text>.
-        </Text>
+        <Text style={[s.termsText, { marginTop: 20 }]}>By joining, you agree to Skillomate policies.</Text>
+        <View style={s.legalLinksRow}>
+          <TouchableOpacity
+            style={s.legalLinkButton}
+            onPress={() => openAppLink(TERMS_URL, "Terms of Service")}
+            accessibilityRole="link"
+            accessibilityLabel="Read Terms of Service"
+          >
+            <Text style={s.legalLinkText}>Terms of Service</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={s.legalLinkButton}
+            onPress={() => openAppLink(PRIVACY_URL, "Privacy Policy")}
+            accessibilityRole="link"
+            accessibilityLabel="Read Privacy Policy"
+          >
+            <Text style={s.legalLinkText}>Privacy Policy</Text>
+          </TouchableOpacity>
+        </View>
 
         <TouchableOpacity onPress={resetSignup} style={s.authLink}>
           <Text style={{ color: C.textSub, fontSize: 14 }}>
@@ -4815,14 +5196,19 @@ export default function App() {
   <View style={{ flex: 1, backgroundColor: C.bg }}>
     <StatusBar barStyle={C.isDark ? "light-content" : "dark-content"} backgroundColor={C.bg} />
     <SafeAreaView>
-      <TouchableOpacity onPress={() => { setScreen("signup1"); setSignupError(""); }} style={{ padding: 16 }}>
+      <TouchableOpacity
+        onPress={() => { setScreen("signup1"); setSignupError(""); }}
+        style={{ padding: 16 }}
+        accessibilityRole="button"
+        accessibilityLabel="Back to phone verification"
+      >
         <Ionicons name="arrow-back" size={22} color={C.text} />
       </TouchableOpacity>
     </SafeAreaView>
     <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1 }}>
       <ScrollView contentContainerStyle={{ flexGrow: 1, paddingHorizontal: 24, paddingBottom: 40 }}>
         <View style={{ alignItems: "center", marginBottom: 24 }}>
-          <EduNexLogo size="lg" />
+          <SkillomateLogo size="lg" />
           <Text style={{ color: C.primary, fontSize: 11, fontWeight: "700", letterSpacing: 2, marginTop: 6, textTransform: "uppercase" }}>Step 2 of 2 — Profile Setup</Text>
           <Text style={{ color: C.text, fontSize: 22, fontWeight: "900", marginTop: 12, textAlign: "center" }}>Tell us about yourself</Text>
           <Text style={{ color: C.textSub, fontSize: 13, marginTop: 6, textAlign: "center" }}>Customize your learning experience with AI-driven personalization.</Text>
@@ -4850,6 +5236,9 @@ export default function App() {
               key={av.id}
               onPress={() => setSignupAvatar(av.id)}
               style={[s.avatarPickerItem, signupAvatar === av.id && s.avatarPickerItemActive]}
+              accessibilityRole="radio"
+              accessibilityLabel={av.label}
+              accessibilityState={{ selected: signupAvatar === av.id }}
             >
               <AvatarImage avatarId={av.id} size={56} style={{ borderRadius: 28 }} />
               {signupAvatar === av.id && (
@@ -4876,6 +5265,9 @@ export default function App() {
               key={g}
               onPress={() => setSignupGender(g)}
               style={[s.genderOption, signupGender === g && s.genderOptionActive]}
+              accessibilityRole="radio"
+              accessibilityLabel={`${g} gender identity`}
+              accessibilityState={{ selected: signupGender === g }}
             >
               <Text style={[s.genderOptionText, signupGender === g && s.genderOptionTextActive]}>{g.toUpperCase()}</Text>
             </TouchableOpacity>
@@ -4903,9 +5295,25 @@ export default function App() {
           }
         </TouchableOpacity>
 
-        <Text style={s.termsText}>
-          By continuing, you agree to our Terms of Personalized Learning and Privacy Policy.
-        </Text>
+        <Text style={s.termsText}>By continuing, you agree to Skillomate policies.</Text>
+        <View style={s.legalLinksRow}>
+          <TouchableOpacity
+            style={s.legalLinkButton}
+            onPress={() => openAppLink(TERMS_URL, "Terms of Service")}
+            accessibilityRole="link"
+            accessibilityLabel="Read Terms of Service"
+          >
+            <Text style={s.legalLinkText}>Terms of Service</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={s.legalLinkButton}
+            onPress={() => openAppLink(PRIVACY_URL, "Privacy Policy")}
+            accessibilityRole="link"
+            accessibilityLabel="Read Privacy Policy"
+          >
+            <Text style={s.legalLinkText}>Privacy Policy</Text>
+          </TouchableOpacity>
+        </View>
 
         <TouchableOpacity onPress={resetSignup} style={s.authLink}>
           <Text style={{ color: C.textSub, fontSize: 14 }}>
@@ -4931,7 +5339,7 @@ export default function App() {
           alignItems: "center",
           borderBottomLeftRadius: 32, borderBottomRightRadius: 32,
         }}>
-          <EduNexLogo size="lg" />
+          <SkillomateLogo size="lg" />
           <Text style={{ color: C.primary, fontSize: 11, fontWeight: "700", letterSpacing: 2, marginTop: 6, textTransform: "uppercase" }}>LEARN · GROW · EARN</Text>
           <Text style={{ color: C.text, fontSize: 28, fontWeight: "900", marginTop: 20, textAlign: "center", lineHeight: 36 }}>Welcome Back</Text>
           <Text style={{ color: C.textSub, fontSize: 14, marginTop: 6, textAlign: "center" }}>Your path to AI mastery continues.</Text>
@@ -4949,9 +5357,10 @@ export default function App() {
             <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
               <Text style={{ fontSize: 13, fontWeight: "600", color: C.text }}>PASSWORD</Text>
               <TouchableOpacity
-                onPress={() => Alert.alert("Password Reset", "Password reset is not available in this build yet. Please contact support@edunex.app.")}
+                onPress={openPasswordReset}
                 accessibilityRole="button"
-                accessibilityLabel="Password reset help"
+                accessibilityLabel="Reset forgotten password"
+                hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
               >
                 <Text style={{ color: C.primary, fontSize: 12, fontWeight: "700" }}>FORGOT?</Text>
               </TouchableOpacity>
@@ -4990,18 +5399,36 @@ export default function App() {
 
           <TouchableOpacity onPress={() => { setScreen("signup1"); setSignupError(""); }} style={s.authLink}>
             <Text style={{ color: C.textSub, fontSize: 14 }}>
-              New to EduNex?{"  "}
+              New to Skillomate?{"  "}
               <Text style={{ color: C.primary, fontWeight: "800" }}>Create an Account</Text>
             </Text>
           </TouchableOpacity>
 
           <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 5, marginTop: 28 }}>
             <Ionicons name="shield-checkmark" size={12} color={C.textMuted} />
-            <Text style={{ color: C.textMuted, fontSize: 11, fontWeight: "600", letterSpacing: 0.8 }}>EDUNEX SECURE</Text>
+            <Text style={{ color: C.textMuted, fontSize: 11, fontWeight: "600", letterSpacing: 0.8 }}>SKILLOMATE SECURE</Text>
           </View>
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
+    <PasswordResetModal
+      visible={resetVisible}
+      step={resetStep}
+      mobile={resetMobile}
+      onMobileChange={setResetMobile}
+      otp={resetOtp}
+      onOtpChange={setResetOtp}
+      newPassword={resetNewPassword}
+      onNewPasswordChange={setResetNewPassword}
+      confirmPassword={resetConfirmPassword}
+      onConfirmPasswordChange={setResetConfirmPassword}
+      error={resetError}
+      loading={resetLoading}
+      onRequest={requestPasswordReset}
+      onConfirm={confirmPasswordReset}
+      onChangeMobile={() => { setResetStep("request"); setResetOtp(""); setResetError(""); }}
+      onClose={closePasswordReset}
+    />
   </View>
     );
   }
@@ -5012,6 +5439,7 @@ export default function App() {
       <AiAssistantScreen
         mode="course"
         fixedCourse={courseAiTarget}
+        user={user}
         onBack={() => setCourseAiTarget(null)}
       />
     );
@@ -5246,13 +5674,16 @@ export default function App() {
                   </View>
                 </View>
                 <TouchableOpacity
-                  hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-                  onPress={() => {
+                  style={{ width: 44, height: 44, alignItems: "center", justifyContent: "center" }}
+                  onPress={event => {
+                    event.stopPropagation?.();
                     Alert.alert("Delete Download", `Remove "${item.title}" from downloads?`, [
                       { text: "Cancel", style: "cancel" },
                       { text: "Delete", style: "destructive", onPress: () => deleteDownload(item.bunnyGuid) },
                     ]);
                   }}
+                  accessibilityRole="button"
+                  accessibilityLabel={`Delete downloaded video ${item.title}`}
                 >
                   <Ionicons name="trash-outline" size={20} color={C.textMuted} />
                 </TouchableOpacity>
@@ -5277,6 +5708,7 @@ export default function App() {
     return (
       <>
         <AiAssistantScreen
+          user={user}
           onGoToHome={() => setMainScreen("home")}
           onGoToCourses={() => setMainScreen("courses")}
           onGoToDownloads={() => { const ok = hasCourseAccess(user); if (!ok) { setShowAppUpgrade(true); } else { setMainScreen("downloads"); } }}
@@ -5370,10 +5802,13 @@ return StyleSheet.create({
   genderOptionTextActive: { color: C.primary },
   otpResendBtn: {
     backgroundColor: C.primaryLight, borderRadius: 10, borderWidth: 1.5,
-    borderColor: C.primary, paddingHorizontal: 14, justifyContent: "center",
+    borderColor: C.primary, paddingHorizontal: 14, minHeight: 48, justifyContent: "center",
   },
   otpResendText: { color: C.primary, fontWeight: "700", fontSize: 13 },
   termsText: { color: C.textMuted, fontSize: 12, textAlign: "center", marginTop: 16, lineHeight: 18 },
+  legalLinksRow: { flexDirection: "row", justifyContent: "center", gap: 8, marginTop: 2 },
+  legalLinkButton: { minHeight: 44, paddingHorizontal: 8, alignItems: "center", justifyContent: "center" },
+  legalLinkText: { color: C.primary, fontSize: 12, fontWeight: "700", textDecorationLine: "underline" },
   authLink: { alignItems: "center", marginTop: 20 },
   authLinkText: { color: C.textSub, fontSize: 14 },
   orRow: { flexDirection: "row", alignItems: "center", marginVertical: 20, gap: 10 },
@@ -5385,6 +5820,18 @@ return StyleSheet.create({
     minHeight: 48, paddingVertical: 13, backgroundColor: C.surface,
   },
   socialBtnText: { color: C.text, fontWeight: "600", fontSize: 14 },
+  resetSheet: {
+    backgroundColor: C.bg, borderTopLeftRadius: 24, borderTopRightRadius: 24,
+    padding: 24, paddingBottom: Platform.OS === "ios" ? 38 : 24,
+    borderWidth: 1, borderColor: C.border,
+  },
+  resetHeader: { flexDirection: "row", alignItems: "flex-start", gap: 12, marginBottom: 22 },
+  resetTitle: { ...TYPE.h2, color: C.text, marginBottom: 5 },
+  resetSubtitle: { ...TYPE.body, color: C.textSub, lineHeight: 20 },
+  resetCloseButton: {
+    width: 44, height: 44, borderRadius: 22, alignItems: "center", justifyContent: "center",
+    backgroundColor: C.surface, borderWidth: 1, borderColor: C.border,
+  },
 
   // Navigation
   pageHeader: {
@@ -5396,7 +5843,7 @@ return StyleSheet.create({
   },
   pageTitle: { flex: 1, ...TYPE.title, color: C.text, marginLeft: 8 },
   iconBtn: {
-    minWidth: 36, minHeight: 36, padding: 6, borderRadius: RADIUS.pill,
+    minWidth: 44, minHeight: 44, padding: 8, borderRadius: RADIUS.pill,
     alignItems: "center", justifyContent: "center",
     backgroundColor: C.isDark ? "rgba(255,255,255,0.06)" : C.accentSoft,
   },
@@ -5942,11 +6389,11 @@ return StyleSheet.create({
   heroBtn: {
     flexDirection: "row", alignItems: "center", gap: 8,
     backgroundColor: C.primary, borderRadius: RADIUS.sm,
-    paddingVertical: 11, paddingHorizontal: 17, alignSelf: "flex-start",
+    minHeight: 44, paddingVertical: 11, paddingHorizontal: 17, alignSelf: "flex-start",
   },
   heroBtnText: { ...TYPE.button, color: C.isDark ? "#151515" : "#FFFFFF" },
   heroGhostBtn: {
-    width: 42, height: 42, borderRadius: 8, alignItems: "center", justifyContent: "center",
+    width: 44, height: 44, borderRadius: 8, alignItems: "center", justifyContent: "center",
     backgroundColor: "rgba(255,255,255,0.14)", borderWidth: 1, borderColor: "rgba(255,255,255,0.16)",
   },
   heroProgressTrack: { height: 4, borderRadius: 3, backgroundColor: "rgba(255,255,255,0.22)", overflow: "hidden" },
@@ -6053,7 +6500,8 @@ return StyleSheet.create({
 
   wishlistBtn: {
     position: "absolute", top: 8, right: 8,
-    backgroundColor: "rgba(255,255,255,0.92)", borderRadius: 14, padding: 5,
+    width: 44, height: 44, alignItems: "center", justifyContent: "center",
+    backgroundColor: "rgba(255,255,255,0.92)", borderRadius: 22,
   },
   badge: { borderRadius: 4, paddingHorizontal: 6, paddingVertical: 2, alignSelf: "flex-start" },
   badgeText: { fontSize: 10, fontWeight: "700" },
@@ -6088,10 +6536,11 @@ return StyleSheet.create({
   searchBox: {
     flexDirection: "row", alignItems: "center", gap: 8,
     backgroundColor: C.surface, borderRadius: RADIUS.lg, marginHorizontal: 16, marginVertical: 12,
-    paddingHorizontal: 14, paddingVertical: 11,
+    minHeight: 52, paddingLeft: 14, paddingRight: 4, paddingVertical: 4,
     borderWidth: 1, borderColor: C.isDark ? "rgba(255,255,255,0.08)" : C.border,
   },
-  searchInput: { flex: 1, ...TYPE.body, color: C.text },
+  searchInput: { flex: 1, minHeight: 44, ...TYPE.body, color: C.text },
+  searchClearButton: { width: 44, height: 44, alignItems: "center", justifyContent: "center", borderRadius: 22 },
 courseListCard: {
     backgroundColor: C.cardBg, borderRadius: RADIUS.lg, overflow: "hidden",
     borderWidth: 1, borderColor: C.border,
@@ -6120,7 +6569,8 @@ courseListCard: {
   clPremiumText: { ...TYPE.caption, color: C.isDark ? "#151515" : "#FFFFFF", fontSize: 10, fontWeight: "800" },
   clWishlistBtn: {
     position: "absolute", bottom: 12, right: 12,
-    backgroundColor: "rgba(0,0,0,0.4)", borderRadius: 16, padding: 6,
+    width: 44, height: 44, alignItems: "center", justifyContent: "center",
+    backgroundColor: "rgba(0,0,0,0.4)", borderRadius: 22,
   },
   clLock: {
     position: "absolute", bottom: 12, left: 12,
@@ -6299,7 +6749,7 @@ courseListCard: {
     padding: 4, borderWidth: 1, borderColor: C.border,
   },
   themeOption: {
-    flex: 1, minHeight: 38, borderRadius: 8,
+    flex: 1, minHeight: 44, borderRadius: 8,
     flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 6,
   },
   themeOptionActive: {
@@ -6380,7 +6830,8 @@ courseListCard: {
     paddingHorizontal: 16, paddingTop: 4, paddingBottom: 8,
   },
   aiSuggestion: {
-    borderRadius: 16, paddingHorizontal: 12, paddingVertical: 8,
+    minHeight: 44, borderRadius: 22, paddingHorizontal: 12, paddingVertical: 8,
+    alignItems: "center", justifyContent: "center",
     backgroundColor: C.primaryLight, borderWidth: 1, borderColor: C.border,
   },
   aiSuggestionText: { color: C.primaryDark, fontSize: 12, fontWeight: "700" },

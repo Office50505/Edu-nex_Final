@@ -33,7 +33,7 @@ export function AdminShell({ activePage, title, subtitle, children, actions = nu
     <>
       <nav className="premium-site-nav" data-premium-nav>
         <div className="premium-nav-panel">
-          <a aria-label="EduNex admin home" className="premium-brand" href={adminRoutes.dashboard}>
+          <a aria-label="Skillomate admin home" className="premium-brand" href={adminRoutes.dashboard}>
             <span className="premium-brand-mark" aria-hidden="true" />
             <span className="premium-brand-name">
               Edu<span>Nex</span>

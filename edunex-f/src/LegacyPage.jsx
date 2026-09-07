@@ -63,7 +63,7 @@ export function LegacyPage({ page, pageKey }) {
   const styleId = useMemo(() => `legacy-page-style-${pageKey.replace(/[^a-z0-9]/gi, "-")}`, [pageKey]);
 
   useEffect(() => {
-    document.title = page.title || "EduNex AI";
+    document.title = page.title || "Skillomate AI";
     document.documentElement.lang = page.lang || "en";
 
     let style = document.getElementById(styleId);

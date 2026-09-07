@@ -1,9 +1,9 @@
 {
   "expo": {
-    "name": "EduNex",
+    "name": "Skillomate",
     "slug": "edunex",
     "version": "1.0.0",
-    "description": "EduNex learning app",
+    "description": "Skillomate learning app",
     "jsEngine": "jsc",
     "scheme": "com.alihussainkhan.edunexfinal",
     "icon": "./assets/icon.png",
@@ -32,7 +32,7 @@
         "usesNonExemptEncryption": false
       },
       "infoPlist": {
-        "CFBundleDisplayName": "EduNex",
+        "CFBundleDisplayName": "Skillomate",
         "ITSAppUsesNonExemptEncryption": false,
         "NSAppTransportSecurity": {
           "NSAllowsArbitraryLoads": false,

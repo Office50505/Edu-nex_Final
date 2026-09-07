@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>EduNex AI — My Certificates</title>
+  <title>Skillomate AI — My Certificates</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -203,7 +203,7 @@
 
 <nav class="navbar">
   <div class="nav-inner">
-    <a href="index.html" class="nav-logo">EduNex <span>AI</span></a>
+    <a href="index.html" class="nav-logo">Skillomate <span>AI</span></a>
     <ul class="nav-links">
       <li><a href="index.html">Home</a></li>
       <li><a href="courses.html">Courses</a></li>
@@ -293,7 +293,7 @@
 
   function certificateCard(certificate) {
     const title = escapeHtml(certificate.courseTitle || 'Completed Course');
-    const learner = escapeHtml(certificate.learnerName || 'EduNex Learner');
+    const learner = escapeHtml(certificate.learnerName || 'Skillomate Learner');
     const certificateId = escapeHtml(certificate.certificateId || '');
     const issuedAt = escapeHtml(formatDate(certificate.issuedAt));
     const lessons = Number(certificate.totalLessons || certificate.completedLessons || 0);
@@ -303,7 +303,7 @@
         <div class="cert-visual">
           <div class="cert-visual-ribbon">Verified</div>
           <div class="cert-visual-seal"><i class="fas fa-certificate"></i></div>
-          <div class="cert-visual-org">EduNex AI</div>
+          <div class="cert-visual-org">Skillomate AI</div>
           <div class="cert-visual-title">${title}</div>
           <div class="cert-visual-name">${learner}</div>
         </div>
@@ -404,10 +404,10 @@
 
   function downloadCertificate(certificate) {
     const text = [
-      'EduNex AI Certificate',
+      'Skillomate AI Certificate',
       '',
       `Certificate ID: ${certificate.certificateId}`,
-      `Learner: ${certificate.learnerName || 'EduNex Learner'}`,
+      `Learner: ${certificate.learnerName || 'Skillomate Learner'}`,
       `Course: ${certificate.courseTitle || 'Completed Course'}`,
       certificate.instructorName ? `Instructor: ${certificate.instructorName}` : null,
       `Issued: ${formatDate(certificate.issuedAt)}`,
@@ -427,8 +427,8 @@
     const url = certificateVerifyUrl(certificate);
     if (navigator.share) {
       await navigator.share({
-        title: 'EduNex AI Certificate',
-        text: `${certificate.learnerName || 'EduNex Learner'} completed ${certificate.courseTitle || 'a course'} on EduNex AI.`,
+        title: 'Skillomate AI Certificate',
+        text: `${certificate.learnerName || 'Skillomate Learner'} completed ${certificate.courseTitle || 'a course'} on Skillomate AI.`,
         url,
       });
       return;

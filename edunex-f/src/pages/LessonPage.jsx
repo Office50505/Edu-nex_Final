@@ -3,7 +3,7 @@ import { page as lessonPage } from "../generated-pages/lesson.html.js";
 import { runLegacyPage } from "../legacyRuntime.js";
 import { usePageStyle } from "../hooks/usePageStyle.js";
 
-const PLACEHOLDER_IMAGE = "data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20width=%27900%27%20height=%27600%27%20viewBox=%270%200%20900%20600%27%3E%3Crect%20width=%27900%27%20height=%27600%27%20fill=%27%23000000%27/%3E%3Crect%20x=%271%27%20y=%271%27%20width=%27898%27%20height=%27598%27%20rx=%2732%27%20fill=%27%230d0d0d%27%20stroke=%27%23C58B2A%27%20stroke-opacity=%27.35%27/%3E%3Ctext%20x=%27450%27%20y=%27312%27%20text-anchor=%27middle%27%20fill=%27%23C58B2A%27%20font-family=%27Arial%27%20font-size=%2748%27%20font-weight=%27800%27%3EEduNex%3C/text%3E%3C/svg%3E";
+const PLACEHOLDER_IMAGE = "data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20width=%27900%27%20height=%27600%27%20viewBox=%270%200%20900%20600%27%3E%3Crect%20width=%27900%27%20height=%27600%27%20fill=%27%23000000%27/%3E%3Crect%20x=%271%27%20y=%271%27%20width=%27898%27%20height=%27598%27%20rx=%2732%27%20fill=%27%230d0d0d%27%20stroke=%27%23C58B2A%27%20stroke-opacity=%27.35%27/%3E%3Ctext%20x=%27450%27%20y=%27312%27%20text-anchor=%27middle%27%20fill=%27%23C58B2A%27%20font-family=%27Arial%27%20font-size=%2748%27%20font-weight=%27800%27%3ESkillomate%3C/text%3E%3C/svg%3E";
 
 const initialMessages = [
   {
@@ -12,7 +12,7 @@ const initialMessages = [
     time: "NEX AI  ·  12:44",
     body: (
       <>
-        EduNex Mentor is currently detailing <strong>ReLU (Rectified Linear Unit)</strong>. It's the most common activation function in deep learning today.
+        Skillomate Mentor is currently detailing <strong>ReLU (Rectified Linear Unit)</strong>. It's the most common activation function in deep learning today.
       </>
     ),
   },
@@ -178,7 +178,7 @@ export function LessonPage() {
                   <span className="vid-timestamp">12:45 / 45:00</span>
                 </div>
                 <h1 className="vid-title">Deep Dive: Neural Network Architectures</h1>
-                <p className="vid-subtitle">Explaining backpropagation and ReLU activation layers with EduNex Mentor.</p>
+                <p className="vid-subtitle">Explaining backpropagation and ReLU activation layers with Skillomate Mentor.</p>
                 <div className="vid-controls">
                   <button
                     className="vid-play-btn"

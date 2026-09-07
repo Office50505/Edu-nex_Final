@@ -103,7 +103,7 @@ export function AdminUploadPage() {
   }
 
   useEffect(() => {
-    document.title = isEditing ? "Edit Course | EduNex" : "Upload Course | EduNex";
+    document.title = isEditing ? "Edit Course | Skillomate" : "Upload Course | Skillomate";
     loadCategories();
     loadCourseForEdit();
     // eslint-disable-next-line react-hooks/exhaustive-deps

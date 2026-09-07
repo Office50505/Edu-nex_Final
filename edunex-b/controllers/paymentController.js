@@ -331,7 +331,7 @@ async function renderPaymentSimulator(req, res) {
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>EduNex Payment Simulator</title>
+  <title>Skillomate Payment Simulator</title>
   <style>
     *{box-sizing:border-box}
     body{margin:0;min-height:100vh;display:grid;place-items:center;background:#f5f7fb;color:#172033;font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
@@ -353,13 +353,13 @@ async function renderPaymentSimulator(req, res) {
 <body>
   <main>
     <div class="eyebrow">Local simulator</div>
-    <h1>Complete EduNex Payment</h1>
+    <h1>Complete Skillomate Payment</h1>
     <dl>
       <dt>Plan</dt><dd>${escapeHtml(plan)}</dd>
       <dt>Amount</dt><dd>INR ${escapeHtml(rupees)}</dd>
       <dt>Status</dt><dd>${escapeHtml(order.status)}</dd>
       <dt>Order ID</dt><dd>${escapeHtml(order.phonePeMerchantTransactionId)}</dd>
-      <dt>User</dt><dd>${escapeHtml(order.user?.fullName || order.user?.mobileNumber || 'EduNex user')}</dd>
+      <dt>User</dt><dd>${escapeHtml(order.user?.fullName || order.user?.mobileNumber || 'Skillomate user')}</dd>
     </dl>
     <form method="post" action="/api/payment/simulate/complete">
       <input type="hidden" name="merchantTransactionId" value="${escapeHtml(order.phonePeMerchantTransactionId)}">

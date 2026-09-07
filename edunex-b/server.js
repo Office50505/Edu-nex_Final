@@ -281,14 +281,14 @@ function recommendationReason(course, categoryWeights, personalized) {
   }
 
   if (rating >= 4.5) {
-    return 'Highly rated by EduNex learners';
+    return 'Highly rated by Skillomate learners';
   }
 
   if (Number(course.totalStarted || 0) > 0) {
     return 'Trending in the current catalog';
   }
 
-  return 'New from the EduNex catalog';
+  return 'New from the Skillomate catalog';
 }
 
 function rankRecommendationCandidates(candidates, signals, limit) {
@@ -622,7 +622,7 @@ app.get('/', (req, res) => {
     return res.sendFile(path.join(FRONTEND_DIR, 'index.html'));
   }
 
-  return res.json({ ok: true, service: 'EduNex API' });
+  return res.json({ ok: true, service: 'Skillomate API' });
 });
 
 app.get('/admin', (req, res) => {
@@ -636,7 +636,7 @@ app.get('/admin', (req, res) => {
 app.get('/api/health', (req, res) => {
   res.json({
     ok: true,
-    service: 'EduNex API',
+    service: 'Skillomate API',
     uptimeSeconds: Math.round(process.uptime()),
     cache: getCacheBackend(),
   });
@@ -982,7 +982,7 @@ app.post('/api/admin/login', (req, res) => {
   clearAdminLoginRate(rateState.key);
 
   const adminToken = jwt.sign(
-    { role: 'admin', name: 'EduNex Admin' },
+    { role: 'admin', name: 'Skillomate Admin' },
     ADMIN_TOKEN_SECRET,
     { expiresIn: '8h' }
   );
@@ -991,7 +991,7 @@ app.post('/api/admin/login', (req, res) => {
     adminToken,
     token: adminToken,
     admin: {
-      name: 'EduNex Admin',
+      name: 'Skillomate Admin',
       role: 'admin',
     },
   });
@@ -1093,7 +1093,7 @@ app.get('/api/image-proxy', async (req, res) => {
     const upstream = await fetch(target.href, {
       signal: controller.signal,
       headers: {
-        'User-Agent': 'EduNex image proxy',
+        'User-Agent': 'Skillomate image proxy',
         Accept: 'image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8',
       },
     });
@@ -2630,20 +2630,26 @@ app.get('/api/courses/checkout-summary', async (req, res) => {
 
 app.get('/api/courses', async (req, res) => {
   try {
-    const cached = await getCachedPublicRead('courses:published:list');
+    const cacheKey = 'courses:published:list:v2';
+    const cached = await getCachedPublicRead(cacheKey);
     if (cached) {
       setPublicReadCacheHeaders(res, true);
       return res.json(cached);
     }
 
-    const courses = await Course.find({ status: 'published' })
-      .select('title slug description category thumbnailUrl thumbnailVerticalUrl averageRating totalWishlisted totalStarted totalCompleted completionRate publishedAt createdAt')
+    const courseDocuments = await Course.find({ status: 'published' })
+      .select('title slug description category thumbnailUrl thumbnailVerticalUrl averageRating totalWishlisted totalStarted totalCompleted completionRate publishedAt createdAt videos')
       .populate('category', 'name slug isActive')
       .sort({ publishedAt: -1, createdAt: -1 })
       .limit(100)
       .lean();
 
-    await setCachedPublicRead('courses:published:list', courses);
+    const courses = courseDocuments.map(({ videos, ...course }) => {
+      const lessonCount = Array.isArray(videos) ? videos.length : 0;
+      return { ...course, lessonCount, videoCount: lessonCount };
+    });
+
+    await setCachedPublicRead(cacheKey, courses);
     setPublicReadCacheHeaders(res, false);
     res.json(courses);
   } catch (error) {
@@ -3009,5 +3015,5 @@ if (SERVE_FRONTEND) {
 }
 
 app.listen(PORT, () => {
-  console.log(`EduNex API listening on port ${PORT}`);
+  console.log(`Skillomate API listening on port ${PORT}`);
 });

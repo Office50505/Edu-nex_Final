@@ -49,7 +49,7 @@ function extractStyles(head) {
 const entries = pageFiles.map((file) => {
   const html = fs.readFileSync(path.join(sourceDir, file), "utf8");
   const head = matchFirst(/<head\b[^>]*>([\s\S]*?)<\/head>/i, html);
-  const title = matchFirst(/<title\b[^>]*>([\s\S]*?)<\/title>/i, head, "EduNex AI").trim();
+  const title = matchFirst(/<title\b[^>]*>([\s\S]*?)<\/title>/i, head, "Skillomate AI").trim();
   const lang = html.match(/<html\b[^>]*lang=(["'])(.*?)\1/i)?.[2] || "en";
   return {
     file,

@@ -55,9 +55,9 @@ export function Footer() {
         <div className="enx-footer-top">
           <div className="enx-footer-intro">
             <div className="enx-footer-about">
-              <a href={route("index.html")} className="enx-footer-brand" aria-label="EduNex AI home">
+              <a href={route("index.html")} className="enx-footer-brand" aria-label="Skillomate AI home">
                 <span className="enx-footer-brand-icon">E</span>
-                <span>EduNex <span>AI</span></span>
+                <span>Skillomate <span>AI</span></span>
               </a>
               <p className="enx-footer-copy">Practical AI-powered learning with real courses, guided videos, progress tracking, and focused tools for modern technical careers.</p>
               <div className="enx-footer-trust-row">
@@ -73,7 +73,7 @@ export function Footer() {
               <a href={route("payment.html")}>Start ₹1 Trial <EnxIcon name="arrowRight" /></a>
               <div className="enx-footer-support">
                 <a href="mailto:support@edunex.ai"><EnxIcon name="mail" /> support@edunex.ai</a>
-                <a href={route("about.html")}><EnxIcon name="info" /> About EduNex</a>
+                <a href={route("about.html")}><EnxIcon name="info" /> About Skillomate</a>
               </div>
             </div>
           </div>
@@ -87,7 +87,7 @@ export function Footer() {
         </div>
 
         <div className="enx-footer-bottom">
-          <span>© 2026 EduNex AI. All rights reserved.</span>
+          <span>© 2026 Skillomate AI. All rights reserved.</span>
           <div>
             <a href={route("login.html")}>Login</a>
             <a href={route("terms.html")}>Terms</a>

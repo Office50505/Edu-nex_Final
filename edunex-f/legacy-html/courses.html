@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>EduNex AI — Explore Our Curriculum</title>
+  <title>Skillomate AI — Explore Our Curriculum</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -380,7 +380,7 @@
 <!-- ===== NAVBAR ===== -->
 <nav class="navbar">
   <div class="nav-inner">
-    <a href="index.html" class="nav-logo">EduNex <span>AI</span></a>
+    <a href="index.html" class="nav-logo">Skillomate <span>AI</span></a>
     <ul class="nav-links">
       <li><a href="index.html">Home</a></li>
       <li><a href="courses.html" class="active">Courses</a></li>
@@ -432,7 +432,7 @@
       <div class="section-header">
         <div class="section-header-left">
           <h2>Loading courses...</h2>
-          <p>Fetching the real EduNex course catalogue from the backend.</p>
+          <p>Fetching the real Skillomate course catalogue from the backend.</p>
         </div>
       </div>
     </div>
@@ -477,7 +477,7 @@
   <div class="container">
     <div class="footer-grid">
       <div>
-        <div class="footer-brand-name">EduNex AI</div>
+        <div class="footer-brand-name">Skillomate AI</div>
         <p class="footer-desc">Empowering the next generation of Indian creators and entrepreneurs with professional-grade AI skills.</p>
         <div class="footer-socials">
           <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
@@ -514,7 +514,7 @@
     </div>
 
     <div class="footer-bottom">
-      <p>© 2024 EduNex AI. All rights reserved.</p>
+      <p>© 2024 Skillomate AI. All rights reserved.</p>
       <div class="footer-bottom-right">
         <div class="system-status">
           <div class="status-dot"></div>
@@ -607,12 +607,12 @@
     return `
       <div class="course-card${courseState.hasAccess ? ' has-access' : ''}" data-course-card-id="${escapeHtml(course.id)}" data-title="${escapeHtml(course.title.toLowerCase())}" data-category="${escapeHtml(course.categoryName.toLowerCase())}">
         <div class="course-thumb-wrap">
-          <img class="course-thumb" src="${escapeHtml(course.image)}" alt="${escapeHtml(course.title)}" onerror="this.onerror=null;this.src=EduNex.placeholderImage(this.alt||'EduNex')">
+          <img class="course-thumb" src="${escapeHtml(course.image)}" alt="${escapeHtml(course.title)}" onerror="this.onerror=null;this.src=EduNex.placeholderImage(this.alt||'Skillomate')">
           <span class="course-cat-badge badge-agency">${escapeHtml(course.categoryName)}</span>
         </div>
         <div class="course-body">
           <h3 class="course-title-main">${escapeHtml(course.title)}</h3>
-          <div class="course-author-line">by <span>EduNex AI Mentors</span></div>
+          <div class="course-author-line">by <span>Skillomate AI Mentors</span></div>
           <div class="course-stats">
             <div class="stat-item"><i class="fas fa-clock"></i> ${escapeHtml(duration)}</div>
             <div class="stat-item"><i class="fas fa-star star-icon"></i> ${escapeHtml(course.rating)}</div>
@@ -660,7 +660,7 @@
         <div class="section-header">
           <div class="section-header-left">
             <h2>${escapeHtml(category)}</h2>
-            <p>Real courses published from the EduNex backend</p>
+            <p>Real courses published from the Skillomate backend</p>
           </div>
         </div>
         <div class="courses-grid">
@@ -737,7 +737,7 @@
     courseState.loading = true;
     const host = document.querySelector('.curriculum-section .container');
     if (host) {
-      host.innerHTML = '<div class="category-block"><div class="section-header"><div class="section-header-left"><h2>Loading courses...</h2><p>Fetching the latest EduNex catalogue.</p></div></div></div>';
+      host.innerHTML = '<div class="category-block"><div class="section-header"><div class="section-header-left"><h2>Loading courses...</h2><p>Fetching the latest Skillomate catalogue.</p></div></div></div>';
     }
     try {
       await Promise.all([hydrateCourseAccess(), hydrateWishlist()]);

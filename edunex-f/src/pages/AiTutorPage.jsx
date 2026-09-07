@@ -143,7 +143,7 @@ export function AiTutorPage() {
           <div style={{ flex: 1 }}></div>
           <a href="dashboard.html" className="btn btn-ghost btn-sm"><i className="fas fa-th-large" aria-hidden="true"></i> Dashboard</a>
           <a href="courses.html" className="btn btn-ghost btn-sm"><i className="fas fa-play-circle" aria-hidden="true"></i> My Courses</a>
-          <img src="data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20width=%27900%27%20height=%27600%27%20viewBox=%270%200%20900%20600%27%3E%3Crect%20width=%27900%27%20height=%27600%27%20fill=%27%23000000%27/%3E%3Crect%20x=%271%27%20y=%271%27%20width=%27898%27%20height=%27598%27%20rx=%2732%27%20fill=%27%230d0d0d%27%20stroke=%27%23C58B2A%27%20stroke-opacity=%27.35%27/%3E%3Ctext%20x=%27450%27%20y=%27312%27%20text-anchor=%27middle%27%20fill=%27%23C58B2A%27%20font-family=%27Arial%27%20font-size=%2748%27%20font-weight=%27800%27%3EEduNex%3C/text%3E%3C/svg%3E" className="avatar avatar-sm" alt="" />
+          <img src="data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20width=%27900%27%20height=%27600%27%20viewBox=%270%200%20900%20600%27%3E%3Crect%20width=%27900%27%20height=%27600%27%20fill=%27%23000000%27/%3E%3Crect%20x=%271%27%20y=%271%27%20width=%27898%27%20height=%27598%27%20rx=%2732%27%20fill=%27%230d0d0d%27%20stroke=%27%23C58B2A%27%20stroke-opacity=%27.35%27/%3E%3Ctext%20x=%27450%27%20y=%27312%27%20text-anchor=%27middle%27%20fill=%27%23C58B2A%27%20font-family=%27Arial%27%20font-size=%2748%27%20font-weight=%27800%27%3ESkillomate%3C/text%3E%3C/svg%3E" className="avatar avatar-sm" alt="" />
         </div>
 
         <div className="full-tutor">
@@ -183,7 +183,7 @@ export function AiTutorPage() {
               <div className="ai-avatar">N</div>
               <div className="ai-info">
                 <h1>NEX — Your AI Learning Tutor</h1>
-                <p>Powered by EduNex AI · Specialised in AI income strategies</p>
+                <p>Powered by Skillomate AI · Specialised in AI income strategies</p>
               </div>
               <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 12 }}>
                 <span className="online-badge">Online</span>
@@ -195,7 +195,7 @@ export function AiTutorPage() {
               <div style={{ textAlign: "center", padding: "20px 0 10px" }}>
                 <div style={{ width: 60, height: 60, borderRadius: "50%", background: "linear-gradient(135deg,var(--accent),var(--accent-green))", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.5rem", fontWeight: 800, color: "#000", margin: "0 auto 12px" }}>N</div>
                 <h2 style={{ marginBottom: 6 }}>Hello, Learner. I'm NEX.</h2>
-                <p style={{ fontSize: ".9rem", maxWidth: 480, margin: "0 auto" }}>I'm your personal AI learning tutor. I know everything in your EduNex curriculum and can help you apply it to earn real income. Ask me anything!</p>
+                <p style={{ fontSize: ".9rem", maxWidth: 480, margin: "0 auto" }}>I'm your personal AI learning tutor. I know everything in your Skillomate curriculum and can help you apply it to earn real income. Ask me anything!</p>
               </div>
 
               <div style={{ display: "flex", gap: 8, justifyContent: "center", flexWrap: "wrap", paddingBottom: 12 }}>
@@ -249,7 +249,7 @@ export function AiTutorPage() {
       <div className={`auth-gate${authGate ? " is-visible" : ""}`} id="aiAuthGate">
         <div className="auth-gate-card">
           <h2>Login or sign up to use Nex AI</h2>
-          <p>Nex AI is available after you create an EduNex account or log in.</p>
+          <p>Nex AI is available after you create an Skillomate account or log in.</p>
           <div className="auth-gate-actions">
             <a id="aiGateLogin" className="btn btn-primary" href={`login.html?next=${next}`}>Login</a>
             <a id="aiGateSignup" className="btn btn-ghost" href={`signup.html?next=${next}`}>Sign up</a>

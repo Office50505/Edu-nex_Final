@@ -229,7 +229,7 @@ export function CoursesPage() {
               <div className="section-header">
                 <div className="section-header-left">
                   <h2>Loading courses...</h2>
-                  <p>Fetching the latest EduNex catalogue.</p>
+                  <p>Fetching the latest Skillomate catalogue.</p>
                 </div>
               </div>
             </div>
@@ -260,7 +260,7 @@ export function CoursesPage() {
               <div className="section-header">
                 <div className="section-header-left">
                   <h2>{group}</h2>
-                  <p>Real courses published from the EduNex backend</p>
+                  <p>Real courses published from the Skillomate backend</p>
                 </div>
               </div>
               <div className="courses-grid">
@@ -290,14 +290,14 @@ export function CoursesPage() {
                           alt={course.title}
                           onError={(event) => {
                             event.currentTarget.onerror = null;
-                            event.currentTarget.src = window.EduNex?.placeholderImage?.(event.currentTarget.alt || "EduNex") || "";
+                            event.currentTarget.src = window.EduNex?.placeholderImage?.(event.currentTarget.alt || "Skillomate") || "";
                           }}
                         />
                         <span className="course-cat-badge badge-agency">{course.categoryName}</span>
                       </div>
                       <div className="course-body">
                         <h3 className="course-title-main">{course.title}</h3>
-                        <div className="course-author-line">by <span>EduNex AI Mentors</span></div>
+                        <div className="course-author-line">by <span>Skillomate AI Mentors</span></div>
                         <div className="course-stats">
                           <div className="stat-item"><i className="fas fa-clock" aria-hidden="true"></i> {duration}</div>
                           <div className="stat-item"><i className="fas fa-star star-icon" aria-hidden="true"></i> {course.rating}</div>

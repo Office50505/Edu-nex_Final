@@ -17,7 +17,7 @@ const FALLBACK_COURSES = [
   isFallback: true,
   title,
   category,
-  instructorName: "EduNex Mentors",
+  instructorName: "Skillomate Mentors",
   language: "Hindi + English",
   duration: `${lessons} lessons`,
   averageRating: rating,
@@ -110,7 +110,7 @@ function progressFor(course) {
 }
 
 function instructorName(course) {
-  return course?.instructor?.name || course?.instructorName || course?.author || "EduNex AI Mentors";
+  return course?.instructor?.name || course?.instructorName || course?.author || "Skillomate AI Mentors";
 }
 
 function languageLabel(course) {
@@ -238,7 +238,7 @@ function HeroPlaceholderCard({ index, isCenter, tab }) {
         openFromCard();
       }}>
         <span className="hero-skeleton hero-skeleton-media"></span>
-        <span className="hero-card-badge">{isMessageCard ? "Course grid" : "EduNex"}</span>
+        <span className="hero-card-badge">{isMessageCard ? "Course grid" : "Skillomate"}</span>
       </div>
       <div className="hero-card-body" onClick={(event) => {
         if (event.target.closest("a, button")) return;
@@ -249,7 +249,7 @@ function HeroPlaceholderCard({ index, isCenter, tab }) {
           <>
             <div className="hero-card-kicker">Courses</div>
             <div className="hero-card-title">{title}</div>
-            <div className="hero-placeholder-note">Real EduNex courses will appear in this carousel as soon as the backend returns them.</div>
+            <div className="hero-placeholder-note">Real Skillomate courses will appear in this carousel as soon as the backend returns them.</div>
             <div style={{ marginTop: 16 }}>
               <a className="hero-card-action" href="courses.html">{action} <MaterialIcon className="text-base">arrow_forward</MaterialIcon></a>
             </div>
@@ -314,7 +314,7 @@ function HeroCourseCard({ item, index, isCenter, hasAccess, isSaved, onOpen, onC
             alt={title}
             onError={(event) => {
               event.currentTarget.onerror = null;
-              event.currentTarget.src = window.EduNex?.placeholderImage?.(event.currentTarget.alt || "EduNex") || "";
+              event.currentTarget.src = window.EduNex?.placeholderImage?.(event.currentTarget.alt || "Skillomate") || "";
             }}
           />
         </a>
@@ -968,7 +968,7 @@ export function HomePage() {
             </div>
           </div>
 
-          <div className="hero-trust-strip" aria-label="EduNex platform trust indicators">
+          <div className="hero-trust-strip" aria-label="Skillomate platform trust indicators">
             {[
               ["groups", "100K+ Learners", "Growing across India"],
               ["workspace_premium", "Expert-Led Courses", "Practical instructors"],
@@ -1002,14 +1002,14 @@ export function HomePage() {
                   <div className="h-44 relative overflow-hidden">
                     <img className="w-full h-full object-cover" src={window.EduNex?.courseImage?.(course) || ""} alt={category} onError={(event) => {
                       event.currentTarget.onerror = null;
-                      event.currentTarget.src = window.EduNex?.placeholderImage?.(event.currentTarget.alt || "EduNex") || "";
+                      event.currentTarget.src = window.EduNex?.placeholderImage?.(event.currentTarget.alt || "Skillomate") || "";
                     }} />
                     <div className="absolute top-4 left-4 bg-black/80 border border-primary/30 text-primary px-3 py-1 rounded-full text-[10px] font-bold uppercase">{items.length} courses</div>
                   </div>
                   <div className="p-6">
                     <div className="text-primary text-xs font-semibold uppercase tracking-[.08em] mb-3">{videos || "Real"} Lessons</div>
                     <h3 className="font-bold text-on-surface mb-2 leading-snug min-h-[48px]">{category}</h3>
-                    <p className="home-category-course text-on-surface-variant text-sm leading-relaxed mb-5">{course?.title || "Explore this EduNex track"}</p>
+                    <p className="home-category-course text-on-surface-variant text-sm leading-relaxed mb-5">{course?.title || "Explore this Skillomate track"}</p>
                     <a href={categoryHref(category)} className="text-primary font-semibold inline-flex items-center gap-2" onClick={(event) => event.stopPropagation()}>View More <MaterialIcon className="text-base">arrow_forward</MaterialIcon></a>
                   </div>
                 </div>
@@ -1060,7 +1060,7 @@ export function HomePage() {
             <div>
               <div className="section-kicker">Catalog</div>
               <h2 className="text-3xl md:text-4xl font-bold mb-4">Popular Courses</h2>
-              <p className="text-on-surface-variant max-w-lg">Real EduNex courses from the backend, shown with the current learning catalog.</p>
+              <p className="text-on-surface-variant max-w-lg">Real Skillomate courses from the backend, shown with the current learning catalog.</p>
             </div>
             <a className="text-primary flex items-center gap-2 font-semibold hover:gap-4 transition-all" href="courses.html">
               View All Courses
@@ -1068,7 +1068,7 @@ export function HomePage() {
             </a>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-gutter" id="homeCoursesGrid">
-            {status === "loading" ? <div className="glass-card rounded-xl p-6">Loading real EduNex courses...</div> : null}
+            {status === "loading" ? <div className="glass-card rounded-xl p-6">Loading real Skillomate courses...</div> : null}
             {status !== "loading" && !popularCourses.length ? <div className="glass-card rounded-xl p-6">No published courses found.</div> : null}
             {popularCourses.map((course) => {
               const category = categoryName(course);
@@ -1077,7 +1077,7 @@ export function HomePage() {
                   <div className="h-44 relative overflow-hidden">
                     <img className="w-full h-full object-cover" src={window.EduNex?.courseImage?.(course) || ""} alt={course.title || "Untitled course"} onError={(event) => {
                       event.currentTarget.onerror = null;
-                      event.currentTarget.src = window.EduNex?.placeholderImage?.(event.currentTarget.alt || "EduNex") || "";
+                      event.currentTarget.src = window.EduNex?.placeholderImage?.(event.currentTarget.alt || "Skillomate") || "";
                     }} />
                     <div className="absolute top-4 left-4 bg-black/80 border border-primary/30 text-primary px-3 py-1 rounded-full text-[10px] font-bold uppercase">{category}</div>
                   </div>

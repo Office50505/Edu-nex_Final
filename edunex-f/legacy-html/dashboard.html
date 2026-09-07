@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>EduNex AI — Dashboard</title>
+  <title>Skillomate AI — Dashboard</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -438,7 +438,7 @@
 <!-- ===== NAVBAR ===== -->
 <nav class="navbar">
   <div class="nav-inner">
-    <a href="index.html" class="nav-logo">EduNex <span>AI</span></a>
+    <a href="index.html" class="nav-logo">Skillomate <span>AI</span></a>
     <ul class="nav-links">
       <li><a href="index.html">Home</a></li>
       <li><a href="courses.html">Courses</a></li>
@@ -581,7 +581,7 @@
 <footer class="footer-wrap">
   <div class="footer-grid">
     <div>
-      <div class="footer-brand">EduNex AI</div>
+      <div class="footer-brand">Skillomate AI</div>
       <p class="footer-desc">Elevating human potential through neural-accelerated learning pathways and personalized AI mentorship.</p>
     </div>
     <div class="footer-col">
@@ -602,7 +602,7 @@
     </div>
   </div>
   <div class="footer-bottom">
-    <p>© 2024 EduNex AI Learning. All rights reserved.</p>
+    <p>© 2024 Skillomate AI Learning. All rights reserved.</p>
     <div class="footer-icons">
       <div class="footer-icon"><i class="fas fa-globe"></i></div>
       <div class="footer-icon"><i class="fas fa-envelope"></i></div>
@@ -651,7 +651,7 @@
     return `
       <div class="hist-card" data-status="${status.key}" onclick="window.location.href='${href}'">
         <div class="hist-thumb-wrap">
-          <img class="hist-thumb" src="${escapeDashHtml(EduNex.courseImage(course))}" alt="${escapeDashHtml(course.title || title)}" onerror="this.onerror=null;this.src=EduNex.placeholderImage(this.alt||'EduNex')">
+          <img class="hist-thumb" src="${escapeDashHtml(EduNex.courseImage(course))}" alt="${escapeDashHtml(course.title || title)}" onerror="this.onerror=null;this.src=EduNex.placeholderImage(this.alt||'Skillomate')">
           <span class="hist-status ${status.cls}">${status.label}</span>
           <span class="hist-duration">${escapeDashHtml(duration)}</span>
           <div class="hist-progress-track"><div class="hist-progress-fill" style="width:${progress.percent}%"></div></div>
@@ -659,7 +659,7 @@
         </div>
         <div class="hist-info">
           <div class="hist-title">${escapeDashHtml(title)}</div>
-          <div class="hist-meta"><span>${escapeDashHtml(course.title || 'EduNex course')}</span><span class="dot">·</span><span>Video ${progress.lessonIndex + 1} of ${progress.total}</span></div>
+          <div class="hist-meta"><span>${escapeDashHtml(course.title || 'Skillomate course')}</span><span class="dot">·</span><span>Video ${progress.lessonIndex + 1} of ${progress.total}</span></div>
           <div class="hist-footer-row"><span class="hist-pct">${progress.percent ? `${progress.percent}% complete` : 'Ready to start'}</span><span class="hist-time">Synced now</span></div>
         </div>
       </div>`;
@@ -668,11 +668,11 @@
   function renderRecommendation(course) {
     const videos = Number(course.videoCount || 0) || (Array.isArray(course.videos) ? course.videos.length : 0);
     const category = typeof course.category === 'string' ? course.category : (course.category?.name || 'Course');
-    const reason = course.recommendation?.reason || 'Recommended from the current EduNex catalog';
+    const reason = course.recommendation?.reason || 'Recommended from the current Skillomate catalog';
     return `
       <div class="rec-card" onclick="EduNex.openCourseDetails({ _id: '${escapeDashHtml(course._id)}' })" role="link" tabindex="0">
         <div class="rec-thumb-wrap">
-          <img class="rec-thumb" src="${escapeDashHtml(EduNex.courseImage(course))}" alt="${escapeDashHtml(course.title)}" onerror="this.onerror=null;this.src=EduNex.placeholderImage(this.alt||'EduNex')">
+          <img class="rec-thumb" src="${escapeDashHtml(EduNex.courseImage(course))}" alt="${escapeDashHtml(course.title)}" onerror="this.onerror=null;this.src=EduNex.placeholderImage(this.alt||'Skillomate')">
           <span class="rec-badge badge-mono">${escapeDashHtml(category)}</span>
         </div>
         <div class="rec-body">
@@ -727,7 +727,7 @@
       statValues[1].textContent = `${completed} Done`;
       statValues[2].textContent = `${realCourses.length}`;
       document.querySelector('.welcome-left p').textContent = realCourses.length
-        ? `You have ${realCourses.length} real EduNex courses available. Continue from your latest saved lesson.`
+        ? `You have ${realCourses.length} real Skillomate courses available. Continue from your latest saved lesson.`
         : 'No published courses were found in the backend yet.';
     } catch (error) {
       histGrid.innerHTML = `<div class="hist-card" style="padding:22px;min-height:180px">Could not load backend courses: ${escapeDashHtml(error.message)}</div>`;

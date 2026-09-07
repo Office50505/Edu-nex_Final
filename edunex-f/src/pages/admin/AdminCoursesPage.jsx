@@ -56,7 +56,7 @@ export function AdminCoursesPage() {
   }
 
   useEffect(() => {
-    document.title = "Course Management | EduNex";
+    document.title = "Course Management | Skillomate";
     loadCourses();
   }, []);
 
@@ -133,7 +133,7 @@ export function AdminCoursesPage() {
       activePage="courses"
       shellClass="courses-shell"
       title="Course Management"
-      subtitle="Review, publish, update, and remove EduNex courses."
+      subtitle="Review, publish, update, and remove Skillomate courses."
       actions={<button className="toolbar-button" type="button" onClick={loadCourses} disabled={loading}>Refresh</button>}
     >
       <Message text={message} type={messageType} />

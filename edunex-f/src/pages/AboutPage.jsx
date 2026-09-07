@@ -22,17 +22,17 @@ export function AboutPage() {
         <section className="hero">
           <div className="container hero-grid">
             <div>
-              <div className="eyebrow">About EduNex</div>
+              <div className="eyebrow">About Skillomate</div>
               <h1 className="hero-title">Learning should lead <span>somewhere.</span></h1>
-              <p className="hero-copy">EduNex was built to make practical, career-relevant skills easier to learn through short expert-led lessons, structured learning paths and real-world application.</p>
+              <p className="hero-copy">Skillomate was built to make practical, career-relevant skills easier to learn through short expert-led lessons, structured learning paths and real-world application.</p>
               <div className="hero-tagline"><i className="fa-solid fa-wand-magic-sparkles" aria-hidden="true"></i> Learn with AI. Earn with AI.</div>
             </div>
-            <figure className={`hero-image${imageFallback ? " is-fallback" : ""}`} aria-label="EduNex learners studying together">
-              <img className="hero-photo-main" src="assets/about-hero.png" alt="EduNex learners studying together" onError={() => setImageFallback(true)} />
+            <figure className={`hero-image${imageFallback ? " is-fallback" : ""}`} aria-label="Skillomate learners studying together">
+              <img className="hero-photo-main" src="assets/about-hero.png" alt="Skillomate learners studying together" onError={() => setImageFallback(true)} />
               <div className="hero-photo-row hero-photo-fallback">
-                <img src="assets/male2.jpeg" alt="EduNex learner" />
-                <img src="assets/female2.jpeg" alt="EduNex learner" />
-                <img src="assets/male3.jpeg" alt="EduNex learner" />
+                <img src="assets/male2.jpeg" alt="Skillomate learner" />
+                <img src="assets/female2.jpeg" alt="Skillomate learner" />
+                <img src="assets/male3.jpeg" alt="Skillomate learner" />
               </div>
             </figure>
           </div>
@@ -43,7 +43,7 @@ export function AboutPage() {
             <div className="section-head">
               <div className="section-kicker">Our Mission</div>
               <h2 className="section-title">Practical education for<br />the opportunities of today.</h2>
-              <p className="section-copy">Traditional learning often takes too long to adapt to fast-changing industries. EduNex focuses on skills people can actually use, from AI and content creation to freelancing, business, marketing and technology.</p>
+              <p className="section-copy">Traditional learning often takes too long to adapt to fast-changing industries. Skillomate focuses on skills people can actually use, from AI and content creation to freelancing, business, marketing and technology.</p>
             </div>
             <div className="mission-grid">
               <div className="mission-item">
@@ -73,7 +73,7 @@ export function AboutPage() {
         <section className="section alt">
           <div className="container">
             <div className="section-head">
-              <div className="section-kicker">Why EduNex Is Different</div>
+              <div className="section-kicker">Why Skillomate Is Different</div>
               <h2 className="section-title">Designed for real learning and real progress.</h2>
             </div>
             <div className="paper-grid">
@@ -104,7 +104,7 @@ export function AboutPage() {
         <section className="section">
           <div className="container">
             <div className="section-head">
-              <div className="section-kicker">The EduNex Learning Journey</div>
+              <div className="section-kicker">The Skillomate Learning Journey</div>
               <h2 className="section-title">Your journey from learning to opportunity.</h2>
             </div>
             <div className="journey">
@@ -146,7 +146,7 @@ export function AboutPage() {
               <div className="section-kicker">Our Philosophy</div>
               <h2 className="section-title">We believe education should be useful before it is impressive.</h2>
             </div>
-            <p className="philosophy-copy">Every EduNex course is designed around one question: "What should the learner be able to do after finishing this?" That principle guides our lessons, learning paths, assessments and AI support.</p>
+            <p className="philosophy-copy">Every Skillomate course is designed around one question: "What should the learner be able to do after finishing this?" That principle guides our lessons, learning paths, assessments and AI support.</p>
           </div>
         </section>
 

@@ -46,7 +46,7 @@ export function WishlistPage() {
   }, [sharedRuntimePage]);
 
   const renderCourseImage = (course) => window.EduNex?.courseImage?.(course) || course.thumbnail || course.image || "";
-  const placeholderImage = (label) => window.EduNex?.placeholderImage?.(label || "EduNex") || "";
+  const placeholderImage = (label) => window.EduNex?.placeholderImage?.(label || "Skillomate") || "";
 
   const loadWishlist = async () => {
     setMessage("Loading your saved real courses...");
@@ -149,7 +149,7 @@ export function WishlistPage() {
                     alt={course.title || "Untitled course"}
                     onError={(event) => {
                       event.currentTarget.onerror = null;
-                      event.currentTarget.src = placeholderImage(event.currentTarget.alt || "EduNex");
+                      event.currentTarget.src = placeholderImage(event.currentTarget.alt || "Skillomate");
                     }}
                   />
                   <span className="wl-badge badge-cyan">{categoryName(course)}</span>

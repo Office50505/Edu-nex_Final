@@ -345,7 +345,7 @@ app.get('/', (req, res) => {
     return res.sendFile(path.join(FRONTEND_DIR, 'index.html'));
   }
 
-  return res.json({ ok: true, service: 'EduNex API' });
+  return res.json({ ok: true, service: 'Skillomate API' });
 });
 
 app.get('/admin', (req, res) => {
@@ -359,7 +359,7 @@ app.get('/admin', (req, res) => {
 app.get('/api/health', (req, res) => {
   res.json({
     ok: true,
-    service: 'EduNex API',
+    service: 'Skillomate API',
     uptimeSeconds: Math.round(process.uptime()),
     cache: getCacheBackend(),
   });
@@ -706,7 +706,7 @@ app.post('/api/admin/login', (req, res) => {
   clearAdminLoginRate(rateState.key);
 
   const adminToken = jwt.sign(
-    { role: 'admin', name: 'EduNex Admin' },
+    { role: 'admin', name: 'Skillomate Admin' },
     ADMIN_TOKEN_SECRET,
     { expiresIn: '8h' }
   );
@@ -715,7 +715,7 @@ app.post('/api/admin/login', (req, res) => {
     adminToken,
     token: adminToken,
     admin: {
-      name: 'EduNex Admin',
+      name: 'Skillomate Admin',
       role: 'admin',
     },
   });
@@ -817,7 +817,7 @@ app.get('/api/image-proxy', async (req, res) => {
     const upstream = await fetch(target.href, {
       signal: controller.signal,
       headers: {
-        'User-Agent': 'EduNex image proxy',
+        'User-Agent': 'Skillomate image proxy',
         Accept: 'image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8',
       },
     });
@@ -2548,5 +2548,5 @@ if (SERVE_FRONTEND) {
 }
 
 app.listen(PORT, () => {
-  console.log(`EduNex API listening on port ${PORT}`);
+  console.log(`Skillomate API listening on port ${PORT}`);
 });

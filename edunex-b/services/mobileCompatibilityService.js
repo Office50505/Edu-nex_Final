@@ -145,6 +145,8 @@ function serializeCourse(course, options = {}) {
   return {
     ...source,
     _id: String(source._id),
+    lessonCount: videos.length,
+    videoCount: videos.length,
     videos: videos.map(options.playableVideos ? publicPlayableVideoInfo : publicVideoInfo),
     ...getCourseImageUrls(source),
   };

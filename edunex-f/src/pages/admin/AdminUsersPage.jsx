@@ -153,7 +153,7 @@ export function AdminUsersPage() {
   }
 
   useEffect(() => {
-    document.title = "User Management | EduNex";
+    document.title = "User Management | Skillomate";
     loadUsers();
   }, []);
 

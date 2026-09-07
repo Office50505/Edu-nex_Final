@@ -267,7 +267,7 @@ router.patch('/me', protect, async (req, res) => {
     if (Object.prototype.hasOwnProperty.call(req.body, 'avatar')) {
       const avatar = sanitizeProfileAvatar(req.body.avatar);
       if (avatar === undefined) {
-        return res.status(400).json({ error: 'Please choose one of the EduNex avatars' });
+        return res.status(400).json({ error: 'Please choose one of the Skillomate avatars' });
       }
       updates.avatar = avatar;
     }
@@ -518,6 +518,145 @@ router.post('/send-otp', sendMobileOtpHandler);
 router.post('/sendOtp', sendMobileOtpHandler);
 router.post('/request-otp', sendMobileOtpHandler);
 router.post('/requestOtp', sendMobileOtpHandler);
+
+/**
+ * POST /auth/password-reset/request
+ * Sends a password-reset OTP to an existing mobile account. The response is
+ * intentionally generic so callers cannot use it to discover registered users.
+ */
+router.post('/password-reset/request', async (req, res) => {
+  try {
+    const normalizedMobile = normalizeMobileNumber(
+      req.body.mobileNumber || req.body.mobile || req.body.phone
+    );
+    const clientIp = getClientIp(req);
+    const phoneKey = getRateLimitKey('password-reset:phone', normalizedMobile);
+    const ipKey = getRateLimitKey('password-reset:ip', clientIp);
+
+    if (!/^\d{10,15}$/.test(normalizedMobile)) {
+      return res.status(400).json({ error: 'Enter a valid registered mobile number' });
+    }
+
+    const phoneBlockedSeconds = isRateLimited(phoneKey);
+    const ipBlockedSeconds = isRateLimited(ipKey);
+    if (phoneBlockedSeconds || ipBlockedSeconds) {
+      const retryAfter = Math.max(phoneBlockedSeconds, ipBlockedSeconds);
+      return res.status(429).json({ error: `Too many reset requests. Try again in ${retryAfter} seconds.` });
+    }
+
+    const attemptBlocked = recordRateLimitAttempt(phoneKey, authRateConfig.otpByPhone)
+      || recordRateLimitAttempt(ipKey, authRateConfig.otpByIp);
+    if (attemptBlocked) {
+      return res.status(429).json({ error: 'Too many reset requests. Please wait and try again.' });
+    }
+
+    const phoneCandidates = [...new Set([
+      normalizedMobile,
+      normalizedMobile.startsWith('91') && normalizedMobile.length === 12
+        ? normalizedMobile.slice(2)
+        : null,
+      normalizedMobile.length === 10 ? `91${normalizedMobile}` : null,
+    ].filter(Boolean))];
+    const user = await User.findOne({ mobileNumber: { $in: phoneCandidates }, isActive: { $ne: false } });
+    const genericMessage = 'If this mobile number is registered, a reset code has been sent.';
+
+    if (!user) {
+      return res.status(200).json({ message: genericMessage });
+    }
+
+    const result = await sendMobileOtp(user.mobileNumber || normalizedMobile);
+    if (!result.ok) {
+      return res.status(400).json({ error: result.error || 'Could not send reset code' });
+    }
+
+    const isDevelopmentProvider = ['development', 'demo'].includes(result.provider);
+    return res.status(200).json({
+      message: genericMessage,
+      provider: result.provider,
+      devOtp: isDevelopmentProvider ? result.devOtp : undefined,
+      developmentAutofill: isDevelopmentProvider,
+    });
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+});
+
+/**
+ * POST /auth/password-reset/confirm
+ * Verifies the reset OTP, changes the password, and revokes existing sessions.
+ */
+router.post('/password-reset/confirm', async (req, res) => {
+  try {
+    const normalizedMobile = normalizeMobileNumber(
+      req.body.mobileNumber || req.body.mobile || req.body.phone
+    );
+    const otp = req.body.otp || req.body.code;
+    const newPassword = String(req.body.newPassword || req.body.password || '');
+    const clientIp = getClientIp(req);
+    const phoneKey = getRateLimitKey('password-reset:verify:phone', normalizedMobile);
+    const ipKey = getRateLimitKey('password-reset:verify:ip', clientIp);
+
+    if (!/^\d{10,15}$/.test(normalizedMobile) || !otp) {
+      return res.status(400).json({ error: 'Mobile number and reset code are required' });
+    }
+    if (newPassword.length < 8) {
+      return res.status(400).json({ error: 'New password must be at least 8 characters' });
+    }
+
+    const phoneBlockedSeconds = isRateLimited(phoneKey);
+    const ipBlockedSeconds = isRateLimited(ipKey);
+    if (phoneBlockedSeconds || ipBlockedSeconds) {
+      const retryAfter = Math.max(phoneBlockedSeconds, ipBlockedSeconds);
+      return res.status(429).json({ error: `Too many reset attempts. Try again in ${retryAfter} seconds.` });
+    }
+
+    const phoneCandidates = [...new Set([
+      normalizedMobile,
+      normalizedMobile.startsWith('91') && normalizedMobile.length === 12
+        ? normalizedMobile.slice(2)
+        : null,
+      normalizedMobile.length === 10 ? `91${normalizedMobile}` : null,
+    ].filter(Boolean))];
+    const user = await User.findOne({ mobileNumber: { $in: phoneCandidates }, isActive: { $ne: false } });
+    if (!user) {
+      recordRateLimitFailure(phoneKey, authRateConfig.otpByPhone);
+      recordRateLimitFailure(ipKey, authRateConfig.otpByIp);
+      return res.status(400).json({ error: 'Invalid or expired reset code' });
+    }
+
+    if (!AUTO_VERIFY_OTP) {
+      const otpResult = await verifyMobileOtpCode(user.mobileNumber || normalizedMobile, otp);
+      if (!otpResult.ok) {
+        recordRateLimitFailure(phoneKey, authRateConfig.otpByPhone);
+        recordRateLimitFailure(ipKey, authRateConfig.otpByIp);
+        return res.status(400).json({ error: otpResult.error || 'Invalid or expired reset code' });
+      }
+    }
+
+    const passwordHash = await bcrypt.hash(newPassword, 12);
+    const now = new Date();
+    await Promise.all([
+      User.findByIdAndUpdate(user._id, {
+        $set: {
+          passwordHash,
+          activeSessionId: null,
+          activeSessions: [],
+          deviceToken: null,
+        },
+      }),
+      Session.updateMany(
+        { user: user._id, loggedOutAt: null },
+        { $set: { loggedOutAt: now, lastPingAt: now } }
+      ),
+    ]);
+
+    resetRateLimit(phoneKey);
+    resetRateLimit(ipKey);
+    return res.status(200).json({ message: 'Password updated. Sign in with your new password.' });
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+});
 
 /**
  * POST /auth/login

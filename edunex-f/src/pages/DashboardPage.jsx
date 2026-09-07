@@ -144,7 +144,7 @@ export function DashboardPage() {
         <div className="welcome-row">
           <div className="welcome-left">
             <h1>Welcome back, {firstName}</h1>
-            <p>{realCourses.length ? `You have ${realCourses.length} real EduNex courses available. Continue from your latest saved lesson.` : "No published courses were found in the backend yet."}</p>
+            <p>{realCourses.length ? `You have ${realCourses.length} real Skillomate courses available. Continue from your latest saved lesson.` : "No published courses were found in the backend yet."}</p>
           </div>
           <div className="stats-row">
             <div className="stat-pill">
@@ -199,7 +199,7 @@ export function DashboardPage() {
                 <div className="hist-thumb-wrap">
                   <img className="hist-thumb" src={window.EduNex?.courseImage?.(course)} alt={course.title || title} onError={(event) => {
                     event.currentTarget.onerror = null;
-                    event.currentTarget.src = window.EduNex?.placeholderImage?.(event.currentTarget.alt || "EduNex") || "";
+                    event.currentTarget.src = window.EduNex?.placeholderImage?.(event.currentTarget.alt || "Skillomate") || "";
                   }} />
                   <span className={`hist-status ${status.cls}`}>{status.label}</span>
                   <span className="hist-duration">{duration}</span>
@@ -208,7 +208,7 @@ export function DashboardPage() {
                 </div>
                 <div className="hist-info">
                   <div className="hist-title">{title}</div>
-                  <div className="hist-meta"><span>{course.title || "EduNex course"}</span><span className="dot">·</span><span>Video {progress.lessonIndex + 1} of {progress.total}</span></div>
+                  <div className="hist-meta"><span>{course.title || "Skillomate course"}</span><span className="dot">·</span><span>Video {progress.lessonIndex + 1} of {progress.total}</span></div>
                   <div className="hist-footer-row"><span className="hist-pct">{progress.percent ? `${progress.percent}% complete` : "Ready to start"}</span><span className="hist-time">Synced now</span></div>
                 </div>
               </div>
@@ -228,7 +228,7 @@ export function DashboardPage() {
               {!recommendationError && allowed && !recommendedCourses.length ? <div className="rec-card" style={{ padding: 18 }}>No published recommendations yet.</div> : null}
               {allowed ? recommendedCourses.map((course) => {
                 const videos = Number(course.videoCount || 0) || (Array.isArray(course.videos) ? course.videos.length : 0);
-                const reason = course.recommendation?.reason || "Recommended from the current EduNex catalog";
+                const reason = course.recommendation?.reason || "Recommended from the current Skillomate catalog";
                 return (
                   <div className="rec-card" key={course._id} onClick={() => window.EduNex?.openCourseDetails?.(course)} role="link" tabIndex={0} onKeyDown={(event) => {
                     if (event.key !== "Enter" && event.key !== " ") return;
@@ -238,7 +238,7 @@ export function DashboardPage() {
                     <div className="rec-thumb-wrap">
                       <img className="rec-thumb" src={window.EduNex?.courseImage?.(course)} alt={course.title} onError={(event) => {
                         event.currentTarget.onerror = null;
-                        event.currentTarget.src = window.EduNex?.placeholderImage?.(event.currentTarget.alt || "EduNex") || "";
+                        event.currentTarget.src = window.EduNex?.placeholderImage?.(event.currentTarget.alt || "Skillomate") || "";
                       }} />
                       <span className="rec-badge badge-mono">{categoryName(course)}</span>
                     </div>

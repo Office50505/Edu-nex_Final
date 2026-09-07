@@ -73,7 +73,7 @@ function PageLoading() {
         <div className="enx-page-loading-mark" aria-hidden="true">
           <EnxIcon name="sparkles" />
         </div>
-        <p>Loading EduNex...</p>
+        <p>Loading Skillomate...</p>
       </section>
     </main>
   );
@@ -111,7 +111,7 @@ export default function App() {
   }
 
   if (!ReactPage) {
-    document.title = "Page Not Found | EduNex";
+    document.title = "Page Not Found | Skillomate";
   }
 
   return (

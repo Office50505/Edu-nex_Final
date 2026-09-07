@@ -182,7 +182,7 @@ function stopLocalServer() {
 }
 
 async function main() {
-  console.log(`EduNex smoke test target: ${baseUrl}`);
+  console.log(`Skillomate smoke test target: ${baseUrl}`);
   console.log(`DB required: ${requireDb ? 'yes' : 'no'}`);
 
   if (startServer) {

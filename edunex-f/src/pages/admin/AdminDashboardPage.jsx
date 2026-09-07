@@ -185,7 +185,7 @@ export function AdminDashboardPage() {
   }
 
   useEffect(() => {
-    document.title = "Admin Analytics | EduNex";
+    document.title = "Admin Analytics | Skillomate";
     loadAnalytics();
   }, []);
 

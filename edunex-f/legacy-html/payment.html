@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Start Learning | EduNex</title>
+  <title>Start Learning | Skillomate</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -522,7 +522,7 @@
       .pay-page { padding: 24px 16px 60px; }
     }
 
-    /* New EduNex noir/cyan checkout theme */
+    /* New Skillomate noir/cyan checkout theme */
     :root {
       --cyan: #C58B2A;
       --cyan-dim: rgba(197,139,42,.10);
@@ -694,7 +694,7 @@
 <body>
 <nav class="navbar">
   <div class="nav-inner">
-    <a href="/index.html" class="nav-logo">EduNex <span>AI</span></a>
+    <a href="/index.html" class="nav-logo">Skillomate <span>AI</span></a>
     <ul class="nav-links">
       <li><a href="/index.html">Home</a></li>
       <li><a href="/courses.html">Courses</a></li>
@@ -758,7 +758,7 @@
           <div class="subscribed-banner">
             <div class="icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#DAB77A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;flex-shrink:0"><polyline points="20 6 9 17 4 12"/></svg></div>
             <h3>You're already subscribed!</h3>
-            <p>Enjoy unlimited access to all EduNex courses.</p>
+            <p>Enjoy unlimited access to all Skillomate courses.</p>
           </div>
           <a id="watchNowBtn" href="/courses.html" class="login-cta-btn">Continue in App</a>
           <a href="/courses.html" class="pay-btn-secondary" style="margin-top:10px;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;flex-shrink:0"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg> Browse All Courses</a>
@@ -903,7 +903,7 @@ function configureAppOpenButton(){
 
   if(appLink){
     watchBtn.href = appLink;
-    watchBtn.textContent = 'Open EduNex App';
+    watchBtn.textContent = 'Open Skillomate App';
     watchBtn.addEventListener('click', (event) => {
       event.preventDefault();
       openAppWithWebFallback(appLink, webLink);
@@ -979,9 +979,9 @@ function courseThumbnailSrc(course){
 }
 function fallbackCoursePreview(){
   return {
-    title: 'EduNex Course Library',
-    description: 'Start your trial and choose from the real EduNex courses available in your course catalogue.',
-    category: { name: 'EduNex AI' },
+    title: 'Skillomate Course Library',
+    description: 'Start your trial and choose from the real Skillomate courses available in your course catalogue.',
+    category: { name: 'Skillomate AI' },
     averageRating: 4.8,
     videoCount: 0
   };
@@ -1053,8 +1053,8 @@ function renderPreview(course){
   const vids = course.videoCount ?? course.videos?.length ?? 0;
   const rating = course.averageRating || 4.8;
 
-  const thumbnailSrc = courseThumbnailSrc(course) || EduNex.placeholderImage(course.title || 'EduNex');
-  const thumbHTML = `<img src="${esc(thumbnailSrc)}" alt="${esc(course.title)}" onerror="this.onerror=null;this.src=EduNex.placeholderImage(this.alt||'EduNex')">`;
+  const thumbnailSrc = courseThumbnailSrc(course) || EduNex.placeholderImage(course.title || 'Skillomate');
+  const thumbHTML = `<img src="${esc(thumbnailSrc)}" alt="${esc(course.title)}" onerror="this.onerror=null;this.src=EduNex.placeholderImage(this.alt||'Skillomate')">`;
 
   document.getElementById('coursePreview').innerHTML = `
     <div class="cp-recommended">Recommended</div>

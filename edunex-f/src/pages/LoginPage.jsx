@@ -4,7 +4,7 @@ import { runLegacyPage } from "../legacyRuntime.js";
 import { usePageStyle } from "../hooks/usePageStyle.js";
 
 const EMPTY_LOGIN_MESSAGE = "Please enter your mobile number and password.";
-const FORGOT_PASSWORD_MESSAGE = "Password recovery is not available on this local build yet. Please contact EduNex support for account help.";
+const FORGOT_PASSWORD_MESSAGE = "Password recovery is not available on this local build yet. Please contact Skillomate support for account help.";
 const FALLBACK_LOGIN_MESSAGE = "Could not sign in. Please try again.";
 
 function normalizePhone(value) {
@@ -132,7 +132,7 @@ export function LoginPage() {
     <div className="react-page-root" data-page="login.html">
       <main className="lp-wrap">
         <div className="lp-left">
-          <a href="index.html" className="lp-logo">EduNex</a>
+          <a href="index.html" className="lp-logo">Skillomate</a>
           <div className="lp-hero">
             <div className="lp-marketing-title">Elevate your career<br />with <span>AI precision.</span></div>
             <p>Join over 100,000+ students mastering the future of technology and creative strategy through our curated AI-first curriculum.</p>
@@ -142,11 +142,11 @@ export function LoginPage() {
               <img className="lp-test-photo" src="assets/image.png" alt="Student at laptop" />
               <div className="lp-test-body">
                 <div className="lp-big-quote">❝</div>
-                <p className="lp-test-text">"The AI Masterclass at EduNex completely redefined my workflow. I secured a Senior Developer role within 3 months of finishing."</p>
+                <p className="lp-test-text">"The AI Masterclass at Skillomate completely redefined my workflow. I secured a Senior Developer role within 3 months of finishing."</p>
                 <div className="lp-author">
-                  <img className="lp-author-avatar" src="assets/image.png" alt="EduNex Mentor" />
+                  <img className="lp-author-avatar" src="assets/image.png" alt="Skillomate Mentor" />
                   <div>
-                    <div className="lp-author-name">EduNex Mentor</div>
+                    <div className="lp-author-name">Skillomate Mentor</div>
                     <div className="lp-author-role">Google Alumni</div>
                   </div>
                 </div>

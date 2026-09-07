@@ -1046,9 +1046,9 @@
     }
   }
 
-  function placeholderImage(label = "EduNex") {
-    const clean = String(label || "EduNex").replace(/[&<>"']/g, "").slice(0, 32);
-    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="675" viewBox="0 0 1200 675"><rect width="1200" height="675" fill="#FAF7F1"/><rect x="1" y="1" width="1198" height="673" rx="34" fill="#FFFDF8" stroke="#E2D6C6" stroke-width="2"/><circle cx="960" cy="120" r="170" fill="rgba(197,139,42,.10)"/><circle cx="210" cy="540" r="210" fill="rgba(218,183,122,.12)"/><text x="72" y="340" fill="#332820" font-family="Arial, sans-serif" font-size="54" font-weight="800">${clean}</text><text x="74" y="394" fill="#C58B2A" font-family="Arial, sans-serif" font-size="24" font-weight="700">EduNex course</text></svg>`;
+  function placeholderImage(label = "Skillomate") {
+    const clean = String(label || "Skillomate").replace(/[&<>"']/g, "").slice(0, 32);
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="675" viewBox="0 0 1200 675"><rect width="1200" height="675" fill="#FAF7F1"/><rect x="1" y="1" width="1198" height="673" rx="34" fill="#FFFDF8" stroke="#E2D6C6" stroke-width="2"/><circle cx="960" cy="120" r="170" fill="rgba(197,139,42,.10)"/><circle cx="210" cy="540" r="210" fill="rgba(218,183,122,.12)"/><text x="72" y="340" fill="#332820" font-family="Arial, sans-serif" font-size="54" font-weight="800">${clean}</text><text x="74" y="394" fill="#C58B2A" font-family="Arial, sans-serif" font-size="24" font-weight="700">Skillomate course</text></svg>`;
     return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
   }
 
@@ -1172,7 +1172,7 @@
     existing.outerHTML = `
       <nav class="navbar">
         <div class="nav-inner">
-          <a href="index.html" class="nav-logo">EduNex <span>AI</span></a>
+          <a href="index.html" class="nav-logo">Skillomate <span>AI</span></a>
           <ul class="nav-links">
             ${link("index.html", "Home")}
             ${link("courses.html", "Courses")}
@@ -1229,7 +1229,7 @@
       imageUrl(course.videos?.[0]?.thumbnail);
     const external = course.thumbnailUrl || course.thumbnailHorizontalUrl || course.thumbnailVerticalUrl ||
       course.videos?.[0]?.thumbnailUrl || "";
-    return embedded || normalizeImageSrc(external) || placeholderImage(course.title || "EduNex");
+    return embedded || normalizeImageSrc(external) || placeholderImage(course.title || "Skillomate");
   }
 
   function courseId(course) {
