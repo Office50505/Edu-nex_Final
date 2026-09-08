@@ -3,7 +3,16 @@ import { AdminShell, Message } from "./AdminShell.jsx";
 import { adminJson, adminRoutes, formatNumber, requireAdmin, slugify } from "./adminApi.js";
 
 function makeVideo(index = 0) {
-  return { title: "", description: "", duration: "", videoUrl: "", examplePrompt: "", key: `${Date.now()}-${index}` };
+  return {
+    title: "",
+    description: "",
+    duration: "",
+    videoUrl: "",
+    thumbnailUrl: "",
+    thumbnailVerticalUrl: "",
+    examplePrompt: "",
+    key: `${Date.now()}-${index}`,
+  };
 }
 
 function emptyCourseForm() {
@@ -34,6 +43,8 @@ function courseVideo(video, index) {
     description: video?.description || "",
     duration: String(video?.duration || ""),
     videoUrl: video?.videoUrl || video?.url || "",
+    thumbnailUrl: video?.thumbnailUrl || video?.thumbnailHorizontalUrl || "",
+    thumbnailVerticalUrl: video?.thumbnailVerticalUrl || "",
     examplePrompt: video?.examplePrompt || video?.examplePromptText || video?.examplePromptUrl || video?.promptUrl || "",
     key: `${video?._id || video?.videoUrl || Date.now()}-${index}`,
   };
@@ -188,6 +199,8 @@ export function AdminUploadPage() {
         description: video.description.trim(),
         duration: Number(video.duration || 0),
         videoUrl: video.videoUrl.trim(),
+        thumbnailUrl: String(video.thumbnailUrl || "").trim(),
+        thumbnailVerticalUrl: String(video.thumbnailVerticalUrl || "").trim(),
         examplePrompt: String(video.examplePrompt || "").trim(),
       })),
     };
@@ -274,6 +287,8 @@ export function AdminUploadPage() {
                     <div className="field"><label htmlFor={`videoTitle${index}`}>Title</label><input id={`videoTitle${index}`} value={video.title} required onChange={(event) => updateVideo(index, "title", event.target.value)} /></div>
                     <div className="field"><label htmlFor={`videoDuration${index}`}>Duration seconds</label><input id={`videoDuration${index}`} type="number" min="0" step="1" value={video.duration} onChange={(event) => updateVideo(index, "duration", event.target.value)} /></div>
                     <div className="field span-2"><label htmlFor={`videoUrl${index}`}>Bunny Stream URL</label><input id={`videoUrl${index}`} type="url" required placeholder="https://player.mediadelivery.net/embed/..." value={video.videoUrl} onChange={(event) => updateVideo(index, "videoUrl", event.target.value)} /></div>
+                    <div className="field"><label htmlFor={`videoThumbnailUrl${index}`}>Horizontal thumbnail URL</label><input id={`videoThumbnailUrl${index}`} type="url" placeholder="https://..." value={video.thumbnailUrl} onChange={(event) => updateVideo(index, "thumbnailUrl", event.target.value)} /></div>
+                    <div className="field"><label htmlFor={`videoThumbnailVerticalUrl${index}`}>Vertical thumbnail URL</label><input id={`videoThumbnailVerticalUrl${index}`} type="url" placeholder="https://..." value={video.thumbnailVerticalUrl} onChange={(event) => updateVideo(index, "thumbnailVerticalUrl", event.target.value)} /></div>
                     <div className="field span-2"><label htmlFor={`examplePrompt${index}`}>Example prompt</label><textarea id={`examplePrompt${index}`} placeholder="Example: Create a 30-second ad script for a local bakery using this framework." value={video.examplePrompt} onChange={(event) => updateVideo(index, "examplePrompt", event.target.value)} /></div>
                     <div className="field span-2"><label htmlFor={`videoDescription${index}`}>Description</label><textarea id={`videoDescription${index}`} value={video.description} onChange={(event) => updateVideo(index, "description", event.target.value)} /></div>
                   </div>

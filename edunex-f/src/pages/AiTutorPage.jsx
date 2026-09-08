@@ -138,7 +138,7 @@ export function AiTutorPage() {
         <div className="tutor-top-bar">
           <a href="index.html" className="nav-logo" style={{ flexShrink: 0 }}>
             <div className="logo-mark">N</div>
-            <span className="logo-name">Edu<span>Nex</span></span>
+            <span className="logo-name">Skillo<span>mate</span></span>
           </a>
           <div style={{ flex: 1 }}></div>
           <a href="dashboard.html" className="btn btn-ghost btn-sm"><i className="fas fa-th-large" aria-hidden="true"></i> Dashboard</a>

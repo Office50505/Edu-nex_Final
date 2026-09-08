@@ -135,6 +135,7 @@ function publicPlayableVideoInfo(video = {}, index = 0) {
     hlsUrl,
     description: video.description || video.videoDescription || video.desc || video.summary || '',
     thumbnailUrl: video.thumbnailUrl || null,
+    thumbnailVerticalUrl: video.thumbnailVerticalUrl || null,
     examplePrompt: video.examplePrompt || video.examplePromptUrl || '',
   };
 }

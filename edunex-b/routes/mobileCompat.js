@@ -249,6 +249,7 @@ router.patch(
       'order',
       'sourceType',
       'thumbnailUrl',
+      'thumbnailVerticalUrl',
       'transcriptUrl',
       'examplePrompt',
     ]);

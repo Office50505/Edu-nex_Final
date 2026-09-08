@@ -3846,7 +3846,7 @@ function ProfileScreen({ user, onLogout, onGoToHome, onGoToCourses, onGoToAI, on
           { icon: "card-outline", label: "Subscription Details", onPress: onGoToSubscription },
           { icon: "ribbon-outline", label: "My Certificates", badge: certificatesCount || 0, onPress: onGoToCertificates },
           { icon: "heart-outline", label: "My Wishlist", badge: wishlistCount || 0, onPress: onGoToWishlist },
-          { icon: "help-circle-outline", label: "Help & Support", onPress: () => Linking.openURL("mailto:support@edunex.app") },
+          { icon: "help-circle-outline", label: "Help & Support", onPress: () => Linking.openURL("mailto:support@skillomate.ai") },
           { icon: "document-text-outline", label: "Terms & Conditions", onPress: () => openAppLink(TERMS_URL, "Terms & Conditions") },
           { icon: "shield-outline", label: "Privacy Policy", onPress: () => openAppLink(PRIVACY_URL, "Privacy Policy") },
         ].map((item, i) => (

@@ -777,6 +777,8 @@ function sanitizeCourseVideos(rawVideos) {
       const title = String(video.title || `Video ${index + 1}`).trim();
       const description = String(video.description || '').trim();
       const transcriptUrl = String(video.transcriptUrl || '').trim() || null;
+      const thumbnailUrl = sanitizeOptionalUrl(video.thumbnailUrl || video.thumbnailHorizontalUrl);
+      const thumbnailVerticalUrl = sanitizeOptionalUrl(video.thumbnailVerticalUrl);
       const examplePrompt = String(
         video.examplePrompt || video.examplePromptText || video.examplePromptUrl || video.promptUrl || ''
       ).trim();
@@ -794,7 +796,8 @@ function sanitizeCourseVideos(rawVideos) {
           bunnyLibraryId: null,
           youtubeId,
           thumbnail: null,
-          thumbnailUrl: null,
+          thumbnailUrl,
+          thumbnailVerticalUrl,
           transcriptUrl,
           examplePrompt,
           duration,
@@ -813,7 +816,8 @@ function sanitizeCourseVideos(rawVideos) {
         ...bunnyVideo,
         youtubeId: null,
         thumbnail: null,
-        thumbnailUrl: null,
+        thumbnailUrl,
+        thumbnailVerticalUrl,
         transcriptUrl,
         examplePrompt,
         duration,
@@ -829,13 +833,15 @@ function sanitizeCourseVideos(rawVideos) {
   return sanitizedVideos;
 }
 
-function applyCourseThumbnailToVideos(videos, courseThumbnail, courseThumbnailUrl) {
+function applyCourseThumbnailToVideos(videos, courseThumbnail, courseThumbnailUrl, courseThumbnailVerticalUrl) {
   const sharedThumbnailUrl = sanitizeOptionalUrl(courseThumbnailUrl);
+  const sharedThumbnailVerticalUrl = sanitizeOptionalUrl(courseThumbnailVerticalUrl);
 
   return (Array.isArray(videos) ? videos : []).map((video) => ({
     ...video,
     thumbnail: null,
-    thumbnailUrl: sharedThumbnailUrl,
+    thumbnailUrl: sanitizeOptionalUrl(video.thumbnailUrl) || sharedThumbnailUrl,
+    thumbnailVerticalUrl: sanitizeOptionalUrl(video.thumbnailVerticalUrl) || sharedThumbnailVerticalUrl,
   }));
 }
 
@@ -2685,7 +2691,7 @@ const course = new Course({
        thumbnailVertical: null,
        thumbnailUrl: courseThumbnailUrl,
        thumbnailVerticalUrl: courseThumbnailVerticalUrl,
-       videos: applyCourseThumbnailToVideos(sanitizedVideos, null, courseThumbnailUrl),
+       videos: applyCourseThumbnailToVideos(sanitizedVideos, null, courseThumbnailUrl, courseThumbnailVerticalUrl),
        notesUrl: req.body.notesUrl || null,
        category: req.body.category,
        status: req.body.status || 'draft',
@@ -2803,7 +2809,8 @@ app.patch('/api/admin/courses/:id', protectAdmin, async (req, res) => {
       updates.videos = applyCourseThumbnailToVideos(
         sanitizedVideos,
         null,
-        Object.prototype.hasOwnProperty.call(updates, 'thumbnailUrl') ? updates.thumbnailUrl : existingCourse.thumbnailUrl
+        Object.prototype.hasOwnProperty.call(updates, 'thumbnailUrl') ? updates.thumbnailUrl : existingCourse.thumbnailUrl,
+        Object.prototype.hasOwnProperty.call(updates, 'thumbnailVerticalUrl') ? updates.thumbnailVerticalUrl : existingCourse.thumbnailVerticalUrl
       );
     }
 

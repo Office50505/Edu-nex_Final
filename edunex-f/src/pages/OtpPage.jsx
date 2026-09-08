@@ -117,7 +117,7 @@ export function OtpPage() {
           >
             <div className="logo-mark">N</div>
             <span className="logo-name" style={{ fontSize: "1.35rem", fontWeight: 800 }}>
-              Edu<span style={{ color: "var(--accent)" }}>Nex</span>
+              Skillo<span style={{ color: "var(--accent)" }}>mate</span>
             </span>
           </a>
 
