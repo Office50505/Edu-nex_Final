@@ -1028,6 +1028,11 @@ export const page = {
       }
       .hero-carousel-viewport {
         padding: 18px 0 16px;
+        scroll-snap-type: none;
+        scroll-behavior: smooth;
+        touch-action: pan-x pan-y;
+        overscroll-behavior-x: contain;
+        -webkit-overflow-scrolling: touch;
       }
       .hero-carousel-track {
         min-height: 360px;
