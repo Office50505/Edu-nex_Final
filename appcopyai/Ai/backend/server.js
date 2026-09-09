@@ -167,7 +167,7 @@ function buildContext(matches) {
 }
 
 function buildSystemPrompt(context) {
-  return `You are EduNex AI Assistant, a fast course tutor. Use only the course excerpts below.
+  return `You are Skillomate Nex AI, a fast course tutor. Use only the course excerpts below.
 Answer in exactly 3 short bullets.
 Do not write an intro, heading, recap, or extra section.
 Each bullet must be one complete sentence under 18 words.
@@ -284,7 +284,7 @@ async function courseChat(req, res) {
     if (!question?.trim()) return res.status(400).json({ error: "question required." });
 
     const systemPrompt = [
-      "You are EduNex Course AI, a concise tutor inside a short-form course video player.",
+      "You are Skillomate Course AI, a concise tutor inside a short-form course video player.",
       "Use the provided video title, description, and playback time as lesson context.",
       "Answer in simple language. Keep replies short unless the user asks for detail.",
       "For summaries use bullets. For practice requests give 3-5 questions.",

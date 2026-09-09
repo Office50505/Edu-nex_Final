@@ -2,9 +2,22 @@ import { useEffect, useMemo, useState } from "react";
 import { AdminShell, Message } from "./AdminShell.jsx";
 import { adminJson, adminRoutes, formatNumber, requireAdmin, slugify } from "./adminApi.js";
 
+function normalizeThumbnailUrl(url, width = 1600) {
+  const value = String(url || "").trim();
+  if (!/^https?:\/\/(?:www\.)?drive\.google\.com\//i.test(value)) return value;
+
+  const pathMatch = value.match(/\/(?:file\/)?d\/([a-zA-Z0-9_-]+)/i);
+  const queryMatch = value.match(/[?&]id=([a-zA-Z0-9_-]+)/i);
+  const driveFileId = pathMatch?.[1] || queryMatch?.[1];
+  return driveFileId
+    ? `https://drive.google.com/thumbnail?id=${encodeURIComponent(driveFileId)}&sz=w${width}`
+    : value;
+}
+
 function makeVideo(index = 0) {
   return {
     title: "",
+    topic: "",
     description: "",
     duration: "",
     videoUrl: "",
@@ -40,6 +53,7 @@ function categoryId(course) {
 function courseVideo(video, index) {
   return {
     title: video?.title || `Video ${index + 1}`,
+    topic: video?.topic || "",
     description: video?.description || "",
     duration: String(video?.duration || ""),
     videoUrl: video?.videoUrl || video?.url || "",
@@ -175,6 +189,7 @@ export function AdminUploadPage() {
   }
 
   const completeVideos = useMemo(() => form.videos.filter((video) => video.videoUrl.trim()).length, [form.videos]);
+  const thumbnailPreviewUrl = useMemo(() => normalizeThumbnailUrl(form.thumbnailUrl), [form.thumbnailUrl]);
   const checks = [
     ["Title", Boolean(form.title.trim())],
     ["Slug", Boolean(form.slug.trim())],
@@ -191,11 +206,12 @@ export function AdminUploadPage() {
       description: form.description.trim(),
       category: form.category,
       status: form.status,
-      thumbnailUrl: form.thumbnailUrl.trim(),
-      thumbnailVerticalUrl: form.thumbnailVerticalUrl.trim(),
+      thumbnailUrl: normalizeThumbnailUrl(form.thumbnailUrl),
+      thumbnailVerticalUrl: normalizeThumbnailUrl(form.thumbnailVerticalUrl),
       notesUrl: form.notesUrl.trim(),
       videos: form.videos.map((video, index) => ({
         title: video.title.trim() || `Video ${index + 1}`,
+        topic: video.topic.trim(),
         description: video.description.trim(),
         duration: Number(video.duration || 0),
         videoUrl: video.videoUrl.trim(),
@@ -264,14 +280,14 @@ export function AdminUploadPage() {
                   </div>
                 </div>
                 <div className="field"><label htmlFor="status">Status</label><select id="status" name="status" value={form.status} onChange={(event) => updateField("status", event.target.value)}><option value="draft">Draft</option><option value="published">Published</option></select></div>
-                <div className="field"><label htmlFor="thumbnailUrl">Horizontal thumbnail URL</label><input id="thumbnailUrl" name="thumbnailUrl" type="url" placeholder="https://..." value={form.thumbnailUrl} onChange={(event) => updateField("thumbnailUrl", event.target.value)} /></div>
-                <div className="field"><label htmlFor="thumbnailVerticalUrl">Vertical thumbnail URL</label><input id="thumbnailVerticalUrl" name="thumbnailVerticalUrl" type="url" placeholder="https://..." value={form.thumbnailVerticalUrl} onChange={(event) => updateField("thumbnailVerticalUrl", event.target.value)} /></div>
+                <div className="field"><label htmlFor="thumbnailUrl">Horizontal thumbnail URL</label><input id="thumbnailUrl" name="thumbnailUrl" type="url" placeholder="https://..." value={form.thumbnailUrl} onChange={(event) => updateField("thumbnailUrl", event.target.value)} /><small>Google Drive links are supported when the file is shared publicly.</small></div>
+                <div className="field"><label htmlFor="thumbnailVerticalUrl">Vertical thumbnail URL</label><input id="thumbnailVerticalUrl" name="thumbnailVerticalUrl" type="url" placeholder="https://..." value={form.thumbnailVerticalUrl} onChange={(event) => updateField("thumbnailVerticalUrl", event.target.value)} /><small>Use a public image URL or public Google Drive file link.</small></div>
                 <div className="field span-2"><label htmlFor="notesUrl">Notes URL</label><input id="notesUrl" name="notesUrl" type="url" placeholder="https://..." value={form.notesUrl} onChange={(event) => updateField("notesUrl", event.target.value)} /></div>
               </div>
             </div>
 
             <aside className="form-section course-preview-panel" aria-label="Course preview">
-              <div className="thumbnail-preview-card">{form.thumbnailUrl ? <img src={form.thumbnailUrl} alt="" /> : <span>No thumbnail URL</span>}</div>
+              <div className="thumbnail-preview-card">{thumbnailPreviewUrl ? <img src={thumbnailPreviewUrl} alt="Course thumbnail preview" /> : <span>No thumbnail URL</span>}</div>
               <div className="preview-copy"><span>{form.status === "published" ? "Published" : "Draft"}</span><h2>{form.title.trim() || "Untitled course"}</h2><p>{form.description.trim() || "Course description preview will appear here."}</p></div>
               <div className="publish-checklist">{checks.map(([label, complete]) => <span className={complete ? "is-complete" : ""} key={label}>{complete ? "[x]" : "[ ]"} {label}</span>)}</div>
             </aside>
@@ -285,6 +301,7 @@ export function AdminUploadPage() {
                   <div className="video-entry-head"><strong className="video-entry-title">Video {index + 1}</strong><button className="action-button danger" type="button" onClick={() => removeVideo(index)}>Remove</button></div>
                   <div className="form-grid">
                     <div className="field"><label htmlFor={`videoTitle${index}`}>Title</label><input id={`videoTitle${index}`} value={video.title} required onChange={(event) => updateVideo(index, "title", event.target.value)} /></div>
+                    <div className="field"><label htmlFor={`videoTopic${index}`}>Topic</label><input id={`videoTopic${index}`} maxLength={80} placeholder="e.g. Prompt Engineering" value={video.topic} onChange={(event) => updateVideo(index, "topic", event.target.value)} /></div>
                     <div className="field"><label htmlFor={`videoDuration${index}`}>Duration seconds</label><input id={`videoDuration${index}`} type="number" min="0" step="1" value={video.duration} onChange={(event) => updateVideo(index, "duration", event.target.value)} /></div>
                     <div className="field span-2"><label htmlFor={`videoUrl${index}`}>Bunny Stream URL</label><input id={`videoUrl${index}`} type="url" required placeholder="https://player.mediadelivery.net/embed/..." value={video.videoUrl} onChange={(event) => updateVideo(index, "videoUrl", event.target.value)} /></div>
                     <div className="field"><label htmlFor={`videoThumbnailUrl${index}`}>Horizontal thumbnail URL</label><input id={`videoThumbnailUrl${index}`} type="url" placeholder="https://..." value={video.thumbnailUrl} onChange={(event) => updateVideo(index, "thumbnailUrl", event.target.value)} /></div>

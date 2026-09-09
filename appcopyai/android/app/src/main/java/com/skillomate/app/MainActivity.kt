@@ -1,7 +1,8 @@
-package com.example.protectedvideo
+package com.skillomate.app
 
 import android.os.Build
 import android.os.Bundle
+import android.window.OnBackInvokedDispatcher
 
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
@@ -17,6 +18,19 @@ class MainActivity : ReactActivity() {
     // This is required for expo-splash-screen.
     setTheme(R.style.AppTheme);
     super.onCreate(null)
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+      onBackInvokedDispatcher.registerOnBackInvokedCallback(
+        OnBackInvokedDispatcher.PRIORITY_DEFAULT
+      ) {
+        dispatchBackToReactNative()
+      }
+    }
+  }
+
+  @Suppress("DEPRECATION")
+  private fun dispatchBackToReactNative() {
+    onBackPressed()
   }
 
   /**

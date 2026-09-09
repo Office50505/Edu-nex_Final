@@ -55,7 +55,6 @@ export const UI_QA_COURSES = [
       "Learn how to identify business automation opportunities, design practical AI workflows, package your service, price retainers and deliver client-ready systems. This description is deliberately extended for Phase 3 UI QA so Course Details, Curriculum and Lesson Player screens can be stress-tested for wrapping, spacing and scroll reachability.",
     price: 499,
     trialPrice: 1,
-    rating: 4.8,
     students: 18420,
     lessonCount: 45,
     certificate: true,
@@ -72,7 +71,6 @@ export const UI_QA_COURSES = [
     category: "AI Skills",
     description: "A practical course for using prompts in real professional workflows.",
     price: 499,
-    rating: 4.7,
     thumbnailAsset: require("../assets/avatars/a2.jpeg"),
     thumbnailVerticalAsset: require("../assets/avatars/a8.jpeg"),
     videos: buildVideos().slice(0, 18).map((video, index) => ({ ...video, _id: `dev-prompt-${index + 1}`, order: index + 1 })),
@@ -84,7 +82,6 @@ export const UI_QA_COURSES = [
     category: "Freelancing",
     description: "This course intentionally omits artwork so fallback cards can be tested.",
     price: 499,
-    rating: 4.6,
     videos: buildVideos().slice(0, 8).map((video, index) => ({ ...video, _id: `dev-missing-${index + 1}`, order: index + 1 })),
   },
 ];

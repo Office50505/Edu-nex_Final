@@ -5,6 +5,8 @@ const bcrypt = require('bcryptjs');
 const User = require('../models/User');
 const Session = require('../models/Session');
 const { protect } = require('../middleware/auth');
+const { requireCompatibleAuth } = require('../middleware/compatAuth');
+const { deleteUserAccount } = require('../services/accountDeletionService');
 const {
   normalizeMobileNumber,
   sendMobileOtp,
@@ -303,6 +305,46 @@ router.patch('/me', protect, async (req, res) => {
       return res.status(409).json({ error: 'That email is already registered' });
     }
     res.status(500).json({ error: error.message });
+  }
+});
+
+/**
+ * DELETE /auth/account
+ * Permanently deletes the authenticated account after password re-verification.
+ * Supports both bearer tokens and the app's existing userId/sessionId sessions.
+ */
+router.delete('/account', requireCompatibleAuth(), async (req, res) => {
+  try {
+    const confirmation = String(req.body.confirmation || '');
+    const password = String(req.body.password || '');
+
+    if (confirmation !== 'DELETE') {
+      return res.status(400).json({
+        error: 'Type DELETE exactly to confirm permanent account deletion.',
+        code: 'INVALID_CONFIRMATION',
+      });
+    }
+    if (!password) {
+      return res.status(400).json({ error: 'Current password is required', code: 'PASSWORD_REQUIRED' });
+    }
+
+    const user = await User.findById(req.compatUser._id).select('_id passwordHash');
+    if (!user) {
+      return res.status(404).json({ error: 'Account not found', code: 'ACCOUNT_NOT_FOUND' });
+    }
+
+    const passwordMatches = await bcrypt.compare(password, user.passwordHash || '');
+    if (!passwordMatches) {
+      return res.status(401).json({ error: 'Current password is incorrect', code: 'INVALID_PASSWORD' });
+    }
+
+    await deleteUserAccount(user._id);
+    return res.status(200).json({ success: true, message: 'Your account has been permanently deleted.' });
+  } catch (error) {
+    return res.status(error.statusCode || 500).json({
+      error: error.statusCode ? error.message : 'Account could not be deleted. Please try again.',
+      code: error.code || 'ACCOUNT_DELETION_FAILED',
+    });
   }
 });
 

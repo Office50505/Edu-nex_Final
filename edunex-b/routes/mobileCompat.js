@@ -244,6 +244,7 @@ router.patch(
       'videoUrl',
       'embedUrl',
       'title',
+      'topic',
       'description',
       'duration',
       'order',
