@@ -2,16 +2,9 @@
   "expo": {
     "name": "Skillomate",
     "slug": "skillomate",
-<<<<<<< HEAD
     "version": "1.0",
     "description": "Skillomate learning app",
     "scheme": "com.skillomate.app",
-=======
-    "version": "1.0.0",
-    "description": "Skillomate learning app",
-    "jsEngine": "hermes",
-    "scheme": "skillomate",
->>>>>>> 997e33eea7b5c5f193080a114f8374e8d90b8191
     "icon": "./assets/icon.png",
     "orientation": "default",
     "userInterfaceStyle": "automatic",
@@ -21,10 +14,7 @@
     ],
     "android": {
       "package": "com.skillomate.app",
-<<<<<<< HEAD
-      "versionCode": 1,
-=======
->>>>>>> 997e33eea7b5c5f193080a114f8374e8d90b8191
+      "versionCode": 2,
       "icon": "./assets/icon.png",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
@@ -34,13 +24,8 @@
       "userInterfaceStyle": "automatic"
     },
     "ios": {
-<<<<<<< HEAD
       "bundleIdentifier": "com.alihussainkhan.edunexfinal",
       "buildNumber": "9",
-=======
-      "bundleIdentifier": "com.skillomate.app",
-      "buildNumber": "7",
->>>>>>> 997e33eea7b5c5f193080a114f8374e8d90b8191
       "icon": "./assets/icon.png",
       "supportsTablet": false,
       "config": {
@@ -68,14 +53,9 @@
     },
     "owner": "niz10",
     "plugins": [
-<<<<<<< HEAD
       "expo-sharing",
       "expo-font",
       "expo-video"
-=======
-      "expo-asset",
-      "expo-font"
->>>>>>> 997e33eea7b5c5f193080a114f8374e8d90b8191
     ]
   }
 }

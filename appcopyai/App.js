@@ -348,14 +348,9 @@ function normalizeAuthUser(data = {}) {
     ...source,
     _id: String(id),
     sessionId: source.sessionId || data.sessionId || source.token || data.token || "",
-<<<<<<< HEAD
     token: accessToken,
     accessToken,
     refreshToken,
-=======
-    accessToken: source.accessToken || data.accessToken || "",
-    refreshToken: source.refreshToken || data.refreshToken || "",
->>>>>>> 997e33eea7b5c5f193080a114f8374e8d90b8191
     wishlist: source.wishlist || data.wishlist || [],
   };
 }
