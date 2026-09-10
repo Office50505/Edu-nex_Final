@@ -2284,6 +2284,35 @@ html[data-theme="light"] :where(.site-footer, .footer, .footer-wrap, .sp-footer,
   border-color: #E2D6C6 !important;
 }
 
+/* Keep primary headings readable when page-local light palette rules are active in dark mode. */
+html:not([data-theme="light"]) .react-page-root:not([data-page="about.html"]) :where(
+  .hero-title,
+  .library-hero h1,
+  .welcome-left h1,
+  .section-title,
+  .section-head h2,
+  .sec-title,
+  .card-title,
+  .course-title,
+  .course-title-main,
+  .pf-page-title,
+  .pf-profile-name,
+  .pf-card-heading,
+  .ep-card-title,
+  .cert-visual-title,
+  .cert-course-name,
+  .hist-title,
+  .rec-title,
+  .astat-value,
+  .lp-marketing-title,
+  .lp-login-title,
+  .sp-form-title,
+  .sp-profile-heading,
+  .payment-choice-title
+) {
+  color: var(--text, #ffffff) !important;
+}
+
 html[data-theme="light"] :where(.hero-cta-secondary, .hero-btn-secondary, .btn-ghost, .pay-btn-secondary, .payment-choice-btn.secondary, .back-btn, .pf-edit-btn) {
   background: #FFFDF8 !important;
   border-color: #DAB77A !important;
