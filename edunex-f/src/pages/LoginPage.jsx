@@ -1,3 +1,4 @@
+import { readLoginPrefill, clearLoginPrefill, saveSignupPrefill, signupDestination } from "../lib/authNavigation.js";
 import { useEffect, useMemo, useState } from "react";
 import { page as loginPage } from "../generated-pages/login.html.js";
 import { runLegacyPage } from "../legacyRuntime.js";
@@ -50,7 +51,7 @@ async function requestLogin(loginId, password) {
       data = null;
     }
   }
-  if (!response.ok) throw new Error(data?.error || data?.message || FALLBACK_LOGIN_MESSAGE);
+  if (!response.ok) throw Object.assign(new Error(data?.error || data?.message || FALLBACK_LOGIN_MESSAGE), { code: data?.code });
   return data;
 }
 
@@ -77,7 +78,7 @@ function safeLoginError(error) {
 }
 
 export function LoginPage() {
-  const [loginId, setLoginId] = useState("");
+  const [loginId, setLoginId] = useState(() => readLoginPrefill(sessionStorage));
   const [password, setPassword] = useState("");
   const [remember, setRemember] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -92,6 +93,7 @@ export function LoginPage() {
   }), []);
 
   useEffect(() => {
+    clearLoginPrefill(sessionStorage);
     document.title = loginPage.title;
     document.documentElement.lang = loginPage.lang || "en";
 
@@ -118,6 +120,12 @@ export function LoginPage() {
       window.dispatchEvent(new Event("edunex:auth-changed"));
       window.location.href = safeNext("/dashboard.html");
     } catch (loginError) {
+      if (loginError.code === "MOBILE_NOT_REGISTERED") {
+        saveSignupPrefill(normalizePhone(trimmedLogin), sessionStorage);
+        const next = new URLSearchParams(window.location.search).get("next");
+        window.location.assign(signupDestination(next, window.location.origin));
+        return;
+      }
       setError(safeLoginError(loginError));
     } finally {
       setLoading(false);

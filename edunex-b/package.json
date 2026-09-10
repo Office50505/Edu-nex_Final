@@ -16,7 +16,10 @@
     "k6:api:common:single": "k6 run tests/k6/common-api-load.js",
     "k6:complete:local": "node scripts/run-k6-complete-local.mjs",
     "test:ai": "node --test tests/ai-chat-history.test.cjs tests/tutor-knowledge.test.cjs",
-    "eval:ai": "node scripts/eval-tutor.cjs"
+    "eval:ai": "node scripts/eval-tutor.cjs",
+    "test:integrations": "node --test tests/auth-navigation.test.cjs tests/otp.test.cjs tests/razorpay.test.cjs",
+    "integrations:check": "node scripts/check-integrations.cjs",
+    "payment:create-plan": "node scripts/create-razorpay-plan.cjs"
   },
   "keywords": [],
   "author": "",

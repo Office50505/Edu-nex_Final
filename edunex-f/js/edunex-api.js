@@ -941,7 +941,10 @@
     }
 
     if (!response.ok) {
-      throw new Error(data?.error || data?.message || `Request failed with ${response.status}`);
+      const error = new Error(data?.error || data?.message || `Request failed with ${response.status}`);
+      error.code = data?.code;
+      error.status = response.status;
+      throw error;
     }
     return data;
   }
