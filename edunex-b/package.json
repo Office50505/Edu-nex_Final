@@ -14,7 +14,9 @@
     "db:index:create": "node scripts/audit-mongo-indexes.mjs --create-missing",
     "k6:api:common": "node scripts/run-k6-common-api-steps.mjs",
     "k6:api:common:single": "k6 run tests/k6/common-api-load.js",
-    "k6:complete:local": "node scripts/run-k6-complete-local.mjs"
+    "k6:complete:local": "node scripts/run-k6-complete-local.mjs",
+    "test:ai": "node --test tests/ai-chat-history.test.cjs tests/tutor-knowledge.test.cjs",
+    "eval:ai": "node scripts/eval-tutor.cjs"
   },
   "keywords": [],
   "author": "",

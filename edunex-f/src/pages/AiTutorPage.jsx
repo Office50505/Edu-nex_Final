@@ -4,71 +4,23 @@ import { runLegacyPage } from "../legacyRuntime.js";
 import { usePageStyle } from "../hooks/usePageStyle.js";
 import { useEduNexRuntimeReady } from "../hooks/useEduNexRuntimeReady.js";
 
-const STARTER_MESSAGES = [
-  {
-    role: "ai",
-    html: (
-      <>
-        <p>Hi Learner. Based on your progress in <strong>Master the AI Economy</strong>, you're 68% through Module 2 on AI Content Creation. You're doing great.</p>
-        <p style={{ marginTop: 8 }}>Want to continue where you left off, or is there something specific you'd like help with today?</p>
-      </>
-    ),
-    time: "10:32 AM",
-  },
-  {
-    role: "user",
-    html: <p>How do I start earning with AI this week?</p>,
-    time: "10:33 AM",
-  },
-  {
-    role: "ai",
-    html: (
-      <>
-        <p>Great question! Here are 3 ways you can start earning with AI <strong>this week</strong> — based on your current skill level:</p>
-        <p style={{ marginTop: 10 }}><strong style={{ color: "var(--accent)" }}>1. AI Content Writing (Fastest)</strong><br />Create a Fiverr/Upwork profile offering AI-assisted blog posts or product descriptions. You can charge $25–$75/article. Module 2 covers exactly how to do this.</p>
-        <p style={{ marginTop: 10 }}><strong style={{ color: "var(--accent-green)" }}>2. Social Media AI Content Packages</strong><br />Offer to manage a local business's social media using AI tools. Package for $300–$500/month. This is beginner-friendly.</p>
-        <p style={{ marginTop: 10 }}><strong style={{ color: "#A78BFA" }}>3. ChatGPT Consulting</strong><br />Many businesses don't know how to use ChatGPT. You can charge $50/hour to show them how. Your current knowledge is enough to start.</p>
-        <p style={{ marginTop: 10 }}>Which of these sounds most interesting to you? I can walk you through the exact steps.</p>
-      </>
-    ),
-    time: "10:33 AM",
-  },
-  {
-    role: "user",
-    html: <p>The Fiverr content writing sounds great. Can you help me set up my profile?</p>,
-    time: "10:35 AM",
-  },
-  {
-    role: "ai",
-    html: (
-      <>
-        <p>Absolutely! Here's your Fiverr AI Content Writing profile setup checklist:</p>
-        <p style={{ marginTop: 10 }}>✅ <strong>Profile Title:</strong> "AI-Powered Blog Writer | SEO Articles in 24hrs"</p>
-        <p style={{ marginTop: 6 }}>✅ <strong>Gig Description:</strong> Emphasise speed, quality, and SEO optimization. I can write your full description — just say the word!</p>
-        <p style={{ marginTop: 6 }}>✅ <strong>Pricing:</strong> Start with $25 for 500 words (competitive but profitable). Move to $50+ after 5 reviews.</p>
-        <p style={{ marginTop: 6 }}>✅ <strong>Portfolio:</strong> Create 2-3 sample articles today using ChatGPT. I'll give you the prompts.</p>
-        <p style={{ marginTop: 6 }}>✅ <strong>Tags:</strong> blog writing, AI content, SEO articles, copywriting, content creation</p>
-        <p style={{ marginTop: 10 }}>Want me to write your full Fiverr gig description right now? 💪</p>
-      </>
-    ),
-    time: "10:35 AM",
-  },
-];
+const QUICK_PROMPTS = ["Explain prompt engineering with an example", "My AI character's face changes between clips", "Help me choose a course", "Quiz me on prompting"];
+const FOOTER_PROMPTS = ["Explain that more simply", "Give me a practice exercise", "Quiz me", "Show a practical example"];
 
-const TOPICS = ["AI Income", "Freelancing", "Automation", "Content", "Prompting"];
-const QUICK_PROMPTS = [
-  "How do I start earning with AI?",
-  "Best AI tools for beginners?",
-  "How to find AI freelance clients?",
-  "Explain prompt engineering",
-];
-const FOOTER_PROMPTS = ["Write my Fiverr description", "Give me portfolio article prompts", "How to get first reviews?", "What should I charge?"];
+function ReplyText({ text }) {
+  return String(text || "").split("\n").map((line, index) => <p key={index} style={{ marginBottom: 6 }}>{line.split(/(\*\*.*?\*\*)/g).map((part, i) => part.startsWith("**") ? <strong key={i}>{part.slice(2, -2)}</strong> : part)}</p>);
+}
 
 export function AiTutorPage() {
-  const [activeTopic, setActiveTopic] = useState("AI Income");
-  const [messages, setMessages] = useState(STARTER_MESSAGES);
+  const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [authGate, setAuthGate] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [status, setStatus] = useState("Ready");
+  const inFlight = useRef(false);
+  const generation = useRef(0);
+  const historyRef = useRef([]);
+  const ownerRef = useRef("");
   const messagesRef = useRef(null);
   const inputRef = useRef(null);
   const runtimeReady = useEduNexRuntimeReady();
@@ -88,8 +40,27 @@ export function AiTutorPage() {
   }, [sharedRuntimePage]);
 
   useEffect(() => {
-    if (!runtimeReady) return;
-    if (!window.EduNex?.getAccessToken?.()) setAuthGate(true);
+    const syncAuth = () => {
+      const api = window.EduNex;
+      const user = api?.getUser?.();
+      const owner = api?.getAccessToken?.() ? String(user?._id || user?.id || "") : "";
+      setAuthGate(!api?.getAccessToken?.());
+      if (owner !== ownerRef.current) {
+        ownerRef.current = owner;
+        generation.current += 1;
+        historyRef.current = [];
+        setMessages([]);
+        setStatus("Ready");
+      }
+    };
+    if (runtimeReady) syncAuth();
+    window.addEventListener("edunex:auth-changed", syncAuth);
+    window.addEventListener("storage", syncAuth);
+    return () => {
+      generation.current += 1;
+      window.removeEventListener("edunex:auth-changed", syncAuth);
+      window.removeEventListener("storage", syncAuth);
+    };
   }, [runtimeReady]);
 
   useEffect(() => {
@@ -101,33 +72,44 @@ export function AiTutorPage() {
     requestAnimationFrame(() => inputRef.current?.focus());
   };
 
+  const newChat = () => {
+    generation.current += 1;
+    historyRef.current = [];
+    setMessages([]);
+    setInput("");
+    setStatus("Ready");
+  };
+
   const sendMessage = async () => {
     const text = input.trim();
-    if (!text) return;
+    if (!text || inFlight.current) return;
+    if (!window.EduNex?.getAccessToken?.()) { setAuthGate(true); return; }
+    const requestGeneration = generation.current;
+    inFlight.current = true;
+    setLoading(true);
+    setStatus("Thinking…");
     setInput("");
-    setMessages((current) => [...current, { role: "user", text, time: "Just now" }]);
-
-    let replyText = "Great question! I'm NEX, your AI learning assistant. Let me help you with that...";
-    const courseId = new URLSearchParams(window.location.search).get("courseId");
-    if (window.EduNex && courseId) {
-      try {
-        const existing = messages.map((message) => ({
-          role: message.role === "user" ? "user" : "assistant",
-          content: message.text || "",
-        })).filter((item) => item.content);
-        await window.EduNex.authRequest("/api/ai-tutor", {
-          method: "POST",
-          body: JSON.stringify({ course: courseId, messages: [...existing, { role: "user", content: text }] }),
-        });
-        replyText = "Saved this question to your course tutor thread. Your mentor can continue from this context.";
-      } catch (error) {
-        replyText = error.message || replyText;
-      }
+    setMessages(current => [...current, { role: "user", text, time: "Just now" }]);
+    try {
+      const courseId = new URLSearchParams(window.location.search).get("courseId");
+      const data = await window.EduNex.authRequest("/api/ai/chat", {
+        method: "POST",
+        body: JSON.stringify({ message: text, history: historyRef.current, courseId: courseId || "", pagePath: window.location.pathname }),
+      });
+      if (requestGeneration !== generation.current) return;
+      if (!data?.reply) throw new Error("No answer returned. Please try again.");
+      historyRef.current = [...historyRef.current, { role: "user", content: text.slice(0, 2000) }, { role: "assistant", content: data.reply.slice(0, 2000) }].slice(-12);
+      setMessages(current => [...current, { role: "ai", text: data.reply, sources: data.sources || [], notice: data.notice, time: "Just now" }]);
+      setStatus(data.provider === "built-in-course-guide" ? "Basic guide" : "Ready");
+    } catch (error) {
+      if (requestGeneration !== generation.current) return;
+      setMessages(current => [...current, { role: "ai", text: `I couldn't answer right now. ${error.message || "Please try again."}`, error: true, time: "Just now" }]);
+      setStatus("Unavailable");
+      setInput(text);
+    } finally {
+      inFlight.current = false;
+      setLoading(false);
     }
-
-    window.setTimeout(() => {
-      setMessages((current) => [...current, { role: "ai", text: replyText, time: "Just now" }]);
-    }, 500);
   };
 
   const next = encodeURIComponent(window.location.pathname + window.location.search);
@@ -149,32 +131,14 @@ export function AiTutorPage() {
         <div className="full-tutor">
           <div className="tutor-sidebar">
             <div style={{ marginBottom: 16 }}>
-              <button onClick={() => location.reload()} className="btn btn-primary" type="button" style={{ width: "100%", justifyContent: "center" }}>
+              <button onClick={newChat} className="btn btn-primary" type="button" style={{ width: "100%", justifyContent: "center" }}>
                 <i className="fas fa-plus" aria-hidden="true"></i> New Chat
               </button>
             </div>
-            <div style={{ fontSize: ".72rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: ".08em", color: "var(--text-muted)", marginBottom: 10, padding: "0 4px" }}>Recent Chats</div>
-            {[
-              ["How to start AI freelancing?", "Today · 4 messages"],
-              ["Prompt engineering tips", "Yesterday · 12 messages"],
-              ["AI automation for clients", "2 days ago · 8 messages"],
-              ["ChatGPT vs Claude comparison", "3 days ago · 15 messages"],
-              ["Module 2 review — content", "4 days ago · 6 messages"],
-              ["Setting up Fiverr profile", "5 days ago · 9 messages"],
-            ].map(([title, preview], index) => (
-              <div className={`chat-history-item${index === 0 ? " active" : ""}`} key={title}>
-                <div className="chi-title">{title}</div>
-                <div className="chi-preview">{preview}</div>
-              </div>
-            ))}
-            <div style={{ flex: 1 }}></div>
-            <div style={{ padding: "12px 0", borderTop: "1px solid var(--border)", marginTop: 12 }}>
-              <div style={{ fontSize: ".72rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: ".08em", color: "var(--text-muted)", marginBottom: 10 }}>Topics</div>
-              <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
-                {TOPICS.map((topic) => (
-                  <button className={`topic-chip${activeTopic === topic ? " active" : ""}`} type="button" key={topic} onClick={() => setActiveTopic(topic)}>{topic}</button>
-                ))}
-              </div>
+            <div style={{ padding: 12, color: "var(--text-muted)" }}>
+              <strong>This conversation</strong>
+              <p style={{ marginTop: 12 }}>{messages.find(message => message.role === "user")?.text || "Start with a question about your course or project."}</p>
+              <p style={{ marginTop: 12 }}>Follow up naturally, ask for examples, or try a quiz. New chat clears the conversation.</p>
             </div>
           </div>
 
@@ -183,19 +147,18 @@ export function AiTutorPage() {
               <div className="ai-avatar">N</div>
               <div className="ai-info">
                 <h1>NEX — Your AI Learning Tutor</h1>
-                <p>Powered by Skillomate AI · Specialised in AI income strategies</p>
+                <p>Course explanations, practical examples, and guided practice</p>
               </div>
               <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 12 }}>
-                <span className="online-badge">Online</span>
-                <button className="btn btn-ghost btn-sm" type="button" aria-label="Tutor settings"><i className="fas fa-sliders-h" aria-hidden="true"></i></button>
+                <span className="online-badge" role="status">{status}</span>
               </div>
             </div>
 
-            <div className="chat-messages" id="chatMessages" ref={messagesRef}>
+            <div className="chat-messages" id="chatMessages" ref={messagesRef} role="log" aria-live="polite" aria-busy={loading}>
               <div style={{ textAlign: "center", padding: "20px 0 10px" }}>
                 <div style={{ width: 60, height: 60, borderRadius: "50%", background: "linear-gradient(135deg,var(--accent),var(--accent-green))", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.5rem", fontWeight: 800, color: "#000", margin: "0 auto 12px" }}>N</div>
                 <h2 style={{ marginBottom: 6 }}>Hello, Learner. I'm NEX.</h2>
-                <p style={{ fontSize: ".9rem", maxWidth: 480, margin: "0 auto" }}>I'm your personal AI learning tutor. I know everything in your Skillomate curriculum and can help you apply it to earn real income. Ask me anything!</p>
+                <p style={{ fontSize: ".9rem", maxWidth: 480, margin: "0 auto" }}>Ask about a concept, troubleshoot your project, or practise with a quiz. I'll distinguish course references from general examples and tell you when information is missing.</p>
               </div>
 
               <div style={{ display: "flex", gap: 8, justifyContent: "center", flexWrap: "wrap", paddingBottom: 12 }}>
@@ -206,12 +169,15 @@ export function AiTutorPage() {
                 <div className={`chat-bubble ${message.role === "user" ? "user" : "ai"}`} key={index}>
                   {message.role !== "user" ? <div className="bub-avatar">N</div> : null}
                   <div className="bub-content">
-                    {message.html || <p>{message.text}</p>}
+                    <ReplyText text={message.text} />
+                    {message.notice ? <p role="status">{message.notice}</p> : null}
+                    {message.sources?.length ? <div style={{ marginTop: 12, fontSize: ".8rem" }}><strong>References</strong>{message.sources.filter(source => source.url?.startsWith("/course-details.html?")).map(source => <p key={source.id}><a href={source.url}>[{source.id}] {source.title} — {source.section}</a></p>)}</div> : null}
                     <div className={`bub-time${message.role === "user" ? "" : ""}`}>{message.time}</div>
                   </div>
                   {message.role === "user" ? <div className="bub-avatar">A</div> : null}
                 </div>
               ))}
+              {loading ? <p role="status" style={{ padding: 16 }}>NEX is thinking…</p> : null}
             </div>
 
             <div className="quick-prompts">
@@ -220,13 +186,11 @@ export function AiTutorPage() {
 
             <div className="chat-input-area">
               <div className="chat-input-wrap">
-                <div className="input-actions">
-                  <button className="input-btn" type="button" title="Attach file" aria-label="Attach file"><i className="fas fa-paperclip" aria-hidden="true"></i></button>
-                  <button className="input-btn" type="button" title="Voice message" aria-label="Voice message"><i className="fas fa-microphone" aria-hidden="true"></i></button>
-                </div>
                 <textarea
                   ref={inputRef}
-                  placeholder="Ask NEX anything about AI, your courses, or earning with AI..."
+                  placeholder="Ask about your course or project…"
+                  aria-label="Message NEX"
+                  maxLength={2000}
                   rows="1"
                   value={input}
                   onChange={(event) => setInput(event.target.value)}
@@ -238,7 +202,7 @@ export function AiTutorPage() {
                   }}
                 ></textarea>
               </div>
-              <button className="send-btn" type="button" onClick={sendMessage} title="Send message" aria-label="Send message">
+              <button className="send-btn" type="button" onClick={sendMessage} disabled={loading || !input.trim()} title="Send message" aria-label="Send message">
                 <i className="fas fa-paper-plane" aria-hidden="true"></i>
               </button>
             </div>
