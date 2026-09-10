@@ -4,7 +4,7 @@ import { runLegacyPage } from "../legacyRuntime.js";
 import { usePageStyle } from "../hooks/usePageStyle.js";
 import { useEduNexRuntimeReady } from "../hooks/useEduNexRuntimeReady.js";
 
-const APP_DEEP_LINK_BASE = "com.example.protectedvideo://payment-success";
+const APP_DEEP_LINK_BASE = "com.skillomate.app://payment-success";
 const CHECKOUT_COURSE_CACHE_TTL = 10 * 60 * 1000;
 const CHECKOUT_COURSE_CACHE_MAX_BYTES = 2 * 1024 * 1024;
 

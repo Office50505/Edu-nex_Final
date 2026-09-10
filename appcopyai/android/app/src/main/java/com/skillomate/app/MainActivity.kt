@@ -1,4 +1,4 @@
-package com.example.protectedvideo
+package com.skillomate.app
 
 import android.os.Build
 import android.os.Bundle

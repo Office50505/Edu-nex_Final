@@ -28,7 +28,7 @@ self.define_singleton_method(use_autolinking_method_symbol) do |*args|
   end
 end
 
-platform :ios, podfile_properties['ios.deploymentTarget'] || '13.4'
+platform :ios, podfile_properties['ios.deploymentTarget'] || '16.4'
 install! 'cocoapods',
   :deterministic_uuids => false
 
@@ -69,6 +69,19 @@ target 'ProtectedVideo' do
           phase.shell_script = 'bash -l "$PODS_TARGET_SRCROOT/../scripts/get-app-config-ios.sh"'
         end
       end
+    end
+
+    app_delegate_umbrella = File.join(
+      __dir__,
+      'Pods',
+      'Target Support Files',
+      'React-RCTAppDelegate',
+      'React-RCTAppDelegate-umbrella.h'
+    )
+    if File.exist?(app_delegate_umbrella)
+      contents = File.read(app_delegate_umbrella)
+      cleaned = contents.gsub(%Q{#import "RCTAppDelegate+Protected.h"\n}, '')
+      File.write(app_delegate_umbrella, cleaned) if cleaned != contents
     end
 
     # This is necessary for Xcode 14, because it signs resource bundles by default

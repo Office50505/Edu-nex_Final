@@ -2,16 +2,16 @@ import { useEffect, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import "./App.css";
 
-const API = (import.meta.env.VITE_API_URL || (import.meta.env.DEV ? "http://localhost:3001" : "")).replace(/\/+$/, "");
+const API = (import.meta.env.VITE_API_URL || (import.meta.env.DEV ? "http://localhost:3000" : "")).replace(/\/+$/, "");
 const apiUrl = (path) => `${API}${path}`;
 const SUGGESTIONS = [
-  "What is prompt engineering?",
-  "Explain ChatGPT basics",
-  "Give me a quick quiz",
+  "Face har video mein change ho jaata hai, kya karu?",
+  "AI influencer ka first reference photo kaise banau?",
+  "Give me a quick quiz from this course",
 ];
 
 function formatCourseName(course) {
-  return course.id.replace(/\.txt$/i, "").replaceAll("-", " ");
+  return course.name || course.id.replace(/\.txt$/i, "").replaceAll("-", " ");
 }
 
 function ChatBot({ initialCourseId, initialCourseName }) {
@@ -23,7 +23,7 @@ function ChatBot({ initialCourseId, initialCourseName }) {
     {
       role: "assistant",
       content:
-        "Ready when you are. Ask about ChatGPT, prompt engineering, and concepts from this lesson.",
+        "Ready when you are. Ask about AI influencer creation, reference photos, prompts, voice, video, and monetization.",
     },
   ]);
   const [input, setInput] = useState("");
@@ -94,7 +94,7 @@ function ChatBot({ initialCourseId, initialCourseName }) {
       full = data.answer || "I could not generate an answer. Try asking again.";
     } catch (error) {
       console.error("AI chat error", error);
-      full = "I could not reach the local AI service. Check that the API, Ollama, and MongoDB Atlas are reachable.";
+      full = `AI service error: ${error.message || "Check that the API, Ollama, and MongoDB Atlas are reachable."}`;
     }
 
     setStreaming("");
@@ -218,5 +218,5 @@ function ChatBot({ initialCourseId, initialCourseName }) {
 }
 
 export default function App() {
-  return <ChatBot initialCourseId="AI Full Course.txt" initialCourseName="AI Full Course" />;
+  return <ChatBot initialCourseId="ai-influencer" initialCourseName="AI Influencer Course" />;
 }

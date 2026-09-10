@@ -28,12 +28,13 @@ import {
   View,
 } from "react-native";
 import { WebView } from "react-native-webview";
+import { useEventListener } from "expo";
 import * as ScreenCapture from "expo-screen-capture";
 import Constants from "expo-constants";
 import * as Print from "expo-print";
 import * as Sharing from "expo-sharing";
 import * as FileSystem from "expo-file-system";
-import { Video } from "expo-av";
+import { useVideoPlayer, VideoView } from "expo-video";
 import {
   DEV_UI_QA_ENABLED,
   UI_QA_AI_MESSAGES,
@@ -61,7 +62,7 @@ const AI_ROBOT_AVATARS = Object.keys(AI_ROBOT_IMAGES).map((id, index) => ({
   id,
   label: `Nex companion ${index + 1}`,
 }));
-const AI_AVATAR_STORAGE_KEY = "edunex_ai_avatar";
+const AI_AVATAR_STORAGE_KEY = "skillomate_ai_avatar";
 
 function getQaCertificatesForUser(user) {
   const learnerName = user?.fullName || user?.email || user?.mobileNumber || "Skillomate Learner";
@@ -235,8 +236,8 @@ function AvatarImage({ avatarId, size = 40, style }) {
   );
   return <Image accessible={false} source={src} style={[{ width: size, height: size, borderRadius: size / 2 }, style]} resizeMode="cover" />;
 }
-const DOWNLOADS_DIR = `${FileSystem.documentDirectory}edunex_dl/`;
-const DOWNLOADS_STORAGE_KEY = "edunex_downloads_v1";
+const DOWNLOADS_DIR = `${FileSystem.documentDirectory}skillomate_dl/`;
+const DOWNLOADS_STORAGE_KEY = "skillomate_downloads_v1";
 const hasCourseAccess = user => DEV_UI_QA_ENABLED || !!(user?.subscriptionStatus && user.subscriptionStatus !== "none");
 const AI_FEATURE_ENABLED = true;
 
@@ -258,11 +259,9 @@ const DEFAULT_API_BASE = __DEV__
   ? (Platform.OS === "android"
     ? `http://${EXPO_HOST === "localhost" ? "10.0.2.2" : EXPO_HOST}:${DEV_API_PORT}`
     : `http://${EXPO_HOST}:${DEV_API_PORT}`)
-  : "http://15.206.129.125:3001";
-const DEFAULT_AI_BASE = __DEV__ ? DEFAULT_API_BASE : "http://43.205.171.165:3002";
+  : "http://13.203.94.35";
 const normalizeBaseUrl = url => String(url || "").replace(/\/+$/, "");
 const API_BASE = normalizeBaseUrl(process.env.EXPO_PUBLIC_API_BASE || DEFAULT_API_BASE);
-const AI_BASE = normalizeBaseUrl(process.env.EXPO_PUBLIC_AI_BASE || DEFAULT_AI_BASE);
 
 const SUBSCRIPTION_URL = "https://edunexmvp.netlify.app/payment";
 const WEB_APP_BASE = normalizeBaseUrl(process.env.EXPO_PUBLIC_WEB_APP_BASE || "https://edunexmvp.netlify.app");
@@ -308,10 +307,15 @@ function normalizeAuthUser(data = {}) {
   const source = data.user && typeof data.user === "object" ? data.user : data;
   const id = source._id || source.id || source.userId || data.userId;
   if (!id) return null;
+  const accessToken = source.accessToken || data.accessToken || source.token || data.token || "";
+  const refreshToken = source.refreshToken || data.refreshToken || "";
   return {
     ...source,
     _id: String(id),
     sessionId: source.sessionId || data.sessionId || source.token || data.token || "",
+    token: accessToken,
+    accessToken,
+    refreshToken,
     wishlist: source.wishlist || data.wishlist || [],
   };
 }
@@ -953,7 +957,7 @@ function getCourseThumbnailAsset(course, preferVertical = false) {
     : course?.thumbnailAsset || course?.thumbnailVerticalAsset || null;
   if (configuredAsset) return configuredAsset;
 
-  const key = String(course?._id || course?.id || course?.title || "edunex");
+  const key = String(course?._id || course?.id || course?.title || "skillomate");
   const hash = [...key].reduce((total, char) => ((total * 31) + char.charCodeAt(0)) >>> 0, 0);
   return HOME_ARTWORK_IMAGES[hash % HOME_ARTWORK_IMAGES.length];
 }
@@ -1526,7 +1530,6 @@ function VideoItem({ video: videoProp, videoId: videoIdProp, isActive, height, o
   const isNativeVideo = hasNativeVideo && !(nativePlaybackFailed && canFallbackToEmbed);
   const isBunny = !isNativeVideo && !!(video.bunnyGuid || video.bunnyVideoId || video.videoUrl || video.embedUrl);
   const webViewRef = useRef(null);
-  const videoRef = useRef(null);
   const seekBarWidth = useRef(0);
   const tapInfoRef = useRef({ count: 0, side: null, timer: null });
   const completionSentRef = useRef(false);
@@ -1546,6 +1549,14 @@ function VideoItem({ video: videoProp, videoId: videoIdProp, isActive, height, o
   const [currentQuality, setCurrentQuality] = useState("Auto");
   const [showQualityPicker, setShowQualityPicker] = useState(false);
   const [seekAnim, setSeekAnim] = useState(null);
+  const nativeVideoSource = useMemo(() => (
+    nativeVideoUrl ? { uri: nativeVideoUrl } : null
+  ), [nativeVideoUrl]);
+  const nativePlayer = useVideoPlayer(null, player => {
+    player.loop = false;
+    player.preservesPitch = true;
+    player.timeUpdateEventInterval = 1;
+  });
   const html = useMemo(() => {
     let provider = "youtube";
     let originalMedia = video?.youtubeId || video?.videoId || "";
@@ -1588,22 +1599,95 @@ function VideoItem({ video: videoProp, videoId: videoIdProp, isActive, height, o
     setIsEnded(false);
     setIsPlaying(isActive);
     setNativePlaybackFailed(false);
-  }, [video?.youtubeId, video?.videoId, video?.bunnyGuid, video?.bunnyVideoId, video?.videoUrl, video?.hlsUrl, video?.embedUrl, localPath, initialTime, isActive]);
+  }, [video?.youtubeId, video?.videoId, video?.bunnyGuid, video?.bunnyVideoId, video?.videoUrl, video?.hlsUrl, video?.embedUrl, nativeVideoUrl, localPath, initialTime, isActive]);
+
+  useEffect(() => {
+    let cancelled = false;
+    if (!nativeVideoSource) {
+      nativePlayer.pause();
+      nativePlayer.replace(null, true);
+      return undefined;
+    }
+    (async () => {
+      try {
+        nativePlayer.pause();
+        await nativePlayer.replaceAsync(nativeVideoSource);
+        if (cancelled) return;
+        nativePlayer.muted = isMuted;
+        nativePlayer.playbackRate = playbackRate || 1;
+        nativePlayer.preservesPitch = true;
+        nativePlayer.timeUpdateEventInterval = 1;
+        const startAt = finiteSeconds(initialTime, 0);
+        if (startAt > 0) nativePlayer.currentTime = startAt;
+        if (isActive && isPlaying) nativePlayer.play();
+      } catch (error) {
+        if (!cancelled && canFallbackToEmbed) {
+          setNativePlaybackFailed(true);
+          setDuration(0);
+          setCurrentTime(0);
+          setIsPlaying(false);
+        }
+      }
+    })();
+    return () => {
+      cancelled = true;
+      nativePlayer.pause();
+    };
+  }, [nativePlayer, nativeVideoSource, initialTime, isActive, isMuted, playbackRate, canFallbackToEmbed]);
+
+  useEventListener(nativePlayer, "sourceLoad", ({ duration: loadedDuration }) => {
+    if (!isNativeVideo) return;
+    const dur = finiteSeconds(loadedDuration, nativePlayer.duration || duration);
+    if (dur > 0) setDuration(dur);
+    const startAt = finiteSeconds(initialTime, 0);
+    if (!initialSeekDoneRef.current && startAt > 0 && dur > 0) {
+      initialSeekDoneRef.current = true;
+      const nextTime = clampSeconds(startAt, dur);
+      dragTargetRef.current = nextTime;
+      seekGuardRef.current = { until: Date.now() + 3000, target: nextTime };
+      setCurrentTime(nextTime);
+      nativePlayer.currentTime = nextTime;
+    }
+    if (isActive && isPlaying) nativePlayer.play();
+  });
+
+  useEventListener(nativePlayer, "timeUpdate", ({ currentTime: nextTime }) => {
+    handleNativeProgress(nextTime, nativePlayer.duration, nativePlayer.playing);
+  });
+
+  useEventListener(nativePlayer, "playingChange", ({ isPlaying: nextPlaying }) => {
+    if (isNativeVideo) setIsPlaying(nextPlaying);
+  });
+
+  useEventListener(nativePlayer, "playToEnd", () => {
+    if (!isNativeVideo) return;
+    const dur = finiteSeconds(nativePlayer.duration, duration);
+    if (dur > 0) setCurrentTime(dur);
+    setIsPlaying(false);
+    setIsEnded(true);
+    markCompleteOnce();
+    onEnded?.();
+  });
+
+  useEventListener(nativePlayer, "statusChange", ({ status }) => {
+    if (status === "error" && isNativeVideo && canFallbackToEmbed) {
+      setNativePlaybackFailed(true);
+      setDuration(0);
+      setCurrentTime(0);
+      setIsPlaying(false);
+    }
+  });
 
   function sendCmd(func, args = []) {
     if (isNativeVideo) {
-      (async () => {
-        try {
-          const v = videoRef.current;
-          if (!v) return;
-          if (func === "playVideo") await v.playAsync();
-          else if (func === "pauseVideo") await v.pauseAsync();
-          else if (func === "seekTo") await v.setPositionAsync(clampSeconds(args[0], duration) * 1000);
-          else if (func === "setPlaybackRate") await v.setRateAsync(args[0] || 1, true);
-          else if (func === "mute") await v.setIsMutedAsync(true);
-          else if (func === "unMute") await v.setIsMutedAsync(false);
-        } catch {}
-      })();
+      try {
+        if (func === "playVideo") nativePlayer.play();
+        else if (func === "pauseVideo") nativePlayer.pause();
+        else if (func === "seekTo") nativePlayer.currentTime = clampSeconds(args[0], duration);
+        else if (func === "setPlaybackRate") nativePlayer.playbackRate = args[0] || 1;
+        else if (func === "mute") nativePlayer.muted = true;
+        else if (func === "unMute") nativePlayer.muted = false;
+      } catch {}
       return;
     }
     if (isBunny) {
@@ -1669,41 +1753,33 @@ function VideoItem({ video: videoProp, videoId: videoIdProp, isActive, height, o
     completionSentRef.current = true; onComplete?.();
   }
 
-  function handleOfflineStatus(status) {
-    if (!status.isLoaded) {
-      if (status.error && canFallbackToEmbed) {
-        setNativePlaybackFailed(true);
-        setDuration(0);
-        setCurrentTime(0);
-        setIsPlaying(false);
-      }
-      return;
-    }
-    const dur = finiteSeconds((status.durationMillis || 0) / 1000, duration);
-    const ct = clampSeconds((status.positionMillis || 0) / 1000, dur);
+  function handleNativeProgress(nextTime, nextDuration, nextPlaying) {
+    if (!isNativeVideo) return;
+    const dur = finiteSeconds(nextDuration, duration);
+    const ct = clampSeconds(nextTime, dur);
     if (!initialSeekDoneRef.current && initialTime > 0 && dur > 0) {
       initialSeekDoneRef.current = true;
       const startAt = clampSeconds(initialTime, dur);
       dragTargetRef.current = startAt;
       seekGuardRef.current = { until: Date.now() + 3000, target: startAt };
       setCurrentTime(startAt);
-      videoRef.current?.setPositionAsync(startAt * 1000).catch(() => {});
+      nativePlayer.currentTime = startAt;
       return;
     }
     if (isDraggingRef.current) {
       if (dur > 0) setDuration(dur);
-      setIsPlaying(!!status.isPlaying);
+      setIsPlaying(!!nextPlaying);
       return;
     }
     if (Date.now() < seekGuardRef.current.until && Math.abs(ct - seekGuardRef.current.target) > 1.5) {
       if (dur > 0) setDuration(dur);
-      setIsPlaying(!!status.isPlaying);
+      setIsPlaying(!!nextPlaying);
       return;
     }
     setCurrentTime(ct);
     if (dur > 0) setDuration(dur);
-    setIsPlaying(!!status.isPlaying);
-    if (status.didJustFinish) {
+    setIsPlaying(!!nextPlaying);
+    if (dur > 0 && ct >= dur - 0.25 && !nextPlaying) {
       setIsEnded(true); markCompleteOnce(); onEnded?.();
     } else {
       setIsEnded(false);
@@ -1827,17 +1903,13 @@ function VideoItem({ video: videoProp, videoId: videoIdProp, isActive, height, o
   return (
     <View style={[s.player, { height }]}>
       {isNativeVideo ? (
-        <Video
-          ref={videoRef}
-          source={{ uri: nativeVideoUrl }}
+        <VideoView
+          player={nativePlayer}
           style={StyleSheet.absoluteFill}
-          resizeMode="contain"
-          shouldPlay={isActive && isPlaying}
-          isMuted={isMuted}
-          rate={playbackRate}
-          shouldCorrectPitch
-          progressUpdateIntervalMillis={1000}
-          onPlaybackStatusUpdate={handleOfflineStatus}
+          contentFit="contain"
+          nativeControls={false}
+          allowsPictureInPicture={false}
+          playsInline
         />
       ) : (
         <WebView
@@ -3892,7 +3964,7 @@ const AI_SUGGESTIONS = [
 ];
 
 function formatAiCourseName(course) {
-  return (course?.name || course?.id || "AI Full Course")
+  return (course?.title || course?.name || course?.id || course?._id || "AI Full Course")
     .replace(/\.txt$/i, "")
     .replaceAll("-", " ");
 }
@@ -3923,6 +3995,9 @@ function findIndexedAiCourse(appCourse, indexedCourses) {
   return indexedCourses.find(course => {
     const values = [
       course.id,
+      course._id,
+      course.title,
+      course.slug,
       course.name,
       ...(Array.isArray(course.modules) ? course.modules : []),
     ].map(normalizeAiCourseKey);
@@ -4008,12 +4083,12 @@ function AiAssistantScreen({
     const authQuery = `userId=${encodeURIComponent(user._id)}&sessionId=${encodeURIComponent(user.sessionId)}`;
 
     Promise.all([
-      fetch(`${AI_BASE}/api/ai/health?${authQuery}`).then(async res => {
+      fetch(`${API_BASE}/api/health/db`).then(async res => {
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || "Could not check Nex AI");
         return data;
       }),
-      fetch(`${AI_BASE}/api/ai/courses?${authQuery}`).then(async res => {
+      fetch(`${API_BASE}/api/courses?${authQuery}`).then(async res => {
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || "Could not load Nex AI courses");
         return data;
@@ -4089,9 +4164,9 @@ function AiAssistantScreen({
     setLoading(true);
 
     try {
-      const res = await fetch(`${AI_BASE}/api/ai/chat`, {
+      const res = await fetch(`${API_BASE}/api/ai/chat`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${user?.accessToken || user?.token || ""}` },
         body: JSON.stringify({
           message: question,
           userId: user?._id,

@@ -1,11 +1,10 @@
 {
   "expo": {
     "name": "Skillomate",
-    "slug": "edunex",
-    "version": "1.0.0",
+    "slug": "skillomate",
+    "version": "1.0",
     "description": "Skillomate learning app",
-    "jsEngine": "jsc",
-    "scheme": "com.alihussainkhan.edunexfinal",
+    "scheme": "com.skillomate.app",
     "icon": "./assets/icon.png",
     "orientation": "default",
     "userInterfaceStyle": "automatic",
@@ -14,7 +13,8 @@
       "android"
     ],
     "android": {
-      "package": "com.example.protectedvideo",
+      "package": "com.skillomate.app",
+      "versionCode": 1,
       "icon": "./assets/icon.png",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
@@ -25,7 +25,7 @@
     },
     "ios": {
       "bundleIdentifier": "com.alihussainkhan.edunexfinal",
-      "buildNumber": "7",
+      "buildNumber": "9",
       "icon": "./assets/icon.png",
       "supportsTablet": false,
       "config": {
@@ -38,11 +38,7 @@
           "NSAllowsArbitraryLoads": false,
           "NSAllowsLocalNetworking": true,
           "NSExceptionDomains": {
-            "15.206.129.125": {
-              "NSExceptionAllowsInsecureHTTPLoads": true,
-              "NSIncludesSubdomains": true
-            },
-            "43.205.171.165": {
+            "13.203.94.35": {
               "NSExceptionAllowsInsecureHTTPLoads": true,
               "NSIncludesSubdomains": true
             }
@@ -55,6 +51,11 @@
         "projectId": "38bd9afc-a582-4a1f-9579-1932429e61b8"
       }
     },
-    "owner": "niz10"
+    "owner": "niz10",
+    "plugins": [
+      "expo-sharing",
+      "expo-font",
+      "expo-video"
+    ]
   }
 }

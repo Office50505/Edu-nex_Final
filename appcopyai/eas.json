@@ -1,15 +1,25 @@
 {
   "cli": {
-    "version": "20.5.1"
+    "version": ">= 23.2.0"
   },
   "build": {
+    "production": {
+      "distribution": "store",
+      "android": {
+        "buildType": "app-bundle",
+        "env": {
+          "EXPO_PUBLIC_API_BASE": "http://13.203.94.35",
+          "EXPO_PUBLIC_AI_BASE": "http://13.203.94.35"
+        }
+      }
+    },
     "railway": {
       "distribution": "internal",
       "android": {
         "buildType": "apk",
         "env": {
-          "EXPO_PUBLIC_API_BASE": "http://15.206.129.125:3001",
-          "EXPO_PUBLIC_AI_BASE": "http://43.205.171.165:3002"
+          "EXPO_PUBLIC_API_BASE": "http://13.203.94.35",
+          "EXPO_PUBLIC_AI_BASE": "http://13.203.94.35"
         }
       }
     },
@@ -18,8 +28,8 @@
       "android": {
         "buildType": "apk",
         "env": {
-          "EXPO_PUBLIC_API_BASE": "http://15.206.129.125:3001",
-          "EXPO_PUBLIC_AI_BASE": "http://43.205.171.165:3002"
+          "EXPO_PUBLIC_API_BASE": "http://13.203.94.35",
+          "EXPO_PUBLIC_AI_BASE": "http://13.203.94.35"
         }
       }
     },
@@ -27,8 +37,8 @@
       "distribution": "store",
       "ios": {
         "env": {
-          "EXPO_PUBLIC_API_BASE": "http://15.206.129.125:3001",
-          "EXPO_PUBLIC_AI_BASE": "http://43.205.171.165:3002"
+          "EXPO_PUBLIC_API_BASE": "http://13.203.94.35",
+          "EXPO_PUBLIC_AI_BASE": "http://13.203.94.35"
         }
       }
     }
