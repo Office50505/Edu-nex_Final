@@ -10,6 +10,7 @@ const Certificate = require('../models/Certificate');
 const Subscription = require('../models/Subscription');
 const SubscriptionEvent = require('../models/SubscriptionEvent');
 const Order = require('../models/Order');
+const RazorpayBilling = require('../models/RazorpayBilling');
 const AiTutorSession = require('../models/AiTutorSession');
 const ContactEnquiry = require('../models/ContactEnquiry');
 const AnalyticsEvent = require('../models/AnalyticsEvent');
@@ -35,6 +36,8 @@ async function deleteUserAccount(userId) {
     throw new AccountDeletionError('Account not found', 404, 'ACCOUNT_NOT_FOUND');
   }
 
+  const billing = await RazorpayBilling.findById(userId);
+  if (billing && billing.phase !== 'closed') throw new AccountDeletionError('Cancel your Razorpay mandate before deleting your account. For unresolved checkout, contact support.', 409, 'ACTIVE_SUBSCRIPTION');
   const userIdString = String(user._id);
   const subscriptions = await Subscription.find({ user: user._id })
     .select('_id phonePeMandateId status')
@@ -53,6 +56,7 @@ async function deleteUserAccount(userId) {
   }
 
   const results = await Promise.all([
+    RazorpayBilling.deleteMany({ _id: user._id }),
     Progress.deleteMany({ user: user._id }),
     CourseProgress.deleteMany({ userId: userIdString }),
     LessonNote.deleteMany({ user: user._id }),

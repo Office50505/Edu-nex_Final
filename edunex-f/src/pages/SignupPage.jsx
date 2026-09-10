@@ -1,3 +1,4 @@
+import { saveLoginPrefill, loginDestination, readSignupPrefill, clearSignupPrefill } from "../lib/authNavigation.js";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { page as signupPage } from "../generated-pages/signup.html.js";
 import { runLegacyPage } from "../legacyRuntime.js";
@@ -10,7 +11,7 @@ const PASSWORD_ERROR = "Password must be at least 8 characters.";
 const PASSWORD_MATCH_ERROR = "Passwords do not match.";
 const VERIFY_FIRST_ERROR = "Please verify your mobile number first.";
 const SIGNUP_FALLBACK_ERROR = "Signup failed. Please try again.";
-const OTP_LENGTH_ERROR = "Please enter all 6 digits.";
+const DEFAULT_OTP_LENGTH = 4;
 const START_AGE = 13;
 const END_AGE = 90;
 const AGE_ITEM_HEIGHT = 52;
@@ -60,7 +61,7 @@ async function request(path, options) {
       data = null;
     }
   }
-  if (!response.ok) throw new Error(data?.error || data?.message || `Request failed with ${response.status}`);
+  if (!response.ok) { const error = new Error(data?.error || data?.message || `Request failed with ${response.status}`); error.code = data?.code; throw error; }
   return data;
 }
 
@@ -101,11 +102,12 @@ function safeErrorMessage(error, fallback) {
 
 export function SignupPage() {
   const [step, setStep] = useState(1);
-  const [phone, setPhone] = useState("");
+  const [phone, setPhone] = useState(() => readSignupPrefill(sessionStorage));
+  useEffect(() => { clearSignupPrefill(sessionStorage); }, []);
   const [agreed, setAgreed] = useState(false);
   const [mobileNumber, setMobileNumber] = useState("");
   const [signupToken, setSignupToken] = useState("");
-  const [otp, setOtp] = useState(["", "", "", "", "", ""]);
+  const [otp, setOtp] = useState(() => Array(DEFAULT_OTP_LENGTH).fill(""));
   const [countdown, setCountdown] = useState(59);
   const [step1Error, setStep1Error] = useState("");
   const [step3Error, setStep3Error] = useState("");
@@ -237,9 +239,9 @@ export function SignupPage() {
     setStep(2);
     setCountdown(59);
     if (devOtp) {
-      setOtp(String(devOtp).slice(0, 6).split("").concat(["", "", "", "", "", ""]).slice(0, 6));
+      setOtp(String(devOtp).split(""));
     } else {
-      setOtp(["", "", "", "", "", ""]);
+      setOtp(Array(DEFAULT_OTP_LENGTH).fill(""));
     }
   };
 
@@ -261,10 +263,16 @@ export function SignupPage() {
     try {
       const data = await request("/api/auth/send-mobile-otp", {
         method: "POST",
-        body: JSON.stringify({ mobileNumber: normalizedPhone, forceDevelopmentOtp: true }),
+        body: JSON.stringify({ mobileNumber: normalizedPhone }),
       });
       startOtpStep(normalizedPhone, data?.devOtp);
     } catch (error) {
+      if (error.code === "MOBILE_ALREADY_REGISTERED") {
+        saveLoginPrefill(normalizedPhone, sessionStorage);
+        const next = window.EduNex?.safeNext?.("/payment.html") || "/payment.html";
+        window.location.assign(loginDestination(next, window.location.origin));
+        return;
+      }
       setStep1Error(safeErrorMessage(error, "Could not send OTP."));
     } finally {
       setSendingOtp(false);
@@ -274,9 +282,9 @@ export function SignupPage() {
   const resendOTP = async () => {
     if (!mobileNumber) return;
     try {
-      await request("/api/auth/send-mobile-otp", {
+      await request("/api/auth/resend-mobile-otp", {
         method: "POST",
-        body: JSON.stringify({ mobileNumber, forceDevelopmentOtp: true }),
+        body: JSON.stringify({ mobileNumber }),
       });
       setCountdown(59);
     } catch (error) {
@@ -288,8 +296,8 @@ export function SignupPage() {
     if (verifyingOtp) return;
 
     const mobileOtp = otp.join("");
-    if (mobileOtp.length < 6) {
-      window.alert(OTP_LENGTH_ERROR);
+    if (mobileOtp.length !== otp.length) {
+      window.alert(`Please enter all ${otp.length} digits.`);
       return;
     }
 
@@ -403,8 +411,8 @@ export function SignupPage() {
 
   const handleOtpPaste = (event) => {
     event.preventDefault();
-    const text = event.clipboardData.getData("text").replace(/\D/g, "").slice(0, 6);
-    const nextOtp = ["", "", "", "", "", ""].map((_, index) => text[index] || "");
+    const text = event.clipboardData.getData("text").replace(/\D/g, "").slice(0, otp.length);
+    const nextOtp = Array(otp.length).fill("").map((_, index) => text[index] || "");
     setOtp(nextOtp);
     otpRefs.current[Math.min(text.length, otpRefs.current.length - 1)]?.focus();
   };
@@ -494,7 +502,7 @@ export function SignupPage() {
             <p className="sp-form-sub">Start your journey with a ₹1 trial.</p>
 
             <p className="sp-otp-label">Enter OTP</p>
-            <p className="sp-otp-desc">We've sent a 6-digit code to your phone.</p>
+            <p className="sp-otp-desc">We've sent a {otp.length}-digit code to your phone.</p>
 
             <div className="sp-otp-boxes">
               {otp.map((digit, index) => (

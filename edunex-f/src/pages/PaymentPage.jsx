@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { openRazorpay } from "../lib/razorpayCheckout.js";
+import { useCallback, useEffect, useMemo, useState, useRef } from "react";
 import { page as paymentPage } from "../generated-pages/payment.html.js";
 import { runLegacyPage } from "../legacyRuntime.js";
 import { usePageStyle } from "../hooks/usePageStyle.js";
@@ -141,10 +142,6 @@ function LightningIcon() {
   );
 }
 
-function ArrowUpIcon() {
-  return <i className="fas fa-arrow-up" aria-hidden="true"></i>;
-}
-
 function CheckIcon() {
   return (
     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#DAB77A" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ verticalAlign: "middle", flexShrink: 0 }} aria-hidden="true">
@@ -227,11 +224,21 @@ export function PaymentPage() {
   const paymentStatus = query.get("payment") || query.get("status");
   const checkoutCourseCacheKey = `edunexCheckoutCourse:${courseId || "featured"}`;
   const [course, setCourse] = useState(() => readCachedCheckoutCourse(checkoutCourseCacheKey));
-  const [selectedPlan, setSelectedPlan] = useState("trial");
   const [trialEligible, setTrialEligible] = useState(true);
   const [checkoutState, setCheckoutState] = useState("loading");
   const [payMsg, setPayMsg] = useState({ text: "", type: "" });
   const [submitting, setSubmitting] = useState(false);
+  const busyRef = useRef(false);
+  const [pricing, setPricing] = useState(null);
+  const rupees = value => new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 2 }).format((value || 0) / 100);
+  useEffect(() => {
+    const controller = new AbortController();
+    fetch("/api/payment/config", { signal: controller.signal }).then(async response => {
+      if (!response.ok) throw new Error("Pricing is unavailable. Please reload.");
+      const data = await response.json(); setPricing(data);
+    }).catch(error => { if (error.name !== "AbortError") setPayMsg({ text: error.message, type: "error" }); });
+    return () => controller.abort();
+  }, []);
   const [modalOpen, setModalOpen] = useState(false);
   const [watchHref, setWatchHref] = useState("/courses.html");
   const [watchText, setWatchText] = useState("Open Video Library");
@@ -356,16 +363,6 @@ export function PaymentPage() {
       document.getElementById("loginBtn")?.setAttribute("href", `/login.html?next=${returnUrl}`);
       document.getElementById("signupBtn")?.setAttribute("href", `/signup.html?next=${returnUrl}`);
 
-      if (paymentStatus === "success" && merchantTransactionId) {
-        markLocalCourseAccess();
-        if (!cancelled) {
-          configureAppOpenButton();
-          setModalOpen(true);
-          setCheckoutState("subscribed");
-        }
-        return;
-      }
-
       if (!token) {
         if (!cancelled) setCheckoutState("login");
         return;
@@ -377,7 +374,6 @@ export function PaymentPage() {
         const nextTrialEligible = data.trialEligible !== false;
         if (!cancelled) {
           setTrialEligible(nextTrialEligible);
-          if (!nextTrialEligible) setSelectedPlan((plan) => (plan === "trial" ? "monthly" : plan));
         }
         const activeStatuses = ["active", "subscribed", "1rs trial", "trial", "trial_active", "paid_active"];
         if (data.hasActiveAccess === true || activeStatuses.includes(data.status)) {
@@ -398,32 +394,21 @@ export function PaymentPage() {
     };
   }, [authFetch, configureAppOpenButton, merchantTransactionId, paymentStatus, runtimeReady]);
 
-  const chooseTrial = () => {
-    if (!trialEligible) {
-      setPayMsg({ text: "You've already used your ₹1 trial. Monthly access is still available.", type: "info" });
-      return;
-    }
-    setSelectedPlan("trial");
-  };
-
   const initiatePayment = async () => {
-    if (submitting) return;
+    if (busyRef.current || !pricing || !trialEligible) return;
+    busyRef.current = true;
     setSubmitting(true);
     setPayMsg({ text: "", type: "" });
     try {
       const response = await authFetch("/api/payment/initiate-trial", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ paymentType: selectedPlan }),
+        body: JSON.stringify({ paymentType: "trial", mandateConsent: true }),
       });
       const data = await safeJsonResponse(response) || {};
       if (response.status === 409) {
         if (data.error) {
           setPayMsg({ text: data.error, type: "error" });
-          if (selectedPlan === "trial") {
-            setTrialEligible(false);
-            setSelectedPlan("monthly");
-          }
           setSubmitting(false);
           return;
         }
@@ -433,6 +418,23 @@ export function PaymentPage() {
         return;
       }
       if (!response.ok) throw new Error(data.error || data.message || `Payment initiation failed (${response.status})`);
+      if (data.gateway === "razorpay") {
+        const result = await openRazorpay(data);
+        setPayMsg({ text: "Verifying payment…", type: "info" });
+        const verified = await authFetch("/api/payment/razorpay/verify", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(result) });
+        const verification = await safeJsonResponse(verified);
+        if (!verified.ok) throw new Error(verification?.error || "Payment verification failed. Check status before paying again.");
+        let access = verification.accessGranted;
+        for (let attempt = 0; !access && attempt < 4; attempt += 1) {
+          await new Promise(resolve => setTimeout(resolve, 1500));
+          const check = await authFetch("/api/payment/subscription-status");
+          const status = await safeJsonResponse(check);
+          access = check.ok && status?.accessGranted;
+        }
+        if (access) { markLocalCourseAccess(); configureAppOpenButton(); setCheckoutState("subscribed"); }
+        else setPayMsg({ text: "Payment authorization received. Access is pending confirmation. Refresh shortly; do not pay again.", type: "info" });
+        return;
+      }
       if (data.redirectUrl) {
         window.location.href = data.redirectUrl;
         return;
@@ -440,13 +442,15 @@ export function PaymentPage() {
       throw new Error("No redirect URL received from payment gateway");
     } catch (error) {
       setPayMsg({ text: error.message || "Payment initiation failed", type: "error" });
+    } finally {
+      busyRef.current = false;
       setSubmitting(false);
     }
   };
 
   const payButtonText = submitting
     ? "Redirecting to payment…"
-    : selectedPlan === "trial" ? "Start ₹1 Trial" : "Subscribe — ₹1/mo";
+    : `Start ${rupees(pricing?.trialAmountPaise)} Trial`;
 
   return (
     <div className="react-page-root" data-page="payment.html">
@@ -462,6 +466,7 @@ export function PaymentPage() {
               <p>Unlimited courses · Cancel anytime</p>
             </div>
             <div className="checkout-body">
+              <div className={`msg pay-msg ${payMsg.type}`} role="status" aria-live="polite">{payMsg.text}</div>
               {checkoutState === "loading" ? (
                 <div id="loadingState" style={{ textAlign: "center", padding: "24px 0", color: "var(--muted)", fontSize: 14 }}>
                   Checking your account…
@@ -474,6 +479,7 @@ export function PaymentPage() {
                     Create a free account to continue — it only takes 30 seconds.
                   </p>
                   <a id="loginBtn" href={`/login.html?next=${encodeURIComponent(window.location.href)}`} className="login-cta-btn"><i className="fas fa-key" aria-hidden="true"></i> Log In to Continue</a>
+
                   <div className="pay-divider"><span>New here?</span></div>
                   <a id="signupBtn" href={`/signup.html?next=${encodeURIComponent(window.location.href)}`} className="pay-btn-secondary"><i className="fas fa-star" aria-hidden="true"></i> Create Free Account</a>
                   <div className="pay-security"><LockIcon /> Your data is safe with us</div>
@@ -505,66 +511,22 @@ export function PaymentPage() {
 
               {checkoutState === "pay" ? (
                 <div id="payState">
-                  <div className="plan-selector" id="planSelector" role="radiogroup" aria-label="Choose subscription plan">
-                    <label
-                      className={`plan-option${selectedPlan === "trial" ? " selected" : ""}${!trialEligible ? " disabled" : ""}`}
-                      id="planTrial"
-                      role="radio"
-                      aria-checked={selectedPlan === "trial"}
-                      aria-disabled={!trialEligible}
-                      tabIndex={0}
-                      onClick={chooseTrial}
-                      onKeyDown={(event) => {
-                        if (event.key === "Enter" || event.key === " ") {
-                          event.preventDefault();
-                          chooseTrial();
-                        }
-                      }}
-                    >
-                      <input type="radio" name="plan" value="trial" checked={selectedPlan === "trial"} disabled={!trialEligible} onChange={chooseTrial} />
-                      <div className="plan-radio"></div>
-                      <div className="plan-info">
-                        <div className="plan-name">1-Day Trial</div>
-                        <div className="plan-desc">Full access · Cancel before day 1</div>
-                      </div>
-                      <div className="plan-price">
-                        <div className="amount">₹1</div>
-                        <span className="per">one time</span>
-                      </div>
-                      <div className="plan-badge">Most Popular</div>
-                    </label>
-
-                    <label
-                      className={`plan-option${selectedPlan === "monthly" ? " selected" : ""}`}
-                      id="planMonthly"
-                      role="radio"
-                      aria-checked={selectedPlan === "monthly"}
-                      tabIndex={0}
-                      onClick={() => setSelectedPlan("monthly")}
-                      onKeyDown={(event) => {
-                        if (event.key === "Enter" || event.key === " ") {
-                          event.preventDefault();
-                          setSelectedPlan("monthly");
-                        }
-                      }}
-                    >
-                      <input type="radio" name="plan" value="monthly" checked={selectedPlan === "monthly"} onChange={() => setSelectedPlan("monthly")} />
-                      <div className="plan-radio"></div>
-                      <div className="plan-info">
-                        <div className="plan-name">Monthly Plan</div>
-                        <div className="plan-desc">Unlimited access · Billed monthly</div>
-                      </div>
-                      <div className="plan-price">
-                        <div className="amount">₹1</div>
-                        <span className="per">/ month</span>
-                      </div>
-                    </label>
+                  <div className="plan-option selected" style={{ cursor: "default" }}>
+                    <div className="plan-info">
+                      <div className="plan-name">{pricing?.trialHours || 24}-Hour Trial</div>
+                      <div className="plan-desc">Full access · Auto-renews monthly</div>
+                    </div>
+                    <div className="plan-price">
+                      <div className="amount">{pricing ? rupees(pricing.trialAmountPaise) : "…"}</div>
+                      <span className="per">trial payment</span>
+                    </div>
                   </div>
-
-                  <div className={`msg pay-msg ${payMsg.type}`} id="payMsg" role="status" aria-live="polite">{payMsg.text}</div>
-
-                  <button className="pay-btn" id="payBtn" type="button" disabled={submitting} onClick={initiatePayment}>
-                    <span id="payBtnIcon">{selectedPlan === "trial" ? <LightningIcon /> : <ArrowUpIcon />}</span>
+                  {!trialEligible ? <p role="status" style={{ margin: "16px 0" }}>You've already used your trial. <a href="/help.html">Contact support</a> for help with your subscription.</p> : null}
+                  {pricing ? <p id="paymentAgreement" style={{ fontSize: 12, lineHeight: 1.6, color: "var(--text)", margin: "16px 0" }}>
+                    By continuing, you accept our <a href="/terms.html" target="_blank" rel="noopener noreferrer">Terms</a> &amp; <a href="/privacy.html" target="_blank" rel="noopener noreferrer">Privacy Policy</a> and {rupees(pricing.subscriptionAmountPaise)}/mo auto-renewal after {pricing.trialHours}h.
+                  </p> : null}
+                  <button className="pay-btn" id="payBtn" type="button" aria-describedby="paymentAgreement" disabled={submitting || !pricing || !trialEligible} onClick={initiatePayment}>
+                    <span id="payBtnIcon">{<LightningIcon />}</span>
                     <span id="payBtnText">{payButtonText}</span>
                   </button>
                   <div className="pay-divider"><span>or</span></div>
@@ -572,7 +534,7 @@ export function PaymentPage() {
 
                   <div className="pay-security" style={{ marginTop: 18, flexDirection: "column", gap: 8 }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                      <LockIcon /> Secured by PhonePe
+                      <LockIcon /> Secured by Razorpay
                     </div>
                     <div style={{ display: "flex", gap: 12, fontSize: 11 }}>
                       <span><CheckIcon /> Cancel anytime</span>

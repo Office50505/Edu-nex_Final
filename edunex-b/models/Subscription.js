@@ -2,13 +2,16 @@ const mongoose = require('mongoose');
 
 const subscriptionSchema = new mongoose.Schema({
   user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true, unique: true },
+  gateway: { type: String, default: 'phonepe' },
+  razorpaySubscriptionId: String,
+  razorpayStatus: String,
   phonePeMerchantId: { type: String, required: true },
   phonePeSubscriptionId: { type: String, default: null },
   phonePeMandateId: { type: String, default: null },
   phonePeAuthRequestId: { type: String, default: null },
   status: {
     type: String,
-    enum: ['1rs trial', 'trial', 'active', 'subscribed', 'cancelled', 'expired', 'paused'],
+    enum: ['pending', '1rs trial', 'trial', 'active', 'subscribed', 'cancelled', 'expired', 'paused'],
     default: 'trial',
   },
   trialStartedAt: { type: Date, default: null },
