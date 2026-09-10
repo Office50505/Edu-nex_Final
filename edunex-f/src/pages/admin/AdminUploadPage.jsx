@@ -14,6 +14,9 @@ function normalizeThumbnailUrl(url, width = 1600) {
     : value;
 }
 
+const MAX_THUMBNAIL_FILE_SIZE = 2 * 1024 * 1024;
+const THUMBNAIL_FILE_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
+
 function makeVideo(index = 0) {
   return {
     title: "",
@@ -37,6 +40,10 @@ function emptyCourseForm() {
     status: "draft",
     thumbnailUrl: "",
     thumbnailVerticalUrl: "",
+    thumbnailDataUrl: "",
+    thumbnailVerticalDataUrl: "",
+    thumbnailFileName: "",
+    thumbnailVerticalFileName: "",
     notesUrl: "",
     videos: [makeVideo()],
   };
@@ -44,6 +51,52 @@ function emptyCourseForm() {
 
 function courseIdFromLocation() {
   return new URLSearchParams(window.location.search).get("courseId") || "";
+}
+
+function thumbnailPreviewSrc(value) {
+  const raw = String(value || "").trim();
+  if (!raw) return "";
+  if (/^(data|blob):/i.test(raw)) return raw;
+
+  try {
+    const parsed = new URL(raw, window.location.origin);
+    const isDrive = /(^|\.)drive\.google\.com$/i.test(parsed.hostname);
+    if (isDrive) {
+      const fileMatch = parsed.pathname.match(/\/file\/d\/([^/]+)/);
+      const driveId = fileMatch?.[1] || parsed.searchParams.get("id");
+      if (driveId) {
+        return `https://drive.google.com/thumbnail?id=${encodeURIComponent(driveId)}&sz=w1200`;
+      }
+    }
+    if (parsed.origin === window.location.origin) return `${parsed.pathname}${parsed.search}${parsed.hash}`;
+    return `/api/image-proxy?url=${encodeURIComponent(parsed.href)}`;
+  } catch (_) {
+    return raw;
+  }
+}
+
+function readThumbnailFile(file) {
+  return new Promise((resolve, reject) => {
+    if (!file) {
+      resolve("");
+      return;
+    }
+
+    if (!THUMBNAIL_FILE_TYPES.has(file.type)) {
+      reject(new Error("Thumbnail upload must be a JPEG, PNG, or WebP image."));
+      return;
+    }
+
+    if (file.size > MAX_THUMBNAIL_FILE_SIZE) {
+      reject(new Error("Thumbnail upload must be smaller than 2 MB."));
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result || ""));
+    reader.onerror = () => reject(new Error("Could not read the selected thumbnail image."));
+    reader.readAsDataURL(file);
+  });
 }
 
 function categoryId(course) {
@@ -76,6 +129,10 @@ function courseForm(course) {
     status: course?.status === "published" ? "published" : "draft",
     thumbnailUrl: course?.thumbnailUrl || "",
     thumbnailVerticalUrl: course?.thumbnailVerticalUrl || "",
+    thumbnailDataUrl: "",
+    thumbnailVerticalDataUrl: "",
+    thumbnailFileName: "",
+    thumbnailVerticalFileName: "",
     notesUrl: course?.notesUrl || "",
     videos,
   };
@@ -93,7 +150,12 @@ export function AdminUploadPage() {
   const [submitting, setSubmitting] = useState(false);
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState("success");
+  const [thumbnailFailed, setThumbnailFailed] = useState(false);
   const isEditing = Boolean(editCourseId);
+  const previewThumbnailSrc = useMemo(
+    () => thumbnailPreviewSrc(form.thumbnailDataUrl || form.thumbnailUrl || form.thumbnailVerticalDataUrl || form.thumbnailVerticalUrl),
+    [form.thumbnailDataUrl, form.thumbnailUrl, form.thumbnailVerticalDataUrl, form.thumbnailVerticalUrl]
+  );
 
   async function loadCategories() {
     if (!requireAdmin()) return;
@@ -134,12 +196,32 @@ export function AdminUploadPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editCourseId]);
 
+  useEffect(() => {
+    setThumbnailFailed(false);
+  }, [previewThumbnailSrc]);
+
   function updateField(field, value) {
     setForm((current) => {
       const next = { ...current, [field]: value };
       if (field === "title" && !slugTouched) next.slug = slugify(value);
       return next;
     });
+  }
+
+  async function updateThumbnailFile(field, fileNameField, file) {
+    try {
+      const dataUrl = await readThumbnailFile(file);
+      setForm((current) => ({
+        ...current,
+        [field]: dataUrl,
+        [fileNameField]: file?.name || "",
+      }));
+      setThumbnailFailed(false);
+      setMessage("");
+    } catch (error) {
+      setMessageType("error");
+      setMessage(error.message || "Could not use that thumbnail image.");
+    }
   }
 
   function updateVideo(index, field, value) {
@@ -189,7 +271,6 @@ export function AdminUploadPage() {
   }
 
   const completeVideos = useMemo(() => form.videos.filter((video) => video.videoUrl.trim()).length, [form.videos]);
-  const thumbnailPreviewUrl = useMemo(() => normalizeThumbnailUrl(form.thumbnailUrl), [form.thumbnailUrl]);
   const checks = [
     ["Title", Boolean(form.title.trim())],
     ["Slug", Boolean(form.slug.trim())],
@@ -220,6 +301,9 @@ export function AdminUploadPage() {
         examplePrompt: String(video.examplePrompt || "").trim(),
       })),
     };
+    if (form.thumbnailDataUrl) payload.thumbnailDataUrl = form.thumbnailDataUrl;
+    if (form.thumbnailVerticalDataUrl) payload.thumbnailVerticalDataUrl = form.thumbnailVerticalDataUrl;
+
     if (!payload.title || !payload.slug || !payload.description || !payload.category || payload.videos.some((video) => !video.videoUrl)) {
       setMessageType("error");
       setMessage("Complete the course details and at least one Bunny video URL.");
@@ -282,12 +366,38 @@ export function AdminUploadPage() {
                 <div className="field"><label htmlFor="status">Status</label><select id="status" name="status" value={form.status} onChange={(event) => updateField("status", event.target.value)}><option value="draft">Draft</option><option value="published">Published</option></select></div>
                 <div className="field"><label htmlFor="thumbnailUrl">Horizontal thumbnail URL</label><input id="thumbnailUrl" name="thumbnailUrl" type="url" placeholder="https://..." value={form.thumbnailUrl} onChange={(event) => updateField("thumbnailUrl", event.target.value)} /><small>Google Drive links are supported when the file is shared publicly.</small></div>
                 <div className="field"><label htmlFor="thumbnailVerticalUrl">Vertical thumbnail URL</label><input id="thumbnailVerticalUrl" name="thumbnailVerticalUrl" type="url" placeholder="https://..." value={form.thumbnailVerticalUrl} onChange={(event) => updateField("thumbnailVerticalUrl", event.target.value)} /><small>Use a public image URL or public Google Drive file link.</small></div>
+                <div className="field">
+                  <label htmlFor="thumbnailUpload">Upload horizontal thumbnail</label>
+                  <input id="thumbnailUpload" type="file" accept="image/jpeg,image/png,image/webp" onChange={(event) => updateThumbnailFile("thumbnailDataUrl", "thumbnailFileName", event.target.files?.[0])} />
+                  {form.thumbnailFileName ? <span className="thumbnail-file-name">{form.thumbnailFileName}</span> : null}
+                </div>
+                <div className="field">
+                  <label htmlFor="thumbnailVerticalUpload">Upload vertical thumbnail</label>
+                  <input id="thumbnailVerticalUpload" type="file" accept="image/jpeg,image/png,image/webp" onChange={(event) => updateThumbnailFile("thumbnailVerticalDataUrl", "thumbnailVerticalFileName", event.target.files?.[0])} />
+                  {form.thumbnailVerticalFileName ? <span className="thumbnail-file-name">{form.thumbnailVerticalFileName}</span> : null}
+                </div>
                 <div className="field span-2"><label htmlFor="notesUrl">Notes URL</label><input id="notesUrl" name="notesUrl" type="url" placeholder="https://..." value={form.notesUrl} onChange={(event) => updateField("notesUrl", event.target.value)} /></div>
               </div>
             </div>
 
             <aside className="form-section course-preview-panel" aria-label="Course preview">
-              <div className="thumbnail-preview-card">{thumbnailPreviewUrl ? <img src={thumbnailPreviewUrl} alt="Course thumbnail preview" /> : <span>No thumbnail URL</span>}</div>
+              <div className={`thumbnail-preview-card${thumbnailFailed ? " has-error" : ""}`}>
+                {previewThumbnailSrc ? (
+                  <>
+                    <img
+                      src={previewThumbnailSrc}
+                      alt=""
+                      onError={() => setThumbnailFailed(true)}
+                    />
+                    {thumbnailFailed ? <span>Thumbnail URL is not public or not an image</span> : null}
+                  </>
+                ) : (
+                  <span>No thumbnail selected</span>
+                )}
+              </div>
+              {thumbnailFailed ? (
+                <p className="thumbnail-help">Google Drive thumbnails must be public. Upload the image here or use a direct image/CDN URL.</p>
+              ) : null}
               <div className="preview-copy"><span>{form.status === "published" ? "Published" : "Draft"}</span><h2>{form.title.trim() || "Untitled course"}</h2><p>{form.description.trim() || "Course description preview will appear here."}</p></div>
               <div className="publish-checklist">{checks.map(([label, complete]) => <span className={complete ? "is-complete" : ""} key={label}>{complete ? "[x]" : "[ ]"} {label}</span>)}</div>
             </aside>

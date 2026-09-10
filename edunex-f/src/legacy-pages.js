@@ -5361,8 +5361,7 @@ f'(x) = 1 if x > 0 else 0</div>
       <p class="lp-create-row">Don't have an account? <a href="signup.html">Create an account</a></p>
 
       <div class="lp-footer-links">
-        <a href="privacy.html">Privacy Policy</a>
-        <a href="terms.html">Terms of Service</a>
+        <a href="/privacy-policy">Privacy Policy</a>
         <a href="help.html">Help Center</a>
       </div>
 
@@ -7209,12 +7208,7 @@ init();
     </div>
     <div class="pf-prefs-inner">
       <div class="pf-prefs-list">
-        <div class="pf-list-item" onclick="window.location.href='terms.html'">
-          <div class="pf-list-icon"><i class="fas fa-file-lines"></i></div>
-          <span class="pf-list-label">Terms &amp; Conditions</span>
-          <i class="fas fa-chevron-right pf-list-chevron"></i>
-        </div>
-        <div class="pf-list-item" onclick="window.location.href='privacy.html'">
+        <div class="pf-list-item" onclick="window.location.href='/privacy-policy'">
           <div class="pf-list-icon"><i class="fas fa-lock"></i></div>
           <span class="pf-list-label">Privacy Policy</span>
           <i class="fas fa-chevron-right pf-list-chevron"></i>
@@ -7998,7 +7992,7 @@ function setStoredUser(user) {
 
       <label class="sp-checkbox-row">
         <input type="checkbox" id="agreeCheck">
-        I agree to the <a href="terms.html">Terms</a> and <a href="privacy.html">Privacy Policy.</a>
+        I agree to the <a href="/privacy-policy">Privacy Policy.</a>
       </label>
 
       <p class="sp-err" id="step1-err" style="font-size:.78rem;color:#f87171;margin-bottom:10px;display:none"></p>
@@ -8145,7 +8139,7 @@ function setStoredUser(user) {
 
       <p class="sp-err" id="step3-err" style="font-size:.78rem;color:#f87171;margin-bottom:10px;display:none"></p>
       <button class="sp-complete-btn" id="completeProfileBtn" onclick="completeProfile()">Complete My Profile</button>
-      <p class="sp-terms-note">By continuing, you agree to our <a href="terms.html">Terms of Personalized Learning.</a></p>
+      <p class="sp-terms-note">By continuing, you agree to our <a href="/privacy-policy">Privacy Policy.</a></p>
     </div>
   </div>
 
@@ -8525,54 +8519,6 @@ function setStoredUser(user) {
     });
   });
 ` }
-    ],
-  },
-  "terms.html": {
-    title: `Terms & Conditions — Skillomate AI`,
-    lang: `en`,
-    stylesheets: [],
-    styles: `
-    :root { --bg:#000; --card:#0d0d0d; --text:#fff; --text2:#9ca3af; --cyan:#00E5FF; --border:rgba(255,255,255,.08); }
-    * { box-sizing: border-box; }
-    body { margin:0; background:var(--bg); color:var(--text); font-family:Poppins, Inter, system-ui, sans-serif; }
-    .legal-page { width:min(980px, calc(100% - 32px)); margin:0 auto; padding:130px 0 72px; }
-    .legal-kicker { color:var(--cyan); font-size:.78rem; font-weight:900; letter-spacing:.12em; text-transform:uppercase; }
-    h1 { margin:10px 0 14px; font-size:clamp(2rem, 7vw, 4rem); line-height:1.04; }
-    .legal-intro { color:var(--text2); line-height:1.8; max-width:760px; }
-    .legal-card { margin-top:26px; padding:28px; border:1px solid var(--border); border-radius:18px; background:var(--card); }
-    h2 { margin:26px 0 10px; font-size:1.08rem; }
-    h2:first-child { margin-top:0; }
-    p, li { color:var(--text2); line-height:1.8; font-size:.94rem; }
-    ul { padding-left:20px; }
-    a { color:var(--cyan); text-decoration:none; font-weight:800; }
-  `,
-    body: `
-  <main class="legal-page">
-    <div class="legal-kicker">Skillomate Legal</div>
-    <h1>Terms & Conditions</h1>
-    <p class="legal-intro">These terms explain how learners use Skillomate courses, subscriptions, videos, notes, AI tools, and account features.</p>
-    <section class="legal-card">
-      <h2>Account Access</h2>
-      <p>You are responsible for the mobile number, email, password, and profile information used on your Skillomate account. Keep your login private and tell support if you notice unauthorized access.</p>
-      <h2>Trials And Subscriptions</h2>
-      <p>Course access may require a valid trial or subscription. Trial pricing, renewal windows, and access rules are shown on the payment page before checkout.</p>
-      <h2>Course Content</h2>
-      <p>Videos, notes, course material, and platform designs are provided for personal learning. Do not redistribute, resell, record, scrape, or upload Skillomate content elsewhere without written permission.</p>
-      <h2>AI Assistance</h2>
-      <p>Nex AI is a learning assistant. It can help explain concepts and plan study, but it may be wrong. Verify important academic, career, financial, or technical decisions independently.</p>
-      <h2>Acceptable Use</h2>
-      <ul>
-        <li>Do not attempt to bypass payments, account access, or video protection.</li>
-        <li>Do not abuse, attack, overload, or reverse engineer the platform.</li>
-        <li>Do not upload harmful, illegal, or misleading content through forms or support channels.</li>
-      </ul>
-      <h2>Support</h2>
-      <p>For account, access, or payment issues, visit the <a href="help.html">Help page</a>.</p>
-    </section>
-  </main>
-`,
-    scripts: [
-      
     ],
   },
   "videos.html": {

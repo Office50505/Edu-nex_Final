@@ -229,12 +229,14 @@ export const page = {
       position: relative;
       aspect-ratio: 16 / 9;
       overflow: hidden;
-      background: #332820;
+      background: #050505;
     }
     .tile-media img {
       width: 100%;
       height: 100%;
       object-fit: cover;
+      object-position: left center;
+      background: #050505;
       display: block;
       transition: transform .3s ease;
     }
@@ -496,6 +498,8 @@ export const page = {
       width: 100%;
       height: 100%;
       object-fit: cover;
+      object-position: left center;
+      background: #050505;
       display: block;
     }
     .lesson-number {

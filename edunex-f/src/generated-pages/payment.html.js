@@ -87,7 +87,7 @@ export const page = {
     }
     .cp-thumb {
       aspect-ratio: 16/9;
-      background: var(--cyan);
+      background: #050505;
       position: relative;
       overflow: hidden;
       margin: 10px 18px 0;
@@ -97,6 +97,8 @@ export const page = {
       width: 100%;
       height: 100%;
       object-fit: cover;
+      object-position: left center;
+      background: #050505;
       display: block;
     }
     .cp-body { padding: 28px; }

@@ -24,6 +24,33 @@ function statusLabel(status) {
   return status === "published" ? "Published" : "Draft";
 }
 
+function normalizedThumbnailUrl(value) {
+  const raw = String(value || "").trim();
+  if (!raw) return "";
+
+  try {
+    const parsed = new URL(raw, window.location.origin);
+    const isDrive = /(^|\.)drive\.google\.com$/i.test(parsed.hostname);
+    if (isDrive) {
+      const fileMatch = parsed.pathname.match(/\/file\/d\/([^/]+)/);
+      const driveId = fileMatch?.[1] || parsed.searchParams.get("id");
+      if (driveId) {
+        return `https://drive.google.com/thumbnail?id=${encodeURIComponent(driveId)}&sz=w1200`;
+      }
+    }
+    if (parsed.origin === window.location.origin) return `${parsed.pathname}${parsed.search}${parsed.hash}`;
+    return `/api/image-proxy?url=${encodeURIComponent(parsed.href)}`;
+  } catch (_) {
+    return raw;
+  }
+}
+
+function courseThumbnailSrc(course) {
+  const embedded = course?.thumbnailHorizontal || course?.thumbnail || course?.thumbnailVertical || course?.videos?.[0]?.thumbnail;
+  if (embedded?.data) return `data:${embedded.mimeType || embedded.contentType || "image/jpeg"};base64,${embedded.data}`;
+  return normalizedThumbnailUrl(course?.thumbnailUrl || course?.thumbnailVerticalUrl || course?.videos?.[0]?.thumbnailUrl || "");
+}
+
 export function AdminCoursesPage() {
   const [courses, setCourses] = useState([]);
   const [categories, setCategories] = useState([]);
@@ -161,11 +188,12 @@ export function AdminCoursesPage() {
         {!loading && filteredCourses.map((course) => {
           const id = courseId(course);
           const isPending = pendingIds.has(id);
+          const thumbnailSrc = courseThumbnailSrc(course);
           return (
             <article className="course-card" key={id}>
               <div className="course-row">
                 <div className="course-title-cell">
-                  <div className="course-thumb">{course.thumbnailUrl ? <img src={course.thumbnailUrl} alt="" /> : <span>No image</span>}</div>
+                  <div className="course-thumb">{thumbnailSrc ? <img src={thumbnailSrc} alt="" onError={(event) => { event.currentTarget.onerror = null; event.currentTarget.src = window.EduNex?.placeholderImage?.(course.title || "Skillomate") || ""; }} /> : <span>No image</span>}</div>
                   <div><strong>{course.title || "Untitled course"}</strong><span>{course.slug || course._id || ""}</span></div>
                 </div>
                 <span><span className={`badge ${statusClass(course.status)}`}>{statusLabel(course.status)}</span></span>

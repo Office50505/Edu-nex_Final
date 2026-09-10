@@ -156,7 +156,7 @@ function mapHashLink(anchor) {
   const text = visibleText(anchor).toLowerCase();
   const label = anchor.getAttribute("aria-label")?.toLowerCase() || "";
   if (/privacy/.test(text)) return "privacy.html";
-  if (/terms|service/.test(text)) return "terms.html";
+  if (/terms|service/.test(text)) return "privacy.html";
   if (/help|support|contact/.test(text)) return "help.html";
   if (/course|catalog|guide/.test(text)) return "courses.html";
   if (/login|sign in/.test(text)) return "login.html";

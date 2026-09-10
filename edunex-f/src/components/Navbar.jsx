@@ -3,10 +3,15 @@ import { EnxIcon } from "./EnxIcon.jsx";
 import { route } from "../lib/routes.js";
 
 const navItems = [
-  { pageKey: "index.html", href: route("index.html"), label: "Home" },
-  { pageKey: "courses.html", href: route("courses.html"), label: "Courses" },
-  { pageKey: "dashboard.html", href: route("dashboard.html"), label: "Dashboard" },
-  { pageKey: "about.html", href: route("about.html"), label: "About" },
+  { pageKey: "index.html", href: route("index.html"), label: "Home", icon: "home" },
+  { pageKey: "courses.html", href: route("courses.html"), label: "Courses", icon: "bookOpen" },
+  { pageKey: "dashboard.html", href: route("dashboard.html"), label: "Dashboard", icon: "dashboard" },
+  { pageKey: "about.html", href: route("about.html"), label: "About", icon: "info" },
+];
+
+const mobileFooterItems = [
+  ...navItems,
+  { pageKey: "profile.html", href: route("profile.html"), label: "Account", icon: "user" },
 ];
 
 function readUser() {
@@ -69,7 +74,8 @@ export function Navbar({ pageKey }) {
   }, [pageKey]);
 
   const profileLabel = auth.user?.fullName || auth.user?.email || auth.user?.mobileNumber || "Profile Settings";
-  const avatarSrc = useMemo(() => auth.user?.avatar || avatarFallback(auth.user), [auth.user]);
+  const navAvatarFallback = useMemo(() => avatarFallback(auth.user), [auth.user]);
+  const avatarSrc = auth.user?.avatar || navAvatarFallback;
   const greeting = auth.token ? `Hi, ${firstName(auth.user)}` : "";
   const handleLogout = () => {
     clearAuthStorage();
@@ -77,6 +83,11 @@ export function Navbar({ pageKey }) {
     setOpen(false);
     window.dispatchEvent(new Event("edunex:auth-changed"));
     window.location.href = route("index.html");
+  };
+  const handleNavAvatarError = (event) => {
+    if (event.currentTarget.src !== navAvatarFallback) {
+      event.currentTarget.src = navAvatarFallback;
+    }
   };
 
   return (
@@ -96,7 +107,7 @@ export function Navbar({ pageKey }) {
             {!auth.token ? <a href={route("login.html")} className="enx-nav-login">Login</a> : null}
             {auth.token ? <button type="button" className="enx-nav-logout" onClick={handleLogout}><EnxIcon name="logout" className="enx-logout-icon" />Log out</button> : null}
             <a href={route("profile.html")} className={`enx-nav-avatar${current === "profile.html" ? " active" : ""}`} title={profileLabel} aria-label={profileLabel}>
-              {auth.token && auth.user ? <img src={avatarSrc} alt={profileLabel} /> : <EnxIcon name="user" />}
+              {auth.token && auth.user ? <img src={avatarSrc} alt={profileLabel} onError={handleNavAvatarError} /> : <EnxIcon name="user" />}
             </a>
           </div>
           <button className="enx-nav-hamburger" aria-label="Menu" aria-expanded={open} onClick={() => setOpen((value) => !value)}>
@@ -124,6 +135,25 @@ export function Navbar({ pageKey }) {
         </div>
         {greeting ? <span className="enx-mobile-greeting">{greeting}</span> : null}
       </div>
+
+      <nav className="enx-mobile-footer" aria-label="Primary mobile navigation">
+        <div className="enx-mobile-footer-shell">
+          {mobileFooterItems.map((item) => {
+            const active = current === item.pageKey;
+            return (
+              <a
+                key={item.href}
+                href={item.href}
+                className={`enx-mobile-footer-link${active ? " active" : ""}`}
+                aria-current={active ? "page" : undefined}
+              >
+                <EnxIcon name={item.icon} />
+                <span>{item.label}</span>
+              </a>
+            );
+          })}
+        </div>
+      </nav>
     </>
   );
 }

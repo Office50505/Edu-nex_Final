@@ -42,15 +42,15 @@ export function HelpPage() {
   `);
 
   useEffect(() => {
-    document.title = helpPage.title;
+    document.title = "Help Center - Skillomate AI";
     document.documentElement.lang = "en";
   }, []);
 
   return (
     <main className="help-page">
-      <div className="help-kicker">Support</div>
+      <div className="help-kicker">Help Center</div>
       <h1>How can we help?</h1>
-      <p className="help-intro">Use these support paths for account access, videos, payments, courses, and profile issues.</p>
+      <p className="help-intro">Use these help paths for account access, videos, payments, courses, and profile issues.</p>
       <section className="help-grid">
         {cards.map((card) => (
           <article className="help-card" key={card.title}>

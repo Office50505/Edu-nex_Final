@@ -780,6 +780,43 @@ function sanitizeOptionalUrl(value) {
   return normalized;
 }
 
+const MAX_THUMBNAIL_BYTES = 2 * 1024 * 1024;
+const ALLOWED_THUMBNAIL_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp']);
+
+function parseThumbnailDataUrl(value, label) {
+  const raw = String(value || '').trim();
+  if (!raw) return null;
+
+  const match = raw.match(/^data:(image\/(?:jpeg|png|webp));base64,([a-z0-9+/=\s]+)$/i);
+  if (!match) {
+    const error = new Error(`${label} must be a JPEG, PNG, or WebP image.`);
+    error.statusCode = 400;
+    throw error;
+  }
+
+  const mimeType = match[1].toLowerCase();
+  if (!ALLOWED_THUMBNAIL_TYPES.has(mimeType)) {
+    const error = new Error(`${label} must be a JPEG, PNG, or WebP image.`);
+    error.statusCode = 400;
+    throw error;
+  }
+
+  const base64 = match[2].replace(/\s/g, '');
+  const buffer = Buffer.from(base64, 'base64');
+  if (!buffer.length || buffer.length > MAX_THUMBNAIL_BYTES) {
+    const error = new Error(`${label} must be smaller than 2 MB.`);
+    error.statusCode = buffer.length > MAX_THUMBNAIL_BYTES ? 413 : 400;
+    throw error;
+  }
+
+  return {
+    data: buffer.toString('base64'),
+    mimeType,
+    originalName: label,
+    size: buffer.length,
+  };
+}
+
 function sanitizeCourseVideos(rawVideos) {
   if (!Array.isArray(rawVideos)) return null;
 
@@ -854,7 +891,7 @@ function applyCourseThumbnailToVideos(videos, courseThumbnail, courseThumbnailUr
 
   return (Array.isArray(videos) ? videos : []).map((video) => ({
     ...video,
-    thumbnail: null,
+    thumbnail: video.thumbnail || courseThumbnail || null,
     thumbnailUrl: sanitizeOptionalUrl(video.thumbnailUrl) || sharedThumbnailUrl,
     thumbnailVerticalUrl: sanitizeOptionalUrl(video.thumbnailVerticalUrl) || sharedThumbnailVerticalUrl,
   }));
@@ -1070,6 +1107,21 @@ function isPrivateIp(address) {
     || /^::ffff:172\.(1[6-9]|2\d|3[0-1])\./.test(normalized);
 }
 
+function googleDriveImageId(target) {
+  const hostname = String(target.hostname || '').toLowerCase();
+  if (!/(^|\.)drive\.google\.com$/.test(hostname)) return '';
+
+  const fileMatch = target.pathname.match(/\/file\/d\/([^/]+)/);
+  return fileMatch?.[1] || target.searchParams.get('id') || '';
+}
+
+function normalizeProxyImageTarget(target) {
+  const driveId = googleDriveImageId(target);
+  if (!driveId) return target;
+
+  return new URL(`https://drive.google.com/thumbnail?id=${encodeURIComponent(driveId)}&sz=w1200`);
+}
+
 async function validateImageProxyTarget(target) {
   const hostname = target.hostname;
 
@@ -1093,6 +1145,7 @@ app.get('/api/image-proxy', async (req, res) => {
 
   try {
     target = new URL(rawUrl);
+    target = normalizeProxyImageTarget(target);
   } catch (_) {
     return res.status(400).send('Invalid image URL');
   }
@@ -2651,7 +2704,7 @@ app.get('/api/courses/checkout-summary', async (req, res) => {
 
 app.get('/api/courses', async (req, res) => {
   try {
-    const cacheKey = 'courses:published:list:v2';
+    const cacheKey = 'courses:published:list:v4';
     const cached = await getCachedPublicRead(cacheKey);
     if (cached) {
       setPublicReadCacheHeaders(res, true);
@@ -2659,7 +2712,7 @@ app.get('/api/courses', async (req, res) => {
     }
 
     const courseDocuments = await Course.find({ status: 'published' })
-      .select('title slug description category thumbnailUrl thumbnailVerticalUrl averageRating totalWishlisted totalStarted totalCompleted completionRate publishedAt createdAt videos')
+      .select('title slug description category thumbnail thumbnailHorizontal thumbnailVertical thumbnailUrl thumbnailVerticalUrl averageRating totalWishlisted totalStarted totalCompleted completionRate publishedAt createdAt videos')
       .populate('category', 'name slug isActive')
       .sort({ publishedAt: -1, createdAt: -1 })
       .limit(100)
@@ -2667,7 +2720,14 @@ app.get('/api/courses', async (req, res) => {
 
     const courses = courseDocuments.map(({ videos, ...course }) => {
       const lessonCount = Array.isArray(videos) ? videos.length : 0;
-      return { ...course, lessonCount, videoCount: lessonCount };
+      const firstVideo = Array.isArray(videos) ? videos[0] : null;
+      const previewVideos = firstVideo ? [{
+        title: firstVideo.title,
+        thumbnail: firstVideo.thumbnail || null,
+        thumbnailUrl: firstVideo.thumbnailUrl || null,
+        thumbnailVerticalUrl: firstVideo.thumbnailVerticalUrl || null,
+      }] : [];
+      return { ...course, videos: previewVideos, lessonCount, videoCount: lessonCount };
     });
 
     await setCachedPublicRead(cacheKey, courses);
@@ -2696,20 +2756,25 @@ app.post('/api/courses', protectAdmin, async (req, res) => {
 
     const courseThumbnailUrl = sanitizeOptionalUrl(req.body.thumbnailUrl || req.body.thumbnailHorizontalUrl);
     const courseThumbnailVerticalUrl = sanitizeOptionalUrl(req.body.thumbnailVerticalUrl);
+    const embeddedHorizontalThumbnail = parseThumbnailDataUrl(
+      req.body.thumbnailDataUrl || req.body.thumbnailHorizontalDataUrl,
+      'Horizontal thumbnail'
+    );
+    const embeddedVerticalThumbnail = parseThumbnailDataUrl(req.body.thumbnailVerticalDataUrl, 'Vertical thumbnail');
 
-const course = new Course({
-       title: req.body.title,
-       slug: req.body.slug,
-       description: req.body.description,
-       thumbnail: null,
-       thumbnailHorizontal: null,
-       thumbnailVertical: null,
-       thumbnailUrl: courseThumbnailUrl,
-       thumbnailVerticalUrl: courseThumbnailVerticalUrl,
-       videos: applyCourseThumbnailToVideos(sanitizedVideos, null, courseThumbnailUrl, courseThumbnailVerticalUrl),
-       notesUrl: req.body.notesUrl || null,
-       category: req.body.category,
-       status: req.body.status || 'draft',
+    const course = new Course({
+      title: req.body.title,
+      slug: req.body.slug,
+      description: req.body.description,
+      thumbnail: embeddedHorizontalThumbnail,
+      thumbnailHorizontal: embeddedHorizontalThumbnail,
+      thumbnailVertical: embeddedVerticalThumbnail,
+      thumbnailUrl: courseThumbnailUrl,
+      thumbnailVerticalUrl: courseThumbnailVerticalUrl,
+      videos: applyCourseThumbnailToVideos(sanitizedVideos, embeddedHorizontalThumbnail, courseThumbnailUrl, courseThumbnailVerticalUrl),
+      notesUrl: req.body.notesUrl || null,
+      category: req.body.category,
+      status: req.body.status || 'draft',
     });
     const savedCourse = await course.save();
     await clearPublicCourseCaches();
@@ -2722,6 +2787,10 @@ const course = new Course({
     if (error.name === 'ValidationError') {
       const details = Object.values(error.errors).map((fieldError) => fieldError.message);
       return res.status(400).json({ error: details.join(', ') });
+    }
+
+    if (error.statusCode) {
+      return res.status(error.statusCode).json({ error: error.message });
     }
 
     if (
@@ -2807,13 +2876,31 @@ app.patch('/api/admin/courses/:id', protectAdmin, async (req, res) => {
       || Object.prototype.hasOwnProperty.call(req.body, 'thumbnailHorizontalUrl')
     ) {
       updates.thumbnailUrl = sanitizeOptionalUrl(req.body.thumbnailUrl || req.body.thumbnailHorizontalUrl);
-      updates.thumbnail = null;
-      updates.thumbnailHorizontal = null;
     }
 
     if (Object.prototype.hasOwnProperty.call(req.body, 'thumbnailVerticalUrl')) {
       updates.thumbnailVerticalUrl = sanitizeOptionalUrl(req.body.thumbnailVerticalUrl);
-      updates.thumbnailVertical = null;
+    }
+
+    if (
+      Object.prototype.hasOwnProperty.call(req.body, 'thumbnailDataUrl')
+      || Object.prototype.hasOwnProperty.call(req.body, 'thumbnailHorizontalDataUrl')
+    ) {
+      const embeddedHorizontalThumbnail = parseThumbnailDataUrl(
+        req.body.thumbnailDataUrl || req.body.thumbnailHorizontalDataUrl,
+        'Horizontal thumbnail'
+      );
+      if (embeddedHorizontalThumbnail) {
+        updates.thumbnail = embeddedHorizontalThumbnail;
+        updates.thumbnailHorizontal = embeddedHorizontalThumbnail;
+      }
+    }
+
+    if (Object.prototype.hasOwnProperty.call(req.body, 'thumbnailVerticalDataUrl')) {
+      const embeddedVerticalThumbnail = parseThumbnailDataUrl(req.body.thumbnailVerticalDataUrl, 'Vertical thumbnail');
+      if (embeddedVerticalThumbnail) {
+        updates.thumbnailVertical = embeddedVerticalThumbnail;
+      }
     }
 
     if (Object.prototype.hasOwnProperty.call(req.body, 'videos')) {
@@ -2823,7 +2910,7 @@ app.patch('/api/admin/courses/:id', protectAdmin, async (req, res) => {
       }
       updates.videos = applyCourseThumbnailToVideos(
         sanitizedVideos,
-        null,
+        Object.prototype.hasOwnProperty.call(updates, 'thumbnail') ? updates.thumbnail : existingCourse.thumbnail,
         Object.prototype.hasOwnProperty.call(updates, 'thumbnailUrl') ? updates.thumbnailUrl : existingCourse.thumbnailUrl,
         Object.prototype.hasOwnProperty.call(updates, 'thumbnailVerticalUrl') ? updates.thumbnailVerticalUrl : existingCourse.thumbnailVerticalUrl
       );
@@ -2852,6 +2939,10 @@ app.patch('/api/admin/courses/:id', protectAdmin, async (req, res) => {
     if (error.name === 'ValidationError') {
       const details = Object.values(error.errors).map((fieldError) => fieldError.message);
       return res.status(400).json({ error: details.join(', ') });
+    }
+
+    if (error.statusCode) {
+      return res.status(error.statusCode).json({ error: error.message });
     }
 
     res.status(400).json({ error: error.message });

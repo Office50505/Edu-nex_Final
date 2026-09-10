@@ -328,12 +328,14 @@ export const page = {
       position: relative;
       height: 100%;
       overflow: hidden;
-      background: var(--card2);
+      background: #050505;
     }
     .hero-card-media img {
       width: 100%;
       height: 100%;
       object-fit: cover;
+      object-position: left center;
+      background: #050505;
       display: block;
     }
     .hero-card-badge,

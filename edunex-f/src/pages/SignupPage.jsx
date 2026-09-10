@@ -2,9 +2,10 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { page as signupPage } from "../generated-pages/signup.html.js";
 import { runLegacyPage } from "../legacyRuntime.js";
 import { usePageStyle } from "../hooks/usePageStyle.js";
+import { route } from "../lib/routes.js";
 
 const PHONE_ERROR = "Please enter a valid 10-digit phone number.";
-const TERMS_ERROR = "Please agree to the Terms and Privacy Policy.";
+const TERMS_ERROR = "Please agree to the Privacy Policy.";
 const NAME_ERROR = "Please enter your name.";
 const PASSWORD_ERROR = "Password must be at least 8 characters.";
 const PASSWORD_MATCH_ERROR = "Passwords do not match.";
@@ -466,7 +467,7 @@ export function SignupPage() {
                 checked={agreed}
                 onChange={(event) => setAgreed(event.target.checked)}
               />
-              I agree to the <a href="terms.html">Terms</a> and <a href="privacy.html">Privacy Policy.</a>
+              I agree to the <a href={route("privacy.html")}>Privacy Policy.</a>
             </label>
 
             <p
@@ -744,7 +745,7 @@ export function SignupPage() {
             <button className="sp-complete-btn" id="completeProfileBtn" type="button" onClick={completeProfile} disabled={creatingAccount}>
               {creatingAccount ? "Creating account..." : "Complete My Profile"}
             </button>
-            <p className="sp-terms-note">By continuing, you agree to our <a href="terms.html">Terms of Personalized Learning.</a></p>
+            <p className="sp-terms-note">By continuing, you agree to our <a href={route("privacy.html")}>Privacy Policy.</a></p>
           </div>
         </div>
       </main>

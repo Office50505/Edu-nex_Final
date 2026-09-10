@@ -295,13 +295,13 @@ export const page = {
     .pf-watermark-main {
       font-size: clamp(2.4rem, 5vw, 4rem);
       font-weight: 900; letter-spacing: .35em;
-      color: rgba(255,255,255,0.04);
+      color: rgba(255,255,255,0.18);
       line-height: 1; margin-bottom: 6px;
     }
     .pf-watermark-sub {
       font-size: .62rem; font-weight: 700;
       letter-spacing: .38em; text-transform: uppercase;
-      color: rgba(255,255,255,0.04);
+      color: rgba(255,255,255,0.24);
     }
     .pf-modal {
       position: fixed; inset: 0; z-index: 9992;
