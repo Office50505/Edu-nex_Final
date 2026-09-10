@@ -32,6 +32,10 @@ function courseThumbnailUrl(course) {
   return course?.thumbnailUrl || null;
 }
 
+function courseThumbnailVerticalUrl(course) {
+  return course?.thumbnailVerticalUrl || null;
+}
+
 function bunnyHlsUrl(video) {
   if (video?.hlsUrl || video?.playlistUrl || video?.streamUrl) {
     return video.hlsUrl || video.playlistUrl || video.streamUrl;
@@ -54,6 +58,7 @@ function bunnyHlsUrl(video) {
 function withRepeatedVideoThumbnails(course) {
   const sharedThumbnail = courseThumbnailPayload(course);
   const sharedThumbnailUrl = courseThumbnailUrl(course);
+  const sharedThumbnailVerticalUrl = courseThumbnailVerticalUrl(course);
 
   return {
     ...course,
@@ -61,7 +66,8 @@ function withRepeatedVideoThumbnails(course) {
       ...video,
       hlsUrl: bunnyHlsUrl(video),
       thumbnail: sharedThumbnail,
-      thumbnailUrl: sharedThumbnailUrl,
+      thumbnailUrl: video.thumbnailUrl || sharedThumbnailUrl,
+      thumbnailVerticalUrl: video.thumbnailVerticalUrl || sharedThumbnailVerticalUrl,
     })),
   };
 }
@@ -131,7 +137,7 @@ router.get('/courses/:id/lessons', requireAccess, async (req, res) => {
     }
 
     const course = await Course.findById(req.params.id)
-      .select('title description videos thumbnail thumbnailHorizontal thumbnailUrl notesUrl')
+      .select('title description videos thumbnail thumbnailHorizontal thumbnailUrl thumbnailVerticalUrl notesUrl')
       .lean();
 
     if (!course) {
@@ -157,7 +163,7 @@ router.get('/lessons/:id', requireAccess, async (req, res) => {
     }
 
     const course = await Course.findById(lesson.course._id)
-      .select('title description videos thumbnail thumbnailHorizontal thumbnailUrl notesUrl')
+      .select('title description videos thumbnail thumbnailHorizontal thumbnailUrl thumbnailVerticalUrl notesUrl')
       .lean();
 
     if (!course) {
@@ -197,9 +203,10 @@ res.json({
        duration: videoData.duration || 0,
        notesUrl: course.notesUrl || null,
        description: course.description,
-       thumbnail: courseThumbnailUrl(course),
+       thumbnail: videoData.thumbnailUrl || courseThumbnailUrl(course),
        videoThumbnail: courseThumbnailPayload(course),
-       videoThumbnailUrl: courseThumbnailUrl(course),
+       videoThumbnailUrl: videoData.thumbnailUrl || courseThumbnailUrl(course),
+       videoThumbnailVerticalUrl: videoData.thumbnailVerticalUrl || courseThumbnailVerticalUrl(course),
        isPreview: false,
      });
   } catch (error) {

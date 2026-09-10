@@ -8,6 +8,7 @@ const FALLBACK_IMAGE = "data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2
 const AUTO_NEXT_KEY = "edunexAutoNextVideo";
 const APP_FULLSCREEN_CLASS = "is-app-fullscreen";
 const BODY_FULLSCREEN_CLASS = "has-edunex-player-fullscreen";
+const MAX_SWIPE_LESSON_JUMP = 8;
 
 function nativeFullscreenElement() {
   return document.fullscreenElement || document.webkitFullscreenElement || null;
@@ -244,6 +245,16 @@ function nextPlaybackRate(rate) {
   const current = Number(rate) || 1;
   const index = rates.findIndex((value) => value === current);
   return rates[(index + 1) % rates.length];
+}
+
+function lessonJumpFromHorizontalSwipe(distance, elapsed, frameWidth) {
+  const absDistance = Math.abs(Number(distance) || 0);
+  if (!absDistance) return 0;
+  const width = Math.max(Number(frameWidth) || 0, 1);
+  const velocity = absDistance / Math.max(Number(elapsed) || 1, 1);
+  const distanceStep = Math.max(1, Math.round(absDistance / Math.max(72, width * 0.24)));
+  const velocityBonus = velocity >= 1.65 ? 3 : velocity >= 1.05 ? 2 : velocity >= 0.58 ? 1 : 0;
+  return Math.min(MAX_SWIPE_LESSON_JUMP, distanceStep + velocityBonus);
 }
 
 function VideoControls({ playing, volume, muted, rate, currentTime, duration, onToggle, onSeek, onVolume, onRate, onFullscreen, onAi, onScreenTap, onScreenSwipe }) {
@@ -994,9 +1005,12 @@ export function VideosPage() {
 
   const lessons = course?.videos || [];
   const lesson = lessons[activeIndex] || lessons[0] || {};
+  const lessonExamplePrompt = String(
+    lesson.examplePrompt || lesson.examplePromptText || lesson.examplePromptUrl || lesson.promptUrl || "",
+  ).trim();
 
-  const changeLessonByNavigation = useCallback((direction) => {
-    setActiveIndex((index) => Math.max(0, Math.min(index + direction, Math.max(lessons.length - 1, 0))));
+  const changeLessonByNavigation = useCallback((delta) => {
+    setActiveIndex((index) => Math.max(0, Math.min(index + delta, Math.max(lessons.length - 1, 0))));
   }, [lessons.length]);
 
   useEffect(() => {
@@ -1013,7 +1027,7 @@ export function VideosPage() {
       swipe.pointerId = null;
     };
     const ignoreSwipeTarget = (target) => Boolean(target?.closest?.(".custom-video-controls, .video-screen-btn, input, select, textarea, [contenteditable='true']"));
-    const canChangeLesson = (direction) => direction > 0 ? activeIndex < lessons.length - 1 : activeIndex > 0;
+    const canChangeLesson = (delta) => delta > 0 ? activeIndex < lessons.length - 1 : delta < 0 && activeIndex > 0;
     const canTrackPlayerSwipe = () => isPlayerFullscreen(frame) || window.matchMedia?.("(max-width: 820px), (pointer: coarse)")?.matches;
     const beginSwipe = (clientX, clientY, pointerId = null) => {
       swipe.active = true;
@@ -1053,19 +1067,20 @@ export function VideosPage() {
       const deltaX = clientX - swipe.startX;
       const deltaY = clientY - swipe.startY;
       const elapsed = Math.max(performance.now() - swipe.startedAt, 1);
-      const horizontalDistanceThreshold = Math.min(96, Math.max(44, frame.clientWidth * 0.14));
+      const horizontalDistanceThreshold = Math.min(72, Math.max(28, frame.clientWidth * 0.08));
       const verticalDistanceThreshold = Math.min(96, Math.max(44, frame.clientHeight * 0.06));
       const horizontalSwipe = swipe.horizontal && Math.abs(deltaX) > Math.abs(deltaY) * 1.1;
       const verticalSwipe = swipe.vertical && Math.abs(deltaY) > Math.abs(deltaX) * 1.1;
-      const intentionalHorizontalSwipe = Math.abs(deltaX) >= horizontalDistanceThreshold || (Math.abs(deltaX) >= 34 && Math.abs(deltaX) / elapsed >= 0.28);
+      const intentionalHorizontalSwipe = Math.abs(deltaX) >= horizontalDistanceThreshold || (Math.abs(deltaX) >= 24 && Math.abs(deltaX) / elapsed >= 0.22);
       const intentionalVerticalSwipe = Math.abs(deltaY) >= verticalDistanceThreshold || (Math.abs(deltaY) >= 34 && Math.abs(deltaY) / elapsed >= 0.28);
       const horizontalDirection = deltaX < 0 ? 1 : -1;
       const verticalDirection = deltaY < 0 ? 1 : -1;
+      const horizontalDelta = horizontalDirection * lessonJumpFromHorizontalSwipe(deltaX, elapsed, frame.clientWidth);
 
-      if (canTrackPlayerSwipe() && horizontalSwipe && intentionalHorizontalSwipe && canChangeLesson(horizontalDirection)) {
+      if (canTrackPlayerSwipe() && horizontalSwipe && intentionalHorizontalSwipe && canChangeLesson(horizontalDelta)) {
         event.preventDefault();
         swipe.suppressClickUntil = Date.now() + 500;
-        changeLessonByNavigation(horizontalDirection);
+        changeLessonByNavigation(horizontalDelta);
       } else if (isPlayerFullscreen(frame) && verticalSwipe && intentionalVerticalSwipe && canChangeLesson(verticalDirection)) {
         event.preventDefault();
         swipe.suppressClickUntil = Date.now() + 500;
@@ -1328,6 +1343,12 @@ export function VideosPage() {
             <div className="lesson-info">
               <h1 id="lessonTitle">{error ? "Course unavailable" : (lesson.title || course?.title || "Select a lesson")}</h1>
               <p id="lessonDescription">{error || lesson.description || course?.description || "Choose a video from the playlist to begin watching."}</p>
+              {lessonExamplePrompt ? (
+                <details className="example-prompt-drawer" key={`${course?._id || "course"}-${activeIndex}-example-prompt`}>
+                  <summary>Example prompt</summary>
+                  <div className="example-prompt-content">{lessonExamplePrompt}</div>
+                </details>
+              ) : null}
               <div className="lesson-meta" id="lessonMeta">
                 {course ? <span>{course.title || "Skillomate course"}</span> : null}
                 {course ? <span>Lesson {activeIndex + 1} of {Math.max(lessons.length, 1)}</span> : null}

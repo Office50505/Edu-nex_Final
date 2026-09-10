@@ -36,7 +36,7 @@ export function AdminShell({ activePage, title, subtitle, children, actions = nu
           <a aria-label="Skillomate admin home" className="premium-brand" href={adminRoutes.dashboard}>
             <span className="premium-brand-mark" aria-hidden="true" />
             <span className="premium-brand-name">
-              Edu<span>Nex</span>
+              Skillo<span>mate</span>
             </span>
           </a>
           <div className="premium-nav-links">

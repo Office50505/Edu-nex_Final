@@ -617,6 +617,8 @@ export function HomePage() {
     }, duration);
   };
 
+  const useNativeTouchCarousel = () => window.matchMedia?.("(pointer: coarse), (max-width: 820px)")?.matches;
+
   const syncCenterFromScroll = () => {
     const viewport = viewportRef.current;
     if (!viewport) return;
@@ -695,6 +697,10 @@ export function HomePage() {
   const handlePointerDown = (event) => {
     if (!event.isPrimary || event.button !== 0) return;
     if (event.pointerType === "mouse") return;
+    if (event.pointerType === "touch") {
+      pauseCarouselAfterInput(3000);
+      return;
+    }
     if (event.target.closest?.("input, textarea, select")) return;
     const viewport = viewportRef.current;
     if (!viewport) return;
@@ -761,6 +767,10 @@ export function HomePage() {
     if (event.target.closest?.("input, textarea, select")) return;
     const viewport = viewportRef.current;
     if (!viewport || pointerRef.current.down) return;
+    if (useNativeTouchCarousel()) {
+      pauseCarouselAfterInput(3000);
+      return;
+    }
     const touch = event.touches[0];
     pointerRef.current = {
       down: true,

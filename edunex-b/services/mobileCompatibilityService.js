@@ -46,9 +46,14 @@ function normalizeImageUrl(url) {
   let normalized = String(url)
     .replace(/^http:\/\/localhost(?::\d+)?/i, API_BASE_URL)
     .replace(/^http:\/\/127\.0\.0\.1(?::\d+)?/i, API_BASE_URL);
-  const driveMatch = normalized.match(/\/file\/d\/([a-zA-Z0-9_-]+)\/view/);
-  if (driveMatch) {
-    normalized = `https://drive.google.com/uc?export=view&id=${driveMatch[1]}`;
+
+  if (/^https?:\/\/(?:www\.)?drive\.google\.com\//i.test(normalized)) {
+    const pathMatch = normalized.match(/\/(?:file\/)?d\/([a-zA-Z0-9_-]+)/i);
+    const queryMatch = normalized.match(/[?&]id=([a-zA-Z0-9_-]+)/i);
+    const driveFileId = pathMatch?.[1] || queryMatch?.[1];
+    if (driveFileId) {
+      normalized = `https://drive.google.com/thumbnail?id=${encodeURIComponent(driveFileId)}&sz=w1600`;
+    }
   }
   return normalized;
 }
@@ -110,6 +115,7 @@ function publicVideoInfo(video = {}, index = 0) {
   return {
     _id: getVideoKey(video, index),
     title: video.title || `Video ${index + 1}`,
+    topic: video.topic || null,
     order: video.order ?? index + 1,
     duration: video.duration ?? video.durationSeconds ?? video.lengthSeconds ?? video.videoDuration ?? null,
   };
@@ -135,6 +141,7 @@ function publicPlayableVideoInfo(video = {}, index = 0) {
     hlsUrl,
     description: video.description || video.videoDescription || video.desc || video.summary || '',
     thumbnailUrl: video.thumbnailUrl || null,
+    thumbnailVerticalUrl: video.thumbnailVerticalUrl || null,
     examplePrompt: video.examplePrompt || video.examplePromptUrl || '',
   };
 }

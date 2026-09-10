@@ -1,7 +1,7 @@
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useColorScheme } from "react-native";
+import { useWindowDimensions } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import {
   ActivityIndicator,
@@ -44,6 +44,14 @@ import {
   UI_QA_PROGRESS,
   UI_QA_WISHLIST,
 } from "./dev/uiQaFixtures";
+import {
+  HOME_AI_FOUNDATIONS_CONTENT,
+  HOME_COMING_SOON,
+  HOME_INFLUENCER_CONTENT,
+  buildLessonTopics,
+  resolveLessonNumbers,
+  sortLessons,
+} from "./homeContentConfig";
 
 const PLAYER_ORIGIN = "https://protected-video.local";
 
@@ -57,6 +65,10 @@ const AI_ROBOT_IMAGES = {
   r7: require("./assets/ai-avatars/r7.jpg"),
   r8: require("./assets/ai-avatars/r8.jpg"),
   r9: require("./assets/ai-avatars/r9.jpg"),
+};
+const HOME_COMING_SOON_IMAGES = {
+  ugc: require("./assets/home/coming-soon-ai-ugc.png"),
+  automation: require("./assets/home/coming-soon-ai-automation.png"),
 };
 const AI_ROBOT_AVATARS = Object.keys(AI_ROBOT_IMAGES).map((id, index) => ({
   id,
@@ -143,8 +155,9 @@ const HOME_FALLBACK_COURSES = HOME_FALLBACK_TITLES.map((title, index) => ({
   thumbnailVerticalAsset: HOME_ARTWORK_IMAGES[index % HOME_ARTWORK_IMAGES.length],
   videos: Array.from({ length: 8 + (index % 8) }, (_, i) => ({ title: `${String(i + 1).padStart(2, "0")}. ${title}` })),
 }));
-const COURSE_LIST_RATINGS = [4.8, 4.9, 4.7, 4.8, 4.6, 4.9];
 const ANDROID_CLIPPED_SUBVIEWS = Platform.OS === "android";
+const MIN_TOUCH_TARGET = Platform.OS === "ios" ? 44 : 48;
+const ANDROID_STATUS_BAR_INSET = Platform.OS === "android" ? (StatusBar.currentHeight || 0) : 0;
 
 function sanitizeImageUrlForLog(url) {
   const value = String(url || "");
@@ -157,6 +170,42 @@ function getImageHost(url) {
   const value = String(url || "");
   const match = value.match(/^https?:\/\/([^/]+)/i);
   return match?.[1] || "";
+}
+
+function getGoogleDriveFileId(url) {
+  const value = String(url || "").trim();
+  if (!/^https?:\/\/(?:www\.)?drive\.google\.com\//i.test(value)) return "";
+
+  const pathMatch = value.match(/\/(?:file\/)?d\/([a-zA-Z0-9_-]+)/i);
+  const queryMatch = value.match(/[?&]id=([a-zA-Z0-9_-]+)/i);
+  return pathMatch?.[1] || queryMatch?.[1] || "";
+}
+
+function normalizeThumbnailUrl(url, width = 1600) {
+  const value = String(url || "").trim();
+  if (!value) return "";
+
+  const driveFileId = getGoogleDriveFileId(value);
+  if (!driveFileId) return value;
+
+  return `https://drive.google.com/thumbnail?id=${encodeURIComponent(driveFileId)}&sz=w${width}`;
+}
+
+function getThumbnailUrlCandidates(url, width = 1600) {
+  const rawUrl = String(url || "").trim();
+  if (!rawUrl) return [];
+
+  const normalizedUrl = normalizeThumbnailUrl(rawUrl, width);
+  const candidates = [normalizedUrl];
+  const imageHost = getImageHost(normalizedUrl).toLowerCase();
+  const apiHost = getImageHost(API_BASE).toLowerCase();
+
+  if (/^https?:\/\//i.test(normalizedUrl) && API_BASE && imageHost && imageHost !== apiHost) {
+    candidates.push(`${API_BASE}/api/image-proxy?url=${encodeURIComponent(normalizedUrl)}`);
+  }
+  if (rawUrl !== normalizedUrl) candidates.push(rawUrl);
+
+  return [...new Set(candidates.filter(Boolean))];
 }
 
 function traceImageFailure({ screen, courseId, imageUrl, fallbackUsed }) {
@@ -174,13 +223,10 @@ function traceImageFailure({ screen, courseId, imageUrl, fallbackUsed }) {
 
 function PosterImage({ course, index = 0, vertical = true, style }) {
   const fallbackTitle = course?.title || "Skillomate";
-  const [useLocalFallback, setUseLocalFallback] = useState(false);
-  const uri = !useLocalFallback ? getCourseThumbnailUri(course, vertical) : null;
-  const localSource = (vertical ? course?.thumbnailVerticalAsset : course?.thumbnailAsset) || course?.thumbnailAsset || HOME_ARTWORK_IMAGES[index % HOME_ARTWORK_IMAGES.length];
-
-  useEffect(() => {
-    setUseLocalFallback(false);
-  }, [course?._id, vertical]);
+  const localSource = (vertical ? course?.thumbnailVerticalAsset : course?.thumbnailAsset)
+    || course?.thumbnailAsset
+    || HOME_ARTWORK_IMAGES[index % HOME_ARTWORK_IMAGES.length];
+  const imageCourse = course ? { ...course, thumbnailAsset: localSource } : course;
 
   return (
     <View style={[StyleSheet.absoluteFill, style]}>
@@ -188,20 +234,7 @@ function PosterImage({ course, index = 0, vertical = true, style }) {
         <Ionicons name="play-circle-outline" size={28} color={C.primary} />
         <Text style={s.artworkFallbackText} numberOfLines={2}>{fallbackTitle}</Text>
       </View>
-      <Image
-        source={uri ? { uri } : localSource}
-        style={StyleSheet.absoluteFill}
-        resizeMode="cover"
-        onError={() => {
-          traceImageFailure({
-            screen: vertical ? "PosterImage.vertical" : "PosterImage.landscape",
-            courseId: course?._id || course?.id,
-            imageUrl: uri,
-            fallbackUsed: true,
-          });
-          setUseLocalFallback(true);
-        }}
-      />
+      {imageCourse ? <CourseThumbnailImage course={imageCourse} preferVertical={vertical} /> : null}
     </View>
   );
 }
@@ -230,8 +263,8 @@ function HorizontalRail({ data, renderItem, contentContainerStyle, keyExtractor 
 function AvatarImage({ avatarId, size = 40, style }) {
   const src = AVATAR_IMAGES[avatarId];
   if (!src) return (
-    <View accessible={false} style={[{ width: size, height: size, borderRadius: size / 2, backgroundColor: EDUNEX_MOBILE_TOKENS.colors.light.accentSoft, alignItems: "center", justifyContent: "center", borderWidth: 1, borderColor: EDUNEX_MOBILE_TOKENS.colors.light.border }, style]}>
-      <Text style={{ color: EDUNEX_MOBILE_TOKENS.colors.light.text, fontWeight: "800", fontSize: size * 0.4 }}>?</Text>
+    <View accessible={false} style={[{ width: size, height: size, borderRadius: size / 2, backgroundColor: EDUNEX_MOBILE_TOKENS.colors.dark.accentSoft, alignItems: "center", justifyContent: "center", borderWidth: 1, borderColor: EDUNEX_MOBILE_TOKENS.colors.dark.border }, style]}>
+      <Text style={{ color: EDUNEX_MOBILE_TOKENS.colors.dark.text, fontWeight: "800", fontSize: size * 0.4 }}>?</Text>
     </View>
   );
   return <Image accessible={false} source={src} style={[{ width: size, height: size, borderRadius: size / 2 }, style]} resizeMode="cover" />;
@@ -243,6 +276,8 @@ const AI_FEATURE_ENABLED = true;
 
 const SPEEDS = [0.5, 0.75, 1, 1.25, 1.5, 2];
 const VIDEO_COMPLETE_THRESHOLD = 0.85;
+const PROTECTED_VIDEO_CAPTURE_KEY = "skillomate-course-video";
+const SHOW_DRAFT_HOME_RECOMMENDATIONS = false;
 
 // SDK 51: host may live in manifest2.extra.expoGo.debuggerHost, not at the root
 const _m1 = Constants.__unsafeNoWarnManifest || Constants.expoConfig || {};
@@ -313,9 +348,14 @@ function normalizeAuthUser(data = {}) {
     ...source,
     _id: String(id),
     sessionId: source.sessionId || data.sessionId || source.token || data.token || "",
+<<<<<<< HEAD
     token: accessToken,
     accessToken,
     refreshToken,
+=======
+    accessToken: source.accessToken || data.accessToken || "",
+    refreshToken: source.refreshToken || data.refreshToken || "",
+>>>>>>> 997e33eea7b5c5f193080a114f8374e8d90b8191
     wishlist: source.wishlist || data.wishlist || [],
   };
 }
@@ -382,56 +422,32 @@ const TYPE = {
 
 const ICON_FAMILY = "Ionicons";
 
-// Skillomate mobile design tokens. Light mode follows the production website
-// palette from app.css: warm cream surfaces, charcoal text, and muted gold.
+// Skillomate uses one premium dark-and-gold theme across iOS and Android.
 const EDUNEX_MOBILE_TOKENS = {
   colors: {
-    light: {
-      isDark: false,
-      background: "#FAF7F1",
-      navigation: "#FBF8F2",
-      surface: "#FFFDF8",
-      surfaceWarm: "#FFFCF6",
-      surfaceElevated: "#FFFDF8",
-      surfacePressed: "#F6F0E7",
-      panel: "#F3EBDD",
-      panelSecondary: "#F6F0E7",
-      textStrong: "#2B211A",
-      text: "#332820",
-      textSecondary: "#756A60",
-      textMuted: "#9A8E82",
-      border: "#E2D6C6",
-      borderStrong: "#E2D6C6",
-      primary: "#C58B2A",
-      primaryPressed: "#A96F18",
-      accent: "#B9853E",
-      accentSoft: "#F3EBDD",
-      success: "#6F7D52",
-      warning: "#B9853E",
-      error: "#EF4444",
-    },
     dark: {
       isDark: true,
-      background: "#11110F",
-      navigation: "#151411",
-      surface: "#1B1A17",
-      surfaceWarm: "#222019",
-      surfaceElevated: "#24221E",
-      surfacePressed: "#2C2923",
+      onPrimary: "#17130B",
+      background: "#0D0D0B",
+      navigation: "#0D0D0B",
+      surface: "#171714",
+      surfaceWarm: "#1C1C18",
+      surfaceElevated: "#23231E",
+      surfacePressed: "#302E28",
       panel: "#2A241C",
-      panelSecondary: "#211F1A",
-      textStrong: "#FFFDF8",
-      text: "#F7F1E8",
-      textSecondary: "#C8BFB3",
-      textMuted: "#9E9387",
-      border: "#343029",
-      borderStrong: "#4B4034",
-      primary: "#C58B2A",
-      primaryPressed: "#A96F18",
-      accent: "#B9853E",
+      panelSecondary: "#201D18",
+      textStrong: "#F5F1E8",
+      text: "#F5F1E8",
+      textSecondary: "#B8B0A5",
+      textMuted: "#8D867D",
+      border: "#302E28",
+      borderStrong: "#454137",
+      primary: "#E7BC68",
+      primaryPressed: "#C58B2A",
+      accent: "#D8A94F",
       accentSoft: "#2A241C",
       success: "#6F7D52",
-      warning: "#B9853E",
+      warning: "#E7BC68",
       error: "#EF4444",
     },
   },
@@ -462,10 +478,8 @@ function buildTheme(mode) {
   };
 }
 
-const LIGHT_THEME = buildTheme("light");
 const DARK_THEME = buildTheme("dark");
-const C = { ...LIGHT_THEME };
-const THEME_STORAGE_KEY = "themeMode";
+const C = { ...DARK_THEME };
 
 function stringToColor(str) {
   const palette = [
@@ -911,6 +925,22 @@ function getBunnyLibraryId(video) {
   return url.match(/\/embed\/(\d+)\//)?.[1] || "";
 }
 
+function getDownloadFailureMessage(error, status) {
+  const statusCode = Number(status || 0);
+  const message = String(error?.message || error || "").toLowerCase();
+
+  if (statusCode === 401 || statusCode === 403) {
+    return "Course access could not be verified. Sign in again, then retry.";
+  }
+  if (statusCode >= 500) {
+    return "The download service is temporarily unavailable. Please retry shortly.";
+  }
+  if (message.includes("network") || message.includes("offline") || message.includes("internet") || message.includes("timed out")) {
+    return "Check your internet connection, then retry the download.";
+  }
+  return "This lesson could not be saved. Check your connection and course access, then retry.";
+}
+
 function getResumeInfo(course, progressByCourse = {}) {
   const progress = progressByCourse?.[course?._id];
   const videos = Array.isArray(course?.videos) ? course.videos : [];
@@ -937,18 +967,14 @@ function getCourseProgressPercent(course, progressByCourse = {}) {
 }
 
 function getCourseThumbnailUri(course, preferVertical = false) {
-  const verticalUrl = course?.thumbnailVerticalUrl || null;
-  const thumbnailUrl = course?.thumbnailUrl || null;
-  return preferVertical
-    ? verticalUrl || thumbnailUrl
-    : thumbnailUrl || verticalUrl;
+  return getCourseThumbnailUris(course, preferVertical)[0] || null;
 }
 
 function getCourseThumbnailUris(course, preferVertical = false) {
   const urls = preferVertical
     ? [course?.thumbnailVerticalUrl, course?.thumbnailUrl]
     : [course?.thumbnailUrl, course?.thumbnailVerticalUrl];
-  return [...new Set(urls.filter(Boolean))];
+  return [...new Set(urls.flatMap(url => getThumbnailUrlCandidates(url)))];
 }
 
 function getCourseThumbnailAsset(course, preferVertical = false) {
@@ -968,12 +994,16 @@ function getCourseThumbnailSource(course, preferVertical = false, uriIndex = 0) 
   return getCourseThumbnailAsset(course, preferVertical);
 }
 
-function applyThemeColors(mode) {
-  Object.assign(C, mode === "dark" ? DARK_THEME : LIGHT_THEME);
-  if (typeof createStyles === "function") s = createStyles(C);
-}
-
 // ── Shared Components ─────────────────────────────────────────────────────────
+
+function ThumbnailBrandBadge({ large = false }) {
+  return (
+    <View pointerEvents="none" style={[s.thumbnailBrandBadge, large && s.thumbnailBrandBadgeLarge]}>
+      <Ionicons name="school" size={11} color={C.primary} />
+      <Text style={s.thumbnailBrandText}>Skillomate</Text>
+    </View>
+  );
+}
 
 function CourseThumbnailImage({ course, preferVertical = false }) {
   const uris = useMemo(
@@ -991,42 +1021,55 @@ function CourseThumbnailImage({ course, preferVertical = false }) {
   if (!source) return null;
 
   return (
-    <Image
-      key={uris[uriIndex] || course?._id || "asset"}
-      source={source}
-      style={StyleSheet.absoluteFill}
-      resizeMode="cover"
-      onError={() => {
-        const failedUrl = uris[uriIndex];
-        traceImageFailure({
-          screen: preferVertical ? "CourseThumbnail.vertical" : "CourseThumbnail.landscape",
-          courseId: course?._id || course?.id,
-          imageUrl: failedUrl,
-          fallbackUsed: Boolean(asset || uris[uriIndex + 1]),
-        });
-        setUriIndex(index => asset ? Math.min(index + 1, uris.length) : index + 1);
-      }}
-    />
+    <View pointerEvents="none" style={StyleSheet.absoluteFill}>
+      <Image
+        key={uris[uriIndex] || course?._id || "asset"}
+        source={source}
+        style={StyleSheet.absoluteFill}
+        resizeMode="cover"
+        accessibilityIgnoresInvertColors
+        onError={() => {
+          const failedUrl = uris[uriIndex];
+          traceImageFailure({
+            screen: preferVertical ? "CourseThumbnail.vertical" : "CourseThumbnail.landscape",
+            courseId: course?._id || course?.id,
+            imageUrl: failedUrl,
+            fallbackUsed: Boolean(asset || uris[uriIndex + 1]),
+          });
+          setUriIndex(currentIndex => asset ? Math.min(currentIndex + 1, uris.length) : currentIndex + 1);
+        }}
+      />
+      <ThumbnailBrandBadge />
+    </View>
   );
 }
 
 function RemoteThumbnailImage({ imageUrl, screen, courseId, borderRadius = 8 }) {
-  const [failed, setFailed] = useState(false);
+  const candidates = useMemo(() => getThumbnailUrlCandidates(imageUrl, 1000), [imageUrl]);
+  const [candidateIndex, setCandidateIndex] = useState(0);
 
   useEffect(() => {
-    setFailed(false);
-  }, [imageUrl]);
+    setCandidateIndex(0);
+  }, [candidates.join("|")]);
 
-  if (!imageUrl || failed) return null;
+  const resolvedUrl = candidates[candidateIndex];
+  if (!resolvedUrl) return null;
 
   return (
     <Image
-      source={{ uri: imageUrl }}
+      key={resolvedUrl}
+      source={{ uri: resolvedUrl }}
       style={[StyleSheet.absoluteFill, { borderRadius }]}
       resizeMode="cover"
+      accessibilityIgnoresInvertColors
       onError={() => {
-        traceImageFailure({ screen, courseId, imageUrl, fallbackUsed: true });
-        setFailed(true);
+        traceImageFailure({
+          screen,
+          courseId,
+          imageUrl: resolvedUrl,
+          fallbackUsed: Boolean(candidates[candidateIndex + 1]),
+        });
+        setCandidateIndex(index => index + 1);
       }}
     />
   );
@@ -1058,8 +1101,8 @@ function StepBar({ current }) {
             borderColor: n <= current ? C.primary : C.border,
           }]}>
             {n < current
-              ? <Ionicons name="checkmark" size={14} color="#fff" />
-              : <Text style={{ color: n === current ? "#fff" : C.textMuted, fontWeight: "700", fontSize: 13 }}>{n}</Text>
+              ? <Ionicons name="checkmark" size={14} color={C.onPrimary} />
+              : <Text style={{ color: n === current ? C.onPrimary : C.textMuted, fontWeight: "700", fontSize: 13 }}>{n}</Text>
             }
           </View>
         </React.Fragment>
@@ -1072,8 +1115,9 @@ function FieldLabel({ label }) {
   return <Text style={s.fieldLabel}>{label}</Text>;
 }
 
-function FieldInput({ label, style, secureTextEntry, ...props }) {
+function FieldInput({ label, style, secureTextEntry, accessibilityLabel, ...props }) {
   const [hidden, setHidden] = useState(!!secureTextEntry);
+  const spokenLabel = accessibilityLabel || label || props.placeholder || "Text input";
   if (secureTextEntry) {
     return (
       <View style={{ marginBottom: 16 }}>
@@ -1083,6 +1127,7 @@ function FieldInput({ label, style, secureTextEntry, ...props }) {
             style={[s.input, { paddingRight: 52 }, style]}
             placeholderTextColor={C.textMuted}
             secureTextEntry={hidden}
+            accessibilityLabel={spokenLabel}
             {...props}
           />
           <TouchableOpacity
@@ -1101,7 +1146,7 @@ function FieldInput({ label, style, secureTextEntry, ...props }) {
   return (
     <View style={{ marginBottom: 16 }}>
       {label ? <FieldLabel label={label} /> : null}
-      <TextInput style={[s.input, style]} placeholderTextColor={C.textMuted} {...props} />
+      <TextInput style={[s.input, style]} placeholderTextColor={C.textMuted} accessibilityLabel={spokenLabel} {...props} />
     </View>
   );
 }
@@ -1121,7 +1166,7 @@ function PrimaryBtn({ title, onPress, loading, disabled, style, outline }) {
       accessibilityState={{ disabled: Boolean(disabled || loading), busy: Boolean(loading) }}
     >
       {loading
-        ? <ActivityIndicator color={outline ? C.primary : "#fff"} />
+        ? <ActivityIndicator color={outline ? C.primary : C.onPrimary} />
         : <Text style={[s.btnText, outline && { color: C.primary }]}>{title}</Text>
       }
     </TouchableOpacity>
@@ -1306,7 +1351,21 @@ function AgePicker({ value, onChange }) {
 }
 
 function Badge({ label, color }) {
-  const bg = color === "blue" ? C.primaryLight : color === "green" ? "#EDF7EA" : color === "orange" ? "#FBF0DA" : "#FBEAE7";
+  const bg = C.isDark
+    ? color === "blue"
+      ? C.primaryLight
+      : color === "green"
+        ? "rgba(111,125,82,0.22)"
+        : color === "orange"
+          ? "rgba(231,188,104,0.16)"
+          : "rgba(239,68,68,0.16)"
+    : color === "blue"
+      ? C.primaryLight
+      : color === "green"
+        ? "#EDF7EA"
+        : color === "orange"
+          ? "#FBF0DA"
+          : "#FBEAE7";
   const tc = color === "blue" ? C.primary : color === "green" ? C.success : color === "orange" ? C.warning : C.danger;
   return (
     <View style={[s.badge, { backgroundColor: bg }]}>
@@ -1325,11 +1384,11 @@ function UpgradeModal({ visible, onClose }) {
   return (
     <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
       <View style={s.upgradeOverlay}>
-        <TouchableOpacity style={StyleSheet.absoluteFill} activeOpacity={1} onPress={onClose} />
+        <TouchableOpacity style={StyleSheet.absoluteFill} activeOpacity={1} onPress={onClose} accessible={false} />
         <View style={[s.upgradeSheet, { backgroundColor: C.white }]}>
 
           {/* Close */}
-          <TouchableOpacity style={s.upgradeClose} onPress={onClose}>
+          <TouchableOpacity style={s.upgradeClose} onPress={onClose} accessibilityRole="button" accessibilityLabel="Close subscription offer">
             <Ionicons name="close" size={20} color={C.textMuted} />
           </TouchableOpacity>
 
@@ -1382,8 +1441,10 @@ function UpgradeModal({ visible, onClose }) {
               style={[s.upgradeBtn, { backgroundColor: C.primary, shadowColor: C.primary }]}
               activeOpacity={0.85}
               onPress={() => { onClose(); Linking.openURL(SUBSCRIPTION_URL); }}
+              accessibilityRole="link"
+              accessibilityLabel="Start ₹1 trial"
             >
-              <Text style={[s.upgradeBtnText, { color: C.bg }]}>Start My ₹1 Trial  →</Text>
+              <Text style={s.upgradeBtnText}>Start My ₹1 Trial  →</Text>
             </TouchableOpacity>
 
             <Text style={{ color: C.textMuted, fontSize: 11, textAlign: "center", marginBottom: 4 }}>No commitment. Cancel anytime before trial ends.</Text>
@@ -1438,15 +1499,15 @@ function NotificationPreviewModal({ visible, onClose, onOpenCourses, onOpenAI, o
 
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
-      <Pressable style={s.notificationOverlay} onPress={onClose}>
-        <Pressable style={s.notificationSheet}>
+      <Pressable style={s.notificationOverlay} onPress={onClose} accessible={false}>
+        <Pressable style={s.notificationSheet} accessible={false}>
           <View style={s.notificationHandle} />
           <View style={s.notificationHeader}>
             <View style={{ flex: 1 }}>
               <Text style={s.notificationTitle}>Notifications</Text>
               <Text style={s.notificationSubtitle}>Preview of upcoming Skillomate alerts</Text>
             </View>
-            <TouchableOpacity onPress={onClose} style={s.notificationClose}>
+            <TouchableOpacity onPress={onClose} style={s.notificationClose} accessibilityRole="button" accessibilityLabel="Close notifications">
               <Ionicons name="close" size={19} color={C.text} />
             </TouchableOpacity>
           </View>
@@ -1458,6 +1519,10 @@ function NotificationPreviewModal({ visible, onClose, onOpenCourses, onOpenAI, o
               style={[s.notificationItem, index === items.length - 1 && { borderBottomWidth: 0 }]}
               activeOpacity={item.action ? 0.82 : undefined}
               onPress={item.action ? () => openItem(item.action) : undefined}
+              accessible
+              accessibilityRole={item.action ? "button" : "text"}
+              accessibilityLabel={`${item.title}. ${item.body}. ${item.time}`}
+              accessibilityHint={item.action ? `Opens ${item.title}` : undefined}
             >
               <View style={s.notificationIcon}>
                 <Ionicons name={item.icon} size={19} color={C.primary} />
@@ -1478,7 +1543,7 @@ function NotificationPreviewModal({ visible, onClose, onOpenCourses, onOpenAI, o
   );
 }
 
-function BottomNav({ active, onHome, onCourses, onAI, onDownloads, onProfile, aiRobotId }) {
+function BottomNav({ active, onHome, onCourses, onAI, onDownloads, onProfile, aiRobotId, forceDark = false }) {
   const tabs = [
     { key: "home", icon: "home", label: "Home", fn: onHome },
     { key: "courses", icon: "compass", label: "Explore", fn: onCourses },
@@ -1487,7 +1552,7 @@ function BottomNav({ active, onHome, onCourses, onAI, onDownloads, onProfile, ai
     { key: "profile", icon: "person", label: "Profile", fn: onProfile },
   ];
   return (
-    <View style={s.bottomNav}>
+    <View style={[s.bottomNav, forceDark && { backgroundColor: "rgba(13,13,11,0.98)", borderTopColor: "#2E2C27" }]}>
       {tabs.map(t => (
         <TouchableOpacity
           key={t.key}
@@ -1501,15 +1566,12 @@ function BottomNav({ active, onHome, onCourses, onAI, onDownloads, onProfile, ai
             <Ionicons
               name={active === t.key ? t.icon : `${t.icon}-outline`}
               size={20}
-              color={active === t.key ? C.primary : C.slateGray}
+              color={active === t.key ? C.primary : (forceDark ? "#AAA297" : C.slateGray)}
             />
           </View>
           <Text
-            style={[s.bottomTabLabel, active === t.key && { color: C.primary }]}
-            numberOfLines={1}
-            adjustsFontSizeToFit
-            minimumFontScale={0.9}
-            maxFontSizeMultiplier={1.15}
+            style={[s.bottomTabLabel, forceDark && { color: "#AAA297" }, active === t.key && { color: C.primary }]}
+            numberOfLines={2}
           >
             {t.label}
           </Text>
@@ -1931,7 +1993,7 @@ function VideoItem({ video: videoProp, videoId: videoIdProp, isActive, height, o
         </View>
       )}
       {isEnded ? (
-        <TouchableOpacity onPress={restart} style={s.restartOverlay}>
+        <TouchableOpacity onPress={restart} style={s.restartOverlay} accessibilityRole="button" accessibilityLabel="Replay lesson">
           <Ionicons name="refresh-circle" size={72} color="rgba(255,255,255,0.9)" />
         </TouchableOpacity>
       ) : (
@@ -1971,7 +2033,14 @@ function VideoItem({ video: videoProp, videoId: videoIdProp, isActive, height, o
       {showSpeedPicker && (
         <View style={s.speedPicker}>
           {SPEEDS.map(r => (
-            <TouchableOpacity key={r} onPress={() => selectSpeed(r)} style={[s.speedOption, playbackRate === r && s.speedOptionActive]}>
+            <TouchableOpacity
+              key={r}
+              onPress={() => selectSpeed(r)}
+              style={[s.speedOption, playbackRate === r && s.speedOptionActive]}
+              accessibilityRole="button"
+              accessibilityLabel={`Set playback speed to ${r} times`}
+              accessibilityState={{ selected: playbackRate === r }}
+            >
               <Text style={s.speedOptionText}>{r}×</Text>
             </TouchableOpacity>
           ))}
@@ -1980,7 +2049,14 @@ function VideoItem({ video: videoProp, videoId: videoIdProp, isActive, height, o
       {showQualityPicker && qualities.length > 0 && (
         <View style={s.qualityPicker}>
           {qualities.map(q => (
-            <TouchableOpacity key={q} onPress={() => selectQuality(q)} style={[s.speedOption, currentQuality === q && s.speedOptionActive]}>
+            <TouchableOpacity
+              key={q}
+              onPress={() => selectQuality(q)}
+              style={[s.speedOption, currentQuality === q && s.speedOptionActive]}
+              accessibilityRole="button"
+              accessibilityLabel={`Set video quality to ${q}`}
+              accessibilityState={{ selected: currentQuality === q }}
+            >
               <Text style={s.speedOptionText}>{q}</Text>
             </TouchableOpacity>
           ))}
@@ -2034,6 +2110,23 @@ function VideoItem({ video: videoProp, videoId: videoIdProp, isActive, height, o
       </View>
       <View
         style={s.timeline}
+        accessible
+        accessibilityRole="adjustable"
+        accessibilityLabel="Video progress"
+        accessibilityValue={{
+          min: 0,
+          max: Math.max(0, Math.round(duration)),
+          now: Math.max(0, Math.round(currentTime)),
+          text: `${formatTime(currentTime)} of ${formatTime(duration)}`,
+        }}
+        accessibilityActions={[
+          { name: "increment", label: "Forward 10 seconds" },
+          { name: "decrement", label: "Rewind 10 seconds" },
+        ]}
+        onAccessibilityAction={({ nativeEvent }) => {
+          if (nativeEvent.actionName === "increment") seekBy(10);
+          if (nativeEvent.actionName === "decrement") seekBy(-10);
+        }}
         onLayout={e => { seekBarWidth.current = e.nativeEvent.layout.width; }}
         onStartShouldSetResponder={() => true}
         onMoveShouldSetResponder={() => true}
@@ -2077,6 +2170,13 @@ function ReelsScreen({ courseId, initialIndex, initialTime, onBack, user, onVide
   const activePrompts = getVideoPrompts(activeVideo);
   const activeResources = getVideoResources(activeVideo);
   const hasSeparateNotes = !!activeNotes && activeNotes !== activeDescription;
+
+  useEffect(() => {
+    ScreenCapture.preventScreenCaptureAsync(PROTECTED_VIDEO_CAPTURE_KEY).catch(() => {});
+    return () => {
+      ScreenCapture.allowScreenCaptureAsync(PROTECTED_VIDEO_CAPTURE_KEY).catch(() => {});
+    };
+  }, []);
 
   useEffect(() => {
     if (preloadedVideos) return; // already have videos, skip fetch
@@ -2152,7 +2252,7 @@ function ReelsScreen({ courseId, initialIndex, initialTime, onBack, user, onVide
   if (error || videos.length === 0) return (
     <View style={[s.centered, { backgroundColor: "#000" }]}>
       <Text style={{ color: "#fff", marginBottom: 16 }}>{error || "No videos yet."}</Text>
-      <TouchableOpacity onPress={onBack} style={s.btnFill}>
+      <TouchableOpacity onPress={onBack} style={[s.btn, s.btnFill]} accessibilityRole="button" accessibilityLabel="Go back">
         <Text style={s.btnText}>Go Back</Text>
       </TouchableOpacity>
     </View>
@@ -2236,12 +2336,12 @@ function ReelsScreen({ courseId, initialIndex, initialTime, onBack, user, onVide
       </TouchableOpacity>
 
       <Modal visible={showDescription} transparent animationType="slide" onRequestClose={() => setShowDescription(false)}>
-        <Pressable style={s.descriptionOverlay} onPress={() => setShowDescription(false)}>
-          <Pressable style={s.descriptionSheet}>
+        <Pressable style={s.descriptionOverlay} onPress={() => setShowDescription(false)} accessible={false}>
+          <Pressable style={s.descriptionSheet} accessible={false}>
             <View style={s.descriptionHandle} />
             <View style={s.descriptionHeader}>
               <Text style={s.descriptionTitle} numberOfLines={2}>{activeTitle || "Video description"}</Text>
-              <TouchableOpacity onPress={() => setShowDescription(false)} style={s.descriptionClose}>
+              <TouchableOpacity onPress={() => setShowDescription(false)} style={s.descriptionClose} accessibilityRole="button" accessibilityLabel="Close lesson information">
                 <Ionicons name="close" size={20} color="#fff" />
               </TouchableOpacity>
             </View>
@@ -2305,8 +2405,8 @@ function ReelsScreen({ courseId, initialIndex, initialTime, onBack, user, onVide
       </Modal>
 
       <Modal visible={showNotes} transparent animationType="slide" onRequestClose={() => setShowNotes(false)}>
-        <Pressable style={s.descriptionOverlay} onPress={() => setShowNotes(false)}>
-          <Pressable style={s.lessonNotesSheet}>
+        <Pressable style={s.descriptionOverlay} onPress={() => setShowNotes(false)} accessible={false}>
+          <Pressable style={s.lessonNotesSheet} accessible={false}>
             <View style={s.descriptionHandle} />
             <View style={s.descriptionHeader}>
               <View style={{ flex: 1 }}>
@@ -2370,7 +2470,7 @@ function ReelsScreen({ courseId, initialIndex, initialTime, onBack, user, onVide
 
       <Modal visible={showCourseAi} transparent animationType="slide" onRequestClose={() => setShowCourseAi(false)}>
         <View style={s.courseAiOverlay}>
-          <Pressable style={StyleSheet.absoluteFill} onPress={() => setShowCourseAi(false)} />
+          <Pressable style={StyleSheet.absoluteFill} onPress={() => setShowCourseAi(false)} accessible={false} />
           <View style={s.courseAiSheet}>
             <View style={s.courseAiHandle} />
             <View style={s.courseAiHeader}>
@@ -2385,20 +2485,20 @@ function ReelsScreen({ courseId, initialIndex, initialTime, onBack, user, onVide
             <ScrollView style={s.courseAiMessages} contentContainerStyle={s.courseAiContent}>
               {courseAiMessages.map((msg, i) => (
                 <View key={i} style={[s.courseAiMessage, msg.role === "user" && s.courseAiMessageUser]}>
-                  {msg.role !== "user" && <View style={s.courseAiAvatar}><Ionicons name="sparkles" size={15} color="#fff" /></View>}
+                  {msg.role !== "user" && <View style={s.courseAiAvatar}><Ionicons name="sparkles" size={15} color={C.onPrimary} /></View>}
                   <View style={[s.courseAiBubble, msg.role === "user" && s.courseAiBubbleUser]}>
-                    <Text style={s.courseAiBubbleText}>{msg.content}</Text>
+                    <Text style={[s.courseAiBubbleText, msg.role === "user" && s.courseAiBubbleTextUser]}>{msg.content}</Text>
                   </View>
                 </View>
               ))}
               {courseAiLoading && (
                 <View style={s.courseAiMessage}>
-                  <View style={s.courseAiAvatar}><Ionicons name="sparkles" size={15} color="#fff" /></View>
-                  <View style={s.courseAiBubble}><ActivityIndicator color="#fff" size="small" /></View>
+                  <View style={s.courseAiAvatar}><Ionicons name="sparkles" size={15} color={C.onPrimary} /></View>
+                  <View style={s.courseAiBubble}><ActivityIndicator color={C.primary} size="small" /></View>
                 </View>
               )}
               {!courseAiLoading && ["Summarize this video", "Explain this topic simply", "Give me practice questions"].map(p => (
-                <TouchableOpacity key={p} style={s.courseAiPrompt} onPress={() => sendCourseAiMessage(p)}>
+                <TouchableOpacity key={p} style={s.courseAiPrompt} onPress={() => sendCourseAiMessage(p)} accessibilityRole="button" accessibilityLabel={`Ask Course AI: ${p}`}>
                   <Text style={s.courseAiPromptText}>{p}</Text>
                 </TouchableOpacity>
               ))}
@@ -2412,14 +2512,71 @@ function ReelsScreen({ courseId, initialIndex, initialTime, onBack, user, onVide
                 onChangeText={setCourseAiInput}
                 onSubmitEditing={() => sendCourseAiMessage()}
                 editable={!courseAiLoading}
+                accessibilityLabel="Message Course AI"
               />
               <TouchableOpacity style={s.courseAiSend} onPress={() => sendCourseAiMessage()} disabled={courseAiLoading} accessibilityRole="button" accessibilityLabel="Send Course AI message">
-                <Ionicons name="send" size={17} color="#fff" />
+                <Ionicons name="send" size={17} color={C.onPrimary} />
               </TouchableOpacity>
             </View>
           </View>
         </View>
       </Modal>
+    </View>
+  );
+}
+
+const COURSE_DESCRIPTION_PREVIEW_LINES = 4;
+
+function ExpandableCourseDescription({ description }) {
+  const [expanded, setExpanded] = useState(false);
+  const [hasOverflow, setHasOverflow] = useState(false);
+
+  useEffect(() => {
+    setExpanded(false);
+    setHasOverflow(false);
+  }, [description]);
+
+  const handleTextMeasure = useCallback(event => {
+    const overflows = event.nativeEvent.lines.length > COURSE_DESCRIPTION_PREVIEW_LINES;
+    setHasOverflow(current => current === overflows ? current : overflows);
+  }, []);
+
+  if (!description) return null;
+
+  return (
+    <View style={s.courseDescriptionCard}>
+      <Text style={s.courseDescriptionTitle}>About this course</Text>
+      <View style={s.courseDescriptionTextFrame}>
+        <Text
+          style={s.courseDescriptionText}
+          numberOfLines={expanded ? undefined : COURSE_DESCRIPTION_PREVIEW_LINES}
+          ellipsizeMode="tail"
+        >
+          {description}
+        </Text>
+        <Text
+          style={[s.courseDescriptionText, s.courseDescriptionMeasure]}
+          onTextLayout={handleTextMeasure}
+          accessible={false}
+          accessibilityElementsHidden
+          importantForAccessibility="no-hide-descendants"
+          pointerEvents="none"
+        >
+          {description}
+        </Text>
+      </View>
+      {hasOverflow && (
+        <TouchableOpacity
+          style={s.courseDescriptionToggle}
+          onPress={() => setExpanded(value => !value)}
+          accessibilityRole="button"
+          accessibilityLabel={expanded ? "Show less course description" : "Read more course description"}
+          accessibilityState={{ expanded }}
+        >
+          <Text style={s.courseDescriptionToggleText}>{expanded ? "Show less" : "Read more"}</Text>
+          <Ionicons name={expanded ? "chevron-up" : "chevron-down"} size={16} color={C.primary} />
+        </TouchableOpacity>
+      )}
     </View>
   );
 }
@@ -2477,6 +2634,8 @@ function VideoListScreen({ course, onSelectVideo, onBack, onOpenCourseAi, downlo
               style={[s.iconBtn, { backgroundColor: C.primaryLight, borderRadius: 8, paddingHorizontal: 8, flexDirection: "row", alignItems: "center" }]}
               hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
               onPress={() => onOpenCourseAi?.(course)}
+              accessibilityRole="button"
+              accessibilityLabel={`Open Course AI for ${course.title}`}
             >
               <Ionicons name="sparkles" size={16} color={C.primary} />
               <Text style={{ color: C.primary, fontSize: 12, fontWeight: "700", marginLeft: 3 }}>AI</Text>
@@ -2487,12 +2646,7 @@ function VideoListScreen({ course, onSelectVideo, onBack, onOpenCourseAi, downlo
 
       {videos.length === 0 ? (
         <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 100 }}>
-          {!!courseDescription && (
-            <View style={s.courseDescriptionCard}>
-              <Text style={s.courseDescriptionTitle}>About this course</Text>
-              <Text style={s.courseDescriptionText}>{courseDescription}</Text>
-            </View>
-          )}
+          <ExpandableCourseDescription description={courseDescription} />
           <View style={[s.centered, { minHeight: 260 }]}>
             <Text style={{ color: C.textSub }}>No videos in this course yet.</Text>
           </View>
@@ -2509,12 +2663,7 @@ function VideoListScreen({ course, onSelectVideo, onBack, onOpenCourseAi, downlo
           removeClippedSubviews={ANDROID_CLIPPED_SUBVIEWS}
           keyboardShouldPersistTaps="handled"
           scrollEventThrottle={16}
-          ListHeaderComponent={courseDescription ? (
-            <View style={s.courseDescriptionCard}>
-              <Text style={s.courseDescriptionTitle}>About this course</Text>
-              <Text style={s.courseDescriptionText}>{courseDescription}</Text>
-            </View>
-          ) : null}
+          ListHeaderComponent={courseDescription ? <ExpandableCourseDescription description={courseDescription} /> : null}
           renderItem={({ item, index }) => {
             const durationLabel = getVideoDurationLabel(item);
             const bunnyGuid = getBunnyGuid(item);
@@ -2526,7 +2675,13 @@ function VideoListScreen({ course, onSelectVideo, onBack, onOpenCourseAi, downlo
                 : "";
             const dl = bunnyGuid ? downloads?.[bunnyGuid] : null;
             return (
-              <TouchableOpacity style={s.videoRow} onPress={() => onSelectVideo(index)}>
+              <TouchableOpacity
+                style={s.videoRow}
+                onPress={() => onSelectVideo(index)}
+                accessibilityRole="button"
+                accessibilityLabel={`Play lesson ${index + 1}: ${item.title || `Video ${index + 1}`}${durationLabel ? `, ${durationLabel}` : ""}`}
+                accessibilityHint="Opens the lesson player"
+              >
                 <View style={s.videoThumbSmall}>
                   {thumbnailUrl ? (
                     <RemoteThumbnailImage
@@ -2564,8 +2719,11 @@ function VideoListScreen({ course, onSelectVideo, onBack, onOpenCourseAi, downlo
                 </View>
                 {bunnyGuid ? (
                   <TouchableOpacity
+                    style={s.videoDownloadButton}
                     hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-                    onPress={() => {
+                    disabled={dl?.status === "downloading"}
+                    onPress={event => {
+                      event.stopPropagation?.();
                       if (!hasAccess) { Alert.alert("Subscription Required", "Upgrade your plan to download videos for offline viewing."); return; }
                       if (dl?.status === "done") {
                         Alert.alert("Downloaded", "This video is saved offline.", [
@@ -2576,6 +2734,17 @@ function VideoListScreen({ course, onSelectVideo, onBack, onOpenCourseAi, downlo
                         onDownload?.(item, course._id, course.title);
                       }
                     }}
+                    accessibilityRole="button"
+                    accessibilityLabel={
+                      !hasAccess
+                        ? `Download locked for ${item.title || `lesson ${index + 1}`}`
+                        : dl?.status === "done"
+                          ? `Manage downloaded lesson ${item.title || index + 1}`
+                          : dl?.status === "downloading"
+                            ? `Downloading ${item.title || `lesson ${index + 1}`}, ${Math.round((dl.progress || 0) * 100)} percent`
+                            : `Download lesson ${index + 1}: ${item.title || `Video ${index + 1}`}`
+                    }
+                    accessibilityState={{ disabled: dl?.status === "downloading", busy: dl?.status === "downloading" }}
                   >
                     {!hasAccess ? (
                       <Ionicons name="lock-closed" size={20} color={C.textMuted} />
@@ -2597,8 +2766,8 @@ function VideoListScreen({ course, onSelectVideo, onBack, onOpenCourseAi, downlo
       )}
 
       <Modal visible={showCourseNotes} transparent animationType="slide" onRequestClose={() => setShowCourseNotes(false)}>
-        <Pressable style={s.courseNotesOverlay} onPress={() => setShowCourseNotes(false)}>
-          <Pressable style={s.courseNotesSheet}>
+        <Pressable style={s.courseNotesOverlay} onPress={() => setShowCourseNotes(false)} accessible={false}>
+          <Pressable style={s.courseNotesSheet} accessible={false}>
             <View style={s.courseNotesHandle} />
             <View style={s.courseNotesHeader}>
               <View style={{ flex: 1 }}>
@@ -2680,7 +2849,7 @@ function HomeAutoplayPreview({ item, fallbackCourse }) {
           <CourseThumbnailImage course={course} />
         ) : (
           <View style={[StyleSheet.absoluteFill, { backgroundColor: C.primary, alignItems: "center", justifyContent: "center" }]}>
-            <Ionicons name="play-circle" size={78} color="rgba(197,139,42,0.38)" />
+            <Ionicons name="play-circle" size={78} color={C.onPrimary} />
           </View>
         )}
       </View>
@@ -2709,8 +2878,462 @@ function HomeAutoplayPreview({ item, fallbackCourse }) {
   );
 }
 
+const HOME_PALETTE = {
+  background: "#0D0D0B",
+  surface: "#171714",
+  surfaceRaised: "#1C1C18",
+  surfaceSoft: "#23231E",
+  border: "#302E28",
+  borderStrong: "#454137",
+  text: "#F5F1E8",
+  textSecondary: "#B8B0A5",
+  textMuted: "#8D867D",
+  gold: "#E7BC68",
+  goldSoft: "#E7BC68",
+  success: "#7F9A67",
+};
+
+function getHomeLessonThumbnailUrl(lesson, course) {
+  if (lesson?.thumbnailUrl) {
+    return normalizeThumbnailUrl(lesson.thumbnailUrl, 1000);
+  }
+  const bunnyGuid = getBunnyGuid(lesson);
+  if (bunnyGuid) {
+    return `${API_BASE}/api/bunny/thumbnail/${bunnyGuid}?libraryId=${encodeURIComponent(getBunnyLibraryId(lesson))}`;
+  }
+  if (lesson?.youtubeId || lesson?.videoId) {
+    return `https://img.youtube.com/vi/${lesson.youtubeId || lesson.videoId}/mqdefault.jpg`;
+  }
+  return getCourseThumbnailUri(course, false) || "";
+}
+
+function HomeMedia({ course, lesson, borderRadius = 12, screen = "Home media" }) {
+  const imageUrl = getHomeLessonThumbnailUrl(lesson, course);
+  return (
+    <View style={[StyleSheet.absoluteFill, { backgroundColor: HOME_PALETTE.surfaceSoft, borderRadius, overflow: "hidden" }]}>
+      <View style={homeStyles.mediaFallback}>
+        <Ionicons name="school-outline" size={24} color={HOME_PALETTE.gold} />
+        <Text style={homeStyles.mediaFallbackText} numberOfLines={2}>{lesson?.title || course?.title || "Skillomate"}</Text>
+      </View>
+      <RemoteThumbnailImage
+        imageUrl={imageUrl}
+        screen={screen}
+        courseId={course?._id}
+        borderRadius={borderRadius}
+      />
+      <ThumbnailBrandBadge large={!lesson} />
+    </View>
+  );
+}
+
+function HomeSectionHeader({ title, onSeeAll, actionLabel = "See All" }) {
+  return (
+    <View style={homeStyles.sectionHeader}>
+      <Text style={homeStyles.sectionTitle}>{title}</Text>
+      {onSeeAll ? (
+        <TouchableOpacity
+          onPress={onSeeAll}
+          accessibilityRole="button"
+          accessibilityLabel={`${actionLabel} ${title}`}
+          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+        >
+          <Text style={homeStyles.sectionAction}>{actionLabel}  ›</Text>
+        </TouchableOpacity>
+      ) : null}
+    </View>
+  );
+}
+
+function FeaturedCourseHero({ course, lessonCount, tagline, onPress }) {
+  return (
+    <View style={homeStyles.featuredHero}>
+      <HomeMedia course={course} borderRadius={14} screen="Home featured course" />
+      <View style={homeStyles.featuredScrim} />
+      <View style={homeStyles.featuredContent}>
+        <Text style={homeStyles.featuredLabel}>FEATURED COURSE</Text>
+        <Text style={homeStyles.featuredTitle} numberOfLines={2}>{course.title}</Text>
+        <Text style={homeStyles.featuredMeta}>
+          {lessonCount} {lessonCount === 1 ? "Lesson" : "Lessons"}{course.level || course.difficulty ? ` • ${course.level || course.difficulty}` : ""}
+        </Text>
+        {tagline ? <Text style={homeStyles.featuredTagline} numberOfLines={1}>{tagline}</Text> : null}
+        <TouchableOpacity
+          style={homeStyles.featuredButton}
+          onPress={onPress}
+          accessibilityRole="button"
+          accessibilityLabel={`Start learning ${course.title}`}
+          activeOpacity={0.86}
+        >
+          <Text style={homeStyles.featuredButtonText}>Start Learning</Text>
+          <Ionicons name="arrow-forward" size={15} color="#17130B" />
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+}
+
+function ContinueLearningCard({ course, lessonCount, resumeIndex, progressPercent, isStarted, isComplete, lesson, onPress }) {
+  const statusTitle = isComplete ? "Course Complete" : isStarted ? course.title : "Start Your Journey";
+  const detail = isComplete
+    ? `${lessonCount} lessons completed`
+    : isStarted
+      ? `Lesson ${Math.min(resumeIndex + 1, lessonCount)} of ${lessonCount}`
+      : `${lessonCount} lessons waiting for you`;
+  const action = isComplete ? "Review Course" : isStarted ? "Continue" : "Start Course";
+
+  return (
+    <TouchableOpacity
+      style={homeStyles.continueCard}
+      onPress={onPress}
+      activeOpacity={0.88}
+      accessibilityRole="button"
+      accessibilityLabel={`${action}: ${course.title}`}
+    >
+      <View style={homeStyles.continueThumb}>
+        <HomeMedia course={course} lesson={lesson} borderRadius={11} screen="Home continue learning" />
+        <View style={homeStyles.continuePlay}>
+          <Ionicons name={isComplete ? "refresh" : "play"} size={15} color="#FFFFFF" />
+        </View>
+      </View>
+      <View style={homeStyles.continueBody}>
+        <Text style={homeStyles.continueTitle} numberOfLines={2}>{statusTitle}</Text>
+        <Text style={homeStyles.continueMeta}>{detail}</Text>
+        <View style={homeStyles.continueProgressRow}>
+          <View style={homeStyles.continueProgressTrack}>
+            <View style={[homeStyles.continueProgressFill, { width: `${progressPercent}%` }]} />
+          </View>
+          <Text style={homeStyles.continuePercent}>{progressPercent}%</Text>
+        </View>
+        <Text style={homeStyles.continueLesson} numberOfLines={1}>
+          {isComplete ? "Revisit any lesson" : isStarted ? `Continue: ${lesson?.title || "Your next lesson"}` : action}
+        </Text>
+      </View>
+      <Ionicons name="chevron-forward" size={18} color={HOME_PALETTE.gold} />
+    </TouchableOpacity>
+  );
+}
+
+function TopicGrid({ topics, onPressTopic }) {
+  return (
+    <View style={homeStyles.topicGrid}>
+      {topics.map(topic => (
+        <TouchableOpacity
+          key={topic.key}
+          style={homeStyles.topicCard}
+          onPress={() => onPressTopic(topic)}
+          activeOpacity={0.86}
+          accessibilityRole="button"
+          accessibilityLabel={`${topic.title}, ${topic.lessons.length} lessons`}
+        >
+          <View style={[homeStyles.topicIcon, { backgroundColor: `${topic.color}20` }]}>
+            <Ionicons name={topic.icon} size={21} color={topic.color} />
+          </View>
+          <View style={{ flex: 1, minWidth: 0 }}>
+            <Text style={homeStyles.topicTitle} numberOfLines={2}>{topic.title}</Text>
+            <Text style={homeStyles.topicCount}>{topic.lessons.length} {topic.lessons.length === 1 ? "lesson" : "lessons"}</Text>
+          </View>
+        </TouchableOpacity>
+      ))}
+    </View>
+  );
+}
+
+function HomeLessonCard({ course, lesson, index, width, displayTitle, onPress, compact = false }) {
+  const duration = getVideoDurationLabel(lesson);
+  const order = Number(lesson?.order) || index + 1;
+  return (
+    <TouchableOpacity
+      style={[compact ? homeStyles.quickCard : homeStyles.lessonCard, width ? { width } : null]}
+      onPress={onPress}
+      activeOpacity={0.88}
+      accessibilityRole="button"
+      accessibilityLabel={`Play lesson ${order}: ${lesson?.title || "Lesson"}`}
+    >
+      <View style={compact ? homeStyles.quickThumb : homeStyles.lessonThumb}>
+        <HomeMedia course={course} lesson={lesson} borderRadius={10} screen={compact ? "Home quick lesson" : "Home recommended lesson"} />
+        <View style={homeStyles.lessonPlayBadge}>
+          <Ionicons name="play" size={10} color="#FFFFFF" />
+          {duration ? <Text style={homeStyles.lessonDuration}>{duration}</Text> : null}
+        </View>
+      </View>
+      <Text style={compact ? homeStyles.quickTitle : homeStyles.lessonTitle} numberOfLines={2}>{displayTitle || lesson?.title}</Text>
+      {!compact ? <Text style={homeStyles.lessonNumber}>Lesson {order}</Text> : null}
+    </TouchableOpacity>
+  );
+}
+
+function LessonCarousel({ course, lessons, cardWidth, onPressLesson }) {
+  return (
+    <ScrollView
+      horizontal
+      showsHorizontalScrollIndicator={false}
+      contentContainerStyle={homeStyles.horizontalContent}
+      directionalLockEnabled
+      nestedScrollEnabled
+    >
+      {lessons.map((lesson, index) => (
+        <HomeLessonCard
+          key={getVideoKey(lesson, index)}
+          course={course}
+          lesson={lesson}
+          index={index}
+          width={cardWidth}
+          onPress={() => onPressLesson(lesson)}
+        />
+      ))}
+    </ScrollView>
+  );
+}
+
+function LearningRoadmap({ stages, onPressStage }) {
+  return (
+    <View style={homeStyles.roadmapCard}>
+      {stages.map((stage, index) => {
+        const complete = stage.status === "complete";
+        const current = stage.status === "current";
+        const firstOrder = Number(stage.lessons[0]?.order) || stage.lessonNumbers[0];
+        const lastOrder = Number(stage.lessons[stage.lessons.length - 1]?.order) || stage.lessonNumbers[stage.lessonNumbers.length - 1];
+        return (
+          <TouchableOpacity
+            key={stage.key}
+            style={homeStyles.roadmapRow}
+            onPress={() => onPressStage(stage)}
+            activeOpacity={0.84}
+            accessibilityRole="button"
+            accessibilityLabel={`${stage.title}, lessons ${firstOrder} to ${lastOrder}, ${stage.status}`}
+          >
+            <View style={homeStyles.roadmapRail}>
+              <View style={[
+                homeStyles.roadmapStep,
+                complete && homeStyles.roadmapStepComplete,
+                current && homeStyles.roadmapStepCurrent,
+              ]}>
+                {complete
+                  ? <Ionicons name="checkmark" size={15} color="#17130B" />
+                  : <Text style={[homeStyles.roadmapStepText, current && { color: "#17130B" }]}>{index + 1}</Text>}
+              </View>
+              {index < stages.length - 1 ? (
+                <View style={[homeStyles.roadmapLine, complete && homeStyles.roadmapLineComplete]} />
+              ) : null}
+            </View>
+            <View style={homeStyles.roadmapBody}>
+              <Text style={[homeStyles.roadmapTitle, stage.status === "locked" && { color: HOME_PALETTE.textSecondary }]}>{stage.title}</Text>
+              <Text style={homeStyles.roadmapMeta}>Lessons {firstOrder}–{lastOrder} • {stage.lessons.length} total</Text>
+            </View>
+            <Ionicons name={complete ? "checkmark-circle-outline" : current ? "play-circle-outline" : "chevron-forward"} size={20} color={complete || current ? HOME_PALETTE.gold : HOME_PALETTE.textMuted} />
+          </TouchableOpacity>
+        );
+      })}
+    </View>
+  );
+}
+
+function QuickLearnSection({ course, items, onPressLesson }) {
+  return (
+    <View style={homeStyles.quickGrid}>
+      {items.map((item, index) => (
+        <HomeLessonCard
+          key={item.key}
+          course={course}
+          lesson={item.lesson}
+          index={index}
+          displayTitle={item.title}
+          compact
+          onPress={() => onPressLesson(item.lesson)}
+        />
+      ))}
+    </View>
+  );
+}
+
+function ProjectCarousel({ course, projects, onPressProject }) {
+  return (
+    <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={homeStyles.horizontalContent} directionalLockEnabled nestedScrollEnabled>
+      {projects.map(project => (
+        <TouchableOpacity
+          key={project.key}
+          style={homeStyles.projectCard}
+          onPress={() => onPressProject(project)}
+          activeOpacity={0.86}
+          accessibilityRole="button"
+          accessibilityLabel={`${project.title}, ${project.lessons.length} lesson project`}
+        >
+          <View style={homeStyles.projectThumb}>
+            <HomeMedia course={course} lesson={project.lessons[0]} borderRadius={10} screen="Home project" />
+            <View style={homeStyles.projectShade} />
+            <Ionicons name={project.icon} size={22} color={HOME_PALETTE.goldSoft} />
+          </View>
+          <Text style={homeStyles.projectTitle} numberOfLines={2}>{project.title}</Text>
+          <Text style={homeStyles.projectMeta}>{project.lessons.length} {project.lessons.length === 1 ? "lesson" : "lessons"}</Text>
+        </TouchableOpacity>
+      ))}
+    </ScrollView>
+  );
+}
+
+function LatestLessonsSection({ course, lessons, onPressLesson }) {
+  return (
+    <View style={homeStyles.latestList}>
+      {lessons.map((lesson, index) => {
+        const duration = getVideoDurationLabel(lesson);
+        return (
+          <TouchableOpacity
+            key={getVideoKey(lesson, index)}
+            style={homeStyles.latestRow}
+            onPress={() => onPressLesson(lesson)}
+            activeOpacity={0.86}
+            accessibilityRole="button"
+            accessibilityLabel={`Open latest lesson ${lesson.order || index + 1}: ${lesson.title}`}
+          >
+            <View style={homeStyles.latestThumb}>
+              <HomeMedia course={course} lesson={lesson} borderRadius={9} screen="Home latest lesson" />
+              <View style={homeStyles.latestPlay}><Ionicons name="play" size={9} color="#FFFFFF" /></View>
+            </View>
+            <View style={{ flex: 1, minWidth: 0 }}>
+              <Text style={homeStyles.latestTitle} numberOfLines={2}>{lesson.title}</Text>
+              <Text style={homeStyles.latestMeta}>Lesson {lesson.order || index + 1}{duration ? ` • ${duration}` : ""}</Text>
+            </View>
+            <Ionicons name="chevron-forward" size={17} color={HOME_PALETTE.textMuted} />
+          </TouchableOpacity>
+        );
+      })}
+    </View>
+  );
+}
+
+function ChallengeCard({ title, steps, completedCount, onPress }) {
+  return (
+    <TouchableOpacity style={homeStyles.challengeCard} onPress={onPress} activeOpacity={0.9} accessibilityRole="button" accessibilityLabel={`Start the 7-Day Challenge: ${title}`}>
+      <View style={homeStyles.challengeIcon}>
+        <Ionicons name="calendar-clear" size={29} color="#17130B" />
+      </View>
+      <View style={{ flex: 1, minWidth: 0 }}>
+        <Text style={homeStyles.challengeKicker}>7-DAY CHALLENGE</Text>
+        <Text style={homeStyles.challengeTitle}>{title}</Text>
+        <Text style={homeStyles.challengeText}>A step-by-step plan using {steps.length} real lessons.</Text>
+        <Text style={homeStyles.challengeProgress}>{completedCount}/{steps.length} days complete</Text>
+      </View>
+      <Ionicons name="arrow-forward-circle" size={28} color="#17130B" />
+    </TouchableOpacity>
+  );
+}
+
+function ComingSoonSection() {
+  return (
+    <View style={homeStyles.comingGrid}>
+      {HOME_COMING_SOON.map(item => (
+        <View key={item.key} style={homeStyles.comingCard} accessibilityLabel={`${item.title}, coming soon`}>
+          <Image source={HOME_COMING_SOON_IMAGES[item.thumbnailKey]} style={homeStyles.comingThumbnail} resizeMode="cover" accessibilityIgnoresInvertColors />
+          <View style={homeStyles.comingBody}>
+            <Text style={homeStyles.comingTitle} numberOfLines={3}>{item.title}</Text>
+            <Text style={homeStyles.comingLabel}>COMING SOON</Text>
+          </View>
+        </View>
+      ))}
+    </View>
+  );
+}
+
+const homeStyles = StyleSheet.create({
+  root: { flex: 1, backgroundColor: HOME_PALETTE.background },
+  header: { paddingTop: ANDROID_STATUS_BAR_INSET, backgroundColor: HOME_PALETTE.background, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: HOME_PALETTE.border },
+  headerInner: { minHeight: 62, paddingHorizontal: 14, paddingVertical: 9, flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
+  headerInnerCompact: { paddingHorizontal: 10 },
+  brandRow: { flexDirection: "row", alignItems: "center", gap: 9 },
+  brandCopy: { flexShrink: 1 },
+  brandIcon: { width: 36, height: 36, borderRadius: 9, alignItems: "center", justifyContent: "center", backgroundColor: HOME_PALETTE.surface, borderWidth: 1, borderColor: HOME_PALETTE.border },
+  brandName: { color: HOME_PALETTE.text, fontSize: 17, lineHeight: 21, fontWeight: "800" },
+  brandTagline: { color: HOME_PALETTE.textSecondary, fontSize: 11.5, lineHeight: 15, marginTop: 1 },
+  headerActions: { flexDirection: "row", alignItems: "center", gap: 9 },
+  headerButton: { width: MIN_TOUCH_TARGET, height: MIN_TOUCH_TARGET, borderRadius: MIN_TOUCH_TARGET / 2, alignItems: "center", justifyContent: "center", backgroundColor: HOME_PALETTE.surface, borderWidth: 1, borderColor: HOME_PALETTE.border, position: "relative" },
+  headerDot: { position: "absolute", top: 10, right: 11, width: 7, height: 7, borderRadius: 4, backgroundColor: HOME_PALETTE.gold, borderWidth: 1, borderColor: HOME_PALETTE.surface },
+  profileButton: { width: MIN_TOUCH_TARGET, height: MIN_TOUCH_TARGET, borderRadius: MIN_TOUCH_TARGET / 2, alignItems: "center", justifyContent: "center", borderWidth: 2, borderColor: HOME_PALETTE.gold },
+  scrollContent: { paddingTop: 10, paddingBottom: 118 },
+  mediaFallback: { ...StyleSheet.absoluteFillObject, alignItems: "center", justifyContent: "center", padding: 10, backgroundColor: HOME_PALETTE.surfaceSoft },
+  mediaFallbackText: { color: HOME_PALETTE.textSecondary, fontSize: 10, lineHeight: 13, fontWeight: "700", textAlign: "center", marginTop: 5 },
+  featuredHero: { height: 246, marginHorizontal: 14, borderRadius: 14, overflow: "hidden", backgroundColor: HOME_PALETTE.surface, borderWidth: 1, borderColor: HOME_PALETTE.borderStrong },
+  featuredScrim: { ...StyleSheet.absoluteFillObject, backgroundColor: "rgba(5,5,4,0.55)" },
+  featuredContent: { flex: 1, justifyContent: "flex-end", alignItems: "flex-start", padding: 16, paddingRight: "24%" },
+  featuredLabel: { color: HOME_PALETTE.goldSoft, fontSize: 10, lineHeight: 13, fontWeight: "900", letterSpacing: 0.8, marginBottom: 6 },
+  featuredTitle: { color: HOME_PALETTE.text, fontSize: 26, lineHeight: 29, fontWeight: "900", letterSpacing: -0.4 },
+  featuredMeta: { color: HOME_PALETTE.text, fontSize: 12, lineHeight: 16, fontWeight: "600", marginTop: 7 },
+  featuredTagline: { color: HOME_PALETTE.textSecondary, fontSize: 12, lineHeight: 16, marginTop: 2 },
+  featuredButton: { minHeight: MIN_TOUCH_TARGET, flexDirection: "row", alignItems: "center", gap: 7, paddingHorizontal: 15, borderRadius: 8, backgroundColor: HOME_PALETTE.gold, marginTop: 13 },
+  featuredButtonText: { color: "#17130B", fontSize: 13, lineHeight: 17, fontWeight: "900" },
+  section: { marginTop: 20 },
+  sectionHeader: { minHeight: 26, flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 12, paddingHorizontal: 14, marginBottom: 9 },
+  sectionTitle: { flex: 1, color: HOME_PALETTE.text, fontSize: 18, lineHeight: 23, fontWeight: "800", letterSpacing: -0.15 },
+  sectionAction: { color: HOME_PALETTE.gold, fontSize: 12, lineHeight: 16, fontWeight: "800" },
+  continueCard: { marginHorizontal: 14, minHeight: 116, padding: 9, flexDirection: "row", alignItems: "center", gap: 10, borderRadius: 13, backgroundColor: HOME_PALETTE.surface, borderWidth: 1, borderColor: HOME_PALETTE.border },
+  continueThumb: { width: 104, height: 96, borderRadius: 11, overflow: "hidden", backgroundColor: HOME_PALETTE.surfaceSoft },
+  continuePlay: { position: "absolute", right: 7, bottom: 7, width: 30, height: 30, borderRadius: 15, alignItems: "center", justifyContent: "center", backgroundColor: "rgba(8,8,7,0.86)", borderWidth: 1, borderColor: "rgba(255,255,255,0.16)" },
+  continueBody: { flex: 1, minWidth: 0 },
+  continueTitle: { color: HOME_PALETTE.text, fontSize: 14, lineHeight: 18, fontWeight: "800" },
+  continueMeta: { color: HOME_PALETTE.textSecondary, fontSize: 11, lineHeight: 15, marginTop: 3 },
+  continueProgressRow: { flexDirection: "row", alignItems: "center", gap: 8, marginTop: 9 },
+  continueProgressTrack: { flex: 1, height: 4, borderRadius: 2, overflow: "hidden", backgroundColor: HOME_PALETTE.borderStrong },
+  continueProgressFill: { height: "100%", borderRadius: 2, backgroundColor: HOME_PALETTE.gold },
+  continuePercent: { minWidth: 29, color: HOME_PALETTE.text, fontSize: 10.5, lineHeight: 14, fontWeight: "800", textAlign: "right" },
+  continueLesson: { color: HOME_PALETTE.textSecondary, fontSize: 10.5, lineHeight: 14, marginTop: 7 },
+  topicGrid: { paddingHorizontal: 14, flexDirection: "row", flexWrap: "wrap", gap: 9 },
+  topicCard: { flexBasis: "47%", flexGrow: 1, minWidth: 136, minHeight: 78, flexDirection: "row", alignItems: "center", gap: 10, padding: 11, borderRadius: 11, backgroundColor: HOME_PALETTE.surface, borderWidth: 1, borderColor: HOME_PALETTE.border },
+  topicIcon: { width: 38, height: 38, borderRadius: 10, alignItems: "center", justifyContent: "center" },
+  topicTitle: { color: HOME_PALETTE.text, fontSize: 12.5, lineHeight: 16, fontWeight: "800" },
+  topicCount: { color: HOME_PALETTE.textSecondary, fontSize: 10.5, lineHeight: 14, marginTop: 3 },
+  horizontalContent: { paddingHorizontal: 14, paddingRight: 26, gap: 10 },
+  lessonCard: { width: 154 },
+  lessonThumb: { width: "100%", aspectRatio: 1.48, borderRadius: 10, overflow: "hidden", backgroundColor: HOME_PALETTE.surfaceSoft, borderWidth: 1, borderColor: HOME_PALETTE.border },
+  lessonPlayBadge: { position: "absolute", right: 6, bottom: 6, minHeight: 23, minWidth: 23, paddingHorizontal: 6, borderRadius: 12, flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 4, backgroundColor: "rgba(5,5,4,0.86)" },
+  lessonDuration: { color: "#FFFFFF", fontSize: 9.5, lineHeight: 12, fontWeight: "700" },
+  lessonTitle: { color: HOME_PALETTE.text, fontSize: 12.5, lineHeight: 16, fontWeight: "800", marginTop: 7 },
+  lessonNumber: { color: HOME_PALETTE.textSecondary, fontSize: 10.5, lineHeight: 14, marginTop: 3 },
+  roadmapCard: { marginHorizontal: 14, paddingHorizontal: 12, paddingVertical: 5, borderRadius: 13, backgroundColor: HOME_PALETTE.surface, borderWidth: 1, borderColor: HOME_PALETTE.border },
+  roadmapRow: { minHeight: 67, flexDirection: "row", alignItems: "center", gap: 11 },
+  roadmapRail: { width: 30, alignSelf: "stretch", alignItems: "center" },
+  roadmapStep: { width: 30, height: 30, borderRadius: 15, alignItems: "center", justifyContent: "center", marginTop: 18, zIndex: 2, backgroundColor: HOME_PALETTE.surfaceSoft, borderWidth: 1, borderColor: HOME_PALETTE.borderStrong },
+  roadmapStepComplete: { backgroundColor: HOME_PALETTE.goldSoft, borderColor: HOME_PALETTE.goldSoft },
+  roadmapStepCurrent: { backgroundColor: HOME_PALETTE.gold, borderColor: HOME_PALETTE.gold },
+  roadmapStepText: { color: HOME_PALETTE.textSecondary, fontSize: 11, lineHeight: 14, fontWeight: "900" },
+  roadmapLine: { position: "absolute", width: 2, top: 46, bottom: -20, backgroundColor: HOME_PALETTE.borderStrong },
+  roadmapLineComplete: { backgroundColor: HOME_PALETTE.gold },
+  roadmapBody: { flex: 1, minWidth: 0, paddingVertical: 12 },
+  roadmapTitle: { color: HOME_PALETTE.text, fontSize: 13.5, lineHeight: 18, fontWeight: "800" },
+  roadmapMeta: { color: HOME_PALETTE.textMuted, fontSize: 10.5, lineHeight: 14, marginTop: 3 },
+  quickGrid: { paddingHorizontal: 14, flexDirection: "row", flexWrap: "wrap", gap: 9 },
+  quickCard: { flexBasis: "47%", flexGrow: 0, minWidth: 136, padding: 8, borderRadius: 11, backgroundColor: HOME_PALETTE.surface, borderWidth: 1, borderColor: HOME_PALETTE.border },
+  quickThumb: { width: "100%", aspectRatio: 1.6, borderRadius: 9, overflow: "hidden", backgroundColor: HOME_PALETTE.surfaceSoft },
+  quickTitle: { minHeight: 32, color: HOME_PALETTE.text, fontSize: 12, lineHeight: 16, fontWeight: "800", marginTop: 7 },
+  projectCard: { width: 132, padding: 8, borderRadius: 11, backgroundColor: HOME_PALETTE.surface, borderWidth: 1, borderColor: HOME_PALETTE.border },
+  projectThumb: { height: 78, borderRadius: 10, overflow: "hidden", alignItems: "center", justifyContent: "center" },
+  projectShade: { ...StyleSheet.absoluteFillObject, backgroundColor: "rgba(7,7,6,0.54)" },
+  projectTitle: { color: HOME_PALETTE.text, fontSize: 12, lineHeight: 16, fontWeight: "800", marginTop: 7 },
+  projectMeta: { color: HOME_PALETTE.textMuted, fontSize: 10, lineHeight: 13, marginTop: 2 },
+  latestList: { marginHorizontal: 14, borderRadius: 13, overflow: "hidden", backgroundColor: HOME_PALETTE.surface, borderWidth: 1, borderColor: HOME_PALETTE.border },
+  latestRow: { minHeight: 79, flexDirection: "row", alignItems: "center", gap: 11, padding: 9, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: HOME_PALETTE.border },
+  latestThumb: { width: 88, height: 60, borderRadius: 9, overflow: "hidden", backgroundColor: HOME_PALETTE.surfaceSoft },
+  latestPlay: { position: "absolute", right: 5, bottom: 5, width: 22, height: 22, borderRadius: 11, alignItems: "center", justifyContent: "center", backgroundColor: "rgba(5,5,4,0.84)" },
+  latestTitle: { color: HOME_PALETTE.text, fontSize: 12.5, lineHeight: 17, fontWeight: "800" },
+  latestMeta: { color: HOME_PALETTE.textSecondary, fontSize: 10.5, lineHeight: 14, marginTop: 4 },
+  challengeCard: { marginHorizontal: 14, minHeight: 146, padding: 16, flexDirection: "row", alignItems: "center", gap: 13, borderRadius: 14, backgroundColor: HOME_PALETTE.goldSoft, borderWidth: 1, borderColor: "#F2D49A" },
+  challengeIcon: { width: 48, height: 48, borderRadius: 12, alignItems: "center", justifyContent: "center", backgroundColor: "rgba(255,255,255,0.35)" },
+  challengeKicker: { color: "#5E4012", fontSize: 9.5, lineHeight: 13, fontWeight: "900", letterSpacing: 0.8 },
+  challengeTitle: { color: "#17130B", fontSize: 17, lineHeight: 21, fontWeight: "900", marginTop: 3 },
+  challengeText: { color: "#5A4829", fontSize: 11, lineHeight: 15, marginTop: 4 },
+  challengeProgress: { color: "#17130B", fontSize: 10.5, lineHeight: 14, fontWeight: "800", marginTop: 7 },
+  comingGrid: { paddingHorizontal: 14, flexDirection: "row", gap: 9 },
+  comingCard: { flex: 1, minWidth: 0, minHeight: 116, flexDirection: "row", overflow: "hidden", borderRadius: 12, backgroundColor: HOME_PALETTE.surfaceRaised, borderWidth: 1, borderColor: HOME_PALETTE.border },
+  comingThumbnail: { width: "38%", minWidth: 48, height: "100%", backgroundColor: HOME_PALETTE.surfaceSoft },
+  comingBody: { flex: 1, minWidth: 0, paddingHorizontal: 9, paddingVertical: 10 },
+  comingTitle: { flex: 1, color: HOME_PALETTE.text, fontSize: 12, lineHeight: 16, fontWeight: "800" },
+  comingLabel: { alignSelf: "flex-start", color: "#17130B", fontSize: 8, lineHeight: 11, fontWeight: "900", paddingHorizontal: 6, paddingVertical: 3, borderRadius: 5, backgroundColor: HOME_PALETTE.goldSoft, marginTop: 7 },
+  stateCard: { minHeight: 220, marginHorizontal: 14, alignItems: "center", justifyContent: "center", padding: 24, borderRadius: 14, backgroundColor: HOME_PALETTE.surface, borderWidth: 1, borderColor: HOME_PALETTE.border },
+  stateTitle: { color: HOME_PALETTE.text, fontSize: 17, lineHeight: 22, fontWeight: "800", textAlign: "center", marginTop: 12 },
+  stateText: { color: HOME_PALETTE.textSecondary, fontSize: 12, lineHeight: 17, textAlign: "center", marginTop: 6 },
+  stateButton: { minHeight: MIN_TOUCH_TARGET, paddingHorizontal: 16, alignItems: "center", justifyContent: "center", borderRadius: 8, backgroundColor: HOME_PALETTE.gold, marginTop: 16 },
+  stateButtonText: { color: "#17130B", fontSize: 12, fontWeight: "900" },
+});
+
 // ── HomeScreen ────────────────────────────────────────────────────────────────
-function HomeScreen({ user, onGoToCourses, onGoToAI, onGoToDownloads, onGoToProfile, onGoToSubscription, onSelectCourse, onResumeCourse, onOpenHeroPreview, courseProgress = {}, aiRobotId }) {
+function LegacyHomeScreenDraft({ user, onGoToCourses, onGoToAI, onGoToDownloads, onGoToProfile, onGoToSubscription, onSelectCourse, onResumeCourse, onOpenHeroPreview, courseProgress = {}, aiRobotId }) {
   const hasAccess = hasCourseAccess(user);
   const [topCourses, setTopCourses] = useState([]);
   const [allCourses, setAllCourses] = useState([]);
@@ -2866,11 +3489,13 @@ function HomeScreen({ user, onGoToCourses, onGoToAI, onGoToDownloads, onGoToProf
                   if (!hasAccess) { setShowUpgrade(true); return; }
                   onOpenHeroPreview?.(previewCourse, mostWatchedVideo?.video, mostWatchedVideo?.videoIndex || 0);
                 }}
+                accessibilityRole="button"
+                accessibilityLabel={`Start learning ${previewCourse?.title || "featured course"}`}
               >
                 <Ionicons name="play" size={16} color={C.text} />
                 <Text style={s.startLearningText}>Start Learning</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={s.myListHeroBtn} activeOpacity={0.86} onPress={onGoToCourses}>
+              <TouchableOpacity style={s.myListHeroBtn} activeOpacity={0.86} onPress={onGoToCourses} accessibilityRole="button" accessibilityLabel="Open my course list">
                 <Ionicons name="bookmark-outline" size={16} color={C.text} />
                 <Text style={s.myListHeroText}>My List</Text>
               </TouchableOpacity>
@@ -2884,7 +3509,7 @@ function HomeScreen({ user, onGoToCourses, onGoToAI, onGoToDownloads, onGoToProf
         <View style={[s.streamingSection, s.firstStreamingSection]}>
           <View style={s.streamingSectionHeader}>
             <Text style={s.streamingSectionTitle}>Continue Learning</Text>
-            <TouchableOpacity onPress={onGoToCourses}>
+            <TouchableOpacity onPress={onGoToCourses} accessibilityRole="button" accessibilityLabel="See all continue learning courses">
               <Text style={s.streamingSeeAll}>See All &gt;</Text>
             </TouchableOpacity>
           </View>
@@ -2895,7 +3520,7 @@ function HomeScreen({ user, onGoToCourses, onGoToAI, onGoToDownloads, onGoToProf
             renderItem={({ item, index }) => {
               const { course, progressPct, lessonTitle } = item;
               return (
-              <TouchableOpacity style={s.learningCard} activeOpacity={0.9} onPress={() => openContinue(course)}>
+              <TouchableOpacity style={s.learningCard} activeOpacity={0.9} onPress={() => openContinue(course)} accessibilityRole="button" accessibilityLabel={`Continue ${course.title}, ${progressPct} percent complete`}>
                 <View style={s.learningThumb}>
                   <PosterImage course={course} index={index} vertical={false} />
                   <View style={s.learningPlay}>
@@ -2913,36 +3538,40 @@ function HomeScreen({ user, onGoToCourses, onGoToAI, onGoToDownloads, onGoToProf
           />
         </View>
 
-        <View style={s.streamingSection}>
-          <View style={s.streamingSectionHeader}>
-            <Text style={s.streamingSectionTitle}>Top 10 in India Today</Text>
-          </View>
-          <HorizontalRail
-            data={rankedCourses.slice(0, 5)}
-            keyExtractor={course => `${course._id}-rank`}
-            contentContainerStyle={s.rankRailContent}
-            renderItem={({ item: course, index }) => (
-              <TouchableOpacity style={s.rankItem} activeOpacity={0.9} onPress={() => openCourse(course)}>
-                <Text style={s.rankNumber}>{index + 1}</Text>
-                <View style={s.rankPoster}>
-                  <PosterImage course={course} index={index} />
-                </View>
-              </TouchableOpacity>
-            )}
-          />
-        </View>
+        {SHOW_DRAFT_HOME_RECOMMENDATIONS && (
+          <>
+            <View style={s.streamingSection}>
+              <View style={s.streamingSectionHeader}>
+                <Text style={s.streamingSectionTitle}>Top 10 in India Today</Text>
+              </View>
+              <HorizontalRail
+                data={rankedCourses.slice(0, 5)}
+                keyExtractor={course => `${course._id}-rank`}
+                contentContainerStyle={s.rankRailContent}
+                renderItem={({ item: course, index }) => (
+                  <TouchableOpacity style={s.rankItem} activeOpacity={0.9} onPress={() => openCourse(course)} accessibilityRole="button" accessibilityLabel={`Open ranked course ${index + 1}: ${course.title}`}>
+                    <Text style={s.rankNumber}>{index + 1}</Text>
+                    <View style={s.rankPoster}>
+                      <PosterImage course={course} index={index} />
+                    </View>
+                  </TouchableOpacity>
+                )}
+              />
+            </View>
 
-        <View style={s.streamingSection}>
-          <View style={s.streamingSectionHeader}>
-            <Text style={s.streamingSectionTitle}>Because You Watched AI Tools for Creators</Text>
-          </View>
-          <PosterRail courses={discoveryCourses.slice(5, 10)} onPressCourse={openCourse} />
-        </View>
+            <View style={s.streamingSection}>
+              <View style={s.streamingSectionHeader}>
+                <Text style={s.streamingSectionTitle}>Because You Watched AI Tools for Creators</Text>
+              </View>
+              <PosterRail courses={discoveryCourses.slice(5, 10)} onPressCourse={openCourse} />
+            </View>
+          </>
+        )}
 
         <View style={s.streamingSection}>
           <View style={s.streamingSectionHeader}>
             <Text style={s.streamingSectionTitle}>Trending Now</Text>
-            <TouchableOpacity onPress={onGoToCourses}>
+            <TouchableOpacity onPress={onGoToCourses} accessibilityRole="button" accessibilityLabel="See all trending courses">
               <Text style={s.streamingSeeAll}>See All &gt;</Text>
             </TouchableOpacity>
           </View>
@@ -2954,7 +3583,7 @@ function HomeScreen({ user, onGoToCourses, onGoToAI, onGoToDownloads, onGoToProf
               keyExtractor={course => `${course._id}-trend`}
               contentContainerStyle={s.railContent}
               renderItem={({ item: course, index }) => (
-                <TouchableOpacity style={s.trendingLandscapeCard} activeOpacity={0.9} onPress={() => openCourse(course)}>
+                <TouchableOpacity style={s.trendingLandscapeCard} activeOpacity={0.9} onPress={() => openCourse(course)} accessibilityRole="button" accessibilityLabel={`Open course ${course.title}`}>
                   <View style={s.trendingLandscapeThumb}>
                     <PosterImage course={course} index={index} vertical={false} />
                     <View style={s.goldLabel}>
@@ -2981,7 +3610,7 @@ function HomeScreen({ user, onGoToCourses, onGoToAI, onGoToDownloads, onGoToProf
             <Text style={s.learnEarnTitle}>Turn AI skills into income.</Text>
             <Text style={s.learnEarnText}>Freelancing, content, automation and client-ready projects.</Text>
           </View>
-          <TouchableOpacity onPress={onGoToCourses} style={s.learnEarnBtn}>
+          <TouchableOpacity onPress={onGoToCourses} style={s.learnEarnBtn} accessibilityRole="button" accessibilityLabel="Explore Learn to Earn courses">
             <Ionicons name="arrow-forward" size={18} color={C.text} />
           </TouchableOpacity>
         </View>
@@ -2996,7 +3625,7 @@ function HomeScreen({ user, onGoToCourses, onGoToAI, onGoToDownloads, onGoToProf
         <View style={s.streamingSection}>
           <View style={s.streamingSectionHeader}>
             <Text style={s.streamingSectionTitle}>My List</Text>
-            <TouchableOpacity onPress={onGoToCourses}>
+            <TouchableOpacity onPress={onGoToCourses} accessibilityRole="button" accessibilityLabel="See all saved courses">
               <Text style={s.streamingSeeAll}>See All &gt;</Text>
             </TouchableOpacity>
           </View>
@@ -3005,7 +3634,7 @@ function HomeScreen({ user, onGoToCourses, onGoToAI, onGoToDownloads, onGoToProf
             keyExtractor={course => `${course._id}-list`}
             contentContainerStyle={s.railContent}
             renderItem={({ item: course, index }) => (
-              <TouchableOpacity style={s.myListPoster} activeOpacity={0.9} onPress={() => openCourse(course)}>
+              <TouchableOpacity style={s.myListPoster} activeOpacity={0.9} onPress={() => openCourse(course)} accessibilityRole="button" accessibilityLabel={`Open saved course ${course.title}`}>
                 <PosterImage course={course} index={index + 2} />
                 <View style={s.bookmarkMark}>
                   <Ionicons name="bookmark" size={13} color={C.primary} />
@@ -3017,7 +3646,7 @@ function HomeScreen({ user, onGoToCourses, onGoToAI, onGoToDownloads, onGoToProf
           />
         </View>
 
-        <TouchableOpacity style={s.nexPromptBand} onPress={onGoToAI} activeOpacity={0.9}>
+        <TouchableOpacity style={s.nexPromptBand} onPress={onGoToAI} activeOpacity={0.9} accessibilityRole="button" accessibilityLabel="Ask Nex AI what to learn next">
           <View style={s.nexPromptIcon}>
             <Ionicons name="sparkles" size={20} color={C.text} />
           </View>
@@ -3048,7 +3677,7 @@ function HomeScreen({ user, onGoToCourses, onGoToAI, onGoToDownloads, onGoToProf
         keyExtractor={course => `${course._id}-${tag || "poster"}`}
         contentContainerStyle={s.railContent}
         renderItem={({ item: course, index }) => (
-          <TouchableOpacity style={s.posterCard} activeOpacity={0.9} onPress={() => onPressCourse(course)}>
+          <TouchableOpacity style={s.posterCard} activeOpacity={0.9} onPress={() => onPressCourse(course)} accessibilityRole="button" accessibilityLabel={`Open course ${course.title}`}>
             <View style={s.posterThumb}>
               <PosterImage course={course} index={index} />
               {tag ? (
@@ -3064,6 +3693,376 @@ function HomeScreen({ user, onGoToCourses, onGoToAI, onGoToDownloads, onGoToProf
       />
     );
   }
+}
+
+function HomeScreen({
+  user,
+  onGoToCourses,
+  onGoToAI,
+  onGoToDownloads,
+  onGoToProfile,
+  onGoToSubscription,
+  onSelectCourse,
+  onResumeCourse,
+  onOpenLessonCollection,
+  courseProgress = {},
+  aiRobotId,
+}) {
+  const { width } = useWindowDimensions();
+  const hasAccess = hasCourseAccess(user);
+  const [primaryCourse, setPrimaryCourse] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState("");
+  const [reloadKey, setReloadKey] = useState(0);
+  const [showUpgrade, setShowUpgrade] = useState(false);
+  const [showNotifications, setShowNotifications] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadPrimaryCourse() {
+      setLoading(true);
+      setLoadError("");
+      try {
+        const richResponse = await fetchApiJson("/api/courses/top?limit=24", []);
+        if (cancelled) return;
+
+        const richCourses = (Array.isArray(richResponse) ? richResponse : richResponse?.courses || []).filter(course => !course?.isMock);
+        const fallbackResponse = richCourses.length ? [] : await fetchApiJson("/api/courses", []);
+        const fallbackCourses = (Array.isArray(fallbackResponse) ? fallbackResponse : fallbackResponse?.courses || []).filter(course => !course?.isMock);
+        const candidates = [...(richCourses.length ? richCourses : fallbackCourses)];
+        candidates.sort((left, right) => {
+          const rightLessonCount = right.videos?.length || right.lessonCount || 0;
+          const leftLessonCount = left.videos?.length || left.lessonCount || 0;
+          const rightIsInfluencerMasterclass = rightLessonCount >= 35 && /ai\s*influencer/i.test(String(right?.title || "")) ? 1 : 0;
+          const leftIsInfluencerMasterclass = leftLessonCount >= 35 && /ai\s*influencer/i.test(String(left?.title || "")) ? 1 : 0;
+          if (rightIsInfluencerMasterclass !== leftIsInfluencerMasterclass) {
+            return rightIsInfluencerMasterclass - leftIsInfluencerMasterclass;
+          }
+          const lessonDifference = rightLessonCount - leftLessonCount;
+          if (lessonDifference) return lessonDifference;
+          return new Date(right.publishedAt || right.createdAt || 0).getTime() - new Date(left.publishedAt || left.createdAt || 0).getTime();
+        });
+
+        let course = candidates[0] || null;
+        if (!course) {
+          setPrimaryCourse(null);
+          setLoadError("No published course is available right now.");
+          return;
+        }
+
+        if (hasAccess && user?._id && user?.sessionId) {
+          const playableData = await fetchApiJson(
+            `/api/courses/${course._id}/videos?userId=${encodeURIComponent(user._id)}&sessionId=${encodeURIComponent(user.sessionId)}`,
+            null
+          );
+          if (!cancelled && Array.isArray(playableData?.videos) && playableData.videos.length) {
+            course = { ...course, videos: playableData.videos, __homePlayableVideos: true };
+          }
+        }
+
+        if (!cancelled) setPrimaryCourse(course);
+      } catch {
+        if (!cancelled) {
+          setPrimaryCourse(null);
+          setLoadError("Home could not load the course catalog. Check your connection and try again.");
+        }
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    }
+
+    loadPrimaryCourse();
+    return () => { cancelled = true; };
+  }, [hasAccess, reloadKey, user?._id, user?.sessionId]);
+
+  const lessons = useMemo(() => sortLessons(primaryCourse?.videos || []), [primaryCourse?.videos]);
+  const course = useMemo(
+    () => primaryCourse ? { ...primaryCourse, videos: lessons } : null,
+    [primaryCourse, lessons]
+  );
+  const savedProgress = course ? courseProgress?.[course._id] || {} : {};
+  const completedIds = useMemo(
+    () => new Set((savedProgress.completedVideoIds || []).map(String)),
+    [savedProgress.completedVideoIds]
+  );
+  const isLessonComplete = useCallback(
+    lesson => completedIds.has(getVideoKey(lesson, lessons.indexOf(lesson))),
+    [completedIds, lessons]
+  );
+  const completedLessonCount = useMemo(
+    () => lessons.reduce((count, lesson, index) => count + (completedIds.has(getVideoKey(lesson, index)) ? 1 : 0), 0),
+    [completedIds, lessons]
+  );
+  const hasPartialProgress = Object.values(savedProgress.videoProgress || {}).some(value => Number(value?.watchedSeconds || 0) > 0);
+  const isStarted = completedLessonCount > 0 || hasPartialProgress;
+  const progressPercent = course ? getCourseProgressPercent(course, courseProgress) : 0;
+  const isComplete = lessons.length > 0 && (progressPercent >= 100 || completedLessonCount === lessons.length);
+  const resume = course ? getResumeInfo(course, courseProgress) : { index: 0, seconds: 0 };
+  const resumeLesson = lessons[resume.index] || lessons[0] || null;
+  const lessonCount = lessons.length || Number(course?.lessonCount || course?.videoCount || 0);
+  const hasFullMasterclass = lessons.length >= 35 && /ai\s*influencer/i.test(String(course?.title || ""));
+  const hasAiFoundationsCourse = lessons.length >= 10 && /ai\s*basic/i.test(String(course?.title || ""));
+  const homeContent = hasFullMasterclass
+    ? HOME_INFLUENCER_CONTENT
+    : hasAiFoundationsCourse
+      ? HOME_AI_FOUNDATIONS_CONTENT
+      : null;
+
+  const topics = useMemo(
+    () => buildLessonTopics(lessons, homeContent?.topicDefinitions),
+    [homeContent, lessons]
+  );
+  const recommendedLessons = useMemo(
+    () => homeContent ? resolveLessonNumbers(lessons, homeContent.recommendedLessonNumbers).slice(0, 6) : lessons.slice(0, 6),
+    [homeContent, lessons]
+  );
+  const quickLearnItems = useMemo(
+    () => homeContent
+      ? homeContent.quickLearnDefinitions
+        .map(item => ({ ...item, lesson: lessons[item.lessonNumber - 1] }))
+        .filter(item => item.lesson)
+      : [],
+    [homeContent, lessons]
+  );
+  const projects = useMemo(
+    () => homeContent
+      ? homeContent.projectDefinitions
+        .map(definition => ({ ...definition, lessons: resolveLessonNumbers(lessons, definition.lessonNumbers) }))
+        .filter(project => project.lessons.length > 0)
+      : [],
+    [homeContent, lessons]
+  );
+  const roadmapStages = useMemo(() => {
+    if (!homeContent) return [];
+    const resolved = homeContent.roadmapDefinitions
+      .map(definition => ({ ...definition, lessons: resolveLessonNumbers(lessons, definition.lessonNumbers) }))
+      .filter(stage => stage.lessons.length > 0);
+    const firstIncomplete = resolved.findIndex(stage => !stage.lessons.every(isLessonComplete));
+    return resolved.map((stage, index) => ({
+      ...stage,
+      status: stage.lessons.every(isLessonComplete)
+        ? "complete"
+        : index === (firstIncomplete < 0 ? resolved.length - 1 : firstIncomplete)
+          ? "current"
+          : "locked",
+    }));
+  }, [homeContent, isLessonComplete, lessons]);
+  const challengeSteps = useMemo(
+    () => homeContent
+      ? homeContent.challengeDefinitions
+        .map(step => ({ ...step, lesson: lessons[step.lessonNumber - 1] }))
+        .filter(step => step.lesson)
+      : [],
+    [homeContent, lessons]
+  );
+  const completedChallengeCount = challengeSteps.filter(step => isLessonComplete(step.lesson)).length;
+  const latestLessons = useMemo(() => {
+    const withDates = lessons.filter(lesson => lesson.createdAt || lesson.publishedAt || lesson.releasedAt);
+    if (withDates.length) {
+      return [...withDates]
+        .sort((left, right) => new Date(right.createdAt || right.publishedAt || right.releasedAt).getTime() - new Date(left.createdAt || left.publishedAt || left.releasedAt).getTime())
+        .slice(0, 3);
+    }
+    return lessons.slice(-3).reverse();
+  }, [lessons]);
+
+  const lessonCardWidth = Math.min(174, Math.max(144, width * 0.42));
+
+  const requireAccess = useCallback(action => {
+    if (!hasAccess) {
+      setShowUpgrade(true);
+      return;
+    }
+    action();
+  }, [hasAccess]);
+
+  const openLesson = useCallback(lesson => {
+    if (!course || !lesson) return;
+    requireAccess(() => {
+      const index = lessons.findIndex(item => getVideoKey(item) === getVideoKey(lesson));
+      if (index < 0) return;
+      const key = getVideoKey(lesson, index);
+      const seconds = Math.floor(savedProgress.videoProgress?.[key]?.watchedSeconds || 0);
+      onResumeCourse(course, index, seconds);
+    });
+  }, [course, lessons, onResumeCourse, requireAccess, savedProgress.videoProgress]);
+
+  const openCollection = useCallback((title, collection) => {
+    if (!course || !collection?.length) return;
+    requireAccess(() => {
+      onOpenLessonCollection(course, {
+        title,
+        videoIds: collection.map((lesson, index) => getVideoKey(lesson, index)),
+      });
+    });
+  }, [course, onOpenLessonCollection, requireAccess]);
+
+  const continueCourse = useCallback(() => {
+    if (!course || !lessons.length) return;
+    requireAccess(() => onResumeCourse(course, isComplete ? 0 : resume.index, isComplete ? 0 : resume.seconds));
+  }, [course, isComplete, lessons.length, onResumeCourse, requireAccess, resume.index, resume.seconds]);
+
+  return (
+    <View style={homeStyles.root}>
+      <StatusBar barStyle="light-content" backgroundColor={HOME_PALETTE.background} />
+      <View style={homeStyles.header}>
+        <SafeAreaView>
+          <View style={[homeStyles.headerInner, width <= 340 && homeStyles.headerInnerCompact]}>
+            <View style={homeStyles.brandRow}>
+              <View style={homeStyles.brandIcon}><Ionicons name="school" size={21} color={HOME_PALETTE.gold} /></View>
+              <View style={homeStyles.brandCopy}>
+                <Text style={homeStyles.brandName}>Skillomate</Text>
+                {width > 340 && <Text style={homeStyles.brandTagline}>Learn with AI. Earn with AI.</Text>}
+              </View>
+            </View>
+            <View style={homeStyles.headerActions}>
+              <TouchableOpacity style={homeStyles.headerButton} onPress={() => setShowNotifications(true)} accessibilityRole="button" accessibilityLabel="Open notifications">
+                <Ionicons name="notifications-outline" size={20} color={HOME_PALETTE.text} />
+                <View style={homeStyles.headerDot} />
+              </TouchableOpacity>
+              <TouchableOpacity style={homeStyles.profileButton} onPress={onGoToProfile} accessibilityRole="button" accessibilityLabel="Open profile">
+                <AvatarImage avatarId={user.avatar || "a1"} size={40} style={{ borderRadius: 20 }} />
+              </TouchableOpacity>
+            </View>
+          </View>
+        </SafeAreaView>
+      </View>
+
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={homeStyles.scrollContent}
+        scrollEventThrottle={16}
+        keyboardShouldPersistTaps="handled"
+        overScrollMode="never"
+      >
+        {loading && !course ? (
+          <View style={homeStyles.stateCard}>
+            <ActivityIndicator color={HOME_PALETTE.gold} />
+            <Text style={homeStyles.stateTitle}>Loading your masterclass</Text>
+            <Text style={homeStyles.stateText}>Preparing the real course and lesson roadmap.</Text>
+          </View>
+        ) : !course ? (
+          <View style={homeStyles.stateCard}>
+            <Ionicons name="cloud-offline-outline" size={32} color={HOME_PALETTE.gold} />
+            <Text style={homeStyles.stateTitle}>Course unavailable</Text>
+            <Text style={homeStyles.stateText}>{loadError || "The course catalog is temporarily unavailable."}</Text>
+            <TouchableOpacity style={homeStyles.stateButton} onPress={() => setReloadKey(value => value + 1)} accessibilityRole="button" accessibilityLabel="Try loading the course again">
+              <Text style={homeStyles.stateButtonText}>Try Again</Text>
+            </TouchableOpacity>
+          </View>
+        ) : (
+          <>
+            <FeaturedCourseHero
+              course={course}
+              lessonCount={lessonCount}
+              tagline={homeContent?.heroTagline}
+              onPress={() => onSelectCourse(course)}
+            />
+
+            <View style={homeStyles.section}>
+              <HomeSectionHeader title="Continue Learning" onSeeAll={() => onSelectCourse(course)} />
+              {lessons.length ? (
+                <ContinueLearningCard
+                  course={course}
+                  lessonCount={lessonCount}
+                  resumeIndex={resume.index}
+                  progressPercent={progressPercent}
+                  isStarted={isStarted}
+                  isComplete={isComplete}
+                  lesson={resumeLesson}
+                  onPress={continueCourse}
+                />
+              ) : (
+                <View style={homeStyles.stateCard}>
+                  <Ionicons name="hourglass-outline" size={30} color={HOME_PALETTE.gold} />
+                  <Text style={homeStyles.stateTitle}>Lessons are being prepared</Text>
+                  <Text style={homeStyles.stateText}>The course is available, but its lesson list could not be loaded.</Text>
+                </View>
+              )}
+            </View>
+
+            {recommendedLessons.length ? (
+              <View style={homeStyles.section}>
+                <HomeSectionHeader title="Recommended Lessons" onSeeAll={() => onSelectCourse(course)} />
+                <LessonCarousel course={course} lessons={recommendedLessons} cardWidth={lessonCardWidth} onPressLesson={openLesson} />
+              </View>
+            ) : null}
+
+            {topics.length ? (
+              <View style={homeStyles.section}>
+                <HomeSectionHeader title="Learn by Topic" />
+                <TopicGrid topics={topics} onPressTopic={topic => openCollection(topic.title, topic.lessons)} />
+              </View>
+            ) : null}
+
+            {quickLearnItems.length ? (
+              <View style={homeStyles.section}>
+                <HomeSectionHeader title="Quick Learn" />
+                <QuickLearnSection course={course} items={quickLearnItems} onPressLesson={openLesson} />
+              </View>
+            ) : null}
+
+            {roadmapStages.length ? (
+              <View style={homeStyles.section}>
+                <HomeSectionHeader title="Your Learning Roadmap" onSeeAll={() => onSelectCourse(course)} />
+                <LearningRoadmap stages={roadmapStages} onPressStage={stage => openCollection(stage.title, stage.lessons)} />
+              </View>
+            ) : null}
+
+            {projects.length ? (
+              <View style={homeStyles.section}>
+                <HomeSectionHeader title="Build With AI" />
+                <ProjectCarousel course={course} projects={projects} onPressProject={project => openCollection(project.title, project.lessons)} />
+              </View>
+            ) : null}
+
+            {latestLessons.length ? (
+              <View style={homeStyles.section}>
+                <HomeSectionHeader title="Latest Lessons" onSeeAll={() => onSelectCourse(course)} />
+                <LatestLessonsSection course={course} lessons={latestLessons} onPressLesson={openLesson} />
+              </View>
+            ) : null}
+
+            {challengeSteps.length ? (
+              <View style={homeStyles.section}>
+                <ChallengeCard
+                  title={homeContent?.challengeTitle || "Build Your Learning Streak"}
+                  steps={challengeSteps}
+                  completedCount={completedChallengeCount}
+                  onPress={() => openCollection("7-Day Challenge", challengeSteps.map(step => step.lesson))}
+                />
+              </View>
+            ) : null}
+
+            <View style={homeStyles.section}>
+              <HomeSectionHeader title="Coming Soon" />
+              <ComingSoonSection />
+            </View>
+          </>
+        )}
+      </ScrollView>
+
+      <BottomNav
+        active="home"
+        onHome={() => {}}
+        onCourses={onGoToCourses}
+        onAI={onGoToAI}
+        onDownloads={onGoToDownloads}
+        onProfile={onGoToProfile}
+        aiRobotId={aiRobotId}
+        forceDark
+      />
+      <NotificationPreviewModal
+        visible={showNotifications}
+        onClose={() => setShowNotifications(false)}
+        onOpenCourses={onGoToCourses}
+        onOpenAI={onGoToAI}
+        onOpenSubscription={onGoToSubscription}
+      />
+      <UpgradeModal visible={showUpgrade} onClose={() => setShowUpgrade(false)} />
+    </View>
+  );
 }
 
 // ── CourseListScreen ──────────────────────────────────────────────────────────
@@ -3141,7 +4140,7 @@ function CourseListScreen({ onSelect, user, onGoToHome, onGoToAI, onGoToDownload
         </View>
         <Text style={{ color: C.text, fontSize: 17, fontWeight: "800", textAlign: "center", marginBottom: 6 }}>Courses unavailable</Text>
         <Text style={{ color: C.textSub, fontSize: 14, lineHeight: 20, textAlign: "center" }}>Failed to load: {error}</Text>
-        <TouchableOpacity style={[s.btn, s.btnFill, { marginTop: 18, minWidth: 140 }]} onPress={loadCourses}>
+        <TouchableOpacity style={[s.btn, s.btnFill, { marginTop: 18, minWidth: 140 }]} onPress={loadCourses} accessibilityRole="button" accessibilityLabel="Retry loading courses">
           <Text style={s.btnText}>Retry</Text>
         </TouchableOpacity>
       </View>
@@ -3196,12 +4195,14 @@ function CourseListScreen({ onSelect, user, onGoToHome, onGoToAI, onGoToDownload
         removeClippedSubviews={ANDROID_CLIPPED_SUBVIEWS}
         keyboardShouldPersistTaps="handled"
         scrollEventThrottle={16}
-        renderItem={({ item, index }) => {
+        renderItem={({ item }) => {
           const declaredCount = Number(item.lessonCount ?? item.videoCount);
           const lessonCount = Number.isFinite(declaredCount)
             ? declaredCount
             : Array.isArray(item.videos) ? item.videos.length : 0;
-          const rating = COURSE_LIST_RATINGS[index % COURSE_LIST_RATINGS.length];
+          const categoryName = typeof item.category === "string"
+            ? item.category.trim()
+            : String(item.category?.name || "").trim();
           const isWishlisted = wishlist.includes(item._id);
           const progressPct = getCourseProgressPercent(item, courseProgress);
           return (
@@ -3221,11 +4222,6 @@ function CourseListScreen({ onSelect, user, onGoToHome, onGoToAI, onGoToDownload
                   <Text style={{ color: C.primary, fontWeight: "900", fontSize: 64 }}>{item.title?.[0]?.toUpperCase()}</Text>
                 </View>
                 <CourseThumbnailImage course={item} />
-
-                {/* PREMIUM badge */}
-                <View style={s.clPremiumBadge}>
-                  <Text style={s.clPremiumText}>PREMIUM</Text>
-                </View>
 
                 {/* Wishlist */}
                 <TouchableOpacity
@@ -3253,12 +4249,16 @@ function CourseListScreen({ onSelect, user, onGoToHome, onGoToAI, onGoToDownload
               <View style={s.clInfo}>
                 <Text style={s.clTitle} numberOfLines={2}>{item.title}</Text>
 
-                {/* Rating row */}
-                <View style={s.clRatingRow}>
-                  <Ionicons name="star" size={13} color={C.accent} />
-                  <Text style={s.clRating}>{rating}</Text>
-                  <Text style={s.clDot}>·</Text>
-                  <Text style={s.clLectures}>{lessonCount} {lessonCount === 1 ? "lesson" : "lessons"}</Text>
+                {/* Only show metadata supplied by the uploaded course. */}
+                <View style={s.clMetaRow}>
+                  <Ionicons name="play-circle-outline" size={15} color={C.primary} />
+                  <Text style={s.clMetaText}>{lessonCount} {lessonCount === 1 ? "lesson" : "lessons"}</Text>
+                  {categoryName ? (
+                    <>
+                      <Text style={s.clMetaDot}>·</Text>
+                      <Text style={s.clMetaText} numberOfLines={1}>{categoryName}</Text>
+                    </>
+                  ) : null}
                 </View>
 
                 {/* Progress */}
@@ -3367,6 +4367,9 @@ function WishlistScreen({ wishlist, onToggleWishlist, onSelect, onBack, user }) 
                 if (!hasAccess) { setShowUpgrade(true); return; }
                 onSelect(item);
               }}
+              accessibilityRole="button"
+              accessibilityLabel={`${item.title}. ${item.videos?.length ?? 0} lessons`}
+              accessibilityHint={hasAccess ? "Opens the course" : "Subscription required"}
             >
               <View style={{ flex: 1 }}>
                 <View style={[s.courseListThumb, { backgroundColor: C.primaryLight, flex: 1 }]}>
@@ -3377,7 +4380,12 @@ function WishlistScreen({ wishlist, onToggleWishlist, onSelect, onBack, user }) 
                   <Text style={{ color: "#fff", fontWeight: "700", fontSize: 14, lineHeight: 19 }} numberOfLines={2}>{item.title}</Text>
                   <Text style={{ color: "#F4E7CB", fontSize: 12, marginTop: 2 }}>{item.videos?.length ?? 0} video{item.videos?.length !== 1 ? "s" : ""}</Text>
                 </View>
-                <TouchableOpacity style={s.wishlistBtn} onPress={() => onToggleWishlist(item._id)}>
+                <TouchableOpacity
+                  style={s.wishlistBtn}
+                  onPress={event => { event.stopPropagation?.(); onToggleWishlist(item._id); }}
+                  accessibilityRole="button"
+                  accessibilityLabel={`Remove ${item.title} from wishlist`}
+                >
                   <Ionicons name="heart" size={14} color={C.primary} />
                 </TouchableOpacity>
               </View>
@@ -3488,11 +4496,14 @@ function CertificateCard({ cert, style, showDownload }) {
           onPress={() => downloadCertificate(cert, setDownloading)}
           disabled={downloading}
           style={{ marginTop: 16, backgroundColor: C.primary, borderRadius: 10, paddingVertical: 12, flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 8 }}
+          accessibilityRole="button"
+          accessibilityLabel={`Download certificate for ${cert.courseTitle}`}
+          accessibilityState={{ disabled: downloading, busy: downloading }}
         >
           {downloading
-            ? <ActivityIndicator color="#fff" size="small" />
-            : <Ionicons name="download-outline" size={18} color="#fff" />}
-          <Text style={{ color: "#fff", fontWeight: "700", fontSize: 14 }}>
+            ? <ActivityIndicator color={C.onPrimary} size="small" />
+            : <Ionicons name="download-outline" size={18} color={C.onPrimary} />}
+          <Text style={{ color: C.onPrimary, fontWeight: "700", fontSize: 14 }}>
             {downloading ? "Generating..." : "Download Certificate"}
           </Text>
         </TouchableOpacity>
@@ -3520,7 +4531,7 @@ function CertificateModal({ cert, onClose }) {
               accessibilityRole="button"
               accessibilityLabel="Continue learning"
             >
-              <Text style={{ color: "#fff", fontWeight: "700", fontSize: 15 }}>Continue Learning</Text>
+              <Text style={{ color: C.onPrimary, fontWeight: "700", fontSize: 15 }}>Continue Learning</Text>
             </TouchableOpacity>
           </ScrollView>
         </View>
@@ -3628,7 +4639,7 @@ function SubscriptionDetailsScreen({ user, onBack }) {
           </View>
           <Text style={{ color: C.text, fontSize: 17, fontWeight: "800", textAlign: "center", marginBottom: 6 }}>Subscription details unavailable</Text>
           <Text style={{ color: C.textSub, fontSize: 14, lineHeight: 20, textAlign: "center" }}>{error}</Text>
-          <TouchableOpacity style={[s.btn, s.btnFill, { marginTop: 18, minWidth: 140 }]} onPress={loadSubscription}>
+          <TouchableOpacity style={[s.btn, s.btnFill, { marginTop: 18, minWidth: 140 }]} onPress={loadSubscription} accessibilityRole="button" accessibilityLabel="Retry loading subscription details">
             <Text style={s.btnText}>Retry</Text>
           </TouchableOpacity>
         </View>
@@ -3685,6 +4696,8 @@ function SubscriptionDetailsScreen({ user, onBack }) {
               <TouchableOpacity
                 onPress={() => Linking.openURL(SUBSCRIPTION_URL)}
                 style={[s.btn, s.btnFill, { marginTop: 14 }]}
+                accessibilityRole="link"
+                accessibilityLabel="Upgrade subscription"
               >
                 <Text style={s.btnText}>Upgrade Now</Text>
               </TouchableOpacity>
@@ -3733,12 +4746,170 @@ function SubscriptionDetailsScreen({ user, onBack }) {
   );
 }
 
-function ProfileScreen({ user, onLogout, onGoToHome, onGoToCourses, onGoToAI, onGoToDownloads, wishlistCount, onGoToWishlist, onGoToCertificates, certificatesCount, themeMode, onThemeChange, onAvatarChange, aiRobotId, onGoToSubscription }) {
+function DeleteAccountModal({ visible, user, onClose, onDeleteAccount }) {
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [confirmation, setConfirmation] = useState("");
+  const [error, setError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const canDelete = Boolean(currentPassword) && confirmation === "DELETE" && !submitting;
+  const hasActivePlan = !["none", "expired", "cancelled", ""].includes(String(user?.subscriptionStatus || "").toLowerCase());
+
+  useEffect(() => {
+    if (!visible) {
+      setCurrentPassword("");
+      setConfirmation("");
+      setError("");
+      setSubmitting(false);
+    }
+  }, [visible]);
+
+  const closeModal = () => {
+    if (submitting) return;
+    setCurrentPassword("");
+    setConfirmation("");
+    setError("");
+    onClose();
+  };
+
+  const submitDeletion = async () => {
+    if (!canDelete) return;
+    setSubmitting(true);
+    setError("");
+    const result = await onDeleteAccount({ password: currentPassword, confirmation });
+    if (result?.ok) return;
+    setError(result?.error || "Account could not be deleted. Please try again.");
+    setSubmitting(false);
+  };
+
+  return (
+    <Modal visible={visible} transparent animationType="fade" onRequestClose={closeModal} statusBarTranslucent>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={s.deleteAccountOverlay}
+      >
+        <Pressable style={StyleSheet.absoluteFill} onPress={closeModal} accessible={false} />
+        <View style={s.deleteAccountDialog} accessibilityViewIsModal>
+          <ScrollView
+            keyboardShouldPersistTaps="handled"
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={s.deleteAccountContent}
+          >
+            <View style={s.deleteAccountIcon}>
+              <Ionicons name="trash-outline" size={26} color={C.danger} />
+            </View>
+            <Text style={s.deleteAccountTitle}>Permanently delete account?</Text>
+            <Text style={s.deleteAccountSubtitle}>
+              This cannot be undone. Your Skillomate account and learning data will be permanently removed.
+            </Text>
+
+            <View style={s.deleteAccountWarningBox}>
+              {[
+                "Profile and saved preferences",
+                "Course progress, notes and certificates",
+                "Wishlist, AI tutor history and app downloads",
+              ].map(item => (
+                <View key={item} style={s.deleteAccountWarningRow}>
+                  <Ionicons name="close-circle" size={17} color={C.danger} />
+                  <Text style={s.deleteAccountWarningText}>{item}</Text>
+                </View>
+              ))}
+            </View>
+
+            {hasActivePlan && (
+              <View style={s.deleteAccountPlanNotice}>
+                <Ionicons name="alert-circle-outline" size={18} color={C.warning} />
+                <Text style={s.deleteAccountPlanText}>
+                  If your plan has an active recurring mandate, cancel it before deleting your account.
+                </Text>
+              </View>
+            )}
+
+            {!!(user?.email || user?.mobileNumber) && (
+              <Text style={s.deleteAccountIdentity} numberOfLines={1}>
+                Account: {user.email || user.mobileNumber}
+              </Text>
+            )}
+
+            <Text style={s.deleteAccountFieldLabel}>Current password</Text>
+            <TextInput
+              value={currentPassword}
+              onChangeText={value => { setCurrentPassword(value); setError(""); }}
+              placeholder="Enter your password"
+              placeholderTextColor={C.textMuted}
+              secureTextEntry
+              autoCapitalize="none"
+              autoCorrect={false}
+              autoComplete="current-password"
+              textContentType="password"
+              style={s.deleteAccountInput}
+              editable={!submitting}
+              accessibilityLabel="Current password"
+              testID="delete-account-password"
+            />
+
+            <Text style={s.deleteAccountFieldLabel}>
+              Type <Text style={{ color: C.danger, fontWeight: "900" }}>DELETE</Text> to confirm
+            </Text>
+            <TextInput
+              value={confirmation}
+              onChangeText={value => { setConfirmation(value); setError(""); }}
+              placeholder="DELETE"
+              placeholderTextColor={C.textMuted}
+              autoCapitalize="characters"
+              autoCorrect={false}
+              style={s.deleteAccountInput}
+              editable={!submitting}
+              returnKeyType="done"
+              onSubmitEditing={submitDeletion}
+              accessibilityLabel="Type DELETE to confirm"
+              testID="delete-account-confirmation"
+            />
+
+            {!!error && (
+              <Text style={s.deleteAccountError} accessibilityRole="alert" accessibilityLiveRegion="polite">
+                {error}
+              </Text>
+            )}
+
+            <View style={s.deleteAccountActions}>
+              <TouchableOpacity
+                style={s.deleteAccountCancelBtn}
+                onPress={closeModal}
+                disabled={submitting}
+                accessibilityRole="button"
+                accessibilityLabel="Cancel account deletion"
+              >
+                <Text style={s.deleteAccountCancelText}>Keep Account</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[s.deleteAccountConfirmBtn, !canDelete && s.deleteAccountConfirmBtnDisabled]}
+                onPress={submitDeletion}
+                disabled={!canDelete}
+                accessibilityRole="button"
+                accessibilityLabel="Permanently delete account"
+                accessibilityState={{ disabled: !canDelete, busy: submitting }}
+                testID="delete-account-submit"
+              >
+                {submitting
+                  ? <ActivityIndicator color="#FFFFFF" />
+                  : <Text style={s.deleteAccountConfirmText}>Delete Forever</Text>
+                }
+              </TouchableOpacity>
+            </View>
+          </ScrollView>
+        </View>
+      </KeyboardAvoidingView>
+    </Modal>
+  );
+}
+
+function ProfileScreen({ user, onLogout, onDeleteAccount, onGoToHome, onGoToCourses, onGoToAI, onGoToDownloads, wishlistCount, onGoToWishlist, onGoToCertificates, certificatesCount, onAvatarChange, aiRobotId, onGoToSubscription }) {
   const isActive = user?.subscriptionStatus && user.subscriptionStatus !== "none";
   const memberSince = user?._id
     ? new Date(parseInt(user._id.substring(0, 8), 16) * 1000).toLocaleDateString("en-IN", { month: "short", year: "numeric" })
     : null;
   const [showAvatarPicker, setShowAvatarPicker] = useState(false);
+  const [showDeleteAccount, setShowDeleteAccount] = useState(false);
   const [tempAvatar, setTempAvatar] = useState(user.avatar || "a1");
   const [savingAvatar, setSavingAvatar] = useState(false);
 
@@ -3764,14 +4935,14 @@ function ProfileScreen({ user, onLogout, onGoToHome, onGoToCourses, onGoToAI, on
               <AvatarImage avatarId={user.avatar || "a1"} size={90} style={{ borderRadius: 0 }} />
             </View>
             <View style={{ position: "absolute", bottom: 0, right: 0, width: 26, height: 26, borderRadius: 13, backgroundColor: C.primary, borderWidth: 2, borderColor: C.white, alignItems: "center", justifyContent: "center" }}>
-              <Ionicons name="pencil" size={12} color="#fff" />
+              <Ionicons name="pencil" size={12} color={C.onPrimary} />
             </View>
           </TouchableOpacity>
 
           {/* Avatar picker modal */}
           <Modal visible={showAvatarPicker} transparent animationType="slide" onRequestClose={() => setShowAvatarPicker(false)}>
-            <Pressable style={{ flex: 1, backgroundColor: "rgba(0,0,0,0.5)", justifyContent: "flex-end" }} onPress={() => setShowAvatarPicker(false)}>
-              <Pressable style={{ backgroundColor: C.white, borderTopLeftRadius: 20, borderTopRightRadius: 20, padding: 24, paddingBottom: 40 }}>
+            <Pressable style={{ flex: 1, backgroundColor: "rgba(0,0,0,0.5)", justifyContent: "flex-end" }} onPress={() => setShowAvatarPicker(false)} accessible={false}>
+              <Pressable style={{ backgroundColor: C.white, borderTopLeftRadius: 20, borderTopRightRadius: 20, padding: 24, paddingBottom: 40 }} accessible={false}>
                 <View style={{ width: 40, height: 4, borderRadius: 2, backgroundColor: C.border, alignSelf: "center", marginBottom: 20 }} />
                 <Text style={{ fontSize: 18, fontWeight: "800", color: C.text, textAlign: "center", marginBottom: 20 }}>Choose Avatar</Text>
                 {/* Preview selected */}
@@ -3793,7 +4964,7 @@ function ProfileScreen({ user, onLogout, onGoToHome, onGoToCourses, onGoToAI, on
                     >
                       <AvatarImage avatarId={av.id} size={60} style={{ borderRadius: 30 }} />
                       {tempAvatar === av.id && (
-                        <View style={s.avatarPickerCheck}><Ionicons name="checkmark" size={10} color="#fff" /></View>
+                        <View style={s.avatarPickerCheck}><Ionicons name="checkmark" size={10} color={C.onPrimary} /></View>
                       )}
                     </TouchableOpacity>
                   ))}
@@ -3819,7 +4990,7 @@ function ProfileScreen({ user, onLogout, onGoToHome, onGoToCourses, onGoToAI, on
                   accessibilityState={{ disabled: savingAvatar, busy: savingAvatar }}
                 >
                   {savingAvatar
-                    ? <ActivityIndicator color="#fff" />
+                    ? <ActivityIndicator color={C.onPrimary} />
                     : <Text style={s.btnText}>Save Avatar</Text>
                   }
                 </TouchableOpacity>
@@ -3879,57 +5050,29 @@ function ProfileScreen({ user, onLogout, onGoToHome, onGoToCourses, onGoToAI, on
           ))}
         </View>
 
-        <View style={s.themeCard}>
-          <View style={s.themeCardHeader}>
-            <View style={s.profileInfoIcon}>
-              <Ionicons name="color-palette-outline" size={16} color={C.primary} />
-            </View>
-            <View style={{ flex: 1 }}>
-              <Text style={s.profileInfoValue}>Theme</Text>
-              <Text style={s.profileInfoLabel}>Choose your app appearance</Text>
-            </View>
-          </View>
-          <View style={s.themeToggle}>
-            {[
-              { key: "auto", label: "Auto", icon: "phone-portrait-outline" },
-              { key: "light", label: "Light", icon: "sunny-outline" },
-              { key: "dark", label: "Dark", icon: "moon-outline" },
-            ].map(option => {
-              const selected = themeMode === option.key;
-              return (
-                <TouchableOpacity
-                  key={option.key}
-                  style={[s.themeOption, selected && s.themeOptionActive]}
-                  onPress={() => onThemeChange(option.key)}
-                  accessibilityRole="radio"
-                  accessibilityLabel={`${option.label} theme`}
-                  accessibilityState={{ selected }}
-                >
-                  <Ionicons name={option.icon} size={16} color={selected ? "#fff" : C.textSub} />
-                  <Text style={[s.themeOptionText, selected && s.themeOptionTextActive]}>{option.label}</Text>
-                </TouchableOpacity>
-              );
-            })}
-          </View>
-        </View>
-
         {/* Menu items */}
         {[
           { icon: "card-outline", label: "Subscription Details", onPress: onGoToSubscription },
           { icon: "ribbon-outline", label: "My Certificates", badge: certificatesCount || 0, onPress: onGoToCertificates },
           { icon: "heart-outline", label: "My Wishlist", badge: wishlistCount || 0, onPress: onGoToWishlist },
-          { icon: "help-circle-outline", label: "Help & Support", onPress: () => Linking.openURL("mailto:support@edunex.app") },
+          { icon: "help-circle-outline", label: "Help & Support", onPress: () => Linking.openURL("mailto:support@skillomate.ai") },
           { icon: "document-text-outline", label: "Terms & Conditions", onPress: () => openAppLink(TERMS_URL, "Terms & Conditions") },
           { icon: "shield-outline", label: "Privacy Policy", onPress: () => openAppLink(PRIVACY_URL, "Privacy Policy") },
         ].map((item, i) => (
-          <TouchableOpacity key={i} style={s.menuItem} onPress={item.onPress}>
+          <TouchableOpacity
+            key={i}
+            style={s.menuItem}
+            onPress={item.onPress}
+            accessibilityRole="button"
+            accessibilityLabel={`${item.label}${item.badge > 0 ? `, ${item.badge}` : ""}`}
+          >
             <View style={s.menuIconBox}>
               <Ionicons name={item.icon} size={20} color={C.primary} />
             </View>
             <Text style={s.menuLabel}>{item.label}</Text>
             {item.badge > 0 && (
               <View style={{ backgroundColor: C.primary, borderRadius: 10, paddingHorizontal: 7, paddingVertical: 2, marginRight: 8 }}>
-                <Text style={{ color: "#fff", fontSize: 11, fontWeight: "700" }}>{item.badge}</Text>
+                <Text style={{ color: C.onPrimary, fontSize: 11, fontWeight: "700" }}>{item.badge}</Text>
               </View>
             )}
             <Ionicons name="chevron-forward" size={18} color={C.textMuted} />
@@ -3949,9 +5092,36 @@ function ProfileScreen({ user, onLogout, onGoToHome, onGoToCourses, onGoToAI, on
           <Text style={s.logoutText}>Logout</Text>
         </TouchableOpacity>
 
+        <View style={s.dangerZone}>
+          <Text style={s.dangerZoneLabel}>Danger Zone</Text>
+          <TouchableOpacity
+            style={s.deleteAccountRow}
+            onPress={() => setShowDeleteAccount(true)}
+            accessibilityRole="button"
+            accessibilityLabel="Permanently delete account"
+            accessibilityHint="Opens a confirmation form"
+            testID="open-delete-account"
+          >
+            <View style={s.deleteAccountRowIcon}>
+              <Ionicons name="trash-outline" size={19} color={C.danger} />
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text style={s.deleteAccountRowTitle}>Delete Account</Text>
+              <Text style={s.deleteAccountRowSubtitle}>Permanently remove your account and data</Text>
+            </View>
+            <Ionicons name="chevron-forward" size={18} color={C.danger} />
+          </TouchableOpacity>
+        </View>
+
         <Text style={{ textAlign: "center", color: C.textMuted, fontSize: 12, marginTop: 16 }}>Version 1.0</Text>
       </ScrollView>
 
+      <DeleteAccountModal
+        visible={showDeleteAccount}
+        user={user}
+        onClose={() => setShowDeleteAccount(false)}
+        onDeleteAccount={onDeleteAccount}
+      />
       <BottomNav active="profile" onHome={onGoToHome} onCourses={onGoToCourses} onAI={onGoToAI} onDownloads={onGoToDownloads} onProfile={() => {}} aiRobotId={aiRobotId} />
     </View>
   );
@@ -4011,7 +5181,7 @@ function RobotAvatar({ robotId, size = 30 }) {
   const src = robotId ? AI_ROBOT_IMAGES[robotId] : null;
   if (!src) return (
     <View accessible={false} style={{ width: size, height: size, borderRadius: size / 2, backgroundColor: C.primary, alignItems: "center", justifyContent: "center" }}>
-      <Ionicons name="sparkles" size={size * 0.5} color="#fff" />
+      <Ionicons name="sparkles" size={size * 0.5} color={C.onPrimary} />
     </View>
   );
   return (
@@ -4136,7 +5306,8 @@ function AiAssistantScreen({
   }, [fixedCourse, isCourseMode, user?._id, user?.sessionId]);
 
   useEffect(() => {
-    setTimeout(() => listRef.current?.scrollToEnd?.({ animated: true }), 80);
+    const scrollTimer = setTimeout(() => listRef.current?.scrollToEnd?.({ animated: true }), 80);
+    return () => clearTimeout(scrollTimer);
   }, [messages, loading]);
 
   async function sendAiMessage(value = input) {
@@ -4212,7 +5383,7 @@ function AiAssistantScreen({
             </TouchableOpacity>
           ) : null}
           <Text style={[s.pageTitle, { marginLeft: onBack ? 0 : 0, textAlign: "center" }]} numberOfLines={1}>
-            {isCourseMode ? "Course AI" : "AI Assistant"}
+            {isCourseMode ? "Course AI" : "Nex AI"}
           </Text>
         </View>
       </SafeAreaView>
@@ -4220,7 +5391,7 @@ function AiAssistantScreen({
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         keyboardVerticalOffset={Platform.OS === "ios" ? 86 : 0}
-        style={{ flex: 1 }}
+        style={[s.aiKeyboardArea, !isCourseMode && s.aiKeyboardAreaWithNav]}
       >
         <View style={{
           flexDirection: "row", alignItems: "center", gap: 12,
@@ -4260,6 +5431,7 @@ function AiAssistantScreen({
 
         <FlatList
           ref={listRef}
+          style={s.aiMessageList}
           data={messages}
           keyExtractor={(_, index) => String(index)}
           contentContainerStyle={s.aiMessages}
@@ -4307,7 +5479,7 @@ function AiAssistantScreen({
           </View>
         )}
 
-        <View style={s.aiComposer}>
+        <View style={[s.aiComposer, isCourseMode && s.aiComposerStandalone]}>
           <TextInput
             style={s.aiInput}
             value={input}
@@ -4326,7 +5498,7 @@ function AiAssistantScreen({
             accessibilityLabel="Send message"
             accessibilityState={{ disabled: !input.trim() || loading }}
           >
-            <Ionicons name="send" size={18} color="#fff" />
+            <Ionicons name="send" size={18} color={C.onPrimary} />
           </TouchableOpacity>
         </View>
       </KeyboardAvoidingView>
@@ -4395,8 +5567,6 @@ function AiAssistantScreen({
 
 // ── App ───────────────────────────────────────────────────────────────────────
 export default function App() {
-  const systemScheme = useColorScheme();
-  const [, forceUpdate] = useState(0);
   const [isRestoring, setIsRestoring] = useState(true);
   const [user, setUser] = useState(null);
   const [mainScreen, setMainScreen] = useState("home");
@@ -4412,7 +5582,6 @@ export default function App() {
   const [courseAiTarget, setCourseAiTarget] = useState(null);
   const [wishlist, setWishlist] = useState([]);
   const [courseProgress, setCourseProgress] = useState({});
-  const [themeMode, setThemeMode] = useState("light");
   const [certificates, setCertificates] = useState([]);
   const [certModal, setCertModal] = useState(null);
 
@@ -4461,7 +5630,7 @@ export default function App() {
         return;
       }
       const { user: fresh, wishlist: freshWishlist } = await res.json();
-      const merged = { ...fresh, sessionId: fallback?.sessionId || sessionId };
+      const merged = { ...fallback, ...fresh, sessionId: fallback?.sessionId || sessionId };
       await AsyncStorage.setItem("user", JSON.stringify(merged));
       setUser(merged); // always set fresh data first — includes avatar
       if (Array.isArray(freshWishlist)) setWishlist(freshWishlist);
@@ -4471,16 +5640,6 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    ScreenCapture.preventScreenCaptureAsync();
-    AsyncStorage.getItem(THEME_STORAGE_KEY).then(savedTheme => {
-      const mode = ["light", "dark", "auto"].includes(savedTheme) ? savedTheme : "light";
-      setThemeMode(mode);
-      applyThemeColors(mode === "auto" ? (systemScheme === "dark" ? "dark" : "light") : mode);
-      forceUpdate(n => n + 1);
-    }).catch(() => {
-      setThemeMode("light");
-      applyThemeColors("light");
-    });
     AsyncStorage.getItem("user").then(async v => {
       try {
         if (v) {
@@ -4496,25 +5655,7 @@ export default function App() {
     }).catch(() => setIsRestoring(false));
     AsyncStorage.getItem(AI_AVATAR_STORAGE_KEY).then(v => { if (v) setAiRobotId(v); }).catch(() => {});
     // wishlist is now DB-backed — loaded via refreshUser/validate response
-    return () => { ScreenCapture.allowScreenCaptureAsync(); };
-  }, [systemScheme, refreshUser]);
-
-  const changeTheme = useCallback((mode) => {
-    if (mode !== "dark" && mode !== "light" && mode !== "auto") return;
-    setThemeMode(mode);
-    AsyncStorage.setItem(THEME_STORAGE_KEY, mode).catch(() => {});
-    if (mode !== "auto") {
-      applyThemeColors(mode);
-      forceUpdate(n => n + 1);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (themeMode === "auto") {
-      applyThemeColors(systemScheme === "dark" ? "dark" : "light");
-      forceUpdate(n => n + 1);
-    }
-  }, [themeMode, systemScheme]);
+  }, [refreshUser]);
 
   const userRef = useRef(null);
   useEffect(() => { userRef.current = user; }, [user]);
@@ -4630,14 +5771,26 @@ export default function App() {
         });
         Alert.alert("Downloaded", "Video saved for offline viewing.");
       } else {
-        setDownloads(prev => ({ ...prev, [guid]: { status: "error", progress: 0, ...meta } }));
-        Alert.alert("Download failed", `Server returned ${result?.status || "an error"}.`);
+        const errorMessage = getDownloadFailureMessage(null, result?.status);
+        setDownloads(prev => ({ ...prev, [guid]: { status: "error", progress: 0, errorMessage, ...meta } }));
+        Alert.alert("Download failed", errorMessage);
       }
     } catch (e) {
-      setDownloads(prev => ({ ...prev, [guid]: { status: "error", progress: 0, ...meta } }));
-      Alert.alert("Download failed", e?.message || "Could not download this video.");
+      const errorMessage = getDownloadFailureMessage(e);
+      setDownloads(prev => ({ ...prev, [guid]: { status: "error", progress: 0, errorMessage, ...meta } }));
+      Alert.alert("Download failed", errorMessage);
     }
   }, []);
+
+  const retryDownload = useCallback((item) => {
+    if (!item?.bunnyGuid || item.status !== "error") return;
+    startDownload({
+      _id: item.videoId || item.bunnyGuid,
+      bunnyGuid: item.bunnyGuid,
+      bunnyLibraryId: item.bunnyLibraryId || "",
+      title: item.title || "Video",
+    }, item.courseId || "", item.courseTitle || "");
+  }, [startDownload]);
 
   const deleteDownload = useCallback(async (guid) => {
     await FileSystem.deleteAsync(DOWNLOADS_DIR + guid + ".mp4", { idempotent: true }).catch(() => {});
@@ -4704,13 +5857,26 @@ export default function App() {
   const openCourse = useCallback(async (course, options = {}) => {
     const u = userRef.current;
     if (!hasCourseAccess(u)) { setShowAppUpgrade(true); return; }
+    const prepareCourse = source => {
+      const sourceVideos = sortLessons(source?.videos || []);
+      const requestedIds = Array.isArray(options.videoIds) ? options.videoIds.map(String) : null;
+      const videosById = new Map(sourceVideos.map((video, index) => [getVideoKey(video, index), video]));
+      const videos = requestedIds
+        ? requestedIds.map(id => videosById.get(id)).filter(Boolean)
+        : sourceVideos;
+      return {
+        ...source,
+        title: options.title || source?.title,
+        videos,
+      };
+    };
     const fixtureCourse = DEV_UI_QA_ENABLED
       ? UI_QA_COURSES.find(item => item._id === course?._id)
       : null;
-    if (fixtureCourse || (DEV_UI_QA_ENABLED && Array.isArray(course?.videos) && course.videos.length > 0)) {
-      const nextCourse = fixtureCourse || course;
+    if (fixtureCourse || course?.__homePlayableVideos || (DEV_UI_QA_ENABLED && Array.isArray(course?.videos) && course.videos.length > 0)) {
+      const nextCourse = prepareCourse(fixtureCourse || course);
       setSelectedCourse(nextCourse);
-      setPreloadedVideos(null);
+      setPreloadedVideos(nextCourse.videos);
       setIsPreviewOnly(false);
       setInitialTime(options.initialTime || 0);
       setStartIndex(Number.isInteger(options.startIndex) ? options.startIndex : null);
@@ -4721,7 +5887,7 @@ export default function App() {
       const res = await fetch(`${API_BASE}/api/courses/${course._id}/videos?userId=${encodeURIComponent(u._id)}&sessionId=${encodeURIComponent(u.sessionId)}`);
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Could not open course.");
-      setSelectedCourse({ ...course, videos: data.videos || [] });
+      setSelectedCourse(prepareCourse({ ...course, videos: data.videos || [] }));
       setPreloadedVideos(null);
       setIsPreviewOnly(false);
       setInitialTime(options.initialTime || 0);
@@ -5168,6 +6334,68 @@ export default function App() {
     setUser(null); setSelectedCourse(null); setStartIndex(null); setCourseAiTarget(null); setMainScreen("home");
   }
 
+  async function handleDeleteAccount({ password: currentPassword, confirmation }) {
+    const currentUser = userRef.current;
+    if (!currentUser?._id || !currentUser?.sessionId) {
+      return { ok: false, error: "Your session has expired. Please sign in again." };
+    }
+
+    try {
+      const payload = JSON.stringify({
+        password: currentPassword,
+        confirmation,
+        userId: currentUser._id,
+        sessionId: currentUser.sessionId,
+      });
+      const requestDeletion = async (includeBearer) => {
+        const headers = { "Content-Type": "application/json" };
+        if (includeBearer && currentUser.accessToken) {
+          headers.Authorization = `Bearer ${currentUser.accessToken}`;
+        }
+        const response = await fetch(`${API_BASE}/api/auth/account`, {
+          method: "DELETE",
+          headers,
+          body: payload,
+        });
+        return { response, responseData: await readJsonResponse(response) };
+      };
+
+      let { response: res, responseData: data } = await requestDeletion(Boolean(currentUser.accessToken));
+      // Access tokens are short-lived. Existing mobile sessions remain valid, so
+      // retry with the stored session ID when only the bearer token has expired.
+      if (res.status === 401 && currentUser.accessToken && data.code !== "INVALID_PASSWORD") {
+        ({ response: res, responseData: data } = await requestDeletion(false));
+      }
+      if (!res.ok) {
+        return { ok: false, error: data.error || "Account could not be deleted. Please try again." };
+      }
+
+      await FileSystem.deleteAsync(DOWNLOADS_DIR, { idempotent: true }).catch(() => {});
+      await AsyncStorage.multiRemove(["user", AI_AVATAR_STORAGE_KEY, DOWNLOADS_STORAGE_KEY]);
+
+      setDownloads({});
+      setAiRobotId(null);
+      setWishlist([]);
+      setCourseProgress({});
+      setCertificates([]);
+      setCertModal(null);
+      setShowAppUpgrade(false);
+      clearLoginForm();
+      resetSignup();
+      setUser(null);
+      setSelectedCourse(null);
+      setStartIndex(null);
+      setInitialTime(0);
+      setPreloadedVideos(null);
+      setIsPreviewOnly(false);
+      setCourseAiTarget(null);
+      setMainScreen("home");
+      return { ok: true };
+    } catch {
+      return { ok: false, error: "Cannot connect to server. Check your connection and try again." };
+    }
+  }
+
   // ── Splash loader — shown while restoring session from storage ──────────────
   if (isRestoring) {
     return (
@@ -5219,9 +6447,12 @@ export default function App() {
                 placeholderTextColor={C.textMuted}
                 value={otp} onChangeText={setOtp}
                 keyboardType="number-pad" maxLength={6}
+                accessibilityLabel="Mobile verification code"
               />
               <TouchableOpacity style={s.otpResendBtn}
-                onPress={() => { setOtpSent(false); setOtp(""); setSignupError(""); }}>
+                onPress={() => { setOtpSent(false); setOtp(""); setSignupError(""); }}
+                accessibilityRole="button"
+                accessibilityLabel="Resend mobile verification code">
                 <Text style={s.otpResendText}>Resend</Text>
               </TouchableOpacity>
             </View>
@@ -5254,7 +6485,7 @@ export default function App() {
           </TouchableOpacity>
         </View>
 
-        <TouchableOpacity onPress={resetSignup} style={s.authLink}>
+        <TouchableOpacity onPress={resetSignup} style={s.authLink} accessibilityRole="button" accessibilityLabel="Return to login">
           <Text style={{ color: C.textSub, fontSize: 14 }}>
             Already have an account?{"  "}
             <Text style={{ color: C.primary, fontWeight: "700" }}>Log in</Text>
@@ -5318,7 +6549,7 @@ export default function App() {
               <AvatarImage avatarId={av.id} size={56} style={{ borderRadius: 28 }} />
               {signupAvatar === av.id && (
                 <View style={s.avatarPickerCheck}>
-                  <Ionicons name="checkmark" size={10} color="#fff" />
+                  <Ionicons name="checkmark" size={10} color={C.onPrimary} />
                 </View>
               )}
             </TouchableOpacity>
@@ -5363,10 +6594,13 @@ export default function App() {
             shadowOffset: { width: 0, height: 4 }, elevation: 6,
             opacity: signupLoading ? 0.6 : 1,
           }}
+          accessibilityRole="button"
+          accessibilityLabel="Complete profile"
+          accessibilityState={{ disabled: signupLoading, busy: signupLoading }}
         >
           {signupLoading
-            ? <ActivityIndicator color={C.bg} />
-            : <Text style={{ color: C.bg, fontWeight: "900", fontSize: 16 }}>Complete My Profile</Text>
+            ? <ActivityIndicator color={C.onPrimary} />
+            : <Text style={{ color: C.onPrimary, fontWeight: "900", fontSize: 16 }}>Complete My Profile</Text>
           }
         </TouchableOpacity>
 
@@ -5390,7 +6624,7 @@ export default function App() {
           </TouchableOpacity>
         </View>
 
-        <TouchableOpacity onPress={resetSignup} style={s.authLink}>
+        <TouchableOpacity onPress={resetSignup} style={s.authLink} accessibilityRole="button" accessibilityLabel="Return to login">
           <Text style={{ color: C.textSub, fontSize: 14 }}>
             Already have an account?{"  "}
             <Text style={{ color: C.primary, fontWeight: "700" }}>Log in</Text>
@@ -5445,6 +6679,7 @@ export default function App() {
             placeholder="••••••••"
             value={password} onChangeText={setPassword}
             secureTextEntry
+            accessibilityLabel="Password"
           />
 
           {!!loginError && <Text style={s.errorText}>{loginError}</Text>}
@@ -5458,10 +6693,13 @@ export default function App() {
               shadowOffset: { width: 0, height: 4 }, elevation: 6,
               opacity: loginLoading ? 0.6 : 1,
             }}
+            accessibilityRole="button"
+            accessibilityLabel="Log in"
+            accessibilityState={{ disabled: loginLoading, busy: loginLoading }}
           >
             {loginLoading
-              ? <ActivityIndicator color={C.bg} />
-              : <Text style={{ color: C.bg, fontWeight: "900", fontSize: 16, letterSpacing: 0.5 }}>Log In</Text>
+              ? <ActivityIndicator color={C.onPrimary} />
+              : <Text style={{ color: C.onPrimary, fontWeight: "900", fontSize: 16, letterSpacing: 0.5 }}>Log In</Text>
             }
           </TouchableOpacity>
 
@@ -5472,7 +6710,12 @@ export default function App() {
             <View style={{ flex: 1, height: 1, backgroundColor: C.border }} />
           </View>
 
-          <TouchableOpacity onPress={() => { setScreen("signup1"); setSignupError(""); }} style={s.authLink}>
+          <TouchableOpacity
+            onPress={() => { setScreen("signup1"); setSignupError(""); }}
+            style={s.authLink}
+            accessibilityRole="button"
+            accessibilityLabel="Create an account"
+          >
             <Text style={{ color: C.textSub, fontSize: 14 }}>
               New to Skillomate?{"  "}
               <Text style={{ color: C.primary, fontWeight: "800" }}>Create an Account</Text>
@@ -5545,7 +6788,7 @@ export default function App() {
             loadCourseProgress();
             setStartIndex(null);
             setInitialTime(0);
-            setPreloadedVideos(null);
+            setPreloadedVideos(Array.isArray(selectedCourse.videos) ? selectedCourse.videos : null);
           }}
         />
         <CertificateModal cert={certModal} onClose={() => setCertModal(null)} />
@@ -5625,6 +6868,7 @@ export default function App() {
         <ProfileScreen
           user={user}
           onLogout={handleLogout}
+          onDeleteAccount={handleDeleteAccount}
           wishlistCount={wishlist.length}
           certificatesCount={certificates.length}
           onGoToWishlist={() => setMainScreen("wishlist")}
@@ -5634,8 +6878,6 @@ export default function App() {
           onGoToCourses={() => setMainScreen("courses")}
           onGoToAI={() => setMainScreen("ai")}
           onGoToDownloads={() => { const ok = hasCourseAccess(user); if (!ok) { setShowAppUpgrade(true); } else { setMainScreen("downloads"); } }}
-          themeMode={themeMode}
-          onThemeChange={changeTheme}
           onAvatarChange={avatarId => {
             setUser(prev => {
               if (!prev) return prev;
@@ -5682,88 +6924,133 @@ export default function App() {
                 {downloadItems.length} video{downloadItems.length !== 1 ? "s" : ""} in downloads
               </Text>
             }
-            renderItem={({ item }) => (
-              <TouchableOpacity
-                style={s.dlVideoRow}
-                activeOpacity={0.85}
-                onPress={() => {
-                  if (item.status !== "done") return;
-                  // Build a fake video object from download metadata — no internet needed
-                  const fakeVideo = {
-                    _id: item.videoId || item.bunnyGuid,
-                    bunnyGuid: item.bunnyGuid,
-                    bunnyLibraryId: item.bunnyLibraryId || "",
-                    title: item.title,
-                    order: 0,
-                  };
-                  const fakeCourseId = item.courseId && /^[a-f0-9]{24}$/i.test(item.courseId)
-                    ? item.courseId : "000000000000000000000000";
-                  setSelectedCourse({ _id: fakeCourseId, title: item.courseTitle || "Downloaded Video", videos: [fakeVideo] });
-                  setPreloadedVideos([fakeVideo]);
-                  setStartIndex(0);
-                  setInitialTime(0);
-                  setMainScreen("courses");
-                }}
-              >
-                <View style={s.dlVideoThumb}>
-                  <RemoteThumbnailImage
-                    imageUrl={`${API_BASE}/api/bunny/thumbnail/${item.bunnyGuid}?libraryId=${encodeURIComponent(item.bunnyLibraryId || "")}`}
-                    screen="Downloads thumbnail"
-                    courseId={item.courseId}
-                    borderRadius={10}
-                  />
-                  <View style={[StyleSheet.absoluteFill, { borderRadius: 10, backgroundColor: "rgba(0,0,0,0.25)", alignItems: "center", justifyContent: "center" }]}>
-                    <Ionicons name="play-circle" size={32} color="#fff" />
-                  </View>
-                </View>
-                <View style={{ flex: 1 }}>
-                  <Text style={{ color: C.text, fontWeight: "700", fontSize: 14, marginBottom: 3 }} numberOfLines={2}>
-                    {item.title}
-                  </Text>
-                  <Text style={{ color: C.textSub, fontSize: 12, marginBottom: 6 }} numberOfLines={1}>
-                    {item.courseTitle}
-                  </Text>
-                  <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
-                    <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
-                      <Ionicons
-                        name={item.status === "error" ? "alert-circle-outline" : item.status === "downloading" ? "time-outline" : "checkmark-circle"}
-                        size={13}
-                        color={C.primary}
-                      />
-                      <Text style={{ color: C.primary, fontSize: 11, fontWeight: "600" }}>
-                        {item.status === "error" ? "Failed" : item.status === "downloading" ? `${Math.round((item.progress || 0) * 100)}%` : "Downloaded"}
-                      </Text>
-                    </View>
-                    {item.status === "downloading" && (
-                      <View style={[s.dlProgressBar, { flex: 1, minWidth: 60, marginTop: 0 }]}>
-                        <View style={[s.dlProgressFill, { width: `${Math.round((item.progress || 0) * 100)}%` }]} />
+            renderItem={({ item }) => {
+              const isDone = item.status === "done";
+              const isDownloading = item.status === "downloading";
+              const isError = item.status === "error";
+              const progressPercent = Math.round((item.progress || 0) * 100);
+              const statusColor = isError ? C.danger : isDone ? C.success : C.primary;
+              const DownloadContent = isDone ? TouchableOpacity : View;
+
+              const playDownload = () => {
+                const offlineVideo = {
+                  _id: item.videoId || item.bunnyGuid,
+                  bunnyGuid: item.bunnyGuid,
+                  bunnyLibraryId: item.bunnyLibraryId || "",
+                  title: item.title,
+                  order: 0,
+                };
+                const offlineCourseId = item.courseId && /^[a-f0-9]{24}$/i.test(item.courseId)
+                  ? item.courseId : "000000000000000000000000";
+                setSelectedCourse({ _id: offlineCourseId, title: item.courseTitle || "Downloaded Video", videos: [offlineVideo] });
+                setPreloadedVideos([offlineVideo]);
+                setStartIndex(0);
+                setInitialTime(0);
+                setMainScreen("courses");
+              };
+
+              return (
+                <View style={[s.dlVideoRow, isError && s.dlVideoRowError]}>
+                  <View style={s.dlVideoRowMain}>
+                    <DownloadContent
+                      style={s.dlVideoContent}
+                      accessible
+                      accessibilityRole={isDone ? "button" : "text"}
+                      accessibilityLabel={
+                        isDone
+                          ? `${item.title}. Ready offline. Tap to play.`
+                          : isDownloading
+                            ? `${item.title}. Downloading ${progressPercent} percent.`
+                            : `${item.title}. Download failed. ${item.errorMessage || "Check your connection and course access, then retry."}`
+                      }
+                      accessibilityState={{ disabled: !isDone, busy: isDownloading }}
+                      {...(isDone ? {
+                        activeOpacity: 0.85,
+                        onPress: playDownload,
+                        accessibilityHint: "Opens the offline lesson player",
+                      } : {})}
+                    >
+                      <View style={[s.dlVideoThumb, !isDone && { opacity: 0.72 }]}>
+                        <RemoteThumbnailImage
+                          imageUrl={`${API_BASE}/api/bunny/thumbnail/${item.bunnyGuid}?libraryId=${encodeURIComponent(item.bunnyLibraryId || "")}`}
+                          screen="Downloads thumbnail"
+                          courseId={item.courseId}
+                          borderRadius={10}
+                        />
+                        <View style={[StyleSheet.absoluteFill, s.dlVideoThumbOverlay]}>
+                          {isDownloading
+                            ? <ActivityIndicator size="small" color={C.primary} />
+                            : <Ionicons name={isError ? "alert-circle" : "play-circle"} size={32} color={isError ? C.danger : "#fff"} />
+                          }
+                        </View>
                       </View>
-                    )}
-                    {item.size > 0 && (
-                      <Text style={{ color: C.textMuted, fontSize: 11 }}>
-                        {item.size > 1024 * 1024 * 1024
-                          ? `${(item.size / (1024 * 1024 * 1024)).toFixed(1)} GB`
-                          : `${Math.round(item.size / (1024 * 1024))} MB`}
-                      </Text>
-                    )}
+                      <View style={{ flex: 1 }}>
+                        <Text style={{ color: C.text, fontWeight: "700", fontSize: 14, marginBottom: 3 }} numberOfLines={2}>
+                          {item.title}
+                        </Text>
+                        <Text style={{ color: C.textSub, fontSize: 12, marginBottom: 6 }} numberOfLines={1}>
+                          {item.courseTitle}
+                        </Text>
+                        <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+                          <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
+                            <Ionicons
+                              name={isError ? "alert-circle-outline" : isDownloading ? "cloud-download-outline" : "checkmark-circle"}
+                              size={13}
+                              color={statusColor}
+                            />
+                            <Text style={{ color: statusColor, fontSize: 11, fontWeight: "700" }}>
+                              {isError ? "Download failed" : isDownloading ? `Downloading ${progressPercent}%` : "Ready offline"}
+                            </Text>
+                          </View>
+                          {isDownloading && (
+                            <View style={[s.dlProgressBar, { flex: 1, minWidth: 36, marginTop: 0 }]}>
+                              <View style={[s.dlProgressFill, { width: `${progressPercent}%` }]} />
+                            </View>
+                          )}
+                          {isDone && item.size > 0 && (
+                            <Text style={{ color: C.textMuted, fontSize: 11 }}>
+                              {item.size > 1024 * 1024 * 1024
+                                ? `${(item.size / (1024 * 1024 * 1024)).toFixed(1)} GB`
+                                : `${Math.round(item.size / (1024 * 1024))} MB`}
+                            </Text>
+                          )}
+                        </View>
+                      </View>
+                    </DownloadContent>
+                    <TouchableOpacity
+                      style={s.dlDeleteButton}
+                      onPress={() => {
+                        Alert.alert("Remove Download", `Remove "${item.title}" from downloads?`, [
+                          { text: "Cancel", style: "cancel" },
+                          { text: "Remove", style: "destructive", onPress: () => deleteDownload(item.bunnyGuid) },
+                        ]);
+                      }}
+                      accessibilityRole="button"
+                      accessibilityLabel={`Remove ${item.title} from downloads`}
+                    >
+                      <Ionicons name="trash-outline" size={20} color={C.textMuted} />
+                    </TouchableOpacity>
                   </View>
+
+                  {isError && (
+                    <View style={s.dlErrorFooter}>
+                      <Text style={s.dlErrorMessage}>
+                        {item.errorMessage || "The download did not finish. Check your connection and course access, then retry."}
+                      </Text>
+                      <TouchableOpacity
+                        style={s.dlRetryButton}
+                        onPress={() => retryDownload(item)}
+                        accessibilityRole="button"
+                        accessibilityLabel={`Retry download ${item.title}`}
+                      >
+                        <Ionicons name="refresh" size={16} color={C.onPrimary} />
+                        <Text style={s.dlRetryButtonText}>Retry</Text>
+                      </TouchableOpacity>
+                    </View>
+                  )}
                 </View>
-                <TouchableOpacity
-                  style={{ width: 44, height: 44, alignItems: "center", justifyContent: "center" }}
-                  onPress={event => {
-                    event.stopPropagation?.();
-                    Alert.alert("Delete Download", `Remove "${item.title}" from downloads?`, [
-                      { text: "Cancel", style: "cancel" },
-                      { text: "Delete", style: "destructive", onPress: () => deleteDownload(item.bunnyGuid) },
-                    ]);
-                  }}
-                  accessibilityRole="button"
-                  accessibilityLabel={`Delete downloaded video ${item.title}`}
-                >
-                  <Ionicons name="trash-outline" size={20} color={C.textMuted} />
-                </TouchableOpacity>
-              </TouchableOpacity>
-            )}
+              );
+            }}
           />
         )}
 
@@ -5808,6 +7095,7 @@ export default function App() {
         onResumeCourse={(course, idx, secs) => {
           openCourse(course, { startIndex: idx, initialTime: secs });
         }}
+        onOpenLessonCollection={(course, options) => openCourse(course, options)}
         onOpenHeroPreview={openHeroPreview}
         courseProgress={courseProgress}
         aiRobotId={aiRobotId}
@@ -5853,7 +7141,7 @@ return StyleSheet.create({
   },
   btnFill: { backgroundColor: C.primary },
   btnOutline: { borderWidth: 1.2, borderColor: C.borderStrong, backgroundColor: C.surface },
-  btnText: { ...TYPE.button, color: C.isDark ? "#151515" : "#FFFFFF" },
+  btnText: { ...TYPE.button, color: C.onPrimary },
   errorText: { color: C.danger, fontSize: 13, marginBottom: 10 },
   avatarPickerItem: {
     width: 64, height: 64, borderRadius: 32,
@@ -5868,7 +7156,7 @@ return StyleSheet.create({
     backgroundColor: C.primary, alignItems: "center", justifyContent: "center",
   },
   genderOption: {
-    flex: 1, minHeight: 44, paddingVertical: 11, borderRadius: RADIUS.sm,
+    flex: 1, minHeight: MIN_TOUCH_TARGET, paddingVertical: 11, borderRadius: RADIUS.sm,
     borderWidth: 1.2, borderColor: C.border,
     alignItems: "center", backgroundColor: C.surface,
   },
@@ -5882,7 +7170,7 @@ return StyleSheet.create({
   otpResendText: { color: C.primary, fontWeight: "700", fontSize: 13 },
   termsText: { color: C.textMuted, fontSize: 12, textAlign: "center", marginTop: 16, lineHeight: 18 },
   legalLinksRow: { flexDirection: "row", justifyContent: "center", gap: 8, marginTop: 2 },
-  legalLinkButton: { minHeight: 44, paddingHorizontal: 8, alignItems: "center", justifyContent: "center" },
+  legalLinkButton: { minHeight: MIN_TOUCH_TARGET, paddingHorizontal: 8, alignItems: "center", justifyContent: "center" },
   legalLinkText: { color: C.primary, fontSize: 12, fontWeight: "700", textDecorationLine: "underline" },
   authLink: { alignItems: "center", marginTop: 20 },
   authLinkText: { color: C.textSub, fontSize: 14 },
@@ -5904,7 +7192,7 @@ return StyleSheet.create({
   resetTitle: { ...TYPE.h2, color: C.text, marginBottom: 5 },
   resetSubtitle: { ...TYPE.body, color: C.textSub, lineHeight: 20 },
   resetCloseButton: {
-    width: 44, height: 44, borderRadius: 22, alignItems: "center", justifyContent: "center",
+    width: MIN_TOUCH_TARGET, height: MIN_TOUCH_TARGET, borderRadius: MIN_TOUCH_TARGET / 2, alignItems: "center", justifyContent: "center",
     backgroundColor: C.surface, borderWidth: 1, borderColor: C.border,
   },
 
@@ -5912,22 +7200,23 @@ return StyleSheet.create({
   pageHeader: {
     flexDirection: "row", alignItems: "center",
     paddingHorizontal: 16, paddingVertical: 12,
+    paddingTop: 12 + ANDROID_STATUS_BAR_INSET,
     backgroundColor: C.surface,
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: C.isDark ? "rgba(255,255,255,0.08)" : C.border,
+    borderBottomColor: C.border,
   },
   pageTitle: { flex: 1, ...TYPE.title, color: C.text, marginLeft: 8 },
   iconBtn: {
-    minWidth: 44, minHeight: 44, padding: 8, borderRadius: RADIUS.pill,
+    minWidth: MIN_TOUCH_TARGET, minHeight: MIN_TOUCH_TARGET, padding: 8, borderRadius: RADIUS.pill,
     alignItems: "center", justifyContent: "center",
-    backgroundColor: C.isDark ? "rgba(255,255,255,0.06)" : C.accentSoft,
+    backgroundColor: C.isDark ? C.surfaceElevated : C.accentSoft,
   },
   bottomNav: {
     position: "absolute", bottom: 0, left: 0, right: 0,
     zIndex: 50,
     elevation: 20,
-    flexDirection: "row", backgroundColor: C.isDark ? "rgba(17,17,17,0.96)" : "rgba(255,253,248,0.96)",
-    borderTopWidth: 1, borderTopColor: C.isDark ? "rgba(255,255,255,0.08)" : C.border,
+    flexDirection: "row", backgroundColor: C.isDark ? C.navigation : "rgba(255,253,248,0.96)",
+    borderTopWidth: 1, borderTopColor: C.border,
     paddingBottom: Platform.OS === "ios" ? 20 : 8, paddingTop: 8,
   },
   bottomTab: { flex: 1, minHeight: 48, alignItems: "center", justifyContent: "center", gap: 2 },
@@ -5945,6 +7234,7 @@ return StyleSheet.create({
 
   // Home
   streamingHeader: {
+    paddingTop: ANDROID_STATUS_BAR_INSET,
     backgroundColor: C.bg,
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: C.border,
@@ -5968,8 +7258,8 @@ return StyleSheet.create({
     marginTop: 2,
   },
   streamingIconBtn: {
-    width: 38,
-    height: 38,
+    width: MIN_TOUCH_TARGET,
+    height: MIN_TOUCH_TARGET,
     borderRadius: RADIUS.pill,
     alignItems: "center",
     justifyContent: "center",
@@ -5996,7 +7286,7 @@ return StyleSheet.create({
     gap: SPACE.xs,
   },
   discoveryTab: {
-    minHeight: 34,
+    minHeight: MIN_TOUCH_TARGET,
     paddingHorizontal: 12,
     borderRadius: RADIUS.sm,
     alignItems: "center",
@@ -6043,6 +7333,33 @@ return StyleSheet.create({
     fontWeight: "700",
     marginTop: SPACE.xs,
   },
+  thumbnailBrandBadge: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    width: 104,
+    minHeight: 32,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    paddingHorizontal: 9,
+    paddingVertical: 7,
+    borderBottomRightRadius: 10,
+    backgroundColor: "#0D0D0B",
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: "rgba(231,188,104,0.45)",
+  },
+  thumbnailBrandText: {
+    color: "#F5F1E8",
+    fontSize: 9,
+    lineHeight: 11,
+    fontWeight: "900",
+  },
+  thumbnailBrandBadgeLarge: {
+    width: 114,
+    minHeight: 42,
+    paddingVertical: 10,
+  },
   streamingHeroPhotoWash: {
     ...StyleSheet.absoluteFillObject,
     backgroundColor: "rgba(255,253,248,0.08)",
@@ -6076,7 +7393,7 @@ return StyleSheet.create({
     gap: SPACE.sm,
   },
   startLearningBtn: {
-    minHeight: 44,
+    minHeight: MIN_TOUCH_TARGET,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
@@ -6089,10 +7406,10 @@ return StyleSheet.create({
   },
   startLearningText: {
     ...TYPE.button,
-    color: C.text,
+    color: C.onPrimary,
   },
   myListHeroBtn: {
-    minHeight: 44,
+    minHeight: MIN_TOUCH_TARGET,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
@@ -6308,7 +7625,7 @@ return StyleSheet.create({
   },
   goldLabelText: {
     ...TYPE.label,
-    color: C.text,
+    color: C.onPrimary,
     fontSize: 9,
   },
   newTag: {
@@ -6323,7 +7640,7 @@ return StyleSheet.create({
   },
   newTagText: {
     ...TYPE.label,
-    color: C.text,
+    color: C.onPrimary,
     fontSize: 9,
   },
   learnEarnBand: {
@@ -6353,9 +7670,9 @@ return StyleSheet.create({
     marginTop: 4,
   },
   learnEarnBtn: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
+    width: MIN_TOUCH_TARGET,
+    height: MIN_TOUCH_TARGET,
+    borderRadius: MIN_TOUCH_TARGET / 2,
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: C.primary,
@@ -6422,23 +7739,23 @@ return StyleSheet.create({
   homeTopBar: {
     backgroundColor: C.surface,
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: C.isDark ? "rgba(255,255,255,0.06)" : C.border,
+    borderBottomColor: C.border,
   },
   homeTopBarInner: {
     flexDirection: "row", alignItems: "center", justifyContent: "space-between",
-    paddingHorizontal: 16, paddingVertical: 12,
+    paddingHorizontal: 16, paddingVertical: 12, paddingTop: 12 + ANDROID_STATUS_BAR_INSET,
   },
   avatarBtn: {
-    width: 40, height: 40, borderRadius: 20,
+    width: MIN_TOUCH_TARGET, height: MIN_TOUCH_TARGET, borderRadius: MIN_TOUCH_TARGET / 2,
     backgroundColor: C.primary, alignItems: "center", justifyContent: "center",
     borderWidth: 2, borderColor: C.primary,
     overflow: "hidden",
   },
-  avatarBtnText: { color: "#fff", fontWeight: "800", fontSize: 14 },
+  avatarBtnText: { color: C.onPrimary, fontWeight: "800", fontSize: 14 },
   hero: {
     minHeight: 252, marginHorizontal: 16, marginTop: 18,
     borderRadius: RADIUS.lg, overflow: "hidden", backgroundColor: C.cardBg,
-    borderWidth: 1, borderColor: C.isDark ? "rgba(255,255,255,0.08)" : C.border,
+    borderWidth: 1, borderColor: C.border,
   },
   heroShade: {
     ...StyleSheet.absoluteFillObject,
@@ -6453,7 +7770,7 @@ return StyleSheet.create({
     flexDirection: "row", alignItems: "center", gap: 5, alignSelf: "flex-start",
     backgroundColor: C.primary, borderRadius: 5, paddingHorizontal: 8, paddingVertical: 4, marginBottom: 8,
   },
-  heroChipText: { color: C.bg, fontSize: 10, fontWeight: "900", letterSpacing: 0.6, textTransform: "uppercase" },
+  heroChipText: { color: C.onPrimary, fontSize: 10, fontWeight: "900", letterSpacing: 0.6, textTransform: "uppercase" },
   heroEyebrow: {
     color: C.primary, fontSize: 12, fontWeight: "700",
     letterSpacing: 1, textTransform: "uppercase", marginBottom: 10,
@@ -6464,11 +7781,11 @@ return StyleSheet.create({
   heroBtn: {
     flexDirection: "row", alignItems: "center", gap: 8,
     backgroundColor: C.primary, borderRadius: RADIUS.sm,
-    minHeight: 44, paddingVertical: 11, paddingHorizontal: 17, alignSelf: "flex-start",
+    minHeight: MIN_TOUCH_TARGET, paddingVertical: 11, paddingHorizontal: 17, alignSelf: "flex-start",
   },
-  heroBtnText: { ...TYPE.button, color: C.isDark ? "#151515" : "#FFFFFF" },
+  heroBtnText: { ...TYPE.button, color: C.onPrimary },
   heroGhostBtn: {
-    width: 44, height: 44, borderRadius: 8, alignItems: "center", justifyContent: "center",
+    width: MIN_TOUCH_TARGET, height: MIN_TOUCH_TARGET, borderRadius: 8, alignItems: "center", justifyContent: "center",
     backgroundColor: "rgba(255,255,255,0.14)", borderWidth: 1, borderColor: "rgba(255,255,255,0.16)",
   },
   heroProgressTrack: { height: 4, borderRadius: 3, backgroundColor: "rgba(255,255,255,0.22)", overflow: "hidden" },
@@ -6501,8 +7818,8 @@ return StyleSheet.create({
   seeAll: { ...TYPE.caption, color: C.primary, fontWeight: "800" },
   skillCard: {
     width: 188, borderRadius: RADIUS.lg, padding: 14,
-    backgroundColor: C.isDark ? "rgba(26,33,35,0.82)" : C.cardBg,
-    borderWidth: 1, borderColor: C.isDark ? "rgba(255,255,255,0.08)" : C.border,
+    backgroundColor: C.isDark ? C.surfaceElevated : C.cardBg,
+    borderWidth: 1, borderColor: C.border,
   },
   skillIcon: {
     width: 46, height: 46, borderRadius: 9, alignItems: "center", justifyContent: "center",
@@ -6575,8 +7892,8 @@ return StyleSheet.create({
 
   wishlistBtn: {
     position: "absolute", top: 8, right: 8,
-    width: 44, height: 44, alignItems: "center", justifyContent: "center",
-    backgroundColor: "rgba(255,255,255,0.92)", borderRadius: 22,
+    width: MIN_TOUCH_TARGET, height: MIN_TOUCH_TARGET, alignItems: "center", justifyContent: "center",
+    backgroundColor: "rgba(255,255,255,0.92)", borderRadius: MIN_TOUCH_TARGET / 2,
   },
   badge: { borderRadius: 4, paddingHorizontal: 6, paddingVertical: 2, alignSelf: "flex-start" },
   badgeText: { fontSize: 10, fontWeight: "700" },
@@ -6586,14 +7903,14 @@ return StyleSheet.create({
     flexDirection: "row", alignItems: "center",
     backgroundColor: C.deepBlue, margin: 16, borderRadius: RADIUS.xl, padding: 20,
   },
-  ctaTitle: { ...TYPE.h2, color: C.isDark ? "#151515" : "#FFFFFF" },
+  ctaTitle: { ...TYPE.h2, color: C.onPrimary },
   ctaIllustration: {
     width: 70, height: 70, borderRadius: 35,
     backgroundColor: "rgba(255,255,255,0.08)", alignItems: "center", justifyContent: "center",
   },
   mentorBanner: {
     marginHorizontal: 16, marginTop: 22, borderRadius: RADIUS.lg, padding: 18,
-    backgroundColor: C.isDark ? "#242B2E" : C.cardBg,
+    backgroundColor: C.isDark ? C.surfaceElevated : C.cardBg,
     borderWidth: 1, borderColor: C.border,
     ...ELEVATION.soft,
   },
@@ -6601,8 +7918,8 @@ return StyleSheet.create({
   mentorTitle: { color: C.text, fontSize: 17, fontWeight: "900" },
   mentorPrompt: {
     color: C.text, fontSize: 15, lineHeight: 22, padding: 14, borderRadius: 10,
-    backgroundColor: C.isDark ? "rgba(8,15,18,0.5)" : C.lightGray,
-    borderWidth: 1, borderColor: C.isDark ? "rgba(255,255,255,0.06)" : C.border,
+    backgroundColor: C.isDark ? C.panelSecondary : C.lightGray,
+    borderWidth: 1, borderColor: C.border,
     marginBottom: 12,
   },
   mentorCta: { color: C.primary, fontSize: 14, fontWeight: "900", textAlign: "center" },
@@ -6614,8 +7931,8 @@ return StyleSheet.create({
     minHeight: 52, paddingLeft: 14, paddingRight: 4, paddingVertical: 4,
     borderWidth: 1, borderColor: C.isDark ? "rgba(255,255,255,0.08)" : C.border,
   },
-  searchInput: { flex: 1, minHeight: 44, ...TYPE.body, color: C.text },
-  searchClearButton: { width: 44, height: 44, alignItems: "center", justifyContent: "center", borderRadius: 22 },
+  searchInput: { flex: 1, minHeight: MIN_TOUCH_TARGET, ...TYPE.body, color: C.text },
+  searchClearButton: { width: MIN_TOUCH_TARGET, height: MIN_TOUCH_TARGET, alignItems: "center", justifyContent: "center", borderRadius: MIN_TOUCH_TARGET / 2 },
 courseListCard: {
     backgroundColor: C.cardBg, borderRadius: RADIUS.lg, overflow: "hidden",
     borderWidth: 1, borderColor: C.border,
@@ -6630,33 +7947,26 @@ courseListCard: {
   // CourseList vertical cards
   clCard: {
     backgroundColor: C.cardBg, borderRadius: RADIUS.lg, overflow: "hidden",
-    borderWidth: 1, borderColor: C.isDark ? "rgba(255,255,255,0.08)" : C.border,
+    borderWidth: 1, borderColor: C.border,
     ...ELEVATION.soft,
   },
   clThumb: {
-    width: "100%", height: 205, backgroundColor: C.lightGray,
+    width: "100%", height: 205, backgroundColor: C.lightGray, overflow: "hidden",
   },
-  clPremiumBadge: {
-    position: "absolute", top: 12, left: 12,
-    backgroundColor: C.accent, borderRadius: RADIUS.xs,
-    paddingHorizontal: 9, paddingVertical: 4,
-  },
-  clPremiumText: { ...TYPE.caption, color: C.isDark ? "#151515" : "#FFFFFF", fontSize: 10, fontWeight: "800" },
   clWishlistBtn: {
     position: "absolute", bottom: 12, right: 12,
-    width: 44, height: 44, alignItems: "center", justifyContent: "center",
-    backgroundColor: "rgba(0,0,0,0.4)", borderRadius: 22,
+    width: MIN_TOUCH_TARGET, height: MIN_TOUCH_TARGET, alignItems: "center", justifyContent: "center",
+    backgroundColor: "rgba(0,0,0,0.4)", borderRadius: MIN_TOUCH_TARGET / 2,
   },
   clLock: {
     position: "absolute", bottom: 12, left: 12,
     backgroundColor: "rgba(0,0,0,0.45)", borderRadius: 10, padding: 5,
   },
-  clInfo: { padding: 14, paddingTop: 12 },
+  clInfo: { padding: 14, paddingTop: 12, backgroundColor: C.cardBg },
   clTitle: { ...TYPE.title, color: C.text, marginBottom: 8 },
-  clRatingRow: { flexDirection: "row", alignItems: "center", gap: 5, marginBottom: 12 },
-  clRating: { fontSize: 13, fontWeight: "700", color: C.text },
-  clDot: { fontSize: 13, color: C.textMuted },
-  clLectures: { fontSize: 13, color: C.textMuted },
+  clMetaRow: { flexDirection: "row", alignItems: "center", gap: 5, marginBottom: 12 },
+  clMetaText: { flexShrink: 1, fontSize: 13, color: C.textMuted },
+  clMetaDot: { fontSize: 13, color: C.textMuted },
   clProgressRow: { flexDirection: "row", justifyContent: "space-between", marginBottom: 5 },
   clProgressLabel: { fontSize: 12, color: C.textMuted, fontWeight: "500" },
   clProgressPct: { fontSize: 12, color: C.primary, fontWeight: "700" },
@@ -6671,7 +7981,7 @@ courseListCard: {
   videoRow: {
     flexDirection: "row", alignItems: "center", gap: 12,
     backgroundColor: C.cardBg, borderRadius: RADIUS.lg, padding: 12,
-    borderWidth: 1, borderColor: C.isDark ? "rgba(255,255,255,0.08)" : C.border,
+    borderWidth: 1, borderColor: C.border,
     ...ELEVATION.hairline,
   },
   courseDescriptionCard: {
@@ -6681,6 +7991,25 @@ courseListCard: {
   },
   courseDescriptionTitle: { ...TYPE.title, color: C.text, marginBottom: 7 },
   courseDescriptionText: { ...TYPE.body, color: C.textSub },
+  courseDescriptionTextFrame: { position: "relative" },
+  courseDescriptionMeasure: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    opacity: 0,
+  },
+  courseDescriptionToggle: {
+    minHeight: MIN_TOUCH_TARGET,
+    alignSelf: "flex-start",
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    marginTop: 2,
+    marginBottom: -10,
+    paddingRight: 8,
+  },
+  courseDescriptionToggleText: { ...TYPE.button, color: C.primary },
   courseNotesOverlay: {
     flex: 1,
     backgroundColor: "rgba(43,33,26,0.24)",
@@ -6715,9 +8044,9 @@ courseListCard: {
   courseNotesTitle: { flex: 1, ...TYPE.title, color: C.textStrong, fontWeight: "900" },
   courseNotesSubtitle: { ...TYPE.caption, color: C.textMuted, marginTop: 2 },
   courseNotesClose: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
+    width: MIN_TOUCH_TARGET,
+    height: MIN_TOUCH_TARGET,
+    borderRadius: MIN_TOUCH_TARGET / 2,
     backgroundColor: C.surfaceWarm,
     borderWidth: 1,
     borderColor: C.border,
@@ -6749,12 +8078,19 @@ courseListCard: {
     flexDirection: "row",
     alignItems: "center",
     gap: 10,
+    minHeight: MIN_TOUCH_TARGET,
     paddingVertical: 11,
     borderTopWidth: StyleSheet.hairlineWidth,
     borderTopColor: C.border,
   },
   courseResourceTitle: { flex: 1, ...TYPE.bodyMedium, color: C.text },
   videoRowTitle: { flex: 1, ...TYPE.bodyMedium, color: C.text },
+  videoDownloadButton: {
+    width: MIN_TOUCH_TARGET,
+    height: MIN_TOUCH_TARGET,
+    alignItems: "center",
+    justifyContent: "center",
+  },
   videoThumbSmall: {
     width: 90, height: 56, borderRadius: 8, overflow: "hidden",
     backgroundColor: C.lightGray,
@@ -6782,14 +8118,34 @@ courseListCard: {
   },
   offlineBadgeText: { color: "#fff", fontSize: 11, fontWeight: "700" },
   dlVideoRow: {
-    flexDirection: "row", alignItems: "center", gap: 12,
-    backgroundColor: C.cardBg, borderRadius: 12, padding: 10,
-    borderWidth: 1, borderColor: C.border,
+    backgroundColor: C.cardBg, borderRadius: 12,
+    borderWidth: 1, borderColor: C.border, overflow: "hidden",
   },
+  dlVideoRowError: { borderColor: "rgba(239,68,68,0.45)" },
+  dlVideoRowMain: { flexDirection: "row", alignItems: "center", padding: 10, gap: 4 },
+  dlVideoContent: { flex: 1, flexDirection: "row", alignItems: "center", gap: 12 },
   dlVideoThumb: {
     width: 90, height: 64, borderRadius: 10,
     backgroundColor: C.lightGray, overflow: "hidden",
   },
+  dlVideoThumbOverlay: {
+    borderRadius: 10, backgroundColor: "rgba(0,0,0,0.38)",
+    alignItems: "center", justifyContent: "center",
+  },
+  dlDeleteButton: { width: MIN_TOUCH_TARGET, height: MIN_TOUCH_TARGET, alignItems: "center", justifyContent: "center" },
+  dlErrorFooter: {
+    flexDirection: "row", alignItems: "center", gap: 10,
+    paddingHorizontal: 12, paddingTop: 10, paddingBottom: 12,
+    borderTopWidth: 1, borderTopColor: "rgba(239,68,68,0.22)",
+    backgroundColor: "rgba(239,68,68,0.06)",
+  },
+  dlErrorMessage: { flex: 1, color: C.textSub, fontSize: 12, lineHeight: 17 },
+  dlRetryButton: {
+    minWidth: 82, minHeight: MIN_TOUCH_TARGET, paddingHorizontal: 12, borderRadius: 10,
+    flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 6,
+    backgroundColor: C.primary,
+  },
+  dlRetryButtonText: { color: C.onPrimary, fontSize: 13, fontWeight: "800" },
   dlProgressBar: {
     height: 3, borderRadius: 2, backgroundColor: C.border, marginTop: 5, overflow: "hidden",
   },
@@ -6813,34 +8169,13 @@ courseListCard: {
   },
   profileInfoLabel: { fontSize: 11, color: C.textMuted, fontWeight: "600", marginBottom: 1 },
   profileInfoValue: { fontSize: 14, color: C.text, fontWeight: "600" },
-  themeCard: {
-    backgroundColor: C.cardBg, borderRadius: RADIUS.lg, borderWidth: 1, borderColor: C.border,
-    padding: 14, marginBottom: 16,
-    ...ELEVATION.hairline,
-  },
-  themeCardHeader: { flexDirection: "row", alignItems: "center", gap: 12, marginBottom: 12 },
-  themeToggle: {
-    flexDirection: "row", backgroundColor: C.lightGray, borderRadius: 10,
-    padding: 4, borderWidth: 1, borderColor: C.border,
-  },
-  themeOption: {
-    flex: 1, minHeight: 44, borderRadius: 8,
-    flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 6,
-  },
-  themeOptionActive: {
-    backgroundColor: C.primary,
-    shadowColor: C.primary, shadowOpacity: 0.18, shadowRadius: 4,
-    shadowOffset: { width: 0, height: 1 }, elevation: 2,
-  },
-  themeOptionText: { color: C.textSub, fontSize: 13, fontWeight: "700" },
-  themeOptionTextActive: { color: "#fff" },
   profileAvatarLg: {
     width: 90, height: 90, borderRadius: 45,
     backgroundColor: C.primary, alignItems: "center", justifyContent: "center",
     borderWidth: 3, borderColor: "rgba(255,255,255,0.3)",
     overflow: "hidden",
   },
-  profileAvatarLgText: { color: "#fff", fontSize: 32, fontWeight: "900" },
+  profileAvatarLgText: { color: C.onPrimary, fontSize: 32, fontWeight: "900" },
   subBadge: { borderRadius: 20, paddingHorizontal: 14, paddingVertical: 5, marginTop: 8 },
   menuItem: {
     flexDirection: "row", alignItems: "center", gap: 14,
@@ -6858,8 +8193,77 @@ courseListCard: {
     borderWidth: 1, borderColor: "rgba(239,68,68,0.3)",
   },
   logoutText: { color: C.danger, fontWeight: "700", fontSize: 15 },
+  dangerZone: { marginTop: 20 },
+  dangerZoneLabel: {
+    ...TYPE.label, color: C.danger, textTransform: "uppercase", marginBottom: 8, paddingHorizontal: 2,
+  },
+  deleteAccountRow: {
+    minHeight: 66, flexDirection: "row", alignItems: "center", gap: 12,
+    backgroundColor: "rgba(239,68,68,0.07)", borderRadius: RADIUS.lg,
+    paddingHorizontal: 14, paddingVertical: 11,
+    borderWidth: 1, borderColor: "rgba(239,68,68,0.32)",
+  },
+  deleteAccountRowIcon: {
+    width: 38, height: 38, borderRadius: 10, alignItems: "center", justifyContent: "center",
+    backgroundColor: "rgba(239,68,68,0.12)",
+  },
+  deleteAccountRowTitle: { color: C.danger, fontSize: 14, fontWeight: "800" },
+  deleteAccountRowSubtitle: { color: C.textSub, fontSize: 11, lineHeight: 15, marginTop: 2 },
+  deleteAccountOverlay: {
+    flex: 1, justifyContent: "center", paddingHorizontal: 18,
+    backgroundColor: "rgba(0,0,0,0.78)",
+  },
+  deleteAccountDialog: {
+    maxHeight: "90%", width: "100%", maxWidth: 430, alignSelf: "center",
+    backgroundColor: C.surface, borderRadius: 18, borderWidth: 1, borderColor: C.borderStrong,
+    overflow: "hidden",
+  },
+  deleteAccountContent: { padding: 20, paddingBottom: 22 },
+  deleteAccountIcon: {
+    width: 50, height: 50, borderRadius: 25, alignItems: "center", justifyContent: "center",
+    alignSelf: "center", backgroundColor: "rgba(239,68,68,0.12)", marginBottom: 12,
+  },
+  deleteAccountTitle: { ...TYPE.h2, color: C.text, textAlign: "center" },
+  deleteAccountSubtitle: {
+    ...TYPE.body, color: C.textSub, textAlign: "center", lineHeight: 20, marginTop: 8,
+  },
+  deleteAccountWarningBox: {
+    backgroundColor: "rgba(239,68,68,0.07)", borderRadius: RADIUS.md,
+    borderWidth: 1, borderColor: "rgba(239,68,68,0.24)", padding: 12, marginTop: 16, gap: 9,
+  },
+  deleteAccountWarningRow: { flexDirection: "row", alignItems: "center", gap: 9 },
+  deleteAccountWarningText: { flex: 1, color: C.textSub, fontSize: 12, lineHeight: 17 },
+  deleteAccountPlanNotice: {
+    flexDirection: "row", alignItems: "flex-start", gap: 9,
+    backgroundColor: C.panelSecondary, borderRadius: RADIUS.md,
+    padding: 11, marginTop: 12, borderWidth: 1, borderColor: C.border,
+  },
+  deleteAccountPlanText: { flex: 1, color: C.textSub, fontSize: 12, lineHeight: 17 },
+  deleteAccountIdentity: { color: C.textMuted, fontSize: 11, marginTop: 14, marginBottom: 3 },
+  deleteAccountFieldLabel: {
+    ...TYPE.label, color: C.text, marginTop: 12, marginBottom: 6,
+  },
+  deleteAccountInput: {
+    ...TYPE.bodyMedium, minHeight: 48, color: C.text, backgroundColor: C.background,
+    borderRadius: RADIUS.md, borderWidth: 1, borderColor: C.borderStrong,
+    paddingHorizontal: 13, paddingVertical: 12,
+  },
+  deleteAccountError: { color: C.danger, fontSize: 12, lineHeight: 17, marginTop: 10 },
+  deleteAccountActions: { flexDirection: "row", gap: 10, marginTop: 18 },
+  deleteAccountCancelBtn: {
+    flex: 1, minHeight: MIN_TOUCH_TARGET, alignItems: "center", justifyContent: "center",
+    borderRadius: RADIUS.md, borderWidth: 1, borderColor: C.borderStrong, backgroundColor: C.surfaceWarm,
+    paddingHorizontal: 10,
+  },
+  deleteAccountCancelText: { ...TYPE.button, color: C.text },
+  deleteAccountConfirmBtn: {
+    flex: 1, minHeight: MIN_TOUCH_TARGET, alignItems: "center", justifyContent: "center",
+    borderRadius: RADIUS.md, backgroundColor: C.danger, paddingHorizontal: 10,
+  },
+  deleteAccountConfirmBtnDisabled: { opacity: 0.38 },
+  deleteAccountConfirmText: { ...TYPE.button, color: "#FFFFFF" },
 
-  // AI Assistant
+  // Nex AI
   aiHero: {
     flexDirection: "row", alignItems: "center", gap: 12,
     marginHorizontal: 16, marginTop: 14, marginBottom: 10,
@@ -6878,8 +8282,11 @@ courseListCard: {
   aiStatusOnline: { backgroundColor: C.success },
   aiStatusOffline: { backgroundColor: C.warning },
   aiMessages: {
-    paddingHorizontal: 16, paddingTop: 6, paddingBottom: 12,
+    paddingHorizontal: 16, paddingTop: 10, paddingBottom: 12,
   },
+  aiKeyboardArea: { flex: 1, minHeight: 0 },
+  aiKeyboardAreaWithNav: { marginBottom: Platform.OS === "ios" ? 76 : 64 },
+  aiMessageList: { flex: 1, minHeight: 0, overflow: "hidden" },
   aiMessageRow: {
     flexDirection: "row", alignItems: "flex-end", gap: 8,
     marginBottom: 12,
@@ -6899,31 +8306,32 @@ courseListCard: {
     borderBottomLeftRadius: 14, borderBottomRightRadius: 5,
   },
   aiBubbleText: { ...TYPE.body, color: C.text },
-  aiBubbleTextUser: { color: "#fff", fontWeight: "600" },
+  aiBubbleTextUser: { color: C.onPrimary, fontWeight: "600" },
   aiSuggestions: {
     flexDirection: "row", flexWrap: "wrap", gap: 8,
     paddingHorizontal: 16, paddingTop: 4, paddingBottom: 8,
   },
   aiSuggestion: {
-    minHeight: 44, borderRadius: 22, paddingHorizontal: 12, paddingVertical: 8,
+    minHeight: MIN_TOUCH_TARGET, borderRadius: MIN_TOUCH_TARGET / 2, paddingHorizontal: 12, paddingVertical: 8,
     alignItems: "center", justifyContent: "center",
     backgroundColor: C.primaryLight, borderWidth: 1, borderColor: C.border,
   },
   aiSuggestionText: { color: C.primaryDark, fontSize: 12, fontWeight: "700" },
   aiComposer: {
     flexDirection: "row", alignItems: "flex-end", gap: 8,
-    paddingHorizontal: 16, paddingTop: 8, paddingBottom: Platform.OS === "ios" ? 92 : 84,
+    paddingHorizontal: 16, paddingTop: 8, paddingBottom: 10,
     backgroundColor: C.bg, borderTopWidth: 1, borderTopColor: C.border,
   },
+  aiComposerStandalone: { paddingBottom: Platform.OS === "ios" ? 28 : 10 },
   aiInput: {
-    flex: 1, minHeight: 44, maxHeight: 104,
+    flex: 1, minHeight: MIN_TOUCH_TARGET, maxHeight: 104,
     color: C.text, backgroundColor: C.cardBg,
     borderWidth: 1, borderColor: C.border, borderRadius: RADIUS.lg,
     paddingHorizontal: 13, paddingTop: 11, paddingBottom: 10,
     ...TYPE.body,
   },
   aiSend: {
-    width: 44, height: 44, borderRadius: 22,
+    width: MIN_TOUCH_TARGET, height: MIN_TOUCH_TARGET, borderRadius: MIN_TOUCH_TARGET / 2,
     backgroundColor: C.primary, alignItems: "center", justifyContent: "center",
   },
   aiSendDisabled: { opacity: 0.45 },
@@ -6939,23 +8347,26 @@ courseListCard: {
     position: "absolute", top: 0, left: 0, right: 0, zIndex: 20,
     flexDirection: "row", alignItems: "center",
     paddingHorizontal: 10, paddingVertical: 6,
+    paddingTop: 6 + ANDROID_STATUS_BAR_INSET,
     backgroundColor: "rgba(0,0,0,0.35)",
   },
   reelsTopBtn: {
-    width: 38, height: 38, borderRadius: 19,
+    width: MIN_TOUCH_TARGET, height: MIN_TOUCH_TARGET, borderRadius: MIN_TOUCH_TARGET / 2,
     alignItems: "center", justifyContent: "center",
   },
   reelsAiBtn: {
     position: "absolute", right: 10, top: 110,
     flexDirection: "row", alignItems: "center", gap: 4,
-    paddingHorizontal: 10, paddingVertical: 8, borderRadius: 19,
+    minWidth: MIN_TOUCH_TARGET, minHeight: MIN_TOUCH_TARGET, justifyContent: "center",
+    paddingHorizontal: 10, borderRadius: MIN_TOUCH_TARGET / 2,
     backgroundColor: C.isDark ? "rgba(240,216,168,0.88)" : "rgba(23,23,23,0.86)",
     zIndex: 20,
   },
   reelsNotesBtn: {
-    position: "absolute", right: 10, top: 164,
+    position: "absolute", right: 10, top: 166,
     flexDirection: "row", alignItems: "center", gap: 5,
-    paddingHorizontal: 10, paddingVertical: 8, borderRadius: 19,
+    minWidth: MIN_TOUCH_TARGET, minHeight: MIN_TOUCH_TARGET, justifyContent: "center",
+    paddingHorizontal: 10, borderRadius: MIN_TOUCH_TARGET / 2,
     backgroundColor: "rgba(23,23,23,0.78)",
     borderWidth: 1, borderColor: "rgba(255,255,255,0.12)",
     zIndex: 20,
@@ -6981,7 +8392,7 @@ courseListCard: {
   descriptionHandle: { width: 38, height: 4, borderRadius: 2, backgroundColor: "rgba(255,255,255,0.35)", alignSelf: "center", marginBottom: 12 },
   descriptionHeader: { flexDirection: "row", alignItems: "center", gap: 12, paddingHorizontal: 18, paddingBottom: 12 },
   descriptionTitle: { flex: 1, color: "#fff", fontSize: 16, fontWeight: "800", lineHeight: 21 },
-  descriptionClose: { width: 32, height: 32, borderRadius: 16, backgroundColor: "rgba(255,255,255,0.12)", alignItems: "center", justifyContent: "center" },
+  descriptionClose: { width: MIN_TOUCH_TARGET, height: MIN_TOUCH_TARGET, borderRadius: MIN_TOUCH_TARGET / 2, backgroundColor: "rgba(255,255,255,0.12)", alignItems: "center", justifyContent: "center" },
   descriptionScroll: { flexGrow: 0 },
   descriptionContent: { paddingHorizontal: 18, paddingBottom: 28, gap: 14 },
   descriptionBody: { color: "rgba(255,255,255,0.86)", fontSize: 14, lineHeight: 21 },
@@ -7009,7 +8420,7 @@ courseListCard: {
   lessonPromptText: { flex: 1, color: "rgba(255,255,255,0.88)", fontSize: 13, lineHeight: 20 },
   lessonResourceRow: {
     flexDirection: "row", alignItems: "center", gap: 10,
-    paddingVertical: 10,
+    minHeight: MIN_TOUCH_TARGET, paddingVertical: 10,
     borderTopWidth: StyleSheet.hairlineWidth,
     borderTopColor: "rgba(255,255,255,0.1)",
   },
@@ -7024,7 +8435,7 @@ courseListCard: {
   courseAiHeader: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingHorizontal: 18, paddingBottom: 12, borderBottomWidth: 1, borderBottomColor: C.border },
   courseAiTitle: { color: C.text, fontSize: 16, fontWeight: "900" },
   courseAiSubtitle: { color: C.textSub, fontSize: 12, marginTop: 2, maxWidth: 260 },
-  courseAiClose: { width: 32, height: 32, borderRadius: 16, backgroundColor: C.surfaceWarm, alignItems: "center", justifyContent: "center" },
+  courseAiClose: { width: MIN_TOUCH_TARGET, height: MIN_TOUCH_TARGET, borderRadius: MIN_TOUCH_TARGET / 2, backgroundColor: C.surfaceWarm, alignItems: "center", justifyContent: "center" },
   courseAiMessages: { flex: 1 },
   courseAiContent: { padding: 16, paddingBottom: 20 },
   courseAiMessage: { flexDirection: "row", alignItems: "flex-start", gap: 10, marginBottom: 14 },
@@ -7033,46 +8444,50 @@ courseListCard: {
   courseAiBubble: { flex: 1, backgroundColor: C.cardBg, borderRadius: 12, paddingHorizontal: 12, paddingVertical: 10, borderWidth: 1, borderColor: C.border },
   courseAiBubbleUser: { flex: 0, maxWidth: "82%", backgroundColor: C.primary },
   courseAiBubbleText: { color: C.text, fontSize: 13, lineHeight: 19 },
-  courseAiPrompt: { alignSelf: "flex-start", borderWidth: 1, borderColor: C.border, backgroundColor: C.accentSoft, borderRadius: 18, paddingHorizontal: 12, paddingVertical: 8, marginBottom: 8 },
+  courseAiBubbleTextUser: { color: C.onPrimary, fontWeight: "600" },
+  courseAiPrompt: { minHeight: MIN_TOUCH_TARGET, alignSelf: "flex-start", justifyContent: "center", borderWidth: 1, borderColor: C.border, backgroundColor: C.accentSoft, borderRadius: MIN_TOUCH_TARGET / 2, paddingHorizontal: 12, paddingVertical: 8, marginBottom: 8 },
   courseAiPromptText: { color: C.primaryDark, fontSize: 13, fontWeight: "700" },
   courseAiComposer: { flexDirection: "row", alignItems: "center", gap: 10, padding: 12, borderTopWidth: 1, borderTopColor: C.border, backgroundColor: C.surface },
-  courseAiInput: { flex: 1, minHeight: 40, maxHeight: 80, borderRadius: 20, backgroundColor: C.cardBg, color: C.text, paddingHorizontal: 14, fontSize: 14, borderWidth: 1, borderColor: C.border },
-  courseAiSend: { width: 40, height: 40, borderRadius: 20, backgroundColor: C.primary, alignItems: "center", justifyContent: "center" },
+  courseAiInput: { flex: 1, minHeight: MIN_TOUCH_TARGET, maxHeight: 80, borderRadius: MIN_TOUCH_TARGET / 2, backgroundColor: C.cardBg, color: C.text, paddingHorizontal: 14, fontSize: 14, borderWidth: 1, borderColor: C.border },
+  courseAiSend: { width: MIN_TOUCH_TARGET, height: MIN_TOUCH_TARGET, borderRadius: MIN_TOUCH_TARGET / 2, backgroundColor: C.primary, alignItems: "center", justifyContent: "center" },
   muteButton: {
     position: "absolute", bottom: 38, right: 10,
-    backgroundColor: "rgba(0,0,0,0.6)", paddingHorizontal: 10, paddingVertical: 6, borderRadius: 4, zIndex: 10,
+    width: MIN_TOUCH_TARGET, height: MIN_TOUCH_TARGET, alignItems: "center", justifyContent: "center",
+    backgroundColor: "rgba(0,0,0,0.6)", borderRadius: 6, zIndex: 10,
   },
   playPauseButton: {
-    position: "absolute", bottom: 35, left: "50%", marginLeft: -21,
-    width: 42, height: 42, borderRadius: 21,
+    position: "absolute", bottom: 35, left: "50%", marginLeft: -(MIN_TOUCH_TARGET / 2),
+    width: MIN_TOUCH_TARGET, height: MIN_TOUCH_TARGET, borderRadius: MIN_TOUCH_TARGET / 2,
     backgroundColor: "rgba(0,0,0,0.62)",
     borderWidth: 1, borderColor: "rgba(255,255,255,0.24)",
     alignItems: "center", justifyContent: "center", zIndex: 12,
   },
   speedButton: {
     position: "absolute", bottom: 38, left: 10,
-    backgroundColor: "rgba(0,0,0,0.6)", paddingHorizontal: 10, paddingVertical: 6, borderRadius: 4, zIndex: 10,
+    minWidth: MIN_TOUCH_TARGET, minHeight: MIN_TOUCH_TARGET, alignItems: "center", justifyContent: "center",
+    backgroundColor: "rgba(0,0,0,0.6)", paddingHorizontal: 10, borderRadius: 6, zIndex: 10,
   },
   speedButtonText: { color: "#fff", fontWeight: "700", fontSize: 13 },
   speedPicker: {
-    position: "absolute", bottom: 72, left: 10,
+    position: "absolute", bottom: 92, left: 10,
     backgroundColor: "rgba(0,0,0,0.88)", borderRadius: 8, overflow: "hidden", zIndex: 20,
   },
   qualityPicker: {
-    position: "absolute", bottom: 72, left: 70,
+    position: "absolute", bottom: 92, left: 70,
     backgroundColor: "rgba(0,0,0,0.88)", borderRadius: 8, overflow: "hidden", zIndex: 20,
   },
   qualityButton: {
     position: "absolute", bottom: 38, left: 70,
-    flexDirection: "row", alignItems: "center", gap: 4,
-    backgroundColor: "rgba(0,0,0,0.6)", paddingHorizontal: 10, paddingVertical: 6, borderRadius: 4, zIndex: 10,
+    minWidth: MIN_TOUCH_TARGET, minHeight: MIN_TOUCH_TARGET,
+    flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 4,
+    backgroundColor: "rgba(0,0,0,0.6)", paddingHorizontal: 10, borderRadius: 6, zIndex: 10,
   },
-  speedOption: { paddingHorizontal: 20, paddingVertical: 10 },
+  speedOption: { minHeight: MIN_TOUCH_TARGET, paddingHorizontal: 20, alignItems: "center", justifyContent: "center" },
   speedOptionActive: { backgroundColor: "rgba(255,255,255,0.2)" },
   speedOptionText: { color: "#fff", fontSize: 14, fontWeight: "600" },
-  timeDisplay: { position: "absolute", bottom: 82, left: 0, right: 0, alignItems: "center", zIndex: 10 },
+  timeDisplay: { position: "absolute", bottom: 96, left: 0, right: 0, alignItems: "center", zIndex: 10 },
   timeText: { color: "#fff", fontSize: 12, fontWeight: "600", textShadowColor: "rgba(0,0,0,0.8)", textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 3 },
-  timeline: { position: "absolute", bottom: 10, left: 12, right: 12, height: 24, justifyContent: "center", zIndex: 10 },
+  timeline: { position: "absolute", bottom: 0, left: 12, right: 12, height: MIN_TOUCH_TARGET, justifyContent: "center", zIndex: 10 },
   timelineTrack: { height: 4, backgroundColor: "rgba(255,255,255,0.4)", borderRadius: 2, overflow: "hidden" },
   timelineFill:  { height: "100%", backgroundColor: C.primary, borderRadius: 2 },
   timelineThumb: { position: "absolute", top: "50%", width: 14, height: 14, borderRadius: 7, backgroundColor: "#fff", marginTop: -7, marginLeft: -7 },
@@ -7103,7 +8518,8 @@ courseListCard: {
   },
   upgradeClose: {
     position: "absolute", top: 14, right: 14, zIndex: 10,
-    backgroundColor: C.surface, borderRadius: 16, padding: 6,
+    width: MIN_TOUCH_TARGET, height: MIN_TOUCH_TARGET, alignItems: "center", justifyContent: "center",
+    backgroundColor: C.surface, borderRadius: MIN_TOUCH_TARGET / 2,
     borderWidth: 1, borderColor: C.border,
   },
   upgradeBanner: {
@@ -7115,7 +8531,7 @@ courseListCard: {
     backgroundColor: C.primary, borderRadius: 6, paddingHorizontal: 10, paddingVertical: 4,
   },
   upgradeBannerBadgeText: {
-    color: "#fff", fontSize: 11, fontWeight: "800", letterSpacing: 1,
+    color: C.onPrimary, fontSize: 11, fontWeight: "800", letterSpacing: 1,
   },
   upgradeBannerIcon: {
     position: "absolute", bottom: 16, right: 20, zIndex: 2,
@@ -7134,7 +8550,7 @@ courseListCard: {
     alignSelf: "flex-end", backgroundColor: C.primary, borderRadius: 6,
     paddingHorizontal: 8, paddingVertical: 3, marginBottom: 10,
   },
-  upgradeBestValueText: { color: "#fff", fontSize: 10, fontWeight: "800", letterSpacing: 0.8 },
+  upgradeBestValueText: { color: C.onPrimary, fontSize: 10, fontWeight: "800", letterSpacing: 0.8 },
   upgradeCurrency: { fontSize: 22, fontWeight: "800", color: C.text, marginBottom: 4 },
   upgradePrice: { fontSize: 52, fontWeight: "900", color: C.text, lineHeight: 58 },
   upgradePricePeriod: { fontSize: 15, fontWeight: "600", color: C.textSub, marginBottom: 4, paddingBottom: 6 },
@@ -7148,7 +8564,7 @@ courseListCard: {
     alignItems: "center", marginTop: 8, marginBottom: 14,
     ...ELEVATION.soft,
   },
-  upgradeBtnText: { ...TYPE.button, color: C.isDark ? "#151515" : "#FFFFFF", fontSize: 17 },
+  upgradeBtnText: { ...TYPE.button, color: C.onPrimary, fontSize: 17 },
   notificationOverlay: {
     flex: 1,
     justifyContent: "flex-start",
@@ -7191,9 +8607,9 @@ courseListCard: {
     marginTop: 2,
   },
   notificationClose: {
-    width: 34,
-    height: 34,
-    borderRadius: 17,
+    width: MIN_TOUCH_TARGET,
+    height: MIN_TOUCH_TARGET,
+    borderRadius: MIN_TOUCH_TARGET / 2,
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: C.surfaceWarm,

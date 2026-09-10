@@ -383,6 +383,48 @@
       font-size: 15px;
       line-height: 1.75;
     }
+    .example-prompt-drawer {
+      max-width: 840px;
+      margin-top: 14px;
+      border: 1px solid var(--library-line);
+      border-radius: 8px;
+      overflow: hidden;
+      background: rgba(255,255,255,.72);
+    }
+    .example-prompt-drawer summary {
+      min-height: 42px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
+      color: #101010;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 900;
+      list-style: none;
+      user-select: none;
+    }
+    .example-prompt-drawer summary::-webkit-details-marker {
+      display: none;
+    }
+    .example-prompt-drawer summary::after {
+      content: "+";
+      margin-left: auto;
+      color: var(--library-accent);
+      font-size: 18px;
+      line-height: 1;
+    }
+    .example-prompt-drawer[open] summary::after {
+      content: "-";
+    }
+    .example-prompt-content {
+      padding: 0 14px 14px;
+      color: var(--library-muted);
+      font-size: 14px;
+      line-height: 1.7;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
     .lesson-meta {
       display: flex;
       flex-wrap: wrap;
@@ -1108,6 +1150,19 @@
       font-size: .92rem;
       line-height: 1.65;
       letter-spacing: 0;
+    }
+    .example-prompt-drawer {
+      border-color: var(--border);
+      background: rgba(255,255,255,.04);
+    }
+    .example-prompt-drawer summary {
+      color: #fff;
+      font-size: .84rem;
+      letter-spacing: 0;
+    }
+    .example-prompt-content {
+      color: rgba(255,255,255,.68);
+      font-size: .9rem;
     }
     .lesson-meta span {
       min-height: 28px;

@@ -765,7 +765,19 @@ function parseBunnyStreamUrl(value) {
 }
 
 function sanitizeOptionalUrl(value) {
-  return String(value || '').trim() || null;
+  const normalized = String(value || '').trim();
+  if (!normalized) return null;
+
+  if (/^https?:\/\/(?:www\.)?drive\.google\.com\//i.test(normalized)) {
+    const pathMatch = normalized.match(/\/(?:file\/)?d\/([a-zA-Z0-9_-]+)/i);
+    const queryMatch = normalized.match(/[?&]id=([a-zA-Z0-9_-]+)/i);
+    const driveFileId = pathMatch?.[1] || queryMatch?.[1];
+    if (driveFileId) {
+      return `https://drive.google.com/thumbnail?id=${encodeURIComponent(driveFileId)}&sz=w1600`;
+    }
+  }
+
+  return normalized;
 }
 
 function sanitizeCourseVideos(rawVideos) {
@@ -775,8 +787,11 @@ function sanitizeCourseVideos(rawVideos) {
   const sanitizedVideos = validVideoInputs
     .map((video, index) => {
       const title = String(video.title || `Video ${index + 1}`).trim();
+      const topic = String(video.topic || '').trim().slice(0, 80);
       const description = String(video.description || '').trim();
       const transcriptUrl = String(video.transcriptUrl || '').trim() || null;
+      const thumbnailUrl = sanitizeOptionalUrl(video.thumbnailUrl || video.thumbnailHorizontalUrl);
+      const thumbnailVerticalUrl = sanitizeOptionalUrl(video.thumbnailVerticalUrl);
       const examplePrompt = String(
         video.examplePrompt || video.examplePromptText || video.examplePromptUrl || video.promptUrl || ''
       ).trim();
@@ -786,6 +801,7 @@ function sanitizeCourseVideos(rawVideos) {
       if (youtubeId) {
         return {
           title,
+          topic,
           description,
           sourceType: 'youtube',
           videoUrl: null,
@@ -794,7 +810,8 @@ function sanitizeCourseVideos(rawVideos) {
           bunnyLibraryId: null,
           youtubeId,
           thumbnail: null,
-          thumbnailUrl: null,
+          thumbnailUrl,
+          thumbnailVerticalUrl,
           transcriptUrl,
           examplePrompt,
           duration,
@@ -809,11 +826,13 @@ function sanitizeCourseVideos(rawVideos) {
 
       return {
         title,
+        topic,
         description,
         ...bunnyVideo,
         youtubeId: null,
         thumbnail: null,
-        thumbnailUrl: null,
+        thumbnailUrl,
+        thumbnailVerticalUrl,
         transcriptUrl,
         examplePrompt,
         duration,
@@ -829,13 +848,15 @@ function sanitizeCourseVideos(rawVideos) {
   return sanitizedVideos;
 }
 
-function applyCourseThumbnailToVideos(videos, courseThumbnail, courseThumbnailUrl) {
+function applyCourseThumbnailToVideos(videos, courseThumbnail, courseThumbnailUrl, courseThumbnailVerticalUrl) {
   const sharedThumbnailUrl = sanitizeOptionalUrl(courseThumbnailUrl);
+  const sharedThumbnailVerticalUrl = sanitizeOptionalUrl(courseThumbnailVerticalUrl);
 
   return (Array.isArray(videos) ? videos : []).map((video) => ({
     ...video,
     thumbnail: null,
-    thumbnailUrl: sharedThumbnailUrl,
+    thumbnailUrl: sanitizeOptionalUrl(video.thumbnailUrl) || sharedThumbnailUrl,
+    thumbnailVerticalUrl: sanitizeOptionalUrl(video.thumbnailVerticalUrl) || sharedThumbnailVerticalUrl,
   }));
 }
 
@@ -2685,7 +2706,7 @@ const course = new Course({
        thumbnailVertical: null,
        thumbnailUrl: courseThumbnailUrl,
        thumbnailVerticalUrl: courseThumbnailVerticalUrl,
-       videos: applyCourseThumbnailToVideos(sanitizedVideos, null, courseThumbnailUrl),
+       videos: applyCourseThumbnailToVideos(sanitizedVideos, null, courseThumbnailUrl, courseThumbnailVerticalUrl),
        notesUrl: req.body.notesUrl || null,
        category: req.body.category,
        status: req.body.status || 'draft',
@@ -2803,7 +2824,8 @@ app.patch('/api/admin/courses/:id', protectAdmin, async (req, res) => {
       updates.videos = applyCourseThumbnailToVideos(
         sanitizedVideos,
         null,
-        Object.prototype.hasOwnProperty.call(updates, 'thumbnailUrl') ? updates.thumbnailUrl : existingCourse.thumbnailUrl
+        Object.prototype.hasOwnProperty.call(updates, 'thumbnailUrl') ? updates.thumbnailUrl : existingCourse.thumbnailUrl,
+        Object.prototype.hasOwnProperty.call(updates, 'thumbnailVerticalUrl') ? updates.thumbnailVerticalUrl : existingCourse.thumbnailVerticalUrl
       );
     }
 

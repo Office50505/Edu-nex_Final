@@ -244,11 +244,13 @@ router.patch(
       'videoUrl',
       'embedUrl',
       'title',
+      'topic',
       'description',
       'duration',
       'order',
       'sourceType',
       'thumbnailUrl',
+      'thumbnailVerticalUrl',
       'transcriptUrl',
       'examplePrompt',
     ]);

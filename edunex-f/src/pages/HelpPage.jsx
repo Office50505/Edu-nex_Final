@@ -32,7 +32,7 @@ const cards = [
   {
     icon: "mail",
     title: "Contact",
-    copy: <>Email support at <a href="mailto:support@edunex.ai">support@edunex.ai</a> with your mobile number and issue details.</>,
+    copy: <>Email support at <a href="mailto:support@skillomate.ai">support@skillomate.ai</a> with your mobile number and issue details.</>,
   },
 ];
 

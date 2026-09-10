@@ -345,6 +345,7 @@ function buildContext(matches) {
 }
 
 function buildSystemPrompt(context) {
+<<<<<<< HEAD
   return `You are AI Studio Coach, the Skillomate AI Influencer course tutor.
 Use only the course excerpts below.
 Answer in simple Roman Hinglish by default, and match the user's language.
@@ -354,6 +355,13 @@ Give short practical steps, exact prompt lines, or fixes when the excerpts conta
 For normal questions use 3-5 concise bullets and never return more than 5 bullets.
 For quiz requests, write 3 short quiz questions with A/B/C options and do not reveal answers until asked.
 Mention the source once when useful.
+=======
+  return `You are Skillomate Nex AI, a fast course tutor. Use only the course excerpts below.
+Answer in exactly 3 short bullets.
+Do not write an intro, heading, recap, or extra section.
+Each bullet must be one complete sentence under 18 words.
+Mention the lesson source once.
+>>>>>>> 997e33eea7b5c5f193080a114f8374e8d90b8191
 If the answer is not explicitly in the excerpts, say exactly: "${REFUSAL_MESSAGE}"
 Never use outside knowledge, guesses, or general training data.
 
@@ -495,7 +503,7 @@ async function courseChat(req, res) {
     if (!question?.trim()) return res.status(400).json({ error: "question required." });
 
     const systemPrompt = [
-      "You are EduNex Course AI, a concise tutor inside a short-form course video player.",
+      "You are Skillomate Course AI, a concise tutor inside a short-form course video player.",
       "Use the provided video title, description, and playback time as lesson context.",
       "Answer in simple language. Keep replies short unless the user asks for detail.",
       "For summaries use bullets. For practice requests give 3-5 questions.",

@@ -347,6 +347,11 @@ body.premium-nav-admin .course-summary-grid {
   min-width: 0;
 }
 
+body.premium-nav-admin .dashboard-shell .analytics-grid {
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)) !important;
+  align-items: stretch;
+}
+
 body.premium-nav-admin .metric-card,
 body.premium-nav-admin .summary-card,
 body.premium-nav-admin .kpi-card,
@@ -378,6 +383,11 @@ body.premium-nav-admin .summary-card span,
 body.premium-nav-admin .kpi-card span,
 body.premium-nav-admin .detail-card span {
   color: var(--admin-accent) !important;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  font-size: clamp(30px, 2.15vw, 38px);
+  line-height: 1.08;
+  font-variant-numeric: tabular-nums;
 }
 
 body.premium-nav-admin .metric-card strong,

@@ -635,7 +635,7 @@ export const pages = {
   <div class="tutor-top-bar">
     <a href="index.html" class="nav-logo" style="flex-shrink:0">
       <div class="logo-mark">N</div>
-      <span class="logo-name">Edu<span>Nex</span></span>
+      <span class="logo-name">Skillo<span>mate</span></span>
     </a>
     <div style="flex:1"></div>
     <a href="dashboard.html" class="btn btn-ghost btn-sm"><i class="fas fa-th-large"></i> Dashboard</a>
@@ -3244,7 +3244,7 @@ async function canOpenDashboard() {
       <article class="help-card">
         <i class="fas fa-envelope"></i>
         <h2>Contact</h2>
-        <p>Email support at <a href="mailto:support@edunex.ai">support@edunex.ai</a> with your mobile number and issue details.</p>
+        <p>Email support at <a href="mailto:support@skillomate.ai">support@skillomate.ai</a> with your mobile number and issue details.</p>
       </article>
     </section>
   </main>
@@ -5450,7 +5450,7 @@ f'(x) = 1 if x > 0 else 0</div>
 
     <a href="index.html" style="display:flex;align-items:center;gap:8px;justify-content:center;margin-bottom:32px">
       <div class="logo-mark">N</div>
-      <span class="logo-name" style="font-size:1.35rem;font-weight:800">Edu<span style="color:var(--accent)">Nex</span></span>
+      <span class="logo-name" style="font-size:1.35rem;font-weight:800">Skillo<span style="color:var(--accent)">mate</span></span>
     </a>
 
     <div class="otp-icon">

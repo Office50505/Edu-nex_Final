@@ -53,6 +53,7 @@ const courseSchema = new mongoose.Schema(
 videos: [
        {
          title: { type: String, required: true, trim: true, maxlength: 200 },
+         topic: { type: String, trim: true, maxlength: 80, default: '' },
          description: { type: String, trim: true, maxlength: 2000, default: '' },
          sourceType: {
            type: String,
@@ -70,6 +71,7 @@ videos: [
            size: { type: Number, default: null },
          },
          thumbnailUrl: { type: String, trim: true, default: null },
+         thumbnailVerticalUrl: { type: String, trim: true, default: null },
          transcriptUrl: { type: String, trim: true, default: null },
          examplePrompt: { type: String, trim: true, maxlength: 4000, default: '' },
          duration: { type: Number, default: 0 },

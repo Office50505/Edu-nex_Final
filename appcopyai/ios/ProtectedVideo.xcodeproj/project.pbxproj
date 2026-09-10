@@ -19,7 +19,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		13B07F961A680F5B00A75B9A /* EduNex.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = EduNex.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		13B07F961A680F5B00A75B9A /* Skillomate.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Skillomate.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = ProtectedVideo/AppDelegate.h; sourceTree = "<group>"; };
 		13B07FB01A68108700A75B9A /* AppDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = AppDelegate.mm; path = ProtectedVideo/AppDelegate.mm; sourceTree = "<group>"; };
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = ProtectedVideo/Images.xcassets; sourceTree = "<group>"; };
@@ -100,7 +100,7 @@
 		83CBBA001A601CBA00E9B192 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				13B07F961A680F5B00A75B9A /* EduNex.app */,
+				13B07F961A680F5B00A75B9A /* Skillomate.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -153,7 +153,11 @@
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
 				800E24972A6A228C8D4807E9 /* [CP] Copy Pods Resources */,
+<<<<<<< HEAD
 				E5C37738727E7C6453EEECE0 /* [CP] Embed Pods Frameworks */,
+=======
+				A4F181C69257AC892A26082E /* [CP] Embed Pods Frameworks */,
+>>>>>>> 997e33eea7b5c5f193080a114f8374e8d90b8191
 			);
 			buildRules = (
 			);
@@ -161,7 +165,7 @@
 			);
 			name = ProtectedVideo;
 			productName = ProtectedVideo;
-			productReference = 13B07F961A680F5B00A75B9A /* EduNex.app */;
+			productReference = 13B07F961A680F5B00A75B9A /* Skillomate.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -257,20 +261,32 @@
 				"${PODS_CONFIGURATION_BUILD_DIR}/EXConstants/EXConstants.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/EXConstants/ExpoConstants_privacy.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/ExpoFileSystem/ExpoFileSystem_privacy.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/RCT-Folly/RCT-Folly_privacy.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/RNCAsyncStorage/RNCAsyncStorage_resources.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/React-Core/React-Core_privacy.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/React-cxxreact/React-cxxreact_privacy.bundle",
+<<<<<<< HEAD
 				"${PODS_CONFIGURATION_BUILD_DIR}/React-timing/React-timing_privacy.bundle",
+=======
+				"${PODS_CONFIGURATION_BUILD_DIR}/boost/boost_privacy.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/glog/glog_privacy.bundle",
+>>>>>>> 997e33eea7b5c5f193080a114f8374e8d90b8191
 			);
 			name = "[CP] Copy Pods Resources";
 			outputPaths = (
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/EXConstants.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ExpoConstants_privacy.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ExpoFileSystem_privacy.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/RCT-Folly_privacy.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/RNCAsyncStorage_resources.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/React-Core_privacy.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/React-cxxreact_privacy.bundle",
+<<<<<<< HEAD
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/React-timing_privacy.bundle",
+=======
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/boost_privacy.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/glog_privacy.bundle",
+>>>>>>> 997e33eea7b5c5f193080a114f8374e8d90b8191
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -301,13 +317,18 @@
 			shellPath = /bin/sh;
 			shellScript = "# This script configures Expo modules and generates the modules provider file.\nbash -l -c \"./Pods/Target\\ Support\\ Files/Pods-ProtectedVideo/expo-configure-project.sh\"\n";
 		};
+<<<<<<< HEAD
 		E5C37738727E7C6453EEECE0 /* [CP] Embed Pods Frameworks */ = {
+=======
+		A4F181C69257AC892A26082E /* [CP] Embed Pods Frameworks */ = {
+>>>>>>> 997e33eea7b5c5f193080a114f8374e8d90b8191
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-ProtectedVideo/Pods-ProtectedVideo-frameworks.sh",
+<<<<<<< HEAD
 				"${PODS_XCFRAMEWORKS_BUILD_DIR}/ExpoModulesJSI/ExpoModulesJSI.framework/ExpoModulesJSI",
 				"${PODS_XCFRAMEWORKS_BUILD_DIR}/React-Core-prebuilt/React.framework/React",
 				"${PODS_XCFRAMEWORKS_BUILD_DIR}/ReactNativeDependencies/ReactNativeDependencies.framework/ReactNativeDependencies",
@@ -319,6 +340,13 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/React.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ReactNativeDependencies.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/hermesvm.framework",
+=======
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/hermes-engine/Pre-built/hermes.framework/hermes",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/hermes.framework",
+>>>>>>> 997e33eea7b5c5f193080a114f8374e8d90b8191
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -358,7 +386,11 @@
 				);
 				INFOPLIST_FILE = ProtectedVideo/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Skillomate;
+<<<<<<< HEAD
 				IPHONEOS_DEPLOYMENT_TARGET = 16.4;
+=======
+				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
+>>>>>>> 997e33eea7b5c5f193080a114f8374e8d90b8191
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -370,7 +402,7 @@
 					"-lc++",
 				);
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_DEBUG";
-				PRODUCT_BUNDLE_IDENTIFIER = com.alihussainkhan.edunexfinal;
+				PRODUCT_BUNDLE_IDENTIFIER = com.skillomate.app;
 				PRODUCT_NAME = Skillomate;
 				SWIFT_OBJC_BRIDGING_HEADER = "ProtectedVideo/ProtectedVideo-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -391,7 +423,11 @@
 				DEVELOPMENT_TEAM = LJ48CVC23W;
 				INFOPLIST_FILE = ProtectedVideo/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Skillomate;
+<<<<<<< HEAD
 				IPHONEOS_DEPLOYMENT_TARGET = 16.4;
+=======
+				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
+>>>>>>> 997e33eea7b5c5f193080a114f8374e8d90b8191
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -403,7 +439,7 @@
 					"-lc++",
 				);
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_RELEASE";
-				PRODUCT_BUNDLE_IDENTIFIER = com.alihussainkhan.edunexfinal;
+				PRODUCT_BUNDLE_IDENTIFIER = com.skillomate.app;
 				PRODUCT_NAME = Skillomate;
 				SWIFT_OBJC_BRIDGING_HEADER = "ProtectedVideo/ProtectedVideo-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
@@ -461,7 +497,11 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+<<<<<<< HEAD
 				IPHONEOS_DEPLOYMENT_TARGET = 16.4;
+=======
+				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
+>>>>>>> 997e33eea7b5c5f193080a114f8374e8d90b8191
 				LD = "";
 				LDPLUSPLUS = "";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -487,7 +527,10 @@
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) DEBUG";
+<<<<<<< HEAD
 				SWIFT_ENABLE_EXPLICIT_MODULES = NO;
+=======
+>>>>>>> 997e33eea7b5c5f193080a114f8374e8d90b8191
 				USE_HERMES = true;
 			};
 			name = Debug;
@@ -534,7 +577,11 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+<<<<<<< HEAD
 				IPHONEOS_DEPLOYMENT_TARGET = 16.4;
+=======
+				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
+>>>>>>> 997e33eea7b5c5f193080a114f8374e8d90b8191
 				LD = "";
 				LDPLUSPLUS = "";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -558,7 +605,10 @@
 				PODFILE_DIR = "$(SRCROOT)";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
+<<<<<<< HEAD
 				SWIFT_ENABLE_EXPLICIT_MODULES = NO;
+=======
+>>>>>>> 997e33eea7b5c5f193080a114f8374e8d90b8191
 				USE_HERMES = true;
 				VALIDATE_PRODUCT = YES;
 			};
