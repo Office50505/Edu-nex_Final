@@ -1,5 +1,4 @@
 pluginManagement {
-<<<<<<< HEAD
   def reactNativeGradlePlugin = new File(
     providers.exec {
       workingDir(rootDir)
@@ -22,52 +21,19 @@ plugins {
   id("com.facebook.react.settings")
   id("expo-autolinking-settings")
 }
-=======
-  includeBuild(new File(["node", "--print", "require.resolve('@react-native/gradle-plugin/package.json', { paths: [require.resolve('react-native/package.json')] })"].execute(null, rootDir).text.trim()).getParentFile().toString())
-}
-
-plugins { id("com.facebook.react.settings") }
->>>>>>> 997e33eea7b5c5f193080a114f8374e8d90b8191
 
 extensions.configure(com.facebook.react.ReactSettingsExtension) { ex ->
   if (System.getenv('EXPO_USE_COMMUNITY_AUTOLINKING') == '1') {
     ex.autolinkLibrariesFromCommand()
   } else {
-<<<<<<< HEAD
     ex.autolinkLibrariesFromCommand(expoAutolinking.rnConfigCommand)
-=======
-    def command = [
-      'node',
-      '--no-warnings',
-      '--eval',
-      'require(require.resolve(\'expo-modules-autolinking\', { paths: [require.resolve(\'expo/package.json\')] }))(process.argv.slice(1))',
-      'react-native-config',
-      '--json',
-      '--platform',
-      'android'
-    ].toList()
-    ex.autolinkLibrariesFromCommand(command)
->>>>>>> 997e33eea7b5c5f193080a114f8374e8d90b8191
   }
 }
 expoAutolinking.useExpoModules()
 
 rootProject.name = 'Protected Video'
 
-<<<<<<< HEAD
 expoAutolinking.useExpoVersionCatalog()
-=======
-dependencyResolutionManagement {
-  versionCatalogs {
-    reactAndroidLibs {
-      from(files(new File(["node", "--print", "require.resolve('react-native/package.json')"].execute(null, rootDir).text.trim(), "../gradle/libs.versions.toml")))
-    }
-  }
-}
-
-apply from: new File(["node", "--print", "require.resolve('expo/package.json')"].execute(null, rootDir).text.trim(), "../scripts/autolinking.gradle")
-useExpoModules()
->>>>>>> 997e33eea7b5c5f193080a114f8374e8d90b8191
 
 include ':app'
 includeBuild(expoAutolinking.reactNativeGradlePlugin)

@@ -1,11 +1,12 @@
 const crypto = require('crypto');
 const https = require('https');
+const OtpAttempt = require('../models/OtpAttempt');
 
 const OTP_TTL_MS = 5 * 60 * 1000;
 const pendingOtps = new Map();
 const isProduction = process.env.NODE_ENV === 'production';
 const MSG91_BASE_URL = String(process.env.MSG91_BASE_URL || 'https://control.msg91.com/api/v5').replace(/\/+$/, '');
-const OTP_PROVIDER = String(process.env.OTP_PROVIDER || (isProduction ? 'msg91' : 'demo'))
+const OTP_PROVIDER = String(process.env.OTP_PROVIDER || process.env.OTP_DELIVERY_PROVIDER || (isProduction ? 'msg91' : 'demo'))
   .trim()
   .toLowerCase();
 
@@ -105,6 +106,7 @@ function msg91JsonRequest(url, options = {}) {
       });
     });
 
+    request.setTimeout(10000, () => request.destroy(new Error('OTP provider timed out. Please try again.')));
     request.on('error', reject);
     if (options.body !== undefined) {
       request.write(options.body);
@@ -155,18 +157,19 @@ async function sendMsg91Otp(mobileNumber) {
   const url = new URL(`${MSG91_BASE_URL}/otp`);
   url.searchParams.set('template_id', templateId);
   url.searchParams.set('mobile', mobile);
-  url.searchParams.set('authkey', authKey);
+
 
   const response = await msg91JsonRequest(url, {
     method: 'POST',
     headers: {
       Accept: 'application/json',
+      authkey: authKey,
       'Content-Type': 'application/json',
     },
     body: '{}',
   });
 
-  if (!response.ok || isMsg91Error(response.body)) {
+  if (!response.ok || isMsg91Error(response.body) || response.body?.type !== 'success') {
     return {
       ok: false,
       provider: 'msg91',
@@ -205,7 +208,7 @@ async function verifyMsg91Otp(mobileNumber, otp) {
     },
   });
 
-  if (!response.ok || isMsg91Error(response.body)) {
+  if (!response.ok || isMsg91Error(response.body) || response.body?.type !== 'success') {
     return {
       ok: false,
       provider: 'msg91',
@@ -220,6 +223,24 @@ async function verifyMsg91Otp(mobileNumber, otp) {
   };
 }
 
+async function reserveDelivery(mobileNumber, resend = false) {
+  const mobile = normalizeMobileForMsg91(mobileNumber);
+  const now = new Date();
+  const generation = crypto.randomUUID();
+  if (resend) {
+    const current = await OtpAttempt.findById(mobile);
+    if (!current || current.expiresAt <= now) return { ok: false, error: 'Request a new OTP first.' };
+  }
+  try {
+    const record = await OtpAttempt.findOneAndUpdate({ _id: mobile, $or: [{ nextSendAt: { $lte: now } }, { nextSendAt: { $exists: false } }] },
+      { $set: { nextSendAt: new Date(Date.now() + 60000), expiresAt: new Date(Date.now() + OTP_TTL_MS), attempts: 0, generation } }, { upsert: true, new: true });
+    return { ok: true, record };
+  } catch (error) {
+    if (error.code === 11000) return { ok: false, error: 'Please wait 60 seconds before requesting another OTP.' };
+    throw error;
+  }
+}
+
 async function sendMobileOtp(mobileNumber, options = {}) {
   const normalizedMobile = normalizeMobileNumber(mobileNumber);
 
@@ -227,18 +248,31 @@ async function sendMobileOtp(mobileNumber, options = {}) {
     return { ok: false, error: 'Enter a valid mobile number' };
   }
 
-  const otp = createOtp();
-  storeOtp(normalizedMobile, otp);
-
-  if (!isProduction && (options.forceDevelopment || shouldUseDevelopmentOtp())) {
-    return {
-      ok: true,
-      provider: OTP_PROVIDER === 'demo' ? 'demo' : 'development',
-      devOtp: otp,
-    };
+  if (!isProduction && shouldUseDevelopmentOtp()) {
+    const otp = createOtp();
+    storeOtp(normalizedMobile, otp);
+    return { ok: true, provider: 'development', devOtp: otp };
   }
-
+  if (OTP_PROVIDER !== 'msg91') return { ok: false, error: 'Unsupported OTP provider configuration.' };
+  const reservation = await reserveDelivery(mobileNumber);
+  if (!reservation.ok) return reservation;
   return sendMsg91Otp(mobileNumber);
+}
+
+async function resendMobileOtp(mobileNumber) {
+  if (shouldUseDevelopmentOtp()) return sendMobileOtp(mobileNumber);
+  if (OTP_PROVIDER !== 'msg91' || !process.env.MSG91_AUTH_KEY) return { ok: false, error: 'MSG91 is not configured.' };
+  const mobile = normalizeMobileForMsg91(mobileNumber);
+  if (!mobile) return { ok: false, error: 'Enter a valid mobile number' };
+  const reservation = await reserveDelivery(mobileNumber, true);
+  if (!reservation.ok) return reservation;
+  const url = new URL(`${MSG91_BASE_URL}/otp/retry`);
+  url.searchParams.set('mobile', mobile);
+  url.searchParams.set('retrytype', 'text');
+  const response = await msg91JsonRequest(url, { headers: { authkey: process.env.MSG91_AUTH_KEY, Accept: 'application/json' } });
+  return response.ok && response.body?.type === 'success'
+    ? { ok: true, provider: 'msg91' }
+    : { ok: false, error: msg91ErrorMessage(response.body, 'Could not resend OTP.') };
 }
 
 async function verifyMobileOtp(mobileNumber, otp) {
@@ -246,13 +280,24 @@ async function verifyMobileOtp(mobileNumber, otp) {
     return verifyStoredOtp(mobileNumber, otp);
   }
 
-  return verifyMsg91Otp(mobileNumber, otp);
+  if (OTP_PROVIDER !== 'msg91') return { ok: false, error: 'Unsupported OTP provider configuration.' };
+  const mobile = normalizeMobileForMsg91(mobileNumber);
+  if (!/^\d{4,6}$/.test(String(otp || ''))) return { ok: false, error: 'Enter a valid OTP.' };
+  const record = await OtpAttempt.findOneAndUpdate({ _id: mobile, expiresAt: { $gt: new Date() }, attempts: { $lt: 5 } }, { $inc: { attempts: 1 } }, { new: true });
+  if (!record) return { ok: false, error: 'OTP expired or too many attempts. Request a new OTP.' };
+  const result = await verifyMsg91Otp(mobileNumber, otp);
+  if (result.ok) {
+    const consumed = await OtpAttempt.deleteOne({ _id: mobile, generation: record.generation });
+    if (!consumed.deletedCount) return { ok: false, error: 'OTP was already used or replaced. Please request a new OTP.' };
+  }
+  return result;
 }
 
 module.exports = {
   normalizeMobileNumber,
   normalizeMobileForMsg91,
   sendMobileOtp,
+  resendMobileOtp,
   verifyMobileOtp,
   verifyStoredOtp,
 };

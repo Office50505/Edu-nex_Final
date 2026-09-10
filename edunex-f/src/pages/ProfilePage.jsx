@@ -1,9 +1,10 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { page as profilePage } from "../generated-pages/profile.html.js";
 import { runLegacyPage } from "../legacyRuntime.js";
 import { usePageStyle } from "../hooks/usePageStyle.js";
 import { useEduNexRuntimeReady } from "../hooks/useEduNexRuntimeReady.js";
 import { route } from "../lib/routes.js";
+import "./ProfilePage.css";
 
 const FALLBACK_AVATAR = "data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20width=%27160%27%20height=%27160%27%20viewBox=%270%200%20160%20160%27%3E%3Crect%20width=%27160%27%20height=%27160%27%20rx=%2780%27%20fill=%27%230d0d0d%27/%3E%3Crect%20x=%272%27%20y=%272%27%20width=%27156%27%20height=%27156%27%20rx=%2778%27%20fill=%27%23111318%27%20stroke=%27%23C58B2A%27%20stroke-width=%274%27%20stroke-opacity=%27.45%27/%3E%3Ctext%20x=%2780%27%20y=%2796%27%20text-anchor=%27middle%27%20fill=%27%23C58B2A%27%20font-family=%27Arial%27%20font-size=%2762%27%20font-weight=%27800%27%3EE%3C/text%3E%3C/svg%3E";
 
@@ -67,6 +68,12 @@ export function ProfilePage() {
   const [status, setStatus] = useState({ message: "", error: false, retry: false });
   const [theme, setTheme] = useState(currentTheme);
   const [modalOpen, setModalOpen] = useState(false);
+  const deleteDialog = useRef(null);
+  const deletingRef = useRef(false);
+  const [deleting, setDeleting] = useState(false);
+  const [deletePassword, setDeletePassword] = useState("");
+  const [deleteConfirmation, setDeleteConfirmation] = useState("");
+  const [deleteError, setDeleteError] = useState("");
   const [subscription, setSubscription] = useState({ loading: false, data: null, error: false });
   const runtimeReady = useEduNexRuntimeReady();
 
@@ -160,6 +167,40 @@ export function ProfilePage() {
       window.dispatchEvent(new Event("edunex:auth-changed"));
       window.location.href = "login.html";
     });
+  };
+
+  const openDeleteAccount = () => {
+    setDeletePassword("");
+    setDeleteConfirmation("");
+    setDeleteError("");
+    deleteDialog.current?.showModal();
+  };
+
+  const deleteAccount = async (event) => {
+    event.preventDefault();
+    if (deletingRef.current || deleteConfirmation !== "DELETE" || !deletePassword) return;
+    deletingRef.current = true;
+    setDeleting(true);
+    setDeleteError("");
+    try {
+      const data = await window.EduNex.authRequest("/api/auth/account", {
+        method: "DELETE",
+        body: JSON.stringify({ password: deletePassword, confirmation: deleteConfirmation }),
+      });
+      if (!data?.success) throw new Error("Account could not be deleted. Please try again.");
+      window.EduNex.clearAuth();
+      for (const storage of [localStorage, sessionStorage]) {
+        Object.keys(storage).filter(key => /^edunex/i.test(key)).forEach(key => storage.removeItem(key));
+      }
+      window.dispatchEvent(new Event("edunex:auth-changed"));
+      window.location.replace("login.html");
+    } catch (error) {
+      setDeleteError(error.message || "Account could not be deleted. Please try again.");
+    } finally {
+      deletingRef.current = false;
+      setDeleting(false);
+      setDeletePassword("");
+    }
   };
 
   const fallbackAvatar = window.EduNex?.avatarFallback?.(user) || FALLBACK_AVATAR;
@@ -273,11 +314,40 @@ export function ProfilePage() {
                 <i className="fas fa-arrow-right-from-bracket" aria-hidden="true"></i>
                 Logout from Skillomate
               </button>
+              <button className="pf-logout-btn" type="button" onClick={openDeleteAccount} disabled={!user}>
+                <i className="fas fa-trash-can" aria-hidden="true"></i> Delete Account
+              </button>
               <p className="pf-version-text">Version 4.2.1-stable • Skillomate <span>Cloud Sync Active</span></p>
             </div>
           </div>
         </div>
       </div>
+
+      <dialog ref={deleteDialog} className="pf-modal-card pf-delete-dialog" aria-labelledby="deleteAccountTitle" aria-describedby="deleteAccountDescription"
+        onCancel={event => { if (deletingRef.current) event.preventDefault(); }}
+        onClose={() => { setDeletePassword(""); setDeleteConfirmation(""); }}>
+        <form onSubmit={deleteAccount}>
+          <div className="pf-modal-head"><h2 id="deleteAccountTitle">Delete account?</h2></div>
+          <div className="pf-modal-body" style={{ display: "grid", gap: 16 }}>
+            <p id="deleteAccountDescription">This permanently deletes your account, learning progress, certificates, and AI chats. This cannot be undone. Any active payment mandate must be cancelled before deletion.</p>
+            <label style={{ display: "grid", gap: 8 }}>Current password
+              <input type="password" autoComplete="current-password" required value={deletePassword} disabled={deleting}
+                onChange={event => setDeletePassword(event.target.value)} style={{ padding: 12, color: "inherit", background: "transparent", border: "1px solid #777", borderRadius: 8 }} />
+            </label>
+            <label style={{ display: "grid", gap: 8 }}>Type DELETE to confirm
+              <input type="text" autoComplete="off" spellCheck={false} required value={deleteConfirmation} disabled={deleting}
+                onChange={event => setDeleteConfirmation(event.target.value)} style={{ padding: 12, color: "inherit", background: "transparent", border: "1px solid #777", borderRadius: 8 }} />
+            </label>
+            {deleteError ? <p role="alert" style={{ color: "#f87171" }}>{deleteError} <a href="help.html">Help &amp; Support</a></p> : null}
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 12 }}>
+              <button className="pf-secondary-btn" type="button" disabled={deleting} onClick={() => deleteDialog.current?.close()}>Keep account</button>
+              <button className="pf-logout-btn" type="submit" disabled={deleting || deleteConfirmation !== "DELETE" || !deletePassword}>
+                {deleting ? "Deleting…" : "Permanently delete account"}
+              </button>
+            </div>
+          </div>
+        </form>
+      </dialog>
 
       <div className="pf-watermark">
         <div className="pf-watermark-main">SKILLOMATE</div>

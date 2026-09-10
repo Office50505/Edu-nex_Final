@@ -8,7 +8,6 @@
     "testflight:deploy": "npx eas-cli@latest build --platform ios --profile testflight --auto-submit"
   },
   "dependencies": {
-<<<<<<< HEAD
     "@expo/vector-icons": "^15.0.2",
     "@react-native-async-storage/async-storage": "2.2.0",
     "expo": "^57.0.9",
@@ -39,36 +38,4 @@
   "private": true,
   "name": "skillomate",
   "version": "1.0.0"
-=======
-    "@expo/vector-icons": "~14.0.4",
-    "@react-native-async-storage/async-storage": "1.23.1",
-    "expo": "~52.0.0",
-    "expo-asset": "~11.0.5",
-    "expo-av": "~15.0.2",
-    "expo-constants": "~17.0.8",
-    "expo-file-system": "~18.0.12",
-    "expo-font": "~13.0.4",
-    "expo-print": "~14.0.3",
-    "expo-screen-capture": "~7.0.1",
-    "expo-sharing": "~13.0.1",
-    "react": "18.3.1",
-    "react-native": "~0.77.1",
-    "react-native-webview": "~13.13.1"
-  },
-  "devDependencies": {
-    "@babel/core": "^7.24.0",
-    "@expo/ngrok": "^4.1.3"
-  },
-  "private": true,
-  "name": "skillomate",
-  "version": "1.0.0",
-  "expo": {
-    "install": {
-      "exclude": [
-        "react-native@0.76.9",
-        "react-native-webview@13.12.5"
-      ]
-    }
-  }
->>>>>>> 997e33eea7b5c5f193080a114f8374e8d90b8191
 }

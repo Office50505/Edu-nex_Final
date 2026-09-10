@@ -1,0 +1,632 @@
+AI INFLUENCER COURSE — DETAILED NOTES +
+ PROMPTS (Lesson 1–34)
+Har lesson: detailed notes (kya + kyun + kaise + common galti + Aaj ka kaam) aur us skill ka teaching prompt.
+Video ke neeche copy-paste karo.
+
+ MODULE 1 — FOUNDATION
+Lesson 1 — Introduction
+Kya hai: AI influencer ek digital model hai jo bina camera, bina model, bina sharam aur bina kharche ke
+tumhare liye din-raat content banati hai. Ek hi phone se tum ek poori "creator + business" chala sakte ho.
+Ye 3 kaam karti hai:
+ • Content — daily reels aur photos (Instagram/YouTube).
+ • Business — kisi brand/product ke professional photos aur videos, ya kisi brand ka "face" banna.
+ • Paisa — followers se sponsorship, ads, affiliate, aur apna product bech ke.
+Kyun ye ab possible hai: AI tools itne saste + aasan ho gaye ki na coding, na editing degree, na English
+chahiye. Sirf seekhne ki niyat.
+Common galti: log sochte hain "ye mushkil/technical hai" — actually ye copy-paste level aasan hai jab process
+pata ho.
+Aaj ka kaam: decide karo tumhe content banana hai, business karna hai, ya paisa — teeno ka rasta isi course
+mein hai.
+*(Concept lesson — koi generation prompt nahi.)*
+
+Lesson 2 — Tools Setup
+Sirf 3 tools chahiye (teeno phone pe, shuruaat free):
+ • Google Flow — photos aur videos generate (course ka main tool).
+ • VN — editing (cuts, captions, music) — bilkul free, watermark nahi.
+ • ChatGPT — scripts, dialogues, prompt ideas.
+Zaroori setup rules:
+ • Flow + baaki sab ek hi Google account se banao — warna account bhool jaoge, files atak jayengi.
+ • Free version ki daily limit hoti hai — practice ke liye kaafi. Pehla client/paisa aaye tabhi paid lena.
+ • Ek home-screen folder "AI Studio" — teeno tools ek jagah, roz kholne mein aasani.
+Common galti: alag-alag accounts se sign-up karke files/history kho dena.
+Aaj ka kaam: teeno tools install + ek hi Google account + "AI Studio" folder.
+*(Concept lesson — koi prompt nahi.)*
+
+Lesson 3 — AI Influencer ka Character Banana
+Sabse bada concept = CONSISTENCY. Face har photo mein bilkul same hona chahiye — warna audience
+aur brands trust nahi karte (log ek pehchana chehra follow karte hain).
+Character decide karo (kahin likh lo): naam, age, city, personality, interest — jaise "Neha, 22, Mumbai,
+fashion + travel". Ye persona uske content ka flavour decide karta.
+Face banane ka tarika: ek detailed prompt se face generate karo, 4 nikaalo, sabse achhi + real wali ko
+REFERENCE PHOTO ke roop mein save karo. Ye ek photo aage har kaam (pose, outfit, location, video) mein
+lagegi.
+
+Common galti: har baar naya face banana (consistency toot jaati). Ek hi reference pakdo.
+Aaj ka kaam: character details likho + face generate karo + best ko reference save.
+■ PROMPT (face banane ke liye):
+A young Indian woman, early 20s, oval face, warm brown eyes, long dark wavy hair, soft friendly
+smile, natural clear skin, wearing a casual top, standing in soft natural daylight, realistic ca
+ndid photo, shot on iphone. 9:16.
+
+Lesson 4 — Prompt Likhna Seekho
+Pure course ki sabse zaroori skill — achha prompt = achhi photo, bura prompt = bekaar output.
+Prompt ke 5 hisse (order mein):
+ 1. Kaun — age, gender, nationality ("a young Indian woman, early 20s").
+ 2. Face details — aankh, baal, skin, smile ("oval face, brown eyes, wavy hair").
+ 3. Kapde — outfit specific ("white cotton kurti").
+ 4. Jagah/background — location + mahaul ("cafe, soft window light").
+ 5. Style — realistic / candid / shot on iphone.
+Rules: English mein likho (weak ho to ChatGPT se translate). "Beautiful/gorgeous" jaise adjectives bekaar —
+details do. Ek prompt mein 2-3 main cheez, zyada maangoge to AI confuse.
+Common galti: vague prompt ("ek sundar ladki") → random output.
+Aaj ka kaam: 5 prompts likho (base same, sirf jagah + kapde badalke).
+■ PROMPT (structure):
+use the exact same face, same woman, same facial features, [outfit], [location + mood], realisti
+c photo, shot on iphone, natural light
+
+ MODULE 2 — PHOTO SKILLS
+Lesson 5 — Same Face, Alag Pose
+Concept: reference photo + magic line "Use this exact face. Same woman, same facial features." → chehra
+same rehta, pose/angle/jagah badal jaati.
+Zaroori:
+ • Hamesha original reference se banao. Nayi banayi photo ko dobara reference mat banao — warna face
+ dheere-dheere badalta jayega (copy ki copy = drift).
+ • AI 100% match nahi deta har baar — 4 generate karo, best 1 rakho.
+Common galti: nayi photo ko reference bana ke chain continue karna → face slowly badal jaata.
+Aaj ka kaam: reference se 5 alag photos (jagah/kapde/pose), best save.
+■ PROMPT:
+use the exact same face, same woman, same facial features, now she is [new pose / angle / sittin
+g / walking], realistic photo, shot on iphone
+
+Lesson 6 — Outfits Badalna
+4 style ka wardrobe banao (zyada styles = zyada clients/brands):
+ • Casual (daily/relatable), Ethnic (Indian/festival), Western (premium/office), Party wear (occasion).
+Tips: outfit ke saath lighting match karo (party → evening/warm, casual → natural day). Ek photo mein main
+kapda + 1 accessory + lighting — bas; zyada maangoge to AI gadbad karta.
+Common galti: ek hi style ki photos (limited kaam milta).
+Aaj ka kaam: chaar style ki ek-ek photo.
+
+■ PROMPT:
+use the exact same face, same woman, same facial features, now she is wearing [specific outfit],
+ [matching lighting], realistic photo, shot on iphone
+
+Lesson 7 — Locations Badalna
+5 location type: Ghar (relatable), Cafe (aesthetic), Street (fashion), Nature (travel), Premium (hotel/rooftop —
+luxury/brands).
+Tips: sirf jagah nahi, mahaul likho ("sunset in background, wind in hair"). Location ke hisaab se pose bhi badlo
+(candid > stiff). Famous monument mat maango (AI bigaad deta) — "historic Indian architecture" jais■ general.
+Common galti: har jagah same khadi pose (boring + AI lagta).
+Aaj ka kaam: paanch location type ki photos.
+■ PROMPT:
+use the exact same face, same woman, same facial features, now she is standing on a Goa beach at
+ sunset in a flowy summer dress, wind in hair, sunset in background, candid pose, realistic phot
+o, shot on iphone
+
+Lesson 8 — Realistic Skin & Details (AI-look hatao)
+Plastic/AI-look hatane ke liye prompt mein 4 cheez:
+ 1. natural skin texture, visible pores
+ 2. slight imperfections, few flyaway hairs
+ 3. shot on iPhone / DSLR
+ 4. soft natural light
+Aur "candid" word add karo — natural pose + real-friend-snap feel.
+Ulta kaam karne wale words: "ultra realistic, 8K, HD, perfect" — ye actually zyada AI/plastic bana dete. Inhe
+avoid karo.
+Common galti: "8K ultra realistic" likhke sochna real aayega — ulta hota hai.
+Aaj ka kaam: 3 purani photos ko in 4 details ke saath dobara banao, side-by-side compare.
+■ PROMPT:
+use the exact same face, same facial features, now she is sitting in a cafe wearing a white shir
+t, candid natural moment, shot on iphone, soft natural light, natural skin texture, visible pore
+s, slight imperfections
+
+Lesson 9 — Photo Quality Fix
+Save karne se pehle checklist:
+ 1. Haath/ungliyan — 5 hain? mudi to nahi?
+ 2. Aankhein — dono ek jagah, same direction?
+ 3. Background — kuch bigda/melt to nahi?
+ 4. Face match — reference se milta hai?
+Repair kaise: "Fix only the hands/eyes... keep everything else exactly the same" (word only zaroori). Ya
+kharab hissa crop karo. Ya aisi pose banao jisme haath chhup jaye (pocket/bag/crossed).
+Rule: ek photo pe max ek fix — do problem ho to delete karke nayi banao (fix pe fix quality girata).
+Common galti: ek hi photo ko baar-baar fix karna → aur bigadti.
+Aaj ka kaam: saari photos checklist pe check; fail wali fix ya delete.
+■ PROMPT:
+fix only her hand in this image, fingers natural and correctly shaped, five fingers, relaxed pos
+e, keep the face hairstyle outfit pose lighting and background exactly the same, do not change a
+
+nything else
+
+Lesson 10 — 30 Photos ka Content Bank
+Batch banao: ek hi din mein poore mahine ka content — 30 photos = 5 outfits × 6 locations. Regular posting
+hi Instagram ka rule, aur roz banana practical nahi.
+Kaise: ChatGPT se 30 numbered prompts likhwao (saari details already daalke), phir Flow mein ek-ek chala
+ke generate.
+Reality: 30 banao to 20-22 achhi milengi (normal AI hit-rate). Har 5 mein 1 candid rakho (feed real lage).
+Common galti: roz ek-ek photo banana (thak jaoge, consistency tootegi). Batch = smart.
+Aaj ka kaam: 30 prompts list + kam se kam 10 photos aaj (baaki 2 din mein).
+■ PROMPT:
+generate multiple photos of her, same exact face: 1 morning coffee at home, 2 working on laptop
+in cafe, 3 evening street walk, 4 reading at night, 5 rooftop golden hour... (numbered, har mein
+ outfit+location details), realistic, shot on iphone
+
+ MODULE 3 — VIDEO & REELS
+Lesson 11 — Photo se Video Banana
+Kyun: Reels = Instagram ka asli game — photo se 10× reach, aur brands video ke zyada paise dete.
+Kaise: photo upload → prompt mein chhoti movement likho (smile, blink, coffee sip, hair sway) + "natural
+motion". Video ~8 sec (reels ke liye kaafi).
+Rule: movement chhoti rakho — badi harkat (chalna, ghoomna) mein face bigadta. 2-3 try, best rakho.
+Common galti: badi/complex movement maangna → face melt/warp.
+Aaj ka kaam: 3 best photos se video (chhoti movements).
+■ PROMPT:
+[attach photo] She smiles softly, blinks naturally, slowly lifts the coffee cup and takes a sip,
+ gentle camera movement, natural motion. 9:16.
+
+Lesson 12 — Lip-Sync Video (bolti Neha)
+2 step: pehle script (jo bolegi), phir Flow mein bulwana.
+Prompt: "She looks at the camera and speaks naturally... saying: [words]".
+Rules: line chhoti (8-10 sec, 15-20 words). Hindi word galat bole to sound ke hisaab se spelling likho
+("zindagi" → "zindagee"). Ek video = ek baat.
+Reality: lip-sync mushkil hai — 3-4 try normal.
+Common galti: lamb■ line/paragraph → mouth out of sync, cut off.
+Aaj ka kaam: ek intro line (15-20 words) + lip-sync video, best save.
+■ PROMPT:
+[attach photo] Real handheld iPhone video. She looks at the camera and speaks naturally, friendl
+y expression, saying: "Hi guys! Mumbai se hu main. Fashion aur travel meri zindagee hai. Naye ho
+ toh follow karlo!" 9:16.
+
+Lesson 13 — AI Voice Banana
+Concept: awaaz bhi face jaisi consistent honi chahiye. Voice ke 3 hisse: pitch (soft/deep), speed (pace), tone
+(friendly/calm).
+
+Kaise: prompt mein voice line add karo aur har video mein bilkul same likho (reference line ki tarah). Fancy
+words ("melodious/honey voice") mat — simple napi-tuli details.
+Pro tip: agar Flow ki awaaz AI-ish lage, edit mein apni recording ya ElevenLabs Hindi voice overlay karke
+Flow-voice mute kar do.
+Common galti: har video mein alag voice description → awaaz badalti rehti.
+Aaj ka kaam: voice description final + notes mein save + ek video us line se.
+■ PROMPT (voice line):
+...she speaks naturally, soft warm female voice, young Indian accent, medium pace, saying: "[lin
+e]"
+
+Lesson 14 — Reel Editing Basics (VN)
+VN mein sirf 4 kaam:
+ 1. Ratio 9:16 (full-screen reel).
+ 2. Cut/jodna — pehla aadha second kaato (turant action se shuru = watch-time).
+ 3. Captions — jo bol rahi wahi text (white + black outline). 80% log bina awaaz dekhte.
+ 4. Music — volume 20-30% (awaaz hero rahe).
+Export 1080p. Transitions/effects ke chakkar mat pado — simple hi professional.
+Common galti: over-editing (zoom, effects) → cheap/cluttered lagta.
+Aaj ka kaam: pehli poori reel (4 steps), export.
+*(VN skill — koi generation prompt nahi.)*
+
+Lesson 15 — 5 Reel Formats
+5 formats (idea kabhi khatam nahi):
+ 1. GRWM (get ready with me), 2. Day in Life, 3. Tips (3 value tips), 4. Trends (trending audio = free reach),
+ 5. Product (sabse keemti — brands ke liye).
+Rule: har format har baar viral nahi — rotate karo (hafte 3 reels, 3 alag formats). 20-30 reels baad pattern
+samajh aata (kya chalta).
+Common galti: ek format pe atakna, ya viral ka intezaar. Consistency > perfection.
+Aaj ka kaam: 2 formats chuno, dono ki 1-1 reel.
+■ PROMPT (batch photo + animate):
+generate 4 photos of her (same face): morning coffee / laptop work / evening walk / reading at n
+ight
+now animate all 4: 1 sips coffee slowly, 2 types and smiles, 3 gentle wind as she walks, 4 turns
+ a page softly
+
+ MODULE 4 — INSTAGRAM *(strategy — koi
+ generation prompt nahi)*
+Lesson 16 — Profile Setup (professional)
+Kyun: log reel dekh ke 3 sec mein profile pe decide karte hain follow kare ya nahi; brands profile 10 baar check
+karte.
+4 cheez:
+ 1. Username — chhota, naam se juda, no numbers/underscores.
+ 2. Profile photo — close-up face (full body nahi — chhoti screen pe pehchana jaaye).
+
+ 3. Bio (3 line) — kaun + kahan se + hook, 1-2 emoji.
+ 4. Professional/Creator account — free analytics (kaun■■ reel chali, followers kab active).
+Common galti: naye account pe 10 posts ek saath thok dena → spam shak, reach dabti.
+Aaj ka kaam: profile taiyaar + ek achhi pehli post.
+
+Lesson 17 — Posting Schedule + Captions & Hashtags
+Schedule: algorithm regularity dekhta. Hafte 3 reels (3 formats), fixed din/time (jaise Mon-Wed-Fri raat 8 —
+followers active time analytics se).
+Caption formula: hook (pehli line) → 1-2 line value/story → call-to-action.
+Hashtags: 10-15 mix (bade + medium + chhote niche), 2-3 sets bana ke rotate.
+Common galti: caption mein "nice day ■" — caption post ka salesman hai, use karo.
+Aaj ka kaam: weekly schedule + 3 caption templates + 3 hashtag sets.
+
+Lesson 18 — Reels Algorithm Samjho
+Soch: algorithm dushman nahi, dukaandaar — usko log app pe rukwane hain. Jo reel rokti hai, wo aage
+badhti.
+Reel ka safar: pehle ~200 logon ko dikhti → achha response → 2000 → aur aage.
+3 sabse important: (1) watch time — pehla second sabse zaroori, (2) completion/re-watch — loop banao,
+(3) shares & saves — likes se zyada powerful.
+Pehla 1 ghanta: active time pe post + comments ka turant reply.
+Common galti: boring pehla second → log scroll → reach mar jaati.
+Aaj ka kaam: apni best reel ka pehla 2 sec pattern dekho aur repeat karo.
+
+Lesson 19 — 0→1000 Followers + Engagement
+1000 kyun khaas: app serious leta (reach khulti) + brands ki duniya (nano-influencer 1000-10000 brands ke
+sabse pasandeeda — engagement zyada, rate sasta).
+Roadmap: 1000 pahaad nahi — hafte 3 reels/3 formats → 2 mahine = 24 reels → 2-3 chalengi → 1000. Shuru
+ke followers apne circle se (koi sharam nahi).
+Engagement (followers rokna + jodna): like/comment/reply/share. Engaged account = zinda account, sirf
+number se zyada keemti.
+Roz ka 20-min routine: (1) comments ka reply (khaas pehle ghante), (2) story mein poll/sawaal/BTS, (3)
+doosron ke posts pe 10-15 genuine comment (niche follow, spam nahi).
+Common galti: post karke gayab — Instagram do-tarfa hai, jo judta wahi badhta.
+Aaj ka kaam: 8-hafte reel plan + aaj ka 20-min routine.
+
+ MODULE 5 — PRODUCT PHOTOGRAPHY (asli kamai
+ shuru)
+Lesson 20 — Product Photo Basics
+Kyun paisa yahin: har seller (Amazon/Flipkart/Instagram/Shopify) ko product photos chahiye — traditional
+shoot hazaaron ka, tum ghar baithe de■■ ho.
+2 type: clean shot (plain bg) + lifestyle. Aaj clean shot (base).
+
+Kaise: Flow mein character + product ki photo jodo — "same character holding this product, plain simple
+background". Product bilkul same rahe (shape/colour/label na badle — dhyan se check).
+Rule: product hero hai, character nahi — product bada, saamne, achhi roshni mein.
+Common galti: product ka label/shape AI badal deta — check kiye bina bhej dena.
+Aaj ka kaam: koi ek product (cup/bottle/jar) ki clean photo character ke saath.
+■ PROMPT:
+Use the same character holding this product (attached), plain simple background, product clearly
+ visible and in sharp focus, soft even light, ultra realistic commercial product photo, 4K
+
+Lesson 21 — Professional Studio Shots
+Saste vs mehnge ka farak = 3 cheez:
+ 1. Lighting — soft studio light, hard shadow nahi.
+ 2. Background — plain white/grey + product ke neeche soft shadow ("rakha hua" lage, chipka nahi).
+ 3. Angle — bottle/jar eye-level, jewellery/watch upar se close, shoes side.
+Har product ke 2-3 angle/variation do (choice = professional).
+Common galti: flat lighting + no shadow → product "floating"/fake lagta.
+Aaj ka kaam: ek product ko studio-level — soft light + clean bg + 3 angles (catalog set).
+■ PROMPT:
+Product photo of [product], professional studio setup, soft key light, plain white/grey backgrou
+nd with a soft shadow under it, [eye-level / top / side] angle, premium commercial look, ultra r
+ealistic, 4K
+
+Lesson 22 — Lifestyle + Platform-Ready Shots
+Lifestyle: product ke saath zindagi (watch kalai pe cafe mein, candle jalti cozy room). Log feeling khareedte —
+brands iske zyada paise dete.
+Platform-ready:
+ • Amazon/Flipkart main image = plain white bg, product bada, no text.
+ • Instagram/website = lifestyle + square/vertical crop.
+Sahi size/crop mein do (client ko dobara crop na karna pade = professional).
+Common galti: ek hi photo har jagah bhejna — pehle poochho "photo kahan use hogi".
+Aaj ka kaam: ek lifestyle photo + ek Amazon-ready white photo (ek set).
+■ PROMPT:
+[product] held in hand in a real [cafe/desk/outdoor] setting, candid lifestyle, shot on iphone,
+natural light, realistic || + separate: [product] on plain white background, product large a
+nd centered, no text, catalog style, 4K
+
+Lesson 23 — Fashion Try-On
+Kyun: model pe pehna kapda flat photo se 3× zyada bikta (return kam). Har boutique/brand ko chahiye.
+Kaise: character + flat outfit photo → "same character wearing this outfit". Print/colour/design bilkul same
+(yahin AI galti karta — zaroor check).
+Variety: kurti/saree/dress + jewellery. Ek kapde ke 2-3 look (full body, half, close-up detail).
+Common galti: print/pattern AI badal deta — mismatch bhej dena.
+Aaj ka kaam: ek flat kapda/accessory try-on + 2 alag look.
+■ PROMPT:
+
+Use the girl from the first attached image (same exact face) wearing the outfit from the second
+attached image (exact same print, colour and design), standing in a cozy room, shot on iphone, n
+atural light, ultra realistic. 9:16.
+
+Lesson 24 — Pehla Client Kaise Laye (Outreach)
+Mindset: tum salesman nahi, ek problem ka hal de rahe (saste professional photos jo sales badhati).
+Client kahan: Instagram pe chhote sellers (boutique, skincare, jewellery, candles, food) jinki photos kamzor;
+local businesses.
+Cold message = 3 line: (1) sachhi tareef/product ka zikr, (2) "main professional photos banata hu jo sales
+badhati", (3) chhoti offer — "ek free sample bana ke dikhau?" (free sample sabse taakatwar).
+Numbers khel: ~20 messages = 1-2 haan. Roz 5-10 personal outreach + follow-up.
+Common galti: copy-paste generic message; ek "no" pe rukna.
+Aaj ka kaam: 10 sellers dhoondho, 2 ke liye free sample + 3-line message.
+*(Strategy — practical prompts L20-23 wale.)*
+
+Lesson 25 — Product Shoot ki Pricing
+2 galtiyan: zyada maanga (client bhaaga) / kam maanga (izzat + kamai giri).
+3-tier packages:
+ • Basic — kuch photos, 1 product, 1 platform (■100-1000 start).
+ • Standard — zyada photos, angles, 2 platform (■1k-3k).
+ • Premium — poora set, lifestyle+studio, sab platform (■3k-7k).
+Rules: daam mat girao, scope girao (kam photos). Advance lo (aadha pehle, aadha delivery). Confidently
+package batao, phir chup raho.
+Common galti: discount de dena instead of scope kam karna → value girti.
+Aaj ka kaam: rate card (3 packages — kya milega + kitne ka).
+*(Strategy — koi prompt nahi.)*
+
+ MODULE 6 — UGC & BRAND DEALS
+Lesson 26 — UGC (Samajh + Pehli Video)
+UGC = User Generated Content — ais■ lage jaise aam user ne banaya (brand ne nahi). Log ads pe nahi,
+logon pe bharosa karte. Followers nahi chahiye (brand apne page/ads mein daalta).
+70% khel = script. Formula (3 hisse): hook (pehle 3 sec — problem/bold line) → value/demo (product kya
+karta) → CTA ("link bio mein"). Total chhota (20-40 sec).
+Banane ka tarika: lip-sync + product haath mein → 3 clips → VN (9:16, tight cuts, captions har line, soft
+music).
+Common galti: hook boring → koi nahi rukta. Pehle 3 sec pe sabse zyada mehnat.
+Aaj ka kaam: ek product, 3-hissa script, ek poori UGC video.
+■ PROMPT:
+Use the girl from the attached image (same exact face). Real handheld iPhone selfie UGC video, s
+he presents [product] to camera like a genuine excited review, cozy room, shot on iphone, super
+realistic. She says: "[hook line + value + CTA]." 9:16.
+
+Lesson 27 — Portfolio Banana
+Kyun: portfolio = tumhara resume/degree/interview — brand 2 min mein dekhke decide karta.
+
+5 videos (range dikhe): 2 testimonial, 2 demo, 1 alag niche. Sab ek jaisi high quality (1 kamzor = poora
+down). 5 achhi > 10 average.
+Kahan rakho: ek link — Google Drive folder / simple portfolio page / Instagram highlight. Upar naam + line
+("UGC creator — product videos jo bikti hain").
+Common galti: kaam ka intezaar phir portfolio — ulta: pehle banao (samples se hi client aata).
+Aaj ka kaam: 5 videos plan (2 testimonial, 2 demo, 1 niche) + ek folder/link.
+*(Practical: Canva "mood board" template → best clips/images → "MY PORTFOLIO" + handle → PDF/PNG
+export.)*
+
+Lesson 28 — Brands Tak Pahunchna
+Kis brand ko: bade (Tata/Nike) mat pakdo (agencies hain) — chhote/medium brands (skincare, gadget,
+kapde, food) jinko content chahiye, budget kam.
+3 raaste: (1) Instagram DM (ads chalate par content simple), (2) Email (website collab), (3) collab platforms /
+"creators wanted".
+Message formula: product ki sachhi tareef → tum UGC creator (bikne wali videos) → portfolio link + sample
+offer (sabse taakatwar).
+Numbers: roz 5 DM + 2 email. Na/no-reply normal. Follow-up (3-4 din baad) — zyadatar deals wahin close
+hoti.
+Common galti: copy-paste sab jagah / bade brand pe atakna. Kam links, personal, consistency.
+Aaj ka kaam: 15 chhote brands list + 5 DM + 2 email + 1 sample video.
+*(Strategy — koi prompt nahi.)*
+
+Lesson 29 — Deal Close Karna
+Rate card (video ka set): Basic (1 video, 1 revision) / Standard (2-3 videos, alag hooks) / Premium (video set,
+alag platforms). Shuru mein 1 video ■3k-15k.
+Negotiation: "zyada hai" → daam nahi, scope girao. "free karke dikhao" → sirf chhota sample. Usage
+poochho (kahan/kitne time — ads = zyada charge).
+Payment: advance (aadha pehle, aadha delivery), likhit mein. Bina advance kaam shuru mat.
+Deal se pehle 3 cheez clear (likhit): kitne videos, kitni revisions, usage.
+Common galti: ye clear kiye bina "haan" → baad mein dispute/free extra kaam.
+Aaj ka kaam: UGC rate card + 3 aam sawaalon ke ready jawab.
+*(Strategy — koi prompt nahi.)*
+
+Lesson 30 — Brand ke Saath Kaam (repeat/retainer)
+Asli paisa purane client mein: naya = 50 messages/hafte; purana = 1 message.
+Delivery 3 niyam: (1) time se pehle do, (2) promise se thoda zyada (extra angle/bonus), (3) saaf files ready
+format (sahi size/name/folder).
+Revisions: deal jitni khushi se; unlimited free se bacho.
+Repeat/monthly: delivery ke baad — "aur content chahiye to ready hoon, monthly package bhi" → monthly
+retainer (fixed content, fixed paisa) = stable income.
+Common galti: deal poori karke gayab — har delivery ke baad feedback + agla kaam offer.
+Aaj ka kaam: delivery checklist + repeat/monthly message template.
+*(Strategy — koi prompt nahi.)*
+
+ MODULE 7 — MONETIZATION & SCALING *(strategy
+ — koi generation prompt nahi)*
+Lesson 31 — Affiliate Marketing
+Kya: product ka special link share → koi khareede → commission (bina bech/stock/delivery).
+Amazon/Flipkart/Myntra free join.
+Perfect kyun: already products dikhate ho, bas link jodo. Ek reel mahinon commission de sakti — passive
+("sote hue") kamai.
+Kaise shuru: (1) program join (Amazon Associates aasan), (2) niche products (fashion/skincare/gadgets), (3)
+value content ("5 monsoon must-haves"), link bio/comment/stories.
+Common galti: har cheez ka link → bharosa tootta. Kam links, zyada bharosa, zyada sale (sirf jo sach mein
+achha).
+Aaj ka kaam: ek program join, 3 niche products, ek value-video plan.
+
+Lesson 32 — Apna Digital Product
+Kya: ek baar bane, baar baar bike (bina stock/delivery) — PDF guide, checklist, template pack. Har sale poora
+munafa (affiliate se farak: product + paisa dono tumhara).
+Kya banao: wahi jo jaante ho ("AI influencer guide", "prompts pack", "content calendar", "UGC templates").
+Followers ki ek problem hal kare. Chhota rakho.
+Kaise: simple PDF/Notion, cover achha + clear steps. Value se bikta, design se nahi. Becho: payment link +
+reels (problem→hal), pricing chhota → reviews → badhao.
+Common galti: perfect banane mein launch nahi karte — chhota banao, jaldi launch, feedback, improve.
+Aaj ka kaam: ek product idea + outline + ek sell-reel plan.
+
+Lesson 33 — Faceless Business Model
+Kya: har business ko Instagram chahiye par owner ko na camera na time — tum ek permanent AI face de do
+(roz saste mein content).
+Model: ek business chuno, consistent character = brand ka chehra (roz product/offers/tips). Grahak ko
+pehchana chehra → bharosa. Owner ko "content machine".
+Kamai: (1) apna business → khud content, (2) doosron ke brand ka face + monthly content → monthly
+retainer (stable income).
+Common galti: sirf bade brands ki soch — ulta, chhote local business (na time na budget) sabse aasan
+client.
+Aaj ka kaam: ek business + brand-face character + content plan + pitch line.
+
+Lesson 34 — Multiple Influencers (Scaling)
+Kya: ek se zyada AI influencers (fashion/tech/fitness) — ek insaan = poori agency, har character apni kamai.
+Doosra kab: pehla set ho tab (ek saath 3 = teeno adhoore). Naya niche = paisa + demand, ek character ek
+niche.
+System se chalao: har character wahi process (sheet, content bank, schedule). Template → doosra aadhe
+time mein. Batch work (1 din photos, 1 din videos). Kamai: 1 character = 4 streams; 3 characters = 4×3 par
+kharcha 3× nahi.
+Common galti: josh mein 3-4 ek saath (sab average) — ek ko winner banao, system pakka karo, phir agla.
+Aaj ka kaam: pehla set hai to doosre ka plan; nahi to pehle ka system likhit.
+
+---
+*Lesson 35 — Monthly Income System + Roadmap (finale) abhi baaki hai.*
+
+GLOBAL RULES (har generation lesson pe)
+ • Image-to-video always (text-to-video = face drift). Ek locked base still → sab clips.
+ • "use the exact same face, same facial features" = identity lock.
+ • Short prompt + short line; "shot on iphone, natural light, candid" = real. "8K/ultra realistic" spam mat.
+ • 4 generate, best 1 rakho. Realism ka 80% base still se aata.
+ • Marketing/earn/app/download words spoken generation mein NAHI (text overlay + VO se).
+
+ AI INFLUENCER COURSE — FULL PROMPTS (har
+ project ka pura prompt)
+Har lesson: Title · Description · Full ready-to-use prompt (copy-paste). Concept/strategy lessons mein prompt
+nahi (strategy hai).
+
+ MODULE 1 — FOUNDATION
+Lesson 1 — Introduction
+Description: AI influencer kya hai, aur ye content + business + paisa kaise deta. *(Concept — no prompt.)*
+
+Lesson 2 — Tools Setup
+Description: Google Flow + VN + ChatGPT setup, ek Google account. *(Concept — no prompt.)*
+
+Lesson 3 — Character Banana (Face Lock)
+Description: Apni AI influencer ka consistent face banana + reference save.
+Full prompt:
+A young Indian woman, early 20s, oval face, warm brown eyes, long dark wavy hair, soft friendly
+smile, natural clear healthy skin with visible pores and a few faint freckles, wearing a simple
+casual top, standing indoors in soft natural daylight, candid pose, shot on iPhone, ultra realis
+tic, real skin texture, natural imperfections, NOT smoothed, no beauty filter, no text. 9:16.
+
+*(4 generate, sabse real wali ko REFERENCE save karo — har kaam mein lagegi.)*
+
+Lesson 4 — Prompt Likhna Seekho
+Description: Prompt ke 5 hisse (kaun/face/kapde/jagah/style).
+Full prompt (template):
+use the exact same face, same woman, same facial features, [outfit — e.g. white cotton kurti], [
+location + mood — e.g. sitting in a sunlit cafe by a window], candid natural pose, shot on iPhon
+e, soft natural light, ultra realistic, real skin texture, no filter, no text. 9:16.
+
+Lesson 5 — Same Face, Alag Pose
+Description: Ek reference se face same, pose/angle alag.
+Full prompt:
+use the exact same face, same woman, same facial features (from the attached reference), now she
+ is [standing / sitting / walking, new angle], relaxed candid pose, natural expression, shot on
+iPhone, soft natural light, ultra realistic, real skin, no filter, no text. 9:16.
+
+ MODULE 2 — PHOTO SKILLS
+Lesson 6 — Outfits Badalna
+Description: Same face, alag kapde (4 style).
+Full prompt:
+use the exact same face, same woman, same facial features, now she is wearing [specific outfit —
+ e.g. a pastel ethnic suit], matching [lighting — e.g. warm festive light], candid pose, shot on
+ iPhone, ultra realistic, real skin texture, no filter, no text. 9:16.
+
+Lesson 7 — Locations Badalna
+Description: Same face, alag jagah + mahaul + pose.
+Full prompt:
+use the exact same face, same woman, same facial features, now she is standing on a Goa beach at
+ sunset in a flowy summer dress, wind gently blowing her hair and dress, sunset glow in the back
+ground, waves softly behind, she looks toward the sea then to the camera with a candid smile, sh
+ot on iPhone, natural realistic light, ultra realistic, real skin, no filter, no text. 9:16.
+
+Lesson 8 — Realistic Skin (AI-look hatao)
+Description: Candid/real look (posed→candid).
+Full prompt:
+use the exact same face, same facial features, now she is sitting in a cafe wearing a white shir
+t, candid natural moment, shot on iPhone, soft natural light, natural skin texture with visible
+pores, slight imperfections and a few flyaway hairs, real and relatable, NOT over-smooth, no bea
+uty filter, no text. 9:16.
+
+Lesson 9 — Photo Quality Fix
+Description: Haath/aankhein/details fix.
+Full prompt:
+fix only her hand in this image — the fingers should look natural and correctly shaped, five fin
+gers, relaxed pose. Keep the face, hairstyle, outfit, pose, lighting and background exactly the
+same. Do not change anything else in the photo.
+
+Lesson 10 — 30 Photos Content Bank
+Description: Ek din mein mahine ka content (batch).
+Full prompt:
+Generate multiple photos of the same woman, exact same face and facial features, realistic, shot
+ on iPhone, natural light, real skin: 1) morning coffee at home in casual wear, 2) working on a
+laptop in a cafe, 3) evening walk on a city street, 4) reading a book at night, 5) rooftop at go
+lden hour... (numbered, each with outfit + location details). No filter, no text. 9:16.
+
+ MODULE 3 — VIDEO & REELS
+Lesson 11 — Photo se Video Banana
+Description: Image-to-video (chhoti natural movement).
+Full prompt:
+
+[attach the photo] Image-to-video. She smiles softly, blinks naturally, slowly lifts a coffee cu
+p and takes a sip, gentle natural camera movement, subtle motion, real handheld iPhone feel, ult
+ra realistic, real skin, no filter, no text. 9:16.
+
+Lesson 12 — Lip-Sync Video
+Description: Bolti hui influencer (script + lip-sync).
+Full prompt:
+[attach the photo] Image-to-video. Real handheld iPhone video. She looks at the camera and speak
+s naturally with a friendly expression, mouth in natural sync, saying: "Hi guys! Mumbai se hu ma
+in. Fashion aur travel meri zindagee hai. Naye ho toh follow karlo!" Ultra realistic, real skin,
+ natural light, no filter, no text. 9:16.
+
+Lesson 13 — AI Voice Banana
+Description: Awaaz control (tone/accent), har video same.
+Full prompt (voice line add):
+[attach the photo] Image-to-video. She speaks naturally in a soft warm female voice, young India
+n accent, medium pace, friendly, NOT robotic, saying: "[your line]". Real handheld iPhone, ultra
+ realistic, real skin, no filter, no text. 9:16.
+
+Lesson 14 — Reel Editing (VN)
+Description: 9:16, cut, captions, music. *(Edit skill — no gen prompt.)*
+
+Lesson 15 — 5 Reel Formats
+Description: Content formats + batch photo→animate.
+Full prompt:
+Generate 4 photos of the same woman (same exact face): 1 morning coffee, 2 laptop work, 3 evenin
+g walk, 4 reading at night — realistic, shot on iPhone, real skin.
+Then animate all 4 (image-to-video): 1 she sips coffee slowly, 2 she types and smiles, 3 gentle
+wind as she walks, 4 she turns a page softly. Natural motion, no filter, no text. 9:16.
+
+MODULE 4 — INSTAGRAM *(strategy — no generation
+ prompts)*
+Lesson 16 — Profile Setup · Lesson 17 — Schedule +
+Captions/Hashtags · Lesson 18 — Algorithm · Lesson 19 — 0→1000
+Followers
+*(In lessons mein generation prompt nahi — strategy/steps.)*
+
+ MODULE 5 — PRODUCT PHOTOGRAPHY
+Lesson 20 — Product Photo Basics
+Description: Clean product shot (character + product).
+Full prompt:
+Use the same character (exact same face) holding this product (attached), plain simple studio ba
+ckground, the product clearly visible and in sharp focus, product large and prominent, soft even
+ lighting, ultra realistic commercial product photography, 4K, sharp, NOT cartoon, no text. 9:16
+.
+
+Lesson 21 — Professional Studio Shots
+Description: Studio-level (light/bg/angle).
+Full prompt:
+Product photo of [product] (attached, exact same), professional studio setup, soft key light wit
+h a subtle fill, plain white or light-grey background with a soft realistic shadow under the pro
+duct, [eye-level / top-down / side] angle, premium commercial look, ultra realistic, 4K, sharp,
+no text. 9:16.
+
+Lesson 22 — Lifestyle + Platform-Ready
+Description: Lifestyle + Amazon-ready.
+Full prompt (2 shots):
+1) [product] held in hand in a real [cafe / desk / outdoor] setting, candid lifestyle, shot on i
+Phone, natural light, ultra realistic, no text. 9:16.
+2) [product] on a plain white background, product large and centered, no props, no text, clean c
+atalog style, 4K. (square/vertical crop as needed).
+
+Lesson 23 — Fashion Try-On
+Description: Flat kapda → model pe.
+Full prompt:
+Use the girl from the first attached image (exact same face) wearing the outfit from the second
+attached image — exact same print, colour and design, same dress. She stands in a cozy room in a
+ natural pose, shot on iPhone, soft natural light, ultra realistic, real skin, no filter, no tex
+t. 9:16.
+
+Lesson 24 — Pehla Client · Lesson 25 — Pricing
+*(Strategy — no generation prompts; L20-23 prompts kaam aate.)*
+
+ MODULE 6 — UGC & BRAND DEALS
+Lesson 26 — UGC (Pehli Video)
+Description: Selfie testimonial ad (hook→value→CTA).
+Full prompt:
+Use the girl from the attached image (exact same face). Image-to-video. Real handheld iPhone sel
+fie UGC video, she presents [product] to the camera like a genuine excited customer review, natu
+ral expressive energy, cozy room, shot on iPhone, super realistic, real skin, no filter, no text
+. She lip-syncs in a natural Hindi voice: "[hook line + value + soft CTA]". 9:16.
+
+Lesson 27 — Portfolio · Lesson 28 — Brands Tak Pahunchna ·
+Lesson 29 — Deal Close · Lesson 30 — Brand ke Saath Kaam
+*(Strategy — no generation prompts.)*
+
+ MODULE 7 — MONETIZATION & SCALING *(strategy
+ — no generation prompts)*
+Lesson 31 — Affiliate · Lesson 32 — Digital Product · Lesson 33 —
+Faceless Business · Lesson 34 — Multiple Influencers
+
+GLOBAL PROMPT RULES
+ • Image-to-video always (text-to-video = face drift). Ek locked base still → sab clips.
+ • "use the exact same face, same facial features" = identity lock.
+ • Realism: "candid, shot on iPhone, natural light, real skin, visible pores, NOT smoothed, no filter." "8K/ultra
+ realistic" spam avoid.
+ • Short lines for lip-sync (15-20 words). 4 generate, best 1.
+ • Marketing/app/download/earn words SPOKEN generation mein NAHI → text overlay + VO.
+ • Real brand naam/logo generation mein NAHI (apna logo edit mein overlay).

@@ -766,6 +766,7 @@
               <div class="nai-avatar-menu" id="nai-avatar-menu" hidden></div>
             </div>
             <div class="nai-hdr-actions">
+              <button class="nai-hdr-btn" id="nai-new-chat" type="button">New chat</button>
               <button class="nai-hdr-btn" id="nai-close" type="button" aria-label="Close Nex AI Tutor"><i class="fas fa-arrow-left"></i><span>Back</span></button>
             </div>
           </div>
@@ -908,6 +909,7 @@
   let lastAiTrigger = null;
   function openChat(container = null)  {
     mountWidget(container);
+    syncConversationOwner();
     lastAiTrigger = document.activeElement instanceof HTMLElement ? document.activeElement : floatBtn;
     if (!requireAiAccess(container)) return;
     overlay.classList.add('nai-open');
@@ -1059,6 +1061,35 @@
   });
 
   /* ── Send message ── */
+  let conversationHistory = [];
+  let conversationOwner = '';
+  let conversationVersion = 0;
+  let sending = false;
+
+  function resetConversation() {
+    conversationHistory = [];
+    conversationVersion += 1;
+    messages.replaceChildren();
+  }
+
+  function syncConversationOwner() {
+    const user = window.EduNex?.getUser?.();
+    const owner = window.EduNex?.getAccessToken?.()
+      ? String(user?._id || user?.id || '') : '';
+    if (owner !== conversationOwner) {
+      conversationOwner = owner;
+      resetConversation();
+    }
+  }
+
+  window.addEventListener('edunex:auth-changed', syncConversationOwner);
+  window.addEventListener('storage', syncConversationOwner);
+  document.getElementById('nai-new-chat').addEventListener('click', () => {
+    resetConversation();
+    input.value = '';
+    input.focus();
+  });
+
   function escapeNaiHtml(value) {
     return String(value || '')
       .replace(/&/g, '&amp;')
@@ -1119,19 +1150,25 @@
       method: 'POST',
       body: JSON.stringify({
         message: text,
+        history: conversationHistory,
         pagePath: window.location.pathname + window.location.search,
         assistantName: normalizeBotName(botNameInput?.value) || localStorage.getItem('edunexAiBotName') || 'Nex AI',
       }),
     });
 
-    return data?.reply || 'I do not know from the Skillomate website or course context I have.';
+    if (typeof data?.reply !== 'string' || !data.reply.trim()) throw new Error('No answer returned. Please try again.');
+    return data;
   }
 
   async function sendMessage() {
+    if (sending) return;
+    syncConversationOwner();
     if (!requireAiAccess(rootEl.parentElement)) return;
     const text = input.value.trim();
     if (!text) return;
 
+    sending = true;
+    const requestVersion = conversationVersion;
     sendBtn.disabled = true;
     const userMsg = document.createElement('div');
     userMsg.className = 'nai-user-row';
@@ -1157,7 +1194,14 @@
     messages.scrollTop = messages.scrollHeight;
 
     try {
-      const reply = await getAiReply(text);
+      const data = await getAiReply(text);
+      const reply = data.reply;
+      syncConversationOwner();
+      if (requestVersion !== conversationVersion) return;
+      conversationHistory = [...conversationHistory,
+        { role: 'user', content: text.slice(0, 2000) },
+        { role: 'assistant', content: reply.slice(0, 2000) },
+      ].slice(-12);
       const t = document.getElementById('nai-typing');
       if (t) t.remove();
 
@@ -1165,11 +1209,16 @@
       aiMsg.className = 'nai-ai-row';
       aiMsg.innerHTML = `
         <div class="nai-ai-avatar">${currentBotAvatarMarkup()}</div>
-        <div class="nai-ai-bubble">${formatNaiReply(reply)}</div>
+        <div class="nai-ai-bubble">${formatNaiReply(reply)}
+          ${data.notice ? `<p role="status">${escapeNaiHtml(data.notice)}</p>` : ''}
+          ${(data.sources || []).length ? `<div style="margin-top:12px;font-size:.8rem"><strong>References</strong>${data.sources.filter(source => source.url?.startsWith('/course-details.html?')).map(source => `<p><a style="color:inherit;text-decoration:underline" href="${escapeNaiHtml(source.url)}">[${escapeNaiHtml(source.id)}] ${escapeNaiHtml(source.title)} — ${escapeNaiHtml(source.section)}</a></p>`).join('')}</div>` : ''}
+        </div>
       `;
       messages.appendChild(aiMsg);
       messages.scrollTop = messages.scrollHeight;
     } catch (error) {
+      syncConversationOwner();
+      if (requestVersion !== conversationVersion) return;
       const t = document.getElementById('nai-typing');
       if (t) t.remove();
 
@@ -1182,6 +1231,7 @@
       messages.appendChild(aiMsg);
       messages.scrollTop = messages.scrollHeight;
     } finally {
+      sending = false;
       sendBtn.disabled = false;
     }
   }

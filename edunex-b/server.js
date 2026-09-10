@@ -46,7 +46,7 @@ const BUNNY_PULL_ZONE_URL = process.env.BUNNY_PULL_ZONE_URL
   || 'https://edunex.b-cdn.net/';
 const BUNNY_STREAM_LIBRARY_ID = process.env.BUNNY_STREAM_LIBRARY_ID || '';
 const BUNNY_STREAM_API_KEY = process.env.BUNNY_STREAM_API_KEY || '';
-const OTP_PROVIDER = String(process.env.OTP_PROVIDER || '').trim().toLowerCase();
+const OTP_PROVIDER = String(process.env.OTP_PROVIDER || process.env.OTP_DELIVERY_PROVIDER || '').trim().toLowerCase();
 const PAYMENT_GATEWAY_MODE = String(process.env.PAYMENT_GATEWAY_MODE || '').trim().toLowerCase();
 const IMAGE_PROXY_ALLOWED_HOSTS = String(process.env.IMAGE_PROXY_ALLOWED_HOSTS || '')
   .split(',')
@@ -573,9 +573,10 @@ app.use((req, res, next) => {
   }
   next();
 });
+app.use('/api/webhooks/razorpay', express.raw({ type: '*/*', limit: '2mb' }));
 app.use('/api/webhooks/phonepe', express.raw({ type: '*/*', limit: '2mb' }));
 app.use((req, res, next) => {
-  if (req.path === '/api/webhooks/phonepe') {
+  if (['/api/webhooks/phonepe', '/api/webhooks/razorpay'].includes(req.path)) {
     return next();
   }
 

@@ -10,78 +10,7 @@ function addMonths(date, months) {
   return result;
 }
 
-// Runs every 15 minutes
-cron.schedule('*/15 * * * *', async function promoteTrialsOnMandate() {
-  console.log('[CRON] Promote 1rs-trial subscriptions on mandate started');
-  try {
-    const now = new Date();
-
-    // Find users whose 24-hour trial window has expired but haven't yet been promoted
-    const trialUsers = await User.find({
-      subscriptionStatus: '1rs trial',
-    }).select('_id');
-
-    if (trialUsers.length === 0) {
-      console.log('[CRON] No 1rs-trial users to process');
-      return;
-    }
-
-    console.log(`[CRON] Found ${trialUsers.length} 1rs-trial user(s) to check`);
-
-    const lookup = await Subscription.find({
-      user: { $in: trialUsers.map((u) => u._id) },
-    });
-
-    const userIdToSub = new Map(lookup.map((s) => [String(s.user), s]));
-
-    for (const user of trialUsers) {
-      try {
-        const sub = userIdToSub.get(String(user._id));
-        if (!sub) continue;
-        // If the trial window hasn't expired yet, skip until it does (idempotent guard)
-        if (sub.trialExpiresAt && now < sub.trialExpiresAt) continue;
-
-        // If the mandate has NOT been approved yet, keep '1rs trial' and wait for MANDATE_APPROVED
-        // (the webhook will promote them immediately when the mandate arrives)
-        if (!sub.phonePeMandateId) {
-          console.log(`[CRON] User ${user._id} trial expired but no mandate yet — skipping`);
-          continue;
-        }
-
-        // Mandate exists after trial window — promote to subscribed (₹500/month)
-        const start = new Date();
-        const end = addMonths(start, 1);
-        const nextBilling = addMonths(start, 1);
-
-        sub.status = 'subscribed';
-        sub.subscriptionType = 'monthly';
-        sub.trialConverted = true;
-        sub.currentPeriodStart = start;
-        sub.currentPeriodEnd = end;
-        sub.nextBillingAt = nextBilling;
-        await sub.save();
-
-        await User.findByIdAndUpdate(user._id, {
-          subscriptionStatus: 'subscribed',
-        });
-
-        await SubscriptionEvent.create({
-          subscription: sub._id,
-          user: user._id,
-          event: 'SUBSCRIPTION_ACTIVATED',
-          amount: sub.amount,
-          metadata: { source: 'trial_promotion', via: 'cron_24h' },
-        });
-
-        console.log(`[CRON] Promoted user ${user._id} from 1rs_trial → subscribed`);
-      } catch (err) {
-        console.error(`[CRON] Error processing user ${user._id}:`, err.message);
-      }
-    }
-  } catch (err) {
-    console.error('[CRON] PromoteTrialsOnMandate failed:', err);
-  }
-});
+// Paid access is granted only by verified provider reconciliation, never by a mandate timer.
 
 // Runs every 30 minutes
 cron.schedule('*/30 * * * *', async function expireOverdueSubscriptions() {
@@ -89,6 +18,7 @@ cron.schedule('*/30 * * * *', async function expireOverdueSubscriptions() {
   try {
     const now = new Date();
     const overdue = await Subscription.find({
+      gateway: { $ne: 'razorpay' },
       status: { $in: ['active', 'subscribed'] },
       currentPeriodEnd: { $ne: null, $lte: now },
     }).select('_id user currentPeriodEnd');

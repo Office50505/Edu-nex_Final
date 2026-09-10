@@ -10,6 +10,7 @@ const { deleteUserAccount } = require('../services/accountDeletionService');
 const {
   normalizeMobileNumber,
   sendMobileOtp,
+  resendMobileOtp,
   verifyMobileOtp: verifyMobileOtpCode,
 } = require('../services/otpService');
 
@@ -26,7 +27,8 @@ function envSecret(name, developmentFallback) {
 const ACCESS_TOKEN_SECRET = envSecret('JWT_SECRET', 'edunex-development-access-secret');
 const REFRESH_TOKEN_SECRET = envSecret('JWT_REFRESH_SECRET', 'edunex-development-refresh-secret');
 const SIGNUP_TOKEN_SECRET = envSecret('JWT_SIGNUP_SECRET', 'edunex-development-signup-secret');
-const AUTO_VERIFY_OTP = process.env.AUTO_VERIFY_OTP === 'true';
+const realOtp = (process.env.OTP_PROVIDER || process.env.OTP_DELIVERY_PROVIDER || (isProduction ? 'msg91' : 'demo')).toLowerCase() === 'msg91';
+const AUTO_VERIFY_OTP = !isProduction && !realOtp && process.env.AUTO_VERIFY_OTP === 'true';
 const DISABLE_AUTH_RATE_LIMIT = process.env.DISABLE_AUTH_RATE_LIMIT === 'true';
 const MAX_COMPAT_ACTIVE_SESSIONS = Number(process.env.MAX_COMPAT_ACTIVE_SESSIONS || 3);
 
@@ -38,10 +40,10 @@ const authRateConfig = {
   loginByIp: isProduction
     ? { windowMs: 15 * 60 * 1000, maxAttempts: 20, blockDurationMs: 15 * 60 * 1000 }
     : { windowMs: 5 * 60 * 1000, maxAttempts: 150, blockDurationMs: 60 * 1000 },
-  otpByPhone: isProduction
+  otpByPhone: (isProduction || realOtp)
     ? { windowMs: 60 * 60 * 1000, maxAttempts: 5, blockDurationMs: 60 * 60 * 1000 }
     : { windowMs: 5 * 60 * 1000, maxAttempts: 50, blockDurationMs: 60 * 1000 },
-  otpByIp: isProduction
+  otpByIp: (isProduction || realOtp)
     ? { windowMs: 60 * 60 * 1000, maxAttempts: 15, blockDurationMs: 60 * 60 * 1000 }
     : { windowMs: 5 * 60 * 1000, maxAttempts: 150, blockDurationMs: 60 * 1000 },
 };
@@ -398,7 +400,7 @@ async function signup(req, res) {
 
     const existingMobileUser = await User.findOne({ mobileNumber: normalizedMobile });
     if (existingMobileUser) {
-      return res.status(409).json({ error: 'This mobile number is already registered' });
+      return res.status(409).json({ error: 'This mobile number is already registered', code: 'MOBILE_ALREADY_REGISTERED' });
     }
 
     const passwordHash = await bcrypt.hash(password, 12);
@@ -471,7 +473,7 @@ async function verifyMobileOtp(req, res) {
 
     const existingUser = await User.findOne({ mobileNumber: normalizedMobile });
     if (existingUser) {
-      return res.status(409).json({ error: 'This mobile number is already registered' });
+      return res.status(409).json({ error: 'This mobile number is already registered', code: 'MOBILE_ALREADY_REGISTERED' });
     }
 
     if (!AUTO_VERIFY_OTP) {
@@ -527,7 +529,7 @@ async function sendMobileOtpHandler(req, res) {
 
     const existingUser = await User.findOne({ mobileNumber: normalizedMobile });
     if (existingUser) {
-      return res.status(409).json({ error: 'This mobile number is already registered' });
+      return res.status(409).json({ error: 'This mobile number is already registered', code: 'MOBILE_ALREADY_REGISTERED' });
     }
 
     const attemptBlocked = recordRateLimitAttempt(phoneOtpKey, authRateConfig.otpByPhone) || recordRateLimitAttempt(ipOtpKey, authRateConfig.otpByIp);
@@ -535,7 +537,7 @@ async function sendMobileOtpHandler(req, res) {
       return res.status(429).json({ error: 'Too many OTP requests. Please wait a while and try again.' });
     }
 
-    const result = await sendMobileOtp(mobileNumber);
+    const result = await (req.resendOtp ? resendMobileOtp : sendMobileOtp)(mobileNumber);
     if (!result.ok) {
       return res.status(400).json({ error: result.error });
     }
@@ -557,6 +559,7 @@ async function sendMobileOtpHandler(req, res) {
 
 router.post('/send-mobile-otp', sendMobileOtpHandler);
 router.post('/send-otp', sendMobileOtpHandler);
+router.post('/resend-mobile-otp', (req, res) => { req.resendOtp = true; return sendMobileOtpHandler(req, res); });
 router.post('/sendOtp', sendMobileOtpHandler);
 router.post('/request-otp', sendMobileOtpHandler);
 router.post('/requestOtp', sendMobileOtpHandler);
@@ -764,6 +767,7 @@ router.post('/login', async (req, res) => {
     if (!user || user.isActive === false) {
       recordRateLimitFailure(loginLimitKey, authRateConfig.loginByPhone);
       recordRateLimitFailure(ipLimitKey, authRateConfig.loginByIp);
+      if (!user && !normalizedEmail) return res.status(404).json({ error: 'This mobile number is not registered.', code: 'MOBILE_NOT_REGISTERED' });
       return res.status(401).json({ error: 'Invalid credentials' });
     }
 

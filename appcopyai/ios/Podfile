@@ -31,19 +31,7 @@ target 'ProtectedVideo' do
     ]
   end
 
-<<<<<<< HEAD
-platform :ios, podfile_properties['ios.deploymentTarget'] || '16.4'
-install! 'cocoapods',
-  :deterministic_uuids => false
-
-prepare_react_native_project!
-
-target 'ProtectedVideo' do
-  use_expo_modules!
-  config = use_native_modules!
-=======
   config = use_native_modules!(config_command)
->>>>>>> 997e33eea7b5c5f193080a114f8374e8d90b8191
 
   use_frameworks! :linkage => podfile_properties['ios.useFrameworks'].to_sym if podfile_properties['ios.useFrameworks']
   use_frameworks! :linkage => ENV['USE_FRAMEWORKS'].to_sym if ENV['USE_FRAMEWORKS']

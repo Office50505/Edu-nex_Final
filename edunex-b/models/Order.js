@@ -7,6 +7,9 @@ const orderSchema = new mongoose.Schema({
   totalAmount: { type: Number, required: true },
   gateway: { type: String, default: 'phonepe' },
   phonePeMerchantTransactionId: { type: String, required: true, unique: true },
+  razorpayPaymentId: String,
+  razorpaySubscriptionId: String,
+  refundedAmount: { type: Number, default: 0 },
   phonePeTransactionId: { type: String, default: null },
   phonePeCustomerId: { type: String, default: null },
   phonePePaymentInstrument: {

@@ -106,31 +106,9 @@ function escapeHtml(value) {
     .replace(/'/g, '&#39;');
 }
 
-async function promoteTrialToSubscribedIfEligible(subscription, userId) {
-  const now = new Date();
-  const trialExpired = subscription.trialExpiresAt && now >= subscription.trialExpiresAt;
-  const hasMandate = Boolean(subscription.phonePeMandateId);
-  const inTrial = subscription.status === '1rs trial' || subscription.status === 'trial';
-
-  if (!inTrial || !hasMandate || !trialExpired) {
-    return false;
-  }
-
-  const start = subscription.currentPeriodStart || now;
-  const end = subscription.currentPeriodEnd || addMonths(start, 1);
-  subscription.status = 'subscribed';
-  subscription.trialConverted = true;
-  subscription.currentPeriodStart = start;
-  subscription.currentPeriodEnd = end;
-  subscription.nextBillingAt = subscription.nextBillingAt || end;
-  await subscription.save();
-
-  await User.findByIdAndUpdate(userId, {
-    subscriptionStatus: 'subscribed',
-    subscriptionId: subscription._id,
-  });
-
-  return true;
+async function promoteTrialToSubscribedIfEligible() {
+  // A mandate is consent, not a successful recurring charge. Payment events grant access.
+  return false;
 }
 
 async function createSubscriptionEventOnce({
@@ -474,6 +452,7 @@ async function handleWebhook(req, res) {
     const order = merchantTransactionId
       ? await Order.findOne({ phonePeMerchantTransactionId: merchantTransactionId })
       : null;
+    if (order && await Subscription.exists({ user: order.user, gateway: 'razorpay' })) return res.sendStatus(200);
     let subscription = order?.subscription ? await Subscription.findById(order.subscription) : null;
 
     if (!subscription && order) {
@@ -498,6 +477,7 @@ async function handleWebhook(req, res) {
       await Order.findByIdAndUpdate(order._id, { subscription: subscription._id });
     }
 
+    if (subscription?.gateway === 'razorpay') return res.sendStatus(200);
     if (!subscription) {
       console.warn('PhonePe webhook received without matching subscription', payload);
       return res.sendStatus(200);
