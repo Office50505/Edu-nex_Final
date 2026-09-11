@@ -48,4 +48,13 @@ if (fs.existsSync(indexHtml) && fs.existsSync(legacyDir)) {
   }
 }
 
+// React-only operational pages have no legacy HTML source.
+if (fs.existsSync(indexHtml)) {
+  const healthDir = path.join(dist, 'admin', 'system-health');
+  const certificateDir = path.join(dist, 'admin', 'certifications');
+  fs.mkdirSync(certificateDir, { recursive: true });
+  fs.copyFileSync(indexHtml, path.join(certificateDir, 'index.html'));
+  fs.mkdirSync(healthDir, { recursive: true });
+  fs.copyFileSync(indexHtml, path.join(healthDir, 'index.html'));
+}
 console.log("Copied static frontend assets and route shells into dist.");

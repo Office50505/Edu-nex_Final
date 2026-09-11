@@ -9,8 +9,9 @@ if (!process.env.FAL_API_KEY && !process.env.FAL_KEY) throw new Error('Set FAL_A
 const routes = {};
 const course = { _id: '6a9e67c46bcb631b8118d341', title: 'AI Influencer Course', slug: 'ai-influencer', description: 'Create AI characters and consistent videos, write prompts, and troubleshoot voice and realism.', videos: [] };
 const query = { select() { return this; }, populate() { return this; }, sort() { return this; }, limit() { return this; }, lean: async () => [course] };
-vm.runInNewContext(fs.readFileSync(path.join(__dirname, '../routes/ai.js'), 'utf8'), {
+const sandbox = {
   require(name) {
+    if (name.includes('aiTutorService')) return serviceModule.exports;
     if (name === 'express') return { Router: () => ({ get() {}, post(url, auth, handler) { routes[url] = handler; } }) };
     if (name.includes('tutorKnowledge')) return require('../services/tutorKnowledge');
     if (name.includes('Subscription')) return { findOne: () => ({ lean: async () => ({ status: 'active', currentPeriodEnd: new Date(Date.now() + 60000) }) }) };
@@ -18,7 +19,10 @@ vm.runInNewContext(fs.readFileSync(path.join(__dirname, '../routes/ai.js'), 'utf
     return { requireCompatibleAuth: () => () => {} };
   },
   module: { exports: {} }, process, console, fetch, AbortSignal,
-});
+};
+const serviceModule = { exports: {} };
+vm.runInNewContext(fs.readFileSync(path.join(__dirname, "../services/aiTutorService.js"), "utf8"), { ...sandbox, module: serviceModule });
+vm.runInNewContext(fs.readFileSync(path.join(__dirname, "../routes/ai.js"), "utf8"), sandbox);
 async function chat(message, history = []) {
   let result;
   await routes['/chat']({ body: { message, history }, compatUser: { _id: 'evaluation-fixture' } }, { json(data) { result = data; }, status() { return this; } });

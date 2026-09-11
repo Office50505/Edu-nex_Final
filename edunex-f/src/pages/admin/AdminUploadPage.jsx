@@ -1,4 +1,6 @@
-import { useEffect, useMemo, useState } from "react";
+import { inferProvider, videoError, importLessons, CLOUDFRONT_HOST } from "./videoForm.js";
+import { VideoPreview } from "./VideoPreview.jsx";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { AdminShell, Message } from "./AdminShell.jsx";
 import { adminJson, adminRoutes, formatNumber, requireAdmin, slugify } from "./adminApi.js";
 
@@ -16,6 +18,7 @@ function normalizeThumbnailUrl(url, width = 1600) {
 
 function makeVideo(index = 0) {
   return {
+    provider: "bunny_stream",
     title: "",
     topic: "",
     description: "",
@@ -24,7 +27,7 @@ function makeVideo(index = 0) {
     thumbnailUrl: "",
     thumbnailVerticalUrl: "",
     examplePrompt: "",
-    key: `${Date.now()}-${index}`,
+    key: crypto.randomUUID(),
   };
 }
 
@@ -52,11 +55,15 @@ function categoryId(course) {
 
 function courseVideo(video, index) {
   return {
+    _id: video?._id,
+    provider: inferProvider(video),
+    youtubeId: video?.youtubeId,
+    transcriptUrl: video?.transcriptUrl,
     title: video?.title || `Video ${index + 1}`,
     topic: video?.topic || "",
     description: video?.description || "",
     duration: String(video?.duration || ""),
-    videoUrl: video?.videoUrl || video?.url || "",
+    videoUrl: video?.videoUrl || video?.embedUrl || video?.url || (video?.bunnyVideoId && video?.bunnyLibraryId ? `https://player.mediadelivery.net/embed/${video.bunnyLibraryId}/${video.bunnyVideoId}` : ""),
     thumbnailUrl: video?.thumbnailUrl || video?.thumbnailHorizontalUrl || "",
     thumbnailVerticalUrl: video?.thumbnailVerticalUrl || "",
     examplePrompt: video?.examplePrompt || video?.examplePromptText || video?.examplePromptUrl || video?.promptUrl || "",
@@ -66,7 +73,9 @@ function courseVideo(video, index) {
 
 function courseForm(course) {
   const videos = Array.isArray(course?.videos) && course.videos.length
-    ? course.videos.map(courseVideo)
+    ? course.videos.slice().sort((a,b)=>(a.order||0)-(b.order||0)).map((video,index) => ({...courseVideo(video,index),
+      thumbnailUrl: video.thumbnailUrl === course.thumbnailUrl ? '' : video.thumbnailUrl || '',
+      thumbnailVerticalUrl: video.thumbnailVerticalUrl === course.thumbnailVerticalUrl ? '' : video.thumbnailVerticalUrl || ''}))
     : [makeVideo()];
   return {
     title: course?.title || "",
@@ -82,6 +91,52 @@ function courseForm(course) {
 }
 
 export function AdminUploadPage() {
+  const [bulk, setBulk] = useState('');
+  const [preview, setPreview] = useState(null);
+  const [cloudHost, setCloudHost] = useState(CLOUDFRONT_HOST);
+  useEffect(() => { adminJson('/api/admin/video-providers').then(data => setCloudHost(data.cloudFrontHost)).catch(() => {}); }, []);
+  function moveVideo(index, offset) {
+    setPreview(null);
+    setForm(current => { const videos=[...current.videos]; const next=index+offset; if(next<0||next>=videos.length)return current; [videos[index],videos[next]]=[videos[next],videos[index]];return {...current,videos}; });
+  }
+  const checkingRef = useRef(false);
+  const mountedRef = useRef(true);
+  const [checking, setChecking] = useState(false);
+  useEffect(() => { mountedRef.current=true; return () => { mountedRef.current=false; }; }, []);
+  async function checkLessons(lessons) {
+    if (checkingRef.current) return;
+    checkingRef.current=true;setChecking(true);
+    let cursor=0;
+    async function worker() {
+      while (cursor < lessons.length && mountedRef.current) {
+        const lesson=lessons[cursor++];
+        let result;
+        try {
+          const error=videoError(lesson,cloudHost);if(error)throw new Error(error);
+          result=await adminJson('/api/admin/video-metadata',{method:'POST',body:JSON.stringify(lesson)});
+        } catch(error) { result={message:error.message,error:true}; }
+        if(!mountedRef.current)return;
+        setForm(current=>({...current,videos:current.videos.map(v=>v.key===lesson.key && v.videoUrl===lesson.videoUrl && v.provider===lesson.provider ? {...v,
+          duration: !result.error && String(v.duration)===String(lesson.duration) ? String(result.duration) : v.duration,
+          metadataMessage:result.message,metadataError:!!result.error} : v)}));
+      }
+    }
+    try { await Promise.all(Array.from({length:Math.min(3,lessons.length)},worker)); }
+    finally { checkingRef.current=false;if(mountedRef.current)setChecking(false); }
+  }
+  function importBulk() {
+    try {
+      const imported=importLessons(bulk);
+      for(const lesson of imported){const error=videoError(lesson,cloudHost);if(error)throw new Error(`${lesson.title}: ${error}`);}
+      const existing=form.videos.filter(v=>v.title||v.videoUrl);
+      if(existing.length+imported.length>500)throw new Error('A course can contain at most 500 lessons.');
+      if(imported.some(v=>existing.some(old=>old.videoUrl===v.videoUrl)))throw new Error('One of these URLs is already in the course. Remove it from the import first.');
+      const lessons=imported.map((v,i)=>({...makeVideo(i),...v}));
+      setForm(current=>({...current,videos:[...current.videos.filter(v=>v.title||v.videoUrl),...lessons]}));
+      setBulk('');setMessage('Lessons imported. Checking durations; review the generated titles and preview playback.');setMessageType('success');
+      void checkLessons(lessons);
+    } catch(error){setMessage(error.message);setMessageType('error');}
+  }
   const [editCourseId] = useState(courseIdFromLocation);
   const [categories, setCategories] = useState([]);
   const [form, setForm] = useState(emptyCourseForm);
@@ -145,7 +200,7 @@ export function AdminUploadPage() {
   function updateVideo(index, field, value) {
     setForm((current) => ({
       ...current,
-      videos: current.videos.map((video, videoIndex) => videoIndex === index ? { ...video, [field]: value } : video),
+      videos: current.videos.map((video, videoIndex) => videoIndex === index ? { ...video, [field]: value, ...(['videoUrl','provider'].includes(field) ? {duration:'',metadataMessage:'',metadataError:false} : {}) } : video),
     }));
   }
 
@@ -196,10 +251,13 @@ export function AdminUploadPage() {
     ["Description", Boolean(form.description.trim())],
     ["Category", Boolean(form.category)],
     ["Video URLs", Boolean(form.videos.length && completeVideos === form.videos.length)],
+    ["Lesson durations", form.videos.every(v=>Number(v.duration)>0)],
   ];
 
   async function handleSubmit(event) {
     event.preventDefault();
+    const invalid = form.videos.map((video,index)=>({index,error:videoError(video,cloudHost)})).find(item=>item.error);
+    if(invalid){setMessageType('error');setMessage(`Lesson ${invalid.index+1}: ${invalid.error}`);return;}
     const payload = {
       title: form.title.trim(),
       slug: form.slug.trim(),
@@ -210,19 +268,20 @@ export function AdminUploadPage() {
       thumbnailVerticalUrl: normalizeThumbnailUrl(form.thumbnailVerticalUrl),
       notesUrl: form.notesUrl.trim(),
       videos: form.videos.map((video, index) => ({
+        _id: video._id, provider: video.provider, youtubeId: video.youtubeId, transcriptUrl: video.transcriptUrl, order: index + 1,
         title: video.title.trim() || `Video ${index + 1}`,
         topic: video.topic.trim(),
         description: video.description.trim(),
         duration: Number(video.duration || 0),
-        videoUrl: video.videoUrl.trim(),
+        videoUrl: video.videoUrl,
         thumbnailUrl: String(video.thumbnailUrl || "").trim(),
         thumbnailVerticalUrl: String(video.thumbnailVerticalUrl || "").trim(),
         examplePrompt: String(video.examplePrompt || "").trim(),
       })),
     };
-    if (!payload.title || !payload.slug || !payload.description || !payload.category || payload.videos.some((video) => !video.videoUrl)) {
+    if (!payload.title || !payload.slug || !payload.description || !payload.category || payload.videos.some((video) => !video.videoUrl && !video.youtubeId)) {
       setMessageType("error");
-      setMessage("Complete the course details and at least one Bunny video URL.");
+      setMessage("Complete the course details and at least one valid lesson.");
       return;
     }
 
@@ -254,7 +313,7 @@ export function AdminUploadPage() {
       activePage="upload"
       shellClass="course-upload-shell"
       title={isEditing ? "Edit Course" : "Upload Course"}
-      subtitle={isEditing ? "Continue editing this course with the full upload layout." : "Create a draft or published course with Bunny Stream video URLs."}
+      subtitle={isEditing ? "Continue editing this course with the full upload layout." : "Create drafts and published courses with CloudFront HLS and Bunny Stream lessons."}
       actions={isEditing ? <a className="toolbar-button" href={adminRoutes.courses}>Back to courses</a> : null}
     >
       <section className="editor-panel">
@@ -262,7 +321,7 @@ export function AdminUploadPage() {
         <form className="course-form" onSubmit={handleSubmit}>
           <div className="course-builder-grid">
             <div className="form-section">
-              <div className="form-section-head"><div><h2>Course Details</h2><p>Set the public catalog identity before attaching lessons.</p></div></div>
+              <div className="form-section-head"><div><h2>Course Details</h2><p>Enter these once. All lessons share the category, course notes and thumbnails unless overridden.</p></div></div>
               <div className="form-grid">
                 <div className="field"><label htmlFor="title">Course title</label><input id="title" name="title" required maxLength={120} value={form.title} onChange={(event) => updateField("title", event.target.value)} /></div>
                 <div className="field"><label htmlFor="slug">Slug</label><input id="slug" name="slug" required maxLength={120} value={form.slug} onChange={(event) => { setSlugTouched(true); updateField("slug", event.target.value); }} /></div>
@@ -294,21 +353,29 @@ export function AdminUploadPage() {
           </div>
 
           <div className="course-publish-panel">
-            <div className="publish-panel-head"><div><h2>Videos</h2><p>Every video must include a valid Bunny Stream URL.</p></div><span>{formatNumber(form.videos.length)} {form.videos.length === 1 ? "video" : "videos"}</span></div>
+            <div className="publish-panel-head"><div><h2>Videos</h2><p>Add permanent video references, arrange lessons, and preview before publishing.</p></div><span>{formatNumber(form.videos.length)} {form.videos.length === 1 ? "video" : "videos"}</span></div>
+            <div className="field"><label htmlFor="bulkLessons">Paste lesson URLs</label><textarea id="bulkLessons" value={bulk} onChange={e=>setBulk(e.target.value)} placeholder={'https://d2vntxz4x493rp.cloudfront.net/Course/01_Introduction/master.m3u8\nhttps://d2vntxz4x493rp.cloudfront.net/Course/02_Next_Lesson/master.m3u8'}/><button type="button" className="secondary-button" disabled={checking} onClick={importBulk}>Import & detect durations</button></div>
+            <p>One URL per line. Titles and numbering come from filenames or lesson folders; numbered title + URL imports still work.</p>
+            <button type="button" className="secondary-button" disabled={checking} onClick={()=>checkLessons(form.videos)}>{checking?'Checking video details…':'Detect all durations / retry checks'}</button>
+            <p role="status">{checking?'You can keep editing while checks run.': 'Detected duration does not replace a playback preview. Retry failed checks after confirming the video URL and provider access.'}</p>
+            {preview ? <VideoPreview key={preview.key} video={preview} onClose={()=>setPreview(null)}/> : null}
             <div className="video-editor">
               {form.videos.map((video, index) => (
                 <article className="video-entry" key={video.key}>
-                  <div className="video-entry-head"><strong className="video-entry-title">Video {index + 1}</strong><button className="action-button danger" type="button" onClick={() => removeVideo(index)}>Remove</button></div>
+                  <div className="video-entry-head"><strong className="video-entry-title">Lesson {index + 1}</strong><button type="button" className="toolbar-button" disabled={index===0} onClick={()=>moveVideo(index,-1)}>Move up</button><button type="button" className="toolbar-button" disabled={index===form.videos.length-1} onClick={()=>moveVideo(index,1)}>Move down</button><button type="button" className="toolbar-button" onClick={()=>{const error=videoError(video,cloudHost);if(error){setMessageType('error');setMessage(error);}else setPreview({...video,key:Date.now()});}}>Preview</button><button className="action-button danger" type="button" onClick={() => removeVideo(index)}>Remove</button></div>
                   <div className="form-grid">
+                    <div className="field"><label htmlFor={`videoProvider${index}`}>Video provider</label><select id={`videoProvider${index}`} value={video.provider} onChange={e=>updateVideo(index,'provider',e.target.value)}><option value="aws_cloudfront">AWS CloudFront</option><option value="bunny_stream">Bunny Stream</option>{video.provider==='youtube'?<option value="youtube">YouTube (existing)</option>:null}</select></div>
                     <div className="field"><label htmlFor={`videoTitle${index}`}>Title</label><input id={`videoTitle${index}`} value={video.title} required onChange={(event) => updateVideo(index, "title", event.target.value)} /></div>
+                    <div className="field span-2"><label htmlFor={`videoUrl${index}`}>Permanent video URL</label><input id={`videoUrl${index}`} type="text" required={video.provider!=="youtube"} spellCheck={false} placeholder={video.provider==="aws_cloudfront"?`https://${cloudHost}/Course/Lesson/master.m3u8`:"https://player.mediadelivery.net/embed/..."} value={video.videoUrl} onChange={(event) => updateVideo(index, "videoUrl", event.target.value)} /></div>
+                  </div>
+                  <p role="status">{video.metadataMessage || 'Uses course thumbnails and notes. Duration can be detected automatically.'}</p>
+                  <details className="lesson-advanced"><summary>Advanced · optional lesson overrides</summary><div className="form-grid">
                     <div className="field"><label htmlFor={`videoTopic${index}`}>Topic</label><input id={`videoTopic${index}`} maxLength={80} placeholder="e.g. Prompt Engineering" value={video.topic} onChange={(event) => updateVideo(index, "topic", event.target.value)} /></div>
-                    <div className="field"><label htmlFor={`videoDuration${index}`}>Duration seconds</label><input id={`videoDuration${index}`} type="number" min="0" step="1" value={video.duration} onChange={(event) => updateVideo(index, "duration", event.target.value)} /></div>
-                    <div className="field span-2"><label htmlFor={`videoUrl${index}`}>Bunny Stream URL</label><input id={`videoUrl${index}`} type="url" required placeholder="https://player.mediadelivery.net/embed/..." value={video.videoUrl} onChange={(event) => updateVideo(index, "videoUrl", event.target.value)} /></div>
                     <div className="field"><label htmlFor={`videoThumbnailUrl${index}`}>Horizontal thumbnail URL</label><input id={`videoThumbnailUrl${index}`} type="url" placeholder="https://..." value={video.thumbnailUrl} onChange={(event) => updateVideo(index, "thumbnailUrl", event.target.value)} /></div>
                     <div className="field"><label htmlFor={`videoThumbnailVerticalUrl${index}`}>Vertical thumbnail URL</label><input id={`videoThumbnailVerticalUrl${index}`} type="url" placeholder="https://..." value={video.thumbnailVerticalUrl} onChange={(event) => updateVideo(index, "thumbnailVerticalUrl", event.target.value)} /></div>
                     <div className="field span-2"><label htmlFor={`examplePrompt${index}`}>Example prompt</label><textarea id={`examplePrompt${index}`} placeholder="Example: Create a 30-second ad script for a local bakery using this framework." value={video.examplePrompt} onChange={(event) => updateVideo(index, "examplePrompt", event.target.value)} /></div>
                     <div className="field span-2"><label htmlFor={`videoDescription${index}`}>Description</label><textarea id={`videoDescription${index}`} value={video.description} onChange={(event) => updateVideo(index, "description", event.target.value)} /></div>
-                  </div>
+                  </div></details>
                 </article>
               ))}
             </div>

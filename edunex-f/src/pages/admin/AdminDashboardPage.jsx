@@ -230,7 +230,7 @@ export function AdminDashboardPage() {
     <AdminShell
       activePage="dashboard"
       shellClass="dashboard-shell"
-      title="Analytics"
+      title="Overview"
       subtitle="Platform revenue, learners, subscriptions, and course engagement."
       actions={<button className="toolbar-button" type="button" onClick={loadAnalytics} disabled={loading}>Refresh</button>}
     >
@@ -259,6 +259,7 @@ export function AdminDashboardPage() {
         <span className="sync-status">{lastUpdated}</span>
       </form>
 
+      <h2 className="admin-section-heading">Business at a glance</h2>
       {loading && !data ? <DashboardMetricsLoading /> : null}
       {data ? <DashboardMetrics data={data} /> : null}
 
@@ -272,6 +273,7 @@ export function AdminDashboardPage() {
         {loading && !data ? <div className="loading-state">Loading chart...</div> : <TrendChart rows={data?.dailySeries} />}
       </section>
 
+      <h2 className="admin-section-heading">Learners, content and subscriptions</h2>
       <section className="admin-panels">
         <article className="dashboard-panel"><h2 className="panel-title">Watch Time Brief</h2><div className="data-list"><DataList rows={data ? watchRows : []} emptyText="No watch-time data." /></div></article>
         <article className="dashboard-panel"><h2 className="panel-title">User Details Brief</h2><div className="data-list"><DataList rows={data ? userRows : []} emptyText="No user details available." /></div></article>

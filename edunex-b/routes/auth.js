@@ -8,6 +8,7 @@ const { protect } = require('../middleware/auth');
 const { requireCompatibleAuth } = require('../middleware/compatAuth');
 const { deleteUserAccount } = require('../services/accountDeletionService');
 const {
+  OTP_LENGTH,
   normalizeMobileNumber,
   sendMobileOtp,
   resendMobileOtp,
@@ -549,6 +550,7 @@ async function sendMobileOtpHandler(req, res) {
         ? 'OTP sent to your mobile number'
         : `${otpLabel} OTP: ${result.devOtp}`,
       provider: result.provider,
+      otpLength: OTP_LENGTH,
       devOtp: isDevelopmentProvider ? result.devOtp : undefined,
       developmentAutofill: isDevelopmentProvider,
     });
@@ -618,6 +620,7 @@ router.post('/password-reset/request', async (req, res) => {
     return res.status(200).json({
       message: genericMessage,
       provider: result.provider,
+      otpLength: OTP_LENGTH,
       devOtp: isDevelopmentProvider ? result.devOtp : undefined,
       developmentAutofill: isDevelopmentProvider,
     });

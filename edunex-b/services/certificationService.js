@@ -1,0 +1,88 @@
+const mongoose = require('mongoose');
+const crypto = require('node:crypto');
+const Course = require('../models/Course');
+const Policy = require('../models/CertificationPolicy');
+const Learning = require('../models/LearningProgress');
+const Assessment = require('../models/AssessmentResult');
+const Certificate = require('../models/Certificate');
+const CourseProgress = require('../models/CourseProgress');
+const User = require('../models/User');
+const Subscription = require('../models/Subscription');
+const AnalyticsEvent = require('../models/AnalyticsEvent');
+const rules = require('./completionRules');
+const fail = (message,statusCode=400) => Object.assign(new Error(message),{statusCode});
+async function context(user, courseId) {
+  if(!mongoose.Types.ObjectId.isValid(courseId)) throw fail('Invalid course id');
+  const course = await Course.findOne({_id:courseId,status:'published'}).lean();
+  if(!course) throw fail('Published course not found',404);
+  const policy = await Policy.findById(String(courseId)).lean();
+  return { course, ...rules.manifest(course,policy) };
+}
+async function access(user) {
+  const sub=await Subscription.findOne({user:user._id}).lean();
+  const date=['trial','1rs trial'].includes(sub?.status) ? sub.trialExpiresAt : ['active','subscribed','cancelled'].includes(sub?.status) ? sub.currentPeriodEnd : null;
+  if(!date || !Number.isFinite(new Date(date).getTime()) || new Date(date)<=new Date()) throw fail('An active learning entitlement is required.',403);
+}
+async function state(user, ctx) {
+  const userId=String(user._id), courseId=String(ctx.course._id);
+  const [rows,assessment] = await Promise.all([Learning.find({userId,courseId,version:ctx.version}).lean(),Assessment.findById(rules.identity(userId,courseId,ctx.version)).lean()]);
+  return { ...rules.eligibility({...ctx,rows,user,assessment}), courseId, courseTitle:ctx.course.title, version:ctx.version };
+}
+function certificateView(c) { return {_id:String(c._id),certificateId:c.certificateId,courseId:c.courseId,courseTitle:c.courseTitle,courseVersion:c.courseVersion,userName:c.userName,learnerName:c.userName,issuedAt:c.issuedAt,status:c.status || 'active',totalLessons:c.totalLessons || 0,criteria:c.criteria}; }
+async function issue(user,ctx,status) {
+  if(!status.eligible) return null;
+  const key=rules.identity(user._id,ctx.course._id,ctx.version);
+  const _id=new mongoose.Types.ObjectId(key.slice(0,24));
+  // The primary-key uniqueness guarantee makes retries/concurrent issuance idempotent without an index migration.
+  const value={certificateId:crypto.randomBytes(16).toString('hex').toUpperCase(),userId:String(user._id),courseId:String(ctx.course._id),courseTitle:ctx.course.title,userName:user.fullName,userEmail:user.email || '',issuedAt:new Date(),status:'active',courseVersion:ctx.version,totalLessons:status.totalLessons,criteria:{coverage:90,assessmentRequired:status.assessmentRequired,score:status.assessmentScore}};
+  let cert;
+  try { cert=await Certificate.findOneAndUpdate({_id},{$setOnInsert:value},{upsert:true,new:true}).lean(); }
+  catch(error) { if(error.code!==11000) throw error; cert=await Certificate.findById(_id).lean(); }
+  return certificateView(cert);
+}
+async function sync(user,ctx,status) {
+  const completedVideoIds=status.lessons.filter(l=>l.complete).map(l=>l.id);
+  const progress={userId:String(user._id),courseId:String(ctx.course._id),courseTitle:ctx.course.title,userName:user.fullName || '',userEmail:user.email || '',userMobileNumber:user.mobileNumber || '',completedVideoIds,completedCount:completedVideoIds.length,totalVideos:status.totalLessons,progressPercent:status.totalLessons?Math.floor(completedVideoIds.length/status.totalLessons*100):0,videoProgress:Object.fromEntries(status.lessons.map(l=>[l.id.replace(/[.$]/g,'_'),{videoId:l.id,watchedSeconds:l.watchedSeconds,durationSeconds:l.duration,resumePosition:l.resumePosition,percent:l.percent}])),updatedAt:new Date()};
+  await CourseProgress.updateOne({userId:progress.userId,courseId:progress.courseId},{$set:progress},{upsert:true});
+  await User.updateOne({_id:user._id},{$set:{[`courseProgress.${ctx.course._id}`]:progress,lastActiveAt:new Date()}});
+  return progress;
+}
+async function recordPlayback({ user,courseId,videoId,currentTime,sessionId }) {
+  await access(user);
+  const ctx=await context(user,courseId);
+  const index=ctx.course.videos.findIndex((v,i)=>[rules.videoKey(v,i),v.bunnyGuid,v.bunnyVideoId,v.youtubeId,String(i)].filter(v=>v!=null).map(String).includes(String(videoId)));
+  if(index<0) throw fail('Lesson does not belong to this course',404);
+  const video=ctx.videos[index];
+  const _id=rules.identity(user._id,courseId,ctx.version,video.id);
+  let saved=false, previousCoverage=0, nextCoverage=0;
+  for(let attempt=0;attempt<4;attempt++) {
+    let old=await Learning.findById(_id).lean();
+    if(!old) {
+      try { await Learning.create({_id,userId:String(user._id),courseId:String(courseId),version:ctx.version,videoId:video.id,revision:0}); }
+      catch(e) { if(e.code!==11000) throw e; }
+      old=await Learning.findById(_id).lean();
+    }
+    const next=rules.heartbeat(old,{position:Number(currentTime),duration:video.duration,now:Date.now(),sessionId:String(sessionId || 'legacy')});
+    const result=await Learning.updateOne({_id,revision:old.revision},{$set:next,$inc:{revision:1}});
+    if(result.modifiedCount) {saved=true;previousCoverage=rules.covered(old.intervals,video.duration);nextCoverage=rules.covered(next.intervals,video.duration);break;}
+  }
+  if(!saved) throw fail('Progress changed concurrently. Retry the next update.',409);
+  const status=await state(user,ctx);
+  const progress=await sync(user,ctx,status);
+  const events=[];
+  if(previousCoverage<10 && nextCoverage>=10)events.push('video_start');
+  if(previousCoverage/video.duration<0.9 && nextCoverage/video.duration>=0.9)events.push('video_complete');
+  if(status.totalLessons>0 && status.completedLessons===status.totalLessons)events.push('course_complete');
+  for(const event of events) {
+    const eventId=new mongoose.Types.ObjectId(rules.identity(event,user._id,courseId,ctx.version,event==='course_complete'?'course':video.id).slice(0,24));
+    await AnalyticsEvent.updateOne({_id:eventId},{$setOnInsert:{event,userId:String(user._id),courseId:String(courseId),courseTitle:ctx.course.title,videoId:video.id,watchedSeconds:nextCoverage,durationSeconds:video.duration,date:new Date().toISOString().slice(0,10),createdAt:new Date()}},{upsert:true}).catch(()=>{});
+  }
+  return {courseId:String(courseId),progress,eligibility:status,certificate:await issue(user,ctx,status)};
+}
+async function completeVideo({user,courseId,videoId}) {
+  await access(user);const ctx=await context(user,courseId),status=await state(user,ctx);
+  const lesson=status.lessons.find(l=>l.id===String(videoId));
+  if(!lesson?.complete) throw fail('Watch at least 90% of this lesson before completing it.',409);
+  return {courseId:String(courseId),progress:await sync(user,ctx,status),eligibility:status,certificate:await issue(user,ctx,status)};
+}
+module.exports={context,state,access,issue,sync,recordPlayback,completeVideo,certificateView,fail};

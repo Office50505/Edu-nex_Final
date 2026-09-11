@@ -781,72 +781,26 @@ function sanitizeOptionalUrl(value) {
   return normalized;
 }
 
-function sanitizeCourseVideos(rawVideos) {
-  if (!Array.isArray(rawVideos)) return null;
-
-  const validVideoInputs = rawVideos.filter((video) => video && typeof video === 'object');
-  const sanitizedVideos = validVideoInputs
-    .map((video, index) => {
-      const title = String(video.title || `Video ${index + 1}`).trim();
-      const topic = String(video.topic || '').trim().slice(0, 80);
-      const description = String(video.description || '').trim();
-      const transcriptUrl = String(video.transcriptUrl || '').trim() || null;
-      const thumbnailUrl = sanitizeOptionalUrl(video.thumbnailUrl || video.thumbnailHorizontalUrl);
-      const thumbnailVerticalUrl = sanitizeOptionalUrl(video.thumbnailVerticalUrl);
-      const examplePrompt = String(
-        video.examplePrompt || video.examplePromptText || video.examplePromptUrl || video.promptUrl || ''
-      ).trim();
-      const duration = Number(video.duration) || 0;
-      const youtubeId = String(video.youtubeId || '').trim();
-
-      if (youtubeId) {
-        return {
-          title,
-          topic,
-          description,
-          sourceType: 'youtube',
-          videoUrl: null,
-          embedUrl: `https://www.youtube.com/embed/${youtubeId}`,
-          bunnyVideoId: null,
-          bunnyLibraryId: null,
-          youtubeId,
-          thumbnail: null,
-          thumbnailUrl,
-          thumbnailVerticalUrl,
-          transcriptUrl,
-          examplePrompt,
-          duration,
-          order: index + 1,
-        };
-      }
-
-      const bunnyVideo = parseBunnyStreamUrl(video.embedUrl || video.videoUrl || video.url);
-      if (!bunnyVideo) {
-        return null;
-      }
-
-      return {
-        title,
-        topic,
-        description,
-        ...bunnyVideo,
-        youtubeId: null,
-        thumbnail: null,
-        thumbnailUrl,
-        thumbnailVerticalUrl,
-        transcriptUrl,
-        examplePrompt,
-        duration,
-        order: index + 1,
-      };
-    })
-    .filter(Boolean);
-
-  if (!sanitizedVideos.length || sanitizedVideos.length !== validVideoInputs.length) {
-    return null;
-  }
-
-  return sanitizedVideos;
+function sanitizeCourseVideos(rawVideos, existingVideos = []) {
+  if (!Array.isArray(rawVideos) || !rawVideos.length || rawVideos.length > 500) throw new Error('Provide between 1 and 500 lessons.');
+  const { validateSource } = require('./services/videoSources');
+  const used = new Set();
+  return rawVideos.map((video, index) => {
+    try {
+      if (!video || typeof video !== 'object') throw new Error('Invalid lesson.');
+      const source = validateSource(video);
+      const previous = video._id ? existingVideos.find(v => String(v._id) === String(video._id)) : existingVideos.find(v => v.videoUrl === video.videoUrl && v.title === video.title);
+      if (video._id && !previous) throw new Error('Lesson ID does not belong to this course.');
+      const id = previous?._id || new mongoose.Types.ObjectId();
+      if (used.has(String(id))) throw new Error('Duplicate lesson ID.');
+      used.add(String(id));
+      const duration = Number(video.duration || 0);
+      if (!Number.isFinite(duration) || duration < 0) throw new Error('Duration must be a positive number of seconds.');
+      return { _id: id, ...source, title: String(video.title || '').trim(), topic: String(video.topic || '').trim(), description: String(video.description || '').trim(), duration, order: index + 1,
+        transcriptUrl: video.transcriptUrl || previous?.transcriptUrl || null, thumbnail: previous?.thumbnail || {},
+        thumbnailUrl: sanitizeOptionalUrl(video.thumbnailUrl), thumbnailVerticalUrl: sanitizeOptionalUrl(video.thumbnailVerticalUrl), examplePrompt: String(video.examplePrompt || '').trim() };
+    } catch (error) { throw new Error(`Lesson ${index + 1}: ${error.message}`); }
+  });
 }
 
 function applyCourseThumbnailToVideos(videos, courseThumbnail, courseThumbnailUrl, courseThumbnailVerticalUrl) {
@@ -855,9 +809,9 @@ function applyCourseThumbnailToVideos(videos, courseThumbnail, courseThumbnailUr
 
   return (Array.isArray(videos) ? videos : []).map((video) => ({
     ...video,
-    thumbnail: null,
-    thumbnailUrl: sanitizeOptionalUrl(video.thumbnailUrl) || sharedThumbnailUrl,
-    thumbnailVerticalUrl: sanitizeOptionalUrl(video.thumbnailVerticalUrl) || sharedThumbnailVerticalUrl,
+    thumbnail: video.thumbnail || {},
+    thumbnailUrl: sanitizeOptionalUrl(video.thumbnailUrl),
+    thumbnailVerticalUrl: sanitizeOptionalUrl(video.thumbnailVerticalUrl),
   }));
 }
 
@@ -1152,6 +1106,9 @@ app.use('/api', (req, res, next) => {
   next();
 });
 
+app.use('/api', require('./routes/playback'));
+app.use('/api', require('./routes/certification'));
+app.use('/api/admin', require('./routes/adminHealth'));
 app.use('/api/auth', authRoutes);
 app.use('/api/ai', aiRoutes);
 app.use('/api', paymentRoutes);
@@ -2406,90 +2363,21 @@ app.get('/api/admin/user-management', protectAdmin, async (req, res) => {
 
 app.delete('/api/admin/users/:id', protectAdmin, async (req, res) => {
   try {
-    const { id } = req.params;
-
-    if (!mongoose.Types.ObjectId.isValid(id)) {
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
       return res.status(400).json({ error: 'Invalid user id' });
     }
-
-    const user = await User.findById(id).select('_id email mobileNumber fullName');
-
-    if (!user) {
-      return res.status(404).json({ error: 'User not found' });
-    }
-
-    const userId = user._id;
-    const userIdString = String(user._id);
-    const subscriptions = await Subscription.find({ user: userId }).select('_id');
-    const subscriptionIds = subscriptions.map((subscription) => subscription._id);
-
-    const [
-      progressResult,
-      courseProgressResult,
-      wishlistResult,
-      reviewResult,
-      sessionResult,
-      aiTutorResult,
-      lessonNoteResult,
-      notificationResult,
-      orderResult,
-      subscriptionEventResult,
-      subscriptionResult,
-      contactResult,
-    ] = await Promise.all([
-      Progress.deleteMany({ user: userId }),
-      CourseProgress.deleteMany({ userId: userIdString }),
-      Wishlist.deleteMany({ user: userId }),
-      Review.deleteMany({ user: userId }),
-      Session.deleteMany({ user: userId }),
-      AiTutorSession.deleteMany({ user: userId }),
-      LessonNote.deleteMany({ user: userId }),
-      Notification.deleteMany({ recipient: userId }),
-      Order.deleteMany({ user: userId }),
-      SubscriptionEvent.deleteMany({
-        $or: [
-          { user: userId },
-          { subscription: { $in: subscriptionIds } },
-        ],
-      }),
-      Subscription.deleteMany({ user: userId }),
-      ContactEnquiry.deleteMany({ userId }),
-    ]);
-
-    await User.deleteOne({ _id: userId });
-
-    res.json({
-      message: 'User deleted successfully',
-      deletedUser: {
-        id: userIdString,
-        fullName: user.fullName,
-        email: user.email,
-        mobileNumber: user.mobileNumber,
-      },
-      deletedCounts: {
-        progress: progressResult.deletedCount || 0,
-        courseProgress: courseProgressResult.deletedCount || 0,
-        wishlists: wishlistResult.deletedCount || 0,
-        reviews: reviewResult.deletedCount || 0,
-        sessions: sessionResult.deletedCount || 0,
-        aiTutorSessions: aiTutorResult.deletedCount || 0,
-        lessonNotes: lessonNoteResult.deletedCount || 0,
-        notifications: notificationResult.deletedCount || 0,
-        orders: orderResult.deletedCount || 0,
-        subscriptionEvents: subscriptionEventResult.deletedCount || 0,
-        subscriptions: subscriptionResult.deletedCount || 0,
-        contactEnquiries: contactResult.deletedCount || 0,
-      },
-    });
+    const { deleteUserAccount } = require('./services/accountDeletionService');
+    const deletedCounts = await deleteUserAccount(req.params.id);
+    res.json({ message: 'User deleted successfully', deletedCounts });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(error.statusCode || 500).json({ error: error.message, code: error.code });
   }
 });
 
 // Users Routes
 app.get('/api/users', protectAdmin, async (req, res) => {
   try {
-    const users = await User.find();
+    const users = await User.find().select('_id fullName email mobileNumber avatar gender age isActive isMobileVerified isEmailVerified subscriptionStatus subscriptionExpiry createdAt lastActiveAt').lean();
     res.json(users);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -2692,7 +2580,7 @@ app.post('/api/courses', protectAdmin, async (req, res) => {
     const sanitizedVideos = sanitizeCourseVideos(req.body.videos);
 
     if (!sanitizedVideos) {
-      return res.status(400).json({ error: 'Every video must include a valid Bunny Stream URL' });
+      return res.status(400).json({ error: 'Every lesson must include a valid permanent video reference' });
     }
 
     const courseThumbnailUrl = sanitizeOptionalUrl(req.body.thumbnailUrl || req.body.thumbnailHorizontalUrl);
@@ -2702,9 +2590,9 @@ const course = new Course({
        title: req.body.title,
        slug: req.body.slug,
        description: req.body.description,
-       thumbnail: null,
-       thumbnailHorizontal: null,
-       thumbnailVertical: null,
+       thumbnail: {},
+       thumbnailHorizontal: {},
+       thumbnailVertical: {},
        thumbnailUrl: courseThumbnailUrl,
        thumbnailVerticalUrl: courseThumbnailVerticalUrl,
        videos: applyCourseThumbnailToVideos(sanitizedVideos, null, courseThumbnailUrl, courseThumbnailVerticalUrl),
@@ -2761,7 +2649,7 @@ app.patch('/api/admin/courses/:id', protectAdmin, async (req, res) => {
       return res.status(400).json({ error: 'Invalid course id' });
     }
 
-    const existingCourse = await Course.findById(req.params.id).select('thumbnail thumbnailHorizontal thumbnailVertical thumbnailUrl thumbnailVerticalUrl');
+    const existingCourse = await Course.findById(req.params.id).select('completionOrder videos thumbnail thumbnailHorizontal thumbnailVertical thumbnailUrl thumbnailVerticalUrl');
     if (!existingCourse) {
       return res.status(404).json({ error: 'Course not found' });
     }
@@ -2808,20 +2696,21 @@ app.patch('/api/admin/courses/:id', protectAdmin, async (req, res) => {
       || Object.prototype.hasOwnProperty.call(req.body, 'thumbnailHorizontalUrl')
     ) {
       updates.thumbnailUrl = sanitizeOptionalUrl(req.body.thumbnailUrl || req.body.thumbnailHorizontalUrl);
-      updates.thumbnail = null;
-      updates.thumbnailHorizontal = null;
+      updates.thumbnail = {};
+      updates.thumbnailHorizontal = {};
     }
 
     if (Object.prototype.hasOwnProperty.call(req.body, 'thumbnailVerticalUrl')) {
       updates.thumbnailVerticalUrl = sanitizeOptionalUrl(req.body.thumbnailVerticalUrl);
-      updates.thumbnailVertical = null;
+      updates.thumbnailVertical = {};
     }
 
     if (Object.prototype.hasOwnProperty.call(req.body, 'videos')) {
-      const sanitizedVideos = sanitizeCourseVideos(req.body.videos);
+      const sanitizedVideos = sanitizeCourseVideos(req.body.videos, existingCourse.videos);
       if (!sanitizedVideos) {
-        return res.status(400).json({ error: 'Every video must include a valid Bunny Stream URL' });
+        return res.status(400).json({ error: 'Every lesson must include a valid permanent video reference' });
       }
+      updates.completionOrder = existingCourse.completionOrder?.length ? Array.from(existingCourse.completionOrder) : existingCourse.videos.map(v=>String(v._id));
       updates.videos = applyCourseThumbnailToVideos(
         sanitizedVideos,
         null,
@@ -2830,11 +2719,16 @@ app.patch('/api/admin/courses/:id', protectAdmin, async (req, res) => {
       );
     }
 
-    const course = await Course.findByIdAndUpdate(
-      req.params.id,
-      { $set: updates },
-      { new: true, runValidators: true }
-    ).populate('category', 'name slug isActive');
+    const course = await Course.findById(req.params.id);
+    if (!course) return res.status(404).json({ error: 'Course not found' });
+    Object.assign(course, updates);
+    await course.validate();
+    if (updates.videos) {
+      // Bind legacy index-based lesson records before an edit can reorder their source videos.
+      await Lesson.bulkWrite(existingCourse.videos.map((video,index)=>({updateMany:{filter:{course:course._id,videoIndex:index,videoId:null},update:{$set:{videoId:video._id}}}})));
+    }
+    await course.save();
+    await course.populate('category', 'name slug isActive');
 
     if (!course) {
       return res.status(404).json({ error: 'Course not found' });

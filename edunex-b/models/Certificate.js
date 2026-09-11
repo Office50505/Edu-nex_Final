@@ -2,6 +2,11 @@ const mongoose = require('mongoose');
 
 const certificateSchema = new mongoose.Schema(
   {
+    courseVersion: String,
+    totalLessons: Number,
+    status: { type: String, enum: ['active', 'revoked'], default: 'active' },
+    criteria: mongoose.Schema.Types.Mixed,
+    audit: [{ action: String, reason: String, at: Date, actor: String }],
     certificateId: {
       type: String,
       required: true,

@@ -1,14 +1,11 @@
-const crypto = require('crypto');
 const mongoose = require('mongoose');
 const AnalyticsEvent = require('../models/AnalyticsEvent');
-const Certificate = require('../models/Certificate');
 const Course = require('../models/Course');
 const CourseProgress = require('../models/CourseProgress');
 const Lesson = require('../models/Lesson');
 const Subscription = require('../models/Subscription');
 const User = require('../models/User');
 
-const VIDEO_COMPLETE_THRESHOLD = Number(process.env.VIDEO_COMPLETE_THRESHOLD || 0.85);
 const API_BASE_URL = String(process.env.API_BASE_URL || '').replace(/\/+$/, '');
 const BUNNY_LIBRARY_ID = process.env.BUNNY_LIBRARY_ID || process.env.BUNNY_STREAM_LIBRARY_ID || '675520';
 const BUNNY_API_KEY = process.env.BUNNY_API_KEY || process.env.BUNNY_STREAM_API_KEY || '';
@@ -122,6 +119,9 @@ function publicVideoInfo(video = {}, index = 0) {
 }
 
 function publicPlayableVideoInfo(video = {}, index = 0) {
+  const provider = require('./videoSources').inferProvider(video);
+  if (provider === 'aws_cloudfront') return { ...publicVideoInfo(video,index), provider, sourceType:provider, playbackRequired:true, transcriptUrl:video.transcriptUrl || null, thumbnailVerticalUrl:video.thumbnailVerticalUrl || null, description:video.description || '', thumbnailUrl:video.thumbnailUrl || null, examplePrompt:video.examplePrompt || '' };
+
   const bunnyVideoId = video.bunnyVideoId || video.bunnyGuid || null;
   const hlsUrl = video.hlsUrl || video.playlistUrl || video.streamUrl || (
     bunnyVideoId && BUNNY_PULL_ZONE_URL
@@ -131,7 +131,9 @@ function publicPlayableVideoInfo(video = {}, index = 0) {
 
   return {
     ...publicVideoInfo(video, index),
-    sourceType: video.sourceType || (video.youtubeId || video.videoId ? 'youtube' : 'bunny_stream'),
+    provider,
+    transcriptUrl: video.transcriptUrl || null,
+    sourceType: provider,
     youtubeId: video.youtubeId || video.videoId || null,
     bunnyGuid: bunnyVideoId,
     bunnyVideoId,
@@ -161,10 +163,7 @@ function serializeCourse(course, options = {}) {
 
 function serializeCertificate(certificate) {
   const source = typeof certificate.toObject === 'function' ? certificate.toObject() : certificate;
-  return {
-    ...source,
-    _id: String(source._id),
-  };
+  return require('./certificationService').certificateView(source);
 }
 
 function isFutureDate(value) {
@@ -198,33 +197,6 @@ async function getCourse(courseId, projection = null) {
   return course;
 }
 
-async function getOrCreateCertificate({ user, course, now = new Date() }) {
-  const userId = String(user._id);
-  const courseId = String(course._id);
-  const existing = await Certificate.findOne({ userId, courseId }).lean();
-  if (existing) return serializeCertificate(existing);
-
-  const certificateId = crypto.randomBytes(6).toString('hex').toUpperCase();
-  try {
-    const certificate = await Certificate.create({
-      certificateId,
-      userId,
-      courseId,
-      courseTitle: course.title || '',
-      userName: user.fullName || '',
-      userEmail: user.email || '',
-      issuedAt: now,
-    });
-    return serializeCertificate(certificate);
-  } catch (error) {
-    if (error.code === 11000) {
-      const duplicate = await Certificate.findOne({ userId, courseId }).lean();
-      if (duplicate) return serializeCertificate(duplicate);
-    }
-    throw error;
-  }
-}
-
 function trackEvent(payload) {
   const date = new Date().toISOString().slice(0, 10);
   AnalyticsEvent.create({ ...payload, date, createdAt: new Date() }).catch(() => {});
@@ -251,196 +223,11 @@ async function progressForUser(userId) {
   return progressMap(rows);
 }
 
-async function saveProgressSnapshot({ user, course, progressDoc, now }) {
-  await CourseProgress.updateOne(
-    { userId: String(user._id), courseId: String(course._id) },
-    { $set: progressDoc, $setOnInsert: { createdAt: now } },
-    { upsert: true }
-  );
-
-  await User.updateOne(
-    { _id: user._id },
-    {
-      $set: {
-        [`courseProgress.${course._id}`]: progressDoc,
-        lastActiveAt: now,
-      },
-    }
-  );
+async function completeVideo(args) {
+  return require('./certificationService').completeVideo(args);
 }
-
-async function completeVideo({ user, courseId, videoId, watchedSeconds = 0, duration = 0 }) {
-  const course = await getCourse(courseId, 'title videos');
-  const videos = Array.isArray(course.videos) ? course.videos : [];
-  const totalVideos = videos.length;
-  const validVideoIds = videos.map((video, index) => getVideoKey(video, index));
-  const normalizedVideoId = canonicalVideoIdFor(videos, videoId);
-  const safeVideoId = safeProgressKey(normalizedVideoId);
-  const videoIndex = findVideoIndexById(videos, normalizedVideoId);
-  const video = videoIndex >= 0 ? videos[videoIndex] : null;
-  const existing = await CourseProgress.findOne({
-    userId: String(user._id),
-    courseId: String(course._id),
-  }).lean();
-  const wasAlreadyCompleted = existing?.progressPercent === 100;
-  const durationSeconds = Math.max(
-    Number(duration) || 0,
-    Number(existing?.videoProgress?.[safeVideoId]?.durationSeconds) || 0,
-    Number(video?.duration) || Number(video?.durationSeconds) || Number(video?.lengthSeconds) || 0
-  );
-  const finalWatchedSeconds = Math.max(
-    Number(watchedSeconds) || 0,
-    Number(existing?.videoProgress?.[safeVideoId]?.watchedSeconds) || 0,
-    durationSeconds
-  );
-  const completedVideoIds = Array.from(new Set([
-    ...(existing?.completedVideoIds || []).map((id) => canonicalVideoIdFor(videos, id)),
-    normalizedVideoId,
-  ].map(String))).filter((id) => !validVideoIds.length || validVideoIds.includes(id));
-  const completedCount = completedVideoIds.length;
-  const completedProgressPercent = totalVideos > 0 ? Math.round((completedCount / totalVideos) * 100) : 0;
-  const videoProgress = {
-    ...(existing?.videoProgress || {}),
-    [safeVideoId]: {
-      ...(existing?.videoProgress?.[safeVideoId] || {}),
-      videoId: normalizedVideoId,
-      watchedSeconds: finalWatchedSeconds,
-      durationSeconds,
-      percent: 100,
-      updatedAt: new Date(),
-    },
-  };
-  const progressPercent = Math.max(existing?.progressPercent || 0, completedProgressPercent);
-  const now = new Date();
-  const progressDoc = {
-    userId: String(user._id),
-    userName: user.fullName || '',
-    userEmail: user.email || '',
-    userMobileNumber: user.mobileNumber || '',
-    courseId: String(course._id),
-    courseTitle: course.title || '',
-    completedVideoIds,
-    completedCount,
-    totalVideos,
-    progressPercent,
-    videoProgress,
-    lastCompletedVideoId: normalizedVideoId,
-    updatedAt: now,
-  };
-
-  await saveProgressSnapshot({ user, course, progressDoc, now });
-
-  let certificate = null;
-  if (completedProgressPercent === 100) {
-    certificate = await getOrCreateCertificate({ user, course, now });
-  }
-
-  const base = {
-    userId: String(user._id),
-    userName: user.fullName || '',
-    userEmail: user.email || '',
-    courseId: String(course._id),
-    courseTitle: course.title || '',
-  };
-  trackEvent({
-    ...base,
-    event: 'video_complete',
-    videoId: normalizedVideoId,
-    watchedSeconds: finalWatchedSeconds,
-    durationSeconds,
-  });
-  if (!wasAlreadyCompleted && completedProgressPercent === 100) {
-    trackEvent({ ...base, event: 'course_complete', totalVideos });
-  }
-
-  return { courseId: String(course._id), progress: progressDoc, certificate };
-}
-
-async function updateVideoProgress({ user, courseId, videoId, currentTime = 0, duration = 0 }) {
-  const course = await getCourse(courseId, 'title videos');
-  const existing = await CourseProgress.findOne({
-    userId: String(user._id),
-    courseId: String(course._id),
-  }).lean();
-  const wasAlreadyCompleted = existing?.progressPercent === 100;
-  const videos = Array.isArray(course.videos) ? course.videos : [];
-  const totalVideos = videos.length;
-  const normalizedVideoId = canonicalVideoIdFor(videos, videoId);
-  const safeVideoId = safeProgressKey(normalizedVideoId);
-  const videoIndex = findVideoIndexById(videos, normalizedVideoId);
-  const video = videoIndex >= 0 ? videos[videoIndex] : null;
-  const prevWatchedSeconds = existing?.videoProgress?.[safeVideoId]?.watchedSeconds || 0;
-  const watchedSeconds = Math.max(Number(currentTime) || 0, prevWatchedSeconds);
-  const durationSeconds = Math.max(
-    Number(duration) || 0,
-    existing?.videoProgress?.[safeVideoId]?.durationSeconds || 0,
-    Number(video?.duration) || Number(video?.durationSeconds) || Number(video?.lengthSeconds) || 0
-  );
-  const videoProgress = {
-    ...(existing?.videoProgress || {}),
-    [safeVideoId]: {
-      videoId: normalizedVideoId,
-      watchedSeconds,
-      durationSeconds,
-      percent: durationSeconds > 0 ? Math.min(100, Math.round((watchedSeconds / durationSeconds) * 100)) : 0,
-      updatedAt: new Date(),
-    },
-  };
-  const completedVideoIds = Array.from(new Set([
-    ...(existing?.completedVideoIds || []).map((id) => canonicalVideoIdFor(videos, id)),
-    ...(durationSeconds > 0 && watchedSeconds / durationSeconds >= VIDEO_COMPLETE_THRESHOLD
-      ? [normalizedVideoId]
-      : []),
-  ].map(String)));
-  const progressSum = videos.reduce((sum, video, index) => {
-    const key = safeProgressKey(getVideoKey(video, index));
-    const progress = videoProgress[key];
-    if (!progress?.durationSeconds) return sum;
-    return sum + Math.min(1, progress.watchedSeconds / progress.durationSeconds);
-  }, 0);
-  const completedPercent = totalVideos > 0 ? Math.round((completedVideoIds.length / totalVideos) * 100) : 0;
-  const progressPercent = totalVideos > 0
-    ? Math.max(Math.round((progressSum / totalVideos) * 100), completedPercent)
-    : 0;
-  const now = new Date();
-  const progressDoc = {
-    userId: String(user._id),
-    userName: user.fullName || '',
-    userEmail: user.email || '',
-    userMobileNumber: user.mobileNumber || '',
-    courseId: String(course._id),
-    courseTitle: course.title || '',
-    completedVideoIds,
-    completedCount: completedVideoIds.length,
-    totalVideos,
-    progressPercent,
-    videoProgress,
-    lastWatchedVideoId: normalizedVideoId,
-    updatedAt: now,
-  };
-
-  await saveProgressSnapshot({ user, course, progressDoc, now });
-
-  let certificate = null;
-  if (completedPercent === 100) {
-    certificate = await getOrCreateCertificate({ user, course, now });
-  }
-
-  const base = {
-    userId: String(user._id),
-    userName: user.fullName || '',
-    userEmail: user.email || '',
-    courseId: String(course._id),
-    courseTitle: course.title || '',
-  };
-  if (prevWatchedSeconds < 10 && watchedSeconds >= 10) {
-    trackEvent({ ...base, event: 'video_start', videoId: normalizedVideoId, durationSeconds });
-  }
-  if (!wasAlreadyCompleted && completedPercent === 100) {
-    trackEvent({ ...base, event: 'course_complete', totalVideos });
-  }
-
-  return { courseId: String(course._id), progress: progressDoc, certificate };
+async function updateVideoProgress(args) {
+  return require('./certificationService').recordPlayback(args);
 }
 
 async function syncLessonProgress({ user, lessonId, courseId, watchedSeconds = 0, completed = false, duration = 0 }) {
@@ -454,7 +241,7 @@ async function syncLessonProgress({ user, lessonId, courseId, watchedSeconds = 0
 
   const course = await getCourse(courseId, 'title videos');
   const videos = Array.isArray(course.videos) ? course.videos : [];
-  const video = videos[lesson.videoIndex];
+  const video = lesson.videoId ? videos.find(v=>String(v._id)===String(lesson.videoId)) : videos[lesson.videoIndex];
   if (!video) {
     throw httpError('Video not found at this lesson index', 404);
   }
@@ -462,23 +249,11 @@ async function syncLessonProgress({ user, lessonId, courseId, watchedSeconds = 0
   const videoId = getVideoKey(video, lesson.videoIndex);
   const videoDuration = Number(duration) || Number(video.duration) || Number(video.durationSeconds) || Number(video.lengthSeconds) || 0;
 
-  if (completed) {
-    return completeVideo({
-      user,
-      courseId,
-      videoId,
-      watchedSeconds,
-      duration: videoDuration,
-    });
-  }
+  const result = completed
+    ? await completeVideo({ user, courseId, videoId })
+    : await updateVideoProgress({ user, courseId, videoId, currentTime: watchedSeconds, duration: videoDuration, sessionId: user.activeSessionId || String(user._id) });
+  return { ...result, lessonCompleted: result.progress.completedVideoIds.includes(videoId) };
 
-  return updateVideoProgress({
-    user,
-    courseId,
-    videoId,
-    currentTime: watchedSeconds,
-    duration: videoDuration,
-  });
 }
 
 async function topCourses(limit = 6) {

@@ -16,28 +16,12 @@ function certificateVerifyUrl(certificate) {
 }
 
 function downloadCertificate(certificate) {
-  const text = [
-    "Skillomate AI Certificate",
-    "",
-    `Certificate ID: ${certificate.certificateId}`,
-    `Learner: ${certificate.learnerName || "Skillomate Learner"}`,
-    `Course: ${certificate.courseTitle || "Completed Course"}`,
-    certificate.instructorName ? `Instructor: ${certificate.instructorName}` : null,
-    `Issued: ${formatDate(certificate.issuedAt)}`,
-    `Verify: ${certificateVerifyUrl(certificate)}`,
-  ].filter(Boolean).join("\n");
-  const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
-  const link = document.createElement("a");
-  link.href = URL.createObjectURL(blob);
-  link.download = `${certificate.certificateId}.txt`;
-  document.body.appendChild(link);
-  link.click();
-  link.remove();
-  URL.revokeObjectURL(link.href);
+  window.open(`${certificateVerifyUrl(certificate)}?print=1`, '_blank', 'noopener');
 }
 
 export function CertificatesPage() {
   const [certificates, setCertificates] = useState([]);
+  const [inProgress, setInProgress] = useState([]);
   const [filter, setFilter] = useState("all");
   const [message, setMessage] = useState("Loading certificates...");
   const [showRetry, setShowRetry] = useState(false);
@@ -60,6 +44,7 @@ export function CertificatesPage() {
   const loadCertificates = async () => {
     if (!window.EduNex?.getAccessToken?.()) {
       setCertificates([]);
+      setInProgress([]);
       setMessage("Log in to view your earned certificates.");
       setShowRetry(false);
       return;
@@ -69,10 +54,12 @@ export function CertificatesPage() {
     try {
       const data = await window.EduNex.authRequest("/api/certificates");
       setCertificates(Array.isArray(data?.certificates) ? data.certificates : []);
+      setInProgress(data.inProgress || []);
       setMessage("");
     } catch (error) {
       console.error("[certificates] Failed to load certificates", error);
       setCertificates([]);
+      setInProgress([]);
       setMessage("We couldn't load your certificates right now. Please try again in a moment.");
       setShowRetry(true);
     }
@@ -121,7 +108,7 @@ export function CertificatesPage() {
           </div>
           <div className="cert-stat">
             <div className="cert-stat-label"><i className="fas fa-spinner" aria-hidden="true"></i> In Progress</div>
-            <div className="cert-stat-value" id="inProgressCount">0</div>
+            <div className="cert-stat-value" id="inProgressCount">{inProgress.length}</div>
           </div>
           <div className="cert-stat">
             <div className="cert-stat-label"><i className="fas fa-star" aria-hidden="true"></i> Avg Score</div>
@@ -149,6 +136,7 @@ export function CertificatesPage() {
               {showRetry ? <button className="cert-action-btn primary" type="button" onClick={loadCertificates} style={{ maxWidth: 140, margin: "16px auto 0" }}>Retry</button> : null}
             </div>
           ) : null}
+          {!message && filter === 'in-progress' ? inProgress.map(item => <article className="cert-card" key={item.courseId} style={{padding:20}}><h3>{item.courseTitle}</h3><p>{item.completedLessons}/{item.totalLessons} lessons completed</p><ul>{item.requirements.map(text=><li key={text}>{text}</li>)}</ul><a href={`/videos?courseId=${encodeURIComponent(item.courseId)}`}>Continue course / assessment</a></article>) : null}
           {!message ? visibleRows.map((certificate) => {
             const title = certificate.courseTitle || "Completed Course";
             const learner = certificate.learnerName || "Skillomate Learner";
@@ -156,7 +144,7 @@ export function CertificatesPage() {
             return (
               <article className="cert-card" data-status="earned" data-certificate-id={certificate.certificateId} key={certificate.certificateId}>
                 <div className="cert-visual">
-                  <div className="cert-visual-ribbon">Verified</div>
+                  <div className="cert-visual-ribbon">{certificate.status === "revoked" ? "Revoked" : "Completion"}</div>
                   <div className="cert-visual-seal"><i className="fas fa-certificate" aria-hidden="true"></i></div>
                   <div className="cert-visual-org">Skillomate AI</div>
                   <div className="cert-visual-title">{title}</div>
@@ -172,7 +160,7 @@ export function CertificatesPage() {
                   <div className="cert-meta">ID: {certificate.certificateId}</div>
                   <div className="cert-actions">
                     <button className="cert-action-btn primary" type="button" data-cert-action="download" data-certificate-id={certificate.certificateId} onClick={() => downloadCertificate(certificate)}>
-                      <i className="fas fa-download" aria-hidden="true"></i> Download
+                      <i className="fas fa-download" aria-hidden="true"></i> Print / PDF
                     </button>
                     <button className="cert-action-btn" type="button" data-cert-action="share" data-certificate-id={certificate.certificateId} onClick={() => shareCertificate(certificate).catch(() => {})}>
                       <i className="fas fa-share" aria-hidden="true"></i> Share
@@ -187,7 +175,7 @@ export function CertificatesPage() {
           }) : null}
         </div>
 
-        <div className="cert-empty" id="certEmpty" style={{ display: !message && !visibleRows.length ? "block" : "none" }}>
+        <div className="cert-empty" id="certEmpty" style={{ display: !message && !visibleRows.length && !(filter === "in-progress" && inProgress.length) ? "block" : "none" }}>
           <i className="fas fa-certificate" aria-hidden="true"></i>
           <p>{emptyMessage}</p>
         </div>

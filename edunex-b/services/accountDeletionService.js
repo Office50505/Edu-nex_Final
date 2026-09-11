@@ -82,6 +82,8 @@ async function deleteUserAccount(userId) {
     }),
     Subscription.deleteMany({ user: user._id }),
     Session.deleteMany({ user: user._id }),
+    require('../models/LearningProgress').deleteMany({ userId: userIdString }),
+    require('../models/AssessmentResult').deleteMany({ userId: userIdString }),
   ]);
 
   const deletedUser = await User.deleteOne({ _id: user._id });
@@ -90,20 +92,23 @@ async function deleteUserAccount(userId) {
   }
 
   return {
-    progress: results[0].deletedCount || 0,
-    courseProgress: results[1].deletedCount || 0,
-    lessonNotes: results[2].deletedCount || 0,
-    notifications: results[3].deletedCount || 0,
-    wishlists: results[4].deletedCount || 0,
-    reviews: results[5].deletedCount || 0,
-    certificates: results[6].deletedCount || 0,
-    aiTutorSessions: results[7].deletedCount || 0,
-    contactEnquiries: results[8].deletedCount || 0,
-    analyticsEvents: results[9].deletedCount || 0,
-    orders: results[10].deletedCount || 0,
-    subscriptionEvents: results[11].deletedCount || 0,
-    subscriptions: results[12].deletedCount || 0,
-    sessions: results[13].deletedCount || 0,
+    razorpayBilling: results[0].deletedCount || 0,
+    progress: results[1].deletedCount || 0,
+    courseProgress: results[2].deletedCount || 0,
+    lessonNotes: results[3].deletedCount || 0,
+    notifications: results[4].deletedCount || 0,
+    wishlists: results[5].deletedCount || 0,
+    reviews: results[6].deletedCount || 0,
+    certificates: results[7].deletedCount || 0,
+    aiTutorSessions: results[8].deletedCount || 0,
+    contactEnquiries: results[9].deletedCount || 0,
+    analyticsEvents: results[10].deletedCount || 0,
+    orders: results[11].deletedCount || 0,
+    subscriptionEvents: results[12].deletedCount || 0,
+    subscriptions: results[13].deletedCount || 0,
+    sessions: results[14].deletedCount || 0,
+    learningProgress: results[15].deletedCount || 0,
+    assessments: results[16].deletedCount || 0,
   };
 }
 

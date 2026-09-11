@@ -1,3 +1,4 @@
+import { csvEscape } from "./adminExport.js";
 import { useEffect, useMemo, useState } from "react";
 import { AdminShell, Message } from "./AdminShell.jsx";
 import { adminJson, formatDate, formatNumber, formatWatchDuration, requireAdmin } from "./adminApi.js";
@@ -122,11 +123,9 @@ function ProgressRow({ course }) {
   );
 }
 
-function csvEscape(value) {
-  return `"${String(value ?? "").replace(/"/g, '""')}"`;
-}
-
 export function AdminUsersPage() {
+  const [page, setPage] = useState(1);
+  const [deletingId, setDeletingId] = useState(null);
   const [users, setUsers] = useState([]);
   const [query, setQuery] = useState("");
   const [status, setStatus] = useState("all");
@@ -174,13 +173,18 @@ export function AdminUsersPage() {
     });
   }, [users, query, status, sort, segment]);
 
+  useEffect(() => { setPage(1); }, [query, status, sort, segment]);
+  const pageCount = Math.max(1, Math.ceil(filteredUsers.length / 25));
+  const currentPage = Math.min(page, pageCount);
+  const visibleUsers = filteredUsers.slice((currentPage - 1) * 25, currentPage * 25);
+
   const summary = useMemo(() => {
     const totalProgressCourses = filteredUsers.reduce((sum, user) => sum + totalCourses(user), 0);
     const totalWatchMinutes = filteredUsers.reduce((sum, user) => sum + watchMinutes(user), 0);
     const activeUsers = filteredUsers.filter((user) => user.isActive).length;
     const subscribedUsers = filteredUsers.filter((user) => ["active", "subscribed"].includes(user.subscriptionStatus)).length;
     const complete = filteredUsers.reduce((sum, user) => sum + completedCourses(user), 0);
-    const usersWithAge = filteredUsers.filter((user) => Number.isFinite(Number(user.age)));
+    const usersWithAge = filteredUsers.filter((user) => user.age != null && Number(user.age) > 0 && Number.isFinite(Number(user.age)));
     const averageAge = usersWithAge.length ? Math.round(usersWithAge.reduce((sum, user) => sum + Number(user.age || 0), 0) / usersWithAge.length) : null;
     return [
       ["Users", formatNumber(filteredUsers.length)],
@@ -202,9 +206,11 @@ export function AdminUsersPage() {
   }
 
   async function deleteUser(user) {
+    if (deletingId) return;
     const userName = user.fullName || user.email || user.mobileNumber || "Learner";
     const confirmed = window.confirm(`Delete ${userName} entirely? This removes the user and their related records.`);
     if (!confirmed) return;
+    setDeletingId(user._id);
     try {
       await adminJson(`/api/admin/users/${encodeURIComponent(user._id)}`, { method: "DELETE" }, "Unable to delete user.");
       setUsers((rows) => rows.filter((item) => String(item._id) !== String(user._id)));
@@ -213,6 +219,8 @@ export function AdminUsersPage() {
     } catch (error) {
       setMessageType("error");
       setMessage(error.message || "Unable to delete user.");
+    } finally {
+      setDeletingId(null);
     }
   }
 
@@ -285,7 +293,7 @@ export function AdminUsersPage() {
         <div className="users-head"><span>Contact</span><span>Lifecycle</span><span>Verification</span><span>Engagement</span><span>Actions</span></div>
         {loading ? <div className="loading-state">Loading users...</div> : null}
         {!loading && !filteredUsers.length ? <div className="empty-state">No users found.</div> : null}
-        {!loading && filteredUsers.map((user) => {
+        {!loading && visibleUsers.map((user) => {
           const average = Math.max(0, Math.min(100, progressAverage(user)));
           const statusValue = user.subscriptionStatus || "none";
           const isOpen = openIds.has(user._id);
@@ -299,7 +307,7 @@ export function AdminUsersPage() {
                 <div><strong>{lifecycleLabel(user)}</strong><span><span className={`badge ${statusBadgeClass(statusValue)}`}>{statusValue}</span></span><span>Joined {formatDate(user.createdAt)}</span></div>
                 <div><strong>{isVerified(user) ? "Verified account" : "Verification pending"}</strong><span>{user.isMobileVerified ? "Mobile verified" : "Mobile pending"}</span><span>{user.isEmailVerified ? "Email verified" : "Email pending"}</span></div>
                 <div className="crm-engagement-cell"><strong>{engagementLabel(user)}</strong><div className="progress-meter" aria-hidden="true"><div className="progress-fill" style={{ width: `${average}%` }} /></div><div className="mini-stats"><span className="pill">{formatNumber(summaryData.totalCourses)} courses</span><span className="pill">{formatNumber(summaryData.completedCourses)} done</span><span className="pill">{formatNumber(summaryData.averageProgress)}% avg</span><span className="pill">{formatWatchDuration(watchMinutes(user))}</span></div></div>
-                <div className="row-actions"><button className="action-button" type="button" aria-expanded={isOpen} onClick={() => toggleOpen(user._id)}>{isOpen ? "Close" : "Open"}</button><button className="action-button danger" type="button" onClick={() => deleteUser(user)}>Delete</button></div>
+                <div className="row-actions"><button className="action-button" type="button" aria-expanded={isOpen} onClick={() => toggleOpen(user._id)}>{isOpen ? "Close" : "Open"}</button><button className="action-button danger" type="button" disabled={Boolean(deletingId)} onClick={() => deleteUser(user)}>{deletingId === user._id ? "Deleting…" : "Delete"}</button></div>
               </div>
               {isOpen ? (
                 <div className="progress-panel">
@@ -313,6 +321,12 @@ export function AdminUsersPage() {
           );
         })}
       </section>
+      <nav className="crm-results-bar" aria-label="Learner pages">
+        <button className="toolbar-button" disabled={currentPage <= 1 || loading} onClick={() => setPage(currentPage - 1)}>Previous</button>
+        <span aria-live="polite">Page {currentPage} of {pageCount} · 25 learners per page</span>
+        <button className="toolbar-button" disabled={currentPage >= pageCount || loading} onClick={() => setPage(currentPage + 1)}>Next</button>
+      </nav>
+
     </AdminShell>
   );
 }

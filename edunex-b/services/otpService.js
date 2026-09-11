@@ -2,6 +2,7 @@ const crypto = require('crypto');
 const https = require('https');
 const OtpAttempt = require('../models/OtpAttempt');
 
+const OTP_LENGTH = 6;
 const OTP_TTL_MS = 5 * 60 * 1000;
 const pendingOtps = new Map();
 const isProduction = process.env.NODE_ENV === 'production';
@@ -20,7 +21,7 @@ function normalizeMobileNumber(mobileNumber) {
 
 function createOtp() {
   const configuredOtp = String(process.env.DEV_OTP || '').trim();
-  if (!isProduction && /^\d{4,9}$/.test(configuredOtp)) {
+  if (!isProduction && /^\d{6}$/.test(configuredOtp)) {
     return configuredOtp;
   }
   return String(crypto.randomInt(100000, 1000000));
@@ -156,6 +157,7 @@ async function sendMsg91Otp(mobileNumber) {
 
   const url = new URL(`${MSG91_BASE_URL}/otp`);
   url.searchParams.set('template_id', templateId);
+  url.searchParams.set('otp_length', String(OTP_LENGTH));
   url.searchParams.set('mobile', mobile);
 
 
@@ -276,13 +278,13 @@ async function resendMobileOtp(mobileNumber) {
 }
 
 async function verifyMobileOtp(mobileNumber, otp) {
+  if (!/^\d{6}$/.test(String(otp || ''))) return { ok: false, error: 'Enter a 6-digit OTP.' };
   if (!isProduction && shouldUseDevelopmentOtp()) {
     return verifyStoredOtp(mobileNumber, otp);
   }
 
   if (OTP_PROVIDER !== 'msg91') return { ok: false, error: 'Unsupported OTP provider configuration.' };
   const mobile = normalizeMobileForMsg91(mobileNumber);
-  if (!/^\d{4,6}$/.test(String(otp || ''))) return { ok: false, error: 'Enter a valid OTP.' };
   const record = await OtpAttempt.findOneAndUpdate({ _id: mobile, expiresAt: { $gt: new Date() }, attempts: { $lt: 5 } }, { $inc: { attempts: 1 } }, { new: true });
   if (!record) return { ok: false, error: 'OTP expired or too many attempts. Request a new OTP.' };
   const result = await verifyMsg91Otp(mobileNumber, otp);
@@ -294,6 +296,7 @@ async function verifyMobileOtp(mobileNumber, otp) {
 }
 
 module.exports = {
+  OTP_LENGTH,
   normalizeMobileNumber,
   normalizeMobileForMsg91,
   sendMobileOtp,

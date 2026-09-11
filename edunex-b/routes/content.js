@@ -63,8 +63,8 @@ function withRepeatedVideoThumbnails(course) {
   return {
     ...course,
     videos: (Array.isArray(course.videos) ? course.videos : []).map((video) => ({
-      ...video,
-      hlsUrl: bunnyHlsUrl(video),
+      ...require('../services/mobileCompatibilityService').publicPlayableVideoInfo(video),
+      ...(require('../services/videoSources').inferProvider(video)==='aws_cloudfront' ? {} : {hlsUrl:bunnyHlsUrl(video)}),
       thumbnail: sharedThumbnail,
       thumbnailUrl: video.thumbnailUrl || sharedThumbnailUrl,
       thumbnailVerticalUrl: video.thumbnailVerticalUrl || sharedThumbnailVerticalUrl,
@@ -137,10 +137,10 @@ router.get('/courses/:id/lessons', requireAccess, async (req, res) => {
     }
 
     const course = await Course.findById(req.params.id)
-      .select('title description videos thumbnail thumbnailHorizontal thumbnailUrl thumbnailVerticalUrl notesUrl')
+      .select('title description status videos thumbnail thumbnailHorizontal thumbnailUrl thumbnailVerticalUrl notesUrl')
       .lean();
 
-    if (!course) {
+    if (!course || course.status !== 'published') {
       return res.status(404).json({ error: 'Course not found' });
     }
 
@@ -163,20 +163,21 @@ router.get('/lessons/:id', requireAccess, async (req, res) => {
     }
 
     const course = await Course.findById(lesson.course._id)
-      .select('title description videos thumbnail thumbnailHorizontal thumbnailUrl thumbnailVerticalUrl notesUrl')
+      .select('title description status videos thumbnail thumbnailHorizontal thumbnailUrl thumbnailVerticalUrl notesUrl')
       .lean();
 
-    if (!course) {
+    if (!course || course.status !== 'published') {
       return res.status(404).json({ error: 'Course not found' });
     }
 
-    const videoIndex = lesson.videoIndex;
+    const videoIndex = lesson.videoId ? course.videos.findIndex(v=>String(v._id)===String(lesson.videoId)) : lesson.videoIndex;
     const videoData = course.videos[videoIndex] || null;
 
     if (!videoData) {
       return res.status(404).json({ error: 'Video not found at this index' });
     }
 
+    if(require('../services/videoSources').inferProvider(videoData)==='aws_cloudfront')return res.json({...require('../services/mobileCompatibilityService').publicPlayableVideoInfo(videoData),_id:lesson._id,videoId:videoData._id,course:course._id,courseTitle:course.title,notesUrl:course.notesUrl,videoIndex});
     const youtubeEmbedUrl = videoData.youtubeId
       ? `https://www.youtube.com/embed/${videoData.youtubeId}`
       : null;
@@ -235,35 +236,17 @@ router.post('/progress', requireAccess, async (req, res) => {
       return res.status(400).json({ error: 'Invalid lesson or course id' });
     }
 
+    // Validate lesson ownership and record coverage before writing the compatibility projection.
+    const result = await syncLessonProgress({ user: req.user, lessonId: lesson, courseId: course, watchedSeconds, duration, completed });
+    const actualCompleted = result.lessonCompleted;
     const progress = await Progress.findOneAndUpdate(
       { user: req.user._id, lesson },
-      {
-        user: req.user._id,
-        lesson,
-        course,
-        watchedSeconds,
-        completed,
-        lastWatchedAt: new Date(),
-      },
-      { new: true, upsert: true, runValidators: true, setDefaultsOnInsert: true }
+      { user: req.user._id, lesson, course, watchedSeconds, completed: actualCompleted, lastWatchedAt: new Date() },
+      { new: true, upsert: true, runValidators: true }
     );
-
-    try {
-      await syncLessonProgress({
-        user: req.user,
-        lessonId: lesson,
-        courseId: course,
-        watchedSeconds,
-        completed,
-        duration,
-      });
-    } catch (error) {
-      console.error('Course progress sync error:', error.message);
-    }
-
     res.status(200).json(progress);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(error.statusCode || 500).json({ error: error.message });
   }
 });
 

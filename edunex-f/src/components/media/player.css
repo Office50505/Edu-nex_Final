@@ -1,0 +1,35 @@
+.sm-player { position:relative; width:100%; height:100%; min-height:260px; aspect-ratio:16/9; background:#000; color:#fff; isolation:isolate; overflow:hidden; font-family:Arial,sans-serif; }
+.sm-player * { box-sizing:border-box; }
+.sm-player video { display:block; width:100%; height:100%; object-fit:contain; }
+.sm-player:fullscreen { width:100vw; height:100dvh; aspect-ratio:auto; }
+.sm-player button { color:#fff; background:transparent; border:0; cursor:pointer; min-width:40px; min-height:44px; padding:8px; border-radius:5px; font:inherit; }
+.sm-player button:hover { background:#ffffff20; }
+.sm-player button:disabled { opacity:.4; cursor:default; }
+.sm-player :focus-visible { outline:2px solid #fff; outline-offset:-2px; }
+.sm-player .sm-controls { position:absolute; bottom:0; left:0; right:0; padding:32px 12px 6px; background:linear-gradient(transparent,#000c); transition:opacity .2s; opacity:0; pointer-events:none; z-index:3; }
+.sm-player.sm-awake .sm-controls,.sm-player:has(:focus-visible) .sm-controls { opacity:1; pointer-events:auto; }
+.sm-player:not(.sm-awake):not(:has(:focus-visible)) { cursor:none; }
+.sm-player .sm-row { display:flex; gap:2px; align-items:center; flex-wrap:wrap; }
+.sm-player .sm-spacer { flex:1; }
+.sm-player .sm-time { white-space:nowrap; font-size:12px; font-variant-numeric:tabular-nums; }
+.sm-player .sm-volume { width:60px; accent-color:#fff; }
+.sm-player .sm-seek { display:block; appearance:none; width:100%; height:5px; margin:10px 0; border:0; border-radius:3px; padding:0; background:linear-gradient(to right,#ff0033 var(--sm-progress),#ffffff80 var(--sm-progress),#ffffff80 var(--sm-buffered),#ffffff40 var(--sm-buffered)); accent-color:#ff0033; cursor:pointer; }
+.sm-player .sm-seek::-webkit-slider-thumb { appearance:none; width:13px; height:13px; border-radius:50%; background:#ff0033; }
+.sm-player .sm-seek::-moz-range-thumb { width:13px; height:13px; border:0; border-radius:50%; background:#ff0033; }
+.sm-player .sm-settings { position:absolute; z-index:5; bottom:85px; right:12px; width:min(290px,calc(100% - 24px)); max-height:calc(100% - 100px); overflow:auto; padding:12px; border-radius:8px; background:#202020f5; box-shadow:0 4px 24px #0008; }
+.sm-player .sm-settings label { display:flex; justify-content:space-between; gap:12px; align-items:center; font-size:13px; min-height:44px; }
+.sm-player select { max-width:160px; background:#303030; color:white; border:1px solid #666; border-radius:4px; padding:6px; }
+.sm-player .sm-captions { display:flex; align-items:center; gap:4px; font-size:12px; }
+.sm-player .sm-captions select { max-width:90px; }
+.sm-player .sm-status,.sm-player .sm-failure { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; flex-direction:column; gap:12px; padding:24px; text-align:center; background:#0008; z-index:2; }
+.sm-player .sm-status { pointer-events:none; }
+.sm-player .sm-failure button { border:1px solid #aaa; }
+.sm-player .sm-notice { position:absolute; top:15px; left:15px; right:15px; background:#222e; padding:10px; z-index:6; font-size:13px; }
+.watch-layout.sm-playlist-closed { grid-template-columns:minmax(0,1fr); }
+.watch-layout .sm-playlist-toggle { color:inherit; background:transparent; border:1px solid currentColor; border-radius:6px; padding:8px 14px; margin-bottom:10px; cursor:pointer; }
+.watch-layout .lesson-sidebar[hidden] { display:none; }
+@media(max-width:600px) { .sm-player { min-height:240px; } .sm-player .sm-controls { padding:20px 6px 4px; } .sm-player .sm-row { gap:0; } .sm-player .sm-volume { display:none; } .sm-player .sm-time { font-size:11px; } .sm-player button { min-width:36px; padding:6px; } .sm-player .sm-settings { bottom:96px; max-height:calc(100% - 104px); } }
+@media(prefers-reduced-motion:reduce) { .sm-player .sm-controls { transition:none; } }
+
+.sm-player button svg { display:block; margin:auto; }
+.sm-player .sm-big-play { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:64px; height:64px; border-radius:50%; background:#ffffff20; }

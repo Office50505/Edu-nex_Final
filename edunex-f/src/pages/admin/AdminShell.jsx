@@ -1,86 +1,48 @@
 import { useEffect, useState } from "react";
 import { adminRoutes, logout } from "./adminApi.js";
 
-const navItems = [
-  ["dashboard", "Analytics", adminRoutes.dashboard],
-  ["users", "Users", adminRoutes.users],
-  ["courses", "Courses", adminRoutes.courses],
-  ["upload", "Upload", adminRoutes.upload],
+const sections = [
+  { label: 'Overview', links: [['dashboard', 'Analytics', adminRoutes.dashboard, '01']] },
+  { label: 'People', links: [['users', 'Learners', adminRoutes.users, '02']] },
+  { label: 'Content', links: [['courses', 'Course library', adminRoutes.courses, '03'], ['upload', 'Create course', adminRoutes.upload, '+']] },
+  { label: 'Operations', links: [['health', 'System health', adminRoutes.health, '04'], ['certifications', 'Certification', adminRoutes.certifications, '05']] },
 ];
 
 export function Message({ text, type = "success" }) {
-  return (
-    <div className={`message${text ? ` ${type}` : ""}`} role="status">
-      {text || ""}
-    </div>
-  );
+  return text ? <div className={`message ${type}`} role={type === 'error' ? 'alert' : 'status'}>{text}</div> : null;
 }
 
 export function AdminShell({ activePage, title, subtitle, children, actions = null, shellClass = "dashboard-shell" }) {
   const [theme, setTheme] = useState(() => localStorage.getItem("edunexAdminTheme") || "dark");
-
   useEffect(() => {
     document.body.classList.toggle("admin-theme-light", theme === "light");
     document.body.classList.toggle("admin-theme-dark", theme !== "light");
     localStorage.setItem("edunexAdminTheme", theme);
   }, [theme]);
-
-  function toggleTheme() {
-    setTheme((current) => (current === "light" ? "dark" : "light"));
-  }
-
+  const section = sections.find(item => item.links.some(([key]) => key === activePage))?.label || 'Overview';
   return (
-    <>
-      <nav className="premium-site-nav" data-premium-nav>
-        <div className="premium-nav-panel">
-          <a aria-label="Skillomate admin home" className="premium-brand" href={adminRoutes.dashboard}>
-            <span className="premium-brand-mark" aria-hidden="true" />
-            <span className="premium-brand-name">
-              Skillo<span>mate</span>
-            </span>
-          </a>
-          <div className="premium-nav-links">
-            {navItems.map(([key, label, href]) => (
-              <a key={key} className={activePage === key ? "is-active" : ""} href={href}>
-                {label}
-              </a>
-            ))}
-          </div>
-          <div className="premium-nav-actions">
-            <button className="toolbar-button" type="button" onClick={logout}>
-              Log out
-            </button>
-          </div>
-        </div>
-      </nav>
-
-      <main className={`app-shell ${shellClass}`}>
-        <header className={`app-header ${activePage}-header`}>
-          <div>
-            <div className="brand-mark">E</div>
-            <h1 className="app-title">{title}</h1>
-            <p className="app-subtitle">{subtitle}</p>
-          </div>
-          <nav className="toolbar-actions" aria-label="Admin navigation">
-            {navItems
-              .filter(([key]) => key !== activePage)
-              .map(([key, label, href]) => (
-                <a key={key} className="toolbar-button" href={href}>
-                  {label}
-                </a>
-              ))}
-            <button className="toolbar-button theme-toggle-button" type="button" onClick={toggleTheme} aria-pressed={theme === "light"}>
-              <span className="theme-toggle-swatch" aria-hidden="true" />
-              {theme === "light" ? "Dark theme" : "Light theme"}
-            </button>
+    <div className="admin-workspace">
+      <a className="admin-skip-link" href="#admin-main">Skip to content</a>
+      <aside className="admin-sidebar">
+        <a className="admin-workspace-brand" href={adminRoutes.dashboard}><span className="admin-monogram">S</span><span>Skillomate<small>ADMIN WORKSPACE</small></span></a>
+        <nav aria-label="Administration sections">
+          {sections.map(group => <div className="admin-nav-group" key={group.label}>
+            <p>{group.label}</p>
+            {group.links.map(([key, label, href, icon]) => <a key={key} href={href} className={activePage === key ? 'is-active' : ''} aria-current={activePage === key ? 'page' : undefined}><span aria-hidden="true">{icon}</span>{label}</a>)}
+          </div>)}
+        </nav>
+        <div className="admin-sidebar-footer"><a href="/" target="_blank" rel="noreferrer">View website ↗</a><button type="button" onClick={logout}>Log out</button></div>
+      </aside>
+      <main id="admin-main" tabIndex={-1} className={`app-shell ${shellClass} admin-workspace-main`}>
+        <header className="admin-workspace-header">
+          <div><p className="admin-breadcrumb">Workspace / {section}</p><h1>{title}</h1><p className="admin-header-description">{subtitle}</p></div>
+          <div className="toolbar-actions">
+            <button className="toolbar-button" type="button" onClick={() => setTheme(current => current === 'light' ? 'dark' : 'light')} aria-pressed={theme === 'light'}>{theme === 'light' ? 'Dark theme' : 'Light theme'}</button>
             {actions}
-            <button className="toolbar-button" type="button" onClick={logout}>
-              Log out
-            </button>
-          </nav>
+          </div>
         </header>
         {children}
       </main>
-    </>
+    </div>
   );
 }

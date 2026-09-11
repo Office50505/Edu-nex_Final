@@ -1,3 +1,9 @@
+import { CourseMediaPlayer } from "../components/media/CourseMediaPlayer.jsx";
+import { adjacent, available, usesCustomPlayer } from "../components/media/playerRules.js";
+import { loadHlsJs } from "../lib/hlsRuntime.js";
+import { usePlaybackAccess } from "../hooks/usePlaybackAccess.js";
+import { useLearningProgress, progressCacheKey } from "../hooks/useLearningProgress.js";
+import { CertificationProgress } from "../components/CertificationProgress.jsx";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { page as videosPage } from "../generated-pages/videos.html.js";
 import { runLegacyPage } from "../legacyRuntime.js";
@@ -120,7 +126,7 @@ function fallbackImage(label = "Skillomate") {
 
 function courseProgress(course) {
   try {
-    const saved = JSON.parse(localStorage.getItem(`edunexCourseProgress:${course._id}`) || "{}");
+    const saved = JSON.parse(localStorage.getItem(progressCacheKey(course._id)) || "{}");
     const total = Math.max(course.videos?.length || 0, 1);
     const index = Math.min(Number(saved.lessonIndex || 0), total - 1);
     const completed = Number(saved.completed || 0);
@@ -180,25 +186,6 @@ function isYoutubeEmbedUrl(value) {
 
 function isHlsUrl(value) {
   return /\.m3u8(\?|#|$)/i.test(String(value || ""));
-}
-
-function loadHlsJs() {
-  if (window.Hls) return Promise.resolve(window.Hls);
-  return new Promise((resolve, reject) => {
-    const existing = document.querySelector('script[data-edunex-hls="true"]');
-    if (existing) {
-      existing.addEventListener("load", () => resolve(window.Hls), { once: true });
-      existing.addEventListener("error", reject, { once: true });
-      return;
-    }
-    const script = document.createElement("script");
-    script.src = "https://cdn.jsdelivr.net/npm/hls.js@latest";
-    script.async = true;
-    script.dataset.edunexHls = "true";
-    script.onload = () => resolve(window.Hls);
-    script.onerror = reject;
-    document.head.appendChild(script);
-  });
 }
 
 function loadEmbeddedPlayerApi() {
@@ -422,7 +409,9 @@ function VideoControls({ playing, volume, muted, rate, currentTime, duration, on
   );
 }
 
-function Player({ course, lesson, autoNext, onEnded, onNavigateLesson }) {
+function Player({ course, lesson: savedLesson, lessonIndex, autoNext, onEnded, onNavigateLesson, forceEmbed = false }) {
+  const playback = usePlaybackAccess(course._id, savedLesson);
+  const lesson = playback.lesson;
   const videoRef = useRef(null);
   const iframeRef = useRef(null);
   const embeddedPlayerRef = useRef(null);
@@ -432,6 +421,9 @@ function Player({ course, lesson, autoNext, onEnded, onNavigateLesson }) {
   const [muted, setMuted] = useState(() => localStorage.getItem("edunexVideoMuted") === "true");
   const [rate, setRate] = useState(1);
   const [time, setTime] = useState({ current: 0, duration: 0 });
+  const videoId = String(lesson._id || lesson.id || lesson.bunnyVideoId || lesson.bunnyGuid || lesson.youtubeId || lesson.videoId || lessonIndex);
+  const learning = useLearningProgress(course._id, videoId, time, playing);
+  const resumed = useRef(false);
   const playerStateRef = useRef({ autoNext, muted, onEnded, rate, volume });
   const playingRef = useRef(false);
   const screenTapRef = useRef({ side: "", at: 0 });
@@ -439,7 +431,7 @@ function Player({ course, lesson, autoNext, onEnded, onNavigateLesson }) {
   const screenHintTimerRef = useRef(null);
 
   const url = embedUrl(lesson);
-  const directUrl = directVideoUrl(lesson) || bunnyStreamUrl(lesson);
+  const directUrl = forceEmbed ? "" : lesson.provider === "aws_cloudfront" ? (lesson.hlsUrl || "") : directVideoUrl(lesson) || bunnyStreamUrl(lesson);
   const isYoutubeEmbed = isYoutubeEmbedUrl(url);
   const hasEmbedControls = isBunnyEmbedUrl(url) || isYoutubeEmbed;
   const needsHlsRuntime = Boolean(directUrl && isHlsUrl(directUrl));
@@ -523,6 +515,12 @@ function Player({ course, lesson, autoNext, onEnded, onNavigateLesson }) {
     postToEmbed({ event: "command", func: "seekTo", args: [next, true] });
     postToEmbed({ method: "seek", value: seconds });
   }, [postToEmbed, time.current]);
+
+  useEffect(() => {
+    if (resumed.current || learning.resume === null || !time.duration) return;
+    resumed.current = true;
+    if (learning.resume > 0 && learning.resume < time.duration - 2) seekBy(learning.resume - time.current);
+  }, [learning.resume, time.duration, time.current, seekBy]);
 
   const clearPendingScreenToggle = useCallback(() => {
     if (screenToggleTimerRef.current) window.clearTimeout(screenToggleTimerRef.current);
@@ -623,7 +621,7 @@ function Player({ course, lesson, autoNext, onEnded, onNavigateLesson }) {
       video.removeEventListener("pause", onPause);
       video.removeEventListener("ended", onEnd);
     };
-  }, [autoNext, muted, onEnded, rate, syncPlaying, volume]);
+  }, [autoNext, muted, onEnded, rate, syncPlaying, volume, directUrl]);
 
   useEffect(() => {
     if (!hasEmbedControls) return undefined;
@@ -725,8 +723,11 @@ function Player({ course, lesson, autoNext, onEnded, onNavigateLesson }) {
     const video = videoRef.current;
     if (!video || !needsHlsRuntime) return undefined;
     if (video.canPlayType("application/vnd.apple.mpegurl")) {
+      const restore = time.current;
+      const ready = () => { if (restore > 0) video.currentTime = restore; if (playingRef.current) video.play().catch(() => {}); };
+      video.addEventListener("loadedmetadata", ready);
       video.src = directUrl;
-      return undefined;
+      return () => video.removeEventListener("loadedmetadata", ready);
     }
     let cancelled = false;
     let hlsInstance = null;
@@ -734,6 +735,9 @@ function Player({ course, lesson, autoNext, onEnded, onNavigateLesson }) {
       .then((Hls) => {
         if (cancelled || !Hls?.isSupported?.()) return;
         hlsInstance = new Hls({ enableWorker: true });
+        hlsInstance.on(Hls.Events.ERROR, (_event, data) => { if (data.fatal) playback.setError('Video playback failed. Check access, the CloudFront object path and CORS configuration, then retry.'); });
+        const restore = time.current;
+        hlsInstance.on(Hls.Events.MANIFEST_PARSED, () => { if (restore > 0) video.currentTime = restore; if (playingRef.current) video.play().catch(() => {}); });
         hlsInstance.loadSource(directUrl);
         hlsInstance.attachMedia(video);
       })
@@ -791,11 +795,13 @@ function Player({ course, lesson, autoNext, onEnded, onNavigateLesson }) {
     />
   );
 
+  if (savedLesson.provider === 'aws_cloudfront' && (!directUrl || playback.error)) return <div className="player-placeholder"><div><strong>{playback.error || 'Authorizing video playback…'}</strong>{playback.error?<button onClick={playback.retry}>Retry playback</button>:null}</div></div>;
   if (directUrl) {
     return (
       <div className="custom-video-player" data-custom-player="true" tabIndex={-1} ref={shellRef}>
-        <video ref={videoRef} src={needsHlsRuntime ? undefined : directUrl} poster={lessonImage(course, lesson)} playsInline preload="metadata"></video>
+        <video onError={() => { if(savedLesson.provider === "aws_cloudfront") playback.setError("Video playback failed. Check the video path, access and CloudFront CORS, then retry."); }} ref={videoRef} src={needsHlsRuntime ? undefined : directUrl} poster={lessonImage(course, lesson)} playsInline preload="metadata"></video>
         {controls}
+        <span role="status" style={{position:"absolute",top:8,left:8,zIndex:4,fontSize:11,background:"#111c",color:"#fff",padding:6,maxWidth:"90%"}}>{learning.notice}</span>
       </div>
     );
   }
@@ -808,6 +814,7 @@ function Player({ course, lesson, autoNext, onEnded, onNavigateLesson }) {
       <div className="custom-video-player" data-embed-player="true" tabIndex={-1} ref={shellRef}>
         <iframe ref={iframeRef} src={url} title={lesson?.title || course?.title} allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowFullScreen></iframe>
         {controls}
+        <span role="status" style={{position:"absolute",top:8,left:8,zIndex:4,fontSize:11,background:"#111c",color:"#fff",padding:6,maxWidth:"90%"}}>{learning.notice}</span>
       </div>
     );
   }
@@ -850,6 +857,9 @@ export function VideosPage() {
   const [filter, setFilter] = useState("all");
   const [search, setSearch] = useState("");
   const [course, setCourse] = useState(null);
+  const [fallbackLesson,setFallbackLesson] = useState(null);
+  const [autoplayLesson,setAutoplayLesson] = useState(false);
+  const [playlistOpen,setPlaylistOpen] = useState(true);
   const [activeIndex, setActiveIndex] = useState(Number.isFinite(selectedVideo) ? selectedVideo : 0);
   const [status, setStatus] = useState("Preparing course...");
   const [error, setError] = useState("");
@@ -943,7 +953,7 @@ export function VideosPage() {
   useEffect(() => {
     if (!course) return;
     const lessons = course.videos || [];
-    const key = `edunexCourseProgress:${course._id}`;
+    const key = progressCacheKey(course._id);
     let saved = {};
     try {
       saved = JSON.parse(localStorage.getItem(key) || "{}");
@@ -955,8 +965,8 @@ export function VideosPage() {
       viewed: true,
       lastViewedAt: new Date().toISOString(),
       lessonIndex: activeIndex,
-      completed: Math.min(activeIndex, Math.max(lessons.length - 1, 0)),
-      percent: lessons.length ? Math.round((activeIndex / lessons.length) * 100) : 0,
+      completed: saved.completed || 0,
+      percent: saved.percent || 0,
     }));
     const urlState = new URL(window.location.href);
     urlState.searchParams.set("courseId", course._id);
@@ -1010,8 +1020,9 @@ export function VideosPage() {
   ).trim();
 
   const changeLessonByNavigation = useCallback((delta) => {
-    setActiveIndex((index) => Math.max(0, Math.min(index + delta, Math.max(lessons.length - 1, 0))));
-  }, [lessons.length]);
+    setAutoplayLesson(true);
+    setActiveIndex((index) => adjacent(lessons,index,delta));
+  }, [lessons]);
 
   useEffect(() => {
     const frame = playerFrameRef.current;
@@ -1026,7 +1037,7 @@ export function VideosPage() {
       swipe.vertical = false;
       swipe.pointerId = null;
     };
-    const ignoreSwipeTarget = (target) => Boolean(target?.closest?.(".custom-video-controls, .video-screen-btn, input, select, textarea, [contenteditable='true']"));
+    const ignoreSwipeTarget = (target) => Boolean(target?.closest?.(".sm-player, .custom-video-controls, .video-screen-btn, input, select, textarea, [contenteditable='true']"));
     const canChangeLesson = (delta) => delta > 0 ? activeIndex < lessons.length - 1 : delta < 0 && activeIndex > 0;
     const canTrackPlayerSwipe = () => isPlayerFullscreen(frame) || window.matchMedia?.("(max-width: 820px), (pointer: coarse)")?.matches;
     const beginSwipe = (clientX, clientY, pointerId = null) => {
@@ -1144,7 +1155,7 @@ export function VideosPage() {
     };
 
     const onKeyDown = (event) => {
-      if (!isPlayerFullscreen(frame)) return;
+      if (!isPlayerFullscreen(frame) || event.target?.closest?.(".sm-player")) return;
       if (event.key === "Escape" && frame.classList.contains(APP_FULLSCREEN_CLASS)) {
         event.preventDefault();
         setAppFullscreen(frame, false);
@@ -1210,8 +1221,9 @@ export function VideosPage() {
   };
 
   const advanceNext = useCallback(() => {
-    setActiveIndex((index) => Math.min(index + 1, Math.max(lessons.length - 1, 0)));
-  }, [lessons.length]);
+    setAutoplayLesson(true);
+    setActiveIndex((index) => adjacent(lessons,index,1));
+  }, [lessons]);
 
   const renderCourseTile = (item, isContinue) => {
     const progress = courseProgress(item);
@@ -1311,7 +1323,8 @@ export function VideosPage() {
             <button className="watch-tool-btn" type="button" id="openNotesBtn" onClick={openNotes}><i className="fas fa-file-lines" aria-hidden="true"></i> Notes</button>
           </div>
         </div>
-        <section className="watch-layout">
+        <button type="button" className="toolbar-button" aria-expanded={playlistOpen} aria-controls="course-playlist" onClick={()=>setPlaylistOpen(v=>!v)}>{playlistOpen?"Hide playlist":"Show playlist"}</button>
+        <section className={`watch-layout${playlistOpen?"":" sm-playlist-closed"}`}>
           <div className="player-wrap">
             <div
               className="player-frame mobile-reel-player"
@@ -1328,9 +1341,11 @@ export function VideosPage() {
               {error ? (
                 <div className="player-placeholder"><div><strong>Could not open this course</strong><span>{error}</span></div></div>
               ) : course ? (
-                <Player
+                !available(lesson) ? <div className="player-placeholder">This lesson is locked.</div> : usesCustomPlayer(lesson) && fallbackLesson !== `${course._id}-${lesson._id}` ? <CourseMediaPlayer onFallback={lesson.provider !== 'aws_cloudfront' && isBunnyEmbedUrl(embedUrl(lesson)) ? ()=>setFallbackLesson(`${course._id}-${lesson._id}`) : undefined} autoplay={autoplayLesson} course={course} lesson={lesson} lessonIndex={activeIndex} autoNext={autoNext} onEnded={advanceNext} onNavigateLesson={changeLessonByNavigation} key={`${course._id}-${lesson._id}`}/> : <Player
+                  forceEmbed={fallbackLesson === `${course._id}-${lesson._id}`}
                   course={course}
                   lesson={lesson}
+                  lessonIndex={activeIndex}
                   autoNext={autoNext}
                   onEnded={advanceNext}
                   onNavigateLesson={changeLessonByNavigation}
@@ -1340,6 +1355,7 @@ export function VideosPage() {
                 <div className="player-placeholder"><div><strong>Preparing course</strong><span>Loading your Skillomate course playlist...</span></div></div>
               )}
             </div>
+            {course ? <CertificationProgress key={course._id} courseId={course._id} /> : null}
             <div className="lesson-info">
               <h1 id="lessonTitle">{error ? "Course unavailable" : (lesson.title || course?.title || "Select a lesson")}</h1>
               <p id="lessonDescription">{error || lesson.description || course?.description || "Choose a video from the playlist to begin watching."}</p>
@@ -1356,7 +1372,7 @@ export function VideosPage() {
               </div>
             </div>
           </div>
-          <aside className="lesson-sidebar" aria-label="Course playlist">
+          <aside className="lesson-sidebar" aria-label="Course playlist" id="course-playlist" hidden={!playlistOpen}>
             <div className="sidebar-head">
               <div className="sidebar-top-row">
                 <h2 id="sidebarCourseTitle">{course?.title || "Course playlist"}</h2>
@@ -1380,7 +1396,7 @@ export function VideosPage() {
               {error ? <div className="empty-state">{error}</div> : null}
               {!error && course && !lessons.length ? <div className="empty-state">This course does not have videos attached yet.</div> : null}
               {!error && lessons.map((item, index) => (
-                <button className={`lesson-item${index === activeIndex ? " is-active" : ""}`} type="button" data-index={index} key={item._id || item.id || `${item.title}-${index}`} onClick={() => setActiveIndex(index)}>
+                <button className={`lesson-item${index === activeIndex ? " is-active" : ""}`} type="button" data-index={index} key={item._id || item.id || `${item.title}-${index}`} disabled={!available(item)} aria-current={index===activeIndex?"true":undefined} onClick={() => {if(available(item)){setAutoplayLesson(true);setActiveIndex(index);}}}>
                   <span className="lesson-thumb">
                     <img src={lessonImage(course, item)} alt={item.title || course.title || "Skillomate lesson"} onError={(event) => {
                       event.currentTarget.onerror = null;

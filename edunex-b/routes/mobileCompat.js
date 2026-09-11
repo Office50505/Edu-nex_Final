@@ -174,6 +174,7 @@ router.post(
       courseId,
       videoId,
       currentTime,
+      sessionId: req.compatAuth.sessionId,
       duration,
     }));
   })
@@ -219,7 +220,8 @@ router.get(
       return res.status(403).json({ error: 'Subscription required' });
     }
 
-    const course = await getCourse(req.params.id, 'title videos');
+    const course = await getCourse(req.params.id, 'title videos status');
+    if (course.status !== 'published') return res.status(403).json({ error: 'Course is not published' });
     const videos = Array.isArray(course.videos)
       ? course.videos.slice().sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
       : [];
@@ -249,6 +251,7 @@ router.patch(
       'duration',
       'order',
       'sourceType',
+      'provider',
       'thumbnailUrl',
       'thumbnailVerticalUrl',
       'transcriptUrl',
@@ -259,38 +262,13 @@ router.patch(
       normalizedBody.bunnyVideoId = normalizedBody.bunnyGuid;
     }
 
-    const set = {};
-    Object.entries(normalizedBody).forEach(([key, value]) => {
-      if (allowed.has(key) && key !== 'bunnyGuid') {
-        set[`videos.$.${key}`] = value;
-      }
-    });
-
-    if (!Object.keys(set).length) {
-      return res.status(400).json({ error: 'No valid fields to update' });
-    }
-
-    const courseObjectId = objectId(courseId, 'course id');
-    const matchers = [
-      { _id: courseObjectId, 'videos._id': videoId },
-      { _id: courseObjectId, 'videos.bunnyVideoId': videoId },
-      { _id: courseObjectId, 'videos.youtubeId': videoId },
-    ];
-
-    if (objectIdSafe(videoId)) {
-      matchers.splice(1, 0, { _id: courseObjectId, 'videos._id': objectId(videoId, 'video id') });
-    }
-
-    let result = null;
-    for (const matcher of matchers) {
-      result = await Course.updateOne(matcher, { $set: set });
-      if (result.matchedCount) break;
-    }
-
-    if (!result?.matchedCount) {
-      return res.status(404).json({ error: 'Course or video not found' });
-    }
-
+    const course = await Course.findById(objectId(courseId, 'course id'));
+    if (!course) return res.status(404).json({ error: 'Course not found' });
+    const video = course.videos.find(v => [String(v._id), v.bunnyVideoId, v.youtubeId].includes(videoId));
+    if (!video) return res.status(404).json({ error: 'Video not found' });
+    for (const [key,value] of Object.entries(normalizedBody)) if (allowed.has(key) && key !== 'bunnyGuid') video[key] = value;
+    if (normalizedBody.provider || normalizedBody.sourceType) video.provider = normalizedBody.provider || normalizedBody.sourceType;
+    await course.save();
     res.json({ ok: true });
   })
 );

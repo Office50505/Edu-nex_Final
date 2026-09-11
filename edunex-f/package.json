@@ -10,10 +10,12 @@
     "k6:login:smoke": "k6 run tests/k6/login-page-load.js",
     "k6:login:quick": "PROFILE=quick k6 run tests/k6/login-page-load.js",
     "k6:login:10k": "REQUESTS=10000 RUN_LABEL=10000-requests k6 run tests/k6/login-page-load.js",
-    "k6:login:steps": "node scripts/run-k6-login-steps.mjs"
+    "k6:login:steps": "node scripts/run-k6-login-steps.mjs",
+    "test:player": "vitest run tests/player"
   },
   "dependencies": {
     "@vitejs/plugin-react": "^5.0.0",
+    "hls.js": "1.7.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "vite": "^7.0.0"
@@ -21,8 +23,11 @@
   "devDependencies": {
     "@tailwindcss/container-queries": "^0.1.1",
     "@tailwindcss/forms": "^0.5.11",
+    "@testing-library/react": "^16.3.3",
     "autoprefixer": "^10.5.4",
+    "jsdom": "^30.0.1",
     "postcss": "^8.5.26",
-    "tailwindcss": "^3.4.17"
+    "tailwindcss": "^3.4.17",
+    "vitest": "^5.0.0"
   }
 }

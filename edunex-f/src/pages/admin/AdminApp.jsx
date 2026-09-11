@@ -1,3 +1,5 @@
+import { AdminCertificationsPage } from "./AdminCertificationsPage.jsx";
+import { AdminHealthPage } from "./AdminHealthPage.jsx";
 import { useEffect } from "react";
 import "../../../admin/auth.css";
 import "../../../admin/motion.css";
@@ -17,6 +19,8 @@ const adminPages = {
   users: AdminUsersPage,
   courses: AdminCoursesPage,
   upload: AdminUploadPage,
+  health: AdminHealthPage,
+  certifications: AdminCertificationsPage,
 };
 
 export function AdminApp({ page }) {

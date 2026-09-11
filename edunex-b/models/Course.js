@@ -57,9 +57,10 @@ videos: [
          description: { type: String, trim: true, maxlength: 2000, default: '' },
          sourceType: {
            type: String,
-           enum: ['bunny_stream', 'youtube'],
+           enum: ['bunny_stream', 'youtube', 'aws_cloudfront'],
          },
-         videoUrl: { type: String, trim: true, default: null },
+         provider: { type: String, enum: ['aws_cloudfront', 'bunny_stream', 'youtube'] },
+         videoUrl: { type: String, default: null },
          embedUrl: { type: String, trim: true, default: null },
          bunnyVideoId: { type: String, trim: true, default: null },
          bunnyLibraryId: { type: String, trim: true, default: null },
@@ -78,7 +79,8 @@ videos: [
          order: { type: Number, required: true },
        },
      ],
-     notesUrl: {
+     completionOrder: { type: [String], default: undefined },
+    notesUrl: {
        type: String,
        default: null,
        trim: true,
@@ -157,17 +159,12 @@ courseSchema.pre('save', function autoFillThumbnail() {
 });
 
 courseSchema.pre('validate', function validateVideoSources() {
-  if (Array.isArray(this.videos)) {
-    this.videos.forEach((video) => {
-      if (!video.sourceType) {
-        video.sourceType = video.youtubeId ? 'youtube' : 'bunny_stream';
-      }
-    });
-
-    const missingSource = this.videos.some((video) => !video.youtubeId && !video.embedUrl && !video.videoUrl);
-    if (missingSource) {
-      throw new Error('Every video must include a valid video source');
-    }
+  const { validateSource, inferProvider } = require('../services/videoSources');
+  for (const video of this.videos || []) {
+    // Old Bunny documents retain their IDs and infer provider without a migration.
+    video.provider = inferProvider(video);
+    video.sourceType = video.provider;
+    Object.assign(video, validateSource(video));
   }
 });
 

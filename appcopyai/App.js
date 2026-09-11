@@ -1,3 +1,4 @@
+import { requestTutor } from "./services/aiClient";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -903,7 +904,7 @@ function getVideoKey(video, index = 0) {
 }
 
 function isPlayableVideo(video) {
-  return !!(video?.hlsUrl || video?.playlistUrl || video?.streamUrl || video?.embedUrl || video?.videoUrl || video?.bunnyGuid || video?.bunnyVideoId || video?.youtubeId || video?.videoId);
+  return !!(video?.playbackRequired || video?.hlsUrl || video?.playlistUrl || video?.streamUrl || video?.embedUrl || video?.videoUrl || video?.bunnyGuid || video?.bunnyVideoId || video?.youtubeId || video?.videoId);
 }
 
 function getBunnyGuid(video) {
@@ -1577,12 +1578,34 @@ function BottomNav({ active, onHome, onCourses, onAI, onDownloads, onProfile, ai
 }
 
 // ── VideoItem ─────────────────────────────────────────────────────────────────
-function VideoItem({ video: videoProp, videoId: videoIdProp, isActive, height, onComplete, onProgress, onEnded, initialTime = 0, localPath }) {
-  const video = videoProp || (videoIdProp ? { youtubeId: videoIdProp } : {});
+function VideoItem({ courseId, user, video: videoProp, videoId: videoIdProp, isActive, height, onComplete, onProgress, onEnded, initialTime = 0, localPath }) {
+  const [cloudLease, setCloudLease] = useState(null);
+  const [cloudError, setCloudError] = useState('');
+  const [cloudRetry, setCloudRetry] = useState(0);
+  const cloudResume = useRef(0);
+  useEffect(() => {
+    if (videoProp?.provider !== 'aws_cloudfront' || !isActive) return;
+    let disposed = false, timer;
+    async function renew() {
+      try {
+        const response = await fetch(`${API_BASE}/api/courses/${courseId}/videos/${videoProp._id}/playback-access`, {
+          method: 'POST', headers: {'Content-Type':'application/json'},
+          body: JSON.stringify({userId:user?._id,sessionId:user?.sessionId})
+        });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || 'Playback access unavailable.');
+        if (disposed) return;
+        setCloudLease({...data,hlsUrl:`${API_BASE}${data.hlsUrl}`});setCloudError('');
+        timer = setTimeout(renew, Math.max(10000,data.expiresAt-Date.now()-60000));
+      } catch(error) { if(!disposed)setCloudError(error.message); }
+    }
+    renew();return () => {disposed=true;clearTimeout(timer);};
+  }, [courseId,videoProp?._id,videoProp?.provider,isActive,user?._id,user?.sessionId,cloudRetry]);
+  const video = {...(videoProp || (videoIdProp ? {youtubeId:videoIdProp}:{})), ...(cloudLease || {})};
   const nativeVideoUrl = getNativeVideoUrl(video, localPath);
   const hasNativeVideo = !!nativeVideoUrl;
   const isOffline = !!localPath;
-  const canFallbackToEmbed = !isOffline && !!(video.bunnyGuid || video.bunnyVideoId || video.videoUrl || video.embedUrl || video.youtubeId || video.videoId);
+  const canFallbackToEmbed = video.provider !== 'aws_cloudfront' && !isOffline && !!(video.bunnyGuid || video.bunnyVideoId || video.videoUrl || video.embedUrl || video.youtubeId || video.videoId);
   const [nativePlaybackFailed, setNativePlaybackFailed] = useState(false);
   const isNativeVideo = hasNativeVideo && !(nativePlaybackFailed && canFallbackToEmbed);
   const isBunny = !isNativeVideo && !!(video.bunnyGuid || video.bunnyVideoId || video.videoUrl || video.embedUrl);
@@ -1656,7 +1679,7 @@ function VideoItem({ video: videoProp, videoId: videoIdProp, isActive, height, o
     setIsEnded(false);
     setIsPlaying(isActive);
     setNativePlaybackFailed(false);
-  }, [video?.youtubeId, video?.videoId, video?.bunnyGuid, video?.bunnyVideoId, video?.videoUrl, video?.hlsUrl, video?.embedUrl, nativeVideoUrl, localPath, initialTime, isActive]);
+  }, [video?.youtubeId, video?.videoId, video?.bunnyGuid, video?.bunnyVideoId, video?._id, video?.videoUrl, video?.embedUrl, localPath, initialTime, isActive]);
 
   useEffect(() => {
     let cancelled = false;
@@ -1674,10 +1697,11 @@ function VideoItem({ video: videoProp, videoId: videoIdProp, isActive, height, o
         nativePlayer.playbackRate = playbackRate || 1;
         nativePlayer.preservesPitch = true;
         nativePlayer.timeUpdateEventInterval = 1;
-        const startAt = finiteSeconds(initialTime, 0);
+        const startAt = video.provider === 'aws_cloudfront' ? Math.max(cloudResume.current,finiteSeconds(initialTime,0)) : finiteSeconds(initialTime, 0);
         if (startAt > 0) nativePlayer.currentTime = startAt;
         if (isActive && isPlaying) nativePlayer.play();
       } catch (error) {
+        if (!cancelled && video.provider === 'aws_cloudfront') setCloudError('Unable to play HLS. Check connectivity and retry.');
         if (!cancelled && canFallbackToEmbed) {
           setNativePlaybackFailed(true);
           setDuration(0);
@@ -1837,7 +1861,7 @@ function VideoItem({ video: videoProp, videoId: videoIdProp, isActive, height, o
     if (dur > 0) setDuration(dur);
     setIsPlaying(!!nextPlaying);
     if (dur > 0 && ct >= dur - 0.25 && !nextPlaying) {
-      setIsEnded(true); markCompleteOnce(); onEnded?.();
+      setIsEnded(true); onProgress?.(ct, dur); markCompleteOnce(); onEnded?.();
     } else {
       setIsEnded(false);
     }
@@ -1879,7 +1903,7 @@ function VideoItem({ video: videoProp, videoId: videoIdProp, isActive, height, o
         }
         setCurrentTime(nextTime);
         if (nextDuration > 0) setDuration(nextDuration);
-        if (d.playerState === 0) { setIsPlaying(false); setIsEnded(true); markCompleteOnce(); onEnded?.(); }
+        if (d.playerState === 0) { setIsPlaying(false); setIsEnded(true); onProgress?.(nextTime, nextDuration); markCompleteOnce(); onEnded?.(); }
         else if (d.playerState === 1) { setIsPlaying(true); setIsEnded(false); }
         else if (d.playerState === 2 || d.playerState === 5) setIsPlaying(false);
         if (nextDuration > 0 && nextTime / nextDuration >= VIDEO_COMPLETE_THRESHOLD) markCompleteOnce();
@@ -1955,6 +1979,8 @@ function VideoItem({ video: videoProp, videoId: videoIdProp, isActive, height, o
     togglePlay();
   }
 
+  if (video.provider === 'aws_cloudfront' && currentTime > 0) cloudResume.current = currentTime;
+  if (video.provider === 'aws_cloudfront' && (!cloudLease || cloudError)) return <View style={[s.player,{height,justifyContent:'center',alignItems:'center'}]}><Text style={{color:'#fff',padding:20}}>{cloudError || 'Authorizing video…'}</Text>{!!cloudError && <TouchableOpacity onPress={()=>{setCloudError('');setCloudRetry(n=>n+1);}}><Text style={{color:'#e0ac45'}}>Retry playback</Text></TouchableOpacity>}</View>;
   const progress = duration > 0 ? Math.max(0, Math.min(1, currentTime / duration)) : 0;
 
   return (
@@ -2141,6 +2167,7 @@ function VideoItem({ video: videoProp, videoId: videoIdProp, isActive, height, o
 
 // ── ReelsScreen ───────────────────────────────────────────────────────────────
 function ReelsScreen({ courseId, initialIndex, initialTime, onBack, user, onVideoComplete, onVideoProgress, downloads, preloadedVideos }) {
+  const [completionInfo, setCompletionInfo] = useState(null);
   const [videos, setVideos] = useState(preloadedVideos || []);
   const [loading, setLoading] = useState(!preloadedVideos);
   const [error, setError] = useState(null);
@@ -2271,9 +2298,9 @@ function ReelsScreen({ courseId, initialIndex, initialTime, onBack, user, onVide
         removeClippedSubviews={ANDROID_CLIPPED_SUBVIEWS}
         scrollEventThrottle={16}
         renderItem={({ item, index }) => (
-          <VideoItem video={item}
-            onComplete={() => onVideoComplete?.(courseId, getVideoKey(item, index))}
-            onProgress={(currentTime, duration) => onVideoProgress?.(courseId, getVideoKey(item, index), currentTime, duration)}
+          <VideoItem video={item} courseId={courseId} user={user}
+            onComplete={() => { /* Completion comes from validated progress responses. */ }}
+            onProgress={async (currentTime, duration) => { const result = await onVideoProgress?.(courseId, getVideoKey(item, index), currentTime, duration); if (result) setCompletionInfo(result.eligibility || { error: result.error }); }}
             onEnded={() => {
               if (index === activeIndex && index < videos.length - 1) {
                 flatListRef.current?.scrollToIndex({ index: index + 1, animated: true });
@@ -2288,6 +2315,9 @@ function ReelsScreen({ courseId, initialIndex, initialTime, onBack, user, onVide
         getItemLayout={(_, i) => ({ length: listHeight, offset: listHeight * i, index: i })}
       />
 
+      <TouchableOpacity accessibilityRole="button" onPress={() => Linking.openURL(`${WEB_APP_BASE}/videos?courseId=${encodeURIComponent(courseId)}`)} style={{position:'absolute',bottom:110,left:14,right:14,padding:10,borderRadius:8,backgroundColor:'rgba(0,0,0,0.8)',zIndex:5}}>
+        <Text style={{color:'#fff',fontSize:11}}>{completionInfo?.error || (completionInfo ? `${completionInfo.completedLessons}/${completionInfo.totalLessons} lessons complete · ${completionInfo.requirements?.[0] || 'Completion requirements met'}` : '90% lesson coverage required · online progress tracking')} · Requirements / assessment on web ↗</Text>
+      </TouchableOpacity>
       <SafeAreaView style={s.reelsTopBar} pointerEvents="box-none">
         <TouchableOpacity
           onPress={onBack}
@@ -3878,7 +3908,7 @@ function HomeScreen({
       const index = lessons.findIndex(item => getVideoKey(item) === getVideoKey(lesson));
       if (index < 0) return;
       const key = getVideoKey(lesson, index);
-      const seconds = Math.floor(savedProgress.videoProgress?.[key]?.watchedSeconds || 0);
+      const seconds = Math.floor(savedProgress.videoProgress?.[key]?.resumePosition ?? savedProgress.videoProgress?.[key]?.watchedSeconds ?? 0);
       onResumeCourse(course, index, seconds);
     });
   }, [course, lessons, onResumeCourse, requireAccess, savedProgress.videoProgress]);
@@ -5330,33 +5360,13 @@ function AiAssistantScreen({
     setLoading(true);
 
     try {
-      const res = await fetch(`${API_BASE}/api/ai/chat`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${user?.accessToken || user?.token || ""}` },
-        body: JSON.stringify({
-          message: question,
-          userId: user?._id,
-          sessionId: user?.sessionId,
-          ...(courseId ? { courseId } : {}),
-        }),
-      });
-      const raw = await res.text();
-      let data = {};
-      try { data = raw ? JSON.parse(raw) : {}; } catch {}
-      const serverError = data.error || data.message || (data.status ? `${data.status}: ${raw}` : "");
-      const answer = res.ok
-        ? data.answer || data.reply
-        : serverError || "I could not reach the AI service.";
-      setMessages(prev => [...prev, { role: "assistant", content: answer || "Try asking again." }]);
-    } catch {
-      const devTarget = __DEV__ ? ` at ${AI_BASE}` : "";
-      setMessages(prev => [
-        ...prev,
-        {
-          role: "assistant",
-          content: `I could not reach Nex AI${devTarget}. Check that the backend is reachable.`,
-        },
-      ]);
+      const data = await requestTutor({ baseUrl: API_BASE, user, question, courseId, messages });
+      setMessages(prev => [...prev, { role: "assistant", content: data.notice ? `${data.notice}\n\n${data.answer}` : data.answer }]);
+    } catch (error) {
+      setMessages(prev => [...prev, {
+        role: "assistant", failed: true,
+        content: error.name === "AbortError" ? "Nex AI took too long. Please try again." : error.message || "I could not reach Nex AI. Please try again.",
+      }]);
       setStatus("offline");
     } finally {
       setLoading(false);
@@ -5990,8 +6000,8 @@ export default function App() {
         }),
       });
       if (!res.ok) {
-        console.log("Progress update failed", res.status);
-        return;
+        const failure = await res.json().catch(() => ({}));
+        return { error: failure.error || "Progress could not be saved. Please retry online." };
       }
       const data = await res.json();
       if (data.progress) setCourseProgress(prev => ({ ...prev, [courseId]: data.progress }));
@@ -6002,8 +6012,10 @@ export default function App() {
           return exists ? prev : [data.certificate, ...prev];
         });
       }
+      return data;
     } catch (e) {
       console.log("Progress update error", e?.message);
+      return { error: "Offline: progress is not verified. Reconnect and replay unrecorded sections." };
     }
   }, []);
 

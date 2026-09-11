@@ -7,6 +7,8 @@ export const adminRoutes = {
   users: "/admin/users",
   courses: "/admin/courses",
   upload: "/admin/upload",
+  health: "/admin/system-health",
+  certifications: "/admin/certifications",
 };
 
 const oldAdminRouteMap = {
@@ -38,6 +40,8 @@ const cleanAdminRouteMap = {
   "admin/users": "users",
   "admin/courses": "courses",
   "admin/upload": "upload",
+  "admin/system-health": "health",
+  "admin/certifications": "certifications",
 };
 
 function normalizedPath(pathname = "/") {

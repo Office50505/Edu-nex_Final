@@ -8,8 +8,9 @@ function backend(options = {}) {
   const routes = {};
   const calls = [];
   const query = { select() { return this; }, populate() { return this; }, sort() { return this; }, limit() { return this; }, async lean() { return options.courses || []; } };
-  vm.runInNewContext(fs.readFileSync(path.join(__dirname, '../routes/ai.js'), 'utf8'), {
+  const sandbox = {
     require(name) {
+      if (name.includes('aiTutorService')) return serviceModule.exports;
       if (name === 'express') return { Router: () => ({ get() {}, post: (url, auth, handler) => { routes[url] = handler; } }) };
       if (name.includes('tutorKnowledge')) return require('../services/tutorKnowledge');
       if (name.includes('Subscription')) return { findOne: () => ({ lean: async () => null }) };
@@ -22,10 +23,13 @@ function backend(options = {}) {
       if (options.fail) throw new Error("Provider offline");
       return { ok: true, headers: { get: () => 'application/json' }, json: async () => ({ choices: [{ message: { content: options.reply ?? 'Example answer' } }] }) };
     },
-  });
+  };
+  const serviceModule = { exports: {} };
+  vm.runInNewContext(fs.readFileSync(path.join(__dirname, '../services/aiTutorService.js'), 'utf8'), { ...sandbox, module: serviceModule });
+  vm.runInNewContext(fs.readFileSync(path.join(__dirname, '../routes/ai.js'), 'utf8'), sandbox);
   return { calls, async chat(body) {
     let result;
-    await routes['/chat']({ body, compatUser: {} }, { json: data => { result = data; }, status() { return this; } });
+    await routes['/chat']({ body, compatUser: options.user || {} }, { json: data => { result = data; }, status() { return this; } });
     return result;
   } };
 }
@@ -117,4 +121,16 @@ test('empty or failed provider replies clearly report the fallback mode', async 
     assert.match(result.notice, /temporarily unavailable/);
     assert.deepEqual(result.sources, []);
   }
+});
+
+
+test('provider receives formatted prompts but no page query secrets or contact fallback', async () => {
+  const api = backend({ user: { email: 'private@example.test', mobileNumber: '919999999999' } });
+  await api.chat({ message: 'Explain this:\n  const x = 1;', pagePath: '/lesson?token=private#detail', history: [{ role: 'user', content: 'line one\nline two' }] });
+  assert.match(api.calls[0].messages.at(-1).content, /const x = 1/);
+  assert.ok(api.calls[0].messages.at(-1).content.includes('Explain this:\n'));
+  assert.ok(!JSON.stringify(api.calls[0]).includes('token=private'));
+  assert.equal(api.calls[0].messages[1].content, 'line one\nline two');
+  assert.ok(!JSON.stringify(api.calls[0]).includes('private@example.test'));
+  assert.ok(!JSON.stringify(api.calls[0]).includes('919999999999'));
 });
