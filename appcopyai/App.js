@@ -301,13 +301,29 @@ const API_BASE = normalizeBaseUrl(process.env.EXPO_PUBLIC_API_BASE || DEFAULT_AP
 const SUBSCRIPTION_URL = "https://edunexmvp.netlify.app/payment";
 const WEB_APP_BASE = normalizeBaseUrl(process.env.EXPO_PUBLIC_WEB_APP_BASE || "https://edunexmvp.netlify.app");
 const TERMS_URL = `${WEB_APP_BASE}/terms`;
-const PRIVACY_URL = `${WEB_APP_BASE}/privacy`;
+const PRIVACY_URL = `${WEB_APP_BASE}/privacy-policy`;
+const HELP_URL = `${WEB_APP_BASE}/help`;
 
-function openAppLink(url, label) {
-  Linking.openURL(url).catch(() => {
-    Alert.alert(`${label} unavailable`, `Could not open ${label.toLowerCase()}. Check your connection and try again.`);
-  });
-}
+const LEGAL_APP_PAGES = {
+  terms: {
+    title: "Terms & Conditions",
+    eyebrow: "Skillomate Legal",
+    url: TERMS_URL,
+    icon: "document-text-outline",
+  },
+  privacy: {
+    title: "Privacy Policy",
+    eyebrow: "Skillomate Legal",
+    url: PRIVACY_URL,
+    icon: "shield-checkmark-outline",
+  },
+  help: {
+    title: "Help Center",
+    eyebrow: "Skillomate Help",
+    url: HELP_URL,
+    icon: "help-circle-outline",
+  },
+};
 
 async function readJsonResponse(res) {
   const raw = await res.text();
@@ -4898,7 +4914,7 @@ function DeleteAccountModal({ visible, user, onClose, onDeleteAccount }) {
   );
 }
 
-function ProfileScreen({ user, onLogout, onDeleteAccount, onGoToHome, onGoToCourses, onGoToAI, onGoToDownloads, wishlistCount, onGoToWishlist, onGoToCertificates, certificatesCount, onAvatarChange, aiRobotId, onGoToSubscription }) {
+function ProfileScreen({ user, onLogout, onDeleteAccount, onGoToHome, onGoToCourses, onGoToAI, onGoToDownloads, wishlistCount, onGoToWishlist, onGoToCertificates, certificatesCount, onAvatarChange, aiRobotId, onGoToSubscription, onOpenLegal }) {
   const isActive = user?.subscriptionStatus && user.subscriptionStatus !== "none";
   const memberSince = user?._id
     ? new Date(parseInt(user._id.substring(0, 8), 16) * 1000).toLocaleDateString("en-IN", { month: "short", year: "numeric" })
@@ -5050,9 +5066,9 @@ function ProfileScreen({ user, onLogout, onDeleteAccount, onGoToHome, onGoToCour
           { icon: "card-outline", label: "Subscription Details", onPress: onGoToSubscription },
           { icon: "ribbon-outline", label: "My Certificates", badge: certificatesCount || 0, onPress: onGoToCertificates },
           { icon: "heart-outline", label: "My Wishlist", badge: wishlistCount || 0, onPress: onGoToWishlist },
-          { icon: "help-circle-outline", label: "Help & Support", onPress: () => Linking.openURL("mailto:support@skillomate.ai") },
-          { icon: "document-text-outline", label: "Terms & Conditions", onPress: () => openAppLink(TERMS_URL, "Terms & Conditions") },
-          { icon: "shield-outline", label: "Privacy Policy", onPress: () => openAppLink(PRIVACY_URL, "Privacy Policy") },
+          { icon: "help-circle-outline", label: "Help Center", onPress: () => onOpenLegal?.("help") },
+          { icon: "document-text-outline", label: "Terms & Conditions", onPress: () => onOpenLegal?.("terms") },
+          { icon: "shield-outline", label: "Privacy Policy", onPress: () => onOpenLegal?.("privacy") },
         ].map((item, i) => (
           <TouchableOpacity
             key={i}
@@ -5560,11 +5576,88 @@ function AiAssistantScreen({
   );
 }
 
+function LegalWebScreen({ page = "privacy", onBack }) {
+  const config = LEGAL_APP_PAGES[page] || LEGAL_APP_PAGES.privacy;
+  const [failed, setFailed] = useState(false);
+
+  return (
+    <View style={s.legalScreen}>
+      <StatusBar barStyle="light-content" backgroundColor={C.bg} />
+      <SafeAreaView style={s.legalSafeArea}>
+        <View style={s.legalHeader}>
+          <TouchableOpacity
+            onPress={onBack}
+            style={s.legalBackButton}
+            accessibilityRole="button"
+            accessibilityLabel={`Close ${config.title}`}
+          >
+            <Ionicons name="arrow-back" size={22} color={C.text} />
+          </TouchableOpacity>
+          <View style={s.legalHeaderTitleWrap}>
+            <Text style={s.legalHeaderEyebrow} numberOfLines={1}>{config.eyebrow}</Text>
+            <Text style={s.legalHeaderTitle} numberOfLines={1}>{config.title}</Text>
+          </View>
+          <View style={s.legalHeaderIcon}>
+            <Ionicons name={config.icon} size={20} color={C.primary} />
+          </View>
+        </View>
+      </SafeAreaView>
+
+      {failed ? (
+        <View style={s.legalErrorArea}>
+          <View style={s.legalErrorCard}>
+            <Ionicons name="cloud-offline-outline" size={34} color={C.primary} />
+            <Text style={s.legalErrorTitle}>{config.title} unavailable</Text>
+            <Text style={s.legalErrorText}>Check your connection and try again.</Text>
+            <TouchableOpacity
+              style={s.legalRetryButton}
+              onPress={() => setFailed(false)}
+              accessibilityRole="button"
+              accessibilityLabel={`Retry loading ${config.title}`}
+            >
+              <Text style={s.legalRetryText}>Retry</Text>
+              <Ionicons name="refresh" size={16} color={C.onPrimary} />
+            </TouchableOpacity>
+          </View>
+        </View>
+      ) : (
+        <WebView
+          source={{ uri: config.url }}
+          style={s.legalWebView}
+          containerStyle={s.legalWebContainer}
+          setSupportMultipleWindows={false}
+          javaScriptEnabled
+          domStorageEnabled
+          startInLoadingState
+          renderLoading={() => (
+            <View style={s.legalLoading}>
+              <ActivityIndicator color={C.primary} />
+              <Text style={s.legalLoadingText}>Loading {config.title}</Text>
+            </View>
+          )}
+          onError={() => setFailed(true)}
+          onHttpError={(event) => {
+            if (event.nativeEvent.statusCode >= 400) setFailed(true);
+          }}
+          onShouldStartLoadWithRequest={(request) => {
+            if (/^(mailto:|tel:|sms:)/i.test(request.url)) {
+              Linking.openURL(request.url).catch(() => {});
+              return false;
+            }
+            return true;
+          }}
+        />
+      )}
+    </View>
+  );
+}
+
 // ── App ───────────────────────────────────────────────────────────────────────
 export default function App() {
   const [isRestoring, setIsRestoring] = useState(true);
   const [user, setUser] = useState(null);
   const [mainScreen, setMainScreen] = useState("home");
+  const [legalPage, setLegalPage] = useState(null);
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [startIndex, setStartIndex] = useState(null);
   const [initialTime, setInitialTime] = useState(0);
@@ -5660,6 +5753,7 @@ export default function App() {
   useEffect(() => {
     if (Platform.OS !== "android") return undefined;
     const sub = BackHandler.addEventListener("hardwareBackPress", () => {
+      if (legalPage) { setLegalPage(null); return true; }
       if (!userRef.current) {
         if (resetVisible) { closePasswordReset(); return true; }
         if (screen === "signup2") { setScreen("signup1"); setSignupError(""); return true; }
@@ -5713,7 +5807,7 @@ export default function App() {
       return true;
     });
     return () => sub.remove();
-  }, [screen, otpSent, resetVisible, courseAiTarget, certModal, showAppUpgrade, mainScreen, startIndex, selectedCourse, isPreviewOnly, loadCourseProgress]);
+  }, [screen, otpSent, resetVisible, legalPage, courseAiTarget, certModal, showAppUpgrade, mainScreen, startIndex, selectedCourse, isPreviewOnly, loadCourseProgress]);
 
   // Load saved downloads on startup and verify files still exist
   useEffect(() => {
@@ -6326,6 +6420,7 @@ export default function App() {
     setCourseProgress({});
     clearLoginForm();
     resetSignup();
+    setLegalPage(null);
     setUser(null); setSelectedCourse(null); setStartIndex(null); setCourseAiTarget(null); setMainScreen("home");
   }
 
@@ -6384,6 +6479,7 @@ export default function App() {
       setPreloadedVideos(null);
       setIsPreviewOnly(false);
       setCourseAiTarget(null);
+      setLegalPage(null);
       setMainScreen("home");
       return { ok: true };
     } catch {
@@ -6399,6 +6495,10 @@ export default function App() {
         <ActivityIndicator size="large" color={C.primary} />
       </View>
     );
+  }
+
+  if (legalPage) {
+    return <LegalWebScreen page={legalPage} onBack={() => setLegalPage(null)} />;
   }
 
   // ── Auth screens ────────────────────────────────────────────────────────────
@@ -6464,15 +6564,15 @@ export default function App() {
         <View style={s.legalLinksRow}>
           <TouchableOpacity
             style={s.legalLinkButton}
-            onPress={() => openAppLink(TERMS_URL, "Terms of Service")}
+            onPress={() => setLegalPage("terms")}
             accessibilityRole="link"
-            accessibilityLabel="Read Terms of Service"
+            accessibilityLabel="Read Terms and Conditions"
           >
-            <Text style={s.legalLinkText}>Terms of Service</Text>
+            <Text style={s.legalLinkText}>Terms &amp; Conditions</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={s.legalLinkButton}
-            onPress={() => openAppLink(PRIVACY_URL, "Privacy Policy")}
+            onPress={() => setLegalPage("privacy")}
             accessibilityRole="link"
             accessibilityLabel="Read Privacy Policy"
           >
@@ -6603,15 +6703,15 @@ export default function App() {
         <View style={s.legalLinksRow}>
           <TouchableOpacity
             style={s.legalLinkButton}
-            onPress={() => openAppLink(TERMS_URL, "Terms of Service")}
+            onPress={() => setLegalPage("terms")}
             accessibilityRole="link"
-            accessibilityLabel="Read Terms of Service"
+            accessibilityLabel="Read Terms and Conditions"
           >
-            <Text style={s.legalLinkText}>Terms of Service</Text>
+            <Text style={s.legalLinkText}>Terms &amp; Conditions</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={s.legalLinkButton}
-            onPress={() => openAppLink(PRIVACY_URL, "Privacy Policy")}
+            onPress={() => setLegalPage("privacy")}
             accessibilityRole="link"
             accessibilityLabel="Read Privacy Policy"
           >
@@ -6869,6 +6969,7 @@ export default function App() {
           onGoToWishlist={() => setMainScreen("wishlist")}
           onGoToCertificates={() => setMainScreen("certificates")}
           onGoToSubscription={() => setMainScreen("subscription")}
+          onOpenLegal={setLegalPage}
           onGoToHome={() => setMainScreen("home")}
           onGoToCourses={() => setMainScreen("courses")}
           onGoToAI={() => setMainScreen("ai")}
@@ -7205,6 +7306,124 @@ return StyleSheet.create({
     minWidth: MIN_TOUCH_TARGET, minHeight: MIN_TOUCH_TARGET, padding: 8, borderRadius: RADIUS.pill,
     alignItems: "center", justifyContent: "center",
     backgroundColor: C.isDark ? C.surfaceElevated : C.accentSoft,
+  },
+  legalScreen: {
+    flex: 1,
+    backgroundColor: C.bg,
+  },
+  legalSafeArea: {
+    backgroundColor: C.bg,
+  },
+  legalHeader: {
+    minHeight: 70,
+    paddingTop: ANDROID_STATUS_BAR_INSET,
+    paddingHorizontal: 14,
+    paddingBottom: 10,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+    backgroundColor: C.bg,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: C.borderStrong,
+  },
+  legalBackButton: {
+    width: MIN_TOUCH_TARGET,
+    height: MIN_TOUCH_TARGET,
+    borderRadius: MIN_TOUCH_TARGET / 2,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: C.surface,
+    borderWidth: 1,
+    borderColor: C.border,
+  },
+  legalHeaderTitleWrap: {
+    flex: 1,
+    minWidth: 0,
+  },
+  legalHeaderEyebrow: {
+    ...TYPE.label,
+    color: C.primary,
+    fontSize: 10,
+    textTransform: "uppercase",
+  },
+  legalHeaderTitle: {
+    ...TYPE.title,
+    color: C.text,
+    fontWeight: "900",
+    marginTop: 2,
+  },
+  legalHeaderIcon: {
+    width: MIN_TOUCH_TARGET,
+    height: MIN_TOUCH_TARGET,
+    borderRadius: 12,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: C.panel,
+    borderWidth: 1,
+    borderColor: C.border,
+  },
+  legalWebContainer: {
+    flex: 1,
+    backgroundColor: C.bg,
+  },
+  legalWebView: {
+    flex: 1,
+    backgroundColor: C.bg,
+  },
+  legalLoading: {
+    ...StyleSheet.absoluteFillObject,
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 10,
+    backgroundColor: C.bg,
+  },
+  legalLoadingText: {
+    ...TYPE.caption,
+    color: C.textSub,
+  },
+  legalErrorArea: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 20,
+    backgroundColor: C.bg,
+  },
+  legalErrorCard: {
+    width: "100%",
+    maxWidth: 420,
+    alignItems: "center",
+    padding: 22,
+    borderRadius: RADIUS.lg,
+    backgroundColor: C.surface,
+    borderWidth: 1,
+    borderColor: C.borderStrong,
+  },
+  legalErrorTitle: {
+    ...TYPE.h3,
+    color: C.text,
+    marginTop: 12,
+    textAlign: "center",
+  },
+  legalErrorText: {
+    ...TYPE.body,
+    color: C.textSub,
+    marginTop: 6,
+    textAlign: "center",
+  },
+  legalRetryButton: {
+    minHeight: MIN_TOUCH_TARGET,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 8,
+    paddingHorizontal: 18,
+    marginTop: 18,
+    borderRadius: RADIUS.sm,
+    backgroundColor: C.primary,
+  },
+  legalRetryText: {
+    ...TYPE.button,
+    color: C.onPrimary,
   },
   bottomNav: {
     position: "absolute", bottom: 0, left: 0, right: 0,
