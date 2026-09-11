@@ -14,7 +14,7 @@
     ],
     "android": {
       "package": "com.skillomate.app",
-      "versionCode": 2,
+      "versionCode": 1,
       "icon": "./assets/icon.png",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
@@ -46,16 +46,16 @@
         }
       }
     },
-    "extra": {
-      "eas": {
-        "projectId": "38bd9afc-a582-4a1f-9579-1932429e61b8"
-      }
-    },
-    "owner": "niz10",
+    "owner": "office50505",
     "plugins": [
       "expo-sharing",
       "expo-font",
       "expo-video"
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "33362fff-8f6f-4fe9-a7ac-bc11f9b34555"
+      }
+    }
   }
 }

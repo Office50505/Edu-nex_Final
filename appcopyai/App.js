@@ -5185,7 +5185,11 @@ function DeleteAccountModal({ visible, user, onClose, onDeleteAccount }) {
   );
 }
 
+<<<<<<< Updated upstream
 function ProfileScreen({ user, onLogout, onDeleteAccount, onGoToHome, onGoToCourses, onGoToAI, onGoToDownloads, wishlistCount, onGoToWishlist, onGoToCertificates, certificatesCount, onAvatarChange, aiRobotId, onGoToSubscription, onOpenLegal }) {
+=======
+function ProfileScreen({ user, onLogout, onDeleteAccount, onGoToHome, onGoToCourses, onGoToAI, onGoToDownloads, wishlistCount, onGoToWishlist, onGoToCertificates, certificatesCount, onAvatarChange, aiRobotId, onGoToSubscription, onGoToHelp, onGoToTerms, onGoToPrivacy }) {
+>>>>>>> Stashed changes
   const isActive = user?.subscriptionStatus && user.subscriptionStatus !== "none";
   const memberSince = user?._id
     ? new Date(parseInt(user._id.substring(0, 8), 16) * 1000).toLocaleDateString("en-IN", { month: "short", year: "numeric" })
@@ -5337,9 +5341,15 @@ function ProfileScreen({ user, onLogout, onDeleteAccount, onGoToHome, onGoToCour
           { icon: "card-outline", label: "Subscription Details", onPress: onGoToSubscription },
           { icon: "ribbon-outline", label: "My Certificates", badge: certificatesCount || 0, onPress: onGoToCertificates },
           { icon: "heart-outline", label: "My Wishlist", badge: wishlistCount || 0, onPress: onGoToWishlist },
+<<<<<<< Updated upstream
           { icon: "help-circle-outline", label: "Help & Support", onPress: () => onOpenLegal?.("help") },
           { icon: "document-text-outline", label: "Terms & Conditions", onPress: () => onOpenLegal?.("terms") },
           { icon: "shield-outline", label: "Privacy Policy", onPress: () => onOpenLegal?.("privacy") },
+=======
+          { icon: "help-circle-outline", label: "Help & Support", onPress: onGoToHelp },
+          { icon: "document-text-outline", label: "Terms & Conditions", onPress: onGoToTerms },
+          { icon: "shield-outline", label: "Privacy Policy", onPress: onGoToPrivacy },
+>>>>>>> Stashed changes
         ].map((item, i) => (
           <TouchableOpacity
             key={i}
@@ -7227,7 +7237,13 @@ export default function App() {
           onGoToWishlist={() => setMainScreen("wishlist")}
           onGoToCertificates={() => setMainScreen("certificates")}
           onGoToSubscription={() => setMainScreen("subscription")}
+<<<<<<< Updated upstream
           onOpenLegal={setLegalPage}
+=======
+          onGoToHelp={() => setMainScreen("help")}
+          onGoToTerms={() => setMainScreen("terms")}
+          onGoToPrivacy={() => setMainScreen("privacy")}
+>>>>>>> Stashed changes
           onGoToHome={() => setMainScreen("home")}
           onGoToCourses={() => setMainScreen("courses")}
           onGoToAI={() => setMainScreen("ai")}
