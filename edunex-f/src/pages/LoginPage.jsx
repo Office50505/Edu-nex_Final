@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import { page as loginPage } from "../generated-pages/login.html.js";
 import { runLegacyPage } from "../legacyRuntime.js";
 import { usePageStyle } from "../hooks/usePageStyle.js";
+import { route } from "../lib/routes.js";
 
 const EMPTY_LOGIN_MESSAGE = "Please enter your mobile number and password.";
 const FORGOT_PASSWORD_MESSAGE = "Password recovery is not available on this local build yet. Please contact Skillomate support for account help.";
@@ -235,8 +236,7 @@ export function LoginPage() {
             <p className="lp-create-row">Don't have an account? <a href="signup.html">Create an account</a></p>
 
             <div className="lp-footer-links">
-              <a href="privacy.html">Privacy Policy</a>
-              <a href="terms.html">Terms of Service</a>
+              <a href={route("privacy.html")}>Privacy Policy</a>
               <a href="help.html">Help Center</a>
             </div>
           </form>

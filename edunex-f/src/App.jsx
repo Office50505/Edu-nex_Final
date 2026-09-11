@@ -94,7 +94,6 @@ export default function App() {
       );
       return;
     }
-    if (!window.location.pathname.endsWith(".html")) return;
     const canonicalRoute = route(`${pageKey}${window.location.search}${window.location.hash}`);
     const currentRoute = `${window.location.pathname}${window.location.search}${window.location.hash}`;
     if (canonicalRoute !== currentRoute) {

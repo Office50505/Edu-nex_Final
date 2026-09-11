@@ -300,15 +300,214 @@ const normalizeBaseUrl = url => String(url || "").replace(/\/+$/, "");
 const API_BASE = normalizeBaseUrl(process.env.EXPO_PUBLIC_API_BASE || DEFAULT_API_BASE);
 
 const SUBSCRIPTION_URL = "https://edunexmvp.netlify.app/payment";
-const WEB_APP_BASE = normalizeBaseUrl(process.env.EXPO_PUBLIC_WEB_APP_BASE || "https://edunexmvp.netlify.app");
-const TERMS_URL = `${WEB_APP_BASE}/terms`;
-const PRIVACY_URL = `${WEB_APP_BASE}/privacy`;
 
-function openAppLink(url, label) {
-  Linking.openURL(url).catch(() => {
-    Alert.alert(`${label} unavailable`, `Could not open ${label.toLowerCase()}. Check your connection and try again.`);
-  });
-}
+const LEGAL_APP_PAGES = {
+  terms: {
+    title: "Terms & Conditions",
+    eyebrow: "Skillomate Legal",
+    icon: "document-text-outline",
+    intro: "These terms explain the rules for using Skillomate accounts, courses, subscriptions, downloads, certificates, and Nex AI.",
+    sections: [
+      { title: "Account access", body: "Use accurate account details and keep your password, OTP, device access, and session private. Do not share access in a way that bypasses payment or content protections." },
+      { title: "Courses and subscriptions", body: "Protected lessons require sign-in and a qualifying trial or subscription. Course listings, lessons, videos, notes, and related material may be updated or removed." },
+      { title: "Payments and billing", body: "Checkout and recurring payments may be handled by external payment providers. Access depends on confirmed payment and the current subscription period." },
+      { title: "Downloads and certificates", body: "Offline downloads are for personal learning inside Skillomate and may not be redistributed. Certificates record Skillomate course completion and are not external professional credentials unless explicitly stated." },
+      { title: "Nex AI", body: "AI responses may be incomplete or inaccurate. Verify important academic, career, financial, and technical decisions independently. Skillomate does not guarantee learning, employment, or income outcomes." },
+      { title: "Acceptable use", body: "Do not attack, overload, disrupt, scrape, reverse engineer, record, resell, or republish the platform or protected course content without written permission." },
+      { title: "Account deletion and availability", body: "Account deletion may require password confirmation and can be limited by unresolved payment mandates. Features may change or be interrupted when required services are unavailable." },
+    ],
+  },
+  privacy: {
+    title: "Privacy Policy",
+    eyebrow: "Skillomate Legal",
+    icon: "shield-checkmark-outline",
+    intro: "This policy explains how Skillomate handles account, learning, AI, payment, device, storage, and support data.",
+    sections: [
+      { title: "Information we collect", body: "We may process your name, mobile number, optional email, age, gender, avatar, login activity, course progress, wishlist, certificates, payment status, device context, and support messages." },
+      { title: "How information is used", body: "Information is used to create and secure accounts, provide learning features, track progress, process subscriptions, answer support requests, and prevent abuse." },
+      { title: "Nex AI data", body: "Nex AI may use your question, recent conversation context, and relevant course material to generate learning assistance. Avoid submitting highly sensitive personal information." },
+      { title: "Payments and service providers", body: "Payment, verification, media, hosting, storage, and AI providers may process the information required to deliver their services. Sensitive payment credentials are entered through the payment provider." },
+      { title: "Device storage and permissions", body: "The app may use internet, storage, vibration, and screen-capture controls for account, media, downloads, exports, and protected learning features. Permissions can be managed in device settings." },
+      { title: "Security and retention", body: "We use technical and organizational safeguards, but no online service can guarantee absolute security. Information is kept only as long as needed for product, legal, payment, security, and support purposes." },
+      { title: "Your controls", body: "You can update profile information and request or perform account deletion where available. Additional privacy requests can be sent through Skillomate support." },
+      { title: "Policy updates", body: "This policy may be updated as Skillomate changes. The latest policy information will be provided in the app." },
+    ],
+  },
+  help: {
+    title: "Help & Support",
+    eyebrow: "Skillomate Help",
+    icon: "help-circle-outline",
+    intro: "Use these help paths for account access, videos, payments, courses, profile details, and Nex AI.",
+    sections: [
+      { title: "Login or profile", body: "If your login, OTP, avatar, or profile details do not sync, close and reopen the app, then sign in again." },
+      { title: "Course videos", body: "Protected video access requires an active trial or subscription. Open Courses and select the lesson again after confirming your connection." },
+      { title: "Payments", body: "After completing payment, return to Skillomate and check Subscription Details from Profile. Reopen the app if the updated status is not visible yet." },
+      { title: "Wishlist and progress", body: "Wishlist and course progress sync to your signed-in account when the server is available." },
+      { title: "Nex AI", body: "Use Nex AI for summaries, study plans, project ideas, and lesson explanations. Try again later if the AI service is temporarily unavailable." },
+      { title: "Contact", body: "Email support@skillomate.ai with your registered mobile number and a clear description of the issue. Never include your password or OTP." },
+    ],
+  },
+};
+
+const HELP_SUPPORT_CONTENT = {
+  title: "Help & Support",
+  eyebrow: "Help Center",
+  icon: "help-circle-outline",
+  intro: "Use these help paths for account access, videos, payments, courses, and profile issues.",
+  sections: [
+    {
+      title: "Login Or Profile",
+      icon: "key-outline",
+      body: "If your login, OTP, avatar, or profile details do not sync, log out and sign in again. Then open Profile.",
+    },
+    {
+      title: "Course Videos",
+      icon: "play-circle-outline",
+      body: "Video access requires an active trial or subscription. Open Courses, then choose View Course.",
+    },
+    {
+      title: "Payments",
+      icon: "receipt-outline",
+      body: "After payment, continue on web to return to courses. Subscription status can be checked from the Profile page.",
+    },
+    {
+      title: "Wishlist",
+      icon: "heart-outline",
+      body: "Tap the heart on a course card to save it. Logged-in accounts sync wishlist data when the backend is available.",
+    },
+    {
+      title: "Nex AI",
+      icon: "sparkles-outline",
+      body: "Use Nex AI inside the video player for summaries, study plans, project ideas, and lesson explanations.",
+    },
+    {
+      title: "Contact",
+      icon: "mail-outline",
+      body: "Email support at support@skillomate.ai with your mobile number and issue details.",
+      actionLabel: "Email Support",
+      actionIcon: "mail",
+      onPress: () => openAppLink("mailto:support@skillomate.ai", "Support email"),
+    },
+  ],
+};
+
+const TERMS_CONTENT = {
+  title: "Terms & Conditions",
+  eyebrow: "Skillomate Legal",
+  icon: "document-text-outline",
+  intro: "These terms explain how learners use Skillomate accounts, courses, subscriptions, videos, notes, certificates, Nex AI, downloads, and support features.",
+  sections: [
+    {
+      title: "Account Access",
+      icon: "person-outline",
+      body: "Create and use your account with accurate details. Keep your password, OTP, device access, and session private, and contact support if you believe your account has been used without permission.",
+    },
+    {
+      title: "Course Access",
+      icon: "play-circle-outline",
+      body: "Public course catalogues and previews may be available, while protected lessons require sign-in and a qualifying trial or subscription.",
+    },
+    {
+      title: "Trials And Subscriptions",
+      icon: "receipt-outline",
+      body: "Course access may require a trial or subscription. Access depends on active entitlement, provider invoice periods, payment reconciliation, and trial eligibility.",
+    },
+    {
+      title: "Payments And Billing",
+      icon: "card-outline",
+      body: "Skillomate uses third-party payment providers for checkout, subscription creation, payment verification, and cancellation handling.",
+    },
+    {
+      title: "Downloads And Offline Use",
+      icon: "download-outline",
+      body: "Authorized mobile offline video downloads are for personal learning inside Skillomate. They do not permit redistribution, resale, recording, scraping, or uploading course content elsewhere.",
+    },
+    {
+      title: "Certificates",
+      icon: "ribbon-outline",
+      body: "Skillomate certificates are course-completion records generated from stored progress. They are not government, university, professional-body, or employer-recognition credentials unless separately stated.",
+    },
+    {
+      title: "Nex AI Assistance",
+      icon: "sparkles-outline",
+      body: "Nex AI can provide course explanations, examples, troubleshooting, practice questions, and platform guidance. AI responses may be inaccurate or incomplete.",
+    },
+    {
+      title: "Acceptable Use",
+      icon: "checkmark-circle-outline",
+      body: "Do not bypass payments, account access, video protection, or subscription controls. Do not attack, overload, reverse engineer, or misuse the platform.",
+    },
+    {
+      title: "Account Deletion",
+      icon: "trash-outline",
+      body: "Profile exposes Delete Account on web and mobile. Self-service deletion requires password verification and a typed DELETE confirmation, and can be blocked by active or unresolved payment mandates.",
+    },
+    {
+      title: "Support",
+      icon: "mail-outline",
+      body: "For account, course access, payment, deletion, or Terms questions, use Help & Support or email support@skillomate.ai.",
+    },
+  ],
+};
+
+const PRIVACY_CONTENT = {
+  title: "Privacy Policy",
+  eyebrow: "Skillomate Privacy",
+  icon: "shield-checkmark-outline",
+  intro: "This policy explains how Skillomate handles account, learning, AI, payment, device, storage, and support data.",
+  sections: [
+    {
+      title: "Information We Collect",
+      icon: "person-outline",
+      body: "Skillomate may process account information, authentication data, learning data, Nex AI conversations, payment records, device data, files, exports, and support communications.",
+    },
+    {
+      title: "How We Use Information",
+      icon: "checkmark-circle-outline",
+      body: "Information is used to create and secure accounts, provide courses, track progress, process payments, answer AI questions, maintain analytics, and support service operations.",
+    },
+    {
+      title: "Nex AI",
+      icon: "sparkles-outline",
+      body: "Nex AI uses your questions and relevant learning context to provide study help, course explanations, and learning assistance. Avoid submitting highly sensitive personal information unless needed.",
+    },
+    {
+      title: "Payments And Subscriptions",
+      icon: "receipt-outline",
+      body: "External payment providers process checkout and subscription handling. Skillomate may keep transaction, subscription, refund, and billing status records needed for access and support.",
+    },
+    {
+      title: "Device Permissions",
+      icon: "phone-portrait-outline",
+      body: "Network, storage, print/share, display, vibration, and screen-capture protection behavior may support course, download, certificate, and protected learning features.",
+    },
+    {
+      title: "Storage And Retention",
+      icon: "server-outline",
+      body: "Account, session, learning, certificate, wishlist, support, analytics, order, subscription, and billing records may be stored as needed to operate Skillomate.",
+    },
+    {
+      title: "Information Sharing",
+      icon: "git-network-outline",
+      body: "Skillomate shares data with service providers that help operate account, learning, payment, media, AI, verification, and support features.",
+    },
+    {
+      title: "Security",
+      icon: "lock-closed-outline",
+      body: "Skillomate uses password protection, session checks, access controls, payment verification, request limits, and administrative access checks to protect learner information.",
+    },
+    {
+      title: "Account And Data Deletion",
+      icon: "trash-outline",
+      body: "Learners can request or perform account deletion from Profile where available. Some records may be retained for legal, billing, security, backup, or dispute-resolution reasons.",
+    },
+    {
+      title: "Contact Us",
+      icon: "mail-outline",
+      body: "For privacy questions, access requests, correction requests, deletion requests, or concerns about data handling, contact Skillomate support.",
+    },
+  ],
+};
 
 async function readJsonResponse(res) {
   const raw = await res.text();
@@ -4604,6 +4803,64 @@ function CertificatesScreen({ certificates, onBack }) {
   );
 }
 
+function InfoPageScreen({ page, onBack }) {
+  return (
+    <View style={{ flex: 1, backgroundColor: C.bg }}>
+      <StatusBar barStyle={C.isDark ? "light-content" : "dark-content"} backgroundColor={C.white} />
+      <View style={[s.homeTopBar, { paddingBottom: 12, backgroundColor: C.white }]}>
+        <SafeAreaView style={{ backgroundColor: C.white }}>
+          <View style={s.homeTopBarInner}>
+            <TouchableOpacity onPress={onBack} style={s.iconBtn} accessibilityRole="button" accessibilityLabel="Back to profile">
+              <Ionicons name="arrow-back" size={22} color={C.text} />
+            </TouchableOpacity>
+            <View pointerEvents="none" style={{ position: "absolute", left: 56, right: 56, alignItems: "center" }}>
+              <Text style={{ color: C.text, fontWeight: "700", fontSize: 16, textAlign: "center" }} numberOfLines={1}>{page.title}</Text>
+            </View>
+            <View style={{ width: 44 }} />
+          </View>
+        </SafeAreaView>
+      </View>
+
+      <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 40 }} showsVerticalScrollIndicator={false}>
+        <View style={s.infoHeroCard}>
+          <View style={s.infoHeroIcon}>
+            <Ionicons name={page.icon} size={30} color={C.primary} />
+          </View>
+          <Text style={s.infoEyebrow}>{page.eyebrow}</Text>
+          <Text style={s.infoTitle}>{page.title}</Text>
+          <Text style={s.infoIntro}>{page.intro}</Text>
+        </View>
+
+        {page.sections.map((section, index) => (
+          <View key={section.title} style={s.infoSectionCard}>
+            <View style={s.infoSectionHeader}>
+              <View style={s.infoSectionIcon}>
+                <Ionicons name={section.icon} size={19} color={C.primary} />
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text style={s.infoSectionNumber}>{String(index + 1).padStart(2, "0")}</Text>
+                <Text style={s.infoSectionTitle}>{section.title}</Text>
+              </View>
+            </View>
+            <Text style={s.infoSectionBody}>{section.body}</Text>
+            {section.actionLabel && (
+              <TouchableOpacity
+                onPress={section.onPress}
+                style={s.infoActionButton}
+                accessibilityRole="button"
+                accessibilityLabel={section.actionLabel}
+              >
+                <Ionicons name={section.actionIcon || "open-outline"} size={16} color={C.onPrimary} />
+                <Text style={s.infoActionText}>{section.actionLabel}</Text>
+              </TouchableOpacity>
+            )}
+          </View>
+        ))}
+      </ScrollView>
+    </View>
+  );
+}
+
 function SubscriptionDetailsScreen({ user, onBack }) {
   const [loading, setLoading] = useState(true);
   const [subData, setSubData] = useState(null);
@@ -4928,7 +5185,11 @@ function DeleteAccountModal({ visible, user, onClose, onDeleteAccount }) {
   );
 }
 
-function ProfileScreen({ user, onLogout, onDeleteAccount, onGoToHome, onGoToCourses, onGoToAI, onGoToDownloads, wishlistCount, onGoToWishlist, onGoToCertificates, certificatesCount, onAvatarChange, aiRobotId, onGoToSubscription }) {
+<<<<<<< Updated upstream
+function ProfileScreen({ user, onLogout, onDeleteAccount, onGoToHome, onGoToCourses, onGoToAI, onGoToDownloads, wishlistCount, onGoToWishlist, onGoToCertificates, certificatesCount, onAvatarChange, aiRobotId, onGoToSubscription, onOpenLegal }) {
+=======
+function ProfileScreen({ user, onLogout, onDeleteAccount, onGoToHome, onGoToCourses, onGoToAI, onGoToDownloads, wishlistCount, onGoToWishlist, onGoToCertificates, certificatesCount, onAvatarChange, aiRobotId, onGoToSubscription, onGoToHelp, onGoToTerms, onGoToPrivacy }) {
+>>>>>>> Stashed changes
   const isActive = user?.subscriptionStatus && user.subscriptionStatus !== "none";
   const memberSince = user?._id
     ? new Date(parseInt(user._id.substring(0, 8), 16) * 1000).toLocaleDateString("en-IN", { month: "short", year: "numeric" })
@@ -5080,9 +5341,15 @@ function ProfileScreen({ user, onLogout, onDeleteAccount, onGoToHome, onGoToCour
           { icon: "card-outline", label: "Subscription Details", onPress: onGoToSubscription },
           { icon: "ribbon-outline", label: "My Certificates", badge: certificatesCount || 0, onPress: onGoToCertificates },
           { icon: "heart-outline", label: "My Wishlist", badge: wishlistCount || 0, onPress: onGoToWishlist },
-          { icon: "help-circle-outline", label: "Help & Support", onPress: () => Linking.openURL("mailto:support@skillomate.ai") },
-          { icon: "document-text-outline", label: "Terms & Conditions", onPress: () => openAppLink(TERMS_URL, "Terms & Conditions") },
-          { icon: "shield-outline", label: "Privacy Policy", onPress: () => openAppLink(PRIVACY_URL, "Privacy Policy") },
+<<<<<<< Updated upstream
+          { icon: "help-circle-outline", label: "Help & Support", onPress: () => onOpenLegal?.("help") },
+          { icon: "document-text-outline", label: "Terms & Conditions", onPress: () => onOpenLegal?.("terms") },
+          { icon: "shield-outline", label: "Privacy Policy", onPress: () => onOpenLegal?.("privacy") },
+=======
+          { icon: "help-circle-outline", label: "Help & Support", onPress: onGoToHelp },
+          { icon: "document-text-outline", label: "Terms & Conditions", onPress: onGoToTerms },
+          { icon: "shield-outline", label: "Privacy Policy", onPress: onGoToPrivacy },
+>>>>>>> Stashed changes
         ].map((item, i) => (
           <TouchableOpacity
             key={i}
@@ -5570,11 +5837,66 @@ function AiAssistantScreen({
   );
 }
 
+function LegalContentScreen({ page = "privacy", onBack }) {
+  const config = LEGAL_APP_PAGES[page] || LEGAL_APP_PAGES.privacy;
+
+  return (
+    <View style={s.legalScreen}>
+      <StatusBar barStyle="light-content" backgroundColor={C.bg} />
+      <SafeAreaView style={s.legalSafeArea}>
+        <View style={s.legalHeader}>
+          <TouchableOpacity
+            onPress={onBack}
+            style={s.legalBackButton}
+            accessibilityRole="button"
+            accessibilityLabel={`Close ${config.title}`}
+          >
+            <Ionicons name="arrow-back" size={22} color={C.text} />
+          </TouchableOpacity>
+          <View style={s.legalHeaderTitleWrap}>
+            <Text style={s.legalHeaderEyebrow} numberOfLines={1}>{config.eyebrow}</Text>
+            <Text style={s.legalHeaderTitle} numberOfLines={1}>{config.title}</Text>
+          </View>
+          <View style={s.legalHeaderIcon}>
+            <Ionicons name={config.icon} size={20} color={C.primary} />
+          </View>
+        </View>
+      </SafeAreaView>
+
+      <ScrollView
+        style={s.legalContentScroll}
+        contentContainerStyle={s.legalContent}
+        showsVerticalScrollIndicator={false}
+      >
+        <View style={s.legalIntroCard}>
+          <Ionicons name={config.icon} size={26} color={C.primary} />
+          <Text style={s.legalIntroText}>{config.intro}</Text>
+        </View>
+
+        {config.sections.map((section, index) => (
+          <View key={section.title} style={s.legalSectionCard}>
+            <View style={s.legalSectionNumber}>
+              <Text style={s.legalSectionNumberText}>{String(index + 1).padStart(2, "0")}</Text>
+            </View>
+            <View style={s.legalSectionBody}>
+              <Text style={s.legalSectionTitle}>{section.title}</Text>
+              <Text style={s.legalSectionText}>{section.body}</Text>
+            </View>
+          </View>
+        ))}
+
+        <Text style={s.legalOfflineNote}>Available inside the app — no website required.</Text>
+      </ScrollView>
+    </View>
+  );
+}
+
 // ── App ───────────────────────────────────────────────────────────────────────
 export default function App() {
   const [isRestoring, setIsRestoring] = useState(true);
   const [user, setUser] = useState(null);
   const [mainScreen, setMainScreen] = useState("home");
+  const [legalPage, setLegalPage] = useState(null);
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [startIndex, setStartIndex] = useState(null);
   const [initialTime, setInitialTime] = useState(0);
@@ -5670,6 +5992,7 @@ export default function App() {
   useEffect(() => {
     if (Platform.OS !== "android") return undefined;
     const sub = BackHandler.addEventListener("hardwareBackPress", () => {
+      if (legalPage) { setLegalPage(null); return true; }
       if (!userRef.current) {
         if (resetVisible) { closePasswordReset(); return true; }
         if (screen === "signup2") { setScreen("signup1"); setSignupError(""); return true; }
@@ -5706,7 +6029,7 @@ export default function App() {
         setSelectedCourse(null);
         return true;
       }
-      if (mainScreen === "wishlist" || mainScreen === "certificates") {
+      if (mainScreen === "wishlist" || mainScreen === "certificates" || mainScreen === "subscription" || mainScreen === "help" || mainScreen === "terms" || mainScreen === "privacy") {
         setMainScreen("profile");
         return true;
       }
@@ -5723,7 +6046,7 @@ export default function App() {
       return true;
     });
     return () => sub.remove();
-  }, [screen, otpSent, resetVisible, courseAiTarget, certModal, showAppUpgrade, mainScreen, startIndex, selectedCourse, isPreviewOnly, loadCourseProgress]);
+  }, [screen, otpSent, resetVisible, legalPage, courseAiTarget, certModal, showAppUpgrade, mainScreen, startIndex, selectedCourse, isPreviewOnly, loadCourseProgress]);
 
   // Load saved downloads on startup and verify files still exist
   useEffect(() => {
@@ -6338,6 +6661,7 @@ export default function App() {
     setCourseProgress({});
     clearLoginForm();
     resetSignup();
+    setLegalPage(null);
     setUser(null); setSelectedCourse(null); setStartIndex(null); setCourseAiTarget(null); setMainScreen("home");
   }
 
@@ -6396,6 +6720,7 @@ export default function App() {
       setPreloadedVideos(null);
       setIsPreviewOnly(false);
       setCourseAiTarget(null);
+      setLegalPage(null);
       setMainScreen("home");
       return { ok: true };
     } catch {
@@ -6411,6 +6736,10 @@ export default function App() {
         <ActivityIndicator size="large" color={C.primary} />
       </View>
     );
+  }
+
+  if (legalPage) {
+    return <LegalContentScreen page={legalPage} onBack={() => setLegalPage(null)} />;
   }
 
   // ── Auth screens ────────────────────────────────────────────────────────────
@@ -6476,16 +6805,16 @@ export default function App() {
         <View style={s.legalLinksRow}>
           <TouchableOpacity
             style={s.legalLinkButton}
-            onPress={() => openAppLink(TERMS_URL, "Terms of Service")}
-            accessibilityRole="link"
-            accessibilityLabel="Read Terms of Service"
+            onPress={() => setLegalPage("terms")}
+            accessibilityRole="button"
+            accessibilityLabel="Read Terms and Conditions"
           >
-            <Text style={s.legalLinkText}>Terms of Service</Text>
+            <Text style={s.legalLinkText}>Terms &amp; Conditions</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={s.legalLinkButton}
-            onPress={() => openAppLink(PRIVACY_URL, "Privacy Policy")}
-            accessibilityRole="link"
+            onPress={() => setLegalPage("privacy")}
+            accessibilityRole="button"
             accessibilityLabel="Read Privacy Policy"
           >
             <Text style={s.legalLinkText}>Privacy Policy</Text>
@@ -6615,16 +6944,16 @@ export default function App() {
         <View style={s.legalLinksRow}>
           <TouchableOpacity
             style={s.legalLinkButton}
-            onPress={() => openAppLink(TERMS_URL, "Terms of Service")}
-            accessibilityRole="link"
-            accessibilityLabel="Read Terms of Service"
+            onPress={() => setLegalPage("terms")}
+            accessibilityRole="button"
+            accessibilityLabel="Read Terms and Conditions"
           >
-            <Text style={s.legalLinkText}>Terms of Service</Text>
+            <Text style={s.legalLinkText}>Terms &amp; Conditions</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={s.legalLinkButton}
-            onPress={() => openAppLink(PRIVACY_URL, "Privacy Policy")}
-            accessibilityRole="link"
+            onPress={() => setLegalPage("privacy")}
+            accessibilityRole="button"
             accessibilityLabel="Read Privacy Policy"
           >
             <Text style={s.legalLinkText}>Privacy Policy</Text>
@@ -6857,6 +7186,33 @@ export default function App() {
     );
   }
 
+  if (mainScreen === "help") {
+    return (
+      <InfoPageScreen
+        page={HELP_SUPPORT_CONTENT}
+        onBack={() => setMainScreen("profile")}
+      />
+    );
+  }
+
+  if (mainScreen === "terms") {
+    return (
+      <InfoPageScreen
+        page={TERMS_CONTENT}
+        onBack={() => setMainScreen("profile")}
+      />
+    );
+  }
+
+  if (mainScreen === "privacy") {
+    return (
+      <InfoPageScreen
+        page={PRIVACY_CONTENT}
+        onBack={() => setMainScreen("profile")}
+      />
+    );
+  }
+
   if (mainScreen === "wishlist") {
     return (
       <WishlistScreen
@@ -6881,6 +7237,13 @@ export default function App() {
           onGoToWishlist={() => setMainScreen("wishlist")}
           onGoToCertificates={() => setMainScreen("certificates")}
           onGoToSubscription={() => setMainScreen("subscription")}
+<<<<<<< Updated upstream
+          onOpenLegal={setLegalPage}
+=======
+          onGoToHelp={() => setMainScreen("help")}
+          onGoToTerms={() => setMainScreen("terms")}
+          onGoToPrivacy={() => setMainScreen("privacy")}
+>>>>>>> Stashed changes
           onGoToHome={() => setMainScreen("home")}
           onGoToCourses={() => setMainScreen("courses")}
           onGoToAI={() => setMainScreen("ai")}
@@ -7217,6 +7580,216 @@ return StyleSheet.create({
     minWidth: MIN_TOUCH_TARGET, minHeight: MIN_TOUCH_TARGET, padding: 8, borderRadius: RADIUS.pill,
     alignItems: "center", justifyContent: "center",
     backgroundColor: C.isDark ? C.surfaceElevated : C.accentSoft,
+  },
+<<<<<<< Updated upstream
+  legalScreen: {
+    flex: 1,
+    backgroundColor: C.bg,
+  },
+  legalSafeArea: {
+    backgroundColor: C.bg,
+  },
+  legalHeader: {
+    minHeight: 70,
+    paddingTop: ANDROID_STATUS_BAR_INSET,
+    paddingHorizontal: 14,
+    paddingBottom: 10,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+    backgroundColor: C.bg,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: C.borderStrong,
+  },
+  legalBackButton: {
+    width: MIN_TOUCH_TARGET,
+    height: MIN_TOUCH_TARGET,
+    borderRadius: MIN_TOUCH_TARGET / 2,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: C.surface,
+    borderWidth: 1,
+    borderColor: C.border,
+  },
+  legalHeaderTitleWrap: {
+    flex: 1,
+    minWidth: 0,
+  },
+  legalHeaderEyebrow: {
+    ...TYPE.label,
+    color: C.primary,
+    fontSize: 10,
+    textTransform: "uppercase",
+  },
+  legalHeaderTitle: {
+    ...TYPE.title,
+    color: C.text,
+    fontWeight: "900",
+    marginTop: 2,
+  },
+  legalHeaderIcon: {
+    width: MIN_TOUCH_TARGET,
+    height: MIN_TOUCH_TARGET,
+    borderRadius: 12,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: C.panel,
+    borderWidth: 1,
+    borderColor: C.border,
+  },
+  legalContentScroll: {
+    flex: 1,
+    backgroundColor: C.bg,
+  },
+  legalContent: {
+    padding: 16,
+    paddingBottom: 36,
+    gap: 12,
+  },
+  legalIntroCard: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    gap: 12,
+    padding: 16,
+    borderRadius: RADIUS.xl,
+    backgroundColor: C.panel,
+    borderWidth: 1,
+    borderColor: C.borderStrong,
+  },
+  legalIntroText: {
+    ...TYPE.body,
+    flex: 1,
+    color: C.text,
+    lineHeight: 21,
+  },
+  legalSectionCard: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    gap: 12,
+    padding: 16,
+    borderRadius: RADIUS.lg,
+    backgroundColor: C.surface,
+    borderWidth: 1,
+    borderColor: C.border,
+  },
+  legalSectionNumber: {
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: C.primaryLight,
+  },
+  legalSectionNumberText: {
+    ...TYPE.label,
+    color: C.primary,
+    fontWeight: "900",
+  },
+  legalSectionBody: {
+    flex: 1,
+    minWidth: 0,
+  },
+  legalSectionTitle: {
+    ...TYPE.title,
+    color: C.text,
+    fontWeight: "800",
+    marginBottom: 6,
+  },
+  legalSectionText: {
+    ...TYPE.body,
+    color: C.textSub,
+    lineHeight: 21,
+  },
+  legalOfflineNote: {
+    ...TYPE.caption,
+    color: C.textMuted,
+    textAlign: "center",
+    marginTop: 4,
+=======
+  infoHeroCard: {
+    backgroundColor: C.surface,
+    borderRadius: RADIUS.lg,
+    borderWidth: 1,
+    borderColor: C.border,
+    padding: SPACE.lg,
+    marginBottom: SPACE.md,
+  },
+  infoHeroIcon: {
+    width: 58,
+    height: 58,
+    borderRadius: 14,
+    backgroundColor: C.primaryLight,
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: SPACE.md,
+  },
+  infoEyebrow: {
+    ...TYPE.label,
+    color: C.primary,
+    textTransform: "uppercase",
+    marginBottom: SPACE.xs,
+  },
+  infoTitle: {
+    ...TYPE.h1,
+    color: C.text,
+    marginBottom: SPACE.sm,
+  },
+  infoIntro: {
+    ...TYPE.body,
+    color: C.textSub,
+  },
+  infoSectionCard: {
+    backgroundColor: C.surface,
+    borderRadius: RADIUS.lg,
+    borderWidth: 1,
+    borderColor: C.border,
+    padding: SPACE.md,
+    marginBottom: SPACE.sm,
+  },
+  infoSectionHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: SPACE.sm,
+    marginBottom: SPACE.sm,
+  },
+  infoSectionIcon: {
+    width: 42,
+    height: 42,
+    borderRadius: 10,
+    backgroundColor: C.primaryLight,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  infoSectionNumber: {
+    ...TYPE.caption,
+    color: C.textMuted,
+    fontSize: 10,
+    fontWeight: "800",
+  },
+  infoSectionTitle: {
+    ...TYPE.title,
+    color: C.text,
+  },
+  infoSectionBody: {
+    ...TYPE.body,
+    color: C.textSub,
+  },
+  infoActionButton: {
+    minHeight: MIN_TOUCH_TARGET,
+    marginTop: SPACE.md,
+    paddingHorizontal: SPACE.md,
+    borderRadius: RADIUS.sm,
+    backgroundColor: C.primary,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: SPACE.xs,
+    alignSelf: "flex-start",
+  },
+  infoActionText: {
+    ...TYPE.button,
+    color: C.onPrimary,
+>>>>>>> Stashed changes
   },
   bottomNav: {
     position: "absolute", bottom: 0, left: 0, right: 0,

@@ -13,7 +13,7 @@ const cleanRoutes = {
   "login.html": "/login",
   "otp.html": "/otp",
   "payment.html": "/payment",
-  "privacy.html": "/privacy",
+  "privacy.html": "/privacy-policy",
   "profile.html": "/profile",
   "signup.html": "/signup",
   "terms.html": "/terms",
@@ -39,6 +39,7 @@ const routeAliases = Object.fromEntries(
 
 routeAliases[""] = "index.html";
 routeAliases.home = "index.html";
+routeAliases["privacy-policy"] = "privacy.html";
 
 function splitRoute(value) {
   const match = String(value || "").trim().match(/^([^?#]*)([?#].*)?$/);

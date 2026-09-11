@@ -24,19 +24,19 @@ const courseSchema = new mongoose.Schema(
     },
     thumbnail: {
       data: { type: String, default: null },
-      mimeType: { type: String, enum: ['image/jpeg', 'image/png', null], default: null },
+      mimeType: { type: String, enum: ['image/jpeg', 'image/png', 'image/webp', null], default: null },
       originalName: { type: String, default: null, trim: true },
       size: { type: Number, default: null },
     },
     thumbnailHorizontal: {
       data: { type: String, default: null },
-      mimeType: { type: String, enum: ['image/jpeg', 'image/png', null], default: null },
+      mimeType: { type: String, enum: ['image/jpeg', 'image/png', 'image/webp', null], default: null },
       originalName: { type: String, default: null, trim: true },
       size: { type: Number, default: null },
     },
     thumbnailVertical: {
       data: { type: String, default: null },
-      mimeType: { type: String, enum: ['image/jpeg', 'image/png', null], default: null },
+      mimeType: { type: String, enum: ['image/jpeg', 'image/png', 'image/webp', null], default: null },
       originalName: { type: String, default: null, trim: true },
       size: { type: Number, default: null },
     },
@@ -67,7 +67,7 @@ videos: [
          youtubeId: { type: String, trim: true, default: null },
          thumbnail: {
            data: { type: String, default: null },
-           mimeType: { type: String, enum: ['image/jpeg', 'image/png', null], default: null },
+           mimeType: { type: String, enum: ['image/jpeg', 'image/png', 'image/webp', null], default: null },
            originalName: { type: String, default: null, trim: true },
            size: { type: Number, default: null },
          },

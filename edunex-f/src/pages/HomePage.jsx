@@ -117,6 +117,36 @@ function languageLabel(course) {
   return course?.language || course?.courseLanguage || "Hindi + English";
 }
 
+function driveThumbnailFallback(course) {
+  const raw = String(course?.thumbnailUrl || course?.thumbnailVerticalUrl || course?.videos?.[0]?.thumbnailUrl || "").trim();
+  if (!raw) return "";
+
+  try {
+    const parsed = new URL(raw, window.location.origin);
+    if (!/(^|\.)drive\.google\.com$/i.test(parsed.hostname)) return "";
+    const fileMatch = parsed.pathname.match(/\/file\/d\/([^/]+)/);
+    const id = fileMatch?.[1] || parsed.searchParams.get("id");
+    if (!id) return "";
+    const driveUrl = `https://drive.google.com/thumbnail?id=${encodeURIComponent(id)}&sz=w1200`;
+    return `/api/image-proxy?url=${encodeURIComponent(driveUrl)}`;
+  } catch (_) {
+    return "";
+  }
+}
+
+function handleCourseImageError(event, course) {
+  const image = event.currentTarget;
+  const fallback = driveThumbnailFallback(course);
+  if (fallback && image.dataset.driveFallback !== "true") {
+    image.dataset.driveFallback = "true";
+    image.src = fallback;
+    return;
+  }
+
+  image.onerror = null;
+  image.src = window.EduNex?.placeholderImage?.(image.alt || "Skillomate") || "";
+}
+
 function durationLabel(course) {
   return course?.duration || (lessonCount(course) ? `${lessonCount(course)} lessons` : "Self paced");
 }
@@ -312,10 +342,7 @@ function HeroCourseCard({ item, index, isCenter, hasAccess, isSaved, onOpen, onC
           <img
             src={image}
             alt={title}
-            onError={(event) => {
-              event.currentTarget.onerror = null;
-              event.currentTarget.src = window.EduNex?.placeholderImage?.(event.currentTarget.alt || "Skillomate") || "";
-            }}
+            onError={(event) => handleCourseImageError(event, course)}
           />
         </a>
         <span className="hero-card-badge">{label}</span>
@@ -512,7 +539,7 @@ export function HomePage() {
       setActiveIndex(10);
       return;
     }
-    setActiveIndex(loop.baseCount + (activeTab === "my-courses" ? 0 : Math.min(3, loop.baseCount - 1)));
+    setActiveIndex(loop.baseCount);
   }, [activeTab, loop.baseCount]);
 
   const setUserScrolling = () => {
@@ -1010,10 +1037,7 @@ export function HomePage() {
                   openCourse(course);
                 }}>
                   <div className="h-44 relative overflow-hidden">
-                    <img className="w-full h-full object-cover" src={window.EduNex?.courseImage?.(course) || ""} alt={category} onError={(event) => {
-                      event.currentTarget.onerror = null;
-                      event.currentTarget.src = window.EduNex?.placeholderImage?.(event.currentTarget.alt || "Skillomate") || "";
-                    }} />
+                    <img className="w-full h-full object-cover" src={window.EduNex?.courseImage?.(course) || ""} alt={category} onError={(event) => handleCourseImageError(event, course)} />
                     <div className="absolute top-4 left-4 bg-black/80 border border-primary/30 text-primary px-3 py-1 rounded-full text-[10px] font-bold uppercase">{items.length} courses</div>
                   </div>
                   <div className="p-6">
@@ -1085,10 +1109,7 @@ export function HomePage() {
               return (
                 <div className="glass-card professional-card rounded-xl overflow-hidden" key={courseId(course)}>
                   <div className="h-44 relative overflow-hidden">
-                    <img className="w-full h-full object-cover" src={window.EduNex?.courseImage?.(course) || ""} alt={course.title || "Untitled course"} onError={(event) => {
-                      event.currentTarget.onerror = null;
-                      event.currentTarget.src = window.EduNex?.placeholderImage?.(event.currentTarget.alt || "Skillomate") || "";
-                    }} />
+                    <img className="w-full h-full object-cover" src={window.EduNex?.courseImage?.(course) || ""} alt={course.title || "Untitled course"} onError={(event) => handleCourseImageError(event, course)} />
                     <div className="absolute top-4 left-4 bg-black/80 border border-primary/30 text-primary px-3 py-1 rounded-full text-[10px] font-bold uppercase">{category}</div>
                   </div>
                   <div className="p-6">

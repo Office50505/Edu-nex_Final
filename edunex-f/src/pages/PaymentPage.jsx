@@ -96,7 +96,7 @@ function driveImageSrc(url) {
 
     const fileMatch = parsed.pathname.match(/\/file\/d\/([^/]+)/);
     const fileId = fileMatch?.[1] || parsed.searchParams.get("id");
-    return proxy(fileId ? `https://drive.google.com/thumbnail?id=${encodeURIComponent(fileId)}&sz=w1200` : rawUrl);
+    return fileId ? `https://drive.google.com/thumbnail?id=${encodeURIComponent(fileId)}&sz=w1200` : rawUrl;
   } catch (_) {
     return rawUrl;
   }

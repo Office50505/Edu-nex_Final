@@ -64,6 +64,36 @@ function normalizeCourse(course) {
   };
 }
 
+function driveThumbnailFallback(course) {
+  const raw = String(course?.thumbnailUrl || course?.thumbnailVerticalUrl || course?.videos?.[0]?.thumbnailUrl || "").trim();
+  if (!raw) return "";
+
+  try {
+    const parsed = new URL(raw, window.location.origin);
+    if (!/(^|\.)drive\.google\.com$/i.test(parsed.hostname)) return "";
+    const fileMatch = parsed.pathname.match(/\/file\/d\/([^/]+)/);
+    const id = fileMatch?.[1] || parsed.searchParams.get("id");
+    if (!id) return "";
+    const driveUrl = `https://drive.google.com/thumbnail?id=${encodeURIComponent(id)}&sz=w1200`;
+    return `/api/image-proxy?url=${encodeURIComponent(driveUrl)}`;
+  } catch (_) {
+    return "";
+  }
+}
+
+function handleCourseImageError(event, course) {
+  const image = event.currentTarget;
+  const fallback = driveThumbnailFallback(course);
+  if (fallback && image.dataset.driveFallback !== "true") {
+    image.dataset.driveFallback = "true";
+    image.src = fallback;
+    return;
+  }
+
+  image.onerror = null;
+  image.src = window.EduNex?.placeholderImage?.(image.alt || "Skillomate") || "";
+}
+
 function groupCourses(courses) {
   const groups = new Map();
   courses.forEach((course) => {
@@ -288,10 +318,7 @@ export function CoursesPage() {
                           className="course-thumb"
                           src={course.image}
                           alt={course.title}
-                          onError={(event) => {
-                            event.currentTarget.onerror = null;
-                            event.currentTarget.src = window.EduNex?.placeholderImage?.(event.currentTarget.alt || "Skillomate") || "";
-                          }}
+                          onError={(event) => handleCourseImageError(event, course)}
                         />
                         <span className="course-cat-badge badge-agency">{course.categoryName}</span>
                       </div>

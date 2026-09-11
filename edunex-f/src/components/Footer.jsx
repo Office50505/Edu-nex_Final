@@ -2,31 +2,27 @@ import { EnxIcon } from "./EnxIcon.jsx";
 import { route } from "../lib/routes.js";
 
 const learnLinks = [
-  ["All Courses", route("courses.html")],
-  ["Video Lessons", route("videos.html")],
-  ["My Dashboard", route("dashboard.html")],
+  ["Verified Courses", route("courses.html")],
   ["Certificates", route("certificates.html")],
+  ["AI Tutor", route("ai-tutor.html")],
 ];
 
 const platformLinks = [
-  ["Start ₹1 Trial", route("payment.html")],
-  ["Profile", route("profile.html")],
-  ["Wishlist", route("wishlist.html")],
-  ["Login", route("login.html")],
+  ["All Courses", route("courses.html")],
+  ["My Dashboard", route("dashboard.html")],
+  ["Course Notes", route("videos.html")],
 ];
 
 const accountLinks = [
-  ["Create Account", route("signup.html")],
   ["Profile", route("profile.html")],
-  ["Dashboard", route("dashboard.html")],
-  ["Course Notes", route("videos.html")],
+  ["Login", route("login.html")],
+  ["Wishlist", route("wishlist.html")],
 ];
 
 const companyLinks = [
   ["About", route("about.html")],
-  ["Courses", route("courses.html")],
-  ["Contact Support", "mailto:support@skillomate.ai"],
-  ["Help", route("help.html")],
+  ["Support", route("help.html")],
+  ["Contact", "mailto:support@skillomate.ai"],
 ];
 
 const legalLinks = [
@@ -35,9 +31,24 @@ const legalLinks = [
   ["Help", route("help.html")],
 ];
 
+const appDownloadLinks = [
+  {
+    label: "App Store",
+    detail: "Download on the",
+    href: "https://apps.apple.com/us/search?term=Skillomate",
+    icon: "apple",
+  },
+  {
+    label: "Google Play",
+    detail: "Get it on",
+    href: "https://play.google.com/store/apps/details?id=com.skillomate.app",
+    icon: "playStore",
+  },
+];
+
 function LinkList({ title, links }) {
   return (
-    <div>
+    <div className="enx-footer-column">
       <div className="enx-footer-heading">{title}</div>
       <ul className="enx-footer-links">
         {links.map(([label, href]) => (
@@ -48,25 +59,38 @@ function LinkList({ title, links }) {
   );
 }
 
+function AppDownloadColumn() {
+  return (
+    <div className="enx-footer-column enx-footer-app-download">
+      <div className="enx-footer-heading">App Download</div>
+      <div className="enx-store-links">
+        {appDownloadLinks.map(({ label, detail, href, icon }) => (
+          <a
+            key={label}
+            className="enx-store-badge"
+            href={href}
+            target="_blank"
+            rel="noreferrer"
+            aria-label={`${detail} ${label}`}
+          >
+            <EnxIcon name={icon} className="enx-store-icon" />
+            <span>
+              <small>{detail}</small>
+              <strong>{label}</strong>
+            </span>
+          </a>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export function Footer() {
   return (
     <footer className="enx-footer">
       <div className="enx-footer-shell">
         <div className="enx-footer-top">
-          <div className="enx-footer-intro">
-            <div className="enx-footer-about">
-              <a href={route("index.html")} className="enx-footer-brand" aria-label="Skillomate AI home">
-                <span className="enx-footer-brand-icon">E</span>
-                <span>Skillomate <span>AI</span></span>
-              </a>
-              <p className="enx-footer-copy">Practical AI-powered learning with real courses, guided videos, progress tracking, and focused tools for modern technical careers.</p>
-              <div className="enx-footer-trust-row">
-                <span><EnxIcon name="checkCircle" /> Verified courses</span>
-                <span><EnxIcon name="award" /> Certificates</span>
-                <span><EnxIcon name="sparkles" /> AI tutor</span>
-              </div>
-            </div>
-
+          <div className="enx-footer-intro enx-footer-intro--single">
             <div className="enx-footer-cta">
               <div className="enx-footer-heading">Need Help?</div>
               <p>Use your dashboard to continue enrolled courses, open notes from lessons, or contact support if access does not look right.</p>
@@ -83,6 +107,7 @@ export function Footer() {
           <LinkList title="Account" links={accountLinks} />
           <LinkList title="Company" links={companyLinks} />
           <LinkList title="Legal" links={legalLinks} />
+          <AppDownloadColumn />
 
         </div>
 

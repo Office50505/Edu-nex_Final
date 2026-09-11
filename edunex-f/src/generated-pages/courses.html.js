@@ -130,15 +130,15 @@ export const page = {
       flex: 0 0 auto;
       aspect-ratio: 16 / 9;
       overflow: hidden;
-      background: var(--card2);
+      background: #050505;
     }
     .course-thumb {
       width: 100%;
       height: 100%;
       object-fit: cover;
-      object-position: center;
+      object-position: left center;
       display: block;
-      background: var(--card2);
+      background: #050505;
     }
     .course-cat-badge {
       position: absolute; top: 12px; left: 12px;

@@ -94,6 +94,7 @@ function proxyImageUrl(url) {
   if (!value || /^(data|blob):/i.test(value)) return value;
   try {
     const parsed = new URL(value, window.location.origin);
+    if (/(^|\.)drive\.google\.com$/i.test(parsed.hostname)) return parsed.href;
     if (parsed.origin === window.location.origin) return `${parsed.pathname}${parsed.search}${parsed.hash}`;
     return `/api/image-proxy?url=${encodeURIComponent(parsed.href)}`;
   } catch (_) {

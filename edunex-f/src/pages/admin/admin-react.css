@@ -156,6 +156,23 @@
   object-fit: cover;
 }
 
+.thumbnail-preview-card.has-error img {
+  display: none;
+}
+
+.thumbnail-help {
+  margin: -10px 0 14px;
+  color: #f2c879;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.thumbnail-file-name {
+  color: var(--admin-muted);
+  font-size: 12px;
+  line-height: 1.35;
+}
+
 .course-actions,
 .row-actions,
 .form-actions {

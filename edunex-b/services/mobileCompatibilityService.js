@@ -44,13 +44,16 @@ function normalizeImageUrl(url) {
     .replace(/^http:\/\/localhost(?::\d+)?/i, API_BASE_URL)
     .replace(/^http:\/\/127\.0\.0\.1(?::\d+)?/i, API_BASE_URL);
 
-  if (/^https?:\/\/(?:www\.)?drive\.google\.com\//i.test(normalized)) {
-    const pathMatch = normalized.match(/\/(?:file\/)?d\/([a-zA-Z0-9_-]+)/i);
-    const queryMatch = normalized.match(/[?&]id=([a-zA-Z0-9_-]+)/i);
-    const driveFileId = pathMatch?.[1] || queryMatch?.[1];
-    if (driveFileId) {
-      normalized = `https://drive.google.com/thumbnail?id=${encodeURIComponent(driveFileId)}&sz=w1600`;
+  try {
+    const parsed = new URL(normalized);
+    const isDrive = /(^|\.)drive\.google\.com$/i.test(parsed.hostname);
+    const fileMatch = parsed.pathname.match(/\/(?:file\/)?d\/([^/]+)/);
+    const driveId = isDrive ? (fileMatch?.[1] || parsed.searchParams.get('id')) : '';
+    if (driveId) {
+      normalized = `https://drive.google.com/thumbnail?id=${encodeURIComponent(driveId)}&sz=w1600`;
     }
+  } catch (_) {
+    return normalized;
   }
   return normalized;
 }
