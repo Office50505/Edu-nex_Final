@@ -18,6 +18,8 @@ export function CourseMediaPlayer({ course, lesson, lessonIndex, autoNext, autop
   const [volume,setVolume] = useState(1), [muted,setMuted] = useState(false);
   const [levels,setLevels] = useState([]), [quality,setQuality] = useState(-1);
   const [captions,setCaptions] = useState([]), [caption,setCaption] = useState(-1);
+  const tapRef = useRef(null), tapTimer = useRef(null);
+  const [fillScreen,setFillScreen] = useState(false);
   const [fullscreen,setFullscreen] = useState(false), [buffered,setBuffered] = useState(0);
   const progress = useLearningProgress(course._id, String(lesson._id), time, playing);
   const source = lesson.provider === "aws_cloudfront" ? access.lesson.hlsUrl : nativeLessonSource(lesson);
@@ -29,8 +31,19 @@ export function CourseMediaPlayer({ course, lesson, lessonIndex, autoNext, autop
   useEffect(()=>()=>clearTimeout(sleepTimer.current),[]);
   useEffect(()=>{if(!notice)return;const timer=setTimeout(()=>setNotice(''),4000);return()=>clearTimeout(timer);},[notice]);
   useEffect(()=>{
-    const sync=()=>setFullscreen(document.fullscreenElement===frameRef.current);
-    document.addEventListener('fullscreenchange',sync);return()=>document.removeEventListener('fullscreenchange',sync);
+    const frame=frameRef.current, wrapper=frame?.closest('#playerFrame');
+    let wasFullscreen=false;
+    const sync=()=>{
+      const active=document.fullscreenElement || document.webkitFullscreenElement;
+      const expanded=Boolean(active && (active===frame || active.contains?.(frame)) || wrapper?.classList.contains('is-app-fullscreen'));
+      if(expanded && !wasFullscreen && window.matchMedia?.('(max-width: 820px) and (orientation: portrait)').matches)setFillScreen(true);
+      wasFullscreen=expanded;setFullscreen(expanded);
+    };
+    const observer=new MutationObserver(sync);
+    if(wrapper)observer.observe(wrapper,{attributes:true,attributeFilter:['class']});
+    document.addEventListener('fullscreenchange',sync);
+    document.addEventListener('webkitfullscreenchange',sync);sync();
+    return()=>{observer.disconnect();document.removeEventListener('fullscreenchange',sync);document.removeEventListener('webkitfullscreenchange',sync);};
   },[]);
   useEffect(()=>{
     const video=videoRef.current;if(!source||!video)return;
@@ -71,15 +84,31 @@ export function CourseMediaPlayer({ course, lesson, lessonIndex, autoNext, autop
   useEffect(()=>{const video=videoRef.current;if(video){video.playbackRate=rate;video.loop=loop;}},[rate,loop]);
   useEffect(()=>{if(access.error){videoRef.current?.pause();setBuffering(false);}},[access.error]);
   function toggle(){const video=videoRef.current;if(!video||!source||access.error||error)return;if(video.paused)video.play().catch(()=>setNotice('Playback could not start. Press play or retry.'));else video.pause();wake();}
+  useEffect(()=>()=>clearTimeout(tapTimer.current),[]);
+  function mobileControls(){return window.matchMedia?.('(max-width: 820px), (pointer: coarse)').matches;}
+  function videoTap(event){
+    if(!mobileControls()){toggle();return;}
+    wake();
+    const rect=event.currentTarget.getBoundingClientRect();
+    const fraction=rect.width ? (event.clientX-rect.left)/rect.width : .5;
+    const side=fraction<.35 ? -1 : fraction>.65 ? 1 : 0;
+    const now=Date.now();
+    if(side && tapRef.current?.side===side && now-tapRef.current.at<300){
+      clearTimeout(tapTimer.current);tapRef.current=null;
+      seek(side*10);setNotice(side<0?'−10 seconds':'+10 seconds');return;
+    }
+    clearTimeout(tapTimer.current);tapRef.current={side,at:now};
+    tapTimer.current=setTimeout(()=>{tapRef.current=null;toggle();},300);
+  }
   function seek(delta){const video=videoRef.current;if(video)video.currentTime=seekTarget(video.currentTime+delta,time.duration);wake();}
-  async function full(){try{if(document.fullscreenElement)await document.exitFullscreen();else if(frameRef.current.requestFullscreen)await frameRef.current.requestFullscreen();else if(videoRef.current.webkitEnterFullscreen)videoRef.current.webkitEnterFullscreen();else setNotice('Fullscreen is unavailable on this device.');}catch{setNotice('Fullscreen is unavailable on this device.');}}
+  async function full(){try{const wrapper=frameRef.current.closest('#playerFrame');if(wrapper?.classList.contains('is-app-fullscreen')){wrapper.classList.remove('is-app-fullscreen');document.body.classList.remove('has-edunex-player-fullscreen');return;}if(document.fullscreenElement)await document.exitFullscreen();else if(frameRef.current.requestFullscreen)await frameRef.current.requestFullscreen();else if(videoRef.current.webkitEnterFullscreen)videoRef.current.webkitEnterFullscreen();else setNotice('Fullscreen is unavailable on this device.');}catch{setNotice('Fullscreen is unavailable on this device.');}}
   async function pip(){try{if(document.pictureInPictureElement)await document.exitPictureInPicture();else await videoRef.current.requestPictureInPicture();}catch{setNotice('Picture-in-picture is unavailable for this video.');}}
   function sleepAfter(minutes){clearTimeout(sleepTimer.current);setSleep(minutes);if(minutes)sleepTimer.current=setTimeout(()=>{videoRef.current?.pause();setSleep(0);setNotice('Sleep timer paused playback.');},minutes*60000);}
   function closeMenu(){setMenu(false);settingsButton.current?.focus();}
   function key(event){if(event.altKey||event.ctrlKey||event.metaKey)return;if(event.key==='Escape'){closeMenu();return;}if(event.target.closest('input,select,textarea,button,[contenteditable]'))return;const k=event.key.toLowerCase();if([' ','k','arrowleft','arrowright','m','f'].includes(k)){event.preventDefault();event.stopPropagation();wake();if(k===' '||k==='k')toggle();if(k==='arrowleft')seek(-10);if(k==='arrowright')seek(10);if(k==='m')videoRef.current.muted=!videoRef.current.muted;if(k==='f')full();}}
   const failure=access.error||error,visible=awake||!playing||menu||!!failure;
-  return <section className={`sm-player ${visible?'sm-awake':''}`} ref={frameRef} tabIndex={0} aria-label={`${lesson.title} video player`} onKeyDown={key} onPointerMove={wake} onPointerDown={wake} onFocus={wake}>
-    <video ref={videoRef} playsInline preload="metadata" aria-label={lesson.title} onClick={toggle} onDoubleClick={full}/>
+  return <section className={`sm-player ${visible?'sm-awake':''} ${fullscreen?'sm-fullscreen':''} ${fillScreen?'sm-fill-screen':''}`} ref={frameRef} tabIndex={0} aria-label={`${lesson.title} video player`} onKeyDown={key} onPointerMove={wake} onPointerDown={wake} onFocus={wake}>
+    <video ref={videoRef} playsInline preload="metadata" aria-label={lesson.title} onClick={videoTap} onDoubleClick={()=>{if(!mobileControls())full();}}/>
     {!source&&!failure?<div className="sm-status" role="status">Authorizing playback…</div>:null}
     {!playing&&!buffering&&!failure&&source&&time.current===0?<button className="sm-big-play" onClick={toggle} aria-label="Start video"><PlayerIcon name="play"/></button>:null}
     {buffering&&!failure?<div className="sm-status" role="status">Loading video…</div>:null}
@@ -95,8 +124,9 @@ export function CourseMediaPlayer({ course, lesson, lessonIndex, autoNext, autop
     <div className="sm-controls">
       <input className="sm-seek" aria-label="Seek video" type="range" min="0" max={time.duration||1} step="0.1" disabled={!time.duration} value={Math.min(time.current,time.duration||1)} style={{'--sm-progress':`${time.duration?time.current/time.duration*100:0}%`,'--sm-buffered':`${time.duration?Math.min(100,buffered/time.duration*100):0}%`}} onChange={e=>{videoRef.current.currentTime=seekTarget(Number(e.target.value),time.duration);wake();}}/>
       <div className="sm-row">
+        {<button className="sm-fit-button" aria-label={fillScreen?"Fit video":"Fill screen"} aria-pressed={fillScreen} onClick={()=>{setFillScreen(value=>!value);wake();}}>{fillScreen?"Fit video":"Fill screen"}</button>}
         <button onClick={toggle} aria-label={playing?'Pause':'Play'} disabled={!source||!!failure}><PlayerIcon name={playing?'pause':'play'}/></button>
-        <button onClick={()=>seek(-10)} aria-label="Rewind 10 seconds"><PlayerIcon name="back"/></button><button onClick={()=>seek(10)} aria-label="Forward 10 seconds"><PlayerIcon name="forward"/></button>
+        <button className="sm-skip" onClick={()=>seek(-10)} aria-label="Rewind 10 seconds"><PlayerIcon name="back"/></button><button className="sm-skip" onClick={()=>seek(10)} aria-label="Forward 10 seconds"><PlayerIcon name="forward"/></button>
         <button onClick={()=>{videoRef.current.muted=!videoRef.current.muted;}} aria-label={muted?'Unmute':'Mute'}><PlayerIcon name={muted||volume===0?'mute':'volume'}/></button>
         <input className="sm-volume" aria-label="Volume" type="range" min="0" max="1" step=".05" value={muted?0:volume} onChange={e=>{videoRef.current.volume=Number(e.target.value);videoRef.current.muted=Number(e.target.value)===0;}}/>
         <span className="sm-time">{clock(time.current)} / {clock(time.duration)}</span><span className="sm-spacer"/>
