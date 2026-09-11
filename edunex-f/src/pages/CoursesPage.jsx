@@ -109,10 +109,34 @@ function courseVideoHref(course) {
   return id ? `/videos.html?courseId=${encodeURIComponent(id)}&video=0` : "/courses.html";
 }
 
+function initialCourseFilters() {
+  const params = new URLSearchParams(window.location.search);
+  const search = params.get("search") || params.get("q") || "";
+  const category = params.get("category") || "all";
+  return {
+    search,
+    category: search ? "all" : category.toLowerCase(),
+  };
+}
+
+function uniqueLabels(values) {
+  const seen = new Set();
+  return values
+    .map((value) => String(value || "").trim())
+    .filter((value) => {
+      if (!value) return false;
+      const key = value.toLowerCase();
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+}
+
 export function CoursesPage() {
+  const initialFilters = initialCourseFilters();
   const [courses, setCourses] = useState([]);
-  const [search, setSearch] = useState("");
-  const [category, setCategory] = useState("all");
+  const [search, setSearch] = useState(initialFilters.search);
+  const [category, setCategory] = useState(initialFilters.category);
   const [hasAccess, setHasAccess] = useState(false);
   const [wishlist, setWishlist] = useState(() => localWishlist());
   const [state, setState] = useState("loading");
@@ -169,7 +193,6 @@ export function CoursesPage() {
       await Promise.all([hydrateCourseAccess(), hydrateWishlist()]);
       const data = await window.EduNex.request("/api/courses");
       setCourses(coursesArray(data).map(normalizeCourse));
-      setCategory("all");
       setState("ready");
     } catch (error) {
       console.error("Courses API failed", error);
@@ -190,6 +213,10 @@ export function CoursesPage() {
   }, [runtimeReady]);
 
   const categories = useMemo(() => Array.from(new Set(courses.map((course) => course.categoryName))).filter(Boolean), [courses]);
+  const searchSuggestions = useMemo(() => uniqueLabels([
+    ...courses.map((course) => course.title),
+    ...courses.map((course) => course.categoryName),
+  ]), [courses]);
   const filteredCourses = useMemo(() => {
     const query = search.trim().toLowerCase();
     return courses.filter((course) => {
@@ -230,6 +257,16 @@ export function CoursesPage() {
     window.EduNex?.openCourseDetails?.(course);
   };
 
+  const updateSearch = (value) => {
+    setSearch(value);
+    if (value.trim()) setCategory("all");
+  };
+
+  const selectCategory = (value) => {
+    setCategory(value);
+    setSearch("");
+  };
+
   return (
     <div className="react-page-root" data-page="courses.html">
       <section className="search-section">
@@ -238,14 +275,23 @@ export function CoursesPage() {
           <div className="search-bar-wrap">
             <div className="search-input-wrap">
               <i className="fas fa-search" aria-hidden="true"></i>
-              <input type="text" placeholder="Search for AI skills..." value={search} onChange={(event) => setSearch(event.target.value)} />
+              <input
+                type="text"
+                list="courses-search-suggestions"
+                placeholder="Search for AI skills..."
+                value={search}
+                onChange={(event) => updateSearch(event.target.value)}
+              />
+              <datalist id="courses-search-suggestions">
+                {searchSuggestions.map((suggestion) => <option value={suggestion} key={suggestion} />)}
+              </datalist>
             </div>
             <div className="filter-pills">
-              <button className={`pill${category === "all" ? " active" : ""}`} type="button" data-category="all" onClick={() => setCategory("all")}>All Courses</button>
+              <button className={`pill${category === "all" ? " active" : ""}`} type="button" data-category="all" onClick={() => selectCategory("all")}>All Courses</button>
               {categories.length ? categories.map((name) => (
-                <button className={`pill${category === name.toLowerCase() ? " active" : ""}`} type="button" data-category={name.toLowerCase()} key={name} onClick={() => setCategory(name.toLowerCase())}>{name}</button>
+                <button className={`pill${category === name.toLowerCase() ? " active" : ""}`} type="button" data-category={name.toLowerCase()} key={name} onClick={() => selectCategory(name.toLowerCase())}>{name}</button>
               )) : ["AI Freelancing", "Prompt Engineering", "Automation Agency", "UGC Creation"].map((name) => (
-                <button className="pill" type="button" key={name} onClick={() => setCategory(name.toLowerCase())}>{name}</button>
+                <button className="pill" type="button" key={name} onClick={() => selectCategory(name.toLowerCase())}>{name}</button>
               ))}
             </div>
           </div>

@@ -20,6 +20,7 @@ const ICON_PATHS = {
   play: '<circle cx="12" cy="12" r="10"></circle><path d="m10 8 6 4-6 4z"></path>',
   playStore: '<path d="M5 3.6v16.8c0 .8.9 1.3 1.6.9l9.2-5.3 2.6-1.5c.7-.4.7-1.4 0-1.8l-2.6-1.5-9.2-5.3C5.9 2.3 5 2.8 5 3.6z"></path><path d="m6 4 9.8 12"></path><path d="M6 20 15.8 8"></path>',
   receipt: '<path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1V2z"></path><path d="M8 7h8"></path><path d="M8 12h8"></path><path d="M8 17h5"></path>',
+  search: '<circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path>',
   sparkles: '<path d="M12 3l1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5z"></path><path d="M19 16l.8 2.2L22 19l-2.2.8L19 22l-.8-2.2L16 19l2.2-.8z"></path><path d="M5 14l.8 2.2L8 17l-2.2.8L5 20l-.8-2.2L2 17l2.2-.8z"></path>',
   target: '<circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle>',
   user: '<path d="M19 21a7 7 0 0 0-14 0"></path><circle cx="12" cy="8" r="4"></circle>',

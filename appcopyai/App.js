@@ -67,6 +67,10 @@ const AI_ROBOT_IMAGES = {
   r8: require("./assets/ai-avatars/r8.jpg"),
   r9: require("./assets/ai-avatars/r9.jpg"),
 };
+const BRAND_LOGOS = {
+  light: require("./assets/skillomate-logo.png"),
+  dark: require("./assets/skillomate-logo-dark.png"),
+};
 const HOME_COMING_SOON_IMAGES = {
   ugc: require("./assets/home/coming-soon-ai-ugc.png"),
   automation: require("./assets/home/coming-soon-ai-automation.png"),
@@ -1270,15 +1274,23 @@ function RemoteThumbnailImage({ imageUrl, screen, courseId, borderRadius = 8 }) 
   );
 }
 
-function SkillomateLogo({ size = "md" }) {
-  const iconSize = size === "lg" ? 44 : size === "sm" ? 28 : 36;
-  const fontSize = size === "lg" ? 22 : size === "sm" ? 15 : 18;
+function SkillomateLogo({ size = "md", mode, style }) {
+  const logoSize = {
+    xs: { width: 112, height: 37 },
+    sm: { width: 132, height: 44 },
+    md: { width: 158, height: 53 },
+    lg: { width: 190, height: 63 },
+  }[size] || { width: 158, height: 53 };
+  const logoMode = mode || (C.isDark ? "dark" : "light");
+
   return (
-    <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
-      <View style={[s.logoBox, { width: iconSize, height: iconSize, borderRadius: iconSize * 0.22 }]}>
-        <Ionicons name="school" size={iconSize * 0.55} color={C.primary} />
-      </View>
-      <Text style={[s.logoText, { fontSize }]}>Skillomate</Text>
+    <View style={[s.logoWrap, logoSize, style]}>
+      <Image
+        source={BRAND_LOGOS[logoMode === "light" ? "light" : "dark"]}
+        style={s.logoImage}
+        resizeMode="contain"
+        accessibilityLabel="Skillomate"
+      />
     </View>
   );
 }
@@ -4134,11 +4146,7 @@ function HomeScreen({
         <SafeAreaView>
           <View style={[homeStyles.headerInner, width <= 340 && homeStyles.headerInnerCompact]}>
             <View style={homeStyles.brandRow}>
-              <View style={homeStyles.brandIcon}><Ionicons name="school" size={21} color={HOME_PALETTE.gold} /></View>
-              <View style={homeStyles.brandCopy}>
-                <Text style={homeStyles.brandName}>Skillomate</Text>
-                {width > 340 && <Text style={homeStyles.brandTagline}>Learn with AI. Earn with AI.</Text>}
-              </View>
+              <SkillomateLogo size={width <= 340 ? "xs" : "sm"} mode="dark" />
             </View>
             <View style={homeStyles.headerActions}>
               <TouchableOpacity style={homeStyles.headerButton} onPress={() => setShowNotifications(true)} accessibilityRole="button" accessibilityLabel="Open notifications">
@@ -5185,11 +5193,7 @@ function DeleteAccountModal({ visible, user, onClose, onDeleteAccount }) {
   );
 }
 
-<<<<<<< Updated upstream
 function ProfileScreen({ user, onLogout, onDeleteAccount, onGoToHome, onGoToCourses, onGoToAI, onGoToDownloads, wishlistCount, onGoToWishlist, onGoToCertificates, certificatesCount, onAvatarChange, aiRobotId, onGoToSubscription, onOpenLegal }) {
-=======
-function ProfileScreen({ user, onLogout, onDeleteAccount, onGoToHome, onGoToCourses, onGoToAI, onGoToDownloads, wishlistCount, onGoToWishlist, onGoToCertificates, certificatesCount, onAvatarChange, aiRobotId, onGoToSubscription, onGoToHelp, onGoToTerms, onGoToPrivacy }) {
->>>>>>> Stashed changes
   const isActive = user?.subscriptionStatus && user.subscriptionStatus !== "none";
   const memberSince = user?._id
     ? new Date(parseInt(user._id.substring(0, 8), 16) * 1000).toLocaleDateString("en-IN", { month: "short", year: "numeric" })
@@ -5341,15 +5345,9 @@ function ProfileScreen({ user, onLogout, onDeleteAccount, onGoToHome, onGoToCour
           { icon: "card-outline", label: "Subscription Details", onPress: onGoToSubscription },
           { icon: "ribbon-outline", label: "My Certificates", badge: certificatesCount || 0, onPress: onGoToCertificates },
           { icon: "heart-outline", label: "My Wishlist", badge: wishlistCount || 0, onPress: onGoToWishlist },
-<<<<<<< Updated upstream
           { icon: "help-circle-outline", label: "Help & Support", onPress: () => onOpenLegal?.("help") },
           { icon: "document-text-outline", label: "Terms & Conditions", onPress: () => onOpenLegal?.("terms") },
           { icon: "shield-outline", label: "Privacy Policy", onPress: () => onOpenLegal?.("privacy") },
-=======
-          { icon: "help-circle-outline", label: "Help & Support", onPress: onGoToHelp },
-          { icon: "document-text-outline", label: "Terms & Conditions", onPress: onGoToTerms },
-          { icon: "shield-outline", label: "Privacy Policy", onPress: onGoToPrivacy },
->>>>>>> Stashed changes
         ].map((item, i) => (
           <TouchableOpacity
             key={i}
@@ -7237,13 +7235,7 @@ export default function App() {
           onGoToWishlist={() => setMainScreen("wishlist")}
           onGoToCertificates={() => setMainScreen("certificates")}
           onGoToSubscription={() => setMainScreen("subscription")}
-<<<<<<< Updated upstream
           onOpenLegal={setLegalPage}
-=======
-          onGoToHelp={() => setMainScreen("help")}
-          onGoToTerms={() => setMainScreen("terms")}
-          onGoToPrivacy={() => setMainScreen("privacy")}
->>>>>>> Stashed changes
           onGoToHome={() => setMainScreen("home")}
           onGoToCourses={() => setMainScreen("courses")}
           onGoToAI={() => setMainScreen("ai")}
@@ -7479,10 +7471,19 @@ export default function App() {
 // ── Styles ────────────────────────────────────────────────────────────────────
 function createStyles(C) {
 return StyleSheet.create({
-  // Logo
-  logoBox: {
-    backgroundColor: C.surface, alignItems: "center", justifyContent: "center",
-    borderWidth: 1, borderColor: C.accentSoft,
+	  // Logo
+	  logoWrap: {
+	    alignItems: "flex-start",
+	    justifyContent: "center",
+	    overflow: "visible",
+	  },
+	  logoImage: {
+	    width: "100%",
+	    height: "100%",
+	  },
+	  logoBox: {
+	    backgroundColor: C.surface, alignItems: "center", justifyContent: "center",
+	    borderWidth: 1, borderColor: C.accentSoft,
   },
   logoText: { ...TYPE.title, color: C.text },
 

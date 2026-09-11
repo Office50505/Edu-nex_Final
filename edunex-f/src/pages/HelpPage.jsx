@@ -39,6 +39,20 @@ const cards = [
 export function HelpPage() {
   usePageStyle("react-page-style-help", `${helpPage.styles}
     .help-card-icon { color: var(--cyan); margin-bottom: 14px; display: inline-flex; font-size: 1.05rem; }
+    html[data-theme="light"] body { background:#FAF7F1 !important; color:#332820 !important; }
+    html[data-theme="light"] .help-page { color:#332820 !important; }
+    html[data-theme="light"] .help-page h1,
+    html[data-theme="light"] .help-page h2 { color:#2B211A !important; }
+    html[data-theme="light"] .help-page .help-intro,
+    html[data-theme="light"] .help-page p { color:#756A60 !important; }
+    html[data-theme="light"] .help-page .help-card {
+      background:#FFFDF8 !important;
+      border-color:#E2D6C6 !important;
+      box-shadow:0 14px 38px rgba(88,65,34,.08) !important;
+    }
+    html[data-theme="light"] .help-page a,
+    html[data-theme="light"] .help-page .help-kicker,
+    html[data-theme="light"] .help-page .help-card-icon { color:#C58B2A !important; }
   `);
 
   useEffect(() => {

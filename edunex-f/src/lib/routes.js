@@ -41,6 +41,7 @@ const routeAliases = Object.fromEntries(
 routeAliases[""] = "index.html";
 routeAliases.home = "index.html";
 routeAliases["privacy-policy"] = "privacy.html";
+routeAliases.support = "help.html";
 
 function splitRoute(value) {
   const match = String(value || "").trim().match(/^([^?#]*)([?#].*)?$/);

@@ -1,5 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Manrope:wght@400;500;600;700;800&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -7,6 +5,10 @@
 :root {
   --font-body: "Manrope", ui-sans-serif, system-ui, sans-serif;
   --font-display: "Fraunces", Georgia, serif;
+  --mobile-nav-height: 76px;
+  --mobile-safe-bottom: env(safe-area-inset-bottom, 0px);
+  --mobile-fixed-reserve: 0px;
+  --floating-ai-bottom: calc(28px + var(--mobile-safe-bottom));
 }
 
 html,
@@ -15,9 +17,15 @@ body,
   min-height: 100%;
 }
 
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
 body {
   margin: 0;
   font-family: var(--font-body);
+  -webkit-tap-highlight-color: transparent;
 }
 
 button,
@@ -29,6 +37,17 @@ select {
 
 .react-page-root {
   font-family: var(--font-body);
+}
+
+:where(a, button, [role="button"], [role="link"], [role="tab"], [role="radio"], label, summary) {
+  touch-action: manipulation;
+}
+
+@media (hover: none) {
+  :where(a[href], button, [role="button"], [role="link"], [role="tab"]):active {
+    transform: translateY(1px) scale(.99);
+    transition-duration: .08s !important;
+  }
 }
 
 .react-page-root :where(h1, h2, .hero-title, .library-hero h1, .welcome-left h1, .market-right h2, .trial-left h2, .team-header-row h2, .cta-section h2, .section-head h2, .auth-brand, .lp-title, .sp-title, .payment-choice-title) {
@@ -207,16 +226,33 @@ html:not([data-theme="light"]) .enx-mobile-menu {
 }
 
 .enx-nav-logo {
-  font-size: 1.2rem !important;
-  font-weight: 700 !important;
   color: var(--text, #fff) !important;
   white-space: nowrap !important;
   flex-shrink: 0 !important;
   text-decoration: none !important;
+  display: inline-flex !important;
+  align-items: center !important;
 }
 
-.enx-nav-logo span {
-  color: var(--cyan, #C58B2A) !important;
+.brand-logo {
+  display: inline-flex;
+  align-items: center;
+  width: clamp(150px, 12vw, 190px);
+  height: 42px;
+  overflow: visible;
+}
+
+.brand-logo-image {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  object-position: left center;
+}
+
+html[data-theme="light"] .brand-logo-image-dark,
+html:not([data-theme="light"]) .brand-logo-image-light {
+  display: none;
 }
 
 .enx-nav-links {
@@ -367,6 +403,14 @@ html:not([data-theme="light"]) .enx-mobile-menu {
   display: block !important;
 }
 
+.enx-mobile-top-account {
+  display: none;
+}
+
+.enx-mobile-top-search {
+  display: none;
+}
+
 .enx-nav-hamburger {
   display: none !important;
   flex-direction: column !important;
@@ -468,7 +512,9 @@ html:not([data-theme="light"]) .enx-mobile-menu {
   min-width: 0;
   min-height: 56px;
   padding: 7px 4px 6px;
+  border: 0;
   border-radius: 12px;
+  background: transparent;
   display: inline-flex;
   flex-direction: column;
   align-items: center;
@@ -480,6 +526,8 @@ html:not([data-theme="light"]) .enx-mobile-menu {
   line-height: 1;
   text-align: center;
   text-decoration: none;
+  appearance: none;
+  -webkit-appearance: none;
   transition: background .2s ease, color .2s ease, transform .2s ease;
 }
 
@@ -495,18 +543,112 @@ html:not([data-theme="light"]) .enx-mobile-menu {
 }
 
 .enx-mobile-footer-link.active {
-  background: var(--text, #fff);
-  color: var(--bg, #050505);
+  background: var(--cyan, #C58B2A);
+  color: #050505;
+  box-shadow: 0 8px 22px rgba(197, 139, 42, .24);
 }
 
 .enx-mobile-footer-link:active {
   transform: translateY(1px);
 }
 
+.enx-mobile-ai-link {
+  min-height: 56px;
+  margin-top: 0;
+  border-radius: 12px;
+  background: transparent;
+  color: var(--text2, #9ca3af);
+  box-shadow: none;
+}
+
+.enx-mobile-ai-link .enx-icon {
+  font-size: 18px;
+}
+
 @media (max-width: 900px) {
+  :root {
+    --mobile-fixed-reserve: calc(var(--mobile-nav-height) + var(--mobile-safe-bottom) + 28px);
+    --floating-ai-bottom: calc(var(--mobile-fixed-reserve) + 16px);
+  }
+
   .enx-nav-links,
   .enx-nav-right {
     display: none !important;
+  }
+
+  .enx-mobile-top-account {
+    flex: 0 0 38px !important;
+    min-width: 38px !important;
+    width: 38px !important;
+    height: 38px !important;
+    margin-left: 0 !important;
+    border-radius: 999px !important;
+    border: 1px solid var(--border, rgba(255, 255, 255, .12)) !important;
+    background: color-mix(in srgb, var(--card2, #111318) 82%, transparent) !important;
+    color: var(--text, #FFFDF8) !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    overflow: hidden !important;
+    text-decoration: none !important;
+    box-shadow: 0 8px 18px rgba(0, 0, 0, .18) !important;
+  }
+
+  .enx-mobile-top-search {
+    display: block !important;
+    flex: 1 1 auto !important;
+    min-width: 92px !important;
+    max-width: 360px !important;
+  }
+
+  .enx-mobile-top-search-field {
+    width: 100% !important;
+    min-height: 38px !important;
+    padding: 0 10px !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 7px !important;
+    border: 1px solid var(--border, rgba(255, 255, 255, .12)) !important;
+    border-radius: 999px !important;
+    background: color-mix(in srgb, var(--card, #111318) 84%, transparent) !important;
+    box-shadow: 0 8px 18px rgba(0, 0, 0, .08) !important;
+  }
+
+  .enx-mobile-top-search-field .enx-icon {
+    flex: 0 0 auto !important;
+    width: 15px !important;
+    height: 15px !important;
+    color: var(--text2, #9ca3af) !important;
+  }
+
+  .enx-mobile-top-search-field input {
+    width: 100% !important;
+    min-width: 0 !important;
+    height: 34px !important;
+    border: 0 !important;
+    outline: 0 !important;
+    background: transparent !important;
+    color: var(--text, #f8fafc) !important;
+    font: 700 .78rem/1 "Manrope", ui-sans-serif, system-ui, sans-serif !important;
+    appearance: none !important;
+    -webkit-appearance: none !important;
+  }
+
+  .enx-mobile-top-search-field input::placeholder {
+    color: color-mix(in srgb, var(--text2, #9ca3af) 82%, transparent) !important;
+  }
+
+  .enx-mobile-top-account.active {
+    border-color: var(--cyan, #C58B2A) !important;
+    color: var(--cyan, #C58B2A) !important;
+  }
+
+  .enx-mobile-top-account img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    object-position: center top !important;
+    display: block !important;
   }
 
   .enx-nav-hamburger {
@@ -529,11 +671,18 @@ html:not([data-theme="light"]) .enx-mobile-menu {
     display: block !important;
     padding: 8px 6px calc(8px + env(safe-area-inset-bottom)) !important;
     border-top: 1px solid var(--border, rgba(255, 255, 255, .1)) !important;
-    background: color-mix(in srgb, var(--nav-bg, #050505) 94%, transparent) !important;
-    backdrop-filter: blur(20px) saturate(140%) !important;
-    -webkit-backdrop-filter: blur(20px) saturate(140%) !important;
+    background: var(--nav-bg, #050505) !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
     box-shadow: 0 -12px 30px rgba(0, 0, 0, .28) !important;
     overflow: hidden !important;
+    contain: layout paint !important;
+  }
+
+  .enx-navbar {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    contain: layout paint !important;
   }
 
   .enx-mobile-footer-shell {
@@ -542,15 +691,73 @@ html:not([data-theme="light"]) .enx-mobile-menu {
   }
 
   .react-page-root {
-    padding-bottom: calc(88px + env(safe-area-inset-bottom));
+    padding-bottom: var(--mobile-fixed-reserve);
+    scroll-padding-bottom: var(--mobile-fixed-reserve);
   }
 
   .enx-footer {
-    padding-bottom: calc(104px + env(safe-area-inset-bottom));
+    padding-bottom: calc(var(--mobile-fixed-reserve) + 26px);
   }
 
   #nai-float-btn {
-    bottom: calc(96px + env(safe-area-inset-bottom, 0px)) !important;
+    display: none !important;
+  }
+
+  .react-page-root :where(.course-card) {
+    min-height: 398px !important;
+  }
+
+  .react-page-root :where(.course-thumb-wrap) {
+    aspect-ratio: auto !important;
+    height: clamp(150px, 38vw, 160px) !important;
+  }
+
+  .react-page-root :where(.course-body) {
+    padding: 16px !important;
+  }
+
+  .react-page-root :where(.course-author-line) {
+    margin-bottom: 8px !important;
+  }
+
+  .react-page-root :where(.course-stats) {
+    margin-bottom: 10px !important;
+    padding-bottom: 10px !important;
+  }
+
+  .react-page-root :where(.course-price-row) {
+    margin-bottom: 10px !important;
+  }
+
+  .react-page-root[data-page="courses.html"] :where(.course-card) {
+    height: auto !important;
+    min-height: 0 !important;
+  }
+
+  .react-page-root[data-page="courses.html"] :where(.course-body) {
+    flex: 0 0 auto !important;
+  }
+
+  .react-page-root[data-page="courses.html"] :where(.course-price-row) {
+    margin-top: 4px !important;
+  }
+}
+
+@media (min-width: 700px) and (max-width: 900px) {
+  :root {
+    --floating-ai-bottom: calc(var(--mobile-fixed-reserve) + 144px);
+  }
+}
+
+@media (min-width: 380px) and (max-width: 400px) and (min-height: 800px) and (max-height: 880px) {
+  .react-page-root[data-page="courses.html"] :where(.courses-grid) {
+    margin-top: 0 !important;
+  }
+}
+
+@media (min-width: 410px) and (max-width: 460px) and (min-height: 900px) and (max-height: 960px) {
+  .react-page-root[data-page="courses.html"] :where(.courses-grid) {
+    margin-top: 0 !important;
   }
 }
 
@@ -561,7 +768,7 @@ html[data-theme="light"] .enx-mobile-menu {
 }
 
 html[data-theme="light"] .enx-mobile-footer {
-  background: rgba(255, 255, 255, .96) !important;
+  background: #FFFDF8 !important;
   border-color: rgba(0, 0, 0, .08) !important;
   box-shadow: 0 -12px 26px rgba(15, 23, 42, .12) !important;
 }
@@ -571,8 +778,24 @@ html[data-theme="light"] .enx-mobile-footer-link {
 }
 
 html[data-theme="light"] .enx-mobile-footer-link.active {
-  background: #111111 !important;
-  color: #ffffff !important;
+  background: var(--cyan, #C58B2A) !important;
+  color: #FFFDF8 !important;
+  box-shadow: 0 8px 18px rgba(197, 139, 42, .22) !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 .enx-footer {
@@ -841,27 +1064,35 @@ html[data-theme="light"] .enx-mobile-footer-link.active {
   gap: 18px;
 }
 
+@media (min-width: 761px) {
+  .enx-footer-bottom div {
+    padding-right: 188px;
+  }
+}
+
 .enx-footer-bottom a {
   color: inherit;
   text-decoration: none;
 }
 
 html[data-theme="light"] .enx-footer {
-  background: #000000;
-  border-color: rgba(255,255,255,.08);
+  background: #FBF8F2;
+  border-color: #E2D6C6;
+  color: #2B211A;
 }
 
 html[data-theme="light"] .enx-footer-cta,
 html[data-theme="light"] .enx-footer-about,
 html[data-theme="light"] .enx-footer-trust-row span,
 html[data-theme="light"] .enx-footer-support a {
-  background: #101114;
-  border-color: rgba(255,255,255,.08);
+  background: #FFFDF8;
+  border-color: #E2D6C6;
 }
 
 html[data-theme="light"] .enx-store-badge {
   background: #111111;
   border-color: rgba(0,0,0,.14);
+  color: #ffffff;
 }
 
 .privacy-policy-page {
@@ -1382,7 +1613,10 @@ html[data-theme="light"] .terms-page {
   .terms-hero {
     width: min(100% - 32px, 820px);
     padding-top: 92px;
-    min-height: 0;
+    min-height: calc(100svh - 16px);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
   }
 
   .terms-hero-grid {
@@ -1407,7 +1641,7 @@ html[data-theme="light"] .terms-page {
   .terms-policy-shell {
     width: min(100% - 32px, 820px);
     display: block;
-    padding-bottom: 112px;
+    padding-bottom: calc(var(--mobile-fixed-reserve) + 44px);
   }
 
   .terms-sidebar {
@@ -1417,7 +1651,7 @@ html[data-theme="light"] .terms-page {
   .terms-mobile-toc {
     width: min(100% - 32px, 820px);
     display: block;
-    margin: 0 auto 18px;
+    margin: 0 auto 24px;
     border: 1px solid var(--terms-border);
     border-radius: 14px;
     background: var(--terms-panel);
@@ -1442,7 +1676,8 @@ html[data-theme="light"] .terms-page {
   }
 
   .terms-mobile-toc a {
-    padding: 10px;
+    min-height: 44px;
+    padding: 10px 12px;
     border: 1px solid var(--terms-border);
     border-radius: 10px;
     color: var(--terms-muted);
@@ -1504,6 +1739,10 @@ html[data-theme="light"] .terms-page {
   .terms-hero-art,
   .terms-policy-section {
     padding: 18px;
+  }
+
+  .terms-hero-art {
+    padding: 0;
   }
 
   .terms-section-main h2 {
@@ -2118,12 +2357,16 @@ html[data-theme="light"] .privacy-policy-page {
   .privacy-hero {
     width: min(100% - 32px, 760px);
     padding-top: 92px;
+    min-height: calc(100svh - 16px);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
   }
 
   .privacy-policy-shell {
     width: min(100% - 32px, 760px);
     display: block;
-    padding-bottom: 112px;
+    padding-bottom: calc(var(--mobile-fixed-reserve) + 44px);
   }
 
   .privacy-sidebar {
@@ -2133,7 +2376,7 @@ html[data-theme="light"] .privacy-policy-page {
   .privacy-mobile-toc {
     width: min(100% - 32px, 760px);
     display: block;
-    margin: 0 auto 18px;
+    margin: 0 auto 24px;
     border: 1px solid var(--privacy-border);
     border-radius: 14px;
     background: rgba(12, 13, 15, .92);
@@ -2158,7 +2401,8 @@ html[data-theme="light"] .privacy-policy-page {
   }
 
   .privacy-mobile-toc a {
-    padding: 10px;
+    min-height: 44px;
+    padding: 10px 12px;
     border: 1px solid var(--privacy-border);
     border-radius: 10px;
     color: var(--privacy-muted);
@@ -2710,11 +2954,16 @@ html:has(.enx-page-loading) .enx-nav-hamburger span {
 
   .enx-nav-inner {
     min-height: 42px !important;
-    gap: 14px !important;
+    gap: 10px !important;
   }
 
-  .enx-nav-logo {
-    font-size: 1.05rem !important;
+  .enx-nav-logo .brand-logo {
+    width: clamp(118px, 35vw, 142px) !important;
+    height: 34px !important;
+  }
+
+  .enx-mobile-top-search-field input {
+    font-size: .74rem !important;
   }
 
   .enx-mobile-menu {
@@ -2858,6 +3107,150 @@ html:has(.enx-page-loading) .enx-nav-hamburger span {
 
   .react-page-root :where(.pf-theme-grid) {
     flex-direction: column !important;
+  }
+
+  html:has(.react-page-root[data-page="profile.html"]) .enx-navbar {
+    background: #000000 !important;
+  }
+
+  .react-page-root[data-page="profile.html"] :where(.pf-page) {
+    padding-top: 108px !important;
+    padding-bottom: calc(var(--mobile-fixed-reserve) + 42px) !important;
+  }
+
+  .react-page-root[data-page="profile.html"] :where(.pf-breadcrumb) {
+    margin-bottom: 12px !important;
+    font-size: .76rem !important;
+  }
+
+  .react-page-root[data-page="profile.html"] :where(.pf-page-title) {
+    margin-bottom: 18px !important;
+    font-size: clamp(2rem, 9vw, 2.45rem) !important;
+    line-height: 1 !important;
+  }
+
+  .react-page-root[data-page="profile.html"] :where(.pf-card) {
+    padding: 16px !important;
+    border-radius: 13px !important;
+  }
+
+  .react-page-root[data-page="profile.html"] :where(.pf-profile-card) {
+    gap: 14px !important;
+    margin-bottom: 14px !important;
+  }
+
+  .react-page-root[data-page="profile.html"] :where(.pf-avatar-wrap) {
+    margin: 0 auto !important;
+  }
+
+  .react-page-root[data-page="profile.html"] :where(.pf-avatar) {
+    width: 78px !important;
+    height: 78px !important;
+    border-radius: 12px !important;
+  }
+
+  .react-page-root[data-page="profile.html"] :where(.pf-profile-actions) {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    width: 100% !important;
+    gap: 8px !important;
+    margin-top: 2px !important;
+  }
+
+  .react-page-root[data-page="profile.html"] :where(.pf-edit-btn, .pf-secondary-btn) {
+    min-height: 44px !important;
+    padding: 11px 12px !important;
+    align-self: stretch !important;
+    white-space: normal !important;
+  }
+
+  .react-page-root[data-page="profile.html"] :where(.pf-row-2) {
+    gap: 14px !important;
+    margin-bottom: 14px !important;
+  }
+
+  .react-page-root[data-page="profile.html"] :where(.pf-card-heading) {
+    margin-bottom: 14px !important;
+    font-size: clamp(1.35rem, 6vw, 1.65rem) !important;
+    line-height: 1.08 !important;
+  }
+
+  .react-page-root[data-page="profile.html"] :where(.pf-card-heading i) {
+    font-size: .9em !important;
+  }
+
+  .react-page-root[data-page="profile.html"] :where(.pf-theme-grid) {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+  }
+
+  .react-page-root[data-page="profile.html"] :where(.pf-theme-opt) {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) 72px !important;
+    align-items: center !important;
+    gap: 10px !important;
+    padding: 8px !important;
+    border: 1px solid var(--border, rgba(255, 255, 255, .08)) !important;
+    border-radius: 12px !important;
+    background: rgba(255, 255, 255, .035) !important;
+  }
+
+  .react-page-root[data-page="profile.html"] :where(.pf-theme-opt.selected) {
+    border-color: rgba(197, 139, 42, .72) !important;
+    background: rgba(197, 139, 42, .08) !important;
+  }
+
+  .react-page-root[data-page="profile.html"] :where(.pf-theme-preview) {
+    height: 46px !important;
+    margin-bottom: 0 !important;
+    border-width: 1px !important;
+    border-radius: 9px !important;
+  }
+
+  .react-page-root[data-page="profile.html"] :where(.pf-theme-label) {
+    text-align: right !important;
+    font-size: .8rem !important;
+  }
+
+  .react-page-root[data-page="profile.html"] :where(.pf-list-item) {
+    min-height: 48px !important;
+    padding: 10px 0 !important;
+  }
+
+  .react-page-root[data-page="profile.html"] :where(.pf-list-icon) {
+    width: 32px !important;
+    height: 32px !important;
+  }
+
+  .react-page-root[data-page="profile.html"] :where(.pf-list-label) {
+    font-size: .86rem !important;
+    line-height: 1.25 !important;
+  }
+
+  .react-page-root[data-page="profile.html"] :where(.pf-prefs-card) {
+    margin-bottom: 0 !important;
+  }
+
+  .react-page-root[data-page="profile.html"] :where(.pf-prefs-inner) {
+    gap: 14px !important;
+  }
+
+  .react-page-root[data-page="profile.html"] :where(.pf-prefs-right) {
+    width: 100% !important;
+    align-items: stretch !important;
+  }
+
+  .react-page-root[data-page="profile.html"] :where(.pf-logout-btn) {
+    width: 100% !important;
+    min-height: 44px !important;
+    justify-content: center !important;
+    white-space: normal !important;
+    text-align: center !important;
+  }
+
+  .react-page-root[data-page="profile.html"] :where(.pf-version-text, .pf-watermark) {
+    display: none !important;
   }
 
   .react-page-root[data-page="videos.html"] :where(.library-page, .video-page, .videos-page) {
@@ -3037,6 +3430,13 @@ html:has(.enx-page-loading) .enx-nav-hamburger span {
   transform: translateY(-50%) scale(1.04);
 }
 
+.react-page-root[data-page="index.html"] .hero-carousel-control :where(.enx-icon, .material-symbols-outlined) {
+  width: 22px;
+  height: 22px;
+  font-size: 22px;
+  line-height: 1;
+}
+
 .react-page-root[data-page="index.html"] .hero-carousel-control-prev {
   left: clamp(10px, 2vw, 26px);
 }
@@ -3116,6 +3516,8 @@ html:has(.enx-page-loading) .enx-nav-hamburger span {
   color: var(--text2);
   font-size: .72rem;
   line-height: 1.35;
+  min-height: 58px;
+  align-content: start;
 }
 
 .react-page-root[data-page="index.html"] .hero-card-meta span,
@@ -3136,6 +3538,7 @@ html:has(.enx-page-loading) .enx-nav-hamburger span {
   margin-top: auto;
   padding-top: 13px;
   border-top: 1px solid var(--border);
+  min-height: 38px;
 }
 
 .react-page-root[data-page="index.html"] .hero-card-price strong {
@@ -3149,6 +3552,7 @@ html:has(.enx-page-loading) .enx-nav-hamburger span {
   grid-template-columns: minmax(0, 1fr) 46px;
   gap: 10px;
   margin-top: 12px;
+  align-items: stretch;
 }
 
 .react-page-root[data-page="index.html"] .hero-card-actions.is-single {
@@ -3156,20 +3560,54 @@ html:has(.enx-page-loading) .enx-nav-hamburger span {
 }
 
 .react-page-root[data-page="index.html"] .hero-card-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start;
   min-width: 0;
   min-height: 46px;
   padding: 10px 14px;
   border: 0;
   border-radius: 10px;
   background: var(--cyan);
-  color: #000;
+  color: #FFFDF8;
   font: 700 .84rem/1.2 "Manrope", ui-sans-serif, system-ui, sans-serif;
+  text-decoration: none;
   cursor: pointer;
 }
 
 .react-page-root[data-page="index.html"] .hero-card-primary:hover {
   background: #A96F18;
   box-shadow: 0 4px 18px rgba(197, 139, 42, .35);
+}
+
+.react-page-root[data-page="index.html"] button.text-primary.inline-flex,
+.react-page-root[data-page="index.html"] a.text-primary.inline-flex {
+  min-height: 44px;
+  padding-block: 10px;
+}
+
+.react-page-root[data-page="payment.html"] .cp-includes p {
+  color: var(--cyan, #C58B2A) !important;
+}
+
+.react-page-root[data-page="payment.html"] .checkout-header p {
+  color: #2B211A !important;
+}
+
+.react-page-root[data-page="payment.html"] .cp-includes li {
+  color: var(--text, #f4f4f5) !important;
+}
+
+html[data-theme="light"] .react-page-root[data-page="payment.html"] .cp-includes li {
+  color: #332820 !important;
+}
+
+html[data-theme="light"] .react-page-root .lp-prefix {
+  color: #332820 !important;
+}
+
+.react-page-root[data-page="index.html"] .ai-mentorship-heading + p {
+  color: #2B211A !important;
 }
 
 .react-page-root[data-page="index.html"] .hero-card-wish {
@@ -3217,13 +3655,21 @@ html:has(.enx-page-loading) .enx-nav-hamburger span {
 
 @media (max-width: 760px) {
   .react-page-root[data-page="index.html"] .hero-carousel-control {
-    width: 38px;
-    height: 38px;
+    width: 36px;
+    height: 36px;
+  }
+
+  .react-page-root[data-page="index.html"] .hero-carousel-control-prev {
+    left: 18px;
+  }
+
+  .react-page-root[data-page="index.html"] .hero-carousel-control-next {
+    right: 18px;
   }
 
   .react-page-root[data-page="index.html"] .hero-course-card {
-    flex-basis: min(86vw, 340px) !important;
-    height: 446px !important;
+    flex-basis: min(82vw, 320px) !important;
+    height: 390px !important;
   }
 
   .react-page-root[data-page="index.html"] .hero-card-body {
@@ -3455,6 +3901,72 @@ html[data-theme="light"] .react-page-root[data-page="videos.html"] .summary-subl
 html[data-theme="light"] .react-page-root[data-page="videos.html"] .watch-layout {
   background: #FAF7F1 !important;
   border-color: rgba(0,0,0,.08) !important;
+}
+
+html[data-theme="light"] .react-page-root[data-page="videos.html"] :where(.watch-top, .player-wrap, .lesson-info, .lesson-sidebar, .sidebar-head, .lesson-list) {
+  color: #332820 !important;
+}
+
+html[data-theme="light"] .react-page-root[data-page="videos.html"] :where(.sidebar-head h2, .lesson-info h1, .lesson-copy strong) {
+  color: #2B211A !important;
+}
+
+html[data-theme="light"] .react-page-root[data-page="videos.html"] :where(.sidebar-head p, .lesson-info p, .lesson-meta span, .lesson-copy span, .status-line) {
+  color: #756A60 !important;
+}
+
+html[data-theme="light"] .react-page-root[data-page="videos.html"] :where(.lesson-sidebar, .sidebar-head, .lesson-item, .lesson-meta span, .auto-next-toggle) {
+  border-color: #E2D6C6 !important;
+}
+
+html[data-theme="light"] .react-page-root[data-page="videos.html"] :where(.lesson-item) {
+  background: #FFFDF8 !important;
+  color: #332820 !important;
+}
+
+html[data-theme="light"] .react-page-root[data-page="videos.html"] :where(.lesson-item:hover, .lesson-item.is-active) {
+  background: #F0FAFC !important;
+  border-color: rgba(197, 139, 42, .26) !important;
+}
+
+html[data-theme="light"] .react-page-root[data-page="videos.html"] .lesson-copy strong {
+  display: -webkit-box !important;
+  -webkit-line-clamp: 2 !important;
+  -webkit-box-orient: vertical !important;
+  overflow: hidden !important;
+  overflow-wrap: normal !important;
+  word-break: normal !important;
+  hyphens: none !important;
+}
+
+html[data-theme="light"] .react-page-root[data-page="videos.html"] .lesson-number {
+  background: rgba(255, 253, 248, .92) !important;
+  color: #8E621D !important;
+  border: 1px solid #E2D6C6 !important;
+}
+
+html[data-theme="light"] .react-page-root[data-page="videos.html"] .auto-next-toggle {
+  background: #FFFCF6 !important;
+  color: #8E621D !important;
+}
+
+html[data-theme="light"] .react-page-root[data-page="videos.html"] .auto-next-switch {
+  background: #E6DACB !important;
+  border-color: #DAB77A !important;
+}
+
+html[data-theme="light"] .react-page-root[data-page="videos.html"] .auto-next-switch::before {
+  background: #FFFDF8 !important;
+}
+
+html[data-theme="light"] .react-page-root[data-page="videos.html"] .auto-next-toggle:has(input:checked) {
+  background: rgba(197, 139, 42, .14) !important;
+  color: #6E4713 !important;
+}
+
+html[data-theme="light"] .react-page-root[data-page="videos.html"] .auto-next-toggle:has(input:checked) .auto-next-switch {
+  background: #C58B2A !important;
+  border-color: #C58B2A !important;
 }
 
 .react-page-root[data-page="about.html"] {
@@ -3838,7 +4350,7 @@ html[data-theme="light"] :where(.nav-logo, .premium-logo, .footer-brand, .enx-na
   color: #2B211A !important;
 }
 
-html[data-theme="light"] :where(.nav-logo span, .premium-logo span, .enx-nav-logo span, .enx-footer-brand span span, .nav-links a.active, .premium-nav-links a.active, .enx-nav-links a.active, .nav-login:hover, .enx-nav-login:hover, .nav-avatar:hover, .enx-nav-avatar:hover, .premium-avatar:hover, .footer-links a:hover, .enx-footer-links a:hover, .enx-footer-cta > a, .sec-link, .course-price, .wl-price, .cp-price, .hero-card-price strong, .hero-card-action) {
+html[data-theme="light"] :where(.nav-logo .brand-logo-mate, .nav-logo .brand-logo-ai, .premium-logo .brand-logo-mate, .premium-logo .brand-logo-ai, .enx-nav-logo .brand-logo-mate, .enx-nav-logo .brand-logo-ai, .enx-footer-brand span span, .nav-links a.active, .premium-nav-links a.active, .enx-nav-links a.active, .nav-login:hover, .enx-nav-login:hover, .nav-avatar:hover, .enx-nav-avatar:hover, .premium-avatar:hover, .footer-links a:hover, .enx-footer-links a:hover, .enx-footer-cta > a, .sec-link, .course-price, .wl-price, .cp-price, .hero-card-price strong, .hero-card-action) {
   color: #C58B2A !important;
 }
 
@@ -3914,22 +4426,180 @@ html[data-theme="light"] :where(.grid-dot-global) {
 }
 
 html[data-theme="light"] :where(.site-footer, .footer, .footer-wrap, .sp-footer, .enx-footer, .enx-footer-cta, .enx-footer-trust-row span, .enx-footer-support a) {
-  background: #000000 !important;
-  border-color: rgba(255, 255, 255, .08) !important;
+  background: #FBF8F2 !important;
+  border-color: #E2D6C6 !important;
 }
 
 html[data-theme="light"] .enx-footer,
 html[data-theme="light"] .enx-footer :where(.enx-footer-heading, .enx-footer-bottom span, .enx-footer-bottom a) {
-  color: #ffffff !important;
+  color: #2B211A !important;
 }
 
 html[data-theme="light"] .enx-footer :where(.enx-footer-links a, .enx-footer-cta p, .enx-footer-support a) {
-  color: #b8bbc4 !important;
+  color: #5F534A !important;
 }
 
 html[data-theme="light"] .enx-footer .enx-footer-cta,
 html[data-theme="light"] .enx-footer .enx-footer-support a {
-  background: #101114 !important;
+  background: #FFFDF8 !important;
+}
+
+/* Legal and help surfaces must follow the selected light theme. */
+html[data-theme="light"] body.has-privacy-policy-page,
+html[data-theme="light"] body.has-terms-page {
+  background: #FAF7F1 !important;
+  color: #332820 !important;
+}
+
+html[data-theme="light"] .privacy-policy-page {
+  --privacy-bg: #FAF7F1;
+  --privacy-panel: #FFFDF8;
+  --privacy-panel-strong: #FFFCF6;
+  --privacy-text: #2B211A;
+  --privacy-muted: #756A60;
+  --privacy-soft: #9A8E82;
+  --privacy-gold: #C58B2A;
+  --privacy-gold-light: #C58B2A;
+  --privacy-border: #E2D6C6;
+  --privacy-gold-border: rgba(197, 139, 42, .34);
+  background: var(--privacy-bg) !important;
+  color: var(--privacy-text) !important;
+}
+
+html[data-theme="light"] .terms-page {
+  --terms-bg: #FAF7F1;
+  --terms-panel: #FFFDF8;
+  --terms-panel-soft: #FFFCF6;
+  --terms-text: #2B211A;
+  --terms-muted: #756A60;
+  --terms-soft: #9A8E82;
+  --terms-gold: #C58B2A;
+  --terms-gold-light: #C58B2A;
+  --terms-border: #E2D6C6;
+  --terms-gold-border: rgba(197, 139, 42, .34);
+  background: var(--terms-bg) !important;
+  color: var(--terms-text) !important;
+}
+
+html[data-theme="light"] .privacy-policy-page :where(.privacy-hero h1, .privacy-section-body h2, .privacy-section-body h3, .privacy-help-card h2, .privacy-final-card h3),
+html[data-theme="light"] .terms-page :where(.terms-hero h1, .terms-section-main h2, .terms-section-main h3, .terms-help-card h2) {
+  color: #2B211A !important;
+}
+
+html[data-theme="light"] .privacy-policy-page :where(p, li, .privacy-breadcrumb, .privacy-info-card p, .privacy-provider-list div, .privacy-retention-row span),
+html[data-theme="light"] .terms-page :where(p, li, .terms-breadcrumb, .terms-info-card p, .terms-check-list li p, .terms-plain-list li p) {
+  color: #756A60 !important;
+}
+
+html[data-theme="light"] .privacy-policy-page :where(.privacy-kicker, .privacy-hero h1 span, .privacy-breadcrumb span:last-child, .privacy-date-row > span .enx-icon, .privacy-card-icon, .privacy-section-number, .privacy-toc p, .privacy-toc .enx-icon, .privacy-help-card > span, .privacy-help-card a, .privacy-note-card .enx-icon, .privacy-retention-row strong, .privacy-deletion-grid h3, .privacy-final-card h3),
+html[data-theme="light"] .terms-page :where(.terms-kicker, .terms-hero h1 span, .terms-breadcrumb span:last-child, .terms-section-number, .terms-card-icon, .terms-toc p, .terms-toc .enx-icon, .terms-help-card > span, .terms-help-card a, .terms-callout > .enx-icon, .terms-ai-panel > .enx-icon, .terms-callout h3, .terms-ai-panel h3, .terms-deletion-panel h3, .terms-section-main a) {
+  color: #C58B2A !important;
+}
+
+html[data-theme="light"] .privacy-policy-page :where(.privacy-toc, .privacy-help-card, .privacy-policy-content, .privacy-info-card, .privacy-provider-list, .privacy-final-card, .privacy-deletion-grid > div, .privacy-retention-table),
+html[data-theme="light"] .terms-page :where(.terms-toc, .terms-help-card, .terms-policy-section, .terms-info-card, .terms-deletion-panel) {
+  background: #FFFDF8 !important;
+  border-color: #E2D6C6 !important;
+  box-shadow: 0 14px 38px rgba(88, 65, 34, .08) !important;
+}
+
+html[data-theme="light"] .privacy-policy-page :where(.privacy-date-row > span, .privacy-note-card, .privacy-mobile-toc, .privacy-card-icon, .privacy-section-number, .privacy-check-list li span, .privacy-help-card > span),
+html[data-theme="light"] .terms-page :where(.terms-section-number, .terms-card-icon, .terms-callout, .terms-ai-panel, .terms-help-card > span, .terms-check-list li span, .terms-mobile-toc) {
+  background: #F3EBDD !important;
+  border-color: rgba(197, 139, 42, .28) !important;
+}
+
+html[data-theme="light"] .privacy-policy-page :where(.privacy-note-card p, .privacy-check-list li, .privacy-plain-list li),
+html[data-theme="light"] .terms-page :where(.terms-callout p, .terms-ai-panel p) {
+  color: #5F5145 !important;
+}
+
+html[data-theme="light"] .privacy-hero-art {
+  background:
+    radial-gradient(ellipse at 80% 34%, rgba(197, 139, 42, .18), transparent 12rem),
+    linear-gradient(145deg, #FFFDF8, #F3EBDD 58%) !important;
+  box-shadow: inset 0 0 60px rgba(197, 139, 42, .08), 0 14px 38px rgba(88, 65, 34, .08) !important;
+}
+
+html[data-theme="light"] .privacy-shield {
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, .62), transparent 38%),
+    linear-gradient(180deg, rgba(197, 139, 42, .22), #FFFDF8) !important;
+  border-color: rgba(197, 139, 42, .3) !important;
+}
+
+html[data-theme="light"] .privacy-hero-art-copy :where(strong, span),
+html[data-theme="light"] .privacy-hero-art-copy small {
+  color: #8B5E1E !important;
+}
+
+html[data-theme="light"] .terms-hero-art {
+  background-color: #F3EBDD !important;
+  border: 1px solid rgba(197, 139, 42, .22) !important;
+  box-shadow: inset 0 -1px 0 rgba(197, 139, 42, .22), 0 14px 38px rgba(88, 65, 34, .08) !important;
+}
+
+html[data-theme="light"] .privacy-policy-section:target,
+html[data-theme="light"] .terms-policy-section:target {
+  border-color: rgba(197, 139, 42, .48) !important;
+  background: #F3EBDD !important;
+}
+
+html[data-theme="light"] :where(.site-footer, .footer, .footer-wrap, .sp-footer, .enx-footer, .enx-footer-cta, .enx-footer-trust-row span, .enx-footer-support a) {
+  background: #FBF8F2 !important;
+  border-color: #E2D6C6 !important;
+}
+
+html[data-theme="light"] .enx-footer,
+html[data-theme="light"] .enx-footer :where(.enx-footer-heading, .enx-footer-bottom span, .enx-footer-bottom a) {
+  color: #2B211A !important;
+}
+
+html[data-theme="light"] .react-page-root :where(.enx-footer, .enx-footer-shell, .enx-footer-top, .enx-footer-intro, .enx-footer-column, .enx-footer-heading, .enx-footer-links) {
+  color: #2B211A !important;
+}
+
+html[data-theme="light"] .enx-footer :where(.enx-footer-links a, .enx-footer-cta p, .enx-footer-support a) {
+  color: #756A60 !important;
+}
+
+html[data-theme="light"] .enx-footer :where(.enx-footer-links a:hover, .enx-footer-cta > a) {
+  color: #C58B2A !important;
+}
+
+html[data-theme="light"] .enx-footer .enx-footer-cta,
+html[data-theme="light"] .enx-footer .enx-footer-support a {
+  background: #FFFDF8 !important;
+}
+
+.react-page-root[data-page="courses.html"] .course-card-actions .btn-trial {
+  min-height: 46px !important;
+  color: #FFFDF8 !important;
+}
+
+.react-page-root :where(
+  .hero-search-btn,
+  .hero-card-primary,
+  .btn-trial,
+  .trial-btn,
+  .pay-btn,
+  .pay-btn-primary,
+  .payment-choice-btn,
+  .lp-signin-btn
+) {
+  min-height: 44px !important;
+}
+
+.react-page-root[data-page="login.html"] :where(.lp-forgot, .lp-eye-icon) {
+  min-width: 44px !important;
+  min-height: 44px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+html[data-theme="light"] .react-page-root :where(.course-thumb-wrap) {
+  color: #FFFDF8 !important;
 }
 
 /* Keep primary headings readable when page-local light palette rules are active in dark mode. */
@@ -4090,6 +4760,40 @@ html[data-theme="light"] :where(.navbar .enx-icon, .premium-site-nav .enx-icon, 
 }
 
 @media (max-width: 900px) {
+  .react-page-root[data-page="index.html"] .learning-hero {
+    display: flex !important;
+    flex-direction: column !important;
+  }
+
+  .react-page-root[data-page="index.html"] .learning-hero-copy {
+    order: 1 !important;
+  }
+
+  .react-page-root[data-page="index.html"] .learning-hero-actions {
+    order: 2 !important;
+  }
+
+  .react-page-root[data-page="index.html"] .hero-search-block {
+    display: none !important;
+    order: 4 !important;
+  }
+
+  .react-page-root[data-page="index.html"] .hero-trust-strip {
+    order: 5 !important;
+  }
+
+  .react-page-root[data-page="index.html"] .hero-carousel-shell {
+    display: block !important;
+    order: 3 !important;
+    width: 100% !important;
+    margin: 20px 0 18px !important;
+    padding: 0 !important;
+  }
+
+  .react-page-root[data-page="index.html"] .hero-carousel-viewport {
+    padding: 10px 0 14px !important;
+  }
+
   .react-page-root[data-page="about.html"] .hero-grid {
     grid-template-columns: 1fr !important;
   }
@@ -4134,8 +4838,141 @@ html[data-theme="light"] :where(.navbar .enx-icon, .premium-site-nav .enx-icon, 
     overflow-x: clip !important;
   }
 
+  :root {
+    --floating-ai-bottom: calc(var(--mobile-fixed-reserve) + 92px);
+  }
+
   .react-page-root :where(.container, section, main, header, footer) {
     max-width: 100% !important;
+  }
+
+  .react-page-root[data-page="index.html"] .learning-hero-copy {
+    margin-top: -72px !important;
+  }
+
+  .react-page-root[data-page="index.html"] .learning-hero-actions {
+    transform: none !important;
+    margin-top: 18px !important;
+  }
+
+  .react-page-root[data-page="index.html"] .hero-search-block {
+    margin-top: 16px !important;
+  }
+
+  .react-page-root[data-page="index.html"] .hero-trust-strip {
+    display: grid !important;
+    grid-auto-flow: column !important;
+    grid-auto-columns: minmax(218px, 72vw) !important;
+    grid-template-columns: none !important;
+    gap: 10px !important;
+    width: 100% !important;
+    padding: 0 16px 4px !important;
+    margin-bottom: 24px !important;
+    overflow-x: auto !important;
+    scrollbar-width: none !important;
+    overscroll-behavior-x: contain !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+
+  .react-page-root[data-page="index.html"] .hero-trust-strip::-webkit-scrollbar {
+    display: none !important;
+  }
+
+  .react-page-root[data-page="index.html"] .hero-trust-item {
+    min-height: 72px !important;
+  }
+
+  .react-page-root[data-page="index.html"] .hero-topics {
+    display: none !important;
+  }
+
+  html:has(.react-page-root[data-page="index.html"]) #nai-float-btn {
+    display: none !important;
+  }
+
+  html:has(.react-page-root[data-page="courses.html"]) #nai-float-btn {
+    display: none !important;
+  }
+
+  .react-page-root[data-page="courses.html"] .search-section {
+    padding-top: 84px !important;
+    padding-bottom: 18px !important;
+  }
+
+  .react-page-root[data-page="courses.html"] .search-bar-wrap {
+    gap: 10px !important;
+  }
+
+  .react-page-root[data-page="courses.html"] .search-input-wrap {
+    min-height: 46px !important;
+    padding: 8px 12px !important;
+    border-radius: 9px !important;
+  }
+
+  .react-page-root[data-page="courses.html"] .search-input-wrap input {
+    font-size: .78rem !important;
+  }
+
+  .react-page-root[data-page="courses.html"] .filter-pills {
+    display: grid !important;
+    grid-auto-flow: column !important;
+    grid-auto-columns: max-content !important;
+    grid-template-columns: none !important;
+    gap: 8px !important;
+    width: 100% !important;
+    padding: 0 0 4px !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    scrollbar-width: none !important;
+    overscroll-behavior-x: contain !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+
+  .react-page-root[data-page="courses.html"] .filter-pills::-webkit-scrollbar {
+    display: none !important;
+  }
+
+  .react-page-root[data-page="courses.html"] .filter-pills .pill {
+    width: auto !important;
+    min-width: 0 !important;
+    min-height: 34px !important;
+    padding: 7px 14px !important;
+    border-radius: 999px !important;
+    font-size: .72rem !important;
+    line-height: 1 !important;
+    white-space: nowrap !important;
+  }
+
+  .react-page-root[data-page="courses.html"] .curriculum-section {
+    padding-top: 0 !important;
+  }
+
+  .react-page-root[data-page="courses.html"] .courses-grid {
+    gap: 14px !important;
+    margin-top: 0 !important;
+  }
+
+  .react-page-root[data-page="courses.html"] .category-block {
+    margin-bottom: 30px !important;
+  }
+
+  .react-page-root[data-page="courses.html"] .section-header {
+    margin-bottom: 10px !important;
+    gap: 6px !important;
+  }
+
+  .react-page-root[data-page="courses.html"] .section-header-left h2 {
+    font-size: clamp(1.45rem, 7vw, 1.8rem) !important;
+    margin-bottom: 2px !important;
+  }
+
+  .react-page-root[data-page="courses.html"] .section-header-left p {
+    font-size: .78rem !important;
+    line-height: 1.35 !important;
+  }
+
+  .help-page .help-grid {
+    gap: 72px !important;
   }
 
   .react-page-root :where(.hero-grid, .courses-grid, .course-grid, .category-grid, .continue-grid, .library-grid, .cert-grid, .wl-grid, .stats-grid, .features-grid, .path-grid, .summary-grid, .team-grid, .directives-grid, .sp-footer-top, .sp-row-2) {
@@ -4296,6 +5133,50 @@ html[data-theme="light"] :where(.navbar .enx-icon, .premium-site-nav .enx-icon, 
     padding-right: 12px !important;
   }
 
+  html:has(.react-page-root[data-page="login.html"]) #nai-float-btn,
+  html:has(.react-page-root[data-page="signup.html"]) #nai-float-btn {
+    display: none !important;
+  }
+
+  .react-page-root[data-page="login.html"] .lp-wrap {
+    padding-top: 68px !important;
+    padding-bottom: calc(var(--mobile-fixed-reserve) + 18px) !important;
+  }
+
+  .react-page-root[data-page="login.html"] .lp-form-box {
+    padding: 14px !important;
+  }
+
+  .react-page-root[data-page="login.html"] .lp-form-box .lp-login-title {
+    font-size: clamp(1.35rem, 7vw, 1.7rem) !important;
+  }
+
+  .react-page-root[data-page="login.html"] .lp-subtitle {
+    margin-bottom: 14px !important;
+    font-size: .88rem !important;
+    line-height: 1.35 !important;
+  }
+
+  .react-page-root[data-page="login.html"] .lp-form-group {
+    margin-bottom: 12px !important;
+  }
+
+  .react-page-root[data-page="login.html"] .lp-input-wrap {
+    min-height: 44px !important;
+  }
+
+  .react-page-root[data-page="login.html"] .lp-remember {
+    margin: 6px 0 12px !important;
+  }
+
+  .react-page-root[data-page="login.html"] .lp-signin-btn {
+    min-height: 44px !important;
+  }
+
+  .react-page-root[data-page="login.html"] .lp-footer-links {
+    margin-top: 68px !important;
+  }
+
   .react-page-root[data-page="signup.html"] .sp-prefix {
     padding-left: 0 !important;
     padding-right: 10px !important;
@@ -4312,6 +5193,23 @@ html[data-theme="light"] :where(.navbar .enx-icon, .premium-site-nav .enx-icon, 
 
   .react-page-root[data-page="signup.html"] .sp-avatar-grid {
     gap: 8px !important;
+  }
+}
+
+@media (min-width: 380px) and (max-width: 400px) and (min-height: 800px) and (max-height: 880px) {
+  html:has(.react-page-root[data-page="index.html"]) #nai-float-btn {
+    display: none !important;
+  }
+}
+
+@media (max-width: 360px) {
+  .enx-nav-logo .brand-logo {
+    width: 106px !important;
+  }
+
+  .enx-mobile-top-search-field {
+    padding-inline: 8px !important;
+    gap: 5px !important;
   }
 }
 
@@ -4373,7 +5271,7 @@ html[data-theme="light"] :where(.nav-logo, .premium-logo, .footer-brand, .enx-na
   color: #2B211A !important;
 }
 
-html[data-theme="light"] :where(.nav-logo span, .premium-logo span, .enx-nav-logo span, .enx-footer-brand span span, .nav-links a.active, .premium-nav-links a.active, .enx-nav-links a.active, .nav-login:hover, .enx-nav-login:hover, .nav-avatar:hover, .enx-nav-avatar:hover, .premium-avatar:hover, .footer-links a:hover, .enx-footer-links a:hover, .enx-footer-cta > a, .sec-link, .course-price, .wl-price, .cp-price, .hero-card-price strong, .hero-card-action) {
+html[data-theme="light"] :where(.nav-logo .brand-logo-mate, .nav-logo .brand-logo-ai, .premium-logo .brand-logo-mate, .premium-logo .brand-logo-ai, .enx-nav-logo .brand-logo-mate, .enx-nav-logo .brand-logo-ai, .enx-footer-brand span span, .nav-links a.active, .premium-nav-links a.active, .enx-nav-links a.active, .nav-login:hover, .enx-nav-login:hover, .nav-avatar:hover, .enx-nav-avatar:hover, .premium-avatar:hover, .footer-links a:hover, .enx-footer-links a:hover, .enx-footer-cta > a, .sec-link, .course-price, .wl-price, .cp-price, .hero-card-price strong, .hero-card-action) {
   color: #C58B2A !important;
 }
 
@@ -4465,20 +5363,20 @@ html[data-theme="light"] :where(.grid-dot-global) {
 }
 
 html[data-theme="light"] :where(.site-footer, .footer, .footer-wrap, .sp-footer, .enx-footer, .enx-footer-cta, .enx-footer-trust-row span, .enx-footer-support a) {
-  background: #000000 !important;
-  border-color: rgba(255, 255, 255, .08) !important;
+  background: #FBF8F2 !important;
+  border-color: #E2D6C6 !important;
 }
 
 html[data-theme="light"] .enx-footer,
 html[data-theme="light"] .enx-footer :where(.enx-footer-heading, .enx-footer-bottom span, .enx-footer-bottom a) {
-  color: #ffffff !important;
+  color: #2B211A !important;
 }
 
 html[data-theme="light"] .enx-footer :where(.enx-footer-links a, .enx-footer-cta p, .enx-footer-support a) {
-  color: #b8bbc4 !important;
+  color: #5F534A !important;
 }
 
 html[data-theme="light"] .enx-footer .enx-footer-cta,
 html[data-theme="light"] .enx-footer .enx-footer-support a {
-  background: #101114 !important;
+  background: #FFFDF8 !important;
 }

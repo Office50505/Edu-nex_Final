@@ -97,6 +97,7 @@
       -webkit-user-select: none;
     }
     #nai-float-btn i { font-size: 1rem; }
+    #nai-float-btn .nai-float-mobile-label { display: none; }
     #nai-float-btn:hover {
       transform: translateY(-3px);
       box-shadow: 0 10px 36px rgba(88,65,34,0.22);
@@ -143,7 +144,7 @@
     /* ── MODAL ── */
     #nai-modal {
       width: 100%;
-      max-width: 860px;
+      max-width: 1060px;
       height: 84vh;
       max-height: 720px;
       background: #0e1118;
@@ -177,6 +178,69 @@
     }
     #nai-sidebar::-webkit-scrollbar { width: 3px; }
     #nai-sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 2px; }
+
+    .nai-history-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    .nai-history-title {
+      margin: 0;
+      color: #fff;
+      font-size: .88rem;
+      font-weight: 900;
+    }
+    .nai-history-list {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+      min-height: 80px;
+    }
+    .nai-history-empty {
+      border: 1px dashed rgba(255,255,255,.12);
+      border-radius: 12px;
+      color: #756A60;
+      font-size: .78rem;
+      font-weight: 700;
+      line-height: 1.45;
+      padding: 13px;
+    }
+    .nai-history-item {
+      all: unset;
+      display: grid;
+      gap: 4px;
+      padding: 11px 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,.08);
+      background: rgba(255,255,255,.035);
+      color: #d1d5db;
+      cursor: pointer;
+      min-width: 0;
+      transition: border-color .18s, background .18s, color .18s;
+    }
+    .nai-history-item:hover,
+    .nai-history-item.is-active {
+      border-color: rgba(197,139,42,.38);
+      background: rgba(197,139,42,.1);
+      color: #fff;
+    }
+    .nai-history-item-title,
+    .nai-history-item-meta {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .nai-history-item-title {
+      font-size: .78rem;
+      font-weight: 900;
+    }
+    .nai-history-item-meta {
+      color: #756A60;
+      font-size: .68rem;
+      font-weight: 700;
+    }
 
     /* Bot header */
     .nai-bot-hdr {
@@ -580,15 +644,84 @@
     .nai-footer-hint span { margin: 0 8px; }
     /* ── RESPONSIVE ── */
     @media (max-width: 768px) {
-      #nai-sidebar { display: none; }
-      #nai-modal { height: 90vh; max-height: none; border-radius: 16px; }
-      #nai-float-btn span { display: inline; }
+      #nai-overlay {
+        align-items: stretch;
+        justify-content: stretch;
+        padding: 0;
+      }
+      #nai-modal {
+        width: 100vw;
+        max-width: none;
+        height: 100dvh;
+        min-height: 100vh;
+        max-height: none;
+        border-radius: 0;
+        border: 0;
+        flex-direction: column;
+        box-shadow: none;
+        transform: translateY(18px);
+      }
+      #nai-overlay.nai-open #nai-modal {
+        transform: translateY(0);
+      }
+      #nai-sidebar {
+        width: 100%;
+        max-height: 188px;
+        border-right: 0;
+        border-bottom: 1px solid rgba(255,255,255,0.06);
+        padding: calc(14px + env(safe-area-inset-top, 0px)) 14px 14px;
+        gap: 12px;
+      }
+      .nai-history-list {
+        display: grid;
+        grid-auto-flow: column;
+        grid-auto-columns: minmax(168px, 1fr);
+        overflow-x: auto;
+        min-height: 0;
+        padding-bottom: 2px;
+      }
+      .nai-history-empty {
+        min-width: 220px;
+      }
+      #nai-float-btn .nai-float-text-label { display: none !important; }
       #nai-float-btn {
+        display: none !important;
+        width: 52px;
+        height: 52px;
+        justify-content: center;
+        bottom: var(--floating-ai-bottom, calc(104px + env(safe-area-inset-bottom, 0px)));
+        right: calc(16px + env(safe-area-inset-right, 0px));
+        padding: 0;
+        border-radius: 16px;
+      }
+      #nai-float-btn i { display: none; }
+      #nai-float-btn .nai-float-mobile-label {
+        display: inline !important;
+        font-size: .78rem;
+        font-weight: 900;
+        letter-spacing: 0;
+      }
+      #nai-input-area {
+        padding-bottom: calc(14px + env(safe-area-inset-bottom, 0px));
+      }
+      #nai-auth-prompt {
+        align-items: stretch;
+        justify-content: stretch;
+        padding: 0;
+      }
+      .nai-auth-card {
+        width: 100vw;
+        min-height: 100dvh;
+        border-radius: 0;
+        border: 0;
+        padding: calc(34px + env(safe-area-inset-top, 0px)) 24px calc(28px + env(safe-area-inset-bottom, 0px));
         display: flex;
-        bottom: calc(18px + env(safe-area-inset-bottom, 0px));
-        right: calc(18px + env(safe-area-inset-right, 0px));
-        padding: 12px 16px;
-        border-radius: 12px;
+        flex-direction: column;
+        justify-content: center;
+        box-shadow: none;
+      }
+      .nai-auth-actions {
+        flex-direction: column;
       }
     }
     #nex-ai-widget-root.nai-fullscreen-hidden {
@@ -601,11 +734,31 @@
       box-shadow: 0 28px 90px rgba(88,65,34,.12);
     }
     html[data-theme="light"] #nai-chat-hdr,
-    html[data-theme="light"] #nai-input-area {
+    html[data-theme="light"] #nai-input-area,
+    html[data-theme="light"] #nai-sidebar {
       border-color: #E6DACB;
     }
+    html[data-theme="light"] #nai-sidebar {
+      background: #FAF5ED;
+    }
     html[data-theme="light"] .nai-session-title,
+    html[data-theme="light"] .nai-history-title,
     html[data-theme="light"] .nai-ai-bubble strong {
+      color: #2B211A;
+    }
+    html[data-theme="light"] .nai-history-empty {
+      border-color: #E2D6C6;
+      color: #8B7A69;
+    }
+    html[data-theme="light"] .nai-history-item {
+      background: #FFFDF8;
+      border-color: #E2D6C6;
+      color: #332820;
+    }
+    html[data-theme="light"] .nai-history-item:hover,
+    html[data-theme="light"] .nai-history-item.is-active {
+      background: rgba(197,139,42,.12);
+      border-color: rgba(197,139,42,.42);
       color: #2B211A;
     }
     html[data-theme="light"] .nai-ai-bubble,
@@ -745,12 +898,30 @@
     <!-- Floating Button -->
     <button id="nai-float-btn" aria-label="Open Nex AI Tutor">
       <i class="fas fa-bolt"></i>
-      <span>${hasAiAccess() ? 'Nex AI' : 'Login to use AI'}</span>
+      <span class="nai-float-mobile-label" aria-hidden="true">AI</span>
+      <span class="nai-float-text-label">${hasAiAccess() ? 'Nex AI' : 'Login to use AI'}</span>
     </button>
 
     <!-- Overlay -->
     <div id="nai-overlay" aria-hidden="true">
       <div id="nai-modal" role="dialog" aria-modal="true" aria-labelledby="nai-session-title" tabindex="-1">
+
+        <!-- ── CHAT HISTORY ── -->
+        <aside id="nai-sidebar" aria-label="Nex AI chat history">
+          <div class="nai-bot-hdr">
+            <div class="nai-bot-icon">${botAvatarMarkup}</div>
+            <div>
+              <div class="nai-bot-name">${savedBotName}</div>
+              <div class="nai-online"><span class="nai-online-dot"></span>Ready to help</div>
+            </div>
+          </div>
+          <div>
+            <div class="nai-history-top">
+              <p class="nai-history-title">Previous chats</p>
+            </div>
+            <div class="nai-history-list" id="nai-conversation-list" aria-live="polite"></div>
+          </div>
+        </aside>
 
         <!-- ── CHAT AREA ── -->
         <div id="nai-chat-area">
@@ -841,8 +1012,10 @@
   const input     = document.getElementById('nai-input');
   const sendBtn   = document.getElementById('nai-send');
   const messages  = document.getElementById('nai-messages');
+  const conversationList = document.getElementById('nai-conversation-list');
   const botNameInput = document.getElementById('nai-bot-name-input');
   const botNameTitle = document.getElementById('nai-bot-name-title');
+  const sidebarBotName = document.querySelector('.nai-bot-name');
   const botAvatarPicker = document.getElementById('nai-bot-avatar-picker');
   const avatarMenu = document.getElementById('nai-avatar-menu');
   const setupPanel = document.getElementById('nai-setup-panel');
@@ -867,6 +1040,8 @@
   function syncBotAvatar() {
     const markup = currentBotAvatarMarkup();
     botAvatarPicker.innerHTML = markup;
+    const sidebarBotIcon = document.querySelector('.nai-bot-icon');
+    if (sidebarBotIcon) sidebarBotIcon.innerHTML = markup;
     document.querySelectorAll('.nai-ai-avatar').forEach((node) => { node.innerHTML = markup; });
   }
 
@@ -885,6 +1060,7 @@
     botNameInput.value = name;
     setupName.value = name === 'Nex AI' ? '' : name;
     botNameTitle.textContent = name;
+    if (sidebarBotName) sidebarBotName.textContent = name;
     validateSetup();
   }
 
@@ -927,7 +1103,7 @@
 
   function syncAuthButton() {
     const isLoggedIn = hasAiAccess();
-    floatBtn.querySelector('span').textContent = isLoggedIn ? 'Nex AI' : 'Login to use AI';
+    floatBtn.querySelector('.nai-float-text-label').textContent = isLoggedIn ? 'Nex AI' : 'Login to use AI';
     floatBtn.setAttribute('aria-label', isLoggedIn ? 'Open Nex AI Tutor' : 'Login to use Nex AI');
   }
 
@@ -1061,15 +1237,213 @@
   });
 
   /* ── Send message ── */
+  const MAX_STORED_SESSIONS = 24;
+  const MAX_MESSAGES_PER_SESSION = 80;
   let conversationHistory = [];
-  let conversationOwner = '';
+  let conversationOwner = null;
+  let conversationSessions = [];
+  let currentSessionId = '';
   let conversationVersion = 0;
   let sending = false;
 
-  function resetConversation() {
+  function conversationStorageKey() {
+    return `edunexNexAiChats:${conversationOwner || 'guest'}`;
+  }
+
+  function readStoredSessions() {
+    try {
+      const parsed = JSON.parse(localStorage.getItem(conversationStorageKey()) || '[]');
+      if (!Array.isArray(parsed)) return [];
+      return parsed
+        .map((session) => ({
+          id: String(session?.id || ''),
+          title: String(session?.title || 'New chat').slice(0, 80),
+          updatedAt: Number(session?.updatedAt || Date.now()),
+          messages: Array.isArray(session?.messages)
+            ? session.messages
+                .filter((message) => message && (message.role === 'user' || message.role === 'assistant') && typeof message.content === 'string')
+                .map((message) => ({
+                  role: message.role,
+                  content: message.content.slice(0, 4000),
+                  notice: typeof message.notice === 'string' ? message.notice.slice(0, 1000) : '',
+                  sources: Array.isArray(message.sources) ? message.sources.slice(0, 8) : [],
+                  createdAt: Number(message.createdAt || Date.now()),
+                }))
+            : [],
+        }))
+        .filter((session) => session.id)
+        .slice(0, MAX_STORED_SESSIONS);
+    } catch (_) {
+      return [];
+    }
+  }
+
+  function writeStoredSessions() {
+    const stored = conversationSessions
+      .filter((session) => Array.isArray(session.messages) && session.messages.length)
+      .sort((a, b) => Number(b.updatedAt || 0) - Number(a.updatedAt || 0))
+      .slice(0, MAX_STORED_SESSIONS);
+    localStorage.setItem(conversationStorageKey(), JSON.stringify(stored));
+  }
+
+  function newSessionId() {
+    return `nai-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
+  }
+
+  function titleFromMessage(value) {
+    const text = String(value || '').replace(/\s+/g, ' ').trim();
+    if (!text) return 'New chat';
+    return text.length > 42 ? `${text.slice(0, 42).trim()}...` : text;
+  }
+
+  function dateLabel(value) {
+    const timestamp = Number(value || Date.now());
+    const delta = Date.now() - timestamp;
+    if (delta < 60 * 1000) return 'Just now';
+    if (delta < 60 * 60 * 1000) return `${Math.max(1, Math.floor(delta / 60000))} min ago`;
+    if (delta < 24 * 60 * 60 * 1000) return `${Math.max(1, Math.floor(delta / 3600000))} hr ago`;
+    return new Date(timestamp).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+  }
+
+  function createConversationSession() {
+    return {
+      id: newSessionId(),
+      title: 'New chat',
+      updatedAt: Date.now(),
+      messages: [],
+    };
+  }
+
+  function activeSession() {
+    let session = conversationSessions.find((item) => item.id === currentSessionId);
+    if (!session) {
+      session = createConversationSession();
+      currentSessionId = session.id;
+      conversationSessions.unshift(session);
+    }
+    return session;
+  }
+
+  function syncHistoryFromActiveSession() {
+    const session = activeSession();
+    conversationHistory = session.messages
+      .filter((message) => message.role === 'user' || message.role === 'assistant')
+      .map((message) => ({ role: message.role, content: message.content }))
+      .slice(-12);
+  }
+
+  function renderMessageRecord(message) {
+    const row = document.createElement('div');
+    if (message.role === 'user') {
+      row.className = 'nai-user-row';
+      row.innerHTML = `
+        <div class="nai-user-bubble">${escapeNaiHtml(message.content)}</div>
+        <div class="nai-user-avatar-sm">
+          <img src="${escapeNaiHtml(learnerAvatar)}" alt="">
+        </div>
+      `;
+      return row;
+    }
+
+    row.className = 'nai-ai-row';
+    row.innerHTML = `
+      <div class="nai-ai-avatar">${currentBotAvatarMarkup()}</div>
+      <div class="nai-ai-bubble">${formatNaiReply(message.content)}
+        ${message.notice ? `<p role="status">${escapeNaiHtml(message.notice)}</p>` : ''}
+        ${(message.sources || []).length ? `<div style="margin-top:12px;font-size:.8rem"><strong>References</strong>${message.sources.filter(source => source.url?.startsWith('/course-details.html?')).map(source => `<p><a style="color:inherit;text-decoration:underline" href="${escapeNaiHtml(source.url)}">[${escapeNaiHtml(source.id)}] ${escapeNaiHtml(source.title)} — ${escapeNaiHtml(source.section)}</a></p>`).join('')}</div>` : ''}
+      </div>
+    `;
+    return row;
+  }
+
+  function renderMessagesForSession(session) {
+    messages.replaceChildren();
+    session.messages.forEach((message) => messages.appendChild(renderMessageRecord(message)));
+    messages.scrollTop = messages.scrollHeight;
+  }
+
+  function renderConversationList() {
+    if (!conversationList) return;
+    const visibleSessions = conversationSessions
+      .filter((session) => session.messages.length)
+      .sort((a, b) => Number(b.updatedAt || 0) - Number(a.updatedAt || 0));
+
+    if (!visibleSessions.length) {
+      conversationList.innerHTML = '<div class="nai-history-empty">Previous Nex AI chats will appear here after you send a message.</div>';
+      return;
+    }
+
+    conversationList.innerHTML = visibleSessions.map((session) => `
+      <button class="nai-history-item${session.id === currentSessionId ? ' is-active' : ''}" type="button" data-session-id="${escapeNaiHtml(session.id)}" aria-current="${session.id === currentSessionId ? 'true' : 'false'}">
+        <span class="nai-history-item-title">${escapeNaiHtml(session.title || 'New chat')}</span>
+        <span class="nai-history-item-meta">${dateLabel(session.updatedAt)} · ${session.messages.length} messages</span>
+      </button>
+    `).join('');
+  }
+
+  function loadConversationSessions() {
+    conversationSessions = readStoredSessions();
+    if (!conversationSessions.length) conversationSessions = [createConversationSession()];
+    currentSessionId = conversationSessions[0].id;
+    syncHistoryFromActiveSession();
+    renderMessagesForSession(activeSession());
+    renderConversationList();
+  }
+
+  function beginNewConversation() {
+    const current = activeSession();
+    if (!current.messages.length) {
+      conversationHistory = [];
+      renderMessagesForSession(current);
+      renderConversationList();
+      return;
+    }
+
+    const session = createConversationSession();
+    conversationSessions.unshift(session);
+    currentSessionId = session.id;
     conversationHistory = [];
     conversationVersion += 1;
-    messages.replaceChildren();
+    renderMessagesForSession(session);
+    renderConversationList();
+    writeStoredSessions();
+  }
+
+  function switchConversation(sessionId) {
+    const session = conversationSessions.find((item) => item.id === sessionId);
+    if (!session) return;
+    currentSessionId = session.id;
+    conversationVersion += 1;
+    syncHistoryFromActiveSession();
+    renderMessagesForSession(session);
+    renderConversationList();
+    input.value = '';
+    input.focus();
+  }
+
+  function appendConversationMessage(message) {
+    const session = activeSession();
+    const record = {
+      role: message.role,
+      content: String(message.content || '').slice(0, 4000),
+      notice: typeof message.notice === 'string' ? message.notice.slice(0, 1000) : '',
+      sources: Array.isArray(message.sources) ? message.sources.slice(0, 8) : [],
+      createdAt: Date.now(),
+    };
+    session.messages.push(record);
+    session.messages = session.messages.slice(-MAX_MESSAGES_PER_SESSION);
+    if (record.role === 'user' && (!session.title || session.title === 'New chat')) {
+      session.title = titleFromMessage(record.content);
+    }
+    session.updatedAt = Date.now();
+    conversationSessions = [
+      session,
+      ...conversationSessions.filter((item) => item.id !== session.id),
+    ].slice(0, MAX_STORED_SESSIONS);
+    syncHistoryFromActiveSession();
+    writeStoredSessions();
+    renderConversationList();
+    return record;
   }
 
   function syncConversationOwner() {
@@ -1078,16 +1452,22 @@
       ? String(user?._id || user?.id || '') : '';
     if (owner !== conversationOwner) {
       conversationOwner = owner;
-      resetConversation();
+      conversationVersion += 1;
+      loadConversationSessions();
     }
   }
 
   window.addEventListener('edunex:auth-changed', syncConversationOwner);
   window.addEventListener('storage', syncConversationOwner);
   document.getElementById('nai-new-chat').addEventListener('click', () => {
-    resetConversation();
+    beginNewConversation();
     input.value = '';
     input.focus();
+  });
+  conversationList?.addEventListener('click', (event) => {
+    const item = event.target.closest('.nai-history-item');
+    if (!item) return;
+    switchConversation(item.dataset.sessionId || '');
   });
 
   function escapeNaiHtml(value) {
@@ -1145,12 +1525,12 @@
     return html.join('');
   }
 
-  async function getAiReply(text) {
+  async function getAiReply(text, history = conversationHistory) {
     const data = await EduNex.authRequest('/api/ai/chat', {
       method: 'POST',
       body: JSON.stringify({
         message: text,
-        history: conversationHistory,
+        history,
         pagePath: window.location.pathname + window.location.search,
         assistantName: normalizeBotName(botNameInput?.value) || localStorage.getItem('edunexAiBotName') || 'Nex AI',
       }),
@@ -1169,16 +1549,11 @@
 
     sending = true;
     const requestVersion = conversationVersion;
+    const historyBeforeSend = conversationHistory.slice();
     sendBtn.disabled = true;
-    const userMsg = document.createElement('div');
-    userMsg.className = 'nai-user-row';
-    userMsg.innerHTML = `
-      <div class="nai-user-bubble">${escapeNaiHtml(text)}</div>
-      <div class="nai-user-avatar-sm">
-        <img src="${learnerAvatar}" alt="">
-      </div>
-    `;
-    messages.appendChild(userMsg);
+    const userRecord = appendConversationMessage({ role: 'user', content: text });
+    const requestSessionId = currentSessionId;
+    messages.appendChild(renderMessageRecord(userRecord));
     input.value = '';
     messages.scrollTop = messages.scrollHeight;
 
@@ -1194,41 +1569,32 @@
     messages.scrollTop = messages.scrollHeight;
 
     try {
-      const data = await getAiReply(text);
+      const data = await getAiReply(text, historyBeforeSend);
       const reply = data.reply;
       syncConversationOwner();
-      if (requestVersion !== conversationVersion) return;
-      conversationHistory = [...conversationHistory,
-        { role: 'user', content: text.slice(0, 2000) },
-        { role: 'assistant', content: reply.slice(0, 2000) },
-      ].slice(-12);
+      if (requestVersion !== conversationVersion || requestSessionId !== currentSessionId) return;
       const t = document.getElementById('nai-typing');
       if (t) t.remove();
 
-      const aiMsg = document.createElement('div');
-      aiMsg.className = 'nai-ai-row';
-      aiMsg.innerHTML = `
-        <div class="nai-ai-avatar">${currentBotAvatarMarkup()}</div>
-        <div class="nai-ai-bubble">${formatNaiReply(reply)}
-          ${data.notice ? `<p role="status">${escapeNaiHtml(data.notice)}</p>` : ''}
-          ${(data.sources || []).length ? `<div style="margin-top:12px;font-size:.8rem"><strong>References</strong>${data.sources.filter(source => source.url?.startsWith('/course-details.html?')).map(source => `<p><a style="color:inherit;text-decoration:underline" href="${escapeNaiHtml(source.url)}">[${escapeNaiHtml(source.id)}] ${escapeNaiHtml(source.title)} — ${escapeNaiHtml(source.section)}</a></p>`).join('')}</div>` : ''}
-        </div>
-      `;
-      messages.appendChild(aiMsg);
+      const aiRecord = appendConversationMessage({
+        role: 'assistant',
+        content: reply,
+        notice: data.notice || '',
+        sources: data.sources || [],
+      });
+      messages.appendChild(renderMessageRecord(aiRecord));
       messages.scrollTop = messages.scrollHeight;
     } catch (error) {
       syncConversationOwner();
-      if (requestVersion !== conversationVersion) return;
+      if (requestVersion !== conversationVersion || requestSessionId !== currentSessionId) return;
       const t = document.getElementById('nai-typing');
       if (t) t.remove();
 
-      const aiMsg = document.createElement('div');
-      aiMsg.className = 'nai-ai-row';
-      aiMsg.innerHTML = `
-        <div class="nai-ai-avatar">${currentBotAvatarMarkup()}</div>
-        <div class="nai-ai-bubble">Nex AI is not available right now. ${escapeNaiHtml(error.message || 'Please try again later.')}</div>
-      `;
-      messages.appendChild(aiMsg);
+      const aiRecord = appendConversationMessage({
+        role: 'assistant',
+        content: `Nex AI is not available right now. ${error.message || 'Please try again later.'}`,
+      });
+      messages.appendChild(renderMessageRecord(aiRecord));
       messages.scrollTop = messages.scrollHeight;
     } finally {
       sending = false;

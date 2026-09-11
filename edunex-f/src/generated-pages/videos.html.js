@@ -1025,8 +1025,7 @@ export const page = {
       height: 104px;
       writing-mode: vertical-lr;
       direction: rtl;
-      appearance: slider-vertical;
-      -webkit-appearance: slider-vertical;
+      appearance: auto;
       accent-color: var(--cyan);
       cursor: pointer;
     }

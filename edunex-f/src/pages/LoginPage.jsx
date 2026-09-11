@@ -1,6 +1,7 @@
 import { readLoginPrefill, clearLoginPrefill, saveSignupPrefill, signupDestination } from "../lib/authNavigation.js";
 import { useEffect, useMemo, useState } from "react";
 import { page as loginPage } from "../generated-pages/login.html.js";
+import { BrandLogo } from "../components/BrandLogo.jsx";
 import { runLegacyPage } from "../legacyRuntime.js";
 import { usePageStyle } from "../hooks/usePageStyle.js";
 import { route } from "../lib/routes.js";
@@ -141,7 +142,9 @@ export function LoginPage() {
     <div className="react-page-root" data-page="login.html">
       <main className="lp-wrap">
         <div className="lp-left">
-          <a href="index.html" className="lp-logo">Skillomate</a>
+          <a href={route("index.html")} className="lp-logo" aria-label="Skillomate AI home">
+            <BrandLogo />
+          </a>
           <div className="lp-hero">
             <div className="lp-marketing-title">Elevate your career<br />with <span>AI precision.</span></div>
             <p>Join over 100,000+ students mastering the future of technology and creative strategy through our curated AI-first curriculum.</p>

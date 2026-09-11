@@ -26,8 +26,6 @@ const FALLBACK_COURSES = [
   videos: Array.from({ length: lessons }, (_, index) => ({ title: `Lesson ${index + 1}` })),
 }));
 
-const TOPICS = ["Video Editing", "AI Tools", "Freelancing", "Digital Marketing", "Web Development", "Business"];
-
 function courseId(course) {
   return String(course?._id || course?.id || "");
 }
@@ -86,7 +84,11 @@ function categoryName(course) {
 }
 
 function categoryHref(category) {
-  return `courses.html?category=${encodeURIComponent(category)}`;
+  return route(`courses.html?category=${encodeURIComponent(category)}`);
+}
+
+function searchHref(value) {
+  return route(`courses.html?search=${encodeURIComponent(value)}`);
 }
 
 function lessonCount(course) {
@@ -172,6 +174,31 @@ function groupedCategories(courses) {
     grouped.get(name).push(course);
   });
   return Array.from(grouped.entries());
+}
+
+function uniqueLabels(values) {
+  const seen = new Set();
+  return values
+    .map((value) => String(value || "").trim())
+    .filter((value) => {
+      if (!value) return false;
+      const key = value.toLowerCase();
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+}
+
+function openNexAiEngine() {
+  if (window.NexAIWidget?.open) {
+    window.NexAIWidget.open();
+    return;
+  }
+
+  document.getElementById("nai-float-btn")?.click();
+  if (!window.NexAIWidget?.isOpen?.()) {
+    window.location.href = route("ai-tutor.html");
+  }
 }
 
 function enrolledItems(courses) {
@@ -909,10 +936,15 @@ export function HomePage() {
   const handleSearch = (event) => {
     event.preventDefault();
     const value = query.trim();
-    window.location.href = value ? `courses.html?search=${encodeURIComponent(value)}` : "courses.html";
+    window.location.href = value ? searchHref(value) : route("courses.html");
   };
 
   const shownCategories = groupedCategories(courses).slice(0, 4);
+  const searchSuggestions = uniqueLabels(courses.filter((course) => !course.isFallback).map((course) => course.title)).slice(0, 6);
+  const autocompleteSuggestions = uniqueLabels([
+    ...searchSuggestions,
+    ...courses.filter((course) => !course.isFallback).map((course) => categoryName(course)),
+  ]);
   const popularCourses = courses.slice(0, 4);
   const activeRows = loop.rows.length ? loop.rows : Array.from({ length: 21 }, (_, index) => ({ loopIndex: index, placeholder: true }));
 
@@ -996,18 +1028,22 @@ export function HomePage() {
             <form className="hero-search-form" id="homeHeroSearch" onSubmit={handleSearch}>
               <label className="hero-search-field">
                 <MaterialIcon>search</MaterialIcon>
-                <input type="search" name="q" placeholder="What do you want to learn today?" aria-label="Search courses" value={query} onChange={(event) => setQuery(event.target.value)} />
+                <input type="search" name="q" list="home-course-search-suggestions" placeholder="What do you want to learn today?" aria-label="Search courses" value={query} onChange={(event) => setQuery(event.target.value)} />
               </label>
+              <datalist id="home-course-search-suggestions">
+                {autocompleteSuggestions.map((suggestion) => <option value={suggestion} key={suggestion} />)}
+              </datalist>
               <button className="hero-search-btn" type="submit">Search</button>
             </form>
-            <div className="hero-topics" aria-label="Popular learning topics">
-              {TOPICS.map((topic) => <a className="hero-topic" href={`courses.html?search=${encodeURIComponent(topic)}`} key={topic}>{topic}</a>)}
-            </div>
+            {searchSuggestions.length ? (
+              <div className="hero-topics" aria-label="Available course suggestions">
+                {searchSuggestions.map((suggestion) => <a className="hero-topic" href={searchHref(suggestion)} key={suggestion}>{suggestion}</a>)}
+              </div>
+            ) : null}
           </div>
 
           <div className="hero-trust-strip" aria-label="Skillomate platform trust indicators">
             {[
-              ["groups", "100K+ Learners", "Growing across India"],
               ["workspace_premium", "Expert-Led Courses", "Practical instructors"],
               ["play_lesson", "Short Vertical Lessons", "Built for momentum"],
               ["verified", "Recognised Certificates", "Career-ready proof"],
@@ -1084,7 +1120,7 @@ export function HomePage() {
                 <span className="block mt-2 text-4xl md:text-5xl">Mentorship Engine</span>
               </h2>
               <p className="text-[1.05rem] text-[#5F534A] leading-relaxed mb-8">Our neural engine maps your career goals to industry requirements, suggesting the exact skills you need to land your dream job.</p>
-              <a href="ai-tutor.html" className="inline-flex items-center justify-center gap-2 rounded-full bg-black px-8 py-3.5 text-[1.05rem] font-bold !text-white transition-colors hover:bg-[#171717]">Explore Engine <MaterialIcon>arrow_forward</MaterialIcon></a>
+              <button type="button" onClick={openNexAiEngine} className="inline-flex items-center justify-center gap-2 rounded-full border-0 bg-black px-8 py-3.5 text-[1.05rem] font-bold !text-white transition-colors hover:bg-[#171717] cursor-pointer">Explore Engine <MaterialIcon>arrow_forward</MaterialIcon></button>
             </div>
           </div>
         </section>

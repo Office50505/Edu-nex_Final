@@ -1,39 +1,62 @@
-import { lazy, Suspense, useEffect } from "react";
+import { lazy, startTransition, Suspense, useCallback, useEffect, useState } from "react";
 import { Navbar } from "./components/Navbar.jsx";
 import { Footer } from "./components/Footer.jsx";
 import { EnxIcon } from "./components/EnxIcon.jsx";
 import { pageKeyFromPath, route } from "./lib/routes.js";
+import { hasReactPage, preloadPage, reactPageLoaders } from "./lib/pageLoaders.jsx";
 import { adminPageFromPath, canonicalAdminPath } from "./pages/admin/adminApi.js";
 
-const reactPageLoaders = {
-  "delete-account.html": lazy(() => import("./pages/DeleteAccountPage.jsx")),
-  "about.html": lazy(() => import("./pages/AboutPage.jsx").then((module) => ({ default: module.AboutPage }))),
-  "ai-tutor.html": lazy(() => import("./pages/AiTutorPage.jsx").then((module) => ({ default: module.AiTutorPage }))),
-  "certificates.html": lazy(() => import("./pages/CertificatesPage.jsx").then((module) => ({ default: module.CertificatesPage }))),
-  "course.html": lazy(() => import("./pages/CourseDetailsPage.jsx").then((module) => ({ default: module.CourseDetailsPage }))),
-  "courses.html": lazy(() => import("./pages/CoursesPage.jsx").then((module) => ({ default: module.CoursesPage }))),
-  "dashboard.html": lazy(() => import("./pages/DashboardPage.jsx").then((module) => ({ default: module.DashboardPage }))),
-  "edit-profile.html": lazy(() => import("./pages/EditProfilePage.jsx").then((module) => ({ default: module.EditProfilePage }))),
-  "help.html": lazy(() => import("./pages/HelpPage.jsx").then((module) => ({ default: module.HelpPage }))),
-  "index.html": lazy(() => import("./pages/HomePage.jsx").then((module) => ({ default: module.HomePage }))),
-  "lesson.html": lazy(() => import("./pages/LessonPage.jsx").then((module) => ({ default: module.LessonPage }))),
-  "login.html": lazy(() => import("./pages/LoginPage.jsx").then((module) => ({ default: module.LoginPage }))),
-  "otp.html": lazy(() => import("./pages/OtpPage.jsx").then((module) => ({ default: module.OtpPage }))),
-  "payment.html": lazy(() => import("./pages/PaymentPage.jsx").then((module) => ({ default: module.PaymentPage }))),
-  "profile.html": lazy(() => import("./pages/ProfilePage.jsx").then((module) => ({ default: module.ProfilePage }))),
-  "signup.html": lazy(() => import("./pages/SignupPage.jsx").then((module) => ({ default: module.SignupPage }))),
-  "videos.html": lazy(() => import("./pages/VideosPage.jsx").then((module) => ({ default: module.VideosPage }))),
-  "wishlist.html": lazy(() => import("./pages/WishlistPage.jsx").then((module) => ({ default: module.WishlistPage }))),
-  "home-based.html": lazy(() => import("./pages/HomeBasedPage.jsx").then((module) => ({ default: module.HomeBasedPage }))),
-  "terms.html": lazy(() => import("./pages/LegalPage.jsx").then((module) => ({
-    default: () => <module.LegalPage type="terms" />,
-  }))),
-  "privacy.html": lazy(() => import("./pages/LegalPage.jsx").then((module) => ({
-    default: () => <module.LegalPage type="privacy" />,
-  }))),
-};
-
 const AdminApp = lazy(() => import("./pages/admin/AdminApp.jsx").then((module) => ({ default: module.AdminApp })));
+
+function currentLocationState() {
+  return {
+    pathname: window.location.pathname,
+    search: window.location.search,
+    hash: window.location.hash,
+  };
+}
+
+function routeFromState(state) {
+  return `${state.pathname}${state.search}${state.hash}`;
+}
+
+function shouldUseAppNavigation(event) {
+  if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
+    return null;
+  }
+
+  const anchor = event.target.closest?.("a[href]");
+  if (!anchor) return null;
+  if (anchor.target && anchor.target !== "_self") return null;
+  if (anchor.hasAttribute("download")) return null;
+
+  const rawHref = anchor.getAttribute("href") || "";
+  if (!rawHref || rawHref.startsWith("#")) return null;
+  if (/^(mailto:|tel:|sms:|data:|blob:|javascript:)/i.test(rawHref)) return null;
+
+  const url = new URL(anchor.href, window.location.href);
+  if (url.origin !== window.location.origin) return null;
+  if (url.pathname === "/api" || url.pathname.startsWith("/api/")) return null;
+
+  const nextPageKey = pageKeyFromPath(url.pathname);
+  const nextAdminPage = adminPageFromPath(url.pathname);
+  if (!nextAdminPage && !hasReactPage(nextPageKey)) return null;
+
+  return { url, pageKey: nextPageKey };
+}
+
+function scrollAfterNavigation(hash) {
+  requestAnimationFrame(() => {
+    if (hash) {
+      const target = document.getElementById(decodeURIComponent(hash.slice(1)));
+      if (target) {
+        target.scrollIntoView({ block: "start", behavior: "smooth" });
+        return;
+      }
+    }
+    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+  });
+}
 
 function goBackSafely() {
   if (window.history.length > 1 && document.referrer) {
@@ -81,31 +104,78 @@ function PageLoading() {
 }
 
 export default function App() {
-  const adminPage = adminPageFromPath(window.location.pathname);
-  const pageKey = pageKeyFromPath(window.location.pathname);
+  const [locationState, setLocationState] = useState(currentLocationState);
+  const adminPage = adminPageFromPath(locationState.pathname);
+  const pageKey = pageKeyFromPath(locationState.pathname);
   const ReactPage = reactPageLoaders[pageKey];
+  const routeKey = routeFromState(locationState);
+
+  const syncLocation = useCallback((nextState = currentLocationState()) => {
+    startTransition(() => {
+      setLocationState(nextState);
+    });
+  }, []);
 
   useEffect(() => {
-    const adminCanonicalRoute = canonicalAdminPath(window.location.pathname);
+    const adminCanonicalRoute = canonicalAdminPath(locationState.pathname);
     if (adminCanonicalRoute) {
+      const nextState = {
+        pathname: adminCanonicalRoute,
+        search: locationState.search,
+        hash: locationState.hash,
+      };
       window.history.replaceState(
         window.history.state,
         "",
-        `${adminCanonicalRoute}${window.location.search}${window.location.hash}`
+        routeFromState(nextState)
       );
+      syncLocation(nextState);
       return;
     }
-    const canonicalRoute = route(`${pageKey}${window.location.search}${window.location.hash}`);
-    const currentRoute = `${window.location.pathname}${window.location.search}${window.location.hash}`;
+    const canonicalRoute = route(`${pageKey}${locationState.search}${locationState.hash}`);
+    const currentRoute = routeFromState(locationState);
     if (canonicalRoute !== currentRoute) {
       window.history.replaceState(window.history.state, "", canonicalRoute);
+      syncLocation(currentLocationState());
     }
-  }, [adminPage, pageKey]);
+  }, [locationState, pageKey, syncLocation]);
+
+  useEffect(() => {
+    const handlePopState = () => syncLocation();
+    const handleClick = (event) => {
+      const next = shouldUseAppNavigation(event);
+      if (!next) return;
+
+      event.preventDefault();
+      void preloadPage(next.pageKey);
+
+      const nextState = {
+        pathname: next.url.pathname,
+        search: next.url.search,
+        hash: next.url.hash,
+      };
+      const currentRoute = `${window.location.pathname}${window.location.search}${window.location.hash}`;
+      const nextRoute = routeFromState(nextState);
+      if (nextRoute !== currentRoute) {
+        window.history.pushState(window.history.state, "", nextRoute);
+      }
+      syncLocation(nextState);
+      window.dispatchEvent(new CustomEvent("edunex:route-changed", { detail: nextState }));
+      scrollAfterNavigation(nextState.hash);
+    };
+
+    window.addEventListener("popstate", handlePopState);
+    document.addEventListener("click", handleClick);
+    return () => {
+      window.removeEventListener("popstate", handlePopState);
+      document.removeEventListener("click", handleClick);
+    };
+  }, [syncLocation]);
 
   if (adminPage) {
     return (
       <Suspense fallback={<PageLoading />}>
-        <AdminApp page={adminPage} />
+        <AdminApp key={routeKey} page={adminPage} />
       </Suspense>
     );
   }
@@ -119,7 +189,7 @@ export default function App() {
       <Navbar pageKey={pageKey} />
       {ReactPage ? (
         <Suspense fallback={<PageLoading />}>
-          <ReactPage />
+          <ReactPage key={routeKey} />
         </Suspense>
       ) : null}
       {!ReactPage ? <NotFoundPage /> : null}

@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { page as aiTutorPage } from "../generated-pages/ai-tutor.html.js";
+import { BrandLogo } from "../components/BrandLogo.jsx";
 import { runLegacyPage } from "../legacyRuntime.js";
 import { usePageStyle } from "../hooks/usePageStyle.js";
 import { useEduNexRuntimeReady } from "../hooks/useEduNexRuntimeReady.js";
@@ -118,9 +119,8 @@ export function AiTutorPage() {
     <div className="react-page-root" data-page="ai-tutor.html">
       <div className="tutor-page">
         <div className="tutor-top-bar">
-          <a href="index.html" className="nav-logo" style={{ flexShrink: 0 }}>
-            <div className="logo-mark">N</div>
-            <span className="logo-name">Skillo<span>mate</span></span>
+          <a href="index.html" className="nav-logo" style={{ flexShrink: 0 }} aria-label="Skillomate AI home">
+            <BrandLogo />
           </a>
           <div style={{ flex: 1 }}></div>
           <a href="dashboard.html" className="btn btn-ghost btn-sm"><i className="fas fa-th-large" aria-hidden="true"></i> Dashboard</a>

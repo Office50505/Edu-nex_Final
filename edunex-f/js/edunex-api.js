@@ -532,7 +532,7 @@
       html[data-theme="light"] :where(.nav-logo, .premium-logo, .footer-brand, .enx-nav-logo, .enx-footer-brand) {
         color: #2B211A !important;
       }
-      html[data-theme="light"] :where(.nav-logo span, .premium-logo span, .enx-nav-logo span, .enx-footer-brand span span, .nav-links a.active, .premium-nav-links a.active, .enx-nav-links a.active, .nav-login:hover, .enx-nav-login:hover, .nav-avatar:hover, .enx-nav-avatar:hover, .premium-avatar:hover, .footer-links a:hover, .enx-footer-links a:hover, .enx-footer-cta > a, .sec-link, .course-price, .wl-price, .cp-price, .hero-card-price strong, .hero-card-action) {
+      html[data-theme="light"] :where(.nav-logo .brand-logo-mate, .nav-logo .brand-logo-ai, .premium-logo .brand-logo-mate, .premium-logo .brand-logo-ai, .enx-nav-logo .brand-logo-mate, .enx-nav-logo .brand-logo-ai, .enx-footer-brand span span, .nav-links a.active, .premium-nav-links a.active, .enx-nav-links a.active, .nav-login:hover, .enx-nav-login:hover, .nav-avatar:hover, .enx-nav-avatar:hover, .premium-avatar:hover, .footer-links a:hover, .enx-footer-links a:hover, .enx-footer-cta > a, .sec-link, .course-price, .wl-price, .cp-price, .hero-card-price strong, .hero-card-action) {
         color: #C58B2A !important;
       }
       html[data-theme="light"] :where(.bar.bar-active, .streak-dot.done, .streak-dot.today, .tile-progress span, .hist-progress-track span, .hero-progress-track span) {
@@ -683,6 +683,7 @@
     arrowLeft: '<path d="M19 12H5"></path><path d="m11 6-6 6 6 6"></path>',
     arrowUp: '<path d="M12 19V5"></path><path d="m6 11 6-6 6 6"></path>',
     chevron: '<path d="m9 6 6 6-6 6"></path>',
+    chevronLeft: '<path d="m15 18-6-6 6-6"></path>',
     plus: '<path d="M12 5v14"></path><path d="M5 12h14"></path>',
     x: '<path d="M18 6 6 18"></path><path d="m6 6 12 12"></path>',
     check: '<path d="m5 12 4 4L19 6"></path>',
@@ -739,7 +740,7 @@
     "fa-wand-magic-sparkles": "sparkles", "fa-award": "award", "fa-certificate": "badge", "fa-shield": "shield", "fa-shield-halved": "shield",
     "fa-lock": "lock", "fa-credit-card": "card", "fa-receipt": "receipt", "fa-clock": "clock", "fa-star": "star", "fa-heart": "heart", "fa-heart-crack": "bookmark",
     "fa-bookmark": "bookmark", "fa-play": "play", "fa-pause": "play", "fa-play-circle": "playCircle", "fa-circle-play": "playCircle",
-    "fa-video": "playCircle", "fa-arrow-right": "arrowRight", "fa-arrow-left": "arrowLeft", "fa-arrow-up": "arrowUp", "fa-chevron-right": "chevron",
+    "fa-video": "playCircle", "fa-arrow-right": "arrowRight", "fa-arrow-left": "arrowLeft", "fa-arrow-up": "arrowUp", "fa-chevron-right": "chevron", "fa-chevron-left": "chevronLeft",
     "fa-chevron-down": "chevron", "fa-plus": "plus", "fa-plus-circle": "plus", "fa-times": "x", "fa-xmark": "x", "fa-check": "check",
     "fa-check-circle": "checkCircle", "fa-circle-check": "checkCircle", "fa-circle-exclamation": "alert", "fa-eye": "eye", "fa-eye-slash": "eyeOff",
     "fa-envelope": "mail", "fa-at": "mail", "fa-phone": "phone", "fa-question-circle": "help", "fa-circle-question": "help", "fa-headset": "help",
@@ -759,7 +760,7 @@
     devices: "device", arrow_forward: "arrowRight", arrow_back: "arrowLeft", bolt: "sparkles", auto_awesome: "sparkles", psychology: "brain",
     smart_toy: "sparkles", favorite: "heart", favorite_border: "heart", bookmark: "bookmark", menu: "menu", logout: "arrowRight",
     notifications: "badge", person: "user", account_circle: "user", credit_card: "card", receipt_long: "receipt", lock: "lock",
-    shield: "shield", help: "help", language: "globe", expand_more: "chevron", chevron_right: "chevron", check_circle: "checkCircle",
+    shield: "shield", help: "help", language: "globe", expand_more: "chevron", chevron_left: "chevronLeft", chevron_right: "chevron", check_circle: "checkCircle",
     error: "alert", schedule: "clock", play_circle: "playCircle", rocket_launch: "arrowUp", trending_flat: "arrowRight",
     workspace_premium: "award", payments: "card", paid: "card", trophy: "award"
   };
@@ -1079,10 +1080,20 @@
         display: flex; align-items: center; gap: 32px;
       }
       .nav-logo {
-        font-size: 1.2rem; font-weight: 700; color: var(--text, #fff);
+        color: var(--text, #fff);
         white-space: nowrap; flex-shrink: 0; text-decoration: none;
+        display: inline-flex; align-items: center;
       }
-      .nav-logo span { color: var(--cyan, #C58B2A); }
+      .brand-logo {
+        display: inline-flex; align-items: center;
+        width: clamp(150px, 12vw, 190px); height: 42px; overflow: visible;
+      }
+      .brand-logo-image {
+        display: block; width: 100%; height: auto;
+        object-fit: contain; object-position: left center;
+      }
+      html[data-theme="light"] .brand-logo-image-dark,
+      html:not([data-theme="light"]) .brand-logo-image-light { display: none; }
       .nav-links {
         display: flex; align-items: center; gap: 4px;
         flex: 1; justify-content: center; list-style: none; margin: 0; padding: 0;
@@ -1175,7 +1186,12 @@
     existing.outerHTML = `
       <nav class="navbar">
         <div class="nav-inner">
-          <a href="index.html" class="nav-logo">Skillomate <span>AI</span></a>
+          <a href="index.html" class="nav-logo" aria-label="Skillomate AI home">
+            <span class="brand-logo">
+              <img class="brand-logo-image brand-logo-image-light" src="/assets/skillomate-logo.png" alt="Skillomate">
+              <img class="brand-logo-image brand-logo-image-dark" src="/assets/skillomate-logo-dark.png" alt="" aria-hidden="true">
+            </span>
+          </a>
           <ul class="nav-links">
             ${link("index.html", "Home")}
             ${link("courses.html", "Courses")}
