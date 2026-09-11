@@ -299,29 +299,52 @@ const normalizeBaseUrl = url => String(url || "").replace(/\/+$/, "");
 const API_BASE = normalizeBaseUrl(process.env.EXPO_PUBLIC_API_BASE || DEFAULT_API_BASE);
 
 const SUBSCRIPTION_URL = "https://edunexmvp.netlify.app/payment";
-const WEB_APP_BASE = normalizeBaseUrl(process.env.EXPO_PUBLIC_WEB_APP_BASE || "https://edunexmvp.netlify.app");
-const TERMS_URL = `${WEB_APP_BASE}/terms`;
-const PRIVACY_URL = `${WEB_APP_BASE}/privacy-policy`;
-const HELP_URL = `${WEB_APP_BASE}/help`;
 
 const LEGAL_APP_PAGES = {
   terms: {
     title: "Terms & Conditions",
     eyebrow: "Skillomate Legal",
-    url: TERMS_URL,
     icon: "document-text-outline",
+    intro: "These terms explain the rules for using Skillomate accounts, courses, subscriptions, downloads, certificates, and Nex AI.",
+    sections: [
+      { title: "Account access", body: "Use accurate account details and keep your password, OTP, device access, and session private. Do not share access in a way that bypasses payment or content protections." },
+      { title: "Courses and subscriptions", body: "Protected lessons require sign-in and a qualifying trial or subscription. Course listings, lessons, videos, notes, and related material may be updated or removed." },
+      { title: "Payments and billing", body: "Checkout and recurring payments may be handled by external payment providers. Access depends on confirmed payment and the current subscription period." },
+      { title: "Downloads and certificates", body: "Offline downloads are for personal learning inside Skillomate and may not be redistributed. Certificates record Skillomate course completion and are not external professional credentials unless explicitly stated." },
+      { title: "Nex AI", body: "AI responses may be incomplete or inaccurate. Verify important academic, career, financial, and technical decisions independently. Skillomate does not guarantee learning, employment, or income outcomes." },
+      { title: "Acceptable use", body: "Do not attack, overload, disrupt, scrape, reverse engineer, record, resell, or republish the platform or protected course content without written permission." },
+      { title: "Account deletion and availability", body: "Account deletion may require password confirmation and can be limited by unresolved payment mandates. Features may change or be interrupted when required services are unavailable." },
+    ],
   },
   privacy: {
     title: "Privacy Policy",
     eyebrow: "Skillomate Legal",
-    url: PRIVACY_URL,
     icon: "shield-checkmark-outline",
+    intro: "This policy explains how Skillomate handles account, learning, AI, payment, device, storage, and support data.",
+    sections: [
+      { title: "Information we collect", body: "We may process your name, mobile number, optional email, age, gender, avatar, login activity, course progress, wishlist, certificates, payment status, device context, and support messages." },
+      { title: "How information is used", body: "Information is used to create and secure accounts, provide learning features, track progress, process subscriptions, answer support requests, and prevent abuse." },
+      { title: "Nex AI data", body: "Nex AI may use your question, recent conversation context, and relevant course material to generate learning assistance. Avoid submitting highly sensitive personal information." },
+      { title: "Payments and service providers", body: "Payment, verification, media, hosting, storage, and AI providers may process the information required to deliver their services. Sensitive payment credentials are entered through the payment provider." },
+      { title: "Device storage and permissions", body: "The app may use internet, storage, vibration, and screen-capture controls for account, media, downloads, exports, and protected learning features. Permissions can be managed in device settings." },
+      { title: "Security and retention", body: "We use technical and organizational safeguards, but no online service can guarantee absolute security. Information is kept only as long as needed for product, legal, payment, security, and support purposes." },
+      { title: "Your controls", body: "You can update profile information and request or perform account deletion where available. Additional privacy requests can be sent through Skillomate support." },
+      { title: "Policy updates", body: "This policy may be updated as Skillomate changes. The latest policy information will be provided in the app." },
+    ],
   },
   help: {
-    title: "Help Center",
+    title: "Help & Support",
     eyebrow: "Skillomate Help",
-    url: HELP_URL,
     icon: "help-circle-outline",
+    intro: "Use these help paths for account access, videos, payments, courses, profile details, and Nex AI.",
+    sections: [
+      { title: "Login or profile", body: "If your login, OTP, avatar, or profile details do not sync, close and reopen the app, then sign in again." },
+      { title: "Course videos", body: "Protected video access requires an active trial or subscription. Open Courses and select the lesson again after confirming your connection." },
+      { title: "Payments", body: "After completing payment, return to Skillomate and check Subscription Details from Profile. Reopen the app if the updated status is not visible yet." },
+      { title: "Wishlist and progress", body: "Wishlist and course progress sync to your signed-in account when the server is available." },
+      { title: "Nex AI", body: "Use Nex AI for summaries, study plans, project ideas, and lesson explanations. Try again later if the AI service is temporarily unavailable." },
+      { title: "Contact", body: "Email support@skillomate.ai with your registered mobile number and a clear description of the issue. Never include your password or OTP." },
+    ],
   },
 };
 
@@ -5066,7 +5089,7 @@ function ProfileScreen({ user, onLogout, onDeleteAccount, onGoToHome, onGoToCour
           { icon: "card-outline", label: "Subscription Details", onPress: onGoToSubscription },
           { icon: "ribbon-outline", label: "My Certificates", badge: certificatesCount || 0, onPress: onGoToCertificates },
           { icon: "heart-outline", label: "My Wishlist", badge: wishlistCount || 0, onPress: onGoToWishlist },
-          { icon: "help-circle-outline", label: "Help Center", onPress: () => onOpenLegal?.("help") },
+          { icon: "help-circle-outline", label: "Help & Support", onPress: () => onOpenLegal?.("help") },
           { icon: "document-text-outline", label: "Terms & Conditions", onPress: () => onOpenLegal?.("terms") },
           { icon: "shield-outline", label: "Privacy Policy", onPress: () => onOpenLegal?.("privacy") },
         ].map((item, i) => (
@@ -5576,9 +5599,8 @@ function AiAssistantScreen({
   );
 }
 
-function LegalWebScreen({ page = "privacy", onBack }) {
+function LegalContentScreen({ page = "privacy", onBack }) {
   const config = LEGAL_APP_PAGES[page] || LEGAL_APP_PAGES.privacy;
-  const [failed, setFailed] = useState(false);
 
   return (
     <View style={s.legalScreen}>
@@ -5603,51 +5625,30 @@ function LegalWebScreen({ page = "privacy", onBack }) {
         </View>
       </SafeAreaView>
 
-      {failed ? (
-        <View style={s.legalErrorArea}>
-          <View style={s.legalErrorCard}>
-            <Ionicons name="cloud-offline-outline" size={34} color={C.primary} />
-            <Text style={s.legalErrorTitle}>{config.title} unavailable</Text>
-            <Text style={s.legalErrorText}>Check your connection and try again.</Text>
-            <TouchableOpacity
-              style={s.legalRetryButton}
-              onPress={() => setFailed(false)}
-              accessibilityRole="button"
-              accessibilityLabel={`Retry loading ${config.title}`}
-            >
-              <Text style={s.legalRetryText}>Retry</Text>
-              <Ionicons name="refresh" size={16} color={C.onPrimary} />
-            </TouchableOpacity>
-          </View>
+      <ScrollView
+        style={s.legalContentScroll}
+        contentContainerStyle={s.legalContent}
+        showsVerticalScrollIndicator={false}
+      >
+        <View style={s.legalIntroCard}>
+          <Ionicons name={config.icon} size={26} color={C.primary} />
+          <Text style={s.legalIntroText}>{config.intro}</Text>
         </View>
-      ) : (
-        <WebView
-          source={{ uri: config.url }}
-          style={s.legalWebView}
-          containerStyle={s.legalWebContainer}
-          setSupportMultipleWindows={false}
-          javaScriptEnabled
-          domStorageEnabled
-          startInLoadingState
-          renderLoading={() => (
-            <View style={s.legalLoading}>
-              <ActivityIndicator color={C.primary} />
-              <Text style={s.legalLoadingText}>Loading {config.title}</Text>
+
+        {config.sections.map((section, index) => (
+          <View key={section.title} style={s.legalSectionCard}>
+            <View style={s.legalSectionNumber}>
+              <Text style={s.legalSectionNumberText}>{String(index + 1).padStart(2, "0")}</Text>
             </View>
-          )}
-          onError={() => setFailed(true)}
-          onHttpError={(event) => {
-            if (event.nativeEvent.statusCode >= 400) setFailed(true);
-          }}
-          onShouldStartLoadWithRequest={(request) => {
-            if (/^(mailto:|tel:|sms:)/i.test(request.url)) {
-              Linking.openURL(request.url).catch(() => {});
-              return false;
-            }
-            return true;
-          }}
-        />
-      )}
+            <View style={s.legalSectionBody}>
+              <Text style={s.legalSectionTitle}>{section.title}</Text>
+              <Text style={s.legalSectionText}>{section.body}</Text>
+            </View>
+          </View>
+        ))}
+
+        <Text style={s.legalOfflineNote}>Available inside the app — no website required.</Text>
+      </ScrollView>
     </View>
   );
 }
@@ -6498,7 +6499,7 @@ export default function App() {
   }
 
   if (legalPage) {
-    return <LegalWebScreen page={legalPage} onBack={() => setLegalPage(null)} />;
+    return <LegalContentScreen page={legalPage} onBack={() => setLegalPage(null)} />;
   }
 
   // ── Auth screens ────────────────────────────────────────────────────────────
@@ -6565,7 +6566,7 @@ export default function App() {
           <TouchableOpacity
             style={s.legalLinkButton}
             onPress={() => setLegalPage("terms")}
-            accessibilityRole="link"
+            accessibilityRole="button"
             accessibilityLabel="Read Terms and Conditions"
           >
             <Text style={s.legalLinkText}>Terms &amp; Conditions</Text>
@@ -6573,7 +6574,7 @@ export default function App() {
           <TouchableOpacity
             style={s.legalLinkButton}
             onPress={() => setLegalPage("privacy")}
-            accessibilityRole="link"
+            accessibilityRole="button"
             accessibilityLabel="Read Privacy Policy"
           >
             <Text style={s.legalLinkText}>Privacy Policy</Text>
@@ -6704,7 +6705,7 @@ export default function App() {
           <TouchableOpacity
             style={s.legalLinkButton}
             onPress={() => setLegalPage("terms")}
-            accessibilityRole="link"
+            accessibilityRole="button"
             accessibilityLabel="Read Terms and Conditions"
           >
             <Text style={s.legalLinkText}>Terms &amp; Conditions</Text>
@@ -6712,7 +6713,7 @@ export default function App() {
           <TouchableOpacity
             style={s.legalLinkButton}
             onPress={() => setLegalPage("privacy")}
-            accessibilityRole="link"
+            accessibilityRole="button"
             accessibilityLabel="Read Privacy Policy"
           >
             <Text style={s.legalLinkText}>Privacy Policy</Text>
@@ -7362,68 +7363,74 @@ return StyleSheet.create({
     borderWidth: 1,
     borderColor: C.border,
   },
-  legalWebContainer: {
+  legalContentScroll: {
     flex: 1,
     backgroundColor: C.bg,
   },
-  legalWebView: {
-    flex: 1,
-    backgroundColor: C.bg,
+  legalContent: {
+    padding: 16,
+    paddingBottom: 36,
+    gap: 12,
   },
-  legalLoading: {
-    ...StyleSheet.absoluteFillObject,
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 10,
-    backgroundColor: C.bg,
-  },
-  legalLoadingText: {
-    ...TYPE.caption,
-    color: C.textSub,
-  },
-  legalErrorArea: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    padding: 20,
-    backgroundColor: C.bg,
-  },
-  legalErrorCard: {
-    width: "100%",
-    maxWidth: 420,
-    alignItems: "center",
-    padding: 22,
-    borderRadius: RADIUS.lg,
-    backgroundColor: C.surface,
+  legalIntroCard: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    gap: 12,
+    padding: 16,
+    borderRadius: RADIUS.xl,
+    backgroundColor: C.panel,
     borderWidth: 1,
     borderColor: C.borderStrong,
   },
-  legalErrorTitle: {
-    ...TYPE.h3,
-    color: C.text,
-    marginTop: 12,
-    textAlign: "center",
-  },
-  legalErrorText: {
+  legalIntroText: {
     ...TYPE.body,
-    color: C.textSub,
-    marginTop: 6,
-    textAlign: "center",
+    flex: 1,
+    color: C.text,
+    lineHeight: 21,
   },
-  legalRetryButton: {
-    minHeight: MIN_TOUCH_TARGET,
+  legalSectionCard: {
     flexDirection: "row",
+    alignItems: "flex-start",
+    gap: 12,
+    padding: 16,
+    borderRadius: RADIUS.lg,
+    backgroundColor: C.surface,
+    borderWidth: 1,
+    borderColor: C.border,
+  },
+  legalSectionNumber: {
+    width: 34,
+    height: 34,
+    borderRadius: 17,
     alignItems: "center",
     justifyContent: "center",
-    gap: 8,
-    paddingHorizontal: 18,
-    marginTop: 18,
-    borderRadius: RADIUS.sm,
-    backgroundColor: C.primary,
+    backgroundColor: C.primaryLight,
   },
-  legalRetryText: {
-    ...TYPE.button,
-    color: C.onPrimary,
+  legalSectionNumberText: {
+    ...TYPE.label,
+    color: C.primary,
+    fontWeight: "900",
+  },
+  legalSectionBody: {
+    flex: 1,
+    minWidth: 0,
+  },
+  legalSectionTitle: {
+    ...TYPE.title,
+    color: C.text,
+    fontWeight: "800",
+    marginBottom: 6,
+  },
+  legalSectionText: {
+    ...TYPE.body,
+    color: C.textSub,
+    lineHeight: 21,
+  },
+  legalOfflineNote: {
+    ...TYPE.caption,
+    color: C.textMuted,
+    textAlign: "center",
+    marginTop: 4,
   },
   bottomNav: {
     position: "absolute", bottom: 0, left: 0, right: 0,
