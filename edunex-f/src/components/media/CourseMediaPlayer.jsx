@@ -43,18 +43,20 @@ export function CourseMediaPlayer({ course, lesson, lessonIndex, autoNext, autop
     const play=()=>{setPlaying(true);setBuffering(false);};
     const pause=()=>setPlaying(false);
     const ended=()=>{setPlaying(false);sync();window.dispatchEvent(new Event('learning-flush'));if(!latest.current.loop&&latest.current.autoNext)latest.current.onEnded?.();};
-    const failed=()=>{video.pause();setError('Playback failed. Retry to refresh access, or contact support if it continues.');setBuffering(false);setPlaying(false);};
+    const failed=(detail='')=>{video.pause();setError(typeof detail==='string'&&detail ? detail : 'Playback could not start. Retry to refresh your video access.');setBuffering(false);setPlaying(false);};
     const tracks=()=>{if(!engine)setCaptions(Array.from(video.textTracks).map((track,index)=>({index,label:track.label||track.language||`Track ${index+1}`})));};
     const listeners={loadedmetadata:ready,timeupdate:sync,progress:sync,playing:play,pause,ended,error:failed,waiting:()=>setBuffering(true),canplay:()=>setBuffering(false),volumechange:()=>{setMuted(video.muted);setVolume(video.volume);}};
     Object.entries(listeners).forEach(([name,fn])=>video.addEventListener(name,fn));
     video.textTracks.addEventListener('addtrack',tracks);
-    if(!isHls || video.canPlayType('application/vnd.apple.mpegurl'))video.src=source;
+    const nativeHls = video.canPlayType('application/vnd.apple.mpegurl');
+    const safari = /Safari/i.test(navigator.userAgent) && !/Chrome|Chromium|CriOS|Edg|Android/i.test(navigator.userAgent);
+    if(!isHls || (nativeHls && safari))video.src=source;
     else loadHlsJs().then(Hls=>{
-      if(stopped)return;if(!Hls.isSupported()){failed();return;}
+      if(stopped)return;if(!Hls.isSupported()){if(nativeHls)video.src=source;else failed();return;}
       engine=new Hls({enableWorker:true,maxBufferLength:30});hlsRef.current=engine;
       engine.on(Hls.Events.MANIFEST_PARSED,(_,data)=>{setLevels(data.levels.map((level,index)=>({index,label:level.height?`${level.height}p`:`${Math.round(level.bitrate/1000)} kbps`})));});
       engine.on(Hls.Events.SUBTITLE_TRACKS_UPDATED,(_,data)=>setCaptions(data.subtitleTracks.map((track,index)=>({index,label:track.name||track.lang||`Track ${index+1}`}))));
-      engine.on(Hls.Events.ERROR,(_,data)=>{if(!data.fatal)return;if(data.type===Hls.ErrorTypes.MEDIA_ERROR&&mediaRecoveries++<2)engine.recoverMediaError();else{engine.stopLoad();failed();}});
+      engine.on(Hls.Events.ERROR,(_,data)=>{if(!data.fatal)return;if(data.type===Hls.ErrorTypes.MEDIA_ERROR&&mediaRecoveries++<2)engine.recoverMediaError();else{engine.stopLoad();const status=data.response?.code;failed(status===401||status===403?'Video access was rejected. Retry to renew access.':status===404?'The video file could not be found. Please contact support.':`Video could not load (${data.details || 'stream error'}). Retry playback.`);}});
       engine.loadSource(source);engine.attachMedia(video);
     }).catch(()=>{if(!stopped)failed();});
     return()=>{stopped=true;Object.entries(listeners).forEach(([name,fn])=>video.removeEventListener(name,fn));video.textTracks.removeEventListener('addtrack',tracks);engine?.destroy();hlsRef.current=null;video.pause();video.removeAttribute('src');video.load();};
@@ -84,7 +86,7 @@ export function CourseMediaPlayer({ course, lesson, lessonIndex, autoNext, autop
     {failure?<div className="sm-failure" role="alert"><p>{failure}</p><button onClick={()=>{setError('');if(lesson.provider==='aws_cloudfront')access.retry();else setReload(n=>n+1);}}>Retry playback</button>{onFallback?<button onClick={onFallback}>Use compatible player</button>:null}</div>:null}
     {notice?<div className="sm-notice" role="status">{notice}</div>:null}
     {menu?<div className="sm-settings" aria-label="Player settings">
-      <button onClick={closeMenu} aria-label="Close settings">Close ×</button>
+      <div className="sm-settings-header"><span>Playback settings</span><button onClick={closeMenu} aria-label="Close settings">×</button></div>
       <label>Playback speed<select value={rate} onChange={e=>setRate(Number(e.target.value))}>{[.25,.5,.75,1,1.25,1.5,1.75,2].map(n=><option key={n} value={n}>{n===1?'Normal':`${n}×`}</option>)}</select></label>
       <label>Quality<select value={quality} disabled={!levels.length} onChange={e=>{const n=Number(e.target.value);if(hlsRef.current)hlsRef.current.currentLevel=n;setQuality(n);}}><option value={-1}>{levels.length?'Auto':'Auto · browser managed'}</option>{levels.map(l=><option key={l.index} value={l.index}>{l.label}</option>)}</select></label>
       <label>Loop lesson<input type="checkbox" checked={loop} onChange={e=>setLoop(e.target.checked)}/></label>

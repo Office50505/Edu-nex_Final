@@ -153,6 +153,7 @@ app.use(helmet({
       scriptSrc: ["'self'"],
       styleSrc: ["'self'", "'unsafe-inline'", 'https:'],
       imgSrc: ["'self'", 'data:', 'blob:', 'https:'],
+      workerSrc: ["'self'", 'blob:'],
       mediaSrc: ["'self'", 'blob:', 'https:'],
       fontSrc: ["'self'", 'data:', 'https:'],
       connectSrc: cspConnectSources,
@@ -1159,6 +1160,7 @@ app.use('/api', (req, res, next) => {
   next();
 });
 
+app.use('/api', require('./routes/deletionRequests'));
 app.use('/api', require('./routes/playback'));
 app.use('/api', require('./routes/certification'));
 app.use('/api/admin', require('./routes/adminHealth'));

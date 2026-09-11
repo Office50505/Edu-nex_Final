@@ -26,6 +26,7 @@ const companyLinks = [
 ];
 
 const legalLinks = [
+  ["Delete account", "/delete-account"],
   ["Terms", route("terms.html")],
   ["Privacy", route("privacy.html")],
   ["Help", route("help.html")],

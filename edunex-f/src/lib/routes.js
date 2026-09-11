@@ -1,4 +1,5 @@
 const cleanRoutes = {
+  "delete-account.html": "/delete-account",
   "index.html": "/",
   "home-based.html": "/home-based",
   "about.html": "/about",

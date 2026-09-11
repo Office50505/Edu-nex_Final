@@ -58,3 +58,6 @@ if (fs.existsSync(indexHtml)) {
   fs.copyFileSync(indexHtml, path.join(healthDir, 'index.html'));
 }
 console.log("Copied static frontend assets and route shells into dist.");
+
+fs.mkdirSync(path.join(dist, 'delete-account'), {recursive:true});
+fs.copyFileSync(indexHtml, path.join(dist, 'delete-account', 'index.html'));

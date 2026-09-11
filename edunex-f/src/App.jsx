@@ -6,6 +6,7 @@ import { pageKeyFromPath, route } from "./lib/routes.js";
 import { adminPageFromPath, canonicalAdminPath } from "./pages/admin/adminApi.js";
 
 const reactPageLoaders = {
+  "delete-account.html": lazy(() => import("./pages/DeleteAccountPage.jsx")),
   "about.html": lazy(() => import("./pages/AboutPage.jsx").then((module) => ({ default: module.AboutPage }))),
   "ai-tutor.html": lazy(() => import("./pages/AiTutorPage.jsx").then((module) => ({ default: module.AiTutorPage }))),
   "certificates.html": lazy(() => import("./pages/CertificatesPage.jsx").then((module) => ({ default: module.CertificatesPage }))),

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import './certification-progress.css';
 export function CertificationProgress({courseId}) {
   const [status,setStatus]=useState(null),[quiz,setQuiz]=useState(null),[answers,setAnswers]=useState([]),[message,setMessage]=useState(''),[busy,setBusy]=useState(false);
   useEffect(()=>{
@@ -16,12 +17,13 @@ export function CertificationProgress({courseId}) {
       else {const data=await window.EduNex.authRequest(path,{method:'POST',body:JSON.stringify(kind==='submit'?{version:quiz.version,answers}:{})});if(data.eligibility)setStatus(data.eligibility);setMessage(data.certificate?'Certificate ready in My Certificates.':`Assessment score: ${data.score}%. You can retry after 30 seconds.`);if(data.passed)setQuiz(null);}
     }catch(e){setMessage(e.message || 'Please retry.');}finally{setBusy(false);}
   }
-  return <section style={{padding:20,border:'1px solid #75613b',borderRadius:12,margin:'18px 0'}} aria-label="Certification progress">
-    <h2 style={{fontSize:18}}>Your course completion</h2>
-    {status?<><p>{status.completedLessons} / {status.totalLessons} lessons complete · 90% coverage required per lesson.</p><ul>{status.requirements.map(item=><li key={item}>{item}</li>)}</ul>
+  const percent = status?.totalLessons ? Math.round(status.completedLessons / status.totalLessons * 100) : 0;
+  return <section className="course-progress" aria-label="Certification progress">
+    <div className="course-progress__heading"><h2>Course progress</h2><span>{percent}% complete</span></div>
+    {status?<><progress max="100" value={percent} aria-label="Lessons completed"/><div className="course-progress__summary"><span>{status.completedLessons} of {status.totalLessons} lessons completed</span><a href="/certificates">My certificates →</a></div>{status.requirements.length ? <details><summary>Certificate requirements</summary><ul>{status.requirements.map(item=><li key={item}>{item === "Course durations must be configured by an administrator." ? "Certificate eligibility is pending course setup." : item}</li>)}</ul></details> : null}
     {status.assessmentRequired&&status.completedLessons===status.totalLessons?<button disabled={busy} onClick={()=>perform('start')}>Take final assessment</button>:null}
     {status.eligible?<><p>Your profile name will appear on the certificate. Check it before claiming.</p><button disabled={busy} onClick={()=>perform('claim')}>Claim certificate</button></>:null}</>:<p>Loading progress…</p>}
     {quiz?<form onSubmit={e=>{e.preventDefault();perform('submit');}}>{quiz.questions.map((q,i)=><fieldset key={i} style={{margin:'16px 0',padding:12}}><legend>{i+1}. {q.prompt}</legend>{q.options.map((option,j)=><label key={j} style={{display:'block',padding:6}}><input type="radio" name={`question-${i}`} required checked={answers[i]===j} onChange={()=>setAnswers(current=>current.map((a,k)=>k===i?j:a))}/> {option}</label>)}</fieldset>)}<button disabled={busy}>Submit answers</button></form>:null}
-    <p role="status">{message}</p><a href="/certificates">My Certificates →</a>
+    {message ? <p role="status">{message}</p> : null}
   </section>;
 }

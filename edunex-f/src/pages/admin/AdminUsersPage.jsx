@@ -1,3 +1,4 @@
+import { DeletionRequests } from "./DeletionRequests";
 import { csvEscape } from "./adminExport.js";
 import { useEffect, useMemo, useState } from "react";
 import { AdminShell, Message } from "./AdminShell.jsx";
@@ -268,6 +269,7 @@ export function AdminUsersPage() {
       actions={<button className="toolbar-button" type="button" onClick={loadUsers} disabled={loading}>Refresh</button>}
     >
       <Message text={message} type={messageType} />
+      <DeletionRequests />
 
       <form className="controls-panel" onSubmit={(event) => event.preventDefault()}>
         <div><label htmlFor="searchInput">Search</label><input id="searchInput" type="search" placeholder="Name, email, mobile, course" value={query} onChange={(event) => setQuery(event.target.value)} /></div>
