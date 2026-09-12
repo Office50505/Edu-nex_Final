@@ -10,6 +10,7 @@ const Lesson = require('../models/Lesson');
 const AiTutorSession = require('../models/AiTutorSession');
 const ContactEnquiry = require('../models/ContactEnquiry');
 const { syncLessonProgress } = require('../services/mobileCompatibilityService');
+const { sendContactEnquiryEmail } = require('../services/supportMailer');
 
 const router = express.Router();
 const requireAccess = [protect, checkSubscription];
@@ -109,9 +110,18 @@ router.post('/contact-enquiries', optionalContactUser, async (req, res) => {
       message,
     });
 
+    let emailDelivered = false;
+    try {
+      const mailResult = await sendContactEnquiryEmail(enquiry, req.contactUser || null);
+      emailDelivered = Boolean(mailResult.sent);
+    } catch (mailError) {
+      console.error('Contact enquiry email failed', mailError.message);
+    }
+
     res.status(201).json({
       message: 'Enquiry submitted successfully',
       enquiryId: enquiry._id,
+      emailDelivered,
     });
   } catch (error) {
     if (error.name === 'ValidationError') {

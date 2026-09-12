@@ -3244,7 +3244,7 @@ async function canOpenDashboard() {
       <article class="help-card">
         <i class="fas fa-envelope"></i>
         <h2>Contact</h2>
-        <p>Email support at <a href="mailto:support@skillomate.ai">support@skillomate.ai</a> with your mobile number and issue details.</p>
+        <p>Email support at <a href="mailto:support@skillomate.in">support@skillomate.in</a> with your mobile number and issue details.</p>
       </article>
     </section>
   </main>

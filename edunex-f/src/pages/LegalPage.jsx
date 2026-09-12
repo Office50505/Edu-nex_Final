@@ -947,7 +947,7 @@ function TermsPage() {
           <TermsSection id="support" title="Support" index={13}>
             <p>
               For account, course access, payment, deletion, or Terms questions, use the Help page or email Skillomate
-              support at <a href="mailto:support@skillomate.ai">support@skillomate.ai</a>.
+              support at <a href="mailto:support@skillomate.in">support@skillomate.in</a>.
             </p>
           </TermsSection>
         </article>

@@ -348,7 +348,7 @@ const LEGAL_APP_PAGES = {
       { title: "Payments", body: "After completing payment, return to Skillomate and check Subscription Details from Profile. Reopen the app if the updated status is not visible yet." },
       { title: "Wishlist and progress", body: "Wishlist and course progress sync to your signed-in account when the server is available." },
       { title: "Nex AI", body: "Use Nex AI for summaries, study plans, project ideas, and lesson explanations. Try again later if the AI service is temporarily unavailable." },
-      { title: "Contact", body: "Email support@skillomate.ai with your registered mobile number and a clear description of the issue. Never include your password or OTP." },
+      { title: "Contact", body: "Email support@skillomate.in with your registered mobile number and a clear description of the issue. Never include your password or OTP." },
     ],
   },
 };
@@ -387,10 +387,10 @@ const HELP_SUPPORT_CONTENT = {
     {
       title: "Contact",
       icon: "mail-outline",
-      body: "Email support at support@skillomate.ai with your mobile number and issue details.",
+      body: "Email support at support@skillomate.in with your mobile number and issue details.",
       actionLabel: "Email Support",
       actionIcon: "mail",
-      onPress: () => openAppLink("mailto:support@skillomate.ai", "Support email"),
+      onPress: () => openAppLink("mailto:support@skillomate.in", "Support email"),
     },
   ],
 };
@@ -449,7 +449,7 @@ const TERMS_CONTENT = {
     {
       title: "Support",
       icon: "mail-outline",
-      body: "For account, course access, payment, deletion, or Terms questions, use Help & Support or email support@skillomate.ai.",
+      body: "For account, course access, payment, deletion, or Terms questions, use Help & Support or email support@skillomate.in.",
     },
   ],
 };

@@ -22,7 +22,7 @@ const accountLinks = [
 const companyLinks = [
   ["About", route("about.html")],
   ["Support", route("help.html")],
-  ["Contact", "mailto:support@skillomate.ai"],
+  ["Contact", "mailto:support@skillomate.in"],
 ];
 
 const legalLinks = [
@@ -97,7 +97,7 @@ export function Footer() {
               <p>Use your dashboard to continue enrolled courses, open notes from lessons, or contact support if access does not look right.</p>
               <a href={route("payment.html")}>Start ₹1 Trial <EnxIcon name="arrowRight" /></a>
               <div className="enx-footer-support">
-                <a href="mailto:support@skillomate.ai"><EnxIcon name="mail" /> support@skillomate.ai</a>
+                <a href="mailto:support@skillomate.in"><EnxIcon name="mail" /> support@skillomate.in</a>
                 <a href={route("about.html")}><EnxIcon name="info" /> About Skillomate</a>
               </div>
             </div>
