@@ -129,8 +129,7 @@ function driveThumbnailFallback(course) {
     const fileMatch = parsed.pathname.match(/\/file\/d\/([^/]+)/);
     const id = fileMatch?.[1] || parsed.searchParams.get("id");
     if (!id) return "";
-    const driveUrl = `https://drive.google.com/thumbnail?id=${encodeURIComponent(id)}&sz=w1200`;
-    return `/api/image-proxy?url=${encodeURIComponent(driveUrl)}`;
+    return `https://drive.google.com/thumbnail?id=${encodeURIComponent(id)}&sz=w1200`;
   } catch (_) {
     return "";
   }

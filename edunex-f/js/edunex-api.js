@@ -1044,7 +1044,7 @@
       const fileMatch = parsed.pathname.match(/\/file\/d\/([^/]+)/);
       const id = fileMatch?.[1] || parsed.searchParams.get("id");
       const driveUrl = id ? `https://drive.google.com/thumbnail?id=${encodeURIComponent(id)}&sz=w1200` : parsed.href;
-      return proxiedImageUrl(driveUrl);
+      return driveUrl;
     } catch (_) {
       return raw;
     }

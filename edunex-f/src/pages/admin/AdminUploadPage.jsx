@@ -146,6 +146,9 @@ function courseVideo(video, index) {
 function courseForm(course) {
   const horizontalThumbnailDataUrl = embeddedThumbnailDataUrl(course?.thumbnailHorizontal, course?.thumbnail, course?.thumbnailVertical);
   const verticalThumbnailDataUrl = embeddedThumbnailDataUrl(course?.thumbnailVertical, course?.thumbnailHorizontal, course?.thumbnail);
+  const courseId = String(course?._id || course?.id || "");
+  const publishedThumbnailUrl = courseId && course?.status === "published" ? `/api/courses/${courseId}/thumbnail` : "";
+  const publishedVerticalThumbnailUrl = courseId && course?.status === "published" ? `/api/courses/${courseId}/thumbnail?orientation=vertical` : "";
   const videos = Array.isArray(course?.videos) && course.videos.length
     ? course.videos.slice().sort((a,b)=>(a.order||0)-(b.order||0)).map((video,index) => ({...courseVideo(video,index),
       thumbnailUrl: video.thumbnailUrl === course.thumbnailUrl ? '' : video.thumbnailUrl || '',
@@ -157,8 +160,8 @@ function courseForm(course) {
     description: course?.description || "",
     category: categoryId(course),
     status: course?.status === "published" ? "published" : "draft",
-    thumbnailUrl: course?.thumbnailUrl || "",
-    thumbnailVerticalUrl: course?.thumbnailVerticalUrl || "",
+    thumbnailUrl: course?.thumbnailUrl || (horizontalThumbnailDataUrl ? "" : publishedThumbnailUrl),
+    thumbnailVerticalUrl: course?.thumbnailVerticalUrl || (verticalThumbnailDataUrl ? "" : publishedVerticalThumbnailUrl),
     thumbnailDataUrl: horizontalThumbnailDataUrl,
     thumbnailVerticalDataUrl: verticalThumbnailDataUrl,
     thumbnailFileName: "",

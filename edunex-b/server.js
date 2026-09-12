@@ -26,6 +26,10 @@ const FRONTEND_DIST_DIR = process.env.FRONTEND_DIST_DIR
 const FRONTEND_DIR = fs.existsSync(path.join(FRONTEND_DIST_DIR, 'index.html'))
   ? FRONTEND_DIST_DIR
   : FRONTEND_SOURCE_DIR;
+const UPLOADS_DIR = process.env.UPLOADS_DIR
+  ? path.resolve(process.env.UPLOADS_DIR)
+  : path.join(__dirname, 'uploads');
+const COURSE_THUMBNAIL_UPLOAD_DIR = path.join(UPLOADS_DIR, 'course-thumbnails');
 const isProduction = process.env.NODE_ENV === 'production';
 const SERVE_FRONTEND = process.env.SERVE_FRONTEND !== 'false' && fs.existsSync(FRONTEND_DIR);
 const MONGODB_URI = process.env.MONGODB_URI || (isProduction ? '' : 'mongodb://localhost:27017/edunex');
@@ -579,6 +583,10 @@ app.use((error, req, res, next) => {
 
   return next(error);
 });
+app.use('/uploads', express.static(UPLOADS_DIR, {
+  maxAge: '7d',
+  immutable: true,
+}));
 if (SERVE_FRONTEND) {
   app.use(express.static(FRONTEND_DIR, {
     setHeaders(res, filePath) {
@@ -775,6 +783,54 @@ function sanitizeOptionalUrl(value) {
 
 const MAX_THUMBNAIL_BYTES = 2 * 1024 * 1024;
 const ALLOWED_THUMBNAIL_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp']);
+
+function hasStoredThumbnail(image) {
+  return Boolean(image?.mimeType && ALLOWED_THUMBNAIL_TYPES.has(image.mimeType));
+}
+
+function thumbnailExtension(mimeType) {
+  if (mimeType === 'image/png') return 'png';
+  if (mimeType === 'image/webp') return 'webp';
+  return 'jpg';
+}
+
+function isLocalThumbnailUrl(value) {
+  return /^\/uploads\/course-thumbnails\/[a-f0-9]{24}-(?:horizontal|vertical)\.(?:jpg|png|webp)$/i.test(String(value || ''));
+}
+
+function saveThumbnailUpload(courseId, orientation, image) {
+  if (!hasStoredThumbnail(image) || !image.data) return null;
+
+  const normalizedOrientation = orientation === 'vertical' ? 'vertical' : 'horizontal';
+  const extension = thumbnailExtension(image.mimeType);
+  const filename = `${courseId}-${normalizedOrientation}.${extension}`;
+  fs.mkdirSync(COURSE_THUMBNAIL_UPLOAD_DIR, { recursive: true });
+  fs.writeFileSync(path.join(COURSE_THUMBNAIL_UPLOAD_DIR, filename), Buffer.from(image.data, 'base64'));
+  return `/uploads/course-thumbnails/${filename}`;
+}
+
+function publicCourseThumbnailUrl(course, orientation = 'horizontal') {
+  const id = course?._id;
+  if (!id) return null;
+
+  const horizontalImage = course.thumbnailHorizontal || course.thumbnail;
+  const verticalImage = course.thumbnailVertical;
+
+  if (orientation === 'vertical') {
+    if (isLocalThumbnailUrl(course.thumbnailVerticalUrl)) return course.thumbnailVerticalUrl;
+    if (isLocalThumbnailUrl(course.thumbnailUrl)) return course.thumbnailUrl;
+    if (hasStoredThumbnail(verticalImage) || hasStoredThumbnail(horizontalImage)) {
+      return `/api/courses/${id}/thumbnail?orientation=vertical`;
+    }
+    return course.thumbnailVerticalUrl || course.thumbnailUrl || `/api/courses/${id}/thumbnail?orientation=vertical`;
+  }
+
+  if (isLocalThumbnailUrl(course.thumbnailUrl)) return course.thumbnailUrl;
+  if (hasStoredThumbnail(horizontalImage) || hasStoredThumbnail(verticalImage)) {
+    return `/api/courses/${id}/thumbnail`;
+  }
+  return course.thumbnailUrl || course.thumbnailVerticalUrl || `/api/courses/${id}/thumbnail`;
+}
 
 function parseThumbnailDataUrl(value, label) {
   const raw = String(value || '').trim();
@@ -2576,8 +2632,11 @@ app.get('/api/courses/checkout-summary', async (req, res) => {
       return res.status(404).json({ error: 'Course not found' });
     }
 
-    course.thumbnailUrl = (course.thumbnailHorizontal?.mimeType || course.thumbnail?.mimeType) ? `/api/courses/${course._id}/thumbnail` : course.thumbnailUrl || `/api/courses/${course._id}/thumbnail`;
-    course.thumbnailVerticalUrl = course.thumbnailVertical?.mimeType ? `/api/courses/${course._id}/thumbnail?orientation=vertical` : course.thumbnailVerticalUrl || `/api/courses/${course._id}/thumbnail?orientation=vertical`;
+    course.thumbnailUrl = publicCourseThumbnailUrl(course);
+    course.thumbnailVerticalUrl = publicCourseThumbnailUrl(course, 'vertical');
+    delete course.thumbnail;
+    delete course.thumbnailHorizontal;
+    delete course.thumbnailVertical;
     await setCachedCheckoutSummary(cacheKey, course);
 
     setCheckoutSummaryCacheHeaders(res, false);
@@ -2612,7 +2671,12 @@ app.get('/api/courses', async (req, res) => {
         thumbnailUrl: firstVideo.thumbnailUrl || null,
         thumbnailVerticalUrl: firstVideo.thumbnailVerticalUrl || null,
       }] : [];
-      return { ...course, thumbnailUrl: (course.thumbnailHorizontal?.mimeType || course.thumbnail?.mimeType) ? `/api/courses/${course._id}/thumbnail` : course.thumbnailUrl || `/api/courses/${course._id}/thumbnail`, thumbnailVerticalUrl: course.thumbnailVertical?.mimeType ? `/api/courses/${course._id}/thumbnail?orientation=vertical` : course.thumbnailVerticalUrl || `/api/courses/${course._id}/thumbnail?orientation=vertical`, videos: previewVideos, lessonCount, videoCount: lessonCount };
+      const thumbnailUrl = publicCourseThumbnailUrl(course);
+      const thumbnailVerticalUrl = publicCourseThumbnailUrl(course, 'vertical');
+      delete course.thumbnail;
+      delete course.thumbnailHorizontal;
+      delete course.thumbnailVertical;
+      return { ...course, thumbnailUrl, thumbnailVerticalUrl, videos: previewVideos, lessonCount, videoCount: lessonCount };
     });
 
     await setCachedPublicRead(cacheKey, courses);
@@ -2639,23 +2703,29 @@ app.post('/api/courses', protectAdmin, async (req, res) => {
       return res.status(400).json({ error: 'Every lesson must include a valid permanent video reference' });
     }
 
-    const courseThumbnailUrl = sanitizeOptionalUrl(req.body.thumbnailUrl || req.body.thumbnailHorizontalUrl);
-    const courseThumbnailVerticalUrl = sanitizeOptionalUrl(req.body.thumbnailVerticalUrl);
     const embeddedHorizontalThumbnail = parseThumbnailDataUrl(
       req.body.thumbnailDataUrl || req.body.thumbnailHorizontalDataUrl,
       'Horizontal thumbnail'
     );
     const embeddedVerticalThumbnail = parseThumbnailDataUrl(req.body.thumbnailVerticalDataUrl, 'Vertical thumbnail');
+    const courseId = new mongoose.Types.ObjectId();
+    const savedHorizontalThumbnailUrl = saveThumbnailUpload(courseId, 'horizontal', embeddedHorizontalThumbnail);
+    const savedVerticalThumbnailUrl = saveThumbnailUpload(courseId, 'vertical', embeddedVerticalThumbnail);
+    const courseThumbnailUrl = savedHorizontalThumbnailUrl
+      || (embeddedHorizontalThumbnail ? null : sanitizeOptionalUrl(req.body.thumbnailUrl || req.body.thumbnailHorizontalUrl));
+    const courseThumbnailVerticalUrl = savedVerticalThumbnailUrl
+      || (embeddedVerticalThumbnail ? null : sanitizeOptionalUrl(req.body.thumbnailVerticalUrl));
 
     const course = new Course({
+      _id: courseId,
       title: req.body.title,
       slug: req.body.slug,
       description: req.body.description,
       thumbnail: embeddedHorizontalThumbnail,
       thumbnailHorizontal: embeddedHorizontalThumbnail,
       thumbnailVertical: embeddedVerticalThumbnail,
-      thumbnailUrl: embeddedHorizontalThumbnail ? null : courseThumbnailUrl,
-      thumbnailVerticalUrl: embeddedVerticalThumbnail ? null : courseThumbnailVerticalUrl,
+      thumbnailUrl: courseThumbnailUrl,
+      thumbnailVerticalUrl: courseThumbnailVerticalUrl,
       videos: applyCourseThumbnailToVideos(sanitizedVideos, embeddedHorizontalThumbnail, courseThumbnailUrl, courseThumbnailVerticalUrl),
       notesUrl: req.body.notesUrl || null,
       category: req.body.category,
@@ -2782,7 +2852,7 @@ app.patch('/api/admin/courses/:id', protectAdmin, async (req, res) => {
       if (embeddedHorizontalThumbnail) {
         updates.thumbnail = embeddedHorizontalThumbnail;
         updates.thumbnailHorizontal = embeddedHorizontalThumbnail;
-        updates.thumbnailUrl = null;
+        updates.thumbnailUrl = saveThumbnailUpload(req.params.id, 'horizontal', embeddedHorizontalThumbnail);
       }
     }
 
@@ -2790,7 +2860,7 @@ app.patch('/api/admin/courses/:id', protectAdmin, async (req, res) => {
       const embeddedVerticalThumbnail = parseThumbnailDataUrl(req.body.thumbnailVerticalDataUrl, 'Vertical thumbnail');
       if (embeddedVerticalThumbnail) {
         updates.thumbnailVertical = embeddedVerticalThumbnail;
-        updates.thumbnailVerticalUrl = null;
+        updates.thumbnailVerticalUrl = saveThumbnailUpload(req.params.id, 'vertical', embeddedVerticalThumbnail);
       }
     }
 
