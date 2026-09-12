@@ -62,8 +62,8 @@ export function CourseMediaPlayer({ course, lesson, lessonIndex, autoNext, autop
     Object.entries(listeners).forEach(([name,fn])=>video.addEventListener(name,fn));
     video.textTracks.addEventListener('addtrack',tracks);
     const nativeHls = video.canPlayType('application/vnd.apple.mpegurl');
-    const safari = /Safari/i.test(navigator.userAgent) && !/Chrome|Chromium|CriOS|Edg|Android/i.test(navigator.userAgent);
-    if(!isHls || (nativeHls && safari))video.src=source;
+    // Device emulation can spoof Safari; select the engine by capability.
+    if(!isHls)video.src=source;
     else loadHlsJs().then(Hls=>{
       if(stopped)return;if(!Hls.isSupported()){if(nativeHls)video.src=source;else failed();return;}
       engine=new Hls({enableWorker:true,maxBufferLength:30});hlsRef.current=engine;

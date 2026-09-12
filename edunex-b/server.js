@@ -2523,7 +2523,7 @@ app.get('/api/recommendations/courses', async (req, res) => {
 app.get('/api/courses/checkout-summary', async (req, res) => {
   try {
     const { courseId } = req.query;
-    const cacheKey = courseId ? `course:${courseId}` : 'featured';
+    const cacheKey = courseId ? `course:v2:${courseId}` : 'featured:v2';
     const cached = await getCachedCheckoutSummary(cacheKey);
 
     if (cached) {
@@ -2558,9 +2558,6 @@ app.get('/api/courses/checkout-summary', async (req, res) => {
           title: 1,
           description: 1,
           category: { _id: '$category._id', name: '$category.name' },
-          thumbnail: 1,
-          thumbnailHorizontal: 1,
-          thumbnailVertical: 1,
           thumbnailUrl: 1,
           thumbnailVerticalUrl: 1,
           averageRating: 1,
@@ -2569,12 +2566,15 @@ app.get('/api/courses/checkout-summary', async (req, res) => {
           videos: { $slice: ['$videos', 1] },
         },
       },
+      { $unset: 'videos.thumbnail' },
     ]);
 
     if (!course) {
       return res.status(404).json({ error: 'Course not found' });
     }
 
+    course.thumbnailUrl = course.thumbnailUrl || `/api/courses/${course._id}/thumbnail`;
+    course.thumbnailVerticalUrl = course.thumbnailVerticalUrl || `/api/courses/${course._id}/thumbnail?orientation=vertical`;
     await setCachedCheckoutSummary(cacheKey, course);
 
     setCheckoutSummaryCacheHeaders(res, false);
@@ -2586,7 +2586,7 @@ app.get('/api/courses/checkout-summary', async (req, res) => {
 
 app.get('/api/courses', async (req, res) => {
   try {
-    const cacheKey = 'courses:published:list:v4';
+    const cacheKey = 'courses:published:list:v5';
     const cached = await getCachedPublicRead(cacheKey);
     if (cached) {
       setPublicReadCacheHeaders(res, true);
@@ -2594,7 +2594,7 @@ app.get('/api/courses', async (req, res) => {
     }
 
     const courseDocuments = await Course.find({ status: 'published' })
-      .select('title slug description category thumbnail thumbnailHorizontal thumbnailVertical thumbnailUrl thumbnailVerticalUrl averageRating totalWishlisted totalStarted totalCompleted completionRate publishedAt createdAt videos')
+      .select('title slug description category thumbnailUrl thumbnailVerticalUrl averageRating totalWishlisted totalStarted totalCompleted completionRate publishedAt createdAt videos._id videos.title videos.thumbnailUrl videos.thumbnailVerticalUrl')
       .populate('category', 'name slug isActive')
       .sort({ publishedAt: -1, createdAt: -1 })
       .limit(100)
@@ -2605,11 +2605,11 @@ app.get('/api/courses', async (req, res) => {
       const firstVideo = Array.isArray(videos) ? videos[0] : null;
       const previewVideos = firstVideo ? [{
         title: firstVideo.title,
-        thumbnail: firstVideo.thumbnail || null,
+        thumbnail: null,
         thumbnailUrl: firstVideo.thumbnailUrl || null,
         thumbnailVerticalUrl: firstVideo.thumbnailVerticalUrl || null,
       }] : [];
-      return { ...course, videos: previewVideos, lessonCount, videoCount: lessonCount };
+      return { ...course, thumbnailUrl: course.thumbnailUrl || `/api/courses/${course._id}/thumbnail`, thumbnailVerticalUrl: course.thumbnailVerticalUrl || `/api/courses/${course._id}/thumbnail?orientation=vertical`, videos: previewVideos, lessonCount, videoCount: lessonCount };
     });
 
     await setCachedPublicRead(cacheKey, courses);
