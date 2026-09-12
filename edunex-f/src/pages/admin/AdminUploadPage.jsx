@@ -160,8 +160,12 @@ function courseForm(course) {
     description: course?.description || "",
     category: categoryId(course),
     status: course?.status === "published" ? "published" : "draft",
-    thumbnailUrl: course?.thumbnailUrl || (horizontalThumbnailDataUrl ? "" : publishedThumbnailUrl),
-    thumbnailVerticalUrl: course?.thumbnailVerticalUrl || (verticalThumbnailDataUrl ? "" : publishedVerticalThumbnailUrl),
+    thumbnailUrl: /^https?:\/\//i.test(course?.thumbnailUrl || "") ? course.thumbnailUrl : "",
+    thumbnailStoredUrl: course?.thumbnailUrl || "",
+    thumbnailPreviewUrl: course?.thumbnailUrl || publishedThumbnailUrl,
+    thumbnailVerticalUrl: /^https?:\/\//i.test(course?.thumbnailVerticalUrl || "") ? course.thumbnailVerticalUrl : "",
+    thumbnailVerticalStoredUrl: course?.thumbnailVerticalUrl || "",
+    thumbnailVerticalPreviewUrl: course?.thumbnailVerticalUrl || publishedVerticalThumbnailUrl,
     thumbnailDataUrl: horizontalThumbnailDataUrl,
     thumbnailVerticalDataUrl: verticalThumbnailDataUrl,
     thumbnailFileName: "",
@@ -233,8 +237,8 @@ export function AdminUploadPage() {
   const [thumbnailFailed, setThumbnailFailed] = useState(false);
   const isEditing = Boolean(editCourseId);
   const previewThumbnailSrc = useMemo(
-    () => thumbnailPreviewSrc(form.thumbnailDataUrl || form.thumbnailUrl || form.thumbnailVerticalDataUrl || form.thumbnailVerticalUrl),
-    [form.thumbnailDataUrl, form.thumbnailUrl, form.thumbnailVerticalDataUrl, form.thumbnailVerticalUrl]
+    () => thumbnailPreviewSrc(form.thumbnailDataUrl || form.thumbnailUrl || form.thumbnailVerticalDataUrl || form.thumbnailVerticalUrl || form.thumbnailPreviewUrl || form.thumbnailVerticalPreviewUrl),
+    [form.thumbnailDataUrl, form.thumbnailUrl, form.thumbnailVerticalDataUrl, form.thumbnailVerticalUrl, form.thumbnailPreviewUrl, form.thumbnailVerticalPreviewUrl]
   );
 
   async function loadCategories() {
@@ -389,6 +393,9 @@ export function AdminUploadPage() {
         examplePrompt: String(video.examplePrompt || "").trim(),
       })),
     };
+    // Preserve existing internal storage references without putting them in URL inputs.
+    if (!form.thumbnailUrl && form.thumbnailStoredUrl?.startsWith('/')) delete payload.thumbnailUrl;
+    if (!form.thumbnailVerticalUrl && form.thumbnailVerticalStoredUrl?.startsWith('/')) delete payload.thumbnailVerticalUrl;
     if (form.thumbnailDataUrl) payload.thumbnailDataUrl = form.thumbnailDataUrl;
     if (form.thumbnailVerticalDataUrl) payload.thumbnailVerticalDataUrl = form.thumbnailVerticalDataUrl;
 

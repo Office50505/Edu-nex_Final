@@ -25,3 +25,12 @@ it('does not allow saving a blank edit form after loading fails',async()=>{
  expect(screen.queryByLabelText('Course title')).toBeNull();
  expect(screen.queryByRole('button',{name:'Create course'})).toBeNull();
 });
+it('keeps generated preview paths out of URL inputs',async()=>{
+ window.history.replaceState({},'', '/admin/upload?courseId=course-one');
+ mocks.request.mockImplementation(async path=>path==='/api/categories'?[]:path.includes('video-providers')?{}:{_id:'course-one',title:'Existing',status:'published',videos:[]});
+ render(<AdminUploadPage/>);
+ await screen.findByDisplayValue('Existing');
+ expect(document.getElementById('thumbnailUrl').value).toBe('');
+ expect(document.getElementById('thumbnailVerticalUrl').value).toBe('');
+ expect(document.getElementById('thumbnailVerticalUrl').validity.valid).toBe(true);
+});

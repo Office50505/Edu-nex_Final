@@ -34,7 +34,8 @@ import * as ScreenCapture from "expo-screen-capture";
 import Constants from "expo-constants";
 import * as Print from "expo-print";
 import * as Sharing from "expo-sharing";
-import * as FileSystem from "expo-file-system";
+import * as FileSystem from "expo-file-system/legacy";
+import { DOWNLOADS_STORAGE_KEY, downloadPath, prepareTemporaryDownloads } from "./downloadStorage";
 import { useVideoPlayer, VideoView } from "expo-video";
 import {
   DEV_UI_QA_ENABLED,
@@ -274,8 +275,7 @@ function AvatarImage({ avatarId, size = 40, style }) {
   );
   return <Image accessible={false} source={src} style={[{ width: size, height: size, borderRadius: size / 2 }, style]} resizeMode="cover" />;
 }
-const DOWNLOADS_DIR = `${FileSystem.documentDirectory}skillomate_dl/`;
-const DOWNLOADS_STORAGE_KEY = "skillomate_downloads_v1";
+const DOWNLOADS_DIR = FileSystem.cacheDirectory ? `${FileSystem.cacheDirectory}skillomate_dl/` : null;
 const hasCourseAccess = user => DEV_UI_QA_ENABLED || !!(user?.subscriptionStatus && user.subscriptionStatus !== "none");
 const AI_FEATURE_ENABLED = true;
 
@@ -5967,6 +5967,7 @@ export default function App() {
   const [isPreviewOnly, setIsPreviewOnly] = useState(false);
   const [downloads, setDownloads] = useState({});
   const downloadsRef = useRef({});
+  const downloadStorageReady = useRef(null);
   const [aiRobotId, setAiRobotId] = useState(null);
   const [showAppUpgrade, setShowAppUpgrade] = useState(false);
   const [courseAiTarget, setCourseAiTarget] = useState(null);
@@ -6092,23 +6093,19 @@ export default function App() {
 
 
 
-  // Load saved downloads on startup and verify files still exist
+  // Migrate old document downloads and discard entries evicted from temporary storage.
   useEffect(() => {
-    AsyncStorage.getItem(DOWNLOADS_STORAGE_KEY).then(async stored => {
-      if (!stored) return;
-      const saved = JSON.parse(stored);
-      const verified = {};
-      await Promise.all(Object.entries(saved).map(async ([guid, info]) => {
-        if (info?.path) {
-          const stat = await FileSystem.getInfoAsync(info.path).catch(() => ({ exists: false }));
-          if (stat.exists) verified[guid] = info;
-        }
-      }));
+    let mounted = true;
+    const ready = prepareTemporaryDownloads(FileSystem, AsyncStorage);
+    downloadStorageReady.current = ready;
+    ready.then(verified => {
+      if (!mounted) return;
+      downloadsRef.current = verified;
       setDownloads(DEV_UI_QA_ENABLED ? { ...UI_QA_DOWNLOADS, ...verified } : verified);
-      AsyncStorage.setItem(DOWNLOADS_STORAGE_KEY, JSON.stringify(verified)).catch(() => {});
     }).catch(() => {
-      if (DEV_UI_QA_ENABLED) setDownloads(UI_QA_DOWNLOADS);
+      if (mounted && DEV_UI_QA_ENABLED) setDownloads(UI_QA_DOWNLOADS);
     });
+    return () => { mounted = false; };
   }, []);
 
   const startDownload = useCallback(async (video, courseId, courseTitle) => {
@@ -6116,11 +6113,18 @@ export default function App() {
     const guid = getBunnyGuid(video);
     const libraryId = getBunnyLibraryId(video);
     if (!guid || !u?._id || !u?.sessionId) return;
+    let filePath;
+    try {
+      await downloadStorageReady.current;
+      filePath = downloadPath(FileSystem, guid);
+      await FileSystem.makeDirectoryAsync(DOWNLOADS_DIR, { intermediates: true });
+    } catch {
+      Alert.alert("Download unavailable", "Temporary storage could not be prepared. Restart the app and try again.");
+      return;
+    }
     const current = downloadsRef.current[guid];
-    if (current?.status === "downloading" || current?.status === "done") return;
-
-    await FileSystem.makeDirectoryAsync(DOWNLOADS_DIR, { intermediates: true }).catch(() => {});
-    const filePath = DOWNLOADS_DIR + guid + ".mp4";
+    if (current?.status === "downloading") return;
+    if (current?.status === "done" && (await FileSystem.getInfoAsync(filePath)).exists) return;
     const url = `${API_BASE}/api/videos/${guid}/download?userId=${encodeURIComponent(u._id)}&sessionId=${encodeURIComponent(u.sessionId)}&libraryId=${encodeURIComponent(libraryId)}&courseId=${encodeURIComponent(courseId || "")}&courseTitle=${encodeURIComponent(courseTitle || "")}&videoTitle=${encodeURIComponent(video.title || "")}`;
     const meta = { title: video.title || "Video", courseId: courseId || "", courseTitle: courseTitle || "", bunnyGuid: guid, bunnyLibraryId: libraryId, videoId: String(video._id || guid) };
 
@@ -6141,7 +6145,7 @@ export default function App() {
           AsyncStorage.setItem(DOWNLOADS_STORAGE_KEY, JSON.stringify(toSave)).catch(() => {});
           return next;
         });
-        Alert.alert("Downloaded", "Video saved for offline viewing.");
+        Alert.alert("Downloaded", "Video saved in temporary app storage for offline viewing. Your device may clear it to free space.");
       } else {
         const errorMessage = getDownloadFailureMessage(null, result?.status);
         setDownloads(prev => ({ ...prev, [guid]: { status: "error", progress: 0, errorMessage, ...meta } }));
@@ -6165,7 +6169,7 @@ export default function App() {
   }, [startDownload]);
 
   const deleteDownload = useCallback(async (guid) => {
-    await FileSystem.deleteAsync(DOWNLOADS_DIR + guid + ".mp4", { idempotent: true }).catch(() => {});
+    await FileSystem.deleteAsync(downloadPath(FileSystem, guid), { idempotent: true }).catch(() => {});
     setDownloads(prev => {
       const next = { ...prev };
       delete next[guid];
@@ -6798,7 +6802,7 @@ export default function App() {
         return { ok: false, error: data.error || "Account could not be deleted. Please try again." };
       }
 
-      await FileSystem.deleteAsync(DOWNLOADS_DIR, { idempotent: true }).catch(() => {});
+      if (DOWNLOADS_DIR) await FileSystem.deleteAsync(DOWNLOADS_DIR, { idempotent: true }).catch(() => {});
       await AsyncStorage.multiRemove(["user", AI_AVATAR_STORAGE_KEY, DOWNLOADS_STORAGE_KEY]);
 
       setDownloads({});
