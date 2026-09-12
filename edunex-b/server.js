@@ -2841,6 +2841,30 @@ app.patch('/api/admin/courses/:id', protectAdmin, async (req, res) => {
   }
 });
 
+app.get('/api/admin/courses/:id', protectAdmin, async (req, res) => {
+  try {
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(400).json({ error: 'Invalid course id' });
+    }
+
+    const course = await Course.findById(req.params.id)
+      .select('title slug description category status thumbnail thumbnailHorizontal thumbnailVertical thumbnailUrl thumbnailVerticalUrl notesUrl videos._id videos.title videos.topic videos.description videos.sourceType videos.provider videos.videoUrl videos.embedUrl videos.bunnyVideoId videos.bunnyLibraryId videos.youtubeId videos.thumbnailUrl videos.thumbnailVerticalUrl videos.transcriptUrl videos.examplePrompt videos.duration videos.order')
+      .populate('category', 'name slug isActive')
+      .lean();
+
+    if (!course) {
+      return res.status(404).json({ error: 'Course not found' });
+    }
+
+    res.json({
+      ...course,
+      videoCount: Array.isArray(course.videos) ? course.videos.length : 0,
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 app.delete('/api/admin/courses/:id', protectAdmin, async (req, res) => {
   try {
     if (!mongoose.Types.ObjectId.isValid(req.params.id)) {

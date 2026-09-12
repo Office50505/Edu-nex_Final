@@ -12,7 +12,7 @@ export function Message({ text, type = "success" }) {
   return text ? <div className={`message ${type}`} role={type === 'error' ? 'alert' : 'status'}>{text}</div> : null;
 }
 
-export function AdminShell({ activePage, title, subtitle, children, actions = null, shellClass = "dashboard-shell" }) {
+export function AdminShell({ activePage, title, subtitle, children, actions = null, shellClass = "dashboard-shell", navLabels = {} }) {
   const [theme, setTheme] = useState(() => localStorage.getItem("edunexAdminTheme") || "dark");
   useEffect(() => {
     document.body.classList.toggle("admin-theme-light", theme === "light");
@@ -28,7 +28,7 @@ export function AdminShell({ activePage, title, subtitle, children, actions = nu
         <nav aria-label="Administration sections">
           {sections.map(group => <div className="admin-nav-group" key={group.label}>
             <p>{group.label}</p>
-            {group.links.map(([key, label, href, icon]) => <a key={key} href={href} className={activePage === key ? 'is-active' : ''} aria-current={activePage === key ? 'page' : undefined}><span aria-hidden="true">{icon}</span>{label}</a>)}
+            {group.links.map(([key, label, href, icon]) => <a key={key} href={href} className={activePage === key ? 'is-active' : ''} aria-current={activePage === key ? 'page' : undefined}><span aria-hidden="true">{icon}</span>{navLabels[key] || label}</a>)}
           </div>)}
         </nav>
         <div className="admin-sidebar-footer"><a href="/" target="_blank" rel="noreferrer">View website ↗</a><button type="button" onClick={logout}>Log out</button></div>
