@@ -106,6 +106,11 @@ function categoryId(course) {
   return String(course?.category?._id || course?.category || "");
 }
 
+function embeddedThumbnailDataUrl(...images) {
+  const image = images.find((value) => value?.data);
+  return image ? `data:${image.mimeType || image.contentType || "image/jpeg"};base64,${image.data}` : "";
+}
+
 function courseVideo(video, index) {
   return {
     _id: video?._id,
@@ -125,6 +130,8 @@ function courseVideo(video, index) {
 }
 
 function courseForm(course) {
+  const horizontalThumbnailDataUrl = embeddedThumbnailDataUrl(course?.thumbnailHorizontal, course?.thumbnail, course?.thumbnailVertical);
+  const verticalThumbnailDataUrl = embeddedThumbnailDataUrl(course?.thumbnailVertical, course?.thumbnailHorizontal, course?.thumbnail);
   const videos = Array.isArray(course?.videos) && course.videos.length
     ? course.videos.slice().sort((a,b)=>(a.order||0)-(b.order||0)).map((video,index) => ({...courseVideo(video,index),
       thumbnailUrl: video.thumbnailUrl === course.thumbnailUrl ? '' : video.thumbnailUrl || '',
@@ -138,8 +145,8 @@ function courseForm(course) {
     status: course?.status === "published" ? "published" : "draft",
     thumbnailUrl: course?.thumbnailUrl || "",
     thumbnailVerticalUrl: course?.thumbnailVerticalUrl || "",
-    thumbnailDataUrl: "",
-    thumbnailVerticalDataUrl: "",
+    thumbnailDataUrl: horizontalThumbnailDataUrl,
+    thumbnailVerticalDataUrl: verticalThumbnailDataUrl,
     thumbnailFileName: "",
     thumbnailVerticalFileName: "",
     notesUrl: course?.notesUrl || "",
@@ -230,9 +237,7 @@ export function AdminUploadPage() {
     if (!editCourseId || !requireAdmin()) return;
     setLoadingCourse(true);
     try {
-      const data = await adminJson("/api/admin/courses", {}, "Unable to load course.");
-      const course = (Array.isArray(data) ? data : []).find((item) => String(item?._id || item?.id || "") === editCourseId);
-      if (!course) throw new Error("Course not found.");
+      const course = await adminJson(`/api/admin/courses/${encodeURIComponent(editCourseId)}`, {}, "Unable to load course.");
       setForm(courseForm(course));
       setSlugTouched(true);
       setMessage("");
@@ -270,6 +275,8 @@ export function AdminUploadPage() {
         ...current,
         [field]: dataUrl,
         [fileNameField]: file?.name || "",
+        ...(file && field === "thumbnailDataUrl" ? { thumbnailUrl: "" } : {}),
+        ...(file && field === "thumbnailVerticalDataUrl" ? { thumbnailVerticalUrl: "" } : {}),
       }));
       setThumbnailFailed(false);
       setMessage("");
@@ -399,6 +406,7 @@ export function AdminUploadPage() {
       title={isEditing ? "Edit Course" : "Upload Course"}
       subtitle={isEditing ? "Continue editing this course with the full upload layout." : "Create drafts and published courses with CloudFront HLS and Bunny Stream lessons."}
       actions={isEditing ? <a className="toolbar-button" href={adminRoutes.courses}>Back to courses</a> : null}
+      navLabels={isEditing ? { upload: "Edit course" } : undefined}
     >
       <section className="editor-panel">
         {loadingCourse ? <div className="loading-state">Loading course editor...</div> : null}
