@@ -11,6 +11,7 @@ const AiTutorSession = require('../models/AiTutorSession');
 const ContactEnquiry = require('../models/ContactEnquiry');
 const { syncLessonProgress } = require('../services/mobileCompatibilityService');
 
+const { playlistProjection, playlistPayload } = require('../services/coursePlaylist');
 const router = express.Router();
 const requireAccess = [protect, checkSubscription];
 const BUNNY_PULL_ZONE_URL = process.env.BUNNY_PULL_ZONE_URL
@@ -29,11 +30,11 @@ function courseThumbnailPayload(course) {
 }
 
 function courseThumbnailUrl(course) {
-  return course?.thumbnailUrl || null;
+  return course?.thumbnailUrl || (course?._id ? `/api/courses/${course._id}/thumbnail` : null);
 }
 
 function courseThumbnailVerticalUrl(course) {
-  return course?.thumbnailVerticalUrl || null;
+  return course?.thumbnailVerticalUrl || (course?._id ? `/api/courses/${course._id}/thumbnail?orientation=vertical` : null);
 }
 
 function bunnyHlsUrl(video) {
@@ -53,23 +54,6 @@ function bunnyHlsUrl(video) {
   if (!pullZone) return null;
 
   return new URL(`${encodeURIComponent(videoId)}/playlist.m3u8`, pullZone.endsWith('/') ? pullZone : `${pullZone}/`).href;
-}
-
-function withRepeatedVideoThumbnails(course) {
-  const sharedThumbnail = courseThumbnailPayload(course);
-  const sharedThumbnailUrl = courseThumbnailUrl(course);
-  const sharedThumbnailVerticalUrl = courseThumbnailVerticalUrl(course);
-
-  return {
-    ...course,
-    videos: (Array.isArray(course.videos) ? course.videos : []).map((video) => ({
-      ...require('../services/mobileCompatibilityService').publicPlayableVideoInfo(video),
-      ...(require('../services/videoSources').inferProvider(video)==='aws_cloudfront' ? {} : {hlsUrl:bunnyHlsUrl(video)}),
-      thumbnail: sharedThumbnail,
-      thumbnailUrl: video.thumbnailUrl || sharedThumbnailUrl,
-      thumbnailVerticalUrl: video.thumbnailVerticalUrl || sharedThumbnailVerticalUrl,
-    })),
-  };
 }
 
 async function optionalContactUser(req, res, next) {
@@ -129,6 +113,37 @@ router.post('/contact-enquiries', optionalContactUser, async (req, res) => {
   }
 });
 
+// Public course artwork is served as an image, never embedded in playlist JSON.
+router.get(['/courses/:id/thumbnail', '/courses/:id/videos/:videoId/thumbnail'], async (req, res) => {
+  try {
+    const { id, videoId } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(id) || (videoId && !mongoose.Types.ObjectId.isValid(videoId))) {
+      return res.status(400).end();
+    }
+    const filter = { _id: id, status: 'published' };
+    if (videoId) filter['videos._id'] = videoId;
+    const course = await Course.findOne(filter)
+      .select(videoId ? { status: 1, 'videos.$': 1 } : 'thumbnail thumbnailHorizontal thumbnailVertical thumbnailUrl thumbnailVerticalUrl')
+      .lean();
+    if (!course) return res.status(404).end();
+    const portrait = req.query.orientation === 'vertical';
+    const images = videoId ? [course.videos?.[0]?.thumbnail] : portrait
+      ? [course.thumbnailVertical, course.thumbnailHorizontal, course.thumbnail]
+      : [course.thumbnailHorizontal, course.thumbnail, course.thumbnailVertical];
+    const image = images.find(value => value?.data && ['image/jpeg', 'image/png', 'image/webp'].includes(value.mimeType));
+    if (image) {
+      res.set('Cache-Control', 'public, max-age=300');
+      return res.type(image.mimeType).send(Buffer.from(image.data, 'base64'));
+    }
+    const url = videoId ? course.videos?.[0]?.thumbnailUrl
+      : (portrait ? course.thumbnailVerticalUrl || course.thumbnailUrl : course.thumbnailUrl || course.thumbnailVerticalUrl);
+    if (url && /^https?:\/\//i.test(url)) return res.redirect(url);
+    return res.status(404).end();
+  } catch (error) {
+    res.status(500).json({ error: 'Could not load course artwork.' });
+  }
+});
+
 // GET /courses/:id/lessons → returns the course document with its videos array
 router.get('/courses/:id/lessons', requireAccess, async (req, res) => {
   try {
@@ -137,14 +152,15 @@ router.get('/courses/:id/lessons', requireAccess, async (req, res) => {
     }
 
     const course = await Course.findById(req.params.id)
-      .select('title description status videos thumbnail thumbnailHorizontal thumbnailUrl thumbnailVerticalUrl notesUrl')
+      .select(playlistProjection)
       .lean();
 
     if (!course || course.status !== 'published') {
       return res.status(404).json({ error: 'Course not found' });
     }
 
-    res.json(withRepeatedVideoThumbnails(course));
+    res.set('Cache-Control', 'private, no-store');
+    res.json(playlistPayload(course, bunnyHlsUrl));
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -157,13 +173,13 @@ router.get('/lessons/:id', requireAccess, async (req, res) => {
       return res.status(400).json({ error: 'Invalid lesson id' });
     }
 
-    const lesson = await Lesson.findById(req.params.id).populate('course');
+    const lesson = await Lesson.findById(req.params.id).populate('course', '_id');
     if (!lesson) {
       return res.status(404).json({ error: 'Lesson not found' });
     }
 
     const course = await Course.findById(lesson.course._id)
-      .select('title description status videos thumbnail thumbnailHorizontal thumbnailUrl thumbnailVerticalUrl notesUrl')
+      .select(playlistProjection)
       .lean();
 
     if (!course || course.status !== 'published') {
