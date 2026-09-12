@@ -51,7 +51,7 @@ function harness(){
  const stored=new Map();
  const course={_id:'course',title:'Course',status:'published',videos:[{_id:'a',duration:100}]};
  const query=value=>({lean:async()=>value});
- const models={Course:{findOne:()=>query(course)},CertificationPolicy:{findById:()=>query(null)},LearningProgress:{find:()=>query([])},AssessmentResult:{findById:()=>query(null)},Subscription:{findOne:()=>query({status:'active',currentPeriodEnd:new Date(Date.now()+60000)})},Certificate:{findOneAndUpdate:({_id},update)=>{const key=String(_id);if(!stored.has(key))stored.set(key,{_id:key,...update.$setOnInsert});return query(stored.get(key));}}};
+ const models={Course:{findOne:()=>({select:projection=>{assert.equal(projection,'-thumbnail -thumbnailHorizontal -thumbnailVertical -videos.thumbnail');return query(course);}})},CertificationPolicy:{findById:()=>query(null)},LearningProgress:{find:()=>query([])},AssessmentResult:{findById:()=>query(null)},Subscription:{findOne:()=>query({status:'active',currentPeriodEnd:new Date(Date.now()+60000)})},Certificate:{findOneAndUpdate:({_id},update)=>{const key=String(_id);if(!stored.has(key))stored.set(key,{_id:key,...update.$setOnInsert});return query(stored.get(key));}}};
  const sandbox={module:{exports:{}},require(name){if(name==='node:crypto')return require('node:crypto');if(name==='mongoose')return{Types:{ObjectId:class{constructor(id){this.id=id;}toString(){return this.id;}static isValid(){return true;}}}};if(name.includes('completionRules'))return rules;return models[name.split('/').at(-1)]||{};}};
  vm.runInNewContext(fs.readFileSync(path.join(__dirname,'../services/certificationService.js'),'utf8'),sandbox);
  return{api:sandbox.module.exports,stored,course};
@@ -78,4 +78,15 @@ test('learner certificate DTO omits private email and admin audit notes',()=>{
  const {certificateView}=require('../services/certificationService');
  const value=certificateView({_id:'a',certificateId:'b',userEmail:'private@example.test',audit:[{reason:'internal'}],userName:'Learner'});
  assert.equal(value.userEmail,undefined);assert.equal(value.audit,undefined);assert.equal(value.learnerName,'Learner');
+});
+
+test('progress context excludes image blobs while preserving the completion version',async()=>{
+ const {api,course}=harness();
+ course.videos[0].videoUrl='https://example.test/lesson.mp4';
+ course.completionOrder=['a'];
+ const expected=rules.manifest(course,null);
+ const actual=await api.context({_id:'u'},'course');
+ assert.equal(actual.version,expected.version);
+ assert.equal(actual.course.videos[0].duration,100);
+ assert.equal(actual.course.videos[0].videoUrl,course.videos[0].videoUrl);
 });

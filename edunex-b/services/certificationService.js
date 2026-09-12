@@ -13,7 +13,7 @@ const rules = require('./completionRules');
 const fail = (message,statusCode=400) => Object.assign(new Error(message),{statusCode});
 async function context(user, courseId) {
   if(!mongoose.Types.ObjectId.isValid(courseId)) throw fail('Invalid course id');
-  const course = await Course.findOne({_id:courseId,status:'published'}).lean();
+  const course = await Course.findOne({_id:courseId,status:'published'}).select('-thumbnail -thumbnailHorizontal -thumbnailVertical -videos.thumbnail').lean();
   if(!course) throw fail('Published course not found',404);
   const policy = await Policy.findById(String(courseId)).lean();
   return { course, ...rules.manifest(course,policy) };
