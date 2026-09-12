@@ -182,7 +182,6 @@ export function LoginPage() {
                   id="emailInput"
                   placeholder="Enter your mobile number"
                   maxLength={10}
-                  style={{ paddingLeft: 56 }}
                   autoComplete="tel-national"
                   aria-describedby="lp-err"
                   value={loginId}

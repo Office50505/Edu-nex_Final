@@ -12,6 +12,7 @@ export const adminRoutes = {
 };
 
 const oldAdminRouteMap = {
+  "admin": adminRoutes.login,
   "admin/admin-login": adminRoutes.login,
   "admin/admin-login.html": adminRoutes.login,
   "admin-login": adminRoutes.login,

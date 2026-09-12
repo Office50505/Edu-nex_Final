@@ -627,12 +627,17 @@ app.get('/', (req, res) => {
   return res.json({ ok: true, service: 'Skillomate API' });
 });
 
-app.get('/admin', (req, res) => {
+app.get(['/admin', '/admin/'], (req, res) => {
   if (SERVE_FRONTEND) {
-    return res.sendFile(path.join(FRONTEND_DIR, 'admin-login.html'));
+    const legacyAdminLogin = path.join(FRONTEND_DIR, 'admin-login.html');
+    if (fs.existsSync(legacyAdminLogin)) {
+      return res.sendFile(legacyAdminLogin);
+    }
   }
 
-  return res.status(404).json({ error: 'Admin frontend is not deployed with this service' });
+  const frontendOrigin = FRONTEND_ORIGINS[0] || '';
+  const adminLoginPath = '/admin/login';
+  return res.redirect(frontendOrigin ? `${frontendOrigin}${adminLoginPath}` : adminLoginPath);
 });
 
 app.get('/api/health', (req, res) => {

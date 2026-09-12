@@ -42,7 +42,7 @@ function shouldUseAppNavigation(event) {
   const nextAdminPage = adminPageFromPath(url.pathname);
   if (!nextAdminPage && !hasReactPage(nextPageKey)) return null;
 
-  return { url, pageKey: nextPageKey };
+  return { url, pageKey: nextAdminPage ? null : nextPageKey };
 }
 
 function scrollAfterNavigation(hash) {
@@ -132,13 +132,15 @@ export default function App() {
       syncLocation(nextState);
       return;
     }
+    if (adminPage) return;
+
     const canonicalRoute = route(`${pageKey}${locationState.search}${locationState.hash}`);
     const currentRoute = routeFromState(locationState);
     if (canonicalRoute !== currentRoute) {
       window.history.replaceState(window.history.state, "", canonicalRoute);
       syncLocation(currentLocationState());
     }
-  }, [locationState, pageKey, syncLocation]);
+  }, [adminPage, locationState, pageKey, syncLocation]);
 
   useEffect(() => {
     const handlePopState = () => syncLocation();
@@ -147,7 +149,7 @@ export default function App() {
       if (!next) return;
 
       event.preventDefault();
-      void preloadPage(next.pageKey);
+      if (next.pageKey) void preloadPage(next.pageKey);
 
       const nextState = {
         pathname: next.url.pathname,

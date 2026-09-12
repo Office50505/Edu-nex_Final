@@ -4444,6 +4444,46 @@ html[data-theme="light"] .enx-footer .enx-footer-support a {
   background: #FFFDF8 !important;
 }
 
+/* The global light-theme input rule can leak into the dark learner login form
+   before the user's saved theme has settled. Keep login inputs visually inside
+   their rounded wrappers instead of painting white rectangles across them. */
+.react-page-root[data-page="login.html"] .lp-input-wrap input,
+html[data-theme="light"] .react-page-root[data-page="login.html"] .lp-input-wrap input {
+  width: 100% !important;
+  min-width: 0 !important;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  color: var(--text, #fff) !important;
+  appearance: none !important;
+  -webkit-appearance: none !important;
+}
+
+.react-page-root[data-page="login.html"] .lp-input-wrap input:-webkit-autofill,
+.react-page-root[data-page="login.html"] .lp-input-wrap input:-webkit-autofill:hover,
+.react-page-root[data-page="login.html"] .lp-input-wrap input:-webkit-autofill:focus {
+  -webkit-text-fill-color: var(--text, #fff) !important;
+  caret-color: var(--text, #fff) !important;
+  box-shadow: 0 0 0 1000px var(--input, #111418) inset !important;
+  border: 0 !important;
+}
+
+.react-page-root[data-page="login.html"] .lp-prefix {
+  position: static !important;
+  padding: 0 !important;
+  flex: 0 0 auto !important;
+}
+
+.react-page-root[data-page="login.html"] .lp-remember input[type="checkbox"] {
+  width: 16px !important;
+  height: 16px !important;
+  margin: 0 !important;
+  border: 1px solid var(--border2, rgba(255, 255, 255, .12)) !important;
+  border-radius: 4px !important;
+  background: var(--input, #111418) !important;
+  accent-color: var(--cyan, #C58B2A) !important;
+}
+
 /* Legal and help surfaces must follow the selected light theme. */
 html[data-theme="light"] body.has-privacy-policy-page,
 html[data-theme="light"] body.has-terms-page {
