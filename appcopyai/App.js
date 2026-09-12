@@ -1926,7 +1926,7 @@ function VideoItem({ courseId, user, video: videoProp, videoId: videoIdProp, isA
       nativePlayer.pause();
       sourceQueue.current = sourceQueue.current.catch(() => {}).then(() => {
         if (!cancelled) return nativePlayer.replaceAsync(null);
-      });
+      }).catch(() => { /* Player may have been released while leaving the screen. */ });
       return () => { cancelled = true; };
     }
     sourceQueue.current = sourceQueue.current.catch(() => {}).then(async () => {
@@ -1955,7 +1955,8 @@ function VideoItem({ courseId, user, video: videoProp, videoId: videoIdProp, isA
     });
     return () => {
       cancelled = true;
-      nativePlayer.pause();
+      // Expo can release its shared player before this effect cleanup runs.
+      try { nativePlayer.pause(); } catch { /* Already released on unmount. */ }
     };
   }, [nativePlayer, nativeVideoSource, initialTime, canFallbackToEmbed]);
 

@@ -428,8 +428,13 @@ export function AdminUploadPage() {
       navLabels={isEditing ? { upload: "Edit course" } : undefined}
     >
       <section className="editor-panel">
-        {loadingCourse ? <div className="loading-state">Loading course editor...</div> : null}
-        <form className="course-form" onSubmit={handleSubmit}>
+        {isEditing && !editLoaded ? (
+          <div role={loadingCourse ? 'status' : 'alert'} className="loading-state">
+            <p>{loadingCourse ? 'Loading your course and lessons…' : message || 'The course could not be loaded.'}</p>
+            {!loadingCourse && <button type="button" className="secondary-button" onClick={loadCourseForEdit}>Retry loading course</button>}
+            <a href={adminRoutes.courses}>Back to course library</a>
+          </div>
+        ) : <form className="course-form" onSubmit={handleSubmit}>
           <div className="course-builder-grid">
             <div className="form-section">
               <div className="form-section-head"><div><h2>Course Details</h2><p>Enter these once. All lessons share the category, course notes and thumbnails unless overridden.</p></div></div>
@@ -521,7 +526,7 @@ export function AdminUploadPage() {
 
           <button className="submit-button" type="submit" disabled={submitting || loadingCourse || (isEditing && !editLoaded)}>{submitting ? (isEditing ? "Saving..." : "Creating...") : (isEditing ? "Save changes" : "Create course")}</button>
           <Message text={message} type={messageType} />
-        </form>
+        </form>}
       </section>
     </AdminShell>
   );

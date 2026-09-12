@@ -20,6 +20,8 @@ it('does not allow saving a blank edit form after loading fails',async()=>{
  window.history.replaceState({},'', '/admin/upload?id=missing');
  mocks.request.mockImplementation(async path=>{if(path.includes('/courses/'))throw Error('Course not found');return [];});
  render(<AdminUploadPage/>);
- await waitFor(()=>expect(screen.getByRole('button',{name:'Save changes'}).disabled).toBe(true));
+ await screen.findByRole('button',{name:'Retry loading course'});
+ expect(screen.queryByRole('button',{name:'Save changes'})).toBeNull();
+ expect(screen.queryByLabelText('Course title')).toBeNull();
  expect(screen.queryByRole('button',{name:'Create course'})).toBeNull();
 });

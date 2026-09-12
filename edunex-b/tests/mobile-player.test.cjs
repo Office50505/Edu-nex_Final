@@ -124,3 +124,11 @@ test('Home displays course metadata before its playback request finishes',async(
   finishPlayback({videos:[{_id:'v',playbackRequired:true}]});await pending;
   assert.equal(state.course.__homePlayableVideos,true);
 });
+
+test('leaving playback tolerates an already released native player',()=>{
+  const cleanup=nodes.find(n=>n.type==='ArrowFunctionExpression'&&source.slice(n.start,n.end).includes('Already released on unmount.')&&n.body.type==='BlockStatement'&&n.body.body[0]?.type==='ExpressionStatement');
+  assert.ok(cleanup);
+  const context={cancelled:false,nativePlayer:{pause(){throw new Error('Native player released');}}};
+  assert.doesNotThrow(()=>compile(cleanup,context)());
+  assert.equal(context.cancelled,true);
+});
