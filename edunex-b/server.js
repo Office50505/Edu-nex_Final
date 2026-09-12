@@ -2691,7 +2691,11 @@ app.post('/api/courses', protectAdmin, async (req, res) => {
 
 app.get('/api/admin/courses', protectAdmin, async (req, res) => {
   try {
-    const courses = await Course.find()
+    const query = Course.find();
+    if (req.query.summary === '1') {
+      query.select('title slug status category createdAt updatedAt thumbnailUrl thumbnailVerticalUrl videos._id videos.thumbnailUrl');
+    }
+    const courses = await query
       .populate('category', 'name slug isActive')
       .sort({ createdAt: -1 })
       .lean();

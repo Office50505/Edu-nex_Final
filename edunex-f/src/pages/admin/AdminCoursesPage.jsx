@@ -48,7 +48,7 @@ function normalizedThumbnailUrl(value) {
 function courseThumbnailSrc(course) {
   const embedded = course?.thumbnailHorizontal || course?.thumbnail || course?.thumbnailVertical || course?.videos?.[0]?.thumbnail;
   if (embedded?.data) return `data:${embedded.mimeType || embedded.contentType || "image/jpeg"};base64,${embedded.data}`;
-  return normalizedThumbnailUrl(course?.thumbnailUrl || course?.thumbnailVerticalUrl || course?.videos?.[0]?.thumbnailUrl || "");
+  return normalizedThumbnailUrl(course?.thumbnailUrl || course?.thumbnailVerticalUrl || course?.videos?.[0]?.thumbnailUrl || (course.status === "published" ? `/api/courses/${courseId(course)}/thumbnail` : ""));
 }
 
 export function AdminCoursesPage() {
@@ -69,7 +69,7 @@ export function AdminCoursesPage() {
     setMessage("");
     try {
       const [courseData, categoryData] = await Promise.all([
-        adminJson("/api/admin/courses", {}, "Unable to load courses."),
+        adminJson("/api/admin/courses?summary=1", {}, "Unable to load courses."),
         adminJson("/api/categories", {}, "Unable to load categories."),
       ]);
       setCourses(Array.isArray(courseData) ? courseData : []);
