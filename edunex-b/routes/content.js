@@ -132,11 +132,20 @@ router.get(['/courses/:id/thumbnail', '/courses/:id/videos/:videoId/thumbnail'],
     }
     const filter = { _id: id, status: 'published' };
     if (videoId) filter['videos._id'] = videoId;
-    const course = await Course.findOne(filter)
-      .select(videoId ? { status: 1, 'videos.$': 1 } : 'thumbnail thumbnailHorizontal thumbnailVertical thumbnailUrl thumbnailVerticalUrl')
-      .lean();
-    if (!course) return res.status(404).end();
     const portrait = req.query.orientation === 'vertical';
+    let course;
+    if (videoId) {
+      course = await Course.findOne(filter).select({ status: 1, 'videos.$': 1 }).lean();
+    } else {
+      const fields = portrait ? ['thumbnailVertical', 'thumbnailHorizontal', 'thumbnail'] : ['thumbnailHorizontal', 'thumbnail', 'thumbnailVertical'];
+      for (const field of fields) {
+        const candidate = await Course.findOne(filter).select(`${field} thumbnailUrl thumbnailVerticalUrl`).lean();
+        if (!candidate) break;
+        course = candidate;
+        if (candidate[field]?.data) break;
+      }
+    }
+    if (!course) return res.status(404).end();
     const images = videoId ? [course.videos?.[0]?.thumbnail] : portrait
       ? [course.thumbnailVertical, course.thumbnailHorizontal, course.thumbnail]
       : [course.thumbnailHorizontal, course.thumbnail, course.thumbnailVertical];

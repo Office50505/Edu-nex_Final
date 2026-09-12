@@ -3,7 +3,7 @@ const { publicPlayableVideoInfo } = require('./mobileCompatibilityService');
 // Do not fetch embedded image data as part of a playlist. An image is loaded
 // separately, once, instead of duplicating its base64 bytes for every lesson.
 const playlistProjection = [
-  'title', 'description', 'status', 'thumbnailUrl', 'thumbnailVerticalUrl', 'notesUrl',
+  'title', 'description', 'status', 'thumbnail.mimeType', 'thumbnailHorizontal.mimeType', 'thumbnailVertical.mimeType', 'thumbnailUrl', 'thumbnailVerticalUrl', 'notesUrl',
   ...['_id', 'title', 'topic', 'description', 'provider', 'sourceType', 'videoUrl',
     'embedUrl', 'bunnyVideoId', 'bunnyLibraryId', 'youtubeId', 'hlsUrl', 'playlistUrl',
     'streamUrl', 'thumbnailUrl', 'thumbnailVerticalUrl', 'thumbnail.mimeType',
@@ -12,8 +12,8 @@ const playlistProjection = [
 
 function playlistPayload(course, resolveBunnyHls) {
   const imagePath = `/api/courses/${encodeURIComponent(String(course._id))}/thumbnail`;
-  const horizontal = course.thumbnailUrl || imagePath;
-  const vertical = course.thumbnailVerticalUrl || `${imagePath}?orientation=vertical`;
+  const horizontal = (course.thumbnailHorizontal?.mimeType || course.thumbnail?.mimeType) ? imagePath : course.thumbnailUrl || imagePath;
+  const vertical = course.thumbnailVertical?.mimeType ? `${imagePath}?orientation=vertical` : course.thumbnailVerticalUrl || `${imagePath}?orientation=vertical`;
   return {
     _id: course._id, title: course.title, description: course.description,
     status: course.status, notesUrl: course.notesUrl,

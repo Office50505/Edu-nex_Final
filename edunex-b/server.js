@@ -838,7 +838,7 @@ function applyCourseThumbnailToVideos(videos, courseThumbnail, courseThumbnailUr
 
   return (Array.isArray(videos) ? videos : []).map((video) => ({
     ...video,
-    thumbnail: video.thumbnail || courseThumbnail || null,
+    thumbnail: video.thumbnail || null,
     thumbnailUrl: sanitizeOptionalUrl(video.thumbnailUrl) || sharedThumbnailUrl,
     thumbnailVerticalUrl: sanitizeOptionalUrl(video.thumbnailVerticalUrl) || sharedThumbnailVerticalUrl,
   }));
@@ -2523,7 +2523,7 @@ app.get('/api/recommendations/courses', async (req, res) => {
 app.get('/api/courses/checkout-summary', async (req, res) => {
   try {
     const { courseId } = req.query;
-    const cacheKey = courseId ? `course:v2:${courseId}` : 'featured:v2';
+    const cacheKey = courseId ? `course:v3:${courseId}` : 'featured:v3';
     const cached = await getCachedCheckoutSummary(cacheKey);
 
     if (cached) {
@@ -2558,6 +2558,9 @@ app.get('/api/courses/checkout-summary', async (req, res) => {
           title: 1,
           description: 1,
           category: { _id: '$category._id', name: '$category.name' },
+          'thumbnail.mimeType': 1,
+          'thumbnailHorizontal.mimeType': 1,
+          'thumbnailVertical.mimeType': 1,
           thumbnailUrl: 1,
           thumbnailVerticalUrl: 1,
           averageRating: 1,
@@ -2573,8 +2576,8 @@ app.get('/api/courses/checkout-summary', async (req, res) => {
       return res.status(404).json({ error: 'Course not found' });
     }
 
-    course.thumbnailUrl = course.thumbnailUrl || `/api/courses/${course._id}/thumbnail`;
-    course.thumbnailVerticalUrl = course.thumbnailVerticalUrl || `/api/courses/${course._id}/thumbnail?orientation=vertical`;
+    course.thumbnailUrl = (course.thumbnailHorizontal?.mimeType || course.thumbnail?.mimeType) ? `/api/courses/${course._id}/thumbnail` : course.thumbnailUrl || `/api/courses/${course._id}/thumbnail`;
+    course.thumbnailVerticalUrl = course.thumbnailVertical?.mimeType ? `/api/courses/${course._id}/thumbnail?orientation=vertical` : course.thumbnailVerticalUrl || `/api/courses/${course._id}/thumbnail?orientation=vertical`;
     await setCachedCheckoutSummary(cacheKey, course);
 
     setCheckoutSummaryCacheHeaders(res, false);
@@ -2586,7 +2589,7 @@ app.get('/api/courses/checkout-summary', async (req, res) => {
 
 app.get('/api/courses', async (req, res) => {
   try {
-    const cacheKey = 'courses:published:list:v5';
+    const cacheKey = 'courses:published:list:v6';
     const cached = await getCachedPublicRead(cacheKey);
     if (cached) {
       setPublicReadCacheHeaders(res, true);
@@ -2594,7 +2597,7 @@ app.get('/api/courses', async (req, res) => {
     }
 
     const courseDocuments = await Course.find({ status: 'published' })
-      .select('title slug description category thumbnailUrl thumbnailVerticalUrl averageRating totalWishlisted totalStarted totalCompleted completionRate publishedAt createdAt videos._id videos.title videos.thumbnailUrl videos.thumbnailVerticalUrl')
+      .select('title slug description category thumbnail.mimeType thumbnailHorizontal.mimeType thumbnailVertical.mimeType thumbnailUrl thumbnailVerticalUrl averageRating totalWishlisted totalStarted totalCompleted completionRate publishedAt createdAt videos._id videos.title videos.thumbnailUrl videos.thumbnailVerticalUrl')
       .populate('category', 'name slug isActive')
       .sort({ publishedAt: -1, createdAt: -1 })
       .limit(100)
@@ -2609,7 +2612,7 @@ app.get('/api/courses', async (req, res) => {
         thumbnailUrl: firstVideo.thumbnailUrl || null,
         thumbnailVerticalUrl: firstVideo.thumbnailVerticalUrl || null,
       }] : [];
-      return { ...course, thumbnailUrl: course.thumbnailUrl || `/api/courses/${course._id}/thumbnail`, thumbnailVerticalUrl: course.thumbnailVerticalUrl || `/api/courses/${course._id}/thumbnail?orientation=vertical`, videos: previewVideos, lessonCount, videoCount: lessonCount };
+      return { ...course, thumbnailUrl: (course.thumbnailHorizontal?.mimeType || course.thumbnail?.mimeType) ? `/api/courses/${course._id}/thumbnail` : course.thumbnailUrl || `/api/courses/${course._id}/thumbnail`, thumbnailVerticalUrl: course.thumbnailVertical?.mimeType ? `/api/courses/${course._id}/thumbnail?orientation=vertical` : course.thumbnailVerticalUrl || `/api/courses/${course._id}/thumbnail?orientation=vertical`, videos: previewVideos, lessonCount, videoCount: lessonCount };
     });
 
     await setCachedPublicRead(cacheKey, courses);
@@ -2651,8 +2654,8 @@ app.post('/api/courses', protectAdmin, async (req, res) => {
       thumbnail: embeddedHorizontalThumbnail,
       thumbnailHorizontal: embeddedHorizontalThumbnail,
       thumbnailVertical: embeddedVerticalThumbnail,
-      thumbnailUrl: courseThumbnailUrl,
-      thumbnailVerticalUrl: courseThumbnailVerticalUrl,
+      thumbnailUrl: embeddedHorizontalThumbnail ? null : courseThumbnailUrl,
+      thumbnailVerticalUrl: embeddedVerticalThumbnail ? null : courseThumbnailVerticalUrl,
       videos: applyCourseThumbnailToVideos(sanitizedVideos, embeddedHorizontalThumbnail, courseThumbnailUrl, courseThumbnailVerticalUrl),
       notesUrl: req.body.notesUrl || null,
       category: req.body.category,
@@ -2779,6 +2782,7 @@ app.patch('/api/admin/courses/:id', protectAdmin, async (req, res) => {
       if (embeddedHorizontalThumbnail) {
         updates.thumbnail = embeddedHorizontalThumbnail;
         updates.thumbnailHorizontal = embeddedHorizontalThumbnail;
+        updates.thumbnailUrl = null;
       }
     }
 
@@ -2786,6 +2790,7 @@ app.patch('/api/admin/courses/:id', protectAdmin, async (req, res) => {
       const embeddedVerticalThumbnail = parseThumbnailDataUrl(req.body.thumbnailVerticalDataUrl, 'Vertical thumbnail');
       if (embeddedVerticalThumbnail) {
         updates.thumbnailVertical = embeddedVerticalThumbnail;
+        updates.thumbnailVerticalUrl = null;
       }
     }
 
@@ -2848,7 +2853,7 @@ app.get('/api/admin/courses/:id', protectAdmin, async (req, res) => {
     }
 
     const course = await Course.findById(req.params.id)
-      .select('title slug description category status thumbnail thumbnailHorizontal thumbnailVertical thumbnailUrl thumbnailVerticalUrl notesUrl videos._id videos.title videos.topic videos.description videos.sourceType videos.provider videos.videoUrl videos.embedUrl videos.bunnyVideoId videos.bunnyLibraryId videos.youtubeId videos.thumbnailUrl videos.thumbnailVerticalUrl videos.transcriptUrl videos.examplePrompt videos.duration videos.order')
+      .select('title slug description category status thumbnailUrl thumbnailVerticalUrl notesUrl videos._id videos.title videos.topic videos.description videos.sourceType videos.provider videos.videoUrl videos.embedUrl videos.bunnyVideoId videos.bunnyLibraryId videos.youtubeId videos.thumbnailUrl videos.thumbnailVerticalUrl videos.transcriptUrl videos.examplePrompt videos.duration videos.order')
       .populate('category', 'name slug isActive')
       .lean();
 

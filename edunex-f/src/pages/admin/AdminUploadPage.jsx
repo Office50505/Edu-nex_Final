@@ -53,7 +53,8 @@ function emptyCourseForm() {
 }
 
 function courseIdFromLocation() {
-  return new URLSearchParams(window.location.search).get("courseId") || "";
+  const params = new URLSearchParams(window.location.search);
+  return params.get("courseId") || params.get("id") || "";
 }
 
 function thumbnailPreviewSrc(value) {
@@ -96,7 +97,20 @@ function readThumbnailFile(file) {
     }
 
     const reader = new FileReader();
-    reader.onload = () => resolve(String(reader.result || ""));
+    reader.onload = () => {
+      const image = new Image();
+      image.onerror = () => reject(new Error("Could not decode thumbnail."));
+      image.onload = () => {
+        const scale = Math.min(1, 960 / Math.max(image.width, image.height));
+        const canvas = document.createElement('canvas');
+        canvas.width = Math.max(1, Math.round(image.width * scale));
+        canvas.height = Math.max(1, Math.round(image.height * scale));
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+        resolve(canvas.toDataURL('image/webp', 0.8));
+      };
+      image.src = String(reader.result || "");
+    };
     reader.onerror = () => reject(new Error("Could not read the selected thumbnail image."));
     reader.readAsDataURL(file);
   });
@@ -201,7 +215,8 @@ export function AdminUploadPage() {
       void checkLessons(lessons);
     } catch(error){setMessage(error.message);setMessageType('error');}
   }
-  const [editCourseId] = useState(courseIdFromLocation);
+  const editCourseId = courseIdFromLocation();
+  const [editLoaded, setEditLoaded] = useState(false);
   const [categories, setCategories] = useState([]);
   const [form, setForm] = useState(emptyCourseForm);
   const [slugTouched, setSlugTouched] = useState(Boolean(editCourseId));
@@ -236,9 +251,12 @@ export function AdminUploadPage() {
   async function loadCourseForEdit() {
     if (!editCourseId || !requireAdmin()) return;
     setLoadingCourse(true);
+    setEditLoaded(false);
     try {
       const course = await adminJson(`/api/admin/courses/${encodeURIComponent(editCourseId)}`, {}, "Unable to load course.");
+      if (String(course._id || course.id) !== editCourseId) throw new Error("The requested course could not be loaded.");
       setForm(courseForm(course));
+      setEditLoaded(true);
       setSlugTouched(true);
       setMessage("");
     } catch (error) {
@@ -344,6 +362,7 @@ export function AdminUploadPage() {
 
   async function handleSubmit(event) {
     event.preventDefault();
+    if (isEditing && !editLoaded) return;
     const invalid = form.videos.map((video,index)=>({index,error:videoError(video,cloudHost)})).find(item=>item.error);
     if(invalid){setMessageType('error');setMessage(`Lesson ${invalid.index+1}: ${invalid.error}`);return;}
     const payload = {
@@ -500,7 +519,7 @@ export function AdminUploadPage() {
             <button className="secondary-button" type="button" onClick={addVideo}>Add video</button>
           </div>
 
-          <button className="submit-button" type="submit" disabled={submitting || loadingCourse}>{submitting ? (isEditing ? "Saving..." : "Creating...") : (isEditing ? "Save changes" : "Create course")}</button>
+          <button className="submit-button" type="submit" disabled={submitting || loadingCourse || (isEditing && !editLoaded)}>{submitting ? (isEditing ? "Saving..." : "Creating...") : (isEditing ? "Save changes" : "Create course")}</button>
           <Message text={message} type={messageType} />
         </form>
       </section>

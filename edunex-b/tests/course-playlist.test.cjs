@@ -19,7 +19,7 @@ test('projection excludes image blobs from the MongoDB response', () => {
  for(const field of fields) assert.ok(!['videos','thumbnail','thumbnailHorizontal','thumbnailVertical','videos.thumbnail'].includes(field) && !field.endsWith('.data'));
 });
 test('uploaded URLs win and shared fallback retains provider metadata', () => {
- const result = playlistPayload({...course, thumbnailUrl:'https://images.example/course.png', videos:[{_id:id,provider:'youtube',youtubeId:'youtube123',thumbnailUrl:'https://images.example/lesson.png'},{_id:id,provider:'bunny_stream',bunnyVideoId:'bunny-id',bunnyLibraryId:'library'}]});
+ const result = playlistPayload({...course, thumbnailHorizontal:null, thumbnailUrl:'https://images.example/course.png', videos:[{_id:id,provider:'youtube',youtubeId:'youtube123',thumbnailUrl:'https://images.example/lesson.png'},{_id:id,provider:'bunny_stream',bunnyVideoId:'bunny-id',bunnyLibraryId:'library'}]});
  assert.equal(result.videos[0].thumbnailUrl,'https://images.example/lesson.png'); assert.equal(result.videos[0].youtubeId,'youtube123');
  assert.equal(result.videos[1].thumbnailUrl,'https://images.example/course.png'); assert.equal(result.videos[1].bunnyVideoId,'bunny-id');
 });
@@ -43,4 +43,9 @@ test('artwork endpoint only queries published courses and caches image responses
 test('missing course/artwork and invalid IDs fail cleanly',async()=>{
  const {handler}=setup(null);const missing=response();await handler({params:{id},query:{}},missing);assert.equal(missing.code,404);
  const bad=response();await handler({params:{id:'bad'},query:{}},bad);assert.equal(bad.code,400);
+});
+
+test('embedded course upload takes precedence over an older URL',()=>{
+ const result=playlistPayload({...course,thumbnailUrl:'https://images.example/old.png'});
+ assert.equal(result.thumbnailUrl,`/api/courses/${id}/thumbnail`);
 });

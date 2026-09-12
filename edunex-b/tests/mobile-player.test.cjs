@@ -88,3 +88,39 @@ test('AI suggestions disappear after the first user message', () => {
     assert.equal(compile(condition, { [messagesName]: [{ role: 'user' }, { role: 'assistant' }], [loadingName]: false }), false);
   }
 });
+
+test('mobile JSON requests time out while waiting for response data', async () => {
+  let expire, cleared=false;
+  const fn=compile(nodes.find(n=>n.type==='FunctionDeclaration'&&n.id.name==='fetchApiJson'), {
+    API_BASE:'https://api.example', AbortController,
+    setTimeout(callback){expire=callback;return 1;}, clearTimeout(){cleared=true;},
+    fetch:async (_url,{signal})=>({ok:true,signal}),
+    readJsonResponse:res=>new Promise((resolve,reject)=>res.signal.addEventListener('abort',()=>reject(Object.assign(new Error('Timed out'),{name:'AbortError'}))))
+  });
+  const pending=fn('/courses');
+  await new Promise(resolve => setImmediate(resolve));
+  expire();
+  await assert.rejects(pending,{name:'AbortError'});
+  assert.equal(cleared,true);
+});
+test('mobile JSON requests honor cancellation and reject HTTP failures', async()=>{
+  const fn=compile(nodes.find(n=>n.type==='FunctionDeclaration'&&n.id.name==='fetchApiJson'), {
+    API_BASE:'https://api.example',AbortController,setTimeout,clearTimeout,
+    fetch:async(_url,{signal})=>{assert.equal(signal.aborted,true);return {ok:false,status:503};},
+    readJsonResponse:async()=>({error:'Unavailable'})
+  });
+  const controller=new AbortController();controller.abort();
+  await assert.rejects(fn('/courses',null,controller.signal),/Unavailable/);
+});
+
+test('Home displays course metadata before its playback request finishes',async()=>{
+  const state={};let finishPlayback;
+  const context={cancelled:false,homeAbort:new AbortController(),hasAccess:true,user:{_id:'u',sessionId:'s'},
+    setLoading:value=>state.loading=value,setLoadError:value=>state.error=value,setPrimaryCourse:value=>state.course=value,
+    fetchApiJson:async path=>path.includes('/top')?[{_id:'c',title:'Course',videos:[{_id:'v'}]}]:new Promise(resolve=>{finishPlayback=resolve;})};
+  const load=compile(nodes.find(n=>n.type==='FunctionDeclaration'&&n.id.name==='loadPrimaryCourse'),context);
+  const pending=load();await new Promise(resolve=>setImmediate(resolve));
+  assert.equal(state.course._id,'c');assert.equal(state.loading,false);
+  finishPlayback({videos:[{_id:'v',playbackRequired:true}]});await pending;
+  assert.equal(state.course.__homePlayableVideos,true);
+});

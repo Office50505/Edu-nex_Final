@@ -520,10 +520,21 @@ async function readJsonResponse(res) {
   catch { return { error: raw }; }
 }
 
-async function fetchApiJson(path, fallback = null) {
-  const res = await fetch(`${API_BASE}${path}`);
-  const data = await readJsonResponse(res);
-  return res.ok ? data : fallback;
+async function fetchApiJson(path, fallback = null, signal) {
+  const controller = new AbortController();
+  const abort = () => controller.abort();
+  if (signal?.aborted) controller.abort();
+  signal?.addEventListener('abort', abort);
+  const timer = setTimeout(abort, 15000);
+  try {
+    const res = await fetch(`${API_BASE}${path}`, { signal: controller.signal });
+    const data = await readJsonResponse(res);
+    if (!res.ok) throw new Error(data.error || `Request failed (${res.status})`);
+    return data ?? fallback;
+  } finally {
+    clearTimeout(timer);
+    signal?.removeEventListener('abort', abort);
+  }
 }
 
 async function postApiJson(paths, body) {
@@ -1794,26 +1805,39 @@ function VideoItem({ courseId, user, video: videoProp, videoId: videoIdProp, isA
   const [cloudError, setCloudError] = useState('');
   const [cloudRetry, setCloudRetry] = useState(0);
   const cloudResume = useRef(0);
+  const cloudLeaseRef = useRef(null);
+  const sourceQueue = useRef(Promise.resolve());
   useEffect(() => {
     if (videoProp?.provider !== 'aws_cloudfront' || !isActive) return;
-    let disposed = false, timer;
+    let disposed = false, timer, requestTimer;
+    const controller = new AbortController();
+    const leaseKey = `${courseId}:${videoProp._id}:${user?.sessionId}`;
     async function renew() {
+      requestTimer = setTimeout(() => controller.abort(), 15000);
       try {
         const response = await fetch(`${API_BASE}/api/courses/${courseId}/videos/${videoProp._id}/playback-access`, {
-          method: 'POST', headers: {'Content-Type':'application/json'},
+          method: 'POST', signal: controller.signal, headers: {'Content-Type':'application/json'},
           body: JSON.stringify({userId:user?._id,sessionId:user?.sessionId})
         });
         const data = await response.json();
         if (!response.ok) throw new Error(data.error || 'Playback access unavailable.');
         if (disposed) return;
-        setCloudLease({...data,hlsUrl:`${API_BASE}${data.hlsUrl}`});setCloudError('');
+        const lease = {...data,hlsUrl:/^https?:\/\//i.test(data.hlsUrl) ? data.hlsUrl : `${API_BASE}${data.hlsUrl}`};
+        cloudLeaseRef.current = {key:leaseKey, lease};
+        setCloudLease(lease);setCloudError('');
         timer = setTimeout(renew, Math.max(10000,data.expiresAt-Date.now()-60000));
-      } catch(error) { if(!disposed)setCloudError(error.message); }
+      } catch(error) { if(!disposed)setCloudError(error.name === 'AbortError' ? 'Video access timed out. Tap retry.' : error.message); }
+      finally { clearTimeout(requestTimer); }
     }
-    renew();return () => {disposed=true;clearTimeout(timer);};
+    const cached = cloudLeaseRef.current;
+    if (cached?.key === leaseKey && cached.lease.expiresAt > Date.now() + 60000 && !cloudError) {
+      timer = setTimeout(renew, cached.lease.expiresAt - Date.now() - 60000);
+    } else renew();
+    return () => {disposed=true;controller.abort();clearTimeout(timer);clearTimeout(requestTimer);};
   }, [courseId,videoProp?._id,videoProp?.provider,isActive,user?._id,user?.sessionId,cloudRetry]);
-  const video = {...(videoProp || (videoIdProp ? {youtubeId:videoIdProp}:{})), ...(cloudLease || {})};
-  const nativeVideoUrl = video.provider === "aws_cloudfront" && !cloudLease && !localPath
+  const validCloudLease = cloudLeaseRef.current?.key === `${courseId}:${videoProp?._id}:${user?.sessionId}` ? cloudLease : null;
+  const video = {...(videoProp || (videoIdProp ? {youtubeId:videoIdProp}:{})), ...(validCloudLease || {})};
+  const nativeVideoUrl = video.provider === "aws_cloudfront" && !validCloudLease && !localPath
     ? "" : getNativeVideoUrl(video, localPath);
   const hasNativeVideo = !!nativeVideoUrl;
   const isOffline = !!localPath;
@@ -1900,10 +1924,13 @@ function VideoItem({ courseId, user, video: videoProp, videoId: videoIdProp, isA
     let cancelled = false;
     if (!nativeVideoSource) {
       nativePlayer.pause();
-      nativePlayer.replace(null, true);
-      return undefined;
+      sourceQueue.current = sourceQueue.current.catch(() => {}).then(() => {
+        if (!cancelled) return nativePlayer.replaceAsync(null);
+      });
+      return () => { cancelled = true; };
     }
-    (async () => {
+    sourceQueue.current = sourceQueue.current.catch(() => {}).then(async () => {
+      if (cancelled) return;
       try {
         nativePlayer.pause();
         await nativePlayer.replaceAsync(nativeVideoSource);
@@ -1925,7 +1952,7 @@ function VideoItem({ courseId, user, video: videoProp, videoId: videoIdProp, isA
           setIsPlaying(false);
         }
       }
-    })();
+    });
     return () => {
       cancelled = true;
       nativePlayer.pause();
@@ -2424,7 +2451,7 @@ function ReelsScreen({ courseId, initialIndex, initialTime, onBack, user, onVide
   ]);
   const [courseAiLoading, setCourseAiLoading] = useState(false);
   const courseAiScrollRef = useRef(null);
-  const vcRef = useRef({ itemVisiblePercentThreshold: 50 });
+  const vcRef = useRef({ itemVisiblePercentThreshold: 70, minimumViewTime: 120 });
   const flatListRef = useRef(null);
 
   const activeVideo = videos[activeIndex];
@@ -2468,7 +2495,8 @@ function ReelsScreen({ courseId, initialIndex, initialTime, onBack, user, onVide
   }, [activeIndex]);
 
   const onViewable = useCallback(({ viewableItems }) => {
-    if (viewableItems.length > 0) setActiveIndex(viewableItems[0].index);
+    const visible = viewableItems.find(item => item.isViewable && Number.isInteger(item.index));
+    if (visible) setActiveIndex(visible.index);
   }, []);
 
 
@@ -3985,15 +4013,19 @@ function HomeScreen({
   useEffect(() => {
     let cancelled = false;
 
+    const homeAbort = new AbortController();
     async function loadPrimaryCourse() {
       setLoading(true);
       setLoadError("");
       try {
-        const richResponse = await fetchApiJson("/api/courses/top?limit=24", []);
+        const richResponse = await fetchApiJson("/api/courses/top?limit=24", [], homeAbort.signal).catch(error => {
+          if (homeAbort.signal.aborted) throw error;
+          return [];
+        });
         if (cancelled) return;
 
         const richCourses = (Array.isArray(richResponse) ? richResponse : richResponse?.courses || []).filter(course => !course?.isMock);
-        const fallbackResponse = richCourses.length ? [] : await fetchApiJson("/api/courses", []);
+        const fallbackResponse = richCourses.length ? [] : await fetchApiJson("/api/courses", [], homeAbort.signal);
         const fallbackCourses = (Array.isArray(fallbackResponse) ? fallbackResponse : fallbackResponse?.courses || []).filter(course => !course?.isMock);
         const candidates = [...(richCourses.length ? richCourses : fallbackCourses)];
         candidates.sort((left, right) => {
@@ -4016,11 +4048,14 @@ function HomeScreen({
           return;
         }
 
+        if (cancelled) return;
+        setPrimaryCourse(course);
+        setLoading(false);
         if (hasAccess && user?._id && user?.sessionId) {
           const playableData = await fetchApiJson(
             `/api/courses/${course._id}/videos?userId=${encodeURIComponent(user._id)}&sessionId=${encodeURIComponent(user.sessionId)}`,
-            null
-          );
+            null, homeAbort.signal
+          ).catch(() => null);
           if (!cancelled && Array.isArray(playableData?.videos) && playableData.videos.length) {
             course = { ...course, videos: playableData.videos, __homePlayableVideos: true };
           }
@@ -4038,7 +4073,7 @@ function HomeScreen({
     }
 
     loadPrimaryCourse();
-    return () => { cancelled = true; };
+    return () => { cancelled = true; homeAbort.abort(); };
   }, [hasAccess, reloadKey, user?._id, user?.sessionId]);
 
   const lessons = useMemo(() => sortLessons(primaryCourse?.videos || []), [primaryCourse?.videos]);
@@ -8817,25 +8852,25 @@ courseListCard: {
   menuLabel: { flex: 1, color: C.text, fontWeight: "600", fontSize: 14 },
   logoutBtn: {
     flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 8,
-    backgroundColor: "rgba(239,68,68,0.1)", borderRadius: 12, padding: 15,
-    borderWidth: 1, borderColor: "rgba(239,68,68,0.3)",
+    alignSelf: "center", minHeight: 44, paddingHorizontal: 18, borderRadius: 8,
+    backgroundColor: "transparent",
   },
-  logoutText: { color: C.danger, fontWeight: "700", fontSize: 15 },
+  logoutText: { color: C.textSub, fontWeight: "500", fontSize: 13 },
   dangerZone: { marginTop: 20 },
   dangerZoneLabel: {
     ...TYPE.label, color: C.danger, textTransform: "uppercase", marginBottom: 8, paddingHorizontal: 2,
   },
   deleteAccountRow: {
-    minHeight: 66, flexDirection: "row", alignItems: "center", gap: 12,
-    backgroundColor: "rgba(239,68,68,0.07)", borderRadius: RADIUS.lg,
-    paddingHorizontal: 14, paddingVertical: 11,
-    borderWidth: 1, borderColor: "rgba(239,68,68,0.32)",
+    minHeight: 48, flexDirection: "row", alignItems: "center", gap: 12,
+    backgroundColor: "transparent", borderRadius: 8,
+    paddingHorizontal: 10, paddingVertical: 6,
+    borderWidth: 1, borderColor: C.border,
   },
   deleteAccountRowIcon: {
     width: 38, height: 38, borderRadius: 10, alignItems: "center", justifyContent: "center",
     backgroundColor: "rgba(239,68,68,0.12)",
   },
-  deleteAccountRowTitle: { color: C.danger, fontSize: 14, fontWeight: "800" },
+  deleteAccountRowTitle: { color: C.textSub, fontSize: 12, fontWeight: "500" },
   deleteAccountRowSubtitle: { color: C.textSub, fontSize: 11, lineHeight: 15, marginTop: 2 },
   deleteAccountOverlay: {
     flex: 1, justifyContent: "center", paddingHorizontal: 18,

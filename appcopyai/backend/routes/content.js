@@ -133,6 +133,46 @@ router.post('/contact-enquiries', optionalContactUser, async (req, res) => {
   }
 });
 
+// Public course artwork is served as an image, never embedded in playlist JSON.
+router.get(['/courses/:id/thumbnail', '/courses/:id/videos/:videoId/thumbnail'], async (req, res) => {
+  try {
+    const { id, videoId } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(id) || (videoId && !mongoose.Types.ObjectId.isValid(videoId))) {
+      return res.status(400).end();
+    }
+    const filter = { _id: id, status: 'published' };
+    if (videoId) filter['videos._id'] = videoId;
+    const portrait = req.query.orientation === 'vertical';
+    let course;
+    if (videoId) {
+      course = await Course.findOne(filter).select({ status: 1, 'videos.$': 1 }).lean();
+    } else {
+      const fields = portrait ? ['thumbnailVertical', 'thumbnailHorizontal', 'thumbnail'] : ['thumbnailHorizontal', 'thumbnail', 'thumbnailVertical'];
+      for (const field of fields) {
+        const candidate = await Course.findOne(filter).select(`${field} thumbnailUrl thumbnailVerticalUrl`).lean();
+        if (!candidate) break;
+        course = candidate;
+        if (candidate[field]?.data) break;
+      }
+    }
+    if (!course) return res.status(404).end();
+    const images = videoId ? [course.videos?.[0]?.thumbnail] : portrait
+      ? [course.thumbnailVertical, course.thumbnailHorizontal, course.thumbnail]
+      : [course.thumbnailHorizontal, course.thumbnail, course.thumbnailVertical];
+    const image = images.find(value => value?.data && ['image/jpeg', 'image/png', 'image/webp'].includes(value.mimeType));
+    if (image) {
+      res.set('Cache-Control', 'public, max-age=300');
+      return res.type(image.mimeType).send(Buffer.from(image.data, 'base64'));
+    }
+    const url = videoId ? course.videos?.[0]?.thumbnailUrl
+      : (portrait ? course.thumbnailVerticalUrl || course.thumbnailUrl : course.thumbnailUrl || course.thumbnailVerticalUrl);
+    if (url && /^https?:\/\//i.test(url)) return res.redirect(url);
+    return res.status(404).end();
+  } catch (error) {
+    res.status(500).json({ error: 'Could not load course artwork.' });
+  }
+});
+
 // GET /courses/:id/lessons → returns the course document with its videos array
 router.get('/courses/:id/lessons', requireAccess, async (req, res) => {
   try {

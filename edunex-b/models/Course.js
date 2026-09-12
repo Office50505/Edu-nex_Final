@@ -150,7 +150,7 @@ courseSchema.pre('validate', function setPublishedAt() {
 });
 
 courseSchema.pre('save', function autoFillThumbnail() {
-  if (!this.thumbnailUrl && this.videos?.length) {
+  if (!this.thumbnailUrl && !this.thumbnailHorizontal?.data && !this.thumbnail?.data && this.videos?.length) {
     const first = this.videos[0];
     if (first.youtubeId) {
       this.thumbnailUrl = `https://img.youtube.com/vi/${first.youtubeId}/hqdefault.jpg`;

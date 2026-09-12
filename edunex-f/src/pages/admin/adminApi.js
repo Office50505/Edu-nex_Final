@@ -136,10 +136,23 @@ export async function adminRequest(path, options = {}) {
 }
 
 export async function adminJson(path, options = {}, fallback = "Request failed.") {
-  const response = await adminRequest(path, options);
-  const data = await response.json().catch(() => ({}));
-  if (!response.ok) throw new Error(errorMessage(data, fallback));
-  return data;
+  const controller = new AbortController();
+  const abort = () => controller.abort();
+  if (options.signal?.aborted) controller.abort();
+  options.signal?.addEventListener('abort', abort);
+  const timer = setTimeout(abort, 20000);
+  try {
+    const response = await adminRequest(path, {...options, signal: controller.signal});
+    const data = await response.json();
+    if (!response.ok) throw new Error(errorMessage(data, fallback));
+    return data;
+  } catch (error) {
+    if (error.name === 'AbortError') throw new Error('The request timed out or was canceled. Reload to check the latest state.');
+    throw error;
+  } finally {
+    clearTimeout(timer);
+    options.signal?.removeEventListener('abort', abort);
+  }
 }
 
 export async function logout() {

@@ -6,6 +6,7 @@ const Lesson = require('../models/Lesson');
 const Subscription = require('../models/Subscription');
 const User = require('../models/User');
 
+const LIGHT_COURSE_FIELDS = 'title slug description category status publishedAt createdAt thumbnail.mimeType thumbnailHorizontal.mimeType thumbnailVertical.mimeType thumbnailUrl thumbnailVerticalUrl notesUrl completionOrder videos._id videos.title videos.topic videos.description videos.provider videos.sourceType videos.videoUrl videos.embedUrl videos.bunnyVideoId videos.bunnyLibraryId videos.youtubeId videos.thumbnailUrl videos.thumbnailVerticalUrl videos.transcriptUrl videos.examplePrompt videos.duration videos.order';
 const API_BASE_URL = String(process.env.API_BASE_URL || '').replace(/\/+$/, '');
 const BUNNY_LIBRARY_ID = process.env.BUNNY_LIBRARY_ID || process.env.BUNNY_STREAM_LIBRARY_ID || '675520';
 const BUNNY_API_KEY = process.env.BUNNY_API_KEY || process.env.BUNNY_STREAM_API_KEY || '';
@@ -61,13 +62,13 @@ function normalizeImageUrl(url) {
 function getCourseImageUrls(course) {
   const thumbnailUrl = normalizeImageUrl(course?.thumbnailUrl);
   const thumbnailVerticalUrl = normalizeImageUrl(course?.thumbnailVerticalUrl);
-  const fallbackThumbnailUrl = API_BASE_URL && course?._id
+  const fallbackThumbnailUrl = course?._id
     ? `${API_BASE_URL}/api/courses/${course._id}/thumbnail`
     : null;
 
   return {
-    thumbnailUrl: thumbnailUrl || thumbnailVerticalUrl || fallbackThumbnailUrl,
-    thumbnailVerticalUrl: thumbnailVerticalUrl || thumbnailUrl || fallbackThumbnailUrl,
+    thumbnailUrl: (course?.thumbnailHorizontal?.mimeType || course?.thumbnail?.mimeType) ? fallbackThumbnailUrl : thumbnailUrl || thumbnailVerticalUrl || fallbackThumbnailUrl,
+    thumbnailVerticalUrl: course?.thumbnailVertical?.mimeType ? `${fallbackThumbnailUrl}?orientation=vertical` : thumbnailVerticalUrl || thumbnailUrl || fallbackThumbnailUrl,
   };
 }
 
@@ -192,7 +193,7 @@ async function hasCourseAccess(user) {
 
 async function getCourse(courseId, projection = null) {
   const query = Course.findById(objectId(courseId, 'course id'));
-  if (projection) query.select(projection);
+  query.select(projection && !projection.split(' ').includes('videos') ? projection : LIGHT_COURSE_FIELDS);
   const course = await query.lean();
   if (!course) {
     throw httpError('Course not found', 404);
@@ -274,7 +275,7 @@ async function topCourses(limit = 6) {
   }, {});
 
   let courses = courseIds.length
-    ? await Course.find({ _id: { $in: courseIds }, status: 'published' }).lean()
+    ? await Course.find({ _id: { $in: courseIds }, status: 'published' }).select(LIGHT_COURSE_FIELDS).lean()
     : [];
 
   courses = courses
@@ -283,7 +284,7 @@ async function topCourses(limit = 6) {
 
   if (courses.length < limit) {
     const existingIds = new Set(courses.map((course) => String(course._id)));
-    const extra = await Course.find({ status: 'published' })
+    const extra = await Course.find({ status: 'published' }).select(LIGHT_COURSE_FIELDS)
       .sort({ publishedAt: -1, createdAt: -1 })
       .limit(limit * 2)
       .lean();
@@ -315,7 +316,7 @@ async function mostWatchedVideo() {
 
   for (const item of ranked) {
     if (!mongoose.Types.ObjectId.isValid(item._id.courseId)) continue;
-    const course = await Course.findOne({ _id: item._id.courseId, status: 'published' }).lean();
+    const course = await Course.findOne({ _id: item._id.courseId, status: 'published' }).select(LIGHT_COURSE_FIELDS).lean();
     const videos = Array.isArray(course?.videos)
       ? course.videos.slice().sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
       : [];
@@ -331,7 +332,7 @@ async function mostWatchedVideo() {
     };
   }
 
-  const fallbackCourse = await Course.findOne({ status: 'published', 'videos.0': { $exists: true } })
+  const fallbackCourse = await Course.findOne({ status: 'published', 'videos.0': { $exists: true } }).select(LIGHT_COURSE_FIELDS)
     .sort({ publishedAt: -1, createdAt: -1 })
     .lean();
   const fallbackVideos = Array.isArray(fallbackCourse?.videos)
