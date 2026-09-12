@@ -1246,6 +1246,11 @@
   let conversationVersion = 0;
   let sending = false;
 
+  function getConversationList() {
+    if (typeof conversationList !== 'undefined') return conversationList;
+    return document.getElementById('nai-conversation-list');
+  }
+
   function conversationStorageKey() {
     return `edunexNexAiChats:${conversationOwner || 'guest'}`;
   }
@@ -1279,11 +1284,14 @@
   }
 
   function writeStoredSessions() {
+    if (typeof localStorage?.setItem !== 'function') return;
     const stored = conversationSessions
       .filter((session) => Array.isArray(session.messages) && session.messages.length)
       .sort((a, b) => Number(b.updatedAt || 0) - Number(a.updatedAt || 0))
       .slice(0, MAX_STORED_SESSIONS);
-    localStorage.setItem(conversationStorageKey(), JSON.stringify(stored));
+    try {
+      localStorage.setItem(conversationStorageKey(), JSON.stringify(stored));
+    } catch (_) {}
   }
 
   function newSessionId() {
@@ -1363,17 +1371,18 @@
   }
 
   function renderConversationList() {
-    if (!conversationList) return;
+    const list = getConversationList();
+    if (!list) return;
     const visibleSessions = conversationSessions
       .filter((session) => session.messages.length)
       .sort((a, b) => Number(b.updatedAt || 0) - Number(a.updatedAt || 0));
 
     if (!visibleSessions.length) {
-      conversationList.innerHTML = '<div class="nai-history-empty">Previous Nex AI chats will appear here after you send a message.</div>';
+      list.innerHTML = '<div class="nai-history-empty">Previous Nex AI chats will appear here after you send a message.</div>';
       return;
     }
 
-    conversationList.innerHTML = visibleSessions.map((session) => `
+    list.innerHTML = visibleSessions.map((session) => `
       <button class="nai-history-item${session.id === currentSessionId ? ' is-active' : ''}" type="button" data-session-id="${escapeNaiHtml(session.id)}" aria-current="${session.id === currentSessionId ? 'true' : 'false'}">
         <span class="nai-history-item-title">${escapeNaiHtml(session.title || 'New chat')}</span>
         <span class="nai-history-item-meta">${dateLabel(session.updatedAt)} · ${session.messages.length} messages</span>
@@ -1446,6 +1455,14 @@
     return record;
   }
 
+  function discardConversationMessage(record) {
+    const session = activeSession();
+    session.messages = session.messages.filter((message) => message !== record);
+    syncHistoryFromActiveSession();
+    writeStoredSessions();
+    renderConversationList();
+  }
+
   function syncConversationOwner() {
     const user = window.EduNex?.getUser?.();
     const owner = window.EduNex?.getAccessToken?.()
@@ -1464,7 +1481,7 @@
     input.value = '';
     input.focus();
   });
-  conversationList?.addEventListener('click', (event) => {
+  getConversationList()?.addEventListener('click', (event) => {
     const item = event.target.closest('.nai-history-item');
     if (!item) return;
     switchConversation(item.dataset.sessionId || '');
@@ -1589,11 +1606,12 @@
       if (requestVersion !== conversationVersion || requestSessionId !== currentSessionId) return;
       const t = document.getElementById('nai-typing');
       if (t) t.remove();
+      discardConversationMessage(userRecord);
 
-      const aiRecord = appendConversationMessage({
+      const aiRecord = {
         role: 'assistant',
         content: `Nex AI is not available right now. ${error.message || 'Please try again later.'}`,
-      });
+      };
       messages.appendChild(renderMessageRecord(aiRecord));
       messages.scrollTop = messages.scrollHeight;
     } finally {

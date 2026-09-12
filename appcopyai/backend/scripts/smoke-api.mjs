@@ -12,6 +12,9 @@ if (process.env.SMOKE_ENV_PATH) {
   if (initialNodeEnv !== 'production') {
     dotenv.config({ path: '.env.local', override: true, quiet: true });
   }
+  if (!process.env.MONGODB_URI) {
+    dotenv.config({ path: '../../edunex-b/.env', override: true, quiet: true });
+  }
 }
 
 const args = new Set(process.argv.slice(2));
@@ -216,7 +219,7 @@ async function main() {
     const result = await request('/api/admin/login', {
       method: 'POST',
       headers: jsonHeaders(),
-      body: { password: '__wrong_smoke_password__' },
+      body: { username: '__wrong_smoke_admin__', password: '__wrong_smoke_password__' },
     });
     expectStatus(result, [401], 'Bad admin login should fail');
     return 'Bad admin login rejected';

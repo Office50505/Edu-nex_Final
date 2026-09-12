@@ -15,6 +15,9 @@ const createMissing = process.argv.includes('--create-missing');
 
 dotenv.config({ path: path.join(rootDir, '.env') });
 dotenv.config({ path: path.join(rootDir, '.env.local'), override: true });
+if (!process.env.MONGODB_URI) {
+  dotenv.config({ path: path.join(rootDir, '..', '..', 'edunex-b', '.env'), override: false });
+}
 
 const mongodbUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/edunex';
 
@@ -45,7 +48,16 @@ async function auditModel(modelName) {
     }))
     .filter((index) => !isIdIndex(index.keys));
 
-  let existingIndexes = await Model.collection.indexes();
+  let existingIndexes = [];
+  let collectionExists = true;
+  try {
+    existingIndexes = await Model.collection.indexes();
+  } catch (error) {
+    if (error?.codeName !== 'NamespaceNotFound' && error?.code !== 26 && !/ns does not exist/i.test(error?.message || '')) {
+      throw error;
+    }
+    collectionExists = false;
+  }
   let existingSignatures = new Set(existingIndexes.map((index) => normalizeIndex(index.key)));
   let missing = expectedIndexes.filter((index) => !existingSignatures.has(index.signature));
 
@@ -62,6 +74,7 @@ async function auditModel(modelName) {
   return {
     modelName,
     collectionName: Model.collection.name,
+    collectionExists,
     expectedCount: expectedIndexes.length,
     existingCount: existingIndexes.length,
     missing,
@@ -91,6 +104,9 @@ async function main() {
 
   results.forEach((result) => {
     console.log(`${result.modelName} -> ${result.collectionName}`);
+    if (!result.collectionExists) {
+      console.log('  collection: not created yet');
+    }
     console.log(`  expected schema indexes: ${result.expectedCount}`);
     console.log(`  existing db indexes: ${result.existingCount}`);
 
