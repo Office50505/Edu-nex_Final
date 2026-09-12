@@ -950,24 +950,37 @@
     return data;
   }
 
+  let refreshInFlight = null;
   async function refreshAccessToken() {
-    const refreshToken = getRefreshToken();
-    if (!refreshToken) return null;
-
-    try {
-      const data = await request("/api/auth/refresh", {
-        method: "POST",
-        body: JSON.stringify({ refreshToken }),
-      });
-      const target = store();
-      if (data.accessToken) target.setItem("edunexAccessToken", data.accessToken);
-      if (data.refreshToken) target.setItem("edunexRefreshToken", data.refreshToken);
-      if (data.user) target.setItem("edunexUser", JSON.stringify(data.user));
-      return data.accessToken || null;
-    } catch (_) {
-      clearAuth();
-      return null;
-    }
+    if (refreshInFlight) return refreshInFlight;
+    const original = getRefreshToken();
+    if (!original) return null;
+    const refresh = async () => {
+      // Another tab may have rotated the token while this tab waited for the lock.
+      if (getRefreshToken() !== original) return getAccessToken();
+      try {
+        const data = await request("/api/auth/refresh", {
+          method: "POST", body: JSON.stringify({ refreshToken: original }),
+        });
+        // An older response must not overwrite a newer login or restore a logout.
+        if (getRefreshToken() !== original) return getAccessToken();
+        if (!data?.accessToken || !data?.refreshToken) throw new Error('Could not refresh your session. Please retry.');
+        const target = store();
+        target.setItem("edunexAccessToken", data.accessToken);
+        target.setItem("edunexRefreshToken", data.refreshToken);
+        if (data.user) target.setItem("edunexUser", JSON.stringify(data.user));
+        return data.accessToken;
+      } catch (error) {
+        if (getRefreshToken() !== original) return getAccessToken();
+        if (error.status === 401) { clearAuth(); return null; }
+        // Network failures and server errors are not session revocations.
+        throw error;
+      }
+    };
+    refreshInFlight = (navigator.locks?.request
+      ? navigator.locks.request('edunex-token-refresh', refresh)
+      : refresh()).finally(() => { refreshInFlight = null; });
+    return refreshInFlight;
   }
 
   async function authRequest(path, options = {}) {
@@ -985,7 +998,7 @@
     try {
       return await run(token);
     } catch (error) {
-      if (!/401|invalid|expired|log in/i.test(error.message)) throw error;
+      if (error.status !== 401) throw error;
       token = await refreshAccessToken();
       if (!token) throw error;
       return run(token);
@@ -1338,6 +1351,7 @@
     apiUrl,
     request,
     authRequest,
+    refreshAccessToken,
     normalizePhone,
     saveAuth,
     clearAuth,
