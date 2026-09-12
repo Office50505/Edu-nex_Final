@@ -8,7 +8,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { page as videosPage } from "../generated-pages/videos.html.js";
 import { runLegacyPage } from "../legacyRuntime.js";
 import { usePageStyle } from "../hooks/usePageStyle.js";
-import { useEduNexRuntimeReady } from "../hooks/useEduNexRuntimeReady.js";
+import { courseRequest } from "../lib/courseRequest.js";
 
 const FALLBACK_IMAGE = "data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20width=%27900%27%20height=%27600%27%20viewBox=%270%200%20900%20600%27%3E%3Crect%20width=%27900%27%20height=%27600%27%20fill=%27%23000000%27/%3E%3Crect%20x=%271%27%20y=%271%27%20width=%27898%27%20height=%27598%27%20rx=%2732%27%20fill=%27%230d0d0d%27%20stroke=%27%23C58B2A%27%20stroke-opacity=%27.35%27/%3E%3Ctext%20x=%27450%27%20y=%27312%27%20text-anchor=%27middle%27%20fill=%27%23C58B2A%27%20font-family=%27Arial%27%20font-size=%2748%27%20font-weight=%27800%27%3ESkillomate%3C/text%3E%3C/svg%3E";
 const AUTO_NEXT_KEY = "edunexAutoNextVideo";
@@ -848,7 +848,6 @@ function NotesModal({ course, onClose }) {
 }
 
 export function VideosPage() {
-  const runtimeReady = useEduNexRuntimeReady();
   const playerFrameRef = useRef(null);
   const lessonSwipeRef = useRef({ active: false, pointerId: null, startX: 0, startY: 0, lastX: 0, lastY: 0, startedAt: 0, horizontal: false, vertical: false, suppressClickUntil: 0 });
   const query = queryParams();
@@ -864,6 +863,7 @@ export function VideosPage() {
   const [activeIndex, setActiveIndex] = useState(Number.isFinite(selectedVideo) ? selectedVideo : 0);
   const [status, setStatus] = useState("Preparing course...");
   const [error, setError] = useState("");
+  const [loadAttempt, setLoadAttempt] = useState(0);
   const [notesOpen, setNotesOpen] = useState(false);
   const [autoNext, setAutoNext] = useState(() => localStorage.getItem(AUTO_NEXT_KEY) === "true");
 
@@ -881,14 +881,15 @@ export function VideosPage() {
     return () => cleanup?.();
   }, [sharedRuntimePage]);
 
-  const ensureCourseAccess = useCallback(async (courseId) => {
+  const ensureCourseAccess = useCallback(async (courseId, signal) => {
     const accessToken = getToken();
     if (!accessToken) {
       window.location.href = `/login.html?next=${encodeURIComponent(window.location.pathname + window.location.search)}`;
       return false;
     }
-    try {
-      const response = await fetch("/api/payment/subscription-status", {
+    {
+      const { response, data } = await courseRequest("/api/payment/subscription-status", {
+        signal,
         headers: { Authorization: `Bearer ${accessToken}` },
       });
       if (response.status === 401) {
@@ -896,60 +897,56 @@ export function VideosPage() {
         window.location.href = `/login.html?next=${encodeURIComponent(window.location.pathname + window.location.search)}`;
         return false;
       }
-      const data = response.ok ? await response.json() : null;
+      if (!response.ok) throw new Error("Could not verify your course access. Please retry.");
       if (data && hasCourseAccess(data)) return true;
-    } catch (_) {}
+    }
     window.location.href = paymentUrlForCourse(courseId);
     return false;
   }, []);
 
   useEffect(() => {
-    if (!runtimeReady) return undefined;
+    const controller = new AbortController();
     let cancelled = false;
+    setError("");
+    setCourse(null);
+    setStatus("Preparing course...");
     (async () => {
       if (!selectedCourseId) {
         window.location.replace("/courses.html");
         return;
       }
-      let catalogCourses = [];
       try {
-        const response = await fetch("/api/courses", { headers: getToken() ? { Authorization: `Bearer ${getToken()}` } : {} });
-        if (response.ok) {
-          catalogCourses = (await response.json()).map(normalizeCourse);
-          if (!cancelled) setCourses(catalogCourses);
+        const allowed = await ensureCourseAccess(selectedCourseId, controller.signal);
+        if (!allowed || cancelled) return;
+        const { response, data } = await courseRequest(`/api/courses/${encodeURIComponent(selectedCourseId)}/lessons`, {
+          headers: { Authorization: `Bearer ${getToken()}` }, signal: controller.signal,
+        });
+        if (response.status === 401) {
+          clearAuthStorage();
+          window.location.href = `/login.html?next=${encodeURIComponent(window.location.pathname + window.location.search)}`;
+          return;
         }
-      } catch (_) {}
-      const allowed = await ensureCourseAccess(selectedCourseId);
-      if (!allowed || cancelled) return;
-      try {
-        const response = await fetch(`/api/courses/${encodeURIComponent(selectedCourseId)}/lessons`, { headers: { Authorization: `Bearer ${getToken()}` } });
-        if (!response.ok) throw new Error("Protected course unavailable");
-        const nextCourse = normalizeCourse(await response.json());
+        if (!response.ok) throw new Error(response.status === 403
+          ? "Your account does not currently have access to this course."
+          : response.status === 404 ? "This course could not be found." : "Could not load the course playlist. Please retry.");
+        const nextCourse = normalizeCourse(data);
         if (cancelled) return;
         const nextIndex = Math.max(0, Math.min(activeIndex, Math.max(nextCourse.videos.length - 1, 0)));
         setCourse(nextCourse);
+        setCourses([nextCourse]);
         setActiveIndex(nextIndex);
         setStatus(nextCourse.videos.length ? "Course ready" : "No lessons yet");
-      } catch (_) {
-        const localCourse = catalogCourses.find((item) => item._id === String(selectedCourseId));
-        if (!cancelled && localCourse?.videos?.length) {
-          const nextIndex = Math.max(0, Math.min(activeIndex, Math.max(localCourse.videos.length - 1, 0)));
-          setCourse(localCourse);
-          setActiveIndex(nextIndex);
-          setStatus("Course ready");
-          return;
-        }
+      } catch (failure) {
         if (!cancelled) {
-          setError("This course was not found in the database, or your account does not currently have access to its videos.");
+          setError(failure.message || "Could not load the course. Please retry.");
           setStatus("Course unavailable");
         }
       }
     })();
-    return () => {
-      cancelled = true;
-    };
+    return () => { cancelled = true; controller.abort(); };
+    // The initial index is clamped after loading; navigating lessons must not reload the course.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [runtimeReady, selectedCourseId]);
+  }, [selectedCourseId, loadAttempt, ensureCourseAccess]);
 
   useEffect(() => {
     if (!course) return;
@@ -1340,7 +1337,7 @@ export function VideosPage() {
               }}
             >
               {error ? (
-                <div className="player-placeholder"><div><strong>Could not open this course</strong><span>{error}</span></div></div>
+                <div className="player-placeholder"><div><strong>Could not open this course</strong><span>{error}</span><button type="button" className="toolbar-button" onClick={() => setLoadAttempt(attempt => attempt + 1)}>Retry loading course</button></div></div>
               ) : course ? (
                 !available(lesson) ? <div className="player-placeholder">This lesson is locked.</div> : usesCustomPlayer(lesson) && fallbackLesson !== `${course._id}-${lesson._id}` ? <CourseMediaPlayer onFallback={lesson.provider !== 'aws_cloudfront' && isBunnyEmbedUrl(embedUrl(lesson)) ? ()=>setFallbackLesson(`${course._id}-${lesson._id}`) : undefined} autoplay={autoplayLesson} course={course} lesson={lesson} lessonIndex={activeIndex} autoNext={autoNext} onEnded={advanceNext} onNavigateLesson={changeLessonByNavigation} key={`${course._id}-${lesson._id}`}/> : <Player
                   forceEmbed={fallbackLesson === `${course._id}-${lesson._id}`}
