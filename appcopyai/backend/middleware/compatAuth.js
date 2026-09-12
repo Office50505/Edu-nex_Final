@@ -1,7 +1,6 @@
 const jwt = require('jsonwebtoken');
 const mongoose = require('mongoose');
 const User = require('../models/User');
-const Session = require('../models/Session');
 
 const isProduction = process.env.NODE_ENV === 'production';
 const ACCESS_TOKEN_SECRET = process.env.JWT_SECRET || (() => {
@@ -34,21 +33,11 @@ function requestValue(req, names) {
 }
 
 function isSessionValid(user, sessionId) {
-  if (!sessionId) return false;
-  if (Array.isArray(user.activeSessions) && user.activeSessions.length > 0) {
-    return user.activeSessions.map(String).includes(String(sessionId));
-  }
-  return String(user.activeSessionId || '') === String(sessionId);
+  return Boolean(sessionId) && String(user.activeSessionId || '') === String(sessionId);
 }
 
 async function isSessionValidForUser(user, sessionId) {
-  if (isSessionValid(user, sessionId)) return true;
-  const session = await Session.findOne({
-    user: user._id,
-    sessionId,
-    loggedOutAt: null,
-  }).select('_id').lean();
-  return Boolean(session);
+  return isSessionValid(user, sessionId);
 }
 
 function publicUser(user) {
@@ -89,7 +78,7 @@ async function authenticateCompatible(req, options = {}) {
   if (token) {
     const decoded = jwt.verify(token, ACCESS_TOKEN_SECRET);
     const user = await loadAuthUser(decoded.userId);
-    if (decoded.sessionId && !await isSessionValidForUser(user, decoded.sessionId)) {
+    if (!await isSessionValidForUser(user, decoded.sessionId)) {
       throw authError('Session expired. Please log in again.');
     }
 
@@ -97,7 +86,7 @@ async function authenticateCompatible(req, options = {}) {
       mode: 'jwt',
       user,
       userId: String(user._id),
-      sessionId: decoded.sessionId || user.activeSessionId || '',
+      sessionId: decoded.sessionId,
     };
   }
 

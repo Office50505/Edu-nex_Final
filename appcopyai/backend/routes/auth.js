@@ -28,7 +28,6 @@ const REFRESH_TOKEN_SECRET = envSecret('JWT_REFRESH_SECRET', 'edunex-development
 const SIGNUP_TOKEN_SECRET = envSecret('JWT_SIGNUP_SECRET', 'edunex-development-signup-secret');
 const AUTO_VERIFY_OTP = process.env.AUTO_VERIFY_OTP === 'true';
 const DISABLE_AUTH_RATE_LIMIT = process.env.DISABLE_AUTH_RATE_LIMIT === 'true';
-const MAX_COMPAT_ACTIVE_SESSIONS = Number(process.env.MAX_COMPAT_ACTIVE_SESSIONS || 3);
 
 const authRateBuckets = new Map();
 const authRateConfig = {
@@ -156,12 +155,7 @@ function hashToken(token) {
 }
 
 function isSessionIdActive(user, sessionId) {
-  if (!sessionId) return false;
-  if (String(user.activeSessionId || '') === String(sessionId)) return true;
-  if (Array.isArray(user.activeSessions)) {
-    return user.activeSessions.map(String).includes(String(sessionId));
-  }
-  return false;
+  return Boolean(sessionId) && String(user.activeSessionId || '') === String(sessionId);
 }
 
 function normalizePlatform(value) {
@@ -647,17 +641,18 @@ router.post('/login', async (req, res) => {
     await User.findByIdAndUpdate(user._id, {
       $set: {
         activeSessionId: sessionId,
+        activeSessions: [sessionId],
         deviceToken: deviceToken || user.deviceToken,
         lastLoginAt: new Date(),
       },
       $inc: { loginCount: 1 },
-      $push: {
-        activeSessions: {
-          $each: [sessionId],
-          $slice: -Math.max(MAX_COMPAT_ACTIVE_SESSIONS, 1),
-        },
-      },
     });
+
+    // Revoke historical session records; the atomic user update above is authoritative.
+    await Session.updateMany(
+      { user: user._id, sessionId: { $ne: sessionId }, loggedOutAt: null },
+      { $set: { loggedOutAt: new Date() } }
+    );
 
     // Sign JWT with sessionId
     const tokens = createTokens(user._id, sessionId);
@@ -695,9 +690,9 @@ router.post('/refresh', async (req, res) => {
 
     const decoded = jwt.verify(refreshToken, REFRESH_TOKEN_SECRET);
     const user = await User.findById(decoded.userId).select('+activeSessionId +activeSessions');
-    const sessionId = decoded.sessionId || user?.activeSessionId;
+    const sessionId = decoded.sessionId;
 
-    if (!user || user.isActive === false || !sessionId) {
+    if (!user || user.isActive === false || !isSessionIdActive(user, sessionId)) {
       return res.status(401).json({ error: 'Session expired. Please log in again.' });
     }
 
@@ -786,7 +781,7 @@ router.post('/logout', protect, async (req, res) => {
     }
 
     await Promise.all([
-      User.findByIdAndUpdate(req.user._id, update),
+      User.updateOne({ _id: req.user._id, activeSessionId: sessionId }, update),
       Session.updateOne(
         { user: req.user._id, sessionId },
         { $set: { loggedOutAt: new Date(), lastPingAt: new Date() } }

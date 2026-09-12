@@ -191,7 +191,7 @@ function normalizeThumbnailUrl(url, width = 1600) {
   if (!value) return "";
 
   const driveFileId = getGoogleDriveFileId(value);
-  if (!driveFileId) return value;
+  if (!driveFileId) return value.startsWith("/") && !value.startsWith("//") ? `${API_BASE}${value}` : value;
 
   return `https://drive.google.com/thumbnail?id=${encodeURIComponent(driveFileId)}&sz=w${width}`;
 }
@@ -1216,7 +1216,7 @@ function CourseThumbnailImage({ course, preferVertical = false }) {
     setUriIndex(0);
   }, [uris.join("|"), course?._id, preferVertical]);
 
-  const source = getCourseThumbnailSource(course, preferVertical, uriIndex);
+  const source = uris[uriIndex] ? { uri: uris[uriIndex] } : asset;
   if (!source) return null;
 
   return (
@@ -1813,11 +1813,13 @@ function VideoItem({ courseId, user, video: videoProp, videoId: videoIdProp, isA
     renew();return () => {disposed=true;clearTimeout(timer);};
   }, [courseId,videoProp?._id,videoProp?.provider,isActive,user?._id,user?.sessionId,cloudRetry]);
   const video = {...(videoProp || (videoIdProp ? {youtubeId:videoIdProp}:{})), ...(cloudLease || {})};
-  const nativeVideoUrl = getNativeVideoUrl(video, localPath);
+  const nativeVideoUrl = video.provider === "aws_cloudfront" && !cloudLease && !localPath
+    ? "" : getNativeVideoUrl(video, localPath);
   const hasNativeVideo = !!nativeVideoUrl;
   const isOffline = !!localPath;
   const canFallbackToEmbed = video.provider !== 'aws_cloudfront' && !isOffline && !!(video.bunnyGuid || video.bunnyVideoId || video.videoUrl || video.embedUrl || video.youtubeId || video.videoId);
   const [nativePlaybackFailed, setNativePlaybackFailed] = useState(false);
+  const [fillVideo, setFillVideo] = useState(true);
   const isNativeVideo = hasNativeVideo && !(nativePlaybackFailed && canFallbackToEmbed);
   const isBunny = !isNativeVideo && !!(video.bunnyGuid || video.bunnyVideoId || video.videoUrl || video.embedUrl);
   const webViewRef = useRef(null);
@@ -1848,6 +1850,8 @@ function VideoItem({ courseId, user, video: videoProp, videoId: videoIdProp, isA
     player.preservesPitch = true;
     player.timeUpdateEventInterval = 1;
   });
+  const playbackStateRef = useRef(null);
+  playbackStateRef.current = { isActive, isPlaying, isMuted, playbackRate };
   const html = useMemo(() => {
     let provider = "youtube";
     let originalMedia = video?.youtubeId || video?.videoId || "";
@@ -1890,7 +1894,7 @@ function VideoItem({ courseId, user, video: videoProp, videoId: videoIdProp, isA
     setIsEnded(false);
     setIsPlaying(isActive);
     setNativePlaybackFailed(false);
-  }, [video?.youtubeId, video?.videoId, video?.bunnyGuid, video?.bunnyVideoId, video?._id, video?.videoUrl, video?.embedUrl, localPath, initialTime, isActive]);
+  }, [video?.youtubeId, video?.videoId, video?.bunnyGuid, video?.bunnyVideoId, video?._id, video?.videoUrl, video?.embedUrl, localPath, initialTime]);
 
   useEffect(() => {
     let cancelled = false;
@@ -1904,13 +1908,14 @@ function VideoItem({ courseId, user, video: videoProp, videoId: videoIdProp, isA
         nativePlayer.pause();
         await nativePlayer.replaceAsync(nativeVideoSource);
         if (cancelled) return;
-        nativePlayer.muted = isMuted;
-        nativePlayer.playbackRate = playbackRate || 1;
+        const latest = playbackStateRef.current;
+        nativePlayer.muted = latest.isMuted;
+        nativePlayer.playbackRate = latest.playbackRate || 1;
         nativePlayer.preservesPitch = true;
         nativePlayer.timeUpdateEventInterval = 1;
         const startAt = video.provider === 'aws_cloudfront' ? Math.max(cloudResume.current,finiteSeconds(initialTime,0)) : finiteSeconds(initialTime, 0);
         if (startAt > 0) nativePlayer.currentTime = startAt;
-        if (isActive && isPlaying) nativePlayer.play();
+        if (latest.isActive && latest.isPlaying) nativePlayer.play();
       } catch (error) {
         if (!cancelled && video.provider === 'aws_cloudfront') setCloudError('Unable to play HLS. Check connectivity and retry.');
         if (!cancelled && canFallbackToEmbed) {
@@ -1925,7 +1930,21 @@ function VideoItem({ courseId, user, video: videoProp, videoId: videoIdProp, isA
       cancelled = true;
       nativePlayer.pause();
     };
-  }, [nativePlayer, nativeVideoSource, initialTime, isActive, isMuted, playbackRate, canFallbackToEmbed]);
+  }, [nativePlayer, nativeVideoSource, initialTime, canFallbackToEmbed]);
+
+  useEffect(() => {
+    setIsPlaying(isActive);
+  }, [isActive]);
+
+  useEffect(() => {
+    nativePlayer.muted = isMuted;
+    nativePlayer.playbackRate = playbackRate;
+  }, [nativePlayer, isMuted, playbackRate]);
+
+  useEffect(() => {
+    if (isActive && isNativeVideo && isPlaying) nativePlayer.play();
+    else nativePlayer.pause();
+  }, [nativePlayer, isActive, isNativeVideo, isPlaying]);
 
   useEventListener(nativePlayer, "sourceLoad", ({ duration: loadedDuration }) => {
     if (!isNativeVideo) return;
@@ -2046,7 +2065,7 @@ function VideoItem({ courseId, user, video: videoProp, videoId: videoIdProp, isA
   }
 
   function handleNativeProgress(nextTime, nextDuration, nextPlaying) {
-    if (!isNativeVideo) return;
+    if (!isNativeVideo || !isActive) return;
     const dur = finiteSeconds(nextDuration, duration);
     const ct = clampSeconds(nextTime, dur);
     if (!initialSeekDoneRef.current && initialTime > 0 && dur > 0) {
@@ -2200,7 +2219,8 @@ function VideoItem({ courseId, user, video: videoProp, videoId: videoIdProp, isA
         <VideoView
           player={nativePlayer}
           style={StyleSheet.absoluteFill}
-          contentFit="contain"
+          contentFit={fillVideo ? "cover" : "contain"}
+          surfaceType="textureView"
           nativeControls={false}
           allowsPictureInPicture={false}
           playsInline
@@ -2293,6 +2313,16 @@ function VideoItem({ courseId, user, video: videoProp, videoId: videoIdProp, isA
             </TouchableOpacity>
           ))}
         </View>
+      )}
+      {isNativeVideo && (
+        <TouchableOpacity
+          onPress={() => setFillVideo(value => !value)}
+          style={s.videoFitButton}
+          accessibilityRole="button"
+          accessibilityLabel={fillVideo ? "Fit entire video" : "Fill screen with video"}
+        >
+          <Text style={s.speedButtonText}>{fillVideo ? "Fit" : "Fill"}</Text>
+        </TouchableOpacity>
       )}
       {isOffline && (
         <View style={s.offlineBadge} pointerEvents="none">
@@ -2393,6 +2423,7 @@ function ReelsScreen({ courseId, initialIndex, initialTime, onBack, user, onVide
     ...(DEV_UI_QA_ENABLED ? UI_QA_AI_MESSAGES : []),
   ]);
   const [courseAiLoading, setCourseAiLoading] = useState(false);
+  const courseAiScrollRef = useRef(null);
   const vcRef = useRef({ itemVisiblePercentThreshold: 50 });
   const flatListRef = useRef(null);
 
@@ -2572,8 +2603,9 @@ function ReelsScreen({ courseId, initialIndex, initialTime, onBack, user, onVide
       </TouchableOpacity>
 
       <Modal visible={showDescription} transparent animationType="slide" onRequestClose={() => setShowDescription(false)}>
-        <Pressable style={s.descriptionOverlay} onPress={() => setShowDescription(false)} accessible={false}>
-          <Pressable style={s.descriptionSheet} accessible={false}>
+        <View style={s.descriptionOverlay}>
+          <Pressable style={StyleSheet.absoluteFill} onPress={() => setShowDescription(false)} accessible={false} />
+          <View style={s.descriptionSheet}>
             <View style={s.descriptionHandle} />
             <View style={s.descriptionHeader}>
               <Text style={s.descriptionTitle} numberOfLines={2}>{activeTitle || "Video description"}</Text>
@@ -2581,13 +2613,13 @@ function ReelsScreen({ courseId, initialIndex, initialTime, onBack, user, onVide
                 <Ionicons name="close" size={20} color="#fff" />
               </TouchableOpacity>
             </View>
-            <ScrollView style={s.descriptionScroll} contentContainerStyle={s.descriptionContent}>
+            <ScrollView nestedScrollEnabled keyboardShouldPersistTaps="handled" style={s.descriptionScroll} contentContainerStyle={s.descriptionContent}>
               <View style={s.lessonNotesBlock}>
                 <View style={s.lessonNotesBlockHeader}>
                   <Ionicons name="information-circle-outline" size={16} color={C.primary} />
                   <Text style={s.lessonNotesBlockTitle}>About this lesson</Text>
                 </View>
-                <Text style={s.descriptionBody}>{activeDescription}</Text>
+                <Text selectable style={s.descriptionBody}>{activeDescription}</Text>
               </View>
 
               {hasSeparateNotes && (
@@ -2596,7 +2628,7 @@ function ReelsScreen({ courseId, initialIndex, initialTime, onBack, user, onVide
                     <Ionicons name="reader-outline" size={16} color={C.primary} />
                     <Text style={s.lessonNotesBlockTitle}>Lecture Notes</Text>
                   </View>
-                  <Text style={s.lessonNotesBody}>{activeNotes}</Text>
+                  <Text selectable style={s.lessonNotesBody}>{activeNotes}</Text>
                 </View>
               )}
 
@@ -2636,13 +2668,14 @@ function ReelsScreen({ courseId, initialIndex, initialTime, onBack, user, onVide
                 </View>
               )}
             </ScrollView>
-          </Pressable>
-        </Pressable>
+          </View>
+        </View>
       </Modal>
 
       <Modal visible={showNotes} transparent animationType="slide" onRequestClose={() => setShowNotes(false)}>
-        <Pressable style={s.descriptionOverlay} onPress={() => setShowNotes(false)} accessible={false}>
-          <Pressable style={s.lessonNotesSheet} accessible={false}>
+        <View style={s.descriptionOverlay}>
+          <Pressable style={StyleSheet.absoluteFill} onPress={() => setShowNotes(false)} accessible={false} />
+          <View style={s.lessonNotesSheet}>
             <View style={s.descriptionHandle} />
             <View style={s.descriptionHeader}>
               <View style={{ flex: 1 }}>
@@ -2653,13 +2686,13 @@ function ReelsScreen({ courseId, initialIndex, initialTime, onBack, user, onVide
                 <Ionicons name="close" size={20} color="#fff" />
               </TouchableOpacity>
             </View>
-            <ScrollView style={s.descriptionScroll} contentContainerStyle={s.lessonNotesContent}>
+            <ScrollView nestedScrollEnabled keyboardShouldPersistTaps="handled" style={s.descriptionScroll} contentContainerStyle={s.lessonNotesContent}>
               <View style={s.lessonNotesBlock}>
                 <View style={s.lessonNotesBlockHeader}>
                   <Ionicons name="reader-outline" size={16} color={C.primary} />
                   <Text style={s.lessonNotesBlockTitle}>Lecture Notes</Text>
                 </View>
-                <Text style={s.lessonNotesBody}>
+                <Text selectable style={s.lessonNotesBody}>
                   {activeNotes || "No notes shared for this lecture yet."}
                 </Text>
               </View>
@@ -2675,7 +2708,7 @@ function ReelsScreen({ courseId, initialIndex, initialTime, onBack, user, onVide
                     <Text selectable style={s.lessonPromptText}>{prompt}</Text>
                   </View>
                 )) : (
-                  <Text style={s.lessonNotesBody}>No prompts shared for this lecture yet.</Text>
+                  <Text selectable style={s.lessonNotesBody}>No prompts shared for this lecture yet.</Text>
                 )}
               </View>
 
@@ -2700,12 +2733,12 @@ function ReelsScreen({ courseId, initialIndex, initialTime, onBack, user, onVide
                 </View>
               )}
             </ScrollView>
-          </Pressable>
-        </Pressable>
+          </View>
+        </View>
       </Modal>
 
       <Modal visible={showCourseAi} transparent animationType="slide" onRequestClose={() => setShowCourseAi(false)}>
-        <View style={s.courseAiOverlay}>
+        <KeyboardAvoidingView style={s.courseAiOverlay} behavior={Platform.OS === "ios" ? "padding" : "height"}>
           <Pressable style={StyleSheet.absoluteFill} onPress={() => setShowCourseAi(false)} accessible={false} />
           <View style={s.courseAiSheet}>
             <View style={s.courseAiHandle} />
@@ -2718,7 +2751,7 @@ function ReelsScreen({ courseId, initialIndex, initialTime, onBack, user, onVide
                 <Ionicons name="close" size={20} color={C.text} />
               </TouchableOpacity>
             </View>
-            <ScrollView style={s.courseAiMessages} contentContainerStyle={s.courseAiContent}>
+            <ScrollView ref={courseAiScrollRef} style={s.courseAiMessages} contentContainerStyle={s.courseAiContent} keyboardShouldPersistTaps="handled" onContentSizeChange={() => courseAiScrollRef.current?.scrollToEnd({ animated: true })}>
               {courseAiMessages.map((msg, i) => (
                 <View key={i} style={[s.courseAiMessage, msg.role === "user" && s.courseAiMessageUser]}>
                   {msg.role !== "user" && <View style={s.courseAiAvatar}><Ionicons name="sparkles" size={15} color={C.onPrimary} /></View>}
@@ -2733,7 +2766,7 @@ function ReelsScreen({ courseId, initialIndex, initialTime, onBack, user, onVide
                   <View style={s.courseAiBubble}><ActivityIndicator color={C.primary} size="small" /></View>
                 </View>
               )}
-              {!courseAiLoading && ["Summarize this video", "Explain this topic simply", "Give me practice questions"].map(p => (
+              {!courseAiLoading && !courseAiMessages.some(message => message.role === "user") && ["Summarize this video", "Explain this topic simply", "Give me practice questions"].map(p => (
                 <TouchableOpacity key={p} style={s.courseAiPrompt} onPress={() => sendCourseAiMessage(p)} accessibilityRole="button" accessibilityLabel={`Ask Course AI: ${p}`}>
                   <Text style={s.courseAiPromptText}>{p}</Text>
                 </TouchableOpacity>
@@ -2755,7 +2788,7 @@ function ReelsScreen({ courseId, initialIndex, initialTime, onBack, user, onVide
               </TouchableOpacity>
             </View>
           </View>
-        </View>
+        </KeyboardAvoidingView>
       </Modal>
     </View>
   );
@@ -2904,11 +2937,7 @@ function VideoListScreen({ course, onSelectVideo, onBack, onOpenCourseAi, downlo
             const durationLabel = getVideoDurationLabel(item);
             const bunnyGuid = getBunnyGuid(item);
             const bunnyLibraryId = getBunnyLibraryId(item);
-            const thumbnailUrl = bunnyGuid
-              ? `${API_BASE}/api/bunny/thumbnail/${bunnyGuid}?libraryId=${encodeURIComponent(bunnyLibraryId)}`
-              : item.youtubeId
-                ? `https://img.youtube.com/vi/${item.youtubeId}/mqdefault.jpg`
-                : "";
+            const thumbnailUrl = getHomeLessonThumbnailUrl(item, course);
             const dl = bunnyGuid ? downloads?.[bunnyGuid] : null;
             return (
               <TouchableOpacity
@@ -3130,15 +3159,15 @@ const HOME_PALETTE = {
 };
 
 function getHomeLessonThumbnailUrl(lesson, course) {
-  if (lesson?.thumbnailUrl) {
-    return normalizeThumbnailUrl(lesson.thumbnailUrl, 1000);
+  if (lesson?.thumbnailUrl || lesson?.thumbnailVerticalUrl) {
+    return normalizeThumbnailUrl(lesson.thumbnailUrl || lesson.thumbnailVerticalUrl, 640);
   }
   const bunnyGuid = getBunnyGuid(lesson);
   if (bunnyGuid) {
     return `${API_BASE}/api/bunny/thumbnail/${bunnyGuid}?libraryId=${encodeURIComponent(getBunnyLibraryId(lesson))}`;
   }
-  if (lesson?.youtubeId || lesson?.videoId) {
-    return `https://img.youtube.com/vi/${lesson.youtubeId || lesson.videoId}/mqdefault.jpg`;
+  if (lesson?.youtubeId) {
+    return `https://img.youtube.com/vi/${lesson.youtubeId}/mqdefault.jpg`;
   }
   return getCourseThumbnailUri(course, false) || "";
 }
@@ -3484,10 +3513,10 @@ const homeStyles = StyleSheet.create({
   headerDot: { position: "absolute", top: 10, right: 11, width: 7, height: 7, borderRadius: 4, backgroundColor: HOME_PALETTE.gold, borderWidth: 1, borderColor: HOME_PALETTE.surface },
   profileButton: { width: MIN_TOUCH_TARGET, height: MIN_TOUCH_TARGET, borderRadius: MIN_TOUCH_TARGET / 2, alignItems: "center", justifyContent: "center", borderWidth: 2, borderColor: HOME_PALETTE.gold },
   scrollContent: { paddingTop: 10, paddingBottom: 118 },
-  mediaFallback: { ...StyleSheet.absoluteFillObject, alignItems: "center", justifyContent: "center", padding: 10, backgroundColor: HOME_PALETTE.surfaceSoft },
+  mediaFallback: { ...StyleSheet.absoluteFill, alignItems: "center", justifyContent: "center", padding: 10, backgroundColor: HOME_PALETTE.surfaceSoft },
   mediaFallbackText: { color: HOME_PALETTE.textSecondary, fontSize: 10, lineHeight: 13, fontWeight: "700", textAlign: "center", marginTop: 5 },
   featuredHero: { height: 246, marginHorizontal: 14, borderRadius: 14, overflow: "hidden", backgroundColor: HOME_PALETTE.surface, borderWidth: 1, borderColor: HOME_PALETTE.borderStrong },
-  featuredScrim: { ...StyleSheet.absoluteFillObject, backgroundColor: "rgba(5,5,4,0.55)" },
+  featuredScrim: { ...StyleSheet.absoluteFill, backgroundColor: "rgba(5,5,4,0.55)" },
   featuredContent: { flex: 1, justifyContent: "flex-end", alignItems: "flex-start", padding: 16, paddingRight: "24%" },
   featuredLabel: { color: HOME_PALETTE.goldSoft, fontSize: 10, lineHeight: 13, fontWeight: "900", letterSpacing: 0.8, marginBottom: 6 },
   featuredTitle: { color: HOME_PALETTE.text, fontSize: 26, lineHeight: 29, fontWeight: "900", letterSpacing: -0.4 },
@@ -3540,7 +3569,7 @@ const homeStyles = StyleSheet.create({
   quickTitle: { minHeight: 32, color: HOME_PALETTE.text, fontSize: 12, lineHeight: 16, fontWeight: "800", marginTop: 7 },
   projectCard: { width: 132, padding: 8, borderRadius: 11, backgroundColor: HOME_PALETTE.surface, borderWidth: 1, borderColor: HOME_PALETTE.border },
   projectThumb: { height: 78, borderRadius: 10, overflow: "hidden", alignItems: "center", justifyContent: "center" },
-  projectShade: { ...StyleSheet.absoluteFillObject, backgroundColor: "rgba(7,7,6,0.54)" },
+  projectShade: { ...StyleSheet.absoluteFill, backgroundColor: "rgba(7,7,6,0.54)" },
   projectTitle: { color: HOME_PALETTE.text, fontSize: 12, lineHeight: 16, fontWeight: "800", marginTop: 7 },
   projectMeta: { color: HOME_PALETTE.textMuted, fontSize: 10, lineHeight: 13, marginTop: 2 },
   latestList: { marginHorizontal: 14, borderRadius: 13, overflow: "hidden", backgroundColor: HOME_PALETTE.surface, borderWidth: 1, borderColor: HOME_PALETTE.border },
@@ -5733,7 +5762,7 @@ function AiAssistantScreen({
           ) : null}
         />
 
-        {!loading && (
+        {!loading && !messages.some(message => message.role === "user") && (
           <View style={s.aiSuggestions}>
             {AI_SUGGESTIONS.map(prompt => (
               <TouchableOpacity
@@ -5985,66 +6014,47 @@ export default function App() {
   const userRef = useRef(null);
   useEffect(() => { userRef.current = user; }, [user]);
 
+  // Check independently of WebSocket support so a replaced login stops playback.
+  useEffect(() => {
+    const id = user?._id;
+    const sid = user?.sessionId;
+    if (!id || !sid) return;
+    let disposed = false;
+    let pending = false;
+    const controller = new AbortController();
+    async function validateSession() {
+      if (pending || disposed || AppState.currentState === "background") return;
+      pending = true;
+      try {
+        const response = await fetch(`${API_BASE}/api/auth/validate/${encodeURIComponent(id)}?sessionId=${encodeURIComponent(sid)}`, { signal: controller.signal });
+        if (disposed || response.status !== 401 || userRef.current?.sessionId !== sid) return;
+        // Clear the UI synchronously; stale requests cannot clear a later login.
+        userRef.current = null;
+        setUser(null); setSelectedCourse(null); setStartIndex(null); setMainScreen("home");
+        setLoginError("Your session ended. Your account may have been signed in on another device.");
+        await AsyncStorage.removeItem("user");
+      } catch {
+        // A network failure is not proof that the session was revoked.
+      } finally {
+        pending = false;
+      }
+    }
+    validateSession();
+    const timer = setInterval(validateSession, 15000);
+    const subscription = AppState.addEventListener("change", state => {
+      if (state === "active") validateSession();
+    });
+    return () => {
+      disposed = true;
+      controller.abort();
+      clearInterval(timer);
+      subscription.remove();
+    };
+  }, [user?._id, user?.sessionId]);
+
   useEffect(() => { downloadsRef.current = downloads; }, [downloads]);
 
-  useEffect(() => {
-    if (Platform.OS !== "android") return undefined;
-    const sub = BackHandler.addEventListener("hardwareBackPress", () => {
-      if (legalPage) { setLegalPage(null); return true; }
-      if (!userRef.current) {
-        if (resetVisible) { closePasswordReset(); return true; }
-        if (screen === "signup2") { setScreen("signup1"); setSignupError(""); return true; }
-        if (screen === "signup1") {
-          if (otpSent) { setOtpSent(false); setOtp(""); setSignupToken(""); setSignupError(""); return true; }
-          resetSignup();
-          return true;
-        }
-        return true;
-      }
 
-      if (courseAiTarget) { setCourseAiTarget(null); return true; }
-      if (certModal) { setCertModal(null); return true; }
-      if (showAppUpgrade) { setShowAppUpgrade(false); return true; }
-      if (mainScreen === "courses" && startIndex !== null) {
-        if (isPreviewOnly) {
-          setSelectedCourse(null);
-          setStartIndex(null);
-          setInitialTime(0);
-          setPreloadedVideos(null);
-          setIsPreviewOnly(false);
-          setMainScreen("home");
-          return true;
-        }
-        loadCourseProgress();
-        setStartIndex(null);
-        setInitialTime(0);
-        setPreloadedVideos(null);
-        setIsPreviewOnly(false);
-        return true;
-      }
-      if (mainScreen === "courses" && selectedCourse) {
-        loadCourseProgress();
-        setSelectedCourse(null);
-        return true;
-      }
-      if (mainScreen === "wishlist" || mainScreen === "certificates" || mainScreen === "subscription" || mainScreen === "help" || mainScreen === "terms" || mainScreen === "privacy") {
-        setMainScreen("profile");
-        return true;
-      }
-      if (mainScreen !== "home") {
-        setSelectedCourse(null);
-        setStartIndex(null);
-        setInitialTime(0);
-        setPreloadedVideos(null);
-        setIsPreviewOnly(false);
-        loadCourseProgress();
-        setMainScreen("home");
-        return true;
-      }
-      return true;
-    });
-    return () => sub.remove();
-  }, [screen, otpSent, resetVisible, legalPage, courseAiTarget, certModal, showAppUpgrade, mainScreen, startIndex, selectedCourse, isPreviewOnly, loadCourseProgress]);
 
   // Load saved downloads on startup and verify files still exist
   useEffect(() => {
@@ -6179,6 +6189,59 @@ export default function App() {
     if (user?._id && user?.sessionId) loadCertificates(user);
     else setCertificates(DEV_UI_QA_ENABLED && user?._id ? getQaCertificatesForUser(user) : []);
   }, [user?._id, user?.sessionId, loadCertificates]);
+
+  const backToLessons = useCallback(() => {
+    if (!isPreviewOnly) loadCourseProgress();
+    setStartIndex(null);
+    setInitialTime(0);
+    setPreloadedVideos(Array.isArray(selectedCourse?.videos) ? selectedCourse.videos : null);
+  }, [isPreviewOnly, selectedCourse, loadCourseProgress]);
+
+  useEffect(() => {
+    if (Platform.OS !== "android") return undefined;
+    const sub = BackHandler.addEventListener("hardwareBackPress", () => {
+      if (legalPage) { setLegalPage(null); return true; }
+      if (!userRef.current) {
+        if (resetVisible) { closePasswordReset(); return true; }
+        if (screen === "signup2") { setScreen("signup1"); setSignupError(""); return true; }
+        if (screen === "signup1") {
+          if (otpSent) { setOtpSent(false); setOtp(""); setSignupToken(""); setSignupError(""); return true; }
+          resetSignup();
+          return true;
+        }
+        return true;
+      }
+
+      if (courseAiTarget) { setCourseAiTarget(null); return true; }
+      if (certModal) { setCertModal(null); return true; }
+      if (showAppUpgrade) { setShowAppUpgrade(false); return true; }
+      if (mainScreen === "courses" && startIndex !== null) {
+        backToLessons();
+        return true;
+      }
+      if (mainScreen === "courses" && selectedCourse) {
+        loadCourseProgress();
+        setSelectedCourse(null);
+        return true;
+      }
+      if (mainScreen === "wishlist" || mainScreen === "certificates" || mainScreen === "subscription" || mainScreen === "help" || mainScreen === "terms" || mainScreen === "privacy") {
+        setMainScreen("profile");
+        return true;
+      }
+      if (mainScreen !== "home") {
+        setSelectedCourse(null);
+        setStartIndex(null);
+        setInitialTime(0);
+        setPreloadedVideos(null);
+        setIsPreviewOnly(false);
+        loadCourseProgress();
+        setMainScreen("home");
+        return true;
+      }
+      return true;
+    });
+    return () => sub.remove();
+  }, [screen, otpSent, resetVisible, legalPage, courseAiTarget, certModal, showAppUpgrade, mainScreen, startIndex, selectedCourse, isPreviewOnly, loadCourseProgress, backToLessons]);
 
   const openCourse = useCallback(async (course, options = {}) => {
     const u = userRef.current;
@@ -7109,21 +7172,7 @@ export default function App() {
           user={user}
           onVideoComplete={isPreviewOnly ? undefined : markVideoComplete}
           onVideoProgress={isPreviewOnly ? undefined : saveVideoProgress}
-          onBack={() => {
-            if (isPreviewOnly) {
-              setSelectedCourse(null);
-              setStartIndex(null);
-              setInitialTime(0);
-              setPreloadedVideos(null);
-              setIsPreviewOnly(false);
-              setMainScreen("home");
-              return;
-            }
-            loadCourseProgress();
-            setStartIndex(null);
-            setInitialTime(0);
-            setPreloadedVideos(Array.isArray(selectedCourse.videos) ? selectedCourse.videos : null);
-          }}
+          onBack={backToLessons}
         />
         <CertificateModal cert={certModal} onClose={() => setCertModal(null)} />
       </View>
@@ -7900,7 +7949,7 @@ return StyleSheet.create({
     overflow: "hidden",
   },
   artworkFallback: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     alignItems: "flex-start",
     justifyContent: "flex-start",
     padding: SPACE.sm,
@@ -7940,7 +7989,7 @@ return StyleSheet.create({
     paddingVertical: 10,
   },
   streamingHeroPhotoWash: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     backgroundColor: "rgba(255,253,248,0.08)",
   },
   streamingHeroContent: {
@@ -8173,7 +8222,7 @@ return StyleSheet.create({
     borderColor: C.border,
   },
   posterScrim: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     backgroundColor: "rgba(0,0,0,0.08)",
   },
   posterTitle: {
@@ -8337,7 +8386,7 @@ return StyleSheet.create({
     borderWidth: 1, borderColor: C.border,
   },
   heroShade: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     backgroundColor: "rgba(0,0,0,0.24)",
     borderRadius: RADIUS.lg,
   },
@@ -8917,7 +8966,8 @@ courseListCard: {
 
   // Video Player
   centered: { flex: 1, alignItems: "center", justifyContent: "center", backgroundColor: C.bg },
-  player: { width: "100%", flex: 1, backgroundColor: "#000" },
+  player: { width: "100%", flexGrow: 0, flexShrink: 0, position: "relative", overflow: "hidden", backgroundColor: "#000" },
+  videoFitButton: { position: "absolute", top: 106, left: 14, zIndex: 8, minHeight: 44, paddingHorizontal: 14, justifyContent: "center", borderRadius: 22, backgroundColor: "rgba(0,0,0,0.65)" },
   reelsBackBtn: {
     position: "absolute", top: 52, left: 14,
     backgroundColor: "rgba(0,0,0,0.5)", borderRadius: 20, padding: 8, zIndex: 20,
@@ -8960,24 +9010,24 @@ courseListCard: {
   seekFlashLeft:  { left: 0, borderTopRightRadius: 80, borderBottomRightRadius: 80 },
   seekFlashRight: { right: 0, borderTopLeftRadius: 80, borderBottomLeftRadius: 80 },
   seekFlashText: { color: "#fff", fontSize: 14, fontWeight: "700" },
-  restartOverlay: { ...StyleSheet.absoluteFillObject, zIndex: 5, alignItems: "center", justifyContent: "center", backgroundColor: "rgba(0,0,0,0.4)" },
-  pauseOverlay: { ...StyleSheet.absoluteFillObject, zIndex: 4, alignItems: "center", justifyContent: "center" },
+  restartOverlay: { ...StyleSheet.absoluteFill, zIndex: 5, alignItems: "center", justifyContent: "center", backgroundColor: "rgba(0,0,0,0.4)" },
+  pauseOverlay: { ...StyleSheet.absoluteFill, zIndex: 4, alignItems: "center", justifyContent: "center" },
   playerAiButtonText: { color: "#fff", fontSize: 11, fontWeight: "900" },
   descriptionOverlay: { flex: 1, backgroundColor: "rgba(0,0,0,0.48)", justifyContent: "flex-end" },
   descriptionSheet: {
     backgroundColor: "rgba(14,14,14,0.97)", borderTopLeftRadius: 18, borderTopRightRadius: 18,
-    maxHeight: "64%", paddingTop: 10, borderWidth: 1, borderColor: "rgba(255,255,255,0.12)",
+    height: "78%", paddingTop: 10, borderWidth: 1, borderColor: "rgba(255,255,255,0.12)",
   },
   descriptionHandle: { width: 38, height: 4, borderRadius: 2, backgroundColor: "rgba(255,255,255,0.35)", alignSelf: "center", marginBottom: 12 },
   descriptionHeader: { flexDirection: "row", alignItems: "center", gap: 12, paddingHorizontal: 18, paddingBottom: 12 },
   descriptionTitle: { flex: 1, color: "#fff", fontSize: 16, fontWeight: "800", lineHeight: 21 },
   descriptionClose: { width: MIN_TOUCH_TARGET, height: MIN_TOUCH_TARGET, borderRadius: MIN_TOUCH_TARGET / 2, backgroundColor: "rgba(255,255,255,0.12)", alignItems: "center", justifyContent: "center" },
-  descriptionScroll: { flexGrow: 0 },
+  descriptionScroll: { flex: 1, minHeight: 0 },
   descriptionContent: { paddingHorizontal: 18, paddingBottom: 28, gap: 14 },
-  descriptionBody: { color: "rgba(255,255,255,0.86)", fontSize: 14, lineHeight: 21 },
+  descriptionBody: { color: "#F5F5F5", fontSize: 16, lineHeight: 25 },
   lessonNotesSheet: {
     backgroundColor: "rgba(14,14,14,0.97)", borderTopLeftRadius: 18, borderTopRightRadius: 18,
-    height: "64%", paddingTop: 10, borderWidth: 1, borderColor: "rgba(255,255,255,0.12)",
+    height: "78%", paddingTop: 10, borderWidth: 1, borderColor: "rgba(255,255,255,0.12)",
   },
   lessonNotesSub: { color: "rgba(255,255,255,0.58)", fontSize: 12, marginTop: 3 },
   lessonNotesContent: { paddingHorizontal: 18, paddingBottom: 30, gap: 14 },
@@ -9071,7 +9121,7 @@ courseListCard: {
   timelineFill:  { height: "100%", backgroundColor: C.primary, borderRadius: 2 },
   timelineThumb: { position: "absolute", top: "50%", width: 14, height: 14, borderRadius: 7, backgroundColor: "#fff", marginTop: -7, marginLeft: -7 },
   playerControls: {
-    ...StyleSheet.absoluteFillObject, alignItems: "center", justifyContent: "center",
+    ...StyleSheet.absoluteFill, alignItems: "center", justifyContent: "center",
     flexDirection: "row", gap: 32, backgroundColor: "rgba(0,0,0,0.3)",
   },
   playerCtrlBtn: { padding: 10 },

@@ -114,7 +114,6 @@ const ContactEnquiry = require('./models/ContactEnquiry');
 const AiTutorSession = require('./models/AiTutorSession');
 const LessonNote = require('./models/LessonNote');
 const Notification = require('./models/Notification');
-const Session = require('./models/Session');
 const Certificate = require('./models/Certificate');
 
 // Import routes
@@ -333,20 +332,7 @@ async function findOptionalRecommendationUser(req) {
     if (!user || user.isActive === false) return null;
 
     const sessionId = decoded.sessionId;
-    const activeSessions = Array.isArray(user.activeSessions) ? user.activeSessions.map(String) : [];
-    let isActive = sessionId && (
-      String(user.activeSessionId || '') === String(sessionId)
-      || activeSessions.includes(String(sessionId))
-    );
-
-    if (!isActive && sessionId) {
-      const session = await Session.findOne({
-        user: decoded.userId,
-        sessionId,
-        loggedOutAt: null,
-      }).select('_id').lean();
-      isActive = Boolean(session);
-    }
+    const isActive = Boolean(sessionId) && String(user.activeSessionId || '') === String(sessionId);
 
     return isActive ? user : null;
   } catch (_) {

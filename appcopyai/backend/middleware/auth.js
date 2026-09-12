@@ -1,6 +1,5 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
-const Session = require('../models/Session');
 const ACCESS_TOKEN_SECRET = process.env.JWT_SECRET || (() => {
   if (process.env.NODE_ENV === 'production') {
     throw new Error('JWT_SECRET must be set in production');
@@ -9,12 +8,7 @@ const ACCESS_TOKEN_SECRET = process.env.JWT_SECRET || (() => {
 })();
 
 function isUserSessionActive(user, sessionId) {
-  if (!sessionId) return false;
-  if (String(user.activeSessionId || '') === String(sessionId)) return true;
-  if (Array.isArray(user.activeSessions)) {
-    return user.activeSessions.map(String).includes(String(sessionId));
-  }
-  return false;
+  return Boolean(sessionId) && String(user.activeSessionId || '') === String(sessionId);
 }
 
 /**
@@ -45,15 +39,7 @@ async function protect(req, res, next) {
       return res.status(401).json({ error: 'User not found' });
     }
 
-    let active = isUserSessionActive(user, decoded.sessionId);
-    if (!active && decoded.sessionId) {
-      const session = await Session.findOne({
-        user: decoded.userId,
-        sessionId: decoded.sessionId,
-        loggedOutAt: null,
-      }).select('_id').lean();
-      active = Boolean(session);
-    }
+    const active = isUserSessionActive(user, decoded.sessionId);
 
     if (!active) {
       return res.status(401).json({ error: 'Session expired. Please log in again.' });
