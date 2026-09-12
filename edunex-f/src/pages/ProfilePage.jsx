@@ -329,7 +329,7 @@ export function ProfilePage() {
         <form onSubmit={deleteAccount}>
           <div className="pf-modal-head"><h2 id="deleteAccountTitle">Delete account?</h2></div>
           <div className="pf-modal-body" style={{ display: "grid", gap: 16 }}>
-            <p id="deleteAccountDescription">This permanently deletes your account, learning progress, certificates, and AI chats. This cannot be undone. Any active payment mandate must be cancelled before deletion.</p>
+            <p id="deleteAccountDescription">This permanently deletes your account, learning progress, certificates, and AI chats. This cannot be undone. Your active subscription will be cancelled automatically.</p>
             <label style={{ display: "grid", gap: 8 }}>Current password
               <input type="password" autoComplete="current-password" required value={deletePassword} disabled={deleting}
                 onChange={event => setDeletePassword(event.target.value)} style={{ padding: 12, color: "inherit", background: "transparent", border: "1px solid #777", borderRadius: 8 }} />

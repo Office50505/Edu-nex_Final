@@ -15,6 +15,7 @@ test('CSV export neutralizes formulas while preserving quotes and multiline cont
 function deletionHarness(billing = null) {
   const calls = [];
   const context = { module: { exports: {} }, process: { env: {} }, require(name) {
+    if (name === './cancelAccountBilling') return {cancelAccountBilling: async (value) => { if (value?.phase === 'ready') throw new Error('Payment setup is still being confirmed.'); calls.push('billingCancelled'); }};
     const model = name.split('/').at(-1);
     return {
       findById: () => model === 'RazorpayBilling' ? Promise.resolve(billing) : { select: async () => ({ _id: 'learner' }) },
@@ -29,13 +30,14 @@ function deletionHarness(billing = null) {
 
 test('shared deletion blocks unresolved mandates before deleting anything', async () => {
   const api = deletionHarness({ phase: 'ready' });
-  await assert.rejects(api.remove('learner'), error => error.statusCode === 409);
+  await assert.rejects(api.remove('learner'), error => error.statusCode === 503);
   assert.equal(api.calls.length, 0);
 });
 
 test('shared deletion includes certificates, analytics and billing and deletes user last', async () => {
   const api = deletionHarness({ phase: 'closed' });
   const result = await api.remove('learner');
+  assert.equal(api.calls[0], 'billingCancelled');
   assert.equal(result.certificates, 7);
   assert.equal(result.razorpayBilling, 1);
   assert.ok(api.calls.includes('AnalyticsEvent'));

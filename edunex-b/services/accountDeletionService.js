@@ -37,21 +37,18 @@ async function deleteUserAccount(userId) {
   }
 
   const billing = await RazorpayBilling.findById(userId);
-  if (billing && billing.phase !== 'closed') throw new AccountDeletionError('Cancel your Razorpay mandate before deleting your account. For unresolved checkout, contact support.', 409, 'ACTIVE_SUBSCRIPTION');
   const userIdString = String(user._id);
   const subscriptions = await Subscription.find({ user: user._id })
-    .select('_id phonePeMandateId status')
+    .select('_id phonePeMandateId status gateway razorpaySubscriptionId')
     .lean();
   const subscriptionIds = subscriptions.map((subscription) => subscription._id);
-  const activeMandate = subscriptions.find((subscription) => subscription.phonePeMandateId);
-
-  // Deleting the local account must never leave a real recurring mandate able
-  // to charge a user whose account no longer exists.
-  if (activeMandate && process.env.PAYMENT_GATEWAY_MODE !== 'simulated') {
+  try {
+    await require('./cancelAccountBilling').cancelAccountBilling(billing, subscriptions);
+  } catch (error) {
     throw new AccountDeletionError(
-      'Cancel your active subscription before deleting your account. Your learning access remains available until the current period ends.',
-      409,
-      'ACTIVE_SUBSCRIPTION'
+      error.message?.startsWith('Payment setup') || error.message?.startsWith('Subscription cancellation') || error.message?.startsWith('We could not')
+        ? error.message : 'Automatic subscription cancellation is unavailable. Your account has not been deleted. Please retry.',
+      503, 'BILLING_CANCELLATION_FAILED'
     );
   }
 
