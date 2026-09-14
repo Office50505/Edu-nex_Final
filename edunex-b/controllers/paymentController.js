@@ -54,6 +54,11 @@ function simulatedCheckoutUrl(req, merchantTransactionId) {
   return base ? `${base}${path}` : path;
 }
 
+function wantsJsonResponse(req) {
+  return String(req.headers.accept || '').toLowerCase().includes('application/json')
+    || req.is('application/json');
+}
+
 function addHours(date, hours) {
   return new Date(date.getTime() + hours * 60 * 60 * 1000);
 }
@@ -140,7 +145,7 @@ async function createSubscriptionEventOnce({
 
 async function createTrialSubscription({ userId, order, mandateId, metadata }) {
   const now = new Date();
-  const trialExpiresAt = addHours(now, 24);
+  const trialExpiresAt = addMonths(now, 1);
   const subscription = await Subscription.findOneAndUpdate(
     { user: userId },
     {
@@ -360,13 +365,16 @@ async function completeSimulatedPayment(req, res) {
       return res.status(404).json({ error: 'Payment simulator is disabled' });
     }
 
-    const merchantTransactionId = req.body.merchantTransactionId || req.query.merchantTransactionId;
-    const result = String(req.body.result || req.query.result || 'success').toLowerCase();
+    const merchantTransactionId = req.body?.merchantTransactionId || req.query.merchantTransactionId;
+    const result = String(req.body?.result || req.query.result || 'success').toLowerCase();
     const order = merchantTransactionId
       ? await Order.findOne({ phonePeMerchantTransactionId: merchantTransactionId })
       : null;
 
     if (!order) {
+      if (wantsJsonResponse(req)) {
+        return res.status(404).json({ success: false, error: 'Payment order not found' });
+      }
       return res.redirect(frontendDashboardUrl);
     }
 
@@ -387,6 +395,14 @@ async function completeSimulatedPayment(req, res) {
         },
       });
 
+      if (wantsJsonResponse(req)) {
+        return res.json({
+          success: true,
+          merchantTransactionId,
+          simulated: true,
+        });
+      }
+
       return res.redirect(withQueryParams(frontendPaymentSuccessUrl, {
         merchantTransactionId,
         simulated: 'true',
@@ -397,6 +413,15 @@ async function completeSimulatedPayment(req, res) {
       transactionId: `SIM_${String(result || 'failed').toUpperCase()}_${merchantTransactionId}`,
     });
 
+    if (wantsJsonResponse(req)) {
+      return res.status(402).json({
+        success: false,
+        merchantTransactionId,
+        simulated: true,
+        reason: result === 'cancelled' ? 'cancelled' : 'failed',
+      });
+    }
+
     return res.redirect(withQueryParams(frontendPaymentFailedUrl, {
       merchantTransactionId,
       simulated: 'true',
@@ -404,6 +429,9 @@ async function completeSimulatedPayment(req, res) {
     }));
   } catch (error) {
     console.error('Simulated payment error:', error);
+    if (wantsJsonResponse(req)) {
+      return res.status(500).json({ success: false, error: 'Simulated payment failed' });
+    }
     return res.redirect(frontendDashboardUrl);
   }
 }
@@ -526,7 +554,7 @@ async function handleWebhook(req, res) {
         const now = new Date();
         subscription.status = '1rs trial';
         subscription.trialStartedAt = subscription.trialStartedAt || now;
-        subscription.trialExpiresAt = subscription.trialExpiresAt || addHours(now, 24);
+        subscription.trialExpiresAt = subscription.trialExpiresAt || addMonths(now, 1);
         await User.findByIdAndUpdate(userId, {
           phonePeCustomerId: phonePeCustomerId || order?.phonePeCustomerId || null,
           subscriptionStatus: '1rs trial',

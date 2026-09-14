@@ -353,7 +353,12 @@ const DEFAULT_API_BASE = __DEV__
 const normalizeBaseUrl = url => String(url || "").replace(/\/+$/, "");
 const API_BASE = normalizeBaseUrl(process.env.EXPO_PUBLIC_API_BASE || DEFAULT_API_BASE);
 
-const SUBSCRIPTION_URL = "https://edunexmvp.netlify.app/payment";
+function showInAppSubscriptionNotice() {
+  Alert.alert(
+    "Subscription checkout",
+    "Test checkout is available only when the backend is running in simulated payment mode."
+  );
+}
 
 const LEGAL_APP_PAGES = {
   terms: {
@@ -1642,13 +1647,22 @@ function Badge({ label, color }) {
   );
 }
 
-function UpgradeModal({ visible, onClose }) {
+function UpgradeModal({ visible, onClose, onStartTrial, trialLoading = false }) {
   const FEATURES = [
     "Certificate of Completion",
     "Ad-free learning experience",
     "Offline downloads for on-the-go",
     "Exclusive AI workshops",
   ];
+  const handleStartTrial = () => {
+    onClose?.();
+    if (onStartTrial) {
+      requestAnimationFrame(onStartTrial);
+      return;
+    }
+    requestAnimationFrame(showInAppSubscriptionNotice);
+  };
+
   return (
     <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
       <View style={s.upgradeOverlay}>
@@ -1691,9 +1705,9 @@ function UpgradeModal({ visible, onClose }) {
               <View style={{ flexDirection: "row", alignItems: "flex-end", marginBottom: 4 }}>
                 <Text style={[s.upgradeCurrency, { color: C.text }]}>₹</Text>
                 <Text style={[s.upgradePrice, { color: C.primary }]}>1</Text>
-                <Text style={[s.upgradePricePeriod, { color: C.textSub }]}>  Trial for 7 Days</Text>
+                <Text style={[s.upgradePricePeriod, { color: C.textSub }]}>  First month</Text>
               </View>
-              <Text style={[s.upgradePriceNote, { color: C.textMuted }]}>Then ₹499/month. Cancel anytime before trial ends.</Text>
+              <Text style={[s.upgradePriceNote, { color: C.textMuted }]}>Then ₹499/month. Cancel anytime before renewal.</Text>
             </View>
 
             {/* Features */}
@@ -1706,16 +1720,22 @@ function UpgradeModal({ visible, onClose }) {
 
             {/* CTA */}
             <TouchableOpacity
-              style={[s.upgradeBtn, { backgroundColor: C.primary, shadowColor: C.primary }]}
+              style={[s.upgradeBtn, { backgroundColor: C.primary, shadowColor: C.primary }, trialLoading && { opacity: 0.72 }]}
               activeOpacity={0.85}
-              onPress={() => { onClose(); Linking.openURL(SUBSCRIPTION_URL); }}
-              accessibilityRole="link"
+              onPress={handleStartTrial}
+              disabled={trialLoading}
+              accessibilityRole="button"
               accessibilityLabel="Start ₹1 trial"
+              accessibilityState={{ busy: trialLoading, disabled: trialLoading }}
             >
-              <Text style={s.upgradeBtnText}>Start My ₹1 Trial  →</Text>
+              {trialLoading ? (
+                <ActivityIndicator color={C.onPrimary} size="small" />
+              ) : (
+                <Text style={s.upgradeBtnText}>Start My ₹1 Trial  →</Text>
+              )}
             </TouchableOpacity>
 
-            <Text style={{ color: C.textMuted, fontSize: 11, textAlign: "center", marginBottom: 4 }}>No commitment. Cancel anytime before trial ends.</Text>
+            <Text style={{ color: C.textMuted, fontSize: 11, textAlign: "center", marginBottom: 4 }}>No commitment. Cancel anytime before renewal.</Text>
 
             {/* Footer */}
             <View style={s.upgradeFooter}>
@@ -1905,6 +1925,7 @@ function VideoItem({ courseId, user, video: videoProp, videoId: videoIdProp, isA
   const isDraggingRef = useRef(false);
   const dragTargetRef = useRef(0);
   const initialSeekDoneRef = useRef(false);
+  const autoPlayTimersRef = useRef([]);
   const [isPlaying, setIsPlaying] = useState(true);
   const [isMuted, setIsMuted] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
@@ -1938,6 +1959,23 @@ function VideoItem({ courseId, user, video: videoProp, videoId: videoIdProp, isA
   const setNativeTime = useCallback((time) => runNativePlayer(player => { player.currentTime = time; }), [runNativePlayer]);
   const setNativeMuted = useCallback((muted) => runNativePlayer(player => { player.muted = muted; }), [runNativePlayer]);
   const setNativeRate = useCallback((rate) => runNativePlayer(player => { player.playbackRate = rate || 1; }), [runNativePlayer]);
+  const clearAutoPlayTimers = useCallback(() => {
+    autoPlayTimersRef.current.forEach(timer => clearTimeout(timer));
+    autoPlayTimersRef.current = [];
+  }, []);
+  const queueAutoPlay = useCallback(() => {
+    clearAutoPlayTimers();
+    if (!isActive) return;
+    setIsEnded(false);
+    setIsPlaying(true);
+    [0, 180, 500, 1000].forEach(delay => {
+      const timer = setTimeout(() => {
+        if (!playbackStateRef.current?.isActive) return;
+        sendCmd("playVideo");
+      }, delay);
+      autoPlayTimersRef.current.push(timer);
+    });
+  }, [clearAutoPlayTimers, isActive]);
   const html = useMemo(() => {
     let provider = "youtube";
     let originalMedia = video?.youtubeId || video?.videoId || "";
@@ -2006,7 +2044,10 @@ function VideoItem({ courseId, user, video: videoProp, videoId: videoIdProp, isA
         });
         const startAt = video.provider === 'aws_cloudfront' ? Math.max(cloudResume.current,finiteSeconds(initialTime,0)) : finiteSeconds(initialTime, 0);
         if (startAt > 0) setNativeTime(startAt);
-        if (latest.isActive && latest.isPlaying) playNativePlayer();
+        if (latest.isActive) {
+          setIsPlaying(true);
+          playNativePlayer();
+        }
       } catch (error) {
         if (!cancelled && video.provider === 'aws_cloudfront') setCloudError('Unable to play HLS. Check connectivity and retry.');
         if (!cancelled && canFallbackToEmbed) {
@@ -2050,7 +2091,10 @@ function VideoItem({ courseId, user, video: videoProp, videoId: videoIdProp, isA
       setCurrentTime(nextTime);
       setNativeTime(nextTime);
     }
-    if (isActive && isPlaying) playNativePlayer();
+    if (isActive) {
+      setIsPlaying(true);
+      playNativePlayer();
+    }
   });
 
   useEventListener(nativePlayer, "timeUpdate", ({ currentTime: nextTime }) => {
@@ -2131,9 +2175,14 @@ function VideoItem({ courseId, user, video: videoProp, videoId: videoIdProp, isA
   }
 
   useEffect(() => {
-    if (isActive) { sendCmd("playVideo"); setIsPlaying(true); }
-    else { sendCmd("pauseVideo"); setIsPlaying(false); }
-  }, [isActive, isNativeVideo, isBunny]);
+    if (isActive) {
+      queueAutoPlay();
+    } else {
+      clearAutoPlayTimers();
+      sendCmd("pauseVideo");
+      setIsPlaying(false);
+    }
+  }, [isActive, isNativeVideo, isBunny, queueAutoPlay, clearAutoPlayTimers]);
 
   useEffect(() => {
     if (!isNativeVideo) return;
@@ -2148,7 +2197,8 @@ function VideoItem({ courseId, user, video: videoProp, videoId: videoIdProp, isA
   useEffect(() => () => {
     const timer = tapInfoRef.current.timer;
     if (timer) clearTimeout(timer);
-  }, []);
+    clearAutoPlayTimers();
+  }, [clearAutoPlayTimers]);
 
   function markCompleteOnce() {
     if (completionSentRef.current) return;
@@ -2199,7 +2249,7 @@ function VideoItem({ courseId, user, video: videoProp, videoId: videoIdProp, isA
       if (d.type === "ready") {
         if (isActive) {
           if (initialTime > 0) sendCmd("seekTo", [initialTime, true]);
-          sendCmd("playVideo");
+          queueAutoPlay();
         } else {
           sendCmd("pauseVideo");
         }
@@ -2238,6 +2288,7 @@ function VideoItem({ courseId, user, video: videoProp, videoId: videoIdProp, isA
 
   function togglePlay() {
     const nowPlaying = !isPlaying;
+    if (isPlaying) clearAutoPlayTimers();
     sendCmd(isPlaying ? "pauseVideo" : "playVideo");
     setIsPlaying(nowPlaying);
   }
@@ -2264,6 +2315,7 @@ function VideoItem({ courseId, user, video: videoProp, videoId: videoIdProp, isA
     setCurrentTime(t);
     if (duration <= 0 || t < duration - 0.5) setIsEnded(false);
     sendCmd("seekTo", [t, true]);
+    if (isActive) queueAutoPlay();
   }
 
   function restart() {
@@ -2276,6 +2328,7 @@ function VideoItem({ courseId, user, video: videoProp, videoId: videoIdProp, isA
     seekGuardRef.current = { until: Date.now() + 3000, target: t };
     if (duration <= 0 || t < duration - 0.5) setIsEnded(false);
     setCurrentTime(t); sendCmd("seekTo", [t, true]);
+    if (isActive) queueAutoPlay();
     setSeekAnim(secs > 0 ? "right" : "left");
     setTimeout(() => setSeekAnim(null), 600);
   }
@@ -2323,7 +2376,7 @@ function VideoItem({ courseId, user, video: videoProp, videoId: videoIdProp, isA
           domStorageEnabled javaScriptEnabled
           mediaPlaybackRequiresUserAction={false}
           setSupportMultipleWindows={false}
-          onLoadEnd={() => { setTimeout(() => isActive ? sendCmd("playVideo") : sendCmd("pauseVideo"), 500); }}
+          onLoadEnd={() => { setTimeout(() => isActive ? queueAutoPlay() : sendCmd("pauseVideo"), 300); }}
           onMessage={handleMsg}
           originWhitelist={["*"]} thirdPartyCookiesEnabled
           source={{ html, baseUrl: PLAYER_ORIGIN }}
@@ -3690,7 +3743,7 @@ const homeStyles = StyleSheet.create({
 });
 
 // ── HomeScreen ────────────────────────────────────────────────────────────────
-function LegacyHomeScreenDraft({ user, onGoToCourses, onGoToAI, onGoToDownloads, onGoToProfile, onGoToSubscription, onSelectCourse, onResumeCourse, onOpenHeroPreview, courseProgress = {}, aiRobotId }) {
+function LegacyHomeScreenDraft({ user, onGoToCourses, onGoToAI, onGoToDownloads, onGoToProfile, onGoToSubscription, onStartTrial, trialLoading = false, onSelectCourse, onResumeCourse, onOpenHeroPreview, courseProgress = {}, aiRobotId }) {
   const hasAccess = hasCourseAccess(user);
   const [topCourses, setTopCourses] = useState([]);
   const [allCourses, setAllCourses] = useState([]);
@@ -4016,7 +4069,12 @@ function LegacyHomeScreenDraft({ user, onGoToCourses, onGoToAI, onGoToDownloads,
       </ScrollView>
 
       <BottomNav active="home" onHome={() => {}} onCourses={onGoToCourses} onAI={onGoToAI} onDownloads={onGoToDownloads} onProfile={onGoToProfile} aiRobotId={aiRobotId} />
-      <UpgradeModal visible={showUpgrade} onClose={() => setShowUpgrade(false)} />
+      <UpgradeModal
+        visible={showUpgrade}
+        onClose={() => setShowUpgrade(false)}
+        onStartTrial={onStartTrial || onGoToSubscription}
+        trialLoading={trialLoading}
+      />
       <NotificationPreviewModal
         visible={showNotifications}
         onClose={() => setShowNotifications(false)}
@@ -4059,6 +4117,8 @@ function HomeScreen({
   onGoToDownloads,
   onGoToProfile,
   onGoToSubscription,
+  onStartTrial,
+  trialLoading = false,
   onSelectCourse,
   onResumeCourse,
   onOpenLessonCollection,
@@ -4420,13 +4480,18 @@ function HomeScreen({
         onOpenAI={onGoToAI}
         onOpenSubscription={onGoToSubscription}
       />
-      <UpgradeModal visible={showUpgrade} onClose={() => setShowUpgrade(false)} />
+      <UpgradeModal
+        visible={showUpgrade}
+        onClose={() => setShowUpgrade(false)}
+        onStartTrial={onStartTrial || onGoToSubscription}
+        trialLoading={trialLoading}
+      />
     </View>
   );
 }
 
 // ── CourseListScreen ──────────────────────────────────────────────────────────
-function CourseListScreen({ onSelect, user, onGoToHome, onGoToAI, onGoToDownloads, onGoToProfile, wishlist = [], onToggleWishlist, courseProgress = {}, onRefreshProgress, aiRobotId }) {
+function CourseListScreen({ onSelect, user, onGoToHome, onGoToAI, onGoToDownloads, onGoToProfile, onGoToSubscription, onStartTrial, trialLoading = false, wishlist = [], onToggleWishlist, courseProgress = {}, onRefreshProgress, aiRobotId }) {
   const hasAccess = hasCourseAccess(user);
   const [showUpgrade, setShowUpgrade] = useState(false);
   const [courses, setCourses] = useState([]);
@@ -4655,13 +4720,18 @@ function CourseListScreen({ onSelect, user, onGoToHome, onGoToAI, onGoToDownload
       />
 
       <BottomNav active="courses" onHome={onGoToHome} onCourses={() => {}} onAI={onGoToAI} onDownloads={onGoToDownloads} onProfile={onGoToProfile} aiRobotId={aiRobotId} />
-      <UpgradeModal visible={showUpgrade} onClose={() => setShowUpgrade(false)} />
+      <UpgradeModal
+        visible={showUpgrade}
+        onClose={() => setShowUpgrade(false)}
+        onStartTrial={onStartTrial || onGoToSubscription}
+        trialLoading={trialLoading}
+      />
     </View>
   );
 }
 
 // ── WishlistScreen ────────────────────────────────────────────────────────────
-function WishlistScreen({ wishlist, onToggleWishlist, onSelect, onBack, user }) {
+function WishlistScreen({ wishlist, onToggleWishlist, onSelect, onBack, user, onGoToSubscription, onStartTrial, trialLoading = false }) {
   const hasAccess = hasCourseAccess(user);
   const [showUpgrade, setShowUpgrade] = useState(false);
   const [courses, setCourses] = useState([]);
@@ -4753,7 +4823,12 @@ function WishlistScreen({ wishlist, onToggleWishlist, onSelect, onBack, user }) 
           )}
         />
       )}
-      <UpgradeModal visible={showUpgrade} onClose={() => setShowUpgrade(false)} />
+      <UpgradeModal
+        visible={showUpgrade}
+        onClose={() => setShowUpgrade(false)}
+        onStartTrial={onStartTrial || onGoToSubscription}
+        trialLoading={trialLoading}
+      />
     </View>
   );
 }
@@ -4997,7 +5072,7 @@ function InfoPageScreen({ page, onBack }) {
   );
 }
 
-function SubscriptionDetailsScreen({ user, onBack }) {
+function SubscriptionDetailsScreen({ user, onBack, onStartTrial = showInAppSubscriptionNotice, trialLoading = false }) {
   const [loading, setLoading] = useState(true);
   const [subData, setSubData] = useState(null);
   const [error, setError] = useState(null);
@@ -5112,12 +5187,18 @@ function SubscriptionDetailsScreen({ user, onBack }) {
 
             {!isActive && (
               <TouchableOpacity
-                onPress={() => Linking.openURL(SUBSCRIPTION_URL)}
-                style={[s.btn, s.btnFill, { marginTop: 14 }]}
-                accessibilityRole="link"
+                onPress={onStartTrial}
+                style={[s.btn, s.btnFill, { marginTop: 14 }, trialLoading && { opacity: 0.72 }]}
+                disabled={trialLoading}
+                accessibilityRole="button"
                 accessibilityLabel="Upgrade subscription"
+                accessibilityState={{ busy: trialLoading, disabled: trialLoading }}
               >
-                <Text style={s.btnText}>Upgrade Now</Text>
+                {trialLoading ? (
+                  <ActivityIndicator color={C.onPrimary} size="small" />
+                ) : (
+                  <Text style={s.btnText}>Upgrade Now</Text>
+                )}
               </TouchableOpacity>
             )}
           </View>
@@ -6046,6 +6127,7 @@ export default function App() {
   const downloadStorageReady = useRef(null);
   const [aiRobotId, setAiRobotId] = useState(null);
   const [showAppUpgrade, setShowAppUpgrade] = useState(false);
+  const [testCheckoutLoading, setTestCheckoutLoading] = useState(false);
   const [courseAiTarget, setCourseAiTarget] = useState(null);
   const [wishlist, setWishlist] = useState([]);
   const [courseProgress, setCourseProgress] = useState({});
@@ -6126,6 +6208,123 @@ export default function App() {
 
   const userRef = useRef(null);
   useEffect(() => { userRef.current = user; }, [user]);
+
+  const refreshAuthSession = useCallback(async currentUser => {
+    if (!currentUser?.refreshToken) {
+      throw new Error("Your session expired. Please log in again.");
+    }
+
+    const refreshResponse = await fetch(`${API_BASE}/api/auth/refresh`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ refreshToken: currentUser.refreshToken }),
+    });
+    const refreshData = await readJsonResponse(refreshResponse);
+    if (!refreshResponse.ok) {
+      throw new Error(refreshData?.error || "Your session expired. Please log in again.");
+    }
+
+    const normalized = normalizeAuthUser(refreshData);
+    if (!normalized?.accessToken) {
+      throw new Error("Your session could not be refreshed. Please log in again.");
+    }
+
+    const refreshedUser = {
+      ...currentUser,
+      ...normalized,
+      accessToken: normalized.accessToken,
+      token: normalized.accessToken,
+      refreshToken: normalized.refreshToken || currentUser.refreshToken,
+      sessionId: normalized.sessionId || currentUser.sessionId,
+    };
+    await AsyncStorage.setItem("user", JSON.stringify(refreshedUser));
+    userRef.current = refreshedUser;
+    setUser(refreshedUser);
+    if (Array.isArray(refreshedUser.wishlist)) setWishlist(refreshedUser.wishlist);
+    return refreshedUser;
+  }, []);
+
+  const completeTestTrialCheckout = useCallback(async () => {
+    const currentUser = userRef.current;
+    if (!currentUser?._id || !currentUser?.sessionId) {
+      Alert.alert("Sign in required", "Please sign in before starting the ₹1 trial.");
+      return;
+    }
+    if (!currentUser.accessToken && !currentUser.refreshToken) {
+      Alert.alert("Session expired", "Please log in again before testing checkout.");
+      return;
+    }
+    if (testCheckoutLoading) return;
+
+    setTestCheckoutLoading(true);
+    try {
+      let paymentUser = currentUser.accessToken ? currentUser : await refreshAuthSession(currentUser);
+      const initiateTrial = async authUser => {
+        const response = await fetch(`${API_BASE}/api/payment/initiate-trial`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${authUser.accessToken}`,
+          },
+          body: JSON.stringify({
+            paymentType: "trial",
+            source: "mobile-test-gateway",
+            platform: Platform.OS,
+          }),
+        });
+        const data = await readJsonResponse(response);
+        return { response, data };
+      };
+
+      let { response: initiateResponse, data: initiateData } = await initiateTrial(paymentUser);
+      if (initiateResponse.status === 401 && paymentUser.refreshToken) {
+        paymentUser = await refreshAuthSession(paymentUser);
+        ({ response: initiateResponse, data: initiateData } = await initiateTrial(paymentUser));
+      }
+      if (!initiateResponse.ok) {
+        throw new Error(initiateData?.error || "Could not create the test payment.");
+      }
+
+      const merchantTransactionId = initiateData?.merchantTransactionId;
+      if (!merchantTransactionId) {
+        throw new Error("The test payment did not return a transaction ID.");
+      }
+
+      const completeResponse = await fetch(
+        `${API_BASE}/api/payment/simulate/complete?merchantTransactionId=${encodeURIComponent(merchantTransactionId)}&result=success`,
+        {
+          method: "POST",
+          headers: { Accept: "application/json" },
+        }
+      );
+      const completeData = await readJsonResponse(completeResponse);
+      if (!completeResponse.ok) {
+        throw new Error(completeData?.error || "The test payment could not be completed.");
+      }
+
+      await refreshUser(paymentUser._id, paymentUser, paymentUser.sessionId);
+      setShowAppUpgrade(false);
+      setSelectedCourse(null);
+      setMainScreen("courses");
+      Alert.alert("Test payment successful", "Your simulated ₹1 trial is active. Courses are unlocked for testing.");
+    } catch (error) {
+      Alert.alert("Test payment failed", error?.message || "Could not complete the simulated checkout.");
+    } finally {
+      setTestCheckoutLoading(false);
+    }
+  }, [refreshAuthSession, refreshUser, testCheckoutLoading]);
+
+  const runTestTrialCheckout = useCallback(() => {
+    if (testCheckoutLoading) return;
+    Alert.alert(
+      "Skillomate Test Gateway",
+      "This will simulate the ₹1 first-month trial payment and unlock course access for this signed-in account.",
+      [
+        { text: "Cancel", style: "cancel" },
+        { text: "Pay ₹1 (Test)", onPress: completeTestTrialCheckout },
+      ]
+    );
+  }, [completeTestTrialCheckout, testCheckoutLoading]);
 
   // Check independently of WebSocket support so a replaced login stops playback.
   useEffect(() => {
@@ -7324,9 +7523,17 @@ export default function App() {
           onGoToAI={() => setMainScreen("ai")}
           onGoToDownloads={() => { const ok = hasCourseAccess(user); if (!ok) { setShowAppUpgrade(true); } else { setMainScreen("downloads"); } }}
           onGoToProfile={() => setMainScreen("profile")}
+          onGoToSubscription={() => setMainScreen("subscription")}
+          onStartTrial={runTestTrialCheckout}
+          trialLoading={testCheckoutLoading}
           aiRobotId={aiRobotId}
         />
-        <UpgradeModal visible={showAppUpgrade} onClose={() => setShowAppUpgrade(false)} />
+        <UpgradeModal
+          visible={showAppUpgrade}
+          onClose={() => setShowAppUpgrade(false)}
+          onStartTrial={runTestTrialCheckout}
+          trialLoading={testCheckoutLoading}
+        />
       </>
     );
   }
@@ -7345,6 +7552,8 @@ export default function App() {
       <SubscriptionDetailsScreen
         user={user}
         onBack={() => setMainScreen("profile")}
+        onStartTrial={runTestTrialCheckout}
+        trialLoading={testCheckoutLoading}
       />
     );
   }
@@ -7384,6 +7593,9 @@ export default function App() {
         onSelect={c => openCourse(c)}
         onBack={() => setMainScreen("profile")}
         user={user}
+        onGoToSubscription={() => setMainScreen("subscription")}
+        onStartTrial={runTestTrialCheckout}
+        trialLoading={testCheckoutLoading}
       />
     );
   }
@@ -7415,7 +7627,12 @@ export default function App() {
           }}
           aiRobotId={aiRobotId}
         />
-        <UpgradeModal visible={showAppUpgrade} onClose={() => setShowAppUpgrade(false)} />
+        <UpgradeModal
+          visible={showAppUpgrade}
+          onClose={() => setShowAppUpgrade(false)}
+          onStartTrial={runTestTrialCheckout}
+          trialLoading={testCheckoutLoading}
+        />
       </>
     );
   }
@@ -7604,7 +7821,12 @@ export default function App() {
           onGoToProfile={() => setMainScreen("profile")}
           onRobotChange={id => setAiRobotId(id)}
         />
-        <UpgradeModal visible={showAppUpgrade} onClose={() => setShowAppUpgrade(false)} />
+        <UpgradeModal
+          visible={showAppUpgrade}
+          onClose={() => setShowAppUpgrade(false)}
+          onStartTrial={runTestTrialCheckout}
+          trialLoading={testCheckoutLoading}
+        />
       </>
     );
   }
@@ -7618,6 +7840,8 @@ export default function App() {
         onGoToDownloads={() => { const ok = hasCourseAccess(user); if (!ok) { setShowAppUpgrade(true); } else { setMainScreen("downloads"); } }}
         onGoToProfile={() => setMainScreen("profile")}
         onGoToSubscription={() => setMainScreen("subscription")}
+        onStartTrial={runTestTrialCheckout}
+        trialLoading={testCheckoutLoading}
         onSelectCourse={course => openCourse(course)}
         onResumeCourse={(course, idx, secs) => {
           openCourse(course, { startIndex: idx, initialTime: secs });
@@ -7628,7 +7852,12 @@ export default function App() {
         aiRobotId={aiRobotId}
       />
       <CertificateModal cert={certModal} onClose={() => setCertModal(null)} />
-      <UpgradeModal visible={showAppUpgrade} onClose={() => setShowAppUpgrade(false)} />
+      <UpgradeModal
+        visible={showAppUpgrade}
+        onClose={() => setShowAppUpgrade(false)}
+        onStartTrial={runTestTrialCheckout}
+        trialLoading={testCheckoutLoading}
+      />
     </View>
   );
 }
