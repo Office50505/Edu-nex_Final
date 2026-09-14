@@ -8,7 +8,18 @@ export function useLearningProgress(courseId, videoId, time, playing) {
     let disposed=false,busy=false,ready=false;
     const publish=status=>{
       if(disposed)return;
-      try { localStorage.setItem(progressCacheKey(courseId),JSON.stringify({percent:status.totalLessons?Math.floor(status.completedLessons/status.totalLessons*100):0,completed:status.completedLessons,lessonIndex:Math.max(0,status.lessons.findIndex(l=>!l.complete))})); } catch {}
+      try {
+        const key=progressCacheKey(courseId);
+        const previous=JSON.parse(localStorage.getItem(key)||"{}");
+        localStorage.setItem(key,JSON.stringify({
+          ...previous,
+          viewed:true,
+          lastViewedAt:new Date().toISOString(),
+          percent:status.totalLessons?Math.floor(status.completedLessons/status.totalLessons*100):0,
+          completed:status.completedLessons,
+          lessonIndex:Math.max(0,status.lessons.findIndex(l=>!l.complete))
+        }));
+      } catch {}
       window.dispatchEvent(new CustomEvent('learning-progress',{detail:status}));
     };
     window.EduNex.authRequest(`/api/learning/${courseId}`).then(status=>{

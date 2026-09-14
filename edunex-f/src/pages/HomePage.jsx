@@ -3,6 +3,7 @@ import { page as indexPage } from "../generated-pages/index.html.js";
 import { runLegacyPage } from "../legacyRuntime.js";
 import { usePageStyle } from "../hooks/usePageStyle.js";
 import { useEduNexRuntimeReady } from "../hooks/useEduNexRuntimeReady.js";
+import { progressCacheKey } from "../hooks/useLearningProgress.js";
 import { route } from "../lib/routes.js";
 
 const FALLBACK_COURSES = [
@@ -56,6 +57,16 @@ function lessonHref(course, lessonIndex = 0) {
   return id ? route(`videos.html?courseId=${encodeURIComponent(id)}&video=${index}`) : route("courses.html");
 }
 
+function carouselItemKey(item, fallbackIndex = 0) {
+  const courseKey = courseId(item?.course) || "course";
+  if (item?.type === "lesson") {
+    const videoKey = item.video?._id || item.video?.id || item.video?.videoUrl || item.video?.title || "lesson";
+    return `${courseKey}:lesson:${item.lessonIndex}:${videoKey}`;
+  }
+  if (item?.type === "path") return `path:${item.category || fallbackIndex}`;
+  return `${courseKey}:${item?.type || "item"}:${fallbackIndex}`;
+}
+
 function coursesArray(response) {
   if (Array.isArray(response)) return response;
   if (Array.isArray(response?.courses)) return response.courses;
@@ -103,20 +114,42 @@ function lessonCount(course) {
   return Array.isArray(course?.videos) ? course.videos.length : 0;
 }
 
+function readProgressRecord(courseId) {
+  if (!courseId || typeof window === "undefined") return {};
+  const keys = new Set([
+    progressCacheKey(courseId),
+    `edunexCourseProgress:${courseId}`,
+  ]);
+  try {
+    for (let index = 0; index < localStorage.length; index += 1) {
+      const key = localStorage.key(index);
+      if (key?.startsWith("edunexCourseProgress:") && (key === `edunexCourseProgress:${courseId}` || key.endsWith(`:${courseId}`))) {
+        keys.add(key);
+      }
+    }
+  } catch (_) {}
+
+  return Array.from(keys).reduce((best, key) => {
+    try {
+      const value = JSON.parse(localStorage.getItem(key) || "{}");
+      if (!value || typeof value !== "object") return best;
+      const bestTime = best?.lastViewedAt ? new Date(best.lastViewedAt).getTime() : 0;
+      const valueTime = value.lastViewedAt ? new Date(value.lastViewedAt).getTime() : 0;
+      if (!best || valueTime >= bestTime) return value;
+    } catch (_) {}
+    return best;
+  }, null) || {};
+}
+
 function progressFor(course) {
   const id = courseId(course);
-  let saved = {};
-  try {
-    saved = JSON.parse(localStorage.getItem(`edunexCourseProgress:${id}`) || "{}");
-  } catch (_) {
-    saved = {};
-  }
+  const saved = readProgressRecord(id);
   const total = Math.max(lessonCount(course), 1);
   const completed = Number(saved.completed || 0);
   const percent = Math.max(0, Math.min(100, Number(saved.percent ?? Math.round((completed / total) * 100))));
   const lessonIndex = Math.max(0, Math.min(Number(saved.lessonIndex || 0), total - 1));
-  const hasProgress = Boolean(saved.viewed || saved.lastViewedAt);
-  return { total, completed, percent, lessonIndex, hasProgress };
+  const hasProgress = Boolean(saved.viewed || saved.lastViewedAt || completed > 0 || percent > 0);
+  return { total, completed, percent, lessonIndex, hasProgress, lastViewedAt: saved.lastViewedAt || "" };
 }
 
 function instructorName(course) {
@@ -169,6 +202,12 @@ function lessonImage(course, video) {
 
 function durationLabel(course) {
   return course?.duration || (lessonCount(course) ? `${lessonCount(course)} lessons` : "Self paced");
+}
+
+function formatDuration(seconds) {
+  const value = Number(seconds || 0);
+  if (!value) return "Self paced";
+  return `${Math.max(1, Math.ceil(value / 60))} min`;
 }
 
 function ratingLabel(course) {
@@ -283,9 +322,17 @@ function itemsForTab(tab, courses) {
 }
 
 function repeatedItems(items, minimum = 7) {
-  if (!items.length) return { baseCount: 0, rows: [] };
-  const baseCount = Math.max(minimum, items.length);
-  const base = Array.from({ length: baseCount }, (_, index) => items[index % items.length]);
+  const uniqueItems = [];
+  const seen = new Set();
+  items.forEach((item, index) => {
+    const key = carouselItemKey(item, index);
+    if (seen.has(key)) return;
+    seen.add(key);
+    uniqueItems.push(item);
+  });
+  if (!uniqueItems.length) return { baseCount: 0, rows: [] };
+  const baseCount = Math.max(minimum, uniqueItems.length);
+  const base = Array.from({ length: baseCount }, (_, index) => uniqueItems[index % uniqueItems.length]);
   return {
     baseCount,
     rows: Array.from({ length: baseCount * 3 }, (_, index) => ({
@@ -303,41 +350,6 @@ function MaterialIcon({ children, className = "" }) {
 function preventNativeDrag(event) {
   event.preventDefault();
 }
-
-const lessonHighlights = [
-  {
-    title: "3 Tools Setup",
-    module: "Module 1 - Foundations",
-    duration: "72 min",
-    keywords: ["tools setup"],
-    fallbackIndex: 1,
-    fallbackImage: "/assets/about-philosophy.png",
-  },
-  {
-    title: "Create Your AI Face",
-    module: "Module 2 - Face & Prompts",
-    duration: "18 min",
-    keywords: ["ai influencer character", "ai face", "same face"],
-    fallbackIndex: 2,
-    fallbackImage: "/assets/female1.jpeg",
-  },
-  {
-    title: "Photo to Video",
-    module: "Module 4 - Video & Voice",
-    duration: "15 min",
-    keywords: ["turning photos into videos", "photo to video"],
-    fallbackIndex: 10,
-    fallbackImage: "/assets/female3.jpeg",
-  },
-  {
-    title: "Caption & Hashtags",
-    module: "Module 5 - Growth Strategy",
-    duration: "14 min",
-    keywords: ["captions & hashtags", "captions", "hashtags"],
-    fallbackIndex: 16,
-    fallbackImage: "/assets/image.png",
-  },
-];
 
 const skillCards = [
   ["photo_camera", "AI Images", "Create stunning visuals with AI", "6 lessons", "/assets/skill-ai-images.png"],
@@ -439,6 +451,25 @@ function relatedLessonThumbnail(course, target) {
   );
 }
 
+function activeProgressLessons(courses) {
+  return courses
+    .filter((course) => course && !course.isFallback)
+    .map((course) => {
+      const progress = progressFor(course);
+      const videos = Array.isArray(course.videos) ? course.videos : [];
+      const lessonIndex = Math.max(0, Math.min(progress.lessonIndex, Math.max(videos.length - 1, 0)));
+      return {
+        course,
+        progress,
+        video: videos[lessonIndex] || null,
+        lessonIndex,
+      };
+    })
+    .filter((item) => item.video && item.progress.hasProgress && item.progress.percent < 100)
+    .sort((a, b) => new Date(b.progress.lastViewedAt || 0).getTime() - new Date(a.progress.lastViewedAt || 0).getTime())
+    .slice(0, 4);
+}
+
 function handleProjectImageError(event, fallback) {
   const image = event.currentTarget;
   if (fallback && image.src !== new URL(fallback, window.location.origin).href) {
@@ -461,6 +492,7 @@ function handleCurriculumImageError(event, course, fallback = "/assets/female1.j
 
 function CurriculumShowcase({ courses, status, onOpenCourse }) {
   const course = courses.find((item) => !item.isFallback) || courses[0] || null;
+  const continueLessons = activeProgressLessons(courses);
   const courseHref = course ? courseDetailsHref(course) : route("courses.html");
   const courseTitle = course?.title || "AI Influencer Course";
   const courseImage = courseFallbackImage(course);
@@ -510,36 +542,44 @@ function CurriculumShowcase({ courses, status, onOpenCourse }) {
           {sectionAction("View My Course", courseHref)}
         </div>
         <div className="continue-learning-row">
-          {lessonHighlights.map((lesson) => {
-            const resolved = relatedLesson(course, lesson);
-            const title = resolved.video?.title || lesson.title;
+          {continueLessons.length ? continueLessons.map(({ course: lessonCourse, video, progress, lessonIndex }) => {
+            const title = video?.title || `Lesson ${lessonIndex + 1}`;
+            const href = lessonHref(lessonCourse, lessonIndex);
+            const duration = video?.duration ? formatDuration(video.duration) : durationLabel(lessonCourse);
+            const progressWidth = `${Math.max(8, Math.min(progress.percent || Math.round(((lessonIndex + 1) / Math.max(progress.total, 1)) * 100), 96))}%`;
             return (
             <article
               className="continue-lesson-card"
-              key={lesson.title}
+              key={`${courseId(lessonCourse)}-${video?._id || video?.id || lessonIndex}`}
               role="link"
               tabIndex={0}
-              onClick={() => openLesson(lesson)}
+              onClick={() => { window.location.href = href; }}
               onKeyDown={(event) => {
                 if (event.key !== "Enter" && event.key !== " ") return;
                 event.preventDefault();
-                openLesson(lesson);
+                window.location.href = href;
               }}
             >
-              <img src={relatedLessonThumbnail(course, lesson)} alt="" loading="lazy" decoding="async" onError={(event) => handleProjectImageError(event, lesson.fallbackImage)} />
+              <img src={lessonImage(lessonCourse, video)} alt="" loading="lazy" decoding="async" onError={(event) => handleCurriculumImageError(event, lessonCourse)} />
               <div>
-                <span>Lesson {resolved.index + 1}</span>
+                <span>Lesson {lessonIndex + 1}</span>
                 <strong>{title}</strong>
-                <small>{lesson.module}</small>
-                <div className="lesson-progress"><i style={{ width: `${28 + resolved.index % 5 * 8}%` }}></i><small><MaterialIcon>schedule</MaterialIcon>{lesson.duration}</small></div>
+                <small>{lessonCourse.title || "Skillomate course"}</small>
+                <div className="lesson-progress"><i style={{ width: progressWidth }}></i><small><MaterialIcon>schedule</MaterialIcon>{duration}</small></div>
               </div>
               <button type="button" aria-label={`Open ${title}`} onClick={(event) => {
                 event.stopPropagation();
-                openLesson(lesson);
+                window.location.href = href;
               }}><MaterialIcon>play_arrow</MaterialIcon></button>
             </article>
             );
-          })}
+          }) : (
+            <div className="continue-learning-empty">
+              <strong>No paused lessons yet</strong>
+              <p>Start watching a course video, then leave midway. Your real resume lesson will appear here.</p>
+              <a href={courseHref}>Open Course <MaterialIcon>arrow_forward</MaterialIcon></a>
+            </div>
+          )}
         </div>
 
         <div className="curriculum-section-head" id="explore-skills">
@@ -1420,7 +1460,7 @@ export function HomePage() {
                     onPath={openPath}
                     onSuppressibleClick={suppressibleClick}
                     onToggleWishlist={toggleWishlist}
-                    key={`${courseId(item.course)}-${item.type}-${index}`}
+                    key={`${carouselItemKey(item, index)}-${item.loopIndex ?? index}`}
                   />
                 ))}
               </div>

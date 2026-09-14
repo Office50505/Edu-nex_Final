@@ -4826,6 +4826,41 @@ html[data-theme="light"] .enx-footer .enx-footer-support a {
   cursor: pointer;
 }
 
+.react-page-root[data-page="index.html"] .continue-learning-empty {
+  grid-column: 1 / -1;
+  min-height: 96px;
+  display: grid;
+  align-content: center;
+  gap: 8px;
+  padding: 18px;
+  border: 1px dashed rgba(197, 139, 42, .42);
+  border-radius: 8px;
+  background: rgba(255, 253, 248, .72);
+  color: #7C7065;
+}
+
+.react-page-root[data-page="index.html"] .continue-learning-empty strong {
+  color: #211711;
+  font-size: .92rem;
+  font-weight: 900;
+}
+
+.react-page-root[data-page="index.html"] .continue-learning-empty p {
+  margin: 0;
+  max-width: 620px;
+  font-size: .82rem;
+}
+
+.react-page-root[data-page="index.html"] .continue-learning-empty a {
+  width: fit-content;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #A96F18;
+  font-size: .82rem;
+  font-weight: 900;
+}
+
 .react-page-root[data-page="index.html"] .skill-strip {
   grid-template-columns: repeat(6, minmax(0, 1fr));
 }
@@ -5182,6 +5217,16 @@ html:not([data-theme="light"]) .react-page-root[data-page="index.html"] :where(.
   border-color: rgba(197, 139, 42, .20);
   background: rgba(12, 10, 8, .86);
   box-shadow: 0 14px 32px rgba(0, 0, 0, .26), inset 0 1px 0 rgba(255, 255, 255, .04);
+}
+
+html:not([data-theme="light"]) .react-page-root[data-page="index.html"] .continue-learning-empty {
+  border-color: rgba(197, 139, 42, .30);
+  background: rgba(12, 10, 8, .74);
+  color: rgba(255, 248, 237, .68);
+}
+
+html:not([data-theme="light"]) .react-page-root[data-page="index.html"] .continue-learning-empty strong {
+  color: #FFF8ED;
 }
 
 html:not([data-theme="light"]) .react-page-root[data-page="index.html"] .curriculum-jump-nav {
