@@ -8,7 +8,17 @@ export async function courseRequest(url, options = {}) {
   let timedOut = false;
   const timer = setTimeout(() => { timedOut = true; cancel(); }, timeoutMs);
   try {
-    const response = await fetch(url, { ...init, signal: controller.signal });
+    let response = await fetch(url, { ...init, signal: controller.signal });
+    if (response.status === 401 && new Headers(init.headers).has('Authorization')) {
+      const refresh = window.EduNex?.refreshAccessToken;
+      if (!refresh) throw new Error('Session refresh is not ready. Please retry.');
+      const token = await refresh();
+      if (token) {
+        const headers = new Headers(init.headers);
+        headers.set('Authorization', `Bearer ${token}`);
+        response = await fetch(url, {...init, headers, signal: controller.signal});
+      }
+    }
     const data = await response.json();
     return { response, data };
   } catch (error) {

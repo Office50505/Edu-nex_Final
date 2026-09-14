@@ -799,34 +799,17 @@ function isLocalThumbnailUrl(value) {
   return /^\/uploads\/course-thumbnails\/[a-f0-9]{24}-(?:horizontal|vertical)\.(?:jpg|png|webp)$/i.test(String(value || ''));
 }
 
-function localThumbnailFileExists(value) {
-  if (!isLocalThumbnailUrl(value)) return false;
-  const filename = path.basename(String(value));
-  return fs.existsSync(path.join(COURSE_THUMBNAIL_UPLOAD_DIR, filename));
-}
-
-function storedThumbnailUrl(courseId, orientation = 'horizontal') {
-  const id = String(courseId || '');
-  if (!/^[a-f0-9]{24}$/i.test(id)) return null;
-
-  const orientations = orientation === 'vertical'
-    ? ['vertical', 'horizontal']
-    : ['horizontal', 'vertical'];
-  const extensions = ['webp', 'png', 'jpg'];
-
-  for (const currentOrientation of orientations) {
-    for (const extension of extensions) {
-      const filename = `${id}-${currentOrientation}.${extension}`;
-      if (fs.existsSync(path.join(COURSE_THUMBNAIL_UPLOAD_DIR, filename))) {
-        return `/uploads/course-thumbnails/${filename}`;
-      }
+async function saveThumbnailUpload(courseId, orientation, image) {
+  try {
+    const thumbnailCdn = require('./services/thumbnailCdn');
+    if (typeof thumbnailCdn.uploadThumbnail === 'function') {
+      const cdnUrl = await thumbnailCdn.uploadThumbnail(courseId, orientation, image);
+      if (cdnUrl) return cdnUrl;
     }
+  } catch (error) {
+    // Fall back to local storage when the CDN service is unavailable.
   }
 
-  return null;
-}
-
-function saveThumbnailUpload(courseId, orientation, image) {
   if (!hasStoredThumbnail(image) || !image.data) return null;
 
   const normalizedOrientation = orientation === 'vertical' ? 'vertical' : 'horizontal';
@@ -835,6 +818,7 @@ function saveThumbnailUpload(courseId, orientation, image) {
   fs.mkdirSync(COURSE_THUMBNAIL_UPLOAD_DIR, { recursive: true });
   fs.writeFileSync(path.join(COURSE_THUMBNAIL_UPLOAD_DIR, filename), Buffer.from(image.data, 'base64'));
   return `/uploads/course-thumbnails/${filename}`;
+}
 }
 
 function publicCourseThumbnailUrl(course, orientation = 'horizontal') {
@@ -2754,8 +2738,8 @@ app.post('/api/courses', protectAdmin, async (req, res) => {
     );
     const embeddedVerticalThumbnail = parseThumbnailDataUrl(req.body.thumbnailVerticalDataUrl, 'Vertical thumbnail');
     const courseId = new mongoose.Types.ObjectId();
-    const savedHorizontalThumbnailUrl = saveThumbnailUpload(courseId, 'horizontal', embeddedHorizontalThumbnail);
-    const savedVerticalThumbnailUrl = saveThumbnailUpload(courseId, 'vertical', embeddedVerticalThumbnail);
+    const savedHorizontalThumbnailUrl = await saveThumbnailUpload(courseId, 'horizontal', embeddedHorizontalThumbnail);
+    const savedVerticalThumbnailUrl = await saveThumbnailUpload(courseId, 'vertical', embeddedVerticalThumbnail);
     const courseThumbnailUrl = savedHorizontalThumbnailUrl
       || (embeddedHorizontalThumbnail ? null : sanitizeOptionalUrl(req.body.thumbnailUrl || req.body.thumbnailHorizontalUrl));
     const courseThumbnailVerticalUrl = savedVerticalThumbnailUrl
@@ -2766,9 +2750,9 @@ app.post('/api/courses', protectAdmin, async (req, res) => {
       title: req.body.title,
       slug: req.body.slug,
       description: req.body.description,
-      thumbnail: embeddedHorizontalThumbnail,
-      thumbnailHorizontal: embeddedHorizontalThumbnail,
-      thumbnailVertical: embeddedVerticalThumbnail,
+      thumbnail: null,
+      thumbnailHorizontal: null,
+      thumbnailVertical: null,
       thumbnailUrl: courseThumbnailUrl,
       thumbnailVerticalUrl: courseThumbnailVerticalUrl,
       videos: applyCourseThumbnailToVideos(sanitizedVideos, embeddedHorizontalThumbnail, courseThumbnailUrl, courseThumbnailVerticalUrl),
@@ -2895,17 +2879,17 @@ app.patch('/api/admin/courses/:id', protectAdmin, async (req, res) => {
         'Horizontal thumbnail'
       );
       if (embeddedHorizontalThumbnail) {
-        updates.thumbnail = embeddedHorizontalThumbnail;
-        updates.thumbnailHorizontal = embeddedHorizontalThumbnail;
-        updates.thumbnailUrl = saveThumbnailUpload(req.params.id, 'horizontal', embeddedHorizontalThumbnail);
+        updates.thumbnail = null;
+        updates.thumbnailHorizontal = null;
+        updates.thumbnailUrl = await saveThumbnailUpload(req.params.id, 'horizontal', embeddedHorizontalThumbnail);
       }
     }
 
     if (Object.prototype.hasOwnProperty.call(req.body, 'thumbnailVerticalDataUrl')) {
       const embeddedVerticalThumbnail = parseThumbnailDataUrl(req.body.thumbnailVerticalDataUrl, 'Vertical thumbnail');
       if (embeddedVerticalThumbnail) {
-        updates.thumbnailVertical = embeddedVerticalThumbnail;
-        updates.thumbnailVerticalUrl = saveThumbnailUpload(req.params.id, 'vertical', embeddedVerticalThumbnail);
+        updates.thumbnailVertical = null;
+        updates.thumbnailVerticalUrl = await saveThumbnailUpload(req.params.id, 'vertical', embeddedVerticalThumbnail);
       }
     }
 

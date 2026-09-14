@@ -876,7 +876,10 @@ router.post('/refresh', async (req, res) => {
       user: toAuthUser(user),
     });
   } catch (error) {
-    res.status(401).json({ error: 'Invalid refresh token' });
+    if (['JsonWebTokenError', 'TokenExpiredError', 'NotBeforeError'].includes(error.name)) {
+      return res.status(401).json({ error: 'Invalid refresh token' });
+    }
+    res.status(503).json({ error: 'Session refresh temporarily unavailable. Please retry.' });
   }
 });
 
