@@ -370,47 +370,30 @@ const modules = [
   ["07", "rocket_launch", "Monetization & Scaling", "4 lessons"],
 ];
 
-const watchedLessons = [
-  { title: "Create Your AI Face", module: "Module 2 - Lesson 7", views: "12.4K", duration: "12:34", keywords: ["ai influencer character", "ai face"], fallbackIndex: 2, fallbackImage: "/assets/female1.jpeg" },
-  { title: "Virtual Fashion Photoshoot", module: "Module 3 - Lesson 11", views: "9.8K", duration: "10:21", keywords: ["fashion try-on", "virtual fashion", "fashion"], fallbackIndex: 22, fallbackImage: "/assets/female3.jpeg" },
-  { title: "Photo to Video (Kling AI)", module: "Module 4 - Lesson 12", views: "8.1K", duration: "08:45", keywords: ["turning photos into videos", "photo to video"], fallbackIndex: 10, fallbackImage: "/assets/female6.jpeg" },
-  { title: "Caption & Hashtags Strategy", module: "Module 5 - Lesson 18", views: "7.6K", duration: "11:20", keywords: ["captions & hashtags", "hashtags"], fallbackIndex: 16, fallbackImage: "/assets/image.png" },
-  { title: "Get Your First Brand Deal", module: "Module 6 - Lesson 24", views: "6.9K", duration: "09:18", keywords: ["first client", "brand deal", "reaching out to brands"], fallbackIndex: 23, fallbackImage: "/assets/female2.jpeg" },
-  { title: "Make Money with AI Content", module: "Module 7 - Lesson 32", views: "6.3K", duration: "13:06", keywords: ["affiliate marketing", "digital product", "monetization"], fallbackIndex: 30, fallbackImage: "/assets/about-philosophy.png" },
-];
-
-const projects = [
+const projectBlueprints = [
   {
     title: "AI Influencer Profile",
     copy: "Create a complete AI influencer with consistent look & style",
-    count: "4 lessons",
-    keywords: ["ai influencer character", "ai influencer", "ai face", "same face", "profile"],
+    keywords: ["creating your ai influencer character", "ai influencer character", "same face", "professional profile setup", "profile"],
     fallbackIndex: 2,
-    fallbackImage: "/assets/female1.jpeg",
   },
   {
     title: "UGC Portfolio",
     copy: "Build a portfolio of UGC content for brand outreach",
-    count: "4 lessons",
-    keywords: ["ugc portfolio", "first ugc", "ugc", "portfolio"],
+    keywords: ["building your ugc portfolio", "understanding ugc", "first ugc", "ugc portfolio", "ugc"],
     fallbackIndex: 26,
-    fallbackImage: "/assets/skill-ugc.png",
   },
   {
     title: "Virtual Fashion Shoot",
     copy: "Create a full fashion photoshoot with AI models",
-    count: "5 lessons",
-    keywords: ["fashion try-on", "virtual fashion", "fashion photoshoot", "fashion"],
+    keywords: ["fashion try-on", "different outfit styles", "virtual fashion", "fashion"],
     fallbackIndex: 22,
-    fallbackImage: "/assets/female6.jpeg",
   },
   {
     title: "Brand Outreach System",
     copy: "Learn how to find, pitch and work with real brands",
-    count: "5 lessons",
-    keywords: ["reaching out to brands", "working with brands", "brand deal", "brand outreach", "first client", "client"],
+    keywords: ["reaching out to brands", "getting your first client", "closing the deal", "working with brands", "brand"],
     fallbackIndex: 27,
-    fallbackImage: "/assets/skill-client-work.png",
   },
 ];
 
@@ -451,6 +434,33 @@ function relatedLessonThumbnail(course, target) {
   );
 }
 
+function videosMatchingKeywords(course, keywords = []) {
+  const videos = Array.isArray(course?.videos) ? course.videos : [];
+  const normalizedKeywords = keywords.map((keyword) => String(keyword || "").toLowerCase()).filter(Boolean);
+  if (!normalizedKeywords.length) return [];
+  return videos
+    .map((video, index) => ({ video, index, title: String(video?.title || "").toLowerCase() }))
+    .filter((item) => normalizedKeywords.some((keyword) => item.title.includes(keyword)));
+}
+
+function projectItemsFromCourse(course) {
+  if (!course || course.isFallback) return [];
+  const videos = Array.isArray(course.videos) ? course.videos : [];
+  return projectBlueprints.map((project) => {
+    const matches = videosMatchingKeywords(course, project.keywords);
+    const fallbackIndex = Math.max(0, Math.min(Number(project.fallbackIndex) || 0, Math.max(videos.length - 1, 0)));
+    const primary = matches[0] || (videos[fallbackIndex] ? { video: videos[fallbackIndex], index: fallbackIndex } : null);
+    if (!primary?.video) return null;
+    return {
+      ...project,
+      course,
+      video: primary.video,
+      lessonIndex: primary.index,
+      count: `${Math.max(matches.length || 1, 1)} ${matches.length === 1 ? "lesson" : "lessons"}`,
+    };
+  }).filter(Boolean);
+}
+
 function activeProgressLessons(courses) {
   return courses
     .filter((course) => course && !course.isFallback)
@@ -468,6 +478,17 @@ function activeProgressLessons(courses) {
     .filter((item) => item.video && item.progress.hasProgress && item.progress.percent < 100)
     .sort((a, b) => new Date(b.progress.lastViewedAt || 0).getTime() - new Date(a.progress.lastViewedAt || 0).getTime())
     .slice(0, 4);
+}
+
+function watchedLectureItems(course, limit = 12) {
+  const videos = Array.isArray(course?.videos) ? course.videos : [];
+  return videos.slice(0, limit).map((video, index) => ({
+    course,
+    video,
+    lessonIndex: index,
+    title: video?.title || `Lesson ${index + 1}`,
+    duration: video?.duration ? formatDuration(video.duration) : "Lecture",
+  }));
 }
 
 function handleProjectImageError(event, fallback) {
@@ -493,6 +514,8 @@ function handleCurriculumImageError(event, course, fallback = "/assets/female1.j
 function CurriculumShowcase({ courses, status, onOpenCourse }) {
   const course = courses.find((item) => !item.isFallback) || courses[0] || null;
   const continueLessons = activeProgressLessons(courses);
+  const projectItems = projectItemsFromCourse(course);
+  const watchedItems = watchedLectureItems(course);
   const courseHref = course ? courseDetailsHref(course) : route("courses.html");
   const courseTitle = course?.title || "AI Influencer Course";
   const courseImage = courseFallbackImage(course);
@@ -621,26 +644,30 @@ function CurriculumShowcase({ courses, status, onOpenCourse }) {
         <div className="curriculum-section-head" id="popular-lessons">
           <div>
             <h2>Most Watched Lessons</h2>
-            <p>A complete learning path from beginner to pro.</p>
+            <p>{course?.title ? `Lectures from ${course.title}.` : "Lectures from your uploaded course."}</p>
           </div>
           {sectionAction("View All Lessons", courseHref)}
         </div>
         <div className="watched-grid">
-          {watchedLessons.map((watched) => {
-            const resolved = relatedLesson(course, watched);
-            const title = resolved.video?.title || watched.title;
+          {watchedItems.length ? watchedItems.map((item) => {
+            const href = lessonHref(item.course, item.lessonIndex);
             return (
-            <button className="watched-card" type="button" key={watched.title} onClick={() => openLesson(watched)}>
+            <button className="watched-card" type="button" key={item.video?._id || `${item.title}-${item.lessonIndex}`} onClick={() => { window.location.href = href; }}>
               <div className="watched-media">
-                <img src={relatedLessonThumbnail(course, watched)} alt="" loading="lazy" decoding="async" onError={(event) => handleProjectImageError(event, watched.fallbackImage)} />
-                <span>{watched.duration}</span>
+                <img src={lessonImage(item.course, item.video)} alt="" loading="lazy" decoding="async" onError={(event) => handleCurriculumImageError(event, item.course)} />
+                <span>{item.duration}</span>
               </div>
-              <strong>{title}</strong>
-              <small>{watched.module}</small>
-              <em><MaterialIcon>visibility</MaterialIcon>{watched.views}</em>
+              <strong>{item.title}</strong>
+              <small>Lecture {item.lessonIndex + 1} of {lessonCount(item.course)}</small>
+              <em><MaterialIcon>play_circle</MaterialIcon>Open lecture</em>
             </button>
             );
-          })}
+          }) : (
+            <div className="watched-empty">
+              <strong>No lectures published yet</strong>
+              <p>Upload course videos and this section will show real lectures automatically.</p>
+            </div>
+          )}
         </div>
 
         <div className="curriculum-section-head" id="projects">
@@ -651,13 +678,25 @@ function CurriculumShowcase({ courses, status, onOpenCourse }) {
           {sectionAction("View All Projects")}
         </div>
         <div className="project-grid">
-          {projects.map((project) => (
-            <button className="project-card" type="button" key={project.title} onClick={() => openLesson(project)}>
-              <img src={relatedLessonThumbnail(course, project)} alt="" loading="lazy" decoding="async" onError={(event) => handleProjectImageError(event, project.fallbackImage)} />
-              <div><strong>{project.title}</strong><p>{project.copy}</p><small><MaterialIcon>assignment</MaterialIcon>{project.count}</small></div>
+          {projectItems.length ? projectItems.map((project) => {
+            const href = lessonHref(project.course, project.lessonIndex);
+            return (
+            <button className="project-card" type="button" key={`${project.title}-${project.lessonIndex}`} onClick={() => { window.location.href = href; }}>
+              <img src={lessonImage(project.course, project.video)} alt="" loading="lazy" decoding="async" onError={(event) => handleCurriculumImageError(event, project.course)} />
+              <div>
+                <strong>{project.title}</strong>
+                <p>{project.copy}</p>
+                <small><MaterialIcon>assignment</MaterialIcon>{project.count} · starts at Lesson {project.lessonIndex + 1}</small>
+              </div>
               <MaterialIcon>arrow_forward</MaterialIcon>
             </button>
-          ))}
+            );
+          }) : (
+            <div className="project-empty">
+              <strong>Projects will appear from your uploaded lessons</strong>
+              <p>Add or publish course videos with project-focused titles to build this section automatically.</p>
+            </div>
+          )}
         </div>
 
         <h2 className="curriculum-standalone-heading">Your Learning Journey</h2>

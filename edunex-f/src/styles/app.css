@@ -4943,7 +4943,7 @@ html[data-theme="light"] .enx-footer .enx-footer-support a {
 }
 
 .react-page-root[data-page="index.html"] .watched-grid {
-  grid-template-columns: repeat(6, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
 .react-page-root[data-page="index.html"] .watched-card {
@@ -4959,7 +4959,7 @@ html[data-theme="light"] .enx-footer .enx-footer-support a {
 
 .react-page-root[data-page="index.html"] .watched-media {
   position: relative;
-  aspect-ratio: 16 / 7.1;
+  aspect-ratio: 16 / 9;
   margin-bottom: 8px;
   overflow: hidden;
   border-radius: 7px;
@@ -4988,6 +4988,30 @@ html[data-theme="light"] .enx-footer .enx-footer-support a {
   margin-top: 4px;
   color: #7C7065;
   font-size: .72rem;
+}
+
+.react-page-root[data-page="index.html"] .watched-empty {
+  grid-column: 1 / -1;
+  min-height: 96px;
+  display: grid;
+  align-content: center;
+  gap: 8px;
+  padding: 18px;
+  border: 1px dashed rgba(197, 139, 42, .42);
+  border-radius: 8px;
+  background: rgba(255, 253, 248, .72);
+  color: #7C7065;
+}
+
+.react-page-root[data-page="index.html"] .watched-empty strong {
+  color: #211711;
+  font-size: .92rem;
+  font-weight: 900;
+}
+
+.react-page-root[data-page="index.html"] .watched-empty p {
+  margin: 0;
+  font-size: .82rem;
 }
 
 .react-page-root[data-page="index.html"] .project-grid {
@@ -5021,6 +5045,30 @@ html[data-theme="light"] .enx-footer .enx-footer-support a {
 
 .react-page-root[data-page="index.html"] .project-card > .material-symbols-outlined {
   color: #A96F18;
+}
+
+.react-page-root[data-page="index.html"] .project-empty {
+  grid-column: 1 / -1;
+  min-height: 96px;
+  display: grid;
+  align-content: center;
+  gap: 8px;
+  padding: 18px;
+  border: 1px dashed rgba(197, 139, 42, .42);
+  border-radius: 8px;
+  background: rgba(255, 253, 248, .72);
+  color: #7C7065;
+}
+
+.react-page-root[data-page="index.html"] .project-empty strong {
+  color: #211711;
+  font-size: .92rem;
+  font-weight: 900;
+}
+
+.react-page-root[data-page="index.html"] .project-empty p {
+  margin: 0;
+  font-size: .82rem;
 }
 
 .react-page-root[data-page="index.html"] .curriculum-standalone-heading {
@@ -5226,6 +5274,26 @@ html:not([data-theme="light"]) .react-page-root[data-page="index.html"] .continu
 }
 
 html:not([data-theme="light"]) .react-page-root[data-page="index.html"] .continue-learning-empty strong {
+  color: #FFF8ED;
+}
+
+html:not([data-theme="light"]) .react-page-root[data-page="index.html"] .project-empty {
+  border-color: rgba(197, 139, 42, .30);
+  background: rgba(12, 10, 8, .74);
+  color: rgba(255, 248, 237, .68);
+}
+
+html:not([data-theme="light"]) .react-page-root[data-page="index.html"] .project-empty strong {
+  color: #FFF8ED;
+}
+
+html:not([data-theme="light"]) .react-page-root[data-page="index.html"] .watched-empty {
+  border-color: rgba(197, 139, 42, .30);
+  background: rgba(12, 10, 8, .74);
+  color: rgba(255, 248, 237, .68);
+}
+
+html:not([data-theme="light"]) .react-page-root[data-page="index.html"] .watched-empty strong {
   color: #FFF8ED;
 }
 
@@ -6206,6 +6274,224 @@ html[data-theme="light"] :where(.navbar .enx-icon, .premium-site-nav .enx-icon, 
   .enx-mobile-top-search-field {
     padding-inline: 8px !important;
     gap: 5px !important;
+  }
+}
+
+/* Responsive alignment pass: keep dense learning surfaces readable and prevent
+   card/media overflow across the production breakpoints. */
+html,
+body {
+  max-width: 100%;
+  overflow-x: clip;
+}
+
+.react-page-root {
+  max-width: 100%;
+  overflow-x: clip;
+}
+
+.react-page-root :where(img, video, canvas, svg) {
+  max-width: 100%;
+}
+
+.react-page-root :where(.container, .learning-hero, .hero-carousel-shell, .curriculum-shell, .curriculum-section-head > div, .footer-top, .sp-footer-top) {
+  min-width: 0;
+}
+
+.react-page-root[data-page="index.html"] :where(.continue-lesson-card, .skill-tile, .module-chip, .watched-card, .project-card, .tool-pill, .journey-step, .curriculum-overview) {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.react-page-root[data-page="index.html"] :where(.continue-lesson-card strong, .continue-lesson-card small, .skill-tile strong, .skill-tile p, .skill-tile small, .module-chip strong, .module-chip small, .watched-card strong, .watched-card small, .watched-card em, .project-card strong, .project-card p, .project-card small, .tool-pill strong, .tool-pill small, .journey-step strong, .journey-step small) {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.react-page-root[data-page="index.html"] :where(.watched-card strong, .project-card strong, .skill-tile strong, .continue-lesson-card strong) {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.react-page-root[data-page="index.html"] :where(.project-card p, .skill-tile p) {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.react-page-root[data-page="index.html"] .curriculum-section-action {
+  flex: 0 0 auto;
+}
+
+.react-page-root[data-page="index.html"] .hero-carousel-shell {
+  max-width: 100%;
+}
+
+.react-page-root[data-page="index.html"] .hero-carousel-viewport {
+  max-width: 100%;
+}
+
+@media (max-width: 1120px) {
+  .react-page-root[data-page="index.html"] .continue-learning-row,
+  .react-page-root[data-page="index.html"] .project-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .react-page-root[data-page="index.html"] .skill-strip,
+  .react-page-root[data-page="index.html"] .watched-grid,
+  .react-page-root[data-page="index.html"] .tool-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .react-page-root[data-page="index.html"] .module-strip,
+  .react-page-root[data-page="index.html"] .journey-strip {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  .react-page-root[data-page="index.html"] .curriculum-shell {
+    width: 100%;
+  }
+
+  .react-page-root[data-page="index.html"] .curriculum-section-head {
+    align-items: stretch !important;
+  }
+
+  .react-page-root[data-page="index.html"] .curriculum-section-action {
+    width: fit-content;
+    max-width: 100%;
+    white-space: normal;
+  }
+
+  .react-page-root[data-page="index.html"] :where(.continue-learning-row, .skill-strip, .module-strip, .watched-grid, .project-grid, .tool-grid, .journey-strip) {
+    grid-auto-flow: row !important;
+    grid-auto-columns: initial !important;
+    grid-template-columns: 1fr !important;
+    overflow-x: visible !important;
+    padding-bottom: 0 !important;
+    scroll-snap-type: none !important;
+  }
+
+  .react-page-root[data-page="index.html"] :where(.continue-lesson-card, .skill-tile, .project-card) {
+    width: 100% !important;
+    grid-template-columns: 86px minmax(0, 1fr) 34px !important;
+  }
+
+  .react-page-root[data-page="index.html"] .skill-tile {
+    grid-template-columns: 38px minmax(0, 1fr) 74px !important;
+  }
+
+  .react-page-root[data-page="index.html"] .module-chip {
+    grid-template-columns: 38px 24px minmax(0, 1fr) 18px !important;
+  }
+
+  .react-page-root[data-page="index.html"] :where(.continue-lesson-card > img, .project-card img) {
+    width: 86px !important;
+    height: 64px !important;
+  }
+
+  .react-page-root[data-page="index.html"] .skill-tile img {
+    width: 74px !important;
+    height: 64px !important;
+  }
+
+  .react-page-root[data-page="index.html"] .watched-card {
+    min-width: 0 !important;
+    width: 100% !important;
+  }
+
+  .react-page-root[data-page="index.html"] .watched-media {
+    margin-bottom: 9px;
+  }
+
+  .react-page-root[data-page="index.html"] .curriculum-overview {
+    grid-template-columns: 64px minmax(0, 1fr) !important;
+    gap: 12px !important;
+  }
+
+  .react-page-root[data-page="index.html"] .curriculum-overview > img {
+    width: 64px !important;
+    height: 64px !important;
+  }
+
+  .react-page-root[data-page="index.html"] .curriculum-overview-stats {
+    width: 100%;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    padding: 0;
+  }
+
+  .react-page-root[data-page="index.html"] .curriculum-cta {
+    gap: 14px;
+  }
+
+  .react-page-root[data-page="courses.html"] .course-card-actions,
+  .react-page-root[data-page="profile.html"] .pf-prefs-inner {
+    grid-template-columns: 1fr !important;
+  }
+
+  .react-page-root[data-page="courses.html"] .course-card-actions :where(a, button),
+  .react-page-root[data-page="pricing.html"] :where(a, button) {
+    max-width: 100%;
+    white-space: normal;
+  }
+}
+
+@media (max-width: 430px) {
+  .react-page-root[data-page="index.html"] .curriculum-home {
+    padding-inline: 12px !important;
+  }
+
+  .react-page-root[data-page="index.html"] .curriculum-section-head h2,
+  .react-page-root[data-page="index.html"] .curriculum-standalone-heading {
+    font-size: clamp(1.28rem, 8vw, 1.72rem) !important;
+  }
+
+  .react-page-root[data-page="index.html"] :where(.continue-lesson-card, .project-card) {
+    grid-template-columns: 72px minmax(0, 1fr) 32px !important;
+    gap: 10px !important;
+    padding: 8px !important;
+  }
+
+  .react-page-root[data-page="index.html"] :where(.continue-lesson-card > img, .project-card img) {
+    width: 72px !important;
+    height: 54px !important;
+  }
+
+  .react-page-root[data-page="index.html"] .skill-tile {
+    grid-template-columns: 34px minmax(0, 1fr) 64px !important;
+    gap: 9px !important;
+  }
+
+  .react-page-root[data-page="index.html"] .skill-tile img {
+    width: 64px !important;
+    height: 56px !important;
+  }
+
+  .react-page-root[data-page="index.html"] .module-chip,
+  .react-page-root[data-page="index.html"] .journey-step,
+  .react-page-root[data-page="index.html"] .tool-pill {
+    padding-inline: 9px !important;
+  }
+
+  .react-page-root[data-page="index.html"] .curriculum-cta-pills {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+  }
+
+  .react-page-root[data-page="index.html"] .curriculum-cta-pills span {
+    justify-content: center;
+  }
+
+  .react-page-root[data-page="index.html"] .hero-carousel-control-prev {
+    left: 8px !important;
+  }
+
+  .react-page-root[data-page="index.html"] .hero-carousel-control-next {
+    right: 8px !important;
   }
 }
 
