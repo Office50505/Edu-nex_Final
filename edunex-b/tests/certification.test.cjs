@@ -47,17 +47,25 @@ test('criteria changes create a new version while cosmetic title changes do not'
  assert.notEqual(identity('user','course',one.version),identity('other','course',one.version));
 });
 const vm=require('node:vm'),fs=require('node:fs'),path=require('node:path');
-function harness(){
+function harness(options={}){
  const stored=new Map();
  const course={_id:'course',title:'Course',status:'published',videos:[{_id:'a',duration:100}]};
  const query=value=>({lean:async()=>value});
- const models={Course:{findOne:()=>({select:projection=>{assert.equal(projection,'-thumbnail -thumbnailHorizontal -thumbnailVertical -videos.thumbnail');return query(course);}})},CertificationPolicy:{findById:()=>query(null)},LearningProgress:{find:()=>query([])},AssessmentResult:{findById:()=>query(null)},Subscription:{findOne:()=>query({status:'active',currentPeriodEnd:new Date(Date.now()+60000)})},Certificate:{findOneAndUpdate:({_id},update)=>{const key=String(_id);if(!stored.has(key))stored.set(key,{_id:key,...update.$setOnInsert});return query(stored.get(key));}}};
+ const subscription=Object.prototype.hasOwnProperty.call(options,'subscription') ? options.subscription : {status:'active',currentPeriodEnd:new Date(Date.now()+60000)};
+ const models={Course:{findOne:()=>({select:projection=>{assert.equal(projection,'-thumbnail -thumbnailHorizontal -thumbnailVertical -videos.thumbnail');return query(course);}})},CertificationPolicy:{findById:()=>query(null)},LearningProgress:{find:()=>query([])},AssessmentResult:{findById:()=>query(null)},Subscription:{findOne:()=>query(subscription)},Certificate:{findOneAndUpdate:({_id},update)=>{const key=String(_id);if(!stored.has(key))stored.set(key,{_id:key,...update.$setOnInsert});return query(stored.get(key));}}};
  const sandbox={module:{exports:{}},require(name){if(name==='node:crypto')return require('node:crypto');if(name==='mongoose')return{Types:{ObjectId:class{constructor(id){this.id=id;}toString(){return this.id;}static isValid(){return true;}}}};if(name.includes('completionRules'))return rules;return models[name.split('/').at(-1)]||{};}};
  vm.runInNewContext(fs.readFileSync(path.join(__dirname,'../services/certificationService.js'),'utf8'),sandbox);
  return{api:sandbox.module.exports,stored,course};
 }
 test('completion endpoint cannot bypass evidence',async()=>{
  const {api}=harness();await assert.rejects(api.completeVideo({user:{_id:'u',...user},courseId:'course',videoId:'a'}),e=>e.statusCode===409);
+});
+test('entitlement check honors mobile-compatible user access when subscription row is absent',async()=>{
+ const {api}=harness({subscription:null});
+ await api.access({_id:'u',subscriptionStatus:'subscribed'});
+ await api.access({_id:'u',subscriptionStatus:'active',subscriptionExpiry:new Date(Date.now()+60000)});
+ await assert.rejects(api.access({_id:'u',subscriptionStatus:'active',subscriptionExpiry:new Date(Date.now()-60000)}),e=>e.statusCode===403);
+ await assert.rejects(api.access({_id:'u',subscriptionStatus:'none'}),e=>e.statusCode===403);
 });
 test('repeated issuance shares a deterministic primary key and never restores revoked records',async()=>{
  const {api,stored,course}=harness();const ctx={course,version:'v1'},status={eligible:true,totalLessons:1,assessmentRequired:false};

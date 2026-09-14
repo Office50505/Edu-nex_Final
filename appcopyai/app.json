@@ -14,7 +14,7 @@
     ],
     "android": {
       "package": "com.skillomate.app",
-      "versionCode": 2,
+      "versionCode": 3,
       "blockedPermissions": [
         "android.permission.READ_MEDIA_IMAGES",
         "android.permission.READ_MEDIA_VIDEO",

@@ -18,10 +18,22 @@ async function context(user, courseId) {
   const policy = await Policy.findById(String(courseId)).lean();
   return { course, ...rules.manifest(course,policy) };
 }
+function futureDate(value, allowMissing=false) {
+  if(!value)return allowMissing;
+  const time=new Date(value).getTime();
+  return Number.isFinite(time) && time>Date.now();
+}
 async function access(user) {
   const sub=await Subscription.findOne({user:user._id}).lean();
-  const date=['trial','1rs trial'].includes(sub?.status) ? sub.trialExpiresAt : ['active','subscribed','cancelled'].includes(sub?.status) ? sub.currentPeriodEnd : null;
-  if(!date || !Number.isFinite(new Date(date).getTime()) || new Date(date)<=new Date()) throw fail('An active learning entitlement is required.',403);
+  const status=String(sub?.status || user?.subscriptionStatus || 'none').toLowerCase();
+  const fallbackExpiry=user?.subscriptionExpiry || null;
+  const date=['trial','1rs trial'].includes(status)
+    ? (sub?.trialExpiresAt || fallbackExpiry)
+    : ['active','subscribed','cancelled'].includes(status)
+      ? (sub?.currentPeriodEnd || fallbackExpiry)
+      : null;
+  const allowMissing=!sub && ['trial','1rs trial','active','subscribed'].includes(status);
+  if(!futureDate(date,allowMissing)) throw fail('An active learning entitlement is required.',403);
 }
 async function state(user, ctx) {
   const userId=String(user._id), courseId=String(ctx.course._id);
