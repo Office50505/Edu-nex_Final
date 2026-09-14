@@ -57,7 +57,7 @@ function readableDuration(course) {
 
 function priceLabel(course) {
   const value = Number(course?.price || 0);
-  return value > 1 ? `₹${value.toLocaleString("en-IN")}` : "₹1 Trial";
+  return value > 1 ? `₹${value.toLocaleString("en-IN")}` : "₹1 first month";
 }
 
 function originalPrice(course) {
@@ -225,7 +225,7 @@ export function CourseDetailsPage() {
   const title = course.title || "Untitled course";
   const videos = Array.isArray(course.videos) ? course.videos : [];
   const progress = progressFor(id);
-  const primaryLabel = state.accessActive ? (progress.hasProgress ? "Continue Learning" : "Start Course") : "Start ₹1 Trial";
+  const primaryLabel = state.accessActive ? (progress.hasProgress ? "Continue Learning" : "Start Course") : "Start ₹1 First Month";
   const maybeOriginal = originalPrice(course);
 
   return (

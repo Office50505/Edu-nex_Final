@@ -131,10 +131,10 @@ export function DashboardPage() {
       <div className={`trial-gate${allowed === false ? " is-open" : ""}`} id="trialGate" role="dialog" aria-modal="true" aria-labelledby="trialGateTitle">
         <div className="trial-gate-card">
           <div className="trial-gate-icon"><i className="fas fa-bolt" aria-hidden="true"></i></div>
-          <div className="trial-gate-title" id="trialGateTitle">Start your 1 rs trial right now</div>
-          <p>Your dashboard unlocks after you start the trial or subscribe. Get instant access to your courses, videos, progress, and AI tutor.</p>
+          <div className="trial-gate-title" id="trialGateTitle">Start your first month for ₹1</div>
+          <p>Your dashboard unlocks after you subscribe. After the introductory month, access renews at ₹499/month until cancelled.</p>
           <div className="trial-gate-actions">
-            <a className="trial-gate-btn" href="payment.html"><i className="fas fa-arrow-right" aria-hidden="true"></i> Start 1 rs Trial</a>
+            <a className="trial-gate-btn" href="payment.html"><i className="fas fa-arrow-right" aria-hidden="true"></i> Start ₹1 First Month</a>
             <a className="trial-gate-btn secondary" href="courses.html">Browse Courses</a>
           </div>
         </div>

@@ -181,7 +181,7 @@ function learnerLabel(course) {
 }
 
 function priceLabel(course) {
-  return course?.price && Number(course.price) > 1 ? `₹${Number(course.price).toLocaleString("en-IN")}` : "₹1 Trial";
+  return course?.price && Number(course.price) > 1 ? `₹${Number(course.price).toLocaleString("en-IN")}` : "₹1 first month";
 }
 
 function groupedCategories(courses) {
@@ -630,8 +630,8 @@ function CurriculumShowcase({ courses, status, onOpenCourse }) {
         <div className="curriculum-cta">
           <div>
             <span><MaterialIcon>auto_awesome</MaterialIcon> Limited Time Offer</span>
-            <h2>Unlock Full Access for Just ₹1 Trial</h2>
-            <p>Get 7 days of unlimited access to the complete course, projects, and future updates.</p>
+            <h2>Unlock Your First Month for ₹1</h2>
+            <p>Then continue at ₹499/month until cancelled. Digital access is added to your Skillomate account.</p>
           </div>
           <div className="curriculum-cta-pills">
             <small><MaterialIcon>video_library</MaterialIcon>{totalLessons} video lessons</small>
@@ -639,7 +639,7 @@ function CurriculumShowcase({ courses, status, onOpenCourse }) {
             <small><MaterialIcon>workspace_premium</MaterialIcon>Certificate</small>
             <small><MaterialIcon>schedule</MaterialIcon>Learn at your pace</small>
           </div>
-          <a href={route("payment.html")}>Start Your ₹1 Trial <MaterialIcon>arrow_forward</MaterialIcon></a>
+          <a href={route("payment.html")}>Start ₹1 First Month <MaterialIcon>arrow_forward</MaterialIcon></a>
         </div>
         {status === "loading" ? <p className="curriculum-status">Loading your live course catalog...</p> : null}
       </div>
@@ -1435,7 +1435,7 @@ export function HomePage() {
               Explore Courses
               <MaterialIcon className="text-[19px]">arrow_forward</MaterialIcon>
             </a>
-            <a href="payment.html" className="hero-cta-secondary">Start ₹1 Trial</a>
+            <a href="payment.html" className="hero-cta-secondary">Start ₹1 First Month</a>
           </div>
 
           <div className="hero-search-block">

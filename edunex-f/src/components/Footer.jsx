@@ -20,16 +20,26 @@ const accountLinks = [
 ];
 
 const companyLinks = [
-  ["About", route("about.html")],
-  ["Support", route("help.html")],
-  ["Contact", "mailto:support@skillomate.in"],
+  ["About Skillomate", route("about.html")],
+  ["Contact Us", route("contact.html")],
+];
+
+const supportLinks = [
+  ["Help & Support", route("help.html")],
+  ["Account Deletion", route("account-deletion.html")],
 ];
 
 const legalLinks = [
-  ["Delete account", "/delete-account"],
-  ["Terms", route("terms.html")],
-  ["Privacy", route("privacy.html")],
-  ["Help", route("help.html")],
+  ["Privacy Policy", route("privacy.html")],
+  ["Terms & Conditions", route("terms.html")],
+  ["Refund & Cancellation", route("refund-policy.html")],
+  ["Subscription & Billing", route("subscription-policy.html")],
+  ["Digital Delivery & Shipping", route("shipping-policy.html")],
+  ["Cookie Policy", route("cookie-policy.html")],
+];
+
+const pricingLinks = [
+  ["Pricing", route("pricing.html")],
 ];
 
 const appDownloadLinks = [
@@ -42,7 +52,7 @@ const appDownloadLinks = [
   {
     label: "Google Play",
     detail: "Get it on",
-    href: "https://play.google.com/store/apps/details?id=com.skillomate.app",
+    href: "https://play.google.com/store/search?q=Skillomate&c=apps",
     icon: "playStore",
   },
 ];
@@ -95,10 +105,10 @@ export function Footer() {
             <div className="enx-footer-cta">
               <div className="enx-footer-heading">Need Help?</div>
               <p>Use your dashboard to continue enrolled courses, open notes from lessons, or contact support if access does not look right.</p>
-              <a href={route("payment.html")}>Start ₹1 Trial <EnxIcon name="arrowRight" /></a>
+              <a href={route("pricing.html")}>See Pricing <EnxIcon name="arrowRight" /></a>
               <div className="enx-footer-support">
                 <a href="mailto:support@skillomate.in"><EnxIcon name="mail" /> support@skillomate.in</a>
-                <a href={route("about.html")}><EnxIcon name="info" /> About Skillomate</a>
+                <a href={route("contact.html")}><EnxIcon name="info" /> Contact Skillomate</a>
               </div>
             </div>
           </div>
@@ -107,7 +117,9 @@ export function Footer() {
           <LinkList title="Access" links={platformLinks} />
           <LinkList title="Account" links={accountLinks} />
           <LinkList title="Company" links={companyLinks} />
+          <LinkList title="Support" links={supportLinks} />
           <LinkList title="Legal" links={legalLinks} />
+          <LinkList title="Pricing" links={pricingLinks} />
           <AppDownloadColumn />
 
         </div>
@@ -118,6 +130,7 @@ export function Footer() {
             <a href={route("login.html")}>Login</a>
             <a href={route("terms.html")}>Terms</a>
             <a href={route("privacy.html")}>Privacy</a>
+            <a href={route("contact.html")}>Contact</a>
           </div>
         </div>
       </div>

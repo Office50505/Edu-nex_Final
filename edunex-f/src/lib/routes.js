@@ -3,10 +3,13 @@ const cleanRoutes = {
   "index.html": "/",
   "home-based.html": "/home-based",
   "about.html": "/about",
+  "account-deletion.html": "/account-deletion",
   "ai-tutor.html": "/ai-tutor",
   "certificates.html": "/certificates",
+  "contact.html": "/contact",
   "course.html": "/course",
   "courses.html": "/courses",
+  "cookie-policy.html": "/cookie-policy",
   "dashboard.html": "/dashboard",
   "edit-profile.html": "/edit-profile",
   "help.html": "/help",
@@ -14,9 +17,13 @@ const cleanRoutes = {
   "login.html": "/login",
   "otp.html": "/otp",
   "payment.html": "/payment",
-  "privacy.html": "/privacy-policy",
+  "pricing.html": "/pricing",
+  "privacy.html": "/privacy",
   "profile.html": "/profile",
+  "refund-policy.html": "/refund-policy",
+  "shipping-policy.html": "/shipping-policy",
   "signup.html": "/signup",
+  "subscription-policy.html": "/subscription-policy",
   "terms.html": "/terms",
   "videos.html": "/videos",
   "wishlist.html": "/wishlist",
@@ -41,6 +48,7 @@ const routeAliases = Object.fromEntries(
 routeAliases[""] = "index.html";
 routeAliases.home = "index.html";
 routeAliases["privacy-policy"] = "privacy.html";
+routeAliases["delete-account"] = "delete-account.html";
 routeAliases.support = "help.html";
 
 function splitRoute(value) {

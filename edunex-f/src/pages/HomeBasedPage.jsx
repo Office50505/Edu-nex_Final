@@ -168,13 +168,13 @@ export function HomeBasedPage() {
             <div className="reveal">
               <div className="section-tag"><i className="fas fa-lightbulb" aria-hidden="true"></i> Our Approach</div>
               <h2 style={{ marginTop: 14 }}>Our AI <span className="gradient-text">Philosophy</span></h2>
-              <p style={{ margin: "14px 0 8px", fontSize: "1rem" }}>We believe AI education should be accessible, practical, and immediately applicable to earning real income. Not theoretical — transformational.</p>
+              <p style={{ margin: "14px 0 8px", fontSize: "1rem" }}>We believe AI education should be accessible, practical, and useful for real projects. Skillomate focuses on learning support, practice, and steady progress.</p>
               <div className="philosophy-list">
                 {[
-                  ["01", "Learn by Doing", "Every lesson ends with a real project or deliverable you can use to earn money immediately — not just theory."],
-                  ["02", "AI-Accelerated Learning", "Our NEX AI tutor adapts to your pace, answers your questions instantly, and helps you master concepts 3× faster."],
-                  ["03", "Community-Powered Growth", "You're never alone. Our community of 50K+ students shares wins, opportunities, and support around the clock."],
-                  ["04", "Results or Refund", "We're so confident in our curriculum that we offer a 30-day money-back guarantee if you don't see real progress."],
+                  ["01", "Learn by Doing", "Lessons focus on practical exercises and projects that help you apply new concepts."],
+                  ["02", "AI-Assisted Learning", "NEX AI can answer questions, explain concepts, and support your course journey."],
+                  ["03", "Structured Progress", "Track lessons, course progress, certificates, and saved learning activity in your account."],
+                  ["04", "Support When Needed", "Contact Skillomate support for account, access, billing, or technical questions."],
                 ].map(([num, title, copy]) => (
                   <div className="philo-item" key={num}>
                     <div className="philo-num">{num}</div>
@@ -233,14 +233,14 @@ export function HomeBasedPage() {
           <h2 className="reveal">Ready to Master the<br /><span className="gradient-text">AI Economy?</span></h2>
           <p className="reveal reveal-delay-1">The best time to learn AI was 2 years ago. The second best time is right now. Don't wait any longer.</p>
           <div className="cta-badge-row reveal reveal-delay-2">
-            <span className="badge badge-teal"><i className="fas fa-check" aria-hidden="true"></i> 30-day money-back guarantee</span>
-            <span className="badge badge-green"><i className="fas fa-check" aria-hidden="true"></i> Start earning in 30 days</span>
-            <span className="badge badge-purple"><i className="fas fa-check" aria-hidden="true"></i> Lifetime access included</span>
+            <span className="badge badge-teal"><i className="fas fa-check" aria-hidden="true"></i> Digital course access</span>
+            <span className="badge badge-green"><i className="fas fa-check" aria-hidden="true"></i> Learn at your pace</span>
+            <span className="badge badge-purple"><i className="fas fa-check" aria-hidden="true"></i> Cancel anytime</span>
           </div>
           <div className="reveal reveal-delay-3">
-            <a href="login.html" className="btn btn-primary btn-xl">GET STARTED FOR $1 <i className="fas fa-arrow-right" aria-hidden="true"></i></a>
+            <a href="login.html" className="btn btn-primary btn-xl">START FIRST MONTH FOR ₹1 <i className="fas fa-arrow-right" aria-hidden="true"></i></a>
           </div>
-          <p className="reveal" style={{ marginTop: 14, fontSize: ".82rem", color: "var(--text-muted)" }}>Join 50,000+ students already on their AI income journey</p>
+          <p className="reveal" style={{ marginTop: 14, fontSize: ".82rem", color: "var(--text-muted)" }}>Then ₹499/month until cancelled. Results depend on your effort and circumstances.</p>
         </div>
       </section>
     </div>

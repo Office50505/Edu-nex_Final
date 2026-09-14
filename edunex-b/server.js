@@ -799,6 +799,25 @@ function isLocalThumbnailUrl(value) {
   return /^\/uploads\/course-thumbnails\/[a-f0-9]{24}-(?:horizontal|vertical)\.(?:jpg|png|webp)$/i.test(String(value || ''));
 }
 
+function localThumbnailFileExists(value) {
+  if (!isLocalThumbnailUrl(value)) return false;
+  return fs.existsSync(path.join(COURSE_THUMBNAIL_UPLOAD_DIR, path.basename(value)));
+}
+
+function storedThumbnailUrl(courseId, orientation = 'horizontal') {
+  const id = String(courseId || '');
+  if (!/^[a-f0-9]{24}$/i.test(id)) return null;
+
+  const normalizedOrientation = orientation === 'vertical' ? 'vertical' : 'horizontal';
+  for (const extension of ['webp', 'png', 'jpg']) {
+    const filename = `${id}-${normalizedOrientation}.${extension}`;
+    if (fs.existsSync(path.join(COURSE_THUMBNAIL_UPLOAD_DIR, filename))) {
+      return `/uploads/course-thumbnails/${filename}`;
+    }
+  }
+  return null;
+}
+
 async function saveThumbnailUpload(courseId, orientation, image) {
   try {
     const thumbnailCdn = require('./services/thumbnailCdn');
@@ -818,7 +837,6 @@ async function saveThumbnailUpload(courseId, orientation, image) {
   fs.mkdirSync(COURSE_THUMBNAIL_UPLOAD_DIR, { recursive: true });
   fs.writeFileSync(path.join(COURSE_THUMBNAIL_UPLOAD_DIR, filename), Buffer.from(image.data, 'base64'));
   return `/uploads/course-thumbnails/${filename}`;
-}
 }
 
 function publicCourseThumbnailUrl(course, orientation = 'horizontal') {

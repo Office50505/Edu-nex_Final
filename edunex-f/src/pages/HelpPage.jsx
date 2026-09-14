@@ -1,79 +1,92 @@
 import { useEffect } from "react";
-import { page as helpPage } from "../generated-pages/help.html.js";
+import { CheckList, LegalLayout, LegalSection } from "../components/legal/LegalLayout.jsx";
+import { SUPPORT_EMAIL, businessInfo, setPageMeta } from "../lib/siteMeta.js";
+import { route } from "../lib/routes.js";
 import { EnxIcon } from "../components/EnxIcon.jsx";
-import { usePageStyle } from "../hooks/usePageStyle.js";
 
-const cards = [
+const supportSections = [
   {
-    icon: "key",
-    title: "Login Or Profile",
-    copy: <>If your login, OTP, avatar, or profile details do not sync, log out and sign in again. Then open <a href="profile.html">Profile</a>.</>,
+    id: "getting-started",
+    icon: "user",
+    title: "Getting Started",
+    items: ["Creating an account", "Phone OTP issues", "Updating profile details and avatar"],
   },
   {
-    icon: "video",
-    title: "Course Videos",
-    copy: <>Video access requires an active trial or subscription. Open <a href="courses.html">Courses</a>, then choose View Course.</>,
-  },
-  {
+    id: "subscriptions",
     icon: "receipt",
+    title: "Subscriptions",
+    items: ["₹1 first month", "₹499/month renewal", "Automatic mandate", "Cancelling subscription"],
+  },
+  {
+    id: "payments",
+    icon: "key",
     title: "Payments",
-    copy: "After payment, continue on web to return to courses. Subscription status can be checked from the Profile page.",
+    items: ["Payment successful but access missing", "Payment pending", "Billing questions"],
   },
   {
-    icon: "heart",
-    title: "Wishlist",
-    copy: "Tap the heart on a course card to save it. Logged-in accounts sync wishlist data when the backend is available.",
+    id: "courses",
+    icon: "bookOpen",
+    title: "Courses",
+    items: ["Accessing lessons", "Tracking progress", "Downloads", "Certificates"],
   },
   {
-    icon: "sparkles",
-    title: "Nex AI",
-    copy: "Use Nex AI inside the video player for summaries, study plans, project ideas, and lesson explanations.",
+    id: "account",
+    icon: "dashboard",
+    title: "Account",
+    items: ["Updating profile", "Managing wishlist", "Deleting account"],
   },
   {
-    icon: "mail",
-    title: "Contact",
-    copy: <>Email support at <a href="mailto:support@skillomate.in">support@skillomate.in</a> with your mobile number and issue details.</>,
+    id: "technical",
+    icon: "video",
+    title: "Technical Support",
+    items: ["Video playback", "App issues", "Notifications", "Download issues"],
   },
 ];
 
-export function HelpPage() {
-  usePageStyle("react-page-style-help", `${helpPage.styles}
-    .help-card-icon { color: var(--cyan); margin-bottom: 14px; display: inline-flex; font-size: 1.05rem; }
-    html[data-theme="light"] body { background:#FAF7F1 !important; color:#332820 !important; }
-    html[data-theme="light"] .help-page { color:#332820 !important; }
-    html[data-theme="light"] .help-page h1,
-    html[data-theme="light"] .help-page h2 { color:#2B211A !important; }
-    html[data-theme="light"] .help-page .help-intro,
-    html[data-theme="light"] .help-page p { color:#756A60 !important; }
-    html[data-theme="light"] .help-page .help-card {
-      background:#FFFDF8 !important;
-      border-color:#E2D6C6 !important;
-      box-shadow:0 14px 38px rgba(88,65,34,.08) !important;
-    }
-    html[data-theme="light"] .help-page a,
-    html[data-theme="light"] .help-page .help-kicker,
-    html[data-theme="light"] .help-page .help-card-icon { color:#C58B2A !important; }
-  `);
+function SupportCard({ section }) {
+  return (
+    <article className="support-card">
+      <span aria-hidden="true"><EnxIcon name={section.icon} /></span>
+      <h3>{section.title}</h3>
+      <ul className="legal-plain-list">
+        {section.items.map((item) => <li key={item}>{item}</li>)}
+      </ul>
+    </article>
+  );
+}
 
+export function HelpPage() {
   useEffect(() => {
-    document.title = "Help Center - Skillomate AI";
-    document.documentElement.lang = "en";
+    setPageMeta({
+      title: "Help & Support | Skillomate",
+      description: "Skillomate Help Center for accounts, OTP, subscriptions, payments, courses, certificates, downloads and technical support.",
+      canonicalPath: "/help",
+    });
   }, []);
 
   return (
-    <main className="help-page">
-      <div className="help-kicker">Help Center</div>
-      <h1>How can we help?</h1>
-      <p className="help-intro">Use these help paths for account access, videos, payments, courses, and profile issues.</p>
-      <section className="help-grid">
-        {cards.map((card) => (
-          <article className="help-card" key={card.title}>
-            <span className="help-card-icon" aria-hidden="true"><EnxIcon name={card.icon} /></span>
-            <h2>{card.title}</h2>
-            <p>{card.copy}</p>
-          </article>
-        ))}
-      </section>
-    </main>
+    <LegalLayout
+      title="Help & Support"
+      description="Find help for accounts, subscriptions, payments, courses, certificates, downloads and technical issues."
+      updated={false}
+      actions={<a className="legal-button" href={`mailto:${SUPPORT_EMAIL}`}>Contact support <EnxIcon name="mail" /></a>}
+      sections={supportSections.map(({ id, title }) => ({ id, title }))}
+    >
+      <LegalSection id="overview" title="How support works">
+        <p>Email <a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a> with your registered phone number and a short description of the issue. Do not send passwords, OTPs, full card details or UPI PINs.</p>
+        <CheckList items={[`Support hours: ${businessInfo.supportHours}`, `Typical response: ${businessInfo.responseTime}`, "Market: India only", "Currency: INR"]} />
+      </LegalSection>
+      <div className="support-grid">
+        {supportSections.map((section) => <SupportCard section={section} key={section.id} />)}
+      </div>
+      <LegalSection id="fast-links" title="Helpful links">
+        <div className="legal-link-cards">
+          <a href={route("pricing.html")}><span>Pricing</span><EnxIcon name="arrowRight" /></a>
+          <a href={route("subscription-policy.html")}><span>Subscription policy</span><EnxIcon name="arrowRight" /></a>
+          <a href={route("refund-policy.html")}><span>Refund policy</span><EnxIcon name="arrowRight" /></a>
+          <a href={route("account-deletion.html")}><span>Account deletion</span><EnxIcon name="arrowRight" /></a>
+        </div>
+      </LegalSection>
+    </LegalLayout>
   );
 }

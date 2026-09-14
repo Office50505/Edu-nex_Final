@@ -5,7 +5,6 @@ import { runLegacyPage } from "../legacyRuntime.js";
 import { usePageStyle } from "../hooks/usePageStyle.js";
 import { useEduNexRuntimeReady } from "../hooks/useEduNexRuntimeReady.js";
 
-const APP_DEEP_LINK_BASE = "com.skillomate.app://payment-success";
 const CHECKOUT_COURSE_CACHE_TTL = 10 * 60 * 1000;
 const CHECKOUT_COURSE_CACHE_MAX_BYTES = 2 * 1024 * 1024;
 
@@ -33,42 +32,6 @@ async function safeJsonResponse(response) {
 
 function buildWebContinueLink() {
   return "/courses.html";
-}
-
-function buildAppDeepLink(merchantTransactionId) {
-  if (!APP_DEEP_LINK_BASE || !merchantTransactionId) return "";
-  const separator = APP_DEEP_LINK_BASE.includes("?") ? "&" : "?";
-  return `${APP_DEEP_LINK_BASE}${separator}merchantTransactionId=${encodeURIComponent(merchantTransactionId)}`;
-}
-
-function openAppWithWebFallback(appLink, webLink) {
-  if (!appLink) {
-    window.location.href = webLink;
-    return;
-  }
-
-  let didLeave = false;
-  const markLeft = () => {
-    didLeave = true;
-  };
-  const onVisibilityChange = () => {
-    if (document.hidden) markLeft();
-  };
-  const cleanup = () => {
-    document.removeEventListener("visibilitychange", onVisibilityChange);
-    window.removeEventListener("pagehide", markLeft);
-    window.removeEventListener("blur", markLeft);
-  };
-
-  document.addEventListener("visibilitychange", onVisibilityChange);
-  window.addEventListener("pagehide", markLeft, { once: true });
-  window.addEventListener("blur", markLeft, { once: true });
-  window.location.href = appLink;
-
-  window.setTimeout(() => {
-    cleanup();
-    if (!didLeave) window.location.href = webLink;
-  }, 1400);
 }
 
 function markLocalCourseAccess() {
@@ -220,8 +183,6 @@ export function PaymentPage() {
   const runtimeReady = useEduNexRuntimeReady();
   const query = params();
   const courseId = query.get("courseId");
-  const merchantTransactionId = query.get("merchantTransactionId");
-  const paymentStatus = query.get("payment") || query.get("status");
   const checkoutCourseCacheKey = `edunexCheckoutCourse:${courseId || "featured"}`;
   const [course, setCourse] = useState(() => readCachedCheckoutCourse(checkoutCourseCacheKey));
   const [trialEligible, setTrialEligible] = useState(true);
@@ -270,22 +231,18 @@ export function PaymentPage() {
     };
   }, [modalOpen]);
 
-  const appLink = buildAppDeepLink(merchantTransactionId);
   const webLink = buildWebContinueLink();
 
   const configureAppOpenButton = useCallback((targetCourse = course) => {
     const courseWatch = targetCourse?._id ? `/videos.html?courseId=${encodeURIComponent(targetCourse._id)}&video=0` : webLink;
-    if (appLink) {
-      setWatchHref(appLink);
-      setWatchText("Open Skillomate App");
-    } else if (courseId || targetCourse?._id) {
+    if (courseId || targetCourse?._id) {
       setWatchHref(courseWatch);
       setWatchText("Continue on Web");
     } else {
       setWatchHref(webLink);
       setWatchText("Open Video Library");
     }
-  }, [appLink, course, courseId, webLink]);
+  }, [course, courseId, webLink]);
 
   const refreshAccessToken = useCallback(async () => {
     const sessionStore = localStorage.getItem("edunexAccessToken") ? localStorage : sessionStorage;
@@ -392,7 +349,7 @@ export function PaymentPage() {
     return () => {
       cancelled = true;
     };
-  }, [authFetch, configureAppOpenButton, merchantTransactionId, paymentStatus, runtimeReady]);
+  }, [authFetch, configureAppOpenButton, runtimeReady]);
 
   const initiatePayment = async () => {
     if (busyRef.current || !pricing || !trialEligible) return;
@@ -450,7 +407,7 @@ export function PaymentPage() {
 
   const payButtonText = submitting
     ? "Redirecting to payment…"
-    : `Start ${rupees(pricing?.trialAmountPaise)} Trial`;
+    : `Start ${rupees(pricing?.trialAmountPaise)} First Month`;
 
   return (
     <div className="react-page-root" data-page="payment.html">
@@ -497,11 +454,6 @@ export function PaymentPage() {
                     id="watchNowBtn"
                     href={watchHref}
                     className="login-cta-btn"
-                    onClick={(event) => {
-                      if (!appLink) return;
-                      event.preventDefault();
-                      openAppWithWebFallback(appLink, webLink);
-                    }}
                   >
                     {watchText}
                   </a>
@@ -523,7 +475,7 @@ export function PaymentPage() {
                   </div>
                   {!trialEligible ? <p role="status" style={{ margin: "16px 0" }}>You've already used your trial. <a href="/help.html">Contact support</a> for help with your subscription.</p> : null}
                   {pricing ? <p id="paymentAgreement" style={{ fontSize: 12, lineHeight: 1.6, color: "var(--text)", margin: "16px 0" }}>
-                    By continuing, you accept our <a href="/terms.html" target="_blank" rel="noopener noreferrer">Terms</a> &amp; <a href="/privacy.html" target="_blank" rel="noopener noreferrer">Privacy Policy</a> and {rupees(pricing.subscriptionAmountPaise)}/mo auto-renewal after {pricing.trialHours}h.
+                    By continuing, you accept our <a href="/terms.html" target="_blank" rel="noopener noreferrer">Terms</a> &amp; <a href="/privacy.html" target="_blank" rel="noopener noreferrer">Privacy Policy</a>. Your first month is {rupees(pricing.trialAmountPaise)}, then {rupees(pricing.subscriptionAmountPaise)}/month until cancelled.
                   </p> : null}
                   <button className="pay-btn" id="payBtn" type="button" aria-describedby="paymentAgreement" disabled={submitting || !pricing || !trialEligible} onClick={initiatePayment}>
                     <span id="payBtnIcon">{<LightningIcon />}</span>
@@ -558,31 +510,19 @@ export function PaymentPage() {
         }}
       >
         <div className="payment-choice-card" role="dialog" aria-modal="true" aria-labelledby="paymentChoiceTitle">
-          <div className="payment-choice-head">
-            <div className="payment-choice-kicker"><i className="fas fa-check-circle" aria-hidden="true"></i> Payment complete</div>
-            <h2 className="payment-choice-title" id="paymentChoiceTitle">Choose where to continue</h2>
-            <p className="payment-choice-copy">You can keep learning in the browser or jump straight into the app.</p>
-          </div>
-          <div className="payment-choice-body">
-            <div className="payment-choice-actions">
-              <a className="payment-choice-btn secondary" id="continueWebBtn" href={webLink}>
+            <div className="payment-choice-head">
+              <div className="payment-choice-kicker"><i className="fas fa-check-circle" aria-hidden="true"></i> Payment complete</div>
+              <h2 className="payment-choice-title" id="paymentChoiceTitle">Continue learning</h2>
+              <p className="payment-choice-copy">Your access is ready. Continue in the browser to open your courses.</p>
+            </div>
+            <div className="payment-choice-body">
+              <div className="payment-choice-actions">
+              <a className="payment-choice-btn primary" id="continueWebBtn" href={webLink}>
                 <i className="fas fa-globe" aria-hidden="true"></i>
                 Continue on Web
               </a>
-              <a
-                className="payment-choice-btn primary"
-                id="continueAppBtn"
-                href={appLink || webLink}
-                onClick={(event) => {
-                  event.preventDefault();
-                  openAppWithWebFallback(appLink, webLink);
-                }}
-              >
-                <i className="fas fa-mobile-screen-button" aria-hidden="true"></i>
-                Continue on App
-              </a>
             </div>
-            <div className="payment-choice-meta">If the app does not open, tap Continue on Web and finish there.</div>
+            <div className="payment-choice-meta">You can also open the Skillomate app separately and sign in with the same account.</div>
           </div>
         </div>
       </div>

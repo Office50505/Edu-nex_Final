@@ -118,23 +118,11 @@ function initialCourseFilters() {
   };
 }
 
-function uniqueLabels(values) {
-  const seen = new Set();
-  return values
-    .map((value) => String(value || "").trim())
-    .filter((value) => {
-      if (!value) return false;
-      const key = value.toLowerCase();
-      if (seen.has(key)) return false;
-      seen.add(key);
-      return true;
-    });
-}
-
 export function CoursesPage() {
   const initialFilters = initialCourseFilters();
   const [courses, setCourses] = useState([]);
   const [search, setSearch] = useState(initialFilters.search);
+  const [suggestionsOpen, setSuggestionsOpen] = useState(false);
   const [category, setCategory] = useState(initialFilters.category);
   const [hasAccess, setHasAccess] = useState(false);
   const [wishlist, setWishlist] = useState(() => localWishlist());
@@ -212,10 +200,22 @@ export function CoursesPage() {
   }, [runtimeReady]);
 
   const categories = useMemo(() => Array.from(new Set(courses.map((course) => course.categoryName))).filter(Boolean), [courses]);
-  const searchSuggestions = useMemo(() => uniqueLabels([
-    ...courses.map((course) => course.title),
-    ...courses.map((course) => course.categoryName),
-  ]), [courses]);
+  const searchSuggestions = useMemo(() => {
+    const query = search.trim().toLowerCase();
+    return courses
+      .filter((course) => {
+        if (!query) return true;
+        return `${course.title} ${course.description} ${course.categoryName}`.toLowerCase().includes(query);
+      })
+      .map((course) => ({
+        id: course.id,
+        title: course.title,
+        categoryName: course.categoryName,
+      }))
+      .filter((course, index, rows) => rows.findIndex((row) => row.title.toLowerCase() === course.title.toLowerCase()) === index)
+      .slice(0, 7);
+  }, [courses, search]);
+  const showSearchSuggestions = suggestionsOpen && searchSuggestions.length > 0;
   const filteredCourses = useMemo(() => {
     const query = search.trim().toLowerCase();
     return courses.filter((course) => {
@@ -261,6 +261,12 @@ export function CoursesPage() {
     if (value.trim()) setCategory("all");
   };
 
+  const selectSearchSuggestion = (title) => {
+    setSearch(title);
+    setCategory("all");
+    setSuggestionsOpen(false);
+  };
+
   const selectCategory = (value) => {
     setCategory(value);
     setSearch("");
@@ -276,14 +282,32 @@ export function CoursesPage() {
               <i className="fas fa-search" aria-hidden="true"></i>
               <input
                 type="text"
-                list="courses-search-suggestions"
                 placeholder="Search for AI skills..."
                 value={search}
                 onChange={(event) => updateSearch(event.target.value)}
+                onFocus={() => setSuggestionsOpen(true)}
+                onBlur={() => window.setTimeout(() => setSuggestionsOpen(false), 120)}
+                aria-autocomplete="list"
+                aria-controls="courses-search-suggestions"
+                aria-expanded={showSearchSuggestions}
               />
-              <datalist id="courses-search-suggestions">
-                {searchSuggestions.map((suggestion) => <option value={suggestion} key={suggestion} />)}
-              </datalist>
+              {showSearchSuggestions ? (
+                <div className="course-search-suggestions" id="courses-search-suggestions" role="listbox" aria-label="Uploaded course suggestions">
+                  {searchSuggestions.map((suggestion) => (
+                    <button
+                      className="course-search-suggestion"
+                      type="button"
+                      role="option"
+                      key={suggestion.id || suggestion.title}
+                      onMouseDown={(event) => event.preventDefault()}
+                      onClick={() => selectSearchSuggestion(suggestion.title)}
+                    >
+                      <span>{suggestion.title}</span>
+                      <small>{suggestion.categoryName}</small>
+                    </button>
+                  ))}
+                </div>
+              ) : null}
             </div>
             <div className="filter-pills">
               <button className={`pill${category === "all" ? " active" : ""}`} type="button" data-category="all" onClick={() => selectCategory("all")}>All Courses</button>
@@ -377,13 +401,13 @@ export function CoursesPage() {
                         <div className="course-price-row">
                           <div className="price-left">
                             <span className="price-original">₹4,999</span>
-                            <span className="price-trial">₹1 Trial</span>
+                            <span className="price-trial">₹1 first month</span>
                           </div>
                           <span className="price-off">99% OFF</span>
                         </div>
                         <div className="course-card-actions">
                           <button className="btn-trial" type="button" data-course-id={course.id} onClick={(event) => { event.stopPropagation(); openCourse(course); }}>
-                            {hasAccess ? "View Course" : "Start ₹1 Trial"}
+                            {hasAccess ? "View Course" : "Start ₹1 first month"}
                           </button>
                           <button
                             className={`wishlist-btn${saved ? " is-saved" : ""}`}
@@ -420,10 +444,10 @@ export function CoursesPage() {
           </div>
           <div className="steps-grid">
             {[
-              ["1", "Claim ₹1 Trial", "Get instant access to any foundation course for just ₹1. No hidden commitments."],
-              ["2", "7-Day Sprint", "Complete the 'First Profit' framework and join our community of 12k+ achievers."],
-              ["3", "Upgrade to Pro", "Unlock advanced scaling modules and 1-on-1 mentorship after your trial."],
-              ["4", "Launch & Earn", "Apply the skills to land your first high-ticket international client or automate your biz."],
+              ["1", "Start for ₹1", "Get your first month for ₹1, then ₹499/month until cancelled."],
+              ["2", "Learn at your pace", "Follow structured lessons, projects and AI-assisted learning support."],
+              ["3", "Track progress", "Use course progress, wishlists and certificates to organize your learning."],
+              ["4", "Apply your skills", "Practice the concepts in your own projects, work, content or business."],
             ].map(([num, title, copy]) => (
               <div className="step-item" key={num}>
                 <div className="step-num">{num}</div>

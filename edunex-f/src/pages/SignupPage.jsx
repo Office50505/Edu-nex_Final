@@ -428,7 +428,7 @@ export function SignupPage() {
             </div>
             <a href="signup.html" className="sp-photo-cta">
               <i className="fas fa-plus-circle" aria-hidden="true"></i>
-              Start your journey today for just ₹1
+              Start your first month for ₹1
             </a>
           </div>
         </div>
@@ -440,7 +440,7 @@ export function SignupPage() {
             ) : (
               <h2 className="sp-form-title">Create your account</h2>
             )}
-            <p className="sp-form-sub">Start your journey with a ₹1 trial.</p>
+            <p className="sp-form-sub">Start with ₹1 for your first month, then ₹499/month until cancelled.</p>
 
             <label className="sp-field-label" htmlFor="phoneInput">Phone Number</label>
             <div className="sp-input-row">
@@ -478,7 +478,7 @@ export function SignupPage() {
             </p>
 
             <button className="sp-primary-btn" type="button" onClick={sendOTP} disabled={sendingOtp}>
-              {sendingOtp ? "Sending..." : "Send OTP & Start Trial"}
+              {sendingOtp ? "Sending..." : "Send OTP & Continue"}
             </button>
             <p className="sp-login-row">Already have an account? <a href="login.html">Log in</a></p>
           </div>
@@ -489,7 +489,7 @@ export function SignupPage() {
             ) : (
               <h2 className="sp-form-title">Create your account</h2>
             )}
-            <p className="sp-form-sub">Start your journey with a ₹1 trial.</p>
+            <p className="sp-form-sub">Start with ₹1 for your first month, then ₹499/month until cancelled.</p>
 
             <p className="sp-otp-label">Enter OTP</p>
             <p className="sp-otp-desc">We've sent a {otp.length}-digit code to your phone.</p>

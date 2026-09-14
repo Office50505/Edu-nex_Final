@@ -301,6 +301,7 @@ export function ProfilePage() {
             <div className="pf-prefs-list">
               {[
                 [route("privacy.html"), "fa-lock", "Privacy Policy"],
+                [route("terms.html"), "fa-file-contract", "Terms & Conditions"],
               ].map(([href, icon, label]) => (
                 <button className="pf-list-item" type="button" key={href} style={listButtonStyle} onClick={() => { window.location.href = href; }}>
                   <div className="pf-list-icon"><i className={`fas ${icon}`} aria-hidden="true"></i></div>

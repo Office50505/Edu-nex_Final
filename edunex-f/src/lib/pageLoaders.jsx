@@ -5,12 +5,17 @@ function namedPage(exportName) {
 }
 
 const pageModules = {
+  "account-deletion.html": () => import("../pages/DeleteAccountPage.jsx"),
   "delete-account.html": () => import("../pages/DeleteAccountPage.jsx"),
   "about.html": () => import("../pages/AboutPage.jsx").then(namedPage("AboutPage")),
   "ai-tutor.html": () => import("../pages/AiTutorPage.jsx").then(namedPage("AiTutorPage")),
   "certificates.html": () => import("../pages/CertificatesPage.jsx").then(namedPage("CertificatesPage")),
+  "contact.html": () => import("../pages/ContactPage.jsx").then(namedPage("ContactPage")),
   "course.html": () => import("../pages/CourseDetailsPage.jsx").then(namedPage("CourseDetailsPage")),
   "courses.html": () => import("../pages/CoursesPage.jsx").then(namedPage("CoursesPage")),
+  "cookie-policy.html": () => import("../pages/LegalPage.jsx").then((module) => ({
+    default: () => <module.LegalPage type="cookies" />,
+  })),
   "dashboard.html": () => import("../pages/DashboardPage.jsx").then(namedPage("DashboardPage")),
   "edit-profile.html": () => import("../pages/EditProfilePage.jsx").then(namedPage("EditProfilePage")),
   "help.html": () => import("../pages/HelpPage.jsx").then(namedPage("HelpPage")),
@@ -19,8 +24,18 @@ const pageModules = {
   "login.html": () => import("../pages/LoginPage.jsx").then(namedPage("LoginPage")),
   "otp.html": () => import("../pages/OtpPage.jsx").then(namedPage("OtpPage")),
   "payment.html": () => import("../pages/PaymentPage.jsx").then(namedPage("PaymentPage")),
+  "pricing.html": () => import("../pages/PricingPage.jsx").then(namedPage("PricingPage")),
   "profile.html": () => import("../pages/ProfilePage.jsx").then(namedPage("ProfilePage")),
+  "refund-policy.html": () => import("../pages/LegalPage.jsx").then((module) => ({
+    default: () => <module.LegalPage type="refund" />,
+  })),
+  "shipping-policy.html": () => import("../pages/LegalPage.jsx").then((module) => ({
+    default: () => <module.LegalPage type="shipping" />,
+  })),
   "signup.html": () => import("../pages/SignupPage.jsx").then(namedPage("SignupPage")),
+  "subscription-policy.html": () => import("../pages/LegalPage.jsx").then((module) => ({
+    default: () => <module.LegalPage type="subscription" />,
+  })),
   "videos.html": () => import("../pages/VideosPage.jsx").then(namedPage("VideosPage")),
   "wishlist.html": () => import("../pages/WishlistPage.jsx").then(namedPage("WishlistPage")),
   "home-based.html": () => import("../pages/HomeBasedPage.jsx").then(namedPage("HomeBasedPage")),

@@ -4,19 +4,26 @@ import { EnxIcon } from "./EnxIcon.jsx";
 import { preloadPage } from "../lib/pageLoaders.jsx";
 import { route } from "../lib/routes.js";
 
+const homeNavItem = { pageKey: "index.html", href: route("index.html"), label: "Home", icon: "home" };
+const coursesNavItem = { pageKey: "courses.html", href: route("courses.html"), label: "Courses", icon: "bookOpen" };
+const dashboardNavItem = { pageKey: "dashboard.html", href: route("dashboard.html"), label: "Dashboard", icon: "dashboard" };
+const pricingNavItem = { pageKey: "pricing.html", href: route("pricing.html"), label: "Pricing", icon: "creditCard" };
+const aboutNavItem = { pageKey: "about.html", href: route("about.html"), label: "About", icon: "info" };
+
 const navItems = [
-  { pageKey: "index.html", href: route("index.html"), label: "Home", icon: "home" },
-  { pageKey: "courses.html", href: route("courses.html"), label: "Courses", icon: "bookOpen" },
-  { pageKey: "dashboard.html", href: route("dashboard.html"), label: "Dashboard", icon: "dashboard" },
-  { pageKey: "about.html", href: route("about.html"), label: "About", icon: "info" },
+  homeNavItem,
+  coursesNavItem,
+  dashboardNavItem,
+  pricingNavItem,
+  aboutNavItem,
 ];
 
 const mobileFooterItems = [
-  navItems[0],
-  navItems[1],
+  homeNavItem,
+  coursesNavItem,
   { pageKey: "ai-tutor.html", label: "AI", icon: "sparkles", action: "nex-ai" },
-  navItems[2],
-  navItems[3],
+  dashboardNavItem,
+  aboutNavItem,
 ];
 
 function readUser() {

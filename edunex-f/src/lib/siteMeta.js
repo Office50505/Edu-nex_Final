@@ -1,0 +1,55 @@
+export const POLICY_LAST_UPDATED = "September 2026";
+export const SITE_ORIGIN = "https://skillomate.in";
+export const SUPPORT_EMAIL = "support@skillomate.in";
+
+export const businessInfo = {
+  brand: "Skillomate",
+  operator: "Smartcart",
+  proprietor: "Insha Noor",
+  type: "Sole Proprietorship",
+  addressLines: [
+    "1B, 586, Sanjogepuri,",
+    "Indore, Madhya Pradesh 452011,",
+    "India",
+  ],
+  supportHours: "Monday-Friday, 10:00 AM - 6:00 PM IST",
+  responseTime: "Within 5 business days",
+};
+
+export const subscriptionOffer = {
+  firstMonth: "₹1",
+  renewal: "₹499/month",
+  annual: "₹4999/year",
+  disclosure: "Get your first month of Skillomate for ₹1. After the introductory period, your subscription automatically renews at ₹499/month using your authorized payment method until cancelled.",
+};
+
+function ensureMeta(name, attr, value) {
+  let tag = document.head.querySelector(`meta[${attr}="${name}"]`);
+  if (!tag) {
+    tag = document.createElement("meta");
+    tag.setAttribute(attr, name);
+    document.head.appendChild(tag);
+  }
+  tag.setAttribute("content", value);
+}
+
+export function setPageMeta({ title, description, canonicalPath }) {
+  document.title = title;
+  document.documentElement.lang = "en";
+  if (description) {
+    ensureMeta("description", "name", description);
+    ensureMeta("og:description", "property", description);
+  }
+  ensureMeta("og:title", "property", title);
+  ensureMeta("og:type", "property", "website");
+
+  const canonicalHref = `${SITE_ORIGIN}${canonicalPath || window.location.pathname}`;
+  let canonical = document.head.querySelector('link[rel="canonical"]');
+  if (!canonical) {
+    canonical = document.createElement("link");
+    canonical.setAttribute("rel", "canonical");
+    document.head.appendChild(canonical);
+  }
+  canonical.setAttribute("href", canonicalHref);
+  ensureMeta("og:url", "property", canonicalHref);
+}
