@@ -35,6 +35,7 @@ import Constants from "expo-constants";
 import * as Print from "expo-print";
 import * as Sharing from "expo-sharing";
 import * as FileSystem from "expo-file-system/legacy";
+import * as ImagePicker from "expo-image-picker";
 import { DOWNLOADS_STORAGE_KEY, downloadPath, prepareTemporaryDownloads } from "./downloadStorage";
 import { useVideoPlayer, VideoView } from "expo-video";
 import {
@@ -267,6 +268,17 @@ function HorizontalRail({ data, renderItem, contentContainerStyle, keyExtractor 
 }
 
 function AvatarImage({ avatarId, size = 40, style }) {
+  if (/^(file|content|https?):\/\//i.test(String(avatarId || ""))) {
+    return (
+      <Image
+        accessible={false}
+        source={{ uri: avatarId }}
+        style={[{ width: size, height: size, borderRadius: size / 2 }, style]}
+        resizeMode="cover"
+      />
+    );
+  }
+
   const src = AVATAR_IMAGES[avatarId];
   if (!src) return (
     <View accessible={false} style={[{ width: size, height: size, borderRadius: size / 2, backgroundColor: EDUNEX_MOBILE_TOKENS.colors.dark.accentSoft, alignItems: "center", justifyContent: "center", borderWidth: 1, borderColor: EDUNEX_MOBILE_TOKENS.colors.dark.border }, style]}>
@@ -275,6 +287,44 @@ function AvatarImage({ avatarId, size = 40, style }) {
   );
   return <Image accessible={false} source={src} style={[{ width: size, height: size, borderRadius: size / 2 }, style]} resizeMode="cover" />;
 }
+
+async function copyProfileImageToAppStorage(sourceUri, userId) {
+  if (!sourceUri || !FileSystem.documentDirectory) return sourceUri;
+  const safeUserId = String(userId || "user").replace(/[^a-zA-Z0-9_-]/g, "");
+  const extensionMatch = String(sourceUri).match(/\.([a-zA-Z0-9]+)(?:\?|$)/);
+  const extension = extensionMatch?.[1]?.toLowerCase() || "jpg";
+  const destination = `${FileSystem.documentDirectory}profile-image-${safeUserId}.${extension}`;
+
+  try {
+    await FileSystem.copyAsync({ from: sourceUri, to: destination });
+    return destination;
+  } catch {
+    return sourceUri;
+  }
+}
+
+async function pickProfileImage(userId) {
+  if (Platform.OS === "ios") {
+    const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (!permission.granted) {
+      Alert.alert("Permission Needed", "Allow photo access to choose a profile picture.");
+      return null;
+    }
+  }
+
+  const result = await ImagePicker.launchImageLibraryAsync({
+    mediaTypes: ["images"],
+    allowsEditing: true,
+    aspect: [1, 1],
+    quality: 0.85,
+    selectionLimit: 1,
+  });
+
+  if (result.canceled) return null;
+  const selectedUri = result.assets?.[0]?.uri;
+  return copyProfileImageToAppStorage(selectedUri, userId);
+}
+
 const DOWNLOADS_DIR = FileSystem.cacheDirectory ? `${FileSystem.cacheDirectory}skillomate_dl/` : null;
 const hasCourseAccess = user => DEV_UI_QA_ENABLED || !!(user?.subscriptionStatus && user.subscriptionStatus !== "none");
 const AI_FEATURE_ENABLED = true;
@@ -5306,6 +5356,19 @@ function ProfileScreen({ user, onLogout, onDeleteAccount, onGoToHome, onGoToCour
                     <AvatarImage avatarId={tempAvatar} size={90} style={{ borderRadius: 0 }} />
                   </View>
                 </View>
+
+                <TouchableOpacity
+                  onPress={async () => {
+                    const selectedImage = await pickProfileImage(user._id);
+                    if (selectedImage) setTempAvatar(selectedImage);
+                  }}
+                  style={[s.btn, { marginTop: 0, marginBottom: 18, flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 8 }]}
+                  accessibilityRole="button"
+                  accessibilityLabel="Choose profile picture from photos"
+                >
+                  <Ionicons name="image-outline" size={18} color={C.primary} />
+                  <Text style={{ color: C.primary, fontWeight: "800" }}>Choose From Photos</Text>
+                </TouchableOpacity>
 
                 <View style={{ flexDirection: "row", flexWrap: "wrap", justifyContent: "center", gap: 12, marginBottom: 24 }}>
                   {DEMO_AVATARS.map(av => (
