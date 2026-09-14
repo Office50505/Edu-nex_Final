@@ -15,6 +15,13 @@
     "android": {
       "package": "com.skillomate.app",
       "versionCode": 2,
+      "blockedPermissions": [
+        "android.permission.READ_MEDIA_IMAGES",
+        "android.permission.READ_MEDIA_VIDEO",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "android.permission.CAMERA"
+      ],
       "icon": "./assets/icon.png",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
@@ -25,7 +32,7 @@
     },
     "ios": {
       "bundleIdentifier": "com.alihussainkhan.edunexfinal",
-      "buildNumber": "11",
+      "buildNumber": "12",
       "icon": "./assets/icon.png",
       "supportsTablet": false,
       "config": {
@@ -34,6 +41,7 @@
       "infoPlist": {
         "CFBundleDisplayName": "Skillomate",
         "ITSAppUsesNonExemptEncryption": false,
+        "NSPhotoLibraryUsageDescription": "Skillomate lets you choose a profile picture from your photo library.",
         "NSAppTransportSecurity": {
           "NSAllowsArbitraryLoads": false,
           "NSAllowsLocalNetworking": true,

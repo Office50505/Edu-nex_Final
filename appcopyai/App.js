@@ -35,6 +35,7 @@ import Constants from "expo-constants";
 import * as Print from "expo-print";
 import * as Sharing from "expo-sharing";
 import * as FileSystem from "expo-file-system/legacy";
+import * as ImagePicker from "expo-image-picker";
 import { DOWNLOADS_STORAGE_KEY, downloadPath, prepareTemporaryDownloads } from "./downloadStorage";
 import { useVideoPlayer, VideoView } from "expo-video";
 import {
@@ -267,6 +268,17 @@ function HorizontalRail({ data, renderItem, contentContainerStyle, keyExtractor 
 }
 
 function AvatarImage({ avatarId, size = 40, style }) {
+  if (/^(file|content|https?):\/\//i.test(String(avatarId || ""))) {
+    return (
+      <Image
+        accessible={false}
+        source={{ uri: avatarId }}
+        style={[{ width: size, height: size, borderRadius: size / 2 }, style]}
+        resizeMode="cover"
+      />
+    );
+  }
+
   const src = AVATAR_IMAGES[avatarId];
   if (!src) return (
     <View accessible={false} style={[{ width: size, height: size, borderRadius: size / 2, backgroundColor: EDUNEX_MOBILE_TOKENS.colors.dark.accentSoft, alignItems: "center", justifyContent: "center", borderWidth: 1, borderColor: EDUNEX_MOBILE_TOKENS.colors.dark.border }, style]}>
@@ -275,6 +287,44 @@ function AvatarImage({ avatarId, size = 40, style }) {
   );
   return <Image accessible={false} source={src} style={[{ width: size, height: size, borderRadius: size / 2 }, style]} resizeMode="cover" />;
 }
+
+async function copyProfileImageToAppStorage(sourceUri, userId) {
+  if (!sourceUri || !FileSystem.documentDirectory) return sourceUri;
+  const safeUserId = String(userId || "user").replace(/[^a-zA-Z0-9_-]/g, "");
+  const extensionMatch = String(sourceUri).match(/\.([a-zA-Z0-9]+)(?:\?|$)/);
+  const extension = extensionMatch?.[1]?.toLowerCase() || "jpg";
+  const destination = `${FileSystem.documentDirectory}profile-image-${safeUserId}.${extension}`;
+
+  try {
+    await FileSystem.copyAsync({ from: sourceUri, to: destination });
+    return destination;
+  } catch {
+    return sourceUri;
+  }
+}
+
+async function pickProfileImage(userId) {
+  if (Platform.OS === "ios") {
+    const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (!permission.granted) {
+      Alert.alert("Permission Needed", "Allow photo access to choose a profile picture.");
+      return null;
+    }
+  }
+
+  const result = await ImagePicker.launchImageLibraryAsync({
+    mediaTypes: ["images"],
+    allowsEditing: true,
+    aspect: [1, 1],
+    quality: 0.85,
+    selectionLimit: 1,
+  });
+
+  if (result.canceled) return null;
+  const selectedUri = result.assets?.[0]?.uri;
+  return copyProfileImageToAppStorage(selectedUri, userId);
+}
+
 const DOWNLOADS_DIR = FileSystem.cacheDirectory ? `${FileSystem.cacheDirectory}skillomate_dl/` : null;
 const hasCourseAccess = user => DEV_UI_QA_ENABLED || !!(user?.subscriptionStatus && user.subscriptionStatus !== "none");
 const AI_FEATURE_ENABLED = true;
@@ -1876,6 +1926,18 @@ function VideoItem({ courseId, user, video: videoProp, videoId: videoIdProp, isA
   });
   const playbackStateRef = useRef(null);
   playbackStateRef.current = { isActive, isPlaying, isMuted, playbackRate };
+  const runNativePlayer = useCallback((operation) => {
+    try {
+      return operation(nativePlayer);
+    } catch {
+      return undefined;
+    }
+  }, [nativePlayer]);
+  const pauseNativePlayer = useCallback(() => runNativePlayer(player => player.pause()), [runNativePlayer]);
+  const playNativePlayer = useCallback(() => runNativePlayer(player => player.play()), [runNativePlayer]);
+  const setNativeTime = useCallback((time) => runNativePlayer(player => { player.currentTime = time; }), [runNativePlayer]);
+  const setNativeMuted = useCallback((muted) => runNativePlayer(player => { player.muted = muted; }), [runNativePlayer]);
+  const setNativeRate = useCallback((rate) => runNativePlayer(player => { player.playbackRate = rate || 1; }), [runNativePlayer]);
   const html = useMemo(() => {
     let provider = "youtube";
     let originalMedia = video?.youtubeId || video?.videoId || "";
@@ -1923,26 +1985,28 @@ function VideoItem({ courseId, user, video: videoProp, videoId: videoIdProp, isA
   useEffect(() => {
     let cancelled = false;
     if (!nativeVideoSource) {
-      nativePlayer.pause();
+      pauseNativePlayer();
       sourceQueue.current = sourceQueue.current.catch(() => {}).then(() => {
-        if (!cancelled) return nativePlayer.replaceAsync(null);
+        if (!cancelled) return runNativePlayer(player => player.replaceAsync(null));
       }).catch(() => { /* Player may have been released while leaving the screen. */ });
       return () => { cancelled = true; };
     }
     sourceQueue.current = sourceQueue.current.catch(() => {}).then(async () => {
       if (cancelled) return;
       try {
-        nativePlayer.pause();
-        await nativePlayer.replaceAsync(nativeVideoSource);
+        pauseNativePlayer();
+        await runNativePlayer(player => player.replaceAsync(nativeVideoSource));
         if (cancelled) return;
         const latest = playbackStateRef.current;
-        nativePlayer.muted = latest.isMuted;
-        nativePlayer.playbackRate = latest.playbackRate || 1;
-        nativePlayer.preservesPitch = true;
-        nativePlayer.timeUpdateEventInterval = 1;
+        runNativePlayer(player => {
+          player.muted = latest.isMuted;
+          player.playbackRate = latest.playbackRate || 1;
+          player.preservesPitch = true;
+          player.timeUpdateEventInterval = 1;
+        });
         const startAt = video.provider === 'aws_cloudfront' ? Math.max(cloudResume.current,finiteSeconds(initialTime,0)) : finiteSeconds(initialTime, 0);
-        if (startAt > 0) nativePlayer.currentTime = startAt;
-        if (latest.isActive && latest.isPlaying) nativePlayer.play();
+        if (startAt > 0) setNativeTime(startAt);
+        if (latest.isActive && latest.isPlaying) playNativePlayer();
       } catch (error) {
         if (!cancelled && video.provider === 'aws_cloudfront') setCloudError('Unable to play HLS. Check connectivity and retry.');
         if (!cancelled && canFallbackToEmbed) {
@@ -1955,24 +2019,23 @@ function VideoItem({ courseId, user, video: videoProp, videoId: videoIdProp, isA
     });
     return () => {
       cancelled = true;
-      // Expo can release its shared player before this effect cleanup runs.
-      try { nativePlayer.pause(); } catch { /* Already released on unmount. */ }
+      pauseNativePlayer();
     };
-  }, [nativePlayer, nativeVideoSource, initialTime, canFallbackToEmbed]);
+  }, [nativeVideoSource, initialTime, canFallbackToEmbed, pauseNativePlayer, playNativePlayer, runNativePlayer, setNativeTime]);
 
   useEffect(() => {
     setIsPlaying(isActive);
   }, [isActive]);
 
   useEffect(() => {
-    nativePlayer.muted = isMuted;
-    nativePlayer.playbackRate = playbackRate;
-  }, [nativePlayer, isMuted, playbackRate]);
+    setNativeMuted(isMuted);
+    setNativeRate(playbackRate);
+  }, [isMuted, playbackRate, setNativeMuted, setNativeRate]);
 
   useEffect(() => {
-    if (isActive && isNativeVideo && isPlaying) nativePlayer.play();
-    else nativePlayer.pause();
-  }, [nativePlayer, isActive, isNativeVideo, isPlaying]);
+    if (isActive && isNativeVideo && isPlaying) playNativePlayer();
+    else pauseNativePlayer();
+  }, [isActive, isNativeVideo, isPlaying, pauseNativePlayer, playNativePlayer]);
 
   useEventListener(nativePlayer, "sourceLoad", ({ duration: loadedDuration }) => {
     if (!isNativeVideo) return;
@@ -1985,13 +2048,15 @@ function VideoItem({ courseId, user, video: videoProp, videoId: videoIdProp, isA
       dragTargetRef.current = nextTime;
       seekGuardRef.current = { until: Date.now() + 3000, target: nextTime };
       setCurrentTime(nextTime);
-      nativePlayer.currentTime = nextTime;
+      setNativeTime(nextTime);
     }
-    if (isActive && isPlaying) nativePlayer.play();
+    if (isActive && isPlaying) playNativePlayer();
   });
 
   useEventListener(nativePlayer, "timeUpdate", ({ currentTime: nextTime }) => {
-    handleNativeProgress(nextTime, nativePlayer.duration, nativePlayer.playing);
+    const nativeDuration = runNativePlayer(player => player.duration);
+    const nativePlaying = runNativePlayer(player => player.playing);
+    handleNativeProgress(nextTime, nativeDuration, nativePlaying);
   });
 
   useEventListener(nativePlayer, "playingChange", ({ isPlaying: nextPlaying }) => {
@@ -2019,14 +2084,12 @@ function VideoItem({ courseId, user, video: videoProp, videoId: videoIdProp, isA
 
   function sendCmd(func, args = []) {
     if (isNativeVideo) {
-      try {
-        if (func === "playVideo") nativePlayer.play();
-        else if (func === "pauseVideo") nativePlayer.pause();
-        else if (func === "seekTo") nativePlayer.currentTime = clampSeconds(args[0], duration);
-        else if (func === "setPlaybackRate") nativePlayer.playbackRate = args[0] || 1;
-        else if (func === "mute") nativePlayer.muted = true;
-        else if (func === "unMute") nativePlayer.muted = false;
-      } catch {}
+      if (func === "playVideo") playNativePlayer();
+      else if (func === "pauseVideo") pauseNativePlayer();
+      else if (func === "seekTo") setNativeTime(clampSeconds(args[0], duration));
+      else if (func === "setPlaybackRate") setNativeRate(args[0] || 1);
+      else if (func === "mute") setNativeMuted(true);
+      else if (func === "unMute") setNativeMuted(false);
       return;
     }
     if (isBunny) {
@@ -2102,7 +2165,7 @@ function VideoItem({ courseId, user, video: videoProp, videoId: videoIdProp, isA
       dragTargetRef.current = startAt;
       seekGuardRef.current = { until: Date.now() + 3000, target: startAt };
       setCurrentTime(startAt);
-      nativePlayer.currentTime = startAt;
+      setNativeTime(startAt);
       return;
     }
     if (isDraggingRef.current) {
@@ -5306,6 +5369,19 @@ function ProfileScreen({ user, onLogout, onDeleteAccount, onGoToHome, onGoToCour
                     <AvatarImage avatarId={tempAvatar} size={90} style={{ borderRadius: 0 }} />
                   </View>
                 </View>
+
+                <TouchableOpacity
+                  onPress={async () => {
+                    const selectedImage = await pickProfileImage(user._id);
+                    if (selectedImage) setTempAvatar(selectedImage);
+                  }}
+                  style={[s.btn, { marginTop: 0, marginBottom: 18, flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 8 }]}
+                  accessibilityRole="button"
+                  accessibilityLabel="Choose profile picture from photos"
+                >
+                  <Ionicons name="image-outline" size={18} color={C.primary} />
+                  <Text style={{ color: C.primary, fontWeight: "800" }}>Choose From Photos</Text>
+                </TouchableOpacity>
 
                 <View style={{ flexDirection: "row", flexWrap: "wrap", justifyContent: "center", gap: 12, marginBottom: 24 }}>
                   {DEMO_AVATARS.map(av => (
