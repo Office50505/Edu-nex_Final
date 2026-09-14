@@ -587,6 +587,7 @@ app.use('/uploads', express.static(UPLOADS_DIR, {
   maxAge: '7d',
   immutable: true,
 }));
+app.use('/uploads', (req, res) => res.sendStatus(404));
 if (SERVE_FRONTEND) {
   app.use(express.static(FRONTEND_DIR, {
     setHeaders(res, filePath) {
@@ -798,6 +799,33 @@ function isLocalThumbnailUrl(value) {
   return /^\/uploads\/course-thumbnails\/[a-f0-9]{24}-(?:horizontal|vertical)\.(?:jpg|png|webp)$/i.test(String(value || ''));
 }
 
+function localThumbnailFileExists(value) {
+  if (!isLocalThumbnailUrl(value)) return false;
+  const filename = path.basename(String(value));
+  return fs.existsSync(path.join(COURSE_THUMBNAIL_UPLOAD_DIR, filename));
+}
+
+function storedThumbnailUrl(courseId, orientation = 'horizontal') {
+  const id = String(courseId || '');
+  if (!/^[a-f0-9]{24}$/i.test(id)) return null;
+
+  const orientations = orientation === 'vertical'
+    ? ['vertical', 'horizontal']
+    : ['horizontal', 'vertical'];
+  const extensions = ['webp', 'png', 'jpg'];
+
+  for (const currentOrientation of orientations) {
+    for (const extension of extensions) {
+      const filename = `${id}-${currentOrientation}.${extension}`;
+      if (fs.existsSync(path.join(COURSE_THUMBNAIL_UPLOAD_DIR, filename))) {
+        return `/uploads/course-thumbnails/${filename}`;
+      }
+    }
+  }
+
+  return null;
+}
+
 function saveThumbnailUpload(courseId, orientation, image) {
   if (!hasStoredThumbnail(image) || !image.data) return null;
 
@@ -815,17 +843,20 @@ function publicCourseThumbnailUrl(course, orientation = 'horizontal') {
 
   const horizontalImage = course.thumbnailHorizontal || course.thumbnail;
   const verticalImage = course.thumbnailVertical;
+  const storedUrl = storedThumbnailUrl(id, orientation);
 
   if (orientation === 'vertical') {
-    if (isLocalThumbnailUrl(course.thumbnailVerticalUrl)) return course.thumbnailVerticalUrl;
-    if (isLocalThumbnailUrl(course.thumbnailUrl)) return course.thumbnailUrl;
+    if (localThumbnailFileExists(course.thumbnailVerticalUrl)) return course.thumbnailVerticalUrl;
+    if (localThumbnailFileExists(course.thumbnailUrl)) return course.thumbnailUrl;
+    if (storedUrl) return storedUrl;
     if (hasStoredThumbnail(verticalImage) || hasStoredThumbnail(horizontalImage)) {
       return `/api/courses/${id}/thumbnail?orientation=vertical`;
     }
     return course.thumbnailVerticalUrl || course.thumbnailUrl || `/api/courses/${id}/thumbnail?orientation=vertical`;
   }
 
-  if (isLocalThumbnailUrl(course.thumbnailUrl)) return course.thumbnailUrl;
+  if (localThumbnailFileExists(course.thumbnailUrl)) return course.thumbnailUrl;
+  if (storedUrl) return storedUrl;
   if (hasStoredThumbnail(horizontalImage) || hasStoredThumbnail(verticalImage)) {
     return `/api/courses/${id}/thumbnail`;
   }
@@ -2648,7 +2679,7 @@ app.get('/api/courses/checkout-summary', async (req, res) => {
 
 app.get('/api/courses', async (req, res) => {
   try {
-    const cacheKey = 'courses:published:list:v6';
+    const cacheKey = 'courses:published:list:v11';
     const cached = await getCachedPublicRead(cacheKey);
     if (cached) {
       setPublicReadCacheHeaders(res, true);
@@ -2656,7 +2687,7 @@ app.get('/api/courses', async (req, res) => {
     }
 
     const courseDocuments = await Course.find({ status: 'published' })
-      .select('title slug description category thumbnail.mimeType thumbnailHorizontal.mimeType thumbnailVertical.mimeType thumbnailUrl thumbnailVerticalUrl averageRating totalWishlisted totalStarted totalCompleted completionRate publishedAt createdAt videos._id videos.title videos.thumbnailUrl videos.thumbnailVerticalUrl')
+      .select('title slug description category thumbnail.mimeType thumbnailHorizontal.mimeType thumbnailVertical.mimeType thumbnailUrl thumbnailVerticalUrl averageRating totalWishlisted totalStarted totalCompleted completionRate publishedAt createdAt videos._id videos.title videos.thumbnail.mimeType videos.thumbnailUrl videos.thumbnailVerticalUrl')
       .populate('category', 'name slug isActive')
       .sort({ publishedAt: -1, createdAt: -1 })
       .limit(100)
@@ -2664,15 +2695,29 @@ app.get('/api/courses', async (req, res) => {
 
     const courses = courseDocuments.map(({ videos, ...course }) => {
       const lessonCount = Array.isArray(videos) ? videos.length : 0;
-      const firstVideo = Array.isArray(videos) ? videos[0] : null;
-      const previewVideos = firstVideo ? [{
-        title: firstVideo.title,
-        thumbnail: null,
-        thumbnailUrl: firstVideo.thumbnailUrl || null,
-        thumbnailVerticalUrl: firstVideo.thumbnailVerticalUrl || null,
-      }] : [];
       const thumbnailUrl = publicCourseThumbnailUrl(course);
       const thumbnailVerticalUrl = publicCourseThumbnailUrl(course, 'vertical');
+      const previewVideos = Array.isArray(videos)
+        ? videos.slice(0, 40).map((video) => {
+          const embeddedVideoThumbnailUrl = video.thumbnail?.mimeType && video._id
+            ? `/api/courses/${course._id}/videos/${video._id}/thumbnail`
+            : null;
+          const videoThumbnailUrl = localThumbnailFileExists(video.thumbnailUrl)
+            ? video.thumbnailUrl
+            : (isLocalThumbnailUrl(video.thumbnailUrl) ? null : video.thumbnailUrl);
+          const videoThumbnailVerticalUrl = localThumbnailFileExists(video.thumbnailVerticalUrl)
+            ? video.thumbnailVerticalUrl
+            : (isLocalThumbnailUrl(video.thumbnailVerticalUrl) ? null : video.thumbnailVerticalUrl);
+
+          return {
+            _id: video._id,
+            title: video.title,
+            thumbnail: null,
+            thumbnailUrl: embeddedVideoThumbnailUrl || videoThumbnailUrl || thumbnailUrl || null,
+            thumbnailVerticalUrl: videoThumbnailVerticalUrl || embeddedVideoThumbnailUrl || thumbnailVerticalUrl || videoThumbnailUrl || thumbnailUrl || null,
+          };
+        })
+        : [];
       delete course.thumbnail;
       delete course.thumbnailHorizontal;
       delete course.thumbnailVertical;

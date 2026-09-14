@@ -50,6 +50,12 @@ function courseDetailsHref(course) {
   return id ? route(`course.html?id=${encodeURIComponent(id)}`) : route("courses.html");
 }
 
+function lessonHref(course, lessonIndex = 0) {
+  const id = courseId(course);
+  const index = Math.max(0, Number(lessonIndex) || 0);
+  return id ? route(`videos.html?courseId=${encodeURIComponent(id)}&video=${index}`) : route("courses.html");
+}
+
 function coursesArray(response) {
   if (Array.isArray(response)) return response;
   if (Array.isArray(response?.courses)) return response.courses;
@@ -92,6 +98,8 @@ function searchHref(value) {
 }
 
 function lessonCount(course) {
+  const explicitCount = Number(course?.videoCount || course?.lessonCount || 0);
+  if (explicitCount > 0) return explicitCount;
   return Array.isArray(course?.videos) ? course.videos.length : 0;
 }
 
@@ -146,6 +154,17 @@ function handleCourseImageError(event, course) {
 
   image.onerror = null;
   image.src = window.EduNex?.placeholderImage?.(image.alt || "Skillomate") || "";
+}
+
+function lessonImage(course, video) {
+  return imageCandidate(
+    video?.thumbnailUrl
+    || video?.thumbnailVerticalUrl
+    || (video?._id && courseId(course) ? `/api/courses/${courseId(course)}/videos/${video._id}/thumbnail` : "")
+    || window.EduNex?.courseImage?.(course)
+    || course?.thumbnailUrl
+    || course?.thumbnailVerticalUrl
+  );
 }
 
 function durationLabel(course) {
@@ -213,10 +232,34 @@ function pathItem(courses) {
   return { type: "path", category: best[0], courses: best[1], course: best[1][0] };
 }
 
+function lessonItems(courses) {
+  return courses.flatMap((course) => {
+    const videos = Array.isArray(course?.videos) ? course.videos : [];
+    return videos.map((video, lessonIndex) => ({
+      type: "lesson",
+      course,
+      video,
+      lessonIndex,
+    }));
+  });
+}
+
 function itemsForTab(tab, courses) {
   const enrolled = enrolledItems(courses);
+  const lessons = lessonItems(courses);
   if (tab === "my-courses") {
-    return enrolled.map((item) => ({ type: "enrolled", course: item.course, progress: item.progress }));
+    const enrolledLessons = enrolled.flatMap((item) => {
+      const videos = Array.isArray(item.course?.videos) ? item.course.videos : [];
+      return videos.map((video, lessonIndex) => ({
+        type: "lesson",
+        course: item.course,
+        video,
+        lessonIndex,
+      }));
+    });
+    return enrolledLessons.length
+      ? enrolledLessons
+      : enrolled.map((item) => ({ type: "enrolled", course: item.course, progress: item.progress }));
   }
   if (tab === "for-you") {
     const seen = new Set();
@@ -236,7 +279,7 @@ function itemsForTab(tab, courses) {
     if (path && !seen.has(courseId(path.course))) items.push(path);
     return items;
   }
-  return courses.slice(0, 8).map((course) => ({ type: "trending", course }));
+  return lessons.length ? lessons : courses.slice(0, 8).map((course) => ({ type: "trending", course }));
 }
 
 function repeatedItems(items, minimum = 7) {
@@ -259,6 +302,349 @@ function MaterialIcon({ children, className = "" }) {
 
 function preventNativeDrag(event) {
   event.preventDefault();
+}
+
+const lessonHighlights = [
+  {
+    title: "3 Tools Setup",
+    module: "Module 1 - Foundations",
+    duration: "72 min",
+    keywords: ["tools setup"],
+    fallbackIndex: 1,
+    fallbackImage: "/assets/about-philosophy.png",
+  },
+  {
+    title: "Create Your AI Face",
+    module: "Module 2 - Face & Prompts",
+    duration: "18 min",
+    keywords: ["ai influencer character", "ai face", "same face"],
+    fallbackIndex: 2,
+    fallbackImage: "/assets/female1.jpeg",
+  },
+  {
+    title: "Photo to Video",
+    module: "Module 4 - Video & Voice",
+    duration: "15 min",
+    keywords: ["turning photos into videos", "photo to video"],
+    fallbackIndex: 10,
+    fallbackImage: "/assets/female3.jpeg",
+  },
+  {
+    title: "Caption & Hashtags",
+    module: "Module 5 - Growth Strategy",
+    duration: "14 min",
+    keywords: ["captions & hashtags", "captions", "hashtags"],
+    fallbackIndex: 16,
+    fallbackImage: "/assets/image.png",
+  },
+];
+
+const skillCards = [
+  ["photo_camera", "AI Images", "Create stunning visuals with AI", "6 lessons", "/assets/skill-ai-images.png"],
+  ["smart_display", "AI Video", "Turn ideas into engaging videos", "6 lessons", "/assets/skill-ai-video.png"],
+  ["groups", "UGC", "Create authentic UGC content", "5 lessons", "/assets/skill-ugc.png"],
+  ["trending_up", "Content Growth", "Grow your audience faster", "5 lessons", "/assets/skill-content-growth.png"],
+  ["currency_rupee", "Monetization", "Turn content into income", "5 lessons", "/assets/skill-monetization.png"],
+  ["business_center", "Client Work", "Get clients and build a business", "4 lessons", "/assets/skill-client-work.png"],
+];
+
+const modules = [
+  ["01", "lightbulb", "Foundations", "5 lessons"],
+  ["02", "person", "Face & Prompts", "5 lessons"],
+  ["03", "checkroom", "Virtual Fashion", "5 lessons"],
+  ["04", "videocam", "Video & Voice", "6 lessons"],
+  ["05", "bar_chart", "Growth Strategy", "5 lessons"],
+  ["06", "groups", "UGC & Clients", "4 lessons"],
+  ["07", "rocket_launch", "Monetization & Scaling", "4 lessons"],
+];
+
+const watchedLessons = [
+  { title: "Create Your AI Face", module: "Module 2 - Lesson 7", views: "12.4K", duration: "12:34", keywords: ["ai influencer character", "ai face"], fallbackIndex: 2, fallbackImage: "/assets/female1.jpeg" },
+  { title: "Virtual Fashion Photoshoot", module: "Module 3 - Lesson 11", views: "9.8K", duration: "10:21", keywords: ["fashion try-on", "virtual fashion", "fashion"], fallbackIndex: 22, fallbackImage: "/assets/female3.jpeg" },
+  { title: "Photo to Video (Kling AI)", module: "Module 4 - Lesson 12", views: "8.1K", duration: "08:45", keywords: ["turning photos into videos", "photo to video"], fallbackIndex: 10, fallbackImage: "/assets/female6.jpeg" },
+  { title: "Caption & Hashtags Strategy", module: "Module 5 - Lesson 18", views: "7.6K", duration: "11:20", keywords: ["captions & hashtags", "hashtags"], fallbackIndex: 16, fallbackImage: "/assets/image.png" },
+  { title: "Get Your First Brand Deal", module: "Module 6 - Lesson 24", views: "6.9K", duration: "09:18", keywords: ["first client", "brand deal", "reaching out to brands"], fallbackIndex: 23, fallbackImage: "/assets/female2.jpeg" },
+  { title: "Make Money with AI Content", module: "Module 7 - Lesson 32", views: "6.3K", duration: "13:06", keywords: ["affiliate marketing", "digital product", "monetization"], fallbackIndex: 30, fallbackImage: "/assets/about-philosophy.png" },
+];
+
+const projects = [
+  {
+    title: "AI Influencer Profile",
+    copy: "Create a complete AI influencer with consistent look & style",
+    count: "4 lessons",
+    keywords: ["ai influencer character", "ai influencer", "ai face", "same face", "profile"],
+    fallbackIndex: 2,
+    fallbackImage: "/assets/female1.jpeg",
+  },
+  {
+    title: "UGC Portfolio",
+    copy: "Build a portfolio of UGC content for brand outreach",
+    count: "4 lessons",
+    keywords: ["ugc portfolio", "first ugc", "ugc", "portfolio"],
+    fallbackIndex: 26,
+    fallbackImage: "/assets/skill-ugc.png",
+  },
+  {
+    title: "Virtual Fashion Shoot",
+    copy: "Create a full fashion photoshoot with AI models",
+    count: "5 lessons",
+    keywords: ["fashion try-on", "virtual fashion", "fashion photoshoot", "fashion"],
+    fallbackIndex: 22,
+    fallbackImage: "/assets/female6.jpeg",
+  },
+  {
+    title: "Brand Outreach System",
+    copy: "Learn how to find, pitch and work with real brands",
+    count: "5 lessons",
+    keywords: ["reaching out to brands", "working with brands", "brand deal", "brand outreach", "first client", "client"],
+    fallbackIndex: 27,
+    fallbackImage: "/assets/skill-client-work.png",
+  },
+];
+
+function sectionAction(label, href = "courses.html") {
+  return <a className="curriculum-section-action" href={href}>{label} <MaterialIcon>arrow_forward</MaterialIcon></a>;
+}
+
+function imageCandidate(value) {
+  return window.EduNex?.normalizeImageSrc?.(value) || String(value || "").trim();
+}
+
+function courseFallbackImage(course, fallback = "/assets/female1.jpeg") {
+  if (!course) return fallback;
+  return imageCandidate(window.EduNex?.courseImage?.(course) || course.thumbnailUrl || course.thumbnailVerticalUrl) || fallback;
+}
+
+function relatedLesson(course, target = {}) {
+  const videos = Array.isArray(course?.videos) ? course.videos : [];
+  const keywords = target.keywords || [];
+  const video = keywords.reduce((match, keyword) => {
+    if (match) return match;
+    const normalizedKeyword = String(keyword || "").toLowerCase();
+    return videos.find((item) => String(item?.title || "").toLowerCase().includes(normalizedKeyword));
+  }, null) || videos[target.fallbackIndex] || videos[0] || {};
+
+  const resolvedIndex = videos.findIndex((item) => String(item?._id || item?.id || item?.title) === String(video?._id || video?.id || video?.title));
+  return { video, index: resolvedIndex >= 0 ? resolvedIndex : Math.max(0, Number(target.fallbackIndex) || 0) };
+}
+
+function relatedLessonThumbnail(course, target) {
+  const { video } = relatedLesson(course, target);
+
+  return imageCandidate(
+    video.thumbnailUrl
+    || video.thumbnailVerticalUrl
+    || (video._id && courseId(course) ? `/api/courses/${courseId(course)}/videos/${video._id}/thumbnail` : "")
+    || target.fallbackImage
+  );
+}
+
+function handleProjectImageError(event, fallback) {
+  const image = event.currentTarget;
+  if (fallback && image.src !== new URL(fallback, window.location.origin).href) {
+    image.src = fallback;
+    return;
+  }
+  image.onerror = null;
+}
+
+function handleCurriculumImageError(event, course, fallback = "/assets/female1.jpeg") {
+  const image = event.currentTarget;
+  const next = courseFallbackImage(course, fallback);
+  if (next && image.src !== new URL(next, window.location.origin).href) {
+    image.src = next;
+    return;
+  }
+  image.onerror = null;
+  image.src = fallback;
+}
+
+function CurriculumShowcase({ courses, status, onOpenCourse }) {
+  const course = courses.find((item) => !item.isFallback) || courses[0] || null;
+  const courseHref = course ? courseDetailsHref(course) : route("courses.html");
+  const courseTitle = course?.title || "AI Influencer Course";
+  const courseImage = courseFallbackImage(course);
+  const totalLessons = Math.max(lessonCount(course), 34);
+  const courseCategory = course ? categoryName(course) : "AI Basics";
+  const handleOpen = () => course ? onOpenCourse(course) : (window.location.href = route("courses.html"));
+  const openLesson = (target) => {
+    if (!course) {
+      window.location.href = route("courses.html");
+      return;
+    }
+    window.location.href = lessonHref(course, relatedLesson(course, target).index);
+  };
+
+  return (
+    <section className="curriculum-home" aria-labelledby="curriculumHomeTitle">
+      <div className="curriculum-shell">
+        <div className="curriculum-overview">
+          <img src={courseImage} alt="" loading="lazy" decoding="async" onError={(event) => handleCurriculumImageError(event, course)} />
+          <div className="curriculum-overview-copy">
+            <span>{courseCategory}</span>
+            <h2>{courseTitle}</h2>
+            <p>A single guided workspace for lessons, modules, projects, and certification.</p>
+          </div>
+          <div className="curriculum-overview-stats" aria-label="Course summary">
+            <strong>{totalLessons}</strong><small>video lessons</small>
+            <strong>7</strong><small>modules</small>
+          </div>
+          <a href={courseHref}>Open Course <MaterialIcon>arrow_forward</MaterialIcon></a>
+        </div>
+
+        <nav className="curriculum-jump-nav" aria-label="Curriculum sections">
+          {[
+            ["Continue", "#continue-learning"],
+            ["Skills", "#explore-skills"],
+            ["Modules", "#modules"],
+            ["Lessons", "#popular-lessons"],
+            ["Projects", "#projects"],
+          ].map(([label, href]) => <a href={href} key={href}>{label}</a>)}
+        </nav>
+
+        <div className="curriculum-section-head" id="continue-learning">
+          <div>
+            <h2 id="curriculumHomeTitle">Continue Learning</h2>
+            <p>Pick up where you left off and keep going.</p>
+          </div>
+          {sectionAction("View My Course", courseHref)}
+        </div>
+        <div className="continue-learning-row">
+          {lessonHighlights.map((lesson) => {
+            const resolved = relatedLesson(course, lesson);
+            const title = resolved.video?.title || lesson.title;
+            return (
+            <article
+              className="continue-lesson-card"
+              key={lesson.title}
+              role="link"
+              tabIndex={0}
+              onClick={() => openLesson(lesson)}
+              onKeyDown={(event) => {
+                if (event.key !== "Enter" && event.key !== " ") return;
+                event.preventDefault();
+                openLesson(lesson);
+              }}
+            >
+              <img src={relatedLessonThumbnail(course, lesson)} alt="" loading="lazy" decoding="async" onError={(event) => handleProjectImageError(event, lesson.fallbackImage)} />
+              <div>
+                <span>Lesson {resolved.index + 1}</span>
+                <strong>{title}</strong>
+                <small>{lesson.module}</small>
+                <div className="lesson-progress"><i style={{ width: `${28 + resolved.index % 5 * 8}%` }}></i><small><MaterialIcon>schedule</MaterialIcon>{lesson.duration}</small></div>
+              </div>
+              <button type="button" aria-label={`Open ${title}`} onClick={(event) => {
+                event.stopPropagation();
+                openLesson(lesson);
+              }}><MaterialIcon>play_arrow</MaterialIcon></button>
+            </article>
+            );
+          })}
+        </div>
+
+        <div className="curriculum-section-head" id="explore-skills">
+          <div>
+            <h2>Explore by Skill</h2>
+            <p>Browse lessons by what you want to learn.</p>
+          </div>
+          {sectionAction("View All Skills")}
+        </div>
+        <div className="skill-strip">
+          {skillCards.map(([icon, title, copy, count, image]) => (
+            <a className="skill-tile" href={searchHref(title)} key={title}>
+              <span className="skill-icon"><MaterialIcon>{icon}</MaterialIcon></span>
+              <div><strong>{title}</strong><p>{copy}</p><small>{count} <MaterialIcon>arrow_forward</MaterialIcon></small></div>
+              <img src={image} alt={`${title} lesson preview`} loading="lazy" decoding="async" />
+            </a>
+          ))}
+        </div>
+
+        <div className="curriculum-section-head" id="modules">
+          <div>
+            <h2>7 Modules • {totalLessons} Lessons</h2>
+            <p>A complete learning path from beginner to pro.</p>
+          </div>
+          {sectionAction("View Course Curriculum", courseHref)}
+        </div>
+        <div className="module-strip">
+          {modules.map(([number, icon, title, count]) => (
+            <button className="module-chip" type="button" onClick={handleOpen} key={number}>
+              <span className="module-icon"><MaterialIcon>{icon}</MaterialIcon></span>
+              <span className="module-number">{number}</span>
+              <strong>{title}</strong>
+              <small>{count}</small>
+              <MaterialIcon className="module-arrow">arrow_forward</MaterialIcon>
+            </button>
+          ))}
+        </div>
+
+        <div className="curriculum-section-head" id="popular-lessons">
+          <div>
+            <h2>Most Watched Lessons</h2>
+            <p>A complete learning path from beginner to pro.</p>
+          </div>
+          {sectionAction("View All Lessons", courseHref)}
+        </div>
+        <div className="watched-grid">
+          {watchedLessons.map((watched) => {
+            const resolved = relatedLesson(course, watched);
+            const title = resolved.video?.title || watched.title;
+            return (
+            <button className="watched-card" type="button" key={watched.title} onClick={() => openLesson(watched)}>
+              <div className="watched-media">
+                <img src={relatedLessonThumbnail(course, watched)} alt="" loading="lazy" decoding="async" onError={(event) => handleProjectImageError(event, watched.fallbackImage)} />
+                <span>{watched.duration}</span>
+              </div>
+              <strong>{title}</strong>
+              <small>{watched.module}</small>
+              <em><MaterialIcon>visibility</MaterialIcon>{watched.views}</em>
+            </button>
+            );
+          })}
+        </div>
+
+        <div className="curriculum-section-head" id="projects">
+          <div>
+            <h2>Build These Projects</h2>
+            <p>Apply what you learn with real-world projects.</p>
+          </div>
+          {sectionAction("View All Projects")}
+        </div>
+        <div className="project-grid">
+          {projects.map((project) => (
+            <button className="project-card" type="button" key={project.title} onClick={() => openLesson(project)}>
+              <img src={relatedLessonThumbnail(course, project)} alt="" loading="lazy" decoding="async" onError={(event) => handleProjectImageError(event, project.fallbackImage)} />
+              <div><strong>{project.title}</strong><p>{project.copy}</p><small><MaterialIcon>assignment</MaterialIcon>{project.count}</small></div>
+              <MaterialIcon>arrow_forward</MaterialIcon>
+            </button>
+          ))}
+        </div>
+
+        <h2 className="curriculum-standalone-heading">Your Learning Journey</h2>
+        <div className="journey-strip">
+          {["Beginner", "Create", "Grow", "Monetize", "Scale"].map((title, index) => (
+            <div className="journey-step" key={title}><span>{index + 1}</span><strong>{title}</strong><small>{["Learn the basics", "Build your skills", "Get an audience", "Turn skills into income", "Build your brand"][index]}</small><MaterialIcon>arrow_forward</MaterialIcon></div>
+          ))}
+        </div>
+
+        <div className="curriculum-cta">
+          <div>
+            <span><MaterialIcon>auto_awesome</MaterialIcon> Limited Time Offer</span>
+            <h2>Unlock Full Access for Just ₹1 Trial</h2>
+            <p>Get 7 days of unlimited access to the complete course, projects, and future updates.</p>
+          </div>
+          <div className="curriculum-cta-pills">
+            <small><MaterialIcon>video_library</MaterialIcon>{totalLessons} video lessons</small>
+            <small><MaterialIcon>assignment</MaterialIcon>Real projects</small>
+            <small><MaterialIcon>workspace_premium</MaterialIcon>Certificate</small>
+            <small><MaterialIcon>schedule</MaterialIcon>Learn at your pace</small>
+          </div>
+          <a href={route("payment.html")}>Start Your ₹1 Trial <MaterialIcon>arrow_forward</MaterialIcon></a>
+        </div>
+        {status === "loading" ? <p className="curriculum-status">Loading your live course catalog...</p> : null}
+      </div>
+    </section>
+  );
 }
 
 function HeroPlaceholderCard({ index, isCenter, tab }) {
@@ -328,17 +714,29 @@ function HeroCourseCard({ item, index, isCenter, hasAccess, isSaved, onOpen, onC
   const course = item.course || {};
   const progress = item.progress || progressFor(course);
   const id = courseId(course);
-  const title = item.type === "path" ? `${item.category} Learning Path` : (course.title || "Untitled course");
+  const isLesson = item.type === "lesson";
+  const lessonNumber = Math.max(0, Number(item.lessonIndex) || 0) + 1;
+  const title = isLesson
+    ? (item.video?.title || `Lesson ${lessonNumber}`)
+    : item.type === "path" ? `${item.category} Learning Path` : (course.title || "Untitled course");
   const category = item.type === "path" ? "Learning Path" : categoryName(course);
-  const image = window.EduNex?.courseImage?.(course) || course.thumbnail || course.image || "";
-  const label = item.type === "enrolled" ? "Continue Learning" : (item.type === "path" ? "Suggested Path" : category);
+  const image = isLesson
+    ? lessonImage(course, item.video)
+    : window.EduNex?.courseImage?.(course) || course.thumbnail || course.image || "";
+  const label = isLesson ? `Lesson ${lessonNumber}` : item.type === "enrolled" ? "Continue Learning" : (item.type === "path" ? "Suggested Path" : category);
   const lessonTitle = course.videos?.[progress.lessonIndex]?.title || `Lesson ${progress.lessonIndex + 1} of ${progress.total}`;
-  const href = item.type === "path"
+  const href = isLesson
+    ? lessonHref(course, item.lessonIndex)
+    : item.type === "enrolled"
+    ? lessonHref(course, progress.lessonIndex)
+    : item.type === "path"
     ? categoryHref(item.category || category)
     : courseDetailsHref(course);
 
   const openFromCard = () => {
     if (item.type === "path") onPath(item.category || category);
+    else if (isLesson && id) window.location.href = href;
+    else if (item.type === "enrolled" && id) onContinue(course);
     else if (id) onOpen(course);
   };
 
@@ -375,7 +773,26 @@ function HeroCourseCard({ item, index, isCenter, hasAccess, isSaved, onOpen, onC
       </div>
       <div className="hero-card-body">
         <a className="hero-card-title" href={href} onClick={(event) => event.stopPropagation()}>{title}</a>
-        {item.type === "enrolled" ? (
+        {isLesson ? (
+          <>
+            <div className="hero-card-author">from <span>{course.title || "Skillomate course"}</span></div>
+            <div className="hero-card-meta">
+              <span><i className="fas fa-play-circle" aria-hidden="true"></i> Lecture {lessonNumber} of {lessonCount(course) || "all"}</span>
+              <span><i className="fas fa-layer-group" aria-hidden="true"></i> {category}</span>
+              <span><i className="fas fa-clock" aria-hidden="true"></i> {item.video?.duration ? `${Math.ceil(Number(item.video.duration) / 60)} min` : "Self paced"}</span>
+              <span><i className="fas fa-language" aria-hidden="true"></i> {languageLabel(course)}</span>
+            </div>
+            <div className="hero-card-price"><strong>Lecture {lessonNumber}</strong></div>
+            <div className="hero-card-actions is-single">
+              <a className="hero-card-primary" href={href} onClick={(event) => {
+                event.stopPropagation();
+                if (onSuppressibleClick()) event.preventDefault();
+              }}>
+                Open Lecture
+              </a>
+            </div>
+          </>
+        ) : item.type === "enrolled" ? (
           <>
             <div className="hero-card-lesson">
               <span><i className="fas fa-play-circle" aria-hidden="true"></i> {lessonTitle}</span>
@@ -904,7 +1321,7 @@ export function HomePage() {
     window.location.href = courseDetailsHref(course);
   };
   const continueCourse = (course) => {
-    window.location.href = courseDetailsHref(course);
+    window.location.href = lessonHref(course, progressFor(course).lessonIndex);
   };
   const openPath = (category) => {
     if (category) window.location.href = categoryHref(category);
@@ -938,13 +1355,11 @@ export function HomePage() {
     window.location.href = value ? searchHref(value) : route("courses.html");
   };
 
-  const shownCategories = groupedCategories(courses).slice(0, 4);
   const searchSuggestions = uniqueLabels(courses.filter((course) => !course.isFallback).map((course) => course.title)).slice(0, 6);
   const autocompleteSuggestions = uniqueLabels([
     ...searchSuggestions,
     ...courses.filter((course) => !course.isFallback).map((course) => categoryName(course)),
   ]);
-  const popularCourses = courses.slice(0, 4);
   const activeRows = loop.rows.length ? loop.rows : Array.from({ length: 21 }, (_, index) => ({ loopIndex: index, placeholder: true }));
 
   return (
@@ -1053,110 +1468,7 @@ export function HomePage() {
           </div>
         </section>
 
-        <section className="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop mb-24">
-          <div className="text-center max-w-2xl mx-auto mb-10">
-            <div className="section-kicker justify-center">Skill Areas</div>
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Top Categories</h2>
-            <p className="text-on-surface-variant leading-relaxed">Focused tracks that help learners move from curiosity to practical, portfolio-ready skills.</p>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-gutter" id="homeCategoriesGrid">
-            {status === "loading" ? <div className="glass-card rounded-xl p-6">Loading real categories...</div> : null}
-            {status !== "loading" && !shownCategories.length ? <div className="glass-card rounded-xl p-6">No course categories found.</div> : null}
-            {shownCategories.map(([category, items]) => {
-              const course = items.find((item) => window.EduNex?.courseImage?.(item)) || items[0];
-              const videos = items.reduce((count, item) => count + lessonCount(item), 0);
-              return (
-                <div className="glass-card professional-card rounded-xl overflow-hidden cursor-pointer" role="link" tabIndex={0} key={category} onClick={() => openCourse(course)} onKeyDown={(event) => {
-                  if (event.key !== "Enter" && event.key !== " ") return;
-                  event.preventDefault();
-                  openCourse(course);
-                }}>
-                  <div className="h-44 relative overflow-hidden">
-                    <img className="w-full h-full object-cover" src={window.EduNex?.courseImage?.(course) || ""} alt={category} onError={(event) => handleCourseImageError(event, course)} />
-                    <div className="absolute top-4 left-4 bg-black/80 border border-primary/30 text-primary px-3 py-1 rounded-full text-[10px] font-bold uppercase">{items.length} courses</div>
-                  </div>
-                  <div className="p-6">
-                    <div className="text-primary text-xs font-semibold uppercase tracking-[.08em] mb-3">{videos || "Real"} Lessons</div>
-                    <h3 className="font-bold text-on-surface mb-2 leading-snug min-h-[48px]">{category}</h3>
-                    <p className="home-category-course text-on-surface-variant text-sm leading-relaxed mb-5">{course?.title || "Explore this Skillomate track"}</p>
-                    <a href={categoryHref(category)} className="text-primary font-semibold inline-flex items-center gap-2" onClick={(event) => event.stopPropagation()}>View More <MaterialIcon className="text-base">arrow_forward</MaterialIcon></a>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </section>
-
-        <section className="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop mb-24">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-gutter">
-            <div className="glass-card professional-card rounded-xl p-8 md:p-10">
-              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-primary/30 bg-primary/10 text-primary text-xs font-semibold uppercase tracking-[.08em] mb-6">
-                <MaterialIcon className="text-[16px]">bolt</MaterialIcon>
-                Limited Time Offer
-              </div>
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">Unlock Full Access for Just <span className="text-primary">₹1</span> Trial</h2>
-              <p className="text-on-surface-variant leading-relaxed mb-8">Experience the power of AI-driven education. Get 7 days of unlimited access to premium courses, mentorship, and project tools for the cost of a candy.</p>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-8">
-                <div className="rounded-2xl bg-white/[.035] border border-white/[.07] p-3 text-sm text-on-surface-variant">Verified certificates</div>
-                <div className="rounded-2xl bg-white/[.035] border border-white/[.07] p-3 text-sm text-on-surface-variant">AI tutors 24/7</div>
-                <div className="rounded-2xl bg-white/[.035] border border-white/[.07] p-3 text-sm text-on-surface-variant">Cloud lab access</div>
-              </div>
-              <a href="login.html" className="inline-flex bg-primary !text-[#FFFDF8] px-6 py-3 rounded-full font-bold hover:shadow-[0_0_18px_rgba(197,139,42,.32)] transition-all">Claim Your Trial Now</a>
-            </div>
-            <div className="rounded-xl p-8 md:p-10 bg-primary text-[#332820]">
-              <h2 className="ai-mentorship-heading font-bold mb-4">
-                <span className="flex items-center gap-1">
-                  <span className="text-[4rem] md:text-[5.25rem] leading-none">AI</span>
-                  <img
-                    className="-ml-2 h-20 w-20 md:h-24 md:w-24 object-contain"
-                    src="/assets/ai-bulb.png"
-                    alt=""
-                    aria-hidden="true"
-                    loading="lazy"
-                    decoding="async"
-                  />
-                </span>
-                <span className="block mt-2 text-4xl md:text-5xl">Mentorship Engine</span>
-              </h2>
-              <p className="text-[1.05rem] text-[#5F534A] leading-relaxed mb-8">Our neural engine maps your career goals to industry requirements, suggesting the exact skills you need to land your dream job.</p>
-              <button type="button" onClick={openNexAiEngine} className="inline-flex items-center justify-center gap-2 rounded-full border-0 bg-black px-8 py-3.5 text-[1.05rem] font-bold !text-white transition-colors hover:bg-[#171717] cursor-pointer">Explore Engine <MaterialIcon>arrow_forward</MaterialIcon></button>
-            </div>
-          </div>
-        </section>
-
-        <section className="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop mb-32">
-          <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
-            <div>
-              <div className="section-kicker">Catalog</div>
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">Popular Courses</h2>
-              <p className="text-on-surface-variant max-w-lg">Real Skillomate courses from the backend, shown with the current learning catalog.</p>
-            </div>
-            <a className="text-primary flex items-center gap-2 font-semibold hover:gap-4 transition-all" href="courses.html">
-              View All Courses
-              <MaterialIcon>trending_flat</MaterialIcon>
-            </a>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-gutter" id="homeCoursesGrid">
-            {status === "loading" ? <div className="glass-card rounded-xl p-6">Loading real Skillomate courses...</div> : null}
-            {status !== "loading" && !popularCourses.length ? <div className="glass-card rounded-xl p-6">No published courses found.</div> : null}
-            {popularCourses.map((course) => {
-              const category = categoryName(course);
-              return (
-                <div className="glass-card professional-card rounded-xl overflow-hidden" key={courseId(course)}>
-                  <div className="h-44 relative overflow-hidden">
-                    <img className="w-full h-full object-cover" src={window.EduNex?.courseImage?.(course) || ""} alt={course.title || "Untitled course"} onError={(event) => handleCourseImageError(event, course)} />
-                    <div className="absolute top-4 left-4 bg-black/80 border border-primary/30 text-primary px-3 py-1 rounded-full text-[10px] font-bold uppercase">{category}</div>
-                  </div>
-                  <div className="p-6">
-                    <div className="text-primary text-xs font-semibold uppercase tracking-[.08em] mb-3">{lessonCount(course)} Lessons</div>
-                    <h3 className="font-bold text-on-surface mb-5 leading-snug min-h-[48px]">{course.title || "Untitled course"}</h3>
-                    <button className="text-primary font-semibold inline-flex items-center gap-2" type="button" onClick={() => openCourse(course)}>Open Course <MaterialIcon className="text-base">arrow_forward</MaterialIcon></button>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </section>
+        <CurriculumShowcase courses={courses} status={status} onOpenCourse={openCourse} />
       </main>
     </div>
   );

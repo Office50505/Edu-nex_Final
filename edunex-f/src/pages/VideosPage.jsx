@@ -852,7 +852,8 @@ export function VideosPage() {
   const lessonSwipeRef = useRef({ active: false, pointerId: null, startX: 0, startY: 0, lastX: 0, lastY: 0, startedAt: 0, horizontal: false, vertical: false, suppressClickUntil: 0 });
   const query = queryParams();
   const selectedCourseId = query.get("courseId") || query.get("course") || query.get("id");
-  const selectedVideo = Number(query.get("video") || 0);
+  const selectedVideoParam = query.get("video") || query.get("videoId") || query.get("lesson") || "0";
+  const selectedVideoIndex = Number(selectedVideoParam);
   const [courses, setCourses] = useState([]);
   const [filter, setFilter] = useState("all");
   const [search, setSearch] = useState("");
@@ -860,7 +861,7 @@ export function VideosPage() {
   const [fallbackLesson,setFallbackLesson] = useState(null);
   const [autoplayLesson,setAutoplayLesson] = useState(false);
   const [playlistOpen,setPlaylistOpen] = useState(true);
-  const [activeIndex, setActiveIndex] = useState(Number.isFinite(selectedVideo) ? selectedVideo : 0);
+  const [activeIndex, setActiveIndex] = useState(Number.isFinite(selectedVideoIndex) ? selectedVideoIndex : 0);
   const [status, setStatus] = useState("Preparing course...");
   const [error, setError] = useState("");
   const [loadAttempt, setLoadAttempt] = useState(0);
@@ -931,7 +932,13 @@ export function VideosPage() {
           : response.status === 404 ? "This course could not be found." : "Could not load the course playlist. Please retry.");
         const nextCourse = normalizeCourse(data);
         if (cancelled) return;
-        const nextIndex = Math.max(0, Math.min(activeIndex, Math.max(nextCourse.videos.length - 1, 0)));
+        const requestedIndex = Number(selectedVideoParam);
+        const requestedById = Number.isFinite(requestedIndex) ? -1 : nextCourse.videos.findIndex((video) => {
+          const ids = [video?._id, video?.id, video?.videoId, video?.bunnyVideoId, video?.youtubeId].map((value) => String(value || ""));
+          return ids.includes(String(selectedVideoParam));
+        });
+        const rawIndex = requestedById >= 0 ? requestedById : (Number.isFinite(requestedIndex) ? requestedIndex : activeIndex);
+        const nextIndex = Math.max(0, Math.min(rawIndex, Math.max(nextCourse.videos.length - 1, 0)));
         setCourse(nextCourse);
         setCourses([nextCourse]);
         setActiveIndex(nextIndex);

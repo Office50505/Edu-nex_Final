@@ -137,7 +137,8 @@ function resetRateLimit(key) {
   authRateBuckets.delete(key);
 }
 
-function createTokens(userId, sessionId) {
+function createTokens(userId, sessionId, options = {}) {
+  const remember = options.remember === true;
   const accessToken = jwt.sign(
     { userId, sessionId },
     ACCESS_TOKEN_SECRET,
@@ -145,9 +146,9 @@ function createTokens(userId, sessionId) {
   );
 
   const refreshToken = jwt.sign(
-    { userId, sessionId },
+    { userId, sessionId, remember },
     REFRESH_TOKEN_SECRET,
-    { expiresIn: '7d' }
+    { expiresIn: remember ? '30d' : '7d' }
   );
 
   return { accessToken, refreshToken };
@@ -711,6 +712,7 @@ router.post('/password-reset/confirm', async (req, res) => {
 router.post('/login', async (req, res) => {
   try {
     const { mobileNumber, loginId, password, deviceToken } = req.body;
+    const remember = req.body.remember === true;
     const clientIp = getClientIp(req);
     const identifier = String(
       loginId ||
@@ -801,7 +803,7 @@ router.post('/login', async (req, res) => {
     );
 
     // Sign JWT with sessionId
-    const tokens = createTokens(user._id, sessionId);
+    const tokens = createTokens(user._id, sessionId, { remember });
     await persistSession({
       userId: user._id,
       sessionId,
@@ -856,7 +858,7 @@ router.post('/refresh', async (req, res) => {
       return res.status(401).json({ error: 'Session expired. Please log in again.' });
     }
 
-    const tokens = createTokens(user._id, sessionId);
+    const tokens = createTokens(user._id, sessionId, { remember: decoded.remember === true });
     await Session.updateOne(
       { user: user._id, sessionId },
       {

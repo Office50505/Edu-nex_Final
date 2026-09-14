@@ -87,6 +87,24 @@ target 'ProtectedVideo' do
       File.write(app_delegate_umbrella, cleaned) if cleaned != contents
     end
 
+    # RN 0.86's AppDelegate headers are visible from both node_modules and the
+    # React-Core-prebuilt xcframework. Add matching guards to both copies so
+    # Clang does not see duplicate Objective-C interfaces through header maps.
+    react_app_delegate_header_roots = [
+      File.join(__dir__, 'Pods', 'React-Core-prebuilt', 'React.xcframework', 'Headers', 'React_RCTAppDelegate'),
+      File.join(__dir__, '..', 'node_modules', 'react-native', 'Libraries', 'AppDelegate')
+    ]
+    react_app_delegate_header_roots.each do |root|
+      Dir.glob(File.join(root, '*.h')).each do |header|
+        guard = "SKILLOMATE_RN_#{File.basename(header).gsub(/[^A-Za-z0-9_]/, '_').upcase}"
+        contents = File.read(header)
+        next if contents.include?("#ifndef #{guard}")
+        File.chmod(0644, header) rescue nil
+        contents = contents.sub(/\A(?:#pragma once\n)?/, '')
+        File.write(header, "#ifndef #{guard}\n#define #{guard}\n#{contents}\n#endif /* #{guard} */\n")
+      end
+    end
+
     # This is necessary for Xcode 14, because it signs resource bundles by default
     # when building for devices.
     installer.target_installation_results.pod_target_installation_results

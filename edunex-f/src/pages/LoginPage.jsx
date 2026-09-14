@@ -30,18 +30,18 @@ function safeNext(defaultPath = "/dashboard.html") {
   }
 }
 
-async function requestLogin(loginId, password) {
+async function requestLogin(loginId, password, remember) {
   if (window.EduNex?.request) {
     return window.EduNex.request("/api/auth/login", {
       method: "POST",
-      body: JSON.stringify({ loginId, password }),
+      body: JSON.stringify({ loginId, password, remember }),
     });
   }
 
   const response = await fetch("/api/auth/login", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ loginId, password }),
+    body: JSON.stringify({ loginId, password, remember }),
   });
   const contentType = response.headers.get("content-type") || "";
   const text = await response.text();
@@ -57,18 +57,19 @@ async function requestLogin(loginId, password) {
   return data;
 }
 
-function saveAuth(data) {
+function saveAuth(data, remember) {
   if (window.EduNex?.saveAuth) {
-    window.EduNex.saveAuth(data, true);
+    window.EduNex.saveAuth(data, remember);
     return;
   }
+  const target = remember ? localStorage : sessionStorage;
   ["edunexAccessToken", "edunexRefreshToken", "edunexUser"].forEach((key) => {
     localStorage.removeItem(key);
     sessionStorage.removeItem(key);
   });
-  if (data?.accessToken) localStorage.setItem("edunexAccessToken", data.accessToken);
-  if (data?.refreshToken) localStorage.setItem("edunexRefreshToken", data.refreshToken);
-  if (data?.user) localStorage.setItem("edunexUser", JSON.stringify(data.user));
+  if (data?.accessToken) target.setItem("edunexAccessToken", data.accessToken);
+  if (data?.refreshToken) target.setItem("edunexRefreshToken", data.refreshToken);
+  if (data?.user) target.setItem("edunexUser", JSON.stringify(data.user));
 }
 
 function safeLoginError(error) {
@@ -117,8 +118,8 @@ export function LoginPage() {
     setError("");
     setLoading(true);
     try {
-      const data = await requestLogin(normalizePhone(trimmedLogin), trimmedPassword);
-      saveAuth(data);
+      const data = await requestLogin(normalizePhone(trimmedLogin), trimmedPassword, remember);
+      saveAuth(data, remember);
       window.dispatchEvent(new Event("edunex:auth-changed"));
       window.location.href = safeNext("/dashboard.html");
     } catch (loginError) {

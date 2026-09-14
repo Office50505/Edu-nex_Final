@@ -9,7 +9,6 @@ const PHONE_ERROR = "Please enter a valid 10-digit phone number.";
 const TERMS_ERROR = "Please agree to the Privacy Policy.";
 const NAME_ERROR = "Please enter your name.";
 const PASSWORD_ERROR = "Password must be at least 8 characters.";
-const PASSWORD_MATCH_ERROR = "Passwords do not match.";
 const VERIFY_FIRST_ERROR = "Please verify your mobile number first.";
 const SIGNUP_FALLBACK_ERROR = "Signup failed. Please try again.";
 const DEFAULT_OTP_LENGTH = 6;
@@ -115,11 +114,8 @@ export function SignupPage() {
   const [sendingOtp, setSendingOtp] = useState(false);
   const [verifyingOtp, setVerifyingOtp] = useState(false);
   const [creatingAccount, setCreatingAccount] = useState(false);
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [email, setEmail] = useState("");
+  const [fullName, setFullName] = useState("");
   const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
   const [gender, setGender] = useState("male");
   const [avatarTab, setAvatarTab] = useState("male");
   const [avatar, setAvatar] = useState({ src: "assets/male1.jpeg", name: "Learner", gender: "male" });
@@ -320,26 +316,20 @@ export function SignupPage() {
   const completeProfile = async () => {
     if (creatingAccount) return;
 
-    const fullName = [firstName.trim(), lastName.trim()].filter(Boolean).join(" ");
     const signupProfile = {
-      fullName,
-      email: email.trim(),
+      fullName: fullName.trim(),
       mobileNumber,
       gender,
       age,
       avatar: normalizedSignupAvatarPath(avatar.src),
     };
 
-    if (!fullName) {
+    if (!signupProfile.fullName) {
       setStep3Error(NAME_ERROR);
       return;
     }
     if (password.length < 8) {
       setStep3Error(PASSWORD_ERROR);
-      return;
-    }
-    if (password !== confirmPassword) {
-      setStep3Error(PASSWORD_MATCH_ERROR);
       return;
     }
     if (!signupToken) {
@@ -354,7 +344,6 @@ export function SignupPage() {
         method: "POST",
         body: JSON.stringify({
           fullName: signupProfile.fullName,
-          email: signupProfile.email || undefined,
           mobileNumber: signupProfile.mobileNumber,
           password,
           signupToken,
@@ -683,30 +672,14 @@ export function SignupPage() {
               </div>
             </div>
 
-            <div className="sp-row-2">
-              <div>
-                <label className="sp-field-label" htmlFor="firstNameInput">First Name</label>
-                <input className="sp-profile-input" id="firstNameInput" type="text" placeholder="e.g. Learner" autoComplete="given-name" aria-describedby="step3-err" value={firstName} onChange={(event) => setFirstName(event.target.value)} />
-              </div>
-              <div>
-                <label className="sp-field-label" htmlFor="lastNameInput">Last Name</label>
-                <input className="sp-profile-input" id="lastNameInput" type="text" placeholder="e.g. Rivers" autoComplete="family-name" aria-describedby="step3-err" value={lastName} onChange={(event) => setLastName(event.target.value)} />
-              </div>
-            </div>
-
             <div className="sp-profile-field">
-              <label className="sp-field-label" htmlFor="emailInput">Email Address <span style={{ color: "var(--gray)", fontWeight: 600 }}>(optional)</span></label>
-              <input className="sp-profile-input" id="emailInput" type="email" placeholder="e.g. alex@company.com" style={{ width: "100%" }} autoComplete="email" aria-describedby="step3-err" value={email} onChange={(event) => setEmail(event.target.value)} />
+              <label className="sp-field-label" htmlFor="fullNameInput">Enter your name</label>
+              <input className="sp-profile-input" id="fullNameInput" type="text" placeholder="e.g. Alex Rivers" style={{ width: "100%" }} autoComplete="name" aria-describedby="step3-err" value={fullName} onChange={(event) => setFullName(event.target.value)} />
             </div>
 
             <div className="sp-profile-field">
               <label className="sp-field-label" htmlFor="passwordInput">Password</label>
               <input className="sp-profile-input" id="passwordInput" type="password" placeholder="Minimum 8 characters" style={{ width: "100%" }} autoComplete="new-password" aria-describedby="step3-err" value={password} onChange={(event) => setPassword(event.target.value)} />
-            </div>
-
-            <div className="sp-profile-field">
-              <label className="sp-field-label" htmlFor="confirmPasswordInput">Confirm Password</label>
-              <input className="sp-profile-input" id="confirmPasswordInput" type="password" placeholder="Repeat your password" style={{ width: "100%" }} autoComplete="new-password" aria-describedby="step3-err" value={confirmPassword} onChange={(event) => setConfirmPassword(event.target.value)} />
             </div>
 
             <div className="sp-profile-field">
