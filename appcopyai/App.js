@@ -835,12 +835,16 @@ function buildYoutubePlayerHtml(videoId, origin) {
           if (func === 'playVideo') player.playVideo();
           else if (func === 'pauseVideo') player.pauseVideo();
           else if (func === 'seekTo') player.seekTo(Number(args[0]) || 0, args[1] !== false);
+          else if (func === 'seekAndPlay') {
+            player.seekTo(Number(args[0]) || 0, args[1] !== false);
+            player.playVideo();
+          }
           else if (func === 'mute') player.mute();
           else if (func === 'unMute') player.unMute();
           else if (func === 'setPlaybackRate') player.setPlaybackRate(Number(args[0]) || 1);
         } catch(e) {}
         postLegacyCommand(func, args);
-        if (func === 'playVideo') post({ type:'stateChange', playing: true, playerState: 1 });
+        if (func === 'playVideo' || func === 'seekAndPlay') post({ type:'stateChange', playing: true, playerState: 1 });
         else if (func === 'pauseVideo') post({ type:'stateChange', playing: false, playerState: 2 });
         emitState();
       });
@@ -925,6 +929,9 @@ function buildEmbedPlayerHtml(embedUrl, initialTime = 0) {
         player.on('pause', function() {
           post({ type:'stateChange', playing: false, playerState: 2 });
         });
+        player.on('buffering', function() {
+          post({ type:'stateChange', playing: false, playerState: 3 });
+        });
         try {
           player.getQualities(function(qs) {
             if (qs && qs.length) {
@@ -959,6 +966,18 @@ function buildEmbedPlayerHtml(embedUrl, initialTime = 0) {
         t = Number(t) || 0;
         try { player.setCurrentTime(t); } catch(e) {}
         playerMessage('setCurrentTime', t);
+      });
+    };
+    window.bunnySeekAndPlay = function(t) {
+      exec(function(){
+        t = Number(t) || 0;
+        try {
+          player.setCurrentTime(t);
+          player.play();
+        } catch(e) {}
+        playerMessage('setCurrentTime', t);
+        playerMessage('play');
+        post({ type:'stateChange', playing: true, playerState: 1 });
       });
     };
     window.bunnyMute  = function(m) {
@@ -1926,7 +1945,11 @@ function VideoItem({ courseId, user, video: videoProp, videoId: videoIdProp, isA
   const dragTargetRef = useRef(0);
   const initialSeekDoneRef = useRef(false);
   const autoPlayTimersRef = useRef([]);
+  const sendCmdRef = useRef(() => {});
+  const shouldBePlayingRef = useRef(isActive);
+  const lastProgressRef = useRef({ time: finiteSeconds(initialTime, 0), advancedAt: Date.now() });
   const [isPlaying, setIsPlaying] = useState(true);
+  const [isBuffering, setIsBuffering] = useState(isActive);
   const [isMuted, setIsMuted] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
@@ -1946,7 +1969,7 @@ function VideoItem({ courseId, user, video: videoProp, videoId: videoIdProp, isA
     player.timeUpdateEventInterval = 1;
   });
   const playbackStateRef = useRef(null);
-  playbackStateRef.current = { isActive, isPlaying, isMuted, playbackRate };
+  playbackStateRef.current = { isActive, isPlaying, isBuffering, isMuted, playbackRate, isEnded };
   const runNativePlayer = useCallback((operation) => {
     try {
       return operation(nativePlayer);
@@ -1966,12 +1989,14 @@ function VideoItem({ courseId, user, video: videoProp, videoId: videoIdProp, isA
   const queueAutoPlay = useCallback(() => {
     clearAutoPlayTimers();
     if (!isActive) return;
+    shouldBePlayingRef.current = true;
     setIsEnded(false);
     setIsPlaying(true);
+    setIsBuffering(true);
     [0, 180, 500, 1000].forEach(delay => {
       const timer = setTimeout(() => {
         if (!playbackStateRef.current?.isActive) return;
-        sendCmd("playVideo");
+        sendCmdRef.current("playVideo");
       }, delay);
       autoPlayTimersRef.current.push(timer);
     });
@@ -2017,6 +2042,9 @@ function VideoItem({ courseId, user, video: videoProp, videoId: videoIdProp, isA
     setDuration(0);
     setIsEnded(false);
     setIsPlaying(isActive);
+    setIsBuffering(isActive);
+    shouldBePlayingRef.current = isActive;
+    lastProgressRef.current = { time: startAt, advancedAt: Date.now() };
     setNativePlaybackFailed(false);
   }, [video?.youtubeId, video?.videoId, video?.bunnyGuid, video?.bunnyVideoId, video?._id, video?.videoUrl, video?.embedUrl, localPath, initialTime]);
 
@@ -2045,7 +2073,9 @@ function VideoItem({ courseId, user, video: videoProp, videoId: videoIdProp, isA
         const startAt = video.provider === 'aws_cloudfront' ? Math.max(cloudResume.current,finiteSeconds(initialTime,0)) : finiteSeconds(initialTime, 0);
         if (startAt > 0) setNativeTime(startAt);
         if (latest.isActive) {
+          shouldBePlayingRef.current = true;
           setIsPlaying(true);
+          setIsBuffering(true);
           playNativePlayer();
         }
       } catch (error) {
@@ -2065,7 +2095,9 @@ function VideoItem({ courseId, user, video: videoProp, videoId: videoIdProp, isA
   }, [nativeVideoSource, initialTime, canFallbackToEmbed, pauseNativePlayer, playNativePlayer, runNativePlayer, setNativeTime]);
 
   useEffect(() => {
+    shouldBePlayingRef.current = isActive;
     setIsPlaying(isActive);
+    setIsBuffering(isActive);
   }, [isActive]);
 
   useEffect(() => {
@@ -2104,21 +2136,39 @@ function VideoItem({ courseId, user, video: videoProp, videoId: videoIdProp, isA
   });
 
   useEventListener(nativePlayer, "playingChange", ({ isPlaying: nextPlaying }) => {
-    if (isNativeVideo) setIsPlaying(nextPlaying);
+    if (!isNativeVideo) return;
+    setIsPlaying(nextPlaying);
+    if (nextPlaying) setIsBuffering(false);
+    else setIsBuffering(Boolean(isActive && shouldBePlayingRef.current && !playbackStateRef.current?.isEnded));
   });
 
   useEventListener(nativePlayer, "playToEnd", () => {
     if (!isNativeVideo) return;
     const dur = finiteSeconds(nativePlayer.duration, duration);
     if (dur > 0) setCurrentTime(dur);
+    shouldBePlayingRef.current = false;
     setIsPlaying(false);
+    setIsBuffering(false);
     setIsEnded(true);
     markCompleteOnce();
     onEnded?.();
   });
 
   useEventListener(nativePlayer, "statusChange", ({ status }) => {
+    if (status === "loading" && isNativeVideo && isActive && shouldBePlayingRef.current) {
+      setIsBuffering(true);
+      return;
+    }
+    if (status === "readyToPlay" && isNativeVideo && isActive) {
+      setIsEnded(false);
+      setIsPlaying(true);
+      setIsBuffering(false);
+      playNativePlayer();
+      return;
+    }
+    if (status === "error") setIsBuffering(false);
     if (status === "error" && isNativeVideo && canFallbackToEmbed) {
+      setIsBuffering(false);
       setNativePlaybackFailed(true);
       setDuration(0);
       setCurrentTime(0);
@@ -2131,6 +2181,10 @@ function VideoItem({ courseId, user, video: videoProp, videoId: videoIdProp, isA
       if (func === "playVideo") playNativePlayer();
       else if (func === "pauseVideo") pauseNativePlayer();
       else if (func === "seekTo") setNativeTime(clampSeconds(args[0], duration));
+      else if (func === "seekAndPlay") {
+        setNativeTime(clampSeconds(args[0], duration));
+        playNativePlayer();
+      }
       else if (func === "setPlaybackRate") setNativeRate(args[0] || 1);
       else if (func === "mute") setNativeMuted(true);
       else if (func === "unMute") setNativeMuted(false);
@@ -2138,7 +2192,13 @@ function VideoItem({ courseId, user, video: videoProp, videoId: videoIdProp, isA
     }
     if (isBunny) {
       const map = { playVideo:"bunnyPlay()", pauseVideo:"bunnyPause()", mute:"bunnyMute(true)", unMute:"bunnyMute(false)" };
-      const call = func === "setPlaybackRate" ? `bunnySpeed(${args[0]})` : func === "seekTo" ? `bunnySeek(${args[0]})` : map[func];
+      const call = func === "setPlaybackRate"
+        ? `bunnySpeed(${args[0]})`
+        : func === "seekAndPlay"
+          ? `bunnySeekAndPlay(${args[0]})`
+          : func === "seekTo"
+            ? `bunnySeek(${args[0]})`
+            : map[func];
       if (call) {
         webViewRef.current?.injectJavaScript(`
           (function(){
@@ -2173,14 +2233,17 @@ function VideoItem({ courseId, user, video: videoProp, videoId: videoIdProp, isA
       `);
     }
   }
+  sendCmdRef.current = sendCmd;
 
   useEffect(() => {
     if (isActive) {
       queueAutoPlay();
     } else {
+      shouldBePlayingRef.current = false;
       clearAutoPlayTimers();
       sendCmd("pauseVideo");
       setIsPlaying(false);
+      setIsBuffering(false);
     }
   }, [isActive, isNativeVideo, isBunny, queueAutoPlay, clearAutoPlayTimers]);
 
@@ -2209,6 +2272,14 @@ function VideoItem({ courseId, user, video: videoProp, videoId: videoIdProp, isA
     if (!isNativeVideo || !isActive) return;
     const dur = finiteSeconds(nextDuration, duration);
     const ct = clampSeconds(nextTime, dur);
+    const now = Date.now();
+    const lastProgress = lastProgressRef.current;
+    if (Math.abs(ct - lastProgress.time) > 0.05) {
+      lastProgressRef.current = { time: ct, advancedAt: now };
+      if (shouldBePlayingRef.current) setIsBuffering(false);
+    } else if (shouldBePlayingRef.current && !nextPlaying && now - lastProgress.advancedAt > 1200) {
+      setIsBuffering(true);
+    }
     if (!initialSeekDoneRef.current && initialTime > 0 && dur > 0) {
       initialSeekDoneRef.current = true;
       const startAt = clampSeconds(initialTime, dur);
@@ -2231,13 +2302,16 @@ function VideoItem({ courseId, user, video: videoProp, videoId: videoIdProp, isA
     setCurrentTime(ct);
     if (dur > 0) setDuration(dur);
     setIsPlaying(!!nextPlaying);
+    if (nextPlaying) setIsBuffering(false);
+    else if (shouldBePlayingRef.current && !(dur > 0 && ct >= dur - 0.25)) setIsBuffering(true);
     if (dur > 0 && ct >= dur - 0.25 && !nextPlaying) {
+      shouldBePlayingRef.current = false;
+      setIsBuffering(false);
       setIsEnded(true); onProgress?.(ct, dur); markCompleteOnce(); onEnded?.();
     } else {
       setIsEnded(false);
     }
     if (dur > 0 && ct / dur >= VIDEO_COMPLETE_THRESHOLD) markCompleteOnce();
-    const now = Date.now();
     if (dur > 0 && now - progressSentAtRef.current >= 5000) {
       progressSentAtRef.current = now; onProgress?.(ct, dur);
     }
@@ -2256,14 +2330,41 @@ function VideoItem({ courseId, user, video: videoProp, videoId: videoIdProp, isA
         return;
       }
       if (d.type === "stateChange") {
-        if (typeof d.playing === "boolean") setIsPlaying(d.playing);
-        if (d.playerState === 0) setIsEnded(true);
+        if (d.playerState === 0) {
+          shouldBePlayingRef.current = false;
+          setIsPlaying(false);
+          setIsBuffering(false);
+          setIsEnded(true);
+          return;
+        }
+        if (d.playerState === 3) {
+          setIsPlaying(false);
+          setIsBuffering(Boolean(isActive && shouldBePlayingRef.current));
+          return;
+        }
+        if (typeof d.playing === "boolean") {
+          setIsPlaying(d.playing);
+          setIsBuffering(d.playing ? false : Boolean(isActive && shouldBePlayingRef.current));
+        }
         return;
       }
       if (d.type === "qualities") { setQualities(d.qualities || []); return; }
       if (d.type === "timeUpdate") {
         const nextDuration = finiteSeconds(d.duration, duration);
         const nextTime = clampSeconds(d.currentTime, nextDuration);
+        const now = Date.now();
+        const lastProgress = lastProgressRef.current;
+        const progressed = Math.abs(nextTime - lastProgress.time) > 0.05;
+        if (progressed) {
+          lastProgressRef.current = { time: nextTime, advancedAt: now };
+          if (shouldBePlayingRef.current) {
+            setIsPlaying(true);
+            setIsBuffering(false);
+          }
+        } else if (shouldBePlayingRef.current && isActive && now - lastProgress.advancedAt > 1200) {
+          setIsPlaying(false);
+          setIsBuffering(true);
+        }
         if (isDraggingRef.current) {
           if (nextDuration > 0) setDuration(nextDuration);
           return;
@@ -2274,11 +2375,26 @@ function VideoItem({ courseId, user, video: videoProp, videoId: videoIdProp, isA
         }
         setCurrentTime(nextTime);
         if (nextDuration > 0) setDuration(nextDuration);
-        if (d.playerState === 0) { setIsPlaying(false); setIsEnded(true); onProgress?.(nextTime, nextDuration); markCompleteOnce(); onEnded?.(); }
-        else if (d.playerState === 1) { setIsPlaying(true); setIsEnded(false); }
-        else if (d.playerState === 2 || d.playerState === 5) setIsPlaying(false);
+        if (d.playerState === 0) {
+          shouldBePlayingRef.current = false;
+          setIsPlaying(false);
+          setIsBuffering(false);
+          setIsEnded(true);
+          onProgress?.(nextTime, nextDuration);
+          markCompleteOnce();
+          onEnded?.();
+        } else if (d.playerState === 1) {
+          setIsPlaying(true);
+          setIsBuffering(false);
+          setIsEnded(false);
+        } else if (d.playerState === 3) {
+          setIsPlaying(false);
+          setIsBuffering(Boolean(isActive && shouldBePlayingRef.current));
+        } else if (d.playerState === 2 || d.playerState === 5) {
+          setIsPlaying(false);
+          setIsBuffering(Boolean(isActive && shouldBePlayingRef.current));
+        }
         if (nextDuration > 0 && nextTime / nextDuration >= VIDEO_COMPLETE_THRESHOLD) markCompleteOnce();
-        const now = Date.now();
         if (nextDuration > 0 && now - progressSentAtRef.current >= 5000) {
           progressSentAtRef.current = now; onProgress?.(nextTime, nextDuration);
         }
@@ -2287,10 +2403,12 @@ function VideoItem({ courseId, user, video: videoProp, videoId: videoIdProp, isA
   }
 
   function togglePlay() {
-    const nowPlaying = !isPlaying;
-    if (isPlaying) clearAutoPlayTimers();
-    sendCmd(isPlaying ? "pauseVideo" : "playVideo");
-    setIsPlaying(nowPlaying);
+    const shouldPause = shouldBePlayingRef.current && (isPlaying || isBuffering);
+    shouldBePlayingRef.current = !shouldPause;
+    setIsBuffering(false);
+    if (shouldPause) clearAutoPlayTimers();
+    sendCmd(shouldPause ? "pauseVideo" : "playVideo");
+    setIsPlaying(!shouldPause);
   }
   function toggleMute() { sendCmd(isMuted ? "unMute" : "mute"); setIsMuted(m => !m); }
   function selectSpeed(r) { sendCmd("setPlaybackRate", [r]); setPlaybackRate(r); setShowSpeedPicker(false); }
@@ -2314,11 +2432,20 @@ function VideoItem({ courseId, user, video: videoProp, videoId: videoIdProp, isA
     seekGuardRef.current = { until: Date.now() + 3000, target: t };
     setCurrentTime(t);
     if (duration <= 0 || t < duration - 0.5) setIsEnded(false);
-    sendCmd("seekTo", [t, true]);
-    if (isActive) queueAutoPlay();
+    if (isActive) {
+      shouldBePlayingRef.current = true;
+      setIsPlaying(true);
+      setIsBuffering(true);
+      sendCmd("seekAndPlay", [t, true]);
+      queueAutoPlay();
+    } else {
+      sendCmd("seekTo", [t, true]);
+    }
   }
 
   function restart() {
+    shouldBePlayingRef.current = true;
+    setIsBuffering(true);
     sendCmd("seekTo", [0, true]); sendCmd("playVideo");
     setIsEnded(false); setIsPlaying(true); setCurrentTime(0);
   }
@@ -2327,8 +2454,16 @@ function VideoItem({ courseId, user, video: videoProp, videoId: videoIdProp, isA
     const t = clampSeconds(currentTime + secs, duration);
     seekGuardRef.current = { until: Date.now() + 3000, target: t };
     if (duration <= 0 || t < duration - 0.5) setIsEnded(false);
-    setCurrentTime(t); sendCmd("seekTo", [t, true]);
-    if (isActive) queueAutoPlay();
+    setCurrentTime(t);
+    if (isActive) {
+      shouldBePlayingRef.current = true;
+      setIsPlaying(true);
+      setIsBuffering(true);
+      sendCmd("seekAndPlay", [t, true]);
+      queueAutoPlay();
+    } else {
+      sendCmd("seekTo", [t, true]);
+    }
     setSeekAnim(secs > 0 ? "right" : "left");
     setTimeout(() => setSeekAnim(null), 600);
   }
@@ -2383,11 +2518,21 @@ function VideoItem({ courseId, user, video: videoProp, videoId: videoIdProp, isA
           style={StyleSheet.absoluteFill}
         />
       )}
-      {!isPlaying && !isEnded && (
+      {isBuffering && !isEnded ? (
+        <View
+          style={s.pauseOverlay}
+          pointerEvents="none"
+          accessible
+          accessibilityRole="progressbar"
+          accessibilityLabel="Buffering video"
+        >
+          <ActivityIndicator size="large" color="#fff" />
+        </View>
+      ) : !isPlaying && !isEnded ? (
         <View style={s.pauseOverlay} pointerEvents="none">
           <Ionicons name="play-circle" size={72} color="rgba(255,255,255,0.85)" />
         </View>
-      )}
+      ) : null}
       {isEnded ? (
         <TouchableOpacity onPress={restart} style={s.restartOverlay} accessibilityRole="button" accessibilityLabel="Replay lesson">
           <Ionicons name="refresh-circle" size={72} color="rgba(255,255,255,0.9)" />
@@ -2404,7 +2549,7 @@ function VideoItem({ courseId, user, video: videoProp, videoId: videoIdProp, isA
             onPress={handleCenterTap}
             style={s.tapCenter}
             accessibilityRole="button"
-            accessibilityLabel={isPlaying ? "Pause video" : "Play video"}
+            accessibilityLabel={isPlaying || isBuffering ? "Pause video" : "Play video"}
           />
           <Pressable
             onPress={() => handleSideTap("right")}
@@ -2501,7 +2646,7 @@ function VideoItem({ courseId, user, video: videoProp, videoId: videoIdProp, isA
       >
         <Ionicons name={isMuted ? "volume-mute" : "volume-high"} size={20} color="#fff" />
       </TouchableOpacity>
-      {!isEnded && (
+      {!isEnded && !isBuffering && (
         <TouchableOpacity
           onPress={togglePlay}
           style={s.playPauseButton}
