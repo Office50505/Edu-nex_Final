@@ -14,6 +14,7 @@ const {
   resendMobileOtp,
   verifyMobileOtp: verifyMobileOtpCode,
 } = require('../services/otpService');
+const { isAuthRateLimitDisabled } = require('../services/rateLimitToggle');
 
 const router = express.Router();
 const isProduction = process.env.NODE_ENV === 'production';
@@ -30,7 +31,6 @@ const REFRESH_TOKEN_SECRET = envSecret('JWT_REFRESH_SECRET', 'edunex-development
 const SIGNUP_TOKEN_SECRET = envSecret('JWT_SIGNUP_SECRET', 'edunex-development-signup-secret');
 const realOtp = (process.env.OTP_PROVIDER || process.env.OTP_DELIVERY_PROVIDER || (isProduction ? 'msg91' : 'demo')).toLowerCase() === 'msg91';
 const AUTO_VERIFY_OTP = !isProduction && !realOtp && process.env.AUTO_VERIFY_OTP === 'true';
-const DISABLE_AUTH_RATE_LIMIT = process.env.DISABLE_AUTH_RATE_LIMIT === 'true';
 
 const authRateBuckets = new Map();
 const authRateConfig = {
@@ -65,7 +65,7 @@ function getRateLimitEntry(key) {
 }
 
 function isRateLimited(key) {
-  if (DISABLE_AUTH_RATE_LIMIT) return 0;
+  if (isAuthRateLimitDisabled()) return 0;
 
   const entry = getRateLimitEntry(key);
   const now = Date.now();
@@ -76,7 +76,7 @@ function isRateLimited(key) {
 }
 
 function recordRateLimitFailure(key, config) {
-  if (DISABLE_AUTH_RATE_LIMIT) return 0;
+  if (isAuthRateLimitDisabled()) return 0;
 
   const now = Date.now();
   const entry = getRateLimitEntry(key);
@@ -105,7 +105,7 @@ function recordRateLimitFailure(key, config) {
 }
 
 function recordRateLimitAttempt(key, config) {
-  if (DISABLE_AUTH_RATE_LIMIT) return 0;
+  if (isAuthRateLimitDisabled()) return 0;
 
   const now = Date.now();
   const entry = getRateLimitEntry(key);

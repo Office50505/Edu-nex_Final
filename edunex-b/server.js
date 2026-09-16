@@ -7,6 +7,11 @@ const net = require('net');
 const path = require('path');
 const fs = require('fs');
 const helmet = require('helmet');
+const {
+  areRateLimitsDisabled,
+  canDisableRateLimitsInProduction,
+  isAuthRateLimitDisabled,
+} = require('./services/rateLimitToggle');
 const initialNodeEnv = process.env.NODE_ENV;
 require('dotenv').config({ path: path.join(__dirname, '.env') });
 if (initialNodeEnv !== 'production') {
@@ -95,8 +100,8 @@ if (isProduction && ['simulated', 'simulation', 'mock', 'local'].includes(PAYMEN
   process.exit(1);
 }
 
-if (isProduction && process.env.DISABLE_AUTH_RATE_LIMIT === 'true') {
-  console.error('DISABLE_AUTH_RATE_LIMIT must not be true in production.');
+if (isProduction && isAuthRateLimitDisabled() && !canDisableRateLimitsInProduction()) {
+  console.error('Rate limit disabling env vars require ALLOW_RATE_LIMIT_DISABLE_IN_PRODUCTION=true in production.');
   process.exit(1);
 }
 
@@ -487,6 +492,10 @@ function getClientIp(req) {
 }
 
 function getAdminLoginRateState(req) {
+  if (areRateLimitsDisabled()) {
+    return { key: getClientIp(req), blockedSeconds: 0, state: { count: 0, firstAttemptAt: Date.now(), blockedUntil: 0 } };
+  }
+
   const key = getClientIp(req);
   const now = Date.now();
   const current = adminLoginRateBuckets.get(key) || { count: 0, firstAttemptAt: now, blockedUntil: 0 };
@@ -505,6 +514,8 @@ function getAdminLoginRateState(req) {
 }
 
 function recordAdminLoginFailure(key, state) {
+  if (areRateLimitsDisabled()) return;
+
   const next = {
     ...state,
     count: state.count + 1,

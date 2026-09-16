@@ -9,6 +9,7 @@ const Policy=require('../models/CertificationPolicy');
 const Assessment=require('../models/AssessmentResult');
 const Course=require('../models/Course');
 const User=require('../models/User');
+const {areRateLimitsDisabled}=require('../services/rateLimitToggle');
 const router=express.Router();
 const auth=requireCompatibleAuth();
 const run=fn=>async(req,res)=>{try{await fn(req,res);}catch(e){res.status(e.statusCode||500).json({error:e.statusCode?e.message:'Could not complete certification request. Please retry.'});}};
@@ -60,7 +61,7 @@ router.post('/learning/:courseId/assessment',auth,run(async(req,res)=>{
   const _id=rules.identity(req.compatUser._id,ctx.course._id,ctx.version);
   const score=Math.round(100*ctx.questions.filter((q,i)=>q.answer===answers[i]).length/ctx.questions.length);
   try { await Assessment.updateOne({_id},{$setOnInsert:{userId:String(req.compatUser._id),courseId:String(ctx.course._id),version:ctx.version}},{upsert:true}); } catch(e){if(e.code!==11000)throw e;}
-  const result=await Assessment.findOneAndUpdate({_id,$or:[{lastAttemptAt:{$lt:new Date(Date.now()-30000)}},{lastAttemptAt:null}]},{$set:{lastAttemptAt:new Date()},$max:{score,passed:score>=70}},{new:true}).lean();
+  const result=await Assessment.findOneAndUpdate(areRateLimitsDisabled()?{_id}:{_id,$or:[{lastAttemptAt:{$lt:new Date(Date.now()-30000)}},{lastAttemptAt:null}]},{$set:{lastAttemptAt:new Date()},$max:{score,passed:score>=70}},{new:true}).lean();
   if(!result)throw service.fail('Wait 30 seconds before submitting again.',429);
   const status=await service.state(req.compatUser,ctx);
   res.json({score,passed:score>=70,eligibility:status,certificate:await service.issue(req.compatUser,ctx,status)});
