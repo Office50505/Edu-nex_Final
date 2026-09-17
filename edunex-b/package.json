@@ -17,7 +17,7 @@
     "k6:complete:local": "node scripts/run-k6-complete-local.mjs",
     "test:ai": "node --test tests/ai-chat-history.test.cjs tests/tutor-knowledge.test.cjs",
     "eval:ai": "node scripts/eval-tutor.cjs",
-    "test:integrations": "node --test tests/auth-navigation.test.cjs tests/otp.test.cjs tests/razorpay.test.cjs",
+    "test:integrations": "node --test tests/auth-navigation.test.cjs tests/otp.test.cjs tests/password-reset.test.cjs tests/razorpay.test.cjs",
     "integrations:check": "node scripts/check-integrations.cjs",
     "payment:create-plan": "node scripts/create-razorpay-plan.cjs",
     "test:maintenance": "node --test tests/admin-maintenance.test.cjs tests/system-health.test.cjs",

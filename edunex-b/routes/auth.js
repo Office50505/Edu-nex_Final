@@ -667,7 +667,8 @@ router.post('/password-reset/confirm', async (req, res) => {
       return res.status(400).json({ error: 'Invalid or expired reset code' });
     }
 
-    if (!AUTO_VERIFY_OTP) {
+    {
+      // Recovery must prove phone ownership even when signup auto-verification is enabled.
       const otpResult = await verifyMobileOtpCode(user.mobileNumber || normalizedMobile, otp);
       if (!otpResult.ok) {
         recordRateLimitFailure(phoneKey, authRateConfig.otpByPhone);

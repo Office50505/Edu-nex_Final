@@ -5,9 +5,9 @@ import { BrandLogo } from "../components/BrandLogo.jsx";
 import { runLegacyPage } from "../legacyRuntime.js";
 import { usePageStyle } from "../hooks/usePageStyle.js";
 import { route } from "../lib/routes.js";
+import { PasswordRecovery } from "../components/PasswordRecovery.jsx";
 
 const EMPTY_LOGIN_MESSAGE = "Please enter your mobile number and password.";
-const FORGOT_PASSWORD_MESSAGE = "Password recovery is not available on this local build yet. Please contact Skillomate support for account help.";
 const FALLBACK_LOGIN_MESSAGE = "Could not sign in. Please try again.";
 
 function normalizePhone(value) {
@@ -102,6 +102,8 @@ export function LoginPage() {
   const [remember, setRemember] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [recovering, setRecovering] = useState(false);
+  const [notice, setNotice] = useState("");
   const [error, setError] = useState(() => readSessionNotice());
 
   usePageStyle("react-page-style-login", loginPage.styles);
@@ -153,7 +155,10 @@ export function LoginPage() {
   };
 
   const showForgotPasswordHelp = () => {
-    setError(FORGOT_PASSWORD_MESSAGE);
+    setError("");
+    setNotice("");
+    setPassword("");
+    setRecovering(true);
   };
 
   return (
@@ -186,6 +191,12 @@ export function LoginPage() {
         </div>
 
         <div className="lp-right">
+          {recovering ? <PasswordRecovery initialPhone={loginId} onBack={() => setRecovering(false)} onComplete={(phone) => {
+            setLoginId(phone);
+            setPassword("");
+            setRecovering(false);
+            setNotice("Password updated. Sign in with your new password.");
+          }} /> :
           <form className="lp-form-box" onSubmit={handleSubmit}>
             <h1 className="lp-login-title">Welcome Back</h1>
             <p className="lp-subtitle">Enter your credentials to access your AI learning dashboard.</p>
@@ -211,7 +222,7 @@ export function LoginPage() {
             <div className="lp-form-group">
               <div className="lp-label-row">
                 <label htmlFor="passInput">Password</label>
-                <button type="button" className="lp-forgot" onClick={showForgotPasswordHelp}>Forgot?</button>
+                <button type="button" className="lp-forgot" disabled={loading} onClick={showForgotPasswordHelp}>Forgot?</button>
               </div>
               <div className="lp-input-wrap">
                 <i className="fas fa-lock" aria-hidden="true"></i>
@@ -245,6 +256,7 @@ export function LoginPage() {
               /> Remember me for 30 days
             </label>
 
+            {notice && <p role="status" style={{ color: "#86efac", marginBottom: 16 }}>{notice}</p>}
             <p className="lp-err" id="lp-err" style={{ display: error ? "block" : "none" }} role="alert" aria-live="assertive">
               {error}
             </p>
@@ -259,7 +271,7 @@ export function LoginPage() {
               <a href={route("privacy.html")}>Privacy Policy</a>
               <a href="help.html">Help Center</a>
             </div>
-          </form>
+          </form>}
         </div>
       </main>
     </div>
