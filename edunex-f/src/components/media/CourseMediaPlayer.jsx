@@ -82,22 +82,28 @@ export function CourseMediaPlayer({ course, lesson, lessonIndex, autoNext, autop
   useEffect(()=>{if(access.error){videoRef.current?.pause();setBuffering(false);}},[access.error]);
   function toggle(){const video=videoRef.current;if(!video||!source||access.error||error)return;if(video.paused)video.play().catch(()=>setNotice('Playback could not start. Press play or retry.'));else video.pause();wake();}
   useEffect(()=>()=>clearTimeout(tapTimer.current),[]);
-  function mobileControls(){return window.matchMedia?.('(max-width: 820px), (pointer: coarse)').matches;}
   function videoTap(event){
-    if(!mobileControls()){toggle();return;}
     wake();
     const rect=event.currentTarget.getBoundingClientRect();
     const fraction=rect.width ? (event.clientX-rect.left)/rect.width : .5;
     const side=fraction<.35 ? -1 : fraction>.65 ? 1 : 0;
     const now=Date.now();
-    if(side && tapRef.current?.side===side && now-tapRef.current.at<300){
+    if(tapRef.current?.side===side && now-tapRef.current.at<300){
       clearTimeout(tapTimer.current);tapRef.current=null;
-      seek(side*10);setNotice(side<0?'−10 seconds':'+10 seconds');return;
+      if(side){seek(side*10,true);setNotice(side<0?'−10 seconds':'+10 seconds');}
+      else full();
+      return;
     }
     clearTimeout(tapTimer.current);tapRef.current={side,at:now};
     tapTimer.current=setTimeout(()=>{tapRef.current=null;toggle();},300);
   }
-  function seek(delta){const video=videoRef.current;if(video)video.currentTime=seekTarget(video.currentTime+delta,time.duration);wake();}
+  function seek(delta,preservePlayback=true){
+    const video=videoRef.current;if(!video)return;
+    const shouldContinue=preservePlayback&&(latest.current.playing||(!video.paused&&!video.ended));
+    video.currentTime=seekTarget(video.currentTime+delta,time.duration);
+    if(shouldContinue)video.play().catch(()=>setNotice('Playback could not resume after seeking.'));
+    wake();
+  }
   async function full(){try{const wrapper=frameRef.current.closest('#playerFrame');if(wrapper?.classList.contains('is-app-fullscreen')){wrapper.classList.remove('is-app-fullscreen');document.body.classList.remove('has-edunex-player-fullscreen');return;}if(document.fullscreenElement)await document.exitFullscreen();else if(frameRef.current.requestFullscreen)await frameRef.current.requestFullscreen();else if(videoRef.current.webkitEnterFullscreen)videoRef.current.webkitEnterFullscreen();else setNotice('Fullscreen is unavailable on this device.');}catch{setNotice('Fullscreen is unavailable on this device.');}}
   async function pip(){try{if(document.pictureInPictureElement)await document.exitPictureInPicture();else await videoRef.current.requestPictureInPicture();}catch{setNotice('Picture-in-picture is unavailable for this video.');}}
   function sleepAfter(minutes){clearTimeout(sleepTimer.current);setSleep(minutes);if(minutes)sleepTimer.current=setTimeout(()=>{videoRef.current?.pause();setSleep(0);setNotice('Sleep timer paused playback.');},minutes*60000);}
@@ -105,7 +111,7 @@ export function CourseMediaPlayer({ course, lesson, lessonIndex, autoNext, autop
   function key(event){if(event.altKey||event.ctrlKey||event.metaKey)return;if(event.key==='Escape'){closeMenu();return;}if(event.target.closest('input,select,textarea,button,[contenteditable]'))return;const k=event.key.toLowerCase();if([' ','k','arrowleft','arrowright','m','f'].includes(k)){event.preventDefault();event.stopPropagation();wake();if(k===' '||k==='k')toggle();if(k==='arrowleft')seek(-10);if(k==='arrowright')seek(10);if(k==='m')videoRef.current.muted=!videoRef.current.muted;if(k==='f')full();}}
   const failure=access.error||error,visible=awake||!playing||menu||!!failure;
   return <section className={`sm-player ${visible?'sm-awake':''} ${fullscreen?'sm-fullscreen':''}`} ref={frameRef} tabIndex={0} aria-label={`${lesson.title} video player`} onKeyDown={key} onPointerMove={wake} onPointerDown={wake} onFocus={wake}>
-    <video ref={videoRef} playsInline preload="metadata" aria-label={lesson.title} onClick={videoTap} onDoubleClick={()=>{if(!mobileControls())full();}}/>
+    <video ref={videoRef} playsInline preload="metadata" aria-label={lesson.title} onClick={videoTap} onDoubleClick={event=>event.preventDefault()}/>
     {!source&&!failure?<div className="sm-status" role="status">Authorizing playback…</div>:null}
     {!playing&&!buffering&&!failure&&source&&time.current===0?<button className="sm-big-play" onClick={toggle} aria-label="Start video"><PlayerIcon name="play"/></button>:null}
     {buffering&&!failure?<div className="sm-status" role="status">Loading video…</div>:null}
