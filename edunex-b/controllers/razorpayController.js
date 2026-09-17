@@ -5,20 +5,23 @@ const Subscription = require('../models/Subscription');
 const Order = require('../models/Order');
 const User = require('../models/User');
 const rzp = require('../services/razorpayService');
+const modes = require('../services/paymentMode');
+const billingMode = billing => billing?.mode || rzp.legacyMode();
 const fail = (message, status = 409) => Object.assign(new Error(message), { status });
 const wrap = fn => async (req, res) => { try { await fn(req, res); } catch (error) { res.status(error.status || 500).json({ error: error.status ? error.message : 'Billing is temporarily unavailable. Please retry.' }); } };
 
 async function reconcile(billing) {
   if (!billing?.subscriptionId) return null;
+  const mode = billingMode(billing);
   const lease = crypto.randomUUID();
   const locked = await Billing.findOneAndUpdate({ _id: billing._id, subscriptionId: billing.subscriptionId,
     $or: [{ leaseUntil: { $lt: new Date() } }, { leaseUntil: null }] }, { $set: { lease, leaseUntil: new Date(Date.now() + 180000) } }, { new: true });
   if (!locked) throw fail('Payment verification is in progress. Please retry shortly.', 503);
   try {
-    const remote = await rzp.api(`/subscriptions/${encodeURIComponent(billing.subscriptionId)}`);
+    const remote = await rzp.api(`/subscriptions/${encodeURIComponent(billing.subscriptionId)}`, 'GET', undefined, billingMode(billing));
     const allInvoices = [];
     for (let skip = 0; skip < 500; skip += 100) {
-      const page = await rzp.api(`/invoices?subscription_id=${encodeURIComponent(billing.subscriptionId)}&count=100&skip=${skip}`);
+      const page = await rzp.api(`/invoices?subscription_id=${encodeURIComponent(billing.subscriptionId)}&count=100&skip=${skip}`, 'GET', undefined, mode);
       allInvoices.push(...(page.items || []));
       if ((page.items || []).length < 100) break;
       if (skip === 400) throw fail('Billing history needs operator reconciliation.', 503);
@@ -26,11 +29,11 @@ async function reconcile(billing) {
     const invoices = allInvoices.filter(invoice => invoice.subscription_id === billing.subscriptionId && invoice.status === 'paid' && invoice.payment_id)
       .sort((a, b) => (b.billing_end || b.paid_at || 0) - (a.billing_end || a.paid_at || 0))
       .filter(invoice => !invoice.billing_end || invoice.billing_end * 1000 > Date.now()).slice(0, 6);
-    const payments = await Promise.all(invoices.map(async invoice => ({ invoice, payment: await rzp.api(`/payments/${encodeURIComponent(invoice.payment_id)}`) })));
+    const payments = await Promise.all(invoices.map(async invoice => ({ invoice, payment: await rzp.api(`/payments/${encodeURIComponent(invoice.payment_id)}`, 'GET', undefined, mode) })));
     const state = rzp.entitlement(billing, remote, payments);
     const terminal = ['cancelled', 'completed', 'expired'].includes(remote.status);
     const subscription = await Subscription.findOneAndUpdate({ user: billing._id }, { $set: {
-      gateway: 'razorpay', razorpaySubscriptionId: remote.id, razorpayStatus: remote.status,
+      gateway: 'razorpay', razorpayMode: mode, razorpaySubscriptionId: remote.id, razorpayStatus: remote.status,
       ...state, amount: billing.monthlyAmount, nextBillingAt: !terminal && remote.charge_at ? new Date(remote.charge_at * 1000) : null,
       ...(terminal ? { cancelledAt: new Date((remote.ended_at || Math.floor(Date.now() / 1000)) * 1000) } : {}),
     }, $setOnInsert: { user: billing._id, phonePeMerchantId: 'razorpay' } }, { upsert: true, new: true, runValidators: true });
@@ -38,7 +41,7 @@ async function reconcile(billing) {
       // Keep the legacy unique transaction key populated; existing PhonePe indexes need no destructive migration.
       await Order.updateOne({ phonePeMerchantTransactionId: `razorpay:${payment.id}` }, { $set: {
         status: payment.status === 'captured' ? 'paid' : 'failed', refundedAmount: payment.amount_refunded || 0,
-      }, $setOnInsert: { user: billing._id, subscription: subscription._id, gateway: 'razorpay', razorpayPaymentId: payment.id,
+      }, $setOnInsert: { user: billing._id, subscription: subscription._id, gateway: 'razorpay', razorpayMode: mode, razorpayPaymentId: payment.id,
         razorpaySubscriptionId: remote.id, totalAmount: payment.amount,
         orderType: invoice.billing_start ? 'subscription_charge' : 'trial_charge', paidAt: new Date(payment.created_at * 1000) } }, { upsert: true });
     }
@@ -52,15 +55,15 @@ async function reconcile(billing) {
   }
 }
 function checkoutResponse(billing, user) {
-  return { gateway: 'razorpay', subscriptionId: billing.subscriptionId, keyId: rzp.config().keyId,
+  return { gateway: 'razorpay', subscriptionId: billing.subscriptionId, mode: billingMode(billing), keyId: rzp.config(billingMode(billing)).keyId,
     trialEndsAt: billing.trialEnd, prefill: { name: user.fullName || '', contact: user.mobileNumber || '', email: user.email || '' } };
 }
 exports.pricing = wrap(async (_req, res) => {
-  const c = rzp.config();
-  res.json({ gateway: process.env.PAYMENT_GATEWAY_MODE || 'razorpay', trialAmountPaise: c.trialAmount, subscriptionAmountPaise: c.monthlyAmount, trialHours: c.trialHours, currency: 'INR', billingCycles: c.cycles });
+  const c = rzp.config(await modes.activeMode());
+  res.json({ mode: c.mode, gateway: process.env.PAYMENT_GATEWAY_MODE || 'razorpay', trialAmountPaise: c.trialAmount, subscriptionAmountPaise: c.monthlyAmount, trialHours: c.trialHours, currency: 'INR', billingCycles: c.cycles });
 });
 exports.initiate = wrap(async (req, res) => {
-  const c = rzp.requireConfig();
+  const c = rzp.requireConfig(await modes.activeMode());
   if (!req.user.isMobileVerified) throw fail('Verify your mobile number before subscribing.', 403);
   if (req.body.mandateConsent !== true) throw fail('Confirm the recurring payment terms before continuing.', 400);
   const type = req.body.paymentType === 'monthly' ? 'monthly' : 'trial';
@@ -70,7 +73,8 @@ exports.initiate = wrap(async (req, res) => {
   if (type === 'trial' && (existing?.trialStartedAt || await Order.exists({ user: req.user._id, orderType: 'trial_charge', status: 'paid' }))) throw fail('You have already used the trial. Choose the monthly plan.');
   let billing = await Billing.findById(req.user._id);
   if (billing?.phase === 'ready') {
-    const remote = await rzp.api(`/subscriptions/${encodeURIComponent(billing.subscriptionId)}`);
+    if (billingMode(billing) !== c.mode) throw fail('An unfinished checkout exists in the previous gateway mode. Cancel it before starting a new checkout.');
+    const remote = await rzp.api(`/subscriptions/${encodeURIComponent(billing.subscriptionId)}`, 'GET', undefined, billingMode(billing));
     if (remote.status === 'created' && (!remote.expire_by || remote.expire_by * 1000 > Date.now())) {
       if (billing.paymentType !== type) throw fail('An unfinished checkout exists. Cancel it before choosing another plan.');
       return res.json(checkoutResponse(billing, req.user));
@@ -78,17 +82,17 @@ exports.initiate = wrap(async (req, res) => {
     if (!['cancelled', 'expired', 'completed'].includes(remote.status)) throw fail('A mandate already exists. Check subscription status before retrying.');
     await Billing.updateOne({ _id: billing._id, subscriptionId: billing.subscriptionId }, { $set: { phase: 'closed' } });
   }
-  const plan = await rzp.api(`/plans/${encodeURIComponent(c.planId)}`);
+  const plan = await rzp.api(`/plans/${encodeURIComponent(c.planId)}`, 'GET', undefined, c.mode);
   if (plan.period !== 'monthly' || plan.interval !== 1 || plan.item?.amount !== c.monthlyAmount || plan.item?.currency !== 'INR') throw fail('Razorpay plan must match the configured INR monthly price.', 503);
   const attempt = crypto.randomUUID();
   const payload = rzp.createPayload(c, type, attempt);
   try {
-    billing = await Billing.findOneAndUpdate({ _id: req.user._id, phase: 'closed' }, { $set: { attempt, phase: 'creating', paymentType: type,
+    billing = await Billing.findOneAndUpdate({ _id: req.user._id, phase: 'closed' }, { $set: { attempt, mode: c.mode, phase: 'creating', paymentType: type,
       planId: c.planId, trialAmount: c.trialAmount, monthlyAmount: c.monthlyAmount, trialEnd: payload.start_at ? new Date(payload.start_at * 1000) : null },
       $unset: { subscriptionId: 1 } }, { upsert: true, new: true });
   } catch (error) { if (error.code === 11000) throw fail('Checkout creation is already in progress or needs reconciliation. Please contact support before trying again.'); throw error; }
   try {
-    const remote = await rzp.api('/subscriptions', 'POST', payload);
+    const remote = await rzp.api('/subscriptions', 'POST', payload, c.mode);
     billing = await Billing.findOneAndUpdate({ _id: billing._id, attempt }, { $set: { phase: 'ready', subscriptionId: remote.id } }, { new: true });
     res.status(201).json(checkoutResponse(billing, req.user));
   } catch (error) {
@@ -101,7 +105,7 @@ exports.verify = wrap(async (req, res) => {
   const billing = await Billing.findById(req.user._id);
   const { razorpay_payment_id: paymentId, razorpay_subscription_id: subscriptionId, razorpay_signature: signature } = req.body;
   if (!billing?.subscriptionId || subscriptionId !== billing.subscriptionId || typeof paymentId !== 'string' || !/^pay_[a-zA-Z0-9]+$/.test(paymentId)) throw fail('Invalid checkout result.', 400);
-  if (!rzp.validSignature(`${paymentId}|${billing.subscriptionId}`, signature, rzp.requireConfig().secret)) throw fail('Invalid payment signature.', 400);
+  if (!rzp.validSignature(`${paymentId}|${billing.subscriptionId}`, signature, rzp.requireConfig(billingMode(billing)).secret)) throw fail('Invalid payment signature.', 400);
   const subscription = await reconcile(billing);
   res.json({ verified: true, accessGranted: ['trial', 'active'].includes(subscription.status), status: subscription.status });
 });
@@ -118,15 +122,17 @@ exports.status = wrap(async (req, res) => {
 exports.cancel = wrap(async (req, res) => {
   const billing = await Billing.findById(req.user._id);
   if (!billing?.subscriptionId) throw fail('No Razorpay subscription found.', 404);
-  const remote = await rzp.api(`/subscriptions/${encodeURIComponent(billing.subscriptionId)}`);
-  if (!['cancelled', 'expired', 'completed'].includes(remote.status)) await rzp.api(`/subscriptions/${encodeURIComponent(billing.subscriptionId)}/cancel`, 'POST', { cancel_at_cycle_end: 0 });
+  const remote = await rzp.api(`/subscriptions/${encodeURIComponent(billing.subscriptionId)}`, 'GET', undefined, billingMode(billing));
+  if (!['cancelled', 'expired', 'completed'].includes(remote.status)) await rzp.api(`/subscriptions/${encodeURIComponent(billing.subscriptionId)}/cancel`, 'POST', { cancel_at_cycle_end: 0 }, billingMode(billing));
   await reconcile(billing);
   res.json({ message: 'Auto-renewal cancelled. Any paid access remains available until its expiry.' });
 });
 exports.webhook = wrap(async (req, res) => {
-  if (!Buffer.isBuffer(req.body) || !rzp.validSignature(req.body, req.get('x-razorpay-signature'), rzp.config().webhookSecret)) throw fail('Invalid webhook signature.', 400);
+  const signedModes = Buffer.isBuffer(req.body) ? ['test', 'live'].filter(mode => rzp.validSignature(req.body, req.get('x-razorpay-signature'), rzp.config(mode).webhookSecret)) : [];
+  if (signedModes.length !== 1) throw fail('Invalid or ambiguous webhook signature. Use different webhook secrets for test and live.', 400);
+  const mode = signedModes[0];
   const payload = JSON.parse(req.body.toString('utf8'));
-  const eventId = req.get('x-razorpay-event-id') || crypto.createHash('sha256').update(req.body).digest('hex');
+  const eventId = `${mode}:${req.get('x-razorpay-event-id') || crypto.createHash('sha256').update(req.body).digest('hex')}`;
   if ((await Webhook.findById(eventId))?.processedAt) return res.json({ ok: true });
   let subscriptionId = payload.payload?.subscription?.entity?.id || payload.payload?.invoice?.entity?.subscription_id;
   const paymentId = payload.payload?.payment?.entity?.id || payload.payload?.refund?.entity?.payment_id;
@@ -134,14 +140,15 @@ exports.webhook = wrap(async (req, res) => {
     const order = await Order.findOne({ razorpayPaymentId: paymentId });
     subscriptionId = order?.razorpaySubscriptionId;
     if (!subscriptionId) {
-      const payment = await rzp.api(`/payments/${encodeURIComponent(paymentId)}`);
-      if (payment.invoice_id) subscriptionId = (await rzp.api(`/invoices/${encodeURIComponent(payment.invoice_id)}`)).subscription_id;
+      const payment = await rzp.api(`/payments/${encodeURIComponent(paymentId)}`, 'GET', undefined, mode);
+      if (payment.invoice_id) subscriptionId = (await rzp.api(`/invoices/${encodeURIComponent(payment.invoice_id)}`, 'GET', undefined, mode)).subscription_id;
     }
   }
   let billing = subscriptionId ? await Billing.findOne({ subscriptionId }) : null;
   // Recover an upstream create that succeeded before a local timeout or process crash.
   const attempt = payload.payload?.subscription?.entity?.notes?.checkout_attempt;
-  if (!billing && subscriptionId && attempt) billing = await Billing.findOneAndUpdate({ attempt, phase: { $in: ['creating', 'uncertain'] } }, { $set: { phase: 'ready', subscriptionId } }, { new: true });
+  if (!billing && subscriptionId && attempt) billing = await Billing.findOneAndUpdate({ attempt, ...(mode === rzp.legacyMode() ? { $or: [{ mode }, { mode: { $exists: false } }] } : { mode }), phase: { $in: ['creating', 'uncertain'] } }, { $set: { phase: 'ready', subscriptionId } }, { new: true });
+  if (billing && billingMode(billing) !== mode) throw fail('Webhook mode does not match the subscription.', 400);
   if (billing) await reconcile(billing);
   await Webhook.updateOne({ _id: eventId }, { $set: { event: payload.event, processedAt: new Date() } }, { upsert: true });
   res.json({ ok: true });

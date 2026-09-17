@@ -8,6 +8,7 @@ const orderSchema = new mongoose.Schema({
   gateway: { type: String, default: 'phonepe' },
   phonePeMerchantTransactionId: { type: String, required: true, unique: true },
   razorpayPaymentId: String,
+  razorpayMode: { type: String, enum: ['test', 'live'] },
   razorpaySubscriptionId: String,
   refundedAmount: { type: Number, default: 0 },
   phonePeTransactionId: { type: String, default: null },

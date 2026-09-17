@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const schema = new mongoose.Schema({
   _id: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
   attempt: String,
+  mode: { type: String, enum: ['test', 'live'] },
   phase: { type: String, enum: ['creating', 'ready', 'closed', 'uncertain'], required: true },
   subscriptionId: String,
   paymentType: { type: String, enum: ['trial', 'monthly'] },

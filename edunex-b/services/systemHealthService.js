@@ -30,9 +30,20 @@ async function systemHealth({ env = process.env, connection, Course, RazorpayBil
   configured('media', 'Integrations', 'Bunny video', ['BUNNY_STREAM_LIBRARY_ID', 'BUNNY_STREAM_API_KEY'], 'Library and API credentials are present. Video playback has not been tested.');
   const gateway = String(env.PAYMENT_GATEWAY_MODE || '').toLowerCase();
   if (gateway === 'razorpay') {
-    configured('payments', 'Payments', 'Razorpay checkout', ['RAZORPAY_KEY_ID', 'RAZORPAY_KEY_SECRET', 'RAZORPAY_PLAN_ID', 'RAZORPAY_WEBHOOK_SECRET'], 'Checkout configuration is present. No charge or mandate was created.');
-    const expected = env.NODE_ENV === 'production' ? 'rzp_live_' : 'rzp_test_';
-    add('payment-mode', 'Payments', 'Payment key mode', String(env.RAZORPAY_KEY_ID || '').startsWith(expected) ? 'unverified' : 'attention', 'Configuration only', String(env.RAZORPAY_KEY_ID || '').startsWith(expected) ? `Key prefix matches ${env.NODE_ENV === 'production' ? 'production' : 'test'} mode; credential validity is unverified.` : 'Payment key mode does not match the backend environment.', 'Use test keys for development and live keys for production.');
+    let payment;
+    try {
+      if (env === process.env) {
+        const modes = require('./paymentMode');
+        const mode = await modes.activeMode();
+        const c = require('./razorpayService').config(mode);
+        payment = { mode, ...c };
+      } else payment = { mode: env.RAZORPAY_MODE || (String(env.RAZORPAY_KEY_ID || '').startsWith('rzp_live_') ? 'live' : 'test'), keyId: env.RAZORPAY_KEY_ID, secret: env.RAZORPAY_KEY_SECRET, planId: env.RAZORPAY_PLAN_ID, webhookSecret: env.RAZORPAY_WEBHOOK_SECRET };
+      const missing = [['keyId','RAZORPAY_KEY_ID'], ['secret','RAZORPAY_KEY_SECRET'], ['planId','RAZORPAY_PLAN_ID'], ['webhookSecret','RAZORPAY_WEBHOOK_SECRET']].filter(([key]) => !payment[key]).map(([,name]) => name);
+      add('payments', 'Payments', 'Razorpay checkout', missing.length ? 'attention' : 'unverified', 'Configuration only', missing.length ? `Missing for ${payment.mode}: ${missing.join(', ')}` : `Configuration present for ${payment.mode} mode. No payment was created.`);
+      const matches = String(payment.keyId || '').startsWith(`rzp_${payment.mode}_`);
+      add('payment-mode', 'Payments', 'Payment key mode', matches ? 'unverified' : 'attention', 'Configuration only', matches ? `${payment.mode} mode selected. Credential validity is unverified.` : 'Key prefix does not match the selected gateway mode.', 'Manage Test/Live mode in Admin Settings.');
+    } catch { add('payments', 'Payments', 'Razorpay checkout', 'error', 'Configuration check', 'Payment mode configuration could not be read.'); }
+
   } else add('payments', 'Payments', 'Payment gateway', 'attention', 'Configuration only', 'Razorpay is not the selected gateway. Legacy or simulated checkout requires separate validation.');
   if (databaseReady) {
     await Promise.all([

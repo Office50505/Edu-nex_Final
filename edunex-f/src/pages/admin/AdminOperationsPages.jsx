@@ -1,3 +1,4 @@
+import { PaymentGatewaySettings } from './PaymentGatewaySettings.jsx';
 import { useEffect, useMemo, useState } from "react";
 import { AdminShell, Message } from "./AdminShell.jsx";
 import { adminJson, formatDate, formatNumber, formatWatchDuration, getAdmin, requireAdmin } from "./adminApi.js";
@@ -303,19 +304,17 @@ export function AdminSettingsPage() {
   const { loading, error, health } = useOperationsData({ health: true });
   const admin = getAdmin() || { name: "Skillomate Admin", role: "admin" };
   const checks = health?.checks || [];
-  const paymentMode = checks.find((check) => check.id === "payment-mode");
   const cache = checks.find((check) => check.id === "cache");
   const settings = useMemo(() => [
     ["Admin profile", admin.name || "Skillomate Admin", admin.role || "admin"],
     ["Theme preference", localStorage.getItem("edunexAdminTheme") || "dark", "Saved locally"],
-    ["Payment mode", paymentMode?.status || "Not checked", paymentMode?.detail || "No payment status returned"],
     ["Cache backend", cache?.status || "Not checked", cache?.detail || "No cache status returned"],
     ["Session", "Active", "Use Log out from the sidebar to end this admin session"],
-  ], [admin.name, admin.role, paymentMode, cache]);
+  ], [admin.name, admin.role, cache]);
   return (
     <AdminShell activePage="settings" title="Admin Settings" subtitle="Profile, session, environment readiness, and workspace preferences.">
       <Message text={error} type="error" />
-      <PlaceholderNote>Backend API not connected for profile edits and feature toggles yet. Environment status values are read from system health.</PlaceholderNote>
+      <PaymentGatewaySettings />
       {loading ? <div className="loading-state">Loading settings...</div> : (
         <StatusTable columns={["Setting", "Value", "Detail"]} rows={settings.map(([name, value, detail]) => ({ id: name, cells: [name, value, detail] }))} />
       )}

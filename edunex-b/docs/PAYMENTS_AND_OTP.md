@@ -6,11 +6,11 @@ Use `OTP_PROVIDER=msg91` and `PAYMENT_GATEWAY_MODE=razorpay`. `OTP_DELIVERY_PROV
 
 Required MSG91 values: `MSG91_AUTH_KEY`, `MSG91_TEMPLATE_ID`, `MSG91_BASE_URL=https://control.msg91.com/api/v5`.
 
-Required Razorpay values: `RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET`, `RAZORPAY_PLAN_ID`, `RAZORPAY_WEBHOOK_SECRET` (a separate secret matching the webhook dashboard setting).
+Legacy single-mode Razorpay values: `RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET`, `RAZORPAY_PLAN_ID`, `RAZORPAY_WEBHOOK_SECRET` (a separate secret matching the webhook dashboard setting).
 
 Pricing: `TRIAL_AMOUNT_PAISE=100`, `SUBSCRIPTION_AMOUNT_PAISE=50000`, `TRIAL_DURATION_HOURS=24`, `SUBSCRIPTION_TOTAL_COUNT=120`. The checkout page gets these values from `/api/payment/config`. The plan must be monthly, interval 1, INR, and exactly match the configured monthly amount, without additional tax/quantity. A change in price requires a matching new provider plan for new subscriptions; existing attempts keep their recorded prices.
 
-Development requires `rzp_test_` keys; production requires `rzp_live_` keys. Plans, subscriptions and webhook configuration are separate between test/live modes. Never put key secrets or MSG91 auth keys in frontend variables.
+The selected gateway mode requires matching `rzp_test_` or `rzp_live_` keys, independently of `NODE_ENV`. Plans, subscriptions and webhook configuration are separate between test/live modes. Never put key secrets or MSG91 auth keys in frontend variables.
 
 ## Razorpay dashboard and plan
 
@@ -52,3 +52,67 @@ MongoDB stores delivery cooldowns, expiry, verification attempt counts and one-t
 - Frontend: `npm run build`.
 
 The browser tests and actual SMS/Checkout/mandate lifecycle must still be completed with working credentials/dashboard configuration before production rollout.
+
+
+## Admin Test/Live gateway selection
+
+Admin → Settings → Razorpay gateway selects the mode for all **new** checkouts.
+Select Test or Live and Apply. The server checks credentials are configured,
+verifies the plan through a read-only Razorpay request, then stores the choice in
+MongoDB. No restart is needed for subsequent mode switches. Environment changes
+still need a restart. Secrets never appear in the admin response.
+
+Configure these four fields separately for each mode:
+`RAZORPAY_TEST_KEY_ID`, `RAZORPAY_TEST_KEY_SECRET`, `RAZORPAY_TEST_PLAN_ID`,
+`RAZORPAY_TEST_WEBHOOK_SECRET`, and the corresponding `RAZORPAY_LIVE_*` fields.
+Both webhook configurations point to `/api/webhooks/razorpay`; use distinct
+webhook secrets so the server can authenticate the mode independently of the
+current checkout selection. Test keys must begin `rzp_test_`, live keys `rzp_live_`.
+
+The generic `RAZORPAY_KEY_ID/KEY_SECRET/PLAN_ID/WEBHOOK_SECRET` fields remain a
+fallback only for the legacy mode. By default this is inferred from the generic
+key ID; explicitly set `RAZORPAY_LEGACY_MODE=test` (or `live`, according to the
+actual old subscriptions) before replacing generic keys. Preserve the original
+credentials in that mode's scoped fields. Existing records without a mode are
+interpreted using this legacy mode; **do not guess or change it after migration**.
+The initial mode is `RAZORPAY_MODE` if supplied, otherwise the legacy mode. Once
+saved by an administrator, the database selection takes precedence.
+
+New billing records, subscriptions and orders store their originating mode.
+Verification, reconciliation, cancellation and webhooks use that recorded mode,
+not the current admin selection. Switching does not cancel existing mandates.
+Users must cancel an unfinished checkout in the other mode before starting a new
+one. Test payments can grant app access in this shared application: select Test
+only when you intend to expose test checkout to all learners.
+
+### ₹1 trial → ₹499 monthly
+
+Create a **₹499 INR plan, every one month**, independently in Test and Live.
+The plan itself does not encode the trial. Set:
+
+```dotenv
+TRIAL_AMOUNT_PAISE=100
+TRIAL_DURATION_HOURS=24
+SUBSCRIPTION_AMOUNT_PAISE=49900
+```
+
+The backend adds the ₹1 upfront amount and schedules the first recurring payment
+24 hours after **checkout creation** via `start_at`. Checkout expires after ten
+minutes. This existing implementation does not promise a full 24 hours measured
+from successful payment; completing checkout later shortens access by that delay.
+Monthly renewal follows the provider's billing schedule. Mandate authorization
+alone does not grant access; captured payments are verified. Bank collection
+success and exact debit time are not guaranteed by a configured plan.
+
+The old configuration used 50000 paise. Explicit `.env` values override the new
+49900 default; update the deployed environment and use a matching plan before
+switching. Previously created subscriptions retain their stored amount and plan.
+
+### Verification and rollout
+
+Run `node --test tests/payment-mode.test.cjs tests/razorpay.test.cjs
+ tests/cancel-account-billing.test.cjs tests/system-health.test.cjs` from edunex-b
+(as one command), plus the frontend payment settings component tests and build.
+Deploy backend and frontend together, preserving `.env` and uploads. The new
+`PaymentSettings` model needs normal application database write access. No
+payment, mandate, or plan is created by saving the admin setting.

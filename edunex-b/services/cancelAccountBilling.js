@@ -7,11 +7,12 @@ async function cancelAccountBilling(billing, subscriptions) {
   }
   const ids = new Set([billing?.subscriptionId, ...subscriptions.map(s=>s.razorpaySubscriptionId)].filter(Boolean));
   for (const id of ids) {
+    const mode = id === billing?.subscriptionId ? billing.mode : subscriptions.find(s => s.razorpaySubscriptionId === id)?.razorpayMode;
     const path = `/subscriptions/${encodeURIComponent(id)}`;
-    let remote = await rzp.api(path);
+    let remote = await rzp.api(path, 'GET', undefined, mode);
     if (!terminal.has(remote.status)) {
-      await rzp.api(`${path}/cancel`, 'POST', {cancel_at_cycle_end:0});
-      remote = await rzp.api(path);
+      await rzp.api(`${path}/cancel`, 'POST', {cancel_at_cycle_end:0}, mode);
+      remote = await rzp.api(path, 'GET', undefined, mode);
     }
     if (!terminal.has(remote.status)) throw new Error('Subscription cancellation is still processing. Please retry account deletion shortly.');
   }

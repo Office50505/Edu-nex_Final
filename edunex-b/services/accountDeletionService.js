@@ -39,7 +39,7 @@ async function deleteUserAccount(userId) {
   const billing = await RazorpayBilling.findById(userId);
   const userIdString = String(user._id);
   const subscriptions = await Subscription.find({ user: user._id })
-    .select('_id phonePeMandateId status gateway razorpaySubscriptionId')
+    .select('_id phonePeMandateId status gateway razorpaySubscriptionId razorpayMode')
     .lean();
   const subscriptionIds = subscriptions.map((subscription) => subscription._id);
   try {

@@ -1255,6 +1255,7 @@ app.use('/api', require('./routes/deletionRequests'));
 app.use('/api', require('./routes/playback'));
 app.use('/api', require('./routes/certification'));
 app.use('/api/admin', require('./routes/adminHealth'));
+app.use('/api/admin', require('./routes/paymentSettings'));
 app.use('/api/auth', authRoutes);
 app.use('/api/ai', aiRoutes);
 app.use('/api', paymentRoutes);

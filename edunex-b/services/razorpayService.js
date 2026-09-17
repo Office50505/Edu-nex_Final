@@ -1,29 +1,36 @@
 const crypto = require('node:crypto');
 
-function config() {
+function legacyMode() {
+  const explicit = process.env.RAZORPAY_LEGACY_MODE;
+  if (explicit === 'test' || explicit === 'live') return explicit;
+  return String(process.env.RAZORPAY_KEY_ID || '').startsWith('rzp_live_') ? 'live' : 'test';
+}
+function config(mode = legacyMode()) {
+  if (!['test', 'live'].includes(mode)) throw Object.assign(new Error('Choose test or live payment mode.'), { status: 400 });
+  const prefix = `RAZORPAY_${mode.toUpperCase()}_`;
+  const field = name => process.env[prefix + name] || (mode === legacyMode() ? process.env['RAZORPAY_' + name] : '') || '';
   const value = {
-    keyId: process.env.RAZORPAY_KEY_ID || '', secret: process.env.RAZORPAY_KEY_SECRET || '',
-    webhookSecret: process.env.RAZORPAY_WEBHOOK_SECRET || '', planId: process.env.RAZORPAY_PLAN_ID || '',
-    trialAmount: Number(process.env.TRIAL_AMOUNT_PAISE || 100), monthlyAmount: Number(process.env.SUBSCRIPTION_AMOUNT_PAISE || 50000),
+    mode, keyId: field('KEY_ID'), secret: field('KEY_SECRET'),
+    webhookSecret: field('WEBHOOK_SECRET'), planId: field('PLAN_ID'),
+    trialAmount: Number(process.env.TRIAL_AMOUNT_PAISE || 100), monthlyAmount: Number(process.env.SUBSCRIPTION_AMOUNT_PAISE || 49900),
     trialHours: Number(process.env.TRIAL_DURATION_HOURS || 24), cycles: Number(process.env.SUBSCRIPTION_TOTAL_COUNT || 120),
   };
   if (![value.trialAmount, value.monthlyAmount, value.trialHours, value.cycles].every(n => Number.isSafeInteger(n) && n > 0)) throw new Error('Invalid billing amount, duration or cycle configuration.');
   return value;
 }
-function credentials() {
-  const c = config();
+function credentials(mode) {
+  const c = config(mode);
   if (!c.keyId || !c.secret) throw Object.assign(new Error('Razorpay needs key ID and key secret.'), { status: 503 });
-  if (process.env.NODE_ENV === 'production' && !c.keyId.startsWith('rzp_live_')) throw Object.assign(new Error('Use Razorpay live keys in production.'), { status: 503 });
-  if (process.env.NODE_ENV !== 'production' && !c.keyId.startsWith('rzp_test_')) throw Object.assign(new Error('Use Razorpay test keys outside production.'), { status: 503 });
+  if (!c.keyId.startsWith(`rzp_${c.mode}_`)) throw Object.assign(new Error('Razorpay key prefix does not match the selected payment mode.'), { status: 503 });
   return c;
 }
-function requireConfig() {
-  const c = credentials();
-  if (!c.planId || !c.webhookSecret) throw Object.assign(new Error('Set RAZORPAY_PLAN_ID and RAZORPAY_WEBHOOK_SECRET before checkout.'), { status: 503 });
+function requireConfig(mode) {
+  const c = credentials(mode);
+  if (!c.planId || !c.webhookSecret) throw Object.assign(new Error(`Set the ${c.mode} Razorpay plan ID and webhook secret before checkout.`), { status: 503 });
   return c;
 }
-async function api(route, method = 'GET', body) {
-  const c = credentials();
+async function api(route, method = 'GET', body, mode) {
+  const c = credentials(mode);
   const response = await fetch(`https://api.razorpay.com/v1${route}`, {
     method, signal: AbortSignal.timeout(15000),
     headers: { Authorization: `Basic ${Buffer.from(`${c.keyId}:${c.secret}`).toString('base64')}`, 'Content-Type': 'application/json' },
@@ -59,4 +66,4 @@ function entitlement(billing, remote, payments, now = Date.now()) {
   };
   return { status: ['created', 'authenticated'].includes(remote.status) ? 'pending' : 'expired' };
 }
-module.exports = { config, requireConfig, api, validSignature, createPayload, entitlement };
+module.exports = { legacyMode, config, requireConfig, api, validSignature, createPayload, entitlement };

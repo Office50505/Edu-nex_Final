@@ -4,6 +4,7 @@ const subscriptionSchema = new mongoose.Schema({
   user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true, unique: true },
   gateway: { type: String, default: 'phonepe' },
   razorpaySubscriptionId: String,
+  razorpayMode: { type: String, enum: ['test', 'live'] },
   razorpayStatus: String,
   phonePeMerchantId: { type: String, required: true },
   phonePeSubscriptionId: { type: String, default: null },

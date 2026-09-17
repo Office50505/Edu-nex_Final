@@ -58,7 +58,7 @@ function controller(billing = {}) {
     module, exports: module.exports, Buffer, Date, console,
     require(name) {
       if (name === 'node:crypto') return crypto;
-      if (name.includes('razorpayService')) return { validSignature, config: () => ({ webhookSecret: 'secret' }), requireConfig: () => ({ secret: 'secret' }), api: () => { upstreamCalls++; } };
+      if (name.includes('razorpayService')) return { validSignature, legacyMode: () => 'test', config: (mode = 'test') => ({ webhookSecret: mode === 'test' ? 'secret' : 'live-secret' }), requireConfig: () => ({ secret: 'secret' }), api: () => { upstreamCalls++; } };
       return { findById: async () => billing };
     },
   });
@@ -75,8 +75,8 @@ test('forged webhook and a different users subscription callback are rejected be
   assert.equal(calls(), 0);
 });
 
-function flow() {
-  const billing = { _id: 'learner', phase: 'ready', subscriptionId: 'sub_test', ...globalBilling() };
+function flow(mode = 'test') {
+  const billing = { _id: 'learner', mode, phase: 'ready', subscriptionId: 'sub_test', ...globalBilling() };
   let local; let providerCalls = 0; let failWrite = false; const processed = new Map();
   const upstream = { id: 'sub_test', status: 'active', charge_at: Math.floor(now / 1000) + 86400 };
   const invoice = { id: 'inv_test', subscription_id: 'sub_test', status: 'paid', payment_id: 'pay_test', ...monthly.invoice };
@@ -93,7 +93,7 @@ function flow() {
   vm.runInNewContext(fs.readFileSync(path.join(__dirname, '../controllers/razorpayController.js'), 'utf8'), { module, exports: module.exports, Buffer, Date, console,
     require(name) {
       if (name === 'node:crypto') return crypto;
-      if (name.includes('razorpayService')) return { validSignature, entitlement, config: () => ({ webhookSecret: 'secret' }), api: async route => {
+      if (name.includes('razorpayService')) return { validSignature, entitlement, legacyMode: () => 'test', config: (mode = 'test') => ({ webhookSecret: mode === 'test' ? 'secret' : 'live-secret' }), api: async route => {
         providerCalls++;
         if (route.startsWith('/subscriptions/')) return upstream;
         if (route.startsWith('/invoices?')) return { items: [invoice] };
@@ -102,9 +102,9 @@ function flow() {
       return models[name.split('/').at(-1)];
     },
   });
-  return { billing, processed, local: () => local, calls: () => providerCalls, interrupt() { failWrite = true; }, async event(id = 'event1') {
+  return { billing, processed, local: () => local, calls: () => providerCalls, interrupt() { failWrite = true; }, async event(id = 'event1', signedMode = mode) {
     const body = Buffer.from(JSON.stringify({ event: 'subscription.charged', payload: { subscription: { entity: { id: 'sub_test' } } } }));
-    const sig = crypto.createHmac('sha256', 'secret').update(body).digest('hex');
+    const sig = crypto.createHmac('sha256', signedMode === 'live' ? 'live-secret' : 'secret').update(body).digest('hex');
     let status = 200;
     await module.exports.webhook({ body, get: key => key === 'x-razorpay-signature' ? sig : id }, { status(value) { status = value; return this; }, json() {} });
     return status;
@@ -120,4 +120,12 @@ test('interrupted writes leave events retryable and release the reconciliation l
   const f = flow(); f.interrupt(); assert.equal(await f.event(), 500);
   assert.equal(f.processed.size, 0); assert.equal(f.billing.lease, undefined);
   assert.equal(await f.event(), 200); assert.equal(f.processed.size, 1);
+});
+
+test('live webhooks reconcile with live credentials and cross-mode events are rejected', async () => {
+  const f = flow('live');
+  assert.equal(await f.event('wrong-mode', 'test'), 400);
+  assert.equal(f.calls(), 0);
+  assert.equal(await f.event('live-event', 'live'), 200);
+  assert.equal(f.local().razorpayMode, 'live');
 });
