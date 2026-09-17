@@ -15,7 +15,7 @@ const supportSections = [
     id: "subscriptions",
     icon: "receipt",
     title: "Subscriptions",
-    items: ["₹1 first month", "₹499/month renewal", "Automatic mandate", "Cancelling subscription"],
+    items: ["₹1 for 24 hours", "₹499/month renewal after trial", "Automatic mandate", "Cancelling subscription"],
   },
   {
     id: "payments",

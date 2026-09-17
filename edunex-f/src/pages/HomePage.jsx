@@ -3,7 +3,6 @@ import { page as indexPage } from "../generated-pages/index.html.js";
 import { runLegacyPage } from "../legacyRuntime.js";
 import { usePageStyle } from "../hooks/usePageStyle.js";
 import { useEduNexRuntimeReady } from "../hooks/useEduNexRuntimeReady.js";
-import { progressCacheKey } from "../hooks/useLearningProgress.js";
 import { route } from "../lib/routes.js";
 
 const FALLBACK_COURSES = [
@@ -114,36 +113,26 @@ function lessonCount(course) {
   return Array.isArray(course?.videos) ? course.videos.length : 0;
 }
 
-function readProgressRecord(courseId) {
-  if (!courseId || typeof window === "undefined") return {};
-  const keys = new Set([
-    progressCacheKey(courseId),
-    `edunexCourseProgress:${courseId}`,
-  ]);
-  try {
-    for (let index = 0; index < localStorage.length; index += 1) {
-      const key = localStorage.key(index);
-      if (key?.startsWith("edunexCourseProgress:") && (key === `edunexCourseProgress:${courseId}` || key.endsWith(`:${courseId}`))) {
-        keys.add(key);
-      }
-    }
-  } catch (_) {}
-
-  return Array.from(keys).reduce((best, key) => {
-    try {
-      const value = JSON.parse(localStorage.getItem(key) || "{}");
-      if (!value || typeof value !== "object") return best;
-      const bestTime = best?.lastViewedAt ? new Date(best.lastViewedAt).getTime() : 0;
-      const valueTime = value.lastViewedAt ? new Date(value.lastViewedAt).getTime() : 0;
-      if (!best || valueTime >= bestTime) return value;
-    } catch (_) {}
-    return best;
-  }, null) || {};
+function authenticatedUserId() {
+  if (typeof window === "undefined" || !window.EduNex?.getAccessToken?.()) return "";
+  const user = window.EduNex?.getUser?.();
+  return String(user?._id || user?.id || "");
 }
 
-function progressFor(course) {
+function readProgressRecord(courseId, ownerId) {
+  if (!courseId || !ownerId || typeof window === "undefined") return {};
+  try {
+    const key = `edunexCourseProgress:${ownerId}:${courseId}`;
+    const value = JSON.parse(localStorage.getItem(key) || "{}");
+    return value && typeof value === "object" ? value : {};
+  } catch (_) {
+    return {};
+  }
+}
+
+function progressFor(course, ownerId = authenticatedUserId()) {
   const id = courseId(course);
-  const saved = readProgressRecord(id);
+  const saved = readProgressRecord(id, ownerId);
   const total = Math.max(lessonCount(course), 1);
   const completed = Number(saved.completed || 0);
   const percent = Math.max(0, Math.min(100, Number(saved.percent ?? Math.round((completed / total) * 100))));
@@ -220,7 +209,7 @@ function learnerLabel(course) {
 }
 
 function priceLabel(course) {
-  return course?.price && Number(course.price) > 1 ? `₹${Number(course.price).toLocaleString("en-IN")}` : "₹1 first month";
+  return course?.price && Number(course.price) > 1 ? `₹${Number(course.price).toLocaleString("en-IN")}` : "₹1 for 24 hours";
 }
 
 function groupedCategories(courses) {
@@ -461,11 +450,12 @@ function projectItemsFromCourse(course) {
   }).filter(Boolean);
 }
 
-function activeProgressLessons(courses) {
+function activeProgressLessons(courses, ownerId) {
+  if (!ownerId) return [];
   return courses
     .filter((course) => course && !course.isFallback)
     .map((course) => {
-      const progress = progressFor(course);
+      const progress = progressFor(course, ownerId);
       const videos = Array.isArray(course.videos) ? course.videos : [];
       const lessonIndex = Math.max(0, Math.min(progress.lessonIndex, Math.max(videos.length - 1, 0)));
       return {
@@ -511,9 +501,9 @@ function handleCurriculumImageError(event, course, fallback = "/assets/female1.j
   image.src = fallback;
 }
 
-function CurriculumShowcase({ courses, status, onOpenCourse }) {
+function CurriculumShowcase({ courses, status, onOpenCourse, authUserId }) {
   const course = courses.find((item) => !item.isFallback) || courses[0] || null;
-  const continueLessons = activeProgressLessons(courses);
+  const continueLessons = activeProgressLessons(courses, authUserId);
   const projectItems = projectItemsFromCourse(course);
   const watchedItems = watchedLectureItems(course);
   const courseHref = course ? courseDetailsHref(course) : route("courses.html");
@@ -702,14 +692,19 @@ function CurriculumShowcase({ courses, status, onOpenCourse }) {
         <h2 className="curriculum-standalone-heading">Your Learning Journey</h2>
         <div className="journey-strip">
           {["Beginner", "Create", "Grow", "Monetize", "Scale"].map((title, index) => (
-            <div className="journey-step" key={title}><span>{index + 1}</span><strong>{title}</strong><small>{["Learn the basics", "Build your skills", "Get an audience", "Turn skills into income", "Build your brand"][index]}</small><MaterialIcon>arrow_forward</MaterialIcon></div>
+            <div className="journey-step" key={title}>
+              <span className="journey-number">{index + 1}</span>
+              <strong>{title}</strong>
+              <small>{["Learn the basics", "Build your skills", "Get an audience", "Turn skills into income", "Build your brand"][index]}</small>
+              <MaterialIcon className="journey-arrow">arrow_forward</MaterialIcon>
+            </div>
           ))}
         </div>
 
         <div className="curriculum-cta">
           <div>
             <span><MaterialIcon>auto_awesome</MaterialIcon> Limited Time Offer</span>
-            <h2>Unlock Your First Month for ₹1</h2>
+            <h2>Unlock 24 Hours for ₹1</h2>
             <p>Then continue at ₹499/month until cancelled. Digital access is added to your Skillomate account.</p>
           </div>
           <div className="curriculum-cta-pills">
@@ -718,7 +713,7 @@ function CurriculumShowcase({ courses, status, onOpenCourse }) {
             <small><MaterialIcon>workspace_premium</MaterialIcon>Certificate</small>
             <small><MaterialIcon>schedule</MaterialIcon>Learn at your pace</small>
           </div>
-          <a href={route("payment.html")}>Start ₹1 First Month <MaterialIcon>arrow_forward</MaterialIcon></a>
+          <a href={route("payment.html")}>Try 24 Hours for ₹1 <MaterialIcon>arrow_forward</MaterialIcon></a>
         </div>
         {status === "loading" ? <p className="curriculum-status">Loading your live course catalog...</p> : null}
       </div>
@@ -770,7 +765,7 @@ function HeroPlaceholderCard({ index, isCenter, tab }) {
           <>
             <div className="hero-card-kicker">Courses</div>
             <div className="hero-card-title">{title}</div>
-            <div className="hero-placeholder-note">Real Skillomate courses will appear in this carousel as soon as the backend returns them.</div>
+            <div className="hero-placeholder-note">Courses are temporarily unavailable. Browse the catalog or try again shortly.</div>
             <div style={{ marginTop: 16 }}>
               <a className="hero-card-action" href="courses.html">{action} <MaterialIcon className="text-base">arrow_forward</MaterialIcon></a>
             </div>
@@ -970,6 +965,8 @@ export function HomePage() {
   const [activeIndex, setActiveIndex] = useState(10);
   const [query, setQuery] = useState("");
   const [status, setStatus] = useState("loading");
+  const [authUserId, setAuthUserId] = useState(() => authenticatedUserId());
+  const [progressVersion, setProgressVersion] = useState(0);
   const viewportRef = useRef(null);
   const rafRef = useRef(0);
   const motionRef = useRef(0);
@@ -1020,6 +1017,20 @@ export function HomePage() {
   }, [runtimeReady]);
 
   useEffect(() => {
+    const syncAuth = () => setAuthUserId(authenticatedUserId());
+    const syncProgress = () => setProgressVersion((version) => version + 1);
+    window.addEventListener("edunex:auth-changed", syncAuth);
+    window.addEventListener("storage", syncAuth);
+    window.addEventListener("learning-progress", syncProgress);
+    syncAuth();
+    return () => {
+      window.removeEventListener("edunex:auth-changed", syncAuth);
+      window.removeEventListener("storage", syncAuth);
+      window.removeEventListener("learning-progress", syncProgress);
+    };
+  }, [runtimeReady]);
+
+  useEffect(() => {
     if (!runtimeReady) return undefined;
     let cancelled = false;
     const nextWishlist = localWishlist();
@@ -1052,7 +1063,7 @@ export function HomePage() {
     };
   }, [runtimeReady]);
 
-  const currentItems = useMemo(() => itemsForTab(activeTab, courses), [activeTab, courses]);
+  const currentItems = useMemo(() => itemsForTab(activeTab, courses), [activeTab, courses, authUserId, progressVersion]);
   const loop = useMemo(() => repeatedItems(currentItems), [currentItems]);
 
   useEffect(() => {
@@ -1514,7 +1525,7 @@ export function HomePage() {
               Explore Courses
               <MaterialIcon className="text-[19px]">arrow_forward</MaterialIcon>
             </a>
-            <a href="payment.html" className="hero-cta-secondary">Start ₹1 First Month</a>
+            <a href="payment.html" className="hero-cta-secondary">Try 24 Hours for ₹1</a>
           </div>
 
           <div className="hero-search-block">
@@ -1547,7 +1558,7 @@ export function HomePage() {
           </div>
         </section>
 
-        <CurriculumShowcase courses={courses} status={status} onOpenCourse={openCourse} />
+        <CurriculumShowcase courses={courses} status={status} onOpenCourse={openCourse} authUserId={authUserId} />
       </main>
     </div>
   );

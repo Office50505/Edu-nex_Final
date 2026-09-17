@@ -5,7 +5,7 @@ function config() {
     keyId: process.env.RAZORPAY_KEY_ID || '', secret: process.env.RAZORPAY_KEY_SECRET || '',
     webhookSecret: process.env.RAZORPAY_WEBHOOK_SECRET || '', planId: process.env.RAZORPAY_PLAN_ID || '',
     trialAmount: Number(process.env.TRIAL_AMOUNT_PAISE || 100), monthlyAmount: Number(process.env.SUBSCRIPTION_AMOUNT_PAISE || 50000),
-    trialHours: Number(process.env.TRIAL_DURATION_HOURS || 720), cycles: Number(process.env.SUBSCRIPTION_TOTAL_COUNT || 120),
+    trialHours: Number(process.env.TRIAL_DURATION_HOURS || 24), cycles: Number(process.env.SUBSCRIPTION_TOTAL_COUNT || 120),
   };
   if (![value.trialAmount, value.monthlyAmount, value.trialHours, value.cycles].every(n => Number.isSafeInteger(n) && n > 0)) throw new Error('Invalid billing amount, duration or cycle configuration.');
   return value;

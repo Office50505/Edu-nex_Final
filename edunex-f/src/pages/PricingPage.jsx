@@ -8,7 +8,7 @@ export function PricingPage() {
   useEffect(() => {
     setPageMeta({
       title: "Pricing | Skillomate",
-      description: "Skillomate pricing: ₹1 for your first month, then ₹499/month until cancelled, or ₹4999 for one year.",
+      description: "Skillomate pricing: ₹1 for a 24-hour trial, then ₹499/month until cancelled, or ₹4999 for one year.",
       canonicalPath: "/pricing",
     });
   }, []);
@@ -18,7 +18,7 @@ export function PricingPage() {
       title="Pricing"
       description="Simple digital subscription pricing for Skillomate learning access."
       updated={false}
-      actions={<a className="legal-button" href={route("payment.html")}>Start ₹1 first month <EnxIcon name="arrowRight" /></a>}
+      actions={<a className="legal-button" href={route("payment.html")}>Try 24 Hours for ₹1 <EnxIcon name="arrowRight" /></a>}
       sections={[
         { id: "plans", title: "Plans" },
         { id: "what-is-included", title: "What is included" },
@@ -31,9 +31,9 @@ export function PricingPage() {
             <div className="pricing-badge">Mandate offer</div>
             <h2>Monthly subscription</h2>
             <div className="pricing-price-row">
-              <div className="pricing-price">{subscriptionOffer.firstMonth}</div>
+              <div className="pricing-price">{subscriptionOffer.trialPrice}</div>
               <div>
-                <p className="pricing-renewal">First month</p>
+                <p className="pricing-renewal">24-hour trial</p>
                 <p>Then <strong>{subscriptionOffer.renewal}</strong> until cancelled.</p>
               </div>
             </div>
@@ -43,7 +43,7 @@ export function PricingPage() {
               <span>Cancel anytime</span>
               <span>Digital access only</span>
             </div>
-            <a className="legal-button pricing-action" href={route("payment.html")}>Start ₹1 first month <EnxIcon name="arrowRight" /></a>
+            <a className="legal-button pricing-action" href={route("payment.html")}>Try 24 Hours for ₹1 <EnxIcon name="arrowRight" /></a>
           </div>
 
           <div className="pricing-card">
@@ -77,7 +77,7 @@ export function PricingPage() {
         ]} />
       </LegalSection>
       <LegalSection id="billing" title="Billing terms">
-        <p>The monthly mandate offer starts with ₹1 for the first month. After that introductory month, the subscription renews automatically at ₹499/month using the payment method or mandate authorized by the user until cancelled.</p>
+        <p>The monthly mandate offer starts with a 24-hour trial for ₹1. After the trial ends, the subscription renews automatically at ₹499/month using the payment method or mandate authorized by the user until cancelled.</p>
         <p>The annual plan is priced at ₹4999 for one year of Skillomate access. Any renewal, cancellation, or refund handling for platform-specific purchases may depend on the applicable payment platform and checkout flow.</p>
         <p>Users may cancel eligible recurring subscriptions anytime. After cancellation, access continues through the current paid period and future renewals stop after cancellation takes effect.</p>
         <p>No physical delivery applies because Skillomate provides digital educational services only.</p>

@@ -352,12 +352,14 @@ const DEFAULT_API_BASE = __DEV__
   : "http://13.203.94.35";
 const normalizeBaseUrl = url => String(url || "").replace(/\/+$/, "");
 const API_BASE = normalizeBaseUrl(process.env.EXPO_PUBLIC_API_BASE || DEFAULT_API_BASE);
+const WEB_APP_BASE = normalizeBaseUrl(process.env.EXPO_PUBLIC_WEB_APP_BASE || "https://skillomate.in");
 
-function showInAppSubscriptionNotice() {
-  Alert.alert(
-    "Subscription checkout",
-    "Test checkout is available only when the backend is running in simulated payment mode."
-  );
+async function openWebTrialCheckout() {
+  try {
+    await Linking.openURL(`${WEB_APP_BASE}/payment`);
+  } catch {
+    Alert.alert("Checkout unavailable", "Could not open the secure Skillomate checkout. Please try again shortly.");
+  }
 }
 
 const LEGAL_APP_PAGES = {
@@ -1679,7 +1681,7 @@ function UpgradeModal({ visible, onClose, onStartTrial, trialLoading = false }) 
       requestAnimationFrame(onStartTrial);
       return;
     }
-    requestAnimationFrame(showInAppSubscriptionNotice);
+    requestAnimationFrame(openWebTrialCheckout);
   };
 
   return (
@@ -1699,22 +1701,22 @@ function UpgradeModal({ visible, onClose, onStartTrial, trialLoading = false }) 
               <View key={i} style={{ flex: 1, backgroundColor: `rgba(197,139,42,${(0.08 * Math.pow(i / 19, 2)).toFixed(3)})` }} />
             ))}
             <View style={[s.upgradeBannerBadge, { backgroundColor: C.accent }]}>
-              <Text style={s.upgradeBannerBadgeText}>LIMITED TIME OFFER</Text>
+              <Text style={s.upgradeBannerBadgeText}>24-HOUR TRIAL</Text>
             </View>
             <View style={s.upgradeBannerIcon}>
               <Ionicons name="ribbon" size={38} color={C.accent} />
             </View>
             {/* Earning potential badge */}
-            <View style={{ position: "absolute", top: 16, right: 56, backgroundColor: "rgba(197,139,42,0.12)", borderRadius: 8, paddingHorizontal: 10, paddingVertical: 4, borderWidth: 1, borderColor: "rgba(197,139,42,0.28)" }}>
-              <Text style={{ color: C.accent, fontSize: 11, fontWeight: "800" }}>EARNING POTENTIAL +240%</Text>
+            <View style={s.upgradeEarningBadge}>
+              <Text style={s.upgradeEarningBadgeText}>PRACTICAL AI SKILLS</Text>
             </View>
           </View>
 
           <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ padding: 20, paddingTop: 14 }}>
             {/* Title */}
-            <Text style={[s.upgradeTitle, { color: C.text }]}>Unlock Your AI Future for</Text>
-            <Text style={[s.upgradeTitle, { color: C.primary, fontSize: 32, marginTop: -4 }]}>just ₹1</Text>
-            <Text style={[s.upgradeSub, { color: C.textSub }]}>Join 100,000+ students mastering the AI economy.</Text>
+            <Text style={[s.upgradeTitle, { color: C.text }]}>Unlock Your AI Future</Text>
+            <Text style={[s.upgradeOfferTitle, { color: C.primary }]}>24-Hour Access for ₹1</Text>
+            <Text style={[s.upgradeSub, { color: C.textSub }]}>Build practical AI skills through guided, self-paced lessons.</Text>
 
             {/* Pricing card */}
             <View style={[s.upgradePricingCard, { backgroundColor: C.cardBg, borderColor: C.primary }]}>
@@ -1722,11 +1724,10 @@ function UpgradeModal({ visible, onClose, onStartTrial, trialLoading = false }) 
                 <Text style={s.upgradeBestValueText}>BEST VALUE</Text>
               </View>
               <View style={{ flexDirection: "row", alignItems: "flex-end", marginBottom: 4 }}>
-                <Text style={[s.upgradeCurrency, { color: C.text }]}>₹</Text>
-                <Text style={[s.upgradePrice, { color: C.primary }]}>1</Text>
-                <Text style={[s.upgradePricePeriod, { color: C.textSub }]}>  First month</Text>
+                <Text style={[s.upgradePrice, { color: C.primary }]}>₹1</Text>
+                <Text style={[s.upgradePricePeriod, { color: C.textSub }]}>  24-hour trial</Text>
               </View>
-              <Text style={[s.upgradePriceNote, { color: C.textMuted }]}>Then ₹499/month. Cancel anytime before renewal.</Text>
+              <Text style={[s.upgradePriceNote, { color: C.textMuted }]}>Then ₹499/month. Cancel before the trial ends to avoid renewal.</Text>
             </View>
 
             {/* Features */}
@@ -1744,13 +1745,13 @@ function UpgradeModal({ visible, onClose, onStartTrial, trialLoading = false }) 
               onPress={handleStartTrial}
               disabled={trialLoading}
               accessibilityRole="button"
-              accessibilityLabel="Start ₹1 trial"
+              accessibilityLabel="Start ₹1 24-hour trial"
               accessibilityState={{ busy: trialLoading, disabled: trialLoading }}
             >
               {trialLoading ? (
                 <ActivityIndicator color={C.onPrimary} size="small" />
               ) : (
-                <Text style={s.upgradeBtnText}>Start My ₹1 Trial  →</Text>
+                <Text style={s.upgradeBtnText}>Start ₹1 · 24-Hour Trial  →</Text>
               )}
             </TouchableOpacity>
 
@@ -3807,7 +3808,7 @@ const homeStyles = StyleSheet.create({
   mediaFallbackText: { color: HOME_PALETTE.textSecondary, fontSize: 10, lineHeight: 13, fontWeight: "700", textAlign: "center", marginTop: 5 },
   featuredHero: { height: 246, marginHorizontal: 14, borderRadius: 14, overflow: "hidden", backgroundColor: HOME_PALETTE.surface, borderWidth: 1, borderColor: HOME_PALETTE.borderStrong },
   featuredScrim: { ...StyleSheet.absoluteFill, backgroundColor: "rgba(5,5,4,0.55)" },
-  featuredContent: { flex: 1, justifyContent: "flex-end", alignItems: "flex-start", padding: 16, paddingRight: "24%" },
+  featuredContent: { position: "absolute", left: 12, right: 12, bottom: 12, alignItems: "flex-start", padding: 14, borderRadius: 12, backgroundColor: "rgba(5,5,4,0.88)", borderWidth: 1, borderColor: HOME_PALETTE.borderStrong },
   featuredLabel: { color: HOME_PALETTE.goldSoft, fontSize: 10, lineHeight: 13, fontWeight: "900", letterSpacing: 0.8, marginBottom: 6 },
   featuredTitle: { color: HOME_PALETTE.text, fontSize: 26, lineHeight: 29, fontWeight: "900", letterSpacing: -0.4 },
   featuredMeta: { color: HOME_PALETTE.text, fontSize: 12, lineHeight: 16, fontWeight: "600", marginTop: 7 },
@@ -5217,7 +5218,7 @@ function InfoPageScreen({ page, onBack }) {
   );
 }
 
-function SubscriptionDetailsScreen({ user, onBack, onStartTrial = showInAppSubscriptionNotice, trialLoading = false }) {
+function SubscriptionDetailsScreen({ user, onBack, onStartTrial = openWebTrialCheckout, trialLoading = false }) {
   const [loading, setLoading] = useState(true);
   const [subData, setSubData] = useState(null);
   const [error, setError] = useState(null);
@@ -6272,7 +6273,6 @@ export default function App() {
   const downloadStorageReady = useRef(null);
   const [aiRobotId, setAiRobotId] = useState(null);
   const [showAppUpgrade, setShowAppUpgrade] = useState(false);
-  const [testCheckoutLoading, setTestCheckoutLoading] = useState(false);
   const [courseAiTarget, setCourseAiTarget] = useState(null);
   const [wishlist, setWishlist] = useState([]);
   const [courseProgress, setCourseProgress] = useState({});
@@ -6353,123 +6353,6 @@ export default function App() {
 
   const userRef = useRef(null);
   useEffect(() => { userRef.current = user; }, [user]);
-
-  const refreshAuthSession = useCallback(async currentUser => {
-    if (!currentUser?.refreshToken) {
-      throw new Error("Your session expired. Please log in again.");
-    }
-
-    const refreshResponse = await fetch(`${API_BASE}/api/auth/refresh`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ refreshToken: currentUser.refreshToken }),
-    });
-    const refreshData = await readJsonResponse(refreshResponse);
-    if (!refreshResponse.ok) {
-      throw new Error(refreshData?.error || "Your session expired. Please log in again.");
-    }
-
-    const normalized = normalizeAuthUser(refreshData);
-    if (!normalized?.accessToken) {
-      throw new Error("Your session could not be refreshed. Please log in again.");
-    }
-
-    const refreshedUser = {
-      ...currentUser,
-      ...normalized,
-      accessToken: normalized.accessToken,
-      token: normalized.accessToken,
-      refreshToken: normalized.refreshToken || currentUser.refreshToken,
-      sessionId: normalized.sessionId || currentUser.sessionId,
-    };
-    await AsyncStorage.setItem("user", JSON.stringify(refreshedUser));
-    userRef.current = refreshedUser;
-    setUser(refreshedUser);
-    if (Array.isArray(refreshedUser.wishlist)) setWishlist(refreshedUser.wishlist);
-    return refreshedUser;
-  }, []);
-
-  const completeTestTrialCheckout = useCallback(async () => {
-    const currentUser = userRef.current;
-    if (!currentUser?._id || !currentUser?.sessionId) {
-      Alert.alert("Sign in required", "Please sign in before starting the ₹1 trial.");
-      return;
-    }
-    if (!currentUser.accessToken && !currentUser.refreshToken) {
-      Alert.alert("Session expired", "Please log in again before testing checkout.");
-      return;
-    }
-    if (testCheckoutLoading) return;
-
-    setTestCheckoutLoading(true);
-    try {
-      let paymentUser = currentUser.accessToken ? currentUser : await refreshAuthSession(currentUser);
-      const initiateTrial = async authUser => {
-        const response = await fetch(`${API_BASE}/api/payment/initiate-trial`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${authUser.accessToken}`,
-          },
-          body: JSON.stringify({
-            paymentType: "trial",
-            source: "mobile-test-gateway",
-            platform: Platform.OS,
-          }),
-        });
-        const data = await readJsonResponse(response);
-        return { response, data };
-      };
-
-      let { response: initiateResponse, data: initiateData } = await initiateTrial(paymentUser);
-      if (initiateResponse.status === 401 && paymentUser.refreshToken) {
-        paymentUser = await refreshAuthSession(paymentUser);
-        ({ response: initiateResponse, data: initiateData } = await initiateTrial(paymentUser));
-      }
-      if (!initiateResponse.ok) {
-        throw new Error(initiateData?.error || "Could not create the test payment.");
-      }
-
-      const merchantTransactionId = initiateData?.merchantTransactionId;
-      if (!merchantTransactionId) {
-        throw new Error("The test payment did not return a transaction ID.");
-      }
-
-      const completeResponse = await fetch(
-        `${API_BASE}/api/payment/simulate/complete?merchantTransactionId=${encodeURIComponent(merchantTransactionId)}&result=success`,
-        {
-          method: "POST",
-          headers: { Accept: "application/json" },
-        }
-      );
-      const completeData = await readJsonResponse(completeResponse);
-      if (!completeResponse.ok) {
-        throw new Error(completeData?.error || "The test payment could not be completed.");
-      }
-
-      await refreshUser(paymentUser._id, paymentUser, paymentUser.sessionId);
-      setShowAppUpgrade(false);
-      setSelectedCourse(null);
-      setMainScreen("courses");
-      Alert.alert("Test payment successful", "Your simulated ₹1 trial is active. Courses are unlocked for testing.");
-    } catch (error) {
-      Alert.alert("Test payment failed", error?.message || "Could not complete the simulated checkout.");
-    } finally {
-      setTestCheckoutLoading(false);
-    }
-  }, [refreshAuthSession, refreshUser, testCheckoutLoading]);
-
-  const runTestTrialCheckout = useCallback(() => {
-    if (testCheckoutLoading) return;
-    Alert.alert(
-      "Skillomate Test Gateway",
-      "This will simulate the ₹1 first-month trial payment and unlock course access for this signed-in account.",
-      [
-        { text: "Cancel", style: "cancel" },
-        { text: "Pay ₹1 (Test)", onPress: completeTestTrialCheckout },
-      ]
-    );
-  }, [completeTestTrialCheckout, testCheckoutLoading]);
 
   // Check independently of WebSocket support so a replaced login stops playback.
   useEffect(() => {
@@ -7680,15 +7563,15 @@ export default function App() {
           onGoToDownloads={() => { const ok = hasCourseAccess(user); if (!ok) { setShowAppUpgrade(true); } else { setMainScreen("downloads"); } }}
           onGoToProfile={() => setMainScreen("profile")}
           onGoToSubscription={() => setMainScreen("subscription")}
-          onStartTrial={runTestTrialCheckout}
-          trialLoading={testCheckoutLoading}
+          onStartTrial={openWebTrialCheckout}
+          trialLoading={false}
           aiRobotId={aiRobotId}
         />
         <UpgradeModal
           visible={showAppUpgrade}
           onClose={() => setShowAppUpgrade(false)}
-          onStartTrial={runTestTrialCheckout}
-          trialLoading={testCheckoutLoading}
+          onStartTrial={openWebTrialCheckout}
+          trialLoading={false}
         />
       </>
     );
@@ -7708,8 +7591,8 @@ export default function App() {
       <SubscriptionDetailsScreen
         user={user}
         onBack={() => setMainScreen("profile")}
-        onStartTrial={runTestTrialCheckout}
-        trialLoading={testCheckoutLoading}
+        onStartTrial={openWebTrialCheckout}
+        trialLoading={false}
       />
     );
   }
@@ -7750,8 +7633,8 @@ export default function App() {
         onBack={() => setMainScreen("profile")}
         user={user}
         onGoToSubscription={() => setMainScreen("subscription")}
-        onStartTrial={runTestTrialCheckout}
-        trialLoading={testCheckoutLoading}
+        onStartTrial={openWebTrialCheckout}
+        trialLoading={false}
       />
     );
   }
@@ -7786,8 +7669,8 @@ export default function App() {
         <UpgradeModal
           visible={showAppUpgrade}
           onClose={() => setShowAppUpgrade(false)}
-          onStartTrial={runTestTrialCheckout}
-          trialLoading={testCheckoutLoading}
+          onStartTrial={openWebTrialCheckout}
+          trialLoading={false}
         />
       </>
     );
@@ -7980,8 +7863,8 @@ export default function App() {
         <UpgradeModal
           visible={showAppUpgrade}
           onClose={() => setShowAppUpgrade(false)}
-          onStartTrial={runTestTrialCheckout}
-          trialLoading={testCheckoutLoading}
+          onStartTrial={openWebTrialCheckout}
+          trialLoading={false}
         />
       </>
     );
@@ -7996,8 +7879,8 @@ export default function App() {
         onGoToDownloads={() => { const ok = hasCourseAccess(user); if (!ok) { setShowAppUpgrade(true); } else { setMainScreen("downloads"); } }}
         onGoToProfile={() => setMainScreen("profile")}
         onGoToSubscription={() => setMainScreen("subscription")}
-        onStartTrial={runTestTrialCheckout}
-        trialLoading={testCheckoutLoading}
+        onStartTrial={openWebTrialCheckout}
+        trialLoading={false}
         onSelectCourse={course => openCourse(course)}
         onResumeCourse={(course, idx, secs) => {
           openCourse(course, { startIndex: idx, initialTime: secs });
@@ -8011,8 +7894,8 @@ export default function App() {
       <UpgradeModal
         visible={showAppUpgrade}
         onClose={() => setShowAppUpgrade(false)}
-        onStartTrial={runTestTrialCheckout}
-        trialLoading={testCheckoutLoading}
+        onStartTrial={openWebTrialCheckout}
+        trialLoading={false}
       />
     </View>
   );
@@ -9663,11 +9546,24 @@ courseListCard: {
   upgradeBannerBadgeText: {
     color: C.onPrimary, fontSize: 11, fontWeight: "800", letterSpacing: 1,
   },
+  upgradeEarningBadge: {
+    position: "absolute", top: 52, left: 16, zIndex: 2,
+    backgroundColor: "rgba(197,139,42,0.12)", borderRadius: 6,
+    paddingHorizontal: 9, paddingVertical: 4,
+    borderWidth: 1, borderColor: "rgba(197,139,42,0.28)",
+  },
+  upgradeEarningBadgeText: {
+    color: C.accent, fontSize: 11, fontWeight: "800", letterSpacing: 0.4,
+  },
   upgradeBannerIcon: {
     position: "absolute", bottom: 16, right: 20, zIndex: 2,
   },
   upgradeTitle: {
-    ...TYPE.h2, color: C.text, marginBottom: 6,
+    ...TYPE.h2, color: C.text, marginBottom: 2,
+  },
+  upgradeOfferTitle: {
+    fontFamily: FONT.heading, fontSize: 28, lineHeight: 34, fontWeight: "900",
+    letterSpacing: -0.4, marginBottom: 6,
   },
   upgradeSub: {
     ...TYPE.body, color: C.textSub, marginBottom: 18,
@@ -9681,7 +9577,6 @@ courseListCard: {
     paddingHorizontal: 8, paddingVertical: 3, marginBottom: 10,
   },
   upgradeBestValueText: { color: C.onPrimary, fontSize: 10, fontWeight: "800", letterSpacing: 0.8 },
-  upgradeCurrency: { fontSize: 22, fontWeight: "800", color: C.text, marginBottom: 4 },
   upgradePrice: { fontSize: 52, fontWeight: "900", color: C.text, lineHeight: 58 },
   upgradePricePeriod: { fontSize: 15, fontWeight: "600", color: C.textSub, marginBottom: 4, paddingBottom: 6 },
   upgradePriceNote: { fontSize: 12, color: C.textMuted, lineHeight: 18 },

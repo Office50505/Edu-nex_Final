@@ -401,13 +401,13 @@ export function CoursesPage() {
                         <div className="course-price-row">
                           <div className="price-left">
                             <span className="price-original">₹4,999</span>
-                            <span className="price-trial">₹1 first month</span>
+                            <span className="price-trial">₹1 for 24 hours</span>
                           </div>
                           <span className="price-off">99% OFF</span>
                         </div>
                         <div className="course-card-actions">
                           <button className="btn-trial" type="button" data-course-id={course.id} onClick={(event) => { event.stopPropagation(); openCourse(course); }}>
-                            {hasAccess ? "View Course" : "Start ₹1 first month"}
+                            {hasAccess ? "View Course" : "Start ₹1 trial"}
                           </button>
                           <button
                             className={`wishlist-btn${saved ? " is-saved" : ""}`}
@@ -444,7 +444,7 @@ export function CoursesPage() {
           </div>
           <div className="steps-grid">
             {[
-              ["1", "Start for ₹1", "Get your first month for ₹1, then ₹499/month until cancelled."],
+              ["1", "Start for ₹1", "Get 24 hours of access for ₹1, then ₹499/month until cancelled."],
               ["2", "Learn at your pace", "Follow structured lessons, projects and AI-assisted learning support."],
               ["3", "Track progress", "Use course progress, wishlists and certificates to organize your learning."],
               ["4", "Apply your skills", "Practice the concepts in your own projects, work, content or business."],

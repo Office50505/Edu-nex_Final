@@ -70,8 +70,8 @@ const deliveryFacts = [
 ];
 
 const subscriptionFacts = [
-  "The introductory first month is ₹1.",
-  "After the introductory month, the subscription automatically renews at ₹499 per month until cancelled.",
+  "The introductory 24-hour trial is ₹1.",
+  "After the 24-hour trial, the subscription automatically renews at ₹499 per month until cancelled.",
   "Users authorize recurring billing when approving the payment mandate or subscription.",
   "Users may cancel anytime. Cancellation stops future renewals after it takes effect.",
   "Existing paid access continues until the end of the applicable billing period after cancellation.",
@@ -163,7 +163,7 @@ const policyContent = {
   subscription: {
     title: "Subscription & Billing Policy",
     metaTitle: "Subscription & Billing Policy | Skillomate",
-    description: "Clear billing terms for Skillomate's ₹1 first month and ₹499/month automatic renewal subscription.",
+    description: "Clear billing terms for Skillomate's ₹1 24-hour trial and ₹499/month automatic renewal subscription.",
     canonicalPath: "/subscription-policy",
     sections: [
       ["current-offer", "Current subscription offer", <><div className="legal-callout"><strong>{subscriptionOffer.disclosure}</strong></div><CheckList items={subscriptionFacts} /></>],

@@ -165,19 +165,19 @@ export function LoginPage() {
           </a>
           <div className="lp-hero">
             <div className="lp-marketing-title">Elevate your career<br />with <span>AI precision.</span></div>
-            <p>Join over 100,000+ students mastering the future of technology and creative strategy through our curated AI-first curriculum.</p>
+            <p>Build practical technology and creative skills through a focused, AI-first curriculum.</p>
           </div>
           <div className="lp-testimonial">
             <div className="lp-test-card">
               <img className="lp-test-photo" src="assets/image.png" alt="Student at laptop" />
               <div className="lp-test-body">
                 <div className="lp-big-quote">❝</div>
-                <p className="lp-test-text">"The AI Masterclass at Skillomate completely redefined my workflow. I secured a Senior Developer role within 3 months of finishing."</p>
+                <p className="lp-test-text">"The AI Masterclass helped me build a clearer learning routine and apply new tools to practical projects."</p>
                 <div className="lp-author">
                   <img className="lp-author-avatar" src="assets/image.png" alt="Skillomate Mentor" />
                   <div>
-                    <div className="lp-author-name">Skillomate Mentor</div>
-                    <div className="lp-author-role">Google Alumni</div>
+                    <div className="lp-author-name">Skillomate Learner</div>
+                    <div className="lp-author-role">Course learner</div>
                   </div>
                 </div>
               </div>

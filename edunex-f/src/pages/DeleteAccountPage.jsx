@@ -90,7 +90,7 @@ export default function DeleteAccountPage() {
         {sent ? (
           <div className="legal-callout" role="status">
             <strong>Request received.</strong>
-            <p>Our team will contact you at the email provided to verify account ownership before processing deletion. Submitting this request does not by itself cancel an active subscription or payment mandate.</p>
+            <p>Your account has not been deleted yet. Our team will contact you at the email provided to verify account ownership before processing deletion. Submitting this request does not by itself cancel an active subscription or payment mandate.</p>
           </div>
         ) : (
           <form className="legal-form" onSubmit={submit}>

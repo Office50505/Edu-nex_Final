@@ -17,10 +17,11 @@ export const businessInfo = {
 };
 
 export const subscriptionOffer = {
-  firstMonth: "₹1",
+  trialPrice: "₹1",
+  trialHours: 24,
   renewal: "₹499/month",
   annual: "₹4999/year",
-  disclosure: "Get your first month of Skillomate for ₹1. After the introductory period, your subscription automatically renews at ₹499/month using your authorized payment method until cancelled.",
+  disclosure: "Get 24 hours of Skillomate access for ₹1. After the 24-hour trial, your subscription automatically renews at ₹499/month using your authorized payment method until cancelled.",
 };
 
 function ensureMeta(name, attr, value) {

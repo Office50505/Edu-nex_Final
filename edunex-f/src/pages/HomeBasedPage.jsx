@@ -238,7 +238,7 @@ export function HomeBasedPage() {
             <span className="badge badge-purple"><i className="fas fa-check" aria-hidden="true"></i> Cancel anytime</span>
           </div>
           <div className="reveal reveal-delay-3">
-            <a href="login.html" className="btn btn-primary btn-xl">START FIRST MONTH FOR ₹1 <i className="fas fa-arrow-right" aria-hidden="true"></i></a>
+            <a href="login.html" className="btn btn-primary btn-xl">START 24-HOUR TRIAL FOR ₹1 <i className="fas fa-arrow-right" aria-hidden="true"></i></a>
           </div>
           <p className="reveal" style={{ marginTop: 14, fontSize: ".82rem", color: "var(--text-muted)" }}>Then ₹499/month until cancelled. Results depend on your effort and circumstances.</p>
         </div>

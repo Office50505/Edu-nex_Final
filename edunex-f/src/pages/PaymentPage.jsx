@@ -407,7 +407,7 @@ export function PaymentPage() {
 
   const payButtonText = submitting
     ? "Redirecting to payment…"
-    : `Start ${rupees(pricing?.trialAmountPaise)} First Month`;
+    : `Try ${pricing?.trialHours || 24} Hours for ${rupees(pricing?.trialAmountPaise)}`;
 
   return (
     <div className="react-page-root" data-page="payment.html">
@@ -475,7 +475,7 @@ export function PaymentPage() {
                   </div>
                   {!trialEligible ? <p role="status" style={{ margin: "16px 0" }}>You've already used your trial. <a href="/help.html">Contact support</a> for help with your subscription.</p> : null}
                   {pricing ? <p id="paymentAgreement" style={{ fontSize: 12, lineHeight: 1.6, color: "var(--text)", margin: "16px 0" }}>
-                    By continuing, you accept our <a href="/terms.html" target="_blank" rel="noopener noreferrer">Terms</a> &amp; <a href="/privacy.html" target="_blank" rel="noopener noreferrer">Privacy Policy</a>. Your first month is {rupees(pricing.trialAmountPaise)}, then {rupees(pricing.subscriptionAmountPaise)}/month until cancelled.
+                    By continuing, you accept our <a href="/terms.html" target="_blank" rel="noopener noreferrer">Terms</a> &amp; <a href="/privacy.html" target="_blank" rel="noopener noreferrer">Privacy Policy</a>. Your {pricing.trialHours || 24}-hour trial costs {rupees(pricing.trialAmountPaise)}, then the subscription renews at {rupees(pricing.subscriptionAmountPaise)}/month until cancelled.
                   </p> : null}
                   <button className="pay-btn" id="payBtn" type="button" aria-describedby="paymentAgreement" disabled={submitting || !pricing || !trialEligible} onClick={initiatePayment}>
                     <span id="payBtnIcon">{<LightningIcon />}</span>

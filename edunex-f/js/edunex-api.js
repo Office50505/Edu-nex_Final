@@ -56,7 +56,10 @@
     Object.keys(vars).forEach((key) => root.style.setProperty(key, vars[key]));
     root.dataset.theme = resolved;
     root.classList.toggle("dark", resolved !== "light");
+    root.style.colorScheme = resolved === "light" ? "light" : "dark";
     root.style.background = vars["--bg"];
+    const themeColor = document.querySelector('meta[name="theme-color"]');
+    if (themeColor) themeColor.setAttribute("content", resolved === "light" ? "#FBF8F2" : "#000000");
     if (document.body) {
       document.body.style.background = vars["--bg"];
       document.body.style.color = vars["--text"];
@@ -921,6 +924,15 @@
   }
 
   function clearAuth() {
+    try {
+      const accountCacheKeys = ["edunexWishlistLocal", "edunexHasCourseAccess", "edunexSignupProfile"];
+      const progressKeys = [];
+      for (let index = 0; index < localStorage.length; index += 1) {
+        const key = localStorage.key(index);
+        if (key?.startsWith("edunexCourseProgress:")) progressKeys.push(key);
+      }
+      [...accountCacheKeys, ...progressKeys].forEach((key) => localStorage.removeItem(key));
+    } catch (_) {}
     AUTH_KEYS.forEach((key) => {
       localStorage.removeItem(key);
       sessionStorage.removeItem(key);

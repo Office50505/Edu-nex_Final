@@ -2736,11 +2736,11 @@ html[data-theme="light"] .privacy-policy-page {
   margin: 0;
 }
 
-/* Keep the shared header neutral while a lazy route is loading. */
+/* Keep the shared header on-theme while a lazy route is loading. */
 html:has(.enx-page-loading) .enx-navbar,
 html:has(.enx-page-loading) .enx-mobile-menu {
-  background: #FFFFFF !important;
-  border-color: #E5E5E5 !important;
+  background: var(--nav-bg, rgba(0, 0, 0, .92)) !important;
+  border-color: var(--border, rgba(255, 255, 255, .08)) !important;
 }
 
 html:has(.enx-page-loading) :where(
@@ -2748,7 +2748,7 @@ html:has(.enx-page-loading) :where(
   .enx-nav-login,
   .enx-mobile-menu a
 ) {
-  color: #737373 !important;
+  color: var(--text2, #9ca3af) !important;
 }
 
 html:has(.enx-page-loading) :where(
@@ -2758,17 +2758,17 @@ html:has(.enx-page-loading) :where(
   .enx-nav-greeting,
   .enx-mobile-menu a.active
 ) {
-  color: #262626 !important;
+  color: var(--text, #ffffff) !important;
 }
 
 html:has(.enx-page-loading) :where(.enx-nav-logout, .enx-nav-avatar) {
-  background: #FAFAFA !important;
-  border-color: #E5E5E5 !important;
-  color: #525252 !important;
+  background: var(--card, #0d0d0d) !important;
+  border-color: var(--border, rgba(255, 255, 255, .08)) !important;
+  color: var(--text2, #9ca3af) !important;
 }
 
 html:has(.enx-page-loading) .enx-nav-hamburger span {
-  background: #262626 !important;
+  background: var(--text, #ffffff) !important;
 }
 
 .react-page-root:has(.lp-wrap),
@@ -5102,14 +5102,15 @@ html[data-theme="light"] .enx-footer .enx-footer-support a {
 .react-page-root[data-page="index.html"] .journey-step {
   min-height: 54px;
   display: grid;
-  grid-template-columns: 34px minmax(0, 1fr) 18px;
+  grid-template-columns: 30px minmax(0, 1fr) 30px;
   align-items: center;
-  gap: 10px;
-  padding: 8px 10px;
+  column-gap: 12px;
+  row-gap: 4px;
+  padding: 10px 12px;
   border-radius: 8px;
 }
 
-.react-page-root[data-page="index.html"] .journey-step span {
+.react-page-root[data-page="index.html"] .journey-step .journey-number {
   width: 30px;
   height: 30px;
   display: grid;
@@ -5124,10 +5125,15 @@ html[data-theme="light"] .enx-footer .enx-footer-support a {
   grid-column: 2;
 }
 
-.react-page-root[data-page="index.html"] .journey-step .material-symbols-outlined {
+.react-page-root[data-page="index.html"] .journey-step .journey-arrow {
   grid-column: 3;
   grid-row: 1 / span 2;
-  color: #A96F18;
+  justify-self: end;
+  width: 30px;
+  height: 30px;
+  border-radius: 999px;
+  background: #C58B2A;
+  color: #FFFDF8;
   font-size: 16px;
 }
 

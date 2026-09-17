@@ -3,6 +3,7 @@ import { page as coursePage } from "../generated-pages/course.html.js";
 import { runLegacyPage } from "../legacyRuntime.js";
 import { usePageStyle } from "../hooks/usePageStyle.js";
 import { useEduNexRuntimeReady } from "../hooks/useEduNexRuntimeReady.js";
+import { progressCacheKey } from "../hooks/useLearningProgress.js";
 
 function courseId(course) {
   return window.EduNex?.courseId?.(course) || course?._id || course?.id || "";
@@ -57,7 +58,7 @@ function readableDuration(course) {
 
 function priceLabel(course) {
   const value = Number(course?.price || 0);
-  return value > 1 ? `₹${value.toLocaleString("en-IN")}` : "₹1 first month";
+  return value > 1 ? `₹${value.toLocaleString("en-IN")}` : "₹1 for 24 hours";
 }
 
 function originalPrice(course) {
@@ -67,7 +68,8 @@ function originalPrice(course) {
 
 function progressFor(id) {
   try {
-    const saved = JSON.parse(localStorage.getItem(`edunexCourseProgress:${id}`) || "{}");
+    if (!window.EduNex?.getAccessToken?.()) return { percent: 0, hasProgress: false };
+    const saved = JSON.parse(localStorage.getItem(progressCacheKey(id)) || "{}");
     const percent = Math.max(0, Math.min(100, Number(saved.percent || 0)));
     return {
       percent,
@@ -79,9 +81,9 @@ function progressFor(id) {
 }
 
 function markCourseViewed(id) {
-  if (!id) return;
+  if (!id || !window.EduNex?.getAccessToken?.()) return;
   try {
-    const key = `edunexCourseProgress:${id}`;
+    const key = progressCacheKey(id);
     const saved = JSON.parse(localStorage.getItem(key) || "{}");
     localStorage.setItem(key, JSON.stringify({
       ...saved,
@@ -225,7 +227,7 @@ export function CourseDetailsPage() {
   const title = course.title || "Untitled course";
   const videos = Array.isArray(course.videos) ? course.videos : [];
   const progress = progressFor(id);
-  const primaryLabel = state.accessActive ? (progress.hasProgress ? "Continue Learning" : "Start Course") : "Start ₹1 First Month";
+  const primaryLabel = state.accessActive ? (progress.hasProgress ? "Continue Learning" : "Start Course") : "Try 24 Hours for ₹1";
   const maybeOriginal = originalPrice(course);
 
   return (

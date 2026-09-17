@@ -47,10 +47,21 @@ function getToken() {
 }
 
 function clearAuthStorage() {
+  if (window.EduNex?.clearAuth) {
+    window.EduNex.clearAuth();
+    return;
+  }
   ["edunexAccessToken", "edunexRefreshToken", "edunexUser"].forEach((key) => {
     localStorage.removeItem(key);
     sessionStorage.removeItem(key);
   });
+  ["edunexWishlistLocal", "edunexHasCourseAccess", "edunexSignupProfile"].forEach((key) => localStorage.removeItem(key));
+  const progressKeys = [];
+  for (let index = 0; index < localStorage.length; index += 1) {
+    const key = localStorage.key(index);
+    if (key?.startsWith("edunexCourseProgress:")) progressKeys.push(key);
+  }
+  progressKeys.forEach((key) => localStorage.removeItem(key));
 }
 
 function paymentUrlForCourse(courseId) {

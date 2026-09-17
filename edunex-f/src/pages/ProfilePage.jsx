@@ -387,7 +387,7 @@ export function ProfilePage() {
                       <span>{item.orderId || item.paymentId || item.subscriptionId || ""}</span>
                     </div>
                   )) : (
-                    <div className="sub-history-row"><strong>No past subscription entries</strong><span>Your current subscription data is shown above. History will appear here once the backend returns previous orders or plans.</span></div>
+                    <div className="sub-history-row"><strong>No past subscription entries</strong><span>Your current subscription data is shown above. Previous plans and orders will appear here when available.</span></div>
                   )}
                 </div>
               </>

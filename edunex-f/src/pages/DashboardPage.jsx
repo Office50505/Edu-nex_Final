@@ -3,6 +3,7 @@ import { page as dashboardPage } from "../generated-pages/dashboard.html.js";
 import { runLegacyPage } from "../legacyRuntime.js";
 import { usePageStyle } from "../hooks/usePageStyle.js";
 import { useEduNexRuntimeReady } from "../hooks/useEduNexRuntimeReady.js";
+import { progressCacheKey } from "../hooks/useLearningProgress.js";
 
 function coursesArray(response) {
   if (Array.isArray(response)) return response;
@@ -18,7 +19,7 @@ function recommendationsArray(response) {
 
 function dashCourseProgress(course) {
   try {
-    const saved = JSON.parse(localStorage.getItem(`edunexCourseProgress:${course._id}`) || "{}");
+    const saved = JSON.parse(localStorage.getItem(progressCacheKey(course._id)) || "{}");
     const total = Math.max(Array.isArray(course.videos) ? course.videos.length : 0, 1);
     const completed = Number(saved.completed || 0);
     const percent = Math.max(0, Math.min(100, Number(saved.percent ?? Math.round((completed / total) * 100))));
@@ -131,10 +132,10 @@ export function DashboardPage() {
       <div className={`trial-gate${allowed === false ? " is-open" : ""}`} id="trialGate" role="dialog" aria-modal="true" aria-labelledby="trialGateTitle">
         <div className="trial-gate-card">
           <div className="trial-gate-icon"><i className="fas fa-bolt" aria-hidden="true"></i></div>
-          <div className="trial-gate-title" id="trialGateTitle">Start your first month for ₹1</div>
-          <p>Your dashboard unlocks after you subscribe. After the introductory month, access renews at ₹499/month until cancelled.</p>
+          <div className="trial-gate-title" id="trialGateTitle">Start your 24-hour trial for ₹1</div>
+          <p>Your dashboard unlocks after you subscribe. After the 24-hour trial, access renews at ₹499/month until cancelled.</p>
           <div className="trial-gate-actions">
-            <a className="trial-gate-btn" href="payment.html"><i className="fas fa-arrow-right" aria-hidden="true"></i> Start ₹1 First Month</a>
+            <a className="trial-gate-btn" href="payment.html"><i className="fas fa-arrow-right" aria-hidden="true"></i> Try 24 Hours for ₹1</a>
             <a className="trial-gate-btn secondary" href="courses.html">Browse Courses</a>
           </div>
         </div>

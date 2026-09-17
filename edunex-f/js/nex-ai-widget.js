@@ -46,6 +46,10 @@
       `;
       target.appendChild(prompt);
       prompt.addEventListener('click', (event) => {
+        if (event.target.closest('.nai-auth-actions a')) {
+          hideAiLoginPrompt();
+          return;
+        }
         if (event.target === prompt || event.target.closest('.nai-auth-close')) {
           hideAiLoginPrompt();
         }
@@ -185,13 +189,22 @@
       justify-content: space-between;
       gap: 10px;
       margin-bottom: 10px;
+      list-style: none;
+      cursor: pointer;
     }
+    .nai-history-top::-webkit-details-marker { display: none; }
     .nai-history-title {
       margin: 0;
       color: #fff;
       font-size: .88rem;
       font-weight: 900;
     }
+    .nai-history-chevron {
+      color: #756A60;
+      font-size: .72rem;
+      transition: transform .18s ease;
+    }
+    .nai-history-panel[open] .nai-history-chevron { transform: rotate(180deg); }
     .nai-history-list {
       display: flex;
       flex-direction: column;
@@ -534,6 +547,12 @@
       font-size: 0.9rem; color: rgba(255,255,255,0.85);
       line-height: 1.72;
     }
+    html:not([data-theme="light"]) #nex-ai-widget-root .nai-ai-bubble,
+    html:not([data-theme="light"]) #nex-ai-widget-root .nai-ai-bubble p,
+    html:not([data-theme="light"]) #nex-ai-widget-root .nai-reply-list,
+    html:not([data-theme="light"]) #nex-ai-widget-root .nai-reply-list li {
+      color: #FFFFFF !important;
+    }
     .nai-ai-bubble a, .nai-cyan-link {
       color: #C58B2A; text-decoration: none; font-weight: 600;
     }
@@ -666,11 +685,29 @@
       }
       #nai-sidebar {
         width: 100%;
-        max-height: 188px;
+        max-height: 172px;
         border-right: 0;
         border-bottom: 1px solid rgba(255,255,255,0.06);
-        padding: calc(14px + env(safe-area-inset-top, 0px)) 14px 14px;
-        gap: 12px;
+        padding: calc(8px + env(safe-area-inset-top, 0px)) 14px 8px;
+        gap: 0;
+        overflow: visible;
+      }
+      #nai-sidebar .nai-bot-hdr {
+        display: none;
+      }
+      .nai-history-panel {
+        min-width: 0;
+      }
+      .nai-history-top {
+        min-height: 34px;
+        margin: 0;
+        padding: 0 4px;
+      }
+      .nai-history-title {
+        font-size: .78rem;
+      }
+      .nai-history-panel[open] .nai-history-top {
+        margin-bottom: 8px;
       }
       .nai-history-list {
         display: grid;
@@ -702,7 +739,89 @@
         letter-spacing: 0;
       }
       #nai-input-area {
-        padding-bottom: calc(14px + env(safe-area-inset-bottom, 0px));
+        padding: 10px 14px calc(10px + env(safe-area-inset-bottom, 0px));
+      }
+      #nai-chat-hdr {
+        align-items: flex-start;
+        gap: 10px;
+        padding: 13px 14px 12px;
+      }
+      #nai-chat-hdr > div:first-child {
+        flex: 1;
+        min-width: 0;
+      }
+      .nai-session-title {
+        overflow: hidden;
+        margin-bottom: 0;
+        font-size: 1.08rem;
+        line-height: 1.25;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .nai-bot-customizer {
+        flex-wrap: nowrap;
+        gap: 8px;
+        margin-top: 8px;
+      }
+      .nai-bot-avatar-picker {
+        width: 34px;
+        height: 34px;
+        border-radius: 10px;
+      }
+      #nai-bot-name-input {
+        flex: 1;
+        width: 150px;
+        min-width: 0;
+        max-width: 150px;
+        min-height: 34px;
+        box-sizing: border-box;
+      }
+      .nai-hdr-actions {
+        flex-shrink: 0;
+      }
+      .nai-hdr-btn {
+        min-height: 34px;
+        padding: 0 9px;
+        font-size: .72rem;
+      }
+      .nai-avatar-menu {
+        top: 72px;
+        left: 14px;
+        width: min(260px, calc(100vw - 28px));
+        box-sizing: border-box;
+      }
+      #nai-messages {
+        gap: 18px;
+        padding: 18px 16px 12px;
+      }
+      .nai-ai-row {
+        gap: 10px;
+      }
+      .nai-ai-avatar {
+        width: 34px;
+        height: 34px;
+        border-radius: 10px;
+      }
+      .nai-ai-bubble {
+        font-size: .86rem;
+        line-height: 1.62;
+      }
+      .nai-user-bubble {
+        max-width: 82%;
+        padding: 11px 14px;
+      }
+      .nai-user-avatar-sm {
+        width: 30px;
+        height: 30px;
+      }
+      .nai-input-row {
+        gap: 8px;
+        margin-bottom: 0;
+        padding: 7px 7px 7px 10px;
+        border-radius: 13px;
+      }
+      .nai-footer-hint {
+        display: none;
       }
       #nai-auth-prompt {
         align-items: stretch;
@@ -762,9 +881,10 @@
       color: #2B211A;
     }
     html[data-theme="light"] .nai-ai-bubble,
+    html[data-theme="light"] .nai-ai-bubble p,
     html[data-theme="light"] .nai-reply-list,
     html[data-theme="light"] .nai-reply-list li {
-      color: #756A60;
+      color: #756A60 !important;
     }
     html[data-theme="light"] .nai-input-row,
     html[data-theme="light"] #nai-bot-name-input {
@@ -915,12 +1035,13 @@
               <div class="nai-online"><span class="nai-online-dot"></span>Ready to help</div>
             </div>
           </div>
-          <div>
-            <div class="nai-history-top">
+          <details class="nai-history-panel" ${window.matchMedia('(min-width: 769px)').matches ? 'open' : ''}>
+            <summary class="nai-history-top">
               <p class="nai-history-title">Previous chats</p>
-            </div>
+              <i class="fas fa-chevron-down nai-history-chevron" aria-hidden="true"></i>
+            </summary>
             <div class="nai-history-list" id="nai-conversation-list" aria-live="polite"></div>
-          </div>
+          </details>
         </aside>
 
         <!-- ── CHAT AREA ── -->
@@ -929,7 +1050,7 @@
           <!-- Header -->
           <div id="nai-chat-hdr">
             <div>
-              <div class="nai-session-title" id="nai-session-title"><span id="nai-bot-name-title">${savedBotName}</span> Tutoring Session</div>
+              <div class="nai-session-title" id="nai-session-title"><span id="nai-bot-name-title">${savedBotName}</span></div>
               <div class="nai-bot-customizer">
                 <button class="nai-bot-avatar-picker" id="nai-bot-avatar-picker" type="button" aria-label="Choose AI icon">${botAvatarMarkup}</button>
                 <input id="nai-bot-name-input" type="text" value="${escAttr(savedBotName)}" maxlength="24" aria-label="AI bot name">

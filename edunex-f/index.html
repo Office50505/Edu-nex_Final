@@ -3,6 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#000000">
+  <script vite-ignore src="/js/theme-preload.js"></script>
   <title>Skillomate AI</title>
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -13,10 +15,10 @@
 </head>
 <body>
   <div id="root">
-    <div style="min-height:100vh;display:grid;place-items:center;background:#FAF7F1;color:#332820;font-family:Manrope,Arial,sans-serif;">
+    <div style="min-height:100vh;display:grid;place-items:center;background:var(--bg,#000);color:var(--text,#fff);font-family:Manrope,Arial,sans-serif;">
       <div style="text-align:center;">
         <img src="/assets/skillomate-logo.png" alt="Skillomate" style="display:block;width:180px;height:auto;margin:0 auto;">
-        <div style="margin-top:10px;font-size:.82rem;font-weight:700;color:#756A60;">Loading learning experience...</div>
+        <div style="margin-top:10px;font-size:.82rem;font-weight:700;color:var(--text2,#9ca3af);">Loading learning experience...</div>
       </div>
     </div>
   </div>

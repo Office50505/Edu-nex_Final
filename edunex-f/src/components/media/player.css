@@ -28,7 +28,7 @@
 .watch-layout.sm-playlist-closed { grid-template-columns:minmax(0,1fr); }
 .watch-layout .sm-playlist-toggle { color:inherit; background:transparent; border:1px solid currentColor; border-radius:6px; padding:8px 14px; margin-bottom:10px; cursor:pointer; }
 .watch-layout .lesson-sidebar[hidden] { display:none; }
-@media(max-width:600px) { .sm-player { min-height:240px; } .sm-player .sm-controls { padding:20px 6px 4px; } .sm-player .sm-row { gap:0; } .sm-player .sm-volume { display:none; } .sm-player .sm-time { font-size:11px; } .sm-player button { min-width:36px; padding:6px; } .sm-player .sm-settings { bottom:96px; max-height:calc(100% - 104px); } }
+@media(max-width:600px) { .sm-player { min-height:0; aspect-ratio:auto; } .sm-player .sm-controls { padding:20px 6px 4px; } .sm-player .sm-row { gap:0; } .sm-player .sm-volume { display:none; } .sm-player .sm-time { font-size:11px; } .sm-player button { min-width:36px; padding:6px; } .sm-player .sm-settings { bottom:96px; max-height:calc(100% - 104px); } }
 @media(prefers-reduced-motion:reduce) { .sm-player .sm-controls { transition:none; } }
 
 .sm-player button svg { display:block; margin:auto; }
@@ -56,35 +56,23 @@
 /* Fullscreen media must fill its own viewport, independently of lesson-page sizing. */
 .sm-player:fullscreen { min-width:0; max-width:none; min-height:0; max-height:none; margin:0; padding:0; border:0; border-radius:0; background:#000; }
 .sm-player:fullscreen > video { position:absolute; inset:0; width:100% !important; height:100% !important; max-width:none; max-height:none; object-fit:contain; background:#000; }
-.sm-player.sm-fill-screen:fullscreen > video { object-fit:cover; }
-.sm-player .sm-fit-button { font-size:11px; min-width:68px; background:#ffffff14; border:1px solid #ffffff25; border-radius:7px; }
 .sm-player:fullscreen .sm-controls { padding-bottom:max(8px,env(safe-area-inset-bottom)); padding-left:max(10px,env(safe-area-inset-left)); padding-right:max(10px,env(safe-area-inset-right)); }
 
 /* The legacy lesson wrapper can own fullscreen instead of the inner player. */
 .sm-player.sm-fullscreen { width:100%; height:100%; min-height:0; max-height:none; aspect-ratio:auto; background:#000; }
 .sm-player.sm-fullscreen > video { position:absolute; inset:0; width:100% !important; height:100% !important; max-width:none; max-height:none; object-fit:contain; background:#000; }
-.sm-player.sm-fill-screen > video { object-fit:cover; }
-.sm-player .sm-fit-button { min-height:32px; padding:5px 8px; }
-
 @media(max-width:820px),(pointer:coarse) {
   .sm-player .sm-skip { display:none; }
   .sm-player > video { touch-action:manipulation; }
   .sm-player .sm-row { gap:0; }
-  .sm-player .sm-fit-button { min-width:56px; padding:5px; font-size:10px; }
 }
-/* Portrait fullscreen uses a 9:16 picture area, not the taller phone ratio.
-   Cover removes the square stream's side padding within this bounded area. */
-@media (orientation:portrait) {
-  .sm-player.sm-fullscreen.sm-fill-screen > video {
-    inset:auto !important;
-    left:50% !important;
-    top:50% !important;
-    transform:translate(-50%,-50%);
-    width:min(100%,56.25dvh) !important;
-    height:auto !important;
-    aspect-ratio:9 / 16;
-    max-height:100% !important;
-    object-fit:cover;
-    background:#000;
-  }
+
+@media(max-width:420px) {
+  .sm-player .sm-row { flex-wrap:nowrap; }
+  .sm-player .sm-time,
+  .sm-player .sm-lesson-nav,
+  .sm-player .sm-pip,
+  .sm-player .sm-captions { display:none; }
+  .sm-player .sm-settings-button,
+  .sm-player .sm-fullscreen-button { flex:0 0 auto; }
 }
