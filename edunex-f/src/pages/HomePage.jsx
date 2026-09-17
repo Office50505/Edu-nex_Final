@@ -531,8 +531,8 @@ function CurriculumShowcase({ courses, status, onOpenCourse, authUserId }) {
             <p>A single guided workspace for lessons, modules, projects, and certification.</p>
           </div>
           <div className="curriculum-overview-stats" aria-label="Course summary">
-            <strong>{totalLessons}</strong><small>video lessons</small>
-            <strong>7</strong><small>modules</small>
+            <span><strong>{totalLessons}</strong><small>video lessons</small></span>
+            <span><strong>7</strong><small>modules</small></span>
           </div>
           <a href={courseHref}>Open Course <MaterialIcon>arrow_forward</MaterialIcon></a>
         </div>
@@ -1464,9 +1464,6 @@ export function HomePage() {
           </div>
 
           <div className="hero-carousel-shell" id="homeHeroCarousel" aria-live="polite">
-            <button className="hero-carousel-control hero-carousel-control-prev" type="button" aria-label="Previous courses" onClick={() => stepCarousel(-1)}>
-              <MaterialIcon>chevron_left</MaterialIcon>
-            </button>
             <div
               className="hero-carousel-viewport"
               tabIndex={0}
@@ -1515,9 +1512,6 @@ export function HomePage() {
                 ))}
               </div>
             </div>
-            <button className="hero-carousel-control hero-carousel-control-next" type="button" aria-label="Next courses" onClick={() => stepCarousel(1)}>
-              <MaterialIcon>chevron_right</MaterialIcon>
-            </button>
           </div>
 
           <div className="learning-hero-actions">

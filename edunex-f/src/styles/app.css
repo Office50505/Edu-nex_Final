@@ -3452,7 +3452,7 @@ html:has(.enx-page-loading) .enx-nav-hamburger span {
   overscroll-behavior-inline: contain;
   scroll-behavior: auto !important;
   scrollbar-width: none;
-  touch-action: pan-y !important;
+  touch-action: pan-x pan-y !important;
   -webkit-overflow-scrolling: touch;
 }
 
@@ -3465,45 +3465,6 @@ html:has(.enx-page-loading) .enx-nav-hamburger span {
 .react-page-root[data-page="index.html"] .hero-carousel-viewport.is-dragging {
   scroll-snap-type: none !important;
   scroll-behavior: auto !important;
-}
-
-.react-page-root[data-page="index.html"] .hero-carousel-control {
-  position: absolute;
-  top: 50%;
-  z-index: 6;
-  width: 44px;
-  height: 44px;
-  display: grid;
-  place-items: center;
-  border: 1px solid var(--border);
-  border-radius: 50%;
-  background: color-mix(in srgb, var(--card) 88%, transparent);
-  color: var(--text);
-  box-shadow: 0 16px 34px rgba(0, 0, 0, .26);
-  cursor: pointer;
-  transform: translateY(-50%);
-  transition: background .18s ease, border-color .18s ease, color .18s ease, transform .18s ease;
-}
-
-.react-page-root[data-page="index.html"] .hero-carousel-control:hover {
-  border-color: rgba(197, 139, 42, .4);
-  color: var(--cyan);
-  transform: translateY(-50%) scale(1.04);
-}
-
-.react-page-root[data-page="index.html"] .hero-carousel-control :where(.enx-icon, .material-symbols-outlined) {
-  width: 22px;
-  height: 22px;
-  font-size: 22px;
-  line-height: 1;
-}
-
-.react-page-root[data-page="index.html"] .hero-carousel-control-prev {
-  left: clamp(10px, 2vw, 26px);
-}
-
-.react-page-root[data-page="index.html"] .hero-carousel-control-next {
-  right: clamp(10px, 2vw, 26px);
 }
 
 /* Home carousel cards use the same clean media/body/action structure as the course catalogue. */
@@ -3715,19 +3676,6 @@ html[data-theme="light"] .react-page-root .lp-prefix {
 }
 
 @media (max-width: 760px) {
-  .react-page-root[data-page="index.html"] .hero-carousel-control {
-    width: 36px;
-    height: 36px;
-  }
-
-  .react-page-root[data-page="index.html"] .hero-carousel-control-prev {
-    left: 18px;
-  }
-
-  .react-page-root[data-page="index.html"] .hero-carousel-control-next {
-    right: 18px;
-  }
-
   .react-page-root[data-page="index.html"] .hero-course-card {
     flex-basis: min(82vw, 320px) !important;
     height: 390px !important;
@@ -4622,11 +4570,18 @@ html[data-theme="light"] .enx-footer .enx-footer-support a {
 
 .react-page-root[data-page="index.html"] .curriculum-overview-stats {
   display: grid;
-  grid-template-columns: repeat(2, auto);
+  grid-template-columns: repeat(2, minmax(0, auto));
   align-items: center;
   column-gap: 12px;
-  row-gap: 2px;
   padding: 0 8px;
+}
+
+.react-page-root[data-page="index.html"] .curriculum-overview-stats > span {
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+  justify-items: center;
+  text-align: center;
 }
 
 .react-page-root[data-page="index.html"] .curriculum-overview-stats strong {
@@ -6374,12 +6329,40 @@ body {
   }
 
   .react-page-root[data-page="index.html"] :where(.continue-learning-row, .skill-strip, .module-strip, .watched-grid, .project-grid, .tool-grid, .journey-strip) {
+    display: flex !important;
+    flex-direction: column !important;
     grid-auto-flow: row !important;
     grid-auto-columns: initial !important;
-    grid-template-columns: 1fr !important;
+    grid-template-columns: none !important;
+    gap: 12px !important;
     overflow-x: visible !important;
     padding-bottom: 0 !important;
     scroll-snap-type: none !important;
+  }
+
+  .react-page-root[data-page="index.html"] .skill-strip {
+    position: relative !important;
+    z-index: 1;
+    margin-top: 8px !important;
+    padding-top: 8px !important;
+    contain: layout paint;
+  }
+
+  .react-page-root[data-page="index.html"] .skill-strip::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto;
+    z-index: 2;
+    height: 18px;
+    background: var(--bg);
+    pointer-events: none;
+  }
+
+  .react-page-root[data-page="index.html"] :where(.continue-learning-row, .skill-strip, .module-strip, .watched-grid, .project-grid, .tool-grid, .journey-strip) > * {
+    position: relative !important;
+    flex: 0 0 auto !important;
+    width: 100% !important;
+    z-index: 3;
   }
 
   .react-page-root[data-page="index.html"] :where(.continue-lesson-card, .skill-tile, .project-card) {
@@ -6389,6 +6372,7 @@ body {
 
   .react-page-root[data-page="index.html"] .skill-tile {
     grid-template-columns: 38px minmax(0, 1fr) 74px !important;
+    overflow: hidden !important;
   }
 
   .react-page-root[data-page="index.html"] .module-chip {
@@ -6417,6 +6401,7 @@ body {
   .react-page-root[data-page="index.html"] .curriculum-overview {
     grid-template-columns: 64px minmax(0, 1fr) !important;
     gap: 12px !important;
+    overflow: hidden !important;
   }
 
   .react-page-root[data-page="index.html"] .curriculum-overview > img {
@@ -6425,9 +6410,15 @@ body {
   }
 
   .react-page-root[data-page="index.html"] .curriculum-overview-stats {
+    grid-column: 1 / -1;
     width: 100%;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     padding: 0;
+  }
+
+  .react-page-root[data-page="index.html"] .curriculum-overview > a {
+    grid-column: 1 / -1;
+    width: 100%;
   }
 
   .react-page-root[data-page="index.html"] .curriculum-cta {
@@ -6492,13 +6483,6 @@ body {
     justify-content: center;
   }
 
-  .react-page-root[data-page="index.html"] .hero-carousel-control-prev {
-    left: 8px !important;
-  }
-
-  .react-page-root[data-page="index.html"] .hero-carousel-control-next {
-    right: 8px !important;
-  }
 }
 
 /* Final warm premium light-theme layer. Colour-only override; layout stays unchanged. */
