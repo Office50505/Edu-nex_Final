@@ -764,11 +764,17 @@ router.post('/login', async (req, res) => {
     // Find user with password field
     const user = await User.findOne(loginQuery).select('+passwordHash +deviceToken +activeSessionId +activeSessions');
 
-    if (!user || user.isActive === false) {
+    if (!user) {
       recordRateLimitFailure(loginLimitKey, authRateConfig.loginByPhone);
       recordRateLimitFailure(ipLimitKey, authRateConfig.loginByIp);
       if (!user && !normalizedEmail) return res.status(404).json({ error: 'Account does not exist.', code: 'MOBILE_NOT_REGISTERED' });
-      return res.status(401).json({ error: 'Invalid credentials' });
+      return res.status(404).json({ error: 'Account does not exist.', code: 'ACCOUNT_NOT_FOUND' });
+    }
+
+    if (user.isActive === false) {
+      recordRateLimitFailure(loginLimitKey, authRateConfig.loginByPhone);
+      recordRateLimitFailure(ipLimitKey, authRateConfig.loginByIp);
+      return res.status(404).json({ error: 'Account does not exist.', code: 'ACCOUNT_NOT_FOUND' });
     }
 
     // Verify password (assuming bcrypt is used)

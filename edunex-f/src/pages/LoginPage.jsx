@@ -9,6 +9,7 @@ import { PasswordRecovery } from "../components/PasswordRecovery.jsx";
 
 const EMPTY_LOGIN_MESSAGE = "Please enter your mobile number and password.";
 const FALLBACK_LOGIN_MESSAGE = "Could not sign in. Please try again.";
+const ACCOUNT_NOT_FOUND_CODES = new Set(["MOBILE_NOT_REGISTERED", "ACCOUNT_NOT_FOUND"]);
 
 function normalizePhone(value) {
   if (window.EduNex?.normalizePhone) return window.EduNex.normalizePhone(value);
@@ -141,7 +142,7 @@ export function LoginPage() {
       window.dispatchEvent(new Event("edunex:auth-changed"));
       window.location.href = safeNext("/dashboard.html");
     } catch (loginError) {
-      if (loginError.code === "MOBILE_NOT_REGISTERED") {
+      if (ACCOUNT_NOT_FOUND_CODES.has(loginError.code)) {
         saveSignupPrefill(normalizePhone(trimmedLogin), sessionStorage);
         setError("Account does not exist. Redirecting to signup...");
         const next = new URLSearchParams(window.location.search).get("next");

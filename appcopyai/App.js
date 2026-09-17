@@ -6838,7 +6838,7 @@ export default function App() {
         password,
       });
       if (!res.ok) {
-        if (data?.code === "MOBILE_NOT_REGISTERED") {
+        if (data?.code === "MOBILE_NOT_REGISTERED" || data?.code === "ACCOUNT_NOT_FOUND") {
           const digits = identifier.replace(/\D/g, "");
           const localMobile = digits.startsWith("91") && digits.length === 12 ? digits.slice(2) : digits;
           setLoginError("Account does not exist.");

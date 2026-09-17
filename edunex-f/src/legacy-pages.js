@@ -5421,7 +5421,7 @@ f'(x) = 1 if x > 0 else 0</div>
       EduNex.saveAuth(data, true);
       window.location.href = EduNex.safeNext('/dashboard.html');
     } catch (error) {
-      if (error.code === 'MOBILE_NOT_REGISTERED') {
+      if (error.code === 'MOBILE_NOT_REGISTERED' || error.code === 'ACCOUNT_NOT_FOUND') {
         try {
           sessionStorage.setItem('edunexSignupPrefill', JSON.stringify({
             phone: EduNex.normalizePhone(email).replace(/\\D/g, ''),
