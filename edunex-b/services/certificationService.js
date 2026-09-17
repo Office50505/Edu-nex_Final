@@ -54,16 +54,23 @@ async function issue(user,ctx,status) {
 }
 async function sync(user,ctx,status) {
   const completedVideoIds=status.lessons.filter(l=>l.complete).map(l=>l.id);
-  const progress={userId:String(user._id),courseId:String(ctx.course._id),courseTitle:ctx.course.title,userName:user.fullName || '',userEmail:user.email || '',userMobileNumber:user.mobileNumber || '',completedVideoIds,completedCount:completedVideoIds.length,totalVideos:status.totalLessons,progressPercent:status.totalLessons?Math.floor(completedVideoIds.length/status.totalLessons*100):0,videoProgress:Object.fromEntries(status.lessons.map(l=>[l.id.replace(/[.$]/g,'_'),{videoId:l.id,watchedSeconds:l.watchedSeconds,durationSeconds:l.duration,resumePosition:l.resumePosition,percent:l.percent}])),updatedAt:new Date()};
+  const progress={userId:String(user._id),courseId:String(ctx.course._id),courseTitle:ctx.course.title,userName:user.fullName || '',userEmail:user.email || '',userMobileNumber:user.mobileNumber || '',completedVideoIds,completedCount:completedVideoIds.length,totalVideos:status.totalLessons,progressPercent:Number(status.progressPercent || 0),videoProgress:Object.fromEntries(status.lessons.map(l=>[l.id.replace(/[.$]/g,'_'),{videoId:l.id,watchedSeconds:l.watchedSeconds,durationSeconds:l.duration,resumePosition:l.resumePosition,percent:l.percent}])),updatedAt:new Date()};
   await CourseProgress.updateOne({userId:progress.userId,courseId:progress.courseId},{$set:progress},{upsert:true});
   await User.updateOne({_id:user._id},{$set:{[`courseProgress.${ctx.course._id}`]:progress,lastActiveAt:new Date()}});
   return progress;
 }
-async function recordPlayback({ user,courseId,videoId,currentTime,sessionId }) {
+async function recordPlayback({ user,courseId,videoId,currentTime,duration,sessionId }) {
   await access(user);
-  const ctx=await context(user,courseId);
-  const index=ctx.course.videos.findIndex((v,i)=>[rules.videoKey(v,i),v.bunnyGuid,v.bunnyVideoId,v.youtubeId,String(i)].filter(v=>v!=null).map(String).includes(String(videoId)));
+  let ctx=await context(user,courseId);
+  let index=ctx.course.videos.findIndex((v,i)=>[rules.videoKey(v,i),v.bunnyGuid,v.bunnyVideoId,v.youtubeId,String(i)].filter(v=>v!=null).map(String).includes(String(videoId)));
   if(index<0) throw fail('Lesson does not belong to this course',404);
+  const reportedDuration=Number(duration);
+  if(Number(ctx.videos[index]?.duration||0)<=0) {
+    if(!Number.isFinite(reportedDuration)||reportedDuration<1||reportedDuration>86400) throw fail('The player could not determine this lesson duration. Reload the video and retry.',400);
+    await Course.updateOne({_id:ctx.course._id},{$set:{[`videos.${index}.duration`]:Math.round(reportedDuration*100)/100}});
+    ctx=await context(user,courseId);
+    index=ctx.course.videos.findIndex((v,i)=>[rules.videoKey(v,i),v.bunnyGuid,v.bunnyVideoId,v.youtubeId,String(i)].filter(v=>v!=null).map(String).includes(String(videoId)));
+  }
   const video=ctx.videos[index];
   const _id=rules.identity(user._id,courseId,ctx.version,video.id);
   let saved=false, previousCoverage=0, nextCoverage=0;

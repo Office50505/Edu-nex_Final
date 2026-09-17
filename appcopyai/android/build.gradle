@@ -24,7 +24,7 @@ ext {
   buildToolsVersion = "36.1.0"
   compileSdkVersion = 36
   ndkVersion = "27.1.12297006"
-  targetSdkVersion = 34
+  targetSdkVersion = 36
 }
 
 apply plugin: "expo-root-project"

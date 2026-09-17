@@ -40,6 +40,9 @@ function eligibility({ videos, rows, user, questions = [], assessment }) {
   if(!user.isMobileVerified) requirements.push('Verify your mobile number.');
   if(!String(user.fullName || '').trim()) requirements.push('Add your full name to your profile.');
   if(questions.length && !assessment?.passed) requirements.push('Pass the final assessment with at least 70%.');
-  return { lessons, completedLessons: lessons.filter(l=>l.complete).length, totalLessons: lessons.length, requirements, eligible: !requirements.length, assessmentRequired: !!questions.length, assessmentScore: assessment?.score ?? null };
+  const totalDuration=lessons.reduce((sum,lesson)=>sum+Math.max(0,Number(lesson.duration)||0),0);
+  const watchedSeconds=lessons.reduce((sum,lesson)=>sum+Math.max(0,Number(lesson.watchedSeconds)||0),0);
+  const progressPercent=totalDuration>0?Math.min(100,Math.floor(watchedSeconds/totalDuration*100)):0;
+  return { lessons, completedLessons: lessons.filter(l=>l.complete).length, totalLessons: lessons.length, watchedSeconds, totalDuration, progressPercent, requirements, eligible: !requirements.length, assessmentRequired: !!questions.length, assessmentScore: assessment?.score ?? null };
 }
 module.exports = { THRESHOLD, videoKey, manifest, identity, mergeIntervals, heartbeat, covered, eligibility };

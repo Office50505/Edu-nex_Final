@@ -36,7 +36,7 @@ router.get('/learning/:courseId',auth,run(async(req,res)=>{
   res.json(await service.state(req.compatUser,ctx));
 }));
 router.post('/learning/:courseId/progress',auth,run(async(req,res)=>{
-  const result=await service.recordPlayback({user:req.compatUser,courseId:req.params.courseId,videoId:req.body.videoId,currentTime:req.body.currentTime,sessionId:req.compatAuth.sessionId});
+  const result=await service.recordPlayback({user:req.compatUser,courseId:req.params.courseId,videoId:req.body.videoId,currentTime:req.body.currentTime,duration:req.body.duration,sessionId:req.compatAuth.sessionId});
   res.json(result);
 }));
 router.post('/learning/:courseId/claim',auth,run(async(req,res)=>{

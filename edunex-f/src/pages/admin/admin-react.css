@@ -494,7 +494,31 @@ body.premium-nav-admin .date-controls {
 }
 
 body.premium-nav-admin .users-shell .controls-panel {
-  grid-template-columns: minmax(260px, 1fr) minmax(170px, 0.36fr) minmax(170px, 0.36fr) auto !important;
+  grid-template-columns: minmax(280px, 1fr) repeat(3, minmax(150px, 0.34fr)) auto !important;
+}
+
+body.premium-nav-admin .users-shell > *,
+body.premium-nav-admin .users-shell .controls-panel > *,
+body.premium-nav-admin .users-shell .summary-grid > * {
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+body.premium-nav-admin .users-shell .controls-panel > .toolbar-button {
+  align-self: end;
+  min-width: 88px;
+}
+
+body.premium-nav-admin .users-shell .toolbar-actions,
+body.premium-nav-admin .users-shell .row-actions {
+  justify-content: flex-end;
+}
+
+body.premium-nav-admin .users-shell .row-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
 }
 
 body.premium-nav-admin .courses-shell .controls-panel {
@@ -914,8 +938,83 @@ body.premium-nav-admin .crm-detail-grid {
   gap: 10px !important;
 }
 
-body.premium-nav-admin .progress-panel {
+body.premium-nav-admin .progress-panel,
+body.premium-nav-admin .users-shell .progress-panel {
   padding: 0 20px 20px !important;
+  background: var(--admin-surface) !important;
+  color: var(--admin-text) !important;
+  border-top: 1px solid var(--admin-line);
+}
+
+body.premium-nav-admin.admin-theme-light .progress-panel,
+body.premium-nav-admin.admin-theme-light .users-shell .progress-panel {
+  background: #ffffff !important;
+  color: #172033 !important;
+}
+
+body.premium-nav-admin .user-management-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 16px;
+  padding: 14px;
+  border: 1px solid var(--admin-line);
+  border-radius: 12px;
+  background: var(--admin-card);
+}
+
+body.premium-nav-admin .action-button.primary {
+  border-color: var(--admin-accent) !important;
+  background: var(--admin-accent) !important;
+  color: #111318 !important;
+  font-weight: 900 !important;
+}
+
+body.premium-nav-admin .action-button.primary:hover {
+  background: color-mix(in srgb, var(--admin-accent) 84%, white) !important;
+  color: #111318 !important;
+}
+
+body.premium-nav-admin .user-management-actions > div {
+  display: grid;
+  gap: 3px;
+  flex: 1 1 320px;
+}
+
+body.premium-nav-admin .user-management-actions span,
+body.premium-nav-admin .admin-action-list span {
+  color: var(--admin-muted);
+  font-size: 12px;
+}
+
+body.premium-nav-admin .admin-action-list {
+  display: grid;
+  gap: 8px;
+}
+
+body.premium-nav-admin .admin-action-list > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  border: 1px solid var(--admin-line);
+  border-radius: 10px;
+  background: var(--admin-card);
+}
+
+body.premium-nav-admin .admin-action-list strong {
+  text-transform: capitalize;
+}
+
+body.premium-nav-admin .admin-alert.bad {
+  display: grid;
+  gap: 4px;
+  margin: 0 0 16px;
+  padding: 12px 14px;
+  border: 1px solid color-mix(in srgb, #ef4444 45%, var(--admin-line));
+  border-radius: 10px;
+  background: color-mix(in srgb, #ef4444 10%, transparent);
 }
 
 body.premium-nav-admin .progress-row {
@@ -1057,6 +1156,25 @@ body.premium-nav-admin.admin-theme-light .secondary-button.danger {
   color: #b42318 !important;
 }
 
+body.premium-nav-admin .action-button.success {
+  border-color: rgba(74, 222, 128, 0.38) !important;
+  background: rgba(74, 222, 128, 0.16) !important;
+  color: #86efac !important;
+  font-weight: 800 !important;
+}
+
+body.premium-nav-admin .action-button.success:hover {
+  border-color: rgba(74, 222, 128, 0.58) !important;
+  background: rgba(74, 222, 128, 0.24) !important;
+  color: #bbf7d0 !important;
+}
+
+body.premium-nav-admin.admin-theme-light .action-button.success {
+  border-color: rgba(22, 131, 75, 0.35) !important;
+  background: rgba(22, 131, 75, 0.12) !important;
+  color: #16834b !important;
+}
+
 body.premium-nav-admin .progress-meter,
 body.premium-nav-admin .bar-track {
   background: color-mix(in srgb, var(--admin-muted) 18%, transparent) !important;
@@ -1129,6 +1247,24 @@ body.premium-nav-admin .course-actions .secondary-button {
   }
 }
 
+@media (max-width: 1500px) {
+  body.premium-nav-admin .users-shell .controls-panel {
+    grid-template-columns: minmax(260px, 1.3fr) repeat(2, minmax(160px, 0.7fr)) !important;
+  }
+
+  body.premium-nav-admin .users-shell .controls-panel > :nth-child(4) {
+    grid-column: 1 / span 2;
+  }
+
+  body.premium-nav-admin .users-shell .controls-panel > .toolbar-button {
+    grid-column: 3;
+  }
+
+  body.premium-nav-admin .users-shell .summary-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  }
+}
+
 @media (max-width: 980px) {
   body.premium-nav-admin .app-shell {
     max-width: 100%;
@@ -1148,6 +1284,11 @@ body.premium-nav-admin .course-actions .secondary-button {
   body.premium-nav-admin .toolbar-actions {
     display: grid;
     width: 100%;
+  }
+
+  body.premium-nav-admin .users-shell .controls-panel > :nth-child(4),
+  body.premium-nav-admin .users-shell .controls-panel > .toolbar-button {
+    grid-column: auto;
   }
 
   body.premium-nav-admin .course-builder-grid {
@@ -1390,10 +1531,11 @@ body.premium-nav-admin.admin-theme-dark .admin-workspace {
 }
 
 body.premium-nav-admin .admin-workspace .admin-workspace-main {
-  width: calc(100vw - 248px) !important;
-  max-width: calc(100vw - 248px) !important;
+  width: calc(100% - 264px) !important;
+  max-width: calc(100% - 264px) !important;
   box-sizing: border-box;
   margin-left: 248px;
+  margin-right: 16px;
   padding: 28px 34px 56px;
   overflow-x: hidden;
 }
@@ -1412,9 +1554,10 @@ body.admin-sidebar-collapsed .admin-sidebar {
 
 body.premium-nav-admin .admin-workspace.is-collapsed .admin-workspace-main,
 body.premium-nav-admin.admin-sidebar-collapsed .admin-workspace .admin-workspace-main {
-  width: calc(100vw - 76px) !important;
-  max-width: calc(100vw - 76px) !important;
+  width: calc(100% - 92px) !important;
+  max-width: calc(100% - 92px) !important;
   margin-left: 76px;
+  margin-right: 16px;
 }
 
 .admin-workspace-header {
@@ -1833,9 +1976,10 @@ body.premium-nav-admin .course-actions .secondary-button {
 
   body.premium-nav-admin .admin-workspace .admin-workspace-main,
   body.premium-nav-admin .admin-workspace.is-collapsed .admin-workspace-main {
-    width: 100vw !important;
-    max-width: 100vw !important;
+    width: calc(100% - 16px) !important;
+    max-width: calc(100% - 16px) !important;
     margin-left: 0;
+    margin-right: 16px;
     padding: 22px 14px 44px;
   }
 

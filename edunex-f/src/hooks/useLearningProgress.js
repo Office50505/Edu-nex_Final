@@ -15,7 +15,7 @@ export function useLearningProgress(courseId, videoId, time, playing) {
           ...previous,
           viewed:true,
           lastViewedAt:new Date().toISOString(),
-          percent:status.totalLessons?Math.floor(status.completedLessons/status.totalLessons*100):0,
+          percent:Number.isFinite(Number(status.progressPercent)) ? Number(status.progressPercent) : status.totalLessons?Math.floor(status.completedLessons/status.totalLessons*100):0,
           completed:status.completedLessons,
           lessonIndex:Math.max(0,status.lessons.findIndex(l=>!l.complete))
         }));
@@ -31,7 +31,7 @@ export function useLearningProgress(courseId, videoId, time, playing) {
       if(busy||!ready||!latest.current.time.duration||disposed)return;
       busy=true;
       try {
-        const data=await window.EduNex.authRequest(`/api/learning/${courseId}/progress`,{method:'POST',keepalive:true,body:JSON.stringify({videoId,currentTime:latest.current.time.current})});
+        const data=await window.EduNex.authRequest(`/api/learning/${courseId}/progress`,{method:'POST',keepalive:true,body:JSON.stringify({videoId,currentTime:latest.current.time.current,duration:latest.current.time.duration})});
         if(!disposed){setNotice(data.certificate?'Certificate earned — open My Certificates':'Progress saved');publish(data.eligibility);}
       } catch(e){if(!disposed)setNotice(e.message || 'Progress not saved. Retrying when connected.');}
       finally{busy=false;}

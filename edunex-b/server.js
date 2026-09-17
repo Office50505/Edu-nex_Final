@@ -124,6 +124,8 @@ const AiTutorSession = require('./models/AiTutorSession');
 const LessonNote = require('./models/LessonNote');
 const Notification = require('./models/Notification');
 const Certificate = require('./models/Certificate');
+const AdminUserAction = require('./models/AdminUserAction');
+const Session = require('./models/Session');
 
 // Import routes
 const authRoutes = require('./routes/auth');
@@ -141,6 +143,8 @@ const {
 } = require('./services/cacheService');
 
 const CHECKOUT_SUMMARY_CACHE_TTL_MS = 10 * 60 * 1000;
+const IP_LOCATION_CACHE_TTL_MS = 24 * 60 * 60 * 1000;
+const ipLocationCache = new Map();
 const PUBLIC_READ_CACHE_TTL_MS = 60 * 1000;
 const CHECKOUT_SUMMARY_CACHE_TTL_SECONDS = Math.ceil(CHECKOUT_SUMMARY_CACHE_TTL_MS / 1000);
 const PUBLIC_READ_CACHE_TTL_SECONDS = Math.ceil(PUBLIC_READ_CACHE_TTL_MS / 1000);
@@ -2354,11 +2358,31 @@ app.get('/api/admin/users', protectAdmin, async (req, res) => {
 
 app.get('/api/admin/user-management', protectAdmin, async (req, res) => {
   try {
+    const normalizeAdminIdentityEmail = (value) => String(value || '').trim().toLowerCase();
+    const normalizeAdminIdentityMobile = (value) => {
+      const digits = String(value || '').replace(/\D/g, '');
+      return digits.length >= 10 ? digits.slice(-10) : digits;
+    };
+    const buildUniqueIdentityIndex = (rows, valueForRow) => {
+      const index = new Map();
+      const ambiguous = new Set();
+      rows.forEach((row) => {
+        const value = valueForRow(row);
+        if (!value || ambiguous.has(value)) return;
+        if (index.has(value)) {
+          index.delete(value);
+          ambiguous.add(value);
+          return;
+        }
+        index.set(value, String(row._id));
+      });
+      return index;
+    };
     const watchEventNames = ['video_start', 'video_progress', 'video_complete', 'video_watch'];
-    const [users, progressRows, progressWatchRows, analyticsWatchRows] = await Promise.all([
+    const [users, progressRows, progressWatchRows, analyticsWatchRows, latestSessionRows] = await Promise.all([
       User.find()
         .sort({ createdAt: -1 })
-        .select('fullName email mobileNumber avatar gender age subscriptionStatus isMobileVerified isEmailVerified isActive marketingOptIn createdAt lastActiveAt')
+        .select('fullName email mobileNumber avatar gender age subscriptionStatus subscriptionExpiry isMobileVerified isEmailVerified isActive bannedAt banReason deletedAt deletedBy deletionReason marketingOptIn createdAt lastActiveAt lastLoginAt loginCount')
         .lean(),
       CourseProgress.aggregate([
         { $match: { userId: { $nin: [null, ''] } } },
@@ -2391,6 +2415,9 @@ app.get('/api/admin/user-management', protectAdmin, async (req, res) => {
             totalVideos: { $ifNull: ['$totalVideos', 0] },
             lastWatchedVideoId: 1,
             lastCompletedVideoId: 1,
+            userEmail: 1,
+            userMobileNumber: 1,
+            videoProgress: 1,
             createdAt: 1,
             updatedAt: 1,
           },
@@ -2435,7 +2462,9 @@ app.get('/api/admin/user-management', protectAdmin, async (req, res) => {
           $group: {
             _id: '$watchedUserId',
             totalWatchSeconds: { $sum: { $ifNull: ['$watchedSeconds', 0] } },
+            totalDurationSeconds: { $sum: { $ifNull: ['$durationSeconds', 0] } },
             watchedVideos: { $addToSet: '$videoId' },
+            courses: { $addToSet: '$courseId' },
             completedVideos: { $sum: { $cond: [{ $eq: ['$event', 'video_complete'] }, 1, 0] } },
             lastWatchedAt: { $max: '$createdAt' },
           },
@@ -2445,17 +2474,46 @@ app.get('/api/admin/user-management', protectAdmin, async (req, res) => {
             _id: 0,
             userId: '$_id',
             totalWatchSeconds: 1,
+            totalDurationSeconds: 1,
             watchedVideos: { $size: '$watchedVideos' },
+            courseCount: {
+              $size: {
+                $filter: { input: '$courses', as: 'courseId', cond: { $ne: ['$$courseId', null] } },
+              },
+            },
             completedVideos: 1,
             lastWatchedAt: 1,
           },
         },
       ]),
+      Session.aggregate([
+        { $match: { ipAddress: { $nin: [null, ''] } } },
+        { $sort: { lastPingAt: -1, loggedInAt: -1 } },
+        {
+          $group: {
+            _id: '$user',
+            ipAddress: { $first: '$ipAddress' },
+            platform: { $first: '$platform' },
+            deviceName: { $first: '$deviceName' },
+            recordedAt: { $first: { $ifNull: ['$lastPingAt', '$loggedInAt'] } },
+          },
+        },
+        { $project: { _id: 0, userId: { $toString: '$_id' }, ipAddress: 1, platform: 1, deviceName: 1, recordedAt: 1 } },
+      ]),
     ]);
 
+    const userIds = new Set(users.map((user) => String(user._id)));
+    const usersByEmail = buildUniqueIdentityIndex(users, (user) => normalizeAdminIdentityEmail(user.email));
+    const usersByMobile = buildUniqueIdentityIndex(users, (user) => normalizeAdminIdentityMobile(user.mobileNumber));
     const progressByUser = progressRows.reduce((acc, row) => {
-      if (!acc[row.userId]) acc[row.userId] = [];
-      acc[row.userId].push(row);
+      const storedId = String(row.userId || '');
+      const resolvedUserId = userIds.has(storedId)
+        ? storedId
+        : usersByEmail.get(normalizeAdminIdentityEmail(row.userEmail))
+          || usersByMobile.get(normalizeAdminIdentityMobile(row.userMobileNumber));
+      if (!resolvedUserId) return acc;
+      if (!acc[resolvedUserId]) acc[resolvedUserId] = [];
+      acc[resolvedUserId].push(row);
       return acc;
     }, {});
 
@@ -2468,31 +2526,57 @@ app.get('/api/admin/user-management', protectAdmin, async (req, res) => {
       return acc;
     }, {});
     const preferAnalyticsWatch = analyticsWatchRows.length > 0;
+    const latestSessionByUser = latestSessionRows.reduce((acc, row) => {
+      acc[row.userId] = row;
+      return acc;
+    }, {});
 
     res.json(users.map((user) => {
       const userProgress = progressByUser[String(user._id)] || [];
-      const watch = (
+      const courseProgressWatch = userProgress.reduce((summary, course) => {
+        Object.values(course.videoProgress || {}).forEach((video) => {
+          const watchedSeconds = Math.max(0, Number(video?.watchedSeconds || 0));
+          const percent = Math.max(0, Number(video?.percent || 0));
+          summary.totalWatchSeconds += watchedSeconds;
+          if (watchedSeconds > 0) summary.watchedVideos += 1;
+          if (percent >= 95) summary.completedVideos += 1;
+        });
+        if (course.updatedAt && (!summary.lastWatchedAt || new Date(course.updatedAt) > new Date(summary.lastWatchedAt))) {
+          summary.lastWatchedAt = course.updatedAt;
+        }
+        return summary;
+      }, { totalWatchSeconds: 0, watchedVideos: 0, completedVideos: 0, lastWatchedAt: null });
+      const recordedWatch = (
         preferAnalyticsWatch
           ? analyticsWatchByUser[String(user._id)] || progressWatchByUser[String(user._id)]
           : progressWatchByUser[String(user._id)]
-      ) || {};
+      );
+      const watch = Number(recordedWatch?.totalWatchSeconds || 0) > 0
+        ? recordedWatch
+        : courseProgressWatch;
       const watchedMinutes = Math.round(Number(watch.totalWatchSeconds || 0) / 60);
       const completedCourses = userProgress.filter((course) => (
         Number(course.totalVideos || 0) > 0
           ? Number(course.completedCount || 0) >= Number(course.totalVideos || 0)
           : Number(course.progressPercent || 0) >= 100
       )).length;
+      const analyticsCourseCount = Number(watch.courseCount || 0);
+      const analyticsProgressPercent = Number(watch.totalDurationSeconds || 0) > 0
+        ? Math.round(Math.min(100, (Number(watch.totalWatchSeconds || 0) / Number(watch.totalDurationSeconds)) * 100))
+        : 0;
+      const progressCourseCount = userProgress.length || analyticsCourseCount;
 
       return {
         ...user,
+        networkSummary: latestSessionByUser[String(user._id)] || null,
         progressCourses: userProgress,
         progressSummary: {
-          totalCourses: userProgress.length,
+          totalCourses: progressCourseCount,
           completedCourses,
-          inProgressCourses: Math.max(userProgress.length - completedCourses, 0),
+          inProgressCourses: Math.max(progressCourseCount - completedCourses, 0),
           averageProgress: userProgress.length
             ? Math.round(userProgress.reduce((sum, course) => sum + Number(course.progressPercent || 0), 0) / userProgress.length)
-            : 0,
+            : analyticsProgressPercent,
         },
         watchSummary: {
           watchedMinutes,
@@ -2508,14 +2592,254 @@ app.get('/api/admin/user-management', protectAdmin, async (req, res) => {
   }
 });
 
+app.patch('/api/admin/users/:id/access', protectAdmin, async (req, res) => {
+  try {
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(400).json({ error: 'Invalid user id' });
+    }
+    const action = String(req.body.action || '').trim();
+    const reason = String(req.body.reason || '').trim().slice(0, 500) || null;
+    if (!['ban', 'unban'].includes(action)) {
+      return res.status(400).json({ error: 'Action must be ban or unban' });
+    }
+    if (action === 'ban' && !reason) {
+      return res.status(400).json({ error: 'A ban reason is required' });
+    }
+
+    const user = await User.findById(req.params.id);
+    if (!user) return res.status(404).json({ error: 'User not found' });
+    const previousState = { isActive: user.isActive, bannedAt: user.bannedAt, banReason: user.banReason };
+    user.isActive = action === 'unban';
+    user.bannedAt = action === 'ban' ? new Date() : null;
+    user.banReason = action === 'ban' ? reason : null;
+    if (action === 'ban') {
+      user.activeSessionId = null;
+      user.activeSessions = [];
+      user.deviceToken = null;
+    }
+    await user.save();
+    await AdminUserAction.create({
+      user: user._id,
+      action: action === 'ban' ? 'user_banned' : 'user_unbanned',
+      reason,
+      previousState,
+      nextState: { isActive: user.isActive, bannedAt: user.bannedAt, banReason: user.banReason },
+      adminSubject: req.admin?.sub || req.admin?.email || 'admin',
+    });
+    res.json({
+      message: action === 'ban' ? 'User banned and active sessions revoked' : 'User unbanned',
+      user: { _id: user._id, isActive: user.isActive, bannedAt: user.bannedAt, banReason: user.banReason },
+    });
+  } catch (error) {
+    res.status(error.statusCode || 500).json({ error: error.message });
+  }
+});
+
+app.patch('/api/admin/users/:id/subscription', protectAdmin, async (req, res) => {
+  try {
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(400).json({ error: 'Invalid user id' });
+    }
+    const action = String(req.body.action || '').trim();
+    const reason = String(req.body.reason || '').trim().slice(0, 500) || null;
+    if (!['grant', 'revoke'].includes(action)) {
+      return res.status(400).json({ error: 'Action must be grant or revoke' });
+    }
+    if (!reason) return res.status(400).json({ error: 'A reason is required' });
+
+    const user = await User.findById(req.params.id);
+    if (!user) return res.status(404).json({ error: 'User not found' });
+    const previousSubscription = await Subscription.findOne({ user: user._id }).lean();
+    const previousState = {
+      subscriptionStatus: user.subscriptionStatus,
+      subscriptionExpiry: user.subscriptionExpiry,
+      subscriptionDocumentStatus: previousSubscription?.status || null,
+    };
+    const now = new Date();
+
+    if (action === 'grant') {
+      const durationDays = Math.min(3650, Math.max(1, Number.parseInt(req.body.durationDays, 10) || 30));
+      const currentPeriodEnd = new Date(now.getTime() + durationDays * 24 * 60 * 60 * 1000);
+      const subscription = await Subscription.findOneAndUpdate(
+        { user: user._id },
+        {
+          $set: {
+            status: 'active', subscriptionType: 'monthly', currentPeriodStart: now,
+            currentPeriodEnd, nextBillingAt: null, cancelledAt: null,
+            cancelReason: null, gateway: 'admin', phonePeMerchantId: process.env.PHONEPE_MERCHANT_ID || 'admin-manual',
+          },
+          $setOnInsert: { user: user._id },
+        },
+        { new: true, upsert: true, runValidators: true }
+      );
+      user.subscriptionStatus = 'active';
+      user.subscriptionExpiry = currentPeriodEnd;
+      user.subscriptionId = subscription._id;
+      user.isOnTrial = false;
+      await user.save();
+    } else {
+      await Subscription.findOneAndUpdate(
+        { user: user._id },
+        { $set: { status: 'paused', currentPeriodEnd: now, nextBillingAt: null, cancelledAt: now, cancelReason: `Admin: ${reason}` } },
+        { runValidators: true }
+      );
+      user.subscriptionStatus = 'expired';
+      user.subscriptionExpiry = now;
+      user.isOnTrial = false;
+      await user.save();
+    }
+
+    const nextState = { subscriptionStatus: user.subscriptionStatus, subscriptionExpiry: user.subscriptionExpiry };
+    await AdminUserAction.create({
+      user: user._id,
+      action: action === 'grant' ? 'subscription_granted' : 'subscription_revoked',
+      reason,
+      previousState,
+      nextState,
+      adminSubject: req.admin?.sub || req.admin?.email || 'admin',
+    });
+    res.json({
+      message: action === 'grant' ? 'Subscription access granted' : 'Subscription access revoked',
+      user: { _id: user._id, subscriptionStatus: user.subscriptionStatus, subscriptionExpiry: user.subscriptionExpiry },
+    });
+  } catch (error) {
+    res.status(error.statusCode || 500).json({ error: error.message });
+  }
+});
+
+app.get('/api/admin/users/:id/actions', protectAdmin, async (req, res) => {
+  try {
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) return res.status(400).json({ error: 'Invalid user id' });
+    const actions = await AdminUserAction.find({ user: req.params.id }).sort({ createdAt: -1 }).limit(25).lean();
+    res.json(actions);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+function normalizedIpAddress(value) {
+  const ip = String(value || '').trim().replace(/^::ffff:/i, '');
+  return net.isIP(ip) ? ip : '';
+}
+
+function isPrivateIpAddress(ip) {
+  if (net.isIP(ip) === 4) {
+    const parts = ip.split('.').map(Number);
+    return parts[0] === 10
+      || parts[0] === 127
+      || (parts[0] === 169 && parts[1] === 254)
+      || (parts[0] === 172 && parts[1] >= 16 && parts[1] <= 31)
+      || (parts[0] === 192 && parts[1] === 168)
+      || (parts[0] === 100 && parts[1] >= 64 && parts[1] <= 127);
+  }
+  return ip === '::1' || /^f[cd]/i.test(ip) || /^fe[89ab]/i.test(ip);
+}
+
+app.get('/api/admin/users/:id/ip-location', protectAdmin, async (req, res) => {
+  try {
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) return res.status(400).json({ error: 'Invalid user id' });
+    const session = await Session.findOne({ user: req.params.id, ipAddress: { $nin: [null, ''] } })
+      .sort({ lastPingAt: -1, loggedInAt: -1 })
+      .select('ipAddress lastPingAt loggedInAt')
+      .lean();
+    if (!session) return res.json({ location: 'Not recorded', approximate: true });
+
+    const ipAddress = normalizedIpAddress(session.ipAddress);
+    if (!ipAddress) return res.json({ location: 'Unavailable', approximate: true });
+    if (isPrivateIpAddress(ipAddress)) return res.json({ location: 'Local network', approximate: true });
+
+    const cached = ipLocationCache.get(ipAddress);
+    if (cached && cached.expiresAt > Date.now()) return res.json(cached.value);
+    const response = await fetch(`https://ipwho.is/${encodeURIComponent(ipAddress)}`, { signal: AbortSignal.timeout(5000) });
+    if (!response.ok) throw new Error('Location provider unavailable');
+    const data = await response.json();
+    if (data.success === false) throw new Error(data.message || 'Location lookup failed');
+    const parts = [data.city, data.region, data.country].map((item) => String(item || '').trim()).filter(Boolean);
+    const value = {
+      location: parts.length ? [...new Set(parts)].join(', ') : 'Unavailable',
+      approximate: true,
+      recordedAt: session.lastPingAt || session.loggedInAt || null,
+    };
+    if (ipLocationCache.size >= 1000) ipLocationCache.delete(ipLocationCache.keys().next().value);
+    ipLocationCache.set(ipAddress, { value, expiresAt: Date.now() + IP_LOCATION_CACHE_TTL_MS });
+    res.json(value);
+  } catch (error) {
+    res.status(502).json({ error: 'Approximate IP location is temporarily unavailable' });
+  }
+});
+
 app.delete('/api/admin/users/:id', protectAdmin, async (req, res) => {
   try {
     if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
       return res.status(400).json({ error: 'Invalid user id' });
     }
+    const user = await User.findById(req.params.id).select('+activeSessionId +activeSessions');
+    if (!user) return res.status(404).json({ error: 'User not found' });
+    if (user.deletedAt) return res.status(409).json({ error: 'User is already in trash' });
+
+    const reason = String(req.body?.reason || 'Moved to trash by admin').trim().slice(0, 500);
+    const previousState = { isActive: user.isActive, deletedAt: user.deletedAt };
+    user.wasActiveBeforeDeletion = user.isActive !== false;
+    user.deletedAt = new Date();
+    user.deletedBy = req.admin?.sub || req.admin?.email || 'admin';
+    user.deletionReason = reason;
+    user.isActive = false;
+    user.activeSessionId = null;
+    user.activeSessions = [];
+    await user.save();
+    await AdminUserAction.create({
+      user: user._id,
+      action: 'user_trashed',
+      reason,
+      previousState,
+      nextState: { isActive: false, deletedAt: user.deletedAt },
+      adminSubject: user.deletedBy,
+    });
+    res.json({
+      message: 'User moved to trash',
+      user: { _id: user._id, isActive: user.isActive, deletedAt: user.deletedAt, deletedBy: user.deletedBy, deletionReason: user.deletionReason },
+    });
+  } catch (error) {
+    res.status(error.statusCode || 500).json({ error: error.message, code: error.code });
+  }
+});
+
+app.patch('/api/admin/users/:id/restore', protectAdmin, async (req, res) => {
+  try {
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) return res.status(400).json({ error: 'Invalid user id' });
+    const user = await User.findById(req.params.id);
+    if (!user) return res.status(404).json({ error: 'User not found' });
+    if (!user.deletedAt) return res.status(409).json({ error: 'User is not in trash' });
+
+    const previousState = { isActive: user.isActive, deletedAt: user.deletedAt };
+    user.isActive = user.wasActiveBeforeDeletion !== false;
+    user.deletedAt = null;
+    user.deletedBy = null;
+    user.deletionReason = null;
+    await user.save();
+    await AdminUserAction.create({
+      user: user._id,
+      action: 'user_restored',
+      reason: 'Restored from trash by admin',
+      previousState,
+      nextState: { isActive: user.isActive, deletedAt: null },
+      adminSubject: req.admin?.sub || req.admin?.email || 'admin',
+    });
+    res.json({ message: 'User restored successfully', user: { _id: user._id, isActive: user.isActive, deletedAt: null, deletedBy: null, deletionReason: null } });
+  } catch (error) {
+    res.status(error.statusCode || 500).json({ error: error.message, code: error.code });
+  }
+});
+
+app.delete('/api/admin/users/:id/permanent', protectAdmin, async (req, res) => {
+  try {
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) return res.status(400).json({ error: 'Invalid user id' });
+    const user = await User.findById(req.params.id).select('deletedAt');
+    if (!user) return res.status(404).json({ error: 'User not found' });
+    if (!user.deletedAt) return res.status(409).json({ error: 'Move the user to trash before permanent deletion' });
     const { deleteUserAccount } = require('./services/accountDeletionService');
     const deletedCounts = await deleteUserAccount(req.params.id);
-    res.json({ message: 'User deleted successfully', deletedCounts });
+    res.json({ message: 'User permanently deleted', deletedCounts });
   } catch (error) {
     res.status(error.statusCode || 500).json({ error: error.message, code: error.code });
   }

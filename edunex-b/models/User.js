@@ -21,6 +21,12 @@ const userSchema = new mongoose.Schema({
   },
   isEmailVerified: { type: Boolean, default: false },
   isActive: { type: Boolean, default: true },
+  bannedAt: { type: Date, default: null },
+  banReason: { type: String, trim: true, maxlength: 500, default: null },
+  deletedAt: { type: Date, default: null },
+  deletedBy: { type: String, trim: true, default: null },
+  deletionReason: { type: String, trim: true, maxlength: 500, default: null },
+  wasActiveBeforeDeletion: { type: Boolean, default: true },
   phonePeCustomerId: { type: String, default: null },
   subscriptionStatus: {
     type: String,
@@ -63,6 +69,7 @@ const userSchema = new mongoose.Schema({
 });
 
 userSchema.index({ isActive: 1, createdAt: -1 });
+userSchema.index({ deletedAt: 1, createdAt: -1 });
 userSchema.index(
   { email: 1 },
   { unique: true, partialFilterExpression: { email: { $type: 'string' } } }

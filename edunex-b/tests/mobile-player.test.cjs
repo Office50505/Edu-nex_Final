@@ -71,13 +71,11 @@ test('uploaded CloudFront lesson thumbnails win over provider guesses', () => {
 });
 
 test('mute and playback speed changes do not trigger a source reload', () => {
-  const effect = nodes.find(n => n.type === 'CallExpression' && n.callee.name === 'useEffect' && source.slice(n.arguments[0].start, n.arguments[0].end).includes('await nativePlayer.replaceAsync'));
-  const context = { nativePlayer: {}, nativeVideoSource: {}, initialTime: 0, canFallbackToEmbed: false, isMuted: false, playbackRate: 1, isActive: true };
-  const before = compile(effect.arguments[1], context);
-  context.isMuted = true; context.playbackRate = 2; context.isActive = false;
-  const after = compile(effect.arguments[1], context);
-  assert.equal(before.length, after.length);
-  before.forEach((dependency, index) => assert.equal(dependency, after[index]));
+  const effect = nodes.find(n => n.type === 'CallExpression' && n.callee.name === 'useEffect' && source.slice(n.arguments[0].start, n.arguments[0].end).includes('player.replaceAsync'));
+  assert.ok(effect);
+  const dependencies = effect.arguments[1].elements.map(dependency => source.slice(dependency.start, dependency.end));
+  assert.ok(dependencies.includes('nativeVideoSource'));
+  for (const state of ['isMuted', 'playbackRate', 'isActive']) assert.equal(dependencies.includes(state), false);
 });
 
 test('AI suggestions disappear after the first user message', () => {
@@ -126,9 +124,9 @@ test('Home displays course metadata before its playback request finishes',async(
 });
 
 test('leaving playback tolerates an already released native player',()=>{
-  const cleanup=nodes.find(n=>n.type==='ArrowFunctionExpression'&&source.slice(n.start,n.end).includes('Already released on unmount.')&&n.body.type==='BlockStatement'&&n.body.body[0]?.type==='ExpressionStatement');
-  assert.ok(cleanup);
-  const context={cancelled:false,nativePlayer:{pause(){throw new Error('Native player released');}}};
-  assert.doesNotThrow(()=>compile(cleanup,context)());
-  assert.equal(context.cancelled,true);
+  const nativePlayer={pause(){throw new Error('Native player released');}};
+  const runNativePlayer=compile(declaration('runNativePlayer').init.arguments[0],{nativePlayer});
+  assert.doesNotThrow(()=>runNativePlayer(player=>player.pause()));
+  assert.equal(runNativePlayer(player=>player.pause()),undefined);
+  assert.match(source,/return \(\) => \{\s*cancelled = true;\s*pauseNativePlayer\(\);\s*\};/);
 });
