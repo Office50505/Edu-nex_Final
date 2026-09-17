@@ -817,6 +817,16 @@
   let timerSeconds = 59;
   const signupState = { mobileNumber: '', signupToken: '' };
 
+  (function prefillSignupPhone() {
+    try {
+      const saved = JSON.parse(sessionStorage.getItem('edunexSignupPrefill') || 'null');
+      if (!saved || saved.expiresAt <= Date.now() || !/^\d{10,15}$/.test(saved.phone || '')) return;
+      sessionStorage.removeItem('edunexSignupPrefill');
+      const input = document.getElementById('phoneInput');
+      if (input) input.value = String(saved.phone).replace(/^91(?=\d{10}$)/, '');
+    } catch (_) {}
+  })();
+
   function setError(id, message) {
     const err = document.getElementById(id);
     if (!err) return;

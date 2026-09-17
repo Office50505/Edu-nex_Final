@@ -10,6 +10,9 @@ const segments = [
   ["trial", "Trials"],
   ["needs_attention", "Needs attention"],
   ["engaged", "Engaged"],
+  ["completed_certificate", "Completed certificate"],
+  ["low_progress", "Low progress"],
+  ["banned", "Banned"],
 ];
 
 function statusBadgeClass(status) {
@@ -78,6 +81,9 @@ function matchesSegment(user, segment) {
   if (segment === "trial") return ["1rs trial", "trial"].includes(status);
   if (segment === "needs_attention") return !isVerified(user) || ["cancelled", "expired", "none"].includes(status) || totalCourses(user) === 0;
   if (segment === "engaged") return progressAverage(user) >= 35 || completedCourses(user) > 0 || watchMinutes(user) > 0;
+  if (segment === "completed_certificate") return completedCourses(user) > 0;
+  if (segment === "low_progress") return totalCourses(user) > 0 && progressAverage(user) < 35;
+  if (segment === "banned") return Boolean(user.isBanned || user.status === "banned");
   return true;
 }
 
@@ -86,6 +92,7 @@ function userSearchText(user) {
     user.fullName,
     user.email,
     user.mobileNumber,
+    user._id,
     user.subscriptionStatus,
     user.gender,
     user.age,
@@ -124,6 +131,42 @@ function ProgressRow({ course }) {
   );
 }
 
+function LearnerDetailDrawer({ user, tab, setTab, onClose }) {
+  if (!user) return null;
+  const progress = user.progressCourses || [];
+  const watch = user.watchSummary || {};
+  const tabs = ["Overview", "Course progress", "Orders/payments", "Certificates", "Activity"];
+  return (
+    <aside className="learner-detail-drawer" aria-label="Learner detail">
+      <div className="drawer-head">
+        <div className="crm-contact-cell">
+          <div className="crm-avatar" aria-hidden="true">{initials(user)}</div>
+          <div><strong>{user.fullName || "Learner"}</strong><span>{user.email || "No email"}</span><span>{user.mobileNumber || "No mobile"}</span></div>
+        </div>
+        <button className="toolbar-button" type="button" onClick={onClose}>Close</button>
+      </div>
+      <div className="drawer-tabs" role="tablist">
+        {tabs.map((item) => <button role="tab" aria-selected={tab === item} className={tab === item ? "is-active" : ""} key={item} type="button" onClick={() => setTab(item)}>{item}</button>)}
+      </div>
+      {tab === "Overview" ? (
+        <div className="crm-detail-grid">
+          <DetailStat label="User ID" value={user._id || "No ID"} /><DetailStat label="Lifecycle" value={lifecycleLabel(user)} /><DetailStat label="Subscription" value={user.subscriptionStatus || "none"} /><DetailStat label="Verified" value={isVerified(user) ? "Yes" : "Pending"} /><DetailStat label="Joined" value={formatDate(user.createdAt)} /><DetailStat label="Last active" value={formatDate(user.lastActiveAt || watch.lastWatchedAt)} /><DetailStat label="Watch time" value={formatWatchDuration(watchMinutes(user))} /><DetailStat label="Average completion" value={`${formatNumber(progressAverage(user))}%`} />
+        </div>
+      ) : null}
+      {tab === "Course progress" ? <div className="progress-list">{progress.length ? progress.map((course) => <ProgressRow course={course} key={`${user._id}-drawer-${course.courseId}`} />) : <div className="empty-state">No course progress yet.</div>}</div> : null}
+      {tab === "Orders/payments" ? <div className="empty-state">Backend API not connected for learner order history yet.</div> : null}
+      {tab === "Certificates" ? <div className="empty-state">Backend API not connected for learner-specific certificate records yet.</div> : null}
+      {tab === "Activity" ? <div className="empty-state">Backend API not connected for learner activity and audit events yet.</div> : null}
+      <div className="drawer-actions">
+        <button className="toolbar-button" type="button" disabled>Ban / unban</button>
+        <button className="toolbar-button" type="button" disabled>Update subscription</button>
+        <button className="toolbar-button" type="button" disabled>Resend certificate</button>
+        <button className="toolbar-button" type="button" disabled>Export record</button>
+      </div>
+    </aside>
+  );
+}
+
 export function AdminUsersPage() {
   const [page, setPage] = useState(1);
   const [deletingId, setDeletingId] = useState(null);
@@ -133,6 +176,8 @@ export function AdminUsersPage() {
   const [sort, setSort] = useState("newest");
   const [segment, setSegment] = useState("all");
   const [openIds, setOpenIds] = useState(new Set());
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [drawerTab, setDrawerTab] = useState("Overview");
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState("success");
@@ -154,6 +199,9 @@ export function AdminUsersPage() {
 
   useEffect(() => {
     document.title = "User Management | Skillomate";
+    const params = new URLSearchParams(window.location.search);
+    const initialQuery = params.get("q");
+    if (initialQuery) setQuery(initialQuery);
     loadUsers();
   }, []);
 
@@ -204,6 +252,11 @@ export function AdminUsersPage() {
       else next.add(userId);
       return next;
     });
+  }
+
+  function openDrawer(user) {
+    setSelectedUser(user);
+    setDrawerTab("Overview");
   }
 
   async function deleteUser(user) {
@@ -292,7 +345,7 @@ export function AdminUsersPage() {
       </div>
 
       <section className="users-panel" aria-label="Users">
-        <div className="users-head"><span>Contact</span><span>Lifecycle</span><span>Verification</span><span>Engagement</span><span>Actions</span></div>
+        <div className="users-head"><span>Learner</span><span>Status / subscription</span><span>Phone / email</span><span>Courses / watch time</span><span>Completion / dates</span><span>Actions</span></div>
         {loading ? <div className="loading-state">Loading users...</div> : null}
         {!loading && !filteredUsers.length ? <div className="empty-state">No users found.</div> : null}
         {!loading && visibleUsers.map((user) => {
@@ -305,11 +358,12 @@ export function AdminUsersPage() {
           return (
             <article className={`user-card${isOpen ? " is-open" : ""}`} key={user._id}>
               <div className="user-row">
-                <div className="crm-contact-cell"><div className="crm-avatar" aria-hidden="true">{initials(user)}</div><div><strong>{user.fullName || "Learner"}</strong><span>{user.email || "No email"}</span><span>{user.mobileNumber || "No mobile"}</span></div></div>
-                <div><strong>{lifecycleLabel(user)}</strong><span><span className={`badge ${statusBadgeClass(statusValue)}`}>{statusValue}</span></span><span>Joined {formatDate(user.createdAt)}</span></div>
-                <div><strong>{isVerified(user) ? "Verified account" : "Verification pending"}</strong><span>{user.isMobileVerified ? "Mobile verified" : "Mobile pending"}</span><span>{user.isEmailVerified ? "Email verified" : "Email pending"}</span></div>
-                <div className="crm-engagement-cell"><strong>{engagementLabel(user)}</strong><div className="progress-meter" aria-hidden="true"><div className="progress-fill" style={{ width: `${average}%` }} /></div><div className="mini-stats"><span className="pill">{formatNumber(summaryData.totalCourses)} courses</span><span className="pill">{formatNumber(summaryData.completedCourses)} done</span><span className="pill">{formatNumber(summaryData.averageProgress)}% avg</span><span className="pill">{formatWatchDuration(watchMinutes(user))}</span></div></div>
-                <div className="row-actions"><button className="action-button" type="button" aria-expanded={isOpen} onClick={() => toggleOpen(user._id)}>{isOpen ? "Close" : "Open"}</button><button className="action-button danger" type="button" disabled={Boolean(deletingId)} onClick={() => deleteUser(user)}>{deletingId === user._id ? "Deleting…" : "Delete"}</button></div>
+                <div className="crm-contact-cell"><div className="crm-avatar" aria-hidden="true">{initials(user)}</div><div><strong>{user.fullName || "Learner"}</strong><span>ID {user._id || "No ID"}</span></div></div>
+                <div><strong>{lifecycleLabel(user)}</strong><span><span className={`badge ${statusBadgeClass(statusValue)}`}>{statusValue}</span></span><span>{isVerified(user) ? "Verified account" : "Verification pending"}</span></div>
+                <div><strong>{user.mobileNumber || "No mobile"}</strong><span>{user.email || "No email"}</span></div>
+                <div className="crm-engagement-cell"><strong>{engagementLabel(user)}</strong><div className="mini-stats"><span className="pill">{formatNumber(summaryData.totalCourses)} courses</span><span className="pill">{formatWatchDuration(watchMinutes(user))}</span></div></div>
+                <div className="crm-engagement-cell"><strong>{formatNumber(average)}% completion</strong><div className="progress-meter" aria-hidden="true"><div className="progress-fill" style={{ width: `${average}%` }} /></div><span>Joined {formatDate(user.createdAt)} · Last {formatDate(user.lastActiveAt || watch.lastWatchedAt)}</span></div>
+                <div className="row-actions"><button className="action-button" type="button" onClick={() => openDrawer(user)}>View</button><button className="action-button" type="button" aria-expanded={isOpen} onClick={() => toggleOpen(user._id)}>{isOpen ? "Close" : "Progress"}</button><button className="action-button danger" type="button" disabled={Boolean(deletingId)} onClick={() => deleteUser(user)}>{deletingId === user._id ? "Deleting…" : "Delete"}</button></div>
               </div>
               {isOpen ? (
                 <div className="progress-panel">
@@ -328,6 +382,7 @@ export function AdminUsersPage() {
         <span aria-live="polite">Page {currentPage} of {pageCount} · 25 learners per page</span>
         <button className="toolbar-button" disabled={currentPage >= pageCount || loading} onClick={() => setPage(currentPage + 1)}>Next</button>
       </nav>
+      <LearnerDetailDrawer user={selectedUser} tab={drawerTab} setTab={setDrawerTab} onClose={() => setSelectedUser(null)} />
 
     </AdminShell>
   );

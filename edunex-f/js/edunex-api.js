@@ -1,5 +1,6 @@
 (function () {
   const AUTH_KEYS = ["edunexAccessToken", "edunexRefreshToken", "edunexUser"];
+  const SESSION_ENDED_NOTICE = "Your account is logged in on a different device.";
   const THEME_VARS = {
     light: {
       "--bg": "#FAF7F1",
@@ -906,6 +907,9 @@
   }
 
   function saveAuth(data, remember = true) {
+    if (!data?.accessToken) {
+      throw new Error("Could not sign in. Please try again.");
+    }
     const target = remember ? localStorage : sessionStorage;
     AUTH_KEYS.forEach((key) => {
       localStorage.removeItem(key);
@@ -921,6 +925,33 @@
       localStorage.removeItem(key);
       sessionStorage.removeItem(key);
     });
+  }
+
+  function isLoginScreen() {
+    return /(?:^|\/)(?:login|signup|otp)\.html$/i.test(window.location.pathname);
+  }
+
+  function currentPathForNext() {
+    return `${window.location.pathname || "/"}${window.location.search || ""}${window.location.hash || ""}`;
+  }
+
+  function loginUrlWithSessionNotice() {
+    const params = new URLSearchParams();
+    params.set("next", currentPathForNext());
+    params.set("session", "different-device");
+    return `/login.html?${params.toString()}`;
+  }
+
+  function handleSessionRevoked(options = {}) {
+    clearAuth();
+    try {
+      sessionStorage.setItem("edunexSessionNotice", SESSION_ENDED_NOTICE);
+    } catch (_) {}
+    window.dispatchEvent(new CustomEvent("edunex:auth-revoked", { detail: { message: SESSION_ENDED_NOTICE } }));
+    window.dispatchEvent(new Event("edunex:auth-changed"));
+    if (options.redirect !== false && !isLoginScreen()) {
+      window.location.assign(loginUrlWithSessionNotice());
+    }
   }
 
   async function request(path, options = {}) {
@@ -972,7 +1003,7 @@
         return data.accessToken;
       } catch (error) {
         if (getRefreshToken() !== original) return getAccessToken();
-        if (error.status === 401) { clearAuth(); return null; }
+        if (error.status === 401) { handleSessionRevoked(); return null; }
         // Network failures and server errors are not session revocations.
         throw error;
       }
@@ -1002,6 +1033,42 @@
       token = await refreshAccessToken();
       if (!token) throw error;
       return run(token);
+    }
+  }
+
+  let sessionValidationTimer = null;
+  let sessionValidationBusy = false;
+  async function validateStoredSession() {
+    if (sessionValidationBusy) return;
+    const token = getAccessToken();
+    const user = getUser();
+    const userId = user?._id || user?.id;
+    if (!token || !userId) return;
+
+    sessionValidationBusy = true;
+    try {
+      await authRequest(`/api/auth/validate/${encodeURIComponent(userId)}`, { method: "GET" });
+    } catch (error) {
+      if (error.status === 401 || /session|expired|invalid|log in/i.test(error.message || "")) {
+        handleSessionRevoked();
+      }
+    } finally {
+      sessionValidationBusy = false;
+    }
+  }
+
+  function syncSessionValidation() {
+    if (getAccessToken()) {
+      if (!sessionValidationTimer) {
+        sessionValidationTimer = setInterval(() => {
+          if (!document.hidden) validateStoredSession();
+        }, 15000);
+      }
+      return;
+    }
+    if (sessionValidationTimer) {
+      clearInterval(sessionValidationTimer);
+      sessionValidationTimer = null;
     }
   }
 
@@ -1355,6 +1422,7 @@
     normalizePhone,
     saveAuth,
     clearAuth,
+    handleSessionRevoked,
     getUser,
     getAccessToken,
     safeNext,
@@ -1394,7 +1462,15 @@
     renderUserAvatar();
     refreshIcons();
     observeIconChanges();
+    syncSessionValidation();
   }
+
+  window.addEventListener("edunex:auth-changed", syncSessionValidation);
+  window.addEventListener("storage", syncSessionValidation);
+  window.addEventListener("focus", validateStoredSession);
+  document.addEventListener("visibilitychange", () => {
+    if (!document.hidden) validateStoredSession();
+  });
 
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", initializeSharedRuntime, { once: true });

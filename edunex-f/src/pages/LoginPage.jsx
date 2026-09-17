@@ -58,6 +58,9 @@ async function requestLogin(loginId, password, remember) {
 }
 
 function saveAuth(data, remember) {
+  if (!data?.accessToken) {
+    throw new Error(FALLBACK_LOGIN_MESSAGE);
+  }
   if (window.EduNex?.saveAuth) {
     window.EduNex.saveAuth(data, remember);
     return;
@@ -80,13 +83,26 @@ function safeLoginError(error) {
   return message;
 }
 
+function readSessionNotice() {
+  const params = new URLSearchParams(window.location.search);
+  const fromQuery = params.get("session") === "different-device";
+  let fromStorage = "";
+  try {
+    fromStorage = sessionStorage.getItem("edunexSessionNotice") || "";
+    sessionStorage.removeItem("edunexSessionNotice");
+  } catch (_) {
+    fromStorage = "";
+  }
+  return fromStorage || (fromQuery ? "Your account is logged in on a different device." : "");
+}
+
 export function LoginPage() {
   const [loginId, setLoginId] = useState(() => readLoginPrefill(sessionStorage));
   const [password, setPassword] = useState("");
   const [remember, setRemember] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [error, setError] = useState(() => readSessionNotice());
 
   usePageStyle("react-page-style-login", loginPage.styles);
 
@@ -125,6 +141,7 @@ export function LoginPage() {
     } catch (loginError) {
       if (loginError.code === "MOBILE_NOT_REGISTERED") {
         saveSignupPrefill(normalizePhone(trimmedLogin), sessionStorage);
+        setError("Account does not exist. Redirecting to signup...");
         const next = new URLSearchParams(window.location.search).get("next");
         window.location.assign(signupDestination(next, window.location.origin));
         return;

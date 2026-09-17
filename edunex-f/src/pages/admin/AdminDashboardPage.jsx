@@ -64,7 +64,11 @@ function DataRow({ title, meta, value }) {
 
 function DataList({ rows, emptyText }) {
   if (!rows.length) return <div className="empty-state compact-empty">{emptyText}</div>;
-  return rows.map((row) => <DataRow key={`${row.title}-${row.meta}-${row.value}`} {...row} />);
+  return rows.map((row, index) => <DataRow key={`${row.title}-${row.meta}-${row.value}-${index}`} {...row} />);
+}
+
+function Badge({ tone = "", children }) {
+  return <span className={`badge ${tone}`}>{children}</span>;
 }
 
 function compactBreakdown(items, limit = 3) {
@@ -83,14 +87,22 @@ function DashboardMetrics({ data }) {
   const activeSubscriptionCount = firstField(totals, ["activeSubscriptions", "subscribedUsers"]);
   const trialUserCount = firstField(totals, ["trialUsers", "oneRupeeTrialUsers"]);
   const metrics = [
-    { label: "Total Users", value: displayNumber(totals.users), meta: `${displayNumber(totals.newUsers)} new in range` },
-    { label: "Active Users", value: displayNumber(totals.activeUsers), meta: `${displayNumber(totals.mobileVerifiedUsers)} mobile verified` },
+    { label: "Total learners", value: displayNumber(totals.users), meta: `${displayNumber(totals.newUsers)} new in range` },
+    { label: "Active learners", value: displayNumber(totals.activeUsers), meta: `${displayNumber(totals.mobileVerifiedUsers)} mobile verified` },
+    { label: "New learners", value: displayNumber(totals.newUsers), meta: "Selected range" },
     { label: "Subscribers", value: displayNumber(activeSubscriptionCount), meta: `${displayNumber(trialUserCount)} trials` },
-    { label: "Revenue", value: money(totals.revenueInRange), meta: `${money(totals.totalRevenue)} all time` },
+    { label: "Trials", value: displayNumber(trialUserCount), meta: `${displayNumber(totals.noSubscriptionUsers)} no plan` },
+    { label: "Revenue in range", value: money(totals.revenueInRange), meta: `${money(totals.totalRevenue)} lifetime` },
+    { label: "Lifetime revenue", value: money(totals.totalRevenue), meta: "All paid orders" },
     { label: "Orders", value: displayNumber(totals.paidOrdersInRange), meta: `${displayNumber(totals.failedOrdersInRange)} failed, ${displayNumber(totals.pendingOrdersInRange)} pending` },
+    { label: "Failed payments", value: displayNumber(totals.failedOrdersInRange), meta: "Needs follow-up" },
+    { label: "Pending payments", value: displayNumber(totals.pendingOrdersInRange), meta: "Needs reconciliation" },
     { label: "Courses", value: displayNumber(totals.courses), meta: `${displayNumber(totals.publishedCourses)} published` },
+    { label: "Published courses", value: displayNumber(totals.publishedCourses), meta: `${displayNumber(totals.draftCourses)} drafts` },
+    { label: "Draft courses", value: displayNumber(totals.draftCourses), meta: "Awaiting review" },
     { label: "Watch Time", value: hasNumber(learning.watchedMinutes) ? formatWatchDuration(learning.watchedMinutes) : "Not returned", meta: `${displayNumber(learning.activeLearnersInRange)} active learners` },
     { label: "Completion", value: hasNumber(learning.completionShare) ? `${displayNumber(learning.completionShare)}%` : "Not returned", meta: `${displayNumber(learning.completedProgress)} completed records` },
+    { label: "Certificates issued", value: displayNumber(data?.certificationSummary?.total), meta: `${displayNumber(data?.certificationSummary?.pendingProgress)} pending checks` },
   ];
 
   return (
@@ -153,6 +165,22 @@ function TrendChart({ rows }) {
   );
 }
 
+function MiniBars({ rows, field }) {
+  const series = Array.isArray(rows) ? rows.filter((item) => hasNumber(item?.[field])) : [];
+  if (!series.length) return <div className="empty-state compact-empty">No live trend data returned.</div>;
+  const values = series.map((item) => chartNumber(item[field]));
+  const max = Math.max(...values, 1);
+  return (
+    <div className="mini-bars">
+      {series.slice(-18).map((item, index) => {
+        const value = chartNumber(item[field]);
+        const height = Math.max(8, Math.round((value / max) * 100));
+        return <span key={`${field}-${item.date || index}`} title={`${item.date || index}: ${displayNumber(value)}`} style={{ height: `${height}%` }} />;
+      })}
+    </div>
+  );
+}
+
 export function AdminDashboardPage() {
   const presetDates = useMemo(() => datesForPreset(30), []);
   const [rangePreset, setRangePreset] = useState("30");
@@ -173,8 +201,25 @@ export function AdminDashboardPage() {
       if (startDate) params.set("startDate", startDate);
       if (endDate) params.set("endDate", endDate);
       const analytics = await adminJson(`/api/admin/analytics?${params.toString()}`, {}, "Unable to load analytics.");
-      setData(analytics);
+      setData({
+        ...analytics,
+        certificationSummary: { total: 0, pendingProgress: 0 },
+        healthReport: null,
+      });
       setLastUpdated(`Updated ${new Date().toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })}`);
+      Promise.all([
+        adminJson("/api/admin/certifications?page=1", {}, "Unable to load certification summary.").catch(() => null),
+        adminJson("/api/admin/system-health", {}, "Unable to load system health.").catch(() => null),
+      ]).then(([certificationSummary, healthReport]) => {
+        setData((current) => current ? ({
+          ...current,
+          certificationSummary: {
+            total: certificationSummary?.total || certificationSummary?.certificates?.length || 0,
+            pendingProgress: certificationSummary?.progress?.filter?.((item) => !item.eligible)?.length || 0,
+          },
+          healthReport,
+        }) : current);
+      });
     } catch (error) {
       setData(null);
       setMessage(error.message || "Unable to load analytics.");
@@ -225,6 +270,19 @@ export function AdminDashboardPage() {
     ["Course Mix", Object.entries(breakdowns.courseStatus || {}).slice(0, 10).map(([label, count]) => ({ title: textValue(label), meta: "Course status", value: displayNumber(count) })), "No course status data."],
     ["Recent Subscriptions", (data?.recentSubscriptions || []).slice(0, 8).map((subscription) => ({ title: textValue(subscription.user?.fullName, subscription.user?.email), meta: textValue(subscription.status, subscription.subscriptionType), value: money(subscription.amount) })), "No recent subscriptions."],
   ];
+  const actionInbox = [
+    { title: `${displayNumber(totals.failedOrdersInRange)} failed payments`, meta: "Retry checkout follow-up or contact learners", tone: "bad", href: "/admin/payments" },
+    { title: `${displayNumber(totals.pendingOrdersInRange)} pending payments`, meta: "Reconcile pending payment state", tone: "warn", href: "/admin/orders" },
+    { title: `${displayNumber(totals.draftCourses)} draft courses`, meta: "Review content before publishing", tone: "warn", href: "/admin/course-review" },
+    { title: `${displayNumber(data?.certificationSummary?.pendingProgress)} certificate blockers`, meta: "Completion criteria or learner eligibility pending", tone: "warn", href: "/admin/certifications" },
+    { title: data?.healthReport ? `${displayNumber(data.healthReport.summary?.attention)} system issues` : "Checking system issues", meta: data?.healthReport ? `${displayNumber(data.healthReport.summary?.unverified)} checks unverified` : "System health loads in the background", tone: data?.healthReport?.summary?.attention ? "bad" : "good", href: "/admin/system-health" },
+    { title: `${displayNumber(learning.activeLearnersInRange)} active learners`, meta: "Track low-progress cohorts", tone: "good", href: "/admin/progress" },
+  ];
+  const ordersByStatus = [
+    ["Paid", totals.paidOrdersInRange, "good"],
+    ["Pending", totals.pendingOrdersInRange, "warn"],
+    ["Failed", totals.failedOrdersInRange, "bad"],
+  ];
 
   return (
     <AdminShell
@@ -235,17 +293,15 @@ export function AdminDashboardPage() {
       actions={<button className="toolbar-button" type="button" onClick={loadAnalytics} disabled={loading}>Refresh</button>}
     >
       <Message text={message} type="error" />
-      <form className="date-controls analytics-controls" onSubmit={(event) => { event.preventDefault(); loadAnalytics(); }}>
-        <div>
-          <label htmlFor="rangePreset">Range</label>
-          <select id="rangePreset" value={rangePreset} onChange={(event) => handlePresetChange(event.target.value)}>
-            <option value="7">Last 7 days</option>
-            <option value="15">Last 15 days</option>
-            <option value="30">Last 30 days</option>
-            <option value="45">Last 45 days</option>
-            <option value="90">Last 90 days</option>
-            <option value="custom">Custom dates</option>
-          </select>
+      <form className="date-controls analytics-controls admin-range-card" onSubmit={(event) => { event.preventDefault(); loadAnalytics(); }}>
+        <div className="range-summary">
+          <strong>Applied range</strong>
+          <span>{formatDate(startDate)} - {formatDate(endDate)}</span>
+          <small>{lastUpdated}</small>
+        </div>
+        <div className="range-preset-buttons" role="group" aria-label="Quick date presets">
+          {["7", "15", "30", "45", "90"].map((days) => <button className={rangePreset === days ? "is-active" : ""} type="button" key={days} onClick={() => handlePresetChange(days)}>{days}D</button>)}
+          <button className={rangePreset === "custom" ? "is-active" : ""} type="button" onClick={() => setRangePreset("custom")}>Custom</button>
         </div>
         <div>
           <label htmlFor="startDate">Start</label>
@@ -255,22 +311,31 @@ export function AdminDashboardPage() {
           <label htmlFor="endDate">End</label>
           <input id="endDate" type="date" value={endDate} onChange={(event) => { setRangePreset("custom"); setEndDate(event.target.value); }} />
         </div>
-        <button className="toolbar-button" type="submit" disabled={loading}>Apply</button>
-        <span className="sync-status">{lastUpdated}</span>
+        <button className="toolbar-button" type="submit" disabled={loading}>{loading ? "Applying..." : "Apply"}</button>
       </form>
 
       <h2 className="admin-section-heading">Business at a glance</h2>
       {loading && !data ? <DashboardMetricsLoading /> : null}
       {data ? <DashboardMetrics data={data} /> : null}
 
-      <section className="dashboard-panel trend-panel" aria-label="Daily trend">
-        <div className="panel-head">
-          <div>
-            <h2 className="panel-title">Daily Trend</h2>
-            <p>Revenue, new learners, and watched minutes for the selected range.</p>
+      <section className="admin-command-grid">
+        <article className="dashboard-panel trend-panel" aria-label="Revenue trend">
+          <div className="panel-head"><div><h2 className="panel-title">Daily revenue trend</h2><p>Revenue, new learners, and watch minutes for the selected range.</p></div></div>
+          {loading && !data ? <div className="loading-state">Loading chart...</div> : <TrendChart rows={data?.dailySeries} />}
+        </article>
+        <article className="dashboard-panel action-inbox" aria-label="Action inbox">
+          <div className="panel-head"><div><h2 className="panel-title">Action Inbox</h2><p>Operational alerts that need daily review.</p></div><a href="/admin/system-health">View all</a></div>
+          <div className="action-list">
+            {actionInbox.map((item) => <a className={`action-item ${item.tone}`} href={item.href} key={item.title}><strong>{item.title}</strong><span>{item.meta}</span></a>)}
           </div>
-        </div>
-        {loading && !data ? <div className="loading-state">Loading chart...</div> : <TrendChart rows={data?.dailySeries} />}
+        </article>
+      </section>
+
+      <section className="admin-chart-grid" aria-label="Operations charts">
+        <article className="dashboard-panel"><h2 className="panel-title">New learners trend</h2><MiniBars rows={data?.dailySeries || []} field="users" /></article>
+        <article className="dashboard-panel"><h2 className="panel-title">Watch time trend</h2><MiniBars rows={data?.dailySeries || []} field="watchMinutes" /></article>
+        <article className="dashboard-panel"><h2 className="panel-title">Course completion trend</h2><MiniBars rows={data?.dailySeries || []} field="completedProgress" /></article>
+        <article className="dashboard-panel"><h2 className="panel-title">Orders by status</h2><div className="status-breakdown">{ordersByStatus.map(([label, count, tone]) => <div key={label}><span>{label}</span><b>{displayNumber(count)}</b><Badge tone={tone}>{tone === "good" ? "OK" : tone === "bad" ? "Risk" : "Watch"}</Badge></div>)}</div></article>
       </section>
 
       <h2 className="admin-section-heading">Learners, content and subscriptions</h2>

@@ -6488,7 +6488,7 @@ export default function App() {
         // Clear the UI synchronously; stale requests cannot clear a later login.
         userRef.current = null;
         setUser(null); setSelectedCourse(null); setStartIndex(null); setMainScreen("home");
-        setLoginError("Your session ended. Your account may have been signed in on another device.");
+        setLoginError("Your account is logged in on a different device.");
         await AsyncStorage.removeItem("user");
       } catch {
         // A network failure is not proof that the session was revoked.
@@ -6954,7 +6954,18 @@ export default function App() {
         emailOrMobile: identifier,
         password,
       });
-      if (!res.ok) setLoginError(data.error || "Login failed.");
+      if (!res.ok) {
+        if (data?.code === "MOBILE_NOT_REGISTERED") {
+          const digits = identifier.replace(/\D/g, "");
+          const localMobile = digits.startsWith("91") && digits.length === 12 ? digits.slice(2) : digits;
+          setLoginError("Account does not exist.");
+          setSignupError("Account does not exist. Create your account to continue.");
+          setMobile(localMobile.length === 10 ? localMobile : "");
+          setScreen("signup1");
+          return;
+        }
+        setLoginError(data.error || "Login failed.");
+      }
       else {
         const authUser = normalizeAuthUser(data);
         if (!authUser) {

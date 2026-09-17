@@ -619,6 +619,7 @@ router.post('/login', async (req, res) => {
     if (!user || user.isActive === false) {
       recordRateLimitFailure(loginLimitKey, authRateConfig.loginByPhone);
       recordRateLimitFailure(ipLimitKey, authRateConfig.loginByIp);
+      if (!user && !normalizedEmail) return res.status(404).json({ error: 'Account does not exist.', code: 'MOBILE_NOT_REGISTERED' });
       return res.status(401).json({ error: 'Invalid credentials' });
     }
 

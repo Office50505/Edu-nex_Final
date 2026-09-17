@@ -9,6 +9,16 @@ import "./admin-react.css";
 import { AdminCoursesPage } from "./AdminCoursesPage.jsx";
 import { AdminDashboardPage } from "./AdminDashboardPage.jsx";
 import { AdminLoginPage } from "./AdminLoginPage.jsx";
+import {
+  AdminAuditLogPage,
+  AdminCourseReviewPage,
+  AdminOrdersPage,
+  AdminPaymentsPage,
+  AdminProgressPage,
+  AdminSettingsPage,
+  AdminSubscribersPage,
+  AdminSubscriptionsPage,
+} from "./AdminOperationsPages.jsx";
 import { AdminUploadPage } from "./AdminUploadPage.jsx";
 import { AdminUsersPage } from "./AdminUsersPage.jsx";
 import { adminPageFromPath, canonicalAdminPath } from "./adminApi.js";
@@ -17,10 +27,18 @@ const adminPages = {
   login: AdminLoginPage,
   dashboard: AdminDashboardPage,
   users: AdminUsersPage,
+  subscribers: AdminSubscribersPage,
   courses: AdminCoursesPage,
   upload: AdminUploadPage,
+  courseReview: AdminCourseReviewPage,
+  orders: AdminOrdersPage,
+  payments: AdminPaymentsPage,
+  subscriptions: AdminSubscriptionsPage,
+  progress: AdminProgressPage,
   health: AdminHealthPage,
   certifications: AdminCertificationsPage,
+  auditLog: AdminAuditLogPage,
+  settings: AdminSettingsPage,
 };
 
 export function AdminApp({ page }) {

@@ -5421,6 +5421,19 @@ f'(x) = 1 if x > 0 else 0</div>
       EduNex.saveAuth(data, true);
       window.location.href = EduNex.safeNext('/dashboard.html');
     } catch (error) {
+      if (error.code === 'MOBILE_NOT_REGISTERED') {
+        try {
+          sessionStorage.setItem('edunexSignupPrefill', JSON.stringify({
+            phone: EduNex.normalizePhone(email).replace(/\\D/g, ''),
+            expiresAt: Date.now() + 300000
+          }));
+        } catch (_) {}
+        err.textContent = 'Account does not exist. Redirecting to signup...';
+        err.style.display = 'block';
+        const next = new URLSearchParams(window.location.search).get('next');
+        window.location.assign('signup.html?next=' + encodeURIComponent(next || '/dashboard.html'));
+        return;
+      }
       err.textContent = error.message || 'Could not sign in. Please try again.';
       err.style.display = 'block';
     } finally {
@@ -8163,6 +8176,16 @@ function setStoredUser(user) {
   let timerInterval = null;
   let timerSeconds = 59;
   const signupState = { mobileNumber: '', signupToken: '' };
+
+  (function prefillSignupPhone() {
+    try {
+      const saved = JSON.parse(sessionStorage.getItem('edunexSignupPrefill') || 'null');
+      if (!saved || saved.expiresAt <= Date.now() || !/^\\d{10,15}$/.test(saved.phone || '')) return;
+      sessionStorage.removeItem('edunexSignupPrefill');
+      const input = document.getElementById('phoneInput');
+      if (input) input.value = String(saved.phone).replace(/^91(?=\\d{10}$)/, '');
+    } catch (_) {}
+  })();
 
   function setError(id, message) {
     const err = document.getElementById(id);

@@ -5,10 +5,18 @@ export const adminRoutes = {
   login: "/admin/login",
   dashboard: "/admin/dashboard",
   users: "/admin/users",
+  subscribers: "/admin/subscribers",
   courses: "/admin/courses",
   upload: "/admin/upload",
+  courseReview: "/admin/course-review",
+  orders: "/admin/orders",
+  payments: "/admin/payments",
+  subscriptions: "/admin/subscriptions",
+  progress: "/admin/progress",
   health: "/admin/system-health",
   certifications: "/admin/certifications",
+  auditLog: "/admin/audit-log",
+  settings: "/admin/settings",
 };
 
 const oldAdminRouteMap = {
@@ -39,10 +47,18 @@ const cleanAdminRouteMap = {
   "admin/login": "login",
   "admin/dashboard": "dashboard",
   "admin/users": "users",
+  "admin/subscribers": "subscribers",
   "admin/courses": "courses",
   "admin/upload": "upload",
+  "admin/course-review": "courseReview",
+  "admin/orders": "orders",
+  "admin/payments": "payments",
+  "admin/subscriptions": "subscriptions",
+  "admin/progress": "progress",
   "admin/system-health": "health",
   "admin/certifications": "certifications",
+  "admin/audit-log": "auditLog",
+  "admin/settings": "settings",
 };
 
 function normalizedPath(pathname = "/") {

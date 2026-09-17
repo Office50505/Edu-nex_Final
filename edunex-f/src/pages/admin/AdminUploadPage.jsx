@@ -366,6 +366,7 @@ export function AdminUploadPage() {
     ["Video URLs", Boolean(form.videos.length && completeVideos === form.videos.length)],
     ["Lesson durations", form.videos.every(v=>Number(v.duration)>0)],
   ];
+  const readinessWarnings = checks.filter(([, complete]) => !complete).map(([label]) => label);
 
   async function handleSubmit(event) {
     event.preventDefault();
@@ -445,6 +446,9 @@ export function AdminUploadPage() {
             <a href={adminRoutes.courses}>Back to course library</a>
           </div>
         ) : <form className="course-form" onSubmit={handleSubmit}>
+          <nav className="course-editor-steps" aria-label="Course editor sections">
+            {["Basic details", "Pricing / access", "Course media", "Modules & lessons", "Certificate settings", "SEO metadata", "Publish settings"].map((step, index) => <a href={index < 3 ? "#title" : "#bulkLessons"} key={step}>{step}</a>)}
+          </nav>
           <div className="course-builder-grid">
             <div className="form-section">
               <div className="form-section-head"><div><h2>Course Details</h2><p>Enter these once. All lessons share the category, course notes and thumbnails unless overridden.</p></div></div>
@@ -501,8 +505,15 @@ export function AdminUploadPage() {
               ) : null}
               <div className="preview-copy"><span>{form.status === "published" ? "Published" : "Draft"}</span><h2>{form.title.trim() || "Untitled course"}</h2><p>{form.description.trim() || "Course description preview will appear here."}</p></div>
               <div className="publish-checklist">{checks.map(([label, complete]) => <span className={complete ? "is-complete" : ""} key={label}>{complete ? "[x]" : "[ ]"} {label}</span>)}</div>
+              <div className="admin-placeholder-note">{readinessWarnings.length ? `Inline warnings: ${readinessWarnings.join(", ")} still need attention before publishing.` : "Ready for admin preview. Pricing, SEO, and certificate toggles are not saved until backend course fields are added."}</div>
             </aside>
           </div>
+
+          <section className="form-section admin-editor-grid" aria-label="Pricing, certificate and SEO placeholders">
+            <div><h2>Pricing / Subscription Access</h2><p>Backend API not connected for price, plan access, free/paid mode, and featured course flags.</p></div>
+            <div><h2>Certificate Settings</h2><p>Use Operations → Certification for live criteria today. Course-level certificate toggles need backend course fields.</p></div>
+            <div><h2>SEO / Metadata</h2><p>Slug, title, description, notes URL and thumbnails are saved now. Meta title and search tags need backend fields.</p></div>
+          </section>
 
           <div className="course-publish-panel">
             <div className="publish-panel-head"><div><h2>Videos</h2><p>Add permanent video references, arrange lessons, and preview before publishing.</p></div><span>{formatNumber(form.videos.length)} {form.videos.length === 1 ? "video" : "videos"}</span></div>

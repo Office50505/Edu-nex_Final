@@ -24,6 +24,18 @@ function statusLabel(status) {
   return status === "published" ? "Published" : "Draft";
 }
 
+function qaFlags(course) {
+  const videos = Array.isArray(course?.videos) ? course.videos : [];
+  const flags = [];
+  if (!course?.thumbnailUrl && !course?.thumbnailVerticalUrl) flags.push("Missing thumbnail");
+  if (!videos.length && Number(course?.videoCount || 0) === 0) flags.push("No lessons");
+  if (videos.length && !videos[0]?.videoUrl && !videos[0]?.embedUrl && !videos[0]?.bunnyVideoId) flags.push("Missing intro video");
+  if (course?.status !== "published") flags.push("Draft review");
+  if (!Number(course?.totalStarted || 0)) flags.push("No enrollments");
+  if (!Number(course?.completionRate || 0)) flags.push("Low completion");
+  return flags.slice(0, 4);
+}
+
 function normalizedThumbnailUrl(value) {
   const raw = String(value || "").trim();
   if (!raw) return "";
@@ -59,6 +71,7 @@ export function AdminCoursesPage() {
   const [category, setCategory] = useState("all");
   const [sort, setSort] = useState("newest");
   const [pendingIds, setPendingIds] = useState(new Set());
+  const [selectedIds, setSelectedIds] = useState(new Set());
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState("success");
@@ -121,6 +134,25 @@ export function AdminCoursesPage() {
     });
   }
 
+  function toggleSelected(id) {
+    setSelectedIds((current) => {
+      const next = new Set(current);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }
+
+  function bulkPlaceholder(action) {
+    if (!selectedIds.size) {
+      setMessageType("error");
+      setMessage("Select at least one course first.");
+      return;
+    }
+    setMessageType("error");
+    setMessage(`${action} requires a backend bulk course endpoint. No course data was changed for the ${formatNumber(selectedIds.size)} selected course${selectedIds.size === 1 ? "" : "s"}.`);
+  }
+
   async function updateStatus(course) {
     const id = courseId(course);
     const nextStatus = course.status === "published" ? "draft" : "published";
@@ -178,27 +210,35 @@ export function AdminCoursesPage() {
 
       <div className="crm-results-bar">
         <div><strong>Catalog workspace</strong><span>{formatNumber(filteredCourses.length)} shown from {formatNumber(courses.length)} total courses</span></div>
-        <a className="toolbar-button" href={adminRoutes.upload}>New course</a>
+        <div className="toolbar-actions">
+          <button className="toolbar-button" type="button" onClick={() => bulkPlaceholder("Bulk publish")}>Publish selected</button>
+          <button className="toolbar-button" type="button" onClick={() => bulkPlaceholder("Bulk archive")}>Archive selected</button>
+          <button className="toolbar-button" type="button" onClick={() => bulkPlaceholder("Send to review")}>Send to review</button>
+          <a className="toolbar-button" href={adminRoutes.upload}>New course</a>
+        </div>
       </div>
 
       <section className="courses-panel" aria-label="Courses">
-        <div className="courses-head"><span>Course</span><span>Status</span><span>Category</span><span>Videos</span><span>Actions</span></div>
+        <div className="courses-head"><span>Course</span><span>Status</span><span>Category</span><span>Ops metrics</span><span>QA flags</span><span>Actions</span></div>
         {loading ? <div className="loading-state">Loading courses...</div> : null}
         {!loading && !filteredCourses.length ? <div className="empty-state">No courses found.</div> : null}
         {!loading && filteredCourses.map((course) => {
           const id = courseId(course);
           const isPending = pendingIds.has(id);
           const thumbnailSrc = courseThumbnailSrc(course);
+          const flags = qaFlags(course);
           return (
             <article className="course-card" key={id}>
               <div className="course-row">
                 <div className="course-title-cell">
+                  <input className="row-select" type="checkbox" checked={selectedIds.has(id)} onChange={() => toggleSelected(id)} aria-label={`Select ${course.title || "course"}`} />
                   <div className="course-thumb">{thumbnailSrc ? <img src={thumbnailSrc} alt="" onError={(event) => { event.currentTarget.onerror = null; event.currentTarget.src = window.EduNex?.placeholderImage?.(course.title || "Skillomate") || ""; }} /> : <span>No image</span>}</div>
                   <div><strong>{course.title || "Untitled course"}</strong><span>{course.slug || course._id || ""}</span></div>
                 </div>
                 <span><span className={`badge ${statusClass(course.status)}`}>{statusLabel(course.status)}</span></span>
                 <span>{categoryName(course)}</span>
-                <span>{formatNumber(course.videoCount || course.videos?.length || 0)}</span>
+                <span className="course-ops-metrics"><strong>{formatNumber(course.videoCount || course.videos?.length || 0)} lessons</strong><span>{formatNumber(course.totalStarted || 0)} enrollments</span><span>{formatNumber(course.completionRate || 0)}% completion</span></span>
+                <span className="flag-list">{flags.length ? flags.map((flag) => <span className="badge warn" key={flag}>{flag}</span>) : <span className="badge good">Ready</span>}</span>
                 <div className="course-actions">
                   <a className="secondary-button" href={`${adminRoutes.upload}?courseId=${encodeURIComponent(id)}`}>Edit</a>
                   <button className="secondary-button" type="button" disabled={isPending} onClick={() => updateStatus(course)}>{course.status === "published" ? "Move to draft" : "Publish"}</button>
