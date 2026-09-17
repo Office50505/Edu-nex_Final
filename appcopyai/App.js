@@ -1,3 +1,4 @@
+import { chatKey, readChat, updateChat } from "./courseAiCache";
 import { requestTutor } from "./services/aiClient";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -2708,16 +2709,30 @@ function ReelsScreen({ courseId, initialIndex, initialTime, onBack, user, onVide
   const [showNotes, setShowNotes] = useState(false);
   const [showCourseAi, setShowCourseAi] = useState(false);
   const [courseAiInput, setCourseAiInput] = useState("");
-  const [courseAiMessages, setCourseAiMessages] = useState([
-    { role: "assistant", content: "Ask me to explain this video, summarize key points, or help with doubts from the lesson." },
-    ...(DEV_UI_QA_ENABLED ? UI_QA_AI_MESSAGES : []),
-  ]);
-  const [courseAiLoading, setCourseAiLoading] = useState(false);
+  const [, refreshCourseAi] = useState(0);
+  const courseAiMounted = useRef(false);
+  useEffect(() => {
+    courseAiMounted.current = true;
+    return () => { courseAiMounted.current = false; };
+  }, []);
   const courseAiScrollRef = useRef(null);
   const vcRef = useRef({ itemVisiblePercentThreshold: 70, minimumViewTime: 120 });
   const flatListRef = useRef(null);
 
   const activeVideo = videos[activeIndex];
+  const courseAiKey = chatKey(user?._id, user?.sessionId, courseId, activeVideo?._id || activeVideo?.id || activeIndex);
+  const courseAiEntry = readChat(courseAiKey, [
+    { role: "assistant", content: AI_FEATURE_ENABLED
+      ? "Ask me to explain this video, summarize key points, or help with doubts from the lesson."
+      : "AI is paused for now." },
+    ...(DEV_UI_QA_ENABLED ? UI_QA_AI_MESSAGES : []),
+  ]);
+  const courseAiMessages = courseAiEntry.messages;
+  const courseAiLoading = courseAiEntry.pending;
+  function updateCourseAi(messages, pending = courseAiEntry.pending) {
+    updateChat(courseAiKey, courseAiEntry, messages, pending);
+    if (courseAiMounted.current) refreshCourseAi(value => value + 1);
+  }
   const activeTitle = activeVideo?.title || "";
   const activeDescription = getVideoDescription(activeVideo) || "No description available.";
   const activeNotes = getVideoNotes(activeVideo);
@@ -2743,19 +2758,9 @@ function ReelsScreen({ courseId, initialIndex, initialTime, onBack, user, onVide
   }, [courseId]);
 
   useEffect(() => {
-    if (!AI_FEATURE_ENABLED) {
-      setCourseAiMessages([{ role: "assistant", content: "AI is paused for now." }]);
-      setCourseAiInput("");
-      setCourseAiLoading(false);
-      return;
-    }
-    setCourseAiMessages([
-      { role: "assistant", content: "Ask me to explain this video, summarize key points, or help with doubts from the lesson." },
-      ...(DEV_UI_QA_ENABLED ? UI_QA_AI_MESSAGES : []),
-    ]);
     setCourseAiInput("");
     setShowNotes(false);
-  }, [activeIndex]);
+  }, [courseAiKey]);
 
   const onViewable = useCallback(({ viewableItems }) => {
     const visible = viewableItems.find(item => item.isViewable && Number.isInteger(item.index));
@@ -2765,37 +2770,40 @@ function ReelsScreen({ courseId, initialIndex, initialTime, onBack, user, onVide
 
   async function sendCourseAiMessage(promptText = courseAiInput) {
     const question = promptText.trim();
-    if (!question || courseAiLoading) return;
+    if (!question || courseAiEntry.pending) return;
     if (!AI_FEATURE_ENABLED) {
-      setCourseAiMessages(prev => [...prev, { role: "assistant", content: "AI is paused for now." }]);
+      updateCourseAi([...courseAiEntry.messages, { role: "assistant", content: "AI is paused for now." }]);
       return;
     }
     if (!user?._id || !user?.sessionId) {
-      setCourseAiMessages(prev => [...prev, { role: "assistant", content: "Please log in again before using Course AI." }]);
+      updateCourseAi([...courseAiEntry.messages, { role: "assistant", content: "Please log in again before using Course AI." }]);
       return;
     }
-    setCourseAiMessages(prev => [...prev, { role: "user", content: question }]);
+    updateCourseAi([...courseAiEntry.messages, { role: "user", content: question }]);
     setCourseAiInput("");
-    setCourseAiLoading(true);
+    updateCourseAi(courseAiEntry.messages, true);
     if (DEV_UI_QA_ENABLED) {
       setTimeout(() => {
-        setCourseAiMessages(prev => [...prev, ...UI_QA_AI_MESSAGES]);
-        setCourseAiLoading(false);
+        updateCourseAi([...courseAiEntry.messages, ...UI_QA_AI_MESSAGES]);
+        updateCourseAi(courseAiEntry.messages, false);
       }, 250);
       return;
     }
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 30000);
     try {
       const res = await fetch(`${API_BASE}/api/course-ai/chat`, {
+        signal: controller.signal,
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userId: user._id, sessionId: user.sessionId, courseId, videoTitle: activeTitle, videoDescription: activeDescription, question, messages: courseAiMessages }),
       });
       const raw = await res.text();
       let data = {}; try { data = raw ? JSON.parse(raw) : {}; } catch {}
-      setCourseAiMessages(prev => [...prev, { role: "assistant", content: res.ok ? data.answer : "AI is unavailable right now. Please try again." }]);
+      updateCourseAi([...courseAiEntry.messages, { role: "assistant", content: res.ok ? data.answer : "AI is unavailable right now. Please try again." }]);
     } catch {
-      setCourseAiMessages(prev => [...prev, { role: "assistant", content: "AI is unavailable right now. Please try again." }]);
-    } finally { setCourseAiLoading(false); }
+      updateCourseAi([...courseAiEntry.messages, { role: "assistant", content: "AI is unavailable right now. Please try again." }]);
+    } finally { clearTimeout(timeout); updateCourseAi(courseAiEntry.messages, false); }
   }
 
   if (loading) return (
