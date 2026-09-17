@@ -28,7 +28,84 @@
   width: 42px;
   height: 42px;
   border-radius: 8px;
-  background: linear-gradient(135deg, #d9a336, #2f8f59);
+  overflow: hidden;
+  background: #000;
+}
+
+.admin-theme-icon {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.admin-icon-light {
+  display: none;
+}
+
+.admin-theme-light .admin-icon-dark {
+  display: none;
+}
+
+.admin-theme-light .admin-icon-light {
+  display: block;
+}
+
+.admin-auth-copy {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.admin-brand-name {
+  display: inline-flex;
+  align-items: center;
+  color: #fff9ec;
+  font-size: 26px;
+  font-weight: 900;
+  line-height: 0.95;
+  letter-spacing: 0;
+  white-space: nowrap;
+}
+
+.admin-brand-mate {
+  color: #d9a336;
+}
+
+.admin-brand-o {
+  position: relative;
+  display: inline-block;
+  width: 0.9em;
+  height: 1.25em;
+  margin: 0 -0.02em 0 -0.03em;
+  transform: translateY(-0.02em);
+  overflow: hidden;
+  vertical-align: middle;
+}
+
+.admin-brand-o-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+}
+
+.admin-brand-o .admin-icon-light {
+  display: none;
+}
+
+.admin-theme-light .admin-brand-o .admin-icon-dark {
+  display: none;
+}
+
+.admin-theme-light .admin-brand-o .admin-icon-light {
+  display: block;
+}
+
+.admin-theme-light .admin-brand-name {
+  color: #111318;
 }
 
 .admin-auth-brand strong,
@@ -1029,7 +1106,10 @@ body.premium-nav-admin .course-actions .secondary-button {
 .admin-workspace { --aw-bg:#111310; --aw-panel:#191c18; --aw-border:#30362e; --aw-text:#f0f2ea; --aw-muted:#a8b1a1; --aw-accent:#dfb86a; min-height:100vh; background:var(--aw-bg); color:var(--aw-text); font-family:Inter,system-ui,sans-serif; }
 .admin-theme-light .admin-workspace { --aw-bg:#f5f6f2; --aw-panel:#fff; --aw-border:#dce1d6; --aw-text:#20271d; --aw-muted:#596650; --aw-accent:#795711; }
 .admin-sidebar { position:fixed; inset:0 auto 0 0; width:224px; z-index:50; padding:30px 18px 20px; display:flex; flex-direction:column; background:var(--aw-panel); border-right:1px solid var(--aw-border); overflow-y:auto; }
-.admin-workspace-brand { display:flex; gap:12px; align-items:center; padding:0 6px 32px; color:var(--aw-text); text-decoration:none; font-weight:750; font-size:19px; }
+.admin-workspace-brand { display:flex; gap:12px; align-items:center; min-width:0; padding:0 6px 32px; color:var(--aw-text); text-decoration:none; font-weight:750; font-size:19px; }
+.admin-brand-copy { display:grid; min-width:0; gap:2px; }
+.admin-brand-symbol { display:block; width:38px; height:42px; flex:0 0 38px; border-radius:10px; overflow:hidden; background:#000; }
+.admin-workspace-brand .admin-brand-name { font-size:25px; }
 .admin-workspace-brand small { display:block; font-size:9px; letter-spacing:1.8px; color:var(--aw-muted); margin-top:5px; }
 .admin-monogram { display:grid; place-items:center; width:35px; height:39px; background:#dfb86a; color:#231e12; border-radius:10px; font-size:23px; }
 .admin-nav-group { margin-bottom:25px; }

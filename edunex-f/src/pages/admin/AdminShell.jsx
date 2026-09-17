@@ -24,7 +24,23 @@ export function AdminShell({ activePage, title, subtitle, children, actions = nu
     <div className="admin-workspace">
       <a className="admin-skip-link" href="#admin-main">Skip to content</a>
       <aside className="admin-sidebar">
-        <a className="admin-workspace-brand" href={adminRoutes.dashboard}><span className="admin-monogram">S</span><span>Skillomate<small>ADMIN WORKSPACE</small></span></a>
+        <a className="admin-workspace-brand" href={adminRoutes.dashboard}>
+          <span className="admin-brand-symbol" aria-hidden="true">
+            <img className="admin-theme-icon admin-icon-dark" src="/assets/brand/skillomate-admin-icon-dark.png" alt="" />
+            <img className="admin-theme-icon admin-icon-light" src="/assets/brand/skillomate-admin-icon-light.png" alt="" />
+          </span>
+          <span className="admin-brand-copy">
+            <span className="admin-brand-name" aria-label="Skillomate">
+              <span className="admin-brand-text">Skill</span>
+              <span className="admin-brand-o" aria-hidden="true">
+                <img className="admin-brand-o-image admin-icon-dark" src="/assets/brand/skillomate-wordmark-symbol-dark.png" alt="" />
+                <img className="admin-brand-o-image admin-icon-light" src="/assets/brand/skillomate-wordmark-symbol-light.png" alt="" />
+              </span>
+              <span className="admin-brand-mate">mate</span>
+            </span>
+            <small>ADMIN WORKSPACE</small>
+          </span>
+        </a>
         <nav aria-label="Administration sections">
           {sections.map(group => <div className="admin-nav-group" key={group.label}>
             <p>{group.label}</p>

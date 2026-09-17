@@ -60,9 +60,19 @@ export function AdminLoginPage() {
     <main className="admin-auth-page">
       <section className="admin-auth-card">
         <div className="admin-auth-brand">
-          <span className="admin-auth-logo" aria-hidden="true" />
-          <div>
-            <strong>Skillomate</strong>
+          <span className="admin-auth-logo" aria-hidden="true">
+            <img className="admin-theme-icon admin-icon-dark" src="/assets/brand/skillomate-admin-icon-dark.png" alt="" />
+            <img className="admin-theme-icon admin-icon-light" src="/assets/brand/skillomate-admin-icon-light.png" alt="" />
+          </span>
+          <div className="admin-auth-copy">
+            <span className="admin-brand-name admin-auth-brand-name" aria-label="Skillomate">
+              <span className="admin-brand-text">Skill</span>
+              <span className="admin-brand-o" aria-hidden="true">
+                <img className="admin-brand-o-image admin-icon-dark" src="/assets/brand/skillomate-wordmark-symbol-dark.png" alt="" />
+                <img className="admin-brand-o-image admin-icon-light" src="/assets/brand/skillomate-wordmark-symbol-light.png" alt="" />
+              </span>
+              <span className="admin-brand-mate">mate</span>
+            </span>
             <small>Admin Workspace</small>
           </div>
         </div>
