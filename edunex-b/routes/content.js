@@ -179,7 +179,28 @@ router.get('/courses/:id/lessons', requireAccess, async (req, res) => {
     }
 
     res.set('Cache-Control', 'private, no-store');
-    res.json(playlistPayload(course, bunnyHlsUrl));
+    res.set('Referrer-Policy', 'no-referrer');
+    const payload = playlistPayload(course, bunnyHlsUrl);
+    if (typeof req.query.playback === 'string' && req.authSessionId) {
+      const requested = req.query.playback;
+      const numeric = /^\d+$/.test(requested) ? Number(requested) : NaN;
+      const index = Number.isSafeInteger(numeric)
+        ? Math.min(numeric, Math.max(0, course.videos.length - 1))
+        : course.videos.findIndex(video => String(video._id) === requested);
+      const video = course.videos[index >= 0 ? index : 0];
+      if (video && require('../services/videoSources').inferProvider(video) === 'aws_cloudfront') {
+        try {
+          const grant = require('../services/cloudFrontPlayback').issueGrant(video.videoUrl, {
+            userId: String(req.user._id), sessionId: req.authSessionId,
+            courseId: String(course._id), videoId: String(video._id),
+          });
+          Object.assign(payload.videos[index >= 0 ? index : 0], grant);
+        } catch {
+          // Keep the playlist usable; the per-lesson authorization route reports configuration errors.
+        }
+      }
+    }
+    res.json(payload);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

@@ -17,9 +17,11 @@ router.post('/admin/playback-preview',protectAdmin,run(async(req,res)=>{
   if(video.provider==='aws_cloudfront')res.json(cf.issueGrant(video.videoUrl,{preview:true}));
   else res.json(video);
 }));
-router.post('/courses/:courseId/videos/:videoId/playback-access',requireCompatibleAuth(),run(async(req,res)=>{
-  await access(req.compatUser);
-  const course=await Course.findOne({_id:req.params.courseId,status:'published'}).select('-thumbnail -thumbnailHorizontal -thumbnailVertical -videos.thumbnail').lean();
+router.post('/courses/:courseId/videos/:videoId/playback-access',requireCompatibleAuth({userProjection:'_id isActive subscriptionStatus subscriptionExpiry +activeSessionId'}),run(async(req,res)=>{
+  const [,course]=await Promise.all([
+    access(req.compatUser),
+    Course.findOne({_id:req.params.courseId,status:'published'}).select('_id videos._id videos.provider videos.sourceType videos.videoUrl videos.embedUrl videos.bunnyVideoId videos.bunnyLibraryId videos.youtubeId videos.hlsUrl videos.playlistUrl videos.streamUrl').lean(),
+  ]);
   if(!course)return res.status(404).json({error:'Published course not found.'});
   const video=course.videos.find(v=>String(v._id)===req.params.videoId);
   if(!video)return res.status(404).json({error:'Lesson does not belong to this course.'});
@@ -29,10 +31,12 @@ router.post('/courses/:courseId/videos/:videoId/playback-access',requireCompatib
 router.get('/playback/hls.m3u8',run(async(req,res)=>{
   let grant;try{grant=cf.decodeGrant(req.query.grant);}catch{return res.status(401).json({error:'Playback access expired. Reload or renew playback.'});}
   if(!grant.preview){
-    const user=await User.findById(grant.userId).select('+activeSessionId +activeSessions').lean();
+    const user=await User.findById(grant.userId).select('_id isActive subscriptionStatus subscriptionExpiry +activeSessionId').lean();
     if(!user||user.isActive===false||!await isSessionValidForUser(user,grant.sessionId))return res.status(401).json({error:'Playback session is no longer active.'});
-    await access(user);
-    const course=await Course.findOne({_id:grant.courseId,status:'published','videos._id':grant.videoId}).select('-thumbnail -thumbnailHorizontal -thumbnailVertical -videos.thumbnail').lean();
+    const [,course]=await Promise.all([
+      access(user),
+      Course.findOne({_id:grant.courseId,status:'published','videos._id':grant.videoId}).select('_id videos._id videos.provider videos.sourceType videos.videoUrl').lean(),
+    ]);
     if(!course)return res.status(403).json({error:'Course or lesson is no longer available.'});
     const video=course.videos.find(v=>String(v._id)===grant.videoId);
     if(inferProvider(video)!=='aws_cloudfront'||video.videoUrl!==grant.reference)return res.status(403).json({error:'Video reference changed. Renew playback.'});

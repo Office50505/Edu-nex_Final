@@ -114,3 +114,34 @@ Progress continues through `useLearningProgress` and unchanged server coverage r
 The existing page/sidebar now selects the custom controls for Bunny HLS as well as AWS, using the API-provided source. Provider labels and stored references are unchanged. Embed-only/YouTube lessons retain compatible playback. On Bunny direct-stream errors, **Use compatible player** forces the existing embed path instead of retrying the blocked CDN URL. AWS still exclusively uses backend playback grants.
 
 Read-only checks of all five existing lessons in “100 Days of AI Basics By Dhruv Rathee” returned HTTP 403 for the generated Bunny playlists (CORS `*`). Full native custom playback for that course is therefore not verified and requires valid Bunny direct-stream access, or real AWS references for those lessons. No course data, provider settings, or infrastructure was modified. 19 player component tests and production build passed; live browser rendering remains unverified.
+
+
+## Course and playback startup optimization
+
+The web watch page now loads the authenticated lessons endpoint directly. Its
+existing session and stored subscription-expiry middleware remains authoritative;
+course startup no longer calls the Razorpay reconciliation endpoint first.
+Checkout verification, webhooks and explicit subscription-status requests retain
+provider reconciliation. Failed course requests show a retryable error; only an
+explicit 403 redirects to payment.
+
+`GET /api/courses/:id/lessons?playback=<index-or-lesson-id>` optionally includes a
+15-minute playback grant for the selected CloudFront lesson, after the same
+subscription and published-course checks. Responses remain private/no-store with
+no-referrer. The player consumes that grant immediately and renews it before
+expiry. Other lessons and old backend responses use a bounded authenticated
+playback request without depending on the legacy-script runtime.
+
+Playback requests use smaller projections and parallel independent entitlement
+and course reads. Each playlist request still rechecks the current session,
+subscription, published lesson and original video reference. The backend reuses
+its parsed RSA key and avoids signing a throwaway URL when issuing a grant;
+segment signatures and expiry are unchanged. No authorization result is cached.
+
+Both frontend and backend must be deployed for the combined startup path. No
+video objects or CloudFront access policies are changed. Isolated tests cover
+bundled-grant renewal/retry, expiry, course selection and session revocation; a
+local 60-segment signing microbenchmark improved from approximately 34 ms to
+19 ms. This is not an end-to-end playback-time measurement. Browser verification
+was blocked by the browser runtime in this session; real-device timings remain
+part of rollout verification.

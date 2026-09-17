@@ -71,26 +71,6 @@ function paymentUrlForCourse(courseId) {
   return paymentUrl.pathname + paymentUrl.search;
 }
 
-function normalizeSubscriptionStatus(status) {
-  return String(status || "none").trim().toLowerCase();
-}
-
-function hasCourseAccess(subscriptionData) {
-  if (typeof subscriptionData?.hasActiveAccess === "boolean") return subscriptionData.hasActiveAccess;
-  const status = normalizeSubscriptionStatus(
-    subscriptionData?.subscriptionDocStatus || subscriptionData?.status || subscriptionData?.subscriptionStatus,
-  );
-  const now = Date.now();
-  if (status === "trial_active" || status === "paid_active") return true;
-  if (status === "trial" || status === "1rs trial") {
-    return !subscriptionData?.trialExpiresAt || new Date(subscriptionData.trialExpiresAt).getTime() > now;
-  }
-  if (status === "active" || status === "subscribed") {
-    return !subscriptionData?.currentPeriodEnd || new Date(subscriptionData.currentPeriodEnd).getTime() > now;
-  }
-  return false;
-}
-
 function googleDriveImageUrl(url) {
   const value = String(url || "").trim();
   if (!value.includes("drive.google.com")) return value;
@@ -893,28 +873,6 @@ export function VideosPage() {
     return () => cleanup?.();
   }, [sharedRuntimePage]);
 
-  const ensureCourseAccess = useCallback(async (courseId, signal) => {
-    const accessToken = getToken();
-    if (!accessToken) {
-      window.location.href = `/login.html?next=${encodeURIComponent(window.location.pathname + window.location.search)}`;
-      return false;
-    }
-    {
-      const { response, data } = await courseRequest("/api/payment/subscription-status", {
-        signal,
-        headers: { Authorization: `Bearer ${accessToken}` },
-      });
-      if (response.status === 401) {
-        clearAuthStorage();
-        window.location.href = `/login.html?next=${encodeURIComponent(window.location.pathname + window.location.search)}`;
-        return false;
-      }
-      if (!response.ok) throw new Error("Could not verify your course access. Please retry.");
-      if (data && hasCourseAccess(data)) return true;
-    }
-    window.location.href = paymentUrlForCourse(courseId);
-    return false;
-  }, []);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -928,9 +886,13 @@ export function VideosPage() {
         return;
       }
       try {
-        const allowed = await ensureCourseAccess(selectedCourseId, controller.signal);
-        if (!allowed || cancelled) return;
-        const { response, data } = await courseRequest(`/api/courses/${encodeURIComponent(selectedCourseId)}/lessons`, {
+        if (!getToken()) {
+          window.location.href = `/login.html?next=${encodeURIComponent(window.location.pathname + window.location.search)}`;
+          return;
+        }
+        // Start downloading the player runtime while the authorized playlist loads.
+        loadHlsJs().catch(() => {});
+        const { response, data } = await courseRequest(`/api/courses/${encodeURIComponent(selectedCourseId)}/lessons?playback=${encodeURIComponent(selectedVideoParam)}`, {
           headers: { Authorization: `Bearer ${getToken()}` }, signal: controller.signal,
         });
         if (response.status === 401) {
@@ -938,9 +900,12 @@ export function VideosPage() {
           window.location.href = `/login.html?next=${encodeURIComponent(window.location.pathname + window.location.search)}`;
           return;
         }
-        if (!response.ok) throw new Error(response.status === 403
-          ? "Your account does not currently have access to this course."
-          : response.status === 404 ? "This course could not be found." : "Could not load the course playlist. Please retry.");
+        if (response.status === 403) {
+          window.location.href = paymentUrlForCourse(selectedCourseId);
+          return;
+        }
+        if (!response.ok) throw new Error(response.status === 404
+          ? "This course could not be found." : "Could not load the course playlist. Please retry.");
         const nextCourse = normalizeCourse(data);
         if (cancelled) return;
         const requestedIndex = Number(selectedVideoParam);
@@ -964,7 +929,7 @@ export function VideosPage() {
     return () => { cancelled = true; controller.abort(); };
     // The initial index is clamped after loading; navigating lessons must not reload the course.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedCourseId, loadAttempt, ensureCourseAccess]);
+  }, [selectedCourseId, loadAttempt]);
 
   useEffect(() => {
     if (!course) return;

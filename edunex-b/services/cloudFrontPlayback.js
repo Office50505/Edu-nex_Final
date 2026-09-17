@@ -9,12 +9,22 @@ function mode() {
 }
 function secret() { if(!process.env.JWT_SECRET)throw new Error('JWT_SECRET is required for playback grants.');return process.env.JWT_SECRET; }
 function encoded(buffer) { return Buffer.from(buffer).toString('base64').replace(/\+/g,'-').replace(/=/g,'_').replace(/\//g,'~'); }
+let cachedPem, cachedKey;
+function signingKey(config) {
+  const pem = config.CLOUDFRONT_PRIVATE_KEY?.replace(/\\n/g,'\n');
+  if (!pem || !config.CLOUDFRONT_PUBLIC_KEY_ID) throw Object.assign(new Error('Private CloudFront playback needs CLOUDFRONT_PRIVATE_KEY and CLOUDFRONT_PUBLIC_KEY_ID on the backend.'),{statusCode:503});
+  if (pem !== cachedPem) {
+    const key = crypto.createPrivateKey(pem);
+    if (key.asymmetricKeyType !== 'rsa') throw problem('CloudFront playback requires an RSA signing key.');
+    cachedKey = key; cachedPem = pem;
+  }
+  return cachedKey;
+}
 function signedUrl(raw, expiresAt, config = process.env) {
   if(raw.includes('*'))throw problem('Encode literal asterisks as %2A in HLS references.');
   if((config.CLOUDFRONT_ACCESS_MODE || 'private')==='public')return raw;
-  const key=config.CLOUDFRONT_PRIVATE_KEY?.replace(/\\n/g,'\n');
+  const key=signingKey(config);
   const keyId=config.CLOUDFRONT_PUBLIC_KEY_ID;
-  if(!key || !keyId)throw Object.assign(new Error('Private CloudFront playback needs CLOUDFRONT_PRIVATE_KEY and CLOUDFRONT_PUBLIC_KEY_ID on the backend.'),{statusCode:503});
   // Canned policy covers this exact resource including the original query, not the entire distribution.
   const policy=JSON.stringify({Statement:[{Resource:raw,Condition:{DateLessThan:{'AWS:EpochTime':expiresAt}}}]});
   const signature=crypto.sign('RSA-SHA1',Buffer.from(policy),key);
@@ -23,7 +33,7 @@ function signedUrl(raw, expiresAt, config = process.env) {
 function issueGrant(reference, identity) {
   validateCloudFront(reference);mode();
   const expiresAt=Math.floor(Date.now()/1000)+TTL_SECONDS;
-  signedUrl(reference,expiresAt); // Fail closed before advertising unavailable private playback.
+  if (mode() === 'private') signingKey(process.env); // Validate before issuing a grant without a redundant signature.
   const token=jwt.sign({...identity,reference,url:reference,root:new URL('.',reference).href,expiresAt},secret(),{algorithm:'HS256',audience:'cloudfront-hls',expiresIn:TTL_SECONDS});
   return {provider:'aws_cloudfront',sourceType:'aws_cloudfront',hlsUrl:`/api/playback/hls.m3u8?grant=${encodeURIComponent(token)}`,expiresAt:expiresAt*1000};
 }

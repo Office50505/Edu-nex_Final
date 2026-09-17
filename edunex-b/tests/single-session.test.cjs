@@ -43,6 +43,7 @@ for (const root of [path.resolve(__dirname, '..'), path.resolve(__dirname, '../.
         if (name.endsWith('/compatAuth')) return { requireCompatibleAuth: () => () => {} };
         if (name.endsWith('/otpService')) return { normalizeMobileNumber: () => '' };
         if (name.endsWith('/accountDeletionService')) return {};
+        if (name.endsWith('/rateLimitToggle')) return { isAuthRateLimitDisabled: () => true };
         throw Error(name);
       } };
       vm.runInNewContext(fs.readFileSync(path.join(root, file), 'utf8'), context);

@@ -56,13 +56,13 @@ function publicUser(user) {
   };
 }
 
-async function loadAuthUser(userId) {
+async function loadAuthUser(userId, projection) {
   if (!mongoose.Types.ObjectId.isValid(userId)) {
     throw authError('Invalid user id', 400);
   }
 
   const user = await User.findById(userId)
-    .select('+activeSessionId +activeSessions +deviceToken')
+    .select(projection || '+activeSessionId +activeSessions +deviceToken')
     .lean();
 
   if (!user || user.isActive === false) {
@@ -77,7 +77,7 @@ async function authenticateCompatible(req, options = {}) {
 
   if (token) {
     const decoded = jwt.verify(token, ACCESS_TOKEN_SECRET);
-    const user = await loadAuthUser(decoded.userId);
+    const user = await loadAuthUser(decoded.userId, options.userProjection);
     if (!await isSessionValidForUser(user, decoded.sessionId)) {
       throw authError('Session expired. Please log in again.');
     }
@@ -97,7 +97,7 @@ async function authenticateCompatible(req, options = {}) {
     throw authError('Authorization required');
   }
 
-  const user = await loadAuthUser(userId);
+  const user = await loadAuthUser(userId, options.userProjection);
   if (!await isSessionValidForUser(user, sessionId)) {
     throw authError('Invalid session');
   }

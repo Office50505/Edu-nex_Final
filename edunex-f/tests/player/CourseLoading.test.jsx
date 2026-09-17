@@ -3,6 +3,7 @@ import React from 'react';
 import { beforeEach, afterEach, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent, act, cleanup } from '@testing-library/react';
 import { VideosPage } from '../../src/pages/VideosPage';
+vi.mock('../../src/lib/hlsRuntime', () => ({loadHlsJs: vi.fn().mockResolvedValue({})}));
 vi.mock('../../src/legacyRuntime', () => ({ runLegacyPage: () => () => {} }));
 vi.mock('../../src/hooks/usePageStyle', () => ({ usePageStyle: () => {} }));
 vi.mock('../../src/components/media/CourseMediaPlayer', () => ({ CourseMediaPlayer: () => <div>Lesson player ready</div> }));
@@ -22,7 +23,7 @@ it('loads the selected course when legacy scripts never become ready', async () 
   render(<VideosPage />);
   expect(await screen.findByText('Lesson player ready')).toBeTruthy();
   expect(screen.queryByText('Preparing course')).toBeNull();
-  expect(fetcher.mock.calls.map(call => call[0])).toEqual(['/api/payment/subscription-status', '/api/courses/course/lessons']);
+  expect(fetcher.mock.calls.map(call => call[0])).toEqual(['/api/courses/course/lessons?playback=0']);
 });
 it('shows a timeout and Retry recovers without reloading the page', async () => {
   vi.useFakeTimers();
@@ -37,6 +38,6 @@ it('shows a timeout and Retry recovers without reloading the page', async () => 
 it('failed access verification shows an error instead of treating it as unpaid', async () => {
   vi.stubGlobal('fetch', vi.fn(async () => ({ ok: false, status: 503, json: async () => ({}) })));
   render(<VideosPage />);
-  expect((await screen.findAllByText(/Could not verify your course access/)).length).toBeGreaterThan(0);
+  expect((await screen.findAllByText(/Could not load the course playlist/)).length).toBeGreaterThan(0);
   expect(window.location.pathname).toBe('/videos');
 });
