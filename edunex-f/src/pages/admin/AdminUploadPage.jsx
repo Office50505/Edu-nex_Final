@@ -473,13 +473,19 @@ export function AdminUploadPage() {
                 <div className="field"><label htmlFor="thumbnailVerticalUrl">Vertical thumbnail URL</label><input id="thumbnailVerticalUrl" name="thumbnailVerticalUrl" type="url" placeholder="https://..." value={form.thumbnailVerticalUrl} onChange={(event) => updateField("thumbnailVerticalUrl", event.target.value)} /><small>Use a public image URL or public Google Drive file link.</small></div>
                 <div className="field">
                   <label htmlFor="thumbnailUpload">Upload horizontal thumbnail</label>
-                  <input id="thumbnailUpload" type="file" accept="image/jpeg,image/png,image/webp" onChange={(event) => updateThumbnailFile("thumbnailDataUrl", "thumbnailFileName", event.target.files?.[0])} />
-                  {form.thumbnailFileName ? <span className="thumbnail-file-name">{form.thumbnailFileName}</span> : null}
+                  <div className="file-upload-control">
+                    <input className="file-upload-input" id="thumbnailUpload" type="file" accept="image/jpeg,image/png,image/webp" onChange={(event) => updateThumbnailFile("thumbnailDataUrl", "thumbnailFileName", event.target.files?.[0])} />
+                    <label className="file-upload-button" htmlFor="thumbnailUpload">Choose file</label>
+                    <span className="file-upload-name">{form.thumbnailFileName || "No file chosen"}</span>
+                  </div>
                 </div>
                 <div className="field">
                   <label htmlFor="thumbnailVerticalUpload">Upload vertical thumbnail</label>
-                  <input id="thumbnailVerticalUpload" type="file" accept="image/jpeg,image/png,image/webp" onChange={(event) => updateThumbnailFile("thumbnailVerticalDataUrl", "thumbnailVerticalFileName", event.target.files?.[0])} />
-                  {form.thumbnailVerticalFileName ? <span className="thumbnail-file-name">{form.thumbnailVerticalFileName}</span> : null}
+                  <div className="file-upload-control">
+                    <input className="file-upload-input" id="thumbnailVerticalUpload" type="file" accept="image/jpeg,image/png,image/webp" onChange={(event) => updateThumbnailFile("thumbnailVerticalDataUrl", "thumbnailVerticalFileName", event.target.files?.[0])} />
+                    <label className="file-upload-button" htmlFor="thumbnailVerticalUpload">Choose file</label>
+                    <span className="file-upload-name">{form.thumbnailVerticalFileName || "No file chosen"}</span>
+                  </div>
                 </div>
                 <div className="field span-2"><label htmlFor="notesUrl">Notes URL</label><input id="notesUrl" name="notesUrl" type="url" placeholder="https://..." value={form.notesUrl} onChange={(event) => updateField("notesUrl", event.target.value)} /></div>
               </div>

@@ -57,9 +57,9 @@ const appDownloadLinks = [
   },
 ];
 
-function LinkList({ title, links }) {
+function LinkList({ title, links, className = "" }) {
   return (
-    <div className="enx-footer-column">
+    <div className={`enx-footer-column${className ? ` ${className}` : ""}`}>
       <div className="enx-footer-heading">{title}</div>
       <ul className="enx-footer-links">
         {links.map(([label, href]) => (
@@ -119,9 +119,37 @@ export function Footer() {
           <LinkList title="Company" links={companyLinks} />
           <LinkList title="Support" links={supportLinks} />
           <LinkList title="Legal" links={legalLinks} />
-          <LinkList title="Pricing" links={pricingLinks} />
+          <LinkList title="Pricing" links={pricingLinks} className="enx-footer-pricing" />
           <AppDownloadColumn />
 
+        </div>
+
+        <div className="enx-footer-mobile-top">
+          <div className="enx-footer-intro enx-footer-intro--single">
+            <div className="enx-footer-cta">
+              <div className="enx-footer-heading">Need Help?</div>
+              <p>Use your dashboard to continue enrolled courses, open notes from lessons, or contact support if access does not look right.</p>
+              <a href={route("pricing.html")}>See Pricing <EnxIcon name="arrowRight" /></a>
+              <div className="enx-footer-support">
+                <a href="mailto:support@skillomate.in"><EnxIcon name="mail" /> support@skillomate.in</a>
+                <a href={route("contact.html")}><EnxIcon name="info" /> Contact Skillomate</a>
+              </div>
+            </div>
+          </div>
+
+          <div className="enx-footer-mobile-stack">
+            <LinkList title="Learn" links={learnLinks} />
+            <LinkList title="Account" links={accountLinks} />
+            <LinkList title="Support" links={supportLinks} />
+            <LinkList title="Pricing" links={pricingLinks} className="enx-footer-pricing" />
+          </div>
+
+          <div className="enx-footer-mobile-stack">
+            <LinkList title="Access" links={platformLinks} />
+            <LinkList title="Company" links={companyLinks} />
+            <LinkList title="Legal" links={legalLinks} />
+            <AppDownloadColumn />
+          </div>
         </div>
 
         <div className="enx-footer-bottom">
