@@ -132,11 +132,13 @@
       padding: 16px;
       opacity: 0;
       pointer-events: none;
+      visibility: hidden;
       transition: opacity 0.3s ease;
     }
     #nai-overlay.nai-open {
       opacity: 1;
       pointer-events: all;
+      visibility: visible;
     }
     #nai-overlay[aria-hidden="true"] #nai-modal {
       visibility: hidden;
@@ -662,17 +664,19 @@
     }
     .nai-footer-hint span { margin: 0 8px; }
     /* ── RESPONSIVE ── */
-    @media (max-width: 768px) {
+    @media (max-width: 900px) {
       #nai-overlay {
         align-items: stretch;
         justify-content: stretch;
+        bottom: var(--mobile-fixed-reserve, calc(84px + env(safe-area-inset-bottom, 0px)));
         padding: 0;
+        z-index: 900;
       }
       #nai-modal {
         width: 100vw;
         max-width: none;
-        height: 100dvh;
-        min-height: 100vh;
+        height: 100%;
+        min-height: 0;
         max-height: none;
         border-radius: 0;
         border: 0;
@@ -684,41 +688,7 @@
         transform: translateY(0);
       }
       #nai-sidebar {
-        width: 100%;
-        max-height: 172px;
-        border-right: 0;
-        border-bottom: 1px solid rgba(255,255,255,0.06);
-        padding: calc(8px + env(safe-area-inset-top, 0px)) 14px 8px;
-        gap: 0;
-        overflow: visible;
-      }
-      #nai-sidebar .nai-bot-hdr {
         display: none;
-      }
-      .nai-history-panel {
-        min-width: 0;
-      }
-      .nai-history-top {
-        min-height: 34px;
-        margin: 0;
-        padding: 0 4px;
-      }
-      .nai-history-title {
-        font-size: .78rem;
-      }
-      .nai-history-panel[open] .nai-history-top {
-        margin-bottom: 8px;
-      }
-      .nai-history-list {
-        display: grid;
-        grid-auto-flow: column;
-        grid-auto-columns: minmax(168px, 1fr);
-        overflow-x: auto;
-        min-height: 0;
-        padding-bottom: 2px;
-      }
-      .nai-history-empty {
-        min-width: 220px;
       }
       #nai-float-btn .nai-float-text-label { display: none !important; }
       #nai-float-btn {
@@ -739,12 +709,12 @@
         letter-spacing: 0;
       }
       #nai-input-area {
-        padding: 10px 14px calc(10px + env(safe-area-inset-bottom, 0px));
+        padding: 10px 14px 12px;
       }
       #nai-chat-hdr {
         align-items: flex-start;
         gap: 10px;
-        padding: 13px 14px 12px;
+        padding: calc(12px + env(safe-area-inset-top, 0px)) 14px 12px;
       }
       #nai-chat-hdr > div:first-child {
         flex: 1;
@@ -824,20 +794,27 @@
         display: none;
       }
       #nai-auth-prompt {
-        align-items: stretch;
-        justify-content: stretch;
-        padding: 0;
+        inset: 0 0 var(--mobile-fixed-reserve, calc(84px + env(safe-area-inset-bottom, 0px))) 0;
+        z-index: 900;
+        align-items: center;
+        justify-content: center;
+        padding: 14px;
+        pointer-events: none;
+        background: rgba(0,0,0,.42);
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
       }
       .nai-auth-card {
-        width: 100vw;
-        min-height: 100dvh;
-        border-radius: 0;
-        border: 0;
-        padding: calc(34px + env(safe-area-inset-top, 0px)) 24px calc(28px + env(safe-area-inset-bottom, 0px));
+        width: min(420px, 100%);
+        min-height: auto;
+        border-radius: 16px;
+        border: 1px solid rgba(255,255,255,.1);
+        padding: 24px;
         display: flex;
         flex-direction: column;
         justify-content: center;
-        box-shadow: none;
+        box-shadow: 0 28px 90px rgba(0,0,0,.65);
+        pointer-events: auto;
       }
       .nai-auth-actions {
         flex-direction: column;
@@ -1027,7 +1004,7 @@
       <div id="nai-modal" role="dialog" aria-modal="true" aria-labelledby="nai-session-title" tabindex="-1">
 
         <!-- ── CHAT HISTORY ── -->
-        <aside id="nai-sidebar" aria-label="Nex AI chat history">
+        <aside id="nai-sidebar" aria-label="Nex AI tutor">
           <div class="nai-bot-hdr">
             <div class="nai-bot-icon">${botAvatarMarkup}</div>
             <div>
@@ -1035,13 +1012,7 @@
               <div class="nai-online"><span class="nai-online-dot"></span>Ready to help</div>
             </div>
           </div>
-          <details class="nai-history-panel" ${window.matchMedia('(min-width: 769px)').matches ? 'open' : ''}>
-            <summary class="nai-history-top">
-              <p class="nai-history-title">Previous chats</p>
-              <i class="fas fa-chevron-down nai-history-chevron" aria-hidden="true"></i>
-            </summary>
-            <div class="nai-history-list" id="nai-conversation-list" aria-live="polite"></div>
-          </details>
+          <div class="nai-focus-card">Ask anything about courses, projects, subscriptions, or your learning plan.</div>
         </aside>
 
         <!-- ── CHAT AREA ── -->
@@ -1219,7 +1190,16 @@
     overlay.classList.remove('nai-open');
     overlay.setAttribute('aria-hidden', 'true');
     floatBtn.classList.remove('nai-btn-open');
+    hideAiLoginPrompt();
     (lastAiTrigger || floatBtn)?.focus?.();
+  }
+
+  function closeChatForNavigation() {
+    overlay.classList.remove('nai-open');
+    overlay.setAttribute('aria-hidden', 'true');
+    floatBtn.classList.remove('nai-btn-open');
+    hideAiLoginPrompt();
+    mountWidget(document.body);
   }
 
   function syncAuthButton() {
@@ -1228,7 +1208,7 @@
     floatBtn.setAttribute('aria-label', isLoggedIn ? 'Open Nex AI Tutor' : 'Login to use Nex AI');
   }
 
-  const mobileFullscreenViewport = window.matchMedia('(max-width: 768px), (pointer: coarse)');
+  const mobileFullscreenViewport = window.matchMedia('(max-width: 900px), (pointer: coarse)');
   let nativeVideoFullscreen = false;
 
   function activeFullscreenElement() {
@@ -1250,6 +1230,8 @@
   });
   window.addEventListener('edunex:auth-changed', syncAuthButton);
   window.addEventListener('storage', syncAuthButton);
+  window.addEventListener('edunex:route-changed', closeChatForNavigation);
+  window.addEventListener('popstate', closeChatForNavigation);
   document.addEventListener('fullscreenchange', syncMobileFullscreenVisibility);
   document.addEventListener('webkitfullscreenchange', syncMobileFullscreenVisibility);
   document.addEventListener('webkitbeginfullscreen', (event) => {
@@ -1499,7 +1481,7 @@
       .sort((a, b) => Number(b.updatedAt || 0) - Number(a.updatedAt || 0));
 
     if (!visibleSessions.length) {
-      list.innerHTML = '<div class="nai-history-empty">Previous Nex AI chats will appear here after you send a message.</div>';
+      list.innerHTML = '<div class="nai-history-empty">Saved chats will appear here after you send a message.</div>';
       return;
     }
 

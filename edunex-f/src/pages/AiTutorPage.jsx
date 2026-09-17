@@ -129,19 +129,6 @@ export function AiTutorPage() {
         </div>
 
         <div className="full-tutor">
-          <div className="tutor-sidebar">
-            <div style={{ marginBottom: 16 }}>
-              <button onClick={newChat} className="btn btn-primary" type="button" style={{ width: "100%", justifyContent: "center" }}>
-                <i className="fas fa-plus" aria-hidden="true"></i> New Chat
-              </button>
-            </div>
-            <div style={{ padding: 12, color: "var(--text-muted)" }}>
-              <strong>This conversation</strong>
-              <p style={{ marginTop: 12 }}>{messages.find(message => message.role === "user")?.text || "Start with a question about your course or project."}</p>
-              <p style={{ marginTop: 12 }}>Follow up naturally, ask for examples, or try a quiz. New chat clears the conversation.</p>
-            </div>
-          </div>
-
           <div className="tutor-chat">
             <div className="chat-header">
               <div className="ai-avatar">N</div>
