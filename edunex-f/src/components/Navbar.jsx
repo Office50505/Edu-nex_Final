@@ -39,6 +39,10 @@ function hasToken() {
   return Boolean(localStorage.getItem("edunexAccessToken") || sessionStorage.getItem("edunexAccessToken"));
 }
 
+function readTheme() {
+  return localStorage.getItem("enx-theme") || "noir";
+}
+
 function avatarFallback(user) {
   const label = user?.fullName || user?.name || user?.email || user?.mobileNumber || "E";
   const initial = String(label).trim().charAt(0).toUpperCase() || "E";
@@ -78,6 +82,7 @@ export function Navbar({ pageKey }) {
   const [open, setOpen] = useState(false);
   const [mobileSearch, setMobileSearch] = useState("");
   const [auth, setAuth] = useState(() => ({ token: hasToken(), user: readUser() }));
+  const [theme, setTheme] = useState(readTheme);
   const current = normalizePageKey(pageKey);
 
   useEffect(() => {
@@ -90,6 +95,19 @@ export function Navbar({ pageKey }) {
       window.removeEventListener("storage", syncAuth);
       window.removeEventListener("edunex:auth-changed", syncAuth);
       window.removeEventListener("edunex:page-ready", syncAuth);
+    };
+  }, []);
+
+  useEffect(() => {
+    const syncTheme = (event) => {
+      const nextTheme = event?.detail?.theme || readTheme();
+      setTheme(nextTheme);
+    };
+    window.addEventListener("storage", syncTheme);
+    window.addEventListener("edunex:theme-changed", syncTheme);
+    return () => {
+      window.removeEventListener("storage", syncTheme);
+      window.removeEventListener("edunex:theme-changed", syncTheme);
     };
   }, []);
 
@@ -123,6 +141,20 @@ export function Navbar({ pageKey }) {
       event.currentTarget.src = navAvatarFallback;
     }
   };
+  const toggleTheme = () => {
+    const resolvedTheme = document.documentElement.dataset.theme || theme;
+    const nextTheme = resolvedTheme === "light" ? "noir" : "light";
+    localStorage.setItem("enx-theme", nextTheme);
+    setTheme(nextTheme);
+    if (window.EduNex?.applyTheme) {
+      window.EduNex.applyTheme(nextTheme);
+    } else {
+      document.documentElement.dataset.theme = nextTheme;
+    }
+    window.dispatchEvent(new CustomEvent("edunex:theme-changed", { detail: { theme: nextTheme } }));
+  };
+  const resolvedTheme = document.documentElement.dataset.theme || theme;
+  const nextThemeLabel = resolvedTheme === "light" ? "dark" : "light";
   const openMobileNexAi = (event) => {
     event.preventDefault();
     const widgetRoot = document.getElementById("nex-ai-widget-root");
@@ -158,6 +190,9 @@ export function Navbar({ pageKey }) {
                 aria-label="Search courses"
               />
             </label>
+            <button className="enx-mobile-theme-toggle" type="button" onClick={toggleTheme} aria-label={`Switch to ${nextThemeLabel} theme`} title={`Switch to ${nextThemeLabel} theme`}>
+              <EnxIcon name={resolvedTheme === "light" ? "moon" : "sun"} />
+            </button>
           </form>
           <ul className="enx-nav-links">
             {navItems.map((item) => (
@@ -176,6 +211,9 @@ export function Navbar({ pageKey }) {
           </ul>
           <div className="enx-nav-right">
             {greeting ? <span className="enx-nav-greeting">{greeting}</span> : null}
+            <button className="enx-nav-theme-toggle" type="button" onClick={toggleTheme} aria-label={`Switch to ${nextThemeLabel} theme`} title={`Switch to ${nextThemeLabel} theme`}>
+              <EnxIcon name={resolvedTheme === "light" ? "moon" : "sun"} />
+            </button>
             {!auth.token ? <a href={route("login.html")} className="enx-nav-login" onMouseEnter={() => preloadNavPage("login.html")} onFocus={() => preloadNavPage("login.html")} onTouchStart={() => preloadNavPage("login.html")}>Login</a> : null}
             {auth.token ? <button type="button" className="enx-nav-logout" onClick={handleLogout}><EnxIcon name="logout" className="enx-logout-icon" />Log out</button> : null}
             <a href={route("profile.html")} className={`enx-nav-avatar${current === "profile.html" ? " active" : ""}`} title={profileLabel} aria-label={profileLabel} onMouseEnter={() => preloadNavPage("profile.html")} onFocus={() => preloadNavPage("profile.html")} onTouchStart={() => preloadNavPage("profile.html")}>

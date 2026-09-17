@@ -3,6 +3,7 @@ import { page as coursesPage } from "../generated-pages/courses.html.js";
 import { runLegacyPage } from "../legacyRuntime.js";
 import { usePageStyle } from "../hooks/usePageStyle.js";
 import { useEduNexRuntimeReady } from "../hooks/useEduNexRuntimeReady.js";
+import { courseEntryHref } from "../lib/courseNavigation.js";
 
 function coursesArray(response) {
   if (Array.isArray(response)) return response;
@@ -101,11 +102,6 @@ function groupCourses(courses) {
     groups.get(key).push(course);
   });
   return Array.from(groups.entries());
-}
-
-function courseVideoHref(course) {
-  const id = String(course?.id || course?._id || "");
-  return id ? `/videos.html?courseId=${encodeURIComponent(id)}&video=0` : "/courses.html";
 }
 
 function initialCourseFilters() {
@@ -249,11 +245,7 @@ export function CoursesPage() {
   };
 
   const openCourse = (course) => {
-    if (hasAccess) {
-      window.location.href = courseVideoHref(course);
-      return;
-    }
-    window.EduNex?.openCourseDetails?.(course);
+    window.location.href = courseEntryHref(course, { hasAccess });
   };
 
   const updateSearch = (value) => {
@@ -309,13 +301,12 @@ export function CoursesPage() {
                 </div>
               ) : null}
             </div>
-            <div className="filter-pills">
-              <button className={`pill${category === "all" ? " active" : ""}`} type="button" data-category="all" onClick={() => selectCategory("all")}>All Courses</button>
-              {categories.length ? categories.map((name) => (
+            <div className="filter-pills" aria-busy={state === "loading"}>
+              {state === "loading" ? <span className="course-filter-loading">Loading course filters...</span> : null}
+              {state === "ready" ? <button className={`pill${category === "all" ? " active" : ""}`} type="button" data-category="all" onClick={() => selectCategory("all")}>All Courses</button> : null}
+              {state === "ready" ? categories.map((name) => (
                 <button className={`pill${category === name.toLowerCase() ? " active" : ""}`} type="button" data-category={name.toLowerCase()} key={name} onClick={() => selectCategory(name.toLowerCase())}>{name}</button>
-              )) : ["AI Freelancing", "Prompt Engineering", "Automation Agency", "UGC Creation"].map((name) => (
-                <button className="pill" type="button" key={name} onClick={() => selectCategory(name.toLowerCase())}>{name}</button>
-              ))}
+              )) : null}
             </div>
           </div>
         </div>
@@ -436,7 +427,7 @@ export function CoursesPage() {
         </div>
       </section>
 
-      <section className="path-section">
+      {state === "ready" ? <section className="path-section">
         <div className="container">
           <div className="path-header">
             <h2>Your Path to Mastery</h2>
@@ -457,7 +448,7 @@ export function CoursesPage() {
             ))}
           </div>
         </div>
-      </section>
+      </section> : null}
     </div>
   );
 }

@@ -20,3 +20,13 @@ dialog.pf-delete-dialog button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
+
+.pf-profile-loading {
+  min-height: 150px;
+  align-items: center;
+  gap: 18px;
+}
+
+.pf-profile-loading .enx-page-loading-mark {
+  flex: 0 0 44px;
+}

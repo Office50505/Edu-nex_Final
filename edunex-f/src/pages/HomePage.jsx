@@ -4,6 +4,7 @@ import { runLegacyPage } from "../legacyRuntime.js";
 import { usePageStyle } from "../hooks/usePageStyle.js";
 import { useEduNexRuntimeReady } from "../hooks/useEduNexRuntimeReady.js";
 import { route } from "../lib/routes.js";
+import { courseEntryHref } from "../lib/courseNavigation.js";
 
 const FALLBACK_COURSES = [
   ["fallback-video-editing", "Video Editing Mastery", "Video Editing", 22, "4.8", 12500, 499],
@@ -43,11 +44,6 @@ function WishlistHeartIcon({ filled }) {
       />
     </svg>
   );
-}
-
-function courseDetailsHref(course) {
-  const id = courseId(course);
-  return id ? route(`course.html?id=${encodeURIComponent(id)}`) : route("courses.html");
 }
 
 function lessonHref(course, lessonIndex = 0) {
@@ -501,12 +497,12 @@ function handleCurriculumImageError(event, course, fallback = "/assets/female1.j
   image.src = fallback;
 }
 
-function CurriculumShowcase({ courses, status, onOpenCourse, authUserId }) {
+function CurriculumShowcase({ courses, status, onOpenCourse, authUserId, hasAccess }) {
   const course = courses.find((item) => !item.isFallback) || courses[0] || null;
   const continueLessons = activeProgressLessons(courses, authUserId);
   const projectItems = projectItemsFromCourse(course);
   const watchedItems = watchedLectureItems(course);
-  const courseHref = course ? courseDetailsHref(course) : route("courses.html");
+  const courseHref = course ? courseEntryHref(course, { hasAccess }) : route("courses.html");
   const courseTitle = course?.title || "AI Influencer Course";
   const courseImage = courseFallbackImage(course);
   const totalLessons = Math.max(lessonCount(course), 34);
@@ -517,7 +513,7 @@ function CurriculumShowcase({ courses, status, onOpenCourse, authUserId }) {
       window.location.href = route("courses.html");
       return;
     }
-    window.location.href = lessonHref(course, relatedLesson(course, target).index);
+    window.location.href = courseEntryHref(course, { hasAccess, lessonIndex: relatedLesson(course, target).index });
   };
 
   return (
@@ -640,7 +636,7 @@ function CurriculumShowcase({ courses, status, onOpenCourse, authUserId }) {
         </div>
         <div className="watched-grid">
           {watchedItems.length ? watchedItems.map((item) => {
-            const href = lessonHref(item.course, item.lessonIndex);
+            const href = courseEntryHref(item.course, { hasAccess, lessonIndex: item.lessonIndex });
             return (
             <button className="watched-card" type="button" key={item.video?._id || `${item.title}-${item.lessonIndex}`} onClick={() => { window.location.href = href; }}>
               <div className="watched-media">
@@ -669,7 +665,7 @@ function CurriculumShowcase({ courses, status, onOpenCourse, authUserId }) {
         </div>
         <div className="project-grid">
           {projectItems.length ? projectItems.map((project) => {
-            const href = lessonHref(project.course, project.lessonIndex);
+            const href = courseEntryHref(project.course, { hasAccess, lessonIndex: project.lessonIndex });
             return (
             <button className="project-card" type="button" key={`${project.title}-${project.lessonIndex}`} onClick={() => { window.location.href = href; }}>
               <img src={lessonImage(project.course, project.video)} alt="" loading="lazy" decoding="async" onError={(event) => handleCurriculumImageError(event, project.course)} />
@@ -805,7 +801,7 @@ function HeroCourseCard({ item, index, isCenter, hasAccess, isSaved, onOpen, onC
     ? lessonHref(course, progress.lessonIndex)
     : item.type === "path"
     ? categoryHref(item.category || category)
-    : courseDetailsHref(course);
+    : courseEntryHref(course, { hasAccess });
 
   const openFromCard = () => {
     if (item.type === "path") onPath(item.category || category);
@@ -1408,7 +1404,7 @@ export function HomePage() {
 
   const suppressibleClick = () => pointerRef.current.moved || Date.now() < pointerRef.current.suppressClickUntil;
   const openCourse = (course) => {
-    window.location.href = courseDetailsHref(course);
+    window.location.href = courseEntryHref(course, { hasAccess });
   };
   const continueCourse = (course) => {
     window.location.href = lessonHref(course, progressFor(course).lessonIndex);
@@ -1552,7 +1548,7 @@ export function HomePage() {
           </div>
         </section>
 
-        <CurriculumShowcase courses={courses} status={status} onOpenCourse={openCourse} authUserId={authUserId} />
+        <CurriculumShowcase courses={courses} status={status} onOpenCourse={openCourse} authUserId={authUserId} hasAccess={hasAccess} />
       </main>
     </div>
   );

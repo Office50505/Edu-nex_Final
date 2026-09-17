@@ -11,13 +11,25 @@ export function useLearningProgress(courseId, videoId, time, playing) {
       try {
         const key=progressCacheKey(courseId);
         const previous=JSON.parse(localStorage.getItem(key)||"{}");
+        const lessons=Array.isArray(status.lessons)?status.lessons:[];
+        const watchedSeconds=lessons.reduce((sum,lesson)=>sum+Math.max(0,Number(lesson.watchedSeconds||0)),0);
+        const durationSeconds=lessons.reduce((sum,lesson)=>sum+Math.max(0,Number(lesson.duration||0)),0);
+        const previousWatched=Number(previous.watchedSeconds);
+        const watchedDelta=Number.isFinite(previousWatched)?Math.max(0,watchedSeconds-previousWatched):0;
+        const now=new Date();
+        const activityKey=`${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()}`;
+        const activityByDay={...(previous.activityByDay||{})};
+        if(watchedDelta>0)activityByDay[activityKey]=Number(activityByDay[activityKey]||0)+watchedDelta;
         localStorage.setItem(key,JSON.stringify({
           ...previous,
           viewed:true,
-          lastViewedAt:new Date().toISOString(),
+          lastViewedAt:now.toISOString(),
           percent:Number.isFinite(Number(status.progressPercent)) ? Number(status.progressPercent) : status.totalLessons?Math.floor(status.completedLessons/status.totalLessons*100):0,
           completed:status.completedLessons,
-          lessonIndex:Math.max(0,status.lessons.findIndex(l=>!l.complete))
+          lessonIndex:Math.max(0,lessons.findIndex(l=>!l.complete)),
+          watchedSeconds,
+          durationSeconds,
+          activityByDay
         }));
       } catch {}
       window.dispatchEvent(new CustomEvent('learning-progress',{detail:status}));

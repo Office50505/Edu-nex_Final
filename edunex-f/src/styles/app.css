@@ -336,6 +336,17 @@ body:has(.react-page-root[data-page="ai-tutor.html"]) {
   margin-top: auto;
 }
 
+.course-filter-loading {
+  min-height: 38px;
+  padding: 9px 14px;
+  border: 1px solid var(--border, rgba(255, 255, 255, .08));
+  border-radius: 999px;
+  color: var(--text2, #9ca3af);
+  background: color-mix(in srgb, var(--card2, #111318) 82%, transparent);
+  font-size: .78rem;
+  font-weight: 700;
+}
+
 .enx-navbar {
   position: fixed !important;
   top: 0 !important;
@@ -444,6 +455,33 @@ html:not([data-theme="light"]) .brand-logo-image-light {
   align-items: center !important;
   gap: 12px !important;
   flex-shrink: 0 !important;
+}
+
+.enx-nav-theme-toggle,
+.enx-mobile-theme-toggle {
+  width: 36px !important;
+  height: 36px !important;
+  flex: 0 0 36px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border: 1px solid var(--border, rgba(255, 255, 255, .1)) !important;
+  border-radius: 999px !important;
+  background: color-mix(in srgb, var(--card2, #111318) 82%, transparent) !important;
+  color: var(--text2, #9ca3af) !important;
+  cursor: pointer !important;
+  transition: color .2s, border-color .2s, background .2s !important;
+}
+
+.enx-nav-theme-toggle:hover,
+.enx-mobile-theme-toggle:hover {
+  border-color: rgba(197, 139, 42, .38) !important;
+  background: rgba(197, 139, 42, .08) !important;
+  color: var(--cyan, #C58B2A) !important;
+}
+
+.enx-mobile-theme-toggle {
+  display: none !important;
 }
 
 .enx-nav-login {
@@ -733,14 +771,25 @@ html:not([data-theme="light"]) .brand-logo-image-light {
   }
 
   .enx-mobile-top-search {
-    display: block !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 7px !important;
     flex: 1 1 auto !important;
     min-width: 92px !important;
     max-width: 360px !important;
   }
 
+  .enx-mobile-theme-toggle {
+    display: inline-flex !important;
+    width: 38px !important;
+    height: 38px !important;
+    flex-basis: 38px !important;
+  }
+
   .enx-mobile-top-search-field {
     width: 100% !important;
+    min-width: 0 !important;
+    flex: 1 1 auto !important;
     min-height: 38px !important;
     padding: 0 10px !important;
     display: flex !important;
@@ -2860,6 +2909,20 @@ html:has(.enx-page-loading) .enx-nav-hamburger span {
   box-sizing: border-box;
 }
 
+.react-page-root[data-page="signup.html"] .sp-roller-track {
+  cursor: grab;
+  outline: none;
+}
+
+.react-page-root[data-page="signup.html"] .sp-roller-track.is-dragging {
+  cursor: grabbing;
+  scroll-snap-type: none;
+}
+
+.react-page-root[data-page="signup.html"] .sp-roller-track:focus-visible {
+  box-shadow: inset 0 0 0 2px var(--cyan, #C58B2A);
+}
+
 @media (max-width: 1399px) {
   .enx-footer-top {
     grid-template-columns: minmax(270px, 1.7fr) repeat(6, minmax(84px, 1fr));
@@ -4542,6 +4605,32 @@ html[data-theme="light"] .enx-footer :where(.enx-footer-links a, .enx-footer-cta
 html[data-theme="light"] .enx-footer .enx-footer-cta,
 html[data-theme="light"] .enx-footer .enx-footer-support a {
   background: #FFFDF8 !important;
+}
+
+/* Course entry checkout: keep the purchase decision above the fold. */
+.react-page-root[data-page="payment.html"] .pay-grid.direct-checkout {
+  grid-template-columns: minmax(0, 480px) !important;
+  justify-content: center;
+  max-width: 480px !important;
+}
+
+.react-page-root[data-page="payment.html"] .pay-grid.direct-checkout .checkout-card {
+  position: static !important;
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  .react-page-root[data-page="payment.html"] .pay-grid.direct-checkout {
+    width: 100%;
+  }
+
+  .react-page-root[data-page="payment.html"] .pay-grid.direct-checkout .checkout-header {
+    padding-inline: 20px;
+  }
+
+  .react-page-root[data-page="payment.html"] .pay-grid.direct-checkout .checkout-body {
+    padding-inline: 16px;
+  }
 }
 
 .react-page-root[data-page="index.html"] .curriculum-home {

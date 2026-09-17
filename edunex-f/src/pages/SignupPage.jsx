@@ -127,6 +127,8 @@ export function SignupPage() {
   const sliderRef = useRef(null);
   const genderButtonRefs = useRef({});
   const ageScrollerRef = useRef(null);
+  const ageDragRef = useRef(null);
+  const suppressAgeClickRef = useRef(false);
   const otpRefs = useRef([]);
   const avatarTriggerRef = useRef(null);
   const closeAvatarRef = useRef(null);
@@ -407,6 +409,64 @@ export function SignupPage() {
     otpRefs.current[Math.min(text.length, otpRefs.current.length - 1)]?.focus();
   };
 
+  const scrollToAge = (nextAge, behavior = "smooth") => {
+    const safeAge = Math.min(END_AGE, Math.max(START_AGE, nextAge));
+    setAge(safeAge);
+    ageScrollerRef.current?.scrollTo({
+      top: (safeAge - START_AGE) * AGE_ITEM_HEIGHT,
+      behavior,
+    });
+  };
+
+  const handleAgePointerDown = (event) => {
+    if (event.pointerType !== "mouse" || event.button !== 0) return;
+    const scroller = event.currentTarget;
+    ageDragRef.current = {
+      pointerId: event.pointerId,
+      startY: event.clientY,
+      startScrollTop: scroller.scrollTop,
+      moved: false,
+    };
+    scroller.setPointerCapture?.(event.pointerId);
+    scroller.classList.add("is-dragging");
+  };
+
+  const handleAgePointerMove = (event) => {
+    const drag = ageDragRef.current;
+    if (!drag || drag.pointerId !== event.pointerId) return;
+    const delta = event.clientY - drag.startY;
+    if (Math.abs(delta) > 3) drag.moved = true;
+    event.currentTarget.scrollTop = drag.startScrollTop - delta;
+    event.preventDefault();
+  };
+
+  const finishAgePointer = (event) => {
+    const drag = ageDragRef.current;
+    if (!drag || drag.pointerId !== event.pointerId) return;
+    const scroller = event.currentTarget;
+    scroller.releasePointerCapture?.(event.pointerId);
+    scroller.classList.remove("is-dragging");
+    const nextAge = START_AGE + Math.round(scroller.scrollTop / AGE_ITEM_HEIGHT);
+    scrollToAge(nextAge);
+    if (drag.moved) {
+      suppressAgeClickRef.current = true;
+      window.setTimeout(() => { suppressAgeClickRef.current = false; }, 0);
+    }
+    ageDragRef.current = null;
+  };
+
+  const handleAgeKeyDown = (event) => {
+    const ageStep = event.key === "PageUp" || event.key === "PageDown" ? 5 : 1;
+    let nextAge = age;
+    if (event.key === "ArrowUp" || event.key === "ArrowLeft" || event.key === "PageUp") nextAge -= ageStep;
+    else if (event.key === "ArrowDown" || event.key === "ArrowRight" || event.key === "PageDown") nextAge += ageStep;
+    else if (event.key === "Home") nextAge = START_AGE;
+    else if (event.key === "End") nextAge = END_AGE;
+    else return;
+    event.preventDefault();
+    scrollToAge(nextAge);
+  };
+
   const openAvatarModal = () => setAvatarModalOpen(true);
   const closeAvatarModal = () => {
     setAvatarModalOpen(false);
@@ -434,7 +494,7 @@ export function SignupPage() {
         </div>
 
         <div className="sp-form-panel">
-          <div className={`sp-step${step === 1 ? " active" : ""}`} id="step1">
+          <form className={`sp-step${step === 1 ? " active" : ""}`} id="step1" onSubmit={(event) => { event.preventDefault(); void sendOTP(); }}>
             {step === 1 ? (
               <h1 className="sp-form-title">Create your account</h1>
             ) : (
@@ -453,7 +513,7 @@ export function SignupPage() {
                 autoComplete="tel-national"
                 aria-describedby="step1-err"
                 value={phone}
-                onChange={(event) => setPhone(event.target.value)}
+                onChange={(event) => setPhone(event.target.value.replace(/\D/g, "").slice(0, 10))}
               />
             </div>
 
@@ -477,11 +537,11 @@ export function SignupPage() {
               {step1Error}
             </p>
 
-            <button className="sp-primary-btn" type="button" onClick={sendOTP} disabled={sendingOtp}>
+            <button className="sp-primary-btn" type="submit" disabled={sendingOtp}>
               {sendingOtp ? "Sending..." : "Send OTP & Continue"}
             </button>
             <p className="sp-login-row">Already have an account? <a href="login.html">Log in</a></p>
-          </div>
+          </form>
 
           <div className={`sp-step${step === 2 ? " active" : ""}`} id="step2">
             {step === 2 ? (
@@ -685,25 +745,32 @@ export function SignupPage() {
             <div className="sp-profile-field">
               <label className="sp-field-label" id="age-label">Your Age</label>
               <div className="sp-age-roller">
-                <div className="sp-roller-track" id="ageScroller" ref={ageScrollerRef} aria-labelledby="age-label">
+                <div
+                  className="sp-roller-track"
+                  id="ageScroller"
+                  ref={ageScrollerRef}
+                  role="listbox"
+                  tabIndex={0}
+                  aria-labelledby="age-label"
+                  aria-activedescendant={`signup-age-${age}`}
+                  onKeyDown={handleAgeKeyDown}
+                  onPointerDown={handleAgePointerDown}
+                  onPointerMove={handleAgePointerMove}
+                  onPointerUp={finishAgePointer}
+                  onPointerCancel={finishAgePointer}
+                >
                   <div className="sp-roller-inner" id="rollerInner" data-ready="true">
                     {ages.map((item) => (
                       <div
                         className={`sp-roller-item${age === item ? " active" : ""}`}
                         data-age={item}
+                        id={`signup-age-${item}`}
                         key={item}
-                        role="button"
-                        tabIndex={0}
+                        role="option"
+                        aria-selected={age === item}
                         onClick={() => {
-                          setAge(item);
-                          ageScrollerRef.current?.scrollTo({ top: (item - START_AGE) * AGE_ITEM_HEIGHT, behavior: "smooth" });
-                        }}
-                        onKeyDown={(event) => {
-                          if (event.key === "Enter" || event.key === " ") {
-                            event.preventDefault();
-                            setAge(item);
-                            ageScrollerRef.current?.scrollTo({ top: (item - START_AGE) * AGE_ITEM_HEIGHT, behavior: "smooth" });
-                          }
+                          if (suppressAgeClickRef.current) return;
+                          scrollToAge(item);
                         }}
                       >
                         {item}

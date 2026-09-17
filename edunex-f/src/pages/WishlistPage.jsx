@@ -167,7 +167,7 @@ export function WishlistPage() {
                     <span><i className="fas fa-signal" aria-hidden="true"></i> Published</span>
                   </div>
                   <div className="wl-footer">
-                    <button className="wl-enroll-btn" type="button" onClick={() => window.EduNex?.openCourseDetails?.({ _id: course._id })}>Open</button>
+                    <button className="wl-enroll-btn" type="button" onClick={() => window.EduNex?.openCourse?.({ _id: course._id })}>Open</button>
                   </div>
                 </div>
               </div>

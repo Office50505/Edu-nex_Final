@@ -4,6 +4,7 @@ import { runLegacyPage } from "../legacyRuntime.js";
 import { usePageStyle } from "../hooks/usePageStyle.js";
 import { useEduNexRuntimeReady } from "../hooks/useEduNexRuntimeReady.js";
 import { progressCacheKey } from "../hooks/useLearningProgress.js";
+import { courseVideoHref } from "../lib/courseNavigation.js";
 
 function coursesArray(response) {
   if (Array.isArray(response)) return response;
@@ -24,10 +25,118 @@ function dashCourseProgress(course) {
     const completed = Number(saved.completed || 0);
     const percent = Math.max(0, Math.min(100, Number(saved.percent ?? Math.round((completed / total) * 100))));
     const lessonIndex = Math.max(0, Math.min(Number(saved.lessonIndex || 0), total - 1));
-    return { total, completed, percent, lessonIndex };
+    return {
+      total,
+      completed,
+      percent,
+      lessonIndex,
+      lastViewedAt: saved.lastViewedAt || "",
+      watchedSeconds: Math.max(0, Number(saved.watchedSeconds || 0)),
+      activityByDay: saved.activityByDay && typeof saved.activityByDay === "object" ? saved.activityByDay : {},
+    };
   } catch (_) {
-    return { total: Math.max(Array.isArray(course.videos) ? course.videos.length : 0, 1), completed: 0, percent: 0, lessonIndex: 0 };
+    return { total: Math.max(Array.isArray(course.videos) ? course.videos.length : 0, 1), completed: 0, percent: 0, lessonIndex: 0, lastViewedAt: "", watchedSeconds: 0, activityByDay: {} };
   }
+}
+
+function durationSeconds(value) {
+  if (typeof value === "number" && Number.isFinite(value)) return Math.max(0, value);
+  const raw = String(value || "").trim();
+  if (!raw) return 0;
+  if (/^\d+(?::\d{1,2}){1,2}$/.test(raw)) {
+    return raw.split(":").map(Number).reduce((total, part) => total * 60 + part, 0);
+  }
+  const hours = Number(raw.match(/([\d.]+)\s*h/i)?.[1] || 0);
+  const minutes = Number(raw.match(/([\d.]+)\s*m/i)?.[1] || 0);
+  return Math.round((hours * 60 + minutes) * 60);
+}
+
+function courseDurationMinutes(course) {
+  const lessonSeconds = Array.isArray(course.videos)
+    ? course.videos.reduce((total, video) => total + durationSeconds(video?.duration || video?.durationSeconds), 0)
+    : 0;
+  return (lessonSeconds || durationSeconds(course.duration)) / 60;
+}
+
+function localDayKey(value) {
+  const date = value instanceof Date ? value : new Date(value);
+  if (Number.isNaN(date.getTime())) return "";
+  return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
+}
+
+function learningTimeLabel(totalMinutes) {
+  const minutes = Math.max(0, Math.round(totalMinutes));
+  if (minutes < 60) return `${minutes}m`;
+  const hours = Math.floor(minutes / 60);
+  const remainder = minutes % 60;
+  return remainder ? `${hours}h ${remainder}m` : `${hours}h`;
+}
+
+export function buildDashboardActivity(courses, now = new Date()) {
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const days = Array.from({ length: 7 }, (_, index) => {
+    const date = new Date(today);
+    date.setDate(today.getDate() - (6 - index));
+    return {
+      key: localDayKey(date),
+      label: date.toLocaleDateString("en-IN", { weekday: "short" }).slice(0, 1),
+      fullLabel: date.toLocaleDateString("en-IN", { weekday: "short", day: "numeric", month: "short" }),
+      value: 0,
+    };
+  });
+  const dayMap = new Map(days.map((day) => [day.key, day]));
+  let completedLessons = 0;
+  let completedCourses = 0;
+  let startedCourses = 0;
+  let totalMinutes = 0;
+  let latestActivity = null;
+
+  courses.forEach((course) => {
+    const progress = dashCourseProgress(course);
+    const completedForCourse = progress.percent >= 100 ? progress.total : progress.completed;
+    completedLessons += completedForCourse;
+    if (progress.percent >= 100) completedCourses += 1;
+    if (progress.percent > 0 || progress.lastViewedAt) startedCourses += 1;
+    const estimatedMinutes = courseDurationMinutes(course) * (progress.percent / 100);
+    totalMinutes += progress.watchedSeconds > 0 ? progress.watchedSeconds / 60 : estimatedMinutes;
+
+    let hasDailyActivity = false;
+    Object.entries(progress.activityByDay).forEach(([key, seconds]) => {
+      const day = dayMap.get(key);
+      const activityMinutes = Math.max(0, Number(seconds || 0)) / 60;
+      if (!day || activityMinutes <= 0) return;
+      day.value += activityMinutes;
+      hasDailyActivity = true;
+    });
+
+    const viewedDate = progress.lastViewedAt ? new Date(progress.lastViewedAt) : null;
+    if (viewedDate && !Number.isNaN(viewedDate.getTime())) {
+      const day = dayMap.get(localDayKey(viewedDate));
+      if (day && !hasDailyActivity && estimatedMinutes > 0) day.value += estimatedMinutes;
+      if (!latestActivity || viewedDate > latestActivity) latestActivity = viewedDate;
+    }
+  });
+
+  let streak = 0;
+  for (let index = days.length - 1; index >= 0 && days[index].value > 0; index -= 1) streak += 1;
+  const latestText = latestActivity
+    ? (localDayKey(latestActivity) === localDayKey(today)
+      ? "Active today"
+      : `Last active ${latestActivity.toLocaleDateString("en-IN", { day: "numeric", month: "short" })}`)
+    : "Start a lesson to begin tracking";
+  const statusLabel = courses.length > 0 && completedCourses === courses.length
+    ? "Complete"
+    : (startedCourses > 0 ? "In progress" : "Not started");
+
+  return {
+    days,
+    maxValue: Math.max(1, ...days.map((day) => day.value)),
+    activeIndex: Math.max(0, days.map((day) => day.value).lastIndexOf(Math.max(...days.map((day) => day.value)))),
+    timeLabel: learningTimeLabel(totalMinutes),
+    completedLabel: `${completedLessons} lesson${completedLessons === 1 ? "" : "s"}`,
+    statusLabel,
+    statusSub: streak > 0 ? `${latestText} · ${streak}-day streak` : latestText,
+  };
 }
 
 function dashStatus(percent) {
@@ -47,6 +156,7 @@ export function DashboardPage() {
   const [loadError, setLoadError] = useState("");
   const [recommendationError, setRecommendationError] = useState("");
   const [historyFilter, setHistoryFilter] = useState("all");
+  const [progressVersion, setProgressVersion] = useState(0);
   const runtimeReady = useEduNexRuntimeReady();
   const user = window.EduNex?.getUser?.();
   const firstName = (user?.fullName || user?.email || user?.mobileNumber || "Learner").split(/\s+/)[0];
@@ -117,6 +227,16 @@ export function DashboardPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [runtimeReady]);
 
+  useEffect(() => {
+    const refreshProgress = () => setProgressVersion((version) => version + 1);
+    window.addEventListener("learning-progress", refreshProgress);
+    window.addEventListener("storage", refreshProgress);
+    return () => {
+      window.removeEventListener("learning-progress", refreshProgress);
+      window.removeEventListener("storage", refreshProgress);
+    };
+  }, []);
+
   const realCourses = courses;
   const withVideos = realCourses.filter((course) => Array.isArray(course.videos) && course.videos.length);
   const shown = (withVideos.length ? withVideos : realCourses).slice(0, 8);
@@ -126,6 +246,7 @@ export function DashboardPage() {
     return dashStatus(dashCourseProgress(course).percent).key === historyFilter;
   });
   const recommendedCourses = recommendations.length ? recommendations : realCourses.slice(0, 4);
+  const activity = useMemo(() => buildDashboardActivity(realCourses), [progressVersion, realCourses]);
 
   return (
     <div className="react-page-root" data-page="dashboard.html">
@@ -231,10 +352,10 @@ export function DashboardPage() {
                 const videos = Number(course.videoCount || 0) || (Array.isArray(course.videos) ? course.videos.length : 0);
                 const reason = course.recommendation?.reason || "Recommended from the current Skillomate catalog";
                 return (
-                  <div className="rec-card" key={course._id} onClick={() => window.EduNex?.openCourseDetails?.(course)} role="link" tabIndex={0} onKeyDown={(event) => {
+                  <div className="rec-card" key={course._id} onClick={() => { window.location.href = courseVideoHref(course); }} role="link" tabIndex={0} onKeyDown={(event) => {
                     if (event.key !== "Enter" && event.key !== " ") return;
                     event.preventDefault();
-                    window.EduNex?.openCourseDetails?.(course);
+                    window.location.href = courseVideoHref(course);
                   }}>
                     <div className="rec-thumb-wrap">
                       <img className="rec-thumb" src={window.EduNex?.courseImage?.(course)} alt={course.title} onError={(event) => {
@@ -263,29 +384,32 @@ export function DashboardPage() {
               <div className="activity-head"><span>Daily Activity</span><button className="activity-more" type="button">···</button></div>
               <div className="chart-area">
                 <div className="bars-wrap">
-                  {[22, 38, 64, 44, 28, 52, 18].map((height, index) => (
-                    <div className="bar-col" style={index === 2 ? { position: "relative" } : undefined} key={`${height}-${index}`}>
-                      {index === 2 ? <div className="bar-tooltip">Wed</div> : null}
-                      <div className={`bar${index === 2 ? " bar-active" : ""}`} style={{ height }}></div>
+                  {activity.days.map((day, index) => {
+                    const height = day.value ? Math.max(12, Math.round((day.value / activity.maxValue) * 64)) : 6;
+                    const active = index === activity.activeIndex && day.value > 0;
+                    const minutes = Math.round(day.value);
+                    return <div className="bar-col" style={active ? { position: "relative" } : undefined} key={day.key} title={`${day.fullLabel}: ${minutes} min`}>
+                      {active ? <div className="bar-tooltip">{minutes} min</div> : null}
+                      <div className={`bar${active ? " bar-active" : ""}`} style={{ height }}></div>
                     </div>
-                  ))}
+                  })}
                 </div>
               </div>
               <div className="chart-days">
-                {["M", "T", "W", "T", "F", "S", "S"].map((day, index) => <div className="chart-day" style={index === 2 ? { color: "var(--cyan)" } : undefined} key={`${day}-${index}`}>{day}</div>)}
+                {activity.days.map((day, index) => <div className="chart-day" style={index === 6 ? { color: "var(--cyan)" } : undefined} key={day.key}>{day.label}</div>)}
               </div>
               <div className="activity-stats">
-                <div className="astat"><div className="astat-label">Hours Spent</div><div className="astat-value">Synced</div></div>
-                <div className="astat"><div className="astat-label">Completed</div><div className="astat-value">Real courses</div></div>
+                <div className="astat"><div className="astat-label">Learning Time</div><div className="astat-value">{activity.timeLabel}</div></div>
+                <div className="astat"><div className="astat-label">Completed</div><div className="astat-value">{activity.completedLabel}</div></div>
               </div>
             </div>
 
             <div className="streak-card">
               <div className="streak-head"><span>Learning Status</span></div>
-              <div className="streak-num">Live</div>
-              <div className="streak-sub">Based on backend course availability</div>
+              <div className="streak-num">{activity.statusLabel}</div>
+              <div className="streak-sub">{activity.statusSub}</div>
               <div className="streak-dots">
-                {Array.from({ length: 7 }).map((_, index) => <div className={`streak-dot${index < 6 ? " done" : " today"}`} key={index}></div>)}
+                {activity.days.map((day, index) => <div className={`streak-dot${day.value > 0 ? " done" : ""}${index === 6 ? " today" : ""}`} title={`${day.fullLabel}: ${Math.round(day.value)} min`} key={day.key}></div>)}
               </div>
             </div>
           </div>

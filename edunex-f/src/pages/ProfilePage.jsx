@@ -31,6 +31,23 @@ function isAuthProfileError(error) {
   return /401|invalid token|expired|log in|authorization/i.test(error?.message || "");
 }
 
+function storedAccessToken() {
+  return localStorage.getItem("edunexAccessToken") || sessionStorage.getItem("edunexAccessToken") || "";
+}
+
+function readStoredProfileUser() {
+  for (const storage of [localStorage, sessionStorage]) {
+    try {
+      const raw = storage.getItem("edunexUser");
+      if (!raw) continue;
+      const parsed = JSON.parse(raw);
+      const user = parsed?.user || parsed;
+      if (user && typeof user === "object") return user;
+    } catch (_) {}
+  }
+  return null;
+}
+
 function setStoredUser(user) {
   const target = localStorage.getItem("edunexAccessToken") ? localStorage : sessionStorage;
   target.setItem("edunexUser", JSON.stringify(user));
@@ -64,8 +81,12 @@ const listButtonStyle = {
 };
 
 export function ProfilePage() {
-  const [user, setUser] = useState(null);
-  const [status, setStatus] = useState({ message: "", error: false, retry: false });
+  const [user, setUser] = useState(readStoredProfileUser);
+  const [status, setStatus] = useState(() => ({
+    message: storedAccessToken() && !readStoredProfileUser() ? "Loading your profile..." : "",
+    error: false,
+    retry: false,
+  }));
   const [theme, setTheme] = useState(currentTheme);
   const [modalOpen, setModalOpen] = useState(false);
   const deleteDialog = useRef(null);
@@ -112,10 +133,15 @@ export function ProfilePage() {
   }, []);
 
   const hydrateProfile = async ({ signal } = {}) => {
-    const cached = window.EduNex?.getUser?.();
-    if (!cached) {
+    if (!window.EduNex?.getAccessToken?.() && !storedAccessToken()) {
       window.location.href = `login.html?next=${encodeURIComponent("profile.html")}`;
       return;
+    }
+    const cached = window.EduNex?.getUser?.() || readStoredProfileUser();
+    if (cached) {
+      setUser(cached);
+    } else {
+      setStatus({ message: "Loading your profile...", error: false, retry: false });
     }
     try {
       const data = await window.EduNex.authRequest("/api/auth/me");
@@ -148,6 +174,7 @@ export function ProfilePage() {
     localStorage.setItem("enx-theme", name);
     setTheme(name);
     window.EduNex?.applyTheme?.(name);
+    window.dispatchEvent(new CustomEvent("edunex:theme-changed", { detail: { theme: name } }));
   };
 
   const openSubscriptionHistory = async () => {
@@ -215,6 +242,29 @@ export function ProfilePage() {
       event.currentTarget.src = fallbackAvatar;
     }
   };
+
+  if (!user) {
+    return (
+      <div className="react-page-root" data-page="profile.html">
+        <div className="pf-page">
+          <div className="pf-breadcrumb">
+            <a href="index.html">Home</a>
+            <span className="sep"><i className="fas fa-chevron-right" aria-hidden="true"></i></span>
+            <span className="current">Account</span>
+          </div>
+          <h1 className="pf-page-title">Profile Settings</h1>
+          <section className="pf-card pf-profile-card pf-profile-loading" aria-live="polite" aria-busy={!status.error}>
+            <div className="enx-page-loading-mark" aria-hidden="true"><i className="fas fa-user"></i></div>
+            <div>
+              <div className="pf-profile-name">{status.error ? "Profile unavailable" : "Loading your profile"}</div>
+              <div className="pf-profile-email">{status.message || "Checking your saved account details..."}</div>
+            </div>
+            {status.retry ? <button className="pf-secondary-btn" type="button" onClick={() => hydrateProfile()}>Retry</button> : null}
+          </section>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="react-page-root" data-page="profile.html">

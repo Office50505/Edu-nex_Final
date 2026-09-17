@@ -97,6 +97,10 @@ function readSessionNotice() {
   return fromStorage || (fromQuery ? "Your account is logged in on a different device." : "");
 }
 
+function hasStoredAccessToken() {
+  return Boolean(localStorage.getItem("edunexAccessToken") || sessionStorage.getItem("edunexAccessToken"));
+}
+
 export function LoginPage() {
   const [loginId, setLoginId] = useState(() => readLoginPrefill(sessionStorage));
   const [password, setPassword] = useState("");
@@ -106,6 +110,7 @@ export function LoginPage() {
   const [recovering, setRecovering] = useState(false);
   const [notice, setNotice] = useState("");
   const [error, setError] = useState(() => readSessionNotice());
+  const [checkingSession] = useState(hasStoredAccessToken);
 
   usePageStyle("react-page-style-login", loginPage.styles);
 
@@ -115,13 +120,24 @@ export function LoginPage() {
   }), []);
 
   useEffect(() => {
+    if (checkingSession) return undefined;
     clearLoginPrefill(sessionStorage);
     document.title = loginPage.title;
     document.documentElement.lang = loginPage.lang || "en";
 
     const cleanup = runLegacyPage(sharedRuntimePage);
     return () => cleanup?.();
-  }, [sharedRuntimePage]);
+  }, [checkingSession, sharedRuntimePage]);
+
+  useEffect(() => {
+    if (!checkingSession) return undefined;
+    const redirectTimer = window.setTimeout(() => {
+      const destination = safeNext("/dashboard.html");
+      window.history.replaceState(window.history.state, "", destination);
+      window.dispatchEvent(new PopStateEvent("popstate"));
+    }, 0);
+    return () => window.clearTimeout(redirectTimer);
+  }, [checkingSession]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -161,6 +177,19 @@ export function LoginPage() {
     setPassword("");
     setRecovering(true);
   };
+
+  if (checkingSession) {
+    return (
+      <div className="react-page-root" data-page="login.html">
+        <main className="enx-page-loading" aria-live="polite" aria-busy="true">
+          <section className="enx-page-loading-card">
+            <div className="enx-page-loading-mark" aria-hidden="true"><i className="fas fa-user-check"></i></div>
+            <p>Opening your dashboard...</p>
+          </section>
+        </main>
+      </div>
+    );
+  }
 
   return (
     <div className="react-page-root" data-page="login.html">

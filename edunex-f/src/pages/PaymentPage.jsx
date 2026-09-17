@@ -5,19 +5,8 @@ import { runLegacyPage } from "../legacyRuntime.js";
 import { usePageStyle } from "../hooks/usePageStyle.js";
 import { useEduNexRuntimeReady } from "../hooks/useEduNexRuntimeReady.js";
 
-const CHECKOUT_COURSE_CACHE_TTL = 10 * 60 * 1000;
-const CHECKOUT_COURSE_CACHE_MAX_BYTES = 2 * 1024 * 1024;
-
 function params() {
   return new URLSearchParams(window.location.search);
-}
-
-function safeJsonFromStorage(key) {
-  try {
-    return JSON.parse(localStorage.getItem(key) || "null");
-  } catch (_) {
-    return null;
-  }
 }
 
 async function safeJsonResponse(response) {
@@ -36,65 +25,6 @@ function buildWebContinueLink() {
 
 function markLocalCourseAccess() {
   localStorage.setItem("edunexHasCourseAccess", JSON.stringify({ active: true, savedAt: Date.now() }));
-}
-
-function driveImageSrc(url) {
-  const rawUrl = String(url || "").trim();
-  if (!rawUrl) return "";
-  const proxy = (value) => {
-    if (!value || /^(data|blob):/i.test(value)) return value;
-    try {
-      const parsed = new URL(value, window.location.origin);
-      if (parsed.origin === window.location.origin) return `${parsed.pathname}${parsed.search}${parsed.hash}`;
-      return `/api/image-proxy?url=${encodeURIComponent(parsed.href)}`;
-    } catch (_) {
-      return value;
-    }
-  };
-
-  try {
-    const parsed = new URL(rawUrl);
-    const isDriveHost = /(^|\.)drive\.google\.com$/i.test(parsed.hostname);
-    if (!isDriveHost) return proxy(rawUrl);
-
-    const fileMatch = parsed.pathname.match(/\/file\/d\/([^/]+)/);
-    const fileId = fileMatch?.[1] || parsed.searchParams.get("id");
-    return fileId ? `https://drive.google.com/thumbnail?id=${encodeURIComponent(fileId)}&sz=w1200` : rawUrl;
-  } catch (_) {
-    return rawUrl;
-  }
-}
-
-function courseThumbnailSrc(course) {
-  const image = course?.thumbnailHorizontal || course?.thumbnail || course?.thumbnailVertical || course?.videos?.[0]?.thumbnail;
-  if (image?.data) {
-    return `data:${image.mimeType || image.contentType || "image/jpeg"};base64,${image.data}`;
-  }
-  return window.EduNex?.normalizeImageSrc?.(course?.thumbnailUrl || course?.thumbnailVerticalUrl || course?.videos?.[0]?.thumbnailUrl || "")
-    || driveImageSrc(course?.thumbnailUrl || course?.thumbnailVerticalUrl || course?.videos?.[0]?.thumbnailUrl || "");
-}
-
-function fallbackCoursePreview() {
-  return {
-    title: "Skillomate Course Library",
-    description: "Start your trial and choose from the real Skillomate courses available in your course catalogue.",
-    category: { name: "Skillomate AI" },
-    averageRating: 4.8,
-    videoCount: 0,
-  };
-}
-
-function readCachedCheckoutCourse(cacheKey) {
-  const cached = safeJsonFromStorage(cacheKey);
-  if (!cached?.course || Date.now() - Number(cached.savedAt || 0) > CHECKOUT_COURSE_CACHE_TTL) return null;
-  return cached.course;
-}
-
-function writeCachedCheckoutCourse(cacheKey, course) {
-  try {
-    const payload = JSON.stringify({ savedAt: Date.now(), course });
-    if (payload.length <= CHECKOUT_COURSE_CACHE_MAX_BYTES) localStorage.setItem(cacheKey, payload);
-  } catch (_) {}
 }
 
 function LightningIcon() {
@@ -122,69 +52,10 @@ function LockIcon() {
   );
 }
 
-function CoursePreview({ course }) {
-  if (!course) {
-    return (
-      <div className="course-preview" id="coursePreview">
-        <div className="cp-thumb skeleton"></div>
-        <div className="cp-body">
-          <div className="skeleton cp-title-skel"></div>
-          <div className="skeleton cp-desc-skel"></div>
-        </div>
-      </div>
-    );
-  }
-
-  const cat = course.category?.name || "Course";
-  const vids = course.videoCount ?? course.videos?.length ?? 0;
-  const rating = Number(course.averageRating || 4.8);
-  const title = course.title || "Skillomate";
-  const thumbnail = courseThumbnailSrc(course) || window.EduNex?.placeholderImage?.(title) || "";
-
-  return (
-    <div className="course-preview" id="coursePreview">
-      <div className="cp-recommended">Recommended</div>
-      <div className="cp-thumb">
-        <img
-          src={thumbnail}
-          alt={title}
-          onError={(event) => {
-            event.currentTarget.onerror = null;
-            event.currentTarget.src = window.EduNex?.placeholderImage?.(event.currentTarget.alt || "Skillomate") || "";
-          }}
-        />
-      </div>
-      <div className="cp-body">
-        <div className="cp-cat">{cat}</div>
-        <div className="cp-title">{title}</div>
-        <p className="cp-desc">{course.description || ""}</p>
-        <div className="cp-meta">
-          <div className="cp-meta-item"><span className="icon"><i className="fas fa-star" aria-hidden="true"></i></span>{rating.toFixed(1)} Rating</div>
-          {vids ? <div className="cp-meta-item"><span className="icon"><i className="fas fa-play-circle" aria-hidden="true"></i></span>{vids} Lessons</div> : null}
-          {course.instructor ? <div className="cp-meta-item"><span className="icon"><i className="fas fa-user" aria-hidden="true"></i></span>{course.instructor}</div> : null}
-          <div className="cp-meta-item"><span className="icon"><i className="fas fa-mobile-screen-button" aria-hidden="true"></i></span>All Devices</div>
-        </div>
-      </div>
-      <div className="cp-includes">
-        <p>What you get</p>
-        <ul>
-          <li>Unlimited access to all {vids || "all"} lessons</li>
-          <li>Download &amp; watch offline in the app</li>
-          <li>Certificate of completion</li>
-          <li>Access to 200+ other premium courses</li>
-          <li>New courses added every month</li>
-        </ul>
-      </div>
-    </div>
-  );
-}
-
 export function PaymentPage() {
   const runtimeReady = useEduNexRuntimeReady();
   const query = params();
   const courseId = query.get("courseId");
-  const checkoutCourseCacheKey = `edunexCheckoutCourse:${courseId || "featured"}`;
-  const [course, setCourse] = useState(() => readCachedCheckoutCourse(checkoutCourseCacheKey));
   const [trialEligible, setTrialEligible] = useState(true);
   const [checkoutState, setCheckoutState] = useState("loading");
   const [payMsg, setPayMsg] = useState({ text: "", type: "" });
@@ -233,16 +104,16 @@ export function PaymentPage() {
 
   const webLink = buildWebContinueLink();
 
-  const configureAppOpenButton = useCallback((targetCourse = course) => {
-    const courseWatch = targetCourse?._id ? `/videos.html?courseId=${encodeURIComponent(targetCourse._id)}&video=0` : webLink;
-    if (courseId || targetCourse?._id) {
+  const configureAppOpenButton = useCallback(() => {
+    const courseWatch = courseId ? `/videos.html?courseId=${encodeURIComponent(courseId)}&video=0` : webLink;
+    if (courseId) {
       setWatchHref(courseWatch);
       setWatchText("Continue on Web");
     } else {
       setWatchHref(webLink);
       setWatchText("Open Video Library");
     }
-  }, [course, courseId, webLink]);
+  }, [courseId, webLink]);
 
   const refreshAccessToken = useCallback(async () => {
     const sessionStore = localStorage.getItem("edunexAccessToken") ? localStorage : sessionStorage;
@@ -269,47 +140,6 @@ export function PaymentPage() {
     }
     return response;
   }, [refreshAccessToken]);
-
-  useEffect(() => {
-    if (!runtimeReady) return undefined;
-    let cancelled = false;
-    (async () => {
-      let rendered = Boolean(course);
-      try {
-        const summaryUrl = courseId
-          ? `/api/courses/checkout-summary?courseId=${encodeURIComponent(courseId)}`
-          : "/api/courses/checkout-summary";
-        const response = await fetch(summaryUrl, { cache: "force-cache" });
-        if (response.ok) {
-          const nextCourse = await safeJsonResponse(response);
-          if (!cancelled && nextCourse && (nextCourse._id || nextCourse.title || courseThumbnailSrc(nextCourse))) {
-            writeCachedCheckoutCourse(checkoutCourseCacheKey, nextCourse);
-            setCourse(nextCourse);
-            configureAppOpenButton(nextCourse);
-            rendered = true;
-          }
-        }
-      } catch (_) {}
-
-      if (!rendered) {
-        try {
-          const catalog = await window.EduNex.request("/api/courses");
-          const list = Array.isArray(catalog) ? catalog : [];
-          const fallbackCourse = list.find((item) => courseThumbnailSrc(item)) || list[0] || null;
-          if (!cancelled) {
-            setCourse(fallbackCourse || fallbackCoursePreview());
-            configureAppOpenButton(fallbackCourse || null);
-          }
-        } catch (_) {
-          if (!cancelled) setCourse(fallbackCoursePreview());
-        }
-      }
-    })();
-    return () => {
-      cancelled = true;
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [runtimeReady, courseId, checkoutCourseCacheKey]);
 
   useEffect(() => {
     if (!runtimeReady) return undefined;
@@ -412,9 +242,7 @@ export function PaymentPage() {
   return (
     <div className="react-page-root" data-page="payment.html">
       <div className="pay-page">
-        <div className="pay-grid">
-          <CoursePreview course={course} />
-
+        <div className="pay-grid direct-checkout">
           <div className="checkout-card">
             <div className="checkout-header">
               <h1 style={{ display: "flex", alignItems: "center", gap: 8 }}>

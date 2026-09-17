@@ -66,6 +66,22 @@ function originalPrice(course) {
   return value > 1 ? `₹${value.toLocaleString("en-IN")}` : "";
 }
 
+export function plainCourseDescription(value) {
+  return String(value || "")
+    .replace(/!\[([^\]]*)\]\([^)]*\)/g, "$1")
+    .replace(/\[([^\]]+)\]\([^)]*\)/g, "$1")
+    .replace(/^\s{0,3}#{1,6}\s+/gm, "")
+    .replace(/^\s{0,3}>\s?/gm, "")
+    .replace(/^\s*[-*+]\s+/gm, "• ")
+    .replace(/(\*\*|__)(.*?)\1/g, "$2")
+    .replace(/(^|[^*])\*([^*\n]+)\*(?!\*)/g, "$1$2")
+    .replace(/(^|[^_])_([^_\n]+)_(?!_)/g, "$1$2")
+    .replace(/`{1,3}([^`]+)`{1,3}/g, "$1")
+    .replace(/^\s*[-*_]{3,}\s*$/gm, "")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
+}
+
 function progressFor(id) {
   try {
     if (!window.EduNex?.getAccessToken?.()) return { percent: 0, hasProgress: false };
@@ -248,7 +264,7 @@ export function CourseDetailsPage() {
               <div className="course-hero-body">
                 <div className="course-kicker"><i className="fas fa-book-open" aria-hidden="true"></i>{categoryName(course)}</div>
                 <h1 className="course-title">{title}</h1>
-                {course.description ? <p className="course-desc">{course.description}</p> : null}
+                {course.description ? <p className="course-desc" style={{ whiteSpace: "pre-line" }}>{plainCourseDescription(course.description)}</p> : null}
                 <div className="course-meta-grid">
                   <span className="course-meta-chip"><i className="fas fa-user" aria-hidden="true"></i>{instructorName(course)}</span>
                   {course.averageRating || course.rating ? <span className="course-meta-chip"><i className="fas fa-star" aria-hidden="true"></i>{course.averageRating || course.rating} rating</span> : null}
