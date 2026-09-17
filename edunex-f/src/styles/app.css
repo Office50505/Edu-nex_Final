@@ -878,12 +878,12 @@ html:not([data-theme="light"]) .brand-logo-image-light {
   }
 
   .react-page-root {
-    padding-bottom: var(--mobile-fixed-reserve);
+    padding-bottom: 0;
     scroll-padding-bottom: var(--mobile-fixed-reserve);
   }
 
   .enx-footer {
-    padding-bottom: calc(var(--mobile-fixed-reserve) + 26px);
+    padding-bottom: calc(var(--mobile-nav-height) + var(--mobile-safe-bottom) + 12px);
   }
 
   #nai-float-btn {
@@ -1120,70 +1120,6 @@ html[data-theme="light"] .enx-mobile-footer-link.active {
   min-width: 0;
 }
 
-.enx-footer-app-download {
-  min-width: 0;
-}
-
-.enx-store-links {
-  display: grid;
-  gap: 10px;
-  width: min(100%, 202px);
-}
-
-.enx-store-badge {
-  width: 100%;
-  min-height: 48px;
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  padding: 8px 10px;
-  border: 1px solid var(--border, rgba(255, 255, 255, .08));
-  border-radius: 12px;
-  background: #050505;
-  color: #ffffff;
-  text-decoration: none;
-  box-shadow: 0 10px 26px rgba(0, 0, 0, .18);
-  transition: transform .18s ease, border-color .18s ease, background .18s ease;
-}
-
-.enx-store-badge:hover {
-  transform: translateY(-2px);
-  border-color: rgba(197, 139, 42, .34);
-  background: #111111;
-}
-
-.enx-store-icon {
-  width: 23px;
-  height: 23px;
-  flex: 0 0 auto;
-  color: var(--cyan, #C58B2A);
-}
-
-.enx-store-badge span {
-  min-width: 0;
-  display: grid;
-  gap: 1px;
-}
-
-.enx-store-badge small,
-.enx-store-badge strong {
-  display: block;
-  line-height: 1.05;
-  white-space: nowrap;
-}
-
-.enx-store-badge small {
-  color: rgba(255, 255, 255, .68);
-  font-size: .62rem;
-  font-weight: 700;
-}
-
-.enx-store-badge strong {
-  color: #ffffff;
-  font-size: .86rem;
-  font-weight: 900;
-}
-
 .enx-footer-cta {
   padding: 18px;
   border: 1px solid var(--border, rgba(255, 255, 255, .08));
@@ -1274,12 +1210,6 @@ html[data-theme="light"] .enx-footer-trust-row span,
 html[data-theme="light"] .enx-footer-support a {
   background: #FFFDF8;
   border-color: #E2D6C6;
-}
-
-html[data-theme="light"] .enx-store-badge {
-  background: #111111;
-  border-color: rgba(0,0,0,.14);
-  color: #ffffff;
 }
 
 .privacy-policy-page {
@@ -4605,6 +4535,1262 @@ html[data-theme="light"] .enx-footer :where(.enx-footer-links a, .enx-footer-cta
 html[data-theme="light"] .enx-footer .enx-footer-cta,
 html[data-theme="light"] .enx-footer .enx-footer-support a {
   background: #FFFDF8 !important;
+}
+
+/* The AI tutor is a dedicated app-like screen, not a widget host. */
+html:has(.react-page-root[data-page="ai-tutor.html"]) :where(.enx-footer, #nex-ai-widget-root, #nai-float-btn) {
+  display: none !important;
+}
+
+.react-page-root[data-page="ai-tutor.html"] {
+  background: var(--bg, #000);
+  color: var(--text, #FFF8ED);
+}
+
+.react-page-root[data-page="ai-tutor.html"] :where(.tutor-page, .full-tutor, .tutor-chat, .chat-messages) {
+  background: var(--bg, #000);
+}
+
+.react-page-root[data-page="ai-tutor.html"] .tutor-sidebar,
+.react-page-root[data-page="ai-tutor.html"] .chat-header,
+.react-page-root[data-page="ai-tutor.html"] .chat-input-area {
+  background: color-mix(in srgb, var(--card, #0d0d0d) 94%, transparent);
+  border-color: var(--border, rgba(255, 255, 255, .09));
+}
+
+.react-page-root[data-page="ai-tutor.html"] .chat-header .ai-avatar,
+.react-page-root[data-page="ai-tutor.html"] .chat-bubble.ai .bub-avatar,
+.react-page-root[data-page="ai-tutor.html"] .tutor-welcome-mark,
+.react-page-root[data-page="ai-tutor.html"] .send-btn {
+  background: var(--cyan, #C58B2A);
+  color: #0A0805;
+  box-shadow: none;
+}
+
+.react-page-root[data-page="ai-tutor.html"] .ai-info h1 {
+  color: var(--text, #FFF8ED);
+  font-family: var(--font-body) !important;
+  font-weight: 800 !important;
+  letter-spacing: -.01em;
+}
+
+.react-page-root[data-page="ai-tutor.html"] .ai-info p,
+.react-page-root[data-page="ai-tutor.html"] .tutor-empty-state > p {
+  color: var(--text2, #A79E94);
+}
+
+.react-page-root[data-page="ai-tutor.html"] .online-badge {
+  color: var(--cyan, #C58B2A);
+}
+
+.react-page-root[data-page="ai-tutor.html"] .online-badge::before {
+  background: var(--cyan, #C58B2A);
+}
+
+.react-page-root[data-page="ai-tutor.html"] .tutor-empty-state {
+  width: min(100%, 620px);
+  min-height: 100%;
+  margin: auto;
+  padding: clamp(22px, 6vh, 64px) 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.react-page-root[data-page="ai-tutor.html"] .tutor-welcome-mark {
+  width: 58px;
+  height: 58px;
+  margin-bottom: 18px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(255, 248, 237, .18);
+  border-radius: 16px;
+  font-size: 1.3rem;
+  font-weight: 900;
+}
+
+.react-page-root[data-page="ai-tutor.html"] .tutor-empty-state h2 {
+  margin: 0;
+  color: var(--text, #FFF8ED);
+  font-family: var(--font-display) !important;
+  font-size: clamp(1.65rem, 4vw, 2.15rem);
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: -.025em;
+}
+
+.react-page-root[data-page="ai-tutor.html"] .tutor-empty-state > p {
+  max-width: 520px !important;
+  margin: 10px auto 0;
+  font-size: .9rem;
+  line-height: 1.65;
+}
+
+.react-page-root[data-page="ai-tutor.html"] .tutor-starter-prompts {
+  width: min(100%, 560px);
+  margin-top: 24px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 9px;
+}
+
+.react-page-root[data-page="ai-tutor.html"] .quick-prompt {
+  min-height: 40px;
+  padding: 9px 13px;
+  border: 1px solid color-mix(in srgb, var(--cyan, #C58B2A) 24%, var(--border, transparent));
+  border-radius: 10px;
+  background: var(--card2, #111318);
+  color: var(--text2, #B8AEA3);
+  font-family: var(--font-body) !important;
+  font-size: .78rem;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.react-page-root[data-page="ai-tutor.html"] .quick-prompt:hover,
+.react-page-root[data-page="ai-tutor.html"] .quick-prompt:focus-visible {
+  border-color: var(--cyan, #C58B2A);
+  background: color-mix(in srgb, var(--cyan, #C58B2A) 10%, var(--card2, #111318));
+  color: var(--text, #FFF8ED);
+}
+
+.react-page-root[data-page="ai-tutor.html"] .bub-content {
+  border-color: var(--border, rgba(255, 255, 255, .09));
+  background: var(--card, #0d0d0d);
+  color: var(--text, #FFF8ED);
+}
+
+.react-page-root[data-page="ai-tutor.html"] .bub-content p,
+.react-page-root[data-page="ai-tutor.html"] .bub-content strong {
+  color: inherit;
+}
+
+.react-page-root[data-page="ai-tutor.html"] .chat-bubble.user .bub-content {
+  border-color: var(--cyan, #C58B2A);
+  background: var(--cyan, #C58B2A);
+  color: #0A0805;
+}
+
+.react-page-root[data-page="ai-tutor.html"] .chat-bubble.user .bub-time {
+  color: rgba(10, 8, 5, .64);
+}
+
+.react-page-root[data-page="ai-tutor.html"] .chat-input-wrap {
+  border: 1px solid var(--border, rgba(255, 255, 255, .1));
+  border-radius: 13px;
+  background: var(--card2, #111318);
+  box-shadow: none;
+}
+
+.react-page-root[data-page="ai-tutor.html"] .chat-input-wrap:focus-within {
+  border-color: var(--cyan, #C58B2A);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--cyan, #C58B2A) 18%, transparent);
+}
+
+.react-page-root[data-page="ai-tutor.html"] .chat-input-wrap textarea {
+  color: var(--text, #FFF8ED);
+  font-family: var(--font-body) !important;
+}
+
+.react-page-root[data-page="ai-tutor.html"] .chat-input-wrap textarea::placeholder {
+  color: var(--text2, #8F877E);
+}
+
+.react-page-root[data-page="ai-tutor.html"] .send-btn {
+  border-radius: 11px;
+}
+
+.react-page-root[data-page="ai-tutor.html"] .send-btn:hover:not(:disabled),
+.react-page-root[data-page="ai-tutor.html"] .send-btn:focus-visible {
+  background: #D9A13A;
+  box-shadow: 0 6px 18px rgba(197, 139, 42, .26);
+}
+
+.react-page-root[data-page="ai-tutor.html"] .send-btn:disabled {
+  cursor: not-allowed;
+  opacity: .48;
+}
+
+@media (max-width: 900px) {
+  .react-page-root[data-page="ai-tutor.html"] {
+    box-sizing: border-box;
+    width: 100%;
+    height: 100dvh;
+    min-height: 0 !important;
+    padding: 74px 0 calc(var(--mobile-nav-height) + var(--mobile-safe-bottom)) !important;
+    overflow: hidden;
+  }
+
+  .react-page-root[data-page="ai-tutor.html"] .tutor-page,
+  .react-page-root[data-page="ai-tutor.html"] .full-tutor,
+  .react-page-root[data-page="ai-tutor.html"] .tutor-chat {
+    width: 100%;
+    height: 100% !important;
+    min-height: 0 !important;
+  }
+
+  .react-page-root[data-page="ai-tutor.html"] .tutor-top-bar,
+  .react-page-root[data-page="ai-tutor.html"] .tutor-sidebar {
+    display: none !important;
+  }
+
+  .react-page-root[data-page="ai-tutor.html"] .tutor-chat {
+    flex: 1 1 auto;
+    overflow: hidden;
+  }
+
+  .react-page-root[data-page="ai-tutor.html"] .chat-header {
+    padding: 12px 14px;
+    gap: 10px;
+  }
+
+  .react-page-root[data-page="ai-tutor.html"] .chat-header .ai-avatar {
+    width: 36px;
+    height: 36px;
+  }
+
+  .react-page-root[data-page="ai-tutor.html"] .ai-info {
+    min-width: 0;
+  }
+
+  .react-page-root[data-page="ai-tutor.html"] .ai-info h1 {
+    overflow: hidden;
+    font-size: .9rem !important;
+    line-height: 1.2 !important;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .react-page-root[data-page="ai-tutor.html"] .ai-info p {
+    overflow: hidden;
+    font-size: .7rem !important;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .react-page-root[data-page="ai-tutor.html"] .online-badge {
+    font-size: .68rem;
+    white-space: nowrap;
+  }
+
+  .react-page-root[data-page="ai-tutor.html"] .chat-messages {
+    min-height: 0;
+    padding: 16px 14px;
+    gap: 14px;
+    overscroll-behavior: contain;
+  }
+
+  .react-page-root[data-page="ai-tutor.html"] .chat-bubble {
+    max-width: 92%;
+    gap: 8px;
+  }
+
+  .react-page-root[data-page="ai-tutor.html"] .bub-content {
+    padding: 11px 13px;
+  }
+
+  .react-page-root[data-page="ai-tutor.html"] .quick-prompts {
+    flex-wrap: nowrap;
+    flex-shrink: 0;
+    padding: 8px 12px;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .react-page-root[data-page="ai-tutor.html"] .quick-prompts::-webkit-scrollbar {
+    display: none;
+  }
+
+  .react-page-root[data-page="ai-tutor.html"] .quick-prompt {
+    flex: 0 0 auto;
+    white-space: nowrap;
+  }
+
+  .react-page-root[data-page="ai-tutor.html"] .tutor-empty-state {
+    justify-content: flex-start;
+    padding: clamp(28px, 7vh, 54px) 2px 24px;
+  }
+
+  .react-page-root[data-page="ai-tutor.html"] .tutor-empty-state h2 {
+    font-size: clamp(1.55rem, 7vw, 1.9rem);
+  }
+
+  .react-page-root[data-page="ai-tutor.html"] .tutor-empty-state > p {
+    font-size: .84rem;
+    line-height: 1.55;
+  }
+
+  .react-page-root[data-page="ai-tutor.html"] .tutor-starter-prompts {
+    margin-top: 20px;
+    gap: 8px;
+  }
+
+  .react-page-root[data-page="ai-tutor.html"] .tutor-starter-prompts .quick-prompt {
+    min-height: 44px;
+    white-space: normal;
+  }
+
+  .react-page-root[data-page="ai-tutor.html"] .chat-input-area {
+    flex-shrink: 0;
+    padding: 10px 12px;
+    gap: 8px;
+    background: var(--bg, #000);
+  }
+
+  .react-page-root[data-page="ai-tutor.html"] .chat-input-wrap {
+    min-width: 0;
+    padding: 9px 12px;
+  }
+
+  .react-page-root[data-page="ai-tutor.html"] .chat-input-wrap textarea {
+    min-width: 0;
+    font-size: 16px;
+  }
+}
+
+/* NEX follows a familiar single-thread chat flow while retaining Skillomate's visual system. */
+.react-page-root[data-page="ai-tutor.html"] .full-tutor {
+  position: relative;
+}
+
+.react-page-root[data-page="ai-tutor.html"] .tutor-sidebar {
+  width: 286px;
+  min-width: 286px;
+  height: auto;
+  padding: 16px 12px;
+  gap: 10px;
+  overflow: hidden;
+}
+
+.react-page-root[data-page="ai-tutor.html"] .tutor-sidebar-head,
+.react-page-root[data-page="ai-tutor.html"] .tutor-new-chat,
+.react-page-root[data-page="ai-tutor.html"] .tutor-history-item {
+  font-family: var(--font-body) !important;
+}
+
+.react-page-root[data-page="ai-tutor.html"] .tutor-sidebar-head {
+  min-height: 42px;
+  padding: 0 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: var(--text, #FFF8ED);
+  font-size: .9rem;
+}
+
+.react-page-root[data-page="ai-tutor.html"] .tutor-icon-button {
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  display: inline-grid;
+  flex: 0 0 auto;
+  place-items: center;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--text, #FFF8ED);
+  cursor: pointer;
+  transition: background .16s ease, border-color .16s ease, color .16s ease;
+}
+
+.react-page-root[data-page="ai-tutor.html"] .tutor-icon-button .enx-icon {
+  width: 19px;
+  height: 19px;
+}
+
+.react-page-root[data-page="ai-tutor.html"] .tutor-icon-button:hover,
+.react-page-root[data-page="ai-tutor.html"] .tutor-icon-button:focus-visible {
+  border-color: var(--border, rgba(255, 255, 255, .1));
+  background: var(--card2, #111318);
+  color: var(--cyan, #C58B2A);
+}
+
+.react-page-root[data-page="ai-tutor.html"] .tutor-sidebar-close,
+.react-page-root[data-page="ai-tutor.html"] .tutor-history-toggle {
+  display: none;
+}
+
+.react-page-root[data-page="ai-tutor.html"] .tutor-new-chat {
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border: 1px solid var(--border, rgba(255, 255, 255, .1));
+  border-radius: 12px;
+  background: var(--card2, #111318);
+  color: var(--text, #FFF8ED);
+  font-size: .82rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.react-page-root[data-page="ai-tutor.html"] .tutor-new-chat:hover,
+.react-page-root[data-page="ai-tutor.html"] .tutor-new-chat:focus-visible {
+  border-color: var(--cyan, #C58B2A);
+  background: color-mix(in srgb, var(--cyan, #C58B2A) 9%, var(--card2, #111318));
+}
+
+.react-page-root[data-page="ai-tutor.html"] .tutor-new-chat .enx-icon {
+  width: 18px;
+  height: 18px;
+  color: var(--cyan, #C58B2A);
+}
+
+.react-page-root[data-page="ai-tutor.html"] .tutor-history-label {
+  padding: 14px 10px 4px;
+  color: var(--text2, #A79E94);
+  font-size: .68rem;
+  font-weight: 800;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+
+.react-page-root[data-page="ai-tutor.html"] .tutor-history-list {
+  min-height: 0;
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: 4px;
+  overflow-y: auto;
+}
+
+.react-page-root[data-page="ai-tutor.html"] .tutor-history-item {
+  width: 100%;
+  padding: 10px;
+  display: grid;
+  gap: 3px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--text, #FFF8ED);
+  text-align: left;
+  cursor: pointer;
+}
+
+.react-page-root[data-page="ai-tutor.html"] .tutor-history-item span,
+.react-page-root[data-page="ai-tutor.html"] .tutor-history-item small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.react-page-root[data-page="ai-tutor.html"] .tutor-history-item span {
+  font-size: .8rem;
+  font-weight: 700;
+}
+
+.react-page-root[data-page="ai-tutor.html"] .tutor-history-item small {
+  color: var(--text2, #A79E94);
+  font-size: .68rem;
+}
+
+.react-page-root[data-page="ai-tutor.html"] .tutor-history-item:hover,
+.react-page-root[data-page="ai-tutor.html"] .tutor-history-item:focus-visible,
+.react-page-root[data-page="ai-tutor.html"] .tutor-history-item.is-active {
+  border-color: var(--border, rgba(255, 255, 255, .1));
+  background: var(--card2, #111318);
+}
+
+.react-page-root[data-page="ai-tutor.html"] .tutor-history-item.is-active {
+  border-color: color-mix(in srgb, var(--cyan, #C58B2A) 46%, transparent);
+}
+
+.react-page-root[data-page="ai-tutor.html"] .tutor-history-empty {
+  margin: 6px 10px;
+  color: var(--text2, #A79E94);
+  font-size: .76rem;
+  line-height: 1.55;
+}
+
+.react-page-root[data-page="ai-tutor.html"] .tutor-history-backdrop {
+  display: none;
+}
+
+.react-page-root[data-page="ai-tutor.html"] .tutor-chat {
+  min-width: 0;
+}
+
+.react-page-root[data-page="ai-tutor.html"] .chat-header {
+  min-height: 64px;
+  padding: 10px 18px;
+  gap: 10px;
+}
+
+.react-page-root[data-page="ai-tutor.html"] .ai-info {
+  min-width: 0;
+  flex: 1 1 auto;
+  text-align: center;
+}
+
+.react-page-root[data-page="ai-tutor.html"] .ai-name-button {
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  border: 0;
+  background: transparent;
+  color: var(--text, #FFF8ED);
+  font-family: var(--font-body) !important;
+  font-size: .9rem !important;
+  font-weight: 800;
+  line-height: 1.25 !important;
+  text-align: left;
+  cursor: pointer;
+}
+
+.react-page-root[data-page="ai-tutor.html"] .ai-name-button span {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.react-page-root[data-page="ai-tutor.html"] .ai-name-button:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--text2, #A79E94) 65%, transparent);
+  outline-offset: 4px;
+  border-radius: 3px;
+}
+
+.react-page-root[data-page="ai-tutor.html"] .ai-info p {
+  margin: 3px 0 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  font-size: .66rem !important;
+}
+
+.react-page-root[data-page="ai-tutor.html"] .online-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--cyan, #C58B2A);
+}
+
+.react-page-root[data-page="ai-tutor.html"] .chat-messages {
+  gap: 22px;
+  padding: 30px clamp(18px, 4vw, 52px) 22px;
+}
+
+.react-page-root[data-page="ai-tutor.html"] .chat-bubble,
+.react-page-root[data-page="ai-tutor.html"] .tutor-thinking {
+  width: min(100%, 760px);
+  max-width: 760px;
+  margin-inline: auto;
+}
+
+.react-page-root[data-page="ai-tutor.html"] .chat-bubble.ai {
+  align-self: auto;
+}
+
+.react-page-root[data-page="ai-tutor.html"] .chat-bubble.user {
+  align-self: auto;
+  justify-content: flex-end;
+  flex-direction: row;
+}
+
+.react-page-root[data-page="ai-tutor.html"] .chat-bubble .bub-avatar,
+.react-page-root[data-page="ai-tutor.html"] .tutor-thinking .bub-avatar {
+  width: 30px;
+  height: 30px;
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 9px;
+  background: var(--cyan, #C58B2A);
+  color: #0A0805;
+  font-size: .72rem;
+  font-weight: 900;
+}
+
+.react-page-root[data-page="ai-tutor.html"] .chat-bubble.ai .bub-content {
+  max-width: calc(100% - 44px);
+  padding: 3px 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+
+.react-page-root[data-page="ai-tutor.html"] .chat-bubble.user .bub-content {
+  max-width: min(78%, 560px);
+  padding: 11px 15px;
+  border-radius: 16px 16px 4px 16px;
+}
+
+.react-page-root[data-page="ai-tutor.html"] .bub-content p {
+  font-size: .9rem;
+  line-height: 1.65;
+}
+
+.react-page-root[data-page="ai-tutor.html"] .tutor-thinking {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.react-page-root[data-page="ai-tutor.html"] .tutor-thinking .typing-dots {
+  min-height: 30px;
+}
+
+.react-page-root[data-page="ai-tutor.html"] .chat-input-area {
+  width: min(calc(100% - 36px), 780px);
+  margin: 0 auto 14px;
+  padding: 8px 8px 5px 14px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 42px;
+  align-items: end;
+  gap: 4px 8px;
+  border: 1px solid var(--border, rgba(255, 255, 255, .1));
+  border-radius: 20px;
+  background: var(--card2, #111318);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, .18);
+}
+
+.react-page-root[data-page="ai-tutor.html"] .chat-input-area:focus-within {
+  border-color: color-mix(in srgb, var(--text2, #A79E94) 46%, transparent);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, .18), 0 0 0 1px color-mix(in srgb, var(--text2, #A79E94) 12%, transparent);
+}
+
+.react-page-root[data-page="ai-tutor.html"] .chat-input-wrap,
+.react-page-root[data-page="ai-tutor.html"] .chat-input-wrap:focus-within {
+  min-height: 42px;
+  padding: 9px 2px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.react-page-root[data-page="ai-tutor.html"] .chat-input-wrap textarea {
+  width: 100%;
+  min-height: 22px;
+  height: auto;
+  padding: 0;
+  line-height: 1.45;
+}
+
+.react-page-root[data-page="ai-tutor.html"] .chat-input-wrap textarea:focus,
+.react-page-root[data-page="ai-tutor.html"] .chat-input-wrap textarea:focus-visible {
+  border: 0 !important;
+  outline: 0 !important;
+  box-shadow: none !important;
+}
+
+.react-page-root[data-page="ai-tutor.html"] .ai-name-setup {
+  position: fixed;
+  z-index: 48;
+  inset: 0;
+  display: grid;
+  padding: 24px;
+  place-items: center;
+  background: rgba(0, 0, 0, .72);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .18s ease;
+}
+
+.react-page-root[data-page="ai-tutor.html"] .ai-name-setup.is-visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.react-page-root[data-page="ai-tutor.html"] .ai-name-setup-card {
+  width: min(100%, 420px);
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  border: 1px solid var(--border, rgba(255, 255, 255, .1));
+  border-radius: 22px;
+  background: var(--card, #0D0D0D);
+  box-shadow: 0 28px 80px rgba(0, 0, 0, .48);
+  color: var(--text, #FFF8ED);
+}
+
+.react-page-root[data-page="ai-tutor.html"] .ai-name-setup-avatar {
+  width: 76px;
+  height: 76px;
+  margin: 0 auto 16px;
+  overflow: hidden;
+  border: 1px solid rgba(197, 139, 42, .3);
+  border-radius: 24px;
+  background: radial-gradient(circle at 50% 38%, rgba(197, 139, 42, .18), #0D0D0D 72%);
+}
+
+.react-page-root[data-page="ai-tutor.html"] .ai-name-setup-avatar .nex-avatar-image {
+  transform: scale(1.12) translateY(2px);
+}
+
+.react-page-root[data-page="ai-tutor.html"] .ai-name-setup-kicker {
+  margin: 0 0 5px !important;
+  color: var(--cyan, #C58B2A) !important;
+  font-size: .66rem !important;
+  font-weight: 800;
+  letter-spacing: .12em;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.react-page-root[data-page="ai-tutor.html"] .ai-name-setup-card h2 {
+  margin: 0;
+  font-size: clamp(1.55rem, 5vw, 2rem);
+  text-align: center;
+}
+
+.react-page-root[data-page="ai-tutor.html"] .ai-name-setup-card > p:not(.ai-name-setup-kicker) {
+  margin: 8px auto 22px;
+  max-width: 330px;
+  color: var(--text2, #A79E94);
+  font-size: .82rem;
+  line-height: 1.55;
+  text-align: center;
+}
+
+.react-page-root[data-page="ai-tutor.html"] .ai-name-setup-card label {
+  margin-bottom: 7px;
+  color: var(--text, #FFF8ED);
+  font-size: .72rem;
+  font-weight: 800;
+}
+
+.react-page-root[data-page="ai-tutor.html"] .ai-name-setup-card input {
+  width: 100%;
+  min-height: 48px;
+  padding: 12px 14px;
+  border: 1px solid var(--border, rgba(255, 255, 255, .1));
+  border-radius: 12px;
+  outline: 0;
+  background: var(--card2, #111318);
+  color: var(--text, #FFF8ED);
+  font: 600 .9rem/1.35 var(--font-body);
+  box-shadow: none;
+}
+
+.react-page-root[data-page="ai-tutor.html"] .ai-name-setup-card input:focus {
+  border-color: color-mix(in srgb, var(--text2, #A79E94) 52%, transparent) !important;
+  outline: 0 !important;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--text2, #A79E94) 10%, transparent) !important;
+}
+
+.react-page-root[data-page="ai-tutor.html"] .ai-name-setup-actions {
+  margin-top: 18px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.react-page-root[data-page="ai-tutor.html"] .ai-name-setup-actions .btn {
+  min-height: 44px;
+  justify-content: center;
+}
+
+.react-page-root[data-page="ai-tutor.html"] .send-btn {
+  width: 38px;
+  height: 38px;
+  margin-bottom: 2px;
+  border-radius: 12px;
+}
+
+.react-page-root[data-page="ai-tutor.html"] .send-btn .enx-icon {
+  width: 18px;
+  height: 18px;
+}
+
+.react-page-root[data-page="ai-tutor.html"] .tutor-disclaimer {
+  grid-column: 1 / -1;
+  margin: 0 0 2px;
+  color: var(--text2, #A79E94);
+  font-size: .62rem;
+  line-height: 1.35;
+  text-align: center;
+}
+
+html[data-theme="light"] .react-page-root[data-page="ai-tutor.html"] .chat-input-area,
+html[data-theme="light"] .react-page-root[data-page="ai-tutor.html"] .tutor-new-chat,
+html[data-theme="light"] .react-page-root[data-page="ai-tutor.html"] .tutor-history-item:hover,
+html[data-theme="light"] .react-page-root[data-page="ai-tutor.html"] .tutor-history-item:focus-visible,
+html[data-theme="light"] .react-page-root[data-page="ai-tutor.html"] .tutor-history-item.is-active {
+  background: #FFFDF8 !important;
+}
+
+html[data-theme="light"] .react-page-root[data-page="ai-tutor.html"] .chat-input-wrap textarea {
+  background: transparent !important;
+}
+
+@media (max-width: 900px) {
+  .react-page-root[data-page="ai-tutor.html"] .tutor-sidebar {
+    position: fixed;
+    z-index: 42;
+    top: 74px;
+    bottom: calc(var(--mobile-nav-height) + var(--mobile-safe-bottom));
+    left: 0;
+    width: min(86vw, 320px);
+    min-width: 0;
+    display: flex !important;
+    border-right: 1px solid var(--border, rgba(255, 255, 255, .1));
+    background: var(--card, #0d0d0d);
+    transform: translateX(-105%);
+    transition: transform .2s ease;
+  }
+
+  .react-page-root[data-page="ai-tutor.html"] .tutor-sidebar.is-open {
+    transform: translateX(0);
+  }
+
+  .react-page-root[data-page="ai-tutor.html"] .tutor-sidebar-close,
+  .react-page-root[data-page="ai-tutor.html"] .tutor-history-toggle {
+    display: inline-grid;
+  }
+
+  .react-page-root[data-page="ai-tutor.html"] .tutor-history-backdrop {
+    position: fixed;
+    z-index: 41;
+    inset: 74px 0 calc(var(--mobile-nav-height) + var(--mobile-safe-bottom));
+    display: block;
+    border: 0;
+    background: rgba(0, 0, 0, .62);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .2s ease;
+  }
+
+  .react-page-root[data-page="ai-tutor.html"] .tutor-history-backdrop.is-visible {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .react-page-root[data-page="ai-tutor.html"] .chat-header {
+    min-height: 58px;
+    padding: 8px 10px;
+  }
+
+  .react-page-root[data-page="ai-tutor.html"] .ai-name-button {
+    max-width: 60vw;
+    font-size: .82rem !important;
+  }
+
+  .react-page-root[data-page="ai-tutor.html"] .ai-info p {
+    font-size: .62rem !important;
+  }
+
+  .react-page-root[data-page="ai-tutor.html"] .chat-messages {
+    gap: 20px;
+    padding: 22px 14px 18px;
+  }
+
+  .react-page-root[data-page="ai-tutor.html"] .chat-bubble {
+    width: 100%;
+    max-width: none;
+  }
+
+  .react-page-root[data-page="ai-tutor.html"] .chat-bubble.user .bub-content {
+    max-width: 86%;
+  }
+
+  .react-page-root[data-page="ai-tutor.html"] .tutor-empty-state {
+    justify-content: center;
+    padding: 24px 4px;
+  }
+
+  .react-page-root[data-page="ai-tutor.html"] .tutor-welcome-mark {
+    width: 48px;
+    height: 48px;
+    margin-bottom: 16px;
+    border-radius: 14px;
+  }
+
+  .react-page-root[data-page="ai-tutor.html"] .tutor-empty-state h2 {
+    font-size: clamp(1.42rem, 6.5vw, 1.8rem);
+  }
+
+  .react-page-root[data-page="ai-tutor.html"] .tutor-empty-state > p {
+    max-width: 340px !important;
+  }
+
+  .react-page-root[data-page="ai-tutor.html"] .tutor-starter-prompts {
+    width: min(100%, 430px);
+  }
+
+  .react-page-root[data-page="ai-tutor.html"] .chat-input-area {
+    width: calc(100% - 20px);
+    margin-bottom: 8px;
+    padding: 6px 6px 4px 12px;
+    border-radius: 18px;
+  }
+
+  .react-page-root[data-page="ai-tutor.html"] .chat-input-wrap {
+    padding: 8px 0;
+  }
+
+  .react-page-root[data-page="ai-tutor.html"] .tutor-disclaimer {
+    font-size: .57rem;
+  }
+
+  .react-page-root[data-page="ai-tutor.html"] .ai-name-setup {
+    inset: 74px 0 calc(var(--mobile-nav-height) + var(--mobile-safe-bottom));
+    padding: 18px;
+  }
+}
+
+@media (max-width: 520px) {
+  .react-page-root[data-page="ai-tutor.html"] .ai-name-setup-card {
+    padding: 24px 20px;
+    border-radius: 18px;
+  }
+
+  .react-page-root[data-page="ai-tutor.html"] .tutor-starter-prompts {
+    grid-template-columns: 1fr;
+  }
+
+  .react-page-root[data-page="ai-tutor.html"] .tutor-starter-prompts .quick-prompt:nth-child(n + 4) {
+    display: none;
+  }
+}
+
+/* Avatar-led NEX conversation: compact social-chat rhythm with Skillomate styling. */
+.react-page-root[data-page="ai-tutor.html"] .nex-avatar-image {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: contain;
+  object-position: center;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.react-page-root[data-page="ai-tutor.html"] .tutor-header-avatar {
+  width: 48px;
+  height: 52px;
+  flex: 0 0 auto;
+  overflow: visible;
+  border: 0;
+  background: transparent;
+  filter: drop-shadow(0 7px 10px rgba(0, 0, 0, .34));
+}
+
+.react-page-root[data-page="ai-tutor.html"] .tutor-header-avatar .nex-avatar-image {
+  transform: none;
+}
+
+.react-page-root[data-page="ai-tutor.html"] .ai-info {
+  text-align: left;
+}
+
+.react-page-root[data-page="ai-tutor.html"] .ai-info p {
+  justify-content: flex-start;
+}
+
+.react-page-root[data-page="ai-tutor.html"] .tutor-welcome-avatar {
+  width: clamp(126px, 18vw, 164px);
+  height: clamp(126px, 18vw, 164px);
+  margin-bottom: 18px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  background: transparent;
+  filter: drop-shadow(0 18px 22px rgba(0, 0, 0, .36));
+  animation: nexAvatarFloat 3.8s ease-in-out infinite;
+  overflow: visible;
+}
+
+.react-page-root[data-page="ai-tutor.html"] .tutor-welcome-avatar .nex-avatar-image {
+  transform: none;
+}
+
+.react-page-root[data-page="ai-tutor.html"] .chat-bubble,
+.react-page-root[data-page="ai-tutor.html"] .tutor-thinking {
+  gap: 10px;
+}
+
+.react-page-root[data-page="ai-tutor.html"] .chat-bubble .bub-avatar,
+.react-page-root[data-page="ai-tutor.html"] .tutor-thinking .bub-avatar {
+  width: 52px;
+  height: 58px;
+  padding: 0;
+  overflow: visible;
+  border: 0;
+  background: transparent;
+  filter: drop-shadow(0 8px 9px rgba(0, 0, 0, .28));
+}
+
+/* Keep the 3D character as a transparent cutout even when legacy AI-avatar rules load. */
+.react-page-root[data-page="ai-tutor.html"] .chat-bubble.ai .bub-avatar.ai-model-cutout,
+.react-page-root[data-page="ai-tutor.html"] .tutor-thinking .bub-avatar.ai-model-cutout {
+  position: relative;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  color: inherit;
+  overflow: visible !important;
+}
+
+.react-page-root[data-page="ai-tutor.html"] .chat-bubble .bub-avatar .nex-avatar-image,
+.react-page-root[data-page="ai-tutor.html"] .tutor-thinking .bub-avatar .nex-avatar-image {
+  transform: none;
+}
+
+.react-page-root[data-page="ai-tutor.html"] .tutor-thinking .bub-avatar.is-thinking {
+  width: 68px;
+  height: 72px;
+  margin-top: -10px;
+  margin-left: -8px;
+  margin-right: -2px;
+}
+
+.react-page-root[data-page="ai-tutor.html"] .ai-thinking-overhead {
+  position: absolute;
+  z-index: 2;
+  top: -12px;
+  left: 64%;
+  min-width: 42px;
+  height: 24px;
+  padding: 0 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  border: 1px solid var(--border, rgba(255, 255, 255, .1));
+  border-radius: 999px;
+  background: var(--card2, #111318);
+  box-shadow: 0 7px 16px rgba(0, 0, 0, .28);
+  transform: translateX(-50%);
+}
+
+.react-page-root[data-page="ai-tutor.html"] .ai-thinking-overhead::after {
+  position: absolute;
+  left: 7px;
+  bottom: -4px;
+  width: 7px;
+  height: 7px;
+  border-right: 1px solid var(--border, rgba(255, 255, 255, .1));
+  border-bottom: 1px solid var(--border, rgba(255, 255, 255, .1));
+  background: var(--card2, #111318);
+  content: "";
+  transform: rotate(45deg);
+}
+
+.react-page-root[data-page="ai-tutor.html"] .ai-thinking-overhead span {
+  position: relative;
+  z-index: 1;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--cyan, #C58B2A);
+  animation: aiOverheadDot 1.05s ease-in-out infinite;
+}
+
+.react-page-root[data-page="ai-tutor.html"] .ai-thinking-overhead span:nth-child(2) { animation-delay: .14s; }
+.react-page-root[data-page="ai-tutor.html"] .ai-thinking-overhead span:nth-child(3) { animation-delay: .28s; }
+
+.react-page-root[data-page="ai-tutor.html"] .bub-content-wrap {
+  min-width: 0;
+  max-width: min(78%, 600px);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 5px;
+}
+
+.react-page-root[data-page="ai-tutor.html"] .chat-bubble.user .bub-content-wrap {
+  align-items: flex-end;
+}
+
+.react-page-root[data-page="ai-tutor.html"] .bub-meta {
+  min-height: 15px;
+  padding: 0 5px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--text2, #A79E94);
+  font-family: var(--font-body) !important;
+  font-size: .62rem;
+  line-height: 1;
+}
+
+.react-page-root[data-page="ai-tutor.html"] .bub-meta strong {
+  color: var(--text, #FFF8ED);
+  font-size: .66rem;
+  font-weight: 800;
+}
+
+.react-page-root[data-page="ai-tutor.html"] .chat-bubble.ai .bub-content,
+.react-page-root[data-page="ai-tutor.html"] .chat-bubble.user .bub-content {
+  width: auto;
+  max-width: 100%;
+  padding: 11px 14px;
+  border: 1px solid var(--border, rgba(255, 255, 255, .1));
+  background: var(--card2, #111318);
+}
+
+.react-page-root[data-page="ai-tutor.html"] .chat-bubble.ai .bub-content {
+  border-radius: 5px 17px 17px 17px;
+}
+
+.react-page-root[data-page="ai-tutor.html"] .chat-bubble.user .bub-content {
+  border-color: color-mix(in srgb, var(--cyan, #C58B2A) 72%, transparent);
+  border-radius: 17px 5px 17px 17px;
+  background: var(--cyan, #C58B2A);
+}
+
+.react-page-root[data-page="ai-tutor.html"] .learner-chat-avatar {
+  width: 36px;
+  height: 36px;
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+  overflow: hidden;
+  border: 1px solid rgba(197, 139, 42, .42);
+  border-radius: 50%;
+  background: var(--card2, #111318);
+  color: var(--text, #FFF8ED);
+  font-size: .72rem;
+  font-weight: 900;
+}
+
+.react-page-root[data-page="ai-tutor.html"] .learner-chat-avatar img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+}
+
+.react-page-root[data-page="ai-tutor.html"] .tutor-thinking {
+  align-items: flex-start;
+}
+
+.react-page-root[data-page="ai-tutor.html"] .tutor-thinking-content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 5px;
+}
+
+.react-page-root[data-page="ai-tutor.html"] .tutor-thinking-label {
+  min-height: 38px;
+  padding: 0 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border, rgba(255, 255, 255, .1));
+  border-radius: 5px 17px 17px 17px;
+  background: var(--card2, #111318);
+  color: var(--text2, #A79E94);
+  font-size: .78rem;
+  font-weight: 700;
+}
+
+.react-page-root[data-page="ai-tutor.html"] .nex-avatar-image.is-replying {
+  animation: nexAvatarReply .62s cubic-bezier(.2, .8, .25, 1) both;
+}
+
+.react-page-root[data-page="ai-tutor.html"] .nex-avatar-image.is-thinking-expression {
+  animation: nexAvatarThinking 1.15s ease-in-out infinite;
+}
+
+@keyframes nexAvatarFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+@keyframes nexAvatarReply {
+  0% { opacity: .45; transform: scale(.82) translateY(7px); }
+  65% { opacity: 1; transform: scale(1.08) translateY(-2px); }
+  100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+@keyframes nexAvatarThinking {
+  0%, 100% { transform: scale(.98) translateY(2px) rotate(-1.2deg); }
+  50% { transform: scale(1.04) translateY(-3px) rotate(1.2deg); }
+}
+
+@keyframes aiOverheadDot {
+  0%, 65%, 100% { opacity: .34; transform: translateY(1px) scale(.82); }
+  32% { opacity: 1; transform: translateY(-2px) scale(1); }
+}
+
+html[data-theme="light"] .react-page-root[data-page="ai-tutor.html"] .chat-bubble.ai .bub-content,
+html[data-theme="light"] .react-page-root[data-page="ai-tutor.html"] .tutor-thinking-label,
+html[data-theme="light"] .react-page-root[data-page="ai-tutor.html"] .learner-chat-avatar {
+  background: #FFFDF8;
+}
+
+html[data-theme="light"] .react-page-root[data-page="ai-tutor.html"] .bub-meta strong {
+  color: #332820;
+}
+
+@media (max-width: 900px) {
+  .react-page-root[data-page="ai-tutor.html"] .tutor-header-avatar {
+    width: 44px;
+    height: 48px;
+  }
+
+  .react-page-root[data-page="ai-tutor.html"] .ai-info h1 {
+    max-width: none;
+    margin-inline: 0;
+  }
+
+  .react-page-root[data-page="ai-tutor.html"] .chat-messages {
+    gap: 17px;
+  }
+
+  .react-page-root[data-page="ai-tutor.html"] .bub-content-wrap {
+    max-width: calc(100% - 54px);
+  }
+
+  .react-page-root[data-page="ai-tutor.html"] .chat-bubble.user .bub-content-wrap {
+    max-width: calc(100% - 46px);
+  }
+
+  .react-page-root[data-page="ai-tutor.html"] .chat-bubble .bub-avatar,
+  .react-page-root[data-page="ai-tutor.html"] .tutor-thinking .bub-avatar {
+    width: 46px;
+    height: 52px;
+  }
+
+  .react-page-root[data-page="ai-tutor.html"] .tutor-thinking .bub-avatar.is-thinking {
+    width: 60px;
+    height: 64px;
+    margin-left: -6px;
+  }
+
+  .react-page-root[data-page="ai-tutor.html"] .learner-chat-avatar {
+    width: 32px;
+    height: 32px;
+  }
+
+  .react-page-root[data-page="ai-tutor.html"] .tutor-welcome-avatar {
+    width: 118px;
+    height: 118px;
+    margin-bottom: 16px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .react-page-root[data-page="ai-tutor.html"] .tutor-sidebar,
+  .react-page-root[data-page="ai-tutor.html"] .tutor-history-backdrop,
+  .react-page-root[data-page="ai-tutor.html"] .tutor-welcome-avatar,
+  .react-page-root[data-page="ai-tutor.html"] .nex-avatar-image {
+    animation: none !important;
+    transition: none;
+  }
+}
+
+/* Keep the Continue Learning empty state readable over its dark card. */
+html:not([data-theme="light"]) .react-page-root[data-page="index.html"] .continue-learning-empty p {
+  color: #E7DED2 !important;
+}
+
+html:not([data-theme="light"]) .react-page-root[data-page="index.html"] .continue-learning-empty a {
+  color: #E4A93A !important;
+}
+
+html[data-theme="light"] .react-page-root[data-page="index.html"] .continue-learning-empty p {
+  color: #5F534A !important;
 }
 
 /* Course entry checkout: keep the purchase decision above the fold. */

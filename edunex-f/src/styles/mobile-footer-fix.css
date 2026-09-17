@@ -4,7 +4,7 @@
 
 @media (max-width: 900px) {
   .enx-footer {
-    padding-bottom: calc(var(--mobile-fixed-reserve) + 64px) !important;
+    padding-bottom: calc(var(--mobile-nav-height) + var(--mobile-safe-bottom) + 12px) !important;
   }
 
   .enx-footer-top {
@@ -32,7 +32,7 @@
 
   .enx-footer-bottom {
     margin-bottom: 0 !important;
-    transform: translateY(-18px) !important;
-    padding-bottom: calc(var(--mobile-fixed-reserve) + 44px) !important;
+    transform: none !important;
+    padding-bottom: 0 !important;
   }
 }

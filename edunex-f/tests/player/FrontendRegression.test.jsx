@@ -3,10 +3,12 @@ import React from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { act, cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { Navbar } from "../../src/components/Navbar.jsx";
+import { Footer } from "../../src/components/Footer.jsx";
 import { LoginPage } from "../../src/pages/LoginPage.jsx";
 import { ProfilePage } from "../../src/pages/ProfilePage.jsx";
 import { SignupPage } from "../../src/pages/SignupPage.jsx";
 import { CoursesPage } from "../../src/pages/CoursesPage.jsx";
+import { AiTutorPage } from "../../src/pages/AiTutorPage.jsx";
 import { plainCourseDescription } from "../../src/pages/CourseDetailsPage.jsx";
 import { buildDashboardActivity } from "../../src/pages/DashboardPage.jsx";
 import { PaymentPage } from "../../src/pages/PaymentPage.jsx";
@@ -39,6 +41,13 @@ afterEach(() => {
 });
 
 describe("reported frontend regressions", () => {
+  it("does not render app download badges in the shared footer", () => {
+    render(<Footer />);
+    expect(screen.queryByText("App Download")).toBeNull();
+    expect(screen.queryByText("App Store")).toBeNull();
+    expect(screen.queryByText("Google Play")).toBeNull();
+  });
+
   it("exposes an accessible theme switch in the shared header", () => {
     window.EduNex = {
       applyTheme: vi.fn((theme) => { document.documentElement.dataset.theme = theme; }),
@@ -47,6 +56,109 @@ describe("reported frontend regressions", () => {
     fireEvent.click(screen.getAllByRole("button", { name: "Switch to light theme" })[0]);
     expect(localStorage.getItem("enx-theme")).toBe("light");
     expect(window.EduNex.applyTheme).toHaveBeenCalledWith("light");
+  });
+
+  it("uses a dedicated AI page from the persistent mobile navigation", () => {
+    render(<Navbar pageKey="ai-tutor.html" />);
+    const aiLink = screen.getByRole("link", { name: "AI" });
+    expect(aiLink.getAttribute("href")).toBe("/ai-tutor");
+    expect(aiLink.classList.contains("active")).toBe(true);
+    expect(screen.queryByRole("button", { name: "Open Nex AI" })).toBeNull();
+  });
+
+  it("renders the AI tutor with one focused set of starter prompts", () => {
+    window.EduNex = {
+      request: vi.fn(),
+      getAccessToken: vi.fn(() => "active-token"),
+      getUser: vi.fn(() => cachedUser),
+    };
+    render(<AiTutorPage />);
+    expect(screen.getByRole("heading", { name: "What can I help you learn?" })).toBeTruthy();
+    expect(screen.getByRole("img", { name: "AI assistant" }).getAttribute("src")).toBe("/assets/nex-avatar.png");
+    expect(screen.getByRole("group", { name: "Suggested questions" }).querySelectorAll("button")).toHaveLength(4);
+    expect(screen.queryByRole("group", { name: "Follow-up suggestions" })).toBeNull();
+  });
+
+  it("lets each learner name the AI without letting a message replace the header name", async () => {
+    window.EduNex = {
+      request: vi.fn(),
+      getAccessToken: vi.fn(() => "active-token"),
+      getUser: vi.fn(() => cachedUser),
+      authRequest: vi.fn(async () => ({ reply: "Hello! How can I help?", provider: "test" })),
+    };
+    render(<AiTutorPage />);
+
+    expect(await screen.findByRole("dialog", { name: "Name your AI" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Customize AI name. Current name: AI" })).toBeTruthy();
+    fireEvent.change(screen.getByRole("textbox", { name: "AI name" }), { target: { value: "Nova" } });
+    fireEvent.click(screen.getByRole("button", { name: "Save name" }));
+
+    expect(localStorage.getItem("edunexAiBotName:user-1")).toBe("Nova");
+    expect(screen.getByRole("button", { name: "Customize AI name. Current name: Nova" })).toBeTruthy();
+    fireEvent.change(screen.getByRole("textbox", { name: "Message Nova" }), { target: { value: "hie" } });
+    fireEvent.click(screen.getByRole("button", { name: "Send message" }));
+    await screen.findByText("Hello! How can I help?");
+
+    expect(screen.getByRole("button", { name: "Customize AI name. Current name: Nova" })).toBeTruthy();
+    expect(JSON.parse(window.EduNex.authRequest.mock.calls[0][1].body).assistantName).toBe("Nova");
+  });
+
+  it("shows the expressive thinking model and animated dots while an answer is pending", async () => {
+    localStorage.setItem("edunexAiBotName:user-1", "AI");
+    localStorage.setItem("edunexAiBotSetupComplete:user-1", "true");
+    let resolveRequest;
+    window.EduNex = {
+      request: vi.fn(),
+      getAccessToken: vi.fn(() => "active-token"),
+      getUser: vi.fn(() => cachedUser),
+      authRequest: vi.fn(() => new Promise(resolve => { resolveRequest = resolve; })),
+    };
+    render(<AiTutorPage />);
+
+    fireEvent.change(screen.getByRole("textbox", { name: "Message AI" }), { target: { value: "Explain this" } });
+    fireEvent.click(screen.getByRole("button", { name: "Send message" }));
+
+    expect(screen.getByLabelText("AI is typing")).toBeTruthy();
+    expect(document.querySelector('.tutor-thinking .ai-model-cutout')).toBeTruthy();
+    expect(document.querySelectorAll('.tutor-thinking .ai-thinking-overhead > span')).toHaveLength(3);
+    expect(document.querySelector('.tutor-thinking .nex-avatar-image')?.getAttribute('src')).toBe('/assets/nex-avatar-thinking.png');
+
+    await act(async () => { resolveRequest({ reply: "Here is the explanation." }); });
+    expect(await screen.findByText("Here is the explanation.")).toBeTruthy();
+    expect(document.querySelector('.chat-bubble.ai .ai-model-cutout')).toBeTruthy();
+    expect(document.querySelector('.chat-bubble.ai .nex-avatar-image')?.getAttribute('src')).toBe('/assets/nex-avatar.png');
+  });
+
+  it("keeps NEX conversations and restores them from the shared chat history", async () => {
+    localStorage.setItem("edunexAiBotName:user-1", "AI");
+    localStorage.setItem("edunexAiBotSetupComplete:user-1", "true");
+    window.EduNex = {
+      request: vi.fn(),
+      getAccessToken: vi.fn(() => "active-token"),
+      getUser: vi.fn(() => cachedUser),
+      authRequest: vi.fn(async () => ({ reply: "Prompting means giving an AI clear instructions.", provider: "test" })),
+    };
+    render(<AiTutorPage />);
+
+    fireEvent.change(screen.getByRole("textbox", { name: "Message AI" }), { target: { value: "What is prompting?" } });
+    fireEvent.click(screen.getByRole("button", { name: "Send message" }));
+    await screen.findByText("Prompting means giving an AI clear instructions.");
+    expect(document.querySelector('.chat-bubble.ai .nex-avatar-image')?.getAttribute('src')).toBe('/assets/nex-avatar.png');
+    expect(screen.getByLabelText("Aarav Learner").textContent).toBe("A");
+
+    const saved = JSON.parse(localStorage.getItem("edunexNexAiChats:user-1"));
+    expect(saved[0].title).toBe("What is prompting?");
+    expect(saved[0].messages.map(message => message.role)).toEqual(["user", "assistant"]);
+    expect(screen.getByRole("button", { name: /What is prompting\?Just now/ })).toBeTruthy();
+
+    cleanup();
+    render(<AiTutorPage />);
+    expect(screen.getByText("Prompting means giving an AI clear instructions.")).toBeTruthy();
+
+    fireEvent.click(screen.getByRole("button", { name: "Start a new chat" }));
+    expect(screen.getByRole("heading", { name: "What can I help you learn?" })).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: /What is prompting\?Just now/ }));
+    expect(screen.getByText("Prompting means giving an AI clear instructions.")).toBeTruthy();
   });
 
   it("does not expose the login form while an existing session is being verified", () => {

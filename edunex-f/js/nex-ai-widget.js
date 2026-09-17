@@ -5,10 +5,14 @@
   const storedUser = window.EduNex?.getUser?.() || null;
   const learnerName = (storedUser?.fullName || storedUser?.email || storedUser?.mobileNumber || 'there').split(/\s+/)[0];
   const learnerAvatar = storedUser?.avatar || window.EduNex?.avatarFallback?.(storedUser) || '';
-  const savedBotName = localStorage.getItem('edunexAiBotName') || 'Nex AI';
-  const savedBotAvatar = localStorage.getItem('edunexAiBotAvatar') || '';
-  const aiSetupComplete = localStorage.getItem('edunexAiBotSetupComplete') === 'true';
-  const botAvatarMarkup = `<i class="fas fa-bolt"></i>`;
+  const botOwner = String(storedUser?._id || storedUser?.id || 'guest');
+  const botNameStorageKey = `edunexAiBotName:${botOwner}`;
+  const botAvatarStorageKey = `edunexAiBotAvatar:${botOwner}`;
+  const botSetupStorageKey = `edunexAiBotSetupComplete:${botOwner}`;
+  const savedBotName = localStorage.getItem(botNameStorageKey) || 'AI';
+  const savedBotAvatar = localStorage.getItem(botAvatarStorageKey) || 'nex';
+  const aiSetupComplete = localStorage.getItem(botSetupStorageKey) === 'true';
+  const botAvatarMarkup = `<img class="nai-bot-avatar-img" src="/assets/nex-avatar.png" alt="">`;
   const escAttr = (value) => String(value || '').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   const hasAiAccess = () => Boolean(
     window.EduNex?.getAccessToken?.()
@@ -270,6 +274,7 @@
       display: flex; align-items: center; justify-content: center;
       color: #FFFDF8; font-size: 1.1rem;
       flex-shrink: 0;
+      overflow: hidden;
     }
     .nai-bot-name {
       font-size: 1rem; font-weight: 800; color: #fff;
@@ -370,9 +375,10 @@
     .nai-bot-avatar-img {
       width: 100%;
       height: 100%;
-      object-fit: cover;
-      object-position: center top;
+      object-fit: contain;
+      object-position: center;
       display: block;
+      transform: scale(1.14) translateY(2px);
     }
     #nai-bot-name-input {
       width: min(220px, 100%);
@@ -392,13 +398,13 @@
       top: 82px;
       left: 24px;
       z-index: 3;
-      width: 260px;
+      width: 290px;
       padding: 12px;
       border: 1px solid rgba(255,255,255,.1);
       border-radius: 14px;
       background: #332820;
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
+      grid-template-columns: repeat(5, 1fr);
       gap: 8px;
       box-shadow: 0 18px 50px rgba(0,0,0,.45);
     }
@@ -490,7 +496,7 @@
     #nai-setup-name:focus { border-color: rgba(197,139,42,.48); }
     .nai-setup-avatars {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
+      grid-template-columns: repeat(5, 1fr);
       gap: 10px;
     }
     .nai-setup-avatars .nai-avatar-choice { border-color: rgba(255,255,255,.08); }
@@ -536,14 +542,39 @@
       display: flex; align-items: flex-start; gap: 14px;
     }
     .nai-ai-avatar {
-      width: 38px; height: 38px; border-radius: 11px;
-      background: #C58B2A;
+      position: relative;
+      width: 50px; height: 56px;
+      background: transparent;
       display: flex; align-items: center; justify-content: center;
       color: #FFFDF8; font-size: 0.85rem;
       flex-shrink: 0; margin-top: 2px;
-      overflow: hidden;
+      overflow: visible;
+      filter: drop-shadow(0 8px 9px rgba(0,0,0,.28));
     }
-    .nai-ai-avatar img { width: 100%; height: 100%; object-fit: cover; object-position: center top; display: block; }
+    .nai-ai-avatar img { width: 100%; height: 100%; object-fit: contain; object-position: center; display: block; }
+    .nai-ai-avatar img.is-thinking { animation: naiavatarthinking 1.15s ease-in-out infinite; }
+    .nai-thinking-overhead {
+      position: absolute; z-index: 2; top: -12px; left: 64%;
+      min-width: 40px; height: 22px; padding: 0 8px;
+      display: flex; align-items: center; justify-content: center; gap: 4px;
+      border: 1px solid rgba(255,255,255,.12); border-radius: 999px;
+      background: #171a21; box-shadow: 0 7px 16px rgba(0,0,0,.28);
+      transform: translateX(-50%);
+    }
+    .nai-thinking-overhead span {
+      width: 5px; height: 5px; border-radius: 50%; background: #C58B2A;
+      animation: naioverheaddot 1.05s ease-in-out infinite;
+    }
+    .nai-thinking-overhead span:nth-child(2) { animation-delay: .14s; }
+    .nai-thinking-overhead span:nth-child(3) { animation-delay: .28s; }
+    @keyframes naioverheaddot {
+      0%,65%,100% { opacity: .34; transform: translateY(1px) scale(.82); }
+      32% { opacity: 1; transform: translateY(-2px) scale(1); }
+    }
+    @keyframes naiavatarthinking {
+      0%,100% { transform: scale(.98) translateY(2px) rotate(-1.2deg); }
+      50% { transform: scale(1.04) translateY(-3px) rotate(1.2deg); }
+    }
     .nai-ai-bubble {
       flex: 1;
       font-size: 0.9rem; color: rgba(255,255,255,0.85);
@@ -565,6 +596,28 @@
     .nai-ai-bubble p:last-child {
       margin-bottom: 0;
     }
+    .nai-typing-indicator {
+      min-height: 38px;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 0 14px;
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 5px 16px 16px 16px;
+      background: rgba(255,255,255,.05);
+      color: rgba(255,255,255,.7);
+      font-size: .76rem;
+      font-weight: 700;
+    }
+    .nai-typing-dots { display: inline-flex; align-items: center; gap: 3px; }
+    .nai-typing-dots span {
+      width: 5px; height: 5px; border-radius: 50%;
+      background: #C58B2A;
+      animation: naitypingdot 1s ease-in-out infinite;
+    }
+    .nai-typing-dots span:nth-child(2) { animation-delay: .14s; }
+    .nai-typing-dots span:nth-child(3) { animation-delay: .28s; }
+    @keyframes naitypingdot { 0%,100%{opacity:.35;transform:translateY(0)} 50%{opacity:1;transform:translateY(-2px)} }
     .nai-reply-list {
       margin: 8px 0 10px 18px;
       padding: 0;
@@ -768,9 +821,8 @@
         gap: 10px;
       }
       .nai-ai-avatar {
-        width: 34px;
-        height: 34px;
-        border-radius: 10px;
+        width: 44px;
+        height: 50px;
       }
       .nai-ai-bubble {
         font-size: .86rem;
@@ -1069,7 +1121,7 @@
             <h3>Choose your AI companion</h3>
             <p>Pick a refined icon and give your tutor a name. I will save it for your future Skillomate sessions.</p>
             <label class="nai-setup-label" for="nai-setup-name">AI name</label>
-            <input id="nai-setup-name" type="text" maxlength="24" value="${escAttr(savedBotName === 'Nex AI' ? '' : savedBotName)}" placeholder="Example: Nex, Nova, Mentor AI">
+            <input id="nai-setup-name" type="text" maxlength="24" value="${escAttr(savedBotName === 'AI' ? '' : savedBotName)}" placeholder="Example: Nova, Mentor, Study Buddy">
             <div class="nai-setup-label">AI icon</div>
             <div class="nai-setup-avatars" id="nai-setup-avatars"></div>
             <div class="nai-setup-error" id="nai-setup-error" role="alert" aria-live="assertive"></div>
@@ -1116,7 +1168,7 @@
   const setupSave = document.getElementById('nai-setup-save');
   const setupError = document.getElementById('nai-setup-error');
   const setupCard = setupPanel?.querySelector('.nai-setup-card');
-  const botAvatars = ['sparkles', 'brain', 'book', 'badge'];
+  const botAvatars = ['nex', 'sparkles', 'brain', 'book', 'badge'];
   const botIconClass = (value) => ({
     sparkles: 'fas fa-bolt',
     brain: 'fas fa-network-wired',
@@ -1124,9 +1176,13 @@
     badge: 'fas fa-award'
   }[value] || 'fas fa-bolt');
 
+  const botAvatarMarkupFor = (value) => value === 'nex'
+    ? '<img class="nai-bot-avatar-img" src="/assets/nex-avatar.png" alt="">'
+    : `<i class="${botIconClass(value)}"></i>`;
+
   function currentBotAvatarMarkup() {
-    const avatar = localStorage.getItem('edunexAiBotAvatar') || 'sparkles';
-    return `<i class="${botIconClass(avatar)}"></i>`;
+    const avatar = localStorage.getItem(botAvatarStorageKey) || 'nex';
+    return botAvatarMarkupFor(avatar);
   }
 
   function syncBotAvatar() {
@@ -1142,15 +1198,15 @@
   }
 
   function previewBotName(value) {
-    const name = normalizeBotName(value) || 'Nex AI';
+    const name = normalizeBotName(value) || 'AI';
     botNameTitle.textContent = name;
   }
 
   function syncBotName(value) {
-    const name = normalizeBotName(value) || 'Nex AI';
-    localStorage.setItem('edunexAiBotName', name);
+    const name = normalizeBotName(value) || 'AI';
+    localStorage.setItem(botNameStorageKey, name);
     botNameInput.value = name;
-    setupName.value = name === 'Nex AI' ? '' : name;
+    setupName.value = name === 'AI' ? '' : name;
     botNameTitle.textContent = name;
     if (sidebarBotName) sidebarBotName.textContent = name;
     validateSetup();
@@ -1183,7 +1239,7 @@
     overlay.classList.add('nai-open');
     overlay.setAttribute('aria-hidden', 'false');
     floatBtn.classList.add('nai-btn-open');
-    if (localStorage.getItem('edunexAiBotSetupComplete') !== 'true') showSetupPrompt();
+    if (localStorage.getItem(botSetupStorageKey) !== 'true') showSetupPrompt();
     setTimeout(() => (input && !input.disabled ? input : modal)?.focus(), 0);
   }
   function closeChat() {
@@ -1285,7 +1341,7 @@
 
   avatarMenu.innerHTML = botAvatars.map((style) => `
     <button class="nai-avatar-choice" type="button" data-avatar="${style}" aria-label="Choose AI style">
-      <i class="${botIconClass(style)}"></i>
+      ${botAvatarMarkupFor(style)}
     </button>
   `).join('');
   botAvatarPicker.addEventListener('click', () => {
@@ -1293,7 +1349,7 @@
   });
   avatarMenu.querySelectorAll('.nai-avatar-choice').forEach((button) => {
     button.addEventListener('click', () => {
-      localStorage.setItem('edunexAiBotAvatar', button.dataset.avatar || '');
+      localStorage.setItem(botAvatarStorageKey, button.dataset.avatar || '');
       avatarMenu.hidden = true;
       syncBotAvatar();
     });
@@ -1301,7 +1357,7 @@
 
   setupAvatars.innerHTML = botAvatars.map((style) => `
     <button class="nai-avatar-choice${savedBotAvatar === style ? ' is-selected' : ''}" type="button" data-avatar="${style}" aria-label="Choose AI style">
-      <i class="${botIconClass(style)}"></i>
+      ${botAvatarMarkupFor(style)}
     </button>
   `).join('');
   setupName.addEventListener('input', validateSetup);
@@ -1309,7 +1365,7 @@
     button.addEventListener('click', () => {
       setupAvatars.querySelectorAll('.nai-avatar-choice').forEach((node) => node.classList.remove('is-selected'));
       button.classList.add('is-selected');
-      localStorage.setItem('edunexAiBotAvatar', button.dataset.avatar || '');
+      localStorage.setItem(botAvatarStorageKey, button.dataset.avatar || '');
       syncBotAvatar();
       validateSetup();
     });
@@ -1318,7 +1374,7 @@
     validateSetup();
     if (setupSave.disabled) return;
     syncBotName(setupName.value);
-    localStorage.setItem('edunexAiBotSetupComplete', 'true');
+    localStorage.setItem(botSetupStorageKey, 'true');
     setupPanel.hidden = true;
     input.focus();
   });
@@ -1652,7 +1708,7 @@
         message: text,
         history,
         pagePath: window.location.pathname + window.location.search,
-        assistantName: normalizeBotName(botNameInput?.value) || localStorage.getItem('edunexAiBotName') || 'Nex AI',
+        assistantName: normalizeBotName(botNameInput?.value) || localStorage.getItem(botNameStorageKey) || 'AI',
       }),
     });
 
@@ -1682,8 +1738,8 @@
     typing.className = 'nai-ai-row';
     typing.id = 'nai-typing';
       typing.innerHTML = `
-      <div class="nai-ai-avatar">${currentBotAvatarMarkup()}</div>
-      <div class="nai-ai-bubble" style="color:rgba(255,255,255,.72);font-style:italic;font-size:.82rem">Nex AI is thinking...</div>
+      <div class="nai-ai-avatar"><span class="nai-thinking-overhead" aria-hidden="true"><span></span><span></span><span></span></span><img class="nai-bot-avatar-img is-thinking" src="/assets/nex-avatar-thinking.png" alt=""></div>
+      <div class="nai-ai-bubble"><span class="nai-typing-indicator" aria-label="AI is thinking"><span>${escHtml(normalizeBotName(botNameInput?.value) || 'AI')} is thinking…</span></span></div>
     `;
     messages.appendChild(typing);
     messages.scrollTop = messages.scrollHeight;

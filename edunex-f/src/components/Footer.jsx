@@ -42,21 +42,6 @@ const pricingLinks = [
   ["Pricing", route("pricing.html")],
 ];
 
-const appDownloadLinks = [
-  {
-    label: "App Store",
-    detail: "Download on the",
-    href: "https://apps.apple.com/us/search?term=Skillomate",
-    icon: "apple",
-  },
-  {
-    label: "Google Play",
-    detail: "Get it on",
-    href: "https://play.google.com/store/search?q=Skillomate&c=apps",
-    icon: "playStore",
-  },
-];
-
 function LinkList({ title, links, className = "" }) {
   return (
     <div className={`enx-footer-column${className ? ` ${className}` : ""}`}>
@@ -66,32 +51,6 @@ function LinkList({ title, links, className = "" }) {
           <li key={label}><a href={href}>{label}</a></li>
         ))}
       </ul>
-    </div>
-  );
-}
-
-function AppDownloadColumn() {
-  return (
-    <div className="enx-footer-column enx-footer-app-download">
-      <div className="enx-footer-heading">App Download</div>
-      <div className="enx-store-links">
-        {appDownloadLinks.map(({ label, detail, href, icon }) => (
-          <a
-            key={label}
-            className="enx-store-badge"
-            href={href}
-            target="_blank"
-            rel="noreferrer"
-            aria-label={`${detail} ${label}`}
-          >
-            <EnxIcon name={icon} className="enx-store-icon" />
-            <span>
-              <small>{detail}</small>
-              <strong>{label}</strong>
-            </span>
-          </a>
-        ))}
-      </div>
     </div>
   );
 }
@@ -120,7 +79,6 @@ export function Footer() {
           <LinkList title="Support" links={supportLinks} />
           <LinkList title="Legal" links={legalLinks} />
           <LinkList title="Pricing" links={pricingLinks} className="enx-footer-pricing" />
-          <AppDownloadColumn />
 
         </div>
 
@@ -148,7 +106,6 @@ export function Footer() {
             <LinkList title="Access" links={platformLinks} />
             <LinkList title="Company" links={companyLinks} />
             <LinkList title="Legal" links={legalLinks} />
-            <AppDownloadColumn />
           </div>
         </div>
 

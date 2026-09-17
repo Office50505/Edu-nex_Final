@@ -9,6 +9,7 @@ const coursesNavItem = { pageKey: "courses.html", href: route("courses.html"), l
 const dashboardNavItem = { pageKey: "dashboard.html", href: route("dashboard.html"), label: "Dashboard", icon: "dashboard" };
 const pricingNavItem = { pageKey: "pricing.html", href: route("pricing.html"), label: "Pricing", icon: "creditCard" };
 const aboutNavItem = { pageKey: "about.html", href: route("about.html"), label: "About", icon: "info" };
+const aiNavItem = { pageKey: "ai-tutor.html", href: route("ai-tutor.html"), label: "AI", icon: "sparkles" };
 
 const navItems = [
   homeNavItem,
@@ -21,7 +22,7 @@ const navItems = [
 const mobileFooterItems = [
   homeNavItem,
   coursesNavItem,
-  { pageKey: "ai-tutor.html", label: "AI", icon: "sparkles", action: "nex-ai" },
+  aiNavItem,
   dashboardNavItem,
   aboutNavItem,
 ];
@@ -155,22 +156,6 @@ export function Navbar({ pageKey }) {
   };
   const resolvedTheme = document.documentElement.dataset.theme || theme;
   const nextThemeLabel = resolvedTheme === "light" ? "dark" : "light";
-  const openMobileNexAi = (event) => {
-    event.preventDefault();
-    const widgetRoot = document.getElementById("nex-ai-widget-root");
-    const floatButton = document.getElementById("nai-float-btn");
-    const widgetAvailable = widgetRoot && getComputedStyle(widgetRoot).display !== "none";
-    if (widgetAvailable) {
-      if (window.NexAIWidget?.open) {
-        window.NexAIWidget.open();
-      } else {
-        floatButton?.click();
-      }
-      return;
-    }
-    window.location.href = route("ai-tutor.html");
-  };
-
   return (
     <>
       <nav className="enx-navbar react-navbar">
@@ -253,20 +238,7 @@ export function Navbar({ pageKey }) {
         <div className="enx-mobile-footer-shell">
           {mobileFooterItems.map((item) => {
             const active = current === item.pageKey;
-            return item.action === "nex-ai" ? (
-              <button
-                key={item.action}
-                type="button"
-                className="enx-mobile-footer-link enx-mobile-ai-link"
-                aria-label="Open Nex AI"
-                onPointerEnter={() => preloadNavPage("ai-tutor.html")}
-                onFocus={() => preloadNavPage("ai-tutor.html")}
-                onClick={openMobileNexAi}
-              >
-                <EnxIcon name={item.icon} />
-                <span>{item.label}</span>
-              </button>
-            ) : (
+            return (
               <a
                 key={item.href}
                 href={item.href}

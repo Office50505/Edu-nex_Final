@@ -60,6 +60,7 @@ import {
 const PLAYER_ORIGIN = "https://protected-video.local";
 
 const AI_ROBOT_IMAGES = {
+  nex: require("./assets/ai-avatars/nex.png"),
   r1: require("./assets/ai-avatars/r1.jpg"),
   r2: require("./assets/ai-avatars/r2.jpg"),
   r3: require("./assets/ai-avatars/r3.jpg"),
@@ -70,6 +71,7 @@ const AI_ROBOT_IMAGES = {
   r8: require("./assets/ai-avatars/r8.jpg"),
   r9: require("./assets/ai-avatars/r9.jpg"),
 };
+const AI_ROBOT_THINKING_IMAGE = require("./assets/ai-avatars/nex-thinking.png");
 const BRAND_LOGOS = {
   light: require("./assets/skillomate-logo.png"),
   dark: require("./assets/skillomate-logo-dark.png"),
@@ -80,9 +82,25 @@ const HOME_COMING_SOON_IMAGES = {
 };
 const AI_ROBOT_AVATARS = Object.keys(AI_ROBOT_IMAGES).map((id, index) => ({
   id,
-  label: `Nex companion ${index + 1}`,
+  label: id === "nex" ? "NEX signature companion" : `Nex companion ${index}`,
 }));
 const AI_AVATAR_STORAGE_KEY = "skillomate_ai_avatar";
+const AI_NAME_STORAGE_PREFIX = "skillomate_ai_name";
+const AI_NAME_SETUP_STORAGE_PREFIX = "skillomate_ai_name_setup";
+const DEFAULT_AI_ROBOT_ID = "nex";
+const DEFAULT_AI_NAME = "AI";
+
+function normalizeAiName(value) {
+  return String(value || "").replace(/\s+/g, " ").trim().slice(0, 24);
+}
+
+function aiNameStorageKeys(user) {
+  const owner = String(user?._id || user?.id || "guest");
+  return {
+    name: `${AI_NAME_STORAGE_PREFIX}:${owner}`,
+    setup: `${AI_NAME_SETUP_STORAGE_PREFIX}:${owner}`,
+  };
+}
 
 function getQaCertificatesForUser(user) {
   const learnerName = user?.fullName || user?.email || user?.mobileNumber || "Skillomate Learner";
@@ -5849,15 +5867,81 @@ function findIndexedAiCourse(appCourse, indexedCourses) {
   }) || null;
 }
 
-function RobotAvatar({ robotId, size = 30 }) {
-  const src = robotId ? AI_ROBOT_IMAGES[robotId] : null;
+function RobotAvatar({ robotId, size = 30, animated = false, replying = false, mood = "idle" }) {
+  const motion = useRef(new Animated.Value(0)).current;
+  const resolvedRobotId = AI_ROBOT_IMAGES[robotId] ? robotId : DEFAULT_AI_ROBOT_ID;
+  const isSignatureRobot = resolvedRobotId === DEFAULT_AI_ROBOT_ID;
+  const src = mood === "thinking" && isSignatureRobot ? AI_ROBOT_THINKING_IMAGE : AI_ROBOT_IMAGES[resolvedRobotId];
+
+  useEffect(() => {
+    if (!animated && !replying) {
+      motion.stopAnimation();
+      motion.setValue(0);
+      return undefined;
+    }
+    const sequence = Animated.sequence([
+      Animated.timing(motion, { toValue: 1, duration: 520, useNativeDriver: true }),
+      Animated.timing(motion, { toValue: 0, duration: 520, useNativeDriver: true }),
+    ]);
+    const animation = animated ? Animated.loop(sequence) : sequence;
+    animation.start();
+    return () => animation.stop();
+  }, [animated, motion, replying]);
+
+  const motionStyle = animated || replying ? {
+    transform: [
+      { translateY: motion.interpolate({ inputRange: [0, 1], outputRange: [0, -2] }) },
+      { scale: motion.interpolate({ inputRange: [0, 1], outputRange: [1, 1.06] }) },
+    ],
+  } : null;
+
   if (!src) return (
     <View accessible={false} style={{ width: size, height: size, borderRadius: size / 2, backgroundColor: C.primary, alignItems: "center", justifyContent: "center" }}>
       <Ionicons name="sparkles" size={size * 0.5} color={C.onPrimary} />
     </View>
   );
   return (
-    <Image accessible={false} source={src} style={{ width: size, height: size, borderRadius: size / 2 }} resizeMode="cover" />
+    <Animated.View accessible={false} style={[{
+      width: size, height: size,
+      borderRadius: isSignatureRobot ? 0 : size / 2,
+      overflow: isSignatureRobot ? "visible" : "hidden",
+      backgroundColor: isSignatureRobot ? "transparent" : C.cardBg,
+      borderWidth: isSignatureRobot ? 0 : 1,
+      borderColor: C.border,
+    }, motionStyle]}>
+      <Image source={src} style={{ width: size, height: size }} resizeMode={isSignatureRobot ? "contain" : "cover"} />
+    </Animated.View>
+  );
+}
+
+function TypingDots({ color = C.primary }) {
+  const dots = useRef([new Animated.Value(0.35), new Animated.Value(0.35), new Animated.Value(0.35)]).current;
+
+  useEffect(() => {
+    const animation = Animated.loop(Animated.stagger(140, dots.map(dot => Animated.sequence([
+      Animated.timing(dot, { toValue: 1, duration: 260, useNativeDriver: true }),
+      Animated.timing(dot, { toValue: 0.35, duration: 260, useNativeDriver: true }),
+    ]))));
+    animation.start();
+    return () => animation.stop();
+  }, [dots]);
+
+  return (
+    <View accessible={false} style={{ flexDirection: "row", alignItems: "center", gap: 5 }}>
+      {dots.map((dot, index) => (
+        <Animated.View
+          key={index}
+          style={{
+            width: 7,
+            height: 7,
+            borderRadius: 4,
+            backgroundColor: color,
+            opacity: dot,
+            transform: [{ translateY: dot.interpolate({ inputRange: [0.35, 1], outputRange: [1, -2] }) }],
+          }}
+        />
+      ))}
+    </View>
   );
 }
 
@@ -5887,17 +5971,51 @@ function AiAssistantScreen({
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState("checking");
-  const [robotId, setRobotId] = useState(null);
+  const [robotId, setRobotId] = useState(DEFAULT_AI_ROBOT_ID);
   const [showRobotPicker, setShowRobotPicker] = useState(false);
+  const [assistantName, setAssistantName] = useState(DEFAULT_AI_NAME);
+  const [assistantNameDraft, setAssistantNameDraft] = useState("");
+  const [nameSetupComplete, setNameSetupComplete] = useState(false);
+  const [showNameSetup, setShowNameSetup] = useState(false);
   const listRef = useRef(null);
 
-  // First-time open — ask to pick robot avatar
+  // NEX is the default identity; learners can still choose another companion.
   useEffect(() => {
     AsyncStorage.getItem(AI_AVATAR_STORAGE_KEY).then(saved => {
-      if (saved) { setRobotId(saved); }
-      else { setShowRobotPicker(true); }
+      const nextRobotId = saved && AI_ROBOT_IMAGES[saved] ? saved : DEFAULT_AI_ROBOT_ID;
+      setRobotId(nextRobotId);
+      if (!saved) AsyncStorage.setItem(AI_AVATAR_STORAGE_KEY, nextRobotId).catch(() => {});
     }).catch(() => {});
   }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    const keys = aiNameStorageKeys(user);
+    Promise.all([AsyncStorage.getItem(keys.name), AsyncStorage.getItem(keys.setup)])
+      .then(([savedName, savedSetup]) => {
+        if (cancelled) return;
+        const nextName = normalizeAiName(savedName) || DEFAULT_AI_NAME;
+        const setupComplete = savedSetup === "true";
+        setAssistantName(nextName);
+        setAssistantNameDraft(nextName === DEFAULT_AI_NAME ? "" : nextName);
+        setNameSetupComplete(setupComplete);
+        setShowNameSetup(Boolean(user?._id) && !setupComplete);
+      })
+      .catch(() => {
+        if (!cancelled) setShowNameSetup(Boolean(user?._id));
+      });
+    return () => { cancelled = true; };
+  }, [user?._id]);
+
+  async function saveAiName(value = assistantNameDraft) {
+    const nextName = normalizeAiName(value) || DEFAULT_AI_NAME;
+    const keys = aiNameStorageKeys(user);
+    setAssistantName(nextName);
+    setAssistantNameDraft(nextName === DEFAULT_AI_NAME ? "" : nextName);
+    setNameSetupComplete(true);
+    setShowNameSetup(false);
+    await AsyncStorage.multiSet([[keys.name, nextName], [keys.setup, "true"]]).catch(() => {});
+  }
 
   useEffect(() => {
     if (!AI_FEATURE_ENABLED) {
@@ -6007,7 +6125,7 @@ function AiAssistantScreen({
     setLoading(true);
 
     try {
-      const data = await requestTutor({ baseUrl: API_BASE, user, question, courseId, messages });
+      const data = await requestTutor({ baseUrl: API_BASE, user, question, courseId, messages, assistantName });
       setMessages(prev => [...prev, { role: "assistant", content: data.notice ? `${data.notice}\n\n${data.answer}` : data.answer }]);
     } catch (error) {
       setMessages(prev => [...prev, {
@@ -6034,9 +6152,17 @@ function AiAssistantScreen({
               <Ionicons name="arrow-back" size={22} color={C.text} />
             </TouchableOpacity>
           ) : null}
-          <Text style={[s.pageTitle, { marginLeft: onBack ? 0 : 0, textAlign: "center" }]} numberOfLines={1}>
-            {isCourseMode ? "Course AI" : "Nex AI"}
-          </Text>
+          <TouchableOpacity
+            onPress={() => {
+              setAssistantNameDraft(assistantName === DEFAULT_AI_NAME ? "" : assistantName);
+              setShowNameSetup(true);
+            }}
+            style={{ flex: 1 }}
+            accessibilityRole="button"
+            accessibilityLabel={`Customize AI name. Current name: ${assistantName}`}
+          >
+            <Text style={[s.pageTitle, { marginLeft: 0, textAlign: "center" }]} numberOfLines={1}>{assistantName}</Text>
+          </TouchableOpacity>
         </View>
       </SafeAreaView>
 
@@ -6057,7 +6183,7 @@ function AiAssistantScreen({
             accessibilityLabel={robotId ? "Change AI companion" : "Choose AI companion"}
           >
             <View style={{ position: "relative" }}>
-              <RobotAvatar robotId={robotId} size={50} />
+              <RobotAvatar robotId={robotId} size={64} mood={loading ? "thinking" : "idle"} animated={loading} />
               <View style={{
                 position: "absolute", bottom: 0, right: 0,
                 width: 14, height: 14, borderRadius: 7,
@@ -6072,7 +6198,7 @@ function AiAssistantScreen({
               <View style={[s.aiStatusDot, status === "online" ? s.aiStatusOnline : s.aiStatusOffline]} />
               <Text style={s.aiHeroSub}>
                 {status !== "online"
-                  ? "Nex AI is unavailable"
+                  ? `${assistantName} is unavailable`
                   : isCourseMode
                     ? courseScopeReady ? "Scoped to this course" : "Course not indexed"
                     : "Master search across all courses"}
@@ -6094,22 +6220,28 @@ function AiAssistantScreen({
           removeClippedSubviews={ANDROID_CLIPPED_SUBVIEWS}
           keyboardShouldPersistTaps="handled"
           scrollEventThrottle={16}
-          renderItem={({ item }) => {
+          renderItem={({ item, index }) => {
             const isUser = item.role === "user";
             return (
               <View style={[s.aiMessageRow, isUser && s.aiMessageRowUser]}>
-                {!isUser && <RobotAvatar robotId={robotId} size={30} />}
+                {!isUser && <RobotAvatar robotId={robotId} size={46} replying={!loading && index === messages.length - 1 && messages.length > 1} />}
                 <View style={[s.aiBubble, isUser && s.aiBubbleUser]}>
                   <Text style={[s.aiBubbleText, isUser && s.aiBubbleTextUser]}>{item.content}</Text>
                 </View>
+                {isUser && <AvatarImage avatarId={user?.avatar || "a1"} size={30} />}
               </View>
             );
           }}
           ListFooterComponent={loading ? (
             <View style={s.aiMessageRow}>
-              <RobotAvatar robotId={robotId} size={30} />
-              <View style={s.aiBubble}>
-                <ActivityIndicator color={C.primary} size="small" />
+              <View style={{ alignItems: "center", paddingTop: 14 }}>
+                <View style={{ position: "absolute", zIndex: 2, top: 0, left: 28, minWidth: 44, height: 24, paddingHorizontal: 9, borderRadius: 12, borderWidth: 1, borderColor: C.border, backgroundColor: C.cardBg, alignItems: "center", justifyContent: "center" }}>
+                  <TypingDots />
+                </View>
+                <RobotAvatar robotId={robotId} size={68} mood="thinking" animated />
+              </View>
+              <View style={[s.aiBubble, s.aiTypingBubble]}>
+                <Text style={s.aiTypingText}>{assistantName} is thinking…</Text>
               </View>
             </View>
           ) : null}
@@ -6123,7 +6255,7 @@ function AiAssistantScreen({
                 style={s.aiSuggestion}
                 onPress={() => sendAiMessage(prompt)}
                 accessibilityRole="button"
-                accessibilityLabel={`Ask Nex AI: ${prompt}`}
+                accessibilityLabel={`Ask ${assistantName}: ${prompt}`}
               >
                 <Text style={s.aiSuggestionText}>{prompt}</Text>
               </TouchableOpacity>
@@ -6140,7 +6272,7 @@ function AiAssistantScreen({
             placeholderTextColor={C.textMuted}
             editable={!loading}
             multiline
-            accessibilityLabel="Message Nex AI"
+            accessibilityLabel={`Message ${assistantName}`}
           />
           <TouchableOpacity
             style={[s.aiSend, (!input.trim() || loading) && s.aiSendDisabled]}
@@ -6165,6 +6297,56 @@ function AiAssistantScreen({
           aiRobotId={robotId}
         />
       )}
+
+      <Modal
+        visible={showNameSetup}
+        transparent
+        animationType="fade"
+        onRequestClose={() => { if (nameSetupComplete) setShowNameSetup(false); }}
+      >
+        <View style={{ flex: 1, backgroundColor: "rgba(0,0,0,0.72)", alignItems: "center", justifyContent: "center", padding: 24 }}>
+          <View style={{ backgroundColor: C.white, borderRadius: 22, borderWidth: 1, borderColor: C.border, padding: 24, width: "100%", maxWidth: 420 }}>
+            <View style={{ alignItems: "center", marginBottom: 16 }}>
+              <RobotAvatar robotId={robotId} size={76} />
+            </View>
+            <Text style={{ color: C.primary, fontSize: 11, fontWeight: "800", letterSpacing: 1.2, textAlign: "center", textTransform: "uppercase" }}>Your learning companion</Text>
+            <Text style={{ color: C.text, fontSize: 24, fontWeight: "800", textAlign: "center", marginTop: 5 }}>Name your AI</Text>
+            <Text style={{ color: C.textSub, fontSize: 13, lineHeight: 20, textAlign: "center", marginTop: 7, marginBottom: 20 }}>Choose a personal name. You can change it anytime by tapping the name in the chat header.</Text>
+            <Text style={{ color: C.text, fontSize: 12, fontWeight: "800", marginBottom: 7 }}>AI name</Text>
+            <TextInput
+              value={assistantNameDraft}
+              onChangeText={setAssistantNameDraft}
+              placeholder="Example: Nova"
+              placeholderTextColor={C.textMuted}
+              autoCapitalize="words"
+              autoCorrect={false}
+              maxLength={24}
+              returnKeyType="done"
+              onSubmitEditing={() => saveAiName()}
+              style={{ minHeight: 48, borderWidth: 1, borderColor: C.border, borderRadius: 12, backgroundColor: C.cardBg, color: C.text, paddingHorizontal: 14, fontSize: 15, fontWeight: "600" }}
+              accessibilityLabel="AI name"
+            />
+            <View style={{ flexDirection: "row", gap: 10, marginTop: 18 }}>
+              <TouchableOpacity
+                onPress={() => nameSetupComplete ? setShowNameSetup(false) : saveAiName(DEFAULT_AI_NAME)}
+                style={[s.btn, { flex: 1, borderWidth: 1, borderColor: C.border, backgroundColor: C.cardBg }]}
+                accessibilityRole="button"
+                accessibilityLabel={nameSetupComplete ? "Cancel AI name change" : "Use default AI name"}
+              >
+                <Text style={[s.btnText, { color: C.text }]}>{nameSetupComplete ? "Cancel" : "Use AI"}</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => saveAiName()}
+                style={[s.btn, s.btnFill, { flex: 1 }]}
+                accessibilityRole="button"
+                accessibilityLabel="Save AI name"
+              >
+                <Text style={s.btnText}>Save name</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
 
       {/* Robot avatar picker modal */}
       <Modal visible={showRobotPicker} transparent animationType="fade" onRequestClose={() => setShowRobotPicker(false)}>
@@ -9331,6 +9513,10 @@ courseListCard: {
     backgroundColor: C.primary, borderColor: C.primary,
     borderBottomLeftRadius: 14, borderBottomRightRadius: 5,
   },
+  aiTypingBubble: {
+    minHeight: 42, flexDirection: "row", alignItems: "center", gap: 8,
+  },
+  aiTypingText: { ...TYPE.caption, color: C.textSub, fontWeight: "700" },
   aiBubbleText: { ...TYPE.body, color: C.text },
   aiBubbleTextUser: { color: C.onPrimary, fontWeight: "600" },
   aiSuggestions: {

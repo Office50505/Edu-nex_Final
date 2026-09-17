@@ -5,7 +5,7 @@ export function conversationHistory(messages) {
     .slice(-12).map(({ role, content }) => ({ role, content: content.trim().slice(0, 2000) }));
 }
 
-export async function requestTutor({ baseUrl, user, question, courseId, messages, fetcher = fetch }) {
+export async function requestTutor({ baseUrl, user, question, courseId, messages, assistantName = 'AI', fetcher = fetch }) {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), 30000);
   try {
@@ -14,12 +14,12 @@ export async function requestTutor({ baseUrl, user, question, courseId, messages
       signal: controller.signal,
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${user?.accessToken || user?.token || ''}` },
       body: JSON.stringify({ message: question, history: conversationHistory(messages), userId: user?._id,
-        sessionId: user?.sessionId, ...(courseId ? { courseId } : {}) }),
+        sessionId: user?.sessionId, assistantName, ...(courseId ? { courseId } : {}) }),
     });
-    if (!response.ok) throw new Error(response.status === 401 ? 'Please log in again to continue chatting.' : 'Nex AI is unavailable. Please try again.');
+    if (!response.ok) throw new Error(response.status === 401 ? 'Please log in again to continue chatting.' : 'AI is unavailable. Please try again.');
     const data = await response.json();
     const answer = data.answer || data.reply;
-    if (typeof answer !== 'string' || !answer.trim()) throw new Error('Nex AI returned an empty answer. Please try again.');
+    if (typeof answer !== 'string' || !answer.trim()) throw new Error('AI returned an empty answer. Please try again.');
     return { answer, notice: data.notice || null, sources: Array.isArray(data.sources) ? data.sources : [] };
   } finally {
     clearTimeout(timer);
