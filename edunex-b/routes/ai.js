@@ -32,7 +32,7 @@ router.get('/courses', requireCompatibleAuth(), async (_req, res) => {
   }
 });
 
-router.post('/chat', requireCompatibleAuth(), async (req, res) => {
+async function handleTutorChat(req, res) {
   try {
     const message = typeof req.body?.message === 'string' ? req.body.message.trim().slice(0, 2000) : '';
     const pagePath = compactText(req.body.pagePath, 160).split(/[?#]/)[0];
@@ -77,8 +77,10 @@ router.post('/chat', requireCompatibleAuth(), async (req, res) => {
       knowledge: knowledge?.materialsAvailable ? 'course-materials' : 'course-overviews',
     });
   } catch (error) {
-    res.status(502).json({ error: error.message || 'Could not reach Nex AI' });
+    res.status(502).json({ error: 'AI is unavailable right now. Please try again.' });
   }
-});
+}
 
+router.post('/chat', requireCompatibleAuth(), handleTutorChat);
 module.exports = router;
+module.exports.handleTutorChat = handleTutorChat;

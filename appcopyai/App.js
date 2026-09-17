@@ -2788,11 +2788,11 @@ function ReelsScreen({ courseId, initialIndex, initialTime, onBack, user, onVide
       const res = await fetch(`${API_BASE}/api/course-ai/chat`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId: user._id, sessionId: user.sessionId, videoTitle: activeTitle, videoDescription: activeDescription, question, messages: courseAiMessages }),
+        body: JSON.stringify({ userId: user._id, sessionId: user.sessionId, courseId, videoTitle: activeTitle, videoDescription: activeDescription, question, messages: courseAiMessages }),
       });
       const raw = await res.text();
       let data = {}; try { data = raw ? JSON.parse(raw) : {}; } catch {}
-      setCourseAiMessages(prev => [...prev, { role: "assistant", content: res.ok ? data.answer : data.error || "AI is unavailable right now." }]);
+      setCourseAiMessages(prev => [...prev, { role: "assistant", content: res.ok ? data.answer : "AI is unavailable right now. Please try again." }]);
     } catch {
       setCourseAiMessages(prev => [...prev, { role: "assistant", content: "AI is unavailable right now. Please try again." }]);
     } finally { setCourseAiLoading(false); }
@@ -4256,6 +4256,9 @@ function LegacyHomeScreenDraft({ user, onGoToCourses, onGoToAI, onGoToDownloads,
   }
 }
 
+// Only public catalog metadata survives Home unmounts; never cache playback grants.
+let homeCatalogCourse = null;
+
 function HomeScreen({
   user,
   onGoToCourses,
@@ -4273,8 +4276,8 @@ function HomeScreen({
 }) {
   const { width } = useWindowDimensions();
   const hasAccess = hasCourseAccess(user);
-  const [primaryCourse, setPrimaryCourse] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [primaryCourse, setPrimaryCourse] = useState(() => homeCatalogCourse);
+  const [loading, setLoading] = useState(() => !homeCatalogCourse);
   const [loadError, setLoadError] = useState("");
   const [reloadKey, setReloadKey] = useState(0);
   const [showUpgrade, setShowUpgrade] = useState(false);
@@ -4285,8 +4288,9 @@ function HomeScreen({
 
     const homeAbort = new AbortController();
     async function loadPrimaryCourse() {
-      setLoading(true);
+      setLoading(!homeCatalogCourse);
       setLoadError("");
+      setPrimaryCourse(homeCatalogCourse);
       try {
         const richResponse = await fetchApiJson("/api/courses/top?limit=24", [], homeAbort.signal).catch(error => {
           if (homeAbort.signal.aborted) throw error;
@@ -4313,12 +4317,14 @@ function HomeScreen({
 
         let course = candidates[0] || null;
         if (!course) {
+          homeCatalogCourse = null;
           setPrimaryCourse(null);
           setLoadError("No published course is available right now.");
           return;
         }
 
         if (cancelled) return;
+        homeCatalogCourse = course;
         setPrimaryCourse(course);
         setLoading(false);
         if (hasAccess && user?._id && user?.sessionId) {
@@ -4334,7 +4340,7 @@ function HomeScreen({
         if (!cancelled) setPrimaryCourse(course);
       } catch {
         if (!cancelled) {
-          setPrimaryCourse(null);
+          setPrimaryCourse(homeCatalogCourse);
           setLoadError("Home could not load the course catalog. Check your connection and try again.");
         }
       } finally {

@@ -30,7 +30,7 @@ const {
 const Certificate = require('../models/Certificate');
 
 const router = express.Router();
-const AI_SERVER_URL = String(process.env.AI_SERVER_URL || '').replace(/\/+$/, '');
+const { handleTutorChat } = require('./ai');
 
 function asyncHandler(handler) {
   return async (req, res) => {
@@ -384,34 +384,20 @@ router.post(
   requireCompatibleAuth(),
   asyncHandler(async (req, res) => {
     const { userId, question } = req.body;
-    if (!userId || !question?.trim()) {
+    if (!userId || typeof question !== 'string' || !question.trim()) {
       return res.status(400).json({ error: 'userId and question required' });
     }
     requireSameUser(req, userId);
 
-    if (!AI_SERVER_URL) {
-      return res.status(501).json({
-        error: 'Course AI compatibility route is not configured. Set AI_SERVER_URL.',
-      });
-    }
-
-    const upstream = await fetch(`${AI_SERVER_URL}/api/course-chat`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        question,
-        videoTitle: req.body.videoTitle,
-        videoDescription: req.body.videoDescription,
-        currentTime: req.body.currentTime,
-        messages: req.body.messages || [],
-      }),
-    });
-    const contentType = upstream.headers.get('content-type') || '';
-    const body = contentType.includes('application/json')
-      ? await upstream.json()
-      : { answer: await upstream.text() };
-
-    res.status(upstream.status).json(body);
+    req.body = {
+      ...req.body,
+      message: question,
+      history: req.body.messages || [],
+      courseId: req.body.courseId,
+      pagePath: '/videos',
+      assistantName: 'Course AI',
+    };
+    return handleTutorChat(req, res);
   })
 );
 
