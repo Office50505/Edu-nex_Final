@@ -95,6 +95,9 @@ export function ProfilePage() {
   const [deletePassword, setDeletePassword] = useState("");
   const [deleteConfirmation, setDeleteConfirmation] = useState("");
   const [deleteError, setDeleteError] = useState("");
+  const [cancelConfirm, setCancelConfirm] = useState(false);
+  const [cancelBusy, setCancelBusy] = useState(false);
+  const [cancelMessage, setCancelMessage] = useState("");
   const [subscription, setSubscription] = useState({ loading: false, data: null, error: false });
   const runtimeReady = useEduNexRuntimeReady();
 
@@ -179,6 +182,7 @@ export function ProfilePage() {
 
   const openSubscriptionHistory = async () => {
     setModalOpen(true);
+    setCancelConfirm(false); setCancelMessage("");
     setSubscription({ loading: true, data: null, error: false });
     try {
       const data = await window.EduNex.authRequest("/api/payment/subscription-status");
@@ -186,6 +190,18 @@ export function ProfilePage() {
     } catch (_) {
       setSubscription({ loading: false, data: null, error: true });
     }
+  };
+
+  const cancelRenewal = async () => {
+    if (cancelBusy) return;
+    setCancelBusy(true); setCancelMessage("");
+    try {
+      const result = await window.EduNex.authRequest("/api/payment/cancel-subscription", { method: "POST" });
+      setCancelConfirm(false);
+      setSubscription(prev => ({ ...prev, data: { ...prev.data, canCancel: false, mandateStatus: "cancelled" } }));
+      setCancelMessage(result.message || "Auto-renewal cancelled. Paid access remains until its expiry.");
+    } catch (error) { setCancelMessage(error.message || "Cancellation could not be confirmed. Please retry."); }
+    finally { setCancelBusy(false); }
   };
 
   const logoutProfile = () => {
@@ -236,7 +252,8 @@ export function ProfilePage() {
   const email = user?.email || user?.mobileNumber || "No email saved";
   const subscriptionLabel = user?.subscriptionLabel || profileSubscriptionLabel(user?.subscriptionStatus);
   const modalStatus = subscription.data?.subscriptionDocStatus || subscription.data?.status || subscription.data?.subscriptionStatus || "none";
-  const periodEnd = subscription.data?.trialExpiresAt || subscription.data?.currentPeriodEnd || subscription.data?.expiresAt;
+  const periodEnd = ["trial", "1rs trial"].includes(modalStatus)
+    ? subscription.data?.trialExpiresAt : subscription.data?.currentPeriodEnd || subscription.data?.expiresAt;
   const handleProfileAvatarError = (event) => {
     if (event.currentTarget.src !== fallbackAvatar) {
       event.currentTarget.src = fallbackAvatar;
@@ -425,10 +442,20 @@ export function ProfilePage() {
             {!subscription.loading && !subscription.error && subscription.data ? (
               <>
                 <div className="sub-current-card">
-                  <strong>Current plan: {profileSubscriptionLabel(modalStatus)}</strong>
+                  <strong>Current plan: {subscription.data.subscriptionType === "annual" ? "Annual subscription" : profileSubscriptionLabel(modalStatus)}</strong>
                   <span>Valid until: {formatProfileDate(periodEnd)}</span>
                   <span>Payment reference: {subscription.data.orderId || subscription.data.subscriptionId || subscription.data.paymentId || "Not available"}</span>
                 </div>
+                {subscription.data.canCancel ? (
+                  <div style={{ margin: "16px 0" }}>
+                    <p>{cancelConfirm ? "Stop future renewals? Your paid access continues until its expiry." : "Manage automatic renewal or cancel an unfinished checkout."}</p>
+                    <button type="button" className="pay-btn-secondary" disabled={cancelBusy} style={{ minHeight: 44, width: "100%", marginTop: 8 }} onClick={cancelConfirm ? cancelRenewal : () => setCancelConfirm(true)}>
+                      {cancelBusy ? "Cancelling…" : cancelConfirm ? "Confirm cancellation" : "Cancel auto-renewal"}
+                    </button>
+                    {cancelConfirm ? <button type="button" disabled={cancelBusy} style={{ minHeight: 44 }} onClick={() => setCancelConfirm(false)}>Keep subscription</button> : null}
+                  </div>
+                ) : null}
+                {cancelMessage ? <p role="status">{cancelMessage}</p> : null}
                 <div className="sub-history-list">
                   {historyRows(subscription.data).length ? historyRows(subscription.data).map((item, index) => (
                     <div className="sub-history-row" key={`${item.orderId || item.paymentId || item.subscriptionId || index}`}>

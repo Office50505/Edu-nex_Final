@@ -56,12 +56,16 @@ export function PaymentPage() {
   const runtimeReady = useEduNexRuntimeReady();
   const query = params();
   const courseId = query.get("courseId");
+  const [selectedPlan, setSelectedPlan] = useState(() => ["annual", "yearly"].includes(query.get("plan")) ? "annual" : "monthly");
+  const annual = selectedPlan === "annual";
   const [trialEligible, setTrialEligible] = useState(true);
   const [checkoutState, setCheckoutState] = useState("loading");
   const [payMsg, setPayMsg] = useState({ text: "", type: "" });
   const [submitting, setSubmitting] = useState(false);
   const busyRef = useRef(false);
   const [pricing, setPricing] = useState(null);
+  const paymentType = annual ? "annual" : trialEligible ? "trial" : "monthly";
+  const planAvailable = Boolean(pricing && (!annual || pricing.annualAvailable));
   const rupees = value => new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 2 }).format((value || 0) / 100);
   useEffect(() => {
     const controller = new AbortController();
@@ -116,18 +120,9 @@ export function PaymentPage() {
   }, [courseId, webLink]);
 
   const refreshAccessToken = useCallback(async () => {
-    const sessionStore = localStorage.getItem("edunexAccessToken") ? localStorage : sessionStorage;
-    const refreshToken = sessionStore.getItem("edunexRefreshToken");
-    if (!refreshToken) throw new Error("Please log in");
-    const response = await fetch("/api/auth/refresh", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ refreshToken }),
-    });
-    const data = await safeJsonResponse(response) || {};
-    if (!response.ok) throw new Error(data.error || data.message || "Session expired");
-    sessionStore.setItem("edunexAccessToken", data.accessToken);
-    return data.accessToken;
+    const token = await window.EduNex?.refreshAccessToken?.();
+    if (!token) throw new Error("Please log in again to continue checkout.");
+    return token;
   }, []);
 
   const authFetch = useCallback(async (url, options = {}) => {
@@ -182,7 +177,7 @@ export function PaymentPage() {
   }, [authFetch, configureAppOpenButton, runtimeReady]);
 
   const initiatePayment = async () => {
-    if (busyRef.current || !pricing || !trialEligible) return;
+    if (busyRef.current || !planAvailable) return;
     busyRef.current = true;
     setSubmitting(true);
     setPayMsg({ text: "", type: "" });
@@ -190,7 +185,7 @@ export function PaymentPage() {
       const response = await authFetch("/api/payment/initiate-trial", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ paymentType: "trial", mandateConsent: true }),
+        body: JSON.stringify({ paymentType, mandateConsent: true }),
       });
       const data = await safeJsonResponse(response) || {};
       if (response.status === 409) {
@@ -237,7 +232,9 @@ export function PaymentPage() {
 
   const payButtonText = submitting
     ? "Redirecting to payment…"
-    : `Try ${pricing?.trialHours || 24} Hours for ${rupees(pricing?.trialAmountPaise)}`;
+    : annual ? `Subscribe for ${rupees(pricing?.annualAmountPaise)}/year`
+      : trialEligible ? `Try ${pricing?.trialHours || 24} Hours for ${rupees(pricing?.trialAmountPaise)}`
+        : `Subscribe for ${rupees(pricing?.subscriptionAmountPaise)}/month`;
 
   return (
     <div className="react-page-root" data-page="payment.html">
@@ -249,6 +246,20 @@ export function PaymentPage() {
                 <i className="fas fa-graduation-cap" aria-hidden="true"></i> Get Full Access
               </h1>
               <p>Unlimited courses · Cancel anytime</p>
+              <fieldset disabled={submitting} style={{ border: 0, padding: 0, margin: "16px 0 0", display: "flex", flexWrap: "wrap", gap: 12 }}>
+                <legend style={{ fontSize: 14, marginBottom: 8 }}>Choose your billing plan</legend>
+                {[['monthly', 'Monthly'], ['annual', 'Yearly']].map(([value, label]) => (
+                  <label key={value} style={{ display: "flex", alignItems: "center", gap: 8, minHeight: 44, cursor: "pointer" }}>
+                    <input type="radio" name="billingPlan" value={value} checked={selectedPlan === value} onChange={() => {
+                      setSelectedPlan(value);
+                      setPayMsg({ text: "", type: "" });
+                      const url = new URL(window.location.href);
+                      url.searchParams.set('plan', value);
+                      window.history.replaceState(window.history.state, '', url.pathname + url.search);
+                    }} />{label}
+                  </label>
+                ))}
+              </fieldset>
             </div>
             <div className="checkout-body">
               <div className={`msg pay-msg ${payMsg.type}`} role="status" aria-live="polite">{payMsg.text}</div>
@@ -285,6 +296,7 @@ export function PaymentPage() {
                   >
                     {watchText}
                   </a>
+                  <a href="/profile" className="pay-btn-secondary" style={{ marginTop: 10 }}>Manage subscription</a>
                   <a href="/courses.html" className="pay-btn-secondary" style={{ marginTop: 10 }}><i className="fas fa-book-open" aria-hidden="true"></i> Browse All Courses</a>
                 </div>
               ) : null}
@@ -293,22 +305,27 @@ export function PaymentPage() {
                 <div id="payState">
                   <div className="plan-option selected" style={{ cursor: "default" }}>
                     <div className="plan-info">
-                      <div className="plan-name">{pricing?.trialHours || 24}-Hour Trial</div>
-                      <div className="plan-desc">Full access · Auto-renews monthly</div>
+                      <div className="plan-name">{annual ? "Annual subscription" : trialEligible ? `${pricing?.trialHours || 24}-Hour Trial` : "Monthly subscription"}</div>
+                      <div className="plan-desc">Full access · Auto-renews {annual ? "yearly" : "monthly"}</div>
                     </div>
                     <div className="plan-price">
-                      <div className="amount">{pricing ? rupees(pricing.trialAmountPaise) : "…"}</div>
-                      <span className="per">trial payment</span>
+                      <div className="amount">{pricing ? rupees(annual ? pricing.annualAmountPaise : trialEligible ? pricing.trialAmountPaise : pricing.subscriptionAmountPaise) : "…"}</div>
+                      <span className="per">{annual ? "per year" : trialEligible ? "trial payment" : "per month"}</span>
                     </div>
                   </div>
-                  {!trialEligible ? <p role="status" style={{ margin: "16px 0" }}>You've already used your trial. <a href="/help.html">Contact support</a> for help with your subscription.</p> : null}
+                  {!annual && !trialEligible ? <p role="status" style={{ margin: "16px 0" }}>You've already used your trial. Continue with a monthly or yearly subscription.</p> : null}
+                  {annual && pricing && !pricing.annualAvailable ? <p role="alert">Yearly checkout is currently unavailable. Please try again later or choose Monthly.</p> : null}
                   {pricing ? <p id="paymentAgreement" style={{ fontSize: 12, lineHeight: 1.6, color: "var(--text)", margin: "16px 0" }}>
-                    By continuing, you accept our <a href="/terms.html" target="_blank" rel="noopener noreferrer">Terms</a> &amp; <a href="/privacy.html" target="_blank" rel="noopener noreferrer">Privacy Policy</a>. Your {pricing.trialHours || 24}-hour trial costs {rupees(pricing.trialAmountPaise)}, then the subscription renews at {rupees(pricing.subscriptionAmountPaise)}/month until cancelled.
+                    By continuing, you accept our <a href="/terms.html" target="_blank" rel="noopener noreferrer">Terms</a> &amp; <a href="/privacy.html" target="_blank" rel="noopener noreferrer">Privacy Policy</a>. {annual
+                      ? `You pay ${rupees(pricing.annualAmountPaise)} now for one year. You authorize automatic renewal at ${rupees(pricing.annualAmountPaise)} per year until cancelled. No trial charge applies.`
+                      : trialEligible ? `Your ${pricing.trialHours || 24}-hour trial costs ${rupees(pricing.trialAmountPaise)}, then the subscription renews at ${rupees(pricing.subscriptionAmountPaise)}/month until cancelled.`
+                        : `You pay ${rupees(pricing.subscriptionAmountPaise)} now and authorize renewal at that amount each month until cancelled.`} Cancel auto-renewal from your profile; paid access continues to its expiry.
                   </p> : null}
-                  <button className="pay-btn" id="payBtn" type="button" aria-describedby="paymentAgreement" disabled={submitting || !pricing || !trialEligible} onClick={initiatePayment}>
+                  <button className="pay-btn" id="payBtn" type="button" aria-describedby="paymentAgreement" disabled={submitting || !planAvailable} onClick={initiatePayment}>
                     <span id="payBtnIcon">{<LightningIcon />}</span>
                     <span id="payBtnText">{payButtonText}</span>
                   </button>
+                  <a href="/profile" style={{ display: "block", marginTop: 12 }}>Manage or cancel an unfinished checkout</a>
                   <div className="pay-divider"><span>or</span></div>
                   <a href="/courses.html" className="pay-btn-secondary">← Back to Courses</a>
 

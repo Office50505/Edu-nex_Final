@@ -8,7 +8,7 @@ Required MSG91 values: `MSG91_AUTH_KEY`, `MSG91_TEMPLATE_ID`, `MSG91_BASE_URL=ht
 
 Legacy single-mode Razorpay values: `RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET`, `RAZORPAY_PLAN_ID`, `RAZORPAY_WEBHOOK_SECRET` (a separate secret matching the webhook dashboard setting).
 
-Pricing: `TRIAL_AMOUNT_PAISE=100`, `SUBSCRIPTION_AMOUNT_PAISE=50000`, `TRIAL_DURATION_HOURS=24`, `SUBSCRIPTION_TOTAL_COUNT=120`. The checkout page gets these values from `/api/payment/config`. The plan must be monthly, interval 1, INR, and exactly match the configured monthly amount, without additional tax/quantity. A change in price requires a matching new provider plan for new subscriptions; existing attempts keep their recorded prices.
+Pricing: `TRIAL_AMOUNT_PAISE=100`, `SUBSCRIPTION_AMOUNT_PAISE=49900`, `TRIAL_DURATION_HOURS=24`, `SUBSCRIPTION_TOTAL_COUNT=120`. The checkout page gets these values from `/api/payment/config`. The plan must be monthly, interval 1, INR, and exactly match the configured monthly amount, without additional tax/quantity. A change in price requires a matching new provider plan for new subscriptions; existing attempts keep their recorded prices.
 
 The selected gateway mode requires matching `rzp_test_` or `rzp_live_` keys, independently of `NODE_ENV`. Plans, subscriptions and webhook configuration are separate between test/live modes. Never put key secrets or MSG91 auth keys in frontend variables.
 
@@ -39,6 +39,14 @@ The new `RazorpayBilling` record reserves one creation attempt per learner. Conc
 Billing reconciliation takes a short database lease. Duplicate events are recorded only after successful processing; provider or database failures return an error so Razorpay can retry. The app does not fake successful verification when invoice/payment data is not yet available. Refresh the payment page to retry reconciliation; do not pay again while confirmation is pending.
 
 ## MSG91 dashboard
+
+Skillomate's current OTP template is `6aad0fdca0b55cc6b0003083`, with sender
+`SKLMTE` and DLT template `1777178964721923789`. Keep the real auth key in the
+backend secret environment. `MSG91_TEMPLATE_ID` is sent to the v5 OTP API;
+`MSG91_DLT_TEMPLATE_ID` and `MSG91_SENDER_ID` document the expected provider-side
+mapping, rather than unsupported extra v5 send parameters. Keep
+`OTP_PROVIDER=msg91` and `AUTO_VERIFY_OTP=false`. Presence checks cannot prove
+template approval, account balance, key validity, or delivery.
 
 Create/approve the OTP template and sender/DLT settings for your target country in MSG91, enable SMS routing, and fund the account. This integration uses the server-side OTP APIs (`/otp`, `/otp/verify`, `/otp/retry`), not the separate browser OTP Widget. Run a send/resend/verify test using a designated phone after credentials and templates are ready. No real SMS is sent by the automated suite.
 
@@ -85,7 +93,43 @@ Users must cancel an unfinished checkout in the other mode before starting a new
 one. Test payments can grant app access in this shared application: select Test
 only when you intend to expose test checkout to all learners.
 
-### ₹1 trial → ₹499 monthly
+### Annual web checkout: ₹4,999/year
+
+The annual pricing card links to `/payment?plan=annual`. Checkout sends
+`paymentType: "annual"`; the server selects and validates the provider plan,
+amount, INR currency, yearly period and interval 1. Client-provided prices and
+plan IDs are ignored. Annual checkout has no trial add-on or delayed start.
+
+Configure annual plans separately by mode:
+
+```dotenv
+RAZORPAY_LIVE_ANNUAL_PLAN_ID=plan_TdSoXLQTCRrb7P
+RAZORPAY_TEST_ANNUAL_PLAN_ID=
+ANNUAL_SUBSCRIPTION_AMOUNT_PAISE=499900
+ANNUAL_SUBSCRIPTION_TOTAL_COUNT=10
+```
+
+The supplied plan was verified read-only as a Live INR 4,999 yearly plan on
+18 September 2026. Create and validate a separate Test-mode plan before testing
+provider checkout in that mode; never put the Live plan ID in Test configuration.
+Without an annual plan in the selected mode, the annual checkout is unavailable.
+No fallback to monthly or trial billing occurs. The default 10 annual cycles
+match the existing monthly configuration's 10-year maximum schedule.
+
+New billing records snapshot the recurring amount. Captured, non-refunded
+payments with current invoices grant access through the provider's exact
+`billing_end`, including annual renewals; existing monthly records retain their
+previous interpretation. Cancelling stops renewal while retaining already-paid
+access. Profile > Subscription History provides a confirmation step to cancel
+renewal or an unfinished checkout. Signed callbacks and webhooks use the billing
+record's originating mode even after the administrator switches modes.
+
+Changing environment variables requires an API restart. Deploy the frontend and
+primary API changes together. The older `appcopyai/backend` is not the annual
+checkout target. No data migration or blanket update of existing subscriptions
+is needed. Do not remove annual handling after accepting annual payments.
+
+### Monthly trial configuration (unchanged)
 
 Create a **₹499 INR plan, every one month**, independently in Test and Live.
 The plan itself does not encode the trial. Set:

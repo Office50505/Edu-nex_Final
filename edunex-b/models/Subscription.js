@@ -25,7 +25,7 @@ const subscriptionSchema = new mongoose.Schema({
   cancelledAt: { type: Date, default: null },
   cancelReason: { type: String, default: null },
   amount: { type: Number, default: 50000 },
-  subscriptionType: { type: String, enum: ['trial', 'monthly'], default: 'trial' },
+  subscriptionType: { type: String, enum: ['trial', 'monthly', 'annual'], default: 'trial' },
   frequency: { type: String, default: 'monthly' },
   nextBillingAt: { type: Date, default: null },
   coupon: { type: mongoose.Schema.Types.ObjectId, ref: 'Coupon', default: null },

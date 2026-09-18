@@ -9,7 +9,10 @@ router.get('/payment/config', razorpay.pricing);
 router.post('/payment/razorpay/verify', protect, razorpay.verify);
 router.post('/webhooks/razorpay', razorpay.webhook);
 
-router.post('/payment/initiate-trial', protect, useRazorpay(razorpay.initiate, paymentController.initiateTrial));
+router.post('/payment/initiate-trial', protect, (req, res, next) => {
+  if (req.body.paymentType === 'annual' && process.env.PAYMENT_GATEWAY_MODE !== 'razorpay') return res.status(503).json({ error: 'Annual checkout requires Razorpay.' });
+  next();
+}, useRazorpay(razorpay.initiate, paymentController.initiateTrial));
 router.get('/payment/simulate', paymentController.renderPaymentSimulator);
 router.post('/payment/simulate/complete', paymentController.completeSimulatedPayment);
 router.get('/payment/callback', paymentController.paymentCallback);

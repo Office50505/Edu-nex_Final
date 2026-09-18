@@ -1,3 +1,4 @@
+import { plainCourseDescription } from "../lib/courseDescription.js";
 import { useEffect, useMemo, useState } from "react";
 import { page as coursesPage } from "../generated-pages/courses.html.js";
 import { runLegacyPage } from "../legacyRuntime.js";
@@ -57,7 +58,7 @@ function normalizeCourse(course) {
     ...course,
     id,
     title: course.title || "Untitled course",
-    description: course.description || "Build practical AI skills with guided lessons and projects.",
+    description: plainCourseDescription(course.description) || "Build practical AI skills with guided lessons and projects.",
     categoryName: window.EduNex?.courseCategory?.(course) || (typeof course.category === "string" ? course.category : course.category?.name) || "Course",
     image: window.EduNex?.courseImage?.(course) || course.thumbnail || course.image || "",
     lessonCount: Array.isArray(course.videos) ? course.videos.length : 0,

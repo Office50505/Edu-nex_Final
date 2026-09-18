@@ -57,13 +57,13 @@ export function PricingPage() {
                 <p>One-year Skillomate digital learning access.</p>
               </div>
             </div>
-            <div className="legal-callout"><strong>Pay ₹4999 for one year of Skillomate access. Renewal or cancellation terms may depend on the payment method or platform used at checkout.</strong></div>
+            <div className="legal-callout"><strong>Pay ₹4,999 for one year of Skillomate access. Renews automatically at ₹4,999/year until cancelled. No trial charge.</strong></div>
             <div className="pricing-includes">
               <span>One-year access</span>
               <span>Digital delivery</span>
               <span>No physical shipping</span>
             </div>
-            <a className="legal-button pricing-action secondary" href={route("payment.html")}>Continue to checkout <EnxIcon name="arrowRight" /></a>
+            <a className="legal-button pricing-action secondary" href={route("payment.html?plan=annual")}>Continue to checkout <EnxIcon name="arrowRight" /></a>
           </div>
         </div>
       </LegalSection>
@@ -79,7 +79,7 @@ export function PricingPage() {
       </LegalSection>
       <LegalSection id="billing" title="Billing terms">
         <p>The monthly mandate offer starts with a 24-hour trial for ₹1. After the trial ends, the subscription renews automatically at ₹499/month using the payment method or mandate authorized by the user until cancelled.</p>
-        <p>The annual plan is priced at ₹4999 for one year of Skillomate access. Any renewal, cancellation, or refund handling for platform-specific purchases may depend on the applicable payment platform and checkout flow.</p>
+        <p>The annual web subscription costs ₹4,999, billed immediately and renewed automatically each year until cancelled. There is no trial charge. Cancel auto-renewal from your profile; access continues through the paid year.</p>
         <p>Users may cancel eligible recurring subscriptions anytime. After cancellation, access continues through the current paid period and future renewals stop after cancellation takes effect.</p>
         <p>No physical delivery applies because Skillomate provides digital educational services only.</p>
       </LegalSection>

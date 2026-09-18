@@ -82,3 +82,14 @@ test('development OTPs also have six digits even with obsolete four-digit config
   assert.equal((await s.api.verifyMobileOtp('9876543210', result.devOtp)).ok, true);
   assert.equal(s.requests.length, 0);
 });
+
+test('Skillomate OTP uses the new OTP template with provider-owned sender/DLT mapping', async () => {
+  const s = service({ MSG91_TEMPLATE_ID: '6aad0fdca0b55cc6b0003083', MSG91_DLT_TEMPLATE_ID: '1777178964721923789', MSG91_SENDER_ID: 'SKLMTE' });
+  assert.equal((await s.api.sendMobileOtp('9876543210')).ok, true);
+  const url = new URL(s.requests[0].url);
+  assert.equal(url.searchParams.get('template_id'), '6aad0fdca0b55cc6b0003083');
+  assert.equal(url.searchParams.has('sender'), false);
+  assert.equal(url.searchParams.has('authkey'), false);
+  s.expireCooldown(); assert.equal((await s.api.resendMobileOtp('9876543210')).ok, true);
+  assert.equal((await s.api.verifyMobileOtp('9876543210', '012345')).ok, true);
+});

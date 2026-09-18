@@ -1,3 +1,4 @@
+import { plainCourseDescription } from "../lib/courseDescription.js";
 import { CourseMediaPlayer } from "../components/media/CourseMediaPlayer.jsx";
 import { adjacent, available, usesCustomPlayer } from "../components/media/playerRules.js";
 import { loadHlsJs } from "../lib/hlsRuntime.js";
@@ -1223,7 +1224,7 @@ export function VideosPage() {
         </div>
         <div className="tile-body">
           <h3>{item.title || "Untitled course"}</h3>
-          <p>{isContinue ? `Next: ${nextLesson.title || "Start course"}` : (item.description || "Open this course to watch the full playlist.")}</p>
+          <p>{isContinue ? `Next: ${nextLesson.title || "Start course"}` : (plainCourseDescription(item.description) || "Open this course to watch the full playlist.")}</p>
           <div className="tile-meta">
             <span>{lessonCount || "No"} lessons</span>
             <span>{item.averageRating ? `${Number(item.averageRating).toFixed(1)} rating` : "Skillomate course"}</span>
@@ -1339,7 +1340,7 @@ export function VideosPage() {
             {course ? <CertificationProgress key={course._id} courseId={course._id} /> : null}
             <div className="lesson-info">
               <h1 id="lessonTitle">{error ? "Course unavailable" : (lesson.title || course?.title || "Select a lesson")}</h1>
-              <p id="lessonDescription">{error || lesson.description || course?.description || "Choose a video from the playlist to begin watching."}</p>
+              <p id="lessonDescription">{error || plainCourseDescription(lesson.description || course?.description) || "Choose a video from the playlist to begin watching."}</p>
               {lessonExamplePrompt ? (
                 <details className="example-prompt-drawer" key={`${course?._id || "course"}-${activeIndex}-example-prompt`}>
                   <summary>Example prompt</summary>

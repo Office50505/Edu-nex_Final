@@ -1,3 +1,4 @@
+import { plainCourseDescription } from "../lib/courseDescription.js";
 import { useEffect, useMemo, useState } from "react";
 import { page as coursePage } from "../generated-pages/course.html.js";
 import { runLegacyPage } from "../legacyRuntime.js";
@@ -66,21 +67,7 @@ function originalPrice(course) {
   return value > 1 ? `₹${value.toLocaleString("en-IN")}` : "";
 }
 
-export function plainCourseDescription(value) {
-  return String(value || "")
-    .replace(/!\[([^\]]*)\]\([^)]*\)/g, "$1")
-    .replace(/\[([^\]]+)\]\([^)]*\)/g, "$1")
-    .replace(/^\s{0,3}#{1,6}\s+/gm, "")
-    .replace(/^\s{0,3}>\s?/gm, "")
-    .replace(/^\s*[-*+]\s+/gm, "• ")
-    .replace(/(\*\*|__)(.*?)\1/g, "$2")
-    .replace(/(^|[^*])\*([^*\n]+)\*(?!\*)/g, "$1$2")
-    .replace(/(^|[^_])_([^_\n]+)_(?!_)/g, "$1$2")
-    .replace(/`{1,3}([^`]+)`{1,3}/g, "$1")
-    .replace(/^\s*[-*_]{3,}\s*$/gm, "")
-    .replace(/\n{3,}/g, "\n\n")
-    .trim();
-}
+export { plainCourseDescription } from "../lib/courseDescription.js";
 
 function progressFor(id) {
   try {

@@ -11,11 +11,13 @@ function config(mode = legacyMode()) {
   const field = name => process.env[prefix + name] || (mode === legacyMode() ? process.env['RAZORPAY_' + name] : '') || '';
   const value = {
     mode, keyId: field('KEY_ID'), secret: field('KEY_SECRET'),
-    webhookSecret: field('WEBHOOK_SECRET'), planId: field('PLAN_ID'),
+    webhookSecret: field('WEBHOOK_SECRET'), planId: field('PLAN_ID'), annualPlanId: field('ANNUAL_PLAN_ID'),
+    annualAmount: Number(process.env.ANNUAL_SUBSCRIPTION_AMOUNT_PAISE || 499900),
+    annualCycles: Number(process.env.ANNUAL_SUBSCRIPTION_TOTAL_COUNT || 10),
     trialAmount: Number(process.env.TRIAL_AMOUNT_PAISE || 100), monthlyAmount: Number(process.env.SUBSCRIPTION_AMOUNT_PAISE || 49900),
     trialHours: Number(process.env.TRIAL_DURATION_HOURS || 24), cycles: Number(process.env.SUBSCRIPTION_TOTAL_COUNT || 120),
   };
-  if (![value.trialAmount, value.monthlyAmount, value.trialHours, value.cycles].every(n => Number.isSafeInteger(n) && n > 0)) throw new Error('Invalid billing amount, duration or cycle configuration.');
+  if (![value.trialAmount, value.monthlyAmount, value.trialHours, value.cycles, value.annualAmount, value.annualCycles].every(n => Number.isSafeInteger(n) && n > 0)) throw new Error('Invalid billing amount, duration or cycle configuration.');
   return value;
 }
 function credentials(mode) {
@@ -24,9 +26,9 @@ function credentials(mode) {
   if (!c.keyId.startsWith(`rzp_${c.mode}_`)) throw Object.assign(new Error('Razorpay key prefix does not match the selected payment mode.'), { status: 503 });
   return c;
 }
-function requireConfig(mode) {
+function requireConfig(mode, type = 'monthly') {
   const c = credentials(mode);
-  if (!c.planId || !c.webhookSecret) throw Object.assign(new Error(`Set the ${c.mode} Razorpay plan ID and webhook secret before checkout.`), { status: 503 });
+  if (!(type === 'annual' ? c.annualPlanId : c.planId) || !c.webhookSecret) throw Object.assign(new Error(`Set the ${c.mode} Razorpay ${type} plan ID and webhook secret before checkout.`), { status: 503 });
   return c;
 }
 async function api(route, method = 'GET', body, mode) {
@@ -45,9 +47,21 @@ function validSignature(body, signature, secret) {
   const expected = crypto.createHmac('sha256', secret).update(body).digest();
   return crypto.timingSafeEqual(expected, Buffer.from(signature, 'hex'));
 }
+function planTerms(c, type) {
+  return type === 'annual'
+    ? { planId: c.annualPlanId, amount: c.annualAmount, period: 'yearly', cycles: c.annualCycles }
+    : { planId: c.planId, amount: c.monthlyAmount, period: 'monthly', cycles: c.cycles };
+}
+function validatePlan(plan, c, type) {
+  const terms = planTerms(c, type);
+  if (plan.id !== terms.planId || plan.period !== terms.period || plan.interval !== 1 || plan.item?.amount !== terms.amount || plan.item?.currency !== 'INR') {
+    throw Object.assign(new Error(`Razorpay plan must match the configured INR ${terms.period} price and interval.`), { status: 503 });
+  }
+}
 function createPayload(c, type, attempt, now = Date.now()) {
+  const terms = planTerms(c, type);
   return {
-    plan_id: c.planId, total_count: c.cycles, quantity: 1, customer_notify: 1,
+    plan_id: terms.planId, total_count: terms.cycles, quantity: 1, customer_notify: 1,
     expire_by: Math.floor(now / 1000) + 600,
     ...(type === 'trial' ? { start_at: Math.floor(now / 1000) + c.trialHours * 3600,
       addons: [{ item: { name: 'Skillomate trial access', amount: c.trialAmount, currency: 'INR' } }] } : {}),
@@ -57,13 +71,13 @@ function createPayload(c, type, attempt, now = Date.now()) {
 function entitlement(billing, remote, payments, now = Date.now()) {
   // Only captured, non-refunded payments count. Mandate approval alone grants nothing.
   const paid = payments.filter(item => item.payment.status === 'captured' && item.payment.currency === 'INR' && (item.payment.amount_refunded || 0) < item.payment.amount);
-  const period = paid.filter(item => item.invoice.billing_end * 1000 > now && item.invoice.billing_start * 1000 <= now && item.payment.amount === billing.monthlyAmount)
+  const period = paid.filter(item => item.invoice.billing_end * 1000 > now && item.invoice.billing_start * 1000 <= now && item.payment.amount === (billing.recurringAmount ?? (billing.paymentType === 'annual' ? billing.annualAmount : billing.monthlyAmount)))
     .sort((a, b) => b.invoice.billing_end - a.invoice.billing_end)[0];
-  if (period) return { status: 'active', currentPeriodStart: new Date(period.invoice.billing_start * 1000), currentPeriodEnd: new Date(period.invoice.billing_end * 1000), subscriptionType: 'monthly' };
+  if (period) return { status: 'active', currentPeriodStart: new Date(period.invoice.billing_start * 1000), currentPeriodEnd: new Date(period.invoice.billing_end * 1000), subscriptionType: billing.paymentType === 'annual' ? 'annual' : 'monthly' };
   const upfront = paid.find(item => !item.invoice.billing_start && item.payment.amount === billing.trialAmount);
   if (remote.status !== 'created' && billing.paymentType === 'trial' && upfront && new Date(billing.trialEnd).getTime() > now) return {
     status: 'trial', trialStartedAt: new Date(upfront.payment.created_at * 1000), trialExpiresAt: billing.trialEnd, subscriptionType: 'trial',
   };
   return { status: ['created', 'authenticated'].includes(remote.status) ? 'pending' : 'expired' };
 }
-module.exports = { legacyMode, config, requireConfig, api, validSignature, createPayload, entitlement };
+module.exports = { legacyMode, config, requireConfig, api, validSignature, planTerms, validatePlan, createPayload, entitlement };

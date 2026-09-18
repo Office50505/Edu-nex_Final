@@ -1,5 +1,7 @@
+import { plainCourseDescription } from "./services/courseDescription";
 import { chatKey, readChat, updateChat } from "./courseAiCache";
 import { requestTutor } from "./services/aiClient";
+import { createNativeSession } from "./services/nativeSession";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -2752,7 +2754,7 @@ function ReelsScreen({ courseId, initialIndex, initialTime, onBack, user, onVide
     if (courseAiMounted.current) refreshCourseAi(value => value + 1);
   }
   const activeTitle = activeVideo?.title || "";
-  const activeDescription = getVideoDescription(activeVideo) || "No description available.";
+  const activeDescription = plainCourseDescription(getVideoDescription(activeVideo)) || "No description available.";
   const activeNotes = getVideoNotes(activeVideo);
   const activePrompts = getVideoPrompts(activeVideo);
   const activeResources = getVideoResources(activeVideo);
@@ -3113,7 +3115,8 @@ function ReelsScreen({ courseId, initialIndex, initialTime, onBack, user, onVide
 
 const COURSE_DESCRIPTION_PREVIEW_LINES = 4;
 
-function ExpandableCourseDescription({ description }) {
+function ExpandableCourseDescription({ description: rawDescription }) {
+  const description = plainCourseDescription(rawDescription);
   const [expanded, setExpanded] = useState(false);
   const [hasOverflow, setHasOverflow] = useState(false);
 
@@ -5949,6 +5952,7 @@ function AiAssistantScreen({
   mode = "master",
   fixedCourse = null,
   user,
+  session,
   onBack,
   onGoToHome,
   onGoToCourses,
@@ -5956,6 +5960,9 @@ function AiAssistantScreen({
   onGoToProfile,
   onRobotChange,
 }) {
+  const aiMounted = useRef(false);
+  useEffect(() => { aiMounted.current = true; return () => { aiMounted.current = false; }; }, []);
+  const aiInFlight = useRef(false);
   const isCourseMode = mode === "course";
   const [courseId, setCourseId] = useState(null);
   const [courseName, setCourseName] = useState(isCourseMode ? fixedCourse?.title || "Course AI" : "Master AI");
@@ -6102,7 +6109,7 @@ function AiAssistantScreen({
 
   async function sendAiMessage(value = input) {
     const question = value.trim();
-    if (!question || loading) return;
+    if (!question || loading || aiInFlight.current) return;
     if (!AI_FEATURE_ENABLED) {
       setInput("");
       setMessages(prev => [
@@ -6123,18 +6130,24 @@ function AiAssistantScreen({
     setInput("");
     setMessages(prev => [...prev, { role: "user", content: question }]);
     setLoading(true);
+    aiInFlight.current = true;
 
     try {
-      const data = await requestTutor({ baseUrl: API_BASE, user, question, courseId, messages, assistantName });
+      const data = await requestTutor({ baseUrl: API_BASE, user, question, courseId, messages, assistantName, session });
+      if (!aiMounted.current) return;
+      setStatus("online");
       setMessages(prev => [...prev, { role: "assistant", content: data.notice ? `${data.notice}\n\n${data.answer}` : data.answer }]);
     } catch (error) {
+      if (!aiMounted.current || ["SESSION_CHANGED", "SESSION_EXPIRED"].includes(error.code)) return;
+      setInput(question);
       setMessages(prev => [...prev, {
         role: "assistant", failed: true,
         content: error.name === "AbortError" ? "Nex AI took too long. Please try again." : error.message || "I could not reach Nex AI. Please try again.",
       }]);
       setStatus("offline");
     } finally {
-      setLoading(false);
+      aiInFlight.current = false;
+      if (aiMounted.current) setLoading(false);
     }
   }
 
@@ -6456,7 +6469,19 @@ function LegalContentScreen({ page = "privacy", onBack }) {
 // ── App ───────────────────────────────────────────────────────────────────────
 export default function App() {
   const [isRestoring, setIsRestoring] = useState(true);
-  const [user, setUser] = useState(null);
+  const [user, setUserState] = useState(null);
+  const userRef = useRef(null);
+  const sessionRef = useRef(null);
+  if (!sessionRef.current) sessionRef.current = createNativeSession({
+    baseUrl: API_BASE, storage: AsyncStorage,
+    onChange: next => { userRef.current = next; setUserState(next); },
+    onExpired: () => {
+      setSelectedCourse(null); setStartIndex(null); setCourseAiTarget(null); setMainScreen("home");
+      setLoginError("Your session has ended. Please log in again.");
+    },
+  });
+  const nativeSession = sessionRef.current;
+  const setUser = useCallback(value => sessionRef.current.setUser(value), []);
   const [mainScreen, setMainScreen] = useState("home");
   const [legalPage, setLegalPage] = useState(null);
   const [selectedCourse, setSelectedCourse] = useState(null);
@@ -6504,51 +6529,31 @@ export default function App() {
   const [signupError, setSignupError] = useState("");
 
   const refreshUser = useCallback(async (userId, fallback = null, sessionId = null) => {
+    const owner = userRef.current;
+    if (!owner || owner._id !== userId || owner.sessionId !== sessionId) return;
+    const sameOwner = () => userRef.current?._id === userId && userRef.current?.sessionId === sessionId;
     try {
-      const url = sessionId
-        ? `${API_BASE}/api/auth/validate/${userId}?sessionId=${encodeURIComponent(sessionId)}`
-        : `${API_BASE}/api/auth/validate/${userId}`;
-      const res = await fetch(url);
+      const res = await fetch(`${API_BASE}/api/auth/validate/${userId}?sessionId=${encodeURIComponent(sessionId)}`);
+      if (!sameOwner()) return;
       if (res.status === 401) {
-        await AsyncStorage.removeItem("user");
-        setUser(null); setSelectedCourse(null); setStartIndex(null); setMainScreen("home");
+        setUser(null); setSelectedCourse(null); setStartIndex(null); setCourseAiTarget(null); setMainScreen("home");
         return;
       }
-      if (!res.ok) {
-        // API failed — show fallback (may not have avatar, but better than nothing)
-        if (fallback) setUser(fallback);
-        return;
-      }
+      if (!res.ok) return;
       const { user: fresh, wishlist: freshWishlist } = await res.json();
-      const merged = { ...fallback, ...fresh, sessionId: fallback?.sessionId || sessionId };
-      await AsyncStorage.setItem("user", JSON.stringify(merged));
-      setUser(merged); // always set fresh data first — includes avatar
+      if (!sameOwner()) return;
+      setUser(prev => ({ ...prev, ...fresh, sessionId: prev.sessionId,
+        accessToken: prev.accessToken, token: prev.token, refreshToken: prev.refreshToken }));
       if (Array.isArray(freshWishlist)) setWishlist(freshWishlist);
-    } catch {
-      if (fallback) setUser(fallback);
-    }
-  }, []);
+    } catch { /* Temporary network errors retain the current session. */ }
+  }, [setUser]);
 
   useEffect(() => {
-    AsyncStorage.getItem("user").then(async v => {
-      try {
-        if (v) {
-          const stored = JSON.parse(v);
-          if (stored.sessionId) {
-            await refreshUser(stored._id, stored, stored.sessionId);
-          } else {
-            AsyncStorage.removeItem("user");
-          }
-        }
-      } catch {}
-      setIsRestoring(false);
-    }).catch(() => setIsRestoring(false));
+    nativeSession.restore().then(async stored => {
+      if (stored) await refreshUser(stored._id, stored, stored.sessionId);
+    }).catch(() => {}).finally(() => setIsRestoring(false));
     AsyncStorage.getItem(AI_AVATAR_STORAGE_KEY).then(v => { if (v) setAiRobotId(v); }).catch(() => {});
-    // wishlist is now DB-backed — loaded via refreshUser/validate response
-  }, [refreshUser]);
-
-  const userRef = useRef(null);
-  useEffect(() => { userRef.current = user; }, [user]);
+  }, [nativeSession, refreshUser]);
 
   // Check independently of WebSocket support so a replaced login stops playback.
   useEffect(() => {
@@ -6568,7 +6573,6 @@ export default function App() {
         userRef.current = null;
         setUser(null); setSelectedCourse(null); setStartIndex(null); setMainScreen("home");
         setLoginError("Your account is logged in on a different device.");
-        await AsyncStorage.removeItem("user");
       } catch {
         // A network failure is not proof that the session was revoked.
       } finally {
@@ -6985,13 +6989,13 @@ export default function App() {
           const data = JSON.parse(event.data);
           if (data.type === "USER_UPDATE") {
             setUser(prev => {
-              const merged = { ...prev, ...data.user, sessionId: sid };
-              AsyncStorage.setItem("user", JSON.stringify(merged));
+              if (!prev || prev._id !== id || prev.sessionId !== sid) return prev;
+              const merged = { ...prev, ...data.user, sessionId: sid, accessToken: prev.accessToken, token: prev.token, refreshToken: prev.refreshToken };
               return merged;
             });
           } else if (data.type === "USER_DELETED" || data.type === "SESSION_REPLACED") {
+            if (userRef.current?._id !== id || userRef.current?.sessionId !== sid) return;
             intentionallyClosed = true;
-            AsyncStorage.removeItem("user");
             setUser(null); setSelectedCourse(null); setStartIndex(null); setMainScreen("home");
           }
         } catch {}
@@ -7051,7 +7055,6 @@ export default function App() {
           setLoginError("Login succeeded, but the server response was incomplete.");
           return;
         }
-        await AsyncStorage.setItem("user", JSON.stringify(authUser));
         setUser(authUser);
         setWishlist(authUser.wishlist || []);
         clearLoginForm();
@@ -7241,7 +7244,6 @@ export default function App() {
           setSignupError("Account created, but the server response was incomplete.");
           return;
         }
-        await AsyncStorage.setItem("user", JSON.stringify(authUser));
         AsyncStorage.removeItem(AI_AVATAR_STORAGE_KEY);
         setAiRobotId(null);
         setUser(authUser);
@@ -7265,7 +7267,6 @@ export default function App() {
   }
 
   function handleLogout() {
-    AsyncStorage.removeItem("user");
     AsyncStorage.removeItem(AI_AVATAR_STORAGE_KEY);
     setAiRobotId(null);
     setWishlist([]);
@@ -7313,7 +7314,7 @@ export default function App() {
       }
 
       if (DOWNLOADS_DIR) await FileSystem.deleteAsync(DOWNLOADS_DIR, { idempotent: true }).catch(() => {});
-      await AsyncStorage.multiRemove(["user", AI_AVATAR_STORAGE_KEY, DOWNLOADS_STORAGE_KEY]);
+      await AsyncStorage.multiRemove([AI_AVATAR_STORAGE_KEY, DOWNLOADS_STORAGE_KEY]);
 
       setDownloads({});
       setAiRobotId(null);
@@ -7702,6 +7703,7 @@ export default function App() {
   if (courseAiTarget) {
     return (
       <AiAssistantScreen
+        session={nativeSession}
         mode="course"
         fixedCourse={courseAiTarget}
         user={user}
@@ -7856,7 +7858,6 @@ export default function App() {
             setUser(prev => {
               if (!prev) return prev;
               const updated = { ...prev, avatar: avatarId };
-              AsyncStorage.setItem("user", JSON.stringify(updated)).catch(() => {});
               return updated;
             });
           }}
@@ -8049,6 +8050,7 @@ export default function App() {
     return (
       <>
         <AiAssistantScreen
+          session={nativeSession}
           user={user}
           onGoToHome={() => setMainScreen("home")}
           onGoToCourses={() => setMainScreen("courses")}

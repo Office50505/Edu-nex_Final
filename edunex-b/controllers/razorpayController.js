@@ -41,7 +41,8 @@ async function reconcile(billing) {
     const terminal = ['cancelled', 'completed', 'expired'].includes(remote.status);
     const subscription = await Subscription.findOneAndUpdate({ user: billing._id }, { $set: {
       gateway: 'razorpay', razorpayMode: mode, razorpaySubscriptionId: remote.id, razorpayStatus: remote.status,
-      ...state, amount: billing.monthlyAmount, nextBillingAt: !terminal && remote.charge_at ? new Date(remote.charge_at * 1000) : null,
+      ...state, amount: billing.recurringAmount ?? (billing.paymentType === 'annual' ? billing.annualAmount : billing.monthlyAmount),
+      frequency: billing.paymentType === 'annual' ? 'yearly' : 'monthly', nextBillingAt: !terminal && remote.charge_at ? new Date(remote.charge_at * 1000) : null,
       ...(terminal ? { cancelledAt: new Date((remote.ended_at || Math.floor(Date.now() / 1000)) * 1000) } : {}),
     }, $setOnInsert: { user: billing._id, phonePeMerchantId: 'razorpay' } }, { upsert: true, new: true, runValidators: true });
     for (const { payment, invoice } of payments) {
@@ -63,17 +64,19 @@ async function reconcile(billing) {
 }
 function checkoutResponse(billing, user) {
   return { gateway: 'razorpay', subscriptionId: billing.subscriptionId, mode: billingMode(billing), keyId: rzp.config(billingMode(billing)).keyId,
-    trialEndsAt: billing.trialEnd, prefill: { name: user.fullName || '', contact: user.mobileNumber || '', email: user.email || '' } };
+    paymentType: billing.paymentType, trialEndsAt: billing.trialEnd, prefill: { name: user.fullName || '', contact: user.mobileNumber || '', email: user.email || '' } };
 }
 exports.pricing = wrap(async (_req, res) => {
   const c = rzp.config(await modes.activeMode());
-  res.json({ mode: c.mode, gateway: process.env.PAYMENT_GATEWAY_MODE || 'razorpay', trialAmountPaise: c.trialAmount, subscriptionAmountPaise: c.monthlyAmount, trialHours: c.trialHours, currency: 'INR', billingCycles: c.cycles });
+  res.json({ mode: c.mode, gateway: process.env.PAYMENT_GATEWAY_MODE || 'razorpay', trialAmountPaise: c.trialAmount, subscriptionAmountPaise: c.monthlyAmount, trialHours: c.trialHours, currency: 'INR', billingCycles: c.cycles,
+    annualAmountPaise: c.annualAmount, annualBillingCycles: c.annualCycles, annualAvailable: process.env.PAYMENT_GATEWAY_MODE === 'razorpay' && Boolean(c.annualPlanId) });
 });
 exports.initiate = wrap(async (req, res) => {
-  const c = rzp.requireConfig(await modes.activeMode());
+  const type = req.body.paymentType || 'trial';
+  if (!['trial', 'monthly', 'annual'].includes(type)) throw fail('Choose a valid subscription plan.', 400);
+  const c = rzp.requireConfig(await modes.activeMode(), type);
   if (!req.user.isMobileVerified) throw fail('Verify your mobile number before subscribing.', 403);
   if (req.body.mandateConsent !== true) throw fail('Confirm the recurring payment terms before continuing.', 400);
-  const type = req.body.paymentType === 'monthly' ? 'monthly' : 'trial';
   const existing = await Subscription.findOne({ user: req.user._id });
   if (existing && ((['active', 'subscribed'].includes(existing.status) && new Date(existing.currentPeriodEnd) > new Date()) || (['trial', '1rs trial'].includes(existing.status) && new Date(existing.trialExpiresAt) > new Date()))) throw fail('You already have paid access. Manage your existing subscription first.');
   if (existing?.phonePeMandateId && !existing.cancelledAt && existing.gateway !== 'razorpay') throw fail('Cancel the existing PhonePe mandate before changing payment providers.');
@@ -89,13 +92,14 @@ exports.initiate = wrap(async (req, res) => {
     if (!['cancelled', 'expired', 'completed'].includes(remote.status)) throw fail('A mandate already exists. Check subscription status before retrying.');
     await Billing.updateOne({ _id: billing._id, subscriptionId: billing.subscriptionId }, { $set: { phase: 'closed' } });
   }
-  const plan = await rzp.api(`/plans/${encodeURIComponent(c.planId)}`, 'GET', undefined, c.mode);
-  if (plan.period !== 'monthly' || plan.interval !== 1 || plan.item?.amount !== c.monthlyAmount || plan.item?.currency !== 'INR') throw fail('Razorpay plan must match the configured INR monthly price.', 503);
+  const terms = rzp.planTerms(c, type);
+  const plan = await rzp.api(`/plans/${encodeURIComponent(terms.planId)}`, 'GET', undefined, c.mode);
+  rzp.validatePlan(plan, c, type);
   const attempt = crypto.randomUUID();
   const payload = rzp.createPayload(c, type, attempt);
   try {
     billing = await Billing.findOneAndUpdate({ _id: req.user._id, phase: 'closed' }, { $set: { attempt, mode: c.mode, phase: 'creating', paymentType: type,
-      planId: c.planId, trialAmount: c.trialAmount, monthlyAmount: c.monthlyAmount, trialEnd: payload.start_at ? new Date(payload.start_at * 1000) : null },
+      planId: terms.planId, trialAmount: c.trialAmount, monthlyAmount: c.monthlyAmount, annualAmount: c.annualAmount, recurringAmount: terms.amount, trialEnd: payload.start_at ? new Date(payload.start_at * 1000) : null },
       $unset: { subscriptionId: 1 } }, { upsert: true, new: true });
   } catch (error) { if (error.code === 11000) throw fail('Checkout creation is already in progress or needs reconciliation. Please contact support before trying again.'); throw error; }
   try {
@@ -112,7 +116,7 @@ exports.verify = wrap(async (req, res) => {
   const billing = await Billing.findById(req.user._id);
   const { razorpay_payment_id: paymentId, razorpay_subscription_id: subscriptionId, razorpay_signature: signature } = req.body;
   if (!billing?.subscriptionId || subscriptionId !== billing.subscriptionId || typeof paymentId !== 'string' || !/^pay_[a-zA-Z0-9]+$/.test(paymentId)) throw fail('Invalid checkout result.', 400);
-  if (!rzp.validSignature(`${paymentId}|${billing.subscriptionId}`, signature, rzp.requireConfig(billingMode(billing)).secret)) throw fail('Invalid payment signature.', 400);
+  if (!rzp.validSignature(`${paymentId}|${billing.subscriptionId}`, signature, rzp.requireConfig(billingMode(billing), billing.paymentType).secret)) throw fail('Invalid payment signature.', 400);
   const subscription = await reconcile(billing);
   res.json({ verified: true, accessGranted: ['trial', 'active'].includes(subscription.status), status: subscription.status });
 });
@@ -125,8 +129,10 @@ exports.status = wrap(async (req, res) => {
   const valid = Boolean(docValid || userValid);
   res.json({ status: effectiveStatus, subscriptionStatus: effectiveStatus, subscriptionDocStatus: subscription?.status || 'none',
     trialExpiresAt: subscription?.trialExpiresAt, currentPeriodEnd: subscription?.currentPeriodEnd, nextBillingAt: subscription?.nextBillingAt,
-    verified: valid, sameAccount: true, paid: valid,
+    subscriptionType: subscription?.subscriptionType, frequency: subscription?.frequency, verified: valid, sameAccount: true, paid: valid,
     mandateStatus: subscription?.razorpayStatus || null, accessGranted: valid, hasActiveAccess: valid, trialEligible: !subscription?.trialStartedAt,
+    subscriptionId: billing?.subscriptionId || null,
+    canCancel: Boolean(billing?.subscriptionId && !['cancelled', 'expired', 'completed'].includes(subscription?.razorpayStatus)),
     pendingCheckout: billing?.phase === 'ready' });
 });
 exports.cancel = wrap(async (req, res) => {
