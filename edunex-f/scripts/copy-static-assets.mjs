@@ -54,6 +54,7 @@ if (fs.existsSync(indexHtml)) {
     'account-deletion',
     'admin/certifications',
     'admin/system-health',
+    'admin/reports',
     'contact',
     'cookie-policy',
     'delete-account',
