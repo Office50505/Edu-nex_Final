@@ -2838,8 +2838,13 @@ app.delete('/api/admin/users/:id/permanent', protectAdmin, async (req, res) => {
     if (!user) return res.status(404).json({ error: 'User not found' });
     if (!user.deletedAt) return res.status(409).json({ error: 'Move the user to trash before permanent deletion' });
     const { deleteUserAccount } = require('./services/accountDeletionService');
-    const deletedCounts = await deleteUserAccount(req.params.id);
-    res.json({ message: 'User permanently deleted', deletedCounts });
+    const force = req.body?.force === true;
+    const deletedCounts = await deleteUserAccount(req.params.id, { skipBillingCancellation: force });
+    res.json({
+      message: 'User permanently deleted',
+      deletedCounts,
+      billingCancellationSkipped: force,
+    });
   } catch (error) {
     res.status(error.statusCode || 500).json({ error: error.message, code: error.code });
   }

@@ -395,7 +395,29 @@ export function AdminUsersPage() {
       setSelectedUser(null);
       setMessageType("success"); setMessage(`${userName} permanently deleted.`);
     } catch (error) {
-      setMessageType("error"); setMessage(error.message || "Unable to permanently delete user.");
+      if (error.code === "BILLING_CANCELLATION_FAILED") {
+        const forceDelete = window.confirm(
+          `${error.message}\n\nDelete ${userName} anyway? This removes the Skillomate account, but any external payment mandate may remain active and must be cancelled separately.`
+        );
+        if (!forceDelete) {
+          setMessageType("error"); setMessage("Permanent deletion cancelled. The user remains in Trash.");
+          return;
+        }
+        try {
+          await adminJson(`/api/admin/users/${encodeURIComponent(user._id)}/permanent`, {
+            method: "DELETE",
+            body: JSON.stringify({ force: true }),
+          }, "Unable to permanently delete user.");
+          setUsers((rows) => rows.filter((item) => String(item._id) !== String(user._id)));
+          setSelectedUser(null);
+          setMessageType("success");
+          setMessage(`${userName} permanently deleted. Check the payment gateway separately for any active mandate.`);
+        } catch (forceError) {
+          setMessageType("error"); setMessage(forceError.message || "Unable to permanently delete user.");
+        }
+      } else {
+        setMessageType("error"); setMessage(error.message || "Unable to permanently delete user.");
+      }
     } finally { setDeletingId(null); }
   }
 

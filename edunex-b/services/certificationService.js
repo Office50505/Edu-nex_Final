@@ -9,6 +9,7 @@ const CourseProgress = require('../models/CourseProgress');
 const User = require('../models/User');
 const Subscription = require('../models/Subscription');
 const AnalyticsEvent = require('../models/AnalyticsEvent');
+const { resolveSubscriptionAccess } = require('./subscriptionAccess');
 const rules = require('./completionRules');
 const fail = (message,statusCode=400) => Object.assign(new Error(message),{statusCode});
 async function context(user, courseId) {
@@ -18,22 +19,9 @@ async function context(user, courseId) {
   const policy = await Policy.findById(String(courseId)).lean();
   return { course, ...rules.manifest(course,policy) };
 }
-function futureDate(value, allowMissing=false) {
-  if(!value)return allowMissing;
-  const time=new Date(value).getTime();
-  return Number.isFinite(time) && time>Date.now();
-}
 async function access(user) {
   const sub=await Subscription.findOne({user:user._id}).lean();
-  const status=String(sub?.status || user?.subscriptionStatus || 'none').toLowerCase();
-  const fallbackExpiry=user?.subscriptionExpiry || null;
-  const date=['trial','1rs trial'].includes(status)
-    ? (sub?.trialExpiresAt || fallbackExpiry)
-    : ['active','subscribed','cancelled'].includes(status)
-      ? (sub?.currentPeriodEnd || fallbackExpiry)
-      : null;
-  const allowMissing=!sub && ['trial','1rs trial','active','subscribed'].includes(status);
-  if(!futureDate(date,allowMissing)) throw fail('An active learning entitlement is required.',403);
+  if(!resolveSubscriptionAccess(sub,user).active) throw fail('An active learning entitlement is required.',403);
 }
 async function state(user, ctx) {
   const userId=String(user._id), courseId=String(ctx.course._id);
@@ -63,6 +51,32 @@ async function sync(user,ctx,status,lastWatchedVideoId=null) {
   await User.updateOne({_id:user._id},{$set:{[`courseProgress.${ctx.course._id}`]:progress,lastActiveAt:new Date()}});
   return progress;
 }
+async function migrateLearningVersion(courseId, previousVersion, nextVersion) {
+  if (!previousVersion || !nextVersion || previousVersion === nextVersion) return 0;
+  const rows = await Learning.find({ courseId: String(courseId), version: previousVersion }).lean();
+  if (!rows.length) return 0;
+  const validVideoIds = new Set((await Course.findById(courseId).select('videos._id').lean())?.videos?.map(video => String(video._id)) || []);
+  const operations = rows.filter(row => validVideoIds.has(String(row.videoId))).map(row => ({
+    updateOne: {
+      filter: { _id: rules.identity(row.userId, courseId, nextVersion, row.videoId) },
+      update: { $setOnInsert: {
+        userId: row.userId,
+        courseId: String(courseId),
+        version: nextVersion,
+        videoId: row.videoId,
+        intervals: row.intervals || [],
+        position: Number(row.position) || 0,
+        lastSeenAt: row.lastSeenAt,
+        sessionId: row.sessionId,
+        revision: Number(row.revision) || 0,
+      } },
+      upsert: true,
+    },
+  }));
+  if (!operations.length) return 0;
+  const result = await Learning.bulkWrite(operations, { ordered: false });
+  return Number(result.upsertedCount || 0);
+}
 async function recordPlayback({ user,courseId,videoId,currentTime,duration,sessionId }) {
   await access(user);
   let ctx=await context(user,courseId);
@@ -70,9 +84,11 @@ async function recordPlayback({ user,courseId,videoId,currentTime,duration,sessi
   if(index<0) throw fail('Lesson does not belong to this course',404);
   const reportedDuration=Number(duration);
   if(Number(ctx.videos[index]?.duration||0)<=0) {
+    const previousVersion=ctx.version;
     if(!Number.isFinite(reportedDuration)||reportedDuration<1||reportedDuration>86400) throw fail('The player could not determine this lesson duration. Reload the video and retry.',400);
     await Course.updateOne({_id:ctx.course._id},{$set:{[`videos.${index}.duration`]:Math.round(reportedDuration*100)/100}});
     ctx=await context(user,courseId);
+    await migrateLearningVersion(courseId,previousVersion,ctx.version);
     index=ctx.course.videos.findIndex((v,i)=>[rules.videoKey(v,i),v.bunnyGuid,v.bunnyVideoId,v.youtubeId,String(i)].filter(v=>v!=null).map(String).includes(String(videoId)));
   }
   const video=ctx.videos[index];
@@ -108,4 +124,4 @@ async function completeVideo({user,courseId,videoId}) {
   if(!lesson?.complete) throw fail('Watch at least 90% of this lesson before completing it.',409);
   return {courseId:String(courseId),progress:await sync(user,ctx,status,videoId),eligibility:status,certificate:await issue(user,ctx,status)};
 }
-module.exports={context,state,access,issue,sync,recordPlayback,completeVideo,certificateView,fail};
+module.exports={context,state,access,issue,sync,migrateLearningVersion,recordPlayback,completeVideo,certificateView,fail};

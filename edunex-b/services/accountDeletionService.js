@@ -30,7 +30,7 @@ class AccountDeletionError extends Error {
  * The user record is intentionally deleted last. If any dependent cleanup fails,
  * the account remains available so the operation can safely be retried.
  */
-async function deleteUserAccount(userId) {
+async function deleteUserAccount(userId, options = {}) {
   const user = await User.findById(userId).select('_id');
   if (!user) {
     throw new AccountDeletionError('Account not found', 404, 'ACCOUNT_NOT_FOUND');
@@ -42,14 +42,16 @@ async function deleteUserAccount(userId) {
     .select('_id phonePeMandateId status gateway razorpaySubscriptionId razorpayMode')
     .lean();
   const subscriptionIds = subscriptions.map((subscription) => subscription._id);
-  try {
-    await require('./cancelAccountBilling').cancelAccountBilling(billing, subscriptions);
-  } catch (error) {
-    throw new AccountDeletionError(
-      error.message?.startsWith('Payment setup') || error.message?.startsWith('Subscription cancellation') || error.message?.startsWith('We could not')
-        ? error.message : 'Automatic subscription cancellation is unavailable. Your account has not been deleted. Please retry.',
-      503, 'BILLING_CANCELLATION_FAILED'
-    );
+  if (!options.skipBillingCancellation) {
+    try {
+      await require('./cancelAccountBilling').cancelAccountBilling(billing, subscriptions);
+    } catch (error) {
+      throw new AccountDeletionError(
+        error.message?.startsWith('Payment setup') || error.message?.startsWith('Subscription cancellation') || error.message?.startsWith('We could not')
+          ? error.message : 'Automatic subscription cancellation is unavailable. Your account has not been deleted. Please retry.',
+        503, 'BILLING_CANCELLATION_FAILED'
+      );
+    }
   }
 
   const results = await Promise.all([

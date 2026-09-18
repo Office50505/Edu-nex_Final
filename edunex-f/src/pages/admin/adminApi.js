@@ -160,7 +160,12 @@ export async function adminJson(path, options = {}, fallback = "Request failed."
   try {
     const response = await adminRequest(path, {...options, signal: controller.signal});
     const data = await response.json();
-    if (!response.ok) throw new Error(errorMessage(data, fallback));
+    if (!response.ok) {
+      const error = new Error(errorMessage(data, fallback));
+      error.code = data?.code || data?.error?.code || "";
+      error.status = response.status;
+      throw error;
+    }
     return data;
   } catch (error) {
     if (error.name === 'AbortError') throw new Error('The request timed out or was canceled. Reload to check the latest state.');

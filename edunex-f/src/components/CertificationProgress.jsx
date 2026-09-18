@@ -17,7 +17,9 @@ export function CertificationProgress({courseId}) {
       else {const data=await window.EduNex.authRequest(path,{method:'POST',body:JSON.stringify(kind==='submit'?{version:quiz.version,answers}:{})});if(data.eligibility)setStatus(data.eligibility);setMessage(data.certificate?'Certificate ready in My Certificates.':`Assessment score: ${data.score}%. You can retry after 30 seconds.`);if(data.passed)setQuiz(null);}
     }catch(e){setMessage(e.message || 'Please retry.');}finally{setBusy(false);}
   }
-  const percent = status?.totalLessons ? Math.round(status.completedLessons / status.totalLessons * 100) : 0;
+  const watchedPercent = Number(status?.progressPercent);
+  const completedPercent = status?.totalLessons ? status.completedLessons / status.totalLessons * 100 : 0;
+  const percent = Math.max(0, Math.min(100, Math.floor(Number.isFinite(watchedPercent) ? watchedPercent : completedPercent)));
   return <section className="course-progress" aria-label="Certification progress">
     <div className="course-progress__heading"><h2>Course progress</h2><span>{percent}% complete</span></div>
     {status?<><progress max="100" value={percent} aria-label="Lessons completed"/><div className="course-progress__summary"><span>{status.completedLessons} of {status.totalLessons} lessons completed</span><a href="/certificates">My certificates →</a></div>{status.requirements.length ? <details><summary>Certificate requirements</summary><ul>{status.requirements.map(item=><li key={item}>{item === "Course durations must be configured by an administrator." ? "Certificate eligibility is pending course setup." : item}</li>)}</ul></details> : null}

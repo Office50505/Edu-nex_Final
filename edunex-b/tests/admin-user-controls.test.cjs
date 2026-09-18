@@ -35,6 +35,7 @@ test('admin deletion uses a recoverable trash workflow', () => {
   assert.match(serverSource, /action: 'user_restored'/);
   assert.match(serverSource, /app\.delete\('\/api\/admin\/users\/:id\/permanent', protectAdmin/);
   assert.match(serverSource, /Move the user to trash before permanent deletion/);
+  assert.match(serverSource, /skipBillingCancellation: force/);
 });
 
 test('admin learner management exposes only the latest recorded session IP', () => {

@@ -1,4 +1,5 @@
 const Subscription = require('../models/Subscription');
+const { resolveSubscriptionAccess } = require('../services/subscriptionAccess');
 
 async function checkSubscription(req, res, next) {
   try {
@@ -8,27 +9,10 @@ async function checkSubscription(req, res, next) {
       return res.status(403).json({ error: 'no_subscription' });
     }
 
-    const now = new Date();
-
-    if (subscription.status === 'trial' || subscription.status === '1rs trial') {
-      if (subscription.trialExpiresAt && now < subscription.trialExpiresAt) {
-        req.subscription = subscription;
-        return next();
-      }
-
-      return res.status(403).json({ error: 'trial_expired' });
-    }
-
-    if (subscription.status === 'active' || subscription.status === 'subscribed') {
-      if (subscription.currentPeriodEnd && now < subscription.currentPeriodEnd) {
-        req.subscription = subscription;
-        return next();
-      }
-
-      return res.status(403).json({ error: 'subscription_expired' });
-    }
-
-    return res.status(403).json({ error: 'no_subscription' });
+    const access = resolveSubscriptionAccess(subscription, req.user);
+    if (!access.active) return res.status(403).json({ error: 'subscription_expired' });
+    req.subscription = subscription;
+    return next();
   } catch (error) {
     return res.status(500).json({ error: error.message });
   }

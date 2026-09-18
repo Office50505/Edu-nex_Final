@@ -4,7 +4,7 @@ const {playlistProjection,playlistPayload}=require('../services/coursePlaylist')
 function harness({subscription={status:'active',currentPeriodEnd:new Date(Date.now()+60000)},course={_id:id,status:'published',videos:[{_id:lessonId,provider:'aws_cloudfront',videoUrl:'https://d2vntxz4x493rp.cloudfront.net/course/master.m3u8'}]},signingError=false}={}){
  const routes=[],grants=[];let queries=0;
  const checkModule={exports:{}};
- vm.runInNewContext(fs.readFileSync(require.resolve('../middleware/checkSubscription'),'utf8'),{module:checkModule,require:()=>({findOne:async()=>subscription}),Date});
+ vm.runInNewContext(fs.readFileSync(require.resolve('../middleware/checkSubscription'),'utf8'),{module:checkModule,require:name=>name.includes('subscriptionAccess')?require('../services/subscriptionAccess'):{findOne:async()=>subscription},Date});
  const protect=()=>{},check=checkModule.exports.checkSubscription;
  const context={module:{exports:{}},process,URL,Buffer,require(name){
   if(name==='express')return {Router:()=>Object.fromEntries(['get','post','patch','delete','put'].map(m=>[m,(...args)=>routes.push(args)]))};

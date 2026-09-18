@@ -170,25 +170,9 @@ function serializeCertificate(certificate) {
   return require('./certificationService').certificateView(source);
 }
 
-function isFutureDate(value) {
-  if (!value) return true;
-  const time = new Date(value).getTime();
-  return Number.isNaN(time) ? true : time > Date.now();
-}
-
 async function hasCourseAccess(user) {
   const subscription = await Subscription.findOne({ user: user._id }).lean();
-  const status = String(subscription?.status || user.subscriptionStatus || 'none').toLowerCase();
-
-  if (status === 'trial' || status === '1rs trial') {
-    return isFutureDate(subscription?.trialExpiresAt || user.subscriptionExpiry);
-  }
-
-  if (status === 'active' || status === 'subscribed') {
-    return isFutureDate(subscription?.currentPeriodEnd || user.subscriptionExpiry);
-  }
-
-  return false;
+  return require('./subscriptionAccess').resolveSubscriptionAccess(subscription, user).active;
 }
 
 async function getCourse(courseId, projection = null) {

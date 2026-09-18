@@ -3,11 +3,13 @@ const Subscription = require('../models/Subscription');
 const SubscriptionEvent = require('../models/SubscriptionEvent');
 const User = require('../models/User');
 const phonePeService = require('../services/phonePeService');
+const { resolveSubscriptionAccess } = require('../services/subscriptionAccess');
 
 const isProduction = process.env.NODE_ENV === 'production';
 const paymentGatewayMode = String(process.env.PAYMENT_GATEWAY_MODE || 'phonepe').trim().toLowerCase();
 const merchantId = process.env.PHONEPE_MERCHANT_ID || process.env.PHONEPE_CLIENT_ID || 'your_merchant_id';
 const trialAmountPaise = Number(process.env.TRIAL_AMOUNT_PAISE || 100);
+const trialDurationHours = Number(process.env.TRIAL_DURATION_HOURS || 24);
 const subscriptionAmountPaise = Number(process.env.SUBSCRIPTION_AMOUNT_PAISE || 50000);
 const frontendOrigin = (process.env.FRONTEND_ORIGIN || '').replace(/\/$/, '');
 const frontendDashboardUrl = process.env.FRONTEND_DASHBOARD_URL || (frontendOrigin ? `${frontendOrigin}/courses.html` : '/courses.html');
@@ -145,7 +147,7 @@ async function createSubscriptionEventOnce({
 
 async function createTrialSubscription({ userId, order, mandateId, metadata }) {
   const now = new Date();
-  const trialExpiresAt = addMonths(now, 1);
+  const trialExpiresAt = addHours(now, trialDurationHours);
   const subscription = await Subscription.findOneAndUpdate(
     { user: userId },
     {
@@ -378,6 +380,26 @@ async function completeSimulatedPayment(req, res) {
       return res.redirect(frontendDashboardUrl);
     }
 
+    if (order.status !== 'pending') {
+      if (order.status === 'paid' && result === 'success') {
+        if (wantsJsonResponse(req)) {
+          return res.json({ success: true, merchantTransactionId, simulated: true, alreadyCompleted: true });
+        }
+        return res.redirect(withQueryParams(frontendPaymentSuccessUrl, {
+          merchantTransactionId,
+          simulated: 'true',
+        }));
+      }
+      if (wantsJsonResponse(req)) {
+        return res.status(409).json({ success: false, error: `Payment order is already ${order.status}` });
+      }
+      return res.redirect(withQueryParams(frontendPaymentFailedUrl, {
+        merchantTransactionId,
+        simulated: 'true',
+        reason: 'already_completed',
+      }));
+    }
+
     if (result === 'success') {
       const simulatedMandateId = order.orderType === 'trial_charge' ? `SIM_MANDATE_${merchantTransactionId}` : null;
       await applySuccessfulPayment(order, {
@@ -554,7 +576,7 @@ async function handleWebhook(req, res) {
         const now = new Date();
         subscription.status = '1rs trial';
         subscription.trialStartedAt = subscription.trialStartedAt || now;
-        subscription.trialExpiresAt = subscription.trialExpiresAt || addMonths(now, 1);
+        subscription.trialExpiresAt = subscription.trialExpiresAt || addHours(now, trialDurationHours);
         await User.findByIdAndUpdate(userId, {
           phonePeCustomerId: phonePeCustomerId || order?.phonePeCustomerId || null,
           subscriptionStatus: '1rs trial',
@@ -646,10 +668,10 @@ async function cancelSubscription(req, res) {
     subscription.cancelledAt = new Date();
     subscription.phonePeMandateId = null;
     await subscription.save();
+    const remainingAccess = resolveSubscriptionAccess(subscription, req.user);
     await User.findByIdAndUpdate(req.user._id, {
-      subscriptionStatus: subscription.currentPeriodEnd && new Date() < subscription.currentPeriodEnd
-        ? 'subscribed'
-        : 'expired',
+      subscriptionStatus: remainingAccess.active ? remainingAccess.status : 'expired',
+      subscriptionExpiry: remainingAccess.expiresAt,
     });
     await createSubscriptionEventOnce({
       subscription: subscription._id,
@@ -658,7 +680,7 @@ async function cancelSubscription(req, res) {
       metadata: { source: 'user' },
     });
 
-    res.json({ success: true, accessUntil: subscription.currentPeriodEnd });
+    res.json({ success: true, accessUntil: remainingAccess.expiresAt });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -678,14 +700,17 @@ async function subscriptionStatus(req, res) {
 
     await promoteTrialToSubscribedIfEligible(subscription, req.user._id);
     const latest = await Subscription.findById(subscription._id);
+    const access = resolveSubscriptionAccess(latest, req.user);
 
     res.json({
-      status: userSubscriptionStatus,
-      subscriptionStatus: userSubscriptionStatus,
+      status: access.status,
+      subscriptionStatus: access.status,
       subscriptionDocStatus: latest.status,
+      hasActiveAccess: access.active,
+      accessGranted: access.active,
       source: 'subscription',
-      trialExpiresAt: ['trial', '1rs trial'].includes(latest.status) ? latest.trialExpiresAt : null,
-      currentPeriodEnd: ['active', 'subscribed'].includes(latest.status) ? latest.currentPeriodEnd : null,
+      trialExpiresAt: latest.trialExpiresAt || null,
+      currentPeriodEnd: latest.currentPeriodEnd || null,
       nextBillingAt: latest.nextBillingAt,
     });
   } catch (error) {
