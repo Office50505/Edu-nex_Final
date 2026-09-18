@@ -22,12 +22,20 @@
   const returnToCurrentPage = () => encodeURIComponent(window.location.pathname + window.location.search);
   const loginUrl = () => `/login.html?next=${returnToCurrentPage()}`;
   const signupUrl = () => `/signup.html?next=${returnToCurrentPage()}`;
+  function restoreFocusWithoutScroll(target) {
+    if (!target?.focus) return;
+    try {
+      target.focus({ preventScroll: true });
+    } catch (_) {
+      target.focus();
+    }
+  }
   function hideAiLoginPrompt() {
     const prompt = document.getElementById('nai-auth-prompt');
     if (!prompt) return;
     prompt.classList.remove('is-visible');
     prompt.setAttribute('aria-hidden', 'true');
-    (lastAiTrigger || document.getElementById('nai-float-btn'))?.focus?.();
+    restoreFocusWithoutScroll(lastAiTrigger || document.getElementById('nai-float-btn'));
   }
   function showAiLoginPrompt(container = null) {
     const target = container || document.fullscreenElement || document.body;
@@ -875,6 +883,11 @@
     #nex-ai-widget-root.nai-fullscreen-hidden {
       display: none !important;
     }
+    html.nai-scroll-locked,
+    html.nai-scroll-locked body {
+      overflow: hidden !important;
+      overscroll-behavior: none !important;
+    }
     html[data-theme="light"] #nai-modal,
     html[data-theme="light"] #nai-chat-area {
       background: #FFFDF8;
@@ -1231,11 +1244,82 @@
   }
 
   let lastAiTrigger = null;
+  let backgroundScrollLocked = false;
+  let backgroundScrollY = 0;
+  let lastTouchY = 0;
+  const savedBodyStyles = {};
+  const scrollablePanelSelector = '#nai-messages, #nai-sidebar, .nai-avatar-menu';
+
+  function closestScrollablePanel(target) {
+    const node = target instanceof Element ? target : target?.parentElement;
+    const scroller = node?.closest?.(scrollablePanelSelector) || null;
+    return scroller && modal.contains(scroller) ? scroller : null;
+  }
+
+  function canScrollPanel(scroller, deltaY) {
+    if (!scroller || scroller.scrollHeight <= scroller.clientHeight) return false;
+    const atTop = scroller.scrollTop <= 0;
+    const atBottom = Math.ceil(scroller.scrollTop + scroller.clientHeight) >= scroller.scrollHeight;
+    if (deltaY < 0 && atTop) return false;
+    if (deltaY > 0 && atBottom) return false;
+    return true;
+  }
+
+  function lockBackgroundScroll() {
+    if (backgroundScrollLocked) return;
+    backgroundScrollLocked = true;
+    backgroundScrollY = window.scrollY || document.documentElement.scrollTop || 0;
+    ['position', 'top', 'left', 'right', 'width', 'overflow'].forEach((key) => {
+      savedBodyStyles[key] = document.body.style[key] || '';
+    });
+    document.documentElement.classList.add('nai-scroll-locked');
+    document.body.classList.add('nai-scroll-locked');
+    document.body.style.position = 'fixed';
+    document.body.style.top = `-${backgroundScrollY}px`;
+    document.body.style.left = '0';
+    document.body.style.right = '0';
+    document.body.style.width = '100%';
+    document.body.style.overflow = 'hidden';
+  }
+
+  function unlockBackgroundScroll() {
+    if (!backgroundScrollLocked) return;
+    backgroundScrollLocked = false;
+    document.documentElement.classList.remove('nai-scroll-locked');
+    document.body.classList.remove('nai-scroll-locked');
+    Object.entries(savedBodyStyles).forEach(([key, value]) => {
+      document.body.style[key] = value;
+    });
+    window.scrollTo(0, backgroundScrollY);
+    requestAnimationFrame(() => window.scrollTo(0, backgroundScrollY));
+    setTimeout(() => window.scrollTo(0, backgroundScrollY), 0);
+  }
+
+  function trapOverlayWheel(event) {
+    if (!overlay.classList.contains('nai-open')) return;
+    const scroller = closestScrollablePanel(event.target);
+    if (!canScrollPanel(scroller, event.deltaY)) event.preventDefault();
+  }
+
+  function trapOverlayTouchStart(event) {
+    lastTouchY = event.touches?.[0]?.clientY || 0;
+  }
+
+  function trapOverlayTouchMove(event) {
+    if (!overlay.classList.contains('nai-open')) return;
+    const nextY = event.touches?.[0]?.clientY || lastTouchY;
+    const deltaY = lastTouchY - nextY;
+    lastTouchY = nextY;
+    const scroller = closestScrollablePanel(event.target);
+    if (!canScrollPanel(scroller, deltaY)) event.preventDefault();
+  }
+
   function openChat(container = null)  {
     mountWidget(container);
     syncConversationOwner();
     lastAiTrigger = document.activeElement instanceof HTMLElement ? document.activeElement : floatBtn;
     if (!requireAiAccess(container)) return;
+    lockBackgroundScroll();
     overlay.classList.add('nai-open');
     overlay.setAttribute('aria-hidden', 'false');
     floatBtn.classList.add('nai-btn-open');
@@ -1246,14 +1330,16 @@
     overlay.classList.remove('nai-open');
     overlay.setAttribute('aria-hidden', 'true');
     floatBtn.classList.remove('nai-btn-open');
+    unlockBackgroundScroll();
     hideAiLoginPrompt();
-    (lastAiTrigger || floatBtn)?.focus?.();
+    restoreFocusWithoutScroll(lastAiTrigger || floatBtn);
   }
 
   function closeChatForNavigation() {
     overlay.classList.remove('nai-open');
     overlay.setAttribute('aria-hidden', 'true');
     floatBtn.classList.remove('nai-btn-open');
+    unlockBackgroundScroll();
     hideAiLoginPrompt();
     mountWidget(document.body);
   }
@@ -1386,6 +1472,9 @@
   overlay.addEventListener('click', (e) => {
     if (e.target === overlay) closeChat();
   });
+  overlay.addEventListener('wheel', trapOverlayWheel, { passive: false, capture: true });
+  overlay.addEventListener('touchstart', trapOverlayTouchStart, { passive: true, capture: true });
+  overlay.addEventListener('touchmove', trapOverlayTouchMove, { passive: false, capture: true });
 
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && document.getElementById('nai-auth-prompt')?.classList.contains('is-visible')) {
