@@ -18,25 +18,94 @@ function recommendationsArray(response) {
   return coursesArray(response);
 }
 
-function dashCourseProgress(course) {
+function progressSummaryMap(response) {
+  const summary = response?.courseProgress;
+  return summary && typeof summary === "object" && !Array.isArray(summary) ? summary : {};
+}
+
+function cachedCourseProgress(courseId) {
   try {
-    const saved = JSON.parse(localStorage.getItem(progressCacheKey(course._id)) || "{}");
-    const total = Math.max(Array.isArray(course.videos) ? course.videos.length : 0, 1);
-    const completed = Number(saved.completed || 0);
-    const percent = Math.max(0, Math.min(100, Number(saved.percent ?? Math.round((completed / total) * 100))));
-    const lessonIndex = Math.max(0, Math.min(Number(saved.lessonIndex || 0), total - 1));
-    return {
-      total,
-      completed,
-      percent,
-      lessonIndex,
-      lastViewedAt: saved.lastViewedAt || "",
-      watchedSeconds: Math.max(0, Number(saved.watchedSeconds || 0)),
-      activityByDay: saved.activityByDay && typeof saved.activityByDay === "object" ? saved.activityByDay : {},
-    };
+    const scoped = localStorage.getItem(progressCacheKey(courseId));
+    const legacy = localStorage.getItem(`edunexCourseProgress:${courseId}`);
+    return JSON.parse(scoped || legacy || "{}");
   } catch (_) {
-    return { total: Math.max(Array.isArray(course.videos) ? course.videos.length : 0, 1), completed: 0, percent: 0, lessonIndex: 0, lastViewedAt: "", watchedSeconds: 0, activityByDay: {} };
+    return {};
   }
+}
+
+function videoAliases(video, index) {
+  return [video?._id, video?.id, video?.bunnyVideoId, video?.bunnyGuid, video?.youtubeId, video?.videoId, index]
+    .filter((value) => value !== undefined && value !== null && value !== "")
+    .map(String);
+}
+
+function progressFromSummary(course, summary) {
+  const videos = Array.isArray(course.videos) ? course.videos : [];
+  const total = Math.max(videos.length, Number(summary?.totalVideos || 0), 1);
+  const completed = Math.max(0, Math.min(total, Number(summary?.completedCount || 0)));
+  const percentValue = Number(summary?.progressPercent);
+  const percent = Math.max(0, Math.min(100, Number.isFinite(percentValue) ? percentValue : Math.round((completed / total) * 100)));
+  const completedIds = new Set((summary?.completedVideoIds || []).map(String));
+  const videoProgress = Object.values(summary?.videoProgress || {});
+  const lastWatchedVideoId = String(summary?.lastWatchedVideoId || videoProgress.find((row) => Number(row?.resumePosition || 0) > 0)?.videoId || "");
+  let lessonIndex = videos.findIndex((video, index) => videoAliases(video, index).includes(lastWatchedVideoId));
+  const firstIncomplete = videos.findIndex((video, index) => !videoAliases(video, index).some((id) => completedIds.has(id)));
+  if (firstIncomplete >= 0 && (lessonIndex < 0 || completedIds.has(lastWatchedVideoId))) lessonIndex = firstIncomplete;
+  if (lessonIndex < 0) lessonIndex = Math.min(completed, total - 1);
+  return {
+    total,
+    completed,
+    percent,
+    lessonIndex: Math.max(0, Math.min(lessonIndex, total - 1)),
+    lastViewedAt: summary?.updatedAt || "",
+    watchedSeconds: videoProgress.reduce((sum, row) => sum + Math.max(0, Number(row?.watchedSeconds || 0)), 0),
+    durationSeconds: videoProgress.reduce((sum, row) => sum + Math.max(0, Number(row?.durationSeconds || 0)), 0),
+    activityByDay: {},
+    viewed: Boolean(summary?.updatedAt || percent > 0 || completed > 0),
+  };
+}
+
+export function dashCourseProgress(course, progressByCourse = null) {
+  const total = Math.max(Array.isArray(course.videos) ? course.videos.length : 0, 1);
+  const saved = cachedCourseProgress(course._id);
+  const completed = Math.max(0, Number(saved.completed || 0));
+  const local = {
+    total,
+    completed,
+    percent: Math.max(0, Math.min(100, Number(saved.percent ?? Math.round((completed / total) * 100)))),
+    lessonIndex: Math.max(0, Math.min(Number(saved.lessonIndex || 0), total - 1)),
+    lastViewedAt: saved.lastViewedAt || "",
+    watchedSeconds: Math.max(0, Number(saved.watchedSeconds || 0)),
+    durationSeconds: Math.max(0, Number(saved.durationSeconds || 0)),
+    activityByDay: saved.activityByDay && typeof saved.activityByDay === "object" ? saved.activityByDay : {},
+    viewed: Boolean(saved.viewed || saved.lastViewedAt),
+  };
+  const summary = progressByCourse?.[String(course._id)];
+  if (!summary) return local;
+  const remote = progressFromSummary(course, summary);
+  const localTime = new Date(local.lastViewedAt).getTime() || 0;
+  const remoteTime = new Date(remote.lastViewedAt).getTime() || 0;
+  const current = localTime > remoteTime ? local : remote;
+  return { ...current, activityByDay: local.activityByDay };
+}
+
+function cacheServerProgress(courses, progressByCourse) {
+  courses.forEach((course) => {
+    const summary = progressByCourse?.[String(course._id)];
+    if (!summary) return;
+    const local = cachedCourseProgress(course._id);
+    const remote = progressFromSummary(course, summary);
+    const localTime = new Date(local.lastViewedAt).getTime() || 0;
+    const remoteTime = new Date(remote.lastViewedAt).getTime() || 0;
+    const current = localTime > remoteTime ? local : remote;
+    try {
+      localStorage.setItem(progressCacheKey(course._id), JSON.stringify({
+        ...local,
+        ...current,
+        activityByDay: local.activityByDay && typeof local.activityByDay === "object" ? local.activityByDay : {},
+      }));
+    } catch (_) {}
+  });
 }
 
 function durationSeconds(value) {
@@ -72,7 +141,7 @@ function learningTimeLabel(totalMinutes) {
   return remainder ? `${hours}h ${remainder}m` : `${hours}h`;
 }
 
-export function buildDashboardActivity(courses, now = new Date()) {
+export function buildDashboardActivity(courses, now = new Date(), progressByCourse = null) {
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
   const days = Array.from({ length: 7 }, (_, index) => {
     const date = new Date(today);
@@ -92,7 +161,7 @@ export function buildDashboardActivity(courses, now = new Date()) {
   let latestActivity = null;
 
   courses.forEach((course) => {
-    const progress = dashCourseProgress(course);
+    const progress = dashCourseProgress(course, progressByCourse);
     const completedForCourse = progress.percent >= 100 ? progress.total : progress.completed;
     completedLessons += completedForCourse;
     if (progress.percent >= 100) completedCourses += 1;
@@ -133,6 +202,7 @@ export function buildDashboardActivity(courses, now = new Date()) {
     maxValue: Math.max(1, ...days.map((day) => day.value)),
     activeIndex: Math.max(0, days.map((day) => day.value).lastIndexOf(Math.max(...days.map((day) => day.value)))),
     timeLabel: learningTimeLabel(totalMinutes),
+    completedLessons,
     completedLabel: `${completedLessons} lesson${completedLessons === 1 ? "" : "s"}`,
     statusLabel,
     statusSub: streak > 0 ? `${latestText} · ${streak}-day streak` : latestText,
@@ -156,9 +226,11 @@ export function DashboardPage() {
   const [loadError, setLoadError] = useState("");
   const [recommendationError, setRecommendationError] = useState("");
   const [historyFilter, setHistoryFilter] = useState("all");
+  const [progressByCourse, setProgressByCourse] = useState(null);
   const [progressVersion, setProgressVersion] = useState(0);
   const runtimeReady = useEduNexRuntimeReady();
   const user = window.EduNex?.getUser?.();
+  const userId = user?._id || user?.id || "";
   const firstName = (user?.fullName || user?.email || user?.mobileNumber || "Learner").split(/\s+/)[0];
 
   usePageStyle("react-page-style-dashboard", dashboardPage.styles);
@@ -189,14 +261,19 @@ export function DashboardPage() {
   const loadDashboardCourses = async () => {
     const token = window.EduNex?.getAccessToken?.();
     const recommendationOptions = token ? { headers: { Authorization: `Bearer ${token}` } } : {};
-    const [courseResult, recommendationResult] = await Promise.allSettled([
+    const progressRequest = userId && window.EduNex?.authRequest
+      ? window.EduNex.authRequest(`/api/user/${encodeURIComponent(userId)}/progress`)
+      : Promise.resolve({ courseProgress: {} });
+    const [courseResult, recommendationResult, progressResult] = await Promise.allSettled([
       window.EduNex.request("/api/courses"),
       window.EduNex.request("/api/recommendations/courses?limit=4", recommendationOptions),
+      progressRequest,
     ]);
 
+    let loadedCourses = [];
     if (courseResult.status === "fulfilled") {
-      const realCourses = coursesArray(courseResult.value).filter((course) => course && course._id);
-      setCourses(realCourses);
+      loadedCourses = coursesArray(courseResult.value).filter((course) => course && course._id);
+      setCourses(loadedCourses);
       setLoadError("");
     } else {
       setCourses([]);
@@ -209,6 +286,15 @@ export function DashboardPage() {
     } else {
       setRecommendations([]);
       setRecommendationError(recommendationResult.reason?.message || "Could not load recommendations.");
+    }
+
+    if (progressResult.status === "fulfilled") {
+      const summaries = progressSummaryMap(progressResult.value);
+      cacheServerProgress(loadedCourses, summaries);
+      setProgressByCourse(summaries);
+      setProgressVersion((version) => version + 1);
+    } else {
+      setProgressByCourse(null);
     }
   };
 
@@ -240,13 +326,12 @@ export function DashboardPage() {
   const realCourses = courses;
   const withVideos = realCourses.filter((course) => Array.isArray(course.videos) && course.videos.length);
   const shown = (withVideos.length ? withVideos : realCourses).slice(0, 8);
-  const completed = realCourses.filter((course) => dashCourseProgress(course).percent >= 100).length;
   const visibleHistory = shown.filter((course) => {
     if (historyFilter === "all") return true;
-    return dashStatus(dashCourseProgress(course).percent).key === historyFilter;
+    return dashStatus(dashCourseProgress(course, progressByCourse).percent).key === historyFilter;
   });
   const recommendedCourses = recommendations.length ? recommendations : realCourses.slice(0, 4);
-  const activity = useMemo(() => buildDashboardActivity(realCourses), [progressVersion, realCourses]);
+  const activity = useMemo(() => buildDashboardActivity(realCourses, new Date(), progressByCourse), [progressByCourse, progressVersion, realCourses]);
 
   return (
     <div className="react-page-root" data-page="dashboard.html">
@@ -274,8 +359,8 @@ export function DashboardPage() {
               <div className="stat-pill-value">{user ? "Active" : "Guest"}</div>
             </div>
             <div className="stat-pill">
-              <div className="stat-pill-label"><i className="fas fa-bullseye" aria-hidden="true"></i> Points</div>
-              <div className="stat-pill-value">{completed} Done</div>
+              <div className="stat-pill-label"><i className="fas fa-bullseye" aria-hidden="true"></i> Lessons</div>
+              <div className="stat-pill-value">{activity.completedLessons} Done</div>
             </div>
             <div className="stat-pill">
               <div className="stat-pill-label"><i className="fas fa-graduation-cap" aria-hidden="true"></i> Courses</div>
@@ -306,7 +391,7 @@ export function DashboardPage() {
           {loadError ? <div className="hist-card" style={{ padding: 22, minHeight: 180 }}>Could not load backend courses: {loadError}</div> : null}
           {!loadError && allowed && !visibleHistory.length ? <div className="hist-card" style={{ padding: 22, minHeight: 180 }}>No published courses with videos are available yet.</div> : null}
           {!loadError && allowed ? visibleHistory.map((course) => {
-            const progress = dashCourseProgress(course);
+            const progress = dashCourseProgress(course, progressByCourse);
             const status = dashStatus(progress.percent);
             const video = course.videos?.[progress.lessonIndex] || course.videos?.[0] || {};
             const title = video.title || course.title || "Untitled lesson";

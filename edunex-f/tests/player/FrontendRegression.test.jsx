@@ -10,7 +10,7 @@ import { SignupPage } from "../../src/pages/SignupPage.jsx";
 import { CoursesPage } from "../../src/pages/CoursesPage.jsx";
 import { AiTutorPage } from "../../src/pages/AiTutorPage.jsx";
 import { plainCourseDescription } from "../../src/pages/CourseDetailsPage.jsx";
-import { buildDashboardActivity } from "../../src/pages/DashboardPage.jsx";
+import { buildDashboardActivity, DashboardPage, dashCourseProgress } from "../../src/pages/DashboardPage.jsx";
 import { PaymentPage } from "../../src/pages/PaymentPage.jsx";
 import { courseEntryHref } from "../../src/lib/courseNavigation.js";
 
@@ -211,9 +211,59 @@ describe("reported frontend regressions", () => {
       videos: [{ duration: 1800 }, { duration: 1800 }, { duration: 1800 }, { duration: 1800 }],
     }], now);
     expect(activity.timeLabel).toBe("1h");
+    expect(activity.completedLessons).toBe(2);
     expect(activity.completedLabel).toBe("2 lessons");
     expect(activity.statusLabel).toBe("In progress");
     expect(activity.days[6].value).toBe(60);
+  });
+
+  it("restores dashboard lesson counts and progress bars from server progress", async () => {
+    const videos = Array.from({ length: 34 }, (_, index) => ({ _id: `lesson-${index + 1}`, title: `Lesson ${index + 1}`, duration: 600 }));
+    const completedVideoIds = videos.slice(0, 20).map((video) => video._id);
+    const videoProgress = Object.fromEntries(videos.map((video, index) => [video._id, {
+      videoId: video._id,
+      watchedSeconds: index < 20 ? 600 : 0,
+      durationSeconds: 600,
+      resumePosition: index < 20 ? 600 : 0,
+    }]));
+    window.EduNex = {
+      getUser: () => cachedUser,
+      getAccessToken: () => "active-token",
+      checkSubscription: vi.fn(async () => ({ status: "active" })),
+      hasCourseAccess: vi.fn(() => true),
+      request: vi.fn(async (path) => path === "/api/courses" ? [{ _id: "course-1", title: "AI Influencer Course", videos }] : { recommendations: [] }),
+      authRequest: vi.fn(async () => ({
+        courseProgress: {
+          "course-1": {
+            completedVideoIds,
+            completedCount: 20,
+            totalVideos: 34,
+            progressPercent: 59,
+            videoProgress,
+            lastWatchedVideoId: "lesson-20",
+            updatedAt: "2026-09-17T12:00:00.000Z",
+          },
+        },
+      })),
+      courseImage: vi.fn(() => "course.jpg"),
+      placeholderImage: vi.fn(() => "fallback.jpg"),
+    };
+
+    render(<DashboardPage />);
+
+    expect(await screen.findByText("59% complete")).toBeTruthy();
+    expect(screen.getByText("20 Done")).toBeTruthy();
+    expect(screen.getByText("20 lessons")).toBeTruthy();
+    expect(document.querySelector(".hist-progress-fill")?.style.width).toBe("59%");
+    expect(screen.getAllByText("In Progress")).toHaveLength(2);
+    expect(window.EduNex.authRequest).toHaveBeenCalledWith("/api/user/user-1/progress");
+    expect(JSON.parse(localStorage.getItem("edunexCourseProgress:user-1:course-1")).completed).toBe(20);
+  });
+
+  it("uses an unscoped legacy progress cache when server progress is unavailable", () => {
+    window.EduNex = { getUser: () => cachedUser };
+    localStorage.setItem("edunexCourseProgress:course-1", JSON.stringify({ completed: 20, percent: 59, lessonIndex: 20 }));
+    expect(dashCourseProgress({ _id: "course-1", videos: Array.from({ length: 34 }) }).percent).toBe(59);
   });
 
   it("submits signup with Enter semantics and supports desktop age dragging", async () => {

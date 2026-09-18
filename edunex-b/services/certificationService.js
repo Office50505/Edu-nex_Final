@@ -52,9 +52,13 @@ async function issue(user,ctx,status) {
   catch(error) { if(error.code!==11000) throw error; cert=await Certificate.findById(_id).lean(); }
   return certificateView(cert);
 }
-async function sync(user,ctx,status) {
+async function sync(user,ctx,status,lastWatchedVideoId=null) {
   const completedVideoIds=status.lessons.filter(l=>l.complete).map(l=>l.id);
   const progress={userId:String(user._id),courseId:String(ctx.course._id),courseTitle:ctx.course.title,userName:user.fullName || '',userEmail:user.email || '',userMobileNumber:user.mobileNumber || '',completedVideoIds,completedCount:completedVideoIds.length,totalVideos:status.totalLessons,progressPercent:Number(status.progressPercent || 0),videoProgress:Object.fromEntries(status.lessons.map(l=>[l.id.replace(/[.$]/g,'_'),{videoId:l.id,watchedSeconds:l.watchedSeconds,durationSeconds:l.duration,resumePosition:l.resumePosition,percent:l.percent}])),updatedAt:new Date()};
+  if(lastWatchedVideoId) {
+    progress.lastWatchedVideoId=String(lastWatchedVideoId);
+    if(completedVideoIds.includes(String(lastWatchedVideoId)))progress.lastCompletedVideoId=String(lastWatchedVideoId);
+  }
   await CourseProgress.updateOne({userId:progress.userId,courseId:progress.courseId},{$set:progress},{upsert:true});
   await User.updateOne({_id:user._id},{$set:{[`courseProgress.${ctx.course._id}`]:progress,lastActiveAt:new Date()}});
   return progress;
@@ -87,7 +91,7 @@ async function recordPlayback({ user,courseId,videoId,currentTime,duration,sessi
   }
   if(!saved) throw fail('Progress changed concurrently. Retry the next update.',409);
   const status=await state(user,ctx);
-  const progress=await sync(user,ctx,status);
+  const progress=await sync(user,ctx,status,video.id);
   const events=[];
   if(previousCoverage<10 && nextCoverage>=10)events.push('video_start');
   if(previousCoverage/video.duration<0.9 && nextCoverage/video.duration>=0.9)events.push('video_complete');
@@ -102,6 +106,6 @@ async function completeVideo({user,courseId,videoId}) {
   await access(user);const ctx=await context(user,courseId),status=await state(user,ctx);
   const lesson=status.lessons.find(l=>l.id===String(videoId));
   if(!lesson?.complete) throw fail('Watch at least 90% of this lesson before completing it.',409);
-  return {courseId:String(courseId),progress:await sync(user,ctx,status),eligibility:status,certificate:await issue(user,ctx,status)};
+  return {courseId:String(courseId),progress:await sync(user,ctx,status,videoId),eligibility:status,certificate:await issue(user,ctx,status)};
 }
 module.exports={context,state,access,issue,sync,recordPlayback,completeVideo,certificateView,fail};
