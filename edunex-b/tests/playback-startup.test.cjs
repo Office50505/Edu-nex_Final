@@ -32,9 +32,12 @@ test('authorized playlist includes selected lesson grant without a separate bill
  assert.match(res.body.videos[0].hlsUrl,/grant=/);assert.equal(res.headers['Cache-Control'],'private, no-store');assert.equal(res.headers['Referrer-Policy'],'no-referrer');
 });
 test('expired or absent subscriptions never read the course or issue a grant',async()=>{
- for(const subscription of [null,{status:'active',currentPeriodEnd:new Date(0)},{status:'trial',trialExpiresAt:new Date(0)},{status:'active'}]){
+ for(const subscription of [null,{status:'active',currentPeriodEnd:new Date(0)},{status:'trial',trialExpiresAt:new Date(0)}]){
   const h=harness({subscription});const res=await h.call();assert.equal(res.code,403);assert.equal(h.queries(),0);assert.equal(h.grants.length,0);
  }
+});
+test('legacy active subscriptions without an expiry retain access',async()=>{
+ const h=harness({subscription:{status:'active'}});const res=await h.call();assert.equal(res.code,200);assert.equal(h.queries(),1);assert.equal(h.grants.length,1);
 });
 test('draft courses cannot produce playlist grants, signing failure still returns usable lesson metadata',async()=>{
  const draft=harness({course:{_id:id,status:'draft',videos:[]}});assert.equal((await draft.call()).code,404);assert.equal(draft.grants.length,0);

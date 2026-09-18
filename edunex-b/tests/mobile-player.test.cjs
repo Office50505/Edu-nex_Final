@@ -113,7 +113,7 @@ test('mobile JSON requests honor cancellation and reject HTTP failures', async()
 
 test('Home displays course metadata before its playback request finishes',async()=>{
   const state={};let finishPlayback;
-  const context={cancelled:false,homeAbort:new AbortController(),hasAccess:true,user:{_id:'u',sessionId:'s'},
+  const context={cancelled:false,homeAbort:new AbortController(),homeCatalogCourse:null,hasAccess:true,user:{_id:'u',sessionId:'s'},
     setLoading:value=>state.loading=value,setLoadError:value=>state.error=value,setPrimaryCourse:value=>state.course=value,
     fetchApiJson:async path=>path.includes('/top')?[{_id:'c',title:'Course',videos:[{_id:'v'}]}]:new Promise(resolve=>{finishPlayback=resolve;})};
   const load=compile(nodes.find(n=>n.type==='FunctionDeclaration'&&n.id.name==='loadPrimaryCourse'),context);

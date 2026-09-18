@@ -1788,7 +1788,7 @@
     typing.id = 'nai-typing';
       typing.innerHTML = `
       <div class="nai-ai-avatar"><span class="nai-thinking-overhead" aria-hidden="true"><span></span><span></span><span></span></span><img class="nai-bot-avatar-img is-thinking" src="/assets/nex-avatar-thinking.png" alt=""></div>
-      <div class="nai-ai-bubble"><span class="nai-typing-indicator" aria-label="AI is thinking"><span>${escHtml(normalizeBotName(botNameInput?.value) || 'AI')} is thinking…</span></span></div>
+      <div class="nai-ai-bubble"><span class="nai-typing-indicator" aria-label="AI is thinking"><span>${escapeNaiHtml(normalizeBotName(botNameInput?.value) || 'AI')} is thinking…</span></span></div>
     `;
     messages.appendChild(typing);
     messages.scrollTop = messages.scrollHeight;
