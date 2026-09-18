@@ -134,6 +134,7 @@ const sessionRoutes = require('./routes/sessions');
 const contentRoutes = require('./routes/content');
 const aiRoutes = require('./routes/ai');
 const mobileCompatRoutes = require('./routes/mobileCompat');
+const problemReportRoutes = require('./routes/problemReports');
 const { protect } = require('./middleware/auth');
 const {
   clearCacheNamespace,
@@ -1258,6 +1259,7 @@ app.use('/api', (req, res, next) => {
 app.use('/api', require('./routes/deletionRequests'));
 app.use('/api', require('./routes/playback'));
 app.use('/api', require('./routes/certification'));
+app.use('/api', problemReportRoutes);
 app.use('/api/admin', require('./routes/adminHealth'));
 app.use('/api/admin', require('./routes/paymentSettings'));
 app.use('/api/auth', authRoutes);
