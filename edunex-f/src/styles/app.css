@@ -2868,8 +2868,8 @@ html:has(.enx-page-loading) .enx-nav-hamburger span {
 
 @media (min-width: 901px) {
   .enx-footer-top {
-    grid-template-columns: repeat(6, minmax(0, 1fr));
-    column-gap: clamp(28px, 5vw, 76px);
+    grid-template-columns: repeat(8, minmax(0, 1fr));
+    column-gap: clamp(20px, 3.2vw, 58px);
   }
 
   .enx-footer-column {
