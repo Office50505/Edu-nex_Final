@@ -5,7 +5,9 @@ function futureDate(value, now = Date.now()) {
 }
 
 function resolveSubscriptionAccess(subscription, user = {}, now = Date.now()) {
-  const rawStatus = String(subscription?.status || user?.subscriptionStatus || 'none').trim().toLowerCase();
+  const subscriptionStatus = String(subscription?.status || '').trim().toLowerCase();
+  const userStatus = String(user?.subscriptionStatus || 'none').trim().toLowerCase();
+  const rawStatus = subscriptionStatus || userStatus;
   const trialExpiresAt = subscription?.trialExpiresAt || null;
   const currentPeriodEnd = subscription?.currentPeriodEnd || null;
 
@@ -16,17 +18,16 @@ function resolveSubscriptionAccess(subscription, user = {}, now = Date.now()) {
   if (futureDate(currentPeriodEnd, now)) {
     return { active: true, status: 'active', expiresAt: currentPeriodEnd, rawStatus };
   }
+  if (['active', 'subscribed'].includes(subscriptionStatus) && !currentPeriodEnd) {
+    return { active: true, status: 'active', expiresAt: null, rawStatus };
+  }
 
-  if (!subscription && ['trial', '1rs trial', 'active', 'subscribed'].includes(rawStatus)) {
-    const fallbackExpiry = user?.subscriptionExpiry || null;
-    if (!fallbackExpiry || futureDate(fallbackExpiry, now)) {
-      return {
-        active: true,
-        status: ['trial', '1rs trial'].includes(rawStatus) ? 'trial' : 'active',
-        expiresAt: fallbackExpiry,
-        rawStatus,
-      };
-    }
+  const fallbackExpiry = user?.subscriptionExpiry || null;
+  if (['trial', '1rs trial'].includes(userStatus) && futureDate(fallbackExpiry, now)) {
+    return { active: true, status: 'trial', expiresAt: fallbackExpiry, rawStatus };
+  }
+  if (['active', 'subscribed'].includes(userStatus) && (!fallbackExpiry || futureDate(fallbackExpiry, now))) {
+    return { active: true, status: 'active', expiresAt: fallbackExpiry, rawStatus };
   }
 
   return { active: false, status: 'none', expiresAt: null, rawStatus };

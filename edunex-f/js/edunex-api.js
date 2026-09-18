@@ -1370,7 +1370,10 @@
     if (typeof subscription?.hasActiveAccess === "boolean") {
       return subscription.hasActiveAccess;
     }
-    const status = String(subscription?.subscriptionDocStatus || subscription?.status || subscription?.subscriptionStatus || "none").toLowerCase();
+    if (typeof subscription?.accessGranted === "boolean") {
+      return subscription.accessGranted;
+    }
+    const status = String(subscription?.status || subscription?.subscriptionStatus || subscription?.subscriptionDocStatus || "none").toLowerCase();
     const now = Date.now();
     if (["trial_active", "paid_active"].includes(status)) return true;
     if (["trial", "1rs trial", "active", "subscribed"].includes(status)) {

@@ -71,6 +71,20 @@ function addMonths(date, months) {
   return result;
 }
 
+function hasValidAccess(status, trialExpiresAt, currentPeriodEnd, now = new Date()) {
+  const normalized = String(status || '').toLowerCase();
+  if (['trial', '1rs trial'].includes(normalized)) {
+    return Boolean(trialExpiresAt && new Date(trialExpiresAt) > now);
+  }
+  if (['active', 'subscribed'].includes(normalized)) {
+    return !currentPeriodEnd || new Date(currentPeriodEnd) > now;
+  }
+  if (['cancelled', 'paused'].includes(normalized)) {
+    return Boolean(currentPeriodEnd && new Date(currentPeriodEnd) > now);
+  }
+  return false;
+}
+
 function normalizePaymentInstrument(instrument) {
   const type = typeof instrument === 'string'
     ? instrument
@@ -689,12 +703,20 @@ async function cancelSubscription(req, res) {
 async function subscriptionStatus(req, res) {
   try {
     const userSubscriptionStatus = req.user.subscriptionStatus || 'none';
+    const userHasAccess = hasValidAccess(
+      userSubscriptionStatus,
+      req.user.subscriptionExpiry,
+      req.user.subscriptionExpiry,
+    );
     const subscription = await Subscription.findOne({ user: req.user._id });
     if (!subscription) {
       return res.json({
-        status: userSubscriptionStatus,
-        subscriptionStatus: userSubscriptionStatus,
+        status: userHasAccess ? userSubscriptionStatus : 'none',
+        subscriptionStatus: userHasAccess ? userSubscriptionStatus : userSubscriptionStatus,
         source: 'user',
+        accessGranted: userHasAccess,
+        hasActiveAccess: userHasAccess,
+        trialEligible: true,
       });
     }
 
@@ -712,6 +734,7 @@ async function subscriptionStatus(req, res) {
       trialExpiresAt: latest.trialExpiresAt || null,
       currentPeriodEnd: latest.currentPeriodEnd || null,
       nextBillingAt: latest.nextBillingAt,
+      trialEligible: !latest.trialStartedAt,
     });
   } catch (error) {
     res.status(500).json({ error: error.message });

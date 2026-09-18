@@ -3864,6 +3864,36 @@ html[data-theme="light"] .react-page-root .lp-prefix {
   border: 1px solid rgba(255,255,255,.08);
 }
 
+.react-page-root[data-page="videos.html"] .custom-video-controls {
+  grid-template-columns: 44px minmax(180px, 1fr) 44px minmax(120px, auto) !important;
+  gap: 10px !important;
+}
+
+.react-page-root[data-page="videos.html"] .video-control-btn,
+.react-page-root[data-page="videos.html"] .video-volume,
+.react-page-root[data-page="videos.html"] .video-volume-toggle {
+  width: 40px !important;
+  height: 40px !important;
+  min-width: 40px !important;
+  flex: 0 0 40px !important;
+}
+
+.react-page-root[data-page="videos.html"] .video-end-controls {
+  width: auto !important;
+  min-width: 120px !important;
+  gap: 10px !important;
+  justify-content: flex-end !important;
+}
+
+.react-page-root[data-page="videos.html"] .video-speed {
+  width: 64px !important;
+  min-width: 64px !important;
+}
+
+.react-page-root[data-page="videos.html"] .video-timeline-wrap {
+  min-width: 0 !important;
+}
+
 .react-page-root[data-page="videos.html"] :where(#playerFrame, .tap-zone):focus,
 .react-page-root[data-page="videos.html"] :where(#playerFrame, .tap-zone):focus-visible {
   outline: none !important;
@@ -3954,6 +3984,28 @@ body.has-edunex-player-fullscreen #nai-float-btn {
 
   .react-page-root[data-page="videos.html"] .custom-video-player {
     touch-action: pan-y !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .react-page-root[data-page="videos.html"] .custom-video-controls {
+    grid-template-columns: 40px minmax(0, 1fr) 40px minmax(108px, auto) !important;
+    gap: 8px !important;
+    padding: 10px !important;
+  }
+
+  .react-page-root[data-page="videos.html"] .video-end-controls {
+    min-width: 108px !important;
+    gap: 8px !important;
+  }
+
+  .react-page-root[data-page="videos.html"] .video-speed {
+    width: 60px !important;
+    min-width: 60px !important;
+  }
+
+  .react-page-root[data-page="videos.html"] .video-time-row [data-duration="true"] {
+    display: none !important;
   }
 }
 

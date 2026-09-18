@@ -240,6 +240,11 @@ export function DashboardPage() {
     scripts: dashboardPage.scripts.filter((script) => script.src),
   }), []);
 
+  const redirectToLogin = () => {
+    const next = `${window.location.pathname || "/"}${window.location.search || ""}${window.location.hash || ""}`;
+    window.location.assign(`/login.html?next=${encodeURIComponent(next)}`);
+  };
+
   useEffect(() => {
     document.title = dashboardPage.title;
     document.documentElement.lang = dashboardPage.lang || "en";
@@ -249,12 +254,22 @@ export function DashboardPage() {
 
   const canOpenDashboard = async () => {
     const token = window.EduNex?.getAccessToken?.();
-    if (!token) return false;
+    if (!token) {
+      redirectToLogin();
+      return null;
+    }
     try {
       const subscription = await window.EduNex.checkSubscription();
       return window.EduNex.hasCourseAccess(subscription);
-    } catch (_) {
-      return false;
+    } catch (error) {
+      const message = String(error?.message || "");
+      if (error?.status === 401 || /session|token|unauthorized|log in/i.test(message)) {
+        window.EduNex?.clearAuth?.();
+        redirectToLogin();
+        return null;
+      }
+      setLoadError(message || "Could not verify your subscription right now. Please refresh.");
+      return null;
     }
   };
 
@@ -304,6 +319,7 @@ export function DashboardPage() {
     (async () => {
       const open = await canOpenDashboard();
       if (cancelled) return;
+      if (open === null) return;
       setAllowed(open);
       if (open) await loadDashboardCourses();
     })();

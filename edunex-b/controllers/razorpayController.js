@@ -9,6 +9,13 @@ const modes = require('../services/paymentMode');
 const billingMode = billing => billing?.mode || rzp.legacyMode();
 const fail = (message, status = 409) => Object.assign(new Error(message), { status });
 const wrap = fn => async (req, res) => { try { await fn(req, res); } catch (error) { res.status(error.status || 500).json({ error: error.status ? error.message : 'Billing is temporarily unavailable. Please retry.' }); } };
+function hasValidAccess(status, trialExpiresAt, currentPeriodEnd, now = new Date()) {
+  const normalized = String(status || '').toLowerCase();
+  if (['trial', '1rs trial'].includes(normalized)) return Boolean(trialExpiresAt && new Date(trialExpiresAt) > now);
+  if (['active', 'subscribed'].includes(normalized)) return !currentPeriodEnd || new Date(currentPeriodEnd) > now;
+  if (['cancelled', 'paused'].includes(normalized)) return Boolean(currentPeriodEnd && new Date(currentPeriodEnd) > now);
+  return false;
+}
 
 async function reconcile(billing) {
   if (!billing?.subscriptionId) return null;
@@ -112,11 +119,14 @@ exports.verify = wrap(async (req, res) => {
 exports.status = wrap(async (req, res) => {
   const billing = await Billing.findById(req.user._id);
   const subscription = billing?.subscriptionId ? await reconcile(billing) : await Subscription.findOne({ user: req.user._id });
-  const valid = subscription && ((['trial', '1rs trial'].includes(subscription.status) && new Date(subscription.trialExpiresAt) > new Date()) || (['active', 'subscribed'].includes(subscription.status) && new Date(subscription.currentPeriodEnd) > new Date()));
-  res.json({ status: valid ? subscription.status : 'none', subscriptionStatus: valid ? subscription.status : 'none', subscriptionDocStatus: subscription?.status || 'none',
+  const docValid = subscription && hasValidAccess(subscription.status, subscription.trialExpiresAt, subscription.currentPeriodEnd);
+  const userValid = hasValidAccess(req.user.subscriptionStatus, req.user.subscriptionExpiry, req.user.subscriptionExpiry);
+  const effectiveStatus = docValid ? subscription.status : (userValid ? req.user.subscriptionStatus : 'none');
+  const valid = Boolean(docValid || userValid);
+  res.json({ status: effectiveStatus, subscriptionStatus: effectiveStatus, subscriptionDocStatus: subscription?.status || 'none',
     trialExpiresAt: subscription?.trialExpiresAt, currentPeriodEnd: subscription?.currentPeriodEnd, nextBillingAt: subscription?.nextBillingAt,
-    verified: Boolean(valid), sameAccount: true, paid: Boolean(valid),
-    mandateStatus: subscription?.razorpayStatus || null, accessGranted: Boolean(valid), trialEligible: !subscription?.trialStartedAt,
+    verified: valid, sameAccount: true, paid: valid,
+    mandateStatus: subscription?.razorpayStatus || null, accessGranted: valid, hasActiveAccess: valid, trialEligible: !subscription?.trialStartedAt,
     pendingCheckout: billing?.phase === 'ready' });
 });
 exports.cancel = wrap(async (req, res) => {
