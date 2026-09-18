@@ -4,6 +4,8 @@ export function plainCourseDescription(value) {
     .replace(/!\[([^\]]*)\]\([^)]*\)/g, "$1")
     .replace(/\[([^\]]+)\]\([^)]*\)/g, "$1")
     .replace(/^ {0,3}#{1,6}\s+(.+?)(?:\s+#+)?$/gm, "$1")
+    // Imported descriptions can flatten Markdown headings into one paragraph.
+    .replace(/(^|[ \t])#{2,6}[ \t]+(?=\S)/g, "$1")
     .replace(/^ {0,3}>[ \t]?/gm, "")
     .replace(/^ {0,3}(?:[-*_][ \t]*){3,}$/gm, "")
     .replace(/^[ \t]*[-*+][ \t]+/gm, "• ")
