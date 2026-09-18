@@ -88,7 +88,7 @@
 
 /* ─── ANIMATED GRADIENT TEXT ─── */
 .gradient-animate {
-  background: linear-gradient(270deg, #C58B2A 0%, #DAB77A 40%, #C58B2A 80%);
+  background: linear-gradient(270deg, #C58B2A 0%, #C58B2A 40%, #C58B2A 80%);
   background-size: 200% auto;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -164,7 +164,7 @@
   position: fixed;
   top: 0; left: 0;
   height: 3px;
-  background: linear-gradient(90deg, #C58B2A, #DAB77A, #C58B2A);
+  background: linear-gradient(90deg, #C58B2A, #C58B2A, #C58B2A);
   background-size: 200% 100%;
   animation: gradientBar 3s linear infinite;
   z-index: 10000;

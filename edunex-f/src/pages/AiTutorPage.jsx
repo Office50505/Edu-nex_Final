@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { page as aiTutorPage } from "../generated-pages/ai-tutor.html.js";
-import { BrandLogo } from "../components/BrandLogo.jsx";
 import { EnxIcon } from "../components/EnxIcon.jsx";
 import { runLegacyPage } from "../legacyRuntime.js";
 import { usePageStyle } from "../hooks/usePageStyle.js";
@@ -312,16 +311,6 @@ export function AiTutorPage() {
   return (
     <div className="react-page-root" data-page="ai-tutor.html">
       <div className="tutor-page">
-        <div className="tutor-top-bar">
-          <a href="index.html" className="nav-logo" style={{ flexShrink: 0 }} aria-label="Skillomate AI home">
-            <BrandLogo />
-          </a>
-          <div style={{ flex: 1 }}></div>
-          <a href="dashboard.html" className="btn btn-ghost btn-sm"><i className="fas fa-th-large" aria-hidden="true"></i> Dashboard</a>
-          <a href="courses.html" className="btn btn-ghost btn-sm"><i className="fas fa-play-circle" aria-hidden="true"></i> My Courses</a>
-          <img src="data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20width=%27900%27%20height=%27600%27%20viewBox=%270%200%20900%20600%27%3E%3Crect%20width=%27900%27%20height=%27600%27%20fill=%27%23000000%27/%3E%3Crect%20x=%271%27%20y=%271%27%20width=%27898%27%20height=%27598%27%20rx=%2732%27%20fill=%27%230d0d0d%27%20stroke=%27%23C58B2A%27%20stroke-opacity=%27.35%27/%3E%3Ctext%20x=%27450%27%20y=%27312%27%20text-anchor=%27middle%27%20fill=%27%23C58B2A%27%20font-family=%27Arial%27%20font-size=%2748%27%20font-weight=%27800%27%3ESkillomate%3C/text%3E%3C/svg%3E" className="avatar avatar-sm" alt="" />
-        </div>
-
         <div className="full-tutor">
           <button className={`tutor-history-backdrop${historyOpen ? " is-visible" : ""}`} type="button" aria-label="Close chat history" onClick={() => setHistoryOpen(false)}></button>
           <aside className={`tutor-sidebar${historyOpen ? " is-open" : ""}`} id="nex-chat-history" aria-label="Chat history">
@@ -363,6 +352,9 @@ export function AiTutorPage() {
               </div>
               <button className="tutor-icon-button tutor-header-new-chat" type="button" aria-label="Start a new chat" title="New chat" onClick={newChat}>
                 <EnxIcon name="plus" />
+              </button>
+              <button className="tutor-icon-button tutor-report-problem" type="button" aria-label="Report a problem" title="Report a problem" onClick={() => window.dispatchEvent(new Event("skillomate:open-problem-report"))}>
+                <EnxIcon name="flag" />
               </button>
             </div>
 

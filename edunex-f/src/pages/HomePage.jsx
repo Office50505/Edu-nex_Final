@@ -1115,6 +1115,33 @@ export function HomePage() {
     return viewport ? Array.from(viewport.querySelectorAll(".hero-course-card[data-hero-index]")) : [];
   };
 
+  const normalizeLoopPosition = () => {
+    const viewport = viewportRef.current;
+    const track = viewport?.querySelector(".hero-carousel-track");
+    const cards = carouselCards();
+    const baseCount = Number(track?.dataset.baseCount || 0);
+    if (!viewport || !baseCount || cards.length < baseCount * 3) return 0;
+
+    const first = cards[0];
+    const middle = cards[baseCount];
+    if (!first || !middle) return 0;
+    const cycleWidth = middle.offsetLeft - first.offsetLeft;
+    if (cycleWidth <= 0) return 0;
+
+    const centerOffset = (viewport.clientWidth - middle.offsetWidth) / 2;
+    const middleStart = middle.offsetLeft - centerOffset;
+    const lowerBoundary = middleStart - (cycleWidth / 2);
+    const upperBoundary = middleStart + (cycleWidth * 1.5);
+    let shift = 0;
+    if (viewport.scrollLeft < lowerBoundary) shift = cycleWidth;
+    else if (viewport.scrollLeft > upperBoundary) shift = -cycleWidth;
+    if (!shift) return 0;
+
+    viewport.scrollLeft += shift;
+    setActiveIndex((current) => current + (shift > 0 ? baseCount : -baseCount));
+    return shift;
+  };
+
   const nearestCarouselIndex = () => {
     const viewport = viewportRef.current;
     const cards = carouselCards();
@@ -1158,10 +1185,10 @@ export function HomePage() {
 
   useEffect(() => {
     if (!loop.rows.length) return undefined;
-    const id = requestAnimationFrame(() => scrollToIndex(activeIndex, "auto"));
+    const id = requestAnimationFrame(() => scrollToIndex(loop.baseCount, "auto"));
     return () => cancelAnimationFrame(id);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [loop.rows.length]);
+  }, [activeTab, loop.baseCount, loop.rows.length]);
 
   const pauseCarouselAfterInput = (duration = 2200) => {
     pauseRef.current = true;
@@ -1198,6 +1225,8 @@ export function HomePage() {
     const viewport = viewportRef.current;
     if (!viewport) return undefined;
     const onScroll = () => {
+      const shift = normalizeLoopPosition();
+      if (shift && pointerRef.current.down) pointerRef.current.startLeft += shift;
       if (viewport.classList.contains("is-auto-moving")) return;
       cancelAnimationFrame(rafRef.current);
       rafRef.current = requestAnimationFrame(syncCenterFromScroll);
@@ -1217,19 +1246,12 @@ export function HomePage() {
       const delta = Math.min(32, timestamp - lastFrameRef.current);
       lastFrameRef.current = timestamp;
 
-      const maxScrollLeft = Math.max(0, viewport.scrollWidth - viewport.clientWidth);
-      if (maxScrollLeft > 1 && !pauseRef.current && !pointerRef.current.down && !smoothScrollRef.current.frame && !document.hidden) {
+      const canScroll = viewport.scrollWidth - viewport.clientWidth > 1;
+      if (canScroll && !pauseRef.current && !pointerRef.current.down && !smoothScrollRef.current.frame && !document.hidden) {
         viewport.classList.add("is-auto-moving");
         const speed = 0.075;
-        let nextLeft = viewport.scrollLeft + (delta * speed * directionRef.current);
-        if (nextLeft >= maxScrollLeft) {
-          nextLeft = maxScrollLeft;
-          directionRef.current = -1;
-        } else if (nextLeft <= 0) {
-          nextLeft = 0;
-          directionRef.current = 1;
-        }
-        viewport.scrollLeft = nextLeft;
+        viewport.scrollLeft += delta * speed * directionRef.current;
+        normalizeLoopPosition();
       } else {
         viewport.classList.remove("is-auto-moving");
       }
@@ -1252,7 +1274,6 @@ export function HomePage() {
 
   const handlePointerDown = (event) => {
     if (!event.isPrimary || event.button !== 0) return;
-    if (event.pointerType === "mouse") return;
     if (event.pointerType === "touch") {
       pauseCarouselAfterInput(3000);
       return;
@@ -1294,6 +1315,8 @@ export function HomePage() {
     pointer.moved = true;
     event.preventDefault();
     viewport.scrollLeft = pointer.startLeft - deltaX;
+    const shift = normalizeLoopPosition();
+    if (shift) pointer.startLeft += shift;
   };
 
   const handlePointerEnd = (event) => {
@@ -1381,6 +1404,11 @@ export function HomePage() {
     const horizontalIntent = Math.abs(event.deltaX) > Math.abs(event.deltaY) || event.shiftKey;
     if (!horizontalIntent) return;
     event.preventDefault();
+    const viewport = viewportRef.current;
+    if (!viewport) return;
+    pauseCarouselAfterInput(1800);
+    viewport.scrollLeft += event.shiftKey && !event.deltaX ? event.deltaY : event.deltaX;
+    normalizeLoopPosition();
   };
 
   useEffect(() => {
@@ -1442,10 +1470,6 @@ export function HomePage() {
   };
 
   const searchSuggestions = uniqueLabels(courses.filter((course) => !course.isFallback).map((course) => course.title)).slice(0, 6);
-  const autocompleteSuggestions = uniqueLabels([
-    ...searchSuggestions,
-    ...courses.filter((course) => !course.isFallback).map((course) => categoryName(course)),
-  ]);
   const activeRows = loop.rows.length ? loop.rows : Array.from({ length: 21 }, (_, index) => ({ loopIndex: index, placeholder: true }));
 
   return (
@@ -1455,7 +1479,10 @@ export function HomePage() {
         <section className="learning-hero" aria-labelledby="learningHeroTitle">
           <div className="learning-hero-copy">
             <div className="learning-hero-label">LEARN WITH AI. EARN WITH AI.</div>
-            <h1 id="learningHeroTitle">Build skills that turn<br />into opportunities.</h1>
+            <h1 id="learningHeroTitle">
+              <span>Build skills that turn</span>
+              <span>into opportunities.</span>
+            </h1>
             <p>Learn practical AI, content, business and digital skills through short expert-led lessons designed for real-world results.</p>
           </div>
 
@@ -1522,11 +1549,8 @@ export function HomePage() {
             <form className="hero-search-form" id="homeHeroSearch" onSubmit={handleSearch}>
               <label className="hero-search-field">
                 <MaterialIcon>search</MaterialIcon>
-                <input type="search" name="q" list="home-course-search-suggestions" placeholder="What do you want to learn today?" aria-label="Search courses" value={query} onChange={(event) => setQuery(event.target.value)} />
+                <input type="search" name="q" placeholder="What do you want to learn today?" aria-label="Search courses" value={query} onChange={(event) => setQuery(event.target.value)} />
               </label>
-              <datalist id="home-course-search-suggestions">
-                {autocompleteSuggestions.map((suggestion) => <option value={suggestion} key={suggestion} />)}
-              </datalist>
               <button className="hero-search-btn" type="submit">Search</button>
             </form>
             {searchSuggestions.length ? (

@@ -112,6 +112,10 @@ export function CourseMediaPlayer({ course, lesson, lessonIndex, autoNext, autop
   const failure=access.error||error,visible=awake||!playing||menu||!!failure;
   return <section className={`sm-player ${visible?'sm-awake':''} ${fullscreen?'sm-fullscreen':''}`} ref={frameRef} tabIndex={0} aria-label={`${lesson.title} video player`} onKeyDown={key} onPointerMove={wake} onPointerDown={wake} onFocus={wake}>
     <video ref={videoRef} playsInline preload="metadata" aria-label={lesson.title} onClick={videoTap} onDoubleClick={event=>event.preventDefault()}/>
+    <div className="sm-player-heading" aria-hidden={!visible}>
+      <span>Lecture {lessonIndex + 1}</span>
+      <strong>{lesson.title || course.title || `Lecture ${lessonIndex + 1}`}</strong>
+    </div>
     {!source&&!failure?<div className="sm-status" role="status">Authorizing playback…</div>:null}
     {!playing&&!buffering&&!failure&&source&&time.current===0?<button className="sm-big-play" onClick={toggle} aria-label="Start video"><PlayerIcon name="play"/></button>:null}
     {buffering&&!failure?<div className="sm-status" role="status">Loading video…</div>:null}

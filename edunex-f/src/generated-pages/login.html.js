@@ -230,7 +230,7 @@ export const page = {
       margin-bottom: 14px;
     }
     .lp-signin-btn:hover {
-      background: #A96F18;
+      background: #C58B2A;
       box-shadow: 0 6px 24px rgba(197,139,42,.4);
     }
 

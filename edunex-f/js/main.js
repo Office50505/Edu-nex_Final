@@ -227,7 +227,7 @@ document.querySelectorAll('.curriculum-item').forEach(item => {
 /* ===== Toast notification ===== */
 function showToast(msg, type = 'success') {
   const toast = document.createElement('div');
-  toast.style.cssText = `position:fixed;bottom:24px;right:24px;z-index:9999;padding:14px 22px;background:${type === 'success' ? '#1F170D' : '#1B0F0F'};border:1px solid ${type === 'success' ? 'rgba(197,139,42,.42)' : 'rgba(239,68,68,.4)'};border-radius:12px;color:${type === 'success' ? '#DAB77A' : '#F87171'};font-size:.875rem;font-weight:600;backdrop-filter:blur(20px);box-shadow:0 8px 32px rgba(0,0,0,.4);animation:slideUp .3s ease;`;
+  toast.style.cssText = `position:fixed;bottom:24px;right:24px;z-index:9999;padding:14px 22px;background:${type === 'success' ? '#111318' : '#1B0F0F'};border:1px solid ${type === 'success' ? 'rgba(197,139,42,.42)' : 'rgba(239,68,68,.4)'};border-radius:12px;color:${type === 'success' ? '#C58B2A' : '#F87171'};font-size:.875rem;font-weight:600;backdrop-filter:blur(20px);box-shadow:0 8px 32px rgba(0,0,0,.4);animation:slideUp .3s ease;`;
   toast.textContent = msg;
   document.body.appendChild(toast);
   setTimeout(() => { toast.style.opacity = '0'; toast.style.transition = 'opacity .4s'; setTimeout(() => toast.remove(), 400); }, 3200);

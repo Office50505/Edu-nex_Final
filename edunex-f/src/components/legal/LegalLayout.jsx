@@ -32,9 +32,9 @@ export function LegalSection({ id, title, children }) {
   );
 }
 
-export function LegalLayout({ title, description, children, sections = [], updated = true, aside, actions }) {
+export function LegalLayout({ title, description, children, sections = [], updated = true, aside, actions, pageKey }) {
   return (
-    <main className="react-page-root legal-page-root">
+    <main className="react-page-root legal-page-root" data-page={pageKey || undefined}>
       <LegalHero title={title} description={description} updated={updated} actions={actions} />
       {sections.length ? (
         <details className="legal-mobile-toc">

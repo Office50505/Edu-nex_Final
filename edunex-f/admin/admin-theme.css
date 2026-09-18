@@ -12,7 +12,7 @@
   --secondary: #2563eb;
   --danger: #d92d20;
   --success: #16834b;
-  --warning: #b7791f;
+  --warning: #F59E0B;
   --shadow: 0 18px 44px rgba(20, 35, 26, .08);
   --navy: #ffffff;
   --navy-dk: #f4f7f5;
@@ -2393,7 +2393,7 @@ body.premium-nav-admin .trend-bars .users {
 }
 
 body.premium-nav-admin .trend-bars .watch {
-  background: #b7791f;
+  background: #F59E0B;
 }
 
 body.premium-nav-admin .trend-day small {
@@ -2630,14 +2630,14 @@ body.premium-nav-admin {
   --muted: #9ca3af;
   --line: rgba(255, 255, 255, .1);
   --primary: #c58b2a;
-  --primary-dark: #a96f18;
+  --primary-dark: #C58B2A;
   --primary-lt: rgba(197, 139, 42, .1);
-  --secondary: #b9853e;
+  --secondary: #C58B2A;
   --success: #4ade80;
   --warning: #facc15;
   --shadow: 0 22px 60px rgba(0, 0, 0, .32);
   --premium-nav-primary: #c58b2a;
-  --premium-nav-primary-dark: #a96f18;
+  --premium-nav-primary-dark: #C58B2A;
   --premium-nav-ink: #ffffff;
   --premium-nav-soft: #9ca3af;
   --premium-nav-line: rgba(255, 255, 255, .1);

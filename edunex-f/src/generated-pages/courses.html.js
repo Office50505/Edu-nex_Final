@@ -177,7 +177,7 @@ export const page = {
     .price-left { display: flex; align-items: baseline; gap: 8px; }
     .price-original { font-size: .78rem; color: var(--gray); text-decoration: line-through; }
     .price-trial { font-size: 1.2rem; font-weight: 800; color: var(--cyan); }
-    .price-off { font-size: .72rem; font-weight: 700; color: #A96F18; background: rgba(197,139,42,.1); border: 1px solid rgba(197,139,42,.25); padding: 2px 8px; border-radius: 100px; }
+    .price-off { font-size: .72rem; font-weight: 700; color: #C58B2A; background: rgba(197,139,42,.1); border: 1px solid rgba(197,139,42,.25); padding: 2px 8px; border-radius: 100px; }
 
     .btn-trial {
       width: 100%; padding: 12px;
@@ -187,7 +187,7 @@ export const page = {
       border: none; border-radius: 10px;
       cursor: pointer; transition: all .2s;
     }
-    .btn-trial:hover { background: #A96F18; box-shadow: 0 4px 18px rgba(197,139,42,.35); }
+    .btn-trial:hover { background: #C58B2A; box-shadow: 0 4px 18px rgba(197,139,42,.35); }
     .course-card-actions {
       display: grid;
       grid-template-columns: 1fr 46px;

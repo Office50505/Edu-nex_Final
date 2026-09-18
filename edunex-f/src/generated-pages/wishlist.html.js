@@ -76,7 +76,7 @@ export const page = {
       font-family: "Manrope", ui-sans-serif, system-ui, sans-serif; font-size: .76rem; font-weight: 700;
       color: var(--gray); cursor: pointer; transition: all .2s;
     }
-    .wl-clear-btn:hover { border-color: rgba(179,106,76,.45); color: #B36A4C; }
+    .wl-clear-btn:hover { border-color: rgba(239,68,68,.45); color: #EF4444; }
 
     /* Sort row */
     .wl-sort-row { display: flex; gap: 8px; margin-bottom: 22px; flex-wrap: wrap; }
@@ -105,11 +105,11 @@ export const page = {
       width: 30px; height: 30px; border-radius: 50%;
       background: rgba(0,0,0,.7); border: 1px solid rgba(255,255,255,.15);
       display: flex; align-items: center; justify-content: center;
-      color: #B36A4C; font-size: .72rem; cursor: pointer;
+      color: #EF4444; font-size: .72rem; cursor: pointer;
       transition: all .2s; opacity: 0;
     }
     .wl-card:hover .wl-remove { opacity: 1; }
-    .wl-remove:hover { background: rgba(179,106,76,.15); border-color: rgba(179,106,76,.45); }
+    .wl-remove:hover { background: rgba(239,68,68,.15); border-color: rgba(239,68,68,.45); }
 
     /* Thumbnail */
     .wl-thumb-wrap { position: relative; overflow: hidden; }
@@ -121,7 +121,7 @@ export const page = {
       font-size: .58rem; font-weight: 800; text-transform: uppercase; letter-spacing: .05em;
     }
     .badge-cyan { background: rgba(197,139,42,.15); border: 1px solid rgba(197,139,42,.4); color: var(--cyan); }
-    .badge-green { background: rgba(169,111,24,.12); border: 1px solid rgba(169,111,24,.35); color: #A96F18; }
+    .badge-green { background: rgba(197,139,42,.12); border: 1px solid rgba(197,139,42,.35); color: #C58B2A; }
     .badge-purple { background: rgba(168,85,247,.12); border: 1px solid rgba(168,85,247,.35); color: #c084fc; }
     .badge-orange { background: rgba(251,146,60,.12); border: 1px solid rgba(251,146,60,.35); color: #fb923c; }
 
@@ -149,7 +149,7 @@ export const page = {
       font-family: "Manrope", ui-sans-serif, system-ui, sans-serif; font-size: .76rem; font-weight: 800;
       color: #000; cursor: pointer; transition: all .2s;
     }
-    .wl-enroll-btn:hover { background: #A96F18; box-shadow: 0 4px 14px rgba(197,139,42,.3); }
+    .wl-enroll-btn:hover { background: #C58B2A; box-shadow: 0 4px 14px rgba(197,139,42,.3); }
 
     /* Empty state */
     .wl-empty {
@@ -171,7 +171,7 @@ export const page = {
       font-family: "Manrope", ui-sans-serif, system-ui, sans-serif; font-size: .84rem; font-weight: 800;
       border-radius: 10px; transition: all .2s;
     }
-    .wl-browse-btn:hover { background: #A96F18; }
+    .wl-browse-btn:hover { background: #C58B2A; }
 
     .nav-hamburger { display: none; flex-direction: column; gap: 5px; background: none; border: none; cursor: pointer; padding: 4px; }
     .nav-hamburger span { display: block; width: 22px; height: 2px; background: var(--text); border-radius: 2px; }

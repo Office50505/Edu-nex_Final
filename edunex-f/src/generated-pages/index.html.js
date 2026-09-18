@@ -12,7 +12,7 @@ export const page = {
       --cyan: #C58B2A;
       --cyan-dim: rgba(197,139,42,0.1);
       --cyan-border: rgba(197,139,42,0.25);
-      --accent: #B9853E;
+      --accent: #C58B2A;
       --gold: #C58B2A;
       --bg: #000000;
       --card: #0d0d0d;
@@ -160,9 +160,9 @@ export const page = {
     .learning-hero-copy {
       position: relative;
       z-index: 3;
-      max-width: 860px;
+      max-width: 1040px;
       margin: 0 auto;
-      padding: 0 clamp(16px, 5vw, 72px);
+      padding: 0 clamp(16px, 3vw, 40px);
       text-align: center;
     }
     .learning-hero-label {
@@ -179,14 +179,19 @@ export const page = {
       text-transform: uppercase;
     }
     .learning-hero h1 {
-      max-width: 850px;
+      max-width: 1000px;
       margin: 0 auto;
       font-family: "Fraunces", serif;
-      font-size: clamp(42px, 5.9vw, 82px);
-      line-height: .98;
+      font-size: clamp(48px, 5vw, 76px);
+      line-height: 1.02;
       letter-spacing: 0;
       font-weight: 600;
       text-align: center;
+    }
+    .learning-hero h1 span {
+      display: block;
+      font-family: inherit !important;
+      white-space: nowrap;
     }
     .learning-hero-copy > p {
       max-width: 720px;
@@ -264,6 +269,7 @@ export const page = {
       scrollbar-width: none;
       padding: 34px 0 24px;
       touch-action: pan-x;
+      cursor: grab;
       -webkit-user-select: none;
       user-select: none;
     }
@@ -271,6 +277,10 @@ export const page = {
     .hero-carousel-viewport::-webkit-scrollbar { display: none; }
     .hero-carousel-viewport.is-dragging {
       scroll-snap-type: none;
+      cursor: grabbing;
+    }
+    .hero-carousel-viewport.is-dragging * {
+      cursor: grabbing !important;
     }
     .hero-carousel-viewport.is-auto-moving {
       scroll-snap-type: none;
@@ -912,13 +922,13 @@ export const page = {
     html[data-theme="light"] h2,
     html[data-theme="light"] h3,
     html[data-theme="light"] h4 {
-      color: #332820 !important;
+      color: #0F172A !important;
     }
     html[data-theme="light"] .text-on-surface-variant,
     html[data-theme="light"] footer p,
     html[data-theme="light"] footer li,
     html[data-theme="light"] footer span {
-      color: #756A60 !important;
+      color: #475569 !important;
     }
     html[data-theme="light"] .glass-card {
       background: rgba(255,255,255,.82);
@@ -931,7 +941,7 @@ export const page = {
     html[data-theme="light"] .hero-trust-item,
     html[data-theme="light"] .hero-card-wish,
     html[data-theme="light"] .hero-topic {
-      background: #FAF7F1;
+      background: #F8FAFC;
       border-color: rgba(0,0,0,.08);
     }
     html[data-theme="light"] .hero-mock-placeholder {
@@ -953,34 +963,34 @@ export const page = {
     html[data-theme="light"] .rounded-2xl.bg-white\\/\\[\\.035\\] {
       background: rgba(255,255,255,.78) !important;
       border-color: rgba(0,0,0,.09) !important;
-      color: #332820 !important;
+      color: #0F172A !important;
     }
     html[data-theme="light"] .bg-black\\/80 {
       background: rgba(255,255,255,.92) !important;
-      color: #A96F18 !important;
+      color: #C58B2A !important;
     }
     html[data-theme="light"] footer {
-      background: #FBF8F2 !important;
-      border-top-color: #E2D6C6 !important;
-      color: #332820 !important;
+      background: #F8FAFC !important;
+      border-top-color: #E2E8F0 !important;
+      color: #0F172A !important;
     }
     html[data-theme="light"] .site-footer {
-      background: #FBF8F2 !important;
-      color: #332820 !important;
+      background: #F8FAFC !important;
+      color: #0F172A !important;
     }
     html[data-theme="light"] .footer-shell,
     html[data-theme="light"] .footer-top,
     html[data-theme="light"] .footer-column,
     html[data-theme="light"] .footer-heading,
     html[data-theme="light"] .footer-links {
-      color: #332820 !important;
+      color: #0F172A !important;
     }
     html[data-theme="light"] .footer-links a,
     html[data-theme="light"] .footer-copy,
     html[data-theme="light"] .footer-contact p,
     html[data-theme="light"] .footer-bottom,
     html[data-theme="light"] .footer-bottom a {
-      color: #5F534A !important;
+      color: #475569 !important;
     }
     html[data-theme="light"] .footer-contact,
     html[data-theme="light"] .footer-trust-chip,
@@ -996,8 +1006,8 @@ export const page = {
         padding-inline: 0;
       }
       .learning-hero h1 {
-        font-size: clamp(58px, 6vw, 66px);
-        line-height: .98;
+        font-size: clamp(42px, 5vw, 56px);
+        line-height: 1.02;
       }
       .learning-hero-copy > p {
         font-size: clamp(17px, 1.7vw, 18px);
@@ -1009,8 +1019,8 @@ export const page = {
         padding-top: 86px;
       }
       .learning-hero h1 {
-        font-size: clamp(42px, 11.5vw, 48px);
-        line-height: 1;
+        font-size: clamp(27px, 8.2vw, 42px);
+        line-height: 1.05;
       }
       .learning-hero-copy > p {
         font-size: 16px;

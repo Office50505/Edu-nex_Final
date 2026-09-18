@@ -1,7 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 1100" role="img" aria-labelledby="title desc">
   <title id="title">Abstract blue Skillomate pattern</title>
   <desc id="desc">A cream background with rounded blue abstract question-mark inspired shapes.</desc>
-  <rect width="900" height="1100" fill="#f3ecdf"/>
+  <rect width="900" height="1100" fill="#F1F5F9"/>
   <g fill="none" stroke="#1168ad" stroke-width="78" stroke-linecap="round" stroke-linejoin="round">
     <path d="M-48 58c104 84 44 174-58 222"/>
     <path d="M152-18c-20 74 70 98 98 36 24-54-36-96-86-66"/>

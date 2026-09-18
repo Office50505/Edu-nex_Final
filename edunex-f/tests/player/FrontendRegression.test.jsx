@@ -77,6 +77,7 @@ describe("reported frontend regressions", () => {
     expect(screen.getByRole("img", { name: "AI assistant" }).getAttribute("src")).toBe("/assets/nex-avatar.png");
     expect(screen.getByRole("group", { name: "Suggested questions" }).querySelectorAll("button")).toHaveLength(4);
     expect(screen.queryByRole("group", { name: "Follow-up suggestions" })).toBeNull();
+    expect(document.querySelector(".tutor-top-bar")).toBeNull();
   });
 
   it("lets each learner name the AI without letting a message replace the header name", async () => {
@@ -293,13 +294,14 @@ describe("reported frontend regressions", () => {
     expect(ageList.scrollTop).toBeGreaterThan(initialScrollTop);
   });
 
-  it("does not flash invented filters or promotional content while courses load", () => {
+  it("does not render category filters or promotional content while courses load", () => {
     window.EduNex = {
       request: vi.fn(() => new Promise(() => {})),
       getAccessToken: vi.fn(() => ""),
     };
     render(<CoursesPage />);
-    expect(screen.getByText("Loading course filters...")).toBeTruthy();
+    expect(document.querySelector(".filter-pills")).toBeNull();
+    expect(screen.getByText("Loading courses...")).toBeTruthy();
     expect(screen.queryByText("AI Freelancing")).toBeNull();
     expect(screen.queryByText("Your Path to Mastery")).toBeNull();
   });

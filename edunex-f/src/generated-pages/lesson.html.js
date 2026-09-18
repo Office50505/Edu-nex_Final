@@ -183,7 +183,7 @@ export const page = {
       border-radius: 11px; border: none; cursor: pointer;
       flex-shrink: 0; transition: all .2s;
     }
-    .ask-ai-btn:hover { background: #A96F18; box-shadow: 0 4px 18px rgba(197,139,42,.5); transform: translateY(-1px); }
+    .ask-ai-btn:hover { background: #C58B2A; box-shadow: 0 4px 18px rgba(197,139,42,.5); transform: translateY(-1px); }
     .ask-ai-btn i { font-size: .78rem; }
 
     /* ===== COURSE CONTENT ===== */
@@ -391,7 +391,7 @@ export const page = {
       color: #000; font-size: .78rem; cursor: pointer;
       flex-shrink: 0; transition: all .2s;
     }
-    .chat-send:hover { background: #A96F18; box-shadow: 0 2px 12px rgba(197,139,42,.4); }
+    .chat-send:hover { background: #C58B2A; box-shadow: 0 2px 12px rgba(197,139,42,.4); }
 
     /* Quick actions */
     .quick-actions { display: flex; gap: 6px; flex-wrap: wrap; padding-bottom: 4px; }

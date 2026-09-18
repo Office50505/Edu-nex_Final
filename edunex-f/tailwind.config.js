@@ -22,9 +22,9 @@ export default {
         outline: "#869397",
         "outline-variant": "#3c494c",
         primary: "#C58B2A",
-        "primary-container": "#F3E4C8",
-        "on-primary": "#FFFDF8",
-        "on-primary-container": "#332820",
+        "primary-container": "#F1F5F9",
+        "on-primary": "#FFFFFF",
+        "on-primary-container": "#0F172A",
       },
       borderRadius: {
         DEFAULT: "1rem",

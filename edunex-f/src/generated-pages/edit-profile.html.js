@@ -214,7 +214,7 @@ export const page = {
       border: none; border-radius: 12px; cursor: pointer; transition: all .2s;
       margin-top: 8px;
     }
-    .ep-save-btn:hover { background: #A96F18; box-shadow: 0 6px 22px rgba(197,139,42,.35); }
+    .ep-save-btn:hover { background: #C58B2A; box-shadow: 0 6px 22px rgba(197,139,42,.35); }
     .ep-save-btn:disabled { opacity: .65; cursor: wait; box-shadow: none; }
 
     /* Toast */
@@ -241,7 +241,7 @@ export const page = {
     .ep-status.error {
       border-color: rgba(248,113,113,.35);
       background: rgba(248,113,113,.08);
-      color: #A96F18;
+      color: #C58B2A;
     }
     .ep-status button {
       margin-left: 10px;

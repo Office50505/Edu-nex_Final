@@ -15,6 +15,7 @@ export function PricingPage() {
 
   return (
     <LegalLayout
+      pageKey="pricing.html"
       title="Pricing"
       description="Simple digital subscription pricing for Skillomate learning access."
       updated={false}

@@ -7,7 +7,7 @@ const sections = [
   { label: 'Content', links: [['courses', 'Course library', adminRoutes.courses, 'book'], ['upload', 'Create course', adminRoutes.upload, 'plus'], ['courseReview', 'Course review', adminRoutes.courseReview, 'check']] },
   { label: 'Commerce', links: [['orders', 'Orders', adminRoutes.orders, 'bag'], ['payments', 'Payments', adminRoutes.payments, 'pay'], ['subscriptions', 'Subscriptions', adminRoutes.subscriptions, 'loop']] },
   { label: 'Learning', links: [['progress', 'Progress', adminRoutes.progress, 'trend'], ['certifications', 'Certification', adminRoutes.certifications, 'award']] },
-  { label: 'Operations', links: [['health', 'System health', adminRoutes.health, 'pulse'], ['auditLog', 'Audit log', adminRoutes.auditLog, 'log'], ['settings', 'Settings', adminRoutes.settings, 'gear']] },
+  { label: 'Operations', links: [['reports', 'User reports', adminRoutes.reports, 'flag'], ['health', 'System health', adminRoutes.health, 'pulse'], ['auditLog', 'Audit log', adminRoutes.auditLog, 'log'], ['settings', 'Settings', adminRoutes.settings, 'gear']] },
 ];
 
 export function Message({ text, type = "success" }) {
@@ -28,6 +28,7 @@ function NavIcon({ type }) {
     loop: <><path d="M17 1l4 4-4 4" /><path d="M3 11V9a4 4 0 0 1 4-4h14" /><path d="m7 23-4-4 4-4" /><path d="M21 13v2a4 4 0 0 1-4 4H3" /></>,
     trend: <><path d="m3 17 6-6 4 4 8-8" /><path d="M14 7h7v7" /></>,
     award: <><circle cx="12" cy="8" r="5" /><path d="m8.5 12.5-1 8 4.5-2 4.5 2-1-8" /></>,
+    flag: <><path d="M5 22V4" /><path d="M5 5c4-3 7 3 14 0v10c-7 3-10-3-14 0" /></>,
     pulse: <><path d="M22 12h-4l-3 8-6-16-3 8H2" /></>,
     log: <><path d="M4 5h16" /><path d="M4 12h16" /><path d="M4 19h10" /></>,
     gear: <><circle cx="12" cy="12" r="3" /><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-2.86 2.86-.06-.06A1.7 1.7 0 0 0 15 19.4a1.7 1.7 0 0 0-1 .6V20h-4v-.08a1.7 1.7 0 0 0-1-.6 1.7 1.7 0 0 0-1.88.34l-.06.06-2.86-2.86.06-.06A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-.6-1H4v-4h.08a1.7 1.7 0 0 0 .6-1 1.7 1.7 0 0 0-.34-1.88l-.06-.06 2.86-2.86.06.06A1.7 1.7 0 0 0 9 4.6a1.7 1.7 0 0 0 1-.6V4h4v.08a1.7 1.7 0 0 0 1 .6 1.7 1.7 0 0 0 1.88-.34l.06-.06 2.86 2.86-.06.06A1.7 1.7 0 0 0 19.4 9a1.7 1.7 0 0 0 .6 1H20v4h-.08a1.7 1.7 0 0 0-.52 1Z" /></>,

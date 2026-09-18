@@ -12,7 +12,7 @@
   var isLight = theme === 'light' || (theme === 'system' && !prefersDark);
   var root = document.documentElement;
   var colors = isLight
-    ? { bg: '#FAF7F1', text: '#332820', text2: '#756A60', nav: '#FBF8F2', border: '#E2D6C6' }
+    ? { bg: '#F8FAFC', text: '#0F172A', text2: '#475569', nav: '#F8FAFC', border: '#E2E8F0' }
     : { bg: '#000000', text: '#ffffff', text2: '#9ca3af', nav: 'rgba(0,0,0,0.92)', border: 'rgba(255,255,255,0.07)' };
 
   root.dataset.theme = isLight ? 'light' : 'noir';
@@ -26,7 +26,7 @@
   root.style.setProperty('--border', colors.border);
 
   var themeColor = document.querySelector('meta[name="theme-color"]');
-  if (themeColor) themeColor.setAttribute('content', isLight ? '#FBF8F2' : '#000000');
+  if (themeColor) themeColor.setAttribute('content', isLight ? '#F8FAFC' : '#000000');
 
   var criticalStyle = document.createElement('style');
   criticalStyle.textContent = 'html,body,#root{background:var(--bg,#000);color:var(--text,#fff)}';

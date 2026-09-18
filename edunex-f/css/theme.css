@@ -5,7 +5,7 @@
 
 html[data-theme="light"] body {
   background: #f3f4f6 !important;
-  color: #332820 !important;
+  color: #0F172A !important;
 }
 
 /* ---- Base text elements ---- */
@@ -14,14 +14,14 @@ html[data-theme="light"] h2,
 html[data-theme="light"] h3,
 html[data-theme="light"] h4,
 html[data-theme="light"] h5,
-html[data-theme="light"] h6 { color: #332820 !important; }
+html[data-theme="light"] h6 { color: #0F172A !important; }
 
 html[data-theme="light"] p,
 html[data-theme="light"] span,
 html[data-theme="light"] li,
 html[data-theme="light"] div { color: inherit; }
 
-html[data-theme="light"] a { color: #332820; }
+html[data-theme="light"] a { color: #0F172A; }
 html[data-theme="light"] label { color: #374151 !important; }
 
 /* ---- Navbar ---- */
@@ -29,11 +29,11 @@ html[data-theme="light"] .navbar {
   background: rgba(255,255,255,0.96) !important;
   border-bottom-color: rgba(0,0,0,0.1) !important;
 }
-html[data-theme="light"] .nav-logo { color: #332820 !important; }
+html[data-theme="light"] .nav-logo { color: #0F172A !important; }
 html[data-theme="light"] .nav-logo span { color: #C58B2A !important; }
 html[data-theme="light"] .nav-links a { color: #374151 !important; }
-html[data-theme="light"] .nav-links a:hover { color: #332820 !important; }
-html[data-theme="light"] .nav-links a.active { color: #332820 !important; }
+html[data-theme="light"] .nav-links a:hover { color: #0F172A !important; }
+html[data-theme="light"] .nav-links a.active { color: #0F172A !important; }
 html[data-theme="light"] .nav-login { color: #374151 !important; }
 html[data-theme="light"] .nav-avatar {
   background: #fff !important;
@@ -73,7 +73,7 @@ html[data-theme="light"] .streak-head span,
 html[data-theme="light"] .astat-value,
 html[data-theme="light"] .stat-pill-value,
 html[data-theme="light"] .cert-stat-value {
-  color: #332820 !important;
+  color: #0F172A !important;
 }
 
 html[data-theme="light"] .pf-list-hint,
@@ -102,7 +102,7 @@ html[data-theme="light"] .pf-profile-card {
   background: #ffffff !important;
   border-color: rgba(0,0,0,0.1) !important;
 }
-html[data-theme="light"] .pf-name { color: #332820 !important; }
+html[data-theme="light"] .pf-name { color: #0F172A !important; }
 html[data-theme="light"] .pf-email { color: #6b7280 !important; }
 html[data-theme="light"] .pf-list-item {
   border-color: rgba(0,0,0,0.06) !important;
@@ -130,7 +130,7 @@ html[data-theme="light"] .pf-edit-btn {
   border-color: rgba(0,0,0,0.1) !important;
   color: #374151 !important;
 }
-html[data-theme="light"] .pf-edit-btn:hover { color: #332820 !important; }
+html[data-theme="light"] .pf-edit-btn:hover { color: #0F172A !important; }
 
 /* ---- Inputs ---- */
 html[data-theme="light"] input,
@@ -140,7 +140,7 @@ html[data-theme="light"] .ep-input,
 html[data-theme="light"] .sp-profile-input {
   background: #f9fafb !important;
   border-color: rgba(0,0,0,0.12) !important;
-  color: #332820 !important;
+  color: #0F172A !important;
 }
 html[data-theme="light"] input::placeholder,
 html[data-theme="light"] textarea::placeholder { color: #9ca3af !important; }
@@ -163,7 +163,7 @@ html[data-theme="light"] .filter-tab.active,
 html[data-theme="light"] .cert-tab.active,
 html[data-theme="light"] .wl-sort-btn.active {
   background: #C58B2A !important;
-  color: #FFFDF8 !important;
+  color: #FFFFFF !important;
 }
 
 /* ---- Hist/course card thumbnails ---- */
@@ -196,7 +196,7 @@ html[data-theme="light"] .footer-bottom p,
 html[data-theme="light"] .footer-desc,
 html[data-theme="light"] .footer-links a { color: #6b7280 !important; }
 html[data-theme="light"] .footer-links a:hover { color: #C58B2A !important; }
-html[data-theme="light"] .footer-col h4 { color: #332820 !important; }
+html[data-theme="light"] .footer-col h4 { color: #0F172A !important; }
 html[data-theme="light"] .footer-brand { color: #C58B2A !important; }
 html[data-theme="light"] .footer-icon {
   background: rgba(0,0,0,0.05) !important;
@@ -206,18 +206,18 @@ html[data-theme="light"] .footer-icon {
 
 /* ---- Certificates page ---- */
 html[data-theme="light"] .cert-visual {
-  background: linear-gradient(135deg, #F3E4C8, #FFFDF8) !important;
+  background: linear-gradient(135deg, #F1F5F9, #FFFFFF) !important;
   border-bottom-color: rgba(0,0,0,0.08) !important;
 }
-html[data-theme="light"] .cert-visual-org { color: #A96F18 !important; }
-html[data-theme="light"] .cert-visual-title { color: #332820 !important; }
+html[data-theme="light"] .cert-visual-org { color: #C58B2A !important; }
+html[data-theme="light"] .cert-visual-title { color: #0F172A !important; }
 html[data-theme="light"] .cert-visual-name { color: #6b7280 !important; }
 html[data-theme="light"] .cert-card.wip .cert-visual { background: #f3f4f6 !important; }
 
 /* ---- Upgrade card always stays colored ---- */
-html[data-theme="light"] .upgrade-card { background: linear-gradient(135deg, #C58B2A, #A96F18) !important; }
+html[data-theme="light"] .upgrade-card { background: linear-gradient(135deg, #C58B2A, #C58B2A) !important; }
 html[data-theme="light"] .upgrade-card .upgrade-label,
-html[data-theme="light"] .upgrade-card .upgrade-title { color: #FFFDF8 !important; }
+html[data-theme="light"] .upgrade-card .upgrade-title { color: #FFFFFF !important; }
 
 /* ---- Page/section backgrounds ---- */
 html[data-theme="light"] .dash-page,
@@ -225,46 +225,46 @@ html[data-theme="light"] .page { background: transparent; }
 
 /* Warm premium light-theme palette. Palette-only override; no layout changes. */
 html[data-theme="light"] {
-  --bg: #FAF7F1;
-  --card: #FFFDF8;
-  --card2: #FFFCF6;
-  --panel: #F3EBDD;
-  --panel2: #F6F0E7;
-  --border: #E2D6C6;
-  --border2: #E6DACB;
-  --text: #332820;
-  --text2: #756A60;
-  --nav-bg: #FBF8F2;
-  --gray: #9A8E82;
-  --light: #756A60;
+  --bg: #F8FAFC;
+  --card: #FFFFFF;
+  --card2: #FFFFFF;
+  --panel: #F1F5F9;
+  --panel2: #F8FAFC;
+  --border: #E2E8F0;
+  --border2: #CBD5E1;
+  --text: #0F172A;
+  --text2: #475569;
+  --nav-bg: #F8FAFC;
+  --gray: #94A3B8;
+  --light: #475569;
   --cyan: #C58B2A;
   --cyan-dim: rgba(197,139,42,.10);
   --cyan-border: rgba(197,139,42,.26);
-  --accent: #B9853E;
+  --accent: #C58B2A;
   --gold: #C58B2A;
 }
 
 html[data-theme="light"],
 html[data-theme="light"] body {
-  background: #FAF7F1 !important;
-  color: #332820 !important;
+  background: #F8FAFC !important;
+  color: #0F172A !important;
 }
 
 html[data-theme="light"] :where(h1, h2, h3, h4, h5, h6, .hero-title, .sec-title, .section-title, .card-title, .course-title, .pf-name, .pf-card-heading, .ep-card-title, .cert-visual-title, .welcome-left h1, .stat-pill-value, .hist-title, .rec-title, .astat-value) {
-  color: #2B211A !important;
+  color: #0F172A !important;
 }
 
 html[data-theme="light"] :where(p, .text-on-surface-variant, .hero-sub, .section-head p, .tile-body p, .tile-meta, .pf-email, .pf-list-hint, .hist-meta, .hist-time, .rec-meta-row, .cert-meta, .wl-meta, .wl-instructor, .stat-pill-label, .astat-label, .chart-day, .footer-desc, .footer-links a, .footer-bottom p) {
-  color: #756A60 !important;
+  color: #475569 !important;
 }
 
 html[data-theme="light"] :where(.navbar, .premium-site-nav, .enx-navbar, .pay-nav, .edunex-mobile-menu, .index2-mobile-menu, .premium-mobile-menu) {
-  background: #FBF8F2 !important;
-  border-color: #E2D6C6 !important;
+  background: #F8FAFC !important;
+  border-color: #E2E8F0 !important;
 }
 
 html[data-theme="light"] :where(.nav-logo, .premium-logo, .footer-brand, .enx-nav-logo, .enx-footer-brand) {
-  color: #2B211A !important;
+  color: #0F172A !important;
 }
 
 html[data-theme="light"] :where(.nav-logo span, .premium-logo span, .enx-nav-logo span, .enx-footer-brand span span, .nav-links a.active, .premium-nav-links a.active, .enx-nav-links a.active, .nav-login:hover, .enx-nav-login:hover, .nav-avatar:hover, .enx-nav-avatar:hover, .premium-avatar:hover, .footer-links a:hover, .enx-footer-links a:hover, .enx-footer-cta > a, .sec-link, .course-price, .wl-price, .cp-price, .hero-card-price strong, .hero-card-action) {
@@ -282,21 +282,21 @@ html[data-theme="light"] .enx-nav-links a.active::after {
 }
 
 html[data-theme="light"] :where(.glass-card, .card-traditional, .directive-card, .team-card, .trial-card, .hero-stat-card, .library-summary, .course-tile, .lesson-sidebar, .empty-state, .pf-card, .pf-profile-card, .ep-card, .cert-card, .wl-card, .hist-card, .rec-card, .activity-card, .streak-card, .stat-pill, .checkout-card, .course-preview, .payment-choice-card, .course-card, .library-shell, .watch-shell, .video-shell, .lp-form-box, .lp-test-card, .sp-profile-card, .sp-form-panel, .legal-card, .hero-course-card, .hero-search-form, .hero-trust-item, .hero-topic, .hero-carousel-btn) {
-  background: #FFFDF8 !important;
-  border-color: #E2D6C6 !important;
-  box-shadow: 0 8px 24px rgba(88,65,34,.06) !important;
+  background: #FFFFFF !important;
+  border-color: #E2E8F0 !important;
+  box-shadow: 0 8px 24px rgba(15, 23, 42,.06) !important;
 }
 
 html[data-theme="light"] :where(.checkout-body, .payment-choice-body, .cp-includes, .plan-option, .pay-btn-secondary, .payment-choice-btn.secondary, .library-tabs, .library-search, .summary-subline, .lesson-item, .pf-list-icon, .pf-edit-btn, .filter-tab, .library-tab, .cert-tab, .back-btn, .btn-ghost, .hero-cta-secondary, .hero-btn-secondary) {
-  background: #FFFCF6 !important;
-  border-color: #E2D6C6 !important;
+  background: #FFFFFF !important;
+  border-color: #E2E8F0 !important;
   color: #C58B2A !important;
 }
 
 html[data-theme="light"] :where(input, textarea, select, .ep-input, .sp-profile-input, .library-search input, .hero-search-field input) {
-  background: #FAF5ED !important;
-  border-color: #E2D6C6 !important;
-  color: #332820 !important;
+  background: #F8FAFC !important;
+  border-color: #E2E8F0 !important;
+  color: #0F172A !important;
 }
 
 html[data-theme="light"] :where(input, textarea, select):focus {
@@ -306,23 +306,23 @@ html[data-theme="light"] :where(input, textarea, select):focus {
 
 html[data-theme="light"] input::placeholder,
 html[data-theme="light"] textarea::placeholder {
-  color: #9A8E82 !important;
+  color: #94A3B8 !important;
 }
 
 html[data-theme="light"] :where(.hero-cta-primary, .hero-search-btn, .btn-cyan, .btn-trial, .trial-btn, .cta-big-btn, .login-cta-btn, .footer-contact-link, .lp-signin-btn, .sp-primary-btn, .sp-complete-btn, .payment-choice-btn.primary, .pay-btn-primary, .wl-enroll-btn, .cart-btn, .upgrade-card) {
   background: #C58B2A !important;
   border-color: #C58B2A !important;
-  color: #FFFDF8 !important;
-  box-shadow: 0 8px 24px rgba(88,65,34,.10) !important;
+  color: #FFFFFF !important;
+  box-shadow: 0 8px 24px rgba(15, 23, 42,.10) !important;
 }
 
 html[data-theme="light"] :where(.hero-cta-primary:hover, .hero-search-btn:hover, .btn-cyan:hover, .btn-trial:hover, .trial-btn:hover, .cta-big-btn:hover, .login-cta-btn:hover, .footer-contact-link:hover, .lp-signin-btn:hover, .sp-primary-btn:hover, .sp-complete-btn:hover, .payment-choice-btn.primary:hover, .pay-btn-primary:hover, .wl-enroll-btn:hover, .cart-btn:hover) {
-  background: #A96F18 !important;
-  border-color: #A96F18 !important;
+  background: #C58B2A !important;
+  border-color: #C58B2A !important;
 }
 
 html[data-theme="light"] :where(.hero-card-badge, .bg-black\/80, .pf-badge-teal, .pf-badge-gray, .filter-tab.active, .cert-tab.active, .wl-sort-btn.active) {
-  background: #F3E4C8 !important;
+  background: #F1F5F9 !important;
   border-color: #C58B2A !important;
   color: #C58B2A !important;
 }
@@ -338,37 +338,37 @@ html[data-theme="light"] :where(.page-grid, #page-grid-global) {
 }
 
 html[data-theme="light"] :where(.grid-dot-global) {
-  background: rgba(185,144,85,.78) !important;
-  box-shadow: 0 0 8px 2px rgba(185,144,85,.28) !important;
+  background: rgba(197, 139, 42,.78) !important;
+  box-shadow: 0 0 8px 2px rgba(197, 139, 42,.28) !important;
 }
 
 html[data-theme="light"] :where(.site-footer, .footer, .footer-wrap, .sp-footer, .enx-footer, .enx-footer-cta, .enx-footer-trust-row span, .enx-footer-support a) {
-  background: #F6F0E7 !important;
-  border-color: #E2D6C6 !important;
+  background: #F8FAFC !important;
+  border-color: #E2E8F0 !important;
 }
 
 html[data-theme="light"] :where(.hero-cta-secondary, .hero-btn-secondary, .btn-ghost, .pay-btn-secondary, .payment-choice-btn.secondary, .back-btn, .pf-edit-btn) {
-  background: #FFFDF8 !important;
-  border-color: #DAB77A !important;
-  color: #9A681F !important;
+  background: #FFFFFF !important;
+  border-color: #C58B2A !important;
+  color: #C58B2A !important;
 }
 
 html[data-theme="light"] :where(.hero-topic, .topic-chip, .filter-tab, .library-tab, .cert-tab) {
-  background: #FAF5ED !important;
-  border-color: #E2D6C6 !important;
-  color: #5F534A !important;
+  background: #F8FAFC !important;
+  border-color: #E2E8F0 !important;
+  color: #475569 !important;
 }
 
 html[data-theme="light"] :where(.hero-topic i, .topic-chip i, .filter-tab i, .library-tab i, .cert-tab i) {
-  color: #B9853E !important;
+  color: #C58B2A !important;
 }
 
 html[data-theme="light"] :where(.hero-card-badge, .bg-black\/80, .pf-badge-teal, .pf-badge-gray, .filter-tab.active, .cert-tab.active, .wl-sort-btn.active, .hero-topic:hover, .topic-chip:hover) {
-  background: #F3E4C8 !important;
-  border-color: #DAB77A !important;
-  color: #8E621D !important;
+  background: #F1F5F9 !important;
+  border-color: #C58B2A !important;
+  color: #C58B2A !important;
 }
 
 html[data-theme="light"] :where(.navbar i, .premium-site-nav i, .enx-navbar i, .pay-nav i, .hero-trust-item i, .hero-trust-item .material-symbols-outlined) {
-  color: #8B6A37 !important;
+  color: #C58B2A !important;
 }

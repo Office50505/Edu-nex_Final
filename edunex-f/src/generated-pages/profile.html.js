@@ -152,7 +152,7 @@ export const page = {
     .pf-badge-teal {
       background: rgba(197,139,42,0.14);
       border: 1px solid rgba(197,139,42,0.34);
-      color: #DAB77A;
+      color: #C58B2A;
     }
     .pf-badge-gray {
       background: rgba(255,255,255,0.06);
@@ -285,7 +285,7 @@ export const page = {
       border-color: rgba(248,113,113,0.4);
     }
     .pf-version-text { font-size: .68rem; color: var(--gray); text-align: right; }
-    .pf-version-text span { color: #DAB77A; font-weight: 600; }
+    .pf-version-text span { color: #C58B2A; font-weight: 600; }
 
     /* Watermark */
     .pf-watermark {
@@ -378,7 +378,7 @@ export const page = {
     html[data-theme="light"] .pf-profile-name,
     html[data-theme="light"] .pf-card-heading,
     html[data-theme="light"] .pf-breadcrumb .current {
-      color: #2B211A !important;
+      color: #0F172A !important;
     }
     html[data-theme="light"] .nav-links a,
     html[data-theme="light"] .nav-login,
@@ -386,47 +386,47 @@ export const page = {
     html[data-theme="light"] .pf-breadcrumb a,
     html[data-theme="light"] .pf-theme-label,
     html[data-theme="light"] .pf-version-text {
-      color: #756A60 !important;
+      color: #475569 !important;
     }
     html[data-theme="light"] .pf-card,
     html[data-theme="light"] .pf-profile-card,
     html[data-theme="light"] .pf-modal-card,
     html[data-theme="light"] .sub-current-card,
     html[data-theme="light"] .sub-history-row {
-      background: #FFFDF8 !important;
-      border-color: #E2D6C6 !important;
-      box-shadow: 0 8px 24px rgba(88,65,34,.06);
+      background: #FFFFFF !important;
+      border-color: #E2E8F0 !important;
+      box-shadow: 0 8px 24px rgba(15, 23, 42,.06);
     }
     html[data-theme="light"] .pf-list-label {
-      color: #5F534A !important;
+      color: #475569 !important;
     }
     html[data-theme="light"] .pf-list-icon,
     html[data-theme="light"] .pf-edit-btn,
     html[data-theme="light"] .pf-secondary-btn {
-      background: #FAF5ED !important;
-      border-color: #E2D6C6 !important;
-      color: #9A681F !important;
+      background: #F8FAFC !important;
+      border-color: #E2E8F0 !important;
+      color: #C58B2A !important;
     }
     html[data-theme="light"] .pf-list-item {
-      border-color: #E6DACB !important;
+      border-color: #CBD5E1 !important;
     }
     html[data-theme="light"] .pf-list-item:hover .pf-list-label,
     html[data-theme="light"] .pf-breadcrumb a:hover {
-      color: #A96F18 !important;
+      color: #C58B2A !important;
     }
     html[data-theme="light"] .pf-theme-opt[data-theme="noir"] .pf-theme-label {
-      color: #2B211A !important;
+      color: #0F172A !important;
       font-weight: 700;
     }
     html[data-theme="light"] .pf-badge-teal,
     html[data-theme="light"] .pf-badge-gray {
-      background: #F3E4C8 !important;
-      border-color: #DAB77A !important;
-      color: #8E621D !important;
+      background: #F1F5F9 !important;
+      border-color: #C58B2A !important;
+      color: #C58B2A !important;
     }
     html[data-theme="light"] .pf-watermark-main,
     html[data-theme="light"] .pf-watermark-sub {
-      color: rgba(88,65,34,.055) !important;
+      color: rgba(15, 23, 42,.055) !important;
     }
     html:not([data-theme="light"]) .pf-page-title,
     html:not([data-theme="light"]) .pf-profile-name,

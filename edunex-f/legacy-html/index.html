@@ -16,20 +16,20 @@
       const resolved = saved === 'light' ? 'light' : (saved === 'system' ? (prefersDark ? 'noir' : 'light') : 'noir');
       const vars = resolved === 'light'
         ? {
-          '--bg': '#FAF7F1',
-          '--card': '#FFFDF8',
-          '--card2': '#FFFCF6',
-          '--border': '#E2D6C6',
-          '--border2': '#E6DACB',
-          '--text': '#332820',
-          '--text2': '#756A60',
-          '--nav-bg': '#FBF8F2',
-          '--gray': '#9A8E82',
-          '--light': '#756A60',
+          '--bg': '#F8FAFC',
+          '--card': '#FFFFFF',
+          '--card2': '#FFFFFF',
+          '--border': '#E2E8F0',
+          '--border2': '#CBD5E1',
+          '--text': '#0F172A',
+          '--text2': '#475569',
+          '--nav-bg': '#F8FAFC',
+          '--gray': '#94A3B8',
+          '--light': '#475569',
           '--cyan': '#C58B2A',
           '--cyan-dim': 'rgba(197,139,42,0.10)',
           '--cyan-border': 'rgba(197,139,42,0.26)',
-          '--accent': '#B9853E',
+          '--accent': '#C58B2A',
           '--gold': '#C58B2A'
         }
         : {
@@ -60,7 +60,7 @@
       --cyan: #C58B2A;
       --cyan-dim: rgba(197,139,42,0.1);
       --cyan-border: rgba(197,139,42,0.25);
-      --accent: #B9853E;
+      --accent: #C58B2A;
       --gold: #C58B2A;
       --bg: #000000;
       --card: #0d0d0d;
@@ -208,9 +208,9 @@
     .learning-hero-copy {
       position: relative;
       z-index: 3;
-      max-width: 860px;
+      max-width: 1040px;
       margin: 0 auto;
-      padding: 0 clamp(16px, 5vw, 72px);
+      padding: 0 clamp(16px, 3vw, 40px);
       text-align: center;
     }
     .learning-hero-label {
@@ -227,14 +227,19 @@
       text-transform: uppercase;
     }
     .learning-hero h1 {
-      max-width: 850px;
+      max-width: 1000px;
       margin: 0 auto;
       font-family: "Fraunces", serif;
-      font-size: clamp(42px, 5.9vw, 82px);
-      line-height: .98;
+      font-size: clamp(48px, 5vw, 76px);
+      line-height: 1.02;
       letter-spacing: 0;
       font-weight: 600;
       text-align: center;
+    }
+    .learning-hero h1 span {
+      display: block;
+      font-family: inherit !important;
+      white-space: nowrap;
     }
     .learning-hero-copy > p {
       max-width: 720px;
@@ -312,6 +317,7 @@
       scrollbar-width: none;
       padding: 34px 0 24px;
       touch-action: pan-x;
+      cursor: grab;
       -webkit-user-select: none;
       user-select: none;
     }
@@ -319,6 +325,10 @@
     .hero-carousel-viewport::-webkit-scrollbar { display: none; }
     .hero-carousel-viewport.is-dragging {
       scroll-snap-type: none;
+      cursor: grabbing;
+    }
+    .hero-carousel-viewport.is-dragging * {
+      cursor: grabbing !important;
     }
     .hero-carousel-viewport.is-auto-moving {
       scroll-snap-type: none;
@@ -960,13 +970,13 @@
     html[data-theme="light"] h2,
     html[data-theme="light"] h3,
     html[data-theme="light"] h4 {
-      color: #332820 !important;
+      color: #0F172A !important;
     }
     html[data-theme="light"] .text-on-surface-variant,
     html[data-theme="light"] footer p,
     html[data-theme="light"] footer li,
     html[data-theme="light"] footer span {
-      color: #756A60 !important;
+      color: #475569 !important;
     }
     html[data-theme="light"] .glass-card {
       background: rgba(255,255,255,.82);
@@ -979,7 +989,7 @@
     html[data-theme="light"] .hero-trust-item,
     html[data-theme="light"] .hero-card-wish,
     html[data-theme="light"] .hero-topic {
-      background: #FAF7F1;
+      background: #F8FAFC;
       border-color: rgba(0,0,0,.08);
     }
     html[data-theme="light"] .hero-mock-placeholder {
@@ -1001,34 +1011,34 @@
     html[data-theme="light"] .rounded-2xl.bg-white\/\[\.035\] {
       background: rgba(255,255,255,.78) !important;
       border-color: rgba(0,0,0,.09) !important;
-      color: #332820 !important;
+      color: #0F172A !important;
     }
     html[data-theme="light"] .bg-black\/80 {
       background: rgba(255,255,255,.92) !important;
-      color: #A96F18 !important;
+      color: #C58B2A !important;
     }
     html[data-theme="light"] footer {
-      background: #FBF8F2 !important;
-      border-top-color: #E2D6C6 !important;
-      color: #332820 !important;
+      background: #F8FAFC !important;
+      border-top-color: #E2E8F0 !important;
+      color: #0F172A !important;
     }
     html[data-theme="light"] .site-footer {
-      background: #FBF8F2 !important;
-      color: #332820 !important;
+      background: #F8FAFC !important;
+      color: #0F172A !important;
     }
     html[data-theme="light"] .footer-shell,
     html[data-theme="light"] .footer-top,
     html[data-theme="light"] .footer-column,
     html[data-theme="light"] .footer-heading,
     html[data-theme="light"] .footer-links {
-      color: #332820 !important;
+      color: #0F172A !important;
     }
     html[data-theme="light"] .footer-links a,
     html[data-theme="light"] .footer-copy,
     html[data-theme="light"] .footer-contact p,
     html[data-theme="light"] .footer-bottom,
     html[data-theme="light"] .footer-bottom a {
-      color: #5F534A !important;
+      color: #475569 !important;
     }
     html[data-theme="light"] .footer-contact,
     html[data-theme="light"] .footer-trust-chip,
@@ -1044,8 +1054,8 @@
         padding-inline: 0;
       }
       .learning-hero h1 {
-        font-size: clamp(58px, 6vw, 66px);
-        line-height: .98;
+        font-size: clamp(42px, 5vw, 56px);
+        line-height: 1.02;
       }
       .learning-hero-copy > p {
         font-size: clamp(17px, 1.7vw, 18px);
@@ -1057,8 +1067,8 @@
         padding-top: 86px;
       }
       .learning-hero h1 {
-        font-size: clamp(42px, 11.5vw, 48px);
-        line-height: 1;
+        font-size: clamp(27px, 8.2vw, 42px);
+        line-height: 1.05;
       }
       .learning-hero-copy > p {
         font-size: 16px;
@@ -1145,7 +1155,7 @@
     <a href="about.html">About</a>
     <div class="mt-4 flex gap-3">
       <a href="login.html" class="flex-1 text-center rounded-lg border border-outline-variant">Login</a>
-      <a href="login.html" class="flex-1 text-center rounded-lg !text-[#FFFDF8] font-bold" style="background:#C58B2A">Get Started</a>
+      <a href="login.html" class="flex-1 text-center rounded-lg !text-[#FFFFFF] font-bold" style="background:#C58B2A">Get Started</a>
     </div>
   </div>
 
@@ -1232,9 +1242,9 @@
             <div class="rounded-2xl bg-white/[.035] border border-white/[.07] p-3 text-sm text-on-surface-variant">AI tutors 24/7</div>
             <div class="rounded-2xl bg-white/[.035] border border-white/[.07] p-3 text-sm text-on-surface-variant">Cloud lab access</div>
           </div>
-          <a href="login.html" class="inline-flex bg-primary !text-[#FFFDF8] px-6 py-3 rounded-full font-bold hover:shadow-[0_0_18px_rgba(197,139,42,.32)] transition-all">Claim Your Trial Now</a>
+          <a href="login.html" class="inline-flex bg-primary !text-[#FFFFFF] px-6 py-3 rounded-full font-bold hover:shadow-[0_0_18px_rgba(197,139,42,.32)] transition-all">Claim Your Trial Now</a>
         </div>
-        <div class="rounded-xl p-8 md:p-10 bg-primary text-[#332820]">
+        <div class="rounded-xl p-8 md:p-10 bg-primary text-[#0F172A]">
           <h2 class="ai-mentorship-heading font-bold mb-4">
             <span class="flex items-center gap-1">
               <span class="text-[4rem] md:text-[5.25rem] leading-none">AI</span>
@@ -1242,7 +1252,7 @@
             </span>
             <span class="block mt-2 text-4xl md:text-5xl">Mentorship Engine</span>
           </h2>
-          <p class="text-[1.05rem] text-[#5F534A] leading-relaxed mb-8">Our neural engine maps your career goals to industry requirements, suggesting the exact skills you need to land your dream job.</p>
+          <p class="text-[1.05rem] text-[#475569] leading-relaxed mb-8">Our neural engine maps your career goals to industry requirements, suggesting the exact skills you need to land your dream job.</p>
           <a href="ai-tutor.html" class="inline-flex items-center justify-center gap-2 rounded-full bg-black px-8 py-3.5 text-[1.05rem] font-bold !text-white transition-colors hover:bg-[#171717]">Explore Engine <span class="material-symbols-outlined">arrow_forward</span></a>
         </div>
       </div>

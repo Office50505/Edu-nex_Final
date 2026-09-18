@@ -21,6 +21,7 @@ import {
 } from "./AdminOperationsPages.jsx";
 import { AdminUploadPage } from "./AdminUploadPage.jsx";
 import { AdminUsersPage } from "./AdminUsersPage.jsx";
+import { AdminReportsPage } from "./AdminReportsPage.jsx";
 import { adminPageFromPath, canonicalAdminPath } from "./adminApi.js";
 
 const adminPages = {
@@ -35,6 +36,7 @@ const adminPages = {
   payments: AdminPaymentsPage,
   subscriptions: AdminSubscriptionsPage,
   progress: AdminProgressPage,
+  reports: AdminReportsPage,
   health: AdminHealthPage,
   certifications: AdminCertificationsPage,
   auditLog: AdminAuditLogPage,

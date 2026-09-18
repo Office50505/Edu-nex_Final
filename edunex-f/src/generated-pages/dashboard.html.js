@@ -179,7 +179,7 @@ export const page = {
       cursor: pointer; transition: all .22s;
     }
     .hist-card:hover { border-color: var(--cyan-border); transform: translateY(-4px); box-shadow: 0 12px 32px rgba(0,0,0,.5); }
-    .hist-card[data-status="completed"] .hist-progress-fill { background: #DAB77A; }
+    .hist-card[data-status="completed"] .hist-progress-fill { background: #C58B2A; }
 
     /* Thumbnail */
     .hist-thumb-wrap { position: relative; overflow: hidden; }
@@ -210,7 +210,7 @@ export const page = {
       font-size: .58rem; font-weight: 800; text-transform: uppercase; letter-spacing: .05em;
     }
     .status-progress { background: var(--cyan-dim); border: 1px solid var(--cyan-border); color: var(--cyan); }
-    .status-completed { background: rgba(169,111,24,.12); border: 1px solid rgba(169,111,24,.35); color: #A96F18; }
+    .status-completed { background: rgba(197,139,42,.12); border: 1px solid rgba(197,139,42,.35); color: #C58B2A; }
     .status-new { background: rgba(255,255,255,0.07); border: 1px solid var(--border2); color: var(--light); }
 
     /* Play overlay on hover */
@@ -246,7 +246,7 @@ export const page = {
       display: flex; align-items: center; justify-content: space-between;
     }
     .hist-pct { font-size: .72rem; font-weight: 700; color: var(--cyan); }
-    .hist-card[data-status="completed"] .hist-pct { color: #A96F18; }
+    .hist-card[data-status="completed"] .hist-pct { color: #C58B2A; }
     .hist-time { font-size: .68rem; color: var(--gray); }
     .hist-card[data-status="new"] .hist-pct { color: var(--light); }
 
@@ -351,7 +351,7 @@ export const page = {
 
     /* Upgrade card */
     .upgrade-card {
-      background: linear-gradient(135deg, #C58B2A, #A96F18);
+      background: linear-gradient(135deg, #C58B2A, #C58B2A);
       border-radius: 14px; padding: 18px;
     }
     .upgrade-label { font-size: .58rem; font-weight: 800; text-transform: uppercase; letter-spacing: .1em; color: rgba(0,0,0,0.5); margin-bottom: 7px; }

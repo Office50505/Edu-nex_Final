@@ -16,7 +16,7 @@ export const page = {
       --library-green: #359c57;
       --library-green-dark: #2f7f48;
       --library-blue: #2563eb;
-      --library-amber: #b7791f;
+      --library-amber: #F59E0B;
       --library-card: #ffffff;
       --library-shadow: 0 18px 48px rgba(16, 39, 25, .1);
     }
@@ -604,7 +604,7 @@ export const page = {
       --library-soft: #9ca3af;
       --library-line: rgba(255,255,255,0.08);
       --library-green: var(--cyan);
-      --library-green-dark: #A96F18;
+      --library-green-dark: #C58B2A;
       --library-blue: var(--cyan);
       --library-amber: var(--cyan);
       --library-card: #141820;
@@ -689,7 +689,7 @@ export const page = {
     .library-search button:hover,
     .back-library:hover,
     .lesson-action:hover {
-      background: #A96F18;
+      background: #C58B2A;
       box-shadow: 0 4px 18px rgba(197,139,42,.38);
     }
 

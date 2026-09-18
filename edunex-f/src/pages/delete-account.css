@@ -2,17 +2,17 @@
 .deletion-page .deletion-card { max-width:600px; margin:auto; padding:32px; background:#12151a; border:1px solid #292d34; border-radius:20px; }
 .deletion-page h1 { font-size:28px; line-height:1.2; color:#fff; margin:10px 0 18px; }
 .deletion-page h2 { color:#fff; font-size:20px; }
-.deletion-page a { color:#dfb65e; }
+.deletion-page a { color:#C58B2A; }
 .deletion-page .deletion-back { font-size:13px; text-decoration:none; }
-.deletion-page .deletion-eyebrow { color:#d7a343; letter-spacing:.12em; font-size:11px; margin-top:28px; }
+.deletion-page .deletion-eyebrow { color:#C58B2A; letter-spacing:.12em; font-size:11px; margin-top:28px; }
 .deletion-page .deletion-info { padding:16px; background:#ffffff05; border-radius:10px; font-size:13px; margin:20px 0; }
 .deletion-page label { display:block; margin:18px 0; color:#e4e6eb; font-size:14px; }
 .deletion-page input:not([type=checkbox]),.deletion-page textarea { display:block; width:100%; box-sizing:border-box; background:#0b0e12; border:1px solid #3a404a; border-radius:9px; padding:12px; color:#fff; font:inherit; margin-top:7px; }
 .deletion-page small,.deletion-page label span,.deletion-page .deletion-note { color:#a5acb8; font-size:12px; }
 .deletion-page .deletion-confirm { display:flex; align-items:flex-start; gap:10px; font-size:13px; }
-.deletion-page input[type=checkbox] { margin-top:4px; accent-color:#d5a23d; }
-.deletion-page button { width:100%; padding:14px; border:0; border-radius:10px; background:#c99127; color:#111; font-weight:700; cursor:pointer; }
+.deletion-page input[type=checkbox] { margin-top:4px; accent-color:#C58B2A; }
+.deletion-page button { width:100%; padding:14px; border:0; border-radius:10px; background:#C58B2A; color:#111; font-weight:700; cursor:pointer; }
 .deletion-page button:disabled { opacity:.6; cursor:wait; }
 .deletion-page [role=alert] { color:#ffaaaa; }
-.deletion-page :focus-visible { outline:2px solid #dfb65e; outline-offset:3px; }
+.deletion-page :focus-visible { outline:2px solid #C58B2A; outline-offset:3px; }
 @media(max-width:520px){.deletion-page{padding:24px 14px}.deletion-page .deletion-card{padding:22px}.deletion-page h1{font-size:24px}}

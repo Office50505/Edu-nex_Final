@@ -668,7 +668,7 @@ html:not([data-theme="light"]) .brand-logo-image-light {
 
 .enx-mobile-actions a:last-child {
   background: var(--cyan, #C58B2A) !important;
-  color: #FFFDF8 !important;
+  color: #FFFFFF !important;
   border-color: transparent !important;
   font-weight: 700 !important;
 }
@@ -761,7 +761,7 @@ html:not([data-theme="light"]) .brand-logo-image-light {
     border-radius: 999px !important;
     border: 1px solid var(--border, rgba(255, 255, 255, .12)) !important;
     background: color-mix(in srgb, var(--card2, #111318) 82%, transparent) !important;
-    color: var(--text, #FFFDF8) !important;
+    color: var(--text, #FFFFFF) !important;
     display: inline-flex !important;
     align-items: center !important;
     justify-content: center !important;
@@ -955,7 +955,7 @@ html[data-theme="light"] .enx-mobile-menu {
 }
 
 html[data-theme="light"] .enx-mobile-footer {
-  background: #FFFDF8 !important;
+  background: #FFFFFF !important;
   border-color: rgba(0, 0, 0, .08) !important;
   box-shadow: 0 -12px 26px rgba(15, 23, 42, .12) !important;
 }
@@ -966,7 +966,7 @@ html[data-theme="light"] .enx-mobile-footer-link {
 
 html[data-theme="light"] .enx-mobile-footer-link.active {
   background: var(--cyan, #C58B2A) !important;
-  color: #FFFDF8 !important;
+  color: #FFFFFF !important;
   box-shadow: 0 8px 18px rgba(197, 139, 42, .22) !important;
 }
 
@@ -1199,28 +1199,28 @@ html[data-theme="light"] .enx-mobile-footer-link.active {
 }
 
 html[data-theme="light"] .enx-footer {
-  background: #FBF8F2;
-  border-color: #E2D6C6;
-  color: #2B211A;
+  background: #F8FAFC;
+  border-color: #E2E8F0;
+  color: #0F172A;
 }
 
 html[data-theme="light"] .enx-footer-cta,
 html[data-theme="light"] .enx-footer-about,
 html[data-theme="light"] .enx-footer-trust-row span,
 html[data-theme="light"] .enx-footer-support a {
-  background: #FFFDF8;
-  border-color: #E2D6C6;
+  background: #FFFFFF;
+  border-color: #E2E8F0;
 }
 
 .privacy-policy-page {
   --privacy-bg: #020202;
   --privacy-panel: rgba(12, 13, 15, .86);
   --privacy-panel-strong: rgba(17, 18, 22, .94);
-  --privacy-text: #fffaf0;
+  --privacy-text: #F8FAFC;
   --privacy-muted: #b8bbc4;
   --privacy-soft: #858a96;
   --privacy-gold: #C58B2A;
-  --privacy-gold-light: #F2C46F;
+  --privacy-gold-light: #C58B2A;
   --privacy-border: rgba(255, 255, 255, .12);
   --privacy-gold-border: rgba(197, 139, 42, .48);
   min-height: 100vh;
@@ -1242,11 +1242,11 @@ html:has(.privacy-policy-page) :where(#nai-float-btn, #nex-ai-widget-root) {
   --terms-bg: #000000;
   --terms-panel: #090a0c;
   --terms-panel-soft: #101114;
-  --terms-text: #fffaf0;
+  --terms-text: #F8FAFC;
   --terms-muted: #c3c5cd;
   --terms-soft: #8f949f;
   --terms-gold: #C58B2A;
-  --terms-gold-light: #F2C46F;
+  --terms-gold-light: #C58B2A;
   --terms-border: rgba(255, 255, 255, .14);
   --terms-gold-border: rgba(197, 139, 42, .54);
   min-height: 100vh;
@@ -1344,7 +1344,7 @@ html:has(.terms-page) :where(#nai-float-btn, #nex-ai-widget-root) {
 .terms-hero-copy > p:not(.terms-kicker) {
   max-width: 650px;
   margin: 10px 0 0;
-  color: #ece7db;
+  color: #E2E8F0;
   font-size: .88rem;
   line-height: 1.55;
 }
@@ -1356,7 +1356,7 @@ html:has(.terms-page) :where(#nai-float-btn, #nex-ai-widget-root) {
   width: min(705px, 50%);
   min-height: 190px;
   border-radius: 0;
-  background: #060503 url("/assets/legal/terms-hero-reference.png") center / cover no-repeat;
+  background: #050505 url("/assets/legal/terms-hero-reference.png") center / cover no-repeat;
   box-shadow: inset 0 -1px 0 rgba(197, 139, 42, .32);
   overflow: hidden;
 }
@@ -1422,7 +1422,7 @@ html:has(.terms-page) :where(#nai-float-btn, #nex-ai-widget-root) {
 .terms-toc a:hover,
 .terms-toc a:focus-visible {
   border-color: var(--terms-gold-border);
-  background: #171109;
+  background: #0A0C12;
   color: var(--terms-text);
   outline: none;
   transform: translateX(2px);
@@ -1445,7 +1445,7 @@ html:has(.terms-page) :where(#nai-float-btn, #nex-ai-widget-root) {
   place-items: center;
   margin-bottom: 18px;
   border-radius: 14px;
-  background: #171109;
+  background: #0A0C12;
   color: var(--terms-gold-light);
   font-size: 1.32rem;
 }
@@ -1499,7 +1499,7 @@ html:has(.terms-page) :where(#nai-float-btn, #nex-ai-widget-root) {
 
 .terms-policy-section:target {
   border-color: var(--terms-gold-border);
-  background: #100d08;
+  background: #0A0C12;
 }
 
 .terms-section-number {
@@ -1509,7 +1509,7 @@ html:has(.terms-page) :where(#nai-float-btn, #nex-ai-widget-root) {
   place-items: center;
   border: 1px solid rgba(197, 139, 42, .36);
   border-radius: 12px;
-  background: #2a1c08;
+  background: #111318;
   color: var(--terms-gold-light);
   font-size: 1.08rem;
   font-weight: 900;
@@ -1583,7 +1583,7 @@ html:has(.terms-page) :where(#nai-float-btn, #nex-ai-widget-root) {
   display: grid;
   place-items: center;
   border-radius: 14px;
-  background: #231807;
+  background: #111318;
   color: var(--terms-gold-light);
   font-size: 1.24rem;
 }
@@ -1600,7 +1600,7 @@ html:has(.terms-page) :where(#nai-float-btn, #nex-ai-widget-root) {
 .terms-deletion-panel {
   border: 1px solid var(--terms-gold-border);
   border-radius: 12px;
-  background: #171109;
+  background: #0A0C12;
 }
 
 .terms-callout,
@@ -1620,7 +1620,7 @@ html:has(.terms-page) :where(#nai-float-btn, #nex-ai-widget-root) {
   display: grid;
   place-items: center;
   border-radius: 14px;
-  background: #2a1c08;
+  background: #111318;
   color: var(--terms-gold-light);
   font-size: 1.2rem;
 }
@@ -1634,7 +1634,7 @@ html:has(.terms-page) :where(#nai-float-btn, #nex-ai-widget-root) {
 .terms-callout p,
 .terms-ai-panel p {
   margin: 0;
-  color: #e8ddc8;
+  color: #D1D5DB;
 }
 
 .terms-check-list,
@@ -1663,7 +1663,7 @@ html:has(.terms-page) :where(#nai-float-btn, #nex-ai-widget-root) {
   display: grid;
   place-items: center;
   border-radius: 50%;
-  background: #241807;
+  background: #111318;
   color: var(--terms-gold-light);
   font-size: .78rem;
 }
@@ -1956,7 +1956,7 @@ html[data-theme="light"] .terms-page {
 .privacy-hero-copy > p:not(.privacy-kicker) {
   max-width: 780px;
   margin: 18px 0 0;
-  color: #e8e3d8;
+  color: #D1D5DB;
   font-size: 1.03rem;
   line-height: 1.85;
 }
@@ -2002,7 +2002,7 @@ html[data-theme="light"] .terms-page {
   background:
     radial-gradient(ellipse at 82% 38%, rgba(242, 196, 111, .22), transparent 13rem),
     radial-gradient(ellipse at 26% 10%, rgba(197, 139, 42, .15), transparent 18rem),
-    linear-gradient(145deg, rgba(20, 15, 9, .9), rgba(3, 3, 4, .86) 58%);
+    linear-gradient(145deg, rgba(10, 12, 18, .9), rgba(3, 3, 4, .86) 58%);
   box-shadow: inset 0 0 90px rgba(197, 139, 42, .1), 0 24px 80px rgba(0, 0, 0, .35);
   isolation: isolate;
 }
@@ -2058,7 +2058,7 @@ html[data-theme="light"] .terms-page {
 .privacy-hero-art-copy small {
   display: block;
   margin-top: 14px;
-  color: #ddd5c6;
+  color: #CBD5E1;
   font-size: .9rem;
 }
 
@@ -2304,7 +2304,7 @@ html[data-theme="light"] .terms-page {
 
 .privacy-note-card p {
   margin: 0;
-  color: #e3d8c2;
+  color: #D1D5DB;
   font-size: .9rem;
 }
 
@@ -2639,10 +2639,10 @@ html[data-theme="light"] .privacy-policy-page {
   min-height: calc(100vh - 68px);
   padding: clamp(118px, 16vh, 178px) clamp(16px, 5vw, 72px) clamp(70px, 10vh, 120px);
   background:
-    radial-gradient(circle at 22% 12%, rgba(218, 183, 122, .18), transparent 30rem),
+    radial-gradient(circle at 22% 12%, rgba(197, 139, 42, .18), transparent 30rem),
     radial-gradient(circle at 78% 16%, rgba(197, 139, 42, .10), transparent 28rem),
-    var(--bg, #FAF7F1);
-  color: var(--text, #332820);
+    var(--bg, #F8FAFC);
+  color: var(--text, #0F172A);
   display: grid;
   place-items: center;
 }
@@ -2650,10 +2650,10 @@ html[data-theme="light"] .privacy-policy-page {
 .enx-not-found-shell {
   width: min(760px, 100%);
   padding: clamp(28px, 5vw, 54px);
-  border: 1px solid var(--border, #E2D6C6);
+  border: 1px solid var(--border, #E2E8F0);
   border-radius: 22px;
-  background: color-mix(in srgb, var(--card, #FFFDF8) 88%, transparent);
-  box-shadow: 0 18px 54px rgba(88, 65, 34, .08);
+  background: color-mix(in srgb, var(--card, #FFFFFF) 88%, transparent);
+  box-shadow: 0 18px 54px rgba(15, 23, 42, .08);
   text-align: center;
 }
 
@@ -2664,8 +2664,8 @@ html[data-theme="light"] .privacy-policy-page {
   border-radius: 18px;
   display: grid;
   place-items: center;
-  border: 1px solid var(--border, #E2D6C6);
-  background: var(--panel, #F3EBDD);
+  border: 1px solid var(--border, #E2E8F0);
+  background: var(--panel, #F1F5F9);
   color: var(--cyan, #C58B2A);
   font-size: 1.35rem;
 }
@@ -2681,7 +2681,7 @@ html[data-theme="light"] .privacy-policy-page {
 
 .enx-not-found h1 {
   margin: 0;
-  color: var(--text, #332820);
+  color: var(--text, #0F172A);
   font-family: var(--font-display);
   font-size: clamp(2.45rem, 7vw, 5.2rem);
   font-weight: 600;
@@ -2692,7 +2692,7 @@ html[data-theme="light"] .privacy-policy-page {
 .enx-not-found-copy {
   width: min(560px, 100%);
   margin: 20px auto 0;
-  color: var(--text2, #756A60);
+  color: var(--text2, #475569);
   font-size: clamp(1rem, 2vw, 1.12rem);
   line-height: 1.65;
 }
@@ -2733,18 +2733,18 @@ html[data-theme="light"] .privacy-policy-page {
 .enx-not-found-primary {
   border: 1px solid transparent;
   background: var(--cyan, #C58B2A);
-  color: #FFFDF8;
+  color: #FFFFFF;
 }
 
 .enx-not-found-primary:hover {
-  background: #A96F18;
-  color: #FFFDF8;
+  background: #C58B2A;
+  color: #FFFFFF;
 }
 
 .enx-not-found-secondary,
 .enx-not-found-ghost {
-  border: 1px solid var(--border, #E2D6C6);
-  background: var(--card, #FFFDF8);
+  border: 1px solid var(--border, #E2E8F0);
+  background: var(--card, #FFFFFF);
   color: var(--cyan, #C58B2A);
 }
 
@@ -2752,14 +2752,14 @@ html[data-theme="light"] .privacy-policy-page {
 .enx-not-found-ghost:hover {
   border-color: rgba(197, 139, 42, .42);
   background: rgba(197, 139, 42, .08);
-  color: #A96F18;
+  color: #C58B2A;
 }
 
 .enx-page-loading {
   min-height: calc(100vh - 68px);
   padding: clamp(118px, 16vh, 178px) clamp(16px, 5vw, 72px) clamp(70px, 10vh, 120px);
-  background: var(--bg, #FAF7F1);
-  color: var(--text, #332820);
+  background: var(--bg, #F8FAFC);
+  color: var(--text, #0F172A);
   display: grid;
   place-items: center;
 }
@@ -2770,10 +2770,10 @@ html[data-theme="light"] .privacy-policy-page {
   justify-items: center;
   gap: 14px;
   padding: 28px;
-  border: 1px solid var(--border, #E2D6C6);
+  border: 1px solid var(--border, #E2E8F0);
   border-radius: 18px;
-  background: color-mix(in srgb, var(--card, #FFFDF8) 88%, transparent);
-  color: var(--text2, #756A60);
+  background: color-mix(in srgb, var(--card, #FFFFFF) 88%, transparent);
+  color: var(--text2, #475569);
   font-size: .92rem;
   font-weight: 700;
 }
@@ -3661,14 +3661,14 @@ html:has(.enx-page-loading) .enx-nav-hamburger span {
   border: 0;
   border-radius: 10px;
   background: var(--cyan);
-  color: #FFFDF8;
+  color: #FFFFFF;
   font: 700 .84rem/1.2 "Manrope", ui-sans-serif, system-ui, sans-serif;
   text-decoration: none;
   cursor: pointer;
 }
 
 .react-page-root[data-page="index.html"] .hero-card-primary:hover {
-  background: #A96F18;
+  background: #C58B2A;
   box-shadow: 0 4px 18px rgba(197, 139, 42, .35);
 }
 
@@ -3683,7 +3683,7 @@ html:has(.enx-page-loading) .enx-nav-hamburger span {
 }
 
 .react-page-root[data-page="payment.html"] .checkout-header p {
-  color: #2B211A !important;
+  color: #0F172A !important;
 }
 
 .react-page-root[data-page="payment.html"] .cp-includes li {
@@ -3691,15 +3691,15 @@ html:has(.enx-page-loading) .enx-nav-hamburger span {
 }
 
 html[data-theme="light"] .react-page-root[data-page="payment.html"] .cp-includes li {
-  color: #332820 !important;
+  color: #0F172A !important;
 }
 
 html[data-theme="light"] .react-page-root .lp-prefix {
-  color: #332820 !important;
+  color: #0F172A !important;
 }
 
 .react-page-root[data-page="index.html"] .ai-mentorship-heading + p {
-  color: #2B211A !important;
+  color: #0F172A !important;
 }
 
 .react-page-root[data-page="index.html"] .hero-card-wish {
@@ -4022,7 +4022,7 @@ body.has-edunex-player-fullscreen #nai-float-btn {
 }
 
 html[data-theme="light"] .react-page-root[data-page="videos.html"] {
-  background: #FAF7F1;
+  background: #F8FAFC;
 }
 
 html[data-theme="light"] .react-page-root[data-page="videos.html"] .library-search,
@@ -4030,29 +4030,29 @@ html[data-theme="light"] .react-page-root[data-page="videos.html"] .library-tabs
 html[data-theme="light"] .react-page-root[data-page="videos.html"] .library-quick-stats span,
 html[data-theme="light"] .react-page-root[data-page="videos.html"] .summary-subline,
 html[data-theme="light"] .react-page-root[data-page="videos.html"] .watch-layout {
-  background: #FAF7F1 !important;
+  background: #F8FAFC !important;
   border-color: rgba(0,0,0,.08) !important;
 }
 
 html[data-theme="light"] .react-page-root[data-page="videos.html"] :where(.watch-top, .player-wrap, .lesson-info, .lesson-sidebar, .sidebar-head, .lesson-list) {
-  color: #332820 !important;
+  color: #0F172A !important;
 }
 
 html[data-theme="light"] .react-page-root[data-page="videos.html"] :where(.sidebar-head h2, .lesson-info h1, .lesson-copy strong) {
-  color: #2B211A !important;
+  color: #0F172A !important;
 }
 
 html[data-theme="light"] .react-page-root[data-page="videos.html"] :where(.sidebar-head p, .lesson-info p, .lesson-meta span, .lesson-copy span, .status-line) {
-  color: #756A60 !important;
+  color: #475569 !important;
 }
 
 html[data-theme="light"] .react-page-root[data-page="videos.html"] :where(.lesson-sidebar, .sidebar-head, .lesson-item, .lesson-meta span, .auto-next-toggle) {
-  border-color: #E2D6C6 !important;
+  border-color: #E2E8F0 !important;
 }
 
 html[data-theme="light"] .react-page-root[data-page="videos.html"] :where(.lesson-item) {
-  background: #FFFDF8 !important;
-  color: #332820 !important;
+  background: #FFFFFF !important;
+  color: #0F172A !important;
 }
 
 html[data-theme="light"] .react-page-root[data-page="videos.html"] :where(.lesson-item:hover, .lesson-item.is-active) {
@@ -4071,28 +4071,28 @@ html[data-theme="light"] .react-page-root[data-page="videos.html"] .lesson-copy 
 }
 
 html[data-theme="light"] .react-page-root[data-page="videos.html"] .lesson-number {
-  background: rgba(255, 253, 248, .92) !important;
-  color: #8E621D !important;
-  border: 1px solid #E2D6C6 !important;
+  background: rgba(255, 255, 255, .92) !important;
+  color: #C58B2A !important;
+  border: 1px solid #E2E8F0 !important;
 }
 
 html[data-theme="light"] .react-page-root[data-page="videos.html"] .auto-next-toggle {
-  background: #FFFCF6 !important;
-  color: #8E621D !important;
+  background: #FFFFFF !important;
+  color: #C58B2A !important;
 }
 
 html[data-theme="light"] .react-page-root[data-page="videos.html"] .auto-next-switch {
-  background: #E6DACB !important;
-  border-color: #DAB77A !important;
+  background: #CBD5E1 !important;
+  border-color: #C58B2A !important;
 }
 
 html[data-theme="light"] .react-page-root[data-page="videos.html"] .auto-next-switch::before {
-  background: #FFFDF8 !important;
+  background: #FFFFFF !important;
 }
 
 html[data-theme="light"] .react-page-root[data-page="videos.html"] .auto-next-toggle:has(input:checked) {
   background: rgba(197, 139, 42, .14) !important;
-  color: #6E4713 !important;
+  color: #C58B2A !important;
 }
 
 html[data-theme="light"] .react-page-root[data-page="videos.html"] .auto-next-toggle:has(input:checked) .auto-next-switch {
@@ -4237,7 +4237,7 @@ html:not([data-theme="light"]) .react-page-root[data-page="profile.html"] :where
 html:not([data-theme="light"]) .react-page-root[data-page="profile.html"] :where(.pf-badge-teal, .pf-badge-gray) {
   background: rgba(197,139,42,.14) !important;
   border-color: rgba(197,139,42,.34) !important;
-  color: #DAB77A !important;
+  color: #C58B2A !important;
 }
 
 html:not([data-theme="light"]) .react-page-root[data-page="profile.html"] :where(.pf-avatar-online, .pf-theme-opt.selected .pf-theme-preview) {
@@ -4308,7 +4308,7 @@ html[data-theme="light"] .react-page-root[data-page="about.html"] .trial-card,
 html[data-theme="light"] .react-page-root[data-page="about.html"] .card-traditional,
 html[data-theme="light"] .react-page-root[data-page="about.html"] .directive-card,
 html[data-theme="light"] .react-page-root[data-page="about.html"] .team-card {
-  background: #FAF7F1 !important;
+  background: #F8FAFC !important;
   border-color: rgba(0,0,0,.08) !important;
 }
 
@@ -4317,8 +4317,8 @@ html[data-theme="light"] .react-page-root[data-page="login.html"] .lp-right,
 html[data-theme="light"] .react-page-root[data-page="signup.html"] .sp-main,
 html[data-theme="light"] .react-page-root[data-page="signup.html"] .sp-profile-wrap,
 html[data-theme="light"] .react-page-root[data-page="signup.html"] .sp-form-panel {
-  background: #FAF7F1 !important;
-  color: #332820 !important;
+  background: #F8FAFC !important;
+  color: #0F172A !important;
 }
 
 html[data-theme="light"] .react-page-root[data-page="login.html"] .lp-left,
@@ -4327,9 +4327,9 @@ html[data-theme="light"] .react-page-root[data-page="login.html"] .lp-test-card,
 html[data-theme="light"] .react-page-root[data-page="signup.html"] .sp-profile-card,
 html[data-theme="light"] .react-page-root[data-page="signup.html"] .sp-footer,
 html[data-theme="light"] .react-page-root[data-page="signup.html"] .sp-ava-modal {
-  background: #FAF7F1 !important;
+  background: #F8FAFC !important;
   border-color: rgba(0,0,0,.08) !important;
-  color: #332820 !important;
+  color: #0F172A !important;
 }
 
 html[data-theme="light"] .react-page-root[data-page="login.html"] .lp-input-wrap,
@@ -4342,23 +4342,23 @@ html[data-theme="light"] .react-page-root[data-page="signup.html"] .sp-avatar-ta
 html[data-theme="light"] .react-page-root[data-page="signup.html"] .sp-ava-modal-close,
 html[data-theme="light"] .react-page-root[data-page="signup.html"] .sp-ava-opt,
 html[data-theme="light"] .react-page-root[data-page="signup.html"] .sp-footer-icon {
-  background: #FAF7F1 !important;
+  background: #F8FAFC !important;
   border-color: rgba(0,0,0,.12) !important;
 }
 
 html[data-theme="light"] .react-page-root[data-page="login.html"] :where(.lp-marketing-title, .lp-login-title, .lp-form-group > label, .lp-label-row label, .lp-author-name, .lp-test-text),
 html[data-theme="light"] .react-page-root[data-page="signup.html"] :where(.sp-form-title, .sp-field-label, .sp-otp-label, .sp-profile-heading, .sp-ava-circle-name, .sp-ava-modal-title, .sp-footer-brand, .sp-footer-col-title) {
-  color: #332820 !important;
+  color: #0F172A !important;
 }
 
 html[data-theme="light"] .react-page-root[data-page="login.html"] :where(.lp-hero p, .lp-subtitle, .lp-author-role, .lp-remember, .lp-create-row, .lp-footer-links a),
 html[data-theme="light"] .react-page-root[data-page="signup.html"] :where(.sp-form-sub, .sp-prefix, .sp-checkbox-row, .sp-login-row, .sp-otp-desc, .sp-resend, .sp-profile-sub, .sp-ava-circle-hint, .sp-roller-item, .sp-gender-slide-btn, .sp-terms-note, .sp-footer-brand-desc, .sp-footer-col-links a, .sp-footer-bottom p, .sp-footer-bottom-links a, .sp-footer-icon) {
-  color: #756A60 !important;
+  color: #475569 !important;
 }
 
 html[data-theme="light"] .react-page-root[data-page="login.html"] :where(.lp-input-wrap input),
 html[data-theme="light"] .react-page-root[data-page="signup.html"] :where(.sp-input-row input, .sp-profile-input, .sp-otp-box) {
-  color: #332820 !important;
+  color: #0F172A !important;
 }
 
 html[data-theme="light"] .react-page-root[data-page="signup.html"] .sp-gender-slider.ready .sp-gender-slide-btn.selected,
@@ -4370,20 +4370,20 @@ html[data-theme="light"] .react-page-root[data-page="login.html"] .lp-signin-btn
 }
 
 html[data-theme="light"] .react-page-root[data-page="dashboard.html"] {
-  background: #FAF7F1 !important;
-  color: #332820 !important;
+  background: #F8FAFC !important;
+  color: #0F172A !important;
 }
 
 html[data-theme="light"] .react-page-root[data-page="dashboard.html"] :where(.dash-page, .welcome-left h1, .sec-title, .stat-pill-value, .hist-title, .rec-title, .activity-head span, .astat-value, .streak-head span, .footer-brand, .footer-col h4) {
-  color: #332820 !important;
+  color: #0F172A !important;
 }
 
 html[data-theme="light"] .react-page-root[data-page="dashboard.html"] :where(.welcome-left p, .stat-pill-label, .hist-meta, .hist-time, .rec-meta-row, .activity-more, .astat-label, .streak-sub, .chart-day, .footer-desc, .footer-links a, .footer-bottom p) {
-  color: #756A60 !important;
+  color: #475569 !important;
 }
 
 html[data-theme="light"] .react-page-root[data-page="dashboard.html"] :where(.stat-pill, .hist-card, .rec-card, .activity-card, .streak-card, .footer-wrap, .filter-tab) {
-  background: #FAF7F1 !important;
+  background: #F8FAFC !important;
   border-color: rgba(0,0,0,.08) !important;
 }
 
@@ -4397,17 +4397,17 @@ html[data-theme="light"] .react-page-root[data-page="dashboard.html"] :where(.ba
 
 /* Light theme off-white pass: soften white surfaces without changing layout. */
 html[data-theme="light"] {
-  --bg: #FAF7F1;
-  --card: #FAF7F1;
-  --card2: #FAF7F1;
-  --panel: #FAF7F1;
-  --panel2: #FAF7F1;
-  --nav-bg: #FAF7F1;
+  --bg: #F8FAFC;
+  --card: #F8FAFC;
+  --card2: #F8FAFC;
+  --panel: #F8FAFC;
+  --panel2: #F8FAFC;
+  --nav-bg: #F8FAFC;
 }
 
 html[data-theme="light"],
 html[data-theme="light"] body {
-  background: #FAF7F1 !important;
+  background: #F8FAFC !important;
 }
 
 html[data-theme="light"] .react-page-root {
@@ -4426,73 +4426,73 @@ html[data-theme="light"] .grid-dot-global {
 }
 
 html[data-theme="light"] :where(.navbar, .premium-site-nav, .enx-navbar, .pay-nav, .edunex-mobile-menu, .index2-mobile-menu, .premium-mobile-menu) {
-  background: #FAF7F1 !important;
+  background: #F8FAFC !important;
 }
 
 html[data-theme="light"] :where(.course-card, .hist-card, .wl-card, .cert-card, .pf-card, .pf-profile-card, .ep-card, .checkout-card, .course-preview, .payment-choice-card, .library-shell, .watch-shell, .video-shell, .lp-form-box, .sp-profile-card, .sp-form-panel, .legal-card, .glass-card, .card-traditional, .directive-card, .team-card, .trial-card, .hero-stat-card, .library-summary, .course-tile, .lesson-sidebar, .empty-state, .activity-card, .streak-card, .stat-pill) {
-  background: #FAF7F1 !important;
+  background: #F8FAFC !important;
 }
 
 html[data-theme="light"] :where(.checkout-body, .payment-choice-body, .cp-includes, .plan-option, .pay-btn-secondary, .payment-choice-btn.secondary, .library-tabs, .library-search, .summary-subline, .lesson-item, input, textarea, select) {
-  background: #FAF7F1 !important;
+  background: #F8FAFC !important;
 }
 
 html[data-theme="light"] .react-page-root[data-page="courses.html"] .course-search-suggestions {
-  background: #FFFDF8 !important;
-  border-color: #E2D6C6 !important;
-  box-shadow: 0 18px 42px rgba(91, 63, 25, .16) !important;
+  background: #FFFFFF !important;
+  border-color: #E2E8F0 !important;
+  box-shadow: 0 18px 42px rgba(15, 23, 42, .16) !important;
 }
 
 html[data-theme="light"] .react-page-root[data-page="courses.html"] .course-search-suggestion {
-  color: #2B211A !important;
+  color: #0F172A !important;
 }
 
 html[data-theme="light"] .react-page-root[data-page="courses.html"] .course-search-suggestion small {
-  color: #74685F !important;
+  color: #475569 !important;
 }
 
 /* Warm premium light-theme palette. Palette-only pass; layout and spacing stay unchanged. */
 html[data-theme="light"] {
-  --bg: #FAF7F1;
-  --card: #FFFDF8;
-  --card2: #FFFCF6;
-  --panel: #F3EBDD;
-  --panel2: #F6F0E7;
-  --border: #E2D6C6;
-  --border2: #E6DACB;
-  --text: #332820;
-  --text2: #756A60;
-  --nav-bg: #FBF8F2;
-  --gray: #9A8E82;
-  --light: #756A60;
+  --bg: #F8FAFC;
+  --card: #FFFFFF;
+  --card2: #FFFFFF;
+  --panel: #F1F5F9;
+  --panel2: #F8FAFC;
+  --border: #E2E8F0;
+  --border2: #CBD5E1;
+  --text: #0F172A;
+  --text2: #475569;
+  --nav-bg: #F8FAFC;
+  --gray: #94A3B8;
+  --light: #475569;
   --cyan: #C58B2A;
   --cyan-dim: rgba(197,139,42,.10);
   --cyan-border: rgba(197,139,42,.26);
-  --accent: #B9853E;
+  --accent: #C58B2A;
   --gold: #C58B2A;
 }
 
 html[data-theme="light"],
 html[data-theme="light"] body {
-  background: #FAF7F1 !important;
-  color: #332820 !important;
+  background: #F8FAFC !important;
+  color: #0F172A !important;
 }
 
 html[data-theme="light"] :where(h1, h2, h3, h4, h5, h6, .hero-title, .sec-title, .section-title, .card-title, .course-title, .pf-name, .pf-card-heading, .ep-card-title, .cert-visual-title, .welcome-left h1, .stat-pill-value, .hist-title, .rec-title, .astat-value) {
-  color: #2B211A !important;
+  color: #0F172A !important;
 }
 
 html[data-theme="light"] :where(p, .text-on-surface-variant, .hero-sub, .section-head p, .tile-body p, .tile-meta, .pf-email, .pf-list-hint, .hist-meta, .hist-time, .rec-meta-row, .cert-meta, .wl-meta, .wl-instructor, .stat-pill-label, .astat-label, .chart-day, .footer-desc, .footer-links a, .footer-bottom p) {
-  color: #756A60 !important;
+  color: #475569 !important;
 }
 
 html[data-theme="light"] :where(.navbar, .premium-site-nav, .enx-navbar, .pay-nav, .edunex-mobile-menu, .index2-mobile-menu, .premium-mobile-menu) {
-  background: #FBF8F2 !important;
-  border-color: #E2D6C6 !important;
+  background: #F8FAFC !important;
+  border-color: #E2E8F0 !important;
 }
 
 html[data-theme="light"] :where(.nav-logo, .premium-logo, .footer-brand, .enx-nav-logo, .enx-footer-brand) {
-  color: #2B211A !important;
+  color: #0F172A !important;
 }
 
 html[data-theme="light"] :where(.nav-logo .brand-logo-mate, .nav-logo .brand-logo-ai, .premium-logo .brand-logo-mate, .premium-logo .brand-logo-ai, .enx-nav-logo .brand-logo-mate, .enx-nav-logo .brand-logo-ai, .enx-footer-brand span span, .nav-links a.active, .premium-nav-links a.active, .enx-nav-links a.active, .nav-login:hover, .enx-nav-login:hover, .nav-avatar:hover, .enx-nav-avatar:hover, .premium-avatar:hover, .footer-links a:hover, .enx-footer-links a:hover, .enx-footer-cta > a, .sec-link, .course-price, .wl-price, .cp-price, .hero-card-price strong, .hero-card-action) {
@@ -4510,21 +4510,21 @@ html[data-theme="light"] .enx-nav-links a.active::after {
 }
 
 html[data-theme="light"] :where(.glass-card, .card-traditional, .directive-card, .team-card, .trial-card, .hero-stat-card, .library-summary, .course-tile, .lesson-sidebar, .empty-state, .pf-card, .pf-profile-card, .ep-card, .cert-card, .wl-card, .hist-card, .rec-card, .activity-card, .streak-card, .stat-pill, .checkout-card, .course-preview, .payment-choice-card, .course-card, .library-shell, .watch-shell, .video-shell, .lp-form-box, .lp-test-card, .sp-profile-card, .sp-form-panel, .legal-card, .hero-course-card, .hero-search-form, .hero-trust-item, .hero-topic, .hero-carousel-btn) {
-  background: #FFFDF8 !important;
-  border-color: #E2D6C6 !important;
-  box-shadow: 0 8px 24px rgba(88,65,34,.06) !important;
+  background: #FFFFFF !important;
+  border-color: #E2E8F0 !important;
+  box-shadow: 0 8px 24px rgba(15, 23, 42,.06) !important;
 }
 
 html[data-theme="light"] :where(.checkout-body, .payment-choice-body, .cp-includes, .plan-option, .pay-btn-secondary, .payment-choice-btn.secondary, .library-tabs, .library-search, .summary-subline, .lesson-item, .pf-list-icon, .pf-edit-btn, .filter-tab, .library-tab, .cert-tab, .back-btn, .btn-ghost, .hero-cta-secondary, .hero-btn-secondary) {
-  background: #FFFCF6 !important;
-  border-color: #E2D6C6 !important;
+  background: #FFFFFF !important;
+  border-color: #E2E8F0 !important;
   color: #C58B2A !important;
 }
 
 html[data-theme="light"] :where(input, textarea, select, .ep-input, .sp-profile-input, .library-search input, .hero-search-field input) {
-  background: #FAF5ED !important;
-  border-color: #E2D6C6 !important;
-  color: #332820 !important;
+  background: #F8FAFC !important;
+  border-color: #E2E8F0 !important;
+  color: #0F172A !important;
 }
 
 html[data-theme="light"] :where(input, textarea, select):focus {
@@ -4534,23 +4534,23 @@ html[data-theme="light"] :where(input, textarea, select):focus {
 
 html[data-theme="light"] input::placeholder,
 html[data-theme="light"] textarea::placeholder {
-  color: #9A8E82 !important;
+  color: #94A3B8 !important;
 }
 
 html[data-theme="light"] :where(.hero-cta-primary, .hero-search-btn, .btn-cyan, .btn-trial, .trial-btn, .cta-big-btn, .login-cta-btn, .footer-contact-link, .lp-signin-btn, .sp-primary-btn, .sp-complete-btn, .payment-choice-btn.primary, .pay-btn-primary, .wl-enroll-btn, .cart-btn, .upgrade-card) {
   background: #C58B2A !important;
   border-color: #C58B2A !important;
-  color: #FFFDF8 !important;
-  box-shadow: 0 8px 24px rgba(88,65,34,.10) !important;
+  color: #FFFFFF !important;
+  box-shadow: 0 8px 24px rgba(15, 23, 42,.10) !important;
 }
 
 html[data-theme="light"] :where(.hero-cta-primary:hover, .hero-search-btn:hover, .btn-cyan:hover, .btn-trial:hover, .trial-btn:hover, .cta-big-btn:hover, .login-cta-btn:hover, .footer-contact-link:hover, .lp-signin-btn:hover, .sp-primary-btn:hover, .sp-complete-btn:hover, .payment-choice-btn.primary:hover, .pay-btn-primary:hover, .wl-enroll-btn:hover, .cart-btn:hover) {
-  background: #A96F18 !important;
-  border-color: #A96F18 !important;
+  background: #C58B2A !important;
+  border-color: #C58B2A !important;
 }
 
 html[data-theme="light"] :where(.hero-card-badge, .bg-black\/80, .pf-badge-teal, .pf-badge-gray, .filter-tab.active, .cert-tab.active, .wl-sort-btn.active) {
-  background: #F3E4C8 !important;
+  background: #F1F5F9 !important;
   border-color: #C58B2A !important;
   color: #C58B2A !important;
 }
@@ -4566,27 +4566,661 @@ html[data-theme="light"] :where(.page-grid, #page-grid-global) {
 }
 
 html[data-theme="light"] :where(.grid-dot-global) {
-  background: rgba(185,144,85,.78) !important;
-  box-shadow: 0 0 8px 2px rgba(185,144,85,.28) !important;
+  background: rgba(197, 139, 42,.78) !important;
+  box-shadow: 0 0 8px 2px rgba(197, 139, 42,.28) !important;
 }
 
 html[data-theme="light"] :where(.site-footer, .footer, .footer-wrap, .sp-footer, .enx-footer, .enx-footer-cta, .enx-footer-trust-row span, .enx-footer-support a) {
-  background: #FBF8F2 !important;
-  border-color: #E2D6C6 !important;
+  background: #F8FAFC !important;
+  border-color: #E2E8F0 !important;
 }
 
 html[data-theme="light"] .enx-footer,
 html[data-theme="light"] .enx-footer :where(.enx-footer-heading, .enx-footer-bottom span, .enx-footer-bottom a) {
-  color: #2B211A !important;
+  color: #0F172A !important;
 }
 
 html[data-theme="light"] .enx-footer :where(.enx-footer-links a, .enx-footer-cta p, .enx-footer-support a) {
-  color: #5F534A !important;
+  color: #475569 !important;
 }
 
 html[data-theme="light"] .enx-footer .enx-footer-cta,
 html[data-theme="light"] .enx-footer .enx-footer-support a {
-  background: #FFFDF8 !important;
+  background: #FFFFFF !important;
+}
+
+/* Global problem reporting */
+.enx-report-nav-button,
+.enx-mobile-report-button,
+.tutor-report-problem {
+  border-color: rgba(220, 38, 38, .52) !important;
+  background: rgba(220, 38, 38, .1) !important;
+  color: #FCA5A5 !important;
+}
+
+.enx-report-nav-button {
+  min-height: 34px !important;
+  padding: 0 12px !important;
+  border: 1px solid !important;
+  border-radius: 999px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 7px !important;
+  font: 800 .78rem/1 var(--font-body, "Manrope", sans-serif) !important;
+  cursor: pointer !important;
+  white-space: nowrap !important;
+  transition: background .2s ease, border-color .2s ease, color .2s ease, transform .2s ease !important;
+}
+
+.enx-report-nav-button .enx-icon {
+  width: 16px !important;
+  height: 16px !important;
+}
+
+.enx-report-nav-button:hover,
+.enx-report-nav-button:focus-visible,
+.enx-mobile-report-button:hover,
+.enx-mobile-report-button:focus-visible,
+.tutor-report-problem:hover,
+.tutor-report-problem:focus-visible {
+  border-color: #EF4444 !important;
+  background: #DC2626 !important;
+  color: #FFFFFF !important;
+}
+
+.enx-mobile-report-button {
+  display: none;
+}
+
+.react-page-root[data-page="ai-tutor.html"] .tutor-report-problem {
+  flex: 0 0 38px;
+  width: 38px;
+  height: 38px;
+  border: 1px solid rgba(220, 38, 38, .52) !important;
+}
+
+.problem-report-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2147483600;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(2, 6, 12, .74);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.problem-report-dialog {
+  width: min(100%, 540px);
+  max-height: min(760px, calc(100dvh - 48px));
+  overflow-y: auto;
+  border: 1px solid var(--border, rgba(255, 255, 255, .12));
+  border-radius: 20px;
+  padding: 24px;
+  background: var(--card, #0D0F14);
+  color: var(--text, #F8FAFC);
+  box-shadow: 0 30px 90px rgba(0, 0, 0, .48);
+  font-family: var(--font-body, "Manrope", sans-serif);
+}
+
+.problem-report-head {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr) 38px;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.problem-report-mark,
+.problem-report-success-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #FFFFFF;
+  background: #DC2626;
+}
+
+.problem-report-mark {
+  width: 44px;
+  height: 44px;
+  border-radius: 13px;
+}
+
+.problem-report-mark .enx-icon,
+.problem-report-success-icon .enx-icon {
+  width: 22px;
+  height: 22px;
+}
+
+.problem-report-head p {
+  margin: 0 0 4px;
+  color: #EF4444;
+  font-size: .67rem;
+  font-weight: 900;
+  letter-spacing: .13em;
+}
+
+.problem-report-head h2 {
+  margin: 0;
+  color: var(--text, #F8FAFC);
+  font-family: var(--font-heading, Georgia, serif);
+  font-size: clamp(1.55rem, 4vw, 2rem);
+  line-height: 1.1;
+}
+
+.problem-report-close {
+  width: 38px;
+  height: 38px;
+  border: 1px solid var(--border, rgba(255, 255, 255, .12));
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  color: var(--text2, #9CA3AF);
+  cursor: pointer;
+}
+
+.problem-report-close:hover,
+.problem-report-close:focus-visible {
+  border-color: var(--text2, #9CA3AF);
+  color: var(--text, #F8FAFC);
+}
+
+.problem-report-description {
+  margin: 0 0 20px;
+  color: var(--text2, #9CA3AF);
+  font-size: .88rem;
+  line-height: 1.65;
+}
+
+.problem-report-field {
+  display: grid;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.problem-report-field > span {
+  color: var(--text, #F8FAFC);
+  font-size: .8rem;
+  font-weight: 800;
+}
+
+.problem-report-field select,
+.problem-report-field textarea {
+  width: 100%;
+  border: 1px solid var(--border, rgba(255, 255, 255, .12));
+  border-radius: 12px;
+  background: var(--card2, #111318);
+  color: var(--text, #F8FAFC);
+  font: 500 .9rem/1.55 var(--font-body, "Manrope", sans-serif);
+  outline: 0;
+  transition: border-color .2s ease, box-shadow .2s ease;
+}
+
+.problem-report-field select {
+  min-height: 46px;
+  padding: 0 13px;
+}
+
+.problem-report-field textarea {
+  min-height: 142px;
+  padding: 13px;
+  resize: vertical;
+}
+
+.problem-report-field :is(select, textarea):focus {
+  border-color: color-mix(in srgb, var(--cyan, #C58B2A) 70%, var(--border, transparent));
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--cyan, #C58B2A) 12%, transparent);
+}
+
+.problem-report-field textarea::placeholder {
+  color: color-mix(in srgb, var(--text2, #9CA3AF) 72%, transparent);
+}
+
+.problem-report-field small {
+  justify-self: end;
+  color: var(--text2, #9CA3AF);
+  font-size: .7rem;
+}
+
+.problem-report-error {
+  margin: 14px 0 0;
+  padding: 10px 12px;
+  border: 1px solid rgba(220, 38, 38, .38);
+  border-radius: 10px;
+  background: rgba(220, 38, 38, .09);
+  color: #FCA5A5;
+  font-size: .8rem;
+}
+
+.problem-report-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.problem-report-cancel,
+.problem-report-submit {
+  min-height: 44px;
+  padding: 0 18px;
+  border-radius: 11px;
+  font: 800 .84rem/1 var(--font-body, "Manrope", sans-serif);
+  cursor: pointer;
+}
+
+.problem-report-cancel {
+  border: 1px solid var(--border, rgba(255, 255, 255, .12));
+  background: transparent;
+  color: var(--text2, #9CA3AF);
+}
+
+.problem-report-submit {
+  border: 1px solid #DC2626;
+  background: #DC2626;
+  color: #FFFFFF;
+}
+
+.problem-report-submit:hover:not(:disabled),
+.problem-report-submit:focus-visible {
+  border-color: #B91C1C;
+  background: #B91C1C;
+}
+
+.problem-report-dialog button:disabled {
+  cursor: not-allowed;
+  opacity: .5;
+}
+
+.problem-report-success {
+  display: grid;
+  justify-items: center;
+  padding: 16px 8px 4px;
+  text-align: center;
+}
+
+.problem-report-success-icon {
+  width: 54px;
+  height: 54px;
+  margin-bottom: 14px;
+  border-radius: 999px;
+}
+
+.problem-report-success h3 {
+  margin: 0 0 8px;
+  color: var(--text, #F8FAFC);
+  font-size: 1.2rem;
+}
+
+.problem-report-success p {
+  max-width: 390px;
+  margin: 0 0 20px;
+  color: var(--text2, #9CA3AF);
+  font-size: .88rem;
+  line-height: 1.65;
+}
+
+html[data-theme="light"] .problem-report-dialog {
+  background: #FFFFFF;
+  border-color: #E2E8F0;
+  box-shadow: 0 30px 90px rgba(15, 23, 42, .22);
+}
+
+html[data-theme="light"] :where(.problem-report-head h2, .problem-report-field > span, .problem-report-success h3) {
+  color: #0F172A;
+}
+
+html[data-theme="light"] :where(.problem-report-description, .problem-report-field small, .problem-report-success p) {
+  color: #64748B;
+}
+
+html[data-theme="light"] :where(.problem-report-field select, .problem-report-field textarea) {
+  border-color: #CBD5E1;
+  background: #F8FAFC;
+  color: #0F172A;
+}
+
+@media (max-width: 1120px) and (min-width: 901px) {
+  .enx-report-nav-button span {
+    display: none;
+  }
+
+  .enx-report-nav-button {
+    width: 36px !important;
+    padding: 0 !important;
+  }
+}
+
+@media (max-width: 900px) {
+  .enx-mobile-report-button {
+    position: fixed;
+    right: 14px;
+    bottom: calc(var(--mobile-nav-height, 72px) + var(--mobile-safe-bottom, 0px) + 16px);
+    z-index: 2147482100;
+    width: 48px;
+    height: 48px;
+    border: 1px solid #DC2626 !important;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 12px 28px rgba(127, 29, 29, .34);
+    cursor: pointer;
+  }
+
+  .enx-mobile-report-button .enx-icon {
+    width: 21px;
+    height: 21px;
+  }
+
+  .react-page-root[data-page="ai-tutor.html"] .tutor-report-problem {
+    width: 36px;
+    height: 36px;
+    flex-basis: 36px;
+  }
+}
+
+@media (max-width: 560px) {
+  .problem-report-overlay {
+    align-items: end;
+    padding: 0;
+  }
+
+  .problem-report-dialog {
+    width: 100%;
+    max-height: calc(100dvh - 18px);
+    padding: 20px 18px calc(18px + env(safe-area-inset-bottom));
+    border-width: 1px 0 0;
+    border-radius: 22px 22px 0 0;
+  }
+
+  .problem-report-actions {
+    display: grid;
+    grid-template-columns: 1fr 1.35fr;
+  }
+
+  .problem-report-actions > button,
+  .problem-report-success .problem-report-submit {
+    width: 100%;
+  }
+}
+
+body.has-edunex-player-fullscreen :where(.enx-report-nav-button, .enx-mobile-report-button, .problem-report-overlay) {
+  display: none !important;
+}
+
+/* Cross-viewport UX hardening: prevent legacy grids and media from forcing a
+   wider page, then tune the dedicated AI workspace for tablets and phones. */
+.react-page-root,
+.react-page-root :where(main, section, article, aside, form, div) {
+  min-width: 0;
+}
+
+.react-page-root :where(img, video, iframe, canvas) {
+  max-width: 100%;
+}
+
+.react-page-root[data-page="pricing.html"] :where(.legal-hero, .legal-shell, .legal-article, .pricing-plan-grid, .pricing-card) {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.react-page-root[data-page="pricing.html"] .pricing-action {
+  max-width: 100%;
+  white-space: normal;
+  text-align: center;
+}
+
+@media (min-width: 901px) and (max-width: 1200px) {
+  .react-page-root[data-page="ai-tutor.html"] .full-tutor {
+    width: 100% !important;
+    padding: 12px !important;
+  }
+
+  .react-page-root[data-page="ai-tutor.html"] .tutor-sidebar {
+    width: clamp(232px, 24vw, 280px) !important;
+    min-width: clamp(232px, 24vw, 280px) !important;
+  }
+
+  .react-page-root[data-page="ai-tutor.html"] .chat-messages {
+    padding-inline: clamp(20px, 4vw, 44px) !important;
+  }
+
+  .react-page-root[data-page="ai-tutor.html"] .chat-input-area {
+    width: min(calc(100% - 36px), 760px) !important;
+  }
+}
+
+@media (max-width: 900px) {
+  .react-page-root[data-page="ai-tutor.html"] {
+    width: 100% !important;
+    max-width: 100% !important;
+    height: 100dvh !important;
+    overflow: hidden !important;
+  }
+
+  .react-page-root[data-page="ai-tutor.html"] .tutor-chat {
+    max-width: none !important;
+  }
+
+  .react-page-root[data-page="ai-tutor.html"] .chat-header {
+    flex: 0 0 auto;
+    min-width: 0;
+  }
+
+  .react-page-root[data-page="ai-tutor.html"] .chat-messages {
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .react-page-root[data-page="ai-tutor.html"] :where(.chat-bubble, .tutor-thinking, .bub-content-wrap, .bub-content) {
+    min-width: 0;
+  }
+
+  .react-page-root[data-page="ai-tutor.html"] .bub-content :where(p, a, strong, code) {
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+
+  .react-page-root[data-page="ai-tutor.html"] .chat-input-area {
+    max-width: calc(100% - 20px) !important;
+  }
+}
+
+@media (max-width: 520px) {
+  .react-page-root[data-page="ai-tutor.html"] .chat-header {
+    padding-inline: 8px !important;
+    gap: 7px !important;
+  }
+
+  .react-page-root[data-page="ai-tutor.html"] .tutor-header-avatar {
+    width: 38px !important;
+    height: 42px !important;
+  }
+
+  .react-page-root[data-page="ai-tutor.html"] .ai-name-button {
+    max-width: calc(100vw - 150px) !important;
+  }
+
+  .react-page-root[data-page="ai-tutor.html"] .chat-messages {
+    padding: 16px 10px 14px !important;
+  }
+
+  .react-page-root[data-page="ai-tutor.html"] .bub-content-wrap,
+  .react-page-root[data-page="ai-tutor.html"] .chat-bubble.user .bub-content-wrap {
+    max-width: calc(100% - 48px) !important;
+  }
+
+  .react-page-root[data-page="ai-tutor.html"] .chat-bubble .bub-avatar,
+  .react-page-root[data-page="ai-tutor.html"] .tutor-thinking .bub-avatar {
+    width: 42px !important;
+    height: 48px !important;
+  }
+
+  .react-page-root[data-page="ai-tutor.html"] .chat-bubble.user .bub-content {
+    max-width: 100% !important;
+  }
+
+  .react-page-root[data-page="ai-tutor.html"] .chat-input-area {
+    width: calc(100% - 12px) !important;
+    max-width: calc(100% - 12px) !important;
+    margin-bottom: 6px !important;
+  }
+
+  .react-page-root[data-page="ai-tutor.html"] .ai-name-setup-actions {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+@media (max-width: 900px) and (max-height: 700px) {
+  .react-page-root[data-page="ai-tutor.html"] .tutor-empty-state {
+    justify-content: flex-start !important;
+    padding-block: 10px 14px !important;
+  }
+
+  .react-page-root[data-page="ai-tutor.html"] .tutor-welcome-avatar {
+    width: 84px !important;
+    height: 84px !important;
+    margin-bottom: 8px !important;
+  }
+
+  .react-page-root[data-page="ai-tutor.html"] .tutor-starter-prompts {
+    margin-top: 12px !important;
+  }
+
+  .react-page-root[data-page="ai-tutor.html"] .tutor-starter-prompts .quick-prompt:nth-child(n + 3) {
+    display: none !important;
+  }
+}
+
+/* Final light-theme contrast guard.
+   Several legacy pages use hard-coded white foregrounds while their panels are
+   changed to white by the shared theme. Keep those foregrounds tied to the
+   surface they actually sit on, without changing the selected colour palette. */
+html[data-theme="light"] .react-page-root[data-page="videos.html"] :where(
+  .summary-number,
+  .tile-body h3,
+  .example-prompt-drawer summary,
+  .notes-modal-head h2
+) {
+  color: #0F172A !important;
+}
+
+html[data-theme="light"] .react-page-root[data-page="videos.html"] :where(
+  .example-prompt-content,
+  .notes-modal-body,
+  .notes-empty
+) {
+  color: #475569 !important;
+}
+
+html[data-theme="light"] .react-page-root[data-page="videos.html"] :where(
+  .example-prompt-drawer,
+  .course-notes-card,
+  .notes-modal-head,
+  .notes-empty
+) {
+  background: #FFFFFF !important;
+  border-color: #E2E8F0 !important;
+}
+
+html[data-theme="light"] .react-page-root[data-page="edit-profile.html"] :where(
+  .back-title,
+  .ava-edit-name
+) {
+  color: #0F172A !important;
+}
+
+html[data-theme="light"] .react-page-root[data-page="edit-profile.html"] :where(
+  .ava-edit-sub,
+  .ava-picker-note,
+  .ep-label,
+  .ep-prefix,
+  .ep-country-code
+) {
+  color: #475569 !important;
+}
+
+html[data-theme="light"] .react-page-root[data-page="lesson.html"] :where(
+  .cc-card,
+  .ai-chat-card,
+  .chat-header,
+  .chat-input-section,
+  .chat-input-row
+) {
+  background: #FFFFFF !important;
+  border-color: #E2E8F0 !important;
+}
+
+html[data-theme="light"] .react-page-root[data-page="lesson.html"] :where(
+  .back-bar-title,
+  .cc-title,
+  .chat-title,
+  .msg-ai-text,
+  .msg-ai-text strong,
+  .chat-input
+) {
+  color: #0F172A !important;
+}
+
+html[data-theme="light"] .react-page-root[data-page="lesson.html"] :where(
+  .cc-meta-row,
+  .msg-time-ai,
+  .msg-time-user,
+  .qa-chip
+) {
+  color: #475569 !important;
+}
+
+html[data-theme="light"] .react-page-root[data-page="lesson.html"] :where(.cc-num, .chat-close, .qa-chip) {
+  background: #F8FAFC !important;
+  border-color: #E2E8F0 !important;
+}
+
+/* These components deliberately retain a dark image or gradient surface in
+   light mode, so their foreground must not inherit the light-card colours. */
+html[data-theme="light"] .react-page-root :where(
+  .bento-card,
+  .cta-section,
+  .featured-course,
+  .home-app-promo,
+  .mock-hero-card,
+  .player-frame,
+  .video-card,
+  .course-thumb-wrap
+) :where(h1, h2, h3, h4, h5, h6, strong) {
+  color: #FFFFFF !important;
+}
+
+html[data-theme="light"] .react-page-root :where(
+  .bento-card,
+  .cta-section,
+  .featured-course,
+  .home-app-promo,
+  .mock-hero-card,
+  .player-frame,
+  .video-card,
+  .course-thumb-wrap
+) :where(p, .cta-sub, .featured-copy, .vid-subtitle) {
+  color: #CBD5E1 !important;
+}
+
+/* Keep AI conversation text readable despite the global paragraph theme rules. */
+html[data-theme="light"] .react-page-root[data-page="ai-tutor.html"] .chat-bubble.ai .bub-content :where(p, strong, a),
+html[data-theme="light"] .react-page-root[data-page="ai-tutor.html"] .chat-bubble.user .bub-content :where(p, strong, a) {
+  color: #0F172A !important;
+}
+
+html:not([data-theme="light"]) .react-page-root[data-page="ai-tutor.html"] .chat-bubble.ai .bub-content :where(p, strong, a) {
+  color: #F8FAFC !important;
+}
+
+html:not([data-theme="light"]) .react-page-root[data-page="ai-tutor.html"] .chat-bubble.user .bub-content :where(p, strong, a) {
+  color: #0A0C12 !important;
 }
 
 /* The AI tutor is a dedicated app-like screen, not a widget host. */
@@ -4596,7 +5230,7 @@ html:has(.react-page-root[data-page="ai-tutor.html"]) :where(.enx-footer, #nex-a
 
 .react-page-root[data-page="ai-tutor.html"] {
   background: var(--bg, #000);
-  color: var(--text, #FFF8ED);
+  color: var(--text, #FFFFFF);
 }
 
 .react-page-root[data-page="ai-tutor.html"] :where(.tutor-page, .full-tutor, .tutor-chat, .chat-messages) {
@@ -4615,12 +5249,12 @@ html:has(.react-page-root[data-page="ai-tutor.html"]) :where(.enx-footer, #nex-a
 .react-page-root[data-page="ai-tutor.html"] .tutor-welcome-mark,
 .react-page-root[data-page="ai-tutor.html"] .send-btn {
   background: var(--cyan, #C58B2A);
-  color: #0A0805;
+  color: #0A0C12;
   box-shadow: none;
 }
 
 .react-page-root[data-page="ai-tutor.html"] .ai-info h1 {
-  color: var(--text, #FFF8ED);
+  color: var(--text, #FFFFFF);
   font-family: var(--font-body) !important;
   font-weight: 800 !important;
   letter-spacing: -.01em;
@@ -4628,7 +5262,7 @@ html:has(.react-page-root[data-page="ai-tutor.html"]) :where(.enx-footer, #nex-a
 
 .react-page-root[data-page="ai-tutor.html"] .ai-info p,
 .react-page-root[data-page="ai-tutor.html"] .tutor-empty-state > p {
-  color: var(--text2, #A79E94);
+  color: var(--text2, #94A3B8);
 }
 
 .react-page-root[data-page="ai-tutor.html"] .online-badge {
@@ -4657,7 +5291,7 @@ html:has(.react-page-root[data-page="ai-tutor.html"]) :where(.enx-footer, #nex-a
   margin-bottom: 18px;
   display: grid;
   place-items: center;
-  border: 1px solid rgba(255, 248, 237, .18);
+  border: 1px solid rgba(248, 250, 252, .18);
   border-radius: 16px;
   font-size: 1.3rem;
   font-weight: 900;
@@ -4665,7 +5299,7 @@ html:has(.react-page-root[data-page="ai-tutor.html"]) :where(.enx-footer, #nex-a
 
 .react-page-root[data-page="ai-tutor.html"] .tutor-empty-state h2 {
   margin: 0;
-  color: var(--text, #FFF8ED);
+  color: var(--text, #FFFFFF);
   font-family: var(--font-display) !important;
   font-size: clamp(1.65rem, 4vw, 2.15rem);
   font-weight: 600;
@@ -4694,7 +5328,7 @@ html:has(.react-page-root[data-page="ai-tutor.html"]) :where(.enx-footer, #nex-a
   border: 1px solid color-mix(in srgb, var(--cyan, #C58B2A) 24%, var(--border, transparent));
   border-radius: 10px;
   background: var(--card2, #111318);
-  color: var(--text2, #B8AEA3);
+  color: var(--text2, #94A3B8);
   font-family: var(--font-body) !important;
   font-size: .78rem;
   font-weight: 700;
@@ -4705,13 +5339,13 @@ html:has(.react-page-root[data-page="ai-tutor.html"]) :where(.enx-footer, #nex-a
 .react-page-root[data-page="ai-tutor.html"] .quick-prompt:focus-visible {
   border-color: var(--cyan, #C58B2A);
   background: color-mix(in srgb, var(--cyan, #C58B2A) 10%, var(--card2, #111318));
-  color: var(--text, #FFF8ED);
+  color: var(--text, #FFFFFF);
 }
 
 .react-page-root[data-page="ai-tutor.html"] .bub-content {
   border-color: var(--border, rgba(255, 255, 255, .09));
   background: var(--card, #0d0d0d);
-  color: var(--text, #FFF8ED);
+  color: var(--text, #FFFFFF);
 }
 
 .react-page-root[data-page="ai-tutor.html"] .bub-content p,
@@ -4722,11 +5356,11 @@ html:has(.react-page-root[data-page="ai-tutor.html"]) :where(.enx-footer, #nex-a
 .react-page-root[data-page="ai-tutor.html"] .chat-bubble.user .bub-content {
   border-color: var(--cyan, #C58B2A);
   background: var(--cyan, #C58B2A);
-  color: #0A0805;
+  color: #0A0C12;
 }
 
 .react-page-root[data-page="ai-tutor.html"] .chat-bubble.user .bub-time {
-  color: rgba(10, 8, 5, .64);
+  color: rgba(15, 23, 42, .64);
 }
 
 .react-page-root[data-page="ai-tutor.html"] .chat-input-wrap {
@@ -4742,12 +5376,12 @@ html:has(.react-page-root[data-page="ai-tutor.html"]) :where(.enx-footer, #nex-a
 }
 
 .react-page-root[data-page="ai-tutor.html"] .chat-input-wrap textarea {
-  color: var(--text, #FFF8ED);
+  color: var(--text, #FFFFFF);
   font-family: var(--font-body) !important;
 }
 
 .react-page-root[data-page="ai-tutor.html"] .chat-input-wrap textarea::placeholder {
-  color: var(--text2, #8F877E);
+  color: var(--text2, #94A3B8);
 }
 
 .react-page-root[data-page="ai-tutor.html"] .send-btn {
@@ -4756,7 +5390,7 @@ html:has(.react-page-root[data-page="ai-tutor.html"]) :where(.enx-footer, #nex-a
 
 .react-page-root[data-page="ai-tutor.html"] .send-btn:hover:not(:disabled),
 .react-page-root[data-page="ai-tutor.html"] .send-btn:focus-visible {
-  background: #D9A13A;
+  background: #C58B2A;
   box-shadow: 0 6px 18px rgba(197, 139, 42, .26);
 }
 
@@ -4928,7 +5562,7 @@ html:has(.react-page-root[data-page="ai-tutor.html"]) :where(.enx-footer, #nex-a
   display: flex;
   align-items: center;
   justify-content: space-between;
-  color: var(--text, #FFF8ED);
+  color: var(--text, #FFFFFF);
   font-size: .9rem;
 }
 
@@ -4942,7 +5576,7 @@ html:has(.react-page-root[data-page="ai-tutor.html"]) :where(.enx-footer, #nex-a
   border: 1px solid transparent;
   border-radius: 10px;
   background: transparent;
-  color: var(--text, #FFF8ED);
+  color: var(--text, #FFFFFF);
   cursor: pointer;
   transition: background .16s ease, border-color .16s ease, color .16s ease;
 }
@@ -4974,7 +5608,7 @@ html:has(.react-page-root[data-page="ai-tutor.html"]) :where(.enx-footer, #nex-a
   border: 1px solid var(--border, rgba(255, 255, 255, .1));
   border-radius: 12px;
   background: var(--card2, #111318);
-  color: var(--text, #FFF8ED);
+  color: var(--text, #FFFFFF);
   font-size: .82rem;
   font-weight: 800;
   cursor: pointer;
@@ -4994,7 +5628,7 @@ html:has(.react-page-root[data-page="ai-tutor.html"]) :where(.enx-footer, #nex-a
 
 .react-page-root[data-page="ai-tutor.html"] .tutor-history-label {
   padding: 14px 10px 4px;
-  color: var(--text2, #A79E94);
+  color: var(--text2, #94A3B8);
   font-size: .68rem;
   font-weight: 800;
   letter-spacing: .1em;
@@ -5018,7 +5652,7 @@ html:has(.react-page-root[data-page="ai-tutor.html"]) :where(.enx-footer, #nex-a
   border: 1px solid transparent;
   border-radius: 10px;
   background: transparent;
-  color: var(--text, #FFF8ED);
+  color: var(--text, #FFFFFF);
   text-align: left;
   cursor: pointer;
 }
@@ -5036,7 +5670,7 @@ html:has(.react-page-root[data-page="ai-tutor.html"]) :where(.enx-footer, #nex-a
 }
 
 .react-page-root[data-page="ai-tutor.html"] .tutor-history-item small {
-  color: var(--text2, #A79E94);
+  color: var(--text2, #94A3B8);
   font-size: .68rem;
 }
 
@@ -5053,7 +5687,7 @@ html:has(.react-page-root[data-page="ai-tutor.html"]) :where(.enx-footer, #nex-a
 
 .react-page-root[data-page="ai-tutor.html"] .tutor-history-empty {
   margin: 6px 10px;
-  color: var(--text2, #A79E94);
+  color: var(--text2, #94A3B8);
   font-size: .76rem;
   line-height: 1.55;
 }
@@ -5085,7 +5719,7 @@ html:has(.react-page-root[data-page="ai-tutor.html"]) :where(.enx-footer, #nex-a
   overflow: hidden;
   border: 0;
   background: transparent;
-  color: var(--text, #FFF8ED);
+  color: var(--text, #FFFFFF);
   font-family: var(--font-body) !important;
   font-size: .9rem !important;
   font-weight: 800;
@@ -5102,7 +5736,7 @@ html:has(.react-page-root[data-page="ai-tutor.html"]) :where(.enx-footer, #nex-a
 }
 
 .react-page-root[data-page="ai-tutor.html"] .ai-name-button:focus-visible {
-  outline: 2px solid color-mix(in srgb, var(--text2, #A79E94) 65%, transparent);
+  outline: 2px solid color-mix(in srgb, var(--text2, #94A3B8) 65%, transparent);
   outline-offset: 4px;
   border-radius: 3px;
 }
@@ -5154,7 +5788,7 @@ html:has(.react-page-root[data-page="ai-tutor.html"]) :where(.enx-footer, #nex-a
   place-items: center;
   border-radius: 9px;
   background: var(--cyan, #C58B2A);
-  color: #0A0805;
+  color: #0A0C12;
   font-size: .72rem;
   font-weight: 900;
 }
@@ -5203,8 +5837,8 @@ html:has(.react-page-root[data-page="ai-tutor.html"]) :where(.enx-footer, #nex-a
 }
 
 .react-page-root[data-page="ai-tutor.html"] .chat-input-area:focus-within {
-  border-color: color-mix(in srgb, var(--text2, #A79E94) 46%, transparent);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, .18), 0 0 0 1px color-mix(in srgb, var(--text2, #A79E94) 12%, transparent);
+  border-color: color-mix(in srgb, var(--text2, #94A3B8) 46%, transparent);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, .18), 0 0 0 1px color-mix(in srgb, var(--text2, #94A3B8) 12%, transparent);
 }
 
 .react-page-root[data-page="ai-tutor.html"] .chat-input-wrap,
@@ -5260,7 +5894,7 @@ html:has(.react-page-root[data-page="ai-tutor.html"]) :where(.enx-footer, #nex-a
   border-radius: 22px;
   background: var(--card, #0D0D0D);
   box-shadow: 0 28px 80px rgba(0, 0, 0, .48);
-  color: var(--text, #FFF8ED);
+  color: var(--text, #FFFFFF);
 }
 
 .react-page-root[data-page="ai-tutor.html"] .ai-name-setup-avatar {
@@ -5296,7 +5930,7 @@ html:has(.react-page-root[data-page="ai-tutor.html"]) :where(.enx-footer, #nex-a
 .react-page-root[data-page="ai-tutor.html"] .ai-name-setup-card > p:not(.ai-name-setup-kicker) {
   margin: 8px auto 22px;
   max-width: 330px;
-  color: var(--text2, #A79E94);
+  color: var(--text2, #94A3B8);
   font-size: .82rem;
   line-height: 1.55;
   text-align: center;
@@ -5304,7 +5938,7 @@ html:has(.react-page-root[data-page="ai-tutor.html"]) :where(.enx-footer, #nex-a
 
 .react-page-root[data-page="ai-tutor.html"] .ai-name-setup-card label {
   margin-bottom: 7px;
-  color: var(--text, #FFF8ED);
+  color: var(--text, #FFFFFF);
   font-size: .72rem;
   font-weight: 800;
 }
@@ -5317,15 +5951,15 @@ html:has(.react-page-root[data-page="ai-tutor.html"]) :where(.enx-footer, #nex-a
   border-radius: 12px;
   outline: 0;
   background: var(--card2, #111318);
-  color: var(--text, #FFF8ED);
+  color: var(--text, #FFFFFF);
   font: 600 .9rem/1.35 var(--font-body);
   box-shadow: none;
 }
 
 .react-page-root[data-page="ai-tutor.html"] .ai-name-setup-card input:focus {
-  border-color: color-mix(in srgb, var(--text2, #A79E94) 52%, transparent) !important;
+  border-color: color-mix(in srgb, var(--text2, #94A3B8) 52%, transparent) !important;
   outline: 0 !important;
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--text2, #A79E94) 10%, transparent) !important;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--text2, #94A3B8) 10%, transparent) !important;
 }
 
 .react-page-root[data-page="ai-tutor.html"] .ai-name-setup-actions {
@@ -5355,7 +5989,7 @@ html:has(.react-page-root[data-page="ai-tutor.html"]) :where(.enx-footer, #nex-a
 .react-page-root[data-page="ai-tutor.html"] .tutor-disclaimer {
   grid-column: 1 / -1;
   margin: 0 0 2px;
-  color: var(--text2, #A79E94);
+  color: var(--text2, #94A3B8);
   font-size: .62rem;
   line-height: 1.35;
   text-align: center;
@@ -5366,7 +6000,7 @@ html[data-theme="light"] .react-page-root[data-page="ai-tutor.html"] .tutor-new-
 html[data-theme="light"] .react-page-root[data-page="ai-tutor.html"] .tutor-history-item:hover,
 html[data-theme="light"] .react-page-root[data-page="ai-tutor.html"] .tutor-history-item:focus-visible,
 html[data-theme="light"] .react-page-root[data-page="ai-tutor.html"] .tutor-history-item.is-active {
-  background: #FFFDF8 !important;
+  background: #FFFFFF !important;
 }
 
 html[data-theme="light"] .react-page-root[data-page="ai-tutor.html"] .chat-input-wrap textarea {
@@ -5658,14 +6292,14 @@ html[data-theme="light"] .react-page-root[data-page="ai-tutor.html"] .chat-input
   display: flex;
   align-items: center;
   gap: 7px;
-  color: var(--text2, #A79E94);
+  color: var(--text2, #94A3B8);
   font-family: var(--font-body) !important;
   font-size: .62rem;
   line-height: 1;
 }
 
 .react-page-root[data-page="ai-tutor.html"] .bub-meta strong {
-  color: var(--text, #FFF8ED);
+  color: var(--text, #FFFFFF);
   font-size: .66rem;
   font-weight: 800;
 }
@@ -5699,7 +6333,7 @@ html[data-theme="light"] .react-page-root[data-page="ai-tutor.html"] .chat-input
   border: 1px solid rgba(197, 139, 42, .42);
   border-radius: 50%;
   background: var(--card2, #111318);
-  color: var(--text, #FFF8ED);
+  color: var(--text, #FFFFFF);
   font-size: .72rem;
   font-weight: 900;
 }
@@ -5731,7 +6365,7 @@ html[data-theme="light"] .react-page-root[data-page="ai-tutor.html"] .chat-input
   border: 1px solid var(--border, rgba(255, 255, 255, .1));
   border-radius: 5px 17px 17px 17px;
   background: var(--card2, #111318);
-  color: var(--text2, #A79E94);
+  color: var(--text2, #94A3B8);
   font-size: .78rem;
   font-weight: 700;
 }
@@ -5768,11 +6402,11 @@ html[data-theme="light"] .react-page-root[data-page="ai-tutor.html"] .chat-input
 html[data-theme="light"] .react-page-root[data-page="ai-tutor.html"] .chat-bubble.ai .bub-content,
 html[data-theme="light"] .react-page-root[data-page="ai-tutor.html"] .tutor-thinking-label,
 html[data-theme="light"] .react-page-root[data-page="ai-tutor.html"] .learner-chat-avatar {
-  background: #FFFDF8;
+  background: #FFFFFF;
 }
 
 html[data-theme="light"] .react-page-root[data-page="ai-tutor.html"] .bub-meta strong {
-  color: #332820;
+  color: #0F172A;
 }
 
 @media (max-width: 900px) {
@@ -5834,15 +6468,15 @@ html[data-theme="light"] .react-page-root[data-page="ai-tutor.html"] .bub-meta s
 
 /* Keep the Continue Learning empty state readable over its dark card. */
 html:not([data-theme="light"]) .react-page-root[data-page="index.html"] .continue-learning-empty p {
-  color: #E7DED2 !important;
+  color: #D1D5DB !important;
 }
 
 html:not([data-theme="light"]) .react-page-root[data-page="index.html"] .continue-learning-empty a {
-  color: #E4A93A !important;
+  color: #C58B2A !important;
 }
 
 html[data-theme="light"] .react-page-root[data-page="index.html"] .continue-learning-empty p {
-  color: #5F534A !important;
+  color: #475569 !important;
 }
 
 /* Course entry checkout: keep the purchase decision above the fold. */
@@ -5881,7 +6515,7 @@ html[data-theme="light"] .react-page-root[data-page="index.html"] .continue-lear
 .react-page-root[data-page="index.html"] .curriculum-shell {
   width: min(100%, 1580px);
   margin: 0 auto;
-  color: #2B211A;
+  color: #0F172A;
   font-family: "Manrope", ui-sans-serif, system-ui, sans-serif;
 }
 
@@ -5897,7 +6531,7 @@ html[data-theme="light"] .react-page-root[data-page="index.html"] .continue-lear
 .react-page-root[data-page="index.html"] .curriculum-section-head h2,
 .react-page-root[data-page="index.html"] .curriculum-standalone-heading {
   margin: 0;
-  color: #211711;
+  color: #0F172A;
   font-family: var(--font-display, Georgia, serif);
   font-size: clamp(1.35rem, 1.7vw, 2rem);
   font-weight: 700;
@@ -5906,7 +6540,7 @@ html[data-theme="light"] .react-page-root[data-page="index.html"] .continue-lear
 
 .react-page-root[data-page="index.html"] .curriculum-section-head p {
   margin: 3px 0 0;
-  color: #7E7167;
+  color: #64748B;
   font-size: .88rem;
 }
 
@@ -5914,14 +6548,14 @@ html[data-theme="light"] .react-page-root[data-page="index.html"] .continue-lear
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  color: #2F2118;
+  color: #0F172A;
   font-size: .88rem;
   font-weight: 800;
   white-space: nowrap;
 }
 
 .react-page-root[data-page="index.html"] .curriculum-section-action .material-symbols-outlined {
-  color: #A96F18;
+  color: #C58B2A;
   font-size: 18px;
 }
 
@@ -5932,10 +6566,10 @@ html[data-theme="light"] .react-page-root[data-page="index.html"] .continue-lear
   gap: 16px;
   margin: 4px 0 14px;
   padding: 12px;
-  border: 1px solid #E5D8C7;
+  border: 1px solid #E2E8F0;
   border-radius: 12px;
-  background: rgba(255, 253, 248, .9);
-  box-shadow: 0 12px 30px rgba(88, 65, 34, .07);
+  background: rgba(255, 255, 255, .9);
+  box-shadow: 0 12px 30px rgba(15, 23, 42, .07);
 }
 
 .react-page-root[data-page="index.html"] .curriculum-overview > img {
@@ -5953,7 +6587,7 @@ html[data-theme="light"] .react-page-root[data-page="index.html"] .continue-lear
 .react-page-root[data-page="index.html"] .curriculum-overview-copy span {
   display: inline-flex;
   margin-bottom: 4px;
-  color: #A96F18;
+  color: #C58B2A;
   font-size: .68rem;
   font-weight: 900;
   text-transform: uppercase;
@@ -5961,7 +6595,7 @@ html[data-theme="light"] .react-page-root[data-page="index.html"] .continue-lear
 
 .react-page-root[data-page="index.html"] .curriculum-overview-copy h2 {
   margin: 0;
-  color: #211711;
+  color: #0F172A;
   font-size: clamp(1rem, 1.3vw, 1.35rem);
   font-weight: 950;
   line-height: 1.12;
@@ -5969,7 +6603,7 @@ html[data-theme="light"] .react-page-root[data-page="index.html"] .continue-lear
 
 .react-page-root[data-page="index.html"] .curriculum-overview-copy p {
   margin: 4px 0 0;
-  color: #7C7065;
+  color: #64748B;
   font-size: .82rem;
 }
 
@@ -5997,7 +6631,7 @@ html[data-theme="light"] .react-page-root[data-page="index.html"] .continue-lear
 }
 
 .react-page-root[data-page="index.html"] .curriculum-overview-stats small {
-  color: #7C7065;
+  color: #64748B;
   font-size: .72rem;
   white-space: nowrap;
 }
@@ -6010,8 +6644,8 @@ html[data-theme="light"] .react-page-root[data-page="index.html"] .continue-lear
   min-height: 42px;
   padding: 0 16px;
   border-radius: 999px;
-  background: #211711;
-  color: #FFFDF8;
+  background: #0F172A;
+  color: #FFFFFF;
   font-size: .82rem;
   font-weight: 900;
   white-space: nowrap;
@@ -6026,26 +6660,26 @@ html[data-theme="light"] .react-page-root[data-page="index.html"] .continue-lear
   margin: 0 0 14px;
   padding: 7px;
   overflow-x: auto;
-  border: 1px solid rgba(229, 216, 199, .78);
+  border: 1px solid rgba(226, 232, 240, .78);
   border-radius: 999px;
-  background: rgba(250, 247, 241, .88);
+  background: rgba(248, 250, 252, .88);
   backdrop-filter: blur(16px);
-  box-shadow: 0 10px 24px rgba(88, 65, 34, .05);
+  box-shadow: 0 10px 24px rgba(15, 23, 42, .05);
 }
 
 .react-page-root[data-page="index.html"] .curriculum-jump-nav a {
   flex: 0 0 auto;
   padding: 8px 13px;
   border-radius: 999px;
-  color: #6E6258;
+  color: #475569;
   font-size: .78rem;
   font-weight: 900;
 }
 
 .react-page-root[data-page="index.html"] .curriculum-jump-nav a:hover,
 .react-page-root[data-page="index.html"] .curriculum-jump-nav a:focus-visible {
-  background: #F3E4C8;
-  color: #A96F18;
+  background: #F1F5F9;
+  color: #C58B2A;
 }
 
 .react-page-root[data-page="index.html"] :where(.continue-learning-row, .skill-strip, .module-strip, .watched-grid, .project-grid, .tool-grid, .journey-strip) {
@@ -6064,9 +6698,9 @@ html[data-theme="light"] .react-page-root[data-page="index.html"] .continue-lear
 .react-page-root[data-page="index.html"] .tool-pill,
 .react-page-root[data-page="index.html"] .journey-step,
 .react-page-root[data-page="index.html"] .curriculum-cta {
-  border: 1px solid #E5D8C7;
-  background: rgba(255, 253, 248, .88);
-  box-shadow: 0 10px 24px rgba(88, 65, 34, .06);
+  border: 1px solid #E2E8F0;
+  background: rgba(255, 255, 255, .88);
+  box-shadow: 0 10px 24px rgba(15, 23, 42, .06);
 }
 
 .react-page-root[data-page="index.html"] :where(.continue-lesson-card, .skill-tile, .module-chip, .watched-card, .project-card, .tool-pill, .journey-step, .curriculum-overview, .curriculum-cta) {
@@ -6076,7 +6710,7 @@ html[data-theme="light"] .react-page-root[data-page="index.html"] .continue-lear
 .react-page-root[data-page="index.html"] :where(.continue-lesson-card, .skill-tile, .module-chip, .watched-card, .project-card):hover {
   transform: translateY(-2px);
   border-color: rgba(197, 139, 42, .42);
-  box-shadow: 0 16px 34px rgba(88, 65, 34, .10);
+  box-shadow: 0 16px 34px rgba(15, 23, 42, .10);
 }
 
 .react-page-root[data-page="index.html"] :where(.continue-lesson-card button, .module-chip, .watched-card, .project-card, .curriculum-cta a, .curriculum-overview > a):focus-visible {
@@ -6104,7 +6738,7 @@ html[data-theme="light"] .react-page-root[data-page="index.html"] .continue-lear
 
 .react-page-root[data-page="index.html"] .continue-lesson-card span,
 .react-page-root[data-page="index.html"] .module-number {
-  color: #A96F18;
+  color: #C58B2A;
   font-size: .66rem;
   font-weight: 900;
   text-transform: uppercase;
@@ -6118,7 +6752,7 @@ html[data-theme="light"] .react-page-root[data-page="index.html"] .continue-lear
 .react-page-root[data-page="index.html"] .tool-pill strong,
 .react-page-root[data-page="index.html"] .journey-step strong {
   display: block;
-  color: #211711;
+  color: #0F172A;
   font-size: .86rem;
   font-weight: 900;
   line-height: 1.2;
@@ -6129,7 +6763,7 @@ html[data-theme="light"] .react-page-root[data-page="index.html"] .continue-lear
 .react-page-root[data-page="index.html"] .project-card p,
 .react-page-root[data-page="index.html"] .tool-pill small,
 .react-page-root[data-page="index.html"] .journey-step small {
-  color: #7C7065;
+  color: #64748B;
   font-size: .74rem;
   line-height: 1.35;
 }
@@ -6146,7 +6780,7 @@ html[data-theme="light"] .react-page-root[data-page="index.html"] .continue-lear
   content: "";
   height: 4px;
   border-radius: 999px;
-  background: #E8DDCF;
+  background: #E2E8F0;
   grid-column: 1;
   grid-row: 1;
 }
@@ -6182,7 +6816,7 @@ html[data-theme="light"] .react-page-root[data-page="index.html"] .continue-lear
   border: 0;
   border-radius: 999px;
   background: #C58B2A;
-  color: #FFFDF8;
+  color: #FFFFFF;
   cursor: pointer;
 }
 
@@ -6195,12 +6829,12 @@ html[data-theme="light"] .react-page-root[data-page="index.html"] .continue-lear
   padding: 18px;
   border: 1px dashed rgba(197, 139, 42, .42);
   border-radius: 8px;
-  background: rgba(255, 253, 248, .72);
-  color: #7C7065;
+  background: rgba(255, 255, 255, .72);
+  color: #64748B;
 }
 
 .react-page-root[data-page="index.html"] .continue-learning-empty strong {
-  color: #211711;
+  color: #0F172A;
   font-size: .92rem;
   font-weight: 900;
 }
@@ -6216,7 +6850,7 @@ html[data-theme="light"] .react-page-root[data-page="index.html"] .continue-lear
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  color: #A96F18;
+  color: #C58B2A;
   font-size: .82rem;
   font-weight: 900;
 }
@@ -6244,14 +6878,14 @@ html[data-theme="light"] .react-page-root[data-page="index.html"] .continue-lear
   display: grid;
   place-items: center;
   border-radius: 999px;
-  background: #F4E5CA;
+  background: #F1F5F9;
   color: #C58B2A;
   flex: 0 0 auto;
 }
 
 .react-page-root[data-page="index.html"] .skill-tile p {
   margin: 4px 0;
-  color: #7C7065;
+  color: #64748B;
   font-size: .73rem;
   line-height: 1.35;
 }
@@ -6260,7 +6894,7 @@ html[data-theme="light"] .react-page-root[data-page="index.html"] .continue-lear
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  color: #A96F18;
+  color: #C58B2A;
   font-size: .72rem;
   font-weight: 900;
 }
@@ -6291,14 +6925,14 @@ html[data-theme="light"] .react-page-root[data-page="index.html"] .continue-lear
 
 .react-page-root[data-page="index.html"] .module-chip small {
   grid-column: 3;
-  color: #8A7D72;
+  color: #64748B;
   font-size: .72rem;
 }
 
 .react-page-root[data-page="index.html"] .module-arrow {
   grid-column: 4;
   grid-row: 1 / span 2;
-  color: #A96F18;
+  color: #C58B2A;
   font-size: 18px;
 }
 
@@ -6323,7 +6957,7 @@ html[data-theme="light"] .react-page-root[data-page="index.html"] .continue-lear
   margin-bottom: 8px;
   overflow: hidden;
   border-radius: 7px;
-  background: #E8DDCF;
+  background: #E2E8F0;
 }
 
 .react-page-root[data-page="index.html"] .watched-media img {
@@ -6338,15 +6972,15 @@ html[data-theme="light"] .react-page-root[data-page="index.html"] .continue-lear
   bottom: 5px;
   padding: 2px 6px;
   border-radius: 5px;
-  background: rgba(20, 16, 12, .86);
-  color: #FFFDF8;
+  background: rgba(15, 23, 42, .86);
+  color: #FFFFFF;
   font-size: .66rem;
   font-weight: 800;
 }
 
 .react-page-root[data-page="index.html"] .watched-card em {
   margin-top: 4px;
-  color: #7C7065;
+  color: #64748B;
   font-size: .72rem;
 }
 
@@ -6359,12 +6993,12 @@ html[data-theme="light"] .react-page-root[data-page="index.html"] .continue-lear
   padding: 18px;
   border: 1px dashed rgba(197, 139, 42, .42);
   border-radius: 8px;
-  background: rgba(255, 253, 248, .72);
-  color: #7C7065;
+  background: rgba(255, 255, 255, .72);
+  color: #64748B;
 }
 
 .react-page-root[data-page="index.html"] .watched-empty strong {
-  color: #211711;
+  color: #0F172A;
   font-size: .92rem;
   font-weight: 900;
 }
@@ -6404,7 +7038,7 @@ html[data-theme="light"] .react-page-root[data-page="index.html"] .continue-lear
 }
 
 .react-page-root[data-page="index.html"] .project-card > .material-symbols-outlined {
-  color: #A96F18;
+  color: #C58B2A;
 }
 
 .react-page-root[data-page="index.html"] .project-empty {
@@ -6416,12 +7050,12 @@ html[data-theme="light"] .react-page-root[data-page="index.html"] .continue-lear
   padding: 18px;
   border: 1px dashed rgba(197, 139, 42, .42);
   border-radius: 8px;
-  background: rgba(255, 253, 248, .72);
-  color: #7C7065;
+  background: rgba(255, 255, 255, .72);
+  color: #64748B;
 }
 
 .react-page-root[data-page="index.html"] .project-empty strong {
-  color: #211711;
+  color: #0F172A;
   font-size: .92rem;
   font-weight: 900;
 }
@@ -6477,7 +7111,7 @@ html[data-theme="light"] .react-page-root[data-page="index.html"] .continue-lear
   place-items: center;
   border-radius: 999px;
   background: #C58B2A;
-  color: #FFFDF8;
+  color: #FFFFFF;
   font-weight: 900;
 }
 
@@ -6493,7 +7127,7 @@ html[data-theme="light"] .react-page-root[data-page="index.html"] .continue-lear
   height: 30px;
   border-radius: 999px;
   background: #C58B2A;
-  color: #FFFDF8;
+  color: #FFFFFF;
   font-size: 16px;
 }
 
@@ -6545,9 +7179,9 @@ html[data-theme="light"] .react-page-root[data-page="index.html"] .continue-lear
   width: max-content;
   margin-bottom: 8px;
   padding: 7px 12px;
-  border: 1px solid #E6C985;
+  border: 1px solid #C58B2A;
   border-radius: 999px;
-  color: #A96F18;
+  color: #C58B2A;
   font-size: .68rem;
   font-weight: 900;
   text-transform: uppercase;
@@ -6555,14 +7189,14 @@ html[data-theme="light"] .react-page-root[data-page="index.html"] .continue-lear
 
 .react-page-root[data-page="index.html"] .curriculum-cta h2 {
   margin: 0;
-  color: #211711;
+  color: #0F172A;
   font-family: var(--font-display, Georgia, serif);
   font-size: clamp(1.2rem, 1.6vw, 1.65rem);
 }
 
 .react-page-root[data-page="index.html"] .curriculum-cta p {
   margin: 3px 0 0;
-  color: #7C7065;
+  color: #64748B;
   font-size: .86rem;
 }
 
@@ -6576,8 +7210,8 @@ html[data-theme="light"] .react-page-root[data-page="index.html"] .continue-lear
 .react-page-root[data-page="index.html"] .curriculum-cta-pills small {
   padding: 8px 12px;
   border-radius: 999px;
-  background: #FFFCF6;
-  color: #6E6258;
+  background: #FFFFFF;
+  color: #475569;
   font-size: .74rem;
   font-weight: 800;
 }
@@ -6591,14 +7225,14 @@ html[data-theme="light"] .react-page-root[data-page="index.html"] .continue-lear
   padding: 13px 20px;
   border-radius: 999px;
   background: #C58B2A;
-  color: #FFFDF8;
+  color: #FFFFFF;
   font-weight: 900;
   white-space: nowrap;
 }
 
 .react-page-root[data-page="index.html"] .curriculum-status {
   margin: 12px 0 0;
-  color: #8A7D72;
+  color: #64748B;
   font-size: .85rem;
 }
 
@@ -6607,7 +7241,7 @@ html:not([data-theme="light"]) .react-page-root[data-page="index.html"] .curricu
 }
 
 html:not([data-theme="light"]) .react-page-root[data-page="index.html"] .curriculum-shell {
-  color: #F7F1E8;
+  color: #F8FAFC;
 }
 
 html:not([data-theme="light"]) .react-page-root[data-page="index.html"] .curriculum-section-head h2,
@@ -6615,7 +7249,7 @@ html:not([data-theme="light"]) .react-page-root[data-page="index.html"] .curricu
 html:not([data-theme="light"]) .react-page-root[data-page="index.html"] .curriculum-overview-copy h2,
 html:not([data-theme="light"]) .react-page-root[data-page="index.html"] .curriculum-cta h2,
 html:not([data-theme="light"]) .react-page-root[data-page="index.html"] :where(.continue-lesson-card strong, .skill-tile strong, .module-chip strong, .watched-card strong, .project-card strong, .tool-pill strong, .journey-step strong) {
-  color: #FFF8ED;
+  color: #FFFFFF;
 }
 
 html:not([data-theme="light"]) .react-page-root[data-page="index.html"] .curriculum-section-head p,
@@ -6623,44 +7257,44 @@ html:not([data-theme="light"]) .react-page-root[data-page="index.html"] .curricu
 html:not([data-theme="light"]) .react-page-root[data-page="index.html"] .curriculum-overview-stats small,
 html:not([data-theme="light"]) .react-page-root[data-page="index.html"] .curriculum-cta p,
 html:not([data-theme="light"]) .react-page-root[data-page="index.html"] :where(.continue-lesson-card small, .watched-card small, .project-card p, .tool-pill small, .journey-step small, .watched-card em) {
-  color: rgba(255, 248, 237, .68);
+  color: rgba(248, 250, 252, .68);
 }
 
 html:not([data-theme="light"]) .react-page-root[data-page="index.html"] .curriculum-overview,
 html:not([data-theme="light"]) .react-page-root[data-page="index.html"] :where(.continue-lesson-card, .skill-tile, .module-chip, .project-card, .tool-pill, .journey-step, .curriculum-cta) {
   border-color: rgba(197, 139, 42, .20);
-  background: rgba(12, 10, 8, .86);
+  background: rgba(15, 23, 42, .86);
   box-shadow: 0 14px 32px rgba(0, 0, 0, .26), inset 0 1px 0 rgba(255, 255, 255, .04);
 }
 
 html:not([data-theme="light"]) .react-page-root[data-page="index.html"] .continue-learning-empty {
   border-color: rgba(197, 139, 42, .30);
-  background: rgba(12, 10, 8, .74);
-  color: rgba(255, 248, 237, .68);
+  background: rgba(15, 23, 42, .74);
+  color: rgba(248, 250, 252, .68);
 }
 
 html:not([data-theme="light"]) .react-page-root[data-page="index.html"] .continue-learning-empty strong {
-  color: #FFF8ED;
+  color: #FFFFFF;
 }
 
 html:not([data-theme="light"]) .react-page-root[data-page="index.html"] .project-empty {
   border-color: rgba(197, 139, 42, .30);
-  background: rgba(12, 10, 8, .74);
-  color: rgba(255, 248, 237, .68);
+  background: rgba(15, 23, 42, .74);
+  color: rgba(248, 250, 252, .68);
 }
 
 html:not([data-theme="light"]) .react-page-root[data-page="index.html"] .project-empty strong {
-  color: #FFF8ED;
+  color: #FFFFFF;
 }
 
 html:not([data-theme="light"]) .react-page-root[data-page="index.html"] .watched-empty {
   border-color: rgba(197, 139, 42, .30);
-  background: rgba(12, 10, 8, .74);
-  color: rgba(255, 248, 237, .68);
+  background: rgba(15, 23, 42, .74);
+  color: rgba(248, 250, 252, .68);
 }
 
 html:not([data-theme="light"]) .react-page-root[data-page="index.html"] .watched-empty strong {
-  color: #FFF8ED;
+  color: #FFFFFF;
 }
 
 html:not([data-theme="light"]) .react-page-root[data-page="index.html"] .curriculum-jump-nav {
@@ -6671,39 +7305,39 @@ html:not([data-theme="light"]) .react-page-root[data-page="index.html"] .curricu
 
 html:not([data-theme="light"]) .react-page-root[data-page="index.html"] .curriculum-jump-nav a,
 html:not([data-theme="light"]) .react-page-root[data-page="index.html"] .curriculum-section-action {
-  color: rgba(255, 248, 237, .82);
+  color: rgba(248, 250, 252, .82);
 }
 
 html:not([data-theme="light"]) .react-page-root[data-page="index.html"] .curriculum-jump-nav a:hover,
 html:not([data-theme="light"]) .react-page-root[data-page="index.html"] .curriculum-jump-nav a:focus-visible {
   background: rgba(197, 139, 42, .18);
-  color: #F4C56F;
+  color: #C58B2A;
 }
 
 html:not([data-theme="light"]) .react-page-root[data-page="index.html"] :where(.curriculum-overview-copy span, .continue-lesson-card span, .module-number, .skill-tile small, .curriculum-section-action .material-symbols-outlined, .project-card > .material-symbols-outlined, .module-arrow) {
-  color: #D79B32;
+  color: #C58B2A;
 }
 
 html:not([data-theme="light"]) .react-page-root[data-page="index.html"] :where(.skill-icon, .module-icon, .tool-pill span) {
   background: rgba(197, 139, 42, .15);
-  color: #E5AD48;
+  color: #C58B2A;
 }
 
 html:not([data-theme="light"]) .react-page-root[data-page="index.html"] .lesson-progress::before,
 html:not([data-theme="light"]) .react-page-root[data-page="index.html"] .watched-media {
-  background: rgba(255, 248, 237, .12);
+  background: rgba(248, 250, 252, .12);
 }
 
 html:not([data-theme="light"]) .react-page-root[data-page="index.html"] .curriculum-cta span,
 html:not([data-theme="light"]) .react-page-root[data-page="index.html"] .curriculum-cta-pills small {
   border-color: rgba(197, 139, 42, .22);
-  background: rgba(255, 248, 237, .06);
-  color: rgba(255, 248, 237, .82);
+  background: rgba(248, 250, 252, .06);
+  color: rgba(248, 250, 252, .82);
 }
 
 html:not([data-theme="light"]) .react-page-root[data-page="index.html"] .curriculum-overview > a {
   background: #C58B2A;
-  color: #FFFDF8;
+  color: #FFFFFF;
 }
 
 @media (max-width: 1280px) {
@@ -6878,35 +7512,35 @@ html[data-theme="light"] .react-page-root[data-page="login.html"] .lp-input-wrap
 /* Legal and help surfaces must follow the selected light theme. */
 html[data-theme="light"] body.has-privacy-policy-page,
 html[data-theme="light"] body.has-terms-page {
-  background: #FAF7F1 !important;
-  color: #332820 !important;
+  background: #F8FAFC !important;
+  color: #0F172A !important;
 }
 
 html[data-theme="light"] .privacy-policy-page {
-  --privacy-bg: #FAF7F1;
-  --privacy-panel: #FFFDF8;
-  --privacy-panel-strong: #FFFCF6;
-  --privacy-text: #2B211A;
-  --privacy-muted: #756A60;
-  --privacy-soft: #9A8E82;
+  --privacy-bg: #F8FAFC;
+  --privacy-panel: #FFFFFF;
+  --privacy-panel-strong: #FFFFFF;
+  --privacy-text: #0F172A;
+  --privacy-muted: #475569;
+  --privacy-soft: #94A3B8;
   --privacy-gold: #C58B2A;
   --privacy-gold-light: #C58B2A;
-  --privacy-border: #E2D6C6;
+  --privacy-border: #E2E8F0;
   --privacy-gold-border: rgba(197, 139, 42, .34);
   background: var(--privacy-bg) !important;
   color: var(--privacy-text) !important;
 }
 
 html[data-theme="light"] .terms-page {
-  --terms-bg: #FAF7F1;
-  --terms-panel: #FFFDF8;
-  --terms-panel-soft: #FFFCF6;
-  --terms-text: #2B211A;
-  --terms-muted: #756A60;
-  --terms-soft: #9A8E82;
+  --terms-bg: #F8FAFC;
+  --terms-panel: #FFFFFF;
+  --terms-panel-soft: #FFFFFF;
+  --terms-text: #0F172A;
+  --terms-muted: #475569;
+  --terms-soft: #94A3B8;
   --terms-gold: #C58B2A;
   --terms-gold-light: #C58B2A;
-  --terms-border: #E2D6C6;
+  --terms-border: #E2E8F0;
   --terms-gold-border: rgba(197, 139, 42, .34);
   background: var(--terms-bg) !important;
   color: var(--terms-text) !important;
@@ -6914,12 +7548,12 @@ html[data-theme="light"] .terms-page {
 
 html[data-theme="light"] .privacy-policy-page :where(.privacy-hero h1, .privacy-section-body h2, .privacy-section-body h3, .privacy-help-card h2, .privacy-final-card h3),
 html[data-theme="light"] .terms-page :where(.terms-hero h1, .terms-section-main h2, .terms-section-main h3, .terms-help-card h2) {
-  color: #2B211A !important;
+  color: #0F172A !important;
 }
 
 html[data-theme="light"] .privacy-policy-page :where(p, li, .privacy-breadcrumb, .privacy-info-card p, .privacy-provider-list div, .privacy-retention-row span),
 html[data-theme="light"] .terms-page :where(p, li, .terms-breadcrumb, .terms-info-card p, .terms-check-list li p, .terms-plain-list li p) {
-  color: #756A60 !important;
+  color: #475569 !important;
 }
 
 html[data-theme="light"] .privacy-policy-page :where(.privacy-kicker, .privacy-hero h1 span, .privacy-breadcrumb span:last-child, .privacy-date-row > span .enx-icon, .privacy-card-icon, .privacy-section-number, .privacy-toc p, .privacy-toc .enx-icon, .privacy-help-card > span, .privacy-help-card a, .privacy-note-card .enx-icon, .privacy-retention-row strong, .privacy-deletion-grid h3, .privacy-final-card h3),
@@ -6929,69 +7563,69 @@ html[data-theme="light"] .terms-page :where(.terms-kicker, .terms-hero h1 span, 
 
 html[data-theme="light"] .privacy-policy-page :where(.privacy-toc, .privacy-help-card, .privacy-policy-content, .privacy-info-card, .privacy-provider-list, .privacy-final-card, .privacy-deletion-grid > div, .privacy-retention-table),
 html[data-theme="light"] .terms-page :where(.terms-toc, .terms-help-card, .terms-policy-section, .terms-info-card, .terms-deletion-panel) {
-  background: #FFFDF8 !important;
-  border-color: #E2D6C6 !important;
-  box-shadow: 0 14px 38px rgba(88, 65, 34, .08) !important;
+  background: #FFFFFF !important;
+  border-color: #E2E8F0 !important;
+  box-shadow: 0 14px 38px rgba(15, 23, 42, .08) !important;
 }
 
 html[data-theme="light"] .privacy-policy-page :where(.privacy-date-row > span, .privacy-note-card, .privacy-mobile-toc, .privacy-card-icon, .privacy-section-number, .privacy-check-list li span, .privacy-help-card > span),
 html[data-theme="light"] .terms-page :where(.terms-section-number, .terms-card-icon, .terms-callout, .terms-ai-panel, .terms-help-card > span, .terms-check-list li span, .terms-mobile-toc) {
-  background: #F3EBDD !important;
+  background: #F1F5F9 !important;
   border-color: rgba(197, 139, 42, .28) !important;
 }
 
 html[data-theme="light"] .privacy-policy-page :where(.privacy-note-card p, .privacy-check-list li, .privacy-plain-list li),
 html[data-theme="light"] .terms-page :where(.terms-callout p, .terms-ai-panel p) {
-  color: #5F5145 !important;
+  color: #475569 !important;
 }
 
 html[data-theme="light"] .privacy-hero-art {
   background:
     radial-gradient(ellipse at 80% 34%, rgba(197, 139, 42, .18), transparent 12rem),
-    linear-gradient(145deg, #FFFDF8, #F3EBDD 58%) !important;
-  box-shadow: inset 0 0 60px rgba(197, 139, 42, .08), 0 14px 38px rgba(88, 65, 34, .08) !important;
+    linear-gradient(145deg, #FFFFFF, #F1F5F9 58%) !important;
+  box-shadow: inset 0 0 60px rgba(197, 139, 42, .08), 0 14px 38px rgba(15, 23, 42, .08) !important;
 }
 
 html[data-theme="light"] .privacy-shield {
   background:
     linear-gradient(145deg, rgba(255, 255, 255, .62), transparent 38%),
-    linear-gradient(180deg, rgba(197, 139, 42, .22), #FFFDF8) !important;
+    linear-gradient(180deg, rgba(197, 139, 42, .22), #FFFFFF) !important;
   border-color: rgba(197, 139, 42, .3) !important;
 }
 
 html[data-theme="light"] .privacy-hero-art-copy :where(strong, span),
 html[data-theme="light"] .privacy-hero-art-copy small {
-  color: #8B5E1E !important;
+  color: #C58B2A !important;
 }
 
 html[data-theme="light"] .terms-hero-art {
-  background-color: #F3EBDD !important;
+  background-color: #F1F5F9 !important;
   border: 1px solid rgba(197, 139, 42, .22) !important;
-  box-shadow: inset 0 -1px 0 rgba(197, 139, 42, .22), 0 14px 38px rgba(88, 65, 34, .08) !important;
+  box-shadow: inset 0 -1px 0 rgba(197, 139, 42, .22), 0 14px 38px rgba(15, 23, 42, .08) !important;
 }
 
 html[data-theme="light"] .privacy-policy-section:target,
 html[data-theme="light"] .terms-policy-section:target {
   border-color: rgba(197, 139, 42, .48) !important;
-  background: #F3EBDD !important;
+  background: #F1F5F9 !important;
 }
 
 html[data-theme="light"] :where(.site-footer, .footer, .footer-wrap, .sp-footer, .enx-footer, .enx-footer-cta, .enx-footer-trust-row span, .enx-footer-support a) {
-  background: #FBF8F2 !important;
-  border-color: #E2D6C6 !important;
+  background: #F8FAFC !important;
+  border-color: #E2E8F0 !important;
 }
 
 html[data-theme="light"] .enx-footer,
 html[data-theme="light"] .enx-footer :where(.enx-footer-heading, .enx-footer-bottom span, .enx-footer-bottom a) {
-  color: #2B211A !important;
+  color: #0F172A !important;
 }
 
 html[data-theme="light"] .react-page-root :where(.enx-footer, .enx-footer-shell, .enx-footer-top, .enx-footer-intro, .enx-footer-column, .enx-footer-heading, .enx-footer-links) {
-  color: #2B211A !important;
+  color: #0F172A !important;
 }
 
 html[data-theme="light"] .enx-footer :where(.enx-footer-links a, .enx-footer-cta p, .enx-footer-support a) {
-  color: #756A60 !important;
+  color: #475569 !important;
 }
 
 html[data-theme="light"] .enx-footer :where(.enx-footer-links a:hover, .enx-footer-cta > a) {
@@ -7000,12 +7634,12 @@ html[data-theme="light"] .enx-footer :where(.enx-footer-links a:hover, .enx-foot
 
 html[data-theme="light"] .enx-footer .enx-footer-cta,
 html[data-theme="light"] .enx-footer .enx-footer-support a {
-  background: #FFFDF8 !important;
+  background: #FFFFFF !important;
 }
 
 .react-page-root[data-page="courses.html"] .course-card-actions .btn-trial {
   min-height: 46px !important;
-  color: #FFFDF8 !important;
+  color: #FFFFFF !important;
 }
 
 .react-page-root :where(
@@ -7030,7 +7664,7 @@ html[data-theme="light"] .enx-footer .enx-footer-support a {
 }
 
 html[data-theme="light"] .react-page-root :where(.course-thumb-wrap) {
-  color: #FFFDF8 !important;
+  color: #FFFFFF !important;
 }
 
 /* Keep primary headings readable when page-local light palette rules are active in dark mode. */
@@ -7063,94 +7697,94 @@ html:not([data-theme="light"]) .react-page-root:not([data-page="about.html"]) :w
 }
 
 html[data-theme="light"] :where(.hero-cta-secondary, .hero-btn-secondary, .btn-ghost, .pay-btn-secondary, .payment-choice-btn.secondary, .back-btn, .pf-edit-btn) {
-  background: #FFFDF8 !important;
-  border-color: #DAB77A !important;
-  color: #9A681F !important;
+  background: #FFFFFF !important;
+  border-color: #C58B2A !important;
+  color: #C58B2A !important;
 }
 
 html[data-theme="light"] :where(.hero-topic, .topic-chip, .filter-tab, .library-tab, .cert-tab) {
-  background: #FAF5ED !important;
-  border-color: #E2D6C6 !important;
-  color: #5F534A !important;
+  background: #F8FAFC !important;
+  border-color: #E2E8F0 !important;
+  color: #475569 !important;
 }
 
 html[data-theme="light"] :where(.hero-topic i, .topic-chip i, .filter-tab i, .library-tab i, .cert-tab i) {
-  color: #B9853E !important;
+  color: #C58B2A !important;
 }
 
 html[data-theme="light"] .react-page-root[data-page="profile.html"] :where(.pf-page) {
   background: transparent !important;
-  color: #332820 !important;
+  color: #0F172A !important;
 }
 
 html[data-theme="light"] .react-page-root[data-page="profile.html"] :where(.pf-page-title, .pf-profile-name, .pf-card-heading, .pf-breadcrumb .current) {
-  color: #2B211A !important;
+  color: #0F172A !important;
 }
 
 html[data-theme="light"] .react-page-root[data-page="profile.html"] :where(.pf-profile-email, .pf-breadcrumb a, .pf-theme-label, .pf-version-text) {
-  color: #756A60 !important;
+  color: #475569 !important;
 }
 
 html[data-theme="light"] .react-page-root[data-page="profile.html"] :where(.pf-list-label) {
-  color: #5F534A !important;
+  color: #475569 !important;
 }
 
 html[data-theme="light"] .react-page-root[data-page="profile.html"] :where(.pf-list-chevron) {
-  color: #9A8E82 !important;
+  color: #94A3B8 !important;
 }
 
 html[data-theme="light"] .react-page-root[data-page="profile.html"] :where(.pf-list-item) {
-  border-color: #E6DACB !important;
+  border-color: #CBD5E1 !important;
 }
 
 html[data-theme="light"] .react-page-root[data-page="profile.html"] :where(.pf-list-item:hover .pf-list-label, .pf-breadcrumb a:hover) {
-  color: #A96F18 !important;
+  color: #C58B2A !important;
 }
 
 html[data-theme="light"] .react-page-root[data-page="profile.html"] .pf-theme-opt[data-theme="noir"] .pf-theme-label {
-  color: #2B211A !important;
+  color: #0F172A !important;
   font-weight: 700;
 }
 
 html[data-theme="light"] .react-page-root[data-page="profile.html"] :where(.pf-list-item:hover .pf-list-chevron) {
-  color: #B9853E !important;
+  color: #C58B2A !important;
 }
 
 html[data-theme="light"] .react-page-root[data-page="profile.html"] :where(.pf-edit-btn, .pf-secondary-btn) {
-  background: #FFFDF8 !important;
-  border-color: #DAB77A !important;
-  color: #9A681F !important;
+  background: #FFFFFF !important;
+  border-color: #C58B2A !important;
+  color: #C58B2A !important;
 }
 
 html[data-theme="light"] .react-page-root[data-page="profile.html"] :where(.pf-edit-btn:hover, .pf-secondary-btn:hover) {
-  background: #F3E4C8 !important;
+  background: #F1F5F9 !important;
   border-color: #C58B2A !important;
-  color: #8E621D !important;
+  color: #C58B2A !important;
 }
 
 html[data-theme="light"] .react-page-root[data-page="profile.html"] :where(.pf-list-icon, .pf-modal-close) {
-  background: #FAF5ED !important;
-  border-color: #E2D6C6 !important;
-  color: #B9853E !important;
+  background: #F8FAFC !important;
+  border-color: #E2E8F0 !important;
+  color: #C58B2A !important;
 }
 
 html[data-theme="light"] .react-page-root[data-page="profile.html"] :where(.pf-badge-teal, .pf-badge-gray) {
-  background: #F3E4C8 !important;
-  border-color: #DAB77A !important;
-  color: #8E621D !important;
+  background: #F1F5F9 !important;
+  border-color: #C58B2A !important;
+  color: #C58B2A !important;
 }
 
 html[data-theme="light"] .react-page-root[data-page="profile.html"] :where(.pf-avatar, .pf-theme-preview) {
-  border-color: #E2D6C6 !important;
+  border-color: #E2E8F0 !important;
 }
 
 html[data-theme="light"] .react-page-root[data-page="profile.html"] :where(.pf-avatar-online) {
   background: #C58B2A !important;
-  border-color: #FFFDF8 !important;
+  border-color: #FFFFFF !important;
 }
 
 html[data-theme="light"] .react-page-root[data-page="profile.html"] :where(.pf-version-text span) {
-  color: #A96F18 !important;
+  color: #C58B2A !important;
 }
 
 .react-page-root[data-page="profile.html"] :where(.pf-watermark-main) {
@@ -7162,22 +7796,22 @@ html[data-theme="light"] .react-page-root[data-page="profile.html"] :where(.pf-v
 }
 
 html[data-theme="light"] .react-page-root[data-page="profile.html"] :where(.pf-watermark-main, .pf-watermark-sub) {
-  color: rgba(88,65,34,.055) !important;
+  color: rgba(15, 23, 42,.055) !important;
 }
 
 html[data-theme="light"] .react-page-root[data-page="profile.html"] :where(.pf-modal-card, .sub-current-card, .sub-history-row) {
-  background: #FFFDF8 !important;
-  border-color: #E2D6C6 !important;
+  background: #FFFFFF !important;
+  border-color: #E2E8F0 !important;
 }
 
 html[data-theme="light"] :where(.hero-card-badge, .bg-black\/80, .pf-badge-teal, .pf-badge-gray, .filter-tab.active, .cert-tab.active, .wl-sort-btn.active, .hero-topic:hover, .topic-chip:hover) {
-  background: #F3E4C8 !important;
-  border-color: #DAB77A !important;
-  color: #8E621D !important;
+  background: #F1F5F9 !important;
+  border-color: #C58B2A !important;
+  color: #C58B2A !important;
 }
 
 html[data-theme="light"] :where(.navbar .enx-icon, .premium-site-nav .enx-icon, .enx-navbar .enx-icon, .pay-nav .enx-icon, .hero-trust-item .enx-icon) {
-  color: #8B6A37 !important;
+  color: #C58B2A !important;
 }
 
 @media (max-width: 1120px) {
@@ -7724,6 +8358,24 @@ body {
     width: 100%;
   }
 
+  .react-page-root[data-page="index.html"] .curriculum-jump-nav {
+    width: 100%;
+    max-width: 100%;
+    flex-wrap: nowrap;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    scroll-behavior: smooth;
+    scroll-snap-type: x proximity;
+    overscroll-behavior-inline: contain;
+    touch-action: pan-x;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .react-page-root[data-page="index.html"] .curriculum-jump-nav a {
+    flex: 0 0 auto;
+    scroll-snap-align: start;
+  }
+
   .react-page-root[data-page="index.html"] .curriculum-section-head {
     align-items: stretch !important;
   }
@@ -7749,19 +8401,87 @@ body {
   .react-page-root[data-page="index.html"] .skill-strip {
     position: relative !important;
     z-index: 1;
+    display: grid !important;
+    grid-auto-flow: column !important;
+    grid-auto-columns: minmax(278px, 84vw) !important;
+    grid-template-columns: none !important;
+    flex-direction: initial !important;
     margin-top: 8px !important;
-    padding-top: 8px !important;
-    contain: layout paint;
+    padding: 8px 2px 10px !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    scroll-behavior: smooth;
+    scroll-padding-inline: 2px;
+    scroll-snap-type: x mandatory !important;
+    overscroll-behavior-inline: contain;
+    touch-action: pan-x;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    contain: layout;
   }
 
   .react-page-root[data-page="index.html"] .skill-strip::before {
-    content: "";
-    position: absolute;
-    inset: 0 0 auto;
-    z-index: 2;
-    height: 18px;
-    background: var(--bg);
-    pointer-events: none;
+    display: none !important;
+  }
+
+  .react-page-root[data-page="index.html"] .skill-strip::-webkit-scrollbar {
+    display: none;
+  }
+
+  .react-page-root[data-page="index.html"] .skill-strip > * {
+    scroll-snap-align: start;
+  }
+
+  .react-page-root[data-page="index.html"] .module-strip {
+    display: grid !important;
+    grid-auto-flow: column !important;
+    grid-auto-columns: minmax(278px, 84vw) !important;
+    grid-template-columns: none !important;
+    flex-direction: initial !important;
+    padding: 2px 2px 10px !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    scroll-behavior: smooth;
+    scroll-padding-inline: 2px;
+    scroll-snap-type: x mandatory !important;
+    overscroll-behavior-inline: contain;
+    touch-action: pan-x;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .react-page-root[data-page="index.html"] .module-strip::-webkit-scrollbar {
+    display: none;
+  }
+
+  .react-page-root[data-page="index.html"] .module-strip > * {
+    scroll-snap-align: start;
+  }
+
+  .react-page-root[data-page="index.html"] .project-grid {
+    display: grid !important;
+    grid-auto-flow: column !important;
+    grid-auto-columns: minmax(292px, 86vw) !important;
+    grid-template-columns: none !important;
+    flex-direction: initial !important;
+    padding: 2px 2px 10px !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    scroll-behavior: smooth;
+    scroll-padding-inline: 2px;
+    scroll-snap-type: x mandatory !important;
+    overscroll-behavior-inline: contain;
+    touch-action: pan-x;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .react-page-root[data-page="index.html"] .project-grid::-webkit-scrollbar {
+    display: none;
+  }
+
+  .react-page-root[data-page="index.html"] .project-grid > * {
+    scroll-snap-align: start;
   }
 
   .react-page-root[data-page="index.html"] :where(.continue-learning-row, .skill-strip, .module-strip, .watched-grid, .project-grid, .tool-grid, .journey-strip) > * {
@@ -7895,22 +8615,22 @@ body {
 
 /* Final warm premium light-theme layer. Colour-only override; layout stays unchanged. */
 html[data-theme="light"] {
-  --bg: #FAF7F1;
-  --card: #FFFDF8;
-  --card2: #FFFCF6;
-  --panel: #F3EBDD;
-  --panel2: #F6F0E7;
-  --border: #E2D6C6;
-  --border2: #E6DACB;
-  --text: #332820;
-  --text2: #756A60;
-  --nav-bg: #FBF8F2;
-  --gray: #9A8E82;
-  --light: #756A60;
+  --bg: #F8FAFC;
+  --card: #FFFFFF;
+  --card2: #FFFFFF;
+  --panel: #F1F5F9;
+  --panel2: #F8FAFC;
+  --border: #E2E8F0;
+  --border2: #CBD5E1;
+  --text: #0F172A;
+  --text2: #475569;
+  --nav-bg: #F8FAFC;
+  --gray: #94A3B8;
+  --light: #475569;
   --cyan: #C58B2A;
   --cyan-dim: rgba(197, 139, 42, .10);
   --cyan-border: rgba(197, 139, 42, .26);
-  --accent: #B9853E;
+  --accent: #C58B2A;
   --gold: #C58B2A;
 }
 
@@ -7924,31 +8644,31 @@ html[data-theme="light"] .react-page-root[data-page="login.html"] .lp-wrap,
 html[data-theme="light"] .react-page-root[data-page="login.html"] .lp-right,
 html[data-theme="light"] .react-page-root[data-page="signup.html"] .sp-main,
 html[data-theme="light"] .react-page-root[data-page="signup.html"] .sp-profile-wrap {
-  background: #FAF7F1 !important;
-  color: #332820 !important;
+  background: #F8FAFC !important;
+  color: #0F172A !important;
 }
 
 html[data-theme="light"] :where(h1, h2, h3, h4, h5, h6, .hero-title, .sec-title, .section-title, .card-title, .course-title, .pf-name, .pf-card-heading, .ep-card-title, .cert-visual-title, .welcome-left h1, .stat-pill-value, .hist-title, .rec-title, .astat-value),
 html[data-theme="light"] .react-page-root[data-page="login.html"] :where(.lp-marketing-title, .lp-login-title, .lp-form-group > label, .lp-label-row label, .lp-author-name, .lp-test-text),
 html[data-theme="light"] .react-page-root[data-page="signup.html"] :where(.sp-form-title, .sp-field-label, .sp-otp-label, .sp-profile-heading, .sp-ava-circle-name, .sp-ava-modal-title, .sp-footer-brand, .sp-footer-col-title),
 html[data-theme="light"] .react-page-root[data-page="dashboard.html"] :where(.dash-page, .welcome-left h1, .sec-title, .stat-pill-value, .hist-title, .rec-title, .activity-head span, .astat-value, .streak-head span, .footer-brand, .footer-col h4) {
-  color: #2B211A !important;
+  color: #0F172A !important;
 }
 
 html[data-theme="light"] :where(p, .text-on-surface-variant, .hero-sub, .section-head p, .tile-body p, .tile-meta, .pf-email, .pf-list-hint, .hist-meta, .hist-time, .rec-meta-row, .cert-meta, .wl-meta, .wl-instructor, .stat-pill-label, .astat-label, .chart-day, .footer-desc, .footer-links a, .footer-bottom p),
 html[data-theme="light"] .react-page-root[data-page="login.html"] :where(.lp-hero p, .lp-subtitle, .lp-author-role, .lp-remember, .lp-create-row, .lp-footer-links a),
 html[data-theme="light"] .react-page-root[data-page="signup.html"] :where(.sp-form-sub, .sp-prefix, .sp-checkbox-row, .sp-login-row, .sp-otp-desc, .sp-resend, .sp-profile-sub, .sp-ava-circle-hint, .sp-roller-item, .sp-gender-slide-btn, .sp-terms-note, .sp-footer-brand-desc, .sp-footer-col-links a, .sp-footer-bottom p, .sp-footer-bottom-links a, .sp-footer-icon),
 html[data-theme="light"] .react-page-root[data-page="dashboard.html"] :where(.welcome-left p, .stat-pill-label, .hist-meta, .hist-time, .rec-meta-row, .activity-more, .astat-label, .streak-sub, .chart-day, .footer-desc, .footer-links a, .footer-bottom p) {
-  color: #756A60 !important;
+  color: #475569 !important;
 }
 
 html[data-theme="light"] :where(.navbar, .premium-site-nav, .enx-navbar, .pay-nav, .edunex-mobile-menu, .index2-mobile-menu, .premium-mobile-menu) {
-  background: #FBF8F2 !important;
-  border-color: #E2D6C6 !important;
+  background: #F8FAFC !important;
+  border-color: #E2E8F0 !important;
 }
 
 html[data-theme="light"] :where(.nav-logo, .premium-logo, .footer-brand, .enx-nav-logo, .enx-footer-brand) {
-  color: #2B211A !important;
+  color: #0F172A !important;
 }
 
 html[data-theme="light"] :where(.nav-logo .brand-logo-mate, .nav-logo .brand-logo-ai, .premium-logo .brand-logo-mate, .premium-logo .brand-logo-ai, .enx-nav-logo .brand-logo-mate, .enx-nav-logo .brand-logo-ai, .enx-footer-brand span span, .nav-links a.active, .premium-nav-links a.active, .enx-nav-links a.active, .nav-login:hover, .enx-nav-login:hover, .nav-avatar:hover, .enx-nav-avatar:hover, .premium-avatar:hover, .footer-links a:hover, .enx-footer-links a:hover, .enx-footer-cta > a, .sec-link, .course-price, .wl-price, .cp-price, .hero-card-price strong, .hero-card-action) {
@@ -7967,25 +8687,25 @@ html[data-theme="light"] .react-page-root[data-page="login.html"] :where(.lp-lef
 html[data-theme="light"] .react-page-root[data-page="signup.html"] :where(.sp-profile-card, .sp-footer, .sp-ava-modal),
 html[data-theme="light"] .react-page-root[data-page="dashboard.html"] :where(.stat-pill, .hist-card, .rec-card, .activity-card, .streak-card, .footer-wrap, .filter-tab),
 html[data-theme="light"] .react-page-root[data-page="videos.html"] :where(.library-search, .library-tabs, .library-quick-stats span, .summary-subline, .watch-layout) {
-  background: #FFFDF8 !important;
-  border-color: #E2D6C6 !important;
-  box-shadow: 0 8px 24px rgba(88, 65, 34, .06) !important;
+  background: #FFFFFF !important;
+  border-color: #E2E8F0 !important;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, .06) !important;
 }
 
 html[data-theme="light"] :where(.checkout-body, .payment-choice-body, .cp-includes, .plan-option, .pay-btn-secondary, .payment-choice-btn.secondary, .library-tabs, .library-search, .summary-subline, .lesson-item, .pf-list-icon, .pf-edit-btn, .filter-tab, .library-tab, .cert-tab, .back-btn, .btn-ghost, .hero-cta-secondary, .hero-btn-secondary),
 html[data-theme="light"] .react-page-root[data-page="login.html"] :where(.lp-input-wrap),
 html[data-theme="light"] .react-page-root[data-page="signup.html"] :where(.sp-input-row, .sp-profile-input, .sp-otp-box, .sp-age-roller, .sp-gender-slider, .sp-avatar-tab, .sp-ava-modal-close, .sp-ava-opt, .sp-footer-icon) {
-  background: #FFFCF6 !important;
-  border-color: #E2D6C6 !important;
+  background: #FFFFFF !important;
+  border-color: #E2E8F0 !important;
   color: #C58B2A !important;
 }
 
 html[data-theme="light"] :where(input, textarea, select, .ep-input, .sp-profile-input, .library-search input, .hero-search-field input),
 html[data-theme="light"] .react-page-root[data-page="login.html"] :where(.lp-input-wrap input),
 html[data-theme="light"] .react-page-root[data-page="signup.html"] :where(.sp-input-row input, .sp-profile-input, .sp-otp-box) {
-  background: #FAF5ED !important;
-  border-color: #E2D6C6 !important;
-  color: #332820 !important;
+  background: #F8FAFC !important;
+  border-color: #E2E8F0 !important;
+  color: #0F172A !important;
 }
 
 html[data-theme="light"] :where(input, textarea, select):focus {
@@ -7995,7 +8715,7 @@ html[data-theme="light"] :where(input, textarea, select):focus {
 
 html[data-theme="light"] input::placeholder,
 html[data-theme="light"] textarea::placeholder {
-  color: #9A8E82 !important;
+  color: #94A3B8 !important;
 }
 
 html[data-theme="light"] :where(.hero-cta-primary, .hero-search-btn, .btn-cyan, .btn-trial, .trial-btn, .cta-big-btn, .login-cta-btn, .footer-contact-link, .lp-signin-btn, .sp-primary-btn, .sp-complete-btn, .sp-btn-cyan, .payment-choice-btn.primary, .pay-btn-primary, .wl-enroll-btn, .cart-btn, .upgrade-card),
@@ -8003,17 +8723,17 @@ html[data-theme="light"] .react-page-root[data-page="signup.html"] :where(.sp-ge
 html[data-theme="light"] .react-page-root[data-page="login.html"] .lp-signin-btn {
   background: #C58B2A !important;
   border-color: #C58B2A !important;
-  color: #FFFDF8 !important;
-  box-shadow: 0 8px 24px rgba(88, 65, 34, .10) !important;
+  color: #FFFFFF !important;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, .10) !important;
 }
 
 html[data-theme="light"] :where(.hero-cta-primary:hover, .hero-search-btn:hover, .btn-cyan:hover, .btn-trial:hover, .trial-btn:hover, .cta-big-btn:hover, .login-cta-btn:hover, .footer-contact-link:hover, .lp-signin-btn:hover, .sp-primary-btn:hover, .sp-complete-btn:hover, .sp-btn-cyan:hover, .payment-choice-btn.primary:hover, .pay-btn-primary:hover, .wl-enroll-btn:hover, .cart-btn:hover) {
-  background: #A96F18 !important;
-  border-color: #A96F18 !important;
+  background: #C58B2A !important;
+  border-color: #C58B2A !important;
 }
 
 html[data-theme="light"] :where(.hero-card-badge, .bg-black\/80, .pf-badge-teal, .pf-badge-gray, .filter-tab.active, .cert-tab.active, .wl-sort-btn.active) {
-  background: #F3E4C8 !important;
+  background: #F1F5F9 !important;
   border-color: #C58B2A !important;
   color: #C58B2A !important;
 }
@@ -8023,8 +8743,131 @@ html[data-theme="light"] .react-page-root[data-page="dashboard.html"] :where(.ba
   background: #C58B2A !important;
 }
 
+/* Keep the home search focus treatment on the container instead of the text field. */
+.react-page-root[data-page="index.html"] .hero-search-form {
+  transition: border-color .18s ease, box-shadow .18s ease, background-color .18s ease;
+}
+
+.react-page-root[data-page="index.html"] .hero-search-form:focus-within {
+  border-color: color-mix(in srgb, var(--cyan, #C58B2A) 58%, transparent);
+  box-shadow: 0 14px 34px rgba(15, 23, 42, .1);
+}
+
+.react-page-root[data-page="index.html"] .hero-search-field input,
+.react-page-root[data-page="index.html"] .hero-search-field input:focus,
+.react-page-root[data-page="index.html"] .hero-search-field input:focus-visible {
+  appearance: textfield;
+  -webkit-appearance: none;
+  border: 0 !important;
+  outline: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.react-page-root[data-page="index.html"] .hero-search-field input::-webkit-search-cancel-button,
+.react-page-root[data-page="index.html"] .hero-search-field input::-webkit-search-decoration,
+.react-page-root[data-page="index.html"] .hero-search-field input::-webkit-calendar-picker-indicator {
+  display: none;
+  -webkit-appearance: none;
+}
+
+.react-page-root[data-page="index.html"] .hero-search-field input::-ms-clear,
+.react-page-root[data-page="index.html"] .hero-search-field input::-ms-reveal {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+/* Match the course search to the same outline-free, container-led focus style. */
+.react-page-root[data-page="courses.html"] .search-input-wrap {
+  transition: border-color .18s ease, box-shadow .18s ease, background-color .18s ease;
+}
+
+.react-page-root[data-page="courses.html"] .search-input-wrap:focus-within {
+  border-color: var(--border, rgba(255, 255, 255, .1)) !important;
+  box-shadow: 0 10px 26px rgba(15, 23, 42, .09);
+}
+
+.react-page-root[data-page="courses.html"] .search-input-wrap input,
+.react-page-root[data-page="courses.html"] .search-input-wrap input:focus,
+.react-page-root[data-page="courses.html"] .search-input-wrap input:focus-visible {
+  border: 0 !important;
+  outline: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+/* Desktop AI workspace: use the shared site header and fill the available viewport. */
+@media (min-width: 901px) {
+  body:has(.react-page-root[data-page="ai-tutor.html"]) {
+    overflow: hidden !important;
+  }
+
+  .react-page-root[data-page="ai-tutor.html"] {
+    box-sizing: border-box;
+    height: 100dvh;
+    min-height: 100dvh !important;
+    overflow: hidden;
+  }
+
+  .react-page-root[data-page="ai-tutor.html"] .tutor-page {
+    height: calc(100dvh - 74px) !important;
+    min-height: 0 !important;
+  }
+
+  .react-page-root[data-page="ai-tutor.html"] .full-tutor {
+    box-sizing: border-box;
+    width: min(100%, 1480px);
+    height: 100%;
+    min-height: 0 !important;
+    margin-inline: auto;
+    padding: 18px !important;
+    align-items: stretch;
+    justify-content: stretch !important;
+    gap: 0;
+  }
+
+  .react-page-root[data-page="ai-tutor.html"] .tutor-sidebar {
+    width: 300px;
+    min-width: 300px;
+    height: 100%;
+    min-height: 0;
+    border: 1px solid var(--border, rgba(255, 255, 255, .09));
+    border-right: 0;
+    border-radius: 18px 0 0 18px;
+  }
+
+  .react-page-root[data-page="ai-tutor.html"] .tutor-chat {
+    flex: 1 1 0;
+    width: auto !important;
+    height: 100% !important;
+    min-height: 0 !important;
+    border-radius: 0 18px 18px 0 !important;
+  }
+
+  .react-page-root[data-page="ai-tutor.html"] .chat-messages {
+    padding-inline: clamp(32px, 5vw, 72px);
+  }
+
+  .react-page-root[data-page="ai-tutor.html"] .chat-input-area {
+    width: min(calc(100% - 64px), 780px);
+    margin-bottom: 18px;
+  }
+}
+
+@media (min-width: 901px) and (max-width: 1200px) {
+  .react-page-root[data-page="ai-tutor.html"] .full-tutor {
+    padding: 12px !important;
+  }
+
+  .react-page-root[data-page="ai-tutor.html"] .tutor-sidebar {
+    width: 260px;
+    min-width: 260px;
+  }
+}
+
 html[data-theme="light"] .react-page-root[data-page="dashboard.html"] :where(.bar, .streak-dot) {
-  background: #E6DACB !important;
+  background: #CBD5E1 !important;
 }
 
 html[data-theme="light"] :where([data-enx-icon="star"], .wl-rating, .rating, .cert-visual-org, .streak-num) {
@@ -8038,25 +8881,25 @@ html[data-theme="light"] :where(.page-grid, #page-grid-global) {
 }
 
 html[data-theme="light"] :where(.grid-dot-global) {
-  background: rgba(185, 144, 85, .78) !important;
-  box-shadow: 0 0 8px 2px rgba(185, 144, 85, .28) !important;
+  background: rgba(197, 139, 42, .78) !important;
+  box-shadow: 0 0 8px 2px rgba(197, 139, 42, .28) !important;
 }
 
 html[data-theme="light"] :where(.site-footer, .footer, .footer-wrap, .sp-footer, .enx-footer, .enx-footer-cta, .enx-footer-trust-row span, .enx-footer-support a) {
-  background: #FBF8F2 !important;
-  border-color: #E2D6C6 !important;
+  background: #F8FAFC !important;
+  border-color: #E2E8F0 !important;
 }
 
 html[data-theme="light"] .enx-footer,
 html[data-theme="light"] .enx-footer :where(.enx-footer-heading, .enx-footer-bottom span, .enx-footer-bottom a) {
-  color: #2B211A !important;
+  color: #0F172A !important;
 }
 
 html[data-theme="light"] .enx-footer :where(.enx-footer-links a, .enx-footer-cta p, .enx-footer-support a) {
-  color: #5F534A !important;
+  color: #475569 !important;
 }
 
 html[data-theme="light"] .enx-footer .enx-footer-cta,
 html[data-theme="light"] .enx-footer .enx-footer-support a {
-  background: #FFFDF8 !important;
+  background: #FFFFFF !important;
 }

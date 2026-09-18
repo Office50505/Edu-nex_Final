@@ -10,23 +10,23 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
     :root {
-      --about-bg: #FAF7F1;
-      --about-bg-soft: #F6F0E7;
-      --about-panel: #F3EBDD;
-      --about-card: #FFFDF8;
-      --about-card2: #FFFCF6;
-      --about-nav-bg: #FBF8F2;
-      --about-border: #E2D6C6;
-      --about-border2: #E6DACB;
-      --about-text: #332820;
-      --about-heading: #2B211A;
-      --about-text2: #756A60;
-      --about-muted: #9A8E82;
+      --about-bg: #F8FAFC;
+      --about-bg-soft: #F8FAFC;
+      --about-panel: #F1F5F9;
+      --about-card: #FFFFFF;
+      --about-card2: #FFFFFF;
+      --about-nav-bg: #F8FAFC;
+      --about-border: #E2E8F0;
+      --about-border2: #CBD5E1;
+      --about-text: #0F172A;
+      --about-heading: #0F172A;
+      --about-text2: #475569;
+      --about-muted: #94A3B8;
       --about-gold: #C58B2A;
-      --about-gold-dark: #A96F18;
-      --about-gold-soft: #F3E4C8;
-      --about-gold-border: #E3CFAC;
-      --about-shadow: 0 14px 36px rgba(88, 65, 34, .08);
+      --about-gold-dark: #C58B2A;
+      --about-gold-soft: #F1F5F9;
+      --about-gold-border: #E2E8F0;
+      --about-shadow: 0 14px 36px rgba(15, 23, 42, .08);
       --font-body: "Manrope", ui-sans-serif, system-ui, sans-serif;
       --font-display: "Fraunces", Georgia, serif;
     }
@@ -37,7 +37,7 @@
       min-height: 100vh;
       overflow-x: hidden;
       background:
-        radial-gradient(circle at 14% 9%, rgba(218, 183, 122, .18), transparent 27rem),
+        radial-gradient(circle at 14% 9%, rgba(197, 139, 42, .18), transparent 27rem),
         radial-gradient(circle at 86% 4%, rgba(197, 139, 42, .11), transparent 25rem),
         var(--about-bg);
       color: var(--about-text);
@@ -53,7 +53,7 @@
       position: sticky;
       top: 0;
       z-index: 50;
-      background: rgba(251, 248, 242, .94);
+      background: rgba(248, 250, 252, .94);
       backdrop-filter: blur(18px);
       border-bottom: 1px solid var(--about-border);
     }
@@ -178,7 +178,7 @@
       overflow: hidden;
       border: 1px solid var(--about-border);
       box-shadow: var(--about-shadow);
-      background: linear-gradient(135deg, #FFFDF8, var(--about-panel));
+      background: linear-gradient(135deg, #FFFFFF, var(--about-panel));
       padding: 14px;
     }
     .hero-photo-row {
@@ -193,7 +193,7 @@
       object-fit: cover;
       object-position: center top;
       border-radius: 10px;
-      border: 1px solid rgba(227, 207, 172, .65);
+      border: 1px solid rgba(226, 232, 240, .65);
       filter: saturate(.88) sepia(.08) brightness(1.03);
       background: var(--about-panel);
     }
@@ -206,7 +206,7 @@
       object-fit: cover;
       object-position: center;
       border-radius: 10px;
-      border: 1px solid rgba(227, 207, 172, .65);
+      border: 1px solid rgba(226, 232, 240, .65);
       filter: saturate(.92) sepia(.06) brightness(1.03);
       background: var(--about-panel);
     }
@@ -215,7 +215,7 @@
     .hero-image.is-fallback .hero-photo-fallback { display: grid; }
 
     .section { padding: 54px 0; }
-    .section.alt { background: linear-gradient(180deg, rgba(243, 235, 221, .72), rgba(246, 240, 231, .5)); border-block: 1px solid rgba(226, 214, 198, .7); }
+    .section.alt { background: linear-gradient(180deg, rgba(241, 245, 249, .72), rgba(248, 250, 252, .5)); border-block: 1px solid rgba(226, 232, 240, .7); }
     .section-head { text-align: center; max-width: 690px; margin: 0 auto 42px; }
     .section-kicker {
       color: var(--about-gold-dark);
@@ -414,7 +414,7 @@
       border-radius: 13px;
       border: 1px solid var(--about-gold-border);
       background:
-        linear-gradient(135deg, rgba(243, 228, 200, .86), rgba(255, 253, 248, .95)),
+        linear-gradient(135deg, rgba(241, 245, 249, .86), rgba(255, 255, 255, .95)),
         repeating-linear-gradient(150deg, transparent 0 18px, rgba(197, 139, 42, .05) 19px 20px);
       box-shadow: var(--about-shadow);
       padding: 30px clamp(24px, 5vw, 64px);
@@ -447,7 +447,7 @@
       font-size: .9rem;
       white-space: nowrap;
     }
-    .primary-btn { background: var(--about-gold); color: #FFFDF8; border: 1px solid var(--about-gold); }
+    .primary-btn { background: var(--about-gold); color: #FFFFFF; border: 1px solid var(--about-gold); }
     .primary-btn:hover { background: var(--about-gold-dark); border-color: var(--about-gold-dark); }
     .secondary-btn { background: var(--about-card); color: var(--about-gold-dark); border: 1px solid var(--about-gold-border); }
     .secondary-btn:hover { background: var(--about-gold-soft); }

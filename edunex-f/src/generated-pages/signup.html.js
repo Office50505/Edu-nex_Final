@@ -67,7 +67,7 @@ export const page = {
       color: #000; cursor: pointer; font-family: "Manrope", ui-sans-serif, system-ui, sans-serif;
       transition: all .2s;
     }
-    .sp-btn-cyan:hover { background: #A96F18; }
+    .sp-btn-cyan:hover { background: #C58B2A; }
 
     /* ===== MAIN SPLIT ===== */
     .sp-main {
@@ -201,7 +201,7 @@ export const page = {
       margin-bottom: 16px;
     }
     .sp-primary-btn:hover {
-      background: #A96F18;
+      background: #C58B2A;
       box-shadow: 0 6px 22px rgba(197,139,42,.38);
     }
     .sp-primary-btn:disabled {
@@ -464,7 +464,7 @@ export const page = {
       margin-bottom: 12px;
     }
     .sp-complete-btn:hover {
-      background: #A96F18;
+      background: #C58B2A;
       box-shadow: 0 6px 22px rgba(197,139,42,.38);
     }
     .sp-terms-note {

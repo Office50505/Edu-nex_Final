@@ -107,11 +107,7 @@ function groupCourses(courses) {
 function initialCourseFilters() {
   const params = new URLSearchParams(window.location.search);
   const search = params.get("search") || params.get("q") || "";
-  const category = params.get("category") || "all";
-  return {
-    search,
-    category: search ? "all" : category.toLowerCase(),
-  };
+  return { search };
 }
 
 export function CoursesPage() {
@@ -119,7 +115,6 @@ export function CoursesPage() {
   const [courses, setCourses] = useState([]);
   const [search, setSearch] = useState(initialFilters.search);
   const [suggestionsOpen, setSuggestionsOpen] = useState(false);
-  const [category, setCategory] = useState(initialFilters.category);
   const [hasAccess, setHasAccess] = useState(false);
   const [wishlist, setWishlist] = useState(() => localWishlist());
   const [state, setState] = useState("loading");
@@ -195,7 +190,6 @@ export function CoursesPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [runtimeReady]);
 
-  const categories = useMemo(() => Array.from(new Set(courses.map((course) => course.categoryName))).filter(Boolean), [courses]);
   const searchSuggestions = useMemo(() => {
     const query = search.trim().toLowerCase();
     return courses
@@ -214,12 +208,8 @@ export function CoursesPage() {
   const showSearchSuggestions = suggestionsOpen && searchSuggestions.length > 0;
   const filteredCourses = useMemo(() => {
     const query = search.trim().toLowerCase();
-    return courses.filter((course) => {
-      const textMatch = !query || `${course.title} ${course.description} ${course.categoryName}`.toLowerCase().includes(query);
-      const categoryMatch = category === "all" || course.categoryName.toLowerCase() === category;
-      return textMatch && categoryMatch;
-    });
-  }, [category, courses, search]);
+    return courses.filter((course) => !query || `${course.title} ${course.description} ${course.categoryName}`.toLowerCase().includes(query));
+  }, [courses, search]);
 
   const toggleWishlist = async (courseId) => {
     if (!courseId) return;
@@ -250,18 +240,11 @@ export function CoursesPage() {
 
   const updateSearch = (value) => {
     setSearch(value);
-    if (value.trim()) setCategory("all");
   };
 
   const selectSearchSuggestion = (title) => {
     setSearch(title);
-    setCategory("all");
     setSuggestionsOpen(false);
-  };
-
-  const selectCategory = (value) => {
-    setCategory(value);
-    setSearch("");
   };
 
   return (
@@ -300,13 +283,6 @@ export function CoursesPage() {
                   ))}
                 </div>
               ) : null}
-            </div>
-            <div className="filter-pills" aria-busy={state === "loading"}>
-              {state === "loading" ? <span className="course-filter-loading">Loading course filters...</span> : null}
-              {state === "ready" ? <button className={`pill${category === "all" ? " active" : ""}`} type="button" data-category="all" onClick={() => selectCategory("all")}>All Courses</button> : null}
-              {state === "ready" ? categories.map((name) => (
-                <button className={`pill${category === name.toLowerCase() ? " active" : ""}`} type="button" data-category={name.toLowerCase()} key={name} onClick={() => selectCategory(name.toLowerCase())}>{name}</button>
-              )) : null}
             </div>
           </div>
         </div>

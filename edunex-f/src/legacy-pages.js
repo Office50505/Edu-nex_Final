@@ -91,7 +91,7 @@ export const pages = {
       border-radius: 20px; overflow: hidden;
       border: 1px solid rgba(0,229,255,0.15);
       box-shadow: 0 0 60px rgba(0,229,255,0.1);
-      background: #f3ecdf;
+      background: #F1F5F9;
       min-height: 420px;
       display: grid;
       place-items: center;
@@ -8557,7 +8557,7 @@ function setStoredUser(user) {
       --library-green: #359c57;
       --library-green-dark: #2f7f48;
       --library-blue: #2563eb;
-      --library-amber: #b7791f;
+      --library-amber: #F59E0B;
       --library-card: #ffffff;
       --library-shadow: 0 18px 48px rgba(16, 39, 25, .1);
     }

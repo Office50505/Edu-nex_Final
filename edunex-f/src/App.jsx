@@ -2,6 +2,7 @@ import { lazy, startTransition, Suspense, useCallback, useEffect, useState } fro
 import { Navbar } from "./components/Navbar.jsx";
 import { Footer } from "./components/Footer.jsx";
 import { EnxIcon } from "./components/EnxIcon.jsx";
+import { ProblemReport } from "./components/ProblemReport.jsx";
 import { pageKeyFromPath, route } from "./lib/routes.js";
 import { hasReactPage, preloadPage, reactPageLoaders } from "./lib/pageLoaders.jsx";
 import { adminPageFromPath, canonicalAdminPath } from "./pages/admin/adminApi.js";
@@ -105,10 +106,13 @@ function PageLoading() {
 
 export default function App() {
   const [locationState, setLocationState] = useState(currentLocationState);
+  const [reportOpen, setReportOpen] = useState(false);
   const adminPage = adminPageFromPath(locationState.pathname);
   const pageKey = pageKeyFromPath(locationState.pathname);
   const ReactPage = reactPageLoaders[pageKey];
   const routeKey = routeFromState(locationState);
+  const openProblemReport = useCallback(() => setReportOpen(true), []);
+  const closeProblemReport = useCallback(() => setReportOpen(false), []);
 
   const syncLocation = useCallback((nextState = currentLocationState()) => {
     startTransition(() => {
@@ -174,6 +178,11 @@ export default function App() {
     };
   }, [syncLocation]);
 
+  useEffect(() => {
+    window.addEventListener("skillomate:open-problem-report", openProblemReport);
+    return () => window.removeEventListener("skillomate:open-problem-report", openProblemReport);
+  }, [openProblemReport]);
+
   if (adminPage) {
     return (
       <Suspense fallback={<PageLoading />}>
@@ -188,7 +197,7 @@ export default function App() {
 
   return (
     <>
-      <Navbar pageKey={pageKey} />
+      <Navbar pageKey={pageKey} onReportProblem={openProblemReport} />
       {ReactPage ? (
         <Suspense fallback={<PageLoading />}>
           <ReactPage key={routeKey} />
@@ -196,6 +205,7 @@ export default function App() {
       ) : null}
       {!ReactPage ? <NotFoundPage /> : null}
       <Footer />
+      <ProblemReport open={reportOpen} onClose={closeProblemReport} />
     </>
   );
 }

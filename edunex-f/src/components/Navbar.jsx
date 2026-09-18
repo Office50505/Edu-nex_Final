@@ -47,7 +47,7 @@ function readTheme() {
 function avatarFallback(user) {
   const label = user?.fullName || user?.name || user?.email || user?.mobileNumber || "E";
   const initial = String(label).trim().charAt(0).toUpperCase() || "E";
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="160" height="160" viewBox="0 0 160 160"><rect width="160" height="160" rx="80" fill="#F3E4C8"/><rect x="2" y="2" width="156" height="156" rx="78" fill="#FFFDF8" stroke="#DAB77A" stroke-width="4"/><text x="80" y="96" text-anchor="middle" fill="#C58B2A" font-family="Arial, sans-serif" font-size="62" font-weight="800">${initial}</text></svg>`;
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="160" height="160" viewBox="0 0 160 160"><rect width="160" height="160" rx="80" fill="#F1F5F9"/><rect x="2" y="2" width="156" height="156" rx="78" fill="#FFFFFF" stroke="#C58B2A" stroke-width="4"/><text x="80" y="96" text-anchor="middle" fill="#C58B2A" font-family="Arial, sans-serif" font-size="62" font-weight="800">${initial}</text></svg>`;
   return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
 }
 
@@ -79,7 +79,7 @@ function clearAuthStorage() {
   progressKeys.forEach((key) => localStorage.removeItem(key));
 }
 
-export function Navbar({ pageKey }) {
+export function Navbar({ pageKey, onReportProblem }) {
   const [open, setOpen] = useState(false);
   const [mobileSearch, setMobileSearch] = useState("");
   const [auth, setAuth] = useState(() => ({ token: hasToken(), user: readUser() }));
@@ -196,6 +196,7 @@ export function Navbar({ pageKey }) {
           </ul>
           <div className="enx-nav-right">
             {greeting ? <span className="enx-nav-greeting">{greeting}</span> : null}
+            {current !== "ai-tutor.html" ? <button className="enx-report-nav-button" type="button" onClick={onReportProblem}><EnxIcon name="flag" /><span>Report issue</span></button> : null}
             <button className="enx-nav-theme-toggle" type="button" onClick={toggleTheme} aria-label={`Switch to ${nextThemeLabel} theme`} title={`Switch to ${nextThemeLabel} theme`}>
               <EnxIcon name={resolvedTheme === "light" ? "moon" : "sun"} />
             </button>
@@ -254,6 +255,7 @@ export function Navbar({ pageKey }) {
           })}
         </div>
       </nav>
+      {current !== "ai-tutor.html" ? <button className="enx-mobile-report-button" type="button" onClick={onReportProblem} aria-label="Report a problem" title="Report a problem"><EnxIcon name="flag" /></button> : null}
     </>
   );
 }

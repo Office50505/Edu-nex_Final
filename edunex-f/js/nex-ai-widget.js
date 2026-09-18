@@ -7,10 +7,8 @@
   const learnerAvatar = storedUser?.avatar || window.EduNex?.avatarFallback?.(storedUser) || '';
   const botOwner = String(storedUser?._id || storedUser?.id || 'guest');
   const botNameStorageKey = `edunexAiBotName:${botOwner}`;
-  const botAvatarStorageKey = `edunexAiBotAvatar:${botOwner}`;
   const botSetupStorageKey = `edunexAiBotSetupComplete:${botOwner}`;
   const savedBotName = localStorage.getItem(botNameStorageKey) || 'AI';
-  const savedBotAvatar = localStorage.getItem(botAvatarStorageKey) || 'nex';
   const aiSetupComplete = localStorage.getItem(botSetupStorageKey) === 'true';
   const botAvatarMarkup = `<img class="nai-bot-avatar-img" src="/assets/nex-avatar.png" alt="">`;
   const escAttr = (value) => String(value || '').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -101,12 +99,12 @@
       background: #C58B2A;
       border-radius: 14px;
       cursor: pointer;
-      color: #FFFDF8;
+      color: #FFFFFF;
       font-family: "Manrope", -apple-system, ui-sans-serif, system-ui, sans-serif;
       font-size: 0.82rem;
       font-weight: 800;
       letter-spacing: 0.02em;
-      box-shadow: 0 4px 24px rgba(88,65,34,0.16);
+      box-shadow: 0 4px 24px rgba(15, 23, 42,0.16);
       transition: transform 0.2s, box-shadow 0.2s;
       animation: naipulse 2.8s ease-in-out infinite;
       user-select: none;
@@ -116,18 +114,18 @@
     #nai-float-btn .nai-float-mobile-label { display: none; }
     #nai-float-btn:hover {
       transform: translateY(-3px);
-      box-shadow: 0 10px 36px rgba(88,65,34,0.22);
+      box-shadow: 0 10px 36px rgba(15, 23, 42,0.22);
     }
     #nai-float-btn.nai-btn-open {
-      background: #A96F18;
-      color: #FFFDF8;
-      border: 1px solid #DAB77A;
-      box-shadow: 0 4px 20px rgba(88,65,34,0.18);
+      background: #C58B2A;
+      color: #FFFFFF;
+      border: 1px solid #C58B2A;
+      box-shadow: 0 4px 20px rgba(15, 23, 42,0.18);
       animation: none;
     }
     @keyframes naipulse {
-      0%,100% { box-shadow: 0 4px 24px rgba(88,65,34,0.16), 0 0 0 0 rgba(197,139,42,0.26); }
-      60%      { box-shadow: 0 4px 24px rgba(88,65,34,0.16), 0 0 0 14px rgba(197,139,42,0); }
+      0%,100% { box-shadow: 0 4px 24px rgba(15, 23, 42,0.16), 0 0 0 0 rgba(197,139,42,0.26); }
+      60%      { box-shadow: 0 4px 24px rgba(15, 23, 42,0.16), 0 0 0 14px rgba(197,139,42,0); }
     }
 
     /* ── OVERLAY ── */
@@ -214,7 +212,7 @@
       font-weight: 900;
     }
     .nai-history-chevron {
-      color: #756A60;
+      color: #475569;
       font-size: .72rem;
       transition: transform .18s ease;
     }
@@ -228,7 +226,7 @@
     .nai-history-empty {
       border: 1px dashed rgba(255,255,255,.12);
       border-radius: 12px;
-      color: #756A60;
+      color: #475569;
       font-size: .78rem;
       font-weight: 700;
       line-height: 1.45;
@@ -264,7 +262,7 @@
       font-weight: 900;
     }
     .nai-history-item-meta {
-      color: #756A60;
+      color: #475569;
       font-size: .68rem;
       font-weight: 700;
     }
@@ -280,7 +278,7 @@
       border-radius: 13px;
       background: #C58B2A;
       display: flex; align-items: center; justify-content: center;
-      color: #FFFDF8; font-size: 1.1rem;
+      color: #FFFFFF; font-size: 1.1rem;
       flex-shrink: 0;
       overflow: hidden;
     }
@@ -290,19 +288,19 @@
     }
     .nai-online {
       display: flex; align-items: center; gap: 5px;
-      font-size: 0.73rem; font-weight: 600; color: #A96F18;
+      font-size: 0.73rem; font-weight: 600; color: #C58B2A;
     }
     .nai-online-dot {
       width: 7px; height: 7px; border-radius: 50%;
-      background: #A96F18;
-      box-shadow: 0 0 6px rgba(169,111,24,0.7);
+      background: #C58B2A;
+      box-shadow: 0 0 6px rgba(197,139,42,0.7);
     }
 
     /* Section label */
     .nai-sec-lbl {
       font-size: 0.6rem; font-weight: 800;
       text-transform: uppercase; letter-spacing: 0.12em;
-      color: #756A60;
+      color: #475569;
       margin-bottom: 10px;
     }
 
@@ -380,6 +378,10 @@
       cursor: pointer;
       overflow: hidden;
     }
+    .nai-bot-avatar-picker.nai-fixed-avatar {
+      cursor: default;
+      pointer-events: none;
+    }
     .nai-bot-avatar-img {
       width: 100%;
       height: 100%;
@@ -410,7 +412,7 @@
       padding: 12px;
       border: 1px solid rgba(255,255,255,.1);
       border-radius: 14px;
-      background: #332820;
+      background: #0F172A;
       display: grid;
       grid-template-columns: repeat(5, 1fr);
       gap: 8px;
@@ -435,7 +437,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      color: #DAB77A;
+      color: #C58B2A;
       font-size: 1.1rem;
     }
 
@@ -502,16 +504,24 @@
       outline: none;
     }
     #nai-setup-name:focus { border-color: rgba(197,139,42,.48); }
-    .nai-setup-avatars {
+    .nai-setup-avatar-preview {
+      width: 92px;
+      height: 92px;
+      margin: 0 auto 14px;
       display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 10px;
+      place-items: center;
+      filter: drop-shadow(0 12px 18px rgba(0,0,0,.32));
     }
-    .nai-setup-avatars .nai-avatar-choice { border-color: rgba(255,255,255,.08); }
+    .nai-setup-avatar-preview .nai-bot-avatar-img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      transform: none;
+    }
     .nai-setup-error {
       min-height: 18px;
       margin-top: 12px;
-      color: #A96F18;
+      color: #C58B2A;
       font-size: .78rem;
       font-weight: 700;
     }
@@ -522,7 +532,7 @@
       border: 0;
       border-radius: 12px;
       background: #C58B2A;
-      color: #FFFDF8;
+      color: #FFFFFF;
       font: inherit;
       font-weight: 900;
       cursor: pointer;
@@ -554,7 +564,7 @@
       width: 50px; height: 56px;
       background: transparent;
       display: flex; align-items: center; justify-content: center;
-      color: #FFFDF8; font-size: 0.85rem;
+      color: #FFFFFF; font-size: 0.85rem;
       flex-shrink: 0; margin-top: 2px;
       overflow: visible;
       filter: drop-shadow(0 8px 9px rgba(0,0,0,.28));
@@ -655,7 +665,7 @@
     .nai-user-bubble {
       max-width: 80%;
       background: #C58B2A;
-      color: #FFFDF8; font-weight: 600;
+      color: #FFFFFF; font-weight: 600;
       padding: 14px 18px;
       border-radius: 16px 16px 4px 16px;
       font-size: 0.88rem;
@@ -698,7 +708,7 @@
       font-family: "Manrope", -apple-system, ui-sans-serif, system-ui, sans-serif;
       min-width: 0;
     }
-    #nai-input::placeholder { color: #756A60; }
+    #nai-input::placeholder { color: #475569; }
     .nai-mic-btn {
       all: unset;
       display: flex; align-items: center; justify-content: center;
@@ -712,10 +722,10 @@
       width: 38px; height: 38px; border-radius: 10px;
       background: #C58B2A;
       display: flex; align-items: center; justify-content: center;
-      color: #FFFDF8; font-size: 0.82rem;
+      color: #FFFFFF; font-size: 0.82rem;
       cursor: pointer; flex-shrink: 0; transition: all 0.2s;
     }
-    #nai-send:hover { background: #A96F18; box-shadow: 0 3px 14px rgba(197,139,42,0.5); }
+    #nai-send:hover { background: #C58B2A; box-shadow: 0 3px 14px rgba(197,139,42,0.5); }
 
     .nai-footer-hint {
       text-align: center;
@@ -890,79 +900,79 @@
     }
     html[data-theme="light"] #nai-modal,
     html[data-theme="light"] #nai-chat-area {
-      background: #FFFDF8;
-      border-color: #E2D6C6;
-      box-shadow: 0 28px 90px rgba(88,65,34,.12);
+      background: #FFFFFF;
+      border-color: #E2E8F0;
+      box-shadow: 0 28px 90px rgba(15, 23, 42,.12);
     }
     html[data-theme="light"] #nai-chat-hdr,
     html[data-theme="light"] #nai-input-area,
     html[data-theme="light"] #nai-sidebar {
-      border-color: #E6DACB;
+      border-color: #CBD5E1;
     }
     html[data-theme="light"] #nai-sidebar {
-      background: #FAF5ED;
+      background: #F8FAFC;
     }
     html[data-theme="light"] .nai-session-title,
     html[data-theme="light"] .nai-history-title,
     html[data-theme="light"] .nai-ai-bubble strong {
-      color: #2B211A;
+      color: #0F172A;
     }
     html[data-theme="light"] .nai-history-empty {
-      border-color: #E2D6C6;
-      color: #8B7A69;
+      border-color: #E2E8F0;
+      color: #64748B;
     }
     html[data-theme="light"] .nai-history-item {
-      background: #FFFDF8;
-      border-color: #E2D6C6;
-      color: #332820;
+      background: #FFFFFF;
+      border-color: #E2E8F0;
+      color: #0F172A;
     }
     html[data-theme="light"] .nai-history-item:hover,
     html[data-theme="light"] .nai-history-item.is-active {
       background: rgba(197,139,42,.12);
       border-color: rgba(197,139,42,.42);
-      color: #2B211A;
+      color: #0F172A;
     }
     html[data-theme="light"] .nai-ai-bubble,
     html[data-theme="light"] .nai-ai-bubble p,
     html[data-theme="light"] .nai-reply-list,
     html[data-theme="light"] .nai-reply-list li {
-      color: #756A60 !important;
+      color: #475569 !important;
     }
     html[data-theme="light"] .nai-input-row,
     html[data-theme="light"] #nai-bot-name-input {
-      background: #FAF5ED;
-      border-color: #E2D6C6;
-      color: #332820;
+      background: #F8FAFC;
+      border-color: #E2E8F0;
+      color: #0F172A;
     }
     html[data-theme="light"] #nai-input {
-      color: #332820;
+      color: #0F172A;
     }
     html[data-theme="light"] .nai-hdr-btn {
-      background: #FFFCF6;
-      border-color: #E2D6C6;
-      color: #8B6A37;
+      background: #FFFFFF;
+      border-color: #E2E8F0;
+      color: #C58B2A;
     }
     html[data-theme="light"] .nai-avatar-menu {
-      background: #FFFDF8;
-      border-color: #E2D6C6;
-      box-shadow: 0 18px 50px rgba(88,65,34,.12);
+      background: #FFFFFF;
+      border-color: #E2E8F0;
+      box-shadow: 0 18px 50px rgba(15, 23, 42,.12);
     }
     html[data-theme="light"] .nai-setup-panel {
-      background: rgba(250,247,241,.92);
+      background: rgba(248,250,252,.92);
     }
     html[data-theme="light"] .nai-setup-card {
-      background: #FFFDF8;
-      color: #332820;
-      border-color: #DAB77A;
+      background: #FFFFFF;
+      color: #0F172A;
+      border-color: #C58B2A;
     }
     html[data-theme="light"] .nai-setup-card p,
     html[data-theme="light"] .nai-setup-label {
-      color: #756A60;
+      color: #475569;
     }
     html[data-theme="light"] #nai-setup-name {
-      background: #FAF5ED;
-      color: #332820;
-      border-color: #E2D6C6;
+      background: #F8FAFC;
+      color: #0F172A;
+      border-color: #E2E8F0;
     }
     #nai-auth-prompt {
       position: fixed;
@@ -1007,7 +1017,7 @@
       align-items: center;
       justify-content: center;
       background: #C58B2A;
-      color: #FFFDF8;
+      color: #FFFFFF;
     }
     .nai-auth-card h3 {
       margin: 0 0 8px;
@@ -1038,19 +1048,19 @@
     }
     .nai-auth-primary {
       background: #C58B2A;
-      color: #FFFDF8;
+      color: #FFFFFF;
     }
     .nai-auth-secondary {
-      border: 1px solid #DAB77A;
-      color: #9A681F;
-      background: #FFFDF8;
+      border: 1px solid #C58B2A;
+      color: #C58B2A;
+      background: #FFFFFF;
     }
     html[data-theme="light"] .nai-auth-card {
-      background: #FFFDF8;
-      color: #332820;
-      border-color: #E2D6C6;
+      background: #FFFFFF;
+      color: #0F172A;
+      border-color: #E2E8F0;
     }
-    html[data-theme="light"] .nai-auth-card p { color: #756A60; }
+    html[data-theme="light"] .nai-auth-card p { color: #475569; }
   `;
 
   /* ═══════════════════════════════════════════════════════════════
@@ -1088,10 +1098,9 @@
             <div>
               <div class="nai-session-title" id="nai-session-title"><span id="nai-bot-name-title">${savedBotName}</span></div>
               <div class="nai-bot-customizer">
-                <button class="nai-bot-avatar-picker" id="nai-bot-avatar-picker" type="button" aria-label="Choose AI icon">${botAvatarMarkup}</button>
+                <div class="nai-bot-avatar-picker nai-fixed-avatar" aria-hidden="true">${botAvatarMarkup}</div>
                 <input id="nai-bot-name-input" type="text" value="${escAttr(savedBotName)}" maxlength="24" aria-label="AI bot name">
               </div>
-              <div class="nai-avatar-menu" id="nai-avatar-menu" hidden></div>
             </div>
             <div class="nai-hdr-actions">
               <button class="nai-hdr-btn" id="nai-new-chat" type="button">New chat</button>
@@ -1130,13 +1139,12 @@
 
         <div class="nai-setup-panel" id="nai-setup-panel" ${aiSetupComplete ? 'hidden' : ''}>
           <div class="nai-setup-card">
+            <div class="nai-setup-avatar-preview" aria-hidden="true">${botAvatarMarkup}</div>
             <div class="nai-setup-kicker">First AI setup</div>
-            <h3>Choose your AI companion</h3>
-            <p>Pick a refined icon and give your tutor a name. I will save it for your future Skillomate sessions.</p>
+            <h3>Name your AI</h3>
+            <p>Your Skillomate robot avatar is fixed. Choose only the name you want to use for future sessions.</p>
             <label class="nai-setup-label" for="nai-setup-name">AI name</label>
             <input id="nai-setup-name" type="text" maxlength="24" value="${escAttr(savedBotName === 'AI' ? '' : savedBotName)}" placeholder="Example: Nova, Mentor, Study Buddy">
-            <div class="nai-setup-label">AI icon</div>
-            <div class="nai-setup-avatars" id="nai-setup-avatars"></div>
             <div class="nai-setup-error" id="nai-setup-error" role="alert" aria-live="assertive"></div>
             <button class="nai-setup-save" id="nai-setup-save" type="button" disabled>Save and start</button>
           </div>
@@ -1173,37 +1181,14 @@
   const botNameInput = document.getElementById('nai-bot-name-input');
   const botNameTitle = document.getElementById('nai-bot-name-title');
   const sidebarBotName = document.querySelector('.nai-bot-name');
-  const botAvatarPicker = document.getElementById('nai-bot-avatar-picker');
-  const avatarMenu = document.getElementById('nai-avatar-menu');
   const setupPanel = document.getElementById('nai-setup-panel');
   const setupName = document.getElementById('nai-setup-name');
-  const setupAvatars = document.getElementById('nai-setup-avatars');
   const setupSave = document.getElementById('nai-setup-save');
   const setupError = document.getElementById('nai-setup-error');
   const setupCard = setupPanel?.querySelector('.nai-setup-card');
-  const botAvatars = ['nex', 'sparkles', 'brain', 'book', 'badge'];
-  const botIconClass = (value) => ({
-    sparkles: 'fas fa-bolt',
-    brain: 'fas fa-network-wired',
-    book: 'fas fa-book-open',
-    badge: 'fas fa-award'
-  }[value] || 'fas fa-bolt');
-
-  const botAvatarMarkupFor = (value) => value === 'nex'
-    ? '<img class="nai-bot-avatar-img" src="/assets/nex-avatar.png" alt="">'
-    : `<i class="${botIconClass(value)}"></i>`;
 
   function currentBotAvatarMarkup() {
-    const avatar = localStorage.getItem(botAvatarStorageKey) || 'nex';
-    return botAvatarMarkupFor(avatar);
-  }
-
-  function syncBotAvatar() {
-    const markup = currentBotAvatarMarkup();
-    botAvatarPicker.innerHTML = markup;
-    const sidebarBotIcon = document.querySelector('.nai-bot-icon');
-    if (sidebarBotIcon) sidebarBotIcon.innerHTML = markup;
-    document.querySelectorAll('.nai-ai-avatar').forEach((node) => { node.innerHTML = markup; });
+    return botAvatarMarkup;
   }
 
   function normalizeBotName(value) {
@@ -1227,9 +1212,8 @@
 
   function validateSetup() {
     const hasName = Boolean(setupName.value.trim());
-    const hasAvatar = Boolean(setupAvatars.querySelector('.is-selected'));
-    setupSave.disabled = !(hasName && hasAvatar);
-    setupError.textContent = setupSave.disabled ? 'Choose an icon and name your AI to continue.' : '';
+    setupSave.disabled = !hasName;
+    setupError.textContent = setupSave.disabled ? 'Enter a name for your AI to continue.' : '';
   }
 
   function showSetupPrompt() {
@@ -1425,45 +1409,21 @@
     }
   });
 
-  avatarMenu.innerHTML = botAvatars.map((style) => `
-    <button class="nai-avatar-choice" type="button" data-avatar="${style}" aria-label="Choose AI style">
-      ${botAvatarMarkupFor(style)}
-    </button>
-  `).join('');
-  botAvatarPicker.addEventListener('click', () => {
-    avatarMenu.hidden = !avatarMenu.hidden;
-  });
-  avatarMenu.querySelectorAll('.nai-avatar-choice').forEach((button) => {
-    button.addEventListener('click', () => {
-      localStorage.setItem(botAvatarStorageKey, button.dataset.avatar || '');
-      avatarMenu.hidden = true;
-      syncBotAvatar();
-    });
-  });
-
-  setupAvatars.innerHTML = botAvatars.map((style) => `
-    <button class="nai-avatar-choice${savedBotAvatar === style ? ' is-selected' : ''}" type="button" data-avatar="${style}" aria-label="Choose AI style">
-      ${botAvatarMarkupFor(style)}
-    </button>
-  `).join('');
   setupName.addEventListener('input', validateSetup);
-  setupAvatars.querySelectorAll('.nai-avatar-choice').forEach((button) => {
-    button.addEventListener('click', () => {
-      setupAvatars.querySelectorAll('.nai-avatar-choice').forEach((node) => node.classList.remove('is-selected'));
-      button.classList.add('is-selected');
-      localStorage.setItem(botAvatarStorageKey, button.dataset.avatar || '');
-      syncBotAvatar();
-      validateSetup();
-    });
-  });
-  setupSave.addEventListener('click', () => {
+  const completeAiSetup = () => {
     validateSetup();
     if (setupSave.disabled) return;
     syncBotName(setupName.value);
     localStorage.setItem(botSetupStorageKey, 'true');
     setupPanel.hidden = true;
     input.focus();
+  };
+  setupName.addEventListener('keydown', (event) => {
+    if (event.key !== 'Enter') return;
+    event.preventDefault();
+    completeAiSetup();
   });
+  setupSave.addEventListener('click', completeAiSetup);
   setupCard?.addEventListener('click', (event) => {
     event.stopPropagation();
   });
