@@ -175,8 +175,8 @@ export function Navbar({ pageKey, onReportProblem }) {
                 aria-label="Search courses"
               />
             </label>
-            <button className="enx-mobile-theme-toggle" type="button" onClick={toggleTheme} aria-label={`Switch to ${nextThemeLabel} theme`} title={`Switch to ${nextThemeLabel} theme`}>
-              <EnxIcon name={resolvedTheme === "light" ? "moon" : "sun"} />
+            <button className="enx-mobile-report-toggle" type="button" onClick={onReportProblem} aria-label="Report a problem" title="Report a problem">
+              <EnxIcon name="flag" />
             </button>
           </form>
           <ul className="enx-nav-links">
@@ -255,7 +255,6 @@ export function Navbar({ pageKey, onReportProblem }) {
           })}
         </div>
       </nav>
-      {current !== "ai-tutor.html" ? <button className="enx-mobile-report-button" type="button" onClick={onReportProblem} aria-label="Report a problem" title="Report a problem"><EnxIcon name="flag" /></button> : null}
     </>
   );
 }

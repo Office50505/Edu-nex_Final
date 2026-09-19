@@ -15,7 +15,9 @@ const FALLBACK_IMAGE = "data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2
 const AUTO_NEXT_KEY = "edunexAutoNextVideo";
 const APP_FULLSCREEN_CLASS = "is-app-fullscreen";
 const BODY_FULLSCREEN_CLASS = "has-edunex-player-fullscreen";
+const BODY_MOBILE_REEL_CLASS = "has-edunex-mobile-reel";
 const MAX_SWIPE_LESSON_JUMP = 8;
+const LECTURES_PER_SHEET_PAGE = 20;
 
 function nativeFullscreenElement() {
   return document.fullscreenElement || document.webkitFullscreenElement || null;
@@ -220,6 +222,39 @@ function isLikelyUrl(value) {
   return /^https?:\/\//i.test(String(value || "").trim()) || /^\/[^/]/.test(String(value || "").trim());
 }
 
+function lessonIdentifier(lesson, index = 0) {
+  return String(lesson?._id || lesson?.id || lesson?.videoId || lesson?.bunnyVideoId || lesson?.bunnyGuid || lesson?.youtubeId || index);
+}
+
+function firstIncompleteLessonIndex(course, learningStatus, cachedProgress = {}) {
+  const videos = course?.videos || [];
+  const progressRows = Array.isArray(learningStatus?.lessons) ? learningStatus.lessons : [];
+  if (progressRows.length) {
+    const completeIds = new Set(progressRows.filter((row) => row?.complete).map((row) => String(row.id || row.videoId || "")));
+    const nextIndex = videos.findIndex((video, index) => !completeIds.has(lessonIdentifier(video, index)));
+    return nextIndex >= 0 ? nextIndex : Math.max(videos.length - 1, 0);
+  }
+  const cachedIndex = Number(cachedProgress?.lessonIndex);
+  return Number.isFinite(cachedIndex) ? Math.max(0, Math.min(cachedIndex, Math.max(videos.length - 1, 0))) : 0;
+}
+
+function completedLessonIds(learningStatus, cachedProgress = {}) {
+  const rows = Array.isArray(learningStatus?.lessons) ? learningStatus.lessons : [];
+  if (rows.length) return new Set(rows.filter((row) => row?.complete).map((row) => String(row.id || row.videoId || "")));
+  return new Set(Array.isArray(cachedProgress?.completedVideoIds) ? cachedProgress.completedVideoIds.map(String) : []);
+}
+
+function ReelIcon({ name }) {
+  const paths = {
+    back: <path d="M19 12H5m6-6-6 6 6 6" />,
+    notes: <><path d="M6 3h8l4 4v14H6V3Z" /><path d="M14 3v5h5M9 12h6M9 16h6" /></>,
+    report: <><path d="M6 3v18" /><path d="M6 4h11l-2 4 2 4H6" /></>,
+    ai: <><path d="m12 3 1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5L12 3Z" /><path d="m19 15 .7 2.3L22 18l-2.3.7L19 21l-.7-2.3L16 18l2.3-.7L19 15Z" /></>,
+    lectures: <><path d="m12 3 9 5-9 5-9-5 9-5Z" /><path d="m3 12 9 5 9-5M3 16l9 5 9-5" /></>,
+  };
+  return <svg className="reel-control-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">{paths[name]}</svg>;
+}
+
 function nextPlaybackRate(rate) {
   const rates = [1, 1.5, 2, 0.5];
   const current = Number(rate) || 1;
@@ -237,7 +272,7 @@ function lessonJumpFromHorizontalSwipe(distance, elapsed, frameWidth) {
   return Math.min(MAX_SWIPE_LESSON_JUMP, distanceStep + velocityBonus);
 }
 
-function VideoControls({ playing, volume, muted, rate, currentTime, duration, onToggle, onSeek, onVolume, onRate, onFullscreen, onAi, onScreenTap, onScreenSwipe }) {
+function VideoControls({ playing, volume, muted, rate, currentTime, duration, onToggle, onSeek, onVolume, onRate, onFullscreen, onAi, onScreenTap, onScreenSwipe, mobileViewMode, onToggleMobileView }) {
   const [volumeOpen, setVolumeOpen] = useState(false);
   const volumeControlRef = useRef(null);
   const tapZoneSwipeRef = useRef({ active: false, pointerId: null, input: "", startX: 0, startY: 0, lastX: 0, lastY: 0, startedAt: 0, horizontal: false, suppressClickUntil: 0 });
@@ -395,14 +430,14 @@ function VideoControls({ playing, volume, muted, rate, currentTime, duration, on
           <div className="video-speed" aria-label="Playback speed">
             <button className="video-speed-btn" type="button" data-rate={rate} aria-label="Playback speed" onClick={onRate}>{rate}x</button>
           </div>
-          <button className="video-control-btn video-fullscreen-control" type="button" data-action="fullscreen" aria-label="Enter fullscreen" onClick={onFullscreen}><i className="fas fa-expand" aria-hidden="true"></i></button>
+          {onToggleMobileView ? <button className="video-control-btn video-fullscreen-control" type="button" data-action="view-mode" aria-label={mobileViewMode === "immersive" ? "Minimize player" : "Open fullscreen player"} onClick={onToggleMobileView}><i className={`fas ${mobileViewMode === "immersive" ? "fa-compress" : "fa-expand"}`} aria-hidden="true"></i></button> : <button className="video-control-btn video-fullscreen-control" type="button" data-action="fullscreen" aria-label="Enter fullscreen" onClick={onFullscreen}><i className="fas fa-expand" aria-hidden="true"></i></button>}
         </div>
       </div>
     </>
   );
 }
 
-function Player({ course, lesson: savedLesson, lessonIndex, autoNext, onEnded, onNavigateLesson, forceEmbed = false }) {
+function Player({ course, lesson: savedLesson, lessonIndex, autoNext, autoplay = false, onEnded, onNavigateLesson, forceEmbed = false, mobileViewMode = null, onToggleMobileView }) {
   const playback = usePlaybackAccess(course._id, savedLesson);
   const lesson = playback.lesson;
   const videoRef = useRef(null);
@@ -445,6 +480,33 @@ function Player({ course, lesson: savedLesson, lessonIndex, autoNext, onEnded, o
     try { frame.contentWindow.postMessage(payload, "*"); } catch (_) {}
     try { frame.contentWindow.postMessage(JSON.stringify(payload), "*"); } catch (_) {}
   }, []);
+
+  useEffect(() => {
+    if (!autoplay) return undefined;
+    const start = () => {
+      const video = videoRef.current;
+      if (video) {
+        video.play().catch(() => {
+          video.muted = true;
+          setMuted(true);
+          localStorage.setItem("edunexVideoMuted", "true");
+          video.play().catch(() => {});
+        });
+        return;
+      }
+      try { embeddedPlayerRef.current?.play?.(); } catch (_) {}
+      postToEmbed({ event: "command", func: "playVideo", args: [] });
+      postToEmbed({ event: "command", func: "play", args: [] });
+      postToEmbed({ method: "play" });
+    };
+    const timer = window.setTimeout(start, 120);
+    const video = videoRef.current;
+    video?.addEventListener("canplay", start, { once: true });
+    return () => {
+      window.clearTimeout(timer);
+      video?.removeEventListener("canplay", start);
+    };
+  }, [autoplay, directUrl, postToEmbed]);
 
   const persistVolume = useCallback((nextVolume, nextMuted) => {
     const safeVolume = Math.max(0, Math.min(1, Number(nextVolume)));
@@ -785,6 +847,8 @@ function Player({ course, lesson: savedLesson, lessonIndex, autoNext, onEnded, o
       onAi={openVideoAi}
       onScreenTap={handleScreenTap}
       onScreenSwipe={onNavigateLesson}
+      mobileViewMode={mobileViewMode}
+      onToggleMobileView={onToggleMobileView}
     />
   );
 
@@ -839,12 +903,78 @@ function NotesModal({ course, onClose }) {
   );
 }
 
+function LectureSheet({ course, activeIndex, completedIds, onClose, onSelect }) {
+  const lessons = course?.videos || [];
+  const [rangeIndex, setRangeIndex] = useState(Math.floor(activeIndex / LECTURES_PER_SHEET_PAGE));
+  const ranges = Array.from({ length: Math.max(1, Math.ceil(lessons.length / LECTURES_PER_SHEET_PAGE)) }, (_, index) => ({
+    start: index * LECTURES_PER_SHEET_PAGE,
+    end: Math.min((index + 1) * LECTURES_PER_SHEET_PAGE, lessons.length),
+  }));
+  const activeRange = ranges[Math.min(rangeIndex, ranges.length - 1)] || { start: 0, end: lessons.length };
+
+  useEffect(() => {
+    const closeOnEscape = (event) => {
+      if (event.key === "Escape") onClose();
+    };
+    document.addEventListener("keydown", closeOnEscape);
+    return () => document.removeEventListener("keydown", closeOnEscape);
+  }, [onClose]);
+
+  return (
+    <div className="reel-lecture-backdrop" onClick={(event) => {
+      if (event.target === event.currentTarget) onClose();
+    }}>
+      <section className="reel-lecture-sheet" role="dialog" aria-modal="true" aria-labelledby="reelLecturesTitle">
+        <div className="reel-sheet-grabber" aria-hidden="true"></div>
+        <header className="reel-sheet-header">
+          <div>
+            <h2 id="reelLecturesTitle">Lectures</h2>
+            <p>{course?.title || "Course playlist"}</p>
+          </div>
+          <button type="button" onClick={onClose} aria-label="Close lectures"><span aria-hidden="true">×</span></button>
+        </header>
+        {ranges.length > 1 ? (
+          <div className="reel-sheet-ranges" role="tablist" aria-label="Lecture ranges">
+            {ranges.map((range, index) => (
+              <button type="button" role="tab" aria-selected={rangeIndex === index} className={rangeIndex === index ? "is-active" : ""} onClick={() => setRangeIndex(index)} key={`${range.start}-${range.end}`}>
+                {range.start + 1}–{range.end}
+              </button>
+            ))}
+          </div>
+        ) : null}
+        <div className="reel-lecture-grid">
+          {lessons.slice(activeRange.start, activeRange.end).map((item, offset) => {
+            const index = activeRange.start + offset;
+            const isActive = index === activeIndex;
+            const isComplete = completedIds.has(lessonIdentifier(item, index));
+            return (
+              <button
+                type="button"
+                className={`${isActive ? "is-active" : ""}${isComplete ? " is-complete" : ""}`}
+                disabled={!available(item)}
+                aria-current={isActive ? "true" : undefined}
+                aria-label={`Lecture ${index + 1}: ${item.title || "Untitled lecture"}${isComplete ? ", completed" : ""}`}
+                onClick={() => onSelect(index)}
+                key={lessonIdentifier(item, index)}
+              >
+                <span>{index + 1}</span>
+                {isActive ? <span className="reel-lecture-state" aria-hidden="true">•••</span> : isComplete ? <span className="reel-lecture-state" aria-hidden="true">✓</span> : null}
+              </button>
+            );
+          })}
+        </div>
+      </section>
+    </div>
+  );
+}
+
 export function VideosPage() {
   const playerFrameRef = useRef(null);
   const lessonSwipeRef = useRef({ active: false, pointerId: null, startX: 0, startY: 0, lastX: 0, lastY: 0, startedAt: 0, horizontal: false, vertical: false, suppressClickUntil: 0 });
   const query = queryParams();
   const selectedCourseId = query.get("courseId") || query.get("course") || query.get("id");
-  const selectedVideoParam = query.get("video") || query.get("videoId") || query.get("lesson") || "0";
+  const selectedVideoParam = query.get("video") ?? query.get("videoId") ?? query.get("lesson");
+  const hasExplicitVideo = selectedVideoParam !== null && selectedVideoParam !== "";
   const selectedVideoIndex = Number(selectedVideoParam);
   const [courses, setCourses] = useState([]);
   const [filter, setFilter] = useState("all");
@@ -852,12 +982,16 @@ export function VideosPage() {
   const [course, setCourse] = useState(null);
   const [fallbackLesson,setFallbackLesson] = useState(null);
   const [autoplayLesson,setAutoplayLesson] = useState(false);
-  const [playlistOpen,setPlaylistOpen] = useState(true);
-  const [activeIndex, setActiveIndex] = useState(Number.isFinite(selectedVideoIndex) ? selectedVideoIndex : 0);
+  const [playlistOpen,setPlaylistOpen] = useState(false);
+  const [activeIndex, setActiveIndex] = useState(hasExplicitVideo && Number.isFinite(selectedVideoIndex) ? selectedVideoIndex : 0);
   const [status, setStatus] = useState("Preparing course...");
   const [error, setError] = useState("");
   const [loadAttempt, setLoadAttempt] = useState(0);
   const [notesOpen, setNotesOpen] = useState(false);
+  const [lectureSheetOpen, setLectureSheetOpen] = useState(false);
+  const [learningStatus, setLearningStatus] = useState(null);
+  const [mobilePlayerViewport, setMobilePlayerViewport] = useState(() => Boolean(window.matchMedia?.("(max-width: 820px), (max-width: 1180px) and (pointer: coarse)")?.matches));
+  const [mobilePlayerMinimized, setMobilePlayerMinimized] = useState(false);
   const [autoNext, setAutoNext] = useState(() => localStorage.getItem(AUTO_NEXT_KEY) === "true");
 
   usePageStyle("react-page-style-videos", videosPage.styles);
@@ -874,12 +1008,31 @@ export function VideosPage() {
     return () => cleanup?.();
   }, [sharedRuntimePage]);
 
+  useEffect(() => {
+    const media = window.matchMedia?.("(max-width: 820px), (max-width: 1180px) and (pointer: coarse)");
+    const syncMobileReel = () => {
+      const isMobile = Boolean(media?.matches);
+      setMobilePlayerViewport(isMobile);
+      if (!isMobile) setMobilePlayerMinimized(false);
+      document.body.classList.toggle(BODY_MOBILE_REEL_CLASS, Boolean(selectedCourseId && isMobile && !mobilePlayerMinimized));
+    };
+    syncMobileReel();
+    if (media?.addEventListener) media.addEventListener("change", syncMobileReel);
+    else media?.addListener?.(syncMobileReel);
+    return () => {
+      if (media?.removeEventListener) media.removeEventListener("change", syncMobileReel);
+      else media?.removeListener?.(syncMobileReel);
+      document.body.classList.remove(BODY_MOBILE_REEL_CLASS);
+    };
+  }, [selectedCourseId, mobilePlayerMinimized]);
+
 
   useEffect(() => {
     const controller = new AbortController();
     let cancelled = false;
     setError("");
     setCourse(null);
+    setLearningStatus(null);
     setStatus("Preparing course...");
     (async () => {
       if (!selectedCourseId) {
@@ -893,9 +1046,16 @@ export function VideosPage() {
         }
         // Start downloading the player runtime while the authorized playlist loads.
         loadHlsJs().catch(() => {});
-        const { response, data } = await courseRequest(`/api/courses/${encodeURIComponent(selectedCourseId)}/lessons?playback=${encodeURIComponent(selectedVideoParam)}`, {
-          headers: { Authorization: `Bearer ${getToken()}` }, signal: controller.signal,
-        });
+        const playbackTarget = hasExplicitVideo ? selectedVideoParam : "0";
+        const learningRequest = window.EduNex?.authRequest
+          ? window.EduNex.authRequest(`/api/learning/${encodeURIComponent(selectedCourseId)}`).catch(() => null)
+          : Promise.resolve(null);
+        const [{ response, data }, nextLearningStatus] = await Promise.all([
+          courseRequest(`/api/courses/${encodeURIComponent(selectedCourseId)}/lessons?playback=${encodeURIComponent(playbackTarget)}`, {
+            headers: { Authorization: `Bearer ${getToken()}` }, signal: controller.signal,
+          }),
+          learningRequest,
+        ]);
         if (response.status === 401) {
           clearAuthStorage();
           window.location.href = `/login.html?next=${encodeURIComponent(window.location.pathname + window.location.search)}`;
@@ -909,16 +1069,26 @@ export function VideosPage() {
           ? "This course could not be found." : "Could not load the course playlist. Please retry.");
         const nextCourse = normalizeCourse(data);
         if (cancelled) return;
+        let cachedProgress = {};
+        try {
+          cachedProgress = JSON.parse(localStorage.getItem(progressCacheKey(nextCourse._id)) || "{}");
+        } catch (_) {
+          cachedProgress = {};
+        }
         const requestedIndex = Number(selectedVideoParam);
-        const requestedById = Number.isFinite(requestedIndex) ? -1 : nextCourse.videos.findIndex((video) => {
+        const requestedById = hasExplicitVideo && !Number.isFinite(requestedIndex) ? nextCourse.videos.findIndex((video) => {
           const ids = [video?._id, video?.id, video?.videoId, video?.bunnyVideoId, video?.youtubeId].map((value) => String(value || ""));
           return ids.includes(String(selectedVideoParam));
-        });
-        const rawIndex = requestedById >= 0 ? requestedById : (Number.isFinite(requestedIndex) ? requestedIndex : activeIndex);
+        }) : -1;
+        const rawIndex = hasExplicitVideo
+          ? (requestedById >= 0 ? requestedById : (Number.isFinite(requestedIndex) ? requestedIndex : 0))
+          : firstIncompleteLessonIndex(nextCourse, nextLearningStatus, cachedProgress);
         const nextIndex = Math.max(0, Math.min(rawIndex, Math.max(nextCourse.videos.length - 1, 0)));
         setCourse(nextCourse);
         setCourses([nextCourse]);
+        setLearningStatus(nextLearningStatus);
         setActiveIndex(nextIndex);
+        setAutoplayLesson(true);
         setStatus(nextCourse.videos.length ? "Course ready" : "No lessons yet");
       } catch (failure) {
         if (!cancelled) {
@@ -942,19 +1112,37 @@ export function VideosPage() {
     } catch (_) {
       saved = {};
     }
+    const resumeIndex = learningStatus
+      ? firstIncompleteLessonIndex(course, learningStatus, saved)
+      : (Number.isFinite(Number(saved.lessonIndex)) ? Number(saved.lessonIndex) : activeIndex);
+    const completedIds = learningStatus
+      ? Array.from(completedLessonIds(learningStatus, saved))
+      : (Array.isArray(saved.completedVideoIds) ? saved.completedVideoIds : []);
     localStorage.setItem(key, JSON.stringify({
       ...saved,
       viewed: true,
       lastViewedAt: new Date().toISOString(),
-      lessonIndex: activeIndex,
-      completed: saved.completed || 0,
-      percent: saved.percent || 0,
+      lessonIndex: resumeIndex,
+      lastOpenedLessonIndex: activeIndex,
+      lastWatchedVideoId: lessonIdentifier(course.videos?.[activeIndex], activeIndex),
+      completedVideoIds: completedIds,
+      completed: learningStatus?.completedLessons ?? saved.completed ?? 0,
+      percent: learningStatus?.progressPercent ?? saved.percent ?? 0,
     }));
     const urlState = new URL(window.location.href);
     urlState.searchParams.set("courseId", course._id);
     urlState.searchParams.set("video", activeIndex);
     history.replaceState(null, "", urlState.pathname + urlState.search);
-  }, [activeIndex, course]);
+  }, [activeIndex, course, learningStatus]);
+
+  useEffect(() => {
+    if (!course) return undefined;
+    const updateLearningStatus = (event) => {
+      if (String(event.detail?.courseId || "") === String(course._id)) setLearningStatus(event.detail);
+    };
+    window.addEventListener("learning-progress", updateLearningStatus);
+    return () => window.removeEventListener("learning-progress", updateLearningStatus);
+  }, [course]);
 
   useEffect(() => {
     const handleKey = (event) => {
@@ -979,6 +1167,24 @@ export function VideosPage() {
     return () => document.removeEventListener("keydown", handleKey);
   }, []);
 
+  useEffect(() => {
+    if (!playlistOpen) return undefined;
+    const closePlaylistDrawer = (event) => {
+      if (event.key === "Escape") setPlaylistOpen(false);
+    };
+    const scrollFrame = window.requestAnimationFrame(() => {
+      document.querySelector("#course-playlist .lesson-item.is-active")?.scrollIntoView?.({
+        behavior: "smooth",
+        block: "center",
+      });
+    });
+    document.addEventListener("keydown", closePlaylistDrawer);
+    return () => {
+      window.cancelAnimationFrame(scrollFrame);
+      document.removeEventListener("keydown", closePlaylistDrawer);
+    };
+  }, [playlistOpen, activeIndex]);
+
   const shownCourses = courses.filter((item) => {
     const progress = courseProgress(item);
     if (filter === "active" && !(progress.percent > 0 && progress.percent < 100)) return false;
@@ -997,6 +1203,13 @@ export function VideosPage() {
 
   const lessons = course?.videos || [];
   const lesson = lessons[activeIndex] || lessons[0] || {};
+  let cachedProgress = {};
+  try {
+    cachedProgress = course ? JSON.parse(localStorage.getItem(progressCacheKey(course._id)) || "{}") : {};
+  } catch (_) {
+    cachedProgress = {};
+  }
+  const completedIds = completedLessonIds(learningStatus, cachedProgress);
   const lessonExamplePrompt = String(
     lesson.examplePrompt || lesson.examplePromptText || lesson.examplePromptUrl || lesson.promptUrl || "",
   ).trim();
@@ -1019,9 +1232,10 @@ export function VideosPage() {
       swipe.vertical = false;
       swipe.pointerId = null;
     };
-    const ignoreSwipeTarget = (target) => Boolean(target?.closest?.(".sm-player, .custom-video-controls, .video-screen-btn, input, select, textarea, [contenteditable='true']"));
+    const ignoreSwipeTarget = (target) => Boolean(target?.closest?.(".sm-controls, .sm-settings, .sm-big-play, .custom-video-controls, .video-ai-screen-btn, .reel-chrome button, .reel-chrome a, input, select, textarea, [contenteditable='true']"));
     const canChangeLesson = (delta) => delta > 0 ? activeIndex < lessons.length - 1 : delta < 0 && activeIndex > 0;
     const canTrackPlayerSwipe = () => isPlayerFullscreen(frame) || window.matchMedia?.("(max-width: 820px), (pointer: coarse)")?.matches;
+    const isMobileReel = () => document.body.classList.contains(BODY_MOBILE_REEL_CLASS);
     const beginSwipe = (clientX, clientY, pointerId = null) => {
       swipe.active = true;
       swipe.horizontal = false;
@@ -1040,20 +1254,21 @@ export function VideosPage() {
       const deltaX = swipe.lastX - swipe.startX;
       const deltaY = swipe.lastY - swipe.startY;
       const fullscreen = isPlayerFullscreen(frame);
+      const verticalNavigation = fullscreen || isMobileReel();
       const absX = Math.abs(deltaX);
       const absY = Math.abs(deltaY);
-      if (!fullscreen && !swipe.horizontal && absY > 10 && absY > absX * 1.08) {
+      if (!verticalNavigation && !swipe.horizontal && absY > 10 && absY > absX * 1.08) {
         resetSwipe();
         return;
       }
       if (!swipe.horizontal && absX > 10 && absX > absY * 1.1) {
         swipe.horizontal = true;
       }
-      if (!swipe.vertical && fullscreen && absY > 10 && absY > absX * 1.1) {
+      if (!swipe.vertical && verticalNavigation && absY > 10 && absY > absX * 1.1) {
         swipe.vertical = true;
       }
       if (swipe.horizontal && canChangeLesson(deltaX < 0 ? 1 : -1)) event.preventDefault();
-      if (fullscreen && swipe.vertical && canChangeLesson(deltaY < 0 ? 1 : -1)) event.preventDefault();
+      if (verticalNavigation && swipe.vertical && canChangeLesson(deltaY < 0 ? 1 : -1)) event.preventDefault();
     };
     const finishSwipe = (clientX, clientY, event) => {
       if (!swipe.active) return;
@@ -1074,7 +1289,7 @@ export function VideosPage() {
         event.preventDefault();
         swipe.suppressClickUntil = Date.now() + 500;
         changeLessonByNavigation(horizontalDelta);
-      } else if (isPlayerFullscreen(frame) && verticalSwipe && intentionalVerticalSwipe && canChangeLesson(verticalDirection)) {
+      } else if ((isPlayerFullscreen(frame) || isMobileReel()) && verticalSwipe && intentionalVerticalSwipe && canChangeLesson(verticalDirection)) {
         event.preventDefault();
         swipe.suppressClickUntil = Date.now() + 500;
         changeLessonByNavigation(verticalDirection);
@@ -1120,7 +1335,7 @@ export function VideosPage() {
     };
 
     const onWheel = (event) => {
-      if (!isPlayerFullscreen(frame) || ignoreSwipeTarget(event.target) || Math.abs(event.deltaY) <= Math.abs(event.deltaX)) return;
+      if ((!isPlayerFullscreen(frame) && !isMobileReel()) || ignoreSwipeTarget(event.target) || Math.abs(event.deltaY) <= Math.abs(event.deltaX)) return;
       const direction = event.deltaY > 0 ? 1 : -1;
       if (!canChangeLesson(direction)) return;
       event.preventDefault();
@@ -1191,6 +1406,7 @@ export function VideosPage() {
 
   useEffect(() => () => {
     setAppFullscreen(playerFrameRef.current, false);
+    document.body.classList.remove(BODY_MOBILE_REEL_CLASS);
   }, []);
 
   const openNotes = () => {
@@ -1200,6 +1416,32 @@ export function VideosPage() {
       return;
     }
     setNotesOpen(true);
+  };
+
+  const selectLecture = (index) => {
+    const item = lessons[index];
+    if (!item || !available(item)) return;
+    setAutoplayLesson(true);
+    setActiveIndex(index);
+    setLectureSheetOpen(false);
+  };
+
+  const openProblemReport = () => {
+    window.dispatchEvent(new CustomEvent("skillomate:open-problem-report", {
+      detail: { courseId: course?._id, videoId: lessonIdentifier(lesson, activeIndex) },
+    }));
+  };
+
+  const toggleMobilePlayerView = () => {
+    setMobilePlayerMinimized((minimized) => {
+      const next = !minimized;
+      if (next) {
+        window.requestAnimationFrame(() => {
+          playerFrameRef.current?.scrollIntoView?.({ behavior: "smooth", block: "start" });
+        });
+      }
+      return next;
+    });
   };
 
   const advanceNext = useCallback(() => {
@@ -1303,9 +1545,9 @@ export function VideosPage() {
           <span className="status-line" id="watchStatus">{status}</span>
           <div className="watch-actions">
             <button className="watch-tool-btn" type="button" id="openNotesBtn" onClick={openNotes}><i className="fas fa-file-lines" aria-hidden="true"></i> Notes</button>
+            <button className="watch-tool-btn playlist-drawer-trigger" type="button" aria-expanded={playlistOpen} aria-controls="course-playlist" onClick={() => setPlaylistOpen((open) => !open)}><i className="fas fa-list" aria-hidden="true"></i> Lectures</button>
           </div>
         </div>
-        <button type="button" className="toolbar-button" aria-expanded={playlistOpen} aria-controls="course-playlist" onClick={()=>setPlaylistOpen(v=>!v)}>{playlistOpen?"Hide playlist":"Show playlist"}</button>
         <section className={`watch-layout${playlistOpen?"":" sm-playlist-closed"}`}>
           <div className="player-wrap">
             <div
@@ -1313,7 +1555,7 @@ export function VideosPage() {
               id="playerFrame"
               ref={playerFrameRef}
               tabIndex={-1}
-              aria-label="Course video player. Swipe horizontally on mobile, or use arrow keys, to change lessons."
+              aria-label="Course video player. Swipe up or down on mobile to change lectures."
               onClickCapture={(event) => {
                 if (Date.now() >= lessonSwipeRef.current.suppressClickUntil) return;
                 event.preventDefault();
@@ -1323,19 +1565,44 @@ export function VideosPage() {
               {error ? (
                 <div className="player-placeholder"><div><strong>Could not open this course</strong><span>{error}</span><button type="button" className="toolbar-button" onClick={() => setLoadAttempt(attempt => attempt + 1)}>Retry loading course</button></div></div>
               ) : course ? (
-                !available(lesson) ? <div className="player-placeholder">This lesson is locked.</div> : usesCustomPlayer(lesson) && fallbackLesson !== `${course._id}-${lesson._id}` ? <CourseMediaPlayer onFallback={lesson.provider !== 'aws_cloudfront' && isBunnyEmbedUrl(embedUrl(lesson)) ? ()=>setFallbackLesson(`${course._id}-${lesson._id}`) : undefined} autoplay={autoplayLesson} course={course} lesson={lesson} lessonIndex={activeIndex} autoNext={autoNext} onEnded={advanceNext} onNavigateLesson={changeLessonByNavigation} key={`${course._id}-${lesson._id}`}/> : <Player
+                !available(lesson) ? <div className="player-placeholder">This lesson is locked.</div> : usesCustomPlayer(lesson) && fallbackLesson !== `${course._id}-${lesson._id}` ? <CourseMediaPlayer onFallback={lesson.provider !== 'aws_cloudfront' && isBunnyEmbedUrl(embedUrl(lesson)) ? ()=>setFallbackLesson(`${course._id}-${lesson._id}`) : undefined} autoplay={autoplayLesson} course={course} lesson={lesson} lessonIndex={activeIndex} autoNext={autoNext} onEnded={advanceNext} onNavigateLesson={changeLessonByNavigation} mobileViewMode={mobilePlayerViewport ? (mobilePlayerMinimized ? "landscape" : "immersive") : null} onToggleMobileView={mobilePlayerViewport ? toggleMobilePlayerView : undefined} key={`${course._id}-${lesson._id}`}/> : <Player
                   forceEmbed={fallbackLesson === `${course._id}-${lesson._id}`}
                   course={course}
                   lesson={lesson}
                   lessonIndex={activeIndex}
                   autoNext={autoNext}
+                  autoplay={autoplayLesson}
                   onEnded={advanceNext}
                   onNavigateLesson={changeLessonByNavigation}
+                  mobileViewMode={mobilePlayerViewport ? (mobilePlayerMinimized ? "landscape" : "immersive") : null}
+                  onToggleMobileView={mobilePlayerViewport ? toggleMobilePlayerView : undefined}
                   key={`${course._id}-${activeIndex}`}
                 />
               ) : (
                 <div className="player-placeholder"><div><strong>Preparing course</strong><span>Loading your Skillomate course playlist...</span></div></div>
               )}
+              {selectedCourseId ? (
+                <div className="reel-chrome" aria-label="Lecture controls">
+                  <div className="reel-topbar">
+                    <div className="reel-topbar-start">
+                      <a className="reel-icon-button" href="/courses.html" aria-label="Back to courses"><ReelIcon name="back" /></a>
+                      <strong>{course ? `Lecture ${activeIndex + 1}/${Math.max(lessons.length, 1)}` : status}</strong>
+                    </div>
+                    {course && !error ? <div className="reel-topbar-actions">
+                      <button className="reel-icon-button" type="button" onClick={openNotes} aria-label="Open course notes"><ReelIcon name="notes" /><span>Notes</span></button>
+                      <button className="reel-icon-button reel-report-button" type="button" onClick={openProblemReport} aria-label="Report a problem"><ReelIcon name="report" /><span>Report</span></button>
+                    </div> : null}
+                  </div>
+                  {course && !error ? <div className="reel-side-actions">
+                    <a className="reel-side-button" href={`/ai-tutor.html?courseId=${encodeURIComponent(course._id)}&video=${activeIndex}`} aria-label="Open AI chat for this lecture"><ReelIcon name="ai" /><span>AI chat</span></a>
+                    <button className="reel-side-button" type="button" onClick={() => setLectureSheetOpen(true)} aria-label="Open all lectures"><ReelIcon name="lectures" /><span>Lectures</span></button>
+                  </div> : null}
+                  {course && !error ? <div className="reel-lesson-copy">
+                    <strong>{lesson.title || `Lecture ${activeIndex + 1}`}</strong>
+                    <span>{lesson.description || course.title || "Skillomate course"}</span>
+                  </div> : null}
+                </div>
+              ) : null}
             </div>
             {course ? <CertificationProgress key={course._id} courseId={course._id} /> : null}
             <div className="lesson-info">
@@ -1354,23 +1621,27 @@ export function VideosPage() {
               </div>
             </div>
           </div>
-          <aside className="lesson-sidebar" aria-label="Course playlist" id="course-playlist" hidden={!playlistOpen}>
+          {playlistOpen ? <button className="playlist-drawer-backdrop" type="button" aria-label="Dismiss lecture drawer" onClick={() => setPlaylistOpen(false)}></button> : null}
+          <aside className="lesson-sidebar playlist-drawer" role="dialog" aria-modal="true" aria-label="Course lectures" id="course-playlist" hidden={!playlistOpen}>
             <div className="sidebar-head">
               <div className="sidebar-top-row">
                 <h2 id="sidebarCourseTitle">{course?.title || "Course playlist"}</h2>
-                <label className="auto-next-toggle" title="Automatically open the next lesson when the current video ends">
-                  <input
-                    type="checkbox"
-                    id="autoNextToggle"
-                    checked={autoNext}
-                    onChange={(event) => {
-                      setAutoNext(event.target.checked);
-                      localStorage.setItem(AUTO_NEXT_KEY, event.target.checked ? "true" : "false");
-                    }}
-                  />
-                  <span>Auto next</span>
-                  <span className="auto-next-switch" aria-hidden="true"></span>
-                </label>
+                <div className="playlist-drawer-controls">
+                  <label className="auto-next-toggle" title="Automatically open the next lesson when the current video ends">
+                    <input
+                      type="checkbox"
+                      id="autoNextToggle"
+                      checked={autoNext}
+                      onChange={(event) => {
+                        setAutoNext(event.target.checked);
+                        localStorage.setItem(AUTO_NEXT_KEY, event.target.checked ? "true" : "false");
+                      }}
+                    />
+                    <span>Auto next</span>
+                    <span className="auto-next-switch" aria-hidden="true"></span>
+                  </label>
+                  <button className="playlist-drawer-close" type="button" aria-label="Close course lectures" onClick={() => setPlaylistOpen(false)}><span aria-hidden="true">×</span></button>
+                </div>
               </div>
               <p id="sidebarCourseMeta">{course ? `${lessons.length} videos in this course` : "Videos will appear here."}</p>
             </div>
@@ -1378,7 +1649,7 @@ export function VideosPage() {
               {error ? <div className="empty-state">{error}</div> : null}
               {!error && course && !lessons.length ? <div className="empty-state">This course does not have videos attached yet.</div> : null}
               {!error && lessons.map((item, index) => (
-                <button className={`lesson-item${index === activeIndex ? " is-active" : ""}`} type="button" data-index={index} key={item._id || item.id || `${item.title}-${index}`} disabled={!available(item)} aria-current={index===activeIndex?"true":undefined} onClick={() => {if(available(item)){setAutoplayLesson(true);setActiveIndex(index);}}}>
+                <button className={`lesson-item${index === activeIndex ? " is-active" : ""}`} type="button" data-index={index} key={item._id || item.id || `${item.title}-${index}`} disabled={!available(item)} aria-current={index===activeIndex?"true":undefined} onClick={() => {if(available(item)){setAutoplayLesson(true);setActiveIndex(index);setPlaylistOpen(false);}}}>
                   <span className="lesson-thumb">
                     <img src={lessonImage(course, item)} alt={item.title || course.title || "Skillomate lesson"} onError={(event) => {
                       event.currentTarget.onerror = null;
@@ -1398,6 +1669,15 @@ export function VideosPage() {
       </main>
 
       {notesOpen ? <NotesModal course={course} onClose={() => setNotesOpen(false)} /> : null}
+      {lectureSheetOpen && course ? (
+        <LectureSheet
+          course={course}
+          activeIndex={activeIndex}
+          completedIds={completedIds}
+          onClose={() => setLectureSheetOpen(false)}
+          onSelect={selectLecture}
+        />
+      ) : null}
     </div>
   );
 }

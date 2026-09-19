@@ -9,7 +9,7 @@ import "./ProfilePage.css";
 const FALLBACK_AVATAR = "data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20width=%27160%27%20height=%27160%27%20viewBox=%270%200%20160%20160%27%3E%3Crect%20width=%27160%27%20height=%27160%27%20rx=%2780%27%20fill=%27%230d0d0d%27/%3E%3Crect%20x=%272%27%20y=%272%27%20width=%27156%27%20height=%27156%27%20rx=%2778%27%20fill=%27%23111318%27%20stroke=%27%23C58B2A%27%20stroke-width=%274%27%20stroke-opacity=%27.45%27/%3E%3Ctext%20x=%2780%27%20y=%2796%27%20text-anchor=%27middle%27%20fill=%27%23C58B2A%27%20font-family=%27Arial%27%20font-size=%2762%27%20font-weight=%27800%27%3EE%3C/text%3E%3C/svg%3E";
 
 function currentTheme() {
-  return localStorage.getItem("enx-theme") || "noir";
+  return localStorage.getItem("enx-theme") === "light" ? "light" : "noir";
 }
 
 function profileSubscriptionLabel(value) {
@@ -116,21 +116,16 @@ export function ProfilePage() {
   }, [sharedRuntimePage]);
 
   useEffect(() => {
+    localStorage.setItem("enx-theme", theme);
     window.EduNex?.applyTheme?.(theme);
   }, [theme]);
 
   useEffect(() => {
-    const handleSystemTheme = () => {
-      if (localStorage.getItem("enx-theme") === "system") window.EduNex?.applyTheme?.("system");
-    };
     const handleStorage = (event) => {
-      if (event.key === "enx-theme") setTheme(event.newValue || "noir");
+      if (event.key === "enx-theme") setTheme(event.newValue === "light" ? "light" : "noir");
     };
-    const media = window.matchMedia?.("(prefers-color-scheme: dark)");
-    media?.addEventListener?.("change", handleSystemTheme);
     window.addEventListener("storage", handleStorage);
     return () => {
-      media?.removeEventListener?.("change", handleSystemTheme);
       window.removeEventListener("storage", handleStorage);
     };
   }, []);
@@ -325,7 +320,7 @@ export function ProfilePage() {
           <div className="pf-card">
             <h2 className="pf-card-heading"><i className="fas fa-palette" aria-hidden="true"></i> Interface Theme</h2>
             <div className="pf-theme-grid" role="group" aria-label="Interface theme">
-              {["light", "noir", "system"].map((name) => (
+              {["light", "noir"].map((name) => (
                 <button
                   className={`pf-theme-opt${theme === name ? " selected" : ""}`}
                   data-theme={name}

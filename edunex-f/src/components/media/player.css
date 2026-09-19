@@ -75,8 +75,8 @@
   .sm-player .sm-row { flex-wrap:nowrap; }
   .sm-player .sm-time,
   .sm-player .sm-lesson-nav,
-  .sm-player .sm-pip,
   .sm-player .sm-captions { display:none; }
   .sm-player .sm-settings-button,
+  .sm-player .sm-view-mode-button,
   .sm-player .sm-fullscreen-button { flex:0 0 auto; }
 }

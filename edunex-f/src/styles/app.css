@@ -73,6 +73,12 @@ select {
   z-index: 1;
 }
 
+.react-page-root[data-page="dashboard.html"] .trial-gate {
+  z-index: 2147483000 !important;
+  overflow-y: auto !important;
+  overscroll-behavior: contain;
+}
+
 body:has(.react-page-root[data-page="ai-tutor.html"]) {
   overflow: auto !important;
 }
@@ -458,7 +464,7 @@ html:not([data-theme="light"]) .brand-logo-image-light {
 }
 
 .enx-nav-theme-toggle,
-.enx-mobile-theme-toggle {
+.enx-mobile-report-toggle {
   width: 36px !important;
   height: 36px !important;
   flex: 0 0 36px !important;
@@ -473,14 +479,20 @@ html:not([data-theme="light"]) .brand-logo-image-light {
   transition: color .2s, border-color .2s, background .2s !important;
 }
 
-.enx-nav-theme-toggle:hover,
-.enx-mobile-theme-toggle:hover {
+.enx-nav-theme-toggle:hover {
   border-color: rgba(197, 139, 42, .38) !important;
   background: rgba(197, 139, 42, .08) !important;
   color: var(--cyan, #C58B2A) !important;
 }
 
-.enx-mobile-theme-toggle {
+.enx-mobile-report-toggle:hover,
+.enx-mobile-report-toggle:focus-visible {
+  border-color: #EF4444 !important;
+  background: #DC2626 !important;
+  color: #FFFFFF !important;
+}
+
+.enx-mobile-report-toggle {
   display: none !important;
 }
 
@@ -779,11 +791,14 @@ html:not([data-theme="light"]) .brand-logo-image-light {
     max-width: 360px !important;
   }
 
-  .enx-mobile-theme-toggle {
+  .enx-mobile-report-toggle {
     display: inline-flex !important;
     width: 38px !important;
     height: 38px !important;
     flex-basis: 38px !important;
+    border-color: rgba(220, 38, 38, .52) !important;
+    background: rgba(220, 38, 38, .1) !important;
+    color: #FCA5A5 !important;
   }
 
   .enx-mobile-top-search-field {
@@ -3748,7 +3763,7 @@ html[data-theme="light"] .react-page-root .lp-prefix {
 @media (max-width: 760px) {
   .react-page-root[data-page="index.html"] .hero-course-card {
     flex-basis: min(82vw, 320px) !important;
-    height: 390px !important;
+    height: 460px !important;
   }
 
   .react-page-root[data-page="index.html"] .hero-card-body {
@@ -4015,6 +4030,63 @@ body.has-edunex-player-fullscreen #nai-float-btn {
 
 .react-page-root[data-page="videos.html"] .lesson-sidebar {
   border-radius: 16px !important;
+}
+
+.react-page-root[data-page="videos.html"] .playlist-drawer-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 2147480900;
+  padding: 0;
+  border: 0;
+  background: rgba(0, 0, 0, .54);
+  cursor: default;
+}
+
+.react-page-root[data-page="videos.html"] .playlist-drawer {
+  position: fixed;
+  top: 88px;
+  right: 16px;
+  bottom: 16px;
+  z-index: 2147481000;
+  width: min(390px, calc(100vw - 32px));
+  max-height: none;
+  box-shadow: -18px 18px 55px rgba(0, 0, 0, .38);
+}
+
+.react-page-root[data-page="videos.html"] .playlist-drawer .lesson-list {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scroll-behavior: smooth;
+  scrollbar-gutter: stable;
+  -webkit-overflow-scrolling: touch;
+}
+
+.react-page-root[data-page="videos.html"] .playlist-drawer-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.react-page-root[data-page="videos.html"] .playlist-drawer-close {
+  display: grid;
+  flex: 0 0 34px;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, .12);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, .06);
+  color: inherit;
+  font: 400 23px/1 Arial, sans-serif;
+  cursor: pointer;
+}
+
+html[data-theme="light"] .react-page-root[data-page="videos.html"] .playlist-drawer-close {
+  border-color: #E2E8F0;
+  background: #FFFFFF;
 }
 
 .react-page-root[data-page="videos.html"] .lesson-item {
@@ -4589,10 +4661,458 @@ html[data-theme="light"] .enx-footer .enx-footer-support a {
   background: #FFFFFF !important;
 }
 
+/* Mobile course player: an immersive, vertical lecture flow with the existing brand palette. */
+.react-page-root[data-page="videos.html"] .reel-chrome {
+  display: none;
+}
+
+.reel-lecture-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 2147483200;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 0;
+  background: rgba(0, 0, 0, .62);
+  backdrop-filter: blur(8px);
+}
+
+.reel-lecture-sheet {
+  width: min(100%, 540px);
+  max-height: min(78dvh, 720px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 10px 18px calc(22px + env(safe-area-inset-bottom));
+  border: 1px solid rgba(197, 139, 42, .28);
+  border-bottom: 0;
+  border-radius: 24px 24px 0 0;
+  background: #11151b;
+  color: #fff;
+  box-shadow: 0 -22px 70px rgba(0, 0, 0, .5);
+}
+
+.reel-sheet-grabber {
+  width: 42px;
+  height: 4px;
+  margin: 0 auto 16px;
+  border-radius: 99px;
+  background: rgba(255, 255, 255, .42);
+}
+
+.reel-sheet-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.reel-sheet-header h2,
+.reel-sheet-header p {
+  margin: 0;
+  color: #fff !important;
+}
+
+.reel-sheet-header h2 {
+  font: 700 22px/1.2 Arial, sans-serif;
+}
+
+.reel-sheet-header p {
+  max-width: 280px;
+  margin-top: 5px;
+  overflow: hidden;
+  color: rgba(255, 255, 255, .62) !important;
+  font: 400 12px/1.4 Arial, sans-serif;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.reel-sheet-header > button {
+  display: grid;
+  flex: 0 0 auto;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, .14);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, .08);
+  color: #fff;
+  font: 300 28px/1 Arial, sans-serif;
+  cursor: pointer;
+}
+
+.reel-sheet-ranges {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.reel-sheet-ranges button {
+  min-height: 40px;
+  padding: 8px 14px;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  background: transparent;
+  color: rgba(255, 255, 255, .62);
+  font: 700 13px/1 Arial, sans-serif;
+  cursor: pointer;
+}
+
+.reel-sheet-ranges button.is-active {
+  border-bottom-color: #C58B2A;
+  color: #fff;
+}
+
+.reel-lecture-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.reel-lecture-grid > button {
+  position: relative;
+  display: grid;
+  min-width: 0;
+  aspect-ratio: 1;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, .09);
+  border-radius: 10px;
+  background: #343b49;
+  color: #fff;
+  font: 700 13px/1 Arial, sans-serif;
+  cursor: pointer;
+}
+
+.reel-lecture-grid > button.is-complete::after,
+.reel-lecture-grid > button.is-active::after {
+  position: absolute;
+  right: 7px;
+  bottom: 5px;
+  left: 7px;
+  height: 3px;
+  border-radius: 9px;
+  background: #C58B2A;
+  content: "";
+}
+
+.reel-lecture-grid > button.is-active {
+  border-color: #C58B2A;
+  background: #59606e;
+}
+
+.reel-lecture-grid > button .reel-lecture-state {
+  position: absolute;
+  top: 7px;
+  right: 7px;
+  color: #C58B2A;
+  font-size: 10px;
+  letter-spacing: -1px;
+}
+
+.reel-lecture-grid > button:disabled {
+  cursor: not-allowed;
+  opacity: .38;
+}
+
+@media (max-width: 820px), (max-width: 1180px) and (pointer: coarse) {
+  html:has(body.has-edunex-mobile-reel),
+  body.has-edunex-mobile-reel {
+    width: 100%;
+    height: 100%;
+    overflow: hidden !important;
+    overscroll-behavior: none !important;
+    background: #000 !important;
+  }
+
+  body.has-edunex-mobile-reel :where(.enx-navbar, .enx-mobile-footer, .navbar, .premium-site-nav, .react-navbar, .mobile-drawer, .site-footer, .enx-footer),
+  body.has-edunex-mobile-reel #nex-ai-widget-root,
+  body.has-edunex-mobile-reel #nai-float-btn {
+    display: none !important;
+  }
+
+  body.has-edunex-mobile-reel .react-page-root[data-page="videos.html"] {
+    position: fixed !important;
+    inset: 0 !important;
+    z-index: 2147482000 !important;
+    width: 100vw !important;
+    height: 100dvh !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    background: #000 !important;
+  }
+
+  body.has-edunex-mobile-reel .react-page-root[data-page="videos.html"] .watch-page,
+  body.has-edunex-mobile-reel .react-page-root[data-page="videos.html"] .watch-layout,
+  body.has-edunex-mobile-reel .react-page-root[data-page="videos.html"] .player-wrap,
+  body.has-edunex-mobile-reel .react-page-root[data-page="videos.html"] .player-frame {
+    width: 100% !important;
+    max-width: none !important;
+    height: 100% !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: #000 !important;
+    box-shadow: none !important;
+  }
+
+  body.has-edunex-mobile-reel .react-page-root[data-page="videos.html"] .watch-page {
+    position: absolute !important;
+    inset: 0 !important;
+    display: block !important;
+    overflow: hidden !important;
+  }
+
+  body.has-edunex-mobile-reel .react-page-root[data-page="videos.html"] :where(.watch-top, .watch-page > .toolbar-button, .lesson-sidebar, .lesson-info, .course-progress) {
+    display: none !important;
+  }
+
+  body.has-edunex-mobile-reel .react-page-root[data-page="videos.html"] .playlist-drawer-backdrop {
+    display: none !important;
+  }
+
+  body.has-edunex-mobile-reel .react-page-root[data-page="videos.html"] .watch-layout {
+    display: block !important;
+  }
+
+  body.has-edunex-mobile-reel .react-page-root[data-page="videos.html"] .player-frame {
+    position: relative !important;
+    inset: auto !important;
+    aspect-ratio: auto !important;
+    touch-action: none !important;
+    overscroll-behavior: none !important;
+    isolation: isolate;
+  }
+
+  body.has-edunex-mobile-reel .react-page-root[data-page="videos.html"] :where(.sm-player, .custom-video-player, .player-placeholder) {
+    width: 100% !important;
+    height: 100% !important;
+    min-height: 0 !important;
+    aspect-ratio: auto !important;
+    border-radius: 0 !important;
+    background: #000 !important;
+  }
+
+  body.has-edunex-mobile-reel .react-page-root[data-page="videos.html"] :where(.sm-player > video, .custom-video-player > video, .custom-video-player > iframe, .player-frame > iframe) {
+    position: absolute !important;
+    inset: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    max-width: none !important;
+    max-height: none !important;
+    border: 0 !important;
+    object-fit: contain !important;
+    background: #000 !important;
+  }
+
+  body.has-edunex-mobile-reel .react-page-root[data-page="videos.html"] .sm-player-heading,
+  body.has-edunex-mobile-reel .react-page-root[data-page="videos.html"] .video-ai-screen-btn {
+    display: none !important;
+  }
+
+  body.has-edunex-mobile-reel .react-page-root[data-page="videos.html"] .sm-player > video,
+  body.has-edunex-mobile-reel .react-page-root[data-page="videos.html"] .custom-video-player > :where(video, iframe),
+  body.has-edunex-mobile-reel .react-page-root[data-page="videos.html"] .tap-zone {
+    touch-action: none !important;
+  }
+
+  body.has-edunex-mobile-reel .react-page-root[data-page="videos.html"] .reel-chrome {
+    position: absolute;
+    inset: 0;
+    z-index: 20;
+    display: block;
+    overflow: hidden;
+    color: #fff;
+    font-family: Arial, sans-serif;
+    pointer-events: none;
+  }
+
+  .reel-topbar {
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    min-height: 78px;
+    padding: max(12px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right)) 20px max(12px, env(safe-area-inset-left));
+    background: linear-gradient(180deg, rgba(0, 0, 0, .78), transparent);
+  }
+
+  .reel-topbar-start,
+  .reel-topbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+  }
+
+  .reel-topbar-start strong {
+    overflow: hidden;
+    color: #fff;
+    font-size: 14px;
+    line-height: 1.2;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, .7);
+  }
+
+  .reel-icon-button,
+  .reel-side-button {
+    display: grid;
+    place-items: center;
+    border: 0;
+    background: transparent;
+    color: #fff;
+    text-decoration: none;
+    cursor: pointer;
+    pointer-events: auto;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, .85);
+  }
+
+  .reel-icon-button {
+    min-width: 42px;
+    min-height: 42px;
+    padding: 4px;
+    border-radius: 50%;
+    font-size: 18px;
+  }
+
+  .reel-icon-button span {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+  }
+
+  .reel-icon-button:disabled {
+    opacity: .55;
+  }
+
+  .reel-control-icon {
+    display: block;
+    width: 23px;
+    height: 23px;
+    flex: 0 0 auto;
+    overflow: visible;
+  }
+
+  .reel-side-actions {
+    position: absolute;
+    right: max(12px, env(safe-area-inset-right));
+    bottom: max(128px, calc(112px + env(safe-area-inset-bottom)));
+    display: grid;
+    gap: 18px;
+  }
+
+  .reel-side-button {
+    gap: 5px;
+    width: 58px;
+    min-height: 54px;
+    padding: 5px;
+    border-radius: 12px;
+  }
+
+  .reel-side-button .reel-control-icon {
+    width: 25px;
+    height: 25px;
+  }
+
+  .reel-side-button span {
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 1.1;
+  }
+
+  .reel-lesson-copy {
+    position: absolute;
+    right: 86px;
+    bottom: max(92px, calc(78px + env(safe-area-inset-bottom)));
+    left: max(16px, env(safe-area-inset-left));
+    display: grid;
+    gap: 5px;
+    text-shadow: 0 2px 12px rgba(0, 0, 0, .9);
+  }
+
+  .reel-lesson-copy strong {
+    display: -webkit-box;
+    overflow: hidden;
+    color: #fff;
+    font-size: 16px;
+    line-height: 1.25;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+
+  .reel-lesson-copy span {
+    display: -webkit-box;
+    overflow: hidden;
+    color: rgba(255, 255, 255, .78);
+    font-size: 12px;
+    line-height: 1.35;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+
+  body.has-edunex-mobile-reel .react-page-root[data-page="videos.html"] .sm-controls {
+    z-index: 24;
+    padding-right: max(8px, env(safe-area-inset-right));
+    padding-bottom: max(6px, env(safe-area-inset-bottom));
+    padding-left: max(8px, env(safe-area-inset-left));
+  }
+
+  body.has-edunex-mobile-reel .react-page-root[data-page="videos.html"] .sm-row {
+    display: grid !important;
+    grid-template-columns: 44px minmax(0, 1fr) 44px 44px !important;
+    gap: 4px !important;
+    align-items: center !important;
+  }
+
+  body.has-edunex-mobile-reel .react-page-root[data-page="videos.html"] .sm-row > :not(.sm-play-button):not(.sm-spacer):not(.sm-settings-button):not(.sm-view-mode-button) {
+    display: none !important;
+  }
+
+  body.has-edunex-mobile-reel .react-page-root[data-page="videos.html"] :where(.sm-play-button, .sm-settings-button, .sm-view-mode-button) {
+    display: grid !important;
+    min-width: 44px !important;
+    min-height: 44px !important;
+    place-items: center !important;
+  }
+
+  body.has-edunex-mobile-reel .react-page-root[data-page="videos.html"] .sm-spacer {
+    display: block !important;
+  }
+
+  body.has-edunex-mobile-reel .react-page-root[data-page="videos.html"] .custom-video-controls {
+    z-index: 24;
+    padding-bottom: max(10px, env(safe-area-inset-bottom)) !important;
+  }
+}
+
+@media (max-width: 380px) {
+  .reel-lecture-grid {
+    gap: 9px;
+  }
+
+  .reel-lesson-copy {
+    right: 76px;
+  }
+
+  .reel-topbar-actions {
+    gap: 0;
+  }
+}
+
 /* Global problem reporting */
-.enx-report-nav-button,
-.enx-mobile-report-button,
-.tutor-report-problem {
+.enx-report-nav-button {
   border-color: rgba(220, 38, 38, .52) !important;
   background: rgba(220, 38, 38, .1) !important;
   color: #FCA5A5 !important;
@@ -4619,25 +5139,10 @@ html[data-theme="light"] .enx-footer .enx-footer-support a {
 }
 
 .enx-report-nav-button:hover,
-.enx-report-nav-button:focus-visible,
-.enx-mobile-report-button:hover,
-.enx-mobile-report-button:focus-visible,
-.tutor-report-problem:hover,
-.tutor-report-problem:focus-visible {
+.enx-report-nav-button:focus-visible {
   border-color: #EF4444 !important;
   background: #DC2626 !important;
   color: #FFFFFF !important;
-}
-
-.enx-mobile-report-button {
-  display: none;
-}
-
-.react-page-root[data-page="ai-tutor.html"] .tutor-report-problem {
-  flex: 0 0 38px;
-  width: 38px;
-  height: 38px;
-  border: 1px solid rgba(220, 38, 38, .52) !important;
 }
 
 .problem-report-overlay {
@@ -4894,35 +5399,6 @@ html[data-theme="light"] :where(.problem-report-field select, .problem-report-fi
   }
 }
 
-@media (max-width: 900px) {
-  .enx-mobile-report-button {
-    position: fixed;
-    right: 14px;
-    bottom: calc(var(--mobile-nav-height, 72px) + var(--mobile-safe-bottom, 0px) + 16px);
-    z-index: 2147482100;
-    width: 48px;
-    height: 48px;
-    border: 1px solid #DC2626 !important;
-    border-radius: 999px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 12px 28px rgba(127, 29, 29, .34);
-    cursor: pointer;
-  }
-
-  .enx-mobile-report-button .enx-icon {
-    width: 21px;
-    height: 21px;
-  }
-
-  .react-page-root[data-page="ai-tutor.html"] .tutor-report-problem {
-    width: 36px;
-    height: 36px;
-    flex-basis: 36px;
-  }
-}
-
 @media (max-width: 560px) {
   .problem-report-overlay {
     align-items: end;
@@ -4948,7 +5424,7 @@ html[data-theme="light"] :where(.problem-report-field select, .problem-report-fi
   }
 }
 
-body.has-edunex-player-fullscreen :where(.enx-report-nav-button, .enx-mobile-report-button, .problem-report-overlay) {
+body.has-edunex-player-fullscreen :where(.enx-report-nav-button, .enx-mobile-report-toggle, .problem-report-overlay) {
   display: none !important;
 }
 
@@ -7912,7 +8388,43 @@ html[data-theme="light"] :where(.navbar .enx-icon, .premium-site-nav .enx-icon, 
   }
 
   .react-page-root[data-page="index.html"] .learning-hero-copy {
+    box-sizing: border-box !important;
+    width: 100% !important;
+    max-width: 100% !important;
     margin-top: -72px !important;
+    padding-right: 16px !important;
+    padding-left: 16px !important;
+  }
+
+  .react-page-root[data-page="index.html"] .learning-hero-label {
+    max-width: 100% !important;
+    margin-bottom: 14px !important;
+    font-size: 10px !important;
+    letter-spacing: .07em !important;
+    white-space: nowrap !important;
+  }
+
+  .react-page-root[data-page="index.html"] .learning-hero h1 {
+    width: 100% !important;
+    max-width: 100% !important;
+    font-size: clamp(24px, 8vw, 32px) !important;
+    line-height: 1.08 !important;
+    letter-spacing: -.015em !important;
+  }
+
+  .react-page-root[data-page="index.html"] .learning-hero h1 span {
+    max-width: 100% !important;
+    white-space: nowrap !important;
+  }
+
+  .react-page-root[data-page="index.html"] .learning-hero-copy > p {
+    width: 100% !important;
+    max-width: 340px !important;
+    margin-top: 16px !important;
+    padding: 0 !important;
+    overflow-wrap: anywhere !important;
+    font-size: 13px !important;
+    line-height: 1.5 !important;
   }
 
   .react-page-root[data-page="index.html"] .learning-hero-actions {

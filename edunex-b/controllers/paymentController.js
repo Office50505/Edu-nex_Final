@@ -5,6 +5,7 @@ const User = require('../models/User');
 const phonePeService = require('../services/phonePeService');
 const { resolveSubscriptionAccess } = require('../services/subscriptionAccess');
 const { activeCourseEntitlements } = require('../services/courseAccess');
+const { hasUsedIntroTrial } = require('../services/trialEligibility');
 
 const isProduction = process.env.NODE_ENV === 'production';
 const paymentGatewayMode = String(process.env.PAYMENT_GATEWAY_MODE || 'phonepe').trim().toLowerCase();
@@ -268,6 +269,14 @@ async function initiateTrial(req, res) {
   try {
     const paymentType = req.body.paymentType === 'monthly' ? 'monthly' : 'trial';
     const existingSubscription = await Subscription.findOne({ user: req.user._id });
+    const trialUsed = await hasUsedIntroTrial(req.user._id, existingSubscription, req.user);
+    if (paymentType === 'trial' && trialUsed) {
+      return res.status(409).json({
+        error: 'The ₹1 trial can only be used once per account. Continue with the monthly plan.',
+        trialEligible: false,
+        nextPaymentType: 'monthly',
+      });
+    }
     const allowedUpgradeStatuses = ['1rs trial', 'trial', 'cancelled', 'expired'];
     const blockedStatuses = ['active', 'subscribed', 'paused'];
     if (existingSubscription) {
@@ -712,6 +721,7 @@ async function subscriptionStatus(req, res) {
       req.user.subscriptionExpiry,
     );
     const subscription = await Subscription.findOne({ user: req.user._id });
+    const trialUsed = await hasUsedIntroTrial(req.user._id, subscription, req.user);
     if (!subscription) {
       return res.json({
         status: userHasAccess ? userSubscriptionStatus : 'none',
@@ -722,7 +732,10 @@ async function subscriptionStatus(req, res) {
         hasCourseAccess: courseIds.length > 0,
         courseIds,
         courseEntitlements,
-        trialEligible: true,
+        trialUsed,
+        trialEligible: !trialUsed,
+        subscriptionType: null,
+        autoRenewEnabled: false,
       });
     }
 
@@ -743,7 +756,10 @@ async function subscriptionStatus(req, res) {
       trialExpiresAt: latest.trialExpiresAt || null,
       currentPeriodEnd: latest.currentPeriodEnd || null,
       nextBillingAt: latest.nextBillingAt,
-      trialEligible: !latest.trialStartedAt,
+      trialUsed,
+      trialEligible: !trialUsed,
+      subscriptionType: latest.subscriptionType || null,
+      autoRenewEnabled: Boolean(latest.phonePeMandateId && !latest.cancelledAt),
     });
   } catch (error) {
     res.status(500).json({ error: error.message });

@@ -6,7 +6,7 @@ import { useLearningProgress } from '../../hooks/useLearningProgress';
 import { clock, seekTarget, adjacent, nativeLessonSource } from './playerRules';
 import './player.css';
 
-export function CourseMediaPlayer({ course, lesson, lessonIndex, autoNext, autoplay = false, onEnded, onNavigateLesson, onFallback }) {
+export function CourseMediaPlayer({ course, lesson, lessonIndex, autoNext, autoplay = false, onEnded, onNavigateLesson, onFallback, mobileViewMode = null, onToggleMobileView }) {
   const access = usePlaybackAccess(course._id, lesson);
   const videoRef = useRef(null), frameRef = useRef(null), hlsRef = useRef(null), hideTimer = useRef(), sleepTimer = useRef();
   const settingsButton = useRef(null), restored = useRef(false), latest = useRef({});
@@ -76,7 +76,7 @@ export function CourseMediaPlayer({ course, lesson, lessonIndex, autoNext, autop
     if(restored.current||progress.resume===null||!time.duration||!video)return;
     restored.current=true;
     if(progress.resume>0&&progress.resume<time.duration-2)video.currentTime=seekTarget(progress.resume,time.duration);
-    if(autoplay)video.play().catch(()=>setNotice("Press play to continue."));
+    if(autoplay)video.play().catch(()=>{video.muted=true;setMuted(true);video.play().catch(()=>setNotice("Press play to continue."));});
   },[progress.resume,time.duration,autoplay]);
   useEffect(()=>{const video=videoRef.current;if(video){video.playbackRate=rate;video.loop=loop;}},[rate,loop]);
   useEffect(()=>{if(access.error){videoRef.current?.pause();setBuffering(false);}},[access.error]);
@@ -105,7 +105,6 @@ export function CourseMediaPlayer({ course, lesson, lessonIndex, autoNext, autop
     wake();
   }
   async function full(){try{const wrapper=frameRef.current.closest('#playerFrame');if(wrapper?.classList.contains('is-app-fullscreen')){wrapper.classList.remove('is-app-fullscreen');document.body.classList.remove('has-edunex-player-fullscreen');return;}if(document.fullscreenElement)await document.exitFullscreen();else if(frameRef.current.requestFullscreen)await frameRef.current.requestFullscreen();else if(videoRef.current.webkitEnterFullscreen)videoRef.current.webkitEnterFullscreen();else setNotice('Fullscreen is unavailable on this device.');}catch{setNotice('Fullscreen is unavailable on this device.');}}
-  async function pip(){try{if(document.pictureInPictureElement)await document.exitPictureInPicture();else await videoRef.current.requestPictureInPicture();}catch{setNotice('Picture-in-picture is unavailable for this video.');}}
   function sleepAfter(minutes){clearTimeout(sleepTimer.current);setSleep(minutes);if(minutes)sleepTimer.current=setTimeout(()=>{videoRef.current?.pause();setSleep(0);setNotice('Sleep timer paused playback.');},minutes*60000);}
   function closeMenu(){setMenu(false);settingsButton.current?.focus();}
   function key(event){if(event.altKey||event.ctrlKey||event.metaKey)return;if(event.key==='Escape'){closeMenu();return;}if(event.target.closest('input,select,textarea,button,[contenteditable]'))return;const k=event.key.toLowerCase();if([' ','k','arrowleft','arrowright','m','f'].includes(k)){event.preventDefault();event.stopPropagation();wake();if(k===' '||k==='k')toggle();if(k==='arrowleft')seek(-10);if(k==='arrowright')seek(10);if(k==='m')videoRef.current.muted=!videoRef.current.muted;if(k==='f')full();}}
@@ -125,23 +124,23 @@ export function CourseMediaPlayer({ course, lesson, lessonIndex, autoNext, autop
       <div className="sm-settings-header"><span>Playback settings</span><button onClick={closeMenu} aria-label="Close settings">×</button></div>
       <label>Playback speed<select value={rate} onChange={e=>setRate(Number(e.target.value))}>{[.25,.5,.75,1,1.25,1.5,1.75,2].map(n=><option key={n} value={n}>{n===1?'Normal':`${n}×`}</option>)}</select></label>
       <label>Quality<select value={quality} disabled={!levels.length} onChange={e=>{const n=Number(e.target.value);if(hlsRef.current)hlsRef.current.currentLevel=n;setQuality(n);}}><option value={-1}>{levels.length?'Auto':'Auto · browser managed'}</option>{levels.map(l=><option key={l.index} value={l.index}>{l.label}</option>)}</select></label>
+      <label>Mute audio<input type="checkbox" checked={muted} onChange={e=>{if(videoRef.current)videoRef.current.muted=e.target.checked;setMuted(e.target.checked);}}/></label>
       <label>Loop lesson<input type="checkbox" checked={loop} onChange={e=>setLoop(e.target.checked)}/></label>
       <label>Sleep timer<select value={sleep} onChange={e=>sleepAfter(Number(e.target.value))}>{[0,15,30,45,60].map(n=><option key={n} value={n}>{n?`${n} minutes`:'Off'}</option>)}</select></label>
     </div>:null}
     <div className="sm-controls">
       <input className="sm-seek" aria-label="Seek video" type="range" min="0" max={time.duration||1} step="0.1" disabled={!time.duration} value={Math.min(time.current,time.duration||1)} style={{'--sm-progress':`${time.duration?time.current/time.duration*100:0}%`,'--sm-buffered':`${time.duration?Math.min(100,buffered/time.duration*100):0}%`}} onChange={e=>{videoRef.current.currentTime=seekTarget(Number(e.target.value),time.duration);wake();}}/>
       <div className="sm-row">
-        <button onClick={toggle} aria-label={playing?'Pause':'Play'} disabled={!source||!!failure}><PlayerIcon name={playing?'pause':'play'}/></button>
+        <button className="sm-play-button" onClick={toggle} aria-label={playing?'Pause':'Play'} disabled={!source||!!failure}><PlayerIcon name={playing?'pause':'play'}/></button>
         <button className="sm-skip" onClick={()=>seek(-10)} aria-label="Rewind 10 seconds"><PlayerIcon name="back"/></button><button className="sm-skip" onClick={()=>seek(10)} aria-label="Forward 10 seconds"><PlayerIcon name="forward"/></button>
-        <button onClick={()=>{videoRef.current.muted=!videoRef.current.muted;}} aria-label={muted?'Unmute':'Mute'}><PlayerIcon name={muted||volume===0?'mute':'volume'}/></button>
+        <button className="sm-volume-button" onClick={()=>{videoRef.current.muted=!videoRef.current.muted;}} aria-label={muted?'Unmute':'Mute'}><PlayerIcon name={muted||volume===0?'mute':'volume'}/></button>
         <input className="sm-volume" aria-label="Volume" type="range" min="0" max="1" step=".05" value={muted?0:volume} onChange={e=>{videoRef.current.volume=Number(e.target.value);videoRef.current.muted=Number(e.target.value)===0;}}/>
         <span className="sm-time">{clock(time.current)} / {clock(time.duration)}</span><span className="sm-spacer"/>
         <button className="sm-lesson-nav" onClick={()=>onNavigateLesson(-1)} disabled={adjacent(course.videos,lessonIndex,-1)===lessonIndex} aria-label="Previous lesson"><PlayerIcon name="previous"/></button>
         <button className="sm-lesson-nav" onClick={()=>onNavigateLesson(1)} disabled={adjacent(course.videos,lessonIndex,1)===lessonIndex} aria-label="Next lesson"><PlayerIcon name="next"/></button>
         {captions.length?<label className="sm-captions">CC<select aria-label="Captions" value={caption} onChange={e=>{const n=Number(e.target.value);if(hlsRef.current)hlsRef.current.subtitleTrack=n;else Array.from(videoRef.current.textTracks).forEach((track,i)=>{track.mode=i===n?'showing':'disabled';});setCaption(n);}}><option value={-1}>Off</option>{captions.map(c=><option key={c.index} value={c.index}>{c.label}</option>)}</select></label>:null}
         <button className="sm-settings-button" ref={settingsButton} onClick={()=>setMenu(v=>!v)} aria-label="Player settings" aria-expanded={menu}><PlayerIcon name="settings"/></button>
-        {document.pictureInPictureEnabled?<button className="sm-pip" onClick={pip} disabled={!time.duration} aria-label="Picture-in-picture"><PlayerIcon name="pip"/></button>:null}
-        <button className="sm-fullscreen-button" onClick={full} aria-label={fullscreen?'Exit fullscreen':'Fullscreen'}><PlayerIcon name="fullscreen"/></button>
+        {onToggleMobileView ? <button className="sm-view-mode-button" onClick={onToggleMobileView} aria-label={mobileViewMode==='immersive'?'Minimize player':'Open fullscreen player'}><PlayerIcon name={mobileViewMode==='immersive'?'minimize':'fullscreen'}/></button> : <button className="sm-fullscreen-button" onClick={full} aria-label={fullscreen?'Exit fullscreen':'Fullscreen'}><PlayerIcon name="fullscreen"/></button>}
       </div>
     </div>
   </section>;

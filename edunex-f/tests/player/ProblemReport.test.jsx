@@ -45,11 +45,14 @@ describe("problem reporting", () => {
     expect(body.pageUrl).not.toContain("never-store-this");
   });
 
-  it("keeps the mobile navigation at five items and provides a separate report trigger", () => {
+  it("keeps the mobile navigation at five items and uses the header report trigger instead of a floating button", () => {
     const onReport = vi.fn();
     render(<Navbar pageKey="index.html" onReportProblem={onReport} />);
     expect(document.querySelectorAll(".enx-mobile-footer-link")).toHaveLength(5);
-    fireEvent.click(screen.getByRole("button", { name: "Report a problem" }));
+    const reportButton = screen.getByRole("button", { name: "Report a problem" });
+    expect(reportButton.classList.contains("enx-mobile-report-toggle")).toBe(true);
+    expect(document.querySelector(".enx-mobile-report-button")).toBeNull();
+    fireEvent.click(reportButton);
     expect(onReport).toHaveBeenCalledTimes(1);
   });
 

@@ -12,6 +12,7 @@ import { AiTutorPage } from "../../src/pages/AiTutorPage.jsx";
 import { plainCourseDescription } from "../../src/pages/CourseDetailsPage.jsx";
 import { buildDashboardActivity, DashboardPage, dashCourseProgress } from "../../src/pages/DashboardPage.jsx";
 import { PaymentPage } from "../../src/pages/PaymentPage.jsx";
+import { activeProgressLessons, CurriculumShowcase } from "../../src/pages/HomePage.jsx";
 import { courseEntryHref } from "../../src/lib/courseNavigation.js";
 
 vi.mock("../../src/legacyRuntime.js", () => ({ runLegacyPage: () => () => {} }));
@@ -41,6 +42,74 @@ afterEach(() => {
 });
 
 describe("reported frontend regressions", () => {
+  it("restores legacy and completed lectures in Continue Learning history", () => {
+    localStorage.setItem("edunexCourseProgress:course-history", JSON.stringify({
+      viewed: true,
+      percent: 100,
+      completed: 2,
+      lessonIndex: 0,
+      lastWatchedVideoId: "lesson-2",
+      lastViewedAt: "2026-09-18T12:00:00.000Z",
+    }));
+    const course = {
+      _id: "course-history",
+      title: "History Course",
+      videos: [
+        { _id: "lesson-1", title: "First lesson" },
+        { _id: "lesson-2", title: "Last watched lesson" },
+      ],
+    };
+
+    const history = activeProgressLessons([course], "user-1");
+
+    expect(history).toHaveLength(1);
+    expect(history[0].lessonIndex).toBe(1);
+    expect(history[0].video.title).toBe("Last watched lesson");
+    expect(localStorage.getItem("edunexCourseProgress:user-1:course-history")).toBeTruthy();
+  });
+
+  it("hides Continue Learning until the user has watched a lecture", () => {
+    const course = {
+      _id: "course-history",
+      title: "History Course",
+      category: "AI Basics",
+      videos: [{ _id: "lesson-1", title: "First lesson", duration: 120 }],
+    };
+    const view = render(<CurriculumShowcase courses={[course]} status="ready" authUserId="user-1" hasAccess />);
+
+    expect(screen.queryByText("Continue Learning")).toBeNull();
+    expect(screen.queryByText("No learning history yet")).toBeNull();
+    expect(screen.queryByText("Try 24 Hours for ₹1")).toBeNull();
+    expect(screen.queryByText("Unlock 24 Hours for ₹1")).toBeNull();
+    expect(screen.getByRole("heading", { name: "Lectures" })).toBeTruthy();
+
+    localStorage.setItem("edunexCourseProgress:user-1:course-history", JSON.stringify({
+      viewed: true,
+      lessonIndex: 0,
+      lastWatchedVideoId: "lesson-1",
+      lastViewedAt: "2026-09-19T12:00:00.000Z",
+      watchedSeconds: 30,
+    }));
+    view.rerender(<CurriculumShowcase courses={[course]} status="ready" authUserId="user-1" hasAccess />);
+
+    expect(screen.getByText("Continue Learning")).toBeTruthy();
+    expect(screen.getAllByText("First lesson").length).toBeGreaterThan(0);
+  });
+
+  it("shows the complete lecture sequence in course order", () => {
+    const videos = Array.from({ length: 34 }, (_, index) => ({
+      _id: `lesson-${index + 1}`,
+      title: `Serial lesson ${index + 1}`,
+      duration: 120,
+    }));
+    render(<CurriculumShowcase courses={[{ _id: "course-34", title: "Full Course", videos }]} status="ready" authUserId="user-1" hasAccess />);
+
+    expect(screen.getByRole("heading", { name: "Lectures" })).toBeTruthy();
+    expect(screen.getByText("Lecture 1 of 34")).toBeTruthy();
+    expect(screen.getByText("Lecture 34 of 34")).toBeTruthy();
+    expect(screen.getAllByText("Open lecture")).toHaveLength(34);
+  });
+
   it("does not render app download badges in the shared footer", () => {
     render(<Footer />);
     expect(screen.queryByText("App Download")).toBeNull();
@@ -78,6 +147,7 @@ describe("reported frontend regressions", () => {
     expect(screen.getByRole("group", { name: "Suggested questions" }).querySelectorAll("button")).toHaveLength(4);
     expect(screen.queryByRole("group", { name: "Follow-up suggestions" })).toBeNull();
     expect(document.querySelector(".tutor-top-bar")).toBeNull();
+    expect(screen.queryByRole("button", { name: "Report a problem" })).toBeNull();
   });
 
   it("lets each learner name the AI without letting a message replace the header name", async () => {
@@ -154,12 +224,15 @@ describe("reported frontend regressions", () => {
 
     cleanup();
     render(<AiTutorPage />);
+    expect(screen.getByRole("heading", { name: "What can I help you learn?" })).toBeTruthy();
+    expect(screen.queryByText("Prompting means giving an AI clear instructions.")).toBeNull();
+    expect(screen.getByRole("button", { name: /What is prompting\?Just now/ })).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: /What is prompting\?Just now/ }));
     expect(screen.getByText("Prompting means giving an AI clear instructions.")).toBeTruthy();
 
     fireEvent.click(screen.getByRole("button", { name: "Start a new chat" }));
     expect(screen.getByRole("heading", { name: "What can I help you learn?" })).toBeTruthy();
-    fireEvent.click(screen.getByRole("button", { name: /What is prompting\?Just now/ }));
-    expect(screen.getByText("Prompting means giving an AI clear instructions.")).toBeTruthy();
+    expect(screen.getByRole("button", { name: /What is prompting\?Just now/ })).toBeTruthy();
   });
 
   it("does not expose the login form while an existing session is being verified", () => {
@@ -188,6 +261,9 @@ describe("reported frontend regressions", () => {
     render(<ProfilePage />);
     expect(screen.getByText("Aarav Learner")).toBeTruthy();
     expect(screen.queryByText("Loading your profile")).toBeNull();
+    expect(screen.getByRole("button", { name: "Light" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Dark" })).toBeTruthy();
+    expect(screen.queryByRole("button", { name: "System" })).toBeNull();
   });
 
   it("converts course Markdown into clean display text", () => {
@@ -259,6 +335,66 @@ describe("reported frontend regressions", () => {
     expect(screen.getAllByText("In Progress")).toHaveLength(2);
     expect(window.EduNex.authRequest).toHaveBeenCalledWith("/api/user/user-1/progress");
     expect(JSON.parse(localStorage.getItem("edunexCourseProgress:user-1:course-1")).completed).toBe(20);
+    expect(document.querySelector("#trialGate")).toBeNull();
+  });
+
+  it("shows renewal instead of another trial when a subscription has expired", async () => {
+    window.EduNex = {
+      getUser: () => cachedUser,
+      getAccessToken: () => "active-token",
+      checkSubscription: vi.fn(async () => ({
+        status: "none",
+        subscriptionDocStatus: "expired",
+        hasActiveAccess: false,
+        trialEligible: false,
+      })),
+      hasCourseAccess: vi.fn((value) => value.hasActiveAccess),
+      request: vi.fn(),
+    };
+
+    render(<DashboardPage />);
+
+    await waitFor(() => expect(screen.getAllByText("Subscribe for ₹499/month")).toHaveLength(2));
+    expect(screen.getByRole("link", { name: /Subscribe for ₹499\/month/ })).toBeTruthy();
+    expect(screen.queryByText("Start your 24-hour trial for ₹1")).toBeNull();
+    expect(document.querySelector("#trialGate")?.classList.contains("is-open")).toBe(true);
+    expect(document.documentElement.style.overflow).toBe("hidden");
+    expect(document.body.style.overflow).toBe("hidden");
+    expect(document.body.style.position).toBe("fixed");
+  });
+
+  it("offers the monthly plan after the account has used its one-time trial", async () => {
+    localStorage.setItem("edunexAccessToken", "active-token");
+    window.EduNex = { request: vi.fn() };
+    let checkoutBody;
+    vi.stubGlobal("fetch", vi.fn(async (url, options = {}) => {
+      if (url === "/api/payment/config") {
+        return { ok: true, status: 200, json: async () => ({ trialAmountPaise: 100, subscriptionAmountPaise: 49900, trialHours: 24 }) };
+      }
+      if (url === "/api/payment/subscription-status") {
+        return { ok: true, status: 200, text: async () => JSON.stringify({
+          status: "trial",
+          hasActiveAccess: true,
+          trialEligible: false,
+          subscriptionType: "trial",
+          autoRenewEnabled: false,
+        }) };
+      }
+      if (url === "/api/payment/initiate-trial") {
+        checkoutBody = JSON.parse(options.body);
+        return { ok: false, status: 503, text: async () => JSON.stringify({ error: "Test checkout stopped" }) };
+      }
+      throw new Error(`Unexpected request: ${url}`);
+    }));
+
+    render(<PaymentPage />);
+
+    const monthlyButton = await screen.findByRole("button", { name: /Subscribe for ₹499\/month/ });
+    expect(screen.getByText("Monthly Plan")).toBeTruthy();
+    expect(screen.getByText(/one-time trial has already been used/i)).toBeTruthy();
+    fireEvent.click(monthlyButton);
+    await waitFor(() => expect(checkoutBody?.paymentType).toBe("monthly"));
+    expect(checkoutBody.mandateConsent).toBe(true);
   });
 
   it("uses an unscoped legacy progress cache when server progress is unavailable", () => {
@@ -306,10 +442,35 @@ describe("reported frontend regressions", () => {
     expect(screen.queryByText("Your Path to Mastery")).toBeNull();
   });
 
+  it("shows View Course when a paid period remains active after auto-renewal ends", async () => {
+    window.EduNex = {
+      request: vi.fn(async (path) => path === "/api/courses" ? [{
+        _id: "course-1",
+        title: "AI Influencer Course",
+        category: "AI Basics",
+        videos: Array.from({ length: 34 }, (_, index) => ({ _id: `lesson-${index + 1}` })),
+      }] : {}),
+      authRequest: vi.fn(async (path) => path === "/api/payment/subscription-status"
+        ? { status: "active", subscriptionDocStatus: "expired", hasActiveAccess: true, currentPeriodEnd: "2026-10-19T09:02:10.908Z" }
+        : { courses: [] }),
+      getAccessToken: vi.fn(() => "active-token"),
+      hasCourseAccess: vi.fn((subscription) => subscription.hasActiveAccess === true),
+      courseCategory: vi.fn((course) => course.category),
+      courseImage: vi.fn(() => "course.jpg"),
+      placeholderImage: vi.fn(() => "fallback.jpg"),
+    };
+
+    render(<CoursesPage />);
+
+    expect(await screen.findByRole("button", { name: "View Course" })).toBeTruthy();
+    expect(screen.queryByRole("button", { name: "Start ₹1 trial" })).toBeNull();
+  });
+
   it("sends non-subscribers straight to checkout and subscribers to the player", () => {
     const course = { _id: "course-1" };
-    expect(courseEntryHref(course)).toBe("/payment?courseId=course-1&next=%2Fvideos%3FcourseId%3Dcourse-1%26video%3D0");
-    expect(courseEntryHref(course, { hasAccess: true })).toBe("/videos?courseId=course-1&video=0");
+    expect(courseEntryHref(course)).toBe("/payment?courseId=course-1&next=%2Fvideos%3FcourseId%3Dcourse-1");
+    expect(courseEntryHref(course, { hasAccess: true })).toBe("/videos?courseId=course-1");
+    expect(courseEntryHref(course, { hasAccess: true, lessonIndex: 3 })).toBe("/videos?courseId=course-1&video=3");
   });
 
   it("opens generic 24-hour trial links as a focused checkout without a course preview", () => {

@@ -16,6 +16,9 @@ export function useLearningProgress(courseId, videoId, time, playing) {
         const durationSeconds=lessons.reduce((sum,lesson)=>sum+Math.max(0,Number(lesson.duration||0)),0);
         const previousWatched=Number(previous.watchedSeconds);
         const watchedDelta=Number.isFinite(previousWatched)?Math.max(0,watchedSeconds-previousWatched):0;
+        const firstIncompleteIndex=lessons.findIndex(lesson=>!lesson.complete);
+        const resumeLessonIndex=firstIncompleteIndex>=0?firstIncompleteIndex:Math.max(lessons.length-1,0);
+        const completedVideoIds=lessons.filter(lesson=>lesson.complete).map(lesson=>String(lesson?.id||lesson?.videoId||''));
         const now=new Date();
         const activityKey=`${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()}`;
         const activityByDay={...(previous.activityByDay||{})};
@@ -26,7 +29,9 @@ export function useLearningProgress(courseId, videoId, time, playing) {
           lastViewedAt:now.toISOString(),
           percent:Number.isFinite(Number(status.progressPercent)) ? Number(status.progressPercent) : status.totalLessons?Math.floor(status.completedLessons/status.totalLessons*100):0,
           completed:status.completedLessons,
-          lessonIndex:Math.max(0,lessons.findIndex(l=>!l.complete)),
+          lessonIndex:Math.max(0,resumeLessonIndex),
+          completedVideoIds,
+          lastWatchedVideoId:String(videoId),
           watchedSeconds,
           durationSeconds,
           activityByDay
@@ -38,7 +43,7 @@ export function useLearningProgress(courseId, videoId, time, playing) {
       if(disposed)return;
       const lesson=status.lessons.find(l=>l.id===String(videoId));
       setResume(lesson?.resumePosition || 0);setNotice('Progress loaded');publish(status);ready=true;send();
-    }).catch(()=>{if(!disposed){setNotice('Could not load saved progress. Reopen this lesson to retry.');}});
+    }).catch(()=>{if(!disposed){setResume(0);setNotice('Could not load saved progress. Reopen this lesson to retry.');ready=true;}});
     const send=async()=>{
       if(busy||!ready||!latest.current.time.duration||disposed)return;
       busy=true;

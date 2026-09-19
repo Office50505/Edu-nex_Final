@@ -118,23 +118,38 @@ function authenticatedUserId() {
 function readProgressRecord(courseId, ownerId) {
   if (!courseId || !ownerId || typeof window === "undefined") return {};
   try {
-    const key = `edunexCourseProgress:${ownerId}:${courseId}`;
-    const value = JSON.parse(localStorage.getItem(key) || "{}");
+    const scopedKey = `edunexCourseProgress:${ownerId}:${courseId}`;
+    const scopedValue = localStorage.getItem(scopedKey);
+    const legacyValue = localStorage.getItem(`edunexCourseProgress:${courseId}`);
+    const rawValue = scopedValue || legacyValue || "{}";
+    const value = JSON.parse(rawValue);
+    if (!scopedValue && legacyValue) localStorage.setItem(scopedKey, legacyValue);
     return value && typeof value === "object" ? value : {};
   } catch (_) {
     return {};
   }
 }
 
-function progressFor(course, ownerId = authenticatedUserId()) {
+function videoAliases(video, index) {
+  return [video?._id, video?.id, video?.videoId, video?.bunnyVideoId, video?.bunnyGuid, video?.youtubeId, index]
+    .filter((value) => value !== undefined && value !== null && value !== "")
+    .map(String);
+}
+
+export function progressFor(course, ownerId = authenticatedUserId()) {
   const id = courseId(course);
   const saved = readProgressRecord(id, ownerId);
+  const videos = Array.isArray(course?.videos) ? course.videos : [];
   const total = Math.max(lessonCount(course), 1);
   const completed = Number(saved.completed || 0);
   const percent = Math.max(0, Math.min(100, Number(saved.percent ?? Math.round((completed / total) * 100))));
-  const lessonIndex = Math.max(0, Math.min(Number(saved.lessonIndex || 0), total - 1));
-  const hasProgress = Boolean(saved.viewed || saved.lastViewedAt || completed > 0 || percent > 0);
-  return { total, completed, percent, lessonIndex, hasProgress, lastViewedAt: saved.lastViewedAt || "" };
+  const lastWatchedVideoId = String(saved.lastWatchedVideoId || "");
+  const watchedIndex = lastWatchedVideoId
+    ? videos.findIndex((video, index) => videoAliases(video, index).includes(lastWatchedVideoId))
+    : -1;
+  const lessonIndex = Math.max(0, Math.min(watchedIndex >= 0 ? watchedIndex : Number(saved.lessonIndex || 0), total - 1));
+  const hasProgress = Boolean(saved.viewed || saved.lastViewedAt || lastWatchedVideoId || Number(saved.watchedSeconds || 0) > 0 || completed > 0 || percent > 0);
+  return { total, completed, percent, lessonIndex, hasProgress, lastWatchedVideoId, lastViewedAt: saved.lastViewedAt || "" };
 }
 
 function instructorName(course) {
@@ -336,52 +351,6 @@ function preventNativeDrag(event) {
   event.preventDefault();
 }
 
-const skillCards = [
-  ["photo_camera", "AI Images", "Create stunning visuals with AI", "6 lessons", "/assets/skill-ai-images.png"],
-  ["smart_display", "AI Video", "Turn ideas into engaging videos", "6 lessons", "/assets/skill-ai-video.png"],
-  ["groups", "UGC", "Create authentic UGC content", "5 lessons", "/assets/skill-ugc.png"],
-  ["trending_up", "Content Growth", "Grow your audience faster", "5 lessons", "/assets/skill-content-growth.png"],
-  ["currency_rupee", "Monetization", "Turn content into income", "5 lessons", "/assets/skill-monetization.png"],
-  ["business_center", "Client Work", "Get clients and build a business", "4 lessons", "/assets/skill-client-work.png"],
-];
-
-const modules = [
-  ["01", "lightbulb", "Foundations", "5 lessons"],
-  ["02", "person", "Face & Prompts", "5 lessons"],
-  ["03", "checkroom", "Virtual Fashion", "5 lessons"],
-  ["04", "videocam", "Video & Voice", "6 lessons"],
-  ["05", "bar_chart", "Growth Strategy", "5 lessons"],
-  ["06", "groups", "UGC & Clients", "4 lessons"],
-  ["07", "rocket_launch", "Monetization & Scaling", "4 lessons"],
-];
-
-const projectBlueprints = [
-  {
-    title: "AI Influencer Profile",
-    copy: "Create a complete AI influencer with consistent look & style",
-    keywords: ["creating your ai influencer character", "ai influencer character", "same face", "professional profile setup", "profile"],
-    fallbackIndex: 2,
-  },
-  {
-    title: "UGC Portfolio",
-    copy: "Build a portfolio of UGC content for brand outreach",
-    keywords: ["building your ugc portfolio", "understanding ugc", "first ugc", "ugc portfolio", "ugc"],
-    fallbackIndex: 26,
-  },
-  {
-    title: "Virtual Fashion Shoot",
-    copy: "Create a full fashion photoshoot with AI models",
-    keywords: ["fashion try-on", "different outfit styles", "virtual fashion", "fashion"],
-    fallbackIndex: 22,
-  },
-  {
-    title: "Brand Outreach System",
-    copy: "Learn how to find, pitch and work with real brands",
-    keywords: ["reaching out to brands", "getting your first client", "closing the deal", "working with brands", "brand"],
-    fallbackIndex: 27,
-  },
-];
-
 function sectionAction(label, href = "courses.html") {
   return <a className="curriculum-section-action" href={href}>{label} <MaterialIcon>arrow_forward</MaterialIcon></a>;
 }
@@ -395,58 +364,7 @@ function courseFallbackImage(course, fallback = "/assets/female1.jpeg") {
   return imageCandidate(window.EduNex?.courseImage?.(course) || course.thumbnailUrl || course.thumbnailVerticalUrl) || fallback;
 }
 
-function relatedLesson(course, target = {}) {
-  const videos = Array.isArray(course?.videos) ? course.videos : [];
-  const keywords = target.keywords || [];
-  const video = keywords.reduce((match, keyword) => {
-    if (match) return match;
-    const normalizedKeyword = String(keyword || "").toLowerCase();
-    return videos.find((item) => String(item?.title || "").toLowerCase().includes(normalizedKeyword));
-  }, null) || videos[target.fallbackIndex] || videos[0] || {};
-
-  const resolvedIndex = videos.findIndex((item) => String(item?._id || item?.id || item?.title) === String(video?._id || video?.id || video?.title));
-  return { video, index: resolvedIndex >= 0 ? resolvedIndex : Math.max(0, Number(target.fallbackIndex) || 0) };
-}
-
-function relatedLessonThumbnail(course, target) {
-  const { video } = relatedLesson(course, target);
-
-  return imageCandidate(
-    video.thumbnailUrl
-    || video.thumbnailVerticalUrl
-    || (video._id && courseId(course) ? `/api/courses/${courseId(course)}/videos/${video._id}/thumbnail` : "")
-    || target.fallbackImage
-  );
-}
-
-function videosMatchingKeywords(course, keywords = []) {
-  const videos = Array.isArray(course?.videos) ? course.videos : [];
-  const normalizedKeywords = keywords.map((keyword) => String(keyword || "").toLowerCase()).filter(Boolean);
-  if (!normalizedKeywords.length) return [];
-  return videos
-    .map((video, index) => ({ video, index, title: String(video?.title || "").toLowerCase() }))
-    .filter((item) => normalizedKeywords.some((keyword) => item.title.includes(keyword)));
-}
-
-function projectItemsFromCourse(course) {
-  if (!course || course.isFallback) return [];
-  const videos = Array.isArray(course.videos) ? course.videos : [];
-  return projectBlueprints.map((project) => {
-    const matches = videosMatchingKeywords(course, project.keywords);
-    const fallbackIndex = Math.max(0, Math.min(Number(project.fallbackIndex) || 0, Math.max(videos.length - 1, 0)));
-    const primary = matches[0] || (videos[fallbackIndex] ? { video: videos[fallbackIndex], index: fallbackIndex } : null);
-    if (!primary?.video) return null;
-    return {
-      ...project,
-      course,
-      video: primary.video,
-      lessonIndex: primary.index,
-      count: `${Math.max(matches.length || 1, 1)} ${matches.length === 1 ? "lesson" : "lessons"}`,
-    };
-  }).filter(Boolean);
-}
-
-function activeProgressLessons(courses, ownerId) {
+export function activeProgressLessons(courses, ownerId) {
   if (!ownerId) return [];
   return courses
     .filter((course) => course && !course.isFallback)
@@ -461,29 +379,20 @@ function activeProgressLessons(courses, ownerId) {
         lessonIndex,
       };
     })
-    .filter((item) => item.video && item.progress.hasProgress && item.progress.percent < 100)
+    .filter((item) => item.video && item.progress.hasProgress)
     .sort((a, b) => new Date(b.progress.lastViewedAt || 0).getTime() - new Date(a.progress.lastViewedAt || 0).getTime())
     .slice(0, 4);
 }
 
-function watchedLectureItems(course, limit = 12) {
+function watchedLectureItems(course) {
   const videos = Array.isArray(course?.videos) ? course.videos : [];
-  return videos.slice(0, limit).map((video, index) => ({
+  return videos.map((video, index) => ({
     course,
     video,
     lessonIndex: index,
     title: video?.title || `Lesson ${index + 1}`,
     duration: video?.duration ? formatDuration(video.duration) : "Lecture",
   }));
-}
-
-function handleProjectImageError(event, fallback) {
-  const image = event.currentTarget;
-  if (fallback && image.src !== new URL(fallback, window.location.origin).href) {
-    image.src = fallback;
-    return;
-  }
-  image.onerror = null;
 }
 
 function handleCurriculumImageError(event, course, fallback = "/assets/female1.jpeg") {
@@ -497,25 +406,15 @@ function handleCurriculumImageError(event, course, fallback = "/assets/female1.j
   image.src = fallback;
 }
 
-function CurriculumShowcase({ courses, status, onOpenCourse, authUserId, hasAccess }) {
+export function CurriculumShowcase({ courses, status, authUserId, hasAccess, accessResolved = true }) {
   const course = courses.find((item) => !item.isFallback) || courses[0] || null;
   const continueLessons = activeProgressLessons(courses, authUserId);
-  const projectItems = projectItemsFromCourse(course);
   const watchedItems = watchedLectureItems(course);
   const courseHref = course ? courseEntryHref(course, { hasAccess }) : route("courses.html");
   const courseTitle = course?.title || "AI Influencer Course";
   const courseImage = courseFallbackImage(course);
   const totalLessons = Math.max(lessonCount(course), 34);
   const courseCategory = course ? categoryName(course) : "AI Basics";
-  const handleOpen = () => course ? onOpenCourse(course) : (window.location.href = route("courses.html"));
-  const openLesson = (target) => {
-    if (!course) {
-      window.location.href = route("courses.html");
-      return;
-    }
-    window.location.href = courseEntryHref(course, { hasAccess, lessonIndex: relatedLesson(course, target).index });
-  };
-
   return (
     <section className="curriculum-home" aria-labelledby="curriculumHomeTitle">
       <div className="curriculum-shell">
@@ -523,7 +422,7 @@ function CurriculumShowcase({ courses, status, onOpenCourse, authUserId, hasAcce
           <img src={courseImage} alt="" loading="lazy" decoding="async" onError={(event) => handleCurriculumImageError(event, course)} />
           <div className="curriculum-overview-copy">
             <span>{courseCategory}</span>
-            <h2>{courseTitle}</h2>
+            <h2 id="curriculumHomeTitle">{courseTitle}</h2>
             <p>A single guided workspace for lessons, modules, projects, and certification.</p>
           </div>
           <div className="curriculum-overview-stats" aria-label="Course summary">
@@ -535,23 +434,21 @@ function CurriculumShowcase({ courses, status, onOpenCourse, authUserId, hasAcce
 
         <nav className="curriculum-jump-nav" aria-label="Curriculum sections">
           {[
-            ["Continue", "#continue-learning"],
-            ["Skills", "#explore-skills"],
-            ["Modules", "#modules"],
+            ...(continueLessons.length ? [["Continue", "#continue-learning"]] : []),
             ["Lessons", "#popular-lessons"],
-            ["Projects", "#projects"],
           ].map(([label, href]) => <a href={href} key={href}>{label}</a>)}
         </nav>
 
-        <div className="curriculum-section-head" id="continue-learning">
-          <div>
-            <h2 id="curriculumHomeTitle">Continue Learning</h2>
-            <p>Pick up where you left off and keep going.</p>
+        {continueLessons.length ? <>
+          <div className="curriculum-section-head" id="continue-learning">
+            <div>
+              <h2>Continue Learning</h2>
+              <p>Pick up where you left off and keep going.</p>
+            </div>
+            {sectionAction("View My Course", courseHref)}
           </div>
-          {sectionAction("View My Course", courseHref)}
-        </div>
-        <div className="continue-learning-row">
-          {continueLessons.length ? continueLessons.map(({ course: lessonCourse, video, progress, lessonIndex }) => {
+          <div className="continue-learning-row">
+            {continueLessons.map(({ course: lessonCourse, video, progress, lessonIndex }) => {
             const title = video?.title || `Lesson ${lessonIndex + 1}`;
             const href = lessonHref(lessonCourse, lessonIndex);
             const duration = video?.duration ? formatDuration(video.duration) : durationLabel(lessonCourse);
@@ -582,55 +479,14 @@ function CurriculumShowcase({ courses, status, onOpenCourse, authUserId, hasAcce
               }}><MaterialIcon>play_arrow</MaterialIcon></button>
             </article>
             );
-          }) : (
-            <div className="continue-learning-empty">
-              <strong>No paused lessons yet</strong>
-              <p>Start watching a course video, then leave midway. Your real resume lesson will appear here.</p>
-              <a href={courseHref}>Open Course <MaterialIcon>arrow_forward</MaterialIcon></a>
-            </div>
-          )}
-        </div>
-
-        <div className="curriculum-section-head" id="explore-skills">
-          <div>
-            <h2>Explore by Skill</h2>
-            <p>Browse lessons by what you want to learn.</p>
+            })}
           </div>
-          {sectionAction("View All Skills")}
-        </div>
-        <div className="skill-strip">
-          {skillCards.map(([icon, title, copy, count, image]) => (
-            <a className="skill-tile" href={searchHref(title)} key={title}>
-              <span className="skill-icon"><MaterialIcon>{icon}</MaterialIcon></span>
-              <div><strong>{title}</strong><p>{copy}</p><small>{count} <MaterialIcon>arrow_forward</MaterialIcon></small></div>
-              <img src={image} alt={`${title} lesson preview`} loading="lazy" decoding="async" />
-            </a>
-          ))}
-        </div>
-
-        <div className="curriculum-section-head" id="modules">
-          <div>
-            <h2>7 Modules • {totalLessons} Lessons</h2>
-            <p>A complete learning path from beginner to pro.</p>
-          </div>
-          {sectionAction("View Course Curriculum", courseHref)}
-        </div>
-        <div className="module-strip">
-          {modules.map(([number, icon, title, count]) => (
-            <button className="module-chip" type="button" onClick={handleOpen} key={number}>
-              <span className="module-icon"><MaterialIcon>{icon}</MaterialIcon></span>
-              <span className="module-number">{number}</span>
-              <strong>{title}</strong>
-              <small>{count}</small>
-              <MaterialIcon className="module-arrow">arrow_forward</MaterialIcon>
-            </button>
-          ))}
-        </div>
+        </> : null}
 
         <div className="curriculum-section-head" id="popular-lessons">
           <div>
-            <h2>Most Watched Lessons</h2>
-            <p>{course?.title ? `Lectures from ${course.title}.` : "Lectures from your uploaded course."}</p>
+            <h2>Lectures</h2>
+            <p>{course?.title ? `All ${watchedItems.length} lectures from ${course.title}, in order.` : "All lectures from your uploaded course, in order."}</p>
           </div>
           {sectionAction("View All Lessons", courseHref)}
         </div>
@@ -656,35 +512,6 @@ function CurriculumShowcase({ courses, status, onOpenCourse, authUserId, hasAcce
           )}
         </div>
 
-        <div className="curriculum-section-head" id="projects">
-          <div>
-            <h2>Build These Projects</h2>
-            <p>Apply what you learn with real-world projects.</p>
-          </div>
-          {sectionAction("View All Projects")}
-        </div>
-        <div className="project-grid">
-          {projectItems.length ? projectItems.map((project) => {
-            const href = courseEntryHref(project.course, { hasAccess, lessonIndex: project.lessonIndex });
-            return (
-            <button className="project-card" type="button" key={`${project.title}-${project.lessonIndex}`} onClick={() => { window.location.href = href; }}>
-              <img src={lessonImage(project.course, project.video)} alt="" loading="lazy" decoding="async" onError={(event) => handleCurriculumImageError(event, project.course)} />
-              <div>
-                <strong>{project.title}</strong>
-                <p>{project.copy}</p>
-                <small><MaterialIcon>assignment</MaterialIcon>{project.count} · starts at Lesson {project.lessonIndex + 1}</small>
-              </div>
-              <MaterialIcon>arrow_forward</MaterialIcon>
-            </button>
-            );
-          }) : (
-            <div className="project-empty">
-              <strong>Projects will appear from your uploaded lessons</strong>
-              <p>Add or publish course videos with project-focused titles to build this section automatically.</p>
-            </div>
-          )}
-        </div>
-
         <h2 className="curriculum-standalone-heading">Your Learning Journey</h2>
         <div className="journey-strip">
           {["Beginner", "Create", "Grow", "Monetize", "Scale"].map((title, index) => (
@@ -697,7 +524,7 @@ function CurriculumShowcase({ courses, status, onOpenCourse, authUserId, hasAcce
           ))}
         </div>
 
-        <div className="curriculum-cta">
+        {!hasAccess && accessResolved ? <div className="curriculum-cta">
           <div>
             <span><MaterialIcon>auto_awesome</MaterialIcon> Limited Time Offer</span>
             <h2>Unlock 24 Hours for ₹1</h2>
@@ -710,7 +537,7 @@ function CurriculumShowcase({ courses, status, onOpenCourse, authUserId, hasAcce
             <small><MaterialIcon>schedule</MaterialIcon>Learn at your pace</small>
           </div>
           <a href={route("payment.html")}>Try 24 Hours for ₹1 <MaterialIcon>arrow_forward</MaterialIcon></a>
-        </div>
+        </div> : null}
         {status === "loading" ? <p className="curriculum-status">Loading your live course catalog...</p> : null}
       </div>
     </section>
@@ -956,6 +783,7 @@ function HeroCourseCard({ item, index, isCenter, hasAccess, isSaved, onOpen, onC
 export function HomePage() {
   const [courses, setCourses] = useState([]);
   const [hasAccess, setHasAccess] = useState(() => hasLocalCourseAccess());
+  const [accessResolved, setAccessResolved] = useState(() => hasLocalCourseAccess() || !authenticatedUserId());
   const [wishlist, setWishlist] = useState(() => localWishlist());
   const [activeTab, setActiveTab] = useState("trending");
   const [activeIndex, setActiveIndex] = useState(10);
@@ -1013,6 +841,55 @@ export function HomePage() {
   }, [runtimeReady]);
 
   useEffect(() => {
+    if (!runtimeReady || !authUserId || !courses.length || !window.EduNex?.authRequest) return undefined;
+    let cancelled = false;
+    window.EduNex.authRequest(`/api/user/${encodeURIComponent(authUserId)}/progress`)
+      .then((response) => {
+        if (cancelled) return;
+        const summaries = response?.courseProgress;
+        if (!summaries || typeof summaries !== "object" || Array.isArray(summaries)) return;
+
+        courses.forEach((course) => {
+          const id = courseId(course);
+          const summary = summaries[id];
+          if (!id || !summary) return;
+          const local = readProgressRecord(id, authUserId);
+          const localTime = new Date(local.lastViewedAt || 0).getTime() || 0;
+          const remoteTime = new Date(summary.updatedAt || 0).getTime() || 0;
+          if (localTime > remoteTime) return;
+
+          const videos = Array.isArray(course.videos) ? course.videos : [];
+          const lastWatchedVideoId = String(summary.lastWatchedVideoId || "");
+          const watchedIndex = videos.findIndex((video, index) => videoAliases(video, index).includes(lastWatchedVideoId));
+          const completed = Math.max(0, Number(summary.completedCount || 0));
+          const total = Math.max(videos.length, Number(summary.totalVideos || 0), 1);
+          const percentValue = Number(summary.progressPercent);
+          const percent = Math.max(0, Math.min(100, Number.isFinite(percentValue) ? percentValue : Math.round((completed / total) * 100)));
+          const videoProgress = Object.values(summary.videoProgress || {});
+          const nextRecord = {
+            ...local,
+            viewed: Boolean(summary.updatedAt || lastWatchedVideoId || completed > 0 || percent > 0),
+            lastViewedAt: summary.updatedAt || local.lastViewedAt || "",
+            lastWatchedVideoId: lastWatchedVideoId || local.lastWatchedVideoId || "",
+            lessonIndex: watchedIndex >= 0 ? watchedIndex : Math.max(0, Math.min(Number(local.lessonIndex || completed || 0), total - 1)),
+            completed,
+            percent,
+            watchedSeconds: videoProgress.reduce((sum, row) => sum + Math.max(0, Number(row?.watchedSeconds || 0)), 0),
+            durationSeconds: videoProgress.reduce((sum, row) => sum + Math.max(0, Number(row?.durationSeconds || 0)), 0),
+          };
+          try {
+            localStorage.setItem(`edunexCourseProgress:${authUserId}:${id}`, JSON.stringify(nextRecord));
+          } catch (_) {}
+        });
+        setProgressVersion((version) => version + 1);
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [runtimeReady, authUserId, courses]);
+
+  useEffect(() => {
     const syncAuth = () => setAuthUserId(authenticatedUserId());
     const syncProgress = () => setProgressVersion((version) => version + 1);
     window.addEventListener("edunex:auth-changed", syncAuth);
@@ -1036,9 +913,11 @@ export function HomePage() {
     if (!accessToken) {
       setWishlist(nextWishlist);
       setHasAccess(localAccess);
+      setAccessResolved(true);
       return undefined;
     }
 
+    setAccessResolved(false);
     Promise.allSettled([
       window.EduNex.authRequest("/api/wishlist"),
       window.EduNex.authRequest("/api/payment/subscription-status"),
@@ -1052,12 +931,13 @@ export function HomePage() {
       setHasAccess(accessResult.status === "fulfilled"
         ? Boolean(window.EduNex?.hasCourseAccess?.(accessResult.value) || localAccess)
         : localAccess);
+      setAccessResolved(true);
     });
 
     return () => {
       cancelled = true;
     };
-  }, [runtimeReady]);
+  }, [runtimeReady, authUserId]);
 
   const currentItems = useMemo(() => itemsForTab(activeTab, courses), [activeTab, courses, authUserId, progressVersion]);
   const loop = useMemo(() => repeatedItems(currentItems), [currentItems]);
@@ -1542,7 +1422,7 @@ export function HomePage() {
               Explore Courses
               <MaterialIcon className="text-[19px]">arrow_forward</MaterialIcon>
             </a>
-            <a href="payment.html" className="hero-cta-secondary">Try 24 Hours for ₹1</a>
+            {!hasAccess && accessResolved ? <a href="payment.html" className="hero-cta-secondary">Try 24 Hours for ₹1</a> : null}
           </div>
 
           <div className="hero-search-block">
@@ -1572,7 +1452,7 @@ export function HomePage() {
           </div>
         </section>
 
-        <CurriculumShowcase courses={courses} status={status} onOpenCourse={openCourse} authUserId={authUserId} hasAccess={hasAccess} />
+        <CurriculumShowcase courses={courses} status={status} authUserId={authUserId} hasAccess={hasAccess} accessResolved={accessResolved} />
       </main>
     </div>
   );

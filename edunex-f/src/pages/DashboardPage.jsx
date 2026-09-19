@@ -221,6 +221,7 @@ function categoryName(course) {
 
 export function DashboardPage() {
   const [allowed, setAllowed] = useState(null);
+  const [subscription, setSubscription] = useState(null);
   const [courses, setCourses] = useState([]);
   const [recommendations, setRecommendations] = useState([]);
   const [loadError, setLoadError] = useState("");
@@ -259,10 +260,11 @@ export function DashboardPage() {
       return null;
     }
     try {
-      const subscription = await window.EduNex.checkSubscription();
+      const nextSubscription = await window.EduNex.checkSubscription();
+      setSubscription(nextSubscription || {});
       return {
-        data: subscription,
-        open: Boolean(window.EduNex.hasCourseAccess(subscription) || subscription?.hasCourseAccess || subscription?.courseIds?.length),
+        data: nextSubscription,
+        open: Boolean(window.EduNex.hasCourseAccess(nextSubscription) || nextSubscription?.hasCourseAccess || nextSubscription?.courseIds?.length),
       };
     } catch (error) {
       const message = String(error?.message || "");
@@ -346,6 +348,42 @@ export function DashboardPage() {
     };
   }, []);
 
+  useEffect(() => {
+    if (allowed !== false) return undefined;
+
+    const scrollTop = window.scrollY || document.documentElement.scrollTop || 0;
+    const htmlStyle = document.documentElement.style;
+    const bodyStyle = document.body.style;
+    const previous = {
+      htmlOverflow: htmlStyle.overflow,
+      bodyOverflow: bodyStyle.overflow,
+      bodyPosition: bodyStyle.position,
+      bodyTop: bodyStyle.top,
+      bodyLeft: bodyStyle.left,
+      bodyRight: bodyStyle.right,
+      bodyWidth: bodyStyle.width,
+    };
+
+    htmlStyle.overflow = "hidden";
+    bodyStyle.overflow = "hidden";
+    bodyStyle.position = "fixed";
+    bodyStyle.top = `-${scrollTop}px`;
+    bodyStyle.left = "0";
+    bodyStyle.right = "0";
+    bodyStyle.width = "100%";
+
+    return () => {
+      htmlStyle.overflow = previous.htmlOverflow;
+      bodyStyle.overflow = previous.bodyOverflow;
+      bodyStyle.position = previous.bodyPosition;
+      bodyStyle.top = previous.bodyTop;
+      bodyStyle.left = previous.bodyLeft;
+      bodyStyle.right = previous.bodyRight;
+      bodyStyle.width = previous.bodyWidth;
+      if (scrollTop > 0) window.scrollTo({ top: scrollTop, left: 0, behavior: "auto" });
+    };
+  }, [allowed]);
+
   const realCourses = courses;
   const withVideos = realCourses.filter((course) => Array.isArray(course.videos) && course.videos.length);
   const shown = (withVideos.length ? withVideos : realCourses).slice(0, 8);
@@ -355,20 +393,26 @@ export function DashboardPage() {
   });
   const recommendedCourses = recommendations.length ? recommendations : realCourses.slice(0, 4);
   const activity = useMemo(() => buildDashboardActivity(realCourses, new Date(), progressByCourse), [progressByCourse, progressVersion, realCourses]);
+  const subscriptionState = String(subscription?.subscriptionDocStatus || subscription?.subscriptionStatus || subscription?.status || "none").toLowerCase();
+  const needsRenewal = subscription?.trialEligible === false || ["expired", "cancelled", "paused"].includes(subscriptionState);
 
   return (
     <div className="react-page-root" data-page="dashboard.html">
-      <div className={`trial-gate${allowed === false ? " is-open" : ""}`} id="trialGate" role="dialog" aria-modal="true" aria-labelledby="trialGateTitle">
-        <div className="trial-gate-card">
-          <div className="trial-gate-icon"><i className="fas fa-bolt" aria-hidden="true"></i></div>
-          <div className="trial-gate-title" id="trialGateTitle">Start your 24-hour trial for ₹1</div>
-          <p>Your dashboard unlocks after you subscribe. After the 24-hour trial, access renews at ₹499/month until cancelled.</p>
-          <div className="trial-gate-actions">
-            <a className="trial-gate-btn" href="payment.html"><i className="fas fa-arrow-right" aria-hidden="true"></i> Try 24 Hours for ₹1</a>
-            <a className="trial-gate-btn secondary" href="courses.html">Browse Courses</a>
+      {allowed === false ? (
+        <div className="trial-gate is-open" id="trialGate" role="dialog" aria-modal="true" aria-labelledby="trialGateTitle">
+          <div className="trial-gate-card">
+            <div className="trial-gate-icon"><i className="fas fa-bolt" aria-hidden="true"></i></div>
+            <div className="trial-gate-title" id="trialGateTitle">{needsRenewal ? "Subscribe for ₹499/month" : "Start your 24-hour trial for ₹1"}</div>
+            <p>{needsRenewal
+              ? "Your one-time trial or previous access has ended. Continue with the monthly plan to unlock your courses, progress, and AI tutor."
+              : "Your dashboard unlocks after you subscribe. After the 24-hour trial, access renews at ₹499/month until cancelled."}</p>
+            <div className="trial-gate-actions">
+              <a className="trial-gate-btn" href="payment.html"><i className="fas fa-arrow-right" aria-hidden="true"></i> {needsRenewal ? "Subscribe for ₹499/month" : "Try 24 Hours for ₹1"}</a>
+              <a className="trial-gate-btn secondary" href="courses.html">Browse Courses</a>
+            </div>
           </div>
         </div>
-      </div>
+      ) : null}
 
       <div className="dash-page" style={allowed === false ? { filter: "blur(6px)", pointerEvents: "none" } : undefined}>
         <div className="welcome-row">

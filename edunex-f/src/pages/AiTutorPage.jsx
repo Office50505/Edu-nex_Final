@@ -153,12 +153,12 @@ export function AiTutorPage() {
         const savedAssistantName = owner ? normalizeAssistantName(localStorage.getItem(assistantNameStorageKey(owner))) : "";
         const savedSetupComplete = Boolean(owner && localStorage.getItem(assistantSetupStorageKey(owner)) === "true");
         const stored = owner ? readStoredSessions(owner) : [];
-        const initial = stored[0] || createConversationSession();
-        const nextConversations = stored.length ? stored : [initial];
-        historyRef.current = historyFromMessages(initial.messages);
+        const initial = createConversationSession();
+        const nextConversations = [initial, ...stored].slice(0, MAX_STORED_SESSIONS);
+        historyRef.current = [];
         setConversations(nextConversations);
         setActiveConversationId(initial.id);
-        setMessages(initial.messages);
+        setMessages([]);
         setHistoryOpen(false);
         setStatus("Active now");
         setAssistantName(savedAssistantName || DEFAULT_ASSISTANT_NAME);
@@ -352,9 +352,6 @@ export function AiTutorPage() {
               </div>
               <button className="tutor-icon-button tutor-header-new-chat" type="button" aria-label="Start a new chat" title="New chat" onClick={newChat}>
                 <EnxIcon name="plus" />
-              </button>
-              <button className="tutor-icon-button tutor-report-problem" type="button" aria-label="Report a problem" title="Report a problem" onClick={() => window.dispatchEvent(new Event("skillomate:open-problem-report"))}>
-                <EnxIcon name="flag" />
               </button>
             </div>
 

@@ -98,7 +98,7 @@ function markCourseViewed(id) {
 
 function ctaHref(course) {
   const id = courseId(course);
-  const next = `/videos.html?courseId=${encodeURIComponent(id)}&video=0`;
+  const next = `/videos.html?courseId=${encodeURIComponent(id)}`;
   return `payment.html?courseId=${encodeURIComponent(id)}&next=${encodeURIComponent(next)}`;
 }
 

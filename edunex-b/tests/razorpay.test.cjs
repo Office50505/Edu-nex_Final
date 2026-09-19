@@ -5,6 +5,8 @@ const fs = require('node:fs');
 const vm = require('node:vm');
 const path = require('node:path');
 const { validSignature, createPayload, entitlement } = require('../services/razorpayService');
+const { hasTrialHistoryMarker, hasUsedIntroTrial } = require('../services/trialEligibility');
+const { resolveSubscriptionAccess } = require('../services/subscriptionAccess');
 const now = Date.now();
 const billing = { paymentType: 'trial', trialAmount: 100, monthlyAmount: 50000, trialEnd: new Date(now + 86400000) };
 const remote = { status: 'authenticated' };
@@ -39,6 +41,16 @@ test('captured trial access expires at scheduled first billing', () => {
   assert.equal(entitlement(billing, remote, [trial], now).status, 'trial');
   assert.notEqual(entitlement(billing, remote, [trial], now + 86400001).status, 'trial');
 });
+test('cancelling auto-renew keeps the already-paid trial until it expires', () => {
+  assert.equal(entitlement(billing, { status: 'cancelled' }, [trial], now).status, 'trial');
+  assert.notEqual(entitlement(billing, { status: 'cancelled' }, [trial], now + 86400001).status, 'trial');
+});
+test('the introductory trial is permanently marked as used by account history or a paid trial order', async () => {
+  assert.equal(hasTrialHistoryMarker({ trialStartedAt: new Date(now) }), true);
+  assert.equal(hasTrialHistoryMarker({ status: 'expired' }, { subscriptionStatus: '1rs trial' }), true);
+  assert.equal(await hasUsedIntroTrial('learner', { status: 'expired' }, {}, { exists: async query => query.orderType === 'trial_charge' && query.status === 'paid' }), true);
+  assert.equal(await hasUsedIntroTrial('learner', { status: 'expired' }, {}, { exists: async () => null }), false);
+});
 test('renewal requires a paid current-period invoice; stale events cannot extend access', () => {
   assert.equal(entitlement(billing, { status: 'active' }, [], now).status, 'expired');
   assert.equal(entitlement(billing, { status: 'active' }, [monthly], now).status, 'active');
@@ -48,6 +60,11 @@ test('cancellation retains already-paid time; full refunds revoke it and partial
   assert.equal(entitlement(billing, { status: 'cancelled' }, [monthly], now).status, 'active');
   assert.equal(entitlement(billing, remote, [{ ...monthly, payment: { ...monthly.payment, amount_refunded: 50000 } }], now).status, 'pending');
   assert.equal(entitlement(billing, remote, [{ ...monthly, payment: { ...monthly.payment, amount_refunded: 100 } }], now).status, 'active');
+});
+test('an expired mandate does not revoke a paid monthly period that has not ended', () => {
+  const access = resolveSubscriptionAccess({ status: 'expired', subscriptionType: 'monthly', currentPeriodEnd: new Date(now + 86400000) }, {}, now);
+  assert.equal(access.active, true);
+  assert.equal(access.status, 'active');
 });
 test('wrong currency and wrong amount cannot unlock access', () => {
   for (const change of [{ currency: 'USD' }, { amount: 1 }]) assert.notEqual(entitlement(billing, remote, [{ ...monthly, payment: { ...monthly.payment, ...change } }], now).status, 'active');
@@ -59,6 +76,8 @@ function controller(billing = {}) {
     require(name) {
       if (name === 'node:crypto') return crypto;
       if (name.includes('razorpayService')) return { validSignature, legacyMode: () => 'test', config: (mode = 'test') => ({ webhookSecret: mode === 'test' ? 'secret' : 'live-secret' }), requireConfig: () => ({ secret: 'secret' }), api: () => { upstreamCalls++; } };
+      if (name.includes('trialEligibility')) return { hasUsedIntroTrial: async () => false };
+      if (name.includes('subscriptionAccess')) return { resolveSubscriptionAccess };
       return { findById: async () => billing };
     },
   });
@@ -99,6 +118,8 @@ function flow(mode = 'test') {
         if (route.startsWith('/invoices?')) return { items: [invoice] };
         return { id: 'pay_test', ...monthly.payment };
       } };
+      if (name.includes('trialEligibility')) return { hasUsedIntroTrial: async () => false };
+      if (name.includes('subscriptionAccess')) return { resolveSubscriptionAccess };
       return models[name.split('/').at(-1)];
     },
   });
