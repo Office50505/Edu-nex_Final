@@ -3,6 +3,8 @@ const Subscription = require('../models/Subscription');
 const SubscriptionEvent = require('../models/SubscriptionEvent');
 const User = require('../models/User');
 const phonePeService = require('../services/phonePeService');
+const phonePeEventClaims = require('../services/phonePeEventClaims');
+const { isPhonePeEnabled, isPhonePeNewPaymentsEnabled } = require('../services/phonePePolicy');
 const { resolveSubscriptionAccess } = require('../services/subscriptionAccess');
 const { activeCourseEntitlements } = require('../services/courseAccess');
 const { hasUsedIntroTrial } = require('../services/trialEligibility');
@@ -162,7 +164,7 @@ async function createSubscriptionEventOnce({
 }
 
 async function createTrialSubscription({ userId, order, mandateId, metadata }) {
-  const now = new Date();
+  const now = order.paidAt || new Date();
   const trialExpiresAt = addHours(now, trialDurationHours);
   const subscription = await Subscription.findOneAndUpdate(
     { user: userId },
@@ -228,7 +230,7 @@ async function applySuccessfulPayment(order, status) {
   }
 
   if (order.orderType === 'subscription_charge') {
-    const now = new Date();
+    const now = order.paidAt || new Date();
     const nextBillingAt = addMonths(now, 1);
     const subscription = await Subscription.findOneAndUpdate(
       { user: order.user },
@@ -267,6 +269,9 @@ async function applyFailedPayment(order, status = {}) {
 
 async function initiateTrial(req, res) {
   try {
+    if (!isSimulatedPaymentEnabled() && !isPhonePeNewPaymentsEnabled(process.env)) {
+      return res.status(410).json({ error: 'PhonePe checkout is no longer available.' });
+    }
     const paymentType = req.body.paymentType === 'monthly' ? 'monthly' : 'trial';
     const existingSubscription = await Subscription.findOne({ user: req.user._id });
     const trialUsed = await hasUsedIntroTrial(req.user._id, existingSubscription, req.user);
@@ -483,6 +488,10 @@ async function completeSimulatedPayment(req, res) {
 }
 
 async function paymentCallback(req, res) {
+  if (!isPhonePeEnabled(process.env)) {
+    return res.status(410).json({ error: 'PhonePe payment confirmation is disabled.' });
+  }
+  let claim = null;
   try {
     const merchantTransactionId = req.query.merchantTransactionId || req.query.transactionId;
     if (!merchantTransactionId) {
@@ -494,179 +503,192 @@ async function paymentCallback(req, res) {
       return res.redirect(frontendDashboardUrl);
     }
 
+    claim = await phonePeEventClaims.claimPhonePeEvent({
+      eventKey: phonePeEventClaims.callbackEventIdentity(merchantTransactionId),
+      source: 'callback',
+      eventType: 'PAYMENT_RESULT',
+    });
+    if (!claim.acquired) {
+      return res.status(200).json({ success: true, duplicate: true });
+    }
+
     const status = await phonePeService.verifyPaymentStatus(merchantTransactionId);
     if (status.success) {
       await applySuccessfulPayment(order, status);
-    } else {
+    } else if (['FAILED', 'CANCELLED', 'EXPIRED', 'DECLINED'].includes(status.state)) {
       await applyFailedPayment(order, status);
+      await phonePeEventClaims.markPhonePeEventProcessed(claim);
       return res.redirect(frontendPaymentFailedUrl);
+    } else {
+      throw new Error('PhonePe payment is not in a terminal state.');
     }
 
+    await phonePeEventClaims.markPhonePeEventProcessed(claim);
     return res.redirect(withQueryParams(frontendPaymentSuccessUrl, { merchantTransactionId }));
   } catch (error) {
-    console.error('PhonePe callback error:', error);
-    return res.redirect(frontendDashboardUrl);
+    await phonePeEventClaims.markPhonePeEventFailed(claim, 'callback_processing_error').catch(() => {});
+    console.error('PhonePe callback processing failed; the event remains retryable.');
+    return res.status(503).json({ error: 'Payment confirmation is temporarily unavailable.' });
   }
 }
 
+async function processPhonePeWebhook({ payload, data, event, merchantTransactionId, phonePeTransactionId }) {
+  const phonePeCustomerId = extractPhonePeCustomerId(data);
+  const amount = data.amount || null;
+  const order = merchantTransactionId
+    ? await Order.findOne({ phonePeMerchantTransactionId: merchantTransactionId })
+    : null;
+  if (order && await Subscription.exists({ user: order.user, gateway: 'razorpay' })) return;
+  let subscription = order?.subscription ? await Subscription.findById(order.subscription) : null;
+
+  if (!subscription && order) subscription = await Subscription.findOne({ user: order.user });
+  if (!subscription && data.merchantSubscriptionId) {
+    subscription = await Subscription.findOne({ phonePeSubscriptionId: data.merchantSubscriptionId });
+  }
+  if (!subscription && order) {
+    subscription = await Subscription.findOneAndUpdate(
+      { user: order.user },
+      { $setOnInsert: { user: order.user, phonePeMerchantId: merchantId } },
+      { new: true, upsert: true, setDefaultsOnInsert: true }
+    );
+    await Order.findByIdAndUpdate(order._id, { subscription: subscription._id });
+  }
+
+  if (subscription?.gateway === 'razorpay') return;
+  if (!subscription) {
+    console.warn('PhonePe webhook received without a matching legacy subscription.');
+    return;
+  }
+
+  const userId = order?.user || subscription.user;
+  if (event === 'MANDATE_APPROVED') {
+    subscription.phonePeMandateId = data.mandateId || data.phonePeMandateId || subscription.phonePeMandateId;
+    if (phonePeCustomerId) {
+      if (order) {
+        order.phonePeCustomerId = phonePeCustomerId;
+        await order.save();
+      }
+      await User.findByIdAndUpdate(userId, { phonePeCustomerId });
+    }
+    if (order?.phonePeCustomerId) {
+      await User.findByIdAndUpdate(userId, { phonePeCustomerId: order.phonePeCustomerId });
+    }
+    await subscription.save();
+    await promoteTrialToSubscribedIfEligible(subscription, userId);
+  }
+
+  if (event === 'PAYMENT_SUCCESS') {
+    if (order) {
+      order.status = 'paid';
+      order.paidAt = order.paidAt || new Date();
+      order.phonePeTransactionId = phonePeTransactionId;
+      order.phonePePaymentInstrument = normalizePaymentInstrument(data.paymentInstrument) || order.phonePePaymentInstrument;
+      if (phonePeCustomerId) order.phonePeCustomerId = phonePeCustomerId;
+      await order.save();
+    }
+
+    if (order?.orderType === 'trial_charge') {
+      const now = order.paidAt || new Date();
+      subscription.status = '1rs trial';
+      subscription.trialStartedAt = subscription.trialStartedAt || now;
+      subscription.trialExpiresAt = subscription.trialExpiresAt || addHours(now, trialDurationHours);
+      await User.findByIdAndUpdate(userId, {
+        phonePeCustomerId: phonePeCustomerId || order.phonePeCustomerId || null,
+        subscriptionStatus: '1rs trial',
+        subscriptionId: subscription._id,
+      });
+    }
+
+    if (order?.orderType === 'subscription_charge') {
+      const now = order.paidAt || new Date();
+      const nextBillingAt = addMonths(now, 1);
+      subscription.status = 'subscribed';
+      subscription.subscriptionType = 'monthly';
+      subscription.trialConverted = true;
+      subscription.currentPeriodStart = now;
+      subscription.currentPeriodEnd = nextBillingAt;
+      subscription.nextBillingAt = nextBillingAt;
+      await User.findByIdAndUpdate(userId, {
+        phonePeCustomerId: phonePeCustomerId || order.phonePeCustomerId || null,
+        subscriptionStatus: 'subscribed',
+        subscriptionId: subscription._id,
+      });
+    }
+    await subscription.save();
+  }
+
+  if (event === 'PAYMENT_FAILED') {
+    if (order) {
+      order.status = 'failed';
+      order.phonePeTransactionId = phonePeTransactionId;
+      await order.save();
+    }
+    if (order?.orderType === 'subscription_charge') {
+      subscription.status = 'expired';
+      await subscription.save();
+      await User.findByIdAndUpdate(userId, { subscriptionStatus: 'expired' });
+    }
+  }
+
+  if (event === 'SUBSCRIPTION_CANCELLED' || event === 'MANDATE_REVOKED') {
+    const now = new Date();
+    const hasRemainingAccess = subscription.currentPeriodEnd && now < subscription.currentPeriodEnd;
+    subscription.status = hasRemainingAccess ? 'subscribed' : 'expired';
+    subscription.cancelledAt = subscription.cancelledAt || now;
+    subscription.phonePeMandateId = null;
+    await subscription.save();
+    await User.findByIdAndUpdate(userId, { subscriptionStatus: hasRemainingAccess ? 'subscribed' : 'expired' });
+  }
+
+  await createSubscriptionEventOnce({
+    subscription: subscription._id,
+    user: userId,
+    event,
+    amount,
+    phonePeTransactionId,
+    phonePeMerchantTransactionId: merchantTransactionId,
+    metadata: payload,
+  });
+}
+
 async function handleWebhook(req, res) {
+  if (!isPhonePeEnabled(process.env)) {
+    return res.status(410).json({ error: 'PhonePe webhook is disabled.' });
+  }
+  let claim = null;
   try {
     const xVerify = req.headers['x-verify'];
     if (!phonePeService.verifyWebhookSignature(req.body, xVerify)) {
       return res.status(400).json({ error: 'Invalid PhonePe signature' });
     }
-
-    const payload = extractWebhookPayload(req);
+    let payload;
+    try {
+      payload = extractWebhookPayload(req);
+    } catch {
+      return res.status(400).json({ error: 'Invalid PhonePe payload' });
+    }
     const data = getWebhookData(payload);
-    const event = getEventName(payload);
-    const merchantTransactionId = data.merchantTransactionId || data.phonePeMerchantTransactionId;
+    const event = String(getEventName(payload) || '').trim().toUpperCase();
+    const merchantTransactionId = data.merchantTransactionId || data.phonePeMerchantTransactionId || null;
     const phonePeTransactionId = data.transactionId || data.phonePeTransactionId || null;
-    const phonePeCustomerId = extractPhonePeCustomerId(data);
-    const amount = data.amount || null;
-    const order = merchantTransactionId
-      ? await Order.findOne({ phonePeMerchantTransactionId: merchantTransactionId })
-      : null;
-    if (order && await Subscription.exists({ user: order.user, gateway: 'razorpay' })) return res.sendStatus(200);
-    let subscription = order?.subscription ? await Subscription.findById(order.subscription) : null;
-
-    if (!subscription && order) {
-      subscription = await Subscription.findOne({ user: order.user });
-    }
-
-    if (!subscription && data.merchantSubscriptionId) {
-      subscription = await Subscription.findOne({ phonePeSubscriptionId: data.merchantSubscriptionId });
-    }
-
-    if (!subscription && order) {
-      subscription = await Subscription.findOneAndUpdate(
-        { user: order.user },
-        {
-          $setOnInsert: {
-            user: order.user,
-            phonePeMerchantId: merchantId,
-          },
-        },
-        { new: true, upsert: true, setDefaultsOnInsert: true }
-      );
-      await Order.findByIdAndUpdate(order._id, { subscription: subscription._id });
-    }
-
-    if (subscription?.gateway === 'razorpay') return res.sendStatus(200);
-    if (!subscription) {
-      console.warn('PhonePe webhook received without matching subscription', payload);
-      return res.sendStatus(200);
-    }
-
-    const userId = order?.user || subscription.user;
-    const alreadyProcessed = phonePeTransactionId
-      ? await SubscriptionEvent.findOne({ phonePeTransactionId, event })
-      : null;
-    if (alreadyProcessed) {
-      return res.sendStatus(200);
-    }
-
-    if (event === 'MANDATE_APPROVED') {
-      subscription.phonePeMandateId = data.mandateId || data.phonePeMandateId || subscription.phonePeMandateId;
-      if (phonePeCustomerId) {
-        if (order) {
-          order.phonePeCustomerId = phonePeCustomerId;
-          await order.save();
-        }
-        await User.findByIdAndUpdate(userId, { phonePeCustomerId });
-      }
-      // Propagate the PhonePe customer id from the order into the user record
-      if (order?.phonePeCustomerId) {
-        await User.findByIdAndUpdate(userId, {
-          phonePeCustomerId: order.phonePeCustomerId,
-        });
-      }
-      await subscription.save();
-      await promoteTrialToSubscribedIfEligible(subscription, userId);
-    }
-
-    if (event === 'PAYMENT_SUCCESS') {
-      if (order) {
-        order.status = 'paid';
-        order.paidAt = order.paidAt || new Date();
-        order.phonePeTransactionId = phonePeTransactionId;
-        order.phonePePaymentInstrument = normalizePaymentInstrument(data.paymentInstrument) || order.phonePePaymentInstrument;
-        if (phonePeCustomerId) {
-          order.phonePeCustomerId = phonePeCustomerId;
-        }
-        await order.save();
-      }
-
-      if (order?.orderType === 'trial_charge') {
-        const now = new Date();
-        subscription.status = '1rs trial';
-        subscription.trialStartedAt = subscription.trialStartedAt || now;
-        subscription.trialExpiresAt = subscription.trialExpiresAt || addHours(now, trialDurationHours);
-        await User.findByIdAndUpdate(userId, {
-          phonePeCustomerId: phonePeCustomerId || order?.phonePeCustomerId || null,
-          subscriptionStatus: '1rs trial',
-          subscriptionId: subscription._id,
-        });
-      }
-
-      if (order?.orderType === 'subscription_charge') {
-        const now = new Date();
-        const nextBillingAt = addMonths(now, 1);
-        subscription.status = 'subscribed';
-        subscription.subscriptionType = 'monthly';
-        subscription.trialConverted = true;
-        subscription.currentPeriodStart = now;
-        subscription.currentPeriodEnd = nextBillingAt;
-        subscription.nextBillingAt = nextBillingAt;
-        await User.findByIdAndUpdate(userId, {
-          phonePeCustomerId: phonePeCustomerId || order?.phonePeCustomerId || null,
-          subscriptionStatus: 'subscribed',
-          subscriptionId: subscription._id,
-        });
-      }
-
-      await subscription.save();
-    }
-
-    if (event === 'PAYMENT_FAILED') {
-      if (order) {
-        order.status = 'failed';
-        order.phonePeTransactionId = phonePeTransactionId;
-        await order.save();
-      }
-
-      if (order?.orderType === 'subscription_charge') {
-        subscription.status = 'expired';
-        await subscription.save();
-        await User.findByIdAndUpdate(userId, { subscriptionStatus: 'expired' });
-      }
-    }
-
-    if (event === 'SUBSCRIPTION_CANCELLED' || event === 'MANDATE_REVOKED') {
-      const now = new Date();
-      const hasRemainingAccess = subscription.currentPeriodEnd && now < subscription.currentPeriodEnd;
-      subscription.status = hasRemainingAccess ? 'subscribed' : 'expired';
-      subscription.cancelledAt = subscription.cancelledAt || new Date();
-      subscription.phonePeMandateId = null;
-      await subscription.save();
-      await User.findByIdAndUpdate(userId, {
-        subscriptionStatus: hasRemainingAccess ? 'subscribed' : 'expired',
-      });
-    }
-
-    await createSubscriptionEventOnce({
-      subscription: subscription._id,
-      user: userId,
+    const eventKey = phonePeEventClaims.webhookEventIdentity({
       event,
-      amount,
+      merchantTransactionId,
       phonePeTransactionId,
-      phonePeMerchantTransactionId: merchantTransactionId,
-      metadata: payload,
+      merchantSubscriptionId: data.merchantSubscriptionId,
     });
+    if (!eventKey) return res.status(400).json({ error: 'PhonePe event identity is required' });
 
+    claim = await phonePeEventClaims.claimPhonePeEvent({ eventKey, source: 'webhook', eventType: event });
+    if (!claim.acquired) return res.sendStatus(200);
+
+    await processPhonePeWebhook({ payload, data, event, merchantTransactionId, phonePeTransactionId });
+    await phonePeEventClaims.markPhonePeEventProcessed(claim);
     return res.sendStatus(200);
   } catch (error) {
-    console.error('PhonePe webhook processing error:', error);
-    return res.sendStatus(200);
+    await phonePeEventClaims.markPhonePeEventFailed(claim, 'webhook_processing_error').catch(() => {});
+    console.error('PhonePe webhook processing failed; the event remains retryable.');
+    return res.status(503).json({ error: 'Webhook processing is temporarily unavailable.' });
   }
 }
 

@@ -23,6 +23,9 @@
     "test:maintenance": "node --test tests/admin-maintenance.test.cjs tests/system-health.test.cjs",
     "test:cache": "node --test tests/shared-cache.test.cjs",
     "test:cron-locks": "node --test tests/distributed-lock.test.cjs",
+    "test:phonepe-legacy": "node --test tests/phonepe-multi-instance.test.cjs",
+    "audit:phonepe-cleanup": "node scripts/audit-phonepe-cleanup.cjs",
+    "cleanup:phonepe": "node scripts/cleanup-phonepe.cjs",
     "test:certification": "node --test tests/certification.test.cjs",
     "test:thumbnail-storage": "node --test tests/thumbnail-cdn.test.cjs",
     "test:video": "node --test tests/cloudfront.test.cjs tests/video-import.test.cjs"

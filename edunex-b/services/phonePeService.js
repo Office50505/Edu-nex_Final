@@ -210,6 +210,7 @@ async function verifyPaymentStatus(merchantTransactionId) {
 
   return {
     success,
+    state: String(state || '').toUpperCase(),
     transactionId: data.transactionId || data.orderId || data.merchantOrderId || merchantTransactionId,
     paymentInstrument: getPaymentInstrumentFromStatus(data),
     mandateId: data.mandateId || data.subscriptionId || null,

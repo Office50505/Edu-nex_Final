@@ -8,6 +8,8 @@ const net = require('net');
 const path = require('path');
 const fs = require('fs');
 const helmet = require('helmet');
+const { getMongoConnectionOptions } = require('./config/mongodb');
+const { createReadinessHandler } = require('./services/readinessService');
 const {
   areRateLimitsDisabled,
   canDisableRateLimitsInProduction,
@@ -150,6 +152,7 @@ const {
   clearCacheNamespace,
   getCacheBackend,
   getJsonCache,
+  getSharedRedisClient,
   setJsonCache,
 } = require('./services/cacheService');
 
@@ -640,14 +643,17 @@ if (SERVE_FRONTEND) {
 if (!/^mongodb(\+srv)?:\/\//.test(MONGODB_URI)) {
   console.error('❌ MongoDB connection error: MONGODB_URI must start with mongodb:// or mongodb+srv://');
 } else {
-  mongoose.connect(MONGODB_URI).then(() => {
+  mongoose.connect(MONGODB_URI, getMongoConnectionOptions()).then(() => {
     console.log('✅ MongoDB connected');
     if (process.env.DISABLE_BACKGROUND_JOBS !== 'true') {
       require('./jobs/courseStatsJob');
       require('./jobs/subscriptionTasks');
     }
   }).catch((err) => {
-    console.error('❌ MongoDB connection error:', err.message);
+    const safeCode = typeof err?.code === 'string' && /^[A-Z0-9_]+$/.test(err.code)
+      ? ` (${err.code})`
+      : '';
+    console.error(`❌ MongoDB connection failed${safeCode}`);
   });
 }
 
@@ -681,6 +687,11 @@ app.get('/api/health', (req, res) => {
     cache: getCacheBackend(),
   });
 });
+
+app.get('/api/ready', createReadinessHandler({
+  mongoose,
+  getSharedRedisClient,
+}));
 
 app.get('/api/health/db', async (req, res) => {
   const states = ['disconnected', 'connected', 'connecting', 'disconnecting'];
