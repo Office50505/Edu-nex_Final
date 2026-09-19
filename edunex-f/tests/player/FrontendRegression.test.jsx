@@ -266,6 +266,10 @@ describe("reported frontend regressions", () => {
   it("renders cached profile data immediately while the server refresh is pending", () => {
     localStorage.setItem("edunexAccessToken", "active-token");
     localStorage.setItem("edunexUser", JSON.stringify(cachedUser));
+    const clearAuth = vi.fn(() => {
+      localStorage.removeItem("edunexAccessToken");
+      localStorage.removeItem("edunexUser");
+    });
     window.EduNex = {
       request: vi.fn(),
       authRequest: vi.fn(() => new Promise(() => {})),
@@ -274,6 +278,7 @@ describe("reported frontend regressions", () => {
       applyTheme: vi.fn(),
       avatarFallback: vi.fn(() => "fallback.png"),
       renderUserAvatar: vi.fn(),
+      clearAuth,
     };
     render(<ProfilePage />);
     expect(screen.getByText("Aarav Learner")).toBeTruthy();
@@ -292,6 +297,10 @@ describe("reported frontend regressions", () => {
     ].forEach(([label, href]) => {
       expect(screen.getByRole("link", { name: label }).getAttribute("href")).toBe(href);
     });
+    fireEvent.click(screen.getByRole("button", { name: "Logout from Skillomate" }));
+    expect(window.EduNex.authRequest).toHaveBeenCalledWith("/api/auth/logout", { method: "POST", keepalive: true });
+    expect(clearAuth).toHaveBeenCalledTimes(1);
+    expect(localStorage.getItem("edunexAccessToken")).toBeNull();
   });
 
   it("converts course Markdown into clean display text", () => {
@@ -459,6 +468,20 @@ describe("reported frontend regressions", () => {
     window.EduNex = { getUser: () => cachedUser };
     localStorage.setItem("edunexCourseProgress:course-1", JSON.stringify({ completed: 20, percent: 59, lessonIndex: 20 }));
     expect(dashCourseProgress({ _id: "course-1", videos: Array.from({ length: 34 }) }).percent).toBe(59);
+  });
+
+  it("pastes a complete mobile number into the login field", () => {
+    render(<LoginPage />);
+    const phone = screen.getByLabelText("Mobile Number");
+    fireEvent.paste(phone, { clipboardData: { getData: () => "+91 98765-43210" } });
+    expect(phone.value).toBe("9876543210");
+  });
+
+  it("pastes a complete mobile number into the signup field", () => {
+    render(<SignupPage />);
+    const phone = screen.getByLabelText("Phone Number");
+    fireEvent.paste(phone, { clipboardData: { getData: () => "0091 98765 43210" } });
+    expect(phone.value).toBe("9876543210");
   });
 
   it("submits signup with Enter semantics and supports desktop age dragging", async () => {

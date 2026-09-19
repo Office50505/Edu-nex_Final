@@ -1741,10 +1741,8 @@ export const pages = {
           </div>
           <div class="course-price-row">
             <div class="price-left">
-              <span class="price-original">₹4,999</span>
               <span class="price-trial">₹1 Trial</span>
             </div>
-            <span class="price-off">99% OFF</span>
           </div>
           <div class="course-card-actions">
             <button class="btn-trial" data-course-id="\${escapeHtml(course.id)}">\${escapeHtml(ctaLabel)}</button>

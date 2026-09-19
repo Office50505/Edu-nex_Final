@@ -1,4 +1,4 @@
-import { saveLoginPrefill, loginDestination, readSignupPrefill, clearSignupPrefill } from "../lib/authNavigation.js";
+import { saveLoginPrefill, loginDestination, readSignupPrefill, clearSignupPrefill, nationalPhoneDigits, pasteNationalPhone } from "../lib/authNavigation.js";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { page as signupPage } from "../generated-pages/signup.html.js";
 import { runLegacyPage } from "../legacyRuntime.js";
@@ -567,10 +567,12 @@ export function SignupPage() {
                 id="phoneInput"
                 placeholder="98765 43210"
                 maxLength={10}
+                inputMode="numeric"
                 autoComplete="tel-national"
                 aria-describedby="step1-err"
                 value={phone}
-                onChange={(event) => setPhone(event.target.value.replace(/\D/g, "").slice(0, 10))}
+                onChange={(event) => setPhone(nationalPhoneDigits(event.target.value))}
+                onPaste={(event) => pasteNationalPhone(event, setPhone)}
               />
             </div>
 

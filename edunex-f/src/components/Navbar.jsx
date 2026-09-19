@@ -125,6 +125,11 @@ export function Navbar({ pageKey, onReportProblem }) {
     void preloadPage(targetPageKey);
   };
   const handleLogout = () => {
+    const serverLogout = window.EduNex?.authRequest?.("/api/auth/logout", {
+      method: "POST",
+      keepalive: true,
+    });
+    void Promise.resolve(serverLogout).catch(() => {});
     clearAuthStorage();
     setAuth({ token: false, user: null });
     setOpen(false);

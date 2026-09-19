@@ -205,11 +205,14 @@ export function ProfilePage() {
   };
 
   const logoutProfile = () => {
-    window.EduNex?.authRequest?.("/api/auth/logout", { method: "POST" }).catch(() => {}).finally(() => {
-      window.EduNex?.clearAuth?.();
-      window.dispatchEvent(new Event("edunex:auth-changed"));
-      window.location.href = "login.html";
+    const serverLogout = window.EduNex?.authRequest?.("/api/auth/logout", {
+      method: "POST",
+      keepalive: true,
     });
+    void Promise.resolve(serverLogout).catch(() => {});
+    window.EduNex?.clearAuth?.();
+    window.dispatchEvent(new Event("edunex:auth-changed"));
+    window.location.href = route("login.html");
   };
 
   const fallbackAvatar = window.EduNex?.avatarFallback?.(user) || FALLBACK_AVATAR;

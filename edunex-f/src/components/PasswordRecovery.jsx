@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { nationalPhoneDigits, pasteNationalPhone } from "../lib/authNavigation.js";
 
 async function requestReset(action, body) {
   const path = `/api/auth/password-reset/${action}`;
@@ -78,7 +79,7 @@ export function PasswordRecovery({ initialPhone, onBack, onComplete }) {
         <label htmlFor="reset-phone">Mobile Number</label>
         <div className="lp-input-wrap">
           <span className="lp-prefix">+91</span>
-          <input id="reset-phone" type="tel" autoComplete="tel-national" inputMode="numeric" maxLength={10} placeholder="Enter your mobile number" value={phone} disabled={sent || busy} onChange={event => setPhone(event.target.value.replace(/\D/g, ""))} />
+          <input id="reset-phone" type="tel" autoComplete="tel-national" inputMode="numeric" maxLength={10} placeholder="Enter your mobile number" value={phone} disabled={sent || busy} onChange={event => setPhone(nationalPhoneDigits(event.target.value))} onPaste={event => pasteNationalPhone(event, setPhone)} />
         </div>
       </div>
       {sent && <>

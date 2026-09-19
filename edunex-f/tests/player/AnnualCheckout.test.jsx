@@ -9,14 +9,14 @@ import { openRazorpay } from '../../src/lib/razorpayCheckout.js';
 vi.mock('../../src/legacyRuntime.js', () => ({ runLegacyPage: () => () => {} }));
 vi.mock('../../src/hooks/usePageStyle.js', () => ({ usePageStyle: () => {} }));
 vi.mock('../../src/hooks/useEduNexRuntimeReady.js', () => ({ useEduNexRuntimeReady: () => true }));
-vi.mock('../../src/lib/razorpayCheckout.js', () => ({ openRazorpay: vi.fn(async () => ({ razorpay_subscription_id: 'sub_annual' })) }));
-const pricing = { annualAmountPaise: 499900, subscriptionAmountPaise: 49900, trialAmountPaise: 100, trialHours: 24, annualAvailable: true };
+vi.mock('../../src/lib/razorpayCheckout.js', () => ({ openRazorpay: vi.fn(async () => ({ razorpay_subscription_id: 'sub_monthly' })) }));
+const pricing = { subscriptionAmountPaise: 49900, trialAmountPaise: 100, trialHours: 24 };
 const response = (data, status = 200) => ({ ok: status < 400, status, json: async () => data, text: async () => JSON.stringify(data) });
 function mockApi(config = pricing, eligible = true) {
   const fetcher = vi.fn(async (url, options) => {
     if (url.endsWith('/config')) return response(config);
     if (url.endsWith('/subscription-status')) return response({ status: 'none', trialEligible: eligible });
-    if (url.endsWith('/initiate-trial')) return response({ gateway: 'razorpay', subscriptionId: 'sub_annual', paymentType: JSON.parse(options.body).paymentType });
+    if (url.endsWith('/initiate-trial')) return response({ gateway: 'razorpay', subscriptionId: 'sub_monthly', paymentType: JSON.parse(options.body).paymentType });
     if (url.endsWith('/razorpay/verify')) return response({ accessGranted: true });
     throw Error('Unexpected URL ' + url);
   });
@@ -24,27 +24,32 @@ function mockApi(config = pricing, eligible = true) {
 }
 beforeEach(() => { localStorage.clear(); sessionStorage.clear(); localStorage.setItem('edunexAccessToken', 'token'); window.history.replaceState(null, '', '/payment?plan=annual'); vi.clearAllMocks(); });
 afterEach(() => { cleanup(); vi.unstubAllGlobals(); delete window.EduNex; });
-it('annual pricing card opens annual checkout', () => {
+it('pricing page only offers the monthly subscription', () => {
   render(<PricingPage />);
-  expect(screen.getByRole('link', { name: /Continue to checkout/ }).getAttribute('href')).toBe('/payment?plan=annual');
+  expect(screen.getByRole('heading', { name: 'Monthly subscription' })).toBeTruthy();
+  expect(screen.queryByText(/annual|yearly|4,999/i)).toBeNull();
+  expect(screen.getAllByRole('link', { name: /Continue with UPI/ })).toHaveLength(2);
 });
-it('annual checkout launches Razorpay automatically and verifies access', async () => {
+it('legacy annual checkout links fall back to monthly Razorpay checkout', async () => {
   const fetcher = mockApi(pricing, false); render(<PaymentPage />);
   await screen.findByText("Payment Successful");
-  expect(JSON.parse(fetcher.mock.calls.find(([url]) => url.endsWith('/initiate-trial'))[1].body)).toEqual({ paymentType: 'annual', mandateConsent: true });
+  expect(JSON.parse(fetcher.mock.calls.find(([url]) => url.endsWith('/initiate-trial'))[1].body)).toEqual({ paymentType: 'monthly', mandateConsent: true });
+  expect(window.location.search).toBe('?plan=monthly');
   expect(openRazorpay).toHaveBeenCalledTimes(1);
   expect(screen.queryByText('Choose your billing plan')).toBeNull();
 });
-it('unconfigured annual checkout cannot silently charge the monthly plan', async () => {
-  const fetcher = mockApi({ ...pricing, annualAvailable: false }); render(<PaymentPage />);
-  expect((await screen.findByRole('button', { name: /Try Razorpay Again/ })).disabled).toBe(true);
-  expect(screen.getByRole('alert').textContent).toContain('Yearly checkout is currently unavailable');
-  expect(fetcher.mock.calls.some(([url]) => url.endsWith('/initiate-trial'))).toBe(false);
+it('legacy yearly checkout links also fall back to monthly', async () => {
+  window.history.replaceState(null, '', '/payment?plan=yearly');
+  const fetcher = mockApi(); render(<PaymentPage />);
+  await screen.findByText('Payment Successful');
+  expect(JSON.parse(fetcher.mock.calls.find(([url]) => url.endsWith('/initiate-trial'))[1].body).paymentType).toBe('monthly');
+  expect(window.location.search).toBe('?plan=monthly');
 });
-it('login continuation preserves the requested plan without rendering plan selection', async () => {
+it('login continuation replaces a retired annual plan with monthly', async () => {
   localStorage.clear(); mockApi(); render(<PaymentPage />);
   await screen.findByRole('link', { name: 'Log In' });
-  expect(screen.getByRole('link', { name: 'Log In' }).getAttribute('href')).toContain('plan%3Dannual');
+  expect(screen.getByRole('link', { name: 'Log In' }).getAttribute('href')).toContain('plan%3Dmonthly');
+  expect(screen.getByRole('link', { name: 'Log In' }).getAttribute('href')).not.toContain('annual');
   expect(screen.queryByRole('radio')).toBeNull();
 });
 it('default checkout charges monthly without silently enrolling in a trial', async () => {

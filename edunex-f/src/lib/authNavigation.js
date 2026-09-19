@@ -1,4 +1,17 @@
 const KEY = 'edunexLoginPrefill';
+
+export function nationalPhoneDigits(value) {
+  const digits = String(value || '').replace(/\D/g, '');
+  return digits.length > 10 ? digits.slice(-10) : digits;
+}
+
+export function pasteNationalPhone(event, setValue) {
+  const pasted = event.clipboardData?.getData('text');
+  if (!pasted) return;
+  event.preventDefault();
+  setValue(nationalPhoneDigits(pasted));
+}
+
 export function saveLoginPrefill(phone, storage, now = Date.now(), key = KEY) {
   const digits = String(phone).replace(/\D/g, '');
   if (!/^\d{10,15}$/.test(digits)) return;

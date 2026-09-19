@@ -368,10 +368,8 @@ export function CoursesPage() {
                         </div>
                         <div className="course-price-row">
                           <div className="price-left">
-                            <span className="price-original">₹4,999</span>
                             <span className="price-trial">₹1 for 24 hours</span>
                           </div>
-                          <span className="price-off">99% OFF</span>
                         </div>
                         <div className="course-card-actions">
                           <button className="btn-trial" type="button" data-course-id={course.id} onClick={(event) => { event.stopPropagation(); openCourse(course); }}>

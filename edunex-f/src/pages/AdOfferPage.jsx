@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { openRazorpay } from "../lib/razorpayCheckout.js";
+import { nationalPhoneDigits, pasteNationalPhone } from "../lib/authNavigation.js";
 import { useViewportLock } from "../hooks/useViewportLock.js";
 import "./ad-offer.css";
 
@@ -271,7 +272,7 @@ export function AdOfferPage() {
             <h2 id="ad-signin-title">Login / Sign up</h2>
             <p>Enter your mobile number, we&apos;ll send an OTP.</p>
             <label htmlFor="ad-phone">Mobile number</label>
-            <div className="ad-phone-field"><span>🇮🇳 +91</span><input id="ad-phone" value={phone} onChange={(event) => setPhone(event.target.value.replace(/\D/g, "").slice(0, 10))} type="tel" inputMode="numeric" autoComplete="tel" maxLength="10" placeholder="Mobile number" required autoFocus /></div>
+            <div className="ad-phone-field"><span>🇮🇳 +91</span><input id="ad-phone" value={phone} onChange={(event) => setPhone(nationalPhoneDigits(event.target.value))} onPaste={(event) => pasteNationalPhone(event, setPhone)} type="tel" inputMode="numeric" autoComplete="tel-national" maxLength="10" placeholder="Mobile number" required autoFocus /></div>
             <button type="submit" disabled={busy || phone.length !== 10}>Send OTP</button>
             <p className="ad-form-status" role="status">{message}</p>
             <p><a href="/login">Already registered? Sign in to Skillomate</a></p>

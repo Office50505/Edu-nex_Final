@@ -40,21 +40,25 @@ export function PaymentPage() {
   const runtimeReady = useEduNexRuntimeReady();
   const query = params();
   const courseId = query.get("courseId");
-  const requestedPlan = ["annual", "yearly"].includes(query.get("plan")) ? "annual" : (query.get("plan") === "trial" ? "trial" : "monthly");
-  const annual = requestedPlan === "annual";
   const [trialEligible, setTrialEligible] = useState(true);
   const [checkoutState, setCheckoutState] = useState("loading");
   const [payMsg, setPayMsg] = useState({ text: "", type: "" });
   const [submitting, setSubmitting] = useState(false);
   const busyRef = useRef(false);
   const [pricing, setPricing] = useState(null);
-  const trial = !annual && query.get("plan") === "trial" && trialEligible;
-  const paymentType = annual ? "annual" : trial ? "trial" : "monthly";
+  const trial = query.get("plan") === "trial" && trialEligible;
+  const paymentType = trial ? "trial" : "monthly";
   const [paymentCompleted, setPaymentCompleted] = useState(false);
   const [paymentFailed, setPaymentFailed] = useState(false);
   const [pending, setPending] = useState(false);
-  const planAvailable = Boolean(pricing && (!annual || pricing.annualAvailable));
+  const planAvailable = Boolean(pricing);
   const autoStartRef = useRef(false);
+  useEffect(() => {
+    if (!["annual", "yearly"].includes(query.get("plan"))) return;
+    const cleanUrl = new URL(window.location.href);
+    cleanUrl.searchParams.set("plan", "monthly");
+    window.history.replaceState(window.history.state, "", `${cleanUrl.pathname}${cleanUrl.search}${cleanUrl.hash}`);
+  }, []);
   useEffect(() => {
     const controller = new AbortController();
     fetch("/api/payment/config", { signal: controller.signal }).then(async response => {
@@ -230,7 +234,7 @@ export function PaymentPage() {
     } catch (error) { setPayMsg({ text: error.message, type: "error" }); }
     finally { busyRef.current = false; setSubmitting(false); }
   };
-  const planLabel = annual ? "yearly subscription" : trial ? "₹1 trial" : "monthly subscription";
+  const planLabel = trial ? "₹1 trial" : "monthly subscription";
 
   return (
     <div className="react-page-root" data-page="payment.html">
@@ -265,9 +269,7 @@ export function PaymentPage() {
           <div className="checkout-launcher-card">
             <h1>{pending ? "Confirming payment" : "Checkout unavailable"}</h1>
             <p className={payMsg.type === "error" || !planAvailable ? "checkout-launcher-error" : ""} role={payMsg.type === "error" || !planAvailable ? "alert" : "status"}>
-              {payMsg.text || (annual && pricing && !pricing.annualAvailable
-                ? "Yearly checkout is currently unavailable."
-                : "Razorpay could not be opened. Please try again.")}
+              {payMsg.text || "Razorpay could not be opened. Please try again."}
             </p>
             <button className="checkout-launcher-primary" type="button" disabled={submitting || !planAvailable} onClick={pending ? checkPayment : initiatePayment}>
               {submitting ? "Please wait…" : pending ? "Check payment status" : "Try Razorpay Again"}

@@ -1,4 +1,4 @@
-import { readLoginPrefill, clearLoginPrefill, saveSignupPrefill, signupDestination } from "../lib/authNavigation.js";
+import { readLoginPrefill, clearLoginPrefill, saveSignupPrefill, signupDestination, nationalPhoneDigits, pasteNationalPhone } from "../lib/authNavigation.js";
 import { useEffect, useMemo, useState } from "react";
 import { page as loginPage } from "../generated-pages/login.html.js";
 import { BrandLogo } from "../components/BrandLogo.jsx";
@@ -241,10 +241,12 @@ export function LoginPage() {
                   id="emailInput"
                   placeholder="Enter your mobile number"
                   maxLength={10}
+                  inputMode="numeric"
                   autoComplete="tel-national"
                   aria-describedby="lp-err"
                   value={loginId}
-                  onChange={(event) => setLoginId(event.target.value)}
+                  onChange={(event) => setLoginId(nationalPhoneDigits(event.target.value))}
+                  onPaste={(event) => pasteNationalPhone(event, setLoginId)}
                 />
               </div>
             </div>
