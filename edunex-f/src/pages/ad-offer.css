@@ -50,15 +50,12 @@ html[data-theme="light"] .ad-offer-page .ad-signin-modal form > button[type="sub
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  filter: drop-shadow(0 0 7px rgba(255, 202, 55, .7));
-  text-shadow: 0 0 14px rgba(255, 193, 47, .45), 0 0 32px rgba(255, 166, 0, .25);
   animation: ad-price-shine 2.8s ease-in-out infinite;
 }
 
 @keyframes ad-price-shine {
-  0%, 25% { background-position: 100% center; filter: drop-shadow(0 0 6px rgba(255, 202, 55, .55)); }
-  52% { background-position: 0 center; filter: drop-shadow(0 0 12px rgba(255, 222, 105, .92)); }
-  100% { background-position: 0 center; filter: drop-shadow(0 0 7px rgba(255, 202, 55, .65)); }
+  0%, 25% { background-position: 100% center; }
+  52%, 100% { background-position: 0 center; }
 }
 
 @media (prefers-reduced-motion: reduce) {
