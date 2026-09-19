@@ -10,16 +10,16 @@ const Assessment=require('../models/AssessmentResult');
 const Course=require('../models/Course');
 const User=require('../models/User');
 const {areRateLimitsDisabled}=require('../services/rateLimitToggle');
+const {renderCertificatePage}=require('../services/certificateTemplate');
 const router=express.Router();
 const auth=requireCompatibleAuth();
 const run=fn=>async(req,res)=>{try{await fn(req,res);}catch(e){res.status(e.statusCode||500).json({error:e.statusCode?e.message:'Could not complete certification request. Please retry.'});}};
-const escape=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 router.get('/certificates/print.js',(_req,res)=>res.type('application/javascript').send("document.getElementById('print')?.addEventListener('click',()=>window.print());if(new URLSearchParams(location.search).has('print'))window.print();"));
 router.get('/certificates/verify/:id',run(async(req,res)=>{
   const cert=await Certificate.findOne({certificateId:req.params.id}).lean();
   if(!cert)return res.status(404).type('html').send('<h1>Certificate not found</h1>');
   res.set('Cache-Control','no-store');
-  res.type('html').send(`<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Certificate verification | Skillomate</title><style>body{font-family:Georgia,serif;background:#f5f3ec;color:#242921;padding:5vw}main{max-width:900px;margin:auto;padding:6vw;border:3px solid #b68d40;background:white;text-align:center}h1{font-size:36px}p{line-height:1.7}small{overflow-wrap:anywhere}button{padding:12px 20px;cursor:pointer}@media print{body{padding:0;background:white}button{display:none}main{border:2px solid #b68d40}@page{size:A4 landscape;margin:15mm}}</style></head><body><main><p>SKILLOMATE</p><h1>Certificate of Completion</h1><p>${cert.status==='revoked'?'REVOKED — this certificate is no longer valid':'Certificate record verified'}</p><h2>${escape(cert.userName)}</h2><p>Completed</p><h2>${escape(cert.courseTitle)}</h2><p>Issued ${escape(new Date(cert.issuedAt).toLocaleDateString('en-IN'))}</p><small>Certificate ID: ${escape(cert.certificateId)}</small><p>${cert.courseVersion?'Completion criteria: 90% lesson coverage'+(cert.criteria?.assessmentRequired?', and final assessment passed.':'.'):'Legacy completion record; issued under the earlier completion policy.'}</p><p>This certifies course completion, not professional accreditation.</p><button id="print">Print / Save as PDF</button></main><script src="/api/certificates/print.js"></script></body></html>`);
+  res.type('html').send(renderCertificatePage(cert));
 }));
 router.get('/certificates',auth,run(async(req,res)=>{
   const userId=String(req.compatUser._id);

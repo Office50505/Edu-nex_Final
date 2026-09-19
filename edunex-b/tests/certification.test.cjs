@@ -1,7 +1,16 @@
 const test=require('node:test');const assert=require('node:assert/strict');
 const rules=require('../services/completionRules');
+const {renderCertificatePage}=require('../services/certificateTemplate');
 const {heartbeat,eligibility,manifest,identity}=rules;
 const user={isMobileVerified:true,fullName:'Test Learner'};
+test('certificate template renders verified data and escapes learner content',()=>{
+ const html=renderCertificatePage({certificateId:'SKM-123',userName:'A <Learner>',courseTitle:'AI & Media',issuedAt:'2026-09-18T00:00:00.000Z',totalLessons:34,status:'active'});
+ assert.match(html,/A &lt;Learner&gt;/);assert.match(html,/AI &amp; Media/);assert.match(html,/34 Lessons/);assert.match(html,/VERIFIED RECORD/);assert.doesNotMatch(html,/{{[A-Z_]+}}/);
+});
+test('certificate template marks revoked certificates',()=>{
+ const html=renderCertificatePage({certificateId:'REVOKED-1',userName:'Learner',courseTitle:'Course',issuedAt:'2026-09-18T00:00:00.000Z',status:'revoked'});
+ assert.match(html,/is-revoked/);assert.match(html,/revoked-banner/);assert.match(html,/REVOKED RECORD/);
+});
 function sample(old,position,seconds=5,sessionId='s'){return heartbeat(old,{position,duration:100,now:seconds*1000,sessionId});}
 test('first sample and seeking do not grant coverage',()=>{
  const first=sample(null,80);assert.deepEqual(first.intervals,[]);

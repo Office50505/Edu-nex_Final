@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>{{PAGE_TITLE}}</title>
+  <style>{{CERTIFICATE_STYLES}}</style>
+</head>
+<body>
+  <div class="certificate-page">
+    <main class="certificate {{STATUS_CLASS}}" aria-labelledby="certificate-title">
+      <div class="certificate-frame" aria-hidden="true"></div>
+      <div class="corner-curve corner-curve-left" aria-hidden="true"></div>
+      <div class="corner-curve corner-curve-right" aria-hidden="true"></div>
+      <header class="certificate-header">
+        <img class="brand-logo" src="/assets/skillomate-logo.png" alt="Skillomate">
+        <div class="brand-promise">A BRIGHTER<br>YOU TOMORROW<span></span></div>
+      </header>
+      <section class="certificate-content">
+        <h1 id="certificate-title">CERTIFICATE</h1>
+        <div class="completion-rule"><span></span><strong>OF COMPLETION</strong><span></span></div>
+        <p class="certify-copy">This is to certify that</p>
+        <h2>{{LEARNER_NAME}}</h2>
+        <p class="completion-copy">has successfully completed the <strong>{{COURSE_TITLE}}</strong> on {{ISSUED_DATE}}.</p>
+        <p class="commendation">This achievement reflects dedication and commitment to learning.</p>
+        <div class="course-facts" aria-label="Course completion details">
+          <span class="fact-icon" aria-hidden="true">&#9654;</span><span>{{LESSON_COUNT}}</span><i></i>
+          <span class="fact-icon star" aria-hidden="true">&#9734;</span><span>Verified Completion</span>
+        </div>
+        <p class="motto">PRACTICAL SKILLS FOR A BRIGHTER YOU</p>
+        <div class="seal-row" aria-hidden="true"><span></span><div class="seal"><b>&#10022;</b></div><span></span></div>
+        <div class="signature">Skillomate</div>
+      </section>
+      <footer class="certificate-footer">
+        <div><span>CERTIFICATE ID</span><strong>{{CERTIFICATE_ID}}</strong></div>
+        <div class="verification-state">{{VERIFICATION_STATE}}</div>
+        <div class="footer-brand"><span>SKILLOMATE.IN</span><strong>LEARN ANYWHERE</strong></div>
+      </footer>
+      {{REVOKED_BANNER}}
+    </main>
+    <div class="certificate-actions" aria-label="Certificate actions">
+      <p>This certificate confirms course completion and is not a professional accreditation.</p>
+      <button id="print" type="button">Print / Save as PDF</button>
+    </div>
+  </div>
+  <script src="/api/certificates/print.js"></script>
+</body>
+</html>
