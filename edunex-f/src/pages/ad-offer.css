@@ -45,17 +45,17 @@ html[data-theme="light"] .ad-offer-page .ad-signin-modal form > button[type="sub
 
 .ad-offer-page .ad-price-card > strong {
   color: #ffe47d;
-  background: linear-gradient(105deg, #b87508 0%, #ffd24a 28%, #fff4b0 47%, #ffd24a 62%, #c4820d 100%);
-  background-size: 220% auto;
+  background: repeating-linear-gradient(105deg, #b87508 0%, #ffd24a 14%, #fff4b0 23%, #ffd24a 31%, #c4820d 50%);
+  background-size: 200% 100%;
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  animation: ad-price-shine 2.8s ease-in-out infinite;
+  animation: ad-price-shine 3.2s linear infinite;
 }
 
 @keyframes ad-price-shine {
-  0%, 25% { background-position: 100% center; }
-  52%, 100% { background-position: 0 center; }
+  from { background-position: 0 center; }
+  to { background-position: 200% center; }
 }
 
 @media (prefers-reduced-motion: reduce) {
