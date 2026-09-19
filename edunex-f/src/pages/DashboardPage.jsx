@@ -260,7 +260,10 @@ export function DashboardPage() {
     }
     try {
       const subscription = await window.EduNex.checkSubscription();
-      return window.EduNex.hasCourseAccess(subscription);
+      return {
+        data: subscription,
+        open: Boolean(window.EduNex.hasCourseAccess(subscription) || subscription?.hasCourseAccess || subscription?.courseIds?.length),
+      };
     } catch (error) {
       const message = String(error?.message || "");
       if (error?.status === 401 || /session|token|unauthorized|log in/i.test(message)) {
@@ -273,7 +276,7 @@ export function DashboardPage() {
     }
   };
 
-  const loadDashboardCourses = async () => {
+  const loadDashboardCourses = async (accessData) => {
     const token = window.EduNex?.getAccessToken?.();
     const recommendationOptions = token ? { headers: { Authorization: `Bearer ${token}` } } : {};
     const progressRequest = userId && window.EduNex?.authRequest
@@ -288,6 +291,10 @@ export function DashboardPage() {
     let loadedCourses = [];
     if (courseResult.status === "fulfilled") {
       loadedCourses = coursesArray(courseResult.value).filter((course) => course && course._id);
+      if (!window.EduNex.hasCourseAccess(accessData) && accessData?.courseIds?.length) {
+        const ownedIds = new Set(accessData.courseIds.map(String));
+        loadedCourses = loadedCourses.filter((course) => ownedIds.has(String(course._id)));
+      }
       setCourses(loadedCourses);
       setLoadError("");
     } else {
@@ -317,11 +324,11 @@ export function DashboardPage() {
     if (!runtimeReady) return undefined;
     let cancelled = false;
     (async () => {
-      const open = await canOpenDashboard();
+      const accessResult = await canOpenDashboard();
       if (cancelled) return;
-      if (open === null) return;
-      setAllowed(open);
-      if (open) await loadDashboardCourses();
+      if (accessResult === null) return;
+      setAllowed(accessResult.open);
+      if (accessResult.open) await loadDashboardCourses(accessResult.data);
     })();
     return () => {
       cancelled = true;
@@ -367,7 +374,7 @@ export function DashboardPage() {
         <div className="welcome-row">
           <div className="welcome-left">
             <h1>Welcome back, {firstName}</h1>
-            <p>{realCourses.length ? `You have ${realCourses.length} real Skillomate courses available. Continue from your latest saved lesson.` : "No published courses were found in the backend yet."}</p>
+            <p>{realCourses.length ? `You have ${realCourses.length} Skillomate course${realCourses.length === 1 ? "" : "s"} available. Continue from your latest saved lesson.` : "No purchased courses are available yet."}</p>
           </div>
           <div className="stats-row">
             <div className="stat-pill">
@@ -380,7 +387,7 @@ export function DashboardPage() {
             </div>
             <div className="stat-pill">
               <div className="stat-pill-label"><i className="fas fa-graduation-cap" aria-hidden="true"></i> Courses</div>
-              <div className="stat-pill-value">{realCourses.length || 8}</div>
+              <div className="stat-pill-value">{realCourses.length}</div>
             </div>
           </div>
         </div>

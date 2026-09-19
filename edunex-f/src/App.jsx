@@ -6,6 +6,7 @@ import { ProblemReport } from "./components/ProblemReport.jsx";
 import { pageKeyFromPath, route } from "./lib/routes.js";
 import { hasReactPage, preloadPage, reactPageLoaders } from "./lib/pageLoaders.jsx";
 import { adminPageFromPath, canonicalAdminPath } from "./pages/admin/adminApi.js";
+import { usePresenceHeartbeat } from "./hooks/usePresenceHeartbeat.js";
 
 const AdminApp = lazy(() => import("./pages/admin/AdminApp.jsx").then((module) => ({ default: module.AdminApp })));
 
@@ -113,6 +114,7 @@ export default function App() {
   const routeKey = routeFromState(locationState);
   const openProblemReport = useCallback(() => setReportOpen(true), []);
   const closeProblemReport = useCallback(() => setReportOpen(false), []);
+  usePresenceHeartbeat(!adminPage);
 
   const syncLocation = useCallback((nextState = currentLocationState()) => {
     startTransition(() => {

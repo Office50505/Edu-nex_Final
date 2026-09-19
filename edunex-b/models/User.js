@@ -42,6 +42,16 @@ const userSchema = new mongoose.Schema({
     type: Date,
     default: null,
   },
+  purchasedCourses: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Course',
+  }],
+  courseEntitlements: [{
+    course: { type: mongoose.Schema.Types.ObjectId, ref: 'Course', required: true },
+    accessType: { type: String, enum: ['trial', 'yearly', 'permanent'], default: 'permanent' },
+    grantedAt: { type: Date, default: Date.now },
+    expiresAt: { type: Date, default: null },
+  }],
   wishlist: {
     type: [String],
     default: undefined,

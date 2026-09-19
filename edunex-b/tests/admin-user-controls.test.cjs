@@ -12,6 +12,14 @@ test('admin user access route is protected and revokes sessions when banning', (
   assert.match(serverSource, /if \(action === 'ban' && !reason\)/);
 });
 
+test('admin can create a learner id with bounded validated credentials', () => {
+  assert.match(serverSource, /app\.post\('\/api\/admin\/users', protectAdmin/);
+  assert.match(serverSource, /await bcrypt\.hash\(password, 12\)/);
+  assert.match(serverSource, /A learner already exists with this mobile number or email/);
+  assert.match(serverSource, /Temporary password must contain 8 to 72 characters/);
+  assert.doesNotMatch(serverSource, /passwordHash: password/);
+});
+
 test('admin subscription route validates its action and duration boundary', () => {
   assert.match(serverSource, /app\.patch\('\/api\/admin\/users\/:id\/subscription', protectAdmin/);
   assert.match(serverSource, /!\['grant', 'revoke'\]\.includes\(action\)/);
@@ -44,4 +52,11 @@ test('admin learner management exposes only the latest recorded session IP', () 
   assert.match(serverSource, /networkSummary: latestSessionByUser/);
   assert.match(serverSource, /app\.get\('\/api\/admin\/users\/:id\/ip-location', protectAdmin/);
   assert.match(serverSource, /isPrivateIpAddress\(ipAddress\)/);
+});
+
+test('admin purchase history combines payment orders and course ownership changes', () => {
+  assert.match(serverSource, /app\.get\('\/api\/admin\/users\/:id\/purchase-history', protectAdmin/);
+  assert.match(serverSource, /Order\.find\(\{ user: req\.params\.id \}\)/);
+  assert.match(serverSource, /course_granted', 'course_revoked/);
+  assert.match(serverSource, /res\.json\(\{ user, orders, courseChanges \}\)/);
 });

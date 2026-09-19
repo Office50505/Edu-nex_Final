@@ -121,6 +121,9 @@ exports.verify = wrap(async (req, res) => {
   res.json({ verified: true, accessGranted: ['trial', 'active'].includes(subscription.status), status: subscription.status });
 });
 exports.status = wrap(async (req, res) => {
+  const { activeCourseEntitlements } = require('../services/courseAccess');
+  const courseEntitlements = activeCourseEntitlements(req.user);
+  const courseIds = courseEntitlements.map(item => item.courseId);
   const billing = await Billing.findById(req.user._id);
   const subscription = billing?.subscriptionId ? await reconcile(billing) : await Subscription.findOne({ user: req.user._id });
   const docValid = subscription && hasValidAccess(subscription.status, subscription.trialExpiresAt, subscription.currentPeriodEnd);
@@ -130,7 +133,8 @@ exports.status = wrap(async (req, res) => {
   res.json({ status: effectiveStatus, subscriptionStatus: effectiveStatus, subscriptionDocStatus: subscription?.status || 'none',
     trialExpiresAt: subscription?.trialExpiresAt, currentPeriodEnd: subscription?.currentPeriodEnd, nextBillingAt: subscription?.nextBillingAt,
     subscriptionType: subscription?.subscriptionType, frequency: subscription?.frequency, verified: valid, sameAccount: true, paid: valid,
-    mandateStatus: subscription?.razorpayStatus || null, accessGranted: valid, hasActiveAccess: valid, trialEligible: !subscription?.trialStartedAt,
+    mandateStatus: subscription?.razorpayStatus || null, accessGranted: valid, hasActiveAccess: valid,
+    hasCourseAccess: courseIds.length > 0, courseIds, courseEntitlements, trialEligible: !subscription?.trialStartedAt,
     subscriptionId: billing?.subscriptionId || null,
     canCancel: Boolean(billing?.subscriptionId && !['cancelled', 'expired', 'completed'].includes(subscription?.razorpayStatus)),
     pendingCheckout: billing?.phase === 'ready' });

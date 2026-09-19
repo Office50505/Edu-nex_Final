@@ -4,6 +4,7 @@ const SubscriptionEvent = require('../models/SubscriptionEvent');
 const User = require('../models/User');
 const phonePeService = require('../services/phonePeService');
 const { resolveSubscriptionAccess } = require('../services/subscriptionAccess');
+const { activeCourseEntitlements } = require('../services/courseAccess');
 
 const isProduction = process.env.NODE_ENV === 'production';
 const paymentGatewayMode = String(process.env.PAYMENT_GATEWAY_MODE || 'phonepe').trim().toLowerCase();
@@ -702,6 +703,8 @@ async function cancelSubscription(req, res) {
 
 async function subscriptionStatus(req, res) {
   try {
+    const courseEntitlements = activeCourseEntitlements(req.user);
+    const courseIds = courseEntitlements.map((item) => item.courseId);
     const userSubscriptionStatus = req.user.subscriptionStatus || 'none';
     const userHasAccess = hasValidAccess(
       userSubscriptionStatus,
@@ -716,6 +719,9 @@ async function subscriptionStatus(req, res) {
         source: 'user',
         accessGranted: userHasAccess,
         hasActiveAccess: userHasAccess,
+        hasCourseAccess: courseIds.length > 0,
+        courseIds,
+        courseEntitlements,
         trialEligible: true,
       });
     }
@@ -729,6 +735,9 @@ async function subscriptionStatus(req, res) {
       subscriptionStatus: access.status,
       subscriptionDocStatus: latest.status,
       hasActiveAccess: access.active,
+      hasCourseAccess: courseIds.length > 0,
+      courseIds,
+      courseEntitlements,
       accessGranted: access.active,
       source: 'subscription',
       trialExpiresAt: latest.trialExpiresAt || null,

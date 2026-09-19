@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
 const dns = require('dns').promises;
 const net = require('net');
@@ -126,6 +127,7 @@ const Notification = require('./models/Notification');
 const Certificate = require('./models/Certificate');
 const AdminUserAction = require('./models/AdminUserAction');
 const Session = require('./models/Session');
+const { presenceFromPing } = require('./services/userPresence');
 
 // Import routes
 const authRoutes = require('./routes/auth');
@@ -2359,6 +2361,124 @@ app.get('/api/admin/users', protectAdmin, async (req, res) => {
   }
 });
 
+app.post('/api/admin/users', protectAdmin, async (req, res) => {
+  try {
+    const fullName = String(req.body?.fullName || '').trim().replace(/\s+/g, ' ').slice(0, 120);
+    const email = String(req.body?.email || '').trim().toLowerCase().slice(0, 254) || null;
+    const rawMobile = String(req.body?.mobileNumber || '').replace(/\D/g, '');
+    const mobileNumber = rawMobile.length === 10 ? `91${rawMobile}` : rawMobile;
+    const password = String(req.body?.password || '');
+    const courseId = String(req.body?.courseId || '').trim();
+    const courseAccessType = String(req.body?.courseAccessType || 'permanent').trim().toLowerCase();
+    const courseAccessDays = Math.min(365, Math.max(1, Number.parseInt(req.body?.courseAccessDays, 10) || 7));
+
+    if (fullName.length < 2) return res.status(400).json({ error: 'Enter a learner name of at least 2 characters.' });
+    if (!/^\d{12,15}$/.test(mobileNumber)) return res.status(400).json({ error: 'Enter a valid mobile number including country code.' });
+    if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return res.status(400).json({ error: 'Enter a valid email address.' });
+    if (password.length < 8 || password.length > 72) return res.status(400).json({ error: 'Temporary password must contain 8 to 72 characters.' });
+    if (courseId && !mongoose.Types.ObjectId.isValid(courseId)) return res.status(400).json({ error: 'Choose a valid course.' });
+    if (courseId && !['trial', 'yearly', 'permanent'].includes(courseAccessType)) return res.status(400).json({ error: 'Choose trial, yearly, or permanent course access.' });
+    if (courseId && !await Course.exists({ _id: courseId, status: 'published' })) return res.status(404).json({ error: 'Published course not found.' });
+
+    const duplicate = await User.findOne({
+      $or: [
+        { mobileNumber },
+        ...(email ? [{ email }] : []),
+      ],
+    }).select('_id mobileNumber email').lean();
+    if (duplicate) return res.status(409).json({ error: 'A learner already exists with this mobile number or email.' });
+
+    const user = await User.create({
+      fullName,
+      email,
+      mobileNumber,
+      passwordHash: await bcrypt.hash(password, 12),
+      isMobileVerified: req.body?.isMobileVerified === true,
+      isEmailVerified: Boolean(email && req.body?.isEmailVerified === true),
+      isActive: true,
+      isOnTrial: false,
+      subscriptionStatus: 'none',
+      subscriptionExpiry: null,
+      purchasedCourses: courseId ? [courseId] : [],
+      courseEntitlements: courseId ? [{
+        course: courseId,
+        accessType: courseAccessType,
+        grantedAt: new Date(),
+        expiresAt: courseAccessType === 'permanent' ? null : new Date(Date.now() + (courseAccessType === 'yearly' ? 365 : courseAccessDays) * 86400000),
+      }] : [],
+    });
+
+    return res.status(201).json({
+      message: 'Learner ID created successfully.',
+      user: {
+        _id: user._id,
+        fullName: user.fullName,
+        email: user.email,
+        mobileNumber: user.mobileNumber,
+        subscriptionStatus: user.subscriptionStatus,
+        subscriptionExpiry: user.subscriptionExpiry,
+        purchasedCourses: user.purchasedCourses,
+        courseEntitlements: user.courseEntitlements,
+        isMobileVerified: user.isMobileVerified,
+        isEmailVerified: user.isEmailVerified,
+        isActive: user.isActive,
+        createdAt: user.createdAt,
+      },
+    });
+  } catch (error) {
+    if (error?.code === 11000) return res.status(409).json({ error: 'A learner already exists with this mobile number or email.' });
+    return res.status(500).json({ error: 'Unable to create the learner ID.' });
+  }
+});
+
+app.patch('/api/admin/users/:id/courses', protectAdmin, async (req, res) => {
+  try {
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) return res.status(400).json({ error: 'Invalid user id' });
+    const courseId = String(req.body?.courseId || '').trim();
+    const action = String(req.body?.action || '').trim().toLowerCase();
+    const accessType = String(req.body?.accessType || 'permanent').trim().toLowerCase();
+    const accessDays = Math.min(365, Math.max(1, Number.parseInt(req.body?.accessDays, 10) || 7));
+    const reason = String(req.body?.reason || '').trim().slice(0, 500) || null;
+    if (!mongoose.Types.ObjectId.isValid(courseId)) return res.status(400).json({ error: 'Choose a valid course.' });
+    if (!['grant', 'revoke'].includes(action)) return res.status(400).json({ error: 'Action must be grant or revoke.' });
+    if (action === 'grant' && !['trial', 'yearly', 'permanent'].includes(accessType)) return res.status(400).json({ error: 'Choose trial, yearly, or permanent course access.' });
+    if (!reason) return res.status(400).json({ error: 'A reason is required.' });
+    const [user, course] = await Promise.all([
+      User.findById(req.params.id),
+      Course.findOne({ _id: courseId, status: 'published' }).select('_id title').lean(),
+    ]);
+    if (!user) return res.status(404).json({ error: 'User not found' });
+    if (!course) return res.status(404).json({ error: 'Published course not found.' });
+    const previousCourses = (user.purchasedCourses || []).map(String);
+    const previousEntitlements = (user.courseEntitlements || []).map((item) => item.toObject?.() || item);
+    user.courseEntitlements = (user.courseEntitlements || []).filter((item) => String(item.course) !== courseId);
+    if (action === 'grant') {
+      user.purchasedCourses.addToSet(course._id);
+      user.courseEntitlements.push({
+        course: course._id,
+        accessType,
+        grantedAt: new Date(),
+        expiresAt: accessType === 'permanent' ? null : new Date(Date.now() + (accessType === 'yearly' ? 365 : accessDays) * 86400000),
+      });
+    } else user.purchasedCourses.pull(course._id);
+    await user.save();
+    await AdminUserAction.create({
+      user: user._id,
+      action: action === 'grant' ? 'course_granted' : 'course_revoked',
+      reason,
+      previousState: { purchasedCourses: previousCourses, courseEntitlements: previousEntitlements },
+      nextState: { purchasedCourses: user.purchasedCourses.map(String), courseEntitlements: user.courseEntitlements, courseId, courseTitle: course.title, accessType },
+      adminSubject: req.admin?.sub || req.admin?.email || 'admin',
+    });
+    res.json({
+      message: `${course.title} ${action === 'grant' ? 'added to' : 'removed from'} this learner.`,
+      user: { _id: user._id, purchasedCourses: user.purchasedCourses, courseEntitlements: user.courseEntitlements },
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 app.get('/api/admin/user-management', protectAdmin, async (req, res) => {
   try {
     const normalizeAdminIdentityEmail = (value) => String(value || '').trim().toLowerCase();
@@ -2382,10 +2502,10 @@ app.get('/api/admin/user-management', protectAdmin, async (req, res) => {
       return index;
     };
     const watchEventNames = ['video_start', 'video_progress', 'video_complete', 'video_watch'];
-    const [users, progressRows, progressWatchRows, analyticsWatchRows, latestSessionRows] = await Promise.all([
+    const [users, progressRows, progressWatchRows, analyticsWatchRows, latestSessionRows, latestPresenceRows] = await Promise.all([
       User.find()
         .sort({ createdAt: -1 })
-        .select('fullName email mobileNumber avatar gender age subscriptionStatus subscriptionExpiry isMobileVerified isEmailVerified isActive bannedAt banReason deletedAt deletedBy deletionReason marketingOptIn createdAt lastActiveAt lastLoginAt loginCount')
+        .select('fullName email mobileNumber avatar gender age subscriptionStatus subscriptionExpiry purchasedCourses courseEntitlements isMobileVerified isEmailVerified isActive bannedAt banReason deletedAt deletedBy deletionReason marketingOptIn createdAt lastActiveAt lastLoginAt loginCount')
         .lean(),
       CourseProgress.aggregate([
         { $match: { userId: { $nin: [null, ''] } } },
@@ -2503,6 +2623,11 @@ app.get('/api/admin/user-management', protectAdmin, async (req, res) => {
         },
         { $project: { _id: 0, userId: { $toString: '$_id' }, ipAddress: 1, platform: 1, deviceName: 1, recordedAt: 1 } },
       ]),
+      Session.aggregate([
+        { $match: { loggedOutAt: null } },
+        { $group: { _id: '$user', lastPingAt: { $max: '$lastPingAt' } } },
+        { $project: { _id: 0, userId: { $toString: '$_id' }, lastPingAt: 1 } },
+      ]),
     ]);
 
     const userIds = new Set(users.map((user) => String(user._id)));
@@ -2531,6 +2656,10 @@ app.get('/api/admin/user-management', protectAdmin, async (req, res) => {
     const preferAnalyticsWatch = analyticsWatchRows.length > 0;
     const latestSessionByUser = latestSessionRows.reduce((acc, row) => {
       acc[row.userId] = row;
+      return acc;
+    }, {});
+    const presenceByUser = latestPresenceRows.reduce((acc, row) => {
+      acc[row.userId] = presenceFromPing(row.lastPingAt);
       return acc;
     }, {});
 
@@ -2571,6 +2700,7 @@ app.get('/api/admin/user-management', protectAdmin, async (req, res) => {
 
       return {
         ...user,
+        presence: presenceByUser[String(user._id)] || { isOnline: false, lastSeenAt: user.lastActiveAt || null },
         networkSummary: latestSessionByUser[String(user._id)] || null,
         progressCourses: userProgress,
         progressSummary: {
@@ -2715,6 +2845,22 @@ app.get('/api/admin/users/:id/actions', protectAdmin, async (req, res) => {
     if (!mongoose.Types.ObjectId.isValid(req.params.id)) return res.status(400).json({ error: 'Invalid user id' });
     const actions = await AdminUserAction.find({ user: req.params.id }).sort({ createdAt: -1 }).limit(25).lean();
     res.json(actions);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.get('/api/admin/users/:id/purchase-history', protectAdmin, async (req, res) => {
+  try {
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) return res.status(400).json({ error: 'Invalid user id' });
+    const [user, orders, courseChanges] = await Promise.all([
+      User.findById(req.params.id).select('_id fullName email mobileNumber').lean(),
+      Order.find({ user: req.params.id }).sort({ createdAt: -1 }).limit(100).lean(),
+      AdminUserAction.find({ user: req.params.id, action: { $in: ['course_granted', 'course_revoked'] } })
+        .sort({ createdAt: -1 }).limit(100).lean(),
+    ]);
+    if (!user) return res.status(404).json({ error: 'User not found' });
+    res.json({ user, orders, courseChanges });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

@@ -26,6 +26,16 @@ test('90 percent coverage of every lesson is required, without rounded completio
  rows.push({videoId:'200',intervals:[[0,89.99]]});assert.equal(eligibility({videos,rows,user}).eligible,false);
  rows.at(-1).intervals=[[0,90]];assert.equal(eligibility({videos,rows,user}).eligible,true);
 });
+test('course percentage stays stable when more lesson durations become known',()=>{
+ const videos=Array.from({length:34},(_,index)=>({id:String(index),duration:index===0?100:0}));
+ const rows=[{videoId:'0',intervals:[[0,100]]}];
+ const before=eligibility({videos,rows,user});
+ videos[1].duration=200;
+ const after=eligibility({videos,rows,user});
+ assert.equal(before.progressPercent,3);
+ assert.equal(after.progressPercent,3);
+ assert.equal(after.completedLessons,1);
+});
 test('empty courses, unverified profiles and missing assessment pass block issuance',()=>{
  assert.equal(eligibility({videos:[],rows:[],user}).eligible,false);
  const options={videos:[{id:'a',duration:100}],rows:[{videoId:'a',intervals:[[0,100]]}],user};
@@ -53,7 +63,7 @@ function harness(options={}){
  const query=value=>({lean:async()=>value});
  const subscription=Object.prototype.hasOwnProperty.call(options,'subscription') ? options.subscription : {status:'active',currentPeriodEnd:new Date(Date.now()+60000)};
  const models={Course:{findOne:()=>({select:projection=>{assert.equal(projection,'-thumbnail -thumbnailHorizontal -thumbnailVertical -videos.thumbnail');return query(course);}})},CertificationPolicy:{findById:()=>query(null)},LearningProgress:{find:()=>query([])},AssessmentResult:{findById:()=>query(null)},Subscription:{findOne:()=>query(subscription)},Certificate:{findOneAndUpdate:({_id},update)=>{const key=String(_id);if(!stored.has(key))stored.set(key,{_id:key,...update.$setOnInsert});return query(stored.get(key));}}};
- const sandbox={module:{exports:{}},require(name){if(name==='node:crypto')return require('node:crypto');if(name==='mongoose')return{Types:{ObjectId:class{constructor(id){this.id=id;}toString(){return this.id;}static isValid(){return true;}}}};if(name.includes('completionRules'))return rules;if(name.includes('subscriptionAccess'))return require('../services/subscriptionAccess');return models[name.split('/').at(-1)]||{};}};
+ const sandbox={module:{exports:{}},require(name){if(name==='node:crypto')return require('node:crypto');if(name==='mongoose')return{Types:{ObjectId:class{constructor(id){this.id=id;}toString(){return this.id;}static isValid(){return true;}}}};if(name.includes('completionRules'))return rules;if(name.includes('subscriptionAccess'))return require('../services/subscriptionAccess');if(name.includes('courseAccess'))return require('../services/courseAccess');return models[name.split('/').at(-1)]||{};}};
  vm.runInNewContext(fs.readFileSync(path.join(__dirname,'../services/certificationService.js'),'utf8'),sandbox);
  return{api:sandbox.module.exports,stored,course};
 }

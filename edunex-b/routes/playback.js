@@ -17,9 +17,9 @@ router.post('/admin/playback-preview',protectAdmin,run(async(req,res)=>{
   if(video.provider==='aws_cloudfront')res.json(cf.issueGrant(video.videoUrl,{preview:true}));
   else res.json(video);
 }));
-router.post('/courses/:courseId/videos/:videoId/playback-access',requireCompatibleAuth({userProjection:'_id isActive subscriptionStatus subscriptionExpiry +activeSessionId'}),run(async(req,res)=>{
+router.post('/courses/:courseId/videos/:videoId/playback-access',requireCompatibleAuth({userProjection:'_id isActive subscriptionStatus subscriptionExpiry purchasedCourses courseEntitlements +activeSessionId'}),run(async(req,res)=>{
   const [,course]=await Promise.all([
-    access(req.compatUser),
+    access(req.compatUser,req.params.courseId),
     Course.findOne({_id:req.params.courseId,status:'published'}).select('_id videos._id videos.provider videos.sourceType videos.videoUrl videos.embedUrl videos.bunnyVideoId videos.bunnyLibraryId videos.youtubeId videos.hlsUrl videos.playlistUrl videos.streamUrl').lean(),
   ]);
   if(!course)return res.status(404).json({error:'Published course not found.'});
@@ -31,10 +31,10 @@ router.post('/courses/:courseId/videos/:videoId/playback-access',requireCompatib
 router.get('/playback/hls.m3u8',run(async(req,res)=>{
   let grant;try{grant=cf.decodeGrant(req.query.grant);}catch{return res.status(401).json({error:'Playback access expired. Reload or renew playback.'});}
   if(!grant.preview){
-    const user=await User.findById(grant.userId).select('_id isActive subscriptionStatus subscriptionExpiry +activeSessionId').lean();
+    const user=await User.findById(grant.userId).select('_id isActive subscriptionStatus subscriptionExpiry purchasedCourses courseEntitlements +activeSessionId').lean();
     if(!user||user.isActive===false||!await isSessionValidForUser(user,grant.sessionId))return res.status(401).json({error:'Playback session is no longer active.'});
     const [,course]=await Promise.all([
-      access(user),
+      access(user,grant.courseId),
       Course.findOne({_id:grant.courseId,status:'published','videos._id':grant.videoId}).select('_id videos._id videos.provider videos.sourceType videos.videoUrl').lean(),
     ]);
     if(!course)return res.status(403).json({error:'Course or lesson is no longer available.'});

@@ -4,7 +4,7 @@ const {playlistProjection,playlistPayload}=require('../services/coursePlaylist')
 function harness({subscription={status:'active',currentPeriodEnd:new Date(Date.now()+60000)},course={_id:id,status:'published',videos:[{_id:lessonId,provider:'aws_cloudfront',videoUrl:'https://d2vntxz4x493rp.cloudfront.net/course/master.m3u8'}]},signingError=false}={}){
  const routes=[],grants=[];let queries=0;
  const checkModule={exports:{}};
- vm.runInNewContext(fs.readFileSync(require.resolve('../middleware/checkSubscription'),'utf8'),{module:checkModule,require:name=>name.includes('subscriptionAccess')?require('../services/subscriptionAccess'):{findOne:async()=>subscription},Date});
+ vm.runInNewContext(fs.readFileSync(require.resolve('../middleware/checkSubscription'),'utf8'),{module:checkModule,require:name=>name.includes('subscriptionAccess')?require('../services/subscriptionAccess'):name.includes('courseAccess')?require('../services/courseAccess'):{findOne:async()=>subscription},Date});
  const protect=()=>{},check=checkModule.exports.checkSubscription;
  const context={module:{exports:{}},process,URL,Buffer,require(name){
   if(name==='express')return {Router:()=>Object.fromEntries(['get','post','patch','delete','put'].map(m=>[m,(...args)=>routes.push(args)]))};
@@ -38,6 +38,31 @@ test('expired or absent subscriptions never read the course or issue a grant',as
 });
 test('legacy active subscriptions without an expiry retain access',async()=>{
  const h=harness({subscription:{status:'active'}});const res=await h.call();assert.equal(res.code,200);assert.equal(h.queries(),1);assert.equal(h.grants.length,1);
+});
+test('a purchased course grants access without a subscription',async()=>{
+ const checkModule={exports:{}};
+ vm.runInNewContext(fs.readFileSync(require.resolve('../middleware/checkSubscription'),'utf8'),{module:checkModule,require:name=>name.includes('subscriptionAccess')?require('../services/subscriptionAccess'):name.includes('courseAccess')?require('../services/courseAccess'):{findOne:async()=>null},Date});
+ const req={params:{id},user:{_id:'course-owner',subscriptionStatus:'none',purchasedCourses:[id]}};
+ const res={code:200,status(n){this.code=n;return this;},json(v){this.body=v;return this;}};
+ let allowed=false;await checkModule.exports.checkSubscription(req,res,()=>{allowed=true;});
+ assert.equal(allowed,true);assert.equal(req.courseAccess.type,'purchase');
+});
+test('course trial and yearly access expire while permanent access remains active',()=>{
+ const {activeCourseEntitlement,activeCourseEntitlements}=require('../services/courseAccess');
+ const now=Date.now();
+ assert.equal(activeCourseEntitlement({courseEntitlements:[{course:id,accessType:'trial',expiresAt:new Date(now-1)}]},id,now),null);
+ assert.equal(activeCourseEntitlement({courseEntitlements:[{course:id,accessType:'yearly',expiresAt:new Date(now+1000)}]},id,now).accessType,'yearly');
+ assert.equal(activeCourseEntitlement({courseEntitlements:[{course:id,accessType:'permanent',expiresAt:null}]},id,now).accessType,'permanent');
+ assert.deepEqual(activeCourseEntitlements({purchasedCourses:[id],courseEntitlements:[]},now),[{courseId:id,accessType:'permanent',expiresAt:null}]);
+ assert.equal(activeCourseEntitlements({purchasedCourses:[id],courseEntitlements:[{course:id,accessType:'trial',expiresAt:new Date(now-1)}]},now).length,0);
+});
+test('admin-granted user access works without a payment subscription document',async()=>{
+ const checkModule={exports:{}};
+ vm.runInNewContext(fs.readFileSync(require.resolve('../middleware/checkSubscription'),'utf8'),{module:checkModule,require:name=>name.includes('subscriptionAccess')?require('../services/subscriptionAccess'):name.includes('courseAccess')?require('../services/courseAccess'):{findOne:async()=>null},Date});
+ const req={user:{_id:'manual-user',subscriptionStatus:'active',subscriptionExpiry:new Date(Date.now()+60000)}};
+ const res={code:200,status(n){this.code=n;return this;},json(v){this.body=v;return this;}};
+ let allowed=false;await checkModule.exports.checkSubscription(req,res,()=>{allowed=true;});
+ assert.equal(allowed,true);assert.equal(req.subscription,null);assert.equal(req.subscriptionAccess.active,true);
 });
 test('draft courses cannot produce playlist grants, signing failure still returns usable lesson metadata',async()=>{
  const draft=harness({course:{_id:id,status:'draft',videos:[]}});assert.equal((await draft.call()).code,404);assert.equal(draft.grants.length,0);

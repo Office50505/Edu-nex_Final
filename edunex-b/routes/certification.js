@@ -45,14 +45,14 @@ router.post('/learning/:courseId/claim',auth,run(async(req,res)=>{
   res.json({certificate:await service.issue(req.compatUser,ctx,status)});
 }));
 router.get('/learning/:courseId/assessment',auth,run(async(req,res)=>{
-  await service.access(req.compatUser);
+  await service.access(req.compatUser,req.params.courseId);
   const ctx=await service.context(req.compatUser,req.params.courseId);
   const status=await service.state(req.compatUser,ctx);
   if(!status.totalLessons||status.completedLessons!==status.totalLessons)throw service.fail('Complete every lesson before taking the assessment.',409);
   res.json({version:ctx.version,passPercent:70,questions:ctx.questions.map(({prompt,options})=>({prompt,options}))});
 }));
 router.post('/learning/:courseId/assessment',auth,run(async(req,res)=>{
-  await service.access(req.compatUser);
+  await service.access(req.compatUser,req.params.courseId);
   const ctx=await service.context(req.compatUser,req.params.courseId),before=await service.state(req.compatUser,ctx);
   if(!before.totalLessons||before.completedLessons!==before.totalLessons)throw service.fail('Complete every lesson before taking the assessment.',409);
   if(req.body.version!==ctx.version)throw service.fail('Course criteria changed. Reload the assessment.',409);

@@ -42,7 +42,11 @@ function eligibility({ videos, rows, user, questions = [], assessment }) {
   if(questions.length && !assessment?.passed) requirements.push('Pass the final assessment with at least 70%.');
   const totalDuration=lessons.reduce((sum,lesson)=>sum+Math.max(0,Number(lesson.duration)||0),0);
   const watchedSeconds=lessons.reduce((sum,lesson)=>sum+Math.max(0,Number(lesson.watchedSeconds)||0),0);
-  const progressPercent=totalDuration>0?Math.min(100,Math.floor(watchedSeconds/totalDuration*100)):0;
+  // Average the per-lesson coverage across the fixed lesson count. Using only
+  // known durations makes progress shrink whenever another duration is filled.
+  const progressPercent=lessons.length
+    ? Math.min(100,Math.round(lessons.reduce((sum,lesson)=>sum+lesson.percent,0)/lessons.length))
+    : 0;
   return { lessons, completedLessons: lessons.filter(l=>l.complete).length, totalLessons: lessons.length, watchedSeconds, totalDuration, progressPercent, requirements, eligible: !requirements.length, assessmentRequired: !!questions.length, assessmentScore: assessment?.score ?? null };
 }
 module.exports = { THRESHOLD, videoKey, manifest, identity, mergeIntervals, heartbeat, covered, eligibility };

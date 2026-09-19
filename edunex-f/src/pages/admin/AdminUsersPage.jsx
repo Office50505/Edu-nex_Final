@@ -16,6 +16,18 @@ const segments = [
   ["trash", "Trash"],
 ];
 
+const emptyCreateLearner = {
+  fullName: "",
+  mobileNumber: "",
+  email: "",
+  password: "",
+  courseId: "",
+  courseAccessType: "permanent",
+  courseAccessDays: "7",
+  isMobileVerified: true,
+  isEmailVerified: false,
+};
+
 function statusBadgeClass(status) {
   if (["active", "subscribed"].includes(status)) return "good";
   if (["1rs trial", "trial"].includes(status)) return "warn";
@@ -74,6 +86,24 @@ function formatGender(value) {
 function formatAge(value) {
   const age = Number(value);
   return Number.isFinite(age) && age > 0 ? `${formatNumber(age)} years` : "Age not provided";
+}
+
+function formatMobile(value) {
+  const digits = String(value || "").replace(/\D/g, "");
+  const local = digits.length === 12 && digits.startsWith("91") ? digits.slice(2) : digits.length === 10 ? digits : "";
+  return local ? `+91,${local.slice(0, 5)}-${local.slice(5)}` : (value || "No mobile");
+}
+
+function formatMoney(paise) {
+  return new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 2 }).format(Number(paise || 0) / 100);
+}
+
+function purchaseTypeLabel(value) {
+  return String(value || "purchase").replaceAll("_", " ").replace(/\b\w/g, (letter) => letter.toUpperCase());
+}
+
+function presenceLabel(user) {
+  return user.presence?.isOnline ? "Online" : "Offline";
 }
 
 function matchesSegment(user, segment) {
@@ -143,7 +173,56 @@ function ProgressRow({ course }) {
   );
 }
 
-function LearnerDetailDrawer({ user, tab, setTab, onClose, ipLocation }) {
+function PurchasedCourseList({ user, courses }) {
+  const courseById = new Map(courses.map((course) => [String(course._id), course]));
+  const entitlementById = new Map((user.courseEntitlements || []).map((item) => [String(item.course?._id || item.course), item]));
+  const rows = (user.purchasedCourses || []).map((value) => {
+    const id = String(value?._id || value);
+    const entitlement = entitlementById.get(id);
+    const accessType = entitlement?.accessType || "permanent";
+    const expired = Boolean(entitlement?.expiresAt && new Date(entitlement.expiresAt) <= new Date());
+    return { id, course: courseById.get(id), accessType, expired, expiresAt: entitlement?.expiresAt || null };
+  });
+  if (!rows.length) return <div className="empty-state">No purchased courses assigned.</div>;
+  return <div className="purchased-course-list">{rows.map((item) => <div className="purchased-course-card" key={item.id}>
+    <div><strong>{item.course?.title || "Course unavailable"}</strong><span>{item.course?.category?.name || item.course?.category || "Published course"}</span></div>
+    <div><span className={`badge ${item.expired ? "bad" : "good"}`}>{item.expired ? "expired" : item.accessType}</span><span>{item.accessType === "permanent" ? "No expiry" : `Ends ${formatDate(item.expiresAt)}`}</span></div>
+  </div>)}</div>;
+}
+
+function PurchaseHistoryPanel({ state }) {
+  if (!state) return null;
+  const records = [
+    ...(state.orders || []).map((order) => ({
+      id: `order-${order._id}`,
+      date: order.paidAt || order.createdAt,
+      title: purchaseTypeLabel(order.orderType),
+      detail: `${order.gateway || "payment"}${order.phonePePaymentInstrument ? ` · ${order.phonePePaymentInstrument}` : ""}`,
+      status: order.status || "pending",
+      amount: formatMoney(order.totalAmount),
+    })),
+    ...(state.courseChanges || []).map((item) => ({
+      id: `course-${item._id}`,
+      date: item.createdAt,
+      title: item.nextState?.courseTitle || "Course access",
+      detail: `${item.action === "course_granted" ? "Granted" : "Revoked"} by admin${item.nextState?.accessType ? ` · ${purchaseTypeLabel(item.nextState.accessType)}` : ""}`,
+      status: item.action === "course_granted" ? "granted" : "revoked",
+      amount: "Admin assigned",
+    })),
+  ].sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
+  return <section className="purchase-history-panel" aria-label={`Purchase history for ${state.user?.fullName || "learner"}`}>
+      <div className="crm-detail-head"><strong>Purchase history</strong><span>{records.length} records</span></div>
+      {state.loading ? <div className="empty-state">Loading purchase history…</div> : null}
+      {state.error ? <div className="admin-alert bad">{state.error}</div> : null}
+      {!state.loading && !state.error && !records.length ? <div className="empty-state">No payment or course purchase history found.</div> : null}
+      {!state.loading && !state.error && records.length ? <div className="purchase-history-list">{records.map((record) => <article key={record.id}>
+        <div><strong>{record.title}</strong><span>{record.detail}</span></div>
+        <div><span className={`badge ${["paid", "granted"].includes(record.status) ? "good" : record.status === "pending" ? "warn" : "bad"}`}>{record.status}</span><strong>{record.amount}</strong><span>{formatDateTime(record.date)}</span></div>
+      </article>)}</div> : null}
+    </section>;
+}
+
+function LearnerDetailDrawer({ user, courses, tab, setTab, onClose, ipLocation }) {
   if (!user) return null;
   const progress = user.progressCourses || [];
   const watch = user.watchSummary || {};
@@ -153,7 +232,7 @@ function LearnerDetailDrawer({ user, tab, setTab, onClose, ipLocation }) {
       <div className="drawer-head">
         <div className="crm-contact-cell">
           <div className="crm-avatar" aria-hidden="true">{initials(user)}</div>
-          <div><strong>{user.fullName || "Learner"}</strong><span>{user.email || "No email"}</span><span>{user.mobileNumber || "No mobile"}</span></div>
+          <div><strong>{user.fullName || "Learner"}</strong><span>{user.email || "No email"}</span><span>{formatMobile(user.mobileNumber)}</span></div>
         </div>
         <button className="toolbar-button" type="button" onClick={onClose}>Close</button>
       </div>
@@ -162,10 +241,10 @@ function LearnerDetailDrawer({ user, tab, setTab, onClose, ipLocation }) {
       </div>
       {tab === "Overview" ? (
         <div className="crm-detail-grid">
-          <DetailStat label="User ID" value={user._id || "No ID"} /><DetailStat label="Lifecycle" value={lifecycleLabel(user)} /><DetailStat label="Subscription" value={user.subscriptionStatus || "none"} /><DetailStat label="Verified" value={isVerified(user) ? "Yes" : "Pending"} /><DetailStat label="Joined" value={formatDateTime(user.createdAt)} /><DetailStat label="Last active" value={formatDate(user.lastActiveAt || watch.lastWatchedAt)} /><DetailStat label="Last IP address" value={user.networkSummary?.ipAddress || "Not recorded"} /><DetailStat label="Approx. location" value={ipLocation?.location || "Open to locate"} /><DetailStat label="IP recorded" value={user.networkSummary?.recordedAt ? formatDateTime(user.networkSummary.recordedAt) : "Not recorded"} /><DetailStat label="Watch time" value={formatWatchDuration(watchMinutes(user))} /><DetailStat label="Average completion" value={`${formatNumber(progressAverage(user))}%`} />
+          <DetailStat label="User ID" value={user._id || "No ID"} /><DetailStat label="Presence" value={user.presence?.isOnline ? "Online now" : `Offline · ${formatDateTime(user.presence?.lastSeenAt || user.lastActiveAt)}`} /><DetailStat label="Lifecycle" value={lifecycleLabel(user)} /><DetailStat label="Subscription" value={user.subscriptionStatus || "none"} /><DetailStat label="Verified" value={isVerified(user) ? "Yes" : "Pending"} /><DetailStat label="Joined" value={formatDateTime(user.createdAt)} /><DetailStat label="Last active" value={formatDate(user.presence?.lastSeenAt || user.lastActiveAt || watch.lastWatchedAt)} /><DetailStat label="Last IP address" value={user.networkSummary?.ipAddress || "Not recorded"} /><DetailStat label="Approx. location" value={ipLocation?.location || "Open to locate"} /><DetailStat label="IP recorded" value={user.networkSummary?.recordedAt ? formatDateTime(user.networkSummary.recordedAt) : "Not recorded"} /><DetailStat label="Watch time" value={formatWatchDuration(watchMinutes(user))} /><DetailStat label="Average completion" value={`${formatNumber(progressAverage(user))}%`} />
         </div>
       ) : null}
-      {tab === "Course progress" ? <div className="progress-list">{progress.length ? progress.map((course) => <ProgressRow course={course} key={`${user._id}-drawer-${course.courseId}`} />) : <div className="empty-state">No course progress yet.</div>}</div> : null}
+      {tab === "Course progress" ? <><PurchasedCourseList user={user} courses={courses} /><div className="drawer-section-label">Learning progress</div><div className="progress-list">{progress.length ? progress.map((course) => <ProgressRow course={course} key={`${user._id}-drawer-${course.courseId}`} />) : <div className="empty-state">Course purchased. Learning has not started yet.</div>}</div></> : null}
       {tab === "Orders/payments" ? <div className="empty-state">Backend API not connected for learner order history yet.</div> : null}
       {tab === "Certificates" ? <div className="empty-state">Backend API not connected for learner-specific certificate records yet.</div> : null}
       {tab === "Activity" ? <div className="empty-state">Backend API not connected for learner activity and audit events yet.</div> : null}
@@ -183,9 +262,11 @@ export function AdminUsersPage() {
   const [page, setPage] = useState(1);
   const [deletingId, setDeletingId] = useState(null);
   const [users, setUsers] = useState([]);
+  const [courses, setCourses] = useState([]);
   const [query, setQuery] = useState("");
   const [status, setStatus] = useState("all");
   const [accountStatus, setAccountStatus] = useState("all");
+  const [presenceStatus, setPresenceStatus] = useState("all");
   const [sort, setSort] = useState("newest");
   const [segment, setSegment] = useState("all");
   const [openIds, setOpenIds] = useState(new Set());
@@ -197,20 +278,32 @@ export function AdminUsersPage() {
   const [updatingId, setUpdatingId] = useState(null);
   const [actionHistory, setActionHistory] = useState({});
   const [ipLocations, setIpLocations] = useState({});
+  const [createLearner, setCreateLearner] = useState(emptyCreateLearner);
+  const [creatingLearner, setCreatingLearner] = useState(false);
+  const [createdLearnerId, setCreatedLearnerId] = useState("");
+  const [courseDialog, setCourseDialog] = useState(null);
+  const [purchaseHistories, setPurchaseHistories] = useState({});
+  const [purchaseOpenIds, setPurchaseOpenIds] = useState(new Set());
   const deferredQuery = useDeferredValue(query);
 
-  async function loadUsers() {
+  async function loadUsers({ silent = false } = {}) {
     if (!requireAdmin()) return;
-    setLoading(true);
-    setMessage("");
+    if (!silent) {
+      setLoading(true);
+      setMessage("");
+    }
     try {
-      const rows = await adminJson("/api/admin/user-management", {}, "Unable to load users.");
+      const [rows, courseRows] = await Promise.all([
+        adminJson("/api/admin/user-management", {}, "Unable to load users."),
+        adminJson("/api/admin/courses?summary=1", {}, "Unable to load courses."),
+      ]);
       setUsers(Array.isArray(rows) ? rows : []);
+      setCourses(Array.isArray(courseRows) ? courseRows.filter((course) => course.status === "published") : []);
     } catch (error) {
       setMessageType("error");
       setMessage(error.message || "Unable to load users.");
     } finally {
-      setLoading(false);
+      if (!silent) setLoading(false);
     }
   }
 
@@ -220,13 +313,16 @@ export function AdminUsersPage() {
     const initialQuery = params.get("q");
     if (initialQuery) setQuery(initialQuery);
     loadUsers();
+    const presenceRefresh = window.setInterval(() => loadUsers({ silent: true }), 30000);
+    return () => window.clearInterval(presenceRefresh);
   }, []);
 
   const filteredUsers = useMemo(() => {
     const rows = users.filter((user) => {
       const matchesStatus = status === "all" || user.subscriptionStatus === status;
       const matchesAccount = accountStatus === "all" || (accountStatus === "active" ? user.isActive : !user.isActive);
-      return matchesStatus && matchesAccount && matchesSearch(user, deferredQuery) && matchesSegment(user, segment);
+      const matchesPresence = presenceStatus === "all" || (presenceStatus === "online" ? user.presence?.isOnline : !user.presence?.isOnline);
+      return matchesStatus && matchesAccount && matchesPresence && matchesSearch(user, deferredQuery) && matchesSegment(user, segment);
     });
 
     return rows.sort((a, b) => {
@@ -236,9 +332,37 @@ export function AdminUsersPage() {
       if (sort === "name") return String(a.fullName || a.email || "").localeCompare(String(b.fullName || b.email || ""));
       return new Date(b.createdAt || 0) - new Date(a.createdAt || 0);
     });
-  }, [users, deferredQuery, status, accountStatus, sort, segment]);
+  }, [users, deferredQuery, status, accountStatus, presenceStatus, sort, segment]);
 
-  useEffect(() => { setPage(1); }, [deferredQuery, status, accountStatus, sort, segment]);
+  useEffect(() => { setPage(1); }, [deferredQuery, status, accountStatus, presenceStatus, sort, segment]);
+
+  function updateCreateLearner(field, value) {
+    setCreateLearner((current) => ({ ...current, [field]: value }));
+  }
+
+  async function submitCreateLearner(event) {
+    event.preventDefault();
+    setCreatingLearner(true);
+    setCreatedLearnerId("");
+    setMessage("");
+    try {
+      const data = await adminJson("/api/admin/users", {
+        method: "POST",
+        body: JSON.stringify(createLearner),
+      }, "Unable to create learner ID.");
+      setCreatedLearnerId(String(data.user?._id || ""));
+      setMessageType("success");
+      setMessage(data.message || "Learner ID created successfully.");
+      setCreateLearner(emptyCreateLearner);
+      await loadUsers();
+    } catch (error) {
+      setMessageType("error");
+      setMessage(error.message || "Unable to create learner ID.");
+    } finally {
+      setCreatingLearner(false);
+    }
+  }
+
   const pageCount = Math.max(1, Math.ceil(filteredUsers.length / 25));
   const currentPage = Math.min(page, pageCount);
   const visibleUsers = filteredUsers.slice((currentPage - 1) * 25, currentPage * 25);
@@ -247,13 +371,15 @@ export function AdminUsersPage() {
     const totalProgressCourses = filteredUsers.reduce((sum, user) => sum + totalCourses(user), 0);
     const totalWatchMinutes = filteredUsers.reduce((sum, user) => sum + watchMinutes(user), 0);
     const activeUsers = filteredUsers.filter((user) => user.isActive).length;
+    const onlineUsers = filteredUsers.filter((user) => user.presence?.isOnline).length;
     const subscribedUsers = filteredUsers.filter((user) => ["active", "subscribed"].includes(user.subscriptionStatus)).length;
     const complete = filteredUsers.reduce((sum, user) => sum + completedCourses(user), 0);
     const usersWithAge = filteredUsers.filter((user) => user.age != null && Number(user.age) > 0 && Number.isFinite(Number(user.age)));
     const averageAge = usersWithAge.length ? Math.round(usersWithAge.reduce((sum, user) => sum + Number(user.age || 0), 0) / usersWithAge.length) : null;
     return [
       ["Users", formatNumber(filteredUsers.length)],
-      ["Active Users", formatNumber(activeUsers)],
+      ["Enabled Accounts", formatNumber(activeUsers)],
+      ["Online Now", formatNumber(onlineUsers)],
       ["Paid Subscribers", formatNumber(subscribedUsers)],
       ["Watch Time", formatWatchDuration(totalWatchMinutes)],
       ["Average Age", averageAge ? `${formatNumber(averageAge)} years` : "No age"],
@@ -291,6 +417,7 @@ export function AdminUsersPage() {
 
   function mergeUser(userId, patch) {
     setUsers((rows) => rows.map((user) => String(user._id) === String(userId) ? { ...user, ...patch } : user));
+    setSelectedUser((user) => user && String(user._id) === String(userId) ? { ...user, ...patch } : user);
   }
 
   async function changeAccountAccess(user) {
@@ -318,27 +445,37 @@ export function AdminUsersPage() {
     } finally { setUpdatingId(null); }
   }
 
-  async function changeSubscription(user, action) {
-    if (updatingId) return;
-    const granting = action === "grant";
-    const durationInput = granting ? window.prompt("Subscription duration in days:", "30") : null;
-    if (granting && durationInput === null) return;
-    const durationDays = Number.parseInt(durationInput, 10);
-    if (granting && (!Number.isFinite(durationDays) || durationDays < 1 || durationDays > 3650)) {
-      setMessageType("error"); setMessage("Duration must be between 1 and 3650 days."); return;
+  function openCourseDialog(user, action) {
+    if (updatingId || !courses.length) return;
+    const entitlements = new Map((user.courseEntitlements || []).map((item) => [String(item.course?._id || item.course), item]));
+    const owned = new Set((user.purchasedCourses || []).map(String).filter((id) => {
+      const entitlement = entitlements.get(id);
+      if (!entitlement) return true;
+      return entitlement.accessType === "permanent" || (entitlement.expiresAt && new Date(entitlement.expiresAt) > new Date());
+    }));
+    const choices = courses.filter((course) => action === "grant" ? !owned.has(String(course._id)) : owned.has(String(course._id)));
+    if (!choices.length) {
+      setMessageType("error");
+      setMessage(action === "grant" ? "This learner already owns every published course." : "This learner has no purchased courses.");
+      return;
     }
-    const reason = window.prompt(`${granting ? "Grant" : "Removal"} reason (required):`);
-    if (!reason?.trim()) return;
-    const warning = granting ? `Grant ${durationDays} days of subscription access?` : "Remove subscription access immediately? This does not cancel billing at the payment gateway.";
-    if (!window.confirm(warning)) return;
+    setCourseDialog({ user, action, choices, courseId: String(choices[0]._id), accessType: "permanent", accessDays: "7", reason: action === "grant" ? "Course purchased/assigned by admin" : "Course access removed by admin" });
+  }
+
+  async function submitCourseAccess(event) {
+    event.preventDefault();
+    if (!courseDialog || updatingId) return;
+    const { user, action, courseId, accessType, accessDays, reason } = courseDialog;
+    const course = courseDialog.choices.find((item) => String(item._id) === String(courseId));
+    if (!course || !reason.trim()) return;
     setUpdatingId(user._id);
     try {
-      const data = await adminJson(`/api/admin/users/${encodeURIComponent(user._id)}/subscription`, {
-        method: "PATCH", body: JSON.stringify({ action, durationDays, reason: reason.trim() }),
-      }, "Unable to update subscription.");
+      const data = await adminJson(`/api/admin/users/${encodeURIComponent(user._id)}/courses`, {
+        method: "PATCH", body: JSON.stringify({ action, courseId: course._id, accessType, accessDays: Number(accessDays), reason: reason.trim() }),
+      }, "Unable to update course ownership.");
       mergeUser(user._id, data.user || {});
-      setActionHistory((current) => ({ ...current, [user._id]: undefined }));
       setMessageType("success"); setMessage(data.message);
+      setCourseDialog(null);
     } catch (error) {
       setMessageType("error"); setMessage(error.message);
     } finally { setUpdatingId(null); }
@@ -348,6 +485,24 @@ export function AdminUsersPage() {
     setSelectedUser(user);
     setDrawerTab("Overview");
     if (!ipLocations[user._id]) loadIpLocation(user._id);
+  }
+
+  async function togglePurchaseHistory(user) {
+    const userId = String(user._id);
+    const opening = !purchaseOpenIds.has(userId);
+    setPurchaseOpenIds((current) => {
+      const next = new Set(current);
+      if (next.has(userId)) next.delete(userId); else next.add(userId);
+      return next;
+    });
+    if (!opening || purchaseHistories[userId]) return;
+    setPurchaseHistories((current) => ({ ...current, [userId]: { user, loading: true, error: "", orders: [], courseChanges: [] } }));
+    try {
+      const data = await adminJson(`/api/admin/users/${encodeURIComponent(user._id)}/purchase-history`, {}, "Unable to load purchase history.");
+      setPurchaseHistories((current) => ({ ...current, [userId]: { user: data.user || user, loading: false, error: "", orders: data.orders || [], courseChanges: data.courseChanges || [] } }));
+    } catch (error) {
+      setPurchaseHistories((current) => ({ ...current, [userId]: { user, loading: false, error: error.message || "Unable to load purchase history.", orders: [], courseChanges: [] } }));
+    }
   }
 
   async function moveToTrash(user) {
@@ -465,14 +620,30 @@ export function AdminUsersPage() {
       actions={<button className="toolbar-button" type="button" onClick={loadUsers} disabled={loading}>Refresh</button>}
     >
       <Message text={message} type={messageType} />
+      <details className="create-learner-panel">
+        <summary><span>Create learner ID</span><small>Add a learner manually and set initial access.</small></summary>
+        <form className="create-learner-form" onSubmit={submitCreateLearner}>
+          <label><span>Full name</span><input value={createLearner.fullName} onChange={(event) => updateCreateLearner("fullName", event.target.value)} minLength="2" maxLength="120" required autoComplete="off" /></label>
+          <label><span>Mobile number</span><input type="tel" value={createLearner.mobileNumber} onChange={(event) => updateCreateLearner("mobileNumber", event.target.value)} placeholder="9876543210" minLength="10" maxLength="18" required autoComplete="off" /></label>
+          <label><span>Email (optional)</span><input type="email" value={createLearner.email} onChange={(event) => updateCreateLearner("email", event.target.value)} maxLength="254" autoComplete="off" /></label>
+          <label><span>Temporary password</span><input type="password" value={createLearner.password} onChange={(event) => updateCreateLearner("password", event.target.value)} minLength="8" maxLength="72" required autoComplete="new-password" /></label>
+          <label><span>Purchased course (optional)</span><select value={createLearner.courseId} onChange={(event) => updateCreateLearner("courseId", event.target.value)}><option value="">No course yet</option>{courses.map((course) => <option value={course._id} key={course._id}>{course.title}</option>)}</select></label>
+          {createLearner.courseId ? <label><span>Course access</span><select value={createLearner.courseAccessType} onChange={(event) => updateCreateLearner("courseAccessType", event.target.value)}><option value="trial">Trial</option><option value="yearly">Yearly (365 days)</option><option value="permanent">Permanent</option></select></label> : null}
+          {createLearner.courseId && createLearner.courseAccessType === "trial" ? <label><span>Trial days</span><input type="number" min="1" max="365" value={createLearner.courseAccessDays} onChange={(event) => updateCreateLearner("courseAccessDays", event.target.value)} required /></label> : null}
+          <label className="create-learner-check"><input type="checkbox" checked={createLearner.isMobileVerified} onChange={(event) => updateCreateLearner("isMobileVerified", event.target.checked)} /><span>Mobile verified</span></label>
+          <label className="create-learner-check"><input type="checkbox" checked={createLearner.isEmailVerified} disabled={!createLearner.email} onChange={(event) => updateCreateLearner("isEmailVerified", event.target.checked)} /><span>Email verified</span></label>
+          <div className="create-learner-actions"><button className="toolbar-button primary" type="submit" disabled={creatingLearner}>{creatingLearner ? "Creating…" : "Create learner ID"}</button>{createdLearnerId ? <output>Created ID: <strong>{createdLearnerId}</strong></output> : null}</div>
+        </form>
+      </details>
       <DeletionRequests />
 
       <form className="controls-panel" onSubmit={(event) => event.preventDefault()}>
         <div><label htmlFor="searchInput">Search</label><input id="searchInput" type="search" placeholder="Name, email, phone number, course" value={query} onChange={(event) => setQuery(event.target.value)} /></div>
-        <div><label htmlFor="statusFilter">Status</label><select id="statusFilter" value={status} onChange={(event) => setStatus(event.target.value)}><option value="all">All statuses</option><option value="active">Active</option><option value="subscribed">Subscribed</option><option value="1rs trial">1rs trial</option><option value="trial">Trial</option><option value="none">None</option><option value="cancelled">Cancelled</option><option value="expired">Expired</option></select></div>
+        <div><label htmlFor="statusFilter">Subscription status</label><select id="statusFilter" value={status} onChange={(event) => setStatus(event.target.value)}><option value="all">All subscriptions</option><option value="active">Active subscription</option><option value="subscribed">Subscribed</option><option value="1rs trial">₹1 trial</option><option value="trial">Trial</option><option value="none">No subscription</option><option value="cancelled">Cancelled</option><option value="expired">Expired</option></select></div>
         <div><label htmlFor="accountFilter">Account access</label><select id="accountFilter" value={accountStatus} onChange={(event) => setAccountStatus(event.target.value)}><option value="all">All accounts</option><option value="active">Active accounts</option><option value="banned">Banned accounts</option></select></div>
+        <div><label htmlFor="presenceFilter">User online status</label><select id="presenceFilter" value={presenceStatus} onChange={(event) => setPresenceStatus(event.target.value)}><option value="all">All users</option><option value="online">Online users</option><option value="offline">Offline users</option></select></div>
         <div><label htmlFor="sortFilter">Sort</label><select id="sortFilter" value={sort} onChange={(event) => setSort(event.target.value)}><option value="newest">Newest first</option><option value="watch">Highest watch time</option><option value="progress">Highest progress</option><option value="courses">Most courses</option><option value="name">Name A-Z</option></select></div>
-        <button className="toolbar-button" type="button" onClick={() => { setQuery(""); setStatus("all"); setAccountStatus("all"); setSort("newest"); setSegment("all"); }}>Clear</button>
+        <button className="toolbar-button" type="button" onClick={() => { setQuery(""); setStatus("all"); setAccountStatus("all"); setPresenceStatus("all"); setSort("newest"); setSegment("all"); }}>Clear</button>
       </form>
 
       <div className="crm-segments" aria-label="CRM segments">
@@ -496,18 +667,19 @@ export function AdminUsersPage() {
           const average = Math.max(0, Math.min(100, progressAverage(user)));
           const statusValue = user.subscriptionStatus || "none";
           const isOpen = openIds.has(user._id);
+          const isPurchaseOpen = purchaseOpenIds.has(String(user._id));
           const progress = user.progressCourses || [];
           const summaryData = user.progressSummary || {};
           const watch = user.watchSummary || {};
           return (
             <article className={`user-card${isOpen ? " is-open" : ""}`} key={user._id}>
               <div className="user-row">
-                <div className="crm-contact-cell"><div className="crm-avatar" aria-hidden="true">{initials(user)}</div><div><strong>{user.fullName || "Learner"}</strong><span>ID {user._id || "No ID"}</span></div></div>
+                <div className="crm-contact-cell"><div className="crm-avatar" aria-hidden="true">{initials(user)}</div><div><strong>{user.fullName || "Learner"}</strong><span className={`presence-status ${user.presence?.isOnline ? "is-online" : "is-offline"}`}><i aria-hidden="true" />{presenceLabel(user)}</span><span>ID {user._id || "No ID"}</span></div></div>
                 <div><strong>{user.deletedAt ? "In Trash" : user.isActive === false ? "Banned account" : lifecycleLabel(user)}</strong><span><span className={`badge ${user.deletedAt || user.isActive === false ? "bad" : statusBadgeClass(statusValue)}`}>{user.deletedAt ? "trashed" : user.isActive === false ? "banned" : statusValue}</span></span><span>{user.deletedAt ? `Deleted ${formatDate(user.deletedAt)}` : isVerified(user) ? "Verified account" : "Verification pending"}</span></div>
-                <div><strong>{user.mobileNumber || "No mobile"}</strong><span>{user.email || "No email"}</span></div>
+                <div><strong>{formatMobile(user.mobileNumber)}</strong><span>{user.email || "No email"}</span></div>
                 <div className="crm-engagement-cell"><strong>{engagementLabel(user)}</strong><div className="mini-stats"><span className="pill">{formatNumber(summaryData.totalCourses)} courses</span><span className="pill">{formatNumber(summaryData.completedCourses)} done</span><span className="pill">{formatWatchDuration(watchMinutes(user))}</span></div></div>
                 <div className="crm-engagement-cell"><strong>{formatNumber(average)}% completion</strong><div className="progress-meter" aria-hidden="true"><div className="progress-fill" style={{ width: `${average}%` }} /></div><span>Joined {formatDateTime(user.createdAt)} · Last {formatDate(user.lastActiveAt || watch.lastWatchedAt)}</span></div>
-                <div className="row-actions"><button className="action-button" type="button" onClick={() => openDrawer(user)}>View</button><button className="action-button" type="button" aria-expanded={isOpen} onClick={() => toggleOpen(user._id)}>{isOpen ? "Close" : "Manage"}</button>{user.deletedAt ? <><button className="action-button primary" type="button" disabled={Boolean(updatingId) || Boolean(deletingId)} onClick={() => restoreUser(user)}>{updatingId === user._id ? "Restoring…" : "Restore"}</button><button className="action-button danger" type="button" disabled={Boolean(deletingId) || Boolean(updatingId)} onClick={() => deletePermanently(user)}>{deletingId === user._id ? "Deleting…" : "Delete permanently"}</button></> : <><button className={`action-button ${user.isActive === false ? "success" : "danger"}`} type="button" disabled={Boolean(updatingId)} onClick={() => changeAccountAccess(user)}>{updatingId === user._id ? "Updating…" : user.isActive === false ? "Unban" : "Ban"}</button><button className="action-button danger" type="button" disabled={Boolean(deletingId) || Boolean(updatingId)} onClick={() => moveToTrash(user)}>{deletingId === user._id ? "Moving…" : "Move to Trash"}</button></>}</div>
+                <div className="row-actions"><button className="action-button" type="button" onClick={() => openDrawer(user)}>View</button><button className="action-button" type="button" aria-expanded={isOpen} onClick={() => toggleOpen(user._id)}>{isOpen ? "Close" : "Manage"}</button><button className="action-button" type="button" aria-expanded={isPurchaseOpen} onClick={() => togglePurchaseHistory(user)}>{isPurchaseOpen ? "Close history" : "Purchase history"}</button>{user.deletedAt ? <><button className="action-button primary" type="button" disabled={Boolean(updatingId) || Boolean(deletingId)} onClick={() => restoreUser(user)}>{updatingId === user._id ? "Restoring…" : "Restore"}</button><button className="action-button danger" type="button" disabled={Boolean(deletingId) || Boolean(updatingId)} onClick={() => deletePermanently(user)}>{deletingId === user._id ? "Deleting…" : "Delete permanently"}</button></> : <><button className={`action-button ${user.isActive === false ? "success" : "danger"}`} type="button" disabled={Boolean(updatingId)} onClick={() => changeAccountAccess(user)}>{updatingId === user._id ? "Updating…" : user.isActive === false ? "Unban" : "Ban"}</button><button className="action-button danger" type="button" disabled={Boolean(deletingId) || Boolean(updatingId)} onClick={() => moveToTrash(user)}>{deletingId === user._id ? "Moving…" : "Move to Trash"}</button></>}</div>
               </div>
               {isOpen ? (
                 <div className="progress-panel">
@@ -516,13 +688,15 @@ export function AdminUsersPage() {
                   </div>
                   {user.banReason ? <div className="admin-alert bad"><strong>Ban reason</strong><span>{user.banReason}</span></div> : null}
                   <div className="user-management-actions">
-                    <div><strong>Subscription access</strong><span>Manual access changes are recorded. Removing access does not cancel an external payment mandate.</span></div>
-                    {user.deletedAt ? <><button className="action-button primary" type="button" disabled={Boolean(updatingId) || Boolean(deletingId)} onClick={() => restoreUser(user)}>Restore user</button><button className="action-button danger" type="button" disabled={Boolean(deletingId) || Boolean(updatingId)} onClick={() => deletePermanently(user)}>{deletingId === user._id ? "Deleting…" : "Delete permanently"}</button></> : <><button className="action-button primary" type="button" disabled={Boolean(updatingId)} onClick={() => changeSubscription(user, "grant")}>Grant subscription</button><button className="action-button danger" type="button" disabled={Boolean(updatingId)} onClick={() => changeSubscription(user, "revoke")}>Remove access</button><button className="action-button danger" type="button" disabled={Boolean(deletingId) || Boolean(updatingId)} onClick={() => moveToTrash(user)}>{deletingId === user._id ? "Moving…" : "Move to Trash"}</button></>}
+                    <div><strong>Purchased courses</strong><span>{formatNumber(user.purchasedCourses?.length || 0)} courses owned. Course changes are recorded in the audit history.</span></div>
+                    {user.deletedAt ? <><button className="action-button primary" type="button" disabled={Boolean(updatingId) || Boolean(deletingId)} onClick={() => restoreUser(user)}>Restore user</button><button className="action-button danger" type="button" disabled={Boolean(deletingId) || Boolean(updatingId)} onClick={() => deletePermanently(user)}>{deletingId === user._id ? "Deleting…" : "Delete permanently"}</button></> : <><button className="action-button primary" type="button" disabled={Boolean(updatingId)} onClick={() => openCourseDialog(user, "grant")}>Add purchased course</button><button className="action-button danger" type="button" disabled={Boolean(updatingId)} onClick={() => openCourseDialog(user, "revoke")}>Remove course</button><button className="action-button danger" type="button" disabled={Boolean(deletingId) || Boolean(updatingId)} onClick={() => moveToTrash(user)}>{deletingId === user._id ? "Moving…" : "Move to Trash"}</button></>}
                   </div>
+                  <div className="crm-detail-section"><div className="crm-detail-head"><strong>Purchased course details</strong><span>{formatNumber(user.purchasedCourses?.length || 0)} assigned</span></div><PurchasedCourseList user={user} courses={courses} /></div>
                   <div className="crm-detail-section"><div className="crm-detail-head"><strong>Course progress</strong><span>{formatNumber(progress.length)} records</span></div><div className="progress-list">{progress.length ? progress.map((course) => <ProgressRow course={course} key={`${user._id}-${course.courseId}`} />) : <div className="empty-state">No course progress yet.</div>}</div></div>
                   <div className="crm-detail-section"><div className="crm-detail-head"><strong>Admin action history</strong><span>Latest 25 actions</span></div><div className="admin-action-list">{actionHistory[user._id] === undefined ? <span>Open again to refresh history.</span> : actionHistory[user._id]?.length ? actionHistory[user._id].map((item) => <div key={item._id}><strong>{String(item.action || "").replaceAll("_", " ")}</strong><span>{item.reason || "No reason"} · {formatDate(item.createdAt)}</span></div>) : <span>No admin actions recorded.</span>}</div></div>
                 </div>
               ) : null}
+              {isPurchaseOpen ? <PurchaseHistoryPanel state={purchaseHistories[String(user._id)] || { user, loading: true, orders: [], courseChanges: [] }} /> : null}
             </article>
           );
         })}
@@ -532,7 +706,19 @@ export function AdminUsersPage() {
         <span aria-live="polite">Page {currentPage} of {pageCount} · 25 learners per page</span>
         <button className="toolbar-button" disabled={currentPage >= pageCount || loading} onClick={() => setPage(currentPage + 1)}>Next</button>
       </nav>
-      <LearnerDetailDrawer user={selectedUser} tab={drawerTab} setTab={setDrawerTab} onClose={() => setSelectedUser(null)} ipLocation={selectedUser ? ipLocations[selectedUser._id] : null} />
+      <LearnerDetailDrawer user={selectedUser} courses={courses} tab={drawerTab} setTab={setDrawerTab} onClose={() => setSelectedUser(null)} ipLocation={selectedUser ? ipLocations[selectedUser._id] : null} />
+
+      {courseDialog ? <div className="course-access-backdrop" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget && !updatingId) setCourseDialog(null); }}>
+        <form className="course-access-dialog" role="dialog" aria-modal="true" aria-labelledby="course-access-title" onSubmit={submitCourseAccess}>
+          <div className="course-access-dialog-head"><div><span>Course ownership</span><h2 id="course-access-title">{courseDialog.action === "grant" ? "Add purchased course" : "Remove purchased course"}</h2></div><button type="button" aria-label="Close" disabled={Boolean(updatingId)} onClick={() => setCourseDialog(null)}>×</button></div>
+          <p>Choose a course for <strong>{courseDialog.user.fullName || formatMobile(courseDialog.user.mobileNumber) || "this learner"}</strong>.</p>
+          <label><span>Course</span><select autoFocus value={courseDialog.courseId} onChange={(event) => setCourseDialog((current) => ({ ...current, courseId: event.target.value }))}>{courseDialog.choices.map((course) => <option value={course._id} key={course._id}>{course.title}</option>)}</select></label>
+          {courseDialog.action === "grant" ? <label><span>Access duration</span><select value={courseDialog.accessType} onChange={(event) => setCourseDialog((current) => ({ ...current, accessType: event.target.value }))}><option value="trial">Trial</option><option value="yearly">Yearly (365 days)</option><option value="permanent">Permanent</option></select></label> : null}
+          {courseDialog.action === "grant" && courseDialog.accessType === "trial" ? <label><span>Trial days</span><input type="number" min="1" max="365" required value={courseDialog.accessDays} onChange={(event) => setCourseDialog((current) => ({ ...current, accessDays: event.target.value }))} /></label> : null}
+          <label><span>Audit reason</span><textarea rows="3" maxLength="500" required value={courseDialog.reason} onChange={(event) => setCourseDialog((current) => ({ ...current, reason: event.target.value }))} /></label>
+          <div className="course-access-dialog-actions"><button className="toolbar-button" type="button" disabled={Boolean(updatingId)} onClick={() => setCourseDialog(null)}>Cancel</button><button className={`action-button ${courseDialog.action === "grant" ? "primary" : "danger"}`} type="submit" disabled={Boolean(updatingId) || !courseDialog.reason.trim()}>{updatingId ? "Saving…" : courseDialog.action === "grant" ? "Add course" : "Remove course"}</button></div>
+        </form>
+      </div> : null}
 
     </AdminShell>
   );

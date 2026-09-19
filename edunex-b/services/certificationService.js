@@ -10,6 +10,7 @@ const User = require('../models/User');
 const Subscription = require('../models/Subscription');
 const AnalyticsEvent = require('../models/AnalyticsEvent');
 const { resolveSubscriptionAccess } = require('./subscriptionAccess');
+const { activeCourseEntitlement } = require('./courseAccess');
 const rules = require('./completionRules');
 const fail = (message,statusCode=400) => Object.assign(new Error(message),{statusCode});
 async function context(user, courseId) {
@@ -19,7 +20,8 @@ async function context(user, courseId) {
   const policy = await Policy.findById(String(courseId)).lean();
   return { course, ...rules.manifest(course,policy) };
 }
-async function access(user) {
+async function access(user, courseId = null) {
+  if (activeCourseEntitlement(user,courseId)) return;
   const sub=await Subscription.findOne({user:user._id}).lean();
   if(!resolveSubscriptionAccess(sub,user).active) throw fail('An active learning entitlement is required.',403);
 }
@@ -78,7 +80,7 @@ async function migrateLearningVersion(courseId, previousVersion, nextVersion) {
   return Number(result.upsertedCount || 0);
 }
 async function recordPlayback({ user,courseId,videoId,currentTime,duration,sessionId }) {
-  await access(user);
+  await access(user,courseId);
   let ctx=await context(user,courseId);
   let index=ctx.course.videos.findIndex((v,i)=>[rules.videoKey(v,i),v.bunnyGuid,v.bunnyVideoId,v.youtubeId,String(i)].filter(v=>v!=null).map(String).includes(String(videoId)));
   if(index<0) throw fail('Lesson does not belong to this course',404);
@@ -119,7 +121,7 @@ async function recordPlayback({ user,courseId,videoId,currentTime,duration,sessi
   return {courseId:String(courseId),progress,eligibility:status,certificate:await issue(user,ctx,status)};
 }
 async function completeVideo({user,courseId,videoId}) {
-  await access(user);const ctx=await context(user,courseId),status=await state(user,ctx);
+  await access(user,courseId);const ctx=await context(user,courseId),status=await state(user,ctx);
   const lesson=status.lessons.find(l=>l.id===String(videoId));
   if(!lesson?.complete) throw fail('Watch at least 90% of this lesson before completing it.',409);
   return {courseId:String(courseId),progress:await sync(user,ctx,status,videoId),eligibility:status,certificate:await issue(user,ctx,status)};
