@@ -6,7 +6,9 @@ import { LegalLayout } from "../../src/components/legal/LegalLayout.jsx";
 const appStyles = readFileSync(new URL("../../src/styles/app.css", import.meta.url), "utf8");
 const indexHtml = readFileSync(new URL("../../index.html", import.meta.url), "utf8");
 const legalStyles = readFileSync(new URL("../../src/components/legal/LegalPages.css", import.meta.url), "utf8");
+const dashboardLegacySource = readFileSync(new URL("../../legacy-html/dashboard.html", import.meta.url), "utf8");
 const homePageSource = readFileSync(new URL("../../src/pages/HomePage.jsx", import.meta.url), "utf8");
+const dashboardPageSource = readFileSync(new URL("../../src/pages/DashboardPage.jsx", import.meta.url), "utf8");
 const videosPageSource = readFileSync(new URL("../../src/pages/VideosPage.jsx", import.meta.url), "utf8");
 
 describe("cross-viewport UX", () => {
@@ -58,12 +60,19 @@ describe("cross-viewport UX", () => {
 
   it("uses the mobile reel actions and simplified player controls on desktop", () => {
     expect(appStyles).toMatch(/@media \(min-width: 1181px\), \(min-width: 821px\) and \(pointer: fine\)[\s\S]*#playerFrame \.reel-chrome[\s\S]*display: block;/);
-    expect(appStyles).toMatch(/#playerFrame \.sm-row > :not\(\.sm-play-button\):not\(\.sm-spacer\):not\(\.sm-settings-button\):not\(\.sm-fullscreen-button\)[\s\S]*display: none !important;/);
-    expect(appStyles).toMatch(/#playerFrame :where\(\.video-volume, \.video-speed\)[\s\S]*display: none !important;/);
+    expect(appStyles).toMatch(/#playerFrame \.sm-row > :not\(\.sm-play-button\):not\(\.sm-volume-button\):not\(\.sm-volume\):not\(\.sm-spacer\):not\(\.sm-settings-button\):not\(\.sm-fullscreen-button\)[\s\S]*display: none !important;/);
+    expect(appStyles).toMatch(/#playerFrame \.video-speed[\s\S]*display: none !important;/);
     expect(videosPageSource).toContain('aria-label="Open lecture notes"');
     expect(videosPageSource).toContain('aria-label="Report a problem"');
     expect(videosPageSource).toContain('aria-label="Open AI chat for this lecture"');
     expect(videosPageSource).toContain('aria-label="Open all lectures"');
+  });
+
+  it("hides the entire reel overlay with timed player controls and raises side actions", () => {
+    expect(appStyles).toMatch(/\.player-frame:has\(\.sm-player:not\(\.sm-awake\):not\(:has\(:focus-visible\)\)\) \.reel-chrome[\s\S]*visibility: hidden;[\s\S]*opacity: 0;/);
+    expect(appStyles).toMatch(/\.player-frame:has\(\.custom-video-player\.is-playing:not\(\.is-controls-awake\)\) \.reel-chrome[\s\S]*visibility: hidden;[\s\S]*opacity: 0;/);
+    expect(appStyles).toMatch(/\.reel-side-actions[\s\S]*bottom: max\(150px, calc\(134px \+ env\(safe-area-inset-bottom\)\)\);/);
+    expect(videosPageSource).toContain('className="video-paused-indicator"');
   });
 
   it("lets desktop lesson details use the full player card width", () => {
@@ -73,6 +82,33 @@ describe("cross-viewport UX", () => {
   it("does not force the mobile profile navbar to black in light theme", () => {
     expect(appStyles).toContain('html:not([data-theme="light"]):has(.react-page-root[data-page="profile.html"]) .enx-navbar');
     expect(appStyles).not.toContain('html:has(.react-page-root[data-page="profile.html"]) .enx-navbar');
+  });
+
+  it("keeps the mobile navbar search readable between the logo and account actions", () => {
+    expect(appStyles).toMatch(/@media \(max-width: 820px\)[\s\S]*\.enx-nav-logo \.brand-logo[\s\S]*width: clamp\(108px, 30vw, 122px\) !important;/);
+    expect(appStyles).toMatch(/@media \(max-width: 820px\)[\s\S]*\.enx-mobile-top-search[\s\S]*grid-template-columns: minmax\(0, 1fr\) 38px !important;[\s\S]*max-width: none !important;/);
+    expect(appStyles).toMatch(/\.enx-mobile-top-search-field:focus-within[\s\S]*border-color: rgba\(197, 139, 42, \.7\) !important;/);
+  });
+
+  it("keeps dashboard stats in one mobile row after removing learning history", () => {
+    expect(appStyles).toMatch(/data-page="dashboard\.html"\] :where\(\.stats-row\)[\s\S]*grid-template-columns: repeat\(3, minmax\(0, 1fr\)\) !important;/);
+    expect(dashboardPageSource).not.toContain("Learning History");
+  });
+
+  it("keeps dashboard recommendation badges readable over thumbnails", () => {
+    expect(dashboardLegacySource).toMatch(/\.rec-badge[\s\S]*z-index: 2;[\s\S]*padding: 5px 10px;[\s\S]*white-space: nowrap;/);
+    expect(dashboardLegacySource).toMatch(/\.badge-mono \{ background: var\(--cyan\);[\s\S]*color: #050505;[\s\S]*box-shadow:/);
+  });
+
+  it("keeps report dialog actions vivid and readable", () => {
+    expect(appStyles).toMatch(/\.problem-report-cancel \{[\s\S]*background: rgba\(255, 255, 255, \.08\);[\s\S]*color: #F8FAFC;/);
+    expect(appStyles).toMatch(/\.problem-report-submit \{[\s\S]*background: linear-gradient\(135deg, #EF4444, #DC2626\);[\s\S]*box-shadow:/);
+    expect(appStyles).toMatch(/\.problem-report-dialog button:disabled \{[\s\S]*opacity: \.72;/);
+  });
+
+  it("keeps the mobile curriculum thumbnail aligned at its native ratio", () => {
+    expect(appStyles).toMatch(/@media \(max-width: 760px\)[\s\S]*\.curriculum-overview \{[\s\S]*grid-template-columns: 114px minmax\(0, 1fr\)/);
+    expect(appStyles).toMatch(/\.curriculum-overview > img \{[\s\S]*width: 114px !important;[\s\S]*height: 64px !important;[\s\S]*aspect-ratio: 16 \/ 9 !important;[\s\S]*object-fit: cover !important;/);
   });
 
   it("keeps reel controls from bleeding through the mobile settings panel", () => {

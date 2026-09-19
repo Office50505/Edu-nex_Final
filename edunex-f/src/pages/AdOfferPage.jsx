@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { openRazorpay } from "../lib/razorpayCheckout.js";
+import { useViewportLock } from "../hooks/useViewportLock.js";
 import "./ad-offer.css";
 
 const PREVIEW_URL = "/assets/skillomate-offer-preview.mp4";
@@ -91,6 +92,7 @@ export function AdOfferPage() {
   const [busy, setBusy] = useState(false);
   const [recovery, setRecovery] = useState(false);
   const busyRef = useRef(false);
+  useViewportLock(Boolean(modalStep));
 
   useEffect(() => {
     document.title = "Special Offer | Skillomate";

@@ -209,12 +209,6 @@ export function buildDashboardActivity(courses, now = new Date(), progressByCour
   };
 }
 
-function dashStatus(percent) {
-  if (percent >= 100) return { key: "completed", label: "Completed", cls: "status-completed" };
-  if (percent > 0) return { key: "in-progress", label: "In Progress", cls: "status-progress" };
-  return { key: "new", label: "Not Started", cls: "status-new" };
-}
-
 function categoryName(course) {
   return typeof course.category === "string" ? course.category : (course.category?.name || "Course");
 }
@@ -224,9 +218,8 @@ export function DashboardPage() {
   const [subscription, setSubscription] = useState(null);
   const [courses, setCourses] = useState([]);
   const [recommendations, setRecommendations] = useState([]);
-  const [loadError, setLoadError] = useState("");
+  const [, setLoadError] = useState("");
   const [recommendationError, setRecommendationError] = useState("");
-  const [historyFilter, setHistoryFilter] = useState("all");
   const [progressByCourse, setProgressByCourse] = useState(null);
   const [progressVersion, setProgressVersion] = useState(0);
   const runtimeReady = useEduNexRuntimeReady();
@@ -385,12 +378,6 @@ export function DashboardPage() {
   }, [allowed]);
 
   const realCourses = courses;
-  const withVideos = realCourses.filter((course) => Array.isArray(course.videos) && course.videos.length);
-  const shown = (withVideos.length ? withVideos : realCourses).slice(0, 8);
-  const visibleHistory = shown.filter((course) => {
-    if (historyFilter === "all") return true;
-    return dashStatus(dashCourseProgress(course, progressByCourse).percent).key === historyFilter;
-  });
   const recommendedCourses = recommendations.length ? recommendations : realCourses.slice(0, 4);
   const activity = useMemo(() => buildDashboardActivity(realCourses, new Date(), progressByCourse), [progressByCourse, progressVersion, realCourses]);
   const subscriptionState = String(subscription?.subscriptionDocStatus || subscription?.subscriptionStatus || subscription?.status || "none").toLowerCase();
@@ -436,60 +423,6 @@ export function DashboardPage() {
           </div>
         </div>
 
-        <div className="sec-header">
-          <div style={{ display: "flex", alignItems: "center", gap: 18, flexWrap: "wrap" }}>
-            <h2 className="sec-title">Learning History</h2>
-            <div className="filter-tabs" role="tablist" aria-label="Learning history filters">
-              {[
-                ["all", "All"],
-                ["in-progress", "In Progress"],
-                ["completed", "Completed"],
-                ["new", "Not Started"],
-              ].map(([value, label]) => (
-                <button className={`filter-tab${historyFilter === value ? " active" : ""}`} type="button" key={value} onClick={() => setHistoryFilter(value)}>{label}</button>
-              ))}
-            </div>
-          </div>
-          <a href="courses.html" className="sec-link">Browse Courses →</a>
-        </div>
-
-        <div className="hist-grid" id="histGrid">
-          {allowed === null ? <div className="hist-card" style={{ padding: 22, minHeight: 180 }}>Loading your real courses...</div> : null}
-          {loadError ? <div className="hist-card" style={{ padding: 22, minHeight: 180 }}>Could not load backend courses: {loadError}</div> : null}
-          {!loadError && allowed && !visibleHistory.length ? <div className="hist-card" style={{ padding: 22, minHeight: 180 }}>No published courses with videos are available yet.</div> : null}
-          {!loadError && allowed ? visibleHistory.map((course) => {
-            const progress = dashCourseProgress(course, progressByCourse);
-            const status = dashStatus(progress.percent);
-            const video = course.videos?.[progress.lessonIndex] || course.videos?.[0] || {};
-            const title = video.title || course.title || "Untitled lesson";
-            const duration = video.duration ? `${Math.max(1, Math.round(Number(video.duration) / 60))} min` : `${progress.total} videos`;
-            const href = `videos.html?courseId=${encodeURIComponent(course._id)}&video=${progress.lessonIndex}`;
-            return (
-              <div className="hist-card" data-status={status.key} key={course._id} onClick={() => { window.location.href = href; }} role="link" tabIndex={0} onKeyDown={(event) => {
-                if (event.key !== "Enter" && event.key !== " ") return;
-                event.preventDefault();
-                window.location.href = href;
-              }}>
-                <div className="hist-thumb-wrap">
-                  <img className="hist-thumb" src={window.EduNex?.courseImage?.(course)} alt={course.title || title} onError={(event) => {
-                    event.currentTarget.onerror = null;
-                    event.currentTarget.src = window.EduNex?.placeholderImage?.(event.currentTarget.alt || "Skillomate") || "";
-                  }} />
-                  <span className={`hist-status ${status.cls}`}>{status.label}</span>
-                  <span className="hist-duration">{duration}</span>
-                  <div className="hist-progress-track"><div className="hist-progress-fill" style={{ width: `${progress.percent}%` }}></div></div>
-                  <div className="hist-play-overlay"><button className="hist-play-btn" type="button" aria-label="Play lesson"><i className="fas fa-play" style={{ marginLeft: 2 }} aria-hidden="true"></i></button></div>
-                </div>
-                <div className="hist-info">
-                  <div className="hist-title">{title}</div>
-                  <div className="hist-meta"><span>{course.title || "Skillomate course"}</span><span className="dot">·</span><span>Video {progress.lessonIndex + 1} of {progress.total}</span></div>
-                  <div className="hist-footer-row"><span className="hist-pct">{progress.percent ? `${progress.percent}% complete` : "Ready to start"}</span><span className="hist-time">Synced now</span></div>
-                </div>
-              </div>
-            );
-          }) : null}
-        </div>
-
         <div className="dash-bottom">
           <section>
             <div className="sec-header">
@@ -504,11 +437,7 @@ export function DashboardPage() {
                 const videos = Number(course.videoCount || 0) || (Array.isArray(course.videos) ? course.videos.length : 0);
                 const reason = course.recommendation?.reason || "Recommended from the current Skillomate catalog";
                 return (
-                  <div className="rec-card" key={course._id} onClick={() => { window.location.href = courseVideoHref(course); }} role="link" tabIndex={0} onKeyDown={(event) => {
-                    if (event.key !== "Enter" && event.key !== " ") return;
-                    event.preventDefault();
-                    window.location.href = courseVideoHref(course);
-                  }}>
+                  <div className="rec-card" key={course._id}>
                     <div className="rec-thumb-wrap">
                       <img className="rec-thumb" src={window.EduNex?.courseImage?.(course)} alt={course.title} onError={(event) => {
                         event.currentTarget.onerror = null;
@@ -523,7 +452,7 @@ export function DashboardPage() {
                         <span><i className="fas fa-star" aria-hidden="true"></i> {course.averageRating || "New"}</span>
                       </div>
                       <div className="rec-reason">{reason}</div>
-                      <div className="rec-price-row"><span className="rec-price">REAL COURSE</span><button className="cart-btn" type="button" aria-label="Open course"><i className="fas fa-arrow-right" aria-hidden="true"></i></button></div>
+                      <div className="rec-price-row"><a className="rec-view-course" href={courseVideoHref(course)}>View Course <i className="fas fa-arrow-right" aria-hidden="true"></i></a></div>
                     </div>
                   </div>
                 );

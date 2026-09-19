@@ -11,6 +11,7 @@ import { createPortal } from "react-dom";
 import { page as videosPage } from "../generated-pages/videos.html.js";
 import { runLegacyPage } from "../legacyRuntime.js";
 import { usePageStyle } from "../hooks/usePageStyle.js";
+import { useViewportLock } from "../hooks/useViewportLock.js";
 import { courseRequest } from "../lib/courseRequest.js";
 
 const FALLBACK_IMAGE = "data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20width=%27900%27%20height=%27600%27%20viewBox=%270%200%20900%20600%27%3E%3Crect%20width=%27900%27%20height=%27600%27%20fill=%27%23000000%27/%3E%3Crect%20x=%271%27%20y=%271%27%20width=%27898%27%20height=%27598%27%20rx=%2732%27%20fill=%27%230d0d0d%27%20stroke=%27%23C58B2A%27%20stroke-opacity=%27.35%27/%3E%3Ctext%20x=%27450%27%20y=%27312%27%20text-anchor=%27middle%27%20fill=%27%23C58B2A%27%20font-family=%27Arial%27%20font-size=%2748%27%20font-weight=%27800%27%3ESkillomate%3C/text%3E%3C/svg%3E";
@@ -422,14 +423,11 @@ function VideoControls({ playing, volume, muted, rate, currentTime, duration, on
       <button className="video-screen-btn video-ai-screen-btn" type="button" data-action="ai" onClick={onAi}><i className="fas fa-bolt" aria-hidden="true"></i><span>AI</span></button>
       <button className="tap-zone tap-zone-left" type="button" tabIndex={-1} aria-label="Play or pause; double-click to rewind 10 seconds" onClick={(event) => handleTapZoneClick(event, "left")} onDoubleClick={(event) => event.preventDefault()} {...tapZoneSwipeHandlers}><span className="tap-hint">-10s</span></button>
       <button className="tap-zone tap-zone-right" type="button" tabIndex={-1} aria-label="Play or pause; double-click to forward 10 seconds" onClick={(event) => handleTapZoneClick(event, "right")} onDoubleClick={(event) => event.preventDefault()} {...tapZoneSwipeHandlers}><span className="tap-hint">+10s</span></button>
+      {!playing ? <button className="video-paused-indicator" type="button" aria-label="Resume video" onClick={onToggle}><i className="fas fa-play" aria-hidden="true"></i></button> : null}
       <div className="custom-video-controls">
         <button className="video-control-btn video-play-control" type="button" data-action="toggle" aria-label={playing ? "Pause" : "Play"} onClick={onToggle}>
           <i className={`fas ${playing ? "fa-pause" : "fa-play"}`} aria-hidden="true"></i>
         </button>
-        <div className="video-timeline-wrap">
-          <input className="video-seek" type="range" min="0" max="1000" value={percent} step="1" aria-label="Video progress" onChange={(event) => onSeek(Number(event.target.value) / 1000)} />
-          <div className="video-time-row"><span data-current-time="true">{formatVideoTime(currentTime)}</span><span data-duration="true">Remaining {formatVideoTime(Math.max((duration || 0) - currentTime, 0))}</span></div>
-        </div>
         <div className={`video-volume${volumeOpen ? " is-open" : ""}`} ref={volumeControlRef}>
           <button className="video-control-btn video-volume-toggle" type="button" data-action="volume" aria-label={`Volume ${Math.round(volume * 100)} percent`} aria-expanded={volumeOpen} onClick={() => setVolumeOpen((open) => !open)}>
             <i className={`fas ${volumeIcon}`} aria-hidden="true"></i>
@@ -438,6 +436,10 @@ function VideoControls({ playing, volume, muted, rate, currentTime, duration, on
             <span className="video-volume-value">{Math.round(volume * 100)}%</span>
             <input className="video-volume-slider" type="range" min="0" max="100" value={Math.round(volume * 100)} step="1" aria-label="Volume" aria-orientation="vertical" onChange={(event) => onVolume(Number(event.target.value) / 100)} />
           </div>
+        </div>
+        <div className="video-timeline-wrap">
+          <input className="video-seek" type="range" min="0" max="1000" value={percent} step="1" aria-label="Video progress" onChange={(event) => onSeek(Number(event.target.value) / 1000)} />
+          <div className="video-time-row"><span data-current-time="true">{formatVideoTime(currentTime)}</span><span data-duration="true">Remaining {formatVideoTime(Math.max((duration || 0) - currentTime, 0))}</span></div>
         </div>
         <div className="video-end-controls">
           <div className="video-speed" aria-label="Playback speed">
@@ -458,6 +460,7 @@ function Player({ course, lesson: savedLesson, lessonIndex, autoNext, autoplay =
   const embeddedPlayerRef = useRef(null);
   const shellRef = useRef(null);
   const [playing, setPlaying] = useState(false);
+  const [controlsAwake, setControlsAwake] = useState(true);
   const [volume, setVolume] = useState(() => Math.max(0, Math.min(1, Number(localStorage.getItem("edunexVideoVolume") || 1))));
   const [muted, setMuted] = useState(() => localStorage.getItem("edunexVideoMuted") === "true");
   const [rate, setRate] = useState(1);
@@ -470,6 +473,7 @@ function Player({ course, lesson: savedLesson, lessonIndex, autoNext, autoplay =
   const screenTapRef = useRef({ side: "", at: 0 });
   const screenToggleTimerRef = useRef(null);
   const screenHintTimerRef = useRef(null);
+  const controlsHideTimerRef = useRef(null);
 
   const url = embedUrl(lesson);
   const directUrl = forceEmbed ? "" : lesson.provider === "aws_cloudfront" ? (lesson.hlsUrl || "") : directVideoUrl(lesson) || bunnyStreamUrl(lesson);
@@ -481,7 +485,18 @@ function Player({ course, lesson: savedLesson, lessonIndex, autoNext, autoplay =
     const next = Boolean(nextPlaying);
     playingRef.current = next;
     setPlaying(next);
+    setControlsAwake(true);
+    window.clearTimeout(controlsHideTimerRef.current);
+    controlsHideTimerRef.current = next ? window.setTimeout(() => setControlsAwake(false), 2600) : null;
   }, []);
+
+  const wakeControls = useCallback(() => {
+    setControlsAwake(true);
+    window.clearTimeout(controlsHideTimerRef.current);
+    controlsHideTimerRef.current = playingRef.current ? window.setTimeout(() => setControlsAwake(false), 2600) : null;
+  }, []);
+
+  useEffect(() => () => window.clearTimeout(controlsHideTimerRef.current), []);
 
   useEffect(() => {
     playerStateRef.current = { autoNext, muted, onEnded, rate, volume };
@@ -868,7 +883,7 @@ function Player({ course, lesson: savedLesson, lessonIndex, autoNext, autoplay =
   if (savedLesson.provider === 'aws_cloudfront' && (!directUrl || playback.error)) return <div className="player-placeholder"><div><strong>{playback.error || 'Authorizing video playback…'}</strong>{playback.error?<button onClick={playback.retry}>Retry playback</button>:null}</div></div>;
   if (directUrl) {
     return (
-      <div className="custom-video-player" data-custom-player="true" tabIndex={-1} ref={shellRef}>
+      <div className={`custom-video-player${playing ? " is-playing" : ""}${controlsAwake ? " is-controls-awake" : ""}`} data-custom-player="true" tabIndex={-1} ref={shellRef} onPointerMove={wakeControls} onPointerDown={wakeControls}>
         <video onError={() => { if(savedLesson.provider === "aws_cloudfront") playback.setError("Video playback failed. Check the video path, access and CloudFront CORS, then retry."); }} ref={videoRef} src={needsHlsRuntime ? undefined : directUrl} poster={lessonImage(course, lesson)} playsInline preload="metadata"></video>
         {controls}
         <span role="status" style={{position:"absolute",top:8,left:8,zIndex:4,fontSize:11,background:"#111c",color:"#fff",padding:6,maxWidth:"90%"}}>{learning.notice}</span>
@@ -881,7 +896,7 @@ function Player({ course, lesson: savedLesson, lessonIndex, autoNext, autoplay =
       return <iframe src={url} title={lesson?.title || course?.title} allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowFullScreen></iframe>;
     }
     return (
-      <div className="custom-video-player" data-embed-player="true" tabIndex={-1} ref={shellRef}>
+      <div className={`custom-video-player${playing ? " is-playing" : ""}${controlsAwake ? " is-controls-awake" : ""}`} data-embed-player="true" tabIndex={-1} ref={shellRef} onPointerMove={wakeControls} onPointerDown={wakeControls}>
         <iframe ref={iframeRef} src={url} title={lesson?.title || course?.title} allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowFullScreen></iframe>
         {controls}
         <span role="status" style={{position:"absolute",top:8,left:8,zIndex:4,fontSize:11,background:"#111c",color:"#fff",padding:6,maxWidth:"90%"}}>{learning.notice}</span>
@@ -1018,6 +1033,7 @@ export function VideosPage() {
   const [mobilePlayerViewport, setMobilePlayerViewport] = useState(() => Boolean(window.matchMedia?.("(max-width: 820px), (max-width: 1180px) and (pointer: coarse)")?.matches));
   const [mobilePlayerMinimized, setMobilePlayerMinimized] = useState(false);
   const [autoNext, setAutoNext] = useState(() => localStorage.getItem(AUTO_NEXT_KEY) === "true");
+  useViewportLock(notesOpen || lectureSheetOpen || playlistOpen);
 
   usePageStyle("react-page-style-videos", videosPage.styles);
 

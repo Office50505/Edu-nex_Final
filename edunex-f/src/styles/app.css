@@ -28,6 +28,16 @@ body {
   -webkit-tap-highlight-color: transparent;
 }
 
+html:has(body.has-viewport-lock),
+body.has-viewport-lock {
+  overflow: hidden !important;
+  overscroll-behavior: none !important;
+}
+
+body.has-viewport-lock {
+  box-sizing: border-box;
+}
+
 button,
 input,
 textarea,
@@ -3100,16 +3110,40 @@ html:has(.enx-page-loading) .enx-nav-hamburger span {
 
   .enx-nav-inner {
     min-height: 42px !important;
-    gap: 10px !important;
+    width: 100% !important;
+    padding-inline: 14px !important;
+    gap: 8px !important;
   }
 
   .enx-nav-logo .brand-logo {
-    width: clamp(118px, 35vw, 142px) !important;
+    width: clamp(108px, 30vw, 122px) !important;
     height: 34px !important;
   }
 
+  .enx-mobile-top-search {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) 38px !important;
+    max-width: none !important;
+    min-width: 0 !important;
+    gap: 6px !important;
+  }
+
+  .enx-mobile-top-search-field {
+    min-width: 0 !important;
+    min-height: 40px !important;
+    padding-inline: 11px !important;
+  }
+
+  .enx-mobile-top-search-field:focus-within {
+    border-color: rgba(197, 139, 42, .7) !important;
+    box-shadow: 0 0 0 3px rgba(197, 139, 42, .12) !important;
+  }
+
   .enx-mobile-top-search-field input {
+    display: block !important;
     font-size: .74rem !important;
+    line-height: 1.2 !important;
+    text-overflow: ellipsis !important;
   }
 
   .enx-mobile-menu {
@@ -3500,12 +3534,14 @@ html:has(.enx-page-loading) .enx-nav-hamburger span {
 
   .react-page-root[data-page="dashboard.html"] :where(.stats-row) {
     display: grid !important;
-    grid-template-columns: 1fr !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 8px !important;
     width: 100% !important;
   }
 
   .react-page-root[data-page="dashboard.html"] :where(.stat-pill) {
     min-width: 0 !important;
+    padding: 10px 8px !important;
   }
 
   .react-page-root[data-page="dashboard.html"] .dash-bottom {
@@ -3880,8 +3916,35 @@ html[data-theme="light"] .react-page-root .lp-prefix {
 }
 
 .react-page-root[data-page="videos.html"] .custom-video-controls {
-  grid-template-columns: 44px minmax(180px, 1fr) 44px minmax(120px, auto) !important;
+  grid-template-columns: 44px 44px minmax(180px, 1fr) minmax(120px, auto) !important;
   gap: 10px !important;
+  transition: opacity .2s ease, visibility .2s ease;
+}
+
+.react-page-root[data-page="videos.html"] .custom-video-player.is-playing:not(.is-controls-awake) .custom-video-controls {
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.react-page-root[data-page="videos.html"] .video-paused-indicator {
+  position: absolute;
+  z-index: 22;
+  top: 50%;
+  left: 50%;
+  display: grid;
+  width: 64px;
+  height: 64px;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, .22);
+  border-radius: 50%;
+  background: rgba(0, 0, 0, .42);
+  color: #fff;
+  font-size: 22px;
+  cursor: pointer;
+  transform: translate(-50%, -50%);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
 
 .react-page-root[data-page="videos.html"] .video-control-btn,
@@ -4013,7 +4076,7 @@ body.has-edunex-player-fullscreen #nai-float-btn {
 
 @media (max-width: 640px) {
   .react-page-root[data-page="videos.html"] .custom-video-controls {
-    grid-template-columns: 40px minmax(0, 1fr) 40px minmax(108px, auto) !important;
+    grid-template-columns: 40px 40px minmax(0, 1fr) minmax(108px, auto) !important;
     gap: 8px !important;
     padding: 10px !important;
   }
@@ -4679,6 +4742,20 @@ html[data-theme="light"] .enx-footer .enx-footer-support a {
 /* Mobile course player: an immersive, vertical lecture flow with the existing brand palette. */
 .react-page-root[data-page="videos.html"] .reel-chrome {
   display: none;
+  opacity: 1;
+  transition: opacity .2s ease, visibility .2s ease;
+}
+
+.react-page-root[data-page="videos.html"] .player-frame:has(.sm-player:not(.sm-awake):not(:has(:focus-visible))) .reel-chrome {
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.react-page-root[data-page="videos.html"] .player-frame:has(.custom-video-player.is-playing:not(.is-controls-awake)) .reel-chrome {
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
 }
 
 .reel-lecture-backdrop {
@@ -5112,7 +5189,7 @@ html[data-theme="light"] .react-page-root[data-page="videos.html"] .reel-lecture
   .reel-side-actions {
     position: absolute;
     right: max(12px, env(safe-area-inset-right));
-    bottom: max(128px, calc(112px + env(safe-area-inset-bottom)));
+    bottom: max(150px, calc(134px + env(safe-area-inset-bottom)));
     display: grid;
     gap: 18px;
   }
@@ -5192,16 +5269,16 @@ html[data-theme="light"] .react-page-root[data-page="videos.html"] .reel-lecture
 
   body.has-edunex-mobile-reel .react-page-root[data-page="videos.html"] .sm-row {
     display: grid !important;
-    grid-template-columns: 44px minmax(0, 1fr) 44px 44px !important;
+    grid-template-columns: 44px 40px minmax(54px, 96px) minmax(0, 1fr) 44px 44px !important;
     gap: 4px !important;
     align-items: center !important;
   }
 
-  body.has-edunex-mobile-reel .react-page-root[data-page="videos.html"] .sm-row > :not(.sm-play-button):not(.sm-spacer):not(.sm-settings-button):not(.sm-view-mode-button) {
+  body.has-edunex-mobile-reel .react-page-root[data-page="videos.html"] .sm-row > :not(.sm-play-button):not(.sm-volume-button):not(.sm-volume):not(.sm-spacer):not(.sm-settings-button):not(.sm-view-mode-button) {
     display: none !important;
   }
 
-  body.has-edunex-mobile-reel .react-page-root[data-page="videos.html"] :where(.sm-play-button, .sm-settings-button, .sm-view-mode-button) {
+  body.has-edunex-mobile-reel .react-page-root[data-page="videos.html"] :where(.sm-play-button, .sm-volume-button, .sm-settings-button, .sm-view-mode-button) {
     display: grid !important;
     min-width: 44px !important;
     min-height: 44px !important;
@@ -5210,6 +5287,13 @@ html[data-theme="light"] .react-page-root[data-page="videos.html"] .reel-lecture
 
   body.has-edunex-mobile-reel .react-page-root[data-page="videos.html"] .sm-spacer {
     display: block !important;
+  }
+
+  body.has-edunex-mobile-reel .react-page-root[data-page="videos.html"] .sm-volume {
+    display: block !important;
+    width: 100% !important;
+    min-width: 54px !important;
+    margin: 0 !important;
   }
 
   body.has-edunex-mobile-reel .react-page-root[data-page="videos.html"] .custom-video-controls {
@@ -5301,7 +5385,7 @@ html[data-theme="light"] .react-page-root[data-page="videos.html"] .reel-lecture
   .react-page-root[data-page="videos.html"] #playerFrame .reel-side-actions {
     position: absolute;
     right: 16px;
-    bottom: 128px;
+    bottom: 150px;
     display: grid;
     gap: 18px;
   }
@@ -5367,16 +5451,16 @@ html[data-theme="light"] .react-page-root[data-page="videos.html"] .reel-lecture
 
   .react-page-root[data-page="videos.html"] #playerFrame .sm-row {
     display: grid !important;
-    grid-template-columns: 44px minmax(0, 1fr) 44px 44px !important;
+    grid-template-columns: 44px 44px minmax(64px, 120px) minmax(0, 1fr) 44px 44px !important;
     gap: 4px !important;
     align-items: center !important;
   }
 
-  .react-page-root[data-page="videos.html"] #playerFrame .sm-row > :not(.sm-play-button):not(.sm-spacer):not(.sm-settings-button):not(.sm-fullscreen-button) {
+  .react-page-root[data-page="videos.html"] #playerFrame .sm-row > :not(.sm-play-button):not(.sm-volume-button):not(.sm-volume):not(.sm-spacer):not(.sm-settings-button):not(.sm-fullscreen-button) {
     display: none !important;
   }
 
-  .react-page-root[data-page="videos.html"] #playerFrame :where(.sm-play-button, .sm-settings-button, .sm-fullscreen-button) {
+  .react-page-root[data-page="videos.html"] #playerFrame :where(.sm-play-button, .sm-volume-button, .sm-settings-button, .sm-fullscreen-button) {
     display: grid !important;
     min-width: 44px !important;
     min-height: 44px !important;
@@ -5387,12 +5471,19 @@ html[data-theme="light"] .react-page-root[data-page="videos.html"] .reel-lecture
     display: block !important;
   }
 
-  .react-page-root[data-page="videos.html"] #playerFrame .custom-video-controls {
-    z-index: 24;
-    grid-template-columns: 44px minmax(0, 1fr) 44px !important;
+  .react-page-root[data-page="videos.html"] #playerFrame .sm-volume {
+    display: block !important;
+    width: 100% !important;
+    min-width: 64px !important;
+    margin: 0 !important;
   }
 
-  .react-page-root[data-page="videos.html"] #playerFrame :where(.video-volume, .video-speed) {
+  .react-page-root[data-page="videos.html"] #playerFrame .custom-video-controls {
+    z-index: 24;
+    grid-template-columns: 44px 44px minmax(0, 1fr) 44px !important;
+  }
+
+  .react-page-root[data-page="videos.html"] #playerFrame .video-speed {
     display: none !important;
   }
 
@@ -5458,10 +5549,15 @@ html[data-theme="light"] .react-page-root[data-page="videos.html"] .reel-lecture
 .problem-report-overlay {
   position: fixed;
   inset: 0;
+  width: 100%;
+  height: 100vh;
+  height: 100dvh;
   z-index: 2147483600;
   display: grid;
   place-items: center;
   padding: 24px;
+  overflow: hidden;
+  overscroll-behavior: contain;
   background: rgba(2, 6, 12, .74);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
@@ -5625,29 +5721,41 @@ html[data-theme="light"] .react-page-root[data-page="videos.html"] .reel-lecture
   border-radius: 11px;
   font: 800 .84rem/1 var(--font-body, "Manrope", sans-serif);
   cursor: pointer;
+  transition: border-color .2s ease, background .2s ease, color .2s ease, box-shadow .2s ease, transform .2s ease;
 }
 
 .problem-report-cancel {
-  border: 1px solid var(--border, rgba(255, 255, 255, .12));
-  background: transparent;
-  color: var(--text2, #9CA3AF);
+  border: 1px solid rgba(255, 255, 255, .3);
+  background: rgba(255, 255, 255, .08);
+  color: #F8FAFC;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .06);
+}
+
+.problem-report-cancel:hover:not(:disabled),
+.problem-report-cancel:focus-visible {
+  border-color: rgba(255, 255, 255, .58);
+  background: rgba(255, 255, 255, .15);
+  color: #FFFFFF;
 }
 
 .problem-report-submit {
-  border: 1px solid #DC2626;
-  background: #DC2626;
+  border: 1px solid #F87171;
+  background: linear-gradient(135deg, #EF4444, #DC2626);
   color: #FFFFFF;
+  box-shadow: 0 9px 22px rgba(220, 38, 38, .28), inset 0 1px 0 rgba(255, 255, 255, .16);
 }
 
 .problem-report-submit:hover:not(:disabled),
 .problem-report-submit:focus-visible {
-  border-color: #B91C1C;
-  background: #B91C1C;
+  border-color: #FCA5A5;
+  background: linear-gradient(135deg, #F05252, #B91C1C);
+  box-shadow: 0 12px 28px rgba(220, 38, 38, .38), inset 0 1px 0 rgba(255, 255, 255, .2);
+  transform: translateY(-1px);
 }
 
 .problem-report-dialog button:disabled {
   cursor: not-allowed;
-  opacity: .5;
+  opacity: .72;
 }
 
 .problem-report-success {
@@ -5695,6 +5803,20 @@ html[data-theme="light"] :where(.problem-report-description, .problem-report-fie
 html[data-theme="light"] :where(.problem-report-field select, .problem-report-field textarea) {
   border-color: #CBD5E1;
   background: #F8FAFC;
+  color: #0F172A;
+}
+
+html[data-theme="light"] .problem-report-cancel {
+  border-color: #CBD5E1;
+  background: #F8FAFC;
+  color: #334155;
+  box-shadow: 0 5px 14px rgba(15, 23, 42, .08);
+}
+
+html[data-theme="light"] .problem-report-cancel:hover:not(:disabled),
+html[data-theme="light"] .problem-report-cancel:focus-visible {
+  border-color: #94A3B8;
+  background: #F1F5F9;
   color: #0F172A;
 }
 
@@ -8170,14 +8292,18 @@ html:not([data-theme="light"]) .react-page-root[data-page="index.html"] .curricu
   }
 
   .react-page-root[data-page="index.html"] .curriculum-overview {
-    grid-template-columns: 86px minmax(0, 1fr);
+    grid-template-columns: 114px minmax(0, 1fr);
     align-items: start;
   }
 
   .react-page-root[data-page="index.html"] .curriculum-overview > img {
-    width: 86px;
+    display: block;
+    width: 114px;
     height: 64px;
+    aspect-ratio: 16 / 9;
     border-radius: 8px;
+    object-fit: cover;
+    object-position: center;
   }
 
   .react-page-root[data-page="index.html"] .curriculum-overview-stats,
@@ -9091,12 +9217,17 @@ html[data-theme="light"] :where(.navbar .enx-icon, .premium-site-nav .enx-icon, 
 
 @media (max-width: 360px) {
   .enx-nav-logo .brand-logo {
-    width: 106px !important;
+    width: 96px !important;
   }
 
   .enx-mobile-top-search-field {
     padding-inline: 8px !important;
     gap: 5px !important;
+  }
+
+  .enx-nav-inner {
+    padding-inline: 12px !important;
+    gap: 6px !important;
   }
 }
 
@@ -9347,16 +9478,20 @@ body {
   }
 
   .react-page-root[data-page="index.html"] .curriculum-overview {
-    grid-template-columns: 86px minmax(0, 1fr) !important;
+    grid-template-columns: 114px minmax(0, 1fr) !important;
     align-items: start !important;
     gap: 12px !important;
     overflow: hidden !important;
   }
 
   .react-page-root[data-page="index.html"] .curriculum-overview > img {
-    width: 86px !important;
+    display: block !important;
+    width: 114px !important;
     height: 64px !important;
+    aspect-ratio: 16 / 9 !important;
     border-radius: 8px !important;
+    object-fit: cover !important;
+    object-position: center !important;
   }
 
   .react-page-root[data-page="index.html"] .curriculum-overview-stats {

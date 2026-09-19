@@ -118,6 +118,21 @@ export function CourseMediaPlayer({ course, lesson, lessonIndex, autoNext, autop
   }
   async function full(){try{const wrapper=frameRef.current.closest('#playerFrame');const target=wrapper||frameRef.current;if(wrapper?.classList.contains('is-app-fullscreen')){wrapper.classList.remove('is-app-fullscreen');document.body.classList.remove('has-edunex-player-fullscreen');return;}if(document.fullscreenElement)await document.exitFullscreen();else if(target?.requestFullscreen)await target.requestFullscreen();else if(target?.webkitRequestFullscreen)await target.webkitRequestFullscreen();else if(videoRef.current.webkitEnterFullscreen)videoRef.current.webkitEnterFullscreen();else setNotice('Fullscreen is unavailable on this device.');}catch{setNotice('Fullscreen is unavailable on this device.');}}
   function sleepAfter(minutes){clearTimeout(sleepTimer.current);setSleep(minutes);if(minutes)sleepTimer.current=setTimeout(()=>{videoRef.current?.pause();setSleep(0);setNotice('Sleep timer paused playback.');},minutes*60000);}
+  function changeVolume(value){
+    const video=videoRef.current;if(!video)return;
+    const next=Math.max(0,Math.min(1,Number(value)||0)),nextMuted=next===0;
+    setVolume(next);setMuted(nextMuted);
+    video.volume=next;video.muted=nextMuted;
+    wake();
+  }
+  function toggleMute(){
+    const video=videoRef.current;if(!video)return;
+    const nextMuted=!video.muted && video.volume>0;
+    const nextVolume=!nextMuted&&video.volume===0?.75:video.volume;
+    setMuted(nextMuted);setVolume(nextVolume);
+    video.volume=nextVolume;video.muted=nextMuted;
+    wake();
+  }
   function selectQuality(height){
     qualityPreference.current=height;
     setQuality(height);
@@ -134,7 +149,7 @@ export function CourseMediaPlayer({ course, lesson, lessonIndex, autoNext, autop
       <strong>{lesson.title || course.title || `Lecture ${lessonIndex + 1}`}</strong>
     </div>
     {!source&&!failure?<div className="sm-status" role="status">Authorizing playback…</div>:null}
-    {!playing&&!buffering&&!failure&&source&&time.current===0?<button className="sm-big-play" onClick={toggle} aria-label="Start video"><PlayerIcon name="play"/></button>:null}
+    {!playing&&!buffering&&!failure&&source?<button className="sm-big-play" onClick={toggle} aria-label={time.current > 0 ? "Resume video" : "Start video"}><PlayerIcon name="play"/></button>:null}
     {buffering&&!failure?<div className="sm-status" role="status">Loading video…</div>:null}
     {failure?<div className="sm-failure" role="alert"><p>{failure}</p><button onClick={()=>{setError('');if(lesson.provider==='aws_cloudfront')access.retry();else setReload(n=>n+1);}}>Retry playback</button>{onFallback?<button onClick={onFallback}>Use compatible player</button>:null}</div>:null}
     {notice?<div className="sm-notice" role="status">{notice}</div>:null}
@@ -152,7 +167,6 @@ export function CourseMediaPlayer({ course, lesson, lessonIndex, autoNext, autop
           {QUALITY_PRESETS.map(height=><button type="button" role="radio" aria-checked={quality===height} aria-label={`Quality ${height}p`} className={quality===height?'is-selected':''} key={height} onClick={()=>selectQuality(height)}>{height}p</button>)}
         </div>
       </div>
-      <label className="sm-setting-section sm-setting-toggle">Mute audio<input type="checkbox" checked={muted} onChange={e=>{if(videoRef.current)videoRef.current.muted=e.target.checked;setMuted(e.target.checked);}}/></label>
       <label className="sm-setting-section sm-setting-toggle">Loop lesson<input type="checkbox" checked={loop} onChange={e=>setLoop(e.target.checked)}/></label>
       <div className="sm-setting-section">
         <span className="sm-setting-label">Sleep timer</span>
@@ -166,8 +180,8 @@ export function CourseMediaPlayer({ course, lesson, lessonIndex, autoNext, autop
       <div className="sm-row">
         <button className="sm-play-button" onClick={toggle} aria-label={playing?'Pause':'Play'} disabled={!source||!!failure}><PlayerIcon name={playing?'pause':'play'}/></button>
         <button className="sm-skip" onClick={()=>seek(-10)} aria-label="Rewind 10 seconds"><PlayerIcon name="back"/></button><button className="sm-skip" onClick={()=>seek(10)} aria-label="Forward 10 seconds"><PlayerIcon name="forward"/></button>
-        <button className="sm-volume-button" onClick={()=>{videoRef.current.muted=!videoRef.current.muted;}} aria-label={muted?'Unmute':'Mute'}><PlayerIcon name={muted||volume===0?'mute':'volume'}/></button>
-        <input className="sm-volume" aria-label="Volume" type="range" min="0" max="1" step=".05" value={muted?0:volume} onChange={e=>{videoRef.current.volume=Number(e.target.value);videoRef.current.muted=Number(e.target.value)===0;}}/>
+        <button className="sm-volume-button" onClick={toggleMute} aria-label={muted||volume===0?'Unmute':'Mute'}><PlayerIcon name={muted||volume===0?'mute':'volume'}/></button>
+        <input className="sm-volume" aria-label="Volume" type="range" min="0" max="1" step=".05" value={muted?0:volume} onInput={e=>changeVolume(e.currentTarget.value)} onPointerDown={e=>e.stopPropagation()} onTouchStart={e=>e.stopPropagation()}/>
         <span className="sm-time">{clock(time.current)} / {clock(time.duration)}</span><span className="sm-spacer"/>
         <button className="sm-lesson-nav" onClick={()=>onNavigateLesson(-1)} disabled={adjacent(course.videos,lessonIndex,-1)===lessonIndex} aria-label="Previous lesson"><PlayerIcon name="previous"/></button>
         <button className="sm-lesson-nav" onClick={()=>onNavigateLesson(1)} disabled={adjacent(course.videos,lessonIndex,1)===lessonIndex} aria-label="Next lesson"><PlayerIcon name="next"/></button>

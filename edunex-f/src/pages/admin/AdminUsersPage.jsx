@@ -3,6 +3,7 @@ import { csvEscape } from "./adminExport.js";
 import { useDeferredValue, useEffect, useMemo, useState } from "react";
 import { AdminShell, Message } from "./AdminShell.jsx";
 import { adminJson, formatDate, formatDateTime, formatNumber, formatWatchDuration, requireAdmin } from "./adminApi.js";
+import { useViewportLock } from "../../hooks/useViewportLock.js";
 
 const segments = [
   ["all", "All learners"],
@@ -282,6 +283,7 @@ export function AdminUsersPage() {
   const [creatingLearner, setCreatingLearner] = useState(false);
   const [createdLearnerId, setCreatedLearnerId] = useState("");
   const [courseDialog, setCourseDialog] = useState(null);
+  useViewportLock(Boolean(courseDialog));
   const [purchaseHistories, setPurchaseHistories] = useState({});
   const [purchaseOpenIds, setPurchaseOpenIds] = useState(new Set());
   const deferredQuery = useDeferredValue(query);

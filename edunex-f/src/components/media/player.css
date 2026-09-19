@@ -16,7 +16,7 @@
 .sm-player .sm-row { display:flex; gap:2px; align-items:center; flex-wrap:wrap; }
 .sm-player .sm-spacer { flex:1; }
 .sm-player .sm-time { white-space:nowrap; font-size:12px; font-variant-numeric:tabular-nums; }
-.sm-player .sm-volume { width:60px; accent-color:#fff; }
+.sm-player .sm-volume { width:60px; accent-color:#fff; cursor:pointer; pointer-events:auto; touch-action:pan-x; }
 .sm-player .sm-seek { display:block; appearance:none; width:100%; height:5px; margin:10px 0; border:0; border-radius:3px; padding:0; background:linear-gradient(to right,#ff0033 var(--sm-progress),#ffffff80 var(--sm-progress),#ffffff80 var(--sm-buffered),#ffffff40 var(--sm-buffered)); accent-color:#ff0033; cursor:pointer; }
 .sm-player .sm-seek::-webkit-slider-thumb { appearance:none; width:13px; height:13px; border-radius:50%; background:#ff0033; }
 .sm-player .sm-seek::-moz-range-thumb { width:13px; height:13px; border:0; border-radius:50%; background:#ff0033; }
@@ -36,7 +36,7 @@
 @media(prefers-reduced-motion:reduce) { .sm-player .sm-controls,.sm-player .sm-player-heading { transition:none; } }
 
 .sm-player button svg { display:block; margin:auto; }
-.sm-player .sm-big-play { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:64px; height:64px; border-radius:50%; background:#ffffff20; }
+.sm-player .sm-big-play { position:absolute; z-index:5; top:50%; left:50%; transform:translate(-50%,-50%); width:64px; height:64px; border:1px solid #ffffff38; border-radius:50%; background:#0000006b; box-shadow:0 10px 32px #0007; backdrop-filter:blur(8px); }
 .sm-player .sm-failure p { color:#e4e7ec; font:400 14px/1.6 Arial,sans-serif; max-width:420px; margin:0; }
 .sm-player .sm-failure button { background:#22262d; border:1px solid #424852; border-radius:8px; padding:10px 18px; }
 /* Settings panel: scoped to the media player, including native form controls. */

@@ -3,6 +3,7 @@ import { page as profilePage } from "../generated-pages/profile.html.js";
 import { runLegacyPage } from "../legacyRuntime.js";
 import { usePageStyle } from "../hooks/usePageStyle.js";
 import { useEduNexRuntimeReady } from "../hooks/useEduNexRuntimeReady.js";
+import { useViewportLock } from "../hooks/useViewportLock.js";
 import { route } from "../lib/routes.js";
 import "./ProfilePage.css";
 
@@ -94,6 +95,7 @@ export function ProfilePage() {
   const [cancelMessage, setCancelMessage] = useState("");
   const [subscription, setSubscription] = useState({ loading: false, data: null, error: false });
   const runtimeReady = useEduNexRuntimeReady();
+  useViewportLock(modalOpen);
 
   usePageStyle("react-page-style-profile", profilePage.styles);
 

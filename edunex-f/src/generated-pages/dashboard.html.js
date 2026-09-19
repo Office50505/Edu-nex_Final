@@ -268,11 +268,12 @@ export const page = {
     .rec-thumb-wrap { position: relative; }
     .rec-thumb { width: 100%; height: 120px; object-fit: cover; background: #111; }
     .rec-badge {
-      position: absolute; top: 8px; left: 8px; padding: 3px 9px;
-      border-radius: 100px; font-size: .58rem; font-weight: 800;
-      text-transform: uppercase; letter-spacing: .05em;
+      position: absolute; z-index: 2; top: 10px; left: 10px; max-width: calc(100% - 20px);
+      overflow: hidden; padding: 5px 10px; border-radius: 100px;
+      font-size: .58rem; font-weight: 900; line-height: 1; text-overflow: ellipsis;
+      text-transform: uppercase; letter-spacing: .06em; white-space: nowrap;
     }
-    .badge-mono { background: rgba(197,139,42,0.15); border: 1px solid rgba(197,139,42,.4); color: var(--cyan); }
+    .badge-mono { background: var(--cyan); border: 1px solid #e4b557; color: #050505; box-shadow: 0 5px 14px rgba(0,0,0,.38); }
     .badge-green { background: rgba(52,211,153,0.15); border: 1px solid rgba(52,211,153,.4); color: #34D399; }
     .badge-purple { background: rgba(168,85,247,0.15); border: 1px solid rgba(168,85,247,.4); color: #c084fc; }
     .badge-orange { background: rgba(251,146,60,0.15); border: 1px solid rgba(251,146,60,.4); color: #fb923c; }
@@ -281,8 +282,15 @@ export const page = {
     .rec-meta-row { display: flex; align-items: center; gap: 10px; font-size: .7rem; color: var(--gray); margin-bottom: 8px; }
     .rec-meta-row span { display: flex; align-items: center; gap: 4px; }
     .rec-reason { min-height: 34px; margin-bottom: 10px; font-size: .7rem; line-height: 1.45; color: var(--light); }
-    .rec-price-row { display: flex; align-items: center; justify-content: space-between; }
-    .rec-price { font-size: 1rem; font-weight: 800; color: var(--cyan); }
+    .rec-price-row { display: flex; align-items: center; justify-content: flex-start; }
+    .rec-view-course {
+      min-height: 36px; padding: 8px 13px; border: 1px solid var(--cyan);
+      border-radius: 8px; background: var(--cyan); color: #050505;
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      font-size: .72rem; font-weight: 800; line-height: 1; text-decoration: none;
+      transition: transform .2s, box-shadow .2s, background .2s;
+    }
+    .rec-view-course:hover { background: #d49b35; box-shadow: 0 8px 20px rgba(197,139,42,.22); transform: translateY(-1px); }
     .cart-btn {
       width: 28px; height: 28px; border-radius: 7px;
       background: rgba(255,255,255,0.05); border: 1px solid var(--border);
@@ -403,6 +411,8 @@ export const page = {
     @media (max-width: 600px) {
       .hist-grid { grid-template-columns: 1fr; }
       .rec-grid { grid-template-columns: 1fr; }
+      .stats-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; width: 100%; }
+      .stat-pill { min-width: 0; padding: 10px 8px; }
       .footer-grid { grid-template-columns: 1fr; }
       .footer-wrap { padding: 28px 20px 0; }
     }

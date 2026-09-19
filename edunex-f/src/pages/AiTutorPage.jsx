@@ -4,6 +4,7 @@ import { EnxIcon } from "../components/EnxIcon.jsx";
 import { runLegacyPage } from "../legacyRuntime.js";
 import { usePageStyle } from "../hooks/usePageStyle.js";
 import { useEduNexRuntimeReady } from "../hooks/useEduNexRuntimeReady.js";
+import { useViewportLock } from "../hooks/useViewportLock.js";
 
 const QUICK_PROMPTS = ["Explain prompt engineering with an example", "My AI character's face changes between clips", "Help me choose a course", "Quiz me on prompting"];
 const NEX_AVATAR_SRC = "/assets/nex-avatar.png";
@@ -118,6 +119,7 @@ export function AiTutorPage() {
   const [assistantName, setAssistantName] = useState(DEFAULT_ASSISTANT_NAME);
   const [assistantNameDraft, setAssistantNameDraft] = useState("");
   const [nameSetupOpen, setNameSetupOpen] = useState(false);
+  useViewportLock(nameSetupOpen && !authGate);
   const [nameSetupComplete, setNameSetupComplete] = useState(false);
   const inFlight = useRef(false);
   const generation = useRef(0);

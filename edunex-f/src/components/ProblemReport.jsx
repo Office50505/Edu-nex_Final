@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { EnxIcon } from "./EnxIcon.jsx";
+import { useViewportLock } from "../hooks/useViewportLock.js";
 
 const CATEGORIES = [
   ["technical", "Technical problem"],
@@ -78,12 +79,11 @@ export function ProblemReport({ open, onClose }) {
 
   closeRef.current = onClose;
   busyRef.current = busy;
+  useViewportLock(open);
 
   useEffect(() => {
     if (!open) return undefined;
     previouslyFocused.current = document.activeElement;
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
     const focusTimer = window.setTimeout(() => messageRef.current?.focus(), 30);
     const handleKeyDown = (event) => {
       if (event.key === "Escape" && !busyRef.current) closeRef.current();
@@ -92,7 +92,6 @@ export function ProblemReport({ open, onClose }) {
     return () => {
       window.clearTimeout(focusTimer);
       window.removeEventListener("keydown", handleKeyDown);
-      document.body.style.overflow = previousOverflow;
       previouslyFocused.current?.focus?.();
     };
   }, [open]);

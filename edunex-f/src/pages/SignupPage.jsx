@@ -3,6 +3,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { page as signupPage } from "../generated-pages/signup.html.js";
 import { runLegacyPage } from "../legacyRuntime.js";
 import { usePageStyle } from "../hooks/usePageStyle.js";
+import { useViewportLock } from "../hooks/useViewportLock.js";
 import { route } from "../lib/routes.js";
 
 const PHONE_ERROR = "Please enter a valid 10-digit phone number.";
@@ -125,6 +126,7 @@ export function SignupPage() {
   const [age, setAge] = useState(24);
   const [thumbStyle, setThumbStyle] = useState({ left: 6, width: 0 });
   const [thumbReady, setThumbReady] = useState(false);
+  useViewportLock(avatarModalOpen);
 
   const sliderRef = useRef(null);
   const genderButtonRefs = useRef({});

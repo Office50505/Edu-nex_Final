@@ -334,11 +334,13 @@ describe("reported frontend regressions", () => {
 
     render(<DashboardPage />);
 
-    expect(await screen.findByText("59% complete")).toBeTruthy();
+    expect(await screen.findByRole("link", { name: /View Course/i })).toBeTruthy();
+    expect(screen.queryByText("REAL COURSE")).toBeNull();
+    expect(screen.queryByText("Learning History")).toBeNull();
+    expect(document.querySelector(".hist-grid")).toBeNull();
     expect(screen.getByText("20 Done")).toBeTruthy();
     expect(screen.getByText("20 lessons")).toBeTruthy();
-    expect(document.querySelector(".hist-progress-fill")?.style.width).toBe("59%");
-    expect(screen.getAllByText("In Progress")).toHaveLength(2);
+    expect(document.querySelectorAll(".stats-row .stat-pill")).toHaveLength(3);
     expect(window.EduNex.authRequest).toHaveBeenCalledWith("/api/user/user-1/progress");
     expect(JSON.parse(localStorage.getItem("edunexCourseProgress:user-1:course-1")).completed).toBe(20);
     expect(document.querySelector("#trialGate")).toBeNull();
