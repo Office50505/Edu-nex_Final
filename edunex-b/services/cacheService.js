@@ -177,9 +177,15 @@ function getCacheBackend() {
   return redisClient?.isReady ? 'redis-connected' : 'redis-disconnected';
 }
 
+function isSharedRedisConfigured() {
+  return Boolean(REDIS_URL);
+}
+
 module.exports = {
   clearCacheNamespace,
   getCacheBackend,
   getJsonCache,
+  getSharedRedisClient: getRedisClient,
+  isSharedRedisConfigured,
   setJsonCache,
 };

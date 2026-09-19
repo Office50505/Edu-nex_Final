@@ -3,6 +3,9 @@ const User = require('../models/User');
 const Subscription = require('../models/Subscription');
 const Order = require('../models/Order');
 const SubscriptionEvent = require('../models/SubscriptionEvent');
+const { scheduleLockedJob } = require('../services/distributedLock');
+
+const SUBSCRIPTION_EXPIRY_LOCK_TTL_MS = 15 * 60 * 1000;
 
 function addMonths(date, months) {
   const result = new Date(date);
@@ -13,7 +16,7 @@ function addMonths(date, months) {
 // Paid access is granted only by verified provider reconciliation, never by a mandate timer.
 
 // Runs every 30 minutes
-cron.schedule('*/30 * * * *', async function expireOverdueSubscriptions() {
+async function expireOverdueSubscriptions() {
   console.log('[CRON] Expire overdue subscriptions started');
   try {
     const now = new Date();
@@ -64,4 +67,12 @@ cron.schedule('*/30 * * * *', async function expireOverdueSubscriptions() {
   } catch (err) {
     console.error('[CRON] Expire overdue subscriptions failed:', err);
   }
+}
+
+scheduleLockedJob({
+  cron,
+  expression: '*/30 * * * *',
+  jobName: 'subscription-expiry',
+  lockTtlMs: SUBSCRIPTION_EXPIRY_LOCK_TTL_MS,
+  task: expireOverdueSubscriptions,
 });

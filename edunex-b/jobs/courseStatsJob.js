@@ -5,6 +5,11 @@ const Wishlist = require('../models/Wishlist');
 const CourseAnalytics = require('../models/CourseAnalytics');
 const Lesson = require('../models/Lesson');
 const AiTutorSession = require('../models/AiTutorSession');
+const { scheduleLockedJob } = require('../services/distributedLock');
+
+const COURSE_STATS_LOCK_TTL_MS = 45 * 60 * 1000;
+const DAILY_ANALYTICS_LOCK_TTL_MS = 90 * 60 * 1000;
+const DROPOFF_LOCK_TTL_MS = 30 * 60 * 1000;
 
 function getYesterdayUtcRange() {
   const start = new Date();
@@ -17,7 +22,7 @@ function getYesterdayUtcRange() {
   return { start, end };
 }
 
-cron.schedule('0 2 * * *', async function refreshCourseStats() {
+async function refreshCourseStats() {
   console.log('[CRON] Refresh Course Stats started');
   try {
     const stats = await Progress.aggregate([
@@ -154,9 +159,9 @@ cron.schedule('0 2 * * *', async function refreshCourseStats() {
   } catch (err) {
     console.error('[CRON] Refresh Course Stats failed:', err);
   }
-});
+}
 
-cron.schedule('0 1 * * *', async function writeDailyCourseAnalytics() {
+async function writeDailyCourseAnalytics() {
   console.log('[CRON] Write Daily CourseAnalytics started');
   try {
     const { start: yesterday, end: yesterdayEnd } = getYesterdayUtcRange();
@@ -247,9 +252,9 @@ cron.schedule('0 1 * * *', async function writeDailyCourseAnalytics() {
   } catch (err) {
     console.error('[CRON] Write Daily CourseAnalytics failed:', err);
   }
-});
+}
 
-cron.schedule('0 3 * * *', async function calculateDropOffPoints() {
+async function calculateDropOffPoints() {
   console.log('[CRON] Calculate Drop Off Points started');
   try {
     const cutoff = new Date(Date.now() - 48 * 60 * 60 * 1000);
@@ -274,4 +279,28 @@ cron.schedule('0 3 * * *', async function calculateDropOffPoints() {
   } catch (err) {
     console.error('[CRON] Calculate Drop Off Points failed:', err);
   }
+}
+
+scheduleLockedJob({
+  cron,
+  expression: '0 2 * * *',
+  jobName: 'course-stats',
+  lockTtlMs: COURSE_STATS_LOCK_TTL_MS,
+  task: refreshCourseStats,
+});
+
+scheduleLockedJob({
+  cron,
+  expression: '0 1 * * *',
+  jobName: 'daily-analytics',
+  lockTtlMs: DAILY_ANALYTICS_LOCK_TTL_MS,
+  task: writeDailyCourseAnalytics,
+});
+
+scheduleLockedJob({
+  cron,
+  expression: '0 3 * * *',
+  jobName: 'dropoff',
+  lockTtlMs: DROPOFF_LOCK_TTL_MS,
+  task: calculateDropOffPoints,
 });
