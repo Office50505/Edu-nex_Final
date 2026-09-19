@@ -77,11 +77,66 @@ html[data-theme="light"] .ad-offer-page .ad-signin-modal form > button[type="sub
 }
 
 @media (max-width: 480px) {
+  .ad-offer-page .ad-offer-shell {
+    padding: 8px 14px calc(164px + env(safe-area-inset-bottom, 0px));
+  }
+
+  .ad-offer-page .ad-preview-player {
+    margin-bottom: 16px;
+  }
+
+  .ad-offer-page .ad-special-ribbon {
+    width: 180px;
+    padding-block: 6px;
+  }
+
+  .ad-offer-page .ad-offer-kicker {
+    margin: 10px 0 16px;
+  }
+
   .ad-offer-page .ad-offer-content > h1 {
     font-size: clamp(25px, 7vw, 28px);
   }
 
+  .ad-offer-page .ad-offer-intro {
+    margin: 8px auto 16px;
+    line-height: 1.4;
+  }
+
+  .ad-offer-page .ad-price-card {
+    min-height: 205px;
+    padding: 17px 18px 15px;
+  }
+
+  .ad-offer-page .ad-price-card > strong {
+    font-size: 64px;
+  }
+
   .ad-offer-page .ad-price-card h2 {
-    font-size: 23px;
+    font-size: 22px;
+  }
+
+  .ad-offer-page .ad-offer-rule {
+    margin: 13px 0 10px;
+  }
+
+  .ad-offer-page .ad-benefits {
+    margin-top: 18px;
+  }
+
+  .ad-offer-page .ad-action-bar {
+    padding: 10px 14px calc(10px + env(safe-area-inset-bottom, 0px));
+  }
+
+  .ad-offer-page .ad-action-bar > button {
+    min-height: 50px;
+  }
+
+  .ad-offer-page .ad-secure-payment {
+    margin-top: 8px;
+  }
+
+  .ad-offer-page .ad-action-bar > p {
+    margin-top: 6px;
   }
 }
