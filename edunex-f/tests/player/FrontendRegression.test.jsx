@@ -246,6 +246,11 @@ describe("reported frontend regressions", () => {
     expect(screen.queryByText("Welcome Back")).toBeNull();
   });
 
+  it("checks remember me by default on the user login form", () => {
+    render(<LoginPage />);
+    expect(screen.getByRole("checkbox", { name: "Remember me for 30 days" }).checked).toBe(true);
+  });
+
   it("renders cached profile data immediately while the server refresh is pending", () => {
     localStorage.setItem("edunexAccessToken", "active-token");
     localStorage.setItem("edunexUser", JSON.stringify(cachedUser));

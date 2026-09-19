@@ -104,7 +104,7 @@ function hasStoredAccessToken() {
 export function LoginPage() {
   const [loginId, setLoginId] = useState(() => readLoginPrefill(sessionStorage));
   const [password, setPassword] = useState("");
-  const [remember, setRemember] = useState(false);
+  const [remember, setRemember] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [recovering, setRecovering] = useState(false);
