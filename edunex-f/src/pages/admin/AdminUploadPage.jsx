@@ -459,9 +459,8 @@ export function AdminUploadPage() {
         examplePrompt: String(video.examplePrompt || "").trim(),
       })),
     };
-    // Preserve existing internal storage references without putting them in URL inputs.
+    // Preserve an existing internal horizontal reference without putting it in the URL input.
     if (!form.thumbnailUrl && form.thumbnailStoredUrl?.startsWith('/')) delete payload.thumbnailUrl;
-    if (!form.thumbnailVerticalUrl && form.thumbnailVerticalStoredUrl?.startsWith('/')) delete payload.thumbnailVerticalUrl;
     if (form.thumbnailDataUrl) payload.thumbnailDataUrl = form.thumbnailDataUrl;
     if (form.thumbnailVerticalDataUrl) payload.thumbnailVerticalDataUrl = form.thumbnailVerticalDataUrl;
 

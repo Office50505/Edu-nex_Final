@@ -1,7 +1,15 @@
 // @vitest-environment jsdom
 import React from 'react';
 import { it, expect, vi, afterEach } from 'vitest';
+<<<<<<< Updated upstream
 import { render, screen, waitFor, fireEvent, cleanup } from '@testing-library/react';
+=======
+<<<<<<< HEAD
+import { render, screen, waitFor, cleanup, fireEvent } from '@testing-library/react';
+=======
+import { render, screen, waitFor, fireEvent, cleanup } from '@testing-library/react';
+>>>>>>> 84cbdd0a5ef72b7a699a6c1808fcd158ff12fd4b
+>>>>>>> Stashed changes
 import { AdminUploadPage } from '../../src/pages/admin/AdminUploadPage';
 const mocks=vi.hoisted(()=>({request:vi.fn(),rawRequest:vi.fn()}));
 vi.mock('../../src/pages/admin/adminApi',async(importOriginal)=>({...await importOriginal(),requireAdmin:()=>true,adminJson:(...args)=>mocks.request(...args),adminRequest:(...args)=>mocks.rawRequest(...args)}));
@@ -34,6 +42,39 @@ it('keeps generated preview paths out of URL inputs',async()=>{
  expect(document.getElementById('thumbnailVerticalUrl').value).toBe('');
  expect(document.getElementById('thumbnailVerticalUrl').validity.valid).toBe(true);
 });
+<<<<<<< Updated upstream
+=======
+<<<<<<< HEAD
+
+it('submits a blank vertical thumbnail to clear legacy storage while preserving horizontal',async()=>{
+ window.history.replaceState({},'', '/admin/upload?courseId=course-one');
+ const horizontal='https://images.example.test/course-horizontal.webp';
+ const legacyVertical='/uploads/course-thumbnails/6aa4ecd63ddad7649031c35f-vertical.webp';
+ const course={
+  _id:'course-one',title:'Existing masterclass',slug:'existing-masterclass',description:'Existing description',
+  category:'category-one',status:'published',thumbnailUrl:horizontal,thumbnailVerticalUrl:legacyVertical,
+  videos:[{_id:'video-one',title:'Lesson one',provider:'youtube',youtubeId:'abcdefghijk',duration:60,order:1}],
+ };
+ let submitted;
+ mocks.request.mockImplementation(async(path,options={})=>{
+  if(path==='/api/categories')return [{_id:'category-one',name:'Category'}];
+  if(path.includes('video-providers'))return {};
+  if(path==='/api/admin/courses/course-one' && options.method==='PATCH'){
+   submitted=JSON.parse(options.body);
+   return {...course,thumbnailVerticalUrl:null};
+  }
+  if(path==='/api/admin/courses/course-one')return course;
+  return [];
+ });
+ render(<AdminUploadPage/>);
+ await screen.findByDisplayValue('Existing masterclass');
+ expect(document.getElementById('thumbnailVerticalUrl').value).toBe('');
+ fireEvent.click(screen.getByRole('button',{name:'Save changes'}));
+ await waitFor(()=>expect(submitted).toBeTruthy());
+ expect(submitted.thumbnailVerticalUrl).toBe('');
+ expect(submitted.thumbnailUrl).toBe(horizontal);
+=======
+>>>>>>> Stashed changes
 it('extracts lesson notes when a PDF is dropped on the lesson drop zone',async()=>{
  window.history.replaceState({},'', '/admin/upload');
  mocks.request.mockImplementation(async path=>path==='/api/categories'?[]:path.includes('video-providers')?{}:[]);
@@ -57,4 +98,8 @@ it('loads a separate notes URL for each lesson',async()=>{
  render(<AdminUploadPage/>);
  expect(await screen.findByDisplayValue('https://notes.example/lesson-one')).toBeTruthy();
  expect(screen.getByLabelText('Lesson notes URL')).toBeTruthy();
+<<<<<<< Updated upstream
+=======
+>>>>>>> 84cbdd0a5ef72b7a699a6c1808fcd158ff12fd4b
+>>>>>>> Stashed changes
 });

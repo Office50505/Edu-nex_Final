@@ -226,3 +226,73 @@ test('failed production upload prevents course construction and database persist
   assert.equal(res.statusCode, 503);
   assert.equal(constructed, 0);
 });
+
+test('blank vertical URL clears legacy storage while preserving the horizontal thumbnail', async () => {
+  const horizontal = 'https://images.example.test/course-horizontal.webp';
+  const existingCourse = {
+    thumbnailUrl: horizontal,
+    thumbnailVerticalUrl: `/uploads/course-thumbnails/${id}-vertical.webp`,
+    thumbnail: null,
+    thumbnailHorizontal: null,
+    thumbnailVertical: null,
+    videos: [],
+    completionOrder: [],
+  };
+  let findCalls = 0;
+  let saveCalls = 0;
+  const mutableCourse = {
+    ...existingCourse,
+    validate: async () => {},
+    save: async () => { saveCalls += 1; },
+    populate: async () => {},
+    toObject() { return { thumbnailUrl: this.thumbnailUrl, thumbnailVerticalUrl: this.thumbnailVerticalUrl }; },
+  };
+  const Course = {
+    findById() {
+      findCalls += 1;
+      return findCalls === 1
+        ? { select: async () => existingCourse }
+        : Promise.resolve(mutableCourse);
+    },
+  };
+  const handler = routeHandler("app.patch('/api/admin/courses/:id'", "app.get('/api/admin/courses/:id'", {
+    protectAdmin() {},
+    mongoose: { Types: { ObjectId: { isValid: () => true } } },
+    Course,
+    Lesson: { bulkWrite: async () => {} },
+    sanitizeCourseThumbnailUrl: (value) => String(value || '').trim() || null,
+    sanitizeOptionalUrl: (value) => value,
+    parseThumbnailDataUrl: () => null,
+    saveThumbnailUpload: async () => null,
+    sanitizeCourseVideos: (value) => value,
+    applyCourseThumbnailToVideos: (value) => value,
+    clearPublicCourseCaches: async () => {},
+  }, 'patch');
+  const res = responseRecorder();
+  await handler({ params: { id }, body: { thumbnailVerticalUrl: '' } }, res);
+
+  assert.equal(res.statusCode, 200);
+  assert.equal(mutableCourse.thumbnailVerticalUrl, null);
+  assert.equal(mutableCourse.thumbnailUrl, horizontal);
+  assert.equal(res.body.thumbnailVerticalUrl, null);
+  assert.equal(res.body.thumbnailUrl, horizontal);
+  assert.equal(saveCalls, 1);
+});
+
+test('course thumbnail API helper tolerates no vertical thumbnail and retains horizontal fallback', () => {
+  const source = fs.readFileSync(path.join(__dirname, '../server.js'), 'utf8');
+  const start = source.indexOf('function publicCourseThumbnailUrl');
+  const end = source.indexOf('function parseThumbnailDataUrl', start);
+  const module = { exports: {} };
+  vm.runInNewContext(`${source.slice(start, end)}\nmodule.exports = { publicCourseThumbnailUrl };`, {
+    module,
+    storedThumbnailUrl: () => null,
+    localThumbnailFileExists: () => false,
+    hasStoredThumbnail: () => false,
+  });
+  const horizontal = 'https://images.example.test/course-horizontal.webp';
+  const course = { _id: id, thumbnailUrl: horizontal, thumbnailVerticalUrl: null };
+
+  assert.equal(module.exports.publicCourseThumbnailUrl(course), horizontal);
+  assert.equal(module.exports.publicCourseThumbnailUrl(course, 'vertical'), horizontal);
+});
