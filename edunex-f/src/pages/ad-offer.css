@@ -4,3 +4,41 @@
 .ad-signin-backdrop{position:fixed;inset:0;z-index:50;padding:0;display:grid;align-items:end;justify-items:center;background:#000c;backdrop-filter:blur(3px)}.ad-signin-modal{position:relative;width:min(100%,460px);padding:42px 24px 28px;color:#f7f7f7;border:1px solid #343436;border-bottom:0;border-radius:22px 22px 0 0;background:#141415;box-shadow:0 -20px 70px #000b;animation:ad-sheet-up .25s ease-out}.ad-sheet-handle{position:absolute;top:11px;left:50%;width:42px;height:4px;transform:translateX(-50%);border-radius:999px;background:#4d4d50}.ad-signin-close{position:absolute;top:15px;right:17px;width:32px;height:32px;color:#aaa;border:0;background:transparent;font-size:25px;font-weight:700}.ad-signin-brand{margin-bottom:28px}.ad-signin-brand img{display:block;width:142px;height:auto}.ad-signin-modal h2{margin:0 0 6px;font-family:Inter,Arial,sans-serif;font-size:24px;font-weight:750}.ad-signin-modal form>p{margin:0 0 20px;color:#9fa0a6;line-height:1.55}.ad-signin-modal label{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}.ad-phone-field{height:60px;display:flex;align-items:center;border:1px solid #d69d27;border-radius:12px;background:#050506;overflow:hidden}.ad-phone-field:focus-within,.ad-otp-input:focus{border-color:#ffd05a;box-shadow:0 0 0 2px #f4b72f26}.ad-phone-field span{height:100%;padding:0 14px;display:grid;place-items:center;color:#f0f0f2;border-right:1px solid #39393b;font-weight:700;white-space:nowrap}.ad-phone-field input,.ad-otp-input{width:100%;height:58px;padding:0 15px;color:#fff;border:1px solid #3b3b3d;border-radius:12px;outline:0;background:#050506;font-size:16px}.ad-phone-field input{height:100%;border:0;border-radius:0}.ad-otp-input{text-align:center;font-size:22px;font-weight:800;letter-spacing:6px}.ad-signin-modal form>button[type="submit"]{width:100%;min-height:54px;margin-top:28px;color:#080808;border:0;border-radius:10px;background:linear-gradient(100deg,#f3b62c,#ffd05a);font-size:15px;font-weight:800}.ad-signin-modal form>button:disabled{opacity:.42}.ad-signin-modal form>small{display:block;margin-top:16px;color:#85868c;font-size:10px;line-height:1.5;text-align:center}.ad-signin-modal .ad-form-status{min-height:18px;margin:10px 0 0;color:#ef9a91;font-size:11px;text-align:center}.ad-signin-modal form>p:has(a){margin:4px 0 0;text-align:center}.ad-signin-modal form>p a{color:#aaa;font-size:12px}.ad-signin-modal .ad-secure-note{margin-top:22px;font-size:11px}.ad-otp-back,.ad-resend-otp{padding:0;color:var(--ad-gold);border:0;background:transparent;font-size:11px;font-weight:700}.ad-otp-back{margin-bottom:20px}.ad-resend-otp{display:block;margin:15px auto 0}.ad-signin-modal .ad-payment-consent{margin:9px 4px 0;color:#85878e;font-size:9px;line-height:1.45;text-align:center}@keyframes ad-sheet-up{from{transform:translateY(100%);opacity:.5}to{transform:translateY(0);opacity:1}}@media(prefers-reduced-motion:reduce){.ad-signin-modal{animation:none}}
 @media(max-width:380px){.ad-offer-shell{padding-inline:12px}.ad-offer-content>h1{font-size:25px}.ad-offer-intro{font-size:12px}.ad-price-card{min-height:225px}.ad-benefits p{font-size:9px}.ad-signin-modal{padding-inline:20px}}
 .ad-recovery button:last-child{grid-column:auto}.ad-recovery button:nth-of-type(n+3){color:#ddd;border:1px solid #3d3d40;background:#18181a;box-shadow:none}
+
+/* The offer is an intentionally dark, campaign-only surface. Keep the site's
+   saved light theme from recoloring its headings, copy, and form controls. */
+html[data-theme="light"] .ad-offer-page {
+  --text: #f7f7f7;
+  --text2: #a9a9ae;
+  color: #f7f7f7;
+  color-scheme: dark;
+}
+
+html[data-theme="light"] .ad-offer-page .ad-offer-content > h1,
+html[data-theme="light"] .ad-offer-page .ad-price-card h2,
+html[data-theme="light"] .ad-offer-page .ad-signin-modal h2 {
+  color: #f7f7f7 !important;
+}
+
+html[data-theme="light"] .ad-offer-page .ad-offer-content > h1 span {
+  color: var(--ad-gold) !important;
+}
+
+html[data-theme="light"] .ad-offer-page :where(.ad-offer-intro, .ad-price-card p, .ad-benefits p, .ad-signin-modal form > p) {
+  color: #a9a9ae !important;
+}
+
+html[data-theme="light"] .ad-offer-page :where(.ad-phone-field, .ad-phone-field input, .ad-otp-input) {
+  color: #fff !important;
+  border-color: #3b3b3d;
+  background: #050506 !important;
+}
+
+html[data-theme="light"] .ad-offer-page :where(.ad-phone-field input, .ad-otp-input)::placeholder {
+  color: #8f96a3 !important;
+}
+
+html[data-theme="light"] .ad-offer-page .ad-signin-modal form > button[type="submit"] {
+  color: #080808 !important;
+  background: linear-gradient(100deg, #f3b62c, #ffd05a) !important;
+}
