@@ -24,6 +24,7 @@
     "test:cache": "node --test tests/shared-cache.test.cjs",
     "test:cron-locks": "node --test tests/distributed-lock.test.cjs",
     "test:certification": "node --test tests/certification.test.cjs",
+    "test:thumbnail-storage": "node --test tests/thumbnail-cdn.test.cjs",
     "test:video": "node --test tests/cloudfront.test.cjs tests/video-import.test.cjs"
   },
   "keywords": [],

@@ -128,6 +128,7 @@ const Certificate = require('./models/Certificate');
 const AdminUserAction = require('./models/AdminUserAction');
 const Session = require('./models/Session');
 const { presenceFromPing } = require('./services/userPresence');
+const { saveThumbnailUpload } = require('./services/thumbnailStorage');
 
 // Import routes
 const authRoutes = require('./routes/auth');
@@ -801,17 +802,31 @@ function sanitizeOptionalUrl(value) {
   return normalized;
 }
 
+function sanitizeCourseThumbnailUrl(value) {
+  const normalized = sanitizeOptionalUrl(value);
+  if (!normalized || !isProduction) return normalized;
+
+  try {
+    const url = new URL(normalized);
+    const hostname = url.hostname.toLowerCase();
+    const localOrInstanceHost = hostname === 'localhost'
+      || hostname.endsWith('.local')
+      || net.isIP(hostname) !== 0
+      || /^ec2-[a-z0-9-]+\.compute(?:-[0-9]+)?\.amazonaws\.com$/i.test(hostname);
+    if (url.protocol !== 'https:' || url.username || url.password || localOrInstanceHost) throw new Error('unsafe');
+    return url.href;
+  } catch {
+    const error = new Error('Course thumbnail URL must use shared HTTPS storage.');
+    error.statusCode = 400;
+    throw error;
+  }
+}
+
 const MAX_THUMBNAIL_BYTES = 2 * 1024 * 1024;
 const ALLOWED_THUMBNAIL_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp']);
 
 function hasStoredThumbnail(image) {
   return Boolean(image?.mimeType && ALLOWED_THUMBNAIL_TYPES.has(image.mimeType));
-}
-
-function thumbnailExtension(mimeType) {
-  if (mimeType === 'image/png') return 'png';
-  if (mimeType === 'image/webp') return 'webp';
-  return 'jpg';
 }
 
 function isLocalThumbnailUrl(value) {
@@ -835,27 +850,6 @@ function storedThumbnailUrl(courseId, orientation = 'horizontal') {
     }
   }
   return null;
-}
-
-async function saveThumbnailUpload(courseId, orientation, image) {
-  try {
-    const thumbnailCdn = require('./services/thumbnailCdn');
-    if (typeof thumbnailCdn.uploadThumbnail === 'function') {
-      const cdnUrl = await thumbnailCdn.uploadThumbnail(courseId, orientation, image);
-      if (cdnUrl) return cdnUrl;
-    }
-  } catch (error) {
-    // Fall back to local storage when the CDN service is unavailable.
-  }
-
-  if (!hasStoredThumbnail(image) || !image.data) return null;
-
-  const normalizedOrientation = orientation === 'vertical' ? 'vertical' : 'horizontal';
-  const extension = thumbnailExtension(image.mimeType);
-  const filename = `${courseId}-${normalizedOrientation}.${extension}`;
-  fs.mkdirSync(COURSE_THUMBNAIL_UPLOAD_DIR, { recursive: true });
-  fs.writeFileSync(path.join(COURSE_THUMBNAIL_UPLOAD_DIR, filename), Buffer.from(image.data, 'base64'));
-  return `/uploads/course-thumbnails/${filename}`;
 }
 
 function publicCourseThumbnailUrl(course, orientation = 'horizontal') {
@@ -3249,9 +3243,9 @@ app.post('/api/courses', protectAdmin, async (req, res) => {
     const savedHorizontalThumbnailUrl = await saveThumbnailUpload(courseId, 'horizontal', embeddedHorizontalThumbnail);
     const savedVerticalThumbnailUrl = await saveThumbnailUpload(courseId, 'vertical', embeddedVerticalThumbnail);
     const courseThumbnailUrl = savedHorizontalThumbnailUrl
-      || (embeddedHorizontalThumbnail ? null : sanitizeOptionalUrl(req.body.thumbnailUrl || req.body.thumbnailHorizontalUrl));
+      || (embeddedHorizontalThumbnail ? null : sanitizeCourseThumbnailUrl(req.body.thumbnailUrl || req.body.thumbnailHorizontalUrl));
     const courseThumbnailVerticalUrl = savedVerticalThumbnailUrl
-      || (embeddedVerticalThumbnail ? null : sanitizeOptionalUrl(req.body.thumbnailVerticalUrl));
+      || (embeddedVerticalThumbnail ? null : sanitizeCourseThumbnailUrl(req.body.thumbnailVerticalUrl));
 
     const course = new Course({
       _id: courseId,
@@ -3371,11 +3365,11 @@ app.patch('/api/admin/courses/:id', protectAdmin, async (req, res) => {
       Object.prototype.hasOwnProperty.call(req.body, 'thumbnailUrl')
       || Object.prototype.hasOwnProperty.call(req.body, 'thumbnailHorizontalUrl')
     ) {
-      updates.thumbnailUrl = sanitizeOptionalUrl(req.body.thumbnailUrl || req.body.thumbnailHorizontalUrl);
+      updates.thumbnailUrl = sanitizeCourseThumbnailUrl(req.body.thumbnailUrl || req.body.thumbnailHorizontalUrl);
     }
 
     if (Object.prototype.hasOwnProperty.call(req.body, 'thumbnailVerticalUrl')) {
-      updates.thumbnailVerticalUrl = sanitizeOptionalUrl(req.body.thumbnailVerticalUrl);
+      updates.thumbnailVerticalUrl = sanitizeCourseThumbnailUrl(req.body.thumbnailVerticalUrl);
     }
 
     if (
