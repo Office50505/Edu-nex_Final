@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { page as profilePage } from "../generated-pages/profile.html.js";
 import { runLegacyPage } from "../legacyRuntime.js";
 import { usePageStyle } from "../hooks/usePageStyle.js";
@@ -89,12 +89,6 @@ export function ProfilePage() {
   }));
   const [theme, setTheme] = useState(currentTheme);
   const [modalOpen, setModalOpen] = useState(false);
-  const deleteDialog = useRef(null);
-  const deletingRef = useRef(false);
-  const [deleting, setDeleting] = useState(false);
-  const [deletePassword, setDeletePassword] = useState("");
-  const [deleteConfirmation, setDeleteConfirmation] = useState("");
-  const [deleteError, setDeleteError] = useState("");
   const [cancelConfirm, setCancelConfirm] = useState(false);
   const [cancelBusy, setCancelBusy] = useState(false);
   const [cancelMessage, setCancelMessage] = useState("");
@@ -205,40 +199,6 @@ export function ProfilePage() {
       window.dispatchEvent(new Event("edunex:auth-changed"));
       window.location.href = "login.html";
     });
-  };
-
-  const openDeleteAccount = () => {
-    setDeletePassword("");
-    setDeleteConfirmation("");
-    setDeleteError("");
-    deleteDialog.current?.showModal();
-  };
-
-  const deleteAccount = async (event) => {
-    event.preventDefault();
-    if (deletingRef.current || deleteConfirmation !== "DELETE" || !deletePassword) return;
-    deletingRef.current = true;
-    setDeleting(true);
-    setDeleteError("");
-    try {
-      const data = await window.EduNex.authRequest("/api/auth/account", {
-        method: "DELETE",
-        body: JSON.stringify({ password: deletePassword, confirmation: deleteConfirmation }),
-      });
-      if (!data?.success) throw new Error("Account could not be deleted. Please try again.");
-      window.EduNex.clearAuth();
-      for (const storage of [localStorage, sessionStorage]) {
-        Object.keys(storage).filter(key => /^edunex/i.test(key)).forEach(key => storage.removeItem(key));
-      }
-      window.dispatchEvent(new Event("edunex:auth-changed"));
-      window.location.replace("login.html");
-    } catch (error) {
-      setDeleteError(error.message || "Account could not be deleted. Please try again.");
-    } finally {
-      deletingRef.current = false;
-      setDeleting(false);
-      setDeletePassword("");
-    }
   };
 
   const fallbackAvatar = window.EduNex?.avatarFallback?.(user) || FALLBACK_AVATAR;
@@ -377,40 +337,11 @@ export function ProfilePage() {
                 <i className="fas fa-arrow-right-from-bracket" aria-hidden="true"></i>
                 Logout from Skillomate
               </button>
-              <button className="pf-logout-btn" type="button" onClick={openDeleteAccount} disabled={!user}>
-                <i className="fas fa-trash-can" aria-hidden="true"></i> Delete Account
-              </button>
               <p className="pf-version-text">Version 4.2.1-stable • Skillomate <span>Cloud Sync Active</span></p>
             </div>
           </div>
         </div>
       </div>
-
-      <dialog ref={deleteDialog} className="pf-modal-card pf-delete-dialog" aria-labelledby="deleteAccountTitle" aria-describedby="deleteAccountDescription"
-        onCancel={event => { if (deletingRef.current) event.preventDefault(); }}
-        onClose={() => { setDeletePassword(""); setDeleteConfirmation(""); }}>
-        <form onSubmit={deleteAccount}>
-          <div className="pf-modal-head"><h2 id="deleteAccountTitle">Delete account?</h2></div>
-          <div className="pf-modal-body" style={{ display: "grid", gap: 16 }}>
-            <p id="deleteAccountDescription">This permanently deletes your account, learning progress, certificates, and AI chats. This cannot be undone. Your active subscription will be cancelled automatically.</p>
-            <label style={{ display: "grid", gap: 8 }}>Current password
-              <input type="password" autoComplete="current-password" required value={deletePassword} disabled={deleting}
-                onChange={event => setDeletePassword(event.target.value)} style={{ padding: 12, color: "inherit", background: "transparent", border: "1px solid #777", borderRadius: 8 }} />
-            </label>
-            <label style={{ display: "grid", gap: 8 }}>Type DELETE to confirm
-              <input type="text" autoComplete="off" spellCheck={false} required value={deleteConfirmation} disabled={deleting}
-                onChange={event => setDeleteConfirmation(event.target.value)} style={{ padding: 12, color: "inherit", background: "transparent", border: "1px solid #777", borderRadius: 8 }} />
-            </label>
-            {deleteError ? <p role="alert" style={{ color: "#f87171" }}>{deleteError} <a href="help.html">Help &amp; Support</a></p> : null}
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 12 }}>
-              <button className="pf-secondary-btn" type="button" disabled={deleting} onClick={() => deleteDialog.current?.close()}>Keep account</button>
-              <button className="pf-logout-btn" type="submit" disabled={deleting || deleteConfirmation !== "DELETE" || !deletePassword}>
-                {deleting ? "Deleting…" : "Permanently delete account"}
-              </button>
-            </div>
-          </div>
-        </form>
-      </dialog>
 
       <div className="pf-watermark">
         <div className="pf-watermark-main">SKILLOMATE</div>
@@ -437,7 +368,7 @@ export function ProfilePage() {
             {!subscription.loading && !subscription.error && subscription.data ? (
               <>
                 <div className="sub-current-card">
-                  <strong>Current plan: {subscription.data.subscriptionType === "annual" ? "Annual subscription" : profileSubscriptionLabel(modalStatus)}</strong>
+                  <strong>Current plan: {profileSubscriptionLabel(modalStatus)}</strong>
                   <span>Valid until: {formatProfileDate(periodEnd)}</span>
                   <span>Payment reference: {subscription.data.orderId || subscription.data.subscriptionId || subscription.data.paymentId || "Not available"}</span>
                 </div>

@@ -6,17 +6,19 @@ import { useLearningProgress } from '../../hooks/useLearningProgress';
 import { clock, seekTarget, adjacent, nativeLessonSource } from './playerRules';
 import './player.css';
 
+const QUALITY_PRESETS = [120, 240, 360, 480, 720, 1080];
+
 export function CourseMediaPlayer({ course, lesson, lessonIndex, autoNext, autoplay = false, onEnded, onNavigateLesson, onFallback, mobileViewMode = null, onToggleMobileView }) {
   const access = usePlaybackAccess(course._id, lesson);
   const videoRef = useRef(null), frameRef = useRef(null), hlsRef = useRef(null), hideTimer = useRef(), sleepTimer = useRef();
-  const settingsButton = useRef(null), restored = useRef(false), latest = useRef({});
+  const settingsButton = useRef(null), restored = useRef(false), latest = useRef({}), qualityPreference = useRef(720);
   const [time,setTime] = useState({current:0,duration:0});
   const [playing,setPlaying] = useState(false), [buffering,setBuffering] = useState(false);
   const [error,setError] = useState(''), [notice,setNotice] = useState('');
   const [awake,setAwake] = useState(true), [menu,setMenu] = useState(false);
   const [rate,setRate] = useState(1), [loop,setLoop] = useState(false), [sleep,setSleep] = useState(0);
   const [volume,setVolume] = useState(1), [muted,setMuted] = useState(false);
-  const [levels,setLevels] = useState([]), [quality,setQuality] = useState(-1);
+  const [levels,setLevels] = useState([]), [quality,setQuality] = useState(720);
   const [captions,setCaptions] = useState([]), [caption,setCaption] = useState(-1);
   const tapRef = useRef(null), tapTimer = useRef(null);
   const [fullscreen,setFullscreen] = useState(false), [buffered,setBuffered] = useState(0);
@@ -46,7 +48,7 @@ export function CourseMediaPlayer({ course, lesson, lessonIndex, autoNext, autop
     const video=videoRef.current;if(!source||!video)return;
     let stopped=false,engine,mediaRecoveries=0;
     const saved=latest.current,position=saved.time.current,wasPlaying=saved.playing;
-    setError('');setBuffering(true);setLevels([]);setQuality(-1);setCaptions([]);setCaption(-1);
+    setError('');setBuffering(true);setLevels([]);setCaptions([]);setCaption(-1);
     video.volume=saved.volume;video.muted=saved.muted;video.playbackRate=saved.rate;video.loop=saved.loop;
     const sync=()=>{setTime({current:video.currentTime||0,duration:Number.isFinite(video.duration)?video.duration:0});let end=0;for(let i=0;i<video.buffered.length;i++)if(video.buffered.start(i)<=video.currentTime&&video.buffered.end(i)>=video.currentTime)end=video.buffered.end(i);setBuffered(end);};
     const ready=()=>{if(position>0)video.currentTime=seekTarget(position,video.duration);setBuffering(false);sync();tracks();if(wasPlaying)video.play().catch(()=>setNotice('Press play to continue.'));};
@@ -64,7 +66,17 @@ export function CourseMediaPlayer({ course, lesson, lessonIndex, autoNext, autop
     else loadHlsJs().then(Hls=>{
       if(stopped)return;if(!Hls.isSupported()){if(nativeHls)video.src=source;else failed();return;}
       engine=new Hls({enableWorker:true,maxBufferLength:30});hlsRef.current=engine;
-      engine.on(Hls.Events.MANIFEST_PARSED,(_,data)=>{setLevels(data.levels.map((level,index)=>({index,label:level.height?`${level.height}p`:`${Math.round(level.bitrate/1000)} kbps`})));});
+      engine.on(Hls.Events.MANIFEST_PARSED,(_,data)=>{
+        const nextLevels=data.levels
+          .map((level,index)=>({index,height:Number(level.height)||0}))
+          .filter(level=>QUALITY_PRESETS.includes(level.height))
+          .filter((level,index,list)=>list.findIndex(item=>item.height===level.height)===index)
+          .sort((a,b)=>a.height-b.height);
+        setLevels(nextLevels);
+        const target=qualityPreference.current;
+        const preferred=nextLevels.find(level=>level.height===target) || nextLevels.reduce((best,level)=>!best||Math.abs(level.height-target)<Math.abs(best.height-target)?level:best,null);
+        if(preferred)engine.currentLevel=preferred.index;
+      });
       engine.on(Hls.Events.SUBTITLE_TRACKS_UPDATED,(_,data)=>setCaptions(data.subtitleTracks.map((track,index)=>({index,label:track.name||track.lang||`Track ${index+1}`}))));
       engine.on(Hls.Events.ERROR,(_,data)=>{if(!data.fatal)return;if(data.type===Hls.ErrorTypes.MEDIA_ERROR&&mediaRecoveries++<2)engine.recoverMediaError();else{engine.stopLoad();const status=data.response?.code;failed(status===401||status===403?'Video access was rejected. Retry to renew access.':status===404?'The video file could not be found. Please contact support.':`Video could not load (${data.details || 'stream error'}). Retry playback.`);}});
       engine.loadSource(source);engine.attachMedia(video);
@@ -104,8 +116,14 @@ export function CourseMediaPlayer({ course, lesson, lessonIndex, autoNext, autop
     if(shouldContinue)video.play().catch(()=>setNotice('Playback could not resume after seeking.'));
     wake();
   }
-  async function full(){try{const wrapper=frameRef.current.closest('#playerFrame');if(wrapper?.classList.contains('is-app-fullscreen')){wrapper.classList.remove('is-app-fullscreen');document.body.classList.remove('has-edunex-player-fullscreen');return;}if(document.fullscreenElement)await document.exitFullscreen();else if(frameRef.current.requestFullscreen)await frameRef.current.requestFullscreen();else if(videoRef.current.webkitEnterFullscreen)videoRef.current.webkitEnterFullscreen();else setNotice('Fullscreen is unavailable on this device.');}catch{setNotice('Fullscreen is unavailable on this device.');}}
+  async function full(){try{const wrapper=frameRef.current.closest('#playerFrame');const target=wrapper||frameRef.current;if(wrapper?.classList.contains('is-app-fullscreen')){wrapper.classList.remove('is-app-fullscreen');document.body.classList.remove('has-edunex-player-fullscreen');return;}if(document.fullscreenElement)await document.exitFullscreen();else if(target?.requestFullscreen)await target.requestFullscreen();else if(target?.webkitRequestFullscreen)await target.webkitRequestFullscreen();else if(videoRef.current.webkitEnterFullscreen)videoRef.current.webkitEnterFullscreen();else setNotice('Fullscreen is unavailable on this device.');}catch{setNotice('Fullscreen is unavailable on this device.');}}
   function sleepAfter(minutes){clearTimeout(sleepTimer.current);setSleep(minutes);if(minutes)sleepTimer.current=setTimeout(()=>{videoRef.current?.pause();setSleep(0);setNotice('Sleep timer paused playback.');},minutes*60000);}
+  function selectQuality(height){
+    qualityPreference.current=height;
+    setQuality(height);
+    const level=levels.find(item=>item.height===height) || levels.reduce((best,item)=>!best||Math.abs(item.height-height)<Math.abs(best.height-height)?item:best,null);
+    if(level&&hlsRef.current)hlsRef.current.currentLevel=level.index;
+  }
   function closeMenu(){setMenu(false);settingsButton.current?.focus();}
   function key(event){if(event.altKey||event.ctrlKey||event.metaKey)return;if(event.key==='Escape'){closeMenu();return;}if(event.target.closest('input,select,textarea,button,[contenteditable]'))return;const k=event.key.toLowerCase();if([' ','k','arrowleft','arrowright','m','f'].includes(k)){event.preventDefault();event.stopPropagation();wake();if(k===' '||k==='k')toggle();if(k==='arrowleft')seek(-10);if(k==='arrowright')seek(10);if(k==='m')videoRef.current.muted=!videoRef.current.muted;if(k==='f')full();}}
   const failure=access.error||error,visible=awake||!playing||menu||!!failure;
@@ -122,11 +140,26 @@ export function CourseMediaPlayer({ course, lesson, lessonIndex, autoNext, autop
     {notice?<div className="sm-notice" role="status">{notice}</div>:null}
     {menu?<div className="sm-settings" aria-label="Player settings">
       <div className="sm-settings-header"><span>Playback settings</span><button onClick={closeMenu} aria-label="Close settings">×</button></div>
-      <label>Playback speed<select value={rate} onChange={e=>setRate(Number(e.target.value))}>{[.25,.5,.75,1,1.25,1.5,1.75,2].map(n=><option key={n} value={n}>{n===1?'Normal':`${n}×`}</option>)}</select></label>
-      <label>Quality<select value={quality} disabled={!levels.length} onChange={e=>{const n=Number(e.target.value);if(hlsRef.current)hlsRef.current.currentLevel=n;setQuality(n);}}><option value={-1}>{levels.length?'Auto':'Auto · browser managed'}</option>{levels.map(l=><option key={l.index} value={l.index}>{l.label}</option>)}</select></label>
-      <label>Mute audio<input type="checkbox" checked={muted} onChange={e=>{if(videoRef.current)videoRef.current.muted=e.target.checked;setMuted(e.target.checked);}}/></label>
-      <label>Loop lesson<input type="checkbox" checked={loop} onChange={e=>setLoop(e.target.checked)}/></label>
-      <label>Sleep timer<select value={sleep} onChange={e=>sleepAfter(Number(e.target.value))}>{[0,15,30,45,60].map(n=><option key={n} value={n}>{n?`${n} minutes`:'Off'}</option>)}</select></label>
+      <div className="sm-setting-section">
+        <span className="sm-setting-label">Playback speed</span>
+        <div className="sm-setting-options" role="radiogroup" aria-label="Playback speed">
+          {[.25,.5,.75,1,1.25,1.5,1.75,2].map(n=>{const label=n===1?'Normal':`${n}×`;return <button type="button" role="radio" aria-checked={rate===n} aria-label={`Playback speed ${label}`} className={rate===n?'is-selected':''} key={n} onClick={()=>setRate(n)}>{label}</button>;})}
+        </div>
+      </div>
+      <div className="sm-setting-section">
+        <span className="sm-setting-label">Quality</span>
+        <div className="sm-setting-options" role="radiogroup" aria-label="Quality">
+          {QUALITY_PRESETS.map(height=><button type="button" role="radio" aria-checked={quality===height} aria-label={`Quality ${height}p`} className={quality===height?'is-selected':''} key={height} onClick={()=>selectQuality(height)}>{height}p</button>)}
+        </div>
+      </div>
+      <label className="sm-setting-section sm-setting-toggle">Mute audio<input type="checkbox" checked={muted} onChange={e=>{if(videoRef.current)videoRef.current.muted=e.target.checked;setMuted(e.target.checked);}}/></label>
+      <label className="sm-setting-section sm-setting-toggle">Loop lesson<input type="checkbox" checked={loop} onChange={e=>setLoop(e.target.checked)}/></label>
+      <div className="sm-setting-section">
+        <span className="sm-setting-label">Sleep timer</span>
+        <div className="sm-setting-options" role="radiogroup" aria-label="Sleep timer">
+          {[0,15,30,45,60].map(n=>{const label=n?`${n} min`:'Off';return <button type="button" role="radio" aria-checked={sleep===n} aria-label={`Sleep timer ${n?`${n} minutes`:'Off'}`} className={sleep===n?'is-selected':''} key={n} onClick={()=>sleepAfter(n)}>{label}</button>;})}
+        </div>
+      </div>
     </div>:null}
     <div className="sm-controls">
       <input className="sm-seek" aria-label="Seek video" type="range" min="0" max={time.duration||1} step="0.1" disabled={!time.duration} value={Math.min(time.current,time.duration||1)} style={{'--sm-progress':`${time.duration?time.current/time.duration*100:0}%`,'--sm-buffered':`${time.duration?Math.min(100,buffered/time.duration*100):0}%`}} onChange={e=>{videoRef.current.currentTime=seekTarget(Number(e.target.value),time.duration);wake();}}/>

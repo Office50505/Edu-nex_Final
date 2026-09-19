@@ -4,11 +4,17 @@ import { describe, expect, it } from "vitest";
 import { LegalLayout } from "../../src/components/legal/LegalLayout.jsx";
 
 const appStyles = readFileSync(new URL("../../src/styles/app.css", import.meta.url), "utf8");
+const indexHtml = readFileSync(new URL("../../index.html", import.meta.url), "utf8");
 const legalStyles = readFileSync(new URL("../../src/components/legal/LegalPages.css", import.meta.url), "utf8");
 const homePageSource = readFileSync(new URL("../../src/pages/HomePage.jsx", import.meta.url), "utf8");
 const videosPageSource = readFileSync(new URL("../../src/pages/VideosPage.jsx", import.meta.url), "utf8");
 
 describe("cross-viewport UX", () => {
+  it("keeps the complete Skillomate wordmark visible during initial page loading", () => {
+    expect(indexHtml).toContain('background:#000');
+    expect(indexHtml).toContain('src="/assets/skillomate-logo-dark.png"');
+  });
+
   it("exposes the page key used by route-specific responsive rules", () => {
     const markup = renderToStaticMarkup(<LegalLayout title="Pricing" pageKey="pricing.html">Plans</LegalLayout>);
     expect(markup).toContain('data-page="pricing.html"');
@@ -38,6 +44,40 @@ describe("cross-viewport UX", () => {
 
   it("groups the mobile lecture drawer into pages of twenty", () => {
     expect(videosPageSource).toContain("const LECTURES_PER_SHEET_PAGE = 20;");
+    expect(appStyles).toMatch(/\.reel-lecture-sheet[\s\S]*height: min\(540px, calc\(100dvh - 16px\)\);[\s\S]*overflow: hidden;/);
+    expect(appStyles).toMatch(/\.reel-lecture-grid[\s\S]*grid-template-rows: repeat\(4, minmax\(0, 1fr\)\);/);
+    expect(appStyles).toMatch(/data-theme="light"[\s\S]*\.reel-lecture-sheet \.reel-sheet-header h2[\s\S]*-webkit-text-fill-color: #fff !important;/);
+    expect(appStyles).toMatch(/\.reel-lecture-sheet[\s\S]*backdrop-filter: blur\(26px\) saturate\(145%\);/);
+    expect(appStyles).toMatch(/\.reel-lecture-sheet::before[\s\S]*linear-gradient\(90deg, transparent, rgba\(255, 255, 255, \.58\), rgba\(197, 139, 42, \.62\), transparent\)/);
+  });
+
+  it("fills the mobile viewport and crops portrait video without side bars", () => {
+    expect(appStyles).toMatch(/body\.has-edunex-mobile-reel #root[\s\S]*width: 100vw !important;[\s\S]*height: 100dvh !important;/);
+    expect(appStyles).toMatch(/body\.has-edunex-mobile-reel[\s\S]*:where\(\.sm-player > video, \.custom-video-player > video\)[\s\S]*object-fit: cover !important;/);
+  });
+
+  it("uses the mobile reel actions and simplified player controls on desktop", () => {
+    expect(appStyles).toMatch(/@media \(min-width: 1181px\), \(min-width: 821px\) and \(pointer: fine\)[\s\S]*#playerFrame \.reel-chrome[\s\S]*display: block;/);
+    expect(appStyles).toMatch(/#playerFrame \.sm-row > :not\(\.sm-play-button\):not\(\.sm-spacer\):not\(\.sm-settings-button\):not\(\.sm-fullscreen-button\)[\s\S]*display: none !important;/);
+    expect(appStyles).toMatch(/#playerFrame :where\(\.video-volume, \.video-speed\)[\s\S]*display: none !important;/);
+    expect(videosPageSource).toContain('aria-label="Open lecture notes"');
+    expect(videosPageSource).toContain('aria-label="Report a problem"');
+    expect(videosPageSource).toContain('aria-label="Open AI chat for this lecture"');
+    expect(videosPageSource).toContain('aria-label="Open all lectures"');
+  });
+
+  it("lets desktop lesson details use the full player card width", () => {
+    expect(appStyles).toMatch(/data-page="videos\.html"\] \.lesson-info > p,[\s\S]*\.lesson-info > \.example-prompt-drawer[\s\S]*width: 100%;[\s\S]*max-width: none;/);
+  });
+
+  it("does not force the mobile profile navbar to black in light theme", () => {
+    expect(appStyles).toContain('html:not([data-theme="light"]):has(.react-page-root[data-page="profile.html"]) .enx-navbar');
+    expect(appStyles).not.toContain('html:has(.react-page-root[data-page="profile.html"]) .enx-navbar');
+  });
+
+  it("keeps reel controls from bleeding through the mobile settings panel", () => {
+    expect(appStyles).toMatch(/\.player-frame:has\(\.sm-settings\) \.reel-chrome[\s\S]*visibility: hidden;/);
+    expect(appStyles).toMatch(/\.sm-settings[\s\S]*z-index: 40 !important;[\s\S]*max-height: min\(420px, calc\(100dvh - 150px\)\) !important;/);
   });
 
   it("omits the retired skills, modules, and projects homepage sections", () => {

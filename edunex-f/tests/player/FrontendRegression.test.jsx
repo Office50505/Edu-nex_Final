@@ -264,6 +264,7 @@ describe("reported frontend regressions", () => {
     expect(screen.getByRole("button", { name: "Light" })).toBeTruthy();
     expect(screen.getByRole("button", { name: "Dark" })).toBeTruthy();
     expect(screen.queryByRole("button", { name: "System" })).toBeNull();
+    expect(screen.queryByRole("button", { name: /Delete Account/i })).toBeNull();
   });
 
   it("converts course Markdown into clean display text", () => {

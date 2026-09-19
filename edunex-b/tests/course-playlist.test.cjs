@@ -19,8 +19,9 @@ test('projection excludes image blobs from the MongoDB response', () => {
  for(const field of fields) assert.ok(!['videos','thumbnail','thumbnailHorizontal','thumbnailVertical','videos.thumbnail'].includes(field) && !field.endsWith('.data'));
 });
 test('uploaded URLs win and shared fallback retains provider metadata', () => {
- const result = playlistPayload({...course, thumbnailHorizontal:null, thumbnailUrl:'https://images.example/course.png', videos:[{_id:id,provider:'youtube',youtubeId:'youtube123',thumbnailUrl:'https://images.example/lesson.png'},{_id:id,provider:'bunny_stream',bunnyVideoId:'bunny-id',bunnyLibraryId:'library'}]});
+ const result = playlistPayload({...course, thumbnailHorizontal:null, thumbnailUrl:'https://images.example/course.png', videos:[{_id:id,provider:'youtube',youtubeId:'youtube123',thumbnailUrl:'https://images.example/lesson.png',notesUrl:'https://notes.example/lesson-one'},{_id:id,provider:'bunny_stream',bunnyVideoId:'bunny-id',bunnyLibraryId:'library'}]});
  assert.equal(result.videos[0].thumbnailUrl,'https://images.example/lesson.png'); assert.equal(result.videos[0].youtubeId,'youtube123');
+ assert.equal(result.videos[0].notesUrl,'https://notes.example/lesson-one');
  assert.equal(result.videos[1].thumbnailUrl,'https://images.example/course.png'); assert.equal(result.videos[1].bunnyVideoId,'bunny-id');
 });
 function setup(record) {

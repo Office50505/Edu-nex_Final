@@ -31,6 +31,7 @@ function makeVideo(index = 0) {
     videoUrl: "",
     thumbnailUrl: "",
     thumbnailVerticalUrl: "",
+    notesUrl: "",
     examplePrompt: "",
     key: crypto.randomUUID(),
   };
@@ -140,6 +141,7 @@ function courseVideo(video, index) {
     videoUrl: video?.videoUrl || video?.embedUrl || video?.url || (video?.bunnyVideoId && video?.bunnyLibraryId ? `https://player.mediadelivery.net/embed/${video.bunnyLibraryId}/${video.bunnyVideoId}` : ""),
     thumbnailUrl: video?.thumbnailUrl || video?.thumbnailHorizontalUrl || "",
     thumbnailVerticalUrl: video?.thumbnailVerticalUrl || "",
+    notesUrl: video?.notesUrl || "",
     examplePrompt: video?.examplePrompt || video?.examplePromptText || video?.examplePromptUrl || video?.promptUrl || "",
     key: `${video?._id || video?.videoUrl || Date.now()}-${index}`,
   };
@@ -451,6 +453,7 @@ export function AdminUploadPage() {
         notes: String(video.notes || "").trim(),
         duration: Number(video.duration || 0),
         videoUrl: video.videoUrl,
+        notesUrl: String(video.notesUrl || "").trim(),
         thumbnailUrl: String(video.thumbnailUrl || "").trim(),
         thumbnailVerticalUrl: String(video.thumbnailVerticalUrl || "").trim(),
         examplePrompt: String(video.examplePrompt || "").trim(),
@@ -599,11 +602,12 @@ export function AdminUploadPage() {
                     <div className="field span-2"><label htmlFor={`videoUrl${index}`}>Permanent video URL</label><input id={`videoUrl${index}`} type="text" required={video.provider!=="youtube"} spellCheck={false} placeholder={video.provider==="aws_cloudfront"?`https://${cloudHost}/Course/Lesson/master.m3u8`:"https://player.mediadelivery.net/embed/..."} value={video.videoUrl} onChange={(event) => updateVideo(index, "videoUrl", event.target.value)} /></div>
                   </div>
                   <div className="field lesson-notes-field"><div className="lesson-notes-heading"><label htmlFor={`videoNotes${index}`}>Lesson notes</label></div><div className={`lesson-pdf-dropzone${draggingNotesIndex === index ? ' is-dragging' : ''}${extractingNotesIndex === index ? ' is-extracting' : ''}`} role="button" tabIndex={0} aria-label={`Upload PDF notes for lesson ${index + 1}`} onClick={() => { if (extractingNotesIndex === null) document.getElementById(`videoNotesPdf${index}`)?.click(); }} onKeyDown={(event) => { if ((event.key === 'Enter' || event.key === ' ') && extractingNotesIndex === null) { event.preventDefault(); document.getElementById(`videoNotesPdf${index}`)?.click(); } }} onDragEnter={(event) => handleNotesDrag(index, event)} onDragOver={(event) => handleNotesDrag(index, event)} onDragLeave={(event) => handleNotesDrag(index, event)} onDrop={(event) => handleNotesDrop(index, event)}><strong>{extractingNotesIndex === index ? 'Extracting text…' : draggingNotesIndex === index ? 'Drop PDF to extract text' : 'Drag and drop a PDF here'}</strong><span>or click to choose one · maximum 10 MB</span><input className="lesson-notes-pdf-input" id={`videoNotesPdf${index}`} type="file" accept="application/pdf,.pdf" disabled={extractingNotesIndex !== null} onClick={(event) => event.stopPropagation()} onChange={(event) => { const file = event.target.files?.[0]; event.target.value = ''; void extractLessonNotes(index, file); }} /></div>{notesExtraction?.index === index ? <div className={`pdf-extraction-status${notesExtraction.error ? ' is-error' : ''}`} role="status" aria-live="polite"><div className="pdf-extraction-copy"><strong>{notesExtraction.stage}</strong><span>{notesExtraction.fileName}</span></div><div className="pdf-extraction-track" aria-label="PDF extraction progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow={notesExtraction.percent} role="progressbar"><span style={{ width: `${notesExtraction.percent}%` }} /></div>{notesExtraction.error ? <p>{notesExtraction.error}</p> : null}</div> : null}<textarea id={`videoNotes${index}`} rows="8" maxLength={20000} placeholder="Write the notes learners should read for this lesson. You can use headings, numbered steps, examples, and links." value={video.notes} onChange={(event) => updateVideo(index, "notes", event.target.value)} /><small>{formatNumber(String(video.notes || '').length)} / 20,000 characters · PDFs are processed temporarily and are not stored.</small></div>
-                  <p role="status">{video.metadataMessage || 'Uses course thumbnails. Duration can be detected automatically.'}</p>
+                  <p role="status">{video.metadataMessage || 'Uses course thumbnails and notes unless you add lesson-specific overrides. Duration can be detected automatically.'}</p>
                   <details className="lesson-advanced"><summary>Advanced · optional lesson overrides</summary><div className="form-grid">
                     <div className="field"><label htmlFor={`videoTopic${index}`}>Topic</label><input id={`videoTopic${index}`} maxLength={80} placeholder="e.g. Prompt Engineering" value={video.topic} onChange={(event) => updateVideo(index, "topic", event.target.value)} /></div>
                     <div className="field"><label htmlFor={`videoThumbnailUrl${index}`}>Horizontal thumbnail URL</label><input id={`videoThumbnailUrl${index}`} type="url" placeholder="https://..." value={video.thumbnailUrl} onChange={(event) => updateVideo(index, "thumbnailUrl", event.target.value)} /></div>
                     <div className="field"><label htmlFor={`videoThumbnailVerticalUrl${index}`}>Vertical thumbnail URL</label><input id={`videoThumbnailVerticalUrl${index}`} type="url" placeholder="https://..." value={video.thumbnailVerticalUrl} onChange={(event) => updateVideo(index, "thumbnailVerticalUrl", event.target.value)} /></div>
+                    <div className="field span-2"><label htmlFor={`videoNotesUrl${index}`}>Lesson notes URL</label><input id={`videoNotesUrl${index}`} type="url" placeholder="https://..." value={video.notesUrl} onChange={(event) => updateVideo(index, "notesUrl", event.target.value)} /><small>This note opens only for Lesson {index + 1}. Leave blank to use the course notes.</small></div>
                     <div className="field span-2"><label htmlFor={`examplePrompt${index}`}>Example prompt</label><textarea id={`examplePrompt${index}`} placeholder="Example: Create a 30-second ad script for a local bakery using this framework." value={video.examplePrompt} onChange={(event) => updateVideo(index, "examplePrompt", event.target.value)} /></div>
                     <div className="field span-2"><label htmlFor={`videoDescription${index}`}>Description</label><textarea id={`videoDescription${index}`} value={video.description} onChange={(event) => updateVideo(index, "description", event.target.value)} /></div>
                   </div></details>

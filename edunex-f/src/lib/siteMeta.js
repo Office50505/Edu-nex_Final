@@ -20,7 +20,6 @@ export const subscriptionOffer = {
   trialPrice: "₹1",
   trialHours: 24,
   renewal: "₹499/month",
-  annual: "₹4999/year",
   disclosure: "Get 24 hours of Skillomate access for ₹1. After the 24-hour trial, your subscription automatically renews at ₹499/month using your authorized payment method until cancelled.",
 };
 

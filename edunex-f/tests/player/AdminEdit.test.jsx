@@ -51,3 +51,10 @@ it('extracts lesson notes when a PDF is dropped on the lesson drop zone',async()
  expect(mocks.rawRequest).toHaveBeenCalledWith('/api/admin/extract-pdf-notes',expect.objectContaining({method:'POST',body:pdf}));
  expect(dropzone.className).not.toContain('is-dragging');
 });
+it('loads a separate notes URL for each lesson',async()=>{
+ window.history.replaceState({},'', '/admin/upload?courseId=course-one');
+ mocks.request.mockImplementation(async path=>path==='/api/categories'?[]:path.includes('video-providers')?{}:{_id:'course-one',title:'Existing',videos:[{_id:'lesson-one',title:'Lesson one',provider:'aws_cloudfront',videoUrl:'https://cdn.example/lesson.m3u8',notesUrl:'https://notes.example/lesson-one'}]});
+ render(<AdminUploadPage/>);
+ expect(await screen.findByDisplayValue('https://notes.example/lesson-one')).toBeTruthy();
+ expect(screen.getByLabelText('Lesson notes URL')).toBeTruthy();
+});

@@ -6,6 +6,7 @@ import { usePlaybackAccess } from "../hooks/usePlaybackAccess.js";
 import { useLearningProgress, progressCacheKey } from "../hooks/useLearningProgress.js";
 import { CertificationProgress } from "../components/CertificationProgress.jsx";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { page as videosPage } from "../generated-pages/videos.html.js";
 import { runLegacyPage } from "../legacyRuntime.js";
 import { usePageStyle } from "../hooks/usePageStyle.js";
@@ -21,6 +22,15 @@ const LECTURES_PER_SHEET_PAGE = 20;
 
 function nativeFullscreenElement() {
   return document.fullscreenElement || document.webkitFullscreenElement || null;
+}
+
+function playerOverlayHost() {
+  return nativeFullscreenElement() || document.querySelector("#playerFrame.is-app-fullscreen");
+}
+
+function PlayerOverlayPortal({ children }) {
+  const host = playerOverlayHost();
+  return host ? createPortal(children, host) : children;
 }
 
 function isPlayerFullscreen(frame) {
@@ -214,8 +224,9 @@ function bunnyStreamUrl(lesson) {
   return String(lesson?.hlsUrl || lesson?.playlistUrl || lesson?.streamUrl || "").trim();
 }
 
-function noteValue(course) {
-  return course?.notesUrl || course?.notesURL || course?.notesLink || course?.courseNotesUrl || course?.notes || course?.courseNotes || "";
+function noteValue(lesson, course) {
+  return lesson?.notesUrl || lesson?.notesURL || lesson?.notesLink || lesson?.notes
+    || course?.notesUrl || course?.notesURL || course?.notesLink || course?.courseNotesUrl || course?.notes || course?.courseNotes || "";
 }
 
 function isLikelyUrl(value) {
@@ -883,9 +894,9 @@ function Player({ course, lesson: savedLesson, lessonIndex, autoNext, autoplay =
   );
 }
 
-function NotesModal({ course, onClose }) {
-  const value = String(noteValue(course)).trim();
-  const title = course?.title ? `${course.title} notes` : "Course notes";
+function NotesModal({ course, lesson, lessonIndex, onClose }) {
+  const value = String(noteValue(lesson, course)).trim();
+  const title = lesson?.title ? `Lecture ${lessonIndex + 1}: ${lesson.title} notes` : (course?.title ? `${course.title} notes` : "Course notes");
   return (
     <div className="course-notes-modal" id="courseNotesModal" onClick={(event) => {
       if (event.target === event.currentTarget) onClose();
@@ -896,7 +907,7 @@ function NotesModal({ course, onClose }) {
           <button className="notes-modal-close" type="button" id="closeNotesBtn" onClick={onClose}><i className="fas fa-arrow-left" aria-hidden="true"></i> Back</button>
         </div>
         <div className="notes-modal-body" id="notesBody">
-          {value ? <div>{value.split("\n").map((line, index) => <span key={`${line}-${index}`}>{line}<br /></span>)}</div> : <div className="notes-empty">No notes are attached to this course yet.</div>}
+          {value ? <div>{value.split("\n").map((line, index) => <span key={`${line}-${index}`}>{line}<br /></span>)}</div> : <div className="notes-empty">No notes are attached to this lecture yet.</div>}
         </div>
       </div>
     </div>
@@ -957,8 +968,19 @@ function LectureSheet({ course, activeIndex, completedIds, onClose, onSelect }) 
                 onClick={() => onSelect(index)}
                 key={lessonIdentifier(item, index)}
               >
-                <span>{index + 1}</span>
-                {isActive ? <span className="reel-lecture-state" aria-hidden="true">•••</span> : isComplete ? <span className="reel-lecture-state" aria-hidden="true">✓</span> : null}
+                <span className="reel-lecture-thumb">
+                  <img
+                    src={lessonImage(course, item)}
+                    alt=""
+                    loading="lazy"
+                    onError={(event) => {
+                      event.currentTarget.onerror = null;
+                      event.currentTarget.src = fallbackImage(item.title || `Lecture ${index + 1}`);
+                    }}
+                  />
+                  {isActive ? <span className="reel-lecture-state" aria-hidden="true">•••</span> : isComplete ? <span className="reel-lecture-state" aria-hidden="true">✓</span> : null}
+                </span>
+                <span className="reel-lecture-number">{index + 1}</span>
               </button>
             );
           })}
@@ -1410,13 +1432,28 @@ export function VideosPage() {
   }, []);
 
   const openNotes = () => {
-    const value = String(noteValue(course)).trim();
+    const value = String(noteValue(lesson, course)).trim();
     if (value && isLikelyUrl(value)) {
       window.location.href = value;
       return;
     }
     setNotesOpen(true);
   };
+
+  const handleReelBack = useCallback((event) => {
+    const frame = playerFrameRef.current;
+    if (mobilePlayerViewport || !isPlayerFullscreen(frame)) return;
+
+    event.preventDefault();
+    event.stopPropagation();
+    if (frame.classList.contains(APP_FULLSCREEN_CLASS)) {
+      setAppFullscreen(frame, false);
+      return;
+    }
+
+    const exitFullscreen = document.exitFullscreen || document.webkitExitFullscreen;
+    if (exitFullscreen) Promise.resolve(exitFullscreen.call(document)).catch(() => {});
+  }, [mobilePlayerViewport]);
 
   const selectLecture = (index) => {
     const item = lessons[index];
@@ -1430,6 +1467,15 @@ export function VideosPage() {
     window.dispatchEvent(new CustomEvent("skillomate:open-problem-report", {
       detail: { courseId: course?._id, videoId: lessonIdentifier(lesson, activeIndex) },
     }));
+  };
+
+  const openPlayerAi = () => {
+    const container = playerFrameRef.current || document.body;
+    if (window.NexAIWidget?.open) {
+      window.NexAIWidget.open(container);
+      return;
+    }
+    document.getElementById("nai-float-btn")?.click();
   };
 
   const toggleMobilePlayerView = () => {
@@ -1585,16 +1631,16 @@ export function VideosPage() {
                 <div className="reel-chrome" aria-label="Lecture controls">
                   <div className="reel-topbar">
                     <div className="reel-topbar-start">
-                      <a className="reel-icon-button" href="/courses.html" aria-label="Back to courses"><ReelIcon name="back" /></a>
+                      <a className="reel-icon-button" href="/courses.html" aria-label="Back to courses or minimize fullscreen player" onClick={handleReelBack}><ReelIcon name="back" /></a>
                       <strong>{course ? `Lecture ${activeIndex + 1}/${Math.max(lessons.length, 1)}` : status}</strong>
                     </div>
                     {course && !error ? <div className="reel-topbar-actions">
-                      <button className="reel-icon-button" type="button" onClick={openNotes} aria-label="Open course notes"><ReelIcon name="notes" /><span>Notes</span></button>
+                      <button className="reel-icon-button" type="button" onClick={openNotes} aria-label="Open lecture notes"><ReelIcon name="notes" /><span>Notes</span></button>
                       <button className="reel-icon-button reel-report-button" type="button" onClick={openProblemReport} aria-label="Report a problem"><ReelIcon name="report" /><span>Report</span></button>
                     </div> : null}
                   </div>
                   {course && !error ? <div className="reel-side-actions">
-                    <a className="reel-side-button" href={`/ai-tutor.html?courseId=${encodeURIComponent(course._id)}&video=${activeIndex}`} aria-label="Open AI chat for this lecture"><ReelIcon name="ai" /><span>AI chat</span></a>
+                    <button className="reel-side-button" type="button" onClick={openPlayerAi} aria-label="Open AI chat for this lecture"><ReelIcon name="ai" /><span>AI chat</span></button>
                     <button className="reel-side-button" type="button" onClick={() => setLectureSheetOpen(true)} aria-label="Open all lectures"><ReelIcon name="lectures" /><span>Lectures</span></button>
                   </div> : null}
                   {course && !error ? <div className="reel-lesson-copy">
@@ -1668,15 +1714,17 @@ export function VideosPage() {
         </section>
       </main>
 
-      {notesOpen ? <NotesModal course={course} onClose={() => setNotesOpen(false)} /> : null}
+      {notesOpen ? <PlayerOverlayPortal><NotesModal course={course} lesson={lesson} lessonIndex={activeIndex} onClose={() => setNotesOpen(false)} /></PlayerOverlayPortal> : null}
       {lectureSheetOpen && course ? (
-        <LectureSheet
-          course={course}
-          activeIndex={activeIndex}
-          completedIds={completedIds}
-          onClose={() => setLectureSheetOpen(false)}
-          onSelect={selectLecture}
-        />
+        <PlayerOverlayPortal>
+          <LectureSheet
+            course={course}
+            activeIndex={activeIndex}
+            completedIds={completedIds}
+            onClose={() => setLectureSheetOpen(false)}
+            onSelect={selectLecture}
+          />
+        </PlayerOverlayPortal>
       ) : null}
     </div>
   );

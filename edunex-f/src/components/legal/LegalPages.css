@@ -369,8 +369,9 @@
 
 .pricing-plan-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: minmax(0, 1fr);
   gap: 16px;
+  max-width: 720px;
 }
 
 .pricing-card {
@@ -424,10 +425,6 @@
   line-height: .9;
 }
 
-.pricing-price.annual-price {
-  font-size: clamp(2.35rem, 4.8vw, 4rem);
-}
-
 .pricing-renewal {
   color: var(--legal-gold-soft);
   font-size: 1.12rem;
@@ -471,8 +468,7 @@
     grid-template-columns: 1fr;
   }
 
-  .pricing-price,
-  .pricing-price.annual-price {
+  .pricing-price {
     font-size: clamp(2.25rem, 13vw, 3.2rem);
   }
 }
@@ -610,9 +606,6 @@ html[data-theme="light"] .pricing-price {
     font-size: clamp(2.7rem, 10vw, 4.4rem);
   }
 
-  .pricing-price.annual-price {
-    font-size: clamp(2.35rem, 9vw, 3.7rem);
-  }
 }
 
 @media (max-width: 720px) {
@@ -667,8 +660,7 @@ html[data-theme="light"] .pricing-price {
     align-items: start;
   }
 
-  .pricing-price,
-  .pricing-price.annual-price {
+  .pricing-price {
     max-width: 100%;
     font-size: clamp(2.25rem, 13vw, 3.2rem);
     overflow-wrap: anywhere;

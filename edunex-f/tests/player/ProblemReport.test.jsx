@@ -17,6 +17,7 @@ afterEach(() => {
   vi.unstubAllGlobals();
   vi.restoreAllMocks();
   delete window.EduNex;
+  Object.defineProperty(document, "fullscreenElement", { configurable: true, value: null });
 });
 
 describe("problem reporting", () => {
@@ -65,5 +66,17 @@ describe("problem reporting", () => {
     fireEvent.submit(input.closest("form"));
     expect((await screen.findByRole("alert")).textContent).toContain("at least 10 characters");
     await waitFor(() => expect(fetchMock).not.toHaveBeenCalled());
+  });
+
+  it("mounts the report dialog inside the active fullscreen player", () => {
+    const host = document.createElement("div");
+    host.id = "playerFrame";
+    document.body.appendChild(host);
+    Object.defineProperty(document, "fullscreenElement", { configurable: true, value: host });
+
+    render(<ProblemReport open onClose={vi.fn()} />);
+
+    expect(document.querySelector(".problem-report-overlay").parentElement).toBe(host);
+    host.remove();
   });
 });

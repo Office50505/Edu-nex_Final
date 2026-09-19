@@ -8,7 +8,7 @@ export function PricingPage() {
   useEffect(() => {
     setPageMeta({
       title: "Pricing | Skillomate",
-      description: "Skillomate pricing: ₹1 for a 24-hour trial, then ₹499/month until cancelled, or ₹4999 for one year.",
+      description: "Skillomate pricing: ₹1 for a 24-hour trial, then ₹499/month until cancelled.",
       canonicalPath: "/pricing",
     });
   }, []);
@@ -47,24 +47,6 @@ export function PricingPage() {
             <a className="legal-button pricing-action" href={route("payment.html")}>Try 24 Hours for ₹1 <EnxIcon name="arrowRight" /></a>
           </div>
 
-          <div className="pricing-card">
-            <div className="pricing-badge muted">Yearly access</div>
-            <h2>Annual plan</h2>
-            <div className="pricing-price-row">
-              <div className="pricing-price annual-price">{subscriptionOffer.annual}</div>
-              <div>
-                <p className="pricing-renewal">For 1 year</p>
-                <p>One-year Skillomate digital learning access.</p>
-              </div>
-            </div>
-            <div className="legal-callout"><strong>Pay ₹4,999 for one year of Skillomate access. Renews automatically at ₹4,999/year until cancelled. No trial charge.</strong></div>
-            <div className="pricing-includes">
-              <span>One-year access</span>
-              <span>Digital delivery</span>
-              <span>No physical shipping</span>
-            </div>
-            <a className="legal-button pricing-action secondary" href={route("payment.html?plan=annual")}>Continue to checkout <EnxIcon name="arrowRight" /></a>
-          </div>
         </div>
       </LegalSection>
       <LegalSection id="what-is-included" title="What is included">
@@ -79,7 +61,6 @@ export function PricingPage() {
       </LegalSection>
       <LegalSection id="billing" title="Billing terms">
         <p>The monthly mandate offer starts with a 24-hour trial for ₹1. After the trial ends, the subscription renews automatically at ₹499/month using the payment method or mandate authorized by the user until cancelled.</p>
-        <p>The annual web subscription costs ₹4,999, billed immediately and renewed automatically each year until cancelled. There is no trial charge. Cancel auto-renewal from your profile; access continues through the paid year.</p>
         <p>Users may cancel eligible recurring subscriptions anytime. After cancellation, access continues through the current paid period and future renewals stop after cancellation takes effect.</p>
         <p>No physical delivery applies because Skillomate provides digital educational services only.</p>
       </LegalSection>

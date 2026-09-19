@@ -14,9 +14,10 @@ beforeEach(() => {
   window.history.replaceState(null, '', '/videos?courseId=course');
   localStorage.clear(); localStorage.setItem('edunexAccessToken', 'test-token');
   delete window.EduNex;
+  delete window.NexAIWidget;
   window.matchMedia = vi.fn(() => ({ matches: false, addEventListener: vi.fn(), removeEventListener: vi.fn() }));
 });
-afterEach(() => { cleanup(); vi.useRealTimers(); vi.unstubAllGlobals(); });
+afterEach(() => { cleanup(); vi.useRealTimers(); vi.unstubAllGlobals(); Object.defineProperty(document, 'fullscreenElement', { configurable: true, value: null }); Object.defineProperty(document, 'exitFullscreen', { configurable: true, value: undefined }); });
 it('loads the selected course when legacy scripts never become ready', async () => {
   const fetcher = vi.fn(url => reply(url.includes('subscription-status') ? { hasActiveAccess: true } : course));
   vi.stubGlobal('fetch', fetcher);
@@ -74,7 +75,7 @@ it('resumes at the first unfinished lecture and exposes the mobile lecture drawe
   expect(screen.getByRole('dialog', { name: 'Course lectures' })).toBeTruthy();
   fireEvent.click(screen.getByRole('button', { name: 'Close course lectures' }));
   expect(document.querySelector('#course-playlist').hidden).toBe(true);
-  expect(screen.getByRole('button', { name: 'Open course notes' })).toBeTruthy();
+  expect(screen.getByRole('button', { name: 'Open lecture notes' })).toBeTruthy();
   expect(screen.queryByRole('button', { name: 'Download lecture' })).toBeNull();
   const reportEvent = vi.fn();
   window.addEventListener('skillomate:open-problem-report', reportEvent, { once: true });
@@ -82,7 +83,57 @@ it('resumes at the first unfinished lecture and exposes the mobile lecture drawe
   expect(reportEvent).toHaveBeenCalledOnce();
   fireEvent.click(screen.getByRole('button', { name: 'Open all lectures' }));
   expect(screen.getByRole('dialog', { name: 'Lectures' })).toBeTruthy();
-  expect(screen.getByRole('button', { name: 'Lecture 1: Lesson 1, completed' })).toBeTruthy();
+  const firstLecture = screen.getByRole('button', { name: 'Lecture 1: Lesson 1, completed' });
+  expect(firstLecture).toBeTruthy();
+  expect(firstLecture.querySelector('.reel-lecture-thumb img')).toBeTruthy();
+  expect(firstLecture.querySelector('.reel-lecture-number').textContent).toBe('1');
+});
+
+it('opens AI inside the player without navigating away from the lecture', async () => {
+  const open = vi.fn();
+  window.NexAIWidget = { open };
+  vi.stubGlobal('fetch', vi.fn(() => reply(course)));
+
+  render(<VideosPage />);
+
+  expect(await screen.findByText('Lesson player ready')).toBeTruthy();
+  fireEvent.click(screen.getByRole('button', { name: 'Open AI chat for this lecture' }));
+  expect(open).toHaveBeenCalledWith(document.getElementById('playerFrame'));
+  expect(window.location.pathname).toBe('/videos');
+  expect(screen.getByText('Lesson player ready')).toBeTruthy();
+});
+
+it('mounts notes and lectures inside the fullscreen player frame', async () => {
+  vi.stubGlobal('fetch', vi.fn(() => reply(course)));
+  render(<VideosPage />);
+  expect(await screen.findByText('Lesson player ready')).toBeTruthy();
+  const playerFrame = document.getElementById('playerFrame');
+  Object.defineProperty(document, 'fullscreenElement', { configurable: true, value: playerFrame });
+
+  fireEvent.click(screen.getByRole('button', { name: 'Open lecture notes' }));
+  expect(document.getElementById('courseNotesModal').parentElement).toBe(playerFrame);
+  fireEvent.click(screen.getByRole('button', { name: 'Back' }));
+
+  fireEvent.click(screen.getByRole('button', { name: 'Open all lectures' }));
+  expect(document.querySelector('.reel-lecture-backdrop').parentElement).toBe(playerFrame);
+});
+
+it('uses the desktop back arrow to exit fullscreen before leaving the course', async () => {
+  vi.stubGlobal('fetch', vi.fn(() => reply(course)));
+  render(<VideosPage />);
+  expect(await screen.findByText('Lesson player ready')).toBeTruthy();
+  const playerFrame = document.getElementById('playerFrame');
+  Object.defineProperty(document, 'fullscreenElement', { configurable: true, value: playerFrame });
+  const exitFullscreen = vi.fn().mockImplementation(() => {
+    Object.defineProperty(document, 'fullscreenElement', { configurable: true, value: null });
+    return Promise.resolve();
+  });
+  Object.defineProperty(document, 'exitFullscreen', { configurable: true, value: exitFullscreen });
+
+  fireEvent.click(screen.getByRole('link', { name: 'Back to courses or minimize fullscreen player' }));
+
+  expect(exitFullscreen).toHaveBeenCalledOnce();
+  expect(window.location.pathname).toBe('/videos');
 });
 
 it('keeps an explicitly selected lecture instead of replacing it with resume progress', async () => {
@@ -129,4 +180,29 @@ it('moves to the next lecture when the mobile player is scrolled', async () => {
   expect(document.body.classList.contains('has-edunex-mobile-reel')).toBe(true);
   fireEvent.wheel(container.querySelector('#playerFrame'), { deltaY: 80, deltaX: 0 });
   expect((await screen.findByTestId('active-player-lesson')).textContent).toBe('Second lesson');
+});
+
+it('changes the Notes content when scrolling to a different lecture', async () => {
+  window.history.replaceState(null, '', '/videos?courseId=course&video=0');
+  window.matchMedia = vi.fn(() => ({ matches: true, addEventListener: vi.fn(), removeEventListener: vi.fn() }));
+  const notesCourse = {
+    ...course,
+    videos: [
+      { ...course.videos[0], notes: 'Notes for lecture one' },
+      { ...course.videos[0], _id: 'lesson-2', title: 'Second lesson', notes: 'Notes for lecture two' },
+    ],
+  };
+  window.EduNex = { authRequest: vi.fn().mockResolvedValue({ courseId: 'course', lessons: [] }) };
+  vi.stubGlobal('fetch', vi.fn(() => reply(notesCourse)));
+
+  const { container } = render(<VideosPage />);
+  expect((await screen.findByTestId('active-player-lesson')).textContent).toBe('First lesson');
+  fireEvent.click(screen.getByRole('button', { name: 'Open lecture notes' }));
+  expect(screen.getByText('Notes for lecture one')).toBeTruthy();
+  fireEvent.click(screen.getByRole('button', { name: /Back/ }));
+
+  fireEvent.wheel(container.querySelector('#playerFrame'), { deltaY: 80, deltaX: 0 });
+  expect((await screen.findByTestId('active-player-lesson')).textContent).toBe('Second lesson');
+  fireEvent.click(screen.getByRole('button', { name: 'Open lecture notes' }));
+  expect(screen.getByText('Notes for lecture two')).toBeTruthy();
 });

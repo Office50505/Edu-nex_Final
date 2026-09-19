@@ -1,14 +1,6 @@
 import { useEffect, useState } from "react";
-import { CheckList, LegalLayout, LegalSection, PlainList } from "../components/legal/LegalLayout.jsx";
+import { LegalLayout, LegalSection, PlainList } from "../components/legal/LegalLayout.jsx";
 import { POLICY_LAST_UPDATED, SUPPORT_EMAIL, setPageMeta } from "../lib/siteMeta.js";
-
-const deletionSteps = [
-  "Open Skillomate.",
-  "Sign in to your account.",
-  "Open Profile.",
-  "Select Delete Account.",
-  "Confirm the deletion request.",
-];
 
 const retainedReasons = [
   "Legal obligations",
@@ -65,20 +57,15 @@ export default function DeleteAccountPage() {
   return (
     <LegalLayout
       title="Account & Data Deletion"
-      description="Users can initiate account deletion from the Skillomate app or request help by email when account access is unavailable."
+      description="Users can request account and data deletion through Skillomate support."
       sections={[
-        { id: "in-app", title: "In-app deletion" },
         { id: "external", title: "External request" },
         { id: "timeline", title: "Deletion timeline" },
         { id: "request-form", title: "Request form" },
       ]}
     >
-      <LegalSection id="in-app" title="In-app deletion">
-        <p>Users can initiate account deletion from Profile → Delete Account.</p>
-        <CheckList items={deletionSteps} />
-      </LegalSection>
       <LegalSection id="external" title="External request">
-        <p>If you cannot access the app or your account, email <a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a> and request deletion. We may need to verify account ownership before processing the request.</p>
+        <p>Email <a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a> or use the request form below. We may need to verify account ownership before processing the request.</p>
       </LegalSection>
       <LegalSection id="timeline" title="Deletion timeline and retained records">
         <p>When an account-deletion request is confirmed, account access may be disabled and associated personal information should be deleted or anonymized within up to 30 days, except information that must legitimately be retained for limited purposes.</p>

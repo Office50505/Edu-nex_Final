@@ -940,7 +940,7 @@ function sanitizeCourseVideos(rawVideos, existingVideos = []) {
       if (!Number.isFinite(duration) || duration < 0) throw new Error('Duration must be a positive number of seconds.');
       return { _id: id, ...source, title: String(video.title || '').trim(), topic: String(video.topic || '').trim(), description: String(video.description || '').trim(), notes: String(video.notes || '').trim(), duration, order: index + 1,
         transcriptUrl: video.transcriptUrl || previous?.transcriptUrl || null, thumbnail: previous?.thumbnail || {},
-        thumbnailUrl: sanitizeOptionalUrl(video.thumbnailUrl), thumbnailVerticalUrl: sanitizeOptionalUrl(video.thumbnailVerticalUrl), examplePrompt: String(video.examplePrompt || '').trim() };
+        notesUrl: sanitizeOptionalUrl(video.notesUrl), thumbnailUrl: sanitizeOptionalUrl(video.thumbnailUrl), thumbnailVerticalUrl: sanitizeOptionalUrl(video.thumbnailVerticalUrl), examplePrompt: String(video.examplePrompt || '').trim() };
     } catch (error) { throw new Error(`Lesson ${index + 1}: ${error.message}`); }
   });
 }
@@ -3464,7 +3464,7 @@ app.get('/api/admin/courses/:id', protectAdmin, async (req, res) => {
     }
 
     const course = await Course.findById(req.params.id)
-      .select('title slug description category status thumbnailUrl thumbnailVerticalUrl videos._id videos.title videos.topic videos.description videos.notes videos.sourceType videos.provider videos.videoUrl videos.embedUrl videos.bunnyVideoId videos.bunnyLibraryId videos.youtubeId videos.thumbnailUrl videos.thumbnailVerticalUrl videos.transcriptUrl videos.examplePrompt videos.duration videos.order')
+      .select('title slug description category status thumbnailUrl thumbnailVerticalUrl notesUrl videos._id videos.title videos.topic videos.description videos.notes videos.sourceType videos.provider videos.videoUrl videos.embedUrl videos.bunnyVideoId videos.bunnyLibraryId videos.youtubeId videos.thumbnailUrl videos.thumbnailVerticalUrl videos.transcriptUrl videos.notesUrl videos.examplePrompt videos.duration videos.order')
       .populate('category', 'name slug isActive')
       .lean();
 

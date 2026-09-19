@@ -6,7 +6,7 @@ const Lesson = require('../models/Lesson');
 const Subscription = require('../models/Subscription');
 const User = require('../models/User');
 
-const LIGHT_COURSE_FIELDS = 'title slug description category status publishedAt createdAt thumbnail.mimeType thumbnailHorizontal.mimeType thumbnailVertical.mimeType thumbnailUrl thumbnailVerticalUrl notesUrl completionOrder videos._id videos.title videos.topic videos.description videos.provider videos.sourceType videos.videoUrl videos.embedUrl videos.bunnyVideoId videos.bunnyLibraryId videos.youtubeId videos.thumbnailUrl videos.thumbnailVerticalUrl videos.transcriptUrl videos.examplePrompt videos.duration videos.order';
+const LIGHT_COURSE_FIELDS = 'title slug description category status publishedAt createdAt thumbnail.mimeType thumbnailHorizontal.mimeType thumbnailVertical.mimeType thumbnailUrl thumbnailVerticalUrl notesUrl completionOrder videos._id videos.title videos.topic videos.description videos.provider videos.sourceType videos.videoUrl videos.embedUrl videos.bunnyVideoId videos.bunnyLibraryId videos.youtubeId videos.thumbnailUrl videos.thumbnailVerticalUrl videos.transcriptUrl videos.notesUrl videos.examplePrompt videos.duration videos.order';
 const API_BASE_URL = String(process.env.API_BASE_URL || '').replace(/\/+$/, '');
 const BUNNY_LIBRARY_ID = process.env.BUNNY_LIBRARY_ID || process.env.BUNNY_STREAM_LIBRARY_ID || '675520';
 const BUNNY_API_KEY = process.env.BUNNY_API_KEY || process.env.BUNNY_STREAM_API_KEY || '';
@@ -124,7 +124,7 @@ function publicVideoInfo(video = {}, index = 0) {
 
 function publicPlayableVideoInfo(video = {}, index = 0) {
   const provider = require('./videoSources').inferProvider(video);
-  if (provider === 'aws_cloudfront') return { ...publicVideoInfo(video,index), provider, sourceType:provider, playbackRequired:true, transcriptUrl:video.transcriptUrl || null, thumbnailVerticalUrl:video.thumbnailVerticalUrl || null, description:video.description || '', thumbnailUrl:video.thumbnailUrl || null, examplePrompt:video.examplePrompt || '' };
+  if (provider === 'aws_cloudfront') return { ...publicVideoInfo(video,index), provider, sourceType:provider, playbackRequired:true, transcriptUrl:video.transcriptUrl || null, notesUrl:video.notesUrl || null, thumbnailVerticalUrl:video.thumbnailVerticalUrl || null, description:video.description || '', thumbnailUrl:video.thumbnailUrl || null, examplePrompt:video.examplePrompt || '' };
 
   const bunnyVideoId = video.bunnyVideoId || video.bunnyGuid || null;
   const hlsUrl = video.hlsUrl || video.playlistUrl || video.streamUrl || (
@@ -137,6 +137,7 @@ function publicPlayableVideoInfo(video = {}, index = 0) {
     ...publicVideoInfo(video, index),
     provider,
     transcriptUrl: video.transcriptUrl || null,
+    notesUrl: video.notesUrl || null,
     sourceType: provider,
     youtubeId: video.youtubeId || video.videoId || null,
     bunnyGuid: bunnyVideoId,

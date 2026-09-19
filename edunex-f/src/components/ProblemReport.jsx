@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { EnxIcon } from "./EnxIcon.jsx";
 
 const CATEGORIES = [
@@ -127,7 +128,7 @@ export function ProblemReport({ open, onClose }) {
     }
   }
 
-  return (
+  const reportDialog = (
     <div className="problem-report-overlay" role="presentation" onMouseDown={(event) => {
       if (event.target === event.currentTarget && !busy) onClose();
     }}>
@@ -183,4 +184,9 @@ export function ProblemReport({ open, onClose }) {
       </section>
     </div>
   );
+
+  const fullscreenHost = document.fullscreenElement
+    || document.webkitFullscreenElement
+    || document.querySelector("#playerFrame.is-app-fullscreen");
+  return fullscreenHost ? createPortal(reportDialog, fullscreenHost) : reportDialog;
 }

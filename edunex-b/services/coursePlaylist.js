@@ -7,7 +7,7 @@ const playlistProjection = [
   ...['_id', 'title', 'topic', 'description', 'provider', 'sourceType', 'videoUrl',
     'embedUrl', 'bunnyVideoId', 'bunnyLibraryId', 'youtubeId', 'hlsUrl', 'playlistUrl',
     'streamUrl', 'thumbnailUrl', 'thumbnailVerticalUrl', 'thumbnail.mimeType',
-    'transcriptUrl', 'examplePrompt', 'duration', 'order'].map(field => `videos.${field}`),
+    'transcriptUrl', 'notesUrl', 'examplePrompt', 'duration', 'order'].map(field => `videos.${field}`),
 ].join(' ');
 
 function playlistPayload(course, resolveBunnyHls) {

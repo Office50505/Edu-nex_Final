@@ -233,7 +233,7 @@ router.get('/lessons/:id', requireAccess, async (req, res) => {
       return res.status(404).json({ error: 'Video not found at this index' });
     }
 
-    if(require('../services/videoSources').inferProvider(videoData)==='aws_cloudfront')return res.json({...require('../services/mobileCompatibilityService').publicPlayableVideoInfo(videoData),_id:lesson._id,videoId:videoData._id,course:course._id,courseTitle:course.title,notesUrl:course.notesUrl,videoIndex});
+    if(require('../services/videoSources').inferProvider(videoData)==='aws_cloudfront')return res.json({...require('../services/mobileCompatibilityService').publicPlayableVideoInfo(videoData),_id:lesson._id,videoId:videoData._id,course:course._id,courseTitle:course.title,notesUrl:videoData.notesUrl || course.notesUrl,videoIndex});
     const youtubeEmbedUrl = videoData.youtubeId
       ? `https://www.youtube.com/embed/${videoData.youtubeId}`
       : null;
@@ -258,7 +258,7 @@ res.json({
        transcriptUrl: videoData.transcriptUrl || null,
        examplePrompt: videoData.examplePrompt || videoData.examplePromptUrl || '',
        duration: videoData.duration || 0,
-       notesUrl: course.notesUrl || null,
+       notesUrl: videoData.notesUrl || course.notesUrl || null,
        description: course.description,
        thumbnail: videoData.thumbnailUrl || courseThumbnailUrl(course),
        videoThumbnail: courseThumbnailPayload(course),
