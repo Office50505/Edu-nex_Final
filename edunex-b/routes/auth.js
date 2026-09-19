@@ -394,6 +394,24 @@ async function signup(req, res) {
       }
     }
 
+    let onboarding = null;
+    let onboardingSubscription = null;
+    if (decodedSignup.purpose) {
+      if (decodedSignup.purpose !== 'paid-onboarding') return res.status(401).json({ error: 'Invalid signup authorization' });
+      const Onboarding = require('../models/OnboardingSession');
+      onboarding = await Onboarding.findOne({ _id: decodedSignup.onboardingId, mobileNumber: normalizedMobile, completedAt: null });
+      if (!onboarding) return res.status(401).json({ error: 'Signup session is no longer available' });
+      onboardingSubscription = await require('../controllers/razorpayController').reconcileForUser(onboarding._id);
+      if (!require('../services/subscriptionAccess').resolveSubscriptionAccess(onboardingSubscription, {}).active) {
+        return res.status(409).json({ error: 'Payment has not been confirmed. Return to checkout to check its status.' });
+      }
+    }
+
+    if (!onboarding) {
+      // A normal OTP signup must claim the same reserved identity, not orphan an ad payment.
+      onboarding = await require('../models/OnboardingSession').findOne({ mobileNumber: normalizedMobile, completedAt: null });
+      if (onboarding) onboardingSubscription = await require('../controllers/razorpayController').reconcileForUser(onboarding._id);
+    }
     const existingMobileUser = await User.findOne({ mobileNumber: normalizedMobile });
     if (existingMobileUser) {
       return res.status(409).json({ error: 'This mobile number is already registered', code: 'MOBILE_ALREADY_REGISTERED' });
@@ -402,6 +420,13 @@ async function signup(req, res) {
     const passwordHash = await bcrypt.hash(password, 12);
     const sessionId = crypto.randomUUID();
     const user = await User.create({
+      ...(onboarding ? { _id: onboarding._id } : {}),
+      ...(onboardingSubscription ? {
+        subscriptionId: onboardingSubscription._id,
+        subscriptionStatus: onboardingSubscription.status === 'pending' ? 'none' : onboardingSubscription.status,
+        subscriptionExpiry: onboardingSubscription.currentPeriodEnd || onboardingSubscription.trialExpiresAt || null,
+        isOnTrial: onboardingSubscription.status === 'trial',
+      } : {}),
       fullName: fullName.trim(),
       email: normalizedEmail,
       passwordHash,
@@ -413,6 +438,11 @@ async function signup(req, res) {
       activeSessions: [sessionId],
       isMobileVerified: Boolean(normalizedMobile),
     });
+    if (onboarding) {
+      await require('../models/OnboardingSession').updateOne({ _id: onboarding._id }, {
+        $set: { completedAt: new Date() }, $unset: { tokenHash: 1, handoffHash: 1 },
+      });
+    }
     const tokens = createTokens(user._id, sessionId);
     await persistSession({
       userId: user._id,

@@ -390,8 +390,8 @@ describe("reported frontend regressions", () => {
 
     render(<PaymentPage />);
 
-    const monthlyButton = await screen.findByRole("button", { name: /Subscribe for ₹499\/month/ });
-    expect(screen.getByText("Monthly Plan")).toBeTruthy();
+    const monthlyButton = await screen.findByRole("button", { name: "Continue with UPI" });
+    expect(screen.getByText("Monthly subscription")).toBeTruthy();
     expect(screen.getByText(/one-time trial has already been used/i)).toBeTruthy();
     fireEvent.click(monthlyButton);
     await waitFor(() => expect(checkoutBody?.paymentType).toBe("monthly"));
@@ -482,7 +482,7 @@ describe("reported frontend regressions", () => {
     vi.stubGlobal("fetch", vi.fn(() => new Promise(() => {})));
 
     const { container } = render(<PaymentPage />);
-    expect(screen.getByText("Get Full Access")).toBeTruthy();
+    expect(screen.getByText("Skillomate Premium")).toBeTruthy();
     expect(container.querySelector(".course-preview")).toBeNull();
     expect(container.querySelector(".pay-grid.direct-checkout")).toBeTruthy();
   });

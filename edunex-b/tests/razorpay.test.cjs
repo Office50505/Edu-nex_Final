@@ -123,8 +123,8 @@ function flow(mode = 'test') {
       return models[name.split('/').at(-1)];
     },
   });
-  return { billing, processed, local: () => local, calls: () => providerCalls, interrupt() { failWrite = true; }, async event(id = 'event1', signedMode = mode) {
-    const body = Buffer.from(JSON.stringify({ event: 'subscription.charged', payload: { subscription: { entity: { id: 'sub_test' } } } }));
+  return { billing, processed, local: () => local, calls: () => providerCalls, interrupt() { failWrite = true; }, async event(id = 'event1', signedMode = mode, eventName = 'subscription.charged') {
+    const body = Buffer.from(JSON.stringify({ event: eventName, payload: { subscription: { entity: { id: 'sub_test' } } } }));
     const sig = crypto.createHmac('sha256', signedMode === 'live' ? 'live-secret' : 'secret').update(body).digest('hex');
     let status = 200;
     await module.exports.webhook({ body, get: key => key === 'x-razorpay-signature' ? sig : id }, { status(value) { status = value; return this; }, json() {} });
@@ -150,3 +150,13 @@ test('live webhooks reconcile with live credentials and cross-mode events are re
   assert.equal(await f.event('live-event', 'live'), 200);
   assert.equal(f.local().razorpayMode, 'live');
 });
+
+for (const event of ['subscription.activated', 'subscription.charged', 'subscription.pending', 'subscription.halted', 'subscription.cancelled', 'subscription.completed', 'payment.failed']) {
+  test(`${event} reconciles signed events against provider data, rather than event labels`, async () => {
+    const f = flow();
+    assert.equal(await f.event(event, 'test', event), 200);
+    assert.ok(f.calls() > 0);
+    assert.equal(f.local().currentPeriodEnd.getTime(), monthly.invoice.billing_end * 1000);
+    assert.equal(f.processed.size, 1);
+  });
+}

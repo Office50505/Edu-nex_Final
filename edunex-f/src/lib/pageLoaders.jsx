@@ -23,6 +23,7 @@ const pageModules = {
   "lesson.html": () => import("../pages/RedirectPage.jsx").then(namedPage("LessonRedirectPage")),
   "login.html": () => import("../pages/LoginPage.jsx").then(namedPage("LoginPage")),
   "otp.html": () => import("../pages/RedirectPage.jsx").then(namedPage("SignupRedirectPage")),
+  "offer.html": () => import("../pages/AdOfferPage.jsx").then(namedPage("AdOfferPage")),
   "payment.html": () => import("../pages/PaymentPage.jsx").then(namedPage("PaymentPage")),
   "pricing.html": () => import("../pages/PricingPage.jsx").then(namedPage("PricingPage")),
   "profile.html": () => import("../pages/ProfilePage.jsx").then(namedPage("ProfilePage")),

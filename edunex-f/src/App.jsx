@@ -1,3 +1,4 @@
+import { PageErrorBoundary } from "./components/PageErrorBoundary.jsx";
 import { lazy, startTransition, Suspense, useCallback, useEffect, useState } from "react";
 import { Navbar } from "./components/Navbar.jsx";
 import { Footer } from "./components/Footer.jsx";
@@ -110,6 +111,7 @@ export default function App() {
   const [reportOpen, setReportOpen] = useState(false);
   const adminPage = adminPageFromPath(locationState.pathname);
   const pageKey = pageKeyFromPath(locationState.pathname);
+  const standaloneOffer = pageKey === "offer.html";
   const ReactPage = reactPageLoaders[pageKey];
   const routeKey = routeFromState(locationState);
   const openProblemReport = useCallback(() => setReportOpen(true), []);
@@ -199,15 +201,17 @@ export default function App() {
 
   return (
     <>
-      <Navbar pageKey={pageKey} onReportProblem={openProblemReport} />
+      {!standaloneOffer ? <Navbar pageKey={pageKey} onReportProblem={openProblemReport} /> : null}
       {ReactPage ? (
-        <Suspense fallback={<PageLoading />}>
-          <ReactPage key={routeKey} />
-        </Suspense>
+        <PageErrorBoundary key={routeKey}>
+          <Suspense fallback={<PageLoading />}>
+            <ReactPage key={routeKey} />
+          </Suspense>
+        </PageErrorBoundary>
       ) : null}
       {!ReactPage ? <NotFoundPage /> : null}
-      <Footer />
-      <ProblemReport open={reportOpen} onClose={closeProblemReport} />
+      {!standaloneOffer ? <Footer /> : null}
+      {!standaloneOffer ? <ProblemReport open={reportOpen} onClose={closeProblemReport} /> : null}
     </>
   );
 }

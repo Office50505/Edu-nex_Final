@@ -65,7 +65,7 @@ exports.pricing = wrap(async (_req, res) => {
   res.json({ mode: c.mode, gateway: process.env.PAYMENT_GATEWAY_MODE || 'razorpay', trialAmountPaise: c.trialAmount, subscriptionAmountPaise: c.monthlyAmount, trialHours: c.trialHours, currency: 'INR', billingCycles: c.cycles });
 });
 exports.initiate = wrap(async (req, res) => {
-  const c = rzp.requireConfig(await modes.activeMode());
+  const c = rzp.requireConfig(req.onboardingMode || await modes.activeMode());
   if (!req.user.isMobileVerified) throw fail('Verify your mobile number before subscribing.', 403);
   if (req.body.mandateConsent !== true) throw fail('Confirm the recurring payment terms before continuing.', 400);
   const type = req.body.paymentType === 'monthly' ? 'monthly' : 'trial';
@@ -166,3 +166,9 @@ exports.webhook = wrap(async (req, res) => {
   res.json({ ok: true });
 });
 exports.reconcile = reconcile;
+
+// Also reconcile subscriptions whose final user id is reserved by ad onboarding.
+exports.reconcileForUser = async userId => {
+  const record = await Billing.findById(userId);
+  return record?.subscriptionId ? reconcile(record) : Subscription.findOne({ user: userId });
+};

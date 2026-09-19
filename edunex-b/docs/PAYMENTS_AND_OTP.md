@@ -2,7 +2,7 @@
 
 ## Backend environment
 
-Use `OTP_PROVIDER=msg91` and `PAYMENT_GATEWAY_MODE=razorpay`. `OTP_DELIVERY_PROVIDER` remains a fallback alias. `RAZORPAY_ENABLED` is no longer the provider selector. `AUTO_VERIFY_OTP=false`; MSG91 mode cannot bypass OTP verification even in development. Existing secret values in `.env` were preserved.
+Use `OTP_PROVIDER=msg91` and `PAYMENT_GATEWAY_MODE=razorpay`. Set `AD_PAYMENT_MODE=test` for local/sandbox offer testing and `AD_PAYMENT_MODE=live` only when the `/offer` funnel should create live mandates. `OTP_DELIVERY_PROVIDER` remains a fallback alias. `RAZORPAY_ENABLED` is no longer the provider selector. `AUTO_VERIFY_OTP=false`; MSG91 mode cannot bypass OTP verification even in development. Existing secret values in `.env` were preserved.
 
 Required MSG91 values: `MSG91_AUTH_KEY`, `MSG91_TEMPLATE_ID`, `MSG91_BASE_URL=https://control.msg91.com/api/v5`.
 

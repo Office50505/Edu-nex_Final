@@ -1,0 +1,7 @@
+.skillomate-recovery { min-height: 65vh; display: grid; place-items: center; padding: 96px 20px 40px; background: #0b0b0d; color: #fff; }
+.skillomate-recovery-card { width: 100%; max-width: 520px; box-sizing: border-box; padding: clamp(24px, 5vw, 40px); background: #171719; border: 1px solid #59431f; border-radius: 20px; }
+.skillomate-recovery-card h1 { font-size: clamp(24px, 5vw, 32px); line-height: 1.25; margin: 0 0 16px; }
+.skillomate-recovery-card p { color: #d4d4d8; line-height: 1.6; }
+.skillomate-recovery-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; margin-top: 24px; }
+.skillomate-recovery-actions a { color: #efbd62; }
+.skillomate-recovery-actions .skillomate-recovery-primary { background: #c58b2a; color: #111; border: 0; border-radius: 10px; padding: 14px 18px; font: inherit; font-weight: 700; text-decoration: none; cursor: pointer; }

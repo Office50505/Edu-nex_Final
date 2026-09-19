@@ -536,7 +536,7 @@ export function CurriculumShowcase({ courses, status, authUserId, hasAccess, acc
             <small><MaterialIcon>workspace_premium</MaterialIcon>Certificate</small>
             <small><MaterialIcon>schedule</MaterialIcon>Learn at your pace</small>
           </div>
-          <a href={route("payment.html")}>Try 24 Hours for ₹1 <MaterialIcon>arrow_forward</MaterialIcon></a>
+          <a href={route("payment.html?plan=trial")}>Try 24 Hours for ₹1 <MaterialIcon>arrow_forward</MaterialIcon></a>
         </div> : null}
         {status === "loading" ? <p className="curriculum-status">Loading your live course catalog...</p> : null}
       </div>
@@ -1422,7 +1422,7 @@ export function HomePage() {
               Explore Courses
               <MaterialIcon className="text-[19px]">arrow_forward</MaterialIcon>
             </a>
-            {!hasAccess && accessResolved ? <a href="payment.html" className="hero-cta-secondary">Try 24 Hours for ₹1</a> : null}
+            {!hasAccess && accessResolved ? <a href="payment.html?plan=trial" className="hero-cta-secondary">Try 24 Hours for ₹1</a> : null}
           </div>
 
           <div className="hero-search-block">

@@ -58,6 +58,7 @@ const BUNNY_STREAM_LIBRARY_ID = process.env.BUNNY_STREAM_LIBRARY_ID || '';
 const BUNNY_STREAM_API_KEY = process.env.BUNNY_STREAM_API_KEY || '';
 const OTP_PROVIDER = String(process.env.OTP_PROVIDER || process.env.OTP_DELIVERY_PROVIDER || '').trim().toLowerCase();
 const PAYMENT_GATEWAY_MODE = String(process.env.PAYMENT_GATEWAY_MODE || '').trim().toLowerCase();
+const AD_PAYMENT_MODE = String(process.env.AD_PAYMENT_MODE || '').trim().toLowerCase();
 const IMAGE_PROXY_ALLOWED_HOSTS = String(process.env.IMAGE_PROXY_ALLOWED_HOSTS || '')
   .split(',')
   .map((host) => host.trim().toLowerCase())
@@ -84,6 +85,7 @@ requireProductionEnv([
   'JWT_SECRET',
   'JWT_REFRESH_SECRET',
   'JWT_SIGNUP_SECRET',
+  'AD_PAYMENT_MODE',
 ]);
 
 if (isProduction && process.env.AUTO_VERIFY_OTP === 'true') {
@@ -98,6 +100,11 @@ if (isProduction && ['development', 'dev', 'demo', 'mock', 'temp', 'temporary'].
 
 if (isProduction && ['simulated', 'simulation', 'mock', 'local'].includes(PAYMENT_GATEWAY_MODE)) {
   console.error('PAYMENT_GATEWAY_MODE must not be simulated/mock/local in production.');
+  process.exit(1);
+}
+
+if (isProduction && !['test', 'live'].includes(AD_PAYMENT_MODE)) {
+  console.error('AD_PAYMENT_MODE must be test or live in production.');
   process.exit(1);
 }
 
@@ -1271,6 +1278,7 @@ app.use('/api', problemReportRoutes);
 app.use('/api/admin', require('./routes/adminHealth'));
 app.use('/api/admin', require('./routes/paymentSettings'));
 app.use('/api/auth', authRoutes);
+app.use('/api/onboarding', require('./routes/onboarding'));
 app.use('/api/ai', aiRoutes);
 app.use('/api', paymentRoutes);
 app.use('/api', sessionRoutes);

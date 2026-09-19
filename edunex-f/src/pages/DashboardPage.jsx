@@ -407,7 +407,7 @@ export function DashboardPage() {
               ? "Your one-time trial or previous access has ended. Continue with the monthly plan to unlock your courses, progress, and AI tutor."
               : "Your dashboard unlocks after you subscribe. After the 24-hour trial, access renews at ₹499/month until cancelled."}</p>
             <div className="trial-gate-actions">
-              <a className="trial-gate-btn" href="payment.html"><i className="fas fa-arrow-right" aria-hidden="true"></i> {needsRenewal ? "Subscribe for ₹499/month" : "Try 24 Hours for ₹1"}</a>
+              <a className="trial-gate-btn" href={needsRenewal ? "payment.html?plan=monthly" : "payment.html?plan=trial"}><i className="fas fa-arrow-right" aria-hidden="true"></i> {needsRenewal ? "Subscribe for ₹499/month" : "Try 24 Hours for ₹1"}</a>
               <a className="trial-gate-btn secondary" href="courses.html">Browse Courses</a>
             </div>
           </div>

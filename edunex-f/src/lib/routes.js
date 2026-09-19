@@ -16,6 +16,7 @@ const cleanRoutes = {
   "lesson.html": "/lesson",
   "login.html": "/login",
   "otp.html": "/otp",
+  "offer.html": "/offer",
   "payment.html": "/payment",
   "pricing.html": "/pricing",
   "privacy.html": "/privacy",

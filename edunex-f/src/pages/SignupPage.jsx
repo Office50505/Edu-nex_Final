@@ -100,6 +100,8 @@ function safeErrorMessage(error, fallback) {
   return message;
 }
 
+const adResumeRequests = new Map();
+
 export function SignupPage() {
   const [step, setStep] = useState(1);
   const [phone, setPhone] = useState(() => readSignupPrefill(sessionStorage));
@@ -132,6 +134,46 @@ export function SignupPage() {
   const otpRefs = useRef([]);
   const avatarTriggerRef = useRef(null);
   const closeAvatarRef = useRef(null);
+
+  useEffect(() => {
+    const fragment = new URLSearchParams(window.location.hash.slice(1));
+    const incoming = fragment.get("onboarding");
+    if (incoming) {
+      sessionStorage.setItem("skillomateAdReturn", incoming);
+      window.history.replaceState(window.history.state, "", window.location.pathname + window.location.search);
+    }
+    const code = incoming || sessionStorage.getItem("skillomateAdReturn");
+    let cancelled = false;
+    const restore = data => {
+      if (cancelled) return;
+      setMobileNumber(data.mobileNumber);
+      setPhone(data.mobileNumber.replace(/^\+?91/, ""));
+      setSignupToken(data.signupToken);
+      setAgreed(true);
+      setStep(3);
+    };
+    if (!code) {
+      try {
+        const saved = JSON.parse(sessionStorage.getItem("skillomateAdProfile") || "null");
+        if (saved?.expiresAt > Date.now()) restore(saved);
+      } catch (_) { /* Normal signup remains available. */ }
+      return () => { cancelled = true; };
+    }
+    setStep1Error("Restoring your verified payment and phone number…");
+    if (!adResumeRequests.has(code)) {
+      adResumeRequests.set(code, request("/api/onboarding/resume", { method: "POST", body: JSON.stringify({ code }) }));
+    }
+    adResumeRequests.get(code).then(data => {
+      sessionStorage.setItem("skillomateAdProfile", JSON.stringify({ ...data, expiresAt: Date.now() + 29 * 60 * 1000 }));
+      sessionStorage.removeItem("skillomateAdReturn");
+      if (!cancelled) { setStep1Error(""); restore(data); }
+    }).catch(error => {
+      sessionStorage.removeItem("skillomateAdReturn");
+      adResumeRequests.delete(code);
+      if (!cancelled) setStep1Error(error.message || "Unable to resume signup. Return to the ad page and check payment status.");
+    });
+    return () => { cancelled = true; };
+  }, []);
 
   usePageStyle("react-page-style-signup", signupPage.styles);
 
@@ -355,6 +397,8 @@ export function SignupPage() {
         }),
       });
       saveAuth(data);
+      sessionStorage.removeItem("skillomateAdProfile");
+      sessionStorage.removeItem("skillomateAdReturn");
       localStorage.setItem("edunexSignupProfile", JSON.stringify(data?.user || signupProfile));
       window.location.href = "dashboard.html";
     } catch (error) {

@@ -1,3 +1,4 @@
+import "./payment-premium.css";
 import { openRazorpay } from "../lib/razorpayCheckout.js";
 import { useCallback, useEffect, useMemo, useState, useRef } from "react";
 import { page as paymentPage } from "../generated-pages/payment.html.js";
@@ -56,13 +57,21 @@ export function PaymentPage() {
   const runtimeReady = useEduNexRuntimeReady();
   const query = params();
   const courseId = query.get("courseId");
+  const [selectedPlan, setSelectedPlan] = useState(() => ["annual", "yearly"].includes(query.get("plan")) ? "annual" : "monthly");
+  const annual = selectedPlan === "annual";
   const [trialEligible, setTrialEligible] = useState(true);
   const [checkoutState, setCheckoutState] = useState("loading");
   const [payMsg, setPayMsg] = useState({ text: "", type: "" });
   const [submitting, setSubmitting] = useState(false);
   const busyRef = useRef(false);
   const [pricing, setPricing] = useState(null);
-  const rupees = value => new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", minimumFractionDigits: 0, maximumFractionDigits: 2 }).format((value || 0) / 100);
+  const trial = !annual && query.get("plan") === "trial" && trialEligible;
+  const paymentType = annual ? "annual" : trial ? "trial" : "monthly";
+  const [paymentCompleted, setPaymentCompleted] = useState(false);
+  const [paymentFailed, setPaymentFailed] = useState(false);
+  const [pending, setPending] = useState(false);
+  const planAvailable = Boolean(pricing && (!annual || pricing.annualAvailable));
+  const rupees = value => new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 2 }).format((value || 0) / 100);
   useEffect(() => {
     const controller = new AbortController();
     fetch("/api/payment/config", { signal: controller.signal }).then(async response => {
@@ -71,9 +80,7 @@ export function PaymentPage() {
     }).catch(error => { if (error.name !== "AbortError") setPayMsg({ text: error.message, type: "error" }); });
     return () => controller.abort();
   }, []);
-  const [modalOpen, setModalOpen] = useState(false);
   const [watchHref, setWatchHref] = useState("/courses.html");
-  const [watchText, setWatchText] = useState("Open Video Library");
 
   usePageStyle("react-page-style-payment", paymentPage.styles);
 
@@ -89,29 +96,20 @@ export function PaymentPage() {
     return () => cleanup?.();
   }, [sharedRuntimePage]);
 
-  useEffect(() => {
-    if (!modalOpen) return undefined;
-    const handleKey = (event) => {
-      if (event.key === "Escape") setModalOpen(false);
-    };
-    document.addEventListener("keydown", handleKey);
-    const timer = window.setTimeout(() => document.getElementById("continueWebBtn")?.focus(), 0);
-    return () => {
-      document.removeEventListener("keydown", handleKey);
-      window.clearTimeout(timer);
-    };
-  }, [modalOpen]);
-
   const webLink = buildWebContinueLink();
 
   const configureAppOpenButton = useCallback(() => {
-    const courseWatch = courseId ? `/videos.html?courseId=${encodeURIComponent(courseId)}` : webLink;
+    let courseWatch = courseId ? `/videos.html?courseId=${encodeURIComponent(courseId)}` : webLink;
+    try {
+      const next = new URL(new URLSearchParams(window.location.search).get("next") || "", window.location.origin);
+      if (courseId && next.origin === window.location.origin && ["/videos", "/videos.html"].includes(next.pathname) && next.searchParams.get("courseId") === courseId) {
+        courseWatch = next.pathname + next.search;
+      }
+    } catch (_) { /* Keep the course entry fallback for invalid return URLs. */ }
     if (courseId) {
       setWatchHref(courseWatch);
-      setWatchText("Continue on Web");
     } else {
       setWatchHref(webLink);
-      setWatchText("Open Video Library");
     }
   }, [courseId, webLink]);
 
@@ -162,11 +160,11 @@ export function PaymentPage() {
         if (!cancelled) {
           setTrialEligible(nextTrialEligible);
         }
-        const activeStatuses = ["active", "subscribed", "1rs trial", "trial", "trial_active", "paid_active"];
+        if (!response.ok) throw new Error(data.error || "Could not check access.");
         const cancelledTrialMandate = !nextTrialEligible
           && data.autoRenewEnabled === false
           && String(data.subscriptionType || "").toLowerCase() === "trial";
-        if ((data.hasActiveAccess === true || activeStatuses.includes(data.status)) && !cancelledTrialMandate) {
+        if ((data.accessGranted === true || data.hasActiveAccess === true) && !cancelledTrialMandate) {
           markLocalCourseAccess();
           if (!cancelled) {
             configureAppOpenButton();
@@ -185,31 +183,24 @@ export function PaymentPage() {
   }, [authFetch, configureAppOpenButton, runtimeReady]);
 
   const initiatePayment = async () => {
-    if (busyRef.current || !pricing) return;
+    if (busyRef.current || !planAvailable) return;
     busyRef.current = true;
     setSubmitting(true);
+    setPaymentFailed(false);
     setPayMsg({ text: "", type: "" });
+    let authorizationReceived = false;
     try {
       const response = await authFetch("/api/payment/initiate-trial", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ paymentType: trialEligible ? "trial" : "monthly", mandateConsent: true }),
+        body: JSON.stringify({ paymentType, mandateConsent: true }),
       });
       const data = await safeJsonResponse(response) || {};
-      if (response.status === 409) {
-        if (data.error) {
-          setPayMsg({ text: data.error, type: "error" });
-          setSubmitting(false);
-          return;
-        }
-        markLocalCourseAccess();
-        configureAppOpenButton();
-        setCheckoutState("subscribed");
-        return;
-      }
       if (!response.ok) throw new Error(data.error || data.message || `Payment initiation failed (${response.status})`);
       if (data.gateway === "razorpay") {
         const result = await openRazorpay(data);
+        authorizationReceived = true;
+        setPending(true);
         setPayMsg({ text: "Verifying payment…", type: "info" });
         const verified = await authFetch("/api/payment/razorpay/verify", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(result) });
         const verification = await safeJsonResponse(verified);
@@ -221,16 +212,13 @@ export function PaymentPage() {
           const status = await safeJsonResponse(check);
           access = check.ok && status?.accessGranted;
         }
-        if (access) { markLocalCourseAccess(); configureAppOpenButton(); setCheckoutState("subscribed"); }
-        else setPayMsg({ text: "Payment authorization received. Access is pending confirmation. Refresh shortly; do not pay again.", type: "info" });
+        if (access) { setPaymentCompleted(true); markLocalCourseAccess(); configureAppOpenButton(); setCheckoutState("subscribed"); }
+        else { setPending(true); setPayMsg({ text: "Payment authorization received. Access is pending confirmation. Check payment status before paying again.", type: "info" }); }
         return;
       }
-      if (data.redirectUrl) {
-        window.location.href = data.redirectUrl;
-        return;
-      }
-      throw new Error("No redirect URL received from payment gateway");
+      throw new Error("Secure checkout is unavailable. Please try again later.");
     } catch (error) {
+      setPaymentFailed(!authorizationReceived);
       setPayMsg({ text: error.message || "Payment initiation failed", type: "error" });
     } finally {
       busyRef.current = false;
@@ -238,11 +226,20 @@ export function PaymentPage() {
     }
   };
 
-  const payButtonText = submitting
-    ? "Redirecting to payment…"
-    : trialEligible
-      ? `Try ${pricing?.trialHours || 24} Hours for ${rupees(pricing?.trialAmountPaise)}`
-      : `Subscribe for ${rupees(pricing?.subscriptionAmountPaise)}/month`;
+  const checkPayment = async () => {
+    if (busyRef.current) return;
+    busyRef.current = true; setSubmitting(true);
+    try {
+      const response = await authFetch("/api/payment/subscription-status");
+      const data = await safeJsonResponse(response);
+      if (!response.ok) throw new Error(data?.error || "Unable to check payment status.");
+      if (data?.accessGranted === true) {
+        setPaymentCompleted(true); markLocalCourseAccess(); configureAppOpenButton(); setCheckoutState("subscribed");
+      } else setPayMsg({ text: "Still waiting for payment confirmation. Please check again shortly.", type: "info" });
+    } catch (error) { setPayMsg({ text: error.message, type: "error" }); }
+    finally { busyRef.current = false; setSubmitting(false); }
+  };
+  const payButtonText = submitting ? "Please wait…" : pending ? "Check payment status" : paymentFailed ? "Try Again" : "Continue with UPI";
 
   return (
     <div className="react-page-root" data-page="payment.html">
@@ -251,9 +248,23 @@ export function PaymentPage() {
           <div className="checkout-card">
             <div className="checkout-header">
               <h1 style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                <i className="fas fa-graduation-cap" aria-hidden="true"></i> Get Full Access
+                <i className="fas fa-graduation-cap" aria-hidden="true"></i> Skillomate Premium
               </h1>
-              <p>Unlimited courses · Cancel anytime</p>
+              <p>Learn more. Create more. Go Premium.</p>
+              <fieldset disabled={submitting || pending} style={{ border: 0, padding: 0, margin: "16px 0 0", display: "flex", flexWrap: "wrap", gap: 12 }}>
+                <legend style={{ fontSize: 14, marginBottom: 8 }}>Choose your billing plan</legend>
+                {[['monthly', 'Monthly'], ['annual', 'Yearly']].map(([value, label]) => (
+                  <label key={value} style={{ display: "flex", alignItems: "center", gap: 8, minHeight: 44, cursor: "pointer" }}>
+                    <input type="radio" name="billingPlan" value={value} checked={selectedPlan === value} onChange={() => {
+                      setSelectedPlan(value);
+                      setPayMsg({ text: "", type: "" });
+                      const url = new URL(window.location.href);
+                      url.searchParams.set('plan', value);
+                      window.history.replaceState(window.history.state, '', url.pathname + url.search);
+                    }} />{label}
+                  </label>
+                ))}
+              </fieldset>
             </div>
             <div className="checkout-body">
               <div className={`msg pay-msg ${payMsg.type}`} role="status" aria-live="polite">{payMsg.text}</div>
@@ -265,6 +276,8 @@ export function PaymentPage() {
 
               {checkoutState === "login" ? (
                 <div id="loginState">
+                  <p className="premium-preview-price">{pricing ? rupees(annual ? pricing.annualAmountPaise : trial ? pricing.trialAmountPaise : pricing.subscriptionAmountPaise) : "…"}<small> / {annual ? "year" : trial ? "trial" : "month"}</small></p>
+                  <ul className="premium-benefits"><li><CheckIcon /> Complete Course Access</li><li><CheckIcon /> Nex AI</li><li><CheckIcon /> Premium AI Tools</li></ul>
                   <p style={{ fontSize: 14, color: "var(--muted)", textAlign: "center", marginBottom: 20, lineHeight: 1.6 }}>
                     Create a free account to continue — it only takes 30 seconds.
                   </p>
@@ -280,15 +293,15 @@ export function PaymentPage() {
                 <div id="subscribedState">
                   <div className="subscribed-banner">
                     <div className="icon"><CheckIcon /></div>
-                    <h3>You're already subscribed!</h3>
-                    <p>Enjoy unlimited access to all Skillomate courses.</p>
+                    <h3>{paymentCompleted ? "Payment Successful" : "Your Premium access is active"}</h3>
+                    <p>{paymentCompleted ? "Welcome to Skillomate Premium. Your Premium access is now active." : "Enjoy unlimited access to all Skillomate courses."}</p>
                   </div>
                   <a
                     id="watchNowBtn"
                     href={watchHref}
                     className="login-cta-btn"
                   >
-                    {watchText}
+                    Start Learning
                   </a>
                   <a href="/courses.html" className="pay-btn-secondary" style={{ marginTop: 10 }}><i className="fas fa-book-open" aria-hidden="true"></i> Browse All Courses</a>
                 </div>
@@ -298,24 +311,31 @@ export function PaymentPage() {
                 <div id="payState">
                   <div className="plan-option selected" style={{ cursor: "default" }}>
                     <div className="plan-info">
-                      <div className="plan-name">{trialEligible ? `${pricing?.trialHours || 24}-Hour Trial` : "Monthly Plan"}</div>
-                      <div className="plan-desc">{trialEligible ? "Full access · Auto-renews monthly" : "Full access · Cancel anytime"}</div>
+                      <div className="plan-name">{annual ? "Annual subscription" : trial ? `${pricing?.trialHours || 24}-Hour Trial` : "Monthly subscription"}</div>
+                      <div className="plan-desc">Full access · Auto-renews {annual ? "yearly" : "monthly"}</div>
                     </div>
                     <div className="plan-price">
-                      <div className="amount">{pricing ? rupees(trialEligible ? pricing.trialAmountPaise : pricing.subscriptionAmountPaise) : "…"}</div>
-                      <span className="per">{trialEligible ? "trial payment" : "per month"}</span>
+                      <div className="amount">{pricing ? rupees(annual ? pricing.annualAmountPaise : trial ? pricing.trialAmountPaise : pricing.subscriptionAmountPaise) : "…"}</div>
+                      <span className="per">{annual ? "per year" : trial ? "trial payment" : "per month"}</span>
                     </div>
                   </div>
-                  {!trialEligible ? <p role="status" style={{ margin: "16px 0" }}>Your one-time trial has already been used. Continue with the monthly plan.</p> : null}
+                  {!trialEligible && !annual ? <p role="status" style={{ margin: "16px 0" }}>Your one-time trial has already been used. Continue with the monthly plan.</p> : null}
+                  {annual && pricing && !pricing.annualAvailable ? <p role="alert">Yearly checkout is currently unavailable. Please try again later or choose Monthly.</p> : null}
                   {pricing ? <p id="paymentAgreement" style={{ fontSize: 12, lineHeight: 1.6, color: "var(--text)", margin: "16px 0" }}>
-                    By continuing, you accept our <a href="/terms.html" target="_blank" rel="noopener noreferrer">Terms</a> &amp; <a href="/privacy.html" target="_blank" rel="noopener noreferrer">Privacy Policy</a>. {trialEligible
-                      ? `Your one-time ${pricing.trialHours || 24}-hour trial costs ${rupees(pricing.trialAmountPaise)}, then the subscription renews at ${rupees(pricing.subscriptionAmountPaise)}/month until cancelled.`
-                      : `You will be charged ${rupees(pricing.subscriptionAmountPaise)} now, then every month until cancelled.`}
+                    By continuing, you accept our <a href="/terms.html" target="_blank" rel="noopener noreferrer">Terms</a> &amp; <a href="/privacy.html" target="_blank" rel="noopener noreferrer">Privacy Policy</a>. {annual
+                      ? `You pay ${rupees(pricing.annualAmountPaise)} now for one year. You authorize automatic renewal at ${rupees(pricing.annualAmountPaise)} per year until cancelled. No trial charge applies.`
+                      : trial ? `Your ${pricing.trialHours || 24}-hour trial costs ${rupees(pricing.trialAmountPaise)}, then the subscription renews at ${rupees(pricing.subscriptionAmountPaise)}/month until cancelled.`
+                        : `You pay ${rupees(pricing.subscriptionAmountPaise)} now and authorize renewal at that amount each month until cancelled.`} Cancel auto-renewal from your profile; paid access continues to its expiry.
                   </p> : null}
-                  <button className="pay-btn" id="payBtn" type="button" aria-describedby="paymentAgreement" disabled={submitting || !pricing} onClick={initiatePayment}>
+                  <ul className="premium-benefits"><li><CheckIcon /> Complete Course Access</li><li><CheckIcon /> Nex AI</li><li><CheckIcon /> Premium AI Tools</li></ul>
+                  {paymentFailed ? <div className="premium-failure" role="alert"><h3>Payment unsuccessful</h3><p>We couldn't complete your payment.</p></div> : null}
+                  <button className="pay-btn" id="payBtn" type="button" aria-describedby="paymentAgreement" disabled={submitting || !planAvailable} onClick={pending ? checkPayment : initiatePayment}>
                     <span id="payBtnIcon">{<LightningIcon />}</span>
                     <span id="payBtnText">{payButtonText}</span>
                   </button>
+                  {pricing && !annual && !trial ? <p className="premium-renewal">{rupees(pricing.subscriptionAmountPaise)}/month. Your subscription automatically renews every month through UPI AutoPay until cancelled.</p> : null}
+                  <p className="premium-payment-help">On desktop, scan the checkout QR with a supported UPI app. On mobile, approve in your UPI app and return here.</p>
+                  <a href="/profile" style={{ display: "block", marginTop: 12 }}>Manage or cancel an unfinished checkout</a>
                   <div className="pay-divider"><span>or</span></div>
                   <a href="/courses.html" className="pay-btn-secondary">← Back to Courses</a>
 
@@ -325,7 +345,7 @@ export function PaymentPage() {
                     </div>
                     <div style={{ display: "flex", gap: 12, fontSize: 11 }}>
                       <span><CheckIcon /> Cancel anytime</span>
-                      <span><CheckIcon /> Instant access</span>
+                      <span><CheckIcon /> Verified payments</span>
                       <span><CheckIcon /> All courses</span>
                     </div>
                   </div>
@@ -336,31 +356,6 @@ export function PaymentPage() {
         </div>
       </div>
 
-      <div
-        className={`payment-choice-modal${modalOpen ? " is-open" : ""}`}
-        id="paymentChoiceModal"
-        aria-hidden={!modalOpen}
-        onClick={(event) => {
-          if (event.target === event.currentTarget) setModalOpen(false);
-        }}
-      >
-        <div className="payment-choice-card" role="dialog" aria-modal="true" aria-labelledby="paymentChoiceTitle">
-            <div className="payment-choice-head">
-              <div className="payment-choice-kicker"><i className="fas fa-check-circle" aria-hidden="true"></i> Payment complete</div>
-              <h2 className="payment-choice-title" id="paymentChoiceTitle">Continue learning</h2>
-              <p className="payment-choice-copy">Your access is ready. Continue in the browser to open your courses.</p>
-            </div>
-            <div className="payment-choice-body">
-              <div className="payment-choice-actions">
-              <a className="payment-choice-btn primary" id="continueWebBtn" href={webLink}>
-                <i className="fas fa-globe" aria-hidden="true"></i>
-                Continue on Web
-              </a>
-            </div>
-            <div className="payment-choice-meta">You can also open the Skillomate app separately and sign in with the same account.</div>
-          </div>
-        </div>
-      </div>
     </div>
   );
 }

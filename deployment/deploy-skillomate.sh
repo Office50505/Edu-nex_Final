@@ -5,6 +5,7 @@ set -Eeuo pipefail
 readonly ACTIVE_BACKEND="/home/ubuntu/skillomate_backend"
 readonly REPOSITORY="/home/ubuntu/skillomate_repo"
 readonly EXPECTED_BACKEND="/home/ubuntu/skillomate_repo/edunex-b"
+readonly EXPECTED_FRONTEND="/home/ubuntu/skillomate_repo/edunex-f"
 readonly EXPECTED_ORIGIN="git@github-skillomate:Office50505/Edu-nex_Final.git"
 readonly PROCESS_NAME="skillomate_backend"
 readonly HEALTH_URL="http://127.0.0.1:3000/api/health"
@@ -103,6 +104,9 @@ rollback_deployment() {
 
   cd "$REPOSITORY" || rollback_ok=0
   git reset --hard "$OLD_COMMIT" || rollback_ok=0
+  cd "$EXPECTED_FRONTEND" || rollback_ok=0
+  npm ci --no-audit --no-fund || rollback_ok=0
+  npm run build || rollback_ok=0
   cd "$EXPECTED_BACKEND" || rollback_ok=0
   npm ci --omit=dev --no-audit --no-fund || rollback_ok=0
   pm2 restart "$PROCESS_NAME" --update-env || rollback_ok=0
@@ -192,6 +196,16 @@ if test ! -f package-lock.json; then
   exit 18
 fi
 
+if test ! -f "$EXPECTED_FRONTEND/package-lock.json"; then
+  echo "Frontend package-lock.json is missing."
+  exit 24
+fi
+
+if ! git -C "$REPOSITORY" ls-files --error-unmatch edunex-f/package-lock.json >/dev/null 2>&1; then
+  echo "Frontend package-lock.json is not tracked."
+  exit 25
+fi
+
 if ! git ls-files --error-unmatch package-lock.json >/dev/null 2>&1; then
   echo "package-lock.json is not tracked by Git."
   exit 19
@@ -244,6 +258,16 @@ fi
 
 if ! git reset --hard "$NEW_COMMIT"; then
   rollback_deployment "git reset to origin/main failed"
+fi
+
+cd "$EXPECTED_FRONTEND"
+
+if ! npm ci --no-audit --no-fund; then
+  rollback_deployment "frontend npm ci failed"
+fi
+
+if ! npm run build; then
+  rollback_deployment "frontend production build failed"
 fi
 
 cd "$EXPECTED_BACKEND"
@@ -303,4 +327,3 @@ echo "subject=$COMMIT_SUBJECT"
 echo "timestamp=$DEPLOYMENT_TIMESTAMP"
 echo "health=$HEALTH_RESULT"
 echo "courses=$COURSES_RESULT"
-

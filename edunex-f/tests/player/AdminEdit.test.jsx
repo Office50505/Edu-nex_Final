@@ -1,15 +1,7 @@
 // @vitest-environment jsdom
 import React from 'react';
 import { it, expect, vi, afterEach } from 'vitest';
-<<<<<<< Updated upstream
 import { render, screen, waitFor, fireEvent, cleanup } from '@testing-library/react';
-=======
-<<<<<<< HEAD
-import { render, screen, waitFor, cleanup, fireEvent } from '@testing-library/react';
-=======
-import { render, screen, waitFor, fireEvent, cleanup } from '@testing-library/react';
->>>>>>> 84cbdd0a5ef72b7a699a6c1808fcd158ff12fd4b
->>>>>>> Stashed changes
 import { AdminUploadPage } from '../../src/pages/admin/AdminUploadPage';
 const mocks=vi.hoisted(()=>({request:vi.fn(),rawRequest:vi.fn()}));
 vi.mock('../../src/pages/admin/adminApi',async(importOriginal)=>({...await importOriginal(),requireAdmin:()=>true,adminJson:(...args)=>mocks.request(...args),adminRequest:(...args)=>mocks.rawRequest(...args)}));
@@ -42,10 +34,6 @@ it('keeps generated preview paths out of URL inputs',async()=>{
  expect(document.getElementById('thumbnailVerticalUrl').value).toBe('');
  expect(document.getElementById('thumbnailVerticalUrl').validity.valid).toBe(true);
 });
-<<<<<<< Updated upstream
-=======
-<<<<<<< HEAD
-
 it('submits a blank vertical thumbnail to clear legacy storage while preserving horizontal',async()=>{
  window.history.replaceState({},'', '/admin/upload?courseId=course-one');
  const horizontal='https://images.example.test/course-horizontal.webp';
@@ -73,8 +61,7 @@ it('submits a blank vertical thumbnail to clear legacy storage while preserving 
  await waitFor(()=>expect(submitted).toBeTruthy());
  expect(submitted.thumbnailVerticalUrl).toBe('');
  expect(submitted.thumbnailUrl).toBe(horizontal);
-=======
->>>>>>> Stashed changes
+});
 it('extracts lesson notes when a PDF is dropped on the lesson drop zone',async()=>{
  window.history.replaceState({},'', '/admin/upload');
  mocks.request.mockImplementation(async path=>path==='/api/categories'?[]:path.includes('video-providers')?{}:[]);
@@ -98,8 +85,4 @@ it('loads a separate notes URL for each lesson',async()=>{
  render(<AdminUploadPage/>);
  expect(await screen.findByDisplayValue('https://notes.example/lesson-one')).toBeTruthy();
  expect(screen.getByLabelText('Lesson notes URL')).toBeTruthy();
-<<<<<<< Updated upstream
-=======
->>>>>>> 84cbdd0a5ef72b7a699a6c1808fcd158ff12fd4b
->>>>>>> Stashed changes
 });

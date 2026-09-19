@@ -1,3 +1,4 @@
+import "../components/page-recovery.css";
 import { plainCourseDescription } from "../lib/courseDescription.js";
 import { CourseMediaPlayer } from "../components/media/CourseMediaPlayer.jsx";
 import { adjacent, available, usesCustomPlayer } from "../components/media/playerRules.js";
@@ -78,7 +79,8 @@ function clearAuthStorage() {
 }
 
 function paymentUrlForCourse(courseId) {
-  const paymentUrl = new URL("/payment.html", window.location.origin);
+  const paymentUrl = new URL("/payment", window.location.origin);
+  paymentUrl.searchParams.set("plan", "monthly");
   if (courseId) paymentUrl.searchParams.set("courseId", courseId);
   paymentUrl.searchParams.set("next", window.location.pathname + window.location.search);
   return paymentUrl.pathname + paymentUrl.search;
@@ -1008,6 +1010,7 @@ export function VideosPage() {
   const [activeIndex, setActiveIndex] = useState(hasExplicitVideo && Number.isFinite(selectedVideoIndex) ? selectedVideoIndex : 0);
   const [status, setStatus] = useState("Preparing course...");
   const [error, setError] = useState("");
+  const [subscriptionRequired, setSubscriptionRequired] = useState(false);
   const [loadAttempt, setLoadAttempt] = useState(0);
   const [notesOpen, setNotesOpen] = useState(false);
   const [lectureSheetOpen, setLectureSheetOpen] = useState(false);
@@ -1053,6 +1056,7 @@ export function VideosPage() {
     const controller = new AbortController();
     let cancelled = false;
     setError("");
+    setSubscriptionRequired(false);
     setCourse(null);
     setLearningStatus(null);
     setStatus("Preparing course...");
@@ -1083,9 +1087,14 @@ export function VideosPage() {
           window.location.href = `/login.html?next=${encodeURIComponent(window.location.pathname + window.location.search)}`;
           return;
         }
+        if (cancelled) return;
         if (response.status === 403) {
-          window.location.href = paymentUrlForCourse(selectedCourseId);
-          return;
+          if (["no_subscription", "subscription_expired"].includes(data?.error)) {
+            setSubscriptionRequired(true);
+            setStatus("Subscription required");
+            return;
+          }
+          throw new Error("You do not have access to this course. Please contact support.");
         }
         if (!response.ok) throw new Error(response.status === 404
           ? "This course could not be found." : "Could not load the course playlist. Please retry.");
@@ -1522,6 +1531,19 @@ export function VideosPage() {
       </a>
     );
   };
+
+  if (subscriptionRequired) return (
+    <main className="skillomate-recovery" aria-labelledby="course-access-title">
+      <section className="skillomate-recovery-card" role="region" aria-label="Subscription required">
+        <h1 id="course-access-title">Subscribe to continue</h1>
+        <p>This course requires Skillomate Premium. Subscribe or renew your membership to start learning.</p>
+        <div className="skillomate-recovery-actions">
+          <a className="skillomate-recovery-primary" href={paymentUrlForCourse(selectedCourseId)}>View subscription plans</a>
+          <a href="/courses">Back to courses</a>
+        </div>
+      </section>
+    </main>
+  );
 
   return (
     <div className="react-page-root" data-page="videos.html">
