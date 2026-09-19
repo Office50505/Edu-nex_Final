@@ -61,3 +61,27 @@ html[data-theme="light"] .ad-offer-page .ad-signin-modal form > button[type="sub
 @media (prefers-reduced-motion: reduce) {
   .ad-offer-page .ad-price-card > strong { animation: none; background-position: 50% center; }
 }
+
+/* Keep global site typography and iOS Safari's viewport behavior from changing
+   the campaign composition. */
+.ad-offer-page :where(h1, h2, strong, button, input) {
+  font-family: Inter, Arial, sans-serif;
+}
+
+.ad-offer-page .ad-offer-shell {
+  padding-bottom: calc(190px + env(safe-area-inset-bottom, 0px));
+}
+
+.ad-offer-page .ad-action-bar {
+  padding-bottom: calc(15px + env(safe-area-inset-bottom, 0px));
+}
+
+@media (max-width: 480px) {
+  .ad-offer-page .ad-offer-content > h1 {
+    font-size: clamp(25px, 7vw, 28px);
+  }
+
+  .ad-offer-page .ad-price-card h2 {
+    font-size: 23px;
+  }
+}
