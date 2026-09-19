@@ -4742,8 +4742,15 @@ html[data-theme="light"] .enx-footer .enx-footer-support a {
 /* Mobile course player: an immersive, vertical lecture flow with the existing brand palette. */
 .react-page-root[data-page="videos.html"] .reel-chrome {
   display: none;
-  opacity: 1;
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
   transition: opacity .2s ease, visibility .2s ease;
+}
+
+.react-page-root[data-page="videos.html"] .reel-chrome.is-visible {
+  visibility: visible;
+  opacity: 1;
 }
 
 .react-page-root[data-page="videos.html"] .player-frame:has(.sm-player:not(.sm-awake):not(:has(:focus-visible))) .reel-chrome {

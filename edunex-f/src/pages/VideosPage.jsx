@@ -452,7 +452,7 @@ function VideoControls({ playing, volume, muted, rate, currentTime, duration, on
   );
 }
 
-function Player({ course, lesson: savedLesson, lessonIndex, autoNext, autoplay = false, onEnded, onNavigateLesson, forceEmbed = false, mobileViewMode = null, onToggleMobileView }) {
+function Player({ course, lesson: savedLesson, lessonIndex, autoNext, autoplay = false, onEnded, onNavigateLesson, forceEmbed = false, mobileViewMode = null, onToggleMobileView, onControlsVisibilityChange }) {
   const playback = usePlaybackAccess(course._id, savedLesson);
   const lesson = playback.lesson;
   const videoRef = useRef(null);
@@ -497,6 +497,9 @@ function Player({ course, lesson: savedLesson, lessonIndex, autoNext, autoplay =
   }, []);
 
   useEffect(() => () => window.clearTimeout(controlsHideTimerRef.current), []);
+  useEffect(() => {
+    onControlsVisibilityChange?.(!playing || controlsAwake);
+  }, [controlsAwake, onControlsVisibilityChange, playing]);
 
   useEffect(() => {
     playerStateRef.current = { autoNext, muted, onEnded, rate, volume };
@@ -1033,7 +1036,16 @@ export function VideosPage() {
   const [mobilePlayerViewport, setMobilePlayerViewport] = useState(() => Boolean(window.matchMedia?.("(max-width: 820px), (max-width: 1180px) and (pointer: coarse)")?.matches));
   const [mobilePlayerMinimized, setMobilePlayerMinimized] = useState(false);
   const [autoNext, setAutoNext] = useState(() => localStorage.getItem(AUTO_NEXT_KEY) === "true");
+  const [playerControlsVisible, setPlayerControlsVisible] = useState(true);
   useViewportLock(notesOpen || lectureSheetOpen || playlistOpen);
+
+  const handlePlayerControlsVisibility = useCallback((visible) => {
+    setPlayerControlsVisible(Boolean(visible));
+  }, []);
+
+  useEffect(() => {
+    setPlayerControlsVisible(true);
+  }, [activeIndex]);
 
   usePageStyle("react-page-style-videos", videosPage.styles);
 
@@ -1649,7 +1661,7 @@ export function VideosPage() {
               {error ? (
                 <div className="player-placeholder"><div><strong>Could not open this course</strong><span>{error}</span><button type="button" className="toolbar-button" onClick={() => setLoadAttempt(attempt => attempt + 1)}>Retry loading course</button></div></div>
               ) : course ? (
-                !available(lesson) ? <div className="player-placeholder">This lesson is locked.</div> : usesCustomPlayer(lesson) && fallbackLesson !== `${course._id}-${lesson._id}` ? <CourseMediaPlayer onFallback={lesson.provider !== 'aws_cloudfront' && isBunnyEmbedUrl(embedUrl(lesson)) ? ()=>setFallbackLesson(`${course._id}-${lesson._id}`) : undefined} autoplay={autoplayLesson} course={course} lesson={lesson} lessonIndex={activeIndex} autoNext={autoNext} onEnded={advanceNext} onNavigateLesson={changeLessonByNavigation} mobileViewMode={mobilePlayerViewport ? (mobilePlayerMinimized ? "landscape" : "immersive") : null} onToggleMobileView={mobilePlayerViewport ? toggleMobilePlayerView : undefined} key={`${course._id}-${lesson._id}`}/> : <Player
+                !available(lesson) ? <div className="player-placeholder">This lesson is locked.</div> : usesCustomPlayer(lesson) && fallbackLesson !== `${course._id}-${lesson._id}` ? <CourseMediaPlayer onFallback={lesson.provider !== 'aws_cloudfront' && isBunnyEmbedUrl(embedUrl(lesson)) ? ()=>setFallbackLesson(`${course._id}-${lesson._id}`) : undefined} autoplay={autoplayLesson} course={course} lesson={lesson} lessonIndex={activeIndex} autoNext={autoNext} onEnded={advanceNext} onNavigateLesson={changeLessonByNavigation} mobileViewMode={mobilePlayerViewport ? (mobilePlayerMinimized ? "landscape" : "immersive") : null} onToggleMobileView={mobilePlayerViewport ? toggleMobilePlayerView : undefined} onControlsVisibilityChange={handlePlayerControlsVisibility} key={`${course._id}-${lesson._id}`}/> : <Player
                   forceEmbed={fallbackLesson === `${course._id}-${lesson._id}`}
                   course={course}
                   lesson={lesson}
@@ -1660,13 +1672,14 @@ export function VideosPage() {
                   onNavigateLesson={changeLessonByNavigation}
                   mobileViewMode={mobilePlayerViewport ? (mobilePlayerMinimized ? "landscape" : "immersive") : null}
                   onToggleMobileView={mobilePlayerViewport ? toggleMobilePlayerView : undefined}
+                  onControlsVisibilityChange={handlePlayerControlsVisibility}
                   key={`${course._id}-${activeIndex}`}
                 />
               ) : (
                 <div className="player-placeholder"><div><strong>Preparing course</strong><span>Loading your Skillomate course playlist...</span></div></div>
               )}
               {selectedCourseId ? (
-                <div className="reel-chrome" aria-label="Lecture controls">
+                <div className={`reel-chrome${playerControlsVisible ? " is-visible" : ""}`} aria-label="Lecture controls" aria-hidden={!playerControlsVisible}>
                   <div className="reel-topbar">
                     <div className="reel-topbar-start">
                       <a className="reel-icon-button" href="/courses.html" aria-label="Back to courses or minimize fullscreen player" onClick={handleReelBack}><ReelIcon name="back" /></a>

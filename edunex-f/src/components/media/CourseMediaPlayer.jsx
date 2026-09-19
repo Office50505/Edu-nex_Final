@@ -8,7 +8,7 @@ import './player.css';
 
 const QUALITY_PRESETS = [120, 240, 360, 480, 720, 1080];
 
-export function CourseMediaPlayer({ course, lesson, lessonIndex, autoNext, autoplay = false, onEnded, onNavigateLesson, onFallback, mobileViewMode = null, onToggleMobileView }) {
+export function CourseMediaPlayer({ course, lesson, lessonIndex, autoNext, autoplay = false, onEnded, onNavigateLesson, onFallback, mobileViewMode = null, onToggleMobileView, onControlsVisibilityChange }) {
   const access = usePlaybackAccess(course._id, lesson);
   const videoRef = useRef(null), frameRef = useRef(null), hlsRef = useRef(null), hideTimer = useRef(), sleepTimer = useRef();
   const settingsButton = useRef(null), restored = useRef(false), latest = useRef({}), qualityPreference = useRef(720);
@@ -142,6 +142,7 @@ export function CourseMediaPlayer({ course, lesson, lessonIndex, autoNext, autop
   function closeMenu(){setMenu(false);settingsButton.current?.focus();}
   function key(event){if(event.altKey||event.ctrlKey||event.metaKey)return;if(event.key==='Escape'){closeMenu();return;}if(event.target.closest('input,select,textarea,button,[contenteditable]'))return;const k=event.key.toLowerCase();if([' ','k','arrowleft','arrowright','m','f'].includes(k)){event.preventDefault();event.stopPropagation();wake();if(k===' '||k==='k')toggle();if(k==='arrowleft')seek(-10);if(k==='arrowright')seek(10);if(k==='m')videoRef.current.muted=!videoRef.current.muted;if(k==='f')full();}}
   const failure=access.error||error,visible=awake||!playing||menu||!!failure;
+  useEffect(()=>{onControlsVisibilityChange?.(visible);},[visible,onControlsVisibilityChange]);
   return <section className={`sm-player ${visible?'sm-awake':''} ${fullscreen?'sm-fullscreen':''}`} ref={frameRef} tabIndex={0} aria-label={`${lesson.title} video player`} onKeyDown={key} onPointerMove={wake} onPointerDown={wake} onFocus={wake}>
     <video ref={videoRef} playsInline preload="metadata" aria-label={lesson.title} onClick={videoTap} onDoubleClick={event=>event.preventDefault()}/>
     <div className="sm-player-heading" aria-hidden={!visible}>

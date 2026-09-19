@@ -69,6 +69,10 @@ describe("cross-viewport UX", () => {
   });
 
   it("hides the entire reel overlay with timed player controls and raises side actions", () => {
+    expect(videosPageSource).toContain('reel-chrome${playerControlsVisible ? " is-visible" : ""}');
+    expect(videosPageSource).toContain("onControlsVisibilityChange={handlePlayerControlsVisibility}");
+    expect(appStyles).toMatch(/\.reel-chrome \{[\s\S]*visibility: hidden;[\s\S]*opacity: 0;/);
+    expect(appStyles).toMatch(/\.reel-chrome\.is-visible \{[\s\S]*visibility: visible;[\s\S]*opacity: 1;/);
     expect(appStyles).toMatch(/\.player-frame:has\(\.sm-player:not\(\.sm-awake\):not\(:has\(:focus-visible\)\)\) \.reel-chrome[\s\S]*visibility: hidden;[\s\S]*opacity: 0;/);
     expect(appStyles).toMatch(/\.player-frame:has\(\.custom-video-player\.is-playing:not\(\.is-controls-awake\)\) \.reel-chrome[\s\S]*visibility: hidden;[\s\S]*opacity: 0;/);
     expect(appStyles).toMatch(/\.reel-side-actions[\s\S]*bottom: max\(150px, calc\(134px \+ env\(safe-area-inset-bottom\)\)\);/);
