@@ -7,18 +7,19 @@ import { clock, seekTarget, adjacent, nativeLessonSource } from './playerRules';
 import './player.css';
 
 const QUALITY_PRESETS = [120, 240, 360, 480, 720, 1080];
+const DEFAULT_QUALITY = 1080;
 
 export function CourseMediaPlayer({ course, lesson, lessonIndex, autoNext, autoplay = false, onEnded, onNavigateLesson, onFallback, mobileViewMode = null, onToggleMobileView, onControlsVisibilityChange }) {
   const access = usePlaybackAccess(course._id, lesson);
   const videoRef = useRef(null), frameRef = useRef(null), hlsRef = useRef(null), hideTimer = useRef(), sleepTimer = useRef();
-  const settingsButton = useRef(null), restored = useRef(false), latest = useRef({}), qualityPreference = useRef(720);
+  const settingsButton = useRef(null), restored = useRef(false), latest = useRef({}), qualityPreference = useRef(DEFAULT_QUALITY);
   const [time,setTime] = useState({current:0,duration:0});
   const [playing,setPlaying] = useState(false), [buffering,setBuffering] = useState(false);
   const [error,setError] = useState(''), [notice,setNotice] = useState('');
   const [awake,setAwake] = useState(true), [menu,setMenu] = useState(false);
   const [rate,setRate] = useState(1), [loop,setLoop] = useState(false), [sleep,setSleep] = useState(0);
   const [volume,setVolume] = useState(1), [muted,setMuted] = useState(false);
-  const [levels,setLevels] = useState([]), [quality,setQuality] = useState(720);
+  const [levels,setLevels] = useState([]), [quality,setQuality] = useState(DEFAULT_QUALITY);
   const [captions,setCaptions] = useState([]), [caption,setCaption] = useState(-1);
   const tapRef = useRef(null), tapTimer = useRef(null);
   const [fullscreen,setFullscreen] = useState(false), [buffered,setBuffered] = useState(0);
@@ -69,13 +70,20 @@ export function CourseMediaPlayer({ course, lesson, lessonIndex, autoNext, autop
       engine.on(Hls.Events.MANIFEST_PARSED,(_,data)=>{
         const nextLevels=data.levels
           .map((level,index)=>({index,height:Number(level.height)||0}))
-          .filter(level=>QUALITY_PRESETS.includes(level.height))
+          .filter(level=>level.height>0)
           .filter((level,index,list)=>list.findIndex(item=>item.height===level.height)===index)
           .sort((a,b)=>a.height-b.height);
         setLevels(nextLevels);
         const target=qualityPreference.current;
         const preferred=nextLevels.find(level=>level.height===target) || nextLevels.reduce((best,level)=>!best||Math.abs(level.height-target)<Math.abs(best.height-target)?level:best,null);
-        if(preferred)engine.currentLevel=preferred.index;
+        if(preferred){
+          qualityPreference.current=preferred.height;
+          setQuality(preferred.height);
+          engine.startLevel=preferred.index;
+          engine.loadLevel=preferred.index;
+          engine.nextLevel=preferred.index;
+          engine.currentLevel=preferred.index;
+        }
       });
       engine.on(Hls.Events.SUBTITLE_TRACKS_UPDATED,(_,data)=>setCaptions(data.subtitleTracks.map((track,index)=>({index,label:track.name||track.lang||`Track ${index+1}`}))));
       engine.on(Hls.Events.ERROR,(_,data)=>{if(!data.fatal)return;if(data.type===Hls.ErrorTypes.MEDIA_ERROR&&mediaRecoveries++<2)engine.recoverMediaError();else{engine.stopLoad();const status=data.response?.code;failed(status===401||status===403?'Video access was rejected. Retry to renew access.':status===404?'The video file could not be found. Please contact support.':`Video could not load (${data.details || 'stream error'}). Retry playback.`);}});
@@ -134,10 +142,14 @@ export function CourseMediaPlayer({ course, lesson, lessonIndex, autoNext, autop
     wake();
   }
   function selectQuality(height){
-    qualityPreference.current=height;
-    setQuality(height);
     const level=levels.find(item=>item.height===height) || levels.reduce((best,item)=>!best||Math.abs(item.height-height)<Math.abs(best.height-height)?item:best,null);
-    if(level&&hlsRef.current)hlsRef.current.currentLevel=level.index;
+    if(!level||!hlsRef.current){setNotice('This resolution is not available for this video.');return;}
+    qualityPreference.current=level.height;
+    setQuality(level.height);
+    hlsRef.current.loadLevel=level.index;
+    hlsRef.current.nextLevel=level.index;
+    hlsRef.current.currentLevel=level.index;
+    setNotice(`Quality changed to ${level.height}p.`);
   }
   function closeMenu(){setMenu(false);settingsButton.current?.focus();}
   function key(event){if(event.altKey||event.ctrlKey||event.metaKey)return;if(event.key==='Escape'){closeMenu();return;}if(event.target.closest('input,select,textarea,button,[contenteditable]'))return;const k=event.key.toLowerCase();if([' ','k','arrowleft','arrowright','m','f'].includes(k)){event.preventDefault();event.stopPropagation();wake();if(k===' '||k==='k')toggle();if(k==='arrowleft')seek(-10);if(k==='arrowright')seek(10);if(k==='m')videoRef.current.muted=!videoRef.current.muted;if(k==='f')full();}}
@@ -165,7 +177,7 @@ export function CourseMediaPlayer({ course, lesson, lessonIndex, autoNext, autop
       <div className="sm-setting-section">
         <span className="sm-setting-label">Quality</span>
         <div className="sm-setting-options" role="radiogroup" aria-label="Quality">
-          {QUALITY_PRESETS.map(height=><button type="button" role="radio" aria-checked={quality===height} aria-label={`Quality ${height}p`} className={quality===height?'is-selected':''} key={height} onClick={()=>selectQuality(height)}>{height}p</button>)}
+          {QUALITY_PRESETS.map(height=>{const available=levels.some(level=>level.height===height);return <button type="button" role="radio" aria-checked={quality===height} aria-label={`Quality ${height}p`} aria-disabled={!available} disabled={!available} className={quality===height?'is-selected':''} key={height} onClick={()=>selectQuality(height)}>{height}p</button>;})}
         </div>
       </div>
       <label className="sm-setting-section sm-setting-toggle">Loop lesson<input type="checkbox" checked={loop} onChange={e=>setLoop(e.target.checked)}/></label>
