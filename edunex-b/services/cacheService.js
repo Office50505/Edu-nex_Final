@@ -2,6 +2,10 @@ const { createClient } = require('redis');
 
 const REDIS_URL = process.env.REDIS_URL || '';
 const CACHE_PREFIX = process.env.CACHE_PREFIX || 'edunex';
+const MEMORY_CACHE_ENABLED = !REDIS_URL && process.env.NODE_ENV !== 'production';
+const REDIS_CONNECT_TIMEOUT_MS = 2000;
+const REDIS_RECONNECT_MAX_RETRIES = 3;
+const REDIS_RECONNECT_MAX_DELAY_MS = 2000;
 
 const memoryNamespaces = new Map();
 let redisClient = null;
@@ -41,78 +45,110 @@ function clearMemoryNamespace(namespace) {
   getMemoryNamespace(namespace).clear();
 }
 
+function logRedisUnavailable(operation, error) {
+  if (redisUnavailableLogged) return;
+
+  // Error messages can contain a connection URL or credentials, so log only a safe code.
+  const safeCode = typeof error?.code === 'string' && /^[A-Z0-9_]+$/.test(error.code)
+    ? ` (${error.code})`
+    : '';
+  console.warn(`Redis cache ${operation} failed${safeCode}; continuing without cached data.`);
+  redisUnavailableLogged = true;
+}
+
+function markRedisAvailable() {
+  redisUnavailableLogged = false;
+}
+
+function reconnectStrategy(retries) {
+  if (retries >= REDIS_RECONNECT_MAX_RETRIES) return false;
+  return Math.min(200 * (2 ** retries), REDIS_RECONNECT_MAX_DELAY_MS);
+}
+
+function createRedisClient() {
+  const client = createClient({
+    url: REDIS_URL,
+    socket: {
+      connectTimeout: REDIS_CONNECT_TIMEOUT_MS,
+      reconnectStrategy,
+    },
+  });
+
+  client.on('error', (error) => logRedisUnavailable('connection', error));
+  client.on('ready', markRedisAvailable);
+  return client;
+}
+
 async function getRedisClient() {
   if (!REDIS_URL) return null;
-  if (redisClient?.isOpen) return redisClient;
 
   if (!redisClient) {
-    redisClient = createClient({ url: REDIS_URL });
-    redisClient.on('error', (error) => {
-      if (!redisUnavailableLogged) {
-        console.warn(`Redis cache unavailable: ${error.message}`);
-        redisUnavailableLogged = true;
-      }
-    });
+    redisClient = createRedisClient();
   }
 
-  if (!redisConnectPromise) {
-    redisConnectPromise = redisClient.connect()
-      .then(() => {
-        redisUnavailableLogged = false;
-        console.log('✅ Redis cache connected');
-        return redisClient;
-      })
-      .catch((error) => {
-        redisConnectPromise = null;
-        if (!redisUnavailableLogged) {
-          console.warn(`Redis cache unavailable: ${error.message}`);
-          redisUnavailableLogged = true;
-        }
-        return null;
-      });
-  }
+  if (redisClient.isReady) return redisClient;
+  if (redisConnectPromise) return redisConnectPromise;
+
+  // An open, non-ready client is already reconnecting. Do not queue cache commands
+  // behind it; let the request use MongoDB/source data immediately.
+  if (redisClient.isOpen) return null;
+
+  redisConnectPromise = redisClient.connect()
+    .then(() => {
+      markRedisAvailable();
+      return redisClient;
+    })
+    .catch((error) => {
+      logRedisUnavailable('connection', error);
+      return null;
+    })
+    .finally(() => {
+      redisConnectPromise = null;
+    });
 
   return redisConnectPromise;
 }
 
 async function getJsonCache(namespace, key) {
-  const client = await getRedisClient();
-  if (!client) {
+  if (MEMORY_CACHE_ENABLED) {
     return getMemoryJson(namespace, key);
   }
 
+  const client = await getRedisClient();
+  if (!client) return null;
+
   try {
     const raw = await client.get(buildKey(namespace, key));
+    markRedisAvailable();
     return raw ? JSON.parse(raw) : null;
   } catch (error) {
-    if (!redisUnavailableLogged) {
-      console.warn(`Redis cache read failed: ${error.message}`);
-      redisUnavailableLogged = true;
-    }
-    return getMemoryJson(namespace, key);
+    logRedisUnavailable('read', error);
+    return null;
   }
 }
 
 async function setJsonCache(namespace, key, data, ttlSeconds) {
-  const client = await getRedisClient();
-  if (!client) {
+  if (MEMORY_CACHE_ENABLED) {
     setMemoryJson(namespace, key, data, ttlSeconds);
     return;
   }
 
+  const client = await getRedisClient();
+  if (!client) return;
+
   try {
     await client.set(buildKey(namespace, key), JSON.stringify(data), { EX: ttlSeconds });
+    markRedisAvailable();
   } catch (error) {
-    if (!redisUnavailableLogged) {
-      console.warn(`Redis cache write failed: ${error.message}`);
-      redisUnavailableLogged = true;
-    }
-    setMemoryJson(namespace, key, data, ttlSeconds);
+    logRedisUnavailable('write', error);
   }
 }
 
 async function clearCacheNamespace(namespace) {
-  clearMemoryNamespace(namespace);
+  if (MEMORY_CACHE_ENABLED) {
+    clearMemoryNamespace(namespace);
+    return;
+  }
 
   const client = await getRedisClient();
   if (!client) return;
@@ -129,16 +165,16 @@ async function clearCacheNamespace(namespace) {
     if (keys.length) {
       await client.del(keys);
     }
+    markRedisAvailable();
   } catch (error) {
-    if (!redisUnavailableLogged) {
-      console.warn(`Redis cache clear failed: ${error.message}`);
-      redisUnavailableLogged = true;
-    }
+    logRedisUnavailable('invalidation', error);
   }
 }
 
 function getCacheBackend() {
-  return REDIS_URL ? 'redis' : 'memory';
+  if (MEMORY_CACHE_ENABLED) return 'memory';
+  if (!REDIS_URL) return 'disabled/no-shared-cache';
+  return redisClient?.isReady ? 'redis-connected' : 'redis-disconnected';
 }
 
 module.exports = {

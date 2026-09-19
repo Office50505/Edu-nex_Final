@@ -21,6 +21,7 @@
     "integrations:check": "node scripts/check-integrations.cjs",
     "payment:create-plan": "node scripts/create-razorpay-plan.cjs",
     "test:maintenance": "node --test tests/admin-maintenance.test.cjs tests/system-health.test.cjs",
+    "test:cache": "node --test tests/shared-cache.test.cjs",
     "test:certification": "node --test tests/certification.test.cjs",
     "test:video": "node --test tests/cloudfront.test.cjs tests/video-import.test.cjs"
   },
