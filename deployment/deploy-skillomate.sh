@@ -9,6 +9,7 @@ readonly EXPECTED_FRONTEND="/home/ubuntu/skillomate_repo/edunex-f"
 readonly EXPECTED_ORIGIN="git@github-skillomate:Office50505/Edu-nex_Final.git"
 readonly PROCESS_NAME="skillomate_backend"
 readonly HEALTH_URL="http://127.0.0.1:3000/api/health"
+readonly READY_URL="http://127.0.0.1:3000/api/ready"
 readonly COURSES_URL="http://127.0.0.1:3000/api/courses"
 readonly LOCK_FILE="/tmp/skillomate-deploy.lock"
 readonly LOG_DIRECTORY="/home/ubuntu/skillomate_deployments"
@@ -25,8 +26,10 @@ chmod 600 "$LOG_FILE"
 OLD_COMMIT=""
 NEW_COMMIT=""
 HEALTH_RESULT=""
+READINESS_RESULT=""
 COURSES_RESULT=""
 DEPLOYMENT_STARTED=0
+EXPECTED_TARGET_COMMIT="${1:-}"
 
 exec 9>"$LOCK_FILE"
 if ! flock -n 9; then
@@ -72,6 +75,21 @@ wait_for_health() {
   return 1
 }
 
+wait_for_readiness() {
+  local body
+  local attempt
+
+  for attempt in $(seq 1 15); do
+    if body=$(curl -fsS --max-time 5 "$READY_URL" 2>/dev/null); then
+      printf '%s' "$body"
+      return 0
+    fi
+    sleep 2
+  done
+
+  return 1
+}
+
 check_courses() {
   curl -fsS --max-time 15 "$COURSES_URL" | python3 -c '
 import json
@@ -95,6 +113,7 @@ rollback_deployment() {
   local reason=$1
   local rollback_ok=1
   local rollback_health="unavailable"
+  local rollback_readiness="unavailable"
   local rollback_courses="unavailable"
 
   trap - ERR
@@ -112,6 +131,7 @@ rollback_deployment() {
   pm2 restart "$PROCESS_NAME" --update-env || rollback_ok=0
   pm2 save || rollback_ok=0
   rollback_health=$(wait_for_health) || rollback_ok=0
+  rollback_readiness=$(wait_for_readiness) || rollback_ok=0
   rollback_courses=$(check_courses 2>/dev/null) || rollback_ok=0
   pm2_status_is online || rollback_ok=0
   ss -ltnp | grep -q ':3000' || rollback_ok=0
@@ -122,6 +142,7 @@ rollback_deployment() {
     echo "ROLLBACK SUCCESSFUL"
     echo "PRODUCTION RESTORED TO $OLD_COMMIT"
     echo "health=$rollback_health"
+    echo "ready=$rollback_readiness"
     echo "courses=$rollback_courses"
     exit 1
   fi
@@ -211,6 +232,11 @@ if ! git ls-files --error-unmatch package-lock.json >/dev/null 2>&1; then
   exit 19
 fi
 
+if test -n "$EXPECTED_TARGET_COMMIT" && [[ ! "$EXPECTED_TARGET_COMMIT" =~ ^[0-9a-f]{40}$ ]]; then
+  echo "Expected deployment commit must be a full lowercase Git SHA."
+  exit 26
+fi
+
 if ! git diff --quiet || ! git diff --cached --quiet || test -n "$(git ls-files --others --exclude-standard)"; then
   echo "Production contains unexpected manual changes. Deployment stopped."
   git status --short
@@ -222,6 +248,14 @@ OLD_COMMIT="$(git rev-parse HEAD)"
 git fetch --prune origin main
 NEW_COMMIT="$(git rev-parse origin/main)"
 
+if test -n "$EXPECTED_TARGET_COMMIT" && test "$NEW_COMMIT" != "$EXPECTED_TARGET_COMMIT"; then
+  record_result preflight-failed target-moved
+  echo "origin/main changed after the rolling deployment target was selected."
+  echo "expected_commit=$EXPECTED_TARGET_COMMIT"
+  echo "current_origin_main=$NEW_COMMIT"
+  exit 27
+fi
+
 echo "old_commit=$OLD_COMMIT"
 echo "new_commit=$NEW_COMMIT"
 
@@ -230,6 +264,11 @@ if test "$OLD_COMMIT" = "$NEW_COMMIT"; then
     record_result already-current health-failed
     echo "Already on latest main, but the health check failed."
     exit 21
+  fi
+  if ! READINESS_RESULT=$(wait_for_readiness); then
+    record_result already-current readiness-failed
+    echo "Already on latest main, but the readiness check failed."
+    exit 28
   fi
   if ! COURSES_RESULT=$(check_courses); then
     record_result already-current courses-failed
@@ -246,6 +285,7 @@ if test "$OLD_COMMIT" = "$NEW_COMMIT"; then
   echo "Already running latest main."
   echo "commit=$OLD_COMMIT"
   echo "health=$HEALTH_RESULT"
+  echo "ready=$READINESS_RESULT"
   echo "courses=$COURSES_RESULT"
   exit 0
 fi
@@ -296,6 +336,10 @@ if ! HEALTH_RESULT=$(wait_for_health); then
   rollback_deployment "health check failed"
 fi
 
+if ! READINESS_RESULT=$(wait_for_readiness); then
+  rollback_deployment "readiness check failed"
+fi
+
 if ! COURSES_RESULT=$(check_courses); then
   rollback_deployment "courses API validation failed"
 fi
@@ -326,4 +370,5 @@ echo "commit=$NEW_COMMIT"
 echo "subject=$COMMIT_SUBJECT"
 echo "timestamp=$DEPLOYMENT_TIMESTAMP"
 echo "health=$HEALTH_RESULT"
+echo "ready=$READINESS_RESULT"
 echo "courses=$COURSES_RESULT"
