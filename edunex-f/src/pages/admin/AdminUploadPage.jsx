@@ -2,7 +2,8 @@ import { inferProvider, videoError, importLessons, CLOUDFRONT_HOST } from "./vid
 import { VideoPreview } from "./VideoPreview.jsx";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { AdminShell, Message } from "./AdminShell.jsx";
-import { adminJson, adminRoutes, formatNumber, requireAdmin, slugify } from "./adminApi.js";
+import { adminJson, adminRequest, adminRoutes, errorMessage, formatNumber, requireAdmin, slugify } from "./adminApi.js";
+import "./pdf-extraction.css";
 
 function normalizeThumbnailUrl(url, width = 1600) {
   const value = String(url || "").trim();
@@ -25,6 +26,7 @@ function makeVideo(index = 0) {
     title: "",
     topic: "",
     description: "",
+    notes: "",
     duration: "",
     videoUrl: "",
     thumbnailUrl: "",
@@ -47,7 +49,6 @@ function emptyCourseForm() {
     thumbnailVerticalDataUrl: "",
     thumbnailFileName: "",
     thumbnailVerticalFileName: "",
-    notesUrl: "",
     videos: [makeVideo()],
   };
 }
@@ -134,6 +135,7 @@ function courseVideo(video, index) {
     title: video?.title || `Video ${index + 1}`,
     topic: video?.topic || "",
     description: video?.description || "",
+    notes: video?.notes || "",
     duration: String(video?.duration || ""),
     videoUrl: video?.videoUrl || video?.embedUrl || video?.url || (video?.bunnyVideoId && video?.bunnyLibraryId ? `https://player.mediadelivery.net/embed/${video.bunnyLibraryId}/${video.bunnyVideoId}` : ""),
     thumbnailUrl: video?.thumbnailUrl || video?.thumbnailHorizontalUrl || "",
@@ -170,7 +172,6 @@ function courseForm(course) {
     thumbnailVerticalDataUrl: verticalThumbnailDataUrl,
     thumbnailFileName: "",
     thumbnailVerticalFileName: "",
-    notesUrl: course?.notesUrl || "",
     videos,
   };
 }
@@ -187,6 +188,9 @@ export function AdminUploadPage() {
   const checkingRef = useRef(false);
   const mountedRef = useRef(true);
   const [checking, setChecking] = useState(false);
+  const [extractingNotesIndex, setExtractingNotesIndex] = useState(null);
+  const [notesExtraction, setNotesExtraction] = useState(null);
+  const [draggingNotesIndex, setDraggingNotesIndex] = useState(null);
   useEffect(() => { mountedRef.current=true; return () => { mountedRef.current=false; }; }, []);
   async function checkLessons(lessons) {
     if (checkingRef.current) return;
@@ -221,6 +225,64 @@ export function AdminUploadPage() {
       setBulk('');setMessage('Lessons imported. Checking durations; review the generated titles and preview playback.');setMessageType('success');
       void checkLessons(lessons);
     } catch(error){setMessage(error.message);setMessageType('error');}
+  }
+
+  async function extractLessonNotes(index, file) {
+    if (!file) return;
+    if (file.type !== 'application/pdf' && !file.name.toLowerCase().endsWith('.pdf')) {
+      setMessageType('error'); setMessage('Choose a PDF file.'); return;
+    }
+    if (file.size > 10 * 1024 * 1024) {
+      setMessageType('error'); setMessage('The PDF must be 10 MB or smaller.'); return;
+    }
+    setExtractingNotesIndex(index); setMessage('');
+    setNotesExtraction({ index, fileName: file.name, percent: 10, stage: 'Preparing PDF…', error: '' });
+    const stageTimer = window.setTimeout(() => {
+      setNotesExtraction(current => current?.index === index ? { ...current, percent: 45, stage: 'Uploading PDF securely…' } : current);
+    }, 250);
+    const extractionTimer = window.setTimeout(() => {
+      setNotesExtraction(current => current?.index === index ? { ...current, percent: 72, stage: 'Reading pages and extracting text…' } : current);
+    }, 900);
+    try {
+      const response = await adminRequest('/api/admin/extract-pdf-notes', { method: 'POST', headers: { 'Content-Type': 'application/pdf' }, body: file });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(errorMessage(data, 'Could not extract text from this PDF.'));
+      updateVideo(index, 'notes', data.text || '');
+      setNotesExtraction({ index, fileName: file.name, percent: 100, stage: `Complete · ${data.pageCount || 0} pages · ${formatNumber(data.characterCount || 0)} characters`, error: '' });
+      setMessageType('success');
+      setMessage(data.truncated ? 'PDF text extracted. It exceeded 20,000 characters and was shortened to fit this lesson.' : 'PDF text extracted into the lesson notes. The PDF was not stored.');
+    } catch (error) {
+      const detail = error.message || 'Could not extract text from this PDF.';
+      setNotesExtraction({ index, fileName: file.name, percent: 100, stage: 'Extraction failed', error: detail });
+      setMessageType('error'); setMessage(detail);
+    } finally {
+      window.clearTimeout(stageTimer);
+      window.clearTimeout(extractionTimer);
+      setExtractingNotesIndex(null);
+    }
+  }
+
+  function handleNotesDrag(index, event) {
+    event.preventDefault();
+    event.stopPropagation();
+    if (extractingNotesIndex !== null) return;
+    if (event.type === 'dragleave' && event.currentTarget.contains(event.relatedTarget)) return;
+    setDraggingNotesIndex(event.type === 'dragleave' ? null : index);
+    if (event.dataTransfer) event.dataTransfer.dropEffect = 'copy';
+  }
+
+  function handleNotesDrop(index, event) {
+    event.preventDefault();
+    event.stopPropagation();
+    setDraggingNotesIndex(null);
+    if (extractingNotesIndex !== null) return;
+    const files = Array.from(event.dataTransfer?.files || []);
+    if (files.length !== 1) {
+      setMessageType('error');
+      setMessage(files.length ? 'Drop one PDF at a time.' : 'Drop a PDF file here.');
+      return;
+    }
+    void extractLessonNotes(index, files[0]);
   }
   const editCourseId = courseIdFromLocation();
   const [editLoaded, setEditLoaded] = useState(false);
@@ -381,12 +443,12 @@ export function AdminUploadPage() {
       status: form.status,
       thumbnailUrl: normalizeThumbnailUrl(form.thumbnailUrl),
       thumbnailVerticalUrl: normalizeThumbnailUrl(form.thumbnailVerticalUrl),
-      notesUrl: form.notesUrl.trim(),
       videos: form.videos.map((video, index) => ({
         _id: video._id, provider: video.provider, youtubeId: video.youtubeId, transcriptUrl: video.transcriptUrl, order: index + 1,
         title: video.title.trim() || `Video ${index + 1}`,
         topic: video.topic.trim(),
         description: video.description.trim(),
+        notes: String(video.notes || "").trim(),
         duration: Number(video.duration || 0),
         videoUrl: video.videoUrl,
         thumbnailUrl: String(video.thumbnailUrl || "").trim(),
@@ -451,7 +513,7 @@ export function AdminUploadPage() {
           </nav>
           <div className="course-builder-grid">
             <div className="form-section">
-              <div className="form-section-head"><div><h2>Course Details</h2><p>Enter these once. All lessons share the category, course notes and thumbnails unless overridden.</p></div></div>
+              <div className="form-section-head"><div><h2>Course Details</h2><p>Enter these once. Lessons can have their own notes, descriptions, and media.</p></div></div>
               <div className="form-grid">
                 <div className="field"><label htmlFor="title">Course title</label><input id="title" name="title" required maxLength={120} value={form.title} onChange={(event) => updateField("title", event.target.value)} /></div>
                 <div className="field"><label htmlFor="slug">Slug</label><input id="slug" name="slug" required maxLength={120} value={form.slug} onChange={(event) => { setSlugTouched(true); updateField("slug", event.target.value); }} /></div>
@@ -487,7 +549,6 @@ export function AdminUploadPage() {
                     <span className="file-upload-name">{form.thumbnailVerticalFileName || "No file chosen"}</span>
                   </div>
                 </div>
-                <div className="field span-2"><label htmlFor="notesUrl">Notes URL</label><input id="notesUrl" name="notesUrl" type="url" placeholder="https://..." value={form.notesUrl} onChange={(event) => updateField("notesUrl", event.target.value)} /></div>
               </div>
             </div>
 
@@ -518,7 +579,7 @@ export function AdminUploadPage() {
           <section className="form-section admin-editor-grid" aria-label="Pricing, certificate and SEO placeholders">
             <div><h2>Pricing / Subscription Access</h2><p>Backend API not connected for price, plan access, free/paid mode, and featured course flags.</p></div>
             <div><h2>Certificate Settings</h2><p>Use Operations → Certification for live criteria today. Course-level certificate toggles need backend course fields.</p></div>
-            <div><h2>SEO / Metadata</h2><p>Slug, title, description, notes URL and thumbnails are saved now. Meta title and search tags need backend fields.</p></div>
+            <div><h2>SEO / Metadata</h2><p>Slug, title, description, and thumbnails are saved now. Meta title and search tags need backend fields.</p></div>
           </section>
 
           <div className="course-publish-panel">
@@ -537,7 +598,8 @@ export function AdminUploadPage() {
                     <div className="field"><label htmlFor={`videoTitle${index}`}>Title</label><input id={`videoTitle${index}`} value={video.title} required onChange={(event) => updateVideo(index, "title", event.target.value)} /></div>
                     <div className="field span-2"><label htmlFor={`videoUrl${index}`}>Permanent video URL</label><input id={`videoUrl${index}`} type="text" required={video.provider!=="youtube"} spellCheck={false} placeholder={video.provider==="aws_cloudfront"?`https://${cloudHost}/Course/Lesson/master.m3u8`:"https://player.mediadelivery.net/embed/..."} value={video.videoUrl} onChange={(event) => updateVideo(index, "videoUrl", event.target.value)} /></div>
                   </div>
-                  <p role="status">{video.metadataMessage || 'Uses course thumbnails and notes. Duration can be detected automatically.'}</p>
+                  <div className="field lesson-notes-field"><div className="lesson-notes-heading"><label htmlFor={`videoNotes${index}`}>Lesson notes</label></div><div className={`lesson-pdf-dropzone${draggingNotesIndex === index ? ' is-dragging' : ''}${extractingNotesIndex === index ? ' is-extracting' : ''}`} role="button" tabIndex={0} aria-label={`Upload PDF notes for lesson ${index + 1}`} onClick={() => { if (extractingNotesIndex === null) document.getElementById(`videoNotesPdf${index}`)?.click(); }} onKeyDown={(event) => { if ((event.key === 'Enter' || event.key === ' ') && extractingNotesIndex === null) { event.preventDefault(); document.getElementById(`videoNotesPdf${index}`)?.click(); } }} onDragEnter={(event) => handleNotesDrag(index, event)} onDragOver={(event) => handleNotesDrag(index, event)} onDragLeave={(event) => handleNotesDrag(index, event)} onDrop={(event) => handleNotesDrop(index, event)}><strong>{extractingNotesIndex === index ? 'Extracting text…' : draggingNotesIndex === index ? 'Drop PDF to extract text' : 'Drag and drop a PDF here'}</strong><span>or click to choose one · maximum 10 MB</span><input className="lesson-notes-pdf-input" id={`videoNotesPdf${index}`} type="file" accept="application/pdf,.pdf" disabled={extractingNotesIndex !== null} onClick={(event) => event.stopPropagation()} onChange={(event) => { const file = event.target.files?.[0]; event.target.value = ''; void extractLessonNotes(index, file); }} /></div>{notesExtraction?.index === index ? <div className={`pdf-extraction-status${notesExtraction.error ? ' is-error' : ''}`} role="status" aria-live="polite"><div className="pdf-extraction-copy"><strong>{notesExtraction.stage}</strong><span>{notesExtraction.fileName}</span></div><div className="pdf-extraction-track" aria-label="PDF extraction progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow={notesExtraction.percent} role="progressbar"><span style={{ width: `${notesExtraction.percent}%` }} /></div>{notesExtraction.error ? <p>{notesExtraction.error}</p> : null}</div> : null}<textarea id={`videoNotes${index}`} rows="8" maxLength={20000} placeholder="Write the notes learners should read for this lesson. You can use headings, numbered steps, examples, and links." value={video.notes} onChange={(event) => updateVideo(index, "notes", event.target.value)} /><small>{formatNumber(String(video.notes || '').length)} / 20,000 characters · PDFs are processed temporarily and are not stored.</small></div>
+                  <p role="status">{video.metadataMessage || 'Uses course thumbnails. Duration can be detected automatically.'}</p>
                   <details className="lesson-advanced"><summary>Advanced · optional lesson overrides</summary><div className="form-grid">
                     <div className="field"><label htmlFor={`videoTopic${index}`}>Topic</label><input id={`videoTopic${index}`} maxLength={80} placeholder="e.g. Prompt Engineering" value={video.topic} onChange={(event) => updateVideo(index, "topic", event.target.value)} /></div>
                     <div className="field"><label htmlFor={`videoThumbnailUrl${index}`}>Horizontal thumbnail URL</label><input id={`videoThumbnailUrl${index}`} type="url" placeholder="https://..." value={video.thumbnailUrl} onChange={(event) => updateVideo(index, "thumbnailUrl", event.target.value)} /></div>

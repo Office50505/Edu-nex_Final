@@ -55,6 +55,7 @@ videos: [
          title: { type: String, required: true, trim: true, maxlength: 200 },
          topic: { type: String, trim: true, maxlength: 80, default: '' },
          description: { type: String, trim: true, maxlength: 2000, default: '' },
+         notes: { type: String, trim: true, maxlength: 20000, default: '' },
          sourceType: {
            type: String,
            enum: ['bunny_stream', 'youtube', 'aws_cloudfront'],

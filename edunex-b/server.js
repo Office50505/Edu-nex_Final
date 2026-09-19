@@ -586,6 +586,17 @@ app.use((req, res, next) => {
 });
 app.use('/api/webhooks/razorpay', express.raw({ type: '*/*', limit: '2mb' }));
 app.use('/api/webhooks/phonepe', express.raw({ type: '*/*', limit: '2mb' }));
+app.post('/api/admin/extract-pdf-notes', protectAdmin, express.raw({ type: 'application/pdf', limit: '10mb' }), async (req, res) => {
+  try {
+    if (!Buffer.isBuffer(req.body) || !req.body.length) return res.status(400).json({ error: 'Choose a PDF file to extract.' });
+    const result = await require('./services/pdfTextExtraction').extractPdfText(req.body);
+    req.body.fill(0);
+    res.json(result);
+  } catch (error) {
+    if (Buffer.isBuffer(req.body)) req.body.fill(0);
+    res.status(error.statusCode || 500).json({ error: error.message || 'Could not extract text from this PDF.' });
+  }
+});
 app.use((req, res, next) => {
   if (['/api/webhooks/phonepe', '/api/webhooks/razorpay'].includes(req.path)) {
     return next();
@@ -927,7 +938,7 @@ function sanitizeCourseVideos(rawVideos, existingVideos = []) {
       used.add(String(id));
       const duration = Number(video.duration || 0);
       if (!Number.isFinite(duration) || duration < 0) throw new Error('Duration must be a positive number of seconds.');
-      return { _id: id, ...source, title: String(video.title || '').trim(), topic: String(video.topic || '').trim(), description: String(video.description || '').trim(), duration, order: index + 1,
+      return { _id: id, ...source, title: String(video.title || '').trim(), topic: String(video.topic || '').trim(), description: String(video.description || '').trim(), notes: String(video.notes || '').trim(), duration, order: index + 1,
         transcriptUrl: video.transcriptUrl || previous?.transcriptUrl || null, thumbnail: previous?.thumbnail || {},
         thumbnailUrl: sanitizeOptionalUrl(video.thumbnailUrl), thumbnailVerticalUrl: sanitizeOptionalUrl(video.thumbnailVerticalUrl), examplePrompt: String(video.examplePrompt || '').trim() };
     } catch (error) { throw new Error(`Lesson ${index + 1}: ${error.message}`); }
@@ -3258,7 +3269,6 @@ app.post('/api/courses', protectAdmin, async (req, res) => {
       thumbnailUrl: courseThumbnailUrl,
       thumbnailVerticalUrl: courseThumbnailVerticalUrl,
       videos: applyCourseThumbnailToVideos(sanitizedVideos, embeddedHorizontalThumbnail, courseThumbnailUrl, courseThumbnailVerticalUrl),
-      notesUrl: req.body.notesUrl || null,
       category: req.body.category,
       status: req.body.status || 'draft',
     });
@@ -3325,7 +3335,7 @@ app.patch('/api/admin/courses/:id', protectAdmin, async (req, res) => {
     }
 
     const updates = {};
-    const stringFields = ['title', 'slug', 'description', 'notesUrl', 'thumbnailUrl', 'thumbnailVerticalUrl'];
+    const stringFields = ['title', 'slug', 'description', 'thumbnailUrl', 'thumbnailVerticalUrl'];
 
     stringFields.forEach((field) => {
       if (Object.prototype.hasOwnProperty.call(req.body, field)) {
@@ -3454,7 +3464,7 @@ app.get('/api/admin/courses/:id', protectAdmin, async (req, res) => {
     }
 
     const course = await Course.findById(req.params.id)
-      .select('title slug description category status thumbnailUrl thumbnailVerticalUrl notesUrl videos._id videos.title videos.topic videos.description videos.sourceType videos.provider videos.videoUrl videos.embedUrl videos.bunnyVideoId videos.bunnyLibraryId videos.youtubeId videos.thumbnailUrl videos.thumbnailVerticalUrl videos.transcriptUrl videos.examplePrompt videos.duration videos.order')
+      .select('title slug description category status thumbnailUrl thumbnailVerticalUrl videos._id videos.title videos.topic videos.description videos.notes videos.sourceType videos.provider videos.videoUrl videos.embedUrl videos.bunnyVideoId videos.bunnyLibraryId videos.youtubeId videos.thumbnailUrl videos.thumbnailVerticalUrl videos.transcriptUrl videos.examplePrompt videos.duration videos.order')
       .populate('category', 'name slug isActive')
       .lean();
 

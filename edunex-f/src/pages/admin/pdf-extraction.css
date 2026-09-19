@@ -1,0 +1,61 @@
+.lesson-notes-field { margin: 14px 0; }
+.lesson-notes-field textarea { min-height: 190px; resize: vertical; line-height: 1.6; }
+.lesson-notes-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+
+.lesson-pdf-dropzone {
+  display: grid;
+  place-items: center;
+  gap: 6px;
+  min-height: 112px;
+  padding: 18px;
+  border: 2px dashed var(--aw-border);
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--aw-surface) 88%, var(--aw-accent) 12%);
+  color: var(--aw-text);
+  text-align: center;
+  cursor: pointer;
+  transition: border-color .18s ease, background .18s ease, transform .18s ease;
+}
+
+.lesson-pdf-dropzone:hover,
+.lesson-pdf-dropzone:focus-visible,
+.lesson-pdf-dropzone.is-dragging {
+  border-color: var(--aw-accent);
+  background: color-mix(in srgb, var(--aw-surface) 76%, var(--aw-accent) 24%);
+  outline: none;
+}
+
+.lesson-pdf-dropzone.is-dragging { transform: scale(1.01); }
+.lesson-pdf-dropzone.is-extracting { cursor: wait; opacity: .72; }
+.lesson-pdf-dropzone strong { font-size: .82rem; }
+.lesson-pdf-dropzone span { color: var(--aw-muted); font-size: .7rem; }
+
+.pdf-extraction-status {
+  display: grid;
+  gap: 8px;
+  padding: 12px 14px;
+  border: 1px solid color-mix(in srgb, var(--aw-accent) 45%, var(--aw-border));
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--aw-surface) 91%, var(--aw-accent) 9%);
+}
+
+.pdf-extraction-copy { display: flex; justify-content: space-between; gap: 12px; min-width: 0; font-size: .72rem; }
+.pdf-extraction-copy span { overflow: hidden; color: var(--aw-muted); text-overflow: ellipsis; white-space: nowrap; }
+.pdf-extraction-track { height: 7px; overflow: hidden; border-radius: 999px; background: color-mix(in srgb, var(--aw-border) 75%, transparent); }
+.pdf-extraction-track span { display: block; height: 100%; border-radius: inherit; background: var(--aw-accent); transition: width .3s ease; }
+.pdf-extraction-status.is-error { border-color: color-mix(in srgb, #ef4444 60%, var(--aw-border)); }
+.pdf-extraction-status.is-error .pdf-extraction-track span { background: #ef4444; }
+.pdf-extraction-status p { margin: 0; color: #f87171; font-size: .72rem; line-height: 1.45; }
+
+.lesson-notes-pdf-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  clip-path: inset(50%);
+}
+
+.lesson-notes-heading .is-disabled { pointer-events: none; opacity: .6; }
+.lesson-notes-field small { justify-self: end; color: var(--aw-muted); }

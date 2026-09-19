@@ -1,10 +1,10 @@
 // @vitest-environment jsdom
 import React from 'react';
 import { it, expect, vi, afterEach } from 'vitest';
-import { render, screen, waitFor, cleanup } from '@testing-library/react';
+import { render, screen, waitFor, fireEvent, cleanup } from '@testing-library/react';
 import { AdminUploadPage } from '../../src/pages/admin/AdminUploadPage';
-const mocks=vi.hoisted(()=>({request:vi.fn()}));
-vi.mock('../../src/pages/admin/adminApi',async(importOriginal)=>({...await importOriginal(),requireAdmin:()=>true,adminJson:(...args)=>mocks.request(...args)}));
+const mocks=vi.hoisted(()=>({request:vi.fn(),rawRequest:vi.fn()}));
+vi.mock('../../src/pages/admin/adminApi',async(importOriginal)=>({...await importOriginal(),requireAdmin:()=>true,adminJson:(...args)=>mocks.request(...args),adminRequest:(...args)=>mocks.rawRequest(...args)}));
 vi.mock('../../src/pages/admin/AdminShell',()=>({AdminShell:({title,children})=><><h1>{title}</h1>{children}</>,Message:({children})=><div>{children}</div>}));
 afterEach(()=>{cleanup();vi.clearAllMocks();});
 it('loads an edit link into the edit form instead of creating a new course',async()=>{
@@ -33,4 +33,21 @@ it('keeps generated preview paths out of URL inputs',async()=>{
  expect(document.getElementById('thumbnailUrl').value).toBe('');
  expect(document.getElementById('thumbnailVerticalUrl').value).toBe('');
  expect(document.getElementById('thumbnailVerticalUrl').validity.valid).toBe(true);
+});
+it('extracts lesson notes when a PDF is dropped on the lesson drop zone',async()=>{
+ window.history.replaceState({},'', '/admin/upload');
+ mocks.request.mockImplementation(async path=>path==='/api/categories'?[]:path.includes('video-providers')?{}:[]);
+ mocks.rawRequest.mockResolvedValue({ok:true,json:async()=>({text:'Extracted lesson notes',truncated:false})});
+ render(<AdminUploadPage/>);
+ const dropzone=await screen.findByRole('button',{name:'Upload PDF notes for lesson 1'});
+ const pdf=new File(['%PDF-1.4 lesson'], 'lesson.pdf', {type:'application/pdf'});
+ fireEvent.dragEnter(dropzone,{dataTransfer:{files:[pdf],dropEffect:''}});
+ expect(dropzone.className).toContain('is-dragging');
+ fireEvent.drop(dropzone,{dataTransfer:{files:[pdf],dropEffect:''}});
+ await waitFor(()=>expect(screen.getByLabelText('Lesson notes').value).toBe('Extracted lesson notes'));
+ const progress=screen.getByRole('progressbar');
+ expect(progress.parentElement.textContent).toContain('Complete');
+ expect(progress.getAttribute('aria-valuenow')).toBe('100');
+ expect(mocks.rawRequest).toHaveBeenCalledWith('/api/admin/extract-pdf-notes',expect.objectContaining({method:'POST',body:pdf}));
+ expect(dropzone.className).not.toContain('is-dragging');
 });
