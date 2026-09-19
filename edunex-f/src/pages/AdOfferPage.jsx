@@ -1,9 +1,8 @@
-import Hls from "hls.js";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { openRazorpay } from "../lib/razorpayCheckout.js";
 import "./ad-offer.css";
 
-const PREVIEW_URL = "https://d2vntxz4x493rp.cloudfront.net/courses/ai-influencer/lesson-001/final%20intro%201_captioned/v1/final%20intro%201_captioned_1.m3u8";
+const PREVIEW_URL = "/assets/skillomate-offer-preview.mp4";
 const POSTER_URL = "https://d5yxyknp74yz8.cloudfront.net/courses/ai-influencer/lessons/lesson-01.webp";
 
 async function api(url, body, bearer = "") {
@@ -39,28 +38,13 @@ function PreviewVideo({ modalOpen }) {
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return undefined;
-    let hls;
     const onReady = () => start();
     const onPlaying = () => setPlaying(true);
     const onPause = () => setPlaying(false);
     const onTime = () => setProgress(Number.isFinite(video.duration) && video.duration > 0 ? Math.min(100, (video.currentTime / video.duration) * 100) : 0);
 
-    if (video.canPlayType("application/vnd.apple.mpegurl")) {
-      video.src = PREVIEW_URL;
-      video.addEventListener("loadedmetadata", onReady, { once: true });
-    } else if (Hls.isSupported()) {
-      hls = new Hls({ enableWorker: true, lowLatencyMode: false, autoStartLoad: true, startPosition: 0 });
-      hls.once(Hls.Events.MANIFEST_PARSED, onReady);
-      hls.once(Hls.Events.FRAG_BUFFERED, onReady);
-      hls.on(Hls.Events.ERROR, (_event, data) => {
-        if (!data.fatal) return;
-        setPlaying(false);
-        if (data.type === Hls.ErrorTypes.NETWORK_ERROR) hls.startLoad();
-        if (data.type === Hls.ErrorTypes.MEDIA_ERROR) hls.recoverMediaError();
-      });
-      hls.loadSource(PREVIEW_URL);
-      hls.attachMedia(video);
-    }
+    video.src = PREVIEW_URL;
+    video.addEventListener("loadedmetadata", onReady, { once: true });
     video.addEventListener("loadeddata", onReady, { once: true });
     video.addEventListener("canplay", onReady, { once: true });
     video.addEventListener("playing", onPlaying);
@@ -68,7 +52,6 @@ function PreviewVideo({ modalOpen }) {
     video.addEventListener("timeupdate", onTime);
     start();
     return () => {
-      hls?.destroy();
       video.removeEventListener("playing", onPlaying);
       video.removeEventListener("pause", onPause);
       video.removeEventListener("timeupdate", onTime);
@@ -89,7 +72,7 @@ function PreviewVideo({ modalOpen }) {
 
   return (
     <div className="ad-preview-player">
-      <video ref={videoRef} autoPlay muted loop playsInline preload="auto" poster={POSTER_URL} />
+      <video ref={videoRef} src={PREVIEW_URL} autoPlay muted loop playsInline preload="auto" poster={POSTER_URL} />
       {!playing ? <button className="ad-preview-play" type="button" onClick={start} aria-label="Play course preview">▶</button> : null}
       <button className={`ad-mute-button${muted ? "" : " is-unmuted"}`} type="button" onClick={toggleMute} aria-label={muted ? "Unmute preview" : "Mute preview"}>
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4Z"/><path d="m17 9 4 6m0-6-4 6"/></svg>

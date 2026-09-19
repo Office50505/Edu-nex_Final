@@ -24,6 +24,7 @@ it("registers the main Skillomate offer route", () => {
 it("shows the premium offer and opens phone verification from its CTA", () => {
   render(<AdOfferPage />);
   expect(screen.getByRole("heading", { name: "Skillomate Subscription" })).toBeTruthy();
+  expect(document.querySelector("video")?.getAttribute("src")).toBe("/assets/skillomate-offer-preview.mp4");
   expect(screen.getByText("Secure payments powered by Razorpay")).toBeTruthy();
   fireEvent.click(screen.getByRole("button", { name: /Subscribe for ₹1/i }));
   expect(screen.getByRole("dialog")).toBeTruthy();
