@@ -28,31 +28,27 @@ it('annual pricing card opens annual checkout', () => {
   render(<PricingPage />);
   expect(screen.getByRole('link', { name: /Continue to checkout/ }).getAttribute('href')).toBe('/payment?plan=annual');
 });
-it('annual checkout works for a used-trial account with annual disclosure and verified access', async () => {
+it('annual checkout launches Razorpay automatically and verifies access', async () => {
   const fetcher = mockApi(pricing, false); render(<PaymentPage />);
-  const button = await screen.findByRole('button', { name: /Continue with UPI/ });
-  expect(button.disabled).toBe(false); expect(screen.getByText(/No trial charge applies/)).toBeTruthy();
-  fireEvent.click(button);
   await screen.findByText("Payment Successful");
   expect(JSON.parse(fetcher.mock.calls.find(([url]) => url.endsWith('/initiate-trial'))[1].body)).toEqual({ paymentType: 'annual', mandateConsent: true });
   expect(openRazorpay).toHaveBeenCalledTimes(1);
+  expect(screen.queryByText('Choose your billing plan')).toBeNull();
 });
 it('unconfigured annual checkout cannot silently charge the monthly plan', async () => {
   const fetcher = mockApi({ ...pricing, annualAvailable: false }); render(<PaymentPage />);
-  expect((await screen.findByRole('button', { name: /Continue with UPI/ })).disabled).toBe(true);
+  expect((await screen.findByRole('button', { name: /Try Razorpay Again/ })).disabled).toBe(true);
   expect(screen.getByRole('alert').textContent).toContain('Yearly checkout is currently unavailable');
   expect(fetcher.mock.calls.some(([url]) => url.endsWith('/initiate-trial'))).toBe(false);
 });
-it('monthly selection preserves the trial and updates the login continuation URL', async () => {
+it('login continuation preserves the requested plan without rendering plan selection', async () => {
   localStorage.clear(); mockApi(); render(<PaymentPage />);
-  await screen.findByRole('link', { name: /Log In to Continue/ });
-  expect(screen.getByRole('link', { name: /Log In to Continue/ }).getAttribute('href')).toContain('plan%3Dannual');
-  fireEvent.click(screen.getByRole('radio', { name: 'Monthly' }));
-  expect(screen.getByRole('link', { name: /Log In to Continue/ }).getAttribute('href')).toContain('plan%3Dmonthly');
+  await screen.findByRole('link', { name: 'Log In' });
+  expect(screen.getByRole('link', { name: 'Log In' }).getAttribute('href')).toContain('plan%3Dannual');
+  expect(screen.queryByRole('radio')).toBeNull();
 });
 it('default checkout charges monthly without silently enrolling in a trial', async () => {
   window.history.replaceState(null, '', '/payment'); const fetcher = mockApi(); render(<PaymentPage />);
-  fireEvent.click(await screen.findByRole('button', { name: /Continue with UPI/ }));
   await waitFor(() => expect(openRazorpay).toHaveBeenCalledTimes(1));
   expect(JSON.parse(fetcher.mock.calls.find(([url]) => url.endsWith('/initiate-trial'))[1].body).paymentType).toBe('monthly');
 });
@@ -85,8 +81,7 @@ it('never navigates to a legacy payment URL', async () => {
     return response({ gateway: 'phonepe', redirectUrl: 'https://example.test/pay' });
   });
   render(<PaymentPage />);
-  fireEvent.click(await screen.findByRole('button', { name: 'Continue with UPI' }));
-  await screen.findByText('Payment unsuccessful');
+  await screen.findByText('Checkout unavailable');
   expect(window.location.pathname).toBe('/payment');
   expect(openRazorpay).not.toHaveBeenCalled();
   expect(localStorage.getItem('edunexHasCourseAccess')).toBeNull();
@@ -94,9 +89,8 @@ it('never navigates to a legacy payment URL', async () => {
 it('keeps provider failures on the paywall with a retry action', async () => {
   mockApi(); openRazorpay.mockRejectedValueOnce(new Error('Payment failed.'));
   render(<PaymentPage />);
-  fireEvent.click(await screen.findByRole('button', { name: 'Continue with UPI' }));
-  await screen.findByRole('button', { name: 'Try Again' });
-  expect(screen.getByText('Payment unsuccessful')).toBeTruthy();
+  await screen.findByRole('button', { name: 'Try Razorpay Again' });
+  expect(screen.getByText('Checkout unavailable')).toBeTruthy();
   expect(localStorage.getItem('edunexHasCourseAccess')).toBeNull();
 });
 it('does not grant access or start another payment when verification is unavailable', async () => {
@@ -105,7 +99,6 @@ it('does not grant access or start another payment when verification is unavaila
   fetcher.mockImplementation((url, options) => url.endsWith('/razorpay/verify')
     ? Promise.resolve(response({ error: 'Confirmation delayed' }, 503)) : initial(url, options));
   render(<PaymentPage />);
-  fireEvent.click(await screen.findByRole('button', { name: 'Continue with UPI' }));
   fireEvent.click(await screen.findByRole('button', { name: 'Check payment status' }));
   await screen.findByText(/Still waiting for payment confirmation/);
   expect(openRazorpay).toHaveBeenCalledTimes(1);
@@ -115,7 +108,6 @@ it('does not grant access or start another payment when verification is unavaila
 it('explicit trial links retain the advertised one-rupee offer', async () => {
   window.history.replaceState(null, '', '/payment?plan=trial');
   const fetcher = mockApi(); render(<PaymentPage />);
-  fireEvent.click(await screen.findByRole('button', { name: 'Continue with UPI' }));
   await screen.findByText('Payment Successful');
   expect(JSON.parse(fetcher.mock.calls.find(([url]) => url.endsWith('/initiate-trial'))[1].body).paymentType).toBe('trial');
 });

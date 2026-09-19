@@ -81,6 +81,15 @@ const listButtonStyle = {
   textAlign: "left",
 };
 
+const profileLegalLinks = [
+  [route("privacy.html"), "fa-lock", "Privacy Policy"],
+  [route("terms.html"), "fa-file-contract", "Terms & Conditions"],
+  [route("refund-policy.html"), "fa-undo-alt", "Refund & Cancellation"],
+  [route("subscription-policy.html"), "fa-credit-card", "Subscription & Billing"],
+  [route("shipping-policy.html"), "fa-truck", "Digital Delivery & Shipping"],
+  [route("cookie-policy.html"), "fa-cookie-bite", "Cookie Policy"],
+];
+
 export function ProfilePage() {
   const [user, setUser] = useState(readStoredProfileUser);
   const [status, setStatus] = useState(() => ({
@@ -323,15 +332,12 @@ export function ProfilePage() {
           <h2 className="pf-card-heading"><i className="fas fa-shield-halved" aria-hidden="true"></i> Preferences &amp; Legal</h2>
           <div className="pf-prefs-inner">
             <div className="pf-prefs-list">
-              {[
-                [route("privacy.html"), "fa-lock", "Privacy Policy"],
-                [route("terms.html"), "fa-file-contract", "Terms & Conditions"],
-              ].map(([href, icon, label]) => (
-                <button className="pf-list-item" type="button" key={href} style={listButtonStyle} onClick={() => { window.location.href = href; }}>
+              {profileLegalLinks.map(([href, icon, label]) => (
+                <a className="pf-list-item" href={href} key={href} style={listButtonStyle}>
                   <div className="pf-list-icon"><i className={`fas ${icon}`} aria-hidden="true"></i></div>
                   <span className="pf-list-label">{label}</span>
                   <i className="fas fa-chevron-right pf-list-chevron" aria-hidden="true"></i>
-                </button>
+                </a>
               ))}
             </div>
             <div className="pf-prefs-right">

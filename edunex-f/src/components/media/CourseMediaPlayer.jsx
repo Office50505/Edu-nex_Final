@@ -96,7 +96,7 @@ export function CourseMediaPlayer({ course, lesson, lessonIndex, autoNext, autop
     if(restored.current||progress.resume===null||!time.duration||!video)return;
     restored.current=true;
     if(progress.resume>0&&progress.resume<time.duration-2)video.currentTime=seekTarget(progress.resume,time.duration);
-    if(autoplay)video.play().catch(()=>{video.muted=true;setMuted(true);video.play().catch(()=>setNotice("Press play to continue."));});
+    if(autoplay)video.play().catch(()=>setNotice("Press play to continue with sound."));
   },[progress.resume,time.duration,autoplay]);
   useEffect(()=>{const video=videoRef.current;if(video){video.playbackRate=rate;video.loop=loop;}},[rate,loop]);
   useEffect(()=>{if(access.error){videoRef.current?.pause();setBuffering(false);}},[access.error]);

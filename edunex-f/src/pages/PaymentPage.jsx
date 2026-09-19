@@ -28,14 +28,6 @@ function markLocalCourseAccess() {
   localStorage.setItem("edunexHasCourseAccess", JSON.stringify({ active: true, savedAt: Date.now() }));
 }
 
-function LightningIcon() {
-  return (
-    <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" style={{ verticalAlign: "middle", flexShrink: 0 }} aria-hidden="true">
-      <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
-    </svg>
-  );
-}
-
 function CheckIcon() {
   return (
     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#C58B2A" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ verticalAlign: "middle", flexShrink: 0 }} aria-hidden="true">
@@ -44,21 +36,12 @@ function CheckIcon() {
   );
 }
 
-function LockIcon() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ verticalAlign: "middle", flexShrink: 0 }} aria-hidden="true">
-      <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-      <path d="M7 11V7a5 5 0 0110 0v4" />
-    </svg>
-  );
-}
-
 export function PaymentPage() {
   const runtimeReady = useEduNexRuntimeReady();
   const query = params();
   const courseId = query.get("courseId");
-  const [selectedPlan, setSelectedPlan] = useState(() => ["annual", "yearly"].includes(query.get("plan")) ? "annual" : "monthly");
-  const annual = selectedPlan === "annual";
+  const requestedPlan = ["annual", "yearly"].includes(query.get("plan")) ? "annual" : (query.get("plan") === "trial" ? "trial" : "monthly");
+  const annual = requestedPlan === "annual";
   const [trialEligible, setTrialEligible] = useState(true);
   const [checkoutState, setCheckoutState] = useState("loading");
   const [payMsg, setPayMsg] = useState({ text: "", type: "" });
@@ -71,7 +54,7 @@ export function PaymentPage() {
   const [paymentFailed, setPaymentFailed] = useState(false);
   const [pending, setPending] = useState(false);
   const planAvailable = Boolean(pricing && (!annual || pricing.annualAvailable));
-  const rupees = value => new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 2 }).format((value || 0) / 100);
+  const autoStartRef = useRef(false);
   useEffect(() => {
     const controller = new AbortController();
     fetch("/api/payment/config", { signal: controller.signal }).then(async response => {
@@ -226,6 +209,14 @@ export function PaymentPage() {
     }
   };
 
+  useEffect(() => {
+    if (checkoutState !== "pay" || !planAvailable || autoStartRef.current) return;
+    autoStartRef.current = true;
+    void initiatePayment();
+    // The checkout should start once for the plan resolved from the URL and account status.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [checkoutState, paymentType, planAvailable]);
+
   const checkPayment = async () => {
     if (busyRef.current) return;
     busyRef.current = true; setSubmitting(true);
@@ -239,123 +230,52 @@ export function PaymentPage() {
     } catch (error) { setPayMsg({ text: error.message, type: "error" }); }
     finally { busyRef.current = false; setSubmitting(false); }
   };
-  const payButtonText = submitting ? "Please wait…" : pending ? "Check payment status" : paymentFailed ? "Try Again" : "Continue with UPI";
+  const planLabel = annual ? "yearly subscription" : trial ? "₹1 trial" : "monthly subscription";
 
   return (
     <div className="react-page-root" data-page="payment.html">
-      <div className="pay-page">
-        <div className="pay-grid direct-checkout">
-          <div className="checkout-card">
-            <div className="checkout-header">
-              <h1 style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                <i className="fas fa-graduation-cap" aria-hidden="true"></i> Skillomate Premium
-              </h1>
-              <p>Learn more. Create more. Go Premium.</p>
-              <fieldset disabled={submitting || pending} style={{ border: 0, padding: 0, margin: "16px 0 0", display: "flex", flexWrap: "wrap", gap: 12 }}>
-                <legend style={{ fontSize: 14, marginBottom: 8 }}>Choose your billing plan</legend>
-                {[['monthly', 'Monthly'], ['annual', 'Yearly']].map(([value, label]) => (
-                  <label key={value} style={{ display: "flex", alignItems: "center", gap: 8, minHeight: 44, cursor: "pointer" }}>
-                    <input type="radio" name="billingPlan" value={value} checked={selectedPlan === value} onChange={() => {
-                      setSelectedPlan(value);
-                      setPayMsg({ text: "", type: "" });
-                      const url = new URL(window.location.href);
-                      url.searchParams.set('plan', value);
-                      window.history.replaceState(window.history.state, '', url.pathname + url.search);
-                    }} />{label}
-                  </label>
-                ))}
-              </fieldset>
-            </div>
-            <div className="checkout-body">
-              <div className={`msg pay-msg ${payMsg.type}`} role="status" aria-live="polite">{payMsg.text}</div>
-              {checkoutState === "loading" ? (
-                <div id="loadingState" style={{ textAlign: "center", padding: "24px 0", color: "var(--muted)", fontSize: 14 }}>
-                  Checking your account…
-                </div>
-              ) : null}
-
-              {checkoutState === "login" ? (
-                <div id="loginState">
-                  <p className="premium-preview-price">{pricing ? rupees(annual ? pricing.annualAmountPaise : trial ? pricing.trialAmountPaise : pricing.subscriptionAmountPaise) : "…"}<small> / {annual ? "year" : trial ? "trial" : "month"}</small></p>
-                  <ul className="premium-benefits"><li><CheckIcon /> Complete Course Access</li><li><CheckIcon /> Nex AI</li><li><CheckIcon /> Premium AI Tools</li></ul>
-                  <p style={{ fontSize: 14, color: "var(--muted)", textAlign: "center", marginBottom: 20, lineHeight: 1.6 }}>
-                    Create a free account to continue — it only takes 30 seconds.
-                  </p>
-                  <a id="loginBtn" href={`/login.html?next=${encodeURIComponent(window.location.href)}`} className="login-cta-btn"><i className="fas fa-key" aria-hidden="true"></i> Log In to Continue</a>
-
-                  <div className="pay-divider"><span>New here?</span></div>
-                  <a id="signupBtn" href={`/signup.html?next=${encodeURIComponent(window.location.href)}`} className="pay-btn-secondary"><i className="fas fa-star" aria-hidden="true"></i> Create Free Account</a>
-                  <div className="pay-security"><LockIcon /> Your data is safe with us</div>
-                </div>
-              ) : null}
-
-              {checkoutState === "subscribed" ? (
-                <div id="subscribedState">
-                  <div className="subscribed-banner">
-                    <div className="icon"><CheckIcon /></div>
-                    <h3>{paymentCompleted ? "Payment Successful" : "Your Premium access is active"}</h3>
-                    <p>{paymentCompleted ? "Welcome to Skillomate Premium. Your Premium access is now active." : "Enjoy unlimited access to all Skillomate courses."}</p>
-                  </div>
-                  <a
-                    id="watchNowBtn"
-                    href={watchHref}
-                    className="login-cta-btn"
-                  >
-                    Start Learning
-                  </a>
-                  <a href="/courses.html" className="pay-btn-secondary" style={{ marginTop: 10 }}><i className="fas fa-book-open" aria-hidden="true"></i> Browse All Courses</a>
-                </div>
-              ) : null}
-
-              {checkoutState === "pay" ? (
-                <div id="payState">
-                  <div className="plan-option selected" style={{ cursor: "default" }}>
-                    <div className="plan-info">
-                      <div className="plan-name">{annual ? "Annual subscription" : trial ? `${pricing?.trialHours || 24}-Hour Trial` : "Monthly subscription"}</div>
-                      <div className="plan-desc">Full access · Auto-renews {annual ? "yearly" : "monthly"}</div>
-                    </div>
-                    <div className="plan-price">
-                      <div className="amount">{pricing ? rupees(annual ? pricing.annualAmountPaise : trial ? pricing.trialAmountPaise : pricing.subscriptionAmountPaise) : "…"}</div>
-                      <span className="per">{annual ? "per year" : trial ? "trial payment" : "per month"}</span>
-                    </div>
-                  </div>
-                  {!trialEligible && !annual ? <p role="status" style={{ margin: "16px 0" }}>Your one-time trial has already been used. Continue with the monthly plan.</p> : null}
-                  {annual && pricing && !pricing.annualAvailable ? <p role="alert">Yearly checkout is currently unavailable. Please try again later or choose Monthly.</p> : null}
-                  {pricing ? <p id="paymentAgreement" style={{ fontSize: 12, lineHeight: 1.6, color: "var(--text)", margin: "16px 0" }}>
-                    By continuing, you accept our <a href="/terms.html" target="_blank" rel="noopener noreferrer">Terms</a> &amp; <a href="/privacy.html" target="_blank" rel="noopener noreferrer">Privacy Policy</a>. {annual
-                      ? `You pay ${rupees(pricing.annualAmountPaise)} now for one year. You authorize automatic renewal at ${rupees(pricing.annualAmountPaise)} per year until cancelled. No trial charge applies.`
-                      : trial ? `Your ${pricing.trialHours || 24}-hour trial costs ${rupees(pricing.trialAmountPaise)}, then the subscription renews at ${rupees(pricing.subscriptionAmountPaise)}/month until cancelled.`
-                        : `You pay ${rupees(pricing.subscriptionAmountPaise)} now and authorize renewal at that amount each month until cancelled.`} Cancel auto-renewal from your profile; paid access continues to its expiry.
-                  </p> : null}
-                  <ul className="premium-benefits"><li><CheckIcon /> Complete Course Access</li><li><CheckIcon /> Nex AI</li><li><CheckIcon /> Premium AI Tools</li></ul>
-                  {paymentFailed ? <div className="premium-failure" role="alert"><h3>Payment unsuccessful</h3><p>We couldn't complete your payment.</p></div> : null}
-                  <button className="pay-btn" id="payBtn" type="button" aria-describedby="paymentAgreement" disabled={submitting || !planAvailable} onClick={pending ? checkPayment : initiatePayment}>
-                    <span id="payBtnIcon">{<LightningIcon />}</span>
-                    <span id="payBtnText">{payButtonText}</span>
-                  </button>
-                  {pricing && !annual && !trial ? <p className="premium-renewal">{rupees(pricing.subscriptionAmountPaise)}/month. Your subscription automatically renews every month through UPI AutoPay until cancelled.</p> : null}
-                  <p className="premium-payment-help">On desktop, scan the checkout QR with a supported UPI app. On mobile, approve in your UPI app and return here.</p>
-                  <a href="/profile" style={{ display: "block", marginTop: 12 }}>Manage or cancel an unfinished checkout</a>
-                  <div className="pay-divider"><span>or</span></div>
-                  <a href="/courses.html" className="pay-btn-secondary">← Back to Courses</a>
-
-                  <div className="pay-security" style={{ marginTop: 18, flexDirection: "column", gap: 8 }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                      <LockIcon /> Secured by Razorpay
-                    </div>
-                    <div style={{ display: "flex", gap: 12, fontSize: 11 }}>
-                      <span><CheckIcon /> Cancel anytime</span>
-                      <span><CheckIcon /> Verified payments</span>
-                      <span><CheckIcon /> All courses</span>
-                    </div>
-                  </div>
-                </div>
-              ) : null}
-            </div>
+      <main className="checkout-launcher" aria-live="polite">
+        {checkoutState === "loading" || (checkoutState === "pay" && planAvailable && !paymentFailed && !pending) ? (
+          <div className="checkout-launcher-card" role="status">
+            <span className="checkout-launcher-spinner" aria-hidden="true"></span>
+            <h1>Opening Razorpay…</h1>
+            <p>Preparing your {planLabel} securely.</p>
           </div>
-        </div>
-      </div>
+        ) : null}
 
+        {checkoutState === "login" ? (
+          <div className="checkout-launcher-card">
+            <h1>Log in to continue</h1>
+            <p>Your Razorpay checkout will open after authentication.</p>
+            <a id="loginBtn" href={`/login.html?next=${encodeURIComponent(window.location.href)}`} className="checkout-launcher-primary">Log In</a>
+            <a id="signupBtn" href={`/signup.html?next=${encodeURIComponent(window.location.href)}`} className="checkout-launcher-secondary">Create Account</a>
+          </div>
+        ) : null}
+
+        {checkoutState === "subscribed" ? (
+          <div className="checkout-launcher-card">
+            <CheckIcon />
+            <h1>{paymentCompleted ? "Payment Successful" : "Premium access is active"}</h1>
+            <p>{paymentCompleted ? "Your payment was verified and access is ready." : "No additional payment is required."}</p>
+            <a id="watchNowBtn" href={watchHref} className="checkout-launcher-primary">Start Learning</a>
+          </div>
+        ) : null}
+
+        {checkoutState === "pay" && (paymentFailed || pending || !planAvailable) ? (
+          <div className="checkout-launcher-card">
+            <h1>{pending ? "Confirming payment" : "Checkout unavailable"}</h1>
+            <p className={payMsg.type === "error" || !planAvailable ? "checkout-launcher-error" : ""} role={payMsg.type === "error" || !planAvailable ? "alert" : "status"}>
+              {payMsg.text || (annual && pricing && !pricing.annualAvailable
+                ? "Yearly checkout is currently unavailable."
+                : "Razorpay could not be opened. Please try again.")}
+            </p>
+            <button className="checkout-launcher-primary" type="button" disabled={submitting || !planAvailable} onClick={pending ? checkPayment : initiatePayment}>
+              {submitting ? "Please wait…" : pending ? "Check payment status" : "Try Razorpay Again"}
+            </button>
+            <a href="/courses.html" className="checkout-launcher-secondary">Back to Courses</a>
+          </div>
+        ) : null}
+      </main>
     </div>
   );
 }

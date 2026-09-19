@@ -104,7 +104,7 @@ function ReplyText({ text }) {
 
 function NexAvatar({ className = "", alt = "", mood = "idle" }) {
   const isThinking = mood === "thinking";
-  return <img className={`nex-avatar-image${isThinking ? " is-thinking-expression" : ""} ${className}`.trim()} src={isThinking ? NEX_THINKING_AVATAR_SRC : NEX_AVATAR_SRC} alt={alt} draggable="false" />;
+  return <img className={`nex-avatar-image${isThinking ? " is-thinking-expression" : ""} ${className}`.trim()} src={isThinking ? NEX_THINKING_AVATAR_SRC : NEX_AVATAR_SRC} alt={alt} width="512" height="512" loading="eager" decoding="async" fetchPriority={isThinking ? "high" : "auto"} draggable="false" />;
 }
 
 export function AiTutorPage() {
@@ -119,6 +119,7 @@ export function AiTutorPage() {
   const [assistantName, setAssistantName] = useState(DEFAULT_ASSISTANT_NAME);
   const [assistantNameDraft, setAssistantNameDraft] = useState("");
   const [nameSetupOpen, setNameSetupOpen] = useState(false);
+  useViewportLock(true);
   useViewportLock(nameSetupOpen && !authGate);
   const [nameSetupComplete, setNameSetupComplete] = useState(false);
   const inFlight = useRef(false);
@@ -312,6 +313,7 @@ export function AiTutorPage() {
 
   return (
     <div className="react-page-root" data-page="ai-tutor.html">
+      <link rel="preload" as="image" href={NEX_THINKING_AVATAR_SRC} fetchPriority="high" />
       <div className="tutor-page">
         <div className="full-tutor">
           <button className={`tutor-history-backdrop${historyOpen ? " is-visible" : ""}`} type="button" aria-label="Close chat history" onClick={() => setHistoryOpen(false)}></button>

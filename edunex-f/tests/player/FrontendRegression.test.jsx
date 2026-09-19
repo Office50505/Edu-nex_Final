@@ -7,6 +7,7 @@ import { Footer } from "../../src/components/Footer.jsx";
 import { LoginPage } from "../../src/pages/LoginPage.jsx";
 import { ProfilePage } from "../../src/pages/ProfilePage.jsx";
 import { SignupPage } from "../../src/pages/SignupPage.jsx";
+import { OtpPage } from "../../src/pages/OtpPage.jsx";
 import { CoursesPage } from "../../src/pages/CoursesPage.jsx";
 import { AiTutorPage } from "../../src/pages/AiTutorPage.jsx";
 import { plainCourseDescription } from "../../src/pages/CourseDetailsPage.jsx";
@@ -14,9 +15,11 @@ import { buildDashboardActivity, DashboardPage, dashCourseProgress } from "../..
 import { PaymentPage } from "../../src/pages/PaymentPage.jsx";
 import { activeProgressLessons, CurriculumShowcase } from "../../src/pages/HomePage.jsx";
 import { courseEntryHref } from "../../src/lib/courseNavigation.js";
+import { openRazorpay } from "../../src/lib/razorpayCheckout.js";
 
 vi.mock("../../src/legacyRuntime.js", () => ({ runLegacyPage: () => () => {} }));
 vi.mock("../../src/hooks/usePageStyle.js", () => ({ usePageStyle: () => {} }));
+vi.mock("../../src/lib/razorpayCheckout.js", () => ({ openRazorpay: vi.fn(async () => ({ razorpay_subscription_id: "sub_trial" })) }));
 
 const cachedUser = { _id: "user-1", fullName: "Aarav Learner", mobileNumber: "+919876543210" };
 
@@ -115,6 +118,9 @@ describe("reported frontend regressions", () => {
     expect(screen.queryByText("App Download")).toBeNull();
     expect(screen.queryByText("App Store")).toBeNull();
     expect(screen.queryByText("Google Play")).toBeNull();
+    const bottomLinks = Array.from(document.querySelectorAll(".enx-footer-bottom a"));
+    expect(bottomLinks.map((link) => link.textContent)).toEqual(["Login", "Terms", "Privacy", "Contact", "About"]);
+    expect(bottomLinks.at(-1)?.getAttribute("href")).toBe("/about");
   });
 
   it("exposes an accessible theme switch in the shared header", () => {
@@ -143,11 +149,17 @@ describe("reported frontend regressions", () => {
     };
     render(<AiTutorPage />);
     expect(screen.getByRole("heading", { name: "What can I help you learn?" })).toBeTruthy();
-    expect(screen.getByRole("img", { name: "AI assistant" }).getAttribute("src")).toBe("/assets/nex-avatar.png");
+    const assistantAvatar = screen.getByRole("img", { name: "AI assistant" });
+    expect(assistantAvatar.getAttribute("src")).toBe("/assets/nex-avatar.png");
+    expect(assistantAvatar.getAttribute("loading")).toBe("eager");
+    expect(document.querySelector('link[rel="preload"][href="/assets/nex-avatar-thinking.png"]')?.getAttribute("fetchpriority")).toBe("high");
     expect(screen.getByRole("group", { name: "Suggested questions" }).querySelectorAll("button")).toHaveLength(4);
     expect(screen.queryByRole("group", { name: "Follow-up suggestions" })).toBeNull();
     expect(document.querySelector(".tutor-top-bar")).toBeNull();
     expect(screen.queryByRole("button", { name: "Report a problem" })).toBeNull();
+    expect(document.documentElement.style.overflow).toBe("hidden");
+    expect(document.body.style.position).toBe("fixed");
+    expect(document.body.classList.contains("has-viewport-lock")).toBe(true);
   });
 
   it("lets each learner name the AI without letting a message replace the header name", async () => {
@@ -270,6 +282,16 @@ describe("reported frontend regressions", () => {
     expect(screen.getByRole("button", { name: "Dark" })).toBeTruthy();
     expect(screen.queryByRole("button", { name: "System" })).toBeNull();
     expect(screen.queryByRole("button", { name: /Delete Account/i })).toBeNull();
+    [
+      ["Privacy Policy", "/privacy"],
+      ["Terms & Conditions", "/terms"],
+      ["Refund & Cancellation", "/refund-policy"],
+      ["Subscription & Billing", "/subscription-policy"],
+      ["Digital Delivery & Shipping", "/shipping-policy"],
+      ["Cookie Policy", "/cookie-policy"],
+    ].forEach(([label, href]) => {
+      expect(screen.getByRole("link", { name: label }).getAttribute("href")).toBe(href);
+    });
   });
 
   it("converts course Markdown into clean display text", () => {
@@ -296,7 +318,6 @@ describe("reported frontend regressions", () => {
     expect(activity.timeLabel).toBe("1h");
     expect(activity.completedLessons).toBe(2);
     expect(activity.completedLabel).toBe("2 lessons");
-    expect(activity.statusLabel).toBe("In progress");
     expect(activity.days[6].value).toBe(60);
   });
 
@@ -337,6 +358,8 @@ describe("reported frontend regressions", () => {
     expect(await screen.findByRole("link", { name: /View Course/i })).toBeTruthy();
     expect(screen.queryByText("REAL COURSE")).toBeNull();
     expect(screen.queryByText("Learning History")).toBeNull();
+    expect(screen.queryByText("Learning Status")).toBeNull();
+    expect(document.querySelector(".streak-card")).toBeNull();
     expect(document.querySelector(".hist-grid")).toBeNull();
     expect(screen.getByText("20 Done")).toBeTruthy();
     expect(screen.getByText("20 lessons")).toBeTruthy();
@@ -371,6 +394,35 @@ describe("reported frontend regressions", () => {
     expect(document.body.style.position).toBe("fixed");
   });
 
+  it("opens the eligible one-rupee trial checkout directly from the dashboard gate", async () => {
+    const authRequest = vi.fn(async (path, options) => {
+      if (path === "/api/payment/initiate-trial") {
+        expect(JSON.parse(options.body)).toEqual({ paymentType: "trial", mandateConsent: true });
+        return { gateway: "razorpay", subscriptionId: "sub_trial", paymentType: "trial" };
+      }
+      if (path === "/api/payment/razorpay/verify") return { accessGranted: true };
+      if (path.includes("/progress")) return { courseProgress: {} };
+      throw new Error(`Unexpected request: ${path}`);
+    });
+    window.EduNex = {
+      getUser: () => cachedUser,
+      getAccessToken: () => "active-token",
+      checkSubscription: vi.fn(async () => ({ status: "none", trialEligible: true, hasActiveAccess: false })),
+      hasCourseAccess: vi.fn((value) => Boolean(value?.accessGranted || value?.hasActiveAccess)),
+      request: vi.fn(async (path) => path === "/api/courses" ? [] : { recommendations: [] }),
+      authRequest,
+    };
+
+    render(<DashboardPage />);
+    const trialButton = await screen.findByRole("button", { name: /Try 24 Hours for ₹1/i });
+    expect(screen.queryByRole("link", { name: /Try 24 Hours for ₹1/i })).toBeNull();
+    fireEvent.click(trialButton);
+
+    await waitFor(() => expect(openRazorpay).toHaveBeenCalledTimes(1));
+    await waitFor(() => expect(authRequest).toHaveBeenCalledWith("/api/payment/razorpay/verify", expect.any(Object)));
+    expect(window.location.pathname).not.toBe("/payment");
+  });
+
   it("offers the monthly plan after the account has used its one-time trial", async () => {
     localStorage.setItem("edunexAccessToken", "active-token");
     window.EduNex = { request: vi.fn() };
@@ -397,12 +449,10 @@ describe("reported frontend regressions", () => {
 
     render(<PaymentPage />);
 
-    const monthlyButton = await screen.findByRole("button", { name: "Continue with UPI" });
-    expect(screen.getByText("Monthly subscription")).toBeTruthy();
-    expect(screen.getByText(/one-time trial has already been used/i)).toBeTruthy();
-    fireEvent.click(monthlyButton);
     await waitFor(() => expect(checkoutBody?.paymentType).toBe("monthly"));
     expect(checkoutBody.mandateConsent).toBe(true);
+    expect(await screen.findByRole("button", { name: "Try Razorpay Again" })).toBeTruthy();
+    expect(screen.queryByText("Choose your billing plan")).toBeNull();
   });
 
   it("uses an unscoped legacy progress cache when server progress is unavailable", () => {
@@ -414,7 +464,7 @@ describe("reported frontend regressions", () => {
   it("submits signup with Enter semantics and supports desktop age dragging", async () => {
     window.EduNex = {
       request: vi.fn(async (path) => {
-        if (path.includes("send-mobile-otp")) return { devOtp: "123456" };
+        if (path.includes("send-mobile-otp")) return {};
         if (path.includes("verify-mobile-otp")) return { signupToken: "signup-token" };
         return {};
       }),
@@ -428,6 +478,11 @@ describe("reported frontend regressions", () => {
     expect(screen.getByRole("button", { name: "Send OTP & Continue" }).getAttribute("type")).toBe("submit");
     fireEvent.submit(phone.closest("form"));
     const verify = await screen.findByRole("button", { name: "Verify OTP" });
+    const otpInputs = screen.getAllByLabelText(/OTP digit/);
+    expect(otpInputs[0].getAttribute("autocomplete")).toBe("one-time-code");
+    expect(otpInputs[0].getAttribute("maxlength")).toBe("6");
+    fireEvent.change(otpInputs[0], { target: { value: "123456" } });
+    expect(otpInputs.map((input) => input.value).join("")).toBe("123456");
     await act(async () => { fireEvent.click(verify); });
     const ageList = await screen.findByRole("listbox", { name: "Your Age" });
     const initialScrollTop = ageList.scrollTop;
@@ -436,6 +491,14 @@ describe("reported frontend regressions", () => {
     fireEvent.pointerUp(ageList, { pointerId: 1, pointerType: "mouse", clientY: 48 });
     await waitFor(() => expect(ageList.getAttribute("aria-activedescendant")).toBe("signup-age-25"));
     expect(ageList.scrollTop).toBeGreaterThan(initialScrollTop);
+  });
+
+  it("distributes browser OTP autofill across every verification box", async () => {
+    render(<OtpPage />);
+    const otpInputs = screen.getAllByLabelText(/OTP digit/);
+    fireEvent.change(otpInputs[0], { target: { value: "654321" } });
+    expect(otpInputs.map((input) => input.value).join("")).toBe("654321");
+    await waitFor(() => expect(document.activeElement).toBe(otpInputs[5]));
   });
 
   it("does not render category filters or promotional content while courses load", () => {
@@ -481,7 +544,7 @@ describe("reported frontend regressions", () => {
     expect(courseEntryHref(course, { hasAccess: true, lessonIndex: 3 })).toBe("/videos?courseId=course-1&video=3");
   });
 
-  it("opens generic 24-hour trial links as a focused checkout without a course preview", () => {
+  it("uses a minimal Razorpay launcher without rendering the old payment page", () => {
     window.history.replaceState(null, "", "/payment");
     window.EduNex = {
       request: vi.fn(() => new Promise(() => {})),
@@ -489,8 +552,9 @@ describe("reported frontend regressions", () => {
     vi.stubGlobal("fetch", vi.fn(() => new Promise(() => {})));
 
     const { container } = render(<PaymentPage />);
-    expect(screen.getByText("Skillomate Premium")).toBeTruthy();
+    expect(container.querySelector(".checkout-launcher")).toBeTruthy();
     expect(container.querySelector(".course-preview")).toBeNull();
-    expect(container.querySelector(".pay-grid.direct-checkout")).toBeTruthy();
+    expect(container.querySelector(".pay-grid.direct-checkout")).toBeNull();
+    expect(screen.queryByText("Choose your billing plan")).toBeNull();
   });
 });

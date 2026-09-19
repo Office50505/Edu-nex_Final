@@ -77,8 +77,17 @@ export function OtpPage() {
   }
 
   function handleInput(index, event) {
-    const value = onlyDigits(event.target.value).slice(-1);
+    const incoming = onlyDigits(event.target.value);
     const nextDigits = [...digits];
+    if (incoming.length > 1) {
+      incoming.slice(0, OTP_LENGTH - index).split("").forEach((digit, offset) => {
+        nextDigits[index + offset] = digit;
+      });
+      updateDigits(nextDigits, Math.min(index + incoming.length, OTP_LENGTH - 1));
+      return;
+    }
+
+    const value = incoming.slice(-1);
     nextDigits[index] = value;
     updateDigits(nextDigits, value && index < OTP_LENGTH - 1 ? index + 1 : undefined);
   }
@@ -140,9 +149,9 @@ export function OtpPage() {
                 }}
                 type="text"
                 className={digit ? "otp-input filled" : "otp-input"}
-                maxLength={1}
+                maxLength={index === 0 ? OTP_LENGTH : 1}
                 inputMode="numeric"
-                autoComplete={index === 0 ? "one-time-code" : undefined}
+                autoComplete={index === 0 ? "one-time-code" : "off"}
                 aria-label={`OTP digit ${index + 1}`}
                 value={digit}
                 onChange={(event) => handleInput(index, event)}

@@ -434,11 +434,22 @@ export function SignupPage() {
   };
 
   const handleOtpChange = (index, value) => {
-    const digit = value.replace(/\D/g, "").slice(-1);
-    setOtp((current) => current.map((item, itemIndex) => (itemIndex === index ? digit : item)));
-    if (digit && index < otpRefs.current.length - 1) {
-      otpRefs.current[index + 1]?.focus();
+    const incoming = value.replace(/\D/g, "");
+    if (incoming.length > 1) {
+      setOtp((current) => {
+        const next = [...current];
+        incoming.slice(0, current.length - index).split("").forEach((digit, offset) => {
+          next[index + offset] = digit;
+        });
+        return next;
+      });
+      otpRefs.current[Math.min(index + incoming.length, otpRefs.current.length - 1)]?.focus();
+      return;
     }
+
+    const digit = incoming.slice(-1);
+    setOtp((current) => current.map((item, itemIndex) => (itemIndex === index ? digit : item)));
+    if (digit && index < otpRefs.current.length - 1) otpRefs.current[index + 1]?.focus();
   };
 
   const handleOtpKeyDown = (index, event) => {
@@ -605,8 +616,9 @@ export function SignupPage() {
                 <input
                   className="sp-otp-box"
                   type="text"
-                  maxLength={1}
+                  maxLength={index === 0 ? otp.length : 1}
                   inputMode="numeric"
+                  autoComplete={index === 0 ? "one-time-code" : "off"}
                   placeholder="–"
                   aria-label={`OTP digit ${index + 1}`}
                   key={`otp-${index + 1}`}

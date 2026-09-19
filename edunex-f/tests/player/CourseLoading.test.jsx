@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import React from 'react';
 import { beforeEach, afterEach, it, expect, vi } from 'vitest';
-import { render, screen, fireEvent, act, cleanup } from '@testing-library/react';
+import { render, screen, fireEvent, act, cleanup, waitFor } from '@testing-library/react';
 import { VideosPage } from '../../src/pages/VideosPage';
 vi.mock('../../src/lib/hlsRuntime', () => ({loadHlsJs: vi.fn().mockResolvedValue({})}));
 vi.mock('../../src/legacyRuntime', () => ({ runLegacyPage: () => () => {} }));
@@ -110,9 +110,18 @@ it('mounts notes and lectures inside the fullscreen player frame', async () => {
   const playerFrame = document.getElementById('playerFrame');
   Object.defineProperty(document, 'fullscreenElement', { configurable: true, value: playerFrame });
 
-  fireEvent.click(screen.getByRole('button', { name: 'Open lecture notes' }));
+  const openNotesButton = screen.getByRole('button', { name: 'Open lecture notes' });
+  fireEvent.click(openNotesButton);
   expect(document.getElementById('courseNotesModal').parentElement).toBe(playerFrame);
-  fireEvent.click(screen.getByRole('button', { name: 'Back' }));
+  const notesBack = screen.getByRole('button', { name: 'Back to video' });
+  expect(document.activeElement).toBe(notesBack);
+  fireEvent.click(notesBack);
+  expect(document.getElementById('courseNotesModal')).toBeNull();
+  await waitFor(() => expect(document.activeElement).toBe(openNotesButton));
+
+  fireEvent.click(openNotesButton);
+  fireEvent.keyDown(document, { key: 'Escape' });
+  expect(document.getElementById('courseNotesModal')).toBeNull();
 
   fireEvent.click(screen.getByRole('button', { name: 'Open all lectures' }));
   expect(document.querySelector('.reel-lecture-backdrop').parentElement).toBe(playerFrame);
@@ -199,7 +208,7 @@ it('changes the Notes content when scrolling to a different lecture', async () =
   expect((await screen.findByTestId('active-player-lesson')).textContent).toBe('First lesson');
   fireEvent.click(screen.getByRole('button', { name: 'Open lecture notes' }));
   expect(screen.getByText('Notes for lecture one')).toBeTruthy();
-  fireEvent.click(screen.getByRole('button', { name: /Back/ }));
+  fireEvent.click(screen.getByRole('button', { name: 'Back to video' }));
 
   fireEvent.wheel(container.querySelector('#playerFrame'), { deltaY: 80, deltaX: 0 });
   expect((await screen.findByTestId('active-player-lesson')).textContent).toBe('Second lesson');

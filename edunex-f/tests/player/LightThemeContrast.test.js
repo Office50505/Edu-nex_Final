@@ -13,4 +13,9 @@ describe("light theme contrast guards", () => {
   it("preserves white foregrounds on intentionally dark media surfaces", () => {
     expect(appStyles).toMatch(/\.bento-card[\s\S]*\.featured-course[\s\S]*\.course-thumb-wrap[\s\S]*color: #FFFFFF !important;/);
   });
+
+  it("keeps Chrome autofilled login fields light and readable in light theme", () => {
+    expect(appStyles).toMatch(/html\[data-theme="light"\][\s\S]*data-page="login\.html"[\s\S]*input:-webkit-autofill[\s\S]*-webkit-text-fill-color: #0F172A !important;[\s\S]*-webkit-box-shadow: 0 0 0 1000px #F8FAFC inset !important;/);
+    expect(appStyles).toMatch(/html\[data-theme="light"\][\s\S]*data-page="login\.html"[\s\S]*input:autofill/);
+  });
 });

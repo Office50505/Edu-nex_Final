@@ -12,6 +12,13 @@ const dashboardPageSource = readFileSync(new URL("../../src/pages/DashboardPage.
 const videosPageSource = readFileSync(new URL("../../src/pages/VideosPage.jsx", import.meta.url), "utf8");
 
 describe("cross-viewport UX", () => {
+  it("stops document overscroll at the footer across the website", () => {
+    expect(appStyles).toMatch(/html \{[\s\S]*height: 100%;[\s\S]*overscroll-behavior: none;/);
+    expect(appStyles).toMatch(/body \{[\s\S]*overflow-x: clip;[\s\S]*overscroll-behavior: none;/);
+    expect(appStyles).toMatch(/#root \{[\s\S]*display: flex;[\s\S]*min-height: 100dvh;[\s\S]*flex-direction: column;/);
+    expect(appStyles).toMatch(/\.react-page-root \{[\s\S]*width: 100%;[\s\S]*flex: 1 0 auto;/);
+  });
+
   it("keeps the complete Skillomate wordmark visible during initial page loading", () => {
     expect(indexHtml).toContain('background:#000');
     expect(indexHtml).toContain('src="/assets/skillomate-logo-dark.png"');
@@ -31,6 +38,7 @@ describe("cross-viewport UX", () => {
   it("contains the AI workspace on tablet, phone, and short viewports", () => {
     expect(appStyles).toMatch(/@media \(min-width: 901px\) and \(max-width: 1200px\)[\s\S]*data-page="ai-tutor\.html"[\s\S]*\.tutor-sidebar/);
     expect(appStyles).toMatch(/@media \(max-width: 520px\)[\s\S]*\.chat-input-area[\s\S]*calc\(100% - 12px\)/);
+    expect(appStyles).toMatch(/Keep the AI composer floating cleanly[\s\S]*\.tutor-chat[\s\S]*border: 0 !important;[\s\S]*\.chat-input-area:focus-within[\s\S]*box-shadow: none !important;/);
     expect(appStyles).toMatch(/@media \(max-width: 900px\) and \(max-height: 700px\)[\s\S]*\.tutor-welcome-avatar/);
   });
 
@@ -42,6 +50,15 @@ describe("cross-viewport UX", () => {
     expect(appStyles).toMatch(/@media \(max-width: 700px\)[\s\S]*\.learning-hero-copy[\s\S]*width: 100% !important;[\s\S]*padding-right: 16px !important;/);
     expect(appStyles).toMatch(/@media \(max-width: 700px\)[\s\S]*\.learning-hero h1[\s\S]*font-size: clamp\(24px, 8vw, 32px\) !important;/);
     expect(appStyles).toMatch(/@media \(max-width: 700px\)[\s\S]*\.learning-hero-copy > p[\s\S]*max-width: 340px !important;[\s\S]*overflow-wrap: anywhere !important;/);
+  });
+
+  it("renders the learning journey as connected stages instead of arrow buttons", () => {
+    expect(homePageSource).not.toContain('className="journey-arrow"');
+    expect(appStyles).toMatch(/\.journey-step:not\(:last-child\)::after \{[\s\S]*content: "→";/);
+    expect(appStyles).toMatch(/@media \(max-width: 1120px\)[\s\S]*\.journey-step:not\(:last-child\)::after[\s\S]*content: "↓";/);
+    expect(appStyles).toMatch(/@media \(max-width: 760px\)[\s\S]*\.journey-strip \{[\s\S]*gap: 32px !important;/);
+    expect(appStyles).toMatch(/@media \(max-width: 760px\)[\s\S]*\.journey-strip \.journey-step \{[\s\S]*width: min\(100%, 280px\) !important;[\s\S]*align-self: center !important;/);
+    expect(appStyles).toMatch(/\.journey-step \.journey-number \{[\s\S]*grid-row: 1 \/ span 2;[\s\S]*align-self: center;/);
   });
 
   it("groups the mobile lecture drawer into pages of twenty", () => {

@@ -1,10 +1,11 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { page as dashboardPage } from "../generated-pages/dashboard.html.js";
 import { runLegacyPage } from "../legacyRuntime.js";
 import { usePageStyle } from "../hooks/usePageStyle.js";
 import { useEduNexRuntimeReady } from "../hooks/useEduNexRuntimeReady.js";
 import { progressCacheKey } from "../hooks/useLearningProgress.js";
 import { courseVideoHref } from "../lib/courseNavigation.js";
+import { openRazorpay } from "../lib/razorpayCheckout.js";
 
 function coursesArray(response) {
   if (Array.isArray(response)) return response;
@@ -155,17 +156,12 @@ export function buildDashboardActivity(courses, now = new Date(), progressByCour
   });
   const dayMap = new Map(days.map((day) => [day.key, day]));
   let completedLessons = 0;
-  let completedCourses = 0;
-  let startedCourses = 0;
   let totalMinutes = 0;
-  let latestActivity = null;
 
   courses.forEach((course) => {
     const progress = dashCourseProgress(course, progressByCourse);
     const completedForCourse = progress.percent >= 100 ? progress.total : progress.completed;
     completedLessons += completedForCourse;
-    if (progress.percent >= 100) completedCourses += 1;
-    if (progress.percent > 0 || progress.lastViewedAt) startedCourses += 1;
     const estimatedMinutes = courseDurationMinutes(course) * (progress.percent / 100);
     totalMinutes += progress.watchedSeconds > 0 ? progress.watchedSeconds / 60 : estimatedMinutes;
 
@@ -182,20 +178,8 @@ export function buildDashboardActivity(courses, now = new Date(), progressByCour
     if (viewedDate && !Number.isNaN(viewedDate.getTime())) {
       const day = dayMap.get(localDayKey(viewedDate));
       if (day && !hasDailyActivity && estimatedMinutes > 0) day.value += estimatedMinutes;
-      if (!latestActivity || viewedDate > latestActivity) latestActivity = viewedDate;
     }
   });
-
-  let streak = 0;
-  for (let index = days.length - 1; index >= 0 && days[index].value > 0; index -= 1) streak += 1;
-  const latestText = latestActivity
-    ? (localDayKey(latestActivity) === localDayKey(today)
-      ? "Active today"
-      : `Last active ${latestActivity.toLocaleDateString("en-IN", { day: "numeric", month: "short" })}`)
-    : "Start a lesson to begin tracking";
-  const statusLabel = courses.length > 0 && completedCourses === courses.length
-    ? "Complete"
-    : (startedCourses > 0 ? "In progress" : "Not started");
 
   return {
     days,
@@ -204,8 +188,6 @@ export function buildDashboardActivity(courses, now = new Date(), progressByCour
     timeLabel: learningTimeLabel(totalMinutes),
     completedLessons,
     completedLabel: `${completedLessons} lesson${completedLessons === 1 ? "" : "s"}`,
-    statusLabel,
-    statusSub: streak > 0 ? `${latestText} · ${streak}-day streak` : latestText,
   };
 }
 
@@ -222,6 +204,9 @@ export function DashboardPage() {
   const [recommendationError, setRecommendationError] = useState("");
   const [progressByCourse, setProgressByCourse] = useState(null);
   const [progressVersion, setProgressVersion] = useState(0);
+  const [trialCheckoutBusy, setTrialCheckoutBusy] = useState(false);
+  const [trialCheckoutMessage, setTrialCheckoutMessage] = useState("");
+  const trialCheckoutBusyRef = useRef(false);
   const runtimeReady = useEduNexRuntimeReady();
   const user = window.EduNex?.getUser?.();
   const userId = user?._id || user?.id || "";
@@ -383,6 +368,52 @@ export function DashboardPage() {
   const subscriptionState = String(subscription?.subscriptionDocStatus || subscription?.subscriptionStatus || subscription?.status || "none").toLowerCase();
   const needsRenewal = subscription?.trialEligible === false || ["expired", "cancelled", "paused"].includes(subscriptionState);
 
+  const startTrialCheckout = async () => {
+    if (trialCheckoutBusyRef.current) return;
+    trialCheckoutBusyRef.current = true;
+    setTrialCheckoutBusy(true);
+    setTrialCheckoutMessage("");
+    try {
+      if (!window.EduNex?.authRequest) throw new Error("Please refresh and try again.");
+      const checkout = await window.EduNex.authRequest("/api/payment/initiate-trial", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ paymentType: "trial", mandateConsent: true }),
+      });
+      if (checkout?.gateway !== "razorpay") throw new Error("Secure checkout is unavailable. Please try again later.");
+
+      const result = await openRazorpay(checkout);
+      const verification = await window.EduNex.authRequest("/api/payment/razorpay/verify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(result),
+      });
+
+      let access = verification?.accessGranted === true;
+      let accessData = verification || {};
+      for (let attempt = 0; !access && attempt < 4; attempt += 1) {
+        await new Promise((resolve) => window.setTimeout(resolve, 1500));
+        accessData = await window.EduNex.authRequest("/api/payment/subscription-status");
+        access = accessData?.accessGranted === true || accessData?.hasActiveAccess === true;
+      }
+
+      if (!access) {
+        setTrialCheckoutMessage("Payment authorization received. Access is still being confirmed; please wait a moment and try again.");
+        return;
+      }
+
+      localStorage.setItem("edunexHasCourseAccess", JSON.stringify({ active: true, savedAt: Date.now() }));
+      setSubscription(accessData);
+      setAllowed(true);
+      await loadDashboardCourses(accessData);
+    } catch (error) {
+      setTrialCheckoutMessage(error?.message || "Could not open secure checkout. Please try again.");
+    } finally {
+      trialCheckoutBusyRef.current = false;
+      setTrialCheckoutBusy(false);
+    }
+  };
+
   return (
     <div className="react-page-root" data-page="dashboard.html">
       {allowed === false ? (
@@ -393,8 +424,15 @@ export function DashboardPage() {
             <p>{needsRenewal
               ? "Your one-time trial or previous access has ended. Continue with the monthly plan to unlock your courses, progress, and AI tutor."
               : "Your dashboard unlocks after you subscribe. After the 24-hour trial, access renews at ₹499/month until cancelled."}</p>
+            {trialCheckoutMessage ? <p className="trial-gate-checkout-message" role="alert">{trialCheckoutMessage}</p> : null}
             <div className="trial-gate-actions">
-              <a className="trial-gate-btn" href={needsRenewal ? "payment.html?plan=monthly" : "payment.html?plan=trial"}><i className="fas fa-arrow-right" aria-hidden="true"></i> {needsRenewal ? "Subscribe for ₹499/month" : "Try 24 Hours for ₹1"}</a>
+              {needsRenewal ? (
+                <a className="trial-gate-btn" href="payment.html?plan=monthly"><i className="fas fa-arrow-right" aria-hidden="true"></i> Subscribe for ₹499/month</a>
+              ) : (
+                <button className="trial-gate-btn" type="button" onClick={startTrialCheckout} disabled={trialCheckoutBusy}>
+                  <i className="fas fa-arrow-right" aria-hidden="true"></i> {trialCheckoutBusy ? "Opening secure checkout…" : "Try 24 Hours for ₹1"}
+                </button>
+              )}
               <a className="trial-gate-btn secondary" href="courses.html">Browse Courses</a>
             </div>
           </div>
@@ -485,14 +523,6 @@ export function DashboardPage() {
               </div>
             </div>
 
-            <div className="streak-card">
-              <div className="streak-head"><span>Learning Status</span></div>
-              <div className="streak-num">{activity.statusLabel}</div>
-              <div className="streak-sub">{activity.statusSub}</div>
-              <div className="streak-dots">
-                {activity.days.map((day, index) => <div className={`streak-dot${day.value > 0 ? " done" : ""}${index === 6 ? " today" : ""}`} title={`${day.fullLabel}: ${Math.round(day.value)} min`} key={day.key}></div>)}
-              </div>
-            </div>
           </div>
         </div>
       </div>

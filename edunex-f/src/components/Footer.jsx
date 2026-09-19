@@ -116,6 +116,7 @@ export function Footer() {
             <a href={route("terms.html")}>Terms</a>
             <a href={route("privacy.html")}>Privacy</a>
             <a href={route("contact.html")}>Contact</a>
+            <a href={route("about.html")}>About</a>
           </div>
         </div>
       </div>

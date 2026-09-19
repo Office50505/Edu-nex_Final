@@ -519,7 +519,6 @@ export function CurriculumShowcase({ courses, status, authUserId, hasAccess, acc
               <span className="journey-number">{index + 1}</span>
               <strong>{title}</strong>
               <small>{["Learn the basics", "Build your skills", "Get an audience", "Turn skills into income", "Build your brand"][index]}</small>
-              <MaterialIcon className="journey-arrow">arrow_forward</MaterialIcon>
             </div>
           ))}
         </div>

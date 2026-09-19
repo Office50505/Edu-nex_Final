@@ -18,14 +18,26 @@ body,
 }
 
 html {
+  height: 100%;
   scroll-behavior: smooth;
+  overscroll-behavior: none;
   -webkit-text-size-adjust: 100%;
 }
 
 body {
   margin: 0;
+  min-height: 100%;
+  overflow-x: clip;
+  overscroll-behavior: none;
   font-family: var(--font-body);
   -webkit-tap-highlight-color: transparent;
+}
+
+#root {
+  display: flex;
+  min-height: 100dvh;
+  flex-direction: column;
+  overflow-x: clip;
 }
 
 html:has(body.has-viewport-lock),
@@ -38,6 +50,23 @@ body.has-viewport-lock {
   box-sizing: border-box;
 }
 
+.react-page-root[data-page="dashboard.html"] button.trial-gate-btn {
+  width: 100%;
+  border: 0;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.react-page-root[data-page="dashboard.html"] button.trial-gate-btn:disabled {
+  cursor: wait;
+  opacity: .72;
+}
+
+.react-page-root[data-page="dashboard.html"] .trial-gate-card .trial-gate-checkout-message {
+  margin: -4px 0 14px;
+  color: #FCA5A5;
+}
+
 button,
 input,
 textarea,
@@ -46,6 +75,8 @@ select {
 }
 
 .react-page-root {
+  width: 100%;
+  flex: 1 0 auto;
   font-family: var(--font-body);
 }
 
@@ -5909,6 +5940,32 @@ body.has-edunex-player-fullscreen :where(.enx-report-nav-button, .enx-mobile-rep
   }
 }
 
+/* Keep the AI composer floating cleanly without the legacy panel frame behind it. */
+.react-page-root[data-page="ai-tutor.html"] .tutor-chat {
+  border: 0 !important;
+  background: var(--bg, #000) !important;
+  box-shadow: none !important;
+}
+
+.react-page-root[data-page="ai-tutor.html"] .chat-input-area,
+.react-page-root[data-page="ai-tutor.html"] .chat-input-area:focus-within {
+  box-shadow: none !important;
+}
+
+.react-page-root[data-page="ai-tutor.html"] :where(.tutor-page, .full-tutor, .tutor-chat) {
+  min-height: 0 !important;
+  overscroll-behavior: none;
+}
+
+.react-page-root[data-page="ai-tutor.html"] .chat-messages {
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
+  -webkit-overflow-scrolling: touch;
+}
+
 @media (max-width: 900px) {
   .react-page-root[data-page="ai-tutor.html"] {
     width: 100% !important;
@@ -6041,6 +6098,119 @@ html[data-theme="light"] .react-page-root[data-page="videos.html"] :where(
 ) {
   background: #FFFFFF !important;
   border-color: #E2E8F0 !important;
+}
+
+/* Lecture notes: keep the return action predictable and touch-friendly. */
+.react-page-root[data-page="videos.html"] .course-notes-card {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.react-page-root[data-page="videos.html"] .notes-modal-head {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  justify-content: initial;
+  padding: 14px 16px;
+  background: color-mix(in srgb, var(--panel, #111318) 92%, transparent);
+  backdrop-filter: blur(18px) saturate(135%);
+}
+
+.react-page-root[data-page="videos.html"] .notes-modal-close {
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0 14px;
+  border-radius: 12px;
+  border-color: rgba(197, 139, 42, .36);
+  background: rgba(197, 139, 42, .1);
+  color: #F8FAFC;
+  white-space: nowrap;
+}
+
+.react-page-root[data-page="videos.html"] .notes-modal-close svg {
+  width: 18px;
+  height: 18px;
+}
+
+.react-page-root[data-page="videos.html"] .notes-modal-close:focus-visible {
+  outline: 3px solid rgba(228, 184, 97, .82);
+  outline-offset: 2px;
+}
+
+.react-page-root[data-page="videos.html"] .notes-modal-title {
+  min-width: 0;
+  display: grid;
+  gap: 3px;
+}
+
+.react-page-root[data-page="videos.html"] .notes-modal-title > span {
+  color: #C58B2A;
+  font-size: .66rem;
+  font-weight: 900;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+.react-page-root[data-page="videos.html"] .notes-modal-head .notes-modal-title h2 {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.react-page-root[data-page="videos.html"] .notes-modal-body {
+  flex: 1;
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+
+html[data-theme="light"] .react-page-root[data-page="videos.html"] .notes-modal-head {
+  background: rgba(255, 255, 255, .94) !important;
+}
+
+html[data-theme="light"] .react-page-root[data-page="videos.html"] .notes-modal-close {
+  background: rgba(197, 139, 42, .1) !important;
+  color: #0F172A !important;
+}
+
+@media (max-width: 640px) {
+  .react-page-root[data-page="videos.html"] .course-notes-modal {
+    padding: 0;
+    place-items: stretch;
+  }
+
+  .react-page-root[data-page="videos.html"] .course-notes-card {
+    width: 100%;
+    height: 100%;
+    max-height: none;
+    border: 0;
+    border-radius: 0;
+  }
+
+  .react-page-root[data-page="videos.html"] .notes-modal-head {
+    padding: max(10px, env(safe-area-inset-top)) 14px 10px;
+    gap: 12px;
+  }
+
+  .react-page-root[data-page="videos.html"] .notes-modal-close {
+    width: 44px;
+    padding: 0;
+  }
+
+  .react-page-root[data-page="videos.html"] .notes-modal-close span {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+
+  .react-page-root[data-page="videos.html"] .notes-modal-body {
+    padding: 18px 16px calc(24px + env(safe-area-inset-bottom));
+  }
 }
 
 html[data-theme="light"] .react-page-root[data-page="edit-profile.html"] :where(
@@ -8006,12 +8176,14 @@ html[data-theme="light"] .react-page-root[data-page="index.html"] .continue-lear
 
 .react-page-root[data-page="index.html"] .journey-strip {
   grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 32px;
 }
 
 .react-page-root[data-page="index.html"] .journey-step {
+  position: relative;
   min-height: 54px;
   display: grid;
-  grid-template-columns: 30px minmax(0, 1fr) 30px;
+  grid-template-columns: 30px minmax(0, 1fr);
   align-items: center;
   column-gap: 12px;
   row-gap: 4px;
@@ -8020,6 +8192,8 @@ html[data-theme="light"] .react-page-root[data-page="index.html"] .continue-lear
 }
 
 .react-page-root[data-page="index.html"] .journey-step .journey-number {
+  grid-row: 1 / span 2;
+  align-self: center;
   width: 30px;
   height: 30px;
   display: grid;
@@ -8034,16 +8208,18 @@ html[data-theme="light"] .react-page-root[data-page="index.html"] .continue-lear
   grid-column: 2;
 }
 
-.react-page-root[data-page="index.html"] .journey-step .journey-arrow {
-  grid-column: 3;
-  grid-row: 1 / span 2;
-  justify-self: end;
-  width: 30px;
-  height: 30px;
-  border-radius: 999px;
-  background: #C58B2A;
-  color: #FFFFFF;
-  font-size: 16px;
+.react-page-root[data-page="index.html"] .journey-step:not(:last-child)::after {
+  content: "→";
+  position: absolute;
+  top: 50%;
+  right: -25px;
+  width: 18px;
+  color: #C58B2A;
+  font-size: 22px;
+  font-weight: 800;
+  line-height: 1;
+  text-align: center;
+  transform: translateY(-50%);
 }
 
 .react-page-root[data-page="index.html"] .curriculum-cta {
@@ -8400,6 +8576,17 @@ html[data-theme="light"] .react-page-root[data-page="login.html"] .lp-input-wrap
   -webkit-text-fill-color: var(--text, #fff) !important;
   caret-color: var(--text, #fff) !important;
   box-shadow: 0 0 0 1000px var(--input, #111418) inset !important;
+  border: 0 !important;
+}
+
+html[data-theme="light"] .react-page-root[data-page="login.html"] .lp-input-wrap input:-webkit-autofill,
+html[data-theme="light"] .react-page-root[data-page="login.html"] .lp-input-wrap input:-webkit-autofill:hover,
+html[data-theme="light"] .react-page-root[data-page="login.html"] .lp-input-wrap input:-webkit-autofill:focus,
+html[data-theme="light"] .react-page-root[data-page="login.html"] .lp-input-wrap input:autofill {
+  -webkit-text-fill-color: #0F172A !important;
+  caret-color: #0F172A !important;
+  -webkit-box-shadow: 0 0 0 1000px #F8FAFC inset !important;
+  box-shadow: 0 0 0 1000px #F8FAFC inset !important;
   border: 0 !important;
 }
 
@@ -9309,7 +9496,26 @@ body {
 
   .react-page-root[data-page="index.html"] .module-strip,
   .react-page-root[data-page="index.html"] .journey-strip {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: 1fr;
+  }
+
+  .react-page-root[data-page="index.html"] .journey-strip {
+    gap: 32px;
+  }
+
+  .react-page-root[data-page="index.html"] .journey-step {
+    width: min(100%, 360px);
+    min-height: 0;
+    justify-self: center;
+    padding: 8px 10px;
+  }
+
+  .react-page-root[data-page="index.html"] .journey-step:not(:last-child)::after {
+    content: "↓";
+    top: calc(100% + 6px);
+    right: auto;
+    left: 50%;
+    transform: translateX(-50%);
   }
 }
 
@@ -9356,6 +9562,18 @@ body {
     overflow-x: visible !important;
     padding-bottom: 0 !important;
     scroll-snap-type: none !important;
+  }
+
+  .react-page-root[data-page="index.html"] .journey-strip {
+    gap: 32px !important;
+    align-items: center !important;
+  }
+
+  .react-page-root[data-page="index.html"] .journey-strip .journey-step {
+    width: min(100%, 280px) !important;
+    min-height: 0 !important;
+    align-self: center !important;
+    padding: 8px 10px !important;
   }
 
   .react-page-root[data-page="index.html"] .skill-strip {

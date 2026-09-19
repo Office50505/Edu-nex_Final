@@ -452,6 +452,8 @@ function VideoControls({ playing, volume, muted, rate, currentTime, duration, on
   );
 }
 
+const USER_MUTED_STORAGE_KEY = "edunexVideoMutedByUser";
+
 function Player({ course, lesson: savedLesson, lessonIndex, autoNext, autoplay = false, onEnded, onNavigateLesson, forceEmbed = false, mobileViewMode = null, onToggleMobileView, onControlsVisibilityChange }) {
   const playback = usePlaybackAccess(course._id, savedLesson);
   const lesson = playback.lesson;
@@ -462,7 +464,7 @@ function Player({ course, lesson: savedLesson, lessonIndex, autoNext, autoplay =
   const [playing, setPlaying] = useState(false);
   const [controlsAwake, setControlsAwake] = useState(true);
   const [volume, setVolume] = useState(() => Math.max(0, Math.min(1, Number(localStorage.getItem("edunexVideoVolume") || 1))));
-  const [muted, setMuted] = useState(() => localStorage.getItem("edunexVideoMuted") === "true");
+  const [muted, setMuted] = useState(() => localStorage.getItem(USER_MUTED_STORAGE_KEY) === "true");
   const [rate, setRate] = useState(1);
   const [time, setTime] = useState({ current: 0, duration: 0 });
   const videoId = String(lesson._id || lesson.id || lesson.bunnyVideoId || lesson.bunnyGuid || lesson.youtubeId || lesson.videoId || lessonIndex);
@@ -517,12 +519,7 @@ function Player({ course, lesson: savedLesson, lessonIndex, autoNext, autoplay =
     const start = () => {
       const video = videoRef.current;
       if (video) {
-        video.play().catch(() => {
-          video.muted = true;
-          setMuted(true);
-          localStorage.setItem("edunexVideoMuted", "true");
-          video.play().catch(() => {});
-        });
+        video.play().catch(() => syncPlaying(false));
         return;
       }
       try { embeddedPlayerRef.current?.play?.(); } catch (_) {}
@@ -537,14 +534,14 @@ function Player({ course, lesson: savedLesson, lessonIndex, autoNext, autoplay =
       window.clearTimeout(timer);
       video?.removeEventListener("canplay", start);
     };
-  }, [autoplay, directUrl, postToEmbed]);
+  }, [autoplay, directUrl, postToEmbed, syncPlaying]);
 
   const persistVolume = useCallback((nextVolume, nextMuted) => {
     const safeVolume = Math.max(0, Math.min(1, Number(nextVolume)));
     setVolume(safeVolume);
     setMuted(Boolean(nextMuted));
     localStorage.setItem("edunexVideoVolume", String(safeVolume));
-    localStorage.setItem("edunexVideoMuted", nextMuted ? "true" : "false");
+    localStorage.setItem(USER_MUTED_STORAGE_KEY, nextMuted ? "true" : "false");
     if (videoRef.current) {
       videoRef.current.volume = safeVolume;
       videoRef.current.muted = Boolean(nextMuted || safeVolume <= 0);
@@ -915,17 +912,34 @@ function Player({ course, lesson: savedLesson, lessonIndex, autoNext, autoplay =
 }
 
 function NotesModal({ course, lesson, lessonIndex, onClose }) {
+  const closeButtonRef = useRef(null);
   const value = String(noteValue(lesson, course)).trim();
-  const title = lesson?.title ? `Lecture ${lessonIndex + 1}: ${lesson.title} notes` : (course?.title ? `${course.title} notes` : "Course notes");
+  const title = lesson?.title ? `Lecture ${lessonIndex + 1}: ${lesson.title}` : (course?.title || "Course notes");
+
+  useEffect(() => {
+    closeButtonRef.current?.focus();
+    const closeOnEscape = (event) => {
+      if (event.key === "Escape") onClose();
+    };
+    document.addEventListener("keydown", closeOnEscape);
+    return () => document.removeEventListener("keydown", closeOnEscape);
+  }, [onClose]);
+
   return (
     <div className="course-notes-modal" id="courseNotesModal" onClick={(event) => {
       if (event.target === event.currentTarget) onClose();
     }}>
       <div className="course-notes-card" role="dialog" aria-modal="true" aria-labelledby="notesTitle">
-        <div className="notes-modal-head">
-          <h2 id="notesTitle">{title}</h2>
-          <button className="notes-modal-close" type="button" id="closeNotesBtn" onClick={onClose}><i className="fas fa-arrow-left" aria-hidden="true"></i> Back</button>
-        </div>
+        <header className="notes-modal-head">
+          <button ref={closeButtonRef} className="notes-modal-close" type="button" id="closeNotesBtn" onClick={onClose} aria-label="Back to video">
+            <ReelIcon name="back" />
+            <span>Back to video</span>
+          </button>
+          <div className="notes-modal-title">
+            <span>Lecture notes</span>
+            <h2 id="notesTitle">{title}</h2>
+          </div>
+        </header>
         <div className="notes-modal-body" id="notesBody">
           {value ? <div>{value.split("\n").map((line, index) => <span key={`${line}-${index}`}>{line}<br /></span>)}</div> : <div className="notes-empty">No notes are attached to this lecture yet.</div>}
         </div>
@@ -1012,6 +1026,7 @@ function LectureSheet({ course, activeIndex, completedIds, onClose, onSelect }) 
 
 export function VideosPage() {
   const playerFrameRef = useRef(null);
+  const notesReturnFocusRef = useRef(null);
   const lessonSwipeRef = useRef({ active: false, pointerId: null, startX: 0, startY: 0, lastX: 0, lastY: 0, startedAt: 0, horizontal: false, vertical: false, suppressClickUntil: 0 });
   const query = queryParams();
   const selectedCourseId = query.get("courseId") || query.get("course") || query.get("id");
@@ -1468,14 +1483,20 @@ export function VideosPage() {
     document.body.classList.remove(BODY_MOBILE_REEL_CLASS);
   }, []);
 
-  const openNotes = () => {
+  const openNotes = (event) => {
     const value = String(noteValue(lesson, course)).trim();
     if (value && isLikelyUrl(value)) {
       window.location.href = value;
       return;
     }
+    notesReturnFocusRef.current = event?.currentTarget instanceof HTMLElement ? event.currentTarget : document.activeElement;
     setNotesOpen(true);
   };
+
+  const closeNotes = useCallback(() => {
+    setNotesOpen(false);
+    window.requestAnimationFrame(() => notesReturnFocusRef.current?.focus());
+  }, []);
 
   const handleReelBack = useCallback((event) => {
     const frame = playerFrameRef.current;
@@ -1765,7 +1786,7 @@ export function VideosPage() {
         </section>
       </main>
 
-      {notesOpen ? <PlayerOverlayPortal><NotesModal course={course} lesson={lesson} lessonIndex={activeIndex} onClose={() => setNotesOpen(false)} /></PlayerOverlayPortal> : null}
+      {notesOpen ? <PlayerOverlayPortal><NotesModal course={course} lesson={lesson} lessonIndex={activeIndex} onClose={closeNotes} /></PlayerOverlayPortal> : null}
       {lectureSheetOpen && course ? (
         <PlayerOverlayPortal>
           <LectureSheet

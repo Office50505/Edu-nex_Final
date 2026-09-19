@@ -1,37 +1,104 @@
-/* Keep the merchant paywall visible beneath the provider checkout. */
-.react-page-root[data-page="payment.html"] .pay-page {
-  background: radial-gradient(ellipse at 50% 0%, #392c19 0%, #141416 50%, #0c0c0e 100%);
-  min-height: 85vh; padding: 48px 20px 80px; color: #f5f3ee;
+.react-page-root[data-page="payment.html"] {
+  min-height: 100dvh;
+  background: #070708;
+  color: #f8fafc;
 }
-.react-page-root[data-page="payment.html"] .checkout-card {
-  width: 100%; max-width: 520px; margin: auto; background: #1b1b1e;
-  border: 1px solid #52432d; border-radius: 24px; box-shadow: 0 24px 80px #0005;
-  --text: #f5f3ee; --muted: #c1bdb4; --surface-alt: #262629;
+
+.react-page-root[data-page="payment.html"] .checkout-launcher {
+  min-height: calc(100dvh - 76px);
+  padding: 96px 20px 120px;
+  display: grid;
+  place-items: center;
+  background: radial-gradient(circle at 50% 30%, rgba(197, 139, 42, .1), transparent 38%), #070708;
 }
-.react-page-root[data-page="payment.html"] .checkout-header { background: transparent; border-bottom: 1px solid #ffffff15; padding: 28px; }
-.react-page-root[data-page="payment.html"] .checkout-header h1 { color: #f4d58f; font-size: clamp(24px, 5vw, 32px); }
-.react-page-root[data-page="payment.html"] .checkout-header p { color: #c1bdb4; }
-.react-page-root[data-page="payment.html"] .plan-option { background: #262629; border-color: #9c743c; }
-.react-page-root[data-page="payment.html"] .plan-name,
-.react-page-root[data-page="payment.html"] .amount { color: #fff; }
-.react-page-root[data-page="payment.html"] .plan-desc,
-.react-page-root[data-page="payment.html"] .per { color: #c1bdb4; }
-.react-page-root[data-page="payment.html"] .pay-btn,
-.react-page-root[data-page="payment.html"] .login-cta-btn { background: #e4b861; color: #19130a; min-height: 52px; font-weight: 800; border-radius: 12px; }
-.react-page-root[data-page="payment.html"] .pay-btn:disabled { opacity: .55; cursor: wait; }
-.react-page-root[data-page="payment.html"] .pay-btn-secondary { background: #262629; color: #f5f3ee; border-color: #ffffff25; }
-.react-page-root[data-page="payment.html"] a:not(.pay-btn-secondary):not(.login-cta-btn) { color: #f4d58f; }
-.premium-benefits { list-style: none; padding: 0; margin: 24px 0; display: grid; gap: 16px; font-size: 16px; font-weight: 600; }
-.premium-benefits li { display: flex; align-items: center; gap: 12px; }
-.premium-renewal, .premium-payment-help { font-size: 12px; line-height: 1.7; color: #c1bdb4; margin: 14px 0; }
-.premium-failure { padding: 16px; margin-bottom: 16px; border: 1px solid #b85d59; border-radius: 12px; background: #3c2326; }
-.premium-failure h3 { margin: 0 0 8px; }
-.react-page-root[data-page="payment.html"] .subscribed-banner { background: #20342a; color: #f5f3ee; }
+
+.react-page-root[data-page="payment.html"] .checkout-launcher-card {
+  width: min(100%, 390px);
+  display: grid;
+  justify-items: center;
+  gap: 14px;
+  text-align: center;
+}
+
+.react-page-root[data-page="payment.html"] .checkout-launcher-card > svg {
+  width: 34px;
+  height: 34px;
+}
+
+.react-page-root[data-page="payment.html"] .checkout-launcher-card h1 {
+  margin: 0;
+  color: #f8fafc;
+  font-size: clamp(1.35rem, 5vw, 1.8rem);
+}
+
+.react-page-root[data-page="payment.html"] .checkout-launcher-card p {
+  margin: 0 0 8px;
+  color: #a8adb7;
+  font-size: .9rem;
+  line-height: 1.6;
+}
+
+.react-page-root[data-page="payment.html"] .checkout-launcher-spinner {
+  width: 42px;
+  height: 42px;
+  border: 3px solid rgba(255, 255, 255, .15);
+  border-top-color: #c58b2a;
+  border-radius: 50%;
+  animation: checkout-launcher-spin .75s linear infinite;
+}
+
+.react-page-root[data-page="payment.html"] :where(.checkout-launcher-primary, .checkout-launcher-secondary) {
+  width: 100%;
+  min-height: 48px;
+  padding: 0 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 11px;
+  font: 800 .88rem/1 var(--font-body, Arial, sans-serif);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.react-page-root[data-page="payment.html"] .checkout-launcher-primary {
+  border: 0;
+  background: #c58b2a;
+  color: #080808;
+}
+
+.react-page-root[data-page="payment.html"] .checkout-launcher-primary:disabled {
+  cursor: wait;
+  opacity: .55;
+}
+
+.react-page-root[data-page="payment.html"] .checkout-launcher-secondary {
+  border: 1px solid rgba(255, 255, 255, .14);
+  background: rgba(255, 255, 255, .04);
+  color: #f8fafc;
+}
+
+.react-page-root[data-page="payment.html"] .checkout-launcher-card .checkout-launcher-error {
+  color: #fca5a5;
+}
+
+.react-page-root[data-page="payment.html"] :focus-visible {
+  outline: 3px solid #e4b861;
+  outline-offset: 3px;
+}
+
+@keyframes checkout-launcher-spin {
+  to { transform: rotate(360deg); }
+}
+
 @media (max-width: 600px) {
-  .react-page-root[data-page="payment.html"] .pay-page { padding: 24px 12px 100px; }
-  .react-page-root[data-page="payment.html"] .checkout-header,
-  .react-page-root[data-page="payment.html"] .checkout-body { padding: 22px 18px; }
+  .react-page-root[data-page="payment.html"] .checkout-launcher {
+    min-height: 100dvh;
+    padding: 80px 20px 104px;
+  }
 }
-.premium-preview-price { font-size: 36px; font-weight: 800; margin: 0; color: #fff; }
-.premium-preview-price small { font-size: 15px; color: #c1bdb4; font-weight: 400; }
-.react-page-root[data-page="payment.html"] :focus-visible { outline: 3px solid #e4b861; outline-offset: 3px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .react-page-root[data-page="payment.html"] .checkout-launcher-spinner {
+    animation-duration: 1.6s;
+  }
+}
