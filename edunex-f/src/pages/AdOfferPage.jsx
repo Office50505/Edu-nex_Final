@@ -93,7 +93,9 @@ export function AdOfferPage() {
   const [message, setMessage] = useState("");
   const [busy, setBusy] = useState(false);
   const [recovery, setRecovery] = useState(false);
+  const [checkoutAttempt, setCheckoutAttempt] = useState(0);
   const busyRef = useRef(false);
+  const handoffRef = useRef(null);
   useViewportLock(Boolean(modalStep));
 
   useEffect(() => {
@@ -101,9 +103,48 @@ export function AdOfferPage() {
   }, []);
 
   const finish = useCallback(async (token = bearer) => {
-    const result = await api("/api/onboarding/handoff", {}, token);
-    window.location.assign(`/signup#onboarding=${encodeURIComponent(result.code)}`);
+    if (handoffRef.current?.token === token) return handoffRef.current.promise;
+    const promise = (async () => {
+      const result = await api("/api/onboarding/handoff", {}, token);
+      window.location.assign(`/signup#onboarding=${encodeURIComponent(result.code)}`);
+    })();
+    handoffRef.current = { token, promise };
+    try { await promise; }
+    catch (error) { handoffRef.current = null; throw error; }
   }, [bearer]);
+
+  // Provider confirmation can arrive after the checkout callback, or while the
+  // customer is in their UPI app. Resume only after the server grants access.
+  useEffect(() => {
+    if (!bearer) return;
+    let disposed = false;
+    let checking = false;
+    const check = async () => {
+      if (disposed || checking || document.visibilityState === "hidden") return;
+      checking = true;
+      try {
+        const state = await api("/api/onboarding/status", undefined, bearer);
+        if (!disposed && state.accessGranted) {
+          await finish(bearer);
+          clearInterval(timer);
+        }
+      } catch (_) {
+        // Transient failures remain retryable; manual recovery stays available.
+      } finally { checking = false; }
+    };
+    const timer = setInterval(() => void check(), 3000);
+    const timeout = setTimeout(() => clearInterval(timer), 120000);
+    window.addEventListener("focus", check);
+    document.addEventListener("visibilitychange", check);
+    void check();
+    return () => {
+      disposed = true;
+      clearInterval(timer);
+      clearTimeout(timeout);
+      window.removeEventListener("focus", check);
+      document.removeEventListener("visibilitychange", check);
+    };
+  }, [bearer, checkoutAttempt, finish]);
 
   const showRecovery = useCallback((text) => {
     setModalStep(null);
@@ -125,11 +166,13 @@ export function AdOfferPage() {
       if (pricing.gateway !== "razorpay") throw new Error("Razorpay checkout is unavailable. Please retry later.");
       const paymentType = state.trialEligible === false ? "monthly" : "trial";
       const checkout = await api("/api/onboarding/checkout", { paymentType, mandateConsent: true }, token);
+      setCheckoutAttempt(attempt => attempt + 1);
       const result = await openRazorpay({ ...checkout, paymentType });
+      setCheckoutAttempt(attempt => attempt + 1);
       showRecovery("Verifying payment…");
       const verified = await api("/api/onboarding/verify", result, token);
       if (verified.accessGranted) await finish(token);
-      else showRecovery("Payment confirmation is pending. Check payment status; do not pay again.");
+      else showRecovery("Confirming your payment automatically… Do not pay again. If confirmation takes longer, use Check payment status.");
     } catch (error) {
       showRecovery(error.message || "Checkout could not be completed. Please retry.");
     } finally {
