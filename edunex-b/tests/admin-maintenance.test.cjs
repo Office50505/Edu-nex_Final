@@ -40,6 +40,8 @@ test('shared deletion includes certificates, analytics and billing and deletes u
   assert.equal(api.calls[0], 'billingCancelled');
   assert.equal(result.certificates, 7);
   assert.equal(result.razorpayBilling, 1);
+  assert.equal(result.onboardingSessions, 1);
+  assert.ok(api.calls.includes('OnboardingSession'));
   assert.ok(api.calls.includes('AnalyticsEvent'));
   assert.equal(api.calls.at(-1), 'User');
 });

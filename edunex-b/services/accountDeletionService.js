@@ -83,6 +83,7 @@ async function deleteUserAccount(userId, options = {}) {
     Session.deleteMany({ user: user._id }),
     require('../models/LearningProgress').deleteMany({ userId: userIdString }),
     require('../models/AssessmentResult').deleteMany({ userId: userIdString }),
+    require('../models/OnboardingSession').deleteMany({ _id: user._id }),
   ]);
 
   const deletedUser = await User.deleteOne({ _id: user._id });
@@ -108,6 +109,7 @@ async function deleteUserAccount(userId, options = {}) {
     sessions: results[14].deletedCount || 0,
     learningProgress: results[15].deletedCount || 0,
     assessments: results[16].deletedCount || 0,
+    onboardingSessions: results[17].deletedCount || 0,
   };
 }
 

@@ -28,6 +28,9 @@ router.post('/session', wrap(async (req, res) => {
   try { proof = jwt.verify(req.body.signupToken, secret); } catch (_) { throw fail('Please verify your phone number again.', 401); }
   if (proof.purpose || !proof.mobileNumber) throw fail('Invalid phone verification.', 401);
   if (await User.exists({ mobileNumber: proof.mobileNumber })) throw fail('This phone already has an account. Please sign in.', 409);
+  // Older account deletions left completed onboarding records behind. Fresh OTP
+  // proof and no registered user allow a new identity, never the old entitlement.
+  await Onboarding.deleteMany({ mobileNumber: proof.mobileNumber, completedAt: { $type: 'date' } });
   const bearer = token();
   const session = await Onboarding.findOneAndUpdate({ mobileNumber: proof.mobileNumber }, {
     $set: { tokenHash: hash(bearer), expiresAt: new Date(Date.now() + 60 * 60 * 1000) },

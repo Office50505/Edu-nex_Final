@@ -9,9 +9,10 @@ function setup() {
  const hash = s => crypto.createHash('sha256').update(s).digest('hex');
  const router = { use() {}, get(p,...h){routes.set('GET '+p,h);}, post(p,...h){routes.set('POST '+p,h);} };
  const model = {
+  async deleteMany(q) { if (saved?.mobileNumber === q.mobileNumber && saved.completedAt instanceof Date) saved = null; },
   async findOneAndUpdate(q,u) {
    if (q.handoffHash && (!saved || saved.handoffHash!==q.handoffHash || !saved.handoffExpiresAt || saved.handoffExpiresAt<=new Date())) return null;
-   saved ||= {_id:'507f1f77bcf86cd799439011',mobileNumber:q.mobileNumber};
+   saved ||= {_id:crypto.randomBytes(12).toString('hex'),mobileNumber:q.mobileNumber};
    Object.assign(saved,u.$set||{}); for(const k of Object.keys(u.$unset||{}))delete saved[k]; return saved;
   },
   async findOne(q) {return saved && !saved.completedAt && saved.tokenHash===q.tokenHash && saved.expiresAt>new Date() ? saved : null;},
@@ -27,6 +28,24 @@ function setup() {
 }
 test('rejects forged and completion tokens as OTP proof',async()=>{const h=setup();assert.equal((await h.call('POST','/session',{signupToken:'fake'})).code,401);assert.equal((await h.call('POST','/session',{signupToken:jwt.sign({mobileNumber:'919999999999',purpose:'paid-onboarding'},'test-signup')})).code,401);});
 test('refuses duplicate registered phone',async()=>{const h=setup();h.setExisting(true);assert.equal((await h.call('POST','/session',{signupToken:h.proof})).code,409);});
+test('deleted account can restart onboarding with a new identity after fresh OTP',async()=>{
+ const h=setup(); const first=await h.call('POST','/session',{signupToken:h.proof});
+ const previousId=h.saved._id; h.saved.completedAt=new Date(); h.saved.handoffHash='old-handoff';
+ const restarted=await h.call('POST','/session',{signupToken:h.proof});
+ assert.equal(restarted.code,200); assert.notEqual(h.saved._id,previousId);
+ assert.equal(h.saved.completedAt,undefined); assert.equal(h.saved.handoffHash,undefined);
+ assert.equal((await h.call('POST','/checkout',{},first.data.token)).code,401);
+});
+test('unfinished onboarding retains its billing identity on renewed OTP',async()=>{
+ const h=setup(); await h.call('POST','/session',{signupToken:h.proof}); const id=h.saved._id;
+ await h.call('POST','/session',{signupToken:h.proof}); assert.equal(h.saved._id,id);
+});
+test('completed onboarding is retained when its account still exists',async()=>{
+ const h=setup(); await h.call('POST','/session',{signupToken:h.proof});
+ const id=h.saved._id; h.saved.completedAt=new Date(); h.setExisting(true);
+ assert.equal((await h.call('POST','/session',{signupToken:h.proof})).code,409);
+ assert.equal(h.saved._id,id); assert.ok(h.saved.completedAt);
+});
 test('stores only hashed session token and uses reserved identity for billing',async()=>{const h=setup();const r=await h.call('POST','/session',{signupToken:h.proof});assert.equal(h.saved.tokenHash,h.hash(r.data.token));const b=await h.call('POST','/checkout',{paymentType:'trial'},r.data.token);assert.equal(b.data.userId,h.saved._id);assert.equal(b.data.verified,true);});
 test('expired or missing session cannot create checkout',async()=>{const h=setup();assert.equal((await h.call('POST','/checkout',{})).code,401);const r=await h.call('POST','/session',{signupToken:h.proof});h.saved.expiresAt=new Date(0);assert.equal((await h.call('POST','/checkout',{paymentType:'trial'},r.data.token)).code,401);});
 test('unconfirmed payment cannot issue completion handoff',async()=>{const h=setup();const r=await h.call('POST','/session',{signupToken:h.proof});assert.equal((await h.call('POST','/handoff',{},r.data.token)).code,409);});
