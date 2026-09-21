@@ -3,12 +3,13 @@ import { openRazorpay } from "../lib/razorpayCheckout.js";
 import { nationalPhoneDigits, pasteNationalPhone } from "../lib/authNavigation.js";
 import { useViewportLock } from "../hooks/useViewportLock.js";
 import "./ad-offer.css";
+import { apiFetch } from "../lib/apiUrl.js";
 
 const PREVIEW_URL = "/assets/skillomate-offer-preview.mp4";
 const POSTER_URL = "https://d5yxyknp74yz8.cloudfront.net/courses/ai-influencer/lessons/lesson-01.webp";
 
 async function api(url, body, bearer = "") {
-  const response = await fetch(url, {
+  const response = await apiFetch(url, {
     method: body === undefined ? "GET" : "POST",
     headers: {
       "Content-Type": "application/json",

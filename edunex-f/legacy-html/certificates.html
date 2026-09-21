@@ -288,7 +288,7 @@
   }
 
   function certificateVerifyUrl(certificate) {
-    return `${window.location.origin}/api/certificates/verify/${encodeURIComponent(certificate.certificateId)}`;
+    return EduNex.apiUrl(`/api/certificates/verify/${encodeURIComponent(certificate.certificateId)}`);
   }
 
   function certificateCard(certificate) {

@@ -44,12 +44,17 @@ const MONGODB_URI = process.env.MONGODB_URI || (isProduction ? '' : 'mongodb://l
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || (isProduction ? '' : 'Sdbc@123');
 const ADMIN_TOKEN_SECRET = process.env.ADMIN_TOKEN_SECRET || (isProduction ? '' : 'edunex-development-admin-secret');
 const ACCESS_TOKEN_SECRET = process.env.JWT_SECRET || (isProduction ? '' : 'edunex-development-access-secret');
-const FRONTEND_ORIGINS = [process.env.FRONTEND_ORIGIN, process.env.FRONTEND_ORIGINS]
+const PRODUCTION_FRONTEND_ORIGINS = ['https://skillomate.in', 'https://www.skillomate.in'];
+const CONFIGURED_FRONTEND_ORIGINS = [process.env.FRONTEND_ORIGIN, process.env.FRONTEND_ORIGINS]
   .filter(Boolean)
   .join(',')
   .split(',')
   .map((origin) => origin.trim())
   .filter(Boolean);
+const FRONTEND_ORIGINS = [...new Set([
+  ...CONFIGURED_FRONTEND_ORIGINS,
+  ...(isProduction ? PRODUCTION_FRONTEND_ORIGINS : []),
+])];
 const BUNNY_STORAGE_ZONE = process.env.BUNNY_STORAGE_ZONE || '';
 const BUNNY_STORAGE_REGION = process.env.BUNNY_STORAGE_REGION || '';
 const BUNNY_STORAGE_ACCESS_KEY = process.env.BUNNY_STORAGE_ACCESS_KEY || '';

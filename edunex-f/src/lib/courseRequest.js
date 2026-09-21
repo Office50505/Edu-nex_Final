@@ -1,3 +1,5 @@
+import { apiUrl } from './apiUrl.js';
+
 const RETRYABLE_STATUS = new Set([502, 503, 504]);
 
 function wait(delayMs, signal) {
@@ -30,10 +32,11 @@ export async function courseRequest(url, options = {}) {
   let timedOut = false;
   const timer = setTimeout(() => { timedOut = true; cancel(); }, timeoutMs);
   try {
+    const requestUrl = apiUrl(url);
     let requestInit = init;
     for (let attempt = 0; attempt < 2; attempt += 1) {
       try {
-        let response = await fetch(url, { ...requestInit, signal: controller.signal });
+        let response = await fetch(requestUrl, { ...requestInit, signal: controller.signal });
         if (response.status === 401 && new Headers(requestInit.headers).has('Authorization')) {
           const refresh = window.EduNex?.refreshAccessToken;
           if (!refresh) throw new Error('Session refresh is not ready. Please retry.');
@@ -42,7 +45,7 @@ export async function courseRequest(url, options = {}) {
             const headers = new Headers(requestInit.headers);
             headers.set('Authorization', `Bearer ${token}`);
             requestInit = { ...requestInit, headers };
-            response = await fetch(url, { ...requestInit, signal: controller.signal });
+            response = await fetch(requestUrl, { ...requestInit, signal: controller.signal });
           }
         }
         if (attempt === 0 && RETRYABLE_STATUS.has(response.status)) {

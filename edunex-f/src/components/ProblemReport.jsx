@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { EnxIcon } from "./EnxIcon.jsx";
 import { useViewportLock } from "../hooks/useViewportLock.js";
+import { apiFetch } from "../lib/apiUrl.js";
 
 const CATEGORIES = [
   ["technical", "Technical problem"],
@@ -53,7 +54,7 @@ function safePageContext() {
 
 async function submitReport(payload) {
   const token = accessToken();
-  const response = await fetch("/api/problem-reports", {
+  const response = await apiFetch("/api/problem-reports", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

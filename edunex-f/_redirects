@@ -1,2 +1,2 @@
-# Configure the /api proxy in production hosting after the live backend domain is set.
+# API requests use the build-time VITE_API_BASE_URL; this rule only serves SPA routes.
 /*  /index.html  200

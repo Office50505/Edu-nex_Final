@@ -5,6 +5,7 @@ import { runLegacyPage } from "../legacyRuntime.js";
 import { usePageStyle } from "../hooks/usePageStyle.js";
 import { useViewportLock } from "../hooks/useViewportLock.js";
 import { route } from "../lib/routes.js";
+import { apiFetch } from "../lib/apiUrl.js";
 
 const PHONE_ERROR = "Please enter a valid 10-digit phone number.";
 const TERMS_ERROR = "Please agree to the Privacy Policy.";
@@ -45,7 +46,7 @@ function normalizePhone(value) {
 async function request(path, options) {
   if (window.EduNex?.request) return window.EduNex.request(path, options);
 
-  const response = await fetch(path, {
+  const response = await apiFetch(path, {
     ...options,
     headers: {
       "Content-Type": "application/json",

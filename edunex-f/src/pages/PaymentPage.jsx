@@ -5,6 +5,7 @@ import { page as paymentPage } from "../generated-pages/payment.html.js";
 import { runLegacyPage } from "../legacyRuntime.js";
 import { usePageStyle } from "../hooks/usePageStyle.js";
 import { useEduNexRuntimeReady } from "../hooks/useEduNexRuntimeReady.js";
+import { apiFetch } from "../lib/apiUrl.js";
 
 function params() {
   return new URLSearchParams(window.location.search);
@@ -61,7 +62,7 @@ export function PaymentPage() {
   }, []);
   useEffect(() => {
     const controller = new AbortController();
-    fetch("/api/payment/config", { signal: controller.signal }).then(async response => {
+    apiFetch("/api/payment/config", { signal: controller.signal }).then(async response => {
       if (!response.ok) throw new Error("Pricing is unavailable. Please reload.");
       const data = await response.json(); setPricing(data);
     }).catch(error => { if (error.name !== "AbortError") setPayMsg({ text: error.message, type: "error" }); });
@@ -104,7 +105,7 @@ export function PaymentPage() {
     const sessionStore = localStorage.getItem("edunexAccessToken") ? localStorage : sessionStorage;
     const refreshToken = sessionStore.getItem("edunexRefreshToken");
     if (!refreshToken) throw new Error("Please log in");
-    const response = await fetch("/api/auth/refresh", {
+    const response = await apiFetch("/api/auth/refresh", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ refreshToken }),
@@ -117,7 +118,7 @@ export function PaymentPage() {
 
   const authFetch = useCallback(async (url, options = {}) => {
     let token = localStorage.getItem("edunexAccessToken") || sessionStorage.getItem("edunexAccessToken");
-    const run = (accessToken) => fetch(url, { ...options, headers: { ...options.headers, Authorization: `Bearer ${accessToken}` } });
+    const run = (accessToken) => apiFetch(url, { ...options, headers: { ...options.headers, Authorization: `Bearer ${accessToken}` } });
     let response = await run(token);
     if (response.status === 401) {
       token = await refreshAccessToken();

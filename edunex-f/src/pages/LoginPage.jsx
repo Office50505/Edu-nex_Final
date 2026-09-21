@@ -6,6 +6,7 @@ import { runLegacyPage } from "../legacyRuntime.js";
 import { usePageStyle } from "../hooks/usePageStyle.js";
 import { route } from "../lib/routes.js";
 import { PasswordRecovery } from "../components/PasswordRecovery.jsx";
+import { apiFetch } from "../lib/apiUrl.js";
 
 const EMPTY_LOGIN_MESSAGE = "Please enter your mobile number and password.";
 const FALLBACK_LOGIN_MESSAGE = "Could not sign in. Please try again.";
@@ -39,7 +40,7 @@ async function requestLogin(loginId, password, remember) {
     });
   }
 
-  const response = await fetch("/api/auth/login", {
+  const response = await apiFetch("/api/auth/login", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ loginId, password, remember }),

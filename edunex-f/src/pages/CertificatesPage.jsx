@@ -3,6 +3,7 @@ import { page as certificatesPage } from "../generated-pages/certificates.html.j
 import { runLegacyPage } from "../legacyRuntime.js";
 import { usePageStyle } from "../hooks/usePageStyle.js";
 import { useEduNexRuntimeReady } from "../hooks/useEduNexRuntimeReady.js";
+import { apiUrl } from "../lib/apiUrl.js";
 
 function formatDate(value) {
   if (!value) return "Date unavailable";
@@ -12,7 +13,7 @@ function formatDate(value) {
 }
 
 function certificateVerifyUrl(certificate) {
-  return `${window.location.origin}/api/certificates/verify/${encodeURIComponent(certificate.certificateId)}`;
+  return apiUrl(`/api/certificates/verify/${encodeURIComponent(certificate.certificateId)}`);
 }
 
 function downloadCertificate(certificate) {

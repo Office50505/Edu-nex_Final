@@ -888,8 +888,28 @@
     return localStorage.getItem("edunexAccessToken") ? localStorage : sessionStorage;
   }
 
+  function configuredApiBaseUrl() {
+    const raw = String(document.querySelector('meta[name="skillomate-api-base-url"]')?.content || "").trim();
+    if (!raw) return "";
+    try {
+      const parsed = new URL(raw);
+      if (!/^https?:$/.test(parsed.protocol)) return "";
+      return `${parsed.origin}${parsed.pathname.replace(/\/+$/, "").replace(/\/api$/i, "")}`;
+    } catch (_) {
+      return "";
+    }
+  }
+
+  const API_BASE_URL = configuredApiBaseUrl();
+
   function apiUrl(path) {
-    return path.startsWith("/api") ? path : `/api${path.startsWith("/") ? path : `/${path}`}`;
+    const raw = String(path || "").trim();
+    if (/^(https?:)?\/\//i.test(raw)) return raw;
+    const rooted = `/${raw.replace(/^\/+/, "")}`;
+    const apiPath = rooted === "/api" || rooted.startsWith("/api/")
+      ? rooted
+      : `/api${rooted === "/" ? "" : rooted}`;
+    return API_BASE_URL ? `${API_BASE_URL}${apiPath}` : apiPath;
   }
 
   function getAccessToken() {
@@ -1116,9 +1136,13 @@
     try {
       const parsed = new URL(rawUrl, window.location.origin);
       if (parsed.origin === window.location.origin) {
-        return `${parsed.pathname}${parsed.search}${parsed.hash}`;
+        const relativeUrl = `${parsed.pathname}${parsed.search}${parsed.hash}`;
+        return parsed.pathname === "/api" || parsed.pathname.startsWith("/api/")
+          ? apiUrl(relativeUrl)
+          : relativeUrl;
       }
-      return `/api/image-proxy?url=${encodeURIComponent(parsed.href)}`;
+      if (API_BASE_URL && parsed.origin === new URL(API_BASE_URL).origin) return parsed.href;
+      return apiUrl(`/api/image-proxy?url=${encodeURIComponent(parsed.href)}`);
     } catch (_) {
       return rawUrl;
     }

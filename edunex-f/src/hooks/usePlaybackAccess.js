@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { courseRequest } from '../lib/courseRequest';
+import { apiUrl } from '../lib/apiUrl.js';
 const validGrant = value => value && typeof value.hlsUrl === 'string' && value.hlsUrl && Number.isFinite(value.expiresAt) && value.expiresAt > Date.now() + 60000;
+const routedGrant = value => value && ({...value,hlsUrl:/^\/?api(?:\/|$)/i.test(value.hlsUrl || '')?apiUrl(value.hlsUrl):value.hlsUrl});
 export function usePlaybackAccess(courseId, savedLesson) {
   const [value,setValue]=useState(null),[error,setError]=useState(''),[attempt,setAttempt]=useState(0);
   const initial = attempt === 0 && validGrant(savedLesson) ? savedLesson : null;
@@ -19,13 +21,13 @@ export function usePlaybackAccess(courseId, savedLesson) {
         if(stopped)return;
         if (!response.ok) throw new Error(data?.error || 'Playback access unavailable. Please retry.');
         if(!validGrant(data)) throw new Error('The playback service returned an invalid response. Please contact support to update the video backend.');
-        setValue({...data,lessonId:savedLesson._id,courseId});setError('');
+        setValue({...routedGrant(data),lessonId:savedLesson._id,courseId});setError('');
         timer=setTimeout(renew,Math.max(10000,data.expiresAt-Date.now()-60000));
       }catch(failure){if(!stopped){setValue(null);setError(failure.message||'Playback access unavailable.');}}
     };
     setError('');
     if (attempt === 0 && validGrant(savedLesson)) {
-      setValue({...savedLesson,lessonId:savedLesson._id,courseId});
+      setValue({...routedGrant(savedLesson),lessonId:savedLesson._id,courseId});
       timer=setTimeout(renew,Math.max(10000,savedLesson.expiresAt-Date.now()-60000));
     } else renew();
     return()=>{stopped=true;clearTimeout(timer);controller.abort();};

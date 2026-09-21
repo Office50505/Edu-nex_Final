@@ -1,3 +1,5 @@
+import { apiUrl } from "../../lib/apiUrl.js";
+
 export const TOKEN_KEY = "edunexAdminToken";
 export const ADMIN_KEY = "edunexAdmin";
 
@@ -82,8 +84,7 @@ export function canonicalAdminPath(pathname = "/") {
 }
 
 export function api(path) {
-  const base = (window.EDUNEX_ADMIN_API_BASE || "").replace(/\/$/, "");
-  return base ? `${base}${path}` : path;
+  return apiUrl(path);
 }
 
 export function getToken() {

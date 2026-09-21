@@ -11,12 +11,8 @@
   const currentPath = window.location.pathname === "/" ? "/index.html" : window.location.pathname;
   const token = localStorage.getItem("edunexAccessToken") || sessionStorage.getItem("edunexAccessToken");
   const tokenStore = localStorage.getItem("edunexAccessToken") ? localStorage : sessionStorage;
-  const API_BASE_URL = (() => {
-    return "";
-  })();
-
   function apiUrl(path) {
-    return `${API_BASE_URL}${path}`;
+    return window.EduNex?.apiUrl?.(path) || path;
   }
 
   function hideJoinButton() {

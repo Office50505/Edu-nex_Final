@@ -13,6 +13,7 @@ import { runLegacyPage } from "../legacyRuntime.js";
 import { usePageStyle } from "../hooks/usePageStyle.js";
 import { useViewportLock } from "../hooks/useViewportLock.js";
 import { courseRequest } from "../lib/courseRequest.js";
+import { apiUrl } from "../lib/apiUrl.js";
 
 const FALLBACK_IMAGE = "data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20width=%27900%27%20height=%27600%27%20viewBox=%270%200%20900%20600%27%3E%3Crect%20width=%27900%27%20height=%27600%27%20fill=%27%23000000%27/%3E%3Crect%20x=%271%27%20y=%271%27%20width=%27898%27%20height=%27598%27%20rx=%2732%27%20fill=%27%230d0d0d%27%20stroke=%27%23C58B2A%27%20stroke-opacity=%27.35%27/%3E%3Ctext%20x=%27450%27%20y=%27312%27%20text-anchor=%27middle%27%20fill=%27%23C58B2A%27%20font-family=%27Arial%27%20font-size=%2748%27%20font-weight=%27800%27%3ESkillomate%3C/text%3E%3C/svg%3E";
 const AUTO_NEXT_KEY = "edunexAutoNextVideo";
@@ -103,7 +104,7 @@ function proxyImageUrl(url) {
     const parsed = new URL(value, window.location.origin);
     if (/(^|\.)drive\.google\.com$/i.test(parsed.hostname)) return parsed.href;
     if (parsed.origin === window.location.origin) return `${parsed.pathname}${parsed.search}${parsed.hash}`;
-    return `/api/image-proxy?url=${encodeURIComponent(parsed.href)}`;
+    return apiUrl(`/api/image-proxy?url=${encodeURIComponent(parsed.href)}`);
   } catch (_) {
     return value;
   }

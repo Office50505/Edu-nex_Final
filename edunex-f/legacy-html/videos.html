@@ -1609,10 +1609,6 @@
 <script src="assets/bot-avatars/manifest.js"></script>
 <script src="js/nex-ai-widget.js"></script>
 <script>
-  const API_BASE_URL = (() => {
-    return "";
-  })();
-
   const state = {
     courses: [],
     filter: "all",
@@ -1710,7 +1706,7 @@
     }
 
     try {
-      const response = await fetch(`${API_BASE_URL}/api/payment/subscription-status`, {
+      const response = await fetch(EduNex.apiUrl('/api/payment/subscription-status'), {
         headers: { Authorization: `Bearer ${accessToken}` },
       });
 
@@ -1889,7 +1885,7 @@
 
   async function loadCourses() {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/courses`, { headers: headers() });
+      const response = await fetch(EduNex.apiUrl('/api/courses'), { headers: headers() });
       if (!response.ok) throw new Error("Course API unavailable");
       const courses = await response.json();
       state.courses = courses.map(normalizeCourse);
@@ -1906,7 +1902,7 @@
   async function loadCourse(courseId) {
     const localCourse = state.courses.find((course) => course._id === courseId);
     try {
-      const response = await fetch(`${API_BASE_URL}/api/courses/${encodeURIComponent(courseId)}/lessons`, { headers: headers() });
+      const response = await fetch(EduNex.apiUrl(`/api/courses/${encodeURIComponent(courseId)}/lessons`), { headers: headers() });
       if (!response.ok) throw new Error("Protected course unavailable");
       return normalizeCourse(await response.json());
     } catch (error) {

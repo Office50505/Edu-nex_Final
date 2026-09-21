@@ -2,6 +2,7 @@
 .env
 .env.*
 !.env.example
+!edunex-f/.env.production
 node_modules/
 dist/
 build/

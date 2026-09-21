@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { LegalLayout, LegalSection, PlainList } from "../components/legal/LegalLayout.jsx";
 import { POLICY_LAST_UPDATED, SUPPORT_EMAIL, setPageMeta } from "../lib/siteMeta.js";
+import { apiFetch } from "../lib/apiUrl.js";
 
 const retainedReasons = [
   "Legal obligations",
@@ -32,7 +33,7 @@ export default function DeleteAccountPage() {
     setError("");
     const data = new FormData(event.currentTarget);
     try {
-      const response = await fetch("/api/deletion-requests", {
+      const response = await apiFetch("/api/deletion-requests", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

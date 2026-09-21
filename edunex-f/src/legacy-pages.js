@@ -6439,8 +6439,11 @@ function driveImageSrc(url){
     if(!value || /^(data|blob):/i.test(value)) return value;
     try{
       const parsed = new URL(value, window.location.origin);
-      if(parsed.origin === window.location.origin) return \`\${parsed.pathname}\${parsed.search}\${parsed.hash}\`;
-      return \`/api/image-proxy?url=\${encodeURIComponent(parsed.href)}\`;
+      if(parsed.origin === window.location.origin){
+        const relativeUrl = \`\${parsed.pathname}\${parsed.search}\${parsed.hash}\`;
+        return parsed.pathname === '/api' || parsed.pathname.startsWith('/api/') ? EduNex.apiUrl(relativeUrl) : relativeUrl;
+      }
+      return EduNex.apiUrl(\`/api/image-proxy?url=\${encodeURIComponent(parsed.href)}\`);
     }catch(_){
       return value;
     }
@@ -6510,7 +6513,7 @@ function showPayMsg(text, type){
 async function refreshAccessToken(){
   const rt = sessionStore.getItem('edunexRefreshToken');
   if(!rt) throw new Error('Please log in');
-  const r = await fetch('/api/auth/refresh',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({refreshToken:rt})});
+  const r = await fetch(EduNex.apiUrl('/api/auth/refresh'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({refreshToken:rt})});
   const d = await r.json();
   if(!r.ok) throw new Error(d.error || 'Session expired');
   token = d.accessToken;
@@ -6519,7 +6522,7 @@ async function refreshAccessToken(){
 }
 
 async function authFetch(url, opts={}){
-  const run = t => fetch(url,{...opts,headers:{...opts.headers,Authorization:\`Bearer \${t}\`}});
+  const run = t => fetch(EduNex.apiUrl(url),{...opts,headers:{...opts.headers,Authorization:\`Bearer \${t}\`}});
   let res = await run(token);
   if(res.status===401){ token = await refreshAccessToken(); res = await run(token); }
   return res;
@@ -6583,7 +6586,7 @@ async function loadCoursePreview(){
     const summaryUrl = courseId
       ? \`/api/courses/checkout-summary?courseId=\${encodeURIComponent(courseId)}\`
       : '/api/courses/checkout-summary';
-    const res = await fetch(summaryUrl, { cache: 'force-cache' });
+    const res = await fetch(EduNex.apiUrl(summaryUrl), { cache: 'force-cache' });
     if(res.ok){
       const course = await res.json();
       if(course && (course._id || course.title || courseThumbnailSrc(course))){
@@ -10021,10 +10024,6 @@ function setStoredUser(user) {
       { src: `assets/bot-avatars/manifest.js` },
       { src: `js/nex-ai-widget.js` },
       { code: `
-  const API_BASE_URL = (() => {
-    return "";
-  })();
-
   const state = {
     courses: [],
     filter: "all",
@@ -10115,7 +10114,7 @@ function setStoredUser(user) {
     }
 
     try {
-      const response = await fetch(\`\${API_BASE_URL}/api/payment/subscription-status\`, {
+      const response = await fetch(EduNex.apiUrl('/api/payment/subscription-status'), {
         headers: { Authorization: \`Bearer \${accessToken}\` },
       });
 
@@ -10293,7 +10292,7 @@ function setStoredUser(user) {
 
   async function loadCourses() {
     try {
-      const response = await fetch(\`\${API_BASE_URL}/api/courses\`, { headers: headers() });
+      const response = await fetch(EduNex.apiUrl('/api/courses'), { headers: headers() });
       if (!response.ok) throw new Error("Course API unavailable");
       const courses = await response.json();
       state.courses = courses.map(normalizeCourse);
@@ -10310,7 +10309,7 @@ function setStoredUser(user) {
   async function loadCourse(courseId) {
     const localCourse = state.courses.find((course) => course._id === courseId);
     try {
-      const response = await fetch(\`\${API_BASE_URL}/api/courses/\${encodeURIComponent(courseId)}/lessons\`, { headers: headers() });
+      const response = await fetch(EduNex.apiUrl(\`/api/courses/\${encodeURIComponent(courseId)}/lessons\`), { headers: headers() });
       if (!response.ok) throw new Error("Protected course unavailable");
       return normalizeCourse(await response.json());
     } catch (error) {

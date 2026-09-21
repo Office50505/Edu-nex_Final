@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { AdminShell, Message } from "./AdminShell.jsx";
 import { adminJson, adminRequest, adminRoutes, errorMessage, formatNumber, requireAdmin, slugify } from "./adminApi.js";
 import "./pdf-extraction.css";
+import { apiUrl } from "../../lib/apiUrl.js";
 
 function normalizeThumbnailUrl(url, width = 1600) {
   const value = String(url || "").trim();
@@ -74,8 +75,11 @@ function thumbnailPreviewSrc(value) {
         return `https://drive.google.com/thumbnail?id=${encodeURIComponent(driveId)}&sz=w1200`;
       }
     }
-    if (parsed.origin === window.location.origin) return `${parsed.pathname}${parsed.search}${parsed.hash}`;
-    return `/api/image-proxy?url=${encodeURIComponent(parsed.href)}`;
+    if (parsed.origin === window.location.origin) {
+      const relativeUrl = `${parsed.pathname}${parsed.search}${parsed.hash}`;
+      return parsed.pathname === "/api" || parsed.pathname.startsWith("/api/") ? apiUrl(relativeUrl) : relativeUrl;
+    }
+    return apiUrl(`/api/image-proxy?url=${encodeURIComponent(parsed.href)}`);
   } catch (_) {
     return raw;
   }
@@ -151,8 +155,8 @@ function courseForm(course) {
   const horizontalThumbnailDataUrl = embeddedThumbnailDataUrl(course?.thumbnailHorizontal, course?.thumbnail, course?.thumbnailVertical);
   const verticalThumbnailDataUrl = embeddedThumbnailDataUrl(course?.thumbnailVertical, course?.thumbnailHorizontal, course?.thumbnail);
   const courseId = String(course?._id || course?.id || "");
-  const publishedThumbnailUrl = courseId && course?.status === "published" ? `/api/courses/${courseId}/thumbnail` : "";
-  const publishedVerticalThumbnailUrl = courseId && course?.status === "published" ? `/api/courses/${courseId}/thumbnail?orientation=vertical` : "";
+  const publishedThumbnailUrl = courseId && course?.status === "published" ? apiUrl(`/api/courses/${courseId}/thumbnail`) : "";
+  const publishedVerticalThumbnailUrl = courseId && course?.status === "published" ? apiUrl(`/api/courses/${courseId}/thumbnail?orientation=vertical`) : "";
   const videos = Array.isArray(course?.videos) && course.videos.length
     ? course.videos.slice().sort((a,b)=>(a.order||0)-(b.order||0)).map((video,index) => ({...courseVideo(video,index),
       thumbnailUrl: video.thumbnailUrl === course.thumbnailUrl ? '' : video.thumbnailUrl || '',

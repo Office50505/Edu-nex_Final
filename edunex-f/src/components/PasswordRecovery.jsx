@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
 import { nationalPhoneDigits, pasteNationalPhone } from "../lib/authNavigation.js";
+import { apiFetch } from "../lib/apiUrl.js";
 
 async function requestReset(action, body) {
   const path = `/api/auth/password-reset/${action}`;
   const options = { method: "POST", body: JSON.stringify(body) };
   if (window.EduNex?.request) return window.EduNex.request(path, options);
-  const response = await fetch(path, { ...options, headers: { "Content-Type": "application/json" } });
+  const response = await apiFetch(path, { ...options, headers: { "Content-Type": "application/json" } });
   const data = await response.json().catch(() => ({}));
   if (!response.ok) throw new Error(data.error || "Password recovery is unavailable. Please try again.");
   return data;

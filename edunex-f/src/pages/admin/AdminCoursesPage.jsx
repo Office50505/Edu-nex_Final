@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { AdminShell, Message } from "./AdminShell.jsx";
 import { adminJson, adminRoutes, formatNumber, requireAdmin } from "./adminApi.js";
+import { apiUrl } from "../../lib/apiUrl.js";
 
 function courseId(course) {
   return String(course?._id || course?.id || "");
@@ -50,8 +51,11 @@ function normalizedThumbnailUrl(value) {
         return `https://drive.google.com/thumbnail?id=${encodeURIComponent(driveId)}&sz=w1200`;
       }
     }
-    if (parsed.origin === window.location.origin) return `${parsed.pathname}${parsed.search}${parsed.hash}`;
-    return `/api/image-proxy?url=${encodeURIComponent(parsed.href)}`;
+    if (parsed.origin === window.location.origin) {
+      const relativeUrl = `${parsed.pathname}${parsed.search}${parsed.hash}`;
+      return parsed.pathname === "/api" || parsed.pathname.startsWith("/api/") ? apiUrl(relativeUrl) : relativeUrl;
+    }
+    return apiUrl(`/api/image-proxy?url=${encodeURIComponent(parsed.href)}`);
   } catch (_) {
     return raw;
   }
@@ -60,7 +64,7 @@ function normalizedThumbnailUrl(value) {
 function courseThumbnailSrc(course) {
   const embedded = course?.thumbnailHorizontal || course?.thumbnail || course?.thumbnailVertical || course?.videos?.[0]?.thumbnail;
   if (embedded?.data) return `data:${embedded.mimeType || embedded.contentType || "image/jpeg"};base64,${embedded.data}`;
-  return normalizedThumbnailUrl(course?.thumbnailUrl || course?.thumbnailVerticalUrl || course?.videos?.[0]?.thumbnailUrl || (course.status === "published" ? `/api/courses/${courseId(course)}/thumbnail` : ""));
+  return normalizedThumbnailUrl(course?.thumbnailUrl || course?.thumbnailVerticalUrl || course?.videos?.[0]?.thumbnailUrl || (course.status === "published" ? apiUrl(`/api/courses/${courseId(course)}/thumbnail`) : ""));
 }
 
 export function AdminCoursesPage() {
