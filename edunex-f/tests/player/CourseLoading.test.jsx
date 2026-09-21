@@ -184,9 +184,11 @@ it('moves to the next lecture when the mobile player is scrolled', async () => {
   expect(document.body.classList.contains('has-edunex-mobile-reel')).toBe(true);
   fireEvent.click(screen.getByRole('button', { name: 'Minimize player' }));
   expect(document.body.classList.contains('has-edunex-mobile-reel')).toBe(false);
+  expect(container.querySelector('.react-page-root').classList.contains('is-mobile-player-minimized')).toBe(true);
   expect(screen.getByRole('button', { name: 'Open fullscreen player' })).toBeTruthy();
   fireEvent.click(screen.getByRole('button', { name: 'Open fullscreen player' }));
   expect(document.body.classList.contains('has-edunex-mobile-reel')).toBe(true);
+  expect(container.querySelector('.react-page-root').classList.contains('is-mobile-player-minimized')).toBe(false);
   fireEvent.wheel(container.querySelector('#playerFrame'), { deltaY: 80, deltaX: 0 });
   expect((await screen.findByTestId('active-player-lesson')).textContent).toBe('Second lesson');
 });

@@ -75,6 +75,13 @@ describe("cross-viewport UX", () => {
     expect(appStyles).toMatch(/body\.has-edunex-mobile-reel[\s\S]*:where\(\.sm-player > video, \.custom-video-player > video\)[\s\S]*object-fit: cover !important;/);
   });
 
+  it("keeps the minimized mobile lesson clear and above the fixed navigation", () => {
+    expect(videosPageSource).toContain('is-mobile-player-minimized');
+    expect(appStyles).toMatch(/\.is-mobile-player-minimized \.watch-page \{[\s\S]*padding: 82px 12px calc\(var\(--mobile-fixed-reserve\) \+ 28px\) !important;/);
+    expect(appStyles).toMatch(/\.is-mobile-player-minimized \.course-progress \.course-progress__heading h2 \{[\s\S]*font-size: 1\.05rem !important;/);
+    expect(appStyles).toMatch(/\.is-mobile-player-minimized \.lesson-info > p \{[\s\S]*color: rgba\(255, 255, 255, \.76\) !important;/);
+  });
+
   it("uses the mobile reel actions and simplified player controls on desktop", () => {
     expect(appStyles).toMatch(/@media \(min-width: 1181px\), \(min-width: 821px\) and \(pointer: fine\)[\s\S]*#playerFrame \.reel-chrome[\s\S]*display: block;/);
     expect(appStyles).toMatch(/#playerFrame \.sm-row > :not\(\.sm-play-button\):not\(\.sm-volume-button\):not\(\.sm-volume\):not\(\.sm-spacer\):not\(\.sm-settings-button\):not\(\.sm-fullscreen-button\)[\s\S]*display: none !important;/);

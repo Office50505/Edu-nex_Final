@@ -1595,7 +1595,7 @@ export function VideosPage() {
   );
 
   return (
-    <div className="react-page-root" data-page="videos.html">
+    <div className={`react-page-root${mobilePlayerViewport && mobilePlayerMinimized ? " is-mobile-player-minimized" : ""}`} data-page="videos.html">
       <main id="libraryView" hidden={Boolean(selectedCourseId)}>
         <section className="library-hero library-shell">
           <div>

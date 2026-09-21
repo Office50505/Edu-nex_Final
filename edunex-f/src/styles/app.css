@@ -8979,6 +8979,70 @@ html[data-theme="light"] :where(.navbar .enx-icon, .premium-site-nav .enx-icon, 
 }
 
 @media (max-width: 820px) {
+  body:has(.react-page-root[data-page="videos.html"].is-mobile-player-minimized) .enx-navbar {
+    background: #050505 !important;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, .26) !important;
+  }
+
+  .react-page-root[data-page="videos.html"].is-mobile-player-minimized {
+    background: #08090b !important;
+  }
+
+  .react-page-root[data-page="videos.html"].is-mobile-player-minimized .watch-page {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 82px 12px calc(var(--mobile-fixed-reserve) + 28px) !important;
+  }
+
+  .react-page-root[data-page="videos.html"].is-mobile-player-minimized .watch-top {
+    display: none !important;
+  }
+
+  .react-page-root[data-page="videos.html"].is-mobile-player-minimized .watch-layout {
+    gap: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+  }
+
+  .react-page-root[data-page="videos.html"].is-mobile-player-minimized .player-frame {
+    border-radius: 14px !important;
+  }
+
+  .react-page-root[data-page="videos.html"].is-mobile-player-minimized .course-progress {
+    margin: 14px 0 0 !important;
+    padding: 16px !important;
+    border-radius: 14px !important;
+    background: #0d0e11 !important;
+  }
+
+  .react-page-root[data-page="videos.html"].is-mobile-player-minimized .course-progress .course-progress__heading h2 {
+    font-size: 1.05rem !important;
+    line-height: 1.25 !important;
+    white-space: nowrap;
+  }
+
+  .react-page-root[data-page="videos.html"].is-mobile-player-minimized .course-progress .course-progress__heading span {
+    flex: 0 0 auto;
+    font-size: .75rem !important;
+  }
+
+  .react-page-root[data-page="videos.html"].is-mobile-player-minimized .lesson-info {
+    padding: 28px 4px 8px !important;
+  }
+
+  .react-page-root[data-page="videos.html"].is-mobile-player-minimized .lesson-info h1 {
+    font-size: clamp(1.4rem, 6.4vw, 1.75rem) !important;
+    line-height: 1.16 !important;
+  }
+
+  .react-page-root[data-page="videos.html"].is-mobile-player-minimized .lesson-info > p {
+    color: rgba(255, 255, 255, .76) !important;
+    font-size: .9rem !important;
+    line-height: 1.65 !important;
+  }
+
   .react-page-root[data-page="videos.html"] .library-quick-stats {
     display: grid;
     grid-template-columns: 1fr;
