@@ -143,6 +143,10 @@ function matchesSearch(user, query) {
   return queryDigits.length >= 4 && mobileDigits.includes(queryDigits);
 }
 
+function courseReferenceId(value) {
+  return String(value?._id || value?.course?._id || value?.course || value || "");
+}
+
 function DetailStat({ label, value }) {
   return (
     <div className="crm-detail-stat">
@@ -448,17 +452,28 @@ export function AdminUsersPage() {
   }
 
   function openCourseDialog(user, action) {
-    if (updatingId || !courses.length) return;
-    const entitlements = new Map((user.courseEntitlements || []).map((item) => [String(item.course?._id || item.course), item]));
-    const owned = new Set((user.purchasedCourses || []).map(String).filter((id) => {
+    if (updatingId) return;
+    if (!courses.length) {
+      const text = "No published courses are available to assign. Publish a course first, then try again.";
+      setMessageType("error");
+      setMessage(text);
+      window.alert(text);
+      return;
+    }
+    const entitlements = new Map((user.courseEntitlements || []).map((item) => [courseReferenceId(item), item]));
+    const owned = new Set((user.purchasedCourses || []).map(courseReferenceId).filter((id) => {
       const entitlement = entitlements.get(id);
       if (!entitlement) return true;
       return entitlement.accessType === "permanent" || (entitlement.expiresAt && new Date(entitlement.expiresAt) > new Date());
     }));
     const choices = courses.filter((course) => action === "grant" ? !owned.has(String(course._id)) : owned.has(String(course._id)));
     if (!choices.length) {
+      const text = action === "grant"
+        ? "This learner already owns every published course. The existing assignment is still active."
+        : "This learner has no purchased courses to remove.";
       setMessageType("error");
-      setMessage(action === "grant" ? "This learner already owns every published course." : "This learner has no purchased courses.");
+      setMessage(text);
+      window.alert(text);
       return;
     }
     setCourseDialog({ user, action, choices, courseId: String(choices[0]._id), accessType: "permanent", accessDays: "7", reason: action === "grant" ? "Course purchased/assigned by admin" : "Course access removed by admin" });
@@ -476,10 +491,26 @@ export function AdminUsersPage() {
         method: "PATCH", body: JSON.stringify({ action, courseId: course._id, accessType, accessDays: Number(accessDays), reason: reason.trim() }),
       }, "Unable to update course ownership.");
       mergeUser(user._id, data.user || {});
-      setMessageType("success"); setMessage(data.message);
+      setActionHistory((current) => ({ ...current, [user._id]: undefined }));
+      setPurchaseOpenIds((current) => {
+        const next = new Set(current);
+        next.delete(String(user._id));
+        return next;
+      });
+      setPurchaseHistories((current) => {
+        if (!Object.prototype.hasOwnProperty.call(current, String(user._id))) return current;
+        const next = { ...current };
+        delete next[String(user._id)];
+        return next;
+      });
+      const successMessage = data.message || `${course.title} course access updated.`;
+      setMessageType("success"); setMessage(successMessage);
       setCourseDialog(null);
+      window.alert(successMessage);
     } catch (error) {
-      setMessageType("error"); setMessage(error.message);
+      const errorMessage = error.message || "Unable to update course ownership.";
+      setMessageType("error"); setMessage(errorMessage);
+      window.alert(errorMessage);
     } finally { setUpdatingId(null); }
   }
 

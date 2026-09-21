@@ -1,7 +1,7 @@
 import { PaymentGatewaySettings } from './PaymentGatewaySettings.jsx';
 import { useEffect, useMemo, useState } from "react";
 import { AdminShell, Message } from "./AdminShell.jsx";
-import { adminJson, formatDate, formatNumber, formatWatchDuration, getAdmin, requireAdmin } from "./adminApi.js";
+import { adminJson, formatDate, formatDateTime, formatNumber, formatWatchDuration, getAdmin, requireAdmin } from "./adminApi.js";
 
 function valueText(value, fallback = "Not returned") {
   if (value === null || value === undefined || value === "") return fallback;
@@ -221,6 +221,93 @@ export function AdminPaymentsPage() {
           }))}
           emptyText="No payment checks returned."
         />
+      )}
+    </AdminShell>
+  );
+}
+
+export function AdminPaymentAuditorPage() {
+  const [state, setState] = useState({ loading: true, error: "", report: null });
+  const [risk, setRisk] = useState("flagged");
+  const [query, setQuery] = useState("");
+
+  async function load() {
+    if (!requireAdmin()) return;
+    setState((current) => ({ ...current, loading: true, error: "" }));
+    try {
+      const report = await adminJson("/api/admin/payment-audit", {}, "Unable to run the payment audit.");
+      setState({ loading: false, error: "", report });
+    } catch (error) {
+      setState((current) => ({ ...current, loading: false, error: error.message || "Unable to run the payment audit." }));
+    }
+  }
+
+  useEffect(() => { load(); }, []);
+  const records = state.report?.records || [];
+  const visibleRecords = useMemo(() => {
+    const needle = query.trim().toLowerCase();
+    return records.filter((record) => {
+      if (risk === "flagged" && record.risk === "clear") return false;
+      if (!["all", "flagged"].includes(risk) && record.risk !== risk) return false;
+      if (!needle) return true;
+      return [record.orderId, record.providerReference, record.gateway, record.status, record.orderType, record.user?.fullName, record.user?.email, record.user?.mobileNumber]
+        .some((value) => String(value || "").toLowerCase().includes(needle));
+    });
+  }, [records, risk, query]);
+  const summary = state.report?.summary || {};
+
+  return (
+    <AdminShell
+      activePage="paymentAuditor"
+      title="Payment Auditor"
+      subtitle="Reconcile payment records and surface data inconsistencies before they affect learner access or reporting."
+      actions={<button className="toolbar-button" type="button" onClick={load} disabled={state.loading}>{state.loading ? "Auditing..." : "Run audit"}</button>}
+    >
+      <Message text={state.error} type="error" />
+      <MetricStrip items={[
+        ["Records scanned", formatNumber(state.report?.scanned), state.report?.limited ? "Most recent records" : "All returned records"],
+        ["Critical", formatNumber(summary.critical), "Immediate reconciliation"],
+        ["Warnings", formatNumber(summary.warning), "Review recommended"],
+        ["Clear", formatNumber(summary.clear), "No automated flags"],
+      ]} />
+      <section className="payment-audit-toolbar" aria-label="Payment audit filters">
+        <label>Risk
+          <select value={risk} onChange={(event) => setRisk(event.target.value)}>
+            <option value="flagged">All flagged</option>
+            <option value="critical">Critical</option>
+            <option value="warning">Warnings</option>
+            <option value="clear">Clear</option>
+            <option value="all">All records</option>
+          </select>
+        </label>
+        <label>Search
+          <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Order, provider ID, learner..." />
+        </label>
+        <p>{formatNumber(visibleRecords.length)} shown · Generated {formatDateTime(state.report?.generatedAt)}</p>
+      </section>
+      {state.loading && !state.report ? <div className="loading-state">Auditing payment records...</div> : (
+        <div className="payment-audit-list">
+          {visibleRecords.map((record) => (
+            <article className={`payment-audit-card is-${record.risk}`} key={record._id}>
+              <header>
+                <div><strong>{record.orderId || "Missing order ID"}</strong><span>{record.user?.fullName || record.user?.email || "Missing learner"}</span></div>
+                <Badge tone={record.risk === "critical" ? "bad" : record.risk === "warning" ? "warn" : "good"}>{record.risk}</Badge>
+              </header>
+              <dl>
+                <div><dt>Amount</dt><dd>{money(record.totalAmount)}</dd></div>
+                <div><dt>Status</dt><dd>{record.status || "unknown"}</dd></div>
+                <div><dt>Gateway</dt><dd>{record.gateway || "unknown"}{record.gatewayMode ? ` · ${record.gatewayMode}` : ""}</dd></div>
+                <div><dt>Provider ID</dt><dd>{record.providerReference || "Missing"}</dd></div>
+                <div><dt>Type</dt><dd>{String(record.orderType || "unknown").replaceAll("_", " ")}</dd></div>
+                <div><dt>Created</dt><dd>{formatDateTime(record.createdAt)}</dd></div>
+              </dl>
+              <div className="payment-audit-findings">
+                {record.issues?.length ? record.issues.map((issue) => <Badge tone={issue.severity === "critical" ? "bad" : "warn"} key={issue.code}>{issue.label}</Badge>) : <Badge tone="good">No automated issues</Badge>}
+              </div>
+            </article>
+          ))}
+          {!visibleRecords.length ? <div className="empty-state">No payment records match these filters.</div> : null}
+        </div>
       )}
     </AdminShell>
   );

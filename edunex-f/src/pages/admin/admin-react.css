@@ -2155,9 +2155,42 @@ body.premium-nav-admin .course-actions .secondary-button {
     padding: 22px 14px 44px;
   }
 
-  .admin-sidebar nav,
-  .admin-sidebar-footer {
+  .admin-sidebar nav {
+    display: flex;
+    gap: 8px;
+    width: 100%;
+    padding: 2px 0 10px;
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+    scrollbar-width: thin;
+  }
+
+  .admin-sidebar .admin-nav-group {
+    display: flex;
+    flex: 0 0 auto;
+    gap: 6px;
+    margin: 0;
+  }
+
+  .admin-sidebar .admin-nav-group p {
     display: none;
+  }
+
+  .admin-sidebar .admin-nav-group a {
+    min-height: 44px;
+    padding: 10px 12px;
+    white-space: nowrap;
+  }
+
+  .admin-sidebar-footer {
+    display: flex;
+    flex-wrap: wrap;
+    margin-top: 4px;
+  }
+
+  .admin-sidebar-footer a,
+  .admin-sidebar-footer button {
+    min-height: 44px;
   }
 
   .admin-workspace.is-collapsed .admin-workspace-brand > span:last-child,
@@ -2437,7 +2470,196 @@ body.premium-nav-admin.admin-theme-light .report-card-badges :is(.report-status-
   font-size: .8rem;
 }
 
+.payment-audit-toolbar {
+  display: grid;
+  grid-template-columns: minmax(150px, 220px) minmax(240px, 1fr) auto;
+  align-items: end;
+  gap: 14px;
+  margin: 18px 0;
+  padding: 16px;
+  border: 1px solid var(--aw-border);
+  border-radius: 14px;
+  background: var(--aw-surface);
+}
+
+.payment-audit-toolbar label {
+  display: grid;
+  gap: 7px;
+  color: var(--aw-muted);
+  font-size: .7rem;
+  font-weight: 800;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+
+.payment-audit-toolbar :where(input, select) {
+  width: 100%;
+  min-height: 42px;
+  padding: 9px 11px;
+  border: 1px solid var(--aw-border);
+  border-radius: 9px;
+  background: var(--aw-input, var(--aw-surface));
+  color: var(--aw-text);
+}
+
+.payment-audit-toolbar p {
+  margin: 0 0 11px;
+  color: var(--aw-muted);
+  font-size: .72rem;
+  white-space: nowrap;
+}
+
+.payment-audit-list {
+  display: grid;
+  gap: 12px;
+}
+
+.payment-audit-card {
+  padding: 16px;
+  border: 1px solid var(--aw-border);
+  border-left: 4px solid var(--aw-good, #2f9e67);
+  border-radius: 12px;
+  background: var(--aw-surface);
+}
+
+.payment-audit-card.is-warning { border-left-color: var(--aw-warning, #d59a20); }
+.payment-audit-card.is-critical { border-left-color: var(--aw-danger, #d04b4b); }
+
+.payment-audit-card > header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.payment-audit-card > header div { display: grid; gap: 4px; min-width: 0; }
+.payment-audit-card > header strong { color: var(--aw-text); overflow-wrap: anywhere; }
+.payment-audit-card > header span { color: var(--aw-muted); font-size: .76rem; }
+
+.payment-audit-card dl {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 12px;
+  margin: 0;
+}
+
+.payment-audit-card dl div { min-width: 0; }
+.payment-audit-card dt { color: var(--aw-muted); font-size: .62rem; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; }
+.payment-audit-card dd { margin: 5px 0 0; color: var(--aw-text); font-size: .75rem; overflow-wrap: anywhere; }
+.payment-audit-findings { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--aw-border); }
+
+.lesson-notes-field {
+  margin: 14px 0;
+}
+
+.lesson-notes-field textarea {
+  min-height: 190px;
+  resize: vertical;
+  line-height: 1.6;
+}
+
+.lesson-notes-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.lesson-pdf-dropzone {
+  display: grid;
+  place-items: center;
+  gap: 6px;
+  min-height: 112px;
+  padding: 18px;
+  border: 2px dashed var(--aw-border);
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--aw-surface) 88%, var(--aw-accent) 12%);
+  color: var(--aw-text);
+  text-align: center;
+  cursor: pointer;
+  transition: border-color .18s ease, background .18s ease, transform .18s ease;
+}
+
+.lesson-pdf-dropzone:hover,
+.lesson-pdf-dropzone:focus-visible,
+.lesson-pdf-dropzone.is-dragging {
+  border-color: var(--aw-accent);
+  background: color-mix(in srgb, var(--aw-surface) 76%, var(--aw-accent) 24%);
+  outline: none;
+}
+
+.lesson-pdf-dropzone.is-dragging { transform: scale(1.01); }
+.lesson-pdf-dropzone.is-extracting { cursor: wait; opacity: .72; }
+.lesson-pdf-dropzone strong { font-size: .82rem; }
+.lesson-pdf-dropzone span { color: var(--aw-muted); font-size: .7rem; }
+
+.pdf-extraction-status {
+  display: grid;
+  gap: 8px;
+  padding: 12px 14px;
+  border: 1px solid color-mix(in srgb, var(--aw-accent) 45%, var(--aw-border));
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--aw-surface) 91%, var(--aw-accent) 9%);
+}
+
+.pdf-extraction-copy {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  min-width: 0;
+  font-size: .72rem;
+}
+
+.pdf-extraction-copy span {
+  overflow: hidden;
+  color: var(--aw-muted);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pdf-extraction-track {
+  height: 7px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--aw-border) 75%, transparent);
+}
+
+.pdf-extraction-track span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--aw-accent);
+  transition: width .3s ease;
+}
+
+.pdf-extraction-status.is-error { border-color: color-mix(in srgb, #ef4444 60%, var(--aw-border)); }
+.pdf-extraction-status.is-error .pdf-extraction-track span { background: #ef4444; }
+.pdf-extraction-status p { margin: 0; color: #f87171; font-size: .72rem; line-height: 1.45; }
+
+.lesson-notes-pdf-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  clip-path: inset(50%);
+}
+
+.lesson-notes-heading .is-disabled {
+  pointer-events: none;
+  opacity: .6;
+}
+
+.lesson-notes-field small {
+  justify-self: end;
+  color: var(--aw-muted);
+}
+
 @media (max-width: 1100px) {
+  .payment-audit-card dl { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+
   .report-context {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -2453,6 +2675,10 @@ body.premium-nav-admin.admin-theme-light .report-card-badges :is(.report-status-
 }
 
 @media (max-width: 700px) {
+  .payment-audit-toolbar { grid-template-columns: 1fr; align-items: stretch; }
+  .payment-audit-toolbar p { margin: 0; white-space: normal; }
+  .payment-audit-card dl { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
   .report-summary {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }

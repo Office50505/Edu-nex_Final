@@ -11,6 +11,7 @@ const helmet = require('helmet');
 const { getMongoConnectionOptions } = require('./config/mongodb');
 const { ALLOWED_ORIGINS, skillomateCors } = require('./middleware/cors');
 const { createReadinessHandler } = require('./services/readinessService');
+const { auditPaymentOrder, duplicatePaymentReferences, paymentReference } = require('./services/paymentAuditService');
 const {
   areRateLimitsDisabled,
   canDisableRateLimitsInProduction,
@@ -1363,6 +1364,56 @@ function groupCount(items, keyField, valueField = 'count') {
     return acc;
   }, {});
 }
+
+app.get('/api/admin/payment-audit', protectAdmin, async (req, res) => {
+  try {
+    const limit = Math.min(500, Math.max(25, Number.parseInt(req.query.limit, 10) || 250));
+    const orders = await Order.find()
+      .sort({ createdAt: -1 })
+      .limit(limit)
+      .populate('user', 'fullName email mobileNumber subscriptionStatus')
+      .populate('subscription', 'status subscriptionType currentPeriodEnd gateway')
+      .lean();
+    const duplicateReferences = duplicatePaymentReferences(orders);
+    const records = orders.map((order) => {
+      const audit = auditPaymentOrder(order, { duplicateReferences });
+      return {
+        _id: order._id,
+        orderId: order.phonePeMerchantTransactionId,
+        providerReference: paymentReference(order),
+        gateway: order.gateway || 'phonepe',
+        gatewayMode: order.razorpayMode || null,
+        orderType: order.orderType,
+        status: order.status,
+        totalAmount: order.totalAmount,
+        refundedAmount: order.refundedAmount || 0,
+        paymentInstrument: order.phonePePaymentInstrument || null,
+        paidAt: order.paidAt,
+        createdAt: order.createdAt,
+        user: order.user,
+        subscription: order.subscription,
+        ...audit,
+      };
+    });
+    const flagged = records.filter((record) => record.risk !== 'clear');
+    res.json({
+      generatedAt: new Date(),
+      scanned: records.length,
+      limited: records.length === limit,
+      summary: {
+        clear: records.filter((record) => record.risk === 'clear').length,
+        warning: records.filter((record) => record.risk === 'warning').length,
+        critical: records.filter((record) => record.risk === 'critical').length,
+        flagged: flagged.length,
+        stalePending: records.filter((record) => record.issues.some((issue) => issue.code === 'stale_pending')).length,
+        duplicateReferences: duplicateReferences.size,
+      },
+      records,
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
 
 app.get('/api/admin/analytics', protectAdmin, async (req, res) => {
   try {

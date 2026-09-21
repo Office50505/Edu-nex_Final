@@ -5,7 +5,7 @@ const sections = [
   { label: 'Overview', links: [['dashboard', 'Overview', adminRoutes.dashboard, 'home']] },
   { label: 'People', links: [['users', 'Learners', adminRoutes.users, 'users'], ['subscribers', 'Subscribers', adminRoutes.subscribers, 'card']] },
   { label: 'Content', links: [['courses', 'Course library', adminRoutes.courses, 'book'], ['upload', 'Create course', adminRoutes.upload, 'plus'], ['courseReview', 'Course review', adminRoutes.courseReview, 'check']] },
-  { label: 'Commerce', links: [['orders', 'Orders', adminRoutes.orders, 'bag'], ['payments', 'Payments', adminRoutes.payments, 'pay'], ['subscriptions', 'Subscriptions', adminRoutes.subscriptions, 'loop']] },
+  { label: 'Commerce', links: [['orders', 'Orders', adminRoutes.orders, 'bag'], ['payments', 'Payments', adminRoutes.payments, 'pay'], ['paymentAuditor', 'Payment auditor', adminRoutes.paymentAuditor, 'audit'], ['subscriptions', 'Subscriptions', adminRoutes.subscriptions, 'loop']] },
   { label: 'Learning', links: [['progress', 'Progress', adminRoutes.progress, 'trend'], ['certifications', 'Certification', adminRoutes.certifications, 'award']] },
   { label: 'Operations', links: [['reports', 'User reports', adminRoutes.reports, 'flag'], ['health', 'System health', adminRoutes.health, 'pulse'], ['auditLog', 'Audit log', adminRoutes.auditLog, 'log'], ['settings', 'Settings', adminRoutes.settings, 'gear']] },
 ];
@@ -25,6 +25,7 @@ function NavIcon({ type }) {
     check: <><path d="M20 6 9 17l-5-5" /><path d="M4 4h16v16H4z" /></>,
     bag: <><path d="M6 8h12l-1 12H7L6 8Z" /><path d="M9 8a3 3 0 0 1 6 0" /></>,
     pay: <><rect x="3" y="6" width="18" height="12" rx="2" /><path d="M3 10h18" /><path d="M7 15h2" /></>,
+    audit: <><path d="M9 4h6" /><path d="M9 2h6v4H9z" /><path d="M6 4H5a2 2 0 0 0-2 2v14h18V6a2 2 0 0 0-2-2h-1" /><path d="m7 12 2 2 4-4" /><path d="M7 18h10" /></>,
     loop: <><path d="M17 1l4 4-4 4" /><path d="M3 11V9a4 4 0 0 1 4-4h14" /><path d="m7 23-4-4 4-4" /><path d="M21 13v2a4 4 0 0 1-4 4H3" /></>,
     trend: <><path d="m3 17 6-6 4 4 8-8" /><path d="M14 7h7v7" /></>,
     award: <><circle cx="12" cy="8" r="5" /><path d="m8.5 12.5-1 8 4.5-2 4.5 2-1-8" /></>,
