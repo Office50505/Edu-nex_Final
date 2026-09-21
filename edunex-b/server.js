@@ -9,6 +9,7 @@ const path = require('path');
 const fs = require('fs');
 const helmet = require('helmet');
 const { getMongoConnectionOptions } = require('./config/mongodb');
+const { ALLOWED_ORIGINS, skillomateCors } = require('./middleware/cors');
 const { createReadinessHandler } = require('./services/readinessService');
 const {
   areRateLimitsDisabled,
@@ -23,6 +24,7 @@ if (initialNodeEnv !== 'production') {
 
 const app = express();
 app.disable('x-powered-by');
+app.use(skillomateCors);
 
 const PORT = process.env.PORT || 3000;
 const FRONTEND_SOURCE_DIR = process.env.FRONTEND_DIR
@@ -44,7 +46,7 @@ const MONGODB_URI = process.env.MONGODB_URI || (isProduction ? '' : 'mongodb://l
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || (isProduction ? '' : 'Sdbc@123');
 const ADMIN_TOKEN_SECRET = process.env.ADMIN_TOKEN_SECRET || (isProduction ? '' : 'edunex-development-admin-secret');
 const ACCESS_TOKEN_SECRET = process.env.JWT_SECRET || (isProduction ? '' : 'edunex-development-access-secret');
-const PRODUCTION_FRONTEND_ORIGINS = ['https://skillomate.in', 'https://www.skillomate.in'];
+const PRODUCTION_FRONTEND_ORIGINS = [...ALLOWED_ORIGINS];
 const CONFIGURED_FRONTEND_ORIGINS = [process.env.FRONTEND_ORIGIN, process.env.FRONTEND_ORIGINS]
   .filter(Boolean)
   .join(',')
@@ -584,21 +586,6 @@ function protectAdmin(req, res, next) {
   }
 }
 
-app.use((req, res, next) => {
-  const requestOrigin = req.headers.origin;
-  if (!isProduction && !FRONTEND_ORIGINS.length) {
-    res.header('Access-Control-Allow-Origin', '*');
-  } else if (requestOrigin && FRONTEND_ORIGINS.includes(requestOrigin)) {
-    res.header('Access-Control-Allow-Origin', requestOrigin);
-    res.header('Vary', 'Origin');
-  }
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
-  res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,PATCH,DELETE,OPTIONS');
-  if (req.method === 'OPTIONS') {
-    return res.sendStatus(204);
-  }
-  next();
-});
 app.use('/api/webhooks/razorpay', express.raw({ type: '*/*', limit: '2mb' }));
 app.use('/api/webhooks/phonepe', express.raw({ type: '*/*', limit: '2mb' }));
 app.post('/api/admin/extract-pdf-notes', protectAdmin, express.raw({ type: 'application/pdf', limit: '10mb' }), async (req, res) => {
