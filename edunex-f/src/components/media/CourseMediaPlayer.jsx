@@ -11,6 +11,7 @@ const QUALITY_PRESETS = [120, 240, 360, 480, 720, 1080];
 const DEFAULT_QUALITY = 1080;
 const VIDEO_VOLUME_STORAGE_KEY = 'edunexVideoVolume';
 const VIDEO_MUTED_STORAGE_KEY = 'edunexVideoMutedByUser';
+const BUFFERING_CONFIRM_DELAY_MS = 450;
 
 function storedVolume() {
   const saved = localStorage.getItem(VIDEO_VOLUME_STORAGE_KEY);
@@ -26,7 +27,7 @@ function storeAudioPreference(volume, muted) {
 
 export function CourseMediaPlayer({ course, lesson, lessonIndex, autoNext, autoplay = false, onEnded, onNavigateLesson, onFallback, mobileViewMode = null, onToggleMobileView, onControlsVisibilityChange }) {
   const access = usePlaybackAccess(course._id, lesson);
-  const videoRef = useRef(null), frameRef = useRef(null), hlsRef = useRef(null), hideTimer = useRef(), sleepTimer = useRef();
+  const videoRef = useRef(null), frameRef = useRef(null), hlsRef = useRef(null), hideTimer = useRef(), sleepTimer = useRef(), bufferingTimer = useRef();
   const settingsButton = useRef(null), restored = useRef(false), latest = useRef({}), qualityPreference = useRef(DEFAULT_QUALITY);
   const [time,setTime] = useState({current:0,duration:0});
   const [playing,setPlaying] = useState(false), [buffering,setBuffering] = useState(true);
@@ -45,7 +46,7 @@ export function CourseMediaPlayer({ course, lesson, lessonIndex, autoNext, autop
   latest.current = {time,playing,rate,loop,volume,muted,autoNext,onEnded};
   function wake() { setAwake(true);clearTimeout(hideTimer.current);hideTimer.current=setTimeout(()=>setAwake(false),2600); }
   useEffect(()=>{wake();return()=>clearTimeout(hideTimer.current);},[playing]);
-  useEffect(()=>()=>clearTimeout(sleepTimer.current),[]);
+  useEffect(()=>()=>{clearTimeout(sleepTimer.current);clearTimeout(bufferingTimer.current);},[]);
   useEffect(()=>{if(!notice)return;const timer=setTimeout(()=>setNotice(''),4000);return()=>clearTimeout(timer);},[notice]);
   useEffect(()=>{
     const frame=frameRef.current, wrapper=frame?.closest('#playerFrame');
@@ -66,15 +67,31 @@ export function CourseMediaPlayer({ course, lesson, lessonIndex, autoNext, autop
     const saved=latest.current,position=saved.time.current,wasPlaying=saved.playing;
     setError('');setBuffering(true);setLevels([]);setCaptions([]);setCaption(-1);
     video.volume=saved.volume;video.muted=saved.muted;video.playbackRate=saved.rate;video.loop=saved.loop;
-    const sync=()=>{setTime({current:video.currentTime||0,duration:Number.isFinite(video.duration)?video.duration:0});let end=0;for(let i=0;i<video.buffered.length;i++)if(video.buffered.start(i)<=video.currentTime&&video.buffered.end(i)>=video.currentTime)end=video.buffered.end(i);setBuffered(end);};
+    let previousMediaTime=video.currentTime||0;
+    const clearBufferingTimer=()=>{clearTimeout(bufferingTimer.current);bufferingTimer.current=undefined;};
+    const clearBuffering=()=>{clearBufferingTimer();setBuffering(false);};
+    const confirmBuffering=()=>{
+      clearBufferingTimer();
+      const sampledTime=video.currentTime||0;
+      bufferingTimer.current=setTimeout(()=>{
+        bufferingTimer.current=undefined;
+        if(stopped||document.hidden||video.paused||video.ended)return;
+        const advanced=(video.currentTime||0)>sampledTime+.01;
+        const hasFutureData=video.readyState>=3;
+        setBuffering(!advanced&&!hasFutureData);
+      },BUFFERING_CONFIRM_DELAY_MS);
+    };
+    const sync=()=>{const current=video.currentTime||0;if(!video.paused&&current>previousMediaTime+.01)clearBuffering();previousMediaTime=current;setTime({current,duration:Number.isFinite(video.duration)?video.duration:0});let end=0;for(let i=0;i<video.buffered.length;i++)if(video.buffered.start(i)<=video.currentTime&&video.buffered.end(i)>=video.currentTime)end=video.buffered.end(i);setBuffered(end);};
     const ready=()=>{if(position>0)video.currentTime=seekTarget(position,video.duration);sync();tracks();if(wasPlaying)video.play().catch(()=>setNotice('Press play to continue.'));};
-    const play=()=>{setPlaying(true);setBuffering(false);};
+    const play=()=>{setPlaying(true);clearBuffering();};
     const pause=()=>setPlaying(false);
     const ended=()=>{setPlaying(false);sync();window.dispatchEvent(new Event('learning-flush'));if(!latest.current.loop&&latest.current.autoNext)latest.current.onEnded?.();};
     const failed=(detail='')=>{video.pause();setError(typeof detail==='string'&&detail ? detail : 'Playback could not start. Retry to refresh your video access.');setBuffering(false);setPlaying(false);};
     const tracks=()=>{if(!engine)setCaptions(Array.from(video.textTracks).map((track,index)=>({index,label:track.label||track.language||`Track ${index+1}`})));};
-    const listeners={loadedmetadata:ready,loadeddata:()=>setBuffering(false),timeupdate:sync,progress:sync,playing:play,pause,ended,error:failed,loadstart:()=>setBuffering(true),waiting:()=>setBuffering(true),stalled:()=>setBuffering(true),seeking:()=>setBuffering(true),seeked:()=>setBuffering(false),canplay:()=>setBuffering(false),volumechange:()=>{setMuted(video.muted);setVolume(video.volume);storeAudioPreference(video.volume,video.muted);}};
+    const handleVisibilityChange=()=>{if(document.hidden)clearBuffering();else if(!video.paused&&video.readyState<3)confirmBuffering();};
+    const listeners={loadedmetadata:ready,loadeddata:clearBuffering,timeupdate:sync,progress:sync,playing:play,pause,ended,error:failed,loadstart:()=>setBuffering(true),waiting:confirmBuffering,stalled:confirmBuffering,seeking:()=>setBuffering(true),seeked:clearBuffering,canplay:clearBuffering,volumechange:()=>{setMuted(video.muted);setVolume(video.volume);storeAudioPreference(video.volume,video.muted);}};
     Object.entries(listeners).forEach(([name,fn])=>video.addEventListener(name,fn));
+    document.addEventListener('visibilitychange',handleVisibilityChange);
     video.textTracks.addEventListener('addtrack',tracks);
     const nativeHls = video.canPlayType('application/vnd.apple.mpegurl');
     // Device emulation can spoof Safari; select the engine by capability.
@@ -104,7 +121,7 @@ export function CourseMediaPlayer({ course, lesson, lessonIndex, autoNext, autop
       engine.on(Hls.Events.ERROR,(_,data)=>{if(!data.fatal)return;if(data.type===Hls.ErrorTypes.MEDIA_ERROR&&mediaRecoveries++<2)engine.recoverMediaError();else{engine.stopLoad();const status=data.response?.code;failed(status===401||status===403?'Video access was rejected. Retry to renew access.':status===404?'The video file could not be found. Please contact support.':`Video could not load (${data.details || 'stream error'}). Retry playback.`);}});
       engine.loadSource(source);engine.attachMedia(video);
     }).catch(()=>{if(!stopped)failed();});
-    return()=>{stopped=true;Object.entries(listeners).forEach(([name,fn])=>video.removeEventListener(name,fn));video.textTracks.removeEventListener('addtrack',tracks);engine?.destroy();hlsRef.current=null;video.pause();video.removeAttribute('src');video.load();};
+    return()=>{stopped=true;clearBufferingTimer();Object.entries(listeners).forEach(([name,fn])=>video.removeEventListener(name,fn));document.removeEventListener('visibilitychange',handleVisibilityChange);video.textTracks.removeEventListener('addtrack',tracks);engine?.destroy();hlsRef.current=null;video.pause();video.removeAttribute('src');video.load();};
   },[source,isHls,reload]);
   useEffect(()=>{
     const video=videoRef.current;
