@@ -1,6 +1,7 @@
 import "../components/page-recovery.css";
 import { plainCourseDescription } from "../lib/courseDescription.js";
 import { CourseMediaPlayer } from "../components/media/CourseMediaPlayer.jsx";
+import { VideoLoadingBrand } from "../components/media/VideoLoadingBrand.jsx";
 import { adjacent, available, usesCustomPlayer } from "../components/media/playerRules.js";
 import { loadHlsJs } from "../lib/hlsRuntime.js";
 import { usePlaybackAccess } from "../hooks/usePlaybackAccess.js";
@@ -463,6 +464,7 @@ function Player({ course, lesson: savedLesson, lessonIndex, autoNext, autoplay =
   const embeddedPlayerRef = useRef(null);
   const shellRef = useRef(null);
   const [playing, setPlaying] = useState(false);
+  const [mediaLoading, setMediaLoading] = useState(true);
   const [controlsAwake, setControlsAwake] = useState(true);
   const [volume, setVolume] = useState(() => Math.max(0, Math.min(1, Number(localStorage.getItem("edunexVideoVolume") || 1))));
   const [muted, setMuted] = useState(() => localStorage.getItem(USER_MUTED_STORAGE_KEY) === "true");
@@ -685,6 +687,8 @@ function Player({ course, lesson: savedLesson, lessonIndex, autoNext, autoplay =
     };
     const onPlay = () => syncPlaying(true);
     const onPause = () => syncPlaying(false);
+    const onLoading = () => setMediaLoading(true);
+    const onReady = () => setMediaLoading(false);
     const onEnd = () => {
       syncPlaying(false);
       if (autoNext) onEnded?.();
@@ -693,6 +697,14 @@ function Player({ course, lesson: savedLesson, lessonIndex, autoNext, autoplay =
     video.muted = muted || volume <= 0;
     video.playbackRate = rate;
     video.addEventListener("loadedmetadata", refresh);
+    video.addEventListener("loadstart", onLoading);
+    video.addEventListener("waiting", onLoading);
+    video.addEventListener("stalled", onLoading);
+    video.addEventListener("seeking", onLoading);
+    video.addEventListener("loadeddata", onReady);
+    video.addEventListener("canplay", onReady);
+    video.addEventListener("playing", onReady);
+    video.addEventListener("seeked", onReady);
     video.addEventListener("timeupdate", refresh);
     video.addEventListener("play", onPlay);
     video.addEventListener("pause", onPause);
@@ -700,6 +712,14 @@ function Player({ course, lesson: savedLesson, lessonIndex, autoNext, autoplay =
     refresh();
     return () => {
       video.removeEventListener("loadedmetadata", refresh);
+      video.removeEventListener("loadstart", onLoading);
+      video.removeEventListener("waiting", onLoading);
+      video.removeEventListener("stalled", onLoading);
+      video.removeEventListener("seeking", onLoading);
+      video.removeEventListener("loadeddata", onReady);
+      video.removeEventListener("canplay", onReady);
+      video.removeEventListener("playing", onReady);
+      video.removeEventListener("seeked", onReady);
       video.removeEventListener("timeupdate", refresh);
       video.removeEventListener("play", onPlay);
       video.removeEventListener("pause", onPause);
@@ -881,11 +901,12 @@ function Player({ course, lesson: savedLesson, lessonIndex, autoNext, autoplay =
     />
   );
 
-  if (savedLesson.provider === 'aws_cloudfront' && (!directUrl || playback.error)) return <div className="player-placeholder"><div><strong>{playback.error || 'Authorizing video playback…'}</strong>{playback.error?<button onClick={playback.retry}>Retry playback</button>:null}</div></div>;
+  if (savedLesson.provider === 'aws_cloudfront' && (!directUrl || playback.error)) return playback.error ? <div className="player-placeholder"><div><strong>{playback.error}</strong><button onClick={playback.retry}>Retry playback</button></div></div> : <div className="player-placeholder"><VideoLoadingBrand label="Authorizing playback…"/></div>;
   if (directUrl) {
     return (
       <div className={`custom-video-player${playing ? " is-playing" : ""}${controlsAwake ? " is-controls-awake" : ""}`} data-custom-player="true" tabIndex={-1} ref={shellRef} onPointerMove={wakeControls} onPointerDown={wakeControls}>
         <video onError={() => { if(savedLesson.provider === "aws_cloudfront") playback.setError("Video playback failed. Check the video path, access and CloudFront CORS, then retry."); }} ref={videoRef} src={needsHlsRuntime ? undefined : directUrl} poster={lessonImage(course, lesson)} playsInline preload="metadata"></video>
+        {mediaLoading ? <VideoLoadingBrand/> : null}
         {controls}
         <span role="status" style={{position:"absolute",top:8,left:8,zIndex:4,fontSize:11,background:"#111c",color:"#fff",padding:6,maxWidth:"90%"}}>{learning.notice}</span>
       </div>
@@ -894,11 +915,12 @@ function Player({ course, lesson: savedLesson, lessonIndex, autoNext, autoplay =
 
   if (url) {
     if (!hasEmbedControls) {
-      return <iframe src={url} title={lesson?.title || course?.title} allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowFullScreen></iframe>;
+      return <div className="custom-video-player" data-embed-player="true"><iframe src={url} title={lesson?.title || course?.title} allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowFullScreen onLoad={() => setMediaLoading(false)}></iframe>{mediaLoading ? <VideoLoadingBrand/> : null}</div>;
     }
     return (
       <div className={`custom-video-player${playing ? " is-playing" : ""}${controlsAwake ? " is-controls-awake" : ""}`} data-embed-player="true" tabIndex={-1} ref={shellRef} onPointerMove={wakeControls} onPointerDown={wakeControls}>
-        <iframe ref={iframeRef} src={url} title={lesson?.title || course?.title} allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowFullScreen></iframe>
+        <iframe ref={iframeRef} src={url} title={lesson?.title || course?.title} allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowFullScreen onLoad={() => setMediaLoading(false)}></iframe>
+        {mediaLoading ? <VideoLoadingBrand/> : null}
         {controls}
         <span role="status" style={{position:"absolute",top:8,left:8,zIndex:4,fontSize:11,background:"#111c",color:"#fff",padding:6,maxWidth:"90%"}}>{learning.notice}</span>
       </div>
@@ -952,11 +974,43 @@ function NotesModal({ course, lesson, lessonIndex, onClose }) {
 function LectureSheet({ course, activeIndex, completedIds, onClose, onSelect }) {
   const lessons = course?.videos || [];
   const [rangeIndex, setRangeIndex] = useState(Math.floor(activeIndex / LECTURES_PER_SHEET_PAGE));
+  const [slideDirection, setSlideDirection] = useState("forward");
+  const rangeGestureRef = useRef({ active: false, pointerId: null, startX: 0, startY: 0, suppressClickUntil: 0, wheelAt: 0 });
   const ranges = Array.from({ length: Math.max(1, Math.ceil(lessons.length / LECTURES_PER_SHEET_PAGE)) }, (_, index) => ({
     start: index * LECTURES_PER_SHEET_PAGE,
     end: Math.min((index + 1) * LECTURES_PER_SHEET_PAGE, lessons.length),
   }));
   const activeRange = ranges[Math.min(rangeIndex, ranges.length - 1)] || { start: 0, end: lessons.length };
+
+  const selectRange = (nextIndex) => {
+    const safeIndex = Math.max(0, Math.min(nextIndex, ranges.length - 1));
+    if (safeIndex === rangeIndex) return;
+    setSlideDirection(safeIndex > rangeIndex ? "forward" : "backward");
+    setRangeIndex(safeIndex);
+  };
+
+  const finishRangeSwipe = (event) => {
+    const gesture = rangeGestureRef.current;
+    if (!gesture.active || (gesture.pointerId !== null && event.pointerId !== gesture.pointerId)) return;
+    gesture.active = false;
+    gesture.pointerId = null;
+    const deltaX = Number(event.clientX) - gesture.startX;
+    const deltaY = Number(event.clientY) - gesture.startY;
+    if (Math.abs(deltaX) < 48 || Math.abs(deltaX) <= Math.abs(deltaY) * 1.2) return;
+    gesture.suppressClickUntil = Date.now() + 350;
+    selectRange(rangeIndex + (deltaX < 0 ? 1 : -1));
+  };
+
+  const changeRangeFromWheel = (event) => {
+    const delta = Math.abs(event.deltaX) > Math.abs(event.deltaY) ? event.deltaX : event.deltaY;
+    if (Math.abs(delta) < 30) return;
+    event.preventDefault();
+    const gesture = rangeGestureRef.current;
+    const now = Date.now();
+    if (now - gesture.wheelAt < 400) return;
+    gesture.wheelAt = now;
+    selectRange(rangeIndex + (delta > 0 ? 1 : -1));
+  };
 
   useEffect(() => {
     const closeOnEscape = (event) => {
@@ -982,13 +1036,49 @@ function LectureSheet({ course, activeIndex, completedIds, onClose, onSelect }) 
         {ranges.length > 1 ? (
           <div className="reel-sheet-ranges" role="tablist" aria-label="Lecture ranges">
             {ranges.map((range, index) => (
-              <button type="button" role="tab" aria-selected={rangeIndex === index} className={rangeIndex === index ? "is-active" : ""} onClick={() => setRangeIndex(index)} key={`${range.start}-${range.end}`}>
+              <button type="button" role="tab" aria-selected={rangeIndex === index} className={rangeIndex === index ? "is-active" : ""} onClick={() => selectRange(index)} key={`${range.start}-${range.end}`}>
                 {range.start + 1}–{range.end}
               </button>
             ))}
           </div>
         ) : null}
-        <div className="reel-lecture-grid">
+        <div
+          className={`reel-lecture-grid is-slide-${slideDirection}`}
+          key={`lecture-range-${rangeIndex}`}
+          aria-label={`Lectures ${activeRange.start + 1} to ${activeRange.end}. Swipe left or right to change range.`}
+          onClickCapture={(event) => {
+            if (Date.now() < rangeGestureRef.current.suppressClickUntil) {
+              event.preventDefault();
+              event.stopPropagation();
+            }
+          }}
+          onPointerDown={(event) => {
+            if (event.pointerType === "mouse" && event.button !== 0) return;
+            rangeGestureRef.current.active = true;
+            rangeGestureRef.current.pointerId = event.pointerId;
+            rangeGestureRef.current.startX = event.clientX;
+            rangeGestureRef.current.startY = event.clientY;
+            event.currentTarget.setPointerCapture?.(event.pointerId);
+          }}
+          onPointerMove={(event) => {
+            const gesture = rangeGestureRef.current;
+            if (!gesture.active || (gesture.pointerId !== null && event.pointerId !== gesture.pointerId)) return;
+            const deltaX = Number(event.clientX) - gesture.startX;
+            const deltaY = Number(event.clientY) - gesture.startY;
+            if (Math.abs(deltaX) < 48 || Math.abs(deltaX) <= Math.abs(deltaY) * 1.2) return;
+            gesture.active = false;
+            gesture.pointerId = null;
+            gesture.suppressClickUntil = Date.now() + 350;
+            selectRange(rangeIndex + (deltaX < 0 ? 1 : -1));
+          }}
+          onPointerUp={finishRangeSwipe}
+          onPointerCancel={() => {
+            rangeGestureRef.current.active = false;
+            rangeGestureRef.current.pointerId = null;
+          }}
+          onDragStart={(event) => event.preventDefault()}
+          onWheel={changeRangeFromWheel}
+        >
           {lessons.slice(activeRange.start, activeRange.end).map((item, offset) => {
             const index = activeRange.start + offset;
             const isActive = index === activeIndex;
@@ -1007,6 +1097,7 @@ function LectureSheet({ course, activeIndex, completedIds, onClose, onSelect }) 
                   <img
                     src={lessonImage(course, item)}
                     alt=""
+                    draggable="false"
                     loading="lazy"
                     onError={(event) => {
                       event.currentTarget.onerror = null;
@@ -1051,7 +1142,7 @@ export function VideosPage() {
   const [learningStatus, setLearningStatus] = useState(null);
   const [mobilePlayerViewport, setMobilePlayerViewport] = useState(() => Boolean(window.matchMedia?.("(max-width: 820px), (max-width: 1180px) and (pointer: coarse)")?.matches));
   const [mobilePlayerMinimized, setMobilePlayerMinimized] = useState(false);
-  const [autoNext, setAutoNext] = useState(() => localStorage.getItem(AUTO_NEXT_KEY) === "true");
+  const [autoNext, setAutoNext] = useState(() => localStorage.getItem(AUTO_NEXT_KEY) !== "false");
   const [playerControlsVisible, setPlayerControlsVisible] = useState(true);
   useViewportLock(notesOpen || lectureSheetOpen || playlistOpen);
 
@@ -1698,7 +1789,7 @@ export function VideosPage() {
                   key={`${course._id}-${activeIndex}`}
                 />
               ) : (
-                <div className="player-placeholder"><div><strong>Preparing course</strong><span>Loading your Skillomate course playlist...</span></div></div>
+                <div className="player-placeholder"><VideoLoadingBrand label="Loading course…"/></div>
               )}
               {selectedCourseId ? (
                 <div className={`reel-chrome${playerControlsVisible ? " is-visible" : ""}`} aria-label="Lecture controls" aria-hidden={!playerControlsVisible}>

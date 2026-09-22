@@ -4,6 +4,7 @@ import { loadHlsJs } from '../../lib/hlsRuntime';
 import { usePlaybackAccess } from '../../hooks/usePlaybackAccess';
 import { useLearningProgress } from '../../hooks/useLearningProgress';
 import { clock, seekTarget, adjacent, nativeLessonSource } from './playerRules';
+import { VideoLoadingBrand } from './VideoLoadingBrand';
 import './player.css';
 
 const QUALITY_PRESETS = [120, 240, 360, 480, 720, 1080];
@@ -14,7 +15,7 @@ export function CourseMediaPlayer({ course, lesson, lessonIndex, autoNext, autop
   const videoRef = useRef(null), frameRef = useRef(null), hlsRef = useRef(null), hideTimer = useRef(), sleepTimer = useRef();
   const settingsButton = useRef(null), restored = useRef(false), latest = useRef({}), qualityPreference = useRef(DEFAULT_QUALITY);
   const [time,setTime] = useState({current:0,duration:0});
-  const [playing,setPlaying] = useState(false), [buffering,setBuffering] = useState(false);
+  const [playing,setPlaying] = useState(false), [buffering,setBuffering] = useState(true);
   const [error,setError] = useState(''), [notice,setNotice] = useState('');
   const [awake,setAwake] = useState(true), [menu,setMenu] = useState(false);
   const [rate,setRate] = useState(1), [loop,setLoop] = useState(false), [sleep,setSleep] = useState(0);
@@ -52,13 +53,13 @@ export function CourseMediaPlayer({ course, lesson, lessonIndex, autoNext, autop
     setError('');setBuffering(true);setLevels([]);setCaptions([]);setCaption(-1);
     video.volume=saved.volume;video.muted=saved.muted;video.playbackRate=saved.rate;video.loop=saved.loop;
     const sync=()=>{setTime({current:video.currentTime||0,duration:Number.isFinite(video.duration)?video.duration:0});let end=0;for(let i=0;i<video.buffered.length;i++)if(video.buffered.start(i)<=video.currentTime&&video.buffered.end(i)>=video.currentTime)end=video.buffered.end(i);setBuffered(end);};
-    const ready=()=>{if(position>0)video.currentTime=seekTarget(position,video.duration);setBuffering(false);sync();tracks();if(wasPlaying)video.play().catch(()=>setNotice('Press play to continue.'));};
+    const ready=()=>{if(position>0)video.currentTime=seekTarget(position,video.duration);sync();tracks();if(wasPlaying)video.play().catch(()=>setNotice('Press play to continue.'));};
     const play=()=>{setPlaying(true);setBuffering(false);};
     const pause=()=>setPlaying(false);
     const ended=()=>{setPlaying(false);sync();window.dispatchEvent(new Event('learning-flush'));if(!latest.current.loop&&latest.current.autoNext)latest.current.onEnded?.();};
     const failed=(detail='')=>{video.pause();setError(typeof detail==='string'&&detail ? detail : 'Playback could not start. Retry to refresh your video access.');setBuffering(false);setPlaying(false);};
     const tracks=()=>{if(!engine)setCaptions(Array.from(video.textTracks).map((track,index)=>({index,label:track.label||track.language||`Track ${index+1}`})));};
-    const listeners={loadedmetadata:ready,timeupdate:sync,progress:sync,playing:play,pause,ended,error:failed,waiting:()=>setBuffering(true),canplay:()=>setBuffering(false),volumechange:()=>{setMuted(video.muted);setVolume(video.volume);}};
+    const listeners={loadedmetadata:ready,loadeddata:()=>setBuffering(false),timeupdate:sync,progress:sync,playing:play,pause,ended,error:failed,loadstart:()=>setBuffering(true),waiting:()=>setBuffering(true),stalled:()=>setBuffering(true),seeking:()=>setBuffering(true),seeked:()=>setBuffering(false),canplay:()=>setBuffering(false),volumechange:()=>{setMuted(video.muted);setVolume(video.volume);}};
     Object.entries(listeners).forEach(([name,fn])=>video.addEventListener(name,fn));
     video.textTracks.addEventListener('addtrack',tracks);
     const nativeHls = video.canPlayType('application/vnd.apple.mpegurl');
@@ -161,9 +162,9 @@ export function CourseMediaPlayer({ course, lesson, lessonIndex, autoNext, autop
       <span>Lecture {lessonIndex + 1}</span>
       <strong>{lesson.title || course.title || `Lecture ${lessonIndex + 1}`}</strong>
     </div>
-    {!source&&!failure?<div className="sm-status" role="status">Authorizing playback…</div>:null}
+    {!source&&!failure?<VideoLoadingBrand label="Authorizing playback…"/>:null}
     {!playing&&!buffering&&!failure&&source?<button className="sm-big-play" onClick={toggle} aria-label={time.current > 0 ? "Resume video" : "Start video"}><PlayerIcon name="play"/></button>:null}
-    {buffering&&!failure?<div className="sm-status" role="status">Loading video…</div>:null}
+    {source&&buffering&&!failure?<VideoLoadingBrand/>:null}
     {failure?<div className="sm-failure" role="alert"><p>{failure}</p><button onClick={()=>{setError('');if(lesson.provider==='aws_cloudfront')access.retry();else setReload(n=>n+1);}}>Retry playback</button>{onFallback?<button onClick={onFallback}>Use compatible player</button>:null}</div>:null}
     {notice?<div className="sm-notice" role="status">{notice}</div>:null}
     {menu?<div className="sm-settings" aria-label="Player settings">

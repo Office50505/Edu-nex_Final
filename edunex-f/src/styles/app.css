@@ -4941,6 +4941,33 @@ html[data-theme="light"] .react-page-root[data-page="videos.html"] .reel-lecture
   row-gap: 10px;
   min-height: 0;
   margin-top: 14px;
+  cursor: grab;
+  touch-action: pan-y;
+  user-select: none;
+  -webkit-user-select: none;
+  will-change: transform, opacity;
+}
+
+.reel-lecture-grid:active {
+  cursor: grabbing;
+}
+
+.reel-lecture-grid.is-slide-forward {
+  animation: reel-lecture-slide-forward .22s ease-out;
+}
+
+.reel-lecture-grid.is-slide-backward {
+  animation: reel-lecture-slide-backward .22s ease-out;
+}
+
+@keyframes reel-lecture-slide-forward {
+  from { opacity: .35; transform: translateX(22px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes reel-lecture-slide-backward {
+  from { opacity: .35; transform: translateX(-22px); }
+  to { opacity: 1; transform: translateX(0); }
 }
 
 .reel-lecture-grid > button {
@@ -5013,6 +5040,13 @@ html[data-theme="light"] .react-page-root[data-page="videos.html"] .reel-lecture
 .reel-lecture-grid > button:disabled {
   cursor: not-allowed;
   opacity: .38;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reel-lecture-grid.is-slide-forward,
+  .reel-lecture-grid.is-slide-backward {
+    animation: none;
+  }
 }
 
 @media (max-width: 820px), (max-width: 1180px) and (pointer: coarse) {

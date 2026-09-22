@@ -6,7 +6,7 @@ import { VideosPage } from '../../src/pages/VideosPage';
 vi.mock('../../src/lib/hlsRuntime', () => ({loadHlsJs: vi.fn().mockResolvedValue({})}));
 vi.mock('../../src/legacyRuntime', () => ({ runLegacyPage: () => () => {} }));
 vi.mock('../../src/hooks/usePageStyle', () => ({ usePageStyle: () => {} }));
-vi.mock('../../src/components/media/CourseMediaPlayer', () => ({ CourseMediaPlayer: ({ lesson, autoplay, mobileViewMode, onToggleMobileView }) => <div><span>Lesson player ready</span><span data-testid="active-player-lesson">{lesson.title}</span><span data-testid="player-autoplay">{String(autoplay)}</span>{onToggleMobileView ? <button type="button" onClick={onToggleMobileView} aria-label={mobileViewMode === 'immersive' ? 'Minimize player' : 'Open fullscreen player'}>Toggle view</button> : null}</div> }));
+vi.mock('../../src/components/media/CourseMediaPlayer', () => ({ CourseMediaPlayer: ({ lesson, autoplay, autoNext, mobileViewMode, onToggleMobileView }) => <div><span>Lesson player ready</span><span data-testid="active-player-lesson">{lesson.title}</span><span data-testid="player-autoplay">{String(autoplay)}</span><span data-testid="player-auto-next">{String(autoNext)}</span>{onToggleMobileView ? <button type="button" onClick={onToggleMobileView} aria-label={mobileViewMode === 'immersive' ? 'Minimize player' : 'Open fullscreen player'}>Toggle view</button> : null}</div> }));
 vi.mock('../../src/components/CertificationProgress', () => ({ CertificationProgress: () => null }));
 const course = { _id: 'course', title: 'Test course', videos: [{ _id: 'lesson', title: 'First lesson', provider: 'aws_cloudfront', videoUrl: 'https://cdn.example/lesson.m3u8' }] };
 const reply = data => Promise.resolve({ ok: true, status: 200, json: async () => data });
@@ -24,7 +24,15 @@ it('loads the selected course when legacy scripts never become ready', async () 
   render(<VideosPage />);
   expect(await screen.findByText('Lesson player ready')).toBeTruthy();
   expect(screen.queryByText('Preparing course')).toBeNull();
+  expect(screen.getByTestId('player-auto-next').textContent).toBe('true');
   expect(fetcher.mock.calls.map(call => call[0])).toEqual(['/api/courses/course/lessons?playback=0']);
+});
+
+it('keeps auto next disabled when the user explicitly turned it off on this device', async () => {
+  localStorage.setItem('edunexAutoNextVideo', 'false');
+  vi.stubGlobal('fetch', vi.fn(url => reply(url.includes('subscription-status') ? { hasActiveAccess: true } : course)));
+  render(<VideosPage />);
+  expect((await screen.findByTestId('player-auto-next')).textContent).toBe('false');
 });
 it('shows a timeout and Retry recovers without reloading the page', async () => {
   vi.useFakeTimers();
@@ -101,6 +109,41 @@ it('opens AI inside the player without navigating away from the lecture', async 
   expect(open).toHaveBeenCalledWith(document.getElementById('playerFrame'));
   expect(window.location.pathname).toBe('/videos');
   expect(screen.getByText('Lesson player ready')).toBeTruthy();
+});
+
+it('changes lecture ranges with horizontal swipe and trackpad scroll while keeping range buttons', async () => {
+  const pagedCourse = {
+    ...course,
+    videos: Array.from({ length: 34 }, (_, index) => ({
+      _id: `lecture-${index + 1}`,
+      title: `Lecture title ${index + 1}`,
+      provider: 'aws_cloudfront',
+      videoUrl: `https://cdn.example/lecture-${index + 1}.m3u8`,
+    })),
+  };
+  vi.stubGlobal('fetch', vi.fn(() => reply(pagedCourse)));
+  render(<VideosPage />);
+  expect(await screen.findByText('Lesson player ready')).toBeTruthy();
+  fireEvent.click(screen.getByRole('button', { name: 'Open all lectures' }));
+
+  expect(screen.getByRole('tab', { name: '1–20' }).getAttribute('aria-selected')).toBe('true');
+  let grid = screen.getByLabelText('Lectures 1 to 20. Swipe left or right to change range.');
+  fireEvent.pointerDown(grid, { pointerId: 1, pointerType: 'touch', clientX: 320, clientY: 180 });
+  fireEvent.pointerUp(grid, { pointerId: 1, pointerType: 'touch', clientX: 80, clientY: 184 });
+
+  expect(screen.getByRole('tab', { name: '21–34' }).getAttribute('aria-selected')).toBe('true');
+  expect(screen.getByRole('button', { name: 'Lecture 21: Lecture title 21' })).toBeTruthy();
+  grid = screen.getByLabelText('Lectures 21 to 34. Swipe left or right to change range.');
+  fireEvent.wheel(grid, { deltaX: 0, deltaY: -120 });
+
+  expect(screen.getByRole('tab', { name: '1–20' }).getAttribute('aria-selected')).toBe('true');
+  expect(screen.getByRole('button', { name: 'Lecture 1: Lecture title 1' })).toBeTruthy();
+
+  fireEvent.click(screen.getByRole('tab', { name: '21–34' }));
+  grid = screen.getByLabelText('Lectures 21 to 34. Swipe left or right to change range.');
+  fireEvent.pointerDown(grid, { pointerId: 2, pointerType: 'mouse', button: 0, clientX: 260, clientY: 150 });
+  fireEvent.pointerMove(grid, { pointerId: 2, pointerType: 'mouse', buttons: 1, clientX: 330, clientY: 152 });
+  expect(screen.getByRole('tab', { name: '1–20' }).getAttribute('aria-selected')).toBe('true');
 });
 
 it('mounts notes and lectures inside the fullscreen player frame', async () => {

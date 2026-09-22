@@ -29,11 +29,16 @@
 .sm-player .sm-status { pointer-events:none; }
 .sm-player .sm-failure button { border:1px solid #aaa; }
 .sm-player .sm-notice { position:absolute; top:15px; left:15px; right:15px; background:#222e; padding:10px; z-index:6; font-size:13px; }
+.video-loading-brand { position:absolute; inset:0; z-index:2; display:grid; place-content:center; justify-items:center; gap:12px; padding:24px; background:#000; color:#d8dbe2; text-align:center; pointer-events:none; }
+.video-loading-brand-mark { position:relative; display:block; width:clamp(76px,10vw,104px); aspect-ratio:1; border-radius:24%; overflow:hidden; box-shadow:0 14px 42px #000c; animation:skillomate-loader-pulse 1.4s ease-in-out infinite; }
+.video-loading-brand-mark img { display:block; width:100%; height:100%; object-fit:cover; border-radius:inherit; }
+.video-loading-brand-label { font:600 12px/1.4 Arial,sans-serif; letter-spacing:.04em; }
+@keyframes skillomate-loader-pulse { 0%,100% { opacity:.72; transform:scale(.96); } 50% { opacity:1; transform:scale(1); } }
 .watch-layout.sm-playlist-closed { grid-template-columns:minmax(0,1fr); }
 .watch-layout .sm-playlist-toggle { color:inherit; background:transparent; border:1px solid currentColor; border-radius:6px; padding:8px 14px; margin-bottom:10px; cursor:pointer; }
 .watch-layout .lesson-sidebar[hidden] { display:none; }
 @media(max-width:600px) { .sm-player { min-height:0; aspect-ratio:auto; } .sm-player .sm-player-heading { padding:12px 12px 30px; } .sm-player .sm-player-heading strong { max-width:88%; font-size:14px; } .sm-player .sm-controls { padding:20px 6px 4px; } .sm-player .sm-row { gap:0; } .sm-player .sm-volume { display:none; } .sm-player .sm-time { font-size:11px; } .sm-player button { min-width:36px; padding:6px; } .sm-player .sm-settings { bottom:96px; max-height:calc(100% - 104px); } }
-@media(prefers-reduced-motion:reduce) { .sm-player .sm-controls,.sm-player .sm-player-heading { transition:none; } }
+@media(prefers-reduced-motion:reduce) { .sm-player .sm-controls,.sm-player .sm-player-heading { transition:none; } .video-loading-brand-mark { animation:none; } }
 
 .sm-player button svg { display:block; margin:auto; }
 .sm-player .sm-big-play { position:absolute; z-index:5; top:50%; left:50%; transform:translate(-50%,-50%); width:64px; height:64px; border:1px solid #ffffff38; border-radius:50%; background:#0000006b; box-shadow:0 10px 32px #0007; backdrop-filter:blur(8px); }
