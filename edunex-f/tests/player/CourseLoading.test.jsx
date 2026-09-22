@@ -334,6 +334,7 @@ it('moves to the next lecture when the mobile player is scrolled', async () => {
 
   const { container, unmount } = render(<VideosPage />);
   expect((await screen.findByTestId('active-player-lesson')).textContent).toBe('First lesson');
+  expect(screen.getByText('Lecture 1/2').classList.contains('reel-lecture-counter')).toBe(true);
   expect(window.SkillomateLessonContext).toEqual({ courseId: 'course', lessonId: 'lesson' });
   expect(document.body.classList.contains('has-edunex-mobile-reel')).toBe(true);
   fireEvent.click(screen.getByRole('button', { name: 'Minimize player' }));
@@ -348,6 +349,28 @@ it('moves to the next lecture when the mobile player is scrolled', async () => {
   expect(window.SkillomateLessonContext).toEqual({ courseId: 'course', lessonId: 'lesson-2' });
   unmount();
   expect(window.SkillomateLessonContext).toBeUndefined();
+});
+
+it('changes lecture with a short, quick reel-style vertical swipe', async () => {
+  window.history.replaceState(null, '', '/videos?courseId=course&video=0');
+  window.matchMedia = vi.fn(() => ({ matches: true, addEventListener: vi.fn(), removeEventListener: vi.fn() }));
+  const twoLessons = {
+    ...course,
+    videos: [course.videos[0], { ...course.videos[0], _id: 'lesson-2', title: 'Second lesson' }],
+  };
+  window.EduNex = { authRequest: vi.fn().mockResolvedValue({ courseId: 'course', lessons: [] }) };
+  vi.stubGlobal('fetch', vi.fn(() => reply(twoLessons)));
+
+  const { container } = render(<VideosPage />);
+  expect((await screen.findByTestId('active-player-lesson')).textContent).toBe('First lesson');
+  const frame = container.querySelector('#playerFrame');
+  fireEvent.touchStart(frame, { touches: [{ clientX: 180, clientY: 420 }] });
+  fireEvent.touchMove(document, { touches: [{ clientX: 179, clientY: 387 }] });
+  expect(frame.classList.contains('is-reel-dragging')).toBe(true);
+  fireEvent.touchEnd(document, { changedTouches: [{ clientX: 179, clientY: 387 }] });
+
+  expect((await screen.findByTestId('active-player-lesson')).textContent).toBe('Second lesson');
+  expect(frame.classList.contains('is-reel-enter-next')).toBe(true);
 });
 
 it('changes the Notes content when scrolling to a different lecture', async () => {

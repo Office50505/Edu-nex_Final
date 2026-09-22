@@ -159,9 +159,9 @@ describe("reported frontend regressions", () => {
     expect(screen.queryByRole("group", { name: "Follow-up suggestions" })).toBeNull();
     expect(document.querySelector(".tutor-top-bar")).toBeNull();
     expect(screen.queryByRole("button", { name: "Report a problem" })).toBeNull();
-    expect(document.documentElement.style.overflow).toBe("hidden");
-    expect(document.body.style.position).toBe("fixed");
-    expect(document.body.classList.contains("has-viewport-lock")).toBe(true);
+    expect(document.documentElement.style.overflow).toBe("");
+    expect(document.body.style.position).toBe("");
+    expect(document.body.classList.contains("has-viewport-lock")).toBe(false);
   });
 
   it("lets each learner name the AI without letting a message replace the header name", async () => {
@@ -421,9 +421,9 @@ describe("reported frontend regressions", () => {
     expect(screen.getByRole("link", { name: /Subscribe for ₹499\/month/ })).toBeTruthy();
     expect(screen.queryByText("Start your 24-hour trial for ₹1")).toBeNull();
     expect(document.querySelector("#trialGate")?.classList.contains("is-open")).toBe(true);
-    expect(document.documentElement.style.overflow).toBe("hidden");
-    expect(document.body.style.overflow).toBe("hidden");
-    expect(document.body.style.position).toBe("fixed");
+    expect(document.documentElement.style.overflow).toBe("");
+    expect(document.body.style.overflow).toBe("");
+    expect(document.body.style.position).toBe("");
   });
 
   it("opens the eligible one-rupee trial checkout directly from the dashboard gate", async () => {

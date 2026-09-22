@@ -4,6 +4,7 @@ import { runLegacyPage } from "../legacyRuntime.js";
 import { usePageStyle } from "../hooks/usePageStyle.js";
 import { useEduNexRuntimeReady } from "../hooks/useEduNexRuntimeReady.js";
 import { progressCacheKey } from "../hooks/useLearningProgress.js";
+import { resetViewportLocks } from "../hooks/useViewportLock.js";
 import { courseVideoHref } from "../lib/courseNavigation.js";
 import { openRazorpay } from "../lib/razorpayCheckout.js";
 
@@ -327,39 +328,7 @@ export function DashboardPage() {
   }, []);
 
   useEffect(() => {
-    if (allowed !== false) return undefined;
-
-    const scrollTop = window.scrollY || document.documentElement.scrollTop || 0;
-    const htmlStyle = document.documentElement.style;
-    const bodyStyle = document.body.style;
-    const previous = {
-      htmlOverflow: htmlStyle.overflow,
-      bodyOverflow: bodyStyle.overflow,
-      bodyPosition: bodyStyle.position,
-      bodyTop: bodyStyle.top,
-      bodyLeft: bodyStyle.left,
-      bodyRight: bodyStyle.right,
-      bodyWidth: bodyStyle.width,
-    };
-
-    htmlStyle.overflow = "hidden";
-    bodyStyle.overflow = "hidden";
-    bodyStyle.position = "fixed";
-    bodyStyle.top = `-${scrollTop}px`;
-    bodyStyle.left = "0";
-    bodyStyle.right = "0";
-    bodyStyle.width = "100%";
-
-    return () => {
-      htmlStyle.overflow = previous.htmlOverflow;
-      bodyStyle.overflow = previous.bodyOverflow;
-      bodyStyle.position = previous.bodyPosition;
-      bodyStyle.top = previous.bodyTop;
-      bodyStyle.left = previous.bodyLeft;
-      bodyStyle.right = previous.bodyRight;
-      bodyStyle.width = previous.bodyWidth;
-      if (scrollTop > 0) window.scrollTo({ top: scrollTop, left: 0, behavior: "auto" });
-    };
+    if (allowed === true) resetViewportLocks();
   }, [allowed]);
 
   const realCourses = courses;

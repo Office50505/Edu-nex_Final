@@ -2,7 +2,7 @@
 import React from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { cleanup, render } from "@testing-library/react";
-import { useViewportLock } from "../../src/hooks/useViewportLock.js";
+import { resetViewportLocks, useViewportLock } from "../../src/hooks/useViewportLock.js";
 
 function LockHarness({ active }) {
   useViewportLock(active);
@@ -11,27 +11,42 @@ function LockHarness({ active }) {
 
 afterEach(() => {
   cleanup();
+  resetViewportLocks();
   vi.restoreAllMocks();
 });
 
 describe("modal viewport locking", () => {
-  it("fixes the background in place and restores it when the window closes", () => {
-    const scrollTo = vi.spyOn(window, "scrollTo").mockImplementation(() => {});
-    Object.defineProperty(window, "scrollY", { configurable: true, value: 240 });
-
+  it("keeps the document scrollable while a modal is open", () => {
     const view = render(<LockHarness active />);
 
-    expect(document.documentElement.style.overflow).toBe("hidden");
-    expect(document.body.style.position).toBe("fixed");
-    expect(document.body.style.top).toBe("-240px");
-    expect(document.body.style.width).toBe("100%");
-    expect(document.body.classList.contains("has-viewport-lock")).toBe(true);
+    expect(document.documentElement.style.overflow).toBe("");
+    expect(document.body.style.position).toBe("");
+    expect(document.body.classList.contains("has-viewport-lock")).toBe(false);
 
     view.rerender(<LockHarness active={false} />);
 
     expect(document.documentElement.style.overflow).toBe("");
     expect(document.body.style.position).toBe("");
     expect(document.body.classList.contains("has-viewport-lock")).toBe(false);
-    expect(scrollTo).toHaveBeenCalledWith({ top: 240, left: 0, behavior: "auto" });
+  });
+
+  it("recovers orphaned inline lock styles left by an older page", () => {
+    document.documentElement.style.overflow = "hidden";
+    document.documentElement.style.overscrollBehavior = "none";
+    document.body.style.overflow = "hidden";
+    document.body.style.overscrollBehavior = "none";
+    document.body.style.position = "fixed";
+    document.body.style.top = "-320px";
+    document.body.style.left = "0px";
+    document.body.style.right = "0px";
+    document.body.style.width = "100%";
+
+    resetViewportLocks();
+
+    expect(document.documentElement.style.overflow).toBe("");
+    expect(document.body.style.overflow).toBe("");
+    expect(document.body.style.position).toBe("");
+    expect(document.body.style.top).toBe("");
+    expect(document.body.style.width).toBe("");
   });
 });

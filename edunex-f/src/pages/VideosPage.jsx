@@ -1124,6 +1124,7 @@ export function VideosPage() {
   const playerFrameRef = useRef(null);
   const notesReturnFocusRef = useRef(null);
   const lessonSwipeRef = useRef({ active: false, pointerId: null, startX: 0, startY: 0, lastX: 0, lastY: 0, startedAt: 0, horizontal: false, vertical: false, suppressClickUntil: 0 });
+  const lessonTransitionTimerRef = useRef(null);
   const query = queryParams();
   const selectedCourseId = query.get("courseId") || query.get("course") || query.get("id");
   const selectedVideoParam = query.get("video") ?? query.get("videoId") ?? query.get("lesson");
@@ -1401,9 +1402,21 @@ export function VideosPage() {
   ).trim();
 
   const changeLessonByNavigation = useCallback((delta) => {
+    const frame = playerFrameRef.current;
+    if (frame && (mobilePlayerViewport || isPlayerFullscreen(frame))) {
+      const transitionClass = delta > 0 ? "is-reel-enter-next" : "is-reel-enter-previous";
+      frame.classList.remove("is-reel-dragging", "is-reel-settling", "is-reel-enter-next", "is-reel-enter-previous");
+      frame.style.removeProperty("--reel-drag-y");
+      void frame.offsetWidth;
+      frame.classList.add(transitionClass);
+      window.clearTimeout(lessonTransitionTimerRef.current);
+      lessonTransitionTimerRef.current = window.setTimeout(() => frame.classList.remove(transitionClass), 300);
+    }
     setAutoplayLesson(true);
     setActiveIndex((index) => adjacent(lessons,index,delta));
-  }, [lessons]);
+  }, [lessons, mobilePlayerViewport]);
+
+  useEffect(() => () => window.clearTimeout(lessonTransitionTimerRef.current), []);
 
   useEffect(() => {
     const frame = playerFrameRef.current;
@@ -1412,6 +1425,22 @@ export function VideosPage() {
     let wheelDelta = 0;
     let wheelResetTimer = 0;
     let wheelLockedUntil = 0;
+    let settleTimer = 0;
+    const clearSwipeVisual = (settle = false) => {
+      window.clearTimeout(settleTimer);
+      frame.classList.remove("is-reel-dragging");
+      if (!settle) {
+        frame.classList.remove("is-reel-settling");
+        frame.style.removeProperty("--reel-drag-y");
+        return;
+      }
+      frame.classList.add("is-reel-settling");
+      frame.style.setProperty("--reel-drag-y", "0px");
+      settleTimer = window.setTimeout(() => {
+        frame.classList.remove("is-reel-settling");
+        frame.style.removeProperty("--reel-drag-y");
+      }, 220);
+    };
     const resetSwipe = () => {
       swipe.active = false;
       swipe.horizontal = false;
@@ -1447,26 +1476,35 @@ export function VideosPage() {
         resetSwipe();
         return;
       }
-      if (!swipe.horizontal && absX > 10 && absX > absY * 1.1) {
+      if (!swipe.horizontal && absX > 7 && absX > absY * 1.06) {
         swipe.horizontal = true;
       }
-      if (!swipe.vertical && verticalNavigation && absY > 10 && absY > absX * 1.1) {
+      if (!swipe.vertical && verticalNavigation && absY > 7 && absY > absX * 1.06) {
         swipe.vertical = true;
       }
       if (swipe.horizontal && canChangeLesson(deltaX < 0 ? 1 : -1)) event.preventDefault();
-      if (verticalNavigation && swipe.vertical && canChangeLesson(deltaY < 0 ? 1 : -1)) event.preventDefault();
+      if (verticalNavigation && swipe.vertical) {
+        const direction = deltaY < 0 ? 1 : -1;
+        const resistance = canChangeLesson(direction) ? 0.52 : 0.14;
+        const dragLimit = Math.max(54, Math.min(frame.clientHeight * 0.16 || 88, 112));
+        const dragY = Math.max(-dragLimit, Math.min(dragLimit, deltaY * resistance));
+        frame.classList.remove("is-reel-settling");
+        frame.classList.add("is-reel-dragging");
+        frame.style.setProperty("--reel-drag-y", `${dragY}px`);
+        if (canChangeLesson(direction)) event.preventDefault();
+      }
     };
     const finishSwipe = (clientX, clientY, event) => {
       if (!swipe.active) return;
       const deltaX = clientX - swipe.startX;
       const deltaY = clientY - swipe.startY;
       const elapsed = Math.max(performance.now() - swipe.startedAt, 1);
-      const horizontalDistanceThreshold = Math.min(72, Math.max(28, frame.clientWidth * 0.08));
-      const verticalDistanceThreshold = Math.min(96, Math.max(44, frame.clientHeight * 0.06));
-      const horizontalSwipe = swipe.horizontal && Math.abs(deltaX) > Math.abs(deltaY) * 1.1;
-      const verticalSwipe = swipe.vertical && Math.abs(deltaY) > Math.abs(deltaX) * 1.1;
-      const intentionalHorizontalSwipe = Math.abs(deltaX) >= horizontalDistanceThreshold || (Math.abs(deltaX) >= 24 && Math.abs(deltaX) / elapsed >= 0.22);
-      const intentionalVerticalSwipe = Math.abs(deltaY) >= verticalDistanceThreshold || (Math.abs(deltaY) >= 34 && Math.abs(deltaY) / elapsed >= 0.28);
+      const horizontalDistanceThreshold = Math.min(64, Math.max(24, frame.clientWidth * 0.065));
+      const verticalDistanceThreshold = Math.min(72, Math.max(28, frame.clientHeight * 0.045));
+      const horizontalSwipe = swipe.horizontal && Math.abs(deltaX) > Math.abs(deltaY) * 1.06;
+      const verticalSwipe = swipe.vertical && Math.abs(deltaY) > Math.abs(deltaX) * 1.06;
+      const intentionalHorizontalSwipe = Math.abs(deltaX) >= horizontalDistanceThreshold || (Math.abs(deltaX) >= 18 && Math.abs(deltaX) / elapsed >= 0.18);
+      const intentionalVerticalSwipe = Math.abs(deltaY) >= verticalDistanceThreshold || (Math.abs(deltaY) >= 20 && Math.abs(deltaY) / elapsed >= 0.18);
       const horizontalDirection = deltaX < 0 ? 1 : -1;
       const verticalDirection = deltaY < 0 ? 1 : -1;
       const horizontalDelta = horizontalDirection * lessonJumpFromHorizontalSwipe(deltaX, elapsed, frame.clientWidth);
@@ -1474,11 +1512,15 @@ export function VideosPage() {
       if (canTrackPlayerSwipe() && horizontalSwipe && intentionalHorizontalSwipe && canChangeLesson(horizontalDelta)) {
         event.preventDefault();
         swipe.suppressClickUntil = Date.now() + 500;
+        clearSwipeVisual();
         changeLessonByNavigation(horizontalDelta);
       } else if ((isPlayerFullscreen(frame) || isMobileReel()) && verticalSwipe && intentionalVerticalSwipe && canChangeLesson(verticalDirection)) {
         event.preventDefault();
         swipe.suppressClickUntil = Date.now() + 500;
+        clearSwipeVisual();
         changeLessonByNavigation(verticalDirection);
+      } else {
+        clearSwipeVisual(true);
       }
       resetSwipe();
     };
@@ -1529,10 +1571,10 @@ export function VideosPage() {
 
       wheelDelta += event.deltaY;
       window.clearTimeout(wheelResetTimer);
-      wheelResetTimer = window.setTimeout(() => { wheelDelta = 0; }, 180);
-      if (Math.abs(wheelDelta) < 52) return;
+      wheelResetTimer = window.setTimeout(() => { wheelDelta = 0; }, 150);
+      if (Math.abs(wheelDelta) < 34) return;
 
-      wheelLockedUntil = Date.now() + 650;
+      wheelLockedUntil = Date.now() + 440;
       wheelDelta = 0;
       changeLessonByNavigation(direction);
     };
@@ -1575,6 +1617,8 @@ export function VideosPage() {
     document.addEventListener("webkitfullscreenchange", onFullscreenChange);
     return () => {
       window.clearTimeout(wheelResetTimer);
+      window.clearTimeout(settleTimer);
+      clearSwipeVisual();
       frame.removeEventListener("pointerdown", onPointerDown, true);
       document.removeEventListener("pointermove", onPointerMove, true);
       document.removeEventListener("pointerup", onPointerUp, true);
@@ -1854,7 +1898,7 @@ export function VideosPage() {
                   <div className="reel-topbar">
                     <div className="reel-topbar-start">
                       <a className="reel-icon-button" href="/courses.html" aria-label="Back to courses or minimize fullscreen player" onClick={handleReelBack}><ReelIcon name="back" /></a>
-                      <strong>{course ? `Lecture ${activeIndex + 1}/${Math.max(lessons.length, 1)}` : status}</strong>
+                      <strong className="reel-lecture-counter">{course ? `Lecture ${activeIndex + 1}/${Math.max(lessons.length, 1)}` : status}</strong>
                     </div>
                     {course && !error ? <div className="reel-topbar-actions">
                       <button className="reel-icon-button" type="button" onClick={openNotes} aria-label="Open lecture notes"><ReelIcon name="notes" /><span>Notes</span></button>

@@ -1,5 +1,5 @@
 import { PageErrorBoundary } from "./components/PageErrorBoundary.jsx";
-import { lazy, startTransition, Suspense, useCallback, useEffect, useState } from "react";
+import { lazy, startTransition, Suspense, useCallback, useEffect, useLayoutEffect, useState } from "react";
 import { Navbar } from "./components/Navbar.jsx";
 import { Footer } from "./components/Footer.jsx";
 import { EnxIcon } from "./components/EnxIcon.jsx";
@@ -8,6 +8,7 @@ import { pageKeyFromPath, route } from "./lib/routes.js";
 import { hasReactPage, preloadPage, reactPageLoaders } from "./lib/pageLoaders.jsx";
 import { adminPageFromPath, canonicalAdminPath } from "./pages/admin/adminApi.js";
 import { usePresenceHeartbeat } from "./hooks/usePresenceHeartbeat.js";
+import { resetViewportLocks } from "./hooks/useViewportLock.js";
 
 const AdminApp = lazy(() => import("./pages/admin/AdminApp.jsx").then((module) => ({ default: module.AdminApp })));
 
@@ -69,6 +70,11 @@ function scrollAfterNavigation(hash) {
   });
 }
 
+function releasePageScrollLocks() {
+  resetViewportLocks();
+  document.body.classList.remove("has-edunex-player-fullscreen", "has-edunex-mobile-reel");
+}
+
 function goBackSafely() {
   if (window.history.length > 1 && document.referrer) {
     window.history.back();
@@ -126,6 +132,11 @@ export default function App() {
   const closeProblemReport = useCallback(() => setReportOpen(false), []);
   usePresenceHeartbeat(!adminPage);
 
+  useLayoutEffect(() => {
+    if (pageKey === "videos.html" || pageKey === "ai-tutor.html") return;
+    releasePageScrollLocks();
+  }, [pageKey, routeKey]);
+
   useEffect(() => {
     const previousScrollRestoration = window.history.scrollRestoration;
     if ("scrollRestoration" in window.history) {
@@ -179,12 +190,16 @@ export default function App() {
   }, [adminPage, locationState, pageKey, syncLocation]);
 
   useEffect(() => {
-    const handlePopState = () => syncLocation();
+    const handlePopState = () => {
+      releasePageScrollLocks();
+      syncLocation();
+    };
     const handleClick = (event) => {
       const next = shouldUseAppNavigation(event);
       if (!next) return;
 
       event.preventDefault();
+      releasePageScrollLocks();
       if (next.pageKey) void preloadPage(next.pageKey);
 
       const nextState = {
