@@ -2657,6 +2657,25 @@ body.premium-nav-admin.admin-theme-light .report-card-badges :is(.report-status-
   color: var(--aw-muted);
 }
 
+.lesson-notes-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px 14px;
+}
+
+.lesson-notes-save-status {
+  color: var(--aw-muted);
+  font-size: .72rem;
+  font-weight: 700;
+}
+
+.lesson-notes-save-status.is-dirty { color: var(--aw-warning, #d59a20); }
+.lesson-notes-save-status.is-saving { color: var(--aw-accent); }
+.lesson-notes-save-status.is-success { color: var(--aw-good, #2f9e67); }
+.lesson-notes-save-status.is-error { color: var(--aw-danger, #ef4444); }
+
 @media (max-width: 1100px) {
   .payment-audit-card dl { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 
