@@ -15,6 +15,7 @@ import { usePageStyle } from "../hooks/usePageStyle.js";
 import { useViewportLock } from "../hooks/useViewportLock.js";
 import { courseRequest } from "../lib/courseRequest.js";
 import { apiUrl } from "../lib/apiUrl.js";
+import { route } from "../lib/routes.js";
 
 const FALLBACK_IMAGE = "data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20width=%27900%27%20height=%27600%27%20viewBox=%270%200%20900%20600%27%3E%3Crect%20width=%27900%27%20height=%27600%27%20fill=%27%23000000%27/%3E%3Crect%20x=%271%27%20y=%271%27%20width=%27898%27%20height=%27598%27%20rx=%2732%27%20fill=%27%230d0d0d%27%20stroke=%27%23C58B2A%27%20stroke-opacity=%27.35%27/%3E%3Ctext%20x=%27450%27%20y=%27312%27%20text-anchor=%27middle%27%20fill=%27%23C58B2A%27%20font-family=%27Arial%27%20font-size=%2748%27%20font-weight=%27800%27%3ESkillomate%3C/text%3E%3C/svg%3E";
 const AUTO_NEXT_KEY = "edunexAutoNextVideo";
@@ -267,6 +268,7 @@ function ReelIcon({ name }) {
     report: <><path d="M6 3v18" /><path d="M6 4h11l-2 4 2 4H6" /></>,
     ai: <><path d="m12 3 1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5L12 3Z" /><path d="m19 15 .7 2.3L22 18l-2.3.7L19 21l-.7-2.3L16 18l2.3-.7L19 15Z" /></>,
     lectures: <><path d="m12 3 9 5-9 5-9-5 9-5Z" /><path d="m3 12 9 5 9-5M3 16l9 5 9-5" /></>,
+    share: <><circle cx="18" cy="5" r="3" /><circle cx="6" cy="12" r="3" /><circle cx="18" cy="19" r="3" /><path d="m8.7 10.7 6.6-4.1M8.7 13.3l6.6 4.1" /></>,
   };
   return <svg className="reel-control-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">{paths[name]}</svg>;
 }
@@ -1144,6 +1146,8 @@ export function VideosPage() {
   const [mobilePlayerMinimized, setMobilePlayerMinimized] = useState(false);
   const [autoNext, setAutoNext] = useState(() => localStorage.getItem(AUTO_NEXT_KEY) !== "false");
   const [playerControlsVisible, setPlayerControlsVisible] = useState(true);
+  const [shareLabel, setShareLabel] = useState("Share");
+  const shareFeedbackTimerRef = useRef(null);
   useViewportLock(notesOpen || lectureSheetOpen || playlistOpen);
 
   const handlePlayerControlsVisibility = useCallback((visible) => {
@@ -1153,6 +1157,8 @@ export function VideosPage() {
   useEffect(() => {
     setPlayerControlsVisible(true);
   }, [activeIndex]);
+
+  useEffect(() => () => window.clearTimeout(shareFeedbackTimerRef.current), []);
 
   usePageStyle("react-page-style-videos", videosPage.styles);
 
@@ -1636,6 +1642,40 @@ export function VideosPage() {
     document.getElementById("nai-float-btn")?.click();
   };
 
+  const showShareFeedback = useCallback((label) => {
+    window.clearTimeout(shareFeedbackTimerRef.current);
+    setShareLabel(label);
+    shareFeedbackTimerRef.current = window.setTimeout(() => setShareLabel("Share"), 2200);
+  }, []);
+
+  const shareOffer = useCallback(async () => {
+    const offerUrl = new URL(route("offer.html"), window.location.origin).href;
+    const shareData = {
+      title: "Skillomate special offer",
+      text: "Start your Skillomate learning journey with this special offer.",
+      url: offerUrl,
+    };
+    try {
+      if (typeof navigator.share === "function") {
+        await navigator.share(shareData);
+        showShareFeedback("Shared");
+        return;
+      }
+      if (!navigator.clipboard?.writeText) throw new Error("Clipboard unavailable");
+      await navigator.clipboard.writeText(offerUrl);
+      showShareFeedback("Link copied");
+    } catch (error) {
+      if (error?.name === "AbortError") return;
+      try {
+        if (!navigator.clipboard?.writeText) throw error;
+        await navigator.clipboard.writeText(offerUrl);
+        showShareFeedback("Link copied");
+      } catch (_) {
+        showShareFeedback("Share failed");
+      }
+    }
+  }, [showShareFeedback]);
+
   const toggleMobilePlayerView = () => {
     setMobilePlayerMinimized((minimized) => {
       const next = !minimized;
@@ -1814,6 +1854,7 @@ export function VideosPage() {
                   {course && !error ? <div className="reel-side-actions">
                     <button className="reel-side-button" type="button" onClick={openPlayerAi} aria-label="Open AI chat for this lecture"><ReelIcon name="ai" /><span>AI chat</span></button>
                     <button className="reel-side-button" type="button" onClick={() => setLectureSheetOpen(true)} aria-label="Open all lectures"><ReelIcon name="lectures" /><span>Lectures</span></button>
+                    <button className="reel-side-button" type="button" onClick={shareOffer} aria-label="Share Skillomate offer"><ReelIcon name="share" /><span aria-live="polite">{shareLabel}</span></button>
                   </div> : null}
                   {course && !error ? <div className="reel-lesson-copy">
                     <strong>{lesson.title || `Lecture ${activeIndex + 1}`}</strong>

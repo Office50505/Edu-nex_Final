@@ -111,6 +111,41 @@ it('opens AI inside the player without navigating away from the lecture', async 
   expect(screen.getByText('Lesson player ready')).toBeTruthy();
 });
 
+it('shares only the offer-page URL from the player action', async () => {
+  const share = vi.fn().mockResolvedValue(undefined);
+  Object.defineProperty(navigator, 'share', { configurable: true, value: share });
+  vi.stubGlobal('fetch', vi.fn(() => reply(course)));
+  render(<VideosPage />);
+  expect(await screen.findByText('Lesson player ready')).toBeTruthy();
+
+  fireEvent.click(screen.getByRole('button', { name: 'Share Skillomate offer' }));
+
+  await waitFor(() => expect(share).toHaveBeenCalledOnce());
+  expect(share.mock.calls[0][0]).toEqual({
+    title: 'Skillomate special offer',
+    text: 'Start your Skillomate learning journey with this special offer.',
+    url: `${window.location.origin}/offer`,
+  });
+  expect(share.mock.calls[0][0].url).not.toContain('/videos');
+  expect(screen.getByText('Shared')).toBeTruthy();
+  Object.defineProperty(navigator, 'share', { configurable: true, value: undefined });
+});
+
+it('copies the offer-page URL when native sharing is unavailable', async () => {
+  const writeText = vi.fn().mockResolvedValue(undefined);
+  Object.defineProperty(navigator, 'share', { configurable: true, value: undefined });
+  Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { writeText } });
+  vi.stubGlobal('fetch', vi.fn(() => reply(course)));
+  render(<VideosPage />);
+  expect(await screen.findByText('Lesson player ready')).toBeTruthy();
+
+  fireEvent.click(screen.getByRole('button', { name: 'Share Skillomate offer' }));
+
+  await waitFor(() => expect(writeText).toHaveBeenCalledWith(`${window.location.origin}/offer`));
+  expect(screen.getByText('Link copied')).toBeTruthy();
+  Object.defineProperty(navigator, 'clipboard', { configurable: true, value: undefined });
+});
+
 it('changes lecture ranges with horizontal swipe and trackpad scroll while keeping range buttons', async () => {
   const pagedCourse = {
     ...course,
