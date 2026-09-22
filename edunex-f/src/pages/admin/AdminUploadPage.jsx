@@ -182,10 +182,6 @@ function courseForm(course) {
   };
 }
 
-function lessonEditKey(video, index) {
-  return String(video?._id || video?.key || `lesson-${index}`);
-}
-
 export function AdminUploadPage() {
   const [bulk, setBulk] = useState('');
   const [preview, setPreview] = useState(null);
@@ -260,7 +256,7 @@ export function AdminUploadPage() {
       updateVideo(index, 'notes', data.text || '');
       setNotesExtraction({ index, fileName: file.name, percent: 100, stage: `Complete · ${data.pageCount || 0} pages · ${formatNumber(data.characterCount || 0)} characters`, error: '' });
       setMessageType('success');
-      setMessage(data.truncated ? 'PDF text extracted and shortened to 20,000 characters. Click Save lesson notes to publish it.' : 'PDF text extracted. Click Save lesson notes to publish it. The PDF was not stored.');
+      setMessage(data.truncated ? 'PDF text extracted. It exceeded 20,000 characters and was shortened to fit this lesson.' : 'PDF text extracted into the lesson notes. The PDF was not stored.');
     } catch (error) {
       const detail = error.message || 'Could not extract text from this PDF.';
       setNotesExtraction({ index, fileName: file.name, percent: 100, stage: 'Extraction failed', error: detail });
@@ -304,8 +300,6 @@ export function AdminUploadPage() {
   const [loadingCategories, setLoadingCategories] = useState(true);
   const [loadingCourse, setLoadingCourse] = useState(Boolean(editCourseId));
   const [submitting, setSubmitting] = useState(false);
-  const [savingLessonNotes, setSavingLessonNotes] = useState("");
-  const [lessonNotesStatus, setLessonNotesStatus] = useState({});
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState("success");
   const [thumbnailFailed, setThumbnailFailed] = useState(false);
@@ -339,7 +333,6 @@ export function AdminUploadPage() {
       setForm(courseForm(course));
       setEditLoaded(true);
       setSlugTouched(true);
-      setLessonNotesStatus({});
       setMessage("");
     } catch (error) {
       setMessageType("error");
@@ -387,13 +380,6 @@ export function AdminUploadPage() {
   }
 
   function updateVideo(index, field, value) {
-    const key = lessonEditKey(form.videos[index], index);
-    if (field === "notes" && isEditing && form.videos[index]?._id) {
-      setLessonNotesStatus((current) => ({
-        ...current,
-        [key]: { type: "dirty", message: "Notes changed — save this lesson." },
-      }));
-    }
     setForm((current) => ({
       ...current,
       videos: current.videos.map((video, videoIndex) => videoIndex === index ? { ...video, [field]: value, ...(['videoUrl','provider'].includes(field) ? {duration:'',metadataMessage:'',metadataError:false} : {}) } : video),
@@ -449,39 +435,6 @@ export function AdminUploadPage() {
     ["Lesson durations", form.videos.every(v=>Number(v.duration)>0)],
   ];
   const readinessWarnings = checks.filter(([, complete]) => !complete).map(([label]) => label);
-
-  async function saveLessonNotes(index) {
-    const video = form.videos[index];
-    if (!isEditing || !video?._id) return;
-    const key = lessonEditKey(video, index);
-    const expectedNotes = String(video.notes || "").trim();
-    setSavingLessonNotes(key);
-    setLessonNotesStatus((current) => ({ ...current, [key]: { type: "saving", message: "Saving notes…" } }));
-    try {
-      const data = await adminJson(
-        `/api/admin/courses/${encodeURIComponent(editCourseId)}/videos/${encodeURIComponent(video._id)}/notes`,
-        { method: "PATCH", body: JSON.stringify({ notes: expectedNotes }) },
-        `Unable to save notes for lesson ${index + 1}.`
-      );
-      if (String(data?.video?.notes || "").trim() !== expectedNotes) {
-        throw new Error(`Lesson ${index + 1} notes were not confirmed by the server.`);
-      }
-      setForm((current) => ({
-        ...current,
-        videos: current.videos.map((item) => String(item._id) === String(video._id) ? { ...item, notes: data.video.notes || "" } : item),
-      }));
-      setLessonNotesStatus((current) => ({ ...current, [key]: { type: "success", message: "Lesson notes saved." } }));
-      setMessageType("success");
-      setMessage(`Lesson ${index + 1} notes saved.`);
-    } catch (error) {
-      const detail = error.message || `Unable to save notes for lesson ${index + 1}.`;
-      setLessonNotesStatus((current) => ({ ...current, [key]: { type: "error", message: detail } }));
-      setMessageType("error");
-      setMessage(detail);
-    } finally {
-      setSavingLessonNotes("");
-    }
-  }
 
   async function handleSubmit(event) {
     event.preventDefault();
@@ -651,24 +604,7 @@ export function AdminUploadPage() {
                     <div className="field"><label htmlFor={`videoTitle${index}`}>Title</label><input id={`videoTitle${index}`} value={video.title} required onChange={(event) => updateVideo(index, "title", event.target.value)} /></div>
                     <div className="field span-2"><label htmlFor={`videoUrl${index}`}>Permanent video URL</label><input id={`videoUrl${index}`} type="text" required={video.provider!=="youtube"} spellCheck={false} placeholder={video.provider==="aws_cloudfront"?`https://${cloudHost}/Course/Lesson/master.m3u8`:"https://player.mediadelivery.net/embed/..."} value={video.videoUrl} onChange={(event) => updateVideo(index, "videoUrl", event.target.value)} /></div>
                   </div>
-                  <div className="field lesson-notes-field">
-                    <div className="lesson-notes-heading">
-                      <label htmlFor={`videoNotes${index}`}>Lesson notes</label>
-                      {isEditing && video._id ? <button
-                        className="secondary-button compact-button"
-                        type="button"
-                        disabled={Boolean(savingLessonNotes) || extractingNotesIndex === index}
-                        onClick={() => saveLessonNotes(index)}
-                      >{savingLessonNotes === lessonEditKey(video, index) ? "Saving notes…" : "Save lesson notes"}</button> : null}
-                    </div>
-                    <div className={`lesson-pdf-dropzone${draggingNotesIndex === index ? ' is-dragging' : ''}${extractingNotesIndex === index ? ' is-extracting' : ''}`} role="button" tabIndex={0} aria-label={`Upload PDF notes for lesson ${index + 1}`} onClick={() => { if (extractingNotesIndex === null) document.getElementById(`videoNotesPdf${index}`)?.click(); }} onKeyDown={(event) => { if ((event.key === 'Enter' || event.key === ' ') && extractingNotesIndex === null) { event.preventDefault(); document.getElementById(`videoNotesPdf${index}`)?.click(); } }} onDragEnter={(event) => handleNotesDrag(index, event)} onDragOver={(event) => handleNotesDrag(index, event)} onDragLeave={(event) => handleNotesDrag(index, event)} onDrop={(event) => handleNotesDrop(index, event)}><strong>{extractingNotesIndex === index ? 'Extracting text…' : draggingNotesIndex === index ? 'Drop PDF to extract text' : 'Drag and drop a PDF here'}</strong><span>or click to choose one · maximum 10 MB</span><input className="lesson-notes-pdf-input" id={`videoNotesPdf${index}`} type="file" accept="application/pdf,.pdf" disabled={extractingNotesIndex !== null} onClick={(event) => event.stopPropagation()} onChange={(event) => { const file = event.target.files?.[0]; event.target.value = ''; void extractLessonNotes(index, file); }} /></div>
-                    {notesExtraction?.index === index ? <div className={`pdf-extraction-status${notesExtraction.error ? ' is-error' : ''}`} role="status" aria-live="polite"><div className="pdf-extraction-copy"><strong>{notesExtraction.stage}</strong><span>{notesExtraction.fileName}</span></div><div className="pdf-extraction-track" aria-label="PDF extraction progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow={notesExtraction.percent} role="progressbar"><span style={{ width: `${notesExtraction.percent}%` }} /></div>{notesExtraction.error ? <p>{notesExtraction.error}</p> : null}</div> : null}
-                    <textarea id={`videoNotes${index}`} rows="8" maxLength={20000} disabled={savingLessonNotes === lessonEditKey(video, index)} placeholder="Write the notes learners should read for this lesson. You can use headings, numbered steps, examples, and links." value={video.notes} onChange={(event) => updateVideo(index, "notes", event.target.value)} />
-                    <div className="lesson-notes-footer">
-                      <small>{formatNumber(String(video.notes || '').length)} / 20,000 characters · PDFs are processed temporarily and are not stored.</small>
-                      {lessonNotesStatus[lessonEditKey(video, index)] ? <span className={`lesson-notes-save-status is-${lessonNotesStatus[lessonEditKey(video, index)].type}`} role={lessonNotesStatus[lessonEditKey(video, index)].type === "error" ? "alert" : "status"}>{lessonNotesStatus[lessonEditKey(video, index)].message}</span> : null}
-                    </div>
-                  </div>
+                  <div className="field lesson-notes-field"><div className="lesson-notes-heading"><label htmlFor={`videoNotes${index}`}>Lesson notes</label></div><div className={`lesson-pdf-dropzone${draggingNotesIndex === index ? ' is-dragging' : ''}${extractingNotesIndex === index ? ' is-extracting' : ''}`} role="button" tabIndex={0} aria-label={`Upload PDF notes for lesson ${index + 1}`} onClick={() => { if (extractingNotesIndex === null) document.getElementById(`videoNotesPdf${index}`)?.click(); }} onKeyDown={(event) => { if ((event.key === 'Enter' || event.key === ' ') && extractingNotesIndex === null) { event.preventDefault(); document.getElementById(`videoNotesPdf${index}`)?.click(); } }} onDragEnter={(event) => handleNotesDrag(index, event)} onDragOver={(event) => handleNotesDrag(index, event)} onDragLeave={(event) => handleNotesDrag(index, event)} onDrop={(event) => handleNotesDrop(index, event)}><strong>{extractingNotesIndex === index ? 'Extracting text…' : draggingNotesIndex === index ? 'Drop PDF to extract text' : 'Drag and drop a PDF here'}</strong><span>or click to choose one · maximum 10 MB</span><input className="lesson-notes-pdf-input" id={`videoNotesPdf${index}`} type="file" accept="application/pdf,.pdf" disabled={extractingNotesIndex !== null} onClick={(event) => event.stopPropagation()} onChange={(event) => { const file = event.target.files?.[0]; event.target.value = ''; void extractLessonNotes(index, file); }} /></div>{notesExtraction?.index === index ? <div className={`pdf-extraction-status${notesExtraction.error ? ' is-error' : ''}`} role="status" aria-live="polite"><div className="pdf-extraction-copy"><strong>{notesExtraction.stage}</strong><span>{notesExtraction.fileName}</span></div><div className="pdf-extraction-track" aria-label="PDF extraction progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow={notesExtraction.percent} role="progressbar"><span style={{ width: `${notesExtraction.percent}%` }} /></div>{notesExtraction.error ? <p>{notesExtraction.error}</p> : null}</div> : null}<textarea id={`videoNotes${index}`} rows="8" maxLength={20000} placeholder="Write the notes learners should read for this lesson. You can use headings, numbered steps, examples, and links." value={video.notes} onChange={(event) => updateVideo(index, "notes", event.target.value)} /><small>{formatNumber(String(video.notes || '').length)} / 20,000 characters · PDFs are processed temporarily and are not stored.</small></div>
                   <p role="status">{video.metadataMessage || 'Uses course thumbnails and notes unless you add lesson-specific overrides. Duration can be detected automatically.'}</p>
                   <details className="lesson-advanced"><summary>Advanced · optional lesson overrides</summary><div className="form-grid">
                     <div className="field"><label htmlFor={`videoTopic${index}`}>Topic</label><input id={`videoTopic${index}`} maxLength={80} placeholder="e.g. Prompt Engineering" value={video.topic} onChange={(event) => updateVideo(index, "topic", event.target.value)} /></div>
