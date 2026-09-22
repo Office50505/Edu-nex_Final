@@ -7,6 +7,7 @@ const path = require('node:path');
 const { validSignature, createPayload, entitlement, validateTrialSchedule } = require('../services/razorpayService');
 const { hasTrialHistoryMarker, hasUsedIntroTrial } = require('../services/trialEligibility');
 const { resolveSubscriptionAccess } = require('../services/subscriptionAccess');
+const { activeCourseEntitlements } = require('../services/courseAccess');
 const now = Date.now();
 const billing = { paymentType: 'trial', trialAmount: 100, monthlyAmount: 50000, trialEnd: new Date(now + 86400000) };
 const remote = { status: 'authenticated' };
@@ -81,6 +82,7 @@ function controller(billing = {}) {
       if (name.includes('razorpayService')) return { validSignature, legacyMode: () => 'test', config: (mode = 'test') => ({ webhookSecret: mode === 'test' ? 'secret' : 'live-secret' }), requireConfig: () => ({ secret: 'secret' }), api: () => { upstreamCalls++; } };
       if (name.includes('trialEligibility')) return { hasUsedIntroTrial: async () => false };
       if (name.includes('subscriptionAccess')) return { resolveSubscriptionAccess };
+      if (name.includes('courseAccess')) return { activeCourseEntitlements };
       return { findById: async () => billing };
     },
   });
@@ -107,7 +109,10 @@ function flow(mode = 'test') {
       async findOneAndUpdate(query, update) { if (billing.lease) return null; Object.assign(billing, update.$set); return billing; },
       async updateOne(query, update) { if (query.lease && query.lease !== billing.lease) return; Object.assign(billing, update.$set || {}); for (const key of Object.keys(update.$unset || {})) delete billing[key]; } },
     BillingWebhook: { findById: async id => processed.get(id), updateOne: async (query, update) => processed.set(query._id, update.$set) },
-    Subscription: { findOneAndUpdate: async (query, update) => { local = { _id: 'local', ...update.$setOnInsert, ...update.$set }; return local; } },
+    Subscription: {
+      findOne: async () => local,
+      findOneAndUpdate: async (query, update) => { local = { _id: 'local', ...update.$setOnInsert, ...update.$set }; return local; },
+    },
     Order: { updateOne: async () => { if (failWrite) { failWrite = false; throw new Error('database write interrupted'); } } },
     User: { findByIdAndUpdate: async () => {} },
   };
@@ -123,6 +128,7 @@ function flow(mode = 'test') {
       } };
       if (name.includes('trialEligibility')) return { hasUsedIntroTrial: async () => false };
       if (name.includes('subscriptionAccess')) return { resolveSubscriptionAccess };
+      if (name.includes('courseAccess')) return { activeCourseEntitlements };
       return models[name.split('/').at(-1)];
     },
   });
@@ -182,4 +188,70 @@ test('provider must preserve the requested trial start before checkout is return
 test('a renewal failure during a paid trial does not block signup or remove paid access', () => {
   assert.equal(entitlement(billing, { status: 'pending' }, [trial], now).status, 'trial');
   assert.equal(entitlement(billing, { status: 'halted' }, [trial], now).status, 'trial');
+});
+
+function statusFlow({ billingRecord = null, subscriptionRecord = null } = {}) {
+  let providerCalls = 0;
+  const module = { exports: {} };
+  vm.runInNewContext(fs.readFileSync(path.join(__dirname, '../controllers/razorpayController.js'), 'utf8'), {
+    module, exports: module.exports, Buffer, Date, console,
+    require(name) {
+      if (name === 'node:crypto') return crypto;
+      if (name.includes('razorpayService')) return {
+        legacyMode: () => 'test',
+        config: () => ({}),
+        api: async () => { providerCalls++; return {}; },
+      };
+      if (name.includes('trialEligibility')) return { hasUsedIntroTrial: async () => false };
+      if (name.includes('subscriptionAccess')) return { resolveSubscriptionAccess };
+      if (name.includes('courseAccess')) return { activeCourseEntitlements };
+      if (name.endsWith('/RazorpayBilling')) return { findById: async () => billingRecord };
+      if (name.endsWith('/Subscription')) return { findOne: async () => subscriptionRecord };
+      return {};
+    },
+  });
+  return {
+    calls: () => providerCalls,
+    async status(user) {
+      let body;
+      let statusCode = 200;
+      await module.exports.status({ user }, {
+        status(value) { statusCode = value; return this; },
+        json(value) { body = value; },
+      });
+      return { body, statusCode };
+    },
+  };
+}
+
+test('active admin grants take precedence over unfinished Razorpay checkout state', async () => {
+  const adminSubscription = {
+    status: 'active',
+    gateway: 'admin',
+    currentPeriodEnd: new Date(now + 86400000),
+  };
+  const f = statusFlow({
+    billingRecord: { _id: 'learner', phase: 'ready', subscriptionId: 'sub_stale' },
+    subscriptionRecord: adminSubscription,
+  });
+  const { body, statusCode } = await f.status({ _id: 'learner' });
+  assert.equal(statusCode, 200);
+  assert.equal(body.status, 'active');
+  assert.equal(body.accessSource, 'admin');
+  assert.equal(body.pendingCheckout, false);
+  assert.equal(body.autoRenewEnabled, false);
+  assert.equal(f.calls(), 0);
+});
+
+test('Razorpay status exposes admin-assigned course access without claiming a global subscription', async () => {
+  const f = statusFlow();
+  const { body, statusCode } = await f.status({
+    _id: 'learner',
+    courseEntitlements: [{ course: 'course-one', accessType: 'permanent' }],
+  });
+  assert.equal(statusCode, 200);
+  assert.equal(body.status, 'none');
+  assert.equal(body.hasActiveAccess, false);
+  assert.equal(body.hasCourseAccess, true);
+  assert.deepEqual(Array.from(body.courseIds), ['course-one']);
 });

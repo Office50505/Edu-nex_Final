@@ -182,6 +182,10 @@ function courseForm(course) {
   };
 }
 
+function lessonEditKey(video, index) {
+  return String(video?._id || video?.key || `lesson-${index}`);
+}
+
 export function AdminUploadPage() {
   const [bulk, setBulk] = useState('');
   const [preview, setPreview] = useState(null);
@@ -189,6 +193,7 @@ export function AdminUploadPage() {
   useEffect(() => { adminJson('/api/admin/video-providers').then(data => setCloudHost(data.cloudFrontHost)).catch(() => {}); }, []);
   function moveVideo(index, offset) {
     setPreview(null);
+    setHasUnsavedChanges(true);
     setForm(current => { const videos=[...current.videos]; const next=index+offset; if(next<0||next>=videos.length)return current; [videos[index],videos[next]]=[videos[next],videos[index]];return {...current,videos}; });
   }
   const checkingRef = useRef(false);
@@ -228,6 +233,7 @@ export function AdminUploadPage() {
       if(imported.some(v=>existing.some(old=>old.videoUrl===v.videoUrl)))throw new Error('One of these URLs is already in the course. Remove it from the import first.');
       const lessons=imported.map((v,i)=>({...makeVideo(i),...v}));
       setForm(current=>({...current,videos:[...current.videos.filter(v=>v.title||v.videoUrl),...lessons]}));
+      setHasUnsavedChanges(true);
       setBulk('');setMessage('Lessons imported. Checking durations; review the generated titles and preview playback.');setMessageType('success');
       void checkLessons(lessons);
     } catch(error){setMessage(error.message);setMessageType('error');}
@@ -256,7 +262,7 @@ export function AdminUploadPage() {
       updateVideo(index, 'notes', data.text || '');
       setNotesExtraction({ index, fileName: file.name, percent: 100, stage: `Complete · ${data.pageCount || 0} pages · ${formatNumber(data.characterCount || 0)} characters`, error: '' });
       setMessageType('success');
-      setMessage(data.truncated ? 'PDF text extracted. It exceeded 20,000 characters and was shortened to fit this lesson.' : 'PDF text extracted into the lesson notes. The PDF was not stored.');
+      setMessage(data.truncated ? 'PDF text extracted and shortened to 20,000 characters. Click Save lesson notes to publish it.' : 'PDF text extracted. Click Save lesson notes to publish it. The PDF was not stored.');
     } catch (error) {
       const detail = error.message || 'Could not extract text from this PDF.';
       setNotesExtraction({ index, fileName: file.name, percent: 100, stage: 'Extraction failed', error: detail });
@@ -300,10 +306,15 @@ export function AdminUploadPage() {
   const [loadingCategories, setLoadingCategories] = useState(true);
   const [loadingCourse, setLoadingCourse] = useState(Boolean(editCourseId));
   const [submitting, setSubmitting] = useState(false);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [dirtyLessonNotes, setDirtyLessonNotes] = useState(() => new Set());
+  const [savingLessonNotes, setSavingLessonNotes] = useState("");
+  const [lessonNotesStatus, setLessonNotesStatus] = useState({});
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState("success");
   const [thumbnailFailed, setThumbnailFailed] = useState(false);
   const isEditing = Boolean(editCourseId);
+  const hasPendingChanges = hasUnsavedChanges || dirtyLessonNotes.size > 0;
   const previewThumbnailSrc = useMemo(
     () => thumbnailPreviewSrc(form.thumbnailDataUrl || form.thumbnailUrl || form.thumbnailVerticalDataUrl || form.thumbnailVerticalUrl || form.thumbnailPreviewUrl || form.thumbnailVerticalPreviewUrl),
     [form.thumbnailDataUrl, form.thumbnailUrl, form.thumbnailVerticalDataUrl, form.thumbnailVerticalUrl, form.thumbnailPreviewUrl, form.thumbnailVerticalPreviewUrl]
@@ -333,6 +344,9 @@ export function AdminUploadPage() {
       setForm(courseForm(course));
       setEditLoaded(true);
       setSlugTouched(true);
+      setHasUnsavedChanges(false);
+      setDirtyLessonNotes(new Set());
+      setLessonNotesStatus({});
       setMessage("");
     } catch (error) {
       setMessageType("error");
@@ -353,7 +367,18 @@ export function AdminUploadPage() {
     setThumbnailFailed(false);
   }, [previewThumbnailSrc]);
 
+  useEffect(() => {
+    if (!isEditing || !hasPendingChanges) return undefined;
+    const warnBeforeLeaving = (event) => {
+      event.preventDefault();
+      event.returnValue = "";
+    };
+    window.addEventListener("beforeunload", warnBeforeLeaving);
+    return () => window.removeEventListener("beforeunload", warnBeforeLeaving);
+  }, [hasPendingChanges, isEditing]);
+
   function updateField(field, value) {
+    setHasUnsavedChanges(true);
     setForm((current) => {
       const next = { ...current, [field]: value };
       if (field === "title" && !slugTouched) next.slug = slugify(value);
@@ -371,6 +396,7 @@ export function AdminUploadPage() {
         ...(file && field === "thumbnailDataUrl" ? { thumbnailUrl: "" } : {}),
         ...(file && field === "thumbnailVerticalDataUrl" ? { thumbnailVerticalUrl: "" } : {}),
       }));
+      setHasUnsavedChanges(true);
       setThumbnailFailed(false);
       setMessage("");
     } catch (error) {
@@ -380,6 +406,16 @@ export function AdminUploadPage() {
   }
 
   function updateVideo(index, field, value) {
+    const key = lessonEditKey(form.videos[index], index);
+    if (field === "notes" && isEditing && form.videos[index]?._id) {
+      setDirtyLessonNotes((current) => new Set(current).add(key));
+      setLessonNotesStatus((current) => ({
+        ...current,
+        [key]: { type: "dirty", message: "Notes changed — save this lesson." },
+      }));
+    } else {
+      setHasUnsavedChanges(true);
+    }
     setForm((current) => ({
       ...current,
       videos: current.videos.map((video, videoIndex) => videoIndex === index ? { ...video, [field]: value, ...(['videoUrl','provider'].includes(field) ? {duration:'',metadataMessage:'',metadataError:false} : {}) } : video),
@@ -387,10 +423,12 @@ export function AdminUploadPage() {
   }
 
   function addVideo() {
+    setHasUnsavedChanges(true);
     setForm((current) => ({ ...current, videos: [...current.videos, makeVideo(current.videos.length)] }));
   }
 
   function removeVideo(index) {
+    setHasUnsavedChanges(true);
     setForm((current) => {
       if (current.videos.length <= 1) {
         setMessageType("error");
@@ -436,9 +474,91 @@ export function AdminUploadPage() {
   ];
   const readinessWarnings = checks.filter(([, complete]) => !complete).map(([label]) => label);
 
+  async function persistLessonNotes(video, index) {
+    const expectedNotes = String(video.notes || "").trim();
+    const data = await adminJson(
+      `/api/admin/courses/${encodeURIComponent(editCourseId)}/videos/${encodeURIComponent(video._id)}/notes`,
+      { method: "PATCH", body: JSON.stringify({ notes: expectedNotes }) },
+      `Unable to save notes for lesson ${index + 1}.`
+    );
+    if (String(data?.video?.notes || "").trim() !== expectedNotes) {
+      throw new Error(`Lesson ${index + 1} notes were not confirmed by the server.`);
+    }
+    return data.video;
+  }
+
+  function clearSavedLessonNotes(pending, savedVideos) {
+    const savedById = new Map(savedVideos.map((video) => [String(video._id), video]));
+    setForm((current) => ({
+      ...current,
+      videos: current.videos.map((video) => savedById.has(String(video._id))
+        ? { ...video, notes: savedById.get(String(video._id)).notes || "" }
+        : video),
+    }));
+    setDirtyLessonNotes((current) => {
+      const next = new Set(current);
+      pending.forEach(({ key }) => next.delete(key));
+      return next;
+    });
+    setLessonNotesStatus((current) => {
+      const next = { ...current };
+      pending.forEach(({ key }) => { next[key] = { type: "success", message: "Lesson notes saved." }; });
+      return next;
+    });
+  }
+
+  async function saveLessonNotes(index) {
+    const video = form.videos[index];
+    if (!isEditing || !video?._id) return;
+    const key = lessonEditKey(video, index);
+    const pending = [{ video, index, key }];
+    setSavingLessonNotes(key);
+    setLessonNotesStatus((current) => ({ ...current, [key]: { type: "saving", message: "Saving notes…" } }));
+    try {
+      const savedVideo = await persistLessonNotes(video, index);
+      clearSavedLessonNotes(pending, [savedVideo]);
+      setMessageType("success");
+      setMessage(`Lesson ${index + 1} notes saved.`);
+    } catch (error) {
+      const detail = error.message || `Unable to save notes for lesson ${index + 1}.`;
+      setLessonNotesStatus((current) => ({ ...current, [key]: { type: "error", message: detail } }));
+      setMessageType("error");
+      setMessage(detail);
+    } finally {
+      setSavingLessonNotes("");
+    }
+  }
+
+  async function savePendingLessonNotes() {
+    const pending = form.videos
+      .map((video, index) => ({ video, index, key: lessonEditKey(video, index) }))
+      .filter(({ video, key }) => video?._id && dirtyLessonNotes.has(key));
+    if (!pending.length) return [];
+    const savedVideos = await Promise.all(pending.map(({ video, index }) => persistLessonNotes(video, index)));
+    clearSavedLessonNotes(pending, savedVideos);
+    return pending;
+  }
+
   async function handleSubmit(event) {
     event.preventDefault();
     if (isEditing && !editLoaded) return;
+    if (isEditing && !hasUnsavedChanges && dirtyLessonNotes.size > 0) {
+      setSubmitting(true);
+      setSavingLessonNotes("all");
+      setMessage("");
+      try {
+        const saved = await savePendingLessonNotes();
+        setMessageType("success");
+        setMessage(saved.length === 1 ? `Lesson ${saved[0].index + 1} notes saved.` : `${saved.length} lesson notes saved.`);
+      } catch (error) {
+        setMessageType("error");
+        setMessage(error.message || "Unable to save lesson notes.");
+      } finally {
+        setSavingLessonNotes("");
+        setSubmitting(false);
+      }
+      return;
+    }
     const invalid = form.videos.map((video,index)=>({index,error:videoError(video,cloudHost)})).find(item=>item.error);
     if(invalid){setMessageType('error');setMessage(`Lesson ${invalid.index+1}: ${invalid.error}`);return;}
     const payload = {
@@ -480,19 +600,28 @@ export function AdminUploadPage() {
       const endpoint = isEditing ? `/api/admin/courses/${encodeURIComponent(editCourseId)}` : "/api/courses";
       const method = isEditing ? "PATCH" : "POST";
       const savedCourse = await adminJson(endpoint, { method, body: JSON.stringify(payload) }, isEditing ? "Unable to update course." : "Unable to create course.");
+      if (isEditing && dirtyLessonNotes.size > 0) {
+        setSavingLessonNotes("all");
+        await savePendingLessonNotes();
+      }
       setMessageType("success");
-      setMessage(isEditing ? "Course updated successfully." : "Course created successfully.");
+      setMessage(isEditing ? "Course and lesson notes saved." : "Course created successfully.");
       if (isEditing) {
         setForm(courseForm(savedCourse));
         setSlugTouched(true);
+        setHasUnsavedChanges(false);
+        setDirtyLessonNotes(new Set());
+        setLessonNotesStatus({});
       } else {
         setForm(emptyCourseForm());
         setSlugTouched(false);
+        setHasUnsavedChanges(false);
       }
     } catch (error) {
       setMessageType("error");
       setMessage(error.message || (isEditing ? "Unable to update course." : "Unable to create course."));
     } finally {
+      setSavingLessonNotes("");
       setSubmitting(false);
     }
   }
@@ -515,7 +644,15 @@ export function AdminUploadPage() {
           </div>
         ) : <form className="course-form" onSubmit={handleSubmit}>
           <nav className="course-editor-steps" aria-label="Course editor sections">
-            {["Basic details", "Pricing / access", "Course media", "Modules & lessons", "Certificate settings", "SEO metadata", "Publish settings"].map((step, index) => <a href={index < 3 ? "#title" : "#bulkLessons"} key={step}>{step}</a>)}
+            <div className="course-editor-step-links">
+              {["Basic details", "Pricing / access", "Course media", "Modules & lessons", "Certificate settings", "SEO metadata", "Publish settings"].map((step, index) => <a href={index < 3 ? "#title" : "#bulkLessons"} key={step}>{step}</a>)}
+            </div>
+            {isEditing ? <div className="course-editor-save">
+              <span className={messageType === "error" && message ? "is-error" : hasPendingChanges ? "is-dirty" : "is-saved"} role={messageType === "error" && message ? "alert" : "status"}>
+                {submitting ? "Saving course and notes…" : messageType === "error" && message ? message : hasPendingChanges ? "Unsaved changes" : message || "All changes saved"}
+              </span>
+              <button className="submit-button" type="submit" disabled={submitting || loadingCourse || !editLoaded || !hasPendingChanges}>{submitting ? "Saving..." : "Save changes"}</button>
+            </div> : null}
           </nav>
           <div className="course-builder-grid">
             <div className="form-section">
@@ -604,7 +741,24 @@ export function AdminUploadPage() {
                     <div className="field"><label htmlFor={`videoTitle${index}`}>Title</label><input id={`videoTitle${index}`} value={video.title} required onChange={(event) => updateVideo(index, "title", event.target.value)} /></div>
                     <div className="field span-2"><label htmlFor={`videoUrl${index}`}>Permanent video URL</label><input id={`videoUrl${index}`} type="text" required={video.provider!=="youtube"} spellCheck={false} placeholder={video.provider==="aws_cloudfront"?`https://${cloudHost}/Course/Lesson/master.m3u8`:"https://player.mediadelivery.net/embed/..."} value={video.videoUrl} onChange={(event) => updateVideo(index, "videoUrl", event.target.value)} /></div>
                   </div>
-                  <div className="field lesson-notes-field"><div className="lesson-notes-heading"><label htmlFor={`videoNotes${index}`}>Lesson notes</label></div><div className={`lesson-pdf-dropzone${draggingNotesIndex === index ? ' is-dragging' : ''}${extractingNotesIndex === index ? ' is-extracting' : ''}`} role="button" tabIndex={0} aria-label={`Upload PDF notes for lesson ${index + 1}`} onClick={() => { if (extractingNotesIndex === null) document.getElementById(`videoNotesPdf${index}`)?.click(); }} onKeyDown={(event) => { if ((event.key === 'Enter' || event.key === ' ') && extractingNotesIndex === null) { event.preventDefault(); document.getElementById(`videoNotesPdf${index}`)?.click(); } }} onDragEnter={(event) => handleNotesDrag(index, event)} onDragOver={(event) => handleNotesDrag(index, event)} onDragLeave={(event) => handleNotesDrag(index, event)} onDrop={(event) => handleNotesDrop(index, event)}><strong>{extractingNotesIndex === index ? 'Extracting text…' : draggingNotesIndex === index ? 'Drop PDF to extract text' : 'Drag and drop a PDF here'}</strong><span>or click to choose one · maximum 10 MB</span><input className="lesson-notes-pdf-input" id={`videoNotesPdf${index}`} type="file" accept="application/pdf,.pdf" disabled={extractingNotesIndex !== null} onClick={(event) => event.stopPropagation()} onChange={(event) => { const file = event.target.files?.[0]; event.target.value = ''; void extractLessonNotes(index, file); }} /></div>{notesExtraction?.index === index ? <div className={`pdf-extraction-status${notesExtraction.error ? ' is-error' : ''}`} role="status" aria-live="polite"><div className="pdf-extraction-copy"><strong>{notesExtraction.stage}</strong><span>{notesExtraction.fileName}</span></div><div className="pdf-extraction-track" aria-label="PDF extraction progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow={notesExtraction.percent} role="progressbar"><span style={{ width: `${notesExtraction.percent}%` }} /></div>{notesExtraction.error ? <p>{notesExtraction.error}</p> : null}</div> : null}<textarea id={`videoNotes${index}`} rows="8" maxLength={20000} placeholder="Write the notes learners should read for this lesson. You can use headings, numbered steps, examples, and links." value={video.notes} onChange={(event) => updateVideo(index, "notes", event.target.value)} /><small>{formatNumber(String(video.notes || '').length)} / 20,000 characters · PDFs are processed temporarily and are not stored.</small></div>
+                  <div className="field lesson-notes-field">
+                    <div className="lesson-notes-heading">
+                      <label htmlFor={`videoNotes${index}`}>Lesson notes</label>
+                      {isEditing && video._id ? <button
+                        className="secondary-button compact-button"
+                        type="button"
+                        disabled={!dirtyLessonNotes.has(lessonEditKey(video, index)) || Boolean(savingLessonNotes) || submitting || extractingNotesIndex === index}
+                        onClick={() => saveLessonNotes(index)}
+                      >{savingLessonNotes === lessonEditKey(video, index) ? "Saving notes…" : "Save lesson notes"}</button> : null}
+                    </div>
+                    <div className={`lesson-pdf-dropzone${draggingNotesIndex === index ? ' is-dragging' : ''}${extractingNotesIndex === index ? ' is-extracting' : ''}`} role="button" tabIndex={0} aria-label={`Upload PDF notes for lesson ${index + 1}`} onClick={() => { if (extractingNotesIndex === null) document.getElementById(`videoNotesPdf${index}`)?.click(); }} onKeyDown={(event) => { if ((event.key === 'Enter' || event.key === ' ') && extractingNotesIndex === null) { event.preventDefault(); document.getElementById(`videoNotesPdf${index}`)?.click(); } }} onDragEnter={(event) => handleNotesDrag(index, event)} onDragOver={(event) => handleNotesDrag(index, event)} onDragLeave={(event) => handleNotesDrag(index, event)} onDrop={(event) => handleNotesDrop(index, event)}><strong>{extractingNotesIndex === index ? 'Extracting text…' : draggingNotesIndex === index ? 'Drop PDF to extract text' : 'Drag and drop a PDF here'}</strong><span>or click to choose one · maximum 10 MB</span><input className="lesson-notes-pdf-input" id={`videoNotesPdf${index}`} type="file" accept="application/pdf,.pdf" disabled={extractingNotesIndex !== null} onClick={(event) => event.stopPropagation()} onChange={(event) => { const file = event.target.files?.[0]; event.target.value = ''; void extractLessonNotes(index, file); }} /></div>
+                    {notesExtraction?.index === index ? <div className={`pdf-extraction-status${notesExtraction.error ? ' is-error' : ''}`} role="status" aria-live="polite"><div className="pdf-extraction-copy"><strong>{notesExtraction.stage}</strong><span>{notesExtraction.fileName}</span></div><div className="pdf-extraction-track" aria-label="PDF extraction progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow={notesExtraction.percent} role="progressbar"><span style={{ width: `${notesExtraction.percent}%` }} /></div>{notesExtraction.error ? <p>{notesExtraction.error}</p> : null}</div> : null}
+                    <textarea id={`videoNotes${index}`} rows="8" maxLength={20000} disabled={savingLessonNotes === "all" || savingLessonNotes === lessonEditKey(video, index)} placeholder="Write the notes learners should read for this lesson. You can use headings, numbered steps, examples, and links." value={video.notes} onChange={(event) => updateVideo(index, "notes", event.target.value)} />
+                    <div className="lesson-notes-footer">
+                      <small>{formatNumber(String(video.notes || '').length)} / 20,000 characters · PDFs are processed temporarily and are not stored.</small>
+                      {lessonNotesStatus[lessonEditKey(video, index)] ? <span className={`lesson-notes-save-status is-${lessonNotesStatus[lessonEditKey(video, index)].type}`} role={lessonNotesStatus[lessonEditKey(video, index)].type === "error" ? "alert" : "status"}>{lessonNotesStatus[lessonEditKey(video, index)].message}</span> : null}
+                    </div>
+                  </div>
                   <p role="status">{video.metadataMessage || 'Uses course thumbnails and notes unless you add lesson-specific overrides. Duration can be detected automatically.'}</p>
                   <details className="lesson-advanced"><summary>Advanced · optional lesson overrides</summary><div className="form-grid">
                     <div className="field"><label htmlFor={`videoTopic${index}`}>Topic</label><input id={`videoTopic${index}`} maxLength={80} placeholder="e.g. Prompt Engineering" value={video.topic} onChange={(event) => updateVideo(index, "topic", event.target.value)} /></div>
@@ -620,8 +774,8 @@ export function AdminUploadPage() {
             <button className="secondary-button" type="button" onClick={addVideo}>Add video</button>
           </div>
 
-          <button className="submit-button" type="submit" disabled={submitting || loadingCourse || (isEditing && !editLoaded)}>{submitting ? (isEditing ? "Saving..." : "Creating...") : (isEditing ? "Save changes" : "Create course")}</button>
-          <Message text={message} type={messageType} />
+          {!isEditing ? <button className="submit-button" type="submit" disabled={submitting || loadingCourse}>{submitting ? "Creating..." : "Create course"}</button> : null}
+          {!isEditing ? <Message text={message} type={messageType} /> : null}
         </form>}
       </section>
     </AdminShell>

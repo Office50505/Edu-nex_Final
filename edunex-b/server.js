@@ -12,6 +12,7 @@ const { getMongoConnectionOptions } = require('./config/mongodb');
 const { ALLOWED_ORIGINS, skillomateCors } = require('./middleware/cors');
 const { createReadinessHandler } = require('./services/readinessService');
 const { auditPaymentOrder, duplicatePaymentReferences, paymentReference } = require('./services/paymentAuditService');
+const { normalizeLessonNotes } = require('./services/lessonNotes');
 const {
   areRateLimitsDisabled,
   canDisableRateLimitsInProduction,
@@ -3540,6 +3541,40 @@ app.get('/api/admin/courses/:id', protectAdmin, async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({ error: error.message });
+  }
+});
+
+app.patch('/api/admin/courses/:courseId/videos/:videoId/notes', protectAdmin, async (req, res) => {
+  try {
+    const { courseId, videoId } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(courseId) || !mongoose.Types.ObjectId.isValid(videoId)) {
+      return res.status(400).json({ error: 'Invalid course or lesson id' });
+    }
+
+    const notes = normalizeLessonNotes(req.body?.notes);
+    const course = await Course.findOneAndUpdate(
+      { _id: courseId, 'videos._id': videoId },
+      { $set: { 'videos.$.notes': notes } },
+      { new: true, runValidators: true }
+    ).select('_id videos._id videos.notes updatedAt').lean();
+
+    if (!course) return res.status(404).json({ error: 'Course or lesson not found' });
+    const video = course.videos.find((item) => String(item._id) === String(videoId));
+    if (!video) return res.status(404).json({ error: 'Lesson not found' });
+
+    await clearPublicCourseCaches();
+    return res.json({
+      message: 'Lesson notes saved.',
+      courseId: String(course._id),
+      updatedAt: course.updatedAt,
+      video: { _id: String(video._id), notes: video.notes || '' },
+    });
+  } catch (error) {
+    if (error.name === 'ValidationError') {
+      const details = Object.values(error.errors).map((fieldError) => fieldError.message);
+      return res.status(400).json({ error: details.join(', ') });
+    }
+    return res.status(error.statusCode || 500).json({ error: error.message || 'Unable to save lesson notes.' });
   }
 });
 

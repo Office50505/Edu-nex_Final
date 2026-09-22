@@ -8,12 +8,18 @@ const rzp = require('../services/razorpayService');
 const modes = require('../services/paymentMode');
 const { hasUsedIntroTrial } = require('../services/trialEligibility');
 const { resolveSubscriptionAccess } = require('../services/subscriptionAccess');
+const { activeCourseEntitlements } = require('../services/courseAccess');
 const billingMode = billing => billing?.mode || rzp.legacyMode();
 const fail = (message, status = 409) => Object.assign(new Error(message), { status });
 const wrap = fn => async (req, res) => { try { await fn(req, res); } catch (error) { res.status(error.status || 500).json({ error: error.status ? error.message : 'Billing is temporarily unavailable. Please retry.' }); } };
 
 async function reconcile(billing) {
   if (!billing?.subscriptionId) return null;
+  const existingSubscription = await Subscription.findOne({ user: billing._id });
+  const adminAccess = existingSubscription?.gateway === 'admin'
+    ? resolveSubscriptionAccess(existingSubscription)
+    : null;
+  if (adminAccess?.active) return existingSubscription;
   const mode = billingMode(billing);
   const lease = crypto.randomUUID();
   const locked = await Billing.findOneAndUpdate({ _id: billing._id, subscriptionId: billing.subscriptionId,
@@ -132,19 +138,28 @@ exports.verify = wrap(async (req, res) => {
   res.json({ verified: true, accessGranted: ['trial', 'active'].includes(subscription.status), status: subscription.status });
 });
 exports.status = wrap(async (req, res) => {
+  const courseEntitlements = activeCourseEntitlements(req.user);
+  const courseIds = courseEntitlements.map((item) => item.courseId);
   const billing = await Billing.findById(req.user._id);
-  const subscription = billing?.subscriptionId ? await reconcile(billing) : await Subscription.findOne({ user: req.user._id });
+  const existingSubscription = await Subscription.findOne({ user: req.user._id });
+  const existingAccess = resolveSubscriptionAccess(existingSubscription, req.user);
+  const subscription = existingSubscription?.gateway === 'admin' && existingAccess.active
+    ? existingSubscription
+    : billing?.subscriptionId ? await reconcile(billing) : existingSubscription;
   const trialUsed = await hasUsedIntroTrial(req.user._id, subscription, req.user);
   const access = resolveSubscriptionAccess(subscription, req.user);
   const effectiveStatus = access.status;
   const valid = access.active;
+  const adminManaged = subscription?.gateway === 'admin' && valid;
   res.json({ status: effectiveStatus, subscriptionStatus: effectiveStatus, subscriptionDocStatus: subscription?.status || 'none',
     trialExpiresAt: subscription?.trialExpiresAt, currentPeriodEnd: subscription?.currentPeriodEnd, nextBillingAt: subscription?.nextBillingAt,
     verified: valid, sameAccount: true, paid: valid,
     mandateStatus: subscription?.razorpayStatus || null, accessGranted: valid, hasActiveAccess: valid,
+    hasCourseAccess: courseIds.length > 0, courseIds, courseEntitlements,
     trialUsed, trialEligible: !trialUsed, subscriptionType: subscription?.subscriptionType || null,
-    autoRenewEnabled: Boolean(billing?.phase === 'ready' && billing?.subscriptionId && !['cancelled', 'expired', 'completed', 'paused'].includes(String(subscription?.razorpayStatus || '').toLowerCase())),
-    pendingCheckout: billing?.phase === 'ready' });
+    accessSource: adminManaged ? 'admin' : subscription?.gateway || 'none',
+    autoRenewEnabled: Boolean(!adminManaged && billing?.phase === 'ready' && billing?.subscriptionId && !['cancelled', 'expired', 'completed', 'paused'].includes(String(subscription?.razorpayStatus || '').toLowerCase())),
+    pendingCheckout: Boolean(!adminManaged && billing?.phase === 'ready') });
 });
 exports.cancel = wrap(async (req, res) => {
   const billing = await Billing.findById(req.user._id);
