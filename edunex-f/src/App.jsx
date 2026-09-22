@@ -125,7 +125,7 @@ export default function App() {
   const [reportOpen, setReportOpen] = useState(false);
   const adminPage = adminPageFromPath(locationState.pathname);
   const pageKey = pageKeyFromPath(locationState.pathname);
-  const standaloneOffer = pageKey === "offer.html";
+  const standaloneOffer = /^offer(?:[2-9]|10)?\.html$/.test(pageKey);
   const ReactPage = reactPageLoaders[pageKey];
   const routeKey = routeFromState(locationState);
   const openProblemReport = useCallback(() => setReportOpen(true), []);

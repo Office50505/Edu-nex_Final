@@ -4,6 +4,13 @@ function namedPage(exportName) {
   return (module) => ({ default: module[exportName] });
 }
 
+const offerPageModules = Object.fromEntries(
+  Array.from({ length: 10 }, (_, index) => {
+    const suffix = index === 0 ? "" : String(index + 1);
+    return [`offer${suffix}.html`, () => import("../pages/AdOfferPage.jsx").then(namedPage("AdOfferPage"))];
+  })
+);
+
 const pageModules = {
   "account-deletion.html": () => import("../pages/DeleteAccountPage.jsx"),
   "delete-account.html": () => import("../pages/DeleteAccountPage.jsx"),
@@ -23,7 +30,7 @@ const pageModules = {
   "lesson.html": () => import("../pages/RedirectPage.jsx").then(namedPage("LessonRedirectPage")),
   "login.html": () => import("../pages/LoginPage.jsx").then(namedPage("LoginPage")),
   "otp.html": () => import("../pages/RedirectPage.jsx").then(namedPage("SignupRedirectPage")),
-  "offer.html": () => import("../pages/AdOfferPage.jsx").then(namedPage("AdOfferPage")),
+  ...offerPageModules,
   "payment.html": () => import("../pages/PaymentPage.jsx").then(namedPage("PaymentPage")),
   "pricing.html": () => import("../pages/PricingPage.jsx").then(namedPage("PricingPage")),
   "profile.html": () => import("../pages/ProfilePage.jsx").then(namedPage("ProfilePage")),

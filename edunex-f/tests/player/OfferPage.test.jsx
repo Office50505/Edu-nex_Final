@@ -4,6 +4,7 @@ import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { AdOfferPage } from "../../src/pages/AdOfferPage.jsx";
 import { pageKeyFromPath, route } from "../../src/lib/routes.js";
+import { hasReactPage } from "../../src/lib/pageLoaders.jsx";
 
 beforeEach(() => {
   vi.spyOn(window.HTMLMediaElement.prototype, "play").mockResolvedValue();
@@ -20,6 +21,15 @@ it("registers the main Skillomate offer route", () => {
   expect(route("offer.html")).toBe("/offer");
   expect(pageKeyFromPath("/offer")).toBe("offer.html");
 });
+
+it.each(Array.from({ length: 9 }, (_, index) => index + 2))(
+  "registers /offer%s as an identical offer-page route",
+  (number) => {
+    expect(route(`offer${number}.html`)).toBe(`/offer${number}`);
+    expect(pageKeyFromPath(`/offer${number}`)).toBe(`offer${number}.html`);
+    expect(hasReactPage(`offer${number}.html`)).toBe(true);
+  },
+);
 
 it("shows the premium offer and opens phone verification from its CTA", () => {
   render(<AdOfferPage />);
