@@ -97,6 +97,8 @@ describe("reported frontend regressions", () => {
 
     expect(screen.getByText("Continue Learning")).toBeTruthy();
     expect(screen.getAllByText("First lesson").length).toBeGreaterThan(0);
+    const continueAction = screen.getByRole("link", { name: /View My Course/i });
+    expect(continueAction.querySelector('[data-enx-icon="arrowRight"]')).toBeTruthy();
   });
 
   it("shows the complete lecture sequence in course order", () => {

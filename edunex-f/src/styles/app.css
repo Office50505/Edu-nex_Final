@@ -7733,7 +7733,7 @@ html[data-theme="light"] .react-page-root[data-page="index.html"] .continue-lear
   white-space: nowrap;
 }
 
-.react-page-root[data-page="index.html"] .curriculum-section-action .material-symbols-outlined {
+.react-page-root[data-page="index.html"] .curriculum-section-action .enx-icon {
   color: #C58B2A;
   font-size: 18px;
 }
@@ -8499,7 +8499,7 @@ html:not([data-theme="light"]) .react-page-root[data-page="index.html"] .curricu
   color: #C58B2A;
 }
 
-html:not([data-theme="light"]) .react-page-root[data-page="index.html"] :where(.curriculum-overview-copy span, .continue-lesson-card span, .module-number, .skill-tile small, .curriculum-section-action .material-symbols-outlined, .project-card > .material-symbols-outlined, .module-arrow) {
+html:not([data-theme="light"]) .react-page-root[data-page="index.html"] :where(.curriculum-overview-copy span, .continue-lesson-card span, .module-number, .skill-tile small, .curriculum-section-action .enx-icon, .project-card > .material-symbols-outlined, .module-arrow) {
   color: #C58B2A;
 }
 

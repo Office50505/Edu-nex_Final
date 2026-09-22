@@ -5,6 +5,7 @@ import { usePageStyle } from "../hooks/usePageStyle.js";
 import { useEduNexRuntimeReady } from "../hooks/useEduNexRuntimeReady.js";
 import { route } from "../lib/routes.js";
 import { courseEntryHref } from "../lib/courseNavigation.js";
+import { EnxIcon } from "../components/EnxIcon.jsx";
 
 const FALLBACK_COURSES = [
   ["fallback-video-editing", "Video Editing Mastery", "Video Editing", 22, "4.8", 12500, 499],
@@ -352,7 +353,7 @@ function preventNativeDrag(event) {
 }
 
 function sectionAction(label, href = "courses.html") {
-  return <a className="curriculum-section-action" href={href}>{label} <MaterialIcon>arrow_forward</MaterialIcon></a>;
+  return <a className="curriculum-section-action" href={href}>{label} <EnxIcon name="arrowRight" /></a>;
 }
 
 function imageCandidate(value) {
