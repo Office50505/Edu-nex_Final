@@ -84,7 +84,6 @@ function clearAuthStorage() {
 
 function paymentUrlForCourse(courseId) {
   const paymentUrl = new URL("/payment", window.location.origin);
-  paymentUrl.searchParams.set("plan", "monthly");
   if (courseId) paymentUrl.searchParams.set("courseId", courseId);
   paymentUrl.searchParams.set("next", window.location.pathname + window.location.search);
   return paymentUrl.pathname + paymentUrl.search;

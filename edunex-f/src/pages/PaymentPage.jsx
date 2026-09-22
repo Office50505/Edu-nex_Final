@@ -41,19 +41,17 @@ export function PaymentPage() {
   const runtimeReady = useEduNexRuntimeReady();
   const query = params();
   const courseId = query.get("courseId");
-  const [trialEligible, setTrialEligible] = useState(true);
+  const [trialEligible, setTrialEligible] = useState(false);
   const [checkoutState, setCheckoutState] = useState("loading");
   const [payMsg, setPayMsg] = useState({ text: "", type: "" });
   const [submitting, setSubmitting] = useState(false);
   const busyRef = useRef(false);
   const [pricing, setPricing] = useState(null);
-  const trial = query.get("plan") === "trial" && trialEligible;
+  const trial = !["monthly", "annual", "yearly"].includes(query.get("plan")) && trialEligible;
   const paymentType = trial ? "trial" : "monthly";
   const [paymentCompleted, setPaymentCompleted] = useState(false);
-  const [paymentFailed, setPaymentFailed] = useState(false);
   const [pending, setPending] = useState(false);
   const planAvailable = Boolean(pricing);
-  const autoStartRef = useRef(false);
   useEffect(() => {
     if (!["annual", "yearly"].includes(query.get("plan"))) return;
     const cleanUrl = new URL(window.location.href);
@@ -161,8 +159,8 @@ export function PaymentPage() {
         } else if (!cancelled) {
           setCheckoutState("pay");
         }
-      } catch (_) {
-        if (!cancelled) setCheckoutState("pay");
+      } catch (error) {
+        if (!cancelled) { setPayMsg({ text: error.message || "Could not check your subscription. Please reload.", type: "error" }); setCheckoutState("error"); }
       }
     })();
     return () => {
@@ -171,12 +169,10 @@ export function PaymentPage() {
   }, [authFetch, configureAppOpenButton, runtimeReady]);
 
   const initiatePayment = async () => {
-    if (busyRef.current || !planAvailable) return;
+    if (busyRef.current || !planAvailable || checkoutState !== "pay") return;
     busyRef.current = true;
     setSubmitting(true);
-    setPaymentFailed(false);
     setPayMsg({ text: "", type: "" });
-    let authorizationReceived = false;
     try {
       const response = await authFetch("/api/payment/initiate-trial", {
         method: "POST",
@@ -186,8 +182,7 @@ export function PaymentPage() {
       const data = await safeJsonResponse(response) || {};
       if (!response.ok) throw new Error(data.error || data.message || `Payment initiation failed (${response.status})`);
       if (data.gateway === "razorpay") {
-        const result = await openRazorpay(data);
-        authorizationReceived = true;
+        const result = await openRazorpay({ ...data, paymentType });
         setPending(true);
         setPayMsg({ text: "Verifying payment…", type: "info" });
         const verified = await authFetch("/api/payment/razorpay/verify", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(result) });
@@ -206,21 +201,12 @@ export function PaymentPage() {
       }
       throw new Error("Secure checkout is unavailable. Please try again later.");
     } catch (error) {
-      setPaymentFailed(!authorizationReceived);
       setPayMsg({ text: error.message || "Payment initiation failed", type: "error" });
     } finally {
       busyRef.current = false;
       setSubmitting(false);
     }
   };
-
-  useEffect(() => {
-    if (checkoutState !== "pay" || !planAvailable || autoStartRef.current) return;
-    autoStartRef.current = true;
-    void initiatePayment();
-    // The checkout should start once for the plan resolved from the URL and account status.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [checkoutState, paymentType, planAvailable]);
 
   const checkPayment = async () => {
     if (busyRef.current) return;
@@ -235,23 +221,51 @@ export function PaymentPage() {
     } catch (error) { setPayMsg({ text: error.message, type: "error" }); }
     finally { busyRef.current = false; setSubmitting(false); }
   };
-  const planLabel = trial ? "₹1 trial" : "monthly subscription";
+  const amount = (paise) => new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", minimumFractionDigits: 0, maximumFractionDigits: 2 }).format(paise / 100);
+  const trialPrice = pricing ? amount(pricing.trialAmountPaise) : "";
+  const monthlyPrice = pricing ? amount(pricing.subscriptionAmountPaise) : "";
+  const planLabel = trial ? `${trialPrice} trial` : "monthly subscription";
 
   return (
     <div className="react-page-root" data-page="payment.html">
       <main className="checkout-launcher" aria-live="polite">
-        {checkoutState === "loading" || (checkoutState === "pay" && planAvailable && !paymentFailed && !pending) ? (
+        {checkoutState === "loading" || (checkoutState === "pay" && submitting && !pending) ? (
           <div className="checkout-launcher-card" role="status">
             <span className="checkout-launcher-spinner" aria-hidden="true"></span>
-            <h1>Opening Razorpay…</h1>
+            <h1>{checkoutState === "loading" ? "Checking your subscription…" : "Opening Razorpay…"}</h1>
             <p>Preparing your {planLabel} securely.</p>
+          </div>
+        ) : null}
+
+        {checkoutState === "error" ? (
+          <div className="checkout-launcher-card">
+            <h1>Could not check your subscription</h1>
+            <p role="alert">{payMsg.text}</p>
+            <button className="checkout-launcher-primary" onClick={() => window.location.reload()}>Retry</button>
+          </div>
+        ) : null}
+
+        {checkoutState === "pay" && planAvailable && !submitting && !pending ? (
+          <div className="checkout-launcher-card">
+            <h1>Subscription plans</h1>
+            <h2>{trial ? `${trialPrice} for ${pricing.trialHours} hours` : `${monthlyPrice}/month`}</h2>
+            <p>Full course access, lesson notes and AI learning tools.</p>
+            <p>{trial ? `Pay ${trialPrice} now. After ${pricing.trialHours} hours, your subscription renews at ${monthlyPrice}/month through AutoPay until cancelled.` : `Pay ${monthlyPrice} now. Your subscription renews at ${monthlyPrice}/month through AutoPay until cancelled.`}</p>
+            {!trialEligible ? <p>The introductory trial is not available for this account.</p> : null}
+            <p>Cancel auto-renewal anytime.</p>
+            {payMsg.text ? <p role={payMsg.type === "error" ? "alert" : "status"}>{payMsg.text}</p> : null}
+            <button className="checkout-launcher-primary" type="button" onClick={initiatePayment}>
+              {trial ? `Pay ${trialPrice} and start trial` : `Pay ${monthlyPrice} and subscribe`}
+            </button>
+            <p>By continuing, you agree to the recurring payment terms above.</p>
+            <a href="/courses" className="checkout-launcher-secondary">Back to courses</a>
           </div>
         ) : null}
 
         {checkoutState === "login" ? (
           <div className="checkout-launcher-card">
             <h1>Log in to continue</h1>
-            <p>Your Razorpay checkout will open after authentication.</p>
+            <p>Log in to see your eligible subscription plan and price before paying.</p>
             <a id="loginBtn" href={`/login.html?next=${encodeURIComponent(window.location.href)}`} className="checkout-launcher-primary">Log In</a>
             <a id="signupBtn" href={`/signup.html?next=${encodeURIComponent(window.location.href)}`} className="checkout-launcher-secondary">Create Account</a>
           </div>
@@ -266,7 +280,7 @@ export function PaymentPage() {
           </div>
         ) : null}
 
-        {checkoutState === "pay" && (paymentFailed || pending || !planAvailable) ? (
+        {checkoutState === "pay" && (pending || !planAvailable) ? (
           <div className="checkout-launcher-card">
             <h1>{pending ? "Confirming payment" : "Checkout unavailable"}</h1>
             <p className={payMsg.type === "error" || !planAvailable ? "checkout-launcher-error" : ""} role={payMsg.type === "error" || !planAvailable ? "alert" : "status"}>
