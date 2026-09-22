@@ -5133,7 +5133,7 @@ html[data-theme="light"] .react-page-root[data-page="videos.html"] .reel-lecture
     position: relative !important;
     inset: auto !important;
     aspect-ratio: auto !important;
-    touch-action: none !important;
+    touch-action: pan-y !important;
     overscroll-behavior: none !important;
     isolation: isolate;
   }
@@ -5606,6 +5606,8 @@ html[data-theme="light"] .react-page-root[data-page="videos.html"] .reel-lecture
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   pointer-events: auto;
+  touch-action: pan-y;
+  overscroll-behavior: contain;
   text-shadow: none;
 }
 
@@ -5618,6 +5620,9 @@ html[data-theme="light"] .react-page-root[data-page="videos.html"] .reel-lecture
   max-height: min(30dvh, 220px);
   overflow-x: hidden !important;
   overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
+  overscroll-behavior: contain;
   padding-right: 4px;
   white-space: pre-line;
   -webkit-box-orient: initial !important;

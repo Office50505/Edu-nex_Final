@@ -47,6 +47,33 @@ it('expands and collapses the complete reel lesson description', async () => {
   expect(screen.getByRole('button', { name: 'More' }).getAttribute('aria-expanded')).toBe('false');
 });
 
+it('lets the expanded mobile description scroll without changing lectures', async () => {
+  window.matchMedia = vi.fn(() => ({ matches: true, addEventListener: vi.fn(), removeEventListener: vi.fn() }));
+  const longDescription = 'Read this complete lesson description while keeping the current lecture selected. '.repeat(12);
+  const twoLessons = {
+    ...course,
+    videos: [
+      { ...course.videos[0], description: longDescription },
+      { ...course.videos[0], _id: 'lesson-2', title: 'Second lesson', description: 'Second description' },
+    ],
+  };
+  vi.stubGlobal('fetch', vi.fn(() => reply(twoLessons)));
+  const { container } = render(<VideosPage />);
+
+  expect((await screen.findByTestId('active-player-lesson')).textContent).toBe('First lesson');
+  fireEvent.click(screen.getByRole('button', { name: 'More' }));
+  const description = container.querySelector('.reel-lesson-copy.is-expanded #reelLessonDescription');
+  expect(description).toBeTruthy();
+
+  fireEvent.wheel(description, { deltaY: 120, deltaX: 0 });
+  fireEvent.touchStart(description, { touches: [{ clientX: 180, clientY: 500 }] });
+  fireEvent.touchMove(description, { touches: [{ clientX: 180, clientY: 390 }] });
+  fireEvent.touchEnd(description, { changedTouches: [{ clientX: 180, clientY: 390 }] });
+
+  expect(screen.getByTestId('active-player-lesson').textContent).toBe('First lesson');
+  expect(screen.getByRole('button', { name: 'Less' }).getAttribute('aria-expanded')).toBe('true');
+});
+
 it('keeps auto next disabled when the user explicitly turned it off on this device', async () => {
   localStorage.setItem('edunexAutoNextVideo', 'false');
   vi.stubGlobal('fetch', vi.fn(url => reply(url.includes('subscription-status') ? { hasActiveAccess: true } : course)));

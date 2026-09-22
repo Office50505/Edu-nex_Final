@@ -1418,7 +1418,7 @@ export function VideosPage() {
       swipe.vertical = false;
       swipe.pointerId = null;
     };
-    const ignoreSwipeTarget = (target) => Boolean(target?.closest?.(".sm-controls, .sm-settings, .sm-big-play, .custom-video-controls, .video-ai-screen-btn, .reel-chrome button, .reel-chrome a, .reel-lecture-backdrop, .course-notes-modal, input, select, textarea, [contenteditable='true']"));
+    const ignoreSwipeTarget = (target) => Boolean(target?.closest?.(".sm-controls, .sm-settings, .sm-big-play, .custom-video-controls, .video-ai-screen-btn, .reel-lesson-copy.is-expanded, .reel-chrome button, .reel-chrome a, .reel-lecture-backdrop, .course-notes-modal, input, select, textarea, [contenteditable='true']"));
     const canChangeLesson = (delta) => delta > 0 ? activeIndex < lessons.length - 1 : delta < 0 && activeIndex > 0;
     const canTrackPlayerSwipe = () => isPlayerFullscreen(frame) || window.matchMedia?.("(max-width: 820px), (pointer: coarse)")?.matches;
     const isMobileReel = () => document.body.classList.contains(BODY_MOBILE_REEL_CLASS);
