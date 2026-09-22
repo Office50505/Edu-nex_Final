@@ -130,6 +130,12 @@ it('opens the selected lecture from the lecture drawer', async () => {
   expect((await screen.findByTestId('active-player-lesson')).textContent).toBe('First lesson');
   fireEvent.click(screen.getByRole('button', { name: 'Open all lectures' }));
   const secondLecture = screen.getByRole('button', { name: 'Lecture 2: Second lesson' });
+  const lectureGrid = secondLecture.closest('.reel-lecture-grid');
+  const setPointerCapture = vi.fn();
+  Object.defineProperty(lectureGrid, 'setPointerCapture', { configurable: true, value: setPointerCapture });
+  fireEvent.pointerDown(secondLecture, { pointerId: 1, pointerType: 'mouse', button: 0, clientX: 120, clientY: 120 });
+  fireEvent.pointerUp(secondLecture, { pointerId: 1, pointerType: 'mouse', button: 0, clientX: 120, clientY: 120 });
+  expect(setPointerCapture).not.toHaveBeenCalled();
   fireEvent.click(secondLecture);
 
   expect(screen.queryByRole('dialog', { name: 'Lectures' })).toBeNull();

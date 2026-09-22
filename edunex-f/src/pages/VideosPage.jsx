@@ -1060,7 +1060,6 @@ function LectureSheet({ course, activeIndex, completedIds, onClose, onSelect }) 
             rangeGestureRef.current.pointerId = event.pointerId;
             rangeGestureRef.current.startX = event.clientX;
             rangeGestureRef.current.startY = event.clientY;
-            event.currentTarget.setPointerCapture?.(event.pointerId);
           }}
           onPointerMove={(event) => {
             const gesture = rangeGestureRef.current;
