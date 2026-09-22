@@ -4,9 +4,11 @@ import { nationalPhoneDigits, pasteNationalPhone } from "../lib/authNavigation.j
 import { useViewportLock } from "../hooks/useViewportLock.js";
 import "./ad-offer.css";
 import { apiFetch } from "../lib/apiUrl.js";
+import { initMetaPixel, metaEventId, trackMetaPixel } from "../lib/metaPixel.js";
 
 const PREVIEW_URL = "/assets/skillomate-offer-preview.mp4";
 const POSTER_URL = "https://d5yxyknp74yz8.cloudfront.net/courses/ai-influencer/lessons/lesson-01.webp";
+const OFFER_EVENT_PARAMS = { content_name: "Skillomate ₹1 Offer", content_category: "subscription", currency: "INR" };
 
 async function api(url, body, bearer = "") {
   const response = await apiFetch(url, {
@@ -54,10 +56,13 @@ function PaymentTransition({ stage, seconds, onCheck, checking }) {
   </div>;
 }
 
-function PreviewVideo({ modalOpen }) {
+function PreviewVideo({ modalOpen, onPixelEvent }) {
   const videoRef = useRef(null);
   const modalOpenRef = useRef(modalOpen);
   modalOpenRef.current = modalOpen;
+  const playedRef = useRef(false);
+  const unmutedRef = useRef(false);
+  const halfwayRef = useRef(false);
   const [playing, setPlaying] = useState(false);
   const [muted, setMuted] = useState(true);
   const [progress, setProgress] = useState(0);
@@ -74,10 +79,29 @@ function PreviewVideo({ modalOpen }) {
     const video = videoRef.current;
     if (!video) return undefined;
     const onReady = () => start();
-    const onPlaying = () => setPlaying(true);
+    const onPlaying = () => {
+      setPlaying(true);
+      if (!playedRef.current) {
+        playedRef.current = true;
+        onPixelEvent?.("OfferVideoPlayed");
+      }
+    };
     const onPause = () => setPlaying(false);
-    const onVolumeChange = () => setMuted(video.muted);
-    const onTime = () => setProgress(Number.isFinite(video.duration) && video.duration > 0 ? Math.min(100, (video.currentTime / video.duration) * 100) : 0);
+    const onVolumeChange = () => {
+      setMuted(video.muted);
+      if (!video.muted && !unmutedRef.current) {
+        unmutedRef.current = true;
+        onPixelEvent?.("OfferVideoUnmuted");
+      }
+    };
+    const onTime = () => {
+      const nextProgress = Number.isFinite(video.duration) && video.duration > 0 ? Math.min(100, (video.currentTime / video.duration) * 100) : 0;
+      setProgress(nextProgress);
+      if (nextProgress >= 50 && !halfwayRef.current) {
+        halfwayRef.current = true;
+        onPixelEvent?.("OfferVideo50Percent");
+      }
+    };
 
     video.src = PREVIEW_URL;
     video.addEventListener("loadedmetadata", onReady, { once: true });
@@ -97,7 +121,7 @@ function PreviewVideo({ modalOpen }) {
       video.removeEventListener("volumechange", onVolumeChange);
       video.removeEventListener("timeupdate", onTime);
     };
-  }, [start]);
+  }, [start, onPixelEvent]);
 
   useEffect(() => {
     if (modalOpen) videoRef.current?.pause();
@@ -148,8 +172,36 @@ export function AdOfferPage() {
   const mountedRef = useRef(true);
   const busyRef = useRef(false);
   const handoffRef = useRef(null);
+  const purchaseTrackedRef = useRef(false);
+  const checkoutPaymentTypeRef = useRef("trial");
   useViewportLock(Boolean(modalStep || paymentStage));
   useEffect(() => { mountedRef.current = true; return () => { mountedRef.current = false; }; }, []);
+
+  const trackOfferEvent = useCallback((eventName, params = {}, options = {}) => {
+    trackMetaPixel(eventName, { ...OFFER_EVENT_PARAMS, ...params }, options);
+  }, []);
+
+  const trackPurchase = useCallback(() => {
+    if (purchaseTrackedRef.current) return;
+    purchaseTrackedRef.current = true;
+    const monthly = checkoutPaymentTypeRef.current === "monthly";
+    const value = monthly ? 499 : 1;
+    const eventId = metaEventId("offer-purchase");
+    trackOfferEvent("Purchase", { value, subscription_type: monthly ? "monthly" : "trial" }, { eventID: eventId });
+    trackOfferEvent("Subscribe", { value, subscription_type: monthly ? "monthly" : "trial" }, { eventID: metaEventId("offer-subscribe") });
+  }, [trackOfferEvent]);
+
+  useEffect(() => {
+    let active = true;
+    api("/api/marketing-config")
+      .then(data => {
+        if (!active || !initMetaPixel(data.metaPixel)) return;
+        trackOfferEvent("PageView");
+        trackOfferEvent("ViewContent", { value: 1 });
+      })
+      .catch(() => {});
+    return () => { active = false; };
+  }, [trackOfferEvent]);
 
   const getStatus = useCallback((token) => {
     if (statusRequestRef.current?.token === token) return statusRequestRef.current.promise;
@@ -182,6 +234,7 @@ export function AdOfferPage() {
       const result = await api("/api/onboarding/handoff", {}, token);
       if (!mountedRef.current) return;
       if (!result.code) throw new Error("Your account link is not ready. Please check payment status again.");
+      trackPurchase();
       setModalStep(null);
       setPaymentStage("success");
       setRedirect(`/signup#onboarding=${encodeURIComponent(result.code)}`);
@@ -189,7 +242,7 @@ export function AdOfferPage() {
     handoffRef.current = { token, promise };
     try { await promise; }
     catch (error) { handoffRef.current = null; throw error; }
-  }, [bearer]);
+  }, [bearer, trackPurchase]);
 
   // Provider confirmation can arrive after the checkout callback, or while the
   // customer is in their UPI app. Resume only after the server grants access.
@@ -247,8 +300,10 @@ export function AdOfferPage() {
       if (state.accessGranted) return await finish(token);
       if (pricing.gateway !== "razorpay") throw new Error("Razorpay checkout is unavailable. Please retry later.");
       const paymentType = state.trialEligible === false ? "monthly" : "trial";
+      checkoutPaymentTypeRef.current = paymentType;
       if (paymentType === "monthly" && !monthlyConsent) { setModalStep("monthly"); return; }
       const checkout = await api("/api/onboarding/checkout", { paymentType, mandateConsent: true, monthlyConsent }, token);
+      trackOfferEvent("InitiateCheckout", { value: paymentType === "monthly" ? 499 : 1, subscription_type: paymentType }, { eventID: metaEventId("offer-checkout") });
       setCheckoutAttempt(attempt => attempt + 1);
       checkoutStarted = true;
       const result = await openRazorpay({ ...checkout, paymentType });
@@ -261,12 +316,16 @@ export function AdOfferPage() {
       // Wait for any polling request before verifying; both acquire the same server lease.
       await statusRequestRef.current?.promise.catch(() => {});
       const verified = await api("/api/onboarding/verify", result, token);
-      if (verified.accessGranted) await finish(token);
+      if (verified.accessGranted) {
+        trackPurchase();
+        await finish(token);
+      }
     } catch (error) {
       if (!handoffRef.current) {
         if (error.code === "CHECKOUT_DISMISSED") {
           sessionStorage.removeItem("skillomateAdAwaitingPayment");
           setPaymentStage(null);
+          trackOfferEvent("OfferCheckoutDismissed");
           showRecovery(error.message);
           setCheckoutAttempt(attempt => attempt + 1);
         }
@@ -274,6 +333,7 @@ export function AdOfferPage() {
           // Closing checkout (or a provider failure event) does not prove that
           // the initial payment failed. Verify before offering another payment.
           sessionStorage.setItem("skillomateAdAwaitingPayment", "1");
+          trackOfferEvent("OfferPaymentPending");
           setPaymentStage("checking");
           setCheckoutAttempt(attempt => attempt + 1);
         }
@@ -284,7 +344,7 @@ export function AdOfferPage() {
       busyRef.current = false;
       setBusy(false);
     }
-  }, [bearer, finish, showRecovery, getStatus, paymentStage]);
+  }, [bearer, finish, showRecovery, getStatus, paymentStage, trackOfferEvent, trackPurchase]);
 
   const begin = () => {
     if (bearer) void openCheckout(bearer);
@@ -302,6 +362,7 @@ export function AdOfferPage() {
     setMessage("Sending OTP…");
     try {
       await api(`/api/auth/${resend ? "resend-mobile-otp" : "send-mobile-otp"}`, { mobileNumber: `+91${phone}` });
+      trackOfferEvent(resend ? "OfferOtpResent" : "OfferOtpSent");
       setOtp("");
       setModalStep("otp");
       setMessage("Enter the OTP sent to your phone.");
@@ -321,7 +382,9 @@ export function AdOfferPage() {
     setMessage("Verifying…");
     try {
       const proof = await api("/api/auth/verify-mobile-otp", { mobileNumber: `+91${phone}`, mobileOtp: otp });
+      trackOfferEvent("Lead", { lead_type: "phone_verified" });
       const session = await api("/api/onboarding/session", { signupToken: proof.signupToken });
+      trackOfferEvent("CompleteRegistration", { registration_method: "phone_otp" });
       sessionStorage.setItem("skillomateAdSession", session.token);
       setBearer(session.token);
       busyRef.current = false;
@@ -345,6 +408,7 @@ export function AdOfferPage() {
       if (state.accessGranted) await finish(bearer);
       else {
         setMessage("Payment confirmation is still pending. Please check again shortly.");
+        trackOfferEvent("OfferPaymentPending");
         setPaymentStage(stage => stage ? "pending" : stage);
       }
     } catch (error) {
@@ -384,7 +448,7 @@ export function AdOfferPage() {
   return (
     <main className="ad-offer-page" data-page="offer.html">
       <section className="ad-offer-shell" aria-label="Skillomate subscription offer" inert={Boolean(paymentStage)} aria-hidden={paymentStage ? true : undefined}>
-        <PreviewVideo modalOpen={Boolean(modalStep || paymentStage || busy)} />
+        <PreviewVideo modalOpen={Boolean(modalStep || paymentStage || busy)} onPixelEvent={trackOfferEvent} />
         <section className="ad-offer-content" aria-labelledby="ad-offer-title">
           <div className="ad-special-ribbon"><span aria-hidden="true">ϟ</span> Special offer</div>
           <p className="ad-offer-kicker">Only for you</p>

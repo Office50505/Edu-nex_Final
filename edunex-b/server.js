@@ -1282,6 +1282,7 @@ app.use('/api', require('./routes/certification'));
 app.use('/api', problemReportRoutes);
 app.use('/api/admin', require('./routes/adminHealth'));
 app.use('/api/admin', require('./routes/paymentSettings'));
+app.use('/api', require('./routes/marketingSettings'));
 app.use('/api/auth', authRoutes);
 app.use('/api/onboarding', require('./routes/onboarding'));
 app.use('/api/ai', aiRoutes);

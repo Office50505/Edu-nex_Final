@@ -1,4 +1,5 @@
 import { PaymentGatewaySettings } from './PaymentGatewaySettings.jsx';
+import { MarketingSettings } from './MarketingSettings.jsx';
 import { useEffect, useMemo, useState } from "react";
 import { AdminShell, Message } from "./AdminShell.jsx";
 import { adminJson, formatDate, formatDateTime, formatNumber, formatWatchDuration, getAdmin, requireAdmin } from "./adminApi.js";
@@ -402,6 +403,7 @@ export function AdminSettingsPage() {
     <AdminShell activePage="settings" title="Admin Settings" subtitle="Profile, session, environment readiness, and workspace preferences.">
       <Message text={error} type="error" />
       <PaymentGatewaySettings />
+      <MarketingSettings />
       {loading ? <div className="loading-state">Loading settings...</div> : (
         <StatusTable columns={["Setting", "Value", "Detail"]} rows={settings.map(([name, value, detail]) => ({ id: name, cells: [name, value, detail] }))} />
       )}

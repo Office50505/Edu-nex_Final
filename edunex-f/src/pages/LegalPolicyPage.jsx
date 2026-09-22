@@ -179,7 +179,7 @@ const policyContent = {
     description: "How Skillomate uses necessary cookies and browser/device storage for authentication, security and core website functionality.",
     canonicalPath: "/cookie-policy",
     sections: [
-      ["overview", "Overview", <p>Skillomate may use necessary cookies, local storage, session storage or similar browser/device storage to operate the website and app. We did not find confirmed advertising cookies, Google Analytics, Meta Pixel or similar third-party advertising trackers in the inspected frontend codebase.</p>],
+      ["overview", "Overview", <p>Skillomate may use necessary cookies, local storage, session storage or similar browser/device storage to operate the website and app. Advertising measurement tools such as Meta Pixel may be used on offer pages when enabled by an administrator.</p>],
       ["uses", "Storage we may use", <CheckList items={cookieItems} />],
       ["choices", "Your choices", <p>Users can clear browser storage through browser settings, but doing so may sign the user out or reset preferences. Mobile app storage can be managed through device settings where supported.</p>],
       ["third-party", "Third-party payment and platform flows", <p>Payment providers and app stores may use their own cookies or storage when their hosted payment or account pages are used. Those services are governed by their own notices.</p>],

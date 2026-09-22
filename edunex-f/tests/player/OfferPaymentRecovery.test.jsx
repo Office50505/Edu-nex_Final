@@ -6,12 +6,13 @@ import { AdOfferPage } from '../../src/pages/AdOfferPage.jsx';
 import { openRazorpay } from '../../src/lib/razorpayCheckout.js';
 
 vi.mock('../../src/lib/razorpayCheckout.js', () => ({ openRazorpay: vi.fn() }));
-let paid, navigate, requests;
+let paid, navigate, requests, pixelEnabled;
 beforeEach(() => {
   vi.useFakeTimers();
   openRazorpay.mockReset();
   vi.spyOn(window, "scrollTo").mockImplementation(() => {});
   paid = false;
+  pixelEnabled = false;
   navigate = vi.fn();
   const originalWindow = window;
   vi.stubGlobal('window', new Proxy(originalWindow, {
@@ -22,7 +23,8 @@ beforeEach(() => {
   vi.spyOn(HTMLMediaElement.prototype, 'play').mockResolvedValue();
   openRazorpay.mockResolvedValue({ razorpay_payment_id: 'pay_test' });
   requests = vi.fn(async (url) => {
-    const data = url.endsWith('/config') ? { gateway: 'razorpay' }
+    const data = url.endsWith('/marketing-config') ? { metaPixel: { enabled: pixelEnabled, pixelId: pixelEnabled ? '123456789012345' : '' } }
+      : url.endsWith('/config') ? { gateway: 'razorpay' }
       : url.endsWith('/status') ? { accessGranted: paid, trialEligible: true }
       : url.endsWith('/verify') ? { accessGranted: false }
       : url.endsWith('/handoff') ? { code: 'verified-handoff' } : {};
@@ -196,4 +198,21 @@ it('toggles preview audio from offer content and speaker without toggling twice 
   await act(async () => { fireEvent.click(screen.getByRole('button', { name: /Subscribe for ₹1/ })); });
   fireEvent.click(document.body);
   expect(video.muted).toBe(false);
+});
+
+it('tracks the Meta Pixel offer funnel only when enabled', async () => {
+  pixelEnabled = true;
+  const fbqCalls = [];
+  await mount();
+  window.fbq.callMethod = (...args) => fbqCalls.push(args);
+  await act(async () => { fireEvent.click(screen.getByRole('button', { name: /Subscribe for ₹1/i })); });
+  paid = true;
+  await act(async () => { await vi.advanceTimersByTimeAsync(3000); });
+  const eventNames = [...(window.fbq.queue || []), ...fbqCalls].map(call => call[1]);
+  expect(eventNames).toContain('PageView');
+  expect(eventNames).toContain('ViewContent');
+  expect(eventNames).toContain('InitiateCheckout');
+  expect(eventNames.filter(name => name === 'Purchase')).toHaveLength(1);
+  expect(eventNames.filter(name => name === 'Subscribe')).toHaveLength(1);
+  expect(JSON.stringify([...(window.fbq.queue || []), ...fbqCalls])).not.toContain('verified-session');
 });

@@ -5,6 +5,7 @@ const Onboarding = require('../models/OnboardingSession');
 const User = require('../models/User');
 const billing = require('../controllers/razorpayController');
 const rzp = require('../services/razorpayService');
+const marketing = require('../services/marketingSettings');
 function adMode() {
   const mode = process.env.AD_PAYMENT_MODE || (process.env.NODE_ENV !== 'production' ? 'test' : '');
   if (!['test', 'live'].includes(mode)) throw fail('Configure AD_PAYMENT_MODE before opening checkout.', 503);
@@ -21,7 +22,8 @@ const fail = (message, status = 400) => Object.assign(new Error(message), { stat
 router.use((_req, res, next) => { res.set('Cache-Control', 'no-store'); next(); });
 router.get('/config', wrap(async (_req, res) => {
   const c = rzp.requireConfig(adMode());
-  res.json({ mode: c.mode, gateway: 'razorpay', trialAmountPaise: c.trialAmount, subscriptionAmountPaise: c.monthlyAmount, trialHours: c.trialHours });
+  const publicMarketing = await marketing.publicConfig();
+  res.json({ mode: c.mode, gateway: 'razorpay', trialAmountPaise: c.trialAmount, subscriptionAmountPaise: c.monthlyAmount, trialHours: c.trialHours, ...publicMarketing });
 }));
 router.post('/session', wrap(async (req, res) => {
   let proof;
