@@ -66,10 +66,7 @@ function PreviewVideo({ modalOpen }) {
     const video = videoRef.current;
     if (!video) return;
     if (modalOpenRef.current) { video.pause(); return; }
-    video.muted = true;
-    video.defaultMuted = true;
     video.autoplay = true;
-    setMuted(true);
     void video.play().then(() => setPlaying(true)).catch(() => setPlaying(false));
   }, []);
 
@@ -79,6 +76,7 @@ function PreviewVideo({ modalOpen }) {
     const onReady = () => start();
     const onPlaying = () => setPlaying(true);
     const onPause = () => setPlaying(false);
+    const onVolumeChange = () => setMuted(video.muted);
     const onTime = () => setProgress(Number.isFinite(video.duration) && video.duration > 0 ? Math.min(100, (video.currentTime / video.duration) * 100) : 0);
 
     video.src = PREVIEW_URL;
@@ -87,6 +85,7 @@ function PreviewVideo({ modalOpen }) {
     video.addEventListener("canplay", onReady, { once: true });
     video.addEventListener("playing", onPlaying);
     video.addEventListener("pause", onPause);
+    video.addEventListener("volumechange", onVolumeChange);
     video.addEventListener("timeupdate", onTime);
     start();
     return () => {
@@ -95,6 +94,7 @@ function PreviewVideo({ modalOpen }) {
       video.removeEventListener("canplay", onReady);
       video.removeEventListener("playing", onPlaying);
       video.removeEventListener("pause", onPause);
+      video.removeEventListener("volumechange", onVolumeChange);
       video.removeEventListener("timeupdate", onTime);
     };
   }, [start]);
@@ -109,13 +109,14 @@ function PreviewVideo({ modalOpen }) {
     if (!video) return;
     video.muted = !video.muted;
     setMuted(video.muted);
+    if (video.paused) start();
   };
 
   return (
-    <div className="ad-preview-player">
+    <div className="ad-preview-player" onClick={toggleMute} style={{ cursor: "pointer" }}>
       <video ref={videoRef} src={PREVIEW_URL} autoPlay muted loop playsInline preload="auto" poster={POSTER_URL} />
       {!playing ? <button className="ad-preview-play" type="button" onClick={start} aria-label="Play course preview">▶</button> : null}
-      <button className={`ad-mute-button${muted ? "" : " is-unmuted"}`} type="button" onClick={toggleMute} aria-label={muted ? "Unmute preview" : "Mute preview"}>
+      <button className={`ad-mute-button${muted ? "" : " is-unmuted"}`} type="button" aria-label={muted ? "Unmute preview" : "Mute preview"}>
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4Z"/><path d="m17 9 4 6m0-6-4 6"/></svg>
       </button>
       <div className="ad-video-progress" aria-hidden="true"><span style={{ width: `${progress}%` }} /></div>
