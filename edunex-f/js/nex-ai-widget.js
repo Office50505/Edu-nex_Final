@@ -83,6 +83,10 @@
      CSS
   ═══════════════════════════════════════════════════════════════ */
   const CSS = `
+    #nex-ai-widget-root {
+      --nai-viewport-height: 100dvh;
+      --nai-viewport-top: 0px;
+    }
     /* ── FLOAT BUTTON ── */
     #nai-float-btn {
       all: unset;
@@ -739,12 +743,21 @@
       #nai-overlay {
         align-items: stretch;
         justify-content: stretch;
-        bottom: var(--mobile-fixed-reserve, calc(84px + env(safe-area-inset-bottom, 0px)));
+        top: var(--nai-viewport-top, 0px);
+        right: 0;
+        bottom: auto;
+        left: 0;
+        width: 100%;
+        max-width: 100%;
+        height: var(--nai-viewport-height, 100dvh);
+        max-height: 100dvh;
+        box-sizing: border-box;
         padding: 0;
-        z-index: 900;
+        overflow: hidden;
+        z-index: 2147483500;
       }
       #nai-modal {
-        width: 100vw;
+        width: 100%;
         max-width: none;
         height: 100%;
         min-height: 0;
@@ -780,7 +793,15 @@
         letter-spacing: 0;
       }
       #nai-input-area {
-        padding: 10px 14px 12px;
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+        padding: 10px max(14px, env(safe-area-inset-right, 0px)) max(12px, env(safe-area-inset-bottom, 0px)) max(14px, env(safe-area-inset-left, 0px));
+      }
+      #nai-chat-area {
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
       }
       #nai-chat-hdr {
         align-items: flex-start;
@@ -855,6 +876,11 @@
         height: 30px;
       }
       .nai-input-row {
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+        box-sizing: border-box;
+        overflow: hidden;
         gap: 8px;
         margin-bottom: 0;
         padding: 7px 7px 7px 10px;
@@ -862,6 +888,14 @@
       }
       .nai-footer-hint {
         display: none;
+      }
+      .nai-setup-panel {
+        max-width: 100%;
+        max-height: 100%;
+        box-sizing: border-box;
+        overflow-x: hidden;
+        overflow-y: auto;
+        padding: max(16px, env(safe-area-inset-top, 0px)) max(14px, env(safe-area-inset-right, 0px)) max(16px, env(safe-area-inset-bottom, 0px)) max(14px, env(safe-area-inset-left, 0px));
       }
       #nai-auth-prompt {
         inset: 0 0 var(--mobile-fixed-reserve, calc(84px + env(safe-area-inset-bottom, 0px))) 0;
@@ -1223,8 +1257,20 @@
   }
 
   function mountWidget(container = null) {
-    const target = container || document.fullscreenElement || document.body;
+    const mobileViewport = window.matchMedia?.('(max-width: 900px), (pointer: coarse)')?.matches;
+    const fullscreenElement = document.fullscreenElement || document.webkitFullscreenElement || null;
+    const target = mobileViewport && !fullscreenElement
+      ? document.body
+      : (container || fullscreenElement || document.body);
     if (rootEl.parentElement !== target) target.appendChild(rootEl);
+  }
+
+  function syncVisualViewport() {
+    const viewport = window.visualViewport;
+    const height = Math.max(1, Number(viewport?.height || window.innerHeight || document.documentElement.clientHeight));
+    const offsetTop = Math.max(0, Number(viewport?.offsetTop || 0));
+    rootEl.style.setProperty('--nai-viewport-height', `${height}px`);
+    rootEl.style.setProperty('--nai-viewport-top', `${offsetTop}px`);
   }
 
   let lastAiTrigger = null;
@@ -1300,6 +1346,7 @@
 
   function openChat(container = null)  {
     mountWidget(container);
+    syncVisualViewport();
     syncConversationOwner();
     lastAiTrigger = document.activeElement instanceof HTMLElement ? document.activeElement : floatBtn;
     if (!requireAiAccess(container)) return;
@@ -1375,6 +1422,10 @@
   } else {
     mobileFullscreenViewport.addListener(syncMobileFullscreenVisibility);
   }
+  window.addEventListener('resize', syncVisualViewport, { passive: true });
+  window.visualViewport?.addEventListener?.('resize', syncVisualViewport, { passive: true });
+  window.visualViewport?.addEventListener?.('scroll', syncVisualViewport, { passive: true });
+  syncVisualViewport();
   syncAuthButton();
   syncMobileFullscreenVisibility();
 

@@ -25,10 +25,27 @@ function storeAudioPreference(volume, muted) {
   localStorage.setItem(VIDEO_MUTED_STORAGE_KEY, muted ? 'true' : 'false');
 }
 
+function nativeHlsLevels(playlist, playlistUrl) {
+  const lines=String(playlist||'').split(/\r?\n/),found=[];
+  for(let index=0;index<lines.length;index+=1){
+    const line=lines[index].trim();
+    if(!line.startsWith('#EXT-X-STREAM-INF:'))continue;
+    const height=Number(line.match(/RESOLUTION=\d+x(\d+)/i)?.[1]);
+    const reference=lines.slice(index+1).find(item=>item.trim()&&!item.trim().startsWith('#'))?.trim();
+    if(!height||!reference)continue;
+    try { found.push({height,url:new URL(reference,playlistUrl).href}); } catch { /* Ignore malformed renditions. */ }
+  }
+  return found
+    .filter((level,index,list)=>list.findIndex(item=>item.height===level.height)===index)
+    .sort((a,b)=>a.height-b.height)
+    .map((level,index)=>({...level,index}));
+}
+
 export function CourseMediaPlayer({ course, lesson, lessonIndex, autoNext, autoplay = false, onEnded, onNavigateLesson, onFallback, mobileViewMode = null, onToggleMobileView, onControlsVisibilityChange }) {
   const access = usePlaybackAccess(course._id, lesson);
   const videoRef = useRef(null), frameRef = useRef(null), hlsRef = useRef(null), hideTimer = useRef(), sleepTimer = useRef(), bufferingTimer = useRef();
-  const settingsButton = useRef(null), restored = useRef(false), latest = useRef({}), qualityPreference = useRef(DEFAULT_QUALITY);
+  const settingsButton = useRef(null), restored = useRef(false), latest = useRef({}), qualityPreference = useRef(DEFAULT_QUALITY), nativeQualitySwitch = useRef(null);
+  const autoplayConsumed = useRef(false);
   const [time,setTime] = useState({current:0,duration:0});
   const [playing,setPlaying] = useState(false), [buffering,setBuffering] = useState(true);
   const [error,setError] = useState(''), [notice,setNotice] = useState('');
@@ -63,13 +80,24 @@ export function CourseMediaPlayer({ course, lesson, lessonIndex, autoNext, autop
   },[]);
   useEffect(()=>{
     const video=videoRef.current;if(!source||!video)return;
-    let stopped=false,engine,mediaRecoveries=0;
+    let stopped=false,engine,mediaRecoveries=0,autoplayAttemptPending=false;
+    const playlistController=new AbortController();
     const saved=latest.current,position=saved.time.current,wasPlaying=saved.playing;
     setError('');setBuffering(true);setLevels([]);setCaptions([]);setCaption(-1);
     video.volume=saved.volume;video.muted=saved.muted;video.playbackRate=saved.rate;video.loop=saved.loop;
     let previousMediaTime=video.currentTime||0;
     const clearBufferingTimer=()=>{clearTimeout(bufferingTimer.current);bufferingTimer.current=undefined;};
     const clearBuffering=()=>{clearBufferingTimer();setBuffering(false);};
+    const requestPlayback=(force=false)=>{
+      if(stopped||autoplayAttemptPending||video.ended||(!force&&(!autoplay||autoplayConsumed.current))||!video.paused)return;
+      autoplayAttemptPending=true;
+      let playRequest;
+      try { playRequest=video.play(); }
+      catch { autoplayAttemptPending=false;setNotice('Press play to continue with sound.');return; }
+      Promise.resolve(playRequest)
+        .catch(()=>setNotice('Press play to continue with sound.'))
+        .finally(()=>{autoplayAttemptPending=false;});
+    };
     const confirmBuffering=()=>{
       clearBufferingTimer();
       const sampledTime=video.currentTime||0;
@@ -82,14 +110,15 @@ export function CourseMediaPlayer({ course, lesson, lessonIndex, autoNext, autop
       },BUFFERING_CONFIRM_DELAY_MS);
     };
     const sync=()=>{const current=video.currentTime||0;if(!video.paused&&current>previousMediaTime+.01)clearBuffering();previousMediaTime=current;setTime({current,duration:Number.isFinite(video.duration)?video.duration:0});let end=0;for(let i=0;i<video.buffered.length;i++)if(video.buffered.start(i)<=video.currentTime&&video.buffered.end(i)>=video.currentTime)end=video.buffered.end(i);setBuffered(end);};
-    const ready=()=>{if(position>0)video.currentTime=seekTarget(position,video.duration);sync();tracks();if(wasPlaying)video.play().catch(()=>setNotice('Press play to continue.'));};
-    const play=()=>{setPlaying(true);clearBuffering();};
+    const ready=()=>{const nativeSwitch=nativeQualitySwitch.current;if(nativeSwitch){video.currentTime=seekTarget(nativeSwitch.position,video.duration);nativeQualitySwitch.current=null;sync();tracks();if(nativeSwitch.playing)requestPlayback(true);return;}if(position>0)video.currentTime=seekTarget(position,video.duration);sync();tracks();if(wasPlaying)requestPlayback(true);};
+    const mediaReady=()=>{clearBuffering();requestPlayback();};
+    const play=()=>{autoplayConsumed.current=true;setPlaying(true);setNotice('');clearBuffering();};
     const pause=()=>setPlaying(false);
     const ended=()=>{setPlaying(false);sync();window.dispatchEvent(new Event('learning-flush'));if(!latest.current.loop&&latest.current.autoNext)latest.current.onEnded?.();};
     const failed=(detail='')=>{video.pause();setError(typeof detail==='string'&&detail ? detail : 'Playback could not start. Retry to refresh your video access.');setBuffering(false);setPlaying(false);};
     const tracks=()=>{if(!engine)setCaptions(Array.from(video.textTracks).map((track,index)=>({index,label:track.label||track.language||`Track ${index+1}`})));};
     const handleVisibilityChange=()=>{if(document.hidden)clearBuffering();else if(!video.paused&&video.readyState<3)confirmBuffering();};
-    const listeners={loadedmetadata:ready,loadeddata:clearBuffering,timeupdate:sync,progress:sync,playing:play,pause,ended,error:failed,loadstart:()=>setBuffering(true),waiting:confirmBuffering,stalled:confirmBuffering,seeking:()=>setBuffering(true),seeked:clearBuffering,canplay:clearBuffering,volumechange:()=>{setMuted(video.muted);setVolume(video.volume);storeAudioPreference(video.volume,video.muted);}};
+    const listeners={loadedmetadata:ready,loadeddata:mediaReady,timeupdate:sync,progress:sync,playing:play,pause,ended,error:failed,loadstart:()=>setBuffering(true),waiting:confirmBuffering,stalled:confirmBuffering,seeking:()=>setBuffering(true),seeked:mediaReady,canplay:mediaReady,volumechange:()=>{setMuted(video.muted);setVolume(video.volume);storeAudioPreference(video.volume,video.muted);}};
     Object.entries(listeners).forEach(([name,fn])=>video.addEventListener(name,fn));
     document.addEventListener('visibilitychange',handleVisibilityChange);
     video.textTracks.addEventListener('addtrack',tracks);
@@ -97,7 +126,7 @@ export function CourseMediaPlayer({ course, lesson, lessonIndex, autoNext, autop
     // Device emulation can spoof Safari; select the engine by capability.
     if(!isHls)video.src=source;
     else loadHlsJs().then(Hls=>{
-      if(stopped)return;if(!Hls.isSupported()){if(nativeHls)video.src=source;else failed();return;}
+      if(stopped)return;if(!Hls.isSupported()){if(nativeHls){video.src=source;fetch(source,{signal:playlistController.signal}).then(async response=>{if(!response.ok)throw new Error('playlist unavailable');const nextLevels=nativeHlsLevels(await response.text(),response.url||source);if(stopped||!nextLevels.length)return;setLevels(nextLevels);const target=qualityPreference.current;const preferred=nextLevels.find(level=>level.height===target)||nextLevels.reduce((best,level)=>!best||Math.abs(level.height-target)<Math.abs(best.height-target)?level:best,null);if(preferred)setQuality(preferred.height);}).catch(()=>{});}else failed();return;}
       engine=new Hls({enableWorker:true,maxBufferLength:30});hlsRef.current=engine;
       engine.on(Hls.Events.MANIFEST_PARSED,(_,data)=>{
         const nextLevels=data.levels
@@ -121,7 +150,7 @@ export function CourseMediaPlayer({ course, lesson, lessonIndex, autoNext, autop
       engine.on(Hls.Events.ERROR,(_,data)=>{if(!data.fatal)return;if(data.type===Hls.ErrorTypes.MEDIA_ERROR&&mediaRecoveries++<2)engine.recoverMediaError();else{engine.stopLoad();const status=data.response?.code;failed(status===401||status===403?'Video access was rejected. Retry to renew access.':status===404?'The video file could not be found. Please contact support.':`Video could not load (${data.details || 'stream error'}). Retry playback.`);}});
       engine.loadSource(source);engine.attachMedia(video);
     }).catch(()=>{if(!stopped)failed();});
-    return()=>{stopped=true;clearBufferingTimer();Object.entries(listeners).forEach(([name,fn])=>video.removeEventListener(name,fn));document.removeEventListener('visibilitychange',handleVisibilityChange);video.textTracks.removeEventListener('addtrack',tracks);engine?.destroy();hlsRef.current=null;video.pause();video.removeAttribute('src');video.load();};
+    return()=>{stopped=true;playlistController.abort();clearBufferingTimer();Object.entries(listeners).forEach(([name,fn])=>video.removeEventListener(name,fn));document.removeEventListener('visibilitychange',handleVisibilityChange);video.textTracks.removeEventListener('addtrack',tracks);engine?.destroy();hlsRef.current=null;video.pause();video.removeAttribute('src');video.load();};
   },[source,isHls,reload]);
   useEffect(()=>{
     const video=videoRef.current;
@@ -177,12 +206,12 @@ export function CourseMediaPlayer({ course, lesson, lessonIndex, autoNext, autop
   }
   function selectQuality(height){
     const level=levels.find(item=>item.height===height) || levels.reduce((best,item)=>!best||Math.abs(item.height-height)<Math.abs(best.height-height)?item:best,null);
-    if(!level||!hlsRef.current){setNotice('This resolution is not available for this video.');return;}
+    const video=videoRef.current;
+    if(!level||(!hlsRef.current&&!level.url)||!video){setNotice('This resolution is not available for this video.');return;}
     qualityPreference.current=level.height;
     setQuality(level.height);
-    hlsRef.current.loadLevel=level.index;
-    hlsRef.current.nextLevel=level.index;
-    hlsRef.current.currentLevel=level.index;
+    if(hlsRef.current){hlsRef.current.loadLevel=level.index;hlsRef.current.nextLevel=level.index;hlsRef.current.currentLevel=level.index;}
+    else {nativeQualitySwitch.current={position:video.currentTime||0,playing:!video.paused&&!video.ended};video.src=level.url;video.load();}
     setNotice(`Quality changed to ${level.height}p.`);
   }
   function closeMenu(){setMenu(false);settingsButton.current?.focus();}
@@ -190,7 +219,7 @@ export function CourseMediaPlayer({ course, lesson, lessonIndex, autoNext, autop
   const failure=access.error||error,visible=awake||!playing||menu||!!failure;
   useEffect(()=>{onControlsVisibilityChange?.(visible);},[visible,onControlsVisibilityChange]);
   return <section className={`sm-player ${visible?'sm-awake':''} ${fullscreen?'sm-fullscreen':''}`} ref={frameRef} tabIndex={0} aria-label={`${lesson.title} video player`} onKeyDown={key} onPointerMove={wake} onPointerDown={wake} onFocus={wake}>
-    <video ref={videoRef} playsInline preload="metadata" aria-label={lesson.title} onClick={videoTap} onDoubleClick={event=>event.preventDefault()}/>
+    <video ref={videoRef} playsInline autoPlay={autoplay&&!autoplayConsumed.current} preload="metadata" aria-label={lesson.title} onClick={videoTap} onDoubleClick={event=>event.preventDefault()}/>
     <div className="sm-player-heading" aria-hidden={!visible}>
       <span>Lecture {lessonIndex + 1}</span>
       <strong>{lesson.title || course.title || `Lecture ${lessonIndex + 1}`}</strong>
