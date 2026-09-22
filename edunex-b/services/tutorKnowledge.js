@@ -26,7 +26,7 @@ function chunks(text) {
     const result = [];
     for (let start = 0; start < section.length; start += 1400) {
       const content = section.slice(start, start + 1800).trim();
-      if (content.length > 60) result.push({ heading, content });
+      if (content.length > 60) result.push({ heading, content, chunkStart: start });
     }
     return result;
   });
@@ -43,14 +43,25 @@ function hasLessonAccess(subscription, now = Date.now()) {
   return false;
 }
 
-function retrieveKnowledge({ courses, message, history = [], includeMaterials = false }) {
+function retrieveKnowledge({ courses, message, history = [], includeMaterials = false, activeLesson = null, activeCourse = null }) {
   const bySlug = new Map(courses.map(course => [course.slug, course]));
   const candidates = courses.flatMap(course => [
     { title: course.title, heading: 'Course overview', content: `${course.title}\n${course.description || ''}`, course, kind: 'course-overview' },
-    ...(course.videos || []).map(video => ({ title: course.title, heading: video.title, content: `${video.title}\n${video.description || ''}${includeMaterials && video.examplePrompt ? `\nExample prompt: ${video.examplePrompt}` : ''}`, course, kind: 'lesson-overview' })),
+    ...(course.videos || []).map(video => ({ title: course.title, heading: video.title, content: `${video.title}\n${video.description || ''}${includeMaterials && video.examplePrompt ? `\nExample prompt: ${video.examplePrompt}` : ''}`, course, active: video === activeLesson, kind: 'lesson-overview' })),
   ]);
+  const normalizeTitle = value => String(value || '').toLowerCase().replace(/^\s*lesson\s*\d+\s*[—:–-]?\s*/i, '').replace(/[^\p{L}\p{N}]+/gu, ' ').trim();
+  const lessonNumber = String(activeLesson?.title || '').match(/^\s*lesson\s+(\d+)\b/i)?.[1];
   if (includeMaterials) {
-    candidates.push(...localDocuments.filter(doc => bySlug.has(doc.courseSlug)).map(doc => ({ ...doc, course: bySlug.get(doc.courseSlug) })));
+    if (activeLesson?.notes && activeCourse) candidates.push({
+      title: activeCourse.title, heading: `${activeLesson.title} — Lesson notes`, content: String(activeLesson.notes).slice(0, 12000),
+      course: activeCourse, kind: 'lesson-notes', active: true,
+    });
+    candidates.push(...localDocuments.filter(doc => bySlug.has(doc.courseSlug)).map(doc => ({ ...doc, course: bySlug.get(doc.courseSlug),
+      active: Boolean(activeLesson && activeCourse?.slug === doc.courseSlug && (
+        (lessonNumber && doc.heading.match(/^\s*lesson\s+(\d+)\b/i)?.[1] === lessonNumber)
+        || normalizeTitle(doc.heading) === normalizeTitle(activeLesson.title)
+      )),
+    })));
   }
 
   // Short follow-ups need the preceding topic; an explicit new question takes priority.
@@ -67,7 +78,7 @@ function retrieveKnowledge({ courses, message, history = [], includeMaterials = 
   const frequencies = new Map();
   for (const doc of indexed) for (const term of new Set(doc.tokens)) frequencies.set(term, (frequencies.get(term) || 0) + 1);
   const ranked = indexed.map(doc => {
-    let score = 0;
+    let score = doc.active ? (doc.kind === 'lesson-notes' ? 120 : 100) : 0;
     const counts = new Map();
     for (const term of doc.tokens) counts.set(term, (counts.get(term) || 0) + 1);
     for (const [word, weight] of weights) {
@@ -80,7 +91,7 @@ function retrieveKnowledge({ courses, message, history = [], includeMaterials = 
   const selected = [];
   const seen = new Set();
   for (const doc of ranked) {
-    const key = `${doc.title}:${doc.heading}`;
+    const key = `${doc.title}:${doc.heading}${doc.active ? `:${doc.chunkStart || 0}` : ''}`;
     if (seen.has(key)) continue;
     seen.add(key);
     selected.push(doc);
@@ -94,7 +105,9 @@ function retrieveKnowledge({ courses, message, history = [], includeMaterials = 
     sources,
     excerpts: selected.map((doc, index) => `[${sources[index].id}] ${doc.title} — ${doc.heading} (${doc.kind})\n${doc.content}`).join('\n\n'),
     bestExcerpt: selected[0]?.content || '',
-    materialsAvailable: includeMaterials && bySlug.has('ai-influencer'),
+    materialsAvailable: includeMaterials && (bySlug.has('ai-influencer') || Boolean(activeLesson?.notes)),
+    activeLesson: activeLesson ? { title: activeLesson.title, description: activeLesson.description || '' } : null,
+    activeLessonExcerpt: selected.filter(doc => doc.active).map(doc => `[${sources[selected.indexOf(doc)].id}] ${doc.content}`).join('\n\n'),
   };
 }
 

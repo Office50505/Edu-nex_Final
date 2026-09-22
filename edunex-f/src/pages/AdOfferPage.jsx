@@ -10,6 +10,7 @@ const POSTER_URL = "https://d5yxyknp74yz8.cloudfront.net/courses/ai-influencer/l
 
 async function api(url, body, bearer = "") {
   const response = await apiFetch(url, {
+    signal: AbortSignal.timeout(20000),
     method: body === undefined ? "GET" : "POST",
     headers: {
       "Content-Type": "application/json",
@@ -22,8 +23,41 @@ async function api(url, body, bearer = "") {
   return data;
 }
 
+function PaymentTransition({ stage, seconds, onCheck, checking }) {
+  const dialog = useRef(null);
+  useEffect(() => {
+    const previous = document.activeElement;
+    dialog.current?.focus();
+    return () => previous?.focus?.();
+  }, []);
+  const title = stage === "success" ? "Payment successful" : stage === "pending" ? "Payment confirmation is taking longer" : "Confirming your payment";
+  return <div className="ad-payment-backdrop">
+    <section className="ad-payment-modal" role="dialog" aria-modal="true" aria-labelledby="ad-payment-title" aria-describedby="ad-payment-description" tabIndex={-1} ref={dialog}
+      onKeyDown={event => {
+        if (event.key === "Tab") {
+          const controls = [...event.currentTarget.querySelectorAll('button:not(:disabled), a[href]')];
+          const next = event.shiftKey ? controls.at(-1) : controls[0];
+          if (!controls.length || event.target === (event.shiftKey ? controls[0] : controls.at(-1)) || event.target === dialog.current) {
+            event.preventDefault(); (next || dialog.current)?.focus();
+          }
+        }
+      }}>
+      <div className={`ad-payment-icon ${stage === "success" ? "is-success" : ""}`} aria-hidden="true">{stage === "success" ? "✓" : stage === "pending" ? "◷" : <span />}</div>
+      <p className="ad-payment-eyebrow">Secure payment</p>
+      <h2 id="ad-payment-title">{title}</h2>
+      <p id="ad-payment-description" role="status" aria-live="polite">{stage === "success"
+        ? `Redirecting in ${seconds} ${seconds === 1 ? "second" : "seconds"} to complete your account.`
+        : stage === "pending" ? "If you have paid, please do not pay again. Check your status to continue safely."
+        : "Please stay here while we verify your payment. You’ll continue automatically—no need to pay again."}</p>
+      {stage === "pending" ? <div className="ad-payment-actions"><button type="button" onClick={onCheck} disabled={checking}>{checking ? "Checking…" : "Check payment status"}</button><a href="mailto:support@skillomate.in">Contact support</a></div> : null}
+    </section>
+  </div>;
+}
+
 function PreviewVideo({ modalOpen }) {
   const videoRef = useRef(null);
+  const modalOpenRef = useRef(modalOpen);
+  modalOpenRef.current = modalOpen;
   const [playing, setPlaying] = useState(false);
   const [muted, setMuted] = useState(true);
   const [progress, setProgress] = useState(0);
@@ -31,6 +65,7 @@ function PreviewVideo({ modalOpen }) {
   const start = useCallback(() => {
     const video = videoRef.current;
     if (!video) return;
+    if (modalOpenRef.current) { video.pause(); return; }
     video.muted = true;
     video.defaultMuted = true;
     video.autoplay = true;
@@ -55,6 +90,9 @@ function PreviewVideo({ modalOpen }) {
     video.addEventListener("timeupdate", onTime);
     start();
     return () => {
+      video.removeEventListener("loadedmetadata", onReady);
+      video.removeEventListener("loadeddata", onReady);
+      video.removeEventListener("canplay", onReady);
       video.removeEventListener("playing", onPlaying);
       video.removeEventListener("pause", onPause);
       video.removeEventListener("timeupdate", onTime);
@@ -94,9 +132,38 @@ export function AdOfferPage() {
   const [busy, setBusy] = useState(false);
   const [recovery, setRecovery] = useState(false);
   const [checkoutAttempt, setCheckoutAttempt] = useState(0);
+  const [paymentStage, setPaymentStage] = useState(() => sessionStorage.getItem("skillomateAdAwaitingPayment") ? "checking" : null);
+  const [redirect, setRedirect] = useState(null);
+  const [seconds, setSeconds] = useState(3);
+  const [checkingPayment, setCheckingPayment] = useState(false);
+  const statusRequestRef = useRef(null);
+  const verifyingRef = useRef(false);
+  const mountedRef = useRef(true);
   const busyRef = useRef(false);
   const handoffRef = useRef(null);
-  useViewportLock(Boolean(modalStep));
+  useViewportLock(Boolean(modalStep || paymentStage));
+  useEffect(() => { mountedRef.current = true; return () => { mountedRef.current = false; }; }, []);
+
+  const getStatus = useCallback((token) => {
+    if (statusRequestRef.current?.token === token) return statusRequestRef.current.promise;
+    const promise = api("/api/onboarding/status", undefined, token);
+    const request = { token, promise };
+    statusRequestRef.current = request;
+    void promise.finally(() => { if (statusRequestRef.current === request) statusRequestRef.current = null; }).catch(() => {});
+    return promise;
+  }, []);
+
+  useEffect(() => {
+    if (!redirect) return;
+    const deadline = Date.now() + 3000;
+    setSeconds(3);
+    const timer = setInterval(() => setSeconds(Math.max(0, Math.ceil((deadline - Date.now()) / 1000))), 250);
+    const navigate = setTimeout(() => {
+      sessionStorage.removeItem("skillomateAdAwaitingPayment");
+      window.location.assign(redirect);
+    }, 3000);
+    return () => { clearInterval(timer); clearTimeout(navigate); };
+  }, [redirect]);
 
   useEffect(() => {
     document.title = "Special Offer | Skillomate";
@@ -106,7 +173,11 @@ export function AdOfferPage() {
     if (handoffRef.current?.token === token) return handoffRef.current.promise;
     const promise = (async () => {
       const result = await api("/api/onboarding/handoff", {}, token);
-      window.location.assign(`/signup#onboarding=${encodeURIComponent(result.code)}`);
+      if (!mountedRef.current) return;
+      if (!result.code) throw new Error("Your account link is not ready. Please check payment status again.");
+      setModalStep(null);
+      setPaymentStage("success");
+      setRedirect(`/signup#onboarding=${encodeURIComponent(result.code)}`);
     })();
     handoffRef.current = { token, promise };
     try { await promise; }
@@ -120,11 +191,11 @@ export function AdOfferPage() {
     let disposed = false;
     let checking = false;
     const check = async () => {
-      if (disposed || checking || document.visibilityState === "hidden") return;
+      if (disposed || checking || verifyingRef.current || handoffRef.current || document.visibilityState === "hidden") return;
       checking = true;
       try {
-        const state = await api("/api/onboarding/status", undefined, bearer);
-        if (!disposed && state.accessGranted) {
+        const state = await getStatus(bearer);
+        if (!disposed && !verifyingRef.current && state.accessGranted) {
           await finish(bearer);
           clearInterval(timer);
         }
@@ -133,7 +204,10 @@ export function AdOfferPage() {
       } finally { checking = false; }
     };
     const timer = setInterval(() => void check(), 3000);
-    const timeout = setTimeout(() => clearInterval(timer), 120000);
+    const timeout = setTimeout(() => {
+      clearInterval(timer);
+      setPaymentStage(stage => stage === "checking" ? "pending" : stage);
+    }, 120000);
     window.addEventListener("focus", check);
     document.addEventListener("visibilitychange", check);
     void check();
@@ -144,7 +218,7 @@ export function AdOfferPage() {
       window.removeEventListener("focus", check);
       document.removeEventListener("visibilitychange", check);
     };
-  }, [bearer, checkoutAttempt, finish]);
+  }, [bearer, checkoutAttempt, finish, getStatus]);
 
   const showRecovery = useCallback((text) => {
     setModalStep(null);
@@ -152,34 +226,52 @@ export function AdOfferPage() {
     setMessage(text);
   }, []);
 
-  const openCheckout = useCallback(async (token = bearer) => {
-    if (!token || busyRef.current) return;
+  const openCheckout = useCallback(async (token = bearer, monthlyConsent = false) => {
+    if (!token || busyRef.current || handoffRef.current || paymentStage) return;
     busyRef.current = true;
     setBusy(true);
     setModalStep(null);
+    let checkoutStarted = false;
     try {
       const [pricing, state] = await Promise.all([
         api("/api/onboarding/config"),
-        api("/api/onboarding/status", undefined, token),
+        getStatus(token),
       ]);
       if (state.accessGranted) return await finish(token);
       if (pricing.gateway !== "razorpay") throw new Error("Razorpay checkout is unavailable. Please retry later.");
       const paymentType = state.trialEligible === false ? "monthly" : "trial";
-      const checkout = await api("/api/onboarding/checkout", { paymentType, mandateConsent: true }, token);
+      if (paymentType === "monthly" && !monthlyConsent) { setModalStep("monthly"); return; }
+      const checkout = await api("/api/onboarding/checkout", { paymentType, mandateConsent: true, monthlyConsent }, token);
       setCheckoutAttempt(attempt => attempt + 1);
+      checkoutStarted = true;
       const result = await openRazorpay({ ...checkout, paymentType });
       setCheckoutAttempt(attempt => attempt + 1);
-      showRecovery("Verifying payment…");
+      if (handoffRef.current) return;
+      sessionStorage.setItem("skillomateAdAwaitingPayment", "1");
+      setRecovery(false);
+      setPaymentStage("checking");
+      verifyingRef.current = true;
+      // Wait for any polling request before verifying; both acquire the same server lease.
+      await statusRequestRef.current?.promise.catch(() => {});
       const verified = await api("/api/onboarding/verify", result, token);
       if (verified.accessGranted) await finish(token);
-      else showRecovery("Confirming your payment automatically… Do not pay again. If confirmation takes longer, use Check payment status.");
     } catch (error) {
-      showRecovery(error.message || "Checkout could not be completed. Please retry.");
+      if (!handoffRef.current) {
+        if (checkoutStarted || sessionStorage.getItem("skillomateAdAwaitingPayment")) {
+          // Closing checkout (or a provider failure event) does not prove that
+          // the initial payment failed. Verify before offering another payment.
+          sessionStorage.setItem("skillomateAdAwaitingPayment", "1");
+          setPaymentStage("checking");
+          setCheckoutAttempt(attempt => attempt + 1);
+        }
+        else showRecovery(error.message || "Checkout could not be completed. Please retry.");
+      }
     } finally {
+      verifyingRef.current = false;
       busyRef.current = false;
       setBusy(false);
     }
-  }, [bearer, finish, showRecovery]);
+  }, [bearer, finish, showRecovery, getStatus, paymentStage]);
 
   const begin = () => {
     if (bearer) void openCheckout(bearer);
@@ -231,23 +323,30 @@ export function AdOfferPage() {
   };
 
   const checkPayment = async () => {
-    if (!bearer || busyRef.current) return;
+    if (!bearer || verifyingRef.current || handoffRef.current) return;
     busyRef.current = true;
     setBusy(true);
+    setCheckingPayment(true);
     try {
-      const state = await api("/api/onboarding/status", undefined, bearer);
+      const state = await getStatus(bearer);
       if (state.accessGranted) await finish(bearer);
-      else setMessage("Payment confirmation is still pending. Please check again shortly.");
+      else {
+        setMessage("Payment confirmation is still pending. Please check again shortly.");
+        setPaymentStage(stage => stage ? "pending" : stage);
+      }
     } catch (error) {
       setMessage(error.message);
     } finally {
       busyRef.current = false;
       setBusy(false);
+      setCheckingPayment(false);
     }
   };
 
   const resetPhone = () => {
     sessionStorage.removeItem("skillomateAdSession");
+    sessionStorage.removeItem("skillomateAdAwaitingPayment");
+    setPaymentStage(null);
     setBearer("");
     setRecovery(false);
     setMessage("");
@@ -271,8 +370,8 @@ export function AdOfferPage() {
 
   return (
     <main className="ad-offer-page" data-page="offer.html">
-      <section className="ad-offer-shell" aria-label="Skillomate subscription offer">
-        <PreviewVideo modalOpen={Boolean(modalStep)} />
+      <section className="ad-offer-shell" aria-label="Skillomate subscription offer" inert={Boolean(paymentStage)} aria-hidden={paymentStage ? true : undefined}>
+        <PreviewVideo modalOpen={Boolean(modalStep || paymentStage || busy)} />
         <section className="ad-offer-content" aria-labelledby="ad-offer-title">
           <div className="ad-special-ribbon"><span aria-hidden="true">ϟ</span> Special offer</div>
           <p className="ad-offer-kicker">Only for you</p>
@@ -307,6 +406,7 @@ export function AdOfferPage() {
         </div>
       </section>
 
+      {paymentStage ? <PaymentTransition stage={paymentStage} seconds={seconds} onCheck={checkPayment} checking={checkingPayment} /> : null}
       {modalStep ? <div className="ad-signin-backdrop">
         <section className="ad-signin-modal" role="dialog" aria-modal="true" aria-labelledby="ad-signin-title">
           <span className="ad-sheet-handle" aria-hidden="true" />
@@ -321,7 +421,11 @@ export function AdOfferPage() {
             <p className="ad-form-status" role="status">{message}</p>
             <p><a href="/login">Already registered? Sign in to Skillomate</a></p>
             <small className="ad-secure-note">🔒 Your information is fully secure</small>
-          </form> : <form onSubmit={verifyOtp}>
+          </form> : modalStep === "monthly" ? <div>
+            <h2 id="ad-signin-title">Continue with monthly access</h2>
+            <p>The ₹1 introductory trial is not available for this account. This subscription costs ₹499 now, then ₹499/month until cancelled.</p>
+            <button type="button" className="ad-monthly-confirm" disabled={busy} onClick={() => openCheckout(bearer, true)}>Agree and continue for ₹499</button>
+          </div> : <form onSubmit={verifyOtp}>
             <button className="ad-otp-back" type="button" onClick={() => setModalStep("phone")}>← Change number</button>
             <h2 id="ad-signin-title">Enter OTP</h2>
             <p>We sent a 6-digit code to <strong>+91 {phone}</strong>.</p>

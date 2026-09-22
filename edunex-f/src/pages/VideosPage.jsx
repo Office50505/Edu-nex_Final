@@ -1369,6 +1369,14 @@ export function VideosPage() {
 
   const lessons = course?.videos || [];
   const lesson = lessons[activeIndex] || lessons[0] || {};
+  useEffect(() => {
+    if (!course?._id || !lessons.length) return;
+    const context = { courseId: String(course._id), lessonId: lessonIdentifier(lesson, activeIndex) };
+    window.SkillomateLessonContext = context;
+    return () => {
+      if (window.SkillomateLessonContext === context) delete window.SkillomateLessonContext;
+    };
+  }, [course?._id, lesson, activeIndex, lessons.length]);
   let cachedProgress = {};
   try {
     cachedProgress = course ? JSON.parse(localStorage.getItem(progressCacheKey(course._id)) || "{}") : {};

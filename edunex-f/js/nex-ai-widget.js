@@ -1756,6 +1756,8 @@
       body: JSON.stringify({
         message: text,
         history,
+        courseId: window.SkillomateLessonContext?.courseId || '',
+        lessonId: window.SkillomateLessonContext?.lessonId || '',
         pagePath: window.location.pathname + window.location.search,
         assistantName: normalizeBotName(botNameInput?.value) || localStorage.getItem(botNameStorageKey) || 'AI',
       }),

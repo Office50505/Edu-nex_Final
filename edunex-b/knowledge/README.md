@@ -22,12 +22,17 @@ The prompt requests direct explanations, language matching, concrete troubleshoo
 
 ## Updating knowledge
 
+The video player supplies the current course and lesson IDs to the floating tutor on every message, updates them when the learner switches videos, and clears them when leaving the player. The backend validates the lesson against the published course. Selected lesson notes and matching bundled document sections take priority for requests such as “summarize this video” or “iss video mein kya sikhaya hai.” Answers follow the question's language, including Roman Hinglish. Lesson notes retain the same subscription checks as other full materials.
+
+This is knowledge from saved materials, not direct video analysis. Other courses need their own lesson notes or explicitly mapped text transcripts for detailed summaries. A title/description alone supports only an overview; the tutor is instructed to disclose that limitation. Remote transcript URLs are not automatically downloaded. Bundled sections match by lesson title or an explicit lesson number, never by assuming list position.
+
 Edit the corresponding text files after instructor review and restart the backend (documents are loaded once). To add courses, extend the document configuration/loading in `services/tutorKnowledge.js` with explicit published slugs and add retrieval test cases. Do not attach these documents to unrelated courses by title similarity. Do not put credentials or learner personal data in knowledge files.
 
 ## Testing
 
 - `npm run test:ai`: offline history, retrieval, and subscription-boundary regression tests.
 - `npm run eval:ai`: four live requests against the configured provider, using a fixture course and subscription in an isolated harness. This incurs provider usage, sends the included course excerpts to the provider, and does not access or modify learner accounts. Review the printed Hinglish and quiz answers manually; automated checks cannot establish overall teaching quality.
+- `node scripts/eval-tutor.cjs --video-context`: two live fixture requests checking selected-video summaries in English and Roman Hinglish.
 
 Use the popup on `/` or the standalone `/ai-tutor` page. Refresh after frontend changes. Try a specific question, then “explain that simply,” “give an example,” and “quiz me.” Both chats retain six exchanges in page memory; refresh/New chat clears history. This is not durable cross-device memory.
 

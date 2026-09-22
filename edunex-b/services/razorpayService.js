@@ -60,13 +60,26 @@ function validatePlan(plan, c, type) {
 }
 function createPayload(c, type, attempt, now = Date.now()) {
   const terms = planTerms(c, type);
+  const expiresAt = Math.ceil(now / 1000) + 600;
+  if (type === 'trial' && (!Number.isSafeInteger(c.trialHours) || c.trialHours < 24)) {
+    throw Object.assign(new Error('The introductory trial must provide at least 24 hours before renewal.'), { status: 503 });
+  }
   return {
     plan_id: terms.planId, total_count: terms.cycles, quantity: 1, customer_notify: 1,
-    expire_by: Math.floor(now / 1000) + 600,
-    ...(type === 'trial' ? { start_at: Math.floor(now / 1000) + c.trialHours * 3600,
+    expire_by: expiresAt,
+    // The mandate may be authorised at any point in the checkout window.
+    // Schedule from its end so a late checkout cannot shorten the paid trial.
+    ...(type === 'trial' ? { start_at: expiresAt + c.trialHours * 3600,
       addons: [{ item: { name: 'Skillomate trial access', amount: c.trialAmount, currency: 'INR' } }] } : {}),
     notes: { checkout_attempt: attempt },
   };
+}
+function validateTrialSchedule(remote, billing) {
+  if (billing.paymentType !== 'trial') return;
+  const expected = new Date(billing.trialEnd).getTime() / 1000;
+  if (!billing.trialEnd || !Number.isFinite(expected) || expected <= 0 || !Number.isSafeInteger(remote.start_at) || remote.start_at < expected) {
+    throw Object.assign(new Error('The trial renewal schedule could not be verified. Please contact support before paying.'), { status: 503 });
+  }
 }
 function entitlement(billing, remote, payments, now = Date.now()) {
   // Only captured, non-refunded payments count. Mandate approval alone grants nothing.
@@ -80,4 +93,4 @@ function entitlement(billing, remote, payments, now = Date.now()) {
   };
   return { status: ['created', 'authenticated'].includes(remote.status) ? 'pending' : 'expired' };
 }
-module.exports = { legacyMode, config, requireConfig, api, validSignature, planTerms, validatePlan, createPayload, entitlement };
+module.exports = { legacyMode, config, requireConfig, api, validSignature, planTerms, validatePlan, createPayload, validateTrialSchedule, entitlement };

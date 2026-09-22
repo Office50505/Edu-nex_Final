@@ -4,7 +4,7 @@ const crypto = require('node:crypto');
 const fs = require('node:fs');
 const vm = require('node:vm');
 const path = require('node:path');
-const { validSignature, createPayload, entitlement } = require('../services/razorpayService');
+const { validSignature, createPayload, entitlement, validateTrialSchedule } = require('../services/razorpayService');
 const { hasTrialHistoryMarker, hasUsedIntroTrial } = require('../services/trialEligibility');
 const { resolveSubscriptionAccess } = require('../services/subscriptionAccess');
 const now = Date.now();
@@ -29,7 +29,10 @@ test('trial creates upfront fee and future billing; direct monthly has no extra 
   const c = { planId: 'plan_test', trialAmount: 100, trialHours: 24, cycles: 120 };
   const payload = createPayload(c, 'trial', 'attempt', now);
   assert.equal(payload.addons[0].item.amount, 100);
-  assert.equal(payload.start_at, Math.floor(now / 1000) + 86400);
+  assert.equal(payload.start_at, payload.expire_by + 86400);
+  for (const delay of [0, 100, 599, 600]) {
+    assert.ok(payload.start_at - (Math.ceil(now / 1000) + delay) >= 86400);
+  }
   assert.ok(payload.expire_by < payload.start_at);
   assert.equal(createPayload(c, 'monthly', 'attempt', now).addons, undefined);
 });
@@ -160,3 +163,23 @@ for (const event of ['subscription.activated', 'subscription.charged', 'subscrip
     assert.equal(f.processed.size, 1);
   });
 }
+
+test('invalid short trial settings cannot schedule an early renewal', () => {
+  for (const trialHours of [0, 1, 23, 23.9, NaN]) {
+    assert.throws(() => createPayload({ trialHours }, 'trial', 'attempt', now), /at least 24 hours/);
+  }
+});
+test('provider must preserve the requested trial start before checkout is returned', () => {
+  const record = { paymentType: 'trial', trialEnd: new Date(now + 86400000) };
+  const expected = Math.ceil(record.trialEnd.getTime() / 1000);
+  for (const start_at of [null, undefined, 0, expected - 1]) {
+    assert.throws(() => validateTrialSchedule({ start_at }, record), /schedule could not be verified/);
+  }
+  assert.doesNotThrow(() => validateTrialSchedule({ start_at: expected }, record));
+  assert.throws(() => validateTrialSchedule({ start_at: expected }, { paymentType: 'trial', trialEnd: null }), /schedule could not be verified/);
+  assert.doesNotThrow(() => validateTrialSchedule({}, { paymentType: 'monthly' }));
+});
+test('a renewal failure during a paid trial does not block signup or remove paid access', () => {
+  assert.equal(entitlement(billing, { status: 'pending' }, [trial], now).status, 'trial');
+  assert.equal(entitlement(billing, { status: 'halted' }, [trial], now).status, 'trial');
+});

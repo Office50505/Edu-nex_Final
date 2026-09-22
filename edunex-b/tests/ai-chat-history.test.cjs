@@ -13,7 +13,7 @@ function backend(options = {}) {
       if (name.includes('aiTutorService')) return serviceModule.exports;
       if (name === 'express') return { Router: () => ({ get() {}, post: (url, auth, handler) => { routes[url] = handler; } }) };
       if (name.includes('tutorKnowledge')) return require('../services/tutorKnowledge');
-      if (name.includes('Subscription')) return { findOne: () => ({ lean: async () => null }) };
+      if (name.includes('Subscription')) return { findOne: () => ({ lean: async () => options.subscription || null }) };
       if (name.includes('Course')) return { find: () => query };
       return { requireCompatibleAuth: () => () => {} };
     },
@@ -74,7 +74,7 @@ function widget() {
   const source = fs.readFileSync(path.join(__dirname, '../../edunex-f/js/nex-ai-widget.js'), 'utf8');
   vm.createContext(context);
   vm.runInContext(source.slice(source.indexOf('  /* ── Send message ── */'), source.indexOf('  /* ── Scroll messages to bottom on open ── */')), context);
-  return { calls, send(text) { input.value = text; return context.sendMessage(); }, resolve() { pending.resolve({ reply: 'Answer' }); }, reject() { pending.reject(new Error('offline')); }, reset() { elements.get('nai-new-chat').listeners.click(); }, switchUser() { owner = 'learner-b'; }, messages };
+  return { calls, setLesson(value) { context.window.SkillomateLessonContext = value; }, send(text) { input.value = text; return context.sendMessage(); }, resolve() { pending.resolve({ reply: 'Answer' }); }, reject() { pending.reject(new Error('offline')); }, reset() { elements.get('nai-new-chat').listeners.click(); }, switchUser() { owner = 'learner-b'; }, messages };
 }
 
 test('popup sends successful history, blocks overlapping sends, and clears on New chat', async () => {
@@ -134,4 +134,50 @@ test('provider receives formatted prompts but no page query secrets or contact f
   assert.equal(api.calls[0].messages[1].content, 'line one\nline two');
   assert.ok(!JSON.stringify(api.calls[0]).includes('private@example.test'));
   assert.ok(!JSON.stringify(api.calls[0]).includes('919999999999'));
+});
+
+const selectedCourse = { _id: '6a9e67c46bcb631b8118d341', slug: 'ai-influencer', title: 'AI Influencer', videos: [
+  { _id: 'lesson-a', title: 'Introduction', description: 'Create an AI influencer.', notes: 'INTRO_NOTES: choose your audience and define a consistent character.' },
+  { _id: 'lesson-b', title: 'Tools Setup', description: 'Set up tools.', notes: 'TOOLS_NOTES: create accounts before generating images.' },
+] };
+for (const question of ['what is in this video', 'summarize this video', 'is video mein kya sikhaya hai', 'iska summary batao']) {
+  test(`current video reaches provider for: ${question}`, async () => {
+    const api = backend({ courses: [selectedCourse], user: { _id: 'learner' }, subscription: { status: 'active', currentPeriodEnd: new Date(Date.now() + 86400000) } });
+    await api.chat({ message: question, courseId: selectedCourse._id, lessonId: 'lesson-b' });
+    const prompt = api.calls[0].messages[0].content;
+    assert.match(prompt, /Currently selected video .*Tools Setup/);
+    assert.match(prompt, /TOOLS_NOTES/);
+    assert.doesNotMatch(prompt, /INTRO_NOTES/);
+    assert.match(prompt, /Roman Hinglish/);
+  });
+}
+test('invalid or cross-course lesson selection does not leak lesson notes', async () => {
+  const api = backend({ courses: [selectedCourse] });
+  await api.chat({ message: 'this video', courseId: selectedCourse._id, lessonId: 'unrelated-id' });
+  assert.match(api.calls[0].messages[0].content, /No valid currently selected video/);
+  assert.doesNotMatch(api.calls[0].messages[0].content, /TOOLS_NOTES|INTRO_NOTES/);
+});
+test('selected paid notes stay inaccessible without an active subscription', async () => {
+  const api = backend({ courses: [selectedCourse] });
+  await api.chat({ message: 'summarize this video', courseId: selectedCourse._id, lessonId: 'lesson-b' });
+  assert.match(api.calls[0].messages[0].content, /Currently selected video .*Tools Setup/);
+  assert.doesNotMatch(api.calls[0].messages[0].content, /TOOLS_NOTES/);
+});
+test('provider outage still identifies the selected video in Roman Hinglish', async () => {
+  const api = backend({ courses: [selectedCourse], fail: true });
+  const response = await api.chat({ message: 'is video mein kya hai', courseId: selectedCourse._id, lessonId: 'lesson-b' });
+  assert.match(response.reply, /Aap abhi Tools Setup dekh rahe ho/);
+  assert.equal(response.provider, 'built-in-course-guide');
+});
+test('widget uses the current lesson at send time and clears it away from the player', async () => {
+  const ui = widget();
+  ui.setLesson({ courseId: 'course-a', lessonId: 'lesson-a' });
+  const first = ui.send('what is in this video'); ui.resolve(); await first;
+  assert.equal(ui.calls[0].lessonId, 'lesson-a');
+  ui.setLesson({ courseId: 'course-a', lessonId: 'lesson-b' });
+  const second = ui.send('iska summary batao'); ui.resolve(); await second;
+  assert.equal(ui.calls[1].lessonId, 'lesson-b');
+  ui.setLesson(undefined);
+  const third = ui.send('hello'); ui.resolve(); await third;
+  assert.equal(ui.calls[2].lessonId, '');
 });

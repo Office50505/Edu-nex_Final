@@ -69,6 +69,9 @@ exports.initiate = wrap(async (req, res) => {
   if (!req.user.isMobileVerified) throw fail('Verify your mobile number before subscribing.', 403);
   if (req.body.mandateConsent !== true) throw fail('Confirm the recurring payment terms before continuing.', 400);
   const type = req.body.paymentType === 'monthly' ? 'monthly' : 'trial';
+  if (req.onboarding && type === 'monthly' && req.body.monthlyConsent !== true) {
+    throw fail('Please confirm the ₹499 monthly subscription before continuing.', 400);
+  }
   const existing = await Subscription.findOne({ user: req.user._id });
   const activePaidPeriod = existing && ['active', 'subscribed'].includes(existing.status) && (!existing.currentPeriodEnd || new Date(existing.currentPeriodEnd) > new Date());
   const activeTrial = existing && ['trial', '1rs trial'].includes(existing.status) && new Date(existing.trialExpiresAt) > new Date();
@@ -84,6 +87,10 @@ exports.initiate = wrap(async (req, res) => {
     const remote = await rzp.api(`/subscriptions/${encodeURIComponent(billing.subscriptionId)}`, 'GET', undefined, billingMode(billing));
     if (remote.status === 'created' && (!remote.expire_by || remote.expire_by * 1000 > Date.now())) {
       if (billing.paymentType !== type) throw fail('An unfinished checkout exists. Cancel it before choosing another plan.');
+      rzp.validateTrialSchedule(remote, billing);
+      if (type === 'trial' && (!remote.expire_by || remote.start_at < remote.expire_by + 86400)) {
+        throw fail('This older checkout cannot provide a full 24-hour trial. Cancel the unfinished mandate and start again.');
+      }
       return res.json(checkoutResponse(billing, req.user));
     }
     if (!['cancelled', 'expired', 'completed'].includes(remote.status)) throw fail('A mandate already exists. Check subscription status before retrying.');
@@ -100,6 +107,10 @@ exports.initiate = wrap(async (req, res) => {
   } catch (error) { if (error.code === 11000) throw fail('Checkout creation is already in progress or needs reconciliation. Please contact support before trying again.'); throw error; }
   try {
     const remote = await rzp.api('/subscriptions', 'POST', payload, c.mode);
+    // Save the provider identity even if validation fails; never blindly create
+    // a replacement for a subscription that may already exist upstream.
+    await Billing.updateOne({ _id: billing._id, attempt }, { $set: { subscriptionId: remote.id } });
+    rzp.validateTrialSchedule(remote, billing);
     billing = await Billing.findOneAndUpdate({ _id: billing._id, attempt }, { $set: { phase: 'ready', subscriptionId: remote.id } }, { new: true });
     res.status(201).json(checkoutResponse(billing, req.user));
   } catch (error) {

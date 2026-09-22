@@ -7,7 +7,10 @@ const assert = require('node:assert/strict');
 require('dotenv').config({ path: path.join(__dirname, '../.env'), quiet: true });
 if (!process.env.FAL_API_KEY && !process.env.FAL_KEY) throw new Error('Set FAL_API_KEY or FAL_KEY before running live evaluations.');
 const routes = {};
-const course = { _id: '6a9e67c46bcb631b8118d341', title: 'AI Influencer Course', slug: 'ai-influencer', description: 'Create AI characters and consistent videos, write prompts, and troubleshoot voice and realism.', videos: [] };
+const course = { _id: '6a9e67c46bcb631b8118d341', title: 'AI Influencer Course', slug: 'ai-influencer', description: 'Create AI characters and consistent videos, write prompts, and troubleshoot voice and realism.', videos: [
+  { _id: 'intro-video', title: 'Introduction', description: 'Learn what an AI influencer is and how it can be used for content and product promotion.' },
+  { _id: 'tools-video', title: 'Tools Setup', description: 'Set up the tools needed before creating AI influencer images and videos.' },
+] };
 const query = { select() { return this; }, populate() { return this; }, sort() { return this; }, limit() { return this; }, lean: async () => [course] };
 const sandbox = {
   require(name) {
@@ -23,13 +26,28 @@ const sandbox = {
 const serviceModule = { exports: {} };
 vm.runInNewContext(fs.readFileSync(path.join(__dirname, "../services/aiTutorService.js"), "utf8"), { ...sandbox, module: serviceModule });
 vm.runInNewContext(fs.readFileSync(path.join(__dirname, "../routes/ai.js"), "utf8"), sandbox);
-async function chat(message, history = []) {
+async function chat(message, history = [], lessonId = '') {
   let result;
-  await routes['/chat']({ body: { message, history }, compatUser: { _id: 'evaluation-fixture' } }, { json(data) { result = data; }, status() { return this; } });
+  await routes['/chat']({ body: { message, history, ...(lessonId ? { courseId: course._id, lessonId } : {}) }, compatUser: { _id: 'evaluation-fixture' } }, { json(data) { result = data; }, status() { return this; } });
   assert.equal(result.provider, 'fal-openrouter', 'Evaluation must exercise the model, not fallback');
   return result;
 }
 (async () => {
+  if (process.argv.includes('--video-context')) {
+    const english = await chat('What is taught in this video? Summarize it.', [], 'intro-video');
+    assert.match(english.reply, /influencer|content|brand/i);
+    assert.doesNotMatch(english.reply, /provide.*title|which video|cannot tell/i);
+    assert.ok(english.sources.length > 0);
+    console.log('PASS English selected-video summary:', english.reply);
+    const hinglish = await chat('Iss video mein kya sikhaya hai? Short mein samjhao.', [], 'tools-video');
+    assert.match(hinglish.reply, /tool|account|setup/i);
+    assert.match(hinglish.reply, /aap|tum|hai|hain|kar|mein/i);
+    assert.doesNotMatch(hinglish.reply, /[\u0900-\u097f]/);
+    assert.doesNotMatch(hinglish.reply, /which video|video ka naam bata/i);
+    assert.ok(hinglish.sources.length > 0);
+    console.log('PASS Roman Hinglish selected-video summary:', hinglish.reply);
+    return;
+  }
   const question = 'My AI character face changes in every clip. How can I keep the same face? Cite the lesson material.';
   const first = await chat(question);
   assert.ok(first.sources.some(source => source.kind === 'course-material'), 'Troubleshooting must cite retrieved course material');

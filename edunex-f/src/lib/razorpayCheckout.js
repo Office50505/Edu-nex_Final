@@ -22,7 +22,7 @@ export async function openRazorpay(data) {
       config: { display: { blocks: { upi: { name: 'UPI AutoPay', instruments: [{ method: 'upi' }] } }, sequence: ['block.upi'], preferences: { show_default_blocks: false } } },
       modal: { ondismiss: () => reject(new Error('Checkout closed. You can retry or cancel the unfinished mandate below.')) },
     });
-    checkout.on('payment.failed', () => { checkout.close(); reject(new Error('Payment failed. No access was granted. Please retry.')); });
+    checkout.on('payment.failed', () => { checkout.close(); reject(new Error('A payment attempt was unsuccessful. Check payment status before retrying.')); });
     checkout.open();
   });
 }

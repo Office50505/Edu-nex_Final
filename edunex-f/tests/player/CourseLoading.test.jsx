@@ -222,8 +222,9 @@ it('moves to the next lecture when the mobile player is scrolled', async () => {
   };
   vi.stubGlobal('fetch', vi.fn(() => reply(twoLessons)));
 
-  const { container } = render(<VideosPage />);
+  const { container, unmount } = render(<VideosPage />);
   expect((await screen.findByTestId('active-player-lesson')).textContent).toBe('First lesson');
+  expect(window.SkillomateLessonContext).toEqual({ courseId: 'course', lessonId: 'lesson' });
   expect(document.body.classList.contains('has-edunex-mobile-reel')).toBe(true);
   fireEvent.click(screen.getByRole('button', { name: 'Minimize player' }));
   expect(document.body.classList.contains('has-edunex-mobile-reel')).toBe(false);
@@ -234,6 +235,9 @@ it('moves to the next lecture when the mobile player is scrolled', async () => {
   expect(container.querySelector('.react-page-root').classList.contains('is-mobile-player-minimized')).toBe(false);
   fireEvent.wheel(container.querySelector('#playerFrame'), { deltaY: 80, deltaX: 0 });
   expect((await screen.findByTestId('active-player-lesson')).textContent).toBe('Second lesson');
+  expect(window.SkillomateLessonContext).toEqual({ courseId: 'course', lessonId: 'lesson-2' });
+  unmount();
+  expect(window.SkillomateLessonContext).toBeUndefined();
 });
 
 it('changes the Notes content when scrolling to a different lecture', async () => {

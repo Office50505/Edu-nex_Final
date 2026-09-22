@@ -44,3 +44,11 @@ test('active and trial access expire and cancelled access is denied', () => {
   assert.equal(hasLessonAccess({ status: 'active', currentPeriodEnd: new Date(now - 1000) }, now), false);
   assert.equal(hasLessonAccess({ status: 'cancelled', currentPeriodEnd: new Date(now + 1000) }, now), false);
 });
+
+test('vague video questions prioritize the selected lesson notes and matching course script', () => {
+  const activeLesson = { _id: 'intro', title: 'Introduction', notes: 'SELECTED_NOTES: introduce the AI influencer workflow.' };
+  const activeCourse = { ...course, videos: [activeLesson] };
+  const result = retrieveKnowledge({ courses: [activeCourse], message: 'is video mein kya hai', includeMaterials: true, activeLesson, activeCourse });
+  assert.match(result.excerpts, /SELECTED_NOTES/);
+  assert.ok(result.sources.some(source => source.kind === 'course-material' && /Introduction/i.test(source.section)));
+});

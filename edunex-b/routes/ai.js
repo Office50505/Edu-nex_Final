@@ -38,6 +38,7 @@ async function handleTutorChat(req, res) {
     const pagePath = compactText(req.body.pagePath, 160).split(/[?#]/)[0];
     const assistantName = compactText(req.body.assistantName, 80);
     const courseId = compactText(req.body.courseId, 120);
+    const lessonId = compactText(req.body.lessonId, 120);
     const history = sanitizeHistory(req.body.history);
 
     if (!message) {
@@ -49,7 +50,7 @@ async function handleTutorChat(req, res) {
     let knowledge;
     if (FAL_API_KEY) {
       try {
-        knowledge = await buildContext(req.compatUser, courseId, message, history);
+        knowledge = await buildContext(req.compatUser, courseId, message, history, { lessonId });
         reply = await callFalOpenRouter({ context: knowledge.context, message, pagePath, assistantName, history });
         provider = 'fal-openrouter';
       } catch (error) {
@@ -59,10 +60,12 @@ async function handleTutorChat(req, res) {
 
     if (!reply) {
       provider = 'built-in-course-guide';
+      if (!knowledge && courseId && lessonId) knowledge = await buildContext(req.compatUser, courseId, message, history, { lessonId });
       reply = await builtInCourseGuide({
         user: req.compatUser,
         message,
         courseId,
+        knowledge,
       });
     }
     reply = String(reply || '').trim().slice(0, 6000) || OUT_OF_SCOPE_REPLY;
