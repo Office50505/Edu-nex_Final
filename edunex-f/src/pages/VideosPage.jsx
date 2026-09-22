@@ -1681,7 +1681,11 @@ export function VideosPage() {
       const next = !minimized;
       if (next) {
         window.requestAnimationFrame(() => {
-          playerFrameRef.current?.scrollIntoView?.({ behavior: "smooth", block: "start" });
+          // The fixed mobile header sits above the lesson scroller. Keeping the
+          // scroller at its true origin preserves its top padding; scrollIntoView
+          // would align the player behind that header and visually crop it.
+          const watchPage = playerFrameRef.current?.closest?.(".watch-page");
+          if (watchPage) watchPage.scrollTop = 0;
         });
       }
       return next;

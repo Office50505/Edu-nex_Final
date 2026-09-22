@@ -77,7 +77,11 @@ describe("cross-viewport UX", () => {
 
   it("keeps the minimized mobile lesson clear and above the fixed navigation", () => {
     expect(videosPageSource).toContain('is-mobile-player-minimized');
-    expect(appStyles).toMatch(/\.is-mobile-player-minimized \.watch-page \{[\s\S]*padding: 82px 12px calc\(var\(--mobile-fixed-reserve\) \+ 28px\) !important;/);
+    expect(videosPageSource).toContain('watchPage.scrollTop = 0');
+    expect(videosPageSource).not.toContain('playerFrameRef.current?.scrollIntoView');
+    expect(appStyles).toMatch(/body:has\(\.react-page-root\[data-page="videos\.html"\]\.is-mobile-player-minimized\) \{[\s\S]*height: 100dvh !important;[\s\S]*overflow: hidden !important;/);
+    expect(appStyles).toMatch(/\.is-mobile-player-minimized \{[\s\S]*flex: 0 0 calc\(100dvh - var\(--mobile-nav-height\) - var\(--mobile-safe-bottom\)\) !important;[\s\S]*max-height: calc\(100dvh - var\(--mobile-nav-height\) - var\(--mobile-safe-bottom\)\) !important;[\s\S]*overflow: hidden !important;/);
+    expect(appStyles).toMatch(/\.is-mobile-player-minimized \.watch-page \{[\s\S]*height: 100% !important;[\s\S]*overflow-y: auto !important;[\s\S]*padding: 82px 12px 28px !important;[\s\S]*scrollbar-width: none;/);
     expect(appStyles).toMatch(/\.is-mobile-player-minimized \.course-progress \.course-progress__heading h2 \{[\s\S]*font-size: 1\.05rem !important;/);
     expect(appStyles).toMatch(/\.is-mobile-player-minimized \.lesson-info > p \{[\s\S]*color: rgba\(255, 255, 255, \.76\) !important;/);
   });
