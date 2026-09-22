@@ -1,4 +1,4 @@
-import { readLoginPrefill, clearLoginPrefill, saveSignupPrefill, signupDestination, nationalPhoneDigits, pasteNationalPhone } from "../lib/authNavigation.js";
+import { readLoginPrefill, clearLoginPrefill, saveSignupPrefill, signupDestination, safeAuthReturnPath, nationalPhoneDigits, pasteNationalPhone } from "../lib/authNavigation.js";
 import { useEffect, useMemo, useState } from "react";
 import { page as loginPage } from "../generated-pages/login.html.js";
 import { BrandLogo } from "../components/BrandLogo.jsx";
@@ -20,16 +20,12 @@ function normalizePhone(value) {
   return String(value || "").trim();
 }
 
-function safeNext(defaultPath = "/dashboard.html") {
-  if (window.EduNex?.safeNext) return window.EduNex.safeNext(defaultPath);
-  const next = new URLSearchParams(window.location.search).get("next");
-  if (!next) return defaultPath;
-  try {
-    const url = new URL(next, window.location.origin);
-    return url.origin === window.location.origin ? `${url.pathname}${url.search}${url.hash}` : defaultPath;
-  } catch (_) {
-    return next.startsWith("/") && !next.startsWith("//") ? next : defaultPath;
+function safeNext(defaultPath = "/") {
+  if (window.EduNex?.safeNext) {
+    return safeAuthReturnPath(window.EduNex.safeNext(defaultPath), window.location.origin, defaultPath);
   }
+  const next = new URLSearchParams(window.location.search).get("next");
+  return safeAuthReturnPath(next, window.location.origin, defaultPath);
 }
 
 async function requestLogin(loginId, password, remember) {
@@ -103,6 +99,8 @@ function hasStoredAccessToken() {
 }
 
 export function LoginPage() {
+  const requestedNext = new URLSearchParams(window.location.search).get("next");
+  const signupHref = requestedNext ? signupDestination(requestedNext, window.location.origin) : route("signup.html");
   const [loginId, setLoginId] = useState(() => readLoginPrefill(sessionStorage));
   const [password, setPassword] = useState("");
   const [remember, setRemember] = useState(true);
@@ -133,7 +131,7 @@ export function LoginPage() {
   useEffect(() => {
     if (!checkingSession) return undefined;
     const redirectTimer = window.setTimeout(() => {
-      const destination = safeNext("/dashboard.html");
+      const destination = safeNext("/");
       window.history.replaceState(window.history.state, "", destination);
       window.dispatchEvent(new PopStateEvent("popstate"));
     }, 0);
@@ -157,13 +155,12 @@ export function LoginPage() {
       const data = await requestLogin(normalizePhone(trimmedLogin), trimmedPassword, remember);
       saveAuth(data, remember);
       window.dispatchEvent(new Event("edunex:auth-changed"));
-      window.location.href = safeNext("/dashboard.html");
+      window.location.href = safeNext("/");
     } catch (loginError) {
       if (ACCOUNT_NOT_FOUND_CODES.has(loginError.code)) {
         saveSignupPrefill(normalizePhone(trimmedLogin), sessionStorage);
         setError("Account does not exist. Redirecting to signup...");
-        const next = new URLSearchParams(window.location.search).get("next");
-        window.location.assign(signupDestination(next, window.location.origin));
+        window.location.assign(signupHref);
         return;
       }
       setError(safeLoginError(loginError));
@@ -185,7 +182,7 @@ export function LoginPage() {
         <main className="enx-page-loading" aria-live="polite" aria-busy="true">
           <section className="enx-page-loading-card">
             <div className="enx-page-loading-mark" aria-hidden="true"><i className="fas fa-user-check"></i></div>
-            <p>Opening your dashboard...</p>
+            <p>Opening Skillomate...</p>
           </section>
         </main>
       </div>
@@ -298,7 +295,7 @@ export function LoginPage() {
               {loading ? "Signing in..." : "Sign In"}
             </button>
 
-            <p className="lp-create-row">Don't have an account? <a href="signup.html">Create an account</a></p>
+            <p className="lp-create-row">Don't have an account? <a href={signupHref}>Create an account</a></p>
 
             <div className="lp-footer-links">
               <a href={route("privacy.html")}>Privacy Policy</a>

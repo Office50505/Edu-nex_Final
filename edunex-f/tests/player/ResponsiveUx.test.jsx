@@ -87,6 +87,7 @@ describe("cross-viewport UX", () => {
   });
 
   it("uses the mobile reel actions and simplified player controls on desktop", () => {
+    expect(videosPageSource).not.toContain('id="watchStatus"');
     expect(appStyles).toMatch(/@media \(min-width: 1181px\), \(min-width: 821px\) and \(pointer: fine\)[\s\S]*#playerFrame \.reel-chrome[\s\S]*display: block;/);
     expect(appStyles).toMatch(/#playerFrame \.sm-row > :not\(\.sm-play-button\):not\(\.sm-volume-button\):not\(\.sm-volume\):not\(\.sm-spacer\):not\(\.sm-settings-button\):not\(\.sm-fullscreen-button\)[\s\S]*display: none !important;/);
     expect(appStyles).toMatch(/#playerFrame \.video-speed[\s\S]*display: none !important;/);
@@ -97,12 +98,14 @@ describe("cross-viewport UX", () => {
   });
 
   it("hides the entire reel overlay with timed player controls and raises side actions", () => {
-    expect(videosPageSource).toContain('reel-chrome${playerControlsVisible ? " is-visible" : ""}');
+    expect(videosPageSource).toContain('reel-chrome${playerControlsVisible || reelDescriptionExpanded ? " is-visible" : ""}');
     expect(videosPageSource).toContain("onControlsVisibilityChange={handlePlayerControlsVisibility}");
     expect(appStyles).toMatch(/\.reel-chrome \{[\s\S]*visibility: hidden;[\s\S]*opacity: 0;/);
     expect(appStyles).toMatch(/\.reel-chrome\.is-visible \{[\s\S]*visibility: visible;[\s\S]*opacity: 1;/);
-    expect(appStyles).toMatch(/\.player-frame:has\(\.sm-player:not\(\.sm-awake\):not\(:has\(:focus-visible\)\)\) \.reel-chrome[\s\S]*visibility: hidden;[\s\S]*opacity: 0;/);
-    expect(appStyles).toMatch(/\.player-frame:has\(\.custom-video-player\.is-playing:not\(\.is-controls-awake\)\) \.reel-chrome[\s\S]*visibility: hidden;[\s\S]*opacity: 0;/);
+    expect(appStyles).toMatch(/\.player-frame:has\(\.sm-player:not\(\.sm-awake\):not\(:has\(:focus-visible\)\)\) \.reel-chrome:not\(\.has-expanded-description\)[\s\S]*visibility: hidden;[\s\S]*opacity: 0;/);
+    expect(appStyles).toMatch(/\.player-frame:has\(\.custom-video-player\.is-playing:not\(\.is-controls-awake\)\) \.reel-chrome:not\(\.has-expanded-description\)[\s\S]*visibility: hidden;[\s\S]*opacity: 0;/);
+    expect(videosPageSource).toContain('aria-controls="reelLessonDescription"');
+    expect(appStyles).toMatch(/\.reel-lesson-copy\.is-expanded \.reel-lesson-description > span \{[\s\S]*max-height: min\(30dvh, 220px\);[\s\S]*overflow-y: auto !important;/);
     expect(appStyles).toMatch(/\.reel-side-actions[\s\S]*bottom: max\(150px, calc\(134px \+ env\(safe-area-inset-bottom\)\)\);/);
     expect(videosPageSource).toContain('className="video-paused-indicator"');
   });

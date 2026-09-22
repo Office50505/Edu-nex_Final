@@ -4784,13 +4784,13 @@ html[data-theme="light"] .enx-footer .enx-footer-support a {
   opacity: 1;
 }
 
-.react-page-root[data-page="videos.html"] .player-frame:has(.sm-player:not(.sm-awake):not(:has(:focus-visible))) .reel-chrome {
+.react-page-root[data-page="videos.html"] .player-frame:has(.sm-player:not(.sm-awake):not(:has(:focus-visible))) .reel-chrome:not(.has-expanded-description) {
   visibility: hidden;
   opacity: 0;
   pointer-events: none;
 }
 
-.react-page-root[data-page="videos.html"] .player-frame:has(.custom-video-player.is-playing:not(.is-controls-awake)) .reel-chrome {
+.react-page-root[data-page="videos.html"] .player-frame:has(.custom-video-player.is-playing:not(.is-controls-awake)) .reel-chrome:not(.has-expanded-description) {
   visibility: hidden;
   opacity: 0;
   pointer-events: none;
@@ -5568,6 +5568,61 @@ html[data-theme="light"] .react-page-root[data-page="videos.html"] .reel-lecture
   .react-page-root[data-page="videos.html"] #playerFrame:has(.sm-settings) .reel-chrome {
     visibility: hidden;
   }
+}
+
+.reel-lesson-description {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 5px;
+  min-width: 0;
+}
+
+.reel-description-toggle {
+  min-width: 0;
+  min-height: 24px;
+  margin: 0;
+  padding: 2px 3px;
+  border: 0;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, .46);
+  color: #fff;
+  font: 700 11px/1.2 Arial, sans-serif;
+  cursor: pointer;
+  pointer-events: auto;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.reel-description-toggle:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+
+.reel-lesson-copy.is-expanded {
+  padding: 10px;
+  border-radius: 10px;
+  background: rgba(0, 0, 0, .72);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  pointer-events: auto;
+  text-shadow: none;
+}
+
+.reel-lesson-copy.is-expanded .reel-lesson-description {
+  align-items: start;
+}
+
+.reel-lesson-copy.is-expanded .reel-lesson-description > span {
+  display: block !important;
+  max-height: min(30dvh, 220px);
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  padding-right: 4px;
+  white-space: pre-line;
+  -webkit-box-orient: initial !important;
+  -webkit-line-clamp: initial !important;
+  scrollbar-width: thin;
 }
 
 @media (max-width: 380px) {

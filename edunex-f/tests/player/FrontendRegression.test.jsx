@@ -254,13 +254,34 @@ describe("reported frontend regressions", () => {
       authRequest: vi.fn(() => new Promise(() => {})),
     };
     render(<LoginPage />);
-    expect(screen.getByText("Opening your dashboard...")).toBeTruthy();
+    expect(screen.getByText("Opening Skillomate...")).toBeTruthy();
     expect(screen.queryByText("Welcome Back")).toBeNull();
   });
 
   it("checks remember me by default on the user login form", () => {
     render(<LoginPage />);
     expect(screen.getByRole("checkbox", { name: "Remember me for 30 days" }).checked).toBe(true);
+  });
+
+  it("preserves a protected destination when switching between login and signup", () => {
+    window.history.replaceState(null, "", "/login?next=%2Fdashboard%3Ftab%3Dcourses");
+    const loginView = render(<LoginPage />);
+    expect(screen.getByRole("link", { name: "Create an account" }).getAttribute("href"))
+      .toBe("/signup.html?next=%2Fdashboard%3Ftab%3Dcourses");
+
+    loginView.unmount();
+    window.history.replaceState(null, "", "/signup?next=%2Fai%3Fchat%3Dnew");
+    render(<SignupPage />);
+    expect(screen.getAllByRole("link", { name: "Log in" })[0].getAttribute("href"))
+      .toBe("/login.html?next=%2Fai%3Fchat%3Dnew");
+  });
+
+  it("uses clean auth links when no protected destination was requested", () => {
+    const loginView = render(<LoginPage />);
+    expect(screen.getByRole("link", { name: "Create an account" }).getAttribute("href")).toBe("/signup");
+    loginView.unmount();
+    render(<SignupPage />);
+    expect(screen.getAllByRole("link", { name: "Log in" })[0].getAttribute("href")).toBe("/login");
   });
 
   it("renders cached profile data immediately while the server refresh is pending", () => {

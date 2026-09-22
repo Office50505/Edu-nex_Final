@@ -28,6 +28,25 @@ it('loads the selected course when legacy scripts never become ready', async () 
   expect(fetcher.mock.calls.map(call => call[0])).toEqual(['/api/courses/course/lessons?playback=0']);
 });
 
+it('expands and collapses the complete reel lesson description', async () => {
+  const longDescription = 'This is a complete lesson description with enough detail to require expansion so learners can read every important instruction without leaving the video player.';
+  vi.stubGlobal('fetch', vi.fn(() => reply({
+    ...course,
+    videos: [{ ...course.videos[0], description: `### ${longDescription}` }],
+  })));
+  render(<VideosPage />);
+
+  await screen.findByText('Lesson player ready');
+  expect(screen.getAllByText(longDescription)).toHaveLength(2);
+  const more = screen.getByRole('button', { name: 'More' });
+  expect(more.getAttribute('aria-expanded')).toBe('false');
+  fireEvent.click(more);
+  expect(screen.getByRole('button', { name: 'Less' }).getAttribute('aria-expanded')).toBe('true');
+  expect(document.querySelector('.reel-lesson-copy').classList.contains('is-expanded')).toBe(true);
+  fireEvent.click(screen.getByRole('button', { name: 'Less' }));
+  expect(screen.getByRole('button', { name: 'More' }).getAttribute('aria-expanded')).toBe('false');
+});
+
 it('keeps auto next disabled when the user explicitly turned it off on this device', async () => {
   localStorage.setItem('edunexAutoNextVideo', 'false');
   vi.stubGlobal('fetch', vi.fn(url => reply(url.includes('subscription-status') ? { hasActiveAccess: true } : course)));
@@ -95,6 +114,29 @@ it('resumes at the first unfinished lecture and exposes the mobile lecture drawe
   expect(firstLecture).toBeTruthy();
   expect(firstLecture.querySelector('.reel-lecture-thumb img')).toBeTruthy();
   expect(firstLecture.querySelector('.reel-lecture-number').textContent).toBe('1');
+});
+
+it('opens the selected lecture from the lecture drawer', async () => {
+  const selectableCourse = {
+    ...course,
+    videos: [
+      { ...course.videos[0], description: 'First description' },
+      { ...course.videos[0], _id: 'lesson-2', title: 'Second lesson', description: 'Second description' },
+    ],
+  };
+  vi.stubGlobal('fetch', vi.fn(() => reply(selectableCourse)));
+  render(<VideosPage />);
+
+  expect((await screen.findByTestId('active-player-lesson')).textContent).toBe('First lesson');
+  fireEvent.click(screen.getByRole('button', { name: 'Open all lectures' }));
+  const secondLecture = screen.getByRole('button', { name: 'Lecture 2: Second lesson' });
+  fireEvent.click(secondLecture);
+
+  expect(screen.queryByRole('dialog', { name: 'Lectures' })).toBeNull();
+  expect((await screen.findByTestId('active-player-lesson')).textContent).toBe('Second lesson');
+  expect(screen.getByTestId('player-autoplay').textContent).toBe('true');
+  expect(new URL(window.location.href).searchParams.get('video')).toBe('1');
+  expect(screen.getByText('Lecture 2/2')).toBeTruthy();
 });
 
 it('opens AI inside the player without navigating away from the lecture', async () => {

@@ -1,4 +1,4 @@
-import { saveLoginPrefill, loginDestination, readSignupPrefill, clearSignupPrefill, nationalPhoneDigits, pasteNationalPhone } from "../lib/authNavigation.js";
+import { saveLoginPrefill, loginDestination, readSignupPrefill, clearSignupPrefill, safeAuthReturnPath, nationalPhoneDigits, pasteNationalPhone } from "../lib/authNavigation.js";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { page as signupPage } from "../generated-pages/signup.html.js";
 import { runLegacyPage } from "../legacyRuntime.js";
@@ -105,6 +105,8 @@ function safeErrorMessage(error, fallback) {
 const adResumeRequests = new Map();
 
 export function SignupPage() {
+  const requestedNext = new URLSearchParams(window.location.search).get("next");
+  const loginHref = requestedNext ? loginDestination(requestedNext, window.location.origin) : route("login.html");
   const [step, setStep] = useState(1);
   const [phone, setPhone] = useState(() => readSignupPrefill(sessionStorage));
   useEffect(() => { clearSignupPrefill(sessionStorage); }, []);
@@ -313,8 +315,7 @@ export function SignupPage() {
     } catch (error) {
       if (error.code === "MOBILE_ALREADY_REGISTERED") {
         saveLoginPrefill(normalizedPhone, sessionStorage);
-        const next = window.EduNex?.safeNext?.("/payment.html") || "/payment.html";
-        window.location.assign(loginDestination(next, window.location.origin));
+        window.location.assign(loginHref);
         return;
       }
       setStep1Error(safeErrorMessage(error, "Could not send OTP."));
@@ -403,7 +404,7 @@ export function SignupPage() {
       sessionStorage.removeItem("skillomateAdProfile");
       sessionStorage.removeItem("skillomateAdReturn");
       localStorage.setItem("edunexSignupProfile", JSON.stringify(data?.user || signupProfile));
-      window.location.href = "dashboard.html";
+      window.location.href = safeAuthReturnPath(requestedNext, window.location.origin, route("index.html"));
     } catch (error) {
       setStep3Error(safeErrorMessage(error, SIGNUP_FALLBACK_ERROR));
     } finally {
@@ -600,7 +601,7 @@ export function SignupPage() {
             <button className="sp-primary-btn" type="submit" disabled={sendingOtp}>
               {sendingOtp ? "Sending..." : "Send OTP & Continue"}
             </button>
-            <p className="sp-login-row">Already have an account? <a href="login.html">Log in</a></p>
+            <p className="sp-login-row">Already have an account? <a href={loginHref}>Log in</a></p>
           </form>
 
           <div className={`sp-step${step === 2 ? " active" : ""}`} id="step2">
@@ -653,7 +654,7 @@ export function SignupPage() {
                 Resend Code (<span id="countdown">{countdownText}</span>)
               </button>
             </p>
-            <p className="sp-login-row">Already have an account? <a href="login.html">Log in</a></p>
+            <p className="sp-login-row">Already have an account? <a href={loginHref}>Log in</a></p>
           </div>
         </div>
 

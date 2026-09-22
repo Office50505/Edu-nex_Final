@@ -25,6 +25,15 @@ export function readLoginPrefill(storage, now = Date.now(), key = KEY) {
   } catch (_) { return ''; }
 }
 export function clearLoginPrefill(storage) { try { storage.removeItem(KEY); } catch (_) {} }
+export function safeAuthReturnPath(next, origin, fallback = '/') {
+  if (!next) return fallback;
+  try {
+    const parsed = new URL(next, origin);
+    return parsed.origin === origin ? `${parsed.pathname}${parsed.search}${parsed.hash}` : fallback;
+  } catch (_) {
+    return fallback;
+  }
+}
 export function loginDestination(next, origin) {
   try { const parsed = new URL(next || '/payment.html', origin); return `/login.html?next=${encodeURIComponent(parsed.origin === origin ? parsed.pathname + parsed.search + parsed.hash : '/payment.html')}`; }
   catch (_) { return '/login.html?next=%2Fpayment.html'; }

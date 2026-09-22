@@ -1092,7 +1092,11 @@ function LectureSheet({ course, activeIndex, completedIds, onClose, onSelect }) 
                 disabled={!available(item)}
                 aria-current={isActive ? "true" : undefined}
                 aria-label={`Lecture ${index + 1}: ${item.title || "Untitled lecture"}${isComplete ? ", completed" : ""}`}
-                onClick={() => onSelect(index)}
+                onClick={(event) => {
+                  event.preventDefault();
+                  event.stopPropagation();
+                  onSelect(index);
+                }}
                 key={lessonIdentifier(item, index)}
               >
                 <span className="reel-lecture-thumb">
@@ -1146,6 +1150,7 @@ export function VideosPage() {
   const [mobilePlayerMinimized, setMobilePlayerMinimized] = useState(false);
   const [autoNext, setAutoNext] = useState(() => localStorage.getItem(AUTO_NEXT_KEY) !== "false");
   const [playerControlsVisible, setPlayerControlsVisible] = useState(true);
+  const [reelDescriptionExpanded, setReelDescriptionExpanded] = useState(false);
   const [shareLabel, setShareLabel] = useState("Share");
   const shareFeedbackTimerRef = useRef(null);
   useViewportLock(notesOpen || lectureSheetOpen || playlistOpen);
@@ -1156,6 +1161,7 @@ export function VideosPage() {
 
   useEffect(() => {
     setPlayerControlsVisible(true);
+    setReelDescriptionExpanded(false);
   }, [activeIndex]);
 
   useEffect(() => () => window.clearTimeout(shareFeedbackTimerRef.current), []);
@@ -1375,6 +1381,8 @@ export function VideosPage() {
 
   const lessons = course?.videos || [];
   const lesson = lessons[activeIndex] || lessons[0] || {};
+  const reelDescription = plainCourseDescription(lesson.description || course?.title || "Skillomate course");
+  const reelDescriptionCanExpand = reelDescription.length > 72;
   useEffect(() => {
     if (!course?._id || !lessons.length) return;
     const context = { courseId: String(course._id), lessonId: lessonIdentifier(lesson, activeIndex) };
@@ -1412,7 +1420,7 @@ export function VideosPage() {
       swipe.vertical = false;
       swipe.pointerId = null;
     };
-    const ignoreSwipeTarget = (target) => Boolean(target?.closest?.(".sm-controls, .sm-settings, .sm-big-play, .custom-video-controls, .video-ai-screen-btn, .reel-chrome button, .reel-chrome a, input, select, textarea, [contenteditable='true']"));
+    const ignoreSwipeTarget = (target) => Boolean(target?.closest?.(".sm-controls, .sm-settings, .sm-big-play, .custom-video-controls, .video-ai-screen-btn, .reel-chrome button, .reel-chrome a, .reel-lecture-backdrop, .course-notes-modal, input, select, textarea, [contenteditable='true']"));
     const canChangeLesson = (delta) => delta > 0 ? activeIndex < lessons.length - 1 : delta < 0 && activeIndex > 0;
     const canTrackPlayerSwipe = () => isPlayerFullscreen(frame) || window.matchMedia?.("(max-width: 820px), (pointer: coarse)")?.matches;
     const isMobileReel = () => document.body.classList.contains(BODY_MOBILE_REEL_CLASS);
@@ -1803,7 +1811,6 @@ export function VideosPage() {
         <div className="watch-top">
           <a className="back-library" href="/courses.html"><i className="fas fa-arrow-left" aria-hidden="true"></i> Courses</a>
           <span className="back-bar-title" id="watchCourseTitle">{course?.title || (error ? "Course unavailable" : "Course playlist")}</span>
-          <span className="status-line" id="watchStatus">{status}</span>
           <div className="watch-actions">
             <button className="watch-tool-btn" type="button" id="openNotesBtn" onClick={openNotes}><i className="fas fa-file-lines" aria-hidden="true"></i> Notes</button>
             <button className="watch-tool-btn playlist-drawer-trigger" type="button" aria-expanded={playlistOpen} aria-controls="course-playlist" onClick={() => setPlaylistOpen((open) => !open)}><i className="fas fa-list" aria-hidden="true"></i> Lectures</button>
@@ -1818,6 +1825,7 @@ export function VideosPage() {
               tabIndex={-1}
               aria-label="Course video player. Swipe up or down on mobile to change lectures."
               onClickCapture={(event) => {
+                if (notesOpen || lectureSheetOpen) return;
                 if (Date.now() >= lessonSwipeRef.current.suppressClickUntil) return;
                 event.preventDefault();
                 event.stopPropagation();
@@ -1844,7 +1852,7 @@ export function VideosPage() {
                 <div className="player-placeholder"><VideoLoadingBrand label="Loading course…"/></div>
               )}
               {selectedCourseId ? (
-                <div className={`reel-chrome${playerControlsVisible ? " is-visible" : ""}`} aria-label="Lecture controls" aria-hidden={!playerControlsVisible}>
+                <div className={`reel-chrome${playerControlsVisible || reelDescriptionExpanded ? " is-visible" : ""}${reelDescriptionExpanded ? " has-expanded-description" : ""}`} aria-label="Lecture controls" aria-hidden={!playerControlsVisible && !reelDescriptionExpanded}>
                   <div className="reel-topbar">
                     <div className="reel-topbar-start">
                       <a className="reel-icon-button" href="/courses.html" aria-label="Back to courses or minimize fullscreen player" onClick={handleReelBack}><ReelIcon name="back" /></a>
@@ -1860,9 +1868,21 @@ export function VideosPage() {
                     <button className="reel-side-button" type="button" onClick={() => setLectureSheetOpen(true)} aria-label="Open all lectures"><ReelIcon name="lectures" /><span>Lectures</span></button>
                     <button className="reel-side-button" type="button" onClick={shareOffer} aria-label="Share Skillomate offer"><ReelIcon name="share" /><span aria-live="polite">{shareLabel}</span></button>
                   </div> : null}
-                  {course && !error ? <div className="reel-lesson-copy">
+                  {course && !error ? <div className={`reel-lesson-copy${reelDescriptionExpanded ? " is-expanded" : ""}`}>
                     <strong>{lesson.title || `Lecture ${activeIndex + 1}`}</strong>
-                    <span>{lesson.description || course.title || "Skillomate course"}</span>
+                    <div className="reel-lesson-description">
+                      <span id="reelLessonDescription">{reelDescription}</span>
+                      {reelDescriptionCanExpand ? <button
+                        className="reel-description-toggle"
+                        type="button"
+                        aria-controls="reelLessonDescription"
+                        aria-expanded={reelDescriptionExpanded}
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          setReelDescriptionExpanded((expanded) => !expanded);
+                        }}
+                      >{reelDescriptionExpanded ? "Less" : "More"}</button> : null}
+                    </div>
                   </div> : null}
                 </div>
               ) : null}

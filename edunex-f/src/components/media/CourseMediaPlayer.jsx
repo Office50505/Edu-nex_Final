@@ -9,6 +9,20 @@ import './player.css';
 
 const QUALITY_PRESETS = [120, 240, 360, 480, 720, 1080];
 const DEFAULT_QUALITY = 1080;
+const VIDEO_VOLUME_STORAGE_KEY = 'edunexVideoVolume';
+const VIDEO_MUTED_STORAGE_KEY = 'edunexVideoMutedByUser';
+
+function storedVolume() {
+  const saved = localStorage.getItem(VIDEO_VOLUME_STORAGE_KEY);
+  if (saved === null) return 1;
+  const value = Number(saved);
+  return Number.isFinite(value) ? Math.max(0, Math.min(1, value)) : 1;
+}
+
+function storeAudioPreference(volume, muted) {
+  localStorage.setItem(VIDEO_VOLUME_STORAGE_KEY, String(Math.max(0, Math.min(1, Number(volume) || 0))));
+  localStorage.setItem(VIDEO_MUTED_STORAGE_KEY, muted ? 'true' : 'false');
+}
 
 export function CourseMediaPlayer({ course, lesson, lessonIndex, autoNext, autoplay = false, onEnded, onNavigateLesson, onFallback, mobileViewMode = null, onToggleMobileView, onControlsVisibilityChange }) {
   const access = usePlaybackAccess(course._id, lesson);
@@ -19,7 +33,7 @@ export function CourseMediaPlayer({ course, lesson, lessonIndex, autoNext, autop
   const [error,setError] = useState(''), [notice,setNotice] = useState('');
   const [awake,setAwake] = useState(true), [menu,setMenu] = useState(false);
   const [rate,setRate] = useState(1), [loop,setLoop] = useState(false), [sleep,setSleep] = useState(0);
-  const [volume,setVolume] = useState(1), [muted,setMuted] = useState(false);
+  const [volume,setVolume] = useState(storedVolume), [muted,setMuted] = useState(() => localStorage.getItem(VIDEO_MUTED_STORAGE_KEY) === 'true');
   const [levels,setLevels] = useState([]), [quality,setQuality] = useState(DEFAULT_QUALITY);
   const [captions,setCaptions] = useState([]), [caption,setCaption] = useState(-1);
   const tapRef = useRef(null), tapTimer = useRef(null);
@@ -59,7 +73,7 @@ export function CourseMediaPlayer({ course, lesson, lessonIndex, autoNext, autop
     const ended=()=>{setPlaying(false);sync();window.dispatchEvent(new Event('learning-flush'));if(!latest.current.loop&&latest.current.autoNext)latest.current.onEnded?.();};
     const failed=(detail='')=>{video.pause();setError(typeof detail==='string'&&detail ? detail : 'Playback could not start. Retry to refresh your video access.');setBuffering(false);setPlaying(false);};
     const tracks=()=>{if(!engine)setCaptions(Array.from(video.textTracks).map((track,index)=>({index,label:track.label||track.language||`Track ${index+1}`})));};
-    const listeners={loadedmetadata:ready,loadeddata:()=>setBuffering(false),timeupdate:sync,progress:sync,playing:play,pause,ended,error:failed,loadstart:()=>setBuffering(true),waiting:()=>setBuffering(true),stalled:()=>setBuffering(true),seeking:()=>setBuffering(true),seeked:()=>setBuffering(false),canplay:()=>setBuffering(false),volumechange:()=>{setMuted(video.muted);setVolume(video.volume);}};
+    const listeners={loadedmetadata:ready,loadeddata:()=>setBuffering(false),timeupdate:sync,progress:sync,playing:play,pause,ended,error:failed,loadstart:()=>setBuffering(true),waiting:()=>setBuffering(true),stalled:()=>setBuffering(true),seeking:()=>setBuffering(true),seeked:()=>setBuffering(false),canplay:()=>setBuffering(false),volumechange:()=>{setMuted(video.muted);setVolume(video.volume);storeAudioPreference(video.volume,video.muted);}};
     Object.entries(listeners).forEach(([name,fn])=>video.addEventListener(name,fn));
     video.textTracks.addEventListener('addtrack',tracks);
     const nativeHls = video.canPlayType('application/vnd.apple.mpegurl');
@@ -131,6 +145,7 @@ export function CourseMediaPlayer({ course, lesson, lessonIndex, autoNext, autop
     const video=videoRef.current;if(!video)return;
     const next=Math.max(0,Math.min(1,Number(value)||0)),nextMuted=next===0;
     setVolume(next);setMuted(nextMuted);
+    storeAudioPreference(next,nextMuted);
     video.volume=next;video.muted=nextMuted;
     wake();
   }
@@ -139,6 +154,7 @@ export function CourseMediaPlayer({ course, lesson, lessonIndex, autoNext, autop
     const nextMuted=!video.muted && video.volume>0;
     const nextVolume=!nextMuted&&video.volume===0?.75:video.volume;
     setMuted(nextMuted);setVolume(nextVolume);
+    storeAudioPreference(nextVolume,nextMuted);
     video.volume=nextVolume;video.muted=nextMuted;
     wake();
   }
