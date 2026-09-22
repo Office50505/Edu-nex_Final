@@ -25,7 +25,9 @@ it("fits the first-time AI setup and chat flow when opened from the mobile video
   const visualViewport = new EventTarget();
   Object.defineProperties(visualViewport, {
     height: { configurable: true, writable: true, value: 720 },
+    width: { configurable: true, writable: true, value: 390 },
     offsetTop: { configurable: true, writable: true, value: 0 },
+    offsetLeft: { configurable: true, writable: true, value: 0 },
   });
   Object.defineProperty(window, "visualViewport", { configurable: true, value: visualViewport });
 
@@ -49,6 +51,7 @@ it("fits the first-time AI setup and chat flow when opened from the mobile video
   expect(root.parentElement).toBe(document.body);
   expect(overlay.classList.contains("nai-open")).toBe(true);
   expect(root.style.getPropertyValue("--nai-viewport-height")).toBe("720px");
+  expect(root.style.getPropertyValue("--nai-viewport-width")).toBe("390px");
 
   const setupName = document.getElementById("nai-setup-name");
   fireEvent.input(setupName, { target: { value: "Ash" } });
@@ -61,6 +64,10 @@ it("fits the first-time AI setup and chat flow when opened from the mobile video
   expect(api.authRequest).toHaveBeenCalledWith("/api/ai/chat", expect.any(Object));
 
   visualViewport.height = 480;
+  visualViewport.width = 320;
+  visualViewport.offsetLeft = 12;
   visualViewport.dispatchEvent(new Event("resize"));
   expect(root.style.getPropertyValue("--nai-viewport-height")).toBe("480px");
+  expect(root.style.getPropertyValue("--nai-viewport-width")).toBe("320px");
+  expect(root.style.getPropertyValue("--nai-viewport-left")).toBe("12px");
 });

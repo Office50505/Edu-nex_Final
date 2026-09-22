@@ -85,7 +85,9 @@
   const CSS = `
     #nex-ai-widget-root {
       --nai-viewport-height: 100dvh;
+      --nai-viewport-width: 100vw;
       --nai-viewport-top: 0px;
+      --nai-viewport-left: 0px;
     }
     /* ── FLOAT BUTTON ── */
     #nai-float-btn {
@@ -744,11 +746,12 @@
         align-items: stretch;
         justify-content: stretch;
         top: var(--nai-viewport-top, 0px);
-        right: 0;
+        right: auto;
         bottom: auto;
-        left: 0;
-        width: 100%;
-        max-width: 100%;
+        left: var(--nai-viewport-left, 0px);
+        width: var(--nai-viewport-width, 100vw);
+        min-width: 0;
+        max-width: none;
         height: var(--nai-viewport-height, 100dvh);
         max-height: 100dvh;
         box-sizing: border-box;
@@ -758,6 +761,7 @@
       }
       #nai-modal {
         width: 100%;
+        min-width: 0;
         max-width: none;
         height: 100%;
         min-height: 0;
@@ -804,6 +808,9 @@
         min-width: 0;
       }
       #nai-chat-hdr {
+        width: 100%;
+        min-width: 0;
+        box-sizing: border-box;
         align-items: flex-start;
         gap: 10px;
         padding: calc(12px + env(safe-area-inset-top, 0px)) 14px 12px;
@@ -840,6 +847,7 @@
       }
       .nai-hdr-actions {
         flex-shrink: 0;
+        min-width: 0;
       }
       .nai-hdr-btn {
         min-height: 34px;
@@ -853,10 +861,15 @@
         box-sizing: border-box;
       }
       #nai-messages {
+        width: 100%;
+        min-width: 0;
+        box-sizing: border-box;
         gap: 18px;
         padding: 18px 16px 12px;
       }
       .nai-ai-row {
+        width: 100%;
+        min-width: 0;
         gap: 10px;
       }
       .nai-ai-avatar {
@@ -864,10 +877,15 @@
         height: 50px;
       }
       .nai-ai-bubble {
+        min-width: 0;
+        max-width: 100%;
+        overflow-wrap: anywhere;
         font-size: .86rem;
         line-height: 1.62;
       }
       .nai-user-bubble {
+        min-width: 0;
+        overflow-wrap: anywhere;
         max-width: 82%;
         padding: 11px 14px;
       }
@@ -885,6 +903,10 @@
         margin-bottom: 0;
         padding: 7px 7px 7px 10px;
         border-radius: 13px;
+      }
+      #nai-input {
+        width: 0;
+        max-width: 100%;
       }
       .nai-footer-hint {
         display: none;
@@ -1268,9 +1290,13 @@
   function syncVisualViewport() {
     const viewport = window.visualViewport;
     const height = Math.max(1, Number(viewport?.height || window.innerHeight || document.documentElement.clientHeight));
+    const width = Math.max(1, Number(viewport?.width || window.innerWidth || document.documentElement.clientWidth));
     const offsetTop = Math.max(0, Number(viewport?.offsetTop || 0));
+    const offsetLeft = Math.max(0, Number(viewport?.offsetLeft || 0));
     rootEl.style.setProperty('--nai-viewport-height', `${height}px`);
+    rootEl.style.setProperty('--nai-viewport-width', `${width}px`);
     rootEl.style.setProperty('--nai-viewport-top', `${offsetTop}px`);
+    rootEl.style.setProperty('--nai-viewport-left', `${offsetLeft}px`);
   }
 
   let lastAiTrigger = null;

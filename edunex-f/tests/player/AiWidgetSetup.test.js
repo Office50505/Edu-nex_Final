@@ -15,8 +15,10 @@ describe("responsive AI widget setup", () => {
 
   it("keeps the mobile player chat inside the iPhone visual viewport", () => {
     expect(widgetSource).toContain("--nai-viewport-height: 100dvh");
+    expect(widgetSource).toContain("--nai-viewport-width: 100vw");
     expect(widgetSource).toContain("height: var(--nai-viewport-height, 100dvh)");
-    expect(widgetSource).toContain("width: 100%;\n        max-width: none;");
+    expect(widgetSource).toContain("width: var(--nai-viewport-width, 100vw)");
+    expect(widgetSource).toContain("width: 100%;\n        min-width: 0;");
     expect(widgetSource).toContain("mobileViewport && !fullscreenElement");
     expect(widgetSource).toContain("window.visualViewport?.addEventListener?.('resize', syncVisualViewport");
     expect(widgetSource).not.toContain("width: 100vw;\n        max-width: none;\n        height: 100%;");

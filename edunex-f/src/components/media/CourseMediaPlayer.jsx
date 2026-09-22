@@ -7,7 +7,6 @@ import { clock, seekTarget, adjacent, nativeLessonSource } from './playerRules';
 import { VideoLoadingBrand } from './VideoLoadingBrand';
 import './player.css';
 
-const QUALITY_PRESETS = [120, 240, 360, 480, 720, 1080];
 const DEFAULT_QUALITY = 1080;
 const VIDEO_VOLUME_STORAGE_KEY = 'edunexVideoVolume';
 const VIDEO_MUTED_STORAGE_KEY = 'edunexVideoMutedByUser';
@@ -30,7 +29,8 @@ function nativeHlsLevels(playlist, playlistUrl) {
   for(let index=0;index<lines.length;index+=1){
     const line=lines[index].trim();
     if(!line.startsWith('#EXT-X-STREAM-INF:'))continue;
-    const height=Number(line.match(/RESOLUTION=\d+x(\d+)/i)?.[1]);
+    const resolution=line.match(/RESOLUTION=(\d+)x(\d+)/i);
+    const height=resolution ? Math.min(Number(resolution[1]),Number(resolution[2])) : 0;
     const reference=lines.slice(index+1).find(item=>item.trim()&&!item.trim().startsWith('#'))?.trim();
     if(!height||!reference)continue;
     try { found.push({height,url:new URL(reference,playlistUrl).href}); } catch { /* Ignore malformed renditions. */ }
@@ -130,7 +130,7 @@ export function CourseMediaPlayer({ course, lesson, lessonIndex, autoNext, autop
       engine=new Hls({enableWorker:true,maxBufferLength:30});hlsRef.current=engine;
       engine.on(Hls.Events.MANIFEST_PARSED,(_,data)=>{
         const nextLevels=data.levels
-          .map((level,index)=>({index,height:Number(level.height)||0}))
+          .map((level,index)=>{const dimensions=[Number(level.width),Number(level.height)].filter(value=>value>0);return {index,height:dimensions.length?Math.min(...dimensions):0};})
           .filter(level=>level.height>0)
           .filter((level,index,list)=>list.findIndex(item=>item.height===level.height)===index)
           .sort((a,b)=>a.height-b.height);
@@ -240,7 +240,7 @@ export function CourseMediaPlayer({ course, lesson, lessonIndex, autoNext, autop
       <div className="sm-setting-section">
         <span className="sm-setting-label">Quality</span>
         <div className="sm-setting-options" role="radiogroup" aria-label="Quality">
-          {QUALITY_PRESETS.map(height=>{const available=levels.some(level=>level.height===height);return <button type="button" role="radio" aria-checked={quality===height} aria-label={`Quality ${height}p`} aria-disabled={!available} disabled={!available} className={quality===height?'is-selected':''} key={height} onClick={()=>selectQuality(height)}>{height}p</button>;})}
+          {levels.length ? levels.map(({height})=><button type="button" role="radio" aria-checked={quality===height} aria-label={`Quality ${height}p`} className={quality===height?'is-selected':''} key={height} onClick={()=>selectQuality(height)}>{height}p</button>) : <span className="sm-quality-loading" role="status">Detecting available qualities…</span>}
         </div>
       </div>
       <label className="sm-setting-section sm-setting-toggle">Loop lesson<input type="checkbox" checked={loop} onChange={e=>setLoop(e.target.checked)}/></label>
