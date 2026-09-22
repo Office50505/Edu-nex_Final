@@ -93,7 +93,7 @@ test "$(grep -c '^DEPLOY SUCCESS$' "$success_output")" -eq 3
 test "$(find "$self_test_directory/success-logs" -type f -name '*.log' | wc -l | tr -d ' ')" -eq 3
 
 deploy_hosts="$(grep 'bash -s' "$calls_file" | cut -d'|' -f1 | paste -sd, -)"
-test "$deploy_hosts" = "43.205.137.167,13.235.24.15,13.127.170.170"
+test "$deploy_hosts" = "13.235.104.167,3.108.8.89,13.201.21.124"
 
 failure_output="$self_test_directory/failure.out"
 : >"$calls_file"
@@ -102,14 +102,14 @@ run_orchestrator \
   "$failure_output" \
   "$self_test_directory/failure-logs" \
   "$self_test_directory/failure.lock" \
-  FAKE_FAIL_HOST=13.235.24.15
+  FAKE_FAIL_HOST=3.108.8.89
 failure_status=$?
 set -e
 
 test "$failure_status" -eq 42
 grep -q '^ROLLBACK SUCCESSFUL$' "$failure_output"
 grep -q '^DEPLOY FAILED$' "$failure_output"
-if grep -q '13.127.170.170|bash -s' "$calls_file"; then
+if grep -q '13.201.21.124|bash -s' "$calls_file"; then
   echo "EC2 #3 was touched after EC2 #2 failed."
   exit 1
 fi

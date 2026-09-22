@@ -11,9 +11,9 @@ readonly LOCK_DIRECTORY="${SKILLOMATE_DEPLOY_LOCK_DIRECTORY:-${TMPDIR:-/tmp}/ski
 readonly REMOTE_REPOSITORY="/home/ubuntu/skillomate_repo"
 
 readonly -a INSTANCES=(
-  "EC2 #1|43.205.137.167"
-  "EC2 #2|13.235.24.15"
-  "EC2 #3|13.127.170.170"
+  "EC2 #1|13.235.104.167"
+  "EC2 #2|3.108.8.89"
+  "EC2 #3|13.201.21.124"
 )
 
 lock_acquired=0

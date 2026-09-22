@@ -10,6 +10,10 @@ copied from a developer machine.
 - Local command: `/Users/kratik/deploy-skillomate-production.sh`.
 - Repository orchestrator: `deployment/deploy-skillomate-production.sh`.
   It deploys EC2 #1, then #2, then #3, and stops immediately on failure.
+- Production fleet (all `m7g.large`, ARM64):
+  - EC2 #1: `13.235.104.167`
+  - EC2 #2: `3.108.8.89`
+  - EC2 #3: `13.201.21.124`
 - Override the SSH key with
   `SKILLOMATE_SSH_KEY=/absolute/path/to/key.pem` when needed.
 
