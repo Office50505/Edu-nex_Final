@@ -90,3 +90,13 @@ it('double taps seek while paused without starting playback',async()=>{vi.useFak
 
 it('uses HLS.js with an emulated iPhone user agent and maybe native support',async()=>{vi.spyOn(navigator,'userAgent','get').mockReturnValue('Mozilla/5.0 (iPhone; CPU iPhone OS 18_5 like Mac OS X) Version/18.5 Mobile/15E148 Safari/604.1');HTMLMediaElement.prototype.canPlayType.mockReturnValue('maybe');await mount();expect(fixture.engines).toHaveLength(1);});
 it('falls back to native HLS when HLS.js is unsupported',async()=>{fixture.hlsSupported=false;HTMLMediaElement.prototype.canPlayType.mockReturnValue('maybe');const {video}=await mount();expect(fixture.engines).toHaveLength(0);expect(video.getAttribute('src')).toBe(fixture.source);});
+
+it('exposes every actual square-stream resolution instead of only a fixed 480p option',async()=>{
+ await mount();const engine=fixture.engines[0];
+ act(()=>engine.listeners.manifest(null,{levels:[{width:480,height:480},{width:852,height:852},{width:960,height:960},{width:1600,height:1600},{width:1920,height:1920}]}));
+ fireEvent.click(screen.getByLabelText('Player settings'));
+ for(const height of [480,852,960,1600,1920])expect(screen.getByLabelText(`Quality ${height}p`).disabled).toBe(false);
+ expect(screen.getByText('1920p')).toBeTruthy();
+ fireEvent.click(screen.getByLabelText('Quality 1920p'));
+ expect(engine.currentLevel).toBe(4);expect(engine.loadLevel).toBe(4);
+});

@@ -104,16 +104,22 @@ function PreviewVideo({ modalOpen }) {
     else start();
   }, [modalOpen, start]);
 
-  const toggleMute = () => {
-    const video = videoRef.current;
-    if (!video) return;
-    video.muted = !video.muted;
-    setMuted(video.muted);
-    if (video.paused) start();
-  };
+  useEffect(() => {
+    const toggleMute = (event) => {
+      const video = videoRef.current;
+      if (!video || modalOpenRef.current || !(event.target instanceof Element)) return;
+      const target = event.target;
+      if (!target.closest(".ad-preview-player") && target.closest('button, a, input, textarea, select, label, [role="dialog"], [role="button"], [contenteditable="true"]')) return;
+      video.muted = !video.muted;
+      setMuted(video.muted);
+      if (video.paused) start();
+    };
+    document.addEventListener("click", toggleMute);
+    return () => document.removeEventListener("click", toggleMute);
+  }, [start]);
 
   return (
-    <div className="ad-preview-player" onClick={toggleMute} style={{ cursor: "pointer" }}>
+    <div className="ad-preview-player" style={{ cursor: "pointer" }}>
       <video ref={videoRef} src={PREVIEW_URL} autoPlay muted loop playsInline preload="auto" poster={POSTER_URL} />
       {!playing ? <button className="ad-preview-play" type="button" onClick={start} aria-label="Play course preview">▶</button> : null}
       <button className={`ad-mute-button${muted ? "" : " is-unmuted"}`} type="button" aria-label={muted ? "Unmute preview" : "Mute preview"}>

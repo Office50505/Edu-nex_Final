@@ -181,3 +181,19 @@ it('still recovers a late successful payment after checkout dismissal', async ()
   expect(navigate).toHaveBeenCalledOnce();
   expect(openRazorpay).toHaveBeenCalledOnce();
 });
+
+it('toggles preview audio from offer content and speaker without toggling twice or affecting checkout', async () => {
+  await mount();
+  const video = document.querySelector('.ad-preview-player video');
+  expect(video.muted).toBe(true);
+  fireEvent.click(screen.getByRole('heading', { name: 'Skillomate Subscription' }));
+  expect(video.muted).toBe(false);
+  expect(screen.getByRole('button', { name: 'Mute preview' })).toBeTruthy();
+  fireEvent.click(screen.getByRole('button', { name: 'Mute preview' }));
+  expect(video.muted).toBe(true);
+  fireEvent.click(document.body);
+  expect(video.muted).toBe(false);
+  await act(async () => { fireEvent.click(screen.getByRole('button', { name: /Subscribe for ₹1/ })); });
+  fireEvent.click(document.body);
+  expect(video.muted).toBe(false);
+});
