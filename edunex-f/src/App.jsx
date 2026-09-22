@@ -51,12 +51,20 @@ function shouldUseAppNavigation(event) {
 function scrollAfterNavigation(hash) {
   requestAnimationFrame(() => {
     if (hash) {
-      const target = document.getElementById(decodeURIComponent(hash.slice(1)));
+      let targetId = hash.slice(1);
+      try {
+        targetId = decodeURIComponent(targetId);
+      } catch {
+        // Keep malformed hashes harmless and fall back to the page top.
+      }
+      const target = document.getElementById(targetId);
       if (target) {
         target.scrollIntoView({ block: "start", behavior: "smooth" });
         return;
       }
     }
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
     window.scrollTo({ top: 0, left: 0, behavior: "auto" });
   });
 }
@@ -118,6 +126,26 @@ export default function App() {
   const closeProblemReport = useCallback(() => setReportOpen(false), []);
   usePresenceHeartbeat(!adminPage);
 
+  useEffect(() => {
+    const previousScrollRestoration = window.history.scrollRestoration;
+    if ("scrollRestoration" in window.history) {
+      window.history.scrollRestoration = "manual";
+    }
+
+    const handlePageShow = () => scrollAfterNavigation(window.location.hash);
+    window.addEventListener("pageshow", handlePageShow);
+    return () => {
+      window.removeEventListener("pageshow", handlePageShow);
+      if ("scrollRestoration" in window.history) {
+        window.history.scrollRestoration = previousScrollRestoration;
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    scrollAfterNavigation(locationState.hash);
+  }, [routeKey, locationState.hash]);
+
   const syncLocation = useCallback((nextState = currentLocationState()) => {
     startTransition(() => {
       setLocationState(nextState);
@@ -171,7 +199,6 @@ export default function App() {
       }
       syncLocation(nextState);
       window.dispatchEvent(new CustomEvent("edunex:route-changed", { detail: nextState }));
-      scrollAfterNavigation(nextState.hash);
     };
 
     window.addEventListener("popstate", handlePopState);
