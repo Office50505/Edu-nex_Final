@@ -7,7 +7,7 @@ const playlistProjection = [
   ...['_id', 'title', 'topic', 'description', 'provider', 'sourceType', 'videoUrl',
     'embedUrl', 'bunnyVideoId', 'bunnyLibraryId', 'youtubeId', 'hlsUrl', 'playlistUrl',
     'streamUrl', 'thumbnailUrl', 'thumbnailVerticalUrl', 'thumbnail.mimeType',
-    'transcriptUrl', 'notesUrl', 'examplePrompt', 'duration', 'order'].map(field => `videos.${field}`),
+    'transcriptUrl', 'notesUrl', 'notes', 'examplePrompt', 'duration', 'order'].map(field => `videos.${field}`),
 ].join(' ');
 
 function playlistPayload(course, resolveBunnyHls) {
@@ -20,6 +20,7 @@ function playlistPayload(course, resolveBunnyHls) {
     thumbnailUrl: horizontal, thumbnailVerticalUrl: vertical,
     videos: (course.videos || []).map((video, index) => ({
       ...publicPlayableVideoInfo(video, index),
+      notes: video.notes || '',
       ...(resolveBunnyHls && require('./videoSources').inferProvider(video) !== 'aws_cloudfront'
         ? { hlsUrl: resolveBunnyHls(video) } : {}),
       thumbnailUrl: video.thumbnailUrl || (video.thumbnail?.mimeType

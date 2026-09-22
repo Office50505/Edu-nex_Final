@@ -50,3 +50,16 @@ test('embedded course upload takes precedence over an older URL',()=>{
  const result=playlistPayload({...course,thumbnailUrl:'https://images.example/old.png'});
  assert.equal(result.thumbnailUrl,`/api/courses/${id}/thumbnail`);
 });
+
+test('protected playlists retain each lessons saved notes across video providers', () => {
+ const notes = 'TOOLS SETUP\nGoogle Flow, VN and ChatGPT';
+ assert.ok(playlistProjection.split(' ').includes('videos.notes'));
+ for (const provider of ['aws_cloudfront', 'youtube', 'bunny_stream']) {
+  const result = playlistPayload({ ...course, videos: [
+   { _id: 'intro', title: 'Introduction', provider },
+   { _id: 'tools', title: 'Tools Setup', provider, notes },
+  ] });
+  assert.equal(result.videos[0].notes, '');
+  assert.equal(result.videos[1].notes, notes);
+ }
+});
