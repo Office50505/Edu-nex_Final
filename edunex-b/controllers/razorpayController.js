@@ -57,8 +57,12 @@ async function reconcile(billing) {
   }
 }
 function checkoutResponse(billing, user) {
+  const digits = String(user.mobileNumber || '').replace(/\D/g, '');
+  const contact = digits ? `+${digits.length === 10 ? '91' : ''}${digits}` : '';
+  const name = String(user.fullName || '').trim();
+  const email = String(user.email || '').trim();
   return { gateway: 'razorpay', subscriptionId: billing.subscriptionId, mode: billingMode(billing), keyId: rzp.config(billingMode(billing)).keyId,
-    trialEndsAt: billing.trialEnd, prefill: { name: user.fullName || '', contact: user.mobileNumber || '', email: user.email || '' } };
+    trialEndsAt: billing.trialEnd, prefill: { ...(name ? { name } : {}), ...(contact ? { contact } : {}), ...(email ? { email } : {}) } };
 }
 exports.pricing = wrap(async (_req, res) => {
   const c = rzp.config(await modes.activeMode());

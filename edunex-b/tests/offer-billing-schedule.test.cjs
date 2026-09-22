@@ -37,9 +37,9 @@ function setup({ invalidSchedule = false, existing = null } = {}) {
       return models[name.split('/').at(-1)] || {};
     },
   });
-  return { calls, get record() { return record; }, async initiate(body = {}) {
+  return { calls, get record() { return record; }, async initiate(body = {}, user = {}) {
     const res = { code: 200, status(code) { this.code = code; return this; }, json(data) { this.data = data; } };
-    await module.exports.initiate({ onboarding: {}, onboardingMode: 'live', user: { _id: 'user', isMobileVerified: true }, body: { mandateConsent: true, paymentType: 'trial', ...body } }, res);
+    await module.exports.initiate({ onboarding: {}, onboardingMode: 'live', user: { _id: 'user', isMobileVerified: true, ...user }, body: { mandateConsent: true, paymentType: 'trial', ...body } }, res);
     return res;
   } };
 }
@@ -72,3 +72,12 @@ test('immediate monthly checkout on the offer page requires separate price conse
   assert.equal(f.calls.length, 0);
   assert.equal((await f.initiate({ paymentType: 'monthly', monthlyConsent: true })).code, 201);
 });
+
+for (const mobileNumber of ['9000090000', '919000090000', '+91 90000 90000']) {
+  test(`checkout reuses normalized phone ${mobileNumber} without inventing email`, async () => {
+    const response = await setup().initiate({}, { mobileNumber, email: '  ' });
+    assert.equal(response.code, 201);
+    assert.equal(response.data.prefill.contact, '+919000090000');
+    assert.equal(Object.hasOwn(response.data.prefill, 'email'), false);
+  });
+}

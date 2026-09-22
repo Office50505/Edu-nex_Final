@@ -13,11 +13,15 @@ export function loadRazorpay() {
   return scriptPromise;
 }
 export async function openRazorpay(data) {
+  const prefill = Object.fromEntries(Object.entries(data.prefill || {}).filter(([, value]) => typeof value === 'string' && value.trim()).map(([key, value]) => [key, value.trim()]));
+  const digits = String(prefill.contact || '').replace(/\D/g, '');
+  if (digits) prefill.contact = `+${digits.length === 10 ? '91' : ''}${digits}`;
   const Razorpay = await loadRazorpay();
   return new Promise((resolve, reject) => {
     const checkout = new Razorpay({ key: data.keyId, subscription_id: data.subscriptionId, name: 'Skillomate',
-      description: data.paymentType === 'trial' ? '₹1 for 24 hours, then ₹499/month' : 'Monthly learning subscription', prefill: data.prefill, handler: resolve,
-      hidden: { contact: true, email: true },
+      description: data.paymentType === 'trial' ? '₹1 for 24 hours, then ₹499/month' : 'Monthly learning subscription', prefill, handler: resolve,
+      readonly: { contact: Boolean(prefill.contact) },
+      hidden: { contact: Boolean(prefill.contact), email: true },
       theme: { color: '#C58B2A', backdrop_color: 'rgba(10, 10, 12, 0.72)' },
       config: { display: { blocks: { upi: { name: 'UPI AutoPay', instruments: [{ method: 'upi' }] } }, sequence: ['block.upi'], preferences: { show_default_blocks: false } } },
       modal: { ondismiss: () => reject(new Error('Checkout closed. You can retry or cancel the unfinished mandate below.')) },
