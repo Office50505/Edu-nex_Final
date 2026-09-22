@@ -22,3 +22,22 @@ it('keeps phone entry available when the server has no number', async () => {
   expect(options.readonly.contact).toBe(false);
   expect(options.prefill.email).toBe('learner@example.com');
 });
+
+it('reports an explicit checkout dismissal', async () => {
+  window.Razorpay = class {
+    constructor(options) { this.options = options; }
+    on() {}
+    open() { this.options.modal.ondismiss(); }
+  };
+  await expect(openRazorpay({})).rejects.toMatchObject({ code: 'CHECKOUT_DISMISSED' });
+});
+
+it('preserves payment failure when closing checkout also fires dismissal', async () => {
+  window.Razorpay = class {
+    constructor(options) { this.options = options; }
+    on(event, callback) { if (event === 'payment.failed') this.failed = callback; }
+    open() { this.failed(); }
+    close() { this.options.modal.ondismiss(); }
+  };
+  await expect(openRazorpay({})).rejects.toMatchObject({ code: 'PAYMENT_FAILED' });
+});

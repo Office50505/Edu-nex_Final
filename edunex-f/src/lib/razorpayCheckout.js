@@ -24,9 +24,9 @@ export async function openRazorpay(data) {
       hidden: { contact: Boolean(prefill.contact), email: true },
       theme: { color: '#C58B2A', backdrop_color: 'rgba(10, 10, 12, 0.72)' },
       config: { display: { blocks: { upi: { name: 'UPI AutoPay', instruments: [{ method: 'upi' }] } }, sequence: ['block.upi'], preferences: { show_default_blocks: false } } },
-      modal: { ondismiss: () => reject(new Error('Checkout closed. You can retry or cancel the unfinished mandate below.')) },
+      modal: { ondismiss: () => reject(Object.assign(new Error('Checkout closed. If money was deducted, check payment status before retrying.'), { code: 'CHECKOUT_DISMISSED' })) },
     });
-    checkout.on('payment.failed', () => { checkout.close(); reject(new Error('A payment attempt was unsuccessful. Check payment status before retrying.')); });
+    checkout.on('payment.failed', () => { reject(Object.assign(new Error('A payment attempt was unsuccessful. Check payment status before retrying.'), { code: 'PAYMENT_FAILED' })); checkout.close(); });
     checkout.open();
   });
 }

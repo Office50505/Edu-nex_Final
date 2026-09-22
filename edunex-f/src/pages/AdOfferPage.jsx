@@ -258,7 +258,13 @@ export function AdOfferPage() {
       if (verified.accessGranted) await finish(token);
     } catch (error) {
       if (!handoffRef.current) {
-        if (checkoutStarted || sessionStorage.getItem("skillomateAdAwaitingPayment")) {
+        if (error.code === "CHECKOUT_DISMISSED") {
+          sessionStorage.removeItem("skillomateAdAwaitingPayment");
+          setPaymentStage(null);
+          showRecovery(error.message);
+          setCheckoutAttempt(attempt => attempt + 1);
+        }
+        else if (checkoutStarted || sessionStorage.getItem("skillomateAdAwaitingPayment")) {
           // Closing checkout (or a provider failure event) does not prove that
           // the initial payment failed. Verify before offering another payment.
           sessionStorage.setItem("skillomateAdAwaitingPayment", "1");

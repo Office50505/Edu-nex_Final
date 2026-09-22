@@ -156,3 +156,28 @@ it('checks captured trial access after a provider failure instead of asking for 
   expect(navigate).toHaveBeenCalledOnce();
   expect(openRazorpay).toHaveBeenCalledOnce();
 });
+
+it('returns to recovery after dismissal without blocking or restoring confirmation on refresh', async () => {
+  openRazorpay.mockRejectedValueOnce(Object.assign(new Error('Checkout closed. If money was deducted, check payment status before retrying.'), { code: 'CHECKOUT_DISMISSED' }));
+  await mount();
+  await act(async () => { fireEvent.click(screen.getByRole('button', { name: /Subscribe for ₹1/i })); });
+  expect(screen.queryByRole('dialog', { name: 'Confirming your payment' })).toBeNull();
+  expect(screen.getByRole('button', { name: 'Open Razorpay again' })).toBeTruthy();
+  expect(sessionStorage.getItem('skillomateAdAwaitingPayment')).toBeNull();
+  cleanup();
+  await mount();
+  expect(screen.queryByRole('dialog', { name: 'Confirming your payment' })).toBeNull();
+  expect(openRazorpay).toHaveBeenCalledOnce();
+});
+
+it('still recovers a late successful payment after checkout dismissal', async () => {
+  openRazorpay.mockRejectedValueOnce(Object.assign(new Error('Checkout closed'), { code: 'CHECKOUT_DISMISSED' }));
+  await mount();
+  await act(async () => { fireEvent.click(screen.getByRole('button', { name: /Subscribe for ₹1/i })); });
+  paid = true;
+  await act(async () => { await vi.advanceTimersByTimeAsync(3000); });
+  expect(screen.getByRole('dialog', { name: 'Payment successful' })).toBeTruthy();
+  await act(async () => { await vi.advanceTimersByTimeAsync(3000); });
+  expect(navigate).toHaveBeenCalledOnce();
+  expect(openRazorpay).toHaveBeenCalledOnce();
+});
