@@ -5,9 +5,9 @@ import { useViewportLock } from "../hooks/useViewportLock.js";
 import "./ad-offer.css";
 import { apiFetch } from "../lib/apiUrl.js";
 import { initMetaPixel, metaEventId, trackMetaPixel } from "../lib/metaPixel.js";
+import { pageKeyFromPath } from "../lib/routes.js";
+import { DEFAULT_OFFER_VIDEO_URL, offerMediaForPage } from "../lib/offerMedia.js";
 
-const PREVIEW_URL = "/assets/skillomate-offer-preview.mp4";
-const POSTER_URL = "https://d5yxyknp74yz8.cloudfront.net/courses/ai-influencer/lessons/lesson-01.webp";
 const OFFER_EVENT_PARAMS = { content_name: "Skillomate ₹1 Offer", content_category: "subscription", currency: "INR" };
 
 async function api(url, body, bearer = "") {
@@ -56,7 +56,7 @@ function PaymentTransition({ stage, seconds, onCheck, checking }) {
   </div>;
 }
 
-function PreviewVideo({ modalOpen, onPixelEvent }) {
+function PreviewVideo({ media, modalOpen, onPixelEvent }) {
   const videoRef = useRef(null);
   const modalOpenRef = useRef(modalOpen);
   modalOpenRef.current = modalOpen;
@@ -66,6 +66,7 @@ function PreviewVideo({ modalOpen, onPixelEvent }) {
   const [playing, setPlaying] = useState(false);
   const [muted, setMuted] = useState(true);
   const [progress, setProgress] = useState(0);
+  const [videoUrl, setVideoUrl] = useState(media.videoUrl);
 
   const start = useCallback(() => {
     const video = videoRef.current;
@@ -103,7 +104,7 @@ function PreviewVideo({ modalOpen, onPixelEvent }) {
       }
     };
 
-    video.src = PREVIEW_URL;
+    video.src = videoUrl;
     video.addEventListener("loadedmetadata", onReady, { once: true });
     video.addEventListener("loadeddata", onReady, { once: true });
     video.addEventListener("canplay", onReady, { once: true });
@@ -121,7 +122,7 @@ function PreviewVideo({ modalOpen, onPixelEvent }) {
       video.removeEventListener("volumechange", onVolumeChange);
       video.removeEventListener("timeupdate", onTime);
     };
-  }, [start, onPixelEvent]);
+  }, [start, onPixelEvent, videoUrl]);
 
   useEffect(() => {
     if (modalOpen) videoRef.current?.pause();
@@ -144,7 +145,17 @@ function PreviewVideo({ modalOpen, onPixelEvent }) {
 
   return (
     <div className="ad-preview-player" style={{ cursor: "pointer" }}>
-      <video ref={videoRef} src={PREVIEW_URL} autoPlay muted loop playsInline preload="auto" poster={POSTER_URL} />
+      <video
+        ref={videoRef}
+        src={videoUrl}
+        autoPlay
+        muted
+        loop
+        playsInline
+        preload="auto"
+        poster={media.posterUrl}
+        onError={() => setVideoUrl(currentUrl => currentUrl === DEFAULT_OFFER_VIDEO_URL ? currentUrl : DEFAULT_OFFER_VIDEO_URL)}
+      />
       {!playing ? <button className="ad-preview-play" type="button" onClick={start} aria-label="Play course preview">▶</button> : null}
       <button className={`ad-mute-button${muted ? "" : " is-unmuted"}`} type="button" aria-label={muted ? "Unmute preview" : "Mute preview"}>
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4Z"/><path d="m17 9 4 6m0-6-4 6"/></svg>
@@ -154,7 +165,9 @@ function PreviewVideo({ modalOpen, onPixelEvent }) {
   );
 }
 
-export function AdOfferPage() {
+export function AdOfferPage({ offerPage }) {
+  const pageKey = offerPage || pageKeyFromPath(window.location.pathname);
+  const offerMedia = offerMediaForPage(pageKey);
   const [bearer, setBearer] = useState(() => sessionStorage.getItem("skillomateAdSession") || "");
   const [modalStep, setModalStep] = useState(null);
   const [phone, setPhone] = useState("");
@@ -446,9 +459,9 @@ export function AdOfferPage() {
   };
 
   return (
-    <main className="ad-offer-page" data-page="offer.html">
+    <main className="ad-offer-page" data-page={pageKey}>
       <section className="ad-offer-shell" aria-label="Skillomate subscription offer" inert={Boolean(paymentStage)} aria-hidden={paymentStage ? true : undefined}>
-        <PreviewVideo modalOpen={Boolean(modalStep || paymentStage || busy)} onPixelEvent={trackOfferEvent} />
+        <PreviewVideo key={offerMedia.videoUrl} media={offerMedia} modalOpen={Boolean(modalStep || paymentStage || busy)} onPixelEvent={trackOfferEvent} />
         <section className="ad-offer-content" aria-labelledby="ad-offer-title">
           <div className="ad-special-ribbon"><span aria-hidden="true">ϟ</span> Special offer</div>
           <p className="ad-offer-kicker">Only for you</p>
