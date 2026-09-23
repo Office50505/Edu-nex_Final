@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { adminRoutes, api, errorMessage, getToken, saveSession } from "./adminApi.js";
 
 export function AdminLoginPage() {
-  const [username, setUsername] = useState("admin");
   const [password, setPassword] = useState("");
   const [remember, setRemember] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -19,15 +18,9 @@ export function AdminLoginPage() {
 
   async function handleSubmit(event) {
     event.preventDefault();
-    const cleanUsername = username.trim();
-    if (!cleanUsername || !password) {
+    if (!password) {
       setMessageType("error");
-      setMessage("Enter admin username and password.");
-      return;
-    }
-    if (cleanUsername !== "admin") {
-      setMessageType("error");
-      setMessage("Admin username must be admin.");
+      setMessage("Enter the admin password.");
       return;
     }
 
@@ -38,7 +31,7 @@ export function AdminLoginPage() {
       const response = await fetch(api("/api/admin/login"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username: cleanUsername, email: cleanUsername, password }),
+        body: JSON.stringify({ password }),
       });
       const data = await response.json().catch(() => ({}));
       if (!response.ok) throw new Error(errorMessage(data, "Admin login failed."));
@@ -76,20 +69,14 @@ export function AdminLoginPage() {
             <small>Admin Workspace</small>
           </div>
         </div>
+        <span className="admin-auth-kicker">Secure workspace</span>
         <h1>Admin Login</h1>
-        <p>Use the local admin credentials to manage analytics, users, and courses.</p>
+        <p>Use your configured admin password to manage analytics, users, content, payments, and platform settings.</p>
 
         <form className="admin-auth-form" onSubmit={handleSubmit}>
-          <label htmlFor="adminUsername">Admin username</label>
-          <input
-            id="adminUsername"
-            autoComplete="username"
-            value={username}
-            onChange={(event) => setUsername(event.target.value)}
-          />
-
           <div className="admin-auth-label-row">
             <label htmlFor="adminPassword">Password</label>
+            <span>Configured in backend .env</span>
           </div>
           <div className="admin-auth-password-field">
             <input

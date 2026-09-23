@@ -98,8 +98,15 @@ function dateLabel(value) {
   return new Date(value).toLocaleDateString(undefined, { month: "short", day: "numeric" });
 }
 
+function cleanReplyText(text) {
+  return String(text || "")
+    .replace(/\s*\[S\d+\]/gi, "")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
+}
+
 function ReplyText({ text }) {
-  return String(text || "").split("\n").map((line, index) => <p key={index} style={{ marginBottom: 6 }}>{line.split(/(\*\*.*?\*\*)/g).map((part, i) => part.startsWith("**") ? <strong key={i}>{part.slice(2, -2)}</strong> : part)}</p>);
+  return cleanReplyText(text).split("\n").map((line, index) => <p key={index} style={{ marginBottom: 6 }}>{line.split(/(\*\*.*?\*\*)/g).map((part, i) => part.startsWith("**") ? <strong key={i}>{part.slice(2, -2)}</strong> : part)}</p>);
 }
 
 function NexAvatar({ className = "", alt = "", mood = "idle" }) {
@@ -387,7 +394,6 @@ export function AiTutorPage() {
                       <div className="bub-content">
                         <ReplyText text={message.content} />
                         {message.notice ? <p role="status">{message.notice}</p> : null}
-                        {message.sources?.length ? <div style={{ marginTop: 12, fontSize: ".8rem" }}><strong>References</strong>{message.sources.filter(source => source.url?.startsWith("/course-details.html?")).map(source => <p key={source.id}><a href={source.url}>[{source.id}] {source.title} — {source.section}</a></p>)}</div> : null}
                       </div>
                     </div>
                     {isUser ? <div className="learner-chat-avatar" aria-label={learnerName}>{learner.avatar ? <img src={learner.avatar} alt="" /> : learnerInitial}</div> : null}

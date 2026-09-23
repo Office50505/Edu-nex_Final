@@ -31,6 +31,20 @@ function safePageLink(value) {
   }
 }
 
+function formatMobile(value) {
+  const digits = String(value || "").replace(/\D/g, "");
+  if (!digits) return "No mobile number";
+  const withoutCountry = digits.length === 12 && digits.startsWith("91") ? digits.slice(2) : digits;
+  if (withoutCountry.length === 10) return `+91 ${withoutCountry.slice(0, 5)} ${withoutCountry.slice(5)}`;
+  return `+${digits}`;
+}
+
+function initialsFor(name, fallback = "?") {
+  const parts = String(name || "").trim().split(/\s+/).filter(Boolean);
+  if (!parts.length) return fallback;
+  return parts.slice(0, 2).map(part => part[0]?.toUpperCase()).join("");
+}
+
 export function AdminReportsPage() {
   const [reports, setReports] = useState([]);
   const [counts, setCounts] = useState({});
@@ -140,33 +154,46 @@ export function AdminReportsPage() {
         {!busy && !reports.length ? <div className="report-empty"><h2>No reports found</h2><p>New learner reports will appear here.</p></div> : null}
         {reports.map((report) => {
           const pageLink = safePageLink(report.pageUrl);
+          const reporterName = report.reporterName || "Anonymous learner";
+          const reporterEmail = report.reporterEmail || "No account email";
+          const reporterMobile = formatMobile(report.reporterMobileNumber);
           return (
-            <article className="report-card" key={report._id}>
-              <header>
-                <div>
+            <article className="report-card report-card-v2" key={report._id}>
+              <header className="report-card-header-v2">
+                <div className="report-person-block">
+                  <span className="report-avatar" aria-hidden="true">{initialsFor(reporterName, "U")}</span>
+                  <div>
+                    <p className="report-kicker">Reported by</p>
+                    <h2>{reporterName}</h2>
+                    <div className="report-contact-row">
+                      <span>{reporterMobile}</span>
+                      <span>{reporterEmail}</span>
+                    </div>
+                  </div>
+                </div>
+                <div className="report-meta-block">
                   <div className="report-card-badges">
                     <span className={`report-status report-status-${report.status}`}>{labelFor(STATUS_OPTIONS, report.status)}</span>
                     <span>{labelFor(CATEGORY_OPTIONS, report.category)}</span>
                   </div>
-                  <h2>{report.reference}</h2>
-                  <p>{formatDateTime(report.createdAt)}</p>
-                </div>
-                <div className="report-reporter">
-                  <strong>{report.reporterName || "Anonymous learner"}</strong>
-                  <span>{report.reporterEmail || "No account email"}</span>
+                  <strong>{report.reference}</strong>
+                  <span>{formatDateTime(report.createdAt)}</span>
                 </div>
               </header>
 
-              <p className="report-message">{report.message}</p>
+              <section className="report-message-box" aria-label="Learner message">
+                <span>What they said</span>
+                <p>{report.message}</p>
+              </section>
 
-              <dl className="report-context">
+              <dl className="report-context report-context-v2">
                 <div><dt>Page</dt><dd>{pageLink ? <a href={pageLink} target="_blank" rel="noreferrer">{report.route || pageLink} ↗</a> : report.route || "Unknown"}</dd></div>
                 <div><dt>Device</dt><dd>{labelFor([["mobile", "Mobile"], ["tablet", "Tablet"], ["desktop", "Desktop"]], report.deviceType)} · {report.viewport?.width || 0} × {report.viewport?.height || 0}</dd></div>
                 <div><dt>Course / lesson</dt><dd>{report.courseId || "—"} / {report.lessonId || "—"}</dd></div>
                 <div><dt>Theme</dt><dd>{report.theme || "Unknown"}</dd></div>
               </dl>
 
-              <div className="report-resolution">
+              <div className="report-resolution report-resolution-v2">
                 <label>
                   <span>Status</span>
                   <select value={report.status} onChange={(event) => changeReport(report._id, "status", event.target.value)} disabled={savingId === report._id}>

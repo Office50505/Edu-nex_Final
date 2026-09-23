@@ -2,7 +2,7 @@ import { PaymentGatewaySettings } from './PaymentGatewaySettings.jsx';
 import { MarketingSettings } from './MarketingSettings.jsx';
 import { useEffect, useMemo, useState } from "react";
 import { AdminShell, Message } from "./AdminShell.jsx";
-import { adminJson, formatDate, formatDateTime, formatNumber, formatWatchDuration, getAdmin, requireAdmin } from "./adminApi.js";
+import { adminJson, adminRoutes, formatDate, formatDateTime, formatNumber, formatWatchDuration, getAdmin, requireAdmin } from "./adminApi.js";
 
 function valueText(value, fallback = "Not returned") {
   if (value === null || value === undefined || value === "") return fallback;
@@ -158,7 +158,7 @@ export function AdminCourseReviewPage() {
               course.category?.name || "Uncategorized",
               formatNumber(course.videoCount || course.videos?.length || 0),
               <span className="flag-list">{course.flags.map((flag) => <Badge tone="warn" key={flag}>{flag}</Badge>)}</span>,
-              <a className="toolbar-button" href={`/admin/upload?courseId=${encodeURIComponent(course._id)}`}>Review</a>,
+              <a className="toolbar-button" href={`${adminRoutes.upload}?courseId=${encodeURIComponent(course._id)}`}>Review</a>,
             ],
           }))}
         />

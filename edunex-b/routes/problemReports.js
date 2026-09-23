@@ -29,7 +29,7 @@ async function optionalUser(req, _res, next) {
     const token = req.headers.authorization?.split(' ')[1];
     if (!token) return next();
     const decoded = jwt.verify(token, accessTokenSecret);
-    const user = await User.findById(decoded.userId).select('+activeSessionId').lean();
+    const user = await User.findById(decoded.userId).select('fullName name email mobileNumber activeSessionId').lean();
     if (user && user.activeSessionId === decoded.sessionId) req.reportUser = user;
   } catch (_) {
     // A report can still be filed anonymously if a saved session has expired.
@@ -59,6 +59,7 @@ router.post('/problem-reports', optionalUser, async (req, res) => {
       userId: user?._id || null,
       reporterName: clean(user?.fullName || user?.name, 160),
       reporterEmail: clean(user?.email, 160).toLowerCase(),
+      reporterMobileNumber: clean(user?.mobileNumber, 32),
       category,
       message,
       pageUrl: clean(req.body?.pageUrl, 2048),
@@ -96,13 +97,19 @@ router.get('/admin/problem-reports', protectAdmin, async (req, res) => {
     if (category && categories.has(category)) filter.category = category;
 
     const [reports, total, statusCounts] = await Promise.all([
-      ProblemReport.find(filter).sort({ createdAt: -1 }).skip((page - 1) * limit).limit(limit).lean(),
+      ProblemReport.find(filter).sort({ createdAt: -1 }).skip((page - 1) * limit).limit(limit).populate('userId', 'fullName email mobileNumber').lean(),
       ProblemReport.countDocuments(filter),
       ProblemReport.aggregate([{ $group: { _id: '$status', count: { $sum: 1 } } }]),
     ]);
 
     return res.json({
-      reports: reports.map(report => ({ ...report, reference: referenceFor(report) })),
+      reports: reports.map(report => ({
+        ...report,
+        reporterName: report.reporterName || report.userId?.fullName || '',
+        reporterEmail: report.reporterEmail || report.userId?.email || '',
+        reporterMobileNumber: report.reporterMobileNumber || report.userId?.mobileNumber || '',
+        reference: referenceFor(report),
+      })),
       page,
       limit,
       total,
@@ -127,9 +134,15 @@ router.patch('/admin/problem-reports/:id', protectAdmin, async (req, res) => {
       updatedBy: clean(req.admin?.email || req.admin?.username || 'admin', 160),
       resolvedAt: status === 'resolved' || status === 'closed' ? new Date() : null,
     };
-    const report = await ProblemReport.findByIdAndUpdate(req.params.id, update, { new: true, runValidators: true }).lean();
+    const report = await ProblemReport.findByIdAndUpdate(req.params.id, update, { new: true, runValidators: true }).populate('userId', 'fullName email mobileNumber').lean();
     if (!report) return res.status(404).json({ error: 'Report not found.' });
-    return res.json({ report: { ...report, reference: referenceFor(report) }, message: 'Report updated.' });
+    return res.json({ report: {
+      ...report,
+      reporterName: report.reporterName || report.userId?.fullName || '',
+      reporterEmail: report.reporterEmail || report.userId?.email || '',
+      reporterMobileNumber: report.reporterMobileNumber || report.userId?.mobileNumber || '',
+      reference: referenceFor(report),
+    }, message: 'Report updated.' });
   } catch (error) {
     if (error.name === 'ValidationError') return res.status(400).json({ error: error.message });
     return res.status(503).json({ error: 'Unable to update the report.' });

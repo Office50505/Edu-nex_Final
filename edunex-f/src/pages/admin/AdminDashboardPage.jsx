@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { AdminShell, Message } from "./AdminShell.jsx";
-import { adminJson, formatDate, formatNumber, formatWatchDuration, requireAdmin } from "./adminApi.js";
+import { adminJson, adminRoutes, formatDate, formatNumber, formatWatchDuration, requireAdmin } from "./adminApi.js";
 
 function hasNumber(value) {
   return value !== null && value !== undefined && value !== "" && Number.isFinite(Number(value));
@@ -271,12 +271,12 @@ export function AdminDashboardPage() {
     ["Recent Subscriptions", (data?.recentSubscriptions || []).slice(0, 8).map((subscription) => ({ title: textValue(subscription.user?.fullName, subscription.user?.email), meta: textValue(subscription.status, subscription.subscriptionType), value: money(subscription.amount) })), "No recent subscriptions."],
   ];
   const actionInbox = [
-    { title: `${displayNumber(totals.failedOrdersInRange)} failed payments`, meta: "Retry checkout follow-up or contact learners", tone: "bad", href: "/admin/payments" },
-    { title: `${displayNumber(totals.pendingOrdersInRange)} pending payments`, meta: "Reconcile pending payment state", tone: "warn", href: "/admin/orders" },
-    { title: `${displayNumber(totals.draftCourses)} draft courses`, meta: "Review content before publishing", tone: "warn", href: "/admin/course-review" },
-    { title: `${displayNumber(data?.certificationSummary?.pendingProgress)} certificate blockers`, meta: "Completion criteria or learner eligibility pending", tone: "warn", href: "/admin/certifications" },
-    { title: data?.healthReport ? `${displayNumber(data.healthReport.summary?.attention)} system issues` : "Checking system issues", meta: data?.healthReport ? `${displayNumber(data.healthReport.summary?.unverified)} checks unverified` : "System health loads in the background", tone: data?.healthReport?.summary?.attention ? "bad" : "good", href: "/admin/system-health" },
-    { title: `${displayNumber(learning.activeLearnersInRange)} active learners`, meta: "Track low-progress cohorts", tone: "good", href: "/admin/progress" },
+    { title: `${displayNumber(totals.failedOrdersInRange)} failed payments`, meta: "Retry checkout follow-up or contact learners", tone: "bad", href: adminRoutes.payments },
+    { title: `${displayNumber(totals.pendingOrdersInRange)} pending payments`, meta: "Reconcile pending payment state", tone: "warn", href: adminRoutes.orders },
+    { title: `${displayNumber(totals.draftCourses)} draft courses`, meta: "Review content before publishing", tone: "warn", href: adminRoutes.courseReview },
+    { title: `${displayNumber(data?.certificationSummary?.pendingProgress)} certificate blockers`, meta: "Completion criteria or learner eligibility pending", tone: "warn", href: adminRoutes.certifications },
+    { title: data?.healthReport ? `${displayNumber(data.healthReport.summary?.attention)} system issues` : "Checking system issues", meta: data?.healthReport ? `${displayNumber(data.healthReport.summary?.unverified)} checks unverified` : "System health loads in the background", tone: data?.healthReport?.summary?.attention ? "bad" : "good", href: adminRoutes.health },
+    { title: `${displayNumber(learning.activeLearnersInRange)} active learners`, meta: "Track low-progress cohorts", tone: "good", href: adminRoutes.progress },
   ];
   const ordersByStatus = [
     ["Paid", totals.paidOrdersInRange, "good"],
@@ -324,7 +324,7 @@ export function AdminDashboardPage() {
           {loading && !data ? <div className="loading-state">Loading chart...</div> : <TrendChart rows={data?.dailySeries} />}
         </article>
         <article className="dashboard-panel action-inbox" aria-label="Action inbox">
-          <div className="panel-head"><div><h2 className="panel-title">Action Inbox</h2><p>Operational alerts that need daily review.</p></div><a href="/admin/system-health">View all</a></div>
+          <div className="panel-head"><div><h2 className="panel-title">Action Inbox</h2><p>Operational alerts that need daily review.</p></div><a href={adminRoutes.health}>View all</a></div>
           <div className="action-list">
             {actionInbox.map((item) => <a className={`action-item ${item.tone}`} href={item.href} key={item.title}><strong>{item.title}</strong><span>{item.meta}</span></a>)}
           </div>

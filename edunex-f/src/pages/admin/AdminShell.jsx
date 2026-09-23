@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { adminRoutes, logout } from "./adminApi.js";
 
 const sections = [
-  { label: 'Overview', links: [['dashboard', 'Overview', adminRoutes.dashboard, 'home']] },
+  { label: 'Command', links: [['dashboard', 'Dashboard', adminRoutes.dashboard, 'home']] },
   { label: 'People', links: [['users', 'Learners', adminRoutes.users, 'users'], ['subscribers', 'Subscribers', adminRoutes.subscribers, 'card']] },
   { label: 'Content', links: [['courses', 'Course library', adminRoutes.courses, 'book'], ['upload', 'Create course', adminRoutes.upload, 'plus'], ['courseReview', 'Course review', adminRoutes.courseReview, 'check']] },
   { label: 'Commerce', links: [['orders', 'Orders', adminRoutes.orders, 'bag'], ['payments', 'Payments', adminRoutes.payments, 'pay'], ['paymentAuditor', 'Payment auditor', adminRoutes.paymentAuditor, 'audit'], ['subscriptions', 'Subscriptions', adminRoutes.subscriptions, 'loop']] },
@@ -47,7 +47,7 @@ export function AdminShell({ activePage, title, subtitle, children, actions = nu
     document.body.classList.toggle("admin-sidebar-collapsed", collapsed);
     localStorage.setItem("edunexAdminTheme", theme);
   }, [theme, collapsed]);
-  const section = sections.find(item => item.links.some(([key]) => key === activePage))?.label || 'Overview';
+  const section = sections.find(item => item.links.some(([key]) => key === activePage))?.label || 'Command';
   function handleGlobalSearch(event) {
     event.preventDefault();
     const query = globalSearch.trim();
@@ -86,19 +86,28 @@ export function AdminShell({ activePage, title, subtitle, children, actions = nu
             {group.links.map(([key, label, href, icon]) => <a key={key} href={href} title={navLabels[key] || label} className={activePage === key ? 'is-active' : ''} aria-current={activePage === key ? 'page' : undefined}><NavIcon type={icon} /><span>{navLabels[key] || label}</span></a>)}
           </div>)}
         </nav>
-        <div className="admin-sidebar-footer"><a href="/" target="_blank" rel="noreferrer">View website ↗</a><button type="button" onClick={logout}>Log out</button></div>
+        <div className="admin-sidebar-footer">
+          <a className="admin-sidebar-site-link" href="/" target="_blank" rel="noreferrer">View website ↗</a>
+          <button className="admin-sidebar-logout" type="button" onClick={logout}>Log out</button>
+        </div>
       </aside>
       <main id="admin-main" tabIndex={-1} className={`app-shell ${shellClass} admin-workspace-main`}>
         <header className="admin-workspace-header">
-          <div><p className="admin-breadcrumb">Workspace / {section}</p><h1>{title}</h1><p className="admin-header-description">{subtitle}</p></div>
-          <form className="admin-global-search" onSubmit={handleGlobalSearch} role="search">
-            <label htmlFor="adminGlobalSearch">Search</label>
-            <input id="adminGlobalSearch" value={globalSearch} onChange={event => setGlobalSearch(event.target.value)} placeholder="Search learners, courses, orders, certificates..." />
-            <button type="submit">Search</button>
-          </form>
-          <div className="toolbar-actions">
-            <button className="toolbar-button" type="button" onClick={() => setTheme(current => current === 'light' ? 'dark' : 'light')} aria-pressed={theme === 'light'}>{theme === 'light' ? 'Dark theme' : 'Light theme'}</button>
-            {actions}
+          <div className="admin-header-main">
+            <p className="admin-breadcrumb">Workspace / {section}</p>
+            <h1>{title}</h1>
+            <p className="admin-header-description">{subtitle}</p>
+          </div>
+          <div className="admin-header-tools">
+            <form className="admin-global-search" onSubmit={handleGlobalSearch} role="search">
+              <label htmlFor="adminGlobalSearch">Search</label>
+              <input id="adminGlobalSearch" value={globalSearch} onChange={event => setGlobalSearch(event.target.value)} placeholder="Search learners, courses, orders..." />
+              <button className="admin-search-button" type="submit">Search</button>
+            </form>
+            <div className="toolbar-actions">
+              <button className="toolbar-button admin-theme-button" type="button" onClick={() => setTheme(current => current === 'light' ? 'dark' : 'light')} aria-pressed={theme === 'light'}>{theme === 'light' ? 'Dark' : 'Light'}</button>
+              {actions}
+            </div>
           </div>
         </header>
         {children}

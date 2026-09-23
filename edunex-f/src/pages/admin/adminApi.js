@@ -3,24 +3,54 @@ import { apiUrl } from "../../lib/apiUrl.js";
 export const TOKEN_KEY = "edunexAdminToken";
 export const ADMIN_KEY = "edunexAdmin";
 
+const ADMIN_STANDALONE = import.meta.env.VITE_ADMIN_STANDALONE === "true";
+const ADMIN_ROUTES_DISABLED = import.meta.env.VITE_DISABLE_ADMIN_ROUTES === "true";
+const ADMIN_BASE_PATH = ADMIN_STANDALONE ? "" : "/admin";
+
+function adminPath(slug = "") {
+  const cleanSlug = String(slug || "").replace(/^\/+|\/+$/g, "");
+  if (ADMIN_STANDALONE) return cleanSlug ? `/${cleanSlug}` : "/";
+  return cleanSlug ? `${ADMIN_BASE_PATH}/${cleanSlug}` : ADMIN_BASE_PATH;
+}
+
 export const adminRoutes = {
-  login: "/admin/login",
-  dashboard: "/admin/dashboard",
-  users: "/admin/users",
-  subscribers: "/admin/subscribers",
-  courses: "/admin/courses",
-  upload: "/admin/upload",
-  courseReview: "/admin/course-review",
-  orders: "/admin/orders",
-  payments: "/admin/payments",
-  paymentAuditor: "/admin/payment-auditor",
-  subscriptions: "/admin/subscriptions",
-  progress: "/admin/progress",
-  reports: "/admin/reports",
-  health: "/admin/system-health",
-  certifications: "/admin/certifications",
-  auditLog: "/admin/audit-log",
-  settings: "/admin/settings",
+  login: adminPath("login"),
+  dashboard: adminPath("dashboard"),
+  users: adminPath("users"),
+  subscribers: adminPath("subscribers"),
+  courses: adminPath("courses"),
+  upload: adminPath("upload"),
+  courseReview: adminPath("course-review"),
+  orders: adminPath("orders"),
+  payments: adminPath("payments"),
+  paymentAuditor: adminPath("payment-auditor"),
+  subscriptions: adminPath("subscriptions"),
+  progress: adminPath("progress"),
+  reports: adminPath("reports"),
+  health: adminPath("system-health"),
+  certifications: adminPath("certifications"),
+  auditLog: adminPath("audit-log"),
+  settings: adminPath("settings"),
+};
+
+const adminPageBySlug = {
+  login: "login",
+  dashboard: "dashboard",
+  users: "users",
+  subscribers: "subscribers",
+  courses: "courses",
+  upload: "upload",
+  "course-review": "courseReview",
+  orders: "orders",
+  payments: "payments",
+  "payment-auditor": "paymentAuditor",
+  subscriptions: "subscriptions",
+  progress: "progress",
+  reports: "reports",
+  "system-health": "health",
+  certifications: "certifications",
+  "audit-log": "auditLog",
+  settings: "settings",
 };
 
 const oldAdminRouteMap = {
@@ -47,42 +77,40 @@ const oldAdminRouteMap = {
   "course-posting.html": adminRoutes.upload,
 };
 
-const cleanAdminRouteMap = {
-  "admin/login": "login",
-  "admin/dashboard": "dashboard",
-  "admin/users": "users",
-  "admin/subscribers": "subscribers",
-  "admin/courses": "courses",
-  "admin/upload": "upload",
-  "admin/course-review": "courseReview",
-  "admin/orders": "orders",
-  "admin/payments": "payments",
-  "admin/payment-auditor": "paymentAuditor",
-  "admin/subscriptions": "subscriptions",
-  "admin/progress": "progress",
-  "admin/reports": "reports",
-  "admin/system-health": "health",
-  "admin/certifications": "certifications",
-  "admin/audit-log": "auditLog",
-  "admin/settings": "settings",
-};
-
 function normalizedPath(pathname = "/") {
   return String(pathname || "/").replace(/^\/+/, "").replace(/\/+$/, "");
 }
 
+function adminPageForCleanPath(normalized) {
+  if (ADMIN_STANDALONE) {
+    if (!normalized) return "login";
+    return adminPageBySlug[normalized] || null;
+  }
+  if (!normalized.startsWith("admin")) return null;
+  const slug = normalized === "admin" ? "login" : normalized.replace(/^admin\/?/, "");
+  return adminPageBySlug[slug] || null;
+}
+
 export function adminPageFromPath(pathname = "/") {
+  if (ADMIN_ROUTES_DISABLED) return null;
   const normalized = normalizedPath(pathname);
-  if (cleanAdminRouteMap[normalized]) return cleanAdminRouteMap[normalized];
+  const cleanPage = adminPageForCleanPath(normalized);
+  if (cleanPage) return cleanPage;
   const cleanPath = oldAdminRouteMap[normalized];
   if (!cleanPath) return null;
-  return cleanAdminRouteMap[normalizedPath(cleanPath)] || null;
+  return adminPageForCleanPath(normalizedPath(cleanPath));
 }
 
 export function canonicalAdminPath(pathname = "/") {
+  if (ADMIN_ROUTES_DISABLED) return null;
   const normalized = normalizedPath(pathname);
-  if (cleanAdminRouteMap[normalized]) return null;
-  return oldAdminRouteMap[normalized] || null;
+  if (adminPageForCleanPath(normalized)) return null;
+  const oldPath = oldAdminRouteMap[normalized];
+  if (!oldPath) return null;
+  const oldPage = adminPageForCleanPath(normalizedPath(oldPath));
+  if (!oldPage) return null;
+  const routeEntry = Object.entries(adminPageBySlug).find(([, page]) => page === oldPage);
+  return routeEntry ? adminPath(routeEntry[0] === "login" ? "login" : routeEntry[0]) : null;
 }
 
 export function api(path) {

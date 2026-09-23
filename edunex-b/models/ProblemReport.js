@@ -19,6 +19,12 @@ const problemReportSchema = new mongoose.Schema({
     maxlength: 160,
     default: '',
   },
+  reporterMobileNumber: {
+    type: String,
+    trim: true,
+    maxlength: 32,
+    default: '',
+  },
   category: {
     type: String,
     enum: ['technical', 'video', 'payment', 'ai', 'account', 'other'],
