@@ -1,7 +1,7 @@
 const express = require('express');
 const Course = require('../models/Course');
 const { requireCompatibleAuth } = require('../middleware/compatAuth');
-const { FAL_API_KEY, compactText, sanitizeHistory, buildContext, callFalOpenRouter, builtInCourseGuide, OUT_OF_SCOPE_REPLY } = require('../services/aiTutorService');
+const { FAL_API_KEY, compactText, sanitizeHistory, buildContext, callFalOpenRouter, builtInCourseGuide, cleanLearnerReply, OUT_OF_SCOPE_REPLY } = require('../services/aiTutorService');
 const router = express.Router();
 
 router.get('/health', requireCompatibleAuth(), (_req, res) => {
@@ -68,13 +68,8 @@ async function handleTutorChat(req, res) {
         knowledge,
       });
     }
-    reply = String(reply || '').trim().slice(0, 6000) || OUT_OF_SCOPE_REPLY;
-    const availableSources = knowledge?.sources || [];
-    reply = reply.replace(/\[(S\d+(?:\s*,\s*S\d+)*)\]/g, (_marker, group) =>
-      [...new Set(group.split(',').map(id => id.trim()))]
-        .filter(id => availableSources.some(source => source.id === id))
-        .map(id => `[${id}]`).join(' '));
-    const sources = availableSources.filter(source => reply.includes(`[${source.id}]`));
+    reply = cleanLearnerReply(String(reply || '').trim().slice(0, 6000)) || OUT_OF_SCOPE_REPLY;
+    const sources = [];
     res.json({ answer: reply, reply, provider, sources,
       notice: provider === 'built-in-course-guide' ? 'AI is temporarily unavailable. Showing the basic course guide.' : null,
       knowledge: knowledge?.materialsAvailable ? 'course-materials' : 'course-overviews',

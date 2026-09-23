@@ -4,7 +4,7 @@ const { publicPlayableVideoInfo } = require('./mobileCompatibilityService');
 // separately, once, instead of duplicating its base64 bytes for every lesson.
 const playlistProjection = [
   'title', 'description', 'status', 'thumbnail.mimeType', 'thumbnailHorizontal.mimeType', 'thumbnailVertical.mimeType', 'thumbnailUrl', 'thumbnailVerticalUrl', 'notesUrl',
-  ...['_id', 'title', 'topic', 'description', 'provider', 'sourceType', 'videoUrl',
+  ...['_id', 'title', 'topic', 'description', 'notes', 'provider', 'sourceType', 'videoUrl',
     'embedUrl', 'bunnyVideoId', 'bunnyLibraryId', 'youtubeId', 'hlsUrl', 'playlistUrl',
     'streamUrl', 'thumbnailUrl', 'thumbnailVerticalUrl', 'thumbnail.mimeType',
     'transcriptUrl', 'notesUrl', 'notes', 'examplePrompt', 'duration', 'order'].map(field => `videos.${field}`),

@@ -39,6 +39,17 @@ function titleFromMessage(value) {
   return text.length > 42 ? `${text.slice(0, 42).trim()}...` : text;
 }
 
+function cleanAssistantReply(value) {
+  return String(value || "")
+    .replace(/\n\s*(?:References|Sources)\s*:?\s*\n(?:\s*\[S\d+\][^\n]*(?:\n|$))+/gi, "\n")
+    .replace(/^\s*(?:References|Sources)\s*:?\s*$/gim, "")
+    .replace(/^\s*\[S\d+\]\s*/gim, "")
+    .replace(/\s*\[(?:S\d+)(?:\s*,\s*S\d+)*\]/g, "")
+    .replace(/[ \t]+\n/g, "\n")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
+}
+
 function conversationStorageKey(owner) {
   return `edunexNexAiChats:${owner || "guest"}`;
 }
@@ -57,9 +68,8 @@ function readStoredSessions(owner) {
               .filter((message) => message && (message.role === "user" || message.role === "assistant") && typeof message.content === "string")
               .map((message) => ({
                 role: message.role,
-                content: message.content.slice(0, 4000),
+                content: (message.role === "assistant" ? cleanAssistantReply(message.content) : message.content).slice(0, 4000),
                 notice: typeof message.notice === "string" ? message.notice.slice(0, 1000) : "",
-                sources: Array.isArray(message.sources) ? message.sources.slice(0, 8) : [],
                 createdAt: Number(message.createdAt || Date.now()),
               }))
           : [],
@@ -256,9 +266,8 @@ export function AiTutorPage() {
   const appendConversationMessage = (sessionId, message) => {
     const record = {
       role: message.role,
-      content: String(message.content || "").slice(0, 4000),
+      content: (message.role === "assistant" ? cleanAssistantReply(message.content) : String(message.content || "")).slice(0, 4000),
       notice: typeof message.notice === "string" ? message.notice.slice(0, 1000) : "",
-      sources: Array.isArray(message.sources) ? message.sources.slice(0, 8) : [],
       createdAt: Date.now(),
     };
     setMessages(current => [...current, record].slice(-MAX_MESSAGES_PER_SESSION));
@@ -300,7 +309,7 @@ export function AiTutorPage() {
       });
       if (requestGeneration !== generation.current) return;
       if (!data?.reply) throw new Error("No answer returned. Please try again.");
-      const assistantMessage = { role: "assistant", content: data.reply, sources: data.sources || [], notice: data.notice };
+      const assistantMessage = { role: "assistant", content: data.reply, notice: data.notice };
       historyRef.current = [...historyBeforeSend, { role: "user", content: text.slice(0, 2000) }, { role: "assistant", content: data.reply.slice(0, 2000) }].slice(-12);
       appendConversationMessage(requestSessionId, assistantMessage);
       setStatus("Active now");

@@ -117,6 +117,7 @@ function publicVideoInfo(video = {}, index = 0) {
     _id: getVideoKey(video, index),
     title: video.title || `Video ${index + 1}`,
     topic: video.topic || null,
+    notes: video.notes || '',
     order: video.order ?? index + 1,
     duration: video.duration ?? video.durationSeconds ?? video.lengthSeconds ?? video.videoDuration ?? null,
   };

@@ -230,7 +230,7 @@ function bunnyStreamUrl(lesson) {
 }
 
 function noteValue(lesson, course) {
-  return lesson?.notesUrl || lesson?.notesURL || lesson?.notesLink || lesson?.notes
+  return lesson?.notesUrl || lesson?.notesURL || lesson?.notesLink || lesson?.notes || lesson?.lessonNotes
     || course?.notesUrl || course?.notesURL || course?.notesLink || course?.courseNotesUrl || course?.notes || course?.courseNotes || "";
 }
 
@@ -938,7 +938,7 @@ function Player({ course, lesson: savedLesson, lessonIndex, autoNext, autoplay =
 function NotesModal({ course, lesson, lessonIndex, onClose }) {
   const closeButtonRef = useRef(null);
   const value = String(noteValue(lesson, course)).trim();
-  const title = lesson?.title ? `Lecture ${lessonIndex + 1}: ${lesson.title}` : (course?.title || "Course notes");
+  const title = lesson?.title ? `${lesson.title} notes` : (course?.title || "Course notes");
 
   useEffect(() => {
     closeButtonRef.current?.focus();
@@ -965,7 +965,7 @@ function NotesModal({ course, lesson, lessonIndex, onClose }) {
           </div>
         </header>
         <div className="notes-modal-body" id="notesBody">
-          {value ? <div>{value.split("\n").map((line, index) => <span key={`${line}-${index}`}>{line}<br /></span>)}</div> : <div className="notes-empty">No notes are attached to this lecture yet.</div>}
+          {value ? <div>{value.split("\n").map((line, index) => <span key={`${line}-${index}`}>{line}<br /></span>)}</div> : <div className="notes-empty">No notes are attached to this lesson yet.</div>}
         </div>
       </div>
     </div>

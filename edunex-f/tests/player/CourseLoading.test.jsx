@@ -298,6 +298,27 @@ it('uses the desktop back arrow to exit fullscreen before leaving the course', a
   expect(window.location.pathname).toBe('/videos');
 });
 
+it('shows notes from the active lesson in the notes modal', async () => {
+  const courseWithNotes = {
+    ...course,
+    notes: '',
+    notesUrl: '',
+    videos: [
+      { ...course.videos[0], notes: 'First lesson saved notes' },
+      { ...course.videos[0], _id: 'lesson-2', title: 'Second lesson', notes: 'Second lesson saved notes' },
+    ],
+  };
+  vi.stubGlobal('fetch', vi.fn(() => reply(courseWithNotes)));
+
+  render(<VideosPage />);
+
+  expect(await screen.findByText('Lesson player ready')).toBeTruthy();
+  fireEvent.click(screen.getByRole('button', { name: 'Open lecture notes' }));
+  expect(screen.getByRole('heading', { name: 'First lesson notes' })).toBeTruthy();
+  expect(screen.getByText('First lesson saved notes')).toBeTruthy();
+  expect(screen.queryByText('No notes are attached to this course yet.')).toBeNull();
+});
+
 it('keeps an explicitly selected lecture instead of replacing it with resume progress', async () => {
   window.history.replaceState(null, '', '/videos?courseId=course&video=0');
   const twoLessons = {

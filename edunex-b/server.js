@@ -3756,7 +3756,9 @@ if (SERVE_FRONTEND) {
   });
 }
 
-app.listen(PORT, () => {
-  console.log(`Skillomate API listening on port ${PORT}`);
+const HOST = process.env.HOST || '127.0.0.1';
+
+app.listen(PORT, HOST, () => {
+  console.log(`Skillomate API listening on http://${HOST}:${PORT}`);
 });
 // meri marji mai chahye kuch bhi karu 

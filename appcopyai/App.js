@@ -89,8 +89,11 @@ const AI_ROBOT_AVATARS = Object.keys(AI_ROBOT_IMAGES).map((id, index) => ({
 const AI_AVATAR_STORAGE_KEY = "skillomate_ai_avatar";
 const AI_NAME_STORAGE_PREFIX = "skillomate_ai_name";
 const AI_NAME_SETUP_STORAGE_PREFIX = "skillomate_ai_name_setup";
+const AI_CHAT_STORAGE_PREFIX = "skillomate_ai_chats";
 const DEFAULT_AI_ROBOT_ID = "nex";
 const DEFAULT_AI_NAME = "AI";
+const MAX_AI_CHAT_SESSIONS = 24;
+const MAX_AI_CHAT_MESSAGES = 80;
 
 function normalizeAiName(value) {
   return String(value || "").replace(/\s+/g, " ").trim().slice(0, 24);
@@ -102,6 +105,81 @@ function aiNameStorageKeys(user) {
     name: `${AI_NAME_STORAGE_PREFIX}:${owner}`,
     setup: `${AI_NAME_SETUP_STORAGE_PREFIX}:${owner}`,
   };
+}
+
+function aiChatOwner(user) {
+  return String(user?._id || user?.id || "guest");
+}
+
+function aiChatScope(mode, fixedCourse) {
+  if (mode !== "course") return "master";
+  const courseKey = fixedCourse?._id || fixedCourse?.id || fixedCourse?.slug || fixedCourse?.title || "course";
+  return `course:${String(courseKey).replace(/[^a-z0-9._:-]+/gi, "_")}`;
+}
+
+function aiChatStorageKey(user, mode, fixedCourse) {
+  return `${AI_CHAT_STORAGE_PREFIX}:${aiChatOwner(user)}:${aiChatScope(mode, fixedCourse)}`;
+}
+
+function newAiChatId() {
+  return `nai-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
+}
+
+function createAiConversationSession(messages = []) {
+  return { id: newAiChatId(), title: "New chat", updatedAt: Date.now(), messages };
+}
+
+function aiChatTitle(value) {
+  const text = String(value || "").replace(/\s+/g, " ").trim();
+  if (!text) return "New chat";
+  return text.length > 42 ? `${text.slice(0, 42).trim()}...` : text;
+}
+
+function aiChatDateLabel(value) {
+  const delta = Date.now() - Number(value || Date.now());
+  if (delta < 60 * 1000) return "Just now";
+  if (delta < 60 * 60 * 1000) return `${Math.max(1, Math.floor(delta / 60000))} min ago`;
+  if (delta < 24 * 60 * 60 * 1000) return `${Math.max(1, Math.floor(delta / 3600000))} hr ago`;
+  return new Date(value).toLocaleDateString("en-IN", { day: "numeric", month: "short" });
+}
+
+function sanitizeAiChatMessage(message) {
+  if (!message || !["user", "assistant"].includes(message.role) || typeof message.content !== "string") return null;
+  return {
+    role: message.role,
+    content: message.content.slice(0, 4000),
+    failed: Boolean(message.failed),
+    createdAt: Number(message.createdAt || Date.now()),
+  };
+}
+
+function readAiChatSessions(raw) {
+  try {
+    const parsed = JSON.parse(raw || "[]");
+    if (!Array.isArray(parsed)) return [];
+    return parsed
+      .map(session => ({
+        id: String(session?.id || ""),
+        title: String(session?.title || "New chat").slice(0, 80),
+        updatedAt: Number(session?.updatedAt || Date.now()),
+        messages: Array.isArray(session?.messages)
+          ? session.messages.map(sanitizeAiChatMessage).filter(Boolean).slice(-MAX_AI_CHAT_MESSAGES)
+          : [],
+      }))
+      .filter(session => session.id && session.messages.some(message => message.role === "user"))
+      .sort((a, b) => b.updatedAt - a.updatedAt)
+      .slice(0, MAX_AI_CHAT_SESSIONS);
+  } catch (_) {
+    return [];
+  }
+}
+
+function writeAiChatSessions(storageKey, sessions) {
+  const stored = sessions
+    .filter(session => Array.isArray(session.messages) && session.messages.some(message => message.role === "user"))
+    .sort((a, b) => Number(b.updatedAt || 0) - Number(a.updatedAt || 0))
+    .slice(0, MAX_AI_CHAT_SESSIONS);
+  return AsyncStorage.setItem(storageKey, JSON.stringify(stored)).catch(() => {});
 }
 
 function getQaCertificatesForUser(user) {
@@ -1790,36 +1868,83 @@ function UpgradeModal({ visible, onClose, onStartTrial, trialLoading = false }) 
   );
 }
 
+const NOTIFICATION_VIEWED_SIGNATURE_KEY = "skillomate_notifications_viewed_signature";
+const PROBLEM_REPORT_CATEGORIES = [
+  { value: "technical", label: "Technical problem" },
+  { value: "video", label: "Video or lesson" },
+  { value: "payment", label: "Payment or subscription" },
+  { value: "ai", label: "AI tutor" },
+  { value: "account", label: "Account or login" },
+  { value: "other", label: "Something else" },
+];
+const NOTIFICATION_PREVIEWS = [
+  {
+    icon: "play-circle-outline",
+    title: "New AI lesson is ready",
+    body: "ChatGPT for Professionals added a short lesson on client-ready prompts.",
+    time: "2 min ago",
+    actionKey: "courses",
+  },
+  {
+    icon: "ribbon-outline",
+    title: "Keep your streak moving",
+    body: "Finish one more lesson today to stay on track for your certificate.",
+    time: "Today",
+    actionKey: "courses",
+  },
+  {
+    icon: "sparkles-outline",
+    title: "Nex AI suggestion",
+    body: "Try a 7-day roadmap for learning AI automation and earning with it.",
+    time: "Today",
+    actionKey: "ai",
+  },
+  {
+    icon: "pricetag-outline",
+    title: "Trial reminder",
+    body: "Your ₹1 Trial and monthly plan details are available in Subscription Details.",
+    time: "This week",
+    actionKey: "subscription",
+  },
+];
+
+function getNotificationSignature(items = NOTIFICATION_PREVIEWS) {
+  return items.map(item => [item.title, item.body, item.time].join("\u001f")).join("\u001e");
+}
+
+function useNotificationReadState() {
+  const notificationSignature = useMemo(() => getNotificationSignature(), []);
+  const [hasUnreadNotifications, setHasUnreadNotifications] = useState(false);
+
+  useEffect(() => {
+    let mounted = true;
+    AsyncStorage.getItem(NOTIFICATION_VIEWED_SIGNATURE_KEY)
+      .then(viewedSignature => {
+        if (mounted) setHasUnreadNotifications(viewedSignature !== notificationSignature);
+      })
+      .catch(() => {
+        if (mounted) setHasUnreadNotifications(true);
+      });
+    return () => { mounted = false; };
+  }, [notificationSignature]);
+
+  const markNotificationsViewed = useCallback(() => {
+    setHasUnreadNotifications(false);
+    AsyncStorage.setItem(NOTIFICATION_VIEWED_SIGNATURE_KEY, notificationSignature).catch(() => {});
+  }, [notificationSignature]);
+
+  return { hasUnreadNotifications, markNotificationsViewed };
+}
+
 function NotificationPreviewModal({ visible, onClose, onOpenCourses, onOpenAI, onOpenSubscription }) {
-  const items = [
-    {
-      icon: "play-circle-outline",
-      title: "New AI lesson is ready",
-      body: "ChatGPT for Professionals added a short lesson on client-ready prompts.",
-      time: "2 min ago",
-      action: onOpenCourses,
-    },
-    {
-      icon: "ribbon-outline",
-      title: "Keep your streak moving",
-      body: "Finish one more lesson today to stay on track for your certificate.",
-      time: "Today",
-      action: onOpenCourses,
-    },
-    {
-      icon: "sparkles-outline",
-      title: "Nex AI suggestion",
-      body: "Try a 7-day roadmap for learning AI automation and earning with it.",
-      time: "Today",
-      action: onOpenAI,
-    },
-    {
-      icon: "pricetag-outline",
-      title: "Trial reminder",
-      body: "Your ₹1 Trial and monthly plan details are available in Subscription Details.",
-      time: "This week",
-    },
-  ];
+  const items = useMemo(() => {
+    const actions = {
+      ai: onOpenAI,
+      courses: onOpenCourses,
+      subscription: onOpenSubscription,
+    };
+    return NOTIFICATION_PREVIEWS.map(item => ({ ...item, action: actions[item.actionKey] }));
+  }, [onOpenAI, onOpenCourses, onOpenSubscription]);
 
   const openItem = action => {
     action?.();
@@ -1872,13 +1997,193 @@ function NotificationPreviewModal({ visible, onClose, onOpenCourses, onOpenAI, o
   );
 }
 
-function BottomNav({ active, onHome, onCourses, onAI, onDownloads, onProfile, aiRobotId, forceDark = false }) {
+function appProblemReportContext(user, route = "home") {
+  const viewport = Dimensions.get("window");
+  const width = Math.round(viewport.width || 0);
+  const height = Math.round(viewport.height || 0);
+  const appVersion = Constants.expoConfig?.version || Constants.nativeAppVersion || "unknown";
+  return {
+    pageUrl: `skillomate-app://${route}`,
+    pageTitle: `Skillomate app - ${route}`,
+    route: `app/${route}`,
+    theme: "noir",
+    viewport: { width, height },
+    deviceType: width >= 768 ? "tablet" : "mobile",
+    userAgent: `SkillomateApp/${appVersion} ${Platform.OS}/${Platform.Version}`,
+    userId: user?._id || "",
+    sessionId: user?.sessionId || "",
+  };
+}
+
+async function submitProblemReportFromApp({ user, category, message, route = "home" }) {
+  const token = user?.accessToken || user?.token || "";
+  const response = await fetch(`${API_BASE}/api/problem-reports`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+    body: JSON.stringify({
+      category,
+      message,
+      ...appProblemReportContext(user, route),
+    }),
+  });
+  const data = await readJsonResponse(response);
+  if (!response.ok) throw new Error(data.error || "Unable to send your report. Please try again.");
+  return data;
+}
+
+function ProblemReportModal({ visible, onClose, user, route = "home" }) {
+  const [category, setCategory] = useState("technical");
+  const [message, setMessage] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState("");
+  const [reference, setReference] = useState("");
+
+  useEffect(() => {
+    if (!visible) {
+      setCategory("technical");
+      setMessage("");
+      setBusy(false);
+      setError("");
+      setReference("");
+    }
+  }, [visible]);
+
+  const cleanMessage = message.trim();
+  const canSubmit = cleanMessage.length >= 10 && !busy;
+
+  const handleSubmit = async () => {
+    if (!canSubmit) {
+      setError("Please describe the problem in at least 10 characters.");
+      return;
+    }
+    setBusy(true);
+    setError("");
+    try {
+      const result = await submitProblemReportFromApp({ user, category, message: cleanMessage, route });
+      setReference(result.reportId || "Submitted");
+    } catch (submitError) {
+      setError(submitError.message || "Unable to send your report. Please try again.");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <Modal visible={visible} transparent animationType="fade" onRequestClose={() => { if (!busy) onClose?.(); }}>
+      <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : undefined} style={s.reportOverlay}>
+        <Pressable style={StyleSheet.absoluteFill} onPress={busy ? undefined : onClose} accessible={false} />
+        <View style={s.reportSheet}>
+          <View style={s.reportHeader}>
+            <View style={s.reportMark}>
+              <Ionicons name="flag-outline" size={24} color="#FFFFFF" />
+            </View>
+            <View style={{ flex: 1, minWidth: 0 }}>
+              <Text style={s.reportEyebrow}>SKILLOMATE SUPPORT</Text>
+              <Text style={s.reportTitle}>Report a problem</Text>
+            </View>
+            <TouchableOpacity
+              style={s.reportClose}
+              onPress={onClose}
+              disabled={busy}
+              accessibilityRole="button"
+              accessibilityLabel="Close report form"
+            >
+              <Ionicons name="close" size={20} color={C.text} />
+            </TouchableOpacity>
+          </View>
+
+          {reference ? (
+            <View style={s.reportSuccess}>
+              <View style={s.reportSuccessIcon}>
+                <Ionicons name="checkmark-circle-outline" size={42} color={C.primary} />
+              </View>
+              <Text style={s.reportSuccessTitle}>Thank you. We received it.</Text>
+              <Text style={s.reportSuccessText}>Reference {reference}. Your report is now visible in the admin panel.</Text>
+              <TouchableOpacity style={[s.reportSubmitButton, s.reportDoneButton]} onPress={onClose} accessibilityRole="button" accessibilityLabel="Close report confirmation">
+                <Text style={s.reportSubmitText}>Done</Text>
+              </TouchableOpacity>
+            </View>
+          ) : (
+            <ScrollView keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
+              <Text style={s.reportDescription}>
+                Tell us what went wrong. We automatically include this app screen and basic device details, never passwords or payment information.
+              </Text>
+
+              <Text style={s.reportFieldLabel}>Where is the problem?</Text>
+              <View style={s.reportCategoryList}>
+                {PROBLEM_REPORT_CATEGORIES.map(item => {
+                  const selected = item.value === category;
+                  return (
+                    <TouchableOpacity
+                      key={item.value}
+                      style={[s.reportCategoryButton, selected && s.reportCategoryButtonActive]}
+                      onPress={() => setCategory(item.value)}
+                      disabled={busy}
+                      accessibilityRole="button"
+                      accessibilityLabel={item.label}
+                      accessibilityState={{ selected }}
+                    >
+                      <Text style={[s.reportCategoryText, selected && s.reportCategoryTextActive]}>{item.label}</Text>
+                      {selected ? <Ionicons name="checkmark" size={17} color={C.onPrimary} /> : null}
+                    </TouchableOpacity>
+                  );
+                })}
+              </View>
+
+              <Text style={s.reportFieldLabel}>What happened?</Text>
+              <TextInput
+                value={message}
+                onChangeText={text => setMessage(text.slice(0, 3000))}
+                editable={!busy}
+                multiline
+                maxLength={3000}
+                placeholder="Describe what you were trying to do and what happened instead..."
+                placeholderTextColor={C.textMuted}
+                style={s.reportTextArea}
+                textAlignVertical="top"
+                accessibilityLabel="Describe the problem"
+              />
+              <Text style={s.reportCounter}>{message.length}/3000</Text>
+              {!!error && <Text style={s.reportError}>{error}</Text>}
+
+              <View style={s.reportActions}>
+                <TouchableOpacity
+                  style={s.reportCancelButton}
+                  onPress={onClose}
+                  disabled={busy}
+                  accessibilityRole="button"
+                  accessibilityLabel="Cancel report"
+                >
+                  <Text style={s.reportCancelText}>Cancel</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[s.reportSubmitButton, !canSubmit && s.reportSubmitButtonDisabled]}
+                  onPress={handleSubmit}
+                  disabled={!canSubmit}
+                  accessibilityRole="button"
+                  accessibilityLabel="Send report"
+                  accessibilityState={{ disabled: !canSubmit, busy }}
+                >
+                  {busy ? <ActivityIndicator color="#FFFFFF" /> : <Text style={s.reportSubmitText}>Send report</Text>}
+                </TouchableOpacity>
+              </View>
+            </ScrollView>
+          )}
+        </View>
+      </KeyboardAvoidingView>
+    </Modal>
+  );
+}
+
+function BottomNav({ active, onHome, onCourses, onAI, onDownloads, aiRobotId, forceDark = false }) {
   const tabs = [
     { key: "home", icon: "home", label: "Home", fn: onHome },
     { key: "courses", icon: "compass", label: "Explore", fn: onCourses },
-    { key: "downloads", icon: "download", label: "Downloads", fn: onDownloads },
     { key: "ai", icon: "sparkles", label: "Nex AI", fn: onAI },
-    { key: "profile", icon: "person", label: "Profile", fn: onProfile },
+    { key: "downloads", icon: "download", label: "Downloads", fn: onDownloads },
   ];
   return (
     <View style={[s.bottomNav, forceDark && { backgroundColor: "rgba(13,13,11,0.98)", borderTopColor: "#2E2C27" }]}>
@@ -1899,8 +2204,12 @@ function BottomNav({ active, onHome, onCourses, onAI, onDownloads, onProfile, ai
             />
           </View>
           <Text
-            style={[s.bottomTabLabel, forceDark && { color: "#AAA297" }, active === t.key && { color: C.primary }]}
-            numberOfLines={2}
+            style={[
+              s.bottomTabLabel,
+              forceDark && { color: "#AAA297" },
+              active === t.key && { color: C.primary },
+            ]}
+            numberOfLines={1}
           >
             {t.label}
           </Text>
@@ -3351,8 +3660,9 @@ function VideoListScreen({ course, onSelectVideo, onBack, onOpenCourseAi, downlo
       )}
 
       <Modal visible={showCourseNotes} transparent animationType="slide" onRequestClose={() => setShowCourseNotes(false)}>
-        <Pressable style={s.courseNotesOverlay} onPress={() => setShowCourseNotes(false)} accessible={false}>
-          <Pressable style={s.courseNotesSheet} accessible={false}>
+        <View style={s.courseNotesOverlay}>
+          <Pressable style={StyleSheet.absoluteFill} onPress={() => setShowCourseNotes(false)} accessible={false} />
+          <View style={s.courseNotesSheet}>
             <View style={s.courseNotesHandle} />
             <View style={s.courseNotesHeader}>
               <View style={{ flex: 1 }}>
@@ -3369,7 +3679,13 @@ function VideoListScreen({ course, onSelectVideo, onBack, onOpenCourseAi, downlo
               </TouchableOpacity>
             </View>
 
-            <ScrollView style={s.courseNotesScroll} contentContainerStyle={s.courseNotesContent}>
+            <ScrollView
+              nestedScrollEnabled
+              keyboardShouldPersistTaps="handled"
+              showsVerticalScrollIndicator
+              style={s.courseNotesScroll}
+              contentContainerStyle={s.courseNotesContent}
+            >
               <View style={s.courseNotesBlock}>
                 <View style={s.courseNotesBlockHeader}>
                   <Ionicons name="reader-outline" size={17} color={C.primary} />
@@ -3414,8 +3730,8 @@ function VideoListScreen({ course, onSelectVideo, onBack, onOpenCourseAi, downlo
                 </View>
               )}
             </ScrollView>
-          </Pressable>
-        </Pressable>
+          </View>
+        </View>
       </Modal>
     </View>
   );
@@ -3830,6 +4146,7 @@ const homeStyles = StyleSheet.create({
   brandTagline: { color: HOME_PALETTE.textSecondary, fontSize: 11.5, lineHeight: 15, marginTop: 1 },
   headerActions: { flexDirection: "row", alignItems: "center", gap: 9 },
   headerButton: { width: MIN_TOUCH_TARGET, height: MIN_TOUCH_TARGET, borderRadius: MIN_TOUCH_TARGET / 2, alignItems: "center", justifyContent: "center", backgroundColor: HOME_PALETTE.surface, borderWidth: 1, borderColor: HOME_PALETTE.border, position: "relative" },
+  headerFlagButton: { width: MIN_TOUCH_TARGET, height: MIN_TOUCH_TARGET, borderRadius: MIN_TOUCH_TARGET / 2, alignItems: "center", justifyContent: "center", backgroundColor: "#140707", borderWidth: 1, borderColor: "#A30B0B" },
   headerDot: { position: "absolute", top: 10, right: 11, width: 7, height: 7, borderRadius: 4, backgroundColor: HOME_PALETTE.gold, borderWidth: 1, borderColor: HOME_PALETTE.surface },
   profileButton: { width: MIN_TOUCH_TARGET, height: MIN_TOUCH_TARGET, borderRadius: MIN_TOUCH_TARGET / 2, alignItems: "center", justifyContent: "center", borderWidth: 2, borderColor: HOME_PALETTE.gold },
   scrollContent: { paddingTop: 10, paddingBottom: 118 },
@@ -3918,7 +4235,7 @@ const homeStyles = StyleSheet.create({
 });
 
 // ── HomeScreen ────────────────────────────────────────────────────────────────
-function LegacyHomeScreenDraft({ user, onGoToCourses, onGoToAI, onGoToDownloads, onGoToProfile, onGoToSubscription, onStartTrial, trialLoading = false, onSelectCourse, onResumeCourse, onOpenHeroPreview, courseProgress = {}, aiRobotId }) {
+function LegacyHomeScreenDraft({ user, onGoToCourses, onGoToAI, onGoToDownloads, onGoToProfile, onGoToSubscription, onStartTrial, trialLoading = false, onSelectCourse, onResumeCourse, onOpenHeroPreview, onReportProblem, courseProgress = {}, aiRobotId }) {
   const hasAccess = hasCourseAccess(user);
   const [topCourses, setTopCourses] = useState([]);
   const [allCourses, setAllCourses] = useState([]);
@@ -3926,6 +4243,11 @@ function LegacyHomeScreenDraft({ user, onGoToCourses, onGoToAI, onGoToDownloads,
   const [loading, setLoading] = useState(true);
   const [showUpgrade, setShowUpgrade] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
+  const { hasUnreadNotifications, markNotificationsViewed } = useNotificationReadState();
+  const openNotifications = useCallback(() => {
+    setShowNotifications(true);
+    markNotificationsViewed();
+  }, [markNotificationsViewed]);
 
   useEffect(() => {
     let cancelled = false;
@@ -4027,10 +4349,19 @@ function LegacyHomeScreenDraft({ user, onGoToCourses, onGoToAI, onGoToDownloads,
                 activeOpacity={0.82}
                 accessibilityRole="button"
                 accessibilityLabel="Open notifications"
-                onPress={() => setShowNotifications(true)}
+                onPress={openNotifications}
               >
                 <Ionicons name="notifications-outline" size={20} color={C.text} />
-                <View style={s.notificationDot} />
+                {hasUnreadNotifications ? <View style={s.notificationDot} /> : null}
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={s.homeFlagButton}
+                activeOpacity={0.82}
+                accessibilityRole="button"
+                accessibilityLabel="Report a problem"
+                onPress={onReportProblem}
+              >
+                <Ionicons name="flag-outline" size={19} color="#FF5656" />
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={onGoToProfile}
@@ -4300,6 +4631,7 @@ function HomeScreen({
   onSelectCourse,
   onResumeCourse,
   onOpenLessonCollection,
+  onReportProblem,
   courseProgress = {},
   aiRobotId,
 }) {
@@ -4311,6 +4643,11 @@ function HomeScreen({
   const [reloadKey, setReloadKey] = useState(0);
   const [showUpgrade, setShowUpgrade] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
+  const { hasUnreadNotifications, markNotificationsViewed } = useNotificationReadState();
+  const openNotifications = useCallback(() => {
+    setShowNotifications(true);
+    markNotificationsViewed();
+  }, [markNotificationsViewed]);
 
   useEffect(() => {
     let cancelled = false;
@@ -4518,9 +4855,12 @@ function HomeScreen({
               <SkillomateLogo size={width <= 340 ? "xs" : "sm"} mode="dark" />
             </View>
             <View style={homeStyles.headerActions}>
-              <TouchableOpacity style={homeStyles.headerButton} onPress={() => setShowNotifications(true)} accessibilityRole="button" accessibilityLabel="Open notifications">
+              <TouchableOpacity style={homeStyles.headerButton} onPress={openNotifications} accessibilityRole="button" accessibilityLabel="Open notifications">
                 <Ionicons name="notifications-outline" size={20} color={HOME_PALETTE.text} />
-                <View style={homeStyles.headerDot} />
+                {hasUnreadNotifications ? <View style={homeStyles.headerDot} /> : null}
+              </TouchableOpacity>
+              <TouchableOpacity style={homeStyles.headerFlagButton} onPress={onReportProblem} accessibilityRole="button" accessibilityLabel="Report a problem">
+                <Ionicons name="flag-outline" size={19} color="#FF5656" />
               </TouchableOpacity>
               <TouchableOpacity style={homeStyles.profileButton} onPress={onGoToProfile} accessibilityRole="button" accessibilityLabel="Open profile">
                 <AvatarImage avatarId={user.avatar || "a1"} size={40} style={{ borderRadius: 20 }} />
@@ -4758,10 +5098,8 @@ function CourseListScreen({ onSelect, user, onGoToHome, onGoToAI, onGoToDownload
     <View style={{ flex: 1, backgroundColor: C.white }}>
       <StatusBar barStyle={C.isDark ? "light-content" : "dark-content"} backgroundColor={C.white} />
       <SafeAreaView style={{ backgroundColor: C.white }}>
-        <View style={s.pageHeader}>
+        <View style={[s.pageHeader, s.pageHeaderLogoOnly]}>
           <SkillomateLogo size="sm" />
-          <Text style={[s.pageTitle, { marginLeft: 0, textAlign: "center" }]} numberOfLines={1}>Explore</Text>
-          <View style={{ width: 86 }} />
         </View>
       </SafeAreaView>
 
@@ -5598,10 +5936,8 @@ function ProfileScreen({ user, onLogout, onDeleteAccount, onGoToHome, onGoToCour
       <StatusBar barStyle={C.isDark ? "light-content" : "dark-content"} backgroundColor={C.white} />
       <View style={[s.homeTopBar, { paddingBottom: 20, backgroundColor: C.white }]}>
         <SafeAreaView style={{ backgroundColor: C.white }}>
-          <View style={s.homeTopBarInner}>
+          <View style={[s.homeTopBarInner, s.pageHeaderLogoOnly]}>
             <SkillomateLogo size="sm" />
-            <Text style={{ flex: 1, color: C.text, fontWeight: "700", fontSize: 16, textAlign: "center" }} numberOfLines={1}>Profile</Text>
-            <View style={{ width: 86 }} />
           </View>
         </SafeAreaView>
         <View style={{ alignItems: "center", marginTop: 8 }}>
@@ -5821,9 +6157,9 @@ function ProfileScreen({ user, onLogout, onDeleteAccount, onGoToHome, onGoToCour
 }
 
 const AI_SUGGESTIONS = [
-  "What is generative AI?",
-  "Explain RAG simply",
-  "Give me a quick quiz",
+  "Explain prompt engineering with an example",
+  "My AI character's face changes between clips",
+  "Help me choose a course",
 ];
 
 function formatAiCourseName(course) {
@@ -5984,7 +6320,90 @@ function AiAssistantScreen({
   const [assistantNameDraft, setAssistantNameDraft] = useState("");
   const [nameSetupComplete, setNameSetupComplete] = useState(false);
   const [showNameSetup, setShowNameSetup] = useState(false);
+  const [conversations, setConversations] = useState([]);
+  const [activeConversationId, setActiveConversationId] = useState("");
+  const [historyOpen, setHistoryOpen] = useState(false);
   const listRef = useRef(null);
+  const aiGeneration = useRef(0);
+  const chatStorageKey = useMemo(
+    () => aiChatStorageKey(user, mode, fixedCourse),
+    [fixedCourse?._id, fixedCourse?.id, fixedCourse?.slug, fixedCourse?.title, mode, user?._id, user?.id]
+  );
+
+  const introMessages = useCallback((content = null) => [{
+    role: "assistant",
+    content: content || (isCourseMode
+      ? `Ask doubts from ${fixedCourse?.title || "this course"}. I will answer only from this course's indexed lessons.`
+      : "Ask anything from your indexed courses. I can search across all course lessons."),
+    createdAt: Date.now(),
+  }], [fixedCourse?.title, isCourseMode]);
+
+  const replaceActiveConversationMessages = useCallback((nextMessages) => {
+    const normalizedMessages = nextMessages.map(message => ({
+      ...message,
+      createdAt: message.createdAt || Date.now(),
+    })).slice(-MAX_AI_CHAT_MESSAGES);
+    setMessages(normalizedMessages);
+    if (!activeConversationId) return;
+    setConversations(current => {
+      const next = current.map(session => (
+        session.id === activeConversationId
+          ? { ...session, messages: normalizedMessages, updatedAt: Date.now() }
+          : session
+      ));
+      writeAiChatSessions(chatStorageKey, next);
+      return next;
+    });
+  }, [activeConversationId, chatStorageKey]);
+
+  const appendAiConversationMessage = useCallback((sessionId, message) => {
+    const record = {
+      role: message.role,
+      content: String(message.content || "").slice(0, 4000),
+      failed: Boolean(message.failed),
+      createdAt: Date.now(),
+    };
+    setMessages(current => [...current, record].slice(-MAX_AI_CHAT_MESSAGES));
+    setConversations(current => {
+      const session = current.find(item => item.id === sessionId) || createAiConversationSession(introMessages());
+      const updatedMessages = [...session.messages, record].slice(-MAX_AI_CHAT_MESSAGES);
+      const updated = {
+        ...session,
+        id: sessionId,
+        title: record.role === "user" && session.title === "New chat" ? aiChatTitle(record.content) : session.title,
+        updatedAt: Date.now(),
+        messages: updatedMessages,
+      };
+      const next = [updated, ...current.filter(item => item.id !== sessionId)].slice(0, MAX_AI_CHAT_SESSIONS);
+      writeAiChatSessions(chatStorageKey, next);
+      return next;
+    });
+    return record;
+  }, [chatStorageKey, introMessages]);
+
+  const startNewChat = useCallback(() => {
+    aiGeneration.current += 1;
+    const active = conversations.find(session => session.id === activeConversationId);
+    const next = active && !active.messages.some(message => message.role === "user")
+      ? active
+      : createAiConversationSession(introMessages());
+    if (!active || active.messages.some(message => message.role === "user")) {
+      setConversations(current => [next, ...current].slice(0, MAX_AI_CHAT_SESSIONS));
+    }
+    setActiveConversationId(next.id);
+    setMessages(next.messages);
+    setInput("");
+    setHistoryOpen(false);
+    setStatus(status === "offline" ? "offline" : "online");
+  }, [activeConversationId, conversations, introMessages, status]);
+
+  const selectConversation = useCallback((session) => {
+    aiGeneration.current += 1;
+    setActiveConversationId(session.id);
+    setMessages(session.messages?.length ? session.messages : introMessages());
+    setInput("");
+    setHistoryOpen(false);
+  }, [introMessages]);
 
   // NEX is the default identity; learners can still choose another companion.
   useEffect(() => {
@@ -6014,6 +6433,31 @@ function AiAssistantScreen({
     return () => { cancelled = true; };
   }, [user?._id]);
 
+  useEffect(() => {
+    let cancelled = false;
+    AsyncStorage.getItem(chatStorageKey)
+      .then(raw => {
+        if (cancelled) return;
+        const stored = readAiChatSessions(raw);
+        const initial = createAiConversationSession(introMessages());
+        const next = [initial, ...stored].slice(0, MAX_AI_CHAT_SESSIONS);
+        aiGeneration.current += 1;
+        setConversations(next);
+        setActiveConversationId(initial.id);
+        setMessages(initial.messages);
+        setInput("");
+        setHistoryOpen(false);
+      })
+      .catch(() => {
+        if (cancelled) return;
+        const initial = createAiConversationSession(introMessages());
+        setConversations([initial]);
+        setActiveConversationId(initial.id);
+        setMessages(initial.messages);
+      });
+    return () => { cancelled = true; };
+  }, [chatStorageKey, introMessages]);
+
   async function saveAiName(value = assistantNameDraft) {
     const nextName = normalizeAiName(value) || DEFAULT_AI_NAME;
     const keys = aiNameStorageKeys(user);
@@ -6028,7 +6472,7 @@ function AiAssistantScreen({
     if (!AI_FEATURE_ENABLED) {
       setStatus("offline");
       setCourseScopeReady(false);
-      setMessages([
+      replaceActiveConversationMessages([
         {
           role: "assistant",
           content: "AI is paused for now.",
@@ -6040,7 +6484,7 @@ function AiAssistantScreen({
     if (!user?._id || !user?.sessionId) {
       setStatus("offline");
       setCourseScopeReady(false);
-      setMessages([{
+      replaceActiveConversationMessages([{
         role: "assistant",
         content: "Please log in again before using Nex AI.",
       }]);
@@ -6069,7 +6513,7 @@ function AiAssistantScreen({
           if (matchedCourse) {
             setCourseId(matchedCourse.id);
             setCourseName(formatAiCourseName(matchedCourse));
-            setMessages([
+            replaceActiveConversationMessages([
               {
                 role: "assistant",
                 content: `Ask doubts from ${fixedCourse?.title || formatAiCourseName(matchedCourse)}. I will answer only from this course.`,
@@ -6078,7 +6522,7 @@ function AiAssistantScreen({
           } else {
             setCourseId(null);
             setCourseName(fixedCourse?.title || "Course AI");
-            setMessages([
+            replaceActiveConversationMessages([
               {
                 role: "assistant",
                 content: "This course is not indexed for AI yet. Add its transcript to the AI knowledge base to enable course-specific answers.",
@@ -6092,7 +6536,7 @@ function AiAssistantScreen({
         setStatus("offline");
         if (isCourseMode) {
           setCourseScopeReady(false);
-          setMessages([
+          replaceActiveConversationMessages([
             {
               role: "assistant",
               content: "I could not load the AI course index. Check that the AI service is running.",
@@ -6100,7 +6544,7 @@ function AiAssistantScreen({
           ]);
         }
       });
-  }, [fixedCourse, isCourseMode, user?._id, user?.sessionId]);
+  }, [fixedCourse, isCourseMode, replaceActiveConversationMessages, user?._id, user?.sessionId]);
 
   useEffect(() => {
     const scrollTimer = setTimeout(() => listRef.current?.scrollToEnd?.({ animated: true }), 80);
@@ -6112,38 +6556,39 @@ function AiAssistantScreen({
     if (!question || loading || aiInFlight.current) return;
     if (!AI_FEATURE_ENABLED) {
       setInput("");
-      setMessages(prev => [
-        ...prev,
-        { role: "user", content: question },
-        { role: "assistant", content: "AI is paused for now." },
-      ]);
+      const targetSessionId = activeConversationId || createAiConversationSession(introMessages()).id;
+      appendAiConversationMessage(targetSessionId, { role: "user", content: question });
+      appendAiConversationMessage(targetSessionId, { role: "assistant", content: "AI is paused for now." });
       return;
     }
     if (isCourseMode && !courseId) {
-      setMessages(prev => [...prev, {
+      const targetSessionId = activeConversationId || createAiConversationSession(introMessages()).id;
+      appendAiConversationMessage(targetSessionId, {
         role: "assistant",
         content: "I cannot answer for this course yet because it is not indexed in the AI knowledge base.",
-      }]);
+      });
       return;
     }
 
+    const requestGeneration = aiGeneration.current;
+    const requestSessionId = activeConversationId || createAiConversationSession(introMessages()).id;
     setInput("");
-    setMessages(prev => [...prev, { role: "user", content: question }]);
+    appendAiConversationMessage(requestSessionId, { role: "user", content: question });
     setLoading(true);
     aiInFlight.current = true;
 
     try {
       const data = await requestTutor({ baseUrl: API_BASE, user, question, courseId, messages, assistantName, session });
-      if (!aiMounted.current) return;
+      if (!aiMounted.current || requestGeneration !== aiGeneration.current) return;
       setStatus("online");
-      setMessages(prev => [...prev, { role: "assistant", content: data.notice ? `${data.notice}\n\n${data.answer}` : data.answer }]);
+      appendAiConversationMessage(requestSessionId, { role: "assistant", content: data.notice ? `${data.notice}\n\n${data.answer}` : data.answer });
     } catch (error) {
-      if (!aiMounted.current || ["SESSION_CHANGED", "SESSION_EXPIRED"].includes(error.code)) return;
+      if (!aiMounted.current || requestGeneration !== aiGeneration.current || ["SESSION_CHANGED", "SESSION_EXPIRED"].includes(error.code)) return;
       setInput(question);
-      setMessages(prev => [...prev, {
+      appendAiConversationMessage(requestSessionId, {
         role: "assistant", failed: true,
         content: error.name === "AbortError" ? "Nex AI took too long. Please try again." : error.message || "I could not reach Nex AI. Please try again.",
-      }]);
+      });
       setStatus("offline");
     } finally {
       aiInFlight.current = false;
@@ -6151,153 +6596,161 @@ function AiAssistantScreen({
     }
   }
 
+  const hasConversation = messages.some(message => message.role === "user") || loading;
+  const assistantStatusText = status !== "online"
+    ? "Unavailable"
+    : isCourseMode
+      ? courseScopeReady ? "Scoped to this course" : "Course not indexed"
+      : "Active now";
+  const visibleConversations = conversations.filter(session => session.messages?.some(message => message.role === "user"));
   return (
-    <View style={{ flex: 1, backgroundColor: C.bg }}>
-      <StatusBar barStyle={C.isDark ? "light-content" : "dark-content"} backgroundColor={C.white} />
-      <SafeAreaView style={{ backgroundColor: C.white }}>
-        <View style={s.pageHeader}>
-          {onBack ? (
-            <TouchableOpacity onPress={onBack} style={s.iconBtn}
-              hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
-              accessibilityRole="button"
-              accessibilityLabel="Back to course"
-            >
-              <Ionicons name="arrow-back" size={22} color={C.text} />
-            </TouchableOpacity>
-          ) : null}
+    <View style={s.aiScreen}>
+      <StatusBar barStyle="light-content" backgroundColor="#050505" />
+      <SafeAreaView style={s.aiTopSafe}>
+        <View style={s.aiTopHeader}>
+          <SkillomateLogo size="xs" mode="dark" />
+          <View style={s.aiTopHeaderSpacer} />
+        </View>
+
+        <View style={s.aiIdentityBar}>
+          <TouchableOpacity
+            style={s.aiIdentityMenu}
+            onPress={() => setHistoryOpen(true)}
+            accessibilityRole="button"
+            accessibilityLabel="Open chat history"
+            accessibilityState={{ expanded: historyOpen }}
+          >
+            <Ionicons name="menu" size={22} color="#D9D2C8" />
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => setShowRobotPicker(true)}
+            style={s.aiIdentityAvatar}
+            accessibilityRole="button"
+            accessibilityLabel="Change AI companion"
+          >
+            <RobotAvatar robotId={robotId} size={46} mood={loading ? "thinking" : "idle"} animated={loading} />
+          </TouchableOpacity>
           <TouchableOpacity
             onPress={() => {
               setAssistantNameDraft(assistantName === DEFAULT_AI_NAME ? "" : assistantName);
               setShowNameSetup(true);
             }}
-            style={{ flex: 1 }}
+            style={s.aiIdentityText}
             accessibilityRole="button"
             accessibilityLabel={`Customize AI name. Current name: ${assistantName}`}
           >
-            <Text style={[s.pageTitle, { marginLeft: 0, textAlign: "center" }]} numberOfLines={1}>{assistantName}</Text>
+            <Text style={s.aiIdentityName} numberOfLines={1}>{assistantName}</Text>
+            <View style={s.aiIdentityStatusRow}>
+              <View style={[s.aiStatusDot, status === "online" ? s.aiStatusOnline : s.aiStatusOffline]} />
+              <Text style={s.aiIdentityStatus} numberOfLines={1}>{assistantStatusText}</Text>
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={s.aiIdentityAdd}
+            onPress={startNewChat}
+            accessibilityRole="button"
+            accessibilityLabel="Start a new chat"
+          >
+            <Ionicons name="add" size={23} color="#F5F1E8" />
           </TouchableOpacity>
         </View>
       </SafeAreaView>
 
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
-        keyboardVerticalOffset={Platform.OS === "ios" ? 86 : 0}
+        keyboardVerticalOffset={Platform.OS === "ios" ? 74 : 0}
         style={[s.aiKeyboardArea, !isCourseMode && s.aiKeyboardAreaWithNav]}
       >
-        <View style={{
-          flexDirection: "row", alignItems: "center", gap: 12,
-          marginHorizontal: 16, marginTop: 12, marginBottom: 10,
-          padding: 14, borderRadius: 16,
-          backgroundColor: C.cardBg, borderWidth: 1, borderColor: C.border,
-        }}>
-          <TouchableOpacity
-            onPress={() => setShowRobotPicker(true)}
-            accessibilityRole="button"
-            accessibilityLabel={robotId ? "Change AI companion" : "Choose AI companion"}
+        {hasConversation ? (
+          <FlatList
+            ref={listRef}
+            style={s.aiMessageList}
+            data={messages}
+            keyExtractor={(_, index) => String(index)}
+            contentContainerStyle={s.aiMessages}
+            initialNumToRender={12}
+            maxToRenderPerBatch={8}
+            windowSize={9}
+            updateCellsBatchingPeriod={40}
+            removeClippedSubviews={ANDROID_CLIPPED_SUBVIEWS}
+            keyboardShouldPersistTaps="handled"
+            scrollEventThrottle={16}
+            renderItem={({ item, index }) => {
+              const isUser = item.role === "user";
+              return (
+                <View style={[s.aiMessageRow, isUser && s.aiMessageRowUser]}>
+                  {!isUser && <RobotAvatar robotId={robotId} size={46} replying={!loading && index === messages.length - 1 && messages.length > 1} />}
+                  <View style={[s.aiBubble, isUser && s.aiBubbleUser]}>
+                    <Text style={[s.aiBubbleText, isUser && s.aiBubbleTextUser]}>{item.content}</Text>
+                  </View>
+                  {isUser && <AvatarImage avatarId={user?.avatar || "a1"} size={30} />}
+                </View>
+              );
+            }}
+            ListFooterComponent={loading ? (
+              <View style={s.aiMessageRow}>
+                <View style={{ alignItems: "center", paddingTop: 14 }}>
+                  <View style={{ position: "absolute", zIndex: 2, top: 0, left: 28, minWidth: 44, height: 24, paddingHorizontal: 9, borderRadius: 12, borderWidth: 1, borderColor: C.border, backgroundColor: C.cardBg, alignItems: "center", justifyContent: "center" }}>
+                    <TypingDots />
+                  </View>
+                  <RobotAvatar robotId={robotId} size={68} mood="thinking" animated />
+                </View>
+                <View style={[s.aiBubble, s.aiTypingBubble]}>
+                  <Text style={s.aiTypingText}>{assistantName} is thinking...</Text>
+                </View>
+              </View>
+            ) : null}
+          />
+        ) : (
+          <ScrollView
+            style={s.aiWelcomeScroll}
+            contentContainerStyle={s.aiWelcomeContent}
+            showsVerticalScrollIndicator={false}
+            keyboardShouldPersistTaps="handled"
           >
-            <View style={{ position: "relative" }}>
-              <RobotAvatar robotId={robotId} size={64} mood={loading ? "thinking" : "idle"} animated={loading} />
-              <View style={{
-                position: "absolute", bottom: 0, right: 0,
-                width: 14, height: 14, borderRadius: 7,
-                backgroundColor: status === "online" ? "#22C55E" : C.warning,
-                borderWidth: 2, borderColor: C.cardBg,
-              }} />
+            <RobotAvatar robotId={robotId} size={108} />
+            <Text style={s.aiWelcomeTitle}>What can I help you learn?</Text>
+            <Text style={s.aiWelcomeSubtitle}>Ask about your course, a project problem, or practise with a quiz.</Text>
+            <View style={s.aiWelcomePrompts}>
+              {AI_SUGGESTIONS.map(prompt => (
+                <TouchableOpacity
+                  key={prompt}
+                  style={s.aiSuggestion}
+                  onPress={() => sendAiMessage(prompt)}
+                  accessibilityRole="button"
+                  accessibilityLabel={`Ask ${assistantName}: ${prompt}`}
+                >
+                  <Text style={s.aiSuggestionText}>{prompt}</Text>
+                </TouchableOpacity>
+              ))}
             </View>
-          </TouchableOpacity>
-          <View style={{ flex: 1 }}>
-            <Text style={s.aiHeroTitle} numberOfLines={1}>{courseName}</Text>
-            <View style={s.aiStatusRow}>
-              <View style={[s.aiStatusDot, status === "online" ? s.aiStatusOnline : s.aiStatusOffline]} />
-              <Text style={s.aiHeroSub}>
-                {status !== "online"
-                  ? `${assistantName} is unavailable`
-                  : isCourseMode
-                    ? courseScopeReady ? "Scoped to this course" : "Course not indexed"
-                    : "Master search across all courses"}
-              </Text>
-            </View>
-          </View>
-        </View>
-
-        <FlatList
-          ref={listRef}
-          style={s.aiMessageList}
-          data={messages}
-          keyExtractor={(_, index) => String(index)}
-          contentContainerStyle={s.aiMessages}
-          initialNumToRender={12}
-          maxToRenderPerBatch={8}
-          windowSize={9}
-          updateCellsBatchingPeriod={40}
-          removeClippedSubviews={ANDROID_CLIPPED_SUBVIEWS}
-          keyboardShouldPersistTaps="handled"
-          scrollEventThrottle={16}
-          renderItem={({ item, index }) => {
-            const isUser = item.role === "user";
-            return (
-              <View style={[s.aiMessageRow, isUser && s.aiMessageRowUser]}>
-                {!isUser && <RobotAvatar robotId={robotId} size={46} replying={!loading && index === messages.length - 1 && messages.length > 1} />}
-                <View style={[s.aiBubble, isUser && s.aiBubbleUser]}>
-                  <Text style={[s.aiBubbleText, isUser && s.aiBubbleTextUser]}>{item.content}</Text>
-                </View>
-                {isUser && <AvatarImage avatarId={user?.avatar || "a1"} size={30} />}
-              </View>
-            );
-          }}
-          ListFooterComponent={loading ? (
-            <View style={s.aiMessageRow}>
-              <View style={{ alignItems: "center", paddingTop: 14 }}>
-                <View style={{ position: "absolute", zIndex: 2, top: 0, left: 28, minWidth: 44, height: 24, paddingHorizontal: 9, borderRadius: 12, borderWidth: 1, borderColor: C.border, backgroundColor: C.cardBg, alignItems: "center", justifyContent: "center" }}>
-                  <TypingDots />
-                </View>
-                <RobotAvatar robotId={robotId} size={68} mood="thinking" animated />
-              </View>
-              <View style={[s.aiBubble, s.aiTypingBubble]}>
-                <Text style={s.aiTypingText}>{assistantName} is thinking…</Text>
-              </View>
-            </View>
-          ) : null}
-        />
-
-        {!loading && !messages.some(message => message.role === "user") && (
-          <View style={s.aiSuggestions}>
-            {AI_SUGGESTIONS.map(prompt => (
-              <TouchableOpacity
-                key={prompt}
-                style={s.aiSuggestion}
-                onPress={() => sendAiMessage(prompt)}
-                accessibilityRole="button"
-                accessibilityLabel={`Ask ${assistantName}: ${prompt}`}
-              >
-                <Text style={s.aiSuggestionText}>{prompt}</Text>
-              </TouchableOpacity>
-            ))}
-          </View>
+          </ScrollView>
         )}
 
         <View style={[s.aiComposer, isCourseMode && s.aiComposerStandalone]}>
-          <TextInput
-            style={s.aiInput}
-            value={input}
-            onChangeText={setInput}
-            placeholder="Ask a course question..."
-            placeholderTextColor={C.textMuted}
-            editable={!loading}
-            multiline
-            accessibilityLabel={`Message ${assistantName}`}
-          />
-          <TouchableOpacity
-            style={[s.aiSend, (!input.trim() || loading) && s.aiSendDisabled]}
-            onPress={() => sendAiMessage()}
-            disabled={!input.trim() || loading}
-            accessibilityRole="button"
-            accessibilityLabel="Send message"
-            accessibilityState={{ disabled: !input.trim() || loading }}
-          >
-            <Ionicons name="send" size={18} color={C.onPrimary} />
+          <View style={s.aiComposerRow}>
+            <TextInput
+              style={s.aiInput}
+              value={input}
+              onChangeText={setInput}
+              placeholder="Ask about your course or project..."
+              placeholderTextColor="#A39D95"
+              editable={!loading}
+              multiline
+              accessibilityLabel={`Message ${assistantName}`}
+            />
+            <TouchableOpacity
+              style={[s.aiSend, (!input.trim() || loading) && s.aiSendDisabled]}
+              onPress={() => sendAiMessage()}
+              disabled={!input.trim() || loading}
+              accessibilityRole="button"
+              accessibilityLabel="Send message"
+              accessibilityState={{ disabled: !input.trim() || loading }}
+            >
+              <Ionicons name="arrow-up" size={20} color="#17130B" />
           </TouchableOpacity>
         </View>
+      </View>
       </KeyboardAvoidingView>
 
       {!isCourseMode && (
@@ -6310,6 +6763,70 @@ function AiAssistantScreen({
           aiRobotId={robotId}
         />
       )}
+
+      <Modal
+        visible={historyOpen}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setHistoryOpen(false)}
+      >
+        <View style={s.aiHistoryOverlay}>
+          <Pressable style={StyleSheet.absoluteFill} onPress={() => setHistoryOpen(false)} accessible={false} />
+          <View style={s.aiHistorySheet}>
+            <View style={s.aiHistoryHeader}>
+              <View>
+                <Text style={s.aiHistoryEyebrow}>{assistantName} CHATS</Text>
+                <Text style={s.aiHistoryTitle}>Chat history</Text>
+              </View>
+              <TouchableOpacity
+                onPress={() => setHistoryOpen(false)}
+                style={s.aiHistoryClose}
+                accessibilityRole="button"
+                accessibilityLabel="Close chat history"
+              >
+                <Ionicons name="close" size={20} color="#F5F1E8" />
+              </TouchableOpacity>
+            </View>
+
+            <TouchableOpacity
+              onPress={startNewChat}
+              style={s.aiHistoryNewChat}
+              accessibilityRole="button"
+              accessibilityLabel="Start a new chat"
+            >
+              <Text style={s.aiHistoryNewChatText}>New chat</Text>
+              <Ionicons name="add" size={20} color="#17130B" />
+            </TouchableOpacity>
+
+            <Text style={s.aiHistoryLabel}>Previous chats</Text>
+            {visibleConversations.length ? (
+              <ScrollView style={s.aiHistoryList} contentContainerStyle={s.aiHistoryListContent} showsVerticalScrollIndicator={false}>
+                {visibleConversations.map(item => {
+                  const active = item.id === activeConversationId;
+                  return (
+                    <TouchableOpacity
+                      key={item.id}
+                      onPress={() => selectConversation(item)}
+                      style={[s.aiHistoryItem, active && s.aiHistoryItemActive]}
+                      accessibilityRole="button"
+                      accessibilityLabel={`Open chat ${item.title}`}
+                      accessibilityState={{ selected: active }}
+                    >
+                      <Text style={s.aiHistoryItemTitle} numberOfLines={1}>{item.title}</Text>
+                      <Text style={s.aiHistoryItemMeta} numberOfLines={1}>{aiChatDateLabel(item.updatedAt)} · {item.messages.length} messages</Text>
+                    </TouchableOpacity>
+                  );
+                })}
+              </ScrollView>
+            ) : (
+              <View style={s.aiHistoryEmpty}>
+                <Ionicons name="chatbubble-ellipses-outline" size={26} color="#E7BC68" />
+                <Text style={s.aiHistoryEmptyText}>Your chats will appear here after you send a message.</Text>
+              </View>
+            )}
+          </View>
+        </View>
+      </Modal>
 
       <Modal
         visible={showNameSetup}
@@ -6494,6 +7011,7 @@ export default function App() {
   const downloadStorageReady = useRef(null);
   const [aiRobotId, setAiRobotId] = useState(null);
   const [showAppUpgrade, setShowAppUpgrade] = useState(false);
+  const [showProblemReport, setShowProblemReport] = useState(false);
   const [courseAiTarget, setCourseAiTarget] = useState(null);
   const [wishlist, setWishlist] = useState([]);
   const [courseProgress, setCourseProgress] = useState({});
@@ -7879,8 +8397,8 @@ export default function App() {
       <View style={{ flex: 1, backgroundColor: C.bg }}>
         <StatusBar barStyle={C.isDark ? "light-content" : "dark-content"} backgroundColor={C.white} />
         <SafeAreaView style={{ backgroundColor: C.white }}>
-          <View style={s.pageHeader}>
-            <Text style={[s.pageTitle, { marginLeft: 0, textAlign: "center" }]}>Downloads</Text>
+          <View style={[s.pageHeader, s.pageHeaderLogoOnly]}>
+            <SkillomateLogo size="sm" />
           </View>
         </SafeAreaView>
 
@@ -8084,11 +8602,18 @@ export default function App() {
           openCourse(course, { startIndex: idx, initialTime: secs });
         }}
         onOpenLessonCollection={(course, options) => openCourse(course, options)}
+        onReportProblem={() => setShowProblemReport(true)}
         onOpenHeroPreview={openHeroPreview}
         courseProgress={courseProgress}
         aiRobotId={aiRobotId}
       />
       <CertificateModal cert={certModal} onClose={() => setCertModal(null)} />
+      <ProblemReportModal
+        visible={showProblemReport}
+        onClose={() => setShowProblemReport(false)}
+        user={user}
+        route="home"
+      />
       <UpgradeModal
         visible={showAppUpgrade}
         onClose={() => setShowAppUpgrade(false)}
@@ -8206,6 +8731,9 @@ return StyleSheet.create({
     backgroundColor: C.surface,
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: C.border,
+  },
+  pageHeaderLogoOnly: {
+    justifyContent: "flex-start",
   },
   pageTitle: { flex: 1, ...TYPE.title, color: C.text, marginLeft: 8 },
   iconBtn: {
@@ -8421,18 +8949,237 @@ return StyleSheet.create({
     ...TYPE.button,
     color: C.onPrimary,
   },
+  reportOverlay: {
+    flex: 1,
+    justifyContent: "flex-end",
+    backgroundColor: "rgba(0,0,0,0.72)",
+  },
+  reportSheet: {
+    width: "100%",
+    maxHeight: "92%",
+    backgroundColor: "#101113",
+    borderTopLeftRadius: 22,
+    borderTopRightRadius: 22,
+    borderWidth: 1,
+    borderColor: C.borderStrong,
+    paddingHorizontal: 18,
+    paddingTop: 20,
+    paddingBottom: Platform.OS === "ios" ? 30 : 20,
+  },
+  reportHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+    marginBottom: 16,
+  },
+  reportMark: {
+    width: 46,
+    height: 46,
+    borderRadius: 13,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#EF2F32",
+  },
+  reportEyebrow: {
+    color: "#FF686B",
+    fontSize: 10,
+    lineHeight: 13,
+    fontWeight: "900",
+    letterSpacing: 1.3,
+  },
+  reportTitle: {
+    ...TYPE.h2,
+    color: C.text,
+    marginTop: 1,
+  },
+  reportClose: {
+    width: MIN_TOUCH_TARGET,
+    height: MIN_TOUCH_TARGET,
+    borderRadius: MIN_TOUCH_TARGET / 2,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: C.surface,
+    borderWidth: 1,
+    borderColor: C.border,
+  },
+  reportDescription: {
+    ...TYPE.body,
+    color: C.textSub,
+    lineHeight: 22,
+    marginBottom: 18,
+  },
+  reportFieldLabel: {
+    ...TYPE.label,
+    color: C.text,
+    marginBottom: 8,
+  },
+  reportCategoryList: {
+    gap: 8,
+    marginBottom: 16,
+  },
+  reportCategoryButton: {
+    minHeight: MIN_TOUCH_TARGET,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: 14,
+    borderRadius: 10,
+    backgroundColor: "#15181D",
+    borderWidth: 1,
+    borderColor: "#303640",
+  },
+  reportCategoryButtonActive: {
+    backgroundColor: C.primary,
+    borderColor: C.primary,
+  },
+  reportCategoryText: {
+    color: C.text,
+    fontSize: 14,
+    lineHeight: 19,
+    fontWeight: "800",
+  },
+  reportCategoryTextActive: {
+    color: C.onPrimary,
+  },
+  reportTextArea: {
+    minHeight: 150,
+    color: C.text,
+    fontSize: 15,
+    lineHeight: 22,
+    backgroundColor: "#15181D",
+    borderWidth: 1.4,
+    borderColor: C.primary,
+    borderRadius: 12,
+    paddingHorizontal: 13,
+    paddingVertical: 13,
+  },
+  reportCounter: {
+    color: C.textMuted,
+    fontSize: 11,
+    lineHeight: 15,
+    textAlign: "right",
+    marginTop: 6,
+  },
+  reportError: {
+    color: C.danger,
+    fontSize: 12,
+    lineHeight: 17,
+    marginTop: 9,
+  },
+  reportActions: {
+    flexDirection: "row",
+    gap: 10,
+    marginTop: 18,
+  },
+  reportCancelButton: {
+    flex: 1,
+    minHeight: MIN_TOUCH_TARGET,
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: "#62656B",
+    backgroundColor: "#242426",
+    paddingHorizontal: 12,
+  },
+  reportCancelText: {
+    color: C.text,
+    fontSize: 14,
+    fontWeight: "900",
+  },
+  reportSubmitButton: {
+    flex: 1,
+    minHeight: MIN_TOUCH_TARGET,
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 10,
+    backgroundColor: "#F0393F",
+    borderWidth: 1,
+    borderColor: "#FF777B",
+    paddingHorizontal: 12,
+    shadowColor: "#F0393F",
+    shadowOpacity: 0.34,
+    shadowRadius: 9,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 5,
+  },
+  reportSubmitButtonDisabled: {
+    backgroundColor: "#471E22",
+    borderColor: "#6A282D",
+    shadowOpacity: 0,
+    elevation: 0,
+  },
+  reportDoneButton: {
+    flex: 0,
+    width: "100%",
+  },
+  reportSubmitText: {
+    color: "#FFFFFF",
+    fontSize: 14,
+    fontWeight: "900",
+  },
+  reportSuccess: {
+    alignItems: "center",
+    paddingTop: 14,
+    paddingBottom: 4,
+  },
+  reportSuccessIcon: {
+    width: 62,
+    height: 62,
+    borderRadius: 31,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: C.panel,
+    marginBottom: 12,
+  },
+  reportSuccessTitle: {
+    ...TYPE.h3,
+    color: C.text,
+    textAlign: "center",
+  },
+  reportSuccessText: {
+    ...TYPE.body,
+    color: C.textSub,
+    textAlign: "center",
+    marginTop: 8,
+    marginBottom: 18,
+  },
   bottomNav: {
     position: "absolute", bottom: 0, left: 0, right: 0,
     zIndex: 50,
     elevation: 20,
     flexDirection: "row", backgroundColor: C.isDark ? C.navigation : "rgba(255,253,248,0.96)",
     borderTopWidth: 1, borderTopColor: C.border,
-    paddingBottom: Platform.OS === "ios" ? 20 : 8, paddingTop: 8,
+    paddingHorizontal: 14,
+    paddingBottom: Platform.OS === "ios" ? 18 : 8,
+    paddingTop: 9,
   },
-  bottomTab: { flex: 1, minHeight: 48, alignItems: "center", justifyContent: "center", gap: 2 },
-  bottomTabIcon: { padding: 4, borderRadius: 8 },
+  bottomTab: {
+    flex: 1,
+    flexBasis: "25%",
+    minWidth: 0,
+    minHeight: 54,
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 3,
+  },
+  bottomTabIcon: {
+    width: 30,
+    height: 26,
+    borderRadius: 8,
+    alignItems: "center",
+    justifyContent: "center",
+  },
   bottomTabIconActive: { backgroundColor: "transparent" },
-  bottomTabLabel: { ...TYPE.caption, width: "100%", textAlign: "center", fontSize: 10.5, lineHeight: 14, color: C.slateGray },
+  bottomTabLabel: {
+    ...TYPE.caption,
+    width: "100%",
+    textAlign: "center",
+    fontSize: 10.5,
+    lineHeight: 14,
+    color: C.slateGray,
+    includeFontPadding: false,
+  },
   bottomTabAI: {
     width: 44, height: 44, borderRadius: 22,
     backgroundColor: C.primary, alignItems: "center", justifyContent: "center",
@@ -8477,6 +9224,16 @@ return StyleSheet.create({
     borderWidth: 1,
     borderColor: C.border,
     position: "relative",
+  },
+  homeFlagButton: {
+    width: MIN_TOUCH_TARGET,
+    height: MIN_TOUCH_TARGET,
+    borderRadius: MIN_TOUCH_TARGET / 2,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#140707",
+    borderWidth: 1,
+    borderColor: "#A30B0B",
   },
   notificationDot: {
     position: "absolute",
@@ -9226,7 +9983,7 @@ courseListCard: {
     justifyContent: "flex-end",
   },
   courseNotesSheet: {
-    maxHeight: "78%",
+    height: "78%",
     backgroundColor: C.surface,
     borderTopLeftRadius: 18,
     borderTopRightRadius: 18,
@@ -9263,7 +10020,7 @@ courseListCard: {
     alignItems: "center",
     justifyContent: "center",
   },
-  courseNotesScroll: { flexGrow: 0 },
+  courseNotesScroll: { flex: 1, minHeight: 0 },
   courseNotesContent: { padding: 18, paddingBottom: 32, gap: 14 },
   courseNotesBlock: {
     backgroundColor: C.surfaceWarm,
@@ -9474,6 +10231,211 @@ courseListCard: {
   deleteAccountConfirmText: { ...TYPE.button, color: "#FFFFFF" },
 
   // Nex AI
+  aiScreen: {
+    flex: 1,
+    backgroundColor: "#000000",
+  },
+  aiTopSafe: {
+    backgroundColor: "#050505",
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: "rgba(255,255,255,0.12)",
+  },
+  aiTopHeader: {
+    minHeight: 58,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    paddingHorizontal: 20,
+    paddingBottom: 8,
+  },
+  aiTopHeaderSpacer: {
+    flex: 1,
+  },
+  aiProfileButton: {
+    width: 42,
+    height: 42,
+    borderRadius: 21,
+    borderWidth: 2,
+    borderColor: "#E7BC68",
+    alignItems: "center",
+    justifyContent: "center",
+    overflow: "hidden",
+  },
+  aiIdentityBar: {
+    minHeight: 72,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+    paddingHorizontal: 20,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: "rgba(255,255,255,0.08)",
+  },
+  aiIdentityMenu: {
+    width: 32,
+    height: 44,
+    alignItems: "flex-start",
+    justifyContent: "center",
+  },
+  aiIdentityAvatar: {
+    width: 52,
+    height: 52,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  aiIdentityText: {
+    flex: 1,
+    justifyContent: "center",
+    minWidth: 0,
+  },
+  aiIdentityName: {
+    color: "#F5F1E8",
+    fontSize: 14,
+    lineHeight: 18,
+    fontWeight: "900",
+  },
+  aiIdentityStatusRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    marginTop: 3,
+  },
+  aiIdentityStatus: {
+    color: "#AFA79C",
+    fontSize: 12,
+    lineHeight: 15,
+    fontWeight: "600",
+  },
+  aiIdentityAdd: {
+    width: 42,
+    height: 42,
+    borderRadius: 21,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  aiHistoryOverlay: {
+    flex: 1,
+    justifyContent: "flex-end",
+    backgroundColor: "rgba(0,0,0,0.72)",
+  },
+  aiHistorySheet: {
+    width: "100%",
+    maxHeight: "82%",
+    backgroundColor: "#0B0C0E",
+    borderTopLeftRadius: 22,
+    borderTopRightRadius: 22,
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.12)",
+    paddingHorizontal: 18,
+    paddingTop: 18,
+    paddingBottom: Platform.OS === "ios" ? 30 : 20,
+  },
+  aiHistoryHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: 12,
+    marginBottom: 14,
+  },
+  aiHistoryEyebrow: {
+    color: "#E7BC68",
+    fontSize: 10,
+    lineHeight: 13,
+    fontWeight: "900",
+    letterSpacing: 1.2,
+  },
+  aiHistoryTitle: {
+    color: "#F5F1E8",
+    fontSize: 22,
+    lineHeight: 27,
+    fontWeight: "900",
+    marginTop: 2,
+  },
+  aiHistoryClose: {
+    width: 42,
+    height: 42,
+    borderRadius: 21,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#14161A",
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.12)",
+  },
+  aiHistoryNewChat: {
+    minHeight: 48,
+    borderRadius: 12,
+    backgroundColor: "#E7BC68",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: 16,
+    marginBottom: 18,
+  },
+  aiHistoryNewChatText: {
+    color: "#17130B",
+    fontSize: 15,
+    lineHeight: 20,
+    fontWeight: "900",
+  },
+  aiHistoryLabel: {
+    color: "#827A70",
+    fontSize: 11,
+    lineHeight: 15,
+    fontWeight: "900",
+    letterSpacing: 1,
+    textTransform: "uppercase",
+    marginBottom: 8,
+  },
+  aiHistoryList: {
+    minHeight: 0,
+  },
+  aiHistoryListContent: {
+    gap: 8,
+    paddingBottom: 8,
+  },
+  aiHistoryItem: {
+    minHeight: 58,
+    borderRadius: 12,
+    backgroundColor: "#111418",
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.09)",
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    justifyContent: "center",
+  },
+  aiHistoryItemActive: {
+    borderColor: "rgba(231,188,104,0.72)",
+    backgroundColor: "#17130B",
+  },
+  aiHistoryItemTitle: {
+    color: "#F5F1E8",
+    fontSize: 14,
+    lineHeight: 18,
+    fontWeight: "900",
+  },
+  aiHistoryItemMeta: {
+    color: "#AFA79C",
+    fontSize: 11,
+    lineHeight: 15,
+    fontWeight: "600",
+    marginTop: 3,
+  },
+  aiHistoryEmpty: {
+    minHeight: 130,
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 10,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.09)",
+    backgroundColor: "#111418",
+    paddingHorizontal: 18,
+  },
+  aiHistoryEmptyText: {
+    color: "#AFA79C",
+    fontSize: 13,
+    lineHeight: 19,
+    textAlign: "center",
+  },
   aiHero: {
     flexDirection: "row", alignItems: "center", gap: 12,
     marginHorizontal: 16, marginTop: 14, marginBottom: 10,
@@ -9492,10 +10454,10 @@ courseListCard: {
   aiStatusOnline: { backgroundColor: C.success },
   aiStatusOffline: { backgroundColor: C.warning },
   aiMessages: {
-    paddingHorizontal: 16, paddingTop: 10, paddingBottom: 12,
+    paddingHorizontal: 16, paddingTop: 16, paddingBottom: 18,
   },
   aiKeyboardArea: { flex: 1, minHeight: 0 },
-  aiKeyboardAreaWithNav: { marginBottom: Platform.OS === "ios" ? 76 : 64 },
+  aiKeyboardAreaWithNav: { marginBottom: Platform.OS === "ios" ? 98 : 82 },
   aiMessageList: { flex: 1, minHeight: 0, overflow: "hidden" },
   aiMessageRow: {
     flexDirection: "row", alignItems: "flex-end", gap: 8,
@@ -9521,34 +10483,112 @@ courseListCard: {
   aiTypingText: { ...TYPE.caption, color: C.textSub, fontWeight: "700" },
   aiBubbleText: { ...TYPE.body, color: C.text },
   aiBubbleTextUser: { color: C.onPrimary, fontWeight: "600" },
+  aiWelcomeScroll: {
+    flex: 1,
+    minHeight: 0,
+  },
+  aiWelcomeContent: {
+    flexGrow: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingHorizontal: 16,
+    paddingTop: 14,
+    paddingBottom: 18,
+  },
+  aiWelcomeTitle: {
+    color: "#FFFFFF",
+    fontFamily: FONT.heading,
+    fontSize: 25,
+    lineHeight: 31,
+    fontWeight: "900",
+    textAlign: "center",
+    marginTop: 22,
+  },
+  aiWelcomeSubtitle: {
+    color: "#AFA79C",
+    fontSize: 13,
+    lineHeight: 19,
+    textAlign: "center",
+    maxWidth: 310,
+    marginTop: 10,
+    marginBottom: 22,
+  },
+  aiWelcomePrompts: {
+    width: "100%",
+    gap: 9,
+  },
   aiSuggestions: {
     flexDirection: "row", flexWrap: "wrap", gap: 8,
     paddingHorizontal: 16, paddingTop: 4, paddingBottom: 8,
   },
   aiSuggestion: {
-    minHeight: MIN_TOUCH_TARGET, borderRadius: MIN_TOUCH_TARGET / 2, paddingHorizontal: 12, paddingVertical: 8,
+    minHeight: 44,
+    width: "100%",
+    borderRadius: 8,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
     alignItems: "center", justifyContent: "center",
-    backgroundColor: C.primaryLight, borderWidth: 1, borderColor: C.border,
+    backgroundColor: "#111418",
+    borderWidth: 1,
+    borderColor: "rgba(231,188,104,0.6)",
   },
-  aiSuggestionText: { color: C.primaryDark, fontSize: 12, fontWeight: "700" },
+  aiSuggestionText: { color: "#B9B2A8", fontSize: 13, lineHeight: 17, fontWeight: "800", textAlign: "center" },
   aiComposer: {
-    flexDirection: "row", alignItems: "flex-end", gap: 8,
-    paddingHorizontal: 16, paddingTop: 8, paddingBottom: 10,
-    backgroundColor: C.bg, borderTopWidth: 1, borderTopColor: C.border,
+    marginHorizontal: 8,
+    marginBottom: 8,
+    paddingHorizontal: 12,
+    paddingTop: 11,
+    paddingBottom: 10,
+    borderRadius: 18,
+    backgroundColor: "#111418",
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.1)",
   },
   aiComposerStandalone: { paddingBottom: Platform.OS === "ios" ? 28 : 10 },
+  aiComposerRow: {
+    flexDirection: "row",
+    alignItems: "flex-end",
+    gap: 8,
+  },
   aiInput: {
-    flex: 1, minHeight: MIN_TOUCH_TARGET, maxHeight: 104,
-    color: C.text, backgroundColor: C.cardBg,
-    borderWidth: 1, borderColor: C.border, borderRadius: RADIUS.lg,
-    paddingHorizontal: 13, paddingTop: 11, paddingBottom: 10,
-    ...TYPE.body,
+    flex: 1,
+    minHeight: 42,
+    maxHeight: 92,
+    color: "#F5F1E8",
+    backgroundColor: "transparent",
+    paddingHorizontal: 0,
+    paddingTop: 10,
+    paddingBottom: 8,
+    fontSize: 16,
+    lineHeight: 21,
   },
   aiSend: {
-    width: MIN_TOUCH_TARGET, height: MIN_TOUCH_TARGET, borderRadius: MIN_TOUCH_TARGET / 2,
-    backgroundColor: C.primary, alignItems: "center", justifyContent: "center",
+    width: 42, height: 42, borderRadius: 14,
+    backgroundColor: "#E7BC68",
+    borderWidth: 1,
+    borderColor: "#F2D49A",
+    shadowColor: "#E7BC68",
+    shadowOpacity: 0.26,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 3 },
+    elevation: 4,
+    alignItems: "center",
+    justifyContent: "center",
   },
-  aiSendDisabled: { opacity: 0.45 },
+  aiSendDisabled: {
+    opacity: 1,
+    backgroundColor: "#E7BC68",
+    borderColor: "#F2D49A",
+    shadowOpacity: 0.2,
+  },
+  aiDisclaimer: {
+    color: "#827A70",
+    fontSize: 9,
+    lineHeight: 12,
+    fontWeight: "600",
+    textAlign: "center",
+    marginTop: 2,
+  },
 
   // Video Player
   centered: { flex: 1, alignItems: "center", justifyContent: "center", backgroundColor: C.bg },
@@ -9574,7 +10614,8 @@ courseListCard: {
     flexDirection: "row", alignItems: "center", gap: 4,
     minWidth: MIN_TOUCH_TARGET, minHeight: MIN_TOUCH_TARGET, justifyContent: "center",
     paddingHorizontal: 10, borderRadius: MIN_TOUCH_TARGET / 2,
-    backgroundColor: C.isDark ? "rgba(240,216,168,0.88)" : "rgba(23,23,23,0.86)",
+    backgroundColor: C.isDark ? C.primaryPressed : "rgba(23,23,23,0.86)",
+    borderWidth: 1, borderColor: C.isDark ? "rgba(255,255,255,0.18)" : "rgba(255,255,255,0.12)",
     zIndex: 20,
   },
   reelsNotesBtn: {

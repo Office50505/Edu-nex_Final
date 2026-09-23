@@ -105,13 +105,13 @@ test('popup omits failures and discards late replies after reset or account chan
 });
 
 
-test('only references actually cited from this request are returned', async () => {
-  const api = backend({ courses: [{ _id: 'course-id', slug: 'prompting', title: 'Prompting', description: 'Write clear prompts.', videos: [] }], reply: 'Write clear prompts [S1, S999, S1]. Unknown [S999].' });
+test('source markers and reference lists are hidden from learner replies', async () => {
+  const api = backend({ courses: [{ _id: 'course-id', slug: 'prompting', title: 'Prompting', description: 'Write clear prompts.', videos: [] }], reply: 'Write clear prompts [S1, S999, S1].\n\nReferences\n[S1] Prompting — intro\n[S999] Unknown.' });
   const result = await api.chat({ message: 'Explain prompting' });
-  assert.equal(result.sources.length, 1);
-  assert.equal(result.sources[0].id, 'S1');
-  assert.doesNotMatch(result.reply, /S999/);
-  assert.equal((result.reply.match(/\[S1\]/g) || []).length, 1);
+  assert.equal(result.reply, 'Write clear prompts.');
+  assert.equal(Array.isArray(result.sources), true);
+  assert.equal(result.sources.length, 0);
+  assert.doesNotMatch(result.reply, /\[S\d+\]|References|Sources|S999/);
 });
 
 test('empty or failed provider replies clearly report the fallback mode', async () => {
@@ -120,7 +120,8 @@ test('empty or failed provider replies clearly report the fallback mode', async 
     const result = await api.chat({ message: 'courses' });
     assert.equal(result.provider, 'built-in-course-guide');
     assert.match(result.notice, /temporarily unavailable/);
-    assert.deepEqual(result.sources, []);
+    assert.equal(Array.isArray(result.sources), true);
+    assert.equal(result.sources.length, 0);
   }
 });
 

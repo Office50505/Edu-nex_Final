@@ -1540,6 +1540,17 @@
     return `edunexNexAiChats:${conversationOwner || 'guest'}`;
   }
 
+  function cleanAssistantReply(value) {
+    return String(value || '')
+      .replace(/\n\s*(?:References|Sources)\s*:?\s*\n(?:\s*\[S\d+\][^\n]*(?:\n|$))+/gi, '\n')
+      .replace(/^\s*(?:References|Sources)\s*:?\s*$/gim, '')
+      .replace(/^\s*\[S\d+\]\s*/gim, '')
+      .replace(/\s*\[(?:S\d+)(?:\s*,\s*S\d+)*\]/g, '')
+      .replace(/[ \t]+\n/g, '\n')
+      .replace(/\n{3,}/g, '\n\n')
+      .trim();
+  }
+
   function readStoredSessions() {
     try {
       const parsed = JSON.parse(localStorage.getItem(conversationStorageKey()) || '[]');
@@ -1554,9 +1565,8 @@
                 .filter((message) => message && (message.role === 'user' || message.role === 'assistant') && typeof message.content === 'string')
                 .map((message) => ({
                   role: message.role,
-                  content: message.content.slice(0, 4000),
+                  content: (message.role === 'assistant' ? cleanAssistantReply(message.content) : message.content).slice(0, 4000),
                   notice: typeof message.notice === 'string' ? message.notice.slice(0, 1000) : '',
-                  sources: Array.isArray(message.sources) ? message.sources.slice(0, 8) : [],
                   createdAt: Number(message.createdAt || Date.now()),
                 }))
             : [],
@@ -1643,7 +1653,6 @@
       <div class="nai-ai-avatar">${currentBotAvatarMarkup()}</div>
       <div class="nai-ai-bubble">${formatNaiReply(message.content)}
         ${message.notice ? `<p role="status">${escapeNaiHtml(message.notice)}</p>` : ''}
-        ${(message.sources || []).length ? `<div style="margin-top:12px;font-size:.8rem"><strong>References</strong>${message.sources.filter(source => source.url?.startsWith('/course-details.html?')).map(source => `<p><a style="color:inherit;text-decoration:underline" href="${escapeNaiHtml(source.url)}">[${escapeNaiHtml(source.id)}] ${escapeNaiHtml(source.title)} — ${escapeNaiHtml(source.section)}</a></p>`).join('')}</div>` : ''}
       </div>
     `;
     return row;
@@ -1719,9 +1728,8 @@
     const session = activeSession();
     const record = {
       role: message.role,
-      content: String(message.content || '').slice(0, 4000),
+      content: (message.role === 'assistant' ? cleanAssistantReply(message.content) : String(message.content || '')).slice(0, 4000),
       notice: typeof message.notice === 'string' ? message.notice.slice(0, 1000) : '',
-      sources: Array.isArray(message.sources) ? message.sources.slice(0, 8) : [],
       createdAt: Date.now(),
     };
     session.messages.push(record);
@@ -1884,7 +1892,6 @@
         role: 'assistant',
         content: reply,
         notice: data.notice || '',
-        sources: data.sources || [],
       });
       messages.appendChild(renderMessageRecord(aiRecord));
       messages.scrollTop = messages.scrollHeight;

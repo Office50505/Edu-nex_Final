@@ -27,12 +27,25 @@ function referenceFor(report) {
 async function optionalUser(req, _res, next) {
   try {
     const token = req.headers.authorization?.split(' ')[1];
-    if (!token) return next();
-    const decoded = jwt.verify(token, accessTokenSecret);
-    const user = await User.findById(decoded.userId).select('fullName name email mobileNumber activeSessionId').lean();
-    if (user && user.activeSessionId === decoded.sessionId) req.reportUser = user;
+    if (token) {
+      const decoded = jwt.verify(token, accessTokenSecret);
+      const user = await User.findById(decoded.userId).select('fullName name email mobileNumber +activeSessionId').lean();
+      if (user && user.activeSessionId === decoded.sessionId) req.reportUser = user;
+    }
   } catch (_) {
     // A report can still be filed anonymously if a saved session has expired.
+  }
+  if (!req.reportUser) {
+    try {
+      const userId = clean(req.body?.userId, 120);
+      const sessionId = clean(req.body?.sessionId, 240);
+      if (mongoose.Types.ObjectId.isValid(userId) && sessionId) {
+        const user = await User.findById(userId).select('+activeSessionId').lean();
+        if (user && user.activeSessionId === sessionId) req.reportUser = user;
+      }
+    } catch (_) {
+      // Mobile session context is best-effort; saving the report is more important.
+    }
   }
   next();
 }
