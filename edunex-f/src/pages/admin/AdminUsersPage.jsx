@@ -227,7 +227,7 @@ function PurchaseHistoryPanel({ state }) {
     </section>;
 }
 
-function LearnerDetailDrawer({ user, courses, tab, setTab, onClose, ipLocation }) {
+function LearnerDetailDrawer({ user, courses, tab, setTab, onClose, ipLocation, purchaseHistory }) {
   if (!user) return null;
   const progress = user.progressCourses || [];
   const watch = user.watchSummary || {};
@@ -250,7 +250,7 @@ function LearnerDetailDrawer({ user, courses, tab, setTab, onClose, ipLocation }
         </div>
       ) : null}
       {tab === "Course progress" ? <><PurchasedCourseList user={user} courses={courses} /><div className="drawer-section-label">Learning progress</div><div className="progress-list">{progress.length ? progress.map((course) => <ProgressRow course={course} key={`${user._id}-drawer-${course.courseId}`} />) : <div className="empty-state">Course purchased. Learning has not started yet.</div>}</div></> : null}
-      {tab === "Orders/payments" ? <div className="empty-state">Backend API not connected for learner order history yet.</div> : null}
+      {tab === "Orders/payments" ? <PurchaseHistoryPanel state={purchaseHistory} /> : null}
       {tab === "Certificates" ? <div className="empty-state">Backend API not connected for learner-specific certificate records yet.</div> : null}
       {tab === "Activity" ? <div className="empty-state">Backend API not connected for learner activity and audit events yet.</div> : null}
       <div className="drawer-actions">
@@ -518,6 +518,19 @@ export function AdminUsersPage() {
     setSelectedUser(user);
     setDrawerTab("Overview");
     if (!ipLocations[user._id]) loadIpLocation(user._id);
+    const userId = String(user._id);
+    if (!purchaseHistories[userId]) void loadPurchaseHistory(user);
+  }
+
+  async function loadPurchaseHistory(user) {
+    const userId = String(user._id);
+    setPurchaseHistories((current) => ({ ...current, [userId]: { user, loading: true, error: "", orders: [], courseChanges: [] } }));
+    try {
+      const data = await adminJson(`/api/admin/users/${encodeURIComponent(user._id)}/purchase-history`, {}, "Unable to load purchase history.");
+      setPurchaseHistories((current) => ({ ...current, [userId]: { user: data.user || user, loading: false, error: "", orders: data.orders || [], courseChanges: data.courseChanges || [] } }));
+    } catch (error) {
+      setPurchaseHistories((current) => ({ ...current, [userId]: { user, loading: false, error: error.message || "Unable to load purchase history.", orders: [], courseChanges: [] } }));
+    }
   }
 
   async function togglePurchaseHistory(user) {
@@ -529,13 +542,7 @@ export function AdminUsersPage() {
       return next;
     });
     if (!opening || purchaseHistories[userId]) return;
-    setPurchaseHistories((current) => ({ ...current, [userId]: { user, loading: true, error: "", orders: [], courseChanges: [] } }));
-    try {
-      const data = await adminJson(`/api/admin/users/${encodeURIComponent(user._id)}/purchase-history`, {}, "Unable to load purchase history.");
-      setPurchaseHistories((current) => ({ ...current, [userId]: { user: data.user || user, loading: false, error: "", orders: data.orders || [], courseChanges: data.courseChanges || [] } }));
-    } catch (error) {
-      setPurchaseHistories((current) => ({ ...current, [userId]: { user, loading: false, error: error.message || "Unable to load purchase history.", orders: [], courseChanges: [] } }));
-    }
+    await loadPurchaseHistory(user);
   }
 
   async function moveToTrash(user) {
@@ -739,7 +746,7 @@ export function AdminUsersPage() {
         <span aria-live="polite">Page {currentPage} of {pageCount} · 25 learners per page</span>
         <button className="toolbar-button" disabled={currentPage >= pageCount || loading} onClick={() => setPage(currentPage + 1)}>Next</button>
       </nav>
-      <LearnerDetailDrawer user={selectedUser} courses={courses} tab={drawerTab} setTab={setDrawerTab} onClose={() => setSelectedUser(null)} ipLocation={selectedUser ? ipLocations[selectedUser._id] : null} />
+      <LearnerDetailDrawer user={selectedUser} courses={courses} tab={drawerTab} setTab={setDrawerTab} onClose={() => setSelectedUser(null)} ipLocation={selectedUser ? ipLocations[selectedUser._id] : null} purchaseHistory={selectedUser ? (purchaseHistories[String(selectedUser._id)] || { user: selectedUser, loading: false, error: "", orders: [], courseChanges: [] }) : null} />
 
       {courseDialog ? <div className="course-access-backdrop" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget && !updatingId) setCourseDialog(null); }}>
         <form className="course-access-dialog" role="dialog" aria-modal="true" aria-labelledby="course-access-title" onSubmit={submitCourseAccess}>
