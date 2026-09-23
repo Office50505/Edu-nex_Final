@@ -1,7 +1,29 @@
-const ALLOWED_ORIGINS = new Set([
+const DEFAULT_ALLOWED_ORIGINS = [
   'https://skillomate.in',
   'https://www.skillomate.in',
-]);
+];
+
+function normalizeOrigin(origin) {
+  return String(origin || '').trim().replace(/\/+$/, '');
+}
+
+function configuredOrigins(env = process.env) {
+  return [env.FRONTEND_ORIGIN, env.FRONTEND_ORIGINS]
+    .filter(Boolean)
+    .join(',')
+    .split(',')
+    .map(normalizeOrigin)
+    .filter(Boolean);
+}
+
+function buildAllowedOrigins(env = process.env) {
+  return new Set([
+    ...DEFAULT_ALLOWED_ORIGINS,
+    ...configuredOrigins(env),
+  ]);
+}
+
+const ALLOWED_ORIGINS = buildAllowedOrigins();
 
 const ALLOWED_HEADERS = [
   'Origin',
@@ -53,5 +75,8 @@ module.exports = {
   ALLOWED_HEADERS,
   ALLOWED_METHODS,
   ALLOWED_ORIGINS,
+  buildAllowedOrigins,
+  configuredOrigins,
+  normalizeOrigin,
   skillomateCors,
 };

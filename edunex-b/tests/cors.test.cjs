@@ -3,6 +3,7 @@ const assert = require('node:assert/strict');
 const {
   ALLOWED_HEADERS,
   ALLOWED_METHODS,
+  buildAllowedOrigins,
   skillomateCors,
 } = require('../middleware/cors');
 
@@ -62,4 +63,17 @@ test('does not emit a wildcard or reflect an untrusted origin', () => {
   assert.equal(result.headers.has('access-control-allow-origin'), false);
   assert.notEqual(result.headers.get('access-control-allow-origin'), '*');
   assert.equal(result.headers.get('vary'), 'Origin');
+});
+
+
+test('includes configured admin origins from environment allowlist', () => {
+  const origins = buildAllowedOrigins({
+    FRONTEND_ORIGIN: 'https://edunexadmin.vercel.app',
+    FRONTEND_ORIGINS: 'https://admin.skillomate.in, https://preview-admin.vercel.app/',
+  });
+
+  assert.equal(origins.has('https://skillomate.in'), true);
+  assert.equal(origins.has('https://edunexadmin.vercel.app'), true);
+  assert.equal(origins.has('https://admin.skillomate.in'), true);
+  assert.equal(origins.has('https://preview-admin.vercel.app'), true);
 });
