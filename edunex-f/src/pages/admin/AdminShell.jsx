@@ -2,12 +2,10 @@ import { useEffect, useState } from "react";
 import { adminRoutes, logout } from "./adminApi.js";
 
 const sections = [
-  { label: 'Command', links: [['dashboard', 'Dashboard', adminRoutes.dashboard, 'home']] },
-  { label: 'People', links: [['users', 'Learners', adminRoutes.users, 'users'], ['subscribers', 'Subscribers', adminRoutes.subscribers, 'card']] },
-  { label: 'Content', links: [['courses', 'Course library', adminRoutes.courses, 'book'], ['upload', 'Create course', adminRoutes.upload, 'plus'], ['courseReview', 'Course review', adminRoutes.courseReview, 'check']] },
-  { label: 'Commerce', links: [['orders', 'Orders', adminRoutes.orders, 'bag'], ['payments', 'Payments', adminRoutes.payments, 'pay'], ['paymentAuditor', 'Payment auditor', adminRoutes.paymentAuditor, 'audit'], ['subscriptions', 'Subscriptions', adminRoutes.subscriptions, 'loop']] },
-  { label: 'Learning', links: [['progress', 'Progress', adminRoutes.progress, 'trend'], ['certifications', 'Certification', adminRoutes.certifications, 'award']] },
-  { label: 'Operations', links: [['reports', 'User reports', adminRoutes.reports, 'flag'], ['health', 'System health', adminRoutes.health, 'pulse'], ['auditLog', 'Audit log', adminRoutes.auditLog, 'log'], ['settings', 'Settings', adminRoutes.settings, 'gear']] },
+  { label: 'Workspace', links: [['dashboard', 'Dashboard', adminRoutes.dashboard, 'home']] },
+  { label: 'Operate', links: [['users', 'Learners', adminRoutes.users, 'users'], ['courses', 'Courses', adminRoutes.courses, 'book'], ['subscriptions', 'Subscriptions', adminRoutes.subscriptions, 'loop'], ['payments', 'Payments', adminRoutes.payments, 'pay'], ['reports', 'Reports', adminRoutes.reports, 'flag']] },
+  { label: 'Create', links: [['upload', 'Create course', adminRoutes.upload, 'plus'], ['courseReview', 'Course review', adminRoutes.courseReview, 'check'], ['certifications', 'Certification', adminRoutes.certifications, 'award']] },
+  { label: 'System', links: [['paymentAuditor', 'Payment auditor', adminRoutes.paymentAuditor, 'audit'], ['health', 'System health', adminRoutes.health, 'pulse'], ['auditLog', 'Audit log', adminRoutes.auditLog, 'log'], ['settings', 'Settings', adminRoutes.settings, 'gear']] },
 ];
 
 export function Message({ text, type = "success" }) {
@@ -101,10 +99,15 @@ export function AdminShell({ activePage, title, subtitle, children, actions = nu
           <div className="admin-header-tools">
             <form className="admin-global-search" onSubmit={handleGlobalSearch} role="search">
               <label htmlFor="adminGlobalSearch">Search</label>
-              <input id="adminGlobalSearch" value={globalSearch} onChange={event => setGlobalSearch(event.target.value)} placeholder="Search learners, courses, orders..." />
+              <input id="adminGlobalSearch" value={globalSearch} onChange={event => setGlobalSearch(event.target.value)} placeholder="Search learners, courses, payments..." />
               <button className="admin-search-button" type="submit">Search</button>
             </form>
+            <div className="admin-status-cluster" aria-label="Workspace status">
+              <span className="admin-mode-pill"><i aria-hidden="true" /> Live mode</span>
+              <span className="admin-date-pill">{new Date().toLocaleDateString("en-IN", { day: "2-digit", month: "short" })}</span>
+            </div>
             <div className="toolbar-actions">
+              <a className="toolbar-button admin-quick-create" href={adminRoutes.upload}>+ Create / Upload</a>
               <button className="toolbar-button admin-theme-button" type="button" onClick={() => setTheme(current => current === 'light' ? 'dark' : 'light')} aria-pressed={theme === 'light'}>{theme === 'light' ? 'Dark' : 'Light'}</button>
               {actions}
             </div>

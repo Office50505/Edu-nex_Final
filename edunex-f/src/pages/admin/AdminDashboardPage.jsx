@@ -283,16 +283,33 @@ export function AdminDashboardPage() {
     ["Pending", totals.pendingOrdersInRange, "warn"],
     ["Failed", totals.failedOrdersInRange, "bad"],
   ];
+  const commandCards = [
+    { title: "Create course", meta: "Upload lessons, notes, pricing, and course details.", href: adminRoutes.upload, cta: "Start upload" },
+    { title: "Review reports", meta: `${displayNumber(data?.reportSummary?.new || totals.openReports)} open learner issues`, href: adminRoutes.reports, cta: "Open reports" },
+    { title: "Payment audit", meta: "Check orders, subscriptions, failed retries, and webhook gaps.", href: adminRoutes.paymentAuditor, cta: "Audit payments" },
+    { title: "Gateway settings", meta: "Switch test/live checkout and Meta Pixel tracking safely.", href: adminRoutes.settings, cta: "Manage settings" },
+  ];
 
   return (
     <AdminShell
       activePage="dashboard"
       shellClass="dashboard-shell"
-      title="Overview"
-      subtitle="Platform revenue, learners, subscriptions, and course engagement."
+      title="Dashboard"
+      subtitle="Your daily command center for revenue, learners, reports, payments, content, and system health."
       actions={<button className="toolbar-button" type="button" onClick={loadAnalytics} disabled={loading}>Refresh</button>}
     >
       <Message text={message} type="error" />
+
+      <section className="admin-command-strip" aria-label="Admin quick actions">
+        {commandCards.map((item) => (
+          <a className="admin-command-card" href={item.href} key={item.title}>
+            <span>{item.title}</span>
+            <strong>{item.meta}</strong>
+            <small>{item.cta} →</small>
+          </a>
+        ))}
+      </section>
+
       <form className="date-controls analytics-controls admin-range-card" onSubmit={(event) => { event.preventDefault(); loadAnalytics(); }}>
         <div className="range-summary">
           <strong>Applied range</strong>
