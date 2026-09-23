@@ -7,6 +7,11 @@ const dns = require('dns').promises;
 const net = require('net');
 const path = require('path');
 const fs = require('fs');
+const initialNodeEnv = process.env.NODE_ENV;
+require('dotenv').config({ path: path.join(__dirname, '.env') });
+if (initialNodeEnv !== 'production') {
+  require('dotenv').config({ path: path.join(__dirname, '.env.local'), override: true });
+}
 const helmet = require('helmet');
 const { getMongoConnectionOptions } = require('./config/mongodb');
 const { ALLOWED_ORIGINS, skillomateCors } = require('./middleware/cors');
@@ -18,12 +23,6 @@ const {
   canDisableRateLimitsInProduction,
   isAuthRateLimitDisabled,
 } = require('./services/rateLimitToggle');
-const initialNodeEnv = process.env.NODE_ENV;
-require('dotenv').config({ path: path.join(__dirname, '.env') });
-if (initialNodeEnv !== 'production') {
-  require('dotenv').config({ path: path.join(__dirname, '.env.local'), override: true });
-}
-
 const app = express();
 app.disable('x-powered-by');
 app.use(skillomateCors);
