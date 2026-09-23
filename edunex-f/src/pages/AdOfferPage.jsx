@@ -129,19 +129,30 @@ function PreviewVideo({ media, modalOpen, onPixelEvent }) {
     else start();
   }, [modalOpen, start]);
 
-  useEffect(() => {
-    const toggleMute = (event) => {
-      const video = videoRef.current;
-      if (!video || modalOpenRef.current || !(event.target instanceof Element)) return;
-      const target = event.target;
-      if (!target.closest(".ad-preview-player") && target.closest('button, a, input, textarea, select, label, [role="dialog"], [role="button"], [contenteditable="true"]')) return;
-      video.muted = !video.muted;
-      setMuted(video.muted);
-      if (video.paused) start();
-    };
-    document.addEventListener("click", toggleMute);
-    return () => document.removeEventListener("click", toggleMute);
+  const unmuteFromPageClick = useCallback((event) => {
+    const video = videoRef.current;
+    if (!video || modalOpenRef.current || !(event.target instanceof Element)) return;
+    const target = event.target;
+    if (!target.closest(".ad-preview-player") && target.closest('button, a, input, textarea, select, label, [role="dialog"], [role="button"], [contenteditable="true"]')) return;
+    if (!video.muted) return;
+    video.muted = false;
+    setMuted(false);
+    if (video.paused) start();
   }, [start]);
+
+  const toggleMuteButton = useCallback((event) => {
+    event.stopPropagation();
+    const video = videoRef.current;
+    if (!video || modalOpenRef.current) return;
+    video.muted = !video.muted;
+    setMuted(video.muted);
+    if (video.paused) start();
+  }, [start]);
+
+  useEffect(() => {
+    document.addEventListener("click", unmuteFromPageClick);
+    return () => document.removeEventListener("click", unmuteFromPageClick);
+  }, [unmuteFromPageClick]);
 
   return (
     <div className="ad-preview-player" style={{ cursor: "pointer" }}>
@@ -157,7 +168,7 @@ function PreviewVideo({ media, modalOpen, onPixelEvent }) {
         onError={() => setVideoUrl(currentUrl => currentUrl === DEFAULT_OFFER_VIDEO_URL ? currentUrl : DEFAULT_OFFER_VIDEO_URL)}
       />
       {!playing ? <button className="ad-preview-play" type="button" onClick={start} aria-label="Play course preview">▶</button> : null}
-      <button className={`ad-mute-button${muted ? "" : " is-unmuted"}`} type="button" aria-label={muted ? "Unmute preview" : "Mute preview"}>
+      <button className={`ad-mute-button${muted ? "" : " is-unmuted"}`} type="button" aria-label={muted ? "Unmute preview" : "Mute preview"} onClick={toggleMuteButton}>
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4Z"/><path d="m17 9 4 6m0-6-4 6"/></svg>
       </button>
       <div className="ad-video-progress" aria-hidden="true"><span style={{ width: `${progress}%` }} /></div>

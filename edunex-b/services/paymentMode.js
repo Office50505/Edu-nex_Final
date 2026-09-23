@@ -1,5 +1,16 @@
 const Settings = require('../models/PaymentSettings');
 const rzp = require('./razorpayService');
+
+function formatRupees(paise) {
+  return `₹${(Number(paise || 0) / 100).toLocaleString('en-IN', { maximumFractionDigits: 2 })}`;
+}
+
+function describePlanMismatch(plan, c) {
+  const actualAmount = Number.isFinite(plan?.item?.amount) ? formatRupees(plan.item.amount) : 'missing amount';
+  const actualCurrency = plan?.item?.currency || 'missing currency';
+  const actualPeriod = plan?.period && plan?.interval ? `${plan.interval} ${plan.period}` : 'missing period';
+  return `Live mode needs Razorpay plan ${c.planId} to be INR ${formatRupees(c.monthlyAmount)} every 1 monthly cycle. Current Razorpay plan is ${actualCurrency} ${actualAmount} every ${actualPeriod}. Update RAZORPAY_LIVE_PLAN_ID to a matching monthly plan or change SUBSCRIPTION_AMOUNT_PAISE.`;
+}
 async function activeMode() {
   const saved = await Settings.findById('razorpay').lean();
   return saved?.mode || process.env.RAZORPAY_MODE || rzp.legacyMode();
@@ -23,7 +34,7 @@ async function select(mode, admin) {
   // Read-only provider check: do not enable an invalid plan or mismatched price.
   const plan = await rzp.api(`/plans/${encodeURIComponent(c.planId)}`, 'GET', undefined, mode);
   if (plan.period !== 'monthly' || plan.interval !== 1 || plan.item?.amount !== c.monthlyAmount || plan.item?.currency !== 'INR') {
-    throw Object.assign(new Error('This mode needs an INR monthly plan matching the configured subscription price.'), { status: 409 });
+    throw Object.assign(new Error(describePlanMismatch(plan, c)), { status: 409 });
   }
   if (c.annualPlanId) {
     const annualPlan = await rzp.api(`/plans/${encodeURIComponent(c.annualPlanId)}`, 'GET', undefined, mode);
