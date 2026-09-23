@@ -9,17 +9,20 @@ import { useWindowDimensions } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import {
   ActivityIndicator,
+  AccessibilityInfo,
   Animated,
   Alert,
   AppState,
   BackHandler,
   Dimensions,
+  Easing,
   FlatList,
   Image,
   Keyboard,
   KeyboardAvoidingView,
   Linking,
   Modal,
+  PanResponder,
   Platform,
   Pressable,
   SafeAreaView,
@@ -345,9 +348,24 @@ function PosterImage({ course, index = 0, vertical = true, style }) {
   );
 }
 
+const RootTabSwipeContext = React.createContext(null);
+
+function useHorizontalSwipeBoundaryProps() {
+  const swipeBoundary = React.useContext(RootTabSwipeContext);
+
+  return useMemo(() => ({
+    onTouchStart: swipeBoundary?.begin,
+    onTouchEnd: swipeBoundary?.end,
+    onTouchCancel: swipeBoundary?.end,
+  }), [swipeBoundary]);
+}
+
 function HorizontalRail({ data, renderItem, contentContainerStyle, keyExtractor }) {
+  const swipeBoundaryProps = useHorizontalSwipeBoundaryProps();
+
   return (
     <FlatList
+      {...swipeBoundaryProps}
       horizontal
       data={data}
       keyExtractor={keyExtractor}
@@ -448,12 +466,27 @@ const DEFAULT_API_BASE = __DEV__
   ? (Platform.OS === "android"
     ? `http://${EXPO_HOST === "localhost" ? "10.0.2.2" : EXPO_HOST}:${DEV_API_PORT}`
     : `http://${EXPO_HOST}:${DEV_API_PORT}`)
-  : "http://13.203.94.35";
+  : "https://api.skillomate.in";
 const normalizeBaseUrl = url => String(url || "").replace(/\/+$/, "");
 const API_BASE = normalizeBaseUrl(process.env.EXPO_PUBLIC_API_BASE || DEFAULT_API_BASE);
 const WEB_APP_BASE = normalizeBaseUrl(process.env.EXPO_PUBLIC_WEB_APP_BASE || "https://skillomate.in");
 
-async function openWebTrialCheckout() {
+async function openMembershipAccess() {
+  if (Platform.OS === "ios") {
+    Alert.alert(
+      "Membership access",
+      "Skillomate for iPhone supports access for existing members. If your membership is not showing, contact support and we’ll help restore it.",
+      [
+        { text: "Not now", style: "cancel" },
+        {
+          text: "Email support",
+          onPress: () => Linking.openURL("mailto:support@skillomate.in?subject=iPhone%20membership%20access"),
+        },
+      ],
+    );
+    return;
+  }
+
   try {
     await Linking.openURL(`${WEB_APP_BASE}/payment`);
   } catch {
@@ -501,7 +534,7 @@ const LEGAL_APP_PAGES = {
     sections: [
       { title: "Login or profile", body: "If your login, OTP, avatar, or profile details do not sync, close and reopen the app, then sign in again." },
       { title: "Course videos", body: "Protected video access requires an active trial or subscription. Open Courses and select the lesson again after confirming your connection." },
-      { title: "Payments", body: "After completing payment, return to Skillomate and check Subscription Details from Profile. Reopen the app if the updated status is not visible yet." },
+      { title: "Membership access", body: "Existing memberships are linked to your Skillomate account. Open Subscription Details from Profile, refresh the status, or contact support if access is missing." },
       { title: "Wishlist and progress", body: "Wishlist and course progress sync to your signed-in account when the server is available." },
       { title: "Nex AI", body: "Use Nex AI for summaries, study plans, project ideas, and lesson explanations. Try again later if the AI service is temporarily unavailable." },
       { title: "Contact", body: "Email support@skillomate.in with your registered mobile number and a clear description of the issue. Never include your password or OTP." },
@@ -528,7 +561,7 @@ const HELP_SUPPORT_CONTENT = {
     {
       title: "Payments",
       icon: "receipt-outline",
-      body: "After payment, continue on web to return to courses. Subscription status can be checked from the Profile page.",
+      body: "Existing memberships are linked to your Skillomate account. Check Subscription Details from Profile, refresh the status, or contact support if access is missing.",
     },
     {
       title: "Wishlist",
@@ -1508,19 +1541,32 @@ function FieldLabel({ label }) {
   return <Text style={s.fieldLabel}>{label}</Text>;
 }
 
-function FieldInput({ label, style, secureTextEntry, accessibilityLabel, ...props }) {
+function FieldInput({ label, style, secureTextEntry, accessibilityLabel, inputRef, onFocus, onBlur, ...props }) {
   const [hidden, setHidden] = useState(!!secureTextEntry);
+  const [focused, setFocused] = useState(false);
   const spokenLabel = accessibilityLabel || label || props.placeholder || "Text input";
+  const handleFocus = event => {
+    setFocused(true);
+    onFocus?.(event);
+  };
+  const handleBlur = event => {
+    setFocused(false);
+    onBlur?.(event);
+  };
   if (secureTextEntry) {
     return (
       <View style={{ marginBottom: 16 }}>
         {label ? <FieldLabel label={label} /> : null}
         <View style={{ position: "relative" }}>
           <TextInput
-            style={[s.input, { paddingRight: 52 }, style]}
+            ref={inputRef}
+            style={[s.input, focused && s.inputFocused, { paddingRight: 52 }, style]}
             placeholderTextColor={C.textMuted}
             secureTextEntry={hidden}
             accessibilityLabel={spokenLabel}
+            maxFontSizeMultiplier={1.5}
+            onFocus={handleFocus}
+            onBlur={handleBlur}
             {...props}
           />
           <TouchableOpacity
@@ -1539,7 +1585,16 @@ function FieldInput({ label, style, secureTextEntry, accessibilityLabel, ...prop
   return (
     <View style={{ marginBottom: 16 }}>
       {label ? <FieldLabel label={label} /> : null}
-      <TextInput style={[s.input, style]} placeholderTextColor={C.textMuted} accessibilityLabel={spokenLabel} {...props} />
+      <TextInput
+        ref={inputRef}
+        style={[s.input, focused && s.inputFocused, style]}
+        placeholderTextColor={C.textMuted}
+        accessibilityLabel={spokenLabel}
+        maxFontSizeMultiplier={1.5}
+        onFocus={handleFocus}
+        onBlur={handleBlur}
+        {...props}
+      />
     </View>
   );
 }
@@ -1768,6 +1823,7 @@ function Badge({ label, color }) {
 }
 
 function UpgradeModal({ visible, onClose, onStartTrial, trialLoading = false }) {
+  const isIOS = Platform.OS === "ios";
   const FEATURES = [
     "Certificate of Completion",
     "Ad-free learning experience",
@@ -1780,7 +1836,7 @@ function UpgradeModal({ visible, onClose, onStartTrial, trialLoading = false }) 
       requestAnimationFrame(onStartTrial);
       return;
     }
-    requestAnimationFrame(openWebTrialCheckout);
+    requestAnimationFrame(openMembershipAccess);
   };
 
   return (
@@ -1794,13 +1850,10 @@ function UpgradeModal({ visible, onClose, onStartTrial, trialLoading = false }) 
             <Ionicons name="close" size={20} color={C.textMuted} />
           </TouchableOpacity>
 
-            {/* Banner */}
+          {/* Banner */}
           <View style={[s.upgradeBanner, { backgroundColor: C.accentSoft }]}>
-            {Array.from({ length: 20 }, (_, i) => (
-              <View key={i} style={{ flex: 1, backgroundColor: `rgba(197,139,42,${(0.08 * Math.pow(i / 19, 2)).toFixed(3)})` }} />
-            ))}
             <View style={[s.upgradeBannerBadge, { backgroundColor: C.accent }]}>
-              <Text style={s.upgradeBannerBadgeText}>24-HOUR TRIAL</Text>
+              <Text style={s.upgradeBannerBadgeText}>{isIOS ? "MEMBER ACCESS" : "24-HOUR TRIAL"}</Text>
             </View>
             <View style={s.upgradeBannerIcon}>
               <Ionicons name="ribbon" size={38} color={C.accent} />
@@ -1813,21 +1866,27 @@ function UpgradeModal({ visible, onClose, onStartTrial, trialLoading = false }) 
 
           <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ padding: 20, paddingTop: 14 }}>
             {/* Title */}
-            <Text style={[s.upgradeTitle, { color: C.text }]}>Unlock Your AI Future</Text>
-            <Text style={[s.upgradeOfferTitle, { color: C.primary }]}>24-Hour Access for ₹1</Text>
-            <Text style={[s.upgradeSub, { color: C.textSub }]}>Build practical AI skills through guided, self-paced lessons.</Text>
+            <Text style={[s.upgradeTitle, { color: C.text }]}>{isIOS ? "Your learning, in one place" : "Unlock Your AI Future"}</Text>
+            <Text style={[s.upgradeOfferTitle, { color: C.primary }]}>{isIOS ? "Continue with an existing membership" : "24-Hour Access for ₹1"}</Text>
+            <Text style={[s.upgradeSub, { color: C.textSub }]}>
+              {isIOS
+                ? "Sign in with the Skillomate account connected to your membership to access included courses."
+                : "Build practical AI skills through guided, self-paced lessons."}
+            </Text>
 
             {/* Pricing card */}
-            <View style={[s.upgradePricingCard, { backgroundColor: C.cardBg, borderColor: C.primary }]}>
-              <View style={s.upgradeBestValue}>
-                <Text style={s.upgradeBestValueText}>BEST VALUE</Text>
+            {!isIOS && (
+              <View style={[s.upgradePricingCard, { backgroundColor: C.cardBg, borderColor: C.primary }]}>
+                <View style={s.upgradeBestValue}>
+                  <Text style={s.upgradeBestValueText}>BEST VALUE</Text>
+                </View>
+                <View style={{ flexDirection: "row", alignItems: "flex-end", marginBottom: 4 }}>
+                  <Text style={[s.upgradePrice, { color: C.primary }]}>₹1</Text>
+                  <Text style={[s.upgradePricePeriod, { color: C.textSub }]}>  24-hour trial</Text>
+                </View>
+                <Text style={[s.upgradePriceNote, { color: C.textMuted }]}>Then ₹499/month. Cancel before the trial ends to avoid renewal.</Text>
               </View>
-              <View style={{ flexDirection: "row", alignItems: "flex-end", marginBottom: 4 }}>
-                <Text style={[s.upgradePrice, { color: C.primary }]}>₹1</Text>
-                <Text style={[s.upgradePricePeriod, { color: C.textSub }]}>  24-hour trial</Text>
-              </View>
-              <Text style={[s.upgradePriceNote, { color: C.textMuted }]}>Then ₹499/month. Cancel before the trial ends to avoid renewal.</Text>
-            </View>
+            )}
 
             {/* Features */}
             {FEATURES.map((f, i) => (
@@ -1844,22 +1903,24 @@ function UpgradeModal({ visible, onClose, onStartTrial, trialLoading = false }) 
               onPress={handleStartTrial}
               disabled={trialLoading}
               accessibilityRole="button"
-              accessibilityLabel="Start ₹1 24-hour trial"
+              accessibilityLabel={isIOS ? "Get membership access help" : "Start ₹1 24-hour trial"}
               accessibilityState={{ busy: trialLoading, disabled: trialLoading }}
             >
               {trialLoading ? (
                 <ActivityIndicator color={C.onPrimary} size="small" />
               ) : (
-                <Text style={s.upgradeBtnText}>Start ₹1 · 24-Hour Trial  →</Text>
+                <Text style={s.upgradeBtnText}>{isIOS ? "Get membership help" : "Start ₹1 · 24-Hour Trial  →"}</Text>
               )}
             </TouchableOpacity>
 
-            <Text style={{ color: C.textMuted, fontSize: 11, textAlign: "center", marginBottom: 4 }}>No commitment. Cancel anytime before renewal.</Text>
+            <Text style={{ color: C.textMuted, fontSize: 11, textAlign: "center", marginBottom: 4 }}>
+              {isIOS ? "Membership access is tied to your Skillomate account." : "No commitment. Cancel anytime before renewal."}
+            </Text>
 
             {/* Footer */}
             <View style={s.upgradeFooter}>
               <Ionicons name="shield-checkmark" size={13} color={C.textMuted} />
-              <Text style={s.upgradeFooterText}>SAFE & SECURE PAYMENT</Text>
+              <Text style={s.upgradeFooterText}>{isIOS ? "ACCOUNT-BASED ACCESS" : "SAFE & SECURE PAYMENT"}</Text>
             </View>
           </ScrollView>
         </View>
@@ -1901,8 +1962,10 @@ const NOTIFICATION_PREVIEWS = [
   },
   {
     icon: "pricetag-outline",
-    title: "Trial reminder",
-    body: "Your ₹1 Trial and monthly plan details are available in Subscription Details.",
+    title: Platform.OS === "ios" ? "Membership status" : "Trial reminder",
+    body: Platform.OS === "ios"
+      ? "Your current membership access is available in Subscription Details."
+      : "Your ₹1 Trial and monthly plan details are available in Subscription Details.",
     time: "This week",
     actionKey: "subscription",
   },
@@ -2178,12 +2241,16 @@ function ProblemReportModal({ visible, onClose, user, route = "home" }) {
   );
 }
 
-function BottomNav({ active, onHome, onCourses, onAI, onDownloads, aiRobotId, forceDark = false }) {
+function BottomNav({ active, onHome, onCourses, onAI, onDownloads, onProfile, aiRobotId, forceDark = false, persistent = false }) {
+  const rootTabSwipe = React.useContext(RootTabSwipeContext);
+  if (rootTabSwipe?.hideEmbeddedNav && !persistent) return null;
+
   const tabs = [
     { key: "home", icon: "home", label: "Home", fn: onHome },
     { key: "courses", icon: "compass", label: "Explore", fn: onCourses },
-    { key: "ai", icon: "sparkles", label: "Nex AI", fn: onAI },
     { key: "downloads", icon: "download", label: "Downloads", fn: onDownloads },
+    { key: "ai", icon: "sparkles", label: "Nex AI", fn: onAI },
+    { key: "profile", icon: "person", label: "Profile", fn: onProfile },
   ];
   return (
     <View style={[s.bottomNav, forceDark && { backgroundColor: "rgba(13,13,11,0.98)", borderTopColor: "#2E2C27" }]}>
@@ -2198,7 +2265,7 @@ function BottomNav({ active, onHome, onCourses, onAI, onDownloads, aiRobotId, fo
         >
           <View style={[s.bottomTabIcon, active === t.key && s.bottomTabIconActive]}>
             <Ionicons
-              name={active === t.key ? t.icon : `${t.icon}-outline`}
+              name={`${t.icon}-outline`}
               size={20}
               color={active === t.key ? C.primary : (forceDark ? "#AAA297" : C.slateGray)}
             />
@@ -2216,6 +2283,243 @@ function BottomNav({ active, onHome, onCourses, onAI, onDownloads, aiRobotId, fo
         </TouchableOpacity>
       ))}
     </View>
+  );
+}
+
+const ROOT_TAB_ORDER = ["home", "courses", "downloads", "ai", "profile"];
+const ROOT_TAB_LABELS = {
+  home: "Home",
+  courses: "Explore",
+  downloads: "Downloads",
+  ai: "Nex AI",
+  profile: "Profile",
+};
+
+function SwipeableRootTabs({ activeTab, onNavigate, renderTab }) {
+  const { width, height } = useWindowDimensions();
+  const pageGap = 10;
+  const pageStride = width + pageGap;
+  const activeIndex = ROOT_TAB_ORDER.indexOf(activeTab);
+  const trackX = useRef(new Animated.Value(-Math.max(activeIndex, 0) * pageStride)).current;
+  const pageChrome = useRef(new Animated.Value(0)).current;
+  const navigateRef = useRef(onNavigate);
+  const transitionInProgressRef = useRef(false);
+  const horizontalChildActiveRef = useRef(false);
+  const pendingIndexRef = useRef(null);
+  const [mountedTabs, setMountedTabs] = useState(() => ROOT_TAB_ORDER.filter((_, index) => (
+    Math.abs(index - activeIndex) <= 1
+  )));
+
+  useEffect(() => {
+    navigateRef.current = onNavigate;
+  }, [onNavigate]);
+
+  const retainNeighborhood = useCallback((centerIndex) => {
+    if (centerIndex < 0) return;
+    setMountedTabs(current => {
+      const next = new Set(current);
+      [centerIndex - 1, centerIndex, centerIndex + 1].forEach(index => {
+        if (ROOT_TAB_ORDER[index]) next.add(ROOT_TAB_ORDER[index]);
+      });
+      if (next.size === current.length) return current;
+      return ROOT_TAB_ORDER.filter(tab => next.has(tab));
+    });
+  }, []);
+
+  React.useLayoutEffect(() => {
+    if (activeIndex < 0) return;
+    retainNeighborhood(activeIndex);
+    trackX.stopAnimation();
+    trackX.setValue(-activeIndex * pageStride);
+    pageChrome.stopAnimation();
+    pageChrome.setValue(0);
+    pendingIndexRef.current = null;
+    transitionInProgressRef.current = false;
+    horizontalChildActiveRef.current = false;
+  }, [activeIndex, pageChrome, pageStride, retainNeighborhood, trackX]);
+
+  const swipeBoundary = useMemo(() => ({
+    begin: () => { horizontalChildActiveRef.current = true; },
+    end: () => { horizontalChildActiveRef.current = false; },
+    hideEmbeddedNav: true,
+  }), []);
+
+  const stationaryNavActions = useMemo(() => ({
+    home: () => navigateRef.current?.("home"),
+    courses: () => navigateRef.current?.("courses"),
+    downloads: () => navigateRef.current?.("downloads"),
+    ai: () => navigateRef.current?.("ai"),
+    profile: () => navigateRef.current?.("profile"),
+  }), []);
+
+  const settleChrome = useCallback(() => Animated.timing(pageChrome, {
+    toValue: 0,
+    duration: 180,
+    easing: Easing.out(Easing.cubic),
+    useNativeDriver: false,
+  }), [pageChrome]);
+
+  const returnToActive = useCallback(() => {
+    if (activeIndex < 0) return;
+    transitionInProgressRef.current = true;
+    Animated.parallel([
+      Animated.spring(trackX, {
+        toValue: -activeIndex * pageStride,
+        damping: 28,
+        stiffness: 300,
+        mass: 0.9,
+        overshootClamping: true,
+        useNativeDriver: true,
+      }),
+      settleChrome(),
+    ]).start(() => {
+      transitionInProgressRef.current = false;
+      pendingIndexRef.current = null;
+    });
+  }, [activeIndex, pageStride, settleChrome, trackX]);
+
+  const navigateByDirection = useCallback((direction) => {
+    if (transitionInProgressRef.current || activeIndex < 0) return;
+    const targetIndex = activeIndex + direction;
+    const targetTab = ROOT_TAB_ORDER[targetIndex];
+    if (!targetTab) return;
+
+    transitionInProgressRef.current = true;
+    const canNavigate = navigateRef.current?.(targetTab, { validateOnly: true });
+    if (canNavigate === false) {
+      navigateRef.current?.(targetTab);
+      returnToActive();
+      return;
+    }
+
+    retainNeighborhood(targetIndex);
+    Animated.parallel([
+      Animated.spring(trackX, {
+        toValue: -targetIndex * pageStride,
+        damping: 28,
+        stiffness: 300,
+        mass: 0.9,
+        overshootClamping: true,
+        useNativeDriver: true,
+      }),
+      settleChrome(),
+    ]).start(({ finished }) => {
+      if (!finished) {
+        returnToActive();
+        return;
+      }
+      pendingIndexRef.current = targetIndex;
+      const didNavigate = navigateRef.current?.(targetTab);
+      if (didNavigate === false) {
+        pendingIndexRef.current = null;
+        returnToActive();
+        return;
+      }
+      AccessibilityInfo.announceForAccessibility(`${ROOT_TAB_LABELS[targetTab]} tab`);
+    });
+  }, [activeIndex, pageStride, retainNeighborhood, returnToActive, settleChrome, trackX]);
+
+  const panResponder = useMemo(() => PanResponder.create({
+    onStartShouldSetPanResponder: () => false,
+    onMoveShouldSetPanResponder: (_, gesture) => {
+      if (transitionInProgressRef.current || horizontalChildActiveRef.current) return false;
+      const horizontalDistance = Math.abs(gesture.dx);
+      const verticalDistance = Math.abs(gesture.dy);
+      const direction = gesture.dx < 0 ? 1 : -1;
+      const targetTab = ROOT_TAB_ORDER[activeIndex + direction];
+      const shouldStart = Boolean(targetTab)
+        && horizontalDistance > 14
+        && horizontalDistance > verticalDistance * 1.35;
+      if (shouldStart) retainNeighborhood(activeIndex + direction);
+      return shouldStart;
+    },
+    onPanResponderGrant: () => {
+      trackX.stopAnimation();
+      pageChrome.stopAnimation();
+      pageChrome.setValue(1);
+    },
+    onPanResponderMove: (_, gesture) => {
+      const direction = gesture.dx < 0 ? 1 : -1;
+      const hasTarget = Boolean(ROOT_TAB_ORDER[activeIndex + direction]);
+      const clampedDistance = Math.max(-pageStride, Math.min(pageStride, gesture.dx));
+      const resistedDistance = hasTarget ? clampedDistance : clampedDistance * 0.18;
+      trackX.setValue((-activeIndex * pageStride) + resistedDistance);
+    },
+    onPanResponderRelease: (_, gesture) => {
+      const distanceThreshold = Math.min(92, Math.max(54, width * 0.16));
+      const crossedDistance = Math.abs(gesture.dx) >= distanceThreshold;
+      const quickFlick = Math.abs(gesture.vx) >= 0.55 && Math.abs(gesture.dx) >= 24;
+      const direction = gesture.dx < 0 ? 1 : -1;
+      const hasTarget = Boolean(ROOT_TAB_ORDER[activeIndex + direction]);
+      if (!hasTarget || (!crossedDistance && !quickFlick)) {
+        returnToActive();
+        return;
+      }
+      navigateByDirection(direction);
+    },
+    onPanResponderTerminate: returnToActive,
+    onPanResponderTerminationRequest: () => true,
+    onShouldBlockNativeResponder: () => false,
+  }), [activeIndex, navigateByDirection, pageChrome, pageStride, retainNeighborhood, returnToActive, trackX, width]);
+
+  const renderedTabs = mountedTabs.includes(activeTab)
+    ? mountedTabs
+    : [...mountedTabs, activeTab].sort((a, b) => ROOT_TAB_ORDER.indexOf(a) - ROOT_TAB_ORDER.indexOf(b));
+  const pageCornerRadius = pageChrome.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0, 28],
+    extrapolate: "clamp",
+  });
+
+  return (
+    <RootTabSwipeContext.Provider value={swipeBoundary}>
+      <View style={s.swipePagerViewport}>
+        <Animated.View
+          style={[
+            s.swipePagerTrack,
+            {
+              width: ROOT_TAB_ORDER.length * pageStride,
+              height,
+              transform: [{ translateX: trackX }],
+            },
+          ]}
+        >
+          {renderedTabs.map(tab => {
+            const tabIndex = ROOT_TAB_ORDER.indexOf(tab);
+            const isInteractive = tab === activeTab;
+            return (
+              <Animated.View
+                key={tab}
+                {...(isInteractive ? panResponder.panHandlers : {})}
+                pointerEvents={isInteractive ? "auto" : "none"}
+                accessibilityElementsHidden={!isInteractive || undefined}
+                importantForAccessibility={!isInteractive ? "no-hide-descendants" : "auto"}
+                style={[
+                  s.swipePagerPage,
+                  {
+                    left: tabIndex * pageStride,
+                    width,
+                    height,
+                    borderRadius: pageCornerRadius,
+                  },
+                ]}
+              >
+                {renderTab(tab, { isActive: tab === activeTab })}
+              </Animated.View>
+            );
+          })}
+        </Animated.View>
+        <BottomNav
+          persistent
+          active={activeTab}
+          onHome={stationaryNavActions.home}
+          onCourses={stationaryNavActions.courses}
+          onDownloads={stationaryNavActions.downloads}
+          onAI={stationaryNavActions.ai}
+          onProfile={stationaryNavActions.profile}
+        />
+      </View>
+    </RootTabSwipeContext.Provider>
   );
 }
 
@@ -3963,8 +4267,11 @@ function HomeLessonCard({ course, lesson, index, width, displayTitle, onPress, c
 }
 
 function LessonCarousel({ course, lessons, cardWidth, onPressLesson }) {
+  const swipeBoundaryProps = useHorizontalSwipeBoundaryProps();
+
   return (
     <ScrollView
+      {...swipeBoundaryProps}
       horizontal
       showsHorizontalScrollIndicator={false}
       contentContainerStyle={homeStyles.horizontalContent}
@@ -4047,8 +4354,10 @@ function QuickLearnSection({ course, items, onPressLesson }) {
 }
 
 function ProjectCarousel({ course, projects, onPressProject }) {
+  const swipeBoundaryProps = useHorizontalSwipeBoundaryProps();
+
   return (
-    <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={homeStyles.horizontalContent} directionalLockEnabled nestedScrollEnabled>
+    <ScrollView {...swipeBoundaryProps} horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={homeStyles.horizontalContent} directionalLockEnabled nestedScrollEnabled>
       {projects.map(project => (
         <TouchableOpacity
           key={project.key}
@@ -4389,9 +4698,11 @@ function LegacyHomeScreenDraft({ user, onGoToCourses, onGoToAI, onGoToDownloads,
             <PosterImage course={previewCourse} index={0} vertical={false} />
             <View style={s.streamingHeroPhotoWash} />
           </View>
-          <View style={s.trialBadge}>
-            <Text style={s.trialBadgeText}>₹1 Trial</Text>
-          </View>
+          {Platform.OS !== "ios" && (
+            <View style={s.trialBadge}>
+              <Text style={s.trialBadgeText}>₹1 Trial</Text>
+            </View>
+          )}
           <View style={s.streamingHeroContent}>
             <Text style={s.heroKicker}>FEATURED</Text>
             <Text style={s.streamingHeroTitle}>Master AI Skills.{"\n"}Build Your Future.</Text>
@@ -5591,7 +5902,7 @@ function InfoPageScreen({ page, onBack }) {
   );
 }
 
-function SubscriptionDetailsScreen({ user, onBack, onStartTrial = openWebTrialCheckout, trialLoading = false }) {
+function SubscriptionDetailsScreen({ user, onBack, onStartTrial = openMembershipAccess, trialLoading = false }) {
   const [loading, setLoading] = useState(true);
   const [subData, setSubData] = useState(null);
   const [error, setError] = useState(null);
@@ -5704,7 +6015,30 @@ function SubscriptionDetailsScreen({ user, onBack, onStartTrial = openWebTrialCh
               ) : null;
             })()}
 
-            {!isActive && (
+            {!isActive && Platform.OS === "ios" ? (
+              <View style={s.iosMembershipPanel}>
+                <Text style={s.iosMembershipText}>
+                  Existing memberships appear automatically when you sign in with the linked Skillomate account.
+                </Text>
+                <TouchableOpacity
+                  onPress={loadSubscription}
+                  style={[s.btn, s.btnFill, { marginTop: 12 }]}
+                  accessibilityRole="button"
+                  accessibilityLabel="Refresh membership status"
+                >
+                  <Ionicons name="refresh" size={17} color={C.onPrimary} />
+                  <Text style={s.btnText}>Refresh Status</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={onStartTrial}
+                  style={s.iosMembershipHelp}
+                  accessibilityRole="button"
+                  accessibilityLabel="Get membership access help"
+                >
+                  <Text style={s.iosMembershipHelpText}>Need help with access?</Text>
+                </TouchableOpacity>
+              </View>
+            ) : !isActive && (
               <TouchableOpacity
                 onPress={onStartTrial}
                 style={[s.btn, s.btnFill, { marginTop: 14 }, trialLoading && { opacity: 0.72 }]}
@@ -5837,7 +6171,7 @@ function DeleteAccountModal({ visible, user, onClose, onDeleteAccount }) {
               <View style={s.deleteAccountPlanNotice}>
                 <Ionicons name="alert-circle-outline" size={18} color={C.warning} />
                 <Text style={s.deleteAccountPlanText}>
-                  If your plan has an active recurring mandate, cancel it before deleting your account.
+                  Skillomate will try to cancel linked recurring billing before deletion. If cancellation cannot be confirmed, deletion pauses and shows the next step.
                 </Text>
               </View>
             )}
@@ -6295,6 +6629,7 @@ function AiAssistantScreen({
   onGoToDownloads,
   onGoToProfile,
   onRobotChange,
+  isRootTabActive = true,
 }) {
   const aiMounted = useRef(false);
   useEffect(() => { aiMounted.current = true; return () => { aiMounted.current = false; }; }, []);
@@ -6425,13 +6760,13 @@ function AiAssistantScreen({
         setAssistantName(nextName);
         setAssistantNameDraft(nextName === DEFAULT_AI_NAME ? "" : nextName);
         setNameSetupComplete(setupComplete);
-        setShowNameSetup(Boolean(user?._id) && !setupComplete);
+        setShowNameSetup(isRootTabActive && Boolean(user?._id) && !setupComplete);
       })
       .catch(() => {
-        if (!cancelled) setShowNameSetup(Boolean(user?._id));
+        if (!cancelled) setShowNameSetup(isRootTabActive && Boolean(user?._id));
       });
     return () => { cancelled = true; };
-  }, [user?._id]);
+  }, [isRootTabActive, user?._id]);
 
   useEffect(() => {
     let cancelled = false;
@@ -6829,7 +7164,7 @@ function AiAssistantScreen({
       </Modal>
 
       <Modal
-        visible={showNameSetup}
+        visible={isRootTabActive && showNameSetup}
         transparent
         animationType="fade"
         onRequestClose={() => { if (nameSetupComplete) setShowNameSetup(false); }}
@@ -7020,6 +7355,7 @@ export default function App() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const passwordInputRef = useRef(null);
   const [loginError, setLoginError] = useState("");
   const [loginLoading, setLoginLoading] = useState(false);
   const [resetVisible, setResetVisible] = useState(false);
@@ -7045,6 +7381,25 @@ export default function App() {
   const [signupAvatar, setSignupAvatar] = useState("a1");
   const [signupLoading, setSignupLoading] = useState(false);
   const [signupError, setSignupError] = useState("");
+
+  const navigateRootTab = useCallback((targetTab, options = {}) => {
+    if (!ROOT_TAB_ORDER.includes(targetTab)) return false;
+    if (targetTab === "downloads" && !hasCourseAccess(userRef.current)) {
+      if (!options.validateOnly) setShowAppUpgrade(true);
+      return false;
+    }
+    if (options.validateOnly) return true;
+
+    setShowAppUpgrade(false);
+    setSelectedCourse(null);
+    setStartIndex(null);
+    setInitialTime(0);
+    setPreloadedVideos(null);
+    setIsPreviewOnly(false);
+    setCourseAiTarget(null);
+    setMainScreen(targetTab);
+    return true;
+  }, []);
 
   const refreshUser = useCallback(async (userId, fallback = null, sessionId = null) => {
     const owner = userRef.current;
@@ -8104,97 +8459,128 @@ export default function App() {
 
     // Login
     return (
-  <View style={{ flex: 1, backgroundColor: C.bg }}>
-    <StatusBar barStyle={C.isDark ? "light-content" : "dark-content"} backgroundColor={C.bg} />
-    <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1 }}>
-      <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
-        {/* Hero Section */}
-        <View style={{
-          backgroundColor: C.white, paddingTop: 60, paddingBottom: 36, paddingHorizontal: 24,
-          alignItems: "center",
-          borderBottomLeftRadius: 32, borderBottomRightRadius: 32,
-        }}>
-          <SkillomateLogo size="lg" />
-          <Text style={{ color: C.primary, fontSize: 11, fontWeight: "700", letterSpacing: 2, marginTop: 6, textTransform: "uppercase" }}>LEARN · GROW · EARN</Text>
-          <Text style={{ color: C.text, fontSize: 28, fontWeight: "900", marginTop: 20, textAlign: "center", lineHeight: 36 }}>Welcome Back</Text>
-          <Text style={{ color: C.textSub, fontSize: 14, marginTop: 6, textAlign: "center" }}>Your path to AI mastery continues.</Text>
-        </View>
+  <View style={s.authScreen}>
+    <StatusBar barStyle="light-content" backgroundColor={C.bg} />
+    <SafeAreaView style={s.authSafeArea}>
+      <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={s.authKeyboardView}>
+        <ScrollView
+          contentContainerStyle={s.authScrollContent}
+          keyboardShouldPersistTaps="handled"
+          keyboardDismissMode={Platform.OS === "ios" ? "interactive" : "on-drag"}
+          automaticallyAdjustKeyboardInsets={Platform.OS === "ios"}
+          showsVerticalScrollIndicator={false}
+        >
+          <View style={s.authContent}>
+            <View style={s.authBrand}>
+              <SkillomateLogo size="md" />
+              <Text style={s.authBrandTagline}>LEARN · GROW · EARN</Text>
+            </View>
 
-        {/* Form */}
-        <View style={{ paddingHorizontal: 24, paddingTop: 28, paddingBottom: 40 }}>
-          <FieldInput
-            label="Email or Phone"
-            placeholder="Enter your email or phone"
-            value={email} onChangeText={setEmail}
-            autoCapitalize="none" keyboardType="email-address"
-          />
-          <View style={{ marginBottom: 6 }}>
-            <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
-              <Text style={{ fontSize: 13, fontWeight: "600", color: C.text }}>PASSWORD</Text>
+            <View style={s.authHeadingBlock}>
+              <Text style={s.authWelcome}>Welcome back</Text>
+              <Text style={s.authWelcomeSub}>Continue your AI learning journey.</Text>
+            </View>
+
+            <View style={s.authForm}>
+              <FieldInput
+                label="Email or phone"
+                placeholder="Enter your email or phone"
+                value={email}
+                onChangeText={setEmail}
+                autoCapitalize="none"
+                autoCorrect={false}
+                autoComplete="username"
+                textContentType="username"
+                keyboardType="default"
+                returnKeyType="next"
+                blurOnSubmit={false}
+                onSubmitEditing={() => passwordInputRef.current?.focus()}
+              />
+
+              <View style={s.authPasswordLabelRow}>
+                <Text style={[s.fieldLabel, { marginBottom: 0 }]}>PASSWORD</Text>
+                <TouchableOpacity
+                  onPress={openPasswordReset}
+                  style={s.authForgotButton}
+                  accessibilityRole="button"
+                  accessibilityLabel="Reset forgotten password"
+                >
+                  <Text style={s.authForgotText}>Forgot password?</Text>
+                </TouchableOpacity>
+              </View>
+              <FieldInput
+                inputRef={passwordInputRef}
+                placeholder="Enter your password"
+                value={password}
+                onChangeText={setPassword}
+                secureTextEntry
+                accessibilityLabel="Password"
+                autoCapitalize="none"
+                autoCorrect={false}
+                autoComplete="current-password"
+                textContentType="password"
+                returnKeyType="go"
+                onSubmitEditing={login}
+              />
+
+              {!!loginError && (
+                <View style={s.authErrorBanner} accessibilityRole="alert">
+                  <Ionicons name="alert-circle-outline" size={18} color={C.danger} />
+                  <Text style={s.authErrorText}>{loginError}</Text>
+                </View>
+              )}
+
               <TouchableOpacity
-                onPress={openPasswordReset}
+                onPress={login}
+                disabled={loginLoading || !email.trim() || !password.trim()}
+                style={[
+                  s.authPrimaryButton,
+                  (loginLoading || !email.trim() || !password.trim()) && s.authPrimaryButtonDisabled,
+                ]}
+                activeOpacity={0.86}
                 accessibilityRole="button"
-                accessibilityLabel="Reset forgotten password"
-                hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+                accessibilityLabel="Log in"
+                accessibilityState={{
+                  disabled: loginLoading || !email.trim() || !password.trim(),
+                  busy: loginLoading,
+                }}
               >
-                <Text style={{ color: C.primary, fontSize: 12, fontWeight: "700" }}>FORGOT?</Text>
+                {loginLoading
+                  ? <ActivityIndicator color={C.onPrimary} />
+                  : <Text style={s.authPrimaryButtonText}>Log in</Text>
+                }
+              </TouchableOpacity>
+
+              <View style={s.authCreateRow}>
+                <Text style={s.authCreatePrompt}>New to Skillomate?</Text>
+                <TouchableOpacity
+                  onPress={() => { setScreen("signup1"); setSignupError(""); }}
+                  style={s.authCreateButton}
+                  accessibilityRole="button"
+                  accessibilityLabel="Create an account"
+                >
+                  <Text style={s.authCreateText}>Create account</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+
+            <View style={s.authFooter}>
+              <TouchableOpacity onPress={() => setLegalPage("terms")} style={s.authFooterLink} accessibilityRole="button" accessibilityLabel="Read Terms and Conditions">
+                <Text style={s.authFooterLinkText}>Terms</Text>
+              </TouchableOpacity>
+              <Text style={s.authFooterSeparator}>|</Text>
+              <TouchableOpacity onPress={() => setLegalPage("privacy")} style={s.authFooterLink} accessibilityRole="button" accessibilityLabel="Read Privacy Policy">
+                <Text style={s.authFooterLinkText}>Privacy</Text>
+              </TouchableOpacity>
+              <Text style={s.authFooterSeparator}>|</Text>
+              <TouchableOpacity onPress={() => setLegalPage("help")} style={s.authFooterLink} accessibilityRole="button" accessibilityLabel="Open support information">
+                <Text style={s.authFooterLinkText}>Support</Text>
               </TouchableOpacity>
             </View>
           </View>
-          <FieldInput
-            placeholder="••••••••"
-            value={password} onChangeText={setPassword}
-            secureTextEntry
-            accessibilityLabel="Password"
-          />
-
-          {!!loginError && <Text style={s.errorText}>{loginError}</Text>}
-
-          <TouchableOpacity
-            onPress={login} disabled={loginLoading}
-            style={{
-              backgroundColor: C.primary, borderRadius: 14, paddingVertical: 16,
-              alignItems: "center", marginTop: 8, marginBottom: 20,
-              shadowColor: C.primary, shadowOpacity: 0.4, shadowRadius: 12,
-              shadowOffset: { width: 0, height: 4 }, elevation: 6,
-              opacity: loginLoading ? 0.6 : 1,
-            }}
-            accessibilityRole="button"
-            accessibilityLabel="Log in"
-            accessibilityState={{ disabled: loginLoading, busy: loginLoading }}
-          >
-            {loginLoading
-              ? <ActivityIndicator color={C.onPrimary} />
-              : <Text style={{ color: C.onPrimary, fontWeight: "900", fontSize: 16, letterSpacing: 0.5 }}>Log In</Text>
-            }
-          </TouchableOpacity>
-
-          {/* Divider */}
-          <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 20 }}>
-            <View style={{ flex: 1, height: 1, backgroundColor: C.border }} />
-            <Text style={{ color: C.textMuted, fontSize: 12, fontWeight: "600", marginHorizontal: 12 }}>OR</Text>
-            <View style={{ flex: 1, height: 1, backgroundColor: C.border }} />
-          </View>
-
-          <TouchableOpacity
-            onPress={() => { setScreen("signup1"); setSignupError(""); }}
-            style={s.authLink}
-            accessibilityRole="button"
-            accessibilityLabel="Create an account"
-          >
-            <Text style={{ color: C.textSub, fontSize: 14 }}>
-              New to Skillomate?{"  "}
-              <Text style={{ color: C.primary, fontWeight: "800" }}>Create an Account</Text>
-            </Text>
-          </TouchableOpacity>
-
-          <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 5, marginTop: 28 }}>
-            <Ionicons name="shield-checkmark" size={12} color={C.textMuted} />
-            <Text style={{ color: C.textMuted, fontSize: 11, fontWeight: "600", letterSpacing: 0.8 }}>SKILLOMATE SECURE</Text>
-          </View>
-        </View>
-      </ScrollView>
-    </KeyboardAvoidingView>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
     <PasswordResetModal
       visible={resetVisible}
       step={resetStep}
@@ -8264,35 +8650,6 @@ export default function App() {
     );
   }
 
-  if (mainScreen === "courses") {
-    return (
-      <>
-        <CourseListScreen
-          onSelect={c => openCourse(c)}
-          user={user}
-          courseProgress={courseProgress}
-          onRefreshProgress={loadCourseProgress}
-          wishlist={wishlist}
-          onToggleWishlist={toggleWishlist}
-          onGoToHome={() => { setSelectedCourse(null); loadCourseProgress(); setMainScreen("home"); }}
-          onGoToAI={() => setMainScreen("ai")}
-          onGoToDownloads={() => { const ok = hasCourseAccess(user); if (!ok) { setShowAppUpgrade(true); } else { setMainScreen("downloads"); } }}
-          onGoToProfile={() => setMainScreen("profile")}
-          onGoToSubscription={() => setMainScreen("subscription")}
-          onStartTrial={openWebTrialCheckout}
-          trialLoading={false}
-          aiRobotId={aiRobotId}
-        />
-        <UpgradeModal
-          visible={showAppUpgrade}
-          onClose={() => setShowAppUpgrade(false)}
-          onStartTrial={openWebTrialCheckout}
-          trialLoading={false}
-        />
-      </>
-    );
-  }
-
   if (mainScreen === "certificates") {
     return (
       <CertificatesScreen
@@ -8307,7 +8664,7 @@ export default function App() {
       <SubscriptionDetailsScreen
         user={user}
         onBack={() => setMainScreen("profile")}
-        onStartTrial={openWebTrialCheckout}
+        onStartTrial={openMembershipAccess}
         trialLoading={false}
       />
     );
@@ -8349,16 +8706,37 @@ export default function App() {
         onBack={() => setMainScreen("profile")}
         user={user}
         onGoToSubscription={() => setMainScreen("subscription")}
-        onStartTrial={openWebTrialCheckout}
+        onStartTrial={openMembershipAccess}
         trialLoading={false}
       />
     );
   }
 
-  if (mainScreen === "profile") {
+  function renderRootTab(tab, { isActive = false } = {}) {
+    if (tab === "courses") {
+      return (
+        <CourseListScreen
+          onSelect={c => openCourse(c)}
+          user={user}
+          courseProgress={courseProgress}
+          onRefreshProgress={loadCourseProgress}
+          wishlist={wishlist}
+          onToggleWishlist={toggleWishlist}
+          onGoToHome={() => { loadCourseProgress(); navigateRootTab("home"); }}
+          onGoToAI={() => navigateRootTab("ai")}
+          onGoToDownloads={() => navigateRootTab("downloads")}
+          onGoToProfile={() => navigateRootTab("profile")}
+          onGoToSubscription={() => setMainScreen("subscription")}
+          onStartTrial={openMembershipAccess}
+          trialLoading={false}
+          aiRobotId={aiRobotId}
+        />
+      );
+    }
+
+    if (tab === "profile") {
     return (
-      <>
-        <ProfileScreen
+      <ProfileScreen
           user={user}
           onLogout={handleLogout}
           onDeleteAccount={handleDeleteAccount}
@@ -8368,10 +8746,10 @@ export default function App() {
           onGoToCertificates={() => setMainScreen("certificates")}
           onGoToSubscription={() => setMainScreen("subscription")}
           onOpenLegal={setLegalPage}
-          onGoToHome={() => setMainScreen("home")}
-          onGoToCourses={() => setMainScreen("courses")}
-          onGoToAI={() => setMainScreen("ai")}
-          onGoToDownloads={() => { const ok = hasCourseAccess(user); if (!ok) { setShowAppUpgrade(true); } else { setMainScreen("downloads"); } }}
+          onGoToHome={() => navigateRootTab("home")}
+          onGoToCourses={() => navigateRootTab("courses")}
+          onGoToAI={() => navigateRootTab("ai")}
+          onGoToDownloads={() => navigateRootTab("downloads")}
           onAvatarChange={avatarId => {
             setUser(prev => {
               if (!prev) return prev;
@@ -8381,17 +8759,10 @@ export default function App() {
           }}
           aiRobotId={aiRobotId}
         />
-        <UpgradeModal
-          visible={showAppUpgrade}
-          onClose={() => setShowAppUpgrade(false)}
-          onStartTrial={openWebTrialCheckout}
-          trialLoading={false}
-        />
-      </>
     );
   }
 
-  if (mainScreen === "downloads") {
+  if (tab === "downloads") {
     const downloadItems = Object.values(downloads).filter(d => d.bunnyGuid);
     return (
       <View style={{ flex: 1, backgroundColor: C.bg }}>
@@ -8553,36 +8924,29 @@ export default function App() {
         )}
 
         <BottomNav active="downloads"
-          onHome={() => setMainScreen("home")}
-          onCourses={() => setMainScreen("courses")}
-          onAI={() => setMainScreen("ai")}
+          onHome={() => navigateRootTab("home")}
+          onCourses={() => navigateRootTab("courses")}
+          onAI={() => navigateRootTab("ai")}
           onDownloads={() => {}}
-          onProfile={() => setMainScreen("profile")}
+          onProfile={() => navigateRootTab("profile")}
           aiRobotId={aiRobotId}
         />
       </View>
     );
   }
 
-  if (mainScreen === "ai") {
+  if (tab === "ai") {
     return (
-      <>
-        <AiAssistantScreen
-          session={nativeSession}
-          user={user}
-          onGoToHome={() => setMainScreen("home")}
-          onGoToCourses={() => setMainScreen("courses")}
-          onGoToDownloads={() => { const ok = hasCourseAccess(user); if (!ok) { setShowAppUpgrade(true); } else { setMainScreen("downloads"); } }}
-          onGoToProfile={() => setMainScreen("profile")}
-          onRobotChange={id => setAiRobotId(id)}
-        />
-        <UpgradeModal
-          visible={showAppUpgrade}
-          onClose={() => setShowAppUpgrade(false)}
-          onStartTrial={openWebTrialCheckout}
-          trialLoading={false}
-        />
-      </>
+      <AiAssistantScreen
+        session={nativeSession}
+        user={user}
+        isRootTabActive={isActive}
+        onGoToHome={() => navigateRootTab("home")}
+        onGoToCourses={() => navigateRootTab("courses")}
+        onGoToDownloads={() => navigateRootTab("downloads")}
+        onGoToProfile={() => navigateRootTab("profile")}
+        onRobotChange={id => setAiRobotId(id)}
+      />
     );
   }
 
@@ -8590,12 +8954,12 @@ export default function App() {
     <View style={{ flex: 1 }}>
       <HomeScreen
         user={user}
-        onGoToCourses={() => setMainScreen("courses")}
-        onGoToAI={() => setMainScreen("ai")}
-        onGoToDownloads={() => { const ok = hasCourseAccess(user); if (!ok) { setShowAppUpgrade(true); } else { setMainScreen("downloads"); } }}
-        onGoToProfile={() => setMainScreen("profile")}
+        onGoToCourses={() => navigateRootTab("courses")}
+        onGoToAI={() => navigateRootTab("ai")}
+        onGoToDownloads={() => navigateRootTab("downloads")}
+        onGoToProfile={() => navigateRootTab("profile")}
         onGoToSubscription={() => setMainScreen("subscription")}
-        onStartTrial={openWebTrialCheckout}
+        onStartTrial={openMembershipAccess}
         trialLoading={false}
         onSelectCourse={course => openCourse(course)}
         onResumeCourse={(course, idx, secs) => {
@@ -8607,6 +8971,18 @@ export default function App() {
         courseProgress={courseProgress}
         aiRobotId={aiRobotId}
       />
+    </View>
+  );
+  }
+
+  const activeRootTab = ROOT_TAB_ORDER.includes(mainScreen) ? mainScreen : "home";
+  return (
+    <View style={{ flex: 1, backgroundColor: C.bg }}>
+      <SwipeableRootTabs
+        activeTab={activeRootTab}
+        onNavigate={navigateRootTab}
+        renderTab={renderRootTab}
+      />
       <CertificateModal cert={certModal} onClose={() => setCertModal(null)} />
       <ProblemReportModal
         visible={showProblemReport}
@@ -8617,7 +8993,7 @@ export default function App() {
       <UpgradeModal
         visible={showAppUpgrade}
         onClose={() => setShowAppUpgrade(false)}
-        onStartTrial={openWebTrialCheckout}
+        onStartTrial={openMembershipAccess}
         trialLoading={false}
       />
     </View>
@@ -8650,18 +9026,101 @@ return StyleSheet.create({
   },
 
   // Auth
+  authScreen: { flex: 1, backgroundColor: C.bg },
+  authSafeArea: { flex: 1, backgroundColor: C.bg },
+  authKeyboardView: { flex: 1 },
+  authScrollContent: { flexGrow: 1 },
+  authContent: {
+    flex: 1,
+    width: "100%",
+    maxWidth: 480,
+    alignSelf: "center",
+    paddingHorizontal: 24,
+    paddingTop: 24,
+    paddingBottom: 8,
+  },
+  authBrand: { alignItems: "center" },
+  authBrandTagline: {
+    ...TYPE.caption,
+    color: C.primary,
+    fontWeight: "700",
+    letterSpacing: 1.8,
+    marginTop: 5,
+  },
+  authHeadingBlock: { marginTop: 52, marginBottom: 30 },
+  authWelcome: { ...TYPE.display, color: C.text, fontWeight: "800", lineHeight: 39 },
+  authWelcomeSub: { fontSize: 16, lineHeight: 23, color: C.textSub, marginTop: 8 },
+  authForm: { width: "100%" },
+  authPasswordLabelRow: {
+    minHeight: MIN_TOUCH_TARGET,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginTop: -4,
+  },
+  authForgotButton: {
+    minHeight: MIN_TOUCH_TARGET,
+    justifyContent: "center",
+    paddingLeft: 16,
+  },
+  authForgotText: { ...TYPE.caption, color: C.primary, fontWeight: "700" },
+  authErrorBanner: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    gap: 8,
+    borderWidth: 1,
+    borderColor: "rgba(239,68,68,0.42)",
+    backgroundColor: "rgba(239,68,68,0.10)",
+    borderRadius: 12,
+    padding: 12,
+    marginBottom: 14,
+  },
+  authErrorText: { flex: 1, color: C.text, fontSize: 13, lineHeight: 19 },
+  authPrimaryButton: {
+    minHeight: 54,
+    borderRadius: 14,
+    backgroundColor: C.primary,
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 4,
+  },
+  authPrimaryButtonDisabled: { opacity: 0.46 },
+  authPrimaryButtonText: { color: C.onPrimary, fontSize: 16, lineHeight: 21, fontWeight: "800" },
+  authCreateRow: {
+    minHeight: MIN_TOUCH_TARGET,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    flexWrap: "wrap",
+    marginTop: 18,
+  },
+  authCreatePrompt: { ...TYPE.body, color: C.textSub },
+  authCreateButton: { minHeight: MIN_TOUCH_TARGET, justifyContent: "center", paddingHorizontal: 6 },
+  authCreateText: { ...TYPE.bodyMedium, color: C.primary, fontWeight: "800" },
+  authFooter: {
+    minHeight: MIN_TOUCH_TARGET,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: "auto",
+    paddingTop: 44,
+  },
+  authFooterLink: { minHeight: MIN_TOUCH_TARGET, justifyContent: "center", paddingHorizontal: 10 },
+  authFooterLinkText: { ...TYPE.caption, color: C.textMuted },
+  authFooterSeparator: { color: C.borderStrong, fontSize: 12 },
   authTagline: { ...TYPE.label, color: C.textSub, marginTop: 6, textTransform: "uppercase" },
   authTitle: { ...TYPE.h1, color: C.text, marginBottom: 6 },
   authSub: { ...TYPE.body, color: C.textSub, marginBottom: SPACE.xl },
   fieldLabel: { ...TYPE.label, color: C.text, marginBottom: 6, textTransform: "uppercase" },
   input: {
     ...TYPE.bodyMedium,
-    backgroundColor: C.surface, borderRadius: RADIUS.md,
+    backgroundColor: C.surface, borderRadius: 12,
     paddingHorizontal: 14, paddingVertical: 13,
-    minHeight: 48, borderWidth: 1.2, borderColor: C.border, color: C.text,
+    minHeight: 52, borderWidth: 1.2, borderColor: C.border, color: C.text,
   },
+  inputFocused: { borderColor: C.primary, backgroundColor: C.surfaceElevated },
   btn: {
-    minHeight: 48,
+    minHeight: 52,
     borderRadius: RADIUS.sm, paddingVertical: 14, paddingHorizontal: 16,
     alignItems: "center", justifyContent: "center",
     flexDirection: "row", gap: 8,
@@ -8670,6 +9129,15 @@ return StyleSheet.create({
   btnOutline: { borderWidth: 1.2, borderColor: C.borderStrong, backgroundColor: C.surface },
   btnText: { ...TYPE.button, color: C.onPrimary },
   errorText: { color: C.danger, fontSize: 13, marginBottom: 10 },
+  iosMembershipPanel: {
+    marginTop: 14,
+    paddingTop: 14,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: C.border,
+  },
+  iosMembershipText: { ...TYPE.body, color: C.textSub },
+  iosMembershipHelp: { minHeight: MIN_TOUCH_TARGET, alignItems: "center", justifyContent: "center", marginTop: 4 },
+  iosMembershipHelpText: { ...TYPE.bodyMedium, color: C.primary, fontWeight: "700" },
   avatarPickerItem: {
     width: 64, height: 64, borderRadius: 32,
     alignItems: "center", justifyContent: "center",
@@ -9156,7 +9624,7 @@ return StyleSheet.create({
   },
   bottomTab: {
     flex: 1,
-    flexBasis: "25%",
+    flexBasis: "20%",
     minWidth: 0,
     minHeight: 54,
     alignItems: "center",
@@ -9179,6 +9647,23 @@ return StyleSheet.create({
     lineHeight: 14,
     color: C.slateGray,
     includeFontPadding: false,
+  },
+  swipePagerViewport: {
+    flex: 1,
+    overflow: "hidden",
+    backgroundColor: "#000",
+  },
+  swipePagerTrack: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+  },
+  swipePagerPage: {
+    position: "absolute",
+    top: 0,
+    zIndex: 1,
+    backgroundColor: C.bg,
+    overflow: "hidden",
   },
   bottomTabAI: {
     width: 44, height: 44, borderRadius: 22,

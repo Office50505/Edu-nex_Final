@@ -4,10 +4,10 @@
     "slug": "skillomate",
     "version": "1.0",
     "description": "Skillomate learning app",
-    "scheme": "com.skillomate.app",
+    "scheme": "skillomate",
     "icon": "./assets/icon.png",
-    "orientation": "default",
-    "userInterfaceStyle": "automatic",
+    "orientation": "portrait",
+    "userInterfaceStyle": "dark",
     "platforms": [
       "ios",
       "android"
@@ -44,16 +44,10 @@
       "infoPlist": {
         "CFBundleDisplayName": "Skillomate",
         "ITSAppUsesNonExemptEncryption": false,
-        "NSPhotoLibraryUsageDescription": "Skillomate lets you choose a profile picture from your photo library.",
+        "NSPhotoLibraryUsageDescription": "Allow access only when you choose a profile photo for your Skillomate account.",
         "NSAppTransportSecurity": {
           "NSAllowsArbitraryLoads": false,
-          "NSAllowsLocalNetworking": true,
-          "NSExceptionDomains": {
-            "13.203.94.35": {
-              "NSExceptionAllowsInsecureHTTPLoads": true,
-              "NSIncludesSubdomains": true
-            }
-          }
+          "NSAllowsLocalNetworking": true
         }
       }
     },
