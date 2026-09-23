@@ -5246,7 +5246,7 @@ function HomeScreen({
             {lessons.length ? (
               <View style={homeStyles.section}>
                 <HomeSectionHeader title="All Lectures" />
-                <LessonListSection course={course} lessons={lessons} onPressLesson={openLesson} screen="Home all lectures" />
+                <LessonCarousel course={course} lessons={lessons} cardWidth={lessonCardWidth} onPressLesson={openLesson} />
               </View>
             ) : null}
           </>
