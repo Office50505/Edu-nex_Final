@@ -143,7 +143,8 @@ describe("reported frontend regressions", () => {
     expect(screen.queryByRole("button", { name: "Open Nex AI" })).toBeNull();
   });
 
-  it("renders the AI tutor with one focused set of starter prompts", () => {
+  it("renders the AI tutor and writes a selected starter prompt into the composer", async () => {
+    localStorage.setItem("edunexAiBotSetupComplete:user-1", "true");
     window.EduNex = {
       request: vi.fn(),
       getAccessToken: vi.fn(() => "active-token"),
@@ -155,13 +156,25 @@ describe("reported frontend regressions", () => {
     expect(assistantAvatar.getAttribute("src")).toBe("/assets/nex-avatar.png");
     expect(assistantAvatar.getAttribute("loading")).toBe("eager");
     expect(document.querySelector('link[rel="preload"][href="/assets/nex-avatar-thinking.png"]')?.getAttribute("fetchpriority")).toBe("high");
-    expect(screen.getByRole("group", { name: "Suggested questions" }).querySelectorAll("button")).toHaveLength(4);
+    const suggestedQuestions = screen.getByRole("group", { name: "Suggested questions" });
+    expect(suggestedQuestions.querySelectorAll("button")).toHaveLength(4);
     expect(screen.queryByRole("group", { name: "Follow-up suggestions" })).toBeNull();
     expect(document.querySelector(".tutor-top-bar")).toBeNull();
     expect(screen.queryByRole("button", { name: "Report a problem" })).toBeNull();
     expect(document.documentElement.style.overflow).toBe("");
     expect(document.body.style.position).toBe("");
     expect(document.body.classList.contains("has-viewport-lock")).toBe(false);
+
+    const prompt = "Explain prompt engineering with an example";
+    const composer = screen.getByRole("textbox", { name: "Message AI" });
+    Object.defineProperty(composer, "scrollHeight", { configurable: true, value: 54 });
+    fireEvent.click(screen.getByRole("button", { name: prompt }));
+
+    await waitFor(() => {
+      expect(composer.value).toBe(prompt);
+      expect(composer.style.height).toBe("54px");
+      expect(document.activeElement).toBe(composer);
+    });
   });
 
   it("lets each learner name the AI without letting a message replace the header name", async () => {

@@ -3,6 +3,7 @@ import { page as editProfilePage } from "../generated-pages/edit-profile.html.js
 import { runLegacyPage } from "../legacyRuntime.js";
 import { usePageStyle } from "../hooks/usePageStyle.js";
 import { useEduNexRuntimeReady } from "../hooks/useEduNexRuntimeReady.js";
+import { route } from "../lib/routes.js";
 
 const ALLOWED_AVATARS = [
   "assets/male1.jpeg",
@@ -211,6 +212,7 @@ export function EditProfilePage() {
       updateStoredUser(data.user);
       setForm((current) => ({ ...current, fullName: data.user.fullName || "Skillomate Learner" }));
       showProfileToast("Profile updated successfully!");
+      window.location.assign(route("profile.html"));
     } catch (error) {
       showProfileToast(userSafeProfileError(error, "We couldn't save your changes. Please try again."), false);
     } finally {

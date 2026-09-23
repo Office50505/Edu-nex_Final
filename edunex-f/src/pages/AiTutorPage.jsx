@@ -184,9 +184,20 @@ export function AiTutorPage() {
     if (messagesRef.current) messagesRef.current.scrollTop = messagesRef.current.scrollHeight;
   }, [messages]);
 
+  const resizeComposer = (element) => {
+    if (!element) return;
+    element.style.height = "auto";
+    element.style.height = `${Math.max(22, Math.min(element.scrollHeight, 120))}px`;
+  };
+
   const setPrompt = (text) => {
     setInput(text);
-    requestAnimationFrame(() => inputRef.current?.focus());
+    requestAnimationFrame(() => {
+      const composer = inputRef.current;
+      resizeComposer(composer);
+      composer?.focus({ preventScroll: true });
+      composer?.setSelectionRange(text.length, text.length);
+    });
   };
 
   const openNameSetup = () => {
@@ -258,12 +269,6 @@ export function AiTutorPage() {
       return next;
     });
     return record;
-  };
-
-  const resizeComposer = (element) => {
-    if (!element) return;
-    element.style.height = "auto";
-    element.style.height = `${Math.max(22, Math.min(element.scrollHeight, 120))}px`;
   };
 
   const sendMessage = async () => {

@@ -9,6 +9,8 @@
   --mobile-safe-bottom: env(safe-area-inset-bottom, 0px);
   --mobile-fixed-reserve: 0px;
   --floating-ai-bottom: calc(28px + var(--mobile-safe-bottom));
+  --enx-visual-viewport-width: 100vw;
+  --enx-visual-viewport-height: 100dvh;
 }
 
 html,
@@ -84,6 +86,19 @@ input,
 textarea,
 select {
   font-family: var(--font-body);
+}
+
+/* iOS Safari zooms the visual viewport when a focused form control renders
+   below 16px. Keep text-entry controls at the safe size so SPA navigation
+   cannot carry a zoomed, horizontally clipped viewport to the next page. */
+@media (max-width: 900px) {
+  :where(
+    input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]):not([type="file"]):not([type="hidden"]):not([type="button"]):not([type="submit"]):not([type="reset"]):not([type="image"]):not(.otp-input):not(.ad-otp-input),
+    textarea,
+    select
+  ) {
+    font-size: 16px !important;
+  }
 }
 
 .react-page-root {
@@ -5121,8 +5136,8 @@ html[data-theme="light"] .react-page-root[data-page="videos.html"] .reel-lecture
   body.has-edunex-mobile-reel #root {
     position: fixed !important;
     inset: 0 !important;
-    width: 100vw !important;
-    height: 100dvh !important;
+    width: var(--enx-visual-viewport-width, 100vw) !important;
+    height: var(--enx-visual-viewport-height, 100dvh) !important;
     min-height: 0 !important;
     margin: 0 !important;
     padding: 0 !important;
@@ -5144,8 +5159,8 @@ html[data-theme="light"] .react-page-root[data-page="videos.html"] .reel-lecture
     position: fixed !important;
     inset: 0 !important;
     z-index: 2147482000 !important;
-    width: 100vw !important;
-    height: 100dvh !important;
+    width: var(--enx-visual-viewport-width, 100vw) !important;
+    height: var(--enx-visual-viewport-height, 100dvh) !important;
     min-height: 0 !important;
     margin: 0 !important;
     padding: 0 !important;
@@ -5157,9 +5172,9 @@ html[data-theme="light"] .react-page-root[data-page="videos.html"] .reel-lecture
   body.has-edunex-mobile-reel .react-page-root[data-page="videos.html"] .watch-layout,
   body.has-edunex-mobile-reel .react-page-root[data-page="videos.html"] .player-wrap,
   body.has-edunex-mobile-reel .react-page-root[data-page="videos.html"] .player-frame {
-    width: 100vw !important;
+    width: var(--enx-visual-viewport-width, 100vw) !important;
     max-width: none !important;
-    height: 100dvh !important;
+    height: var(--enx-visual-viewport-height, 100dvh) !important;
     min-height: 0 !important;
     margin: 0 !important;
     padding: 0 !important;

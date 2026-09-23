@@ -70,9 +70,13 @@ describe("cross-viewport UX", () => {
     expect(appStyles).toMatch(/\.reel-lecture-sheet::before[\s\S]*linear-gradient\(90deg, transparent, rgba\(255, 255, 255, \.58\), rgba\(197, 139, 42, \.62\), transparent\)/);
   });
 
-  it("fills the mobile viewport and crops portrait video without side bars", () => {
-    expect(appStyles).toMatch(/body\.has-edunex-mobile-reel #root[\s\S]*width: 100vw !important;[\s\S]*height: 100dvh !important;/);
+  it("fills Safari's visible mobile viewport and crops portrait video without side bars", () => {
+    expect(appStyles).toMatch(/body\.has-edunex-mobile-reel #root[\s\S]*width: var\(--enx-visual-viewport-width, 100vw\) !important;[\s\S]*height: var\(--enx-visual-viewport-height, 100dvh\) !important;/);
     expect(appStyles).toMatch(/body\.has-edunex-mobile-reel[\s\S]*:where\(\.sm-player > video, \.custom-video-player > video\)[\s\S]*object-fit: cover !important;/);
+  });
+
+  it("prevents iPhone Safari from auto-zooming small form fields", () => {
+    expect(appStyles).toMatch(/iOS Safari zooms the visual viewport[\s\S]*@media \(max-width: 900px\)[\s\S]*textarea,[\s\S]*select[\s\S]*font-size: 16px !important;/);
   });
 
   it("keeps the minimized mobile lesson clear and above the fixed navigation", () => {

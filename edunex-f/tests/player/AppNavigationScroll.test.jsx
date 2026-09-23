@@ -56,6 +56,10 @@ describe("application navigation scroll restoration", () => {
   it("starts every app link destination at the top", async () => {
     render(<App />);
     await screen.findByText("Home page");
+    const focusedInput = document.createElement("input");
+    document.body.appendChild(focusedInput);
+    focusedInput.focus();
+    expect(document.activeElement).toBe(focusedInput);
     window.scrollTo.mockClear();
     document.documentElement.scrollTop = 420;
     document.body.scrollTop = 420;
@@ -67,6 +71,8 @@ describe("application navigation scroll restoration", () => {
     expect(document.documentElement.scrollTop).toBe(0);
     expect(document.body.scrollTop).toBe(0);
     expect(window.scrollTo).toHaveBeenLastCalledWith({ top: 0, left: 0, behavior: "auto" });
+    expect(document.activeElement).not.toBe(focusedInput);
+    focusedInput.remove();
   });
 
   it("clears stale fullscreen locks when a standard page renders", async () => {

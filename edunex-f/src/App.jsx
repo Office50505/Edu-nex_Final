@@ -71,6 +71,10 @@ function scrollAfterNavigation(hash) {
 }
 
 function releasePageScrollLocks() {
+  const activeElement = document.activeElement;
+  if (activeElement instanceof HTMLElement && activeElement.matches("input, textarea, select, [contenteditable='true']")) {
+    activeElement.blur();
+  }
   resetViewportLocks();
   document.body.classList.remove("has-edunex-player-fullscreen", "has-edunex-mobile-reel");
 }
@@ -131,6 +135,32 @@ export default function App() {
   const openProblemReport = useCallback(() => setReportOpen(true), []);
   const closeProblemReport = useCallback(() => setReportOpen(false), []);
   usePresenceHeartbeat(!adminPage);
+
+  useEffect(() => {
+    const viewport = window.visualViewport;
+    let frame = 0;
+    const syncVisualViewport = () => {
+      window.cancelAnimationFrame(frame);
+      frame = window.requestAnimationFrame(() => {
+        const width = Math.max(1, viewport?.width || document.documentElement.clientWidth || window.innerWidth);
+        const height = Math.max(1, viewport?.height || window.innerHeight);
+        document.documentElement.style.setProperty("--enx-visual-viewport-width", `${width}px`);
+        document.documentElement.style.setProperty("--enx-visual-viewport-height", `${height}px`);
+      });
+    };
+    syncVisualViewport();
+    viewport?.addEventListener("resize", syncVisualViewport, { passive: true });
+    viewport?.addEventListener("scroll", syncVisualViewport, { passive: true });
+    window.addEventListener("orientationchange", syncVisualViewport, { passive: true });
+    return () => {
+      window.cancelAnimationFrame(frame);
+      viewport?.removeEventListener("resize", syncVisualViewport);
+      viewport?.removeEventListener("scroll", syncVisualViewport);
+      window.removeEventListener("orientationchange", syncVisualViewport);
+      document.documentElement.style.removeProperty("--enx-visual-viewport-width");
+      document.documentElement.style.removeProperty("--enx-visual-viewport-height");
+    };
+  }, []);
 
   useLayoutEffect(() => {
     if (pageKey === "videos.html" || pageKey === "ai-tutor.html") return;
