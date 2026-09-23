@@ -4786,3 +4786,251 @@ body.premium-nav-admin .admin-workspace-main::after {
     padding-bottom: 140px !important;
   }
 }
+
+/* Certificate editor */
+body.premium-nav-admin .cert-template-shell {
+  margin: 22px 0 30px !important;
+  padding: 22px !important;
+  border: 1px solid var(--admin-line) !important;
+  border-radius: 24px !important;
+  background: rgba(255,255,255,.92) !important;
+  box-shadow: var(--admin-shadow) !important;
+}
+
+body.premium-nav-admin .cert-template-heading {
+  display: flex !important;
+  justify-content: space-between !important;
+  gap: 18px !important;
+  align-items: flex-start !important;
+  margin-bottom: 18px !important;
+}
+
+body.premium-nav-admin .cert-template-heading span {
+  color: #9a6b1f !important;
+  font-size: 11px !important;
+  font-weight: 950 !important;
+  letter-spacing: .12em !important;
+  text-transform: uppercase !important;
+}
+
+body.premium-nav-admin .cert-template-heading h2 {
+  margin: 4px 0 6px !important;
+  color: var(--admin-navy) !important;
+  font-size: 28px !important;
+  letter-spacing: -.04em !important;
+}
+
+body.premium-nav-admin .cert-template-heading p {
+  margin: 0 !important;
+  max-width: 720px !important;
+  color: #667085 !important;
+  line-height: 1.55 !important;
+}
+
+body.premium-nav-admin .cert-template-grid {
+  display: grid !important;
+  grid-template-columns: minmax(320px, .82fr) minmax(420px, 1.18fr) !important;
+  gap: 18px !important;
+  align-items: start !important;
+}
+
+body.premium-nav-admin .cert-template-form {
+  display: grid !important;
+  gap: 14px !important;
+}
+
+body.premium-nav-admin .cert-template-form fieldset {
+  margin: 0 !important;
+  padding: 16px !important;
+  border: 1px solid #edf1f6 !important;
+  border-radius: 18px !important;
+  background: #fbfcfe !important;
+}
+
+body.premium-nav-admin .cert-template-form legend {
+  padding: 0 8px !important;
+  color: var(--admin-navy) !important;
+  font-weight: 950 !important;
+}
+
+body.premium-nav-admin .cert-template-form label {
+  display: grid !important;
+  gap: 7px !important;
+  margin: 10px 0 !important;
+  color: #667085 !important;
+  font-size: 11px !important;
+  font-weight: 900 !important;
+  letter-spacing: .05em !important;
+}
+
+body.premium-nav-admin .cert-template-form textarea {
+  min-height: 76px !important;
+  resize: vertical !important;
+}
+
+body.premium-nav-admin .cert-color-grid {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 10px !important;
+}
+
+body.premium-nav-admin .cert-color-grid input[type="color"] {
+  width: 100% !important;
+  min-height: 44px !important;
+  padding: 5px !important;
+}
+
+body.premium-nav-admin .certificate-live-preview {
+  position: sticky !important;
+  top: 110px !important;
+  padding: 18px !important;
+  border: 1px solid #edf1f6 !important;
+  border-radius: 22px !important;
+  background: var(--cert-bg) !important;
+  color: var(--cert-ink) !important;
+}
+
+body.premium-nav-admin .certificate-live-preview > p {
+  margin: 14px 0 0 !important;
+  color: color-mix(in srgb, var(--cert-ink) 72%, transparent) !important;
+  font-size: 12px !important;
+  font-weight: 800 !important;
+}
+
+body.premium-nav-admin .certificate-preview-card {
+  position: relative !important;
+  aspect-ratio: 1.414 / 1 !important;
+  overflow: hidden !important;
+  padding: 5.5% 6% !important;
+  border-radius: 8px !important;
+  background: radial-gradient(circle at 50% 44%, #fff 0 50%, var(--cert-soft) 100%), var(--cert-paper) !important;
+  box-shadow: 0 24px 60px rgba(15,23,42,.14) !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+body.premium-nav-admin .certificate-preview-frame,
+body.premium-nav-admin .certificate-preview-card::before,
+body.premium-nav-admin .certificate-preview-card::after {
+  content: "" !important;
+  position: absolute !important;
+  pointer-events: none !important;
+  border: 1px solid var(--cert-gold) !important;
+}
+
+body.premium-nav-admin .certificate-preview-frame { inset: 2.2% !important; border-width: 2px !important; }
+body.premium-nav-admin .certificate-preview-card::before { inset: 3.2% !important; opacity: .78 !important; }
+body.premium-nav-admin .certificate-preview-card::after { inset: 4.2% !important; opacity: .52 !important; }
+
+body.premium-nav-admin .certificate-preview-card header,
+body.premium-nav-admin .certificate-preview-card footer {
+  position: relative !important;
+  z-index: 2 !important;
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: flex-start !important;
+  gap: 12px !important;
+}
+
+body.premium-nav-admin .certificate-preview-card header strong {
+  color: var(--cert-ink) !important;
+  font-size: clamp(18px, 2.2vw, 34px) !important;
+  letter-spacing: -.05em !important;
+}
+
+body.premium-nav-admin .certificate-preview-card header span {
+  color: var(--cert-ink) !important;
+  display: grid !important;
+  text-align: center !important;
+  font-size: clamp(8px, .8vw, 12px) !important;
+  font-style: normal !important;
+  letter-spacing: .32em !important;
+  line-height: 1.4 !important;
+}
+
+body.premium-nav-admin .certificate-preview-card header em { font-style: normal !important; }
+body.premium-nav-admin .certificate-preview-card section {
+  position: relative !important;
+  z-index: 2 !important;
+  margin: auto 0 !important;
+  text-align: center !important;
+}
+
+body.premium-nav-admin .certificate-preview-card h3 {
+  margin: 0 !important;
+  color: var(--cert-ink) !important;
+  font-family: Georgia, serif !important;
+  font-size: clamp(34px, 5vw, 72px) !important;
+  font-weight: 400 !important;
+  letter-spacing: .08em !important;
+}
+
+body.premium-nav-admin .certificate-preview-card .preview-subtitle {
+  margin: 6px 0 22px !important;
+  color: var(--cert-ink) !important;
+  font-size: clamp(11px, 1.4vw, 18px) !important;
+  letter-spacing: .4em !important;
+}
+
+body.premium-nav-admin .certificate-preview-card h4 {
+  display: inline-block !important;
+  margin: 6px 0 12px !important;
+  padding: 0 22px 7px !important;
+  border-bottom: 1px solid var(--cert-gold) !important;
+  color: var(--cert-ink) !important;
+  font-family: Georgia, serif !important;
+  font-size: clamp(26px, 4.2vw, 56px) !important;
+  font-weight: 400 !important;
+}
+
+body.premium-nav-admin .certificate-preview-card p,
+body.premium-nav-admin .certificate-preview-card small {
+  color: var(--cert-ink) !important;
+  line-height: 1.35 !important;
+}
+
+body.premium-nav-admin .certificate-preview-card .preview-seal {
+  width: 58px !important;
+  height: 58px !important;
+  margin: 16px auto 8px !important;
+  display: grid !important;
+  place-items: center !important;
+  border-radius: 999px !important;
+  background: var(--cert-gold) !important;
+  color: #fff !important;
+  box-shadow: 0 8px 18px rgba(15,23,42,.16) !important;
+}
+
+body.premium-nav-admin .certificate-preview-card .preview-motto {
+  margin: 8px 0 !important;
+  font-size: 10px !important;
+  letter-spacing: .34em !important;
+}
+
+body.premium-nav-admin .certificate-preview-card .preview-signature {
+  color: var(--cert-ink) !important;
+  font-family: "Brush Script MT", "Segoe Script", cursive !important;
+  font-size: clamp(24px, 3vw, 42px) !important;
+  text-decoration: underline !important;
+  text-decoration-color: var(--cert-gold) !important;
+  text-underline-offset: 7px !important;
+}
+
+body.premium-nav-admin .certificate-preview-card footer {
+  align-items: flex-end !important;
+  color: var(--cert-ink) !important;
+  font-size: 10px !important;
+  letter-spacing: .22em !important;
+}
+
+@media (max-width: 1180px) {
+  body.premium-nav-admin .cert-template-grid { grid-template-columns: 1fr !important; }
+  body.premium-nav-admin .certificate-live-preview { position: relative !important; top: auto !important; }
+}
+
+@media (max-width: 680px) {
+  body.premium-nav-admin .cert-template-heading { flex-direction: column !important; }
+  body.premium-nav-admin .cert-color-grid { grid-template-columns: 1fr !important; }
+  body.premium-nav-admin .certificate-live-preview { overflow-x: auto !important; }
+  body.premium-nav-admin .certificate-preview-card { min-width: 620px !important; }
+}

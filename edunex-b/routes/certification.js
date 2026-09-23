@@ -11,6 +11,7 @@ const Course=require('../models/Course');
 const User=require('../models/User');
 const {areRateLimitsDisabled}=require('../services/rateLimitToggle');
 const {renderCertificatePage}=require('../services/certificateTemplate');
+const templateSettings=require('../services/certificateTemplateSettings');
 const router=express.Router();
 const auth=requireCompatibleAuth();
 const run=fn=>async(req,res)=>{try{await fn(req,res);}catch(e){res.status(e.statusCode||500).json({error:e.statusCode?e.message:'Could not complete certification request. Please retry.'});}};
@@ -19,7 +20,7 @@ router.get('/certificates/verify/:id',run(async(req,res)=>{
   const cert=await Certificate.findOne({certificateId:req.params.id}).lean();
   if(!cert)return res.status(404).type('html').send('<h1>Certificate not found</h1>');
   res.set('Cache-Control','no-store');
-  res.type('html').send(renderCertificatePage(cert));
+  res.type('html').send(renderCertificatePage(cert, await templateSettings.getActiveTemplate()));
 }));
 router.get('/certificates',auth,run(async(req,res)=>{
   const userId=String(req.compatUser._id);
@@ -66,10 +67,30 @@ router.post('/learning/:courseId/assessment',auth,run(async(req,res)=>{
   const status=await service.state(req.compatUser,ctx);
   res.json({score,passed:score>=70,eligibility:status,certificate:await service.issue(req.compatUser,ctx,status)});
 }));
+
+router.get('/admin/certificate-template',protectAdmin,run(async(_req,res)=>{
+  res.json({template:await templateSettings.getActiveTemplate()});
+}));
+router.put('/admin/certificate-template',protectAdmin,run(async(req,res)=>{
+  res.json({template:await templateSettings.saveTemplate(req.body,req.admin),message:'Certificate template saved. Future certificate pages use this design.'});
+}));
+router.post('/admin/certificate-template/preview',protectAdmin,run(async(req,res)=>{
+  const template=templateSettings.normalize(req.body.template||req.body||{});
+  const certificate=templateSettings.previewCertificate(req.body.sample||{});
+  res.type('html').send(renderCertificatePage(certificate,template));
+}));
 router.get('/admin/certifications',protectAdmin,run(async(req,res)=>{
   const page=Math.max(1,Math.min(10000,parseInt(req.query.page,10)||1));
-  const [certificates,total,courses]=await Promise.all([Certificate.find().sort({issuedAt:-1}).skip((page-1)*25).limit(25).select('-userEmail').lean(),Certificate.countDocuments(),Course.find().select('title status videos._id videos.title videos.duration').limit(500).lean()]);
-  const learners = await Learning.aggregate([{ $group: { _id: { userId: '$userId', courseId: '$courseId' }, updatedAt: { $max: '$updatedAt' } } }, { $sort: { updatedAt: -1 } }, { $skip: (page-1)*25 }, { $limit: 25 }]);
+  const learningGroups=[{ $group: { _id: { userId: '$userId', courseId: '$courseId' }, updatedAt: { $max: '$updatedAt' } } }];
+  const [certificates,total,activeTotal,revokedTotal,courses,learnerTotal,learners]=await Promise.all([
+    Certificate.find().sort({issuedAt:-1}).skip((page-1)*25).limit(25).select('-userEmail').lean(),
+    Certificate.countDocuments(),
+    Certificate.countDocuments({status:{$ne:'revoked'}}),
+    Certificate.countDocuments({status:'revoked'}),
+    Course.find().select('title status videos._id videos.title videos.duration').limit(500).lean(),
+    Learning.aggregate([...learningGroups,{ $count: 'count' }]),
+    Learning.aggregate([...learningGroups,{ $sort: { updatedAt: -1 } },{ $skip: (page-1)*25 },{ $limit: 25 }]),
+  ]);
   const progress = [];
   for (const row of learners) {
     const user = await User.findById(row._id.userId).select('fullName isMobileVerified').lean();
@@ -77,7 +98,23 @@ router.get('/admin/certifications',protectAdmin,run(async(req,res)=>{
     try { const ctx = await service.context(user,row._id.courseId); progress.push({ learnerName: user.fullName, updatedAt: row.updatedAt, ...await service.state(user,ctx) }); }
     catch(e) { if(e.statusCode!==404)throw e; }
   }
-  res.json({certificates:certificates.map(c=>({...service.certificateView(c),audit:c.audit||[]})),total,page,courses,progress});
+  const progressTotal=Number(learnerTotal?.[0]?.count||0);
+  const pendingTotal=progress.filter(item=>!item.eligible).length;
+  res.json({
+    certificates:certificates.map(c=>({...service.certificateView(c),audit:c.audit||[]})),
+    total,
+    page,
+    courses,
+    progress,
+    stats:{
+      totalCertificates:total,
+      activeCertificates:activeTotal,
+      revokedCertificates:revokedTotal,
+      progressTotal,
+      pendingOnCurrentPage:pendingTotal,
+      conversionPercent:progressTotal?Math.round((activeTotal/progressTotal)*100):0,
+    },
+  });
 }));
 router.patch('/admin/certifications/:id',protectAdmin,run(async(req,res)=>{
   const {action,reason}=req.body;
