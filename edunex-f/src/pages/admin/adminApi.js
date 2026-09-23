@@ -4,7 +4,7 @@ export const TOKEN_KEY = "edunexAdminToken";
 export const ADMIN_KEY = "edunexAdmin";
 
 const ADMIN_STANDALONE = import.meta.env.VITE_ADMIN_STANDALONE === "true";
-const ADMIN_ROUTES_DISABLED = import.meta.env.VITE_DISABLE_ADMIN_ROUTES === "true";
+const ADMIN_ROUTES_DISABLED = !ADMIN_STANDALONE;
 const ADMIN_BASE_PATH = ADMIN_STANDALONE ? "" : "/admin";
 
 function adminPath(slug = "") {
