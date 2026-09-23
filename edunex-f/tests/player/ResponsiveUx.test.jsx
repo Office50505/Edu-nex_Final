@@ -75,6 +75,10 @@ describe("cross-viewport UX", () => {
     expect(appStyles).toMatch(/body\.has-edunex-mobile-reel[\s\S]*:where\(\.sm-player > video, \.custom-video-player > video\)[\s\S]*object-fit: cover !important;/);
   });
 
+  it("keeps document scrolling enabled for the desktop lesson page", () => {
+    expect(appStyles).toMatch(/@media \(min-width: 1181px\), \(min-width: 821px\) and \(pointer: fine\)[\s\S]*body:not\(\.has-edunex-player-fullscreen\):has\(\.react-page-root\[data-page="videos\.html"\]\)[\s\S]*overflow-y: auto !important;[\s\S]*\.watch-page[\s\S]*overflow-y: visible !important;/);
+  });
+
   it("prevents iPhone Safari from auto-zooming small form fields", () => {
     expect(appStyles).toMatch(/iOS Safari zooms the visual viewport[\s\S]*@media \(max-width: 900px\)[\s\S]*textarea,[\s\S]*select[\s\S]*font-size: 16px !important;/);
   });

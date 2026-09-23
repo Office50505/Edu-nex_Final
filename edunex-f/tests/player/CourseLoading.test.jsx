@@ -394,6 +394,31 @@ it('changes lecture with a short, quick reel-style vertical swipe', async () => 
   expect(frame.classList.contains('is-reel-enter-next')).toBe(true);
 });
 
+it('smoothly changes one lecture with the desktop mouse wheel over the player', async () => {
+  window.history.replaceState(null, '', '/videos?courseId=course&video=0');
+  window.matchMedia = vi.fn((query) => ({
+    matches: query.includes('(pointer: fine)'),
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
+  }));
+  const twoLessons = {
+    ...course,
+    videos: [course.videos[0], { ...course.videos[0], _id: 'lesson-2', title: 'Second lesson' }],
+  };
+  window.EduNex = { authRequest: vi.fn().mockResolvedValue({ courseId: 'course', lessons: [] }) };
+  vi.stubGlobal('fetch', vi.fn(() => reply(twoLessons)));
+
+  const { container } = render(<VideosPage />);
+  expect((await screen.findByTestId('active-player-lesson')).textContent).toBe('First lesson');
+  const frame = container.querySelector('#playerFrame');
+  fireEvent.wheel(frame, { deltaY: 28, deltaX: 0 });
+  expect(frame.classList.contains('is-reel-dragging')).toBe(true);
+  fireEvent.wheel(frame, { deltaY: 32, deltaX: 0 });
+
+  expect((await screen.findByTestId('active-player-lesson')).textContent).toBe('Second lesson');
+  expect(frame.classList.contains('is-reel-enter-next')).toBe(true);
+});
+
 it('changes the Notes content when scrolling to a different lecture', async () => {
   window.history.replaceState(null, '', '/videos?courseId=course&video=0');
   window.matchMedia = vi.fn(() => ({ matches: true, addEventListener: vi.fn(), removeEventListener: vi.fn() }));

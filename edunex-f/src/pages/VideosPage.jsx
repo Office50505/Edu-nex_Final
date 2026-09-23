@@ -1403,14 +1403,15 @@ export function VideosPage() {
 
   const changeLessonByNavigation = useCallback((delta) => {
     const frame = playerFrameRef.current;
-    if (frame && (mobilePlayerViewport || isPlayerFullscreen(frame))) {
+    const desktopReel = window.matchMedia?.("(min-width: 821px) and (pointer: fine)")?.matches;
+    if (frame && (mobilePlayerViewport || desktopReel || isPlayerFullscreen(frame))) {
       const transitionClass = delta > 0 ? "is-reel-enter-next" : "is-reel-enter-previous";
       frame.classList.remove("is-reel-dragging", "is-reel-settling", "is-reel-enter-next", "is-reel-enter-previous");
       frame.style.removeProperty("--reel-drag-y");
       void frame.offsetWidth;
       frame.classList.add(transitionClass);
       window.clearTimeout(lessonTransitionTimerRef.current);
-      lessonTransitionTimerRef.current = window.setTimeout(() => frame.classList.remove(transitionClass), 300);
+      lessonTransitionTimerRef.current = window.setTimeout(() => frame.classList.remove(transitionClass), 380);
     }
     setAutoplayLesson(true);
     setActiveIndex((index) => adjacent(lessons,index,delta));
@@ -1450,7 +1451,10 @@ export function VideosPage() {
     const ignoreSwipeTarget = (target) => Boolean(target?.closest?.(".sm-controls, .sm-settings, .sm-big-play, .custom-video-controls, .video-ai-screen-btn, .reel-lesson-copy.is-expanded, .reel-chrome button, .reel-chrome a, .reel-lecture-backdrop, .course-notes-modal, input, select, textarea, [contenteditable='true']"));
     const canChangeLesson = (delta) => delta > 0 ? activeIndex < lessons.length - 1 : delta < 0 && activeIndex > 0;
     const canTrackPlayerSwipe = () => isPlayerFullscreen(frame) || window.matchMedia?.("(max-width: 820px), (pointer: coarse)")?.matches;
-    const isMobileReel = () => document.body.classList.contains(BODY_MOBILE_REEL_CLASS);
+    const isMobileReel = () => Boolean(
+      document.body.classList.contains(BODY_MOBILE_REEL_CLASS)
+      && window.matchMedia?.("(max-width: 820px), (max-width: 1180px) and (pointer: coarse)")?.matches
+    );
     const beginSwipe = (clientX, clientY, pointerId = null) => {
       swipe.active = true;
       swipe.horizontal = false;
@@ -1485,8 +1489,8 @@ export function VideosPage() {
       if (swipe.horizontal && canChangeLesson(deltaX < 0 ? 1 : -1)) event.preventDefault();
       if (verticalNavigation && swipe.vertical) {
         const direction = deltaY < 0 ? 1 : -1;
-        const resistance = canChangeLesson(direction) ? 0.52 : 0.14;
-        const dragLimit = Math.max(54, Math.min(frame.clientHeight * 0.16 || 88, 112));
+        const resistance = canChangeLesson(direction) ? 0.78 : 0.16;
+        const dragLimit = Math.max(64, Math.min(frame.clientHeight * 0.22 || 104, 180));
         const dragY = Math.max(-dragLimit, Math.min(dragLimit, deltaY * resistance));
         frame.classList.remove("is-reel-settling");
         frame.classList.add("is-reel-dragging");
@@ -1563,19 +1567,29 @@ export function VideosPage() {
     };
 
     const onWheel = (event) => {
-      if ((!isPlayerFullscreen(frame) && !isMobileReel()) || ignoreSwipeTarget(event.target) || Math.abs(event.deltaY) <= Math.abs(event.deltaX)) return;
+      const desktopReel = window.matchMedia?.("(min-width: 821px) and (pointer: fine)")?.matches;
+      if ((!isPlayerFullscreen(frame) && !isMobileReel() && !desktopReel) || ignoreSwipeTarget(event.target) || Math.abs(event.deltaY) <= Math.abs(event.deltaX)) return;
       const direction = event.deltaY > 0 ? 1 : -1;
       if (!canChangeLesson(direction)) return;
       event.preventDefault();
       if (Date.now() < wheelLockedUntil) return;
 
       wheelDelta += event.deltaY;
+      const dragLimit = Math.max(64, Math.min(frame.clientHeight * 0.18 || 96, 148));
+      const dragY = Math.max(-dragLimit, Math.min(dragLimit, wheelDelta * -0.42));
+      frame.classList.remove("is-reel-settling");
+      frame.classList.add("is-reel-dragging");
+      frame.style.setProperty("--reel-drag-y", `${dragY}px`);
       window.clearTimeout(wheelResetTimer);
-      wheelResetTimer = window.setTimeout(() => { wheelDelta = 0; }, 150);
-      if (Math.abs(wheelDelta) < 34) return;
+      wheelResetTimer = window.setTimeout(() => {
+        wheelDelta = 0;
+        clearSwipeVisual(true);
+      }, 140);
+      if (Math.abs(wheelDelta) < 58) return;
 
-      wheelLockedUntil = Date.now() + 440;
+      wheelLockedUntil = Date.now() + 520;
       wheelDelta = 0;
+      clearSwipeVisual();
       changeLessonByNavigation(direction);
     };
 

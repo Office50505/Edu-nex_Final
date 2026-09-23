@@ -48,7 +48,9 @@ it("assigns a distinct video URL to every offer page", () => {
   const entries = Object.entries(OFFER_MEDIA);
   expect(entries).toHaveLength(10);
   expect(new Set(entries.map(([, media]) => media.videoUrl)).size).toBe(10);
-  expect(offerMediaForPage("offer2.html").videoUrl).toBe("/assets/offers/offer-02.mp4");
+  expect(offerMediaForPage("offer2.html").videoUrl).toBe("/assets/offer-video/offer-2.mp4");
+  expect(offerMediaForPage("offer3.html").videoUrl).toBe("/assets/offer-video/offer-3.mov");
+  expect(offerMediaForPage("offer4.html").videoUrl).toBe("/assets/offer-video/offer-4.mov");
   expect(offerMediaForPage("offer10.html").videoUrl).toBe("/assets/offers/offer-10.mp4");
 });
 
@@ -56,7 +58,19 @@ it("selects the video from the current offer route and falls back safely when it
   window.history.replaceState({}, "", "/offer2");
   render(<AdOfferPage />);
   const video = document.querySelector("video");
-  expect(video?.getAttribute("src")).toBe("/assets/offers/offer-02.mp4");
+  expect(video?.getAttribute("src")).toBe("/assets/offer-video/offer-2.mp4");
   fireEvent.error(video);
   expect(video?.getAttribute("src")).toBe(DEFAULT_OFFER_VIDEO_URL);
+});
+
+it("selects the uploaded video from the /offer3 route", () => {
+  window.history.replaceState({}, "", "/offer3");
+  render(<AdOfferPage />);
+  expect(document.querySelector("video")?.getAttribute("src")).toBe("/assets/offer-video/offer-3.mov");
+});
+
+it("selects the uploaded video from the /offer4 route", () => {
+  window.history.replaceState({}, "", "/offer4");
+  render(<AdOfferPage />);
+  expect(document.querySelector("video")?.getAttribute("src")).toBe("/assets/offer-video/offer-4.mov");
 });

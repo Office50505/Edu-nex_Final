@@ -55,7 +55,6 @@ import {
 } from "./dev/uiQaFixtures";
 import {
   HOME_AI_FOUNDATIONS_CONTENT,
-  HOME_COMING_SOON,
   HOME_INFLUENCER_CONTENT,
   buildLessonTopics,
   resolveLessonNumbers,
@@ -80,10 +79,6 @@ const AI_ROBOT_THINKING_IMAGE = require("./assets/ai-avatars/nex-thinking.png");
 const BRAND_LOGOS = {
   light: require("./assets/skillomate-logo.png"),
   dark: require("./assets/skillomate-logo-dark.png"),
-};
-const HOME_COMING_SOON_IMAGES = {
-  ugc: require("./assets/home/coming-soon-ai-ugc.png"),
-  automation: require("./assets/home/coming-soon-ai-automation.png"),
 };
 const AI_ROBOT_AVATARS = Object.keys(AI_ROBOT_IMAGES).map((id, index) => ({
   id,
@@ -2244,7 +2239,6 @@ function ProblemReportModal({ visible, onClose, user, route = "home" }) {
 function BottomNav({ active, onHome, onCourses, onAI, onDownloads, onProfile, aiRobotId, forceDark = false, persistent = false }) {
   const rootTabSwipe = React.useContext(RootTabSwipeContext);
   if (rootTabSwipe?.hideEmbeddedNav && !persistent) return null;
-
   const tabs = [
     { key: "home", icon: "home", label: "Home", fn: onHome },
     { key: "courses", icon: "compass", label: "Explore", fn: onCourses },
@@ -4126,7 +4120,6 @@ function HomeMedia({ course, lesson, borderRadius = 12, screen = "Home media" })
         courseId={course?._id}
         borderRadius={borderRadius}
       />
-      <ThumbnailBrandBadge large={!lesson} />
     </View>
   );
 }
@@ -4149,29 +4142,20 @@ function HomeSectionHeader({ title, onSeeAll, actionLabel = "See All" }) {
   );
 }
 
-function FeaturedCourseHero({ course, lessonCount, tagline, onPress }) {
+function FeaturedCourseHero({ course, onPress }) {
   return (
     <View style={homeStyles.featuredHero}>
       <HomeMedia course={course} borderRadius={14} screen="Home featured course" />
-      <View style={homeStyles.featuredScrim} />
-      <View style={homeStyles.featuredContent}>
-        <Text style={homeStyles.featuredLabel}>FEATURED COURSE</Text>
-        <Text style={homeStyles.featuredTitle} numberOfLines={2}>{course.title}</Text>
-        <Text style={homeStyles.featuredMeta}>
-          {lessonCount} {lessonCount === 1 ? "Lesson" : "Lessons"}{course.level || course.difficulty ? ` • ${course.level || course.difficulty}` : ""}
-        </Text>
-        {tagline ? <Text style={homeStyles.featuredTagline} numberOfLines={1}>{tagline}</Text> : null}
-        <TouchableOpacity
-          style={homeStyles.featuredButton}
-          onPress={onPress}
-          accessibilityRole="button"
-          accessibilityLabel={`Start learning ${course.title}`}
-          activeOpacity={0.86}
-        >
-          <Text style={homeStyles.featuredButtonText}>Start Learning</Text>
-          <Ionicons name="arrow-forward" size={15} color="#17130B" />
-        </TouchableOpacity>
-      </View>
+      <TouchableOpacity
+        style={homeStyles.featuredButton}
+        onPress={onPress}
+        accessibilityRole="button"
+        accessibilityLabel={`Start learning ${course.title}`}
+        activeOpacity={0.86}
+      >
+        <Text style={homeStyles.featuredButtonText}>Start Learning</Text>
+        <Ionicons name="arrow-forward" size={15} color="#17130B" />
+      </TouchableOpacity>
     </View>
   );
 }
@@ -4380,7 +4364,7 @@ function ProjectCarousel({ course, projects, onPressProject }) {
   );
 }
 
-function LatestLessonsSection({ course, lessons, onPressLesson }) {
+function LessonListSection({ course, lessons, onPressLesson, screen = "Home lesson list" }) {
   return (
     <View style={homeStyles.latestList}>
       {lessons.map((lesson, index) => {
@@ -4392,10 +4376,10 @@ function LatestLessonsSection({ course, lessons, onPressLesson }) {
             onPress={() => onPressLesson(lesson)}
             activeOpacity={0.86}
             accessibilityRole="button"
-            accessibilityLabel={`Open latest lesson ${lesson.order || index + 1}: ${lesson.title}`}
+            accessibilityLabel={`Open lesson ${lesson.order || index + 1}: ${lesson.title}`}
           >
             <View style={homeStyles.latestThumb}>
-              <HomeMedia course={course} lesson={lesson} borderRadius={9} screen="Home latest lesson" />
+              <HomeMedia course={course} lesson={lesson} borderRadius={9} screen={screen} />
               <View style={homeStyles.latestPlay}><Ionicons name="play" size={9} color="#FFFFFF" /></View>
             </View>
             <View style={{ flex: 1, minWidth: 0 }}>
@@ -4427,22 +4411,6 @@ function ChallengeCard({ title, steps, completedCount, onPress }) {
   );
 }
 
-function ComingSoonSection() {
-  return (
-    <View style={homeStyles.comingGrid}>
-      {HOME_COMING_SOON.map(item => (
-        <View key={item.key} style={homeStyles.comingCard} accessibilityLabel={`${item.title}, coming soon`}>
-          <Image source={HOME_COMING_SOON_IMAGES[item.thumbnailKey]} style={homeStyles.comingThumbnail} resizeMode="cover" accessibilityIgnoresInvertColors />
-          <View style={homeStyles.comingBody}>
-            <Text style={homeStyles.comingTitle} numberOfLines={3}>{item.title}</Text>
-            <Text style={homeStyles.comingLabel}>COMING SOON</Text>
-          </View>
-        </View>
-      ))}
-    </View>
-  );
-}
-
 const homeStyles = StyleSheet.create({
   root: { flex: 1, backgroundColor: HOME_PALETTE.background },
   header: { paddingTop: ANDROID_STATUS_BAR_INSET, backgroundColor: HOME_PALETTE.background, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: HOME_PALETTE.border },
@@ -4461,21 +4429,15 @@ const homeStyles = StyleSheet.create({
   scrollContent: { paddingTop: 10, paddingBottom: 118 },
   mediaFallback: { ...StyleSheet.absoluteFill, alignItems: "center", justifyContent: "center", padding: 10, backgroundColor: HOME_PALETTE.surfaceSoft },
   mediaFallbackText: { color: HOME_PALETTE.textSecondary, fontSize: 10, lineHeight: 13, fontWeight: "700", textAlign: "center", marginTop: 5 },
-  featuredHero: { height: 246, marginHorizontal: 14, borderRadius: 14, overflow: "hidden", backgroundColor: HOME_PALETTE.surface, borderWidth: 1, borderColor: HOME_PALETTE.borderStrong },
-  featuredScrim: { ...StyleSheet.absoluteFill, backgroundColor: "rgba(5,5,4,0.55)" },
-  featuredContent: { position: "absolute", left: 12, right: 12, bottom: 12, alignItems: "flex-start", padding: 14, borderRadius: 12, backgroundColor: "rgba(5,5,4,0.88)", borderWidth: 1, borderColor: HOME_PALETTE.borderStrong },
-  featuredLabel: { color: HOME_PALETTE.goldSoft, fontSize: 10, lineHeight: 13, fontWeight: "900", letterSpacing: 0.8, marginBottom: 6 },
-  featuredTitle: { color: HOME_PALETTE.text, fontSize: 26, lineHeight: 29, fontWeight: "900", letterSpacing: -0.4 },
-  featuredMeta: { color: HOME_PALETTE.text, fontSize: 12, lineHeight: 16, fontWeight: "600", marginTop: 7 },
-  featuredTagline: { color: HOME_PALETTE.textSecondary, fontSize: 12, lineHeight: 16, marginTop: 2 },
-  featuredButton: { minHeight: MIN_TOUCH_TARGET, flexDirection: "row", alignItems: "center", gap: 7, paddingHorizontal: 15, borderRadius: 8, backgroundColor: HOME_PALETTE.gold, marginTop: 13 },
+  featuredHero: { width: "auto", aspectRatio: 16 / 9, marginHorizontal: 14, borderRadius: 14, overflow: "hidden", backgroundColor: HOME_PALETTE.surface, borderWidth: 1, borderColor: HOME_PALETTE.borderStrong },
+  featuredButton: { position: "absolute", left: 14, bottom: 14, minHeight: 40, flexDirection: "row", alignItems: "center", gap: 7, paddingHorizontal: 14, borderRadius: 8, backgroundColor: HOME_PALETTE.gold },
   featuredButtonText: { color: "#17130B", fontSize: 13, lineHeight: 17, fontWeight: "900" },
   section: { marginTop: 20 },
   sectionHeader: { minHeight: 26, flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 12, paddingHorizontal: 14, marginBottom: 9 },
   sectionTitle: { flex: 1, color: HOME_PALETTE.text, fontSize: 18, lineHeight: 23, fontWeight: "800", letterSpacing: -0.15 },
   sectionAction: { color: HOME_PALETTE.gold, fontSize: 12, lineHeight: 16, fontWeight: "800" },
   continueCard: { marginHorizontal: 14, minHeight: 116, padding: 9, flexDirection: "row", alignItems: "center", gap: 10, borderRadius: 13, backgroundColor: HOME_PALETTE.surface, borderWidth: 1, borderColor: HOME_PALETTE.border },
-  continueThumb: { width: 104, height: 96, borderRadius: 11, overflow: "hidden", backgroundColor: HOME_PALETTE.surfaceSoft },
+  continueThumb: { width: 112, aspectRatio: 16 / 9, flexShrink: 0, alignSelf: "center", borderRadius: 11, overflow: "hidden", backgroundColor: HOME_PALETTE.surfaceSoft },
   continuePlay: { position: "absolute", right: 7, bottom: 7, width: 30, height: 30, borderRadius: 15, alignItems: "center", justifyContent: "center", backgroundColor: "rgba(8,8,7,0.86)", borderWidth: 1, borderColor: "rgba(255,255,255,0.16)" },
   continueBody: { flex: 1, minWidth: 0 },
   continueTitle: { color: HOME_PALETTE.text, fontSize: 14, lineHeight: 18, fontWeight: "800" },
@@ -4492,7 +4454,7 @@ const homeStyles = StyleSheet.create({
   topicCount: { color: HOME_PALETTE.textSecondary, fontSize: 10.5, lineHeight: 14, marginTop: 3 },
   horizontalContent: { paddingHorizontal: 14, paddingRight: 26, gap: 10 },
   lessonCard: { width: 154 },
-  lessonThumb: { width: "100%", aspectRatio: 1.48, borderRadius: 10, overflow: "hidden", backgroundColor: HOME_PALETTE.surfaceSoft, borderWidth: 1, borderColor: HOME_PALETTE.border },
+  lessonThumb: { width: "100%", aspectRatio: 16 / 9, alignSelf: "center", borderRadius: 10, overflow: "hidden", backgroundColor: HOME_PALETTE.surfaceSoft, borderWidth: 1, borderColor: HOME_PALETTE.border },
   lessonPlayBadge: { position: "absolute", right: 6, bottom: 6, minHeight: 23, minWidth: 23, paddingHorizontal: 6, borderRadius: 12, flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 4, backgroundColor: "rgba(5,5,4,0.86)" },
   lessonDuration: { color: "#FFFFFF", fontSize: 9.5, lineHeight: 12, fontWeight: "700" },
   lessonTitle: { color: HOME_PALETTE.text, fontSize: 12.5, lineHeight: 16, fontWeight: "800", marginTop: 7 },
@@ -4518,8 +4480,8 @@ const homeStyles = StyleSheet.create({
   projectShade: { ...StyleSheet.absoluteFill, backgroundColor: "rgba(7,7,6,0.54)" },
   projectTitle: { color: HOME_PALETTE.text, fontSize: 12, lineHeight: 16, fontWeight: "800", marginTop: 7 },
   projectMeta: { color: HOME_PALETTE.textMuted, fontSize: 10, lineHeight: 13, marginTop: 2 },
-  latestList: { marginHorizontal: 14, borderRadius: 13, overflow: "hidden", backgroundColor: HOME_PALETTE.surface, borderWidth: 1, borderColor: HOME_PALETTE.border },
-  latestRow: { minHeight: 79, flexDirection: "row", alignItems: "center", gap: 11, padding: 9, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: HOME_PALETTE.border },
+  latestList: { marginHorizontal: 14 },
+  latestRow: { minHeight: 79, flexDirection: "row", alignItems: "center", gap: 11, paddingVertical: 9 },
   latestThumb: { width: 88, height: 60, borderRadius: 9, overflow: "hidden", backgroundColor: HOME_PALETTE.surfaceSoft },
   latestPlay: { position: "absolute", right: 5, bottom: 5, width: 22, height: 22, borderRadius: 11, alignItems: "center", justifyContent: "center", backgroundColor: "rgba(5,5,4,0.84)" },
   latestTitle: { color: HOME_PALETTE.text, fontSize: 12.5, lineHeight: 17, fontWeight: "800" },
@@ -4530,12 +4492,6 @@ const homeStyles = StyleSheet.create({
   challengeTitle: { color: "#17130B", fontSize: 17, lineHeight: 21, fontWeight: "900", marginTop: 3 },
   challengeText: { color: "#5A4829", fontSize: 11, lineHeight: 15, marginTop: 4 },
   challengeProgress: { color: "#17130B", fontSize: 10.5, lineHeight: 14, fontWeight: "800", marginTop: 7 },
-  comingGrid: { paddingHorizontal: 14, flexDirection: "row", gap: 9 },
-  comingCard: { flex: 1, minWidth: 0, minHeight: 116, flexDirection: "row", overflow: "hidden", borderRadius: 12, backgroundColor: HOME_PALETTE.surfaceRaised, borderWidth: 1, borderColor: HOME_PALETTE.border },
-  comingThumbnail: { width: "38%", minWidth: 48, height: "100%", backgroundColor: HOME_PALETTE.surfaceSoft },
-  comingBody: { flex: 1, minWidth: 0, paddingHorizontal: 9, paddingVertical: 10 },
-  comingTitle: { flex: 1, color: HOME_PALETTE.text, fontSize: 12, lineHeight: 16, fontWeight: "800" },
-  comingLabel: { alignSelf: "flex-start", color: "#17130B", fontSize: 8, lineHeight: 11, fontWeight: "900", paddingHorizontal: 6, paddingVertical: 3, borderRadius: 5, backgroundColor: HOME_PALETTE.goldSoft, marginTop: 7 },
   stateCard: { minHeight: 220, marginHorizontal: 14, alignItems: "center", justifyContent: "center", padding: 24, borderRadius: 14, backgroundColor: HOME_PALETTE.surface, borderWidth: 1, borderColor: HOME_PALETTE.border },
   stateTitle: { color: HOME_PALETTE.text, fontSize: 17, lineHeight: 22, fontWeight: "800", textAlign: "center", marginTop: 12 },
   stateText: { color: HOME_PALETTE.textSecondary, fontSize: 12, lineHeight: 17, textAlign: "center", marginTop: 6 },
@@ -5272,7 +5228,7 @@ function HomeScreen({
             {latestLessons.length ? (
               <View style={homeStyles.section}>
                 <HomeSectionHeader title="Latest Lessons" onSeeAll={() => onSelectCourse(course)} />
-                <LatestLessonsSection course={course} lessons={latestLessons} onPressLesson={openLesson} />
+                <LessonListSection course={course} lessons={latestLessons} onPressLesson={openLesson} screen="Home latest lesson" />
               </View>
             ) : null}
 
@@ -5287,10 +5243,12 @@ function HomeScreen({
               </View>
             ) : null}
 
-            <View style={homeStyles.section}>
-              <HomeSectionHeader title="Coming Soon" />
-              <ComingSoonSection />
-            </View>
+            {lessons.length ? (
+              <View style={homeStyles.section}>
+                <HomeSectionHeader title="All Lectures" />
+                <LessonListSection course={course} lessons={lessons} onPressLesson={openLesson} screen="Home all lectures" />
+              </View>
+            ) : null}
           </>
         )}
       </ScrollView>
@@ -7691,7 +7649,16 @@ export default function App() {
     try {
       const res = await fetch(`${API_BASE}/api/courses/${course._id}/videos?userId=${encodeURIComponent(u._id)}&sessionId=${encodeURIComponent(u.sessionId)}`);
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Could not open course.");
+      if (!res.ok) {
+        const accessMessage = String(data?.error || "");
+        const requiresSubscription = res.status === 403
+          || /subscription|expired|course access|entitlement/i.test(accessMessage);
+        if (requiresSubscription) {
+          setShowAppUpgrade(true);
+          return;
+        }
+        throw new Error(accessMessage || "Could not open course.");
+      }
       setSelectedCourse(prepareCourse({ ...course, videos: data.videos || [] }));
       setPreloadedVideos(null);
       setIsPreviewOnly(false);
@@ -7699,7 +7666,12 @@ export default function App() {
       setStartIndex(Number.isInteger(options.startIndex) ? options.startIndex : null);
       setMainScreen("courses");
     } catch (e) {
-      Alert.alert("Course access", e?.message || "Could not open course.");
+      const accessMessage = String(e?.message || "");
+      if (/subscription|expired|course access|entitlement/i.test(accessMessage)) {
+        setShowAppUpgrade(true);
+        return;
+      }
+      Alert.alert("Course unavailable", accessMessage || "Could not open course.");
     }
   }, []);
 
