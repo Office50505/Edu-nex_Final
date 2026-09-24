@@ -1,4 +1,4 @@
-export const DEFAULT_OFFER_VIDEO_URL = "/assets/skillomate-offer-preview.mp4";
+export const DEFAULT_OFFER_VIDEO_URL = "/assets/offer-video/offer-1.mp4";
 
 const DEFAULT_OFFER_POSTER_URL = "https://d5yxyknp74yz8.cloudfront.net/courses/ai-influencer/lessons/lesson-01.webp";
 
