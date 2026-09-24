@@ -28,7 +28,7 @@ export function MarketingSettings() {
     try {
       const data = await adminJson('/api/admin/marketing-settings', {
         method: 'PUT',
-        body: JSON.stringify({ metaPixelEnabled: enabled, metaPixelId }),
+        body: JSON.stringify({ metaPixelEnabled: enabled, metaPixelId: pixelId }),
       });
       setSettings(data);
       setEnabled(Boolean(data.metaPixelEnabled));
