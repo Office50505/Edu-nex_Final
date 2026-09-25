@@ -1,3 +1,4 @@
+import { useAdminPermissions, AdminWrite } from "./AdminPermissions.jsx";
 import { useEffect, useState } from "react";
 import { adminRoutes, logout } from "./adminApi.js";
 
@@ -5,7 +6,7 @@ const sections = [
   { label: 'Workspace', links: [['dashboard', 'Dashboard', adminRoutes.dashboard, 'home']] },
   { label: 'Operate', links: [['users', 'Learners', adminRoutes.users, 'users'], ['courses', 'Courses', adminRoutes.courses, 'book'], ['subscriptions', 'Subscriptions', adminRoutes.subscriptions, 'loop'], ['payments', 'Payments', adminRoutes.payments, 'pay'], ['reports', 'Reports', adminRoutes.reports, 'flag']] },
   { label: 'Create', links: [['upload', 'Create course', adminRoutes.upload, 'plus'], ['courseReview', 'Course review', adminRoutes.courseReview, 'check'], ['certifications', 'Certification', adminRoutes.certifications, 'award']] },
-  { label: 'System', links: [['paymentAuditor', 'Payment auditor', adminRoutes.paymentAuditor, 'audit'], ['health', 'System health', adminRoutes.health, 'pulse'], ['auditLog', 'Audit log', adminRoutes.auditLog, 'log'], ['settings', 'Settings', adminRoutes.settings, 'gear']] },
+  { label: 'System', links: [['paymentAuditor', 'Payment auditor', adminRoutes.paymentAuditor, 'audit'], ['health', 'System health', adminRoutes.health, 'pulse'], ['auditLog', 'Audit log', adminRoutes.auditLog, 'log'], ['settings', 'Settings', adminRoutes.settings, 'gear'], ['team', 'Team access', adminRoutes.team, 'users']] },
 ];
 
 export function Message({ text, type = "success" }) {
@@ -36,6 +37,7 @@ function NavIcon({ type }) {
 }
 
 export function AdminShell({ activePage, title, subtitle, children, actions = null, shellClass = "dashboard-shell", navLabels = {} }) {
+  const { canWrite, canManageRoles } = useAdminPermissions();
   const [theme, setTheme] = useState(() => localStorage.getItem("edunexAdminTheme") || "light");
   const [collapsed, setCollapsed] = useState(false);
   useEffect(() => {
@@ -72,7 +74,7 @@ export function AdminShell({ activePage, title, subtitle, children, actions = nu
         <nav aria-label="Administration sections">
           {sections.map(group => <div className="admin-nav-group" key={group.label}>
             <p>{group.label}</p>
-            {group.links.map(([key, label, href, icon]) => <a key={key} href={href} title={navLabels[key] || label} className={activePage === key ? 'is-active' : ''} aria-current={activePage === key ? 'page' : undefined}><NavIcon type={icon} /><span>{navLabels[key] || label}</span></a>)}
+            {group.links.filter(([key]) => (canWrite || key !== "upload") && (canManageRoles || key !== "team")).map(([key, label, href, icon]) => <a key={key} href={href} title={navLabels[key] || label} className={activePage === key ? 'is-active' : ''} aria-current={activePage === key ? 'page' : undefined}><NavIcon type={icon} /><span>{navLabels[key] || label}</span></a>)}
           </div>)}
         </nav>
         <div className="admin-sidebar-footer">
@@ -93,12 +95,13 @@ export function AdminShell({ activePage, title, subtitle, children, actions = nu
               <span className="admin-date-pill">{new Date().toLocaleDateString("en-IN", { day: "2-digit", month: "short" })}</span>
             </div>
             <div className="toolbar-actions">
-              <a className="toolbar-button admin-quick-create" href={adminRoutes.upload}>+ Create / Upload</a>
+              <AdminWrite><a className="toolbar-button admin-quick-create" href={adminRoutes.upload}>+ Create / Upload</a></AdminWrite>
               <button className="toolbar-button admin-theme-button" type="button" onClick={() => setTheme(current => current === 'light' ? 'dark' : 'light')} aria-pressed={theme === 'light'}>{theme === 'light' ? 'Dark' : 'Light'}</button>
               {actions}
             </div>
           </div>
         </header>
+        {!canWrite ? <p className="admin-inline-message" role="status">Read-only access</p> : null}
         {children}
       </main>
     </div>

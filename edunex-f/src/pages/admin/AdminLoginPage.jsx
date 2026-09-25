@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { adminRoutes, api, errorMessage, getToken, saveSession } from "./adminApi.js";
 
 export function AdminLoginPage() {
+  const [username, setUsername] = useState("owner");
   const [password, setPassword] = useState("");
   const [remember, setRemember] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -13,7 +14,7 @@ export function AdminLoginPage() {
     document.title = "Admin Login | Skillomate";
     if (!getToken()) return;
     const params = new URLSearchParams(window.location.search);
-    window.location.href = params.get("next") || adminRoutes.dashboard;
+    window.location.href = (params.get("next")?.startsWith("/") && !params.get("next").startsWith("//") && !params.get("next").includes("\\") ? params.get("next") : adminRoutes.dashboard);
   }, []);
 
   async function handleSubmit(event) {
@@ -31,7 +32,7 @@ export function AdminLoginPage() {
       const response = await fetch(api("/api/admin/login"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ password }),
+        body: JSON.stringify({ username, password }),
       });
       const data = await response.json().catch(() => ({}));
       if (!response.ok) throw new Error(errorMessage(data, "Admin login failed."));
@@ -40,7 +41,7 @@ export function AdminLoginPage() {
       setMessageType("success");
       setMessage("Signed in. Opening admin dashboard...");
       const params = new URLSearchParams(window.location.search);
-      window.location.href = params.get("next") || adminRoutes.dashboard;
+      window.location.href = (params.get("next")?.startsWith("/") && !params.get("next").startsWith("//") && !params.get("next").includes("\\") ? params.get("next") : adminRoutes.dashboard);
     } catch (error) {
       setMessageType("error");
       setMessage(error.message || "Cannot connect to server. Try again.");
@@ -71,12 +72,13 @@ export function AdminLoginPage() {
         </div>
         <span className="admin-auth-kicker">Secure workspace</span>
         <h1>Admin Login</h1>
-        <p>Use your configured admin password to manage analytics, users, content, payments, and platform settings.</p>
+        <p>Sign in with your workspace account. Your permissions are set by an admin.</p>
 
         <form className="admin-auth-form" onSubmit={handleSubmit}>
+          <label htmlFor="adminUsername">Username</label><input id="adminUsername" autoComplete="username" required value={username} onChange={event => setUsername(event.target.value)} />
           <div className="admin-auth-label-row">
             <label htmlFor="adminPassword">Password</label>
-            <span>Configured in backend .env</span>
+
           </div>
           <div className="admin-auth-password-field">
             <input

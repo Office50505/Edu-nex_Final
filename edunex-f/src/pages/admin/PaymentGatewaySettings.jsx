@@ -1,3 +1,4 @@
+import { AdminWrite, AdminEditFields } from "./AdminPermissions.jsx";
 import { useEffect, useState } from 'react';
 import { adminJson } from './adminApi';
 
@@ -34,7 +35,7 @@ export function PaymentGatewaySettings() {
     </div>
     {error ? <p className="admin-inline-message is-error" role="alert">{error}</p> : null}
     {message ? <p className="admin-inline-message is-success" role="status">{message}</p> : null}
-    {!settings ? <p>{error ? 'Reload to retry loading payment settings.' : 'Loading payment settings…'}</p> : <form className="admin-settings-form" onSubmit={save}>
+    {!settings ? <p>{error ? 'Reload to retry loading payment settings.' : 'Loading payment settings…'}</p> : <form className="admin-settings-form" onSubmit={save}><AdminEditFields>
       <fieldset className="admin-choice-grid" disabled={saving}>
         <legend>Gateway for new checkouts</legend>
         {['test', 'live'].map(mode => {
@@ -55,6 +56,6 @@ export function PaymentGatewaySettings() {
       <button className="primary-button admin-save-button" type="submit" disabled={saving || selected === settings.mode || !settings.modes[selected]?.configured}>
         {saving ? 'Checking and saving…' : `Apply ${selected === 'live' ? 'Live' : 'Test'} mode`}
       </button>
-    </form>}
+    </AdminEditFields></form>}
   </section>;
 }

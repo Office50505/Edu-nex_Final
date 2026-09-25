@@ -1,3 +1,4 @@
+import { AdminWrite, AdminEditFields } from "./AdminPermissions.jsx";
 import { useEffect, useState } from "react";
 import { AdminShell, Message } from "./AdminShell.jsx";
 import { adminJson, formatDateTime, requireAdmin } from "./adminApi.js";
@@ -193,7 +194,7 @@ export function AdminReportsPage() {
                 <div><dt>Theme</dt><dd>{report.theme || "Unknown"}</dd></div>
               </dl>
 
-              <div className="report-resolution report-resolution-v2">
+              <AdminEditFields><div className="report-resolution report-resolution-v2">
                 <label>
                   <span>Status</span>
                   <select value={report.status} onChange={(event) => changeReport(report._id, "status", event.target.value)} disabled={savingId === report._id}>
@@ -204,8 +205,8 @@ export function AdminReportsPage() {
                   <span>Private admin note</span>
                   <textarea value={report.adminNote || ""} onChange={(event) => changeReport(report._id, "adminNote", event.target.value.slice(0, 2000))} maxLength="2000" rows="3" placeholder="Add investigation notes or resolution details…" disabled={savingId === report._id} />
                 </label>
-                <button className="toolbar-button" type="button" onClick={() => saveReport(report)} disabled={savingId === report._id}>{savingId === report._id ? "Saving…" : "Save update"}</button>
-              </div>
+                <AdminWrite><button className="toolbar-button" type="button" onClick={() => saveReport(report)} disabled={savingId === report._id}>{savingId === report._id ? "Saving…" : "Save update"}</button></AdminWrite>
+              </div></AdminEditFields>
             </article>
           );
         })}

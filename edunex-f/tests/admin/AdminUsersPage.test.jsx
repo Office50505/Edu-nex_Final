@@ -1,7 +1,8 @@
+import { renderAdmin as render } from "../helpers/adminRender.jsx";
 // @vitest-environment jsdom
 import React from "react";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
-import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { cleanup, fireEvent, screen, waitFor } from "@testing-library/react";
 
 const { adminJson } = vi.hoisted(() => ({ adminJson: vi.fn() }));
 

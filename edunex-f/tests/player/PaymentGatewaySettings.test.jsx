@@ -1,6 +1,7 @@
+import { renderAdmin as render } from "../helpers/adminRender.jsx";
 // @vitest-environment jsdom
 import { it, expect, vi, afterEach } from 'vitest';
-import { render, screen, fireEvent, waitFor, cleanup } from '@testing-library/react';
+import { screen, fireEvent, waitFor, cleanup } from '@testing-library/react';
 import { PaymentGatewaySettings } from '../../src/pages/admin/PaymentGatewaySettings';
 import { adminJson } from '../../src/pages/admin/adminApi';
 vi.mock('../../src/pages/admin/adminApi', () => ({adminJson: vi.fn()}));

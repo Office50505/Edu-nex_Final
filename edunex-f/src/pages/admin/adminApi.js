@@ -31,6 +31,7 @@ export const adminRoutes = {
   certifications: adminPath("certifications"),
   auditLog: adminPath("audit-log"),
   settings: adminPath("settings"),
+  team: adminPath("team"),
 };
 
 const adminPageBySlug = {
@@ -51,6 +52,7 @@ const adminPageBySlug = {
   certifications: "certifications",
   "audit-log": "auditLog",
   settings: "settings",
+  team: "team",
 };
 
 const oldAdminRouteMap = {
@@ -176,7 +178,7 @@ export async function adminRequest(path, options = {}) {
     },
   });
 
-  if (response.status === 401 || response.status === 403) {
+  if (response.status === 401) {
     clearSession();
     window.location.href = loginUrl();
   }

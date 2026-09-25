@@ -1,6 +1,6 @@
 const express=require('express');
 const {requireCompatibleAuth,isSessionValidForUser}=require('../middleware/compatAuth');
-const {protectAdmin}=require('../middleware/adminAuth');
+const {protectAdmin, protectAdminRead}=require('../middleware/adminAuth');
 const {access}=require('../services/certificationService');
 const Course=require('../models/Course');
 const User=require('../models/User');
@@ -9,10 +9,10 @@ const cf=require('../services/cloudFrontPlayback');
 const router=express.Router();
 const run=fn=>async(req,res)=>{res.set('Cache-Control','no-store');res.set('Referrer-Policy','no-referrer');try{await fn(req,res);}catch(error){res.status(error.statusCode||502).json({error:error.statusCode?error.message:'Playback could not be authorized. Check the backend video configuration.'});}};
 router.get('/admin/video-providers',protectAdmin,(_req,res)=>res.json({cloudFrontHost:cloudFrontHost(),accessMode:process.env.CLOUDFRONT_ACCESS_MODE||'private'}));
-router.post('/admin/video-metadata',protectAdmin,run(async(req,res)=>{
+router.post('/admin/video-metadata',protectAdminRead,run(async(req,res)=>{
   res.json(await require('../services/videoMetadata').inspectVideo(req.body));
 }));
-router.post('/admin/playback-preview',protectAdmin,run(async(req,res)=>{
+router.post('/admin/playback-preview',protectAdminRead,run(async(req,res)=>{
   const video=validateSource(req.body);
   if(video.provider==='aws_cloudfront')res.json(cf.issueGrant(video.videoUrl,{preview:true}));
   else res.json(video);

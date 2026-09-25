@@ -1,6 +1,6 @@
 const express=require('express');
 const { requireCompatibleAuth }=require('../middleware/compatAuth');
-const { protectAdmin }=require('../middleware/adminAuth');
+const { protectAdmin, protectAdminRead }=require('../middleware/adminAuth');
 const service=require('../services/certificationService');
 const rules=require('../services/completionRules');
 const Learning=require('../models/LearningProgress');
@@ -80,7 +80,7 @@ router.get('/admin/certificate-template',protectAdmin,run(async(_req,res)=>{
 router.put('/admin/certificate-template',protectAdmin,run(async(req,res)=>{
   res.json({template:await templateSettings.saveTemplate(req.body,req.admin),message:'Certificate template saved. Future certificate pages use this design.'});
 }));
-router.post('/admin/certificate-template/preview',protectAdmin,run(async(req,res)=>{
+router.post('/admin/certificate-template/preview',protectAdminRead,run(async(req,res)=>{
   const template=templateSettings.normalize(req.body.template||req.body||{});
   const certificate=templateSettings.previewCertificate(req.body.sample||{});
   res.type('html').send(renderCertificatePage(certificate,template));

@@ -1,3 +1,4 @@
+import { AdminWrite, AdminEditFields } from "./AdminPermissions.jsx";
 import { useEffect, useMemo, useState } from "react";
 import { AdminShell, Message } from "./AdminShell.jsx";
 import { adminJson, adminRoutes, formatNumber, requireAdmin } from "./adminApi.js";
@@ -215,10 +216,10 @@ export function AdminCoursesPage() {
       <div className="crm-results-bar">
         <div><strong>Catalog workspace</strong><span>{formatNumber(filteredCourses.length)} shown from {formatNumber(courses.length)} total courses</span></div>
         <div className="toolbar-actions">
-          <button className="toolbar-button" type="button" onClick={() => bulkPlaceholder("Bulk publish")}>Publish selected</button>
-          <button className="toolbar-button" type="button" onClick={() => bulkPlaceholder("Bulk archive")}>Archive selected</button>
-          <button className="toolbar-button" type="button" onClick={() => bulkPlaceholder("Send to review")}>Send to review</button>
-          <a className="toolbar-button" href={adminRoutes.upload}>New course</a>
+          <AdminWrite><button className="toolbar-button" type="button" onClick={() => bulkPlaceholder("Bulk publish")}>Publish selected</button></AdminWrite>
+          <AdminWrite><button className="toolbar-button" type="button" onClick={() => bulkPlaceholder("Bulk archive")}>Archive selected</button></AdminWrite>
+          <AdminWrite><button className="toolbar-button" type="button" onClick={() => bulkPlaceholder("Send to review")}>Send to review</button></AdminWrite>
+          <AdminWrite><a className="toolbar-button" href={adminRoutes.upload}>New course</a></AdminWrite>
         </div>
       </div>
 
@@ -244,9 +245,9 @@ export function AdminCoursesPage() {
                 <span className="course-ops-metrics"><strong>{formatNumber(course.videoCount || course.videos?.length || 0)} lessons</strong><span>{formatNumber(course.totalStarted || 0)} enrollments</span><span>{formatNumber(course.completionRate || 0)}% completion</span></span>
                 <span className="flag-list">{flags.length ? flags.map((flag) => <span className="badge warn" key={flag}>{flag}</span>) : <span className="badge good">Ready</span>}</span>
                 <div className="course-actions">
-                  <a className="secondary-button" href={`${adminRoutes.upload}?courseId=${encodeURIComponent(id)}`}>Edit</a>
-                  <button className="secondary-button" type="button" disabled={isPending} onClick={() => updateStatus(course)}>{course.status === "published" ? "Move to draft" : "Publish"}</button>
-                  <button className="secondary-button danger" type="button" disabled={isPending} onClick={() => deleteCourse(course)}>Delete</button>
+                  <AdminWrite><a className="secondary-button" href={`${adminRoutes.upload}?courseId=${encodeURIComponent(id)}`}>Edit</a></AdminWrite>
+                  <AdminWrite><button className="secondary-button" type="button" disabled={isPending} onClick={() => updateStatus(course)}>{course.status === "published" ? "Move to draft" : "Publish"}</button></AdminWrite>
+                  <AdminWrite><button className="secondary-button danger" type="button" disabled={isPending} onClick={() => deleteCourse(course)}>Delete</button></AdminWrite>
                 </div>
               </div>
             </article>

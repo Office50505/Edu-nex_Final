@@ -1,7 +1,8 @@
+import { renderAdmin as render } from "../helpers/adminRender.jsx";
 // @vitest-environment jsdom
 import React from 'react';
 import { afterEach, beforeEach, expect, it, vi } from 'vitest';
-import { cleanup, fireEvent, render, screen, within } from '@testing-library/react';
+import { cleanup, fireEvent, screen, within } from '@testing-library/react';
 import { AdminReportsPage } from '../../src/pages/admin/AdminReportsPage.jsx';
 
 const report = {
@@ -11,7 +12,7 @@ const report = {
   route: '/videos', deviceType: 'mobile', viewport: { width: 390, height: 844 },
   createdAt: '2026-09-18T10:00:00Z', adminNote: '',
 };
-const response = (data, ok = true) => ({ ok, status: ok ? 200 : 503, json: async () => data });
+const response = (data, ok = true) => new Response(JSON.stringify(data), { status: ok ? 200 : 503, headers: { 'Content-Type': 'application/json' } });
 beforeEach(() => {
   localStorage.clear(); sessionStorage.clear();
   sessionStorage.setItem('edunexAdminToken', 'test-admin-token');

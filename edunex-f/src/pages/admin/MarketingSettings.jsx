@@ -1,3 +1,4 @@
+import { AdminWrite, AdminEditFields } from "./AdminPermissions.jsx";
 import { useEffect, useState } from 'react';
 import { adminJson } from './adminApi';
 
@@ -51,7 +52,7 @@ export function MarketingSettings() {
     </div>
     {error ? <p className="admin-inline-message is-error" role="alert">{error}</p> : null}
     {message ? <p className="admin-inline-message is-success" role="status">{message}</p> : null}
-    {!settings ? <p>{error ? 'Reload to retry loading marketing settings.' : 'Loading marketing settings…'}</p> : <form className="admin-settings-form" onSubmit={save}>
+    {!settings ? <p>{error ? 'Reload to retry loading marketing settings.' : 'Loading marketing settings…'}</p> : <form className="admin-settings-form" onSubmit={save}><AdminEditFields>
       <fieldset className="admin-fieldset" disabled={saving}>
         <label className="admin-field-label" htmlFor="metaPixelId">
           <span>Meta Pixel ID</span>
@@ -78,6 +79,6 @@ export function MarketingSettings() {
       <button className="primary-button admin-save-button" type="submit" disabled={saving || !dirty || (enabled && !pixelId)}>
         {saving ? 'Saving…' : 'Save Meta Pixel settings'}
       </button>
-    </form>}
+    </AdminEditFields></form>}
   </section>;
 }

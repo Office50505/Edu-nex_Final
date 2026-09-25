@@ -1,3 +1,4 @@
+import { useAdminPermissions } from "./AdminPermissions.jsx";
 import { useEffect, useMemo, useState } from "react";
 import { AdminShell, Message } from "./AdminShell.jsx";
 import { adminJson, adminRoutes, formatDate, formatNumber, formatWatchDuration, requireAdmin } from "./adminApi.js";
@@ -182,6 +183,7 @@ function MiniBars({ rows, field }) {
 }
 
 export function AdminDashboardPage() {
+  const { canWrite } = useAdminPermissions();
   const presetDates = useMemo(() => datesForPreset(30), []);
   const [rangePreset, setRangePreset] = useState("30");
   const [startDate, setStartDate] = useState(presetDates.startDate);
@@ -303,7 +305,7 @@ export function AdminDashboardPage() {
       <Message text={message} type="error" />
 
       <section className="admin-command-strip" aria-label="Admin quick actions">
-        {commandCards.map((item) => (
+        {commandCards.filter(item => canWrite || item.href !== adminRoutes.upload).map((item) => (
           <a className="admin-command-card" href={item.href} key={item.title}>
             <span>{item.title}</span>
             <strong>{item.meta}</strong>

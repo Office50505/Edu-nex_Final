@@ -566,26 +566,7 @@ function safeEqualString(left, right) {
   return crypto.timingSafeEqual(leftBuffer, rightBuffer);
 }
 
-function protectAdmin(req, res, next) {
-  try {
-    const token = req.headers.authorization?.split(' ')[1];
-
-    if (!token) {
-      return res.status(401).json({ error: 'No admin authorization token provided' });
-    }
-
-    const decoded = jwt.verify(token, ADMIN_TOKEN_SECRET);
-
-    if (decoded.role !== 'admin') {
-      return res.status(403).json({ error: 'Admin access required' });
-    }
-
-    req.admin = decoded;
-    next();
-  } catch (error) {
-    res.status(401).json({ error: 'Invalid admin token' });
-  }
-}
+const { protectAdmin } = require('./middleware/adminAuth');
 
 app.use('/api/webhooks/razorpay', express.raw({ type: '*/*', limit: '2mb' }));
 app.use('/api/webhooks/phonepe', express.raw({ type: '*/*', limit: '2mb' }));
@@ -1089,42 +1070,20 @@ app.get('/api/bunny/videos', protectAdmin, async (req, res) => {
   }
 });
 
-app.post('/api/admin/login', (req, res) => {
-  const { password } = req.body;
+app.post('/api/admin/login', async (req, res) => {
+  res.set('Cache-Control', 'no-store');
   const rateState = getAdminLoginRateState(req);
-
-  if (rateState.blockedSeconds) {
-    return res.status(429).json({
-      error: `Too many admin login attempts. Try again in ${rateState.blockedSeconds} seconds.`,
-    });
+  if (rateState.blockedSeconds) return res.status(429).json({ error: `Too many login attempts. Try again in ${rateState.blockedSeconds} seconds.` });
+  try {
+    const result = await require('./services/adminIdentity').login(req.body.username, req.body.password);
+    clearAdminLoginRate(rateState.key);
+    res.json(result);
+  } catch (error) {
+    if (error.statusCode === 401) recordAdminLoginFailure(rateState.key, rateState.state);
+    res.status(error.statusCode || 503).json({ error: error.statusCode ? error.message : 'Workspace login is temporarily unavailable.' });
   }
-
-  if (!password) {
-    return res.status(400).json({ error: 'Admin password is required' });
-  }
-
-  if (!safeEqualString(password, ADMIN_PASSWORD)) {
-    recordAdminLoginFailure(rateState.key, rateState.state);
-    return res.status(401).json({ error: 'Invalid admin password' });
-  }
-
-  clearAdminLoginRate(rateState.key);
-
-  const adminToken = jwt.sign(
-    { role: 'admin', name: 'Skillomate Admin' },
-    ADMIN_TOKEN_SECRET,
-    { expiresIn: '8h' }
-  );
-
-  res.json({
-    adminToken,
-    token: adminToken,
-    admin: {
-      name: 'Skillomate Admin',
-      role: 'admin',
-    },
-  });
 });
+app.use('/api/admin', require('./routes/adminAccounts'));
 
 function proxyValidationError(message, statusCode = 400) {
   const error = new Error(message);

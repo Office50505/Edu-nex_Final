@@ -1,6 +1,7 @@
+import { renderAdmin as render } from "../helpers/adminRender.jsx";
 // @vitest-environment jsdom
 import { afterEach, expect, it, vi } from 'vitest';
-import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { cleanup, fireEvent, screen, waitFor } from '@testing-library/react';
 import { MarketingSettings } from '../../src/pages/admin/MarketingSettings';
 import { adminJson } from '../../src/pages/admin/adminApi';
 
