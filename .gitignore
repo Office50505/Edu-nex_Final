@@ -12,3 +12,9 @@ yarn-error.log*
 
 # Generated k6 load-test reports
 edunex-b/reports/k6/complete-local-*
+
+# Generated mobile release artifacts (APK, AAB, IPA, and Xcode archives)
+appcopyai/releases/
+
+# Generated build comparison reports
+output/pdf/

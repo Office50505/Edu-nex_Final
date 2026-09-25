@@ -1,7 +1,7 @@
 PODS:
-  - EXConstants (57.0.18):
+  - EXConstants (57.0.19):
     - ExpoModulesCore
-  - Expo (57.0.22):
+  - Expo (57.0.25):
     - ExpoModulesCore
     - ExpoModulesJSI
     - hermes-engine
@@ -27,7 +27,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - ExpoAsset (57.0.17):
+  - ExpoAsset (57.0.18):
     - ExpoModulesCore
   - ExpoDomWebView (57.0.1):
     - ExpoModulesCore
@@ -35,13 +35,13 @@ PODS:
     - ExpoModulesCore
   - ExpoFont (57.0.4):
     - ExpoModulesCore
-  - ExpoImagePicker (57.0.17):
+  - ExpoImagePicker (57.0.20):
     - ExpoModulesCore
   - ExpoKeepAwake (57.0.2):
     - ExpoModulesCore
   - ExpoLogBox (57.0.4):
     - React-Core
-  - ExpoModulesCore (57.0.18):
+  - ExpoModulesCore (57.0.19):
     - ExpoModulesJSI
     - hermes-engine
     - RCTRequired
@@ -65,19 +65,19 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - ExpoModulesJSI (57.1.0):
+  - ExpoModulesJSI (57.1.1):
     - React-Core
     - ReactCommon
-  - ExpoModulesWorklets (57.0.18):
+  - ExpoModulesWorklets (57.0.19):
     - ExpoModulesCore
     - ExpoModulesJSI
   - ExpoPrint (57.0.2):
     - ExpoModulesCore
   - ExpoScreenCapture (57.0.3):
     - ExpoModulesCore
-  - ExpoSharing (57.0.19):
+  - ExpoSharing (57.0.22):
     - ExpoModulesCore
-  - ExpoVideo (57.0.4):
+  - ExpoVideo (57.0.5):
     - ExpoModulesCore
   - FBLazyVector (0.86.3)
   - hermes-engine (250829098.0.17):
@@ -1952,13 +1952,13 @@ PODS:
 DEPENDENCIES:
   - EXConstants (from `../node_modules/expo-constants/ios`)
   - Expo (from `../node_modules/expo`)
-  - ExpoAsset (from `../node_modules/expo-asset/ios`)
-  - "ExpoDomWebView (from `../node_modules/@expo/dom-webview/ios`)"
+  - ExpoAsset (from `../node_modules/expo/node_modules/expo-asset/ios`)
+  - "ExpoDomWebView (from `../node_modules/expo/node_modules/@expo/dom-webview/ios`)"
   - ExpoFileSystem (from `../node_modules/expo-file-system/ios`)
   - ExpoFont (from `../node_modules/expo-font/ios`)
   - ExpoImagePicker (from `../node_modules/expo-image-picker/ios`)
   - ExpoKeepAwake (from `../node_modules/expo-keep-awake/ios`)
-  - "ExpoLogBox (from `../node_modules/@expo/log-box`)"
+  - "ExpoLogBox (from `../node_modules/expo/node_modules/@expo/log-box`)"
   - ExpoModulesCore (from `../node_modules/expo-modules-core`)
   - ExpoModulesJSI (from `../node_modules/expo-modules-jsi/apple`)
   - ExpoModulesWorklets (from `../node_modules/expo-modules-core`)
@@ -2051,9 +2051,9 @@ EXTERNAL SOURCES:
   Expo:
     :path: "../node_modules/expo"
   ExpoAsset:
-    :path: "../node_modules/expo-asset/ios"
+    :path: "../node_modules/expo/node_modules/expo-asset/ios"
   ExpoDomWebView:
-    :path: "../node_modules/@expo/dom-webview/ios"
+    :path: "../node_modules/expo/node_modules/@expo/dom-webview/ios"
   ExpoFileSystem:
     :path: "../node_modules/expo-file-system/ios"
   ExpoFont:
@@ -2063,7 +2063,7 @@ EXTERNAL SOURCES:
   ExpoKeepAwake:
     :path: "../node_modules/expo-keep-awake/ios"
   ExpoLogBox:
-    :path: "../node_modules/@expo/log-box"
+    :path: "../node_modules/expo/node_modules/@expo/log-box"
   ExpoModulesCore:
     :path: "../node_modules/expo-modules-core"
   ExpoModulesJSI:
@@ -2235,22 +2235,22 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
 SPEC CHECKSUMS:
-  EXConstants: 8948a340eb14bf2bdaaa0e21a63cb9343860b87a
-  Expo: 70c70c1692c316b909fbe4996cf9c92b9cfb1bae
-  ExpoAsset: b3999ffb3d4049b6c870708c60ea2209ace9f170
+  EXConstants: 2dc4473aff5574eccaccb9f3eefe6d95247e5d38
+  Expo: 467b8a6845b753adca743c1d2e3d0b93af904db9
+  ExpoAsset: a917b756b2e4fe12cef1ac3bca5fd849ddb2b919
   ExpoDomWebView: beaec034e51bd028428b98bb1f2633ab79c6d095
   ExpoFileSystem: 28778f942725170102f7c6cf4dee05a526ddacd0
   ExpoFont: f8198a952ba2ff53c9b393b5269ea435f232cfc3
-  ExpoImagePicker: d41b6d06bb83ac975418d9b2d098959376f5d0ca
+  ExpoImagePicker: 661e13a7616fbcea630cfb9409b7483094978e02
   ExpoKeepAwake: 72af0b3be3615e59bc819d26061ff4e06b155ee0
   ExpoLogBox: 80957303325cd4439137765c90a87d7f22aaf2ff
-  ExpoModulesCore: 859b593d784f53f2a55224dd0b21e7c80556465e
-  ExpoModulesJSI: 9df8e7c9719f59e8c001ec33611774137fc1484a
-  ExpoModulesWorklets: 986cf72c18400743869b4642d243115f831e404d
+  ExpoModulesCore: 67b2bca48c36995226fae75d8d5228957ab62df7
+  ExpoModulesJSI: 383849017851b1ebacbd78cfaa32b18b6152585e
+  ExpoModulesWorklets: 8c9a7e3572a420e3e7f93f98453da9c9175edf88
   ExpoPrint: 460476a4b6291114e4d515e8df4c0225b92161b0
   ExpoScreenCapture: bd0a12b12fb7f487d8d2ce7b7c780145d308d420
-  ExpoSharing: c5da4721c1c539fde2db3fe83e46338550e3691d
-  ExpoVideo: 56ed2863b981dd5ae946d8ef23ecfcae855863a0
+  ExpoSharing: 5cc46810cfba71e331f649d947660213082094c1
+  ExpoVideo: 31d5dc617d913808aeba05c3ab900712637b0e47
   FBLazyVector: 2138c6c2ab66c31bf5754dc18097fbc498a49c7f
   hermes-engine: 63c5db7d529c36335fada6582fd293ae2a105d77
   RCTDeprecation: 96f68ebf33f8762466b01d57d6e873c4f30efb07
