@@ -19,7 +19,7 @@ async function reconcile(billing) {
   const adminAccess = existingSubscription?.gateway === 'admin'
     ? resolveSubscriptionAccess(existingSubscription)
     : null;
-  if (adminAccess?.active) return existingSubscription;
+  if (adminAccess?.active || (existingSubscription?.gateway === 'admin' && existingSubscription.adminBillingSubscriptionId === billing.subscriptionId)) return existingSubscription;
   const mode = billingMode(billing);
   const lease = crypto.randomUUID();
   const locked = await Billing.findOneAndUpdate({ _id: billing._id, subscriptionId: billing.subscriptionId,

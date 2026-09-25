@@ -2841,68 +2841,32 @@ app.patch('/api/admin/users/:id/subscription', protectAdmin, async (req, res) =>
     if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
       return res.status(400).json({ error: 'Invalid user id' });
     }
-    const action = String(req.body.action || '').trim();
-    const reason = String(req.body.reason || '').trim().slice(0, 500) || null;
-    if (!['grant', 'revoke'].includes(action)) {
-      return res.status(400).json({ error: 'Action must be grant or revoke' });
-    }
-    if (!reason) return res.status(400).json({ error: 'A reason is required' });
-
-    const user = await User.findById(req.params.id);
-    if (!user) return res.status(404).json({ error: 'User not found' });
-    const previousSubscription = await Subscription.findOne({ user: user._id }).lean();
-    const previousState = {
-      subscriptionStatus: user.subscriptionStatus,
-      subscriptionExpiry: user.subscriptionExpiry,
-      subscriptionDocumentStatus: previousSubscription?.status || null,
-    };
-    const now = new Date();
-
-    if (action === 'grant') {
-      const durationDays = Math.min(3650, Math.max(1, Number.parseInt(req.body.durationDays, 10) || 30));
-      const currentPeriodEnd = new Date(now.getTime() + durationDays * 24 * 60 * 60 * 1000);
+    const { subscriptionChange } = require('./services/adminSubscription');
+    const Billing = require('./models/RazorpayBilling');
+    let updatedUser;
+    await mongoose.connection.transaction(async (session) => {
+      const user = await User.findById(req.params.id).session(session);
+      if (!user) throw Object.assign(new Error('User not found'), { statusCode: 404 });
+      if (user.deletedAt) throw Object.assign(new Error('Restore this user before changing subscription access.'), { statusCode: 409 });
+      const previous = await Subscription.findOne({ user: user._id }).session(session).lean();
+      const billing = await Billing.findById(user._id).session(session).lean();
+      const change = subscriptionChange(req.body, previous || {}, billing);
+      const previousState = { subscriptionStatus: user.subscriptionStatus, subscriptionExpiry: user.subscriptionExpiry, subscriptionDocumentStatus: previous?.status || null };
       const subscription = await Subscription.findOneAndUpdate(
         { user: user._id },
-        {
-          $set: {
-            status: 'active', subscriptionType: 'monthly', currentPeriodStart: now,
-            currentPeriodEnd, nextBillingAt: null, cancelledAt: null,
-            cancelReason: null, gateway: 'admin', phonePeMerchantId: process.env.PHONEPE_MERCHANT_ID || 'admin-manual',
-          },
-          $setOnInsert: { user: user._id },
-        },
-        { new: true, upsert: true, runValidators: true }
+        { $set: change.subscription, $setOnInsert: { user: user._id } },
+        { new: true, upsert: true, runValidators: true, session }
       );
-      user.subscriptionStatus = 'active';
-      user.subscriptionExpiry = currentPeriodEnd;
-      user.subscriptionId = subscription._id;
-      user.isOnTrial = false;
-      await user.save();
-    } else {
-      await Subscription.findOneAndUpdate(
-        { user: user._id },
-        { $set: { status: 'paused', currentPeriodEnd: now, nextBillingAt: null, cancelledAt: now, cancelReason: `Admin: ${reason}` } },
-        { runValidators: true }
-      );
-      user.subscriptionStatus = 'expired';
-      user.subscriptionExpiry = now;
-      user.isOnTrial = false;
-      await user.save();
-    }
-
-    const nextState = { subscriptionStatus: user.subscriptionStatus, subscriptionExpiry: user.subscriptionExpiry };
-    await AdminUserAction.create({
-      user: user._id,
-      action: action === 'grant' ? 'subscription_granted' : 'subscription_revoked',
-      reason,
-      previousState,
-      nextState,
-      adminSubject: req.admin?.sub || req.admin?.email || 'admin',
+      Object.assign(user, change.user, { subscriptionId: subscription._id });
+      await user.save({ session });
+      await AdminUserAction.create([{
+        user: user._id, action: change.status === 'none' ? 'subscription_revoked' : 'subscription_granted',
+        reason: change.reason, previousState, nextState: change.user,
+        adminSubject: req.admin?.sub || req.admin?.email || 'admin',
+      }], { session });
+      updatedUser = { _id: user._id, ...change.user };
     });
-    res.json({
-      message: action === 'grant' ? 'Subscription access granted' : 'Subscription access revoked',
-      user: { _id: user._id, subscriptionStatus: user.subscriptionStatus, subscriptionExpiry: user.subscriptionExpiry },
-    });
+    res.json({ message: `Subscription changed to ${updatedUser.subscriptionStatus}.`, user: updatedUser });
   } catch (error) {
     res.status(error.statusCode || 500).json({ error: error.message });
   }

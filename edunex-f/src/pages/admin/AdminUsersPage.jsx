@@ -2,7 +2,7 @@ import { DeletionRequests } from "./DeletionRequests";
 import { csvEscape } from "./adminExport.js";
 import { useDeferredValue, useEffect, useMemo, useState } from "react";
 import { AdminShell, Message } from "./AdminShell.jsx";
-import { adminJson, formatDate, formatDateTime, formatNumber, formatWatchDuration, requireAdmin } from "./adminApi.js";
+import { api, adminJson, formatDate, formatDateTime, formatNumber, formatWatchDuration, requireAdmin } from "./adminApi.js";
 import { useViewportLock } from "../../hooks/useViewportLock.js";
 
 const segments = [
@@ -53,7 +53,7 @@ function watchMinutes(user) {
 }
 
 function isVerified(user) {
-  return Boolean(user.isMobileVerified && user.isEmailVerified);
+  return Boolean(user.isMobileVerified);
 }
 
 function lifecycleLabel(user) {
@@ -227,7 +227,7 @@ function PurchaseHistoryPanel({ state }) {
     </section>;
 }
 
-function LearnerDetailDrawer({ user, courses, tab, setTab, onClose, ipLocation, purchaseHistory }) {
+function LearnerDetailDrawer({ user, courses, tab, setTab, onClose, ipLocation, purchaseHistory, activity, certificates, onSubscription, onAccess, busy }) {
   if (!user) return null;
   const progress = user.progressCourses || [];
   const watch = user.watchSummary || {};
@@ -251,13 +251,11 @@ function LearnerDetailDrawer({ user, courses, tab, setTab, onClose, ipLocation, 
       ) : null}
       {tab === "Course progress" ? <><PurchasedCourseList user={user} courses={courses} /><div className="drawer-section-label">Learning progress</div><div className="progress-list">{progress.length ? progress.map((course) => <ProgressRow course={course} key={`${user._id}-drawer-${course.courseId}`} />) : <div className="empty-state">Course purchased. Learning has not started yet.</div>}</div></> : null}
       {tab === "Orders/payments" ? <PurchaseHistoryPanel state={purchaseHistory} /> : null}
-      {tab === "Certificates" ? <div className="empty-state">Backend API not connected for learner-specific certificate records yet.</div> : null}
-      {tab === "Activity" ? <div className="empty-state">Backend API not connected for learner activity and audit events yet.</div> : null}
+      {tab === "Certificates" ? <div className="admin-action-list">{certificates?.loading ? <p>Loading certificates…</p> : certificates?.error ? <p role="alert">{certificates.error}</p> : certificates?.rows?.length ? certificates.rows.map(item => <div key={item.certificateId}><strong>{item.courseTitle || "Course certificate"}</strong><span>{item.status} · {formatDate(item.issuedAt)}</span><a href={api(`/api/certificates/verify/${encodeURIComponent(item.certificateId)}`)} target="_blank" rel="noreferrer">View certificate</a></div>) : <p>No certificates issued yet.</p>}</div> : null}
+      {tab === "Activity" ? <section><h3>Admin action history</h3><div className="admin-action-list">{activity?.loading ? <p>Loading activity…</p> : activity?.error ? <p role="alert">{activity.error}</p> : activity?.rows?.length ? activity.rows.map(item => <div key={item._id}><strong>{String(item.action).replaceAll("_", " ")}</strong><span>{item.reason || "No reason"} · {formatDateTime(item.createdAt)}</span></div>) : <p>No admin actions recorded.</p>}</div></section> : null}
       <div className="drawer-actions">
-        <button className="toolbar-button" type="button" disabled>Ban / unban</button>
-        <button className="toolbar-button" type="button" disabled>Update subscription</button>
-        <button className="toolbar-button" type="button" disabled>Resend certificate</button>
-        <button className="toolbar-button" type="button" disabled>Export record</button>
+        <button className="toolbar-button" type="button" disabled={busy || Boolean(user.deletedAt)} onClick={() => onAccess(user)}>{user.isActive === false ? "Unban" : "Ban"}</button>
+        <button className="toolbar-button" type="button" disabled={busy || Boolean(user.deletedAt)} onClick={() => onSubscription(user)}>Update subscription</button>
       </div>
     </aside>
   );
@@ -287,7 +285,10 @@ export function AdminUsersPage() {
   const [creatingLearner, setCreatingLearner] = useState(false);
   const [createdLearnerId, setCreatedLearnerId] = useState("");
   const [courseDialog, setCourseDialog] = useState(null);
-  useViewportLock(Boolean(courseDialog));
+  const [subscriptionDialog, setSubscriptionDialog] = useState(null);
+  const [drawerActivity, setDrawerActivity] = useState({});
+  const [drawerCertificates, setDrawerCertificates] = useState({});
+  useViewportLock(Boolean(courseDialog || subscriptionDialog));
   const [purchaseHistories, setPurchaseHistories] = useState({});
   const [purchaseOpenIds, setPurchaseOpenIds] = useState(new Set());
   const deferredQuery = useDeferredValue(query);
@@ -318,6 +319,8 @@ export function AdminUsersPage() {
     const params = new URLSearchParams(window.location.search);
     const initialQuery = params.get("q");
     if (initialQuery) setQuery(initialQuery);
+    const initialStatus = params.get("subscription");
+    if (["active", "subscribed", "1rs trial", "trial", "none", "cancelled", "expired"].includes(initialStatus)) setStatus(initialStatus);
     loadUsers();
     const presenceRefresh = window.setInterval(() => loadUsers({ silent: true }), 30000);
     return () => window.clearInterval(presenceRefresh);
@@ -451,6 +454,46 @@ export function AdminUsersPage() {
     } finally { setUpdatingId(null); }
   }
 
+  function openSubscriptionDialog(user) {
+    const status = ["active", "subscribed"].includes(user.subscriptionStatus) ? "subscribed" : ["trial", "1rs trial"].includes(user.subscriptionStatus) ? "trial" : "none";
+    setSubscriptionDialog({ user, status, durationDays: status === "trial" ? 1 : 30, reason: "Admin subscription update", error: "" });
+  }
+
+  async function saveSubscription(event) {
+    event.preventDefault();
+    if (updatingId) return;
+    const { user, status, durationDays, reason } = subscriptionDialog;
+    setUpdatingId(user._id);
+    try {
+      const data = await adminJson(`/api/admin/users/${encodeURIComponent(user._id)}/subscription`, {
+        method: "PATCH", body: JSON.stringify({ status, ...(status === "none" ? {} : { durationDays: Number(durationDays) }), reason }),
+      }, "Unable to update subscription.");
+      mergeUser(user._id, data.user);
+      setSubscriptionDialog(null);
+      setMessageType("success"); setMessage(data.message);
+      setActionHistory(current => ({ ...current, [user._id]: undefined }));
+      void loadDrawerRecords(user._id);
+    } catch (error) {
+      setSubscriptionDialog(current => ({ ...current, error: error.message }));
+    } finally { setUpdatingId(null); }
+  }
+
+  async function loadDrawerRecords(userId) {
+    const load = async (path, setter) => {
+      setter(current => ({ ...current, [userId]: { loading: true, rows: [] } }));
+      try {
+        const rows = await adminJson(path);
+        setter(current => ({ ...current, [userId]: { loading: false, rows: Array.isArray(rows) ? rows : [] } }));
+      } catch (error) {
+        setter(current => ({ ...current, [userId]: { loading: false, rows: [], error: error.message } }));
+      }
+    };
+    await Promise.all([
+      load(`/api/admin/users/${encodeURIComponent(userId)}/actions`, setDrawerActivity),
+      load(`/api/admin/users/${encodeURIComponent(userId)}/certificates`, setDrawerCertificates),
+    ]);
+  }
+
   function openCourseDialog(user, action) {
     if (updatingId) return;
     if (!courses.length) {
@@ -517,6 +560,7 @@ export function AdminUsersPage() {
   function openDrawer(user) {
     setSelectedUser(user);
     setDrawerTab("Overview");
+    void loadDrawerRecords(user._id);
     if (!ipLocations[user._id]) loadIpLocation(user._id);
     const userId = String(user._id);
     if (!purchaseHistories[userId]) void loadPurchaseHistory(user);
@@ -727,6 +771,7 @@ export function AdminUsersPage() {
                     <DetailStat label="Gender" value={formatGender(user.gender)} /><DetailStat label="Age" value={formatAge(user.age)} /><DetailStat label="Courses started" value={formatNumber(summaryData.totalCourses)} /><DetailStat label="Completed courses" value={formatNumber(summaryData.completedCourses)} /><DetailStat label="Average progress" value={`${formatNumber(summaryData.averageProgress)}%`} /><DetailStat label="Watch time" value={formatWatchDuration(watchMinutes(user))} /><DetailStat label="Watched videos" value={formatNumber(watch.watchedVideos)} /><DetailStat label="Last watched" value={formatDate(watch.lastWatchedAt)} /><DetailStat label="Last login" value={formatDateTime(user.lastLoginAt)} /><DetailStat label="Last IP address" value={user.networkSummary?.ipAddress || "Not recorded"} /><DetailStat label="Approx. location" value={ipLocations[user._id]?.location || "Open to locate"} /><DetailStat label="IP recorded" value={user.networkSummary?.recordedAt ? formatDateTime(user.networkSummary.recordedAt) : "Not recorded"} /><DetailStat label="Login platform" value={user.networkSummary?.platform || "Not recorded"} /><DetailStat label="Login count" value={formatNumber(user.loginCount)} /><DetailStat label="Subscription ends" value={formatDate(user.subscriptionExpiry)} /><DetailStat label="User ID" value={user._id || "No ID"} />
                   </div>
                   {user.banReason ? <div className="admin-alert bad"><strong>Ban reason</strong><span>{user.banReason}</span></div> : null}
+                  {!user.deletedAt ? <div className="user-management-actions"><div><strong>Subscription</strong><span>{user.subscriptionStatus || "none"} · Ends {formatDate(user.subscriptionExpiry)}</span></div><button className="action-button primary" disabled={Boolean(updatingId)} onClick={() => openSubscriptionDialog(user)}>Update subscription</button></div> : null}
                   <div className="user-management-actions">
                     <div><strong>Purchased courses</strong><span>{formatNumber(user.purchasedCourses?.length || 0)} courses owned. Course changes are recorded in the audit history.</span></div>
                     {user.deletedAt ? <><button className="action-button primary" type="button" disabled={Boolean(updatingId) || Boolean(deletingId)} onClick={() => restoreUser(user)}>Restore user</button><button className="action-button danger" type="button" disabled={Boolean(deletingId) || Boolean(updatingId)} onClick={() => deletePermanently(user)}>{deletingId === user._id ? "Deleting…" : "Delete permanently"}</button></> : <><button className="action-button primary" type="button" disabled={Boolean(updatingId)} onClick={() => openCourseDialog(user, "grant")}>Add purchased course</button><button className="action-button danger" type="button" disabled={Boolean(updatingId)} onClick={() => openCourseDialog(user, "revoke")}>Remove course</button><button className="action-button danger" type="button" disabled={Boolean(deletingId) || Boolean(updatingId)} onClick={() => moveToTrash(user)}>{deletingId === user._id ? "Moving…" : "Move to Trash"}</button></>}
@@ -746,8 +791,20 @@ export function AdminUsersPage() {
         <span aria-live="polite">Page {currentPage} of {pageCount} · 25 learners per page</span>
         <button className="toolbar-button" disabled={currentPage >= pageCount || loading} onClick={() => setPage(currentPage + 1)}>Next</button>
       </nav>
-      <LearnerDetailDrawer user={selectedUser} courses={courses} tab={drawerTab} setTab={setDrawerTab} onClose={() => setSelectedUser(null)} ipLocation={selectedUser ? ipLocations[selectedUser._id] : null} purchaseHistory={selectedUser ? (purchaseHistories[String(selectedUser._id)] || { user: selectedUser, loading: false, error: "", orders: [], courseChanges: [] }) : null} />
+      <LearnerDetailDrawer activity={drawerActivity[selectedUser?._id]} certificates={drawerCertificates[selectedUser?._id]} onSubscription={openSubscriptionDialog} onAccess={changeAccountAccess} busy={Boolean(updatingId)} user={selectedUser} courses={courses} tab={drawerTab} setTab={setDrawerTab} onClose={() => setSelectedUser(null)} ipLocation={selectedUser ? ipLocations[selectedUser._id] : null} purchaseHistory={selectedUser ? (purchaseHistories[String(selectedUser._id)] || { user: selectedUser, loading: false, error: "", orders: [], courseChanges: [] }) : null} />
 
+      {subscriptionDialog ? <div className="course-access-backdrop">
+        <form className="course-access-dialog" role="dialog" aria-modal="true" aria-labelledby="subscription-dialog-title" onSubmit={saveSubscription}>
+          <h2 id="subscription-dialog-title">Update subscription</h2>
+          <p>{subscriptionDialog.user.fullName || "Learner"}</p>
+          <label><span>Subscription status</span><select autoFocus value={subscriptionDialog.status} onChange={event => setSubscriptionDialog(current => ({ ...current, status: event.target.value, durationDays: event.target.value === "trial" ? 1 : 30 }))}><option value="none">None</option><option value="trial">Trial</option><option value="subscribed">Subscribed</option></select></label>
+          {subscriptionDialog.status !== "none" ? <label><span>Access days (from now)</span><input type="number" min="1" max="3650" step="1" required value={subscriptionDialog.durationDays} onChange={event => setSubscriptionDialog(current => ({ ...current, durationDays: event.target.value }))} /></label> : null}
+          <p>{subscriptionDialog.status === "none" ? "Removes subscription access. Separately purchased courses remain available." : "Grants access to the subscription catalogue for this period. No payment is charged."}</p>
+          <label><span>Reason</span><input required maxLength="500" value={subscriptionDialog.reason} onChange={event => setSubscriptionDialog(current => ({ ...current, reason: event.target.value }))} /></label>
+          {subscriptionDialog.error ? <p role="alert">{subscriptionDialog.error}</p> : null}
+          <div className="course-access-dialog-actions"><button className="toolbar-button" type="button" disabled={Boolean(updatingId)} onClick={() => setSubscriptionDialog(null)}>Cancel</button><button className="action-button primary" type="submit" disabled={Boolean(updatingId)}>{updatingId ? "Saving…" : "Save subscription"}</button></div>
+        </form>
+      </div> : null}
       {courseDialog ? <div className="course-access-backdrop" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget && !updatingId) setCourseDialog(null); }}>
         <form className="course-access-dialog" role="dialog" aria-modal="true" aria-labelledby="course-access-title" onSubmit={submitCourseAccess}>
           <div className="course-access-dialog-head"><div><span>Course ownership</span><h2 id="course-access-title">{courseDialog.action === "grant" ? "Add purchased course" : "Remove purchased course"}</h2></div><button type="button" aria-label="Close" disabled={Boolean(updatingId)} onClick={() => setCourseDialog(null)}>×</button></div>

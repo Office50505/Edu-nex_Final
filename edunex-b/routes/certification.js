@@ -15,6 +15,12 @@ const templateSettings=require('../services/certificateTemplateSettings');
 const router=express.Router();
 const auth=requireCompatibleAuth();
 const run=fn=>async(req,res)=>{try{await fn(req,res);}catch(e){res.status(e.statusCode||500).json({error:e.statusCode?e.message:'Could not complete certification request. Please retry.'});}};
+router.get('/admin/users/:id/certificates', protectAdmin, run(async (req, res) => {
+  if (!require('mongoose').Types.ObjectId.isValid(req.params.id)) return res.status(400).json({ error: 'Invalid user id' });
+  const certificates = await Certificate.find({ userId: req.params.id }).sort({ issuedAt: -1 }).limit(100)
+    .select('certificateId courseTitle status issuedAt').lean();
+  res.json(certificates);
+}));
 router.get('/certificates/print.js',(_req,res)=>res.type('application/javascript').send("document.getElementById('print')?.addEventListener('click',()=>window.print());if(new URLSearchParams(location.search).has('print'))window.print();"));
 router.get('/certificates/verify/:id',run(async(req,res)=>{
   const cert=await Certificate.findOne({certificateId:req.params.id}).lean();

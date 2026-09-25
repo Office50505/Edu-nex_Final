@@ -210,7 +210,8 @@ export function AdminDashboardPage() {
       Promise.all([
         adminJson("/api/admin/certifications?page=1", {}, "Unable to load certification summary.").catch(() => null),
         adminJson("/api/admin/system-health", {}, "Unable to load system health.").catch(() => null),
-      ]).then(([certificationSummary, healthReport]) => {
+        adminJson("/api/admin/problem-reports?page=1&limit=1", {}, "Unable to load report counts.").catch(() => null),
+      ]).then(([certificationSummary, healthReport, reportSummary]) => {
         setData((current) => current ? ({
           ...current,
           certificationSummary: {
@@ -218,6 +219,7 @@ export function AdminDashboardPage() {
             pendingProgress: certificationSummary?.progress?.filter?.((item) => !item.eligible)?.length || 0,
           },
           healthReport,
+          reportSummary,
         }) : current);
       });
     } catch (error) {
@@ -285,7 +287,7 @@ export function AdminDashboardPage() {
   ];
   const commandCards = [
     { title: "Create course", meta: "Upload lessons, notes, pricing, and course details.", href: adminRoutes.upload, cta: "Start upload" },
-    { title: "Review reports", meta: `${displayNumber(data?.reportSummary?.new || totals.openReports)} open learner issues`, href: adminRoutes.reports, cta: "Open reports" },
+    { title: "Review reports", meta: data?.reportSummary ? `${displayNumber((data.reportSummary.counts?.new ?? 0) + (data.reportSummary.counts?.in_progress ?? 0))} open learner issues` : "Report count unavailable", href: adminRoutes.reports, cta: "Open reports" },
     { title: "Payment audit", meta: "Check orders, subscriptions, failed retries, and webhook gaps.", href: adminRoutes.paymentAuditor, cta: "Audit payments" },
     { title: "Gateway settings", meta: "Switch test/live checkout and Meta Pixel tracking safely.", href: adminRoutes.settings, cta: "Manage settings" },
   ];

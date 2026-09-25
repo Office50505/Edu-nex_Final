@@ -38,7 +38,6 @@ function NavIcon({ type }) {
 export function AdminShell({ activePage, title, subtitle, children, actions = null, shellClass = "dashboard-shell", navLabels = {} }) {
   const [theme, setTheme] = useState(() => localStorage.getItem("edunexAdminTheme") || "light");
   const [collapsed, setCollapsed] = useState(false);
-  const [globalSearch, setGlobalSearch] = useState("");
   useEffect(() => {
     document.body.classList.toggle("admin-theme-light", theme === "light");
     document.body.classList.toggle("admin-theme-dark", theme !== "light");
@@ -46,14 +45,6 @@ export function AdminShell({ activePage, title, subtitle, children, actions = nu
     localStorage.setItem("edunexAdminTheme", theme);
   }, [theme, collapsed]);
   const section = sections.find(item => item.links.some(([key]) => key === activePage))?.label || 'Command';
-  function handleGlobalSearch(event) {
-    event.preventDefault();
-    const query = globalSearch.trim();
-    if (!query) return;
-    const target = new URL(adminRoutes.users, window.location.origin);
-    target.searchParams.set("q", query);
-    window.location.href = `${target.pathname}${target.search}`;
-  }
   return (
     <div className={`admin-workspace${collapsed ? " is-collapsed" : ""}`}>
       <a className="admin-skip-link" href="#admin-main">Skip to content</a>
@@ -97,11 +88,6 @@ export function AdminShell({ activePage, title, subtitle, children, actions = nu
             <p className="admin-header-description">{subtitle}</p>
           </div>
           <div className="admin-header-tools">
-            <form className="admin-global-search" onSubmit={handleGlobalSearch} role="search">
-              <label htmlFor="adminGlobalSearch">Search</label>
-              <input id="adminGlobalSearch" value={globalSearch} onChange={event => setGlobalSearch(event.target.value)} placeholder="Search learners, courses, payments..." />
-              <button className="admin-search-button" type="submit">Search</button>
-            </form>
             <div className="admin-status-cluster" aria-label="Workspace status">
               <span className="admin-mode-pill"><i aria-hidden="true" /> Live mode</span>
               <span className="admin-date-pill">{new Date().toLocaleDateString("en-IN", { day: "2-digit", month: "short" })}</span>

@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const subscriptionSchema = new mongoose.Schema({
   user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true, unique: true },
   gateway: { type: String, default: 'phonepe' },
+  adminBillingSubscriptionId: { type: String, default: null },
   razorpaySubscriptionId: String,
   razorpayMode: { type: String, enum: ['test', 'live'] },
   razorpayStatus: String,
