@@ -1,5 +1,7 @@
 node_modules
 .env
 .expo/
+credentials.json
+credentials/
 __pycache__/
 *.pyc
