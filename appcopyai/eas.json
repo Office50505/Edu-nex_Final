@@ -6,12 +6,12 @@
   "build": {
     "production": {
       "distribution": "store",
+      "env": {
+        "EXPO_PUBLIC_API_BASE": "https://api.skillomate.in",
+        "EXPO_PUBLIC_AI_BASE": "https://api.skillomate.in"
+      },
       "android": {
-        "buildType": "app-bundle",
-        "env": {
-          "EXPO_PUBLIC_API_BASE": "https://api.skillomate.in",
-          "EXPO_PUBLIC_AI_BASE": "https://api.skillomate.in"
-        }
+        "buildType": "app-bundle"
       }
     },
     "production-apk": {
@@ -46,11 +46,9 @@
     },
     "testflight": {
       "distribution": "store",
-      "ios": {
-        "env": {
-          "EXPO_PUBLIC_API_BASE": "https://api.skillomate.in",
-          "EXPO_PUBLIC_AI_BASE": "https://api.skillomate.in"
-        }
+      "env": {
+        "EXPO_PUBLIC_API_BASE": "https://api.skillomate.in",
+        "EXPO_PUBLIC_AI_BASE": "https://api.skillomate.in"
       }
     }
   },
