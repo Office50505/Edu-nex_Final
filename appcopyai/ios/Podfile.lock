@@ -1,7 +1,7 @@
 PODS:
   - EXConstants (57.0.18):
     - ExpoModulesCore
-  - Expo (57.0.23):
+  - Expo (57.0.22):
     - ExpoModulesCore
     - ExpoModulesJSI
     - hermes-engine
@@ -35,7 +35,7 @@ PODS:
     - ExpoModulesCore
   - ExpoFont (57.0.4):
     - ExpoModulesCore
-  - ExpoImagePicker (57.0.18):
+  - ExpoImagePicker (57.0.17):
     - ExpoModulesCore
   - ExpoKeepAwake (57.0.2):
     - ExpoModulesCore
@@ -75,7 +75,7 @@ PODS:
     - ExpoModulesCore
   - ExpoScreenCapture (57.0.3):
     - ExpoModulesCore
-  - ExpoSharing (57.0.20):
+  - ExpoSharing (57.0.19):
     - ExpoModulesCore
   - ExpoVideo (57.0.4):
     - ExpoModulesCore
@@ -1953,12 +1953,12 @@ DEPENDENCIES:
   - EXConstants (from `../node_modules/expo-constants/ios`)
   - Expo (from `../node_modules/expo`)
   - ExpoAsset (from `../node_modules/expo-asset/ios`)
-  - "ExpoDomWebView (from `../node_modules/expo/node_modules/@expo/dom-webview/ios`)"
+  - "ExpoDomWebView (from `../node_modules/@expo/dom-webview/ios`)"
   - ExpoFileSystem (from `../node_modules/expo-file-system/ios`)
   - ExpoFont (from `../node_modules/expo-font/ios`)
   - ExpoImagePicker (from `../node_modules/expo-image-picker/ios`)
   - ExpoKeepAwake (from `../node_modules/expo-keep-awake/ios`)
-  - "ExpoLogBox (from `../node_modules/expo/node_modules/@expo/log-box`)"
+  - "ExpoLogBox (from `../node_modules/@expo/log-box`)"
   - ExpoModulesCore (from `../node_modules/expo-modules-core`)
   - ExpoModulesJSI (from `../node_modules/expo-modules-jsi/apple`)
   - ExpoModulesWorklets (from `../node_modules/expo-modules-core`)
@@ -2053,7 +2053,7 @@ EXTERNAL SOURCES:
   ExpoAsset:
     :path: "../node_modules/expo-asset/ios"
   ExpoDomWebView:
-    :path: "../node_modules/expo/node_modules/@expo/dom-webview/ios"
+    :path: "../node_modules/@expo/dom-webview/ios"
   ExpoFileSystem:
     :path: "../node_modules/expo-file-system/ios"
   ExpoFont:
@@ -2063,7 +2063,7 @@ EXTERNAL SOURCES:
   ExpoKeepAwake:
     :path: "../node_modules/expo-keep-awake/ios"
   ExpoLogBox:
-    :path: "../node_modules/expo/node_modules/@expo/log-box"
+    :path: "../node_modules/@expo/log-box"
   ExpoModulesCore:
     :path: "../node_modules/expo-modules-core"
   ExpoModulesJSI:
@@ -2236,12 +2236,12 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   EXConstants: 8948a340eb14bf2bdaaa0e21a63cb9343860b87a
-  Expo: d06878ab7512dbcb2deec84c4d56f07af8a8b765
+  Expo: 70c70c1692c316b909fbe4996cf9c92b9cfb1bae
   ExpoAsset: b3999ffb3d4049b6c870708c60ea2209ace9f170
   ExpoDomWebView: beaec034e51bd028428b98bb1f2633ab79c6d095
   ExpoFileSystem: 28778f942725170102f7c6cf4dee05a526ddacd0
   ExpoFont: f8198a952ba2ff53c9b393b5269ea435f232cfc3
-  ExpoImagePicker: bcbd037dd189d0c26e723628fd8a5df69fe65496
+  ExpoImagePicker: d41b6d06bb83ac975418d9b2d098959376f5d0ca
   ExpoKeepAwake: 72af0b3be3615e59bc819d26061ff4e06b155ee0
   ExpoLogBox: 80957303325cd4439137765c90a87d7f22aaf2ff
   ExpoModulesCore: 859b593d784f53f2a55224dd0b21e7c80556465e
@@ -2249,7 +2249,7 @@ SPEC CHECKSUMS:
   ExpoModulesWorklets: 986cf72c18400743869b4642d243115f831e404d
   ExpoPrint: 460476a4b6291114e4d515e8df4c0225b92161b0
   ExpoScreenCapture: bd0a12b12fb7f487d8d2ce7b7c780145d308d420
-  ExpoSharing: 9091cb39a298bf09234c65e790ad952d4a1fdfb4
+  ExpoSharing: c5da4721c1c539fde2db3fe83e46338550e3691d
   ExpoVideo: 56ed2863b981dd5ae946d8ef23ecfcae855863a0
   FBLazyVector: 2138c6c2ab66c31bf5754dc18097fbc498a49c7f
   hermes-engine: 63c5db7d529c36335fada6582fd293ae2a105d77
@@ -2331,4 +2331,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 4562844547ab0e99d7e2f12c6614b5dc2f2f0fcb
 
-COCOAPODS: 1.16.2
+COCOAPODS: 1.17.0

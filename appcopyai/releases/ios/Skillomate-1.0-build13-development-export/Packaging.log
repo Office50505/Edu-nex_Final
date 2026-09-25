@@ -1,0 +1,615 @@
+2026-09-24 07:46:03 +0000 [MT] Initial pipeline context: <IDEDistributionProcessingPipelineContext: 0xad228d200; archive(resolved)="<IDEArchive: 0xad2bcbd40>", distributionTask(resolved)="2", distributionDestination(resolved)="1", distributionMethod(resolved)="<IDEDistributionMethodDevelopmentSigned: 0xad21f0b50>", team(resolved)="<IDEProvisioningBasicTeam: 0xad4a539e0; teamID='LJ48CVC23W', teamName='(null)'>">
+	Chain (14, self inclusive):
+	<IDEDistributionProcessingPipelineContext: 0xad228d200; archive = "<IDEArchive: 0xad2bcbd40>", distributionMethod="<IDEDistributionMethodDevelopmentSigned: 0xad21f0b50>", team="<IDEProvisioningBasicTeam: 0xad4a539e0; teamID='LJ48CVC23W', teamName='(null)'>">
+	<IDEDistributionProcessingPipelineContext: 0xad228d500; archive = "<IDEArchive: 0xad2bcbd40>", distributionMethod="<IDEDistributionMethodDevelopmentSigned: 0xad21f0b50>", team="<IDEProvisioningBasicTeam: 0xad4a539e0; teamID='LJ48CVC23W', teamName='(null)'>">
+	<IDEDistributionContext: 0xad2186800; archive = "<IDEArchive: 0xad2bcbd40>", distributionMethod="<IDEDistributionMethodDevelopmentSigned: 0xad21f0b50>", team="<IDEProvisioningBasicTeam: 0xad4a539e0; teamID='LJ48CVC23W', teamName='(null)'>">
+	<IDEDistributionContext: 0xad2186080; archive = "<IDEArchive: 0xad2bcbd40>", distributionMethod="<IDEDistributionMethodDevelopmentSigned: 0xad21f0b50>", team="<IDEProvisioningBasicTeam: 0xad4a539e0; teamID='LJ48CVC23W', teamName='(null)'>">
+	<IDEDistributionContext: 0xad2185e00; archive = "<IDEArchive: 0xad2bcbd40>", distributionMethod="<IDEDistributionMethodDevelopmentSigned: 0xad21f0b50>", team="<IDEProvisioningBasicTeam: 0xad4a539e0; teamID='LJ48CVC23W', teamName='(null)'>">
+	<IDEDistributionContext: 0xad2185b80; archive = "<IDEArchive: 0xad2bcbd40>", distributionMethod="<IDEDistributionMethodDevelopmentSigned: 0xad21f0b50>", team="<IDEProvisioningBasicTeam: 0xad4a539e0; teamID='LJ48CVC23W', teamName='(null)'>">
+	<IDEDistributionContext: 0xad2185900; archive = "<IDEArchive: 0xad2bcbd40>", distributionMethod="<IDEDistributionMethodDevelopmentSigned: 0xad21f0b50>", team="<IDEProvisioningBasicTeam: 0xad4a539e0; teamID='LJ48CVC23W', teamName='(null)'>">
+	<IDEDistributionContext: 0xad2185680; archive = "<IDEArchive: 0xad2bcbd40>", distributionMethod="<IDEDistributionMethodDevelopmentSigned: 0xad21f0b50>", team="<IDEProvisioningBasicTeam: 0xad4a539e0; teamID='LJ48CVC23W', teamName='(null)'>">
+	<IDEDistributionContext: 0xad2185180; archive = "<IDEArchive: 0xad2bcbd40>", distributionMethod="<IDEDistributionMethodDevelopmentSigned: 0xad21f0b50>", team="<IDEProvisioningBasicTeam: 0xad4a539e0; teamID='LJ48CVC23W', teamName='(null)'>">
+	<IDEDistributionContext: 0xad2184f00; archive = "<IDEArchive: 0xad2bcbd40>", distributionMethod="<IDEDistributionMethodDevelopmentSigned: 0xad21f0b50>", team="(null)">
+	<IDEDistributionContext: 0xad2184c80; archive = "<IDEArchive: 0xad2bcbd40>", distributionMethod="<IDEDistributionMethodDevelopmentSigned: 0xad21f0b50>", team="(null)">
+	<IDEDistributionContext: 0xad2184a00; archive = "<IDEArchive: 0xad2bcbd40>", distributionMethod="<IDEDistributionMethodDevelopmentSigned: 0xad21f0b50>", team="(null)">
+	<IDEDistributionContext: 0xad2184000; archive = "<IDEArchive: 0xad2bcbd40>", distributionMethod="<IDEDistributionMethodDevelopmentSigned: 0xad21f0b50>", team="(null)">
+	<IDEDistributionContext: 0x1012adfe0; archive = "<IDEArchive: 0xad2bcbd40>", distributionMethod="(null)", team="(null)">
+</IDEDistributionProcessingPipelineContext: 0xad228d200>
+2026-09-24 07:46:03 +0000 [MT] Processing step: IDEDistributionCreateDestRootStep
+2026-09-24 07:46:03 +0000 [MT] Processing step: IDEDistributionCopyItemStep
+2026-09-24 07:46:03 +0000 [MT] Running /usr/bin/ditto '-V' '/Users/kratik/Desktop/yttry-main copy/Edu-nex_Final/appcopyai/releases/ios/Skillomate-1.0-build13.xcarchive/Products/Applications/Skillomate.app' '/var/folders/tl/z0rfr49119vbwvp7ks733h780000gn/T/XcodeDistPipeline.~~~BL97vm/Root/Payload/Skillomate.app'
+2026-09-24 07:46:03 +0000  >>> Copying /Users/kratik/Desktop/yttry-main copy/Edu-nex_Final/appcopyai/releases/ios/Skillomate-1.0-build13.xcarchive/Products/Applications/Skillomate.app 
+2026-09-24 07:46:03 +0000  copying file ./React-timing_privacy.bundle/PrivacyInfo.xcprivacy ... 
+2026-09-24 07:46:03 +0000  553 bytes for ./React-timing_privacy.bundle/PrivacyInfo.xcprivacy
+2026-09-24 07:46:03 +0000  copying file ./React-timing_privacy.bundle/Info.plist ... 
+2026-09-24 07:46:03 +0000  788 bytes for ./React-timing_privacy.bundle/Info.plist
+2026-09-24 07:46:03 +0000  copying file ./_CodeSignature/CodeResources ... 
+2026-09-24 07:46:03 +0000  27911 bytes for ./_CodeSignature/CodeResources
+2026-09-24 07:46:03 +0000  copying file ./SplashScreen.storyboardc/EXPO-VIEWCONTROLLER-1-view-EXPO-ContainerView.nib ... 
+2026-09-24 07:46:03 +0000  1903 bytes for ./SplashScreen.storyboardc/EXPO-VIEWCONTROLLER-1-view-EXPO-ContainerView.nib
+2026-09-24 07:46:03 +0000  copying file ./SplashScreen.storyboardc/SplashScreenViewController.nib ... 
+2026-09-24 07:46:03 +0000  1004 bytes for ./SplashScreen.storyboardc/SplashScreenViewController.nib
+2026-09-24 07:46:03 +0000  copying file ./SplashScreen.storyboardc/Info.plist ... 
+2026-09-24 07:46:03 +0000  225 bytes for ./SplashScreen.storyboardc/Info.plist
+2026-09-24 07:46:03 +0000  copying file ./AppIcon60x60@2x.png ... 
+2026-09-24 07:46:03 +0000  4172 bytes for ./AppIcon60x60@2x.png
+2026-09-24 07:46:03 +0000  copying file ./ExpoConstants_privacy.bundle/PrivacyInfo.xcprivacy ... 
+2026-09-24 07:46:03 +0000  607 bytes for ./ExpoConstants_privacy.bundle/PrivacyInfo.xcprivacy
+2026-09-24 07:46:03 +0000  copying file ./ExpoConstants_privacy.bundle/Info.plist ... 
+2026-09-24 07:46:03 +0000  791 bytes for ./ExpoConstants_privacy.bundle/Info.plist
+2026-09-24 07:46:03 +0000  copying file ./React-cxxreact_privacy.bundle/PrivacyInfo.xcprivacy ... 
+2026-09-24 07:46:03 +0000  552 bytes for ./React-cxxreact_privacy.bundle/PrivacyInfo.xcprivacy
+2026-09-24 07:46:03 +0000  copying file ./React-cxxreact_privacy.bundle/Info.plist ... 
+2026-09-24 07:46:03 +0000  792 bytes for ./React-cxxreact_privacy.bundle/Info.plist
+2026-09-24 07:46:03 +0000  copying file ./Skillomate ... 
+2026-09-24 07:46:03 +0000  3663296 bytes for ./Skillomate
+2026-09-24 07:46:03 +0000  copying file ./Assets.car ... 
+2026-09-24 07:46:03 +0000  355032 bytes for ./Assets.car
+2026-09-24 07:46:03 +0000  copying file ./AppIcon76x76@2x~ipad.png ... 
+2026-09-24 07:46:03 +0000  5853 bytes for ./AppIcon76x76@2x~ipad.png
+2026-09-24 07:46:03 +0000  copying file ./main.jsbundle ... 
+2026-09-24 07:46:03 +0000  2345494 bytes for ./main.jsbundle
+2026-09-24 07:46:03 +0000  copying file ./EXConstants.bundle/Info.plist ... 
+2026-09-24 07:46:03 +0000  769 bytes for ./EXConstants.bundle/Info.plist
+2026-09-24 07:46:03 +0000  copying file ./PrivacyInfo.xcprivacy ... 
+2026-09-24 07:46:03 +0000  5032 bytes for ./PrivacyInfo.xcprivacy
+2026-09-24 07:46:03 +0000  copying file ./ExpoFileSystem_privacy.bundle/PrivacyInfo.xcprivacy ... 
+2026-09-24 07:46:03 +0000  877 bytes for ./ExpoFileSystem_privacy.bundle/PrivacyInfo.xcprivacy
+2026-09-24 07:46:03 +0000  copying file ./ExpoFileSystem_privacy.bundle/Info.plist ... 
+2026-09-24 07:46:03 +0000  792 bytes for ./ExpoFileSystem_privacy.bundle/Info.plist
+2026-09-24 07:46:03 +0000  copying file ./Frameworks/ExpoModulesJSI.framework/_CodeSignature/CodeResources ... 
+2026-09-24 07:46:03 +0000  1798 bytes for ./Frameworks/ExpoModulesJSI.framework/_CodeSignature/CodeResources
+2026-09-24 07:46:03 +0000  copying file ./Frameworks/ExpoModulesJSI.framework/ExpoModulesJSI ... 
+2026-09-24 07:46:03 +0000  926368 bytes for ./Frameworks/ExpoModulesJSI.framework/ExpoModulesJSI
+2026-09-24 07:46:03 +0000  copying file ./Frameworks/ExpoModulesJSI.framework/Info.plist ... 
+2026-09-24 07:46:03 +0000  757 bytes for ./Frameworks/ExpoModulesJSI.framework/Info.plist
+2026-09-24 07:46:03 +0000  copying file ./Frameworks/hermesvm.framework/_CodeSignature/CodeResources ... 
+2026-09-24 07:46:03 +0000  1798 bytes for ./Frameworks/hermesvm.framework/_CodeSignature/CodeResources
+2026-09-24 07:46:03 +0000  copying file ./Frameworks/hermesvm.framework/hermesvm ... 
+2026-09-24 07:46:03 +0000  5094560 bytes for ./Frameworks/hermesvm.framework/hermesvm
+2026-09-24 07:46:03 +0000  copying file ./Frameworks/hermesvm.framework/Info.plist ... 
+859 bytes for ./Frameworks/hermesvm.framework/Info.plist
+2026-09-24 07:46:03 +0000  copying file ./Frameworks/React.framework/_CodeSignature/CodeResources ... 
+2026-09-24 07:46:03 +0000  1798 bytes for ./Frameworks/React.framework/_CodeSignature/CodeResources
+2026-09-24 07:46:03 +0000  copying file ./Frameworks/React.framework/React ... 
+2026-09-24 07:46:03 +0000  12056816 bytes for ./Frameworks/React.framework/React
+2026-09-24 07:46:03 +0000  copying file ./Frameworks/React.framework/Info.plist ... 
+2026-09-24 07:46:03 +0000  744 bytes for ./Frameworks/React.framework/Info.plist
+2026-09-24 07:46:03 +0000  copying file ./Frameworks/ReactNativeDependencies.framework/_CodeSignature/CodeResources ... 
+2026-09-24 07:46:03 +0000  3548 bytes for ./Frameworks/ReactNativeDependencies.framework/_CodeSignature/CodeResources
+2026-09-24 07:46:03 +0000  copying file ./Frameworks/ReactNativeDependencies.framework/ReactNativeDependencies_folly.bundle/PrivacyInfo.xcprivacy ... 
+2026-09-24 07:46:03 +0000  552 bytes for ./Frameworks/ReactNativeDependencies.framework/ReactNativeDependencies_folly.bundle/PrivacyInfo.xcprivacy
+2026-09-24 07:46:03 +0000  copying file ./Frameworks/ReactNativeDependencies.framework/ReactNativeDependencies_folly.bundle/Info.plist ... 
+2026-09-24 07:46:03 +0000  689 bytes for ./Frameworks/ReactNativeDependencies.framework/ReactNativeDependencies_folly.bundle/Info.plist
+2026-09-24 07:46:03 +0000  copying file ./Frameworks/ReactNativeDependencies.framework/ReactNativeDependencies ... 
+2026-09-24 07:46:03 +0000  1256528 bytes for ./Frameworks/ReactNativeDependencies.framework/ReactNativeDependencies
+2026-09-24 07:46:03 +0000  copying file ./Frameworks/ReactNativeDependencies.framework/ReactNativeDependencies_glog.bundle/PrivacyInfo.xcprivacy ... 
+2026-09-24 07:46:03 +0000  552 bytes for ./Frameworks/ReactNativeDependencies.framework/ReactNativeDependencies_glog.bundle/PrivacyInfo.xcprivacy
+2026-09-24 07:46:03 +0000  copying file ./Frameworks/ReactNativeDependencies.framework/ReactNativeDependencies_glog.bundle/Info.plist ... 
+2026-09-24 07:46:03 +0000  687 bytes for ./Frameworks/ReactNativeDependencies.framework/ReactNativeDependencies_glog.bundle/Info.plist
+2026-09-24 07:46:03 +0000  copying file ./Frameworks/ReactNativeDependencies.framework/ReactNativeDependencies_boost.bundle/PrivacyInfo.xcprivacy ... 
+2026-09-24 07:46:03 +0000  776 bytes for ./Frameworks/ReactNativeDependencies.framework/ReactNativeDependencies_boost.bundle/PrivacyInfo.xcprivacy
+2026-09-24 07:46:03 +0000  copying file ./Frameworks/ReactNativeDependencies.framework/ReactNativeDependencies_boost.bundle/Info.plist ... 
+2026-09-24 07:46:03 +0000  689 bytes for ./Frameworks/ReactNativeDependencies.framework/ReactNativeDependencies_boost.bundle/Info.plist
+2026-09-24 07:46:03 +0000  copying file ./Frameworks/ReactNativeDependencies.framework/Info.plist ... 
+2026-09-24 07:46:03 +0000  781 bytes for ./Frameworks/ReactNativeDependencies.framework/Info.plist
+2026-09-24 07:46:03 +0000  copying file ./embedded.mobileprovision ... 
+2026-09-24 07:46:03 +0000  18737 bytes for ./embedded.mobileprovision
+2026-09-24 07:46:03 +0000  copying file ./assets/node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/Fontisto.ttf ... 
+2026-09-24 07:46:03 +0000  313528 bytes for ./assets/node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/Fontisto.ttf
+2026-09-24 07:46:03 +0000  copying file ./assets/node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/Octicons.ttf ... 
+2026-09-24 07:46:03 +0000  69436 bytes for ./assets/node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/Octicons.ttf
+2026-09-24 07:46:03 +0000  copying file ./assets/node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/Feather.ttf ... 
+2026-09-24 07:46:03 +0000  55596 bytes for ./assets/node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/Feather.ttf
+2026-09-24 07:46:03 +0000  copying file ./assets/node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/FontAwesome6_Regular.ttf ... 
+2026-09-24 07:46:03 +0000  67976 bytes for ./assets/node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/FontAwesome6_Regular.ttf
+2026-09-24 07:46:03 +0000  copying file ./assets/node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/Entypo.ttf ... 
+2026-09-24 07:46:03 +0000  66200 bytes for ./assets/node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/Entypo.ttf
+2026-09-24 07:46:03 +0000  copying file ./assets/node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/FontAwesome5_Brands.ttf ... 
+2026-09-24 07:46:03 +0000  134040 bytes for ./assets/node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/FontAwesome5_Brands.ttf
+2026-09-24 07:46:03 +0000  copying file ./assets/node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/MaterialCommunityIcons.ttf ... 
+2026-09-24 07:46:03 +0000  1307660 bytes for ./assets/node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/MaterialCommunityIcons.ttf
+2026-09-24 07:46:03 +0000  copying file ./assets/node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/AntDesign.ttf ... 
+2026-09-24 07:46:03 +0000  130484 bytes for ./assets/node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/AntDesign.ttf
+2026-09-24 07:46:03 +0000  copying file ./assets/node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/Foundation.ttf ... 
+2026-09-24 07:46:03 +0000  56976 bytes for ./assets/node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/Foundation.ttf
+2026-09-24 07:46:03 +0000  copying file ./assets/node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/Ionicons.ttf ... 
+2026-09-24 07:46:03 +0000  389724 bytes for ./assets/node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/Ionicons.ttf
+2026-09-24 07:46:03 +0000  copying file ./assets/node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/FontAwesome5_Solid.ttf ... 
+2026-09-24 07:46:03 +0000  202744 bytes for ./assets/node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/FontAwesome5_Solid.ttf
+2026-09-24 07:46:03 +0000  copying file ./assets/node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/FontAwesome5_Regular.ttf ... 
+2026-09-24 07:46:03 +0000  33736 bytes for ./assets/node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/FontAwesome5_Regular.ttf
+2026-09-24 07:46:03 +0000  copying file ./assets/node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/FontAwesome.ttf ... 
+2026-09-24 07:46:03 +0000  165548 bytes for ./assets/node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/FontAwesome.ttf
+2026-09-24 07:46:03 +0000  copying file ./assets/node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/Zocial.ttf ... 
+2026-09-24 07:46:03 +0000  25788 bytes for ./assets/node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/Zocial.ttf
+2026-09-24 07:46:03 +0000  copying file ./assets/node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/EvilIcons.ttf ... 
+2026-09-24 07:46:03 +0000  13456 bytes for ./assets/node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/EvilIcons.ttf
+2026-09-24 07:46:03 +0000  copying file ./assets/node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/FontAwesome6_Solid.ttf ... 
+2026-09-24 07:46:03 +0000  423676 bytes for ./assets/node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/FontAwesome6_Solid.ttf
+2026-09-24 07:46:03 +0000  copying file ./assets/node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/SimpleLineIcons.ttf ... 
+2026-09-24 07:46:03 +0000  54056 bytes for ./assets/node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/SimpleLineIcons.ttf
+2026-09-24 07:46:03 +0000  copying file ./assets/node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/FontAwesome6_Brands.ttf ... 
+2026-09-24 07:46:03 +0000  209376 bytes for ./assets/node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/FontAwesome6_Brands.ttf
+2026-09-24 07:46:03 +0000  copying file ./assets/node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/MaterialIcons.ttf ... 
+2026-09-24 07:46:03 +0000  356840 bytes for ./assets/node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/MaterialIcons.ttf
+2026-09-24 07:46:03 +0000  copying file ./assets/assets/ai-avatars/r2.jpg ... 
+2026-09-24 07:46:03 +0000  18722 bytes for ./assets/assets/ai-avatars/r2.jpg
+2026-09-24 07:46:03 +0000  copying file ./assets/assets/ai-avatars/r3.jpg ... 
+2026-09-24 07:46:03 +0000  16795 bytes for ./assets/assets/ai-avatars/r3.jpg
+2026-09-24 07:46:03 +0000  copying file ./assets/assets/ai-avatars/r1.jpg ... 
+2026-09-24 07:46:03 +0000  16585 bytes for ./assets/assets/ai-avatars/r1.jpg
+2026-09-24 07:46:03 +0000  copying file ./assets/assets/ai-avatars/nex.png ... 
+2026-09-24 07:46:03 +0000  275570 bytes for ./assets/assets/ai-avatars/nex.png
+2026-09-24 07:46:03 +0000  copying file ./assets/assets/ai-avatars/r4.jpg ... 
+2026-09-24 07:46:03 +0000  17775 bytes for ./assets/assets/ai-avatars/r4.jpg
+2026-09-24 07:46:03 +0000  copying file ./assets/assets/ai-avatars/r5.jpg ... 
+2026-09-24 07:46:03 +0000  19313 bytes for ./assets/assets/ai-avatars/r5.jpg
+2026-09-24 07:46:03 +0000  copying file ./assets/assets/ai-avatars/r7.jpg ... 
+2026-09-24 07:46:03 +0000  22449 bytes for ./assets/assets/ai-avatars/r7.jpg
+2026-09-24 07:46:03 +0000  copying file ./assets/assets/ai-avatars/r6.jpg ... 
+2026-09-24 07:46:03 +0000  18017 bytes for ./assets/assets/ai-avatars/r6.jpg
+2026-09-24 07:46:03 +0000  copying file ./assets/assets/ai-avatars/r8.jpg ... 
+2026-09-24 07:46:03 +0000  16242 bytes for ./assets/assets/ai-avatars/r8.jpg
+2026-09-24 07:46:03 +0000  copying file ./assets/assets/ai-avatars/r9.jpg ... 
+2026-09-24 07:46:03 +0000  18076 bytes for ./assets/assets/ai-avatars/r9.jpg
+2026-09-24 07:46:03 +0000  copying file ./assets/assets/ai-avatars/nex-thinking.png ... 
+2026-09-24 07:46:03 +0000  233000 bytes for ./assets/assets/ai-avatars/nex-thinking.png
+2026-09-24 07:46:03 +0000  copying file ./assets/assets/skillomate-logo-dark.png ... 
+2026-09-24 07:46:03 +0000  327905 bytes for ./assets/assets/skillomate-logo-dark.png
+2026-09-24 07:46:03 +0000  copying file ./assets/assets/skillomate-logo.png ... 
+2026-09-24 07:46:03 +0000  436325 bytes for ./assets/assets/skillomate-logo.png
+2026-09-24 07:46:03 +0000  copying file ./assets/assets/avatars/a12.jpeg ... 
+2026-09-24 07:46:03 +0000  16935 bytes for ./assets/assets/avatars/a12.jpeg
+2026-09-24 07:46:03 +0000  copying file ./assets/assets/avatars/a9.jpeg ... 
+2026-09-24 07:46:03 +0000  15401 bytes for ./assets/assets/avatars/a9.jpeg
+2026-09-24 07:46:03 +0000  copying file ./assets/assets/avatars/a5.jpeg ... 
+2026-09-24 07:46:03 +0000  16223 bytes for ./assets/assets/avatars/a5.jpeg
+2026-09-24 07:46:03 +0000  copying file ./assets/assets/avatars/a4.jpeg ... 
+2026-09-24 07:46:03 +0000  16742 bytes for ./assets/assets/avatars/a4.jpeg
+2026-09-24 07:46:03 +0000  copying file ./assets/assets/avatars/a8.jpeg ... 
+2026-09-24 07:46:03 +0000  18410 bytes for ./assets/assets/avatars/a8.jpeg
+2026-09-24 07:46:03 +0000  copying file ./assets/assets/avatars/a13.jpeg ... 
+2026-09-24 07:46:03 +0000  16065 bytes for ./assets/assets/avatars/a13.jpeg
+2026-09-24 07:46:03 +0000  copying file ./assets/assets/avatars/a3.jpeg ... 
+2026-09-24 07:46:03 +0000  19751 bytes for ./assets/assets/avatars/a3.jpeg
+2026-09-24 07:46:03 +0000  copying file ./assets/assets/avatars/a14.jpeg ... 
+2026-09-24 07:46:03 +0000  14082 bytes for ./assets/assets/avatars/a14.jpeg
+2026-09-24 07:46:03 +0000  copying file ./assets/assets/avatars/a15.jpeg ... 
+2026-09-24 07:46:03 +0000  16890 bytes for ./assets/assets/avatars/a15.jpeg
+2026-09-24 07:46:03 +0000  copying file ./assets/assets/avatars/a2.jpeg ... 
+2026-09-24 07:46:03 +0000  14310 bytes for ./assets/assets/avatars/a2.jpeg
+2026-09-24 07:46:03 +0000  copying file ./assets/assets/avatars/a1.jpeg ... 
+2026-09-24 07:46:03 +0000  19662 bytes for ./assets/assets/avatars/a1.jpeg
+2026-09-24 07:46:03 +0000  copying file ./assets/assets/avatars/a10.jpeg ... 
+2026-09-24 07:46:03 +0000  16441 bytes for ./assets/assets/avatars/a10.jpeg
+2026-09-24 07:46:03 +0000  copying file ./assets/assets/avatars/a7.jpeg ... 
+2026-09-24 07:46:03 +0000  17860 bytes for ./assets/assets/avatars/a7.jpeg
+2026-09-24 07:46:03 +0000  copying file ./assets/assets/avatars/a6.jpeg ... 
+2026-09-24 07:46:03 +0000  18569 bytes for ./assets/assets/avatars/a6.jpeg
+2026-09-24 07:46:03 +0000  copying file ./assets/assets/avatars/a11.jpeg ... 
+2026-09-24 07:46:03 +0000  15311 bytes for ./assets/assets/avatars/a11.jpeg
+2026-09-24 07:46:03 +0000  copying file ./Info.plist ... 
+2026-09-24 07:46:03 +0000  1761 bytes for ./Info.plist
+2026-09-24 07:46:03 +0000  copying file ./Expo.plist ... 
+2026-09-24 07:46:03 +0000  132 bytes for ./Expo.plist
+2026-09-24 07:46:03 +0000  copying file ./RNCAsyncStorage_resources.bundle/PrivacyInfo.xcprivacy ... 
+2026-09-24 07:46:03 +0000  512 bytes for ./RNCAsyncStorage_resources.bundle/PrivacyInfo.xcprivacy
+2026-09-24 07:46:03 +0000  copying file ./RNCAsyncStorage_resources.bundle/Info.plist ... 
+2026-09-24 07:46:03 +0000  797 bytes for ./RNCAsyncStorage_resources.bundle/Info.plist
+2026-09-24 07:46:03 +0000  copying file ./PkgInfo ... 
+2026-09-24 07:46:03 +0000  8 bytes for ./PkgInfo
+2026-09-24 07:46:03 +0000  copying file ./React-Core_privacy.bundle/PrivacyInfo.xcprivacy ... 
+2026-09-24 07:46:03 +0000  768 bytes for ./React-Core_privacy.bundle/PrivacyInfo.xcprivacy
+2026-09-24 07:46:03 +0000  copying file ./React-Core_privacy.bundle/Info.plist ... 
+2026-09-24 07:46:03 +0000  784 bytes for ./React-Core_privacy.bundle/Info.plist
+2026-09-24 07:46:03 +0000 [MT] /usr/bin/ditto exited with 0
+2026-09-24 07:46:03 +0000 [MT] Processing step: IDEDistributionEmbedProfileStep
+2026-09-24 07:46:03 +0000 [MT] Skipping profile for item: <IDEDistributionItem: 0xad49ccd80; bundleID='apple.ExpoModulesJSI', path='<DVTFilePath:0xad21710a0:'/Users/kratik/Desktop/yttry-main copy/Edu-nex_Final/appcopyai/releases/ios/Skillomate-1.0-build13.xcarchive/Products/Applications/Skillomate.app/Frameworks/ExpoModulesJSI.framework'>', codeSigningInfo='<_DVTCodeSigningInformation_Path: 0xad49ccde0; isSigned='1', isAdHocSigned='0', signingCertificate='<DVTSigningCertificate: 0xad24586c0; name='Apple Development: Ali Hussain Khan (JGXF4R39DG)', hash='8D7568AE8C58C024C9D6C6DA39320E4542A70FF5', serialNumber='2527604EF53715772A6E6E18129E15A0', certificateKinds='(
+    "1.2.840.113635.100.6.1.12",
+    "1.2.840.113635.100.6.1.2"
+), issueDate='2026-07-10 06:49:37 +0000''>', entitlements='(null)', teamID='LJ48CVC23W', identifier='apple.ExpoModulesJSI', executablePath='<DVTFilePath:0xad48a3c60:'/Users/kratik/Desktop/yttry-main copy/Edu-nex_Final/appcopyai/releases/ios/Skillomate-1.0-build13.xcarchive/Products/Applications/Skillomate.app/Frameworks/ExpoModulesJSI.framework/ExpoModulesJSI'>', hardenedRuntime='0'>'>
+2026-09-24 07:46:03 +0000 [MT] Skipping profile for item: <IDEDistributionItem: 0xad49cce40; bundleID='react-native.React', path='<DVTFilePath:0xad49a46c0:'/Users/kratik/Desktop/yttry-main copy/Edu-nex_Final/appcopyai/releases/ios/Skillomate-1.0-build13.xcarchive/Products/Applications/Skillomate.app/Frameworks/React.framework'>', codeSigningInfo='<_DVTCodeSigningInformation_Path: 0xad49ccea0; isSigned='1', isAdHocSigned='0', signingCertificate='<DVTSigningCertificate: 0xad24586c0; name='Apple Development: Ali Hussain Khan (JGXF4R39DG)', hash='8D7568AE8C58C024C9D6C6DA39320E4542A70FF5', serialNumber='2527604EF53715772A6E6E18129E15A0', certificateKinds='(
+    "1.2.840.113635.100.6.1.12",
+    "1.2.840.113635.100.6.1.2"
+), issueDate='2026-07-10 06:49:37 +0000''>', entitlements='(null)', teamID='LJ48CVC23W', identifier='react-native.React', executablePath='<DVTFilePath:0xad49a47e0:'/Users/kratik/Desktop/yttry-main copy/Edu-nex_Final/appcopyai/releases/ios/Skillomate-1.0-build13.xcarchive/Products/Applications/Skillomate.app/Frameworks/React.framework/React'>', hardenedRuntime='0'>'>
+2026-09-24 07:46:03 +0000 [MT] Skipping profile for item: <IDEDistributionItem: 0xad49ccc60; bundleID='third-party.ReactNativeDependencies', path='<DVTFilePath:0xad495e380:'/Users/kratik/Desktop/yttry-main copy/Edu-nex_Final/appcopyai/releases/ios/Skillomate-1.0-build13.xcarchive/Products/Applications/Skillomate.app/Frameworks/ReactNativeDependencies.framework'>', codeSigningInfo='<_DVTCodeSigningInformation_Path: 0xad49cccc0; isSigned='1', isAdHocSigned='0', signingCertificate='<DVTSigningCertificate: 0xad24586c0; name='Apple Development: Ali Hussain Khan (JGXF4R39DG)', hash='8D7568AE8C58C024C9D6C6DA39320E4542A70FF5', serialNumber='2527604EF53715772A6E6E18129E15A0', certificateKinds='(
+    "1.2.840.113635.100.6.1.12",
+    "1.2.840.113635.100.6.1.2"
+), issueDate='2026-07-10 06:49:37 +0000''>', entitlements='(null)', teamID='LJ48CVC23W', identifier='third-party.ReactNativeDependencies', executablePath='<DVTFilePath:0xad2171730:'/Users/kratik/Desktop/yttry-main copy/Edu-nex_Final/appcopyai/releases/ios/Skillomate-1.0-build13.xcarchive/Products/Applications/Skillomate.app/Frameworks/ReactNativeDependencies.framework/ReactNativeDependencies'>', hardenedRuntime='0'>'>
+2026-09-24 07:46:03 +0000 [MT] Skipping profile for item: <IDEDistributionItem: 0xad49ccba0; bundleID='dev.hermesengine.iphoneos', path='<DVTFilePath:0xad2171180:'/Users/kratik/Desktop/yttry-main copy/Edu-nex_Final/appcopyai/releases/ios/Skillomate-1.0-build13.xcarchive/Products/Applications/Skillomate.app/Frameworks/hermesvm.framework'>', codeSigningInfo='<_DVTCodeSigningInformation_Path: 0xad49ccb40; isSigned='1', isAdHocSigned='0', signingCertificate='<DVTSigningCertificate: 0xad24586c0; name='Apple Development: Ali Hussain Khan (JGXF4R39DG)', hash='8D7568AE8C58C024C9D6C6DA39320E4542A70FF5', serialNumber='2527604EF53715772A6E6E18129E15A0', certificateKinds='(
+    "1.2.840.113635.100.6.1.12",
+    "1.2.840.113635.100.6.1.2"
+), issueDate='2026-07-10 06:49:37 +0000''>', entitlements='(null)', teamID='LJ48CVC23W', identifier='dev.hermesengine.iphoneos', executablePath='<DVTFilePath:0xad49a40c0:'/Users/kratik/Desktop/yttry-main copy/Edu-nex_Final/appcopyai/releases/ios/Skillomate-1.0-build13.xcarchive/Products/Applications/Skillomate.app/Frameworks/hermesvm.framework/hermesvm'>', hardenedRuntime='0'>'>
+2026-09-24 07:46:03 +0000 [MT] Processing step: IDEDistributionInfoPlistStep
+2026-09-24 07:46:03 +0000 [MT] Skipping step: IDEDistributionInfoPlistStep because it said so
+2026-09-24 07:46:03 +0000 [MT] Skipping step: IDEDistributionInfoPlistStep because it said so
+2026-09-24 07:46:03 +0000 [MT] Skipping step: IDEDistributionInfoPlistStep because it said so
+2026-09-24 07:46:03 +0000 [MT] Skipping step: IDEDistributionInfoPlistStep because it said so
+2026-09-24 07:46:03 +0000 [MT] Skipping step: IDEDistributionInfoPlistStep because it said so
+2026-09-24 07:46:03 +0000 [MT] Processing step: IDEDistributionAppThinningPlistStep
+2026-09-24 07:46:03 +0000 [MT] Skipping step: IDEDistributionAppThinningPlistStep because it said so
+2026-09-24 07:46:03 +0000 [MT] Processing step: IDEDistributionSymbolsStep
+2026-09-24 07:46:03 +0000 [MT] Skipping step: IDEDistributionSymbolsStep because it said so
+2026-09-24 07:46:03 +0000 [MT] Processing step: IDEDistributionAppThinningStep
+2026-09-24 07:46:03 +0000 [MT] Skipping step: IDEDistributionAppThinningStep because it said so
+2026-09-24 07:46:03 +0000 [MT] Processing step: IDEDistributionArchThinningStep
+2026-09-24 07:46:03 +0000 [MT] Archs to thin for item /Users/kratik/Desktop/yttry-main copy/Edu-nex_Final/appcopyai/releases/ios/Skillomate-1.0-build13.xcarchive/Products/Applications/Skillomate.app/Frameworks/ExpoModulesJSI.framework are []
+2026-09-24 07:46:03 +0000 [MT] Archs to thin for item /Users/kratik/Desktop/yttry-main copy/Edu-nex_Final/appcopyai/releases/ios/Skillomate-1.0-build13.xcarchive/Products/Applications/Skillomate.app/Frameworks/React.framework are []
+2026-09-24 07:46:03 +0000 [MT] Archs to thin for item /Users/kratik/Desktop/yttry-main copy/Edu-nex_Final/appcopyai/releases/ios/Skillomate-1.0-build13.xcarchive/Products/Applications/Skillomate.app/Frameworks/ReactNativeDependencies.framework are []
+2026-09-24 07:46:03 +0000 [MT] Archs to thin for item /Users/kratik/Desktop/yttry-main copy/Edu-nex_Final/appcopyai/releases/ios/Skillomate-1.0-build13.xcarchive/Products/Applications/Skillomate.app/Frameworks/hermesvm.framework are []
+2026-09-24 07:46:03 +0000 [MT] Archs to thin for item /Users/kratik/Desktop/yttry-main copy/Edu-nex_Final/appcopyai/releases/ios/Skillomate-1.0-build13.xcarchive/Products/Applications/Skillomate.app are []
+2026-09-24 07:46:03 +0000 [MT] Processing step: IDEDistributionODRStep
+2026-09-24 07:46:03 +0000 [MT] Processing step: IDEDistributionStripXattrsStep
+2026-09-24 07:46:03 +0000 [MT] Skipping stripping extended attributes because the codesign step will strip them.
+2026-09-24 07:46:03 +0000 [MT] Skipping stripping extended attributes because the codesign step will strip them.
+2026-09-24 07:46:03 +0000 [MT] Skipping stripping extended attributes because the codesign step will strip them.
+2026-09-24 07:46:03 +0000 [MT] Skipping stripping extended attributes because the codesign step will strip them.
+2026-09-24 07:46:03 +0000 [MT] Skipping stripping extended attributes because the codesign step will strip them.
+2026-09-24 07:46:03 +0000 [MT] Processing step: IDEDistributionCodesignStep
+2026-09-24 07:46:03 +0000 [MT] Entitlements for <IDEDistributionItem: 0xad49ccd80; bundleID='apple.ExpoModulesJSI', path='<DVTFilePath:0xad21710a0:'/Users/kratik/Desktop/yttry-main copy/Edu-nex_Final/appcopyai/releases/ios/Skillomate-1.0-build13.xcarchive/Products/Applications/Skillomate.app/Frameworks/ExpoModulesJSI.framework'>', codeSigningInfo='<_DVTCodeSigningInformation_Path: 0xad49ccde0; isSigned='1', isAdHocSigned='0', signingCertificate='<DVTSigningCertificate: 0xad24586c0; name='Apple Development: Ali Hussain Khan (JGXF4R39DG)', hash='8D7568AE8C58C024C9D6C6DA39320E4542A70FF5', serialNumber='2527604EF53715772A6E6E18129E15A0', certificateKinds='(
+    "1.2.840.113635.100.6.1.12",
+    "1.2.840.113635.100.6.1.2"
+), issueDate='2026-07-10 06:49:37 +0000''>', entitlements='(null)', teamID='LJ48CVC23W', identifier='apple.ExpoModulesJSI', executablePath='<DVTFilePath:0xad48a3c60:'/Users/kratik/Desktop/yttry-main copy/Edu-nex_Final/appcopyai/releases/ios/Skillomate-1.0-build13.xcarchive/Products/Applications/Skillomate.app/Frameworks/ExpoModulesJSI.framework/ExpoModulesJSI'>', hardenedRuntime='0'>'>: {
+}
+2026-09-24 07:46:03 +0000 [MT] Associated App Clip Identifiers Filter: Skipping because "com.apple.developer.associated-appclip-app-identifiers" is not present
+2026-09-24 07:46:03 +0000 [MT] Entitlements for <IDEDistributionItem: 0xad49ccd80; bundleID='apple.ExpoModulesJSI', path='<DVTFilePath:0xad21710a0:'/Users/kratik/Desktop/yttry-main copy/Edu-nex_Final/appcopyai/releases/ios/Skillomate-1.0-build13.xcarchive/Products/Applications/Skillomate.app/Frameworks/ExpoModulesJSI.framework'>', codeSigningInfo='<_DVTCodeSigningInformation_Path: 0xad49ccde0; isSigned='1', isAdHocSigned='0', signingCertificate='<DVTSigningCertificate: 0xad2458a80; name='Apple Development: Ali Hussain Khan (JGXF4R39DG)', hash='8D7568AE8C58C024C9D6C6DA39320E4542A70FF5', serialNumber='2527604EF53715772A6E6E18129E15A0', certificateKinds='(
+    "1.2.840.113635.100.6.1.12",
+    "1.2.840.113635.100.6.1.2"
+), issueDate='2026-07-10 06:49:37 +0000''>', entitlements='(null)', teamID='LJ48CVC23W', identifier='apple.ExpoModulesJSI', executablePath='<DVTFilePath:0xad48a3c60:'/Users/kratik/Desktop/yttry-main copy/Edu-nex_Final/appcopyai/releases/ios/Skillomate-1.0-build13.xcarchive/Products/Applications/Skillomate.app/Frameworks/ExpoModulesJSI.framework/ExpoModulesJSI'>', hardenedRuntime='0'>'> are: {
+}
+2026-09-24 07:46:03 +0000 [MT] Writing entitlements for <IDEDistributionItem: 0xad49ccd80; bundleID='apple.ExpoModulesJSI', path='<DVTFilePath:0xad21710a0:'/Users/kratik/Desktop/yttry-main copy/Edu-nex_Final/appcopyai/releases/ios/Skillomate-1.0-build13.xcarchive/Products/Applications/Skillomate.app/Frameworks/ExpoModulesJSI.framework'>', codeSigningInfo='<_DVTCodeSigningInformation_Path: 0xad49ccde0; isSigned='1', isAdHocSigned='0', signingCertificate='<DVTSigningCertificate: 0xad2458a80; name='Apple Development: Ali Hussain Khan (JGXF4R39DG)', hash='8D7568AE8C58C024C9D6C6DA39320E4542A70FF5', serialNumber='2527604EF53715772A6E6E18129E15A0', certificateKinds='(
+    "1.2.840.113635.100.6.1.12",
+    "1.2.840.113635.100.6.1.2"
+), issueDate='2026-07-10 06:49:37 +0000''>', entitlements='(null)', teamID='LJ48CVC23W', identifier='apple.ExpoModulesJSI', executablePath='<DVTFilePath:0xad48a3c60:'/Users/kratik/Desktop/yttry-main copy/Edu-nex_Final/appcopyai/releases/ios/Skillomate-1.0-build13.xcarchive/Products/Applications/Skillomate.app/Frameworks/ExpoModulesJSI.framework/ExpoModulesJSI'>', hardenedRuntime='0'>'> to: /var/folders/tl/z0rfr49119vbwvp7ks733h780000gn/T/XcodeDistPipeline.~~~BL97vm/entitlements~~~G2aOUE
+2026-09-24 07:46:03 +0000 [MT] invoking codesign: <NSConcreteTask: 0xad5570050; launchPath='/usr/bin/codesign', arguments='(
+    "-f",
+    "-s",
+    8D7568AE8C58C024C9D6C6DA39320E4542A70FF5,
+    "--entitlements",
+    "/var/folders/tl/z0rfr49119vbwvp7ks733h780000gn/T/XcodeDistPipeline.~~~BL97vm/entitlements~~~G2aOUE",
+    "--preserve-metadata=identifier,flags,runtime,launch-constraints,library-constraints",
+    "--generate-entitlement-der",
+    "--strip-disallowed-xattrs",
+    "-vvv",
+    "/var/folders/tl/z0rfr49119vbwvp7ks733h780000gn/T/XcodeDistPipeline.~~~BL97vm/Root/Payload/Skillomate.app/Frameworks/ExpoModulesJSI.framework"
+)'>
+2026-09-24 07:46:03 +0000 [MT] codesign output: /var/folders/tl/z0rfr49119vbwvp7ks733h780000gn/T/XcodeDistPipeline.~~~BL97vm/Root/Payload/Skillomate.app/Frameworks/ExpoModulesJSI.framework: replacing existing signature
+/var/folders/tl/z0rfr49119vbwvp7ks733h780000gn/T/XcodeDistPipeline.~~~BL97vm/Root/Payload/Skillomate.app/Frameworks/ExpoModulesJSI.framework: signed bundle with Mach-O thin (arm64) [apple.ExpoModulesJSI]
+2026-09-24 07:46:03 +0000 [MT] Entitlements for <IDEDistributionItem: 0xad49cce40; bundleID='react-native.React', path='<DVTFilePath:0xad49a46c0:'/Users/kratik/Desktop/yttry-main copy/Edu-nex_Final/appcopyai/releases/ios/Skillomate-1.0-build13.xcarchive/Products/Applications/Skillomate.app/Frameworks/React.framework'>', codeSigningInfo='<_DVTCodeSigningInformation_Path: 0xad49ccea0; isSigned='1', isAdHocSigned='0', signingCertificate='<DVTSigningCertificate: 0xad24586c0; name='Apple Development: Ali Hussain Khan (JGXF4R39DG)', hash='8D7568AE8C58C024C9D6C6DA39320E4542A70FF5', serialNumber='2527604EF53715772A6E6E18129E15A0', certificateKinds='(
+    "1.2.840.113635.100.6.1.12",
+    "1.2.840.113635.100.6.1.2"
+), issueDate='2026-07-10 06:49:37 +0000''>', entitlements='(null)', teamID='LJ48CVC23W', identifier='react-native.React', executablePath='<DVTFilePath:0xad49a47e0:'/Users/kratik/Desktop/yttry-main copy/Edu-nex_Final/appcopyai/releases/ios/Skillomate-1.0-build13.xcarchive/Products/Applications/Skillomate.app/Frameworks/React.framework/React'>', hardenedRuntime='0'>'>: {
+}
+2026-09-24 07:46:03 +0000 [MT] Associated App Clip Identifiers Filter: Skipping because "com.apple.developer.associated-appclip-app-identifiers" is not present
+2026-09-24 07:46:03 +0000 [MT] Entitlements for <IDEDistributionItem: 0xad49cce40; bundleID='react-native.React', path='<DVTFilePath:0xad49a46c0:'/Users/kratik/Desktop/yttry-main copy/Edu-nex_Final/appcopyai/releases/ios/Skillomate-1.0-build13.xcarchive/Products/Applications/Skillomate.app/Frameworks/React.framework'>', codeSigningInfo='<_DVTCodeSigningInformation_Path: 0xad49ccea0; isSigned='1', isAdHocSigned='0', signingCertificate='<DVTSigningCertificate: 0xad2458a80; name='Apple Development: Ali Hussain Khan (JGXF4R39DG)', hash='8D7568AE8C58C024C9D6C6DA39320E4542A70FF5', serialNumber='2527604EF53715772A6E6E18129E15A0', certificateKinds='(
+    "1.2.840.113635.100.6.1.12",
+    "1.2.840.113635.100.6.1.2"
+), issueDate='2026-07-10 06:49:37 +0000''>', entitlements='(null)', teamID='LJ48CVC23W', identifier='react-native.React', executablePath='<DVTFilePath:0xad49a47e0:'/Users/kratik/Desktop/yttry-main copy/Edu-nex_Final/appcopyai/releases/ios/Skillomate-1.0-build13.xcarchive/Products/Applications/Skillomate.app/Frameworks/React.framework/React'>', hardenedRuntime='0'>'> are: {
+}
+2026-09-24 07:46:03 +0000 [MT] Writing entitlements for <IDEDistributionItem: 0xad49cce40; bundleID='react-native.React', path='<DVTFilePath:0xad49a46c0:'/Users/kratik/Desktop/yttry-main copy/Edu-nex_Final/appcopyai/releases/ios/Skillomate-1.0-build13.xcarchive/Products/Applications/Skillomate.app/Frameworks/React.framework'>', codeSigningInfo='<_DVTCodeSigningInformation_Path: 0xad49ccea0; isSigned='1', isAdHocSigned='0', signingCertificate='<DVTSigningCertificate: 0xad2458a80; name='Apple Development: Ali Hussain Khan (JGXF4R39DG)', hash='8D7568AE8C58C024C9D6C6DA39320E4542A70FF5', serialNumber='2527604EF53715772A6E6E18129E15A0', certificateKinds='(
+    "1.2.840.113635.100.6.1.12",
+    "1.2.840.113635.100.6.1.2"
+), issueDate='2026-07-10 06:49:37 +0000''>', entitlements='(null)', teamID='LJ48CVC23W', identifier='react-native.React', executablePath='<DVTFilePath:0xad49a47e0:'/Users/kratik/Desktop/yttry-main copy/Edu-nex_Final/appcopyai/releases/ios/Skillomate-1.0-build13.xcarchive/Products/Applications/Skillomate.app/Frameworks/React.framework/React'>', hardenedRuntime='0'>'> to: /var/folders/tl/z0rfr49119vbwvp7ks733h780000gn/T/XcodeDistPipeline.~~~BL97vm/entitlements~~~tO26g7
+2026-09-24 07:46:03 +0000 [MT] invoking codesign: <NSConcreteTask: 0xad5571310; launchPath='/usr/bin/codesign', arguments='(
+    "-f",
+    "-s",
+    8D7568AE8C58C024C9D6C6DA39320E4542A70FF5,
+    "--entitlements",
+    "/var/folders/tl/z0rfr49119vbwvp7ks733h780000gn/T/XcodeDistPipeline.~~~BL97vm/entitlements~~~tO26g7",
+    "--preserve-metadata=identifier,flags,runtime,launch-constraints,library-constraints",
+    "--generate-entitlement-der",
+    "--strip-disallowed-xattrs",
+    "-vvv",
+    "/var/folders/tl/z0rfr49119vbwvp7ks733h780000gn/T/XcodeDistPipeline.~~~BL97vm/Root/Payload/Skillomate.app/Frameworks/React.framework"
+)'>
+2026-09-24 07:46:03 +0000 [MT] codesign output: /var/folders/tl/z0rfr49119vbwvp7ks733h780000gn/T/XcodeDistPipeline.~~~BL97vm/Root/Payload/Skillomate.app/Frameworks/React.framework: replacing existing signature
+/var/folders/tl/z0rfr49119vbwvp7ks733h780000gn/T/XcodeDistPipeline.~~~BL97vm/Root/Payload/Skillomate.app/Frameworks/React.framework: signed bundle with Mach-O thin (arm64) [react-native.React]
+2026-09-24 07:46:03 +0000 [MT] Entitlements for <IDEDistributionItem: 0xad49ccc60; bundleID='third-party.ReactNativeDependencies', path='<DVTFilePath:0xad495e380:'/Users/kratik/Desktop/yttry-main copy/Edu-nex_Final/appcopyai/releases/ios/Skillomate-1.0-build13.xcarchive/Products/Applications/Skillomate.app/Frameworks/ReactNativeDependencies.framework'>', codeSigningInfo='<_DVTCodeSigningInformation_Path: 0xad49cccc0; isSigned='1', isAdHocSigned='0', signingCertificate='<DVTSigningCertificate: 0xad24586c0; name='Apple Development: Ali Hussain Khan (JGXF4R39DG)', hash='8D7568AE8C58C024C9D6C6DA39320E4542A70FF5', serialNumber='2527604EF53715772A6E6E18129E15A0', certificateKinds='(
+    "1.2.840.113635.100.6.1.12",
+    "1.2.840.113635.100.6.1.2"
+), issueDate='2026-07-10 06:49:37 +0000''>', entitlements='(null)', teamID='LJ48CVC23W', identifier='third-party.ReactNativeDependencies', executablePath='<DVTFilePath:0xad2171730:'/Users/kratik/Desktop/yttry-main copy/Edu-nex_Final/appcopyai/releases/ios/Skillomate-1.0-build13.xcarchive/Products/Applications/Skillomate.app/Frameworks/ReactNativeDependencies.framework/ReactNativeDependencies'>', hardenedRuntime='0'>'>: {
+}
+2026-09-24 07:46:03 +0000 [MT] Associated App Clip Identifiers Filter: Skipping because "com.apple.developer.associated-appclip-app-identifiers" is not present
+2026-09-24 07:46:03 +0000 [MT] Entitlements for <IDEDistributionItem: 0xad49ccc60; bundleID='third-party.ReactNativeDependencies', path='<DVTFilePath:0xad495e380:'/Users/kratik/Desktop/yttry-main copy/Edu-nex_Final/appcopyai/releases/ios/Skillomate-1.0-build13.xcarchive/Products/Applications/Skillomate.app/Frameworks/ReactNativeDependencies.framework'>', codeSigningInfo='<_DVTCodeSigningInformation_Path: 0xad49cccc0; isSigned='1', isAdHocSigned='0', signingCertificate='<DVTSigningCertificate: 0xad2458a80; name='Apple Development: Ali Hussain Khan (JGXF4R39DG)', hash='8D7568AE8C58C024C9D6C6DA39320E4542A70FF5', serialNumber='2527604EF53715772A6E6E18129E15A0', certificateKinds='(
+    "1.2.840.113635.100.6.1.12",
+    "1.2.840.113635.100.6.1.2"
+), issueDate='2026-07-10 06:49:37 +0000''>', entitlements='(null)', teamID='LJ48CVC23W', identifier='third-party.ReactNativeDependencies', executablePath='<DVTFilePath:0xad2171730:'/Users/kratik/Desktop/yttry-main copy/Edu-nex_Final/appcopyai/releases/ios/Skillomate-1.0-build13.xcarchive/Products/Applications/Skillomate.app/Frameworks/ReactNativeDependencies.framework/ReactNativeDependencies'>', hardenedRuntime='0'>'> are: {
+}
+2026-09-24 07:46:03 +0000 [MT] Writing entitlements for <IDEDistributionItem: 0xad49ccc60; bundleID='third-party.ReactNativeDependencies', path='<DVTFilePath:0xad495e380:'/Users/kratik/Desktop/yttry-main copy/Edu-nex_Final/appcopyai/releases/ios/Skillomate-1.0-build13.xcarchive/Products/Applications/Skillomate.app/Frameworks/ReactNativeDependencies.framework'>', codeSigningInfo='<_DVTCodeSigningInformation_Path: 0xad49cccc0; isSigned='1', isAdHocSigned='0', signingCertificate='<DVTSigningCertificate: 0xad2458a80; name='Apple Development: Ali Hussain Khan (JGXF4R39DG)', hash='8D7568AE8C58C024C9D6C6DA39320E4542A70FF5', serialNumber='2527604EF53715772A6E6E18129E15A0', certificateKinds='(
+    "1.2.840.113635.100.6.1.12",
+    "1.2.840.113635.100.6.1.2"
+), issueDate='2026-07-10 06:49:37 +0000''>', entitlements='(null)', teamID='LJ48CVC23W', identifier='third-party.ReactNativeDependencies', executablePath='<DVTFilePath:0xad2171730:'/Users/kratik/Desktop/yttry-main copy/Edu-nex_Final/appcopyai/releases/ios/Skillomate-1.0-build13.xcarchive/Products/Applications/Skillomate.app/Frameworks/ReactNativeDependencies.framework/ReactNativeDependencies'>', hardenedRuntime='0'>'> to: /var/folders/tl/z0rfr49119vbwvp7ks733h780000gn/T/XcodeDistPipeline.~~~BL97vm/entitlements~~~8BLtUo
+2026-09-24 07:46:03 +0000 [MT] invoking codesign: <NSConcreteTask: 0xad5571310; launchPath='/usr/bin/codesign', arguments='(
+    "-f",
+    "-s",
+    8D7568AE8C58C024C9D6C6DA39320E4542A70FF5,
+    "--entitlements",
+    "/var/folders/tl/z0rfr49119vbwvp7ks733h780000gn/T/XcodeDistPipeline.~~~BL97vm/entitlements~~~8BLtUo",
+    "--preserve-metadata=identifier,flags,runtime,launch-constraints,library-constraints",
+    "--generate-entitlement-der",
+    "--strip-disallowed-xattrs",
+    "-vvv",
+    "/var/folders/tl/z0rfr49119vbwvp7ks733h780000gn/T/XcodeDistPipeline.~~~BL97vm/Root/Payload/Skillomate.app/Frameworks/ReactNativeDependencies.framework"
+)'>
+2026-09-24 07:46:03 +0000 [MT] codesign output: /var/folders/tl/z0rfr49119vbwvp7ks733h780000gn/T/XcodeDistPipeline.~~~BL97vm/Root/Payload/Skillomate.app/Frameworks/ReactNativeDependencies.framework: replacing existing signature
+/var/folders/tl/z0rfr49119vbwvp7ks733h780000gn/T/XcodeDistPipeline.~~~BL97vm/Root/Payload/Skillomate.app/Frameworks/ReactNativeDependencies.framework: signed bundle with Mach-O thin (arm64) [third-party.ReactNativeDependencies]
+2026-09-24 07:46:03 +0000 [MT] Entitlements for <IDEDistributionItem: 0xad49ccba0; bundleID='dev.hermesengine.iphoneos', path='<DVTFilePath:0xad2171180:'/Users/kratik/Desktop/yttry-main copy/Edu-nex_Final/appcopyai/releases/ios/Skillomate-1.0-build13.xcarchive/Products/Applications/Skillomate.app/Frameworks/hermesvm.framework'>', codeSigningInfo='<_DVTCodeSigningInformation_Path: 0xad49ccb40; isSigned='1', isAdHocSigned='0', signingCertificate='<DVTSigningCertificate: 0xad24586c0; name='Apple Development: Ali Hussain Khan (JGXF4R39DG)', hash='8D7568AE8C58C024C9D6C6DA39320E4542A70FF5', serialNumber='2527604EF53715772A6E6E18129E15A0', certificateKinds='(
+    "1.2.840.113635.100.6.1.12",
+    "1.2.840.113635.100.6.1.2"
+), issueDate='2026-07-10 06:49:37 +0000''>', entitlements='(null)', teamID='LJ48CVC23W', identifier='dev.hermesengine.iphoneos', executablePath='<DVTFilePath:0xad49a40c0:'/Users/kratik/Desktop/yttry-main copy/Edu-nex_Final/appcopyai/releases/ios/Skillomate-1.0-build13.xcarchive/Products/Applications/Skillomate.app/Frameworks/hermesvm.framework/hermesvm'>', hardenedRuntime='0'>'>: {
+}
+2026-09-24 07:46:03 +0000 [MT] Associated App Clip Identifiers Filter: Skipping because "com.apple.developer.associated-appclip-app-identifiers" is not present
+2026-09-24 07:46:03 +0000 [MT] Entitlements for <IDEDistributionItem: 0xad49ccba0; bundleID='dev.hermesengine.iphoneos', path='<DVTFilePath:0xad2171180:'/Users/kratik/Desktop/yttry-main copy/Edu-nex_Final/appcopyai/releases/ios/Skillomate-1.0-build13.xcarchive/Products/Applications/Skillomate.app/Frameworks/hermesvm.framework'>', codeSigningInfo='<_DVTCodeSigningInformation_Path: 0xad49ccb40; isSigned='1', isAdHocSigned='0', signingCertificate='<DVTSigningCertificate: 0xad2458a80; name='Apple Development: Ali Hussain Khan (JGXF4R39DG)', hash='8D7568AE8C58C024C9D6C6DA39320E4542A70FF5', serialNumber='2527604EF53715772A6E6E18129E15A0', certificateKinds='(
+    "1.2.840.113635.100.6.1.12",
+    "1.2.840.113635.100.6.1.2"
+), issueDate='2026-07-10 06:49:37 +0000''>', entitlements='(null)', teamID='LJ48CVC23W', identifier='dev.hermesengine.iphoneos', executablePath='<DVTFilePath:0xad49a40c0:'/Users/kratik/Desktop/yttry-main copy/Edu-nex_Final/appcopyai/releases/ios/Skillomate-1.0-build13.xcarchive/Products/Applications/Skillomate.app/Frameworks/hermesvm.framework/hermesvm'>', hardenedRuntime='0'>'> are: {
+}
+2026-09-24 07:46:03 +0000 [MT] Writing entitlements for <IDEDistributionItem: 0xad49ccba0; bundleID='dev.hermesengine.iphoneos', path='<DVTFilePath:0xad2171180:'/Users/kratik/Desktop/yttry-main copy/Edu-nex_Final/appcopyai/releases/ios/Skillomate-1.0-build13.xcarchive/Products/Applications/Skillomate.app/Frameworks/hermesvm.framework'>', codeSigningInfo='<_DVTCodeSigningInformation_Path: 0xad49ccb40; isSigned='1', isAdHocSigned='0', signingCertificate='<DVTSigningCertificate: 0xad2458a80; name='Apple Development: Ali Hussain Khan (JGXF4R39DG)', hash='8D7568AE8C58C024C9D6C6DA39320E4542A70FF5', serialNumber='2527604EF53715772A6E6E18129E15A0', certificateKinds='(
+    "1.2.840.113635.100.6.1.12",
+    "1.2.840.113635.100.6.1.2"
+), issueDate='2026-07-10 06:49:37 +0000''>', entitlements='(null)', teamID='LJ48CVC23W', identifier='dev.hermesengine.iphoneos', executablePath='<DVTFilePath:0xad49a40c0:'/Users/kratik/Desktop/yttry-main copy/Edu-nex_Final/appcopyai/releases/ios/Skillomate-1.0-build13.xcarchive/Products/Applications/Skillomate.app/Frameworks/hermesvm.framework/hermesvm'>', hardenedRuntime='0'>'> to: /var/folders/tl/z0rfr49119vbwvp7ks733h780000gn/T/XcodeDistPipeline.~~~BL97vm/entitlements~~~dy9USV
+2026-09-24 07:46:03 +0000 [MT] invoking codesign: <NSConcreteTask: 0xad5571310; launchPath='/usr/bin/codesign', arguments='(
+    "-f",
+    "-s",
+    8D7568AE8C58C024C9D6C6DA39320E4542A70FF5,
+    "--entitlements",
+    "/var/folders/tl/z0rfr49119vbwvp7ks733h780000gn/T/XcodeDistPipeline.~~~BL97vm/entitlements~~~dy9USV",
+    "--preserve-metadata=identifier,flags,runtime,launch-constraints,library-constraints",
+    "--generate-entitlement-der",
+    "--strip-disallowed-xattrs",
+    "-vvv",
+    "/var/folders/tl/z0rfr49119vbwvp7ks733h780000gn/T/XcodeDistPipeline.~~~BL97vm/Root/Payload/Skillomate.app/Frameworks/hermesvm.framework"
+)'>
+2026-09-24 07:46:03 +0000 [MT] codesign output: /var/folders/tl/z0rfr49119vbwvp7ks733h780000gn/T/XcodeDistPipeline.~~~BL97vm/Root/Payload/Skillomate.app/Frameworks/hermesvm.framework: replacing existing signature
+/var/folders/tl/z0rfr49119vbwvp7ks733h780000gn/T/XcodeDistPipeline.~~~BL97vm/Root/Payload/Skillomate.app/Frameworks/hermesvm.framework: signed bundle with Mach-O thin (arm64) [dev.hermesengine.iphoneos]
+2026-09-24 07:46:03 +0000 [MT] Entitlements for <IDEDistributionItem: 0xad49ccf00; bundleID='com.alihussainkhan.edunexfinal', path='<DVTFilePath:0xad48a1560:'/Users/kratik/Desktop/yttry-main copy/Edu-nex_Final/appcopyai/releases/ios/Skillomate-1.0-build13.xcarchive/Products/Applications/Skillomate.app'>', codeSigningInfo='<_DVTCodeSigningInformation_Path: 0xad49ccf60; isSigned='1', isAdHocSigned='0', signingCertificate='<DVTSigningCertificate: 0xad24586c0; name='Apple Development: Ali Hussain Khan (JGXF4R39DG)', hash='8D7568AE8C58C024C9D6C6DA39320E4542A70FF5', serialNumber='2527604EF53715772A6E6E18129E15A0', certificateKinds='(
+    "1.2.840.113635.100.6.1.12",
+    "1.2.840.113635.100.6.1.2"
+), issueDate='2026-07-10 06:49:37 +0000''>', entitlements='{
+    "application-identifier" = "LJ48CVC23W.com.alihussainkhan.edunexfinal";
+    "com.apple.developer.team-identifier" = LJ48CVC23W;
+    "get-task-allow" = 1;
+}', teamID='LJ48CVC23W', identifier='com.alihussainkhan.edunexfinal', executablePath='<DVTFilePath:0xad48a3300:'/Users/kratik/Desktop/yttry-main copy/Edu-nex_Final/appcopyai/releases/ios/Skillomate-1.0-build13.xcarchive/Products/Applications/Skillomate.app/Skillomate'>', hardenedRuntime='0'>'>: {
+    "application-identifier" = "LJ48CVC23W.com.alihussainkhan.edunexfinal";
+    "com.apple.developer.team-identifier" = LJ48CVC23W;
+    "get-task-allow" = 1;
+}
+2026-09-24 07:46:03 +0000 [MT] Associated App Clip Identifiers Filter: Skipping because "com.apple.developer.associated-appclip-app-identifiers" is not present
+2026-09-24 07:46:03 +0000 [MT] Entitlements for <IDEDistributionItem: 0xad49ccf00; bundleID='com.alihussainkhan.edunexfinal', path='<DVTFilePath:0xad48a1560:'/Users/kratik/Desktop/yttry-main copy/Edu-nex_Final/appcopyai/releases/ios/Skillomate-1.0-build13.xcarchive/Products/Applications/Skillomate.app'>', codeSigningInfo='<_DVTCodeSigningInformation_Path: 0xad49ccf60; isSigned='1', isAdHocSigned='0', signingCertificate='<DVTSigningCertificate: 0xad2458a80; name='Apple Development: Ali Hussain Khan (JGXF4R39DG)', hash='8D7568AE8C58C024C9D6C6DA39320E4542A70FF5', serialNumber='2527604EF53715772A6E6E18129E15A0', certificateKinds='(
+    "1.2.840.113635.100.6.1.12",
+    "1.2.840.113635.100.6.1.2"
+), issueDate='2026-07-10 06:49:37 +0000''>', entitlements='{
+    "application-identifier" = "LJ48CVC23W.com.alihussainkhan.edunexfinal";
+    "com.apple.developer.team-identifier" = LJ48CVC23W;
+    "get-task-allow" = 1;
+}', teamID='LJ48CVC23W', identifier='com.alihussainkhan.edunexfinal', executablePath='<DVTFilePath:0xad48a3300:'/Users/kratik/Desktop/yttry-main copy/Edu-nex_Final/appcopyai/releases/ios/Skillomate-1.0-build13.xcarchive/Products/Applications/Skillomate.app/Skillomate'>', hardenedRuntime='0'>'> are: {
+    "application-identifier" = "LJ48CVC23W.com.alihussainkhan.edunexfinal";
+    "com.apple.developer.team-identifier" = LJ48CVC23W;
+    "get-task-allow" = 1;
+}
+2026-09-24 07:46:03 +0000 [MT] Writing entitlements for <IDEDistributionItem: 0xad49ccf00; bundleID='com.alihussainkhan.edunexfinal', path='<DVTFilePath:0xad48a1560:'/Users/kratik/Desktop/yttry-main copy/Edu-nex_Final/appcopyai/releases/ios/Skillomate-1.0-build13.xcarchive/Products/Applications/Skillomate.app'>', codeSigningInfo='<_DVTCodeSigningInformation_Path: 0xad49ccf60; isSigned='1', isAdHocSigned='0', signingCertificate='<DVTSigningCertificate: 0xad2458a80; name='Apple Development: Ali Hussain Khan (JGXF4R39DG)', hash='8D7568AE8C58C024C9D6C6DA39320E4542A70FF5', serialNumber='2527604EF53715772A6E6E18129E15A0', certificateKinds='(
+    "1.2.840.113635.100.6.1.12",
+    "1.2.840.113635.100.6.1.2"
+), issueDate='2026-07-10 06:49:37 +0000''>', entitlements='{
+    "application-identifier" = "LJ48CVC23W.com.alihussainkhan.edunexfinal";
+    "com.apple.developer.team-identifier" = LJ48CVC23W;
+    "get-task-allow" = 1;
+}', teamID='LJ48CVC23W', identifier='com.alihussainkhan.edunexfinal', executablePath='<DVTFilePath:0xad48a3300:'/Users/kratik/Desktop/yttry-main copy/Edu-nex_Final/appcopyai/releases/ios/Skillomate-1.0-build13.xcarchive/Products/Applications/Skillomate.app/Skillomate'>', hardenedRuntime='0'>'> to: /var/folders/tl/z0rfr49119vbwvp7ks733h780000gn/T/XcodeDistPipeline.~~~BL97vm/entitlements~~~ilHeZP
+2026-09-24 07:46:03 +0000 [MT] invoking codesign: <NSConcreteTask: 0xad5571310; launchPath='/usr/bin/codesign', arguments='(
+    "-f",
+    "-s",
+    8D7568AE8C58C024C9D6C6DA39320E4542A70FF5,
+    "--entitlements",
+    "/var/folders/tl/z0rfr49119vbwvp7ks733h780000gn/T/XcodeDistPipeline.~~~BL97vm/entitlements~~~ilHeZP",
+    "--preserve-metadata=identifier,flags,runtime,launch-constraints,library-constraints",
+    "--generate-entitlement-der",
+    "--strip-disallowed-xattrs",
+    "-vvv",
+    "/var/folders/tl/z0rfr49119vbwvp7ks733h780000gn/T/XcodeDistPipeline.~~~BL97vm/Root/Payload/Skillomate.app"
+)'>
+2026-09-24 07:46:03 +0000 [MT] codesign output: /var/folders/tl/z0rfr49119vbwvp7ks733h780000gn/T/XcodeDistPipeline.~~~BL97vm/Root/Payload/Skillomate.app: replacing existing signature
+/var/folders/tl/z0rfr49119vbwvp7ks733h780000gn/T/XcodeDistPipeline.~~~BL97vm/Root/Payload/Skillomate.app: signed app bundle with Mach-O thin (arm64) [com.alihussainkhan.edunexfinal]
+2026-09-24 07:46:03 +0000 [MT] Processing step: IDEDistributionZipODRItemStep
+2026-09-24 07:46:03 +0000 [MT] Skipping step: IDEDistributionZipODRItemStep because it said so
+2026-09-24 07:46:03 +0000 [MT] Skipping step: IDEDistributionZipODRItemStep because it said so
+2026-09-24 07:46:03 +0000 [MT] Skipping step: IDEDistributionZipODRItemStep because it said so
+2026-09-24 07:46:03 +0000 [MT] Skipping step: IDEDistributionZipODRItemStep because it said so
+2026-09-24 07:46:03 +0000 [MT] Skipping step: IDEDistributionZipODRItemStep because it said so
+2026-09-24 07:46:03 +0000 [MT] Processing step: IDEDistributionCreateIPAStep
+2026-09-24 07:46:03 +0000 [MT] Running /usr/bin/ditto '-V' '-c' '-k' '--norsrc' '/var/folders/tl/z0rfr49119vbwvp7ks733h780000gn/T/XcodeDistPipeline.~~~BL97vm/Root' '/var/folders/tl/z0rfr49119vbwvp7ks733h780000gn/T/XcodeDistPipeline.~~~BL97vm/Packages/Skillomate.ipa'
+2026-09-24 07:46:03 +0000  >>> Copying /var/folders/tl/z0rfr49119vbwvp7ks733h780000gn/T/XcodeDistPipeline.~~~BL97vm/Root 
+2026-09-24 07:46:03 +0000  copying file ./Payload/Skillomate.app/React-timing_privacy.bundle/PrivacyInfo.xcprivacy ... 
+2026-09-24 07:46:03 +0000  553 bytes for ./Payload/Skillomate.app/React-timing_privacy.bundle/PrivacyInfo.xcprivacy
+2026-09-24 07:46:03 +0000  copying file ./Payload/Skillomate.app/React-timing_privacy.bundle/Info.plist ... 
+2026-09-24 07:46:03 +0000  788 bytes for ./Payload/Skillomate.app/React-timing_privacy.bundle/Info.plist
+2026-09-24 07:46:03 +0000  copying file ./Payload/Skillomate.app/_CodeSignature/CodeResources ... 
+2026-09-24 07:46:03 +0000  27911 bytes for ./Payload/Skillomate.app/_CodeSignature/CodeResources
+2026-09-24 07:46:03 +0000  copying file ./Payload/Skillomate.app/SplashScreen.storyboardc/EXPO-VIEWCONTROLLER-1-view-EXPO-ContainerView.nib ... 
+2026-09-24 07:46:03 +0000  1903 bytes for ./Payload/Skillomate.app/SplashScreen.storyboardc/EXPO-VIEWCONTROLLER-1-view-EXPO-ContainerView.nib
+2026-09-24 07:46:03 +0000  copying file ./Payload/Skillomate.app/SplashScreen.storyboardc/SplashScreenViewController.nib ... 
+2026-09-24 07:46:03 +0000  1004 bytes for ./Payload/Skillomate.app/SplashScreen.storyboardc/SplashScreenViewController.nib
+2026-09-24 07:46:03 +0000  copying file ./Payload/Skillomate.app/SplashScreen.storyboardc/Info.plist ... 
+2026-09-24 07:46:03 +0000  225 bytes for ./Payload/Skillomate.app/SplashScreen.storyboardc/Info.plist
+2026-09-24 07:46:03 +0000  copying file ./Payload/Skillomate.app/AppIcon60x60@2x.png ... 
+2026-09-24 07:46:03 +0000  4172 bytes for ./Payload/Skillomate.app/AppIcon60x60@2x.png
+2026-09-24 07:46:03 +0000  copying file ./Payload/Skillomate.app/ExpoConstants_privacy.bundle/PrivacyInfo.xcprivacy ... 
+2026-09-24 07:46:03 +0000  607 bytes for ./Payload/Skillomate.app/ExpoConstants_privacy.bundle/PrivacyInfo.xcprivacy
+2026-09-24 07:46:03 +0000  copying file ./Payload/Skillomate.app/ExpoConstants_privacy.bundle/Info.plist ... 
+2026-09-24 07:46:03 +0000  791 bytes for ./Payload/Skillomate.app/ExpoConstants_privacy.bundle/Info.plist
+2026-09-24 07:46:03 +0000  copying file ./Payload/Skillomate.app/React-cxxreact_privacy.bundle/PrivacyInfo.xcprivacy ... 
+2026-09-24 07:46:03 +0000  552 bytes for ./Payload/Skillomate.app/React-cxxreact_privacy.bundle/PrivacyInfo.xcprivacy
+2026-09-24 07:46:03 +0000  copying file ./Payload/Skillomate.app/React-cxxreact_privacy.bundle/Info.plist ... 
+2026-09-24 07:46:03 +0000  792 bytes for ./Payload/Skillomate.app/React-cxxreact_privacy.bundle/Info.plist
+2026-09-24 07:46:03 +0000  copying file ./Payload/Skillomate.app/Skillomate ... 
+2026-09-24 07:46:03 +0000  3663296 bytes for ./Payload/Skillomate.app/Skillomate
+2026-09-24 07:46:03 +0000  copying file ./Payload/Skillomate.app/Assets.car ... 
+2026-09-24 07:46:03 +0000  355032 bytes for ./Payload/Skillomate.app/Assets.car
+2026-09-24 07:46:03 +0000  copying file ./Payload/Skillomate.app/AppIcon76x76@2x~ipad.png ... 
+2026-09-24 07:46:03 +0000  5853 bytes for ./Payload/Skillomate.app/AppIcon76x76@2x~ipad.png
+2026-09-24 07:46:03 +0000  copying file ./Payload/Skillomate.app/main.jsbundle ... 
+2026-09-24 07:46:03 +0000  2345494 bytes for ./Payload/Skillomate.app/main.jsbundle
+2026-09-24 07:46:03 +0000  copying file ./Payload/Skillomate.app/EXConstants.bundle/Info.plist ... 
+2026-09-24 07:46:03 +0000  769 bytes for ./Payload/Skillomate.app/EXConstants.bundle/Info.plist
+2026-09-24 07:46:03 +0000  copying file ./Payload/Skillomate.app/PrivacyInfo.xcprivacy ... 
+2026-09-24 07:46:03 +0000  5032 bytes for ./Payload/Skillomate.app/PrivacyInfo.xcprivacy
+2026-09-24 07:46:03 +0000  copying file ./Payload/Skillomate.app/ExpoFileSystem_privacy.bundle/PrivacyInfo.xcprivacy ... 
+2026-09-24 07:46:03 +0000  877 bytes for ./Payload/Skillomate.app/ExpoFileSystem_privacy.bundle/PrivacyInfo.xcprivacy
+2026-09-24 07:46:03 +0000  copying file ./Payload/Skillomate.app/ExpoFileSystem_privacy.bundle/Info.plist ... 
+2026-09-24 07:46:03 +0000  792 bytes for ./Payload/Skillomate.app/ExpoFileSystem_privacy.bundle/Info.plist
+2026-09-24 07:46:03 +0000  copying file ./Payload/Skillomate.app/Frameworks/ExpoModulesJSI.framework/_CodeSignature/CodeResources ... 
+2026-09-24 07:46:03 +0000  1798 bytes for ./Payload/Skillomate.app/Frameworks/ExpoModulesJSI.framework/_CodeSignature/CodeResources
+2026-09-24 07:46:03 +0000  copying file ./Payload/Skillomate.app/Frameworks/ExpoModulesJSI.framework/ExpoModulesJSI ... 
+2026-09-24 07:46:03 +0000  926368 bytes for ./Payload/Skillomate.app/Frameworks/ExpoModulesJSI.framework/ExpoModulesJSI
+2026-09-24 07:46:03 +0000  copying file ./Payload/Skillomate.app/Frameworks/ExpoModulesJSI.framework/Info.plist ... 
+2026-09-24 07:46:03 +0000  757 bytes for ./Payload/Skillomate.app/Frameworks/ExpoModulesJSI.framework/Info.plist
+2026-09-24 07:46:03 +0000  copying file ./Payload/Skillomate.app/Frameworks/hermesvm.framework/_CodeSignature/CodeResources ... 
+2026-09-24 07:46:03 +0000  1798 bytes for ./Payload/Skillomate.app/Frameworks/hermesvm.framework/_CodeSignature/CodeResources
+2026-09-24 07:46:03 +0000  copying file ./Payload/Skillomate.app/Frameworks/hermesvm.framework/hermesvm ... 
+2026-09-24 07:46:03 +0000  5094560 bytes for ./Payload/Skillomate.app/Frameworks/hermesvm.framework/hermesvm
+2026-09-24 07:46:03 +0000  copying file ./Payload/Skillomate.app/Frameworks/hermesvm.framework/Info.plist ... 
+859 bytes for ./Payload/Skillomate.app/Frameworks/hermesvm.framework/Info.plist
+copying file ./Payload/Skillomate.app/Frameworks/React.framework/_CodeSignature/CodeResources ... 
+1798 bytes for ./Payload/Skillomate.app/Frameworks/React.framework/_CodeSignature/CodeResources
+copying file ./Payload/Skillomate.app/Frameworks/React.framework/React ... 
+2026-09-24 07:46:03 +0000  12056816 bytes for ./Payload/Skillomate.app/Frameworks/React.framework/React
+2026-09-24 07:46:03 +0000  copying file ./Payload/Skillomate.app/Frameworks/React.framework/Info.plist ... 
+744 bytes for ./Payload/Skillomate.app/Frameworks/React.framework/Info.plist
+copying file ./Payload/Skillomate.app/Frameworks/ReactNativeDependencies.framework/_CodeSignature/CodeResources ... 
+3548 bytes for ./Payload/Skillomate.app/Frameworks/ReactNativeDependencies.framework/_CodeSignature/CodeResources
+copying file ./Payload/Skillomate.app/Frameworks/ReactNativeDependencies.framework/ReactNativeDependencies_folly.bundle/PrivacyInfo.xcprivacy ... 
+552 bytes for ./Payload/Skillomate.app/Frameworks/ReactNativeDependencies.framework/ReactNativeDependencies_folly.bundle/PrivacyInfo.xcprivacy
+2026-09-24 07:46:03 +0000  copying file ./Payload/Skillomate.app/Frameworks/ReactNativeDependencies.framework/ReactNativeDependencies_folly.bundle/Info.plist ... 
+689 bytes for ./Payload/Skillomate.app/Frameworks/ReactNativeDependencies.framework/ReactNativeDependencies_folly.bundle/Info.plist
+copying file ./Payload/Skillomate.app/Frameworks/ReactNativeDependencies.framework/ReactNativeDependencies ... 
+2026-09-24 07:46:03 +0000  1256528 bytes for ./Payload/Skillomate.app/Frameworks/ReactNativeDependencies.framework/ReactNativeDependencies
+2026-09-24 07:46:03 +0000  copying file ./Payload/Skillomate.app/Frameworks/ReactNativeDependencies.framework/ReactNativeDependencies_glog.bundle/PrivacyInfo.xcprivacy ... 
+2026-09-24 07:46:03 +0000  552 bytes for ./Payload/Skillomate.app/Frameworks/ReactNativeDependencies.framework/ReactNativeDependencies_glog.bundle/PrivacyInfo.xcprivacy
+2026-09-24 07:46:03 +0000  copying file ./Payload/Skillomate.app/Frameworks/ReactNativeDependencies.framework/ReactNativeDependencies_glog.bundle/Info.plist ... 
+2026-09-24 07:46:03 +0000  687 bytes for ./Payload/Skillomate.app/Frameworks/ReactNativeDependencies.framework/ReactNativeDependencies_glog.bundle/Info.plist
+2026-09-24 07:46:03 +0000  copying file ./Payload/Skillomate.app/Frameworks/ReactNativeDependencies.framework/ReactNativeDependencies_boost.bundle/PrivacyInfo.xcprivacy ... 
+2026-09-24 07:46:03 +0000  776 bytes for ./Payload/Skillomate.app/Frameworks/ReactNativeDependencies.framework/ReactNativeDependencies_boost.bundle/PrivacyInfo.xcprivacy
+2026-09-24 07:46:03 +0000  copying file ./Payload/Skillomate.app/Frameworks/ReactNativeDependencies.framework/ReactNativeDependencies_boost.bundle/Info.plist ... 
+2026-09-24 07:46:03 +0000  689 bytes for ./Payload/Skillomate.app/Frameworks/ReactNativeDependencies.framework/ReactNativeDependencies_boost.bundle/Info.plist
+2026-09-24 07:46:03 +0000  copying file ./Payload/Skillomate.app/Frameworks/ReactNativeDependencies.framework/Info.plist ... 
+2026-09-24 07:46:03 +0000  781 bytes for ./Payload/Skillomate.app/Frameworks/ReactNativeDependencies.framework/Info.plist
+2026-09-24 07:46:03 +0000  copying file ./Payload/Skillomate.app/embedded.mobileprovision ... 
+2026-09-24 07:46:03 +0000  18737 bytes for ./Payload/Skillomate.app/embedded.mobileprovision
+2026-09-24 07:46:03 +0000  copying file ./Payload/Skillomate.app/assets/node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/Fontisto.ttf ... 
+2026-09-24 07:46:03 +0000  313528 bytes for ./Payload/Skillomate.app/assets/node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/Fontisto.ttf
+2026-09-24 07:46:03 +0000  copying file ./Payload/Skillomate.app/assets/node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/Octicons.ttf ... 
+2026-09-24 07:46:03 +0000  69436 bytes for ./Payload/Skillomate.app/assets/node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/Octicons.ttf
+2026-09-24 07:46:03 +0000  copying file ./Payload/Skillomate.app/assets/node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/Feather.ttf ... 
+2026-09-24 07:46:03 +0000  55596 bytes for ./Payload/Skillomate.app/assets/node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/Feather.ttf
+2026-09-24 07:46:03 +0000  copying file ./Payload/Skillomate.app/assets/node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/FontAwesome6_Regular.ttf ... 
+2026-09-24 07:46:03 +0000  67976 bytes for ./Payload/Skillomate.app/assets/node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/FontAwesome6_Regular.ttf
+2026-09-24 07:46:03 +0000  copying file ./Payload/Skillomate.app/assets/node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/Entypo.ttf ... 
+2026-09-24 07:46:03 +0000  66200 bytes for ./Payload/Skillomate.app/assets/node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/Entypo.ttf
+2026-09-24 07:46:03 +0000  copying file ./Payload/Skillomate.app/assets/node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/FontAwesome5_Brands.ttf ... 
+2026-09-24 07:46:03 +0000  134040 bytes for ./Payload/Skillomate.app/assets/node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/FontAwesome5_Brands.ttf
+2026-09-24 07:46:03 +0000  copying file ./Payload/Skillomate.app/assets/node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/MaterialCommunityIcons.ttf ... 
+2026-09-24 07:46:03 +0000  1307660 bytes for ./Payload/Skillomate.app/assets/node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/MaterialCommunityIcons.ttf
+2026-09-24 07:46:03 +0000  copying file ./Payload/Skillomate.app/assets/node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/AntDesign.ttf ... 
+2026-09-24 07:46:03 +0000  130484 bytes for ./Payload/Skillomate.app/assets/node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/AntDesign.ttf
+2026-09-24 07:46:03 +0000  copying file ./Payload/Skillomate.app/assets/node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/Foundation.ttf ... 
+2026-09-24 07:46:03 +0000  56976 bytes for ./Payload/Skillomate.app/assets/node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/Foundation.ttf
+2026-09-24 07:46:03 +0000  copying file ./Payload/Skillomate.app/assets/node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/Ionicons.ttf ... 
+2026-09-24 07:46:03 +0000  389724 bytes for ./Payload/Skillomate.app/assets/node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/Ionicons.ttf
+2026-09-24 07:46:03 +0000  copying file ./Payload/Skillomate.app/assets/node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/FontAwesome5_Solid.ttf ... 
+2026-09-24 07:46:03 +0000  202744 bytes for ./Payload/Skillomate.app/assets/node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/FontAwesome5_Solid.ttf
+2026-09-24 07:46:03 +0000  copying file ./Payload/Skillomate.app/assets/node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/FontAwesome5_Regular.ttf ... 
+2026-09-24 07:46:03 +0000  33736 bytes for ./Payload/Skillomate.app/assets/node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/FontAwesome5_Regular.ttf
+2026-09-24 07:46:03 +0000  copying file ./Payload/Skillomate.app/assets/node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/FontAwesome.ttf ... 
+2026-09-24 07:46:03 +0000  165548 bytes for ./Payload/Skillomate.app/assets/node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/FontAwesome.ttf
+2026-09-24 07:46:03 +0000  copying file ./Payload/Skillomate.app/assets/node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/Zocial.ttf ... 
+2026-09-24 07:46:03 +0000  25788 bytes for ./Payload/Skillomate.app/assets/node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/Zocial.ttf
+2026-09-24 07:46:03 +0000  copying file ./Payload/Skillomate.app/assets/node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/EvilIcons.ttf ... 
+2026-09-24 07:46:03 +0000  13456 bytes for ./Payload/Skillomate.app/assets/node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/EvilIcons.ttf
+2026-09-24 07:46:03 +0000  copying file ./Payload/Skillomate.app/assets/node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/FontAwesome6_Solid.ttf ... 
+2026-09-24 07:46:04 +0000  423676 bytes for ./Payload/Skillomate.app/assets/node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/FontAwesome6_Solid.ttf
+2026-09-24 07:46:04 +0000  copying file ./Payload/Skillomate.app/assets/node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/SimpleLineIcons.ttf ... 
+2026-09-24 07:46:04 +0000  54056 bytes for ./Payload/Skillomate.app/assets/node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/SimpleLineIcons.ttf
+2026-09-24 07:46:04 +0000  copying file ./Payload/Skillomate.app/assets/node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/FontAwesome6_Brands.ttf ... 
+2026-09-24 07:46:04 +0000  209376 bytes for ./Payload/Skillomate.app/assets/node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/FontAwesome6_Brands.ttf
+2026-09-24 07:46:04 +0000  copying file ./Payload/Skillomate.app/assets/node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/MaterialIcons.ttf ... 
+2026-09-24 07:46:04 +0000  356840 bytes for ./Payload/Skillomate.app/assets/node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/MaterialIcons.ttf
+2026-09-24 07:46:04 +0000  copying file ./Payload/Skillomate.app/assets/assets/ai-avatars/r2.jpg ... 
+2026-09-24 07:46:04 +0000  18722 bytes for ./Payload/Skillomate.app/assets/assets/ai-avatars/r2.jpg
+2026-09-24 07:46:04 +0000  copying file ./Payload/Skillomate.app/assets/assets/ai-avatars/r3.jpg ... 
+2026-09-24 07:46:04 +0000  16795 bytes for ./Payload/Skillomate.app/assets/assets/ai-avatars/r3.jpg
+2026-09-24 07:46:04 +0000  copying file ./Payload/Skillomate.app/assets/assets/ai-avatars/r1.jpg ... 
+2026-09-24 07:46:04 +0000  16585 bytes for ./Payload/Skillomate.app/assets/assets/ai-avatars/r1.jpg
+2026-09-24 07:46:04 +0000  copying file ./Payload/Skillomate.app/assets/assets/ai-avatars/nex.png ... 
+2026-09-24 07:46:04 +0000  275570 bytes for ./Payload/Skillomate.app/assets/assets/ai-avatars/nex.png
+2026-09-24 07:46:04 +0000  copying file ./Payload/Skillomate.app/assets/assets/ai-avatars/r4.jpg ... 
+2026-09-24 07:46:04 +0000  17775 bytes for ./Payload/Skillomate.app/assets/assets/ai-avatars/r4.jpg
+2026-09-24 07:46:04 +0000  copying file ./Payload/Skillomate.app/assets/assets/ai-avatars/r5.jpg ... 
+2026-09-24 07:46:04 +0000  19313 bytes for ./Payload/Skillomate.app/assets/assets/ai-avatars/r5.jpg
+2026-09-24 07:46:04 +0000  copying file ./Payload/Skillomate.app/assets/assets/ai-avatars/r7.jpg ... 
+2026-09-24 07:46:04 +0000  22449 bytes for ./Payload/Skillomate.app/assets/assets/ai-avatars/r7.jpg
+2026-09-24 07:46:04 +0000  copying file ./Payload/Skillomate.app/assets/assets/ai-avatars/r6.jpg ... 
+2026-09-24 07:46:04 +0000  18017 bytes for ./Payload/Skillomate.app/assets/assets/ai-avatars/r6.jpg
+2026-09-24 07:46:04 +0000  copying file ./Payload/Skillomate.app/assets/assets/ai-avatars/r8.jpg ... 
+2026-09-24 07:46:04 +0000  16242 bytes for ./Payload/Skillomate.app/assets/assets/ai-avatars/r8.jpg
+2026-09-24 07:46:04 +0000  copying file ./Payload/Skillomate.app/assets/assets/ai-avatars/r9.jpg ... 
+2026-09-24 07:46:04 +0000  18076 bytes for ./Payload/Skillomate.app/assets/assets/ai-avatars/r9.jpg
+2026-09-24 07:46:04 +0000  copying file ./Payload/Skillomate.app/assets/assets/ai-avatars/nex-thinking.png ... 
+2026-09-24 07:46:04 +0000  233000 bytes for ./Payload/Skillomate.app/assets/assets/ai-avatars/nex-thinking.png
+2026-09-24 07:46:04 +0000  copying file ./Payload/Skillomate.app/assets/assets/skillomate-logo-dark.png ... 
+2026-09-24 07:46:04 +0000  327905 bytes for ./Payload/Skillomate.app/assets/assets/skillomate-logo-dark.png
+2026-09-24 07:46:04 +0000  copying file ./Payload/Skillomate.app/assets/assets/skillomate-logo.png ... 
+2026-09-24 07:46:04 +0000  436325 bytes for ./Payload/Skillomate.app/assets/assets/skillomate-logo.png
+2026-09-24 07:46:04 +0000  copying file ./Payload/Skillomate.app/assets/assets/avatars/a12.jpeg ... 
+2026-09-24 07:46:04 +0000  16935 bytes for ./Payload/Skillomate.app/assets/assets/avatars/a12.jpeg
+2026-09-24 07:46:04 +0000  copying file ./Payload/Skillomate.app/assets/assets/avatars/a9.jpeg ... 
+2026-09-24 07:46:04 +0000  15401 bytes for ./Payload/Skillomate.app/assets/assets/avatars/a9.jpeg
+2026-09-24 07:46:04 +0000  copying file ./Payload/Skillomate.app/assets/assets/avatars/a5.jpeg ... 
+2026-09-24 07:46:04 +0000  16223 bytes for ./Payload/Skillomate.app/assets/assets/avatars/a5.jpeg
+2026-09-24 07:46:04 +0000  copying file ./Payload/Skillomate.app/assets/assets/avatars/a4.jpeg ... 
+2026-09-24 07:46:04 +0000  16742 bytes for ./Payload/Skillomate.app/assets/assets/avatars/a4.jpeg
+2026-09-24 07:46:04 +0000  copying file ./Payload/Skillomate.app/assets/assets/avatars/a8.jpeg ... 
+2026-09-24 07:46:04 +0000  18410 bytes for ./Payload/Skillomate.app/assets/assets/avatars/a8.jpeg
+2026-09-24 07:46:04 +0000  copying file ./Payload/Skillomate.app/assets/assets/avatars/a13.jpeg ... 
+2026-09-24 07:46:04 +0000  16065 bytes for ./Payload/Skillomate.app/assets/assets/avatars/a13.jpeg
+2026-09-24 07:46:04 +0000  copying file ./Payload/Skillomate.app/assets/assets/avatars/a3.jpeg ... 
+2026-09-24 07:46:04 +0000  19751 bytes for ./Payload/Skillomate.app/assets/assets/avatars/a3.jpeg
+2026-09-24 07:46:04 +0000  copying file ./Payload/Skillomate.app/assets/assets/avatars/a14.jpeg ... 
+2026-09-24 07:46:04 +0000  14082 bytes for ./Payload/Skillomate.app/assets/assets/avatars/a14.jpeg
+2026-09-24 07:46:04 +0000  copying file ./Payload/Skillomate.app/assets/assets/avatars/a15.jpeg ... 
+2026-09-24 07:46:04 +0000  16890 bytes for ./Payload/Skillomate.app/assets/assets/avatars/a15.jpeg
+2026-09-24 07:46:04 +0000  copying file ./Payload/Skillomate.app/assets/assets/avatars/a2.jpeg ... 
+2026-09-24 07:46:04 +0000  14310 bytes for ./Payload/Skillomate.app/assets/assets/avatars/a2.jpeg
+2026-09-24 07:46:04 +0000  copying file ./Payload/Skillomate.app/assets/assets/avatars/a1.jpeg ... 
+2026-09-24 07:46:04 +0000  19662 bytes for ./Payload/Skillomate.app/assets/assets/avatars/a1.jpeg
+2026-09-24 07:46:04 +0000  copying file ./Payload/Skillomate.app/assets/assets/avatars/a10.jpeg ... 
+2026-09-24 07:46:04 +0000  16441 bytes for ./Payload/Skillomate.app/assets/assets/avatars/a10.jpeg
+2026-09-24 07:46:04 +0000  copying file ./Payload/Skillomate.app/assets/assets/avatars/a7.jpeg ... 
+2026-09-24 07:46:04 +0000  17860 bytes for ./Payload/Skillomate.app/assets/assets/avatars/a7.jpeg
+2026-09-24 07:46:04 +0000  copying file ./Payload/Skillomate.app/assets/assets/avatars/a6.jpeg ... 
+2026-09-24 07:46:04 +0000  18569 bytes for ./Payload/Skillomate.app/assets/assets/avatars/a6.jpeg
+2026-09-24 07:46:04 +0000  copying file ./Payload/Skillomate.app/assets/assets/avatars/a11.jpeg ... 
+2026-09-24 07:46:04 +0000  15311 bytes for ./Payload/Skillomate.app/assets/assets/avatars/a11.jpeg
+2026-09-24 07:46:04 +0000  copying file ./Payload/Skillomate.app/Info.plist ... 
+2026-09-24 07:46:04 +0000  1761 bytes for ./Payload/Skillomate.app/Info.plist
+2026-09-24 07:46:04 +0000  copying file ./Payload/Skillomate.app/Expo.plist ... 
+2026-09-24 07:46:04 +0000  132 bytes for ./Payload/Skillomate.app/Expo.plist
+2026-09-24 07:46:04 +0000  copying file ./Payload/Skillomate.app/RNCAsyncStorage_resources.bundle/PrivacyInfo.xcprivacy ... 
+2026-09-24 07:46:04 +0000  512 bytes for ./Payload/Skillomate.app/RNCAsyncStorage_resources.bundle/PrivacyInfo.xcprivacy
+2026-09-24 07:46:04 +0000  copying file ./Payload/Skillomate.app/RNCAsyncStorage_resources.bundle/Info.plist ... 
+2026-09-24 07:46:04 +0000  797 bytes for ./Payload/Skillomate.app/RNCAsyncStorage_resources.bundle/Info.plist
+2026-09-24 07:46:04 +0000  copying file ./Payload/Skillomate.app/PkgInfo ... 
+2026-09-24 07:46:04 +0000  8 bytes for ./Payload/Skillomate.app/PkgInfo
+2026-09-24 07:46:04 +0000  copying file ./Payload/Skillomate.app/React-Core_privacy.bundle/PrivacyInfo.xcprivacy ... 
+2026-09-24 07:46:04 +0000  768 bytes for ./Payload/Skillomate.app/React-Core_privacy.bundle/PrivacyInfo.xcprivacy
+2026-09-24 07:46:04 +0000  copying file ./Payload/Skillomate.app/React-Core_privacy.bundle/Info.plist ... 
+2026-09-24 07:46:04 +0000  784 bytes for ./Payload/Skillomate.app/React-Core_privacy.bundle/Info.plist
+2026-09-24 07:46:04 +0000 [MT] /usr/bin/ditto exited with 0
+2026-09-24 07:46:04 +0000 [MT] Processing step: IDEDistributionAppStoreInformationStep
+2026-09-24 07:46:04 +0000 [MT] Skipping step: IDEDistributionAppStoreInformationStep because it said so
+2026-09-24 07:46:04 +0000 [MT] Processing step: IDEDistributionGenerateProcessedDistributionItems
+2026-09-24 07:46:04 +0000 [MT] IDEDistributionItem init <DVTFilePath:0xad1d71ea0:'/var/folders/tl/z0rfr49119vbwvp7ks733h780000gn/T/XcodeDistPipeline.~~~BL97vm/Root/Payload/Skillomate.app/Frameworks/hermesvm.framework'>
+2026-09-24 07:46:04 +0000 [MT] IDEDistributionItem init <DVTFilePath:0xad1d71dc0:'/var/folders/tl/z0rfr49119vbwvp7ks733h780000gn/T/XcodeDistPipeline.~~~BL97vm/Root/Payload/Skillomate.app/Frameworks/ExpoModulesJSI.framework'>
+2026-09-24 07:46:04 +0000 [MT] IDEDistributionItem init <DVTFilePath:0xad49cea60:'/var/folders/tl/z0rfr49119vbwvp7ks733h780000gn/T/XcodeDistPipeline.~~~BL97vm/Root/Payload/Skillomate.app/Frameworks/React.framework'>
+2026-09-24 07:46:04 +0000 [MT] IDEDistributionItem init <DVTFilePath:0xad48c2580:'/var/folders/tl/z0rfr49119vbwvp7ks733h780000gn/T/XcodeDistPipeline.~~~BL97vm/Root/Payload/Skillomate.app/Frameworks/ReactNativeDependencies.framework'>
+2026-09-24 07:46:04 +0000 [MT] IDEDistributionItem init <DVTFilePath:0xad49cdf20:'/var/folders/tl/z0rfr49119vbwvp7ks733h780000gn/T/XcodeDistPipeline.~~~BL97vm/Root/Payload/Skillomate.app'>
+2026-09-24 07:46:04 +0000 [MT] Processing step: IDEDistributionCreateManifestStep
