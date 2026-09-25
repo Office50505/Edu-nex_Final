@@ -2,6 +2,7 @@
 import React from 'react';
 import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { route } from '../../src/lib/routes.js';
 import { AdOfferPage } from '../../src/pages/AdOfferPage.jsx';
 import { DEFAULT_OFFER_VIDEO_URL, OFFER_MEDIA } from '../../src/lib/offerMedia.js';
 
@@ -25,7 +26,7 @@ afterEach(() => {
 });
 
 it.each(Object.entries(OFFER_MEDIA))('%s renders its video, falls back on media failure, and opens phone verification', async (page, media) => {
-  window.history.replaceState({}, '', `/${page.replace('.html', '')}`);
+  window.history.replaceState({}, '', route(page));
   render(<AdOfferPage />);
   await waitFor(() => expect(fetch).toHaveBeenCalled());
   expect(screen.getByRole('heading', { name: 'Skillomate Subscription' })).toBeTruthy();

@@ -52,6 +52,7 @@ if (fs.existsSync(indexHtml) && fs.existsSync(legacyDir)) {
 if (fs.existsSync(indexHtml)) {
   const reactOnlyRoutes = [
     'account-deletion',
+    'ai',
     'admin/certifications',
     'admin/system-health',
     'admin/reports',

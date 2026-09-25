@@ -16,7 +16,7 @@ const cleanRoutes = {
   "lesson.html": "/lesson",
   "login.html": "/login",
   "otp.html": "/otp",
-  "offer.html": "/offer",
+  "offer.html": "/ai",
   ...Object.fromEntries(Array.from({ length: 9 }, (_, index) => {
     const number = index + 2;
     return [`offer${number}.html`, `/offer${number}`];
