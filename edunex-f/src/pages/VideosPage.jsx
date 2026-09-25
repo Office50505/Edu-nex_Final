@@ -1567,8 +1567,7 @@ export function VideosPage() {
     };
 
     const onWheel = (event) => {
-      const desktopReel = window.matchMedia?.("(min-width: 821px) and (pointer: fine)")?.matches;
-      if ((!isPlayerFullscreen(frame) && !isMobileReel() && !desktopReel) || ignoreSwipeTarget(event.target) || Math.abs(event.deltaY) <= Math.abs(event.deltaX)) return;
+      if ((!isPlayerFullscreen(frame) && !isMobileReel()) || ignoreSwipeTarget(event.target) || Math.abs(event.deltaY) <= Math.abs(event.deltaX)) return;
       const direction = event.deltaY > 0 ? 1 : -1;
       if (!canChangeLesson(direction)) return;
       event.preventDefault();

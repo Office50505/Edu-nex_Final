@@ -394,7 +394,7 @@ it('changes lecture with a short, quick reel-style vertical swipe', async () => 
   expect(frame.classList.contains('is-reel-enter-next')).toBe(true);
 });
 
-it('smoothly changes one lecture with the desktop mouse wheel over the player', async () => {
+it('changes lecture with the desktop mouse wheel only while the player is fullscreen', async () => {
   window.history.replaceState(null, '', '/videos?courseId=course&video=0');
   window.matchMedia = vi.fn((query) => ({
     matches: query.includes('(pointer: fine)'),
@@ -411,6 +411,13 @@ it('smoothly changes one lecture with the desktop mouse wheel over the player', 
   const { container } = render(<VideosPage />);
   expect((await screen.findByTestId('active-player-lesson')).textContent).toBe('First lesson');
   const frame = container.querySelector('#playerFrame');
+  fireEvent.wheel(frame, { deltaY: 28, deltaX: 0 });
+  fireEvent.wheel(frame, { deltaY: 32, deltaX: 0 });
+  expect(screen.getByTestId('active-player-lesson').textContent).toBe('First lesson');
+  expect(frame.classList.contains('is-reel-dragging')).toBe(false);
+
+  Object.defineProperty(document, 'fullscreenElement', { configurable: true, value: frame });
+  fireEvent(document, new Event('fullscreenchange'));
   fireEvent.wheel(frame, { deltaY: 28, deltaX: 0 });
   expect(frame.classList.contains('is-reel-dragging')).toBe(true);
   fireEvent.wheel(frame, { deltaY: 32, deltaX: 0 });
@@ -438,7 +445,10 @@ it('changes the Notes content when scrolling to a different lecture', async () =
   expect(screen.getByText('Notes for lecture one')).toBeTruthy();
   fireEvent.click(screen.getByRole('button', { name: 'Back to video' }));
 
-  fireEvent.wheel(container.querySelector('#playerFrame'), { deltaY: 80, deltaX: 0 });
+  const frame = container.querySelector('#playerFrame');
+  Object.defineProperty(document, 'fullscreenElement', { configurable: true, value: frame });
+  fireEvent(document, new Event('fullscreenchange'));
+  fireEvent.wheel(frame, { deltaY: 80, deltaX: 0 });
   expect((await screen.findByTestId('active-player-lesson')).textContent).toBe('Second lesson');
   fireEvent.click(screen.getByRole('button', { name: 'Open lecture notes' }));
   expect(screen.getByText('Notes for lecture two')).toBeTruthy();
