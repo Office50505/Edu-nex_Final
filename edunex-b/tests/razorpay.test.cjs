@@ -255,3 +255,15 @@ test('Razorpay status exposes admin-assigned course access without claiming a gl
   assert.equal(body.hasCourseAccess, true);
   assert.deepEqual(Array.from(body.courseIds), ['course-one']);
 });
+
+test('a revoked admin subscription is not restored by reconciliation of the old closed mandate', async () => {
+  const f = statusFlow({
+    billingRecord: { _id: 'learner', phase: 'closed', subscriptionId: 'sub_old' },
+    subscriptionRecord: { gateway: 'admin', status: 'paused', adminBillingSubscriptionId: 'sub_old', trialExpiresAt: null, currentPeriodEnd: null },
+  });
+  const { body, statusCode } = await f.status({ _id: 'learner', subscriptionStatus: 'none' });
+  assert.equal(statusCode, 200);
+  assert.equal(body.status, 'none');
+  assert.equal(body.hasActiveAccess, false);
+  assert.equal(f.calls(), 0);
+});

@@ -20,11 +20,11 @@ test('admin can create a learner id with bounded validated credentials', () => {
   assert.doesNotMatch(serverSource, /passwordHash: password/);
 });
 
-test('admin subscription route validates its action and duration boundary', () => {
-  assert.match(serverSource, /app\.patch\('\/api\/admin\/users\/:id\/subscription', protectAdmin/);
-  assert.match(serverSource, /!\['grant', 'revoke'\]\.includes\(action\)/);
-  assert.match(serverSource, /Math\.min\(3650, Math\.max\(1,/);
-  assert.match(serverSource, /status: 'paused', currentPeriodEnd: now/);
+test('admin subscription route is protected and updates records and audit in a transaction', () => {
+  assert.ok(serverSource.includes("app.patch('/api/admin/users/:id/subscription', protectAdmin"));
+  assert.ok(serverSource.includes('mongoose.connection.transaction(async (session)'));
+  assert.ok(serverSource.includes('subscriptionChange(req.body, previous || {}, billing)'));
+  assert.ok(serverSource.includes('await user.save({ session })'));
 });
 
 test('admin actions are audited and user ban metadata is bounded', () => {

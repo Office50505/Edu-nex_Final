@@ -106,3 +106,63 @@ it("explains why assignment cannot start when no course is published", async () 
   expect(window.alert).toHaveBeenCalledWith("No published courses are available to assign. Publish a course first, then try again.");
   expect(screen.getByRole("alert").textContent).toContain("No published courses are available");
 });
+
+it.each(['none', 'trial', 'subscribed'])('saves %s subscription without changing course ownership', async (status) => {
+  mockAdminApi();
+  const original = adminJson.getMockImplementation();
+  adminJson.mockImplementation(async (path, options = {}) => {
+    if (path.endsWith('/subscription')) {
+      return { message: `Subscription changed to ${status}.`, user: { _id: learner._id, subscriptionStatus: status } };
+    }
+    if (path.endsWith('/certificates')) return [];
+    return original(path, options);
+  });
+  render(<AdminUsersPage />);
+  fireEvent.click(await screen.findByRole('button', { name: 'Manage' }));
+  fireEvent.click(screen.getByRole('button', { name: 'Update subscription' }));
+  const dialog = screen.getByRole('dialog', { name: 'Update subscription' });
+  const select = dialog.querySelector('select');
+  fireEvent.change(select, { target: { value: status } });
+  expect(Array.from(select.options, option => option.value)).toEqual(['none', 'trial', 'subscribed']);
+  fireEvent.click(screen.getByRole('button', { name: 'Save subscription' }));
+  await screen.findByText(`Subscription changed to ${status}.`);
+  expect(screen.queryByRole('dialog')).toBeNull();
+  const mutation = adminJson.mock.calls.find(([path]) => path.endsWith('/subscription'));
+  expect(mutation[1].method).toBe('PATCH');
+  expect(JSON.parse(mutation[1].body)).toEqual({ status, reason: 'Admin subscription update', ...(status === 'none' ? {} : { durationDays: status === 'trial' ? 1 : 30 }) });
+  expect(adminJson.mock.calls.some(([path, options]) => path.endsWith('/courses') && options?.method === 'PATCH')).toBe(false);
+});
+
+it('keeps the subscription editor open and displays billing conflicts', async () => {
+  mockAdminApi();
+  const original = adminJson.getMockImplementation();
+  adminJson.mockImplementation(async (path, options) => {
+    if (path.endsWith('/subscription')) throw new Error('Resolve the existing payment setup first.');
+    return original(path, options);
+  });
+  render(<AdminUsersPage />);
+  fireEvent.click(await screen.findByRole('button', { name: 'Manage' }));
+  fireEvent.click(screen.getByRole('button', { name: 'Update subscription' }));
+  fireEvent.click(screen.getByRole('button', { name: 'Save subscription' }));
+  expect(await screen.findByRole('alert')).toHaveProperty('textContent', 'Resolve the existing payment setup first.');
+  expect(screen.getByRole('dialog')).toBeTruthy();
+});
+
+it('loads real admin history in the learner drawer and offers subscription editing', async () => {
+  mockAdminApi();
+  const original = adminJson.getMockImplementation();
+  adminJson.mockImplementation(async (path, options) => {
+    if (path.endsWith('/actions')) return [{ _id: 'audit-1', action: 'subscription_granted', reason: 'Support correction', createdAt: '2026-09-25' }];
+    if (path.endsWith('/certificates')) return [];
+    if (path.endsWith('/purchase-history')) return { orders: [], courseChanges: [] };
+    return original(path, options);
+  });
+  render(<AdminUsersPage />);
+  fireEvent.click(await screen.findByRole('button', { name: 'View', exact: true }));
+  fireEvent.click(screen.getByRole('tab', { name: 'Activity' }));
+  expect(await screen.findByText('subscription granted')).toBeTruthy();
+  expect(screen.getByText(/Support correction/)).toBeTruthy();
+  expect(screen.queryByText(/Backend API not connected/)).toBeNull();
+  fireEvent.click(screen.getByRole('button', { name: 'Update subscription' }));
+  expect(screen.getByRole('dialog', { name: 'Update subscription' })).toBeTruthy();
+});

@@ -317,11 +317,11 @@ export function AdminPaymentAuditorPage() {
 export function AdminSubscriptionsPage() {
   const { loading, error, analytics } = useOperationsData({ analytics: true });
   const mix = analytics?.breakdowns?.userSubscriptionStatus || analytics?.breakdowns?.subscriptionStatus || {};
-  const rows = Object.entries(mix).map(([status, count]) => ({ id: status, cells: [status || "none", formatNumber(count), "Analytics API rollup", <button className="toolbar-button" type="button" disabled>Manage</button>] }));
+  const rows = Object.entries(mix).map(([status, count]) => ({ id: status, cells: [status || "none", formatNumber(count), "Analytics API rollup", <a className="toolbar-button" href={`${adminRoutes.users}?subscription=${encodeURIComponent(status || "none")}`}>Manage learners</a>] }));
   return (
     <AdminShell activePage="subscriptions" title="Subscriptions" subtitle="Subscription mix, churn signals, and plan operations.">
       <Message text={error} type="error" />
-      <PlaceholderNote>Backend API not connected for subscription changes yet. The counts are live analytics totals.</PlaceholderNote>
+      <PlaceholderNote>Select Manage learners to update subscription status and access duration.</PlaceholderNote>
       {loading ? <div className="loading-state">Loading subscription mix...</div> : <StatusTable columns={["Status", "Learners", "Source", "Actions"]} rows={rows} />}
     </AdminShell>
   );
