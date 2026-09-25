@@ -465,6 +465,8 @@ const DEFAULT_API_BASE = __DEV__
 const normalizeBaseUrl = url => String(url || "").replace(/\/+$/, "");
 const API_BASE = normalizeBaseUrl(process.env.EXPO_PUBLIC_API_BASE || DEFAULT_API_BASE);
 const WEB_APP_BASE = normalizeBaseUrl(process.env.EXPO_PUBLIC_WEB_APP_BASE || "https://skillomate.in");
+const API_REQUEST_TIMEOUT_MS = 12000;
+const API_NETWORK_RETRY_DELAYS_MS = [0, 600, 1600];
 
 function openMembershipAccess() {
   Alert.alert(
@@ -689,6 +691,40 @@ async function readJsonResponse(res) {
   catch { return { error: raw }; }
 }
 
+const wait = milliseconds => new Promise(resolve => setTimeout(resolve, milliseconds));
+
+async function fetchWithNetworkRetry(url, options = {}) {
+  let lastError;
+
+  for (let attempt = 0; attempt < API_NETWORK_RETRY_DELAYS_MS.length; attempt += 1) {
+    const retryDelay = API_NETWORK_RETRY_DELAYS_MS[attempt];
+    if (retryDelay) await wait(retryDelay);
+
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), API_REQUEST_TIMEOUT_MS);
+
+    try {
+      return await fetch(url, { ...options, signal: controller.signal });
+    } catch (error) {
+      lastError = error;
+      console.warn(
+        `[Skillomate API] request failed (${attempt + 1}/${API_NETWORK_RETRY_DELAYS_MS.length})`,
+        String(error?.message || error || "Unknown network error"),
+      );
+    } finally {
+      clearTimeout(timer);
+    }
+  }
+
+  const requestError = new Error(
+    lastError?.name === "AbortError"
+      ? "The server took too long to respond."
+      : "The device could not reach the Skillomate server.",
+  );
+  requestError.code = lastError?.name === "AbortError" ? "API_TIMEOUT" : "API_NETWORK_ERROR";
+  throw requestError;
+}
+
 async function fetchApiJson(path, fallback = null, signal) {
   const controller = new AbortController();
   const abort = () => controller.abort();
@@ -710,7 +746,7 @@ async function postApiJson(paths, body) {
   const candidates = Array.isArray(paths) ? paths : [paths];
   let last = null;
   for (const path of candidates) {
-    const res = await fetch(`${API_BASE}${path}`, {
+    const res = await fetchWithNetworkRetry(`${API_BASE}${path}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
@@ -7821,7 +7857,13 @@ export default function App() {
         setWishlist(authUser.wishlist || []);
         clearLoginForm();
       }
-    } catch { setLoginError("Cannot connect to server. Try again."); }
+    } catch (error) {
+      setLoginError(
+        error?.code === "API_TIMEOUT"
+          ? "The server took too long to respond. Check your connection and try again."
+          : "Cannot connect to server. Check Wi-Fi or mobile data and try again.",
+      );
+    }
     finally { setLoginLoading(false); }
   }
 

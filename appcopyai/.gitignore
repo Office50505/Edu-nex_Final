@@ -3,5 +3,7 @@ node_modules
 .expo/
 credentials.json
 credentials/
+*.jks
+*.keystore
 __pycache__/
 *.pyc
