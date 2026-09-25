@@ -35,4 +35,13 @@ function subscriptionChange(input, previous = {}, billing, now = new Date()) {
   };
 }
 
-module.exports = { subscriptionChange };
+async function verifyEndedBilling(previous, billing, fetchSubscription) {
+  if (!billing?.subscriptionId || !['ready', 'closed'].includes(billing.phase)) return null;
+  if (previous?.razorpaySubscriptionId && previous.razorpaySubscriptionId !== billing.subscriptionId) return null;
+  if (billing.phase === 'closed' && (!previous?.razorpaySubscriptionId || ['cancelled', 'completed', 'expired'].includes(previous.razorpayStatus))) return null;
+  const remote = await fetchSubscription(billing.subscriptionId, billing.mode);
+  if (remote.id !== billing.subscriptionId || !['cancelled', 'completed', 'expired'].includes(remote.status)) return null;
+  return remote.status;
+}
+
+module.exports = { subscriptionChange, verifyEndedBilling };

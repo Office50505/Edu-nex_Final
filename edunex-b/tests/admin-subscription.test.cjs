@@ -45,3 +45,22 @@ test('legacy grant/revoke clients map to supported statuses', () => {
   assert.equal(subscriptionChange({ action: 'grant', reason: 'Test' }).status, 'subscribed');
   assert.equal(subscriptionChange({ action: 'revoke', reason: 'Test' }).status, 'none');
 });
+
+test('verifies terminal gateway state before clearing stale billing restrictions', async () => {
+  const { verifyEndedBilling } = require('../services/adminSubscription');
+  const billing = { subscriptionId: 'sub_old', mode: 'live', phase: 'ready' };
+  const previous = { razorpaySubscriptionId: 'sub_old', razorpayStatus: 'created' };
+  for (const status of ['expired', 'cancelled', 'completed']) {
+    assert.equal(await verifyEndedBilling(previous, billing, async (id, mode) => {
+      assert.equal(mode, 'live'); return { id, status };
+    }), status);
+  }
+  for (const status of ['active', 'authenticated', 'paused', 'pending', 'created']) {
+    assert.equal(await verifyEndedBilling(previous, billing, async id => ({ id, status })), null);
+  }
+  assert.equal(await verifyEndedBilling(previous, billing, async () => ({ id: 'different', status: 'expired' })), null);
+  await assert.rejects(verifyEndedBilling(previous, billing, async () => { throw new Error('Unavailable'); }), /Unavailable/);
+  for (const phase of ['creating', 'uncertain']) {
+    assert.equal(await verifyEndedBilling(previous, { ...billing, phase }, async () => { throw new Error('Must not fetch'); }), null);
+  }
+});

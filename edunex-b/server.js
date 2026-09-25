@@ -2800,7 +2800,7 @@ app.patch('/api/admin/users/:id/subscription', protectAdmin, async (req, res) =>
     if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
       return res.status(400).json({ error: 'Invalid user id' });
     }
-    const { subscriptionChange } = require('./services/adminSubscription');
+    const { subscriptionChange, verifyEndedBilling } = require('./services/adminSubscription');
     const Billing = require('./models/RazorpayBilling');
     let updatedUser;
     await mongoose.connection.transaction(async (session) => {
@@ -2809,7 +2809,15 @@ app.patch('/api/admin/users/:id/subscription', protectAdmin, async (req, res) =>
       if (user.deletedAt) throw Object.assign(new Error('Restore this user before changing subscription access.'), { statusCode: 409 });
       const previous = await Subscription.findOne({ user: user._id }).session(session).lean();
       const billing = await Billing.findById(user._id).session(session).lean();
+      const endedStatus = await verifyEndedBilling(previous, billing, (id, mode) =>
+        require('./services/razorpayService').api(`/subscriptions/${encodeURIComponent(id)}`, 'GET', undefined, mode));
+      if (endedStatus) {
+        await Billing.updateOne({ _id: user._id, subscriptionId: billing.subscriptionId }, { $set: { phase: 'closed' } }, { session });
+        billing.phase = 'closed';
+        if (previous?.razorpaySubscriptionId) previous.razorpayStatus = endedStatus;
+      }
       const change = subscriptionChange(req.body, previous || {}, billing);
+      if (endedStatus && previous?.razorpaySubscriptionId) change.subscription.razorpayStatus = endedStatus;
       const previousState = { subscriptionStatus: user.subscriptionStatus, subscriptionExpiry: user.subscriptionExpiry, subscriptionDocumentStatus: previous?.status || null };
       const subscription = await Subscription.findOneAndUpdate(
         { user: user._id },

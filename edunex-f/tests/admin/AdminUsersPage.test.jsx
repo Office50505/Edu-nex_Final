@@ -167,3 +167,27 @@ it('loads real admin history in the learner drawer and offers subscription editi
   fireEvent.click(screen.getByRole('button', { name: 'Update subscription' }));
   expect(screen.getByRole('dialog', { name: 'Update subscription' })).toBeTruthy();
 });
+
+it('saves the selected duration and locks the editor while the request is pending', async () => {
+  mockAdminApi();
+  const original = adminJson.getMockImplementation();
+  let finishSave;
+  adminJson.mockImplementation((path, options) => {
+    if (path.endsWith('/subscription')) return new Promise(resolve => { finishSave = resolve; });
+    return original(path, options);
+  });
+  render(<AdminUsersPage />);
+  fireEvent.click(await screen.findByRole('button', { name: 'Manage' }));
+  fireEvent.click(screen.getByRole('button', { name: 'Update subscription' }));
+  const dialog = screen.getByRole('dialog');
+  fireEvent.change(dialog.querySelector('select'), { target: { value: 'subscribed' } });
+  fireEvent.click(screen.getByRole('button', { name: '90 days' }));
+  fireEvent.click(screen.getByRole('button', { name: 'Save subscription' }));
+  expect(dialog.querySelector('fieldset').disabled).toBe(true);
+  const mutation = adminJson.mock.calls.find(([path]) => path.endsWith('/subscription'));
+  expect(JSON.parse(mutation[1].body).durationDays).toBe(90);
+  finishSave({ message: 'Subscription saved.', user: { subscriptionStatus: 'subscribed', subscriptionExpiry: '2026-12-24T09:48:19Z' } });
+  await screen.findByText('Subscription saved.');
+  expect(screen.queryByRole('dialog')).toBeNull();
+  expect(screen.getAllByText(/24 Dec 2026.*03:18 pm IST/).length).toBeGreaterThan(0);
+});
