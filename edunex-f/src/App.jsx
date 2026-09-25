@@ -130,6 +130,9 @@ export default function App() {
   const adminPage = adminPageFromPath(locationState.pathname);
   const pageKey = pageKeyFromPath(locationState.pathname);
   const standaloneOffer = /^offer(?:[2-9]|10)?\.html$/.test(pageKey);
+  const standaloneDirectPayment = pageKey === "payment.html"
+    && new URLSearchParams(locationState.search).get("source") === "skillomate-direct";
+  const standalonePage = standaloneOffer || standaloneDirectPayment;
   const ReactPage = reactPageLoaders[pageKey];
   const routeKey = routeFromState(locationState);
   const openProblemReport = useCallback(() => setReportOpen(true), []);
@@ -273,7 +276,7 @@ export default function App() {
 
   return (
     <>
-      {!standaloneOffer ? <Navbar pageKey={pageKey} onReportProblem={openProblemReport} /> : null}
+      {!standalonePage ? <Navbar pageKey={pageKey} onReportProblem={openProblemReport} /> : null}
       {ReactPage ? (
         <PageErrorBoundary key={routeKey}>
           <Suspense fallback={<PageLoading />}>
@@ -282,8 +285,8 @@ export default function App() {
         </PageErrorBoundary>
       ) : null}
       {!ReactPage ? <NotFoundPage /> : null}
-      {!standaloneOffer ? <Footer /> : null}
-      {!standaloneOffer ? <ProblemReport open={reportOpen} onClose={closeProblemReport} /> : null}
+      {!standalonePage ? <Footer /> : null}
+      {!standalonePage ? <ProblemReport open={reportOpen} onClose={closeProblemReport} /> : null}
     </>
   );
 }

@@ -77,6 +77,11 @@
   color: #f8fafc;
 }
 
+.react-page-root[data-page="payment.html"].direct-app-payment .checkout-launcher {
+  min-height: 100dvh;
+  padding: 24px 20px;
+}
+
 .react-page-root[data-page="payment.html"] .checkout-launcher-card .checkout-launcher-error {
   color: #fca5a5;
 }

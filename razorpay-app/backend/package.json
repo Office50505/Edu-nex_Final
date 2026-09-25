@@ -1,0 +1,33 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "smoke:api": "node scripts/smoke-api.mjs",
+    "smoke:api:local": "node scripts/smoke-api.mjs --start --allow-db-unavailable",
+    "db:index:audit": "node scripts/audit-mongo-indexes.mjs",
+    "db:index:create": "node scripts/audit-mongo-indexes.mjs --create-missing",
+    "k6:api:common": "node scripts/run-k6-common-api-steps.mjs",
+    "k6:api:common:single": "k6 run tests/k6/common-api-load.js",
+    "k6:complete:local": "node scripts/run-k6-complete-local.mjs"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "helmet": "^8.3.0",
+    "jsonwebtoken": "^9.0.3",
+    "mongoose": "^9.6.2",
+    "node-cron": "^4.2.1",
+    "nodemailer": "^10.0.9",
+    "path": "^0.12.7",
+    "redis": "^6.0.0"
+  }
+}

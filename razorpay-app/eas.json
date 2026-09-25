@@ -1,0 +1,63 @@
+{
+  "cli": {
+    "version": ">= 23.2.0"
+  },
+  "build": {
+    "production": {
+      "distribution": "store",
+      "android": {
+        "buildType": "app-bundle",
+        "env": {
+          "EXPO_PUBLIC_API_BASE": "https://api.skillomate.in",
+          "EXPO_PUBLIC_AI_BASE": "https://api.skillomate.in"
+        }
+      }
+    },
+    "production-apk": {
+      "distribution": "internal",
+      "android": {
+        "buildType": "apk",
+        "env": {
+          "EXPO_PUBLIC_API_BASE": "https://api.skillomate.in",
+          "EXPO_PUBLIC_AI_BASE": "https://api.skillomate.in"
+        }
+      }
+    },
+    "railway": {
+      "distribution": "internal",
+      "android": {
+        "buildType": "apk",
+        "env": {
+          "EXPO_PUBLIC_API_BASE": "https://api.skillomate.in",
+          "EXPO_PUBLIC_AI_BASE": "https://api.skillomate.in"
+        }
+      }
+    },
+    "aws": {
+      "distribution": "internal",
+      "android": {
+        "buildType": "apk",
+        "env": {
+          "EXPO_PUBLIC_API_BASE": "https://api.skillomate.in",
+          "EXPO_PUBLIC_AI_BASE": "https://api.skillomate.in"
+        }
+      }
+    },
+    "testflight": {
+      "distribution": "store",
+      "ios": {
+        "env": {
+          "EXPO_PUBLIC_API_BASE": "https://api.skillomate.in",
+          "EXPO_PUBLIC_AI_BASE": "https://api.skillomate.in"
+        }
+      }
+    }
+  },
+  "submit": {
+    "testflight": {
+      "ios": {
+        "appleTeamId": "LJ48CVC23W"
+      }
+    }
+  }
+}

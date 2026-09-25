@@ -41,6 +41,7 @@ export function PaymentPage() {
   const runtimeReady = useEduNexRuntimeReady();
   const query = params();
   const courseId = query.get("courseId");
+  const directApp = query.get("source") === "skillomate-direct";
   const [trialEligible, setTrialEligible] = useState(false);
   const [checkoutState, setCheckoutState] = useState("loading");
   const [payMsg, setPayMsg] = useState({ text: "", type: "" });
@@ -158,6 +159,13 @@ export function PaymentPage() {
             setCheckoutState("subscribed");
           }
         } else if (!cancelled) {
+          const mandateStatus = String(data.mandateStatus || "").toLowerCase();
+          const pendingMandate = data.pendingCheckout === true
+            && !["cancelled", "expired", "completed", "paused"].includes(mandateStatus);
+          setPending(pendingMandate);
+          if (pendingMandate) {
+            setPayMsg({ text: "An existing Razorpay mandate is being confirmed. Check its status before starting another payment.", type: "info" });
+          }
           setCheckoutState("pay");
         }
       } catch (error) {
@@ -202,7 +210,13 @@ export function PaymentPage() {
       }
       throw new Error("Secure checkout is unavailable. Please try again later.");
     } catch (error) {
-      setPayMsg({ text: error.message || "Payment initiation failed", type: "error" });
+      const message = error.message || "Payment initiation failed";
+      if (/mandate already exists|unfinished checkout/i.test(message)) {
+        setPending(true);
+        setPayMsg({ text: "An existing Razorpay mandate is being confirmed. Check its status before starting another payment.", type: "info" });
+      } else {
+        setPayMsg({ text: message, type: "error" });
+      }
     } finally {
       busyRef.current = false;
       setSubmitting(false);
@@ -210,10 +224,10 @@ export function PaymentPage() {
   };
 
   useEffect(() => {
-    if (checkoutState !== "pay" || !planAvailable || autoLaunchAttemptedRef.current) return;
+    if (checkoutState !== "pay" || !planAvailable || pending || autoLaunchAttemptedRef.current) return;
     autoLaunchAttemptedRef.current = true;
     void initiatePayment();
-  }, [checkoutState, planAvailable, paymentType]);
+  }, [checkoutState, planAvailable, paymentType, pending]);
 
   const checkPayment = async () => {
     if (busyRef.current) return;
@@ -224,7 +238,14 @@ export function PaymentPage() {
       if (!response.ok) throw new Error(data?.error || "Unable to check payment status.");
       if (data?.accessGranted === true) {
         setPaymentCompleted(true); markLocalCourseAccess(); configureAppOpenButton(); setCheckoutState("subscribed");
-      } else setPayMsg({ text: "Still waiting for payment confirmation. Please check again shortly.", type: "info" });
+      } else if (data?.pendingCheckout === false
+        && ["cancelled", "expired", "completed", "paused"].includes(String(data?.mandateStatus || "").toLowerCase())) {
+        setPending(false);
+        setPayMsg({ text: "The previous checkout is no longer pending. You can start Razorpay again.", type: "info" });
+      } else {
+        setPending(true);
+        setPayMsg({ text: "Still waiting for payment confirmation. Please check again shortly.", type: "info" });
+      }
     } catch (error) { setPayMsg({ text: error.message, type: "error" }); }
     finally { busyRef.current = false; setSubmitting(false); }
   };
@@ -234,7 +255,7 @@ export function PaymentPage() {
   const planLabel = trial ? `${trialPrice} trial` : "monthly subscription";
 
   return (
-    <div className="react-page-root" data-page="payment.html">
+    <div className={`react-page-root${directApp ? " direct-app-payment" : ""}`} data-page="payment.html">
       <main className="checkout-launcher" aria-live="polite">
         {checkoutState === "loading" || (checkoutState === "pay" && submitting && !pending) ? (
           <div className="checkout-launcher-card" role="status">
@@ -265,7 +286,7 @@ export function PaymentPage() {
               {payMsg.type === "error" ? "Try Razorpay Again" : trial ? `Pay ${trialPrice} and start trial` : `Pay ${monthlyPrice} and subscribe`}
             </button>
             <p>By continuing, you agree to the recurring payment terms above.</p>
-            <a href="/courses" className="checkout-launcher-secondary">Back to courses</a>
+            <a href="/courses" className="checkout-launcher-secondary">{directApp ? "Back to app" : "Back to courses"}</a>
           </div>
         ) : null}
 
@@ -296,7 +317,7 @@ export function PaymentPage() {
             <button className="checkout-launcher-primary" type="button" disabled={submitting || !planAvailable} onClick={pending ? checkPayment : initiatePayment}>
               {submitting ? "Please wait…" : pending ? "Check payment status" : "Try Razorpay Again"}
             </button>
-            <a href="/courses.html" className="checkout-launcher-secondary">Back to Courses</a>
+            <a href="/courses.html" className="checkout-launcher-secondary">{directApp ? "Back to app" : "Back to Courses"}</a>
           </div>
         ) : null}
       </main>

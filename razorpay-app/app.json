@@ -1,0 +1,62 @@
+{
+  "expo": {
+    "name": "Skillomate Direct",
+    "slug": "skillomate-direct",
+    "version": "1.0",
+    "description": "Skillomate learning app",
+    "scheme": "skillomate-direct",
+    "icon": "./assets/icon.png",
+    "orientation": "portrait",
+    "userInterfaceStyle": "dark",
+    "platforms": [
+      "ios",
+      "android"
+    ],
+    "android": {
+      "package": "com.skillomate.direct",
+      "versionCode": 1,
+      "permissions": [
+        "android.permission.POST_NOTIFICATIONS"
+      ],
+      "blockedPermissions": [
+        "android.permission.SYSTEM_ALERT_WINDOW",
+        "android.permission.READ_MEDIA_IMAGES",
+        "android.permission.READ_MEDIA_VIDEO",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "android.permission.CAMERA"
+      ],
+      "icon": "./assets/icon.png",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#FAF7F1"
+      },
+      "softwareKeyboardLayoutMode": "pan",
+      "userInterfaceStyle": "automatic"
+    },
+    "ios": {
+      "bundleIdentifier": "com.skillomate.direct",
+      "buildNumber": "1",
+      "icon": "./assets/icon.png",
+      "supportsTablet": false,
+      "config": {
+        "usesNonExemptEncryption": false
+      },
+      "infoPlist": {
+        "CFBundleDisplayName": "Skillomate Direct",
+        "ITSAppUsesNonExemptEncryption": false,
+        "NSPhotoLibraryUsageDescription": "Allow access only when you choose a profile photo for your Skillomate account.",
+        "NSAppTransportSecurity": {
+          "NSAllowsArbitraryLoads": false,
+          "NSAllowsLocalNetworking": true
+        }
+      }
+    },
+    "owner": "office50505",
+    "plugins": [
+      "expo-sharing",
+      "expo-font",
+      "expo-video"
+    ]
+  }
+}
