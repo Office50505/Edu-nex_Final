@@ -466,27 +466,12 @@ const normalizeBaseUrl = url => String(url || "").replace(/\/+$/, "");
 const API_BASE = normalizeBaseUrl(process.env.EXPO_PUBLIC_API_BASE || DEFAULT_API_BASE);
 const WEB_APP_BASE = normalizeBaseUrl(process.env.EXPO_PUBLIC_WEB_APP_BASE || "https://skillomate.in");
 
-async function openMembershipAccess() {
-  if (Platform.OS === "ios") {
-    Alert.alert(
-      "Membership access",
-      "Skillomate for iPhone supports access for existing members. If your membership is not showing, contact support and we’ll help restore it.",
-      [
-        { text: "Not now", style: "cancel" },
-        {
-          text: "Email support",
-          onPress: () => Linking.openURL("mailto:support@skillomate.in?subject=iPhone%20membership%20access"),
-        },
-      ],
-    );
-    return;
-  }
-
-  try {
-    await Linking.openURL(`${WEB_APP_BASE}/payment`);
-  } catch {
-    Alert.alert("Checkout unavailable", "Could not open the secure Skillomate checkout. Please try again shortly.");
-  }
+function openMembershipAccess() {
+  Alert.alert(
+    "Membership access",
+    "Sign in with the Skillomate account connected to your membership. Visit our website to purchase a subscription.",
+    [{ text: "OK" }],
+  );
 }
 
 const LEGAL_APP_PAGES = {
@@ -1817,23 +1802,13 @@ function Badge({ label, color }) {
   );
 }
 
-function UpgradeModal({ visible, onClose, onStartTrial, trialLoading = false }) {
-  const isIOS = Platform.OS === "ios";
+function UpgradeModal({ visible, onClose }) {
   const FEATURES = [
     "Certificate of Completion",
     "Ad-free learning experience",
     "Offline downloads for on-the-go",
     "Exclusive AI workshops",
   ];
-  const handleStartTrial = () => {
-    onClose?.();
-    if (onStartTrial) {
-      requestAnimationFrame(onStartTrial);
-      return;
-    }
-    requestAnimationFrame(openMembershipAccess);
-  };
-
   return (
     <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
       <View style={s.upgradeOverlay}>
@@ -1841,14 +1816,14 @@ function UpgradeModal({ visible, onClose, onStartTrial, trialLoading = false }) 
         <View style={[s.upgradeSheet, { backgroundColor: C.white }]}>
 
           {/* Close */}
-          <TouchableOpacity style={s.upgradeClose} onPress={onClose} accessibilityRole="button" accessibilityLabel="Close subscription offer">
+          <TouchableOpacity style={s.upgradeClose} onPress={onClose} accessibilityRole="button" accessibilityLabel="Close membership information">
             <Ionicons name="close" size={20} color={C.textMuted} />
           </TouchableOpacity>
 
           {/* Banner */}
           <View style={[s.upgradeBanner, { backgroundColor: C.accentSoft }]}>
             <View style={[s.upgradeBannerBadge, { backgroundColor: C.accent }]}>
-              <Text style={s.upgradeBannerBadgeText}>{isIOS ? "MEMBER ACCESS" : "24-HOUR TRIAL"}</Text>
+              <Text style={s.upgradeBannerBadgeText}>MEMBER ACCESS</Text>
             </View>
             <View style={s.upgradeBannerIcon}>
               <Ionicons name="ribbon" size={38} color={C.accent} />
@@ -1861,27 +1836,11 @@ function UpgradeModal({ visible, onClose, onStartTrial, trialLoading = false }) 
 
           <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ padding: 20, paddingTop: 14 }}>
             {/* Title */}
-            <Text style={[s.upgradeTitle, { color: C.text }]}>{isIOS ? "Your learning, in one place" : "Unlock Your AI Future"}</Text>
-            <Text style={[s.upgradeOfferTitle, { color: C.primary }]}>{isIOS ? "Continue with an existing membership" : "24-Hour Access for ₹1"}</Text>
+            <Text style={[s.upgradeTitle, { color: C.text }]}>Membership required</Text>
+            <Text style={[s.upgradeOfferTitle, { color: C.primary }]}>Continue with an existing membership</Text>
             <Text style={[s.upgradeSub, { color: C.textSub }]}>
-              {isIOS
-                ? "Sign in with the Skillomate account connected to your membership to access included courses."
-                : "Build practical AI skills through guided, self-paced lessons."}
+              Sign in with the Skillomate account connected to your membership to access included courses.
             </Text>
-
-            {/* Pricing card */}
-            {!isIOS && (
-              <View style={[s.upgradePricingCard, { backgroundColor: C.cardBg, borderColor: C.primary }]}>
-                <View style={s.upgradeBestValue}>
-                  <Text style={s.upgradeBestValueText}>BEST VALUE</Text>
-                </View>
-                <View style={{ flexDirection: "row", alignItems: "flex-end", marginBottom: 4 }}>
-                  <Text style={[s.upgradePrice, { color: C.primary }]}>₹1</Text>
-                  <Text style={[s.upgradePricePeriod, { color: C.textSub }]}>  24-hour trial</Text>
-                </View>
-                <Text style={[s.upgradePriceNote, { color: C.textMuted }]}>Then ₹499/month. Cancel before the trial ends to avoid renewal.</Text>
-              </View>
-            )}
 
             {/* Features */}
             {FEATURES.map((f, i) => (
@@ -1891,31 +1850,14 @@ function UpgradeModal({ visible, onClose, onStartTrial, trialLoading = false }) 
               </View>
             ))}
 
-            {/* CTA */}
-            <TouchableOpacity
-              style={[s.upgradeBtn, { backgroundColor: C.primary, shadowColor: C.primary }, trialLoading && { opacity: 0.72 }]}
-              activeOpacity={0.85}
-              onPress={handleStartTrial}
-              disabled={trialLoading}
-              accessibilityRole="button"
-              accessibilityLabel={isIOS ? "Get membership access help" : "Start ₹1 24-hour trial"}
-              accessibilityState={{ busy: trialLoading, disabled: trialLoading }}
-            >
-              {trialLoading ? (
-                <ActivityIndicator color={C.onPrimary} size="small" />
-              ) : (
-                <Text style={s.upgradeBtnText}>{isIOS ? "Get membership help" : "Start ₹1 · 24-Hour Trial  →"}</Text>
-              )}
-            </TouchableOpacity>
-
-            <Text style={{ color: C.textMuted, fontSize: 11, textAlign: "center", marginBottom: 4 }}>
-              {isIOS ? "Membership access is tied to your Skillomate account." : "No commitment. Cancel anytime before renewal."}
-            </Text>
+            <View style={[s.iosMembershipPanel, { marginTop: 16 }]}>
+              <Text style={[s.iosMembershipText, { textAlign: "center" }]}>Visit our website to purchase a subscription.</Text>
+            </View>
 
             {/* Footer */}
             <View style={s.upgradeFooter}>
               <Ionicons name="shield-checkmark" size={13} color={C.textMuted} />
-              <Text style={s.upgradeFooterText}>{isIOS ? "ACCOUNT-BASED ACCESS" : "SAFE & SECURE PAYMENT"}</Text>
+              <Text style={s.upgradeFooterText}>ACCOUNT-BASED ACCESS</Text>
             </View>
           </ScrollView>
         </View>
@@ -1957,10 +1899,8 @@ const NOTIFICATION_PREVIEWS = [
   },
   {
     icon: "pricetag-outline",
-    title: Platform.OS === "ios" ? "Membership status" : "Trial reminder",
-    body: Platform.OS === "ios"
-      ? "Your current membership access is available in Subscription Details."
-      : "Your ₹1 Trial and monthly plan details are available in Subscription Details.",
+    title: "Membership status",
+    body: "Your current membership access is available in Subscription Details.",
     time: "This week",
     actionKey: "subscription",
   },
@@ -2242,9 +2182,8 @@ function BottomNav({ active, onHome, onCourses, onAI, onDownloads, onProfile, ai
   const tabs = [
     { key: "home", icon: "home", label: "Home", fn: onHome },
     { key: "courses", icon: "compass", label: "Explore", fn: onCourses },
-    { key: "downloads", icon: "download", label: "Downloads", fn: onDownloads },
     { key: "ai", icon: "sparkles", label: "Nex AI", fn: onAI },
-    { key: "profile", icon: "person", label: "Profile", fn: onProfile },
+    { key: "downloads", icon: "download", label: "Downloads", fn: onDownloads },
   ];
   return (
     <View style={[s.bottomNav, forceDark && { backgroundColor: "rgba(13,13,11,0.98)", borderTopColor: "#2E2C27" }]}>
@@ -5860,7 +5799,7 @@ function InfoPageScreen({ page, onBack }) {
   );
 }
 
-function SubscriptionDetailsScreen({ user, onBack, onStartTrial = openMembershipAccess, trialLoading = false }) {
+function SubscriptionDetailsScreen({ user, onBack }) {
   const [loading, setLoading] = useState(true);
   const [subData, setSubData] = useState(null);
   const [error, setError] = useState(null);
@@ -5973,11 +5912,12 @@ function SubscriptionDetailsScreen({ user, onBack, onStartTrial = openMembership
               ) : null;
             })()}
 
-            {!isActive && Platform.OS === "ios" ? (
+            {!isActive && (
               <View style={s.iosMembershipPanel}>
                 <Text style={s.iosMembershipText}>
                   Existing memberships appear automatically when you sign in with the linked Skillomate account.
                 </Text>
+                <Text style={[s.iosMembershipText, { marginTop: 8 }]}>Visit our website to purchase a subscription.</Text>
                 <TouchableOpacity
                   onPress={loadSubscription}
                   style={[s.btn, s.btnFill, { marginTop: 12 }]}
@@ -5987,30 +5927,7 @@ function SubscriptionDetailsScreen({ user, onBack, onStartTrial = openMembership
                   <Ionicons name="refresh" size={17} color={C.onPrimary} />
                   <Text style={s.btnText}>Refresh Status</Text>
                 </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={onStartTrial}
-                  style={s.iosMembershipHelp}
-                  accessibilityRole="button"
-                  accessibilityLabel="Get membership access help"
-                >
-                  <Text style={s.iosMembershipHelpText}>Need help with access?</Text>
-                </TouchableOpacity>
               </View>
-            ) : !isActive && (
-              <TouchableOpacity
-                onPress={onStartTrial}
-                style={[s.btn, s.btnFill, { marginTop: 14 }, trialLoading && { opacity: 0.72 }]}
-                disabled={trialLoading}
-                accessibilityRole="button"
-                accessibilityLabel="Upgrade subscription"
-                accessibilityState={{ busy: trialLoading, disabled: trialLoading }}
-              >
-                {trialLoading ? (
-                  <ActivityIndicator color={C.onPrimary} size="small" />
-                ) : (
-                  <Text style={s.btnText}>Upgrade Now</Text>
-                )}
-              </TouchableOpacity>
             )}
           </View>
 
@@ -9596,7 +9513,7 @@ return StyleSheet.create({
   },
   bottomTab: {
     flex: 1,
-    flexBasis: "20%",
+    flexBasis: "25%",
     minWidth: 0,
     minHeight: 54,
     alignItems: "center",

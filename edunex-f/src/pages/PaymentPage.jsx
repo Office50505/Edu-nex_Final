@@ -46,6 +46,7 @@ export function PaymentPage() {
   const [payMsg, setPayMsg] = useState({ text: "", type: "" });
   const [submitting, setSubmitting] = useState(false);
   const busyRef = useRef(false);
+  const autoLaunchAttemptedRef = useRef(false);
   const [pricing, setPricing] = useState(null);
   const trial = !["monthly", "annual", "yearly"].includes(query.get("plan")) && trialEligible;
   const paymentType = trial ? "trial" : "monthly";
@@ -208,6 +209,12 @@ export function PaymentPage() {
     }
   };
 
+  useEffect(() => {
+    if (checkoutState !== "pay" || !planAvailable || autoLaunchAttemptedRef.current) return;
+    autoLaunchAttemptedRef.current = true;
+    void initiatePayment();
+  }, [checkoutState, planAvailable, paymentType]);
+
   const checkPayment = async () => {
     if (busyRef.current) return;
     busyRef.current = true; setSubmitting(true);
@@ -255,7 +262,7 @@ export function PaymentPage() {
             <p>Cancel auto-renewal anytime.</p>
             {payMsg.text ? <p role={payMsg.type === "error" ? "alert" : "status"}>{payMsg.text}</p> : null}
             <button className="checkout-launcher-primary" type="button" onClick={initiatePayment}>
-              {trial ? `Pay ${trialPrice} and start trial` : `Pay ${monthlyPrice} and subscribe`}
+              {payMsg.type === "error" ? "Try Razorpay Again" : trial ? `Pay ${trialPrice} and start trial` : `Pay ${monthlyPrice} and subscribe`}
             </button>
             <p>By continuing, you agree to the recurring payment terms above.</p>
             <a href="/courses" className="checkout-launcher-secondary">Back to courses</a>

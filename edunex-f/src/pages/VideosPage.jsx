@@ -7,7 +7,7 @@ import { loadHlsJs } from "../lib/hlsRuntime.js";
 import { usePlaybackAccess } from "../hooks/usePlaybackAccess.js";
 import { useLearningProgress, progressCacheKey } from "../hooks/useLearningProgress.js";
 import { CertificationProgress } from "../components/CertificationProgress.jsx";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { page as videosPage } from "../generated-pages/videos.html.js";
 import { runLegacyPage } from "../legacyRuntime.js";
@@ -1382,7 +1382,7 @@ export function VideosPage() {
   const lesson = lessons[activeIndex] || lessons[0] || {};
   const reelDescription = plainCourseDescription(lesson.description || course?.title || "Skillomate course");
   const reelDescriptionCanExpand = reelDescription.length > 72;
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!course?._id || !lessons.length) return;
     const context = { courseId: String(course._id), lessonId: lessonIdentifier(lesson, activeIndex) };
     window.SkillomateLessonContext = context;

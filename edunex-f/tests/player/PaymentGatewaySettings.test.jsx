@@ -26,5 +26,5 @@ it('missing credentials disable a mode and an API failure keeps the active mode'
  fireEvent.click(await screen.findByRole('radio',{name:/Live — charge real money/}));
  fireEvent.click(screen.getByRole('button',{name:'Apply Live mode'}));
  await waitFor(()=>expect(screen.getByRole('alert').textContent).toBe('Plan price mismatch'));
- expect(screen.getByText('Test — simulated payments')).toBeTruthy();
+ expect(screen.getByText('Test — use Razorpay test payments')).toBeTruthy();
 });

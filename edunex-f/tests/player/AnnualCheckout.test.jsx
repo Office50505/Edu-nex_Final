@@ -32,7 +32,6 @@ it('pricing page only offers the monthly subscription', () => {
 });
 it('legacy annual checkout links fall back to monthly Razorpay checkout', async () => {
   const fetcher = mockApi(pricing, false); render(<PaymentPage />);
-  fireEvent.click(await screen.findByRole("button", { name: "Pay ₹499 and subscribe" }));
   await screen.findByText("Payment Successful");
   expect(JSON.parse(fetcher.mock.calls.find(([url]) => url.endsWith('/initiate-trial'))[1].body)).toEqual({ paymentType: 'monthly', mandateConsent: true });
   expect(window.location.search).toBe('?plan=monthly');
@@ -42,7 +41,6 @@ it('legacy annual checkout links fall back to monthly Razorpay checkout', async 
 it('legacy yearly checkout links also fall back to monthly', async () => {
   window.history.replaceState(null, '', '/payment?plan=yearly');
   const fetcher = mockApi(); render(<PaymentPage />);
-  fireEvent.click(await screen.findByRole('button', { name: /Pay ₹.*(?:subscribe|start trial)/ }));
   await screen.findByText('Payment Successful');
   expect(JSON.parse(fetcher.mock.calls.find(([url]) => url.endsWith('/initiate-trial'))[1].body).paymentType).toBe('monthly');
   expect(window.location.search).toBe('?plan=monthly');
@@ -54,13 +52,8 @@ it('login continuation replaces a retired annual plan with monthly', async () =>
   expect(screen.getByRole('link', { name: 'Log In' }).getAttribute('href')).not.toContain('annual');
   expect(screen.queryByRole('radio')).toBeNull();
 });
-it('default checkout offers trial and waits for explicit purchase', async () => {
+it('default checkout opens the eligible trial directly', async () => {
   window.history.replaceState(null, '', '/payment'); const fetcher = mockApi(); render(<PaymentPage />);
-  const pay = await screen.findByRole('button', { name: 'Pay ₹1 and start trial' });
-  expect(openRazorpay).not.toHaveBeenCalled();
-  expect(fetcher.mock.calls.some(([url]) => url.endsWith('/initiate-trial'))).toBe(false);
-  expect(screen.getByText(/After 24 hours.*₹499/)).toBeTruthy();
-  fireEvent.click(pay);
   await waitFor(() => expect(openRazorpay).toHaveBeenCalledTimes(1));
   expect(JSON.parse(fetcher.mock.calls.find(([url]) => url.endsWith('/initiate-trial'))[1].body).paymentType).toBe('trial');
 });
@@ -93,7 +86,6 @@ it('never navigates to a legacy payment URL', async () => {
     return response({ gateway: 'phonepe', redirectUrl: 'https://example.test/pay' });
   });
   render(<PaymentPage />);
-  fireEvent.click(await screen.findByRole('button', { name: 'Pay ₹499 and subscribe' }));
   await screen.findByText('Secure checkout is unavailable. Please try again later.');
   expect(window.location.pathname).toBe('/payment');
   expect(openRazorpay).not.toHaveBeenCalled();
@@ -102,9 +94,8 @@ it('never navigates to a legacy payment URL', async () => {
 it('keeps provider failures on the paywall with a retry action', async () => {
   mockApi(); openRazorpay.mockRejectedValueOnce(new Error('Payment failed.'));
   render(<PaymentPage />);
-  fireEvent.click(await screen.findByRole('button', { name: 'Pay ₹499 and subscribe' }));
   await screen.findByText('Payment failed.');
-  expect(screen.getByRole('button', { name: 'Pay ₹499 and subscribe' })).toBeTruthy();
+  expect(screen.getByRole('button', { name: 'Try Razorpay Again' })).toBeTruthy();
   expect(localStorage.getItem('edunexHasCourseAccess')).toBeNull();
 });
 it('does not grant access or start another payment when verification is unavailable', async () => {
@@ -113,7 +104,6 @@ it('does not grant access or start another payment when verification is unavaila
   fetcher.mockImplementation((url, options) => url.endsWith('/razorpay/verify')
     ? Promise.resolve(response({ error: 'Confirmation delayed' }, 503)) : initial(url, options));
   render(<PaymentPage />);
-  fireEvent.click(await screen.findByRole('button', { name: 'Pay ₹499 and subscribe' }));
   fireEvent.click(await screen.findByRole('button', { name: 'Check payment status' }));
   await screen.findByText(/Still waiting for payment confirmation/);
   expect(openRazorpay).toHaveBeenCalledTimes(1);
@@ -123,16 +113,14 @@ it('does not grant access or start another payment when verification is unavaila
 it('explicit trial links retain the advertised one-rupee offer', async () => {
   window.history.replaceState(null, '', '/payment?plan=trial');
   const fetcher = mockApi(); render(<PaymentPage />);
-  fireEvent.click(await screen.findByRole('button', { name: /Pay ₹.*(?:subscribe|start trial)/ }));
   await screen.findByText('Payment Successful');
   expect(JSON.parse(fetcher.mock.calls.find(([url]) => url.endsWith('/initiate-trial'))[1].body).paymentType).toBe('trial');
 });
 
-it('shows monthly terms for a trial-used account without auto-opening checkout', async () => {
- window.history.replaceState(null, '', '/payment'); mockApi(pricing, false); render(<PaymentPage />);
- await screen.findByRole('button', { name: 'Pay ₹499 and subscribe' });
- expect(screen.queryByRole('button', { name: 'Pay ₹1 and start trial' })).toBeNull();
- expect(openRazorpay).not.toHaveBeenCalled();
+it('opens monthly checkout directly for a trial-used account', async () => {
+ window.history.replaceState(null, '', '/payment'); const fetcher = mockApi(pricing, false); render(<PaymentPage />);
+ await waitFor(() => expect(openRazorpay).toHaveBeenCalledTimes(1));
+ expect(JSON.parse(fetcher.mock.calls.find(([url]) => url.endsWith('/initiate-trial'))[1].body).paymentType).toBe('monthly');
 });
 it('blocks purchasing when eligibility could not be checked', async () => {
  const fetcher = mockApi(); const original = fetcher.getMockImplementation();
