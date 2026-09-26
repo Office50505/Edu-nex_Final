@@ -27,6 +27,7 @@ import {
   Pressable,
   SafeAreaView,
   ScrollView,
+  Share,
   StatusBar,
   StyleSheet,
   Text,
@@ -260,6 +261,9 @@ const HOME_FALLBACK_COURSES = HOME_FALLBACK_TITLES.map((title, index) => ({
   videos: Array.from({ length: 8 + (index % 8) }, (_, i) => ({ title: `${String(i + 1).padStart(2, "0")}. ${title}` })),
 }));
 const ANDROID_CLIPPED_SUBVIEWS = Platform.OS === "android";
+const ANDROID_ROOT_TAB_PLACEHOLDERS = Platform.OS === "android";
+const ROOT_TAB_SWIPE_ENABLED = true;
+const ROOT_TAB_CHROME_ENABLED = Platform.OS !== "android";
 const MIN_TOUCH_TARGET = Platform.OS === "ios" ? 44 : 48;
 const ANDROID_STATUS_BAR_INSET = Platform.OS === "android" ? (StatusBar.currentHeight || 0) : 0;
 
@@ -441,8 +445,8 @@ const DOWNLOADS_DIR = FileSystem.cacheDirectory ? `${FileSystem.cacheDirectory}s
 const hasCourseAccess = user => DEV_UI_QA_ENABLED || !!(user?.subscriptionStatus && user.subscriptionStatus !== "none");
 const AI_FEATURE_ENABLED = true;
 
-const SPEEDS = [0.5, 0.75, 1, 1.25, 1.5, 2];
-const VIDEO_COMPLETE_THRESHOLD = 0.85;
+const SPEEDS = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2];
+const VIDEO_COMPLETE_THRESHOLD = 0.9;
 const PROTECTED_VIDEO_CAPTURE_KEY = "skillomate-course-video";
 const SHOW_DRAFT_HOME_RECOMMENDATIONS = false;
 
@@ -758,6 +762,14 @@ async function postApiJson(paths, body) {
   return last;
 }
 
+function authHeadersForUser(user, extra = {}) {
+  const token = user?.accessToken || user?.token || "";
+  return {
+    ...extra,
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+  };
+}
+
 function normalizeAuthUser(data = {}) {
   const source = data.user && typeof data.user === "object" ? data.user : data;
   const id = source._id || source.id || source.userId || data.userId;
@@ -912,6 +924,8 @@ const PLAYER_CSS = `
   iframe{width:100%;height:100%;border:0;pointer-events:none}
   .shield{position:absolute;inset:0;z-index:2;background:transparent}
 `;
+const EMBED_PLAYER_POLL_MS = Platform.OS === "android" ? 1000 : 500;
+const VIDEO_TIME_UPDATE_INTERVAL = Platform.OS === "android" ? 1.25 : 1;
 
 function buildYoutubePlayerHtml(videoId, origin) {
   return `<!DOCTYPE html><html><head>
@@ -945,7 +959,7 @@ function buildYoutubePlayerHtml(videoId, origin) {
     }
     function startPolling() {
       if (pollTimer) clearInterval(pollTimer);
-      pollTimer = setInterval(emitState, 500);
+      pollTimer = setInterval(emitState, ${EMBED_PLAYER_POLL_MS});
       emitState();
     }
     function postLegacyCommand(func, args) {
@@ -1053,7 +1067,7 @@ function buildEmbedPlayerHtml(embedUrl, initialTime = 0) {
             });
           } catch(e) {}
         });
-      }, 500);
+      }, ${EMBED_PLAYER_POLL_MS});
     }
     function exec(fn) { if (ready) fn(); else pending.push(fn); }
     function playerMessage(method, value) {
@@ -1359,6 +1373,83 @@ function getBunnyLibraryId(video) {
   return url.match(/\/embed\/(\d+)\//)?.[1] || "";
 }
 
+const PLAYBACK_ACCESS_TIMEOUT_MS = 30000;
+const PLAYBACK_ACCESS_MIN_VALID_MS = 60000;
+const PLAYBACK_ACCESS_CACHE = new Map();
+
+function getPlaybackLeaseKey(courseId, videoId, sessionId) {
+  return `${courseId || ""}:${videoId || ""}:${sessionId || ""}`;
+}
+
+function getCachedPlaybackLease(leaseKey, minValidMs = PLAYBACK_ACCESS_MIN_VALID_MS) {
+  const lease = PLAYBACK_ACCESS_CACHE.get(leaseKey);
+  if (!lease || Number(lease.expiresAt || 0) <= Date.now() + minValidMs) {
+    if (lease) PLAYBACK_ACCESS_CACHE.delete(leaseKey);
+    return null;
+  }
+  return lease;
+}
+
+function isFetchCancellation(error) {
+  const name = String(error?.name || "").toLowerCase();
+  const message = String(error?.message || error || "").toLowerCase();
+  return name === "aborterror" || message.includes("abort") || message.includes("cancel");
+}
+
+async function fetchPlaybackLease({ courseId, video, user, signal, timeoutMs = PLAYBACK_ACCESS_TIMEOUT_MS }) {
+  const controller = new AbortController();
+  const abortFromParent = () => controller.abort();
+  if (signal) {
+    if (signal.aborted) controller.abort();
+    else signal.addEventListener("abort", abortFromParent, { once: true });
+  }
+  const requestTimer = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    const url = `${API_BASE}/api/courses/${courseId}/videos/${video._id}/playback-access`;
+    const body = JSON.stringify({ userId: user?._id, sessionId: user?.sessionId });
+    let response = await fetch(url, {
+      method: "POST",
+      signal: controller.signal,
+      headers: authHeadersForUser(user, { "Content-Type": "application/json" }),
+      body,
+    });
+    if ((response.status === 401 || response.status === 403) && (user?.accessToken || user?.token)) {
+      response = await fetch(url, {
+        method: "POST",
+        signal: controller.signal,
+        headers: { "Content-Type": "application/json" },
+        body,
+      });
+    }
+    const raw = await response.text();
+    let data = {};
+    try { data = raw ? JSON.parse(raw) : {}; } catch {}
+    if (!response.ok) throw new Error(data.error || "Playback access unavailable.");
+    if (!data.hlsUrl) throw new Error("Playback URL unavailable.");
+    return {
+      ...data,
+      hlsUrl: /^https?:\/\//i.test(data.hlsUrl) ? data.hlsUrl : `${API_BASE}${data.hlsUrl}`,
+    };
+  } finally {
+    clearTimeout(requestTimer);
+    signal?.removeEventListener?.("abort", abortFromParent);
+  }
+}
+
+function getLessonThumbnailUrl(lesson, course) {
+  if (lesson?.thumbnailUrl || lesson?.thumbnailVerticalUrl) {
+    return normalizeThumbnailUrl(lesson.thumbnailUrl || lesson.thumbnailVerticalUrl, 640);
+  }
+  const bunnyGuid = getBunnyGuid(lesson);
+  if (bunnyGuid) {
+    return `${API_BASE}/api/bunny/thumbnail/${bunnyGuid}?libraryId=${encodeURIComponent(getBunnyLibraryId(lesson))}`;
+  }
+  if (lesson?.youtubeId) {
+    return `https://img.youtube.com/vi/${lesson.youtubeId}/mqdefault.jpg`;
+  }
+  return getCourseThumbnailUri(course, false) || "";
+}
+
 function getDownloadFailureMessage(error, status) {
   const statusCode = Number(status || 0);
   const message = String(error?.message || error || "").toLowerCase();
@@ -1384,7 +1475,7 @@ function getResumeInfo(course, progressByCourse = {}) {
     const key = getVideoKey(videos[i], i);
     if (!completed.has(key)) {
       const vp = videoProgress[key];
-      return { index: i, seconds: Math.floor(vp?.watchedSeconds || 0) };
+      return { index: i, seconds: Math.floor(vp?.resumePosition ?? vp?.watchedSeconds ?? 0) };
     }
   }
   return { index: 0, seconds: 0 };
@@ -1398,6 +1489,32 @@ function getCourseProgressPercent(course, progressByCourse = {}) {
   const completed = new Set((saved?.completedVideoIds || []).map(String));
   const completedCount = videos.filter((video, index) => completed.has(getVideoKey(video, index))).length;
   return Math.round((completedCount / videos.length) * 100);
+}
+
+function progressFromLearningStatus(status, previous = {}) {
+  if (!status || typeof status !== "object") return null;
+  const lessons = Array.isArray(status.lessons) ? status.lessons : [];
+  const videoProgress = { ...(previous.videoProgress || {}) };
+  lessons.forEach(lesson => {
+    const id = String(lesson?.id || lesson?.videoId || "");
+    if (!id) return;
+    videoProgress[id] = {
+      ...(videoProgress[id] || {}),
+      watchedSeconds: Math.max(0, Number(lesson.watchedSeconds ?? lesson.resumePosition ?? videoProgress[id]?.watchedSeconds ?? 0)),
+      resumePosition: Math.max(0, Number(lesson.resumePosition ?? lesson.watchedSeconds ?? videoProgress[id]?.resumePosition ?? 0)),
+      duration: Math.max(0, Number(lesson.duration ?? videoProgress[id]?.duration ?? 0)),
+      completed: Boolean(lesson.complete),
+    };
+  });
+  return {
+    ...previous,
+    completedVideoIds: lessons.filter(lesson => lesson?.complete).map(lesson => String(lesson.id || lesson.videoId)).filter(Boolean),
+    completedCount: Number(status.completedLessons || 0),
+    totalVideos: Number(status.totalLessons || lessons.length || previous.totalVideos || 0),
+    progressPercent: Math.max(0, Math.min(100, Number(status.progressPercent || 0))),
+    videoProgress,
+    updatedAt: new Date().toISOString(),
+  };
 }
 
 function getCourseThumbnailUri(course, preferVertical = false) {
@@ -2086,11 +2203,11 @@ function ProblemReportModal({ visible, onClose, user, route = "home" }) {
   }, [visible]);
 
   const cleanMessage = message.trim();
-  const canSubmit = cleanMessage.length >= 10 && !busy;
+  const canSubmit = Boolean(category && cleanMessage.length > 0 && !busy);
 
   const handleSubmit = async () => {
     if (!canSubmit) {
-      setError("Please describe the problem in at least 10 characters.");
+      setError("Please choose a problem type and describe what happened.");
       return;
     }
     setBusy(true);
@@ -2255,16 +2372,50 @@ function BottomNav({ active, onHome, onCourses, onAI, onDownloads, onProfile, ai
   );
 }
 
-const ROOT_TAB_ORDER = ["home", "courses", "downloads", "ai", "profile"];
+const ROOT_TAB_ORDER = ["home", "courses", "ai", "downloads"];
 const ROOT_TAB_LABELS = {
   home: "Home",
   courses: "Explore",
-  downloads: "Downloads",
   ai: "Nex AI",
+  downloads: "Downloads",
   profile: "Profile",
 };
 
-function SwipeableRootTabs({ activeTab, onNavigate, renderTab }) {
+function StaticRootTabs({ activeTab, onNavigate, renderTab }) {
+  const swipeBoundary = useMemo(() => ({ hideEmbeddedNav: true }), []);
+  const stationaryNavActions = useMemo(() => ({
+    home: () => onNavigate?.("home"),
+    courses: () => onNavigate?.("courses"),
+    downloads: () => onNavigate?.("downloads"),
+    ai: () => onNavigate?.("ai"),
+    profile: () => onNavigate?.("profile"),
+  }), [onNavigate]);
+
+  return (
+    <RootTabSwipeContext.Provider value={swipeBoundary}>
+      <View style={s.swipePagerViewport}>
+        <View style={s.staticRootTabPage}>
+          {renderTab(activeTab, { isActive: true })}
+        </View>
+        <BottomNav
+          persistent
+          active={activeTab}
+          onHome={stationaryNavActions.home}
+          onCourses={stationaryNavActions.courses}
+          onDownloads={stationaryNavActions.downloads}
+          onAI={stationaryNavActions.ai}
+          onProfile={stationaryNavActions.profile}
+        />
+      </View>
+    </RootTabSwipeContext.Provider>
+  );
+}
+
+function SwipeableRootTabs(props) {
+  return ROOT_TAB_SWIPE_ENABLED ? <SwipeableRootTabsPager {...props} /> : <StaticRootTabs {...props} />;
+}
+
+function SwipeableRootTabsPager({ activeTab, onNavigate, renderTab }) {
   const { width, height } = useWindowDimensions();
   const pageGap = 10;
   const pageStride = width + pageGap;
@@ -2286,12 +2437,13 @@ function SwipeableRootTabs({ activeTab, onNavigate, renderTab }) {
   const retainNeighborhood = useCallback((centerIndex) => {
     if (centerIndex < 0) return;
     setMountedTabs(current => {
-      const next = new Set(current);
+      const next = new Set();
       [centerIndex - 1, centerIndex, centerIndex + 1].forEach(index => {
         if (ROOT_TAB_ORDER[index]) next.add(ROOT_TAB_ORDER[index]);
       });
-      if (next.size === current.length) return current;
-      return ROOT_TAB_ORDER.filter(tab => next.has(tab));
+      const ordered = ROOT_TAB_ORDER.filter(tab => next.has(tab));
+      if (ordered.length === current.length && ordered.every((tab, index) => tab === current[index])) return current;
+      return ordered;
     });
   }, []);
 
@@ -2321,12 +2473,16 @@ function SwipeableRootTabs({ activeTab, onNavigate, renderTab }) {
     profile: () => navigateRef.current?.("profile"),
   }), []);
 
-  const settleChrome = useCallback(() => Animated.timing(pageChrome, {
-    toValue: 0,
-    duration: 180,
-    easing: Easing.out(Easing.cubic),
-    useNativeDriver: false,
-  }), [pageChrome]);
+  const settleChrome = useCallback(() => (
+    ROOT_TAB_CHROME_ENABLED
+      ? Animated.timing(pageChrome, {
+          toValue: 0,
+          duration: 180,
+          easing: Easing.out(Easing.cubic),
+          useNativeDriver: false,
+        })
+      : Animated.delay(0)
+  ), [pageChrome]);
 
   const returnToActive = useCallback(() => {
     if (activeIndex < 0) return;
@@ -2404,8 +2560,10 @@ function SwipeableRootTabs({ activeTab, onNavigate, renderTab }) {
     },
     onPanResponderGrant: () => {
       trackX.stopAnimation();
-      pageChrome.stopAnimation();
-      pageChrome.setValue(1);
+      if (ROOT_TAB_CHROME_ENABLED) {
+        pageChrome.stopAnimation();
+        pageChrome.setValue(1);
+      }
     },
     onPanResponderMove: (_, gesture) => {
       const direction = gesture.dx < 0 ? 1 : -1;
@@ -2434,11 +2592,13 @@ function SwipeableRootTabs({ activeTab, onNavigate, renderTab }) {
   const renderedTabs = mountedTabs.includes(activeTab)
     ? mountedTabs
     : [...mountedTabs, activeTab].sort((a, b) => ROOT_TAB_ORDER.indexOf(a) - ROOT_TAB_ORDER.indexOf(b));
-  const pageCornerRadius = pageChrome.interpolate({
-    inputRange: [0, 1],
-    outputRange: [0, 28],
-    extrapolate: "clamp",
-  });
+  const pageCornerRadius = ROOT_TAB_CHROME_ENABLED
+    ? pageChrome.interpolate({
+        inputRange: [0, 1],
+        outputRange: [0, 28],
+        extrapolate: "clamp",
+      })
+    : 0;
 
   return (
     <RootTabSwipeContext.Provider value={swipeBoundary}>
@@ -2456,6 +2616,7 @@ function SwipeableRootTabs({ activeTab, onNavigate, renderTab }) {
           {renderedTabs.map(tab => {
             const tabIndex = ROOT_TAB_ORDER.indexOf(tab);
             const isInteractive = tab === activeTab;
+            const shouldRenderContent = !ANDROID_ROOT_TAB_PLACEHOLDERS || isInteractive;
             return (
               <Animated.View
                 key={tab}
@@ -2473,7 +2634,7 @@ function SwipeableRootTabs({ activeTab, onNavigate, renderTab }) {
                   },
                 ]}
               >
-                {renderTab(tab, { isActive: tab === activeTab })}
+                {shouldRenderContent ? renderTab(tab, { isActive: tab === activeTab }) : <View style={s.rootTabPlaceholder} />}
               </Animated.View>
             );
           })}
@@ -2493,7 +2654,7 @@ function SwipeableRootTabs({ activeTab, onNavigate, renderTab }) {
 }
 
 // ── VideoItem ─────────────────────────────────────────────────────────────────
-function VideoItem({ courseId, user, video: videoProp, videoId: videoIdProp, isActive, height, onComplete, onProgress, onEnded, initialTime = 0, localPath }) {
+function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdProp, isActive, height, onComplete, onProgress, onEnded, onSettingsOpenChange, onExitFullscreen, initialTime = 0, localPath, suspendSurface = false }) {
   const [cloudLease, setCloudLease] = useState(null);
   const [cloudError, setCloudError] = useState('');
   const [cloudRetry, setCloudRetry] = useState(0);
@@ -2501,32 +2662,57 @@ function VideoItem({ courseId, user, video: videoProp, videoId: videoIdProp, isA
   const cloudLeaseRef = useRef(null);
   const sourceQueue = useRef(Promise.resolve());
   useEffect(() => {
-    if (videoProp?.provider !== 'aws_cloudfront' || !isActive) return;
-    let disposed = false, timer, requestTimer;
+    if (videoProp?.provider !== "aws_cloudfront" || !isActive) return;
+    let disposed = false;
+    let retryTimer = null;
+    let renewTimer = null;
     const controller = new AbortController();
-    const leaseKey = `${courseId}:${videoProp._id}:${user?.sessionId}`;
-    async function renew() {
-      requestTimer = setTimeout(() => controller.abort(), 15000);
+    const leaseKey = getPlaybackLeaseKey(courseId, videoProp._id, user?.sessionId);
+    const applyLease = lease => {
+      cloudLeaseRef.current = { key: leaseKey, lease };
+      PLAYBACK_ACCESS_CACHE.set(leaseKey, lease);
+      setCloudLease(lease);
+      setCloudError("");
+    };
+    const scheduleRenew = lease => {
+      clearTimeout(renewTimer);
+      const renewIn = Math.max(15000, Number(lease?.expiresAt || 0) - Date.now() - PLAYBACK_ACCESS_MIN_VALID_MS);
+      renewTimer = setTimeout(() => requestLease({ background: true }), renewIn);
+    };
+    const requestLease = async ({ background = false, attempt = 0 } = {}) => {
       try {
-        const response = await fetch(`${API_BASE}/api/courses/${courseId}/videos/${videoProp._id}/playback-access`, {
-          method: 'POST', signal: controller.signal, headers: {'Content-Type':'application/json'},
-          body: JSON.stringify({userId:user?._id,sessionId:user?.sessionId})
-        });
-        const data = await response.json();
-        if (!response.ok) throw new Error(data.error || 'Playback access unavailable.');
+        const lease = await fetchPlaybackLease({ courseId, video: videoProp, user, signal: controller.signal });
         if (disposed) return;
-        const lease = {...data,hlsUrl:/^https?:\/\//i.test(data.hlsUrl) ? data.hlsUrl : `${API_BASE}${data.hlsUrl}`};
-        cloudLeaseRef.current = {key:leaseKey, lease};
-        setCloudLease(lease);setCloudError('');
-        timer = setTimeout(renew, Math.max(10000,data.expiresAt-Date.now()-60000));
-      } catch(error) { if(!disposed)setCloudError(error.name === 'AbortError' ? 'Video access timed out. Tap retry.' : error.message); }
-      finally { clearTimeout(requestTimer); }
+        applyLease(lease);
+        scheduleRenew(lease);
+      } catch (error) {
+        if (disposed) return;
+        const wasCanceled = isFetchCancellation(error);
+        if (wasCanceled && attempt < 2) {
+          retryTimer = setTimeout(() => {
+            requestLease({ background, attempt: attempt + 1 });
+          }, 600 + (attempt * 900));
+          return;
+        }
+        if (background && getCachedPlaybackLease(leaseKey, 5000)) return;
+        setCloudError(wasCanceled ? "Video access is taking longer than expected. Tap retry." : (error.message || "Playback access unavailable."));
+      }
+    };
+    const cachedLease = getCachedPlaybackLease(leaseKey);
+    if (cachedLease) {
+      applyLease(cachedLease);
+      scheduleRenew(cachedLease);
+    } else {
+      setCloudLease(null);
+      setCloudError("");
+      requestLease();
     }
-    const cached = cloudLeaseRef.current;
-    if (cached?.key === leaseKey && cached.lease.expiresAt > Date.now() + 60000 && !cloudError) {
-      timer = setTimeout(renew, cached.lease.expiresAt - Date.now() - 60000);
-    } else renew();
-    return () => {disposed=true;controller.abort();clearTimeout(timer);clearTimeout(requestTimer);};
+    return () => {
+      disposed = true;
+      controller.abort();
+      clearTimeout(retryTimer);
+      clearTimeout(renewTimer);
+    };
   }, [courseId,videoProp?._id,videoProp?.provider,isActive,user?._id,user?.sessionId,cloudRetry]);
   const validCloudLease = cloudLeaseRef.current?.key === `${courseId}:${videoProp?._id}:${user?.sessionId}` ? cloudLease : null;
   const video = {...(videoProp || (videoIdProp ? {youtubeId:videoIdProp}:{})), ...(validCloudLease || {})};
@@ -2534,24 +2720,37 @@ function VideoItem({ courseId, user, video: videoProp, videoId: videoIdProp, isA
     ? "" : getNativeVideoUrl(video, localPath);
   const hasNativeVideo = !!nativeVideoUrl;
   const isOffline = !!localPath;
-  const canFallbackToEmbed = video.provider !== 'aws_cloudfront' && !isOffline && !!(video.bunnyGuid || video.bunnyVideoId || video.videoUrl || video.embedUrl || video.youtubeId || video.videoId);
+  const hasEmbeddableVideo = !!(
+    video.bunnyGuid ||
+    video.bunnyVideoId ||
+    video.embedUrl ||
+    (!isDirectMediaUrl(video.videoUrl) && video.videoUrl) ||
+    video.youtubeId ||
+    video.videoId
+  );
+  const canFallbackToEmbed = video.provider !== 'aws_cloudfront' && !isOffline && hasEmbeddableVideo;
+  const preferEmbedPlayer = Platform.OS === "android" && !isOffline && hasEmbeddableVideo && video.provider !== "aws_cloudfront";
   const [nativePlaybackFailed, setNativePlaybackFailed] = useState(false);
-  const [fillVideo, setFillVideo] = useState(true);
-  const isNativeVideo = hasNativeVideo && !(nativePlaybackFailed && canFallbackToEmbed);
+  const isNativeVideo = hasNativeVideo && !preferEmbedPlayer && !(nativePlaybackFailed && canFallbackToEmbed);
   const isBunny = !isNativeVideo && !!(video.bunnyGuid || video.bunnyVideoId || video.videoUrl || video.embedUrl);
   const webViewRef = useRef(null);
   const seekBarWidth = useRef(0);
   const tapInfoRef = useRef({ count: 0, side: null, timer: null });
   const completionSentRef = useRef(false);
   const progressSentAtRef = useRef(0);
+  const lastProgressFlushRef = useRef({ time: -1, duration: 0, at: 0 });
   const seekGuardRef = useRef({ until: 0, target: 0 });
   const isDraggingRef = useRef(false);
   const dragTargetRef = useRef(0);
   const initialSeekDoneRef = useRef(false);
   const autoPlayTimersRef = useRef([]);
+  const sleepTimerRef = useRef(null);
   const sendCmdRef = useRef(() => {});
   const shouldBePlayingRef = useRef(isActive);
+  const wasSurfaceSuspendedRef = useRef(suspendSurface);
   const lastProgressRef = useRef({ time: finiteSeconds(initialTime, 0), advancedAt: Date.now() });
+  const latestProgressValueRef = useRef({ currentTime: finiteSeconds(initialTime, 0), duration: 0 });
+  const [surfaceRevision, setSurfaceRevision] = useState(0);
   const [isPlaying, setIsPlaying] = useState(true);
   const [isBuffering, setIsBuffering] = useState(isActive);
   const [isMuted, setIsMuted] = useState(false);
@@ -2559,18 +2758,27 @@ function VideoItem({ courseId, user, video: videoProp, videoId: videoIdProp, isA
   const [duration, setDuration] = useState(0);
   const [isEnded, setIsEnded] = useState(false);
   const [playbackRate, setPlaybackRate] = useState(1);
-  const [showSpeedPicker, setShowSpeedPicker] = useState(false);
+  const [surfaceResumeTime, setSurfaceResumeTime] = useState(finiteSeconds(initialTime, 0));
   const [qualities, setQualities] = useState([]);
   const [currentQuality, setCurrentQuality] = useState("Auto");
-  const [showQualityPicker, setShowQualityPicker] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
+  const [loopLesson, setLoopLesson] = useState(false);
+  const [sleepMinutes, setSleepMinutes] = useState(0);
   const [seekAnim, setSeekAnim] = useState(null);
+  useEffect(() => {
+    latestProgressValueRef.current = { currentTime, duration };
+  }, [currentTime, duration]);
+  useEffect(() => {
+    onSettingsOpenChange?.(Boolean(isActive && showSettings));
+    return () => onSettingsOpenChange?.(false);
+  }, [isActive, onSettingsOpenChange, showSettings]);
   const nativeVideoSource = useMemo(() => (
     nativeVideoUrl ? { uri: nativeVideoUrl } : null
   ), [nativeVideoUrl]);
   const nativePlayer = useVideoPlayer(null, player => {
     player.loop = false;
     player.preservesPitch = true;
-    player.timeUpdateEventInterval = 1;
+    player.timeUpdateEventInterval = VIDEO_TIME_UPDATE_INTERVAL;
   });
   const playbackStateRef = useRef(null);
   playbackStateRef.current = { isActive, isPlaying, isBuffering, isMuted, playbackRate, isEnded };
@@ -2595,11 +2803,16 @@ function VideoItem({ courseId, user, video: videoProp, videoId: videoIdProp, isA
     if (!isActive) return;
     shouldBePlayingRef.current = true;
     setIsEnded(false);
+    if (playbackStateRef.current?.isPlaying && !playbackStateRef.current?.isBuffering) {
+      setIsBuffering(false);
+      return;
+    }
     setIsPlaying(true);
-    setIsBuffering(true);
-    [0, 180, 500, 1000].forEach(delay => {
+    setIsBuffering(false);
+    [0, 120].forEach(delay => {
       const timer = setTimeout(() => {
         if (!playbackStateRef.current?.isActive) return;
+        if (playbackStateRef.current?.isPlaying && !playbackStateRef.current?.isBuffering) return;
         sendCmdRef.current("playVideo");
       }, delay);
       autoPlayTimersRef.current.push(timer);
@@ -2610,16 +2823,17 @@ function VideoItem({ courseId, user, video: videoProp, videoId: videoIdProp, isA
     let originalMedia = video?.youtubeId || video?.videoId || "";
     let finalUrl = `https://www.youtube.com/embed/${originalMedia}`;
     let nextHtml;
+    const htmlInitialTime = finiteSeconds(surfaceResumeTime, initialTime);
     if (video.embedUrl || (!isDirectMediaUrl(video.videoUrl) && video.videoUrl)) {
       provider = "bunny-url";
       originalMedia = video.embedUrl || video.videoUrl;
       finalUrl = video.embedUrl || video.videoUrl;
-      nextHtml = buildEmbedPlayerHtml(finalUrl, initialTime);
+      nextHtml = buildEmbedPlayerHtml(finalUrl, htmlInitialTime);
     } else if (video.bunnyGuid || video.bunnyVideoId) {
       provider = "bunny-guid";
       originalMedia = video.bunnyGuid || video.bunnyVideoId;
       finalUrl = `https://iframe.mediadelivery.net/embed/${video?.bunnyLibraryId || "675520"}/${originalMedia}`;
-      nextHtml = buildEmbedPlayerHtml(finalUrl, initialTime);
+      nextHtml = buildEmbedPlayerHtml(finalUrl, htmlInitialTime);
     } else {
       nextHtml = buildYoutubePlayerHtml(video?.youtubeId || video || "", PLAYER_ORIGIN);
     }
@@ -2633,7 +2847,7 @@ function VideoItem({ courseId, user, video: videoProp, videoId: videoIdProp, isA
       });
     }
     return nextHtml;
-  }, [video?.youtubeId, video?.videoId, video?.bunnyGuid, video?.bunnyVideoId, video?.bunnyLibraryId, video?.videoUrl, video?.embedUrl, initialTime]);
+  }, [video?.youtubeId, video?.videoId, video?.bunnyGuid, video?.bunnyVideoId, video?.bunnyLibraryId, video?.videoUrl, video?.embedUrl, initialTime, surfaceResumeTime]);
 
   useEffect(() => {
     const startAt = finiteSeconds(initialTime, 0);
@@ -2646,7 +2860,8 @@ function VideoItem({ courseId, user, video: videoProp, videoId: videoIdProp, isA
     setDuration(0);
     setIsEnded(false);
     setIsPlaying(isActive);
-    setIsBuffering(isActive);
+    setIsBuffering(false);
+    setSurfaceResumeTime(startAt);
     shouldBePlayingRef.current = isActive;
     lastProgressRef.current = { time: startAt, advancedAt: Date.now() };
     setNativePlaybackFailed(false);
@@ -2671,15 +2886,16 @@ function VideoItem({ courseId, user, video: videoProp, videoId: videoIdProp, isA
         runNativePlayer(player => {
           player.muted = latest.isMuted;
           player.playbackRate = latest.playbackRate || 1;
+          player.loop = false;
           player.preservesPitch = true;
-          player.timeUpdateEventInterval = 1;
+          player.timeUpdateEventInterval = VIDEO_TIME_UPDATE_INTERVAL;
         });
         const startAt = video.provider === 'aws_cloudfront' ? Math.max(cloudResume.current,finiteSeconds(initialTime,0)) : finiteSeconds(initialTime, 0);
         if (startAt > 0) setNativeTime(startAt);
         if (latest.isActive) {
           shouldBePlayingRef.current = true;
           setIsPlaying(true);
-          setIsBuffering(true);
+          setIsBuffering(false);
           playNativePlayer();
         }
       } catch (error) {
@@ -2707,7 +2923,8 @@ function VideoItem({ courseId, user, video: videoProp, videoId: videoIdProp, isA
   useEffect(() => {
     setNativeMuted(isMuted);
     setNativeRate(playbackRate);
-  }, [isMuted, playbackRate, setNativeMuted, setNativeRate]);
+    runNativePlayer(player => { player.loop = false; });
+  }, [isMuted, playbackRate, loopLesson, runNativePlayer, setNativeMuted, setNativeRate]);
 
   useEffect(() => {
     if (isActive && isNativeVideo && isPlaying) playNativePlayer();
@@ -2750,10 +2967,23 @@ function VideoItem({ courseId, user, video: videoProp, videoId: videoIdProp, isA
     if (!isNativeVideo) return;
     const dur = finiteSeconds(nativePlayer.duration, duration);
     if (dur > 0) setCurrentTime(dur);
+    if (loopLesson) {
+      flushProgress(dur, dur, true);
+      seekGuardRef.current = { until: Date.now() + 1000, target: 0 };
+      setNativeTime(0);
+      setCurrentTime(0);
+      setIsEnded(false);
+      setIsPlaying(true);
+      setIsBuffering(false);
+      shouldBePlayingRef.current = true;
+      playNativePlayer();
+      return;
+    }
     shouldBePlayingRef.current = false;
     setIsPlaying(false);
     setIsBuffering(false);
     setIsEnded(true);
+    flushProgress(dur, dur, true);
     markCompleteOnce();
     onEnded?.();
   });
@@ -2843,6 +3073,7 @@ function VideoItem({ courseId, user, video: videoProp, videoId: videoIdProp, isA
     if (isActive) {
       queueAutoPlay();
     } else {
+      flushProgress(undefined, undefined, true);
       shouldBePlayingRef.current = false;
       clearAutoPlayTimers();
       sendCmd("pauseVideo");
@@ -2850,6 +3081,32 @@ function VideoItem({ courseId, user, video: videoProp, videoId: videoIdProp, isA
       setIsBuffering(false);
     }
   }, [isActive, isNativeVideo, isBunny, queueAutoPlay, clearAutoPlayTimers]);
+
+  useEffect(() => {
+    if (!suspendSurface) return;
+    clearAutoPlayTimers();
+    shouldBePlayingRef.current = false;
+    setSurfaceResumeTime(latestProgressValueRef.current.currentTime);
+    flushProgress(undefined, undefined, true);
+    sendCmd("pauseVideo");
+    setIsPlaying(false);
+    setIsBuffering(false);
+  }, [clearAutoPlayTimers, suspendSurface]);
+
+  useEffect(() => {
+    const wasSuspended = wasSurfaceSuspendedRef.current;
+    wasSurfaceSuspendedRef.current = suspendSurface;
+    if (!wasSuspended || suspendSurface) return;
+    setSurfaceRevision(value => value + 1);
+    if (!isActive) return;
+    const resumeAt = latestProgressValueRef.current.currentTime;
+    const timer = setTimeout(() => {
+      if (!playbackStateRef.current?.isActive) return;
+      if (resumeAt > 0) setNativeTime(resumeAt);
+      queueAutoPlay();
+    }, 40);
+    return () => clearTimeout(timer);
+  }, [isActive, queueAutoPlay, setNativeTime, suspendSurface]);
 
   useEffect(() => {
     if (!isNativeVideo) return;
@@ -2862,10 +3119,26 @@ function VideoItem({ courseId, user, video: videoProp, videoId: videoIdProp, isA
   }, [playbackRate, isNativeVideo]);
 
   useEffect(() => () => {
+    const latest = latestProgressValueRef.current;
+    if (latest.duration > 0) onProgress?.(latest.currentTime, latest.duration);
     const timer = tapInfoRef.current.timer;
     if (timer) clearTimeout(timer);
+    if (sleepTimerRef.current) clearTimeout(sleepTimerRef.current);
     clearAutoPlayTimers();
-  }, [clearAutoPlayTimers]);
+  }, [clearAutoPlayTimers, onProgress]);
+
+  function flushProgress(nextTime = currentTime, nextDuration = duration, force = false) {
+    const dur = finiteSeconds(nextDuration, duration);
+    if (dur <= 0) return;
+    const ct = clampSeconds(finiteSeconds(nextTime, currentTime), dur);
+    const now = Date.now();
+    const previous = lastProgressFlushRef.current;
+    const recentlyFlushed = Math.abs(previous.time - ct) < 0.25 && Math.abs(previous.duration - dur) < 0.25 && now - previous.at < 1500;
+    if (!force && recentlyFlushed) return;
+    lastProgressFlushRef.current = { time: ct, duration: dur, at: now };
+    progressSentAtRef.current = now;
+    onProgress?.(ct, dur);
+  }
 
   function markCompleteOnce() {
     if (completionSentRef.current) return;
@@ -2909,15 +3182,27 @@ function VideoItem({ courseId, user, video: videoProp, videoId: videoIdProp, isA
     if (nextPlaying) setIsBuffering(false);
     else if (shouldBePlayingRef.current && !(dur > 0 && ct >= dur - 0.25)) setIsBuffering(true);
     if (dur > 0 && ct >= dur - 0.25 && !nextPlaying) {
+      if (loopLesson) {
+        flushProgress(ct, dur, true);
+        seekGuardRef.current = { until: Date.now() + 1000, target: 0 };
+        setCurrentTime(0);
+        setNativeTime(0);
+        shouldBePlayingRef.current = true;
+        setIsEnded(false);
+        setIsPlaying(true);
+        setIsBuffering(false);
+        playNativePlayer();
+        return;
+      }
       shouldBePlayingRef.current = false;
       setIsBuffering(false);
-      setIsEnded(true); onProgress?.(ct, dur); markCompleteOnce(); onEnded?.();
+      setIsEnded(true); flushProgress(ct, dur, true); markCompleteOnce(); onEnded?.();
     } else {
       setIsEnded(false);
     }
     if (dur > 0 && ct / dur >= VIDEO_COMPLETE_THRESHOLD) markCompleteOnce();
     if (dur > 0 && now - progressSentAtRef.current >= 5000) {
-      progressSentAtRef.current = now; onProgress?.(ct, dur);
+      flushProgress(ct, dur, true);
     }
   }
 
@@ -2935,6 +3220,17 @@ function VideoItem({ courseId, user, video: videoProp, videoId: videoIdProp, isA
       }
       if (d.type === "stateChange") {
         if (d.playerState === 0) {
+          if (loopLesson) {
+            flushProgress(duration || currentTime, duration, true);
+            shouldBePlayingRef.current = true;
+            seekGuardRef.current = { until: Date.now() + 1000, target: 0 };
+            setCurrentTime(0);
+            sendCmd("seekAndPlay", [0, true]);
+            setIsPlaying(true);
+            setIsBuffering(false);
+            setIsEnded(false);
+            return;
+          }
           shouldBePlayingRef.current = false;
           setIsPlaying(false);
           setIsBuffering(false);
@@ -2980,11 +3276,22 @@ function VideoItem({ courseId, user, video: videoProp, videoId: videoIdProp, isA
         setCurrentTime(nextTime);
         if (nextDuration > 0) setDuration(nextDuration);
         if (d.playerState === 0) {
+          if (loopLesson) {
+            flushProgress(nextDuration || nextTime, nextDuration, true);
+            shouldBePlayingRef.current = true;
+            seekGuardRef.current = { until: Date.now() + 1000, target: 0 };
+            setCurrentTime(0);
+            sendCmd("seekAndPlay", [0, true]);
+            setIsPlaying(true);
+            setIsBuffering(false);
+            setIsEnded(false);
+            return;
+          }
           shouldBePlayingRef.current = false;
           setIsPlaying(false);
           setIsBuffering(false);
           setIsEnded(true);
-          onProgress?.(nextTime, nextDuration);
+          flushProgress(nextTime, nextDuration, true);
           markCompleteOnce();
           onEnded?.();
         } else if (d.playerState === 1) {
@@ -3000,7 +3307,7 @@ function VideoItem({ courseId, user, video: videoProp, videoId: videoIdProp, isA
         }
         if (nextDuration > 0 && nextTime / nextDuration >= VIDEO_COMPLETE_THRESHOLD) markCompleteOnce();
         if (nextDuration > 0 && now - progressSentAtRef.current >= 5000) {
-          progressSentAtRef.current = now; onProgress?.(nextTime, nextDuration);
+          flushProgress(nextTime, nextDuration, true);
         }
       }
     } catch {}
@@ -3010,15 +3317,31 @@ function VideoItem({ courseId, user, video: videoProp, videoId: videoIdProp, isA
     const shouldPause = shouldBePlayingRef.current && (isPlaying || isBuffering);
     shouldBePlayingRef.current = !shouldPause;
     setIsBuffering(false);
-    if (shouldPause) clearAutoPlayTimers();
+    clearAutoPlayTimers();
+    if (shouldPause) {
+      flushProgress(undefined, undefined, true);
+    }
     sendCmd(shouldPause ? "pauseVideo" : "playVideo");
     setIsPlaying(!shouldPause);
   }
   function toggleMute() { sendCmd(isMuted ? "unMute" : "mute"); setIsMuted(m => !m); }
-  function selectSpeed(r) { sendCmd("setPlaybackRate", [r]); setPlaybackRate(r); setShowSpeedPicker(false); }
+  function selectSpeed(r) { sendCmd("setPlaybackRate", [r]); setPlaybackRate(r); }
   function selectQuality(q) {
     webViewRef.current?.injectJavaScript(`try{bunnyQuality(${JSON.stringify(q)});}catch(e){} true;`);
-    setCurrentQuality(q); setShowQualityPicker(false);
+    setCurrentQuality(q);
+  }
+  function setSleepTimer(minutes) {
+    if (sleepTimerRef.current) clearTimeout(sleepTimerRef.current);
+    setSleepMinutes(minutes);
+    if (!minutes) return;
+    sleepTimerRef.current = setTimeout(() => {
+      shouldBePlayingRef.current = false;
+      flushProgress(undefined, undefined, true);
+      sendCmd("pauseVideo");
+      setIsPlaying(false);
+      setIsBuffering(false);
+      setSleepMinutes(0);
+    }, minutes * 60000);
   }
 
   function handleSeekDrag(x) {
@@ -3033,15 +3356,16 @@ function VideoItem({ courseId, user, video: videoProp, videoId: videoIdProp, isA
     if (!isDraggingRef.current) return;
     isDraggingRef.current = false;
     const t = clampSeconds(dragTargetRef.current, duration);
+    flushProgress(t, duration, true);
     seekGuardRef.current = { until: Date.now() + 3000, target: t };
     setCurrentTime(t);
     if (duration <= 0 || t < duration - 0.5) setIsEnded(false);
     if (isActive) {
       shouldBePlayingRef.current = true;
       setIsPlaying(true);
-      setIsBuffering(true);
+      setIsBuffering(false);
+      clearAutoPlayTimers();
       sendCmd("seekAndPlay", [t, true]);
-      queueAutoPlay();
     } else {
       sendCmd("seekTo", [t, true]);
     }
@@ -3062,9 +3386,9 @@ function VideoItem({ courseId, user, video: videoProp, videoId: videoIdProp, isA
     if (isActive) {
       shouldBePlayingRef.current = true;
       setIsPlaying(true);
-      setIsBuffering(true);
+      setIsBuffering(false);
+      clearAutoPlayTimers();
       sendCmd("seekAndPlay", [t, true]);
-      queueAutoPlay();
     } else {
       sendCmd("seekTo", [t, true]);
     }
@@ -3087,22 +3411,49 @@ function VideoItem({ courseId, user, video: videoProp, videoId: videoIdProp, isA
   }
 
   function handleCenterTap() {
-    if (showSpeedPicker) { setShowSpeedPicker(false); return; }
-    if (showQualityPicker) { setShowQualityPicker(false); return; }
+    if (showSettings) { setShowSettings(false); return; }
     togglePlay();
   }
 
+  function handleExitFullscreen() {
+    setShowSettings(false);
+    if (isActive) onExitFullscreen?.();
+  }
+
   if (video.provider === 'aws_cloudfront' && currentTime > 0) cloudResume.current = currentTime;
-  if (video.provider === 'aws_cloudfront' && (!cloudLease || cloudError)) return <View style={[s.player,{height,justifyContent:'center',alignItems:'center'}]}><Text style={{color:'#fff',padding:20}}>{cloudError || 'Authorizing video…'}</Text>{!!cloudError && <TouchableOpacity onPress={()=>{setCloudError('');setCloudRetry(n=>n+1);}}><Text style={{color:'#e0ac45'}}>Retry playback</Text></TouchableOpacity>}</View>;
+  if (video.provider === 'aws_cloudfront' && (!validCloudLease || cloudError)) return (
+    <View style={[s.player, { height, justifyContent: "center", alignItems: "center" }]}>
+      {!cloudError && <ActivityIndicator size="large" color="#fff" />}
+      <Text style={{ color: "#fff", padding: 20, textAlign: "center" }}>{cloudError || "Preparing secure playback..."}</Text>
+      {!!cloudError && (
+        <TouchableOpacity onPress={() => { setCloudError(""); setCloudRetry(n => n + 1); }} accessibilityRole="button" accessibilityLabel="Retry playback">
+          <Text style={{ color: "#e0ac45" }}>Retry playback</Text>
+        </TouchableOpacity>
+      )}
+    </View>
+  );
   const progress = duration > 0 ? Math.max(0, Math.min(1, currentTime / duration)) : 0;
+  const qualityOptions = isBunny && qualities.length > 0 ? qualities : ["Auto"];
+  const showLiveSurface = !suspendSurface;
+  const suspendedPosterUrl = suspendSurface ? getLessonThumbnailUrl(video, course) : "";
 
   return (
     <View style={[s.player, { height }]}>
-      {isNativeVideo ? (
+      {!showLiveSurface ? (
+        <View style={s.suspendedVideoSurface} pointerEvents="none">
+          {suspendedPosterUrl ? (
+            <Image source={{ uri: suspendedPosterUrl }} style={StyleSheet.absoluteFill} resizeMode="cover" blurRadius={Platform.OS === "android" ? 1 : 2} />
+          ) : course ? (
+            <CourseThumbnailImage course={course} />
+          ) : null}
+          <View style={s.suspendedVideoScrim} />
+        </View>
+      ) : isNativeVideo ? (
         <VideoView
+          key={`native-video-${surfaceRevision}`}
           player={nativePlayer}
           style={StyleSheet.absoluteFill}
-          contentFit={fillVideo ? "cover" : "contain"}
+          contentFit="cover"
           surfaceType="textureView"
           nativeControls={false}
           allowsPictureInPicture={false}
@@ -3122,7 +3473,7 @@ function VideoItem({ courseId, user, video: videoProp, videoId: videoIdProp, isA
           style={StyleSheet.absoluteFill}
         />
       )}
-      {isBuffering && !isEnded ? (
+      {showLiveSurface && isBuffering && !isEnded ? (
         <View
           style={s.pauseOverlay}
           pointerEvents="none"
@@ -3132,7 +3483,7 @@ function VideoItem({ courseId, user, video: videoProp, videoId: videoIdProp, isA
         >
           <ActivityIndicator size="large" color="#fff" />
         </View>
-      ) : !isPlaying && !isEnded ? (
+      ) : showLiveSurface && !isPlaying && !isEnded ? (
         <View style={s.pauseOverlay} pointerEvents="none">
           <Ionicons name="play-circle" size={72} color="rgba(255,255,255,0.85)" />
         </View>
@@ -3175,72 +3526,90 @@ function VideoItem({ courseId, user, video: videoProp, videoId: videoIdProp, isA
           )}
         </>
       )}
-      {showSpeedPicker && (
-        <View style={s.speedPicker}>
-          {SPEEDS.map(r => (
-            <TouchableOpacity
-              key={r}
-              onPress={() => selectSpeed(r)}
-              style={[s.speedOption, playbackRate === r && s.speedOptionActive]}
-              accessibilityRole="button"
-              accessibilityLabel={`Set playback speed to ${r} times`}
-              accessibilityState={{ selected: playbackRate === r }}
-            >
-              <Text style={s.speedOptionText}>{r}×</Text>
+      {showSettings && (
+        <View style={s.playerSettingsPanel}>
+          <View style={s.playerSettingsHeader}>
+            <Text style={s.playerSettingsTitle}>Playback settings</Text>
+            <TouchableOpacity onPress={() => setShowSettings(false)} style={s.playerSettingsClose} accessibilityRole="button" accessibilityLabel="Close playback settings">
+              <Ionicons name="close" size={18} color="rgba(255,255,255,0.82)" />
             </TouchableOpacity>
-          ))}
-        </View>
-      )}
-      {showQualityPicker && qualities.length > 0 && (
-        <View style={s.qualityPicker}>
-          {qualities.map(q => (
+          </View>
+          <View style={s.playerSettingsSection}>
+            <Text style={s.playerSettingsLabel}>Playback speed</Text>
+            <View style={s.playerSettingsOptions}>
+              {SPEEDS.map(r => {
+                const label = r === 1 ? "Normal" : `${r}×`;
+                return (
+                  <TouchableOpacity
+                    key={r}
+                    onPress={() => selectSpeed(r)}
+                    style={[s.playerSettingsOption, playbackRate === r && s.playerSettingsOptionActive]}
+                    accessibilityRole="button"
+                    accessibilityLabel={`Set playback speed to ${label}`}
+                    accessibilityState={{ selected: playbackRate === r }}
+                  >
+                    <Text style={[s.playerSettingsOptionText, playbackRate === r && s.playerSettingsOptionTextActive]}>{label}</Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+          </View>
+          <View style={s.playerSettingsSection}>
+            <Text style={s.playerSettingsLabel}>Quality</Text>
+            <View style={s.playerSettingsOptions}>
+              {qualityOptions.map(q => (
+                <TouchableOpacity
+                  key={q}
+                  onPress={() => { if (q !== "Auto") selectQuality(q); else setCurrentQuality("Auto"); }}
+                  style={[s.playerSettingsOption, currentQuality === q && s.playerSettingsOptionActive]}
+                  accessibilityRole="button"
+                  accessibilityLabel={`Set video quality to ${q}`}
+                  accessibilityState={{ selected: currentQuality === q }}
+                >
+                  <Text style={[s.playerSettingsOptionText, currentQuality === q && s.playerSettingsOptionTextActive]}>{q}</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          </View>
+          <View style={[s.playerSettingsRow, s.playerSettingsSection]}>
+            <Text style={s.playerSettingsLabel}>Loop lesson</Text>
             <TouchableOpacity
-              key={q}
-              onPress={() => selectQuality(q)}
-              style={[s.speedOption, currentQuality === q && s.speedOptionActive]}
-              accessibilityRole="button"
-              accessibilityLabel={`Set video quality to ${q}`}
-              accessibilityState={{ selected: currentQuality === q }}
+              onPress={() => setLoopLesson(value => !value)}
+              style={[s.playerSwitch, loopLesson && s.playerSwitchActive]}
+              accessibilityRole="switch"
+              accessibilityState={{ checked: loopLesson }}
+              accessibilityLabel="Loop lesson"
             >
-              <Text style={s.speedOptionText}>{q}</Text>
+              <View style={[s.playerSwitchThumb, loopLesson && s.playerSwitchThumbActive]} />
             </TouchableOpacity>
-          ))}
+          </View>
+          <View style={[s.playerSettingsSection, { borderBottomWidth: 0, paddingBottom: 0 }]}>
+            <Text style={s.playerSettingsLabel}>Sleep timer</Text>
+            <View style={s.playerSettingsOptions}>
+              {[0, 15, 30, 45, 60].map(minutes => {
+                const label = minutes ? `${minutes} min` : "Off";
+                return (
+                  <TouchableOpacity
+                    key={minutes}
+                    onPress={() => setSleepTimer(minutes)}
+                    style={[s.playerSettingsOption, sleepMinutes === minutes && s.playerSettingsOptionActive]}
+                    accessibilityRole="button"
+                    accessibilityLabel={`Sleep timer ${label}`}
+                    accessibilityState={{ selected: sleepMinutes === minutes }}
+                  >
+                    <Text style={[s.playerSettingsOptionText, sleepMinutes === minutes && s.playerSettingsOptionTextActive]}>{label}</Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+          </View>
         </View>
-      )}
-      {isNativeVideo && (
-        <TouchableOpacity
-          onPress={() => setFillVideo(value => !value)}
-          style={s.videoFitButton}
-          accessibilityRole="button"
-          accessibilityLabel={fillVideo ? "Fit entire video" : "Fill screen with video"}
-        >
-          <Text style={s.speedButtonText}>{fillVideo ? "Fit" : "Fill"}</Text>
-        </TouchableOpacity>
       )}
       {isOffline && (
         <View style={s.offlineBadge} pointerEvents="none">
           <Ionicons name="arrow-down-circle" size={11} color="#fff" />
           <Text style={s.offlineBadgeText}>Offline</Text>
         </View>
-      )}
-      <TouchableOpacity
-        onPress={() => { setShowSpeedPicker(v => !v); setShowQualityPicker(false); }}
-        style={s.speedButton}
-        accessibilityRole="button"
-        accessibilityLabel="Change playback speed"
-      >
-        <Text style={s.speedButtonText}>{playbackRate}×</Text>
-      </TouchableOpacity>
-      {isBunny && qualities.length > 0 && (
-        <TouchableOpacity
-          onPress={() => { setShowQualityPicker(v => !v); setShowSpeedPicker(false); }}
-          style={s.qualityButton}
-          accessibilityRole="button"
-          accessibilityLabel="Change video quality"
-        >
-          <Ionicons name="settings-outline" size={16} color="#fff" />
-          <Text style={s.speedButtonText}>{currentQuality}</Text>
-        </TouchableOpacity>
       )}
       <TouchableOpacity
         onPress={toggleMute}
@@ -3263,6 +3632,23 @@ function VideoItem({ courseId, user, video: videoProp, videoId: videoIdProp, isA
       <View style={s.timeDisplay} pointerEvents="none">
         <Text style={s.timeText}>{formatTime(currentTime)} / {formatTime(duration)}</Text>
       </View>
+      <TouchableOpacity
+        onPress={() => setShowSettings(value => !value)}
+        style={[s.playerSettingsButton, showSettings && s.playerSettingsButtonActive]}
+        accessibilityRole="button"
+        accessibilityLabel="Playback settings"
+        accessibilityState={{ expanded: showSettings }}
+      >
+        <Ionicons name="settings-outline" size={22} color="#fff" />
+      </TouchableOpacity>
+      <TouchableOpacity
+        onPress={handleExitFullscreen}
+        style={s.playerExpandButton}
+        accessibilityRole="button"
+        accessibilityLabel="Exit full screen player"
+      >
+        <Ionicons name="contract-outline" size={22} color="#fff" />
+      </TouchableOpacity>
       <View
         style={s.timeline}
         accessible
@@ -3300,8 +3686,7 @@ function VideoItem({ courseId, user, video: videoProp, videoId: videoIdProp, isA
 }
 
 // ── ReelsScreen ───────────────────────────────────────────────────────────────
-function ReelsScreen({ courseId, initialIndex, initialTime, onBack, user, onVideoComplete, onVideoProgress, downloads, preloadedVideos }) {
-  const [completionInfo, setCompletionInfo] = useState(null);
+function ReelsScreen({ courseId, course, initialIndex, initialTime, onBack, user, onVideoComplete, onVideoProgress, downloads, preloadedVideos }) {
   const [videos, setVideos] = useState(preloadedVideos || []);
   const [loading, setLoading] = useState(!preloadedVideos);
   const [error, setError] = useState(null);
@@ -3310,6 +3695,7 @@ function ReelsScreen({ courseId, initialIndex, initialTime, onBack, user, onVide
   const [showDescription, setShowDescription] = useState(false);
   const [showNotes, setShowNotes] = useState(false);
   const [showCourseAi, setShowCourseAi] = useState(false);
+  const [playerSettingsOpen, setPlayerSettingsOpen] = useState(false);
   const [courseAiInput, setCourseAiInput] = useState("");
   const [, refreshCourseAi] = useState(0);
   const courseAiMounted = useRef(false);
@@ -3341,6 +3727,30 @@ function ReelsScreen({ courseId, initialIndex, initialTime, onBack, user, onVide
   const activePrompts = getVideoPrompts(activeVideo);
   const activeResources = getVideoResources(activeVideo);
   const hasSeparateNotes = !!activeNotes && activeNotes !== activeDescription;
+  const activeLessonNumber = Math.min(videos.length, Math.max(1, activeIndex + 1));
+  const activeLessonLabel = videos.length ? `Lecture ${activeLessonNumber}/${videos.length}` : "Lecture";
+  const activeSummary = activeDescription === "No description available." ? "" : activeDescription;
+  const activeShareUrl = `${WEB_APP_BASE}/videos?courseId=${encodeURIComponent(courseId)}`;
+  const videoUiOverlayOpen = showCourseAi || showDescription || showNotes;
+  const closeCourseAi = useCallback(() => {
+    Keyboard.dismiss();
+    setShowCourseAi(false);
+  }, []);
+
+  useEffect(() => {
+    if (!user?._id || !user?.sessionId || !videos.length) return;
+    [activeIndex + 1, activeIndex + 2].forEach(index => {
+      const video = videos[index];
+      if (video?.provider !== "aws_cloudfront" || !video?._id) return;
+      const leaseKey = getPlaybackLeaseKey(courseId, video._id, user.sessionId);
+      if (getCachedPlaybackLease(leaseKey)) return;
+      fetchPlaybackLease({ courseId, video, user, timeoutMs: PLAYBACK_ACCESS_TIMEOUT_MS + 15000 })
+        .then(lease => {
+          PLAYBACK_ACCESS_CACHE.set(leaseKey, lease);
+        })
+        .catch(() => {});
+    });
+  }, [activeIndex, courseId, user?._id, user?.sessionId, videos]);
 
   useEffect(() => {
     ScreenCapture.preventScreenCaptureAsync(PROTECTED_VIDEO_CAPTURE_KEY).catch(() => {});
@@ -3362,6 +3772,7 @@ function ReelsScreen({ courseId, initialIndex, initialTime, onBack, user, onVide
   useEffect(() => {
     setCourseAiInput("");
     setShowNotes(false);
+    setPlayerSettingsOpen(false);
   }, [courseAiKey]);
 
   const onViewable = useCallback(({ viewableItems }) => {
@@ -3369,6 +3780,15 @@ function ReelsScreen({ courseId, initialIndex, initialTime, onBack, user, onVide
     if (visible) setActiveIndex(visible.index);
   }, []);
 
+  async function shareActiveLesson() {
+    try {
+      await Share.share({
+        title: activeTitle || "Skillomate lecture",
+        message: `${activeTitle || "Skillomate lecture"}\n${activeShareUrl}`,
+        url: activeShareUrl,
+      });
+    } catch {}
+  }
 
   async function sendCourseAiMessage(promptText = courseAiInput) {
     const question = promptText.trim();
@@ -3441,15 +3861,22 @@ function ReelsScreen({ courseId, initialIndex, initialTime, onBack, user, onVide
         removeClippedSubviews={ANDROID_CLIPPED_SUBVIEWS}
         scrollEventThrottle={16}
         renderItem={({ item, index }) => (
-          <VideoItem video={item} courseId={courseId} user={user}
+          <VideoItem video={item} courseId={courseId} course={course} user={user}
             onComplete={() => { /* Completion comes from validated progress responses. */ }}
-            onProgress={async (currentTime, duration) => { const result = await onVideoProgress?.(courseId, getVideoKey(item, index), currentTime, duration); if (result) setCompletionInfo(result.eligibility || { error: result.error }); }}
+            onProgress={(currentTime, duration) => { onVideoProgress?.(courseId, getVideoKey(item, index), currentTime, duration); }}
+            onSettingsOpenChange={open => {
+              if (index === activeIndex) setPlayerSettingsOpen(open);
+            }}
+            onExitFullscreen={() => {
+              if (index === activeIndex) onBack?.();
+            }}
             onEnded={() => {
               if (index === activeIndex && index < videos.length - 1) {
                 flatListRef.current?.scrollToIndex({ index: index + 1, animated: true });
               }
             }}
-            isActive={index === activeIndex} height={listHeight}
+            isActive={index === activeIndex && !videoUiOverlayOpen} height={listHeight}
+            suspendSurface={index === activeIndex && videoUiOverlayOpen}
             initialTime={index === (initialIndex ?? 0) ? (initialTime ?? 0) : 0}
             localPath={downloads?.[getBunnyGuid(item)]?.status === "done" ? downloads[getBunnyGuid(item)].path : null} />
         )}
@@ -3458,50 +3885,59 @@ function ReelsScreen({ courseId, initialIndex, initialTime, onBack, user, onVide
         getItemLayout={(_, i) => ({ length: listHeight, offset: listHeight * i, index: i })}
       />
 
-      <TouchableOpacity accessibilityRole="button" onPress={() => Linking.openURL(`${WEB_APP_BASE}/videos?courseId=${encodeURIComponent(courseId)}`)} style={{position:'absolute',bottom:110,left:14,right:14,padding:10,borderRadius:8,backgroundColor:'rgba(0,0,0,0.8)',zIndex:5}}>
-        <Text style={{color:'#fff',fontSize:11}}>{completionInfo?.error || (completionInfo ? `${completionInfo.completedLessons}/${completionInfo.totalLessons} lessons complete · ${completionInfo.requirements?.[0] || 'Completion requirements met'}` : '90% lesson coverage required · online progress tracking')} · Requirements / assessment on web ↗</Text>
-      </TouchableOpacity>
-      <SafeAreaView style={s.reelsTopBar} pointerEvents="box-none">
+      <SafeAreaView style={s.webPlayerTopBar} pointerEvents="box-none">
         <TouchableOpacity
           onPress={onBack}
-          style={s.reelsTopBtn}
+          style={s.webPlayerTopBtn}
           hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
           accessibilityRole="button"
           accessibilityLabel="Back"
         >
-          <Ionicons name="arrow-back" size={22} color="#fff" />
+          <Ionicons name="arrow-back" size={22} color={C.primary} />
         </TouchableOpacity>
+        <Text style={s.webPlayerLectureLabel} numberOfLines={1}>{activeLessonLabel}</Text>
         <View style={{ flex: 1 }} />
         <TouchableOpacity
+          onPress={() => setShowNotes(true)}
+          style={s.webPlayerTopBtn}
+          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+          accessibilityRole="button"
+          accessibilityLabel="Open lecture notes and prompts"
+        >
+          <Ionicons name="document-text-outline" size={21} color={C.primary} />
+        </TouchableOpacity>
+        <TouchableOpacity
           onPress={() => setShowDescription(true)}
-          style={s.reelsTopBtn}
+          style={s.webPlayerTopBtn}
           hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
           accessibilityRole="button"
           accessibilityLabel="Show lesson information"
         >
-          <Ionicons name="information-circle-outline" size={22} color="#fff" />
+          <Ionicons name="flag-outline" size={21} color={C.primary} />
         </TouchableOpacity>
       </SafeAreaView>
-      <TouchableOpacity
-        onPress={() => setShowCourseAi(true)}
-        style={s.reelsAiBtn}
-        hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-        accessibilityRole="button"
-        accessibilityLabel="Ask Course AI"
-      >
-        <Ionicons name="sparkles" size={16} color="#fff" />
-        <Text style={s.playerAiButtonText}>AI</Text>
-      </TouchableOpacity>
-      <TouchableOpacity
-        onPress={() => setShowNotes(true)}
-        style={s.reelsNotesBtn}
-        hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-        accessibilityRole="button"
-        accessibilityLabel="Open lecture notes and prompts"
-      >
-        <Ionicons name="document-text-outline" size={16} color="#fff" />
-        <Text style={s.playerAiButtonText}>Notes</Text>
-      </TouchableOpacity>
+      {!playerSettingsOpen && (
+        <View style={s.webPlayerSideRail} pointerEvents="box-none">
+          <TouchableOpacity onPress={() => setShowCourseAi(true)} style={s.webPlayerRailBtn} accessibilityRole="button" accessibilityLabel="Ask Course AI">
+            <Ionicons name="sparkles" size={20} color="#fff" />
+            <Text style={s.webPlayerRailText}>AI chat</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => setShowNotes(true)} style={s.webPlayerRailBtn} accessibilityRole="button" accessibilityLabel="Open lectures">
+            <Ionicons name="layers-outline" size={21} color="#fff" />
+            <Text style={s.webPlayerRailText}>Lectures</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={shareActiveLesson} style={s.webPlayerRailBtn} accessibilityRole="button" accessibilityLabel="Share lecture">
+            <Ionicons name="share-social-outline" size={21} color="#fff" />
+            <Text style={s.webPlayerRailText}>Share</Text>
+          </TouchableOpacity>
+        </View>
+      )}
+      {!playerSettingsOpen && (
+        <View style={s.webPlayerMeta} pointerEvents="none">
+          <Text style={s.webPlayerTitle} numberOfLines={1}>{activeTitle || "Lesson"}</Text>
+          {!!activeSummary && <Text style={s.webPlayerDescription} numberOfLines={2}>{activeLessonLabel} - {activeSummary}</Text>}
+        </View>
+      )}
 
       <Modal visible={showDescription} transparent animationType="slide" onRequestClose={() => setShowDescription(false)}>
         <View style={s.descriptionOverlay}>
@@ -3638,9 +4074,9 @@ function ReelsScreen({ courseId, initialIndex, initialTime, onBack, user, onVide
         </View>
       </Modal>
 
-      <Modal visible={showCourseAi} transparent animationType="slide" onRequestClose={() => setShowCourseAi(false)}>
+      <Modal visible={showCourseAi} transparent animationType="slide" onRequestClose={closeCourseAi}>
         <KeyboardAvoidingView style={s.courseAiOverlay} behavior={Platform.OS === "ios" ? "padding" : "height"}>
-          <Pressable style={StyleSheet.absoluteFill} onPress={() => setShowCourseAi(false)} accessible={false} />
+          <Pressable style={StyleSheet.absoluteFill} onPress={closeCourseAi} accessible={false} />
           <View style={s.courseAiSheet}>
             <View style={s.courseAiHandle} />
             <View style={s.courseAiHeader}>
@@ -3648,7 +4084,7 @@ function ReelsScreen({ courseId, initialIndex, initialTime, onBack, user, onVide
                 <Text style={s.courseAiTitle}>Course AI</Text>
                 <Text style={s.courseAiSubtitle} numberOfLines={1}>{activeTitle || "Ask about this video"}</Text>
               </View>
-              <TouchableOpacity onPress={() => setShowCourseAi(false)} style={s.courseAiClose} accessibilityRole="button" accessibilityLabel="Close Course AI">
+              <TouchableOpacity onPress={closeCourseAi} style={s.courseAiClose} accessibilityRole="button" accessibilityLabel="Close Course AI">
                 <Ionicons name="close" size={20} color={C.text} />
               </TouchableOpacity>
             </View>
@@ -4068,17 +4504,7 @@ const HOME_PALETTE = {
 };
 
 function getHomeLessonThumbnailUrl(lesson, course) {
-  if (lesson?.thumbnailUrl || lesson?.thumbnailVerticalUrl) {
-    return normalizeThumbnailUrl(lesson.thumbnailUrl || lesson.thumbnailVerticalUrl, 640);
-  }
-  const bunnyGuid = getBunnyGuid(lesson);
-  if (bunnyGuid) {
-    return `${API_BASE}/api/bunny/thumbnail/${bunnyGuid}?libraryId=${encodeURIComponent(getBunnyLibraryId(lesson))}`;
-  }
-  if (lesson?.youtubeId) {
-    return `https://img.youtube.com/vi/${lesson.youtubeId}/mqdefault.jpg`;
-  }
-  return getCourseThumbnailUri(course, false) || "";
+  return getLessonThumbnailUrl(lesson, course);
 }
 
 function HomeMedia({ course, lesson, borderRadius = 12, screen = "Home media" }) {
@@ -4236,6 +4662,9 @@ function LessonCarousel({ course, lessons, cardWidth, onPressLesson }) {
       contentContainerStyle={homeStyles.horizontalContent}
       directionalLockEnabled
       nestedScrollEnabled
+      scrollEventThrottle={16}
+      decelerationRate="fast"
+      removeClippedSubviews={ANDROID_CLIPPED_SUBVIEWS}
     >
       {lessons.map((lesson, index) => (
         <HomeLessonCard
@@ -4316,7 +4745,17 @@ function ProjectCarousel({ course, projects, onPressProject }) {
   const swipeBoundaryProps = useHorizontalSwipeBoundaryProps();
 
   return (
-    <ScrollView {...swipeBoundaryProps} horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={homeStyles.horizontalContent} directionalLockEnabled nestedScrollEnabled>
+    <ScrollView
+      {...swipeBoundaryProps}
+      horizontal
+      showsHorizontalScrollIndicator={false}
+      contentContainerStyle={homeStyles.horizontalContent}
+      directionalLockEnabled
+      nestedScrollEnabled
+      scrollEventThrottle={16}
+      decelerationRate="fast"
+      removeClippedSubviews={ANDROID_CLIPPED_SUBVIEWS}
+    >
       {projects.map(project => (
         <TouchableOpacity
           key={project.key}
@@ -5104,7 +5543,14 @@ function HomeScreen({
               <TouchableOpacity style={homeStyles.headerFlagButton} onPress={onReportProblem} accessibilityRole="button" accessibilityLabel="Report a problem">
                 <Ionicons name="flag-outline" size={19} color="#FF5656" />
               </TouchableOpacity>
-              <TouchableOpacity style={homeStyles.profileButton} onPress={onGoToProfile} accessibilityRole="button" accessibilityLabel="Open profile">
+              <TouchableOpacity
+                style={homeStyles.profileButton}
+                onPress={onGoToProfile}
+                accessibilityRole="button"
+                accessibilityLabel="Open profile"
+                hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                testID="home-profile-button"
+              >
                 <AvatarImage avatarId={user.avatar || "a1"} size={40} style={{ borderRadius: 20 }} />
               </TouchableOpacity>
             </View>
@@ -6182,6 +6628,15 @@ function ProfileScreen({ user, onLogout, onDeleteAccount, onGoToHome, onGoToCour
       <View style={[s.homeTopBar, { paddingBottom: 20, backgroundColor: C.white }]}>
         <SafeAreaView style={{ backgroundColor: C.white }}>
           <View style={[s.homeTopBarInner, s.pageHeaderLogoOnly]}>
+            <TouchableOpacity
+              onPress={onGoToHome}
+              style={{ position: "absolute", left: 16, width: MIN_TOUCH_TARGET, height: MIN_TOUCH_TARGET, alignItems: "center", justifyContent: "center" }}
+              accessibilityRole="button"
+              accessibilityLabel="Back to home"
+              hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+            >
+              <Ionicons name="arrow-back" size={22} color={C.text} />
+            </TouchableOpacity>
             <SkillomateLogo size="sm" />
           </View>
         </SafeAreaView>
@@ -6357,10 +6812,13 @@ function ProfileScreen({ user, onLogout, onDeleteAccount, onGoToHome, onGoToCour
           style={s.logoutBtn}
           onPress={() => Alert.alert("Log out?", "Log out of Skillomate on this device? You’ll need to sign in again to access your courses and downloads.", [
             { text: "Cancel", style: "cancel" },
-            { text: "Log out", style: "destructive", onPress: onLogout },
+            { text: "Log out", style: "destructive", onPress: () => onLogout?.() },
           ])}
+          activeOpacity={0.8}
+          hitSlop={{ top: 10, bottom: 10, left: 16, right: 16 }}
           accessibilityRole="button"
           accessibilityLabel="Log out of Skillomate"
+          testID="profile-logout"
         >
           <Ionicons name="log-out-outline" size={18} color={C.danger} />
           <Text style={s.logoutText}>Logout</Text>
@@ -6396,7 +6854,7 @@ function ProfileScreen({ user, onLogout, onDeleteAccount, onGoToHome, onGoToCour
         onClose={() => setShowDeleteAccount(false)}
         onDeleteAccount={onDeleteAccount}
       />
-      <BottomNav active="profile" onHome={onGoToHome} onCourses={onGoToCourses} onAI={onGoToAI} onDownloads={onGoToDownloads} onProfile={() => {}} aiRobotId={aiRobotId} />
+      <BottomNav active="" onHome={onGoToHome} onCourses={onGoToCourses} onAI={onGoToAI} onDownloads={onGoToDownloads} aiRobotId={aiRobotId} persistent />
     </View>
   );
 }
@@ -7294,6 +7752,18 @@ export default function App() {
   const [signupError, setSignupError] = useState("");
 
   const navigateRootTab = useCallback((targetTab, options = {}) => {
+    if (targetTab === "profile") {
+      if (options.validateOnly) return true;
+      setShowAppUpgrade(false);
+      setSelectedCourse(null);
+      setStartIndex(null);
+      setInitialTime(0);
+      setPreloadedVideos(null);
+      setIsPreviewOnly(false);
+      setCourseAiTarget(null);
+      setMainScreen("profile");
+      return true;
+    }
     if (!ROOT_TAB_ORDER.includes(targetTab)) return false;
     if (targetTab === "downloads" && !hasCourseAccess(userRef.current)) {
       if (!options.validateOnly) setShowAppUpgrade(true);
@@ -7672,7 +8142,7 @@ export default function App() {
     try {
       const res = await fetch(`${API_BASE}/api/user/progress/complete-video`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: authHeadersForUser(u, { "Content-Type": "application/json" }),
         body: JSON.stringify({ userId: u._id, sessionId: u.sessionId, courseId, videoId: id }),
       });
       if (res.ok) {
@@ -7711,25 +8181,23 @@ export default function App() {
   const saveVideoProgress = useCallback(async (courseId, videoId, currentTime, duration) => {
     const u = userRef.current;
     if (!u?._id || !u?.sessionId || !courseId || !videoId || !duration) return;
-    try {
-      const res = await fetch(`${API_BASE}/api/user/progress/update-video`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          userId: u._id,
-          sessionId: u.sessionId,
-          courseId,
-          videoId: String(videoId),
-          currentTime,
-          duration,
-        }),
-      });
-      if (!res.ok) {
-        const failure = await res.json().catch(() => ({}));
-        return { error: failure.error || "Progress could not be saved. Please retry online." };
+    const body = {
+      userId: u._id,
+      sessionId: u.sessionId,
+      courseId,
+      videoId: String(videoId),
+      currentTime,
+      duration,
+    };
+    const applyProgressResult = data => {
+      if (data.progress) {
+        setCourseProgress(prev => ({ ...prev, [courseId]: data.progress }));
+      } else if (data.eligibility) {
+        setCourseProgress(prev => ({
+          ...prev,
+          [courseId]: progressFromLearningStatus(data.eligibility, prev[courseId]),
+        }));
       }
-      const data = await res.json();
-      if (data.progress) setCourseProgress(prev => ({ ...prev, [courseId]: data.progress }));
       if (data.certificate) {
         setCertificates(prev => {
           const exists = prev.some(c => c.courseId === courseId);
@@ -7737,6 +8205,29 @@ export default function App() {
           return exists ? prev : [data.certificate, ...prev];
         });
       }
+    };
+    try {
+      const postProgress = (path, includeBearer = true) => fetch(`${API_BASE}${path}`, {
+        method: "POST",
+        headers: includeBearer ? authHeadersForUser(u, { "Content-Type": "application/json" }) : { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+      let res = await postProgress(`/api/learning/${encodeURIComponent(courseId)}/progress`);
+      if ((res.status === 401 || res.status === 403) && (u.accessToken || u.token)) {
+        res = await postProgress(`/api/learning/${encodeURIComponent(courseId)}/progress`, false);
+      }
+      if (res.status === 404) {
+        res = await postProgress("/api/user/progress/update-video");
+        if ((res.status === 401 || res.status === 403) && (u.accessToken || u.token)) {
+          res = await postProgress("/api/user/progress/update-video", false);
+        }
+      }
+      if (!res.ok) {
+        const failure = await res.json().catch(() => ({}));
+        return { error: failure.error || "Progress could not be saved. Please retry online." };
+      }
+      const data = await res.json();
+      applyProgressResult(data);
       return data;
     } catch (e) {
       console.log("Progress update error", e?.message);
@@ -8070,8 +8561,8 @@ export default function App() {
     setSignupFullName(""); setSignupEmail(""); setSignupPassword(""); setSignupGender(""); setSignupAge("18"); setSignupAvatar("a1"); setSignupError("");
   }
 
-  function handleLogout() {
-    AsyncStorage.removeItem(AI_AVATAR_STORAGE_KEY);
+  async function handleLogout() {
+    AsyncStorage.removeItem(AI_AVATAR_STORAGE_KEY).catch(() => {});
     setAiRobotId(null);
     setWishlist([]);
     setCourseProgress({});
@@ -8079,6 +8570,7 @@ export default function App() {
     resetSignup();
     setLegalPage(null);
     setUser(null); setSelectedCourse(null); setStartIndex(null); setCourseAiTarget(null); setMainScreen("home");
+    await nativeSession.flush().catch(() => {});
   }
 
   async function handleDeleteAccount({ password: currentPassword, confirmation }) {
@@ -8552,6 +9044,7 @@ export default function App() {
       <View style={{ flex: 1 }}>
         <ReelsScreen
           courseId={selectedCourse._id}
+          course={selectedCourse}
           initialIndex={startIndex}
           initialTime={initialTime}
           downloads={downloads}
@@ -8664,34 +9157,6 @@ export default function App() {
         />
       );
     }
-
-    if (tab === "profile") {
-    return (
-      <ProfileScreen
-          user={user}
-          onLogout={handleLogout}
-          onDeleteAccount={handleDeleteAccount}
-          wishlistCount={wishlist.length}
-          certificatesCount={certificates.length}
-          onGoToWishlist={() => setMainScreen("wishlist")}
-          onGoToCertificates={() => setMainScreen("certificates")}
-          onGoToSubscription={() => setMainScreen("subscription")}
-          onOpenLegal={setLegalPage}
-          onGoToHome={() => navigateRootTab("home")}
-          onGoToCourses={() => navigateRootTab("courses")}
-          onGoToAI={() => navigateRootTab("ai")}
-          onGoToDownloads={() => navigateRootTab("downloads")}
-          onAvatarChange={avatarId => {
-            setUser(prev => {
-              if (!prev) return prev;
-              const updated = { ...prev, avatar: avatarId };
-              return updated;
-            });
-          }}
-          aiRobotId={aiRobotId}
-        />
-    );
-  }
 
   if (tab === "downloads") {
     const downloadItems = Object.values(downloads).filter(d => d.bunnyGuid);
@@ -8904,6 +9369,33 @@ export default function App() {
       />
     </View>
   );
+  }
+
+  if (mainScreen === "profile") {
+    return (
+      <ProfileScreen
+        user={user}
+        onLogout={handleLogout}
+        onDeleteAccount={handleDeleteAccount}
+        wishlistCount={wishlist.length}
+        certificatesCount={certificates.length}
+        onGoToWishlist={() => setMainScreen("wishlist")}
+        onGoToCertificates={() => setMainScreen("certificates")}
+        onGoToSubscription={() => setMainScreen("subscription")}
+        onOpenLegal={setLegalPage}
+        onGoToHome={() => navigateRootTab("home")}
+        onGoToCourses={() => navigateRootTab("courses")}
+        onGoToAI={() => navigateRootTab("ai")}
+        onGoToDownloads={() => navigateRootTab("downloads")}
+        onAvatarChange={avatarId => {
+          setUser(prev => {
+            if (!prev) return prev;
+            return { ...prev, avatar: avatarId };
+          });
+        }}
+        aiRobotId={aiRobotId}
+      />
+    );
   }
 
   const activeRootTab = ROOT_TAB_ORDER.includes(mainScreen) ? mainScreen : "home";
@@ -9492,13 +9984,13 @@ return StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     borderRadius: 10,
-    backgroundColor: "#F0393F",
+    backgroundColor: "#EF2F32",
     borderWidth: 1,
-    borderColor: "#FF777B",
+    borderColor: "#FF686B",
     paddingHorizontal: 12,
-    shadowColor: "#F0393F",
-    shadowOpacity: 0.34,
-    shadowRadius: 9,
+    shadowColor: "#EF2F32",
+    shadowOpacity: 0.42,
+    shadowRadius: 10,
     shadowOffset: { width: 0, height: 4 },
     elevation: 5,
   },
@@ -9595,6 +10087,14 @@ return StyleSheet.create({
     zIndex: 1,
     backgroundColor: C.bg,
     overflow: "hidden",
+  },
+  staticRootTabPage: {
+    flex: 1,
+    backgroundColor: C.bg,
+  },
+  rootTabPlaceholder: {
+    flex: 1,
+    backgroundColor: C.bg,
   },
   bottomTabAI: {
     width: 44, height: 44, borderRadius: 22,
@@ -11009,7 +11509,17 @@ courseListCard: {
   // Video Player
   centered: { flex: 1, alignItems: "center", justifyContent: "center", backgroundColor: C.bg },
   player: { width: "100%", flexGrow: 0, flexShrink: 0, position: "relative", overflow: "hidden", backgroundColor: "#000" },
-  videoFitButton: { position: "absolute", top: 106, left: 14, zIndex: 8, minHeight: 44, paddingHorizontal: 14, justifyContent: "center", borderRadius: 22, backgroundColor: "rgba(0,0,0,0.65)" },
+  nativeVideoBalancedFill: { transform: [{ scale: 0.98 }] },
+  suspendedVideoSurface: {
+    ...StyleSheet.absoluteFillObject,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#050505",
+  },
+  suspendedVideoScrim: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: "rgba(0,0,0,0.24)",
+  },
   reelsBackBtn: {
     position: "absolute", top: 52, left: 14,
     backgroundColor: "rgba(0,0,0,0.5)", borderRadius: 20, padding: 8, zIndex: 20,
@@ -11122,47 +11632,197 @@ courseListCard: {
   courseAiComposer: { flexDirection: "row", alignItems: "center", gap: 10, padding: 12, borderTopWidth: 1, borderTopColor: C.border, backgroundColor: C.surface },
   courseAiInput: { flex: 1, minHeight: MIN_TOUCH_TARGET, maxHeight: 80, borderRadius: MIN_TOUCH_TARGET / 2, backgroundColor: C.cardBg, color: C.text, paddingHorizontal: 14, fontSize: 14, borderWidth: 1, borderColor: C.border },
   courseAiSend: { width: MIN_TOUCH_TARGET, height: MIN_TOUCH_TARGET, borderRadius: MIN_TOUCH_TARGET / 2, backgroundColor: C.primary, alignItems: "center", justifyContent: "center" },
+  webPlayerTopBar: {
+    position: "absolute", top: 0, left: 0, right: 0, zIndex: 24,
+    flexDirection: "row", alignItems: "center", gap: 10,
+    paddingHorizontal: 14, paddingVertical: 8,
+    paddingTop: 8 + ANDROID_STATUS_BAR_INSET,
+    backgroundColor: "rgba(0,0,0,0.64)",
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: "rgba(224,172,69,0.55)",
+  },
+  webPlayerTopBtn: {
+    width: MIN_TOUCH_TARGET, height: MIN_TOUCH_TARGET,
+    alignItems: "center", justifyContent: "center",
+  },
+  webPlayerLectureLabel: {
+    color: C.primary,
+    fontSize: 13,
+    fontWeight: "900",
+    maxWidth: 170,
+  },
+  webPlayerSideRail: {
+    position: "absolute", right: 10, bottom: 136, zIndex: 22,
+    alignItems: "center", gap: 16,
+  },
+  webPlayerRailBtn: {
+    minWidth: 56,
+    minHeight: 50,
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 3,
+  },
+  webPlayerRailText: {
+    color: "#fff",
+    fontSize: 10,
+    fontWeight: "900",
+    textAlign: "center",
+    textShadowColor: "rgba(0,0,0,0.9)",
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 3,
+  },
+  webPlayerMeta: {
+    position: "absolute", left: 16, right: 82, bottom: 112, zIndex: 11,
+  },
+  webPlayerTitle: {
+    color: "#fff",
+    fontSize: 15,
+    lineHeight: 20,
+    fontWeight: "800",
+    textShadowColor: "rgba(0,0,0,0.95)",
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 4,
+  },
+  webPlayerDescription: {
+    marginTop: 4,
+    color: "rgba(255,255,255,0.9)",
+    fontSize: 11,
+    lineHeight: 15,
+    fontWeight: "600",
+    textShadowColor: "rgba(0,0,0,0.95)",
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 4,
+  },
   muteButton: {
-    position: "absolute", bottom: 38, right: 10,
+    position: "absolute", bottom: 18, left: 66,
     width: MIN_TOUCH_TARGET, height: MIN_TOUCH_TARGET, alignItems: "center", justifyContent: "center",
-    backgroundColor: "rgba(0,0,0,0.6)", borderRadius: 6, zIndex: 10,
+    backgroundColor: "rgba(0,0,0,0.56)", borderRadius: 6, zIndex: 14,
   },
   playPauseButton: {
-    position: "absolute", bottom: 35, left: "50%", marginLeft: -(MIN_TOUCH_TARGET / 2),
-    width: MIN_TOUCH_TARGET, height: MIN_TOUCH_TARGET, borderRadius: MIN_TOUCH_TARGET / 2,
-    backgroundColor: "rgba(0,0,0,0.62)",
-    borderWidth: 1, borderColor: "rgba(255,255,255,0.24)",
-    alignItems: "center", justifyContent: "center", zIndex: 12,
+    position: "absolute", bottom: 18, left: 14,
+    width: MIN_TOUCH_TARGET, height: MIN_TOUCH_TARGET, borderRadius: 6,
+    backgroundColor: "rgba(0,0,0,0.56)",
+    alignItems: "center", justifyContent: "center", zIndex: 16,
   },
   speedButton: {
-    position: "absolute", bottom: 38, left: 10,
+    position: "absolute", bottom: 18, left: 14,
     minWidth: MIN_TOUCH_TARGET, minHeight: MIN_TOUCH_TARGET, alignItems: "center", justifyContent: "center",
-    backgroundColor: "rgba(0,0,0,0.6)", paddingHorizontal: 10, borderRadius: 6, zIndex: 10,
+    backgroundColor: "rgba(0,0,0,0.56)", paddingHorizontal: 10, borderRadius: 6, zIndex: 14,
   },
   speedButtonText: { color: "#fff", fontWeight: "700", fontSize: 13 },
   speedPicker: {
-    position: "absolute", bottom: 92, left: 10,
+    position: "absolute", bottom: 72, left: 14,
     backgroundColor: "rgba(0,0,0,0.88)", borderRadius: 8, overflow: "hidden", zIndex: 20,
   },
   qualityPicker: {
-    position: "absolute", bottom: 92, left: 70,
+    position: "absolute", bottom: 72, right: 14,
     backgroundColor: "rgba(0,0,0,0.88)", borderRadius: 8, overflow: "hidden", zIndex: 20,
   },
   qualityButton: {
-    position: "absolute", bottom: 38, left: 70,
+    position: "absolute", bottom: 18, right: 14,
     minWidth: MIN_TOUCH_TARGET, minHeight: MIN_TOUCH_TARGET,
     flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 4,
-    backgroundColor: "rgba(0,0,0,0.6)", paddingHorizontal: 10, borderRadius: 6, zIndex: 10,
+    backgroundColor: "rgba(0,0,0,0.56)", paddingHorizontal: 10, borderRadius: 6, zIndex: 14,
   },
   speedOption: { minHeight: MIN_TOUCH_TARGET, paddingHorizontal: 20, alignItems: "center", justifyContent: "center" },
   speedOptionActive: { backgroundColor: "rgba(255,255,255,0.2)" },
   speedOptionText: { color: "#fff", fontSize: 14, fontWeight: "600" },
-  timeDisplay: { position: "absolute", bottom: 96, left: 0, right: 0, alignItems: "center", zIndex: 10 },
+  playerSettingsPanel: {
+    position: "absolute",
+    left: 20,
+    right: 20,
+    bottom: 94,
+    zIndex: 24,
+    borderRadius: 14,
+    paddingHorizontal: 14,
+    paddingTop: 14,
+    paddingBottom: 16,
+    backgroundColor: "rgba(20,22,27,0.93)",
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.24)",
+  },
+  playerSettingsHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingBottom: 12,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: "rgba(255,255,255,0.22)",
+  },
+  playerSettingsTitle: { color: "#fff", fontSize: 13, fontWeight: "900" },
+  playerSettingsClose: { width: 32, height: 32, alignItems: "center", justifyContent: "center" },
+  playerSettingsSection: {
+    paddingTop: 12,
+    paddingBottom: 10,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: "rgba(255,255,255,0.16)",
+  },
+  playerSettingsLabel: { color: "rgba(255,255,255,0.82)", fontSize: 12, fontWeight: "700", marginBottom: 9 },
+  playerSettingsOptions: { flexDirection: "row", flexWrap: "wrap", gap: 8 },
+  playerSettingsOption: {
+    minHeight: 32,
+    borderRadius: 7,
+    paddingHorizontal: 10,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "rgba(255,255,255,0.12)",
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.24)",
+  },
+  playerSettingsOptionActive: {
+    backgroundColor: "rgba(224,172,69,0.24)",
+    borderColor: C.primary,
+  },
+  playerSettingsOptionText: { color: "rgba(255,255,255,0.86)", fontSize: 11, fontWeight: "800" },
+  playerSettingsOptionTextActive: { color: "#fff" },
+  playerSettingsRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  playerSwitch: {
+    width: 38,
+    height: 22,
+    borderRadius: 11,
+    padding: 2,
+    alignItems: "flex-start",
+    justifyContent: "center",
+    backgroundColor: "rgba(255,255,255,0.22)",
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.32)",
+  },
+  playerSwitchActive: { alignItems: "flex-end", backgroundColor: "rgba(224,172,69,0.86)", borderColor: C.primary },
+  playerSwitchThumb: { width: 16, height: 16, borderRadius: 8, backgroundColor: "#fff" },
+  playerSwitchThumbActive: { backgroundColor: "#fff" },
+  playerSettingsButton: {
+    position: "absolute", bottom: 18, right: 66,
+    width: MIN_TOUCH_TARGET, height: MIN_TOUCH_TARGET, borderRadius: 7,
+    alignItems: "center", justifyContent: "center",
+    backgroundColor: "rgba(0,0,0,0.56)",
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.18)",
+    zIndex: 16,
+  },
+  playerSettingsButtonActive: {
+    borderColor: C.primary,
+    borderWidth: 2,
+    backgroundColor: "rgba(224,172,69,0.18)",
+  },
+  playerExpandButton: {
+    position: "absolute", bottom: 18, right: 14,
+    width: MIN_TOUCH_TARGET, height: MIN_TOUCH_TARGET, borderRadius: 7,
+    alignItems: "center", justifyContent: "center",
+    backgroundColor: "rgba(0,0,0,0.56)",
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.18)",
+    zIndex: 16,
+  },
+  timeDisplay: { position: "absolute", bottom: 82, left: 0, right: 0, alignItems: "center", zIndex: 12 },
   timeText: { color: "#fff", fontSize: 12, fontWeight: "600", textShadowColor: "rgba(0,0,0,0.8)", textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 3 },
-  timeline: { position: "absolute", bottom: 0, left: 12, right: 12, height: MIN_TOUCH_TARGET, justifyContent: "center", zIndex: 10 },
-  timelineTrack: { height: 4, backgroundColor: "rgba(255,255,255,0.4)", borderRadius: 2, overflow: "hidden" },
-  timelineFill:  { height: "100%", backgroundColor: C.primary, borderRadius: 2 },
-  timelineThumb: { position: "absolute", top: "50%", width: 14, height: 14, borderRadius: 7, backgroundColor: "#fff", marginTop: -7, marginLeft: -7 },
+  timeline: { position: "absolute", bottom: 50, left: 20, right: 20, height: MIN_TOUCH_TARGET, justifyContent: "center", zIndex: 13 },
+  timelineTrack: { height: 5, backgroundColor: "rgba(255,255,255,0.78)", borderRadius: 3, overflow: "hidden" },
+  timelineFill:  { height: "100%", backgroundColor: "#ff0033", borderRadius: 3 },
+  timelineThumb: { position: "absolute", top: "50%", width: 14, height: 14, borderRadius: 7, backgroundColor: "#ff0033", marginTop: -7, marginLeft: -7 },
   playerControls: {
     ...StyleSheet.absoluteFill, alignItems: "center", justifyContent: "center",
     flexDirection: "row", gap: 32, backgroundColor: "rgba(0,0,0,0.3)",
