@@ -12,6 +12,9 @@ yarn-error.log*
 
 # Generated k6 load-test reports
 edunex-b/reports/k6/complete-local-*
+output/load-testing/
+tmp/pdfs/generate_skillomate_k6_report_*.py
+tmp/pdfs/rendered-skillomate-k6-*/
 
 # Generated mobile release artifacts (APK, AAB, IPA, and Xcode archives)
 appcopyai/releases/
