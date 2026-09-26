@@ -1,3 +1,9 @@
+if (process.env.SKILLOMATE_CONFIG_SOURCE === 'ssm'
+  && globalThis[Symbol.for('skillomate.ssm.bootstrap')] !== true) {
+  console.error('SSM_CONFIG_STARTUP_FAILURE: BootstrapRequired');
+  process.exit(1);
+}
+
 const express = require('express');
 const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
@@ -9,7 +15,7 @@ const path = require('path');
 const fs = require('fs');
 const initialNodeEnv = process.env.NODE_ENV;
 require('dotenv').config({ path: path.join(__dirname, '.env') });
-if (initialNodeEnv !== 'production') {
+if (initialNodeEnv !== 'production' && process.env.SKILLOMATE_CONFIG_SOURCE !== 'ssm') {
   require('dotenv').config({ path: path.join(__dirname, '.env.local'), override: true });
 }
 const helmet = require('helmet');
@@ -3692,4 +3698,4 @@ const HOST = process.env.HOST || '127.0.0.1';
 app.listen(PORT, HOST, () => {
   console.log(`Skillomate API listening on http://${HOST}:${PORT}`);
 });
-// meri marji mai chahye kuch bhi karu 
+// meri marji mai chahye kuch bhi karu
