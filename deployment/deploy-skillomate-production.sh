@@ -5,6 +5,7 @@ set -Eeuo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 readonly LOCAL_REPOSITORY="${SKILLOMATE_LOCAL_REPOSITORY:-$(cd "$SCRIPT_DIR/.." && pwd)}"
 readonly REMOTE_DEPLOY_SCRIPT="${SKILLOMATE_REMOTE_DEPLOY_SCRIPT:-$LOCAL_REPOSITORY/deployment/deploy-skillomate.sh}"
+readonly SSM_BOOTSTRAP="$LOCAL_REPOSITORY/edunex-b/ssm-bootstrap.js"
 readonly SSH_KEY="${SKILLOMATE_SSH_KEY:-$HOME/Downloads/Skillomate_Key.pem}"
 readonly SSH_COMMAND="${SKILLOMATE_SSH_COMMAND:-ssh}"
 readonly LOG_DIRECTORY="${SKILLOMATE_DEPLOY_LOG_DIRECTORY:-$HOME/skillomate-deployment-logs}"
@@ -60,6 +61,16 @@ if test ! -r "$REMOTE_DEPLOY_SCRIPT"; then
   exit 1
 fi
 
+if test ! -r "$SSM_BOOTSTRAP"; then
+  echo "SSM bootstrap is missing from the local repository: $SSM_BOOTSTRAP"
+  exit 1
+fi
+
+if ! grep -Fxq '# SKILLOMATE_SSM_DEPLOY_CONTRACT_V1' "$REMOTE_DEPLOY_SCRIPT"; then
+  echo "Remote deployment script does not declare the SSM production contract."
+  exit 1
+fi
+
 mkdir -p -- "$LOG_DIRECTORY"
 chmod 700 "$LOG_DIRECTORY"
 acquire_lock
@@ -92,6 +103,7 @@ for instance in "${INSTANCES[@]}"; do
   echo "=== $label ==="
   echo "host=$host" >"$log_file"
   echo "target_commit=$TARGET_COMMIT" >>"$log_file"
+  echo "config_source=ssm" >>"$log_file"
   chmod 600 "$log_file"
 
   if "$SSH_COMMAND" "${SSH_OPTIONS[@]}" "ubuntu@$host" \

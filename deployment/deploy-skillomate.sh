@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# SKILLOMATE_SSM_DEPLOY_CONTRACT_V1
 
 set -Eeuo pipefail
 
@@ -8,6 +9,7 @@ readonly EXPECTED_BACKEND="/home/ubuntu/skillomate_repo/edunex-b"
 readonly EXPECTED_FRONTEND="/home/ubuntu/skillomate_repo/edunex-f"
 readonly EXPECTED_ORIGIN="git@github-skillomate:Office50505/Edu-nex_Final.git"
 readonly PROCESS_NAME="skillomate_backend"
+readonly SSM_SCRIPT="$EXPECTED_BACKEND/ssm-bootstrap.js"
 readonly HEALTH_URL="http://127.0.0.1:3000/api/health"
 readonly READY_URL="http://127.0.0.1:3000/api/ready"
 readonly COURSES_URL="http://127.0.0.1:3000/api/courses"
@@ -49,15 +51,53 @@ record_result() {
   } >>"$LOG_FILE"
 }
 
-pm2_status_is() {
-  local wanted=$1
+pm2_process_matches() {
+  local mode=$1
   pm2 jlist | node -e '
     const fs = require("fs");
-    const wanted = process.argv[1];
-    const processes = JSON.parse(fs.readFileSync(0, "utf8"));
-    const backend = processes.find((process) => process.name === "skillomate_backend");
-    process.exit(backend && backend.pm2_env.status === wanted ? 0 : 1);
-  ' "$wanted"
+    const mode = process.argv[1];
+    const expectedScript = process.argv[2];
+    const processName = process.argv[3];
+    let processes;
+    try { processes = JSON.parse(fs.readFileSync(0, "utf8")); }
+    catch { process.exit(1); }
+    if (!Array.isArray(processes)) process.exit(1);
+    const backend = processes.find((item) => item.name === processName);
+    if (mode === "exists") process.exit(backend ? 0 : 1);
+    if (mode === "missing") process.exit(backend ? 1 : 0);
+    if (!backend) process.exit(1);
+    const details = backend.pm2_env || {};
+    const script = details.pm_exec_path || backend.pm_exec_path;
+    let scriptMatches = false;
+    try { scriptMatches = fs.realpathSync(script) === fs.realpathSync(expectedScript); }
+    catch { /* Missing or invalid script path is a failed check. */ }
+    if (mode === "script") process.exit(scriptMatches ? 0 : 1);
+    const nodeEnv = details.NODE_ENV ?? details.env?.NODE_ENV;
+    const configSource = details.SKILLOMATE_CONFIG_SOURCE ?? details.env?.SKILLOMATE_CONFIG_SOURCE;
+    process.exit(scriptMatches && details.status === "online"
+      && nodeEnv === "production" && configSource === "ssm" ? 0 : 1);
+  ' "$mode" "$SSM_SCRIPT" "$PROCESS_NAME"
+}
+
+run_ssm_check() {
+  test -f "$SSM_SCRIPT" || return 1
+  (cd "$EXPECTED_BACKEND" && env NODE_ENV=production SKILLOMATE_CONFIG_SOURCE=ssm node ssm-bootstrap.js --check)
+}
+
+start_or_restart_pm2_ssm() {
+  if pm2_process_matches script; then
+    env NODE_ENV=production SKILLOMATE_CONFIG_SOURCE=ssm pm2 restart "$PROCESS_NAME" --update-env
+    return
+  fi
+
+  if pm2_process_matches exists; then
+    pm2 delete "$PROCESS_NAME" || return 1
+  elif ! pm2_process_matches missing; then
+    echo "PM2 process inventory could not be verified; backend was not changed."
+    return 1
+  fi
+  env NODE_ENV=production SKILLOMATE_CONFIG_SOURCE=ssm \
+    pm2 start "$SSM_SCRIPT" --name "$PROCESS_NAME" --cwd "$EXPECTED_BACKEND"
 }
 
 wait_for_health() {
@@ -81,8 +121,16 @@ wait_for_readiness() {
 
   for attempt in $(seq 1 15); do
     if body=$(curl -fsS --max-time 5 "$READY_URL" 2>/dev/null); then
-      printf '%s' "$body"
-      return 0
+      if printf '%s' "$body" | node -e '
+        let payload;
+        try { payload = JSON.parse(require("fs").readFileSync(0, "utf8")); }
+        catch { process.exit(1); }
+        process.exit(payload?.ok === true && payload.mongodb === "connected"
+          && payload.redis === "connected" ? 0 : 1);
+      '; then
+        printf '%s' 'mongodb=connected redis=connected'
+        return 0
+      fi
     fi
     sleep 2
   done
@@ -111,6 +159,7 @@ show_safe_diagnostics() {
 
 rollback_deployment() {
   local reason=$1
+  local restart_backend=${2:-yes}
   local rollback_ok=1
   local rollback_health="unavailable"
   local rollback_readiness="unavailable"
@@ -128,13 +177,23 @@ rollback_deployment() {
   npm run build || rollback_ok=0
   cd "$EXPECTED_BACKEND" || rollback_ok=0
   npm ci --omit=dev --no-audit --no-fund || rollback_ok=0
-  pm2 restart "$PROCESS_NAME" --update-env || rollback_ok=0
-  pm2 save || rollback_ok=0
+  if test "$restart_backend" = yes; then
+    if run_ssm_check; then
+      start_or_restart_pm2_ssm || rollback_ok=0
+    else
+      echo "Rollback SSM check failed; backend was not restarted."
+      rollback_ok=0
+    fi
+  fi
   rollback_health=$(wait_for_health) || rollback_ok=0
   rollback_readiness=$(wait_for_readiness) || rollback_ok=0
   rollback_courses=$(check_courses 2>/dev/null) || rollback_ok=0
-  pm2_status_is online || rollback_ok=0
+  pm2_process_matches runtime || rollback_ok=0
   ss -ltnp | grep -q ':3000' || rollback_ok=0
+  test "$(git -C "$REPOSITORY" rev-parse HEAD)" = "$OLD_COMMIT" || rollback_ok=0
+  if test "$rollback_ok" -eq 1 && test "$restart_backend" = yes; then
+    pm2 save || rollback_ok=0
+  fi
 
   if test "$rollback_ok" -eq 1; then
     record_result failed successful
@@ -232,6 +291,11 @@ if ! git ls-files --error-unmatch package-lock.json >/dev/null 2>&1; then
   exit 19
 fi
 
+if test ! -f "$SSM_SCRIPT" || ! git -C "$REPOSITORY" ls-files --error-unmatch edunex-b/ssm-bootstrap.js >/dev/null 2>&1; then
+  echo "Current commit lacks the tracked SSM bootstrap needed for an SSM rollback."
+  exit 31
+fi
+
 if test -n "$EXPECTED_TARGET_COMMIT" && [[ ! "$EXPECTED_TARGET_COMMIT" =~ ^[0-9a-f]{40}$ ]]; then
   echo "Expected deployment commit must be a full lowercase Git SHA."
   exit 26
@@ -260,27 +324,59 @@ echo "old_commit=$OLD_COMMIT"
 echo "new_commit=$NEW_COMMIT"
 
 if test "$OLD_COMMIT" = "$NEW_COMMIT"; then
+  if ! run_ssm_check; then
+    record_result already-current ssm-check-failed
+    echo "SSM check failed. Backend was not restarted."
+    exit 29
+  fi
+
+  restarted=0
+  if ! pm2_process_matches runtime; then
+    DEPLOYMENT_STARTED=1
+    if ! start_or_restart_pm2_ssm; then
+      rollback_deployment "PM2 SSM startup failed on the current commit"
+    fi
+    restarted=1
+  fi
+
   if ! HEALTH_RESULT=$(wait_for_health); then
+    if test "$restarted" -eq 1; then rollback_deployment "health check failed"; fi
     record_result already-current health-failed
     echo "Already on latest main, but the health check failed."
     exit 21
   fi
   if ! READINESS_RESULT=$(wait_for_readiness); then
+    if test "$restarted" -eq 1; then rollback_deployment "readiness check failed"; fi
     record_result already-current readiness-failed
     echo "Already on latest main, but the readiness check failed."
     exit 28
   fi
   if ! COURSES_RESULT=$(check_courses); then
+    if test "$restarted" -eq 1; then rollback_deployment "courses API validation failed"; fi
     record_result already-current courses-failed
     echo "Already on latest main, but the courses check failed."
     exit 22
   fi
-  if ! pm2_status_is online || ! ss -ltnp | grep -q ':3000'; then
+  if ! pm2_process_matches runtime || ! ss -ltnp | grep -q ':3000'; then
+    if test "$restarted" -eq 1; then rollback_deployment "PM2 SSM runtime check failed"; fi
     record_result already-current runtime-failed
     echo "Already on latest main, but the runtime check failed."
     exit 23
   fi
 
+  if test "$(git -C "$REPOSITORY" rev-parse HEAD)" != "$NEW_COMMIT"; then
+    if test "$restarted" -eq 1; then rollback_deployment "deployed commit changed during verification"; fi
+    record_result already-current commit-failed
+    echo "Already on latest main, but the deployed commit changed."
+    exit 30
+  fi
+
+  if test "$restarted" -eq 1 && ! pm2 save; then
+    rollback_deployment "PM2 save failed"
+  fi
+
+  trap - ERR
+  DEPLOYMENT_STARTED=0
   record_result already-current not-required
   echo "Already running latest main."
   echo "commit=$OLD_COMMIT"
@@ -324,12 +420,12 @@ if ! npm ci --omit=dev --no-audit --no-fund; then
   rollback_deployment "npm ci failed"
 fi
 
-if ! pm2 restart "$PROCESS_NAME" --update-env; then
-  rollback_deployment "PM2 restart failed"
+if ! run_ssm_check; then
+  rollback_deployment "SSM check failed before PM2 restart" no
 fi
 
-if ! pm2 save; then
-  rollback_deployment "PM2 save failed"
+if ! start_or_restart_pm2_ssm; then
+  rollback_deployment "PM2 SSM startup failed"
 fi
 
 if ! HEALTH_RESULT=$(wait_for_health); then
@@ -344,8 +440,8 @@ if ! COURSES_RESULT=$(check_courses); then
   rollback_deployment "courses API validation failed"
 fi
 
-if ! pm2_status_is online; then
-  rollback_deployment "PM2 process is not online"
+if ! pm2_process_matches runtime; then
+  rollback_deployment "PM2 process is not online in SSM mode"
 fi
 
 if ! ss -ltnp | grep -q ':3000'; then
@@ -358,6 +454,10 @@ fi
 
 if test "$CURRENT_COMMIT" != "$NEW_COMMIT"; then
   rollback_deployment "deployed commit does not equal origin/main"
+fi
+
+if ! pm2 save; then
+  rollback_deployment "PM2 save failed"
 fi
 
 trap - ERR

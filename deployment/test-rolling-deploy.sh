@@ -25,7 +25,7 @@ calls_file="$self_test_directory/calls.log"
 
 touch "$fake_key"
 chmod 600 "$fake_key"
-printf '#!/usr/bin/env bash\nexit 0\n' >"$fake_remote_deployer"
+printf '#!/usr/bin/env bash\n# SKILLOMATE_SSM_DEPLOY_CONTRACT_V1\nexit 0\n' >"$fake_remote_deployer"
 chmod 700 "$fake_remote_deployer"
 
 cat >"$fake_ssh" <<'FAKE_SSH'
@@ -133,7 +133,42 @@ test "$lock_status" -eq 75
 grep -q 'Another Skillomate rolling deployment is already running' "$lock_output"
 test ! -s "$calls_file"
 
+missing_bootstrap_output="$self_test_directory/missing-bootstrap.out"
+: >"$calls_file"
+set +e
+run_orchestrator \
+  "$missing_bootstrap_output" \
+  "$self_test_directory/missing-bootstrap-logs" \
+  "$self_test_directory/missing-bootstrap.lock" \
+  SKILLOMATE_LOCAL_REPOSITORY="$self_test_directory/checkout-without-bootstrap"
+missing_bootstrap_status=$?
+set -e
+
+test "$missing_bootstrap_status" -eq 1
+grep -q 'SSM bootstrap is missing from the local repository' "$missing_bootstrap_output"
+test ! -s "$calls_file"
+
+old_deployer="$self_test_directory/old-remote-deploy.sh"
+printf '#!/usr/bin/env bash\nexit 0\n' >"$old_deployer"
+chmod 700 "$old_deployer"
+old_deployer_output="$self_test_directory/old-deployer.out"
+: >"$calls_file"
+set +e
+run_orchestrator \
+  "$old_deployer_output" \
+  "$self_test_directory/old-deployer-logs" \
+  "$self_test_directory/old-deployer.lock" \
+  SKILLOMATE_REMOTE_DEPLOY_SCRIPT="$old_deployer"
+old_deployer_status=$?
+set -e
+
+test "$old_deployer_status" -eq 1
+grep -q 'does not declare the SSM production contract' "$old_deployer_output"
+test ! -s "$calls_file"
+
 echo "ROLLING DEPLOYMENT SELF-TEST PASSED"
 echo "success_order=EC2 #1,EC2 #2,EC2 #3"
 echo "failure_stop=EC2 #2"
 echo "concurrent_deployment_blocked=yes"
+echo "missing_ssm_bootstrap_blocked=yes"
+echo "old_remote_deployer_blocked=yes"

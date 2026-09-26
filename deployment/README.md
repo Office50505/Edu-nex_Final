@@ -7,33 +7,61 @@ copied from a developer machine.
 - Backend directory: `/home/ubuntu/skillomate_repo/edunex-b`
 - Stable PM2 path: `/home/ubuntu/skillomate_backend`
 - EC2 deployment command: `/home/ubuntu/bin/deploy-skillomate.sh`
-- Local command: `/Users/kratik/deploy-skillomate-production.sh`.
+- Local command, from any checkout: `bash deployment/deploy-skillomate-production.sh`.
 - Repository orchestrator: `deployment/deploy-skillomate-production.sh`.
   It deploys EC2 #1, then #2, then #3, and stops immediately on failure.
 - Production fleet (all `m7g.large`, ARM64):
   - EC2 #1: `13.235.104.167`
   - EC2 #2: `3.108.8.89`
   - EC2 #3: `13.201.21.124`
-- Override the SSH key with
+- The default SSH key is `$HOME/Downloads/Skillomate_Key.pem`; override it with
   `SKILLOMATE_SSH_KEY=/absolute/path/to/key.pem` when needed.
 
 The orchestrator uses a local atomic lock to prevent overlapping rolling
-deployments and pins one full `origin/main` SHA for the complete run. Each EC2
-script also uses `flock` to prevent per-host overlap. The EC2 script refuses
+deployments, requires the local SSM bootstrap and SSM-aware remote deployer,
+and pins one full `origin/main` SHA for the complete run. Each EC2
+script also uses `flock` to prevent per-host overlap. It requires the current
+commit to contain the tracked SSM bootstrap so rollback can remain in SSM mode.
+The EC2 script refuses
 dirty worktrees, requires an ignored and untracked `.env`, fetches GitHub,
 deploys the pinned commit only while it still equals `origin/main`, installs and
-builds the web frontend, runs backend `npm ci --omit=dev`, restarts and saves
-PM2, then verifies `/api/health`, `/api/ready`, `/api/courses`, PM2 status, port
-3000, and the deployed commit. A post-switch failure automatically resets only
-that EC2 to its previous commit, reinstalls dependencies, restarts PM2, and
-repeats the health, readiness, courses, and runtime checks. The orchestrator
-does not continue to later instances after any failure.
+builds the web frontend, and runs backend `npm ci --omit=dev`. Before changing
+PM2 it runs `node ssm-bootstrap.js --check` against the 73 SecureStrings under
+`/skillomate/prod/` in `ap-south-1`. A failed SSM check restores the previous
+commit and dependencies without restarting that backend; the rolling deployment
+stops and later EC2 instances are untouched.
+
+The `skillomate_backend` PM2 process runs `ssm-bootstrap.js` with explicit
+`NODE_ENV=production` and `SKILLOMATE_CONFIG_SOURCE=ssm`. If PM2 still points to
+`server.js`, the deploy script replaces that process with the SSM entrypoint; if
+it already points to the SSM entrypoint, it restarts with `--update-env`. It
+then verifies PM2 online status, script path and both environment flags,
+`/api/health`, `/api/ready` with MongoDB and Redis both connected,
+`/api/courses` as a JSON list, port 3000, and the pinned Git commit. `pm2 save`
+runs only after those checks pass. An already-current commit receives the same
+SSM and runtime checks and repairs a mismatched PM2 entrypoint.
+
+A post-restart failure resets only that EC2 to its previous commit, reinstalls
+dependencies, runs the SSM check again, restarts through `ssm-bootstrap.js`,
+and repeats the health, readiness, courses, runtime, and commit checks before
+saving PM2. The orchestrator never continues to later instances after a
+failure. The ignored `.env` remains in place as an emergency fallback and is
+not changed by deployment.
 
 Per-instance logs are retained both locally under
-`/Users/kratik/skillomate-deployment-logs` and remotely under
+`$HOME/skillomate-deployment-logs` and remotely under
 `/home/ubuntu/skillomate_deployments`. The application `.env` is never copied
 from the Mac.
 
 The old rsync production directories remain available for manual emergency
 recovery from the first migration. They must not be deleted as part of normal
 deployments.
+
+Local checks that do not contact production:
+
+```bash
+bash -n deployment/deploy-skillomate-production.sh deployment/deploy-skillomate.sh
+bash deployment/test-ssm-deploy.sh
+bash deployment/test-rolling-deploy.sh
+bash deployment/test-deploy-skillomate-rollback.sh
+```
