@@ -486,11 +486,9 @@ export function AdOfferPage({ offerPage }) {
             <div className="ad-offer-rule" />
             <p>Then ₹499/month <span>·</span> Cancel anytime</p>
           </article>
-          <div className="ad-benefits" aria-label="Subscription benefits">
-            <div><span aria-hidden="true">▶</span><p>Full Course<br />Access</p></div>
-            <div><span aria-hidden="true">◆</span><p>Learn at<br />Your Pace</p></div>
-            <div><span aria-hidden="true">✦</span><p>Practical<br />AI Skills</p></div>
-            <div><span aria-hidden="true">▣</span><p>Cancel<br />Anytime</p></div>
+          <div className="ad-offer-brief">
+            <span>What you get</span>
+            <p>Full Skillomate access for 24 hours at ₹1, including practical AI, content, and digital skill lessons before your monthly plan begins.</p>
           </div>
         </section>
         <div className="ad-action-bar">
