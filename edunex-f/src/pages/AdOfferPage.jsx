@@ -7,6 +7,7 @@ import { apiFetch } from "../lib/apiUrl.js";
 import { initMetaPixel, metaEventId, trackMetaPixel } from "../lib/metaPixel.js";
 import { pageKeyFromPath } from "../lib/routes.js";
 import { DEFAULT_OFFER_VIDEO_URL, offerMediaForPage } from "../lib/offerMedia.js";
+import { route } from "../lib/routes.js";
 
 const OFFER_EVENT_PARAMS = { content_name: "Skillomate ₹1 Offer", content_category: "subscription", currency: "INR" };
 
@@ -504,6 +505,11 @@ export function AdOfferPage({ offerPage }) {
           )}
           <div className="ad-secure-payment"><span aria-hidden="true">✓</span> Secure payments powered by Razorpay</div>
           <p>To enjoy uninterrupted learning, your subscription will auto-renew. You can cancel it anytime.</p>
+          <nav className="ad-legal-links" aria-label="Offer legal links">
+            <a href={route("about.html")}>About Us</a>
+            <a href={route("privacy.html")}>Privacy Policy</a>
+            <a href={route("terms.html")}>Terms &amp; Conditions</a>
+          </nav>
         </div>
       </section>
 

@@ -16,7 +16,7 @@ const cleanRoutes = {
   "lesson.html": "/lesson",
   "login.html": "/login",
   "otp.html": "/otp",
-  "offer.html": "/ai",
+  "offer.html": "/1rs-offer-page",
   ...Object.fromEntries(Array.from({ length: 9 }, (_, index) => {
     const number = index + 2;
     return [`offer${number}.html`, `/offer${number}`];
@@ -52,6 +52,7 @@ const routeAliases = Object.fromEntries(
 
 routeAliases[""] = "index.html";
 routeAliases.home = "index.html";
+routeAliases.ai = "offer.html";
 routeAliases["privacy-policy"] = "privacy.html";
 routeAliases["delete-account"] = "delete-account.html";
 routeAliases.support = "help.html";

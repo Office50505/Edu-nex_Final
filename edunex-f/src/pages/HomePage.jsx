@@ -1366,6 +1366,14 @@ export function HomePage() {
             <p>Learn practical AI, content, business and digital skills through short expert-led lessons designed for real-world results.</p>
           </div>
 
+          <div className="learning-hero-actions">
+            <a href="courses.html" className="hero-cta-primary">
+              Explore Courses
+              <MaterialIcon className="text-[19px]">arrow_forward</MaterialIcon>
+            </a>
+            {!hasAccess && accessResolved ? <a href="payment.html?plan=trial" className="hero-cta-secondary">Try 24 Hours for ₹1</a> : null}
+          </div>
+
           <div className="hero-carousel-shell" id="homeHeroCarousel" aria-live="polite">
             <div
               className="hero-carousel-viewport"
@@ -1415,14 +1423,6 @@ export function HomePage() {
                 ))}
               </div>
             </div>
-          </div>
-
-          <div className="learning-hero-actions">
-            <a href="courses.html" className="hero-cta-primary">
-              Explore Courses
-              <MaterialIcon className="text-[19px]">arrow_forward</MaterialIcon>
-            </a>
-            {!hasAccess && accessResolved ? <a href="payment.html?plan=trial" className="hero-cta-secondary">Try 24 Hours for ₹1</a> : null}
           </div>
 
           <div className="hero-search-block">

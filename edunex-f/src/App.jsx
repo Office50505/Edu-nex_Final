@@ -140,6 +140,13 @@ export default function App() {
   usePresenceHeartbeat(!adminPage);
 
   useEffect(() => {
+    if (locationState.pathname.replace(/\/+$/, "") !== "/ai") return;
+    const next = `${route("offer.html")}${locationState.search}${locationState.hash}`;
+    window.history.replaceState({}, "", next);
+    setLocationState(currentLocationState());
+  }, [locationState.hash, locationState.pathname, locationState.search]);
+
+  useEffect(() => {
     const viewport = window.visualViewport;
     let frame = 0;
     const syncVisualViewport = () => {
