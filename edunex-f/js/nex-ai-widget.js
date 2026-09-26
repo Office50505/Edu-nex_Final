@@ -4,13 +4,16 @@
 
   const storedUser = window.EduNex?.getUser?.() || null;
   const learnerName = (storedUser?.fullName || storedUser?.email || storedUser?.mobileNumber || 'there').split(/\s+/)[0];
-  const learnerAvatar = storedUser?.avatar || window.EduNex?.avatarFallback?.(storedUser) || '';
+  const learnerAvatar = window.EduNex?.normalizeImageSrc?.(storedUser?.avatar)
+    || storedUser?.avatar
+    || window.EduNex?.avatarFallback?.(storedUser)
+    || '';
   const botOwner = String(storedUser?._id || storedUser?.id || 'guest');
   const botNameStorageKey = `edunexAiBotName:${botOwner}`;
   const botSetupStorageKey = `edunexAiBotSetupComplete:${botOwner}`;
   const savedBotName = localStorage.getItem(botNameStorageKey) || 'AI';
   const aiSetupComplete = localStorage.getItem(botSetupStorageKey) === 'true';
-  const botAvatarMarkup = `<img class="nai-bot-avatar-img" src="/assets/nex-avatar.png" alt="">`;
+  const botAvatarMarkup = `<img class="nai-bot-avatar-img" src="/assets/nex-avatar-v1.webp" alt="">`;
   const escAttr = (value) => String(value || '').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   const hasAiAccess = () => Boolean(
     window.EduNex?.getAccessToken?.()
@@ -1206,6 +1209,20 @@
           </div>
         </div>
 
+        <div class="nai-setup-panel" id="nai-consent-panel" hidden>
+          <div class="nai-setup-card" role="dialog" aria-modal="true" aria-labelledby="nai-consent-title">
+            <div class="nai-setup-kicker">Optional AI data sharing</div>
+            <h3 id="nai-consent-title">Allow third-party AI processing?</h3>
+            <p>Skillomate will send your question, up to 12 recent chat messages, and relevant course or lesson context to fal.ai, OpenRouter, and the selected Google Gemini model. Your profile name is not sent.</p>
+            <p>You can keep using courses without AI, withdraw consent later, and delete AI history from AI Data Controls.</p>
+            <div class="nai-setup-error" id="nai-consent-error" role="alert" aria-live="assertive"></div>
+            <div style="display:flex;gap:10px;justify-content:flex-end">
+              <button class="nai-setup-save" id="nai-consent-decline" type="button" style="background:#25262b;color:#fff">Not Now</button>
+              <button class="nai-setup-save" id="nai-consent-allow" type="button">Allow</button>
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
   `;
@@ -1242,6 +1259,12 @@
   const setupSave = document.getElementById('nai-setup-save');
   const setupError = document.getElementById('nai-setup-error');
   const setupCard = setupPanel?.querySelector('.nai-setup-card');
+  const consentPanel = document.getElementById('nai-consent-panel');
+  const consentAllow = document.getElementById('nai-consent-allow');
+  const consentDecline = document.getElementById('nai-consent-decline');
+  const consentError = document.getElementById('nai-consent-error');
+  let aiConsentLoaded = false;
+  let aiConsentGranted = false;
 
   function currentBotAvatarMarkup() {
     return botAvatarMarkup;
@@ -1763,6 +1786,9 @@
     if (owner !== conversationOwner) {
       conversationOwner = owner;
       conversationVersion += 1;
+      aiConsentLoaded = false;
+      aiConsentGranted = false;
+      consentPanel.hidden = true;
       loadConversationSessions();
     }
   }
@@ -1852,12 +1878,54 @@
     return data;
   }
 
-  async function sendMessage() {
+  async function ensureAiConsent() {
+    if (aiConsentGranted) return true;
+    if (!aiConsentLoaded) {
+      try {
+        const state = await EduNex.authRequest('/api/ai/consent');
+        aiConsentGranted = state?.granted === true;
+      } catch (_) {
+        aiConsentGranted = false;
+      }
+      aiConsentLoaded = true;
+    }
+    if (aiConsentGranted) return true;
+    consentError.textContent = '';
+    consentPanel.hidden = false;
+    setTimeout(() => consentAllow.focus(), 40);
+    return false;
+  }
+
+  async function saveAiConsent(granted) {
+    consentAllow.disabled = true;
+    consentDecline.disabled = true;
+    consentError.textContent = '';
+    try {
+      const decision = await EduNex.authRequest('/api/ai/consent', {
+        method: 'PUT',
+        body: JSON.stringify({ granted }),
+      });
+      aiConsentLoaded = true;
+      aiConsentGranted = decision?.granted === true;
+      consentPanel.hidden = true;
+      if (aiConsentGranted) await sendMessage(true);
+      else input.focus();
+    } catch (error) {
+      consentError.textContent = error.message || 'Could not save AI data preference.';
+    } finally {
+      consentAllow.disabled = false;
+      consentDecline.disabled = false;
+    }
+  }
+
+  async function sendMessage(consentOverride = false) {
     if (sending) return;
     syncConversationOwner();
     if (!requireAiAccess(rootEl.parentElement)) return;
     const text = input.value.trim();
     if (!text) return;
+    if (!consentOverride && !await ensureAiConsent()) return;
+    if (sending) return;
 
     sending = true;
     const requestVersion = conversationVersion;
@@ -1874,7 +1942,7 @@
     typing.className = 'nai-ai-row';
     typing.id = 'nai-typing';
       typing.innerHTML = `
-      <div class="nai-ai-avatar"><span class="nai-thinking-overhead" aria-hidden="true"><span></span><span></span><span></span></span><img class="nai-bot-avatar-img is-thinking" src="/assets/nex-avatar-thinking.png" alt=""></div>
+      <div class="nai-ai-avatar"><span class="nai-thinking-overhead" aria-hidden="true"><span></span><span></span><span></span></span><img class="nai-bot-avatar-img is-thinking" src="/assets/nex-avatar-thinking-v1.webp" alt=""></div>
       <div class="nai-ai-bubble"><span class="nai-typing-indicator" aria-label="AI is thinking"><span>${escapeNaiHtml(normalizeBotName(botNameInput?.value) || 'AI')} is thinking…</span></span></div>
     `;
     messages.appendChild(typing);
@@ -1914,7 +1982,9 @@
     }
   }
 
-  sendBtn.addEventListener('click', sendMessage);
+  sendBtn.addEventListener('click', () => sendMessage());
+  consentAllow.addEventListener('click', () => saveAiConsent(true));
+  consentDecline.addEventListener('click', () => saveAiConsent(false));
   input.addEventListener('keydown', (e) => {
     if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
   });

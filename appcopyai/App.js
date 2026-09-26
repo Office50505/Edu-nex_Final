@@ -2,8 +2,14 @@ import { plainCourseDescription } from "./services/courseDescription";
 import { chatKey, readChat, updateChat } from "./courseAiCache";
 import { requestTutor } from "./services/aiClient";
 import { createNativeSession } from "./services/nativeSession";
+import { createSecureSessionStorage } from "./services/secureSessionStorage";
+import { APPLE_SUBSCRIPTION_MANAGEMENT_URL, canOpenExternalUrl } from "./services/externalLinks";
+import { hasActivePremiumEntitlement } from "./services/subscriptions";
+import { useAppleSubscriptions } from "./services/useAppleSubscriptions";
+import { AI_CONSENT_POLICY_VERSION, isAiConsentCurrent } from "./services/aiConsent";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as SecureStore from "expo-secure-store";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useWindowDimensions } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
@@ -43,17 +49,9 @@ import * as Print from "expo-print";
 import * as Sharing from "expo-sharing";
 import * as FileSystem from "expo-file-system/legacy";
 import * as ImagePicker from "expo-image-picker";
+import * as ImageManipulator from "expo-image-manipulator";
 import { DOWNLOADS_STORAGE_KEY, downloadPath, prepareTemporaryDownloads } from "./downloadStorage";
 import { useVideoPlayer, VideoView } from "expo-video";
-import {
-  DEV_UI_QA_ENABLED,
-  UI_QA_AI_MESSAGES,
-  UI_QA_CERTIFICATES,
-  UI_QA_COURSES,
-  UI_QA_DOWNLOADS,
-  UI_QA_PROGRESS,
-  UI_QA_WISHLIST,
-} from "./dev/uiQaFixtures";
 import {
   HOME_AI_FOUNDATIONS_CONTENT,
   HOME_INFLUENCER_CONTENT,
@@ -63,6 +61,17 @@ import {
 } from "./homeContentConfig";
 
 const PLAYER_ORIGIN = "https://protected-video.local";
+
+// Production binaries never package development fixture content. Keep these
+// empty constants only to preserve the existing guarded QA call sites without
+// allowing a build-time environment value to enable mock accounts or courses.
+const DEV_UI_QA_ENABLED = false;
+const UI_QA_AI_MESSAGES = [];
+const UI_QA_CERTIFICATES = [];
+const UI_QA_COURSES = [];
+const UI_QA_DOWNLOADS = {};
+const UI_QA_PROGRESS = {};
+const UI_QA_WISHLIST = [];
 
 const AI_ROBOT_IMAGES = {
   nex: require("./assets/ai-avatars/nex.png"),
@@ -146,6 +155,7 @@ function sanitizeAiChatMessage(message) {
   if (!message || !["user", "assistant"].includes(message.role) || typeof message.content !== "string") return null;
   return {
     role: message.role,
+    id: typeof message.id === "string" ? message.id.slice(0, 120) : null,
     content: message.content.slice(0, 4000),
     failed: Boolean(message.failed),
     createdAt: Number(message.createdAt || Date.now()),
@@ -217,49 +227,7 @@ const AVATAR_IMAGES = {
   m6: require("./assets/avatars/a11.jpeg"),
 };
 const DEMO_AVATARS = Object.keys(AVATAR_IMAGES).map((id, index) => ({ id, label: `Profile avatar ${index + 1}` }));
-const HOME_ARTWORK_IMAGES = [
-  AVATAR_IMAGES.a1,
-  AVATAR_IMAGES.a2,
-  AVATAR_IMAGES.a3,
-  AVATAR_IMAGES.a4,
-  AVATAR_IMAGES.a5,
-  AVATAR_IMAGES.a6,
-  AVATAR_IMAGES.a7,
-  AVATAR_IMAGES.a8,
-  AVATAR_IMAGES.a9,
-  AVATAR_IMAGES.a10,
-  AVATAR_IMAGES.a11,
-  AVATAR_IMAGES.a12,
-  AVATAR_IMAGES.a13,
-  AVATAR_IMAGES.a14,
-  AVATAR_IMAGES.a15,
-];
-const HOME_FALLBACK_TITLES = [
-  "ChatGPT for Professionals",
-  "AI Content Creation Masterclass",
-  "Prompt Engineering Mastery",
-  "Make Money with AI",
-  "AI Automation Agency",
-  "Midjourney Mastery",
-  "Canva AI for Designers",
-  "Build AI Apps Without Coding",
-  "AI Avatars from Scratch",
-  "Claude AI Complete Guide",
-  "YouTube Growth with AI",
-  "Notion AI Productivity",
-  "AI Video Creation",
-  "Start Freelancing with AI",
-  "Get Your First Client",
-  "AI Side Hustles",
-];
-const HOME_FALLBACK_COURSES = HOME_FALLBACK_TITLES.map((title, index) => ({
-  _id: `mock-home-${index}`,
-  title,
-  isMock: true,
-  thumbnailAsset: HOME_ARTWORK_IMAGES[index % HOME_ARTWORK_IMAGES.length],
-  thumbnailVerticalAsset: HOME_ARTWORK_IMAGES[index % HOME_ARTWORK_IMAGES.length],
-  videos: Array.from({ length: 8 + (index % 8) }, (_, i) => ({ title: `${String(i + 1).padStart(2, "0")}. ${title}` })),
-}));
+const HOME_FALLBACK_COURSES = [];
 const ANDROID_CLIPPED_SUBVIEWS = Platform.OS === "android";
 const ANDROID_ROOT_TAB_PLACEHOLDERS = Platform.OS === "android";
 const ROOT_TAB_SWIPE_ENABLED = true;
@@ -333,7 +301,7 @@ function PosterImage({ course, index = 0, vertical = true, style }) {
   const fallbackTitle = course?.title || "Skillomate";
   const localSource = (vertical ? course?.thumbnailVerticalAsset : course?.thumbnailAsset)
     || course?.thumbnailAsset
-    || HOME_ARTWORK_IMAGES[index % HOME_ARTWORK_IMAGES.length];
+    || null;
   const imageCourse = course ? { ...course, thumbnailAsset: localSource } : course;
 
   return (
@@ -384,11 +352,12 @@ function HorizontalRail({ data, renderItem, contentContainerStyle, keyExtractor 
 }
 
 function AvatarImage({ avatarId, size = 40, style }) {
-  if (/^(file|content|https?):\/\//i.test(String(avatarId || ""))) {
+  const avatarValue = String(avatarId || "");
+  if (/^(file|content|https?):\/\//i.test(avatarValue) || avatarValue.startsWith("/")) {
     return (
       <Image
         accessible={false}
-        source={{ uri: avatarId }}
+        source={{ uri: avatarValue.startsWith("/") ? `${API_BASE}${avatarValue}` : avatarValue }}
         style={[{ width: size, height: size, borderRadius: size / 2 }, style]}
         resizeMode="cover"
       />
@@ -404,45 +373,41 @@ function AvatarImage({ avatarId, size = 40, style }) {
   return <Image accessible={false} source={src} style={[{ width: size, height: size, borderRadius: size / 2 }, style]} resizeMode="cover" />;
 }
 
-async function copyProfileImageToAppStorage(sourceUri, userId) {
-  if (!sourceUri || !FileSystem.documentDirectory) return sourceUri;
-  const safeUserId = String(userId || "user").replace(/[^a-zA-Z0-9_-]/g, "");
-  const extensionMatch = String(sourceUri).match(/\.([a-zA-Z0-9]+)(?:\?|$)/);
-  const extension = extensionMatch?.[1]?.toLowerCase() || "jpg";
-  const destination = `${FileSystem.documentDirectory}profile-image-${safeUserId}.${extension}`;
-
-  try {
-    await FileSystem.copyAsync({ from: sourceUri, to: destination });
-    return destination;
-  } catch {
-    return sourceUri;
-  }
-}
-
-async function pickProfileImage(userId) {
-  if (Platform.OS === "ios") {
-    const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (!permission.granted) {
-      Alert.alert("Permission Needed", "Allow photo access to choose a profile picture.");
-      return null;
-    }
-  }
-
+async function pickProfileImage() {
   const result = await ImagePicker.launchImageLibraryAsync({
     mediaTypes: ["images"],
     allowsEditing: true,
     aspect: [1, 1],
-    quality: 0.85,
+    quality: 1,
     selectionLimit: 1,
   });
 
   if (result.canceled) return null;
-  const selectedUri = result.assets?.[0]?.uri;
-  return copyProfileImageToAppStorage(selectedUri, userId);
+  const selected = result.assets?.[0];
+  if (!selected?.uri) return null;
+  if (selected.fileSize && selected.fileSize > 12 * 1024 * 1024) {
+    Alert.alert("Photo too large", "Choose an image smaller than 12 MB.");
+    return null;
+  }
+  if (!Number.isFinite(selected.width) || !Number.isFinite(selected.height) || selected.width < 64 || selected.height < 64) {
+    Alert.alert("Photo too small", "Choose an image at least 64 by 64 pixels.");
+    return null;
+  }
+  const mimeType = String(selected.mimeType || "image/jpeg").toLowerCase();
+  if (!["image/jpeg", "image/png", "image/webp"].includes(mimeType)) {
+    Alert.alert("Unsupported photo", "Choose a JPEG, PNG, or WebP image.");
+    return null;
+  }
+  const manipulated = await ImageManipulator.manipulateAsync(
+    selected.uri,
+    [{ resize: { width: 1024 } }],
+    { compress: 0.82, format: ImageManipulator.SaveFormat.JPEG }
+  );
+  return { uri: manipulated.uri, mimeType: "image/jpeg" };
 }
 
 const DOWNLOADS_DIR = FileSystem.cacheDirectory ? `${FileSystem.cacheDirectory}skillomate_dl/` : null;
-const hasCourseAccess = user => DEV_UI_QA_ENABLED || !!(user?.subscriptionStatus && user.subscriptionStatus !== "none");
+const hasCourseAccess = user => DEV_UI_QA_ENABLED || hasActivePremiumEntitlement(user);
 const AI_FEATURE_ENABLED = true;
 
 const SPEEDS = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2];
@@ -475,9 +440,31 @@ const API_NETWORK_RETRY_DELAYS_MS = [0, 600, 1600];
 function openMembershipAccess() {
   Alert.alert(
     "Membership access",
-    "Sign in with the Skillomate account connected to your membership. Visit our website to purchase a subscription.",
+    Platform.OS === "ios"
+      ? "Open Subscription Details to subscribe securely through the App Store or restore a previous purchase."
+      : "Sign in with the Skillomate account connected to your membership, then open Subscription Details.",
     [{ text: "OK" }],
   );
+}
+
+async function openSafeExternalUrl(url, context = "resource") {
+  const decision = canOpenExternalUrl(url, Platform.OS);
+  if (!decision.allowed) {
+    Alert.alert(
+      context === "resource" ? "Link unavailable" : "Cannot open link",
+      decision.category === "purchase"
+        ? "Purchases on iPhone are available only through the App Store inside Skillomate."
+        : "This link is not on Skillomate's trusted-link list."
+    );
+    return false;
+  }
+  try {
+    await Linking.openURL(decision.url);
+    return true;
+  } catch (_) {
+    Alert.alert("Link unavailable", "This link could not be opened.");
+    return false;
+  }
 }
 
 const LEGAL_APP_PAGES = {
@@ -489,11 +476,11 @@ const LEGAL_APP_PAGES = {
     sections: [
       { title: "Account access", body: "Use accurate account details and keep your password, OTP, device access, and session private. Do not share access in a way that bypasses payment or content protections." },
       { title: "Courses and subscriptions", body: "Protected lessons require sign-in and a qualifying trial or subscription. Course listings, lessons, videos, notes, and related material may be updated or removed." },
-      { title: "Payments and billing", body: "Checkout and recurring payments may be handled by external payment providers. Access depends on confirmed payment and the current subscription period." },
+      { title: "Payments and billing", body: "Subscriptions purchased on iPhone are processed by Apple through the App Store. The monthly subscription renews automatically until cancelled in Apple ID settings. Other platforms may use their authorized payment provider. Access depends on server-verified entitlement and the current subscription period." },
       { title: "Downloads and certificates", body: "Offline downloads are for personal learning inside Skillomate and may not be redistributed. Certificates record Skillomate course completion and are not external professional credentials unless explicitly stated." },
       { title: "Nex AI", body: "AI responses may be incomplete or inaccurate. Verify important academic, career, financial, and technical decisions independently. Skillomate does not guarantee learning, employment, or income outcomes." },
       { title: "Acceptable use", body: "Do not attack, overload, disrupt, scrape, reverse engineer, record, resell, or republish the platform or protected course content without written permission." },
-      { title: "Account deletion and availability", body: "Account deletion may require password confirmation and can be limited by unresolved payment mandates. Features may change or be interrupted when required services are unavailable." },
+      { title: "Account deletion and availability", body: "Account deletion requires password confirmation. Access is revoked immediately; if a billing provider is temporarily unavailable, deletion continues and cancellation is queued for retry. Deleting a Skillomate account does not cancel a subscription billed by Apple; that subscription must be managed separately in Apple ID settings." },
     ],
   },
   privacy: {
@@ -502,13 +489,13 @@ const LEGAL_APP_PAGES = {
     icon: "shield-checkmark-outline",
     intro: "This policy explains how Skillomate handles account, learning, AI, payment, device, storage, and support data.",
     sections: [
-      { title: "Information we collect", body: "We may process your name, mobile number, optional email, age, gender, avatar, login activity, course progress, wishlist, certificates, payment status, device context, and support messages." },
+      { title: "Information we collect", body: "We may process your name, mobile number, optional email, age, gender, avatar or optional profile photo, login and IP security records, course progress, wishlist, certificates, payment status, device context, and support messages." },
       { title: "How information is used", body: "Information is used to create and secure accounts, provide learning features, track progress, process subscriptions, answer support requests, and prevent abuse." },
-      { title: "Nex AI data", body: "Nex AI may use your question, recent conversation context, and relevant course material to generate learning assistance. Avoid submitting highly sensitive personal information." },
+      { title: "Nex AI data", body: "Only after you choose Allow, fal.ai, OpenRouter, and Google Gemini may process your question, up to 12 recent messages, and relevant course material. Your profile name is not sent. You can withdraw consent and delete history in AI Data Controls." },
       { title: "Payments and service providers", body: "Payment, verification, media, hosting, storage, and AI providers may process the information required to deliver their services. Sensitive payment credentials are entered through the payment provider." },
       { title: "Device storage and permissions", body: "The app may use internet, storage, vibration, and screen-capture controls for account, media, downloads, exports, and protected learning features. Permissions can be managed in device settings." },
       { title: "Security and retention", body: "We use technical and organizational safeguards, but no online service can guarantee absolute security. Information is kept only as long as needed for product, legal, payment, security, and support purposes." },
-      { title: "Your controls", body: "You can update profile information and request or perform account deletion where available. Additional privacy requests can be sent through Skillomate support." },
+      { title: "Your controls", body: "You can update profile information, remove AI consent and history, and permanently delete your account in Profile. Limited transaction records may be anonymized and retained for legal or accounting requirements." },
       { title: "Policy updates", body: "This policy may be updated as Skillomate changes. The latest policy information will be provided in the app." },
     ],
   },
@@ -565,7 +552,7 @@ const HELP_SUPPORT_CONTENT = {
       body: "Email support at support@skillomate.in with your mobile number and issue details.",
       actionLabel: "Email Support",
       actionIcon: "mail",
-      onPress: () => openAppLink("mailto:support@skillomate.in", "Support email"),
+      onPress: () => openSafeExternalUrl("mailto:support@skillomate.in", "support"),
     },
   ],
 };
@@ -589,12 +576,12 @@ const TERMS_CONTENT = {
     {
       title: "Trials And Subscriptions",
       icon: "receipt-outline",
-      body: "Course access may require a trial or subscription. Access depends on active entitlement, provider invoice periods, payment reconciliation, and trial eligibility.",
+      body: "Course access may require a trial or subscription. On iPhone, the monthly subscription renews automatically until cancelled in Apple ID settings. Access depends on active entitlement, provider invoice periods, payment reconciliation, and trial eligibility.",
     },
     {
       title: "Payments And Billing",
       icon: "card-outline",
-      body: "Skillomate uses third-party payment providers for checkout, subscription creation, payment verification, and cancellation handling.",
+      body: "Subscriptions purchased on iPhone are processed by Apple through the App Store. Other platforms may use their authorized payment provider. Skillomate grants access only after server verification.",
     },
     {
       title: "Downloads And Offline Use",
@@ -619,7 +606,7 @@ const TERMS_CONTENT = {
     {
       title: "Account Deletion",
       icon: "trash-outline",
-      body: "Profile exposes Delete Account on web and mobile. Self-service deletion requires password verification and a typed DELETE confirmation, and can be blocked by active or unresolved payment mandates.",
+      body: "Profile exposes Delete Account on web and mobile. Self-service deletion requires password verification and a typed DELETE confirmation. Access is revoked first, and deletion continues even if provider cancellation must be retried later. Deleting an account does not cancel a subscription billed by Apple; manage it separately in Apple ID settings.",
     },
     {
       title: "Support",
@@ -638,7 +625,7 @@ const PRIVACY_CONTENT = {
     {
       title: "Information We Collect",
       icon: "person-outline",
-      body: "Skillomate may process account information, authentication data, learning data, Nex AI conversations, payment records, device data, files, exports, and support communications.",
+      body: "Skillomate may process account information, an optional profile photo, authentication and IP security records, learning data, Nex AI conversations, payment records, device data, exports, and support communications.",
     },
     {
       title: "How We Use Information",
@@ -648,12 +635,12 @@ const PRIVACY_CONTENT = {
     {
       title: "Nex AI",
       icon: "sparkles-outline",
-      body: "Nex AI uses your questions and relevant learning context to provide study help, course explanations, and learning assistance. Avoid submitting highly sensitive personal information unless needed.",
+      body: "Only after you choose Allow, fal.ai, OpenRouter, and Google Gemini may process your question, up to 12 recent messages, and relevant course context. Your profile name is not sent. AI Data Controls let you withdraw consent and delete history.",
     },
     {
       title: "Payments And Subscriptions",
       icon: "receipt-outline",
-      body: "External payment providers process checkout and subscription handling. Skillomate may keep transaction, subscription, refund, and billing status records needed for access and support.",
+      body: "Apple processes iPhone subscription purchases through the App Store; other authorized providers may process payments on other platforms. Skillomate may keep transaction, subscription, refund, and billing status records needed for access and support.",
     },
     {
       title: "Device Permissions",
@@ -678,7 +665,7 @@ const PRIVACY_CONTENT = {
     {
       title: "Account And Data Deletion",
       icon: "trash-outline",
-      body: "Learners can request or perform account deletion from Profile where available. Some records may be retained for legal, billing, security, backup, or dispute-resolution reasons.",
+      body: "Learners can permanently delete their account from Profile. Personal data and any stored profile photo are removed; limited payment records may be anonymized and retained for legal, accounting, fraud, or dispute requirements.",
     },
     {
       title: "Contact Us",
@@ -729,14 +716,14 @@ async function fetchWithNetworkRetry(url, options = {}) {
   throw requestError;
 }
 
-async function fetchApiJson(path, fallback = null, signal) {
+async function fetchApiJson(path, fallback = null, signal, headers = {}) {
   const controller = new AbortController();
   const abort = () => controller.abort();
   if (signal?.aborted) controller.abort();
   signal?.addEventListener('abort', abort);
   const timer = setTimeout(abort, 15000);
   try {
-    const res = await fetch(`${API_BASE}${path}`, { signal: controller.signal });
+    const res = await fetch(`${API_BASE}${path}`, { signal: controller.signal, headers });
     const data = await readJsonResponse(res);
     if (!res.ok) throw new Error(data.error || `Request failed (${res.status})`);
     return data ?? fallback;
@@ -1533,10 +1520,7 @@ function getCourseThumbnailAsset(course, preferVertical = false) {
     ? course?.thumbnailVerticalAsset || course?.thumbnailAsset || null
     : course?.thumbnailAsset || course?.thumbnailVerticalAsset || null;
   if (configuredAsset) return configuredAsset;
-
-  const key = String(course?._id || course?.id || course?.title || "skillomate");
-  const hash = [...key].reduce((total, char) => ((total * 31) + char.charCodeAt(0)) >>> 0, 0);
-  return HOME_ARTWORK_IMAGES[hash % HOME_ARTWORK_IMAGES.length];
+  return null;
 }
 
 function getCourseThumbnailSource(course, preferVertical = false, uriIndex = 0) {
@@ -1854,7 +1838,7 @@ function PasswordResetModal({
   );
 }
 
-const AGES = Array.from({ length: 76 }, (_, i) => i + 5); // backend accepts ages 5–80
+const AGES = Array.from({ length: 68 }, (_, i) => i + 13);
 const AGE_ITEM_W = 60;
 
 function AgePicker({ value, onChange }) {
@@ -1925,7 +1909,7 @@ function AgePicker({ value, onChange }) {
       </View>
       <View style={{ alignItems: "center", marginTop: 4 }}>
         <Text style={{ color: C.primary, fontSize: 12 }}>▲</Text>
-        <Text style={{ color: C.textSub, fontSize: 12, marginTop: 2 }}>Age: {selected}</Text>
+        <Text style={{ color: C.textSub, fontSize: 12, marginTop: 2 }}>Age: {selected || "Select your age"}</Text>
       </View>
     </View>
   );
@@ -2004,7 +1988,11 @@ function UpgradeModal({ visible, onClose }) {
             ))}
 
             <View style={[s.iosMembershipPanel, { marginTop: 16 }]}>
-              <Text style={[s.iosMembershipText, { textAlign: "center" }]}>Visit our website to purchase a subscription.</Text>
+              <Text style={[s.iosMembershipText, { textAlign: "center" }]}>
+                {Platform.OS === "ios"
+                  ? "Subscriptions are available securely through the App Store in Subscription Details."
+                  : "Open Subscription Details to view the payment options available on this device."}
+              </Text>
             </View>
 
             {/* Footer */}
@@ -2028,61 +2016,18 @@ const PROBLEM_REPORT_CATEGORIES = [
   { value: "account", label: "Account or login" },
   { value: "other", label: "Something else" },
 ];
-const NOTIFICATION_PREVIEWS = [
-  {
-    icon: "play-circle-outline",
-    title: "New AI lesson is ready",
-    body: "ChatGPT for Professionals added a short lesson on client-ready prompts.",
-    time: "2 min ago",
-    actionKey: "courses",
-  },
-  {
-    icon: "ribbon-outline",
-    title: "Keep your streak moving",
-    body: "Finish one more lesson today to stay on track for your certificate.",
-    time: "Today",
-    actionKey: "courses",
-  },
-  {
-    icon: "sparkles-outline",
-    title: "Nex AI suggestion",
-    body: "Try a 7-day roadmap for learning AI automation and earning with it.",
-    time: "Today",
-    actionKey: "ai",
-  },
-  {
-    icon: "pricetag-outline",
-    title: "Membership status",
-    body: "Your current membership access is available in Subscription Details.",
-    time: "This week",
-    actionKey: "subscription",
-  },
-];
+const NOTIFICATION_PREVIEWS = [];
 
 function getNotificationSignature(items = NOTIFICATION_PREVIEWS) {
   return items.map(item => [item.title, item.body, item.time].join("\u001f")).join("\u001e");
 }
 
 function useNotificationReadState() {
-  const notificationSignature = useMemo(() => getNotificationSignature(), []);
   const [hasUnreadNotifications, setHasUnreadNotifications] = useState(false);
-
-  useEffect(() => {
-    let mounted = true;
-    AsyncStorage.getItem(NOTIFICATION_VIEWED_SIGNATURE_KEY)
-      .then(viewedSignature => {
-        if (mounted) setHasUnreadNotifications(viewedSignature !== notificationSignature);
-      })
-      .catch(() => {
-        if (mounted) setHasUnreadNotifications(true);
-      });
-    return () => { mounted = false; };
-  }, [notificationSignature]);
 
   const markNotificationsViewed = useCallback(() => {
     setHasUnreadNotifications(false);
-    AsyncStorage.setItem(NOTIFICATION_VIEWED_SIGNATURE_KEY, notificationSignature).catch(() => {});
-  }, [notificationSignature]);
+  }, []);
 
   return { hasUnreadNotifications, markNotificationsViewed };
 }
@@ -2110,13 +2055,18 @@ function NotificationPreviewModal({ visible, onClose, onOpenCourses, onOpenAI, o
           <View style={s.notificationHeader}>
             <View style={{ flex: 1 }}>
               <Text style={s.notificationTitle}>Notifications</Text>
-              <Text style={s.notificationSubtitle}>Preview of upcoming Skillomate alerts</Text>
+              <Text style={s.notificationSubtitle}>Account and learning updates</Text>
             </View>
             <TouchableOpacity onPress={onClose} style={s.notificationClose} accessibilityRole="button" accessibilityLabel="Close notifications">
               <Ionicons name="close" size={19} color={C.text} />
             </TouchableOpacity>
           </View>
-          {items.map((item, index) => {
+          {items.length === 0 ? (
+            <View style={{ alignItems: "center", paddingVertical: 28, paddingHorizontal: 20 }}>
+              <Ionicons name="notifications-outline" size={30} color={C.textMuted} />
+              <Text style={[s.notificationBody, { marginTop: 10, textAlign: "center" }]}>You have no notifications.</Text>
+            </View>
+          ) : items.map((item, index) => {
             const Row = item.action ? TouchableOpacity : View;
             return (
             <Row
@@ -3686,7 +3636,8 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
 }
 
 // ── ReelsScreen ───────────────────────────────────────────────────────────────
-function ReelsScreen({ courseId, course, initialIndex, initialTime, onBack, user, onVideoComplete, onVideoProgress, downloads, preloadedVideos }) {
+function ReelsScreen({ courseId, course, initialIndex, initialTime, onBack, user, session, onVideoComplete, onVideoProgress, downloads, preloadedVideos }) {
+  const [completionInfo, setCompletionInfo] = useState(null);
   const [videos, setVideos] = useState(preloadedVideos || []);
   const [loading, setLoading] = useState(!preloadedVideos);
   const [error, setError] = useState(null);
@@ -3762,12 +3713,11 @@ function ReelsScreen({ courseId, course, initialIndex, initialTime, onBack, user
   useEffect(() => {
     if (preloadedVideos) return; // already have videos, skip fetch
     if (!user?._id || !user?.sessionId) { setError("Subscription required."); setLoading(false); return; }
-    fetch(`${API_BASE}/api/courses/${courseId}/videos?userId=${encodeURIComponent(user._id)}&sessionId=${encodeURIComponent(user.sessionId)}`)
-      .then(r => r.json())
-      .then(d => { if (d.error) throw new Error(d.error); setVideos(d.videos || []); })
+    session.requestJson(`/api/courses/${courseId}/videos`)
+      .then(d => { setVideos(d.videos || []); })
       .catch(e => setError(e.message))
       .finally(() => setLoading(false));
-  }, [courseId]);
+  }, [courseId, session, user?._id, user?.sessionId]);
 
   useEffect(() => {
     setCourseAiInput("");
@@ -3801,31 +3751,49 @@ function ReelsScreen({ courseId, course, initialIndex, initialTime, onBack, user
       updateCourseAi([...courseAiEntry.messages, { role: "assistant", content: "Please log in again before using Course AI." }]);
       return;
     }
-    updateCourseAi([...courseAiEntry.messages, { role: "user", content: question }]);
+    try {
+      const consent = await session.requestJson("/api/ai/consent");
+      if (!isAiConsentCurrent(consent)) {
+        const allowed = await new Promise(resolve => {
+          Alert.alert(
+            "Nex AI Privacy",
+            `Your question, recent chat, and relevant lesson context will be processed by ${(consent.providerNames || ["external AI providers"]).join(", ")}. Your name is not sent.`,
+            [
+              { text: "Not Now", style: "cancel", onPress: async () => { await session.requestJson("/api/ai/consent", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ granted: false }) }).catch(() => {}); resolve(false); } },
+              { text: "Allow", onPress: async () => {
+                try {
+                  const saved = await session.requestJson("/api/ai/consent", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ granted: true }) });
+                  resolve(isAiConsentCurrent(saved));
+                } catch (_) { resolve(false); }
+              } },
+            ]
+          );
+        });
+        if (!allowed) return;
+      }
+    } catch (_) {
+      Alert.alert("AI privacy unavailable", "Your privacy choice could not be checked. No AI request was sent.");
+      return;
+    }
+    const messagesWithQuestion = [...courseAiEntry.messages, { role: "user", content: question }];
     setCourseAiInput("");
-    updateCourseAi(courseAiEntry.messages, true);
+    updateCourseAi(messagesWithQuestion, true);
     if (DEV_UI_QA_ENABLED) {
       setTimeout(() => {
-        updateCourseAi([...courseAiEntry.messages, ...UI_QA_AI_MESSAGES]);
-        updateCourseAi(courseAiEntry.messages, false);
+        updateCourseAi([...messagesWithQuestion, ...UI_QA_AI_MESSAGES], false);
       }, 250);
       return;
     }
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 30000);
     try {
-      const res = await fetch(`${API_BASE}/api/course-ai/chat`, {
-        signal: controller.signal,
+      const data = await session.requestJson("/api/course-ai/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId: user._id, sessionId: user.sessionId, courseId, videoTitle: activeTitle, videoDescription: activeDescription, question, messages: courseAiMessages }),
+        body: JSON.stringify({ userId: user._id, courseId, videoTitle: activeTitle, videoDescription: activeDescription, question, messages: courseAiMessages }),
       });
-      const raw = await res.text();
-      let data = {}; try { data = raw ? JSON.parse(raw) : {}; } catch {}
-      updateCourseAi([...courseAiEntry.messages, { role: "assistant", content: res.ok ? data.answer : "AI is unavailable right now. Please try again." }]);
+      updateCourseAi([...messagesWithQuestion, { role: "assistant", id: data.messageId, content: data.answer }], false);
     } catch {
-      updateCourseAi([...courseAiEntry.messages, { role: "assistant", content: "AI is unavailable right now. Please try again." }]);
-    } finally { clearTimeout(timeout); updateCourseAi(courseAiEntry.messages, false); }
+      updateCourseAi([...messagesWithQuestion, { role: "assistant", content: "AI is unavailable right now. Please try again." }], false);
+    }
   }
 
   if (loading) return (
@@ -3863,7 +3831,10 @@ function ReelsScreen({ courseId, course, initialIndex, initialTime, onBack, user
         renderItem={({ item, index }) => (
           <VideoItem video={item} courseId={courseId} course={course} user={user}
             onComplete={() => { /* Completion comes from validated progress responses. */ }}
-            onProgress={(currentTime, duration) => { onVideoProgress?.(courseId, getVideoKey(item, index), currentTime, duration); }}
+            onProgress={async (currentTime, duration) => {
+              const result = await onVideoProgress?.(courseId, getVideoKey(item, index), currentTime, duration);
+              if (result) setCompletionInfo(result.eligibility || { error: result.error });
+            }}
             onSettingsOpenChange={open => {
               if (index === activeIndex) setPlayerSettingsOpen(open);
             }}
@@ -3885,6 +3856,9 @@ function ReelsScreen({ courseId, course, initialIndex, initialTime, onBack, user
         getItemLayout={(_, i) => ({ length: listHeight, offset: listHeight * i, index: i })}
       />
 
+      <View style={{position:'absolute',bottom:110,left:14,right:14,padding:10,borderRadius:8,backgroundColor:'rgba(0,0,0,0.8)',zIndex:5}}>
+        <Text style={{color:'#fff',fontSize:11}}>{completionInfo?.error || (completionInfo ? `${completionInfo.completedLessons}/${completionInfo.totalLessons} lessons complete · ${completionInfo.requirements?.[0] || 'Completion requirements met'}` : '90% lesson coverage required · online progress tracking')}</Text>
+      </View>
       <SafeAreaView style={s.webPlayerTopBar} pointerEvents="box-none">
         <TouchableOpacity
           onPress={onBack}
@@ -3994,7 +3968,7 @@ function ReelsScreen({ courseId, course, initialIndex, initialTime, onBack, user
                     <TouchableOpacity
                       key={`${resource.title}-${index}`}
                       style={s.lessonResourceRow}
-                      onPress={() => resource.url ? Linking.openURL(resource.url).catch(() => Alert.alert("Error", "Could not open this resource.")) : null}
+                      onPress={() => resource.url ? openSafeExternalUrl(resource.url, "resource") : null}
                       accessibilityRole="button"
                       accessibilityLabel={`Open resource ${resource.title}`}
                     >
@@ -4059,7 +4033,7 @@ function ReelsScreen({ courseId, course, initialIndex, initialTime, onBack, user
                     <TouchableOpacity
                       key={`${resource.title}-${index}`}
                       style={s.lessonResourceRow}
-                      onPress={() => resource.url ? Linking.openURL(resource.url).catch(() => Alert.alert("Error", "Could not open this resource.")) : null}
+                      onPress={() => resource.url ? openSafeExternalUrl(resource.url, "resource") : null}
                       accessibilityRole="button"
                       accessibilityLabel={`Open resource ${resource.title}`}
                     >
@@ -4428,7 +4402,7 @@ function VideoListScreen({ course, onSelectVideo, onBack, onOpenCourseAi, downlo
                     <TouchableOpacity
                       key={`${resource.title}-${index}`}
                       style={s.courseResourceRow}
-                      onPress={() => resource.url ? Linking.openURL(resource.url).catch(() => Alert.alert("Error", "Could not open this resource.")) : null}
+                      onPress={() => resource.url ? openSafeExternalUrl(resource.url, "resource") : null}
                       accessibilityRole="button"
                       accessibilityLabel={`Open resource ${resource.title}`}
                     >
@@ -4935,7 +4909,7 @@ function LegacyHomeScreenDraft({ user, onGoToCourses, onGoToAI, onGoToDownloads,
         const [top, all, mostWatched] = await Promise.all([
           fetchApiJson("/api/courses/top", []),
           fetchApiJson("/api/courses", []),
-          fetchApiJson(`/api/videos/most-watched?userId=${encodeURIComponent(user._id)}&sessionId=${encodeURIComponent(user.sessionId || "")}`, null),
+          fetchApiJson('/api/videos/most-watched', null, undefined, { Authorization: `Bearer ${user.accessToken || user.token || ''}` }),
         ]);
         if (cancelled) return;
         const loadedAll = Array.isArray(all) ? all : [];
@@ -4947,8 +4921,10 @@ function LegacyHomeScreenDraft({ user, onGoToCourses, onGoToAI, onGoToDownloads,
           setMostWatchedVideo(mostWatched);
         } else if (hasCourseAccess(user) && nextTop[0]?._id) {
           const videoData = await fetchApiJson(
-            `/api/courses/${nextTop[0]._id}/videos?userId=${encodeURIComponent(user._id)}&sessionId=${encodeURIComponent(user.sessionId || "")}`,
-            null
+            `/api/courses/${nextTop[0]._id}/videos`,
+            null,
+            undefined,
+            { Authorization: `Bearer ${user.accessToken || user.token || ''}` }
           );
           if (!cancelled && Array.isArray(videoData?.videos) && videoData.videos.length > 0) {
             setMostWatchedVideo({
@@ -5301,6 +5277,7 @@ function LegacyHomeScreenDraft({ user, onGoToCourses, onGoToAI, onGoToDownloads,
 let homeCatalogCourse = null;
 
 function HomeScreen({
+  session,
   user,
   onGoToCourses,
   onGoToAI,
@@ -5375,10 +5352,7 @@ function HomeScreen({
         setPrimaryCourse(course);
         setLoading(false);
         if (hasAccess && user?._id && user?.sessionId) {
-          const playableData = await fetchApiJson(
-            `/api/courses/${course._id}/videos?userId=${encodeURIComponent(user._id)}&sessionId=${encodeURIComponent(user.sessionId)}`,
-            null, homeAbort.signal
-          ).catch(() => null);
+          const playableData = await session.requestJson(`/api/courses/${course._id}/videos`).catch(() => null);
           if (!cancelled && Array.isArray(playableData?.videos) && playableData.videos.length) {
             course = { ...course, videos: playableData.videos, __homePlayableVideos: true };
           }
@@ -5397,7 +5371,7 @@ function HomeScreen({
 
     loadPrimaryCourse();
     return () => { cancelled = true; homeAbort.abort(); };
-  }, [hasAccess, reloadKey, user?._id, user?.sessionId]);
+  }, [hasAccess, reloadKey, session, user?._id, user?.sessionId]);
 
   const lessons = useMemo(() => sortLessons(primaryCourse?.videos || []), [primaryCourse?.videos]);
   const course = useMemo(
@@ -6281,7 +6255,7 @@ function InfoPageScreen({ page, onBack }) {
   );
 }
 
-function SubscriptionDetailsScreen({ user, onBack }) {
+function SubscriptionDetailsScreen({ user, onBack, session, appleSubscription, onOpenTerms, onOpenPrivacy }) {
   const [loading, setLoading] = useState(true);
   const [subData, setSubData] = useState(null);
   const [error, setError] = useState(null);
@@ -6289,17 +6263,18 @@ function SubscriptionDetailsScreen({ user, onBack }) {
   const loadSubscription = useCallback(() => {
     setLoading(true);
     setError(null);
-    fetch(`${API_BASE}/api/user/${user._id}/subscription?sessionId=${encodeURIComponent(user.sessionId || "")}`)
-      .then(r => r.json())
+    session.requestJson(`/api/user/${user._id}/subscription`)
       .then(data => { setSubData(data); setLoading(false); })
       .catch(() => { setError("Failed to load subscription details."); setLoading(false); });
-  }, [user._id, user.sessionId]);
+  }, [session, user._id]);
 
   useEffect(() => {
     loadSubscription();
   }, [loadSubscription]);
 
-  const isActive = subData?.subscriptionStatus && subData.subscriptionStatus !== "none";
+  const isActive = subData
+    ? subData.entitlementActive === true
+    : hasActivePremiumEntitlement(user);
 
   function formatDate(dateStr) {
     if (!dateStr) return "—";
@@ -6396,20 +6371,84 @@ function SubscriptionDetailsScreen({ user, onBack }) {
 
             {!isActive && (
               <View style={s.iosMembershipPanel}>
-                <Text style={s.iosMembershipText}>
-                  Existing memberships appear automatically when you sign in with the linked Skillomate account.
-                </Text>
-                <Text style={[s.iosMembershipText, { marginTop: 8 }]}>Visit our website to purchase a subscription.</Text>
-                <TouchableOpacity
-                  onPress={loadSubscription}
-                  style={[s.btn, s.btnFill, { marginTop: 12 }]}
-                  accessibilityRole="button"
-                  accessibilityLabel="Refresh membership status"
-                >
-                  <Ionicons name="refresh" size={17} color={C.onPrimary} />
-                  <Text style={s.btnText}>Refresh Status</Text>
-                </TouchableOpacity>
+                {Platform.OS === "ios" ? (
+                  <>
+                    <Text style={s.iosMembershipText}>
+                      Unlock all protected Skillomate courses, downloads, progress, certificates, and Nex AI course assistance. Payment is charged to your Apple ID. The monthly subscription renews automatically until cancelled in Apple ID settings.
+                    </Text>
+                    <Text style={[s.iosMembershipText, { marginTop: 8, fontWeight: "800" }]}>
+                      {appleSubscription.localizedPrice
+                        ? `${appleSubscription.localizedPrice} per month`
+                        : "Monthly price will be shown by the App Store"}
+                    </Text>
+                    {!!appleSubscription.error && <Text style={[s.errorText, { marginTop: 10 }]}>{appleSubscription.error}</Text>}
+                    {!!appleSubscription.notice && <Text style={[s.iosMembershipText, { marginTop: 10 }]}>{appleSubscription.notice}</Text>}
+                    <TouchableOpacity
+                      onPress={appleSubscription.purchase}
+                      disabled={appleSubscription.working || !appleSubscription.product}
+                      style={[s.btn, s.btnFill, { marginTop: 12 }, (appleSubscription.working || !appleSubscription.product) && { opacity: 0.55 }]}
+                      accessibilityRole="button"
+                      accessibilityLabel="Subscribe with the App Store"
+                    >
+                      {appleSubscription.working ? <ActivityIndicator color={C.onPrimary} /> : <Ionicons name="logo-apple" size={17} color={C.onPrimary} />}
+                      <Text style={s.btnText}>Subscribe with Apple</Text>
+                    </TouchableOpacity>
+                    <View style={{ flexDirection: "row", justifyContent: "center", gap: 20, marginTop: 14 }}>
+                      <TouchableOpacity
+                        onPress={onOpenTerms}
+                        accessibilityRole="link"
+                        accessibilityLabel="Read subscription Terms of Use"
+                      >
+                        <Text style={{ color: C.primary, fontWeight: "700", fontSize: 12 }}>Terms of Use</Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        onPress={onOpenPrivacy}
+                        accessibilityRole="link"
+                        accessibilityLabel="Read subscription Privacy Policy"
+                      >
+                        <Text style={{ color: C.primary, fontWeight: "700", fontSize: 12 }}>Privacy Policy</Text>
+                      </TouchableOpacity>
+                    </View>
+                  </>
+                ) : (
+                  <Text style={s.iosMembershipText}>
+                    Existing memberships appear automatically when you sign in with the linked Skillomate account.
+                  </Text>
+                )}
               </View>
+            )}
+
+            {Platform.OS === "ios" && (
+              <>
+                <TouchableOpacity
+                  onPress={appleSubscription.restore}
+                  disabled={appleSubscription.working}
+                  style={[s.btn, { marginTop: 12, borderWidth: 1, borderColor: C.primary }, appleSubscription.working && { opacity: 0.55 }]}
+                  accessibilityRole="button"
+                  accessibilityLabel="Restore App Store purchases"
+                >
+                  <Ionicons name="refresh" size={17} color={C.primary} />
+                  <Text style={[s.btnText, { color: C.primary }]}>Restore Purchases</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => Promise.all([loadSubscription(), appleSubscription.refresh().catch(() => null)])}
+                  disabled={appleSubscription.working}
+                  style={[s.btn, { marginTop: 8 }]}
+                  accessibilityRole="button"
+                  accessibilityLabel="Refresh subscription status"
+                >
+                  <Text style={[s.btnText, { color: C.text }]}>Refresh Status</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => openSafeExternalUrl(APPLE_SUBSCRIPTION_MANAGEMENT_URL, "account")}
+                  style={[s.btn, { marginTop: 8 }]}
+                  accessibilityRole="link"
+                  accessibilityLabel="Manage App Store subscription"
+                >
+                  <Ionicons name="open-outline" size={17} color={C.text} />
+                  <Text style={[s.btnText, { color: C.text }]}>Manage App Store Subscription</Text>
+                </TouchableOpacity>
+              </>
             )}
           </View>
 
@@ -6461,7 +6500,7 @@ function DeleteAccountModal({ visible, user, onClose, onDeleteAccount }) {
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const canDelete = Boolean(currentPassword) && confirmation === "DELETE" && !submitting;
-  const hasActivePlan = !["none", "expired", "cancelled", ""].includes(String(user?.subscriptionStatus || "").toLowerCase());
+  const hasActivePlan = hasActivePremiumEntitlement(user);
 
   useEffect(() => {
     if (!visible) {
@@ -6528,8 +6567,27 @@ function DeleteAccountModal({ visible, user, onClose, onDeleteAccount }) {
               <View style={s.deleteAccountPlanNotice}>
                 <Ionicons name="alert-circle-outline" size={18} color={C.warning} />
                 <Text style={s.deleteAccountPlanText}>
-                  Skillomate will try to cancel linked recurring billing before deletion. If cancellation cannot be confirmed, deletion pauses and shows the next step.
+                  Skillomate will try to cancel linked recurring billing. Your account deletion continues even if a billing provider is temporarily unavailable; cancellation is queued for retry.
                 </Text>
+              </View>
+            )}
+
+            {Platform.OS === "ios" && (
+              <View style={s.deleteAccountPlanNotice}>
+                <Ionicons name="logo-apple" size={18} color={C.warning} />
+                <View style={{ flex: 1 }}>
+                  <Text style={s.deleteAccountPlanText}>
+                    Deleting your Skillomate account does not cancel a subscription billed by Apple. Manage or cancel it in the App Store; account deletion remains available either way.
+                  </Text>
+                  <TouchableOpacity
+                    onPress={() => openSafeExternalUrl(APPLE_SUBSCRIPTION_MANAGEMENT_URL, "account")}
+                    accessibilityRole="link"
+                    accessibilityLabel="Manage App Store subscription before deletion"
+                    style={{ alignSelf: "flex-start", marginTop: 8 }}
+                  >
+                    <Text style={{ color: C.primary, fontWeight: "800", fontSize: 12 }}>Manage App Store Subscription</Text>
+                  </TouchableOpacity>
+                </View>
               </View>
             )}
 
@@ -6612,8 +6670,8 @@ function DeleteAccountModal({ visible, user, onClose, onDeleteAccount }) {
   );
 }
 
-function ProfileScreen({ user, onLogout, onDeleteAccount, onGoToHome, onGoToCourses, onGoToAI, onGoToDownloads, wishlistCount, onGoToWishlist, onGoToCertificates, certificatesCount, onAvatarChange, aiRobotId, onGoToSubscription, onOpenLegal }) {
-  const isActive = user?.subscriptionStatus && user.subscriptionStatus !== "none";
+function ProfileScreen({ user, session, onLogout, onDeleteAccount, onGoToHome, onGoToCourses, onGoToAI, onGoToDownloads, wishlistCount, onGoToWishlist, onGoToCertificates, certificatesCount, onAvatarChange, aiRobotId, onGoToSubscription, onOpenLegal }) {
+  const isActive = hasActivePremiumEntitlement(user);
   const memberSince = user?._id
     ? new Date(parseInt(user._id.substring(0, 8), 16) * 1000).toLocaleDateString("en-IN", { month: "short", year: "numeric" })
     : null;
@@ -6664,13 +6722,13 @@ function ProfileScreen({ user, onLogout, onDeleteAccount, onGoToHome, onGoToCour
                 {/* Preview selected */}
                 <View style={{ alignItems: "center", marginBottom: 20 }}>
                   <View style={{ width: 90, height: 90, borderRadius: 45, overflow: "hidden", borderWidth: 3, borderColor: C.primary }}>
-                    <AvatarImage avatarId={tempAvatar} size={90} style={{ borderRadius: 0 }} />
+                    <AvatarImage avatarId={tempAvatar?.uri || tempAvatar} size={90} style={{ borderRadius: 0 }} />
                   </View>
                 </View>
 
                 <TouchableOpacity
                   onPress={async () => {
-                    const selectedImage = await pickProfileImage(user._id);
+                    const selectedImage = await pickProfileImage();
                     if (selectedImage) setTempAvatar(selectedImage);
                   }}
                   style={[s.btn, { marginTop: 0, marginBottom: 18, flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 8 }]}
@@ -6703,13 +6761,26 @@ function ProfileScreen({ user, onLogout, onDeleteAccount, onGoToHome, onGoToCour
                   onPress={async () => {
                     setSavingAvatar(true);
                     try {
-                      const res = await fetch(`${API_BASE}/api/user/${user._id}/avatar`, {
-                        method: "PATCH",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ avatar: tempAvatar, sessionId: user.sessionId }),
-                      });
-                      if (res.ok) { onAvatarChange?.(tempAvatar); setShowAvatarPicker(false); }
-                    } catch {}
+                      let data;
+                      if (tempAvatar?.uri) {
+                        const imageResponse = await fetch(tempAvatar.uri);
+                        const imageBytes = await imageResponse.blob();
+                        data = await session.requestJson(`/api/user/${user._id}/avatar-photo`, {
+                          method: "PUT",
+                          headers: { "Content-Type": tempAvatar.mimeType || "image/jpeg" },
+                          body: imageBytes,
+                        });
+                      } else {
+                        data = await session.requestJson(`/api/user/${user._id}/avatar`, {
+                          method: "PATCH",
+                          headers: { "Content-Type": "application/json" },
+                          body: JSON.stringify({ avatar: tempAvatar }),
+                        });
+                      }
+                      if (data?.avatar) { onAvatarChange?.(data.avatar); setShowAvatarPicker(false); }
+                    } catch (uploadError) {
+                      Alert.alert("Photo not saved", uploadError.message || "Check your connection and try again.");
+                    }
                     setSavingAvatar(false);
                   }}
                   style={[s.btn, s.btnFill, { marginTop: 0 }]}
@@ -7018,6 +7089,10 @@ function AiAssistantScreen({
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState("checking");
+  const [aiConsent, setAiConsent] = useState({ granted: false, policyVersion: AI_CONSENT_POLICY_VERSION, providerNames: ["fal.ai", "OpenRouter", "Google Gemini"] });
+  const [aiConsentLoading, setAiConsentLoading] = useState(true);
+  const [showAiConsent, setShowAiConsent] = useState(false);
+  const pendingAiPrompt = useRef("");
   const [robotId, setRobotId] = useState(DEFAULT_AI_ROBOT_ID);
   const [showRobotPicker, setShowRobotPicker] = useState(false);
   const [assistantName, setAssistantName] = useState(DEFAULT_AI_NAME);
@@ -7063,6 +7138,7 @@ function AiAssistantScreen({
   const appendAiConversationMessage = useCallback((sessionId, message) => {
     const record = {
       role: message.role,
+      id: message.id || null,
       content: String(message.content || "").slice(0, 4000),
       failed: Boolean(message.failed),
       createdAt: Date.now(),
@@ -7110,6 +7186,21 @@ function AiAssistantScreen({
   }, [introMessages]);
 
   // NEX is the default identity; learners can still choose another companion.
+  useEffect(() => {
+    if (!user?._id || !session) {
+      setAiConsentLoading(false);
+      setAiConsent({ granted: false, policyVersion: AI_CONSENT_POLICY_VERSION, providerNames: ["fal.ai", "OpenRouter", "Google Gemini"] });
+      return;
+    }
+    let cancelled = false;
+    setAiConsentLoading(true);
+    session.requestJson("/api/ai/consent")
+      .then(value => { if (!cancelled) setAiConsent(value); })
+      .catch(() => { if (!cancelled) setAiConsent(current => ({ ...current, granted: false })); })
+      .finally(() => { if (!cancelled) setAiConsentLoading(false); });
+    return () => { cancelled = true; };
+  }, [session, user?._id]);
+
   useEffect(() => {
     AsyncStorage.getItem(AI_AVATAR_STORAGE_KEY).then(saved => {
       const nextRobotId = saved && AI_ROBOT_IMAGES[saved] ? saved : DEFAULT_AI_ROBOT_ID;
@@ -7195,15 +7286,13 @@ function AiAssistantScreen({
       return;
     }
 
-    const authQuery = `userId=${encodeURIComponent(user._id)}&sessionId=${encodeURIComponent(user.sessionId)}`;
-
     Promise.all([
       fetch(`${API_BASE}/api/health/db`).then(async res => {
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || "Could not check Nex AI");
         return data;
       }),
-      fetch(`${API_BASE}/api/courses?${authQuery}`).then(async res => {
+      fetch(`${API_BASE}/api/courses`).then(async res => {
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || "Could not load Nex AI courses");
         return data;
@@ -7255,9 +7344,95 @@ function AiAssistantScreen({
     return () => clearTimeout(scrollTimer);
   }, [messages, loading]);
 
-  async function sendAiMessage(value = input) {
+  async function saveAiConsent(granted) {
+    if (!session) return null;
+    setAiConsentLoading(true);
+    try {
+      const next = await session.requestJson("/api/ai/consent", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ granted }),
+      });
+      setAiConsent(next);
+      setShowAiConsent(false);
+      return next;
+    } catch (_) {
+      Alert.alert("Privacy choice not saved", "Check your connection and try again.");
+      return null;
+    } finally {
+      setAiConsentLoading(false);
+    }
+  }
+
+  async function allowAiAndContinue() {
+    const next = await saveAiConsent(true);
+    if (!isAiConsentCurrent(next)) return;
+    const queued = pendingAiPrompt.current;
+    pendingAiPrompt.current = "";
+    if (queued) sendAiMessage(queued, { consentOverride: true });
+  }
+
+  async function declineAiConsent() {
+    pendingAiPrompt.current = "";
+    await saveAiConsent(false);
+  }
+
+  async function clearAiHistory() {
+    try {
+      await session.requestJson("/api/ai/history", { method: "DELETE" });
+      await AsyncStorage.removeItem(chatStorageKey);
+      const initial = createAiConversationSession(introMessages());
+      aiGeneration.current += 1;
+      setConversations([initial]);
+      setActiveConversationId(initial.id);
+      setMessages(initial.messages);
+      setHistoryOpen(false);
+      Alert.alert("AI history deleted", "Your Nex AI chat history was deleted.");
+    } catch (_) {
+      Alert.alert("Could not delete history", "Check your connection and try again.");
+    }
+  }
+
+  function reportAiResponse(message) {
+    if (!message?.id) {
+      Alert.alert("Report unavailable", "This older response does not have a report identifier.");
+      return;
+    }
+    const reasons = [
+      ["Incorrect", "incorrect"],
+      ["Harmful or unsafe", "harmful_or_unsafe"],
+      ["Inappropriate", "inappropriate"],
+      ["Privacy concern", "privacy_concern"],
+      ["Other", "other"],
+    ];
+    Alert.alert("Report response", "Why are you reporting this response?", [
+      ...reasons.map(([label, reason]) => ({
+        text: label,
+        onPress: async () => {
+          try {
+            const result = await session.requestJson("/api/ai/reports", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ messageId: message.id, reason, response: message.content }),
+            });
+            Alert.alert("Report received", result.message || "Thanks. We will review this response.");
+          } catch (_) {
+            Alert.alert("Report not sent", "Check your connection and try again.");
+          }
+        },
+      })),
+      { text: "Cancel", style: "cancel" },
+    ]);
+  }
+
+  async function sendAiMessage(value = input, options = {}) {
     const question = value.trim();
     if (!question || loading || aiInFlight.current) return;
+    if (!options.consentOverride && !isAiConsentCurrent(aiConsent)) {
+      pendingAiPrompt.current = question;
+      setShowAiConsent(true);
+      return;
+    }
     if (!AI_FEATURE_ENABLED) {
       setInput("");
       const targetSessionId = activeConversationId || createAiConversationSession(introMessages()).id;
@@ -7285,7 +7460,7 @@ function AiAssistantScreen({
       const data = await requestTutor({ baseUrl: API_BASE, user, question, courseId, messages, assistantName, session });
       if (!aiMounted.current || requestGeneration !== aiGeneration.current) return;
       setStatus("online");
-      appendAiConversationMessage(requestSessionId, { role: "assistant", content: data.notice ? `${data.notice}\n\n${data.answer}` : data.answer });
+      appendAiConversationMessage(requestSessionId, { id: data.messageId, role: "assistant", content: data.notice ? `${data.notice}\n\n${data.answer}` : data.answer });
     } catch (error) {
       if (!aiMounted.current || requestGeneration !== aiGeneration.current || ["SESSION_CHANGED", "SESSION_EXPIRED"].includes(error.code)) return;
       setInput(question);
@@ -7386,6 +7561,16 @@ function AiAssistantScreen({
                   {!isUser && <RobotAvatar robotId={robotId} size={46} replying={!loading && index === messages.length - 1 && messages.length > 1} />}
                   <View style={[s.aiBubble, isUser && s.aiBubbleUser]}>
                     <Text style={[s.aiBubbleText, isUser && s.aiBubbleTextUser]}>{item.content}</Text>
+                    {!isUser && item.id ? (
+                      <TouchableOpacity
+                        onPress={() => reportAiResponse(item)}
+                        style={{ alignSelf: "flex-end", marginTop: 7, minWidth: 44, minHeight: 30, alignItems: "center", justifyContent: "center" }}
+                        accessibilityRole="button"
+                        accessibilityLabel="Report AI response"
+                      >
+                        <Ionicons name="ellipsis-horizontal" size={18} color={C.textMuted} />
+                      </TouchableOpacity>
+                    ) : null}
                   </View>
                   {isUser && <AvatarImage avatarId={user?.avatar || "a1"} size={30} />}
                 </View>
@@ -7528,6 +7713,80 @@ function AiAssistantScreen({
                 <Text style={s.aiHistoryEmptyText}>Your chats will appear here after you send a message.</Text>
               </View>
             )}
+            <View style={{ borderTopWidth: 1, borderTopColor: C.border, paddingTop: 14, marginTop: 10, gap: 8 }}>
+              <Text style={s.aiHistoryLabel}>AI Data Controls</Text>
+              <Text style={s.aiHistoryItemMeta}>
+                Third-party AI processing: {isAiConsentCurrent(aiConsent) ? "Allowed" : "Not allowed"}
+              </Text>
+              {isAiConsentCurrent(aiConsent) ? (
+                <TouchableOpacity
+                  onPress={() => saveAiConsent(false)}
+                  style={[s.aiHistoryNewChat, { backgroundColor: C.cardBg, borderWidth: 1, borderColor: C.border }]}
+                  accessibilityRole="button"
+                  accessibilityLabel="Withdraw AI data consent"
+                >
+                  <Text style={[s.aiHistoryNewChatText, { color: C.text }]}>Withdraw consent</Text>
+                  <Ionicons name="shield-outline" size={18} color={C.primary} />
+                </TouchableOpacity>
+              ) : (
+                <TouchableOpacity
+                  onPress={() => setShowAiConsent(true)}
+                  style={[s.aiHistoryNewChat, { backgroundColor: C.cardBg, borderWidth: 1, borderColor: C.border }]}
+                  accessibilityRole="button"
+                  accessibilityLabel="Review AI privacy consent"
+                >
+                  <Text style={[s.aiHistoryNewChatText, { color: C.text }]}>Review AI privacy</Text>
+                  <Ionicons name="shield-checkmark-outline" size={18} color={C.primary} />
+                </TouchableOpacity>
+              )}
+              <TouchableOpacity
+                onPress={() => Alert.alert("Delete AI history?", "This removes your Nex AI conversations from this device and the server.", [
+                  { text: "Cancel", style: "cancel" },
+                  { text: "Delete", style: "destructive", onPress: clearAiHistory },
+                ])}
+                style={[s.aiHistoryNewChat, { backgroundColor: C.cardBg, borderWidth: 1, borderColor: C.border }]}
+                accessibilityRole="button"
+                accessibilityLabel="Delete AI chat history"
+              >
+                <Text style={[s.aiHistoryNewChatText, { color: C.danger }]}>Delete AI history</Text>
+                <Ionicons name="trash-outline" size={18} color={C.danger} />
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+
+      <Modal visible={showAiConsent} transparent animationType="fade" onRequestClose={declineAiConsent}>
+        <View style={{ flex: 1, backgroundColor: "rgba(0,0,0,0.76)", alignItems: "center", justifyContent: "center", padding: 24 }}>
+          <View style={{ backgroundColor: C.white, borderRadius: 20, borderWidth: 1, borderColor: C.border, width: "100%", maxWidth: 430, padding: 22 }}>
+            <View style={{ width: 48, height: 48, borderRadius: 24, backgroundColor: C.primaryLight, alignItems: "center", justifyContent: "center", alignSelf: "center" }}>
+              <Ionicons name="shield-checkmark-outline" size={26} color={C.primary} />
+            </View>
+            <Text style={{ color: C.text, fontSize: 21, fontWeight: "800", textAlign: "center", marginTop: 14 }}>Nex AI Privacy</Text>
+            <Text style={{ color: C.textSub, fontSize: 13, lineHeight: 20, marginTop: 10 }}>
+              To answer you, Skillomate sends your question, up to 12 recent chat messages, and relevant course or lesson context to {Array.isArray(aiConsent.providerNames) ? aiConsent.providerNames.join(", ") : "external AI providers"}.
+            </Text>
+            <Text style={{ color: C.textSub, fontSize: 13, lineHeight: 20, marginTop: 8 }}>
+              Your name is not sent. Avoid including passwords, payment details, or other sensitive personal information. You can withdraw consent and delete AI history from AI Data Controls.
+            </Text>
+            <TouchableOpacity
+              onPress={allowAiAndContinue}
+              disabled={aiConsentLoading}
+              style={[s.btn, s.btnFill, { marginTop: 18 }, aiConsentLoading && { opacity: 0.55 }]}
+              accessibilityRole="button"
+              accessibilityLabel="Allow external AI processing"
+            >
+              {aiConsentLoading ? <ActivityIndicator color={C.onPrimary} /> : <Text style={s.btnText}>Allow</Text>}
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={declineAiConsent}
+              disabled={aiConsentLoading}
+              style={[s.btn, { marginTop: 8, borderWidth: 1, borderColor: C.border }]}
+              accessibilityRole="button"
+              accessibilityLabel="Do not allow external AI processing"
+            >
+              <Text style={[s.btnText, { color: C.text }]}>Not Now</Text>
+            </TouchableOpacity>
           </View>
         </View>
       </Modal>
@@ -7693,8 +7952,12 @@ export default function App() {
   const [user, setUserState] = useState(null);
   const userRef = useRef(null);
   const sessionRef = useRef(null);
+  const secureSessionStorageRef = useRef(null);
+  if (!secureSessionStorageRef.current) {
+    secureSessionStorageRef.current = createSecureSessionStorage({ secureStore: SecureStore, legacyStorage: AsyncStorage });
+  }
   if (!sessionRef.current) sessionRef.current = createNativeSession({
-    baseUrl: API_BASE, storage: AsyncStorage,
+    baseUrl: API_BASE, storage: secureSessionStorageRef.current,
     onChange: next => { userRef.current = next; setUserState(next); },
     onExpired: () => {
       setSelectedCourse(null); setStartIndex(null); setCourseAiTarget(null); setMainScreen("home");
@@ -7703,6 +7966,22 @@ export default function App() {
   });
   const nativeSession = sessionRef.current;
   const setUser = useCallback(value => sessionRef.current.setUser(value), []);
+  const mergeAppleEntitlement = useCallback(entitlement => {
+    setUser(previous => previous ? ({
+      ...previous,
+      entitlementState: entitlement.entitlementState,
+      entitlementActive: entitlement.entitlementActive,
+      entitlementExpiresAt: entitlement.expiresAt,
+      entitlementSource: "apple",
+      subscriptionExpiry: entitlement.expiresAt,
+      subscriptionStatus: entitlement.entitlementActive ? "active" : "expired",
+    }) : previous);
+  }, [setUser]);
+  const appleSubscription = useAppleSubscriptions({
+    session: nativeSession,
+    user,
+    onEntitlementChanged: mergeAppleEntitlement,
+  });
   const [mainScreen, setMainScreen] = useState("home");
   const [legalPage, setLegalPage] = useState(null);
   const [selectedCourse, setSelectedCourse] = useState(null);
@@ -7721,6 +8000,13 @@ export default function App() {
   const [courseProgress, setCourseProgress] = useState({});
   const [certificates, setCertificates] = useState([]);
   const [certModal, setCertModal] = useState(null);
+  const openLegalPage = useCallback(page => {
+    if (page === "privacy") {
+      openSafeExternalUrl("https://skillomate.in/privacy", "legal");
+      return;
+    }
+    setLegalPage(page);
+  }, []);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -7746,7 +8032,7 @@ export default function App() {
   const [signupEmail, setSignupEmail] = useState("");
   const [signupPassword, setSignupPassword] = useState("");
   const [signupGender, setSignupGender] = useState("");
-  const [signupAge, setSignupAge] = useState("18");
+  const [signupAge, setSignupAge] = useState("");
   const [signupAvatar, setSignupAvatar] = useState("a1");
   const [signupLoading, setSignupLoading] = useState(false);
   const [signupError, setSignupError] = useState("");
@@ -7787,20 +8073,13 @@ export default function App() {
     if (!owner || owner._id !== userId || owner.sessionId !== sessionId) return;
     const sameOwner = () => userRef.current?._id === userId && userRef.current?.sessionId === sessionId;
     try {
-      const res = await fetch(`${API_BASE}/api/auth/validate/${userId}?sessionId=${encodeURIComponent(sessionId)}`);
-      if (!sameOwner()) return;
-      if (res.status === 401) {
-        setUser(null); setSelectedCourse(null); setStartIndex(null); setCourseAiTarget(null); setMainScreen("home");
-        return;
-      }
-      if (!res.ok) return;
-      const { user: fresh, wishlist: freshWishlist } = await res.json();
+      const { user: fresh, wishlist: freshWishlist } = await nativeSession.requestJson(`/api/auth/validate/${encodeURIComponent(userId)}`);
       if (!sameOwner()) return;
       setUser(prev => ({ ...prev, ...fresh, sessionId: prev.sessionId,
         accessToken: prev.accessToken, token: prev.token, refreshToken: prev.refreshToken }));
       if (Array.isArray(freshWishlist)) setWishlist(freshWishlist);
     } catch { /* Temporary network errors retain the current session. */ }
-  }, [setUser]);
+  }, [nativeSession, setUser]);
 
   useEffect(() => {
     nativeSession.restore().then(async stored => {
@@ -7816,18 +8095,14 @@ export default function App() {
     if (!id || !sid) return;
     let disposed = false;
     let pending = false;
-    const controller = new AbortController();
     async function validateSession() {
       if (pending || disposed || AppState.currentState === "background") return;
       pending = true;
       try {
-        const response = await fetch(`${API_BASE}/api/auth/validate/${encodeURIComponent(id)}?sessionId=${encodeURIComponent(sid)}`, { signal: controller.signal });
-        if (disposed || response.status !== 401 || userRef.current?.sessionId !== sid) return;
-        // Clear the UI synchronously; stale requests cannot clear a later login.
-        userRef.current = null;
-        setUser(null); setSelectedCourse(null); setStartIndex(null); setMainScreen("home");
+        await nativeSession.requestJson(`/api/auth/validate/${encodeURIComponent(id)}`);
+      } catch (error) {
+        if (disposed || error?.code !== "SESSION_EXPIRED" || userRef.current?.sessionId !== sid) return;
         setLoginError("Your account is logged in on a different device.");
-      } catch {
         // A network failure is not proof that the session was revoked.
       } finally {
         pending = false;
@@ -7840,11 +8115,10 @@ export default function App() {
     });
     return () => {
       disposed = true;
-      controller.abort();
       clearInterval(timer);
       subscription.remove();
     };
-  }, [user?._id, user?.sessionId]);
+  }, [nativeSession, setUser, user?._id, user?.sessionId]);
 
   useEffect(() => { downloadsRef.current = downloads; }, [downloads]);
 
@@ -7882,11 +8156,17 @@ export default function App() {
     const current = downloadsRef.current[guid];
     if (current?.status === "downloading") return;
     if (current?.status === "done" && (await FileSystem.getInfoAsync(filePath)).exists) return;
-    const url = `${API_BASE}/api/videos/${guid}/download?userId=${encodeURIComponent(u._id)}&sessionId=${encodeURIComponent(u.sessionId)}&libraryId=${encodeURIComponent(libraryId)}&courseId=${encodeURIComponent(courseId || "")}&courseTitle=${encodeURIComponent(courseTitle || "")}&videoTitle=${encodeURIComponent(video.title || "")}`;
     const meta = { title: video.title || "Video", courseId: courseId || "", courseTitle: courseTitle || "", bunnyGuid: guid, bunnyLibraryId: libraryId, videoId: String(video._id || guid) };
 
     setDownloads(prev => ({ ...prev, [guid]: { status: "downloading", progress: 0, path: filePath, ...meta } }));
     try {
+      const grant = await nativeSession.requestJson(`/api/videos/${encodeURIComponent(guid)}/download-grant`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ courseId }),
+      });
+      if (!grant?.downloadUrl) throw new Error("The download authorization response was invalid.");
+      const url = `${API_BASE}${grant.downloadUrl}`;
       const dl = FileSystem.createDownloadResumable(url, filePath, {}, ({ totalBytesWritten, totalBytesExpectedToWrite }) => {
         const pct = totalBytesExpectedToWrite > 0 ? totalBytesWritten / totalBytesExpectedToWrite : 0;
         setDownloads(prev => ({ ...prev, [guid]: { ...prev[guid], progress: pct } }));
@@ -7913,7 +8193,7 @@ export default function App() {
       setDownloads(prev => ({ ...prev, [guid]: { status: "error", progress: 0, errorMessage, ...meta } }));
       Alert.alert("Download failed", errorMessage);
     }
-  }, []);
+  }, [nativeSession]);
 
   const retryDownload = useCallback((item) => {
     if (!item?.bunnyGuid || item.status !== "error") return;
@@ -7939,19 +8219,13 @@ export default function App() {
   const loadCourseProgress = useCallback(async (u = userRef.current) => {
     if (!u?._id || !u?.sessionId) return;
     try {
-      const res = await fetch(`${API_BASE}/api/user/${u._id}/progress?sessionId=${encodeURIComponent(u.sessionId)}`);
-      if (!res.ok) {
-        console.log("Progress load failed", res.status);
-        if (DEV_UI_QA_ENABLED) setCourseProgress(UI_QA_PROGRESS);
-        return;
-      }
-      const data = await res.json();
+      const data = await nativeSession.requestJson(`/api/user/${encodeURIComponent(u._id)}/progress`);
       const nextProgress = data.courseProgress || {};
       setCourseProgress(DEV_UI_QA_ENABLED && Object.keys(nextProgress).length === 0 ? UI_QA_PROGRESS : nextProgress);
     } catch {
       if (DEV_UI_QA_ENABLED) setCourseProgress(UI_QA_PROGRESS);
     }
-  }, []);
+  }, [nativeSession]);
 
   useEffect(() => {
     if (user?._id && user?.sessionId) loadCourseProgress(user);
@@ -7969,18 +8243,13 @@ export default function App() {
   const loadCertificates = useCallback(async (u = userRef.current) => {
     if (!u?._id || !u?.sessionId) return;
     try {
-      const res = await fetch(`${API_BASE}/api/user/${u._id}/certificates?sessionId=${encodeURIComponent(u.sessionId)}`);
-      if (!res.ok) {
-        if (DEV_UI_QA_ENABLED) setCertificates(getQaCertificatesForUser(u));
-        return;
-      }
-      const data = await res.json();
+      const data = await nativeSession.requestJson(`/api/user/${encodeURIComponent(u._id)}/certificates`);
       const nextCertificates = data.certificates || [];
       setCertificates(DEV_UI_QA_ENABLED && nextCertificates.length === 0 ? getQaCertificatesForUser(u) : nextCertificates);
     } catch {
       if (DEV_UI_QA_ENABLED) setCertificates(getQaCertificatesForUser(u));
     }
-  }, []);
+  }, [nativeSession]);
 
   useEffect(() => {
     if (user?._id && user?.sessionId) loadCertificates(user);
@@ -8070,18 +8339,7 @@ export default function App() {
       return;
     }
     try {
-      const res = await fetch(`${API_BASE}/api/courses/${course._id}/videos?userId=${encodeURIComponent(u._id)}&sessionId=${encodeURIComponent(u.sessionId)}`);
-      const data = await res.json();
-      if (!res.ok) {
-        const accessMessage = String(data?.error || "");
-        const requiresSubscription = res.status === 403
-          || /subscription|expired|course access|entitlement/i.test(accessMessage);
-        if (requiresSubscription) {
-          setShowAppUpgrade(true);
-          return;
-        }
-        throw new Error(accessMessage || "Could not open course.");
-      }
+      const data = await nativeSession.requestJson(`/api/courses/${encodeURIComponent(course._id)}/videos`);
       setSelectedCourse(prepareCourse({ ...course, videos: data.videos || [] }));
       setPreloadedVideos(null);
       setIsPreviewOnly(false);
@@ -8096,7 +8354,7 @@ export default function App() {
       }
       Alert.alert("Course unavailable", accessMessage || "Could not open course.");
     }
-  }, []);
+  }, [nativeSession]);
 
   const openHeroPreview = useCallback(async (course, video, videoIndex = 0) => {
     const previewVideo = video || course?.videos?.[videoIndex] || course?.videos?.[0];
@@ -8140,50 +8398,41 @@ export default function App() {
       };
     });
     try {
-      const res = await fetch(`${API_BASE}/api/user/progress/complete-video`, {
+      const data = await nativeSession.requestJson("/api/user/progress/complete-video", {
         method: "POST",
-        headers: authHeadersForUser(u, { "Content-Type": "application/json" }),
-        body: JSON.stringify({ userId: u._id, sessionId: u.sessionId, courseId, videoId: id }),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ courseId, videoId: id }),
       });
-      if (res.ok) {
-        const data = await res.json();
-        if (data.progress) {
-          setCourseProgress(prev => ({ ...prev, [courseId]: data.progress }));
-        } else {
-          setCourseProgress(prev => ({
-            ...prev,
-            [courseId]: {
-              ...(prev[courseId] || {}),
-              completedVideoIds: data.completedVideoIds || prev[courseId]?.completedVideoIds || [],
-            },
-          }));
-        }
-        if (data.certificate) {
-          setCertificates(prev => {
-            const exists = prev.some(c => c.courseId === courseId);
-            if (!exists) {
-              setCertModal(data.certificate);
-              return [data.certificate, ...prev];
-            }
-            return prev;
-          });
-        }
+      if (data.progress) {
+        setCourseProgress(prev => ({ ...prev, [courseId]: data.progress }));
       } else {
-        console.log("Progress save failed", res.status);
-        revertCompletion();
+        setCourseProgress(prev => ({
+          ...prev,
+          [courseId]: {
+            ...(prev[courseId] || {}),
+            completedVideoIds: data.completedVideoIds || prev[courseId]?.completedVideoIds || [],
+          },
+        }));
       }
-    } catch (e) {
-      console.log("Progress save error", e?.message);
+      if (data.certificate) {
+        setCertificates(prev => {
+          const exists = prev.some(c => c.courseId === courseId);
+          if (!exists) {
+            setCertModal(data.certificate);
+            return [data.certificate, ...prev];
+          }
+          return prev;
+        });
+      }
+    } catch (_) {
       revertCompletion();
     }
-  }, [courseProgress]);
+  }, [courseProgress, nativeSession]);
 
   const saveVideoProgress = useCallback(async (courseId, videoId, currentTime, duration) => {
     const u = userRef.current;
     if (!u?._id || !u?.sessionId || !courseId || !videoId || !duration) return;
     const body = {
-      userId: u._id,
-      sessionId: u.sessionId,
       courseId,
       videoId: String(videoId),
       currentTime,
@@ -8207,33 +8456,27 @@ export default function App() {
       }
     };
     try {
-      const postProgress = (path, includeBearer = true) => fetch(`${API_BASE}${path}`, {
-        method: "POST",
-        headers: includeBearer ? authHeadersForUser(u, { "Content-Type": "application/json" }) : { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
-      });
-      let res = await postProgress(`/api/learning/${encodeURIComponent(courseId)}/progress`);
-      if ((res.status === 401 || res.status === 403) && (u.accessToken || u.token)) {
-        res = await postProgress(`/api/learning/${encodeURIComponent(courseId)}/progress`, false);
+      let data;
+      try {
+        data = await nativeSession.requestJson(`/api/learning/${encodeURIComponent(courseId)}/progress`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body),
+        });
+      } catch (error) {
+        if (error?.status !== 404) throw error;
+        data = await nativeSession.requestJson("/api/user/progress/update-video", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body),
+        });
       }
-      if (res.status === 404) {
-        res = await postProgress("/api/user/progress/update-video");
-        if ((res.status === 401 || res.status === 403) && (u.accessToken || u.token)) {
-          res = await postProgress("/api/user/progress/update-video", false);
-        }
-      }
-      if (!res.ok) {
-        const failure = await res.json().catch(() => ({}));
-        return { error: failure.error || "Progress could not be saved. Please retry online." };
-      }
-      const data = await res.json();
       applyProgressResult(data);
       return data;
-    } catch (e) {
-      console.log("Progress update error", e?.message);
+    } catch (_) {
       return { error: "Offline: progress is not verified. Reconnect and replay unrecorded sections." };
     }
-  }, []);
+  }, [nativeSession]);
 
   const toggleWishlist = useCallback(async (courseId) => {
     const u = userRef.current;
@@ -8241,23 +8484,17 @@ export default function App() {
     // Optimistic update
     setWishlist(prev => prev.includes(courseId) ? prev.filter(id => id !== courseId) : [...prev, courseId]);
     try {
-      const res = await fetch(`${API_BASE}/api/user/wishlist/toggle`, {
+      const data = await nativeSession.requestJson("/api/user/wishlist/toggle", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId: u._id, courseId, sessionId: u.sessionId }),
+        body: JSON.stringify({ courseId }),
       });
-      if (res.ok) {
-        const { wishlist: updated } = await res.json();
-        setWishlist(updated);
-      } else {
-        // Revert optimistic update on failure
-        setWishlist(prev => prev.includes(courseId) ? prev.filter(id => id !== courseId) : [...prev, courseId]);
-      }
+      setWishlist(data.wishlist || []);
     } catch {
       // Network error — revert
       setWishlist(prev => prev.includes(courseId) ? prev.filter(id => id !== courseId) : [...prev, courseId]);
     }
-  }, []);
+  }, [nativeSession]);
 
   useEffect(() => {
     if (!user) return;
@@ -8509,6 +8746,7 @@ export default function App() {
     if (!signupFullName.trim()) { setSignupError("Full name is required."); return; }
     if (mobile.trim().length !== 10) { setSignupError("Enter a valid 10-digit mobile number."); return; }
     if (!signupPassword.trim() || signupPassword.length < 8) { setSignupError("Password must be at least 8 characters."); return; }
+    if (!signupAge || Number(signupAge) < 13 || Number(signupAge) > 80) { setSignupError("Select your age. Skillomate is for learners aged 13 and older."); return; }
     if (!signupToken && !DEV_UI_QA_ENABLED) { setSignupError("Please verify your mobile number again."); setScreen("signup1"); return; }
     setSignupLoading(true); setSignupError("");
     try {
@@ -8558,7 +8796,7 @@ export default function App() {
 
   function resetSignup() {
     setScreen("login"); setMobile(""); setOtp(""); setOtpSent(false); setSignupToken("");
-    setSignupFullName(""); setSignupEmail(""); setSignupPassword(""); setSignupGender(""); setSignupAge("18"); setSignupAvatar("a1"); setSignupError("");
+    setSignupFullName(""); setSignupEmail(""); setSignupPassword(""); setSignupGender(""); setSignupAge(""); setSignupAvatar("a1"); setSignupError("");
   }
 
   async function handleLogout() {
@@ -8580,34 +8818,14 @@ export default function App() {
     }
 
     try {
-      const payload = JSON.stringify({
+      await nativeSession.requestJson("/api/auth/account", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
         password: currentPassword,
         confirmation,
-        userId: currentUser._id,
-        sessionId: currentUser.sessionId,
+        }),
       });
-      const requestDeletion = async (includeBearer) => {
-        const headers = { "Content-Type": "application/json" };
-        if (includeBearer && currentUser.accessToken) {
-          headers.Authorization = `Bearer ${currentUser.accessToken}`;
-        }
-        const response = await fetch(`${API_BASE}/api/auth/account`, {
-          method: "DELETE",
-          headers,
-          body: payload,
-        });
-        return { response, responseData: await readJsonResponse(response) };
-      };
-
-      let { response: res, responseData: data } = await requestDeletion(Boolean(currentUser.accessToken));
-      // Access tokens are short-lived. Existing mobile sessions remain valid, so
-      // retry with the stored session ID when only the bearer token has expired.
-      if (res.status === 401 && currentUser.accessToken && data.code !== "INVALID_PASSWORD") {
-        ({ response: res, responseData: data } = await requestDeletion(false));
-      }
-      if (!res.ok) {
-        return { ok: false, error: data.error || "Account could not be deleted. Please try again." };
-      }
 
       if (DOWNLOADS_DIR) await FileSystem.deleteAsync(DOWNLOADS_DIR, { idempotent: true }).catch(() => {});
       await AsyncStorage.multiRemove([AI_AVATAR_STORAGE_KEY, DOWNLOADS_STORAGE_KEY]);
@@ -8631,8 +8849,8 @@ export default function App() {
       setLegalPage(null);
       setMainScreen("home");
       return { ok: true };
-    } catch {
-      return { ok: false, error: "Cannot connect to server. Check your connection and try again." };
+    } catch (error) {
+      return { ok: false, error: error?.message || "Cannot connect to server. Check your connection and try again." };
     }
   }
 
@@ -8721,7 +8939,7 @@ export default function App() {
           </TouchableOpacity>
           <TouchableOpacity
             style={s.legalLinkButton}
-            onPress={() => setLegalPage("privacy")}
+            onPress={() => openLegalPage("privacy")}
             accessibilityRole="button"
             accessibilityLabel="Read Privacy Policy"
           >
@@ -8860,7 +9078,7 @@ export default function App() {
           </TouchableOpacity>
           <TouchableOpacity
             style={s.legalLinkButton}
-            onPress={() => setLegalPage("privacy")}
+            onPress={() => openLegalPage("privacy")}
             accessibilityRole="button"
             accessibilityLabel="Read Privacy Policy"
           >
@@ -8992,7 +9210,7 @@ export default function App() {
                 <Text style={s.authFooterLinkText}>Terms</Text>
               </TouchableOpacity>
               <Text style={s.authFooterSeparator}>|</Text>
-              <TouchableOpacity onPress={() => setLegalPage("privacy")} style={s.authFooterLink} accessibilityRole="button" accessibilityLabel="Read Privacy Policy">
+              <TouchableOpacity onPress={() => openLegalPage("privacy")} style={s.authFooterLink} accessibilityRole="button" accessibilityLabel="Read Privacy Policy">
                 <Text style={s.authFooterLinkText}>Privacy</Text>
               </TouchableOpacity>
               <Text style={s.authFooterSeparator}>|</Text>
@@ -9050,6 +9268,7 @@ export default function App() {
           downloads={downloads}
           preloadedVideos={preloadedVideos || (DEV_UI_QA_ENABLED ? selectedCourse.videos : null)}
           user={user}
+          session={nativeSession}
           onVideoComplete={isPreviewOnly ? undefined : markVideoComplete}
           onVideoProgress={isPreviewOnly ? undefined : saveVideoProgress}
           onBack={backToLessons}
@@ -9087,9 +9306,11 @@ export default function App() {
     return (
       <SubscriptionDetailsScreen
         user={user}
+        session={nativeSession}
+        appleSubscription={appleSubscription}
         onBack={() => setMainScreen("profile")}
-        onStartTrial={openMembershipAccess}
-        trialLoading={false}
+        onOpenTerms={() => setLegalPage("terms")}
+        onOpenPrivacy={() => openLegalPage("privacy")}
       />
     );
   }
@@ -9349,6 +9570,7 @@ export default function App() {
   return (
     <View style={{ flex: 1 }}>
       <HomeScreen
+        session={nativeSession}
         user={user}
         onGoToCourses={() => navigateRootTab("courses")}
         onGoToAI={() => navigateRootTab("ai")}
@@ -9459,8 +9681,10 @@ return StyleSheet.create({
     maxWidth: 480,
     alignSelf: "center",
     paddingHorizontal: 24,
-    paddingTop: 24,
-    paddingBottom: 8,
+    // Match Android's login composition to the iPhone safe-area layout.
+    // React Native's built-in SafeAreaView only supplies the larger inset on iOS.
+    paddingTop: Platform.OS === "android" ? 87 : 24,
+    paddingBottom: Platform.OS === "android" ? 44 : 8,
   },
   authBrand: { alignItems: "center" },
   authBrandTagline: {

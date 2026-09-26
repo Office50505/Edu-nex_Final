@@ -1,4 +1,9 @@
 const loadedAssets = new Map();
+const skippedLegacyScripts = new Set([
+  "/assets/bot-avatars/manifest.js",
+  "/js/edunex-api.js",
+  "/js/nex-ai-widget.js",
+]);
 
 function assetUrl(src) {
   if (!src) return "";
@@ -8,6 +13,7 @@ function assetUrl(src) {
 
 function loadScript(src) {
   const url = assetUrl(src);
+  if (skippedLegacyScripts.has(url)) return Promise.resolve();
   if (loadedAssets.has(url)) return loadedAssets.get(url);
 
   const promise = new Promise((resolve, reject) => {

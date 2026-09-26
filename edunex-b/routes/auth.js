@@ -6,6 +6,7 @@ const User = require('../models/User');
 const Session = require('../models/Session');
 const { protect } = require('../middleware/auth');
 const { requireCompatibleAuth } = require('../middleware/compatAuth');
+const { sensitiveRateLimit } = require('../middleware/sensitiveRateLimit');
 const { deleteUserAccount } = require('../services/accountDeletionService');
 const {
   OTP_LENGTH,
@@ -225,7 +226,7 @@ function toAuthUser(user) {
 function sanitizeProfileAvatar(value) {
   const avatar = String(value || '').trim();
   if (!avatar) return null;
-  const allowed = /^assets\/(?:male[1-6]|female[1-6]|_stylized_3D_character_illustration,_semi-realistic_20260604\d{4}(?: \(\d\))?)\.jpeg$/;
+  const allowed = /^(?:assets\/(?:male[1-6]|female[1-6]|_stylized_3D_character_illustration,_semi-realistic_20260604\d{4}(?: \(\d\))?)\.jpeg|assets\/avatars\/(?:male[1-6]|female[1-6])-v1\.webp)$/;
   return allowed.test(avatar) ? avatar : undefined;
 }
 
@@ -278,12 +279,12 @@ router.patch('/me', protect, async (req, res) => {
 
     if (Object.prototype.hasOwnProperty.call(req.body, 'age')) {
       const age = Number(req.body.age);
-      if (Number.isFinite(age) && age >= 5 && age <= 80) {
+      if (Number.isFinite(age) && age >= 13 && age <= 80) {
         updates.age = Math.round(age);
       } else if (req.body.age === null || req.body.age === '') {
         updates.age = null;
       } else {
-        return res.status(400).json({ error: 'Please select a valid age' });
+        return res.status(400).json({ error: 'Age must be between 13 and 80' });
       }
     }
 
@@ -311,7 +312,11 @@ router.patch('/me', protect, async (req, res) => {
  * Permanently deletes the authenticated account after password re-verification.
  * Supports both bearer tokens and the app's existing userId/sessionId sessions.
  */
-router.delete('/account', requireCompatibleAuth(), async (req, res) => {
+router.delete(
+  '/account',
+  requireCompatibleAuth(),
+  sensitiveRateLimit({ namespace: 'account-delete', windowMs: 15 * 60 * 1000, max: 10 }),
+  async (req, res) => {
   try {
     const confirmation = String(req.body.confirmation || '');
     const password = String(req.body.password || '');
@@ -333,7 +338,10 @@ router.delete('/account', requireCompatibleAuth(), async (req, res) => {
 
     const passwordMatches = await bcrypt.compare(password, user.passwordHash || '');
     if (!passwordMatches) {
-      return res.status(401).json({ error: 'Current password is incorrect', code: 'INVALID_PASSWORD' });
+      // The bearer session is still valid; this is a failed step-up check, not an
+      // authentication-token failure. A 403 prevents mobile clients from rotating
+      // or clearing a valid session in response to a mistyped password.
+      return res.status(403).json({ error: 'Current password is incorrect', code: 'INVALID_PASSWORD' });
     }
 
     await deleteUserAccount(user._id);
@@ -344,7 +352,8 @@ router.delete('/account', requireCompatibleAuth(), async (req, res) => {
       code: error.code || 'ACCOUNT_DELETION_FAILED',
     });
   }
-});
+  }
+);
 
 /**
  * POST /auth/signup
@@ -361,8 +370,8 @@ async function signup(req, res) {
       return res.status(400).json({ error: 'Full name and password are required' });
     }
 
-    if (age !== null && (age < 5 || age > 80)) {
-      return res.status(400).json({ error: 'Please select a valid age' });
+    if (age === null || age < 13 || age > 80) {
+      return res.status(400).json({ error: 'Age is required and must be between 13 and 80' });
     }
 
     if (!signupToken) {

@@ -53,6 +53,9 @@ function publicUser(user) {
     avatar: user.avatar || null,
     gender: user.gender || null,
     age: user.age || null,
+    entitlementState: user.entitlementState || null,
+    entitlementActive: user.entitlementActive === true,
+    entitlementExpiresAt: user.entitlementExpiresAt || null,
   };
 }
 

@@ -2,7 +2,7 @@
 export const page = {
   title: `Skillomate AI — Best Platform to Empower Skills`,
   lang: `en`,
-  stylesheets: [`css/theme.css`],
+  stylesheets: [],
   styles: `
     :root { --font-body: "Manrope", ui-sans-serif, system-ui, sans-serif; --font-display: "Fraunces", Georgia, serif; }
     body, button, input, textarea, select { font-family: var(--font-body); }
@@ -627,7 +627,7 @@ export const page = {
       font-size: .92rem;
       line-height: 1.25;
     }
-    .hero-trust-item .material-symbols-outlined {
+    .hero-trust-item :where(.material-symbols-outlined, .enx-icon) {
       color: var(--cyan);
       font-size: 21px;
       flex: 0 0 auto;

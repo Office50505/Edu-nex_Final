@@ -68,17 +68,20 @@ function checkoutResponse(billing, user) {
   const name = String(user.fullName || '').trim();
   const email = String(user.email || '').trim();
   return { gateway: 'razorpay', subscriptionId: billing.subscriptionId, mode: billingMode(billing), keyId: rzp.config(billingMode(billing)).keyId,
+    paymentType: billing.paymentType, amountPaise: billing.recurringAmount || billing.monthlyAmount,
     trialEndsAt: billing.trialEnd, prefill: { ...(name ? { name } : {}), ...(contact ? { contact } : {}), ...(email ? { email } : {}) } };
 }
 exports.pricing = wrap(async (_req, res) => {
   const c = rzp.config(await modes.activeMode());
-  res.json({ mode: c.mode, gateway: process.env.PAYMENT_GATEWAY_MODE || 'razorpay', trialAmountPaise: c.trialAmount, subscriptionAmountPaise: c.monthlyAmount, trialHours: c.trialHours, currency: 'INR', billingCycles: c.cycles });
+  res.json({ mode: c.mode, gateway: process.env.PAYMENT_GATEWAY_MODE || 'razorpay', trialAmountPaise: c.trialAmount, subscriptionAmountPaise: c.monthlyAmount,
+    annualSubscriptionAmountPaise: c.annualAmount, trialHours: c.trialHours, currency: 'INR', billingCycles: c.cycles, annualBillingCycles: c.annualCycles });
 });
 exports.initiate = wrap(async (req, res) => {
-  const c = rzp.requireConfig(req.onboardingMode || await modes.activeMode());
+  const type = String(req.body.paymentType || '');
+  if (!['trial', 'monthly', 'annual'].includes(type)) throw fail('Choose a supported plan.', 400);
+  const c = rzp.requireConfig(req.onboardingMode || await modes.activeMode(), type);
   if (!req.user.isMobileVerified) throw fail('Verify your mobile number before subscribing.', 403);
   if (req.body.mandateConsent !== true) throw fail('Confirm the recurring payment terms before continuing.', 400);
-  const type = req.body.paymentType === 'monthly' ? 'monthly' : 'trial';
   if (req.onboarding && type === 'monthly' && req.body.monthlyConsent !== true) {
     throw fail('Please confirm the ₹499 monthly subscription before continuing.', 400);
   }
@@ -106,13 +109,16 @@ exports.initiate = wrap(async (req, res) => {
     if (!['cancelled', 'expired', 'completed'].includes(remote.status)) throw fail('A mandate already exists. Check subscription status before retrying.');
     await Billing.updateOne({ _id: billing._id, subscriptionId: billing.subscriptionId }, { $set: { phase: 'closed' } });
   }
-  const plan = await rzp.api(`/plans/${encodeURIComponent(c.planId)}`, 'GET', undefined, c.mode);
-  if (plan.period !== 'monthly' || plan.interval !== 1 || plan.item?.amount !== c.monthlyAmount || plan.item?.currency !== 'INR') throw fail('Razorpay plan must match the configured INR monthly price.', 503);
+  const terms = rzp.planTerms(c, type);
+  const plan = await rzp.api(`/plans/${encodeURIComponent(terms.planId)}`, 'GET', undefined, c.mode);
+  rzp.validatePlan(plan, c, type);
   const attempt = crypto.randomUUID();
   const payload = rzp.createPayload(c, type, attempt);
   try {
     billing = await Billing.findOneAndUpdate({ _id: req.user._id, phase: 'closed' }, { $set: { attempt, mode: c.mode, phase: 'creating', paymentType: type,
-      planId: c.planId, trialAmount: c.trialAmount, monthlyAmount: c.monthlyAmount, trialEnd: payload.start_at ? new Date(payload.start_at * 1000) : null },
+      planId: terms.planId, trialAmount: c.trialAmount, monthlyAmount: c.monthlyAmount,
+      annualAmount: c.annualAmount, recurringAmount: terms.amount,
+      trialEnd: payload.start_at ? new Date(payload.start_at * 1000) : null },
       $unset: { subscriptionId: 1 } }, { upsert: true, new: true });
   } catch (error) { if (error.code === 11000) throw fail('Checkout creation is already in progress or needs reconciliation. Please contact support before trying again.'); throw error; }
   try {

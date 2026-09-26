@@ -115,7 +115,7 @@ router.post('/contact-enquiries', optionalContactUser, async (req, res) => {
       const mailResult = await sendContactEnquiryEmail(enquiry, req.contactUser || null);
       emailDelivered = Boolean(mailResult.sent);
     } catch (mailError) {
-      console.error('Contact enquiry email failed', mailError.message);
+      console.error(`Contact enquiry email failed (${mailError?.code || mailError?.name || 'unknown'})`);
     }
 
     res.status(201).json({

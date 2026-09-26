@@ -26,7 +26,7 @@ function setup({ invalidSchedule = false, existing = null } = {}) {
         ...service, requireConfig: () => config, config: () => config,
         api: async (route, method, payload) => {
           calls.push({ route, method, payload });
-          if (route.startsWith('/plans/')) return { period: 'monthly', interval: 1, item: { amount: 49900, currency: 'INR' } };
+          if (route.startsWith('/plans/')) return { id: 'plan_monthly', period: 'monthly', interval: 1, item: { amount: 49900, currency: 'INR' } };
           if (method === 'POST') return { id: 'sub_new', start_at: invalidSchedule ? null : payload.start_at };
           return { id: record.subscriptionId, status: 'created', start_at: new Date(record.trialEnd).getTime() / 1000, expire_by: Math.ceil(Date.now() / 1000) + 600 };
         },

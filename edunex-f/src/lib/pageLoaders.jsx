@@ -1,4 +1,5 @@
 import { lazy } from "react";
+import { HomePage } from "../pages/HomePage.jsx";
 
 function namedPage(exportName) {
   return (module) => ({ default: module[exportName] });
@@ -10,6 +11,10 @@ const offerPageModules = Object.fromEntries(
     return [`offer${suffix}.html`, () => import("../pages/AdOfferPage.jsx").then(namedPage("AdOfferPage"))];
   })
 );
+
+const eagerPages = {
+  "index.html": HomePage,
+};
 
 const pageModules = {
   "account-deletion.html": () => import("../pages/DeleteAccountPage.jsx"),
@@ -26,7 +31,6 @@ const pageModules = {
   "dashboard.html": () => import("../pages/DashboardPage.jsx").then(namedPage("DashboardPage")),
   "edit-profile.html": () => import("../pages/EditProfilePage.jsx").then(namedPage("EditProfilePage")),
   "help.html": () => import("../pages/HelpPage.jsx").then(namedPage("HelpPage")),
-  "index.html": () => import("../pages/HomePage.jsx").then(namedPage("HomePage")),
   "lesson.html": () => import("../pages/RedirectPage.jsx").then(namedPage("LessonRedirectPage")),
   "login.html": () => import("../pages/LoginPage.jsx").then(namedPage("LoginPage")),
   "otp.html": () => import("../pages/RedirectPage.jsx").then(namedPage("SignupRedirectPage")),
@@ -58,6 +62,7 @@ const pageModules = {
 const preloadCache = new Map();
 
 export function preloadPage(pageKey) {
+  if (eagerPages[pageKey]) return Promise.resolve({ default: eagerPages[pageKey] });
   const loader = pageModules[pageKey];
   if (!loader) return Promise.resolve(null);
   if (!preloadCache.has(pageKey)) {
@@ -73,9 +78,12 @@ export function preloadPage(pageKey) {
 }
 
 export function hasReactPage(pageKey) {
-  return Boolean(pageModules[pageKey]);
+  return Boolean(eagerPages[pageKey] || pageModules[pageKey]);
 }
 
-export const reactPageLoaders = Object.fromEntries(
-  Object.keys(pageModules).map((pageKey) => [pageKey, lazy(() => preloadPage(pageKey))])
-);
+export const reactPageLoaders = {
+  ...eagerPages,
+  ...Object.fromEntries(
+    Object.keys(pageModules).map((pageKey) => [pageKey, lazy(() => preloadPage(pageKey))])
+  ),
+};

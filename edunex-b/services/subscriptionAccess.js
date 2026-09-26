@@ -33,4 +33,22 @@ function resolveSubscriptionAccess(subscription, user = {}, now = Date.now()) {
   return { active: false, status: 'none', expiresAt: null, rawStatus };
 }
 
-module.exports = { futureDate, resolveSubscriptionAccess };
+function resolveCombinedSubscriptionAccess(subscription, appleSubscription, user = {}, now = Date.now()) {
+  if (appleSubscription) {
+    const state = String(appleSubscription.entitlementState || 'UNKNOWN').toUpperCase();
+    const expiresAt = state === 'GRACE_PERIOD'
+      ? appleSubscription.gracePeriodExpiresAt
+      : appleSubscription.expiresAt;
+    if (['ACTIVE', 'ACTIVE_CANCELS_AT_PERIOD_END', 'GRACE_PERIOD'].includes(state) && futureDate(expiresAt, now)) {
+      return { active: true, status: 'active', entitlementState: state, expiresAt, source: 'apple' };
+    }
+  }
+  const legacy = resolveSubscriptionAccess(subscription, user, now);
+  return {
+    ...legacy,
+    entitlementState: legacy.active ? 'ACTIVE' : (legacy.rawStatus === 'expired' ? 'EXPIRED' : 'NONE'),
+    source: legacy.active ? 'legacy' : 'none',
+  };
+}
+
+module.exports = { futureDate, resolveCombinedSubscriptionAccess, resolveSubscriptionAccess };

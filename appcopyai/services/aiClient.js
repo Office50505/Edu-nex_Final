@@ -6,8 +6,8 @@ export function conversationHistory(messages) {
 }
 
 export async function requestTutor({ baseUrl, user, question, courseId, messages, assistantName = 'AI', session, fetcher = fetch }) {
-  const body = JSON.stringify({ message: question, history: conversationHistory(messages), userId: user?._id,
-    sessionId: user?.sessionId, assistantName, ...(courseId ? { courseId } : {}) });
+  const body = JSON.stringify({ message: question, history: conversationHistory(messages),
+    assistantName, ...(courseId ? { courseId } : {}) });
   if (session) {
     const current = session.getUser();
     if (!current || current._id !== user?._id || current.sessionId !== user?.sessionId) {
@@ -36,5 +36,5 @@ export async function requestTutor({ baseUrl, user, question, courseId, messages
 function tutorAnswer(data) {
   const answer = data?.answer || data?.reply;
   if (typeof answer !== 'string' || !answer.trim()) throw new Error('AI returned an empty answer. Please try again.');
-  return { answer, notice: data.notice || null, sources: Array.isArray(data.sources) ? data.sources : [] };
+  return { answer, messageId: data?.messageId || null, notice: data.notice || null, sources: Array.isArray(data.sources) ? data.sources : [] };
 }

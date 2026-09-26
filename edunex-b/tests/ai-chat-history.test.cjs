@@ -10,8 +10,16 @@ function backend(options = {}) {
   const query = { select() { return this; }, populate() { return this; }, sort() { return this; }, limit() { return this; }, async lean() { return options.courses || []; } };
   const sandbox = {
     require(name) {
+      if (name === 'node:crypto') return require('node:crypto');
       if (name.includes('aiTutorService')) return serviceModule.exports;
-      if (name === 'express') return { Router: () => ({ get() {}, post: (url, auth, handler) => { routes[url] = handler; } }) };
+      if (name === 'express') return { Router: () => ({
+        get() {}, put() {}, delete() {},
+        post: (url, ...handlers) => { routes[url] = handlers.at(-1); },
+      }) };
+      if (name.includes('aiCompliance')) return require('../services/aiCompliance');
+      if (name.includes('AiTutorSession')) return { deleteMany: async () => ({ deletedCount: 0 }) };
+      if (name.includes('AiResponseReport')) return { create: async () => ({}) };
+      if (name.includes('/models/User')) return { updateOne: async () => ({}) };
       if (name.includes('tutorKnowledge')) return require('../services/tutorKnowledge');
       if (name.includes('Subscription')) return { findOne: () => ({ lean: async () => options.subscription || null }) };
       if (name.includes('Course')) return { find: () => query };
@@ -29,7 +37,8 @@ function backend(options = {}) {
   vm.runInNewContext(fs.readFileSync(path.join(__dirname, '../routes/ai.js'), 'utf8'), sandbox);
   return { calls, async chat(body) {
     let result;
-    await routes['/chat']({ body, compatUser: options.user || {} }, { json: data => { result = data; }, status() { return this; } });
+    const consented = { aiConsentGranted: true, aiConsentPolicyVersion: '2026-09-25', aiConsentProviderVersion: 'fal-openrouter:google/gemini-2.5-flash', ...(options.user || {}) };
+    await routes['/chat']({ body, compatUser: consented, compatAuth: { userId: 'learner' }, ip: '127.0.0.1' }, { json: data => { result = data; }, status() { return this; } });
     return result;
   } };
 }
@@ -61,7 +70,10 @@ function widget() {
   const input = node(); const messages = node(); const sendBtn = node();
   let owner = 'learner-a'; let pending;
   const calls = [];
-  const api = { getUser: () => ({ _id: owner }), getAccessToken: () => owner ? 'token' : '', authRequest: async (_, options) => {
+  const consentAllow = node(); const consentDecline = node(); const consentError = node(); const consentPanel = node(); consentPanel.hidden = true;
+  const api = { getUser: () => ({ _id: owner }), getAccessToken: () => owner ? 'token' : '', authRequest: async (url, options) => {
+    if (url === '/api/ai/consent' && !options) return { granted: true };
+    if (url === '/api/ai/consent') return { granted: JSON.parse(options.body).granted };
     calls.push(JSON.parse(options.body));
     return new Promise((resolve, reject) => { pending = { resolve, reject }; });
   } };
@@ -69,7 +81,9 @@ function widget() {
     document: { getElementById(id) { if (!elements.has(id)) elements.set(id, node()); return elements.get(id); }, createElement: node },
     localStorage: { getItem: () => null }, botNameInput: { value: 'Nex' }, normalizeBotName: v => v,
     escHtml: value => String(value).replace(/[&<>"']/g, character => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[character])),
-    input, messages, sendBtn, rootEl: {}, requireAiAccess: () => Boolean(owner), learnerAvatar: '', currentBotAvatarMarkup: () => '',
+    input, messages, sendBtn, consentAllow, consentDecline, consentError, consentPanel,
+    aiConsentLoaded: true, aiConsentGranted: true,
+    rootEl: {}, requireAiAccess: () => Boolean(owner), learnerAvatar: '', currentBotAvatarMarkup: () => '',
   };
   const source = fs.readFileSync(path.join(__dirname, '../../edunex-f/js/nex-ai-widget.js'), 'utf8');
   vm.createContext(context);
@@ -80,28 +94,31 @@ function widget() {
 test('popup sends successful history, blocks overlapping sends, and clears on New chat', async () => {
   const ui = widget();
   const first = ui.send('prompting');
+  await new Promise(resolve => setImmediate(resolve));
   await ui.send('duplicate');
   assert.equal(ui.calls.length, 1);
   assert.deepEqual(ui.calls[0].history, []);
   ui.resolve(); await first;
   const second = ui.send('elaborate');
+  await new Promise(resolve => setImmediate(resolve));
   assert.deepEqual(ui.calls[1].history, [{ role: 'user', content: 'prompting' }, { role: 'assistant', content: 'Answer' }]);
   ui.resolve(); await second;
   ui.reset();
   const third = ui.send('new topic');
+  await new Promise(resolve => setImmediate(resolve));
   assert.deepEqual(ui.calls[2].history, []);
   ui.resolve(); await third;
 });
 
 test('popup omits failures and discards late replies after reset or account change', async () => {
   const ui = widget();
-  const failed = ui.send('fail'); ui.reject(); await failed;
-  const next = ui.send('retry'); assert.deepEqual(ui.calls[1].history, []);
+  const failed = ui.send('fail'); await new Promise(resolve => setImmediate(resolve)); ui.reject(); await failed;
+  const next = ui.send('retry'); await new Promise(resolve => setImmediate(resolve)); assert.deepEqual(ui.calls[1].history, []);
   ui.reset(); ui.resolve(); await next;
   assert.equal(ui.messages.children.length, 0);
-  const switched = ui.send('private'); ui.switchUser(); ui.resolve(); await switched;
+  const switched = ui.send('private'); await new Promise(resolve => setImmediate(resolve)); ui.switchUser(); ui.resolve(); await switched;
   assert.equal(ui.messages.children.length, 0);
-  const fresh = ui.send('hello'); assert.deepEqual(ui.calls[3].history, []); ui.resolve(); await fresh;
+  const fresh = ui.send('hello'); await new Promise(resolve => setImmediate(resolve)); assert.deepEqual(ui.calls[3].history, []); ui.resolve(); await fresh;
 });
 
 
@@ -173,12 +190,12 @@ test('provider outage still identifies the selected video in Roman Hinglish', as
 test('widget uses the current lesson at send time and clears it away from the player', async () => {
   const ui = widget();
   ui.setLesson({ courseId: 'course-a', lessonId: 'lesson-a' });
-  const first = ui.send('what is in this video'); ui.resolve(); await first;
+  const first = ui.send('what is in this video'); await new Promise(resolve => setImmediate(resolve)); ui.resolve(); await first;
   assert.equal(ui.calls[0].lessonId, 'lesson-a');
   ui.setLesson({ courseId: 'course-a', lessonId: 'lesson-b' });
-  const second = ui.send('iska summary batao'); ui.resolve(); await second;
+  const second = ui.send('iska summary batao'); await new Promise(resolve => setImmediate(resolve)); ui.resolve(); await second;
   assert.equal(ui.calls[1].lessonId, 'lesson-b');
   ui.setLesson(undefined);
-  const third = ui.send('hello'); ui.resolve(); await third;
+  const third = ui.send('hello'); await new Promise(resolve => setImmediate(resolve)); ui.resolve(); await third;
   assert.equal(ui.calls[2].lessonId, '');
 });

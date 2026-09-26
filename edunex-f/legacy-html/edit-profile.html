@@ -346,7 +346,7 @@
     <h2 class="ep-card-title"><i class="fas fa-id-badge"></i> Identity</h2>
     <div class="ep-field">
       <label class="ep-label" for="ageInput">Age</label>
-      <input class="ep-input" id="ageInput" type="number" min="5" max="80" style="color:var(--cyan);font-weight:800">
+      <input class="ep-input" id="ageInput" type="number" min="13" max="80" style="color:var(--cyan);font-weight:800">
     </div>
     <div class="ep-field" style="margin-bottom:0">
       <label class="ep-label">Gender</label>
@@ -598,7 +598,7 @@
     }
 
     const age = document.getElementById('ageInput').value;
-    if (age && (Number(age) < 5 || Number(age) > 80)) {
+    if (age && (Number(age) < 13 || Number(age) > 80)) {
       showProfileToast('Please select a valid age', false);
       return;
     }

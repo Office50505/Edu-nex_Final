@@ -153,9 +153,9 @@ describe("reported frontend regressions", () => {
     render(<AiTutorPage />);
     expect(screen.getByRole("heading", { name: "What can I help you learn?" })).toBeTruthy();
     const assistantAvatar = screen.getByRole("img", { name: "AI assistant" });
-    expect(assistantAvatar.getAttribute("src")).toBe("/assets/nex-avatar.png");
+    expect(assistantAvatar.getAttribute("src")).toBe("/assets/nex-avatar-v1.webp");
     expect(assistantAvatar.getAttribute("loading")).toBe("eager");
-    expect(document.querySelector('link[rel="preload"][href="/assets/nex-avatar-thinking.png"]')?.getAttribute("fetchpriority")).toBe("high");
+    expect(document.querySelector('link[rel="preload"][href="/assets/nex-avatar-thinking-v1.webp"]')?.getAttribute("fetchpriority")).toBe("high");
     const suggestedQuestions = screen.getByRole("group", { name: "Suggested questions" });
     expect(suggestedQuestions.querySelectorAll("button")).toHaveLength(4);
     expect(screen.queryByRole("group", { name: "Follow-up suggestions" })).toBeNull();
@@ -182,7 +182,9 @@ describe("reported frontend regressions", () => {
       request: vi.fn(),
       getAccessToken: vi.fn(() => "active-token"),
       getUser: vi.fn(() => cachedUser),
-      authRequest: vi.fn(async () => ({ reply: "Hello! How can I help?", provider: "test" })),
+      authRequest: vi.fn(async (path) => path === "/api/ai/consent"
+        ? { granted: true, providerVersion: "test" }
+        : { reply: "Hello! How can I help?", provider: "test" }),
     };
     render(<AiTutorPage />);
 
@@ -198,7 +200,8 @@ describe("reported frontend regressions", () => {
     await screen.findByText("Hello! How can I help?");
 
     expect(screen.getByRole("button", { name: "Customize AI name. Current name: Nova" })).toBeTruthy();
-    expect(JSON.parse(window.EduNex.authRequest.mock.calls[0][1].body).assistantName).toBe("Nova");
+    const chatCall = window.EduNex.authRequest.mock.calls.find(([path]) => path === "/api/ai/chat");
+    expect(JSON.parse(chatCall[1].body).assistantName).toBe("Nova");
   });
 
   it("shows the expressive thinking model and animated dots while an answer is pending", async () => {
@@ -209,9 +212,13 @@ describe("reported frontend regressions", () => {
       request: vi.fn(),
       getAccessToken: vi.fn(() => "active-token"),
       getUser: vi.fn(() => cachedUser),
-      authRequest: vi.fn(() => new Promise(resolve => { resolveRequest = resolve; })),
+      authRequest: vi.fn((path) => path === "/api/ai/consent"
+        ? Promise.resolve({ granted: true, providerVersion: "test" })
+        : new Promise(resolve => { resolveRequest = resolve; })),
     };
     render(<AiTutorPage />);
+
+    await screen.findByText("Third-party AI processing allowed");
 
     fireEvent.change(screen.getByRole("textbox", { name: "Message AI" }), { target: { value: "Explain this" } });
     fireEvent.click(screen.getByRole("button", { name: "Send message" }));
@@ -219,12 +226,12 @@ describe("reported frontend regressions", () => {
     expect(screen.getByLabelText("AI is typing")).toBeTruthy();
     expect(document.querySelector('.tutor-thinking .ai-model-cutout')).toBeTruthy();
     expect(document.querySelectorAll('.tutor-thinking .ai-thinking-overhead > span')).toHaveLength(3);
-    expect(document.querySelector('.tutor-thinking .nex-avatar-image')?.getAttribute('src')).toBe('/assets/nex-avatar-thinking.png');
+    expect(document.querySelector('.tutor-thinking .nex-avatar-image')?.getAttribute('src')).toBe('/assets/nex-avatar-thinking-v1.webp');
 
     await act(async () => { resolveRequest({ reply: "Here is the explanation." }); });
     expect(await screen.findByText("Here is the explanation.")).toBeTruthy();
     expect(document.querySelector('.chat-bubble.ai .ai-model-cutout')).toBeTruthy();
-    expect(document.querySelector('.chat-bubble.ai .nex-avatar-image')?.getAttribute('src')).toBe('/assets/nex-avatar.png');
+    expect(document.querySelector('.chat-bubble.ai .nex-avatar-image')?.getAttribute('src')).toBe('/assets/nex-avatar-v1.webp');
   });
 
   it("keeps NEX conversations and restores them from the shared chat history", async () => {
@@ -234,14 +241,18 @@ describe("reported frontend regressions", () => {
       request: vi.fn(),
       getAccessToken: vi.fn(() => "active-token"),
       getUser: vi.fn(() => cachedUser),
-      authRequest: vi.fn(async () => ({ reply: "Prompting means giving an AI clear instructions.", provider: "test" })),
+      authRequest: vi.fn(async (path) => path === "/api/ai/consent"
+        ? { granted: true, providerVersion: "test" }
+        : { reply: "Prompting means giving an AI clear instructions.", provider: "test" }),
     };
     render(<AiTutorPage />);
+
+    await screen.findByText("Third-party AI processing allowed");
 
     fireEvent.change(screen.getByRole("textbox", { name: "Message AI" }), { target: { value: "What is prompting?" } });
     fireEvent.click(screen.getByRole("button", { name: "Send message" }));
     await screen.findByText("Prompting means giving an AI clear instructions.");
-    expect(document.querySelector('.chat-bubble.ai .nex-avatar-image')?.getAttribute('src')).toBe('/assets/nex-avatar.png');
+    expect(document.querySelector('.chat-bubble.ai .nex-avatar-image')?.getAttribute('src')).toBe('/assets/nex-avatar-v1.webp');
     expect(screen.getByLabelText("Aarav Learner").textContent).toBe("A");
 
     const saved = JSON.parse(localStorage.getItem("edunexNexAiChats:user-1"));
@@ -548,7 +559,7 @@ describe("reported frontend regressions", () => {
     fireEvent.pointerDown(ageList, { pointerId: 1, pointerType: "mouse", button: 0, clientY: 100 });
     fireEvent.pointerMove(ageList, { pointerId: 1, pointerType: "mouse", clientY: 48 });
     fireEvent.pointerUp(ageList, { pointerId: 1, pointerType: "mouse", clientY: 48 });
-    await waitFor(() => expect(ageList.getAttribute("aria-activedescendant")).toBe("signup-age-25"));
+    await waitFor(() => expect(ageList.getAttribute("aria-activedescendant")).toBe("signup-age-14"));
     expect(ageList.scrollTop).toBeGreaterThan(initialScrollTop);
   });
 

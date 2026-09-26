@@ -20,10 +20,10 @@ afterEach(() => {
 });
 
 it("registers the main Skillomate offer route", () => {
-  expect(route("offer.html")).toBe("/ai");
+  expect(route("offer.html")).toBe("/skillomate-1rs-for-24-hours-full-course-access");
   expect(pageKeyFromPath("/ai")).toBe("offer.html");
-  expect(route("/offer?utm_source=ad#subscribe")).toBe("/ai?utm_source=ad#subscribe");
-  expect(route("/offer.html")).toBe("/ai");
+  expect(route("/offer?utm_source=ad#subscribe")).toBe("/skillomate-1rs-for-24-hours-full-course-access?utm_source=ad#subscribe");
+  expect(route("/offer.html")).toBe("/skillomate-1rs-for-24-hours-full-course-access");
   expect(pageKeyFromPath("/offer")).toBe("offer.html");
 });
 

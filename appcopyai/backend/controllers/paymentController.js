@@ -452,7 +452,7 @@ async function paymentCallback(req, res) {
 
     return res.redirect(withQueryParams(frontendPaymentSuccessUrl, { merchantTransactionId }));
   } catch (error) {
-    console.error('PhonePe callback error:', error);
+    console.error(`PhonePe callback failed (${error?.code || error?.name || 'unknown'})`);
     return res.redirect(frontendDashboardUrl);
   }
 }
@@ -499,7 +499,7 @@ async function handleWebhook(req, res) {
     }
 
     if (!subscription) {
-      console.warn('PhonePe webhook received without matching subscription', payload);
+      console.warn('PhonePe webhook received without a matching subscription.');
       return res.sendStatus(200);
     }
 
@@ -611,7 +611,7 @@ async function handleWebhook(req, res) {
 
     return res.sendStatus(200);
   } catch (error) {
-    console.error('PhonePe webhook processing error:', error);
+    console.error(`PhonePe webhook processing failed (${error?.code || error?.name || 'unknown'})`);
     return res.sendStatus(200);
   }
 }

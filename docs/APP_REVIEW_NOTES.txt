@@ -1,0 +1,27 @@
+SKILLOMATE APP REVIEW NOTES
+
+Skillomate is a 13+ educational app with courses, protected lessons, progress, certificates, offline lesson downloads where available, and an optional AI learning assistant.
+
+REVIEW ACCOUNT
+Use the username and password entered in the dedicated App Review Information fields. The account is a normal server-backed account; no review backdoor or credentials are embedded in the app. Existing-account password login does not require a new Indian OTP.
+
+SUBSCRIPTION
+Open Profile > Subscription Details. The iOS app uses the auto-renewable App Store subscription com.skillomate.premium.monthly and displays Apple's localized price. It includes purchase, Restore Purchases, subscription-status refresh, Terms of Use, Privacy Policy, and Manage Apple Subscription. There is no external web purchase link on iOS.
+
+Premium access is granted only after Skillomate's backend verifies Apple's signed transaction and current entitlement. Apple Sandbox may be used to test purchase/restore. Cancellation at period end retains access through the verified expiry; expired, refunded, revoked, billing-retry, unknown, and no-entitlement states do not grant access.
+
+PREMIUM CONTENT
+After a verified subscription, open Courses, select a published course, and open a lesson from its curriculum. Playback, progress, supported downloads, and lesson-scoped Nex AI are available there.
+
+NEX AI CONSENT
+On the first intentional AI request, the app explains that fal.ai, OpenRouter, and the selected Google Gemini model process the question, up to 12 recent messages, and relevant course/lesson context. Choosing Not Now sends no AI request. The learner's profile name is not sent. Consent withdrawal and history deletion are under Profile > AI Data Controls. Individual AI answers can be reported.
+
+ACCOUNT DELETION
+Open Profile > Danger Zone > Delete Account. The user enters the current password and types DELETE. App sessions are revoked and account deletion continues even if a legacy billing-provider cancellation must be retried. Deleting the Skillomate account does not itself cancel an Apple subscription; the warning links to Apple's subscription-management page.
+
+LEGAL AND SUPPORT
+Privacy Policy: https://skillomate.in/privacy
+Terms of Use: available from Subscription Details and the in-app legal screen
+Support: support@skillomate.in
+
+The review backend and published media must remain available throughout review.

@@ -1154,6 +1154,10 @@
 
     try {
       const parsed = new URL(raw, window.location.origin);
+      const localAvatar = parsed.origin === window.location.origin
+        ? parsed.pathname.match(/^\/assets\/(male[1-6]|female[1-6])\.jpeg$/i)
+        : null;
+      if (localAvatar) return `/assets/avatars/${localAvatar[1].toLowerCase()}-v1.webp`;
       const isDrive = /(^|\.)drive\.google\.com$/i.test(parsed.hostname);
       if (!isDrive) return proxiedImageUrl(parsed.href);
 
@@ -1280,7 +1284,7 @@
     document.querySelectorAll('.nav-avatar, a[href$="profile.html"] .avatar, .premium-avatar').forEach((avatar) => {
       if (!token || !user) return;
       const label = user.fullName || user.email || user.mobileNumber || "Account";
-      const src = user.avatar || avatarFallback(user);
+      const src = normalizeImageSrc(user.avatar) || avatarFallback(user);
       avatar.setAttribute("title", label);
       avatar.setAttribute("aria-label", label);
       if (avatar.tagName === "IMG") {
@@ -1304,8 +1308,8 @@
         <div class="nav-inner">
           <a href="index.html" class="nav-logo" aria-label="Skillomate AI home">
             <span class="brand-logo">
-              <img class="brand-logo-image brand-logo-image-light" src="/assets/skillomate-logo.png" alt="Skillomate">
-              <img class="brand-logo-image brand-logo-image-dark" src="/assets/skillomate-logo-dark.png" alt="" aria-hidden="true">
+              <img class="brand-logo-image brand-logo-image-light" src="/assets/skillomate-logo-light-v1.webp" alt="Skillomate" width="480" height="160">
+              <img class="brand-logo-image brand-logo-image-dark" src="/assets/skillomate-logo-dark-v1.webp" alt="" aria-hidden="true" width="480" height="160">
             </span>
           </a>
           <ul class="nav-links">

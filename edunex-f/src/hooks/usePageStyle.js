@@ -1,7 +1,7 @@
-import { useEffect } from "react";
+import { useInsertionEffect } from "react";
 
 export function usePageStyle(id, cssText) {
-  useEffect(() => {
+  useInsertionEffect(() => {
     if (!cssText) return undefined;
 
     let style = document.getElementById(id);

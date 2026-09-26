@@ -242,7 +242,7 @@ function PurchaseHistoryPanel({ state }) {
     </section>;
 }
 
-function LearnerDetailDrawer({ user, courses, tab, setTab, onClose, ipLocation, purchaseHistory, activity, certificates, onSubscription, onAccess, busy }) {
+function LearnerDetailDrawer({ user, courses, tab, setTab, onClose, purchaseHistory, activity, certificates, onSubscription, onAccess, busy }) {
   if (!user) return null;
   const progress = user.progressCourses || [];
   const watch = user.watchSummary || {};
@@ -261,7 +261,7 @@ function LearnerDetailDrawer({ user, courses, tab, setTab, onClose, ipLocation, 
       </div>
       {tab === "Overview" ? (
         <div className="crm-detail-grid">
-          <DetailStat label="User ID" value={user._id || "No ID"} /><DetailStat label="Presence" value={user.presence?.isOnline ? "Online now" : `Offline · ${formatDateTime(user.presence?.lastSeenAt || user.lastActiveAt)}`} /><DetailStat label="Lifecycle" value={lifecycleLabel(user)} /><DetailStat label="Subscription" value={user.subscriptionStatus || "none"} /><DetailStat label={accessEndLabel(user)} value={accessEndDate(user)} /><DetailStat label="Verified" value={isVerified(user) ? "Yes" : "Pending"} /><DetailStat label="Joined" value={formatDateTime(user.createdAt)} /><DetailStat label="Last active" value={formatDate(user.presence?.lastSeenAt || user.lastActiveAt || watch.lastWatchedAt)} /><DetailStat label="Last IP address" value={user.networkSummary?.ipAddress || "Not recorded"} /><DetailStat label="Approx. location" value={ipLocation?.location || "Open to locate"} /><DetailStat label="IP recorded" value={user.networkSummary?.recordedAt ? formatDateTime(user.networkSummary.recordedAt) : "Not recorded"} /><DetailStat label="Watch time" value={formatWatchDuration(watchMinutes(user))} /><DetailStat label="Average completion" value={`${formatNumber(progressAverage(user))}%`} />
+          <DetailStat label="User ID" value={user._id || "No ID"} /><DetailStat label="Presence" value={user.presence?.isOnline ? "Online now" : `Offline · ${formatDateTime(user.presence?.lastSeenAt || user.lastActiveAt)}`} /><DetailStat label="Lifecycle" value={lifecycleLabel(user)} /><DetailStat label="Subscription" value={user.subscriptionStatus || "none"} /><DetailStat label={accessEndLabel(user)} value={accessEndDate(user)} /><DetailStat label="Verified" value={isVerified(user) ? "Yes" : "Pending"} /><DetailStat label="Joined" value={formatDateTime(user.createdAt)} /><DetailStat label="Last active" value={formatDate(user.presence?.lastSeenAt || user.lastActiveAt || watch.lastWatchedAt)} /><DetailStat label="Last IP address" value={user.networkSummary?.ipAddress || "Not recorded"} /><DetailStat label="IP recorded" value={user.networkSummary?.recordedAt ? formatDateTime(user.networkSummary.recordedAt) : "Not recorded"} /><DetailStat label="Watch time" value={formatWatchDuration(watchMinutes(user))} /><DetailStat label="Average completion" value={`${formatNumber(progressAverage(user))}%`} />
         </div>
       ) : null}
       {tab === "Course progress" ? <><PurchasedCourseList user={user} courses={courses} /><div className="drawer-section-label">Learning progress</div><div className="progress-list">{progress.length ? progress.map((course) => <ProgressRow course={course} key={`${user._id}-drawer-${course.courseId}`} />) : <div className="empty-state">Course purchased. Learning has not started yet.</div>}</div></> : null}
@@ -295,7 +295,6 @@ export function AdminUsersPage() {
   const [messageType, setMessageType] = useState("success");
   const [updatingId, setUpdatingId] = useState(null);
   const [actionHistory, setActionHistory] = useState({});
-  const [ipLocations, setIpLocations] = useState({});
   const [createLearner, setCreateLearner] = useState(emptyCreateLearner);
   const [creatingLearner, setCreatingLearner] = useState(false);
   const [createdLearnerId, setCreatedLearnerId] = useState("");
@@ -425,17 +424,6 @@ export function AdminUsersPage() {
       } catch (_) {
         setActionHistory((current) => ({ ...current, [userId]: [] }));
       }
-    }
-    if (!openIds.has(userId) && !ipLocations[userId]) loadIpLocation(userId);
-  }
-
-  async function loadIpLocation(userId) {
-    setIpLocations((current) => ({ ...current, [userId]: { loading: true, location: "Locating…" } }));
-    try {
-      const data = await adminJson(`/api/admin/users/${encodeURIComponent(userId)}/ip-location`, {}, "Unable to locate IP address.");
-      setIpLocations((current) => ({ ...current, [userId]: { loading: false, location: data.location || "Unavailable" } }));
-    } catch (_) {
-      setIpLocations((current) => ({ ...current, [userId]: { loading: false, location: "Unavailable" } }));
     }
   }
 
@@ -576,7 +564,6 @@ export function AdminUsersPage() {
     setSelectedUser(user);
     setDrawerTab("Overview");
     void loadDrawerRecords(user._id);
-    if (!ipLocations[user._id]) loadIpLocation(user._id);
     const userId = String(user._id);
     if (!purchaseHistories[userId]) void loadPurchaseHistory(user);
   }
@@ -783,7 +770,7 @@ export function AdminUsersPage() {
               {isOpen ? (
                 <div className="progress-panel">
                   <div className="crm-detail-grid">
-                    <DetailStat label="Gender" value={formatGender(user.gender)} /><DetailStat label="Age" value={formatAge(user.age)} /><DetailStat label="Courses started" value={formatNumber(summaryData.totalCourses)} /><DetailStat label="Completed courses" value={formatNumber(summaryData.completedCourses)} /><DetailStat label="Average progress" value={`${formatNumber(summaryData.averageProgress)}%`} /><DetailStat label="Watch time" value={formatWatchDuration(watchMinutes(user))} /><DetailStat label="Watched videos" value={formatNumber(watch.watchedVideos)} /><DetailStat label="Last watched" value={formatDate(watch.lastWatchedAt)} /><DetailStat label="Last login" value={formatDateTime(user.lastLoginAt)} /><DetailStat label="Last IP address" value={user.networkSummary?.ipAddress || "Not recorded"} /><DetailStat label="Approx. location" value={ipLocations[user._id]?.location || "Open to locate"} /><DetailStat label="IP recorded" value={user.networkSummary?.recordedAt ? formatDateTime(user.networkSummary.recordedAt) : "Not recorded"} /><DetailStat label="Login platform" value={user.networkSummary?.platform || "Not recorded"} /><DetailStat label="Login count" value={formatNumber(user.loginCount)} /><DetailStat label={accessEndLabel(user)} value={accessEndDate(user)} /><DetailStat label="User ID" value={user._id || "No ID"} />
+                    <DetailStat label="Gender" value={formatGender(user.gender)} /><DetailStat label="Age" value={formatAge(user.age)} /><DetailStat label="Courses started" value={formatNumber(summaryData.totalCourses)} /><DetailStat label="Completed courses" value={formatNumber(summaryData.completedCourses)} /><DetailStat label="Average progress" value={`${formatNumber(summaryData.averageProgress)}%`} /><DetailStat label="Watch time" value={formatWatchDuration(watchMinutes(user))} /><DetailStat label="Watched videos" value={formatNumber(watch.watchedVideos)} /><DetailStat label="Last watched" value={formatDate(watch.lastWatchedAt)} /><DetailStat label="Last login" value={formatDateTime(user.lastLoginAt)} /><DetailStat label="Last IP address" value={user.networkSummary?.ipAddress || "Not recorded"} /><DetailStat label="IP recorded" value={user.networkSummary?.recordedAt ? formatDateTime(user.networkSummary.recordedAt) : "Not recorded"} /><DetailStat label="Login platform" value={user.networkSummary?.platform || "Not recorded"} /><DetailStat label="Login count" value={formatNumber(user.loginCount)} /><DetailStat label={accessEndLabel(user)} value={accessEndDate(user)} /><DetailStat label="User ID" value={user._id || "No ID"} />
                   </div>
                   {user.banReason ? <div className="admin-alert bad"><strong>Ban reason</strong><span>{user.banReason}</span></div> : null}
                   {!user.deletedAt ? <div className="user-management-actions"><div><strong>Subscription</strong><span>{user.subscriptionStatus || "none"} · {accessEndLabel(user)}: {accessEndDate(user)}</span></div><AdminWrite><button className="action-button primary" disabled={Boolean(updatingId)} onClick={() => openSubscriptionDialog(user)}>Update subscription</button></AdminWrite></div> : null}
@@ -806,7 +793,7 @@ export function AdminUsersPage() {
         <span aria-live="polite">Page {currentPage} of {pageCount} · 25 learners per page</span>
         <button className="toolbar-button" disabled={currentPage >= pageCount || loading} onClick={() => setPage(currentPage + 1)}>Next</button>
       </nav>
-      <LearnerDetailDrawer activity={drawerActivity[selectedUser?._id]} certificates={drawerCertificates[selectedUser?._id]} onSubscription={openSubscriptionDialog} onAccess={changeAccountAccess} busy={Boolean(updatingId)} user={selectedUser} courses={courses} tab={drawerTab} setTab={setDrawerTab} onClose={() => setSelectedUser(null)} ipLocation={selectedUser ? ipLocations[selectedUser._id] : null} purchaseHistory={selectedUser ? (purchaseHistories[String(selectedUser._id)] || { user: selectedUser, loading: false, error: "", orders: [], courseChanges: [] }) : null} />
+      <LearnerDetailDrawer activity={drawerActivity[selectedUser?._id]} certificates={drawerCertificates[selectedUser?._id]} onSubscription={openSubscriptionDialog} onAccess={changeAccountAccess} busy={Boolean(updatingId)} user={selectedUser} courses={courses} tab={drawerTab} setTab={setDrawerTab} onClose={() => setSelectedUser(null)} purchaseHistory={selectedUser ? (purchaseHistories[String(selectedUser._id)] || { user: selectedUser, loading: false, error: "", orders: [], courseChanges: [] }) : null} />
 
       {subscriptionDialog ? <div className="course-access-backdrop">
         <form className="course-access-dialog" role="dialog" aria-modal="true" aria-labelledby="subscription-dialog-title" style={{ maxHeight: "calc(100dvh - 48px)", overflowY: "auto" }} onSubmit={saveSubscription}><AdminEditFields disabled={Boolean(updatingId)}>

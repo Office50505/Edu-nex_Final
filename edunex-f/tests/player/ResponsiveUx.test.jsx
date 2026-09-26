@@ -5,6 +5,9 @@ import { LegalLayout } from "../../src/components/legal/LegalLayout.jsx";
 
 const appStyles = readFileSync(new URL("../../src/styles/app.css", import.meta.url), "utf8");
 const indexHtml = readFileSync(new URL("../../index.html", import.meta.url), "utf8");
+const mainSource = readFileSync(new URL("../../src/main.jsx", import.meta.url), "utf8");
+const pageLoadersSource = readFileSync(new URL("../../src/lib/pageLoaders.jsx", import.meta.url), "utf8");
+const pageStyleSource = readFileSync(new URL("../../src/hooks/usePageStyle.js", import.meta.url), "utf8");
 const legalStyles = readFileSync(new URL("../../src/components/legal/LegalPages.css", import.meta.url), "utf8");
 const dashboardLegacySource = readFileSync(new URL("../../legacy-html/dashboard.html", import.meta.url), "utf8");
 const homePageSource = readFileSync(new URL("../../src/pages/HomePage.jsx", import.meta.url), "utf8");
@@ -19,9 +22,32 @@ describe("cross-viewport UX", () => {
     expect(appStyles).toMatch(/\.react-page-root \{[\s\S]*width: 100%;[\s\S]*flex: 1 0 auto;/);
   });
 
-  it("keeps the complete Skillomate wordmark visible during initial page loading", () => {
-    expect(indexHtml).toContain('background:#000');
-    expect(indexHtml).toContain('src="/assets/skillomate-logo-dark.png"');
+  it("keeps the initial document shell neutral so hydration does not shift a loading card", () => {
+    expect(indexHtml).toContain('<div id="root" style="min-height:100vh"></div>');
+    expect(indexHtml).not.toContain("Loading learning experience");
+  });
+
+  it("loads the homepage and its generated styles before the first paint", () => {
+    expect(pageLoadersSource).toContain('import { HomePage } from "../pages/HomePage.jsx"');
+    expect(pageLoadersSource).toContain('"index.html": HomePage');
+    expect(pageStyleSource).toContain("useInsertionEffect");
+  });
+
+  it("keeps third-party fonts and non-critical runtimes out of the render path", () => {
+    expect(indexHtml).not.toContain("fonts.googleapis.com");
+    expect(indexHtml).not.toContain("cdnjs.cloudflare.com");
+    expect(indexHtml).not.toContain('src="/js/theme-preload.js"');
+    expect(indexHtml).not.toContain('src="/js/nex-ai-widget.js"');
+    expect(mainSource).toContain('import("../js/nex-ai-widget.js")');
+    expect(homePageSource).toContain('loading={isCenter ? "eager" : "lazy"}');
+    expect(homePageSource).toContain('fetchPriority={isCenter ? "high" : "low"}');
+    expect(indexHtml).toContain('rel="preload" href="/src/assets/fonts/manrope-latin-v20.woff2"');
+    expect(indexHtml).toContain('rel="preload" href="/src/assets/fonts/fraunces-latin-v38.woff2"');
+  });
+
+  it("caps the looping homepage carousel to seven unique images", () => {
+    expect(homePageSource).toContain("const HERO_CAROUSEL_ITEM_LIMIT = 7;");
+    expect(homePageSource).toContain("lessons.slice(0, HERO_CAROUSEL_ITEM_LIMIT)");
   });
 
   it("exposes the page key used by route-specific responsive rules", () => {

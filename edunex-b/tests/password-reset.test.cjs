@@ -21,6 +21,7 @@ function setup({ valid = true, exists = true } = {}) {
         sendMobileOtp: async () => ({ ok: true, provider: 'msg91' }),
         verifyMobileOtp: async (...args) => { checks.push(args); return { ok: valid, error: 'Invalid OTP' }; } };
       if (name.endsWith('/rateLimitToggle')) return { isAuthRateLimitDisabled: () => false };
+      if (name.endsWith('/sensitiveRateLimit')) return { sensitiveRateLimit: () => (_req, _res, next) => next() };
       if (name.endsWith('/compatAuth')) return { requireCompatibleAuth: () => () => {} };
       if (name.startsWith('../')) return {};
       return require(name);

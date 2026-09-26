@@ -118,7 +118,9 @@ export function Navbar({ pageKey, onReportProblem }) {
 
   const profileLabel = auth.user?.fullName || auth.user?.email || auth.user?.mobileNumber || "Profile Settings";
   const navAvatarFallback = useMemo(() => avatarFallback(auth.user), [auth.user]);
-  const avatarSrc = auth.user?.avatar || navAvatarFallback;
+  const avatarSrc = auth.user?.avatar
+    ? (window.EduNex?.normalizeImageSrc?.(auth.user.avatar) || auth.user.avatar)
+    : navAvatarFallback;
   const greeting = auth.token ? `Hi, ${firstName(auth.user)}` : "";
   const preloadNavPage = (targetPageKey) => {
     if (!targetPageKey || targetPageKey === current) return;

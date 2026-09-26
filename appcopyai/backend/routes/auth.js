@@ -329,7 +329,7 @@ router.delete('/account', requireCompatibleAuth(), async (req, res) => {
 
     const passwordMatches = await bcrypt.compare(password, user.passwordHash || '');
     if (!passwordMatches) {
-      return res.status(401).json({ error: 'Current password is incorrect', code: 'INVALID_PASSWORD' });
+      return res.status(403).json({ error: 'Current password is incorrect', code: 'INVALID_PASSWORD' });
     }
 
     await deleteUserAccount(user._id);

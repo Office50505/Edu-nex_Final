@@ -22,6 +22,7 @@ const helmet = require('helmet');
 const { getMongoConnectionOptions } = require('./config/mongodb');
 const { ALLOWED_ORIGINS, skillomateCors } = require('./middleware/cors');
 const { createReadinessHandler } = require('./services/readinessService');
+const { frontendCacheControl, inlineScriptCspHash } = require('./services/frontendAssets');
 const { auditPaymentOrder, duplicatePaymentReferences, paymentReference } = require('./services/paymentAuditService');
 const { normalizeLessonNotes } = require('./services/lessonNotes');
 const {
@@ -43,6 +44,10 @@ const FRONTEND_DIST_DIR = process.env.FRONTEND_DIST_DIR
 const FRONTEND_DIR = fs.existsSync(path.join(FRONTEND_DIST_DIR, 'index.html'))
   ? FRONTEND_DIST_DIR
   : FRONTEND_SOURCE_DIR;
+const THEME_PRELOAD_CSP_HASH = inlineScriptCspHash(
+  path.join(FRONTEND_DIR, 'index.html'),
+  'skillomate-theme-preload',
+);
 const UPLOADS_DIR = process.env.UPLOADS_DIR
   ? path.resolve(process.env.UPLOADS_DIR)
   : path.join(__dirname, 'uploads');
@@ -101,7 +106,13 @@ requireProductionEnv([
   'JWT_SECRET',
   'JWT_REFRESH_SECRET',
   'JWT_SIGNUP_SECRET',
+  'ACCOUNT_DELETION_HASH_SECRET',
   'AD_PAYMENT_MODE',
+  'APPLE_BUNDLE_ID',
+  'APPLE_APP_ID',
+  'APPLE_IAP_ISSUER_ID',
+  'APPLE_IAP_KEY_ID',
+  'APPLE_IAP_PRIVATE_KEY',
 ]);
 
 if (isProduction && process.env.AUTO_VERIFY_OTP === 'true') {
@@ -171,8 +182,6 @@ const {
 } = require('./services/cacheService');
 
 const CHECKOUT_SUMMARY_CACHE_TTL_MS = 10 * 60 * 1000;
-const IP_LOCATION_CACHE_TTL_MS = 24 * 60 * 60 * 1000;
-const ipLocationCache = new Map();
 const PUBLIC_READ_CACHE_TTL_MS = 60 * 1000;
 const CHECKOUT_SUMMARY_CACHE_TTL_SECONDS = Math.ceil(CHECKOUT_SUMMARY_CACHE_TTL_MS / 1000);
 const PUBLIC_READ_CACHE_TTL_SECONDS = Math.ceil(PUBLIC_READ_CACHE_TTL_MS / 1000);
@@ -190,7 +199,7 @@ app.use(helmet({
       defaultSrc: ["'self'"],
       baseUri: ["'self'"],
       objectSrc: ["'none'"],
-      scriptSrc: ["'self'", 'https://checkout.razorpay.com'],
+      scriptSrc: ["'self'", ...(THEME_PRELOAD_CSP_HASH ? [THEME_PRELOAD_CSP_HASH] : []), 'https://checkout.razorpay.com'],
       frameSrc: ["'self'", 'https://api.razorpay.com', 'https://checkout.razorpay.com'],
       styleSrc: ["'self'", "'unsafe-inline'", 'https:'],
       imgSrc: ["'self'", 'data:', 'blob:', 'https:'],
@@ -612,9 +621,8 @@ app.use('/uploads', (req, res) => res.sendStatus(404));
 if (SERVE_FRONTEND) {
   app.use(express.static(FRONTEND_DIR, {
     setHeaders(res, filePath) {
-      if (/\.(?:html|css|js)$/i.test(filePath)) {
-        res.setHeader('Cache-Control', 'no-store');
-      }
+      const cacheControl = frontendCacheControl(filePath, FRONTEND_DIR);
+      if (cacheControl) res.setHeader('Cache-Control', cacheControl);
     },
   }));
 }
@@ -628,6 +636,7 @@ if (!/^mongodb(\+srv)?:\/\//.test(MONGODB_URI)) {
     if (process.env.DISABLE_BACKGROUND_JOBS !== 'true') {
       require('./jobs/courseStatsJob');
       require('./jobs/subscriptionTasks');
+      require('./jobs/billingCancellationTasks');
     }
   }).catch((err) => {
     const safeCode = typeof err?.code === 'string' && /^[A-Z0-9_]+$/.test(err.code)
@@ -1221,7 +1230,7 @@ app.get('/api/image-proxy', async (req, res) => {
 
     const imageBuffer = Buffer.from(await upstream.arrayBuffer());
     res.set('Content-Type', contentType);
-    res.set('Cache-Control', 'public, max-age=86400, stale-while-revalidate=604800');
+    res.set('Cache-Control', 'public, max-age=2592000, stale-while-revalidate=31536000');
     return res.send(imageBuffer);
   } catch (error) {
     clearTimeout(timeout);
@@ -1250,6 +1259,7 @@ app.use('/api', require('./routes/marketingSettings'));
 app.use('/api/auth', authRoutes);
 app.use('/api/onboarding', require('./routes/onboarding'));
 app.use('/api/ai', aiRoutes);
+app.use('/api', require('./routes/appleIap'));
 app.use('/api', paymentRoutes);
 app.use('/api', sessionRoutes);
 app.use('/api', contentRoutes);
@@ -2868,57 +2878,6 @@ app.get('/api/admin/users/:id/purchase-history', protectAdmin, async (req, res) 
     res.json({ user, orders, courseChanges });
   } catch (error) {
     res.status(500).json({ error: error.message });
-  }
-});
-
-function normalizedIpAddress(value) {
-  const ip = String(value || '').trim().replace(/^::ffff:/i, '');
-  return net.isIP(ip) ? ip : '';
-}
-
-function isPrivateIpAddress(ip) {
-  if (net.isIP(ip) === 4) {
-    const parts = ip.split('.').map(Number);
-    return parts[0] === 10
-      || parts[0] === 127
-      || (parts[0] === 169 && parts[1] === 254)
-      || (parts[0] === 172 && parts[1] >= 16 && parts[1] <= 31)
-      || (parts[0] === 192 && parts[1] === 168)
-      || (parts[0] === 100 && parts[1] >= 64 && parts[1] <= 127);
-  }
-  return ip === '::1' || /^f[cd]/i.test(ip) || /^fe[89ab]/i.test(ip);
-}
-
-app.get('/api/admin/users/:id/ip-location', protectAdmin, async (req, res) => {
-  try {
-    if (!mongoose.Types.ObjectId.isValid(req.params.id)) return res.status(400).json({ error: 'Invalid user id' });
-    const session = await Session.findOne({ user: req.params.id, ipAddress: { $nin: [null, ''] } })
-      .sort({ lastPingAt: -1, loggedInAt: -1 })
-      .select('ipAddress lastPingAt loggedInAt')
-      .lean();
-    if (!session) return res.json({ location: 'Not recorded', approximate: true });
-
-    const ipAddress = normalizedIpAddress(session.ipAddress);
-    if (!ipAddress) return res.json({ location: 'Unavailable', approximate: true });
-    if (isPrivateIpAddress(ipAddress)) return res.json({ location: 'Local network', approximate: true });
-
-    const cached = ipLocationCache.get(ipAddress);
-    if (cached && cached.expiresAt > Date.now()) return res.json(cached.value);
-    const response = await fetch(`https://ipwho.is/${encodeURIComponent(ipAddress)}`, { signal: AbortSignal.timeout(5000) });
-    if (!response.ok) throw new Error('Location provider unavailable');
-    const data = await response.json();
-    if (data.success === false) throw new Error(data.message || 'Location lookup failed');
-    const parts = [data.city, data.region, data.country].map((item) => String(item || '').trim()).filter(Boolean);
-    const value = {
-      location: parts.length ? [...new Set(parts)].join(', ') : 'Unavailable',
-      approximate: true,
-      recordedAt: session.lastPingAt || session.loggedInAt || null,
-    };
-    if (ipLocationCache.size >= 1000) ipLocationCache.delete(ipLocationCache.keys().next().value);
-    ipLocationCache.set(ipAddress, { value, expiresAt: Date.now() + IP_LOCATION_CACHE_TTL_MS });
-    res.json(value);
-  } catch (error) {
-    res.status(502).json({ error: 'Approximate IP location is temporarily unavailable' });
   }
 });
 

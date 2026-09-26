@@ -157,7 +157,7 @@ async function refreshCourseStats() {
 
     console.log('[CRON] Refresh Course Stats completed');
   } catch (err) {
-    console.error('[CRON] Refresh Course Stats failed:', err);
+    console.error(`[CRON] Refresh Course Stats failed (${err?.code || err?.name || 'unknown'})`);
   }
 }
 
@@ -250,7 +250,7 @@ async function writeDailyCourseAnalytics() {
 
     console.log('[CRON] Write Daily CourseAnalytics completed');
   } catch (err) {
-    console.error('[CRON] Write Daily CourseAnalytics failed:', err);
+    console.error(`[CRON] Write Daily CourseAnalytics failed (${err?.code || err?.name || 'unknown'})`);
   }
 }
 
@@ -277,7 +277,7 @@ async function calculateDropOffPoints() {
 
     console.log('[CRON] Calculate Drop Off Points completed');
   } catch (err) {
-    console.error('[CRON] Calculate Drop Off Points failed:', err);
+    console.error(`[CRON] Calculate Drop Off Points failed (${err?.code || err?.name || 'unknown'})`);
   }
 }
 

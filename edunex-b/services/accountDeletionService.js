@@ -14,6 +14,13 @@ const RazorpayBilling = require('../models/RazorpayBilling');
 const AiTutorSession = require('../models/AiTutorSession');
 const ContactEnquiry = require('../models/ContactEnquiry');
 const AnalyticsEvent = require('../models/AnalyticsEvent');
+const AppleSubscription = require('../models/AppleSubscription');
+const AppleTransaction = require('../models/AppleTransaction');
+const BillingCancellationJob = require('../models/BillingCancellationJob');
+const DownloadGrant = require('../models/DownloadGrant');
+const AiResponseReport = require('../models/AiResponseReport');
+const crypto = require('node:crypto');
+const { deleteProfileImage } = require('./profileImageStorage');
 
 class AccountDeletionError extends Error {
   constructor(message, statusCode = 500, code = 'ACCOUNT_DELETION_FAILED') {
@@ -27,13 +34,13 @@ class AccountDeletionError extends Error {
 /**
  * Permanently removes a user and all data owned by that user.
  *
- * The user record is intentionally deleted last. If any dependent cleanup fails,
- * the account remains available so the operation can safely be retried.
+ * Access is revoked before provider cancellation or data cleanup. Provider failures
+ * are queued for retry and never keep the user's account active.
  */
 async function deleteUserAccount(userId, options = {}) {
-  const user = await User.findById(userId).select('_id');
+  const user = await User.findById(userId).select('_id +avatarStorageKey');
   if (!user) {
-    throw new AccountDeletionError('Account not found', 404, 'ACCOUNT_NOT_FOUND');
+    return { alreadyDeleted: true };
   }
 
   const billing = await RazorpayBilling.findById(userId);
@@ -42,15 +49,57 @@ async function deleteUserAccount(userId, options = {}) {
     .select('_id phonePeMandateId status gateway razorpaySubscriptionId razorpayMode')
     .lean();
   const subscriptionIds = subscriptions.map((subscription) => subscription._id);
+  const accountReferenceHash = crypto
+    .createHmac('sha256', process.env.ACCOUNT_DELETION_HASH_SECRET || process.env.JWT_SECRET || 'development-only')
+    .update(userIdString)
+    .digest('hex');
+
+  // Revoke application access first. Billing providers must never keep an account usable
+  // while cancellation or deletion cleanup is pending.
+  await Promise.all([
+    User.updateOne({ _id: user._id }, {
+      $set: {
+        isActive: false,
+        deviceToken: null,
+        activeSessionId: null,
+        activeSessions: [],
+        aiConsentGranted: false,
+      },
+    }),
+    Session.updateMany(
+      { user: user._id, loggedOutAt: null },
+      { $set: { loggedOutAt: new Date(), deviceToken: null, refreshTokenHash: null } }
+    ),
+  ]);
+
+  let billingCancellationQueued = false;
   if (!options.skipBillingCancellation) {
     try {
       await require('./cancelAccountBilling').cancelAccountBilling(billing, subscriptions);
     } catch (error) {
-      throw new AccountDeletionError(
-        error.message?.startsWith('Payment setup') || error.message?.startsWith('Subscription cancellation') || error.message?.startsWith('We could not')
-          ? error.message : 'Automatic subscription cancellation is unavailable. Your account has not been deleted. Please retry.',
-        503, 'BILLING_CANCELLATION_FAILED'
-      );
+      const cancellationTargets = [
+        ...(billing?.subscriptionId ? [{ provider: 'razorpay', referenceId: billing.subscriptionId, mode: billing.mode || null }] : []),
+        ...subscriptions.flatMap(subscription => [
+          ...(subscription.razorpaySubscriptionId ? [{ provider: 'razorpay', referenceId: subscription.razorpaySubscriptionId, mode: subscription.razorpayMode || null }] : []),
+          ...(subscription.phonePeMandateId && subscription.gateway !== 'razorpay' && subscription.gateway !== 'simulated' && !/^SIM_MANDATE_/.test(subscription.phonePeMandateId)
+            ? [{ provider: 'phonepe', referenceId: subscription.phonePeMandateId, mode: null }]
+            : []),
+        ]),
+      ];
+      await BillingCancellationJob.create({
+        accountReferenceHash,
+        provider: [...new Set(cancellationTargets.map(item => item.provider))].length > 1
+          ? 'mixed'
+          : cancellationTargets[0]?.provider || 'unknown',
+        providerReferenceIds: cancellationTargets.map(item => item.referenceId),
+        cancellationTargets,
+        status: 'pending',
+        attempts: 1,
+        nextAttemptAt: new Date(Date.now() + 15 * 60 * 1000),
+        lastErrorCode: String(error?.code || error?.name || 'PROVIDER_CANCELLATION_FAILED').slice(0, 120),
+        lastErrorAt: new Date(),
+      });
+      billingCancellationQueued = true;
     }
   }
 
@@ -72,7 +121,13 @@ async function deleteUserAccount(userId, options = {}) {
         { userId: userIdString },
       ],
     }),
-    Order.deleteMany({ user: user._id }),
+    Order.updateMany(
+      { user: user._id },
+      {
+        $set: { retainedAccountHash: accountReferenceHash, accountDeletedAt: new Date(), phonePeCustomerId: null },
+        $unset: { user: 1, subscription: 1, coupon: 1 },
+      }
+    ),
     SubscriptionEvent.deleteMany({
       $or: [
         { user: user._id },
@@ -81,10 +136,19 @@ async function deleteUserAccount(userId, options = {}) {
     }),
     Subscription.deleteMany({ user: user._id }),
     Session.deleteMany({ user: user._id }),
+    AppleTransaction.updateMany(
+      { user: user._id },
+      { $set: { retainedAccountHash: accountReferenceHash, accountDeletedAt: new Date() }, $unset: { user: 1 } }
+    ),
+    AppleSubscription.deleteMany({ user: user._id }),
     require('../models/LearningProgress').deleteMany({ userId: userIdString }),
     require('../models/AssessmentResult').deleteMany({ userId: userIdString }),
     require('../models/OnboardingSession').deleteMany({ _id: user._id }),
+    DownloadGrant.deleteMany({ user: user._id }),
+    AiResponseReport.deleteMany({ user: user._id }),
   ]);
+
+  if (user.avatarStorageKey) await deleteProfileImage(user.avatarStorageKey).catch(() => {});
 
   const deletedUser = await User.deleteOne({ _id: user._id });
   if (deletedUser.deletedCount !== 1) {
@@ -103,13 +167,18 @@ async function deleteUserAccount(userId, options = {}) {
     aiTutorSessions: results[8].deletedCount || 0,
     contactEnquiries: results[9].deletedCount || 0,
     analyticsEvents: results[10].deletedCount || 0,
-    orders: results[11].deletedCount || 0,
+    ordersAnonymized: results[11].modifiedCount || 0,
     subscriptionEvents: results[12].deletedCount || 0,
     subscriptions: results[13].deletedCount || 0,
     sessions: results[14].deletedCount || 0,
-    learningProgress: results[15].deletedCount || 0,
-    assessments: results[16].deletedCount || 0,
-    onboardingSessions: results[17].deletedCount || 0,
+    appleTransactionsAnonymized: results[15].modifiedCount || 0,
+    appleSubscriptions: results[16].deletedCount || 0,
+    learningProgress: results[17].deletedCount || 0,
+    assessments: results[18].deletedCount || 0,
+    onboardingSessions: results[19].deletedCount || 0,
+    downloadGrants: results[20].deletedCount || 0,
+    aiResponseReports: results[21].deletedCount || 0,
+    billingCancellationQueued,
   };
 }
 

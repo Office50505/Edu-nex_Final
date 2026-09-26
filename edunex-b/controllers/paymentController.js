@@ -479,7 +479,7 @@ async function completeSimulatedPayment(req, res) {
       reason: result === 'cancelled' ? 'cancelled' : 'failed',
     }));
   } catch (error) {
-    console.error('Simulated payment error:', error);
+    console.error(`Simulated payment failed (${error?.code || error?.name || 'unknown'})`);
     if (wantsJsonResponse(req)) {
       return res.status(500).json({ success: false, error: 'Simulated payment failed' });
     }

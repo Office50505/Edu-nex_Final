@@ -44,7 +44,7 @@ cron.schedule('*/15 * * * *', async function promoteTrialsOnMandate() {
         // If the mandate has NOT been approved yet, keep '1rs trial' and wait for MANDATE_APPROVED
         // (the webhook will promote them immediately when the mandate arrives)
         if (!sub.phonePeMandateId) {
-          console.log(`[CRON] User ${user._id} trial expired but no mandate yet — skipping`);
+          console.log('[CRON] Trial expired but no mandate exists — skipping');
           continue;
         }
 
@@ -73,9 +73,9 @@ cron.schedule('*/15 * * * *', async function promoteTrialsOnMandate() {
           metadata: { source: 'trial_promotion', via: 'cron_24h' },
         });
 
-        console.log(`[CRON] Promoted user ${user._id} from 1rs_trial → subscribed`);
+        console.log('[CRON] Promoted an eligible trial to subscribed');
       } catch (err) {
-        console.error(`[CRON] Error processing user ${user._id}:`, err.message);
+        console.error(`[CRON] Trial processing failed (${err?.code || err?.name || 'unknown'})`);
       }
     }
   } catch (err) {

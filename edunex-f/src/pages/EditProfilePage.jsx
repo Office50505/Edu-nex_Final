@@ -6,18 +6,18 @@ import { useEduNexRuntimeReady } from "../hooks/useEduNexRuntimeReady.js";
 import { route } from "../lib/routes.js";
 
 const ALLOWED_AVATARS = [
-  "assets/male1.jpeg",
-  "assets/male2.jpeg",
-  "assets/male3.jpeg",
-  "assets/male4.jpeg",
-  "assets/male5.jpeg",
-  "assets/male6.jpeg",
-  "assets/female1.jpeg",
-  "assets/female2.jpeg",
-  "assets/female3.jpeg",
-  "assets/female4.jpeg",
-  "assets/female5.jpeg",
-  "assets/female6.jpeg",
+  "assets/avatars/male1-v1.webp",
+  "assets/avatars/male2-v1.webp",
+  "assets/avatars/male3-v1.webp",
+  "assets/avatars/male4-v1.webp",
+  "assets/avatars/male5-v1.webp",
+  "assets/avatars/male6-v1.webp",
+  "assets/avatars/female1-v1.webp",
+  "assets/avatars/female2-v1.webp",
+  "assets/avatars/female3-v1.webp",
+  "assets/avatars/female4-v1.webp",
+  "assets/avatars/female5-v1.webp",
+  "assets/avatars/female6-v1.webp",
 ];
 
 function storedUserTarget() {
@@ -59,11 +59,13 @@ function normalizedAvatarPath(value) {
     const parsed = new URL(raw, window.location.origin);
     const path = parsed.pathname.replace(/^\/+/, "");
     const assetIndex = path.lastIndexOf("assets/");
-    return assetIndex >= 0 ? path.slice(assetIndex) : raw;
+    const normalized = assetIndex >= 0 ? path.slice(assetIndex) : raw;
+    return normalized.replace(/^assets\/(male[1-6]|female[1-6])\.jpeg$/i, (_, name) => `assets/avatars/${name.toLowerCase()}-v1.webp`);
   } catch (_) {
     const cleaned = raw.replace(/^\/+/, "");
     const assetIndex = cleaned.lastIndexOf("assets/");
-    return assetIndex >= 0 ? cleaned.slice(assetIndex) : cleaned;
+    const normalized = assetIndex >= 0 ? cleaned.slice(assetIndex) : cleaned;
+    return normalized.replace(/^assets\/(male[1-6]|female[1-6])\.jpeg$/i, (_, name) => `assets/avatars/${name.toLowerCase()}-v1.webp`);
   }
 }
 
@@ -188,7 +190,7 @@ export function EditProfilePage() {
       showProfileToast("Please enter a valid email address", false);
       return;
     }
-    if (form.age && (Number(form.age) < 5 || Number(form.age) > 80)) {
+    if (form.age && (Number(form.age) < 13 || Number(form.age) > 80)) {
       showProfileToast("Please select a valid age", false);
       return;
     }
@@ -294,7 +296,7 @@ export function EditProfilePage() {
           <h2 className="ep-card-title"><i className="fas fa-id-badge" aria-hidden="true"></i> Identity</h2>
           <div className="ep-field">
             <label className="ep-label" htmlFor="ageInput">Age</label>
-            <input className="ep-input" id="ageInput" type="number" min="5" max="80" style={{ color: "var(--cyan)", fontWeight: 800 }} value={form.age} onChange={(event) => setField("age", event.target.value)} />
+            <input className="ep-input" id="ageInput" type="number" min="13" max="80" style={{ color: "var(--cyan)", fontWeight: 800 }} value={form.age} onChange={(event) => setField("age", event.target.value)} />
           </div>
           <div className="ep-field" style={{ marginBottom: 0 }}>
             <label className="ep-label">Gender</label>

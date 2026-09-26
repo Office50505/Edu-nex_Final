@@ -11,6 +11,7 @@ const PHONE_ERROR = "Please enter a valid 10-digit phone number.";
 const TERMS_ERROR = "Please agree to the Privacy Policy.";
 const NAME_ERROR = "Please enter your name.";
 const PASSWORD_ERROR = "Password must be at least 8 characters.";
+const AGE_ERROR = "Please select your age. Skillomate is for learners aged 13 and older.";
 const VERIFY_FIRST_ERROR = "Please verify your mobile number first.";
 const SIGNUP_FALLBACK_ERROR = "Signup failed. Please try again.";
 const DEFAULT_OTP_LENGTH = 6;
@@ -20,16 +21,16 @@ const AGE_ITEM_HEIGHT = 52;
 
 const avatars = {
   male: [
-    { src: "assets/male1.jpeg", name: "Avatar 1" },
-    { src: "assets/male2.jpeg", name: "Avatar 2" },
-    { src: "assets/male3.jpeg", name: "Avatar 3" },
-    { src: "assets/male4.jpeg", name: "Avatar 4" },
+    { src: "assets/avatars/male1-v1.webp", name: "Avatar 1" },
+    { src: "assets/avatars/male2-v1.webp", name: "Avatar 2" },
+    { src: "assets/avatars/male3-v1.webp", name: "Avatar 3" },
+    { src: "assets/avatars/male4-v1.webp", name: "Avatar 4" },
   ],
   female: [
-    { src: "assets/female1.jpeg", name: "Avatar 5" },
-    { src: "assets/female2.jpeg", name: "Avatar 6" },
-    { src: "assets/female3.jpeg", name: "Avatar 7" },
-    { src: "assets/female4.jpeg", name: "Avatar 8" },
+    { src: "assets/avatars/female1-v1.webp", name: "Avatar 5" },
+    { src: "assets/avatars/female2-v1.webp", name: "Avatar 6" },
+    { src: "assets/avatars/female3-v1.webp", name: "Avatar 7" },
+    { src: "assets/avatars/female4-v1.webp", name: "Avatar 8" },
   ],
 };
 
@@ -83,7 +84,7 @@ function saveAuth(data) {
 
 function normalizedSignupAvatarPath(value) {
   const raw = String(value || "").trim();
-  if (!raw) return "assets/male1.jpeg";
+  if (!raw) return "assets/avatars/male1-v1.webp";
   try {
     const parsed = new URL(raw, window.location.origin);
     const path = parsed.pathname.replace(/^\/+/, "");
@@ -124,9 +125,9 @@ export function SignupPage() {
   const [password, setPassword] = useState("");
   const [gender, setGender] = useState("male");
   const [avatarTab, setAvatarTab] = useState("male");
-  const [avatar, setAvatar] = useState({ src: "assets/male1.jpeg", name: "Learner", gender: "male" });
+  const [avatar, setAvatar] = useState({ src: "assets/avatars/male1-v1.webp", name: "Learner", gender: "male" });
   const [avatarModalOpen, setAvatarModalOpen] = useState(false);
-  const [age, setAge] = useState(24);
+  const [age, setAge] = useState(null);
   const [thumbStyle, setThumbStyle] = useState({ left: 6, width: 0 });
   const [thumbReady, setThumbReady] = useState(false);
   useViewportLock(avatarModalOpen);
@@ -216,7 +217,7 @@ export function SignupPage() {
     if (step !== 3) return;
     const scroller = ageScrollerRef.current;
     if (!scroller) return;
-    scroller.scrollTop = (age - START_AGE) * AGE_ITEM_HEIGHT;
+    scroller.scrollTop = age === null ? 0 : (age - START_AGE) * AGE_ITEM_HEIGHT;
   }, [age, step]);
 
   useEffect(() => {
@@ -380,6 +381,10 @@ export function SignupPage() {
       setStep3Error(PASSWORD_ERROR);
       return;
     }
+    if (!Number.isInteger(age) || age < START_AGE || age > END_AGE) {
+      setStep3Error(AGE_ERROR);
+      return;
+    }
     if (!signupToken) {
       setStep3Error(VERIFY_FIRST_ERROR);
       return;
@@ -516,7 +521,7 @@ export function SignupPage() {
 
   const handleAgeKeyDown = (event) => {
     const ageStep = event.key === "PageUp" || event.key === "PageDown" ? 5 : 1;
-    let nextAge = age;
+    let nextAge = age ?? START_AGE;
     if (event.key === "ArrowUp" || event.key === "ArrowLeft" || event.key === "PageUp") nextAge -= ageStep;
     else if (event.key === "ArrowDown" || event.key === "ArrowRight" || event.key === "PageDown") nextAge += ageStep;
     else if (event.key === "Home") nextAge = START_AGE;
@@ -814,7 +819,7 @@ export function SignupPage() {
                   role="listbox"
                   tabIndex={0}
                   aria-labelledby="age-label"
-                  aria-activedescendant={`signup-age-${age}`}
+                  aria-activedescendant={age === null ? undefined : `signup-age-${age}`}
                   onKeyDown={handleAgeKeyDown}
                   onPointerDown={handleAgePointerDown}
                   onPointerMove={handleAgePointerMove}

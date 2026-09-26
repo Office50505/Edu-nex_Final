@@ -2,27 +2,18 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <!-- skillomate-runtime-config -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content">
   <meta name="theme-color" content="#000000">
-  <script vite-ignore src="/js/theme-preload.js"></script>
+  <meta name="description" content="Learn practical AI, content, business, and digital skills through short expert-led Skillomate courses.">
   <title>Skillomate AI</title>
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="preconnect" href="https://api.skillomate.in" crossorigin>
+  <link rel="preload" href="/src/assets/fonts/manrope-latin-v20.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/src/assets/fonts/fraunces-latin-v38.woff2" as="font" type="font/woff2" crossorigin>
 </head>
 <body>
-  <div id="root">
-    <div style="min-height:100vh;display:grid;place-items:center;background:#000;color:#fff;font-family:Manrope,Arial,sans-serif;">
-      <div style="text-align:center;">
-        <img src="/assets/skillomate-logo-dark.png" alt="Skillomate" style="display:block;width:180px;height:auto;margin:0 auto;">
-        <div style="margin-top:10px;font-size:.82rem;font-weight:700;color:#9ca3af;">Loading learning experience...</div>
-      </div>
-    </div>
-  </div>
+  <div id="root" style="min-height:100vh"></div>
   <script type="module" src="/src/main.jsx"></script>
-  <script type="module" src="/js/nex-ai-widget.js"></script>
 </body>
 </html>

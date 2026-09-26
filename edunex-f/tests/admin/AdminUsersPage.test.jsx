@@ -54,7 +54,6 @@ function mockAdminApi(courses = [course]) {
     if (path === "/api/admin/user-management") return [learner];
     if (path === "/api/admin/courses?summary=1") return courses;
     if (path.endsWith("/actions")) return [];
-    if (path.endsWith("/ip-location")) return { location: "Unavailable" };
     if (path === "/api/admin/users/user-1/courses" && options.method === "PATCH") {
       return {
         message: "AI Influencer Course added to this learner.",

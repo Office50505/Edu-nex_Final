@@ -65,7 +65,7 @@ async function expireOverdueSubscriptions() {
 
     console.log(`[CRON] Expired ${overdue.length} subscription(s)`);
   } catch (err) {
-    console.error('[CRON] Expire overdue subscriptions failed:', err);
+    console.error(`[CRON] Expire overdue subscriptions failed (${err?.code || err?.name || 'unknown'})`);
   }
 }
 

@@ -4,12 +4,20 @@ require File.join(File.dirname(`node --print "require.resolve('react-native/pack
 require 'json'
 podfile_properties = JSON.parse(File.read(File.join(__dir__, 'Podfile.properties.json'))) rescue {}
 
-ENV['RCT_NEW_ARCH_ENABLED'] = podfile_properties['newArchEnabled'] == 'true' ? '1' : '0'
-ENV['EX_DEV_CLIENT_NETWORK_INSPECTOR'] = podfile_properties['EX_DEV_CLIENT_NETWORK_INSPECTOR']
+def ccache_enabled?(podfile_properties)
+  return ENV['USE_CCACHE'] == '1' if ENV['USE_CCACHE']
+
+  podfile_properties['apple.ccacheEnabled'] == 'true'
+end
+
+ENV['EX_DEV_CLIENT_NETWORK_INSPECTOR'] ||= podfile_properties['EX_DEV_CLIENT_NETWORK_INSPECTOR']
+ENV['RCT_USE_RN_DEP'] ||= podfile_properties['ios.buildReactNativeFromSource'] == 'true' ? '0' : '1'
+ENV['RCT_USE_PREBUILT_RNCORE'] ||= podfile_properties['ios.buildReactNativeFromSource'] == 'true' ? '0' : '1'
+ENV['RCT_HERMES_V1_ENABLED'] ||= '0' if podfile_properties['expo.useHermesV1'] == 'false'
+ENV['EXPO_USE_PRECOMPILED_MODULES'] = '0' if podfile_properties['EXPO_USE_PRECOMPILED_MODULES'] == 'false'
+ENV['EXPO_USE_PRECOMPILED_MODULES'] ||= '1'
 
 platform :ios, podfile_properties['ios.deploymentTarget'] || '15.1'
-install! 'cocoapods',
-  :deterministic_uuids => false
 
 prepare_react_native_project!
 
@@ -23,7 +31,8 @@ target 'ProtectedVideo' do
       'node',
       '--no-warnings',
       '--eval',
-      'require(require.resolve(\'expo-modules-autolinking\', { paths: [require.resolve(\'expo/package.json\')] }))(process.argv.slice(1))',
+      'require(\'expo/bin/autolinking\')',
+      'expo-modules-autolinking',
       'react-native-config',
       '--json',
       '--platform',
@@ -49,7 +58,7 @@ target 'ProtectedVideo' do
       installer,
       config[:reactNativePath],
       :mac_catalyst_enabled => false,
-      :ccache_enabled => podfile_properties['apple.ccacheEnabled'] == 'true',
+      :ccache_enabled => ccache_enabled?(podfile_properties),
     )
 
     installer.pods_project.targets.each do |target|
@@ -61,59 +70,6 @@ target 'ProtectedVideo' do
         end
       end
 
-      target.shell_script_build_phases.each do |phase|
-        case phase.name
-        when '[CP-User] Generate Specs'
-          phase.shell_script = phase.shell_script.gsub(
-            '/bin/sh -c "$WITH_ENVIRONMENT $SCRIPT_PHASES_SCRIPT"',
-            ". \"$WITH_ENVIRONMENT\"\n/bin/sh \"$SCRIPT_PHASES_SCRIPT\""
-          )
-        when '[CP-User] Generate app.config for prebuilt Constants.manifest'
-          phase.shell_script = 'bash -l "$PODS_TARGET_SRCROOT/../scripts/get-app-config-ios.sh"'
-        end
-      end
-    end
-
-    app_delegate_umbrella = File.join(
-      __dir__,
-      'Pods',
-      'Target Support Files',
-      'React-RCTAppDelegate',
-      'React-RCTAppDelegate-umbrella.h'
-    )
-    if File.exist?(app_delegate_umbrella)
-      contents = File.read(app_delegate_umbrella)
-      cleaned = contents.gsub(%Q{#import "RCTAppDelegate+Protected.h"\n}, '')
-      File.write(app_delegate_umbrella, cleaned) if cleaned != contents
-    end
-
-    # RN 0.86's AppDelegate headers are visible from both node_modules and the
-    # React-Core-prebuilt xcframework. Add matching guards to both copies so
-    # Clang does not see duplicate Objective-C interfaces through header maps.
-    react_app_delegate_header_roots = [
-      File.join(__dir__, 'Pods', 'React-Core-prebuilt', 'React.xcframework', 'Headers', 'React_RCTAppDelegate'),
-      File.join(__dir__, '..', 'node_modules', 'react-native', 'Libraries', 'AppDelegate')
-    ]
-    react_app_delegate_header_roots.each do |root|
-      Dir.glob(File.join(root, '*.h')).each do |header|
-        guard = "SKILLOMATE_RN_#{File.basename(header).gsub(/[^A-Za-z0-9_]/, '_').upcase}"
-        contents = File.read(header)
-        next if contents.include?("#ifndef #{guard}")
-        File.chmod(0644, header) rescue nil
-        contents = contents.sub(/\A(?:#pragma once\n)?/, '')
-        File.write(header, "#ifndef #{guard}\n#define #{guard}\n#{contents}\n#endif /* #{guard} */\n")
-      end
-    end
-
-    # This is necessary for Xcode 14, because it signs resource bundles by default
-    # when building for devices.
-    installer.target_installation_results.pod_target_installation_results
-      .each do |pod_name, target_installation_result|
-      target_installation_result.resource_bundle_targets.each do |resource_bundle_target|
-        resource_bundle_target.build_configurations.each do |config|
-          config.build_settings['CODE_SIGNING_ALLOWED'] = 'NO'
-        end
-      end
     end
   end
 

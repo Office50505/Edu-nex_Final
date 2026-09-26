@@ -50,8 +50,8 @@ test('admin learner management exposes only the latest recorded session IP', () 
   assert.match(serverSource, /Session\.aggregate\(\[/);
   assert.match(serverSource, /ipAddress: \{ \$first: '\$ipAddress' \}/);
   assert.match(serverSource, /networkSummary: latestSessionByUser/);
-  assert.match(serverSource, /app\.get\('\/api\/admin\/users\/:id\/ip-location', protectAdmin/);
-  assert.match(serverSource, /isPrivateIpAddress\(ipAddress\)/);
+  assert.doesNotMatch(serverSource, /ipwho\.is/);
+  assert.doesNotMatch(serverSource, /\/api\/admin\/users\/:id\/ip-location/);
 });
 
 test('admin purchase history combines payment orders and course ownership changes', () => {

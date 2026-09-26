@@ -186,7 +186,7 @@ async function sendSilentLogout(deviceToken) {
     }
   } catch (err) {
     if (process.env.NODE_ENV !== 'production') {
-      console.warn('Silent logout push skipped:', err.message);
+      console.warn(`Silent logout push skipped (${err?.code || err?.name || 'unknown'})`);
     }
     // Never throw. Logout notification failure must not block login.
   }

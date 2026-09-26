@@ -34,7 +34,10 @@ it("fits the first-time AI setup and chat flow when opened from the mobile video
   const api = {
     getAccessToken: vi.fn(() => "active-token"),
     getUser: vi.fn(() => ({ _id: "learner-1", fullName: "Learner" })),
-    authRequest: vi.fn(async () => ({ reply: "Hello! How can I help?" })),
+    authRequest: vi.fn(async (path, options) => {
+      if (path === "/api/ai/consent") return options ? { granted: true } : { granted: true };
+      return { reply: "Hello! How can I help?" };
+    }),
   };
   window.EduNex = api;
   vi.stubGlobal("EduNex", api);

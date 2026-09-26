@@ -8113,9 +8113,9 @@ html[data-theme="light"] .react-page-root[data-page="index.html"] .continue-lear
   font-style: normal;
 }
 
-.react-page-root[data-page="index.html"] .lesson-progress .material-symbols-outlined,
-.react-page-root[data-page="index.html"] .watched-card .material-symbols-outlined,
-.react-page-root[data-page="index.html"] .project-card .material-symbols-outlined {
+.react-page-root[data-page="index.html"] .lesson-progress :where(.material-symbols-outlined, .enx-icon),
+.react-page-root[data-page="index.html"] .watched-card :where(.material-symbols-outlined, .enx-icon),
+.react-page-root[data-page="index.html"] .project-card :where(.material-symbols-outlined, .enx-icon) {
   font-size: 14px;
 }
 
@@ -9798,6 +9798,13 @@ body {
 
 .react-page-root[data-page="index.html"] .hero-carousel-viewport {
   max-width: 100%;
+}
+
+@supports (content-visibility: auto) {
+  .react-page-root[data-page="index.html"] .curriculum-home {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 1400px;
+  }
 }
 
 @media (max-width: 1120px) {

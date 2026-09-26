@@ -199,7 +199,7 @@ it('shares only the offer-page URL from the player action', async () => {
   expect(share.mock.calls[0][0]).toEqual({
     title: 'Skillomate special offer',
     text: 'Start your Skillomate learning journey with this special offer.',
-    url: `${window.location.origin}/ai`,
+    url: `${window.location.origin}/skillomate-1rs-for-24-hours-full-course-access`,
   });
   expect(share.mock.calls[0][0].url).not.toContain('/videos');
   expect(screen.getByText('Shared')).toBeTruthy();
@@ -216,7 +216,7 @@ it('copies the offer-page URL when native sharing is unavailable', async () => {
 
   fireEvent.click(screen.getByRole('button', { name: 'Share Skillomate offer' }));
 
-  await waitFor(() => expect(writeText).toHaveBeenCalledWith(`${window.location.origin}/ai`));
+  await waitFor(() => expect(writeText).toHaveBeenCalledWith(`${window.location.origin}/skillomate-1rs-for-24-hours-full-course-access`));
   expect(screen.getByText('Link copied')).toBeTruthy();
   Object.defineProperty(navigator, 'clipboard', { configurable: true, value: undefined });
 });

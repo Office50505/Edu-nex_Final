@@ -33,7 +33,7 @@ test('annual entitlement uses paid invoice dates, survives cancellation and reje
 function controller({ pending = null, remotePlan = plan } = {}) {
   let billing = pending, created, recorded;
   const models = {
-    RazorpayBilling: { findById: async () => billing, findOneAndUpdate: async (_q, update) => { recorded = { ...recorded, ...update.$set }; billing = { _id: 'u', ...recorded }; return billing; } },
+    RazorpayBilling: { findById: async () => billing, updateOne: async () => ({}), findOneAndUpdate: async (_q, update) => { recorded = { ...recorded, ...update.$set }; billing = { _id: 'u', ...recorded }; return billing; } },
     Subscription: { findOne: async () => null }, Order: { exists: async () => false },
   };
   const module = { exports: {} };

@@ -1,7 +1,9 @@
 const mongoose = require('mongoose');
 
 const orderSchema = new mongoose.Schema({
-  user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null },
+  retainedAccountHash: { type: String, default: null, index: true },
+  accountDeletedAt: { type: Date, default: null },
   subscription: { type: mongoose.Schema.Types.ObjectId, ref: 'Subscription', default: null },
   coupon: { type: mongoose.Schema.Types.ObjectId, ref: 'Coupon', default: null },
   totalAmount: { type: Number, required: true },

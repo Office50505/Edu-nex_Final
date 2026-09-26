@@ -62,7 +62,7 @@ test('player overlays cover the screen with the React Native 0.86 StyleSheet API
 
 test('uploaded CloudFront lesson thumbnails win over provider guesses', () => {
   const context = { API_BASE: 'https://api.example', getBunnyGuid: () => '', getCourseThumbnailUri: () => 'https://api.example/course.jpg' };
-  for (const name of ['getGoogleDriveFileId', 'normalizeThumbnailUrl', 'getHomeLessonThumbnailUrl']) {
+  for (const name of ['getGoogleDriveFileId', 'normalizeThumbnailUrl', 'getLessonThumbnailUrl', 'getHomeLessonThumbnailUrl']) {
     context[name] = compile(nodes.find(n => n.type === 'FunctionDeclaration' && n.id.name === name), context);
   }
   assert.equal(context.getHomeLessonThumbnailUrl({ provider: 'aws_cloudfront', thumbnailUrl: '/uploads/lesson.jpg' }, {}), 'https://api.example/uploads/lesson.jpg');
@@ -79,12 +79,13 @@ test('mute and playback speed changes do not trigger a source reload', () => {
 });
 
 test('AI suggestions disappear after the first user message', () => {
-  for (const [messagesName, loadingName] of [['messages', 'loading'], ['courseAiMessages', 'courseAiLoading']]) {
-    const condition = nodes.find(n => n.type === 'LogicalExpression' && source.slice(n.start, n.end) === `!${loadingName} && !${messagesName}.some(message => message.role === "user")`);
-    assert.ok(condition);
-    assert.equal(compile(condition, { [messagesName]: [{ role: 'assistant' }], [loadingName]: false }), true);
-    assert.equal(compile(condition, { [messagesName]: [{ role: 'user' }, { role: 'assistant' }], [loadingName]: false }), false);
-  }
+  const hasConversation = declaration('hasConversation').init;
+  assert.equal(compile(hasConversation, { messages: [{ role: 'assistant' }], loading: false }), false);
+  assert.equal(compile(hasConversation, { messages: [{ role: 'user' }, { role: 'assistant' }], loading: false }), true);
+  const courseCondition = nodes.find(n => n.type === 'LogicalExpression' && source.slice(n.start, n.end) === '!courseAiLoading && !courseAiMessages.some(message => message.role === "user")');
+  assert.ok(courseCondition);
+  assert.equal(compile(courseCondition, { courseAiMessages: [{ role: 'assistant' }], courseAiLoading: false }), true);
+  assert.equal(compile(courseCondition, { courseAiMessages: [{ role: 'user' }], courseAiLoading: false }), false);
 });
 
 test('mobile JSON requests time out while waiting for response data', async () => {
@@ -115,7 +116,8 @@ test('Home displays course metadata before its playback request finishes',async(
   const state={};let finishPlayback;
   const context={cancelled:false,homeAbort:new AbortController(),homeCatalogCourse:null,hasAccess:true,user:{_id:'u',sessionId:'s'},
     setLoading:value=>state.loading=value,setLoadError:value=>state.error=value,setPrimaryCourse:value=>state.course=value,
-    fetchApiJson:async path=>path.includes('/top')?[{_id:'c',title:'Course',videos:[{_id:'v'}]}]:new Promise(resolve=>{finishPlayback=resolve;})};
+    fetchApiJson:async path=>path.includes('/top')?[{_id:'c',title:'Course',videos:[{_id:'v'}]}]:[],
+    session:{requestJson:async()=>new Promise(resolve=>{finishPlayback=resolve;})}};
   const load=compile(nodes.find(n=>n.type==='FunctionDeclaration'&&n.id.name==='loadPrimaryCourse'),context);
   const pending=load();await new Promise(resolve=>setImmediate(resolve));
   assert.equal(state.course._id,'c');assert.equal(state.loading,false);

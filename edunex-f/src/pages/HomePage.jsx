@@ -28,6 +28,8 @@ const FALLBACK_COURSES = [
   videos: Array.from({ length: lessons }, (_, index) => ({ title: `Lesson ${index + 1}` })),
 }));
 
+const HERO_CAROUSEL_ITEM_LIMIT = 7;
+
 function courseId(course) {
   return String(course?._id || course?.id || "");
 }
@@ -298,8 +300,8 @@ function itemsForTab(tab, courses) {
       }));
     });
     return enrolledLessons.length
-      ? enrolledLessons
-      : enrolled.map((item) => ({ type: "enrolled", course: item.course, progress: item.progress }));
+      ? enrolledLessons.slice(0, HERO_CAROUSEL_ITEM_LIMIT)
+      : enrolled.slice(0, HERO_CAROUSEL_ITEM_LIMIT).map((item) => ({ type: "enrolled", course: item.course, progress: item.progress }));
   }
   if (tab === "for-you") {
     const seen = new Set();
@@ -317,12 +319,14 @@ function itemsForTab(tab, courses) {
     });
     const path = pathItem(courses);
     if (path && !seen.has(courseId(path.course))) items.push(path);
-    return items;
+    return items.slice(0, HERO_CAROUSEL_ITEM_LIMIT);
   }
-  return lessons.length ? lessons : courses.slice(0, 8).map((course) => ({ type: "trending", course }));
+  return lessons.length
+    ? lessons.slice(0, HERO_CAROUSEL_ITEM_LIMIT)
+    : courses.slice(0, HERO_CAROUSEL_ITEM_LIMIT).map((course) => ({ type: "trending", course }));
 }
 
-function repeatedItems(items, minimum = 7) {
+function repeatedItems(items, minimum = HERO_CAROUSEL_ITEM_LIMIT) {
   const uniqueItems = [];
   const seen = new Set();
   items.forEach((item, index) => {
@@ -344,8 +348,23 @@ function repeatedItems(items, minimum = 7) {
   };
 }
 
+const MATERIAL_ICON_NAMES = {
+  arrow_forward: "arrowRight",
+  assignment: "receipt",
+  auto_awesome: "sparkles",
+  devices: "phone",
+  play_arrow: "play",
+  play_circle: "play",
+  play_lesson: "play",
+  schedule: "clock",
+  search: "search",
+  verified: "checkCircle",
+  video_library: "video",
+  workspace_premium: "award",
+};
+
 function MaterialIcon({ children, className = "" }) {
-  return <span className={`material-symbols-outlined${className ? ` ${className}` : ""}`}>{children}</span>;
+  return <EnxIcon name={MATERIAL_ICON_NAMES[children] || "sparkles"} className={className} />;
 }
 
 function preventNativeDrag(event) {
@@ -360,7 +379,7 @@ function imageCandidate(value) {
   return window.EduNex?.normalizeImageSrc?.(value) || String(value || "").trim();
 }
 
-function courseFallbackImage(course, fallback = "/assets/female1.jpeg") {
+function courseFallbackImage(course, fallback = "/assets/avatars/female1-v1.webp") {
   if (!course) return fallback;
   return imageCandidate(window.EduNex?.courseImage?.(course) || course.thumbnailUrl || course.thumbnailVerticalUrl) || fallback;
 }
@@ -396,7 +415,7 @@ function watchedLectureItems(course) {
   }));
 }
 
-function handleCurriculumImageError(event, course, fallback = "/assets/female1.jpeg") {
+function handleCurriculumImageError(event, course, fallback = "/assets/avatars/female1-v1.webp") {
   const image = event.currentTarget;
   const next = courseFallbackImage(course, fallback);
   if (next && image.src !== new URL(next, window.location.origin).href) {
@@ -663,6 +682,11 @@ function HeroCourseCard({ item, index, isCenter, hasAccess, isSaved, onOpen, onC
           <img
             src={image}
             alt={title}
+            width="640"
+            height="360"
+            loading={isCenter ? "eager" : "lazy"}
+            decoding="async"
+            fetchPriority={isCenter ? "high" : "low"}
             onError={(event) => handleCourseImageError(event, course)}
           />
         </a>
@@ -786,7 +810,7 @@ export function HomePage() {
   const [accessResolved, setAccessResolved] = useState(() => hasLocalCourseAccess() || !authenticatedUserId());
   const [wishlist, setWishlist] = useState(() => localWishlist());
   const [activeTab, setActiveTab] = useState("trending");
-  const [activeIndex, setActiveIndex] = useState(10);
+  const [activeIndex, setActiveIndex] = useState(HERO_CAROUSEL_ITEM_LIMIT);
   const [query, setQuery] = useState("");
   const [status, setStatus] = useState("loading");
   const [authUserId, setAuthUserId] = useState(() => authenticatedUserId());
@@ -945,7 +969,7 @@ export function HomePage() {
   useEffect(() => {
     directionRef.current = 1;
     if (!loop.baseCount) {
-      setActiveIndex(10);
+      setActiveIndex(HERO_CAROUSEL_ITEM_LIMIT);
       return;
     }
     setActiveIndex(loop.baseCount);

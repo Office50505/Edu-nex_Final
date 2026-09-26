@@ -25,6 +25,7 @@
     "test:cron-locks": "node --test tests/distributed-lock.test.cjs",
     "test:phonepe-legacy": "node --test tests/phonepe-multi-instance.test.cjs",
     "audit:phonepe-cleanup": "node scripts/audit-phonepe-cleanup.cjs",
+    "migration:flag-underage": "node scripts/flag-underage-accounts.cjs",
     "cleanup:phonepe": "node scripts/cleanup-phonepe.cjs",
     "test:certification": "node --test tests/certification.test.cjs",
     "test:thumbnail-storage": "node --test tests/thumbnail-cdn.test.cjs",
@@ -35,6 +36,7 @@
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
+    "@apple/app-store-server-library": "^3.1.0",
     "@aws-sdk/client-s3": "^3.1131.0",
     "@aws-sdk/client-ssm": "^3.1141.0",
     "bcryptjs": "^3.0.3",

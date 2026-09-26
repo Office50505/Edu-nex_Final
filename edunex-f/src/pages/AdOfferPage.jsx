@@ -516,7 +516,7 @@ export function AdOfferPage({ offerPage }) {
         <section className="ad-signin-modal" role="dialog" aria-modal="true" aria-labelledby="ad-signin-title">
           <span className="ad-sheet-handle" aria-hidden="true" />
           <button className="ad-signin-close" type="button" aria-label="Close" onClick={() => setModalStep(null)}>×</button>
-          <div className="ad-signin-brand"><img src="/assets/skillomate-logo-dark.png" alt="Skillomate" /></div>
+          <div className="ad-signin-brand"><img src="/assets/skillomate-logo-dark-v1.webp" alt="Skillomate" width="480" height="160" /></div>
           {modalStep === "phone" ? <form onSubmit={sendOtp}>
             <h2 id="ad-signin-title">Login / Sign up</h2>
             <p>Enter your mobile number, we&apos;ll send an OTP.</p>

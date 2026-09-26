@@ -41,13 +41,9 @@
 	<dict>
 		<key>NSAllowsArbitraryLoads</key>
 		<false/>
-		<key>NSAllowsLocalNetworking</key>
-		<true/>
 	</dict>
 	<key>RCTNewArchEnabled</key>
 	<true/>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Allow access only when you choose a profile photo for your Skillomate account.</string>
 	<key>UILaunchStoryboardName</key>
 	<string>SplashScreen</string>
 	<key>UIRequiredDeviceCapabilities</key>

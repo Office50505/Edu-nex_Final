@@ -216,7 +216,9 @@ export function ProfilePage() {
   };
 
   const fallbackAvatar = window.EduNex?.avatarFallback?.(user) || FALLBACK_AVATAR;
-  const avatar = user?.avatar || fallbackAvatar;
+  const avatar = user?.avatar
+    ? (window.EduNex?.normalizeImageSrc?.(user.avatar) || user.avatar)
+    : fallbackAvatar;
   const displayName = user?.fullName || user?.mobileNumber || "Learner";
   const email = user?.email || user?.mobileNumber || "No email saved";
   const subscriptionLabel = user?.subscriptionLabel || profileSubscriptionLabel(user?.subscriptionStatus);

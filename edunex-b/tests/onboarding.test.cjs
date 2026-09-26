@@ -62,7 +62,7 @@ test('paid signup creates the reserved user and reuses its verified subscription
  t.mock.method(billing,'reconcileForUser',async()=>({_id:'subdoc',status:'trial',trialExpiresAt:new Date(Date.now()+86400000)}));
  const route=require('../routes/auth').stack.find(x=>x.route?.path==='/signup').route.stack[0].handle;
  const proof=jwt.sign({mobileNumber:phone,purpose:'paid-onboarding',onboardingId:id},process.env.JWT_SIGNUP_SECRET||'edunex-development-signup-secret',{expiresIn:'10m'});
- const req={body:{fullName:'Test Learner',password:'not-a-real-password',mobileNumber:phone,signupToken:proof},headers:{},socket:{remoteAddress:'127.0.0.1'}};
+ const req={body:{fullName:'Test Learner',password:'not-a-real-password',mobileNumber:phone,age:24,signupToken:proof},headers:{},socket:{remoteAddress:'127.0.0.1'}};
  const res={code:200,status(c){this.code=c;return this;},json(d){this.data=d;return this;}};
  await route(req,res);assert.equal(res.code,201,JSON.stringify(res.data));assert.equal(created._id,id);assert.equal(created.subscriptionStatus,'trial');assert.equal(created.isMobileVerified,true);assert.ok(res.data.accessToken);
 });
@@ -73,7 +73,7 @@ test('paid signup rejects unconfirmed entitlement before user creation',async t=
  t.mock.method(billing,'reconcileForUser',async()=>({status:'pending'}));
  const route=require('../routes/auth').stack.find(x=>x.route?.path==='/signup').route.stack[0].handle;
  const proof=jwt.sign({mobileNumber:'919999999999',purpose:'paid-onboarding',onboardingId:'507f1f77bcf86cd799439011'},process.env.JWT_SIGNUP_SECRET||'edunex-development-signup-secret',{expiresIn:'10m'});
- const req={body:{fullName:'Test',password:'not-a-real-password',mobileNumber:'919999999999',signupToken:proof},headers:{}};
+ const req={body:{fullName:'Test',password:'not-a-real-password',mobileNumber:'919999999999',age:24,signupToken:proof},headers:{}};
  const res={code:200,status(c){this.code=c;return this;},json(d){this.data=d;return this;}};
  await route(req,res);assert.equal(res.code,409);assert.equal(created,false);
 });
