@@ -16,7 +16,7 @@ const cleanRoutes = {
   "lesson.html": "/lesson",
   "login.html": "/login",
   "otp.html": "/otp",
-  "offer.html": "/skillomate-1rs-for-24-hours-full-course-access",
+  "offer.html": "/static-pages/skillomate-ai-influencer-course/#paywall",
   ...Object.fromEntries(Array.from({ length: 9 }, (_, index) => {
     const number = index + 2;
     return [`offer${number}.html`, `/offer${number}`];
@@ -54,7 +54,10 @@ routeAliases[""] = "index.html";
 routeAliases.home = "index.html";
 routeAliases.ai = "offer.html";
 routeAliases["1rs-offer-page"] = "offer.html";
+routeAliases["skillomate-1rs-for-24-hours-full-course-access"] = "offer.html";
 routeAliases["skillomate-1rs-offer-for-24-hours-full-course-access"] = "offer.html";
+routeAliases["static-pages/skillomate-1rs-for-24-hours-full-course-access"] = "offer.html";
+routeAliases["static-pages/skillomate-ai-influencer-course"] = "offer.html";
 routeAliases["privacy-policy"] = "privacy.html";
 routeAliases["delete-account"] = "delete-account.html";
 routeAliases.support = "help.html";
@@ -87,6 +90,7 @@ export function route(value = "/") {
 export function pageKeyFromPath(pathname = "/") {
   const normalized = String(pathname || "/").replace(/\/+$/, "").replace(/^\/+/, "");
   if (!normalized) return "index.html";
+  if (routeAliases[normalized]) return routeAliases[normalized];
   const lastSegment = normalized.split("/").filter(Boolean).pop() || "";
   return routeAliases[lastSegment] || (lastSegment.endsWith(".html") ? lastSegment : `${lastSegment}.html`);
 }

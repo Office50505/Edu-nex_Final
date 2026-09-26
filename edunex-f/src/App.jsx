@@ -140,7 +140,13 @@ export default function App() {
   usePresenceHeartbeat(!adminPage);
 
   useEffect(() => {
-    const legacyOfferPaths = new Set(["/ai", "/1rs-offer-page", "/skillomate-1rs-offer-for-24-hours-full-course-access"]);
+    const legacyOfferPaths = new Set([
+      "/ai",
+      "/1rs-offer-page",
+      "/skillomate-1rs-for-24-hours-full-course-access",
+      "/skillomate-1rs-offer-for-24-hours-full-course-access",
+      "/static-pages/skillomate-1rs-for-24-hours-full-course-access",
+    ]);
     if (!legacyOfferPaths.has(locationState.pathname.replace(/\/+$/, ""))) return;
     const next = `${route("offer.html")}${locationState.search}${locationState.hash}`;
     window.history.replaceState({}, "", next);
