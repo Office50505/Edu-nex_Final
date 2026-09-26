@@ -140,7 +140,8 @@ export default function App() {
   usePresenceHeartbeat(!adminPage);
 
   useEffect(() => {
-    if (locationState.pathname.replace(/\/+$/, "") !== "/ai") return;
+    const legacyOfferPaths = new Set(["/ai", "/1rs-offer-page"]);
+    if (!legacyOfferPaths.has(locationState.pathname.replace(/\/+$/, ""))) return;
     const next = `${route("offer.html")}${locationState.search}${locationState.hash}`;
     window.history.replaceState({}, "", next);
     setLocationState(currentLocationState());
