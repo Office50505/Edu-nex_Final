@@ -173,7 +173,7 @@ function driveThumbnailFallback(course) {
     const fileMatch = parsed.pathname.match(/\/file\/d\/([^/]+)/);
     const id = fileMatch?.[1] || parsed.searchParams.get("id");
     if (!id) return "";
-    return `https://drive.google.com/thumbnail?id=${encodeURIComponent(id)}&sz=w1200`;
+    return `https://drive.google.com/thumbnail?id=${encodeURIComponent(id)}&sz=w640`;
   } catch (_) {
     return "";
   }
@@ -192,14 +192,15 @@ function handleCourseImageError(event, course) {
   image.src = window.EduNex?.placeholderImage?.(image.alt || "Skillomate") || "";
 }
 
-function lessonImage(course, video) {
+function lessonImage(course, video, width = 640) {
   return imageCandidate(
     video?.thumbnailUrl
     || video?.thumbnailVerticalUrl
     || (video?._id && courseId(course) ? `/api/courses/${courseId(course)}/videos/${video._id}/thumbnail` : "")
-    || window.EduNex?.courseImage?.(course)
+    || window.EduNex?.courseImage?.(course, { width, quality: 76 })
     || course?.thumbnailUrl
-    || course?.thumbnailVerticalUrl
+    || course?.thumbnailVerticalUrl,
+    { width, quality: 76 },
   );
 }
 
@@ -375,13 +376,16 @@ function sectionAction(label, href = "courses.html") {
   return <a className="curriculum-section-action" href={href}>{label} <EnxIcon name="arrowRight" /></a>;
 }
 
-function imageCandidate(value) {
-  return window.EduNex?.normalizeImageSrc?.(value) || String(value || "").trim();
+function imageCandidate(value, options = {}) {
+  return window.EduNex?.normalizeImageSrc?.(value, options) || String(value || "").trim();
 }
 
 function courseFallbackImage(course, fallback = "/assets/avatars/female1-v1.webp") {
   if (!course) return fallback;
-  return imageCandidate(window.EduNex?.courseImage?.(course) || course.thumbnailUrl || course.thumbnailVerticalUrl) || fallback;
+  return imageCandidate(
+    window.EduNex?.courseImage?.(course, { width: 640, quality: 76 }) || course.thumbnailUrl || course.thumbnailVerticalUrl,
+    { width: 640, quality: 76 },
+  ) || fallback;
 }
 
 export function activeProgressLessons(courses, ownerId) {
@@ -477,14 +481,7 @@ export function CurriculumShowcase({ courses, status, authUserId, hasAccess, acc
             <article
               className="continue-lesson-card"
               key={`${courseId(lessonCourse)}-${video?._id || video?.id || lessonIndex}`}
-              role="link"
-              tabIndex={0}
               onClick={() => { window.location.href = href; }}
-              onKeyDown={(event) => {
-                if (event.key !== "Enter" && event.key !== " ") return;
-                event.preventDefault();
-                window.location.href = href;
-              }}
             >
               <img src={lessonImage(lessonCourse, video)} alt="" loading="lazy" decoding="async" onError={(event) => handleCurriculumImageError(event, lessonCourse)} />
               <div>
@@ -568,41 +565,18 @@ function HeroPlaceholderCard({ index, isCenter, tab }) {
   const isMessageCard = sourceIndex === 3;
   const title = tab === "my-courses" ? "You haven't started a course yet." : "No courses available right now.";
   const action = tab === "my-courses" ? "Explore Courses" : "Browse Courses";
-  const openFromCard = () => {
-    window.location.href = "courses.html";
-  };
 
   return (
     <article
       className={`hero-course-card hero-placeholder-card${isCenter ? " is-center" : ""}`}
-      role="link"
-      tabIndex={isCenter ? 0 : -1}
-      aria-current={isCenter ? "true" : "false"}
-      aria-label="Open courses page"
+      aria-label={isMessageCard ? title : "Loading course"}
       data-hero-index={index}
-      onClick={(event) => {
-        if (event.target.closest("a, button")) return;
-        openFromCard();
-      }}
-      onKeyDown={(event) => {
-        if (event.key !== "Enter" && event.key !== " ") return;
-        event.preventDefault();
-        openFromCard();
-      }}
     >
-      <div className="hero-card-media" onClick={(event) => {
-        if (event.target.closest("a, button")) return;
-        event.stopPropagation();
-        openFromCard();
-      }}>
+      <div className="hero-card-media">
         <span className="hero-skeleton hero-skeleton-media"></span>
         <span className="hero-card-badge">{isMessageCard ? "Course grid" : "Skillomate"}</span>
       </div>
-      <div className="hero-card-body" onClick={(event) => {
-        if (event.target.closest("a, button")) return;
-        event.stopPropagation();
-        openFromCard();
-      }}>
+      <div className="hero-card-body">
         {isMessageCard ? (
           <>
             <div className="hero-card-kicker">Courses</div>
@@ -638,7 +612,7 @@ function HeroCourseCard({ item, index, isCenter, hasAccess, isSaved, onOpen, onC
   const category = item.type === "path" ? "Learning Path" : categoryName(course);
   const image = isLesson
     ? lessonImage(course, item.video)
-    : window.EduNex?.courseImage?.(course) || course.thumbnail || course.image || "";
+    : window.EduNex?.courseImage?.(course, { width: 640, quality: 76 }) || course.thumbnail || course.image || "";
   const label = isLesson ? `Lesson ${lessonNumber}` : item.type === "enrolled" ? "Continue Learning" : (item.type === "path" ? "Suggested Path" : category);
   const lessonTitle = course.videos?.[progress.lessonIndex]?.title || `Lesson ${progress.lessonIndex + 1} of ${progress.total}`;
   const href = isLesson
@@ -659,21 +633,13 @@ function HeroCourseCard({ item, index, isCenter, hasAccess, isSaved, onOpen, onC
   return (
     <article
       className={`hero-course-card${isCenter ? " is-center" : ""}`}
-      tabIndex={0}
-      role="link"
       data-hero-index={index}
       data-hero-id={item.type === "path" ? undefined : id}
       data-hero-path={item.type === "path" ? item.category : undefined}
-      aria-current={isCenter ? "true" : "false"}
       aria-label={title}
       onClick={(event) => {
         if (event.target.closest("a, button")) return;
         if (onSuppressibleClick()) return;
-        openFromCard();
-      }}
-      onKeyDown={(event) => {
-        if (event.key !== "Enter" && event.key !== " ") return;
-        event.preventDefault();
         openFromCard();
       }}
     >
@@ -815,6 +781,7 @@ export function HomePage() {
   const [status, setStatus] = useState("loading");
   const [authUserId, setAuthUserId] = useState(() => authenticatedUserId());
   const [progressVersion, setProgressVersion] = useState(0);
+  const [carouselAutoPlayEnabled, setCarouselAutoPlayEnabled] = useState(false);
   const viewportRef = useRef(null);
   const rafRef = useRef(0);
   const motionRef = useRef(0);
@@ -822,7 +789,8 @@ export function HomePage() {
   const smoothScrollRef = useRef({ frame: 0, target: 0 });
   const userScrollTimerRef = useRef(0);
   const lastFrameRef = useRef(0);
-  const pauseRef = useRef(false);
+  const carouselActivatedRef = useRef(false);
+  const pauseRef = useRef(true);
   const directionRef = useRef(1);
   const pointerRef = useRef({ down: false, moved: false, input: "", startX: 0, startY: 0, startLeft: 0, suppressClickUntil: 0 });
   const runtimeReady = useEduNexRuntimeReady();
@@ -1095,12 +1063,14 @@ export function HomePage() {
   }, [activeTab, loop.baseCount, loop.rows.length]);
 
   const pauseCarouselAfterInput = (duration = 2200) => {
+    carouselActivatedRef.current = true;
+    setCarouselAutoPlayEnabled(true);
     pauseRef.current = true;
     setUserScrolling();
     if (resumeCarouselTimerRef.current) window.clearTimeout(resumeCarouselTimerRef.current);
     resumeCarouselTimerRef.current = window.setTimeout(() => {
       resumeCarouselTimerRef.current = 0;
-      if (!pointerRef.current.down) pauseRef.current = false;
+      if (!pointerRef.current.down && !document.hidden) pauseRef.current = false;
     }, duration);
   };
 
@@ -1144,14 +1114,19 @@ export function HomePage() {
 
   useEffect(() => {
     const viewport = viewportRef.current;
-    if (!viewport || window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return undefined;
+    if (!viewport || !carouselAutoPlayEnabled || window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return undefined;
     const tick = (timestamp) => {
       if (!lastFrameRef.current) lastFrameRef.current = timestamp;
       const delta = Math.min(32, timestamp - lastFrameRef.current);
       lastFrameRef.current = timestamp;
 
-      const canScroll = viewport.scrollWidth - viewport.clientWidth > 1;
-      if (canScroll && !pauseRef.current && !pointerRef.current.down && !smoothScrollRef.current.frame && !document.hidden) {
+      const shouldAutoScroll = carouselActivatedRef.current
+        && !pauseRef.current
+        && !pointerRef.current.down
+        && !smoothScrollRef.current.frame
+        && !document.hidden;
+      const canScroll = shouldAutoScroll && viewport.scrollWidth - viewport.clientWidth > 1;
+      if (canScroll) {
         viewport.classList.add("is-auto-moving");
         const speed = 0.075;
         viewport.scrollLeft += delta * speed * directionRef.current;
@@ -1163,7 +1138,9 @@ export function HomePage() {
       motionRef.current = requestAnimationFrame(tick);
     };
     motionRef.current = requestAnimationFrame(tick);
-    const onVisibility = () => { pauseRef.current = document.hidden; };
+    const onVisibility = () => {
+      pauseRef.current = document.hidden || !carouselActivatedRef.current;
+    };
     document.addEventListener("visibilitychange", onVisibility);
     return () => {
       cancelAnimationFrame(motionRef.current);
@@ -1174,7 +1151,7 @@ export function HomePage() {
       viewport.classList.remove("is-auto-moving");
       lastFrameRef.current = 0;
     };
-  }, [loop.rows.length]);
+  }, [carouselAutoPlayEnabled, loop.rows.length]);
 
   const handlePointerDown = (event) => {
     if (!event.isPrimary || event.button !== 0) return;
@@ -1230,7 +1207,9 @@ export function HomePage() {
     pointer.down = false;
     pointer.input = "";
     if (viewport?.hasPointerCapture?.(event.pointerId)) viewport.releasePointerCapture(event.pointerId);
-    if (!resumeCarouselTimerRef.current) pauseRef.current = Boolean(viewport?.matches(":hover") || viewport?.contains(document.activeElement));
+    if (!resumeCarouselTimerRef.current) {
+      pauseRef.current = Boolean(viewport?.matches(":hover") || viewport?.contains(document.activeElement));
+    }
     viewport?.classList.remove("is-dragging");
     if (pointer.moved) settleCarousel();
     window.setTimeout(() => { pointerRef.current.moved = false; }, 0);
@@ -1241,7 +1220,7 @@ export function HomePage() {
     const pointer = pointerRef.current;
     if (!viewport || !pointer.down || pointer.moved) return;
     pointer.down = false;
-    pauseRef.current = false;
+    pauseRef.current = !carouselActivatedRef.current;
     viewport.classList.remove("is-dragging");
   };
 
@@ -1298,7 +1277,9 @@ export function HomePage() {
     if (pointer.moved) pointer.suppressClickUntil = Date.now() + 250;
     pointer.down = false;
     pointer.input = "";
-    if (!resumeCarouselTimerRef.current) pauseRef.current = Boolean(viewport?.matches(":hover") || viewport?.contains(document.activeElement));
+    if (!resumeCarouselTimerRef.current) {
+      pauseRef.current = Boolean(viewport?.matches(":hover") || viewport?.contains(document.activeElement));
+    }
     viewport?.classList.remove("is-dragging");
     if (pointer.moved) settleCarousel();
     window.setTimeout(() => { pointerRef.current.moved = false; }, 0);

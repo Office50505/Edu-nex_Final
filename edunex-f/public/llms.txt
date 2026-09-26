@@ -1,0 +1,19 @@
+# Skillomate
+
+> Skillomate is an online learning platform for practical AI, content, business, and digital skills through short, expert-led courses.
+
+## Main pages
+
+- [Home](https://skillomate.in/): Browse featured lessons and learning paths.
+- [Courses](https://skillomate.in/courses): Explore the available course catalogue.
+- [Pricing](https://skillomate.in/pricing): Review current plans and access options.
+- [About](https://skillomate.in/about): Learn about Skillomate and its teaching approach.
+- [Help](https://skillomate.in/help): Find support information and common answers.
+- [Contact](https://skillomate.in/contact): Contact the Skillomate team.
+
+## Policies
+
+- [Terms](https://skillomate.in/terms)
+- [Privacy policy](https://skillomate.in/privacy)
+- [Refund policy](https://skillomate.in/refund-policy)
+- [Subscription policy](https://skillomate.in/subscription-policy)

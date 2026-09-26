@@ -38,6 +38,29 @@ describe("production API routing", () => {
       .toBe("https://cdn.example.test/media.m3u8");
   });
 
+  it("requests bounded image-proxy variants for course cards", () => {
+    const imageUrl = new URL(window.EduNex.courseImage({
+      title: "Course",
+      thumbnailUrl: "https://images.example.test/course.jpg",
+    }, { width: 640, quality: 72 }));
+
+    expect(imageUrl.origin).toBe("https://api.skillomate.in");
+    expect(imageUrl.pathname).toBe("/api/image-proxy");
+    expect(imageUrl.searchParams.get("url")).toBe("https://images.example.test/course.jpg");
+    expect(imageUrl.searchParams.get("w")).toBe("640");
+    expect(imageUrl.searchParams.get("q")).toBe("72");
+  });
+
+  it("ignores invalid image options instead of emitting invalid query values", () => {
+    const imageUrl = new URL(window.EduNex.normalizeImageSrc(
+      "https://images.example.test/course.jpg",
+      { width: "not-a-number", quality: "not-a-number" },
+    ));
+
+    expect(imageUrl.searchParams.has("w")).toBe(false);
+    expect(imageUrl.searchParams.has("q")).toBe(false);
+  });
+
   it("keeps bearer authentication while sending to the production API origin", async () => {
     localStorage.setItem("edunexAccessToken", "access-token");
     const fetchMock = vi.fn(async () => new Response(JSON.stringify({ ok: true }), {

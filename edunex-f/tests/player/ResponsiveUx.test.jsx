@@ -13,6 +13,7 @@ const dashboardLegacySource = readFileSync(new URL("../../legacy-html/dashboard.
 const homePageSource = readFileSync(new URL("../../src/pages/HomePage.jsx", import.meta.url), "utf8");
 const dashboardPageSource = readFileSync(new URL("../../src/pages/DashboardPage.jsx", import.meta.url), "utf8");
 const videosPageSource = readFileSync(new URL("../../src/pages/VideosPage.jsx", import.meta.url), "utf8");
+const llmsText = readFileSync(new URL("../../public/llms.txt", import.meta.url), "utf8");
 
 describe("cross-viewport UX", () => {
   it("stops document overscroll at the footer across the website", () => {
@@ -48,6 +49,20 @@ describe("cross-viewport UX", () => {
   it("caps the looping homepage carousel to seven unique images", () => {
     expect(homePageSource).toContain("const HERO_CAROUSEL_ITEM_LIMIT = 7;");
     expect(homePageSource).toContain("lessons.slice(0, HERO_CAROUSEL_ITEM_LIMIT)");
+  });
+
+  it("keeps carousel autoplay dormant during the initial performance window", () => {
+    expect(homePageSource).toContain("const carouselActivatedRef = useRef(false);");
+    expect(homePageSource).toContain("const pauseRef = useRef(true);");
+    expect(homePageSource).toContain("!carouselAutoPlayEnabled");
+    expect(homePageSource).toContain("const canScroll = shouldAutoScroll && viewport.scrollWidth - viewport.clientWidth > 1;");
+  });
+
+  it("exposes valid course-card semantics and AI-readable site guidance", () => {
+    expect(homePageSource).not.toMatch(/<article[^>]*role="link"/);
+    expect(homePageSource).not.toMatch(/<article[^>]*tabIndex=\{0\}/);
+    expect(llmsText).toMatch(/^# Skillomate/m);
+    expect(llmsText).toMatch(/\[Courses\]\(https:\/\/skillomate\.in\/courses\)/);
   });
 
   it("exposes the page key used by route-specific responsive rules", () => {

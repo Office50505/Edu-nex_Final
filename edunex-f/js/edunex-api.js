@@ -1129,11 +1129,25 @@
     return "";
   }
 
-  function proxiedImageUrl(rawUrl) {
+  function normalizedImageOptions(options = {}) {
+    const source = typeof options === "number" ? { width: options } : options;
+    const requestedWidth = Number(source?.width || 0);
+    const requestedQuality = Number(source?.quality || 76);
+    const width = Number.isFinite(requestedWidth)
+      ? Math.max(0, Math.min(1600, Math.round(requestedWidth)))
+      : 0;
+    const quality = Number.isFinite(requestedQuality)
+      ? Math.max(45, Math.min(90, Math.round(requestedQuality)))
+      : 76;
+    return { width, quality };
+  }
+
+  function proxiedImageUrl(rawUrl, options = {}) {
     if (!rawUrl) return "";
     if (/^(data|blob):/i.test(rawUrl)) return rawUrl;
 
     try {
+      const imageOptions = normalizedImageOptions(options);
       const parsed = new URL(rawUrl, window.location.origin);
       if (parsed.origin === window.location.origin) {
         const relativeUrl = `${parsed.pathname}${parsed.search}${parsed.hash}`;
@@ -1142,28 +1156,35 @@
           : relativeUrl;
       }
       if (API_BASE_URL && parsed.origin === new URL(API_BASE_URL).origin) return parsed.href;
-      return apiUrl(`/api/image-proxy?url=${encodeURIComponent(parsed.href)}`);
+      const params = new URLSearchParams({ url: parsed.href });
+      if (imageOptions.width) {
+        params.set("w", String(imageOptions.width));
+        params.set("q", String(imageOptions.quality));
+      }
+      return apiUrl(`/api/image-proxy?${params.toString()}`);
     } catch (_) {
       return rawUrl;
     }
   }
 
-  function normalizeImageSrc(value) {
+  function normalizeImageSrc(value, options = {}) {
     const raw = String(value || "").trim();
     if (!raw) return "";
 
     try {
+      const imageOptions = normalizedImageOptions(options);
       const parsed = new URL(raw, window.location.origin);
       const localAvatar = parsed.origin === window.location.origin
         ? parsed.pathname.match(/^\/assets\/(male[1-6]|female[1-6])\.jpeg$/i)
         : null;
       if (localAvatar) return `/assets/avatars/${localAvatar[1].toLowerCase()}-v1.webp`;
       const isDrive = /(^|\.)drive\.google\.com$/i.test(parsed.hostname);
-      if (!isDrive) return proxiedImageUrl(parsed.href);
+      if (!isDrive) return proxiedImageUrl(parsed.href, imageOptions);
 
       const fileMatch = parsed.pathname.match(/\/file\/d\/([^/]+)/);
       const id = fileMatch?.[1] || parsed.searchParams.get("id");
-      const driveUrl = id ? `https://drive.google.com/thumbnail?id=${encodeURIComponent(id)}&sz=w1200` : parsed.href;
+      const driveWidth = imageOptions.width || 1200;
+      const driveUrl = id ? `https://drive.google.com/thumbnail?id=${encodeURIComponent(id)}&sz=w${driveWidth}` : parsed.href;
       return driveUrl;
     } catch (_) {
       return raw;
@@ -1360,7 +1381,7 @@
     }
   }
 
-  function courseImage(course) {
+  function courseImage(course, options = {}) {
     const embedded =
       imageUrl(course.thumbnailHorizontal) ||
       imageUrl(course.thumbnail) ||
@@ -1368,7 +1389,7 @@
       imageUrl(course.videos?.[0]?.thumbnail);
     const external = course.thumbnailUrl || course.thumbnailHorizontalUrl || course.thumbnailVerticalUrl ||
       course.videos?.[0]?.thumbnailUrl || "";
-    return embedded || normalizeImageSrc(external) || placeholderImage(course.title || "Skillomate");
+    return embedded || normalizeImageSrc(external, options) || placeholderImage(course.title || "Skillomate");
   }
 
   function courseId(course) {

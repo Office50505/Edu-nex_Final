@@ -64,4 +64,23 @@ bash -n deployment/deploy-skillomate-production.sh deployment/deploy-skillomate.
 bash deployment/test-ssm-deploy.sh
 bash deployment/test-rolling-deploy.sh
 bash deployment/test-deploy-skillomate-rollback.sh
+bash deployment/test-frontend-s3-deploy.sh
 ```
+
+## S3 and CloudFront frontend
+
+`skillomate.in` is served from S3 through CloudFront, so frontend cache headers
+must be applied as S3 object metadata. The Express static cache policy does not
+affect this delivery path. Deploy the built frontend with:
+
+```bash
+SKILLOMATE_FRONTEND_BUCKET=your-bucket \
+SKILLOMATE_FRONTEND_DISTRIBUTION_ID=your-distribution-id \
+bash deployment/deploy-frontend-s3.sh
+```
+
+The script gives HTML a revalidation policy, ordinary static files a 30-day
+cache, and Vite-hashed or explicitly versioned assets a one-year immutable
+cache. It then invalidates the CloudFront distribution so updated route shells
+are available immediately. Use `--skip-build` only when `edunex-f/dist` already
+contains the exact production build to upload.

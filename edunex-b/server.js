@@ -23,6 +23,11 @@ const { getMongoConnectionOptions } = require('./config/mongodb');
 const { ALLOWED_ORIGINS, skillomateCors } = require('./middleware/cors');
 const { createReadinessHandler } = require('./services/readinessService');
 const { frontendCacheControl, inlineScriptCspHash } = require('./services/frontendAssets');
+const {
+  assertSourceSize,
+  imageVariantFromQuery,
+  optimizeImageBuffer,
+} = require('./services/imageProxy');
 const { auditPaymentOrder, duplicatePaymentReferences, paymentReference } = require('./services/paymentAuditService');
 const { normalizeLessonNotes } = require('./services/lessonNotes');
 const {
@@ -1160,11 +1165,12 @@ function googleDriveImageId(target) {
   return fileMatch?.[1] || target.searchParams.get('id') || '';
 }
 
-function normalizeProxyImageTarget(target) {
+function normalizeProxyImageTarget(target, requestedWidth = 0) {
   const driveId = googleDriveImageId(target);
   if (!driveId) return target;
 
-  return new URL(`https://drive.google.com/thumbnail?id=${encodeURIComponent(driveId)}&sz=w1200`);
+  const width = requestedWidth || 1200;
+  return new URL(`https://drive.google.com/thumbnail?id=${encodeURIComponent(driveId)}&sz=w${width}`);
 }
 
 async function validateImageProxyTarget(target) {
@@ -1187,12 +1193,14 @@ async function validateImageProxyTarget(target) {
 app.get('/api/image-proxy', async (req, res) => {
   const rawUrl = String(req.query.url || '').trim();
   let target;
+  let variant;
 
   try {
+    variant = imageVariantFromQuery(req.query);
     target = new URL(rawUrl);
-    target = normalizeProxyImageTarget(target);
-  } catch (_) {
-    return res.status(400).send('Invalid image URL');
+    target = normalizeProxyImageTarget(target, variant.width);
+  } catch (error) {
+    return res.status(error.statusCode || 400).send(error.statusCode ? error.message : 'Invalid image URL');
   }
 
   if (!['http:', 'https:'].includes(target.protocol)) {
@@ -1228,13 +1236,16 @@ app.get('/api/image-proxy', async (req, res) => {
       return res.status(415).send('URL did not return an image');
     }
 
+    assertSourceSize(upstream.headers.get('content-length'));
     const imageBuffer = Buffer.from(await upstream.arrayBuffer());
-    res.set('Content-Type', contentType);
+    assertSourceSize(0, imageBuffer.length);
+    const image = await optimizeImageBuffer(imageBuffer, contentType, variant);
+    res.set('Content-Type', image.contentType);
     res.set('Cache-Control', 'public, max-age=2592000, stale-while-revalidate=31536000');
-    return res.send(imageBuffer);
+    return res.send(image.buffer);
   } catch (error) {
     clearTimeout(timeout);
-    return res.status(502).send('Could not fetch image');
+    return res.status(error.statusCode || 502).send(error.statusCode ? error.message : 'Could not fetch image');
   }
 });
 
