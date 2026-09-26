@@ -16,7 +16,7 @@ const cleanRoutes = {
   "lesson.html": "/lesson",
   "login.html": "/login",
   "otp.html": "/otp",
-  "offer.html": "/static-pages/skillomate-ai-influencer-course/#paywall",
+  "offer.html": "/static-pages/skillomate-ai-influencer-course/",
   ...Object.fromEntries(Array.from({ length: 9 }, (_, index) => {
     const number = index + 2;
     return [`offer${number}.html`, `/offer${number}`];
@@ -70,6 +70,10 @@ function splitRoute(value) {
   };
 }
 
+function withOfferPaywallHash(value) {
+  return `${String(value || "").replace(/#.*$/, "")}#paywall`;
+}
+
 export function route(value = "/") {
   const raw = String(value || "").trim();
   if (!raw) return "/";
@@ -81,7 +85,8 @@ export function route(value = "/") {
   const normalized = pathname.replace(/^\/+/, "").replace(/\/+$/, "");
   const pageKey = routeAliases[normalized];
   if (pageKey && cleanRoutes[pageKey]) {
-    return `${cleanRoutes[pageKey]}${suffix}`;
+    const next = `${cleanRoutes[pageKey]}${suffix}`;
+    return pageKey === "offer.html" ? withOfferPaywallHash(next) : next;
   }
 
   return pathname.startsWith("/") ? `${pathname}${suffix}` : `/${pathname}${suffix}`;

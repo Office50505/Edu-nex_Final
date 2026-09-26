@@ -24,6 +24,12 @@ function routeFromState(state) {
   return `${state.pathname}${state.search}${state.hash}`;
 }
 
+function canonicalOfferUrl(search = "") {
+  const offerUrl = route("offer.html");
+  const [pathAndQuery, hash = ""] = offerUrl.split("#");
+  return `${pathAndQuery}${search || ""}${hash ? `#${hash}` : ""}`;
+}
+
 function shouldUseAppNavigation(event) {
   if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
     return null;
@@ -140,6 +146,7 @@ export default function App() {
   usePresenceHeartbeat(!adminPage);
 
   useEffect(() => {
+    const canonicalOfferPath = canonicalOfferUrl().split("#")[0].replace(/\/+$/, "");
     const legacyOfferPaths = new Set([
       "/ai",
       "/1rs-offer-page",
@@ -147,8 +154,10 @@ export default function App() {
       "/skillomate-1rs-offer-for-24-hours-full-course-access",
       "/static-pages/skillomate-1rs-for-24-hours-full-course-access",
     ]);
-    if (!legacyOfferPaths.has(locationState.pathname.replace(/\/+$/, ""))) return;
-    const next = `${route("offer.html")}${locationState.search}${locationState.hash}`;
+    const normalizedPath = locationState.pathname.replace(/\/+$/, "");
+    const hasRepeatedPaywallHash = /^(?:#paywall){2,}$/i.test(locationState.hash);
+    if (!legacyOfferPaths.has(normalizedPath) && !(normalizedPath === canonicalOfferPath && hasRepeatedPaywallHash)) return;
+    const next = canonicalOfferUrl(locationState.search);
     window.history.replaceState({}, "", next);
     setLocationState(currentLocationState());
   }, [locationState.hash, locationState.pathname, locationState.search]);
