@@ -2,11 +2,12 @@
 
 set -Eeuo pipefail
 
-readonly LOCAL_REPOSITORY="${SKILLOMATE_LOCAL_REPOSITORY:-/Users/kratik/Desktop/yttry-main copy/Edu-nex_Final}"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+readonly LOCAL_REPOSITORY="${SKILLOMATE_LOCAL_REPOSITORY:-$(cd "$SCRIPT_DIR/.." && pwd)}"
 readonly REMOTE_DEPLOY_SCRIPT="${SKILLOMATE_REMOTE_DEPLOY_SCRIPT:-$LOCAL_REPOSITORY/deployment/deploy-skillomate.sh}"
-readonly SSH_KEY="${SKILLOMATE_SSH_KEY:-/Users/kratik/Downloads/Skillomate_Key.pem}"
+readonly SSH_KEY="${SKILLOMATE_SSH_KEY:-$HOME/Downloads/Skillomate_Key.pem}"
 readonly SSH_COMMAND="${SKILLOMATE_SSH_COMMAND:-ssh}"
-readonly LOG_DIRECTORY="${SKILLOMATE_DEPLOY_LOG_DIRECTORY:-/Users/kratik/skillomate-deployment-logs}"
+readonly LOG_DIRECTORY="${SKILLOMATE_DEPLOY_LOG_DIRECTORY:-$HOME/skillomate-deployment-logs}"
 readonly LOCK_DIRECTORY="${SKILLOMATE_DEPLOY_LOCK_DIRECTORY:-${TMPDIR:-/tmp}/skillomate-rolling-deploy.lock}"
 readonly REMOTE_REPOSITORY="/home/ubuntu/skillomate_repo"
 
