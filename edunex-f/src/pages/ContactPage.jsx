@@ -38,9 +38,9 @@ export function ContactPage() {
       </LegalSection>
       <LegalSection id="support" title="Support contact">
         <p>Email: <a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a></p>
+        <p>Phone: <a href="tel:+919479820866">9479820866</a></p>
         <p>Support hours: {businessInfo.supportHours}</p>
         <p>Typical response: {businessInfo.responseTime}</p>
-        <p>Skillomate does not display a public phone number. Please use email for support and verification requests.</p>
       </LegalSection>
       <LegalSection id="links" title="Useful links">
         <LinkCards links={contactLinks} />
