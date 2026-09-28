@@ -32,13 +32,16 @@ and a trusted SSH host key for each current instance. Each EC2
 script also uses `flock` to prevent per-host overlap. It requires the current
 commit to contain the tracked SSM bootstrap so rollback can remain in SSM mode.
 The EC2 script refuses
-dirty worktrees, requires an ignored and untracked `.env`, fetches GitHub,
+dirty worktrees and Git commits that track local configuration files. It
+fetches GitHub without requiring a local `.env` file,
 deploys the pinned commit only while it still equals `origin/main`, installs and
-builds the web frontend, and runs backend `npm ci --omit=dev`. Before changing
-PM2 it runs `node ssm-bootstrap.js --check` against the 73 SecureStrings under
-`/skillomate/prod/` in `ap-south-1`. A failed SSM check restores the previous
-commit and dependencies without restarting that backend; the rolling deployment
-stops and later EC2 instances are untouched.
+builds the web frontend, and runs backend `npm ci --omit=dev`. It runs
+`node ssm-bootstrap.js --check` before changing the working tree and again
+before changing PM2, against the 73 SecureStrings under
+`/skillomate/prod/` in `ap-south-1`. A failed preflight check leaves the
+working tree and PM2 untouched. A failed check after switching commits restores
+the previous commit and dependencies without restarting that backend; the
+rolling deployment stops and later EC2 instances are untouched.
 
 The `skillomate_backend` PM2 process runs `ssm-bootstrap.js` with explicit
 `NODE_ENV=production` and `SKILLOMATE_CONFIG_SOURCE=ssm`. If PM2 still points to
@@ -54,8 +57,8 @@ A post-restart failure resets only that EC2 to its previous commit, reinstalls
 dependencies, runs the SSM check again, restarts through `ssm-bootstrap.js`,
 and repeats the health, readiness, courses, runtime, and commit checks before
 saving PM2. The orchestrator never continues to later instances after a
-failure. The ignored `.env` remains in place as an emergency fallback and is
-not changed by deployment.
+failure. In production SSM mode the server skips dotenv loading; neither
+deployment nor rollback creates, copies, restores, or reads an `.env` file.
 If target-group health alone fails after the remote deployer reports success,
 the wrapper stops before the next instance; the operator must investigate that
 instance and decide whether to run a separate rollback. The remote automatic
@@ -80,8 +83,8 @@ those conditions.
 
 Per-instance logs are retained both locally under
 `$HOME/skillomate-deployment-logs` and remotely under
-`/home/ubuntu/skillomate_deployments`. The application `.env` is never copied
-from the Mac.
+`/home/ubuntu/skillomate_deployments`. Application secrets are read from SSM
+at startup and are never copied from the Mac.
 
 The old rsync production directories remain available for manual emergency
 recovery from the first migration. They must not be deleted as part of normal
@@ -92,6 +95,7 @@ Local checks that do not contact production:
 ```bash
 bash -n deployment/deploy-skillomate-production.sh deployment/deploy-skillomate.sh
 bash deployment/test-ssm-deploy.sh
+bash deployment/test-ssm-only-production-deploy.sh
 bash deployment/test-rolling-deploy.sh
 bash deployment/test-deploy-skillomate-rollback.sh
 bash deployment/test-frontend-s3-deploy.sh

@@ -256,20 +256,12 @@ if test "$(git branch --show-current)" != "main"; then
   exit 14
 fi
 
-if test ! -f .env || test "$(stat -c %a .env)" != "600"; then
-  echo "Production .env is missing or does not have permission 0600."
-  exit 15
-fi
-
-if ! git check-ignore -q .env; then
-  echo "Production .env is not ignored by Git."
-  exit 16
-fi
-
-if git ls-files --error-unmatch .env >/dev/null 2>&1; then
-  echo "Production .env is tracked by Git."
-  exit 17
-fi
+for config_file in edunex-b/.env edunex-b/.env.local; do
+  if git -C "$REPOSITORY" ls-files --error-unmatch "$config_file" >/dev/null 2>&1; then
+    echo "Production Git commit tracks a local configuration file."
+    exit 17
+  fi
+done
 
 if test ! -f package-lock.json; then
   echo "package-lock.json is missing."
@@ -312,6 +304,14 @@ OLD_COMMIT="$(git rev-parse HEAD)"
 git fetch --prune origin main
 NEW_COMMIT="$(git rev-parse origin/main)"
 
+for config_file in edunex-b/.env edunex-b/.env.local; do
+  if git -C "$REPOSITORY" cat-file -e "$NEW_COMMIT:$config_file" >/dev/null 2>&1; then
+    record_result preflight-failed tracked-config
+    echo "Target Git commit tracks a local configuration file."
+    exit 32
+  fi
+done
+
 if test -n "$EXPECTED_TARGET_COMMIT" && test "$NEW_COMMIT" != "$EXPECTED_TARGET_COMMIT"; then
   record_result preflight-failed target-moved
   echo "origin/main changed after the rolling deployment target was selected."
@@ -339,19 +339,19 @@ if test "$OLD_COMMIT" = "$NEW_COMMIT"; then
     restarted=1
   fi
 
-  if ! HEALTH_RESULT=$(wait_for_health); then
+  if ! HEALTH_RESULT=$(trap - ERR; wait_for_health); then
     if test "$restarted" -eq 1; then rollback_deployment "health check failed"; fi
     record_result already-current health-failed
     echo "Already on latest main, but the health check failed."
     exit 21
   fi
-  if ! READINESS_RESULT=$(wait_for_readiness); then
+  if ! READINESS_RESULT=$(trap - ERR; wait_for_readiness); then
     if test "$restarted" -eq 1; then rollback_deployment "readiness check failed"; fi
     record_result already-current readiness-failed
     echo "Already on latest main, but the readiness check failed."
     exit 28
   fi
-  if ! COURSES_RESULT=$(check_courses); then
+  if ! COURSES_RESULT=$(trap - ERR; check_courses); then
     if test "$restarted" -eq 1; then rollback_deployment "courses API validation failed"; fi
     record_result already-current courses-failed
     echo "Already on latest main, but the courses check failed."
@@ -386,6 +386,12 @@ if test "$OLD_COMMIT" = "$NEW_COMMIT"; then
   exit 0
 fi
 
+if ! run_ssm_check; then
+  record_result preflight-failed ssm-check-failed
+  echo "SSM check failed before changing production. Backend was not restarted."
+  exit 29
+fi
+
 DEPLOYMENT_STARTED=1
 
 if ! git checkout main; then
@@ -408,10 +414,6 @@ fi
 
 cd "$EXPECTED_BACKEND"
 
-if test ! -f .env || test "$(stat -c %a .env)" != "600"; then
-  rollback_deployment ".env verification failed after switching commits"
-fi
-
 if test ! -f package-lock.json; then
   rollback_deployment "package-lock.json is missing in the target commit"
 fi
@@ -428,15 +430,15 @@ if ! start_or_restart_pm2_ssm; then
   rollback_deployment "PM2 SSM startup failed"
 fi
 
-if ! HEALTH_RESULT=$(wait_for_health); then
+if ! HEALTH_RESULT=$(trap - ERR; wait_for_health); then
   rollback_deployment "health check failed"
 fi
 
-if ! READINESS_RESULT=$(wait_for_readiness); then
+if ! READINESS_RESULT=$(trap - ERR; wait_for_readiness); then
   rollback_deployment "readiness check failed"
 fi
 
-if ! COURSES_RESULT=$(check_courses); then
+if ! COURSES_RESULT=$(trap - ERR; check_courses); then
   rollback_deployment "courses API validation failed"
 fi
 
@@ -448,7 +450,7 @@ if ! ss -ltnp | grep -q ':3000'; then
   rollback_deployment "port 3000 is not listening"
 fi
 
-if ! CURRENT_COMMIT=$(git -C "$REPOSITORY" rev-parse HEAD); then
+if ! CURRENT_COMMIT=$(trap - ERR; git -C "$REPOSITORY" rev-parse HEAD); then
   rollback_deployment "could not read the deployed commit"
 fi
 

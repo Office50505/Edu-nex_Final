@@ -13,10 +13,12 @@ const dns = require('dns').promises;
 const net = require('net');
 const path = require('path');
 const fs = require('fs');
-const initialNodeEnv = process.env.NODE_ENV;
-require('dotenv').config({ path: path.join(__dirname, '.env') });
-if (initialNodeEnv !== 'production' && process.env.SKILLOMATE_CONFIG_SOURCE !== 'ssm') {
-  require('dotenv').config({ path: path.join(__dirname, '.env.local'), override: true });
+if (process.env.SKILLOMATE_CONFIG_SOURCE !== 'ssm') {
+  const initialNodeEnv = process.env.NODE_ENV;
+  require('dotenv').config({ path: path.join(__dirname, '.env') });
+  if (initialNodeEnv !== 'production') {
+    require('dotenv').config({ path: path.join(__dirname, '.env.local'), override: true });
+  }
 }
 const helmet = require('helmet');
 const { getMongoConnectionOptions } = require('./config/mongodb');
@@ -1069,7 +1071,7 @@ app.get('/api/bunny/videos', protectAdmin, async (req, res) => {
 
     if (!BUNNY_STORAGE_ZONE || !BUNNY_STORAGE_ACCESS_KEY) {
       return res.status(500).json({
-        error: 'Bunny Stream is not configured. Set BUNNY_STREAM_LIBRARY_ID and BUNNY_STREAM_API_KEY in backend/.env.local.',
+        error: 'Bunny Stream is not configured.',
       });
     }
 
@@ -1253,7 +1255,7 @@ app.get('/api/image-proxy', async (req, res) => {
 app.use('/api', (req, res, next) => {
   if (mongoose.connection.readyState !== 1) {
     return res.status(503).json({
-      error: 'Database is not connected. Check MONGODB_URI in backend/.env and restart the server.',
+      error: 'Database is not connected.',
     });
   }
 
