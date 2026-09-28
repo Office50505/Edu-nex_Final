@@ -41,7 +41,7 @@ for (const root of [path.resolve(__dirname, '..'), path.resolve(__dirname, '../.
         if (name.endsWith('/Session')) return Session;
         if (name.endsWith('/auth')) return { protect: () => {} };
         if (name.endsWith('/compatAuth')) return { requireCompatibleAuth: () => () => {} };
-        if (name.endsWith('/otpService')) return { normalizeMobileNumber: () => '' };
+        if (name.endsWith('/otpService')) return { normalizeMobileNumber: value => String(value || '').replace(/\D/g, '') };
         if (name.endsWith('/accountDeletionService')) return {};
         if (name.endsWith('/rateLimitToggle')) return { isAuthRateLimitDisabled: () => true };
         if (name.endsWith('/sensitiveRateLimit')) return { sensitiveRateLimit: () => (_req, _res, next) => next() };
@@ -68,10 +68,10 @@ for (const root of [path.resolve(__dirname, '..'), path.resolve(__dirname, '../.
   }
   test(`${path.relative(process.cwd(), root)}: second login revokes access, legacy sessions and refresh`, async () => {
     const ctx = setup();
-    const login = () => ctx.call('/login', { email: 'test@example.com', password: 'valid' });
+    const login = () => ctx.call('/login', { mobileNumber: '9000090000', password: 'valid' });
     const first = await login(); assert.equal(first.code, 200);
     assert.equal(await ctx.authorize(first.body.accessToken), true);
-    const rejected = await ctx.call('/login', { email: 'test@example.com', password: 'wrong' });
+    const rejected = await ctx.call('/login', { mobileNumber: '9000090000', password: 'wrong' });
     assert.equal(rejected.code, 401); assert.equal(await ctx.authorize(first.body.accessToken), true);
     const second = await login(); assert.equal(second.code, 200);
     assert.equal(ctx.user.activeSessions.length, 1);
@@ -99,7 +99,7 @@ for (const root of [path.resolve(__dirname, '..'), path.resolve(__dirname, '../.
   });
   test(`${path.relative(process.cwd(), root)}: concurrent logins leave exactly one usable session`, async () => {
     const ctx = setup();
-    const results = await Promise.all(Array.from({ length: 4 }, () => ctx.call('/login', { email: 'test@example.com', password: 'valid' })));
+    const results = await Promise.all(Array.from({ length: 4 }, () => ctx.call('/login', { mobileNumber: '9000090000', password: 'valid' })));
     results.forEach(result => assert.equal(result.code, 200));
     const accepted = await Promise.all(results.map(result => ctx.authorize(result.body.accessToken)));
     assert.equal(accepted.filter(Boolean).length, 1);
