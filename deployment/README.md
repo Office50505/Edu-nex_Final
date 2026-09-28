@@ -9,17 +9,26 @@ copied from a developer machine.
 - EC2 deployment command: `/home/ubuntu/bin/deploy-skillomate.sh`
 - Local command, from any checkout: `bash deployment/deploy-skillomate-production.sh`.
 - Repository orchestrator: `deployment/deploy-skillomate-production.sh`.
-  It deploys EC2 #1, then #2, then #3, and stops immediately on failure.
-- Production fleet (all `m7g.large`, ARM64):
-  - EC2 #1: `13.235.104.167`
-  - EC2 #2: `3.108.8.89`
-  - EC2 #3: `13.201.21.124`
+  It discovers the current healthy `InService` instances in
+  `skillomate-backend-asg` in `ap-south-1`, sorts their instance IDs, and
+  deploys them sequentially. The instance count follows the ASG desired
+  capacity; no fixed instance IDs or addresses are used.
+- The target group is `skillomate-backend-tg`. The script verifies that it is
+  attached to the ASG and that every candidate target is healthy.
 - The default SSH key is `$HOME/Downloads/Skillomate_Key.pem`; override it with
   `SKILLOMATE_SSH_KEY=/absolute/path/to/key.pem` when needed.
 
 The orchestrator uses a local atomic lock to prevent overlapping rolling
 deployments, requires the local SSM bootstrap and SSM-aware remote deployer,
-and pins one full `origin/main` SHA for the complete run. Each EC2
+and pins one full `origin/main` SHA for the complete run. It uses read-only
+AWS CLI `describe` calls to get ASG membership, EC2 public addresses, and
+target health. It refuses a mixed or unstable ASG, missing public IPs,
+unreachable SSH, or an untrusted SSH host key before any deployment starts.
+Before each instance it rechecks ASG membership, EC2 identity and address, and
+target health; after each instance it waits for the target to become healthy.
+It stops on any failure. The local machine needs AWS CLI credentials with
+read-only Auto Scaling, EC2, and ELBv2 describe permissions, plus Python 3
+and a trusted SSH host key for each current instance. Each EC2
 script also uses `flock` to prevent per-host overlap. It requires the current
 commit to contain the tracked SSM bootstrap so rollback can remain in SSM mode.
 The EC2 script refuses
@@ -47,6 +56,27 @@ and repeats the health, readiness, courses, runtime, and commit checks before
 saving PM2. The orchestrator never continues to later instances after a
 failure. The ignored `.env` remains in place as an emergency fallback and is
 not changed by deployment.
+If target-group health alone fails after the remote deployer reports success,
+the wrapper stops before the next instance; the operator must investigate that
+instance and decide whether to run a separate rollback. The remote automatic
+rollback is triggered by failures inside the per-instance deployer.
+
+This SSH workflow changes in-service targets without draining them. For an
+ASG whose instances have no public IP or cannot accept SSH, use a versioned
+application artifact baked into a new launch template version, then an ASG
+Instance Refresh with target-group health checks, a conservative minimum
+healthy percentage, and automatic rollback. A reviewed SSM Run Command
+workflow can also run the existing per-instance deploy script one instance at
+a time, verifying each target before continuing. Either approach needs its own
+reviewed deployment procedure; this script intentionally stops rather than
+falling back to an unverified access path. An in-place Git deployment alone
+does not make replacement ASG instances boot into the deployed commit.
+
+Old fixed-IP servers should only be retired after confirming they are absent
+from the ASG and target group, DNS and load-balancer traffic no longer reaches
+them, replacement instances reproduce the intended commit and SSM PM2 setup,
+and rollback has been tested. Their old addresses are not evidence of any of
+those conditions.
 
 Per-instance logs are retained both locally under
 `$HOME/skillomate-deployment-logs` and remotely under
