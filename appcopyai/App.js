@@ -3914,7 +3914,7 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
 }
 
 // ── ReelsScreen ───────────────────────────────────────────────────────────────
-function ReelsScreen({ courseId, course, initialIndex, initialTime, onBack, onReportProblem, onGoToDownloads, user, session, onVideoComplete, onVideoProgress, downloads, preloadedVideos }) {
+function ReelsScreen({ courseId, course, initialIndex, initialTime, onBack, onReportProblem, onGoToDownloads, onDownload, user, session, onVideoComplete, onVideoProgress, downloads, preloadedVideos }) {
   const { width: viewportWidth } = useWindowDimensions();
   const [videos, setVideos] = useState(preloadedVideos || []);
   const [loading, setLoading] = useState(!preloadedVideos);
@@ -3962,6 +3962,12 @@ function ReelsScreen({ courseId, course, initialIndex, initialTime, onBack, onRe
   const activeLessonLabel = videos.length ? `Lecture ${activeLessonNumber}/${videos.length}` : "Lecture";
   const activeSummary = activeDescription === "No description available." ? "" : activeDescription;
   const activeShareUrl = `${WEB_APP_BASE}/videos?courseId=${encodeURIComponent(courseId)}`;
+  const activeBunnyGuid = getBunnyGuid(activeVideo);
+  const activeDownload = activeBunnyGuid ? downloads?.[activeBunnyGuid] : null;
+  const activeDownloadStatus = activeDownload?.status || "";
+  const activeDownloadBusy = activeDownloadStatus === "downloading";
+  const activeDownloadDone = activeDownloadStatus === "done";
+  const activeDownloadLabel = activeDownloadBusy ? "Downloading" : activeDownloadDone ? "Saved" : "Download";
   const lecturePageSize = 20;
   const lectureRanges = useMemo(() => {
     const rangeCount = Math.max(1, Math.ceil(videos.length / lecturePageSize));
@@ -4054,6 +4060,26 @@ function ReelsScreen({ courseId, course, initialIndex, initialTime, onBack, onRe
         url: activeShareUrl,
       });
     } catch {}
+  }
+
+  function downloadActiveLesson() {
+    if (!activeVideo) return;
+    if (!activeBunnyGuid) {
+      Alert.alert("Download unavailable", "This lesson is not available for offline download.");
+      return;
+    }
+    if (!hasCourseAccess(user)) {
+      Alert.alert("Subscription Required", "Upgrade your plan to download videos for offline viewing.");
+      return;
+    }
+    if (activeDownloadDone) {
+      Alert.alert("Downloaded", "This video is already saved offline.", [
+        { text: "Cancel", style: "cancel" },
+        { text: "Open Downloads", onPress: onGoToDownloads },
+      ]);
+      return;
+    }
+    if (!activeDownloadBusy) onDownload?.(activeVideo, courseId, course?.title);
   }
 
   async function sendCourseAiMessage(promptText = courseAiInput) {
@@ -4189,13 +4215,23 @@ function ReelsScreen({ courseId, course, initialIndex, initialTime, onBack, onRe
             <Text style={s.webPlayerRailText}>Lectures</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={onGoToDownloads}
+            onPress={downloadActiveLesson}
             style={s.webPlayerRailBtn}
+            disabled={activeDownloadBusy}
             accessibilityRole="button"
-            accessibilityLabel="Open downloads"
+            accessibilityLabel={
+              activeDownloadBusy
+                ? `Downloading ${activeTitle || "current lecture"}, ${Math.round((activeDownload?.progress || 0) * 100)} percent`
+                : activeDownloadDone
+                  ? `Current lecture is downloaded`
+                  : `Download current lecture ${activeTitle || ""}`.trim()
+            }
+            accessibilityState={{ disabled: activeDownloadBusy, busy: activeDownloadBusy }}
           >
-            <Ionicons name="download-outline" size={21} color="#fff" />
-            <Text style={s.webPlayerRailText}>Download</Text>
+            {activeDownloadBusy
+              ? <ActivityIndicator size="small" color="#fff" />
+              : <Ionicons name={activeDownloadDone ? "checkmark-circle" : "download-outline"} size={21} color="#fff" />}
+            <Text style={s.webPlayerRailText}>{activeDownloadLabel}</Text>
           </TouchableOpacity>
           <TouchableOpacity onPress={shareActiveLesson} style={s.webPlayerRailBtn} accessibilityRole="button" accessibilityLabel="Share lecture">
             <Ionicons name="share-social-outline" size={21} color="#fff" />
@@ -9597,6 +9633,7 @@ export default function App() {
           onVideoProgress={isPreviewOnly ? undefined : saveVideoProgress}
           onReportProblem={openProblemReport}
           onGoToDownloads={() => navigateRootTab("downloads")}
+          onDownload={(video, courseId, courseTitle) => startDownload(video, courseId, courseTitle)}
           onBack={backToLessons}
         />
         <CertificateModal cert={certModal} onClose={() => setCertModal(null)} />
