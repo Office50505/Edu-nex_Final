@@ -11,10 +11,10 @@ const learningServices = [
 ];
 
 const privacyCollected = [
-  "Name, phone number, optional email, age, gender, selected avatar and any profile photograph you choose to upload",
+  "Name, phone number, age, gender, selected avatar and any profile photograph you choose to upload",
   "Course progress, lesson/watch activity, downloaded lesson/content information and certificates",
   "Wishlist information, search activity and course discovery activity",
-  "AI chatbot prompts, up to 12 recent chat messages and relevant course/lesson context when you choose to use third-party AI",
+  "AI chatbot prompts, up to 12 recent chat messages and relevant course/lesson context when you use Nex AI",
   "Device/app information, authentication session data, IP address, security logs and push notification tokens",
   "Payment transaction identifiers and billing/subscription records",
 ];
@@ -37,7 +37,7 @@ const providerCards = [
   { icon: "key", title: "OTP authentication", copy: "Phone number OTP authentication may use MSG91 to send and verify one-time passwords." },
   { icon: "receipt", title: "Payments", copy: "Razorpay may process eligible web transactions. Google Play Billing or Apple in-app purchase systems may process eligible mobile purchases." },
   { icon: "dashboard", title: "Infrastructure", copy: "Infrastructure may include Amazon Web Services, Amazon EC2, Amazon S3, Amazon CloudFront and MongoDB, without exposing confidential configuration details." },
-  { icon: "sparkles", title: "Optional AI functionality", copy: "Only after explicit consent, fal.ai, OpenRouter and the selected Google Gemini model may process your question, up to 12 recent messages and relevant course/lesson context. Skillomate does not send your profile name in the AI request." },
+  { icon: "sparkles", title: "AI functionality", copy: "When you use Nex AI, AI service providers may process your question, up to 12 recent messages and relevant course/lesson context. Skillomate does not send your profile name in the AI request." },
 ];
 
 const termsItems = [
@@ -94,12 +94,12 @@ const policyContent = {
     sections: [
       ["operator", "Who operates Skillomate", <><p>Skillomate is operated by Smartcart, a sole proprietorship owned by Insha Noor, based in Indore, Madhya Pradesh, India.</p><BusinessAddress /></>],
       ["information-we-collect", "Information we collect", <><p>Skillomate may collect the following information when you create an account, use courses, choose AI features, make payments, upload a profile photo or contact support.</p><PlainList items={privacyCollected} /><div className="legal-callout"><strong>Location:</strong> Skillomate records IP addresses in security/session logs but does not request precise GPS location or send IP addresses to a geolocation lookup provider.</div></>],
-      ["information-users-provide", "Information users provide", <PlainList items={["Account details such as name, phone number, optional email, age, gender, avatar selection and optional profile photograph.", "Support messages and deletion/contact requests sent to Skillomate.", "AI prompts or messages submitted after accepting the AI data-sharing notice."]} />],
+      ["information-users-provide", "Information users provide", <PlainList items={["Account details such as name, phone number, age, gender, avatar selection and optional profile photograph.", "Support messages and deletion/contact requests sent to Skillomate.", "AI prompts or messages submitted through Nex AI."]} />],
       ["automatically-collected", "Automatically collected information", <PlainList items={["Device, browser or app information, IP address and authentication/session records needed for security and service operation.", "Lesson activity, watch activity, downloads, search activity and wishlist activity.", "Push notification tokens and limited technical logs."]} />],
       ["not-collected", "Information not required for standard profiles", <PlainList items={privacyNotCollected} />],
       ["how-we-use", "How we use information", <CheckList items={privacyUses} />],
       ["payments", "Payments", <p>Razorpay may process eligible web transactions. Google Play Billing may process Android purchases where applicable. Apple may process eligible iOS purchases through Apple in-app purchase systems. Skillomate may keep transaction identifiers, subscription status and billing records to provide access, reconcile payments, support users and meet compliance obligations.</p>],
-      ["ai-functionality", "Optional AI functionality and consent", <><p>Before Skillomate sends AI data to a third-party model, the app asks you to choose Allow or Not Now. If you allow it, fal.ai, OpenRouter and the selected Google Gemini model may receive your question, up to 12 recent messages and relevant course or lesson context. Your profile name is not included in that model request.</p><p>You can decline without losing non-AI learning features, withdraw AI consent later, and delete AI chat history from AI Data Controls. Chat history may also be stored locally in your browser or app so you can reopen prior chats. Reports about unsafe or incorrect replies retain a response hash and report reason rather than the response text.</p><p>AI responses may be inaccurate or incomplete and should not be treated as professional advice.</p></>],
+      ["ai-functionality", "AI functionality", <><p>When you use Nex AI, AI service providers may receive your question, up to 12 recent messages and relevant course or lesson context. Your profile name is not included in that model request.</p><p>You can delete AI chat history from AI Data Controls. Chat history may also be stored locally in your browser or app so you can reopen prior chats. Reports about unsafe or incorrect replies retain a response hash and report reason rather than the response text.</p><p>AI responses may be inaccurate or incomplete and should not be treated as professional advice.</p></>],
       ["sharing", "Data sharing and service providers", <><p>Skillomate may share limited information with service providers that help operate authentication, hosting, storage, payments, notifications, media delivery, AI learning functionality and customer support.</p><InfoGrid items={providerCards} /></>],
       ["security", "Data security", <p>We use reasonable administrative, technical and organizational safeguards designed to protect information. No online service can guarantee absolute security, and users should keep OTPs, passwords and account access private.</p>],
       ["retention", "Data retention", <p>Account, profile, learning and local AI history are kept while needed to provide the service and are deleted through the applicable deletion controls. Security and support records are retained only as reasonably needed. Payment and App Store transaction records may be anonymized and retained when required for tax, accounting, reconciliation, fraud prevention, disputes or legal compliance.</p>],

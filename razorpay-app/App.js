@@ -7466,7 +7466,6 @@ export default function App() {
   const [signupToken, setSignupToken] = useState("");
   const [otpLoading, setOtpLoading] = useState(false);
   const [signupFullName, setSignupFullName] = useState("");
-  const [signupEmail, setSignupEmail] = useState("");
   const [signupPassword, setSignupPassword] = useState("");
   const [signupGender, setSignupGender] = useState("");
   const [signupAge, setSignupAge] = useState("18");
@@ -8031,15 +8030,16 @@ export default function App() {
   }, [user?._id]);
 
   async function login() {
-    if (!email.trim() || !password.trim()) { setLoginError("Please enter your email/phone and password."); return; }
+    if (!email.trim() || !password.trim()) { setLoginError("Please enter your mobile number and password."); return; }
     setLoginLoading(true); setLoginError("");
     try {
-      const identifier = email.trim();
+      const identifier = email.replace(/\D/g, "");
+      if (identifier.length !== 10) {
+        setLoginError("Enter the 10-digit mobile number registered to your account.");
+        return;
+      }
       const { res, data } = await postApiJson("/api/auth/login", {
-        identifier,
-        email: identifier,
         mobileNumber: identifier,
-        emailOrMobile: identifier,
         password,
       });
       if (!res.ok) {
@@ -8224,11 +8224,9 @@ export default function App() {
     try {
       const mobileNumber = mobile.trim();
       const fullName = signupFullName.trim();
-      const emailAddress = signupEmail.trim() || null;
       const { res, data } = await postApiJson(["/api/auth/register", "/api/auth/signup"], {
         fullName,
         name: fullName,
-        email: emailAddress,
         password: signupPassword,
         mobileNumber,
         mobile: mobileNumber,
@@ -8268,7 +8266,7 @@ export default function App() {
 
   function resetSignup() {
     setScreen("login"); setMobile(""); setOtp(""); setOtpSent(false); setSignupToken("");
-    setSignupFullName(""); setSignupEmail(""); setSignupPassword(""); setSignupGender(""); setSignupAge("18"); setSignupAvatar("a1"); setSignupError("");
+    setSignupFullName(""); setSignupPassword(""); setSignupGender(""); setSignupAge("18"); setSignupAvatar("a1"); setSignupError("");
   }
 
   function handleLogout() {
@@ -8511,9 +8509,6 @@ export default function App() {
 
         <FieldInput label="FIRST NAME" placeholder="e.g. Alex"
           value={signupFullName} onChangeText={setSignupFullName} />
-        <FieldInput label="EMAIL (OPTIONAL)" placeholder="e.g. alex@email.com"
-          value={signupEmail} onChangeText={setSignupEmail}
-          autoCapitalize="none" keyboardType="email-address" />
         <FieldInput label="PASSWORD" placeholder="At least 8 characters"
           value={signupPassword} onChangeText={setSignupPassword} secureTextEntry />
 
@@ -8615,15 +8610,16 @@ export default function App() {
 
             <View style={s.authForm}>
               <FieldInput
-                label="Email or phone"
-                placeholder="Enter your email or phone"
+                label="Mobile number"
+                placeholder="Enter your mobile number"
                 value={email}
-                onChangeText={setEmail}
+                onChangeText={text => setEmail(text.replace(/[^0-9]/g, ""))}
                 autoCapitalize="none"
                 autoCorrect={false}
-                autoComplete="username"
-                textContentType="username"
-                keyboardType="default"
+                autoComplete="tel"
+                textContentType="telephoneNumber"
+                keyboardType="phone-pad"
+                maxLength={10}
                 returnKeyType="next"
                 blurOnSubmit={false}
                 onSubmitEditing={() => passwordInputRef.current?.focus()}

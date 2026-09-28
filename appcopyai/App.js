@@ -6,7 +6,6 @@ import { createSecureSessionStorage } from "./services/secureSessionStorage";
 import { APPLE_SUBSCRIPTION_MANAGEMENT_URL, canOpenExternalUrl } from "./services/externalLinks";
 import { hasActivePremiumEntitlement } from "./services/subscriptions";
 import { useAppleSubscriptions } from "./services/useAppleSubscriptions";
-import { AI_CONSENT_POLICY_VERSION, isAiConsentCurrent } from "./services/aiConsent";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as SecureStore from "expo-secure-store";
@@ -489,13 +488,13 @@ const LEGAL_APP_PAGES = {
     icon: "shield-checkmark-outline",
     intro: "This policy explains how Skillomate handles account, learning, AI, payment, device, storage, and support data.",
     sections: [
-      { title: "Information we collect", body: "We may process your name, mobile number, optional email, age, gender, avatar or optional profile photo, login and IP security records, course progress, wishlist, certificates, payment status, device context, and support messages." },
+      { title: "Information we collect", body: "We may process your name, mobile number, age, gender, avatar or optional profile photo, login and IP security records, course progress, wishlist, certificates, payment status, device context, and support messages." },
       { title: "How information is used", body: "Information is used to create and secure accounts, provide learning features, track progress, process subscriptions, answer support requests, and prevent abuse." },
-      { title: "Nex AI data", body: "Only after you choose Allow, fal.ai, OpenRouter, and Google Gemini may process your question, up to 12 recent messages, and relevant course material. Your profile name is not sent. You can withdraw consent and delete history in AI Data Controls." },
+      { title: "Nex AI data", body: "When you use Nex AI, AI service providers may process your question, up to 12 recent messages, and relevant course material. Your profile name is not sent. You can delete history in AI Data Controls." },
       { title: "Payments and service providers", body: "Payment, verification, media, hosting, storage, and AI providers may process the information required to deliver their services. Sensitive payment credentials are entered through the payment provider." },
       { title: "Device storage and permissions", body: "The app may use internet, storage, vibration, and screen-capture controls for account, media, downloads, exports, and protected learning features. Permissions can be managed in device settings." },
       { title: "Security and retention", body: "We use technical and organizational safeguards, but no online service can guarantee absolute security. Information is kept only as long as needed for product, legal, payment, security, and support purposes." },
-      { title: "Your controls", body: "You can update profile information, remove AI consent and history, and permanently delete your account in Profile. Limited transaction records may be anonymized and retained for legal or accounting requirements." },
+      { title: "Your controls", body: "You can update profile information, delete AI history, and permanently delete your account in Profile. Limited transaction records may be anonymized and retained for legal or accounting requirements." },
       { title: "Policy updates", body: "This policy may be updated as Skillomate changes. The latest policy information will be provided in the app." },
     ],
   },
@@ -635,7 +634,7 @@ const PRIVACY_CONTENT = {
     {
       title: "Nex AI",
       icon: "sparkles-outline",
-      body: "Only after you choose Allow, fal.ai, OpenRouter, and Google Gemini may process your question, up to 12 recent messages, and relevant course context. Your profile name is not sent. AI Data Controls let you withdraw consent and delete history.",
+      body: "When you use Nex AI, AI service providers may process your question, up to 12 recent messages, and relevant course context. Your profile name is not sent. AI Data Controls let you delete history.",
     },
     {
       title: "Payments And Subscriptions",
@@ -3749,30 +3748,6 @@ function ReelsScreen({ courseId, course, initialIndex, initialTime, onBack, user
     }
     if (!user?._id || !user?.sessionId) {
       updateCourseAi([...courseAiEntry.messages, { role: "assistant", content: "Please log in again before using Course AI." }]);
-      return;
-    }
-    try {
-      const consent = await session.requestJson("/api/ai/consent");
-      if (!isAiConsentCurrent(consent)) {
-        const allowed = await new Promise(resolve => {
-          Alert.alert(
-            "Nex AI Privacy",
-            `Your question, recent chat, and relevant lesson context will be processed by ${(consent.providerNames || ["external AI providers"]).join(", ")}. Your name is not sent.`,
-            [
-              { text: "Not Now", style: "cancel", onPress: async () => { await session.requestJson("/api/ai/consent", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ granted: false }) }).catch(() => {}); resolve(false); } },
-              { text: "Allow", onPress: async () => {
-                try {
-                  const saved = await session.requestJson("/api/ai/consent", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ granted: true }) });
-                  resolve(isAiConsentCurrent(saved));
-                } catch (_) { resolve(false); }
-              } },
-            ]
-          );
-        });
-        if (!allowed) return;
-      }
-    } catch (_) {
-      Alert.alert("AI privacy unavailable", "Your privacy choice could not be checked. No AI request was sent.");
       return;
     }
     const messagesWithQuestion = [...courseAiEntry.messages, { role: "user", content: question }];
@@ -7089,10 +7064,6 @@ function AiAssistantScreen({
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState("checking");
-  const [aiConsent, setAiConsent] = useState({ granted: false, policyVersion: AI_CONSENT_POLICY_VERSION, providerNames: ["fal.ai", "OpenRouter", "Google Gemini"] });
-  const [aiConsentLoading, setAiConsentLoading] = useState(true);
-  const [showAiConsent, setShowAiConsent] = useState(false);
-  const pendingAiPrompt = useRef("");
   const [robotId, setRobotId] = useState(DEFAULT_AI_ROBOT_ID);
   const [showRobotPicker, setShowRobotPicker] = useState(false);
   const [assistantName, setAssistantName] = useState(DEFAULT_AI_NAME);
@@ -7184,22 +7155,6 @@ function AiAssistantScreen({
     setInput("");
     setHistoryOpen(false);
   }, [introMessages]);
-
-  // NEX is the default identity; learners can still choose another companion.
-  useEffect(() => {
-    if (!user?._id || !session) {
-      setAiConsentLoading(false);
-      setAiConsent({ granted: false, policyVersion: AI_CONSENT_POLICY_VERSION, providerNames: ["fal.ai", "OpenRouter", "Google Gemini"] });
-      return;
-    }
-    let cancelled = false;
-    setAiConsentLoading(true);
-    session.requestJson("/api/ai/consent")
-      .then(value => { if (!cancelled) setAiConsent(value); })
-      .catch(() => { if (!cancelled) setAiConsent(current => ({ ...current, granted: false })); })
-      .finally(() => { if (!cancelled) setAiConsentLoading(false); });
-    return () => { cancelled = true; };
-  }, [session, user?._id]);
 
   useEffect(() => {
     AsyncStorage.getItem(AI_AVATAR_STORAGE_KEY).then(saved => {
@@ -7344,39 +7299,6 @@ function AiAssistantScreen({
     return () => clearTimeout(scrollTimer);
   }, [messages, loading]);
 
-  async function saveAiConsent(granted) {
-    if (!session) return null;
-    setAiConsentLoading(true);
-    try {
-      const next = await session.requestJson("/api/ai/consent", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ granted }),
-      });
-      setAiConsent(next);
-      setShowAiConsent(false);
-      return next;
-    } catch (_) {
-      Alert.alert("Privacy choice not saved", "Check your connection and try again.");
-      return null;
-    } finally {
-      setAiConsentLoading(false);
-    }
-  }
-
-  async function allowAiAndContinue() {
-    const next = await saveAiConsent(true);
-    if (!isAiConsentCurrent(next)) return;
-    const queued = pendingAiPrompt.current;
-    pendingAiPrompt.current = "";
-    if (queued) sendAiMessage(queued, { consentOverride: true });
-  }
-
-  async function declineAiConsent() {
-    pendingAiPrompt.current = "";
-    await saveAiConsent(false);
-  }
-
   async function clearAiHistory() {
     try {
       await session.requestJson("/api/ai/history", { method: "DELETE" });
@@ -7425,14 +7347,9 @@ function AiAssistantScreen({
     ]);
   }
 
-  async function sendAiMessage(value = input, options = {}) {
+  async function sendAiMessage(value = input) {
     const question = value.trim();
     if (!question || loading || aiInFlight.current) return;
-    if (!options.consentOverride && !isAiConsentCurrent(aiConsent)) {
-      pendingAiPrompt.current = question;
-      setShowAiConsent(true);
-      return;
-    }
     if (!AI_FEATURE_ENABLED) {
       setInput("");
       const targetSessionId = activeConversationId || createAiConversationSession(introMessages()).id;
@@ -7715,30 +7632,6 @@ function AiAssistantScreen({
             )}
             <View style={{ borderTopWidth: 1, borderTopColor: C.border, paddingTop: 14, marginTop: 10, gap: 8 }}>
               <Text style={s.aiHistoryLabel}>AI Data Controls</Text>
-              <Text style={s.aiHistoryItemMeta}>
-                Third-party AI processing: {isAiConsentCurrent(aiConsent) ? "Allowed" : "Not allowed"}
-              </Text>
-              {isAiConsentCurrent(aiConsent) ? (
-                <TouchableOpacity
-                  onPress={() => saveAiConsent(false)}
-                  style={[s.aiHistoryNewChat, { backgroundColor: C.cardBg, borderWidth: 1, borderColor: C.border }]}
-                  accessibilityRole="button"
-                  accessibilityLabel="Withdraw AI data consent"
-                >
-                  <Text style={[s.aiHistoryNewChatText, { color: C.text }]}>Withdraw consent</Text>
-                  <Ionicons name="shield-outline" size={18} color={C.primary} />
-                </TouchableOpacity>
-              ) : (
-                <TouchableOpacity
-                  onPress={() => setShowAiConsent(true)}
-                  style={[s.aiHistoryNewChat, { backgroundColor: C.cardBg, borderWidth: 1, borderColor: C.border }]}
-                  accessibilityRole="button"
-                  accessibilityLabel="Review AI privacy consent"
-                >
-                  <Text style={[s.aiHistoryNewChatText, { color: C.text }]}>Review AI privacy</Text>
-                  <Ionicons name="shield-checkmark-outline" size={18} color={C.primary} />
-                </TouchableOpacity>
-              )}
               <TouchableOpacity
                 onPress={() => Alert.alert("Delete AI history?", "This removes your Nex AI conversations from this device and the server.", [
                   { text: "Cancel", style: "cancel" },
@@ -7752,41 +7645,6 @@ function AiAssistantScreen({
                 <Ionicons name="trash-outline" size={18} color={C.danger} />
               </TouchableOpacity>
             </View>
-          </View>
-        </View>
-      </Modal>
-
-      <Modal visible={showAiConsent} transparent animationType="fade" onRequestClose={declineAiConsent}>
-        <View style={{ flex: 1, backgroundColor: "rgba(0,0,0,0.76)", alignItems: "center", justifyContent: "center", padding: 24 }}>
-          <View style={{ backgroundColor: C.white, borderRadius: 20, borderWidth: 1, borderColor: C.border, width: "100%", maxWidth: 430, padding: 22 }}>
-            <View style={{ width: 48, height: 48, borderRadius: 24, backgroundColor: C.primaryLight, alignItems: "center", justifyContent: "center", alignSelf: "center" }}>
-              <Ionicons name="shield-checkmark-outline" size={26} color={C.primary} />
-            </View>
-            <Text style={{ color: C.text, fontSize: 21, fontWeight: "800", textAlign: "center", marginTop: 14 }}>Nex AI Privacy</Text>
-            <Text style={{ color: C.textSub, fontSize: 13, lineHeight: 20, marginTop: 10 }}>
-              To answer you, Skillomate sends your question, up to 12 recent chat messages, and relevant course or lesson context to {Array.isArray(aiConsent.providerNames) ? aiConsent.providerNames.join(", ") : "external AI providers"}.
-            </Text>
-            <Text style={{ color: C.textSub, fontSize: 13, lineHeight: 20, marginTop: 8 }}>
-              Your name is not sent. Avoid including passwords, payment details, or other sensitive personal information. You can withdraw consent and delete AI history from AI Data Controls.
-            </Text>
-            <TouchableOpacity
-              onPress={allowAiAndContinue}
-              disabled={aiConsentLoading}
-              style={[s.btn, s.btnFill, { marginTop: 18 }, aiConsentLoading && { opacity: 0.55 }]}
-              accessibilityRole="button"
-              accessibilityLabel="Allow external AI processing"
-            >
-              {aiConsentLoading ? <ActivityIndicator color={C.onPrimary} /> : <Text style={s.btnText}>Allow</Text>}
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={declineAiConsent}
-              disabled={aiConsentLoading}
-              style={[s.btn, { marginTop: 8, borderWidth: 1, borderColor: C.border }]}
-              accessibilityRole="button"
-              accessibilityLabel="Do not allow external AI processing"
-            >
-              <Text style={[s.btnText, { color: C.text }]}>Not Now</Text>
-            </TouchableOpacity>
           </View>
         </View>
       </Modal>
@@ -8029,7 +7887,6 @@ export default function App() {
   const [signupToken, setSignupToken] = useState("");
   const [otpLoading, setOtpLoading] = useState(false);
   const [signupFullName, setSignupFullName] = useState("");
-  const [signupEmail, setSignupEmail] = useState("");
   const [signupPassword, setSignupPassword] = useState("");
   const [signupGender, setSignupGender] = useState("");
   const [signupAge, setSignupAge] = useState("");
@@ -8552,15 +8409,16 @@ export default function App() {
   }, [user?._id]);
 
   async function login() {
-    if (!email.trim() || !password.trim()) { setLoginError("Please enter your email/phone and password."); return; }
+    if (!email.trim() || !password.trim()) { setLoginError("Please enter your mobile number and password."); return; }
     setLoginLoading(true); setLoginError("");
     try {
-      const identifier = email.trim();
+      const identifier = email.replace(/\D/g, "");
+      if (identifier.length !== 10) {
+        setLoginError("Enter the 10-digit mobile number registered to your account.");
+        return;
+      }
       const { res, data } = await postApiJson("/api/auth/login", {
-        identifier,
-        email: identifier,
         mobileNumber: identifier,
-        emailOrMobile: identifier,
         password,
       });
       if (!res.ok) {
@@ -8752,11 +8610,9 @@ export default function App() {
     try {
       const mobileNumber = mobile.trim();
       const fullName = signupFullName.trim();
-      const emailAddress = signupEmail.trim() || null;
       const { res, data } = await postApiJson(["/api/auth/register", "/api/auth/signup"], {
         fullName,
         name: fullName,
-        email: emailAddress,
         password: signupPassword,
         mobileNumber,
         mobile: mobileNumber,
@@ -8796,7 +8652,7 @@ export default function App() {
 
   function resetSignup() {
     setScreen("login"); setMobile(""); setOtp(""); setOtpSent(false); setSignupToken("");
-    setSignupFullName(""); setSignupEmail(""); setSignupPassword(""); setSignupGender(""); setSignupAge(""); setSignupAvatar("a1"); setSignupError("");
+    setSignupFullName(""); setSignupPassword(""); setSignupGender(""); setSignupAge(""); setSignupAvatar("a1"); setSignupError("");
   }
 
   async function handleLogout() {
@@ -9020,9 +8876,6 @@ export default function App() {
 
         <FieldInput label="FIRST NAME" placeholder="e.g. Alex"
           value={signupFullName} onChangeText={setSignupFullName} />
-        <FieldInput label="EMAIL (OPTIONAL)" placeholder="e.g. alex@email.com"
-          value={signupEmail} onChangeText={setSignupEmail}
-          autoCapitalize="none" keyboardType="email-address" />
         <FieldInput label="PASSWORD" placeholder="At least 8 characters"
           value={signupPassword} onChangeText={setSignupPassword} secureTextEntry />
 
@@ -9124,15 +8977,16 @@ export default function App() {
 
             <View style={s.authForm}>
               <FieldInput
-                label="Email or phone"
-                placeholder="Enter your email or phone"
+                label="Mobile number"
+                placeholder="Enter your mobile number"
                 value={email}
-                onChangeText={setEmail}
+                onChangeText={text => setEmail(text.replace(/[^0-9]/g, ""))}
                 autoCapitalize="none"
                 autoCorrect={false}
-                autoComplete="username"
-                textContentType="username"
-                keyboardType="default"
+                autoComplete="tel"
+                textContentType="telephoneNumber"
+                keyboardType="phone-pad"
+                maxLength={10}
                 returnKeyType="next"
                 blurOnSubmit={false}
                 onSubmitEditing={() => passwordInputRef.current?.focus()}

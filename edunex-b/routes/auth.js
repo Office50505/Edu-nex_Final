@@ -361,7 +361,7 @@ router.delete(
  */
 async function signup(req, res) {
   try {
-    const { fullName, email, password, mobileNumber, signupToken } = req.body;
+    const { fullName, password, mobileNumber, signupToken } = req.body;
     const avatar = String(req.body.avatar || '').trim() || null;
     const gender = ['male', 'female', 'other'].includes(req.body.gender) ? req.body.gender : null;
     const age = Number.isInteger(Number(req.body.age)) ? Number(req.body.age) : null;
@@ -382,7 +382,6 @@ async function signup(req, res) {
       return res.status(400).json({ error: 'Password must be at least 8 characters' });
     }
 
-    const normalizedEmail = email ? email.trim().toLowerCase() : null;
     const normalizedMobile = normalizeMobileNumber(mobileNumber);
     let decodedSignup;
 
@@ -394,13 +393,6 @@ async function signup(req, res) {
 
     if (!normalizedMobile || decodedSignup.mobileNumber !== normalizedMobile) {
       return res.status(400).json({ error: 'Mobile verification does not match this signup' });
-    }
-
-    if (normalizedEmail) {
-      const existingUser = await User.findOne({ email: normalizedEmail });
-      if (existingUser) {
-        return res.status(409).json({ error: 'An account with this email already exists' });
-      }
     }
 
     let onboarding = null;
@@ -437,7 +429,7 @@ async function signup(req, res) {
         isOnTrial: onboardingSubscription.status === 'trial',
       } : {}),
       fullName: fullName.trim(),
-      email: normalizedEmail,
+      email: null,
       passwordHash,
       mobileNumber: normalizedMobile,
       avatar,
@@ -758,19 +750,16 @@ router.post('/login', async (req, res) => {
       loginId ||
       mobileNumber ||
       req.body.identifier ||
-      req.body.emailOrMobile ||
-      req.body.email ||
       req.body.mobile ||
       req.body.phone ||
       ''
     ).trim();
 
     if (!identifier || !password) {
-      return res.status(400).json({ error: 'Email/mobile and password required' });
+      return res.status(400).json({ error: 'Mobile number and password required' });
     }
 
     const normalizedPhone = normalizeMobileNumber(identifier);
-    const normalizedEmail = identifier.includes('@') ? identifier.toLowerCase() : '';
     const phoneCandidates = normalizedPhone
       ? [...new Set([
           normalizedPhone,
@@ -780,15 +769,13 @@ router.post('/login', async (req, res) => {
           normalizedPhone.length === 10 ? `91${normalizedPhone}` : null,
         ].filter(Boolean))]
       : [];
-    const loginQuery = normalizedEmail
-      ? { email: normalizedEmail }
-      : { mobileNumber: { $in: phoneCandidates } };
+    const loginQuery = { mobileNumber: { $in: phoneCandidates } };
 
-    if (!normalizedEmail && !/^\d{10,15}$/.test(normalizedPhone)) {
-      return res.status(400).json({ error: 'Valid email or mobile number is required' });
+    if (!/^\d{10,15}$/.test(normalizedPhone)) {
+      return res.status(400).json({ error: 'Valid mobile number is required' });
     }
 
-    const loginLimitKey = getRateLimitKey('login:user', normalizedEmail || normalizedPhone);
+    const loginLimitKey = getRateLimitKey('login:user', normalizedPhone);
     const ipLimitKey = getRateLimitKey('login:ip', clientIp);
     const loginBlockedSeconds = isRateLimited(loginLimitKey);
     const ipBlockedSeconds = isRateLimited(ipLimitKey);
@@ -806,8 +793,7 @@ router.post('/login', async (req, res) => {
     if (!user) {
       recordRateLimitFailure(loginLimitKey, authRateConfig.loginByPhone);
       recordRateLimitFailure(ipLimitKey, authRateConfig.loginByIp);
-      if (!user && !normalizedEmail) return res.status(404).json({ error: 'Account does not exist.', code: 'MOBILE_NOT_REGISTERED' });
-      return res.status(404).json({ error: 'Account does not exist.', code: 'ACCOUNT_NOT_FOUND' });
+      return res.status(404).json({ error: 'Account does not exist.', code: 'MOBILE_NOT_REGISTERED' });
     }
 
     if (user.isActive === false) {
