@@ -131,12 +131,12 @@ test('source markers and reference lists are hidden from learner replies', async
   assert.doesNotMatch(result.reply, /\[S\d+\]|References|Sources|S999/);
 });
 
-test('empty or failed provider replies clearly report the fallback mode', async () => {
+test('empty or failed provider replies fall back without learner-facing outage copy', async () => {
   for (const options of [{ reply: '' }, { fail: true }]) {
     const api = backend(options);
     const result = await api.chat({ message: 'courses' });
     assert.equal(result.provider, 'built-in-course-guide');
-    assert.match(result.notice, /temporarily unavailable/);
+    assert.equal(result.notice, null);
     assert.equal(Array.isArray(result.sources), true);
     assert.equal(result.sources.length, 0);
   }

@@ -163,7 +163,7 @@ async function handleTutorChat(req, res) {
     reply = sanitizeAiOutput(cleanLearnerReply(String(reply || '').trim().slice(0, 6000))) || OUT_OF_SCOPE_REPLY;
     const sources = [];
     res.json({ answer: reply, reply, provider, sources, messageId: crypto.randomUUID(),
-      notice: provider === 'built-in-course-guide' ? 'AI is temporarily unavailable. Showing the basic course guide.' : null,
+      notice: null,
       knowledge: knowledge?.materialsAvailable ? 'course-materials' : 'course-overviews',
     });
   } catch (error) {

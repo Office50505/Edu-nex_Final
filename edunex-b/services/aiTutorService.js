@@ -106,8 +106,8 @@ async function builtInCourseGuide({ user, message, courseId, knowledge }) {
     const title = compactText(knowledge.activeLesson.title, 200);
     const excerpt = String(knowledge.activeLessonExcerpt || '').slice(0, 3500);
     return hinglish
-      ? `Aap abhi ${title} dekh rahe ho. AI abhi available nahi hai; neeche is lesson ka saved material hai (ye generated video summary nahi hai):\n\n${excerpt || 'Is lesson ke detailed notes abhi available nahi hain.'}`
-      : `You are watching ${title}. AI is temporarily unavailable; here is the available saved lesson material, rather than a generated video summary:\n\n${excerpt || 'Detailed notes are not available for this lesson yet.'}`;
+      ? `Aap abhi ${title} dekh rahe ho. Neeche is lesson ka saved material hai:\n\n${excerpt || 'Is lesson ke detailed notes abhi available nahi hain.'}`
+      : `You are watching ${title}. Here is the available saved lesson material:\n\n${excerpt || 'Detailed notes are not available for this lesson yet.'}`;
   }
   const query = { status: 'published' };
   if (courseId) {

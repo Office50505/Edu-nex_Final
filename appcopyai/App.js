@@ -228,9 +228,10 @@ const AVATAR_IMAGES = {
 const DEMO_AVATARS = Object.keys(AVATAR_IMAGES).map((id, index) => ({ id, label: `Profile avatar ${index + 1}` }));
 const HOME_FALLBACK_COURSES = [];
 const ANDROID_CLIPPED_SUBVIEWS = Platform.OS === "android";
-const ANDROID_ROOT_TAB_PLACEHOLDERS = Platform.OS === "android";
 const ROOT_TAB_SWIPE_ENABLED = true;
 const ROOT_TAB_CHROME_ENABLED = Platform.OS !== "android";
+const ROOT_TAB_PAGE_GAP = Platform.OS === "android" ? 0 : 10;
+const ROOT_TAB_SWITCH_DURATION_MS = Platform.OS === "android" ? 165 : 210;
 const MIN_TOUCH_TARGET = Platform.OS === "ios" ? 44 : 48;
 const ANDROID_STATUS_BAR_INSET = Platform.OS === "android" ? (StatusBar.currentHeight || 0) : 0;
 
@@ -410,6 +411,8 @@ const hasCourseAccess = user => DEV_UI_QA_ENABLED || hasActivePremiumEntitlement
 const AI_FEATURE_ENABLED = true;
 
 const SPEEDS = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2];
+const AUTO_QUALITY_LABEL = "Auto";
+const FALLBACK_QUALITY_OPTIONS = ["144p", "240p", "360p", "480p", "720p", "1080p", "1440p", "2160p"];
 const VIDEO_COMPLETE_THRESHOLD = 0.9;
 const PROTECTED_VIDEO_CAPTURE_KEY = "skillomate-course-video";
 const SHOW_DRAFT_HOME_RECOMMENDATIONS = false;
@@ -955,6 +958,27 @@ function buildYoutubePlayerHtml(videoId, origin) {
         frame.contentWindow.postMessage(JSON.stringify({ event:'command', func:func, args:args || [] }), '*');
       } catch(e) {}
     }
+    function ytQualityToken(value) {
+      var raw = String(value || '').toLowerCase();
+      if (!raw || raw === 'auto' || raw === 'default') return 'default';
+      var pixels = Number((raw.match(/\\d+/) || [0])[0]);
+      if (pixels >= 2160) return 'hd2160';
+      if (pixels >= 1440) return 'hd1440';
+      if (pixels >= 1080) return 'hd1080';
+      if (pixels >= 720) return 'hd720';
+      if (pixels >= 480) return 'large';
+      if (pixels >= 360) return 'medium';
+      if (pixels >= 240) return 'small';
+      return 'tiny';
+    }
+    function emitQualities() {
+      try {
+        if (player && player.getAvailableQualityLevels) {
+          var levels = player.getAvailableQualityLevels() || [];
+          if (levels.length) post({ type:'qualities', qualities: levels });
+        }
+      } catch(e) {}
+    }
     window.onYouTubeIframeAPIReady = function() {
       player = new YT.Player('yt', {
         width: '100%',
@@ -971,6 +995,7 @@ function buildYoutubePlayerHtml(videoId, origin) {
             pending = [];
             try { player.unMute(); player.playVideo(); } catch(e) {}
             startPolling();
+            emitQualities();
             post({ type:'ready' });
           },
           onStateChange: emitState,
@@ -992,6 +1017,13 @@ function buildYoutubePlayerHtml(videoId, origin) {
           else if (func === 'mute') player.mute();
           else if (func === 'unMute') player.unMute();
           else if (func === 'setPlaybackRate') player.setPlaybackRate(Number(args[0]) || 1);
+          else if (func === 'setQuality') {
+            var quality = ytQualityToken(args[0]);
+            if (player.setPlaybackQualityRange) player.setPlaybackQualityRange(quality, quality);
+            if (player.setPlaybackQuality) player.setPlaybackQuality(quality);
+            post({ type:'qualityChange', quality: quality === 'default' ? 'auto' : args[0] });
+            setTimeout(emitQualities, 250);
+          }
         } catch(e) {}
         postLegacyCommand(func, args);
         if (func === 'playVideo' || func === 'seekAndPlay') post({ type:'stateChange', playing: true, playerState: 1 });
@@ -1144,12 +1176,66 @@ function buildEmbedPlayerHtml(embedUrl, initialTime = 0) {
     };
     window.bunnyQuality = function(q) {
       exec(function(){
-        try { player.setQuality(q); } catch(e) {}
-        playerMessage('setQuality', q);
+        var nextQuality = (!q || String(q).toLowerCase() === 'auto') ? 'auto' : q;
+        try { player.setQuality(nextQuality); } catch(e) {}
+        playerMessage('setQuality', nextQuality);
+        post({ type:'qualityChange', quality: nextQuality });
       });
     };
   </script>
 </body></html>`;
+}
+
+function normalizeVideoQualityOptions(values = []) {
+  const seen = new Set();
+  const options = [];
+  values.forEach(value => {
+    const rawValue = typeof value === "object" && value
+      ? getVideoTrackQualityLabel(value) || value.label || value.name || value.id || ""
+      : value;
+    const raw = String(rawValue || "").trim();
+    if (!raw || /^auto$/i.test(raw)) return;
+    const match = raw.match(/(\d{3,4})\s*p?/i);
+    const label = match ? `${match[1]}p` : raw;
+    const key = label.toLowerCase();
+    if (seen.has(key)) return;
+    seen.add(key);
+    options.push(label);
+  });
+  return options.sort((a, b) => {
+    const aPixels = Number(String(a).match(/\d+/)?.[0] || 0);
+    const bPixels = Number(String(b).match(/\d+/)?.[0] || 0);
+    return aPixels - bPixels;
+  });
+}
+
+function qualityPixels(label) {
+  const value = Number(String(label || "").match(/\d+/)?.[0] || 0);
+  return Number.isFinite(value) ? value : 0;
+}
+
+function getVideoTrackQualityLabel(track) {
+  const width = Number(track?.size?.width || track?.width || 0);
+  const height = Number(track?.size?.height || track?.height || 0);
+  const pixels = width > 0 && height > 0 ? Math.min(width, height) : Math.max(width, height);
+  if (Number.isFinite(pixels) && pixels > 0) return `${Math.round(pixels)}p`;
+  return String(track?.label || track?.name || track?.id || "").trim();
+}
+
+function findVideoTrackForQuality(tracks = [], quality) {
+  const target = qualityPixels(quality);
+  if (!target) return null;
+  const candidates = tracks
+    .filter(track => track?.url)
+    .map(track => ({ track, pixels: qualityPixels(getVideoTrackQualityLabel(track)) }))
+    .filter(item => item.pixels > 0)
+    .sort((a, b) => a.pixels - b.pixels);
+  if (!candidates.length) return null;
+  return (
+    candidates.find(item => item.pixels === target) ||
+    candidates.filter(item => item.pixels <= target).at(-1) ||
+    candidates[0]
+  ).track;
 }
 
 function buildPlayerHtml(video, origin) {
@@ -2278,32 +2364,184 @@ function ProblemReportModal({ visible, onClose, user, route = "home" }) {
   );
 }
 
-function BottomNav({ active, onHome, onCourses, onAI, onDownloads, onProfile, aiRobotId, forceDark = false, persistent = false }) {
+function NavIcon({ icon, color, size = 20 }) {
+  return <Ionicons name={`${icon}-outline`} size={size} color={color} />;
+}
+
+function BottomNav({
+  active,
+  onHome,
+  onCourses,
+  onAI,
+  onDownloads,
+  onProfile,
+  aiRobotId,
+  forceDark = false,
+  persistent = false,
+  searchReferences: searchReferencesOverride = null,
+  searchPlaceholder = "Search this page",
+}) {
   const rootTabSwipe = React.useContext(RootTabSwipeContext);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [navSearchText, setNavSearchText] = useState("");
+  const navSearchInputRef = useRef(null);
+  useEffect(() => {
+    if (!searchOpen) return undefined;
+    const timer = setTimeout(() => navSearchInputRef.current?.focus?.(), 120);
+    return () => clearTimeout(timer);
+  }, [searchOpen]);
   if (rootTabSwipe?.hideEmbeddedNav && !persistent) return null;
+  const inactiveColor = forceDark ? "#AAA297" : C.slateGray;
+  const normalizedSearch = navSearchText.trim().toLowerCase().replace(/%20/g, " ");
+  const searchTerms = normalizedSearch.split(/\s+/).filter(Boolean);
+  const closeSearch = () => {
+    setSearchOpen(false);
+    Keyboard.dismiss();
+  };
+  const toggleSearch = () => {
+    if (searchOpen) closeSearch();
+    else setSearchOpen(true);
+  };
   const tabs = [
     { key: "home", icon: "home", label: "Home", fn: onHome },
-    { key: "courses", icon: "compass", label: "Explore", fn: onCourses },
+    { key: "courses", icon: "compass", label: "Courses", fn: onCourses },
+    { key: "search", icon: "search", label: "Search", fn: toggleSearch },
     { key: "ai", icon: "sparkles", label: "Nex AI", fn: onAI },
     { key: "downloads", icon: "download", label: "Downloads", fn: onDownloads },
   ];
+  const defaultSearchReferences = [
+    {
+      key: "ai-influencer-course",
+      title: "AI Influencer Course",
+      subtitle: "Open the course and related lessons",
+      icon: "play-circle",
+      fn: onCourses,
+      keywords: "ai influencer course masterclass lessons lecture character face prompts",
+    },
+    {
+      key: "course-lessons",
+      title: "Course Lessons",
+      subtitle: "Browse all Skillomate course lessons",
+      icon: "albums",
+      fn: onCourses,
+      keywords: "course lessons lectures explore browse videos tools setup",
+    },
+    {
+      key: "home-progress",
+      title: "Continue Learning",
+      subtitle: "Return to your active course progress",
+      icon: "home",
+      fn: onHome,
+      keywords: "continue learning progress resume home ai influencer course",
+    },
+    {
+      key: "nex-ai",
+      title: "Nex AI",
+      subtitle: "Ask questions about your course",
+      icon: "sparkles",
+      fn: onAI,
+      keywords: "ai chat nex assistant doubt question prompt help",
+    },
+    {
+      key: "downloads",
+      title: "Downloads",
+      subtitle: "Find offline saved lessons",
+      icon: "download",
+      fn: onDownloads,
+      keywords: "download downloads offline saved videos lessons",
+    },
+  ];
+  const searchReferences = (Array.isArray(searchReferencesOverride) ? searchReferencesOverride : defaultSearchReferences)
+    .filter(item => typeof item.fn === "function");
+  const searchResults = searchTerms.length
+    ? searchReferences.filter(item => {
+        const haystack = `${item.title} ${item.subtitle} ${item.keywords}`.toLowerCase();
+        return searchTerms.every(term => haystack.includes(term));
+      }).slice(0, 4)
+    : [];
+  const openSearchResult = item => {
+    closeSearch();
+    setNavSearchText("");
+    item.fn?.();
+  };
+  const submitSearch = () => {
+    if (searchResults[0]) openSearchResult(searchResults[0]);
+  };
   return (
     <View style={[s.bottomNav, forceDark && { backgroundColor: "rgba(13,13,11,0.98)", borderTopColor: "#2E2C27" }]}>
-      {tabs.map(t => (
+      {searchOpen ? (
+        <View style={s.bottomNavSearchBar}>
+          {normalizedSearch ? (
+            <View style={s.bottomNavSearchResults}>
+              {searchResults.length ? searchResults.map(item => (
+                <TouchableOpacity
+                  key={item.key}
+                  style={s.bottomNavSearchResult}
+                  onPress={() => openSearchResult(item)}
+                  accessibilityRole="button"
+                  accessibilityLabel={`${item.title}. ${item.subtitle}`}
+                >
+                  <View style={s.bottomNavSearchResultIcon}>
+                    <Ionicons name={`${item.icon}-outline`} size={16} color={C.primary} />
+                  </View>
+                  <View style={{ flex: 1, minWidth: 0 }}>
+                    <Text style={s.bottomNavSearchResultTitle} numberOfLines={1}>{item.title}</Text>
+                    <Text style={s.bottomNavSearchResultSubtitle} numberOfLines={1}>{item.subtitle}</Text>
+                  </View>
+                  <Ionicons name="arrow-forward" size={16} color={inactiveColor} />
+                </TouchableOpacity>
+              )) : (
+                <View style={s.bottomNavSearchEmpty}>
+                  <Text style={s.bottomNavSearchEmptyText}>No matching references</Text>
+                </View>
+              )}
+            </View>
+          ) : null}
+          <TouchableOpacity
+            onPress={toggleSearch}
+            style={s.bottomNavSearchIcon}
+            accessibilityRole="button"
+            accessibilityLabel="Close search"
+          >
+            <NavIcon icon="search" color={C.primary} size={24} />
+          </TouchableOpacity>
+          <TextInput
+            ref={navSearchInputRef}
+            value={navSearchText}
+            onChangeText={setNavSearchText}
+            placeholder={searchPlaceholder}
+            placeholderTextColor={forceDark ? "#AAA297" : C.textMuted}
+            style={s.bottomNavSearchInput}
+            returnKeyType="search"
+            accessibilityLabel="Search this page"
+            onSubmitEditing={submitSearch}
+          />
+          <TouchableOpacity
+            onPress={() => {
+              if (navSearchText) setNavSearchText("");
+              else closeSearch();
+            }}
+            style={s.bottomNavSearchClose}
+            accessibilityRole="button"
+            accessibilityLabel={navSearchText ? "Clear search" : "Close search"}
+          >
+            <Ionicons name={navSearchText ? "close-circle" : "close"} size={22} color={inactiveColor} />
+          </TouchableOpacity>
+        </View>
+      ) : tabs.map(t => (
         <TouchableOpacity
           key={t.key}
-          onPress={t.fn}
+          onPress={() => {
+            if (t.key !== "search") closeSearch();
+            t.fn?.();
+          }}
           style={s.bottomTab}
           accessibilityRole="button"
           accessibilityLabel={t.label}
           accessibilityState={{ selected: active === t.key }}
         >
           <View style={[s.bottomTabIcon, active === t.key && s.bottomTabIconActive]}>
-            <Ionicons
-              name={`${t.icon}-outline`}
-              size={20}
-              color={active === t.key ? C.primary : (forceDark ? "#AAA297" : C.slateGray)}
-            />
+            <NavIcon icon={t.icon} color={active === t.key ? C.primary : inactiveColor} />
           </View>
           <Text
             style={[
@@ -2324,7 +2562,7 @@ function BottomNav({ active, onHome, onCourses, onAI, onDownloads, onProfile, ai
 const ROOT_TAB_ORDER = ["home", "courses", "ai", "downloads"];
 const ROOT_TAB_LABELS = {
   home: "Home",
-  courses: "Explore",
+  courses: "Courses",
   ai: "Nex AI",
   downloads: "Downloads",
   profile: "Profile",
@@ -2366,7 +2604,7 @@ function SwipeableRootTabs(props) {
 
 function SwipeableRootTabsPager({ activeTab, onNavigate, renderTab }) {
   const { width, height } = useWindowDimensions();
-  const pageGap = 10;
+  const pageGap = ROOT_TAB_PAGE_GAP;
   const pageStride = width + pageGap;
   const activeIndex = ROOT_TAB_ORDER.indexOf(activeTab);
   const trackX = useRef(new Animated.Value(-Math.max(activeIndex, 0) * pageStride)).current;
@@ -2375,30 +2613,14 @@ function SwipeableRootTabsPager({ activeTab, onNavigate, renderTab }) {
   const transitionInProgressRef = useRef(false);
   const horizontalChildActiveRef = useRef(false);
   const pendingIndexRef = useRef(null);
-  const [mountedTabs, setMountedTabs] = useState(() => ROOT_TAB_ORDER.filter((_, index) => (
-    Math.abs(index - activeIndex) <= 1
-  )));
+  const mountedTabs = ROOT_TAB_ORDER;
 
   useEffect(() => {
     navigateRef.current = onNavigate;
   }, [onNavigate]);
 
-  const retainNeighborhood = useCallback((centerIndex) => {
-    if (centerIndex < 0) return;
-    setMountedTabs(current => {
-      const next = new Set();
-      [centerIndex - 1, centerIndex, centerIndex + 1].forEach(index => {
-        if (ROOT_TAB_ORDER[index]) next.add(ROOT_TAB_ORDER[index]);
-      });
-      const ordered = ROOT_TAB_ORDER.filter(tab => next.has(tab));
-      if (ordered.length === current.length && ordered.every((tab, index) => tab === current[index])) return current;
-      return ordered;
-    });
-  }, []);
-
   React.useLayoutEffect(() => {
     if (activeIndex < 0) return;
-    retainNeighborhood(activeIndex);
     trackX.stopAnimation();
     trackX.setValue(-activeIndex * pageStride);
     pageChrome.stopAnimation();
@@ -2406,7 +2628,7 @@ function SwipeableRootTabsPager({ activeTab, onNavigate, renderTab }) {
     pendingIndexRef.current = null;
     transitionInProgressRef.current = false;
     horizontalChildActiveRef.current = false;
-  }, [activeIndex, pageChrome, pageStride, retainNeighborhood, trackX]);
+  }, [activeIndex, pageChrome, pageStride, trackX]);
 
   const swipeBoundary = useMemo(() => ({
     begin: () => { horizontalChildActiveRef.current = true; },
@@ -2437,12 +2659,10 @@ function SwipeableRootTabsPager({ activeTab, onNavigate, renderTab }) {
     if (activeIndex < 0) return;
     transitionInProgressRef.current = true;
     Animated.parallel([
-      Animated.spring(trackX, {
+      Animated.timing(trackX, {
         toValue: -activeIndex * pageStride,
-        damping: 28,
-        stiffness: 300,
-        mass: 0.9,
-        overshootClamping: true,
+        duration: 170,
+        easing: Easing.out(Easing.cubic),
         useNativeDriver: true,
       }),
       settleChrome(),
@@ -2466,14 +2686,11 @@ function SwipeableRootTabsPager({ activeTab, onNavigate, renderTab }) {
       return;
     }
 
-    retainNeighborhood(targetIndex);
     Animated.parallel([
-      Animated.spring(trackX, {
+      Animated.timing(trackX, {
         toValue: -targetIndex * pageStride,
-        damping: 28,
-        stiffness: 300,
-        mass: 0.9,
-        overshootClamping: true,
+        duration: Math.max(140, Math.min(220, ROOT_TAB_SWITCH_DURATION_MS - Math.abs(direction) * 18)),
+        easing: Easing.out(Easing.cubic),
         useNativeDriver: true,
       }),
       settleChrome(),
@@ -2491,7 +2708,7 @@ function SwipeableRootTabsPager({ activeTab, onNavigate, renderTab }) {
       }
       AccessibilityInfo.announceForAccessibility(`${ROOT_TAB_LABELS[targetTab]} tab`);
     });
-  }, [activeIndex, pageStride, retainNeighborhood, returnToActive, settleChrome, trackX]);
+  }, [activeIndex, pageStride, returnToActive, settleChrome, trackX]);
 
   const panResponder = useMemo(() => PanResponder.create({
     onStartShouldSetPanResponder: () => false,
@@ -2502,9 +2719,8 @@ function SwipeableRootTabsPager({ activeTab, onNavigate, renderTab }) {
       const direction = gesture.dx < 0 ? 1 : -1;
       const targetTab = ROOT_TAB_ORDER[activeIndex + direction];
       const shouldStart = Boolean(targetTab)
-        && horizontalDistance > 14
-        && horizontalDistance > verticalDistance * 1.35;
-      if (shouldStart) retainNeighborhood(activeIndex + direction);
+        && horizontalDistance > (Platform.OS === "android" ? 10 : 14)
+        && horizontalDistance > verticalDistance * (Platform.OS === "android" ? 1.55 : 1.35);
       return shouldStart;
     },
     onPanResponderGrant: () => {
@@ -2536,11 +2752,9 @@ function SwipeableRootTabsPager({ activeTab, onNavigate, renderTab }) {
     onPanResponderTerminate: returnToActive,
     onPanResponderTerminationRequest: () => true,
     onShouldBlockNativeResponder: () => false,
-  }), [activeIndex, navigateByDirection, pageChrome, pageStride, retainNeighborhood, returnToActive, trackX, width]);
+  }), [activeIndex, navigateByDirection, pageChrome, pageStride, returnToActive, trackX, width]);
 
-  const renderedTabs = mountedTabs.includes(activeTab)
-    ? mountedTabs
-    : [...mountedTabs, activeTab].sort((a, b) => ROOT_TAB_ORDER.indexOf(a) - ROOT_TAB_ORDER.indexOf(b));
+  const renderedTabs = mountedTabs;
   const pageCornerRadius = ROOT_TAB_CHROME_ENABLED
     ? pageChrome.interpolate({
         inputRange: [0, 1],
@@ -2565,7 +2779,6 @@ function SwipeableRootTabsPager({ activeTab, onNavigate, renderTab }) {
           {renderedTabs.map(tab => {
             const tabIndex = ROOT_TAB_ORDER.indexOf(tab);
             const isInteractive = tab === activeTab;
-            const shouldRenderContent = !ANDROID_ROOT_TAB_PLACEHOLDERS || isInteractive;
             return (
               <Animated.View
                 key={tab}
@@ -2576,14 +2789,17 @@ function SwipeableRootTabsPager({ activeTab, onNavigate, renderTab }) {
                 style={[
                   s.swipePagerPage,
                   {
-                    left: tabIndex * pageStride,
                     width,
                     height,
+                    marginRight: tabIndex === ROOT_TAB_ORDER.length - 1 ? 0 : pageGap,
                     borderRadius: pageCornerRadius,
                   },
                 ]}
+                collapsable={false}
+                renderToHardwareTextureAndroid={Platform.OS === "android"}
+                needsOffscreenAlphaCompositing={Platform.OS === "android"}
               >
-                {shouldRenderContent ? renderTab(tab, { isActive: tab === activeTab }) : <View style={s.rootTabPlaceholder} />}
+                {renderTab(tab, { isActive: tab === activeTab })}
               </Animated.View>
             );
           })}
@@ -2709,6 +2925,7 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
   const [playbackRate, setPlaybackRate] = useState(1);
   const [surfaceResumeTime, setSurfaceResumeTime] = useState(finiteSeconds(initialTime, 0));
   const [qualities, setQualities] = useState([]);
+  const [nativeVideoTracks, setNativeVideoTracks] = useState([]);
   const [currentQuality, setCurrentQuality] = useState("Auto");
   const [showSettings, setShowSettings] = useState(false);
   const [loopLesson, setLoopLesson] = useState(false);
@@ -2811,6 +3028,9 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
     setIsPlaying(isActive);
     setIsBuffering(false);
     setSurfaceResumeTime(startAt);
+    setCurrentQuality(AUTO_QUALITY_LABEL);
+    setQualities([]);
+    setNativeVideoTracks([]);
     shouldBePlayingRef.current = isActive;
     lastProgressRef.current = { time: startAt, advancedAt: Date.now() };
     setNativePlaybackFailed(false);
@@ -2882,6 +3102,8 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
 
   useEventListener(nativePlayer, "sourceLoad", ({ duration: loadedDuration }) => {
     if (!isNativeVideo) return;
+    const tracks = nativePlayer.availableVideoTracks || [];
+    if (tracks.length) setNativeVideoTracks(tracks);
     const dur = finiteSeconds(loadedDuration, nativePlayer.duration || duration);
     if (dur > 0) setDuration(dur);
     const startAt = finiteSeconds(initialTime, 0);
@@ -2897,6 +3119,18 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
       setIsPlaying(true);
       playNativePlayer();
     }
+  });
+
+  useEventListener(nativePlayer, "availableVideoTracksChange", ({ availableVideoTracks }) => {
+    if (!isNativeVideo) return;
+    const tracks = availableVideoTracks || nativePlayer.availableVideoTracks || [];
+    if (tracks.length) setNativeVideoTracks(tracks);
+  });
+
+  useEventListener(nativePlayer, "videoTrackChange", ({ videoTrack }) => {
+    if (!isNativeVideo || currentQuality === AUTO_QUALITY_LABEL) return;
+    const label = getVideoTrackQualityLabel(videoTrack);
+    if (FALLBACK_QUALITY_OPTIONS.includes(label)) setCurrentQuality(label);
   });
 
   useEventListener(nativePlayer, "timeUpdate", ({ currentTime: nextTime }) => {
@@ -2977,6 +3211,8 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
       const map = { playVideo:"bunnyPlay()", pauseVideo:"bunnyPause()", mute:"bunnyMute(true)", unMute:"bunnyMute(false)" };
       const call = func === "setPlaybackRate"
         ? `bunnySpeed(${args[0]})`
+        : func === "setQuality"
+          ? `bunnyQuality(${JSON.stringify(args[0] || "auto")})`
         : func === "seekAndPlay"
           ? `bunnySeekAndPlay(${args[0]})`
           : func === "seekTo"
@@ -3197,7 +3433,11 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
         }
         return;
       }
-      if (d.type === "qualities") { setQualities(d.qualities || []); return; }
+      if (d.type === "qualities") { setQualities(normalizeVideoQualityOptions(d.qualities || [])); return; }
+      if (d.type === "qualityChange") {
+        setCurrentQuality(String(d.quality || "").toLowerCase() === "auto" ? AUTO_QUALITY_LABEL : String(d.quality || AUTO_QUALITY_LABEL));
+        return;
+      }
       if (d.type === "timeUpdate") {
         const nextDuration = finiteSeconds(d.duration, duration);
         const nextTime = clampSeconds(d.currentTime, nextDuration);
@@ -3275,8 +3515,45 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
   }
   function toggleMute() { sendCmd(isMuted ? "unMute" : "mute"); setIsMuted(m => !m); }
   function selectSpeed(r) { sendCmd("setPlaybackRate", [r]); setPlaybackRate(r); }
+  function selectNativeQuality(q) {
+    const resumeAt = latestProgressValueRef.current.currentTime;
+    const shouldResume = Boolean(isActive && shouldBePlayingRef.current);
+    const nextSource = q === AUTO_QUALITY_LABEL
+      ? nativeVideoSource
+      : (() => {
+          const track = findVideoTrackForQuality(nativeVideoTracks, q);
+          return track?.url ? { uri: track.url } : null;
+        })();
+    if (!nextSource) return;
+    setCurrentQuality(q);
+    setIsBuffering(shouldResume);
+    sourceQueue.current = sourceQueue.current.catch(() => {}).then(async () => {
+      try {
+        pauseNativePlayer();
+        await runNativePlayer(player => player.replaceAsync(nextSource));
+        runNativePlayer(player => {
+          player.muted = playbackStateRef.current?.isMuted;
+          player.playbackRate = playbackStateRef.current?.playbackRate || 1;
+          player.loop = false;
+          player.preservesPitch = true;
+          player.timeUpdateEventInterval = VIDEO_TIME_UPDATE_INTERVAL;
+        });
+        if (resumeAt > 0) setNativeTime(resumeAt);
+        if (shouldResume) playNativePlayer();
+      } catch {
+        setCurrentQuality(AUTO_QUALITY_LABEL);
+      } finally {
+        setIsBuffering(false);
+      }
+    });
+  }
   function selectQuality(q) {
-    webViewRef.current?.injectJavaScript(`try{bunnyQuality(${JSON.stringify(q)});}catch(e){} true;`);
+    if (isNativeVideo) {
+      selectNativeQuality(q);
+      return;
+    }
+    const nextQuality = q === AUTO_QUALITY_LABEL ? "auto" : q;
+    sendCmd("setQuality", [nextQuality]);
     setCurrentQuality(q);
   }
   function setSleepTimer(minutes) {
@@ -3382,7 +3659,7 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
     </View>
   );
   const progress = duration > 0 ? Math.max(0, Math.min(1, currentTime / duration)) : 0;
-  const qualityOptions = isBunny && qualities.length > 0 ? qualities : ["Auto"];
+  const qualityOptions = [AUTO_QUALITY_LABEL, ...FALLBACK_QUALITY_OPTIONS];
   const showLiveSurface = !suspendSurface;
   const suspendedPosterUrl = suspendSurface ? getLessonThumbnailUrl(video, course) : "";
 
@@ -3483,6 +3760,7 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
               <Ionicons name="close" size={18} color="rgba(255,255,255,0.82)" />
             </TouchableOpacity>
           </View>
+          <ScrollView style={s.playerSettingsScroll} contentContainerStyle={s.playerSettingsScrollContent} showsVerticalScrollIndicator={false}>
           <View style={s.playerSettingsSection}>
             <Text style={s.playerSettingsLabel}>Playback speed</Text>
             <View style={s.playerSettingsOptions}>
@@ -3509,7 +3787,7 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
               {qualityOptions.map(q => (
                 <TouchableOpacity
                   key={q}
-                  onPress={() => { if (q !== "Auto") selectQuality(q); else setCurrentQuality("Auto"); }}
+                  onPress={() => selectQuality(q)}
                   style={[s.playerSettingsOption, currentQuality === q && s.playerSettingsOptionActive]}
                   accessibilityRole="button"
                   accessibilityLabel={`Set video quality to ${q}`}
@@ -3552,6 +3830,7 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
               })}
             </View>
           </View>
+          </ScrollView>
         </View>
       )}
       {isOffline && (
@@ -3635,8 +3914,8 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
 }
 
 // ── ReelsScreen ───────────────────────────────────────────────────────────────
-function ReelsScreen({ courseId, course, initialIndex, initialTime, onBack, user, session, onVideoComplete, onVideoProgress, downloads, preloadedVideos }) {
-  const [completionInfo, setCompletionInfo] = useState(null);
+function ReelsScreen({ courseId, course, initialIndex, initialTime, onBack, onReportProblem, onGoToDownloads, user, session, onVideoComplete, onVideoProgress, downloads, preloadedVideos }) {
+  const { width: viewportWidth } = useWindowDimensions();
   const [videos, setVideos] = useState(preloadedVideos || []);
   const [loading, setLoading] = useState(!preloadedVideos);
   const [error, setError] = useState(null);
@@ -3644,6 +3923,8 @@ function ReelsScreen({ courseId, course, initialIndex, initialTime, onBack, user
   const [listHeight, setListHeight] = useState(Dimensions.get("window").height);
   const [showDescription, setShowDescription] = useState(false);
   const [showNotes, setShowNotes] = useState(false);
+  const [showLectures, setShowLectures] = useState(false);
+  const [lecturePage, setLecturePage] = useState(0);
   const [showCourseAi, setShowCourseAi] = useState(false);
   const [playerSettingsOpen, setPlayerSettingsOpen] = useState(false);
   const [courseAiInput, setCourseAiInput] = useState("");
@@ -3681,11 +3962,42 @@ function ReelsScreen({ courseId, course, initialIndex, initialTime, onBack, user
   const activeLessonLabel = videos.length ? `Lecture ${activeLessonNumber}/${videos.length}` : "Lecture";
   const activeSummary = activeDescription === "No description available." ? "" : activeDescription;
   const activeShareUrl = `${WEB_APP_BASE}/videos?courseId=${encodeURIComponent(courseId)}`;
-  const videoUiOverlayOpen = showCourseAi || showDescription || showNotes;
+  const lecturePageSize = 20;
+  const lectureRanges = useMemo(() => {
+    const rangeCount = Math.max(1, Math.ceil(videos.length / lecturePageSize));
+    return Array.from({ length: rangeCount }, (_, page) => {
+      const start = page * lecturePageSize;
+      return { start, end: Math.min(videos.length, start + lecturePageSize) };
+    });
+  }, [videos.length]);
+  const visibleLectureRange = lectureRanges[Math.min(lecturePage, lectureRanges.length - 1)] || { start: 0, end: videos.length };
+  const visibleLectureVideos = videos.slice(visibleLectureRange.start, visibleLectureRange.end);
+  const lectureSheetWidth = Math.min(Math.max(viewportWidth - 28, 300), 420);
+  const lectureTileWidth = Math.floor((lectureSheetWidth - 60) / 5);
+  const lectureTileHeight = Math.max(40, Math.round(lectureTileWidth * 0.72));
+  const videoUiOverlayOpen = showCourseAi || showDescription || showNotes || showLectures;
   const closeCourseAi = useCallback(() => {
     Keyboard.dismiss();
     setShowCourseAi(false);
   }, []);
+  const goToLecture = useCallback((index) => {
+    if (!Number.isInteger(index) || index < 0 || index >= videos.length) return;
+    setShowLectures(false);
+    setShowNotes(false);
+    setShowDescription(false);
+    setPlayerSettingsOpen(false);
+    setActiveIndex(index);
+    flatListRef.current?.scrollToIndex({ index, animated: true });
+  }, [videos.length]);
+  const reportActiveLesson = useCallback(() => {
+    setShowLectures(false);
+    setShowNotes(false);
+    setShowDescription(false);
+    setShowCourseAi(false);
+    setPlayerSettingsOpen(false);
+    const lessonId = activeVideo?._id || activeVideo?.id || activeIndex + 1;
+    onReportProblem?.(`courses/${courseId}/lectures/${lessonId}`);
+  }, [activeIndex, activeVideo?._id, activeVideo?.id, courseId, onReportProblem]);
 
   useEffect(() => {
     if (!user?._id || !user?.sessionId || !videos.length) return;
@@ -3721,8 +4033,13 @@ function ReelsScreen({ courseId, course, initialIndex, initialTime, onBack, user
   useEffect(() => {
     setCourseAiInput("");
     setShowNotes(false);
+    setShowLectures(false);
     setPlayerSettingsOpen(false);
   }, [courseAiKey]);
+
+  useEffect(() => {
+    if (showLectures) setLecturePage(Math.floor(activeIndex / lecturePageSize));
+  }, [activeIndex, showLectures]);
 
   const onViewable = useCallback(({ viewableItems }) => {
     const visible = viewableItems.find(item => item.isViewable && Number.isInteger(item.index));
@@ -3807,8 +4124,7 @@ function ReelsScreen({ courseId, course, initialIndex, initialTime, onBack, user
           <VideoItem video={item} courseId={courseId} course={course} user={user}
             onComplete={() => { /* Completion comes from validated progress responses. */ }}
             onProgress={async (currentTime, duration) => {
-              const result = await onVideoProgress?.(courseId, getVideoKey(item, index), currentTime, duration);
-              if (result) setCompletionInfo(result.eligibility || { error: result.error });
+              await onVideoProgress?.(courseId, getVideoKey(item, index), currentTime, duration);
             }}
             onSettingsOpenChange={open => {
               if (index === activeIndex) setPlayerSettingsOpen(open);
@@ -3831,9 +4147,6 @@ function ReelsScreen({ courseId, course, initialIndex, initialTime, onBack, user
         getItemLayout={(_, i) => ({ length: listHeight, offset: listHeight * i, index: i })}
       />
 
-      <View style={{position:'absolute',bottom:110,left:14,right:14,padding:10,borderRadius:8,backgroundColor:'rgba(0,0,0,0.8)',zIndex:5}}>
-        <Text style={{color:'#fff',fontSize:11}}>{completionInfo?.error || (completionInfo ? `${completionInfo.completedLessons}/${completionInfo.totalLessons} lessons complete · ${completionInfo.requirements?.[0] || 'Completion requirements met'}` : '90% lesson coverage required · online progress tracking')}</Text>
-      </View>
       <SafeAreaView style={s.webPlayerTopBar} pointerEvents="box-none">
         <TouchableOpacity
           onPress={onBack}
@@ -3856,11 +4169,11 @@ function ReelsScreen({ courseId, course, initialIndex, initialTime, onBack, user
           <Ionicons name="document-text-outline" size={21} color={C.primary} />
         </TouchableOpacity>
         <TouchableOpacity
-          onPress={() => setShowDescription(true)}
+          onPress={reportActiveLesson}
           style={s.webPlayerTopBtn}
           hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
           accessibilityRole="button"
-          accessibilityLabel="Show lesson information"
+          accessibilityLabel="Report a problem with this lecture"
         >
           <Ionicons name="flag-outline" size={21} color={C.primary} />
         </TouchableOpacity>
@@ -3871,9 +4184,18 @@ function ReelsScreen({ courseId, course, initialIndex, initialTime, onBack, user
             <Ionicons name="sparkles" size={20} color="#fff" />
             <Text style={s.webPlayerRailText}>AI chat</Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => setShowNotes(true)} style={s.webPlayerRailBtn} accessibilityRole="button" accessibilityLabel="Open lectures">
+          <TouchableOpacity onPress={() => setShowLectures(true)} style={s.webPlayerRailBtn} accessibilityRole="button" accessibilityLabel="Open course lectures">
             <Ionicons name="layers-outline" size={21} color="#fff" />
             <Text style={s.webPlayerRailText}>Lectures</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={onGoToDownloads}
+            style={s.webPlayerRailBtn}
+            accessibilityRole="button"
+            accessibilityLabel="Open downloads"
+          >
+            <Ionicons name="download-outline" size={21} color="#fff" />
+            <Text style={s.webPlayerRailText}>Download</Text>
           </TouchableOpacity>
           <TouchableOpacity onPress={shareActiveLesson} style={s.webPlayerRailBtn} accessibilityRole="button" accessibilityLabel="Share lecture">
             <Ionicons name="share-social-outline" size={21} color="#fff" />
@@ -4023,6 +4345,88 @@ function ReelsScreen({ courseId, course, initialIndex, initialTime, onBack, user
         </View>
       </Modal>
 
+      <Modal visible={showLectures} transparent animationType="slide" onRequestClose={() => setShowLectures(false)}>
+        <View style={s.lecturePickerOverlay}>
+          <Pressable style={StyleSheet.absoluteFill} onPress={() => setShowLectures(false)} accessible={false} />
+          <View style={s.lecturePickerSheet}>
+            <View style={s.lecturePickerHandle} />
+            <View style={s.lecturePickerHeader}>
+              <View style={{ flex: 1 }}>
+                <Text style={s.lecturePickerHeading} numberOfLines={1}>Lectures</Text>
+                <Text style={s.lecturePickerCourse} numberOfLines={1}>{course?.title || "AI Influencer Course"}</Text>
+              </View>
+              <TouchableOpacity onPress={() => setShowLectures(false)} style={s.lecturePickerClose} accessibilityRole="button" accessibilityLabel="Close lectures">
+                <Ionicons name="close" size={20} color="#fff" />
+              </TouchableOpacity>
+            </View>
+            <View style={s.lecturePickerTabs}>
+              {lectureRanges.map((range, index) => {
+                const active = index === Math.min(lecturePage, lectureRanges.length - 1);
+                return (
+                  <TouchableOpacity
+                    key={`${range.start}-${range.end}`}
+                    style={[s.lecturePickerTab, active && s.lecturePickerTabActive]}
+                    onPress={() => setLecturePage(index)}
+                    accessibilityRole="button"
+                    accessibilityLabel={`Show lectures ${range.start + 1} to ${range.end}`}
+                    accessibilityState={{ selected: active }}
+                  >
+                    <Text style={[s.lecturePickerTabText, active && s.lecturePickerTabTextActive]}>
+                      {range.start + 1}-{range.end}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+            <FlatList
+              key={`lecture-grid-${visibleLectureRange.start}`}
+              data={visibleLectureVideos}
+              keyExtractor={(item, index) => getVideoKey(item, visibleLectureRange.start + index)}
+              numColumns={5}
+              style={s.lecturePickerList}
+              contentContainerStyle={s.lecturePickerContent}
+              columnWrapperStyle={s.lecturePickerGridRow}
+              keyboardShouldPersistTaps="handled"
+              renderItem={({ item, index }) => {
+                const lectureIndex = visibleLectureRange.start + index;
+                const current = lectureIndex === activeIndex;
+                const title = item?.title || `Lecture ${lectureIndex + 1}`;
+                const thumbnailUrl = getHomeLessonThumbnailUrl(item, course);
+                return (
+                  <TouchableOpacity
+                    style={[s.lecturePickerTile, { width: lectureTileWidth }, current && s.lecturePickerTileActive]}
+                    onPress={() => goToLecture(lectureIndex)}
+                    accessibilityRole="button"
+                    accessibilityLabel={`${current ? "Current lecture, " : ""}Lecture ${lectureIndex + 1}: ${title}`}
+                  >
+                    <View style={[s.lecturePickerThumb, { height: lectureTileHeight }]}>
+                      {thumbnailUrl ? (
+                        <RemoteThumbnailImage
+                          imageUrl={thumbnailUrl}
+                          screen="Player lecture picker"
+                          courseId={courseId}
+                          borderRadius={8}
+                        />
+                      ) : (
+                        <View style={s.mediaFallback}>
+                          <Ionicons name="play-circle-outline" size={18} color={C.primary} />
+                        </View>
+                      )}
+                      {current && (
+                        <View style={s.lecturePickerCurrentBadge}>
+                          <Ionicons name="play" size={11} color="#121212" />
+                        </View>
+                      )}
+                    </View>
+                    <Text style={[s.lecturePickerNumber, current && s.lecturePickerNumberActive]}>{lectureIndex + 1}</Text>
+                  </TouchableOpacity>
+                );
+              }}
+            />
+          </View>
+        </View>
+      </Modal>
+
       <Modal visible={showCourseAi} transparent animationType="slide" onRequestClose={closeCourseAi}>
         <KeyboardAvoidingView style={s.courseAiOverlay} behavior={Platform.OS === "ios" ? "padding" : "height"}>
           <Pressable style={StyleSheet.absoluteFill} onPress={closeCourseAi} accessible={false} />
@@ -4138,7 +4542,22 @@ function ExpandableCourseDescription({ description: rawDescription }) {
 }
 
 // ── VideoListScreen ───────────────────────────────────────────────────────────
-function VideoListScreen({ course, onSelectVideo, onBack, onOpenCourseAi, downloads, onDownload, onDeleteDownload, hasAccess }) {
+function VideoListScreen({
+  course,
+  onSelectVideo,
+  onBack,
+  onOpenCourseAi,
+  downloads,
+  onDownload,
+  onDeleteDownload,
+  hasAccess,
+  onGoToHome,
+  onGoToCourses,
+  onGoToAI,
+  onGoToDownloads,
+  onGoToProfile,
+  aiRobotId,
+}) {
   const [showCourseNotes, setShowCourseNotes] = useState(false);
   const videos = useMemo(
     () => (course.videos || []).slice().sort((a, b) => a.order - b.order),
@@ -4153,6 +4572,21 @@ function VideoListScreen({ course, onSelectVideo, onBack, onOpenCourseAi, downlo
   const coursePrompts = useMemo(
     () => [...new Set(videos.flatMap(video => getVideoPrompts(video)))].slice(0, 8),
     [videos]
+  );
+  const lectureSearchReferences = useMemo(
+    () => videos.map((video, index) => {
+      const title = video.title || `Video ${index + 1}`;
+      const durationLabel = getVideoDurationLabel(video);
+      return {
+        key: video._id || `lecture-${index}`,
+        title,
+        subtitle: `Lecture ${index + 1}${durationLabel ? ` · ${durationLabel}` : ""}`,
+        icon: "play-circle",
+        fn: () => onSelectVideo(index),
+        keywords: `${title} lecture ${index + 1} lesson ${index + 1}`,
+      };
+    }),
+    [onSelectVideo, videos]
   );
   const courseResources = useMemo(() => {
     const resources = [];
@@ -4201,7 +4635,7 @@ function VideoListScreen({ course, onSelectVideo, onBack, onOpenCourseAi, downlo
       </SafeAreaView>
 
       {videos.length === 0 ? (
-        <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 100 }}>
+        <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 140 }}>
           <ExpandableCourseDescription description={courseDescription} />
           <View style={[s.centered, { minHeight: 260 }]}>
             <Text style={{ color: C.textSub }}>No videos in this course yet.</Text>
@@ -4211,7 +4645,7 @@ function VideoListScreen({ course, onSelectVideo, onBack, onOpenCourseAi, downlo
         <FlatList
           data={videos}
           keyExtractor={(item, i) => item._id || String(i)}
-          contentContainerStyle={{ padding: 16, gap: 10 }}
+          contentContainerStyle={{ padding: 16, paddingBottom: 140, gap: 10 }}
           initialNumToRender={8}
           maxToRenderPerBatch={8}
           windowSize={7}
@@ -4316,6 +4750,20 @@ function VideoListScreen({ course, onSelectVideo, onBack, onOpenCourseAi, downlo
           }}
         />
       )}
+
+      <BottomNav
+        active="courses"
+        onHome={onGoToHome || onBack}
+        onCourses={onGoToCourses || (() => {})}
+        onAI={onGoToAI}
+        onDownloads={onGoToDownloads}
+        onProfile={onGoToProfile}
+        aiRobotId={aiRobotId}
+        forceDark
+        persistent
+        searchReferences={lectureSearchReferences}
+        searchPlaceholder="Search lectures"
+      />
 
       <Modal visible={showCourseNotes} transparent animationType="slide" onRequestClose={() => setShowCourseNotes(false)}>
         <View style={s.courseNotesOverlay}>
@@ -4494,18 +4942,21 @@ function HomeSectionHeader({ title, onSeeAll, actionLabel = "See All" }) {
 
 function FeaturedCourseHero({ course, onPress }) {
   return (
-    <View style={homeStyles.featuredHero}>
+    <View
+      style={homeStyles.featuredHero}
+      onTouchEnd={onPress}
+      accessible
+      accessibilityRole="button"
+      accessibilityLabel={`Start learning ${course.title}`}
+    >
       <HomeMedia course={course} borderRadius={14} screen="Home featured course" />
-      <TouchableOpacity
+      <View
         style={homeStyles.featuredButton}
-        onPress={onPress}
-        accessibilityRole="button"
-        accessibilityLabel={`Start learning ${course.title}`}
-        activeOpacity={0.86}
+        pointerEvents="none"
       >
         <Text style={homeStyles.featuredButtonText}>Start Learning</Text>
         <Ionicons name="arrow-forward" size={15} color="#17130B" />
-      </TouchableOpacity>
+      </View>
     </View>
   );
 }
@@ -4792,8 +5243,8 @@ const homeStyles = StyleSheet.create({
   scrollContent: { paddingTop: 10, paddingBottom: 118 },
   mediaFallback: { ...StyleSheet.absoluteFill, alignItems: "center", justifyContent: "center", padding: 10, backgroundColor: HOME_PALETTE.surfaceSoft },
   mediaFallbackText: { color: HOME_PALETTE.textSecondary, fontSize: 10, lineHeight: 13, fontWeight: "700", textAlign: "center", marginTop: 5 },
-  featuredHero: { width: "auto", aspectRatio: 16 / 9, marginHorizontal: 14, borderRadius: 14, overflow: "hidden", backgroundColor: HOME_PALETTE.surface, borderWidth: 1, borderColor: HOME_PALETTE.borderStrong },
-  featuredButton: { position: "absolute", left: 14, bottom: 14, minHeight: 40, flexDirection: "row", alignItems: "center", gap: 7, paddingHorizontal: 14, borderRadius: 8, backgroundColor: HOME_PALETTE.gold },
+  featuredHero: { position: "relative", width: "auto", aspectRatio: 16 / 9, marginHorizontal: 14, borderRadius: 14, overflow: "hidden", backgroundColor: HOME_PALETTE.surface, borderWidth: 1, borderColor: HOME_PALETTE.borderStrong },
+  featuredButton: { position: "absolute", left: 14, bottom: 14, zIndex: 6, minHeight: 40, flexDirection: "row", alignItems: "center", gap: 7, paddingHorizontal: 14, borderRadius: 8, backgroundColor: HOME_PALETTE.gold },
   featuredButtonText: { color: "#17130B", fontSize: 13, lineHeight: 17, fontWeight: "900" },
   section: { marginTop: 20 },
   sectionHeader: { minHeight: 26, flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 12, paddingHorizontal: 14, marginBottom: 9 },
@@ -5651,7 +6102,7 @@ function HomeScreen({
 }
 
 // ── CourseListScreen ──────────────────────────────────────────────────────────
-function CourseListScreen({ onSelect, user, onGoToHome, onGoToAI, onGoToDownloads, onGoToProfile, onGoToSubscription, onStartTrial, trialLoading = false, wishlist = [], onToggleWishlist, courseProgress = {}, onRefreshProgress, aiRobotId }) {
+function CourseListScreen({ onSelect, user, onGoToHome, onGoToCourses, onGoToAI, onGoToDownloads, onGoToProfile, onGoToSubscription, onStartTrial, trialLoading = false, wishlist = [], onToggleWishlist, courseProgress = {}, onRefreshProgress, aiRobotId, keepPreviewMounted = false, activeTab = "courses" }) {
   const hasAccess = hasCourseAccess(user);
   const [showUpgrade, setShowUpgrade] = useState(false);
   const [courses, setCourses] = useState([]);
@@ -5729,7 +6180,7 @@ function CourseListScreen({ onSelect, user, onGoToHome, onGoToAI, onGoToDownload
           <Text style={s.btnText}>Retry</Text>
         </TouchableOpacity>
       </View>
-      <BottomNav active="courses" onHome={onGoToHome} onCourses={() => {}} onAI={onGoToAI} onDownloads={onGoToDownloads} onProfile={onGoToProfile} aiRobotId={aiRobotId} />
+      <BottomNav active={activeTab} onHome={onGoToHome} onCourses={onGoToCourses || (() => {})} onAI={onGoToAI} onDownloads={onGoToDownloads} onProfile={onGoToProfile} aiRobotId={aiRobotId} />
     </View>
   );
 
@@ -5775,7 +6226,7 @@ function CourseListScreen({ onSelect, user, onGoToHome, onGoToAI, onGoToDownload
         maxToRenderPerBatch={6}
         windowSize={7}
         updateCellsBatchingPeriod={40}
-        removeClippedSubviews={ANDROID_CLIPPED_SUBVIEWS}
+        removeClippedSubviews={keepPreviewMounted ? false : ANDROID_CLIPPED_SUBVIEWS}
         keyboardShouldPersistTaps="handled"
         scrollEventThrottle={16}
         renderItem={({ item }) => {
@@ -5877,7 +6328,7 @@ function CourseListScreen({ onSelect, user, onGoToHome, onGoToAI, onGoToDownload
         }
       />
 
-      <BottomNav active="courses" onHome={onGoToHome} onCourses={() => {}} onAI={onGoToAI} onDownloads={onGoToDownloads} onProfile={onGoToProfile} aiRobotId={aiRobotId} />
+      <BottomNav active={activeTab} onHome={onGoToHome} onCourses={onGoToCourses || (() => {})} onAI={onGoToAI} onDownloads={onGoToDownloads} onProfile={onGoToProfile} aiRobotId={aiRobotId} />
       <UpgradeModal
         visible={showUpgrade}
         onClose={() => setShowUpgrade(false)}
@@ -7377,7 +7828,7 @@ function AiAssistantScreen({
       const data = await requestTutor({ baseUrl: API_BASE, user, question, courseId, messages, assistantName, session });
       if (!aiMounted.current || requestGeneration !== aiGeneration.current) return;
       setStatus("online");
-      appendAiConversationMessage(requestSessionId, { id: data.messageId, role: "assistant", content: data.notice ? `${data.notice}\n\n${data.answer}` : data.answer });
+      appendAiConversationMessage(requestSessionId, { id: data.messageId, role: "assistant", content: data.answer });
     } catch (error) {
       if (!aiMounted.current || requestGeneration !== aiGeneration.current || ["SESSION_CHANGED", "SESSION_EXPIRED"].includes(error.code)) return;
       setInput(question);
@@ -7468,7 +7919,7 @@ function AiAssistantScreen({
             maxToRenderPerBatch={8}
             windowSize={9}
             updateCellsBatchingPeriod={40}
-            removeClippedSubviews={ANDROID_CLIPPED_SUBVIEWS}
+            removeClippedSubviews={isRootTabActive ? ANDROID_CLIPPED_SUBVIEWS : false}
             keyboardShouldPersistTaps="handled"
             scrollEventThrottle={16}
             renderItem={({ item, index }) => {
@@ -7853,6 +8304,7 @@ export default function App() {
   const [aiRobotId, setAiRobotId] = useState(null);
   const [showAppUpgrade, setShowAppUpgrade] = useState(false);
   const [showProblemReport, setShowProblemReport] = useState(false);
+  const [problemReportRoute, setProblemReportRoute] = useState("home");
   const [courseAiTarget, setCourseAiTarget] = useState(null);
   const [wishlist, setWishlist] = useState([]);
   const [courseProgress, setCourseProgress] = useState({});
@@ -7864,6 +8316,10 @@ export default function App() {
       return;
     }
     setLegalPage(page);
+  }, []);
+  const openProblemReport = useCallback((route = "home") => {
+    setProblemReportRoute(route || "home");
+    setShowProblemReport(true);
   }, []);
 
   const [email, setEmail] = useState("");
@@ -9125,9 +9581,17 @@ export default function App() {
           session={nativeSession}
           onVideoComplete={isPreviewOnly ? undefined : markVideoComplete}
           onVideoProgress={isPreviewOnly ? undefined : saveVideoProgress}
+          onReportProblem={openProblemReport}
+          onGoToDownloads={() => navigateRootTab("downloads")}
           onBack={backToLessons}
         />
         <CertificateModal cert={certModal} onClose={() => setCertModal(null)} />
+        <ProblemReportModal
+          visible={showProblemReport}
+          onClose={() => setShowProblemReport(false)}
+          user={user}
+          route={problemReportRoute}
+        />
       </View>
     );
   }
@@ -9143,6 +9607,12 @@ export default function App() {
         onDownload={(video, courseId, courseTitle) => startDownload(video, courseId, courseTitle)}
         onDeleteDownload={deleteDownload}
         hasAccess={hasCourseAccess(user)}
+        onGoToHome={() => { loadCourseProgress(); setSelectedCourse(null); navigateRootTab("home"); }}
+        onGoToCourses={() => { loadCourseProgress(); setSelectedCourse(null); navigateRootTab("courses"); }}
+        onGoToAI={() => { setSelectedCourse(null); navigateRootTab("ai"); }}
+        onGoToDownloads={() => { setSelectedCourse(null); navigateRootTab("downloads"); }}
+        onGoToProfile={() => { setSelectedCourse(null); navigateRootTab("profile"); }}
+        aiRobotId={aiRobotId}
       />
     );
   }
@@ -9222,6 +9692,7 @@ export default function App() {
           wishlist={wishlist}
           onToggleWishlist={toggleWishlist}
           onGoToHome={() => { loadCourseProgress(); navigateRootTab("home"); }}
+          onGoToCourses={() => navigateRootTab("courses")}
           onGoToAI={() => navigateRootTab("ai")}
           onGoToDownloads={() => navigateRootTab("downloads")}
           onGoToProfile={() => navigateRootTab("profile")}
@@ -9229,6 +9700,8 @@ export default function App() {
           onStartTrial={openMembershipAccess}
           trialLoading={false}
           aiRobotId={aiRobotId}
+          keepPreviewMounted
+          activeTab="courses"
         />
       );
     }
@@ -9438,7 +9911,7 @@ export default function App() {
           openCourse(course, { startIndex: idx, initialTime: secs });
         }}
         onOpenLessonCollection={(course, options) => openCourse(course, options)}
-        onReportProblem={() => setShowProblemReport(true)}
+        onReportProblem={() => openProblemReport("home")}
         onOpenHeroPreview={openHeroPreview}
         courseProgress={courseProgress}
         aiRobotId={aiRobotId}
@@ -9487,7 +9960,7 @@ export default function App() {
         visible={showProblemReport}
         onClose={() => setShowProblemReport(false)}
         user={user}
-        route="home"
+        route={problemReportRoute}
       />
       <UpgradeModal
         visible={showAppUpgrade}
@@ -10114,32 +10587,138 @@ return StyleSheet.create({
     marginBottom: 18,
   },
   bottomNav: {
-    position: "absolute", bottom: 0, left: 0, right: 0,
+    position: "absolute",
+    left: 14,
+    right: 14,
+    bottom: Platform.OS === "ios" ? 10 : 22,
     zIndex: 50,
     elevation: 20,
-    flexDirection: "row", backgroundColor: C.isDark ? C.navigation : "rgba(255,253,248,0.96)",
-    borderTopWidth: 1, borderTopColor: C.border,
-    paddingHorizontal: 14,
-    paddingBottom: Platform.OS === "ios" ? 18 : 8,
-    paddingTop: 9,
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: C.isDark ? "rgba(18,18,17,0.96)" : "rgba(255,253,248,0.96)",
+    borderWidth: 1,
+    borderColor: C.isDark ? "rgba(231,188,104,0.2)" : "rgba(30,24,16,0.12)",
+    borderRadius: 26,
+    paddingHorizontal: 8,
+    paddingVertical: 7,
+    shadowColor: "#000",
+    shadowOpacity: C.isDark ? 0.34 : 0.12,
+    shadowRadius: 18,
+    shadowOffset: { width: 0, height: 8 },
   },
   bottomTab: {
     flex: 1,
-    flexBasis: "25%",
+    flexBasis: "20%",
     minWidth: 0,
-    minHeight: 54,
+    minHeight: 58,
     alignItems: "center",
     justifyContent: "center",
     gap: 3,
+    borderRadius: 20,
   },
   bottomTabIcon: {
-    width: 30,
-    height: 26,
-    borderRadius: 8,
+    width: 42,
+    height: 42,
+    borderRadius: 21,
+    alignItems: "center",
+    justifyContent: "center",
+    overflow: "hidden",
+  },
+  bottomTabIconActive: {
+    backgroundColor: C.isDark ? "rgba(231,188,104,0.16)" : "rgba(197,139,42,0.14)",
+  },
+  bottomNavSearchBar: {
+    flex: 1,
+    minHeight: 58,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+    borderRadius: 20,
+    paddingHorizontal: 10,
+    backgroundColor: C.isDark ? "rgba(255,255,255,0.055)" : "rgba(20,18,15,0.06)",
+  },
+  bottomNavSearchIcon: {
+    width: 42,
+    height: 42,
+    borderRadius: 21,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: C.isDark ? "rgba(231,188,104,0.16)" : "rgba(197,139,42,0.14)",
+  },
+  bottomNavSearchInput: {
+    flex: 1,
+    minWidth: 0,
+    minHeight: 44,
+    color: C.text,
+    fontSize: 15,
+    lineHeight: 20,
+    fontWeight: "700",
+    paddingVertical: 0,
+  },
+  bottomNavSearchClose: {
+    width: 42,
+    height: 42,
+    borderRadius: 21,
     alignItems: "center",
     justifyContent: "center",
   },
-  bottomTabIconActive: { backgroundColor: "transparent" },
+  bottomNavSearchResults: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    bottom: 74,
+    borderRadius: 16,
+    overflow: "hidden",
+    backgroundColor: C.isDark ? "rgba(24,24,23,0.98)" : "rgba(255,253,248,0.98)",
+    borderWidth: 1,
+    borderColor: C.isDark ? "rgba(231,188,104,0.2)" : "rgba(30,24,16,0.12)",
+    shadowColor: "#000",
+    shadowOpacity: C.isDark ? 0.28 : 0.12,
+    shadowRadius: 16,
+    shadowOffset: { width: 0, height: 8 },
+    elevation: 24,
+  },
+  bottomNavSearchResult: {
+    minHeight: 58,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+    paddingHorizontal: 12,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: C.border,
+  },
+  bottomNavSearchResultIcon: {
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: C.isDark ? "rgba(231,188,104,0.14)" : C.primaryLight,
+  },
+  bottomNavSearchResultTitle: {
+    color: C.text,
+    fontSize: 13,
+    lineHeight: 17,
+    fontWeight: "900",
+  },
+  bottomNavSearchResultSubtitle: {
+    color: C.textSub,
+    fontSize: 11,
+    lineHeight: 15,
+    marginTop: 1,
+  },
+  bottomNavSearchEmpty: {
+    minHeight: 52,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingHorizontal: 14,
+  },
+  bottomNavSearchEmptyText: {
+    color: C.textSub,
+    fontSize: 12,
+    lineHeight: 16,
+    fontWeight: "700",
+  },
   bottomTabLabel: {
     ...TYPE.caption,
     width: "100%",
@@ -10158,19 +10737,14 @@ return StyleSheet.create({
     position: "absolute",
     top: 0,
     left: 0,
+    flexDirection: "row",
   },
   swipePagerPage: {
-    position: "absolute",
-    top: 0,
     zIndex: 1,
     backgroundColor: C.bg,
     overflow: "hidden",
   },
   staticRootTabPage: {
-    flex: 1,
-    backgroundColor: C.bg,
-  },
-  rootTabPlaceholder: {
     flex: 1,
     backgroundColor: C.bg,
   },
@@ -11233,6 +11807,7 @@ courseListCard: {
     backgroundColor: "#050505",
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: "rgba(255,255,255,0.12)",
+    paddingTop: Platform.OS === "android" ? Math.max(ANDROID_STATUS_BAR_INSET + 18, 42) : 0,
   },
   aiTopHeader: {
     minHeight: 58,
@@ -11710,6 +12285,59 @@ courseListCard: {
   courseAiComposer: { flexDirection: "row", alignItems: "center", gap: 10, padding: 12, borderTopWidth: 1, borderTopColor: C.border, backgroundColor: C.surface },
   courseAiInput: { flex: 1, minHeight: MIN_TOUCH_TARGET, maxHeight: 80, borderRadius: MIN_TOUCH_TARGET / 2, backgroundColor: C.cardBg, color: C.text, paddingHorizontal: 14, fontSize: 14, borderWidth: 1, borderColor: C.border },
   courseAiSend: { width: MIN_TOUCH_TARGET, height: MIN_TOUCH_TARGET, borderRadius: MIN_TOUCH_TARGET / 2, backgroundColor: C.primary, alignItems: "center", justifyContent: "center" },
+  lecturePickerOverlay: { flex: 1, backgroundColor: "rgba(0,0,0,0.28)", justifyContent: "flex-end", paddingHorizontal: 14, paddingBottom: 16 },
+  lecturePickerSheet: {
+    maxHeight: "58%",
+    minHeight: 360,
+    backgroundColor: "rgba(22,20,22,0.92)",
+    borderRadius: 18,
+    borderWidth: 1,
+    borderColor: "rgba(231,188,104,0.24)",
+    overflow: "hidden",
+    paddingTop: 10,
+  },
+  lecturePickerHandle: { width: 34, height: 4, borderRadius: 2, backgroundColor: "rgba(255,255,255,0.62)", alignSelf: "center", marginBottom: 8 },
+  lecturePickerHeader: { flexDirection: "row", alignItems: "center", gap: 12, paddingHorizontal: 14, paddingBottom: 10 },
+  lecturePickerHeading: { color: "#fff", fontFamily: TYPE.title.fontFamily, fontSize: 25, lineHeight: 31, fontWeight: "900" },
+  lecturePickerCourse: { color: "rgba(255,255,255,0.68)", fontSize: 11, lineHeight: 15, fontWeight: "700", marginTop: 2 },
+  lecturePickerClose: { width: 36, height: 36, borderRadius: 18, backgroundColor: "rgba(255,255,255,0.2)", alignItems: "center", justifyContent: "center", borderWidth: 1, borderColor: "rgba(255,255,255,0.16)" },
+  lecturePickerTabs: { flexDirection: "row", alignItems: "center", gap: 18, paddingHorizontal: 14, marginTop: 2, marginBottom: 10 },
+  lecturePickerTab: { minHeight: 32, justifyContent: "center", borderBottomWidth: 2, borderBottomColor: "transparent", paddingHorizontal: 8 },
+  lecturePickerTabActive: { borderBottomColor: C.primary },
+  lecturePickerTabText: { color: "rgba(255,255,255,0.7)", fontSize: 12, lineHeight: 16, fontWeight: "900" },
+  lecturePickerTabTextActive: { color: "#fff" },
+  lecturePickerList: { flex: 1 },
+  lecturePickerContent: { paddingHorizontal: 14, paddingBottom: 18, gap: 8 },
+  lecturePickerGridRow: { justifyContent: "space-between", marginBottom: 8 },
+  lecturePickerTile: {
+    alignItems: "center",
+    justifyContent: "flex-start",
+    minHeight: 64,
+  },
+  lecturePickerTileActive: {
+    transform: [{ translateY: -1 }],
+  },
+  lecturePickerThumb: {
+    width: "100%",
+    borderRadius: 7,
+    overflow: "hidden",
+    backgroundColor: "rgba(255,255,255,0.08)",
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.34)",
+  },
+  lecturePickerCurrentBadge: {
+    position: "absolute",
+    right: 4,
+    bottom: 4,
+    width: 18,
+    height: 18,
+    borderRadius: 9,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: C.primary,
+  },
+  lecturePickerNumber: { color: "#fff", fontSize: 11, lineHeight: 15, fontWeight: "900", marginTop: 3, textAlign: "center" },
+  lecturePickerNumberActive: { color: C.primary },
   webPlayerTopBar: {
     position: "absolute", top: 0, left: 0, right: 0, zIndex: 24,
     flexDirection: "row", alignItems: "center", gap: 10,
@@ -11730,12 +12358,12 @@ courseListCard: {
     maxWidth: 170,
   },
   webPlayerSideRail: {
-    position: "absolute", right: 10, bottom: 136, zIndex: 22,
-    alignItems: "center", gap: 16,
+    position: "absolute", right: 10, bottom: 178, zIndex: 22,
+    alignItems: "center", gap: 10,
   },
   webPlayerRailBtn: {
     minWidth: 56,
-    minHeight: 50,
+    minHeight: 46,
     alignItems: "center",
     justifyContent: "center",
     gap: 3,
@@ -11810,6 +12438,7 @@ courseListCard: {
     left: 20,
     right: 20,
     bottom: 94,
+    maxHeight: "70%",
     zIndex: 24,
     borderRadius: 14,
     paddingHorizontal: 14,
@@ -11819,6 +12448,8 @@ courseListCard: {
     borderWidth: 1,
     borderColor: "rgba(255,255,255,0.24)",
   },
+  playerSettingsScroll: { maxHeight: 360 },
+  playerSettingsScrollContent: { paddingBottom: 2 },
   playerSettingsHeader: {
     flexDirection: "row",
     alignItems: "center",
