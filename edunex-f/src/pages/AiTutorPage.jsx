@@ -136,12 +136,8 @@ export function AiTutorPage() {
   const [assistantName, setAssistantName] = useState(DEFAULT_ASSISTANT_NAME);
   const [assistantNameDraft, setAssistantNameDraft] = useState("");
   const [nameSetupOpen, setNameSetupOpen] = useState(false);
-  const [aiConsent, setAiConsent] = useState({ loaded: false, granted: false, providerNames: ["fal.ai", "OpenRouter", "Google Gemini"] });
-  const [consentOpen, setConsentOpen] = useState(false);
-  const [consentSaving, setConsentSaving] = useState(false);
-  const [pendingConsentPrompt, setPendingConsentPrompt] = useState("");
   useViewportLock(true);
-  useViewportLock((nameSetupOpen || consentOpen) && !authGate);
+  useViewportLock(nameSetupOpen && !authGate);
   const [nameSetupComplete, setNameSetupComplete] = useState(false);
   const inFlight = useRef(false);
   const generation = useRef(0);
@@ -189,20 +185,6 @@ export function AiTutorPage() {
         setAssistantNameDraft(savedAssistantName || "");
         setNameSetupComplete(savedSetupComplete);
         setNameSetupOpen(Boolean(owner) && !savedSetupComplete);
-        setConsentOpen(false);
-        setPendingConsentPrompt("");
-        setAiConsent({ loaded: false, granted: false, providerNames: ["fal.ai", "OpenRouter", "Google Gemini"] });
-        if (owner && typeof api?.authRequest === "function") {
-          api.authRequest("/api/ai/consent")
-            .then((value) => {
-              if (ownerRef.current === owner) setAiConsent({ loaded: true, ...value });
-            })
-            .catch(() => {
-              if (ownerRef.current === owner) setAiConsent((current) => ({ ...current, loaded: true, granted: false }));
-            });
-        } else if (owner) {
-          setAiConsent((current) => ({ ...current, loaded: true, granted: false }));
-        }
       }
     };
     if (runtimeReady) syncAuth();
@@ -305,15 +287,10 @@ export function AiTutorPage() {
     return record;
   };
 
-  const sendMessage = async (forcedText = "", consentOverride = false) => {
+  const sendMessage = async (forcedText = "") => {
     const text = String(forcedText || input).trim();
     if (!text || inFlight.current) return;
     if (!window.EduNex?.getAccessToken?.()) { setAuthGate(true); return; }
-    if (!consentOverride && !aiConsent.granted) {
-      setPendingConsentPrompt(text);
-      setConsentOpen(true);
-      return;
-    }
     const requestGeneration = generation.current;
     const requestSessionId = activeConversationId || createConversationSession().id;
     const historyBeforeSend = historyRef.current.slice();
@@ -345,26 +322,6 @@ export function AiTutorPage() {
     } finally {
       inFlight.current = false;
       setLoading(false);
-    }
-  };
-
-  const saveConsentDecision = async (granted) => {
-    if (consentSaving) return;
-    setConsentSaving(true);
-    try {
-      const decision = await window.EduNex.authRequest("/api/ai/consent", {
-        method: "PUT",
-        body: JSON.stringify({ granted }),
-      });
-      setAiConsent({ loaded: true, ...decision });
-      setConsentOpen(false);
-      const queued = pendingConsentPrompt;
-      setPendingConsentPrompt("");
-      if (granted && queued) await sendMessage(queued, true);
-    } catch (error) {
-      setStatus(error.message || "Could not save AI data preference");
-    } finally {
-      setConsentSaving(false);
     }
   };
 
@@ -424,8 +381,6 @@ export function AiTutorPage() {
             </nav>
             <div className="tutor-history-label">AI Data Controls</div>
             <div style={{ display: "grid", gap: 8, padding: "0 12px 16px" }}>
-              <small>{aiConsent.granted ? "Third-party AI processing allowed" : "Third-party AI processing not allowed"}</small>
-              {aiConsent.granted ? <button className="tutor-new-chat" type="button" onClick={() => saveConsentDecision(false)}>Withdraw AI consent</button> : null}
               <button className="tutor-new-chat" type="button" onClick={deleteAiHistory}>Delete AI history</button>
             </div>
           </aside>
@@ -542,20 +497,6 @@ export function AiTutorPage() {
           <div className="ai-name-setup-actions">
             {nameSetupComplete ? <button className="btn btn-ghost" type="button" onClick={() => setNameSetupOpen(false)}>Cancel</button> : <button className="btn btn-ghost" type="button" onClick={() => saveAssistantName(DEFAULT_ASSISTANT_NAME)}>Use AI</button>}
             <button className="btn btn-primary" type="button" onClick={() => saveAssistantName()}>Save name</button>
-          </div>
-        </section>
-      </div>
-
-      <div className={`ai-name-setup${consentOpen && !authGate ? " is-visible" : ""}`} aria-hidden={!consentOpen || authGate} style={{ zIndex: 10050 }}>
-        <section className="ai-name-setup-card" role="dialog" aria-modal="true" aria-labelledby="ai-consent-title">
-          <div className="ai-name-setup-avatar" aria-hidden="true"><EnxIcon name="shield" /></div>
-          <p className="ai-name-setup-kicker">Optional AI data sharing</p>
-          <h2 id="ai-consent-title">Allow third-party AI processing?</h2>
-          <p>To answer this prompt, Skillomate will send your question, up to 12 recent chat messages, and relevant course or lesson context to fal.ai, OpenRouter, and the selected Google Gemini model. Your profile name is not sent.</p>
-          <p>You can continue using courses without AI, withdraw consent later, and delete AI history from AI Data Controls.</p>
-          <div className="ai-name-setup-actions">
-            <button className="btn btn-ghost" type="button" disabled={consentSaving} onClick={() => saveConsentDecision(false)}>Not Now</button>
-            <button className="btn btn-primary" type="button" disabled={consentSaving} onClick={() => saveConsentDecision(true)}>{consentSaving ? "Saving…" : "Allow"}</button>
           </div>
         </section>
       </div>
