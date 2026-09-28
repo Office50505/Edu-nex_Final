@@ -61,6 +61,14 @@ target 'ProtectedVideo' do
       :ccache_enabled => ccache_enabled?(podfile_properties),
     )
 
+    # Expo Constants runs its script through bash -c. Quote the script path in
+    # that inner shell so project directories containing spaces build in Xcode.
+    installer.pods_project.targets.find { |target| target.name == 'EXConstants' }&.shell_script_build_phases&.each do |phase|
+      next unless phase.name == '[CP-User] Generate app.config for prebuilt Constants.manifest'
+
+      phase.shell_script = %q{bash -l -c '"$PODS_TARGET_SRCROOT/../scripts/get-app-config-ios.sh"'}
+    end
+
     installer.pods_project.targets.each do |target|
       # fmt 11.0.2 uses consteval paths that Apple Clang 21 rejects under C++20.
       # Compile only this third-party pod as C++17 until React Native ships fmt 12+.
