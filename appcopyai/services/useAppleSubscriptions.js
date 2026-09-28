@@ -8,11 +8,26 @@ export function useAppleSubscriptions({ session, user, onEntitlementChanged }) {
   const [working, setWorking] = useState(false);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
+  const [productLoadStatus, setProductLoadStatus] = useState(Platform.OS === "ios" ? "loading" : "idle");
   const handled = useRef(new Set());
+  const productFetchAttempted = useRef(false);
+  const productLoadTimer = useRef(null);
   const userId = user?._id || user?.id || null;
+  const currentUserId = useRef(userId);
+  currentUserId.current = userId;
 
   const verifyAndFinish = useCallback(async (purchase) => {
-    if (Platform.OS !== "ios" || !userId || !purchase?.purchaseToken) return null;
+    if (Platform.OS !== "ios" || !userId) return null;
+    if (purchase?.purchaseState === "pending") {
+      setWorking(false);
+      setNotice("Purchase is pending approval. Premium will activate after Apple confirms it.");
+      return null;
+    }
+    if (purchase?.productId !== APPLE_SUBSCRIPTION_PRODUCT_IDS.monthly || !purchase?.purchaseToken) {
+      setWorking(false);
+      setError("The App Store did not return a valid Skillomate subscription transaction.");
+      return null;
+    }
     const callbackKey = purchase.transactionId || purchase.id || purchase.purchaseToken.slice(-48);
     if (handled.current.has(callbackKey)) return null;
     handled.current.add(callbackKey);
@@ -29,11 +44,13 @@ export function useAppleSubscriptions({ session, user, onEntitlementChanged }) {
       // expired transaction must also be finished so StoreKit does not redeliver it
       // forever; premium access still remains fail-closed.
       await iapRef.current.finishTransaction({ purchase, isConsumable: false });
-      setConfiguration(current => ({ ...current, ...entitlement }));
-      setNotice(entitlement.entitlementActive
-        ? "Your App Store subscription is active."
-        : "This App Store transaction has no active access period.");
-      await onEntitlementChanged?.(entitlement);
+      if (currentUserId.current === userId) {
+        setConfiguration(current => ({ ...current, ...entitlement }));
+        setNotice(entitlement.entitlementActive
+          ? "Your App Store subscription is active."
+          : "This App Store transaction has no active access period.");
+        await onEntitlementChanged?.(entitlement);
+      }
       return entitlement;
     } catch (verificationError) {
       // The transaction intentionally remains unfinished so StoreKit can redeliver it.
@@ -52,6 +69,9 @@ export function useAppleSubscriptions({ session, user, onEntitlementChanged }) {
       if (purchaseError?.code === ErrorCode.UserCancelled) {
         setNotice("Purchase cancelled. No charge was made.");
         setError("");
+      } else if ([ErrorCode.Pending, ErrorCode.DeferredPayment].includes(purchaseError?.code)) {
+        setNotice("Purchase is pending approval. Premium will activate after Apple confirms it.");
+        setError("");
       } else {
         setError("The App Store purchase could not be completed. Please try again.");
       }
@@ -65,6 +85,7 @@ export function useAppleSubscriptions({ session, user, onEntitlementChanged }) {
     if (Platform.OS !== "ios" || !userId) return null;
     setError("");
     const next = await session.requestJson("/api/apple-iap/config");
+    if (currentUserId.current !== userId) return null;
     setConfiguration(next);
     if (next?.entitlementState && next.entitlementState !== "NONE") {
       await onEntitlementChanged?.(next);
@@ -73,11 +94,9 @@ export function useAppleSubscriptions({ session, user, onEntitlementChanged }) {
   }, [onEntitlementChanged, session, userId]);
 
   useEffect(() => {
-    if (Platform.OS !== "ios" || !userId) {
-      setConfiguration(null);
-      handled.current.clear();
-      return;
-    }
+    setConfiguration(null);
+    handled.current.clear();
+    if (Platform.OS !== "ios" || !userId) return;
     refresh().catch(() => setError("Could not refresh App Store subscription status."));
   }, [refresh, userId]);
 
@@ -94,21 +113,63 @@ export function useAppleSubscriptions({ session, user, onEntitlementChanged }) {
     };
   }, [refresh, userId]);
 
+  const loadProduct = useCallback(async (retry = false) => {
+    if (Platform.OS !== "ios") return;
+    if (!iapRef.current.connected) {
+      if (!retry || typeof iapRef.current.reconnect !== "function" || !await iapRef.current.reconnect()) {
+        setProductLoadStatus("error");
+        setError("Could not connect to the App Store. Please retry.");
+        return;
+      }
+    }
+    if (productFetchAttempted.current && !retry) return;
+    productFetchAttempted.current = true;
+    clearTimeout(productLoadTimer.current);
+    setProductLoadStatus("loading");
+    setError("");
+    try {
+      await iapRef.current.fetchProducts({ skus: [APPLE_SUBSCRIPTION_PRODUCT_IDS.monthly], type: "subs" });
+      productLoadTimer.current = setTimeout(() => {
+        const found = iapRef.current.subscriptions.some(item => item.id === APPLE_SUBSCRIPTION_PRODUCT_IDS.monthly || item.productId === APPLE_SUBSCRIPTION_PRODUCT_IDS.monthly);
+        if (!found) {
+          setProductLoadStatus("error");
+          setError("Could not load the Skillomate subscription from the App Store. Please retry.");
+        }
+      }, 4000);
+    } catch (_) {
+      setProductLoadStatus("error");
+      setError("Could not load the Skillomate subscription from the App Store. Please retry.");
+    }
+  }, []);
+
   useEffect(() => {
-    if (Platform.OS !== "ios" || !iap.connected) return;
-    iap.fetchProducts({
-      skus: [configuration?.productId || APPLE_SUBSCRIPTION_PRODUCT_IDS.monthly],
-      type: "subs",
-    }).catch(() => setError("Could not load the App Store subscription."));
-  }, [configuration?.productId, iap.connected]);
+    if (Platform.OS !== "ios") return;
+    if (iap.connected) loadProduct();
+    else {
+      productFetchAttempted.current = false;
+      const timer = setTimeout(() => {
+        setProductLoadStatus("error");
+        setError("Could not connect to the App Store. Please retry.");
+      }, 10000);
+      return () => clearTimeout(timer);
+    }
+  }, [iap.connected, loadProduct]);
+
+  useEffect(() => () => clearTimeout(productLoadTimer.current), []);
 
   const product = useMemo(() => {
-    const productId = configuration?.productId || APPLE_SUBSCRIPTION_PRODUCT_IDS.monthly;
-    return iap.subscriptions.find(item => item.id === productId || item.productId === productId) || null;
-  }, [configuration?.productId, iap.subscriptions]);
+    return iap.subscriptions.find(item => item.id === APPLE_SUBSCRIPTION_PRODUCT_IDS.monthly || item.productId === APPLE_SUBSCRIPTION_PRODUCT_IDS.monthly) || null;
+  }, [iap.subscriptions]);
+
+  useEffect(() => {
+    if (!product) return;
+    clearTimeout(productLoadTimer.current);
+    setProductLoadStatus("ready");
+    setError(current => current.includes("load the Skillomate subscription") ? "" : current);
+  }, [product]);
 
   const purchase = useCallback(async () => {
-    if (Platform.OS !== "ios" || !configuration?.appAccountToken || !product) {
+    if (Platform.OS !== "ios" || working || !configuration?.appAccountToken || !product) {
       setError("The App Store subscription is not ready. Refresh and try again.");
       return;
     }
@@ -119,7 +180,7 @@ export function useAppleSubscriptions({ session, user, onEntitlementChanged }) {
       await iap.requestPurchase({
         request: {
           apple: {
-            sku: configuration.productId || APPLE_SUBSCRIPTION_PRODUCT_IDS.monthly,
+            sku: APPLE_SUBSCRIPTION_PRODUCT_IDS.monthly,
             appAccountToken: configuration.appAccountToken,
             andDangerouslyFinishTransactionAutomatically: false,
           },
@@ -129,9 +190,10 @@ export function useAppleSubscriptions({ session, user, onEntitlementChanged }) {
     } catch (purchaseError) {
       setWorking(false);
       if (purchaseError?.code === ErrorCode.UserCancelled) setNotice("Purchase cancelled. No charge was made.");
+      else if ([ErrorCode.Pending, ErrorCode.DeferredPayment].includes(purchaseError?.code)) setNotice("Purchase is pending approval. Premium will activate after Apple confirms it.");
       else setError("The App Store purchase could not be started. Please try again.");
     }
-  }, [configuration, iap, product]);
+  }, [configuration?.appAccountToken, product, working]);
 
   const restore = useCallback(async () => {
     if (Platform.OS !== "ios" || !iap.connected) {
@@ -143,7 +205,7 @@ export function useAppleSubscriptions({ session, user, onEntitlementChanged }) {
     setNotice("");
     try {
       const purchases = await readAvailablePurchases({ onlyIncludeActiveItemsIOS: false });
-      const matching = (purchases || []).filter(item => item.productId === (configuration?.productId || APPLE_SUBSCRIPTION_PRODUCT_IDS.monthly));
+      const matching = (purchases || []).filter(item => item.productId === APPLE_SUBSCRIPTION_PRODUCT_IDS.monthly);
       if (!matching.length) {
         setNotice("No previous Skillomate subscription was found for this Apple ID.");
         return;
@@ -152,24 +214,30 @@ export function useAppleSubscriptions({ session, user, onEntitlementChanged }) {
       for (const restoredPurchase of matching) {
         if ((await verifyAndFinish(restoredPurchase))?.entitlementActive) restored = true;
       }
-      setNotice(restored ? "Purchases restored." : "No currently active purchase could be restored.");
+      const current = await refresh();
+      setNotice(restored || current?.entitlementActive ? "Purchases restored." : "No currently active purchase could be restored.");
     } catch (_) {
       setError("Purchases could not be restored. Check your connection and try again.");
     } finally {
       setWorking(false);
     }
-  }, [configuration?.productId, iap.connected, verifyAndFinish]);
+  }, [iap.connected, refresh, verifyAndFinish]);
 
   return {
     connected: iap.connected,
     entitlement: configuration,
     error,
     localizedPrice: product?.displayPrice || product?.localizedPriceIOS || "",
+    period: product?.subscriptionPeriodNumberIOS && product?.subscriptionPeriodUnitIOS
+      ? `${Number(product.subscriptionPeriodNumberIOS) === 1 ? "" : `${product.subscriptionPeriodNumberIOS} `}${String(product.subscriptionPeriodUnitIOS).toLowerCase()}${Number(product.subscriptionPeriodNumberIOS) === 1 ? "" : "s"}`
+      : "month",
     notice,
     product,
+    productLoadStatus,
     purchase,
     refresh,
     restore,
+    retryProductLoad: () => loadProduct(true),
     working,
   };
 }

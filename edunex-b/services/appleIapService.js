@@ -122,8 +122,14 @@ function createAppleIapService(dependencies = {}) {
     return subscription;
   }
 
-  async function persistVerifiedTransaction({ userId, account, transaction, renewal = {}, notificationType = '', subtype = '', storeStatus = null }) {
+  async function persistVerifiedTransaction({ userId, account, transaction, renewal = {}, notificationType = '', subtype = '', storeStatus = null, snapshotAt = now() }) {
     validateSignedTransaction(transaction, account.appAccountToken);
+    if (account.originalTransactionId && account.originalTransactionId !== transaction.originalTransactionId) {
+      throw new AppleIapError('This account is linked to a different App Store subscription.', 409, 'APPLE_ORIGINAL_TRANSACTION_MISMATCH');
+    }
+    if (account.lastStoreSnapshotAt && Number(snapshotAt) < new Date(account.lastStoreSnapshotAt).getTime()) {
+      return { subscription: account, entitlement: publicAppleEntitlement(account, new Date(now())), duplicate: true };
+    }
     const existing = await models.AppleTransaction.findOne({ transactionId: transaction.transactionId });
     if (existing && String(existing.user) !== String(userId)) {
       throw new AppleIapError('This transaction is already linked to another account.', 409, 'APPLE_TRANSACTION_OWNERSHIP');
@@ -160,17 +166,29 @@ function createAppleIapService(dependencies = {}) {
       purchasedAt: transaction.purchaseDate ? new Date(transaction.purchaseDate) : account.purchasedAt,
       ...entitlement,
       lastVerifiedAt: new Date(now()),
+      lastStoreSnapshotAt: new Date(snapshotAt),
       lastNotificationType: notificationType || account.lastNotificationType || null,
       lastNotificationSubtype: subtype || account.lastNotificationSubtype || null,
       updatedAt: new Date(now()),
     };
     delete update.revokedAt;
     update.revokedAt = entitlement.revokedAt;
-    const saved = await models.AppleSubscription.findOneAndUpdate(
-      { user: userId, appAccountToken: account.appAccountToken },
-      { $set: update },
-      { new: true }
-    );
+    let saved;
+    try {
+      saved = await models.AppleSubscription.findOneAndUpdate(
+        { user: userId, appAccountToken: account.appAccountToken,
+          $or: [{ lastStoreSnapshotAt: { $lte: new Date(snapshotAt) } }, { lastStoreSnapshotAt: null }] },
+        { $set: update },
+        { new: true }
+      );
+    } catch (error) {
+      if (error?.code !== 11000) throw error;
+      throw new AppleIapError('This subscription is already linked to another account.', 409, 'APPLE_TRANSACTION_OWNERSHIP');
+    }
+    if (!saved) {
+      const current = await models.AppleSubscription.findOne({ user: userId });
+      return { subscription: current, entitlement: publicAppleEntitlement(current, new Date(now())), duplicate: true };
+    }
     await models.User.updateOne({ _id: userId }, { $set: userSubscriptionFields(entitlement) });
     return { subscription: saved, entitlement, duplicate: Boolean(existing) };
   }
@@ -186,25 +204,21 @@ function createAppleIapService(dependencies = {}) {
     if (existing && String(existing.user) !== String(userId)) {
       throw new AppleIapError('This transaction is already linked to another account.', 409, 'APPLE_TRANSACTION_OWNERSHIP');
     }
-    // A client can retain an older, still correctly signed JWS. Never let replay of
-    // that device payload overwrite a refund/revocation or newer server state.
-    // Server notifications and App Store Server API refreshes remain authoritative.
-    if (existing || ['REFUNDED', 'REVOKED'].includes(account.entitlementState)) {
-      return { ...publicAppleEntitlement(account, new Date(now())), duplicate: true };
-    }
-    const result = await persistVerifiedTransaction({ userId, account, transaction });
-    return { ...publicAppleEntitlement(result.subscription, new Date(now())), duplicate: result.duplicate };
+    // The signed client JWS identifies the purchase. Current entitlement comes
+    // from Apple's subscription status API so replayed or refunded JWS cannot grant access.
+    const refreshed = await refreshSubscriptionFromApple(userId, account, transaction.originalTransactionId, transaction.environment);
+    return { ...publicAppleEntitlement(refreshed.account, new Date(now())), duplicate: Boolean(existing) };
   }
 
-  async function refreshSubscriptionFromApple(userId, account) {
-    if (!account?.originalTransactionId) return { account, refreshStatus: 'not_purchased' };
-    const environment = account.environment === Environment.SANDBOX || account.environment === 'Sandbox'
+  async function refreshSubscriptionFromApple(userId, account, originalTransactionId = account?.originalTransactionId, transactionEnvironment = account?.environment) {
+    if (!originalTransactionId) return { account, refreshStatus: 'not_purchased' };
+    const environment = transactionEnvironment === Environment.SANDBOX || transactionEnvironment === 'Sandbox'
       ? Environment.SANDBOX
       : Environment.PRODUCTION;
     const client = serverApiClientFactory(environment);
-    if (!client) return { account, refreshStatus: 'not_configured' };
+    if (!client) throw new AppleIapError('Apple subscription status verification is not configured.', 503, 'APPLE_API_NOT_CONFIGURED');
 
-    const response = await client.getAllSubscriptionStatuses(account.originalTransactionId);
+    const response = await client.getAllSubscriptionStatuses(originalTransactionId);
     const candidates = (response?.data || [])
       .flatMap(group => group?.lastTransactions || [])
       .filter(item => item?.signedTransactionInfo);
@@ -212,15 +226,16 @@ function createAppleIapService(dependencies = {}) {
     for (const item of candidates) {
       const { decoded: transaction } = await verifyPayload('verifyAndDecodeTransaction', item.signedTransactionInfo);
       if (transaction.productId !== APPLE_PRODUCT_ID
-        || transaction.originalTransactionId !== account.originalTransactionId) continue;
+        || transaction.originalTransactionId !== originalTransactionId) continue;
       let renewal = {};
       if (item.signedRenewalInfo) {
         ({ decoded: renewal } = await verifyPayload('verifyAndDecodeRenewalInfo', item.signedRenewalInfo));
       }
       validateSignedTransaction(transaction, account.appAccountToken);
       const expiry = Number(transaction.expiresDate || 0);
-      if (!selected || expiry > selected.expiry) {
-        selected = { item, transaction, renewal, expiry };
+      const purchaseDate = Number(transaction.purchaseDate || 0);
+      if (!selected || purchaseDate > selected.purchaseDate || purchaseDate === selected.purchaseDate && expiry > selected.expiry) {
+        selected = { item, transaction, renewal, expiry, purchaseDate };
       }
     }
     if (!selected) {
@@ -233,6 +248,7 @@ function createAppleIapService(dependencies = {}) {
       transaction: selected.transaction,
       renewal: selected.renewal,
       storeStatus: selected.item.status,
+      snapshotAt: now(),
     });
     return { account: persisted.subscription, refreshStatus: 'verified' };
   }
@@ -284,16 +300,12 @@ function createAppleIapService(dependencies = {}) {
     let processed = false;
     let processingNote = 'No matching account';
     if (account && transaction) {
-      await persistVerifiedTransaction({
-        userId: account.user,
-        account,
-        transaction,
-        renewal,
-        notificationType: notification.notificationType,
-        subtype: notification.subtype,
-      });
+      validateSignedTransaction(transaction, account.appAccountToken);
+      // Notifications can concern an older refunded transaction while a later
+      // renewal is still active. Read the current status from Apple before changing access.
+      await refreshSubscriptionFromApple(account.user, account, originalTransactionId, transaction.environment);
       processed = true;
-      processingNote = 'Entitlement synchronized';
+      processingNote = 'Current Apple subscription status synchronized';
     }
 
     try {

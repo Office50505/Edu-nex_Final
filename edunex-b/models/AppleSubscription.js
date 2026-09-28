@@ -28,6 +28,7 @@ const appleSubscriptionSchema = new mongoose.Schema({
   billingRetry: { type: Boolean, default: false },
   revokedAt: { type: Date, default: null },
   lastVerifiedAt: { type: Date, default: null },
+  lastStoreSnapshotAt: { type: Date, default: null },
   lastNotificationType: { type: String, default: null },
   lastNotificationSubtype: { type: String, default: null },
   createdAt: { type: Date, default: Date.now },

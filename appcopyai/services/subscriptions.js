@@ -33,7 +33,9 @@ function normalizeEntitlement(input, serverNow = Date.now()) {
   const state = Object.values(PREMIUM_STATES).includes(input.entitlementState)
     ? input.entitlementState
     : PREMIUM_STATES.UNKNOWN;
-  const expiresAt = input.expiresAt || input.subscriptionExpiry || input.currentPeriodEnd || null;
+  const expiresAt = state === PREMIUM_STATES.GRACE_PERIOD
+    ? input.gracePeriodExpiresAt || null
+    : input.expiresAt || input.subscriptionExpiry || input.currentPeriodEnd || null;
   const serverSaysActive = input.entitlementActive === true;
   const timeLimitedState = ACCESS_STATES.has(state);
   const active = serverSaysActive && timeLimitedState && validFutureTimestamp(expiresAt, serverNow);

@@ -122,6 +122,11 @@ requireProductionEnv([
   'APPLE_IAP_PRIVATE_KEY',
 ]);
 
+if (process.env.APPLE_SUBSCRIPTION_PRODUCT_ID && process.env.APPLE_SUBSCRIPTION_PRODUCT_ID !== 'com.skillomate.premium.monthly') {
+  console.error('APPLE_SUBSCRIPTION_PRODUCT_ID must be com.skillomate.premium.monthly.');
+  process.exit(1);
+}
+
 if (isProduction && process.env.AUTO_VERIFY_OTP === 'true') {
   console.error('AUTO_VERIFY_OTP must not be true in production.');
   process.exit(1);

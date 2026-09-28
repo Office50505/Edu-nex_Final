@@ -14,7 +14,7 @@
     ],
     "android": {
       "package": "com.skillomate.app",
-      "versionCode": 7,
+      "versionCode": 8,
       "permissions": [
         "android.permission.POST_NOTIFICATIONS"
       ],
@@ -36,7 +36,7 @@
     },
     "ios": {
       "bundleIdentifier": "com.alihussainkhan.edunexfinal",
-      "buildNumber": "17",
+      "buildNumber": "18",
       "icon": "./assets/icon.png",
       "supportsTablet": false,
       "config": {

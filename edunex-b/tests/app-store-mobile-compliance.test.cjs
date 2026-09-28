@@ -83,7 +83,8 @@ test('premium access is fail-closed for unknown, retry, revoked and expired stat
   }
   assert.equal(hasActivePremiumEntitlement({ entitlementState: 'ACTIVE', entitlementActive: true, expiresAt: future }), true);
   assert.equal(hasActivePremiumEntitlement({ entitlementState: 'ACTIVE_CANCELS_AT_PERIOD_END', entitlementActive: true, expiresAt: future }), true);
-  assert.equal(hasActivePremiumEntitlement({ entitlementState: 'GRACE_PERIOD', entitlementActive: true, expiresAt: future }), true);
+  assert.equal(hasActivePremiumEntitlement({ entitlementState: 'GRACE_PERIOD', entitlementActive: true, expiresAt: past, gracePeriodExpiresAt: future }), true);
+  assert.equal(hasActivePremiumEntitlement({ entitlementState: 'GRACE_PERIOD', entitlementActive: true, expiresAt: future }), false);
   assert.equal(normalizeEntitlement({ entitlementState: 'ACTIVE', entitlementActive: true, expiresAt: past }).active, false);
 });
 
@@ -101,10 +102,15 @@ test('StoreKit client verifies before finishing, handles cancellation, and resto
   const finish = appleHookSource.indexOf('finishTransaction({ purchase, isConsumable: false })');
   assert.ok(verification >= 0 && finish > verification);
   assert.match(appleHookSource, /ErrorCode\.UserCancelled/);
+  assert.match(appleHookSource, /ErrorCode\.Pending/);
+  assert.match(appleHookSource, /ErrorCode\.DeferredPayment/);
   assert.match(appleHookSource, /No charge was made/);
   assert.match(appleHookSource, /getAvailablePurchases/);
   assert.match(appleHookSource, /entitlementActive\) restored = true/);
   assert.match(appleHookSource, /transaction intentionally remains unfinished/);
+  assert.match(appleHookSource, /fetchProducts\(\{ skus: \[APPLE_SUBSCRIPTION_PRODUCT_IDS\.monthly\], type: "subs" \}\)/);
+  assert.match(appleHookSource, /productFetchAttempted\.current && !retry/);
+  assert.match(appSource, />Retry App Store</);
 });
 
 test('iOS privacy manifest declares uploaded photos without claiming device identifiers or tracking', () => {

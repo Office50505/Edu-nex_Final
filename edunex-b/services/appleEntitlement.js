@@ -1,4 +1,4 @@
-const APPLE_PRODUCT_ID = process.env.APPLE_SUBSCRIPTION_PRODUCT_ID || 'com.skillomate.premium.monthly';
+const APPLE_PRODUCT_ID = 'com.skillomate.premium.monthly';
 
 const STATES = Object.freeze({
   ACTIVE: 'ACTIVE',
@@ -37,6 +37,7 @@ function deriveAppleEntitlement({ transaction = {}, renewal = {}, notificationTy
   else if (notification === 'REFUND' || notification === 'REFUND_REVERSED') {
     state = notification === 'REFUND' ? STATES.REFUNDED : (expiresAt?.getTime() > now ? STATES.ACTIVE : STATES.EXPIRED);
   } else if (status === 5) state = STATES.REVOKED;
+  else if (notification === 'GRACE_PERIOD_EXPIRED') state = STATES.BILLING_RETRY;
   else if (status === 4 || gracePeriodExpiresAt?.getTime() > now || detail === 'GRACE_PERIOD') state = STATES.GRACE_PERIOD;
   else if (status === 3 || renewal.isInBillingRetryPeriod === true || notification === 'DID_FAIL_TO_RENEW') state = STATES.BILLING_RETRY;
   else if (status === 2 || !expiresAt || expiresAt.getTime() <= now || notification === 'EXPIRED') state = STATES.EXPIRED;

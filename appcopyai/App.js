@@ -6696,7 +6696,7 @@ function SubscriptionDetailsScreen({ user, onBack, session, appleSubscription, o
 
   useEffect(() => {
     loadSubscription();
-  }, [loadSubscription]);
+  }, [loadSubscription, appleSubscription.entitlement?.entitlementState, appleSubscription.entitlement?.expiresAt]);
 
   const isActive = subData
     ? subData.entitlementActive === true
@@ -6804,15 +6804,28 @@ function SubscriptionDetailsScreen({ user, onBack, session, appleSubscription, o
                     </Text>
                     <Text style={[s.iosMembershipText, { marginTop: 8, fontWeight: "800" }]}>
                       {appleSubscription.localizedPrice
-                        ? `${appleSubscription.localizedPrice} per month`
-                        : "Monthly price will be shown by the App Store"}
+                        ? `${appleSubscription.localizedPrice} per ${appleSubscription.period}`
+                        : appleSubscription.productLoadStatus === "loading"
+                          ? "Loading App Store price…"
+                          : "App Store price unavailable"}
                     </Text>
+                    {appleSubscription.productLoadStatus === "loading" && <ActivityIndicator color={C.primary} style={{ marginTop: 10 }} />}
                     {!!appleSubscription.error && <Text style={[s.errorText, { marginTop: 10 }]}>{appleSubscription.error}</Text>}
+                    {appleSubscription.productLoadStatus === "error" && (
+                      <TouchableOpacity
+                        onPress={appleSubscription.retryProductLoad}
+                        style={[s.btn, { marginTop: 10, borderWidth: 1, borderColor: C.primary }]}
+                        accessibilityRole="button"
+                        accessibilityLabel="Retry loading App Store subscription"
+                      >
+                        <Text style={[s.btnText, { color: C.primary }]}>Retry App Store</Text>
+                      </TouchableOpacity>
+                    )}
                     {!!appleSubscription.notice && <Text style={[s.iosMembershipText, { marginTop: 10 }]}>{appleSubscription.notice}</Text>}
                     <TouchableOpacity
                       onPress={appleSubscription.purchase}
-                      disabled={appleSubscription.working || !appleSubscription.product}
-                      style={[s.btn, s.btnFill, { marginTop: 12 }, (appleSubscription.working || !appleSubscription.product) && { opacity: 0.55 }]}
+                      disabled={appleSubscription.working || !appleSubscription.product || !appleSubscription.entitlement?.appAccountToken}
+                      style={[s.btn, s.btnFill, { marginTop: 12 }, (appleSubscription.working || !appleSubscription.product || !appleSubscription.entitlement?.appAccountToken) && { opacity: 0.55 }]}
                       accessibilityRole="button"
                       accessibilityLabel="Subscribe with the App Store"
                     >
@@ -8280,9 +8293,10 @@ export default function App() {
       ...previous,
       entitlementState: entitlement.entitlementState,
       entitlementActive: entitlement.entitlementActive,
-      entitlementExpiresAt: entitlement.expiresAt,
+      entitlementExpiresAt: entitlement.entitlementState === "GRACE_PERIOD" ? entitlement.gracePeriodExpiresAt : entitlement.expiresAt,
+      gracePeriodExpiresAt: entitlement.gracePeriodExpiresAt,
       entitlementSource: "apple",
-      subscriptionExpiry: entitlement.expiresAt,
+      subscriptionExpiry: entitlement.entitlementState === "GRACE_PERIOD" ? entitlement.gracePeriodExpiresAt : entitlement.expiresAt,
       subscriptionStatus: entitlement.entitlementActive ? "active" : "expired",
     }) : previous);
   }, [setUser]);

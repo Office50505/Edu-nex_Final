@@ -61,9 +61,12 @@ test('Apple entitlement state machine grants only active, cancel-at-period-end a
   assert.equal(deriveAppleEntitlement({ transaction: transaction(), notificationType: 'REFUND', now }).entitlementState, STATES.REFUNDED);
 });
 
-test('server verification is idempotent and rejects bundle, product, account and cross-user replay mismatches', async () => {
+test('server verification checks current Apple status, is idempotent, and rejects mismatches', async () => {
   let decoded = transaction();
-  const harness = modelHarness({ verifyPayload: async () => ({ decoded }) });
+  const harness = modelHarness({
+    verifyPayload: async () => ({ decoded }),
+    serverResponse: { data: [{ lastTransactions: [{ status: 1, signedTransactionInfo: 'signed-tx' }] }] },
+  });
   const first = await harness.service.verifyClientTransaction('user-a', 'x'.repeat(120));
   const duplicate = await harness.service.verifyClientTransaction('user-a', 'x'.repeat(120));
   assert.equal(first.entitlementActive, true);
@@ -93,13 +96,39 @@ test('client replay cannot reactivate a server-recorded refund or revocation', a
         originalTransactionId: 'original-1',
       },
       verifyPayload: async () => ({ decoded: transaction() }),
+      serverResponse: { data: [{ lastTransactions: [{ status: 5, signedTransactionInfo: 'signed-tx' }] }] },
     });
     const result = await harness.service.verifyClientTransaction('user-a', 'x'.repeat(120));
-    assert.equal(result.entitlementState, entitlementState);
     assert.equal(result.entitlementActive, false);
-    assert.equal(result.duplicate, true);
-    assert.equal(harness.transactions.size, 0);
+    assert.equal(result.entitlementState, STATES.REVOKED);
   }
+});
+
+test('signed client transaction does not activate Premium when Apple status API is unavailable', async () => {
+  const harness = modelHarness({ verifyPayload: async () => ({ decoded: transaction() }) });
+  await assert.rejects(harness.service.verifyClientTransaction('user-a', 'x'.repeat(120)), /not configured/);
+  assert.equal(harness.subscription.entitlementState, STATES.NONE);
+  assert.equal(harness.transactions.size, 0);
+});
+
+test('older signed notifications cannot overwrite a newer Apple status snapshot', async () => {
+  const tx = transaction();
+  const verifier = { verifyAndDecodeTransaction: async () => tx };
+  const notification = {
+    notificationUUID: 'stale-notification', notificationType: 'DID_RENEW', signedDate: now - 1000,
+    data: { signedTransactionInfo: 'signed-tx', status: 1, environment: 'Sandbox' },
+  };
+  const harness = modelHarness({
+    account: { originalTransactionId: tx.originalTransactionId, entitlementState: STATES.REVOKED,
+      entitlementActive: false, expiresAt: new Date(future), lastStoreSnapshotAt: new Date(now) },
+    verifyPayload: async (_method, payload) => payload === 'current-tx'
+      ? { decoded: transaction({ revocationDate: now }) }
+      : { decoded: notification, verifier },
+    serverResponse: { data: [{ lastTransactions: [{ status: 5, signedTransactionInfo: 'current-tx' }] }] },
+  });
+  await harness.service.processNotification('x'.repeat(120));
+  assert.equal(harness.subscription.entitlementState, STATES.REVOKED);
+  assert.equal(harness.subscription.entitlementActive, false);
 });
 
 test('App Store Server API refresh verifies signed status and persists cancellation-at-period-end', async () => {
@@ -117,6 +146,35 @@ test('App Store Server API refresh verifies signed status and persists cancellat
   assert.equal(status.entitlementActive, true);
 });
 
+test('Apple status refresh selects the newest renewal and removes access after expiration or refund', async () => {
+  let statusCode = 1;
+  let latest = transaction({ transactionId: 'renewed', purchaseDate: now - 500, expiresDate: future });
+  const old = transaction({ transactionId: 'initial', purchaseDate: now - 1000, expiresDate: now - 100 });
+  const harness = modelHarness({
+    account: { originalTransactionId: 'original-1', environment: 'Sandbox' },
+    verifyPayload: async (_method, payload) => ({ decoded: payload === 'old' ? old : latest }),
+    serverResponse: { data: [{ lastTransactions: [
+      { status: 2, signedTransactionInfo: 'old' },
+      { get status() { return statusCode; }, signedTransactionInfo: 'latest' },
+    ] }] },
+  });
+  const renewal = await harness.service.statusForUser('user-a');
+  assert.equal(renewal.entitlementActive, true);
+  assert.equal(harness.subscription.latestTransactionId, 'renewed');
+
+  statusCode = 2;
+  latest = transaction({ transactionId: 'renewed', purchaseDate: now - 500, expiresDate: now - 1 });
+  const expiration = await harness.service.statusForUser('user-a');
+  assert.equal(expiration.entitlementState, STATES.EXPIRED);
+  assert.equal(expiration.entitlementActive, false);
+
+  statusCode = 5;
+  latest = transaction({ transactionId: 'renewed', purchaseDate: now - 500, expiresDate: future, revocationDate: now });
+  const refund = await harness.service.statusForUser('user-a');
+  assert.equal(refund.entitlementActive, false);
+  assert.equal(refund.entitlementState, STATES.REVOKED);
+});
+
 test('notification processing is idempotent and never trusts an unverified inner transaction', async () => {
   const tx = transaction();
   const verifier = {
@@ -129,7 +187,10 @@ test('notification processing is idempotent and never trusts an unverified inner
   };
   const harness = modelHarness({
     account: { originalTransactionId: tx.originalTransactionId },
-    verifyPayload: async () => ({ decoded: notification, verifier }),
+    verifyPayload: async (_method, payload) => payload === 'current-tx'
+      ? { decoded: tx }
+      : { decoded: notification, verifier },
+    serverResponse: { data: [{ lastTransactions: [{ status: 1, signedTransactionInfo: 'current-tx' }] }] },
   });
   assert.deepEqual(await harness.service.processNotification('x'.repeat(120)), { duplicate: false, processed: true });
   assert.deepEqual(await harness.service.processNotification('x'.repeat(120)), { duplicate: true, processed: true });
