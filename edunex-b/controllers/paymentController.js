@@ -131,6 +131,14 @@ function getEventName(payload) {
   return payload.event || payload.eventType || payload.type || getWebhookData(payload).event || getWebhookData(payload).eventType;
 }
 
+function webhookPaymentFlow(data = {}) {
+  return data.paymentFlow || data.payment_flow || {};
+}
+
+function webhookPaymentDetail(data = {}) {
+  return data.paymentDetails?.[0] || data.paymentDetail?.[0] || {};
+}
+
 function extractPhonePeCustomerId(data = {}) {
   return data.subscriptionId
     || data.customerId
@@ -198,6 +206,7 @@ async function createTrialSubscription({ userId, order, mandateId, metadata }) {
         subscriptionType: 'trial',
         trialStartedAt: now,
         trialExpiresAt,
+        phonePeSubscriptionId: order.phonePeMerchantSubscriptionId || null,
         phonePeMandateId: mandateId || null,
       },
     },
@@ -236,13 +245,14 @@ async function applySuccessfulPayment(order, status) {
   order.phonePeTransactionId = status.transactionId;
   order.phonePePaymentInstrument = status.paymentInstrument;
   order.phonePeCustomerId = extractPhonePeCustomerId(status.raw?.data || status.raw) || order.phonePeCustomerId;
+  order.phonePeMerchantSubscriptionId = status.merchantSubscriptionId || order.phonePeMerchantSubscriptionId;
   await order.save();
 
-  if (order.orderType === 'trial_charge') {
+  if (order.orderType === 'trial_charge' || order.orderType === 'mandate_setup') {
     await createTrialSubscription({
       userId: order.user,
       order,
-      mandateId: status.mandateId,
+      mandateId: status.mandateId || order.phonePeMerchantSubscriptionId,
       metadata: status.raw,
     });
     return;
@@ -328,7 +338,8 @@ async function initiateTrial(req, res) {
       totalAmount: paymentType === 'monthly' ? subscriptionAmountPaise : trialAmountPaise,
       gateway: isSimulatedPaymentEnabled() ? 'simulated' : 'phonepe',
       phonePeMerchantTransactionId: paymentRequest.merchantTransactionId,
-      orderType: paymentType === 'monthly' ? 'subscription_charge' : 'trial_charge',
+      phonePeMerchantSubscriptionId: paymentRequest.merchantSubscriptionId || null,
+      orderType: paymentType === 'monthly' ? 'subscription_charge' : 'mandate_setup',
       checkoutReturnUrl: safeCheckoutReturnUrl(req.body?.returnUrl),
       status: 'pending',
     });
@@ -535,7 +546,9 @@ async function paymentCallback(req, res) {
       return res.status(200).json({ success: true, duplicate: true });
     }
 
-    const status = await phonePeService.verifyPaymentStatus(merchantTransactionId);
+    const status = order.orderType === 'mandate_setup'
+      ? await phonePeService.verifySubscriptionOrderStatus(merchantTransactionId)
+      : await phonePeService.verifyPaymentStatus(merchantTransactionId);
     if (status.success) {
       await applySuccessfulPayment(order, status);
     } else if (['FAILED', 'CANCELLED', 'EXPIRED', 'DECLINED'].includes(status.state)) {
@@ -557,6 +570,7 @@ async function paymentCallback(req, res) {
 
 async function processPhonePeWebhook({ payload, data, event, merchantTransactionId, phonePeTransactionId }) {
   const phonePeCustomerId = extractPhonePeCustomerId(data);
+  const paymentFlow = webhookPaymentFlow(data);
   const amount = data.amount || null;
   const order = merchantTransactionId
     ? await Order.findOne({ phonePeMerchantTransactionId: merchantTransactionId })
@@ -565,8 +579,9 @@ async function processPhonePeWebhook({ payload, data, event, merchantTransaction
   let subscription = order?.subscription ? await Subscription.findById(order.subscription) : null;
 
   if (!subscription && order) subscription = await Subscription.findOne({ user: order.user });
-  if (!subscription && data.merchantSubscriptionId) {
-    subscription = await Subscription.findOne({ phonePeSubscriptionId: data.merchantSubscriptionId });
+  const merchantSubscriptionId = data.merchantSubscriptionId || paymentFlow.merchantSubscriptionId || order?.phonePeMerchantSubscriptionId || null;
+  if (!subscription && merchantSubscriptionId) {
+    subscription = await Subscription.findOne({ phonePeSubscriptionId: merchantSubscriptionId });
   }
   if (!subscription && order) {
     subscription = await Subscription.findOneAndUpdate(
@@ -584,8 +599,9 @@ async function processPhonePeWebhook({ payload, data, event, merchantTransaction
   }
 
   const userId = order?.user || subscription.user;
-  if (event === 'MANDATE_APPROVED') {
-    subscription.phonePeMandateId = data.mandateId || data.phonePeMandateId || subscription.phonePeMandateId;
+  if (event === 'MANDATE_APPROVED' || event === 'CHECKOUT.ORDER.COMPLETED' || event === 'SUBSCRIPTION.SETUP.ORDER.COMPLETED' || event === 'SUBSCRIPTION.ACTIVE') {
+    subscription.phonePeSubscriptionId = merchantSubscriptionId || subscription.phonePeSubscriptionId;
+    subscription.phonePeMandateId = data.subscriptionId || paymentFlow.subscriptionId || data.mandateId || data.phonePeMandateId || subscription.phonePeMandateId;
     if (phonePeCustomerId) {
       if (order) {
         order.phonePeCustomerId = phonePeCustomerId;
@@ -595,6 +611,22 @@ async function processPhonePeWebhook({ payload, data, event, merchantTransaction
     }
     if (order?.phonePeCustomerId) {
       await User.findByIdAndUpdate(userId, { phonePeCustomerId: order.phonePeCustomerId });
+    }
+    if (order?.orderType === 'mandate_setup') {
+      order.status = 'paid';
+      order.paidAt = order.paidAt || new Date();
+      order.phonePeTransactionId = phonePeTransactionId || order.phonePeTransactionId;
+      await order.save();
+      const now = order.paidAt || new Date();
+      subscription.status = '1rs trial';
+      subscription.subscriptionType = 'trial';
+      subscription.trialStartedAt = subscription.trialStartedAt || now;
+      subscription.trialExpiresAt = subscription.trialExpiresAt || addHours(now, trialAccessDurationHours);
+      await User.findByIdAndUpdate(userId, {
+        phonePeCustomerId: phonePeCustomerId || order.phonePeCustomerId || null,
+        subscriptionStatus: '1rs trial',
+        subscriptionId: subscription._id,
+      });
     }
     await subscription.save();
     await promoteTrialToSubscribedIfEligible(subscription, userId);
@@ -610,7 +642,7 @@ async function processPhonePeWebhook({ payload, data, event, merchantTransaction
       await order.save();
     }
 
-    if (order?.orderType === 'trial_charge') {
+    if (order?.orderType === 'trial_charge' || order?.orderType === 'mandate_setup') {
       const now = order.paidAt || new Date();
       subscription.status = '1rs trial';
       subscription.trialStartedAt = subscription.trialStartedAt || now;
@@ -640,7 +672,7 @@ async function processPhonePeWebhook({ payload, data, event, merchantTransaction
     await subscription.save();
   }
 
-  if (event === 'PAYMENT_FAILED') {
+  if (event === 'PAYMENT_FAILED' || event === 'CHECKOUT.ORDER.FAILED' || event === 'SUBSCRIPTION.SETUP.ORDER.FAILED') {
     if (order) {
       order.status = 'failed';
       order.phonePeTransactionId = phonePeTransactionId;
@@ -692,13 +724,16 @@ async function handleWebhook(req, res) {
     }
     const data = getWebhookData(payload);
     const event = String(getEventName(payload) || '').trim().toUpperCase();
-    const merchantTransactionId = data.merchantTransactionId || data.phonePeMerchantTransactionId || null;
-    const phonePeTransactionId = data.transactionId || data.phonePeTransactionId || null;
+    const paymentFlow = webhookPaymentFlow(data);
+    const paymentDetail = webhookPaymentDetail(data);
+    const merchantSubscriptionId = data.merchantSubscriptionId || paymentFlow.merchantSubscriptionId || null;
+    const merchantTransactionId = data.merchantTransactionId || data.merchantOrderId || data.phonePeMerchantTransactionId || null;
+    const phonePeTransactionId = data.transactionId || data.phonePeTransactionId || paymentDetail.transactionId || null;
     const eventKey = phonePeEventClaims.webhookEventIdentity({
       event,
       merchantTransactionId,
       phonePeTransactionId,
-      merchantSubscriptionId: data.merchantSubscriptionId,
+      merchantSubscriptionId,
     });
     if (!eventKey) return res.status(400).json({ error: 'PhonePe event identity is required' });
 

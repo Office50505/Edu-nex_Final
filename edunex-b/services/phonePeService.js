@@ -29,6 +29,10 @@ function generateMerchantTransactionId(userId) {
   return `EDUNEX_${userId}_${Date.now()}`;
 }
 
+function generateMerchantSubscriptionId(userId) {
+  return `EDUNEX_SUB_${userId}_${Date.now()}`.slice(0, 63);
+}
+
 function normalizePaymentInstrument(instrument) {
   const type = typeof instrument === 'string'
     ? instrument
@@ -92,53 +96,86 @@ async function getAccessToken() {
 
 async function createTrialPaymentRequest(userId) {
   const merchantTransactionId = generateMerchantTransactionId(userId);
+  const merchantSubscriptionId = generateMerchantSubscriptionId(userId);
   const accessToken = await getAccessToken();
   const subscriptionAmountPaise = Number(process.env.SUBSCRIPTION_AMOUNT_PAISE || 50000);
   const trialAmountPaise = Number(process.env.TRIAL_AMOUNT_PAISE || 100);
+  const subscriptionExpiresAt = Date.now() + Number(process.env.PHONEPE_SUBSCRIPTION_EXPIRY_DAYS || 3650) * 24 * 60 * 60 * 1000;
   const payload = {
     merchantOrderId: merchantTransactionId,
     amount:          trialAmountPaise,
-    expireAfter:     1200,
+    expireAt:        Math.floor(Date.now() / 1000) + 900,
     metaInfo: {
       udf1: String(userId),
-      udf2: 'trial_charge',
+      udf2: 'mandate_setup',
       udf3: 'edunex',
-      udf4: 'phonepe_test',
+      udf4: 'phonepe_autopay',
+      udf5: merchantSubscriptionId,
     },
     paymentFlow: {
-      type: 'PG_CHECKOUT',
-      message: 'Start Skillomate trial',
-      subscription: {
-        type: 'RECURRING',
-        startAmount: trialAmountPaise,
-        amount: subscriptionAmountPaise,
-        frequency: 'MONTHLY',
-        billingCycle: 'monthly',
+      type: 'SUBSCRIPTION_SETUP',
+      merchantSubscriptionId,
+      authWorkflowType: process.env.PHONEPE_AUTOPAY_AUTH_WORKFLOW || 'TRANSACTION',
+      amountType: 'FIXED',
+      maxAmount: subscriptionAmountPaise,
+      frequency: process.env.PHONEPE_AUTOPAY_FREQUENCY || 'MONTHLY',
+      expireAt: subscriptionExpiresAt,
+      paymentMode: {
+        type: 'UPI_INTENT',
+        targetApp: process.env.PHONEPE_AUTOPAY_TARGET_APP || 'com.phonepe.app',
       },
-      merchantUrls: {
-        redirectUrl: `${redirectUrl}?merchantTransactionId=${merchantTransactionId}`,
-      },
+    },
+    deviceContext: {
+      deviceOS: process.env.PHONEPE_AUTOPAY_DEVICE_OS || 'ANDROID',
     },
   };
 
-  const response = await fetch(`${baseUrl}/checkout/v2/pay`, {
+  const response = await fetch(`${baseUrl}/subscriptions/v2/setup`, {
     method: 'POST',
     headers: {
+      Accept: 'application/json',
       'Content-Type': 'application/json',
       Authorization: `O-Bearer ${accessToken}`,
     },
     body: JSON.stringify(payload),
   });
   const body = await readJson(response);
-  const redirect = body.redirectUrl || body.data?.redirectUrl || body.instrumentResponse?.redirectInfo?.url;
+  const redirect = body.intentUrl || body.data?.intentUrl || body.redirectUrl || body.data?.redirectUrl;
 
   if (!response.ok || !redirect) {
-    throw new Error(body.message || body.error || 'PhonePe payment URL request failed');
+    throw new Error(body.message || body.error || 'PhonePe mandate setup request failed');
   }
 
   return {
     redirectUrl: redirect,
     merchantTransactionId,
+    merchantSubscriptionId,
+    raw: body,
+  };
+}
+
+async function verifySubscriptionOrderStatus(merchantTransactionId) {
+  const accessToken = await getAccessToken();
+  const response = await fetch(`${baseUrl}/subscriptions/v2/order/${merchantTransactionId}/status`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `O-Bearer ${accessToken}`,
+    },
+  });
+  const body = await readJson(response);
+  const data = body.data || body;
+  const paymentFlow = data.paymentFlow || data.payment_flow || {};
+  const state = data.state || data.status || body.state || body.status;
+  const success = response.ok && ['COMPLETED', 'SUCCESS', 'ACTIVE'].includes(String(state || '').toUpperCase());
+
+  return {
+    success,
+    state: String(state || '').toUpperCase(),
+    transactionId: data.transactionId || data.orderId || data.merchantOrderId || merchantTransactionId,
+    paymentInstrument: getPaymentInstrumentFromStatus(data),
+    mandateId: data.subscriptionId || paymentFlow.subscriptionId || data.mandateId || null,
+    merchantSubscriptionId: data.merchantSubscriptionId || paymentFlow.merchantSubscriptionId || null,
     raw: body,
   };
 }
@@ -301,9 +338,11 @@ function readiness() {
 
 module.exports = {
   generateMerchantTransactionId,
+  generateMerchantSubscriptionId,
   createTrialPaymentRequest,
   createMonthlyPaymentRequest,
   verifyPaymentStatus,
+  verifySubscriptionOrderStatus,
   verifyWebhookSignature,
   cancelMandate,
   config,

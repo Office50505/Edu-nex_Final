@@ -889,7 +889,8 @@
   }
 
   function configuredApiBaseUrl() {
-    const raw = String(document.querySelector('meta[name="skillomate-api-base-url"]')?.content || "").trim();
+    const envBase = typeof import.meta !== "undefined" ? import.meta.env?.VITE_API_BASE_URL : "";
+    const raw = String(document.querySelector('meta[name="skillomate-api-base-url"]')?.content || envBase || "").trim();
     if (!raw) return "";
     try {
       const parsed = new URL(raw);
