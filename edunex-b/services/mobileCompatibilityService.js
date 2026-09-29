@@ -13,6 +13,7 @@ const BUNNY_LIBRARY_ID = process.env.BUNNY_LIBRARY_ID || process.env.BUNNY_STREA
 const BUNNY_API_KEY = process.env.BUNNY_API_KEY || process.env.BUNNY_STREAM_API_KEY || '';
 const BUNNY_PULL_ZONE_URL = process.env.BUNNY_PULL_ZONE_URL
   || (process.env.BUNNY_STREAM_CDN_HOSTNAME ? `https://${process.env.BUNNY_STREAM_CDN_HOSTNAME}/` : '');
+const BUNNY_DEFAULT_PULL_ZONE_URL = 'https://edunex.b-cdn.net/';
 const BUNNY_CDN_HOST = process.env.BUNNY_CDN_HOST
   || process.env.BUNNY_STREAM_CDN_HOSTNAME
   || hostFromUrl(BUNNY_PULL_ZONE_URL);
@@ -129,9 +130,10 @@ function publicPlayableVideoInfo(video = {}, index = 0) {
   if (provider === 'aws_cloudfront') return { ...publicVideoInfo(video,index), provider, sourceType:provider, playbackRequired:true, transcriptUrl:video.transcriptUrl || null, notesUrl:video.notesUrl || null, thumbnailVerticalUrl:video.thumbnailVerticalUrl || null, description:video.description || '', thumbnailUrl:video.thumbnailUrl || null, examplePrompt:video.examplePrompt || '' };
 
   const bunnyVideoId = video.bunnyVideoId || video.bunnyGuid || null;
+  const pullZone = BUNNY_PULL_ZONE_URL || BUNNY_DEFAULT_PULL_ZONE_URL;
   const hlsUrl = video.hlsUrl || video.playlistUrl || video.streamUrl || (
-    bunnyVideoId && BUNNY_PULL_ZONE_URL
-      ? new URL(`${encodeURIComponent(bunnyVideoId)}/playlist.m3u8`, BUNNY_PULL_ZONE_URL.endsWith('/') ? BUNNY_PULL_ZONE_URL : `${BUNNY_PULL_ZONE_URL}/`).href
+    bunnyVideoId && pullZone
+      ? new URL(`${encodeURIComponent(bunnyVideoId)}/playlist.m3u8`, pullZone.endsWith('/') ? pullZone : `${pullZone}/`).href
       : null
   );
 

@@ -26,10 +26,12 @@ import {
   Keyboard,
   KeyboardAvoidingView,
   Linking,
+  LogBox,
   Modal,
   PanResponder,
   Platform,
   Pressable,
+  RefreshControl,
   SafeAreaView,
   ScrollView,
   Share,
@@ -235,6 +237,15 @@ const ROOT_TAB_SWITCH_DURATION_MS = Platform.OS === "android" ? 165 : 210;
 const MIN_TOUCH_TARGET = Platform.OS === "ios" ? 44 : 48;
 const ANDROID_STATUS_BAR_INSET = Platform.OS === "android" ? (StatusBar.currentHeight || 0) : 0;
 
+if (__DEV__) {
+  LogBox.ignoreLogs([
+    "Tried to access onWindowFocusChange while context is not ready",
+    "Don't know how to round that drawable",
+    "StatusBarModule: Ignored status bar change",
+  ]);
+  if (Platform.OS === "android") LogBox.ignoreAllLogs(true);
+}
+
 function sanitizeImageUrlForLog(url) {
   const value = String(url || "");
   if (!value) return "";
@@ -327,6 +338,56 @@ function useHorizontalSwipeBoundaryProps() {
   }), [swipeBoundary]);
 }
 
+function cleanAiMarkdownText(text) {
+  return String(text || "")
+    .replace(/\\([*_`#>\-])/g, "$1")
+    .replace(/`([^`\n]+)`/g, "$1")
+    .replace(/\[(.*?)\]\((.*?)\)/g, "$1")
+    .replace(/^\s{0,3}#{1,6}\s+/gm, "")
+    .replace(/^\s{0,3}>\s?/gm, "");
+}
+
+function renderInlineMarkdown(text, baseStyle, keyPrefix) {
+  const parts = cleanAiMarkdownText(text).split(/(\*\*.+?\*\*|\*[^*\n]+\*)/g).filter(part => part !== "");
+  return parts.map((part, index) => {
+    const strong = part.startsWith("**") && part.endsWith("**");
+    const emphasis = !strong && part.startsWith("*") && part.endsWith("*");
+    const content = (strong ? part.slice(2, -2) : emphasis ? part.slice(1, -1) : part)
+      .replace(/\*\*/g, "")
+      .replace(/(^|[^\w])_([^_\n]+)_/g, "$1$2");
+    return (
+      <Text
+        key={`${keyPrefix}-part-${index}`}
+        style={strong ? [baseStyle, s.aiMarkdownStrong] : emphasis ? [baseStyle, s.aiMarkdownEmphasis] : baseStyle}
+      >
+        {content}
+      </Text>
+    );
+  });
+}
+
+function AiMarkdownText({ content, style }) {
+  const lines = cleanAiMarkdownText(content)
+    .replace(/\r\n/g, "\n")
+    .split("\n");
+
+  return (
+    <Text style={style}>
+      {lines.map((rawLine, index) => {
+        const bullet = rawLine.match(/^\s*[-*•]\s+(.*)$/);
+        const numbered = rawLine.match(/^\s*(\d+)\.\s+(.*)$/);
+        const line = bullet ? `• ${bullet[1]}` : numbered ? `${numbered[1]}. ${numbered[2]}` : rawLine;
+        return (
+          <React.Fragment key={`line-${index}`}>
+            {renderInlineMarkdown(line, style, `line-${index}`)}
+            {index < lines.length - 1 ? "\n" : null}
+          </React.Fragment>
+        );
+      })}
+    </Text>
+  );
+}
+
 function HorizontalRail({ data, renderItem, contentContainerStyle, keyExtractor }) {
   const swipeBoundaryProps = useHorizontalSwipeBoundaryProps();
 
@@ -411,8 +472,10 @@ const hasCourseAccess = user => DEV_UI_QA_ENABLED || hasActivePremiumEntitlement
 const AI_FEATURE_ENABLED = true;
 
 const SPEEDS = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2];
+const HOLD_SPEED_RATE = 2;
+const HOLD_SPEED_DELAY_MS = 220;
 const AUTO_QUALITY_LABEL = "Auto";
-const FALLBACK_QUALITY_OPTIONS = ["144p", "240p", "360p", "480p", "720p", "1080p", "1440p", "2160p"];
+const FALLBACK_QUALITY_OPTIONS = ["144p", "240p", "360p", "480p", "720p", "1080p"];
 const VIDEO_COMPLETE_THRESHOLD = 0.9;
 const PROTECTED_VIDEO_CAPTURE_KEY = "skillomate-course-video";
 const SHOW_DRAFT_HOME_RECOMMENDATIONS = false;
@@ -436,6 +499,7 @@ const DEFAULT_API_BASE = __DEV__
 const normalizeBaseUrl = url => String(url || "").replace(/\/+$/, "");
 const API_BASE = normalizeBaseUrl(process.env.EXPO_PUBLIC_API_BASE || DEFAULT_API_BASE);
 const WEB_APP_BASE = normalizeBaseUrl(process.env.EXPO_PUBLIC_WEB_APP_BASE || "https://skillomate.in");
+const BUNNY_CDN_BASE = normalizeBaseUrl(process.env.EXPO_PUBLIC_BUNNY_CDN_BASE || "https://edunex.b-cdn.net");
 const API_REQUEST_TIMEOUT_MS = 12000;
 const API_NETWORK_RETRY_DELAYS_MS = [0, 600, 1600];
 
@@ -1057,6 +1121,8 @@ function buildEmbedPlayerHtml(embedUrl, initialTime = 0) {
     var ready = false;
     var pending = [];
     var pollTimer = null;
+    var availableQualities = [];
+    var standardQualities = ${JSON.stringify(FALLBACK_QUALITY_OPTIONS.map(q => Number(q.replace('p', ''))))};
     function post(data) {
       try { window.ReactNativeWebView.postMessage(JSON.stringify(data)); } catch(e) {}
     }
@@ -1095,6 +1161,62 @@ function buildEmbedPlayerHtml(embedUrl, initialTime = 0) {
         }), '*');
       } catch(e) {}
     }
+    function qualityPixels(value) {
+      var match = String(value || '').match(/(\\d{3,4})/);
+      return match ? Number(match[1]) : 0;
+    }
+    function nearestStandardQuality(value) {
+      var pixels = Number(value) || 0;
+      if (!pixels) return 0;
+      var best = standardQualities[0] || 144;
+      standardQualities.forEach(function(option) {
+        if (Math.abs(option - pixels) <= Math.abs(best - pixels)) best = option;
+      });
+      return best;
+    }
+    function qualityRawValue(item) {
+      if (item && typeof item === 'object') {
+        return item.value || item.id || item.label || item.name || item.quality || item.height || item;
+      }
+      return item;
+    }
+    function qualityLabel(item) {
+      var width = Number(item && typeof item === 'object' && (item.width || item.size && item.size.width)) || 0;
+      var height = Number(item && typeof item === 'object' && (item.height || item.size && item.size.height)) || 0;
+      if (width > 0 && height > 0) return nearestStandardQuality(Math.min(width, height)) + 'p';
+      var raw = item && typeof item === 'object'
+        ? (item.label || item.name || item.id || item.value || item.quality || '')
+        : item;
+      var text = String(raw || '').trim();
+      if (!text || /^auto$/i.test(text)) return '';
+      var resolution = text.match(/(\\d{3,4})\\s*x\\s*(\\d{3,4})/i);
+      if (resolution) return nearestStandardQuality(Math.min(Number(resolution[1]), Number(resolution[2]))) + 'p';
+      var numeric = qualityPixels(text);
+      if (!numeric) return text;
+      if (standardQualities.indexOf(numeric) >= 0) return numeric + 'p';
+      return nearestStandardQuality(numeric * 9 / 16) + 'p';
+    }
+    function postQualities(qs) {
+      availableQualities = Array.isArray(qs) ? qs : [];
+      var seen = {};
+      var labels = [];
+      availableQualities.forEach(function(item) {
+        var label = qualityLabel(item);
+        if (!label || seen[label]) return;
+        seen[label] = true;
+        labels.push(label);
+      });
+      labels.sort(function(a, b) { return qualityPixels(a) - qualityPixels(b); });
+      if (labels.length) post({ type:'qualities', qualities: labels });
+    }
+    function rawQualityForLabel(label) {
+      var requested = qualityLabel(label);
+      if (!requested || /^auto$/i.test(String(label || ''))) return 'auto';
+      for (var i = 0; i < availableQualities.length; i++) {
+        if (qualityLabel(availableQualities[i]) === requested) return qualityRawValue(availableQualities[i]);
+      }
+      return label;
+    }
     p.addEventListener('load', function() {
       player = new playerjs.Player(p);
       player.on('ready', function() {
@@ -1116,9 +1238,7 @@ function buildEmbedPlayerHtml(embedUrl, initialTime = 0) {
         });
         try {
           player.getQualities(function(qs) {
-            if (qs && qs.length) {
-              post({ type:'qualities', qualities: qs });
-            }
+            postQualities(qs);
           });
         } catch(e) {}
         if (${initialTime} > 0) { player.setCurrentTime(${initialTime}); }
@@ -1171,42 +1291,22 @@ function buildEmbedPlayerHtml(embedUrl, initialTime = 0) {
     window.bunnySpeed = function(r) {
       exec(function(){
         try { player.setPlaybackRate(r); } catch(e) {}
+        try { player.setSpeed(r); } catch(e) {}
         playerMessage('setPlaybackRate', r);
+        playerMessage('setSpeed', r);
+        playerMessage('playbackRate', r);
       });
     };
     window.bunnyQuality = function(q) {
       exec(function(){
-        var nextQuality = (!q || String(q).toLowerCase() === 'auto') ? 'auto' : q;
+        var nextQuality = rawQualityForLabel(q);
         try { player.setQuality(nextQuality); } catch(e) {}
         playerMessage('setQuality', nextQuality);
-        post({ type:'qualityChange', quality: nextQuality });
+        post({ type:'qualityChange', quality: q || nextQuality });
       });
     };
   </script>
 </body></html>`;
-}
-
-function normalizeVideoQualityOptions(values = []) {
-  const seen = new Set();
-  const options = [];
-  values.forEach(value => {
-    const rawValue = typeof value === "object" && value
-      ? getVideoTrackQualityLabel(value) || value.label || value.name || value.id || ""
-      : value;
-    const raw = String(rawValue || "").trim();
-    if (!raw || /^auto$/i.test(raw)) return;
-    const match = raw.match(/(\d{3,4})\s*p?/i);
-    const label = match ? `${match[1]}p` : raw;
-    const key = label.toLowerCase();
-    if (seen.has(key)) return;
-    seen.add(key);
-    options.push(label);
-  });
-  return options.sort((a, b) => {
-    const aPixels = Number(String(a).match(/\d+/)?.[0] || 0);
-    const bPixels = Number(String(b).match(/\d+/)?.[0] || 0);
-    return aPixels - bPixels;
-  });
 }
 
 function qualityPixels(label) {
@@ -1214,12 +1314,134 @@ function qualityPixels(label) {
   return Number.isFinite(value) ? value : 0;
 }
 
+function nearestStandardQuality(value) {
+  const pixels = Number(value);
+  if (!Number.isFinite(pixels) || pixels <= 0) return 0;
+  return FALLBACK_QUALITY_OPTIONS
+    .map(qualityPixels)
+    .reduce((best, option) => (
+      Math.abs(option - pixels) <= Math.abs(best - pixels) ? option : best
+    ), qualityPixels(FALLBACK_QUALITY_OPTIONS[0]));
+}
+
+function youtubeStyleQualityLabel(value, width = 0, height = 0) {
+  const rawWidth = Number(width);
+  const rawHeight = Number(height);
+  if (rawWidth > 0 && rawHeight > 0) {
+    return `${nearestStandardQuality(Math.min(rawWidth, rawHeight))}p`;
+  }
+  const raw = String(value || "").trim();
+  if (!raw || /^auto$/i.test(raw)) return "";
+  const resolution = raw.match(/(\d{3,4})\s*x\s*(\d{3,4})/i);
+  if (resolution) return youtubeStyleQualityLabel("", Number(resolution[1]), Number(resolution[2]));
+  const numeric = qualityPixels(raw);
+  if (!numeric) return raw;
+  if (FALLBACK_QUALITY_OPTIONS.includes(`${numeric}p`)) return `${numeric}p`;
+  const inferredShortEdge = numeric * 9 / 16;
+  return `${nearestStandardQuality(inferredShortEdge)}p`;
+}
+
 function getVideoTrackQualityLabel(track) {
   const width = Number(track?.size?.width || track?.width || 0);
   const height = Number(track?.size?.height || track?.height || 0);
-  const pixels = width > 0 && height > 0 ? Math.min(width, height) : Math.max(width, height);
-  if (Number.isFinite(pixels) && pixels > 0) return `${Math.round(pixels)}p`;
-  return String(track?.label || track?.name || track?.id || "").trim();
+  return youtubeStyleQualityLabel(track?.label || track?.name || track?.id || "", width, height);
+}
+
+function normalizeVideoQualityOptions(values = []) {
+  const seen = new Set();
+  const options = [];
+  values.forEach(value => {
+    const label = typeof value === "object" && value
+      ? getVideoTrackQualityLabel(value)
+      : youtubeStyleQualityLabel(value);
+    if (!label) return;
+    const key = label.toLowerCase();
+    if (seen.has(key)) return;
+    seen.add(key);
+    options.push(label);
+  });
+  return options.sort((a, b) => qualityPixels(a) - qualityPixels(b));
+}
+
+function mergeQualityOptions(...groups) {
+  const seen = new Set();
+  const options = [];
+  groups.flat().forEach(value => {
+    const label = typeof value === "object" && value
+      ? getVideoTrackQualityLabel(value)
+      : youtubeStyleQualityLabel(value);
+    if (!label) return;
+    const key = label.toLowerCase();
+    if (seen.has(key)) return;
+    seen.add(key);
+    options.push(label);
+  });
+  return options.sort((a, b) => qualityPixels(a) - qualityPixels(b));
+}
+
+function absoluteVideoTrackUrl(trackUrl, masterUrl) {
+  const raw = String(trackUrl || "").trim();
+  if (!raw) return "";
+  try {
+    return new URL(raw, String(masterUrl || "")).href;
+  } catch {
+    return raw;
+  }
+}
+
+function mergeVideoTracks(previous = [], next = []) {
+  const byKey = new Map();
+  [...previous, ...next].forEach(track => {
+    if (!track?.url) return;
+    const label = getVideoTrackQualityLabel(track);
+    const key = `${label || track.id || ""}:${track.url}`;
+    if (key !== ":") byKey.set(key, track);
+  });
+  return [...byKey.values()].sort((a, b) => (
+    qualityPixels(getVideoTrackQualityLabel(a)) - qualityPixels(getVideoTrackQualityLabel(b))
+  ));
+}
+
+function sourceUri(source) {
+  if (!source) return "";
+  if (typeof source === "string") return source;
+  return String(source.uri || "");
+}
+
+function videoSourceFromUri(uri) {
+  const value = String(uri || "").trim();
+  if (!value) return null;
+  const source = { uri: value };
+  if (/\.m3u8(?:[?#]|$)/i.test(value)) source.contentType = "hls";
+  return source;
+}
+
+function parseHlsVariantTracks(manifestText, masterUrl) {
+  const lines = String(manifestText || "").split(/\r?\n/);
+  const tracks = [];
+  for (let index = 0; index < lines.length; index += 1) {
+    const line = lines[index].trim();
+    if (!line.startsWith("#EXT-X-STREAM-INF")) continue;
+    const resolution = line.match(/RESOLUTION=(\d+)x(\d+)/i);
+    let variantLine = "";
+    for (let next = index + 1; next < lines.length; next += 1) {
+      const candidate = lines[next].trim();
+      if (!candidate || candidate.startsWith("#")) continue;
+      variantLine = candidate;
+      break;
+    }
+    const uri = absoluteVideoTrackUrl(variantLine, masterUrl);
+    if (!uri) continue;
+    const width = Number(resolution?.[1] || 0);
+    const height = Number(resolution?.[2] || 0);
+    tracks.push({
+      id: uri,
+      url: uri,
+      size: { width, height },
+      label: height > 0 ? `${height}p` : "",
+    });
+  }
+  return mergeVideoTracks([], tracks);
 }
 
 function findVideoTrackForQuality(tracks = [], quality) {
@@ -1233,8 +1455,9 @@ function findVideoTrackForQuality(tracks = [], quality) {
   if (!candidates.length) return null;
   return (
     candidates.find(item => item.pixels === target) ||
-    candidates.filter(item => item.pixels <= target).at(-1) ||
-    candidates[0]
+    candidates.filter(item => item.pixels < target).at(-1) ||
+    candidates.find(item => item.pixels > target) ||
+    candidates[candidates.length - 1]
   ).track;
 }
 
@@ -1333,9 +1556,45 @@ function clampSeconds(value, max = 0) {
   return upper > 0 ? Math.max(0, Math.min(next, upper)) : Math.max(0, next);
 }
 
+const RESUME_RESTART_REMAINING_SECONDS = 3;
+const RESUME_RESTART_FRACTION = 0.985;
+
+function parseDurationSeconds(value) {
+  if (typeof value === "number") return finiteSeconds(value, 0);
+  if (typeof value !== "string") return 0;
+  const text = value.trim();
+  if (!text) return 0;
+  const numeric = Number(text);
+  if (Number.isFinite(numeric) && numeric > 0) return numeric;
+  const parts = text.split(":").map(part => Number(part));
+  if (!parts.length || parts.some(part => !Number.isFinite(part) || part < 0)) return 0;
+  return parts.reduce((total, part) => (total * 60) + part, 0);
+}
+
+function getVideoKnownDuration(video) {
+  return parseDurationSeconds(video?.duration ?? video?.durationSeconds ?? video?.lengthSeconds ?? video?.videoDuration ?? video?.durationText);
+}
+
+function normalizeResumeTime(time, knownDuration = 0) {
+  const current = finiteSeconds(time, 0);
+  const duration = finiteSeconds(knownDuration, 0);
+  if (duration > 0) {
+    const remaining = duration - current;
+    if (remaining <= RESUME_RESTART_REMAINING_SECONDS || current / duration >= RESUME_RESTART_FRACTION) return 0;
+    return clampSeconds(current, duration);
+  }
+  return current;
+}
+
 function isDirectMediaUrl(url) {
   const value = String(url || "").trim();
   return /\.(m3u8|mp4|m4v|mov|webm)(?:[?#]|$)/i.test(value) || /\/playlist\.m3u8(?:[?#]|$)/i.test(value);
+}
+
+function getBunnyNativeHlsUrl(video) {
+  const guid = getBunnyGuid(video);
+  if (!guid || !BUNNY_CDN_BASE) return "";
+  return `${BUNNY_CDN_BASE}/${encodeURIComponent(guid)}/playlist.m3u8`;
 }
 
 function getNativeVideoUrl(video, localPath) {
@@ -1344,8 +1603,37 @@ function getNativeVideoUrl(video, localPath) {
     video?.hlsUrl ||
     video?.playlistUrl ||
     video?.streamUrl ||
-    (isDirectMediaUrl(video?.videoUrl) ? video.videoUrl : "")
+    (isDirectMediaUrl(video?.videoUrl) ? video.videoUrl : "") ||
+    getBunnyNativeHlsUrl(video)
   );
+}
+
+function getBunnyQualityBaseUrl(video, masterUrl = "") {
+  const urls = [
+    masterUrl,
+    video?.hlsUrl,
+    video?.playlistUrl,
+    video?.streamUrl,
+    getBunnyNativeHlsUrl(video),
+  ].filter(value => typeof value === "string" && value.trim());
+  for (const raw of urls) {
+    try {
+      const parsed = new URL(raw);
+      parsed.search = "";
+      parsed.hash = "";
+      parsed.pathname = parsed.pathname.replace(/\/playlist\.m3u8$/i, "").replace(/\/+$/, "");
+      if (parsed.pathname) return parsed.href.replace(/\/+$/, "");
+    } catch {}
+  }
+  const guid = getBunnyGuid(video);
+  return guid && BUNNY_CDN_BASE ? `${BUNNY_CDN_BASE}/${encodeURIComponent(guid)}` : "";
+}
+
+function getBunnyQualityMp4Url(video, quality, masterUrl = "") {
+  const label = youtubeStyleQualityLabel(quality);
+  if (!label || label === AUTO_QUALITY_LABEL) return "";
+  const base = getBunnyQualityBaseUrl(video, masterUrl);
+  return base ? `${base}/play_${label}.mp4` : "";
 }
 
 function getVideoDurationLabel(video) {
@@ -1434,15 +1722,28 @@ function isPlayableVideo(video) {
 function getBunnyGuid(video) {
   if (video?.bunnyGuid) return String(video.bunnyGuid);
   if (video?.bunnyVideoId) return String(video.bunnyVideoId);
-  const url = typeof video?.videoUrl === "string" ? video.videoUrl : typeof video?.embedUrl === "string" ? video.embedUrl : "";
-  const match = url.match(/\/(?:embed\/\d+\/)?([0-9a-f-]{32,36})(?:[/?#]|$)/i);
-  return match?.[1] || "";
+  const urls = [
+    video?.videoUrl,
+    video?.embedUrl,
+    video?.hlsUrl,
+    video?.playlistUrl,
+    video?.streamUrl,
+  ].filter(value => typeof value === "string" && value.trim());
+  for (const url of urls) {
+    const match = url.match(/\/(?:embed\/\d+\/)?([0-9a-f-]{32,36})(?:[/?#]|$)/i);
+    if (match?.[1]) return match[1];
+  }
+  return "";
 }
 
 function getBunnyLibraryId(video) {
   if (video?.bunnyLibraryId) return String(video.bunnyLibraryId);
-  const url = typeof video?.videoUrl === "string" ? video.videoUrl : typeof video?.embedUrl === "string" ? video.embedUrl : "";
-  return url.match(/\/embed\/(\d+)\//)?.[1] || "";
+  const urls = [video?.videoUrl, video?.embedUrl].filter(value => typeof value === "string" && value.trim());
+  for (const url of urls) {
+    const match = url.match(/\/embed\/(\d+)\//);
+    if (match?.[1]) return match[1];
+  }
+  return "";
 }
 
 const PLAYBACK_ACCESS_TIMEOUT_MS = 30000;
@@ -1547,7 +1848,9 @@ function getResumeInfo(course, progressByCourse = {}) {
     const key = getVideoKey(videos[i], i);
     if (!completed.has(key)) {
       const vp = videoProgress[key];
-      return { index: i, seconds: Math.floor(vp?.resumePosition ?? vp?.watchedSeconds ?? 0) };
+      const savedSeconds = vp?.resumePosition ?? vp?.watchedSeconds ?? 0;
+      const duration = vp?.duration || getVideoKnownDuration(videos[i]);
+      return { index: i, seconds: Math.floor(normalizeResumeTime(savedSeconds, duration)) };
     }
   }
   return { index: 0, seconds: 0 };
@@ -2092,7 +2395,6 @@ function UpgradeModal({ visible, onClose }) {
   );
 }
 
-const NOTIFICATION_VIEWED_SIGNATURE_KEY = "skillomate_notifications_viewed_signature";
 const PROBLEM_REPORT_CATEGORIES = [
   { value: "technical", label: "Technical problem" },
   { value: "video", label: "Video or lesson" },
@@ -2101,31 +2403,108 @@ const PROBLEM_REPORT_CATEGORIES = [
   { value: "account", label: "Account or login" },
   { value: "other", label: "Something else" },
 ];
-const NOTIFICATION_PREVIEWS = [];
 
-function getNotificationSignature(items = NOTIFICATION_PREVIEWS) {
-  return items.map(item => [item.title, item.body, item.time].join("\u001f")).join("\u001e");
+function notificationIconForType(type) {
+  const value = String(type || "").toLowerCase();
+  if (/course|lesson|video|learning/.test(value)) return "play-circle-outline";
+  if (/ai|tutor|chat/.test(value)) return "sparkles-outline";
+  if (/subscription|payment|billing|trial/.test(value)) return "card-outline";
+  if (/certificate|complete/.test(value)) return "ribbon-outline";
+  return "notifications-outline";
 }
 
-function useNotificationReadState() {
+function notificationActionKey(type = "") {
+  const value = String(type).toLowerCase();
+  if (/ai|tutor|chat/.test(value)) return "ai";
+  if (/subscription|payment|billing|trial/.test(value)) return "subscription";
+  if (/course|lesson|video|learning|certificate/.test(value)) return "courses";
+  return "";
+}
+
+function notificationTimeLabel(value) {
+  const time = new Date(value || Date.now()).getTime();
+  if (!Number.isFinite(time)) return "Now";
+  const diff = Math.max(0, Date.now() - time);
+  const minutes = Math.floor(diff / 60000);
+  if (minutes < 1) return "Now";
+  if (minutes < 60) return `${minutes}m`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours}h`;
+  const days = Math.floor(hours / 24);
+  if (days < 7) return `${days}d`;
+  return new Date(time).toLocaleDateString("en-IN", { day: "numeric", month: "short" });
+}
+
+function normalizeNotification(item = {}) {
+  const id = String(item._id || item.id || `${item.title || "notification"}-${item.createdAt || Date.now()}`);
+  const type = item.type || "update";
+  return {
+    id,
+    title: item.title || "Notification",
+    body: item.body || "",
+    time: notificationTimeLabel(item.createdAt),
+    icon: notificationIconForType(type),
+    actionKey: notificationActionKey(type),
+    isRead: item.isRead === true,
+  };
+}
+
+function useNotificationReadState({ session, user } = {}) {
+  const [notifications, setNotifications] = useState([]);
+  const [loading, setLoading] = useState(false);
   const [hasUnreadNotifications, setHasUnreadNotifications] = useState(false);
 
-  const markNotificationsViewed = useCallback(() => {
-    setHasUnreadNotifications(false);
-  }, []);
+  const loadNotifications = useCallback(async () => {
+    if (!session || !user?._id || !user?.sessionId) {
+      setNotifications([]);
+      setHasUnreadNotifications(false);
+      return;
+    }
+    setLoading(true);
+    try {
+      const data = await session.requestJson("/api/notifications?limit=20");
+      const items = Array.isArray(data?.notifications) ? data.notifications.map(normalizeNotification) : [];
+      setNotifications(items);
+      setHasUnreadNotifications(Number(data?.unreadCount || 0) > 0 || items.some(item => !item.isRead));
+    } catch {
+      setNotifications([]);
+      setHasUnreadNotifications(false);
+    } finally {
+      setLoading(false);
+    }
+  }, [session, user?._id, user?.sessionId]);
 
-  return { hasUnreadNotifications, markNotificationsViewed };
+  useEffect(() => {
+    loadNotifications();
+    if (!session || !user?._id || !user?.sessionId) return undefined;
+    const timer = setInterval(loadNotifications, 60000);
+    return () => clearInterval(timer);
+  }, [loadNotifications, session, user?._id, user?.sessionId]);
+
+  const markNotificationsViewed = useCallback(() => {
+    const unreadIds = notifications.filter(item => !item.isRead).map(item => item.id);
+    setHasUnreadNotifications(false);
+    setNotifications(items => items.map(item => ({ ...item, isRead: true })));
+    if (!session || !user?._id || !user?.sessionId || !unreadIds.length) return;
+    session.requestJson("/api/notifications/read", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ids: unreadIds }),
+    }).catch(() => {});
+  }, [notifications, session, user?._id, user?.sessionId]);
+
+  return { notifications, notificationsLoading: loading, hasUnreadNotifications, markNotificationsViewed, refreshNotifications: loadNotifications };
 }
 
-function NotificationPreviewModal({ visible, onClose, onOpenCourses, onOpenAI, onOpenSubscription }) {
+function NotificationPreviewModal({ visible, items: notificationItems = [], loading = false, onClose, onOpenCourses, onOpenAI, onOpenSubscription }) {
   const items = useMemo(() => {
     const actions = {
       ai: onOpenAI,
       courses: onOpenCourses,
       subscription: onOpenSubscription,
     };
-    return NOTIFICATION_PREVIEWS.map(item => ({ ...item, action: actions[item.actionKey] }));
-  }, [onOpenAI, onOpenCourses, onOpenSubscription]);
+    return notificationItems.map(item => ({ ...item, action: actions[item.actionKey] }));
+  }, [notificationItems, onOpenAI, onOpenCourses, onOpenSubscription]);
 
   const openItem = action => {
     action?.();
@@ -2146,7 +2525,12 @@ function NotificationPreviewModal({ visible, onClose, onOpenCourses, onOpenAI, o
               <Ionicons name="close" size={19} color={C.text} />
             </TouchableOpacity>
           </View>
-          {items.length === 0 ? (
+          {loading ? (
+            <View style={{ alignItems: "center", paddingVertical: 28, paddingHorizontal: 20 }}>
+              <ActivityIndicator color={C.primary} />
+              <Text style={[s.notificationBody, { marginTop: 10, textAlign: "center" }]}>Loading notifications...</Text>
+            </View>
+          ) : items.length === 0 ? (
             <View style={{ alignItems: "center", paddingVertical: 28, paddingHorizontal: 20 }}>
               <Ionicons name="notifications-outline" size={30} color={C.textMuted} />
               <Text style={[s.notificationBody, { marginTop: 10, textAlign: "center" }]}>You have no notifications.</Text>
@@ -2155,7 +2539,7 @@ function NotificationPreviewModal({ visible, onClose, onOpenCourses, onOpenAI, o
             const Row = item.action ? TouchableOpacity : View;
             return (
             <Row
-              key={item.title}
+              key={item.id || item.title}
               style={[s.notificationItem, index === items.length - 1 && { borderBottomWidth: 0 }]}
               activeOpacity={item.action ? 0.82 : undefined}
               onPress={item.action ? () => openItem(item.action) : undefined}
@@ -2348,10 +2732,10 @@ function ProblemReportModal({ visible, onClose, user, route = "home" }) {
                 <TouchableOpacity
                   style={[s.reportSubmitButton, !canSubmit && s.reportSubmitButtonDisabled]}
                   onPress={handleSubmit}
-                  disabled={!canSubmit}
+                  disabled={busy}
                   accessibilityRole="button"
                   accessibilityLabel="Send report"
-                  accessibilityState={{ disabled: !canSubmit, busy }}
+                  accessibilityState={{ disabled: busy, busy }}
                 >
                   {busy ? <ActivityIndicator color="#FFFFFF" /> : <Text style={s.reportSubmitText}>Send report</Text>}
                 </TouchableOpacity>
@@ -2390,18 +2774,27 @@ function BottomNav({
     const timer = setTimeout(() => navSearchInputRef.current?.focus?.(), 120);
     return () => clearTimeout(timer);
   }, [searchOpen]);
-  if (rootTabSwipe?.hideEmbeddedNav && !persistent) return null;
   const inactiveColor = forceDark ? "#AAA297" : C.slateGray;
   const normalizedSearch = navSearchText.trim().toLowerCase().replace(/%20/g, " ");
   const searchTerms = normalizedSearch.split(/\s+/).filter(Boolean);
-  const closeSearch = () => {
+  const closeSearch = (clearText = true) => {
     setSearchOpen(false);
+    if (clearText) setNavSearchText("");
     Keyboard.dismiss();
   };
   const toggleSearch = () => {
     if (searchOpen) closeSearch();
     else setSearchOpen(true);
   };
+  useEffect(() => {
+    if (!searchOpen) return undefined;
+    const subscription = BackHandler.addEventListener("hardwareBackPress", () => {
+      closeSearch();
+      return true;
+    });
+    return () => subscription.remove();
+  }, [searchOpen]);
+  if (rootTabSwipe?.hideEmbeddedNav && !persistent) return null;
   const tabs = [
     { key: "home", icon: "home", label: "Home", fn: onHome },
     { key: "courses", icon: "compass", label: "Courses", fn: onCourses },
@@ -2885,22 +3278,25 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
     ? "" : getNativeVideoUrl(video, localPath);
   const hasNativeVideo = !!nativeVideoUrl;
   const isOffline = !!localPath;
+  const bunnyGuid = getBunnyGuid(video);
+  const bunnyLibraryId = getBunnyLibraryId(video);
   const hasEmbeddableVideo = !!(
-    video.bunnyGuid ||
-    video.bunnyVideoId ||
+    bunnyGuid ||
     video.embedUrl ||
     (!isDirectMediaUrl(video.videoUrl) && video.videoUrl) ||
     video.youtubeId ||
     video.videoId
   );
   const canFallbackToEmbed = video.provider !== 'aws_cloudfront' && !isOffline && hasEmbeddableVideo;
-  const preferEmbedPlayer = Platform.OS === "android" && !isOffline && hasEmbeddableVideo && video.provider !== "aws_cloudfront";
+  const preferEmbedPlayer = Platform.OS === "android" && !isOffline && !hasNativeVideo && hasEmbeddableVideo && video.provider !== "aws_cloudfront";
+  const requestedInitialTime = normalizeResumeTime(initialTime, getVideoKnownDuration(video));
   const [nativePlaybackFailed, setNativePlaybackFailed] = useState(false);
   const isNativeVideo = hasNativeVideo && !preferEmbedPlayer && !(nativePlaybackFailed && canFallbackToEmbed);
-  const isBunny = !isNativeVideo && !!(video.bunnyGuid || video.bunnyVideoId || video.videoUrl || video.embedUrl);
+  const isBunny = !isNativeVideo && !!(bunnyGuid || video.videoUrl || video.embedUrl);
   const webViewRef = useRef(null);
   const seekBarWidth = useRef(0);
   const tapInfoRef = useRef({ count: 0, side: null, timer: null });
+  const holdSpeedRef = useRef({ timer: null, active: false, previousRate: 1, side: null, suppressNextPress: false });
   const completionSentRef = useRef(false);
   const progressSentAtRef = useRef(0);
   const lastProgressFlushRef = useRef({ time: -1, duration: 0, at: 0 });
@@ -2910,11 +3306,18 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
   const initialSeekDoneRef = useRef(false);
   const autoPlayTimersRef = useRef([]);
   const sleepTimerRef = useRef(null);
+  const qualitySwitchTimerRef = useRef(null);
+  const qualityPersistTimerRef = useRef(null);
+  const qualityRecoveryTimerRef = useRef(null);
+  const nativeStartupRetryTimerRef = useRef(null);
+  const nativeStartupRetryCountRef = useRef(0);
+  const qualityPreferenceRef = useRef(AUTO_QUALITY_LABEL);
+  const playbackRateSyncTimerRef = useRef(null);
   const sendCmdRef = useRef(() => {});
   const shouldBePlayingRef = useRef(isActive);
   const wasSurfaceSuspendedRef = useRef(suspendSurface);
-  const lastProgressRef = useRef({ time: finiteSeconds(initialTime, 0), advancedAt: Date.now() });
-  const latestProgressValueRef = useRef({ currentTime: finiteSeconds(initialTime, 0), duration: 0 });
+  const lastProgressRef = useRef({ time: requestedInitialTime, advancedAt: Date.now() });
+  const latestProgressValueRef = useRef({ currentTime: requestedInitialTime, duration: 0 });
   const [surfaceRevision, setSurfaceRevision] = useState(0);
   const [isPlaying, setIsPlaying] = useState(true);
   const [isBuffering, setIsBuffering] = useState(isActive);
@@ -2923,14 +3326,17 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
   const [duration, setDuration] = useState(0);
   const [isEnded, setIsEnded] = useState(false);
   const [playbackRate, setPlaybackRate] = useState(1);
-  const [surfaceResumeTime, setSurfaceResumeTime] = useState(finiteSeconds(initialTime, 0));
+  const [surfaceResumeTime, setSurfaceResumeTime] = useState(requestedInitialTime);
   const [qualities, setQualities] = useState([]);
   const [nativeVideoTracks, setNativeVideoTracks] = useState([]);
+  const [hlsVariantTracks, setHlsVariantTracks] = useState([]);
   const [currentQuality, setCurrentQuality] = useState("Auto");
   const [showSettings, setShowSettings] = useState(false);
   const [loopLesson, setLoopLesson] = useState(false);
   const [sleepMinutes, setSleepMinutes] = useState(0);
   const [seekAnim, setSeekAnim] = useState(null);
+  const [holdSpeedSide, setHoldSpeedSide] = useState(null);
+  const [qualitySwitching, setQualitySwitching] = useState(false);
   useEffect(() => {
     latestProgressValueRef.current = { currentTime, duration };
   }, [currentTime, duration]);
@@ -2939,7 +3345,7 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
     return () => onSettingsOpenChange?.(false);
   }, [isActive, onSettingsOpenChange, showSettings]);
   const nativeVideoSource = useMemo(() => (
-    nativeVideoUrl ? { uri: nativeVideoUrl } : null
+    videoSourceFromUri(nativeVideoUrl)
   ), [nativeVideoUrl]);
   const nativePlayer = useVideoPlayer(null, player => {
     player.loop = false;
@@ -2989,16 +3395,16 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
     let originalMedia = video?.youtubeId || video?.videoId || "";
     let finalUrl = `https://www.youtube.com/embed/${originalMedia}`;
     let nextHtml;
-    const htmlInitialTime = finiteSeconds(surfaceResumeTime, initialTime);
+    const htmlInitialTime = finiteSeconds(surfaceResumeTime, requestedInitialTime);
     if (video.embedUrl || (!isDirectMediaUrl(video.videoUrl) && video.videoUrl)) {
       provider = "bunny-url";
       originalMedia = video.embedUrl || video.videoUrl;
       finalUrl = video.embedUrl || video.videoUrl;
       nextHtml = buildEmbedPlayerHtml(finalUrl, htmlInitialTime);
-    } else if (video.bunnyGuid || video.bunnyVideoId) {
+    } else if (bunnyGuid) {
       provider = "bunny-guid";
-      originalMedia = video.bunnyGuid || video.bunnyVideoId;
-      finalUrl = `https://iframe.mediadelivery.net/embed/${video?.bunnyLibraryId || "675520"}/${originalMedia}`;
+      originalMedia = bunnyGuid;
+      finalUrl = `https://iframe.mediadelivery.net/embed/${bunnyLibraryId || "675520"}/${originalMedia}`;
       nextHtml = buildEmbedPlayerHtml(finalUrl, htmlInitialTime);
     } else {
       nextHtml = buildYoutubePlayerHtml(video?.youtubeId || video || "", PLAYER_ORIGIN);
@@ -3013,10 +3419,10 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
       });
     }
     return nextHtml;
-  }, [video?.youtubeId, video?.videoId, video?.bunnyGuid, video?.bunnyVideoId, video?.bunnyLibraryId, video?.videoUrl, video?.embedUrl, initialTime, surfaceResumeTime]);
+  }, [video?.youtubeId, video?.videoId, bunnyGuid, bunnyLibraryId, video?.videoUrl, video?.embedUrl, requestedInitialTime, surfaceResumeTime]);
 
   useEffect(() => {
-    const startAt = finiteSeconds(initialTime, 0);
+    const startAt = requestedInitialTime;
     completionSentRef.current = false;
     progressSentAtRef.current = 0;
     initialSeekDoneRef.current = false;
@@ -3029,15 +3435,73 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
     setIsBuffering(false);
     setSurfaceResumeTime(startAt);
     setCurrentQuality(AUTO_QUALITY_LABEL);
+    qualityPreferenceRef.current = AUTO_QUALITY_LABEL;
     setQualities([]);
     setNativeVideoTracks([]);
+    setHlsVariantTracks([]);
+    nativeStartupRetryCountRef.current = 0;
+    if (nativeStartupRetryTimerRef.current) {
+      clearTimeout(nativeStartupRetryTimerRef.current);
+      nativeStartupRetryTimerRef.current = null;
+    }
     shouldBePlayingRef.current = isActive;
     lastProgressRef.current = { time: startAt, advancedAt: Date.now() };
     setNativePlaybackFailed(false);
-  }, [video?.youtubeId, video?.videoId, video?.bunnyGuid, video?.bunnyVideoId, video?._id, video?.videoUrl, video?.embedUrl, localPath, initialTime]);
+  }, [video?.youtubeId, video?.videoId, video?.bunnyGuid, video?.bunnyVideoId, video?._id, video?.videoUrl, video?.embedUrl, localPath, requestedInitialTime]);
+
+  const scheduleNativeStartupRecovery = useCallback((source, startAt = 0) => {
+    if (!source) return;
+    if (nativeStartupRetryTimerRef.current) clearTimeout(nativeStartupRetryTimerRef.current);
+    nativeStartupRetryTimerRef.current = setTimeout(() => {
+      nativeStartupRetryTimerRef.current = null;
+      const latest = playbackStateRef.current;
+      if (!latest?.isActive || !shouldBePlayingRef.current || latest.isEnded) return;
+      const nativePlaying = runNativePlayer(player => player.playing);
+      if (nativePlaying && !latest.isBuffering) return;
+      if (nativeStartupRetryCountRef.current >= 2) {
+        if (canFallbackToEmbed) {
+          setNativePlaybackFailed(true);
+          setIsBuffering(false);
+          setIsPlaying(false);
+        }
+        return;
+      }
+      nativeStartupRetryCountRef.current += 1;
+      setSurfaceRevision(value => value + 1);
+      setIsBuffering(true);
+      setIsPlaying(true);
+      sourceQueue.current = sourceQueue.current.catch(() => {}).then(async () => {
+        if (!playbackStateRef.current?.isActive || !shouldBePlayingRef.current) return;
+        await runNativePlayer(player => player.replaceAsync(null));
+        await runNativePlayer(player => player.replaceAsync(source));
+        runNativePlayer(player => {
+          player.muted = playbackStateRef.current?.isMuted;
+          player.playbackRate = playbackStateRef.current?.playbackRate || 1;
+          player.loop = false;
+          player.preservesPitch = true;
+          player.timeUpdateEventInterval = VIDEO_TIME_UPDATE_INTERVAL;
+        });
+        if (startAt > 0) setNativeTime(startAt);
+        [0, 200, 700].forEach(delay => {
+          const timer = setTimeout(() => {
+            if (!playbackStateRef.current?.isActive || !shouldBePlayingRef.current) return;
+            playNativePlayer();
+          }, delay);
+          autoPlayTimersRef.current.push(timer);
+        });
+        scheduleNativeStartupRecovery(source, startAt);
+      }).catch(() => {
+        setIsBuffering(false);
+      });
+    }, 8000);
+  }, [canFallbackToEmbed, playNativePlayer, runNativePlayer, setNativeTime]);
 
   useEffect(() => {
     let cancelled = false;
+    if (nativeStartupRetryTimerRef.current) {
+      clearTimeout(nativeStartupRetryTimerRef.current);
+      nativeStartupRetryTimerRef.current = null;
+    }
     if (!nativeVideoSource) {
       pauseNativePlayer();
       sourceQueue.current = sourceQueue.current.catch(() => {}).then(() => {
@@ -3059,13 +3523,16 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
           player.preservesPitch = true;
           player.timeUpdateEventInterval = VIDEO_TIME_UPDATE_INTERVAL;
         });
-        const startAt = video.provider === 'aws_cloudfront' ? Math.max(cloudResume.current,finiteSeconds(initialTime,0)) : finiteSeconds(initialTime, 0);
+        const startAt = video.provider === 'aws_cloudfront'
+          ? normalizeResumeTime(Math.max(cloudResume.current, requestedInitialTime), nativePlayer.duration || getVideoKnownDuration(video))
+          : requestedInitialTime;
         if (startAt > 0) setNativeTime(startAt);
         if (latest.isActive) {
           shouldBePlayingRef.current = true;
           setIsPlaying(true);
           setIsBuffering(false);
           playNativePlayer();
+          scheduleNativeStartupRecovery(nativeVideoSource, startAt);
         }
       } catch (error) {
         if (!cancelled && video.provider === 'aws_cloudfront') setCloudError('Unable to play HLS. Check connectivity and retry.');
@@ -3079,15 +3546,38 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
     });
     return () => {
       cancelled = true;
+      if (nativeStartupRetryTimerRef.current) {
+        clearTimeout(nativeStartupRetryTimerRef.current);
+        nativeStartupRetryTimerRef.current = null;
+      }
       pauseNativePlayer();
     };
-  }, [nativeVideoSource, initialTime, canFallbackToEmbed, pauseNativePlayer, playNativePlayer, runNativePlayer, setNativeTime]);
+  }, [nativeVideoSource, requestedInitialTime, canFallbackToEmbed, pauseNativePlayer, playNativePlayer, runNativePlayer, scheduleNativeStartupRecovery, setNativeTime]);
 
   useEffect(() => {
     shouldBePlayingRef.current = isActive;
     setIsPlaying(isActive);
     setIsBuffering(isActive);
   }, [isActive]);
+
+  useEffect(() => {
+    const masterUrl = sourceUri(nativeVideoSource);
+    if (!isNativeVideo || !/\.m3u8(?:[?#]|$)/i.test(masterUrl)) {
+      setHlsVariantTracks([]);
+      return;
+    }
+    let cancelled = false;
+    fetch(masterUrl)
+      .then(response => response.ok ? response.text() : "")
+      .then(text => {
+        if (cancelled) return;
+        setHlsVariantTracks(parseHlsVariantTracks(text, masterUrl));
+      })
+      .catch(() => {
+        if (!cancelled) setHlsVariantTracks([]);
+      });
+    return () => { cancelled = true; };
+  }, [isNativeVideo, nativeVideoSource]);
 
   useEffect(() => {
     setNativeMuted(isMuted);
@@ -3100,18 +3590,18 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
     else pauseNativePlayer();
   }, [isActive, isNativeVideo, isPlaying, pauseNativePlayer, playNativePlayer]);
 
-  useEventListener(nativePlayer, "sourceLoad", ({ duration: loadedDuration }) => {
+  useEventListener(nativePlayer, "sourceLoad", ({ duration: loadedDuration, availableVideoTracks }) => {
     if (!isNativeVideo) return;
-    const tracks = nativePlayer.availableVideoTracks || [];
-    if (tracks.length) setNativeVideoTracks(tracks);
+    const tracks = availableVideoTracks || nativePlayer.availableVideoTracks || [];
+    if (tracks.length) setNativeVideoTracks(previous => mergeVideoTracks(previous, tracks));
     const dur = finiteSeconds(loadedDuration, nativePlayer.duration || duration);
     if (dur > 0) setDuration(dur);
-    const startAt = finiteSeconds(initialTime, 0);
-    if (!initialSeekDoneRef.current && startAt > 0 && dur > 0) {
+    const startAt = normalizeResumeTime(requestedInitialTime, dur);
+    if (!initialSeekDoneRef.current && requestedInitialTime > 0 && dur > 0) {
       initialSeekDoneRef.current = true;
       const nextTime = clampSeconds(startAt, dur);
       dragTargetRef.current = nextTime;
-      seekGuardRef.current = { until: Date.now() + 3000, target: nextTime };
+      seekGuardRef.current = nextTime > 0 ? { until: Date.now() + 3000, target: nextTime } : { until: 0, target: 0 };
       setCurrentTime(nextTime);
       setNativeTime(nextTime);
     }
@@ -3124,13 +3614,16 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
   useEventListener(nativePlayer, "availableVideoTracksChange", ({ availableVideoTracks }) => {
     if (!isNativeVideo) return;
     const tracks = availableVideoTracks || nativePlayer.availableVideoTracks || [];
-    if (tracks.length) setNativeVideoTracks(tracks);
+    if (tracks.length) setNativeVideoTracks(previous => mergeVideoTracks(previous, tracks));
   });
 
   useEventListener(nativePlayer, "videoTrackChange", ({ videoTrack }) => {
     if (!isNativeVideo || currentQuality === AUTO_QUALITY_LABEL) return;
+    if (Platform.OS === "android") return;
     const label = getVideoTrackQualityLabel(videoTrack);
-    if (FALLBACK_QUALITY_OPTIONS.includes(label)) setCurrentQuality(label);
+    if (!FALLBACK_QUALITY_OPTIONS.includes(label)) return;
+    if (qualitySwitching && label !== currentQuality) return;
+    setCurrentQuality(label);
   });
 
   useEventListener(nativePlayer, "timeUpdate", ({ currentTime: nextTime }) => {
@@ -3141,9 +3634,23 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
 
   useEventListener(nativePlayer, "playingChange", ({ isPlaying: nextPlaying }) => {
     if (!isNativeVideo) return;
-    setIsPlaying(nextPlaying);
     if (nextPlaying) setIsBuffering(false);
-    else setIsBuffering(Boolean(isActive && shouldBePlayingRef.current && !playbackStateRef.current?.isEnded));
+    else {
+      const shouldRecoverPlayback = Boolean(isActive && shouldBePlayingRef.current && !playbackStateRef.current?.isEnded);
+      setIsPlaying(shouldRecoverPlayback);
+      setIsBuffering(shouldRecoverPlayback);
+      if (shouldRecoverPlayback) {
+        [120, 520, 1300].forEach(delay => {
+          const timer = setTimeout(() => {
+            if (!playbackStateRef.current?.isActive || !shouldBePlayingRef.current || playbackStateRef.current?.isEnded) return;
+            playNativePlayer();
+          }, delay);
+          autoPlayTimersRef.current.push(timer);
+        });
+      }
+      return;
+    }
+    setIsPlaying(true);
   });
 
   useEventListener(nativePlayer, "playToEnd", () => {
@@ -3190,6 +3697,16 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
       setDuration(0);
       setCurrentTime(0);
       setIsPlaying(false);
+    }
+  });
+
+  useEventListener(nativePlayer, "playbackRateChange", ({ playbackRate: nextRate }) => {
+    if (!isNativeVideo) return;
+    const desiredRate = holdSpeedRef.current.active
+      ? HOLD_SPEED_RATE
+      : playbackStateRef.current?.playbackRate || 1;
+    if (Math.abs((Number(nextRate) || 1) - desiredRate) > 0.01) {
+      setNativeRate(desiredRate);
     }
   });
 
@@ -3299,8 +3816,8 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
   }, [isMuted, isNativeVideo]);
 
   useEffect(() => {
-    if (!isNativeVideo) return;
-    sendCmd("setPlaybackRate", [playbackRate]);
+    if (isNativeVideo) return;
+    syncPlaybackRate(playbackRate);
   }, [playbackRate, isNativeVideo]);
 
   useEffect(() => () => {
@@ -3308,7 +3825,17 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
     if (latest.duration > 0) onProgress?.(latest.currentTime, latest.duration);
     const timer = tapInfoRef.current.timer;
     if (timer) clearTimeout(timer);
+    const holdTimer = holdSpeedRef.current.timer;
+    if (holdTimer) clearTimeout(holdTimer);
+    if (holdSpeedRef.current.active) {
+      sendCmdRef.current("setPlaybackRate", [holdSpeedRef.current.previousRate || 1]);
+    }
     if (sleepTimerRef.current) clearTimeout(sleepTimerRef.current);
+    if (qualitySwitchTimerRef.current) clearTimeout(qualitySwitchTimerRef.current);
+    if (qualityPersistTimerRef.current) clearTimeout(qualityPersistTimerRef.current);
+    if (qualityRecoveryTimerRef.current) clearTimeout(qualityRecoveryTimerRef.current);
+    if (nativeStartupRetryTimerRef.current) clearTimeout(nativeStartupRetryTimerRef.current);
+    if (playbackRateSyncTimerRef.current) clearTimeout(playbackRateSyncTimerRef.current);
     clearAutoPlayTimers();
   }, [clearAutoPlayTimers, onProgress]);
 
@@ -3342,30 +3869,31 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
     } else if (shouldBePlayingRef.current && !nextPlaying && now - lastProgress.advancedAt > 1200) {
       setIsBuffering(true);
     }
-    if (!initialSeekDoneRef.current && initialTime > 0 && dur > 0) {
+    if (!initialSeekDoneRef.current && requestedInitialTime > 0 && dur > 0) {
       initialSeekDoneRef.current = true;
-      const startAt = clampSeconds(initialTime, dur);
+      const startAt = normalizeResumeTime(requestedInitialTime, dur);
       dragTargetRef.current = startAt;
-      seekGuardRef.current = { until: Date.now() + 3000, target: startAt };
+      seekGuardRef.current = startAt > 0 ? { until: Date.now() + 3000, target: startAt } : { until: 0, target: 0 };
       setCurrentTime(startAt);
       setNativeTime(startAt);
       return;
     }
     if (isDraggingRef.current) {
       if (dur > 0) setDuration(dur);
-      setIsPlaying(!!nextPlaying);
+      setIsPlaying(Boolean(nextPlaying || shouldBePlayingRef.current));
       return;
     }
     if (Date.now() < seekGuardRef.current.until && Math.abs(ct - seekGuardRef.current.target) > 1.5) {
       if (dur > 0) setDuration(dur);
-      setIsPlaying(!!nextPlaying);
+      setIsPlaying(Boolean(nextPlaying || shouldBePlayingRef.current));
       return;
     }
     setCurrentTime(ct);
     if (dur > 0) setDuration(dur);
-    setIsPlaying(!!nextPlaying);
+    const shouldKeepTryingPlayback = Boolean(shouldBePlayingRef.current && !(dur > 0 && ct >= dur - 0.25));
+    setIsPlaying(Boolean(nextPlaying || shouldKeepTryingPlayback));
     if (nextPlaying) setIsBuffering(false);
-    else if (shouldBePlayingRef.current && !(dur > 0 && ct >= dur - 0.25)) setIsBuffering(true);
+    else if (shouldKeepTryingPlayback) setIsBuffering(true);
     if (dur > 0 && ct >= dur - 0.25 && !nextPlaying) {
       if (loopLesson) {
         flushProgress(ct, dur, true);
@@ -3396,11 +3924,12 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
       const d = JSON.parse(e.nativeEvent.data);
       if (d.type === "ready") {
         if (isActive) {
-          if (initialTime > 0) sendCmd("seekTo", [initialTime, true]);
+          if (requestedInitialTime > 0) sendCmd("seekTo", [requestedInitialTime, true]);
           queueAutoPlay();
         } else {
           sendCmd("pauseVideo");
         }
+        syncPlaybackRate(playbackRate);
         return;
       }
       if (d.type === "stateChange") {
@@ -3430,12 +3959,16 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
         if (typeof d.playing === "boolean") {
           setIsPlaying(d.playing);
           setIsBuffering(d.playing ? false : Boolean(isActive && shouldBePlayingRef.current));
+          if (d.playing) syncPlaybackRate(playbackRate);
         }
         return;
       }
       if (d.type === "qualities") { setQualities(normalizeVideoQualityOptions(d.qualities || [])); return; }
       if (d.type === "qualityChange") {
-        setCurrentQuality(String(d.quality || "").toLowerCase() === "auto" ? AUTO_QUALITY_LABEL : String(d.quality || AUTO_QUALITY_LABEL));
+        setCurrentQuality(String(d.quality || "").toLowerCase() === "auto"
+          ? AUTO_QUALITY_LABEL
+          : youtubeStyleQualityLabel(d.quality) || AUTO_QUALITY_LABEL);
+        hideQualitySwitchGuard(360);
         return;
       }
       if (d.type === "timeUpdate") {
@@ -3487,6 +4020,7 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
           setIsPlaying(true);
           setIsBuffering(false);
           setIsEnded(false);
+          syncPlaybackRate(playbackRate);
         } else if (d.playerState === 3) {
           setIsPlaying(false);
           setIsBuffering(Boolean(isActive && shouldBePlayingRef.current));
@@ -3514,18 +4048,166 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
     setIsPlaying(!shouldPause);
   }
   function toggleMute() { sendCmd(isMuted ? "unMute" : "mute"); setIsMuted(m => !m); }
-  function selectSpeed(r) { sendCmd("setPlaybackRate", [r]); setPlaybackRate(r); }
+  function syncPlaybackRate(rate = playbackStateRef.current?.playbackRate || 1) {
+    const nextRate = Number.isFinite(Number(rate)) && Number(rate) > 0 ? Number(rate) : 1;
+    sendCmd("setPlaybackRate", [nextRate]);
+    if (playbackRateSyncTimerRef.current) clearTimeout(playbackRateSyncTimerRef.current);
+    playbackRateSyncTimerRef.current = setTimeout(() => {
+      playbackRateSyncTimerRef.current = null;
+      sendCmdRef.current("setPlaybackRate", [nextRate]);
+    }, 450);
+  }
+  function restoreAudiblePlaybackAfterQualityChange() {
+    if (playbackStateRef.current?.isMuted) return;
+    [120, 520, 1100].forEach(delay => {
+      const timer = setTimeout(() => {
+        const latest = playbackStateRef.current;
+        if (!latest?.isActive || latest.isMuted || latest.isEnded) return;
+        sendCmdRef.current("unMute");
+        if (shouldBePlayingRef.current) sendCmdRef.current("playVideo");
+      }, delay);
+      autoPlayTimersRef.current.push(timer);
+    });
+  }
+  function selectSpeed(r) {
+    setPlaybackRate(r);
+    syncPlaybackRate(r);
+  }
+  function showQualitySwitchGuard(timeoutMs = 1300) {
+    if (qualitySwitchTimerRef.current) clearTimeout(qualitySwitchTimerRef.current);
+    setQualitySwitching(true);
+    qualitySwitchTimerRef.current = setTimeout(() => {
+      qualitySwitchTimerRef.current = null;
+      setQualitySwitching(false);
+    }, timeoutMs);
+  }
+  function hideQualitySwitchGuard(delayMs = 300) {
+    if (qualitySwitchTimerRef.current) clearTimeout(qualitySwitchTimerRef.current);
+    qualitySwitchTimerRef.current = setTimeout(() => {
+      qualitySwitchTimerRef.current = null;
+      setQualitySwitching(false);
+    }, delayMs);
+  }
+  function beginHoldSpeed(side) {
+    if (showSettings || isEnded || !showLiveSurface) return;
+    const hold = holdSpeedRef.current;
+    if (hold.timer) clearTimeout(hold.timer);
+    hold.active = false;
+    hold.side = side;
+    hold.suppressNextPress = false;
+    hold.previousRate = playbackStateRef.current?.playbackRate || playbackRate || 1;
+    hold.timer = setTimeout(() => {
+      const latest = playbackStateRef.current;
+      if (!latest?.isActive || latest?.isEnded) return;
+      hold.active = true;
+      hold.previousRate = latest.playbackRate || hold.previousRate || 1;
+      setHoldSpeedSide(side);
+      sendCmd("setPlaybackRate", [HOLD_SPEED_RATE]);
+    }, HOLD_SPEED_DELAY_MS);
+  }
+  function endHoldSpeed() {
+    const hold = holdSpeedRef.current;
+    if (hold.timer) clearTimeout(hold.timer);
+    const shouldRestore = hold.active;
+    const previousRate = hold.previousRate || 1;
+    hold.timer = null;
+    hold.active = false;
+    hold.side = null;
+    hold.previousRate = 1;
+    hold.suppressNextPress = shouldRestore;
+    setHoldSpeedSide(null);
+    if (shouldRestore) {
+      syncPlaybackRate(previousRate);
+      setTimeout(() => { holdSpeedRef.current.suppressNextPress = false; }, 0);
+    }
+  }
+  function shouldSkipSideTapAfterHold() {
+    if (!holdSpeedRef.current.suppressNextPress) return false;
+    holdSpeedRef.current.suppressNextPress = false;
+    return true;
+  }
   function selectNativeQuality(q) {
+    if (Platform.OS === "android") {
+      const resumeAt = latestProgressValueRef.current.currentTime;
+      const shouldResume = Boolean(isActive && shouldBePlayingRef.current);
+      const masterUrl = sourceUri(nativeVideoSource);
+      const selectableTracks = mergeVideoTracks(hlsVariantTracks, nativeVideoTracks);
+      const mp4Url = q === AUTO_QUALITY_LABEL ? "" : getBunnyQualityMp4Url(video, q, masterUrl);
+      const hlsTrack = q === AUTO_QUALITY_LABEL ? null : findVideoTrackForQuality(selectableTracks, q);
+      const hlsUrl = absoluteVideoTrackUrl(hlsTrack?.url, masterUrl);
+      const nextSource = q === AUTO_QUALITY_LABEL
+        ? nativeVideoSource
+        : (videoSourceFromUri(mp4Url) || videoSourceFromUri(hlsUrl) || nativeVideoSource);
+      if (!nextSource) return;
+      qualityPreferenceRef.current = q;
+      if (qualityPersistTimerRef.current) clearTimeout(qualityPersistTimerRef.current);
+      if (qualityRecoveryTimerRef.current) clearTimeout(qualityRecoveryTimerRef.current);
+      showQualitySwitchGuard(1800);
+      setCurrentQuality(q);
+      shouldBePlayingRef.current = shouldResume;
+      setIsPlaying(shouldResume);
+      setIsBuffering(shouldResume);
+      sourceQueue.current = sourceQueue.current.catch(() => {}).then(async () => {
+        try {
+          pauseNativePlayer();
+          await runNativePlayer(player => player.replaceAsync(nextSource));
+          runNativePlayer(player => {
+            player.muted = playbackStateRef.current?.isMuted;
+            player.playbackRate = playbackStateRef.current?.playbackRate || 1;
+            player.loop = false;
+            player.preservesPitch = true;
+            player.timeUpdateEventInterval = VIDEO_TIME_UPDATE_INTERVAL;
+          });
+          if (resumeAt > 0) setNativeTime(resumeAt);
+          if (shouldResume) {
+            [0, 160, 520].forEach(delay => {
+              const timer = setTimeout(() => {
+                if (!playbackStateRef.current?.isActive || !shouldBePlayingRef.current) return;
+                playNativePlayer();
+              }, delay);
+              autoPlayTimersRef.current.push(timer);
+            });
+          }
+        } catch {
+          const fallbackSource = videoSourceFromUri(hlsUrl) || nativeVideoSource;
+          if (fallbackSource && fallbackSource !== nextSource) {
+            try {
+              await runNativePlayer(player => player.replaceAsync(fallbackSource));
+              if (resumeAt > 0) setNativeTime(resumeAt);
+              if (shouldResume) playNativePlayer();
+            } catch {}
+          }
+        } finally {
+          setCurrentQuality(qualityPreferenceRef.current);
+          setIsPlaying(shouldResume);
+          setIsBuffering(false);
+          qualityPersistTimerRef.current = setTimeout(() => {
+            setCurrentQuality(qualityPreferenceRef.current);
+          }, 550);
+          hideQualitySwitchGuard(360);
+        }
+      });
+      return;
+    }
     const resumeAt = latestProgressValueRef.current.currentTime;
     const shouldResume = Boolean(isActive && shouldBePlayingRef.current);
+    const masterUrl = sourceUri(nativeVideoSource);
+    const selectableTracks = mergeVideoTracks(hlsVariantTracks, nativeVideoTracks);
     const nextSource = q === AUTO_QUALITY_LABEL
       ? nativeVideoSource
       : (() => {
-          const track = findVideoTrackForQuality(nativeVideoTracks, q);
-          return track?.url ? { uri: track.url } : null;
+          const track = findVideoTrackForQuality(selectableTracks, q);
+          const uri = absoluteVideoTrackUrl(track?.url, masterUrl);
+          return videoSourceFromUri(uri) || nativeVideoSource;
         })();
     if (!nextSource) return;
+    qualityPreferenceRef.current = q;
+    if (qualityPersistTimerRef.current) clearTimeout(qualityPersistTimerRef.current);
+    if (qualityRecoveryTimerRef.current) clearTimeout(qualityRecoveryTimerRef.current);
+    showQualitySwitchGuard(1800);
     setCurrentQuality(q);
+    shouldBePlayingRef.current = shouldResume;
+    setIsPlaying(shouldResume);
     setIsBuffering(shouldResume);
     sourceQueue.current = sourceQueue.current.catch(() => {}).then(async () => {
       try {
@@ -3539,11 +4221,62 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
           player.timeUpdateEventInterval = VIDEO_TIME_UPDATE_INTERVAL;
         });
         if (resumeAt > 0) setNativeTime(resumeAt);
-        if (shouldResume) playNativePlayer();
+        if (shouldResume) {
+          setIsPlaying(true);
+          setIsBuffering(true);
+          [0, 160, 520, 1100].forEach(delay => {
+            const timer = setTimeout(() => {
+              if (!playbackStateRef.current?.isActive || !shouldBePlayingRef.current) return;
+              playNativePlayer();
+            }, delay);
+            autoPlayTimersRef.current.push(timer);
+          });
+          qualityRecoveryTimerRef.current = setTimeout(() => {
+            qualityRecoveryTimerRef.current = null;
+            if (!playbackStateRef.current?.isActive || !shouldBePlayingRef.current) return;
+            const nativePlaying = runNativePlayer(player => player.playing);
+            if (nativePlaying && !playbackStateRef.current?.isBuffering) return;
+            const fallbackAt = latestProgressValueRef.current.currentTime || resumeAt || 0;
+            sourceQueue.current = sourceQueue.current.catch(() => {}).then(async () => {
+              if (!playbackStateRef.current?.isActive || !shouldBePlayingRef.current || !nativeVideoSource) return;
+              await runNativePlayer(player => player.replaceAsync(nativeVideoSource));
+              if (fallbackAt > 0) setNativeTime(fallbackAt);
+              qualityPreferenceRef.current = AUTO_QUALITY_LABEL;
+              setCurrentQuality(AUTO_QUALITY_LABEL);
+              setIsPlaying(true);
+              setIsBuffering(true);
+              [0, 180, 560].forEach(delay => {
+                const timer = setTimeout(() => {
+                  if (!playbackStateRef.current?.isActive || !shouldBePlayingRef.current) return;
+                  playNativePlayer();
+                }, delay);
+                autoPlayTimersRef.current.push(timer);
+              });
+              hideQualitySwitchGuard(360);
+            }).catch(() => {
+              playNativePlayer();
+            });
+          }, 8500);
+        }
       } catch {
-        setCurrentQuality(AUTO_QUALITY_LABEL);
+        try {
+          if (q !== AUTO_QUALITY_LABEL && nativeVideoSource) {
+            await runNativePlayer(player => player.replaceAsync(nativeVideoSource));
+            if (resumeAt > 0) setNativeTime(resumeAt);
+            if (shouldResume) {
+              setIsPlaying(true);
+              playNativePlayer();
+            }
+          }
+        } catch {}
+        setCurrentQuality(q);
       } finally {
-        setIsBuffering(false);
+        setIsBuffering(Boolean(shouldResume));
+        setCurrentQuality(qualityPreferenceRef.current);
+        qualityPersistTimerRef.current = setTimeout(() => {
+          setCurrentQuality(qualityPreferenceRef.current);
+        }, 550);
+        hideQualitySwitchGuard(360);
       }
     });
   }
@@ -3553,7 +4286,9 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
       return;
     }
     const nextQuality = q === AUTO_QUALITY_LABEL ? "auto" : q;
+    showQualitySwitchGuard(1400);
     sendCmd("setQuality", [nextQuality]);
+    restoreAudiblePlaybackAfterQualityChange();
     setCurrentQuality(q);
   }
   function setSleepTimer(minutes) {
@@ -3659,7 +4394,15 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
     </View>
   );
   const progress = duration > 0 ? Math.max(0, Math.min(1, currentTime / duration)) : 0;
-  const qualityOptions = [AUTO_QUALITY_LABEL, ...FALLBACK_QUALITY_OPTIONS];
+  const availableNativeQualityOptions = normalizeVideoQualityOptions(mergeVideoTracks(hlsVariantTracks, nativeVideoTracks));
+  const availableEmbedQualityOptions = normalizeVideoQualityOptions(qualities);
+  const qualityOptions = [
+    AUTO_QUALITY_LABEL,
+    ...mergeQualityOptions(
+      FALLBACK_QUALITY_OPTIONS,
+      isNativeVideo ? availableNativeQualityOptions : availableEmbedQualityOptions
+    ),
+  ];
   const showLiveSurface = !suspendSurface;
   const suspendedPosterUrl = suspendSurface ? getLessonThumbnailUrl(video, course) : "";
 
@@ -3714,6 +4457,12 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
           <Ionicons name="play-circle" size={72} color="rgba(255,255,255,0.85)" />
         </View>
       ) : null}
+      {showLiveSurface && qualitySwitching ? (
+        <View style={s.qualitySwitchOverlay} pointerEvents="none">
+          <ActivityIndicator size="small" color="#fff" />
+          <Text style={s.qualitySwitchText}>Adjusting quality</Text>
+        </View>
+      ) : null}
       {isEnded ? (
         <TouchableOpacity onPress={restart} style={s.restartOverlay} accessibilityRole="button" accessibilityLabel="Replay lesson">
           <Ionicons name="refresh-circle" size={72} color="rgba(255,255,255,0.9)" />
@@ -3721,10 +4470,15 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
       ) : (
         <>
           <Pressable
-            onPress={() => handleSideTap("left")}
+            onPressIn={() => beginHoldSpeed("left")}
+            onPressOut={endHoldSpeed}
+            onPress={() => {
+              if (shouldSkipSideTapAfterHold()) return;
+              handleSideTap("left");
+            }}
             style={s.tapLeft}
             accessibilityRole="button"
-            accessibilityLabel="Rewind video"
+            accessibilityLabel="Hold left side for 2x speed or double tap to rewind"
           />
           <Pressable
             onPress={handleCenterTap}
@@ -3733,11 +4487,24 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
             accessibilityLabel={isPlaying || isBuffering ? "Pause video" : "Play video"}
           />
           <Pressable
-            onPress={() => handleSideTap("right")}
+            onPressIn={() => beginHoldSpeed("right")}
+            onPressOut={endHoldSpeed}
+            onPress={() => {
+              if (shouldSkipSideTapAfterHold()) return;
+              handleSideTap("right");
+            }}
             style={s.tapRight}
             accessibilityRole="button"
-            accessibilityLabel="Fast forward video"
+            accessibilityLabel="Hold right side for 2x speed or double tap to fast forward"
           />
+          {holdSpeedSide && (
+            <View
+              style={[s.holdSpeedIndicator, holdSpeedSide === "left" ? s.holdSpeedIndicatorLeft : s.holdSpeedIndicatorRight]}
+              pointerEvents="none"
+            >
+              <Text style={s.holdSpeedText}>2x</Text>
+            </View>
+          )}
           {seekAnim === "left" && (
             <View style={[s.seekFlash, s.seekFlashLeft]} pointerEvents="none">
               <Ionicons name="play-back" size={22} color="#fff" />
@@ -4482,7 +5249,7 @@ function ReelsScreen({ courseId, course, initialIndex, initialTime, onBack, onRe
                 <View key={i} style={[s.courseAiMessage, msg.role === "user" && s.courseAiMessageUser]}>
                   {msg.role !== "user" && <View style={s.courseAiAvatar}><Ionicons name="sparkles" size={15} color={C.onPrimary} /></View>}
                   <View style={[s.courseAiBubble, msg.role === "user" && s.courseAiBubbleUser]}>
-                    <Text style={[s.courseAiBubbleText, msg.role === "user" && s.courseAiBubbleTextUser]}>{msg.content}</Text>
+                    <AiMarkdownText content={msg.content} style={[s.courseAiBubbleText, msg.role === "user" && s.courseAiBubbleTextUser]} />
                   </View>
                 </View>
               ))}
@@ -4582,7 +5349,6 @@ function VideoListScreen({
   course,
   onSelectVideo,
   onBack,
-  onOpenCourseAi,
   downloads,
   onDownload,
   onDeleteDownload,
@@ -4655,16 +5421,6 @@ function VideoListScreen({
               accessibilityLabel="Open course notes"
             >
               <Ionicons name="document-text-outline" size={22} color={C.text} />
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[s.iconBtn, { backgroundColor: C.primaryLight, borderRadius: 8, paddingHorizontal: 8, flexDirection: "row", alignItems: "center" }]}
-              hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
-              onPress={() => onOpenCourseAi?.(course)}
-              accessibilityRole="button"
-              accessibilityLabel={`Open Course AI for ${course.title}`}
-            >
-              <Ionicons name="sparkles" size={16} color={C.primary} />
-              <Text style={{ color: C.primary, fontSize: 12, fontWeight: "700", marginLeft: 3 }}>AI</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -5350,7 +6106,7 @@ const homeStyles = StyleSheet.create({
 });
 
 // ── HomeScreen ────────────────────────────────────────────────────────────────
-function LegacyHomeScreenDraft({ user, onGoToCourses, onGoToAI, onGoToDownloads, onGoToProfile, onGoToSubscription, onStartTrial, trialLoading = false, onSelectCourse, onResumeCourse, onOpenHeroPreview, onReportProblem, courseProgress = {}, aiRobotId }) {
+function LegacyHomeScreenDraft({ session, user, onGoToCourses, onGoToAI, onGoToDownloads, onGoToProfile, onGoToSubscription, onStartTrial, trialLoading = false, onSelectCourse, onResumeCourse, onOpenHeroPreview, onReportProblem, courseProgress = {}, aiRobotId }) {
   const hasAccess = hasCourseAccess(user);
   const [topCourses, setTopCourses] = useState([]);
   const [allCourses, setAllCourses] = useState([]);
@@ -5358,7 +6114,7 @@ function LegacyHomeScreenDraft({ user, onGoToCourses, onGoToAI, onGoToDownloads,
   const [loading, setLoading] = useState(true);
   const [showUpgrade, setShowUpgrade] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
-  const { hasUnreadNotifications, markNotificationsViewed } = useNotificationReadState();
+  const { notifications, notificationsLoading, hasUnreadNotifications, markNotificationsViewed } = useNotificationReadState({ session, user });
   const openNotifications = useCallback(() => {
     setShowNotifications(true);
     markNotificationsViewed();
@@ -5702,6 +6458,8 @@ function LegacyHomeScreenDraft({ user, onGoToCourses, onGoToAI, onGoToDownloads,
       />
       <NotificationPreviewModal
         visible={showNotifications}
+        items={notifications}
+        loading={notificationsLoading}
         onClose={() => setShowNotifications(false)}
         onOpenCourses={onGoToCourses}
         onOpenAI={onGoToAI}
@@ -5761,13 +6519,24 @@ function HomeScreen({
   const [loading, setLoading] = useState(() => !homeCatalogCourse);
   const [loadError, setLoadError] = useState("");
   const [reloadKey, setReloadKey] = useState(0);
+  const [refreshing, setRefreshing] = useState(false);
   const [showUpgrade, setShowUpgrade] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
-  const { hasUnreadNotifications, markNotificationsViewed } = useNotificationReadState();
+  const { notifications, notificationsLoading, hasUnreadNotifications, markNotificationsViewed } = useNotificationReadState({ session, user });
   const openNotifications = useCallback(() => {
     setShowNotifications(true);
     markNotificationsViewed();
   }, [markNotificationsViewed]);
+
+  useEffect(() => {
+    if (!loading && refreshing) setRefreshing(false);
+  }, [loading, refreshing]);
+
+  const refreshHome = useCallback(() => {
+    homeCatalogCourse = null;
+    setRefreshing(true);
+    setReloadKey(value => value + 1);
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -5999,7 +6768,16 @@ function HomeScreen({
         contentContainerStyle={homeStyles.scrollContent}
         scrollEventThrottle={16}
         keyboardShouldPersistTaps="handled"
-        overScrollMode="never"
+        overScrollMode="always"
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={refreshHome}
+            tintColor={HOME_PALETTE.gold}
+            colors={[HOME_PALETTE.gold]}
+            progressBackgroundColor={HOME_PALETTE.surface}
+          />
+        }
       >
         {loading && !course ? (
           <View style={homeStyles.stateCard}>
@@ -6012,7 +6790,7 @@ function HomeScreen({
             <Ionicons name="cloud-offline-outline" size={32} color={HOME_PALETTE.gold} />
             <Text style={homeStyles.stateTitle}>Course unavailable</Text>
             <Text style={homeStyles.stateText}>{loadError || "The course catalog is temporarily unavailable."}</Text>
-            <TouchableOpacity style={homeStyles.stateButton} onPress={() => setReloadKey(value => value + 1)} accessibilityRole="button" accessibilityLabel="Try loading the course again">
+            <TouchableOpacity style={homeStyles.stateButton} onPress={refreshHome} accessibilityRole="button" accessibilityLabel="Try loading the course again">
               <Text style={homeStyles.stateButtonText}>Try Again</Text>
             </TouchableOpacity>
           </View>
@@ -6122,6 +6900,8 @@ function HomeScreen({
       />
       <NotificationPreviewModal
         visible={showNotifications}
+        items={notifications}
+        loading={notificationsLoading}
         onClose={() => setShowNotifications(false)}
         onOpenCourses={onGoToCourses}
         onOpenAI={onGoToAI}
@@ -6143,27 +6923,31 @@ function CourseListScreen({ onSelect, user, onGoToHome, onGoToCourses, onGoToAI,
   const [showUpgrade, setShowUpgrade] = useState(false);
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState(null);
   const [query, setQuery] = useState("");
   const [searchFocused, setSearchFocused] = useState(false);
 
-  const loadCourses = useCallback(() => {
-    setLoading(true);
+  const loadCourses = useCallback(async (options = {}) => {
+    const isRefresh = Boolean(options.refresh);
+    if (isRefresh) setRefreshing(true);
+    else setLoading(true);
     setError(null);
-    fetch(`${API_BASE}/api/courses`)
-      .then(r => r.json())
-      .then(d => {
-        if (d.error) throw new Error(d.error);
-        setCourses(DEV_UI_QA_ENABLED && (!Array.isArray(d) || d.length === 0) ? UI_QA_COURSES : d);
-      })
-      .catch(e => {
-        if (DEV_UI_QA_ENABLED) {
-          setCourses(UI_QA_COURSES);
-          return;
-        }
-        setError(e.message);
-      })
-      .finally(() => setLoading(false));
+    try {
+      const response = await fetch(`${API_BASE}/api/courses`);
+      const data = await response.json();
+      if (data.error) throw new Error(data.error);
+      setCourses(DEV_UI_QA_ENABLED && (!Array.isArray(data) || data.length === 0) ? UI_QA_COURSES : data);
+    } catch (e) {
+      if (DEV_UI_QA_ENABLED) {
+        setCourses(UI_QA_COURSES);
+        return;
+      }
+      setError(e.message);
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
   }, []);
 
   useEffect(() => {
@@ -6173,6 +6957,11 @@ function CourseListScreen({ onSelect, user, onGoToHome, onGoToCourses, onGoToAI,
   useEffect(() => {
     onRefreshProgress?.();
   }, [onRefreshProgress]);
+
+  const refreshCourses = useCallback(() => {
+    onRefreshProgress?.();
+    loadCourses({ refresh: true });
+  }, [loadCourses, onRefreshProgress]);
 
   useEffect(() => {
     if (Platform.OS !== "android") return undefined;
@@ -6258,6 +7047,15 @@ function CourseListScreen({ onSelect, user, onGoToHome, onGoToCourses, onGoToAI,
         data={filtered}
         keyExtractor={item => item._id}
         contentContainerStyle={{ paddingHorizontal: 16, paddingTop: 12, gap: 16, paddingBottom: 100 }}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={refreshCourses}
+            tintColor={C.primary}
+            colors={[C.primary]}
+            progressBackgroundColor={C.cardBg}
+          />
+        }
         initialNumToRender={6}
         maxToRenderPerBatch={6}
         windowSize={7}
@@ -7145,7 +7943,7 @@ function DeleteAccountModal({ visible, user, onClose, onDeleteAccount }) {
   );
 }
 
-function ProfileScreen({ user, session, onLogout, onDeleteAccount, onGoToHome, onGoToCourses, onGoToAI, onGoToDownloads, wishlistCount, onGoToWishlist, onGoToCertificates, certificatesCount, onAvatarChange, aiRobotId, onGoToSubscription, onOpenLegal }) {
+function ProfileScreen({ user, session, onLogout, onDeleteAccount, onGoToHome, onGoToCourses, onGoToAI, onGoToDownloads, wishlistCount, onGoToWishlist, onGoToCertificates, certificatesCount, onAvatarChange, aiRobotId, onGoToSubscription, onOpenLegal, refreshing = false, onRefresh }) {
   const isActive = hasActivePremiumEntitlement(user);
   const memberSince = user?._id
     ? new Date(parseInt(user._id.substring(0, 8), 16) * 1000).toLocaleDateString("en-IN", { month: "short", year: "numeric" })
@@ -7282,7 +8080,18 @@ function ProfileScreen({ user, session, onLogout, onDeleteAccount, onGoToHome, o
         </View>
       </View>
 
-      <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 160 }}>
+      <ScrollView
+        contentContainerStyle={{ padding: 16, paddingBottom: 160 }}
+        refreshControl={onRefresh ? (
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            tintColor={C.primary}
+            colors={[C.primary]}
+            progressBackgroundColor={C.cardBg}
+          />
+        ) : undefined}
+      >
         {/* Stats row */}
         <View style={{
           flexDirection: "row", backgroundColor: C.cardBg, borderRadius: 16,
@@ -7977,7 +8786,7 @@ function AiAssistantScreen({
                 <View style={[s.aiMessageRow, isUser && s.aiMessageRowUser]}>
                   {!isUser && <RobotAvatar robotId={robotId} size={46} replying={!loading && index === messages.length - 1 && messages.length > 1} />}
                   <View style={[s.aiBubble, isUser && s.aiBubbleUser]}>
-                    <Text style={[s.aiBubbleText, isUser && s.aiBubbleTextUser]}>{item.content}</Text>
+                    <AiMarkdownText content={item.content} style={[s.aiBubbleText, isUser && s.aiBubbleTextUser]} />
                     {!isUser && item.id ? (
                       <TouchableOpacity
                         onPress={() => reportAiResponse(item)}
@@ -8351,6 +9160,7 @@ export default function App() {
   const [downloads, setDownloads] = useState({});
   const downloadsRef = useRef({});
   const downloadStorageReady = useRef(null);
+  const [downloadsRefreshing, setDownloadsRefreshing] = useState(false);
   const [aiRobotId, setAiRobotId] = useState(null);
   const [showAppUpgrade, setShowAppUpgrade] = useState(false);
   const [showProblemReport, setShowProblemReport] = useState(false);
@@ -8360,6 +9170,7 @@ export default function App() {
   const [courseProgress, setCourseProgress] = useState({});
   const [certificates, setCertificates] = useState([]);
   const [certModal, setCertModal] = useState(null);
+  const [profileRefreshing, setProfileRefreshing] = useState(false);
   const openLegalPage = useCallback(page => {
     if (page === "privacy") {
       openSafeExternalUrl("https://skillomate.in/privacy", "legal");
@@ -8502,6 +9313,19 @@ export default function App() {
     return () => { mounted = false; };
   }, []);
 
+  const refreshDownloads = useCallback(async () => {
+    setDownloadsRefreshing(true);
+    try {
+      const verified = await prepareTemporaryDownloads(FileSystem, AsyncStorage);
+      downloadsRef.current = verified;
+      setDownloads(DEV_UI_QA_ENABLED ? { ...UI_QA_DOWNLOADS, ...verified } : verified);
+    } catch {
+      if (DEV_UI_QA_ENABLED) setDownloads(previous => ({ ...UI_QA_DOWNLOADS, ...(previous || {}) }));
+    } finally {
+      setDownloadsRefreshing(false);
+    }
+  }, []);
+
   const startDownload = useCallback(async (video, courseId, courseTitle) => {
     const u = userRef.current;
     const guid = getBunnyGuid(video);
@@ -8618,6 +9442,22 @@ export default function App() {
     if (user?._id && user?.sessionId) loadCertificates(user);
     else setCertificates(DEV_UI_QA_ENABLED && user?._id ? getQaCertificatesForUser(user) : []);
   }, [user?._id, user?.sessionId, loadCertificates]);
+
+  const refreshProfile = useCallback(async () => {
+    const currentUser = userRef.current;
+    if (!currentUser?._id || !currentUser?.sessionId) return;
+    setProfileRefreshing(true);
+    try {
+      await Promise.all([
+        refreshUser(currentUser._id, currentUser, currentUser.sessionId),
+        loadCourseProgress(currentUser),
+        loadCertificates(currentUser),
+        appleSubscription.refresh().catch(() => null),
+      ]);
+    } finally {
+      setProfileRefreshing(false);
+    }
+  }, [appleSubscription, loadCertificates, loadCourseProgress, refreshUser]);
 
   const backToLessons = useCallback(() => {
     if (!isPreviewOnly) loadCourseProgress();
@@ -9653,7 +10493,6 @@ export default function App() {
         course={selectedCourse}
         onSelectVideo={idx => setStartIndex(idx)}
         onBack={() => { loadCourseProgress(); setSelectedCourse(null); }}
-        onOpenCourseAi={course => setCourseAiTarget(course)}
         downloads={downloads}
         onDownload={(video, courseId, courseTitle) => startDownload(video, courseId, courseTitle)}
         onDeleteDownload={deleteDownload}
@@ -9769,7 +10608,18 @@ export default function App() {
         </SafeAreaView>
 
         {downloadItems.length === 0 ? (
-          <View style={s.centered}>
+          <ScrollView
+            contentContainerStyle={[s.centered, { flexGrow: 1 }]}
+            refreshControl={
+              <RefreshControl
+                refreshing={downloadsRefreshing}
+                onRefresh={refreshDownloads}
+                tintColor={C.primary}
+                colors={[C.primary]}
+                progressBackgroundColor={C.cardBg}
+              />
+            }
+          >
             <View style={{ width: 72, height: 72, borderRadius: 36, backgroundColor: C.primaryLight, alignItems: "center", justifyContent: "center", marginBottom: 16 }}>
               <Ionicons name="download" size={34} color={C.primary} />
             </View>
@@ -9777,12 +10627,21 @@ export default function App() {
             <Text style={{ fontSize: 14, color: C.textSub, textAlign: "center", paddingHorizontal: 40 }}>
               Tap the download icon on any video to save it for offline viewing.
             </Text>
-          </View>
+          </ScrollView>
         ) : (
           <FlatList
             data={downloadItems}
             keyExtractor={(item, i) => item.bunnyGuid || String(i)}
             contentContainerStyle={{ padding: 16, gap: 10, paddingBottom: 100 }}
+            refreshControl={
+              <RefreshControl
+                refreshing={downloadsRefreshing}
+                onRefresh={refreshDownloads}
+                tintColor={C.primary}
+                colors={[C.primary]}
+                progressBackgroundColor={C.cardBg}
+              />
+            }
             ListHeaderComponent={
               <Text style={{ color: C.textSub, fontSize: 13, marginBottom: 4 }}>
                 {downloadItems.length} video{downloadItems.length !== 1 ? "s" : ""} in downloads
@@ -9994,6 +10853,8 @@ export default function App() {
           });
         }}
         aiRobotId={aiRobotId}
+        refreshing={profileRefreshing}
+        onRefresh={refreshProfile}
       />
     );
   }
@@ -12103,6 +12964,8 @@ courseListCard: {
   aiTypingText: { ...TYPE.caption, color: C.textSub, fontWeight: "700" },
   aiBubbleText: { ...TYPE.body, color: C.text },
   aiBubbleTextUser: { color: C.onPrimary, fontWeight: "600" },
+  aiMarkdownStrong: { fontWeight: "900" },
+  aiMarkdownEmphasis: { fontStyle: "italic" },
   aiWelcomeScroll: {
     flex: 1,
     minHeight: 0,
@@ -12257,9 +13120,25 @@ courseListCard: {
     borderWidth: 1, borderColor: "rgba(255,255,255,0.12)",
     zIndex: 20,
   },
-  tapLeft:   { position: "absolute", left: 0,   top: 0, bottom: 50, width: "25%", zIndex: 5 },
-  tapCenter: { position: "absolute", left: "25%", top: 0, bottom: 50, width: "50%", zIndex: 5 },
-  tapRight:  { position: "absolute", right: 0,  top: 0, bottom: 50, width: "25%", zIndex: 5 },
+  tapLeft:   { position: "absolute", left: 0,   top: 0, bottom: 50, width: "38%", zIndex: 5 },
+  tapCenter: { position: "absolute", left: "38%", top: 0, bottom: 50, width: "24%", zIndex: 5 },
+  tapRight:  { position: "absolute", right: 0,  top: 0, bottom: 50, width: "38%", zIndex: 5 },
+  holdSpeedIndicator: {
+    position: "absolute",
+    top: "46%",
+    zIndex: 7,
+    minWidth: 58,
+    minHeight: 38,
+    borderRadius: 19,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "rgba(0,0,0,0.54)",
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.18)",
+  },
+  holdSpeedIndicatorLeft: { left: 22 },
+  holdSpeedIndicatorRight: { right: 22 },
+  holdSpeedText: { color: "#fff", fontSize: 18, fontWeight: "900" },
   seekFlash: {
     position: "absolute", top: 0, bottom: 0, width: "42%", zIndex: 6,
     backgroundColor: "rgba(255,255,255,0.18)", alignItems: "center", justifyContent: "center", flexDirection: "row", gap: 6,
@@ -12269,6 +13148,22 @@ courseListCard: {
   seekFlashText: { color: "#fff", fontSize: 14, fontWeight: "700" },
   restartOverlay: { ...StyleSheet.absoluteFill, zIndex: 5, alignItems: "center", justifyContent: "center", backgroundColor: "rgba(0,0,0,0.4)" },
   pauseOverlay: { ...StyleSheet.absoluteFill, zIndex: 4, alignItems: "center", justifyContent: "center" },
+  qualitySwitchOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    zIndex: 23,
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 8,
+    backgroundColor: "rgba(0,0,0,0.74)",
+  },
+  qualitySwitchText: {
+    color: "#fff",
+    fontSize: 12,
+    fontWeight: "900",
+    textShadowColor: "rgba(0,0,0,0.75)",
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 3,
+  },
   playerAiButtonText: { color: "#fff", fontSize: 11, fontWeight: "900" },
   descriptionOverlay: { flex: 1, backgroundColor: "rgba(0,0,0,0.48)", justifyContent: "flex-end" },
   descriptionSheet: {

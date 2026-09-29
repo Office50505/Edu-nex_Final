@@ -873,6 +873,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/ai', aiRoutes);
 app.use('/api', paymentRoutes);
 app.use('/api', sessionRoutes);
+app.use('/api', require('./routes/notifications'));
 app.use('/api', contentRoutes);
 app.use('/api', mobileCompatRoutes);
 

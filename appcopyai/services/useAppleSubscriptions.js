@@ -3,7 +3,22 @@ import { AppState, Platform } from "react-native";
 import { ErrorCode, getAvailablePurchases as readAvailablePurchases, useIAP } from "react-native-iap";
 import { APPLE_SUBSCRIPTION_PRODUCT_IDS } from "./subscriptions";
 
+const UNAVAILABLE_APPLE_SUBSCRIPTION = {
+  connected: false,
+  entitlement: null,
+  error: "",
+  localizedPrice: "",
+  notice: "",
+  product: null,
+  purchase: async () => {},
+  refresh: async () => null,
+  restore: async () => {},
+  working: false,
+};
+
 export function useAppleSubscriptions({ session, user, onEntitlementChanged }) {
+  if (Platform.OS !== "ios") return UNAVAILABLE_APPLE_SUBSCRIPTION;
+
   const [configuration, setConfiguration] = useState(null);
   const [working, setWorking] = useState(false);
   const [error, setError] = useState("");

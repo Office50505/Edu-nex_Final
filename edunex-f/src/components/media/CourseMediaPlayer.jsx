@@ -7,7 +7,9 @@ import { clock, seekTarget, adjacent, nativeLessonSource } from './playerRules';
 import { VideoLoadingBrand } from './VideoLoadingBrand';
 import './player.css';
 
-const DEFAULT_QUALITY = 1080;
+const AUTO_QUALITY = 'auto';
+const DEFAULT_QUALITY = AUTO_QUALITY;
+const STANDARD_QUALITIES = [144, 360, 480, 720, 1080];
 const VIDEO_VOLUME_STORAGE_KEY = 'edunexVideoVolume';
 const VIDEO_MUTED_STORAGE_KEY = 'edunexVideoMutedByUser';
 const BUFFERING_CONFIRM_DELAY_MS = 450;
@@ -22,6 +24,20 @@ function storedVolume() {
 function storeAudioPreference(volume, muted) {
   localStorage.setItem(VIDEO_VOLUME_STORAGE_KEY, String(Math.max(0, Math.min(1, Number(volume) || 0))));
   localStorage.setItem(VIDEO_MUTED_STORAGE_KEY, muted ? 'true' : 'false');
+}
+
+function closestLevel(levels, target) {
+  const exact = levels.find(item => item.height === target);
+  if (exact) return { level: exact, exact: true };
+  if (!levels.length) return { level: null, exact: false };
+  const lower = levels.filter(item => item.height < target).at(-1);
+  const upper = levels.find(item => item.height > target);
+  return { level: lower || upper || levels[levels.length - 1], exact: false };
+}
+
+function qualityButtonsFor(levels) {
+  const values = [AUTO_QUALITY, ...STANDARD_QUALITIES, ...levels.map(level => level.height)];
+  return values.filter((value, index) => values.indexOf(value) === index);
 }
 
 function nativeHlsLevels(playlist, playlistUrl) {
@@ -118,7 +134,7 @@ export function CourseMediaPlayer({ course, lesson, lessonIndex, autoNext, autop
     const failed=(detail='')=>{video.pause();setError(typeof detail==='string'&&detail ? detail : 'Playback could not start. Retry to refresh your video access.');setBuffering(false);setPlaying(false);};
     const tracks=()=>{if(!engine)setCaptions(Array.from(video.textTracks).map((track,index)=>({index,label:track.label||track.language||`Track ${index+1}`})));};
     const handleVisibilityChange=()=>{if(document.hidden)clearBuffering();else if(!video.paused&&video.readyState<3)confirmBuffering();};
-    const listeners={loadedmetadata:ready,loadeddata:mediaReady,timeupdate:sync,progress:sync,playing:play,pause,ended,error:failed,loadstart:()=>setBuffering(true),waiting:confirmBuffering,stalled:confirmBuffering,seeking:()=>setBuffering(true),seeked:mediaReady,canplay:mediaReady,volumechange:()=>{setMuted(video.muted);setVolume(video.volume);storeAudioPreference(video.volume,video.muted);}};
+    const listeners={loadedmetadata:ready,loadeddata:mediaReady,timeupdate:sync,progress:sync,playing:play,pause,ended,error:failed,loadstart:()=>setBuffering(true),waiting:confirmBuffering,stalled:confirmBuffering,seeking:()=>setBuffering(true),seeked:mediaReady,canplay:mediaReady,volumechange:()=>{setMuted(video.muted);setVolume(video.volume);}};
     Object.entries(listeners).forEach(([name,fn])=>video.addEventListener(name,fn));
     document.addEventListener('visibilitychange',handleVisibilityChange);
     video.textTracks.addEventListener('addtrack',tracks);
@@ -136,10 +152,16 @@ export function CourseMediaPlayer({ course, lesson, lessonIndex, autoNext, autop
           .sort((a,b)=>a.height-b.height);
         setLevels(nextLevels);
         const target=qualityPreference.current;
-        const preferred=nextLevels.find(level=>level.height===target) || nextLevels.reduce((best,level)=>!best||Math.abs(level.height-target)<Math.abs(best.height-target)?level:best,null);
+        if(target===AUTO_QUALITY){
+          setQuality(AUTO_QUALITY);
+          engine.startLevel=-1;
+          engine.loadLevel=-1;
+          engine.nextLevel=-1;
+          engine.currentLevel=-1;
+          return;
+        }
+        const {level: preferred}=closestLevel(nextLevels,target);
         if(preferred){
-          qualityPreference.current=preferred.height;
-          setQuality(preferred.height);
           engine.startLevel=preferred.index;
           engine.loadLevel=preferred.index;
           engine.nextLevel=preferred.index;
@@ -198,24 +220,34 @@ export function CourseMediaPlayer({ course, lesson, lessonIndex, autoNext, autop
   function toggleMute(){
     const video=videoRef.current;if(!video)return;
     const nextMuted=!video.muted && video.volume>0;
-    const nextVolume=!nextMuted&&video.volume===0?.75:video.volume;
+    const nextVolume=nextMuted ? video.volume : (video.volume>0 ? video.volume : .75);
     setMuted(nextMuted);setVolume(nextVolume);
     storeAudioPreference(nextVolume,nextMuted);
     video.volume=nextVolume;video.muted=nextMuted;
     wake();
   }
   function selectQuality(height){
-    const level=levels.find(item=>item.height===height) || levels.reduce((best,item)=>!best||Math.abs(item.height-height)<Math.abs(best.height-height)?item:best,null);
     const video=videoRef.current;
+    if(height===AUTO_QUALITY){
+      qualityPreference.current=AUTO_QUALITY;
+      setQuality(AUTO_QUALITY);
+      if(hlsRef.current){hlsRef.current.loadLevel=-1;hlsRef.current.nextLevel=-1;hlsRef.current.currentLevel=-1;}
+      else if(video&&source){nativeQualitySwitch.current={position:video.currentTime||0,playing:!video.paused&&!video.ended};video.src=source;video.load();}
+      setNotice('Quality changed to Auto.');
+      wake();
+      return;
+    }
+    const {level, exact}=closestLevel(levels,height);
     if(!level||(!hlsRef.current&&!level.url)||!video){setNotice('This resolution is not available for this video.');return;}
-    qualityPreference.current=level.height;
-    setQuality(level.height);
-    if(hlsRef.current){hlsRef.current.loadLevel=level.index;hlsRef.current.nextLevel=level.index;hlsRef.current.currentLevel=level.index;}
+    qualityPreference.current=height;
+    setQuality(height);
+    if(hlsRef.current){hlsRef.current.loadLevel=level.index;hlsRef.current.nextLevel=level.index;}
     else {nativeQualitySwitch.current={position:video.currentTime||0,playing:!video.paused&&!video.ended};video.src=level.url;video.load();}
-    setNotice(`Quality changed to ${level.height}p.`);
+    setNotice(exact ? `Quality changed to ${height}p.` : `${height}p is not encoded for this lesson. Using ${level.height}p.`);
+    wake();
   }
   function closeMenu(){setMenu(false);settingsButton.current?.focus();}
-  function key(event){if(event.altKey||event.ctrlKey||event.metaKey)return;if(event.key==='Escape'){closeMenu();return;}if(event.target.closest('input,select,textarea,button,[contenteditable]'))return;const k=event.key.toLowerCase();if([' ','k','arrowleft','arrowright','m','f'].includes(k)){event.preventDefault();event.stopPropagation();wake();if(k===' '||k==='k')toggle();if(k==='arrowleft')seek(-10);if(k==='arrowright')seek(10);if(k==='m')videoRef.current.muted=!videoRef.current.muted;if(k==='f')full();}}
+  function key(event){if(event.altKey||event.ctrlKey||event.metaKey)return;if(event.key==='Escape'){closeMenu();return;}if(event.target.closest('input,select,textarea,button,[contenteditable]'))return;const k=event.key.toLowerCase();if([' ','k','arrowleft','arrowright','m','f'].includes(k)){event.preventDefault();event.stopPropagation();wake();if(k===' '||k==='k')toggle();if(k==='arrowleft')seek(-10);if(k==='arrowright')seek(10);if(k==='m'){const video=videoRef.current;if(video){const nextMuted=!video.muted;setMuted(nextMuted);storeAudioPreference(video.volume,nextMuted);video.muted=nextMuted;}}if(k==='f')full();}}
   const failure=access.error||error,visible=awake||!playing||menu||!!failure;
   useEffect(()=>{onControlsVisibilityChange?.(visible);},[visible,onControlsVisibilityChange]);
   return <section className={`sm-player ${visible?'sm-awake':''} ${fullscreen?'sm-fullscreen':''}`} ref={frameRef} tabIndex={0} aria-label={`${lesson.title} video player`} onKeyDown={key} onPointerMove={wake} onPointerDown={wake} onFocus={wake}>
@@ -240,7 +272,10 @@ export function CourseMediaPlayer({ course, lesson, lessonIndex, autoNext, autop
       <div className="sm-setting-section">
         <span className="sm-setting-label">Quality</span>
         <div className="sm-setting-options" role="radiogroup" aria-label="Quality">
-          {levels.length ? levels.map(({height})=><button type="button" role="radio" aria-checked={quality===height} aria-label={`Quality ${height}p`} className={quality===height?'is-selected':''} key={height} onClick={()=>selectQuality(height)}>{height}p</button>) : <span className="sm-quality-loading" role="status">Detecting available qualities…</span>}
+          {levels.length ? qualityButtonsFor(levels).map(option=>{
+            const label=option===AUTO_QUALITY?'Auto':`${option}p`;
+            return <button type="button" role="radio" aria-checked={quality===option} aria-label={`Quality ${label}`} className={quality===option?'is-selected':''} key={option} onClick={()=>selectQuality(option)}>{label}</button>;
+          }) : <span className="sm-quality-loading" role="status">Detecting available qualities…</span>}
         </div>
       </div>
       <label className="sm-setting-section sm-setting-toggle">Loop lesson<input type="checkbox" checked={loop} onChange={e=>setLoop(e.target.checked)}/></label>
