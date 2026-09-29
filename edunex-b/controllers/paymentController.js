@@ -681,8 +681,7 @@ async function handleWebhook(req, res) {
   }
   let claim = null;
   try {
-    const xVerify = req.headers['x-verify'];
-    if (!phonePeService.verifyWebhookSignature(req.body, xVerify)) {
+    if (!phonePeService.verifyWebhookSignature(req.body, req.headers)) {
       return res.status(400).json({ error: 'Invalid PhonePe signature' });
     }
     let payload;

@@ -15,6 +15,8 @@ const saltKey = envValue('PHONEPE_SALT_KEY');
 const saltIndex = process.env.PHONEPE_SALT_INDEX || '1';
 const baseUrl = process.env.PHONEPE_BASE_URL || 'https://api-preprod.phonepe.com/apis/pg-sandbox';
 const redirectUrl = process.env.PHONEPE_REDIRECT_URL || (isProduction ? envValue('PHONEPE_REDIRECT_URL') : 'http://localhost:3000/api/payment/callback');
+const webhookUsername = envValue('PHONEPE_WEBHOOK_USERNAME');
+const webhookPassword = envValue('PHONEPE_WEBHOOK_PASSWORD');
 const trialAmountPaise = Number(process.env.TRIAL_AMOUNT_PAISE || 100);
 const subscriptionAmountPaise = Number(process.env.SUBSCRIPTION_AMOUNT_PAISE || 50000);
 
@@ -215,7 +217,29 @@ async function verifyPaymentStatus(merchantTransactionId) {
   };
 }
 
-function verifyWebhookSignature(payload, xVerify) {
+function timingSafeMatch(expected, received) {
+  if (!expected || !received || expected.length !== received.length) {
+    return false;
+  }
+
+  return crypto.timingSafeEqual(Buffer.from(expected), Buffer.from(received));
+}
+
+function verifyWebhookShaAuth(authorization) {
+  if (!authorization || !webhookUsername || !webhookPassword) {
+    return false;
+  }
+
+  const received = String(authorization).replace(/^sha256\s+/i, '').trim();
+  const expected = crypto
+    .createHash('sha256')
+    .update(`${webhookUsername}:${webhookPassword}`)
+    .digest('hex');
+
+  return timingSafeMatch(expected, received);
+}
+
+function verifyLegacyXVerify(payload, xVerify) {
   if (!payload || !xVerify || !saltKey) {
     return false;
   }
@@ -224,11 +248,19 @@ function verifyWebhookSignature(payload, xVerify) {
   const expectedHash = crypto.createHash('sha256').update(`${rawPayload}${saltKey}`).digest('hex');
   const expected = `${expectedHash}###${saltIndex}`;
 
-  if (expected.length !== xVerify.length) {
-    return false;
+  return timingSafeMatch(expected, String(xVerify));
+}
+
+function verifyWebhookSignature(payload, headersOrXVerify = {}) {
+  if (typeof headersOrXVerify === 'string') {
+    return verifyLegacyXVerify(payload, headersOrXVerify);
   }
 
-  return crypto.timingSafeEqual(Buffer.from(expected), Buffer.from(xVerify));
+  const headers = headersOrXVerify || {};
+  const authorization = headers.authorization || headers.Authorization;
+  const xVerify = headers['x-verify'] || headers['X-VERIFY'];
+
+  return verifyWebhookShaAuth(authorization) || verifyLegacyXVerify(payload, xVerify);
 }
 
 async function cancelMandate() {
@@ -245,6 +277,8 @@ function config() {
     saltIndex,
     baseUrl,
     redirectUrl,
+    webhookUsername,
+    webhookPassword,
     trialAmountPaise,
     subscriptionAmountPaise,
   };
@@ -256,7 +290,6 @@ function readiness() {
   if (!c.clientId) missing.push('PHONEPE_CLIENT_ID');
   if (!c.clientSecret) missing.push('PHONEPE_CLIENT_SECRET');
   if (!c.merchantId) missing.push('PHONEPE_MERCHANT_ID');
-  if (!c.saltKey) missing.push('PHONEPE_SALT_KEY');
   if (!c.redirectUrl) missing.push('PHONEPE_REDIRECT_URL');
   return missing.length
     ? { configured: false, detail: `Missing: ${missing.join(', ')}` }

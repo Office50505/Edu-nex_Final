@@ -23,7 +23,7 @@ if (paymentGateway === 'razorpay') {
     console.log(`Razorpay ${mode} annual: ${configured.annualPlanId ? 'configured (provider validation required)' : 'not configured; yearly checkout unavailable in this mode'}`);
   }
 } else if (paymentGateway === 'phonepe') {
-  required.push('PHONEPE_CLIENT_ID', 'PHONEPE_CLIENT_SECRET', 'PHONEPE_MERCHANT_ID', 'PHONEPE_SALT_KEY', 'PHONEPE_SALT_INDEX', 'PHONEPE_BASE_URL', 'PHONEPE_CALLBACK_URL', 'PHONEPE_REDIRECT_URL');
+  required.push('PHONEPE_CLIENT_ID', 'PHONEPE_CLIENT_SECRET', 'PHONEPE_MERCHANT_ID', 'PHONEPE_BASE_URL', 'PHONEPE_CALLBACK_URL', 'PHONEPE_REDIRECT_URL', 'PHONEPE_WEBHOOK_USERNAME', 'PHONEPE_WEBHOOK_PASSWORD');
 } else if (paymentGateway === 'simulated') {
   console.log('PAYMENT_GATEWAY_MODE is simulated; live payment provider credentials are not required for this mode.');
 } else {
