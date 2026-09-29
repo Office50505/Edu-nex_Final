@@ -182,9 +182,7 @@ describe("reported frontend regressions", () => {
       request: vi.fn(),
       getAccessToken: vi.fn(() => "active-token"),
       getUser: vi.fn(() => cachedUser),
-      authRequest: vi.fn(async (path) => path === "/api/ai/consent"
-        ? { granted: true, providerVersion: "test" }
-        : { reply: "Hello! How can I help?", provider: "test" }),
+      authRequest: vi.fn(async () => ({ reply: "Hello! How can I help?", provider: "test" })),
     };
     render(<AiTutorPage />);
 
@@ -212,13 +210,12 @@ describe("reported frontend regressions", () => {
       request: vi.fn(),
       getAccessToken: vi.fn(() => "active-token"),
       getUser: vi.fn(() => cachedUser),
-      authRequest: vi.fn((path) => path === "/api/ai/consent"
-        ? Promise.resolve({ granted: true, providerVersion: "test" })
-        : new Promise(resolve => { resolveRequest = resolve; })),
+      authRequest: vi.fn(() => new Promise(resolve => { resolveRequest = resolve; })),
     };
     render(<AiTutorPage />);
 
-    await screen.findByText("Third-party AI processing allowed");
+    await screen.findByRole("textbox", { name: "Message AI" });
+    expect(window.EduNex.authRequest).not.toHaveBeenCalledWith("/api/ai/consent");
 
     fireEvent.change(screen.getByRole("textbox", { name: "Message AI" }), { target: { value: "Explain this" } });
     fireEvent.click(screen.getByRole("button", { name: "Send message" }));
@@ -241,13 +238,12 @@ describe("reported frontend regressions", () => {
       request: vi.fn(),
       getAccessToken: vi.fn(() => "active-token"),
       getUser: vi.fn(() => cachedUser),
-      authRequest: vi.fn(async (path) => path === "/api/ai/consent"
-        ? { granted: true, providerVersion: "test" }
-        : { reply: "Prompting means giving an AI clear instructions.", provider: "test" }),
+      authRequest: vi.fn(async () => ({ reply: "Prompting means giving an AI clear instructions.", provider: "test" })),
     };
     render(<AiTutorPage />);
 
-    await screen.findByText("Third-party AI processing allowed");
+    await screen.findByRole("textbox", { name: "Message AI" });
+    expect(window.EduNex.authRequest).not.toHaveBeenCalledWith("/api/ai/consent");
 
     fireEvent.change(screen.getByRole("textbox", { name: "Message AI" }), { target: { value: "What is prompting?" } });
     fireEvent.click(screen.getByRole("button", { name: "Send message" }));

@@ -10,6 +10,7 @@ const { resolveSubscriptionAccess } = require('../services/subscriptionAccess');
 const { activeCourseEntitlements } = require('../services/courseAccess');
 const now = Date.now();
 const billing = { paymentType: 'trial', trialAmount: 100, monthlyAmount: 50000, trialEnd: new Date(now + 86400000) };
+const billingWithAccessWindow = { ...billing, trialAccessEnd: new Date(now + 26 * 3600000) };
 const remote = { status: 'authenticated' };
 const trial = { invoice: {}, payment: { status: 'captured', currency: 'INR', amount: 100, created_at: Math.floor(now / 1000) } };
 const monthly = { invoice: { billing_start: Math.floor(now / 1000) - 100, billing_end: Math.floor(now / 1000) + 86400 }, payment: { status: 'captured', currency: 'INR', amount: 50000, created_at: Math.floor(now / 1000) } };
@@ -44,6 +45,10 @@ test('mandate authorization alone and uncaptured payments grant no access', () =
 test('captured trial access expires at scheduled first billing', () => {
   assert.equal(entitlement(billing, remote, [trial], now).status, 'trial');
   assert.notEqual(entitlement(billing, remote, [trial], now + 86400001).status, 'trial');
+});
+test('captured trial access can extend past first billing as an internal grace window', () => {
+  assert.equal(entitlement(billingWithAccessWindow, remote, [trial], now + 25 * 3600000).status, 'trial');
+  assert.notEqual(entitlement(billingWithAccessWindow, remote, [trial], now + 26 * 3600000 + 1).status, 'trial');
 });
 test('cancelling auto-renew keeps the already-paid trial until it expires', () => {
   assert.equal(entitlement(billing, { status: 'cancelled' }, [trial], now).status, 'trial');

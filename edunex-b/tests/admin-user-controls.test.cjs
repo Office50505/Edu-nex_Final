@@ -54,6 +54,23 @@ test('admin learner management exposes only the latest recorded session IP', () 
   assert.doesNotMatch(serverSource, /\/api\/admin\/users\/:id\/ip-location/);
 });
 
+test('admin can mark learners as testers without changing learner identity', () => {
+  assert.match(userSource, /isTester:\s*\{\s*type:\s*Boolean,\s*default:\s*false\s*\}/);
+  assert.match(userSource, /testerSince:\s*\{\s*type:\s*Date,\s*default:\s*null\s*\}/);
+  assert.match(userSource, /testerAssignedBy:\s*\{\s*type:\s*String/);
+  assert.match(serverSource, /app\.patch\('\/api\/admin\/users\/:id\/tester', protectAdmin/);
+  assert.match(serverSource, /action:\s*enabling\s*\?\s*'tester_enabled'\s*:\s*'tester_disabled'/);
+  assert.match(serverSource, /isTester testerSince testerAssignedBy testerNotes/);
+});
+
+test('tester analytics is separate from main admin analytics', () => {
+  assert.match(serverSource, /app\.get\('\/api\/admin\/tester-analytics', protectAdmin/);
+  assert.match(serverSource, /User\.find\(\{\s*isTester:\s*true\s*\}\)/);
+  assert.match(serverSource, /testerRows = await User\.find/);
+  assert.match(actionSource, /tester_enabled/);
+  assert.match(actionSource, /tester_disabled/);
+});
+
 test('admin purchase history combines payment orders and course ownership changes', () => {
   assert.match(serverSource, /app\.get\('\/api\/admin\/users\/:id\/purchase-history', protectAdmin/);
   assert.match(serverSource, /Order\.find\(\{ user: req\.params\.id \}\)/);

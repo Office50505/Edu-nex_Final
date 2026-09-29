@@ -13,7 +13,7 @@ function valueText(value, fallback = "Not returned") {
 
 function money(value) {
   const number = Number(value || 0);
-  return Number.isFinite(number) ? `₹${formatNumber(number)}` : "₹0";
+  return Number.isFinite(number) ? new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 2 }).format(number / 100) : "₹0";
 }
 
 function Badge({ tone = "", children }) {
@@ -368,7 +368,6 @@ export function AdminAuditLogPage() {
   return (
     <AdminShell activePage="auditLog" title="Audit Log" subtitle="Administrative and platform activity trail.">
       <Message text={error} type="error" />
-      <PlaceholderNote>Analytics events are shown when returned. Persistent admin audit records still need a backend actor/action/entity endpoint.</PlaceholderNote>
       {loading ? <div className="loading-state">Loading audit trail...</div> : (
         <StatusTable
           columns={["Actor", "Action", "Entity", "Timestamp", "Details"]}
@@ -382,7 +381,7 @@ export function AdminAuditLogPage() {
               event.courseTitle || event.videoTitle || event.metadata?.message || "No details",
             ],
           }))}
-          emptyText="No audit-like activity returned by analytics."
+          emptyText="No audit activity yet."
         />
       )}
     </AdminShell>

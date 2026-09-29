@@ -1,0 +1,969 @@
+
+ RUN  v5.0.0 /Users/zohershakir/Desktop/edunex-ai/Edu-nex_final/edunex-f
+
+ ❯ tests/player/PaymentGatewaySettings.test.jsx (2 tests | 1 failed) 123ms
+   × missing credentials disable a mode and an API failure keeps the active mode 30ms
+Not implemented: navigation to another Document
+ ❯ tests/player/FrontendRegression.test.jsx (30 tests | 1 failed) 2122ms
+   ❯ reported frontend regressions (30)
+     × offers the monthly plan after the account has used its one-time trial 1011ms
+ ❯ tests/player/AdminReports.test.jsx (3 tests | 3 failed) 2241ms
+   × loads learner reports with admin authentication and saves resolution notes 1078ms
+   × shows newly submitted reports when the admin refreshes the list 1126ms
+   × shows a loading failure instead of claiming reports were loaded 36ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 5 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/player/AdminReports.test.jsx > loads learner reports with admin authentication and saves resolution notes
+TestingLibraryElementError: Unable to find an element with the text: The lesson video stays blank on my phone.. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<body[39m
+  [33mclass[39m=[32m"admin-theme-light"[39m
+[36m>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"admin-workspace"[39m
+    [36m>[39m
+      [36m<a[39m
+        [33mclass[39m=[32m"admin-skip-link"[39m
+        [33mhref[39m=[32m"#admin-main"[39m
+      [36m>[39m
+        [0mSkip to content[0m
+      [36m</a>[39m
+      [36m<aside[39m
+        [33mclass[39m=[32m"admin-sidebar"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"admin-sidebar-top"[39m
+        [36m>[39m
+          [36m<a[39m
+            [33mclass[39m=[32m"admin-workspace-brand"[39m
+            [33mhref[39m=[32m"/admin/dashboard"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"admin-brand-symbol"[39m
+            [36m>[39m
+              [36m<img[39m
+                [33malt[39m=[32m""[39m
+                [33mclass[39m=[32m"admin-theme-icon admin-icon-dark"[39m
+                [33msrc[39m=[32m"/assets/brand/skillomate-admin-icon-dark.png"[39m
+              [36m/>[39m
+              [36m<img[39m
+                [33malt[39m=[32m""[39m
+                [33mclass[39m=[32m"admin-theme-icon admin-icon-light"[39m
+                [33msrc[39m=[32m"/assets/brand/skillomate-admin-icon-light.png"[39m
+              [36m/>[39m
+            [36m</span>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"admin-brand-copy"[39m
+            [36m>[39m
+              [36m<span[39m
+                [33maria-label[39m=[32m"Skillomate"[39m
+                [33mclass[39m=[32m"admin-brand-name"[39m
+              [36m>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"admin-brand-text"[39m
+                [36m>[39m
+                  [0mSkill[0m
+                [36m</span>[39m
+                [36m<span[39m
+                  [33maria-hidden[39m=[32m"true"[39m
+                  [33mclass[39m=[32m"admin-brand-o"[39m
+                [36m>[39m
+                  [36m<img[39m
+                    [33malt[39m=[32m""[39m
+                    [33mclass[39m=[32m"admin-brand-o-image admin-icon-dark"[39m
+                    [33msrc[39m=[32m"/assets/brand/skillomate-wordmark-symbol-dark.png"[39m
+                  [36m/>[39m
+                  [36m<img[39m
+                    [33malt[39m=[32m""[39m
+                    [33mclass[39m=[32m"admin-brand-o-image admin-icon-light"[39m
+                    [33msrc[39m=[32m"/assets/brand/skillomate-wordmark-symbol-light.png"[39m
+                  [36m/>[39m
+                [36m</span>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"admin-brand-mate"[39m
+                [36m>[39m
+                  [0mmate[0m
+                [36m</span>[39m
+              [36m</span>[39m
+              [36m<small>[39m
+                [0mADMIN WORKSPACE[0m
+              [36m</small>[39m
+            [36m</span>[39m
+          [36m</a>[39m
+          [36m<button[39m
+            [33maria-label[39m=[32m"Collapse sidebar"[39m
+            [33maria-pressed[39m=[32m"false"[39m
+            [33mclass[39m=[32m"admin-sidebar-toggle"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [0m&lt;[0m
+          [36m</button>[39m
+          [36m<button[39m
+            [33maria-controls[39m=[32m"admin-mobile-nav"[39m
+            [33maria-expanded[39m=[32m"false"[39m
+            [33maria-label[39m=[32m"Open admin navigation"[39m
+            [33mclass[39m=[32m"admin-mobile-menu-button"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [36m<span />[39m
+            [36m<span />[39m
+            [36m<span />[39m
+          [36m</button>[39m
+        [36m</div>[39m
+        [36m<nav[39m
+          [33maria-label[39m=[32m"Administration sections"[39m
+          [33mid[39m=[32m"admin-mobile-nav"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"admin-nav-group"[39m
+          [36m>[39m
+            [36m<p>[39m
+              [0mWorkspace[0m
+            [36m</p>[39m
+            [36m<a[39m
+              [33mclass[39m=[32m""[39m
+              [33mhref[39m=[32m"/admin/dashboard"[39m
+              [33mtitle[39m=[32m"Dashboard"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"admin-nav-icon"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"2"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M3 11.5 12 4l9 7.5"[39m
+                [36m/>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M5 10.5V20h14v-9.5"[39m
+                [36m/>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M9 20v-6h6v6"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+              [36m<span>[39m
+                [0mDashboard[0m
+              [36m</span>[39m
+            [36m</a>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"admin-nav-group"[39m
+          [36m>[39m
+            [36m<p>[39m
+              [0mOperate[0m
+            [36m</p>[39m
+            [36m<a[39m
+              [33mclass[39m=[32m""[39m
+              [33mhref[39m=[32m"/admin/users"[39m
+              [33mtitle[39m=[32m"Learners"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"admin-nav-icon"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"2"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M16 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"[39m
+                [36m/>[39m
+                [36m<circle[39m
+                  [33mcx[39m=[32m"9.5"[39m
+                  [33mcy[39m=[32m"7"[39m
+                  [33mr[39m=[32m"4"[39m
+                [36m/>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M22 21v-2a4 4 0 0 0-3-3.87"[39m
+                [36m/>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M16 3.13a4 4 0 0 1 0 7.75"[39m
+                [36m/>...
+
+Ignored nodes: comments, script, style
+[36m<body[39m
+  [33mclass[39m=[32m"admin-theme-light"[39m
+[36m>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"admin-workspace"[39m
+    [36m>[39m
+      [36m<a[39m
+        [33mclass[39m=[32m"admin-skip-link"[39m
+        [33mhref[39m=[32m"#admin-main"[39m
+      [36m>[39m
+        [0mSkip to content[0m
+      [36m</a>[39m
+      [36m<aside[39m
+        [33mclass[39m=[32m"admin-sidebar"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"admin-sidebar-top"[39m
+        [36m>[39m
+          [36m<a[39m
+            [33mclass[39m=[32m"admin-workspace-brand"[39m
+            [33mhref[39m=[32m"/admin/dashboard"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"admin-brand-symbol"[39m
+            [36m>[39m
+              [36m<img[39m
+                [33malt[39m=[32m""[39m
+                [33mclass[39m=[32m"admin-theme-icon admin-icon-dark"[39m
+                [33msrc[39m=[32m"/assets/brand/skillomate-admin-icon-dark.png"[39m
+              [36m/>[39m
+              [36m<img[39m
+                [33malt[39m=[32m""[39m
+                [33mclass[39m=[32m"admin-theme-icon admin-icon-light"[39m
+                [33msrc[39m=[32m"/assets/brand/skillomate-admin-icon-light.png"[39m
+              [36m/>[39m
+            [36m</span>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"admin-brand-copy"[39m
+            [36m>[39m
+              [36m<span[39m
+                [33maria-label[39m=[32m"Skillomate"[39m
+                [33mclass[39m=[32m"admin-brand-name"[39m
+              [36m>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"admin-brand-text"[39m
+                [36m>[39m
+                  [0mSkill[0m
+                [36m</span>[39m
+                [36m<span[39m
+                  [33maria-hidden[39m=[32m"true"[39m
+                  [33mclass[39m=[32m"admin-brand-o"[39m
+                [36m>[39m
+                  [36m<img[39m
+                    [33malt[39m=[32m""[39m
+                    [33mclass[39m=[32m"admin-brand-o-image admin-icon-dark"[39m
+                    [33msrc[39m=[32m"/assets/brand/skillomate-wordmark-symbol-dark.png"[39m
+                  [36m/>[39m
+                  [36m<img[39m
+                    [33malt[39m=[32m""[39m
+                    [33mclass[39m=[32m"admin-brand-o-image admin-icon-light"[39m
+                    [33msrc[39m=[32m"/assets/brand/skillomate-wordmark-symbol-light.png"[39m
+                  [36m/>[39m
+                [36m</span>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"admin-brand-mate"[39m
+                [36m>[39m
+                  [0mmate[0m
+                [36m</span>[39m
+              [36m</span>[39m
+              [36m<small>[39m
+                [0mADMIN WORKSPACE[0m
+              [36m</small>[39m
+            [36m</span>[39m
+          [36m</a>[39m
+          [36m<button[39m
+            [33maria-label[39m=[32m"Collapse sidebar"[39m
+            [33maria-pressed[39m=[32m"false"[39m
+            [33mclass[39m=[32m"admin-sidebar-toggle"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [0m&lt;[0m
+          [36m</button>[39m
+          [36m<button[39m
+            [33maria-controls[39m=[32m"admin-mobile-nav"[39m
+            [33maria-expanded[39m=[32m"false"[39m
+            [33maria-label[39m=[32m"Open admin navigation"[39m
+            [33mclass[39m=[32m"admin-mobile-menu-button"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [36m<span />[39m
+            [36m<span />[39m
+            [36m<span />[39m
+          [36m</button>[39m
+        [36m</div>[39m
+        [36m<nav[39m
+          [33maria-label[39m=[32m"Administration sections"[39m
+          [33mid[39m=[32m"admin-mobile-nav"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"admin-nav-group"[39m
+          [36m>[39m
+            [36m<p>[39m
+              [0mWorkspace[0m
+            [36m</p>[39m
+            [36m<a[39m
+              [33mclass[39m=[32m""[39m
+              [33mhref[39m=[32m"/admin/dashboard"[39m
+              [33mtitle[39m=[32m"Dashboard"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"admin-nav-icon"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"2"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M3 11.5 12 4l9 7.5"[39m
+                [36m/>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M5 10.5V20h14v-9.5"[39m
+                [36m/>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M9 20v-6h6v6"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+              [36m<span>[39m
+                [0mDashboard[0m
+              [36m</span>[39m
+            [36m</a>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"admin-nav-group"[39m
+          [36m>[39m
+            [36m<p>[39m
+              [0mOperate[0m
+            [36m</p>[39m
+            [36m<a[39m
+              [33mclass[39m=[32m""[39m
+              [33mhref[39m=[32m"/admin/users"[39m
+              [33mtitle[39m=[32m"Learners"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"admin-nav-icon"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"2"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M16 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"[39m
+                [36m/>[39m
+                [36m<circle[39m
+                  [33mcx[39m=[32m"9.5"[39m
+                  [33mcy[39m=[32m"7"[39m
+                  [33mr[39m=[32m"4"[39m
+                [36m/>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M22 21v-2a4 4 0 0 0-3-3.87"[39m
+                [36m/>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M16 3.13a4 4 0 0 1 0 7.75"[39m
+                [36m/>...
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ tests/player/AdminReports.test.jsx:28:30
+     26|   vi.stubGlobal('fetch', fetchMock);
+     27|   render(<AdminReportsPage />);
+     28|   const card = (await screen.findByText(report.message)).closest('arti…
+       |                              ^
+     29|   expect(within(card).getByText(report.reporterEmail)).toBeTruthy();
+     30|   expect(fetchMock.mock.calls[0][0]).toBe('/api/admin/problem-reports?…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/5]⎯
+
+ FAIL  tests/player/AdminReports.test.jsx > shows newly submitted reports when the admin refreshes the list
+TestingLibraryElementError: Unable to find an element with the text: The lesson video stays blank on my phone.. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<body[39m
+  [33mclass[39m=[32m"admin-theme-light"[39m
+[36m>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"admin-workspace"[39m
+    [36m>[39m
+      [36m<a[39m
+        [33mclass[39m=[32m"admin-skip-link"[39m
+        [33mhref[39m=[32m"#admin-main"[39m
+      [36m>[39m
+        [0mSkip to content[0m
+      [36m</a>[39m
+      [36m<aside[39m
+        [33mclass[39m=[32m"admin-sidebar"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"admin-sidebar-top"[39m
+        [36m>[39m
+          [36m<a[39m
+            [33mclass[39m=[32m"admin-workspace-brand"[39m
+            [33mhref[39m=[32m"/admin/dashboard"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"admin-brand-symbol"[39m
+            [36m>[39m
+              [36m<img[39m
+                [33malt[39m=[32m""[39m
+                [33mclass[39m=[32m"admin-theme-icon admin-icon-dark"[39m
+                [33msrc[39m=[32m"/assets/brand/skillomate-admin-icon-dark.png"[39m
+              [36m/>[39m
+              [36m<img[39m
+                [33malt[39m=[32m""[39m
+                [33mclass[39m=[32m"admin-theme-icon admin-icon-light"[39m
+                [33msrc[39m=[32m"/assets/brand/skillomate-admin-icon-light.png"[39m
+              [36m/>[39m
+            [36m</span>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"admin-brand-copy"[39m
+            [36m>[39m
+              [36m<span[39m
+                [33maria-label[39m=[32m"Skillomate"[39m
+                [33mclass[39m=[32m"admin-brand-name"[39m
+              [36m>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"admin-brand-text"[39m
+                [36m>[39m
+                  [0mSkill[0m
+                [36m</span>[39m
+                [36m<span[39m
+                  [33maria-hidden[39m=[32m"true"[39m
+                  [33mclass[39m=[32m"admin-brand-o"[39m
+                [36m>[39m
+                  [36m<img[39m
+                    [33malt[39m=[32m""[39m
+                    [33mclass[39m=[32m"admin-brand-o-image admin-icon-dark"[39m
+                    [33msrc[39m=[32m"/assets/brand/skillomate-wordmark-symbol-dark.png"[39m
+                  [36m/>[39m
+                  [36m<img[39m
+                    [33malt[39m=[32m""[39m
+                    [33mclass[39m=[32m"admin-brand-o-image admin-icon-light"[39m
+                    [33msrc[39m=[32m"/assets/brand/skillomate-wordmark-symbol-light.png"[39m
+                  [36m/>[39m
+                [36m</span>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"admin-brand-mate"[39m
+                [36m>[39m
+                  [0mmate[0m
+                [36m</span>[39m
+              [36m</span>[39m
+              [36m<small>[39m
+                [0mADMIN WORKSPACE[0m
+              [36m</small>[39m
+            [36m</span>[39m
+          [36m</a>[39m
+          [36m<button[39m
+            [33maria-label[39m=[32m"Collapse sidebar"[39m
+            [33maria-pressed[39m=[32m"false"[39m
+            [33mclass[39m=[32m"admin-sidebar-toggle"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [0m&lt;[0m
+          [36m</button>[39m
+          [36m<button[39m
+            [33maria-controls[39m=[32m"admin-mobile-nav"[39m
+            [33maria-expanded[39m=[32m"false"[39m
+            [33maria-label[39m=[32m"Open admin navigation"[39m
+            [33mclass[39m=[32m"admin-mobile-menu-button"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [36m<span />[39m
+            [36m<span />[39m
+            [36m<span />[39m
+          [36m</button>[39m
+        [36m</div>[39m
+        [36m<nav[39m
+          [33maria-label[39m=[32m"Administration sections"[39m
+          [33mid[39m=[32m"admin-mobile-nav"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"admin-nav-group"[39m
+          [36m>[39m
+            [36m<p>[39m
+              [0mWorkspace[0m
+            [36m</p>[39m
+            [36m<a[39m
+              [33mclass[39m=[32m""[39m
+              [33mhref[39m=[32m"/admin/dashboard"[39m
+              [33mtitle[39m=[32m"Dashboard"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"admin-nav-icon"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"2"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M3 11.5 12 4l9 7.5"[39m
+                [36m/>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M5 10.5V20h14v-9.5"[39m
+                [36m/>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M9 20v-6h6v6"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+              [36m<span>[39m
+                [0mDashboard[0m
+              [36m</span>[39m
+            [36m</a>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"admin-nav-group"[39m
+          [36m>[39m
+            [36m<p>[39m
+              [0mOperate[0m
+            [36m</p>[39m
+            [36m<a[39m
+              [33mclass[39m=[32m""[39m
+              [33mhref[39m=[32m"/admin/users"[39m
+              [33mtitle[39m=[32m"Learners"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"admin-nav-icon"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"2"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M16 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"[39m
+                [36m/>[39m
+                [36m<circle[39m
+                  [33mcx[39m=[32m"9.5"[39m
+                  [33mcy[39m=[32m"7"[39m
+                  [33mr[39m=[32m"4"[39m
+                [36m/>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M22 21v-2a4 4 0 0 0-3-3.87"[39m
+                [36m/>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M16 3.13a4 4 0 0 1 0 7.75"[39m
+                [36m/>...
+
+Ignored nodes: comments, script, style
+[36m<body[39m
+  [33mclass[39m=[32m"admin-theme-light"[39m
+[36m>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"admin-workspace"[39m
+    [36m>[39m
+      [36m<a[39m
+        [33mclass[39m=[32m"admin-skip-link"[39m
+        [33mhref[39m=[32m"#admin-main"[39m
+      [36m>[39m
+        [0mSkip to content[0m
+      [36m</a>[39m
+      [36m<aside[39m
+        [33mclass[39m=[32m"admin-sidebar"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"admin-sidebar-top"[39m
+        [36m>[39m
+          [36m<a[39m
+            [33mclass[39m=[32m"admin-workspace-brand"[39m
+            [33mhref[39m=[32m"/admin/dashboard"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"admin-brand-symbol"[39m
+            [36m>[39m
+              [36m<img[39m
+                [33malt[39m=[32m""[39m
+                [33mclass[39m=[32m"admin-theme-icon admin-icon-dark"[39m
+                [33msrc[39m=[32m"/assets/brand/skillomate-admin-icon-dark.png"[39m
+              [36m/>[39m
+              [36m<img[39m
+                [33malt[39m=[32m""[39m
+                [33mclass[39m=[32m"admin-theme-icon admin-icon-light"[39m
+                [33msrc[39m=[32m"/assets/brand/skillomate-admin-icon-light.png"[39m
+              [36m/>[39m
+            [36m</span>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"admin-brand-copy"[39m
+            [36m>[39m
+              [36m<span[39m
+                [33maria-label[39m=[32m"Skillomate"[39m
+                [33mclass[39m=[32m"admin-brand-name"[39m
+              [36m>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"admin-brand-text"[39m
+                [36m>[39m
+                  [0mSkill[0m
+                [36m</span>[39m
+                [36m<span[39m
+                  [33maria-hidden[39m=[32m"true"[39m
+                  [33mclass[39m=[32m"admin-brand-o"[39m
+                [36m>[39m
+                  [36m<img[39m
+                    [33malt[39m=[32m""[39m
+                    [33mclass[39m=[32m"admin-brand-o-image admin-icon-dark"[39m
+                    [33msrc[39m=[32m"/assets/brand/skillomate-wordmark-symbol-dark.png"[39m
+                  [36m/>[39m
+                  [36m<img[39m
+                    [33malt[39m=[32m""[39m
+                    [33mclass[39m=[32m"admin-brand-o-image admin-icon-light"[39m
+                    [33msrc[39m=[32m"/assets/brand/skillomate-wordmark-symbol-light.png"[39m
+                  [36m/>[39m
+                [36m</span>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"admin-brand-mate"[39m
+                [36m>[39m
+                  [0mmate[0m
+                [36m</span>[39m
+              [36m</span>[39m
+              [36m<small>[39m
+                [0mADMIN WORKSPACE[0m
+              [36m</small>[39m
+            [36m</span>[39m
+          [36m</a>[39m
+          [36m<button[39m
+            [33maria-label[39m=[32m"Collapse sidebar"[39m
+            [33maria-pressed[39m=[32m"false"[39m
+            [33mclass[39m=[32m"admin-sidebar-toggle"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [0m&lt;[0m
+          [36m</button>[39m
+          [36m<button[39m
+            [33maria-controls[39m=[32m"admin-mobile-nav"[39m
+            [33maria-expanded[39m=[32m"false"[39m
+            [33maria-label[39m=[32m"Open admin navigation"[39m
+            [33mclass[39m=[32m"admin-mobile-menu-button"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [36m<span />[39m
+            [36m<span />[39m
+            [36m<span />[39m
+          [36m</button>[39m
+        [36m</div>[39m
+        [36m<nav[39m
+          [33maria-label[39m=[32m"Administration sections"[39m
+          [33mid[39m=[32m"admin-mobile-nav"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"admin-nav-group"[39m
+          [36m>[39m
+            [36m<p>[39m
+              [0mWorkspace[0m
+            [36m</p>[39m
+            [36m<a[39m
+              [33mclass[39m=[32m""[39m
+              [33mhref[39m=[32m"/admin/dashboard"[39m
+              [33mtitle[39m=[32m"Dashboard"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"admin-nav-icon"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"2"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M3 11.5 12 4l9 7.5"[39m
+                [36m/>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M5 10.5V20h14v-9.5"[39m
+                [36m/>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M9 20v-6h6v6"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+              [36m<span>[39m
+                [0mDashboard[0m
+              [36m</span>[39m
+            [36m</a>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"admin-nav-group"[39m
+          [36m>[39m
+            [36m<p>[39m
+              [0mOperate[0m
+            [36m</p>[39m
+            [36m<a[39m
+              [33mclass[39m=[32m""[39m
+              [33mhref[39m=[32m"/admin/users"[39m
+              [33mtitle[39m=[32m"Learners"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"admin-nav-icon"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"2"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M16 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"[39m
+                [36m/>[39m
+                [36m<circle[39m
+                  [33mcx[39m=[32m"9.5"[39m
+                  [33mcy[39m=[32m"7"[39m
+                  [33mr[39m=[32m"4"[39m
+                [36m/>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M22 21v-2a4 4 0 0 0-3-3.87"[39m
+                [36m/>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M16 3.13a4 4 0 0 1 0 7.75"[39m
+                [36m/>...
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ tests/player/AdminReports.test.jsx:49:16
+     47|   await screen.findByText('No reports found');
+     48|   fireEvent.click(screen.getByRole('button', { name: 'Refresh' }));
+     49|   await screen.findByText(report.message);
+       |                ^
+     50|   expect(screen.getByText('1 matching report')).toBeTruthy();
+     51| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/5]⎯
+
+ FAIL  tests/player/AdminReports.test.jsx > shows a loading failure instead of claiming reports were loaded
+AssertionError: expected 'Cannot read properties of undefined (…' to contain 'Unable to load problem reports.'
+
+Expected: "Unable to load problem reports."
+Received: "Cannot read properties of undefined (reading 'get')"
+
+ ❯ tests/player/AdminReports.test.jsx:56:58
+     54|   vi.stubGlobal('fetch', vi.fn(async () => response({ error: 'Unable t…
+     55|   render(<AdminReportsPage />);
+     56|   expect((await screen.findByRole('alert')).textContent).toContain('Un…
+       |                                                          ^
+     57| });
+     58|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/5]⎯
+
+ FAIL  tests/player/FrontendRegression.test.jsx > reported frontend regressions > offers the monthly plan after the account has used its one-time trial
+AssertionError: expected undefined to be 'monthly' // Object.is equality
+
+Ignored nodes: comments, script, style
+[36m<html[39m
+  [33mdata-theme[39m=[32m"noir"[39m
+  [33mlang[39m=[32m"en"[39m
+[36m>[39m
+  [36m<head>[39m
+    [36m<title>[39m
+      [0mStart Learning | Skillomate[0m
+    [36m</title>[39m
+  [36m</head>[39m
+  [36m<body>[39m
+    [36m<div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"react-page-root"[39m
+        [33mdata-page[39m=[32m"payment.html"[39m
+      [36m>[39m
+        [36m<main[39m
+          [33maria-live[39m=[32m"polite"[39m
+          [33mclass[39m=[32m"checkout-launcher"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"checkout-launcher-card"[39m
+          [36m>[39m
+            [36m<h1>[39m
+              [0mSubscription plans[0m
+            [36m</h1>[39m
+            [36m<h2>[39m
+              [0m₹499/month[0m
+            [36m</h2>[39m
+            [36m<p>[39m
+              [0mFull course access, lesson notes and AI learning tools.[0m
+            [36m</p>[39m
+            [36m<p>[39m
+              [0mPay ₹499 now. Your subscription renews at ₹499/month through AutoPay until cancelled.[0m
+            [36m</p>[39m
+            [36m<p>[39m
+              [0mThe introductory trial is not available for this account.[0m
+            [36m</p>[39m
+            [36m<p>[39m
+              [0mCancel auto-renewal anytime.[0m
+            [36m</p>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"checkout-launcher-primary"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [0mPay ₹499 and subscribe[0m
+            [36m</button>[39m
+            [36m<p>[39m
+              [0mBy continuing, you agree to the recurring payment terms above.[0m
+            [36m</p>[39m
+            [36m<a[39m
+              [33mclass[39m=[32m"checkout-launcher-secondary"[39m
+              [33mhref[39m=[32m"/courses"[39m
+            [36m>[39m
+              [0mBack to courses[0m
+            [36m</a>[39m
+          [36m</div>[39m
+        [36m</main>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+  [36m</body>[39m
+[36m</html>[39m
+
+- Expected:
+"monthly"
+
++ Received:
+undefined
+
+ ❯ tests/player/FrontendRegression.test.jsx:497:59
+    495|     render(<PaymentPage />);
+    496|
+    497|     await waitFor(() => expect(checkoutBody?.paymentType).toBe("monthl…
+       |                                                           ^
+    498|     expect(checkoutBody.mandateConsent).toBe(true);
+    499|     expect(await screen.findByRole("button", { name: "Try Razorpay Aga…
+ ❯ runWithExpensiveErrorDiagnosticsDisabled node_modules/@testing-library/dom/dist/config.js:47:12
+ ❯ checkCallback node_modules/@testing-library/dom/dist/wait-for.js:124:77
+ ❯ Timeout.checkRealTimersCallback node_modules/@testing-library/dom/dist/wait-for.js:118:16
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/5]⎯
+
+ FAIL  tests/player/PaymentGatewaySettings.test.jsx > missing credentials disable a mode and an API failure keeps the active mode
+TestingLibraryElementError: Unable to find an element with the text: Test — simulated payments. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+  [36m<div>[39m
+    [36m<section[39m
+      [33maria-labelledby[39m=[32m"gateway-heading"[39m
+      [33mclass[39m=[32m"panel admin-settings-card"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"admin-settings-card-head"[39m
+      [36m>[39m
+        [36m<div>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"admin-settings-eyebrow"[39m
+          [36m>[39m
+            [0mPayments[0m
+          [36m</span>[39m
+          [36m<h2[39m
+            [33mid[39m=[32m"gateway-heading"[39m
+          [36m>[39m
+            [0mRazorpay gateway[0m
+          [36m</h2>[39m
+          [36m<p>[39m
+            [0mChoose whether new learner checkouts use test credentials or live Razorpay billing.[0m
+          [36m</p>[39m
+        [36m</div>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"admin-status-pill is-test"[39m
+        [36m>[39m
+          [0mTest mode[0m
+        [36m</span>[39m
+      [36m</div>[39m
+      [36m<p[39m
+        [33mclass[39m=[32m"admin-inline-message is-error"[39m
+        [33mrole[39m=[32m"alert"[39m
+      [36m>[39m
+        [0mPlan price mismatch[0m
+      [36m</p>[39m
+      [36m<form[39m
+        [33mclass[39m=[32m"admin-settings-form"[39m
+      [36m>[39m
+        [36m<fieldset[39m
+          [33mclass[39m=[32m"admin-choice-grid"[39m
+        [36m>[39m
+          [36m<legend>[39m
+            [0mGateway for new checkouts[0m
+          [36m</legend>[39m
+          [36m<label[39m
+            [33mclass[39m=[32m"admin-choice-card  "[39m
+          [36m>[39m
+            [36m<input[39m
+              [33mchecked[39m=[32m""[39m
+              [33mname[39m=[32m"gateway-mode"[39m
+              [33mtype[39m=[32m"radio"[39m
+              [33mvalue[39m=[32m"test"[39m
+            [36m/>[39m
+            [36m<span[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"admin-choice-dot"[39m
+            [36m/>[39m
+            [36m<span>[39m
+              [36m<strong>[39m
+                [0mTest — use Razorpay test payments[0m
+              [36m</strong>[39m
+              [36m<small>[39m
+                [0mSafe for local checkout testing.[0m
+              [36m</small>[39m
+            [36m</span>[39m
+          [36m</label>[39m
+          [36m<label[39m
+            [33mclass[39m=[32m"admin-choice-card is-selected "[39m
+          [36m>[39m
+            [36m<input[39m
+              [33mname[39m=[32m"gateway-mode"[39m
+              [33mtype[39m=[32m"radio"[39m
+              [33mvalue[39m=[32m"live"[39m
+            [36m/>[39m
+            [36m<span[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"admin-choice-dot"[39m
+            [36m/>[39m
+            [36m<span>[39m
+              [36m<strong>[39m
+                [0mLive — charge real money[0m
+              [36m</strong>[39m
+              [36m<small>[39m
+                [0mUses live Razorpay keys and real mandates.[0m
+              [36m</small>[39m
+            [36m</span>[39m
+          [36m</label>[39m
+        [36m</fieldset>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"admin-settings-note"[39m
+        [36m>[39m
+          [0mThis changes checkout for all learners. Test payments can grant app access. Existing subscriptions keep their original gateway mode and are not cancelled by this switch.[0m
+        [36m</p>[39m
+        [36m<button[39m
+          [33mclass[39m=[32m"primary-button admin-save-button"[39m
+          [33mtype[39m=[32m"submit"[39m
+        [36m>[39m
+          [0mApply Live mode[0m
+        [36m</button>[39m
+      [36m</form>[39m
+    [36m</section>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ tests/player/PaymentGatewaySettings.test.jsx:29:16
+     27|  fireEvent.click(screen.getByRole('button',{name:'Apply Live mode'}));
+     28|  await waitFor(()=>expect(screen.getByRole('alert').textContent).toBe(…
+     29|  expect(screen.getByText('Test — simulated payments')).toBeTruthy();
+       |                ^
+     30| });
+     31|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/5]⎯
+
+
+ Test Files  3 failed | 29 passed (32)
+      Tests  5 failed | 226 passed (231)
+   Start at  12:30:54
+   Duration  4.83s (tests 42%, environment 41%, transform 10%, import 7%)
+
+    Isolate  32 workers spawned · ~479ms startup each (spawn + environment, per file)
+             at least ~1.22s faster with isolate: false — reuses workers across files instead of one per file
+

@@ -23,7 +23,7 @@ function displayNumber(value) {
 }
 
 function money(value) {
-  return hasNumber(value) ? `₹${formatNumber(value)}` : "Not returned";
+  return hasNumber(value) ? new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 2 }).format(Number(value || 0) / 100) : "Not returned";
 }
 
 function textValue(...values) {

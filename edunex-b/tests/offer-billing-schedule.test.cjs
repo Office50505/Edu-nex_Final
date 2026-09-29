@@ -8,7 +8,7 @@ const service = require('../services/razorpayService');
 function setup({ invalidSchedule = false, existing = null } = {}) {
   const calls = [];
   let record = existing;
-  const config = { mode: 'live', planId: 'plan_monthly', monthlyAmount: 49900, trialAmount: 100, trialHours: 24, cycles: 120 };
+  const config = { mode: 'live', planId: 'plan_monthly', monthlyAmount: 49900, trialAmount: 100, trialHours: 24, trialAccessHours: 26, cycles: 120 };
   const models = {
     RazorpayBilling: {
       findById: async () => record,
@@ -51,6 +51,7 @@ test('new offer mandates preserve 24 hours after the last allowed checkout secon
   assert.equal(created.start_at - created.expire_by, 86400);
   assert.equal(created.addons[0].item.amount, 100);
   assert.equal(f.record.trialEnd.getTime(), created.start_at * 1000);
+  assert.equal(f.record.trialAccessEnd.getTime(), created.start_at * 1000 + 2 * 3600000);
 });
 test('a provider schedule mismatch is not exposed to the customer and retains the upstream ID', async () => {
   const f = setup({ invalidSchedule: true }); const response = await f.initiate();

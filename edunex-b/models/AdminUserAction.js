@@ -4,7 +4,7 @@ const adminUserActionSchema = new mongoose.Schema({
   user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true, index: true },
   action: {
     type: String,
-    enum: ['user_banned', 'user_unbanned', 'subscription_granted', 'subscription_revoked', 'course_granted', 'course_revoked', 'user_trashed', 'user_restored'],
+    enum: ['user_banned', 'user_unbanned', 'subscription_granted', 'subscription_revoked', 'course_granted', 'course_revoked', 'user_trashed', 'user_restored', 'tester_enabled', 'tester_disabled'],
     required: true,
     index: true,
   },

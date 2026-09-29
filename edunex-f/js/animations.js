@@ -34,6 +34,7 @@
   /* ────────────────────────────────────────────────
      3. AUTO-STAGGER GRID CHILDREN
   ──────────────────────────────────────────────── */
+  
   var staggerSelectors = [
     '.courses-grid',
     '.categories-grid',

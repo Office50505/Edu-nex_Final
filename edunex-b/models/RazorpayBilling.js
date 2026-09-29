@@ -12,6 +12,7 @@ const schema = new mongoose.Schema({
   recurringAmount: Number,
   planId: String,
   trialEnd: Date,
+  trialAccessEnd: Date,
   lease: String,
   leaseUntil: Date,
 }, { timestamps: true });

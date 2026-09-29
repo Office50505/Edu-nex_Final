@@ -9,6 +9,7 @@ import { hasReactPage, preloadPage, reactPageLoaders } from "./lib/pageLoaders.j
 import { adminPageFromPath, canonicalAdminPath } from "./pages/admin/adminApi.js";
 import { usePresenceHeartbeat } from "./hooks/usePresenceHeartbeat.js";
 import { resetViewportLocks } from "./hooks/useViewportLock.js";
+import { trackPageView } from "./lib/analytics.js";
 
 const AdminApp = lazy(() => import("./pages/admin/AdminApp.jsx").then((module) => ({ default: module.AdminApp })));
 
@@ -212,6 +213,10 @@ export default function App() {
   useEffect(() => {
     scrollAfterNavigation(locationState.hash);
   }, [routeKey, locationState.hash]);
+
+  useEffect(() => {
+    trackPageView(routeKey);
+  }, [routeKey]);
 
   const syncLocation = useCallback((nextState = currentLocationState()) => {
     startTransition(() => {

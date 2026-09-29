@@ -16,8 +16,10 @@ function config(mode = legacyMode()) {
     annualCycles: Number(process.env.ANNUAL_SUBSCRIPTION_TOTAL_COUNT || 10),
     trialAmount: Number(process.env.TRIAL_AMOUNT_PAISE || 100), monthlyAmount: Number(process.env.SUBSCRIPTION_AMOUNT_PAISE || 49900),
     trialHours: Number(process.env.TRIAL_DURATION_HOURS || 24), cycles: Number(process.env.SUBSCRIPTION_TOTAL_COUNT || 120),
+    trialAccessHours: Number(process.env.TRIAL_ACCESS_DURATION_HOURS || process.env.TRIAL_ACCESS_HOURS || 26),
   };
-  if (![value.trialAmount, value.monthlyAmount, value.trialHours, value.cycles, value.annualAmount, value.annualCycles].every(n => Number.isSafeInteger(n) && n > 0)) throw new Error('Invalid billing amount, duration or cycle configuration.');
+  if (![value.trialAmount, value.monthlyAmount, value.trialHours, value.trialAccessHours, value.cycles, value.annualAmount, value.annualCycles].every(n => Number.isSafeInteger(n) && n > 0)) throw new Error('Invalid billing amount, duration or cycle configuration.');
+  if (value.trialAccessHours < value.trialHours) throw new Error('Trial access window cannot be shorter than the billing trial.');
   return value;
 }
 function credentials(mode) {
@@ -74,6 +76,13 @@ function createPayload(c, type, attempt, now = Date.now()) {
     notes: { checkout_attempt: attempt },
   };
 }
+function trialAccessEnd(c, trialEnd) {
+  if (!trialEnd) return null;
+  const billingHours = Number(c?.trialHours || 24);
+  const accessHours = Number(c?.trialAccessHours || billingHours);
+  const extraHours = Math.max(0, accessHours - billingHours);
+  return new Date(new Date(trialEnd).getTime() + extraHours * 3600 * 1000);
+}
 function validateTrialSchedule(remote, billing) {
   if (billing.paymentType !== 'trial') return;
   const expected = new Date(billing.trialEnd).getTime() / 1000;
@@ -88,9 +97,10 @@ function entitlement(billing, remote, payments, now = Date.now()) {
     .sort((a, b) => b.invoice.billing_end - a.invoice.billing_end)[0];
   if (period) return { status: 'active', currentPeriodStart: new Date(period.invoice.billing_start * 1000), currentPeriodEnd: new Date(period.invoice.billing_end * 1000), subscriptionType: billing.paymentType === 'annual' ? 'annual' : 'monthly' };
   const upfront = paid.find(item => !item.invoice.billing_start && item.payment.amount === billing.trialAmount);
-  if (remote.status !== 'created' && billing.paymentType === 'trial' && upfront && new Date(billing.trialEnd).getTime() > now) return {
-    status: 'trial', trialStartedAt: new Date(upfront.payment.created_at * 1000), trialExpiresAt: billing.trialEnd, subscriptionType: 'trial',
+  const trialAccessExpiry = billing.trialAccessEnd || billing.trialEnd;
+  if (remote.status !== 'created' && billing.paymentType === 'trial' && upfront && new Date(trialAccessExpiry).getTime() > now) return {
+    status: 'trial', trialStartedAt: new Date(upfront.payment.created_at * 1000), trialExpiresAt: trialAccessExpiry, subscriptionType: 'trial',
   };
   return { status: ['created', 'authenticated'].includes(remote.status) ? 'pending' : 'expired' };
 }
-module.exports = { legacyMode, config, requireConfig, api, validSignature, planTerms, validatePlan, createPayload, validateTrialSchedule, entitlement };
+module.exports = { legacyMode, config, requireConfig, api, validSignature, planTerms, validatePlan, createPayload, trialAccessEnd, validateTrialSchedule, entitlement };

@@ -14,6 +14,7 @@ const paymentGatewayMode = String(process.env.PAYMENT_GATEWAY_MODE || 'phonepe')
 const merchantId = process.env.PHONEPE_MERCHANT_ID || process.env.PHONEPE_CLIENT_ID || 'your_merchant_id';
 const trialAmountPaise = Number(process.env.TRIAL_AMOUNT_PAISE || 100);
 const trialDurationHours = Number(process.env.TRIAL_DURATION_HOURS || 24);
+const trialAccessDurationHours = Number(process.env.TRIAL_ACCESS_DURATION_HOURS || process.env.TRIAL_ACCESS_HOURS || 26);
 const subscriptionAmountPaise = Number(process.env.SUBSCRIPTION_AMOUNT_PAISE || 50000);
 const frontendOrigin = (process.env.FRONTEND_ORIGIN || '').replace(/\/$/, '');
 const frontendDashboardUrl = process.env.FRONTEND_DASHBOARD_URL || (frontendOrigin ? `${frontendOrigin}/courses.html` : '/courses.html');
@@ -165,7 +166,7 @@ async function createSubscriptionEventOnce({
 
 async function createTrialSubscription({ userId, order, mandateId, metadata }) {
   const now = order.paidAt || new Date();
-  const trialExpiresAt = addHours(now, trialDurationHours);
+  const trialExpiresAt = addHours(now, trialAccessDurationHours);
   const subscription = await Subscription.findOneAndUpdate(
     { user: userId },
     {
@@ -591,7 +592,7 @@ async function processPhonePeWebhook({ payload, data, event, merchantTransaction
       const now = order.paidAt || new Date();
       subscription.status = '1rs trial';
       subscription.trialStartedAt = subscription.trialStartedAt || now;
-      subscription.trialExpiresAt = subscription.trialExpiresAt || addHours(now, trialDurationHours);
+      subscription.trialExpiresAt = subscription.trialExpiresAt || addHours(now, trialAccessDurationHours);
       await User.findByIdAndUpdate(userId, {
         phonePeCustomerId: phonePeCustomerId || order.phonePeCustomerId || null,
         subscriptionStatus: '1rs trial',

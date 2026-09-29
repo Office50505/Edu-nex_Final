@@ -4,7 +4,7 @@ import { adminRoutes, logout } from "./adminApi.js";
 
 const sections = [
   { label: 'Workspace', links: [['dashboard', 'Dashboard', adminRoutes.dashboard, 'home']] },
-  { label: 'Operate', links: [['users', 'Learners', adminRoutes.users, 'users'], ['courses', 'Courses', adminRoutes.courses, 'book'], ['subscriptions', 'Subscriptions', adminRoutes.subscriptions, 'loop'], ['payments', 'Payments', adminRoutes.payments, 'pay'], ['reports', 'Reports', adminRoutes.reports, 'flag']] },
+  { label: 'Operate', links: [['users', 'Learners', adminRoutes.users, 'users'], ['testerAnalytics', 'Tester analytics', adminRoutes.testerAnalytics, 'test'], ['courses', 'Courses', adminRoutes.courses, 'book'], ['subscriptions', 'Subscriptions', adminRoutes.subscriptions, 'loop'], ['payments', 'Payments', adminRoutes.payments, 'pay'], ['reports', 'Reports', adminRoutes.reports, 'flag']] },
   { label: 'Create', links: [['upload', 'Create course', adminRoutes.upload, 'plus'], ['courseReview', 'Course review', adminRoutes.courseReview, 'check'], ['certifications', 'Certification', adminRoutes.certifications, 'award']] },
   { label: 'System', links: [['paymentAuditor', 'Payment auditor', adminRoutes.paymentAuditor, 'audit'], ['health', 'System health', adminRoutes.health, 'pulse'], ['auditLog', 'Audit log', adminRoutes.auditLog, 'log'], ['settings', 'Settings', adminRoutes.settings, 'gear'], ['team', 'Team access', adminRoutes.team, 'users']] },
 ];
@@ -18,6 +18,7 @@ function NavIcon({ type }) {
   const paths = {
     home: <><path d="M3 11.5 12 4l9 7.5" /><path d="M5 10.5V20h14v-9.5" /><path d="M9 20v-6h6v6" /></>,
     users: <><path d="M16 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2" /><circle cx="9.5" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></>,
+    test: <><path d="M9 3h6" /><path d="M10 3v5l-5 9a3 3 0 0 0 2.6 4.5h8.8A3 3 0 0 0 19 17l-5-9V3" /><path d="M8 14h8" /><path d="M10 18h4" /></>,
     card: <><rect x="3" y="5" width="18" height="14" rx="2" /><path d="M3 10h18" /><path d="M7 15h4" /></>,
     book: <><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" /><path d="M4 4v15.5" /><path d="M6.5 4H20v13H6.5A2.5 2.5 0 0 0 4 19.5" /></>,
     plus: <><path d="M12 5v14" /><path d="M5 12h14" /></>,
@@ -40,12 +41,14 @@ export function AdminShell({ activePage, title, subtitle, children, actions = nu
   const { canWrite, canManageRoles } = useAdminPermissions();
   const [theme, setTheme] = useState(() => localStorage.getItem("edunexAdminTheme") || "light");
   const [collapsed, setCollapsed] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   useEffect(() => {
     document.body.classList.toggle("admin-theme-light", theme === "light");
     document.body.classList.toggle("admin-theme-dark", theme !== "light");
     document.body.classList.toggle("admin-sidebar-collapsed", collapsed);
+    document.body.classList.toggle("admin-mobile-menu-open", mobileMenuOpen);
     localStorage.setItem("edunexAdminTheme", theme);
-  }, [theme, collapsed]);
+  }, [theme, collapsed, mobileMenuOpen]);
   const section = sections.find(item => item.links.some(([key]) => key === activePage))?.label || 'Command';
   return (
     <div className={`admin-workspace${collapsed ? " is-collapsed" : ""}`}>
@@ -70,11 +73,16 @@ export function AdminShell({ activePage, title, subtitle, children, actions = nu
             </span>
           </a>
           <button className="admin-sidebar-toggle" type="button" onClick={() => setCollapsed(value => !value)} aria-pressed={collapsed} aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}>{collapsed ? ">" : "<"}</button>
+          <button className="admin-mobile-menu-button" type="button" onClick={() => setMobileMenuOpen(value => !value)} aria-expanded={mobileMenuOpen} aria-controls="admin-mobile-nav" aria-label={mobileMenuOpen ? "Close admin navigation" : "Open admin navigation"}>
+            <span />
+            <span />
+            <span />
+          </button>
         </div>
-        <nav aria-label="Administration sections">
+        <nav id="admin-mobile-nav" aria-label="Administration sections">
           {sections.map(group => <div className="admin-nav-group" key={group.label}>
             <p>{group.label}</p>
-            {group.links.filter(([key]) => (canWrite || key !== "upload") && (canManageRoles || key !== "team")).map(([key, label, href, icon]) => <a key={key} href={href} title={navLabels[key] || label} className={activePage === key ? 'is-active' : ''} aria-current={activePage === key ? 'page' : undefined}><NavIcon type={icon} /><span>{navLabels[key] || label}</span></a>)}
+            {group.links.filter(([key]) => (canWrite || key !== "upload") && (canManageRoles || key !== "team")).map(([key, label, href, icon]) => <a key={key} href={href} title={navLabels[key] || label} onClick={() => setMobileMenuOpen(false)} className={activePage === key ? 'is-active' : ''} aria-current={activePage === key ? 'page' : undefined}><NavIcon type={icon} /><span>{navLabels[key] || label}</span></a>)}
           </div>)}
         </nav>
         <div className="admin-sidebar-footer">

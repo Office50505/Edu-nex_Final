@@ -4,6 +4,7 @@ const assert = require('node:assert/strict');
 process.env.NODE_ENV = 'development';
 process.env.PAYMENT_GATEWAY_MODE = 'simulated';
 process.env.TRIAL_DURATION_HOURS = '24';
+process.env.TRIAL_ACCESS_DURATION_HOURS = '26';
 
 const Order = require('../models/Order');
 const Subscription = require('../models/Subscription');
@@ -73,7 +74,7 @@ test('simulated success grants the configured trial once and is idempotent', asy
   assert.equal(order.status, 'paid');
   assert.equal(subscriptionWrites, 1);
   const grantedHours = (trialExpiresAt.getTime() - startedAt) / 3600000;
-  assert.ok(grantedHours >= 23.99 && grantedHours <= 24.01);
+  assert.ok(grantedHours >= 25.99 && grantedHours <= 26.01);
 
   const duplicate = response();
   await completeSimulatedPayment(request, duplicate);

@@ -118,7 +118,8 @@ exports.initiate = wrap(async (req, res) => {
     billing = await Billing.findOneAndUpdate({ _id: req.user._id, phase: 'closed' }, { $set: { attempt, mode: c.mode, phase: 'creating', paymentType: type,
       planId: terms.planId, trialAmount: c.trialAmount, monthlyAmount: c.monthlyAmount,
       annualAmount: c.annualAmount, recurringAmount: terms.amount,
-      trialEnd: payload.start_at ? new Date(payload.start_at * 1000) : null },
+      trialEnd: payload.start_at ? new Date(payload.start_at * 1000) : null,
+      trialAccessEnd: payload.start_at ? rzp.trialAccessEnd(c, new Date(payload.start_at * 1000)) : null },
       $unset: { subscriptionId: 1 } }, { upsert: true, new: true });
   } catch (error) { if (error.code === 11000) throw fail('Checkout creation is already in progress or needs reconciliation. Please contact support before trying again.'); throw error; }
   try {

@@ -1415,8 +1415,16 @@ app.get('/api/admin/analytics', protectAdmin, async (req, res) => {
     const rangeFilter = { $gte: startDate, $lte: endDate };
     const rangeStartKey = formatDateKey(startDate);
     const rangeEndKey = formatDateKey(endDate);
+    const testerUsers = await User.find({ isTester: true }).select('_id').lean();
+    const testerObjectIds = testerUsers.map((user) => user._id);
+    const testerIds = testerObjectIds.map(String);
+    const learnerFilter = { isTester: { $ne: true } };
+    const learnerRangeFilter = { ...learnerFilter, createdAt: rangeFilter };
+    const testerUserExclusion = testerObjectIds.length ? { user: { $nin: testerObjectIds } } : {};
+    const testerUserIdExclusion = testerIds.length ? { userId: { $nin: testerIds } } : {};
     const analyticsEventFilter = {
       event: { $in: ['video_start', 'video_progress', 'video_complete', 'video_watch'] },
+      ...testerUserIdExclusion,
       $or: [
         { date: { $gte: rangeStartKey, $lte: rangeEndKey } },
         { createdAt: rangeFilter },
@@ -1424,6 +1432,7 @@ app.get('/api/admin/analytics', protectAdmin, async (req, res) => {
     };
     const analyticsDownloadFilter = {
       event: 'video_download',
+      ...testerUserIdExclusion,
       $or: [
         { date: { $gte: rangeStartKey, $lte: rangeEndKey } },
         { createdAt: rangeFilter },
@@ -1499,12 +1508,12 @@ app.get('/api/admin/analytics', protectAdmin, async (req, res) => {
       courseStatusRows,
       categoryRows,
     ] = await Promise.all([
-      User.countDocuments(),
-      User.countDocuments({ isActive: true }),
-      User.countDocuments({ isActive: false }),
-      User.countDocuments({ isMobileVerified: true }),
-      User.countDocuments({ isEmailVerified: true }),
-      User.countDocuments({ marketingOptIn: true }),
+      User.countDocuments(learnerFilter),
+      User.countDocuments({ ...learnerFilter, isActive: true }),
+      User.countDocuments({ ...learnerFilter, isActive: false }),
+      User.countDocuments({ ...learnerFilter, isMobileVerified: true }),
+      User.countDocuments({ ...learnerFilter, isEmailVerified: true }),
+      User.countDocuments({ ...learnerFilter, marketingOptIn: true }),
       Course.countDocuments(),
       Course.countDocuments({ status: 'published' }),
       Course.countDocuments({ status: 'draft' }),
@@ -1512,49 +1521,52 @@ app.get('/api/admin/analytics', protectAdmin, async (req, res) => {
       Lesson.countDocuments({ isPreview: true }),
       Review.countDocuments(),
       Wishlist.countDocuments(),
-      Subscription.countDocuments(),
-      Subscription.countDocuments({ status: { $in: subscriberStatuses } }),
-      Subscription.countDocuments({ status: { $in: trialStatuses } }),
-      User.countDocuments({ subscriptionStatus: '1rs trial' }),
-      User.countDocuments({ subscriptionStatus: 'trial' }),
-      User.countDocuments({ subscriptionStatus: { $in: subscriberStatuses } }),
+      Subscription.countDocuments(testerUserExclusion),
+      Subscription.countDocuments({ ...testerUserExclusion, status: { $in: subscriberStatuses } }),
+      Subscription.countDocuments({ ...testerUserExclusion, status: { $in: trialStatuses } }),
+      User.countDocuments({ ...learnerFilter, subscriptionStatus: '1rs trial' }),
+      User.countDocuments({ ...learnerFilter, subscriptionStatus: 'trial' }),
+      User.countDocuments({ ...learnerFilter, subscriptionStatus: { $in: subscriberStatuses } }),
       User.countDocuments({
+        ...learnerFilter,
         $or: [
           { subscriptionStatus: 'none' },
           { subscriptionStatus: null },
           { subscriptionStatus: { $exists: false } },
         ],
       }),
-      User.countDocuments({ subscriptionStatus: 'cancelled' }),
-      User.countDocuments({ subscriptionStatus: 'expired' }),
-      Subscription.countDocuments({ status: 'paused' }),
+      User.countDocuments({ ...learnerFilter, subscriptionStatus: 'cancelled' }),
+      User.countDocuments({ ...learnerFilter, subscriptionStatus: 'expired' }),
+      Subscription.countDocuments({ ...testerUserExclusion, status: 'paused' }),
       User.countDocuments({
+        ...learnerFilter,
         $or: [
           { subscriptionId: null },
           { subscriptionId: { $exists: false } },
         ],
       }),
-      User.countDocuments({ createdAt: rangeFilter }),
-      Subscription.countDocuments({ createdAt: rangeFilter }),
+      User.countDocuments(learnerRangeFilter),
+      Subscription.countDocuments({ ...testerUserExclusion, createdAt: rangeFilter }),
       Course.countDocuments({ createdAt: rangeFilter }),
-      Order.countDocuments({ createdAt: rangeFilter }),
-      Order.countDocuments({ status: 'paid', createdAt: rangeFilter }),
-      Order.countDocuments({ status: 'failed', createdAt: rangeFilter }),
-      Order.countDocuments({ status: 'pending', createdAt: rangeFilter }),
+      Order.countDocuments({ ...testerUserExclusion, createdAt: rangeFilter }),
+      Order.countDocuments({ ...testerUserExclusion, status: 'paid', createdAt: rangeFilter }),
+      Order.countDocuments({ ...testerUserExclusion, status: 'failed', createdAt: rangeFilter }),
+      Order.countDocuments({ ...testerUserExclusion, status: 'pending', createdAt: rangeFilter }),
       Order.aggregate([
-        { $match: { status: 'paid', createdAt: rangeFilter } },
+        { $match: { ...testerUserExclusion, status: 'paid', createdAt: rangeFilter } },
         { $group: { _id: null, total: { $sum: '$totalAmount' }, average: { $avg: '$totalAmount' } } },
       ]),
       Order.aggregate([
-        { $match: { status: 'paid' } },
+        { $match: { ...testerUserExclusion, status: 'paid' } },
         { $group: { _id: null, total: { $sum: '$totalAmount' } } },
       ]),
-      Order.aggregate([{ $group: { _id: '$status', count: { $sum: 1 } } }]),
-      Order.aggregate([{ $group: { _id: '$orderType', count: { $sum: 1 }, amount: { $sum: '$totalAmount' } } }]),
-      Order.aggregate([{ $group: { _id: '$phonePePaymentInstrument', count: { $sum: 1 } } }]),
-      Subscription.aggregate([{ $group: { _id: '$status', count: { $sum: 1 } } }]),
-      User.aggregate([{ $group: { _id: '$subscriptionStatus', count: { $sum: 1 } } }]),
+      Order.aggregate([{ $match: testerUserExclusion }, { $group: { _id: '$status', count: { $sum: 1 } } }]),
+      Order.aggregate([{ $match: testerUserExclusion }, { $group: { _id: '$orderType', count: { $sum: 1 }, amount: { $sum: '$totalAmount' } } }]),
+      Order.aggregate([{ $match: testerUserExclusion }, { $group: { _id: '$phonePePaymentInstrument', count: { $sum: 1 } } }]),
+      Subscription.aggregate([{ $match: testerUserExclusion }, { $group: { _id: '$status', count: { $sum: 1 } } }]),
+      User.aggregate([{ $match: learnerFilter }, { $group: { _id: '$subscriptionStatus', count: { $sum: 1 } } }]),
       User.aggregate([
+        { $match: learnerFilter },
         {
           $group: {
             _id: {
@@ -1570,6 +1582,7 @@ app.get('/api/admin/analytics', protectAdmin, async (req, res) => {
         { $sort: { count: -1 } },
       ]),
       User.aggregate([
+        { $match: learnerFilter },
         {
           $bucket: {
             groupBy: '$age',
@@ -1580,7 +1593,7 @@ app.get('/api/admin/analytics', protectAdmin, async (req, res) => {
         },
       ]),
       Progress.aggregate([
-        { $match: { lastWatchedAt: rangeFilter } },
+        { $match: { ...testerUserExclusion, lastWatchedAt: rangeFilter } },
         {
           $group: {
             _id: '$course',
@@ -1613,7 +1626,7 @@ app.get('/api/admin/analytics', protectAdmin, async (req, res) => {
         { $sort: { progressRecords: -1, learnerCount: -1, completedRecords: -1 } },
       ]),
       CourseProgress.aggregate([
-        { $match: { courseTitle: { $nin: [null, ''] } } },
+        { $match: { courseTitle: { $nin: [null, ''] }, ...testerUserIdExclusion } },
         {
           $group: {
             _id: '$courseTitle',
@@ -1640,7 +1653,7 @@ app.get('/api/admin/analytics', protectAdmin, async (req, res) => {
         { $limit: 8 },
       ]),
       Progress.aggregate([
-        { $match: { lastWatchedAt: rangeFilter } },
+        { $match: { ...testerUserExclusion, lastWatchedAt: rangeFilter } },
         {
           $lookup: {
             from: 'users',
@@ -1706,7 +1719,7 @@ app.get('/api/admin/analytics', protectAdmin, async (req, res) => {
         { $limit: 24 },
       ]),
       Progress.aggregate([
-        { $match: { lastWatchedAt: rangeFilter } },
+        { $match: { ...testerUserExclusion, lastWatchedAt: rangeFilter } },
         {
           $group: {
             _id: { course: '$course', lesson: '$lesson' },
@@ -1772,7 +1785,7 @@ app.get('/api/admin/analytics', protectAdmin, async (req, res) => {
         { $limit: 12 },
       ]),
       Progress.aggregate([
-        { $match: { lastWatchedAt: rangeFilter } },
+        { $match: { ...testerUserExclusion, lastWatchedAt: rangeFilter } },
         {
           $group: {
             _id: '$course',
@@ -1813,7 +1826,7 @@ app.get('/api/admin/analytics', protectAdmin, async (req, res) => {
         { $limit: 12 },
       ]),
       Progress.aggregate([
-        { $match: { lastWatchedAt: rangeFilter } },
+        { $match: { ...testerUserExclusion, lastWatchedAt: rangeFilter } },
         {
           $group: {
             _id: null,
@@ -2166,36 +2179,36 @@ app.get('/api/admin/analytics', protectAdmin, async (req, res) => {
         { $sort: { _id: 1 } },
       ]),
       User.aggregate([
-        { $match: { createdAt: rangeFilter } },
+        { $match: learnerRangeFilter },
         { $group: { _id: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt', timezone: ANALYTICS_TIMEZONE } }, count: { $sum: 1 } } },
       ]),
       Subscription.aggregate([
-        { $match: { createdAt: rangeFilter } },
+        { $match: { ...testerUserExclusion, createdAt: rangeFilter } },
         { $group: { _id: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt', timezone: ANALYTICS_TIMEZONE } }, count: { $sum: 1 } } },
       ]),
       Order.aggregate([
-        { $match: { status: 'paid', createdAt: rangeFilter } },
+        { $match: { ...testerUserExclusion, status: 'paid', createdAt: rangeFilter } },
         { $group: { _id: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt', timezone: ANALYTICS_TIMEZONE } }, count: { $sum: 1 } } },
       ]),
       Order.aggregate([
-        { $match: { status: 'paid', createdAt: rangeFilter } },
+        { $match: { ...testerUserExclusion, status: 'paid', createdAt: rangeFilter } },
         { $group: { _id: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt', timezone: ANALYTICS_TIMEZONE } }, total: { $sum: '$totalAmount' } } },
       ]),
-      Subscription.find()
+      Subscription.find(testerUserExclusion)
         .sort({ createdAt: -1 })
         .limit(8)
         .populate('user', 'fullName email mobileNumber subscriptionStatus')
         .select('user status subscriptionType amount trialStartedAt trialExpiresAt currentPeriodEnd nextBillingAt createdAt'),
-      User.find()
+      User.find(learnerFilter)
         .sort({ createdAt: -1 })
         .limit(8)
         .select('fullName email mobileNumber avatar gender age subscriptionStatus isMobileVerified createdAt lastActiveAt'),
-      Order.find()
+      Order.find(testerUserExclusion)
         .sort({ createdAt: -1 })
         .limit(8)
         .populate('user', 'fullName email')
         .select('user totalAmount status orderType phonePePaymentInstrument paidAt createdAt'),
-      SubscriptionEvent.find()
+      SubscriptionEvent.find(testerUserExclusion)
         .sort({ createdAt: -1 })
         .limit(8)
         .populate('user', 'fullName email')
@@ -2422,6 +2435,162 @@ app.get('/api/admin/users', protectAdmin, async (req, res) => {
   }
 });
 
+app.get('/api/admin/tester-analytics', protectAdmin, async (req, res) => {
+  try {
+    const { startDate, endDate } = getAnalyticsRange(req.query);
+    const rangeFilter = { $gte: startDate, $lte: endDate };
+    const rangeStartKey = formatDateKey(startDate);
+    const rangeEndKey = formatDateKey(endDate);
+    const testerRows = await User.find({ isTester: true })
+      .sort({ testerSince: -1, createdAt: -1 })
+      .select('fullName email mobileNumber avatar subscriptionStatus isActive isTester testerSince testerAssignedBy testerNotes createdAt lastActiveAt lastLoginAt loginCount purchasedCourses')
+      .lean();
+    const testerObjectIds = testerRows.map((user) => user._id);
+    const testerIds = testerRows.map((user) => String(user._id));
+    const testerIdSet = new Set(testerIds);
+    const analyticsFilter = {
+      userId: { $in: testerIds },
+      $or: [
+        { date: { $gte: rangeStartKey, $lte: rangeEndKey } },
+        { createdAt: rangeFilter },
+      ],
+    };
+    const watchEventNames = ['video_start', 'video_progress', 'video_complete', 'video_watch'];
+    const [
+      activeToday,
+      active7Days,
+      active30Days,
+      watchTotals,
+      courseRows,
+      aiRows,
+      recentEvents,
+      progressRows,
+      latestActions,
+    ] = await Promise.all([
+      User.countDocuments({ isTester: true, lastActiveAt: { $gte: new Date(Date.now() - 24 * 60 * 60 * 1000) } }),
+      User.countDocuments({ isTester: true, lastActiveAt: { $gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) } }),
+      User.countDocuments({ isTester: true, lastActiveAt: { $gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) } }),
+      AnalyticsEvent.aggregate([
+        { $match: { ...analyticsFilter, event: { $in: watchEventNames } } },
+        {
+          $addFields: {
+            watchedSeconds: { $ifNull: ['$watchSeconds', { $ifNull: ['$watchedSeconds', '$durationSeconds'] }] },
+            completedValue: { $cond: [{ $eq: ['$event', 'video_complete'] }, 1, 0] },
+          },
+        },
+        {
+          $group: {
+            _id: null,
+            testerIds: { $addToSet: '$userId' },
+            events: { $sum: 1 },
+            totalWatchSeconds: { $sum: { $ifNull: ['$watchedSeconds', 0] } },
+            completions: { $sum: '$completedValue' },
+          },
+        },
+      ]),
+      AnalyticsEvent.aggregate([
+        { $match: { ...analyticsFilter, event: { $in: watchEventNames } } },
+        {
+          $addFields: {
+            watchedSeconds: { $ifNull: ['$watchSeconds', { $ifNull: ['$watchedSeconds', '$durationSeconds'] }] },
+          },
+        },
+        {
+          $group: {
+            _id: { courseId: '$courseId', courseTitle: '$courseTitle' },
+            testerIds: { $addToSet: '$userId' },
+            events: { $sum: 1 },
+            totalWatchSeconds: { $sum: { $ifNull: ['$watchedSeconds', 0] } },
+            lastEventAt: { $max: '$createdAt' },
+          },
+        },
+        {
+          $project: {
+            courseId: '$_id.courseId',
+            title: { $ifNull: ['$_id.courseTitle', 'Unknown course'] },
+            testerCount: { $size: '$testerIds' },
+            events: 1,
+            watchMinutes: { $round: [{ $divide: ['$totalWatchSeconds', 60] }, 1] },
+            lastEventAt: 1,
+          },
+        },
+        { $sort: { watchMinutes: -1, events: -1, testerCount: -1 } },
+        { $limit: 12 },
+      ]),
+      AnalyticsEvent.aggregate([
+        { $match: { ...analyticsFilter, event: { $in: ['ai_tutor_query', 'ai_chat', 'course_ai_query'] } } },
+        { $group: { _id: '$userId', count: { $sum: 1 }, lastUsedAt: { $max: '$createdAt' } } },
+        { $sort: { count: -1, lastUsedAt: -1 } },
+      ]),
+      AnalyticsEvent.find(analyticsFilter)
+        .sort({ createdAt: -1 })
+        .limit(24)
+        .select('event userId userName userEmail courseId courseTitle videoTitle createdAt date')
+        .lean(),
+      Progress.aggregate([
+        { $match: { user: { $in: testerObjectIds } } },
+        {
+          $group: {
+            _id: '$user',
+            totalWatchSeconds: { $sum: { $ifNull: ['$watchedSeconds', 0] } },
+            watchedVideos: { $sum: { $cond: [{ $gt: [{ $ifNull: ['$watchedSeconds', 0] }, 0] }, 1, 0] } },
+            completedVideos: { $sum: { $cond: ['$completed', 1, 0] } },
+            lastWatchedAt: { $max: '$lastWatchedAt' },
+          },
+        },
+      ]),
+      AdminUserAction.find({ user: { $in: testerObjectIds }, action: { $in: ['tester_enabled', 'tester_disabled'] } })
+        .sort({ createdAt: -1 })
+        .limit(20)
+        .populate('user', 'fullName mobileNumber email isTester')
+        .select('user action reason adminSubject previousState nextState createdAt')
+        .lean(),
+    ]);
+
+    const progressByUser = new Map(progressRows.map((row) => [String(row._id), row]));
+    const aiByUser = new Map(aiRows.map((row) => [String(row._id), row]));
+    const watchSummary = watchTotals[0] || {};
+    const testers = testerRows.map((user) => {
+      const progress = progressByUser.get(String(user._id)) || {};
+      const ai = aiByUser.get(String(user._id)) || {};
+      return {
+        ...user,
+        watchSummary: {
+          watchedMinutes: Math.round(Number(progress.totalWatchSeconds || 0) / 60),
+          watchedVideos: Number(progress.watchedVideos || 0),
+          completedVideos: Number(progress.completedVideos || 0),
+          lastWatchedAt: progress.lastWatchedAt || null,
+        },
+        aiSummary: {
+          messages: Number(ai.count || 0),
+          lastUsedAt: ai.lastUsedAt || null,
+        },
+      };
+    });
+
+    res.json({
+      range: { startDate: rangeStartKey, endDate: rangeEndKey },
+      totals: {
+        testers: testerRows.length,
+        activeToday,
+        active7Days,
+        active30Days,
+        activeInRange: (watchSummary.testerIds || []).filter((id) => testerIdSet.has(String(id))).length,
+        watchEvents: Number(watchSummary.events || 0),
+        watchMinutes: Math.round(Number(watchSummary.totalWatchSeconds || 0) / 60),
+        completedVideos: Number(watchSummary.completions || 0),
+        aiMessages: aiRows.reduce((sum, row) => sum + Number(row.count || 0), 0),
+      },
+      testers,
+      courses: courseRows,
+      recentEvents,
+      recentActions: latestActions,
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 app.post('/api/admin/users', protectAdmin, async (req, res) => {
   try {
     const fullName = String(req.body?.fullName || '').trim().replace(/\s+/g, ' ').slice(0, 120);
@@ -2564,9 +2733,9 @@ app.get('/api/admin/user-management', protectAdmin, async (req, res) => {
     };
     const watchEventNames = ['video_start', 'video_progress', 'video_complete', 'video_watch'];
     const [users, progressRows, progressWatchRows, analyticsWatchRows, latestSessionRows, latestPresenceRows] = await Promise.all([
-      User.find()
+      User.find({ isTester: { $ne: true } })
         .sort({ createdAt: -1 })
-        .select('fullName email mobileNumber avatar gender age subscriptionStatus subscriptionExpiry purchasedCourses courseEntitlements isMobileVerified isEmailVerified isActive bannedAt banReason deletedAt deletedBy deletionReason marketingOptIn createdAt lastActiveAt lastLoginAt loginCount')
+        .select('fullName email mobileNumber avatar gender age subscriptionStatus subscriptionExpiry purchasedCourses courseEntitlements isMobileVerified isEmailVerified isActive bannedAt banReason deletedAt deletedBy deletionReason marketingOptIn isTester testerSince testerAssignedBy testerNotes createdAt lastActiveAt lastLoginAt loginCount')
         .lean(),
       CourseProgress.aggregate([
         { $match: { userId: { $nin: [null, ''] } } },
@@ -2823,6 +2992,55 @@ app.patch('/api/admin/users/:id/access', protectAdmin, async (req, res) => {
     res.json({
       message: action === 'ban' ? 'User banned and active sessions revoked' : 'User unbanned',
       user: { _id: user._id, isActive: user.isActive, bannedAt: user.bannedAt, banReason: user.banReason },
+    });
+  } catch (error) {
+    res.status(error.statusCode || 500).json({ error: error.message });
+  }
+});
+
+app.patch('/api/admin/users/:id/tester', protectAdmin, async (req, res) => {
+  try {
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(400).json({ error: 'Invalid user id' });
+    }
+    const action = String(req.body?.action || '').trim().toLowerCase();
+    const notes = String(req.body?.notes || '').trim().slice(0, 500) || null;
+    if (!['enable', 'disable'].includes(action)) {
+      return res.status(400).json({ error: 'Action must be enable or disable.' });
+    }
+    const user = await User.findById(req.params.id);
+    if (!user) return res.status(404).json({ error: 'User not found' });
+    if (user.deletedAt) return res.status(409).json({ error: 'Restore this user before changing tester status.' });
+    const adminSubject = req.admin?.sub || req.admin?.email || 'admin';
+    const previousState = {
+      isTester: Boolean(user.isTester),
+      testerSince: user.testerSince,
+      testerAssignedBy: user.testerAssignedBy,
+      testerNotes: user.testerNotes,
+    };
+    const enabling = action === 'enable';
+    user.isTester = enabling;
+    user.testerSince = enabling ? (user.testerSince || new Date()) : null;
+    user.testerAssignedBy = enabling ? adminSubject : null;
+    user.testerNotes = enabling ? notes : null;
+    await user.save();
+    const nextState = {
+      isTester: Boolean(user.isTester),
+      testerSince: user.testerSince,
+      testerAssignedBy: user.testerAssignedBy,
+      testerNotes: user.testerNotes,
+    };
+    await AdminUserAction.create({
+      user: user._id,
+      action: enabling ? 'tester_enabled' : 'tester_disabled',
+      reason: notes || (enabling ? 'Tester access enabled by admin' : 'Tester access removed by admin'),
+      previousState,
+      nextState,
+      adminSubject,
+    });
+    res.json({
+      message: enabling ? 'Learner moved to tester analytics.' : 'Tester status removed.',
+      user: { _id: user._id, ...nextState },
     });
   } catch (error) {
     res.status(error.statusCode || 500).json({ error: error.message });

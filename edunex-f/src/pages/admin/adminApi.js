@@ -17,6 +17,7 @@ export const adminRoutes = {
   login: adminPath("login"),
   dashboard: adminPath("dashboard"),
   users: adminPath("users"),
+  testerAnalytics: adminPath("tester-analytics"),
   subscribers: adminPath("subscribers"),
   courses: adminPath("courses"),
   upload: adminPath("upload"),
@@ -38,6 +39,7 @@ const adminPageBySlug = {
   login: "login",
   dashboard: "dashboard",
   users: "users",
+  "tester-analytics": "testerAnalytics",
   subscribers: "subscribers",
   courses: "courses",
   upload: "upload",
@@ -193,15 +195,38 @@ export async function adminJson(path, options = {}, fallback = "Request failed."
   options.signal?.addEventListener('abort', abort);
   const timer = setTimeout(abort, 20000);
   try {
-    const response = await adminRequest(path, {...options, signal: controller.signal});
-    const data = await response.json();
+    const response = await adminRequest(path, { ...options, signal: controller.signal });
+    const contentType = response.headers.get("content-type") || "";
+    const raw = await response.text();
+    let data = null;
+
+    if (raw) {
+      if (contentType.includes("application/json") || /^[\s]*[\[{]/.test(raw)) {
+        try {
+          data = JSON.parse(raw);
+        } catch (_) {
+          data = null;
+        }
+      }
+    }
+
     if (!response.ok) {
-      const error = new Error(errorMessage(data, fallback));
+      const statusText = response.status ? ` (${response.status})` : "";
+      const isHtml = raw && /<\s*!doctype|<\s*html|<\s*h1|<\s*body/i.test(raw);
+      const message = data
+        ? errorMessage(data, fallback)
+        : isHtml
+          ? `${fallback}${statusText} The server returned an HTML error page instead of JSON.`
+          : (raw?.trim() || `${fallback}${statusText}`);
+      const error = new Error(message);
       error.code = data?.code || data?.error?.code || "";
       error.status = response.status;
       throw error;
     }
-    return data;
+
+    if (data !== null) return data;
+    if (!raw) return {};
+    throw new Error(`${fallback} The server returned a non-JSON response.`);
   } catch (error) {
     if (error.name === 'AbortError') throw new Error('The request timed out or was canceled. Reload to check the latest state.');
     throw error;

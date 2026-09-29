@@ -1,0 +1,52 @@
+vite v7.3.6 building client environment for production...
+transforming...
+✓ 133 modules transformed.
+rendering chunks...
+computing gzip size...
+../../../../../../tmp/edunex-audit-admin-build/index.html                                  1.66 kB │ gzip:   0.81 kB
+../../../../../../tmp/edunex-audit-admin-build/assets/ProfilePage-CV7YYS0j.css             0.12 kB │ gzip:   0.12 kB
+../../../../../../tmp/edunex-audit-admin-build/assets/PaymentPage-hHRfOJGu.css             2.28 kB │ gzip:   0.78 kB
+../../../../../../tmp/edunex-audit-admin-build/assets/LegalLayout-0vZByguF.css             9.54 kB │ gzip:   2.43 kB
+../../../../../../tmp/edunex-audit-admin-build/assets/VideosPage-B1iAupy-.css             12.18 kB │ gzip:   3.14 kB
+../../../../../../tmp/edunex-audit-admin-build/assets/AdOfferPage-Duo1mNtK.css            12.79 kB │ gzip:   3.47 kB
+../../../../../../tmp/edunex-audit-admin-build/assets/AdminApp-BxgtSiFt.css              218.45 kB │ gzip:  34.09 kB
+../../../../../../tmp/edunex-audit-admin-build/assets/index-DHew17cT.css                 268.14 kB │ gzip:  42.78 kB
+../../../../../../tmp/edunex-audit-admin-build/assets/hlsRuntime-B694HMVk.js               0.17 kB │ gzip:   0.17 kB
+../../../../../../tmp/edunex-audit-admin-build/assets/useEduNexRuntimeReady-CBHoZeid.js    0.34 kB │ gzip:   0.22 kB
+../../../../../../tmp/edunex-audit-admin-build/assets/courseDescription-D74W-Y_P.js        0.57 kB │ gzip:   0.30 kB
+../../../../../../tmp/edunex-audit-admin-build/assets/courseNavigation-CCk69v-6.js         0.60 kB │ gzip:   0.32 kB
+../../../../../../tmp/edunex-audit-admin-build/assets/RedirectPage-Di4_RNhp.js             0.95 kB │ gzip:   0.51 kB
+../../../../../../tmp/edunex-audit-admin-build/assets/authNavigation-PqCgKxA8.js           1.25 kB │ gzip:   0.62 kB
+../../../../../../tmp/edunex-audit-admin-build/assets/ContactPage-CRfVM-rM.js              1.62 kB │ gzip:   0.69 kB
+../../../../../../tmp/edunex-audit-admin-build/assets/razorpayCheckout-CXgfSe7g.js         1.71 kB │ gzip:   0.96 kB
+../../../../../../tmp/edunex-audit-admin-build/assets/AboutPage-BaUw9enk.js                2.45 kB │ gzip:   1.04 kB
+../../../../../../tmp/edunex-audit-admin-build/assets/useLearningProgress-ChXuw2TT.js      2.68 kB │ gzip:   1.28 kB
+../../../../../../tmp/edunex-audit-admin-build/assets/PricingPage-BL2tr80H.js              2.71 kB │ gzip:   1.06 kB
+../../../../../../tmp/edunex-audit-admin-build/assets/HelpPage-osqKKoFU.js                 2.96 kB │ gzip:   1.25 kB
+../../../../../../tmp/edunex-audit-admin-build/assets/DeleteAccountPage-BcmTuR_7.js        3.92 kB │ gzip:   1.69 kB
+../../../../../../tmp/edunex-audit-admin-build/assets/LegalLayout-tq_PPWNI.js              4.50 kB │ gzip:   1.65 kB
+../../../../../../tmp/edunex-audit-admin-build/assets/usePageStyle-Dh7LGo6b.js             7.51 kB │ gzip:   3.07 kB
+../../../../../../tmp/edunex-audit-admin-build/assets/WishlistPage-CDpz6zqd.js            14.12 kB │ gzip:   4.11 kB
+../../../../../../tmp/edunex-audit-admin-build/assets/CertificatesPage-2ZnUVGpJ.js        15.45 kB │ gzip:   4.34 kB
+../../../../../../tmp/edunex-audit-admin-build/assets/AiTutorPage-CmQz6cIc.js             16.42 kB │ gzip:   5.93 kB
+../../../../../../tmp/edunex-audit-admin-build/assets/CourseDetailsPage-ChfFmAhS.js       16.44 kB │ gzip:   5.18 kB
+../../../../../../tmp/edunex-audit-admin-build/assets/AdOfferPage-CLJ2Hw2r.js             18.07 kB │ gzip:   6.49 kB
+../../../../../../tmp/edunex-audit-admin-build/assets/EditProfilePage-BYVH3iRd.js         20.39 kB │ gzip:   5.79 kB
+../../../../../../tmp/edunex-audit-admin-build/assets/LoginPage-DoV_3gQC.js               20.63 kB │ gzip:   6.30 kB
+../../../../../../tmp/edunex-audit-admin-build/assets/LegalPage-DLfnWWZa.js               20.74 kB │ gzip:   6.42 kB
+../../../../../../tmp/edunex-audit-admin-build/assets/CoursesPage-DHOdADon.js             28.59 kB │ gzip:   7.82 kB
+../../../../../../tmp/edunex-audit-admin-build/assets/PaymentPage-ROIMKMmO.js             29.06 kB │ gzip:   7.21 kB
+../../../../../../tmp/edunex-audit-admin-build/assets/ProfilePage-Q9f0Dzls.js             30.77 kB │ gzip:   7.90 kB
+../../../../../../tmp/edunex-audit-admin-build/assets/DashboardPage-BQ1WIhi5.js           34.41 kB │ gzip:   9.52 kB
+../../../../../../tmp/edunex-audit-admin-build/assets/SignupPage-DhKltv9N.js              39.30 kB │ gzip:  10.52 kB
+../../../../../../tmp/edunex-audit-admin-build/assets/HomePage-BExeYHv5.js                67.44 kB │ gzip:  16.78 kB
+../../../../../../tmp/edunex-audit-admin-build/assets/VideosPage-De2pdbqZ.js             120.16 kB │ gzip:  32.95 kB
+../../../../../../tmp/edunex-audit-admin-build/assets/AdminApp-BHn5vJhT.js               156.41 kB │ gzip:  43.38 kB
+../../../../../../tmp/edunex-audit-admin-build/assets/index-hM0Joh5M.js                  349.24 kB │ gzip: 100.37 kB
+../../../../../../tmp/edunex-audit-admin-build/assets/hls-BOLXTnjL.js                    592.43 kB │ gzip: 185.41 kB
+
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 2.00s

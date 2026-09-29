@@ -1,0 +1,35 @@
+{"path":"/api/admin/login","status":200,"hasToken":true}
+{"path":"/api/health","status":200,"ms":2,"shape":["ok","service","uptimeSeconds","cache"]}
+{"path":"/api/health/db","status":200,"ms":25,"shape":["ok","state","database","courseCollection","totalCourses","publishedCourses"]}
+{"path":"/api/ready","status":503,"ms":23,"shape":["ok","service","mongodb","redis"],"diagnostics":{"ok":false,"service":"Skillomate API","mongodb":"connected","redis":"disconnected"}}
+{"path":"/api/courses","status":200,"ms":1,"shape":"array(1)"}
+{"path":"/api/categories","status":200,"ms":1,"shape":"array(6)"}
+{"path":"/api/marketing-config","status":200,"ms":23,"shape":["metaPixel"]}
+{"path":"/api/onboarding/config","status":200,"ms":24,"shape":["mode","gateway","trialAmountPaise","subscriptionAmountPaise","trialHours","metaPixel"]}
+{"path":"/api/payment/config","status":200,"ms":24,"shape":["mode","gateway","trialAmountPaise","subscriptionAmountPaise","trialHours","currency","billingCycles"]}
+{"path":"/api/admin/analytics","status":200,"ms":1197,"shape":["range","totals","breakdowns","learning","dailySeries","recentSubscriptions","recentUsers","recentOrders","recentEvents","recentContactEnquiries","videoDownloads","topSellingCourses","topCourses"]}
+{"path":"/api/admin/user-management","status":200,"ms":31,"shape":"array(5)"}
+{"path":"/api/admin/courses?summary=1","status":200,"ms":53,"shape":"array(1)"}
+{"path":"/api/admin/payment-audit","status":200,"ms":26,"shape":["generatedAt","scanned","limited","summary","records"]}
+{"path":"/api/admin/payment-settings","status":200,"ms":26,"shape":["mode","modes"]}
+{"path":"/api/admin/marketing-settings","status":200,"ms":27,"shape":["metaPixelEnabled","metaPixelId","configured","updatedAt","updatedBy"]}
+{"path":"/api/admin/problem-reports?page=1&limit=20","status":200,"ms":27,"shape":["reports","page","limit","total","pages","counts"]}
+{"path":"/api/admin/deletion-requests?page=1","status":200,"ms":26,"shape":["requests","page"]}
+{"path":"/api/admin/certifications?page=1","status":200,"ms":229,"shape":["certificates","total","page","courses","progress","stats"]}
+{"path":"/api/admin/certificate-template","status":200,"ms":27,"shape":["template"]}
+{"path":"/api/admin/video-providers","status":200,"ms":2,"shape":["cloudFrontHost","accessMode"]}
+{"path":"/api/admin/system-health","status":200,"ms":98,"shape":["checkedAt","environment","summary","checks"],"diagnostics":{"checkedAt":"2026-09-25T07:09:01.660Z","environment":"development","summary":{"healthy":5,"attention":1,"error":0,"unverified":8},"checks":[{"id":"ai","group":"Integrations","label":"NEX AI","status":"unverified","evidence":"Configuration only","detail":"Model credentials are present. No model request was made.","action":"Run the tutor evaluation to verify grounding and provider availability."},{"id":"api","group":"Platform","label":"Backend API","status":"healthy","evidence":"Live check","detail":"Responding · uptime 146 seconds","action":""},{"id":"auth","group":"Platform","label":"Learner authentication","status":"unverified","evidence":"Configuration only","detail":"Signing secrets are present. Login, OTP and refresh have not been exercised by this check.","action":"Validate the complete user flow in the provider test environment."},{"id":"cache","group":"Platform","label":"Cache","status":"unverified","evidence":"Configuration only","detail":"Using process-memory fallback; no shared Redis cache is configured.","action":""},{"id":"catalogue","group":"Content","label":"Published courses","status":"healthy","evidence":"Database check","detail":"1 published courses available.","action":""},{"id":"certification","group":"Content","label":"Certification durations","status":"healthy","evidence":"Database check","detail":"0 published courses have missing lesson durations.","action":"Required duration metadata is present; completion and assessment workflows still need end-to-end testing."},{"id":"checkout-recovery","group":"Payments","label":"Checkout recovery","status":"healthy","evidence":"Database check","detail":"0 uncertain or stalled checkout attempts.","action":"No recovery backlog detected; this is not a payment success test."},{"id":"database","group":"Platform","label":"MongoDB","status":"healthy","evidence":"Live check","detail":"Database ping succeeded in 22 ms.","action":""},{"id":"jobs","group":"Platform","label":"Scheduled jobs","status":"attention","evidence":"Configuration only","detail":"Background jobs are disabled in this process.","action":""},{"id":"media","group":"Integrations","label":"Bunny video","status":"unverified","evidence":"Configuration only","detail":"Library and API credentials are present. Video playback has not been tested.","action":"Validate the complete user flow in the provider test environment."},{"id":"otp","group":"Integrations","label":"MSG91 OTP","status":"unverified","evidence":"Configuration only","detail":"MSG91 credentials are present. No SMS was sent and delivery is unverified.","action":"Validate the complete user flow in the provider test environment."},{"id":"payment-mode","group":"Payments","label":"Payment key mode","status":"unverified","evidence":"Configuration only","detail":"live mode selected. Credential validity is unverified.","action":"Manage Test/Live mode in Admin Settings."},{"id":"payments","group":"Payments","label":"Razorpay checkout","status":"unverified","evidence":"Configuration only","detail":"Configuration present for live mode. No payment was created.","action":""},{"id":"webhooks","group":"Payments","label":"Webhook processing","status":"unverified","evidence":"Historical evidence","detail":"Last processed event: 2026-09-24T15:34:26.602Z. This does not prove current delivery.","action":"Send a test event from Razorpay and check its delivery result."}]}}
+{"path":"/api/admin/course-progress","status":200,"ms":29,"shape":"array(12)"}
+{"anonymous":"/api/admin/analytics","status":401,"pass":true}
+{"anonymous":"/api/admin/user-management","status":401,"pass":true}
+{"anonymous":"/api/admin/courses?summary=1","status":401,"pass":true}
+{"anonymous":"/api/admin/payment-audit","status":401,"pass":true}
+{"anonymous":"/api/admin/payment-settings","status":401,"pass":true}
+{"anonymous":"/api/admin/marketing-settings","status":401,"pass":true}
+{"anonymous":"/api/admin/problem-reports?page=1&limit=20","status":401,"pass":true}
+{"anonymous":"/api/admin/deletion-requests?page=1","status":401,"pass":true}
+{"anonymous":"/api/admin/certifications?page=1","status":401,"pass":true}
+{"anonymous":"/api/admin/certificate-template","status":401,"pass":true}
+{"anonymous":"/api/admin/video-providers","status":401,"pass":true}
+{"anonymous":"/api/admin/system-health","status":401,"pass":true}
+{"anonymous":"/api/admin/course-progress","status":401,"pass":true}

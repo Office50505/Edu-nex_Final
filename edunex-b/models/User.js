@@ -68,6 +68,10 @@ const userSchema = new mongoose.Schema({
   aiConsentProviderVersion: { type: String, default: null, select: false },
   aiConsentDecidedAt: { type: Date, default: null, select: false },
   marketingOptIn: { type: Boolean, default: false },
+  isTester: { type: Boolean, default: false },
+  testerSince: { type: Date, default: null },
+  testerAssignedBy: { type: String, trim: true, default: null },
+  testerNotes: { type: String, trim: true, maxlength: 500, default: null },
   lastActiveAt: { type: Date, default: Date.now },
   lastLoginAt: { type: Date, default: null },
   loginCount: { type: Number, default: 0 },
@@ -99,6 +103,7 @@ userSchema.index({ lastActiveAt: -1 });
 userSchema.index({ isMobileVerified: 1, createdAt: -1 });
 userSchema.index({ isEmailVerified: 1, createdAt: -1 });
 userSchema.index({ marketingOptIn: 1, createdAt: -1 });
+userSchema.index({ isTester: 1, testerSince: -1 });
 userSchema.index({ activeSessionId: 1 }, { sparse: true });
 userSchema.index({ activeSessions: 1 }, { sparse: true });
 

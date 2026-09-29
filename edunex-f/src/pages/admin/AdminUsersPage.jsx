@@ -242,7 +242,7 @@ function PurchaseHistoryPanel({ state }) {
     </section>;
 }
 
-function LearnerDetailDrawer({ user, courses, tab, setTab, onClose, purchaseHistory, activity, certificates, onSubscription, onAccess, busy }) {
+function LearnerDetailDrawer({ user, courses, tab, setTab, onClose, purchaseHistory, activity, certificates, onSubscription, onAccess, onTesterStatus, busy }) {
   if (!user) return null;
   const progress = user.progressCourses || [];
   const watch = user.watchSummary || {};
@@ -270,6 +270,7 @@ function LearnerDetailDrawer({ user, courses, tab, setTab, onClose, purchaseHist
       {tab === "Activity" ? <section><h3>Admin action history</h3><div className="admin-action-list">{activity?.loading ? <p>Loading activity…</p> : activity?.error ? <p role="alert">{activity.error}</p> : activity?.rows?.length ? activity.rows.map(item => <div key={item._id}><strong>{String(item.action).replaceAll("_", " ")}</strong><span>{item.reason || "No reason"} · {formatDateTime(item.createdAt)}</span></div>) : <p>No admin actions recorded.</p>}</div></section> : null}
       <div className="drawer-actions">
         <AdminWrite><button className="toolbar-button" type="button" disabled={busy || Boolean(user.deletedAt)} onClick={() => onAccess(user)}>{user.isActive === false ? "Unban" : "Ban"}</button></AdminWrite>
+        <AdminWrite><button className="toolbar-button" type="button" disabled={busy || Boolean(user.deletedAt)} onClick={() => onTesterStatus(user)}>Make tester</button></AdminWrite>
         <AdminWrite><button className="toolbar-button" type="button" disabled={busy || Boolean(user.deletedAt)} onClick={() => onSubscription(user)}>Update subscription</button></AdminWrite>
       </div>
     </aside>
@@ -341,7 +342,8 @@ export function AdminUsersPage() {
   }, []);
 
   const filteredUsers = useMemo(() => {
-    const rows = users.filter((user) => {
+    const learnerUsers = users.filter((user) => !user.isTester);
+    const rows = learnerUsers.filter((user) => {
       const matchesStatus = status === "all" || user.subscriptionStatus === status;
       const matchesAccount = accountStatus === "all" || (accountStatus === "active" ? user.isActive : !user.isActive);
       const matchesPresence = presenceStatus === "all" || (presenceStatus === "online" ? user.presence?.isOnline : !user.presence?.isOnline);
@@ -455,6 +457,32 @@ export function AdminUsersPage() {
       setMessageType("error"); setMessage(error.message);
       window.alert(error.message || `Unable to ${banning ? "ban" : "unban"} user.`);
     } finally { setUpdatingId(null); }
+  }
+
+  async function changeTesterStatus(user) {
+    if (updatingId) return;
+    const enabling = !user.isTester;
+    const label = user.fullName || user.mobileNumber || "this learner";
+    const notes = enabling
+      ? window.prompt(`Move ${label} to Tester Analytics?\n\nOptional note for the audit log:`, "Tester account enabled by admin")
+      : window.prompt(`Remove ${label} from Tester Analytics?\n\nOptional note for the audit log:`, "Tester status removed by admin");
+    if (notes === null) return;
+    setUpdatingId(user._id);
+    try {
+      const data = await adminJson(`/api/admin/users/${encodeURIComponent(user._id)}/tester`, {
+        method: "PATCH",
+        body: JSON.stringify({ action: enabling ? "enable" : "disable", notes }),
+      }, `Unable to ${enabling ? "enable" : "remove"} tester status.`);
+      mergeUser(user._id, data.user || {});
+      setActionHistory((current) => ({ ...current, [user._id]: undefined }));
+      setMessageType("success");
+      setMessage(data.message || (enabling ? "Learner moved to tester analytics." : "Tester status removed."));
+    } catch (error) {
+      setMessageType("error");
+      setMessage(error.message || `Unable to ${enabling ? "enable" : "remove"} tester status.`);
+    } finally {
+      setUpdatingId(null);
+    }
   }
 
   function openSubscriptionDialog(user) {
@@ -741,7 +769,7 @@ export function AdminUsersPage() {
       </section>
 
       <div className="crm-results-bar">
-        <div><strong>Learner pipeline</strong><span>{formatNumber(filteredUsers.length)} shown from {formatNumber(users.length)} total users</span></div>
+        <div><strong>Learner pipeline</strong><span>{formatNumber(filteredUsers.length)} shown from {formatNumber(users.filter((user) => !user.isTester).length)} total learners</span></div>
         <button className="toolbar-button" type="button" onClick={exportCsv} disabled={!filteredUsers.length}>Export CSV</button>
       </div>
 
@@ -765,7 +793,7 @@ export function AdminUsersPage() {
                 <div><strong>{formatMobile(user.mobileNumber)}</strong><span>{user.email || "No email"}</span></div>
                 <div className="crm-engagement-cell"><strong>{engagementLabel(user)}</strong><div className="mini-stats"><span className="pill">{formatNumber(summaryData.totalCourses)} courses</span><span className="pill">{formatNumber(summaryData.completedCourses)} done</span><span className="pill">{formatWatchDuration(watchMinutes(user))}</span></div></div>
                 <div className="crm-engagement-cell"><strong>{formatNumber(average)}% completion</strong><div className="progress-meter" aria-hidden="true"><div className="progress-fill" style={{ width: `${average}%` }} /></div><span>Joined {formatDateTime(user.createdAt)} · Last {formatDate(user.lastActiveAt || watch.lastWatchedAt)}</span></div>
-                <div className="row-actions"><button className="action-button" type="button" onClick={() => openDrawer(user)}>View</button><button className="action-button" type="button" aria-expanded={isOpen} onClick={() => toggleOpen(user._id)}>{isOpen ? "Close" : "Manage"}</button><button className="action-button" type="button" aria-expanded={isPurchaseOpen} onClick={() => togglePurchaseHistory(user)}>{isPurchaseOpen ? "Close history" : "Purchase history"}</button>{user.deletedAt ? <><AdminWrite><button className="action-button primary" type="button" disabled={Boolean(updatingId) || Boolean(deletingId)} onClick={() => restoreUser(user)}>{updatingId === user._id ? "Restoring…" : "Restore"}</button></AdminWrite><AdminWrite><button className="action-button danger" type="button" disabled={Boolean(deletingId) || Boolean(updatingId)} onClick={() => deletePermanently(user)}>{deletingId === user._id ? "Deleting…" : "Delete permanently"}</button></AdminWrite></> : <><AdminWrite><button className={`action-button ${user.isActive === false ? "success" : "danger"}`} type="button" disabled={Boolean(updatingId)} onClick={() => changeAccountAccess(user)}>{updatingId === user._id ? "Updating…" : user.isActive === false ? "Unban" : "Ban"}</button></AdminWrite><AdminWrite><button className="action-button danger" type="button" disabled={Boolean(deletingId) || Boolean(updatingId)} onClick={() => moveToTrash(user)}>{deletingId === user._id ? "Moving…" : "Move to Trash"}</button></AdminWrite></>}</div>
+                <div className="row-actions"><button className="action-button" type="button" onClick={() => openDrawer(user)}>View</button><button className="action-button" type="button" aria-expanded={isOpen} onClick={() => toggleOpen(user._id)}>{isOpen ? "Close" : "Manage"}</button><button className="action-button" type="button" aria-expanded={isPurchaseOpen} onClick={() => togglePurchaseHistory(user)}>{isPurchaseOpen ? "Close history" : "Purchase history"}</button>{user.deletedAt ? <><AdminWrite><button className="action-button primary" type="button" disabled={Boolean(updatingId) || Boolean(deletingId)} onClick={() => restoreUser(user)}>{updatingId === user._id ? "Restoring…" : "Restore"}</button></AdminWrite><AdminWrite><button className="action-button danger" type="button" disabled={Boolean(deletingId) || Boolean(updatingId)} onClick={() => deletePermanently(user)}>{deletingId === user._id ? "Deleting…" : "Delete permanently"}</button></AdminWrite></> : <><AdminWrite><button className="action-button primary" type="button" disabled={Boolean(updatingId)} onClick={() => changeTesterStatus(user)}>{updatingId === user._id ? "Updating…" : "Make tester"}</button></AdminWrite><AdminWrite><button className={`action-button ${user.isActive === false ? "success" : "danger"}`} type="button" disabled={Boolean(updatingId)} onClick={() => changeAccountAccess(user)}>{updatingId === user._id ? "Updating…" : user.isActive === false ? "Unban" : "Ban"}</button></AdminWrite><AdminWrite><button className="action-button danger" type="button" disabled={Boolean(deletingId) || Boolean(updatingId)} onClick={() => moveToTrash(user)}>{deletingId === user._id ? "Moving…" : "Move to Trash"}</button></AdminWrite></>}</div>
               </div>
               {isOpen ? (
                 <div className="progress-panel">
@@ -793,7 +821,7 @@ export function AdminUsersPage() {
         <span aria-live="polite">Page {currentPage} of {pageCount} · 25 learners per page</span>
         <button className="toolbar-button" disabled={currentPage >= pageCount || loading} onClick={() => setPage(currentPage + 1)}>Next</button>
       </nav>
-      <LearnerDetailDrawer activity={drawerActivity[selectedUser?._id]} certificates={drawerCertificates[selectedUser?._id]} onSubscription={openSubscriptionDialog} onAccess={changeAccountAccess} busy={Boolean(updatingId)} user={selectedUser} courses={courses} tab={drawerTab} setTab={setDrawerTab} onClose={() => setSelectedUser(null)} purchaseHistory={selectedUser ? (purchaseHistories[String(selectedUser._id)] || { user: selectedUser, loading: false, error: "", orders: [], courseChanges: [] }) : null} />
+      <LearnerDetailDrawer activity={drawerActivity[selectedUser?._id]} certificates={drawerCertificates[selectedUser?._id]} onSubscription={openSubscriptionDialog} onAccess={changeAccountAccess} onTesterStatus={changeTesterStatus} busy={Boolean(updatingId)} user={selectedUser} courses={courses} tab={drawerTab} setTab={setDrawerTab} onClose={() => setSelectedUser(null)} purchaseHistory={selectedUser ? (purchaseHistories[String(selectedUser._id)] || { user: selectedUser, loading: false, error: "", orders: [], courseChanges: [] }) : null} />
 
       {subscriptionDialog ? <div className="course-access-backdrop">
         <form className="course-access-dialog" role="dialog" aria-modal="true" aria-labelledby="subscription-dialog-title" style={{ maxHeight: "calc(100dvh - 48px)", overflowY: "auto" }} onSubmit={saveSubscription}><AdminEditFields disabled={Boolean(updatingId)}>
