@@ -265,7 +265,7 @@ function PurchaseHistoryPanel({ state }) {
     </section>;
 }
 
-function LearnerDetailDrawer({ user, courses, tab, setTab, onClose, purchaseHistory, activity, certificates, onSubscription, onAccess, onTesterStatus, busy }) {
+function LearnerDetailDrawer({ user, courses, tab, setTab, onClose, purchaseHistory, activity, certificates, onSubscription, onAccess, onTesterStatus, onPasswordReset, busy }) {
   if (!user) return null;
   const progress = user.progressCourses || [];
   const watch = user.watchSummary || {};
@@ -295,13 +295,22 @@ function LearnerDetailDrawer({ user, courses, tab, setTab, onClose, purchaseHist
       <div className="drawer-actions">
         <AdminWrite><button className="toolbar-button" type="button" disabled={busy || Boolean(user.deletedAt)} onClick={() => onAccess(user)}>{user.isActive === false ? "Unban" : "Ban"}</button></AdminWrite>
         <AdminWrite><button className="toolbar-button" type="button" disabled={busy || Boolean(user.deletedAt)} onClick={() => onTesterStatus(user)}>Make tester</button></AdminWrite>
+        <AdminWrite><button className="toolbar-button" type="button" disabled={busy || Boolean(user.deletedAt)} onClick={() => onPasswordReset(user)}>Set password</button></AdminWrite>
         <AdminWrite><button className="toolbar-button" type="button" disabled={busy || Boolean(user.deletedAt)} onClick={() => onSubscription(user)}>Update subscription</button></AdminWrite>
       </div>
     </aside>
   );
 }
 
-export function AdminUsersPage() {
+export function AdminUsersPage({ audience = "learners" } = {}) {
+  const testerMode = audience === "testers";
+  const entityLabel = testerMode ? "tester" : "learner";
+  const entityLabelTitle = testerMode ? "Tester" : "Learner";
+  const pageTitle = testerMode ? "Test Account Management" : "User Management";
+  const pageSubtitle = testerMode
+    ? "CRM-style tester records with the same account, subscription, course, and deletion controls."
+    : "CRM-style learner records with subscription status, verification health, engagement, and course progress.";
+  const pageKey = testerMode ? "testerUsers" : "users";
   const [page, setPage] = useState(1);
   const [deletingId, setDeletingId] = useState(null);
   const [users, setUsers] = useState([]);
@@ -331,6 +340,7 @@ export function AdminUsersPage() {
   const [purchaseHistories, setPurchaseHistories] = useState({});
   const [purchaseOpenIds, setPurchaseOpenIds] = useState(new Set());
   const deferredQuery = useDeferredValue(query);
+  const totalAudienceCount = users.filter((user) => testerMode ? user.isTester : !user.isTester).length;
 
   async function loadUsers({ silent = false } = {}) {
     if (!requireAdmin()) return;
@@ -340,7 +350,7 @@ export function AdminUsersPage() {
     }
     try {
       const [rows, courseRows] = await Promise.all([
-        adminJson("/api/admin/user-management", {}, "Unable to load users."),
+        adminJson(`/api/admin/user-management${testerMode ? "?audience=testers" : ""}`, {}, "Unable to load users."),
         adminJson("/api/admin/courses?summary=1", {}, "Unable to load courses."),
       ]);
       setUsers(Array.isArray(rows) ? rows : []);
@@ -354,7 +364,7 @@ export function AdminUsersPage() {
   }
 
   useEffect(() => {
-    document.title = "User Management | Skillomate";
+    document.title = `${pageTitle} | Skillomate`;
     const params = new URLSearchParams(window.location.search);
     const initialQuery = params.get("q");
     if (initialQuery) setQuery(initialQuery);
@@ -363,11 +373,11 @@ export function AdminUsersPage() {
     loadUsers();
     const presenceRefresh = window.setInterval(() => loadUsers({ silent: true }), 30000);
     return () => window.clearInterval(presenceRefresh);
-  }, []);
+  }, [pageTitle, testerMode]);
 
   const filteredUsers = useMemo(() => {
-    const learnerUsers = users.filter((user) => !user.isTester);
-    const rows = learnerUsers.filter((user) => {
+    const audienceUsers = users.filter((user) => testerMode ? user.isTester : !user.isTester);
+    const rows = audienceUsers.filter((user) => {
       const matchesStatus = status === "all" || user.subscriptionStatus === status;
       const matchesAccount = accountStatus === "all" || (accountStatus === "active" ? user.isActive : !user.isActive);
       const matchesPresence = presenceStatus === "all" || (presenceStatus === "online" ? user.presence?.isOnline : !user.presence?.isOnline);
@@ -381,7 +391,7 @@ export function AdminUsersPage() {
       if (sort === "name") return String(a.fullName || a.email || "").localeCompare(String(b.fullName || b.email || ""));
       return new Date(b.createdAt || 0) - new Date(a.createdAt || 0);
     });
-  }, [users, deferredQuery, status, accountStatus, presenceStatus, sort, segment]);
+  }, [users, deferredQuery, status, accountStatus, presenceStatus, sort, segment, testerMode]);
 
   useEffect(() => { setPage(1); }, [deferredQuery, status, accountStatus, presenceStatus, sort, segment]);
 
@@ -486,7 +496,7 @@ export function AdminUsersPage() {
   async function changeTesterStatus(user) {
     if (updatingId) return;
     const enabling = !user.isTester;
-    const label = user.fullName || user.mobileNumber || "this learner";
+    const label = user.fullName || user.mobileNumber || `this ${entityLabel}`;
     const notes = enabling
       ? window.prompt(`Move ${label} to Tester Analytics?\n\nOptional note for the audit log:`, "Tester account enabled by admin")
       : window.prompt(`Remove ${label} from Tester Analytics?\n\nOptional note for the audit log:`, "Tester status removed by admin");
@@ -504,6 +514,36 @@ export function AdminUsersPage() {
     } catch (error) {
       setMessageType("error");
       setMessage(error.message || `Unable to ${enabling ? "enable" : "remove"} tester status.`);
+    } finally {
+      setUpdatingId(null);
+    }
+  }
+
+  async function resetUserPassword(user) {
+    if (updatingId) return;
+    const label = user.fullName || user.mobileNumber || `this ${entityLabel}`;
+    const password = window.prompt(`Set a new temporary password for ${label}.\n\nEnter 8 to 72 characters:`);
+    if (password === null) return;
+    if (password.length < 8 || password.length > 72) {
+      window.alert("Temporary password must contain 8 to 72 characters.");
+      return;
+    }
+    const confirmed = window.confirm(`Set this temporary password for ${label}? Existing sessions will be logged out.`);
+    if (!confirmed) return;
+    setUpdatingId(user._id);
+    try {
+      const data = await adminJson(`/api/admin/users/${encodeURIComponent(user._id)}/password`, {
+        method: "PATCH",
+        body: JSON.stringify({ password, reason: `Temporary password set from ${pageTitle}` }),
+      }, "Unable to set temporary password.");
+      setActionHistory((current) => ({ ...current, [user._id]: undefined }));
+      setMessageType("success");
+      setMessage(data.message || "Temporary password set.");
+      window.alert(data.message || "Temporary password set.");
+    } catch (error) {
+      setMessageType("error");
+      setMessage(error.message || "Unable to set temporary password.");
+      window.alert(error.message || "Unable to set temporary password.");
     } finally {
       setUpdatingId(null);
     }
@@ -567,8 +607,8 @@ export function AdminUsersPage() {
     const choices = courses.filter((course) => action === "grant" ? !owned.has(String(course._id)) : owned.has(String(course._id)));
     if (!choices.length) {
       const text = action === "grant"
-        ? "This learner already owns every published course. The existing assignment is still active."
-        : "This learner has no purchased courses to remove.";
+        ? `This ${entityLabel} already owns every published course. The existing assignment is still active.`
+        : `This ${entityLabel} has no purchased courses to remove.`;
       setMessageType("error");
       setMessage(text);
       window.alert(text);
@@ -645,12 +685,12 @@ export function AdminUsersPage() {
 
   async function moveToTrash(user) {
     if (deletingId) return;
-    const userName = user.fullName || user.email || user.mobileNumber || "Learner";
+    const userName = user.fullName || user.email || user.mobileNumber || entityLabelTitle;
     const confirmed = window.confirm(`Move ${userName} to Trash? You can restore this user later.`);
     if (!confirmed) return;
     setDeletingId(user._id);
     try {
-      const data = await adminJson(`/api/admin/users/${encodeURIComponent(user._id)}`, { method: "DELETE", body: JSON.stringify({ reason: "Moved to trash from User Management" }) }, "Unable to move user to trash.");
+      const data = await adminJson(`/api/admin/users/${encodeURIComponent(user._id)}`, { method: "DELETE", body: JSON.stringify({ reason: `Moved to trash from ${pageTitle}` }) }, "Unable to move user to trash.");
       mergeUser(user._id, data.user || { deletedAt: new Date().toISOString(), isActive: false });
       setSelectedUser(null);
       setMessageType("success");
@@ -665,7 +705,7 @@ export function AdminUsersPage() {
 
   async function restoreUser(user) {
     if (updatingId) return;
-    const userName = user.fullName || user.email || user.mobileNumber || "Learner";
+    const userName = user.fullName || user.email || user.mobileNumber || entityLabelTitle;
     if (!window.confirm(`Restore ${userName} from Trash?`)) return;
     setUpdatingId(user._id);
     try {
@@ -679,7 +719,7 @@ export function AdminUsersPage() {
 
   async function deletePermanently(user) {
     if (deletingId) return;
-    const userName = user.fullName || user.email || user.mobileNumber || "Learner";
+    const userName = user.fullName || user.email || user.mobileNumber || entityLabelTitle;
     if (!window.confirm(`Permanently delete ${userName}? This cannot be undone and all related records will be removed.`)) return;
     setDeletingId(user._id);
     try {
@@ -725,7 +765,7 @@ export function AdminUsersPage() {
       headers.map(csvEscape).join(","),
       ...filteredUsers.map((user) => [
         user._id || "",
-        user.fullName || "Learner",
+        user.fullName || entityLabelTitle,
         user.email || "",
         user.mobileNumber || "",
         lifecycleLabel(user),
@@ -750,21 +790,21 @@ export function AdminUsersPage() {
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
-    link.download = `edunex-users-${new Date().toISOString().slice(0, 10)}.csv`;
+    link.download = `${testerMode ? "edunex-test-accounts" : "edunex-users"}-${new Date().toISOString().slice(0, 10)}.csv`;
     link.click();
     URL.revokeObjectURL(url);
   }
 
   return (
     <AdminShell
-      activePage="users"
+      activePage={pageKey}
       shellClass="users-shell"
-      title="User Management"
-      subtitle="CRM-style learner records with subscription status, verification health, engagement, and course progress."
+      title={pageTitle}
+      subtitle={pageSubtitle}
       actions={<button className="toolbar-button" type="button" onClick={loadUsers} disabled={loading}>Refresh</button>}
     >
       <Message text={message} type={messageType} />
-      <AdminWrite><details className="create-learner-panel">
+      {!testerMode ? <AdminWrite><details className="create-learner-panel">
         <summary><span>Create learner ID</span><small>Add a learner manually and set initial access.</small></summary>
         <form className="create-learner-form" onSubmit={submitCreateLearner}><AdminEditFields>
           <label><span>Full name</span><input value={createLearner.fullName} onChange={(event) => updateCreateLearner("fullName", event.target.value)} minLength="2" maxLength="120" required autoComplete="off" /></label>
@@ -778,7 +818,7 @@ export function AdminUsersPage() {
           <label className="create-learner-check"><input type="checkbox" checked={createLearner.isEmailVerified} disabled={!createLearner.email} onChange={(event) => updateCreateLearner("isEmailVerified", event.target.checked)} /><span>Email verified</span></label>
           <div className="create-learner-actions"><button className="toolbar-button primary" type="submit" disabled={creatingLearner}>{creatingLearner ? "Creating…" : "Create learner ID"}</button>{createdLearnerId ? <output>Created ID: <strong>{createdLearnerId}</strong></output> : null}</div>
         </AdminEditFields></form>
-      </details></AdminWrite>
+      </details></AdminWrite> : null}
       <DeletionRequests />
 
       <form className="controls-panel" onSubmit={(event) => event.preventDefault()}>
@@ -799,12 +839,12 @@ export function AdminUsersPage() {
       </section>
 
       <div className="crm-results-bar">
-        <div><strong>Learner pipeline</strong><span>{formatNumber(filteredUsers.length)} shown from {formatNumber(users.filter((user) => !user.isTester).length)} total learners</span></div>
+        <div><strong>{testerMode ? "Tester pipeline" : "Learner pipeline"}</strong><span>{formatNumber(filteredUsers.length)} shown from {formatNumber(totalAudienceCount)} total {testerMode ? "test accounts" : "learners"}</span></div>
         <button className="toolbar-button" type="button" onClick={exportCsv} disabled={!filteredUsers.length}>Export CSV</button>
       </div>
 
       <section className="users-panel" aria-label="Users">
-        <div className="users-head"><span>Learner</span><span>Status / subscription</span><span>Phone / email</span><span>Courses / watch time</span><span>Completion / dates</span><span>Actions</span></div>
+        <div className="users-head"><span>{entityLabelTitle}</span><span>Status / subscription</span><span>Phone / email</span><span>Courses / watch time</span><span>Completion / dates</span><span>Actions</span></div>
         {loading ? <div className="loading-state">Loading users...</div> : null}
         {!loading && !filteredUsers.length ? <div className="empty-state">No users found.</div> : null}
         {!loading && visibleUsers.map((user) => {
@@ -818,12 +858,12 @@ export function AdminUsersPage() {
           return (
             <article className={`user-card${isOpen ? " is-open" : ""}`} key={user._id}>
               <div className="user-row">
-                <div className="crm-contact-cell"><div className="crm-avatar" aria-hidden="true">{initials(user)}</div><div><strong>{user.fullName || "Learner"}</strong><span className={`presence-status ${user.presence?.isOnline ? "is-online" : "is-offline"}`}><i aria-hidden="true" />{presenceLabel(user)}</span><span>ID {user._id || "No ID"}</span></div></div>
+                <div className="crm-contact-cell"><div className="crm-avatar" aria-hidden="true">{initials(user)}</div><div><strong>{user.fullName || entityLabelTitle}</strong><span className={`presence-status ${user.presence?.isOnline ? "is-online" : "is-offline"}`}><i aria-hidden="true" />{presenceLabel(user)}</span><span>ID {user._id || "No ID"}</span></div></div>
                 <div><strong>{user.deletedAt ? "In Trash" : user.isActive === false ? "Banned account" : lifecycleLabel(user)}</strong><span><span className={`badge ${user.deletedAt || user.isActive === false ? "bad" : statusBadgeClass(statusValue)}`}>{user.deletedAt ? "trashed" : user.isActive === false ? "banned" : statusValue}</span></span><span>{user.deletedAt ? `Deleted ${formatDate(user.deletedAt)}` : isVerified(user) ? "Verified account" : "Verification pending"}</span></div>
                 <div><strong>{formatMobile(user.mobileNumber)}</strong><span>{user.email || "No email"}</span></div>
                 <div className="crm-engagement-cell"><strong>{engagementLabel(user)}</strong><div className="mini-stats"><span className="pill">{formatNumber(summaryData.totalCourses)} courses</span><span className="pill">{formatNumber(summaryData.completedCourses)} done</span><span className="pill">{formatWatchDuration(watchMinutes(user))}</span></div></div>
                 <div className="crm-engagement-cell"><strong>{formatNumber(average)}% completion</strong><div className="progress-meter" aria-hidden="true"><div className="progress-fill" style={{ width: `${average}%` }} /></div><span>Joined {formatDateTime(user.createdAt)} · Last {formatDate(user.lastActiveAt || watch.lastWatchedAt)}</span></div>
-                <div className="row-actions"><button className="action-button" type="button" onClick={() => openDrawer(user)}>View</button><button className="action-button" type="button" aria-expanded={isOpen} onClick={() => toggleOpen(user._id)}>{isOpen ? "Close" : "Manage"}</button><button className="action-button" type="button" aria-expanded={isPurchaseOpen} onClick={() => togglePurchaseHistory(user)}>{isPurchaseOpen ? "Close history" : "Purchase history"}</button>{user.deletedAt ? <><AdminWrite><button className="action-button primary" type="button" disabled={Boolean(updatingId) || Boolean(deletingId)} onClick={() => restoreUser(user)}>{updatingId === user._id ? "Restoring…" : "Restore"}</button></AdminWrite><AdminWrite><button className="action-button danger" type="button" disabled={Boolean(deletingId) || Boolean(updatingId)} onClick={() => deletePermanently(user)}>{deletingId === user._id ? "Deleting…" : "Delete permanently"}</button></AdminWrite></> : <><AdminWrite><button className="action-button primary" type="button" disabled={Boolean(updatingId)} onClick={() => changeTesterStatus(user)}>{updatingId === user._id ? "Updating…" : "Make tester"}</button></AdminWrite><AdminWrite><button className={`action-button ${user.isActive === false ? "success" : "danger"}`} type="button" disabled={Boolean(updatingId)} onClick={() => changeAccountAccess(user)}>{updatingId === user._id ? "Updating…" : user.isActive === false ? "Unban" : "Ban"}</button></AdminWrite><AdminWrite><button className="action-button danger" type="button" disabled={Boolean(deletingId) || Boolean(updatingId)} onClick={() => moveToTrash(user)}>{deletingId === user._id ? "Moving…" : "Move to Trash"}</button></AdminWrite></>}</div>
+                <div className="row-actions"><button className="action-button" type="button" onClick={() => openDrawer(user)}>View</button><button className="action-button" type="button" aria-expanded={isOpen} onClick={() => toggleOpen(user._id)}>{isOpen ? "Close" : "Manage"}</button><button className="action-button" type="button" aria-expanded={isPurchaseOpen} onClick={() => togglePurchaseHistory(user)}>{isPurchaseOpen ? "Close history" : "Purchase history"}</button>{user.deletedAt ? <><AdminWrite><button className="action-button primary" type="button" disabled={Boolean(updatingId) || Boolean(deletingId)} onClick={() => restoreUser(user)}>{updatingId === user._id ? "Restoring…" : "Restore"}</button></AdminWrite><AdminWrite><button className="action-button danger" type="button" disabled={Boolean(deletingId) || Boolean(updatingId)} onClick={() => deletePermanently(user)}>{deletingId === user._id ? "Deleting…" : "Delete permanently"}</button></AdminWrite></> : <><AdminWrite><button className="action-button primary" type="button" disabled={Boolean(updatingId)} onClick={() => changeTesterStatus(user)}>{updatingId === user._id ? "Updating…" : user.isTester ? "Remove tester" : "Make tester"}</button></AdminWrite><AdminWrite><button className="action-button" type="button" disabled={Boolean(updatingId)} onClick={() => resetUserPassword(user)}>{updatingId === user._id ? "Updating…" : "Set password"}</button></AdminWrite><AdminWrite><button className={`action-button ${user.isActive === false ? "success" : "danger"}`} type="button" disabled={Boolean(updatingId)} onClick={() => changeAccountAccess(user)}>{updatingId === user._id ? "Updating…" : user.isActive === false ? "Unban" : "Ban"}</button></AdminWrite><AdminWrite><button className="action-button danger" type="button" disabled={Boolean(deletingId) || Boolean(updatingId)} onClick={() => moveToTrash(user)}>{deletingId === user._id ? "Moving…" : "Move to Trash"}</button></AdminWrite></>}</div>
               </div>
               {isOpen ? (
                 <div className="progress-panel">
@@ -849,15 +889,15 @@ export function AdminUsersPage() {
       </section>
       <nav className="crm-results-bar" aria-label="Learner pages">
         <button className="toolbar-button" disabled={currentPage <= 1 || loading} onClick={() => setPage(currentPage - 1)}>Previous</button>
-        <span aria-live="polite">Page {currentPage} of {pageCount} · 25 learners per page</span>
+        <span aria-live="polite">Page {currentPage} of {pageCount} · 25 {testerMode ? "test accounts" : "learners"} per page</span>
         <button className="toolbar-button" disabled={currentPage >= pageCount || loading} onClick={() => setPage(currentPage + 1)}>Next</button>
       </nav>
-      <LearnerDetailDrawer activity={drawerActivity[selectedUser?._id]} certificates={drawerCertificates[selectedUser?._id]} onSubscription={openSubscriptionDialog} onAccess={changeAccountAccess} onTesterStatus={changeTesterStatus} busy={Boolean(updatingId)} user={selectedUser} courses={courses} tab={drawerTab} setTab={setDrawerTab} onClose={() => setSelectedUser(null)} purchaseHistory={selectedUser ? (purchaseHistories[String(selectedUser._id)] || { user: selectedUser, loading: false, error: "", orders: [], courseChanges: [] }) : null} />
+      <LearnerDetailDrawer activity={drawerActivity[selectedUser?._id]} certificates={drawerCertificates[selectedUser?._id]} onSubscription={openSubscriptionDialog} onAccess={changeAccountAccess} onTesterStatus={changeTesterStatus} onPasswordReset={resetUserPassword} busy={Boolean(updatingId)} user={selectedUser} courses={courses} tab={drawerTab} setTab={setDrawerTab} onClose={() => setSelectedUser(null)} purchaseHistory={selectedUser ? (purchaseHistories[String(selectedUser._id)] || { user: selectedUser, loading: false, error: "", orders: [], courseChanges: [] }) : null} />
 
       {subscriptionDialog ? <div className="course-access-backdrop">
         <form className="course-access-dialog" role="dialog" aria-modal="true" aria-labelledby="subscription-dialog-title" style={{ maxHeight: "calc(100dvh - 48px)", overflowY: "auto" }} onSubmit={saveSubscription}><AdminEditFields disabled={Boolean(updatingId)}>
           <h2 id="subscription-dialog-title">Update subscription</h2>
-          <p>{subscriptionDialog.user.fullName || "Learner"}</p>
+          <p>{subscriptionDialog.user.fullName || entityLabelTitle}</p>
           <p>Current status: <strong>{subscriptionDialog.user.subscriptionStatus || "none"}</strong><br />{accessEndLabel(subscriptionDialog.user)}: {accessEndDate(subscriptionDialog.user)}</p>
           <label><span>Subscription status</span><select autoFocus value={subscriptionDialog.status} onChange={event => setSubscriptionDialog(current => ({ ...current, status: event.target.value, durationDays: event.target.value === "trial" ? 1 : 30 }))}><option value="none">None</option><option value="trial">Trial</option><option value="subscribed">Subscribed</option></select></label>
           {subscriptionDialog.status !== "none" ? <div className="toolbar-actions" aria-label="Access duration presets">{(subscriptionDialog.status === "trial" ? [1, 3, 7] : [30, 90, 365]).map(days => <button className="toolbar-button" key={days} type="button" aria-pressed={Number(subscriptionDialog.durationDays) === days} onClick={() => setSubscriptionDialog(current => ({ ...current, durationDays: days }))}>{days === 1 ? "24 hours" : `${days} days`}</button>)}</div> : null}
@@ -871,7 +911,7 @@ export function AdminUsersPage() {
       {courseDialog ? <div className="course-access-backdrop" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget && !updatingId) setCourseDialog(null); }}>
         <form className="course-access-dialog" role="dialog" aria-modal="true" aria-labelledby="course-access-title" onSubmit={submitCourseAccess}><AdminEditFields>
           <div className="course-access-dialog-head"><div><span>Course ownership</span><h2 id="course-access-title">{courseDialog.action === "grant" ? "Add purchased course" : "Remove purchased course"}</h2></div><button type="button" aria-label="Close" disabled={Boolean(updatingId)} onClick={() => setCourseDialog(null)}>×</button></div>
-          <p>Choose a course for <strong>{courseDialog.user.fullName || formatMobile(courseDialog.user.mobileNumber) || "this learner"}</strong>.</p>
+          <p>Choose a course for <strong>{courseDialog.user.fullName || formatMobile(courseDialog.user.mobileNumber) || `this ${entityLabel}`}</strong>.</p>
           <label><span>Course</span><select autoFocus value={courseDialog.courseId} onChange={(event) => setCourseDialog((current) => ({ ...current, courseId: event.target.value }))}>{courseDialog.choices.map((course) => <option value={course._id} key={course._id}>{course.title}</option>)}</select></label>
           {courseDialog.action === "grant" ? <label><span>Access duration</span><select value={courseDialog.accessType} onChange={(event) => setCourseDialog((current) => ({ ...current, accessType: event.target.value }))}><option value="trial">Trial</option><option value="yearly">Yearly (365 days)</option><option value="permanent">Permanent</option></select></label> : null}
           {courseDialog.action === "grant" && courseDialog.accessType === "trial" ? <label><span>Trial days</span><input type="number" min="1" max="365" required value={courseDialog.accessDays} onChange={(event) => setCourseDialog((current) => ({ ...current, accessDays: event.target.value }))} /></label> : null}

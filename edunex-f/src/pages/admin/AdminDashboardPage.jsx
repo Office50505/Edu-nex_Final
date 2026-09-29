@@ -33,6 +33,15 @@ function textValue(...values) {
   return "Not returned";
 }
 
+function orderTypeLabel(value) {
+  const type = String(value || "").trim();
+  if (type === "trial_charge") return "1-Day Trial";
+  if (type === "subscription_charge") return "Monthly Subscription";
+  if (type === "mandate_setup") return "Mandate Setup";
+  if (type === "refund") return "Refund";
+  return textValue(type.replaceAll("_", " "));
+}
+
 function sumCounts(items) {
   return Array.isArray(items) ? items.reduce((sum, item) => sum + chartNumber(item.count), 0) : 0;
 }
@@ -268,7 +277,7 @@ export function AdminDashboardPage() {
   ];
   const panelRows = [
     ["Recent Users", (data?.recentUsers || []).slice(0, 8).map((user) => ({ title: textValue(user.fullName, user.email, user.mobileNumber), meta: formatDate(user.createdAt), value: textValue(user.subscriptionStatus) })), "No recent users."],
-    ["Recent Orders", (data?.recentOrders || []).slice(0, 8).map((order) => ({ title: textValue(order.user?.fullName, order.user?.email, order.orderType), meta: textValue(order.status), value: money(firstField(order, ["totalAmount", "amount", "amountInRupees"])) })), "No recent orders."],
+    ["Recent Orders", (data?.recentOrders || []).slice(0, 8).map((order) => ({ title: textValue(order.user?.fullName, order.user?.email, orderTypeLabel(order.orderType)), meta: `${textValue(order.status)} · ${orderTypeLabel(order.orderType)}`, value: money(firstField(order, ["totalAmount", "amount", "amountInRupees"])) })), "No recent orders."],
     ["Top Courses", (data?.topCourses || data?.topSellingCourses || []).slice(0, 8).map((course) => ({ title: textValue(course.title, course.courseTitle), meta: `${displayNumber(firstField(course, ["learnerCount", "totalStarted", "startedCount"]))} learners`, value: `${displayNumber(firstField(course, ["completedCount", "totalCompleted"]))} done` })), "No course analytics yet."],
     ["Subscription Mix", Object.entries(breakdowns.userSubscriptionStatus || breakdowns.subscriptionStatus || {}).slice(0, 10).map(([label, count]) => ({ title: textValue(label), meta: "Subscription status", value: displayNumber(count) })), "No subscription data."],
     ["Course Mix", Object.entries(breakdowns.courseStatus || {}).slice(0, 10).map(([label, count]) => ({ title: textValue(label), meta: "Course status", value: displayNumber(count) })), "No course status data."],

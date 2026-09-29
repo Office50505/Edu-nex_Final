@@ -2712,6 +2712,8 @@ app.patch('/api/admin/users/:id/courses', protectAdmin, async (req, res) => {
 
 app.get('/api/admin/user-management', protectAdmin, async (req, res) => {
   try {
+    const audience = String(req.query?.audience || 'learners').trim().toLowerCase();
+    const userFilter = audience === 'testers' ? { isTester: true } : { isTester: { $ne: true } };
     const normalizeAdminIdentityEmail = (value) => String(value || '').trim().toLowerCase();
     const normalizeAdminIdentityMobile = (value) => {
       const digits = String(value || '').replace(/\D/g, '');
@@ -2734,7 +2736,7 @@ app.get('/api/admin/user-management', protectAdmin, async (req, res) => {
     };
     const watchEventNames = ['video_start', 'video_progress', 'video_complete', 'video_watch'];
     const [users, progressRows, progressWatchRows, analyticsWatchRows, latestSessionRows, latestPresenceRows] = await Promise.all([
-      User.find({ isTester: { $ne: true } })
+      User.find(userFilter)
         .sort({ createdAt: -1 })
         .select('fullName email mobileNumber avatar gender age subscriptionStatus subscriptionExpiry purchasedCourses courseEntitlements isMobileVerified isEmailVerified isActive bannedAt banReason deletedAt deletedBy deletionReason marketingOptIn isTester testerSince testerAssignedBy testerNotes createdAt lastActiveAt lastLoginAt loginCount')
         .lean(),
@@ -3042,6 +3044,50 @@ app.patch('/api/admin/users/:id/tester', protectAdmin, async (req, res) => {
     res.json({
       message: enabling ? 'Learner moved to tester analytics.' : 'Tester status removed.',
       user: { _id: user._id, ...nextState },
+    });
+  } catch (error) {
+    res.status(error.statusCode || 500).json({ error: error.message });
+  }
+});
+
+app.patch('/api/admin/users/:id/password', protectAdmin, async (req, res) => {
+  try {
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(400).json({ error: 'Invalid user id' });
+    }
+    const password = String(req.body?.password || '');
+    const reason = String(req.body?.reason || 'Temporary password set by admin').trim().slice(0, 500) || 'Temporary password set by admin';
+    if (password.length < 8 || password.length > 72) {
+      return res.status(400).json({ error: 'Temporary password must contain 8 to 72 characters.' });
+    }
+    const user = await User.findById(req.params.id).select('+activeSessionId +activeSessions');
+    if (!user) return res.status(404).json({ error: 'User not found' });
+    if (user.deletedAt) return res.status(409).json({ error: 'Restore this user before setting a password.' });
+    const previousState = {
+      hadPassword: Boolean(user.passwordHash),
+      activeSessionId: user.activeSessionId || null,
+      activeSessions: Array.isArray(user.activeSessions) ? user.activeSessions.length : 0,
+    };
+    user.passwordHash = await bcrypt.hash(password, 12);
+    user.activeSessionId = null;
+    user.activeSessions = [];
+    user.deviceToken = null;
+    await user.save();
+    await Session.updateMany(
+      { user: user._id, loggedOutAt: null },
+      { $set: { loggedOutAt: new Date(), deviceToken: null, refreshTokenHash: null } }
+    );
+    await AdminUserAction.create({
+      user: user._id,
+      action: 'password_reset',
+      reason,
+      previousState,
+      nextState: { hadPassword: true, sessionsRevoked: true },
+      adminSubject: req.admin?.sub || req.admin?.email || 'admin',
+    });
+    res.json({
+      message: 'Temporary password set. Existing sessions were revoked.',
+      user: { _id: user._id },
     });
   } catch (error) {
     res.status(error.statusCode || 500).json({ error: error.message });
@@ -3503,17 +3549,90 @@ app.get('/api/admin/courses', protectAdmin, async (req, res) => {
   try {
     const query = Course.find();
     if (req.query.summary === '1') {
-      query.select('title slug status category createdAt updatedAt thumbnailUrl thumbnailVerticalUrl videos._id videos.thumbnailUrl');
+      query.select('title slug status category createdAt updatedAt thumbnailUrl thumbnailVerticalUrl totalStarted totalCompleted completionRate totalWatchMinutes averageProgress videos._id videos.title videos.videoUrl videos.embedUrl videos.bunnyVideoId videos.awsKey videos.playbackUrl videos.thumbnailUrl');
     }
     const courses = await query
       .populate('category', 'name slug isActive')
       .sort({ createdAt: -1 })
       .lean();
 
-    res.json(courses.map((course) => ({
-      ...course,
-      videoCount: Array.isArray(course.videos) ? course.videos.length : 0,
-    })));
+    if (req.query.summary !== '1' || !courses.length) {
+      return res.json(courses.map((course) => ({
+        ...course,
+        videoCount: Array.isArray(course.videos) ? course.videos.length : 0,
+      })));
+    }
+
+    const courseIds = courses.map((course) => course._id).filter(Boolean);
+    const [lessonProgressRows, courseProgressRows] = await Promise.all([
+      Progress.aggregate([
+        { $match: { course: { $in: courseIds } } },
+        {
+          $group: {
+            _id: '$course',
+            learnerIds: { $addToSet: '$user' },
+            watchedSeconds: { $sum: { $ifNull: ['$watchedSeconds', 0] } },
+            completedRecords: { $sum: { $cond: ['$completed', 1, 0] } },
+            progressRecords: { $sum: 1 },
+          },
+        },
+        {
+          $project: {
+            learnerCount: { $size: '$learnerIds' },
+            watchedSeconds: 1,
+            completedRecords: 1,
+            progressRecords: 1,
+          },
+        },
+      ]),
+      CourseProgress.aggregate([
+        { $match: { courseId: { $in: courseIds.map((id) => String(id)) } } },
+        {
+          $group: {
+            _id: '$courseId',
+            learnerIds: { $addToSet: '$userId' },
+            averageProgress: { $avg: '$progressPercent' },
+            completedRecords: { $sum: { $cond: [{ $gte: ['$progressPercent', 100] }, 1, 0] } },
+          },
+        },
+        {
+          $project: {
+            learnerCount: { $size: '$learnerIds' },
+            averageProgress: { $round: [{ $ifNull: ['$averageProgress', 0] }, 2] },
+            completedRecords: 1,
+          },
+        },
+      ]),
+    ]);
+
+    const lessonProgressByCourse = new Map(lessonProgressRows.map((row) => [String(row._id), row]));
+    const courseProgressByCourse = new Map(courseProgressRows.map((row) => [String(row._id), row]));
+
+    res.json(courses.map((course) => {
+      const id = String(course._id);
+      const lessonProgress = lessonProgressByCourse.get(id) || {};
+      const courseProgress = courseProgressByCourse.get(id) || {};
+      const totalStarted = Math.max(
+        Number(course.totalStarted || 0),
+        Number(lessonProgress.learnerCount || 0),
+        Number(courseProgress.learnerCount || 0)
+      );
+      const totalCompleted = Math.max(
+        Number(course.totalCompleted || 0),
+        Number(lessonProgress.completedRecords || 0),
+        Number(courseProgress.completedRecords || 0)
+      );
+      const completionRate = Number(course.completionRate || 0) || (totalStarted ? Math.round((totalCompleted / totalStarted) * 100) : 0);
+      return {
+        ...course,
+        totalStarted,
+        totalCompleted,
+        completionRate,
+        averageProgress: Number(course.averageProgress || 0) || Number(courseProgress.averageProgress || 0),
+        totalWatchMinutes: Number(course.totalWatchMinutes || 0) || Math.round(Number(lessonProgress.watchedSeconds || 0) / 60),
+        videoCount: Array.isArray(course.videos) ? course.videos.length : 0,
+      };
+    }));
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

@@ -54,6 +54,12 @@ test('admin learner management exposes only the latest recorded session IP', () 
   assert.doesNotMatch(serverSource, /\/api\/admin\/users\/:id\/ip-location/);
 });
 
+test('admin user management can be scoped to tester accounts', () => {
+  assert.match(serverSource, /const audience = String\(req\.query\?\.audience \|\| 'learners'\)/);
+  assert.match(serverSource, /audience === 'testers' \? \{ isTester: true \} : \{ isTester: \{ \$ne: true \} \}/);
+  assert.match(serverSource, /User\.find\(userFilter\)/);
+});
+
 test('admin can mark learners as testers without changing learner identity', () => {
   assert.match(userSource, /isTester:\s*\{\s*type:\s*Boolean,\s*default:\s*false\s*\}/);
   assert.match(userSource, /testerSince:\s*\{\s*type:\s*Date,\s*default:\s*null\s*\}/);
@@ -76,4 +82,12 @@ test('admin purchase history combines payment orders and course ownership change
   assert.match(serverSource, /Order\.find\(\{ user: req\.params\.id \}\)/);
   assert.match(serverSource, /course_granted', 'course_revoked/);
   assert.match(serverSource, /res\.json\(\{ user, orders, courseChanges \}\)/);
+});
+
+test('admin course summary derives learner metrics from progress records', () => {
+  assert.match(serverSource, /app\.get\('\/api\/admin\/courses', protectAdmin/);
+  assert.match(serverSource, /Progress\.aggregate\(\[/);
+  assert.match(serverSource, /CourseProgress\.aggregate\(\[/);
+  assert.match(serverSource, /Math\.max\([\s\S]*Number\(course\.totalStarted \|\| 0\)[\s\S]*Number\(lessonProgress\.learnerCount \|\| 0\)[\s\S]*Number\(courseProgress\.learnerCount \|\| 0\)/);
+  assert.match(serverSource, /videos\.videoUrl videos\.embedUrl videos\.bunnyVideoId/);
 });

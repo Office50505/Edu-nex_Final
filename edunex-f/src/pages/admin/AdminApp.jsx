@@ -33,6 +33,7 @@ const adminPages = {
   team: AdminTeamPage,
   dashboard: AdminDashboardPage,
   users: AdminUsersPage,
+  testerUsers: () => <AdminUsersPage audience="testers" />,
   testerAnalytics: AdminTesterAnalyticsPage,
   subscribers: AdminSubscribersPage,
   courses: AdminCoursesPage,
