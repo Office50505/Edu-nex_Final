@@ -38,7 +38,7 @@ function modeService({ planAmount = 49900, providerError = false } = {}) {
   const r = service(env, async (url, opts) => { providerCalls.push({url, method: opts.method}); if(providerError) throw Error('network'); return {ok:true,json:async()=>({period:'monthly',interval:1,item:{amount:planAmount,currency:'INR'}})}; });
   const module = {exports:{}};
   const Settings = { findById: () => ({lean:async()=>saved}), findByIdAndUpdate: async (id, update) => {saved=update.$set; writes.push(saved);} };
-  vm.runInNewContext(fs.readFileSync(path.join(__dirname,'../services/paymentMode.js'),'utf8'), {module, process:{env}, require: name => name.includes('PaymentSettings') ? Settings : r});
+  vm.runInNewContext(fs.readFileSync(path.join(__dirname,'../services/paymentMode.js'),'utf8'), {module, process:{env}, require: name => name.includes('PaymentSettings') ? Settings : name.includes('phonePeService') ? { readiness: () => ({ configured: false, detail: 'Missing: PHONEPE_CLIENT_ID' }) } : r});
   return { ...module.exports, writes, providerCalls };
 }
 test('admin mode persists only after read-only plan validation; summaries contain no credentials', async () => {

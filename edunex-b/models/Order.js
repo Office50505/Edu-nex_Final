@@ -15,6 +15,7 @@ const orderSchema = new mongoose.Schema({
   refundedAmount: { type: Number, default: 0 },
   phonePeTransactionId: { type: String, default: null },
   phonePeCustomerId: { type: String, default: null },
+  checkoutReturnUrl: { type: String, default: null },
   phonePePaymentInstrument: {
     type: String,
     enum: ['UPI', 'CARD', 'NETBANKING', 'WALLET', null],

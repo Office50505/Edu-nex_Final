@@ -144,6 +144,7 @@ function controllerHarness({ env = {}, failFirstOrderSave = false, providerStatu
     },
   };
   const phonePeService = {
+    readiness: () => ({ configured: true }),
     verifyWebhookSignature: () => true,
     async verifyPaymentStatus() {
       counters.providerVerify += 1;
@@ -177,6 +178,7 @@ function controllerHarness({ env = {}, failFirstOrderSave = false, providerStatu
         isPhonePeNewPaymentsEnabled: candidate => policy.isPhonePeNewPaymentsEnabled(candidate),
       };
       if (name.includes('phonePeService')) return phonePeService;
+      if (name.includes('paymentMode')) return { activeProvider: async () => policy.newCheckoutProvider(sandboxProcess.env) === 'phonepe' ? 'phonepe' : 'razorpay' };
       if (name.includes('subscriptionAccess')) return { resolveSubscriptionAccess: () => ({ active: false, status: 'expired', expiresAt: null }) };
       if (name.includes('courseAccess')) return { activeCourseEntitlements: () => [] };
       if (name.includes('trialEligibility')) return { hasUsedIntroTrial: async () => false };

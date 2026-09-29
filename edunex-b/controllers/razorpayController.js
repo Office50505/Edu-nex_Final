@@ -72,8 +72,9 @@ function checkoutResponse(billing, user) {
     trialEndsAt: billing.trialEnd, prefill: { ...(name ? { name } : {}), ...(contact ? { contact } : {}), ...(email ? { email } : {}) } };
 }
 exports.pricing = wrap(async (_req, res) => {
+  const provider = await modes.activeProvider();
   const c = rzp.config(await modes.activeMode());
-  res.json({ mode: c.mode, gateway: process.env.PAYMENT_GATEWAY_MODE || 'razorpay', trialAmountPaise: c.trialAmount, subscriptionAmountPaise: c.monthlyAmount,
+  res.json({ mode: c.mode, gateway: provider, trialAmountPaise: c.trialAmount, subscriptionAmountPaise: c.monthlyAmount,
     annualSubscriptionAmountPaise: c.annualAmount, trialHours: c.trialHours, currency: 'INR', billingCycles: c.cycles, annualBillingCycles: c.annualCycles });
 });
 exports.initiate = wrap(async (req, res) => {

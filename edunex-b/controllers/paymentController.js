@@ -5,6 +5,7 @@ const User = require('../models/User');
 const phonePeService = require('../services/phonePeService');
 const phonePeEventClaims = require('../services/phonePeEventClaims');
 const { isPhonePeEnabled, isPhonePeNewPaymentsEnabled } = require('../services/phonePePolicy');
+const paymentModes = require('../services/paymentMode');
 const { resolveSubscriptionAccess } = require('../services/subscriptionAccess');
 const { activeCourseEntitlements } = require('../services/courseAccess');
 const { hasUsedIntroTrial } = require('../services/trialEligibility');
@@ -43,6 +44,23 @@ function withQueryParams(url, params = {}) {
   }
 
   return parsed.toString();
+}
+
+function safeCheckoutReturnUrl(value) {
+  const raw = String(value || '').trim();
+  if (!raw) return null;
+  try {
+    const parsed = new URL(raw, frontendOrigin || 'http://localhost');
+    if (frontendOrigin) {
+      const allowed = new URL(frontendOrigin);
+      if (parsed.origin !== allowed.origin) return null;
+    } else if (!raw.startsWith('/')) {
+      return null;
+    }
+    return frontendOrigin ? parsed.toString() : `${parsed.pathname}${parsed.search}${parsed.hash}`;
+  } catch {
+    return null;
+  }
 }
 
 function requestOrigin(req) {
@@ -270,7 +288,9 @@ async function applyFailedPayment(order, status = {}) {
 
 async function initiateTrial(req, res) {
   try {
-    if (!isSimulatedPaymentEnabled() && !isPhonePeNewPaymentsEnabled(process.env)) {
+    const activeProvider = await paymentModes.activeProvider();
+    const ready = phonePeService.readiness();
+    if (!isSimulatedPaymentEnabled() && (activeProvider !== 'phonepe' || !ready.configured)) {
       return res.status(410).json({ error: 'PhonePe checkout is no longer available.' });
     }
     const paymentType = req.body.paymentType === 'monthly' ? 'monthly' : 'trial';
@@ -309,6 +329,7 @@ async function initiateTrial(req, res) {
       gateway: isSimulatedPaymentEnabled() ? 'simulated' : 'phonepe',
       phonePeMerchantTransactionId: paymentRequest.merchantTransactionId,
       orderType: paymentType === 'monthly' ? 'subscription_charge' : 'trial_charge',
+      checkoutReturnUrl: safeCheckoutReturnUrl(req.body?.returnUrl),
       status: 'pending',
     });
 
@@ -415,7 +436,7 @@ async function completeSimulatedPayment(req, res) {
         if (wantsJsonResponse(req)) {
           return res.json({ success: true, merchantTransactionId, simulated: true, alreadyCompleted: true });
         }
-        return res.redirect(withQueryParams(frontendPaymentSuccessUrl, {
+        return res.redirect(withQueryParams(order.checkoutReturnUrl || frontendPaymentSuccessUrl, {
           merchantTransactionId,
           simulated: 'true',
         }));
@@ -423,7 +444,7 @@ async function completeSimulatedPayment(req, res) {
       if (wantsJsonResponse(req)) {
         return res.status(409).json({ success: false, error: `Payment order is already ${order.status}` });
       }
-      return res.redirect(withQueryParams(frontendPaymentFailedUrl, {
+      return res.redirect(withQueryParams(order.checkoutReturnUrl || frontendPaymentFailedUrl, {
         merchantTransactionId,
         simulated: 'true',
         reason: 'already_completed',
@@ -455,7 +476,7 @@ async function completeSimulatedPayment(req, res) {
         });
       }
 
-      return res.redirect(withQueryParams(frontendPaymentSuccessUrl, {
+      return res.redirect(withQueryParams(order.checkoutReturnUrl || frontendPaymentSuccessUrl, {
         merchantTransactionId,
         simulated: 'true',
       }));
@@ -474,7 +495,7 @@ async function completeSimulatedPayment(req, res) {
       });
     }
 
-    return res.redirect(withQueryParams(frontendPaymentFailedUrl, {
+    return res.redirect(withQueryParams(order.checkoutReturnUrl || frontendPaymentFailedUrl, {
       merchantTransactionId,
       simulated: 'true',
       reason: result === 'cancelled' ? 'cancelled' : 'failed',
@@ -489,7 +510,8 @@ async function completeSimulatedPayment(req, res) {
 }
 
 async function paymentCallback(req, res) {
-  if (!isPhonePeEnabled(process.env)) {
+  const activeProvider = await paymentModes.activeProvider().catch(() => null);
+  if (activeProvider !== 'phonepe' && !isPhonePeEnabled(process.env)) {
     return res.status(410).json({ error: 'PhonePe payment confirmation is disabled.' });
   }
   let claim = null;
@@ -519,13 +541,13 @@ async function paymentCallback(req, res) {
     } else if (['FAILED', 'CANCELLED', 'EXPIRED', 'DECLINED'].includes(status.state)) {
       await applyFailedPayment(order, status);
       await phonePeEventClaims.markPhonePeEventProcessed(claim);
-      return res.redirect(frontendPaymentFailedUrl);
+      return res.redirect(withQueryParams(order.checkoutReturnUrl || frontendPaymentFailedUrl, { merchantTransactionId }));
     } else {
       throw new Error('PhonePe payment is not in a terminal state.');
     }
 
     await phonePeEventClaims.markPhonePeEventProcessed(claim);
-    return res.redirect(withQueryParams(frontendPaymentSuccessUrl, { merchantTransactionId }));
+    return res.redirect(withQueryParams(order.checkoutReturnUrl || frontendPaymentSuccessUrl, { merchantTransactionId, payment: 'success' }));
   } catch (error) {
     await phonePeEventClaims.markPhonePeEventFailed(claim, 'callback_processing_error').catch(() => {});
     console.error('PhonePe callback processing failed; the event remains retryable.');
@@ -653,7 +675,8 @@ async function processPhonePeWebhook({ payload, data, event, merchantTransaction
 }
 
 async function handleWebhook(req, res) {
-  if (!isPhonePeEnabled(process.env)) {
+  const activeProvider = await paymentModes.activeProvider().catch(() => null);
+  if (activeProvider !== 'phonepe' && !isPhonePeEnabled(process.env)) {
     return res.status(410).json({ error: 'PhonePe webhook is disabled.' });
   }
   let claim = null;

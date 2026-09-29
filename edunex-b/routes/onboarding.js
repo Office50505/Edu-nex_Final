@@ -4,7 +4,9 @@ const jwt = require('jsonwebtoken');
 const Onboarding = require('../models/OnboardingSession');
 const User = require('../models/User');
 const billing = require('../controllers/razorpayController');
+const phonePeBilling = require('../controllers/paymentController');
 const rzp = require('../services/razorpayService');
+const paymentModes = require('../services/paymentMode');
 const marketing = require('../services/marketingSettings');
 function adMode() {
   const mode = process.env.AD_PAYMENT_MODE || (process.env.NODE_ENV !== 'production' ? 'test' : '');
@@ -21,9 +23,10 @@ const wrap = fn => async (req, res) => { try { await fn(req, res); } catch (erro
 const fail = (message, status = 400) => Object.assign(new Error(message), { status });
 router.use((_req, res, next) => { res.set('Cache-Control', 'no-store'); next(); });
 router.get('/config', wrap(async (_req, res) => {
+  const provider = await paymentModes.activeProvider();
   const c = rzp.requireConfig(adMode());
   const publicMarketing = await marketing.publicConfig();
-  res.json({ mode: c.mode, gateway: 'razorpay', trialAmountPaise: c.trialAmount, subscriptionAmountPaise: c.monthlyAmount, trialHours: c.trialHours, ...publicMarketing });
+  res.json({ mode: c.mode, gateway: provider, trialAmountPaise: c.trialAmount, subscriptionAmountPaise: c.monthlyAmount, trialHours: c.trialHours, ...publicMarketing });
 }));
 router.post('/session', wrap(async (req, res) => {
   let proof;
@@ -53,13 +56,28 @@ async function requireSession(req, res, next) {
   } catch (error) { res.status(error.status || 500).json({ error: error.status ? error.message : 'Unable to resume onboarding.' }); }
 }
 router.post('/checkout', requireSession, (req, res, next) => {
-  if (process.env.PAYMENT_GATEWAY_MODE !== 'razorpay') return res.status(503).json({ error: 'Razorpay checkout is not configured.' });
   if (!['trial', 'monthly'].includes(req.body.paymentType)) return res.status(400).json({ error: 'Choose a supported plan.' });
   next();
-}, billing.initiate);
-router.post('/verify', requireSession, billing.verify);
-router.get('/status', requireSession, billing.status);
-router.post('/cancel', requireSession, billing.cancel);
+}, async (req, res, next) => {
+  const provider = await paymentModes.activeProvider();
+  if (provider === 'phonepe') return phonePeBilling.initiateTrial(req, res, next);
+  return billing.initiate(req, res, next);
+});
+router.post('/verify', requireSession, async (req, res, next) => {
+  const provider = await paymentModes.activeProvider();
+  if (provider === 'phonepe') return phonePeBilling.verifyAppAccess(req, res, next);
+  return billing.verify(req, res, next);
+});
+router.get('/status', requireSession, async (req, res, next) => {
+  const provider = await paymentModes.activeProvider();
+  if (provider === 'phonepe') return phonePeBilling.subscriptionStatus(req, res, next);
+  return billing.status(req, res, next);
+});
+router.post('/cancel', requireSession, async (req, res, next) => {
+  const provider = await paymentModes.activeProvider();
+  if (provider === 'phonepe') return phonePeBilling.cancelSubscription(req, res, next);
+  return billing.cancel(req, res, next);
+});
 router.post('/handoff', requireSession, wrap(async (req, res) => {
   const subscription = await billing.reconcileForUser(req.onboarding._id);
   if (!resolveSubscriptionAccess(subscription, {}).active) throw fail('Payment is still awaiting confirmation.', 409);

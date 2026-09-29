@@ -323,14 +323,19 @@ export function AdOfferPage({ offerPage }) {
         getStatus(token),
       ]);
       if (state.accessGranted) return await finish(token);
-      if (pricing.gateway !== "razorpay") throw new Error("Razorpay checkout is unavailable. Please retry later.");
+      if (!["razorpay", "phonepe", "simulated"].includes(pricing.gateway)) throw new Error("Secure checkout is unavailable. Please retry later.");
       const paymentType = state.trialEligible === false ? "monthly" : "trial";
       checkoutPaymentTypeRef.current = paymentType;
       if (paymentType === "monthly" && !monthlyConsent) { setModalStep("monthly"); return; }
-      const checkout = await api("/api/onboarding/checkout", { paymentType, mandateConsent: true, monthlyConsent }, token);
+      const checkout = await api("/api/onboarding/checkout", { paymentType, mandateConsent: true, monthlyConsent, returnUrl: window.location.href }, token);
       trackOfferEvent("InitiateCheckout", { value: paymentType === "monthly" ? 499 : 1, subscription_type: paymentType }, { eventID: metaEventId("offer-checkout") });
       setCheckoutAttempt(attempt => attempt + 1);
       checkoutStarted = true;
+      if ((checkout.gateway === "phonepe" || checkout.gateway === "simulated") && checkout.redirectUrl) {
+        sessionStorage.setItem("skillomateAdAwaitingPayment", "1");
+        window.location.assign(checkout.redirectUrl);
+        return;
+      }
       const result = await openRazorpay({ ...checkout, paymentType });
       setCheckoutAttempt(attempt => attempt + 1);
       if (handoffRef.current) return;
@@ -495,13 +500,13 @@ export function AdOfferPage({ offerPage }) {
           {!recovery ? <button type="button" onClick={begin} disabled={busy}>Subscribe for ₹1 <span>→</span></button> : (
             <div className="ad-recovery">
               <p role="status" aria-live="polite">{message}</p>
-              <button type="button" onClick={() => openCheckout()} disabled={busy}>Open Razorpay again</button>
+              <button type="button" onClick={() => openCheckout()} disabled={busy}>Open checkout again</button>
               <button type="button" onClick={checkPayment} disabled={busy}>Check payment status</button>
               <button type="button" onClick={resetPhone} disabled={busy}>Verify another phone</button>
               <button type="button" onClick={cancelMandate} disabled={busy}>Cancel unfinished mandate</button>
             </div>
           )}
-          <div className="ad-secure-payment"><span aria-hidden="true">✓</span> Secure payments powered by Razorpay</div>
+          <div className="ad-secure-payment"><span aria-hidden="true">✓</span> Secure payments powered by Skillomate payment partners</div>
           <p>To enjoy uninterrupted learning, your subscription will auto-renew. You can cancel it anytime.</p>
           <nav className="ad-legal-links" aria-label="Offer legal links">
             <a href={route("about.html")}>About Us</a>

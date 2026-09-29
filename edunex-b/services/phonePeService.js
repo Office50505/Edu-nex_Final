@@ -4,13 +4,10 @@ const querystring = require('querystring');
 const isProduction = process.env.NODE_ENV === 'production';
 function envValue(name, fallback = '') {
   const value = process.env[name];
-  if (!value && isProduction) {
-    throw new Error(`${name} must be set in production`);
-  }
   return value || fallback;
 }
 
-const clientId = process.env.PHONEPE_CLIENT_ID || process.env.PHONEPE_MERCHANT_ID || (isProduction ? envValue('PHONEPE_CLIENT_ID') : '');
+const clientId = process.env.PHONEPE_CLIENT_ID || process.env.PHONEPE_MERCHANT_ID || envValue('PHONEPE_CLIENT_ID');
 const clientSecret = envValue('PHONEPE_CLIENT_SECRET');
 const clientVersion = process.env.PHONEPE_CLIENT_VERSION || '1';
 const merchantId = process.env.PHONEPE_MERCHANT_ID || clientId;
@@ -238,6 +235,34 @@ async function cancelMandate() {
   return { success: false, raw: { message: 'Mandate cancellation is not implemented for Standard Checkout test flow' } };
 }
 
+function config() {
+  return {
+    clientId,
+    clientSecret,
+    clientVersion,
+    merchantId,
+    saltKey,
+    saltIndex,
+    baseUrl,
+    redirectUrl,
+    trialAmountPaise,
+    subscriptionAmountPaise,
+  };
+}
+
+function readiness() {
+  const c = config();
+  const missing = [];
+  if (!c.clientId) missing.push('PHONEPE_CLIENT_ID');
+  if (!c.clientSecret) missing.push('PHONEPE_CLIENT_SECRET');
+  if (!c.merchantId) missing.push('PHONEPE_MERCHANT_ID');
+  if (!c.saltKey) missing.push('PHONEPE_SALT_KEY');
+  if (!c.redirectUrl) missing.push('PHONEPE_REDIRECT_URL');
+  return missing.length
+    ? { configured: false, detail: `Missing: ${missing.join(', ')}` }
+    : { configured: true, detail: 'PhonePe credentials are configured. No payment request was created.' };
+}
+
 module.exports = {
   generateMerchantTransactionId,
   createTrialPaymentRequest,
@@ -245,5 +270,7 @@ module.exports = {
   verifyPaymentStatus,
   verifyWebhookSignature,
   cancelMandate,
+  config,
+  readiness,
   merchantId,
 };
