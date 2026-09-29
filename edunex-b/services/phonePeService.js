@@ -14,6 +14,8 @@ const merchantId = process.env.PHONEPE_MERCHANT_ID || clientId;
 const saltKey = envValue('PHONEPE_SALT_KEY');
 const saltIndex = process.env.PHONEPE_SALT_INDEX || '1';
 const baseUrl = process.env.PHONEPE_BASE_URL || 'https://api-preprod.phonepe.com/apis/pg-sandbox';
+const authBaseUrl = process.env.PHONEPE_AUTH_BASE_URL
+  || (baseUrl.includes('api.phonepe.com/apis/pg') ? 'https://api.phonepe.com/apis/identity-manager' : baseUrl);
 const redirectUrl = process.env.PHONEPE_REDIRECT_URL || (isProduction ? envValue('PHONEPE_REDIRECT_URL') : 'http://localhost:3000/api/payment/callback');
 const webhookUsername = envValue('PHONEPE_WEBHOOK_USERNAME');
 const webhookPassword = envValue('PHONEPE_WEBHOOK_PASSWORD');
@@ -62,7 +64,7 @@ async function getAccessToken() {
     throw new Error('PhonePe client credentials are missing. Set PHONEPE_CLIENT_ID and PHONEPE_CLIENT_SECRET.');
   }
 
-  const response = await fetch(`${baseUrl}/v1/oauth/token`, {
+  const response = await fetch(`${authBaseUrl}/v1/oauth/token`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded',
@@ -276,6 +278,7 @@ function config() {
     saltKey,
     saltIndex,
     baseUrl,
+    authBaseUrl,
     redirectUrl,
     webhookUsername,
     webhookPassword,
