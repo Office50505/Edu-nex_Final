@@ -49,8 +49,9 @@ export function PaymentPage() {
   const busyRef = useRef(false);
   const autoLaunchAttemptedRef = useRef(false);
   const [pricing, setPricing] = useState(null);
-  const trial = !["monthly", "annual", "yearly"].includes(query.get("plan")) && trialEligible;
-  const paymentType = trial ? "trial" : "monthly";
+  const phonePeOneTime = pricing?.gateway === "phonepe" || pricing?.gateway === "simulated";
+  const trial = !phonePeOneTime && !["monthly", "annual", "yearly"].includes(query.get("plan")) && trialEligible;
+  const paymentType = phonePeOneTime ? "one_time" : trial ? "trial" : "monthly";
   const [paymentCompleted, setPaymentCompleted] = useState(false);
   const [pending, setPending] = useState(false);
   const planAvailable = Boolean(pricing);
@@ -149,7 +150,7 @@ export function PaymentPage() {
           setTrialEligible(nextTrialEligible);
         }
         if (!response.ok) throw new Error(data.error || "Could not check access.");
-        const cancelledTrialMandate = !nextTrialEligible
+        const cancelledTrialMandate = !phonePeOneTime && !nextTrialEligible
           && data.autoRenewEnabled === false
           && String(data.subscriptionType || "").toLowerCase() === "trial";
         if ((data.accessGranted === true || data.hasActiveAccess === true) && !cancelledTrialMandate) {
@@ -160,11 +161,13 @@ export function PaymentPage() {
           }
         } else if (!cancelled) {
           const mandateStatus = String(data.mandateStatus || "").toLowerCase();
-          const pendingMandate = data.pendingCheckout === true
-            && !["cancelled", "expired", "completed", "paused"].includes(mandateStatus);
-          setPending(pendingMandate);
-          if (pendingMandate) {
-            setPayMsg({ text: "An existing payment mandate is being confirmed. Check its status before starting another payment.", type: "info" });
+          const pendingPayment = data.pendingCheckout === true
+            && (phonePeOneTime || !["cancelled", "expired", "completed", "paused"].includes(mandateStatus));
+          setPending(pendingPayment);
+          if (pendingPayment) {
+            setPayMsg({ text: phonePeOneTime
+              ? "Your PhonePe payment is being confirmed. Check its status before starting another payment."
+              : "An existing payment mandate is being confirmed. Check its status before starting another payment.", type: "info" });
           }
           setCheckoutState("pay");
         }
@@ -175,7 +178,7 @@ export function PaymentPage() {
     return () => {
       cancelled = true;
     };
-  }, [authFetch, configureAppOpenButton, runtimeReady]);
+  }, [authFetch, configureAppOpenButton, runtimeReady, phonePeOneTime]);
 
   const initiatePayment = async () => {
     if (busyRef.current || !planAvailable || checkoutState !== "pay") return;
@@ -186,7 +189,9 @@ export function PaymentPage() {
       const response = await authFetch("/api/payment/initiate-trial", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ paymentType, mandateConsent: true, returnUrl: window.location.href }),
+        body: JSON.stringify(phonePeOneTime
+          ? { paymentType, returnUrl: window.location.href }
+          : { paymentType, mandateConsent: true, returnUrl: window.location.href }),
       });
       const data = await safeJsonResponse(response) || {};
       if (!response.ok) throw new Error(data.error || data.message || `Payment initiation failed (${response.status})`);
@@ -219,7 +224,9 @@ export function PaymentPage() {
       const message = error.message || "Payment initiation failed";
       if (/mandate already exists|unfinished checkout/i.test(message)) {
         setPending(true);
-        setPayMsg({ text: "An existing payment mandate is being confirmed. Check its status before starting another payment.", type: "info" });
+        setPayMsg({ text: phonePeOneTime
+          ? "Your PhonePe payment is being confirmed. Check its status before starting another payment."
+          : "An existing payment mandate is being confirmed. Check its status before starting another payment.", type: "info" });
       } else {
         setPayMsg({ text: message, type: "error" });
       }
@@ -230,10 +237,10 @@ export function PaymentPage() {
   };
 
   useEffect(() => {
-    if (checkoutState !== "pay" || !planAvailable || pending || autoLaunchAttemptedRef.current) return;
+    if (checkoutState !== "pay" || !planAvailable || pending || phonePeOneTime || autoLaunchAttemptedRef.current) return;
     autoLaunchAttemptedRef.current = true;
     void initiatePayment();
-  }, [checkoutState, planAvailable, paymentType, pending]);
+  }, [checkoutState, planAvailable, paymentType, pending, phonePeOneTime]);
 
   const checkPayment = async () => {
     if (busyRef.current) return;
@@ -245,7 +252,7 @@ export function PaymentPage() {
       if (data?.accessGranted === true) {
         setPaymentCompleted(true); markLocalCourseAccess(); configureAppOpenButton(); setCheckoutState("subscribed");
       } else if (data?.pendingCheckout === false
-        && ["cancelled", "expired", "completed", "paused"].includes(String(data?.mandateStatus || "").toLowerCase())) {
+        && (phonePeOneTime || ["cancelled", "expired", "completed", "paused"].includes(String(data?.mandateStatus || "").toLowerCase()))) {
         setPending(false);
         setPayMsg({ text: "The previous checkout is no longer pending. You can start checkout again.", type: "info" });
       } else {
@@ -258,7 +265,8 @@ export function PaymentPage() {
   const amount = (paise) => new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", minimumFractionDigits: 0, maximumFractionDigits: 2 }).format(paise / 100);
   const trialPrice = pricing ? amount(pricing.trialAmountPaise) : "";
   const monthlyPrice = pricing ? amount(pricing.subscriptionAmountPaise) : "";
-  const planLabel = trial ? `${trialPrice} trial` : "monthly subscription";
+  const oneTimePrice = pricing?.oneTimeAmountPaise ? amount(pricing.oneTimeAmountPaise) : "";
+  const planLabel = phonePeOneTime ? `${oneTimePrice} one-time access` : trial ? `${trialPrice} trial` : "monthly subscription";
 
   return (
     <div className={`react-page-root${directApp ? " direct-app-payment" : ""}`} data-page="payment.html">
@@ -281,17 +289,17 @@ export function PaymentPage() {
 
         {checkoutState === "pay" && planAvailable && !submitting && !pending ? (
           <div className="checkout-launcher-card">
-            <h1>Subscription plans</h1>
-            <h2>{trial ? `${trialPrice} for ${pricing.trialHours} hours` : `${monthlyPrice}/month`}</h2>
+            <h1>{phonePeOneTime ? "Premium access" : "Subscription plans"}</h1>
+            <h2>{phonePeOneTime ? `${oneTimePrice} for ${pricing.accessDays} days` : trial ? `${trialPrice} for ${pricing.trialHours} hours` : `${monthlyPrice}/month`}</h2>
             <p>Full course access, lesson notes and AI learning tools.</p>
-            <p>{trial ? `Pay ${trialPrice} now. After ${pricing.trialHours} hours, your subscription renews at ${monthlyPrice}/month through AutoPay until cancelled.` : `Pay ${monthlyPrice} now. Your subscription renews at ${monthlyPrice}/month through AutoPay until cancelled.`}</p>
-            {!trialEligible ? <p>The introductory trial is not available for this account.</p> : null}
-            <p>Cancel auto-renewal anytime.</p>
+            <p>{phonePeOneTime ? `Pay ${oneTimePrice} once through PhonePe. Access lasts ${pricing.accessDays} days and does not renew automatically.` : trial ? `Pay ${trialPrice} now. After ${pricing.trialHours} hours, your subscription renews at ${monthlyPrice}/month through AutoPay until cancelled.` : `Pay ${monthlyPrice} now. Your subscription renews at ${monthlyPrice}/month through AutoPay until cancelled.`}</p>
+            {!phonePeOneTime && !trialEligible ? <p>The introductory trial is not available for this account.</p> : null}
+            {!phonePeOneTime ? <p>Cancel auto-renewal anytime.</p> : null}
             {payMsg.text ? <p role={payMsg.type === "error" ? "alert" : "status"}>{payMsg.text}</p> : null}
             <button className="checkout-launcher-primary" type="button" onClick={initiatePayment}>
-              {payMsg.type === "error" ? "Try Checkout Again" : trial ? `Pay ${trialPrice} and start trial` : `Pay ${monthlyPrice} and subscribe`}
+              {payMsg.type === "error" ? "Try Checkout Again" : phonePeOneTime ? `Pay ${oneTimePrice} once` : trial ? `Pay ${trialPrice} and start trial` : `Pay ${monthlyPrice} and subscribe`}
             </button>
-            <p>By continuing, you agree to the recurring payment terms above.</p>
+            <p>{phonePeOneTime ? "By continuing, you agree to this one-time payment for limited access." : "By continuing, you agree to the recurring payment terms above."}</p>
             <a href="/courses" className="checkout-launcher-secondary">{directApp ? "Back to app" : "Back to courses"}</a>
           </div>
         ) : null}

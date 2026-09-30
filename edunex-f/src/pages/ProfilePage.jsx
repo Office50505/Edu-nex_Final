@@ -366,7 +366,7 @@ export function ProfilePage() {
       }}>
         <div className="pf-modal-card" role="dialog" aria-modal="true" aria-labelledby="subscriptionModalTitle">
           <div className="pf-modal-head">
-            <h2 id="subscriptionModalTitle">Subscription History</h2>
+            <h2 id="subscriptionModalTitle">{subscription.data?.billingType === "one_time" ? "Payment History" : "Subscription History"}</h2>
             <button className="pf-modal-close" type="button" onClick={() => setModalOpen(false)} aria-label="Close">
               <i className="fas fa-times" aria-hidden="true"></i>
             </button>
@@ -381,7 +381,7 @@ export function ProfilePage() {
             {!subscription.loading && !subscription.error && subscription.data ? (
               <>
                 <div className="sub-current-card">
-                  <strong>Current plan: {profileSubscriptionLabel(modalStatus)}</strong>
+                  <strong>{subscription.data.billingType === "one_time" ? "Premium access" : `Current plan: ${profileSubscriptionLabel(modalStatus)}`}</strong>
                   <span>Valid until: {formatProfileDate(periodEnd)}</span>
                   <span>Payment reference: {subscription.data.orderId || subscription.data.subscriptionId || subscription.data.paymentId || "Not available"}</span>
                 </div>
@@ -403,7 +403,7 @@ export function ProfilePage() {
                       <span>{item.orderId || item.paymentId || item.subscriptionId || ""}</span>
                     </div>
                   )) : (
-                    <div className="sub-history-row"><strong>No past subscription entries</strong><span>Your current subscription data is shown above. Previous plans and orders will appear here when available.</span></div>
+                    <div className="sub-history-row"><strong>No past payment entries</strong><span>Your current access is shown above. Previous orders will appear here when available.</span></div>
                   )}
                 </div>
               </>

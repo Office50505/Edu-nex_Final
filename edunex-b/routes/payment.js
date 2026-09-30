@@ -10,7 +10,7 @@ const modes = require('../services/paymentMode');
 async function configuredProvider() {
   const provider = await modes.activeProvider();
   if (provider === 'phonepe') {
-    return newCheckoutProvider({ ...process.env, PAYMENT_GATEWAY_MODE: 'phonepe', PHONEPE_ENABLED: 'true', PHONEPE_NEW_PAYMENTS_ENABLED: 'true' });
+    return newCheckoutProvider({ ...process.env, PAYMENT_GATEWAY_MODE: 'phonepe' });
   }
   if (provider === 'razorpay') return 'razorpay';
   return 'disabled';
@@ -22,7 +22,14 @@ const useConfiguredPaymentProvider = (modern, legacy) => async (req, res, next) 
   if (provider === 'phonepe' || provider === 'simulated') return legacy(req, res, next);
   return res.status(503).json({ error: 'Payment service is unavailable.' });
 };
-router.get('/payment/config', razorpay.pricing);
+router.get('/payment/config', async (req, res, next) => {
+  try {
+    const provider = await configuredProvider();
+    if (provider === 'phonepe' || provider === 'simulated') return paymentController.phonePePricing(req, res);
+    if (provider === 'disabled') return res.status(503).json({ error: 'Payment checkout is unavailable.' });
+    return razorpay.pricing(req, res, next);
+  } catch (error) { return next(error); }
+});
 router.post('/payment/razorpay/verify', protect, razorpay.verify);
 router.post('/webhooks/razorpay', razorpay.webhook);
 

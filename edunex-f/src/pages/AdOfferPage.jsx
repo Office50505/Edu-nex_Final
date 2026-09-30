@@ -192,6 +192,9 @@ export function AdOfferPage({ offerPage }) {
   const [redirect, setRedirect] = useState(null);
   const [seconds, setSeconds] = useState(3);
   const [checkingPayment, setCheckingPayment] = useState(false);
+  const [offerPricing, setOfferPricing] = useState(null);
+  const [offerPricingError, setOfferPricingError] = useState(false);
+  const phonePeOneTime = offerPricing?.gateway === "phonepe";
   const statusRequestRef = useRef(null);
   const verifyingRef = useRef(false);
   const mountedRef = useRef(true);
@@ -201,19 +204,30 @@ export function AdOfferPage({ offerPage }) {
   const checkoutPaymentTypeRef = useRef("trial");
   useViewportLock(Boolean(modalStep || paymentStage));
   useEffect(() => { mountedRef.current = true; return () => { mountedRef.current = false; }; }, []);
+  useEffect(() => {
+    let active = true;
+    api("/api/onboarding/config")
+      .then(data => {
+        if (!active) return;
+        if (data.gateway === "phonepe") checkoutPaymentTypeRef.current = "one_time";
+        setOfferPricing(data);
+      })
+      .catch(() => { if (active) setOfferPricingError(true); });
+    return () => { active = false; };
+  }, []);
 
   const trackOfferEvent = useCallback((eventName, params = {}, options = {}) => {
-    trackMetaPixel(eventName, { ...OFFER_EVENT_PARAMS, ...params }, options);
-  }, []);
+    trackMetaPixel(eventName, { ...OFFER_EVENT_PARAMS, ...(phonePeOneTime ? { content_name: "Skillomate ₹299 Access" } : {}), ...params }, options);
+  }, [phonePeOneTime]);
 
   const trackPurchase = useCallback(() => {
     if (purchaseTrackedRef.current) return;
     purchaseTrackedRef.current = true;
-    const monthly = checkoutPaymentTypeRef.current === "monthly";
-    const value = monthly ? 499 : 1;
+    const paymentType = checkoutPaymentTypeRef.current;
+    const value = paymentType === "one_time" ? 299 : paymentType === "monthly" ? 499 : 1;
     const eventId = metaEventId("offer-purchase");
-    trackOfferEvent("Purchase", { value, subscription_type: monthly ? "monthly" : "trial" }, { eventID: eventId });
-    trackOfferEvent("Subscribe", { value, subscription_type: monthly ? "monthly" : "trial" }, { eventID: metaEventId("offer-subscribe") });
+    trackOfferEvent("Purchase", { value, subscription_type: paymentType }, { eventID: eventId });
+    if (paymentType !== "one_time") trackOfferEvent("Subscribe", { value, subscription_type: paymentType }, { eventID: metaEventId("offer-subscribe") });
   }, [trackOfferEvent]);
 
   useEffect(() => {
@@ -324,11 +338,13 @@ export function AdOfferPage({ offerPage }) {
       ]);
       if (state.accessGranted) return await finish(token);
       if (!["razorpay", "phonepe", "simulated"].includes(pricing.gateway)) throw new Error("Secure checkout is unavailable. Please retry later.");
-      const paymentType = state.trialEligible === false ? "monthly" : "trial";
+      const paymentType = pricing.gateway === "phonepe" ? "one_time" : state.trialEligible === false ? "monthly" : "trial";
       checkoutPaymentTypeRef.current = paymentType;
       if (paymentType === "monthly" && !monthlyConsent) { setModalStep("monthly"); return; }
-      const checkout = await api("/api/onboarding/checkout", { paymentType, mandateConsent: true, monthlyConsent, returnUrl: window.location.href }, token);
-      trackOfferEvent("InitiateCheckout", { value: paymentType === "monthly" ? 499 : 1, subscription_type: paymentType }, { eventID: metaEventId("offer-checkout") });
+      const checkout = await api("/api/onboarding/checkout", paymentType === "one_time"
+        ? { paymentType, returnUrl: window.location.href }
+        : { paymentType, mandateConsent: true, monthlyConsent, returnUrl: window.location.href }, token);
+      trackOfferEvent("InitiateCheckout", { value: paymentType === "one_time" ? 299 : paymentType === "monthly" ? 499 : 1, subscription_type: paymentType }, { eventID: metaEventId("offer-checkout") });
       setCheckoutAttempt(attempt => attempt + 1);
       checkoutStarted = true;
       if ((checkout.gateway === "phonepe" || checkout.gateway === "simulated") && checkout.redirectUrl) {
@@ -475,41 +491,45 @@ export function AdOfferPage({ offerPage }) {
     }
   };
 
+  if (!offerPricing) return <main className="ad-offer-page" data-page={pageKey} role="status">
+    <p>{offerPricingError ? "Payment pricing is temporarily unavailable. Please reload to try again." : "Loading payment options…"}</p>
+  </main>;
+
   return (
     <main className="ad-offer-page" data-page={pageKey}>
       <section className="ad-offer-shell" aria-label="Skillomate subscription offer" inert={Boolean(paymentStage)} aria-hidden={paymentStage ? true : undefined}>
         <PreviewVideo key={offerMedia.videoUrl} media={offerMedia} modalOpen={Boolean(modalStep || paymentStage || busy)} onPixelEvent={trackOfferEvent} />
         <section className="ad-offer-content" aria-labelledby="ad-offer-title">
-          <button type="button" className="ad-special-ribbon" onClick={begin} disabled={busy} aria-label="Special offer - subscribe for ₹1">
+          <button type="button" className="ad-special-ribbon" onClick={begin} disabled={busy} aria-label={phonePeOneTime ? "Special offer - pay ₹299 once" : "Special offer - subscribe for ₹1"}>
             <span aria-hidden="true">ϟ</span> Special offer
           </button>
           <p className="ad-offer-kicker">Only for you</p>
-          <h1 id="ad-offer-title">Skillomate <span>Subscription</span></h1>
+          <h1 id="ad-offer-title">Skillomate <span>{phonePeOneTime ? "Premium Access" : "Subscription"}</span></h1>
           <p className="ad-offer-intro">Unlock complete access and start your learning journey today.</p>
-          <button type="button" className="ad-price-card" onClick={begin} disabled={busy} aria-label="Subscribe for ₹1 - limited time offer">
+          <button type="button" className="ad-price-card" onClick={begin} disabled={busy} aria-label={phonePeOneTime ? "View ₹299 offer details" : "View ₹1 offer details"}>
             <div className="ad-limited-badge"><span aria-hidden="true">◷</span> Limited time offer</div>
-            <strong>₹1</strong>
-            <h2>For 24 Hours</h2>
+            <strong>{phonePeOneTime ? `₹${offerPricing.oneTimeAmountPaise / 100}` : "₹1"}</strong>
+            <h2>{phonePeOneTime ? `For ${offerPricing.accessDays} Days` : "For 24 Hours"}</h2>
             <div className="ad-offer-rule" />
-            <p>Then ₹499/month <span>·</span> Cancel anytime</p>
+            <p>{phonePeOneTime ? "One-time payment · No automatic renewal" : <>Then ₹499/month <span>·</span> Cancel anytime</>}</p>
           </button>
           <div className="ad-offer-brief">
             <span>What you get</span>
-            <p>Full Skillomate access for 24 hours at ₹1, including practical AI, content, and digital skill lessons before your monthly plan begins.</p>
+            <p>{phonePeOneTime ? `Full Skillomate access for ${offerPricing.accessDays} days with a one-time PhonePe payment.` : "Full Skillomate access for 24 hours at ₹1, including practical AI, content, and digital skill lessons before your monthly plan begins."}</p>
           </div>
         </section>
         <div className="ad-action-bar">
-          {!recovery ? <button type="button" onClick={begin} disabled={busy}>Subscribe for ₹1 <span>→</span></button> : (
+          {!recovery ? <button type="button" onClick={begin} disabled={busy}>{phonePeOneTime ? `Pay ₹${offerPricing.oneTimeAmountPaise / 100} once` : "Subscribe for ₹1"} <span>→</span></button> : (
             <div className="ad-recovery">
               <p role="status" aria-live="polite">{message}</p>
               <button type="button" onClick={() => openCheckout()} disabled={busy}>Open checkout again</button>
               <button type="button" onClick={checkPayment} disabled={busy}>Check payment status</button>
               <button type="button" onClick={resetPhone} disabled={busy}>Verify another phone</button>
-              <button type="button" onClick={cancelMandate} disabled={busy}>Cancel unfinished mandate</button>
+              {!phonePeOneTime ? <button type="button" onClick={cancelMandate} disabled={busy}>Cancel unfinished mandate</button> : null}
             </div>
           )}
           <div className="ad-secure-payment"><span aria-hidden="true">✓</span> Secure payments powered by Skillomate payment partners</div>
-          <p>To enjoy uninterrupted learning, your subscription will auto-renew. You can cancel it anytime.</p>
+          <p>{phonePeOneTime ? `Access lasts ${offerPricing.accessDays} days and will not renew automatically.` : "To enjoy uninterrupted learning, your subscription will auto-renew. You can cancel it anytime."}</p>
           <nav className="ad-legal-links" aria-label="Offer legal links">
             <a href={route("about.html")}>About Us</a>
             <a href={route("privacy.html")}>Privacy Policy</a>
@@ -544,7 +564,7 @@ export function AdOfferPage({ offerPage }) {
             <label htmlFor="ad-otp">One-time password</label>
             <input className="ad-otp-input" id="ad-otp" value={otp} onChange={(event) => setOtp(event.target.value.replace(/\D/g, "").slice(0, 6))} inputMode="numeric" autoComplete="one-time-code" maxLength="6" placeholder="• • • • • •" required autoFocus />
             <button type="submit" disabled={busy || otp.length !== 6}>Pay now</button>
-            <p className="ad-payment-consent">By clicking Pay now, you agree to our Terms &amp; Conditions and authorize ₹1 for 24 hours, followed by ₹499/month through AutoPay until cancelled.</p>
+            <p className="ad-payment-consent">{phonePeOneTime ? `By clicking Pay now, you agree to our Terms & Conditions and a one-time ₹${offerPricing.oneTimeAmountPaise / 100} payment for ${offerPricing.accessDays} days of access.` : "By clicking Pay now, you agree to our Terms & Conditions and authorize ₹1 for 24 hours, followed by ₹499/month through AutoPay until cancelled."}</p>
             <button className="ad-resend-otp" type="button" onClick={(event) => sendOtp(event, true)} disabled={busy}>Resend OTP</button>
             <p className="ad-form-status" role="status">{message}</p>
           </form>}

@@ -38,9 +38,27 @@ afterEach(() => {
 const mount = async () => { await act(async () => { render(<AdOfferPage />); }); };
 const handoffs = () => requests.mock.calls.filter(([url]) => url.endsWith('/handoff'));
 
+it('PhonePe offer charges ₹299 once without mandate consent', async () => {
+  const standard = requests.getMockImplementation();
+  requests.mockImplementation((url, options) => {
+    if (url.endsWith('/config')) return Promise.resolve({ ok: true, json: async () => ({ gateway: 'phonepe', oneTimeAmountPaise: 29900, accessDays: 30 }) });
+    if (url.endsWith('/checkout')) return Promise.resolve({ ok: true, json: async () => ({ gateway: 'phonepe', redirectUrl: 'https://checkout.example.test/pay' }) });
+    return standard(url, options);
+  });
+  await mount();
+  expect(screen.getByText(/One-time payment · No automatic renewal/)).toBeTruthy();
+  expect(screen.getByRole('button', { name: 'Special offer - pay ₹299 once' })).toBeTruthy();
+  await act(async () => { fireEvent.click(screen.getByRole('button', { name: /Pay ₹299 once/ })); });
+  const checkout = requests.mock.calls.find(([url]) => url.endsWith('/checkout'));
+  expect(JSON.parse(checkout[1].body)).toMatchObject({ paymentType: 'one_time' });
+  expect(JSON.parse(checkout[1].body).mandateConsent).toBeUndefined();
+  expect(navigate).toHaveBeenCalledWith('https://checkout.example.test/pay');
+  expect(openRazorpay).not.toHaveBeenCalled();
+});
+
 it('automatically redirects after initially pending payment confirmation without another click', async () => {
   await mount();
-  await act(async () => { fireEvent.click(screen.getByRole('button', { name: /Subscribe for ₹1/i })); });
+  await act(async () => { fireEvent.click(screen.getByRole('button', { name: /^Subscribe for ₹1 →$/i })); });
   expect(screen.getByRole("dialog", { name: "Confirming your payment" })).toBeTruthy();
   expect(screen.queryByRole("button", { name: "Open Razorpay again" })).toBeNull();
   expect(navigate).not.toHaveBeenCalled();
@@ -60,7 +78,7 @@ it('automatically redirects after initially pending payment confirmation without
 it('recovers on return from a UPI app even when the checkout callback never arrives', async () => {
   openRazorpay.mockReturnValueOnce(new Promise(() => {}));
   await mount();
-  await act(async () => { fireEvent.click(screen.getByRole('button', { name: /Subscribe for ₹1/i })); });
+  await act(async () => { fireEvent.click(screen.getByRole('button', { name: /^Subscribe for ₹1 →$/i })); });
   await act(async () => { await vi.advanceTimersByTimeAsync(121000); });
   paid = true;
   await act(async () => { window.dispatchEvent(new Event('focus')); });
@@ -91,7 +109,7 @@ it('stops checking after the offer page unmounts', async () => {
 
 it('keeps slow confirmation honest and offers status checking instead of another payment', async () => {
   await mount();
-  await act(async () => { fireEvent.click(screen.getByRole('button', { name: /Subscribe for ₹1/i })); });
+  await act(async () => { fireEvent.click(screen.getByRole('button', { name: /^Subscribe for ₹1 →$/i })); });
   await act(async () => { await vi.advanceTimersByTimeAsync(121000); });
   expect(screen.getByRole('dialog', { name: 'Payment confirmation is taking longer' })).toBeTruthy();
   expect(screen.queryByText('Payment successful')).toBeNull();
@@ -108,7 +126,7 @@ it('never silently converts the one-rupee offer into immediate monthly checkout'
     ? { ok: true, json: async () => ({ accessGranted: false, trialEligible: false }) }
     : standard(url, options));
   await mount();
-  await act(async () => { fireEvent.click(screen.getByRole('button', { name: /Subscribe for ₹1/i })); });
+  await act(async () => { fireEvent.click(screen.getByRole('button', { name: /^Subscribe for ₹1 →$/i })); });
   expect(openRazorpay).not.toHaveBeenCalled();
   expect(screen.getByRole('heading', { name: 'Continue with monthly access' })).toBeTruthy();
   await act(async () => { fireEvent.click(screen.getByRole('button', { name: 'Agree and continue for ₹499' })); });
@@ -149,7 +167,7 @@ it('cancels the success countdown on unmount', async () => {
 it('checks captured trial access after a provider failure instead of asking for another payment', async () => {
   openRazorpay.mockRejectedValueOnce(new Error('A payment attempt was unsuccessful'));
   await mount();
-  await act(async () => { fireEvent.click(screen.getByRole('button', { name: /Subscribe for ₹1/i })); });
+  await act(async () => { fireEvent.click(screen.getByRole('button', { name: /^Subscribe for ₹1 →$/i })); });
   expect(screen.getByRole('dialog', { name: 'Confirming your payment' })).toBeTruthy();
   expect(screen.queryByRole('button', { name: 'Open Razorpay again' })).toBeNull();
   paid = true;
@@ -162,9 +180,9 @@ it('checks captured trial access after a provider failure instead of asking for 
 it('returns to recovery after dismissal without blocking or restoring confirmation on refresh', async () => {
   openRazorpay.mockRejectedValueOnce(Object.assign(new Error('Checkout closed. If money was deducted, check payment status before retrying.'), { code: 'CHECKOUT_DISMISSED' }));
   await mount();
-  await act(async () => { fireEvent.click(screen.getByRole('button', { name: /Subscribe for ₹1/i })); });
+  await act(async () => { fireEvent.click(screen.getByRole('button', { name: /^Subscribe for ₹1 →$/i })); });
   expect(screen.queryByRole('dialog', { name: 'Confirming your payment' })).toBeNull();
-  expect(screen.getByRole('button', { name: 'Open Razorpay again' })).toBeTruthy();
+  expect(screen.getByRole('button', { name: 'Open checkout again' })).toBeTruthy();
   expect(sessionStorage.getItem('skillomateAdAwaitingPayment')).toBeNull();
   cleanup();
   await mount();
@@ -175,7 +193,7 @@ it('returns to recovery after dismissal without blocking or restoring confirmati
 it('still recovers a late successful payment after checkout dismissal', async () => {
   openRazorpay.mockRejectedValueOnce(Object.assign(new Error('Checkout closed'), { code: 'CHECKOUT_DISMISSED' }));
   await mount();
-  await act(async () => { fireEvent.click(screen.getByRole('button', { name: /Subscribe for ₹1/i })); });
+  await act(async () => { fireEvent.click(screen.getByRole('button', { name: /^Subscribe for ₹1 →$/i })); });
   paid = true;
   await act(async () => { await vi.advanceTimersByTimeAsync(3000); });
   expect(screen.getByRole('dialog', { name: 'Payment successful' })).toBeTruthy();
@@ -195,7 +213,7 @@ it('toggles preview audio from offer content and speaker without toggling twice 
   expect(video.muted).toBe(true);
   fireEvent.click(document.body);
   expect(video.muted).toBe(false);
-  await act(async () => { fireEvent.click(screen.getByRole('button', { name: /Subscribe for ₹1/ })); });
+  await act(async () => { fireEvent.click(screen.getByRole('button', { name: /^Subscribe for ₹1 →$/i })); });
   fireEvent.click(document.body);
   expect(video.muted).toBe(false);
 });
@@ -205,7 +223,7 @@ it('tracks the Meta Pixel offer funnel only when enabled', async () => {
   const fbqCalls = [];
   await mount();
   window.fbq.callMethod = (...args) => fbqCalls.push(args);
-  await act(async () => { fireEvent.click(screen.getByRole('button', { name: /Subscribe for ₹1/i })); });
+  await act(async () => { fireEvent.click(screen.getByRole('button', { name: /^Subscribe for ₹1 →$/i })); });
   paid = true;
   await act(async () => { await vi.advanceTimersByTimeAsync(3000); });
   const eventNames = [...(window.fbq.queue || []), ...fbqCalls].map(call => call[1]);

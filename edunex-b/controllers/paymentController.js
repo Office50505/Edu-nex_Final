@@ -13,10 +13,7 @@ const { hasUsedIntroTrial } = require('../services/trialEligibility');
 const isProduction = process.env.NODE_ENV === 'production';
 const paymentGatewayMode = String(process.env.PAYMENT_GATEWAY_MODE || 'phonepe').trim().toLowerCase();
 const merchantId = process.env.PHONEPE_MERCHANT_ID || process.env.PHONEPE_CLIENT_ID || 'your_merchant_id';
-const trialAmountPaise = Number(process.env.TRIAL_AMOUNT_PAISE || 100);
-const trialDurationHours = Number(process.env.TRIAL_DURATION_HOURS || 24);
 const trialAccessDurationHours = Number(process.env.TRIAL_ACCESS_DURATION_HOURS || process.env.TRIAL_ACCESS_HOURS || 26);
-const subscriptionAmountPaise = Number(process.env.SUBSCRIPTION_AMOUNT_PAISE || 50000);
 const frontendOrigin = (process.env.FRONTEND_ORIGIN || '').replace(/\/$/, '');
 const frontendDashboardUrl = process.env.FRONTEND_DASHBOARD_URL || (frontendOrigin ? `${frontendOrigin}/courses.html` : '/courses.html');
 const frontendPaymentSuccessUrl = process.env.FRONTEND_PAYMENT_SUCCESS_URL || (frontendOrigin ? `${frontendOrigin}/payment.html?payment=success` : '/payment.html?payment=success');
@@ -94,6 +91,10 @@ function addMonths(date, months) {
   return result;
 }
 
+function addDays(date, days) {
+  return new Date(date.getTime() + days * 24 * 60 * 60 * 1000);
+}
+
 function hasValidAccess(status, trialExpiresAt, currentPeriodEnd, now = new Date()) {
   const normalized = String(status || '').toLowerCase();
   if (['trial', '1rs trial'].includes(normalized)) {
@@ -124,7 +125,7 @@ function extractWebhookPayload(req) {
 }
 
 function getWebhookData(payload) {
-  return payload.data || payload.response || payload;
+  return payload.payload || payload.data || payload.response || payload;
 }
 
 function getEventName(payload) {
@@ -240,12 +241,58 @@ async function createTrialSubscription({ userId, order, mandateId, metadata }) {
 }
 
 async function applySuccessfulPayment(order, status) {
+  if (order.orderType === 'one_time_access' && status.amount !== order.totalAmount) {
+    throw new Error('PhonePe payment amount did not match the order.');
+  }
   order.status = 'paid';
   order.paidAt = order.paidAt || new Date();
   order.phonePeTransactionId = status.transactionId;
   order.phonePePaymentInstrument = status.paymentInstrument;
   order.phonePeCustomerId = extractPhonePeCustomerId(status.raw?.data || status.raw) || order.phonePeCustomerId;
   order.phonePeMerchantSubscriptionId = status.merchantSubscriptionId || order.phonePeMerchantSubscriptionId;
+  if (order.orderType === 'one_time_access') {
+    const now = order.paidAt;
+    const accessUntil = addDays(now, phonePeService.oneTimeAccessDays);
+    const subscription = await Subscription.findOneAndUpdate(
+      { user: order.user },
+      {
+        $setOnInsert: { user: order.user, phonePeMerchantId: merchantId, createdAt: now },
+        $set: {
+          gateway: 'phonepe',
+          status: 'subscribed',
+          subscriptionType: 'monthly',
+          frequency: 'once',
+          amount: order.totalAmount,
+          trialExpiresAt: null,
+          currentPeriodStart: now,
+          currentPeriodEnd: accessUntil,
+          nextBillingAt: null,
+          phonePeSubscriptionId: null,
+          phonePeMandateId: null,
+          cancelledAt: null,
+        },
+      },
+      { new: true, upsert: true, setDefaultsOnInsert: true }
+    );
+    await Order.findByIdAndUpdate(order._id, { subscription: subscription._id });
+    await User.findByIdAndUpdate(order.user, {
+      subscriptionStatus: 'subscribed',
+      subscriptionExpiry: accessUntil,
+      subscriptionId: subscription._id,
+    });
+    await createSubscriptionEventOnce({
+      subscription: subscription._id,
+      user: order.user,
+      event: 'PAYMENT_SUCCESS',
+      amount: order.totalAmount,
+      phonePeTransactionId: order.phonePeTransactionId,
+      phonePeMerchantTransactionId: order.phonePeMerchantTransactionId,
+      metadata: { paymentType: 'one_time_access' },
+    });
+    await order.save();
+    return;
+  }
+
   await order.save();
 
   if (order.orderType === 'trial_charge' || order.orderType === 'mandate_setup') {
@@ -291,37 +338,45 @@ async function applySuccessfulPayment(order, status) {
 }
 
 async function applyFailedPayment(order, status = {}) {
+  if (order.status === 'paid') return;
   order.status = 'failed';
   order.phonePeTransactionId = status.transactionId || order.phonePeTransactionId;
   await order.save();
+}
+
+async function reconcileOneTimeOrder(order) {
+  if (order.status !== 'pending') return order.status;
+  const status = await phonePeService.verifyPaymentStatus(order.phonePeMerchantTransactionId);
+  if (status.success) await applySuccessfulPayment(order, status);
+  else if (['FAILED', 'CANCELLED', 'EXPIRED', 'DECLINED'].includes(status.state)) await applyFailedPayment(order, status);
+  return order.status;
+}
+
+async function reconcilePhonePeForUser(userId) {
+  const pendingOrder = await Order.findOne({ user: userId, gateway: 'phonepe', orderType: 'one_time_access', status: 'pending' }).sort({ createdAt: -1 });
+  if (pendingOrder && !isSimulatedPaymentEnabled()) await reconcileOneTimeOrder(pendingOrder);
+  return Subscription.findOne({ user: userId, gateway: 'phonepe' });
 }
 
 async function initiateTrial(req, res) {
   try {
     const activeProvider = await paymentModes.activeProvider();
     const ready = phonePeService.readiness();
-    if (!isSimulatedPaymentEnabled() && (activeProvider !== 'phonepe' || !ready.configured)) {
+    if (!isSimulatedPaymentEnabled() && (activeProvider !== 'phonepe' || !isPhonePeNewPaymentsEnabled(process.env) || !ready.configured)) {
       return res.status(410).json({ error: 'PhonePe checkout is no longer available.' });
     }
-    const paymentType = req.body.paymentType === 'monthly' ? 'monthly' : 'trial';
     const existingSubscription = await Subscription.findOne({ user: req.user._id });
-    const trialUsed = await hasUsedIntroTrial(req.user._id, existingSubscription, req.user);
-    if (paymentType === 'trial' && trialUsed) {
-      return res.status(409).json({
-        error: 'The ₹1 trial can only be used once per account. Continue with the monthly plan.',
-        trialEligible: false,
-        nextPaymentType: 'monthly',
-      });
+    if (resolveSubscriptionAccess(existingSubscription, req.user).active) {
+      return res.status(409).json({ error: 'Premium access is already active.' });
     }
-    const allowedUpgradeStatuses = ['1rs trial', 'trial', 'cancelled', 'expired'];
-    const blockedStatuses = ['active', 'subscribed', 'paused'];
-    if (existingSubscription) {
-      if (paymentType === 'trial' && blockedStatuses.includes(existingSubscription.status)) {
-        return res.status(409).json({ error: 'You already have a subscription' });
-      }
-      if (!allowedUpgradeStatuses.includes(existingSubscription.status)) {
-        return res.status(409).json({ error: 'You already have a subscription' });
-      }
+    if (existingSubscription?.phonePeMandateId && !existingSubscription.cancelledAt) {
+      return res.status(409).json({ error: 'An existing PhonePe mandate must be cancelled before a one-time payment.' });
+    }
+    const pendingOrder = await Order.findOne({ user: req.user._id, gateway: 'phonepe', orderType: 'one_time_access', status: 'pending' }).sort({ createdAt: -1 });
+    if (pendingOrder) {
+      const state = isSimulatedPaymentEnabled() ? 'pending' : await reconcileOneTimeOrder(pendingOrder);
+      if (state === 'paid') return res.status(409).json({ error: 'Payment has already succeeded. Refresh your access status.' });
+      if (state === 'pending') return res.status(409).json({ error: 'An unfinished checkout exists. Check payment status before paying again.' });
     }
 
     const paymentRequest = isSimulatedPaymentEnabled()
@@ -329,17 +384,15 @@ async function initiateTrial(req, res) {
         merchantTransactionId: phonePeService.generateMerchantTransactionId(req.user._id),
         redirectUrl: null,
       }
-      : paymentType === 'monthly'
-        ? await phonePeService.createMonthlyPaymentRequest(req.user._id)
-        : await phonePeService.createTrialPaymentRequest(req.user._id);
+      : await phonePeService.createOneTimePaymentRequest(req.user._id);
 
     await Order.create({
       user: req.user._id,
-      totalAmount: paymentType === 'monthly' ? subscriptionAmountPaise : trialAmountPaise,
+      totalAmount: phonePeService.oneTimeAmountPaise,
       gateway: isSimulatedPaymentEnabled() ? 'simulated' : 'phonepe',
       phonePeMerchantTransactionId: paymentRequest.merchantTransactionId,
       phonePeMerchantSubscriptionId: paymentRequest.merchantSubscriptionId || null,
-      orderType: paymentType === 'monthly' ? 'subscription_charge' : 'mandate_setup',
+      orderType: 'one_time_access',
       checkoutReturnUrl: safeCheckoutReturnUrl(req.body?.returnUrl),
       status: 'pending',
     });
@@ -370,7 +423,8 @@ async function renderPaymentSimulator(req, res) {
     }
 
     const rupees = (Number(order.totalAmount || 0) / 100).toFixed(2);
-    const plan = order.orderType === 'subscription_charge' ? 'Monthly Subscription' : '1-Day Trial';
+    const plan = order.orderType === 'one_time_access' ? '30-Day Premium Access'
+      : order.orderType === 'subscription_charge' ? 'Monthly Subscription' : '1-Day Trial';
     const disabled = order.status !== 'pending' ? 'disabled' : '';
 
     return res.type('html').send(`<!doctype html>
@@ -466,6 +520,7 @@ async function completeSimulatedPayment(req, res) {
       const simulatedMandateId = order.orderType === 'trial_charge' ? `SIM_MANDATE_${merchantTransactionId}` : null;
       await applySuccessfulPayment(order, {
         success: true,
+        amount: order.totalAmount,
         transactionId: `SIM_${merchantTransactionId}`,
         paymentInstrument: 'UPI',
         mandateId: simulatedMandateId,
@@ -543,16 +598,18 @@ async function paymentCallback(req, res) {
       eventType: 'PAYMENT_RESULT',
     });
     if (!claim.acquired) {
-      return res.status(200).json({ success: true, duplicate: true });
+      return res.redirect(withQueryParams(order.checkoutReturnUrl || frontendPaymentSuccessUrl, { merchantTransactionId }));
     }
 
-    const status = order.orderType === 'mandate_setup'
-      ? await phonePeService.verifySubscriptionOrderStatus(merchantTransactionId)
-      : await phonePeService.verifyPaymentStatus(merchantTransactionId);
-    if (status.success) {
-      await applySuccessfulPayment(order, status);
-    } else if (['FAILED', 'CANCELLED', 'EXPIRED', 'DECLINED'].includes(status.state)) {
-      await applyFailedPayment(order, status);
+    const status = order.orderType === 'one_time_access'
+      ? { state: await reconcileOneTimeOrder(order) }
+      : order.orderType === 'mandate_setup'
+        ? await phonePeService.verifySubscriptionOrderStatus(merchantTransactionId)
+        : await phonePeService.verifyPaymentStatus(merchantTransactionId);
+    if (status.state === 'paid' || status.success) {
+      if (order.orderType !== 'one_time_access') await applySuccessfulPayment(order, status);
+    } else if (status.state === 'failed' || ['FAILED', 'CANCELLED', 'EXPIRED', 'DECLINED'].includes(status.state)) {
+      if (order.orderType !== 'one_time_access') await applyFailedPayment(order, status);
       await phonePeEventClaims.markPhonePeEventProcessed(claim);
       return res.redirect(withQueryParams(order.checkoutReturnUrl || frontendPaymentFailedUrl, { merchantTransactionId }));
     } else {
@@ -740,6 +797,18 @@ async function handleWebhook(req, res) {
     claim = await phonePeEventClaims.claimPhonePeEvent({ eventKey, source: 'webhook', eventType: event });
     if (!claim.acquired) return res.sendStatus(200);
 
+    const oneTimeOrder = merchantTransactionId
+      ? await Order.findOne({ phonePeMerchantTransactionId: merchantTransactionId, gateway: 'phonepe', orderType: 'one_time_access' })
+      : null;
+    if (oneTimeOrder) {
+      if (['CHECKOUT.ORDER.COMPLETED', 'CHECKOUT.ORDER.FAILED', 'PAYMENT_SUCCESS', 'PAYMENT_FAILED'].includes(event)) {
+        const state = await reconcileOneTimeOrder(oneTimeOrder);
+        if (state === 'pending') throw new Error('PhonePe order status is still pending.');
+      }
+      await phonePeEventClaims.markPhonePeEventProcessed(claim);
+      return res.sendStatus(200);
+    }
+
     await processPhonePeWebhook({ payload, data, event, merchantTransactionId, phonePeTransactionId });
     await phonePeEventClaims.markPhonePeEventProcessed(claim);
     return res.sendStatus(200);
@@ -792,6 +861,12 @@ async function cancelSubscription(req, res) {
 
 async function subscriptionStatus(req, res) {
   try {
+    const pendingOrder = await Order.findOne({ user: req.user._id, gateway: 'phonepe', orderType: 'one_time_access', status: 'pending' }).sort({ createdAt: -1 });
+    if (pendingOrder && !isSimulatedPaymentEnabled()) {
+      try { await reconcileOneTimeOrder(pendingOrder); }
+      catch (error) { console.warn('PhonePe payment status check is temporarily unavailable.'); }
+    }
+    const pendingCheckout = pendingOrder?.status === 'pending';
     const courseEntitlements = activeCourseEntitlements(req.user);
     const courseIds = courseEntitlements.map((item) => item.courseId);
     const userSubscriptionStatus = req.user.subscriptionStatus || 'none';
@@ -815,7 +890,9 @@ async function subscriptionStatus(req, res) {
         trialUsed,
         trialEligible: !trialUsed,
         subscriptionType: null,
+        billingType: null,
         autoRenewEnabled: false,
+        pendingCheckout,
       });
     }
 
@@ -839,7 +916,9 @@ async function subscriptionStatus(req, res) {
       trialUsed,
       trialEligible: !trialUsed,
       subscriptionType: latest.subscriptionType || null,
+      billingType: latest.frequency === 'once' ? 'one_time' : 'recurring',
       autoRenewEnabled: Boolean(latest.phonePeMandateId && !latest.cancelledAt),
+      pendingCheckout,
     });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -866,10 +945,10 @@ async function verifyAppAccess(req, res) {
       });
     }
 
+    if (order.orderType === 'one_time_access' && order.status === 'pending') await reconcileOneTimeOrder(order);
     const paid = order.status === 'paid';
     const subscription = await Subscription.findOne({ user: req.user._id });
-    const activeStatuses = ['active', 'subscribed', '1rs trial', 'trial'];
-    const hasAccess = paid && subscription && activeStatuses.includes(subscription.status);
+    const hasAccess = Boolean(paid && resolveSubscriptionAccess(subscription, req.user).active);
 
     return res.json({
       verified: hasAccess,
@@ -884,8 +963,20 @@ async function verifyAppAccess(req, res) {
   }
 }
 
+function phonePePricing(_req, res) {
+  res.json({
+    gateway: isSimulatedPaymentEnabled() ? 'simulated' : 'phonepe',
+    currency: 'INR',
+    oneTimeAmountPaise: phonePeService.oneTimeAmountPaise,
+    accessDays: phonePeService.oneTimeAccessDays,
+    autoRenewEnabled: false,
+  });
+}
+
 module.exports = {
   initiateTrial,
+  phonePePricing,
+  reconcilePhonePeForUser,
   renderPaymentSimulator,
   completeSimulatedPayment,
   paymentCallback,

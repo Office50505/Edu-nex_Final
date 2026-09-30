@@ -24,16 +24,24 @@ function mockApi(config = pricing, eligible = true) {
 }
 beforeEach(() => { localStorage.clear(); sessionStorage.clear(); localStorage.setItem('edunexAccessToken', 'token'); window.history.replaceState(null, '', '/payment?plan=annual'); vi.clearAllMocks(); });
 afterEach(() => { cleanup(); vi.unstubAllGlobals(); delete window.EduNex; });
-it('pricing page only offers the monthly subscription', () => {
+it('pricing page only offers the monthly subscription', async () => {
+  mockApi();
   render(<PricingPage />);
-  expect(screen.getByRole('heading', { name: 'Monthly subscription' })).toBeTruthy();
+  expect(await screen.findByRole('heading', { name: 'Monthly subscription' })).toBeTruthy();
   expect(screen.queryByText(/annual|yearly|4,999/i)).toBeNull();
   expect(screen.getAllByRole('link', { name: /Continue with UPI/ })).toHaveLength(2);
+});
+it('PhonePe pricing shows the one-time payment and no renewal', async () => {
+  mockApi({ gateway: 'phonepe', oneTimeAmountPaise: 29900, accessDays: 30 });
+  render(<PricingPage />);
+  expect(await screen.findByRole('heading', { name: '30-day access' })).toBeTruthy();
+  expect(screen.getByText(/no mandate or automatic renewal/i)).toBeTruthy();
+  expect(screen.queryByText(/₹499\/month/i)).toBeNull();
 });
 it('legacy annual checkout links fall back to monthly Razorpay checkout', async () => {
   const fetcher = mockApi(pricing, false); render(<PaymentPage />);
   await screen.findByText("Payment Successful");
-  expect(JSON.parse(fetcher.mock.calls.find(([url]) => url.endsWith('/initiate-trial'))[1].body)).toEqual({ paymentType: 'monthly', mandateConsent: true });
+  expect(JSON.parse(fetcher.mock.calls.find(([url]) => url.endsWith('/initiate-trial'))[1].body)).toMatchObject({ paymentType: 'monthly', mandateConsent: true });
   expect(window.location.search).toBe('?plan=monthly');
   expect(openRazorpay).toHaveBeenCalledTimes(1);
   expect(screen.queryByText('Choose your billing plan')).toBeNull();
@@ -78,24 +86,20 @@ it('annual renewal cancellation requires confirmation and keeps the paid expiry 
   expect(api.mock.calls.filter(([url]) => url.endsWith('/cancel-subscription'))).toHaveLength(1);
 });
 
-it('never navigates to a legacy payment URL', async () => {
-  const fetcher = mockApi();
-  fetcher.mockImplementation(async (url) => {
-    if (url.endsWith('/config')) return response(pricing);
-    if (url.endsWith('/subscription-status')) return response({ accessGranted: false });
-    return response({ gateway: 'phonepe', redirectUrl: 'https://example.test/pay' });
-  });
+it('PhonePe one-time checkout shows ₹299 before opening payment', async () => {
+  const fetcher = mockApi({ gateway: 'phonepe', oneTimeAmountPaise: 29900, accessDays: 30 });
   render(<PaymentPage />);
-  await screen.findByText('Secure checkout is unavailable. Please try again later.');
+  expect(await screen.findByRole('button', { name: 'Pay ₹299 once' })).toBeTruthy();
+  expect(screen.getByText(/does not renew automatically/)).toBeTruthy();
+  expect(fetcher.mock.calls.filter(([url]) => url.endsWith('/initiate-trial'))).toHaveLength(0);
   expect(window.location.pathname).toBe('/payment');
   expect(openRazorpay).not.toHaveBeenCalled();
-  expect(localStorage.getItem('edunexHasCourseAccess')).toBeNull();
 });
 it('keeps provider failures on the paywall with a retry action', async () => {
   mockApi(); openRazorpay.mockRejectedValueOnce(new Error('Payment failed.'));
   render(<PaymentPage />);
   await screen.findByText('Payment failed.');
-  expect(screen.getByRole('button', { name: 'Try Razorpay Again' })).toBeTruthy();
+  expect(screen.getByRole('button', { name: 'Try Checkout Again' })).toBeTruthy();
   expect(localStorage.getItem('edunexHasCourseAccess')).toBeNull();
 });
 it('does not grant access or start another payment when verification is unavailable', async () => {

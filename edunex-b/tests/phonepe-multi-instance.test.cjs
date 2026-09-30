@@ -67,7 +67,7 @@ function responseRecorder() {
   };
 }
 
-function controllerHarness({ env = {}, failFirstOrderSave = false, providerStatus = null } = {}) {
+function controllerHarness({ env = {}, failFirstOrderSave = false, providerStatus = null, orderType = 'subscription_charge' } = {}) {
   const counters = {
     orderFind: 0,
     orderSave: 0,
@@ -75,6 +75,8 @@ function controllerHarness({ env = {}, failFirstOrderSave = false, providerStatu
     userUpdate: 0,
     eventCreate: 0,
     providerVerify: 0,
+    subscriptionUpdate: null,
+    userFields: null,
   };
   const logs = [];
   let shouldFailOrderSave = failFirstOrderSave;
@@ -82,8 +84,9 @@ function controllerHarness({ env = {}, failFirstOrderSave = false, providerStatu
     _id: 'order-1',
     user: 'user-1',
     subscription: 'subscription-1',
-    orderType: 'subscription_charge',
-    totalAmount: 50000,
+    orderType,
+    totalAmount: orderType === 'one_time_access' ? 29900 : 50000,
+    gateway: 'phonepe',
     status: 'pending',
     phonePeMerchantTransactionId: 'merchant-1',
     phonePePaymentInstrument: null,
@@ -107,7 +110,10 @@ function controllerHarness({ env = {}, failFirstOrderSave = false, providerStatu
   };
   const models = {
     Order: {
-      async findOne() { counters.orderFind += 1; return order; },
+      async findOne(query = {}) {
+        counters.orderFind += 1;
+        return query.orderType && query.orderType !== order.orderType ? null : order;
+      },
       async findByIdAndUpdate() {},
       async create() { throw new Error('new PhonePe order must not be created'); },
     },
@@ -115,14 +121,14 @@ function controllerHarness({ env = {}, failFirstOrderSave = false, providerStatu
       async exists() { return false; },
       async findById() { return subscription; },
       async findOne() { return subscription; },
-      async findOneAndUpdate() { return subscription; },
+      async findOneAndUpdate(_query, update) { counters.subscriptionUpdate = update; return subscription; },
     },
     SubscriptionEvent: {
       async findOne() { return null; },
       async create(value) { counters.eventCreate += 1; return value; },
     },
     User: {
-      async findByIdAndUpdate() { counters.userUpdate += 1; },
+      async findByIdAndUpdate(_id, fields) { counters.userUpdate += 1; counters.userFields = fields; },
     },
   };
   const claimStates = new Map();
@@ -144,6 +150,8 @@ function controllerHarness({ env = {}, failFirstOrderSave = false, providerStatu
     },
   };
   const phonePeService = {
+    oneTimeAccessDays: 30,
+    oneTimeAmountPaise: 29900,
     readiness: () => ({ configured: true }),
     verifyWebhookSignature: () => true,
     async verifyPaymentStatus() {
@@ -272,8 +280,56 @@ test('same callback on two instances has one atomic owner and one provider verif
   ]);
   assert.equal(flow.counters.providerVerify, 1);
   assert.equal(flow.counters.orderSave, 1);
-  assert.ok([first.statusCode, duplicate.statusCode].includes(200));
-  assert.ok([first.statusCode, duplicate.statusCode].includes(302));
+  assert.equal(first.statusCode, 302);
+  assert.equal(duplicate.statusCode, 302);
+});
+
+test('one-time PhonePe payment grants 30 days without creating a mandate', async () => {
+  const flow = controllerHarness({ orderType: 'one_time_access', providerStatus: {
+    success: true, state: 'COMPLETED', amount: 29900,
+    transactionId: 'provider-transaction-1', paymentInstrument: 'UPI', raw: {},
+  } });
+  const response = responseRecorder();
+  await flow.handlers.paymentCallback({ query: { merchantTransactionId: 'merchant-1' } }, response);
+  assert.equal(response.statusCode, 302);
+  assert.equal(flow.order.status, 'paid');
+  assert.equal(flow.counters.subscriptionUpdate.$set.frequency, 'once');
+  assert.equal(flow.counters.subscriptionUpdate.$set.phonePeMandateId, null);
+  assert.equal(flow.counters.subscriptionUpdate.$set.nextBillingAt, null);
+  assert.equal(flow.counters.subscriptionUpdate.$set.amount, 29900);
+  assert.equal(flow.counters.subscriptionUpdate.$set.currentPeriodEnd.getTime() - flow.order.paidAt.getTime(), 30 * 24 * 60 * 60 * 1000);
+  assert.equal(flow.counters.userFields.subscriptionExpiry.getTime(), flow.counters.subscriptionUpdate.$set.currentPeriodEnd.getTime());
+});
+
+test('standard checkout webhook confirms the one-time order from PhonePe status', async () => {
+  const flow = controllerHarness({ orderType: 'one_time_access', providerStatus: {
+    success: true, state: 'COMPLETED', amount: 29900,
+    transactionId: 'provider-transaction-1', paymentInstrument: 'UPI', raw: {},
+  } });
+  const webhook = responseRecorder();
+  await flow.handlers.handleWebhook({
+    headers: { authorization: 'valid' },
+    body: Buffer.from(JSON.stringify({
+      event: 'checkout.order.completed',
+      payload: { merchantOrderId: 'merchant-1', state: 'COMPLETED', amount: 29900, paymentDetails: [{ transactionId: 'provider-transaction-1' }] },
+    })),
+  }, webhook);
+  assert.equal(webhook.statusCode, 200);
+  assert.equal(flow.counters.providerVerify, 1);
+  assert.equal(flow.order.status, 'paid');
+  assert.equal(flow.counters.subscriptionUpdate.$set.frequency, 'once');
+});
+
+test('PhonePe amount mismatch never grants one-time access', async () => {
+  const flow = controllerHarness({ orderType: 'one_time_access', providerStatus: {
+    success: true, state: 'COMPLETED', amount: 100,
+    transactionId: 'provider-transaction-1', paymentInstrument: 'UPI', raw: {},
+  } });
+  const response = responseRecorder();
+  await flow.handlers.paymentCallback({ query: { merchantTransactionId: 'merchant-1' } }, response);
+  assert.equal(response.statusCode, 503);
+  assert.equal(flow.order.status, 'pending');
+  assert.equal(flow.counters.subscriptionUpdate, null);
 });
 
 test('failed processing returns retryable status, is not marked successful, and logs no secret', async () => {
@@ -328,6 +384,8 @@ test('disabled PhonePe callback and webhook return before all side effects', asy
     userUpdate: 0,
     eventCreate: 0,
     providerVerify: 0,
+    subscriptionUpdate: null,
+    userFields: null,
   });
   assert.equal(flow.claimStates.size, 0);
 });

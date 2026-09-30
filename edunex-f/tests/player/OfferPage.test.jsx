@@ -10,6 +10,7 @@ import { DEFAULT_OFFER_VIDEO_URL, OFFER_MEDIA, offerMediaForPage } from "../../s
 beforeEach(() => {
   vi.spyOn(window.HTMLMediaElement.prototype, "play").mockResolvedValue();
   vi.spyOn(window.HTMLMediaElement.prototype, "pause").mockImplementation(() => {});
+  vi.stubGlobal("fetch", vi.fn(async () => ({ ok: true, json: async () => ({ gateway: "razorpay" }) })));
 });
 
 afterEach(() => {
@@ -17,6 +18,7 @@ afterEach(() => {
   sessionStorage.clear();
   window.history.replaceState({}, "", "/");
   vi.restoreAllMocks();
+  vi.unstubAllGlobals();
 });
 
 it("registers the main Skillomate offer route", () => {
@@ -41,9 +43,9 @@ it("keeps the offer2 static page as the canonical route", () => {
   expect(pageKeyFromPath("/static-pages/skillomate-ai-influencer-course2")).toBe("offer2.html");
 });
 
-it("shows the premium offer and opens phone verification from its CTA", () => {
+it("shows the premium offer and opens phone verification from its CTA", async () => {
   render(<AdOfferPage />);
-  expect(screen.getByRole("heading", { name: "Skillomate Subscription" })).toBeTruthy();
+  expect(await screen.findByRole("heading", { name: "Skillomate Subscription" })).toBeTruthy();
   expect(document.querySelector("video")?.getAttribute("src")).toBe(DEFAULT_OFFER_VIDEO_URL);
   expect(screen.getByText("Secure payments powered by Skillomate payment partners")).toBeTruthy();
   fireEvent.click(screen.getByRole("button", { name: /^Subscribe for ₹1 →$/i }));
@@ -52,16 +54,16 @@ it("shows the premium offer and opens phone verification from its CTA", () => {
   expect(screen.getByLabelText("Mobile number")).toBeTruthy();
 });
 
-it("opens phone verification when the offer price card is clicked", () => {
+it("opens phone verification when the offer price card is clicked", async () => {
   render(<AdOfferPage />);
-  fireEvent.click(screen.getByRole("button", { name: /Subscribe for ₹1 - limited time offer/i }));
+  fireEvent.click(await screen.findByRole("button", { name: "View ₹1 offer details" }));
   expect(screen.getByRole("dialog")).toBeTruthy();
   expect(screen.getByRole("heading", { name: "Login / Sign up" })).toBeTruthy();
 });
 
-it("opens phone verification when the special offer pill is clicked", () => {
+it("opens phone verification when the special offer pill is clicked", async () => {
   render(<AdOfferPage />);
-  fireEvent.click(screen.getByRole("button", { name: /Special offer - subscribe for ₹1/i }));
+  fireEvent.click(await screen.findByRole("button", { name: /Special offer - subscribe for ₹1/i }));
   expect(screen.getByRole("dialog")).toBeTruthy();
   expect(screen.getByRole("heading", { name: "Login / Sign up" })).toBeTruthy();
 });
@@ -76,23 +78,26 @@ it("assigns a distinct video URL to every offer page", () => {
   expect(offerMediaForPage("offer10.html").videoUrl).toBe("/assets/offers/offer-10.mp4");
 });
 
-it("selects the video from the current offer route and falls back safely when it is missing", () => {
+it("selects the video from the current offer route and falls back safely when it is missing", async () => {
   window.history.replaceState({}, "", "/offer2");
   render(<AdOfferPage />);
+  await screen.findByRole("heading", { name: "Skillomate Subscription" });
   const video = document.querySelector("video");
   expect(video?.getAttribute("src")).toBe("/assets/offer-video/Video-65454.mp4");
   fireEvent.error(video);
   expect(video?.getAttribute("src")).toBe(DEFAULT_OFFER_VIDEO_URL);
 });
 
-it("selects the uploaded video from the /offer3 route", () => {
+it("selects the uploaded video from the /offer3 route", async () => {
   window.history.replaceState({}, "", "/offer3");
   render(<AdOfferPage />);
+  await screen.findByRole("heading", { name: "Skillomate Subscription" });
   expect(document.querySelector("video")?.getAttribute("src")).toBe("/assets/offer-video/offer-3.mov");
 });
 
-it("selects the uploaded video from the /offer4 route", () => {
+it("selects the uploaded video from the /offer4 route", async () => {
   window.history.replaceState({}, "", "/offer4");
   render(<AdOfferPage />);
+  await screen.findByRole("heading", { name: "Skillomate Subscription" });
   expect(document.querySelector("video")?.getAttribute("src")).toBe("/assets/offer-video/offer-4.mov");
 });

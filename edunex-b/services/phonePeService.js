@@ -21,6 +21,8 @@ const webhookUsername = envValue('PHONEPE_WEBHOOK_USERNAME');
 const webhookPassword = envValue('PHONEPE_WEBHOOK_PASSWORD');
 const trialAmountPaise = Number(process.env.TRIAL_AMOUNT_PAISE || 100);
 const subscriptionAmountPaise = Number(process.env.SUBSCRIPTION_AMOUNT_PAISE || 50000);
+const oneTimeAmountPaise = 29900;
+const oneTimeAccessDays = 30;
 
 let cachedToken = null;
 let tokenExpiresAt = 0;
@@ -235,6 +237,43 @@ async function createMonthlyPaymentRequest(userId) {
   };
 }
 
+async function createOneTimePaymentRequest(userId) {
+  const merchantTransactionId = `${generateMerchantTransactionId(userId)}_${crypto.randomBytes(4).toString('hex')}`;
+  const accessToken = await getAccessToken();
+  const payload = {
+    merchantOrderId: merchantTransactionId,
+    amount: oneTimeAmountPaise,
+    expireAfter: 1200,
+    metaInfo: {
+      udf1: String(userId),
+      udf2: 'one_time_access',
+      udf3: '30_days',
+      udf4: 'edunex',
+    },
+    paymentFlow: {
+      type: 'PG_CHECKOUT',
+      merchantUrls: {
+        redirectUrl: `${redirectUrl}?merchantTransactionId=${encodeURIComponent(merchantTransactionId)}`,
+      },
+    },
+  };
+  const response = await fetch(`${baseUrl}/checkout/v2/pay`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `O-Bearer ${accessToken}`,
+      'X-MERCHANT-ID': merchantId,
+    },
+    body: JSON.stringify(payload),
+  });
+  const body = await readJson(response);
+  const redirect = body.redirectUrl || body.data?.redirectUrl;
+  if (!response.ok || !redirect) {
+    throw new Error(body.message || body.error || 'PhonePe payment URL request failed');
+  }
+  return { redirectUrl: redirect, merchantTransactionId };
+}
+
 async function verifyPaymentStatus(merchantTransactionId) {
   const accessToken = await getAccessToken();
   const response = await fetch(`${baseUrl}/checkout/v2/order/${merchantTransactionId}/status`, {
@@ -253,7 +292,9 @@ async function verifyPaymentStatus(merchantTransactionId) {
   return {
     success,
     state: String(state || '').toUpperCase(),
-    transactionId: data.transactionId || data.orderId || data.merchantOrderId || merchantTransactionId,
+    amount: Number(data.amount),
+    transactionId: data.paymentDetails?.find((detail) => detail.state === 'COMPLETED')?.transactionId
+      || data.transactionId || data.orderId || data.merchantOrderId || merchantTransactionId,
     paymentInstrument: getPaymentInstrumentFromStatus(data),
     mandateId: data.mandateId || data.subscriptionId || null,
     raw: body,
@@ -345,6 +386,7 @@ module.exports = {
   generateMerchantSubscriptionId,
   createTrialPaymentRequest,
   createMonthlyPaymentRequest,
+  createOneTimePaymentRequest,
   verifyPaymentStatus,
   verifySubscriptionOrderStatus,
   verifyWebhookSignature,
@@ -352,4 +394,6 @@ module.exports = {
   config,
   readiness,
   merchantId,
+  oneTimeAmountPaise,
+  oneTimeAccessDays,
 };

@@ -402,7 +402,10 @@ async function signup(req, res) {
       const Onboarding = require('../models/OnboardingSession');
       onboarding = await Onboarding.findOne({ _id: decodedSignup.onboardingId, mobileNumber: normalizedMobile, completedAt: null });
       if (!onboarding) return res.status(401).json({ error: 'Signup session is no longer available' });
-      onboardingSubscription = await require('../controllers/razorpayController').reconcileForUser(onboarding._id);
+      const phonePeOrder = await require('../models/Order').exists({ user: onboarding._id, gateway: 'phonepe', orderType: 'one_time_access' });
+      onboardingSubscription = phonePeOrder
+        ? await require('../controllers/paymentController').reconcilePhonePeForUser(onboarding._id)
+        : await require('../controllers/razorpayController').reconcileForUser(onboarding._id);
       if (!require('../services/subscriptionAccess').resolveSubscriptionAccess(onboardingSubscription, {}).active) {
         return res.status(409).json({ error: 'Payment has not been confirmed. Return to checkout to check its status.' });
       }
@@ -411,7 +414,12 @@ async function signup(req, res) {
     if (!onboarding) {
       // A normal OTP signup must claim the same reserved identity, not orphan an ad payment.
       onboarding = await require('../models/OnboardingSession').findOne({ mobileNumber: normalizedMobile, completedAt: null });
-      if (onboarding) onboardingSubscription = await require('../controllers/razorpayController').reconcileForUser(onboarding._id);
+      if (onboarding) {
+        const phonePeOrder = await require('../models/Order').exists({ user: onboarding._id, gateway: 'phonepe', orderType: 'one_time_access' });
+        onboardingSubscription = phonePeOrder
+          ? await require('../controllers/paymentController').reconcilePhonePeForUser(onboarding._id)
+          : await require('../controllers/razorpayController').reconcileForUser(onboarding._id);
+      }
     }
     const existingMobileUser = await User.findOne({ mobileNumber: normalizedMobile });
     if (existingMobileUser) {

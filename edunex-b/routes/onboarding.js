@@ -5,6 +5,8 @@ const Onboarding = require('../models/OnboardingSession');
 const User = require('../models/User');
 const billing = require('../controllers/razorpayController');
 const phonePeBilling = require('../controllers/paymentController');
+const phonePeService = require('../services/phonePeService');
+const { isPhonePeNewPaymentsEnabled } = require('../services/phonePePolicy');
 const rzp = require('../services/razorpayService');
 const paymentModes = require('../services/paymentMode');
 const marketing = require('../services/marketingSettings');
@@ -24,8 +26,12 @@ const fail = (message, status = 400) => Object.assign(new Error(message), { stat
 router.use((_req, res, next) => { res.set('Cache-Control', 'no-store'); next(); });
 router.get('/config', wrap(async (_req, res) => {
   const provider = await paymentModes.activeProvider();
-  const c = rzp.requireConfig(adMode());
   const publicMarketing = await marketing.publicConfig();
+  if (provider === 'phonepe') {
+    if (!isPhonePeNewPaymentsEnabled(process.env)) throw fail('PhonePe checkout is unavailable.', 503);
+    return res.json({ gateway: 'phonepe', oneTimeAmountPaise: phonePeService.oneTimeAmountPaise, accessDays: phonePeService.oneTimeAccessDays, ...publicMarketing });
+  }
+  const c = rzp.requireConfig(adMode());
   res.json({ mode: c.mode, gateway: provider, trialAmountPaise: c.trialAmount, subscriptionAmountPaise: c.monthlyAmount, trialHours: c.trialHours, ...publicMarketing });
 }));
 router.post('/session', wrap(async (req, res) => {
@@ -50,16 +56,15 @@ async function requireSession(req, res, next) {
     const session = await Onboarding.findOne({ tokenHash: hash(bearer), expiresAt: { $gt: new Date() }, completedAt: null });
     if (!session || await User.exists({ mobileNumber: session.mobileNumber })) throw fail('Please verify your phone or sign in again.', 401);
     req.onboarding = session;
-    req.onboardingMode = adMode();
+    req.onboardingMode = await paymentModes.activeProvider() === 'phonepe' ? null : adMode();
     req.user = { _id: session._id, mobileNumber: session.mobileNumber, isMobileVerified: true };
     next();
   } catch (error) { res.status(error.status || 500).json({ error: error.status ? error.message : 'Unable to resume onboarding.' }); }
 }
-router.post('/checkout', requireSession, (req, res, next) => {
-  if (!['trial', 'monthly'].includes(req.body.paymentType)) return res.status(400).json({ error: 'Choose a supported plan.' });
-  next();
-}, async (req, res, next) => {
+router.post('/checkout', requireSession, async (req, res, next) => {
   const provider = await paymentModes.activeProvider();
+  if (provider === 'phonepe' && req.body.paymentType !== 'one_time') return res.status(400).json({ error: 'Choose the one-time PhonePe payment.' });
+  if (provider !== 'phonepe' && !['trial', 'monthly'].includes(req.body.paymentType)) return res.status(400).json({ error: 'Choose a supported plan.' });
   if (provider === 'phonepe') return phonePeBilling.initiateTrial(req, res, next);
   return billing.initiate(req, res, next);
 });
@@ -79,7 +84,10 @@ router.post('/cancel', requireSession, async (req, res, next) => {
   return billing.cancel(req, res, next);
 });
 router.post('/handoff', requireSession, wrap(async (req, res) => {
-  const subscription = await billing.reconcileForUser(req.onboarding._id);
+  const phonePeOrder = await require('../models/Order').exists({ user: req.onboarding._id, gateway: 'phonepe', orderType: 'one_time_access' });
+  const subscription = phonePeOrder
+    ? await phonePeBilling.reconcilePhonePeForUser(req.onboarding._id)
+    : await billing.reconcileForUser(req.onboarding._id);
   if (!resolveSubscriptionAccess(subscription, {}).active) throw fail('Payment is still awaiting confirmation.', 409);
   const code = token();
   await Onboarding.updateOne({ _id: req.onboarding._id, completedAt: null }, { $set: { handoffHash: hash(code), handoffExpiresAt: new Date(Date.now() + 5 * 60 * 1000) } });

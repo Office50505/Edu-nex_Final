@@ -24,7 +24,7 @@ const orderSchema = new mongoose.Schema({
   },
   orderType: {
     type: String,
-    enum: ['trial_charge', 'mandate_setup', 'subscription_charge', 'refund'],
+    enum: ['trial_charge', 'mandate_setup', 'subscription_charge', 'one_time_access', 'refund'],
     required: true,
   },
   status: {
