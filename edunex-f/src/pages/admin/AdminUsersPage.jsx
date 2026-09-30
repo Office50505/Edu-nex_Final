@@ -28,15 +28,40 @@ const emptyCreateLearner = {
   courseAccessDays: "7",
   isMobileVerified: true,
   isEmailVerified: false,
+  testerNotes: "",
 };
 
+function isTrialStatus(status) {
+  return ["trial", "1rs trial"].includes(status);
+}
+
+function dateHasPassed(value) {
+  if (!value) return false;
+  const date = new Date(value);
+  return !Number.isNaN(date.getTime()) && date.getTime() <= Date.now();
+}
+
+function trialEndValue(user) {
+  return billing(user).trialExpiresAt || user.subscriptionExpiry;
+}
+
+function isTrialExpired(user) {
+  return isTrialStatus(user.subscriptionStatus) && dateHasPassed(trialEndValue(user));
+}
+
+function subscriptionDisplayStatus(user) {
+  return isTrialExpired(user) ? "trial expired" : user.subscriptionStatus || "none";
+}
+
 function accessEndLabel(user) {
-  return ["trial", "1rs trial"].includes(user.subscriptionStatus) ? "Trial ends" : "Subscription ends";
+  if (isTrialExpired(user)) return "Trial ended";
+  return isTrialStatus(user.subscriptionStatus) ? "Trial ends" : "Subscription ends";
 }
 
 function accessEndDate(user) {
-  if (!user.subscriptionExpiry) return user.subscriptionStatus === "none" || !user.subscriptionStatus ? "No subscription" : "Not recorded";
-  const date = new Date(user.subscriptionExpiry);
+  const endValue = trialEndValue(user) || user.subscriptionExpiry;
+  if (!endValue) return user.subscriptionStatus === "none" || !user.subscriptionStatus ? "No subscription" : "Not recorded";
+  const date = new Date(endValue);
   if (Number.isNaN(date.getTime())) return "Not recorded";
   return `${date.toLocaleString("en-IN", {
     timeZone: "Asia/Kolkata", day: "2-digit", month: "short", year: "numeric",
@@ -47,7 +72,7 @@ function accessEndDate(user) {
 function statusBadgeClass(status) {
   if (["active", "subscribed"].includes(status)) return "good";
   if (["1rs trial", "trial"].includes(status)) return "warn";
-  if (["cancelled", "expired"].includes(status)) return "bad";
+  if (["cancelled", "expired", "trial expired"].includes(status)) return "bad";
   return "";
 }
 
@@ -72,9 +97,10 @@ function isVerified(user) {
 }
 
 function lifecycleLabel(user) {
+  if (isTrialExpired(user)) return "Trial expired";
   const status = user.subscriptionStatus || "none";
   if (["active", "subscribed"].includes(status)) return "Customer";
-  if (["1rs trial", "trial"].includes(status)) return "Trial learner";
+  if (isTrialStatus(status)) return "Trial learner";
   if (["cancelled", "expired"].includes(status)) return "Retention";
   return "Lead";
 }
@@ -151,7 +177,17 @@ function mandateBadgeClass(user) {
 
 function billingOneLine(user) {
   const summary = billing(user);
-  const nextDate = summary.cancelledAt ? `Cancelled ${formatDate(summary.cancelledAt)}` : summary.nextBillingAt ? `Next ${formatDate(summary.nextBillingAt)}` : "Next billing not recorded";
+  const trialEndedAt = trialEndValue(user);
+  const renewalAnchor = summary.nextBillingAt || trialEndedAt;
+  const nextDate = summary.cancelledAt
+    ? `Cancelled ${formatDate(summary.cancelledAt)}`
+    : isTrialExpired(user) && String(summary.mandateStatus || "").toLowerCase() === "active"
+      ? `Renewal pending since ${formatDate(renewalAnchor)}`
+      : isTrialExpired(user)
+        ? `Trial ended ${formatDate(trialEndedAt)}`
+        : summary.nextBillingAt
+          ? `Next ${formatDate(summary.nextBillingAt)}`
+          : "Next billing not recorded";
   return `${billingGatewayLabel(user)} · ${mandateLabel(user)} · ${nextDate}`;
 }
 
@@ -168,8 +204,8 @@ function matchesSegment(user, segment) {
   if (user.deletedAt) return false;
   const status = user.subscriptionStatus || "none";
   if (segment === "paying") return ["active", "subscribed"].includes(status);
-  if (segment === "trial") return ["1rs trial", "trial"].includes(status);
-  if (segment === "needs_attention") return !isVerified(user) || ["cancelled", "expired", "none"].includes(status) || totalCourses(user) === 0;
+  if (segment === "trial") return isTrialStatus(status);
+  if (segment === "needs_attention") return isTrialExpired(user) || !isVerified(user) || ["cancelled", "expired", "none"].includes(status) || totalCourses(user) === 0;
   if (segment === "engaged") return progressAverage(user) >= 35 || completedCourses(user) > 0 || watchMinutes(user) > 0;
   if (segment === "completed_certificate") return completedCourses(user) > 0;
   if (segment === "low_progress") return totalCourses(user) > 0 && progressAverage(user) < 35;
@@ -325,7 +361,7 @@ function LearnerDetailDrawer({ user, courses, tab, setTab, onClose, purchaseHist
       </div>
       {tab === "Overview" ? (
         <div className="crm-detail-grid">
-          <DetailStat label="User ID" value={user._id || "No ID"} /><DetailStat label="Presence" value={user.presence?.isOnline ? "Online now" : `Offline · ${formatDateTime(user.presence?.lastSeenAt || user.lastActiveAt)}`} /><DetailStat label="Lifecycle" value={lifecycleLabel(user)} /><DetailStat label="Subscription" value={user.subscriptionStatus || "none"} /><DetailStat label="Gateway" value={billingGatewayLabel(user)} /><DetailStat label="Mandate" value={mandateLabel(user)} /><DetailStat label="Provider status" value={billing(user).providerStatus || billing(user).billingPhase || "Not recorded"} /><DetailStat label="Subscription started" value={billingDate(billing(user).subscriptionStartedAt)} /><DetailStat label="Trial started" value={billingDate(billing(user).trialStartedAt)} /><DetailStat label="Trial ends" value={billingDate(billing(user).trialExpiresAt)} /><DetailStat label="Next billing" value={billingDate(billing(user).nextBillingAt)} /><DetailStat label="Cancelled at" value={billingDate(billing(user).cancelledAt)} /><DetailStat label={accessEndLabel(user)} value={accessEndDate(user)} /><DetailStat label="Verified" value={isVerified(user) ? "Yes" : "Pending"} /><DetailStat label="Joined" value={formatDateTime(user.createdAt)} /><DetailStat label="Last active" value={formatDate(user.presence?.lastSeenAt || user.lastActiveAt || watch.lastWatchedAt)} /><DetailStat label="Last IP address" value={user.networkSummary?.ipAddress || "Not recorded"} /><DetailStat label="IP recorded" value={user.networkSummary?.recordedAt ? formatDateTime(user.networkSummary.recordedAt) : "Not recorded"} /><DetailStat label="Watch time" value={formatWatchDuration(watchMinutes(user))} /><DetailStat label="Average completion" value={`${formatNumber(progressAverage(user))}%`} />
+          <DetailStat label="User ID" value={user._id || "No ID"} /><DetailStat label="Presence" value={user.presence?.isOnline ? "Online now" : `Offline · ${formatDateTime(user.presence?.lastSeenAt || user.lastActiveAt)}`} /><DetailStat label="Lifecycle" value={lifecycleLabel(user)} /><DetailStat label="Subscription" value={subscriptionDisplayStatus(user)} /><DetailStat label="Gateway" value={billingGatewayLabel(user)} /><DetailStat label="Mandate" value={mandateLabel(user)} /><DetailStat label="Provider status" value={billing(user).providerStatus || billing(user).billingPhase || "Not recorded"} /><DetailStat label="Subscription started" value={billingDate(billing(user).subscriptionStartedAt)} /><DetailStat label="Trial started" value={billingDate(billing(user).trialStartedAt)} /><DetailStat label="Trial ends" value={billingDate(billing(user).trialExpiresAt)} /><DetailStat label="Next billing" value={billingDate(billing(user).nextBillingAt)} /><DetailStat label="Cancelled at" value={billingDate(billing(user).cancelledAt)} /><DetailStat label={accessEndLabel(user)} value={accessEndDate(user)} /><DetailStat label="Verified" value={isVerified(user) ? "Yes" : "Pending"} /><DetailStat label="Joined" value={formatDateTime(user.createdAt)} /><DetailStat label="Last active" value={formatDate(user.presence?.lastSeenAt || user.lastActiveAt || watch.lastWatchedAt)} /><DetailStat label="Last IP address" value={user.networkSummary?.ipAddress || "Not recorded"} /><DetailStat label="IP recorded" value={user.networkSummary?.recordedAt ? formatDateTime(user.networkSummary.recordedAt) : "Not recorded"} /><DetailStat label="Watch time" value={formatWatchDuration(watchMinutes(user))} /><DetailStat label="Average completion" value={`${formatNumber(progressAverage(user))}%`} />
         </div>
       ) : null}
       {tab === "Registration" ? <RegistrationDetails user={user} /> : null}
@@ -419,7 +455,7 @@ export function AdminUsersPage({ audience = "learners" } = {}) {
   const filteredUsers = useMemo(() => {
     const audienceUsers = users.filter((user) => testerMode ? user.isTester : !user.isTester);
     const rows = audienceUsers.filter((user) => {
-      const matchesStatus = status === "all" || user.subscriptionStatus === status;
+      const matchesStatus = status === "all" || user.subscriptionStatus === status || (status === "expired" && isTrialExpired(user));
       const matchesAccount = accountStatus === "all" || (accountStatus === "active" ? user.isActive : !user.isActive);
       const matchesPresence = presenceStatus === "all" || (presenceStatus === "online" ? user.presence?.isOnline : !user.presence?.isOnline);
       return matchesStatus && matchesAccount && matchesPresence && matchesSearch(user, deferredQuery) && matchesSegment(user, segment);
@@ -448,11 +484,11 @@ export function AdminUsersPage({ audience = "learners" } = {}) {
     try {
       const data = await adminJson("/api/admin/users", {
         method: "POST",
-        body: JSON.stringify(createLearner),
-      }, "Unable to create learner ID.");
+        body: JSON.stringify({ ...createLearner, isTester: testerMode }),
+      }, `Unable to create ${testerMode ? "test account" : "learner ID"}.`);
       setCreatedLearnerId(String(data.user?._id || ""));
       setMessageType("success");
-      setMessage(data.message || "Learner ID created successfully.");
+      setMessage(data.message || `${testerMode ? "Test account" : "Learner ID"} created successfully.`);
       setCreateLearner(emptyCreateLearner);
       await loadUsers();
     } catch (error) {
@@ -814,7 +850,7 @@ export function AdminUsersPage({ audience = "learners" } = {}) {
         user.email || "",
         user.mobileNumber || "",
         lifecycleLabel(user),
-        user.subscriptionStatus || "none",
+        subscriptionDisplayStatus(user),
         billingGatewayLabel(user),
         mandateLabel(user),
         billing(user).providerStatus || billing(user).billingPhase || "",
@@ -858,21 +894,22 @@ export function AdminUsersPage({ audience = "learners" } = {}) {
       actions={<button className="toolbar-button" type="button" onClick={loadUsers} disabled={loading}>Refresh</button>}
     >
       <Message text={message} type={messageType} />
-      {!testerMode ? <AdminWrite><details className="create-learner-panel">
-        <summary><span>Create learner ID</span><small>Add a learner manually and set initial access.</small></summary>
+      <AdminWrite><details className="create-learner-panel">
+        <summary><span>{testerMode ? "Create planted test account" : "Create learner ID"}</span><small>{testerMode ? "Add a maintained tester login for smoke checks, payment QA, and support reproduction." : "Add a learner manually and set initial access."}</small></summary>
         <form className="create-learner-form" onSubmit={submitCreateLearner}><AdminEditFields>
           <label><span>Full name</span><input value={createLearner.fullName} onChange={(event) => updateCreateLearner("fullName", event.target.value)} minLength="2" maxLength="120" required autoComplete="off" /></label>
           <label><span>Mobile number</span><input type="tel" value={createLearner.mobileNumber} onChange={(event) => updateCreateLearner("mobileNumber", event.target.value)} placeholder="9876543210" minLength="10" maxLength="18" required autoComplete="off" /></label>
           <label><span>Email (optional)</span><input type="email" value={createLearner.email} onChange={(event) => updateCreateLearner("email", event.target.value)} maxLength="254" autoComplete="off" /></label>
           <label><span>Temporary password</span><input type="password" value={createLearner.password} onChange={(event) => updateCreateLearner("password", event.target.value)} minLength="8" maxLength="72" required autoComplete="new-password" /></label>
+          {testerMode ? <label><span>Tester note</span><input value={createLearner.testerNotes} onChange={(event) => updateCreateLearner("testerNotes", event.target.value)} maxLength="500" placeholder="Purpose, owner, payment path, or fixture details" autoComplete="off" /></label> : null}
           <label><span>Purchased course (optional)</span><select value={createLearner.courseId} onChange={(event) => updateCreateLearner("courseId", event.target.value)}><option value="">No course yet</option>{courses.map((course) => <option value={course._id} key={course._id}>{course.title}</option>)}</select></label>
           {createLearner.courseId ? <label><span>Course access</span><select value={createLearner.courseAccessType} onChange={(event) => updateCreateLearner("courseAccessType", event.target.value)}><option value="trial">Trial</option><option value="yearly">Yearly (365 days)</option><option value="permanent">Permanent</option></select></label> : null}
           {createLearner.courseId && createLearner.courseAccessType === "trial" ? <label><span>Trial days</span><input type="number" min="1" max="365" value={createLearner.courseAccessDays} onChange={(event) => updateCreateLearner("courseAccessDays", event.target.value)} required /></label> : null}
           <label className="create-learner-check"><input type="checkbox" checked={createLearner.isMobileVerified} onChange={(event) => updateCreateLearner("isMobileVerified", event.target.checked)} /><span>Mobile verified</span></label>
           <label className="create-learner-check"><input type="checkbox" checked={createLearner.isEmailVerified} disabled={!createLearner.email} onChange={(event) => updateCreateLearner("isEmailVerified", event.target.checked)} /><span>Email verified</span></label>
-          <div className="create-learner-actions"><button className="toolbar-button primary" type="submit" disabled={creatingLearner}>{creatingLearner ? "Creating…" : "Create learner ID"}</button>{createdLearnerId ? <output>Created ID: <strong>{createdLearnerId}</strong></output> : null}</div>
+          <div className="create-learner-actions"><button className="toolbar-button primary" type="submit" disabled={creatingLearner}>{creatingLearner ? "Creating…" : testerMode ? "Create test account" : "Create learner ID"}</button>{createdLearnerId ? <output>Created ID: <strong>{createdLearnerId}</strong></output> : null}</div>
         </AdminEditFields></form>
-      </details></AdminWrite> : null}
+      </details></AdminWrite>
       <DeletionRequests />
 
       <form className="controls-panel" onSubmit={(event) => event.preventDefault()}>
@@ -903,7 +940,7 @@ export function AdminUsersPage({ audience = "learners" } = {}) {
         {!loading && !filteredUsers.length ? <div className="empty-state">No users found.</div> : null}
         {!loading && visibleUsers.map((user) => {
           const average = Math.max(0, Math.min(100, progressAverage(user)));
-          const statusValue = user.subscriptionStatus || "none";
+          const statusValue = subscriptionDisplayStatus(user);
           const isOpen = openIds.has(user._id);
           const isPurchaseOpen = purchaseOpenIds.has(String(user._id));
           const progress = user.progressCourses || [];
@@ -926,7 +963,7 @@ export function AdminUsersPage({ audience = "learners" } = {}) {
                   </div>
                   <RegistrationDetails user={user} />
                   {user.banReason ? <div className="admin-alert bad"><strong>Ban reason</strong><span>{user.banReason}</span></div> : null}
-                  {!user.deletedAt ? <div className="user-management-actions"><div><strong>Subscription</strong><span>{user.subscriptionStatus || "none"} · {billingOneLine(user)}</span></div><AdminWrite><button className="action-button primary" disabled={Boolean(updatingId)} onClick={() => openSubscriptionDialog(user)}>Update subscription</button></AdminWrite></div> : null}
+                  {!user.deletedAt ? <div className="user-management-actions"><div><strong>Subscription</strong><span>{subscriptionDisplayStatus(user)} · {billingOneLine(user)}</span></div><AdminWrite><button className="action-button primary" disabled={Boolean(updatingId)} onClick={() => openSubscriptionDialog(user)}>Update subscription</button></AdminWrite></div> : null}
                   <div className="user-management-actions">
                     <div><strong>Purchased courses</strong><span>{formatNumber(user.purchasedCourses?.length || 0)} courses owned. Course changes are recorded in the audit history.</span></div>
                     {user.deletedAt ? <><AdminWrite><button className="action-button primary" type="button" disabled={Boolean(updatingId) || Boolean(deletingId)} onClick={() => restoreUser(user)}>Restore user</button></AdminWrite><AdminWrite><button className="action-button danger" type="button" disabled={Boolean(deletingId) || Boolean(updatingId)} onClick={() => deletePermanently(user)}>{deletingId === user._id ? "Deleting…" : "Delete permanently"}</button></AdminWrite></> : <><AdminWrite><button className="action-button primary" type="button" disabled={Boolean(updatingId)} onClick={() => openCourseDialog(user, "grant")}>Add purchased course</button></AdminWrite><AdminWrite><button className="action-button danger" type="button" disabled={Boolean(updatingId)} onClick={() => openCourseDialog(user, "revoke")}>Remove course</button></AdminWrite><AdminWrite><button className="action-button danger" type="button" disabled={Boolean(deletingId) || Boolean(updatingId)} onClick={() => moveToTrash(user)}>{deletingId === user._id ? "Moving…" : "Move to Trash"}</button></AdminWrite></>}
@@ -952,7 +989,7 @@ export function AdminUsersPage({ audience = "learners" } = {}) {
         <form className="course-access-dialog" role="dialog" aria-modal="true" aria-labelledby="subscription-dialog-title" style={{ maxHeight: "calc(100dvh - 48px)", overflowY: "auto" }} onSubmit={saveSubscription}><AdminEditFields disabled={Boolean(updatingId)}>
           <h2 id="subscription-dialog-title">Update subscription</h2>
           <p>{subscriptionDialog.user.fullName || entityLabelTitle}</p>
-          <p>Current status: <strong>{subscriptionDialog.user.subscriptionStatus || "none"}</strong><br />{accessEndLabel(subscriptionDialog.user)}: {accessEndDate(subscriptionDialog.user)}</p>
+          <p>Current status: <strong>{subscriptionDisplayStatus(subscriptionDialog.user)}</strong><br />{accessEndLabel(subscriptionDialog.user)}: {accessEndDate(subscriptionDialog.user)}</p>
           <label><span>Subscription status</span><select autoFocus value={subscriptionDialog.status} onChange={event => setSubscriptionDialog(current => ({ ...current, status: event.target.value, durationDays: event.target.value === "trial" ? 1 : 30 }))}><option value="none">None</option><option value="trial">Trial</option><option value="subscribed">Subscribed</option></select></label>
           {subscriptionDialog.status !== "none" ? <div className="toolbar-actions" aria-label="Access duration presets">{(subscriptionDialog.status === "trial" ? [1, 3, 7] : [30, 90, 365]).map(days => <button className="toolbar-button" key={days} type="button" aria-pressed={Number(subscriptionDialog.durationDays) === days} onClick={() => setSubscriptionDialog(current => ({ ...current, durationDays: days }))}>{days === 1 ? "24 hours" : `${days} days`}</button>)}</div> : null}
           {subscriptionDialog.status !== "none" ? <label><span>Access days (from now)</span><input type="number" min="1" max="3650" step="1" required value={subscriptionDialog.durationDays} onChange={event => setSubscriptionDialog(current => ({ ...current, durationDays: event.target.value }))} /></label> : null}

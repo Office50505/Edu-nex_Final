@@ -2640,8 +2640,11 @@ app.post('/api/admin/users', protectAdmin, async (req, res) => {
     const courseId = String(req.body?.courseId || '').trim();
     const courseAccessType = String(req.body?.courseAccessType || 'permanent').trim().toLowerCase();
     const courseAccessDays = Math.min(365, Math.max(1, Number.parseInt(req.body?.courseAccessDays, 10) || 7));
+    const isTester = req.body?.isTester === true;
+    const testerNotes = String(req.body?.testerNotes || '').trim().slice(0, 500);
+    const adminSubject = req.admin?.sub || req.admin?.email || 'admin';
 
-    if (fullName.length < 2) return res.status(400).json({ error: 'Enter a learner name of at least 2 characters.' });
+    if (fullName.length < 2) return res.status(400).json({ error: `Enter a ${isTester ? 'test account' : 'learner'} name of at least 2 characters.` });
     if (!/^\d{12,15}$/.test(mobileNumber)) return res.status(400).json({ error: 'Enter a valid mobile number including country code.' });
     if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return res.status(400).json({ error: 'Enter a valid email address.' });
     if (password.length < 8 || password.length > 72) return res.status(400).json({ error: 'Temporary password must contain 8 to 72 characters.' });
@@ -2675,10 +2678,14 @@ app.post('/api/admin/users', protectAdmin, async (req, res) => {
         grantedAt: new Date(),
         expiresAt: courseAccessType === 'permanent' ? null : new Date(Date.now() + (courseAccessType === 'yearly' ? 365 : courseAccessDays) * 86400000),
       }] : [],
+      isTester,
+      testerSince: isTester ? new Date() : null,
+      testerAssignedBy: isTester ? adminSubject : null,
+      testerNotes: isTester ? (testerNotes || 'Planted test account created from admin panel') : '',
     });
 
     return res.status(201).json({
-      message: 'Learner ID created successfully.',
+      message: isTester ? 'Test account created successfully.' : 'Learner ID created successfully.',
       user: {
         _id: user._id,
         fullName: user.fullName,
@@ -2691,12 +2698,16 @@ app.post('/api/admin/users', protectAdmin, async (req, res) => {
         isMobileVerified: user.isMobileVerified,
         isEmailVerified: user.isEmailVerified,
         isActive: user.isActive,
+        isTester: user.isTester,
+        testerSince: user.testerSince,
+        testerAssignedBy: user.testerAssignedBy,
+        testerNotes: user.testerNotes,
         createdAt: user.createdAt,
       },
     });
   } catch (error) {
-    if (error?.code === 11000) return res.status(409).json({ error: 'A learner already exists with this mobile number or email.' });
-    return res.status(500).json({ error: 'Unable to create the learner ID.' });
+    if (error?.code === 11000) return res.status(409).json({ error: 'An account already exists with this mobile number or email.' });
+    return res.status(500).json({ error: 'Unable to create the account.' });
   }
 });
 
