@@ -6,7 +6,8 @@ REVIEW ACCOUNT
 Use the username and password entered in the dedicated App Review Information fields. The account is a normal server-backed account; no review backdoor or credentials are embedded in the app. Existing-account password login does not require a new Indian OTP.
 
 SUBSCRIPTION
-Open Profile > Subscription Details. The iOS app uses the auto-renewable App Store subscription com.skillomate.premium.monthly and displays Apple's localized price. It includes purchase, Restore Purchases, subscription-status refresh, Terms of Use, Privacy Policy, and Manage Apple Subscription. There is no external web purchase link on iOS.
+Open Profile > Subscription Details. The iOS app offers one auto-renewable App Store subscription, com.skillomate.premium.monthly, at Apple's localized monthly price (₹499/month in India). There is no iOS introductory offer, free trial, or discounted first period. The screen includes purchase, Restore Purchases, subscription-status refresh, Terms of Use, Privacy Policy, and Manage Apple Subscription. There is no external web purchase link on iOS.
+After an inactive account signs in and its entitlement is checked, the app presents the in-app subscription popup once for that login. The popup can be dismissed; selecting a protected course or Downloads opens it again. It shows the same standard StoreKit monthly price, Subscribe with Apple, Restore Purchases, renewal disclosure, Terms of Use, and Privacy Policy.
 
 Premium access is granted only after Skillomate's backend verifies Apple's signed transaction and current entitlement. Apple Sandbox may be used to test purchase/restore. Cancellation at period end retains access through the verified expiry; expired, refunded, revoked, billing-retry, unknown, and no-entitlement states do not grant access.
 
@@ -14,7 +15,7 @@ PREMIUM CONTENT
 After a verified subscription, open Courses, select a published course, and open a lesson from its curriculum. Playback, progress, supported downloads, and lesson-scoped Nex AI are available there.
 
 NEX AI CONSENT
-On the first intentional AI request, the app explains that fal.ai, OpenRouter, and the selected Google Gemini model process the question, up to 12 recent messages, and relevant course/lesson context. Choosing Not Now sends no AI request. The learner's profile name is not sent. Consent withdrawal and history deletion are under Profile > AI Data Controls. Individual AI answers can be reported.
+On the first intentional AI request, the app explains that fal.ai, OpenRouter, and the selected Google Gemini model process the question, up to 12 recent messages, and relevant course/lesson context. Choosing Not Now sends no AI request. The learner's profile name is not sent. Consent withdrawal and history deletion are under Nex AI > chat menu > AI Data Controls. Individual AI answers can be reported.
 
 ACCOUNT DELETION
 Open Profile > Danger Zone > Delete Account. The user enters the current password and types DELETE. App sessions are revoked and account deletion continues even if a legacy billing-provider cancellation must be retried. Deleting the Skillomate account does not itself cancel an Apple subscription; the warning links to Apple's subscription-management page.

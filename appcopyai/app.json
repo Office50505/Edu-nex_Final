@@ -36,7 +36,7 @@
     },
     "ios": {
       "bundleIdentifier": "com.alihussainkhan.edunexfinal",
-      "buildNumber": "18",
+      "buildNumber": "19",
       "icon": "./assets/icon.png",
       "supportsTablet": false,
       "config": {
@@ -45,6 +45,7 @@
       "infoPlist": {
         "CFBundleDisplayName": "Skillomate",
         "ITSAppUsesNonExemptEncryption": false,
+        "NSPhotoLibraryUsageDescription": "Allow Skillomate to choose a profile photo from your photo library.",
         "NSAppTransportSecurity": {
           "NSAllowsArbitraryLoads": false
         }

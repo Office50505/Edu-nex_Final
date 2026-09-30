@@ -4,6 +4,7 @@ const Course = require('../models/Course');
 const CourseProgress = require('../models/CourseProgress');
 const Subscription = require('../models/Subscription');
 const AppleSubscription = require('../models/AppleSubscription');
+const GooglePlaySubscription = require('../models/GooglePlaySubscription');
 const User = require('../models/User');
 const Wishlist = require('../models/Wishlist');
 const { protectAdmin } = require('../middleware/adminAuth');
@@ -74,12 +75,13 @@ router.get(
   requireCompatibleAuth({ userIdNames: ['id', 'userId'] }),
   asyncHandler(async (req, res) => {
     requireSameUser(req, req.params.id);
-    const [subscription, appleSubscription] = await Promise.all([
+    const [subscription, appleSubscription, googlePlaySubscription] = await Promise.all([
       Subscription.findOne({ user: req.compatUser._id }).lean(),
       AppleSubscription.findOne({ user: req.compatUser._id }).lean(),
+      GooglePlaySubscription.findOne({ user: req.compatUser._id }).lean(),
     ]);
     const access = require('../services/subscriptionAccess')
-      .resolveCombinedSubscriptionAccess(subscription, appleSubscription, req.compatUser);
+      .resolveAllSubscriptionAccess(subscription, appleSubscription, googlePlaySubscription, req.compatUser);
     const status = access.active ? 'active' : (subscription?.status || req.compatUser.subscriptionStatus || 'none');
 
     res.json({

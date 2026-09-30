@@ -1,11 +1,17 @@
 import { plainCourseDescription } from "./services/courseDescription";
 import { chatKey, readChat, updateChat } from "./courseAiCache";
 import { requestTutor } from "./services/aiClient";
+import { AI_CONSENT_POLICY_VERSION, isAiConsentCurrent } from "./services/aiConsent";
 import { createNativeSession } from "./services/nativeSession";
 import { createSecureSessionStorage } from "./services/secureSessionStorage";
-import { APPLE_SUBSCRIPTION_MANAGEMENT_URL, canOpenExternalUrl } from "./services/externalLinks";
+import {
+  APPLE_SUBSCRIPTION_MANAGEMENT_URL,
+  GOOGLE_PLAY_SUBSCRIPTION_MANAGEMENT_URL,
+  canOpenExternalUrl,
+} from "./services/externalLinks";
 import { hasActivePremiumEntitlement } from "./services/subscriptions";
 import { useAppleSubscriptions } from "./services/useAppleSubscriptions";
+import { useGooglePlaySubscriptions } from "./services/useGooglePlaySubscriptions";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as SecureStore from "expo-secure-store";
@@ -227,7 +233,10 @@ const AVATAR_IMAGES = {
   m5: require("./assets/avatars/a10.jpeg"),
   m6: require("./assets/avatars/a11.jpeg"),
 };
-const DEMO_AVATARS = Object.keys(AVATAR_IMAGES).map((id, index) => ({ id, label: `Profile avatar ${index + 1}` }));
+const DEMO_AVATARS = Array.from({ length: 15 }, (_, index) => ({
+  id: `a${index + 1}`,
+  label: `Profile avatar ${index + 1}`,
+}));
 const HOME_FALLBACK_COURSES = [];
 const ANDROID_CLIPPED_SUBVIEWS = Platform.OS === "android";
 const ROOT_TAB_SWIPE_ENABLED = true;
@@ -425,12 +434,7 @@ function AvatarImage({ avatarId, size = 40, style }) {
     );
   }
 
-  const src = AVATAR_IMAGES[avatarId];
-  if (!src) return (
-    <View accessible={false} style={[{ width: size, height: size, borderRadius: size / 2, backgroundColor: EDUNEX_MOBILE_TOKENS.colors.dark.accentSoft, alignItems: "center", justifyContent: "center", borderWidth: 1, borderColor: EDUNEX_MOBILE_TOKENS.colors.dark.border }, style]}>
-      <Text style={{ color: EDUNEX_MOBILE_TOKENS.colors.dark.text, fontWeight: "800", fontSize: size * 0.4 }}>?</Text>
-    </View>
-  );
+  const src = AVATAR_IMAGES[avatarId] || AVATAR_IMAGES.a1;
   return <Image accessible={false} source={src} style={[{ width: size, height: size, borderRadius: size / 2 }, style]} resizeMode="cover" />;
 }
 
@@ -507,16 +511,6 @@ const BUNNY_CDN_BASE = normalizeBaseUrl(process.env.EXPO_PUBLIC_BUNNY_CDN_BASE |
 const API_REQUEST_TIMEOUT_MS = 12000;
 const API_NETWORK_RETRY_DELAYS_MS = [0, 600, 1600];
 
-function openMembershipAccess() {
-  Alert.alert(
-    "Membership access",
-    Platform.OS === "ios"
-      ? "Open Subscription Details to subscribe securely through the App Store or restore a previous purchase."
-      : "Sign in with the Skillomate account connected to your membership, then open Subscription Details.",
-    [{ text: "OK" }],
-  );
-}
-
 async function openSafeExternalUrl(url, context = "resource") {
   const decision = canOpenExternalUrl(url, Platform.OS);
   if (!decision.allowed) {
@@ -561,7 +555,7 @@ const LEGAL_APP_PAGES = {
     sections: [
       { title: "Information we collect", body: "We may process your name, mobile number, age, gender, avatar or optional profile photo, login and IP security records, course progress, wishlist, certificates, payment status, device context, and support messages." },
       { title: "How information is used", body: "Information is used to create and secure accounts, provide learning features, track progress, process subscriptions, answer support requests, and prevent abuse." },
-      { title: "Nex AI data", body: "When you use Nex AI, AI service providers may process your question, up to 12 recent messages, and relevant course material. Your profile name is not sent. You can delete history in AI Data Controls." },
+      { title: "Nex AI data", body: "Only after you choose Allow, fal.ai, OpenRouter, and Google Gemini may process your question, up to 12 recent messages, and relevant course material. Your profile name is not sent. You can withdraw consent and delete history in AI Data Controls." },
       { title: "Payments and service providers", body: "Payment, verification, media, hosting, storage, and AI providers may process the information required to deliver their services. Sensitive payment credentials are entered through the payment provider." },
       { title: "Device storage and permissions", body: "The app may use internet, storage, vibration, and screen-capture controls for account, media, downloads, exports, and protected learning features. Permissions can be managed in device settings." },
       { title: "Security and retention", body: "We use technical and organizational safeguards, but no online service can guarantee absolute security. Information is kept only as long as needed for product, legal, payment, security, and support purposes." },
@@ -705,7 +699,7 @@ const PRIVACY_CONTENT = {
     {
       title: "Nex AI",
       icon: "sparkles-outline",
-      body: "When you use Nex AI, AI service providers may process your question, up to 12 recent messages, and relevant course context. Your profile name is not sent. AI Data Controls let you delete history.",
+      body: "Only after you choose Allow, fal.ai, OpenRouter, and Google Gemini may process your question, up to 12 recent messages, and relevant course context. Your profile name is not sent. AI Data Controls let you withdraw consent and delete history.",
     },
     {
       title: "Payments And Subscriptions",
@@ -2357,18 +2351,55 @@ function Badge({ label, color }) {
   );
 }
 
-function UpgradeModal({ visible, onClose }) {
+function appleSubscriptionPriceCopy(appleSubscription) {
+  const storeName = Platform.OS === "ios" ? "App Store" : "Google Play";
+  const recurring = appleSubscription?.localizedPrice
+    ? `${appleSubscription.localizedPrice} per ${appleSubscription.period || "month"}`
+    : appleSubscription?.productLoadStatus === "loading"
+      ? `Loading ${storeName} price…`
+      : `${storeName} price unavailable`;
+  const eligibleOffer = Platform.OS === "android" && appleSubscription?.introductoryOfferEligible
+    ? appleSubscription.introductoryOffer
+    : null;
+  return {
+    headline: eligibleOffer?.displayText || recurring,
+    isIntroductory: Boolean(eligibleOffer?.displayText),
+    recurring,
+  };
+}
+
+function UpgradeModal({
+  visible,
+  onClose,
+  appleSubscription,
+  onOpenSubscription,
+  onOpenTerms,
+  onOpenPrivacy,
+}) {
   const FEATURES = [
     "Certificate of Completion",
     "Ad-free learning experience",
     "Offline downloads for on-the-go",
     "Exclusive AI workshops",
   ];
+  const isIOS = Platform.OS === "ios";
+  const storeName = isIOS ? "App Store" : "Google Play";
+  const purchaseBusy = Boolean(appleSubscription?.working);
+  const purchaseReady = appleSubscription?.purchaseReady ?? Boolean(
+    appleSubscription?.product && appleSubscription?.entitlement?.appAccountToken
+  );
+  const priceCopy = appleSubscriptionPriceCopy(appleSubscription);
+
+  const openSubscriptionDetails = () => {
+    onClose?.();
+    onOpenSubscription?.();
+  };
+
   return (
     <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
       <View style={s.upgradeOverlay}>
         <TouchableOpacity style={StyleSheet.absoluteFill} activeOpacity={1} onPress={onClose} accessible={false} />
-        <View style={[s.upgradeSheet, { backgroundColor: C.white }]}>
+        <View style={[s.upgradeSheet, { backgroundColor: C.white }, !isIOS && s.upgradeSheetAndroid]} accessibilityViewIsModal>
 
           {/* Close */}
           <TouchableOpacity style={s.upgradeClose} onPress={onClose} accessibilityRole="button" accessibilityLabel="Close membership information">
@@ -2376,7 +2407,7 @@ function UpgradeModal({ visible, onClose }) {
           </TouchableOpacity>
 
           {/* Banner */}
-          <View style={[s.upgradeBanner, { backgroundColor: C.accentSoft }]}>
+          <View style={[s.upgradeBanner, { backgroundColor: C.accentSoft }, !isIOS && s.upgradeBannerAndroid]}>
             <View style={[s.upgradeBannerBadge, { backgroundColor: C.accent }]}>
               <Text style={s.upgradeBannerBadgeText}>MEMBER ACCESS</Text>
             </View>
@@ -2389,29 +2420,116 @@ function UpgradeModal({ visible, onClose }) {
             </View>
           </View>
 
-          <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ padding: 20, paddingTop: 14 }}>
+          <ScrollView
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={isIOS ? { padding: 20, paddingTop: 14 } : s.upgradeContentAndroid}
+          >
             {/* Title */}
-            <Text style={[s.upgradeTitle, { color: C.text }]}>Membership required</Text>
-            <Text style={[s.upgradeOfferTitle, { color: C.primary }]}>Continue with an existing membership</Text>
-            <Text style={[s.upgradeSub, { color: C.textSub }]}>
-              Sign in with the Skillomate account connected to your membership to access included courses.
+            <Text style={[s.upgradeTitle, { color: C.text }, !isIOS && s.upgradeTitleAndroid]}>
+              {priceCopy.isIntroductory ? "Welcome to Skillomate" : "Membership required"}
+            </Text>
+            <Text style={[s.upgradeOfferTitle, { color: C.primary }, !isIOS && s.upgradeOfferTitleAndroid]}>
+              {priceCopy.isIntroductory ? "Your new-subscriber offer" : "Unlock Skillomate Premium"}
+            </Text>
+            <Text style={[s.upgradeSub, { color: C.textSub }, !isIOS && s.upgradeSubAndroid]}>
+              Subscribe to access every protected course and premium learning feature.
             </Text>
 
             {/* Features */}
             {FEATURES.map((f, i) => (
-              <View key={i} style={s.upgradeFeatureRow}>
+              <View key={i} style={[s.upgradeFeatureRow, !isIOS && s.upgradeFeatureRowAndroid]}>
                 <Ionicons name="checkmark-circle" size={19} color={C.primary} />
                 <Text style={[s.upgradeFeatureText, { color: C.text }]}>{f}</Text>
               </View>
             ))}
 
-            <View style={[s.iosMembershipPanel, { marginTop: 16 }]}>
-              <Text style={[s.iosMembershipText, { textAlign: "center" }]}>
-                {Platform.OS === "ios"
-                  ? "Subscriptions are available securely through the App Store in Subscription Details."
-                  : "Open Subscription Details to view the payment options available on this device."}
-              </Text>
-            </View>
+            <View style={[s.upgradePricingCard, !isIOS && s.upgradePricingCardAndroid]}>
+                <Text style={s.upgradeBestValueText}>
+                  {priceCopy.isIntroductory ? "ELIGIBLE NEW-SUBSCRIBER OFFER" : "MONTHLY MEMBERSHIP"}
+                </Text>
+                <Text style={[s.upgradePricePeriod, { color: C.primary }]}>{priceCopy.headline}</Text>
+                {priceCopy.isIntroductory ? (
+                  <Text style={[s.iosMembershipText, { marginBottom: 8, fontWeight: "700" }]}>Then {priceCopy.recurring} until cancelled.</Text>
+                ) : null}
+                {appleSubscription?.productLoadStatus === "loading" ? (
+                  <ActivityIndicator color={C.primary} style={{ marginVertical: 8 }} />
+                ) : null}
+                <Text style={s.upgradePriceNote}>
+                  {isIOS
+                    ? "Payment is charged to your Apple ID at confirmation. The subscription renews automatically unless cancelled at least 24 hours before the current period ends. Manage or cancel it in Apple ID settings."
+                    : "Charged to your Google Play account. Renews automatically until cancelled in Google Play."
+                  }
+                </Text>
+
+                {appleSubscription?.error ? (
+                  <Text style={[s.errorText, { marginTop: 10 }]} accessibilityRole="alert">
+                    {appleSubscription.error}
+                  </Text>
+                ) : null}
+                {appleSubscription?.notice ? (
+                  <Text style={[s.iosMembershipText, { marginTop: 10, textAlign: "center" }]}>
+                    {appleSubscription.notice}
+                  </Text>
+                ) : null}
+
+                {appleSubscription?.productLoadStatus === "error" ? (
+                  <TouchableOpacity
+                    onPress={appleSubscription.retryProductLoad}
+                    style={s.upgradeRestoreBtn}
+                    accessibilityRole="button"
+                    accessibilityLabel={`Retry loading ${storeName} subscription`}
+                  >
+                    <Ionicons name="refresh" size={17} color={C.primary} />
+                    <Text style={s.upgradeRestoreBtnText}>Retry {storeName}</Text>
+                  </TouchableOpacity>
+                ) : (
+                  <TouchableOpacity
+                    onPress={appleSubscription?.purchase}
+                    disabled={purchaseBusy || !purchaseReady}
+                    style={[s.upgradeBtn, (purchaseBusy || !purchaseReady) && { opacity: 0.55 }]}
+                    accessibilityRole="button"
+                    accessibilityLabel={priceCopy.isIntroductory ? `Start new-subscriber offer with ${storeName}` : `Subscribe with ${storeName}`}
+                    accessibilityState={{ disabled: purchaseBusy || !purchaseReady, busy: purchaseBusy }}
+                  >
+                    {purchaseBusy
+                      ? <ActivityIndicator color={C.onPrimary} />
+                      : <Ionicons name={isIOS ? "logo-apple" : "logo-google-playstore"} size={18} color={C.onPrimary} />
+                    }
+                    <Text style={s.upgradeBtnText}>{priceCopy.isIntroductory ? `Start Offer with ${storeName}` : `Subscribe with ${storeName}`}</Text>
+                  </TouchableOpacity>
+                )}
+
+                <TouchableOpacity
+                  onPress={appleSubscription?.restore}
+                  disabled={purchaseBusy}
+                  style={[s.upgradeRestoreBtn, purchaseBusy && { opacity: 0.55 }]}
+                  accessibilityRole="button"
+                  accessibilityLabel={`Restore ${storeName} purchases`}
+                  accessibilityState={{ disabled: purchaseBusy, busy: purchaseBusy }}
+                >
+                  <Ionicons name="refresh" size={17} color={C.primary} />
+                  <Text style={s.upgradeRestoreBtnText}>Restore Purchases</Text>
+                </TouchableOpacity>
+
+                <View style={s.upgradeLegalRow}>
+                  <TouchableOpacity onPress={onOpenTerms} accessibilityRole="link" accessibilityLabel="Read subscription Terms of Use">
+                    <Text style={s.upgradeLegalLink}>Terms of Use</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity onPress={onOpenPrivacy} accessibilityRole="link" accessibilityLabel="Read subscription Privacy Policy">
+                    <Text style={s.upgradeLegalLink}>Privacy Policy</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+
+            <TouchableOpacity
+              onPress={openSubscriptionDetails}
+              style={[s.upgradeDetailsBtn, !isIOS && s.upgradeDetailsBtnAndroid]}
+              accessibilityRole="button"
+              accessibilityLabel="Open subscription details"
+            >
+              <Text style={s.upgradeDetailsBtnText}>View Subscription Details</Text>
+              <Ionicons name="arrow-forward" size={16} color={C.text} />
+            </TouchableOpacity>
 
             {/* Footer */}
             <View style={s.upgradeFooter}>
@@ -5186,6 +5304,50 @@ function ReelsScreen({ courseId, course, initialIndex, initialTime, onBack, onRe
       updateCourseAi([...courseAiEntry.messages, { role: "assistant", content: "Please log in again before using Course AI." }]);
       return;
     }
+    try {
+      const consent = await session.requestJson("/api/ai/consent");
+      if (!isAiConsentCurrent(consent)) {
+        const allowed = await new Promise(resolve => {
+          Alert.alert(
+            "Nex AI Privacy",
+            `Your question, up to 12 recent chat messages, and relevant lesson context will be processed by ${(consent.providerNames || ["external AI providers"]).join(", ")}. Your name is not sent.`,
+            [
+              {
+                text: "Not Now",
+                style: "cancel",
+                onPress: async () => {
+                  await session.requestJson("/api/ai/consent", {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ granted: false }),
+                  }).catch(() => {});
+                  resolve(false);
+                },
+              },
+              {
+                text: "Allow",
+                onPress: async () => {
+                  try {
+                    const saved = await session.requestJson("/api/ai/consent", {
+                      method: "PUT",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({ granted: true }),
+                    });
+                    resolve(isAiConsentCurrent(saved));
+                  } catch (_) {
+                    resolve(false);
+                  }
+                },
+              },
+            ]
+          );
+        });
+        if (!allowed) return;
+      }
+    } catch (_) {
+      Alert.alert("AI privacy unavailable", "Your privacy choice could not be checked. No AI request was sent.");
+      return;
+    }
     const messagesWithQuestion = [...courseAiEntry.messages, { role: "user", content: question }];
     setCourseAiInput("");
     updateCourseAi(messagesWithQuestion, true);
@@ -6454,7 +6616,7 @@ const homeStyles = StyleSheet.create({
 });
 
 // ── HomeScreen ────────────────────────────────────────────────────────────────
-function LegacyHomeScreenDraft({ session, user, onGoToCourses, onGoToAI, onGoToDownloads, onGoToProfile, onGoToSubscription, onStartTrial, trialLoading = false, onSelectCourse, onResumeCourse, onOpenHeroPreview, onReportProblem, courseProgress = {}, aiRobotId }) {
+function LegacyHomeScreenDraft({ session, user, onGoToCourses, onGoToAI, onGoToDownloads, onGoToProfile, onGoToSubscription, onStartTrial, trialLoading = false, appleSubscription, onOpenTerms, onOpenPrivacy, onSelectCourse, onResumeCourse, onOpenHeroPreview, onReportProblem, courseProgress = {}, aiRobotId }) {
   const hasAccess = hasCourseAccess(user);
   const [topCourses, setTopCourses] = useState([]);
   const [allCourses, setAllCourses] = useState([]);
@@ -6612,7 +6774,7 @@ function LegacyHomeScreenDraft({ session, user, onGoToCourses, onGoToAI, onGoToD
           </View>
           {Platform.OS !== "ios" && (
             <View style={s.trialBadge}>
-              <Text style={s.trialBadgeText}>₹1 Trial</Text>
+              <Text style={s.trialBadgeText}>New Member Offer</Text>
             </View>
           )}
           <View style={s.streamingHeroContent}>
@@ -6799,10 +6961,12 @@ function LegacyHomeScreenDraft({ session, user, onGoToCourses, onGoToAI, onGoToD
 
       <BottomNav active="home" onHome={() => {}} onCourses={onGoToCourses} onAI={onGoToAI} onDownloads={onGoToDownloads} onProfile={onGoToProfile} aiRobotId={aiRobotId} />
       <UpgradeModal
-        visible={showUpgrade}
+        visible={showUpgrade && !hasAccess}
         onClose={() => setShowUpgrade(false)}
-        onStartTrial={onStartTrial || onGoToSubscription}
-        trialLoading={trialLoading}
+        appleSubscription={appleSubscription}
+        onOpenSubscription={onGoToSubscription}
+        onOpenTerms={onOpenTerms}
+        onOpenPrivacy={onOpenPrivacy}
       />
       <NotificationPreviewModal
         visible={showNotifications}
@@ -6852,8 +7016,9 @@ function HomeScreen({
   onGoToDownloads,
   onGoToProfile,
   onGoToSubscription,
-  onStartTrial,
-  trialLoading = false,
+  appleSubscription,
+  onOpenTerms,
+  onOpenPrivacy,
   onSelectCourse,
   onResumeCourse,
   onOpenLessonCollection,
@@ -7256,17 +7421,19 @@ function HomeScreen({
         onOpenSubscription={onGoToSubscription}
       />
       <UpgradeModal
-        visible={showUpgrade}
+        visible={showUpgrade && !hasAccess}
         onClose={() => setShowUpgrade(false)}
-        onStartTrial={onStartTrial || onGoToSubscription}
-        trialLoading={trialLoading}
+        appleSubscription={appleSubscription}
+        onOpenSubscription={onGoToSubscription}
+        onOpenTerms={onOpenTerms}
+        onOpenPrivacy={onOpenPrivacy}
       />
     </View>
   );
 }
 
 // ── CourseListScreen ──────────────────────────────────────────────────────────
-function CourseListScreen({ onSelect, user, onGoToHome, onGoToCourses, onGoToAI, onGoToDownloads, onGoToProfile, onGoToSubscription, onStartTrial, trialLoading = false, wishlist = [], onToggleWishlist, courseProgress = {}, onRefreshProgress, aiRobotId, keepPreviewMounted = false, activeTab = "courses" }) {
+function CourseListScreen({ onSelect, user, onGoToHome, onGoToCourses, onGoToAI, onGoToDownloads, onGoToProfile, onGoToSubscription, appleSubscription, onOpenTerms, onOpenPrivacy, wishlist = [], onToggleWishlist, courseProgress = {}, onRefreshProgress, aiRobotId, keepPreviewMounted = false, activeTab = "courses" }) {
   const hasAccess = hasCourseAccess(user);
   const [showUpgrade, setShowUpgrade] = useState(false);
   const [courses, setCourses] = useState([]);
@@ -7512,17 +7679,19 @@ function CourseListScreen({ onSelect, user, onGoToHome, onGoToCourses, onGoToAI,
 
       <BottomNav active={activeTab} onHome={onGoToHome} onCourses={onGoToCourses || (() => {})} onAI={onGoToAI} onDownloads={onGoToDownloads} onProfile={onGoToProfile} aiRobotId={aiRobotId} />
       <UpgradeModal
-        visible={showUpgrade}
+        visible={showUpgrade && !hasAccess}
         onClose={() => setShowUpgrade(false)}
-        onStartTrial={onStartTrial || onGoToSubscription}
-        trialLoading={trialLoading}
+        appleSubscription={appleSubscription}
+        onOpenSubscription={onGoToSubscription}
+        onOpenTerms={onOpenTerms}
+        onOpenPrivacy={onOpenPrivacy}
       />
     </View>
   );
 }
 
 // ── WishlistScreen ────────────────────────────────────────────────────────────
-function WishlistScreen({ wishlist, onToggleWishlist, onSelect, onBack, user, onGoToSubscription, onStartTrial, trialLoading = false }) {
+function WishlistScreen({ wishlist, onToggleWishlist, onSelect, onBack, user, onGoToSubscription, appleSubscription, onOpenTerms, onOpenPrivacy }) {
   const hasAccess = hasCourseAccess(user);
   const [showUpgrade, setShowUpgrade] = useState(false);
   const [courses, setCourses] = useState([]);
@@ -7622,10 +7791,12 @@ function WishlistScreen({ wishlist, onToggleWishlist, onSelect, onBack, user, on
         />
       )}
       <UpgradeModal
-        visible={showUpgrade}
+        visible={showUpgrade && !hasAccess}
         onClose={() => setShowUpgrade(false)}
-        onStartTrial={onStartTrial || onGoToSubscription}
-        trialLoading={trialLoading}
+        appleSubscription={appleSubscription}
+        onOpenSubscription={onGoToSubscription}
+        onOpenTerms={onOpenTerms}
+        onOpenPrivacy={onOpenPrivacy}
       />
     </View>
   );
@@ -7890,6 +8061,15 @@ function SubscriptionDetailsScreen({ user, onBack, session, appleSubscription, o
   const isActive = subData
     ? subData.entitlementActive === true
     : hasActivePremiumEntitlement(user);
+  const isIOS = Platform.OS === "ios";
+  const storeName = isIOS ? "App Store" : "Google Play";
+  const purchaseReady = appleSubscription.purchaseReady ?? Boolean(
+    appleSubscription.product && appleSubscription.entitlement?.appAccountToken
+  );
+  const managementUrl = isIOS
+    ? APPLE_SUBSCRIPTION_MANAGEMENT_URL
+    : appleSubscription.managementUrl;
+  const priceCopy = appleSubscriptionPriceCopy(appleSubscription);
 
   function formatDate(dateStr) {
     if (!dateStr) return "—";
@@ -7986,98 +8166,95 @@ function SubscriptionDetailsScreen({ user, onBack, session, appleSubscription, o
 
             {!isActive && (
               <View style={s.iosMembershipPanel}>
-                {Platform.OS === "ios" ? (
-                  <>
-                    <Text style={s.iosMembershipText}>
-                      Unlock all protected Skillomate courses, downloads, progress, certificates, and Nex AI course assistance. Payment is charged to your Apple ID. The monthly subscription renews automatically until cancelled in Apple ID settings.
-                    </Text>
-                    <Text style={[s.iosMembershipText, { marginTop: 8, fontWeight: "800" }]}>
-                      {appleSubscription.localizedPrice
-                        ? `${appleSubscription.localizedPrice} per ${appleSubscription.period}`
-                        : appleSubscription.productLoadStatus === "loading"
-                          ? "Loading App Store price…"
-                          : "App Store price unavailable"}
-                    </Text>
-                    {appleSubscription.productLoadStatus === "loading" && <ActivityIndicator color={C.primary} style={{ marginTop: 10 }} />}
-                    {!!appleSubscription.error && <Text style={[s.errorText, { marginTop: 10 }]}>{appleSubscription.error}</Text>}
-                    {appleSubscription.productLoadStatus === "error" && (
-                      <TouchableOpacity
-                        onPress={appleSubscription.retryProductLoad}
-                        style={[s.btn, { marginTop: 10, borderWidth: 1, borderColor: C.primary }]}
-                        accessibilityRole="button"
-                        accessibilityLabel="Retry loading App Store subscription"
-                      >
-                        <Text style={[s.btnText, { color: C.primary }]}>Retry App Store</Text>
-                      </TouchableOpacity>
-                    )}
-                    {!!appleSubscription.notice && <Text style={[s.iosMembershipText, { marginTop: 10 }]}>{appleSubscription.notice}</Text>}
-                    <TouchableOpacity
-                      onPress={appleSubscription.purchase}
-                      disabled={appleSubscription.working || !appleSubscription.product || !appleSubscription.entitlement?.appAccountToken}
-                      style={[s.btn, s.btnFill, { marginTop: 12 }, (appleSubscription.working || !appleSubscription.product || !appleSubscription.entitlement?.appAccountToken) && { opacity: 0.55 }]}
-                      accessibilityRole="button"
-                      accessibilityLabel="Subscribe with the App Store"
-                    >
-                      {appleSubscription.working ? <ActivityIndicator color={C.onPrimary} /> : <Ionicons name="logo-apple" size={17} color={C.onPrimary} />}
-                      <Text style={s.btnText}>Subscribe with Apple</Text>
-                    </TouchableOpacity>
-                    <View style={{ flexDirection: "row", justifyContent: "center", gap: 20, marginTop: 14 }}>
-                      <TouchableOpacity
-                        onPress={onOpenTerms}
-                        accessibilityRole="link"
-                        accessibilityLabel="Read subscription Terms of Use"
-                      >
-                        <Text style={{ color: C.primary, fontWeight: "700", fontSize: 12 }}>Terms of Use</Text>
-                      </TouchableOpacity>
-                      <TouchableOpacity
-                        onPress={onOpenPrivacy}
-                        accessibilityRole="link"
-                        accessibilityLabel="Read subscription Privacy Policy"
-                      >
-                        <Text style={{ color: C.primary, fontWeight: "700", fontSize: 12 }}>Privacy Policy</Text>
-                      </TouchableOpacity>
-                    </View>
-                  </>
-                ) : (
-                  <Text style={s.iosMembershipText}>
-                    Existing memberships appear automatically when you sign in with the linked Skillomate account.
-                  </Text>
+                <Text style={s.iosMembershipText}>
+                  {isIOS
+                    ? "Unlock all protected Skillomate courses, downloads, progress, certificates, and Nex AI course assistance. Payment is charged to your Apple ID. The monthly subscription renews automatically until cancelled in Apple ID settings."
+                    : "Unlock all protected Skillomate courses, downloads, progress, certificates, and Nex AI course assistance. Payment is charged to your Google Play account. The monthly subscription renews automatically until cancelled in Google Play."
+                  }
+                </Text>
+                <Text style={[s.iosMembershipText, { marginTop: 8, fontWeight: "800" }]}>
+                  {priceCopy.isIntroductory ? `New-subscriber offer: ${priceCopy.headline}` : priceCopy.headline}
+                </Text>
+                {priceCopy.isIntroductory ? (
+                  <Text style={[s.iosMembershipText, { marginTop: 4 }]}>Then {priceCopy.recurring} until cancelled.</Text>
+                ) : null}
+                {appleSubscription.productLoadStatus === "loading" && <ActivityIndicator color={C.primary} style={{ marginTop: 10 }} />}
+                {!!appleSubscription.error && <Text style={[s.errorText, { marginTop: 10 }]}>{appleSubscription.error}</Text>}
+                {appleSubscription.productLoadStatus === "error" && (
+                  <TouchableOpacity
+                    onPress={appleSubscription.retryProductLoad}
+                    style={[s.btn, { marginTop: 10, borderWidth: 1, borderColor: C.primary }]}
+                    accessibilityRole="button"
+                    accessibilityLabel={`Retry loading ${storeName} subscription`}
+                  >
+                    <Text style={[s.btnText, { color: C.primary }]}>Retry {storeName}</Text>
+                  </TouchableOpacity>
                 )}
+                {!!appleSubscription.notice && <Text style={[s.iosMembershipText, { marginTop: 10 }]}>{appleSubscription.notice}</Text>}
+                <TouchableOpacity
+                  onPress={appleSubscription.purchase}
+                  disabled={appleSubscription.working || !purchaseReady}
+                  style={[s.btn, s.btnFill, { marginTop: 12 }, (appleSubscription.working || !purchaseReady) && { opacity: 0.55 }]}
+                  accessibilityRole="button"
+                  accessibilityLabel={`Subscribe with ${storeName}`}
+                >
+                  {appleSubscription.working
+                    ? <ActivityIndicator color={C.onPrimary} />
+                    : <Ionicons name={isIOS ? "logo-apple" : "logo-google-playstore"} size={17} color={C.onPrimary} />
+                  }
+                  <Text style={s.btnText}>
+                    {priceCopy.isIntroductory ? `Start Offer with ${storeName}` : `Subscribe with ${storeName}`}
+                  </Text>
+                </TouchableOpacity>
+                <View style={{ flexDirection: "row", justifyContent: "center", gap: 20, marginTop: 14 }}>
+                  <TouchableOpacity
+                    onPress={onOpenTerms}
+                    accessibilityRole="link"
+                    accessibilityLabel="Read subscription Terms of Use"
+                  >
+                    <Text style={{ color: C.primary, fontWeight: "700", fontSize: 12 }}>Terms of Use</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={onOpenPrivacy}
+                    accessibilityRole="link"
+                    accessibilityLabel="Read subscription Privacy Policy"
+                  >
+                    <Text style={{ color: C.primary, fontWeight: "700", fontSize: 12 }}>Privacy Policy</Text>
+                  </TouchableOpacity>
+                </View>
               </View>
             )}
 
-            {Platform.OS === "ios" && (
-              <>
+            <TouchableOpacity
+              onPress={appleSubscription.restore}
+              disabled={appleSubscription.working}
+              style={[s.btn, { marginTop: 12, borderWidth: 1, borderColor: C.primary }, appleSubscription.working && { opacity: 0.55 }]}
+              accessibilityRole="button"
+              accessibilityLabel={`Restore ${storeName} purchases`}
+            >
+              <Ionicons name="refresh" size={17} color={C.primary} />
+              <Text style={[s.btnText, { color: C.primary }]}>Restore Purchases</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => Promise.all([loadSubscription(), appleSubscription.refresh().catch(() => null)])}
+              disabled={appleSubscription.working}
+              style={[s.btn, { marginTop: 8 }]}
+              accessibilityRole="button"
+              accessibilityLabel="Refresh subscription status"
+            >
+              <Text style={[s.btnText, { color: C.text }]}>Refresh Status</Text>
+            </TouchableOpacity>
+            {managementUrl ? (
                 <TouchableOpacity
-                  onPress={appleSubscription.restore}
-                  disabled={appleSubscription.working}
-                  style={[s.btn, { marginTop: 12, borderWidth: 1, borderColor: C.primary }, appleSubscription.working && { opacity: 0.55 }]}
-                  accessibilityRole="button"
-                  accessibilityLabel="Restore App Store purchases"
-                >
-                  <Ionicons name="refresh" size={17} color={C.primary} />
-                  <Text style={[s.btnText, { color: C.primary }]}>Restore Purchases</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={() => Promise.all([loadSubscription(), appleSubscription.refresh().catch(() => null)])}
-                  disabled={appleSubscription.working}
-                  style={[s.btn, { marginTop: 8 }]}
-                  accessibilityRole="button"
-                  accessibilityLabel="Refresh subscription status"
-                >
-                  <Text style={[s.btnText, { color: C.text }]}>Refresh Status</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={() => openSafeExternalUrl(APPLE_SUBSCRIPTION_MANAGEMENT_URL, "account")}
+                  onPress={() => openSafeExternalUrl(managementUrl, "account")}
                   style={[s.btn, { marginTop: 8 }]}
                   accessibilityRole="link"
-                  accessibilityLabel="Manage App Store subscription"
+                  accessibilityLabel={`Manage ${storeName} subscription`}
                 >
                   <Ionicons name="open-outline" size={17} color={C.text} />
-                  <Text style={[s.btnText, { color: C.text }]}>Manage App Store Subscription</Text>
+                  <Text style={[s.btnText, { color: C.text }]}>Manage {storeName} Subscription</Text>
                 </TouchableOpacity>
-              </>
-            )}
+            ) : null}
           </View>
 
           {/* Subscription history */}
@@ -8200,20 +8377,28 @@ function DeleteAccountModal({ visible, user, onClose, onDeleteAccount }) {
               </View>
             )}
 
-            {Platform.OS === "ios" && (
+            {(Platform.OS === "ios" || Platform.OS === "android") && (
               <View style={s.deleteAccountPlanNotice}>
-                <Ionicons name="logo-apple" size={18} color={C.warning} />
+                <Ionicons name={Platform.OS === "ios" ? "logo-apple" : "logo-google-playstore"} size={18} color={C.warning} />
                 <View style={{ flex: 1 }}>
                   <Text style={s.deleteAccountPlanText}>
-                    Deleting your Skillomate account does not cancel a subscription billed by Apple. Manage or cancel it in the App Store; account deletion remains available either way.
+                    {Platform.OS === "ios"
+                      ? "Deleting your Skillomate account does not cancel a subscription billed by Apple. Manage or cancel it in the App Store; account deletion remains available either way."
+                      : "Deleting your Skillomate account does not cancel a subscription billed by Google Play. Manage or cancel it in Google Play; account deletion remains available either way."
+                    }
                   </Text>
                   <TouchableOpacity
-                    onPress={() => openSafeExternalUrl(APPLE_SUBSCRIPTION_MANAGEMENT_URL, "account")}
+                    onPress={() => openSafeExternalUrl(
+                      Platform.OS === "ios" ? APPLE_SUBSCRIPTION_MANAGEMENT_URL : GOOGLE_PLAY_SUBSCRIPTION_MANAGEMENT_URL,
+                      "account"
+                    )}
                     accessibilityRole="link"
-                    accessibilityLabel="Manage App Store subscription before deletion"
+                    accessibilityLabel={`Manage ${Platform.OS === "ios" ? "App Store" : "Google Play"} subscription before deletion`}
                     style={{ alignSelf: "flex-start", marginTop: 8 }}
                   >
-                    <Text style={{ color: C.primary, fontWeight: "800", fontSize: 12 }}>Manage App Store Subscription</Text>
+                    <Text style={{ color: C.primary, fontWeight: "800", fontSize: 12 }}>
+                      Manage {Platform.OS === "ios" ? "App Store" : "Google Play"} Subscription
+                    </Text>
                   </TouchableOpacity>
                 </View>
               </View>
@@ -8729,6 +8914,14 @@ function AiAssistantScreen({
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState("checking");
+  const [aiConsent, setAiConsent] = useState({
+    granted: false,
+    policyVersion: AI_CONSENT_POLICY_VERSION,
+    providerNames: ["fal.ai", "OpenRouter", "Google Gemini"],
+  });
+  const [aiConsentLoading, setAiConsentLoading] = useState(true);
+  const [showAiConsent, setShowAiConsent] = useState(false);
+  const pendingAiPrompt = useRef("");
   const [robotId, setRobotId] = useState(DEFAULT_AI_ROBOT_ID);
   const [showRobotPicker, setShowRobotPicker] = useState(false);
   const [assistantName, setAssistantName] = useState(DEFAULT_AI_NAME);
@@ -8820,6 +9013,31 @@ function AiAssistantScreen({
     setInput("");
     setHistoryOpen(false);
   }, [introMessages]);
+
+  useEffect(() => {
+    if (!user?._id || !session) {
+      setAiConsentLoading(false);
+      setAiConsent({
+        granted: false,
+        policyVersion: AI_CONSENT_POLICY_VERSION,
+        providerNames: ["fal.ai", "OpenRouter", "Google Gemini"],
+      });
+      return;
+    }
+    let cancelled = false;
+    setAiConsentLoading(true);
+    session.requestJson("/api/ai/consent")
+      .then(value => {
+        if (!cancelled) setAiConsent(value);
+      })
+      .catch(() => {
+        if (!cancelled) setAiConsent(current => ({ ...current, granted: false }));
+      })
+      .finally(() => {
+        if (!cancelled) setAiConsentLoading(false);
+      });
+    return () => { cancelled = true; };
+  }, [session, user?._id]);
 
   useEffect(() => {
     AsyncStorage.getItem(AI_AVATAR_STORAGE_KEY).then(saved => {
@@ -8964,6 +9182,39 @@ function AiAssistantScreen({
     return () => clearTimeout(scrollTimer);
   }, [messages, loading]);
 
+  async function saveAiConsent(granted) {
+    if (!session) return null;
+    setAiConsentLoading(true);
+    try {
+      const next = await session.requestJson("/api/ai/consent", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ granted }),
+      });
+      setAiConsent(next);
+      setShowAiConsent(false);
+      return next;
+    } catch (_) {
+      Alert.alert("Privacy choice not saved", "Check your connection and try again.");
+      return null;
+    } finally {
+      setAiConsentLoading(false);
+    }
+  }
+
+  async function allowAiAndContinue() {
+    const next = await saveAiConsent(true);
+    if (!isAiConsentCurrent(next)) return;
+    const queued = pendingAiPrompt.current;
+    pendingAiPrompt.current = "";
+    if (queued) sendAiMessage(queued, { consentOverride: true });
+  }
+
+  async function declineAiConsent() {
+    pendingAiPrompt.current = "";
+    await saveAiConsent(false);
+  }
+
   async function clearAiHistory() {
     try {
       await session.requestJson("/api/ai/history", { method: "DELETE" });
@@ -9012,9 +9263,14 @@ function AiAssistantScreen({
     ]);
   }
 
-  async function sendAiMessage(value = input) {
+  async function sendAiMessage(value = input, options = {}) {
     const question = value.trim();
     if (!question || loading || aiInFlight.current) return;
+    if (!options.consentOverride && !isAiConsentCurrent(aiConsent)) {
+      pendingAiPrompt.current = question;
+      setShowAiConsent(true);
+      return;
+    }
     if (!AI_FEATURE_ENABLED) {
       setInput("");
       const targetSessionId = activeConversationId || createAiConversationSession(introMessages()).id;
@@ -9297,6 +9553,30 @@ function AiAssistantScreen({
             )}
             <View style={{ borderTopWidth: 1, borderTopColor: C.border, paddingTop: 14, marginTop: 10, gap: 8 }}>
               <Text style={s.aiHistoryLabel}>AI Data Controls</Text>
+              <Text style={s.aiHistoryItemMeta}>
+                Third-party AI processing: {isAiConsentCurrent(aiConsent) ? "Allowed" : "Not allowed"}
+              </Text>
+              {isAiConsentCurrent(aiConsent) ? (
+                <TouchableOpacity
+                  onPress={() => saveAiConsent(false)}
+                  style={[s.aiHistoryNewChat, { backgroundColor: C.cardBg, borderWidth: 1, borderColor: C.border }]}
+                  accessibilityRole="button"
+                  accessibilityLabel="Withdraw AI data consent"
+                >
+                  <Text style={[s.aiHistoryNewChatText, { color: C.text }]}>Withdraw consent</Text>
+                  <Ionicons name="shield-outline" size={18} color={C.primary} />
+                </TouchableOpacity>
+              ) : (
+                <TouchableOpacity
+                  onPress={() => setShowAiConsent(true)}
+                  style={[s.aiHistoryNewChat, { backgroundColor: C.cardBg, borderWidth: 1, borderColor: C.border }]}
+                  accessibilityRole="button"
+                  accessibilityLabel="Review AI privacy consent"
+                >
+                  <Text style={[s.aiHistoryNewChatText, { color: C.text }]}>Review AI privacy</Text>
+                  <Ionicons name="shield-checkmark-outline" size={18} color={C.primary} />
+                </TouchableOpacity>
+              )}
               <TouchableOpacity
                 onPress={() => Alert.alert("Delete AI history?", "This removes your Nex AI conversations from this device and the server.", [
                   { text: "Cancel", style: "cancel" },
@@ -9310,6 +9590,41 @@ function AiAssistantScreen({
                 <Ionicons name="trash-outline" size={18} color={C.danger} />
               </TouchableOpacity>
             </View>
+          </View>
+        </View>
+      </Modal>
+
+      <Modal visible={showAiConsent} transparent animationType="fade" onRequestClose={declineAiConsent}>
+        <View style={{ flex: 1, backgroundColor: "rgba(0,0,0,0.76)", alignItems: "center", justifyContent: "center", padding: 24 }}>
+          <View style={{ backgroundColor: C.white, borderRadius: 20, borderWidth: 1, borderColor: C.border, width: "100%", maxWidth: 430, padding: 22 }}>
+            <View style={{ width: 48, height: 48, borderRadius: 24, backgroundColor: C.primaryLight, alignItems: "center", justifyContent: "center", alignSelf: "center" }}>
+              <Ionicons name="shield-checkmark-outline" size={26} color={C.primary} />
+            </View>
+            <Text style={{ color: C.text, fontSize: 21, fontWeight: "800", textAlign: "center", marginTop: 14 }}>Nex AI Privacy</Text>
+            <Text style={{ color: C.textSub, fontSize: 13, lineHeight: 20, marginTop: 10 }}>
+              To answer you, Skillomate sends your question, up to 12 recent chat messages, and relevant course or lesson context to {Array.isArray(aiConsent.providerNames) ? aiConsent.providerNames.join(", ") : "external AI providers"}.
+            </Text>
+            <Text style={{ color: C.textSub, fontSize: 13, lineHeight: 20, marginTop: 8 }}>
+              Your name is not sent. Avoid including passwords, payment details, or other sensitive personal information. You can withdraw consent and delete AI history from AI Data Controls.
+            </Text>
+            <TouchableOpacity
+              onPress={allowAiAndContinue}
+              disabled={aiConsentLoading}
+              style={[s.btn, s.btnFill, { marginTop: 18 }, aiConsentLoading && { opacity: 0.55 }]}
+              accessibilityRole="button"
+              accessibilityLabel="Allow external AI processing"
+            >
+              {aiConsentLoading ? <ActivityIndicator color={C.onPrimary} /> : <Text style={s.btnText}>Allow</Text>}
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={declineAiConsent}
+              disabled={aiConsentLoading}
+              style={[s.btn, { marginTop: 8, borderWidth: 1, borderColor: C.border }]}
+              accessibilityRole="button"
+              accessibilityLabel="Do not allow external AI processing"
+            >
+              <Text style={[s.btnText, { color: C.text }]}>Not Now</Text>
+            </TouchableOpacity>
           </View>
         </View>
       </Modal>
@@ -9489,14 +9804,14 @@ export default function App() {
   });
   const nativeSession = sessionRef.current;
   const setUser = useCallback(value => sessionRef.current.setUser(value), []);
-  const mergeAppleEntitlement = useCallback(entitlement => {
+  const mergeStoreEntitlement = useCallback(entitlement => {
     setUser(previous => previous ? ({
       ...previous,
       entitlementState: entitlement.entitlementState,
       entitlementActive: entitlement.entitlementActive,
       entitlementExpiresAt: entitlement.entitlementState === "GRACE_PERIOD" ? entitlement.gracePeriodExpiresAt : entitlement.expiresAt,
       gracePeriodExpiresAt: entitlement.gracePeriodExpiresAt,
-      entitlementSource: "apple",
+      entitlementSource: Platform.OS === "android" ? "google_play" : "apple",
       subscriptionExpiry: entitlement.entitlementState === "GRACE_PERIOD" ? entitlement.gracePeriodExpiresAt : entitlement.expiresAt,
       subscriptionStatus: entitlement.entitlementActive ? "active" : "expired",
     }) : previous);
@@ -9504,8 +9819,14 @@ export default function App() {
   const appleSubscription = useAppleSubscriptions({
     session: nativeSession,
     user,
-    onEntitlementChanged: mergeAppleEntitlement,
+    onEntitlementChanged: mergeStoreEntitlement,
   });
+  const googlePlaySubscription = useGooglePlaySubscriptions({
+    session: nativeSession,
+    user,
+    onEntitlementChanged: mergeStoreEntitlement,
+  });
+  const storeSubscription = Platform.OS === "android" ? googlePlaySubscription : appleSubscription;
   const [mainScreen, setMainScreen] = useState("home");
   const [legalPage, setLegalPage] = useState(null);
   const [selectedCourse, setSelectedCourse] = useState(null);
@@ -9519,6 +9840,7 @@ export default function App() {
   const [downloadsRefreshing, setDownloadsRefreshing] = useState(false);
   const [aiRobotId, setAiRobotId] = useState(null);
   const [showAppUpgrade, setShowAppUpgrade] = useState(false);
+  const subscriptionPopupShownForSessions = useRef(new Set());
   const [showProblemReport, setShowProblemReport] = useState(false);
   const [problemReportRoute, setProblemReportRoute] = useState("home");
   const [courseAiTarget, setCourseAiTarget] = useState(null);
@@ -9538,6 +9860,58 @@ export default function App() {
     setProblemReportRoute(route || "home");
     setShowProblemReport(true);
   }, []);
+  const openSubscriptionDetails = useCallback(() => {
+    setShowAppUpgrade(false);
+    setMainScreen("subscription");
+  }, []);
+  const openSubscriptionTerms = useCallback(() => setLegalPage("terms"), []);
+  const openSubscriptionPrivacy = useCallback(() => openLegalPage("privacy"), [openLegalPage]);
+
+  const currentUserHasCourseAccess = hasCourseAccess(user);
+  useEffect(() => {
+    const currentUserId = user?._id || user?.id;
+    if (!currentUserId) {
+      subscriptionPopupShownForSessions.current.clear();
+      return undefined;
+    }
+    const subscriptionStateKnown = Boolean(storeSubscription.entitlement?.entitlementState);
+    if (!subscriptionStateKnown || currentUserHasCourseAccess) return undefined;
+
+    const currentSessionId = user?.sessionId || "current";
+    const sessionKey = `${currentUserId}:${currentSessionId}`;
+    if (showAppUpgrade) {
+      subscriptionPopupShownForSessions.current.add(sessionKey);
+      return undefined;
+    }
+    if (
+      mainScreen !== "home"
+      || legalPage
+      || courseAiTarget
+      || certModal
+      || showProblemReport
+      || subscriptionPopupShownForSessions.current.has(sessionKey)
+    ) return undefined;
+
+    // Let the first Home render and the verified entitlement refresh settle before
+    // presenting the platform subscription. The prompt appears once per login.
+    const timer = setTimeout(() => {
+      subscriptionPopupShownForSessions.current.add(sessionKey);
+      setShowAppUpgrade(true);
+    }, 400);
+    return () => clearTimeout(timer);
+  }, [
+    storeSubscription.entitlement?.entitlementState,
+    certModal,
+    courseAiTarget,
+    currentUserHasCourseAccess,
+    legalPage,
+    mainScreen,
+    showAppUpgrade,
+    showProblemReport,
+    user?._id,
+    user?.id,
+    user?.sessionId,
+  ]);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -9808,12 +10182,12 @@ export default function App() {
         refreshUser(currentUser._id, currentUser, currentUser.sessionId),
         loadCourseProgress(currentUser),
         loadCertificates(currentUser),
-        appleSubscription.refresh().catch(() => null),
+        storeSubscription.refresh().catch(() => null),
       ]);
     } finally {
       setProfileRefreshing(false);
     }
-  }, [appleSubscription, loadCertificates, loadCourseProgress, refreshUser]);
+  }, [loadCertificates, loadCourseProgress, refreshUser, storeSubscription]);
 
   const backToLessons = useCallback(() => {
     if (!isPreviewOnly) loadCourseProgress();
@@ -10877,7 +11251,7 @@ export default function App() {
       <SubscriptionDetailsScreen
         user={user}
         session={nativeSession}
-        appleSubscription={appleSubscription}
+        appleSubscription={storeSubscription}
         onBack={() => setMainScreen("profile")}
         onOpenTerms={() => setLegalPage("terms")}
         onOpenPrivacy={() => openLegalPage("privacy")}
@@ -10920,9 +11294,10 @@ export default function App() {
         onSelect={c => openCourse(c)}
         onBack={() => navigateRootTab("profile")}
         user={user}
-        onGoToSubscription={() => setMainScreen("subscription")}
-        onStartTrial={openMembershipAccess}
-        trialLoading={false}
+        onGoToSubscription={openSubscriptionDetails}
+        appleSubscription={storeSubscription}
+        onOpenTerms={openSubscriptionTerms}
+        onOpenPrivacy={openSubscriptionPrivacy}
       />
     );
   }
@@ -10942,9 +11317,10 @@ export default function App() {
           onGoToAI={() => navigateRootTab("ai")}
           onGoToDownloads={() => navigateRootTab("downloads")}
           onGoToProfile={() => navigateRootTab("profile")}
-          onGoToSubscription={() => setMainScreen("subscription")}
-          onStartTrial={openMembershipAccess}
-          trialLoading={false}
+          onGoToSubscription={openSubscriptionDetails}
+          appleSubscription={storeSubscription}
+          onOpenTerms={openSubscriptionTerms}
+          onOpenPrivacy={openSubscriptionPrivacy}
           aiRobotId={aiRobotId}
           keepPreviewMounted
           activeTab="courses"
@@ -11169,9 +11545,10 @@ export default function App() {
         onGoToAI={() => navigateRootTab("ai")}
         onGoToDownloads={() => navigateRootTab("downloads")}
         onGoToProfile={() => navigateRootTab("profile")}
-        onGoToSubscription={() => setMainScreen("subscription")}
-        onStartTrial={openMembershipAccess}
-        trialLoading={false}
+        onGoToSubscription={openSubscriptionDetails}
+        appleSubscription={storeSubscription}
+        onOpenTerms={openSubscriptionTerms}
+        onOpenPrivacy={openSubscriptionPrivacy}
         onSelectCourse={course => openCourse(course)}
         onResumeCourse={(course, idx, secs) => {
           openCourse(course, { startIndex: idx, initialTime: secs });
@@ -11231,10 +11608,12 @@ export default function App() {
         route={problemReportRoute}
       />
       <UpgradeModal
-        visible={showAppUpgrade}
+        visible={showAppUpgrade && !hasCourseAccess(user)}
         onClose={() => setShowAppUpgrade(false)}
-        onStartTrial={openMembershipAccess}
-        trialLoading={false}
+        appleSubscription={storeSubscription}
+        onOpenSubscription={openSubscriptionDetails}
+        onOpenTerms={openSubscriptionTerms}
+        onOpenPrivacy={openSubscriptionPrivacy}
       />
     </View>
   );
@@ -13870,6 +14249,7 @@ courseListCard: {
     backgroundColor: C.surface, borderTopLeftRadius: 18, borderTopRightRadius: 18,
     maxHeight: "90%", overflow: "hidden",
   },
+  upgradeSheetAndroid: { maxHeight: "96%" },
   upgradeClose: {
     position: "absolute", top: 14, right: 14, zIndex: 10,
     width: MIN_TOUCH_TARGET, height: MIN_TOUCH_TARGET, alignItems: "center", justifyContent: "center",
@@ -13880,6 +14260,8 @@ courseListCard: {
     height: 130, backgroundColor: C.accentSoft, flexDirection: "column", overflow: "hidden",
     borderBottomWidth: 1, borderBottomColor: C.border,
   },
+  upgradeBannerAndroid: { height: 100 },
+  upgradeContentAndroid: { paddingHorizontal: 16, paddingTop: 10, paddingBottom: 8 },
   upgradeBannerBadge: {
     position: "absolute", top: 16, left: 16, zIndex: 2,
     backgroundColor: C.primary, borderRadius: 6, paddingHorizontal: 10, paddingVertical: 4,
@@ -13902,35 +14284,57 @@ courseListCard: {
   upgradeTitle: {
     ...TYPE.h2, color: C.text, marginBottom: 2,
   },
+  upgradeTitleAndroid: { fontSize: 17, lineHeight: 21 },
   upgradeOfferTitle: {
     fontFamily: FONT.heading, fontSize: 28, lineHeight: 34, fontWeight: "900",
     letterSpacing: -0.4, marginBottom: 6,
   },
+  upgradeOfferTitleAndroid: { fontSize: 22, lineHeight: 27, marginBottom: 3 },
   upgradeSub: {
     ...TYPE.body, color: C.textSub, marginBottom: 18,
   },
+  upgradeSubAndroid: { fontSize: 12, lineHeight: 17, marginBottom: 10 },
   upgradePricingCard: {
     backgroundColor: C.surfaceWarm, borderRadius: RADIUS.lg, padding: 16, marginBottom: 18,
     borderWidth: 1.5, borderColor: C.border,
   },
+  upgradePricingCardAndroid: { padding: 12, marginBottom: 10 },
   upgradeBestValue: {
     alignSelf: "flex-end", backgroundColor: C.primary, borderRadius: 6,
     paddingHorizontal: 8, paddingVertical: 3, marginBottom: 10,
   },
-  upgradeBestValueText: { color: C.onPrimary, fontSize: 10, fontWeight: "800", letterSpacing: 0.8 },
+  upgradeBestValueText: { color: C.primary, fontSize: 10, fontWeight: "800", letterSpacing: 0.8, marginBottom: 6 },
   upgradePrice: { fontSize: 52, fontWeight: "900", color: C.text, lineHeight: 58 },
-  upgradePricePeriod: { fontSize: 15, fontWeight: "600", color: C.textSub, marginBottom: 4, paddingBottom: 6 },
+  upgradePricePeriod: { fontSize: 20, lineHeight: 26, fontWeight: "900", color: C.textSub, marginBottom: 4, paddingBottom: 6 },
   upgradePriceNote: { fontSize: 12, color: C.textMuted, lineHeight: 18 },
   upgradeFeatureRow: {
     flexDirection: "row", alignItems: "center", gap: 10, marginBottom: 12,
   },
+  upgradeFeatureRowAndroid: { marginBottom: 7 },
   upgradeFeatureText: { fontSize: 14, color: C.text, fontWeight: "500", flex: 1 },
   upgradeBtn: {
-    backgroundColor: C.primary, borderRadius: RADIUS.sm, paddingVertical: 16,
-    alignItems: "center", marginTop: 8, marginBottom: 14,
+    minHeight: MIN_TOUCH_TARGET, backgroundColor: C.primary, borderRadius: RADIUS.sm, paddingVertical: 14,
+    flexDirection: "row", gap: 8, alignItems: "center", justifyContent: "center", marginTop: 14,
     ...ELEVATION.soft,
   },
   upgradeBtnText: { ...TYPE.button, color: C.onPrimary, fontSize: 17 },
+  upgradeRestoreBtn: {
+    minHeight: MIN_TOUCH_TARGET, borderRadius: RADIUS.sm, borderWidth: 1, borderColor: C.primary,
+    flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 8, marginTop: 10,
+    paddingHorizontal: 14,
+  },
+  upgradeRestoreBtnText: { ...TYPE.button, color: C.primary, fontSize: 14 },
+  upgradeLegalRow: {
+    flexDirection: "row", justifyContent: "center", alignItems: "center", gap: 24, marginTop: 14,
+  },
+  upgradeLegalLink: { color: C.primary, fontSize: 12, lineHeight: 17, fontWeight: "800" },
+  upgradeDetailsBtn: {
+    minHeight: MIN_TOUCH_TARGET, flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 7,
+    borderRadius: RADIUS.sm, borderWidth: 1, borderColor: C.border, backgroundColor: C.surfaceWarm,
+    paddingHorizontal: 14, marginBottom: 14,
+  },
+  upgradeDetailsBtnAndroid: { marginBottom: 8 },
+  upgradeDetailsBtnText: { ...TYPE.button, color: C.text, fontSize: 14 },
   notificationOverlay: {
     flex: 1,
     justifyContent: "flex-start",

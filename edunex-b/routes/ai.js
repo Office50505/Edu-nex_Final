@@ -127,6 +127,14 @@ async function handleTutorChat(req, res) {
     const lessonId = compactText(req.body.lessonId, 120);
     const history = sanitizeHistory(req.body.history);
 
+    if (FAL_API_KEY && !consentIsCurrent(req.compatUser)) {
+      return res.status(403).json({
+        error: 'Allow third-party AI processing before using Nex AI.',
+        code: 'AI_CONSENT_REQUIRED',
+        policyVersion: AI_CONSENT_POLICY_VERSION,
+      });
+    }
+
     if (inputCheck.blocked) {
       return res.json({
         answer: inputCheck.reply,

@@ -5,6 +5,7 @@ const CourseProgress = require('../models/CourseProgress');
 const Lesson = require('../models/Lesson');
 const Subscription = require('../models/Subscription');
 const AppleSubscription = require('../models/AppleSubscription');
+const GooglePlaySubscription = require('../models/GooglePlaySubscription');
 const User = require('../models/User');
 
 const LIGHT_COURSE_FIELDS = 'title slug description category status publishedAt createdAt thumbnail.mimeType thumbnailHorizontal.mimeType thumbnailVertical.mimeType thumbnailUrl thumbnailVerticalUrl notesUrl completionOrder videos._id videos.title videos.topic videos.description videos.provider videos.sourceType videos.videoUrl videos.embedUrl videos.bunnyVideoId videos.bunnyLibraryId videos.youtubeId videos.thumbnailUrl videos.thumbnailVerticalUrl videos.transcriptUrl videos.notesUrl videos.examplePrompt videos.duration videos.order';
@@ -176,11 +177,17 @@ function serializeCertificate(certificate) {
 }
 
 async function hasCourseAccess(user) {
-  const [subscription, appleSubscription] = await Promise.all([
+  const [subscription, appleSubscription, googlePlaySubscription] = await Promise.all([
     Subscription.findOne({ user: user._id }).lean(),
     AppleSubscription.findOne({ user: user._id }).lean(),
+    GooglePlaySubscription.findOne({ user: user._id }).lean(),
   ]);
-  return require('./subscriptionAccess').resolveCombinedSubscriptionAccess(subscription, appleSubscription, user).active;
+  return require('./subscriptionAccess').resolveAllSubscriptionAccess(
+    subscription,
+    appleSubscription,
+    googlePlaySubscription,
+    user
+  ).active;
 }
 
 async function getCourse(courseId, projection = null) {

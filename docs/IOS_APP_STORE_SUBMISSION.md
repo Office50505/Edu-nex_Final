@@ -1,6 +1,6 @@
 # Skillomate iOS submission guide
 
-This guide describes the implementation actually present in the release candidate verified on 25 September 2026. The separate final checklist contains the remaining manual gates.
+This guide describes the implementation present in the release candidate verified on 30 September 2026. The separate final checklist contains the remaining manual gates.
 
 ## Release identity
 
@@ -9,7 +9,7 @@ This guide describes the implementation actually present in the release candidat
 | Display name | Skillomate |
 | Bundle identifier | `com.alihussainkhan.edunexfinal` |
 | Marketing version | `1.0` |
-| Checked-in build number | `14` — increment before the next upload |
+| Checked-in build number | `19` |
 | URL scheme | `skillomate` |
 | Supported devices | iPhone (`supportsTablet: false`) |
 | Minimum native deployment target | iOS 16.4 |
@@ -17,6 +17,7 @@ This guide describes the implementation actually present in the release candidat
 | Privacy policy | `https://skillomate.in/privacy` |
 | Support email | `support@skillomate.in` |
 | Apple subscription product | `com.skillomate.premium.monthly` |
+| Intended India pricing | ₹499/month; no introductory offer or free trial |
 | Server notification endpoint | `POST https://api.skillomate.in/api/apple-iap/notifications` |
 
 ATS arbitrary loads remain disabled. The app does not contain an advertising identifier or tracking permission. First-party password/OTP authentication is used; no Google/Facebook primary login is present, so Sign in with Apple is not being added solely for review.
@@ -27,15 +28,18 @@ ATS arbitrary loads remain disabled. The app does not contain an advertising ide
 2. Enter the review username and password supplied only in App Store Connect. Existing users can log in without requesting a new OTP.
 3. Home and Courses show the live published catalog. Open a course to inspect its overview and curriculum.
 4. Open **Profile → Subscription Details** to see the App Store product, localized price, auto-renewal disclosure, purchase control, Restore Purchases, Terms of Use, Privacy Policy, and Apple subscription-management control.
-5. Use Apple's Sandbox purchase environment if premium access must be acquired. The app sends the signed StoreKit transaction to Skillomate's backend; premium access changes only after server verification.
-6. Open a protected lesson from the course curriculum to test playback, progress, notes/resources, downloads where available, and lesson-scoped Nex AI.
-7. The first intentional Nex AI request displays a neutral Allow / Not Now disclosure before any third-party AI transmission.
-8. Open **Profile → AI Data Controls** to review/withdraw consent and delete AI history.
-9. Open **Profile → Danger Zone → Delete Account**. Deletion requires the current password and explicit `DELETE` confirmation.
+5. With an inactive account, the subscription popup appears once after login and entitlement refresh. Dismiss it to continue browsing; selecting a protected course or Downloads opens it again. It shows the same localized App Store price and can start the Apple purchase directly.
+6. Use Apple's Sandbox purchase environment if premium access must be acquired. The app sends the signed StoreKit transaction to Skillomate's backend; premium access changes only after server verification.
+7. Open a protected lesson from the course curriculum to test playback, progress, notes/resources, downloads where available, and lesson-scoped Nex AI.
+8. The first intentional Nex AI request displays a neutral Allow / Not Now disclosure before any third-party AI transmission.
+9. Open **Nex AI → chat menu → AI Data Controls** to review/withdraw consent and delete AI history.
+10. Open **Profile → Danger Zone → Delete Account**. Deletion requires the current password and explicit `DELETE` confirmation.
 
 ## Apple subscription behavior
 
-The iOS app uses `react-native-iap` / StoreKit. It fetches product metadata from Apple and displays Apple's localized price. It does not direct iOS users to Razorpay or a website to buy digital access.
+The iOS app uses `react-native-iap` / StoreKit. It fetches product metadata from Apple and displays Apple's localized standard monthly price. The client does not check or present introductory-offer eligibility, a free trial, or a discounted first period. It does not direct iOS users to Razorpay or a website to buy digital access.
+
+The intended India configuration is exactly one one-month auto-renewable subscription at ₹499/month. Remove or deactivate any introductory offer or free trial previously configured for this product in App Store Connect, because StoreKit product configuration is controlled by App Store Connect rather than by the application bundle. Android billing remains separate and may continue to present its configured new-subscriber offer.
 
 The client never creates entitlement from an unverified callback. It binds the signed transaction to an app-account token, posts signed transaction data to the backend, waits for backend verification, and only then finishes the StoreKit transaction. The backend verifies Apple's certificate chain and signed data, exact bundle ID, exact product ID, environment, transaction ownership, and current subscription status. Original transaction IDs are unique across Skillomate accounts.
 
@@ -63,7 +67,7 @@ Signup deliberately requires an age from 13 through 80 on mobile, web, and backe
 
 Access/refresh tokens and session secrets are stored in iOS Keychain through Expo SecureStore. The migration reads a legacy AsyncStorage session, writes and verifies the secure copy, then deletes the plaintext copy. Logout/account deletion clears secure credentials.
 
-Profile photos are user-initiated through the system picker, resized/compressed, validated by MIME/signature/size, and uploaded as bytes. Production fails closed without durable S3/CDN storage. Replacement and account deletion remove the previous object. No `file://` profile path is persisted and no broad iOS Photos usage string is requested.
+Profile photos are user-initiated through the system picker, resized/compressed, validated by MIME/signature/size, and uploaded as bytes. Production fails closed without durable S3/CDN storage. Replacement and account deletion remove the previous object. No `file://` profile path is persisted. The iOS bundle includes a specific purpose string explaining that Photos access is used only to choose a profile photo.
 
 Account deletion revokes sessions/push tokens first. Billing cancellation is attempted, but provider timeout or unsupported legacy PhonePe cancellation creates an operational retry record and does not indefinitely deny the user's deletion request. Personal data is deleted; financial records required for reconciliation/accounting are anonymized.
 
@@ -79,22 +83,28 @@ Deleting a Skillomate account does not cancel an Apple subscription. The deletio
 
 ## Build verification recorded for this candidate
 
-- Backend: 354/354 tests passed.
-- Frontend: 256/256 tests passed across 35 files.
+- Backend: 382/382 tests passed.
+- Frontend: 264/264 tests passed across 35 files.
+- Current App Store/mobile compliance coverage verifies one ₹499 monthly StoreKit product with no introductory offer, StoreKit price sourcing, AI-consent fail-closed behavior, and avatar fallback behavior.
 - Expo Doctor: 20/20 checks passed.
 - Frontend production build: passed; one non-blocking HLS chunk-size warning.
 - Clean iOS Expo export: passed, 47 assets, one 2.5 MB Hermes bundle.
-- Unsigned arm64 Release device build: passed.
-- App/dSYM UUID: matched.
+- Native simulator build: installed and launched on iPhone 17 Pro Max with iOS 26.5.
+- Simulator smoke tests: Subscription Details and the protected-course popup exposed purchase, restore, legal, privacy, and subscription-management controls. The current sandbox product reports `$4.99/month`; configure and retest the India standard price of ₹499/month in App Store Connect/TestFlight.
+- Unsigned arm64 Release archive: passed at `appcopyai/releases/ios/Skillomate-1.0-build19-unsigned.xcarchive`.
+- Archive metadata: version 1.0, build 19, iOS SDK 26.5, minimum iOS 16.4, and packaged privacy manifests present.
+- App/dSYM UUID: matched at `325182BC-8691-368F-B315-CCBF6EA3EDEA`.
 - Plists, entitlement plist, privacy manifest, and Xcode project: parsed successfully.
 - Release bundle scan: no mock/QA courses, purchase steering, localhost, or loopback production endpoints.
+
+A signed archive cannot be produced on this Mac until the intended Apple Developer account is signed into Xcode and a valid Apple Distribution identity plus matching provisioning profile are installed. The unsigned archive validates Release compilation and packaging, but it cannot be uploaded to App Store Connect.
 
 The native build produces normal third-party deprecation/nullability/generated-code warnings from React Native, Expo, WebView, and Nitro IAP. No app compile/link failure remains. The app dSYM is generated and matches the executable; verify symbol acceptance again on the signed App Store archive.
 
 ## Final submission order
 
 1. Complete sections C–E of `docs/IOS_APP_STORE_FINAL_CHECKLIST.md`.
-2. Increment the iOS build number.
+2. Confirm build `19` has not already been uploaded; increment again if App Store Connect reports a duplicate build number.
 3. Deploy the backend with Apple credentials, notification URL, rate limiting, AI provider secrets, and durable profile storage.
 4. Create the signed TestFlight build.
 5. Run every physical-device scenario in the checklist against that build.
