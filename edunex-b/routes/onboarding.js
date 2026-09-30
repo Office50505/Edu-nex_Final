@@ -28,8 +28,7 @@ router.get('/config', wrap(async (_req, res) => {
   const provider = await paymentModes.activeProvider();
   const publicMarketing = await marketing.publicConfig();
   if (provider === 'phonepe') {
-    if (!isPhonePeNewPaymentsEnabled(process.env)) throw fail('PhonePe checkout is unavailable.', 503);
-    return res.json({ gateway: 'phonepe', oneTimeAmountPaise: phonePeService.oneTimeAmountPaise, accessDays: phonePeService.oneTimeAccessDays, ...publicMarketing });
+    return res.json({ gateway: 'phonepe', checkoutEnabled: isPhonePeNewPaymentsEnabled(process.env), oneTimeAmountPaise: phonePeService.oneTimeAmountPaise, accessDays: phonePeService.oneTimeAccessDays, ...publicMarketing });
   }
   const c = rzp.requireConfig(adMode());
   res.json({ mode: c.mode, gateway: provider, trialAmountPaise: c.trialAmount, subscriptionAmountPaise: c.monthlyAmount, trialHours: c.trialHours, ...publicMarketing });

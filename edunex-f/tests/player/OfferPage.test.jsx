@@ -68,6 +68,31 @@ it("opens phone verification when the special offer pill is clicked", async () =
   expect(screen.getByRole("heading", { name: "Login / Sign up" })).toBeTruthy();
 });
 
+it("keeps the offer visible and blocks checkout while pricing fails, then recovers on retry", async () => {
+  let pricingReady = false;
+  vi.stubGlobal("fetch", vi.fn(async url => {
+    if (url.endsWith("/api/onboarding/config") && !pricingReady) throw new Error("Pricing API unavailable");
+    return { ok: true, json: async () => ({ gateway: "phonepe", checkoutEnabled: true, oneTimeAmountPaise: 29900, accessDays: 30 }) };
+  }));
+  render(<AdOfferPage />);
+  expect(await screen.findByText(/Payment pricing is temporarily unavailable/)).toBeTruthy();
+  expect(document.querySelector("video")?.getAttribute("src")).toBe(DEFAULT_OFFER_VIDEO_URL);
+  expect(screen.getByRole("button", { name: /Checkout unavailable/ }).disabled).toBe(true);
+  expect(screen.queryByText("₹1")).toBeNull();
+  pricingReady = true;
+  fireEvent.click(screen.getByRole("button", { name: "Retry" }));
+  expect(await screen.findByRole("button", { name: /Pay ₹299 once/ })).toBeTruthy();
+});
+
+it("shows the PhonePe price but blocks checkout when new payments are disabled", async () => {
+  vi.stubGlobal("fetch", vi.fn(async () => ({ ok: true, json: async () => ({ gateway: "phonepe", checkoutEnabled: false, oneTimeAmountPaise: 29900, accessDays: 30 }) })));
+  render(<AdOfferPage />);
+  expect(await screen.findByText(/Checkout is temporarily unavailable/)).toBeTruthy();
+  expect(screen.getByText("₹299")).toBeTruthy();
+  expect(screen.getByRole("button", { name: /Checkout unavailable/ }).disabled).toBe(true);
+  expect(screen.queryByRole("dialog")).toBeNull();
+});
+
 it("assigns a distinct video URL to every offer page", () => {
   const entries = Object.entries(OFFER_MEDIA);
   expect(entries).toHaveLength(10);

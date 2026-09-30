@@ -176,3 +176,4 @@ html[data-theme="light"] .ad-offer-page .ad-signin-modal form > button[type="sub
 .ad-payment-actions a { color: #d9d5c9; font-size: 14px; text-underline-offset: 4px; }
 @keyframes ad-payment-spin { to { transform: rotate(360deg); } }
 @media (prefers-reduced-motion: reduce) { .ad-payment-icon > span { animation: none; } }
+.ad-action-bar .ad-pricing-retry{margin-left:5px;padding:0;color:#ffd05a;border:0;background:none;font:inherit;font-weight:800;text-decoration:underline;text-underline-offset:2px;cursor:pointer}

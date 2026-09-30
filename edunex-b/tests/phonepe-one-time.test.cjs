@@ -9,6 +9,36 @@ process.env.PHONEPE_REDIRECT_URL = 'https://api.example.test/api/payment/callbac
 
 const phonePe = require('../services/phonePeService');
 
+test('PhonePe pricing remains readable while the new-payment gate is closed', async (t) => {
+  const paymentModes = require('../services/paymentMode');
+  const marketing = require('../services/marketingSettings');
+  t.mock.method(paymentModes, 'activeProvider', async () => 'phonepe');
+  t.mock.method(marketing, 'publicConfig', async () => ({}));
+  const previous = {
+    mode: process.env.PAYMENT_GATEWAY_MODE,
+    enabled: process.env.PHONEPE_ENABLED,
+    newPayments: process.env.PHONEPE_NEW_PAYMENTS_ENABLED,
+  };
+  process.env.PAYMENT_GATEWAY_MODE = 'phonepe';
+  process.env.PHONEPE_ENABLED = 'false';
+  process.env.PHONEPE_NEW_PAYMENTS_ENABLED = 'false';
+  t.after(() => {
+    for (const [key, value] of Object.entries({ PAYMENT_GATEWAY_MODE: previous.mode, PHONEPE_ENABLED: previous.enabled, PHONEPE_NEW_PAYMENTS_ENABLED: previous.newPayments })) {
+      if (value === undefined) delete process.env[key];
+      else process.env[key] = value;
+    }
+  });
+  const router = require('../routes/onboarding');
+  const handler = router.stack.find(layer => layer.route?.path === '/config').route.stack[0].handle;
+  const res = { statusCode: 200, status(code) { this.statusCode = code; return this; }, json(body) { this.body = body; return this; } };
+  await handler({}, res);
+  assert.equal(res.statusCode, 200);
+  assert.equal(res.body.gateway, 'phonepe');
+  assert.equal(res.body.checkoutEnabled, false);
+  assert.equal(res.body.oneTimeAmountPaise, 29900);
+  assert.equal(res.body.accessDays, 30);
+});
+
 test('PhonePe direct checkout requests exactly 29900 paise without a subscription setup', async (t) => {
   const originalFetch = global.fetch;
   const requests = [];
