@@ -59,6 +59,13 @@ it("opens phone verification when the offer price card is clicked", () => {
   expect(screen.getByRole("heading", { name: "Login / Sign up" })).toBeTruthy();
 });
 
+it("opens phone verification when the special offer pill is clicked", () => {
+  render(<AdOfferPage />);
+  fireEvent.click(screen.getByRole("button", { name: /Special offer - subscribe for ₹1/i }));
+  expect(screen.getByRole("dialog")).toBeTruthy();
+  expect(screen.getByRole("heading", { name: "Login / Sign up" })).toBeTruthy();
+});
+
 it("assigns a distinct video URL to every offer page", () => {
   const entries = Object.entries(OFFER_MEDIA);
   expect(entries).toHaveLength(10);

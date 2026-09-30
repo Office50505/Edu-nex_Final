@@ -473,6 +473,8 @@ export function AdminUsersPage({ audience = "learners" } = {}) {
     const activeUsers = filteredUsers.filter((user) => user.isActive).length;
     const onlineUsers = filteredUsers.filter((user) => user.presence?.isOnline).length;
     const subscribedUsers = filteredUsers.filter((user) => ["active", "subscribed"].includes(user.subscriptionStatus)).length;
+    const mandateOnUsers = filteredUsers.filter((user) => String(billing(user).mandateStatus || "").toLowerCase() === "active").length;
+    const mandateCancelledUsers = filteredUsers.filter((user) => ["cancelled", "expired", "halted"].includes(String(billing(user).mandateStatus || "").toLowerCase())).length;
     const complete = filteredUsers.reduce((sum, user) => sum + completedCourses(user), 0);
     const usersWithAge = filteredUsers.filter((user) => user.age != null && Number(user.age) > 0 && Number.isFinite(Number(user.age)));
     const averageAge = usersWithAge.length ? Math.round(usersWithAge.reduce((sum, user) => sum + Number(user.age || 0), 0) / usersWithAge.length) : null;
@@ -481,6 +483,8 @@ export function AdminUsersPage({ audience = "learners" } = {}) {
       ["Enabled Accounts", formatNumber(activeUsers)],
       ["Online Now", formatNumber(onlineUsers)],
       ["Paid Subscribers", formatNumber(subscribedUsers)],
+      ["Mandate On", formatNumber(mandateOnUsers)],
+      ["Mandate Cancelled", formatNumber(mandateCancelledUsers)],
       ["Watch Time", formatWatchDuration(totalWatchMinutes)],
       ["Average Age", averageAge ? `${formatNumber(averageAge)} years` : "No age"],
       ["Progress Courses", `${formatNumber(totalProgressCourses)} / ${formatNumber(complete)}`],

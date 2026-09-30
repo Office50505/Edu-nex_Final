@@ -480,7 +480,9 @@ export function AdOfferPage({ offerPage }) {
       <section className="ad-offer-shell" aria-label="Skillomate subscription offer" inert={Boolean(paymentStage)} aria-hidden={paymentStage ? true : undefined}>
         <PreviewVideo key={offerMedia.videoUrl} media={offerMedia} modalOpen={Boolean(modalStep || paymentStage || busy)} onPixelEvent={trackOfferEvent} />
         <section className="ad-offer-content" aria-labelledby="ad-offer-title">
-          <div className="ad-special-ribbon"><span aria-hidden="true">ϟ</span> Special offer</div>
+          <button type="button" className="ad-special-ribbon" onClick={begin} disabled={busy} aria-label="Special offer - subscribe for ₹1">
+            <span aria-hidden="true">ϟ</span> Special offer
+          </button>
           <p className="ad-offer-kicker">Only for you</p>
           <h1 id="ad-offer-title">Skillomate <span>Subscription</span></h1>
           <p className="ad-offer-intro">Unlock complete access and start your learning journey today.</p>
