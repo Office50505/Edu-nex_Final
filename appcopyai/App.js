@@ -474,6 +474,9 @@ const AI_FEATURE_ENABLED = true;
 const SPEEDS = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2];
 const HOLD_SPEED_RATE = 2;
 const HOLD_SPEED_DELAY_MS = 220;
+const PLAYER_CHROME_FADE_IN_MS = 170;
+const PLAYER_CHROME_FADE_OUT_MS = 260;
+const PLAYER_CHROME_AUTO_HIDE_MS = 2000;
 const AUTO_QUALITY_LABEL = "Auto";
 const FALLBACK_QUALITY_OPTIONS = ["144p", "240p", "360p", "480p", "720p", "1080p"];
 const VIDEO_COMPLETE_THRESHOLD = 0.9;
@@ -1101,7 +1104,7 @@ function buildYoutubePlayerHtml(videoId, origin) {
 
 // Bunny embed builder — uses playerjs protocol to control inner Bunny iframe
 function buildEmbedPlayerHtml(embedUrl, initialTime = 0) {
-  const src = (embedUrl.includes('?') ? embedUrl + '&' : embedUrl + '?') + 'autoplay=true&controls=false';
+  const src = (embedUrl.includes('?') ? embedUrl + '&' : embedUrl + '?') + 'autoplay=true&controls=false&muted=false';
   return `<!DOCTYPE html><html><head>
   <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0">
   <style>${PLAYER_CSS}</style>
@@ -1122,6 +1125,7 @@ function buildEmbedPlayerHtml(embedUrl, initialTime = 0) {
     var pending = [];
     var pollTimer = null;
     var availableQualities = [];
+    var wantsMuted = false;
     var standardQualities = ${JSON.stringify(FALLBACK_QUALITY_OPTIONS.map(q => Number(q.replace('p', ''))))};
     function post(data) {
       try { window.ReactNativeWebView.postMessage(JSON.stringify(data)); } catch(e) {}
@@ -1160,6 +1164,24 @@ function buildEmbedPlayerHtml(embedUrl, initialTime = 0) {
           context:'player.js', version:'0.0.11', method: method, value: value
         }), '*');
       } catch(e) {}
+    }
+    function setMutedState(muted) {
+      wantsMuted = !!muted;
+      try {
+        if (wantsMuted) {
+          if (player && player.mute) player.mute();
+        } else {
+          if (player && player.unmute) player.unmute();
+          if (player && player.setVolume) player.setVolume(100);
+        }
+      } catch(e) {}
+      playerMessage(wantsMuted ? 'mute' : 'unmute');
+      playerMessage('setMuted', wantsMuted);
+      if (!wantsMuted) playerMessage('setVolume', 100);
+    }
+    function ensureAudible() {
+      if (wantsMuted) return;
+      setMutedState(false);
     }
     function qualityPixels(value) {
       var match = String(value || '').match(/(\\d{3,4})/);
@@ -1242,7 +1264,9 @@ function buildEmbedPlayerHtml(embedUrl, initialTime = 0) {
           });
         } catch(e) {}
         if (${initialTime} > 0) { player.setCurrentTime(${initialTime}); }
+        ensureAudible();
         player.play();
+        setTimeout(ensureAudible, 240);
         startPolling();
         post({ type:'ready' });
         pending.forEach(function(fn) { fn(); });
@@ -1251,8 +1275,10 @@ function buildEmbedPlayerHtml(embedUrl, initialTime = 0) {
     });
     window.bunnyPlay  = function() {
       exec(function(){
+        ensureAudible();
         try { player.play(); } catch(e) {}
         playerMessage('play');
+        setTimeout(ensureAudible, 240);
         post({ type:'stateChange', playing: true, playerState: 1 });
       });
     };
@@ -1275,17 +1301,18 @@ function buildEmbedPlayerHtml(embedUrl, initialTime = 0) {
         t = Number(t) || 0;
         try {
           player.setCurrentTime(t);
+          ensureAudible();
           player.play();
         } catch(e) {}
         playerMessage('setCurrentTime', t);
         playerMessage('play');
+        setTimeout(ensureAudible, 240);
         post({ type:'stateChange', playing: true, playerState: 1 });
       });
     };
     window.bunnyMute  = function(m) {
       exec(function(){
-        try { m ? player.mute() : player.unmute(); } catch(e) {}
-        playerMessage(m ? 'mute' : 'unmute');
+        setMutedState(!!m);
       });
     };
     window.bunnySpeed = function(r) {
@@ -1302,6 +1329,8 @@ function buildEmbedPlayerHtml(embedUrl, initialTime = 0) {
         var nextQuality = rawQualityForLabel(q);
         try { player.setQuality(nextQuality); } catch(e) {}
         playerMessage('setQuality', nextQuality);
+        setTimeout(ensureAudible, 180);
+        setTimeout(ensureAudible, 720);
         post({ type:'qualityChange', quality: q || nextQuality });
       });
     };
@@ -3212,7 +3241,7 @@ function SwipeableRootTabsPager({ activeTab, onNavigate, renderTab }) {
 }
 
 // ── VideoItem ─────────────────────────────────────────────────────────────────
-function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdProp, isActive, height, onComplete, onProgress, onEnded, onSettingsOpenChange, onExitFullscreen, initialTime = 0, localPath, suspendSurface = false }) {
+function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdProp, isActive, height, onComplete, onProgress, onEnded, onSettingsOpenChange, onExitFullscreen, onPlayerChromeHiddenChange, onPlayerChromeReveal, playerChromeHiddenOverride = false, initialTime = 0, localPath, suspendSurface = false }) {
   const [cloudLease, setCloudLease] = useState(null);
   const [cloudError, setCloudError] = useState('');
   const [cloudRetry, setCloudRetry] = useState(0);
@@ -3311,6 +3340,9 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
   const qualityRecoveryTimerRef = useRef(null);
   const nativeStartupRetryTimerRef = useRef(null);
   const nativeStartupRetryCountRef = useRef(0);
+  const chromeAutoHideTimerRef = useRef(null);
+  const playerChromeShownAtRef = useRef(Date.now());
+  const playerChromeOpacityRef = useRef(new Animated.Value(1));
   const qualityPreferenceRef = useRef(AUTO_QUALITY_LABEL);
   const playbackRateSyncTimerRef = useRef(null);
   const sendCmdRef = useRef(() => {});
@@ -3337,6 +3369,9 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
   const [seekAnim, setSeekAnim] = useState(null);
   const [holdSpeedSide, setHoldSpeedSide] = useState(null);
   const [qualitySwitching, setQualitySwitching] = useState(false);
+  const [playerChromeVisible, setPlayerChromeVisible] = useState(true);
+  const [renderPlayerChrome, setRenderPlayerChrome] = useState(true);
+  const [hasPlaybackStarted, setHasPlaybackStarted] = useState(false);
   useEffect(() => {
     latestProgressValueRef.current = { currentTime, duration };
   }, [currentTime, duration]);
@@ -3344,6 +3379,82 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
     onSettingsOpenChange?.(Boolean(isActive && showSettings));
     return () => onSettingsOpenChange?.(false);
   }, [isActive, onSettingsOpenChange, showSettings]);
+  const chromeSessionKey = video?._id || video?.id || videoProp?._id || videoProp?.id || video?.bunnyGuid || video?.bunnyVideoId || video?.youtubeId || videoIdProp || "video";
+  const playbackHasVisibleProgress = hasPlaybackStarted || currentTime > 0.05;
+  const canAutoHideChrome = Boolean(isActive && !suspendSurface && !showSettings && !isEnded && isPlaying && playbackHasVisibleProgress);
+  const localPlayerChromeHidden = canAutoHideChrome && !playerChromeVisible;
+  const playerChromeHidden = canAutoHideChrome && (playerChromeHiddenOverride || localPlayerChromeHidden);
+  const showPlayerChrome = !playerChromeHidden;
+  const playerChromeOpacity = playerChromeOpacityRef.current;
+  const playerChromeAnimatedStyle = useMemo(() => ({
+    opacity: playerChromeOpacity,
+    transform: [{
+      translateY: playerChromeOpacity.interpolate({
+        inputRange: [0, 1],
+        outputRange: [8, 0],
+      }),
+    }],
+  }), [playerChromeOpacity]);
+  useEffect(() => {
+    if (!canAutoHideChrome) {
+      if (chromeAutoHideTimerRef.current) {
+        clearTimeout(chromeAutoHideTimerRef.current);
+        chromeAutoHideTimerRef.current = null;
+      }
+      setPlayerChromeVisible(true);
+      return undefined;
+    }
+    if (!playerChromeVisible || chromeAutoHideTimerRef.current) return undefined;
+    chromeAutoHideTimerRef.current = setTimeout(() => {
+      chromeAutoHideTimerRef.current = null;
+      setPlayerChromeVisible(false);
+    }, PLAYER_CHROME_AUTO_HIDE_MS);
+    return () => {
+      if (chromeAutoHideTimerRef.current) {
+        clearTimeout(chromeAutoHideTimerRef.current);
+        chromeAutoHideTimerRef.current = null;
+      }
+    };
+  }, [canAutoHideChrome, chromeSessionKey, playerChromeVisible]);
+  useEffect(() => {
+    if (playerChromeVisible) playerChromeShownAtRef.current = Date.now();
+  }, [chromeSessionKey, playerChromeVisible]);
+  useEffect(() => {
+    setHasPlaybackStarted(false);
+    setPlayerChromeVisible(true);
+  }, [chromeSessionKey]);
+  useEffect(() => {
+    if (!isActive) {
+      setHasPlaybackStarted(false);
+      setPlayerChromeVisible(true);
+    }
+  }, [isActive]);
+  useEffect(() => {
+    onPlayerChromeHiddenChange?.(Boolean(playerChromeHidden));
+  }, [onPlayerChromeHiddenChange, playerChromeHidden]);
+  useEffect(() => {
+    playerChromeOpacity.stopAnimation();
+    if (playerChromeHidden) {
+      Animated.timing(playerChromeOpacity, {
+        toValue: 0,
+        duration: PLAYER_CHROME_FADE_OUT_MS,
+        easing: Easing.out(Easing.cubic),
+        useNativeDriver: true,
+        isInteraction: false,
+      }).start(({ finished }) => {
+        if (finished) setRenderPlayerChrome(false);
+      });
+      return;
+    }
+    setRenderPlayerChrome(true);
+    Animated.timing(playerChromeOpacity, {
+      toValue: 1,
+      duration: PLAYER_CHROME_FADE_IN_MS,
+      easing: Easing.out(Easing.cubic),
+      useNativeDriver: true,
+      isInteraction: false,
+    }).start();
+  }, [playerChromeHidden, playerChromeOpacity]);
   const nativeVideoSource = useMemo(() => (
     videoSourceFromUri(nativeVideoUrl)
   ), [nativeVideoUrl]);
@@ -3634,7 +3745,10 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
 
   useEventListener(nativePlayer, "playingChange", ({ isPlaying: nextPlaying }) => {
     if (!isNativeVideo) return;
-    if (nextPlaying) setIsBuffering(false);
+    if (nextPlaying) {
+      setHasPlaybackStarted(true);
+      setIsBuffering(false);
+    }
     else {
       const shouldRecoverPlayback = Boolean(isActive && shouldBePlayingRef.current && !playbackStateRef.current?.isEnded);
       setIsPlaying(shouldRecoverPlayback);
@@ -3811,9 +3925,8 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
   }, [isActive, queueAutoPlay, setNativeTime, suspendSurface]);
 
   useEffect(() => {
-    if (!isNativeVideo) return;
     sendCmd(isMuted ? "mute" : "unMute");
-  }, [isMuted, isNativeVideo]);
+  }, [isMuted, isNativeVideo, isBunny, surfaceRevision]);
 
   useEffect(() => {
     if (isNativeVideo) return;
@@ -3827,6 +3940,8 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
     if (timer) clearTimeout(timer);
     const holdTimer = holdSpeedRef.current.timer;
     if (holdTimer) clearTimeout(holdTimer);
+    const holdRateTimer = holdSpeedRef.current.rateTimer;
+    if (holdRateTimer) clearInterval(holdRateTimer);
     if (holdSpeedRef.current.active) {
       sendCmdRef.current("setPlaybackRate", [holdSpeedRef.current.previousRate || 1]);
     }
@@ -3836,8 +3951,36 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
     if (qualityRecoveryTimerRef.current) clearTimeout(qualityRecoveryTimerRef.current);
     if (nativeStartupRetryTimerRef.current) clearTimeout(nativeStartupRetryTimerRef.current);
     if (playbackRateSyncTimerRef.current) clearTimeout(playbackRateSyncTimerRef.current);
+    if (chromeAutoHideTimerRef.current) clearTimeout(chromeAutoHideTimerRef.current);
     clearAutoPlayTimers();
   }, [clearAutoPlayTimers, onProgress]);
+
+  function revealPlayerChrome() {
+    onPlayerChromeReveal?.();
+    if (chromeAutoHideTimerRef.current) {
+      clearTimeout(chromeAutoHideTimerRef.current);
+      chromeAutoHideTimerRef.current = null;
+    }
+    playerChromeShownAtRef.current = Date.now();
+    setPlayerChromeVisible(true);
+    if (!canAutoHideChrome) return;
+    chromeAutoHideTimerRef.current = setTimeout(() => {
+      chromeAutoHideTimerRef.current = null;
+      setPlayerChromeVisible(false);
+    }, PLAYER_CHROME_AUTO_HIDE_MS);
+  }
+
+  function hidePlayerChromeAfterVisibleDelay() {
+    const latest = playbackStateRef.current;
+    if (!playerChromeVisible || !latest?.isActive || !latest?.isPlaying || latest?.isEnded || showSettings || suspendSurface) return;
+    if (Date.now() - playerChromeShownAtRef.current >= PLAYER_CHROME_AUTO_HIDE_MS) {
+      if (chromeAutoHideTimerRef.current) {
+        clearTimeout(chromeAutoHideTimerRef.current);
+        chromeAutoHideTimerRef.current = null;
+      }
+      setPlayerChromeVisible(false);
+    }
+  }
 
   function flushProgress(nextTime = currentTime, nextDuration = duration, force = false) {
     const dur = finiteSeconds(nextDuration, duration);
@@ -3865,7 +4008,10 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
     const lastProgress = lastProgressRef.current;
     if (Math.abs(ct - lastProgress.time) > 0.05) {
       lastProgressRef.current = { time: ct, advancedAt: now };
-      if (shouldBePlayingRef.current) setIsBuffering(false);
+      setHasPlaybackStarted(true);
+      if (shouldBePlayingRef.current) {
+        setIsBuffering(false);
+      }
     } else if (shouldBePlayingRef.current && !nextPlaying && now - lastProgress.advancedAt > 1200) {
       setIsBuffering(true);
     }
@@ -3890,9 +4036,13 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
     }
     setCurrentTime(ct);
     if (dur > 0) setDuration(dur);
+    hidePlayerChromeAfterVisibleDelay();
     const shouldKeepTryingPlayback = Boolean(shouldBePlayingRef.current && !(dur > 0 && ct >= dur - 0.25));
     setIsPlaying(Boolean(nextPlaying || shouldKeepTryingPlayback));
-    if (nextPlaying) setIsBuffering(false);
+    if (nextPlaying) {
+      setHasPlaybackStarted(true);
+      setIsBuffering(false);
+    }
     else if (shouldKeepTryingPlayback) setIsBuffering(true);
     if (dur > 0 && ct >= dur - 0.25 && !nextPlaying) {
       if (loopLesson) {
@@ -3929,6 +4079,7 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
         } else {
           sendCmd("pauseVideo");
         }
+        sendCmd(isMuted ? "mute" : "unMute");
         syncPlaybackRate(playbackRate);
         return;
       }
@@ -3956,7 +4107,16 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
           setIsBuffering(Boolean(isActive && shouldBePlayingRef.current));
           return;
         }
+        if (d.playerState === 1) {
+          setHasPlaybackStarted(true);
+          setIsPlaying(true);
+          setIsBuffering(false);
+          setIsEnded(false);
+          syncPlaybackRate(playbackRate);
+          return;
+        }
         if (typeof d.playing === "boolean") {
+          if (d.playing) setHasPlaybackStarted(true);
           setIsPlaying(d.playing);
           setIsBuffering(d.playing ? false : Boolean(isActive && shouldBePlayingRef.current));
           if (d.playing) syncPlaybackRate(playbackRate);
@@ -3979,6 +4139,7 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
         const progressed = Math.abs(nextTime - lastProgress.time) > 0.05;
         if (progressed) {
           lastProgressRef.current = { time: nextTime, advancedAt: now };
+          setHasPlaybackStarted(true);
           if (shouldBePlayingRef.current) {
             setIsPlaying(true);
             setIsBuffering(false);
@@ -3997,6 +4158,7 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
         }
         setCurrentTime(nextTime);
         if (nextDuration > 0) setDuration(nextDuration);
+        hidePlayerChromeAfterVisibleDelay();
         if (d.playerState === 0) {
           if (loopLesson) {
             flushProgress(nextDuration || nextTime, nextDuration, true);
@@ -4017,6 +4179,7 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
           markCompleteOnce();
           onEnded?.();
         } else if (d.playerState === 1) {
+          setHasPlaybackStarted(true);
           setIsPlaying(true);
           setIsBuffering(false);
           setIsEnded(false);
@@ -4037,6 +4200,7 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
   }
 
   function togglePlay() {
+    revealPlayerChrome();
     const shouldPause = shouldBePlayingRef.current && (isPlaying || isBuffering);
     shouldBePlayingRef.current = !shouldPause;
     setIsBuffering(false);
@@ -4088,6 +4252,22 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
       setQualitySwitching(false);
     }, delayMs);
   }
+  function activateHoldSpeed(side) {
+    const hold = holdSpeedRef.current;
+    if (hold.active) return;
+    const latest = playbackStateRef.current;
+    if (!latest?.isActive || latest?.isEnded) return;
+    hold.active = true;
+    hold.side = side;
+    hold.previousRate = latest.playbackRate || hold.previousRate || playbackRate || 1;
+    setHoldSpeedSide(side);
+    syncPlaybackRate(HOLD_SPEED_RATE);
+    if (hold.rateTimer) clearInterval(hold.rateTimer);
+    hold.rateTimer = setInterval(() => {
+      if (!holdSpeedRef.current.active) return;
+      sendCmdRef.current("setPlaybackRate", [HOLD_SPEED_RATE]);
+    }, 250);
+  }
   function beginHoldSpeed(side) {
     if (showSettings || isEnded || !showLiveSurface) return;
     const hold = holdSpeedRef.current;
@@ -4096,21 +4276,16 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
     hold.side = side;
     hold.suppressNextPress = false;
     hold.previousRate = playbackStateRef.current?.playbackRate || playbackRate || 1;
-    hold.timer = setTimeout(() => {
-      const latest = playbackStateRef.current;
-      if (!latest?.isActive || latest?.isEnded) return;
-      hold.active = true;
-      hold.previousRate = latest.playbackRate || hold.previousRate || 1;
-      setHoldSpeedSide(side);
-      sendCmd("setPlaybackRate", [HOLD_SPEED_RATE]);
-    }, HOLD_SPEED_DELAY_MS);
+    hold.timer = setTimeout(() => activateHoldSpeed(side), HOLD_SPEED_DELAY_MS);
   }
   function endHoldSpeed() {
     const hold = holdSpeedRef.current;
     if (hold.timer) clearTimeout(hold.timer);
+    if (hold.rateTimer) clearInterval(hold.rateTimer);
     const shouldRestore = hold.active;
     const previousRate = hold.previousRate || 1;
     hold.timer = null;
+    hold.rateTimer = null;
     hold.active = false;
     hold.side = null;
     hold.previousRate = 1;
@@ -4121,10 +4296,11 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
       setTimeout(() => { holdSpeedRef.current.suppressNextPress = false; }, 0);
     }
   }
-  function shouldSkipSideTapAfterHold() {
-    if (!holdSpeedRef.current.suppressNextPress) return false;
-    holdSpeedRef.current.suppressNextPress = false;
-    return true;
+  function finishSidePress(side) {
+    const wasHoldActive = holdSpeedRef.current.active;
+    endHoldSpeed();
+    if (wasHoldActive) return;
+    handleSideTap(side);
   }
   function selectNativeQuality(q) {
     if (Platform.OS === "android") {
@@ -4358,6 +4534,8 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
   }
 
   function handleSideTap(side) {
+    if (showSettings || isEnded || !showLiveSurface) return;
+    revealPlayerChrome();
     const info = tapInfoRef.current;
     if (info.timer) clearTimeout(info.timer);
     if (info.count === 1 && info.side === side) {
@@ -4373,6 +4551,10 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
 
   function handleCenterTap() {
     if (showSettings) { setShowSettings(false); return; }
+    if (playerChromeHidden) {
+      revealPlayerChrome();
+      return;
+    }
     togglePlay();
   }
 
@@ -4452,10 +4634,10 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
         >
           <ActivityIndicator size="large" color="#fff" />
         </View>
-      ) : showLiveSurface && !isPlaying && !isEnded ? (
-        <View style={s.pauseOverlay} pointerEvents="none">
+      ) : showLiveSurface && !isPlaying && !isEnded && renderPlayerChrome ? (
+        <Animated.View style={[s.pauseOverlay, playerChromeAnimatedStyle]} pointerEvents="none">
           <Ionicons name="play-circle" size={72} color="rgba(255,255,255,0.85)" />
-        </View>
+        </Animated.View>
       ) : null}
       {showLiveSurface && qualitySwitching ? (
         <View style={s.qualitySwitchOverlay} pointerEvents="none">
@@ -4463,41 +4645,43 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
           <Text style={s.qualitySwitchText}>Adjusting quality</Text>
         </View>
       ) : null}
-      {isEnded ? (
-        <TouchableOpacity onPress={restart} style={s.restartOverlay} accessibilityRole="button" accessibilityLabel="Replay lesson">
-          <Ionicons name="refresh-circle" size={72} color="rgba(255,255,255,0.9)" />
-        </TouchableOpacity>
-      ) : (
+      {showLiveSurface && !isEnded && (
         <>
-          <Pressable
-            onPressIn={() => beginHoldSpeed("left")}
-            onPressOut={endHoldSpeed}
-            onPress={() => {
-              if (shouldSkipSideTapAfterHold()) return;
-              handleSideTap("left");
-            }}
+          <View
             style={s.tapLeft}
+            accessible
             accessibilityRole="button"
             accessibilityLabel="Hold left side for 2x speed or double tap to rewind"
+            onStartShouldSetResponder={() => true}
+            onMoveShouldSetResponder={() => true}
+            onResponderTerminationRequest={() => false}
+            onResponderGrant={() => beginHoldSpeed("left")}
+            onResponderRelease={() => finishSidePress("left")}
+            onResponderTerminate={endHoldSpeed}
           />
           <Pressable
+            key={showPlayerChrome ? "center-tap-visible" : "center-tap-hidden"}
             onPress={handleCenterTap}
             style={s.tapCenter}
-            accessibilityRole="button"
-            accessibilityLabel={isPlaying || isBuffering ? "Pause video" : "Play video"}
+            accessible={showPlayerChrome}
+            focusable={showPlayerChrome}
+            importantForAccessibility={showPlayerChrome ? "auto" : "no-hide-descendants"}
+            accessibilityRole={showPlayerChrome ? "button" : undefined}
+            accessibilityLabel={showPlayerChrome ? (isPlaying || isBuffering ? "Pause video" : "Play video") : ""}
           />
-          <Pressable
-            onPressIn={() => beginHoldSpeed("right")}
-            onPressOut={endHoldSpeed}
-            onPress={() => {
-              if (shouldSkipSideTapAfterHold()) return;
-              handleSideTap("right");
-            }}
+          <View
             style={s.tapRight}
+            accessible
             accessibilityRole="button"
             accessibilityLabel="Hold right side for 2x speed or double tap to fast forward"
+            onStartShouldSetResponder={() => true}
+            onMoveShouldSetResponder={() => true}
+            onResponderTerminationRequest={() => false}
+            onResponderGrant={() => beginHoldSpeed("right")}
+            onResponderRelease={() => finishSidePress("right")}
+            onResponderTerminate={endHoldSpeed}
           />
-          {holdSpeedSide && (
+          {Boolean(holdSpeedSide) && (
             <View
               style={[s.holdSpeedIndicator, holdSpeedSide === "left" ? s.holdSpeedIndicatorLeft : s.holdSpeedIndicatorRight]}
               pointerEvents="none"
@@ -4519,6 +4703,19 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
           )}
         </>
       )}
+      {renderPlayerChrome && (
+        <Animated.View
+          style={[StyleSheet.absoluteFill, playerChromeAnimatedStyle]}
+          pointerEvents={showPlayerChrome ? "box-none" : "none"}
+          importantForAccessibility={showPlayerChrome ? "auto" : "no-hide-descendants"}
+        >
+          {isEnded ? (
+            <TouchableOpacity onPress={restart} style={s.restartOverlay} accessibilityRole="button" accessibilityLabel="Replay lesson">
+              <Ionicons name="refresh-circle" size={72} color="rgba(255,255,255,0.9)" />
+            </TouchableOpacity>
+          ) : (
+            null
+          )}
       {showSettings && (
         <View style={s.playerSettingsPanel}>
           <View style={s.playerSettingsHeader}>
@@ -4606,14 +4803,14 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
           <Text style={s.offlineBadgeText}>Offline</Text>
         </View>
       )}
-      <TouchableOpacity
-        onPress={toggleMute}
-        style={s.muteButton}
-        accessibilityRole="button"
-        accessibilityLabel={isMuted ? "Unmute video" : "Mute video"}
-      >
-        <Ionicons name={isMuted ? "volume-mute" : "volume-high"} size={20} color="#fff" />
-      </TouchableOpacity>
+        <TouchableOpacity
+          onPress={toggleMute}
+          style={s.muteButton}
+          accessibilityRole="button"
+          accessibilityLabel={isMuted ? "Unmute video" : "Mute video"}
+        >
+          <Ionicons name={isMuted ? "volume-mute" : "volume-high"} size={20} color="#fff" />
+        </TouchableOpacity>
       {!isEnded && !isBuffering && (
         <TouchableOpacity
           onPress={togglePlay}
@@ -4624,58 +4821,64 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
           <Ionicons name={isPlaying ? "pause" : "play"} size={22} color="#fff" />
         </TouchableOpacity>
       )}
-      <View style={s.timeDisplay} pointerEvents="none">
-        <Text style={s.timeText}>{formatTime(currentTime)} / {formatTime(duration)}</Text>
-      </View>
-      <TouchableOpacity
-        onPress={() => setShowSettings(value => !value)}
-        style={[s.playerSettingsButton, showSettings && s.playerSettingsButtonActive]}
-        accessibilityRole="button"
-        accessibilityLabel="Playback settings"
-        accessibilityState={{ expanded: showSettings }}
-      >
-        <Ionicons name="settings-outline" size={22} color="#fff" />
-      </TouchableOpacity>
-      <TouchableOpacity
-        onPress={handleExitFullscreen}
-        style={s.playerExpandButton}
-        accessibilityRole="button"
-        accessibilityLabel="Exit full screen player"
-      >
-        <Ionicons name="contract-outline" size={22} color="#fff" />
-      </TouchableOpacity>
-      <View
-        style={s.timeline}
-        accessible
-        accessibilityRole="adjustable"
-        accessibilityLabel="Video progress"
-        accessibilityValue={{
-          min: 0,
-          max: Math.max(0, Math.round(duration)),
-          now: Math.max(0, Math.round(currentTime)),
-          text: `${formatTime(currentTime)} of ${formatTime(duration)}`,
-        }}
-        accessibilityActions={[
-          { name: "increment", label: "Forward 10 seconds" },
-          { name: "decrement", label: "Rewind 10 seconds" },
-        ]}
-        onAccessibilityAction={({ nativeEvent }) => {
-          if (nativeEvent.actionName === "increment") seekBy(10);
-          if (nativeEvent.actionName === "decrement") seekBy(-10);
-        }}
-        onLayout={e => { seekBarWidth.current = e.nativeEvent.layout.width; }}
-        onStartShouldSetResponder={() => true}
-        onMoveShouldSetResponder={() => true}
-        onResponderGrant={e => handleSeekDrag(e.nativeEvent.locationX)}
-        onResponderMove={e => handleSeekDrag(e.nativeEvent.locationX)}
-        onResponderRelease={handleSeekCommit}
-        onResponderTerminate={handleSeekCommit}
-      >
-        <View style={s.timelineTrack} pointerEvents="none">
-          <View style={[s.timelineFill, { width: `${progress * 100}%` }]} />
-        </View>
-        <View style={[s.timelineThumb, { left: `${progress * 100}%` }]} pointerEvents="none" />
-      </View>
+      {!isEnded && (
+        <>
+          <View style={s.timeDisplay} pointerEvents="none">
+            <Text style={s.timeText}>{formatTime(currentTime)} / {formatTime(duration)}</Text>
+          </View>
+          <TouchableOpacity
+            onPress={() => setShowSettings(value => !value)}
+            style={[s.playerSettingsButton, showSettings && s.playerSettingsButtonActive]}
+            accessibilityRole="button"
+            accessibilityLabel="Playback settings"
+            accessibilityState={{ expanded: showSettings }}
+          >
+            <Ionicons name="settings-outline" size={22} color="#fff" />
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={handleExitFullscreen}
+            style={s.playerExpandButton}
+            accessibilityRole="button"
+            accessibilityLabel="Exit full screen player"
+          >
+            <Ionicons name="contract-outline" size={22} color="#fff" />
+          </TouchableOpacity>
+          <View
+            style={s.timeline}
+            accessible
+            accessibilityRole="adjustable"
+            accessibilityLabel="Video progress"
+            accessibilityValue={{
+              min: 0,
+              max: Math.max(0, Math.round(duration)),
+              now: Math.max(0, Math.round(currentTime)),
+              text: `${formatTime(currentTime)} of ${formatTime(duration)}`,
+            }}
+            accessibilityActions={[
+              { name: "increment", label: "Forward 10 seconds" },
+              { name: "decrement", label: "Rewind 10 seconds" },
+            ]}
+            onAccessibilityAction={({ nativeEvent }) => {
+              if (nativeEvent.actionName === "increment") seekBy(10);
+              if (nativeEvent.actionName === "decrement") seekBy(-10);
+            }}
+            onLayout={e => { seekBarWidth.current = e.nativeEvent.layout.width; }}
+            onStartShouldSetResponder={() => true}
+            onMoveShouldSetResponder={() => true}
+            onResponderGrant={e => handleSeekDrag(e.nativeEvent.locationX)}
+            onResponderMove={e => handleSeekDrag(e.nativeEvent.locationX)}
+            onResponderRelease={handleSeekCommit}
+            onResponderTerminate={handleSeekCommit}
+          >
+            <View style={s.timelineTrack} pointerEvents="none">
+              <View style={[s.timelineFill, { width: `${progress * 100}%` }]} />
+            </View>
+            <View style={[s.timelineThumb, { left: `${progress * 100}%` }]} pointerEvents="none" />
+          </View>
+        </>
+      )}
+        </Animated.View>
+      )}
     </View>
   );
 }
@@ -4694,8 +4897,12 @@ function ReelsScreen({ courseId, course, initialIndex, initialTime, onBack, onRe
   const [lecturePage, setLecturePage] = useState(0);
   const [showCourseAi, setShowCourseAi] = useState(false);
   const [playerSettingsOpen, setPlayerSettingsOpen] = useState(false);
+  const [playerChromeHidden, setPlayerChromeHidden] = useState(false);
   const [courseAiInput, setCourseAiInput] = useState("");
   const [, refreshCourseAi] = useState(0);
+  const playerChromeTimerRef = useRef(null);
+  const webPlayerChromeOpacityRef = useRef(new Animated.Value(1));
+  const [renderWebPlayerChrome, setRenderWebPlayerChrome] = useState(true);
   const courseAiMounted = useRef(false);
   useEffect(() => {
     courseAiMounted.current = true;
@@ -4749,6 +4956,52 @@ function ReelsScreen({ courseId, course, initialIndex, initialTime, onBack, onRe
   const lectureTileWidth = Math.floor((lectureSheetWidth - 60) / 5);
   const lectureTileHeight = Math.max(40, Math.round(lectureTileWidth * 0.72));
   const videoUiOverlayOpen = showCourseAi || showDescription || showNotes || showLectures;
+  const webPlayerChromeOpacity = webPlayerChromeOpacityRef.current;
+  const webPlayerChromeAnimatedStyle = useMemo(() => ({
+    opacity: webPlayerChromeOpacity,
+    transform: [{
+      translateY: webPlayerChromeOpacity.interpolate({
+        inputRange: [0, 1],
+        outputRange: [-8, 0],
+      }),
+    }],
+  }), [webPlayerChromeOpacity]);
+  const schedulePlayerChromeHide = useCallback(() => {
+    if (playerChromeTimerRef.current) {
+      clearTimeout(playerChromeTimerRef.current);
+      playerChromeTimerRef.current = null;
+    }
+    setPlayerChromeHidden(false);
+  }, []);
+  useEffect(() => {
+    schedulePlayerChromeHide();
+  }, [activeIndex, schedulePlayerChromeHide]);
+  useEffect(() => () => {
+    if (playerChromeTimerRef.current) clearTimeout(playerChromeTimerRef.current);
+  }, []);
+  useEffect(() => {
+    webPlayerChromeOpacity.stopAnimation();
+    if (playerChromeHidden) {
+      Animated.timing(webPlayerChromeOpacity, {
+        toValue: 0,
+        duration: PLAYER_CHROME_FADE_OUT_MS,
+        easing: Easing.out(Easing.cubic),
+        useNativeDriver: true,
+        isInteraction: false,
+      }).start(({ finished }) => {
+        if (finished) setRenderWebPlayerChrome(false);
+      });
+      return;
+    }
+    setRenderWebPlayerChrome(true);
+    Animated.timing(webPlayerChromeOpacity, {
+      toValue: 1,
+      duration: PLAYER_CHROME_FADE_IN_MS,
+      easing: Easing.out(Easing.cubic),
+      useNativeDriver: true,
+      isInteraction: false,
+    }).start();
+  }, [playerChromeHidden, webPlayerChromeOpacity]);
   const closeCourseAi = useCallback(() => {
     Keyboard.dismiss();
     setShowCourseAi(false);
@@ -4808,6 +5061,7 @@ function ReelsScreen({ courseId, course, initialIndex, initialTime, onBack, onRe
     setShowNotes(false);
     setShowLectures(false);
     setPlayerSettingsOpen(false);
+    setPlayerChromeHidden(false);
   }, [courseAiKey]);
 
   useEffect(() => {
@@ -4922,6 +5176,13 @@ function ReelsScreen({ courseId, course, initialIndex, initialTime, onBack, onRe
             onSettingsOpenChange={open => {
               if (index === activeIndex) setPlayerSettingsOpen(open);
             }}
+            playerChromeHiddenOverride={index === activeIndex && playerChromeHidden}
+            onPlayerChromeHiddenChange={hidden => {
+              if (index === activeIndex) setPlayerChromeHidden(hidden);
+            }}
+            onPlayerChromeReveal={() => {
+              if (index === activeIndex) schedulePlayerChromeHide();
+            }}
             onExitFullscreen={() => {
               if (index === activeIndex) onBack?.();
             }}
@@ -4940,39 +5201,51 @@ function ReelsScreen({ courseId, course, initialIndex, initialTime, onBack, onRe
         getItemLayout={(_, i) => ({ length: listHeight, offset: listHeight * i, index: i })}
       />
 
-      <SafeAreaView style={s.webPlayerTopBar} pointerEvents="box-none">
-        <TouchableOpacity
-          onPress={onBack}
-          style={s.webPlayerTopBtn}
-          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-          accessibilityRole="button"
-          accessibilityLabel="Back"
+      {renderWebPlayerChrome && (
+      <Animated.View
+        style={[s.webPlayerTopBar, webPlayerChromeAnimatedStyle]}
+        pointerEvents={playerChromeHidden ? "none" : "box-none"}
+        importantForAccessibility={playerChromeHidden ? "no-hide-descendants" : "auto"}
+      >
+        <SafeAreaView style={s.webPlayerTopSafeArea} pointerEvents="box-none">
+          <TouchableOpacity
+            onPress={onBack}
+            style={s.webPlayerTopBtn}
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            accessibilityRole="button"
+            accessibilityLabel="Back"
+          >
+            <Ionicons name="arrow-back" size={22} color={C.primary} />
+          </TouchableOpacity>
+          <Text style={s.webPlayerLectureLabel} numberOfLines={1}>{activeLessonLabel}</Text>
+          <View style={{ flex: 1 }} />
+          <TouchableOpacity
+            onPress={() => setShowNotes(true)}
+            style={s.webPlayerTopBtn}
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            accessibilityRole="button"
+            accessibilityLabel="Open lecture notes and prompts"
+          >
+            <Ionicons name="document-text-outline" size={21} color={C.primary} />
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={reportActiveLesson}
+            style={s.webPlayerTopBtn}
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            accessibilityRole="button"
+            accessibilityLabel="Report a problem with this lecture"
+          >
+            <Ionicons name="flag-outline" size={21} color={C.primary} />
+          </TouchableOpacity>
+        </SafeAreaView>
+      </Animated.View>
+      )}
+      {!playerSettingsOpen && renderWebPlayerChrome && (
+        <Animated.View
+          style={[s.webPlayerSideRail, webPlayerChromeAnimatedStyle]}
+          pointerEvents={playerChromeHidden ? "none" : "box-none"}
+          importantForAccessibility={playerChromeHidden ? "no-hide-descendants" : "auto"}
         >
-          <Ionicons name="arrow-back" size={22} color={C.primary} />
-        </TouchableOpacity>
-        <Text style={s.webPlayerLectureLabel} numberOfLines={1}>{activeLessonLabel}</Text>
-        <View style={{ flex: 1 }} />
-        <TouchableOpacity
-          onPress={() => setShowNotes(true)}
-          style={s.webPlayerTopBtn}
-          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-          accessibilityRole="button"
-          accessibilityLabel="Open lecture notes and prompts"
-        >
-          <Ionicons name="document-text-outline" size={21} color={C.primary} />
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={reportActiveLesson}
-          style={s.webPlayerTopBtn}
-          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-          accessibilityRole="button"
-          accessibilityLabel="Report a problem with this lecture"
-        >
-          <Ionicons name="flag-outline" size={21} color={C.primary} />
-        </TouchableOpacity>
-      </SafeAreaView>
-      {!playerSettingsOpen && (
-        <View style={s.webPlayerSideRail} pointerEvents="box-none">
           <TouchableOpacity onPress={() => setShowCourseAi(true)} style={s.webPlayerRailBtn} accessibilityRole="button" accessibilityLabel="Ask Course AI">
             <Ionicons name="sparkles" size={20} color="#fff" />
             <Text style={s.webPlayerRailText}>AI chat</Text>
@@ -5004,13 +5277,13 @@ function ReelsScreen({ courseId, course, initialIndex, initialTime, onBack, onRe
             <Ionicons name="share-social-outline" size={21} color="#fff" />
             <Text style={s.webPlayerRailText}>Share</Text>
           </TouchableOpacity>
-        </View>
+        </Animated.View>
       )}
-      {!playerSettingsOpen && (
-        <View style={s.webPlayerMeta} pointerEvents="none">
+      {!playerSettingsOpen && renderWebPlayerChrome && (
+        <Animated.View style={[s.webPlayerMeta, webPlayerChromeAnimatedStyle]} pointerEvents="none">
           <Text style={s.webPlayerTitle} numberOfLines={1}>{activeTitle || "Lesson"}</Text>
           {!!activeSummary && <Text style={s.webPlayerDescription} numberOfLines={2}>{activeLessonLabel} - {activeSummary}</Text>}
-        </View>
+        </Animated.View>
       )}
 
       <Modal visible={showDescription} transparent animationType="slide" onRequestClose={() => setShowDescription(false)}>
@@ -7194,6 +7467,10 @@ function WishlistScreen({ wishlist, onToggleWishlist, onSelect, onBack, user, on
       })
       .finally(() => setLoading(false));
   }, [wishlist.join("|")]);
+  const removeFromWishlist = useCallback((courseId) => {
+    setCourses(prev => prev.filter(course => course._id !== courseId));
+    onToggleWishlist?.(courseId);
+  }, [onToggleWishlist]);
 
   return (
     <View style={{ flex: 1, backgroundColor: C.white }}>
@@ -7234,35 +7511,38 @@ function WishlistScreen({ wishlist, onToggleWishlist, onSelect, onBack, user, on
           keyboardShouldPersistTaps="handled"
           scrollEventThrottle={16}
           renderItem={({ item }) => (
-            <TouchableOpacity
-              style={[s.courseListCard, { flex: 1 }]}
-              onPress={() => {
-                if (!hasAccess) { setShowUpgrade(true); return; }
-                onSelect(item);
-              }}
-              accessibilityRole="button"
-              accessibilityLabel={`${item.title}. ${item.videos?.length ?? 0} lessons`}
-              accessibilityHint={hasAccess ? "Opens the course" : "Subscription required"}
-            >
-              <View style={{ flex: 1 }}>
-                <View style={[s.courseListThumb, { backgroundColor: C.primaryLight, flex: 1 }]}>
-                  <Text style={[s.courseListThumbText, { color: C.primary }]}>{item.title?.[0]?.toUpperCase()}</Text>
+            <View style={{ flex: 1, position: "relative" }}>
+              <TouchableOpacity
+                style={[s.courseListCard, { flex: 1 }]}
+                onPress={() => {
+                  if (!hasAccess) { setShowUpgrade(true); return; }
+                  onSelect(item);
+                }}
+                accessibilityRole="button"
+                accessibilityLabel={`${item.title}. ${item.videos?.length ?? 0} lessons`}
+                accessibilityHint={hasAccess ? "Opens the course" : "Subscription required"}
+              >
+                <View style={{ flex: 1 }}>
+                  <View style={[s.courseListThumb, { backgroundColor: C.primaryLight, flex: 1 }]}>
+                    <Text style={[s.courseListThumbText, { color: C.primary }]}>{item.title?.[0]?.toUpperCase()}</Text>
+                  </View>
+                  <CourseThumbnailImage course={item} />
+                  <View style={{ position: "absolute", bottom: 0, left: 0, right: 0, backgroundColor: "rgba(0,0,0,0.6)", padding: 10 }}>
+                    <Text style={{ color: "#fff", fontWeight: "700", fontSize: 14, lineHeight: 19 }} numberOfLines={2}>{item.title}</Text>
+                    <Text style={{ color: "#F4E7CB", fontSize: 12, marginTop: 2 }}>{item.videos?.length ?? 0} video{item.videos?.length !== 1 ? "s" : ""}</Text>
+                  </View>
                 </View>
-                <CourseThumbnailImage course={item} />
-                <View style={{ position: "absolute", bottom: 0, left: 0, right: 0, backgroundColor: "rgba(0,0,0,0.6)", padding: 10 }}>
-                  <Text style={{ color: "#fff", fontWeight: "700", fontSize: 14, lineHeight: 19 }} numberOfLines={2}>{item.title}</Text>
-                  <Text style={{ color: "#F4E7CB", fontSize: 12, marginTop: 2 }}>{item.videos?.length ?? 0} video{item.videos?.length !== 1 ? "s" : ""}</Text>
-                </View>
-                <TouchableOpacity
-                  style={s.wishlistBtn}
-                  onPress={event => { event.stopPropagation?.(); onToggleWishlist(item._id); }}
-                  accessibilityRole="button"
-                  accessibilityLabel={`Remove ${item.title} from wishlist`}
-                >
-                  <Ionicons name="heart" size={14} color={C.primary} />
-                </TouchableOpacity>
-              </View>
-            </TouchableOpacity>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={s.wishlistBtn}
+                onPress={() => removeFromWishlist(item._id)}
+                hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
+                accessibilityRole="button"
+                accessibilityLabel={`Remove ${item.title} from wishlist`}
+              >
+                <Ionicons name="heart" size={14} color={C.primary} />
+              </TouchableOpacity>
+            </View>
           )}
         />
       )}
@@ -7497,7 +7777,7 @@ function InfoPageScreen({ page, onBack }) {
               </View>
             </View>
             <Text style={s.infoSectionBody}>{section.body}</Text>
-            {section.actionLabel && (
+            {Boolean(section.actionLabel) && (
               <TouchableOpacity
                 onPress={section.onPress}
                 style={s.infoActionButton}
@@ -7614,7 +7894,7 @@ function SubscriptionDetailsScreen({ user, onBack, session, appleSubscription, o
               </View>
             </View>
 
-            {isActive && subData?.subscriptionExpiry && (() => {
+            {isActive && Boolean(subData?.subscriptionExpiry) && (() => {
               const daysLeft = Math.ceil((new Date(subData.subscriptionExpiry) - new Date()) / (1000 * 60 * 60 * 24));
               return daysLeft > 0 ? (
                 <View style={[s.profileInfoRow, { marginTop: 4 }]}>
@@ -7754,7 +8034,7 @@ function SubscriptionDetailsScreen({ user, onBack, session, appleSubscription, o
                       <Text style={{ fontSize: 12, color: C.textSub, fontWeight: "600" }}>{formatDate(item.expiresAt)}</Text>
                     </View>
                   </View>
-                  {item.subscriptionId && (
+                  {Boolean(item.subscriptionId) && (
                     <Text style={{ fontSize: 11, color: C.textMuted, marginTop: 4 }}>ID: {item.subscriptionId}</Text>
                   )}
                 </View>
@@ -8081,6 +8361,7 @@ function ProfileScreen({ user, session, onLogout, onDeleteAccount, onGoToHome, o
       </View>
 
       <ScrollView
+        style={s.profileScroll}
         contentContainerStyle={{ padding: 16, paddingBottom: 160 }}
         refreshControl={onRefresh ? (
           <RefreshControl
@@ -10562,7 +10843,7 @@ export default function App() {
         wishlist={wishlist}
         onToggleWishlist={toggleWishlist}
         onSelect={c => openCourse(c)}
-        onBack={() => setMainScreen("profile")}
+        onBack={() => navigateRootTab("profile")}
         user={user}
         onGoToSubscription={() => setMainScreen("subscription")}
         onStartTrial={openMembershipAccess}
@@ -12341,6 +12622,8 @@ return StyleSheet.create({
     position: "absolute", top: 8, right: 8,
     width: MIN_TOUCH_TARGET, height: MIN_TOUCH_TARGET, alignItems: "center", justifyContent: "center",
     backgroundColor: "rgba(255,255,255,0.92)", borderRadius: MIN_TOUCH_TARGET / 2,
+    zIndex: 4,
+    elevation: 4,
   },
   badge: { borderRadius: 4, paddingHorizontal: 6, paddingVertical: 2, alignSelf: "flex-start" },
   badgeText: { fontSize: 10, fontWeight: "700" },
@@ -12623,6 +12906,10 @@ courseListCard: {
     overflow: "hidden",
   },
   profileAvatarLgText: { color: C.onPrimary, fontSize: 32, fontWeight: "900" },
+  profileScroll: {
+    flex: 1,
+    marginBottom: Platform.OS === "ios" ? 102 : 118,
+  },
   subBadge: { borderRadius: 20, paddingHorizontal: 14, paddingVertical: 5, marginTop: 8 },
   menuItem: {
     flexDirection: "row", alignItems: "center", gap: 14,
@@ -13120,9 +13407,9 @@ courseListCard: {
     borderWidth: 1, borderColor: "rgba(255,255,255,0.12)",
     zIndex: 20,
   },
-  tapLeft:   { position: "absolute", left: 0,   top: 0, bottom: 50, width: "38%", zIndex: 5 },
-  tapCenter: { position: "absolute", left: "38%", top: 0, bottom: 50, width: "24%", zIndex: 5 },
-  tapRight:  { position: "absolute", right: 0,  top: 0, bottom: 50, width: "38%", zIndex: 5 },
+  tapLeft:   { position: "absolute", left: 0,   top: 0, bottom: 50, width: "38%", zIndex: 30, elevation: 30 },
+  tapCenter: { position: "absolute", left: "38%", top: 0, bottom: 50, width: "24%", zIndex: 30, elevation: 30 },
+  tapRight:  { position: "absolute", right: 0,  top: 0, bottom: 50, width: "38%", zIndex: 30, elevation: 30 },
   holdSpeedIndicator: {
     position: "absolute",
     top: "46%",
@@ -13286,12 +13573,17 @@ courseListCard: {
   lecturePickerNumberActive: { color: C.primary },
   webPlayerTopBar: {
     position: "absolute", top: 0, left: 0, right: 0, zIndex: 24,
-    flexDirection: "row", alignItems: "center", gap: 10,
-    paddingHorizontal: 14, paddingVertical: 8,
-    paddingTop: 8 + ANDROID_STATUS_BAR_INSET,
     backgroundColor: "rgba(0,0,0,0.64)",
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: "rgba(224,172,69,0.55)",
+  },
+  webPlayerTopSafeArea: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    paddingTop: 8 + ANDROID_STATUS_BAR_INSET,
   },
   webPlayerTopBtn: {
     width: MIN_TOUCH_TARGET, height: MIN_TOUCH_TARGET,
