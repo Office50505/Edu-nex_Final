@@ -34,7 +34,7 @@ it.each(Object.entries(OFFER_MEDIA))('%s renders its video, falls back on media 
   expect(video.getAttribute('src')).toBe(media.videoUrl);
   fireEvent.error(video);
   expect(video.getAttribute('src')).toBe(DEFAULT_OFFER_VIDEO_URL);
-  fireEvent.click(screen.getByRole('button', { name: /Subscribe for ₹1/i }));
+  fireEvent.click(screen.getByRole('button', { name: /^Subscribe for ₹1 →$/i }));
   expect(screen.getByRole('dialog')).toBeTruthy();
   expect(screen.getByLabelText('Mobile number')).toBeTruthy();
   expect(screen.getByRole('heading', { name: 'Login / Sign up' })).toBeTruthy();
