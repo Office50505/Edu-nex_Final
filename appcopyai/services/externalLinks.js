@@ -17,6 +17,7 @@ const TRUSTED_RESOURCE_HOSTS = new Set([
   "www.skillomate.in",
 ]);
 const APPLE_SUBSCRIPTION_MANAGEMENT_URL = "https://apps.apple.com/account/subscriptions";
+const GOOGLE_PLAY_SUBSCRIPTION_MANAGEMENT_URL = "https://play.google.com/store/account/subscriptions";
 const SUPPORT_EMAIL_URL = "mailto:support@skillomate.in";
 
 function classifyExternalUrl(rawUrl) {
@@ -45,6 +46,9 @@ function classifyExternalUrl(rawUrl) {
   if (host === "apps.apple.com" && url.pathname.replace(/\/+$/, "") === "/account/subscriptions" && !url.search && !url.hash) {
     return { allowed: true, category: "account-management", url: APPLE_SUBSCRIPTION_MANAGEMENT_URL };
   }
+  if (host === "play.google.com" && url.pathname.replace(/\/+$/, "") === "/store/account/subscriptions" && !url.hash) {
+    return { allowed: true, category: "account-management", url: url.href };
+  }
   const isSkillomate = SKILLOMATE_HOSTS.has(host);
   if (isSkillomate && IOS_BLOCKED_PURCHASE_PATHS.some(pattern => pattern.test(hrefPath))) {
     return { allowed: false, category: "purchase", reason: "ios-external-purchase" };
@@ -72,4 +76,10 @@ function canOpenExternalUrl(rawUrl, platform = "ios") {
   return result;
 }
 
-module.exports = { APPLE_SUBSCRIPTION_MANAGEMENT_URL, SUPPORT_EMAIL_URL, canOpenExternalUrl, classifyExternalUrl };
+module.exports = {
+  APPLE_SUBSCRIPTION_MANAGEMENT_URL,
+  GOOGLE_PLAY_SUBSCRIPTION_MANAGEMENT_URL,
+  SUPPORT_EMAIL_URL,
+  canOpenExternalUrl,
+  classifyExternalUrl,
+};

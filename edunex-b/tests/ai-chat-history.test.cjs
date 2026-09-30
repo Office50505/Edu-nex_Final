@@ -35,13 +35,31 @@ function backend(options = {}) {
   const serviceModule = { exports: {} };
   vm.runInNewContext(fs.readFileSync(path.join(__dirname, '../services/aiTutorService.js'), 'utf8'), { ...sandbox, module: serviceModule });
   vm.runInNewContext(fs.readFileSync(path.join(__dirname, '../routes/ai.js'), 'utf8'), sandbox);
-  return { calls, async chat(body) {
+  async function rawChat(body) {
     let result;
+    let statusCode = 200;
     const consented = { aiConsentGranted: true, aiConsentPolicyVersion: '2026-09-25', aiConsentProviderVersion: 'fal-openrouter:google/gemini-2.5-flash', ...(options.user || {}) };
-    await routes['/chat']({ body, compatUser: consented, compatAuth: { userId: 'learner' }, ip: '127.0.0.1' }, { json: data => { result = data; }, status() { return this; } });
-    return result;
-  } };
+    const response = {
+      json(data) { result = data; return data; },
+      status(code) { statusCode = code; return this; },
+    };
+    await routes['/chat']({ body, compatUser: consented, compatAuth: { userId: 'learner' }, ip: '127.0.0.1' }, response);
+    return { result, statusCode };
+  }
+  return {
+    calls,
+    rawChat,
+    async chat(body) { return (await rawChat(body)).result; },
+  };
 }
+
+test('chat fails closed before contacting a third-party AI provider without current consent', async () => {
+  const api = backend({ user: { aiConsentGranted: false } });
+  const response = await api.rawChat({ message: 'Explain prompting' });
+  assert.equal(response.statusCode, 403);
+  assert.equal(response.result.code, 'AI_CONSENT_REQUIRED');
+  assert.equal(api.calls.length, 0);
+});
 
 test('chat forwards earlier turns between system context and the new question', async () => {
   const api = backend();

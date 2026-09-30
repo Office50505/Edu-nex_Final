@@ -16,6 +16,7 @@ const ContactEnquiry = require('../models/ContactEnquiry');
 const AnalyticsEvent = require('../models/AnalyticsEvent');
 const AppleSubscription = require('../models/AppleSubscription');
 const AppleTransaction = require('../models/AppleTransaction');
+const GooglePlaySubscription = require('../models/GooglePlaySubscription');
 const BillingCancellationJob = require('../models/BillingCancellationJob');
 const DownloadGrant = require('../models/DownloadGrant');
 const AiResponseReport = require('../models/AiResponseReport');
@@ -141,6 +142,7 @@ async function deleteUserAccount(userId, options = {}) {
       { $set: { retainedAccountHash: accountReferenceHash, accountDeletedAt: new Date() }, $unset: { user: 1 } }
     ),
     AppleSubscription.deleteMany({ user: user._id }),
+    GooglePlaySubscription.deleteMany({ user: user._id }),
     require('../models/LearningProgress').deleteMany({ userId: userIdString }),
     require('../models/AssessmentResult').deleteMany({ userId: userIdString }),
     require('../models/OnboardingSession').deleteMany({ _id: user._id }),
@@ -173,11 +175,12 @@ async function deleteUserAccount(userId, options = {}) {
     sessions: results[14].deletedCount || 0,
     appleTransactionsAnonymized: results[15].modifiedCount || 0,
     appleSubscriptions: results[16].deletedCount || 0,
-    learningProgress: results[17].deletedCount || 0,
-    assessments: results[18].deletedCount || 0,
-    onboardingSessions: results[19].deletedCount || 0,
-    downloadGrants: results[20].deletedCount || 0,
-    aiResponseReports: results[21].deletedCount || 0,
+    googlePlaySubscriptions: results[17].deletedCount || 0,
+    learningProgress: results[18].deletedCount || 0,
+    assessments: results[19].deletedCount || 0,
+    onboardingSessions: results[20].deletedCount || 0,
+    downloadGrants: results[21].deletedCount || 0,
+    aiResponseReports: results[22].deletedCount || 0,
     billingCancellationQueued,
   };
 }

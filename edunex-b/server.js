@@ -1280,6 +1280,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/onboarding', require('./routes/onboarding'));
 app.use('/api/ai', aiRoutes);
 app.use('/api', require('./routes/appleIap'));
+app.use('/api', require('./routes/googlePlayIap'));
 app.use('/api', paymentRoutes);
 app.use('/api', sessionRoutes);
 app.use('/api', require('./routes/notifications'));
