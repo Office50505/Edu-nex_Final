@@ -42,6 +42,21 @@ function orderTypeLabel(value) {
   return textValue(type.replaceAll("_", " "));
 }
 
+function gatewayLabel(value) {
+  const gateway = String(value || "").trim().toLowerCase();
+  if (gateway === "phonepe") return "PhonePe";
+  if (gateway === "razorpay") return "Razorpay";
+  return gateway ? gateway.replaceAll("_", " ") : "Gateway not returned";
+}
+
+function subscriptionDateLine(subscription) {
+  if (subscription?.cancelledAt) return `Cancelled ${formatDate(subscription.cancelledAt)}`;
+  if (subscription?.nextBillingAt) return `Next ${formatDate(subscription.nextBillingAt)}`;
+  if (subscription?.currentPeriodEnd) return `Period ends ${formatDate(subscription.currentPeriodEnd)}`;
+  if (subscription?.trialExpiresAt) return `Trial ends ${formatDate(subscription.trialExpiresAt)}`;
+  return "Billing date not returned";
+}
+
 function sumCounts(items) {
   return Array.isArray(items) ? items.reduce((sum, item) => sum + chartNumber(item.count), 0) : 0;
 }
@@ -102,6 +117,9 @@ function DashboardMetrics({ data }) {
     { label: "New learners", value: displayNumber(totals.newUsers), meta: "Selected range" },
     { label: "Subscribers", value: displayNumber(activeSubscriptionCount), meta: `${displayNumber(trialUserCount)} trials` },
     { label: "Trials", value: displayNumber(trialUserCount), meta: `${displayNumber(totals.noSubscriptionUsers)} no plan` },
+    { label: "AutoPay active", value: displayNumber(totals.autoPayActiveSubscriptions), meta: "Mandates ready to renew" },
+    { label: "Cancelled mandates", value: displayNumber(totals.cancelledMandates), meta: "Needs retention follow-up" },
+    { label: "Renewal pending", value: displayNumber(totals.renewalPendingSubscriptions), meta: "Trial elapsed, monthly charge not seen" },
     { label: "Revenue in range", value: money(totals.revenueInRange), meta: `${money(totals.totalRevenue)} lifetime` },
     { label: "Lifetime revenue", value: money(totals.totalRevenue), meta: "All paid orders" },
     { label: "Orders", value: displayNumber(totals.paidOrdersInRange), meta: `${displayNumber(totals.failedOrdersInRange)} failed, ${displayNumber(totals.pendingOrdersInRange)} pending` },
@@ -281,11 +299,13 @@ export function AdminDashboardPage() {
     ["Top Courses", (data?.topCourses || data?.topSellingCourses || []).slice(0, 8).map((course) => ({ title: textValue(course.title, course.courseTitle), meta: `${displayNumber(firstField(course, ["learnerCount", "totalStarted", "startedCount"]))} learners`, value: `${displayNumber(firstField(course, ["completedCount", "totalCompleted"]))} done` })), "No course analytics yet."],
     ["Subscription Mix", Object.entries(breakdowns.userSubscriptionStatus || breakdowns.subscriptionStatus || {}).slice(0, 10).map(([label, count]) => ({ title: textValue(label), meta: "Subscription status", value: displayNumber(count) })), "No subscription data."],
     ["Course Mix", Object.entries(breakdowns.courseStatus || {}).slice(0, 10).map(([label, count]) => ({ title: textValue(label), meta: "Course status", value: displayNumber(count) })), "No course status data."],
-    ["Recent Subscriptions", (data?.recentSubscriptions || []).slice(0, 8).map((subscription) => ({ title: textValue(subscription.user?.fullName, subscription.user?.email), meta: textValue(subscription.status, subscription.subscriptionType), value: money(subscription.amount) })), "No recent subscriptions."],
+    ["Recent Subscriptions", (data?.recentSubscriptions || []).slice(0, 8).map((subscription) => ({ title: textValue(subscription.user?.fullName, subscription.user?.email), meta: `${gatewayLabel(subscription.gateway)} · ${textValue(subscription.status, subscription.razorpayStatus, subscription.subscriptionType)} · ${subscriptionDateLine(subscription)}`, value: money(subscription.amount) })), "No recent subscriptions."],
   ];
   const actionInbox = [
     { title: `${displayNumber(totals.failedOrdersInRange)} failed payments`, meta: "Retry checkout follow-up or contact learners", tone: "bad", href: adminRoutes.payments },
     { title: `${displayNumber(totals.pendingOrdersInRange)} pending payments`, meta: "Reconcile pending payment state", tone: "warn", href: adminRoutes.orders },
+    { title: `${displayNumber(totals.renewalPendingSubscriptions)} renewal pending`, meta: "Trial elapsed but monthly subscription is not reflected yet", tone: chartNumber(totals.renewalPendingSubscriptions) ? "warn" : "good", href: adminRoutes.subscriptions },
+    { title: `${displayNumber(totals.cancelledMandates)} cancelled mandates`, meta: "Follow up before access or retention gets messy", tone: chartNumber(totals.cancelledMandates) ? "bad" : "good", href: adminRoutes.subscriptions },
     { title: `${displayNumber(totals.draftCourses)} draft courses`, meta: "Review content before publishing", tone: "warn", href: adminRoutes.courseReview },
     { title: `${displayNumber(data?.certificationSummary?.pendingProgress)} certificate blockers`, meta: "Completion criteria or learner eligibility pending", tone: "warn", href: adminRoutes.certifications },
     { title: data?.healthReport ? `${displayNumber(data.healthReport.summary?.attention)} system issues` : "Checking system issues", meta: data?.healthReport ? `${displayNumber(data.healthReport.summary?.unverified)} checks unverified` : "System health loads in the background", tone: data?.healthReport?.summary?.attention ? "bad" : "good", href: adminRoutes.health },

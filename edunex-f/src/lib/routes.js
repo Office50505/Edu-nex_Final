@@ -17,8 +17,9 @@ const cleanRoutes = {
   "login.html": "/login",
   "otp.html": "/otp",
   "offer.html": "/static-pages/skillomate-ai-influencer-course/",
-  ...Object.fromEntries(Array.from({ length: 9 }, (_, index) => {
-    const number = index + 2;
+  "offer2.html": "/static-pages/skillomate-ai-influencer-course2/",
+  ...Object.fromEntries(Array.from({ length: 8 }, (_, index) => {
+    const number = index + 3;
     return [`offer${number}.html`, `/offer${number}`];
   })),
   "payment.html": "/payment",
@@ -58,6 +59,7 @@ routeAliases["skillomate-1rs-for-24-hours-full-course-access"] = "offer.html";
 routeAliases["skillomate-1rs-offer-for-24-hours-full-course-access"] = "offer.html";
 routeAliases["static-pages/skillomate-1rs-for-24-hours-full-course-access"] = "offer.html";
 routeAliases["static-pages/skillomate-ai-influencer-course"] = "offer.html";
+routeAliases["static-pages/skillomate-ai-influencer-course2"] = "offer2.html";
 routeAliases["privacy-policy"] = "privacy.html";
 routeAliases["delete-account"] = "delete-account.html";
 routeAliases.support = "help.html";

@@ -4,7 +4,7 @@ import { adminRoutes, logout } from "./adminApi.js";
 
 const sections = [
   { label: 'Workspace', links: [['dashboard', 'Dashboard', adminRoutes.dashboard, 'home']] },
-  { label: 'Operate', links: [['users', 'Learners', adminRoutes.users, 'users'], ['testerUsers', 'Test accounts', adminRoutes.testerUsers, 'test'], ['testerAnalytics', 'Tester analytics', adminRoutes.testerAnalytics, 'trend'], ['courses', 'Courses', adminRoutes.courses, 'book'], ['subscriptions', 'Subscriptions', adminRoutes.subscriptions, 'loop'], ['payments', 'Payments', adminRoutes.payments, 'pay'], ['reports', 'Reports', adminRoutes.reports, 'flag']] },
+  { label: 'Operate', links: [['users', 'Learners', adminRoutes.users, 'users'], ['testerUsers', 'Test accounts', adminRoutes.testerUsers, 'test'], ['analytics', 'Analytics', adminRoutes.analytics, 'trend'], ['testerAnalytics', 'Tester analytics', adminRoutes.testerAnalytics, 'trend'], ['courses', 'Courses', adminRoutes.courses, 'book'], ['subscriptions', 'Subscriptions', adminRoutes.subscriptions, 'loop'], ['payments', 'Payments', adminRoutes.payments, 'pay'], ['reports', 'Reports', adminRoutes.reports, 'flag']] },
   { label: 'Create', links: [['upload', 'Create course', adminRoutes.upload, 'plus'], ['courseReview', 'Course review', adminRoutes.courseReview, 'check'], ['certifications', 'Certification', adminRoutes.certifications, 'award']] },
   { label: 'System', links: [['paymentAuditor', 'Payment auditor', adminRoutes.paymentAuditor, 'audit'], ['health', 'System health', adminRoutes.health, 'pulse'], ['auditLog', 'Audit log', adminRoutes.auditLog, 'log'], ['settings', 'Settings', adminRoutes.settings, 'gear'], ['team', 'Team access', adminRoutes.team, 'users']] },
 ];

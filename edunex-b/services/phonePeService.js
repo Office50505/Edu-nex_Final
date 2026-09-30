@@ -136,6 +136,7 @@ async function createTrialPaymentRequest(userId) {
       Accept: 'application/json',
       'Content-Type': 'application/json',
       Authorization: `O-Bearer ${accessToken}`,
+      'X-MERCHANT-ID': merchantId,
     },
     body: JSON.stringify(payload),
   });
@@ -161,6 +162,7 @@ async function verifySubscriptionOrderStatus(merchantTransactionId) {
     headers: {
       'Content-Type': 'application/json',
       Authorization: `O-Bearer ${accessToken}`,
+      'X-MERCHANT-ID': merchantId,
     },
   });
   const body = await readJson(response);
@@ -215,6 +217,7 @@ async function createMonthlyPaymentRequest(userId) {
     headers: {
       'Content-Type': 'application/json',
       Authorization: `O-Bearer ${accessToken}`,
+      'X-MERCHANT-ID': merchantId,
     },
     body: JSON.stringify(payload),
   });
@@ -239,6 +242,7 @@ async function verifyPaymentStatus(merchantTransactionId) {
     headers: {
       'Content-Type': 'application/json',
       Authorization: `O-Bearer ${accessToken}`,
+      'X-MERCHANT-ID': merchantId,
     },
   });
   const body = await readJson(response);

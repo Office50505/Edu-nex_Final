@@ -10,6 +10,7 @@ import "../../../admin/admin-theme.css";
 import "./admin-react.css";
 import { AdminCoursesPage } from "./AdminCoursesPage.jsx";
 import { AdminDashboardPage } from "./AdminDashboardPage.jsx";
+import { AdminAnalyticsPage } from "./AdminAnalyticsPage.jsx";
 import { AdminLoginPage } from "./AdminLoginPage.jsx";
 import {
   AdminAuditLogPage,
@@ -32,6 +33,7 @@ const adminPages = {
   login: AdminLoginPage,
   team: AdminTeamPage,
   dashboard: AdminDashboardPage,
+  analytics: AdminAnalyticsPage,
   users: AdminUsersPage,
   testerUsers: () => <AdminUsersPage audience="testers" />,
   testerAnalytics: AdminTesterAnalyticsPage,

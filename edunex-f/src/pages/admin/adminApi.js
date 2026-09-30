@@ -16,6 +16,7 @@ function adminPath(slug = "") {
 export const adminRoutes = {
   login: adminPath("login"),
   dashboard: adminPath("dashboard"),
+  analytics: adminPath("analytics"),
   users: adminPath("users"),
   testerUsers: adminPath("test-accounts"),
   testerAnalytics: adminPath("tester-analytics"),
@@ -39,6 +40,7 @@ export const adminRoutes = {
 const adminPageBySlug = {
   login: "login",
   dashboard: "dashboard",
+  analytics: "analytics",
   users: "users",
   "test-accounts": "testerUsers",
   "tester-analytics": "testerAnalytics",

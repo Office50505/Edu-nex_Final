@@ -21,10 +21,30 @@ async function expireOverdueSubscriptions() {
   try {
     const now = new Date();
     const overdue = await Subscription.find({
-      gateway: { $ne: 'razorpay' },
-      status: { $in: ['active', 'subscribed'] },
-      currentPeriodEnd: { $ne: null, $lte: now },
-    }).select('_id user currentPeriodEnd');
+      $or: [
+        {
+          gateway: { $ne: 'razorpay' },
+          status: { $in: ['active', 'subscribed'] },
+          currentPeriodEnd: { $ne: null, $lte: now },
+        },
+        {
+          status: { $in: ['trial', '1rs trial'] },
+          trialExpiresAt: { $ne: null, $lte: now },
+          $or: [
+            { cancelledAt: { $ne: null } },
+            { razorpayStatus: { $in: ['cancelled', 'expired', 'halted'] } },
+            {
+              gateway: { $ne: 'razorpay' },
+              $or: [
+                { currentPeriodEnd: null },
+                { currentPeriodEnd: { $exists: false } },
+                { currentPeriodEnd: { $lte: now } },
+              ],
+            },
+          ],
+        },
+      ],
+    }).select('_id user status gateway currentPeriodEnd trialExpiresAt razorpayStatus cancelledAt');
 
     if (!overdue.length) {
       console.log('[CRON] No overdue subscriptions found');
@@ -57,7 +77,13 @@ async function expireOverdueSubscriptions() {
         event: 'PAYMENT_FAILED',
         metadata: {
           source: 'cron_expiry',
-          reason: 'current_period_elapsed_without_renewal',
+          reason: ['trial', '1rs trial'].includes(sub.status)
+            ? 'trial_elapsed_without_paid_renewal'
+            : 'current_period_elapsed_without_renewal',
+          previousStatus: sub.status,
+          gateway: sub.gateway,
+          providerStatus: sub.razorpayStatus || null,
+          cancelledAt: sub.cancelledAt || null,
           expiredAt: new Date(),
         },
       }))

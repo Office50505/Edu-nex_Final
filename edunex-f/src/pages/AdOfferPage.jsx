@@ -484,13 +484,13 @@ export function AdOfferPage({ offerPage }) {
           <p className="ad-offer-kicker">Only for you</p>
           <h1 id="ad-offer-title">Skillomate <span>Subscription</span></h1>
           <p className="ad-offer-intro">Unlock complete access and start your learning journey today.</p>
-          <article className="ad-price-card">
+          <button type="button" className="ad-price-card" onClick={begin} disabled={busy} aria-label="Subscribe for ₹1 - limited time offer">
             <div className="ad-limited-badge"><span aria-hidden="true">◷</span> Limited time offer</div>
             <strong>₹1</strong>
             <h2>For 24 Hours</h2>
             <div className="ad-offer-rule" />
             <p>Then ₹499/month <span>·</span> Cancel anytime</p>
-          </article>
+          </button>
           <div className="ad-offer-brief">
             <span>What you get</span>
             <p>Full Skillomate access for 24 hours at ₹1, including practical AI, content, and digital skill lessons before your monthly plan begins.</p>

@@ -17,7 +17,21 @@ function envProvider() {
   return provider === 'phonepe' ? 'phonepe' : 'razorpay';
 }
 
+function localProviderOverride() {
+  if (process.env.NODE_ENV === 'production') return null;
+  const provider = String(process.env.PAYMENT_GATEWAY_LOCAL_PROVIDER || '').trim().toLowerCase();
+  return ['razorpay', 'phonepe'].includes(provider) ? provider : null;
+}
+
 async function activeSettings() {
+  const localProvider = localProviderOverride();
+  if (localProvider) {
+    return {
+      provider: localProvider,
+      mode: process.env.RAZORPAY_MODE || rzp.legacyMode(),
+    };
+  }
+
   const saved = await Settings.findById('gateway').lean()
     || await Settings.findById('razorpay').lean();
   return {

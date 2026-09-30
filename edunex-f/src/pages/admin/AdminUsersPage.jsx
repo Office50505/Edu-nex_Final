@@ -114,6 +114,47 @@ function formatMoney(paise) {
   return new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 2 }).format(Number(paise || 0) / 100);
 }
 
+function billing(user) {
+  return user.billingSummary || {};
+}
+
+function billingGatewayLabel(user) {
+  const gateway = String(billing(user).gateway || "").trim();
+  if (!gateway) return "Gateway not recorded";
+  if (gateway.toLowerCase() === "phonepe") return "PhonePe";
+  if (gateway.toLowerCase() === "razorpay") return "Razorpay";
+  return gateway.replaceAll("_", " ");
+}
+
+function billingDate(value) {
+  return value ? formatDateTime(value) : "Not recorded";
+}
+
+function mandateLabel(user) {
+  const summary = billing(user);
+  const status = String(summary.mandateStatus || "").toLowerCase();
+  if (status === "active") return "AutoPay active";
+  if (status === "cancelled") return "Mandate cancelled";
+  if (status === "expired") return "Mandate expired";
+  if (status === "halted") return "Mandate halted";
+  if (status === "pending") return "Mandate pending";
+  return "Mandate not started";
+}
+
+function mandateBadgeClass(user) {
+  const status = String(billing(user).mandateStatus || "").toLowerCase();
+  if (status === "active") return "good";
+  if (status === "cancelled" || status === "expired" || status === "halted") return "bad";
+  if (status === "pending") return "warn";
+  return "";
+}
+
+function billingOneLine(user) {
+  const summary = billing(user);
+  const nextDate = summary.cancelledAt ? `Cancelled ${formatDate(summary.cancelledAt)}` : summary.nextBillingAt ? `Next ${formatDate(summary.nextBillingAt)}` : "Next billing not recorded";
+  return `${billingGatewayLabel(user)} · ${mandateLabel(user)} · ${nextDate}`;
+}
+
 function purchaseTypeLabel(value) {
   return String(value || "purchase").replaceAll("_", " ").replace(/\b\w/g, (letter) => letter.toUpperCase());
 }
@@ -284,7 +325,7 @@ function LearnerDetailDrawer({ user, courses, tab, setTab, onClose, purchaseHist
       </div>
       {tab === "Overview" ? (
         <div className="crm-detail-grid">
-          <DetailStat label="User ID" value={user._id || "No ID"} /><DetailStat label="Presence" value={user.presence?.isOnline ? "Online now" : `Offline · ${formatDateTime(user.presence?.lastSeenAt || user.lastActiveAt)}`} /><DetailStat label="Lifecycle" value={lifecycleLabel(user)} /><DetailStat label="Subscription" value={user.subscriptionStatus || "none"} /><DetailStat label={accessEndLabel(user)} value={accessEndDate(user)} /><DetailStat label="Verified" value={isVerified(user) ? "Yes" : "Pending"} /><DetailStat label="Joined" value={formatDateTime(user.createdAt)} /><DetailStat label="Last active" value={formatDate(user.presence?.lastSeenAt || user.lastActiveAt || watch.lastWatchedAt)} /><DetailStat label="Last IP address" value={user.networkSummary?.ipAddress || "Not recorded"} /><DetailStat label="IP recorded" value={user.networkSummary?.recordedAt ? formatDateTime(user.networkSummary.recordedAt) : "Not recorded"} /><DetailStat label="Watch time" value={formatWatchDuration(watchMinutes(user))} /><DetailStat label="Average completion" value={`${formatNumber(progressAverage(user))}%`} />
+          <DetailStat label="User ID" value={user._id || "No ID"} /><DetailStat label="Presence" value={user.presence?.isOnline ? "Online now" : `Offline · ${formatDateTime(user.presence?.lastSeenAt || user.lastActiveAt)}`} /><DetailStat label="Lifecycle" value={lifecycleLabel(user)} /><DetailStat label="Subscription" value={user.subscriptionStatus || "none"} /><DetailStat label="Gateway" value={billingGatewayLabel(user)} /><DetailStat label="Mandate" value={mandateLabel(user)} /><DetailStat label="Provider status" value={billing(user).providerStatus || billing(user).billingPhase || "Not recorded"} /><DetailStat label="Subscription started" value={billingDate(billing(user).subscriptionStartedAt)} /><DetailStat label="Trial started" value={billingDate(billing(user).trialStartedAt)} /><DetailStat label="Trial ends" value={billingDate(billing(user).trialExpiresAt)} /><DetailStat label="Next billing" value={billingDate(billing(user).nextBillingAt)} /><DetailStat label="Cancelled at" value={billingDate(billing(user).cancelledAt)} /><DetailStat label={accessEndLabel(user)} value={accessEndDate(user)} /><DetailStat label="Verified" value={isVerified(user) ? "Yes" : "Pending"} /><DetailStat label="Joined" value={formatDateTime(user.createdAt)} /><DetailStat label="Last active" value={formatDate(user.presence?.lastSeenAt || user.lastActiveAt || watch.lastWatchedAt)} /><DetailStat label="Last IP address" value={user.networkSummary?.ipAddress || "Not recorded"} /><DetailStat label="IP recorded" value={user.networkSummary?.recordedAt ? formatDateTime(user.networkSummary.recordedAt) : "Not recorded"} /><DetailStat label="Watch time" value={formatWatchDuration(watchMinutes(user))} /><DetailStat label="Average completion" value={`${formatNumber(progressAverage(user))}%`} />
         </div>
       ) : null}
       {tab === "Registration" ? <RegistrationDetails user={user} /> : null}
@@ -760,7 +801,7 @@ export function AdminUsersPage({ audience = "learners" } = {}) {
       setMessage("No visible users to export.");
       return;
     }
-    const headers = ["User ID", "Name", "Email", "Mobile", "Lifecycle", "Subscription", "Mobile Verified", "Email Verified", "Gender", "Age", "Avatar", "Marketing Opt-in", "Registered At", "Last Login", "Courses", "Completed", "Average Progress", "Watch Minutes", "Watched Videos"];
+    const headers = ["User ID", "Name", "Email", "Mobile", "Lifecycle", "Subscription", "Gateway", "Mandate", "Provider Status", "Subscription Started", "Trial Started", "Trial Ends", "Next Billing", "Cancelled At", "Cancel Reason", "Mobile Verified", "Email Verified", "Gender", "Age", "Avatar", "Marketing Opt-in", "Registered At", "Last Login", "Courses", "Completed", "Average Progress", "Watch Minutes", "Watched Videos"];
     const csvRows = [
       headers.map(csvEscape).join(","),
       ...filteredUsers.map((user) => [
@@ -770,6 +811,15 @@ export function AdminUsersPage({ audience = "learners" } = {}) {
         user.mobileNumber || "",
         lifecycleLabel(user),
         user.subscriptionStatus || "none",
+        billingGatewayLabel(user),
+        mandateLabel(user),
+        billing(user).providerStatus || billing(user).billingPhase || "",
+        billingDate(billing(user).subscriptionStartedAt),
+        billingDate(billing(user).trialStartedAt),
+        billingDate(billing(user).trialExpiresAt),
+        billingDate(billing(user).nextBillingAt),
+        billingDate(billing(user).cancelledAt),
+        billing(user).cancelReason || "",
         isVerified(user) ? "yes" : "no",
         user.isEmailVerified ? "yes" : "no",
         formatGender(user.gender),
@@ -859,7 +909,7 @@ export function AdminUsersPage({ audience = "learners" } = {}) {
             <article className={`user-card${isOpen ? " is-open" : ""}`} key={user._id}>
               <div className="user-row">
                 <div className="crm-contact-cell"><div className="crm-avatar" aria-hidden="true">{initials(user)}</div><div><strong>{user.fullName || entityLabelTitle}</strong><span className={`presence-status ${user.presence?.isOnline ? "is-online" : "is-offline"}`}><i aria-hidden="true" />{presenceLabel(user)}</span><span>ID {user._id || "No ID"}</span></div></div>
-                <div><strong>{user.deletedAt ? "In Trash" : user.isActive === false ? "Banned account" : lifecycleLabel(user)}</strong><span><span className={`badge ${user.deletedAt || user.isActive === false ? "bad" : statusBadgeClass(statusValue)}`}>{user.deletedAt ? "trashed" : user.isActive === false ? "banned" : statusValue}</span></span><span>{user.deletedAt ? `Deleted ${formatDate(user.deletedAt)}` : isVerified(user) ? "Verified account" : "Verification pending"}</span></div>
+                <div><strong>{user.deletedAt ? "In Trash" : user.isActive === false ? "Banned account" : lifecycleLabel(user)}</strong><span><span className={`badge ${user.deletedAt || user.isActive === false ? "bad" : statusBadgeClass(statusValue)}`}>{user.deletedAt ? "trashed" : user.isActive === false ? "banned" : statusValue}</span> <span className={`badge ${mandateBadgeClass(user)}`}>{mandateLabel(user)}</span></span><span>{user.deletedAt ? `Deleted ${formatDate(user.deletedAt)}` : billingOneLine(user)}</span></div>
                 <div><strong>{formatMobile(user.mobileNumber)}</strong><span>{user.email || "No email"}</span></div>
                 <div className="crm-engagement-cell"><strong>{engagementLabel(user)}</strong><div className="mini-stats"><span className="pill">{formatNumber(summaryData.totalCourses)} courses</span><span className="pill">{formatNumber(summaryData.completedCourses)} done</span><span className="pill">{formatWatchDuration(watchMinutes(user))}</span></div></div>
                 <div className="crm-engagement-cell"><strong>{formatNumber(average)}% completion</strong><div className="progress-meter" aria-hidden="true"><div className="progress-fill" style={{ width: `${average}%` }} /></div><span>Joined {formatDateTime(user.createdAt)} · Last {formatDate(user.lastActiveAt || watch.lastWatchedAt)}</span></div>
@@ -868,11 +918,11 @@ export function AdminUsersPage({ audience = "learners" } = {}) {
               {isOpen ? (
                 <div className="progress-panel">
                   <div className="crm-detail-grid">
-                    <DetailStat label="Gender" value={formatGender(user.gender)} /><DetailStat label="Age" value={formatAge(user.age)} /><DetailStat label="Courses started" value={formatNumber(summaryData.totalCourses)} /><DetailStat label="Completed courses" value={formatNumber(summaryData.completedCourses)} /><DetailStat label="Average progress" value={`${formatNumber(summaryData.averageProgress)}%`} /><DetailStat label="Watch time" value={formatWatchDuration(watchMinutes(user))} /><DetailStat label="Watched videos" value={formatNumber(watch.watchedVideos)} /><DetailStat label="Last watched" value={formatDate(watch.lastWatchedAt)} /><DetailStat label="Last login" value={formatDateTime(user.lastLoginAt)} /><DetailStat label="Last IP address" value={user.networkSummary?.ipAddress || "Not recorded"} /><DetailStat label="IP recorded" value={user.networkSummary?.recordedAt ? formatDateTime(user.networkSummary.recordedAt) : "Not recorded"} /><DetailStat label="Login platform" value={user.networkSummary?.platform || "Not recorded"} /><DetailStat label="Login count" value={formatNumber(user.loginCount)} /><DetailStat label={accessEndLabel(user)} value={accessEndDate(user)} /><DetailStat label="User ID" value={user._id || "No ID"} />
+                    <DetailStat label="Gender" value={formatGender(user.gender)} /><DetailStat label="Age" value={formatAge(user.age)} /><DetailStat label="Gateway" value={billingGatewayLabel(user)} /><DetailStat label="Mandate" value={mandateLabel(user)} /><DetailStat label="Subscription started" value={billingDate(billing(user).subscriptionStartedAt)} /><DetailStat label="Next billing" value={billingDate(billing(user).nextBillingAt)} /><DetailStat label="Cancelled at" value={billingDate(billing(user).cancelledAt)} /><DetailStat label="Provider status" value={billing(user).providerStatus || billing(user).billingPhase || "Not recorded"} /><DetailStat label="Courses started" value={formatNumber(summaryData.totalCourses)} /><DetailStat label="Completed courses" value={formatNumber(summaryData.completedCourses)} /><DetailStat label="Average progress" value={`${formatNumber(summaryData.averageProgress)}%`} /><DetailStat label="Watch time" value={formatWatchDuration(watchMinutes(user))} /><DetailStat label="Watched videos" value={formatNumber(watch.watchedVideos)} /><DetailStat label="Last watched" value={formatDate(watch.lastWatchedAt)} /><DetailStat label="Last login" value={formatDateTime(user.lastLoginAt)} /><DetailStat label="Last IP address" value={user.networkSummary?.ipAddress || "Not recorded"} /><DetailStat label="IP recorded" value={user.networkSummary?.recordedAt ? formatDateTime(user.networkSummary.recordedAt) : "Not recorded"} /><DetailStat label="Login platform" value={user.networkSummary?.platform || "Not recorded"} /><DetailStat label="Login count" value={formatNumber(user.loginCount)} /><DetailStat label={accessEndLabel(user)} value={accessEndDate(user)} /><DetailStat label="User ID" value={user._id || "No ID"} />
                   </div>
                   <RegistrationDetails user={user} />
                   {user.banReason ? <div className="admin-alert bad"><strong>Ban reason</strong><span>{user.banReason}</span></div> : null}
-                  {!user.deletedAt ? <div className="user-management-actions"><div><strong>Subscription</strong><span>{user.subscriptionStatus || "none"} · {accessEndLabel(user)}: {accessEndDate(user)}</span></div><AdminWrite><button className="action-button primary" disabled={Boolean(updatingId)} onClick={() => openSubscriptionDialog(user)}>Update subscription</button></AdminWrite></div> : null}
+                  {!user.deletedAt ? <div className="user-management-actions"><div><strong>Subscription</strong><span>{user.subscriptionStatus || "none"} · {billingOneLine(user)}</span></div><AdminWrite><button className="action-button primary" disabled={Boolean(updatingId)} onClick={() => openSubscriptionDialog(user)}>Update subscription</button></AdminWrite></div> : null}
                   <div className="user-management-actions">
                     <div><strong>Purchased courses</strong><span>{formatNumber(user.purchasedCourses?.length || 0)} courses owned. Course changes are recorded in the audit history.</span></div>
                     {user.deletedAt ? <><AdminWrite><button className="action-button primary" type="button" disabled={Boolean(updatingId) || Boolean(deletingId)} onClick={() => restoreUser(user)}>Restore user</button></AdminWrite><AdminWrite><button className="action-button danger" type="button" disabled={Boolean(deletingId) || Boolean(updatingId)} onClick={() => deletePermanently(user)}>{deletingId === user._id ? "Deleting…" : "Delete permanently"}</button></AdminWrite></> : <><AdminWrite><button className="action-button primary" type="button" disabled={Boolean(updatingId)} onClick={() => openCourseDialog(user, "grant")}>Add purchased course</button></AdminWrite><AdminWrite><button className="action-button danger" type="button" disabled={Boolean(updatingId)} onClick={() => openCourseDialog(user, "revoke")}>Remove course</button></AdminWrite><AdminWrite><button className="action-button danger" type="button" disabled={Boolean(deletingId) || Boolean(updatingId)} onClick={() => moveToTrash(user)}>{deletingId === user._id ? "Moving…" : "Move to Trash"}</button></AdminWrite></>}

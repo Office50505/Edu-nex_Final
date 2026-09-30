@@ -157,6 +157,7 @@ const User = require('./models/User');
 const Category = require('./models/Category');
 const Course = require('./models/Course');
 const Subscription = require('./models/Subscription');
+const RazorpayBilling = require('./models/RazorpayBilling');
 const Order = require('./models/Order');
 const Progress = require('./models/Progress');
 const CourseProgress = require('./models/CourseProgress');
@@ -175,6 +176,7 @@ const AdminUserAction = require('./models/AdminUserAction');
 const Session = require('./models/Session');
 const { presenceFromPing } = require('./services/userPresence');
 const { saveThumbnailUpload } = require('./services/thumbnailStorage');
+const { getClarityDashboardInsights } = require('./services/clarityInsights');
 
 // Import routes
 const authRoutes = require('./routes/auth');
@@ -1466,6 +1468,9 @@ app.get('/api/admin/analytics', protectAdmin, async (req, res) => {
       cancelledUsers,
       expiredUsers,
       pausedSubscriptions,
+      autoPayActiveSubscriptions,
+      cancelledMandates,
+      renewalPendingSubscriptions,
       usersWithoutSubscriptionDoc,
       newUsers,
       newSubscriptions,
@@ -1539,6 +1544,31 @@ app.get('/api/admin/analytics', protectAdmin, async (req, res) => {
       User.countDocuments({ ...learnerFilter, subscriptionStatus: 'cancelled' }),
       User.countDocuments({ ...learnerFilter, subscriptionStatus: 'expired' }),
       Subscription.countDocuments({ ...testerUserExclusion, status: 'paused' }),
+      Subscription.countDocuments({
+        ...testerUserExclusion,
+        cancelledAt: null,
+        $or: [
+          { phonePeMandateId: { $nin: [null, ''] } },
+          { razorpaySubscriptionId: { $nin: [null, ''] }, razorpayStatus: { $nin: ['cancelled', 'expired', 'halted', 'paused'] } },
+        ],
+      }),
+      Subscription.countDocuments({
+        ...testerUserExclusion,
+        $or: [
+          { cancelledAt: { $ne: null } },
+          { status: 'cancelled' },
+          { razorpayStatus: 'cancelled' },
+        ],
+      }),
+      Subscription.countDocuments({
+        ...testerUserExclusion,
+        status: { $in: trialStatuses },
+        trialExpiresAt: { $lte: new Date() },
+        $or: [
+          { currentPeriodEnd: null },
+          { currentPeriodEnd: { $exists: false } },
+        ],
+      }),
       User.countDocuments({
         ...learnerFilter,
         $or: [
@@ -2199,7 +2229,7 @@ app.get('/api/admin/analytics', protectAdmin, async (req, res) => {
         .sort({ createdAt: -1 })
         .limit(8)
         .populate('user', 'fullName email mobileNumber subscriptionStatus')
-        .select('user status subscriptionType amount trialStartedAt trialExpiresAt currentPeriodEnd nextBillingAt createdAt'),
+        .select('user gateway status subscriptionType amount trialStartedAt trialExpiresAt currentPeriodStart currentPeriodEnd nextBillingAt cancelledAt cancelReason razorpaySubscriptionId razorpayStatus phonePeSubscriptionId phonePeMandateId createdAt'),
       User.find(learnerFilter)
         .sort({ createdAt: -1 })
         .limit(8)
@@ -2316,6 +2346,10 @@ app.get('/api/admin/analytics', protectAdmin, async (req, res) => {
     const orderStatusCounts = groupCount(orderStatusBreakdown, '_id');
     const instrumentCounts = groupCount(paymentInstrumentBreakdown, '_id');
     const courseStatusCounts = groupCount(courseStatusRows, '_id');
+    const clarityInsights = await getClarityDashboardInsights().catch((error) => ({
+      configured: Boolean(process.env.CLARITY_API_TOKEN || process.env.CLARITY_DATA_EXPORT_TOKEN),
+      error: error.message,
+    }));
     const ageBucketLabels = {
       5: '5-12',
       13: '13-17',
@@ -2355,6 +2389,9 @@ app.get('/api/admin/analytics', protectAdmin, async (req, res) => {
         cancelledUsers,
         expiredUsers,
         pausedSubscriptions,
+        autoPayActiveSubscriptions,
+        cancelledMandates,
+        renewalPendingSubscriptions,
         usersWithoutSubscriptionDoc,
         revenueInRange: rangeRevenue.total || 0,
         averageOrderValue: Math.round(rangeRevenue.average || 0),
@@ -2416,6 +2453,7 @@ app.get('/api/admin/analytics', protectAdmin, async (req, res) => {
       recentEvents,
       recentContactEnquiries,
       videoDownloads: videoDownloadRows,
+      clarity: clarityInsights,
       topSellingCourses: topCourseProgressRows,
       topCourses,
     });
@@ -2864,6 +2902,80 @@ app.get('/api/admin/user-management', protectAdmin, async (req, res) => {
     ]);
 
     const userIds = new Set(users.map((user) => String(user._id)));
+    const userObjectIds = users.map((user) => user._id);
+    const [subscriptionRows, razorpayBillingRows] = await Promise.all([
+      Subscription.find({ user: { $in: userObjectIds } })
+        .sort({ createdAt: -1 })
+        .select('user gateway status subscriptionType amount trialStartedAt trialExpiresAt trialConverted currentPeriodStart currentPeriodEnd nextBillingAt cancelledAt cancelReason razorpaySubscriptionId razorpayStatus phonePeSubscriptionId phonePeMandateId phonePeAuthRequestId createdAt updatedAt')
+        .lean(),
+      RazorpayBilling.find({ _id: { $in: userObjectIds } })
+        .select('_id mode phase subscriptionId paymentType trialAmount monthlyAmount annualAmount recurringAmount planId trialEnd trialAccessEnd createdAt updatedAt')
+        .lean(),
+    ]);
+    const subscriptionByUser = subscriptionRows.reduce((acc, row) => {
+      const key = String(row.user);
+      if (!acc[key]) acc[key] = row;
+      return acc;
+    }, {});
+    const razorpayBillingByUser = razorpayBillingRows.reduce((acc, row) => {
+      acc[String(row._id)] = row;
+      return acc;
+    }, {});
+    const buildBillingSummary = (user) => {
+      const subscription = subscriptionByUser[String(user._id)] || null;
+      const razorpayBilling = razorpayBillingByUser[String(user._id)] || null;
+      const gateway = subscription?.gateway || (razorpayBilling?.subscriptionId ? 'razorpay' : null);
+      const providerStatus = subscription?.razorpayStatus || subscription?.status || razorpayBilling?.phase || null;
+      const providerStatusText = String(providerStatus || '').toLowerCase();
+      const hasRazorpayMandate = Boolean(subscription?.razorpaySubscriptionId || razorpayBilling?.subscriptionId);
+      const hasPhonePeMandate = Boolean(subscription?.phonePeMandateId || subscription?.phonePeSubscriptionId);
+      const isCancelled = Boolean(subscription?.cancelledAt)
+        || ['cancelled', 'canceled', 'expired', 'halted'].includes(providerStatusText)
+        || razorpayBilling?.phase === 'closed';
+      const autoRenewEnabled = !isCancelled && (
+        (gateway === 'phonepe' && hasPhonePeMandate)
+        || (gateway === 'razorpay' && hasRazorpayMandate && (
+          ['active', 'authenticated', 'ready'].includes(providerStatusText)
+          || ['ready'].includes(String(razorpayBilling?.phase || '').toLowerCase())
+        ))
+      );
+      const terminalMandateStatus = ['expired', 'halted'].includes(providerStatusText)
+        ? providerStatusText
+        : 'cancelled';
+      const mandateStatus = isCancelled
+        ? terminalMandateStatus
+        : autoRenewEnabled
+          ? 'active'
+          : (hasPhonePeMandate || hasRazorpayMandate)
+            ? 'pending'
+            : 'not_started';
+
+      return {
+        gateway,
+        providerStatus,
+        subscriptionStatus: subscription?.status || user.subscriptionStatus || null,
+        subscriptionType: subscription?.subscriptionType || razorpayBilling?.paymentType || null,
+        amount: subscription?.amount || razorpayBilling?.recurringAmount || razorpayBilling?.monthlyAmount || null,
+        autoRenewEnabled,
+        mandateStatus,
+        subscriptionStartedAt: subscription?.currentPeriodStart || subscription?.trialStartedAt || subscription?.createdAt || razorpayBilling?.createdAt || null,
+        trialStartedAt: subscription?.trialStartedAt || null,
+        trialExpiresAt: subscription?.trialExpiresAt || razorpayBilling?.trialEnd || user.subscriptionExpiry || null,
+        currentPeriodStart: subscription?.currentPeriodStart || null,
+        currentPeriodEnd: subscription?.currentPeriodEnd || null,
+        nextBillingAt: subscription?.nextBillingAt || subscription?.currentPeriodEnd || null,
+        cancelledAt: subscription?.cancelledAt || null,
+        cancelReason: subscription?.cancelReason || null,
+        razorpaySubscriptionId: subscription?.razorpaySubscriptionId || razorpayBilling?.subscriptionId || null,
+        phonePeSubscriptionId: subscription?.phonePeSubscriptionId || null,
+        phonePeMandateId: subscription?.phonePeMandateId || null,
+        phonePeAuthRequestId: subscription?.phonePeAuthRequestId || null,
+        billingPhase: razorpayBilling?.phase || null,
+        billingMode: razorpayBilling?.mode || null,
+        planId: razorpayBilling?.planId || null,
+        updatedAt: subscription?.updatedAt || razorpayBilling?.updatedAt || null,
+      };
+    };
     const usersByEmail = buildUniqueIdentityIndex(users, (user) => normalizeAdminIdentityEmail(user.email));
     const usersByMobile = buildUniqueIdentityIndex(users, (user) => normalizeAdminIdentityMobile(user.mobileNumber));
     const progressByUser = progressRows.reduce((acc, row) => {
@@ -2935,6 +3047,7 @@ app.get('/api/admin/user-management', protectAdmin, async (req, res) => {
         ...user,
         presence: presenceByUser[String(user._id)] || { isOnline: false, lastSeenAt: user.lastActiveAt || null },
         networkSummary: latestSessionByUser[String(user._id)] || null,
+        billingSummary: buildBillingSummary(user),
         progressCourses: userProgress,
         progressSummary: {
           totalCourses: progressCourseCount,
