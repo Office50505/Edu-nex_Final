@@ -473,7 +473,8 @@ const AI_FEATURE_ENABLED = true;
 
 const SPEEDS = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2];
 const HOLD_SPEED_RATE = 2;
-const HOLD_SPEED_DELAY_MS = 220;
+const HOLD_SPEED_DELAY_MS = 140;
+const HOLD_SPEED_SYNC_MS = 120;
 const PLAYER_CHROME_FADE_IN_MS = 170;
 const PLAYER_CHROME_FADE_OUT_MS = 260;
 const PLAYER_CHROME_AUTO_HIDE_MS = 2000;
@@ -2798,11 +2799,66 @@ function BottomNav({
   const [searchOpen, setSearchOpen] = useState(false);
   const [navSearchText, setNavSearchText] = useState("");
   const navSearchInputRef = useRef(null);
+  const bottomNavRef = useRef(null);
+  const keyboardLiftAnim = useRef(new Animated.Value(0)).current;
+  const animateKeyboardLift = useCallback((lift = 0, duration = 180) => {
+    Animated.timing(keyboardLiftAnim, {
+      toValue: -Math.max(0, lift),
+      duration: Math.max(120, Number(duration) || 180),
+      easing: Easing.out(Easing.cubic),
+      useNativeDriver: true,
+    }).start();
+  }, [keyboardLiftAnim]);
+  const updateKeyboardLift = useCallback(event => {
+    if (!searchOpen) {
+      animateKeyboardLift(0, event?.duration);
+      return;
+    }
+    const keyboardHeight = Number(event?.endCoordinates?.height) || 0;
+    const keyboardScreenY = Number(event?.endCoordinates?.screenY);
+    const keyboardTop = Number.isFinite(keyboardScreenY) && keyboardScreenY > 0
+      ? keyboardScreenY
+      : Dimensions.get("screen").height - keyboardHeight;
+    const gap = Platform.OS === "ios" ? 8 : 10;
+    const duration = event?.duration ?? (Platform.OS === "ios" ? 240 : 180);
+    requestAnimationFrame(() => {
+      const node = bottomNavRef.current;
+      if (!node?.measureInWindow) {
+        animateKeyboardLift(keyboardHeight + gap, duration);
+        return;
+      }
+      node.measureInWindow((x, y, width, height) => {
+        const navBottom = Number(y) + Number(height);
+        const lift = keyboardTop > 0
+          ? Math.max(0, navBottom + gap - keyboardTop)
+          : Math.max(0, keyboardHeight + gap);
+        animateKeyboardLift(lift, duration);
+      });
+    });
+  }, [animateKeyboardLift, searchOpen]);
   useEffect(() => {
     if (!searchOpen) return undefined;
     const timer = setTimeout(() => navSearchInputRef.current?.focus?.(), 120);
     return () => clearTimeout(timer);
   }, [searchOpen]);
+  useEffect(() => {
+    if (!searchOpen) {
+      animateKeyboardLift(0, 160);
+      return undefined;
+    }
+    const showEvent = Platform.OS === "ios" ? "keyboardWillShow" : "keyboardDidShow";
+    const hideEvent = Platform.OS === "ios" ? "keyboardWillHide" : "keyboardDidHide";
+    const showSub = Keyboard.addListener(showEvent, updateKeyboardLift);
+    const hideSub = Keyboard.addListener(hideEvent, event => animateKeyboardLift(0, event?.duration));
+    const currentKeyboard = Keyboard.metrics?.();
+    if (currentKeyboard?.height) {
+      updateKeyboardLift({ endCoordinates: currentKeyboard, duration: 160 });
+    }
+    return () => {
+      showSub.remove();
+      hideSub.remove();
+    };
+  }, [animateKeyboardLift, searchOpen, updateKeyboardLift]);
   const inactiveColor = forceDark ? "#AAA297" : C.slateGray;
   const normalizedSearch = navSearchText.trim().toLowerCase().replace(/%20/g, " ");
   const searchTerms = normalizedSearch.split(/\s+/).filter(Boolean);
@@ -2890,7 +2946,14 @@ function BottomNav({
     if (searchResults[0]) openSearchResult(searchResults[0]);
   };
   return (
-    <View style={[s.bottomNav, forceDark && { backgroundColor: "rgba(13,13,11,0.98)", borderTopColor: "#2E2C27" }]}>
+    <Animated.View
+      ref={bottomNavRef}
+      style={[
+        s.bottomNav,
+        { transform: [{ translateY: keyboardLiftAnim }] },
+        forceDark && { backgroundColor: "rgba(13,13,11,0.98)", borderTopColor: "#2E2C27" },
+      ]}
+    >
       {searchOpen ? (
         <View style={s.bottomNavSearchBar}>
           {normalizedSearch ? (
@@ -2977,7 +3040,7 @@ function BottomNav({
           </Text>
         </TouchableOpacity>
       ))}
-    </View>
+    </Animated.View>
   );
 }
 
@@ -3241,7 +3304,7 @@ function SwipeableRootTabsPager({ activeTab, onNavigate, renderTab }) {
 }
 
 // ── VideoItem ─────────────────────────────────────────────────────────────────
-function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdProp, isActive, height, onComplete, onProgress, onEnded, onSettingsOpenChange, onExitFullscreen, onPlayerChromeHiddenChange, onPlayerChromeReveal, playerChromeHiddenOverride = false, initialTime = 0, localPath, suspendSurface = false }) {
+function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdProp, isActive, height, onComplete, onProgress, onEnded, onSettingsOpenChange, onExitFullscreen, onPlayerChromeHiddenChange, onPlayerChromeReveal, onHoldSpeedChange, playerChromeHiddenOverride = false, initialTime = 0, localPath, suspendSurface = false }) {
   const [cloudLease, setCloudLease] = useState(null);
   const [cloudError, setCloudError] = useState('');
   const [cloudRetry, setCloudRetry] = useState(0);
@@ -3343,6 +3406,8 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
   const chromeAutoHideTimerRef = useRef(null);
   const playerChromeShownAtRef = useRef(Date.now());
   const playerChromeOpacityRef = useRef(new Animated.Value(1));
+  const onProgressRef = useRef(onProgress);
+  const onHoldSpeedChangeRef = useRef(onHoldSpeedChange);
   const qualityPreferenceRef = useRef(AUTO_QUALITY_LABEL);
   const playbackRateSyncTimerRef = useRef(null);
   const sendCmdRef = useRef(() => {});
@@ -3432,6 +3497,12 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
   useEffect(() => {
     onPlayerChromeHiddenChange?.(Boolean(playerChromeHidden));
   }, [onPlayerChromeHiddenChange, playerChromeHidden]);
+  useEffect(() => {
+    onProgressRef.current = onProgress;
+  }, [onProgress]);
+  useEffect(() => {
+    onHoldSpeedChangeRef.current = onHoldSpeedChange;
+  }, [onHoldSpeedChange]);
   useEffect(() => {
     playerChromeOpacity.stopAnimation();
     if (playerChromeHidden) {
@@ -3935,7 +4006,7 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
 
   useEffect(() => () => {
     const latest = latestProgressValueRef.current;
-    if (latest.duration > 0) onProgress?.(latest.currentTime, latest.duration);
+    if (latest.duration > 0) onProgressRef.current?.(latest.currentTime, latest.duration);
     const timer = tapInfoRef.current.timer;
     if (timer) clearTimeout(timer);
     const holdTimer = holdSpeedRef.current.timer;
@@ -3952,8 +4023,9 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
     if (nativeStartupRetryTimerRef.current) clearTimeout(nativeStartupRetryTimerRef.current);
     if (playbackRateSyncTimerRef.current) clearTimeout(playbackRateSyncTimerRef.current);
     if (chromeAutoHideTimerRef.current) clearTimeout(chromeAutoHideTimerRef.current);
+    onHoldSpeedChangeRef.current?.(false);
     clearAutoPlayTimers();
-  }, [clearAutoPlayTimers, onProgress]);
+  }, [clearAutoPlayTimers]);
 
   function revealPlayerChrome() {
     onPlayerChromeReveal?.();
@@ -3992,7 +4064,7 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
     if (!force && recentlyFlushed) return;
     lastProgressFlushRef.current = { time: ct, duration: dur, at: now };
     progressSentAtRef.current = now;
-    onProgress?.(ct, dur);
+    onProgressRef.current?.(ct, dur);
   }
 
   function markCompleteOnce() {
@@ -4213,12 +4285,14 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
   }
   function toggleMute() { sendCmd(isMuted ? "unMute" : "mute"); setIsMuted(m => !m); }
   function syncPlaybackRate(rate = playbackStateRef.current?.playbackRate || 1) {
-    const nextRate = Number.isFinite(Number(rate)) && Number(rate) > 0 ? Number(rate) : 1;
+    const requestedRate = holdSpeedRef.current.active ? HOLD_SPEED_RATE : rate;
+    const nextRate = Number.isFinite(Number(requestedRate)) && Number(requestedRate) > 0 ? Number(requestedRate) : 1;
     sendCmd("setPlaybackRate", [nextRate]);
     if (playbackRateSyncTimerRef.current) clearTimeout(playbackRateSyncTimerRef.current);
     playbackRateSyncTimerRef.current = setTimeout(() => {
       playbackRateSyncTimerRef.current = null;
-      sendCmdRef.current("setPlaybackRate", [nextRate]);
+      const effectiveRate = holdSpeedRef.current.active ? HOLD_SPEED_RATE : nextRate;
+      sendCmdRef.current("setPlaybackRate", [effectiveRate]);
     }, 450);
   }
   function restoreAudiblePlaybackAfterQualityChange() {
@@ -4266,12 +4340,14 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
     hold.rateTimer = setInterval(() => {
       if (!holdSpeedRef.current.active) return;
       sendCmdRef.current("setPlaybackRate", [HOLD_SPEED_RATE]);
-    }, 250);
+    }, HOLD_SPEED_SYNC_MS);
   }
   function beginHoldSpeed(side) {
     if (showSettings || isEnded || !showLiveSurface) return;
     const hold = holdSpeedRef.current;
     if (hold.timer) clearTimeout(hold.timer);
+    if (hold.rateTimer) clearInterval(hold.rateTimer);
+    onHoldSpeedChangeRef.current?.(true);
     hold.active = false;
     hold.side = side;
     hold.suppressNextPress = false;
@@ -4291,6 +4367,7 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
     hold.previousRate = 1;
     hold.suppressNextPress = shouldRestore;
     setHoldSpeedSide(null);
+    onHoldSpeedChangeRef.current?.(false);
     if (shouldRestore) {
       syncPlaybackRate(previousRate);
       setTimeout(() => { holdSpeedRef.current.suppressNextPress = false; }, 0);
@@ -4647,17 +4724,13 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
       ) : null}
       {showLiveSurface && !isEnded && (
         <>
-          <View
+          <Pressable
             style={s.tapLeft}
             accessible
             accessibilityRole="button"
             accessibilityLabel="Hold left side for 2x speed or double tap to rewind"
-            onStartShouldSetResponder={() => true}
-            onMoveShouldSetResponder={() => true}
-            onResponderTerminationRequest={() => false}
-            onResponderGrant={() => beginHoldSpeed("left")}
-            onResponderRelease={() => finishSidePress("left")}
-            onResponderTerminate={endHoldSpeed}
+            onPressIn={() => beginHoldSpeed("left")}
+            onPressOut={() => finishSidePress("left")}
           />
           <Pressable
             key={showPlayerChrome ? "center-tap-visible" : "center-tap-hidden"}
@@ -4669,17 +4742,13 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
             accessibilityRole={showPlayerChrome ? "button" : undefined}
             accessibilityLabel={showPlayerChrome ? (isPlaying || isBuffering ? "Pause video" : "Play video") : ""}
           />
-          <View
+          <Pressable
             style={s.tapRight}
             accessible
             accessibilityRole="button"
             accessibilityLabel="Hold right side for 2x speed or double tap to fast forward"
-            onStartShouldSetResponder={() => true}
-            onMoveShouldSetResponder={() => true}
-            onResponderTerminationRequest={() => false}
-            onResponderGrant={() => beginHoldSpeed("right")}
-            onResponderRelease={() => finishSidePress("right")}
-            onResponderTerminate={endHoldSpeed}
+            onPressIn={() => beginHoldSpeed("right")}
+            onPressOut={() => finishSidePress("right")}
           />
           {Boolean(holdSpeedSide) && (
             <View
@@ -4898,6 +4967,7 @@ function ReelsScreen({ courseId, course, initialIndex, initialTime, onBack, onRe
   const [showCourseAi, setShowCourseAi] = useState(false);
   const [playerSettingsOpen, setPlayerSettingsOpen] = useState(false);
   const [playerChromeHidden, setPlayerChromeHidden] = useState(false);
+  const [playerHoldSpeedActive, setPlayerHoldSpeedActive] = useState(false);
   const [courseAiInput, setCourseAiInput] = useState("");
   const [, refreshCourseAi] = useState(0);
   const playerChromeTimerRef = useRef(null);
@@ -4956,6 +5026,7 @@ function ReelsScreen({ courseId, course, initialIndex, initialTime, onBack, onRe
   const lectureTileWidth = Math.floor((lectureSheetWidth - 60) / 5);
   const lectureTileHeight = Math.max(40, Math.round(lectureTileWidth * 0.72));
   const videoUiOverlayOpen = showCourseAi || showDescription || showNotes || showLectures;
+  const reelScrollEnabled = videos.length > 1 && !playerHoldSpeedActive;
   const webPlayerChromeOpacity = webPlayerChromeOpacityRef.current;
   const webPlayerChromeAnimatedStyle = useMemo(() => ({
     opacity: webPlayerChromeOpacity,
@@ -5062,6 +5133,7 @@ function ReelsScreen({ courseId, course, initialIndex, initialTime, onBack, onRe
     setShowLectures(false);
     setPlayerSettingsOpen(false);
     setPlayerChromeHidden(false);
+    setPlayerHoldSpeedActive(false);
   }, [courseAiKey]);
 
   useEffect(() => {
@@ -5160,7 +5232,7 @@ function ReelsScreen({ courseId, course, initialIndex, initialTime, onBack, onRe
         initialScrollIndex={initialIndex ?? 0}
         snapToInterval={listHeight} snapToAlignment="start"
         decelerationRate="fast" disableIntervalMomentum
-        scrollEnabled={videos.length > 1}
+        scrollEnabled={reelScrollEnabled}
         initialNumToRender={1}
         maxToRenderPerBatch={2}
         windowSize={3}
@@ -5182,6 +5254,9 @@ function ReelsScreen({ courseId, course, initialIndex, initialTime, onBack, onRe
             }}
             onPlayerChromeReveal={() => {
               if (index === activeIndex) schedulePlayerChromeHide();
+            }}
+            onHoldSpeedChange={active => {
+              if (index === activeIndex) setPlayerHoldSpeedActive(active);
             }}
             onExitFullscreen={() => {
               if (index === activeIndex) onBack?.();
