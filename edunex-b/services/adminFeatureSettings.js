@@ -3,6 +3,7 @@ const AdminFeatureSettings = require('../models/AdminFeatureSettings');
 function normalize(row) {
   return {
     certificationEnabled: row?.certificationEnabled !== false,
+    progressBarEnabled: row?.progressBarEnabled !== false,
     updatedAt: row?.updatedAt || null,
     updatedBy: row?.updatedBy || null,
   };
@@ -15,9 +16,14 @@ async function getSettings() {
 
 async function saveSettings(input, admin) {
   const next = {
-    certificationEnabled: input?.certificationEnabled !== false,
     updatedBy: String(admin?.id || admin?.username || admin?.name || 'admin'),
   };
+  if (Object.prototype.hasOwnProperty.call(input || {}, 'certificationEnabled')) {
+    next.certificationEnabled = input.certificationEnabled !== false;
+  }
+  if (Object.prototype.hasOwnProperty.call(input || {}, 'progressBarEnabled')) {
+    next.progressBarEnabled = input.progressBarEnabled !== false;
+  }
   const row = await AdminFeatureSettings.findByIdAndUpdate(
     'features',
     { $set: next },
@@ -30,4 +36,8 @@ async function certificationIsEnabled() {
   return (await getSettings()).certificationEnabled;
 }
 
-module.exports = { certificationIsEnabled, getSettings, saveSettings };
+async function progressBarIsEnabled() {
+  return (await getSettings()).progressBarEnabled;
+}
+
+module.exports = { certificationIsEnabled, progressBarIsEnabled, getSettings, saveSettings };

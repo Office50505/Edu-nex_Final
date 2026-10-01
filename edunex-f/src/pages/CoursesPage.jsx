@@ -5,6 +5,18 @@ import { runLegacyPage } from "../legacyRuntime.js";
 import { usePageStyle } from "../hooks/usePageStyle.js";
 import { useEduNexRuntimeReady } from "../hooks/useEduNexRuntimeReady.js";
 import { courseEntryHref } from "../lib/courseNavigation.js";
+import { route } from "../lib/routes.js";
+
+function normalizeAccessPhase(data, localAccess = false) {
+  const status = String(data?.subscriptionDocStatus || data?.status || data?.subscriptionStatus || "").trim().toLowerCase();
+  const grace = Boolean(data?.grace || String(data?.entitlementState || "").toUpperCase() === "GRACE_PERIOD");
+  const paid = ["active", "subscribed"].includes(status) || grace;
+  const trialExpiry = data?.trialExpiresAt ? new Date(data.trialExpiresAt).getTime() : 0;
+  const activeTrial = ["trial", "1rs trial"].includes(status) && (!trialExpiry || trialExpiry > Date.now()) && !paid;
+  if (paid || (localAccess && !activeTrial)) return "full";
+  if (activeTrial) return "trial";
+  return localAccess ? "full" : "none";
+}
 
 function coursesArray(response) {
   if (Array.isArray(response)) return response;
@@ -105,6 +117,51 @@ function groupCourses(courses) {
   return Array.from(groups.entries());
 }
 
+const PLANNED_COURSES = [
+  "AI Film Making",
+  "AI Video Ads for Business",
+  "AI Photography & Product Shoots",
+  "AI Music & Songs",
+  "AI Cartoon & Animation",
+  "Create Your Own AI Bot",
+  "Build Websites & Apps with AI",
+  "AI Automation",
+  "How to Earn Money with AI",
+  "Faceless YouTube Channel with AI",
+  "AI for Your Business",
+  "ChatGPT Masterclass",
+  "AI Voice & Dubbing",
+  "Top AI Tools Every Month",
+];
+
+function PreviewCourseCard({ title, subtitle, badge, image, variant, onOpen }) {
+  return (
+    <button
+      className={`course-card course-preview-card course-preview-card--${variant}`}
+      type="button"
+      onClick={onOpen}
+      aria-label={title}
+    >
+      <div className="course-thumb-wrap">
+        {image ? <img className="course-thumb" src={image} alt="" aria-hidden="true" /> : <div className="course-preview-fallback" aria-hidden="true" />}
+        <span className="course-cat-badge badge-agency">{badge}</span>
+        <span className="course-preview-lock">{variant === "locked" ? "Locked" : "Coming soon"}</span>
+      </div>
+      <div className="course-body">
+        <h3 className="course-title-main">{title}</h3>
+        <div className="course-author-line">{subtitle}</div>
+        <div className="course-stats">
+          <div className="stat-item"><i className="fas fa-clock" aria-hidden="true"></i> Self paced</div>
+          <div className="stat-item"><i className="fas fa-star star-icon" aria-hidden="true"></i> Skillomate</div>
+        </div>
+        <div className="course-card-actions">
+          <span className="btn-trial course-preview-cta">{variant === "locked" ? "Pay to unlock" : "Notify me"}</span>
+        </div>
+      </div>
+    </button>
+  );
+}
+
 function initialCourseFilters() {
   const params = new URLSearchParams(window.location.search);
   const search = params.get("search") || params.get("q") || "";
@@ -117,8 +174,11 @@ export function CoursesPage() {
   const [search, setSearch] = useState(initialFilters.search);
   const [suggestionsOpen, setSuggestionsOpen] = useState(false);
   const [hasAccess, setHasAccess] = useState(false);
+  const [accessPhase, setAccessPhase] = useState("none");
+  const [courseAccessIds, setCourseAccessIds] = useState(() => new Set());
   const [wishlist, setWishlist] = useState(() => localWishlist());
   const [state, setState] = useState("loading");
+  const [previewModal, setPreviewModal] = useState(null);
   const runtimeReady = useEduNexRuntimeReady();
 
   usePageStyle("react-page-style-courses", coursesPage.styles);
@@ -139,16 +199,24 @@ export function CoursesPage() {
     const localAccess = hasLocalCourseAccess();
     if (!window.EduNex?.getAccessToken?.()) {
       setHasAccess(localAccess);
+      setAccessPhase(localAccess ? "full" : "none");
+      setCourseAccessIds(new Set());
       return localAccess;
     }
     setHasAccess(localAccess);
     try {
       const data = await window.EduNex.authRequest("/api/payment/subscription-status");
-      const active = window.EduNex?.hasCourseAccess?.(data) || localAccess;
+      const purchasedIds = new Set((data?.courseIds || data?.courseEntitlements?.map((item) => item.courseId) || []).map(String));
+      const phase = normalizeAccessPhase(data, localAccess);
+      const active = phase === "full" || localAccess;
       setHasAccess(active);
+      setAccessPhase(phase);
+      setCourseAccessIds(purchasedIds);
       return active;
     } catch (_) {
       setHasAccess(localAccess);
+      setAccessPhase(localAccess ? "full" : "none");
+      setCourseAccessIds(new Set());
       return localAccess;
     }
   };
@@ -211,6 +279,7 @@ export function CoursesPage() {
     const query = search.trim().toLowerCase();
     return courses.filter((course) => !query || `${course.title} ${course.description} ${course.categoryName}`.toLowerCase().includes(query));
   }, [courses, search]);
+  const firstVisibleCourseId = filteredCourses[0]?.id || "";
 
   const toggleWishlist = async (courseId) => {
     if (!courseId) return;
@@ -235,9 +304,14 @@ export function CoursesPage() {
     } catch (_) {}
   };
 
+  const canOpenCourse = (course) => accessPhase === "full" || courseAccessIds.has(course.id) || (accessPhase === "trial" && course.id === firstVisibleCourseId);
+
   const openCourse = (course) => {
-    window.location.href = courseEntryHref(course, { hasAccess });
+    window.location.href = courseEntryHref(course, { hasAccess: canOpenCourse(course) });
   };
+
+  const groupedCourseRows = useMemo(() => groupCourses(filteredCourses), [filteredCourses]);
+  const previewImage = filteredCourses[0]?.image || "";
 
   const updateSearch = (value) => {
     setSearch(value);
@@ -250,6 +324,137 @@ export function CoursesPage() {
 
   return (
     <div className="react-page-root" data-page="courses.html">
+      <style>{`
+        @media (min-width: 901px) {
+          .react-page-root[data-page="courses.html"] .search-section .container,
+          .react-page-root[data-page="courses.html"] .curriculum-section .container,
+          .react-page-root[data-page="courses.html"] .path-section .container {
+            max-width: 1120px !important;
+            margin-inline: auto !important;
+          }
+          .react-page-root[data-page="courses.html"] .courses-grid {
+            display: grid !important;
+            grid-template-columns: repeat(3, 368px) !important;
+            justify-content: start !important;
+            align-items: stretch !important;
+            gap: 24px !important;
+          }
+          .react-page-root[data-page="courses.html"] .course-card {
+            width: 368px !important;
+            max-width: 368px !important;
+            min-height: 430px !important;
+          }
+          .react-page-root[data-page="courses.html"] .course-thumb-wrap {
+            aspect-ratio: 16 / 9 !important;
+          }
+        }
+        @media (min-width: 901px) and (max-width: 1280px) {
+          .react-page-root[data-page="courses.html"] .courses-grid {
+            grid-template-columns: repeat(2, minmax(320px, 368px)) !important;
+          }
+          .react-page-root[data-page="courses.html"] .course-card {
+            width: 100% !important;
+            max-width: 368px !important;
+          }
+        }
+        .react-page-root[data-page="courses.html"] .course-preview-card {
+          appearance: none;
+          border: 1px solid rgba(255, 182, 38, 0.22);
+          color: inherit;
+          text-align: left;
+          cursor: pointer;
+          position: relative;
+          overflow: hidden;
+        }
+        .react-page-root[data-page="courses.html"] .course-preview-card .course-thumb,
+        .react-page-root[data-page="courses.html"] .course-preview-fallback {
+          filter: blur(7px) saturate(0.72) brightness(0.68);
+          transform: scale(1.04);
+        }
+        .react-page-root[data-page="courses.html"] .course-preview-fallback {
+          width: 100%;
+          height: 100%;
+          background: radial-gradient(circle at 30% 30%, rgba(218, 155, 39, 0.52), transparent 34%), linear-gradient(135deg, #1a1610, #050505);
+        }
+        .react-page-root[data-page="courses.html"] .course-preview-lock {
+          position: absolute;
+          left: 50%;
+          top: 50%;
+          transform: translate(-50%, -50%);
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          min-width: 132px;
+          min-height: 44px;
+          border-radius: 999px;
+          background: rgba(0, 0, 0, 0.72);
+          border: 1px solid rgba(255, 182, 38, 0.58);
+          color: #fff;
+          font-weight: 900;
+          letter-spacing: 0.02em;
+          backdrop-filter: blur(10px);
+        }
+        .react-page-root[data-page="courses.html"] .course-preview-cta {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          width: 100%;
+          pointer-events: none;
+        }
+        .react-page-root[data-page="courses.html"] .course-preview-modal-backdrop {
+          position: fixed;
+          inset: 0;
+          z-index: 80;
+          display: grid;
+          place-items: center;
+          padding: 20px;
+          background: rgba(0, 0, 0, 0.72);
+          backdrop-filter: blur(8px);
+        }
+        .react-page-root[data-page="courses.html"] .course-preview-modal {
+          width: min(420px, 100%);
+          border-radius: 22px;
+          border: 1px solid rgba(255, 182, 38, 0.24);
+          background: #111;
+          padding: 24px;
+          box-shadow: 0 30px 90px rgba(0, 0, 0, 0.5);
+        }
+        .react-page-root[data-page="courses.html"] .course-preview-modal h3 {
+          margin: 0;
+          color: #fff;
+          font-size: 24px;
+          line-height: 1.1;
+        }
+        .react-page-root[data-page="courses.html"] .course-preview-modal p {
+          margin: 12px 0 20px;
+          color: rgba(255, 255, 255, 0.72);
+          line-height: 1.55;
+        }
+        .react-page-root[data-page="courses.html"] .course-preview-modal-actions {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 10px;
+        }
+        .react-page-root[data-page="courses.html"] .course-preview-modal-actions button,
+        .react-page-root[data-page="courses.html"] .course-preview-modal-actions a {
+          min-height: 46px;
+          border-radius: 14px;
+          border: 1px solid rgba(255, 255, 255, 0.12);
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          font-weight: 900;
+          text-decoration: none;
+        }
+        .react-page-root[data-page="courses.html"] .course-preview-modal-actions button {
+          background: rgba(255, 255, 255, 0.08);
+          color: #fff;
+        }
+        .react-page-root[data-page="courses.html"] .course-preview-modal-actions a {
+          background: #d59623;
+          color: #050505;
+        }
+      `}</style>
       <section className="search-section">
         <div className="container">
           <h1 className="sr-only">Explore Courses</h1>
@@ -322,7 +527,7 @@ export function CoursesPage() {
               </div>
             </div>
           ) : null}
-          {state === "ready" ? groupCourses(filteredCourses).map(([group, rows]) => (
+          {state === "ready" ? groupedCourseRows.map(([group, rows], groupIndex) => (
             <div className="category-block" key={group}>
               <div className="section-header">
                 <div className="section-header-left">
@@ -334,20 +539,24 @@ export function CoursesPage() {
                 {rows.map((course) => {
                   const duration = course.duration || (course.lessonCount ? `${course.lessonCount} Lessons` : "Self paced");
                   const saved = wishlist.has(course.id);
+                  const canOpen = canOpenCourse(course);
+                  const lockedByTrial = accessPhase === "trial" && !canOpen;
+                  const buttonLabel = lockedByTrial ? "Locked" : canOpen ? "View Course" : "Start ₹499";
                   return (
                     <div
-                      className={`course-card${hasAccess ? " has-access" : ""}`}
+                      className={`course-card${hasAccess ? " has-access" : ""}${lockedByTrial ? " is-trial-locked" : ""}`}
                       data-course-card-id={course.id}
                       data-title={course.title.toLowerCase()}
                       data-category={course.categoryName.toLowerCase()}
                       role="link"
                       tabIndex={0}
                       key={course.id}
-                      onClick={() => openCourse(course)}
+                      aria-disabled={lockedByTrial}
+                      onClick={() => { if (!lockedByTrial) openCourse(course); }}
                       onKeyDown={(event) => {
                         if (event.key !== "Enter" && event.key !== " ") return;
                         event.preventDefault();
-                        openCourse(course);
+                        if (!lockedByTrial) openCourse(course);
                       }}
                     >
                       <div className="course-thumb-wrap">
@@ -358,6 +567,7 @@ export function CoursesPage() {
                           onError={(event) => handleCourseImageError(event, course)}
                         />
                         <span className="course-cat-badge badge-agency">{course.categoryName}</span>
+                        {lockedByTrial ? <span className="course-lock-badge">Locked until AutoPay starts</span> : null}
                       </div>
                       <div className="course-body">
                         <h3 className="course-title-main">{course.title}</h3>
@@ -372,8 +582,8 @@ export function CoursesPage() {
                           </div>
                         </div>
                         <div className="course-card-actions">
-                          <button className="btn-trial" type="button" data-course-id={course.id} onClick={(event) => { event.stopPropagation(); openCourse(course); }}>
-                            {hasAccess ? "View Course" : "Start ₹499"}
+                          <button className="btn-trial" type="button" data-course-id={course.id} disabled={lockedByTrial} onClick={(event) => { event.stopPropagation(); if (!lockedByTrial) openCourse(course); }}>
+                            {buttonLabel}
                           </button>
                           <button
                             className={`wishlist-btn${saved ? " is-saved" : ""}`}
@@ -396,6 +606,21 @@ export function CoursesPage() {
                     </div>
                   );
                 })}
+                {groupIndex === 0 ? (
+                  <>
+                    {PLANNED_COURSES.map((title, index) => (
+                      <PreviewCourseCard
+                        title={title}
+                        subtitle="New lessons are being prepared."
+                        badge={index < 5 ? "CREATIVE AI" : index < 8 ? "BUILD WITH AI" : index < 12 ? "AI CAREER" : "DAILY AI"}
+                        image={previewImage}
+                        variant="soon"
+                        onOpen={() => setPreviewModal("soon")}
+                        key={title}
+                      />
+                    ))}
+                  </>
+                ) : null}
               </div>
             </div>
           )) : null}
@@ -424,6 +649,22 @@ export function CoursesPage() {
           </div>
         </div>
       </section> : null}
+      {previewModal ? (
+        <div className="course-preview-modal-backdrop" role="presentation" onMouseDown={() => setPreviewModal(null)}>
+          <div className="course-preview-modal" role="dialog" aria-modal="true" aria-labelledby="coursePreviewTitle" onMouseDown={(event) => event.stopPropagation()}>
+            <h3 id="coursePreviewTitle">{previewModal === "locked" ? "Unlock the next course" : "Coming soon"}</h3>
+            <p>
+              {previewModal === "locked"
+                ? "This course opens after your AutoPay mandate starts, or you can pay upfront to unlock full access right away."
+                : "This course is in the upcoming Skillomate roadmap. We will open it once the lessons are ready."}
+            </p>
+            <div className="course-preview-modal-actions">
+              <button type="button" onClick={() => setPreviewModal(null)}>Close</button>
+              {previewModal === "locked" ? <a href={route("payment.html?plan=monthly")}>Pay to unlock</a> : <button type="button" onClick={() => setPreviewModal(null)}>Okay</button>}
+            </div>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }

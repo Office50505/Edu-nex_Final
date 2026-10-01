@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { page as indexPage } from "../generated-pages/index.html.js";
 import { runLegacyPage } from "../legacyRuntime.js";
 import { usePageStyle } from "../hooks/usePageStyle.js";
@@ -29,6 +29,7 @@ const FALLBACK_COURSES = [
 }));
 
 const HERO_CAROUSEL_ITEM_LIMIT = 7;
+const HOME_HERO_VIDEO_SRC = "/assets/offer-video/Video-65454.mp4";
 
 function courseId(course) {
   return String(course?._id || course?.id || "");
@@ -366,6 +367,94 @@ const MATERIAL_ICON_NAMES = {
 
 function MaterialIcon({ children, className = "" }) {
   return <EnxIcon name={MATERIAL_ICON_NAMES[children] || "sparkles"} className={className} />;
+}
+
+function HomeHeroVideo() {
+  const videoRef = useRef(null);
+  const userMutedRef = useRef(false);
+  const [muted, setMuted] = useState(true);
+  const [playing, setPlaying] = useState(false);
+
+  const start = useCallback(() => {
+    const video = videoRef.current;
+    if (!video) return;
+    video.autoplay = true;
+    void video.play().then(() => setPlaying(true)).catch(() => setPlaying(false));
+  }, []);
+
+  const unmuteAndPlay = useCallback((options = {}) => {
+    const video = videoRef.current;
+    if (!video) return;
+    if (userMutedRef.current && !options.force) {
+      start();
+      return;
+    }
+    if (!video.muted) {
+      start();
+      return;
+    }
+    video.muted = false;
+    userMutedRef.current = false;
+    setMuted(false);
+    start();
+  }, [start]);
+
+  const toggleMute = useCallback((event) => {
+    event.stopPropagation();
+    const video = videoRef.current;
+    if (!video) return;
+    const nextMuted = !video.muted;
+    video.muted = nextMuted;
+    userMutedRef.current = nextMuted;
+    setMuted(nextMuted);
+    start();
+  }, [start]);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return undefined;
+    const onPlaying = () => setPlaying(true);
+    const onPause = () => setPlaying(false);
+    const onVolumeChange = () => setMuted(video.muted);
+    video.addEventListener("playing", onPlaying);
+    video.addEventListener("pause", onPause);
+    video.addEventListener("volumechange", onVolumeChange);
+    start();
+    return () => {
+      video.removeEventListener("playing", onPlaying);
+      video.removeEventListener("pause", onPause);
+      video.removeEventListener("volumechange", onVolumeChange);
+    };
+  }, [start]);
+
+  useEffect(() => {
+    const onPageClick = () => unmuteAndPlay();
+    document.addEventListener("click", onPageClick);
+    return () => document.removeEventListener("click", onPageClick);
+  }, [unmuteAndPlay]);
+
+  return (
+    <div className="home-hero-video-shell" aria-label="Skillomate course preview" onClick={unmuteAndPlay} role="button" tabIndex={0} onKeyDown={(event) => {
+      if (event.key !== "Enter" && event.key !== " ") return;
+      event.preventDefault();
+      unmuteAndPlay();
+    }}>
+      <video
+        ref={videoRef}
+        className="home-hero-video"
+        src={HOME_HERO_VIDEO_SRC}
+        playsInline
+        muted
+        autoPlay
+        loop
+        preload="auto"
+      />
+      {!playing ? <button className="home-hero-play-button" type="button" onClick={(event) => { event.stopPropagation(); start(); }} aria-label="Play preview">▶</button> : null}
+      <button className={`home-hero-mute-button${muted ? "" : " is-unmuted"}`} type="button" aria-label={muted ? "Unmute preview" : "Mute preview"} onClick={toggleMute}>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4Z"/><path d="m17 9 4 6m0-6-4 6"/></svg>
+      </button>
+    </div>
+  );
 }
 
 function preventNativeDrag(event) {
@@ -1354,11 +1443,67 @@ export function HomePage() {
     window.location.href = value ? searchHref(value) : route("courses.html");
   };
 
+  const handleExploreCourses = (event) => {
+    event.stopPropagation();
+  };
+
   const searchSuggestions = uniqueLabels(courses.filter((course) => !course.isFallback).map((course) => course.title)).slice(0, 6);
   const activeRows = loop.rows.length ? loop.rows : Array.from({ length: 21 }, (_, index) => ({ loopIndex: index, placeholder: true }));
 
   return (
     <div className="react-page-root" data-page="index.html">
+      <style>{`
+        @media (max-width: 900px) {
+          .react-page-root[data-page="index.html"] .learning-hero {
+            display: flex !important;
+            flex-direction: column !important;
+            padding-top: 34px !important;
+            overflow: hidden !important;
+          }
+          .react-page-root[data-page="index.html"] .learning-hero-copy { order: 1 !important; margin-top: 0 !important; }
+          .react-page-root[data-page="index.html"] .home-hero-video-shell { order: 2 !important; flex: 0 0 auto !important; }
+          .react-page-root[data-page="index.html"] .learning-hero-actions { order: 3 !important; }
+          .react-page-root[data-page="index.html"] .hero-carousel-shell { order: 4 !important; margin-top: 20px !important; }
+        }
+        @media (max-width: 700px) {
+          .react-page-root[data-page="index.html"] .learning-hero { padding-top: 28px !important; }
+          .react-page-root[data-page="index.html"] .learning-hero-copy { margin-top: 0 !important; padding-inline: 18px !important; }
+          .react-page-root[data-page="index.html"] .learning-hero-label { margin-bottom: 14px !important; white-space: normal !important; }
+          .react-page-root[data-page="index.html"] .learning-hero h1 { font-size: clamp(32px, 10vw, 44px) !important; line-height: 1.08 !important; }
+          .react-page-root[data-page="index.html"] .learning-hero h1 span { white-space: normal !important; }
+          .react-page-root[data-page="index.html"] .learning-hero-copy > p { max-width: 360px !important; margin-top: 16px !important; font-size: 15px !important; line-height: 1.55 !important; }
+          .react-page-root[data-page="index.html"] .learning-hero-actions {
+            display: grid !important;
+            grid-template-columns: 1fr !important;
+            width: min(100%, 390px) !important;
+            margin: 18px auto 0 !important;
+            padding-inline: 18px !important;
+          }
+          .react-page-root[data-page="index.html"] .home-hero-video-shell {
+            width: calc(100% - 32px) !important;
+            margin: 22px auto 0 !important;
+            border-radius: 18px !important;
+            aspect-ratio: 16 / 9 !important;
+          }
+          .react-page-root[data-page="index.html"] .hero-carousel-shell { width: 100% !important; margin: 24px 0 0 !important; padding: 0 !important; }
+          .react-page-root[data-page="index.html"] .hero-trust-strip {
+            order: 5 !important;
+            margin-top: 16px !important;
+          }
+          .react-page-root[data-page="index.html"] .hero-search-block {
+            order: 6 !important;
+          }
+          .react-page-root[data-page="index.html"] .hero-carousel-shell,
+          .react-page-root[data-page="index.html"] .hero-search-block,
+          .react-page-root[data-page="index.html"] .hero-trust-strip,
+          .react-page-root[data-page="index.html"] .curriculum-home {
+            display: none !important;
+          }
+          body:has(.react-page-root[data-page="index.html"]) .enx-footer {
+            display: none !important;
+          }
+        }
+      `}</style>
       <div className="page-grid"></div>
       <main className="relative pt-16">
         <section className="learning-hero" aria-labelledby="learningHeroTitle">
@@ -1372,12 +1517,14 @@ export function HomePage() {
           </div>
 
           <div className="learning-hero-actions">
-            <a href="courses.html" className="hero-cta-primary">
+            <a href="courses.html" className="hero-cta-primary" onClick={handleExploreCourses}>
               Explore Courses
               <MaterialIcon className="text-[19px]">arrow_forward</MaterialIcon>
             </a>
-            {!hasAccess && accessResolved ? <a href="payment.html?plan=trial" className="hero-cta-secondary">Try 24 Hours for ₹1</a> : null}
+            {!hasAccess && accessResolved ? <a href="payment.html?plan=trial" className="hero-cta-secondary" onClick={(event) => event.stopPropagation()}>Try 24 Hours for ₹1</a> : null}
           </div>
+
+          <HomeHeroVideo />
 
           <div className="hero-carousel-shell" id="homeHeroCarousel" aria-live="polite">
             <div

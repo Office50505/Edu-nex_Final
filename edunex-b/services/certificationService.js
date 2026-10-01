@@ -24,17 +24,25 @@ async function context(user, courseId) {
 async function access(user, courseId = null) {
   if (activeCourseEntitlement(user,courseId)) return;
   const sub=await Subscription.findOne({user:user._id}).lean();
-  if(!resolveSubscriptionAccess(sub,user).active) throw fail('An active learning entitlement is required.',403);
+  const resolvedAccess = resolveSubscriptionAccess(sub,user);
+  if(!resolvedAccess.active) throw fail('An active learning entitlement is required.',403);
+  if(resolvedAccess.status === 'trial' && !resolvedAccess.grace && courseId) {
+    const firstCourse = await Course.findOne({status:'published'}).sort({publishedAt:-1,createdAt:-1,_id:-1}).select('_id').lean();
+    if(firstCourse && String(firstCourse._id) !== String(courseId)) throw fail('This course unlocks after AutoPay starts or after an upfront purchase.',403);
+  }
 }
 async function state(user, ctx) {
   const userId=String(user._id), courseId=String(ctx.course._id);
   const [rows,assessment] = await Promise.all([Learning.find({userId,courseId,version:ctx.version}).lean(),Assessment.findById(rules.identity(userId,courseId,ctx.version)).lean()]);
   const eligibility = rules.eligibility({...ctx,rows,user,assessment});
-  const certificationEnabled = await featureSettings.certificationIsEnabled();
+  const settings = await featureSettings.getSettings();
+  const certificationEnabled = settings.certificationEnabled !== false;
+  const progressBarEnabled = settings.progressBarEnabled !== false;
   return {
     ...eligibility,
     eligible: certificationEnabled ? eligibility.eligible : false,
     certificationEnabled,
+    progressBarEnabled,
     watchMore: !certificationEnabled && eligibility.completedLessons === eligibility.totalLessons,
     requirements: certificationEnabled ? eligibility.requirements : ['More learning is available. Continue with recommended lessons.'],
     courseId,

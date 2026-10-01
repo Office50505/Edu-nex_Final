@@ -4828,6 +4828,601 @@ html[data-theme="light"] .enx-footer .enx-footer-support a {
   background: #FFFFFF !important;
 }
 
+/* Final mobile home hero ordering: copy, CTAs, video, moving strip. */
+@media (max-width: 900px) {
+  .react-page-root[data-page="index.html"] .learning-hero {
+    display: flex !important;
+    flex-direction: column !important;
+    padding-top: 34px !important;
+    overflow: hidden !important;
+  }
+  .react-page-root[data-page="index.html"] .learning-hero-copy {
+    order: 1 !important;
+    margin-top: 0 !important;
+  }
+  .react-page-root[data-page="index.html"] .learning-hero-actions {
+    order: 2 !important;
+  }
+  .react-page-root[data-page="index.html"] .home-hero-video-shell {
+    order: 3 !important;
+    flex: 0 0 auto !important;
+  }
+  .react-page-root[data-page="index.html"] .hero-carousel-shell {
+    order: 4 !important;
+    margin-top: 20px !important;
+  }
+}
+
+@media (max-width: 700px) {
+  .react-page-root[data-page="index.html"] .learning-hero {
+    padding-top: 28px !important;
+  }
+  .react-page-root[data-page="index.html"] .learning-hero-copy {
+    margin-top: 0 !important;
+    padding-inline: 18px !important;
+  }
+  .react-page-root[data-page="index.html"] .learning-hero-label {
+    margin-bottom: 14px !important;
+    white-space: normal !important;
+  }
+  .react-page-root[data-page="index.html"] .learning-hero h1 {
+    font-size: clamp(32px, 10vw, 44px) !important;
+    line-height: 1.08 !important;
+  }
+  .react-page-root[data-page="index.html"] .learning-hero h1 span {
+    white-space: normal !important;
+  }
+  .react-page-root[data-page="index.html"] .learning-hero-copy > p {
+    max-width: 360px !important;
+    margin-top: 16px !important;
+    font-size: 15px !important;
+    line-height: 1.55 !important;
+  }
+  .react-page-root[data-page="index.html"] .learning-hero-actions {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    width: min(100%, 390px) !important;
+    margin: 18px auto 0 !important;
+    padding-inline: 18px !important;
+  }
+  .react-page-root[data-page="index.html"] .home-hero-video-shell {
+    width: calc(100% - 32px) !important;
+    margin: 22px auto 0 !important;
+    border-radius: 18px !important;
+    aspect-ratio: 16 / 9 !important;
+  }
+  .react-page-root[data-page="index.html"] .hero-carousel-shell {
+    width: 100% !important;
+    margin: 20px 0 0 !important;
+    padding: 0 !important;
+  }
+}
+/* EOF mobile home hero override */
+@media (max-width: 900px) {
+  .react-page-root[data-page="index.html"] .learning-hero {
+    display: flex !important;
+    flex-direction: column !important;
+    padding-top: 34px !important;
+    overflow: hidden !important;
+  }
+  .react-page-root[data-page="index.html"] .learning-hero-copy {
+    order: 1 !important;
+    margin-top: 0 !important;
+  }
+  .react-page-root[data-page="index.html"] .learning-hero-actions {
+    order: 2 !important;
+  }
+  .react-page-root[data-page="index.html"] .home-hero-video-shell {
+    order: 3 !important;
+    flex: 0 0 auto !important;
+  }
+  .react-page-root[data-page="index.html"] .hero-carousel-shell {
+    order: 4 !important;
+    margin-top: 20px !important;
+  }
+}
+
+@media (max-width: 700px) {
+  .react-page-root[data-page="index.html"] .learning-hero {
+    padding-top: 28px !important;
+  }
+  .react-page-root[data-page="index.html"] .learning-hero-copy {
+    margin-top: 0 !important;
+    padding-inline: 18px !important;
+  }
+  .react-page-root[data-page="index.html"] .learning-hero-label {
+    margin-bottom: 14px !important;
+    white-space: normal !important;
+  }
+  .react-page-root[data-page="index.html"] .learning-hero h1 {
+    font-size: clamp(32px, 10vw, 44px) !important;
+    line-height: 1.08 !important;
+  }
+  .react-page-root[data-page="index.html"] .learning-hero h1 span {
+    white-space: normal !important;
+  }
+  .react-page-root[data-page="index.html"] .learning-hero-copy > p {
+    max-width: 360px !important;
+    margin-top: 16px !important;
+    font-size: 15px !important;
+    line-height: 1.55 !important;
+  }
+  .react-page-root[data-page="index.html"] .learning-hero-actions {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    width: min(100%, 390px) !important;
+    margin: 18px auto 0 !important;
+    padding-inline: 18px !important;
+  }
+  .react-page-root[data-page="index.html"] .home-hero-video-shell {
+    width: calc(100% - 32px) !important;
+    margin: 22px auto 0 !important;
+    border-radius: 18px !important;
+    aspect-ratio: 16 / 9 !important;
+  }
+  .react-page-root[data-page="index.html"] .hero-carousel-shell {
+    width: 100% !important;
+    margin: 20px 0 0 !important;
+    padding: 0 !important;
+  }
+}
+
+/* Final mobile home hero ordering: copy, CTAs, video, moving strip. */
+@media (max-width: 900px) {
+  .react-page-root[data-page="index.html"] .learning-hero {
+    display: flex !important;
+    flex-direction: column !important;
+    padding-top: 34px !important;
+    overflow: hidden !important;
+  }
+
+  .react-page-root[data-page="index.html"] .learning-hero-copy {
+    order: 1 !important;
+    margin-top: 0 !important;
+  }
+
+  .react-page-root[data-page="index.html"] .learning-hero-actions {
+    order: 2 !important;
+  }
+
+  .react-page-root[data-page="index.html"] .home-hero-video-shell {
+    order: 3 !important;
+    flex: 0 0 auto !important;
+  }
+
+  .react-page-root[data-page="index.html"] .hero-carousel-shell {
+    order: 4 !important;
+    margin-top: 20px !important;
+  }
+}
+
+@media (max-width: 700px) {
+  .react-page-root[data-page="index.html"] .learning-hero {
+    padding-top: 28px !important;
+  }
+
+  .react-page-root[data-page="index.html"] .learning-hero-copy {
+    margin-top: 0 !important;
+    padding-inline: 18px !important;
+  }
+
+  .react-page-root[data-page="index.html"] .learning-hero-label {
+    margin-bottom: 14px !important;
+    white-space: normal !important;
+  }
+
+  .react-page-root[data-page="index.html"] .learning-hero h1 {
+    font-size: clamp(32px, 10vw, 44px) !important;
+    line-height: 1.08 !important;
+  }
+
+  .react-page-root[data-page="index.html"] .learning-hero h1 span {
+    white-space: normal !important;
+  }
+
+  .react-page-root[data-page="index.html"] .learning-hero-copy > p {
+    max-width: 360px !important;
+    margin-top: 16px !important;
+    font-size: 15px !important;
+    line-height: 1.55 !important;
+  }
+
+  .react-page-root[data-page="index.html"] .learning-hero-actions {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    width: min(100%, 390px) !important;
+    margin: 18px auto 0 !important;
+    padding-inline: 18px !important;
+  }
+
+  .react-page-root[data-page="index.html"] .home-hero-video-shell {
+    width: calc(100% - 32px) !important;
+    margin: 22px auto 0 !important;
+    border-radius: 18px !important;
+    aspect-ratio: 16 / 9 !important;
+  }
+
+  .react-page-root[data-page="index.html"] .hero-carousel-shell {
+    width: 100% !important;
+    margin: 20px 0 0 !important;
+    padding: 0 !important;
+  }
+}
+
+/* Final mobile home hero ordering: copy, CTAs, video, moving strip. */
+@media (max-width: 900px) {
+  .react-page-root[data-page="index.html"] .learning-hero {
+    display: flex !important;
+    flex-direction: column !important;
+    padding-top: 34px !important;
+    overflow: hidden !important;
+  }
+
+  .react-page-root[data-page="index.html"] .learning-hero-copy {
+    order: 1 !important;
+    margin-top: 0 !important;
+  }
+
+  .react-page-root[data-page="index.html"] .learning-hero-actions {
+    order: 2 !important;
+  }
+
+  .react-page-root[data-page="index.html"] .home-hero-video-shell {
+    order: 3 !important;
+    flex: 0 0 auto !important;
+  }
+
+  .react-page-root[data-page="index.html"] .hero-carousel-shell {
+    order: 4 !important;
+    margin-top: 20px !important;
+  }
+}
+
+@media (max-width: 700px) {
+  .react-page-root[data-page="index.html"] .learning-hero {
+    padding-top: 28px !important;
+  }
+
+  .react-page-root[data-page="index.html"] .learning-hero-copy {
+    margin-top: 0 !important;
+    padding-inline: 18px !important;
+  }
+
+  .react-page-root[data-page="index.html"] .learning-hero-label {
+    margin-bottom: 14px !important;
+    white-space: normal !important;
+  }
+
+  .react-page-root[data-page="index.html"] .learning-hero h1 {
+    font-size: clamp(32px, 10vw, 44px) !important;
+    line-height: 1.08 !important;
+  }
+
+  .react-page-root[data-page="index.html"] .learning-hero h1 span {
+    white-space: normal !important;
+  }
+
+  .react-page-root[data-page="index.html"] .learning-hero-copy > p {
+    max-width: 360px !important;
+    margin-top: 16px !important;
+    font-size: 15px !important;
+    line-height: 1.55 !important;
+  }
+
+  .react-page-root[data-page="index.html"] .learning-hero-actions {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    width: min(100%, 390px) !important;
+    margin: 18px auto 0 !important;
+    padding-inline: 18px !important;
+  }
+
+  .react-page-root[data-page="index.html"] .home-hero-video-shell {
+    width: calc(100% - 32px) !important;
+    margin: 22px auto 0 !important;
+    border-radius: 18px !important;
+    aspect-ratio: 16 / 9 !important;
+  }
+
+  .react-page-root[data-page="index.html"] .hero-carousel-shell {
+    width: 100% !important;
+    margin: 20px 0 0 !important;
+    padding: 0 !important;
+  }
+}
+
+/* Final mobile home hero ordering: copy, CTAs, video, moving strip. */
+@media (max-width: 900px) {
+  .react-page-root[data-page="index.html"] .learning-hero {
+    display: flex !important;
+    flex-direction: column !important;
+    padding-top: 34px !important;
+    overflow: hidden !important;
+  }
+
+  .react-page-root[data-page="index.html"] .learning-hero-copy {
+    order: 1 !important;
+    margin-top: 0 !important;
+  }
+
+  .react-page-root[data-page="index.html"] .learning-hero-actions {
+    order: 2 !important;
+  }
+
+  .react-page-root[data-page="index.html"] .home-hero-video-shell {
+    order: 3 !important;
+    flex: 0 0 auto !important;
+  }
+
+  .react-page-root[data-page="index.html"] .hero-carousel-shell {
+    order: 4 !important;
+    margin-top: 20px !important;
+  }
+}
+
+@media (max-width: 700px) {
+  .react-page-root[data-page="index.html"] .learning-hero {
+    padding-top: 28px !important;
+  }
+
+  .react-page-root[data-page="index.html"] .learning-hero-copy {
+    margin-top: 0 !important;
+    padding-inline: 18px !important;
+  }
+
+  .react-page-root[data-page="index.html"] .learning-hero-label {
+    margin-bottom: 14px !important;
+    white-space: normal !important;
+  }
+
+  .react-page-root[data-page="index.html"] .learning-hero h1 {
+    font-size: clamp(32px, 10vw, 44px) !important;
+    line-height: 1.08 !important;
+  }
+
+  .react-page-root[data-page="index.html"] .learning-hero h1 span {
+    white-space: normal !important;
+  }
+
+  .react-page-root[data-page="index.html"] .learning-hero-copy > p {
+    max-width: 360px !important;
+    margin-top: 16px !important;
+    font-size: 15px !important;
+    line-height: 1.55 !important;
+  }
+
+  .react-page-root[data-page="index.html"] .learning-hero-actions {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    width: min(100%, 390px) !important;
+    margin: 18px auto 0 !important;
+    padding-inline: 18px !important;
+  }
+
+  .react-page-root[data-page="index.html"] .home-hero-video-shell {
+    width: calc(100% - 32px) !important;
+    margin: 22px auto 0 !important;
+    border-radius: 18px !important;
+    aspect-ratio: 16 / 9 !important;
+  }
+
+  .react-page-root[data-page="index.html"] .hero-carousel-shell {
+    width: 100% !important;
+    margin: 20px 0 0 !important;
+    padding: 0 !important;
+  }
+}
+
+/* Home: mobile-first CTA, video, then moving lesson strip. */
+.react-page-root[data-page="index.html"] .home-hero-video-shell {
+  position: relative;
+  z-index: 3;
+  width: min(920px, calc(100% - 32px));
+  margin: clamp(20px, 4vw, 34px) auto 0;
+  overflow: hidden;
+  border: 1px solid rgba(197, 139, 42, .35);
+  border-radius: 24px;
+  background: #050505;
+  box-shadow: 0 22px 60px rgba(0, 0, 0, .32), 0 0 34px rgba(197, 139, 42, .12);
+  aspect-ratio: 16 / 9;
+  cursor: pointer;
+}
+
+.react-page-root[data-page="index.html"] .home-hero-video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: #000;
+}
+
+.react-page-root[data-page="index.html"] .home-hero-mute-button,
+.react-page-root[data-page="index.html"] .home-hero-play-button {
+  position: absolute;
+  z-index: 5;
+  display: inline-grid;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, .32);
+  background: rgba(0, 0, 0, .58);
+  color: #fff;
+  backdrop-filter: blur(12px);
+  cursor: pointer;
+  transition: transform .18s ease, background .18s ease, border-color .18s ease;
+}
+
+.react-page-root[data-page="index.html"] .home-hero-mute-button {
+  top: 14px;
+  right: 14px;
+  width: 42px;
+  height: 42px;
+  border-radius: 999px;
+}
+
+.react-page-root[data-page="index.html"] .home-hero-mute-button:hover,
+.react-page-root[data-page="index.html"] .home-hero-play-button:hover {
+  transform: translateY(-1px);
+  border-color: rgba(197, 139, 42, .72);
+  background: rgba(0, 0, 0, .72);
+}
+
+.react-page-root[data-page="index.html"] .home-hero-mute-button svg {
+  width: 20px;
+  height: 20px;
+  fill: currentColor;
+}
+
+.react-page-root[data-page="index.html"] .home-hero-mute-button.is-unmuted svg path:last-child {
+  display: none;
+}
+
+.react-page-root[data-page="index.html"] .home-hero-play-button {
+  inset: 50% auto auto 50%;
+  width: 58px;
+  height: 58px;
+  border-radius: 999px;
+  transform: translate(-50%, -50%);
+  font-size: 22px;
+  padding-left: 4px;
+}
+
+.react-page-root[data-page="index.html"] .home-hero-play-button:hover {
+  transform: translate(-50%, calc(-50% - 1px));
+}
+
+.react-page-root[data-page="index.html"] .hero-carousel-shell {
+  margin-top: clamp(24px, 4vw, 44px);
+}
+
+@media (max-width: 720px) {
+  .react-page-root[data-page="index.html"] .learning-hero {
+    padding-top: 34px;
+  }
+
+  .react-page-root[data-page="index.html"] .learning-hero-copy {
+    padding-inline: 20px;
+  }
+
+  .react-page-root[data-page="index.html"] .learning-hero h1 {
+    font-size: clamp(39px, 11.5vw, 56px);
+  }
+
+  .react-page-root[data-page="index.html"] .learning-hero h1 span {
+    white-space: normal;
+  }
+
+  .react-page-root[data-page="index.html"] .learning-hero-copy > p {
+    margin-top: 18px;
+    font-size: 17px;
+    line-height: 1.55;
+  }
+
+  .react-page-root[data-page="index.html"] .learning-hero-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+    width: min(100%, 420px);
+    margin-top: 22px;
+    padding-inline: 20px;
+  }
+
+  .react-page-root[data-page="index.html"] .learning-hero-actions :where(.hero-cta-primary, .hero-cta-secondary) {
+    width: 100%;
+    min-height: 54px;
+    border-radius: 16px;
+  }
+
+  .react-page-root[data-page="index.html"] .home-hero-video-shell {
+    width: calc(100% - 28px);
+    border-radius: 18px;
+    margin-top: 22px;
+  }
+
+  .react-page-root[data-page="index.html"] .hero-carousel-viewport {
+    padding-inline: max(14px, calc((100vw - 360px) / 2));
+  }
+
+  .react-page-root[data-page="index.html"] .hero-course-card {
+    --hero-card-width: min(78vw, 330px);
+  }
+}
+
+/* Course catalogue: trial users can preview only the first course until renewal/access upgrades. */
+.react-page-root[data-page="courses.html"] .courses-grid {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+}
+
+.react-page-root[data-page="courses.html"] .course-card.is-trial-locked {
+  cursor: default;
+  position: relative;
+}
+
+.react-page-root[data-page="courses.html"] .course-card.is-trial-locked .course-thumb,
+.react-page-root[data-page="courses.html"] .course-card.is-trial-locked .course-body {
+  filter: blur(4px);
+  opacity: .62;
+}
+
+.react-page-root[data-page="courses.html"] .course-card.is-trial-locked .course-lock-badge {
+  position: absolute;
+  left: 14px;
+  right: 14px;
+  bottom: 14px;
+  z-index: 3;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 38px;
+  padding: 0 14px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, .74);
+  border: 1px solid rgba(197, 139, 42, .5);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: .01em;
+  backdrop-filter: blur(10px);
+}
+
+.react-page-root[data-page="courses.html"] .course-card.is-trial-locked .btn-trial:disabled {
+  cursor: not-allowed;
+  opacity: .72;
+  background: rgba(197, 139, 42, .45) !important;
+  border-color: rgba(197, 139, 42, .3) !important;
+}
+
+@media (max-width: 720px) {
+  .react-page-root[data-page="courses.html"] .search-section,
+  .react-page-root[data-page="courses.html"] .curriculum-section,
+  .react-page-root[data-page="courses.html"] .path-section {
+    overflow-x: hidden;
+  }
+
+  .react-page-root[data-page="courses.html"] .container {
+    width: min(100% - 28px, 1180px);
+  }
+
+  .react-page-root[data-page="courses.html"] .search-bar-wrap,
+  .react-page-root[data-page="courses.html"] .search-input-wrap {
+    width: 100%;
+    max-width: none;
+  }
+
+  .react-page-root[data-page="courses.html"] .courses-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+
+  .react-page-root[data-page="courses.html"] .course-card {
+    width: 100%;
+    max-width: 440px;
+    margin-inline: auto;
+  }
+
+  .react-page-root[data-page="courses.html"] .course-card-actions {
+    grid-template-columns: 1fr auto;
+  }
+}
+
 /* Mobile course player: an immersive, vertical lecture flow with the existing brand palette. */
 .react-page-root[data-page="videos.html"] .reel-chrome {
   display: none;

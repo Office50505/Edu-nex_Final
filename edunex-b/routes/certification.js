@@ -91,7 +91,10 @@ router.get('/admin/certification-settings',protectAdmin,run(async(_req,res)=>{
   res.json(await featureSettings.getSettings());
 }));
 router.put('/admin/certification-settings',protectAdmin,run(async(req,res)=>{
-  res.json(await featureSettings.saveSettings({certificationEnabled:req.body?.certificationEnabled!==false},req.admin));
+  const patch = {};
+  if (Object.prototype.hasOwnProperty.call(req.body || {}, 'certificationEnabled')) patch.certificationEnabled = req.body.certificationEnabled !== false;
+  if (Object.prototype.hasOwnProperty.call(req.body || {}, 'progressBarEnabled')) patch.progressBarEnabled = req.body.progressBarEnabled !== false;
+  res.json(await featureSettings.saveSettings(patch,req.admin));
 }));
 router.get('/admin/certifications',protectAdmin,run(async(req,res)=>{
   const page=Math.max(1,Math.min(10000,parseInt(req.query.page,10)||1));

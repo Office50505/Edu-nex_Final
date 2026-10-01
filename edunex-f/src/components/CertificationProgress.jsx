@@ -20,6 +20,7 @@ export function CertificationProgress({courseId}) {
   const watchedPercent = Number(status?.progressPercent);
   const completedPercent = status?.totalLessons ? status.completedLessons / status.totalLessons * 100 : 0;
   const percent = Math.max(0, Math.min(100, Math.floor(Number.isFinite(watchedPercent) ? watchedPercent : completedPercent)));
+  if (status?.progressBarEnabled === false) return null;
   return <section className="course-progress" aria-label="Certification progress">
     <div className="course-progress__heading"><h2>Course progress</h2><span>{percent}% complete</span></div>
     {status?<><progress max="100" value={percent} aria-label="Lessons completed"/><div className="course-progress__summary"><span>{status.completedLessons} of {status.totalLessons} lessons completed</span>{status.certificationEnabled===false?<a href="/courses">Watch more →</a>:<a href="/certificates">My certificates →</a>}</div>{status.watchMore?<div className="course-progress__watch-more"><strong>Keep learning</strong><p>You finished this course. Explore more lessons and continue building your skills.</p><a href="/courses">Watch more videos</a></div>:status.requirements.length ? <details><summary>Certificate requirements</summary><ul>{status.requirements.map(item=><li key={item}>{item === "Course durations must be configured by an administrator." ? "Certificate eligibility is pending course setup." : item}</li>)}</ul></details> : null}

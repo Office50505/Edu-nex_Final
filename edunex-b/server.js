@@ -2572,9 +2572,10 @@ app.get('/api/admin/feature-settings', protectAdmin, async (_req, res) => {
 app.put('/api/admin/feature-settings', protectAdmin, async (req, res) => {
   try {
     res.set('Cache-Control', 'no-store');
-    res.json(await featureSettings.saveSettings({
-      certificationEnabled: req.body?.certificationEnabled !== false,
-    }, req.admin));
+    const patch = {};
+    if (Object.prototype.hasOwnProperty.call(req.body || {}, 'certificationEnabled')) patch.certificationEnabled = req.body.certificationEnabled !== false;
+    if (Object.prototype.hasOwnProperty.call(req.body || {}, 'progressBarEnabled')) patch.progressBarEnabled = req.body.progressBarEnabled !== false;
+    res.json(await featureSettings.saveSettings(patch, req.admin));
   } catch (error) {
     res.status(500).json({ error: 'Unable to save feature settings.' });
   }
