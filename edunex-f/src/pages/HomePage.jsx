@@ -1493,15 +1493,6 @@ export function HomePage() {
           .react-page-root[data-page="index.html"] .hero-search-block {
             order: 6 !important;
           }
-          .react-page-root[data-page="index.html"] .hero-carousel-shell,
-          .react-page-root[data-page="index.html"] .hero-search-block,
-          .react-page-root[data-page="index.html"] .hero-trust-strip,
-          .react-page-root[data-page="index.html"] .curriculum-home {
-            display: none !important;
-          }
-          body:has(.react-page-root[data-page="index.html"]) .enx-footer {
-            display: none !important;
-          }
         }
       `}</style>
       <div className="page-grid"></div>

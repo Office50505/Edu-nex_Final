@@ -527,7 +527,7 @@ export function AdOfferPage({ offerPage }) {
           </button>
           <p className="ad-offer-kicker">Only for you</p>
           <h1 id="ad-offer-title">Skillomate <span>{phonePeOneTime || !offerPricing ? "Premium Access" : "Subscription"}</span></h1>
-          <p className="ad-offer-intro">Unlock complete access and start your learning journey today.</p>
+          <p className="ad-offer-intro">Unlock AI Influencer Course and start your learning journey today.</p>
           <button type="button" className="ad-price-card" onClick={begin} disabled={busy || pricingUnavailable} aria-label={pricingUnavailable ? "Payment pricing unavailable" : phonePeOneTime ? "View ₹299 offer details" : "View ₹1 offer details"}>
             <div className="ad-limited-badge"><span aria-hidden="true">◷</span> Limited time offer</div>
             <strong>{phonePeOneTime ? `₹${offerPricing.oneTimeAmountPaise / 100}` : offerPricing ? "₹1" : "—"}</strong>
