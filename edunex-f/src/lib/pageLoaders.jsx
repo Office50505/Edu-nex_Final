@@ -14,6 +14,7 @@ const offerPageModules = Object.fromEntries(
 
 const eagerPages = {
   "index.html": HomePage,
+  "marketing-web.html": HomePage,
 };
 
 const pageModules = {

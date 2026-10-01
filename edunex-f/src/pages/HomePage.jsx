@@ -338,10 +338,22 @@ function repeatedItems(items, minimum = HERO_CAROUSEL_ITEM_LIMIT) {
     uniqueItems.push(item);
   });
   if (!uniqueItems.length) return { baseCount: 0, rows: [] };
+  if (uniqueItems.length < minimum) {
+    return {
+      baseCount: uniqueItems.length,
+      looped: false,
+      rows: uniqueItems.map((item, index) => ({
+        ...item,
+        loopIndex: index,
+        loopSourceIndex: index,
+      })),
+    };
+  }
   const baseCount = Math.max(minimum, uniqueItems.length);
   const base = Array.from({ length: baseCount }, (_, index) => uniqueItems[index % uniqueItems.length]);
   return {
     baseCount,
+    looped: true,
     rows: Array.from({ length: baseCount * 3 }, (_, index) => ({
       ...base[index % baseCount],
       loopIndex: index,
@@ -1029,8 +1041,8 @@ export function HomePage() {
       setActiveIndex(HERO_CAROUSEL_ITEM_LIMIT);
       return;
     }
-    setActiveIndex(loop.baseCount);
-  }, [activeTab, loop.baseCount]);
+    setActiveIndex(loop.looped ? loop.baseCount : 0);
+  }, [activeTab, loop.baseCount, loop.looped]);
 
   const setUserScrolling = () => {
     const viewport = viewportRef.current;
@@ -1546,7 +1558,12 @@ export function HomePage() {
                 event.stopPropagation();
               }}
             >
-              <div className={`hero-carousel-track${!currentItems.length ? " is-empty" : ""}`} id="homeHeroCarouselTrack" data-base-count={loop.baseCount || 7} data-looped="true">
+              <div
+                className={`hero-carousel-track${!currentItems.length ? " is-empty" : ""}${loop.looped ? "" : " is-static"}`}
+                id="homeHeroCarouselTrack"
+                data-base-count={loop.baseCount || 7}
+                data-looped={loop.looped ? "true" : "false"}
+              >
                 {activeRows.map((item, index) => item.placeholder ? (
                   <HeroPlaceholderCard index={index} isCenter={index === activeIndex} tab={activeTab} key={`placeholder-${index}`} />
                 ) : (
