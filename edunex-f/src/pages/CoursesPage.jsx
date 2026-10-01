@@ -331,6 +331,10 @@ export function CoursesPage() {
     window.location.href = courseEntryHref(course, { hasAccess: canOpenCourse(course) });
   };
 
+  const openUnlockPayment = () => {
+    window.location.href = route("payment.html?plan=monthly");
+  };
+
   const groupedCourseRows = useMemo(() => groupCourses(filteredCourses), [filteredCourses]);
   const previewImage = filteredCourses[0]?.image || "";
 
@@ -562,7 +566,7 @@ export function CoursesPage() {
                   const saved = wishlist.has(course.id);
                   const canOpen = canOpenCourse(course);
                   const lockedByTrial = accessPhase === "trial" && !canOpen;
-                  const buttonLabel = lockedByTrial ? "Locked" : canOpen ? "View Course" : "Start ₹499";
+                  const buttonLabel = lockedByTrial ? "Pay to unlock" : canOpen ? "View Course" : "Start ₹499";
                   return (
                     <div
                       className={`course-card${hasAccess ? " has-access" : ""}${lockedByTrial ? " is-trial-locked" : ""}`}
@@ -603,7 +607,7 @@ export function CoursesPage() {
                           </div>
                         </div>
                         <div className="course-card-actions">
-                          <button className="btn-trial" type="button" data-course-id={course.id} disabled={lockedByTrial} onClick={(event) => { event.stopPropagation(); if (!lockedByTrial) openCourse(course); }}>
+                          <button className="btn-trial" type="button" data-course-id={course.id} onClick={(event) => { event.stopPropagation(); if (lockedByTrial) openUnlockPayment(); else openCourse(course); }}>
                             {buttonLabel}
                           </button>
                           <button
