@@ -64,10 +64,15 @@ function PreviewVideo({ media, modalOpen, onPixelEvent }) {
   const playedRef = useRef(false);
   const unmutedRef = useRef(false);
   const halfwayRef = useRef(false);
+  const firstFrameRef = useRef(false);
   const [playing, setPlaying] = useState(false);
   const [muted, setMuted] = useState(true);
   const [progress, setProgress] = useState(0);
   const [videoUrl, setVideoUrl] = useState(media.videoUrl);
+
+  useEffect(() => {
+    firstFrameRef.current = false;
+  }, [videoUrl]);
 
   const start = useCallback(() => {
     const video = videoRef.current;
@@ -77,10 +82,26 @@ function PreviewVideo({ media, modalOpen, onPixelEvent }) {
     void video.play().then(() => setPlaying(true)).catch(() => setPlaying(false));
   }, []);
 
+  const prepareFirstFrame = useCallback(() => {
+    const video = videoRef.current;
+    if (!video || firstFrameRef.current) return;
+    firstFrameRef.current = true;
+    try {
+      if (Number.isFinite(video.duration) && video.duration > 0) {
+        video.currentTime = Math.min(0.05, Math.max(0, video.duration - 0.05));
+      } else {
+        video.currentTime = 0.05;
+      }
+    } catch (_) {}
+  }, []);
+
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return undefined;
-    const onReady = () => start();
+    const onReady = () => {
+      prepareFirstFrame();
+      start();
+    };
     const onPlaying = () => {
       setPlaying(true);
       if (!playedRef.current) {
@@ -123,7 +144,7 @@ function PreviewVideo({ media, modalOpen, onPixelEvent }) {
       video.removeEventListener("volumechange", onVolumeChange);
       video.removeEventListener("timeupdate", onTime);
     };
-  }, [start, onPixelEvent, videoUrl]);
+  }, [start, prepareFirstFrame, onPixelEvent, videoUrl]);
 
   useEffect(() => {
     if (modalOpen) videoRef.current?.pause();
@@ -165,7 +186,6 @@ function PreviewVideo({ media, modalOpen, onPixelEvent }) {
         loop
         playsInline
         preload="auto"
-        poster={media.posterUrl}
         onError={() => setVideoUrl(currentUrl => currentUrl === DEFAULT_OFFER_VIDEO_URL ? currentUrl : DEFAULT_OFFER_VIDEO_URL)}
       />
       {!playing ? <button className="ad-preview-play" type="button" onClick={start} aria-label="Play course preview">▶</button> : null}
