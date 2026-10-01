@@ -14,6 +14,7 @@ import { AdminAnalyticsPage } from "./AdminAnalyticsPage.jsx";
 import { AdminLoginPage } from "./AdminLoginPage.jsx";
 import {
   AdminAuditLogPage,
+  AdminAiChatsPage,
   AdminCourseReviewPage,
   AdminOrdersPage,
   AdminPaymentsPage,
@@ -34,6 +35,7 @@ const adminPages = {
   team: AdminTeamPage,
   dashboard: AdminDashboardPage,
   analytics: AdminAnalyticsPage,
+  aiChats: AdminAiChatsPage,
   users: AdminUsersPage,
   testerUsers: () => <AdminUsersPage audience="testers" />,
   testerAnalytics: AdminTesterAnalyticsPage,

@@ -1,5 +1,6 @@
 const express = require('express');
 const crypto = require('node:crypto');
+const mongoose = require('mongoose');
 const Course = require('../models/Course');
 const User = require('../models/User');
 const AiTutorSession = require('../models/AiTutorSession');
@@ -18,6 +19,30 @@ const {
 const router = express.Router();
 const AI_USER_PROJECTION = '+activeSessionId +activeSessions +aiConsentGranted +aiConsentPolicyVersion +aiConsentProviderVersion +aiConsentDecidedAt';
 const aiRateState = new Map();
+
+function aiMessageRecord(role, content) {
+  return {
+    role,
+    content: compactText(content, 4000),
+    createdAt: Date.now(),
+  };
+}
+
+async function persistTutorChat(req, courseId, history, message, reply) {
+  const userId = req.compatAuth?.userId;
+  if (!userId) return;
+  const course = mongoose.Types.ObjectId.isValid(courseId) ? courseId : null;
+  const messages = [
+    ...sanitizeHistory(history).map((item) => aiMessageRecord(item.role, item.content)),
+    aiMessageRecord('user', message),
+    aiMessageRecord('assistant', reply),
+  ].filter((item) => item.content).slice(-40);
+  await AiTutorSession.findOneAndUpdate(
+    { user: userId, course },
+    { user: userId, course, messages, lastUpdatedAt: new Date() },
+    { new: true, upsert: true, runValidators: true, setDefaultsOnInsert: true }
+  );
+}
 
 function aiRateLimit(req, res, next) {
   const key = String(req.compatAuth?.userId || req.ip);
@@ -169,6 +194,7 @@ async function handleTutorChat(req, res) {
       });
     }
     reply = sanitizeAiOutput(cleanLearnerReply(String(reply || '').trim().slice(0, 6000))) || OUT_OF_SCOPE_REPLY;
+    await persistTutorChat(req, courseId, history, message, reply).catch(() => {});
     const sources = [];
     res.json({ answer: reply, reply, provider, sources, messageId: crypto.randomUUID(),
       notice: null,

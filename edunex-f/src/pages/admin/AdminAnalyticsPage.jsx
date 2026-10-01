@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { AdminShell, Message } from "./AdminShell.jsx";
 import { adminJson, formatDate, formatNumber, formatWatchDuration, requireAdmin } from "./adminApi.js";
+import { AdminDateRangeFilter } from "./AdminDateRangeFilter.jsx";
 
 function hasNumber(value) {
   return value !== null && value !== undefined && value !== "" && Number.isFinite(Number(value));
@@ -93,15 +94,17 @@ export function AdminAnalyticsPage() {
   const [message, setMessage] = useState("");
   const [lastUpdated, setLastUpdated] = useState("Waiting for data");
 
-  async function loadAnalytics() {
+  async function loadAnalytics(rangeOverride = null) {
     if (!requireAdmin()) return;
     setLoading(true);
     setMessage("");
     setLastUpdated("Syncing...");
     try {
       const params = new URLSearchParams();
-      if (startDate) params.set("startDate", startDate);
-      if (endDate) params.set("endDate", endDate);
+      const activeStart = rangeOverride?.startDate || startDate;
+      const activeEnd = rangeOverride?.endDate || endDate;
+      if (activeStart) params.set("startDate", activeStart);
+      if (activeEnd) params.set("endDate", activeEnd);
       const analytics = await adminJson(`/api/admin/analytics?${params.toString()}`, {}, "Unable to load analytics.");
       setData(analytics);
       setLastUpdated(`Updated ${new Date().toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })}`);
@@ -126,6 +129,12 @@ export function AdminAnalyticsPage() {
       setStartDate(dates.startDate);
       setEndDate(dates.endDate);
     }
+  }
+
+  function handleDateRangeChange(next) {
+    setRangePreset(next.preset || "custom");
+    setStartDate(next.startDate || "");
+    setEndDate(next.endDate || "");
   }
 
   const clarity = data?.clarity || {};
@@ -157,18 +166,13 @@ export function AdminAnalyticsPage() {
           <span>{formatDate(startDate)} - {formatDate(endDate)}</span>
           <small>{lastUpdated}</small>
         </div>
-        <div className="range-preset-buttons" role="group" aria-label="Quick date presets">
-          {["7", "15", "30", "45", "90"].map((days) => <button className={rangePreset === days ? "is-active" : ""} type="button" key={days} onClick={() => handlePresetChange(days)}>{days}D</button>)}
-          <button className={rangePreset === "custom" ? "is-active" : ""} type="button" onClick={() => setRangePreset("custom")}>Custom</button>
-        </div>
-        <div>
-          <label htmlFor="analyticsStartDate">Start</label>
-          <input id="analyticsStartDate" type="date" value={startDate} onChange={(event) => { setRangePreset("custom"); setStartDate(event.target.value); }} />
-        </div>
-        <div>
-          <label htmlFor="analyticsEndDate">End</label>
-          <input id="analyticsEndDate" type="date" value={endDate} onChange={(event) => { setRangePreset("custom"); setEndDate(event.target.value); }} />
-        </div>
+        <AdminDateRangeFilter
+          value={{ preset: rangePreset, startDate, endDate }}
+          onChange={handleDateRangeChange}
+          onApply={(next) => { handleDateRangeChange(next); loadAnalytics(next); }}
+          loading={loading}
+          label="Analytics range"
+        />
         <button className="toolbar-button" type="submit" disabled={loading}>{loading ? "Applying..." : "Apply"}</button>
       </form>
 

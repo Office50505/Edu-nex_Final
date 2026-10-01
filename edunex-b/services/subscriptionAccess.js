@@ -4,6 +4,41 @@ function futureDate(value, now = Date.now()) {
   return Number.isFinite(time) && time > now;
 }
 
+function graceHours() {
+  const hours = Number(process.env.SUBSCRIPTION_GRACE_HOURS || 48);
+  return Number.isFinite(hours) && hours > 0 ? hours : 48;
+}
+
+function hasActiveMandate(subscription) {
+  const status = String(subscription?.razorpayStatus || '').trim().toLowerCase();
+  return Boolean(subscription?.razorpaySubscriptionId)
+    && !subscription?.cancelledAt
+    && ['active', 'authenticated'].includes(status);
+}
+
+function resolveRazorpayGrace(subscription, now = Date.now()) {
+  if (!hasActiveMandate(subscription)) return null;
+  const status = String(subscription?.status || '').trim().toLowerCase();
+  if (!['trial', '1rs trial', 'pending', 'expired'].includes(status)) return null;
+  const anchor = subscription?.trialExpiresAt || subscription?.nextBillingAt || null;
+  if (!anchor) return null;
+  const anchorTime = new Date(anchor).getTime();
+  if (!Number.isFinite(anchorTime) || anchorTime > now) return null;
+  const expiresAt = new Date(anchorTime + graceHours() * 60 * 60 * 1000);
+  if (expiresAt.getTime() <= now) return null;
+  return {
+    active: true,
+    status: 'trial',
+    expiresAt,
+    rawStatus: status,
+    entitlementState: 'GRACE_PERIOD',
+    source: 'razorpay_grace',
+    grace: true,
+    graceStartedAt: new Date(anchorTime),
+    graceExpiresAt: expiresAt,
+  };
+}
+
 function resolveSubscriptionAccess(subscription, user = {}, now = Date.now()) {
   const subscriptionStatus = String(subscription?.status || '').trim().toLowerCase();
   const userStatus = String(user?.subscriptionStatus || 'none').trim().toLowerCase();
@@ -21,6 +56,9 @@ function resolveSubscriptionAccess(subscription, user = {}, now = Date.now()) {
   if (['active', 'subscribed'].includes(subscriptionStatus) && !currentPeriodEnd) {
     return { active: true, status: 'active', expiresAt: null, rawStatus };
   }
+
+  const grace = resolveRazorpayGrace(subscription, now);
+  if (grace) return grace;
 
   const fallbackExpiry = user?.subscriptionExpiry || null;
   if (['trial', '1rs trial'].includes(userStatus) && futureDate(fallbackExpiry, now)) {
@@ -83,4 +121,4 @@ function resolveAllSubscriptionAccess(subscription, appleSubscription, googlePla
   };
 }
 
-module.exports = { futureDate, resolveAllSubscriptionAccess, resolveCombinedSubscriptionAccess, resolveSubscriptionAccess };
+module.exports = { futureDate, hasActiveMandate, resolveRazorpayGrace, resolveAllSubscriptionAccess, resolveCombinedSubscriptionAccess, resolveSubscriptionAccess };

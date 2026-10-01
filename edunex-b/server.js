@@ -174,6 +174,8 @@ const Notification = require('./models/Notification');
 const Certificate = require('./models/Certificate');
 const AdminUserAction = require('./models/AdminUserAction');
 const Session = require('./models/Session');
+const featureSettings = require('./services/adminFeatureSettings');
+const { resolveSubscriptionAccess: resolveAdminSubscriptionAccess } = require('./services/subscriptionAccess');
 const { presenceFromPing } = require('./services/userPresence');
 const { saveThumbnailUpload } = require('./services/thumbnailStorage');
 const { getClarityDashboardInsights } = require('./services/clarityInsights');
@@ -2475,6 +2477,109 @@ app.get('/api/admin/users', protectAdmin, async (req, res) => {
   }
 });
 
+app.get('/api/admin/payments', protectAdmin, async (req, res) => {
+  try {
+    const limit = Math.min(Math.max(Number(req.query.limit) || 150, 1), 500);
+    const rows = await Order.find({ status: 'paid' })
+      .sort({ paidAt: -1, createdAt: -1 })
+      .limit(limit)
+      .populate('user', 'fullName email mobileNumber subscriptionStatus')
+      .populate('subscription', 'gateway status subscriptionType amount razorpayStatus razorpaySubscriptionId phonePeSubscriptionId phonePeMandateId nextBillingAt currentPeriodStart currentPeriodEnd cancelledAt')
+      .select('user subscription totalAmount gateway status orderType phonePePaymentInstrument phonePeMerchantTransactionId phonePeTransactionId razorpayPaymentId razorpaySubscriptionId refundedAmount paidAt createdAt')
+      .lean();
+    const orderSubscriptionIds = new Set(rows.map((order) => String(order.razorpaySubscriptionId || order.subscription?.razorpaySubscriptionId || '')).filter(Boolean));
+    const paidSubscriptions = await Subscription.find({
+      gateway: 'razorpay',
+      status: { $in: ['active', 'subscribed'] },
+      currentPeriodStart: { $ne: null },
+      amount: { $gt: 0 },
+    })
+      .sort({ currentPeriodStart: -1 })
+      .limit(limit)
+      .populate('user', 'fullName email mobileNumber subscriptionStatus')
+      .select('user gateway status subscriptionType amount razorpayStatus razorpaySubscriptionId nextBillingAt currentPeriodStart currentPeriodEnd cancelledAt')
+      .lean();
+    const syntheticRows = paidSubscriptions
+      .filter((subscription) => subscription.razorpaySubscriptionId && !orderSubscriptionIds.has(String(subscription.razorpaySubscriptionId)))
+      .map((subscription) => ({
+        _id: `subscription-period:${subscription._id}`,
+        user: subscription.user,
+        subscription,
+        totalAmount: subscription.amount,
+        gateway: 'razorpay',
+        status: 'paid',
+        orderType: 'subscription_charge',
+        razorpaySubscriptionId: subscription.razorpaySubscriptionId,
+        paidAt: subscription.currentPeriodStart,
+        createdAt: subscription.currentPeriodStart,
+        ledgerSource: 'subscription_period',
+      }));
+    const ledgerRows = [...rows, ...syntheticRows]
+      .sort((a, b) => new Date(b.paidAt || b.createdAt || 0) - new Date(a.paidAt || a.createdAt || 0))
+      .slice(0, limit);
+    const totalAmount = ledgerRows.reduce((sum, order) => sum + Number(order.totalAmount || 0), 0);
+    const autoPayRows = ledgerRows.filter((order) => order.orderType === 'subscription_charge');
+    const directRows = ledgerRows.filter((order) => order.orderType !== 'subscription_charge');
+    res.json({
+      summary: {
+        count: rows.length,
+        totalAmount,
+        autoPayCount: autoPayRows.length,
+        autoPayAmount: autoPayRows.reduce((sum, order) => sum + Number(order.totalAmount || 0), 0),
+        directCount: directRows.length,
+        directAmount: directRows.reduce((sum, order) => sum + Number(order.totalAmount || 0), 0),
+      },
+      payments: ledgerRows,
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.get('/api/admin/ai-chats', protectAdmin, async (req, res) => {
+  try {
+    const limit = Math.min(Math.max(Number(req.query.limit) || 100, 1), 300);
+    const sessions = await AiTutorSession.find({})
+      .sort({ lastUpdatedAt: -1 })
+      .limit(limit)
+      .populate('user', 'fullName email mobileNumber subscriptionStatus')
+      .populate('course', 'title slug')
+      .lean();
+    const totalMessages = sessions.reduce((sum, session) => sum + (Array.isArray(session.messages) ? session.messages.length : 0), 0);
+    const users = new Set(sessions.map((session) => String(session.user?._id || session.user || '')).filter(Boolean));
+    res.json({
+      summary: {
+        sessions: sessions.length,
+        users: users.size,
+        messages: totalMessages,
+      },
+      sessions,
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.get('/api/admin/feature-settings', protectAdmin, async (_req, res) => {
+  try {
+    res.set('Cache-Control', 'no-store');
+    res.json(await featureSettings.getSettings());
+  } catch (error) {
+    res.status(500).json({ error: 'Unable to load feature settings.' });
+  }
+});
+
+app.put('/api/admin/feature-settings', protectAdmin, async (req, res) => {
+  try {
+    res.set('Cache-Control', 'no-store');
+    res.json(await featureSettings.saveSettings({
+      certificationEnabled: req.body?.certificationEnabled !== false,
+    }, req.admin));
+  } catch (error) {
+    res.status(500).json({ error: 'Unable to save feature settings.' });
+  }
+});
+
 app.get('/api/admin/tester-analytics', protectAdmin, async (req, res) => {
   try {
     const { startDate, endDate } = getAnalyticsRange(req.query);
@@ -2936,6 +3041,8 @@ app.get('/api/admin/user-management', protectAdmin, async (req, res) => {
     const buildBillingSummary = (user) => {
       const subscription = subscriptionByUser[String(user._id)] || null;
       const razorpayBilling = razorpayBillingByUser[String(user._id)] || null;
+      const access = resolveAdminSubscriptionAccess(subscription, user);
+      const inGracePeriod = Boolean(access.grace);
       const gateway = subscription?.gateway || (razorpayBilling?.subscriptionId ? 'razorpay' : null);
       const providerStatus = subscription?.razorpayStatus || subscription?.status || razorpayBilling?.phase || null;
       const providerStatusText = String(providerStatus || '').toLowerCase();
@@ -2969,6 +3076,9 @@ app.get('/api/admin/user-management', protectAdmin, async (req, res) => {
         subscriptionType: subscription?.subscriptionType || razorpayBilling?.paymentType || null,
         amount: subscription?.amount || razorpayBilling?.recurringAmount || razorpayBilling?.monthlyAmount || null,
         autoRenewEnabled,
+        inGracePeriod,
+        graceStartedAt: access.graceStartedAt || null,
+        graceExpiresAt: access.graceExpiresAt || null,
         mandateStatus,
         subscriptionStartedAt: subscription?.currentPeriodStart || subscription?.trialStartedAt || subscription?.createdAt || razorpayBilling?.createdAt || null,
         trialStartedAt: subscription?.trialStartedAt || null,

@@ -4,6 +4,7 @@ import { csvEscape } from "./adminExport.js";
 import { useDeferredValue, useEffect, useMemo, useState } from "react";
 import { AdminShell, Message } from "./AdminShell.jsx";
 import { api, adminJson, formatDate, formatDateTime, formatNumber, formatWatchDuration, requireAdmin } from "./adminApi.js";
+import { AdminDateRangeFilter, dateInRange, defaultDateRange } from "./AdminDateRangeFilter.jsx";
 import { useViewportLock } from "../../hooks/useViewportLock.js";
 
 const segments = [
@@ -50,16 +51,18 @@ function isTrialExpired(user) {
 }
 
 function subscriptionDisplayStatus(user) {
+  if (billing(user).inGracePeriod) return "grace period";
   return isTrialExpired(user) ? "trial expired" : user.subscriptionStatus || "none";
 }
 
 function accessEndLabel(user) {
+  if (billing(user).inGracePeriod) return "Grace ends";
   if (isTrialExpired(user)) return "Trial ended";
   return isTrialStatus(user.subscriptionStatus) ? "Trial ends" : "Subscription ends";
 }
 
 function accessEndDate(user) {
-  const endValue = trialEndValue(user) || user.subscriptionExpiry;
+  const endValue = billing(user).inGracePeriod ? billing(user).graceExpiresAt : trialEndValue(user) || user.subscriptionExpiry;
   if (!endValue) return user.subscriptionStatus === "none" || !user.subscriptionStatus ? "No subscription" : "Not recorded";
   const date = new Date(endValue);
   if (Number.isNaN(date.getTime())) return "Not recorded";
@@ -71,6 +74,7 @@ function accessEndDate(user) {
 
 function statusBadgeClass(status) {
   if (["active", "subscribed"].includes(status)) return "good";
+  if (status === "grace period") return "warn";
   if (["1rs trial", "trial"].includes(status)) return "warn";
   if (["cancelled", "expired", "trial expired"].includes(status)) return "bad";
   return "";
@@ -97,6 +101,7 @@ function isVerified(user) {
 }
 
 function lifecycleLabel(user) {
+  if (billing(user).inGracePeriod) return "Grace period";
   if (isTrialExpired(user)) return "Trial expired";
   const status = user.subscriptionStatus || "none";
   if (["active", "subscribed"].includes(status)) return "Customer";
@@ -177,6 +182,7 @@ function mandateBadgeClass(user) {
 
 function billingOneLine(user) {
   const summary = billing(user);
+  if (summary.inGracePeriod) return `${billingGatewayLabel(user)} · Grace period · Ends ${formatDate(summary.graceExpiresAt)}`;
   const trialEndedAt = trialEndValue(user);
   const renewalAnchor = summary.nextBillingAt || trialEndedAt;
   const nextDate = summary.cancelledAt
@@ -398,6 +404,7 @@ export function AdminUsersPage({ audience = "learners" } = {}) {
   const [presenceStatus, setPresenceStatus] = useState("all");
   const [sort, setSort] = useState("newest");
   const [segment, setSegment] = useState("all");
+  const [dateRange, setDateRange] = useState(() => defaultDateRange("today"));
   const [openIds, setOpenIds] = useState(new Set());
   const [selectedUser, setSelectedUser] = useState(null);
   const [drawerTab, setDrawerTab] = useState("Overview");
@@ -446,7 +453,7 @@ export function AdminUsersPage({ audience = "learners" } = {}) {
     const initialQuery = params.get("q");
     if (initialQuery) setQuery(initialQuery);
     const initialStatus = params.get("subscription");
-    if (["active", "subscribed", "1rs trial", "trial", "none", "cancelled", "expired"].includes(initialStatus)) setStatus(initialStatus);
+    if (["active", "subscribed", "1rs trial", "trial", "none", "cancelled", "expired", "grace"].includes(initialStatus)) setStatus(initialStatus);
     loadUsers();
     const presenceRefresh = window.setInterval(() => loadUsers({ silent: true }), 30000);
     return () => window.clearInterval(presenceRefresh);
@@ -455,10 +462,11 @@ export function AdminUsersPage({ audience = "learners" } = {}) {
   const filteredUsers = useMemo(() => {
     const audienceUsers = users.filter((user) => testerMode ? user.isTester : !user.isTester);
     const rows = audienceUsers.filter((user) => {
-      const matchesStatus = status === "all" || user.subscriptionStatus === status || (status === "expired" && isTrialExpired(user));
+      const matchesStatus = status === "all" || user.subscriptionStatus === status || (status === "expired" && isTrialExpired(user)) || (status === "grace" && billing(user).inGracePeriod);
       const matchesAccount = accountStatus === "all" || (accountStatus === "active" ? user.isActive : !user.isActive);
       const matchesPresence = presenceStatus === "all" || (presenceStatus === "online" ? user.presence?.isOnline : !user.presence?.isOnline);
-      return matchesStatus && matchesAccount && matchesPresence && matchesSearch(user, deferredQuery) && matchesSegment(user, segment);
+      const matchesDate = dateInRange(user.createdAt, dateRange);
+      return matchesStatus && matchesAccount && matchesPresence && matchesDate && matchesSearch(user, deferredQuery) && matchesSegment(user, segment);
     });
 
     return rows.sort((a, b) => {
@@ -468,9 +476,9 @@ export function AdminUsersPage({ audience = "learners" } = {}) {
       if (sort === "name") return String(a.fullName || a.email || "").localeCompare(String(b.fullName || b.email || ""));
       return new Date(b.createdAt || 0) - new Date(a.createdAt || 0);
     });
-  }, [users, deferredQuery, status, accountStatus, presenceStatus, sort, segment, testerMode]);
+  }, [users, deferredQuery, status, accountStatus, presenceStatus, sort, segment, testerMode, dateRange]);
 
-  useEffect(() => { setPage(1); }, [deferredQuery, status, accountStatus, presenceStatus, sort, segment]);
+  useEffect(() => { setPage(1); }, [deferredQuery, status, accountStatus, presenceStatus, sort, segment, dateRange]);
 
   function updateCreateLearner(field, value) {
     setCreateLearner((current) => ({ ...current, [field]: value }));
@@ -509,6 +517,7 @@ export function AdminUsersPage({ audience = "learners" } = {}) {
     const activeUsers = filteredUsers.filter((user) => user.isActive).length;
     const onlineUsers = filteredUsers.filter((user) => user.presence?.isOnline).length;
     const subscribedUsers = filteredUsers.filter((user) => ["active", "subscribed"].includes(user.subscriptionStatus)).length;
+    const graceUsers = filteredUsers.filter((user) => billing(user).inGracePeriod).length;
     const mandateOnUsers = filteredUsers.filter((user) => String(billing(user).mandateStatus || "").toLowerCase() === "active").length;
     const mandateCancelledUsers = filteredUsers.filter((user) => ["cancelled", "expired", "halted"].includes(String(billing(user).mandateStatus || "").toLowerCase())).length;
     const complete = filteredUsers.reduce((sum, user) => sum + completedCourses(user), 0);
@@ -519,6 +528,7 @@ export function AdminUsersPage({ audience = "learners" } = {}) {
       ["Enabled Accounts", formatNumber(activeUsers)],
       ["Online Now", formatNumber(onlineUsers)],
       ["Paid Subscribers", formatNumber(subscribedUsers)],
+      ["Grace Period", formatNumber(graceUsers)],
       ["Mandate On", formatNumber(mandateOnUsers)],
       ["Mandate Cancelled", formatNumber(mandateCancelledUsers)],
       ["Watch Time", formatWatchDuration(totalWatchMinutes)],
@@ -899,14 +909,12 @@ export function AdminUsersPage({ audience = "learners" } = {}) {
         <form className="create-learner-form" onSubmit={submitCreateLearner}><AdminEditFields>
           <label><span>Full name</span><input value={createLearner.fullName} onChange={(event) => updateCreateLearner("fullName", event.target.value)} minLength="2" maxLength="120" required autoComplete="off" /></label>
           <label><span>Mobile number</span><input type="tel" value={createLearner.mobileNumber} onChange={(event) => updateCreateLearner("mobileNumber", event.target.value)} placeholder="9876543210" minLength="10" maxLength="18" required autoComplete="off" /></label>
-          <label><span>Email (optional)</span><input type="email" value={createLearner.email} onChange={(event) => updateCreateLearner("email", event.target.value)} maxLength="254" autoComplete="off" /></label>
           <label><span>Temporary password</span><input type="password" value={createLearner.password} onChange={(event) => updateCreateLearner("password", event.target.value)} minLength="8" maxLength="72" required autoComplete="new-password" /></label>
           {testerMode ? <label><span>Tester note</span><input value={createLearner.testerNotes} onChange={(event) => updateCreateLearner("testerNotes", event.target.value)} maxLength="500" placeholder="Purpose, owner, payment path, or fixture details" autoComplete="off" /></label> : null}
           <label><span>Purchased course (optional)</span><select value={createLearner.courseId} onChange={(event) => updateCreateLearner("courseId", event.target.value)}><option value="">No course yet</option>{courses.map((course) => <option value={course._id} key={course._id}>{course.title}</option>)}</select></label>
           {createLearner.courseId ? <label><span>Course access</span><select value={createLearner.courseAccessType} onChange={(event) => updateCreateLearner("courseAccessType", event.target.value)}><option value="trial">Trial</option><option value="yearly">Yearly (365 days)</option><option value="permanent">Permanent</option></select></label> : null}
           {createLearner.courseId && createLearner.courseAccessType === "trial" ? <label><span>Trial days</span><input type="number" min="1" max="365" value={createLearner.courseAccessDays} onChange={(event) => updateCreateLearner("courseAccessDays", event.target.value)} required /></label> : null}
           <label className="create-learner-check"><input type="checkbox" checked={createLearner.isMobileVerified} onChange={(event) => updateCreateLearner("isMobileVerified", event.target.checked)} /><span>Mobile verified</span></label>
-          <label className="create-learner-check"><input type="checkbox" checked={createLearner.isEmailVerified} disabled={!createLearner.email} onChange={(event) => updateCreateLearner("isEmailVerified", event.target.checked)} /><span>Email verified</span></label>
           <div className="create-learner-actions"><button className="toolbar-button primary" type="submit" disabled={creatingLearner}>{creatingLearner ? "Creating…" : testerMode ? "Create test account" : "Create learner ID"}</button>{createdLearnerId ? <output>Created ID: <strong>{createdLearnerId}</strong></output> : null}</div>
         </AdminEditFields></form>
       </details></AdminWrite>
@@ -914,11 +922,12 @@ export function AdminUsersPage({ audience = "learners" } = {}) {
 
       <form className="controls-panel" onSubmit={(event) => event.preventDefault()}>
         <div><label htmlFor="searchInput">Search</label><input id="searchInput" type="search" placeholder="Name, email, phone number, course" value={query} onChange={(event) => setQuery(event.target.value)} /></div>
-        <div><label htmlFor="statusFilter">Subscription status</label><select id="statusFilter" value={status} onChange={(event) => setStatus(event.target.value)}><option value="all">All subscriptions</option><option value="active">Active subscription</option><option value="subscribed">Subscribed</option><option value="1rs trial">₹1 trial</option><option value="trial">Trial</option><option value="none">No subscription</option><option value="cancelled">Cancelled</option><option value="expired">Expired</option></select></div>
+        <div><label>Joined date</label><AdminDateRangeFilter value={dateRange} onChange={setDateRange} label="Joined date" /></div>
+        <div><label htmlFor="statusFilter">Subscription status</label><select id="statusFilter" value={status} onChange={(event) => setStatus(event.target.value)}><option value="all">All subscriptions</option><option value="active">Active subscription</option><option value="subscribed">Subscribed</option><option value="1rs trial">₹1 trial</option><option value="trial">Trial</option><option value="grace">Grace period</option><option value="none">No subscription</option><option value="cancelled">Cancelled</option><option value="expired">Expired</option></select></div>
         <div><label htmlFor="accountFilter">Account access</label><select id="accountFilter" value={accountStatus} onChange={(event) => setAccountStatus(event.target.value)}><option value="all">All accounts</option><option value="active">Active accounts</option><option value="banned">Banned accounts</option></select></div>
         <div><label htmlFor="presenceFilter">User online status</label><select id="presenceFilter" value={presenceStatus} onChange={(event) => setPresenceStatus(event.target.value)}><option value="all">All users</option><option value="online">Online users</option><option value="offline">Offline users</option></select></div>
         <div><label htmlFor="sortFilter">Sort</label><select id="sortFilter" value={sort} onChange={(event) => setSort(event.target.value)}><option value="newest">Newest first</option><option value="watch">Highest watch time</option><option value="progress">Highest progress</option><option value="courses">Most courses</option><option value="name">Name A-Z</option></select></div>
-        <button className="toolbar-button" type="button" onClick={() => { setQuery(""); setStatus("all"); setAccountStatus("all"); setPresenceStatus("all"); setSort("newest"); setSegment("all"); }}>Clear</button>
+        <button className="toolbar-button" type="button" onClick={() => { setQuery(""); setStatus("all"); setAccountStatus("all"); setPresenceStatus("all"); setSort("newest"); setSegment("all"); setDateRange(defaultDateRange("today")); }}>Clear</button>
       </form>
 
       <div className="crm-segments" aria-label="CRM segments">

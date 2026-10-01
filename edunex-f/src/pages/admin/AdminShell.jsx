@@ -4,7 +4,7 @@ import { adminRoutes, logout } from "./adminApi.js";
 
 const sections = [
   { label: 'Workspace', links: [['dashboard', 'Dashboard', adminRoutes.dashboard, 'home']] },
-  { label: 'Operate', links: [['users', 'Learners', adminRoutes.users, 'users'], ['testerUsers', 'Test accounts', adminRoutes.testerUsers, 'test'], ['analytics', 'Analytics', adminRoutes.analytics, 'trend'], ['testerAnalytics', 'Tester analytics', adminRoutes.testerAnalytics, 'trend'], ['courses', 'Courses', adminRoutes.courses, 'book'], ['subscriptions', 'Subscriptions', adminRoutes.subscriptions, 'loop'], ['payments', 'Payments', adminRoutes.payments, 'pay'], ['reports', 'Reports', adminRoutes.reports, 'flag']] },
+  { label: 'Operate', links: [['users', 'Learners', adminRoutes.users, 'users'], ['testerUsers', 'Test accounts', adminRoutes.testerUsers, 'test'], ['analytics', 'Analytics', adminRoutes.analytics, 'trend'], ['aiChats', 'Nex AI chats', adminRoutes.aiChats, 'chat'], ['testerAnalytics', 'Tester analytics', adminRoutes.testerAnalytics, 'trend'], ['courses', 'Courses', adminRoutes.courses, 'book'], ['subscriptions', 'Subscriptions', adminRoutes.subscriptions, 'loop'], ['payments', 'Payments', adminRoutes.payments, 'pay'], ['reports', 'Reports', adminRoutes.reports, 'flag']] },
   { label: 'Create', links: [['upload', 'Create course', adminRoutes.upload, 'plus'], ['courseReview', 'Course review', adminRoutes.courseReview, 'check'], ['certifications', 'Certification', adminRoutes.certifications, 'award']] },
   { label: 'System', links: [['paymentAuditor', 'Payment auditor', adminRoutes.paymentAuditor, 'audit'], ['health', 'System health', adminRoutes.health, 'pulse'], ['auditLog', 'Audit log', adminRoutes.auditLog, 'log'], ['settings', 'Settings', adminRoutes.settings, 'gear'], ['team', 'Team access', adminRoutes.team, 'users']] },
 ];
@@ -28,6 +28,7 @@ function NavIcon({ type }) {
     audit: <><path d="M9 4h6" /><path d="M9 2h6v4H9z" /><path d="M6 4H5a2 2 0 0 0-2 2v14h18V6a2 2 0 0 0-2-2h-1" /><path d="m7 12 2 2 4-4" /><path d="M7 18h10" /></>,
     loop: <><path d="M17 1l4 4-4 4" /><path d="M3 11V9a4 4 0 0 1 4-4h14" /><path d="m7 23-4-4 4-4" /><path d="M21 13v2a4 4 0 0 1-4 4H3" /></>,
     trend: <><path d="m3 17 6-6 4 4 8-8" /><path d="M14 7h7v7" /></>,
+    chat: <><path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z" /><path d="M8 9h8" /><path d="M8 13h5" /></>,
     award: <><circle cx="12" cy="8" r="5" /><path d="m8.5 12.5-1 8 4.5-2 4.5 2-1-8" /></>,
     flag: <><path d="M5 22V4" /><path d="M5 5c4-3 7 3 14 0v10c-7 3-10-3-14 0" /></>,
     pulse: <><path d="M22 12h-4l-3 8-6-16-3 8H2" /></>,

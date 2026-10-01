@@ -38,7 +38,7 @@ export function ContactPage() {
       </LegalSection>
       <LegalSection id="support" title="Support contact">
         <p>Email: <a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a></p>
-        <p>Phone: <a href="tel:+919479820866">9479820866</a></p>
+        <p>Phone: <a href="tel:+919770095392">+91 97700 95392</a></p>
         <p>Support hours: {businessInfo.supportHours}</p>
         <p>Typical response: {businessInfo.responseTime}</p>
       </LegalSection>

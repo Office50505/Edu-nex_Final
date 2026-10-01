@@ -11,6 +11,7 @@ const Subscription = require('../models/Subscription');
 const AnalyticsEvent = require('../models/AnalyticsEvent');
 const { resolveSubscriptionAccess } = require('./subscriptionAccess');
 const { activeCourseEntitlement } = require('./courseAccess');
+const featureSettings = require('./adminFeatureSettings');
 const rules = require('./completionRules');
 const fail = (message,statusCode=400) => Object.assign(new Error(message),{statusCode});
 async function context(user, courseId) {
@@ -28,10 +29,22 @@ async function access(user, courseId = null) {
 async function state(user, ctx) {
   const userId=String(user._id), courseId=String(ctx.course._id);
   const [rows,assessment] = await Promise.all([Learning.find({userId,courseId,version:ctx.version}).lean(),Assessment.findById(rules.identity(userId,courseId,ctx.version)).lean()]);
-  return { ...rules.eligibility({...ctx,rows,user,assessment}), courseId, courseTitle:ctx.course.title, version:ctx.version };
+  const eligibility = rules.eligibility({...ctx,rows,user,assessment});
+  const certificationEnabled = await featureSettings.certificationIsEnabled();
+  return {
+    ...eligibility,
+    eligible: certificationEnabled ? eligibility.eligible : false,
+    certificationEnabled,
+    watchMore: !certificationEnabled && eligibility.completedLessons === eligibility.totalLessons,
+    requirements: certificationEnabled ? eligibility.requirements : ['More learning is available. Continue with recommended lessons.'],
+    courseId,
+    courseTitle:ctx.course.title,
+    version:ctx.version,
+  };
 }
 function certificateView(c) { return {_id:String(c._id),certificateId:c.certificateId,courseId:c.courseId,courseTitle:c.courseTitle,courseVersion:c.courseVersion,userName:c.userName,learnerName:c.userName,issuedAt:c.issuedAt,status:c.status || 'active',totalLessons:c.totalLessons || 0,criteria:c.criteria}; }
 async function issue(user,ctx,status) {
+  if(status.certificationEnabled === false || !(await featureSettings.certificationIsEnabled())) return null;
   if(!status.eligible) return null;
   const key=rules.identity(user._id,ctx.course._id,ctx.version);
   const _id=new mongoose.Types.ObjectId(key.slice(0,24));

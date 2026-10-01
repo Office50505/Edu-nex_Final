@@ -4,6 +4,7 @@ import { MarketingSettings } from './MarketingSettings.jsx';
 import { useEffect, useMemo, useState } from "react";
 import { AdminShell, Message } from "./AdminShell.jsx";
 import { adminJson, adminRoutes, formatDate, formatDateTime, formatNumber, formatWatchDuration, getAdmin, requireAdmin } from "./adminApi.js";
+import { AdminDateRangeFilter, dateInRange, defaultDateRange } from "./AdminDateRangeFilter.jsx";
 
 function valueText(value, fallback = "Not returned") {
   if (value === null || value === undefined || value === "") return fallback;
@@ -38,10 +39,10 @@ function MetricStrip({ items }) {
   );
 }
 
-function StatusTable({ columns, rows, emptyText = "No records found." }) {
+function StatusTable({ columns, rows, emptyText = "No records found.", className = "" }) {
   if (!rows.length) return <div className="empty-state">{emptyText}</div>;
   return (
-    <div className="admin-data-table" role="table">
+    <div className={`admin-data-table ${className}`.trim()} role="table">
       <div className="admin-data-head" role="row">
         {columns.map((column) => <span role="columnheader" key={column}>{column}</span>)}
       </div>
@@ -90,6 +91,58 @@ function userWatchMinutes(user) {
 
 function userProgress(user) {
   return Number(user.progressSummary?.averageProgress || 0);
+}
+
+function orderTypeLabel(type) {
+  const labels = {
+    trial_charge: "Trial charge",
+    mandate_setup: "Mandate setup",
+    subscription_charge: "Subscription renewal",
+    one_time_access: "Direct access",
+    refund: "Refund",
+  };
+  return labels[type] || valueText(type, "Payment");
+}
+
+function paymentMethodLabel(order) {
+  if (order.orderType === "subscription_charge") return "AutoPay";
+  if (order.razorpaySubscriptionId || order.subscription?.razorpaySubscriptionId) return "Direct subscription";
+  if (order.orderType === "trial_charge") return "Trial payment";
+  if (order.orderType === "one_time_access") return "Direct payment";
+  if (order.orderType === "mandate_setup") return "Mandate setup";
+  return "Direct payment";
+}
+
+function customerStage(order) {
+  const status = String(order.user?.subscriptionStatus || order.subscription?.status || "none").toLowerCase();
+  if (["active", "subscribed"].includes(status)) return "Customer";
+  if (["trial", "1rs trial"].includes(status)) return "Trial";
+  return "None";
+}
+
+function paymentReference(order) {
+  if (order.ledgerSource === "subscription_period") return `Subscription period ${order.razorpaySubscriptionId || order.subscription?.razorpaySubscriptionId || ""}`.trim();
+  return order.razorpayPaymentId
+    || order.phonePeTransactionId
+    || order.phonePeMerchantTransactionId
+    || order.razorpaySubscriptionId
+    || order.subscription?.razorpaySubscriptionId
+    || order._id
+    || "No reference";
+}
+
+function messageText(message) {
+  if (typeof message === "string") return message;
+  return String(message?.content || message?.text || message?.message || message?.answer || "");
+}
+
+function messageRole(message) {
+  return String(message?.role || message?.sender || "message").toLowerCase();
+}
+
+function clippedText(value, max = 140) {
+  const text = String(value || "").replace(/\s+/g, " ").trim();
+  return text.length > max ? `${text.slice(0, max - 1)}…` : text;
 }
 
 export function AdminSubscribersPage() {
@@ -204,25 +257,223 @@ export function AdminOrdersPage() {
 
 export function AdminPaymentsPage() {
   const { loading, error, analytics, health } = useOperationsData({ analytics: true, health: true });
+  const [ledger, setLedger] = useState({ loading: true, error: "", payments: [], summary: {} });
+  const [dateRange, setDateRange] = useState(() => defaultDateRange("today"));
+  const [query, setQuery] = useState("");
+  useEffect(() => {
+    let active = true;
+    async function loadPayments() {
+      if (!requireAdmin()) return;
+      setLedger((current) => ({ ...current, loading: true, error: "" }));
+      try {
+        const data = await adminJson("/api/admin/payments?limit=200", {}, "Unable to load payment ledger.");
+        if (active) setLedger({ loading: false, error: "", payments: data.payments || [], summary: data.summary || {} });
+      } catch (error) {
+        if (active) setLedger((current) => ({ ...current, loading: false, error: error.message || "Unable to load payment ledger." }));
+      }
+    }
+    loadPayments();
+    return () => { active = false; };
+  }, []);
   const totals = analytics?.totals || {};
   const paymentChecks = (health?.checks || []).filter((check) => ["payment-mode", "payments", "webhooks"].includes(check.id));
+  const filteredPayments = useMemo(() => {
+    const needle = query.trim().toLowerCase();
+    return (ledger.payments || []).filter((order) => {
+      const matchesDate = dateInRange(order.paidAt || order.createdAt, dateRange);
+      if (!matchesDate) return false;
+      if (!needle) return true;
+      return [
+        order.user?.fullName,
+        order.user?.mobileNumber,
+        order.user?.email,
+        order.gateway,
+        order.status,
+        order.orderType,
+        order.razorpayPaymentId,
+        order.razorpayOrderId,
+        order._id,
+      ].some((value) => String(value || "").toLowerCase().includes(needle));
+    });
+  }, [ledger.payments, dateRange, query]);
+  const filteredSummary = useMemo(() => ({
+    count: filteredPayments.length,
+    totalAmount: filteredPayments.reduce((sum, order) => sum + Number(order.totalAmount || 0), 0),
+    autoPayCount: filteredPayments.filter((order) => paymentMethodLabel(order) === "AutoPay").length,
+    directCount: filteredPayments.filter((order) => paymentMethodLabel(order) !== "AutoPay").length,
+    autoPayAmount: filteredPayments.filter((order) => paymentMethodLabel(order) === "AutoPay").reduce((sum, order) => sum + Number(order.totalAmount || 0), 0),
+    directAmount: filteredPayments.filter((order) => paymentMethodLabel(order) !== "AutoPay").reduce((sum, order) => sum + Number(order.totalAmount || 0), 0),
+  }), [filteredPayments]);
   return (
-    <AdminShell activePage="payments" title="Payments" subtitle="Payment gateway readiness, failed payment alerts, and revenue controls.">
+    <AdminShell activePage="payments" title="Payments" subtitle="Money received, AutoPay cuts, direct payments, and user payment context.">
       <Message text={error} type="error" />
+      <Message text={ledger.error} type="error" />
+      <section className="controls-panel date-filter-panel">
+        <div>
+          <label htmlFor="paymentLedgerSearch">Search</label>
+          <input id="paymentLedgerSearch" type="search" placeholder="User, mobile, gateway, reference" value={query} onChange={(event) => setQuery(event.target.value)} />
+        </div>
+        <div>
+          <label>Payment date</label>
+          <AdminDateRangeFilter value={dateRange} onChange={setDateRange} label="Payment date" />
+        </div>
+        <button className="toolbar-button" type="button" onClick={() => { setQuery(""); setDateRange(defaultDateRange("today")); }}>Clear</button>
+      </section>
       <MetricStrip items={[
-        ["Revenue in range", money(totals.revenueInRange), "Selected analytics range"],
+        ["Ledger received", money(filteredSummary.totalAmount), `${formatNumber(filteredSummary.count)} paid rows shown`],
         ["Lifetime revenue", money(totals.totalRevenue), "All paid orders"],
-        ["Failed payments", formatNumber(totals.failedOrdersInRange), "Needs follow-up"],
+        ["AutoPay cuts", money(filteredSummary.autoPayAmount), `${formatNumber(filteredSummary.autoPayCount)} monthly renewals`],
+        ["Direct payments", money(filteredSummary.directAmount), `${formatNumber(filteredSummary.directCount)} trial, mandate, or one-time payments`],
       ]} />
-      {loading ? <div className="loading-state">Loading payment checks...</div> : (
+      {ledger.loading ? <div className="loading-state">Loading payment ledger...</div> : (
         <StatusTable
-          columns={["Check", "Status", "Detail", "Next step"]}
-          rows={paymentChecks.map((check) => ({
-            id: check.id,
-            cells: [check.label, <Badge tone={check.status === "healthy" ? "good" : check.status === "attention" ? "warn" : ""}>{check.status}</Badge>, check.detail, check.action || "No action returned"],
+          className="payment-ledger-table"
+          columns={["User", "Amount", "Date", "Payment mode", "Customer state", "Gateway", "Reference"]}
+          rows={filteredPayments.map((order) => ({
+            id: order._id || paymentReference(order),
+            cells: [
+              <span className="payment-user-cell"><strong>{order.user?.fullName || "Unknown user"}</strong><small>{order.user?.mobileNumber || "No mobile"}</small></span>,
+              <span className="payment-amount-cell"><strong>{money(order.totalAmount)}</strong><small>{orderTypeLabel(order.orderType)}</small></span>,
+              formatDateTime(order.paidAt || order.createdAt),
+              <Badge tone={paymentMethodLabel(order) === "AutoPay" ? "good" : "warn"}>{paymentMethodLabel(order)}</Badge>,
+              <Badge tone={customerStage(order) === "Customer" ? "good" : customerStage(order) === "Trial" ? "warn" : ""}>{customerStage(order)}</Badge>,
+              valueText(order.gateway || order.subscription?.gateway, "Unknown"),
+              paymentReference(order),
+            ],
           }))}
-          emptyText="No payment checks returned."
+          emptyText="No paid payments returned."
         />
+      )}
+      <section className="dashboard-panel">
+        <h2 className="panel-title">Gateway checks</h2>
+        {loading ? <div className="loading-state">Loading payment checks...</div> : (
+          <StatusTable
+            columns={["Check", "Status", "Detail", "Next step"]}
+            rows={paymentChecks.map((check) => ({
+              id: check.id,
+              cells: [check.label, <Badge tone={check.status === "healthy" ? "good" : check.status === "attention" ? "warn" : ""}>{check.status}</Badge>, check.detail, check.action || "No action returned"],
+            }))}
+            emptyText="No payment checks returned."
+          />
+        )}
+      </section>
+    </AdminShell>
+  );
+}
+
+export function AdminAiChatsPage() {
+  const [state, setState] = useState({ loading: true, error: "", sessions: [], summary: {} });
+  const [query, setQuery] = useState("");
+  const [selectedId, setSelectedId] = useState("");
+  const [dateRange, setDateRange] = useState(() => defaultDateRange("today"));
+
+  useEffect(() => {
+    let active = true;
+    async function load() {
+      if (!requireAdmin()) return;
+      setState((current) => ({ ...current, loading: true, error: "" }));
+      try {
+        const data = await adminJson("/api/admin/ai-chats?limit=200", {}, "Unable to load Nex AI chat history.");
+        if (active) {
+          setState({ loading: false, error: "", sessions: data.sessions || [], summary: data.summary || {} });
+          setSelectedId((current) => current || String(data.sessions?.[0]?._id || ""));
+        }
+      } catch (error) {
+        if (active) setState((current) => ({ ...current, loading: false, error: error.message || "Unable to load Nex AI chat history." }));
+      }
+    }
+    load();
+    return () => { active = false; };
+  }, []);
+
+  const filtered = useMemo(() => {
+    const needle = query.trim().toLowerCase();
+    const inRange = state.sessions.filter((session) => dateInRange(session.lastUpdatedAt || session.updatedAt || session.createdAt, dateRange));
+    if (!needle) return inRange;
+    return inRange.filter((session) => [
+      session.user?.fullName,
+      session.user?.email,
+      session.user?.mobileNumber,
+      session.user?.subscriptionStatus,
+      session.course?.title,
+      ...(Array.isArray(session.messages) ? session.messages.map(messageText).slice(-6) : []),
+    ].some((value) => String(value || "").toLowerCase().includes(needle)));
+  }, [query, state.sessions, dateRange]);
+
+  const selected = filtered.find((session) => String(session._id) === selectedId) || filtered[0] || null;
+  const messages = Array.isArray(selected?.messages) ? selected.messages : [];
+
+  return (
+    <AdminShell activePage="aiChats" title="Nex AI Chats" subtitle="Review learner conversations with Nex AI by user, course, date, and message history.">
+      <Message text={state.error} type="error" />
+      <MetricStrip items={[
+        ["Chat sessions", formatNumber(filtered.length), "User-course conversations"],
+        ["Users", formatNumber(new Set(filtered.map((session) => session.user?._id || session.user?.mobileNumber || session.user?.email).filter(Boolean)).size), "Learners with saved chats"],
+        ["Messages", formatNumber(filtered.reduce((sum, session) => sum + (Array.isArray(session.messages) ? session.messages.length : 0), 0)), "Saved user and AI messages"],
+      ]} />
+      <section className="controls-panel">
+        <div className="filter-group">
+          <label htmlFor="aiChatSearch">Search chats</label>
+          <input id="aiChatSearch" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search by user, phone, course, status, or message" />
+        </div>
+        <div>
+          <label>Chat date</label>
+          <AdminDateRangeFilter value={dateRange} onChange={setDateRange} label="Chat date" />
+        </div>
+      </section>
+      {state.loading ? <div className="loading-state">Loading Nex AI chats...</div> : (
+        <div className="analytics-grid ai-chat-grid">
+          <section className="dashboard-panel">
+            <h2 className="panel-title">Chat sessions</h2>
+            <StatusTable
+              columns={["User", "Course", "Messages", "Last active", "Last message"]}
+              rows={filtered.map((session) => {
+                const sessionMessages = Array.isArray(session.messages) ? session.messages : [];
+                const last = sessionMessages[sessionMessages.length - 1];
+                return {
+                  id: session._id,
+                  cells: [
+                    <button className="toolbar-button" type="button" onClick={() => setSelectedId(String(session._id))}>
+                      {session.user?.fullName || session.user?.mobileNumber || "Unknown user"}
+                    </button>,
+                    session.course?.title || "No course",
+                    formatNumber(sessionMessages.length),
+                    formatDateTime(session.lastUpdatedAt),
+                    clippedText(messageText(last), 90) || "No messages",
+                  ],
+                };
+              })}
+              emptyText="No Nex AI chat sessions found."
+            />
+          </section>
+          <section className="dashboard-panel">
+            <h2 className="panel-title">Transcript</h2>
+            {selected ? (
+              <>
+                <div className="data-list">
+                  <div className="data-row"><span>User</span><strong>{selected.user?.fullName || "Unknown user"}</strong></div>
+                  <div className="data-row"><span>Contact</span><strong>{selected.user?.mobileNumber || selected.user?.email || "No contact"}</strong></div>
+                  <div className="data-row"><span>Subscription</span><strong>{selected.user?.subscriptionStatus || "none"}</strong></div>
+                  <div className="data-row"><span>Course</span><strong>{selected.course?.title || "No course"}</strong></div>
+                </div>
+                <div className="payment-audit-grid">
+                  {messages.map((message, index) => {
+                    const role = messageRole(message);
+                    return (
+                      <article className="payment-audit-card" key={`${selected._id}-${index}`}>
+                        <div className="payment-audit-card-head">
+                          <strong>{role === "assistant" ? "Nex AI" : role === "user" ? "User" : valueText(role, "Message")}</strong>
+                          <Badge tone={role === "assistant" ? "good" : "warn"}>{role}</Badge>
+                        </div>
+                        <p>{messageText(message) || "Empty message"}</p>
+                      </article>
+                    );
+                  })}
+                </div>
+              </>
+            ) : <div className="empty-state">Select a chat session to view messages.</div>}
+          </section>
+        </div>
       )}
     </AdminShell>
   );

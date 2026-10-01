@@ -12,6 +12,7 @@ const User=require('../models/User');
 const {areRateLimitsDisabled}=require('../services/rateLimitToggle');
 const {renderCertificatePage}=require('../services/certificateTemplate');
 const templateSettings=require('../services/certificateTemplateSettings');
+const featureSettings=require('../services/adminFeatureSettings');
 const router=express.Router();
 const auth=requireCompatibleAuth();
 const run=fn=>async(req,res)=>{try{await fn(req,res);}catch(e){res.status(e.statusCode||500).json({error:e.statusCode?e.message:'Could not complete certification request. Please retry.'});}};
@@ -48,6 +49,7 @@ router.post('/learning/:courseId/progress',auth,run(async(req,res)=>{
 }));
 router.post('/learning/:courseId/claim',auth,run(async(req,res)=>{
   const ctx=await service.context(req.compatUser,req.params.courseId),status=await service.state(req.compatUser,ctx);
+  if(status.certificationEnabled === false)return res.json({certificate:null,eligibility:status,certificationDisabled:true,watchMore:true});
   if(!status.eligible)return res.status(409).json({error:status.requirements.join(' '),eligibility:status});
   res.json({certificate:await service.issue(req.compatUser,ctx,status)});
 }));
@@ -71,7 +73,7 @@ router.post('/learning/:courseId/assessment',auth,run(async(req,res)=>{
   const result=await Assessment.findOneAndUpdate(areRateLimitsDisabled()?{_id}:{_id,$or:[{lastAttemptAt:{$lt:new Date(Date.now()-30000)}},{lastAttemptAt:null}]},{$set:{lastAttemptAt:new Date()},$max:{score,passed:score>=70}},{new:true}).lean();
   if(!result)throw service.fail('Wait 30 seconds before submitting again.',429);
   const status=await service.state(req.compatUser,ctx);
-  res.json({score,passed:score>=70,eligibility:status,certificate:await service.issue(req.compatUser,ctx,status)});
+  res.json({score,passed:score>=70,eligibility:status,certificate:await service.issue(req.compatUser,ctx,status),certificationDisabled:status.certificationEnabled===false,watchMore:status.watchMore});
 }));
 
 router.get('/admin/certificate-template',protectAdmin,run(async(_req,res)=>{
@@ -84,6 +86,12 @@ router.post('/admin/certificate-template/preview',protectAdminRead,run(async(req
   const template=templateSettings.normalize(req.body.template||req.body||{});
   const certificate=templateSettings.previewCertificate(req.body.sample||{});
   res.type('html').send(renderCertificatePage(certificate,template));
+}));
+router.get('/admin/certification-settings',protectAdmin,run(async(_req,res)=>{
+  res.json(await featureSettings.getSettings());
+}));
+router.put('/admin/certification-settings',protectAdmin,run(async(req,res)=>{
+  res.json(await featureSettings.saveSettings({certificationEnabled:req.body?.certificationEnabled!==false},req.admin));
 }));
 router.get('/admin/certifications',protectAdmin,run(async(req,res)=>{
   const page=Math.max(1,Math.min(10000,parseInt(req.query.page,10)||1));

@@ -49,7 +49,7 @@ export function useLearningProgress(courseId, videoId, time, playing) {
       busy=true;
       try {
         const data=await window.EduNex.authRequest(`/api/learning/${courseId}/progress`,{method:'POST',keepalive:true,body:JSON.stringify({videoId,currentTime:latest.current.time.current,duration:latest.current.time.duration})});
-        if(!disposed){setNotice(data.certificate?'Certificate earned — open My Certificates':'Progress saved');publish(data.eligibility);}
+        if(!disposed){setNotice(data.watchMore?'Course complete — more lessons are ready for you.':data.certificate?'Certificate earned — open My Certificates':'Progress saved');publish(data.eligibility);}
       } catch(e){if(!disposed)setNotice(e.message || 'Progress not saved. Retrying when connected.');}
       finally{busy=false;}
     };

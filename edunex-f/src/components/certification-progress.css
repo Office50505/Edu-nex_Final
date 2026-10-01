@@ -99,6 +99,23 @@
   opacity: .5;
 }
 
+.course-progress__watch-more {
+  margin-top: 14px;
+  padding: 14px;
+  border: 1px solid rgba(217, 154, 34, .35);
+  border-radius: 12px;
+  background: rgba(217, 154, 34, .08);
+}
+
+.course-progress__watch-more strong {
+  display: block;
+  color: var(--text, var(--library-ink));
+}
+
+.course-progress__watch-more p {
+  margin: 6px 0 10px;
+}
+
 .course-progress :focus-visible {
   outline: 2px solid var(--cyan);
   outline-offset: 4px;
