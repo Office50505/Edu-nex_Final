@@ -69,6 +69,7 @@ function normalizeCourse(course) {
   return {
     ...course,
     id,
+    slug: course.slug || "",
     title: course.title || "Untitled course",
     description: plainCourseDescription(course.description) || "Build practical AI skills with guided lessons and projects.",
     categoryName: window.EduNex?.courseCategory?.(course) || (typeof course.category === "string" ? course.category : course.category?.name) || "Course",
@@ -76,6 +77,26 @@ function normalizeCourse(course) {
     lessonCount: Array.isArray(course.videos) ? course.videos.length : 0,
     rating: course.rating || course.averageRating || "4.8",
   };
+}
+
+function isPrimaryTrialCourse(course) {
+  const text = `${course?.title || ""} ${course?.slug || ""}`.toLowerCase();
+  return /\bai\s+influenc(?:er|e)\b/.test(text);
+}
+
+function courseTime(course) {
+  const value = new Date(course?.publishedAt || course?.createdAt || 0).getTime();
+  return Number.isFinite(value) ? value : 0;
+}
+
+function orderCoursesForAccess(courses) {
+  return [...courses].sort((left, right) => {
+    const leftPrimary = isPrimaryTrialCourse(left);
+    const rightPrimary = isPrimaryTrialCourse(right);
+    if (leftPrimary !== rightPrimary) return leftPrimary ? -1 : 1;
+    if (leftPrimary && rightPrimary) return courseTime(left) - courseTime(right);
+    return courseTime(right) - courseTime(left);
+  });
 }
 
 function driveThumbnailFallback(course) {
@@ -239,7 +260,7 @@ export function CoursesPage() {
     try {
       await Promise.all([hydrateCourseAccess(), hydrateWishlist()]);
       const data = await window.EduNex.request("/api/courses");
-      setCourses(coursesArray(data).map(normalizeCourse));
+      setCourses(orderCoursesForAccess(coursesArray(data).map(normalizeCourse)));
       setState("ready");
     } catch (error) {
       console.error("Courses API failed", error);
@@ -277,9 +298,9 @@ export function CoursesPage() {
   const showSearchSuggestions = suggestionsOpen && searchSuggestions.length > 0;
   const filteredCourses = useMemo(() => {
     const query = search.trim().toLowerCase();
-    return courses.filter((course) => !query || `${course.title} ${course.description} ${course.categoryName}`.toLowerCase().includes(query));
+    return orderCoursesForAccess(courses.filter((course) => !query || `${course.title} ${course.description} ${course.categoryName}`.toLowerCase().includes(query)));
   }, [courses, search]);
-  const firstVisibleCourseId = filteredCourses[0]?.id || "";
+  const primaryTrialCourseId = courses.find(isPrimaryTrialCourse)?.id || courses[0]?.id || "";
 
   const toggleWishlist = async (courseId) => {
     if (!courseId) return;
@@ -304,7 +325,7 @@ export function CoursesPage() {
     } catch (_) {}
   };
 
-  const canOpenCourse = (course) => accessPhase === "full" || courseAccessIds.has(course.id) || (accessPhase === "trial" && course.id === firstVisibleCourseId);
+  const canOpenCourse = (course) => accessPhase === "full" || courseAccessIds.has(course.id) || (accessPhase === "trial" && course.id === primaryTrialCourseId);
 
   const openCourse = (course) => {
     window.location.href = courseEntryHref(course, { hasAccess: canOpenCourse(course) });
