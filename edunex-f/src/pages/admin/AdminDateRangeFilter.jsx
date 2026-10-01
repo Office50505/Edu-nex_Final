@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { formatDate } from "./adminApi.js";
 
 const DAY_MS = 86400000;
@@ -85,6 +85,7 @@ export function adminDatePresets(today = new Date()) {
   const last7 = addDays(now, -6);
   const last30 = addDays(now, -29);
   return {
+    allTime: { label: "All time", startDate: "", endDate: "" },
     today: { label: "Today", startDate: toDateInput(now), endDate: toDateInput(now) },
     yesterday: { label: "Yesterday", startDate: toDateInput(yesterday), endDate: toDateInput(yesterday) },
     last7: { label: "Last 7 days", startDate: toDateInput(last7), endDate: toDateInput(now) },
@@ -100,6 +101,7 @@ export function defaultDateRange(preset = "today") {
 }
 
 export function dateInRange(value, range) {
+  if (!range || range.preset === "allTime") return true;
   if (!value) return false;
   const time = new Date(value).getTime();
   if (!Number.isFinite(time)) return false;
@@ -110,17 +112,39 @@ export function dateInRange(value, range) {
 
 export function AdminDateRangeFilter({ value, onChange, onApply, loading = false, label = "Date range", meta = "" }) {
   const presets = useMemo(() => adminDatePresets(), []);
+  const rootRef = useRef(null);
   const [open, setOpen] = useState(false);
   const [draftStep, setDraftStep] = useState("start");
   const [calendarMonth, setCalendarMonth] = useState(() => startOfMonth(new Date()));
   const range = value || defaultDateRange();
   const selectedLabel = presets[range.preset]?.label || "Custom range";
-  const canApply = Boolean(range.startDate && range.endDate) && !loading;
+  const isAllTime = range.preset === "allTime";
+  const canApply = (isAllTime || Boolean(range.startDate && range.endDate)) && !loading;
+
+  useEffect(() => {
+    if (!open) return undefined;
+    function onPointerDown(event) {
+      if (rootRef.current?.contains(event.target)) return;
+      setOpen(false);
+    }
+    function onKeyDown(event) {
+      if (event.key === "Escape") setOpen(false);
+    }
+    document.addEventListener("pointerdown", onPointerDown);
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.removeEventListener("pointerdown", onPointerDown);
+      document.removeEventListener("keydown", onKeyDown);
+    };
+  }, [open]);
 
   function choosePreset(key) {
     const next = { preset: key, ...presets[key] };
     onChange?.(next);
-    if (key !== "custom") onApply?.(next);
+    if (key !== "custom") {
+      setOpen(false);
+      onApply?.(next);
+    }
   }
 
   function updateCustom(field, nextValue) {
@@ -152,20 +176,21 @@ export function AdminDateRangeFilter({ value, onChange, onApply, loading = false
   }
 
   return (
-    <div className="admin-date-range-filter">
+    <div className="admin-date-range-filter" ref={rootRef}>
       <button className="date-chip" type="button" onClick={() => setOpen((current) => !current)} aria-expanded={open}>
         <span aria-hidden="true">Date</span>
         <strong>{selectedLabel}</strong>
       </button>
       <button className="date-chip date-chip-wide" type="button" onClick={() => setOpen((current) => !current)}>
         <span aria-hidden="true">Range</span>
-        <strong>{formatDate(range.startDate)} - {formatDate(range.endDate)}</strong>
+        <strong>{isAllTime ? "All records" : `${formatDate(range.startDate)} - ${formatDate(range.endDate)}`}</strong>
       </button>
       {meta ? <span className="date-range-meta">{meta}</span> : null}
       {open ? (
         <div className="date-range-popover">
           <div className="date-range-menu" role="menu" aria-label={label}>
             {[
+              ["allTime", "All time"],
               ["today", "Today"],
               ["yesterday", "Yesterday"],
               ["last7", "Last"],
@@ -179,23 +204,32 @@ export function AdminDateRangeFilter({ value, onChange, onApply, loading = false
             ))}
           </div>
           <div className="date-range-main">
-            <div className="date-range-inputs">
-              <input type="date" value={range.startDate || ""} onChange={(event) => updateCustom("startDate", event.target.value)} aria-label={`${label} start`} />
-              <span>-</span>
-              <input type="date" value={range.endDate || ""} onChange={(event) => updateCustom("endDate", event.target.value)} aria-label={`${label} end`} />
-            </div>
-            <div className="date-calendar-toolbar">
-              <button type="button" onClick={() => setCalendarMonth((current) => new Date(current.getFullYear(), current.getMonth() - 1, 1))} aria-label="Previous month">‹</button>
-              <strong>{draftStep === "end" ? "Choose end date" : "Choose start date"}</strong>
-              <button type="button" onClick={() => setCalendarMonth((current) => new Date(current.getFullYear(), current.getMonth() + 1, 1))} aria-label="Next month">›</button>
-            </div>
-            <div className="date-calendar-shell">
-              <CalendarMonth month={calendarMonth} range={range} onPick={pickDay} />
-              <CalendarMonth month={new Date(calendarMonth.getFullYear(), calendarMonth.getMonth() + 1, 1)} range={range} onPick={pickDay} />
-            </div>
+            {isAllTime ? (
+              <div className="date-range-all-time">
+                <strong>All time selected</strong>
+                <span>Joined-date filtering is off, so every learner is included.</span>
+              </div>
+            ) : (
+              <>
+                <div className="date-range-inputs">
+                  <input type="date" value={range.startDate || ""} onChange={(event) => updateCustom("startDate", event.target.value)} aria-label={`${label} start`} />
+                  <span>-</span>
+                  <input type="date" value={range.endDate || ""} onChange={(event) => updateCustom("endDate", event.target.value)} aria-label={`${label} end`} />
+                </div>
+                <div className="date-calendar-toolbar">
+                  <button type="button" onClick={() => setCalendarMonth((current) => new Date(current.getFullYear(), current.getMonth() - 1, 1))} aria-label="Previous month">‹</button>
+                  <strong>{draftStep === "end" ? "Choose end date" : "Choose start date"}</strong>
+                  <button type="button" onClick={() => setCalendarMonth((current) => new Date(current.getFullYear(), current.getMonth() + 1, 1))} aria-label="Next month">›</button>
+                </div>
+                <div className="date-calendar-shell">
+                  <CalendarMonth month={calendarMonth} range={range} onPick={pickDay} />
+                  <CalendarMonth month={new Date(calendarMonth.getFullYear(), calendarMonth.getMonth() + 1, 1)} range={range} onPick={pickDay} />
+                </div>
+              </>
+            )}
             <div className="date-range-preview">
               <span>{selectedLabel}</span>
-              <strong>{formatDate(range.startDate)} - {range.endDate ? formatDate(range.endDate) : "Select end date"}</strong>
+              <strong>{isAllTime ? "Every joined date" : `${formatDate(range.startDate)} - ${range.endDate ? formatDate(range.endDate) : "Select end date"}`}</strong>
             </div>
             <div className="date-range-actions">
               <button type="button" onClick={() => setOpen(false)}>Cancel</button>

@@ -404,7 +404,7 @@ export function AdminUsersPage({ audience = "learners" } = {}) {
   const [presenceStatus, setPresenceStatus] = useState("all");
   const [sort, setSort] = useState("newest");
   const [segment, setSegment] = useState("all");
-  const [dateRange, setDateRange] = useState(() => defaultDateRange("today"));
+  const [dateRange, setDateRange] = useState(() => defaultDateRange("allTime"));
   const [openIds, setOpenIds] = useState(new Set());
   const [selectedUser, setSelectedUser] = useState(null);
   const [drawerTab, setDrawerTab] = useState("Overview");
@@ -927,7 +927,7 @@ export function AdminUsersPage({ audience = "learners" } = {}) {
         <div><label htmlFor="accountFilter">Account access</label><select id="accountFilter" value={accountStatus} onChange={(event) => setAccountStatus(event.target.value)}><option value="all">All accounts</option><option value="active">Active accounts</option><option value="banned">Banned accounts</option></select></div>
         <div><label htmlFor="presenceFilter">User online status</label><select id="presenceFilter" value={presenceStatus} onChange={(event) => setPresenceStatus(event.target.value)}><option value="all">All users</option><option value="online">Online users</option><option value="offline">Offline users</option></select></div>
         <div><label htmlFor="sortFilter">Sort</label><select id="sortFilter" value={sort} onChange={(event) => setSort(event.target.value)}><option value="newest">Newest first</option><option value="watch">Highest watch time</option><option value="progress">Highest progress</option><option value="courses">Most courses</option><option value="name">Name A-Z</option></select></div>
-        <button className="toolbar-button" type="button" onClick={() => { setQuery(""); setStatus("all"); setAccountStatus("all"); setPresenceStatus("all"); setSort("newest"); setSegment("all"); setDateRange(defaultDateRange("today")); }}>Clear</button>
+        <button className="toolbar-button" type="button" onClick={() => { setQuery(""); setStatus("all"); setAccountStatus("all"); setPresenceStatus("all"); setSort("newest"); setSegment("all"); setDateRange(defaultDateRange("allTime")); }}>Clear</button>
       </form>
 
       <div className="crm-segments" aria-label="CRM segments">
