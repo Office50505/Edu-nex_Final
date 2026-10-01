@@ -385,15 +385,19 @@ function LearnerDetailDrawer({ user, courses, tab, setTab, onClose, purchaseHist
   );
 }
 
-export function AdminUsersPage({ audience = "learners" } = {}) {
+export function AdminUsersPage({ audience = "learners", paymentGateway = "" } = {}) {
   const testerMode = audience === "testers";
+  const gatewayFilter = String(paymentGateway || "").trim().toLowerCase();
+  const gatewayTitle = gatewayFilter === "phonepe" ? "PhonePe" : gatewayFilter === "razorpay" ? "Razorpay" : "";
   const entityLabel = testerMode ? "tester" : "learner";
   const entityLabelTitle = testerMode ? "Tester" : "Learner";
-  const pageTitle = testerMode ? "Test Account Management" : "User Management";
+  const pageTitle = testerMode ? "Test Account Management" : gatewayTitle ? `${gatewayTitle} Payment Users` : "User Management";
   const pageSubtitle = testerMode
     ? "CRM-style tester records with the same account, subscription, course, and deletion controls."
+    : gatewayTitle
+      ? `CRM-style user management for ${gatewayTitle} paying users with billing, access, course, and account controls.`
     : "CRM-style learner records with subscription status, verification health, engagement, and course progress.";
-  const pageKey = testerMode ? "testerUsers" : "users";
+  const pageKey = testerMode ? "testerUsers" : gatewayFilter === "phonepe" ? "phonePeUsers" : gatewayFilter === "razorpay" ? "razorpayUsers" : "users";
   const [page, setPage] = useState(1);
   const [deletingId, setDeletingId] = useState(null);
   const [users, setUsers] = useState([]);
@@ -424,7 +428,21 @@ export function AdminUsersPage({ audience = "learners" } = {}) {
   const [purchaseHistories, setPurchaseHistories] = useState({});
   const [purchaseOpenIds, setPurchaseOpenIds] = useState(new Set());
   const deferredQuery = useDeferredValue(query);
-  const totalAudienceCount = users.filter((user) => testerMode ? user.isTester : !user.isTester).length;
+  const matchesGatewayFilter = (user) => {
+    if (!gatewayFilter) return true;
+    return String(billing(user).gateway || "").trim().toLowerCase() === gatewayFilter;
+  };
+  const isGatewayPayingUser = (user) => {
+    if (!gatewayFilter) return true;
+    const summary = billing(user);
+    return matchesGatewayFilter(user) && (
+      ["active", "subscribed"].includes(String(user.subscriptionStatus || "").toLowerCase())
+      || ["active", "subscribed"].includes(String(summary.subscriptionStatus || "").toLowerCase())
+      || Boolean(summary.inGracePeriod)
+      || Number(summary.amount || 0) > 0
+    );
+  };
+  const totalAudienceCount = users.filter((user) => (testerMode ? user.isTester : !user.isTester) && isGatewayPayingUser(user)).length;
 
   async function loadUsers({ silent = false } = {}) {
     if (!requireAdmin()) return;
@@ -460,7 +478,7 @@ export function AdminUsersPage({ audience = "learners" } = {}) {
   }, [pageTitle, testerMode]);
 
   const filteredUsers = useMemo(() => {
-    const audienceUsers = users.filter((user) => testerMode ? user.isTester : !user.isTester);
+    const audienceUsers = users.filter((user) => (testerMode ? user.isTester : !user.isTester) && isGatewayPayingUser(user));
     const rows = audienceUsers.filter((user) => {
       const matchesStatus = status === "all" || user.subscriptionStatus === status || (status === "expired" && isTrialExpired(user)) || (status === "grace" && billing(user).inGracePeriod);
       const matchesAccount = accountStatus === "all" || (accountStatus === "active" ? user.isActive : !user.isActive);
@@ -476,7 +494,7 @@ export function AdminUsersPage({ audience = "learners" } = {}) {
       if (sort === "name") return String(a.fullName || a.email || "").localeCompare(String(b.fullName || b.email || ""));
       return new Date(b.createdAt || 0) - new Date(a.createdAt || 0);
     });
-  }, [users, deferredQuery, status, accountStatus, presenceStatus, sort, segment, testerMode, dateRange]);
+  }, [users, deferredQuery, status, accountStatus, presenceStatus, sort, segment, testerMode, dateRange, gatewayFilter]);
 
   useEffect(() => { setPage(1); }, [deferredQuery, status, accountStatus, presenceStatus, sort, segment, dateRange]);
 

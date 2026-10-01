@@ -37,6 +37,8 @@ const adminPages = {
   analytics: AdminAnalyticsPage,
   aiChats: AdminAiChatsPage,
   users: AdminUsersPage,
+  phonePeUsers: () => <AdminUsersPage paymentGateway="phonepe" />,
+  razorpayUsers: () => <AdminUsersPage paymentGateway="razorpay" />,
   testerUsers: () => <AdminUsersPage audience="testers" />,
   testerAnalytics: AdminTesterAnalyticsPage,
   subscribers: AdminSubscribersPage,
