@@ -5356,9 +5356,14 @@ html[data-theme="light"] .enx-footer .enx-footer-support a {
 }
 
 .react-page-root[data-page="courses.html"] .course-card.is-trial-locked .course-thumb,
-.react-page-root[data-page="courses.html"] .course-card.is-trial-locked .course-body {
+.react-page-root[data-page="courses.html"] .course-card.is-trial-locked .course-body > :not(.course-card-actions) {
   filter: blur(4px);
   opacity: .62;
+}
+
+.react-page-root[data-page="courses.html"] .course-card.is-trial-locked .course-card-actions {
+  position: relative;
+  z-index: 4;
 }
 
 .react-page-root[data-page="courses.html"] .course-card.is-trial-locked .course-lock-badge {
