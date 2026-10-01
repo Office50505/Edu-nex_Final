@@ -125,7 +125,7 @@ function ReelCard({
           onClick()
         }
       }}
-      aria-label={`Select promotional video ${index + 1} of ${DEMO_VIDEOS.length}`}
+      aria-label={`Select Skillomate preview video ${index + 1} of ${DEMO_VIDEOS.length}`}
       className={[
         'group absolute left-4 right-9 top-1/2 overflow-hidden rounded-2xl border text-left outline-none sm:left-5 sm:right-10',
         'transition-all duration-500 ease-out',
@@ -146,9 +146,9 @@ function ReelCard({
               <p className="text-[10px] font-black uppercase tracking-[0.24em] text-lime font-(family-name:--font-grotesk)">
                 Video unavailable
               </p>
-              <p className="mt-3 text-2xl font-bold leading-tight text-white">Skillomate promo</p>
+              <p className="mt-3 text-2xl font-bold leading-tight text-white">Skillomate preview</p>
               <p className="mt-2 text-sm leading-relaxed text-white/62 font-(family-name:--font-grotesk)">
-                Add the correct CDN file for this Skillomate promotional video.
+                Add the correct CDN file for this Skillomate preview video.
               </p>
             </div>
           </div>
@@ -188,7 +188,7 @@ function ReelCard({
 
         <div className="absolute left-3 right-3 top-3 flex items-center justify-between gap-2">
           <span className="rounded-sm bg-lime px-2 py-0.5 text-[9px] font-black uppercase tracking-wider text-black">
-            Ad
+            Preview
           </span>
           <span className="rounded border border-white/10 bg-black/60 px-2 py-1 text-[9px] font-bold text-white/80 backdrop-blur-sm">
             {index + 1} of {DEMO_VIDEOS.length}
@@ -197,7 +197,7 @@ function ReelCard({
 
         <div className="absolute bottom-4 left-4 right-4 flex items-end justify-between gap-3">
           <div>
-            <p className="text-base font-bold text-white">Skillomate promo</p>
+            <p className="text-base font-bold text-white">Skillomate preview</p>
             <p className="mt-1 text-xs font-medium text-white/62 font-(family-name:--font-grotesk)">
               {index + 1} of {DEMO_VIDEOS.length}
             </p>
@@ -271,20 +271,8 @@ function ManualVideoCarousel() {
   }
 
   return (
-    <div className="relative mx-0 w-full max-w-[260px] sm:mx-auto sm:max-w-[350px] lg:max-w-[360px]">
-      <div className="mb-0 flex flex-col items-center gap-3 text-center sm:mb-4 lg:mb-5">
-        <div className="hidden sm:block">
-          <p className="text-xs font-black uppercase tracking-[0.22em] text-lime font-(family-name:--font-grotesk)">
-            Get to know Skillomate.
-          </p>
-          <h2 className="mt-2 text-xl font-bold leading-tight text-white sm:text-2xl lg:text-[1.7rem]">
-            <span className="block sm:inline">Watch, explore,</span>{' '}
-            <span className="block sm:inline">and find your reason</span>{' '}
-            <span className="block sm:inline">to start learning.</span>
-          </h2>
-        </div>
-
-        <div className="absolute left-1/2 top-3 z-[60] flex -translate-x-1/2 items-center gap-3 sm:static sm:translate-x-0">
+    <div className="relative mx-auto w-full max-w-[270px] sm:max-w-[330px] lg:max-w-[340px]">
+      <div className="absolute left-1/2 top-3 z-[60] flex -translate-x-1/2 items-center gap-3">
           <button
             type="button"
             onClick={previous}
@@ -301,11 +289,10 @@ function ManualVideoCarousel() {
           >
             <ChevronDown size={19} />
           </button>
-        </div>
       </div>
 
       <div
-        className="relative mx-auto h-[405px] w-full touch-pan-y overflow-hidden rounded-[28px] border border-white/10 bg-[#0d1119]/90 shadow-[0_30px_90px_rgba(0,0,0,0.32)] cursor-grab active:cursor-grabbing sm:h-[590px] lg:h-[610px]"
+        className="relative mx-auto h-[420px] w-full touch-pan-y overflow-hidden rounded-[28px] border border-white/10 bg-[#0d1119]/90 shadow-[0_30px_90px_rgba(0,0,0,0.32)] cursor-grab active:cursor-grabbing sm:h-[540px] lg:h-[560px]"
         onWheel={handleWheel}
         onTouchStart={(event) => { dragStartY.current = event.touches[0]?.clientY ?? null }}
         onTouchEnd={(event) => { handleDragEnd(event.changedTouches[0]?.clientY ?? 0) }}
@@ -327,7 +314,7 @@ function ManualVideoCarousel() {
               key={demo.src}
               type="button"
               onClick={() => setActiveIndex(index)}
-              aria-label={`Show promotional video ${index + 1}`}
+              aria-label={`Show Skillomate preview video ${index + 1}`}
               className={[
                 'w-2.5 rounded-full transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lime/70',
                 activeIndex === index ? 'h-8 bg-lime' : 'h-2.5 bg-white/25 hover:bg-white/45',
@@ -356,7 +343,7 @@ function ManualVideoCarousel() {
 
 export default function Hero() {
   return (
-    <section className="relative overflow-hidden px-0 pb-14 pt-4 sm:pt-8 md:pb-18 md:pt-10">
+    <section className="relative overflow-hidden px-0 pb-14 pt-6 sm:pt-10 md:pb-18">
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         <div
           className="absolute left-1/2 top-0 h-130 w-210 -translate-x-1/2 rounded-full"
@@ -366,19 +353,19 @@ export default function Hero() {
       </div>
 
       <div className="container-xl relative">
-        <div className="grid min-h-[calc(100svh-4rem)] min-w-0 content-start items-start gap-4 overflow-hidden sm:gap-10 lg:grid-cols-[minmax(0,1fr)_390px] lg:items-center lg:gap-14">
-          <div className="mx-0 min-w-0 max-w-[312px] text-center sm:mx-auto sm:max-w-4xl lg:mx-0 lg:max-w-3xl lg:text-left">
+        <div className="grid min-h-[calc(100svh-4rem)] min-w-0 items-center gap-8 sm:gap-10 lg:grid-cols-[minmax(0,560px)_minmax(340px,380px)] lg:justify-center lg:gap-20 xl:gap-24">
+          <div className="mx-auto min-w-0 max-w-[320px] text-center sm:max-w-2xl lg:mx-0 lg:max-w-[560px] lg:text-left">
             <h1
-              className="text-[1.42rem] font-bold leading-[0.96] text-white min-[390px]:text-[1.52rem] sm:text-[clamp(2.5rem,7vw,4.95rem)] sm:leading-[0.98] lg:text-[clamp(4.1rem,6.1vw,5.55rem)]"
+              className="text-[2.35rem] font-bold leading-[0.96] text-white min-[390px]:text-[2.65rem] sm:text-[clamp(3.3rem,8vw,5.2rem)] sm:leading-[0.98] lg:text-[clamp(4.1rem,5.4vw,5.15rem)]"
             >
-              <span className="block whitespace-nowrap">Learn AI.</span>
-              <span className="block whitespace-nowrap">One skill at a time.</span>
+              <span className="block">Learn AI</span>
+              <span className="block text-gradient-static">with Skillomate.</span>
             </h1>
 
             <p
-              className="mx-auto mt-3 max-w-[320px] text-[13px] leading-relaxed text-gray-400 sm:mt-5 sm:max-w-2xl sm:text-lg lg:mx-0 font-(family-name:--font-grotesk)"
+              className="mx-auto mt-4 max-w-[330px] text-[13px] leading-relaxed text-gray-400 sm:mt-6 sm:max-w-xl sm:text-lg lg:mx-0 font-(family-name:--font-grotesk)"
             >
-              Explore practical AI courses in the Skillomate app. Follow step-by-step video lessons, get guidance from your built-in AI assistant, and learn at your own pace.
+              Practical AI courses, guided projects, video lessons, progress tracking, and an AI assistant inside one learning app.
             </p>
 
             <div
@@ -413,7 +400,7 @@ export default function Hero() {
             </div>
           </div>
 
-          <div className="relative min-w-0 overflow-hidden">
+          <div className="relative min-w-0 justify-self-center lg:justify-self-end">
             <div
               className="pointer-events-none absolute left-1/2 top-1/2 h-[86%] w-[112%] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-80"
               style={{ background: 'radial-gradient(ellipse, rgba(208,147,39,0.18) 0%, transparent 68%)', filter: 'blur(46px)' }}
