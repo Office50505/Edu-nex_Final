@@ -263,10 +263,8 @@ export function PaymentPage() {
     finally { busyRef.current = false; setSubmitting(false); }
   };
   const amount = (paise) => new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", minimumFractionDigits: 0, maximumFractionDigits: 2 }).format(paise / 100);
-  const trialPrice = pricing ? amount(pricing.trialAmountPaise) : "";
-  const monthlyPrice = pricing ? amount(pricing.subscriptionAmountPaise) : "";
   const oneTimePrice = pricing?.oneTimeAmountPaise ? amount(pricing.oneTimeAmountPaise) : "";
-  const planLabel = phonePeOneTime ? `${oneTimePrice} one-time access` : trial ? `${trialPrice} trial` : "monthly subscription";
+  const planLabel = phonePeOneTime ? `${oneTimePrice} access` : "Skillomate access";
 
   return (
     <div className={`react-page-root${directApp ? " direct-app-payment" : ""}`} data-page="payment.html">
@@ -289,17 +287,15 @@ export function PaymentPage() {
 
         {checkoutState === "pay" && planAvailable && !submitting && !pending ? (
           <div className="checkout-launcher-card">
-            <h1>{phonePeOneTime ? "Premium access" : "Subscription plans"}</h1>
-            <h2>{phonePeOneTime ? `${oneTimePrice} for ${pricing.accessDays} days` : trial ? `${trialPrice} for ${pricing.trialHours} hours` : `${monthlyPrice}/month`}</h2>
-            <p>Full course access, lesson notes and AI learning tools.</p>
-            <p>{phonePeOneTime ? `Pay ${oneTimePrice} once through PhonePe. Access lasts ${pricing.accessDays} days and does not renew automatically.` : trial ? `Pay ${trialPrice} now. After ${pricing.trialHours} hours, your subscription renews at ${monthlyPrice}/month through AutoPay until cancelled.` : `Pay ${monthlyPrice} now. Your subscription renews at ${monthlyPrice}/month through AutoPay until cancelled.`}</p>
-            {!phonePeOneTime && !trialEligible ? <p>The introductory trial is not available for this account.</p> : null}
-            {!phonePeOneTime ? <p>Cancel auto-renewal anytime.</p> : null}
+            <h1>Skillomate access</h1>
+            <h2>{oneTimePrice || "₹299"}</h2>
+            <p>Full course access, lesson notes, progress tracking, and AI learning tools.</p>
+            <p>Pay {oneTimePrice || "₹299"} securely through PhonePe to activate your Skillomate account.</p>
             {payMsg.text ? <p role={payMsg.type === "error" ? "alert" : "status"}>{payMsg.text}</p> : null}
             <button className="checkout-launcher-primary" type="button" onClick={initiatePayment}>
-              {payMsg.type === "error" ? "Try Checkout Again" : phonePeOneTime ? `Pay ${oneTimePrice} once` : trial ? `Pay ${trialPrice} and start trial` : `Pay ${monthlyPrice} and subscribe`}
+              {payMsg.type === "error" ? "Try Checkout Again" : `Pay ${oneTimePrice || "₹299"} with PhonePe`}
             </button>
-            <p>{phonePeOneTime ? "By continuing, you agree to this one-time payment for limited access." : "By continuing, you agree to the recurring payment terms above."}</p>
+            <p>After successful payment, your Skillomate access will open on this account.</p>
             <a href="/courses" className="checkout-launcher-secondary">{directApp ? "Back to app" : "Back to courses"}</a>
           </div>
         ) : null}
@@ -307,9 +303,9 @@ export function PaymentPage() {
         {checkoutState === "login" ? (
           <div className="checkout-launcher-card">
             <h1>Log in to continue</h1>
-            <p>Log in to see your eligible subscription plan and price before paying.</p>
+            <p>Create an account or log in, then continue to secure PhonePe payment for ₹299.</p>
             <a id="loginBtn" href={`/login.html?next=${encodeURIComponent(window.location.href)}`} className="checkout-launcher-primary">Log In</a>
-            <a id="signupBtn" href={`/signup.html?next=${encodeURIComponent(window.location.href)}`} className="checkout-launcher-secondary">Create Account</a>
+            <a id="signupBtn" href={`/signup.html?next=${encodeURIComponent(window.location.href)}`} className="checkout-launcher-secondary">Create Account & Pay ₹299</a>
           </div>
         ) : null}
 

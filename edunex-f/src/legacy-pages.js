@@ -491,8 +491,8 @@ export const pages = {
     <div class="trial-grid">
       <!-- Left -->
       <div class="trial-left">
-        <h2>The <span>₹1 Trial</span> Philosophy</h2>
-        <p>We believe high-value knowledge shouldn't be locked behind a $1,000 gate. Our ₹1 trial is our commitment to accessibility.</p>
+        <h2>The <span>₹299 Access</span> Philosophy</h2>
+        <p>We believe high-value knowledge shouldn't be locked behind a $1,000 gate. Our ₹299 access is our commitment to accessibility.</p>
         <p>By removing the financial barrier to entry, we ensure that only your ambition determines your success. It's a low-risk, high-reward entry point into the most lucrative skill set of the century.</p>
         <div class="trial-proof">
           <div class="proof-avatars">
@@ -509,10 +509,10 @@ export const pages = {
         <div class="trial-price-row">
           <div class="trial-rupee">₹1</div>
         </div>
-        <div class="trial-access-lbl">Trial Access</div>
+        <div class="trial-access-lbl">Skillomate Access</div>
         <hr class="trial-divider">
-        <p class="trial-desc">Get full access to the AI Foundation module for 7 days. No hidden fees. Cancel anytime.</p>
-        <button class="trial-btn" onclick="window.location.href='login.html'">Start Your Trial Now</button>
+        <p class="trial-desc">Get full access to the AI Foundation module for 7 days. No hidden fees. Secure PhonePe.</p>
+        <button class="trial-btn" onclick="window.location.href='login.html'">Start Learning for ₹299</button>
         <div class="trial-fine">
           <span><i class="fas fa-lock"></i> Secure</span>
           <span><i class="fas fa-redo"></i> Risk-Free</span>
@@ -561,7 +561,7 @@ export const pages = {
         <div class="team-info">
           <div class="team-name">Trial and Subscription Access</div>
           <div class="team-title">Protected dashboard and lessons</div>
-          <div class="team-role">Learning unlocks after trial or active plan</div>
+          <div class="team-role">Learning unlocks after active access</div>
         </div>
       </div>
     </div>
@@ -574,7 +574,7 @@ export const pages = {
     <h2>Ready to Master the <span>AI<br>Economy?</span></h2>
     <p>Don't be left behind in the greatest wealth transition in history. Join Skillomate today and start your journey for just ₹1.</p>
     <button class="cta-big-btn" onclick="window.location.href='login.html'">
-      Get Started for ₹1
+      Start Learning for ₹299
     </button>
   </div>
 </section>
@@ -1626,7 +1626,7 @@ export const pages = {
     <div class="steps-grid">
       <div class="step-item">
         <div class="step-num">1</div>
-        <h4>Claim ₹1 Trial</h4>
+        <h4>Start ₹299 Access</h4>
         <p>Get instant access to any foundation course for just ₹1. No hidden commitments.</p>
       </div>
       <div class="step-item">
@@ -1724,7 +1724,7 @@ export const pages = {
 
   function courseCard(course) {
     const duration = course.duration || (course.lessonCount ? \`\${course.lessonCount} Lessons\` : 'Self paced');
-    const ctaLabel = courseState.hasAccess ? 'View Course' : 'Start ₹1 Trial';
+    const ctaLabel = courseState.hasAccess ? 'View Course' : 'Start Learning for ₹299';
     const saved = courseState.wishlist.has(String(course.id));
     return \`
       <div class="course-card\${courseState.hasAccess ? ' has-access' : ''}" data-course-card-id="\${escapeHtml(course.id)}" data-title="\${escapeHtml(course.title.toLowerCase())}" data-category="\${escapeHtml(course.categoryName.toLowerCase())}">
@@ -1741,7 +1741,7 @@ export const pages = {
           </div>
           <div class="course-price-row">
             <div class="price-left">
-              <span class="price-trial">₹1 Trial</span>
+              <span class="price-trial">₹299 Access</span>
             </div>
           </div>
           <div class="course-card-actions">
@@ -2303,10 +2303,10 @@ document.querySelector('.search-input-wrap input')?.addEventListener('input', re
 <div class="trial-gate" id="trialGate" role="dialog" aria-modal="true" aria-labelledby="trialGateTitle">
   <div class="trial-gate-card">
     <div class="trial-gate-icon"><i class="fas fa-bolt"></i></div>
-    <h2 id="trialGateTitle">Start your 1 rs trial right now</h2>
+    <h2 id="trialGateTitle">Start your ₹299 access right now</h2>
     <p>Your dashboard unlocks after you start the trial or subscribe. Get instant access to your courses, videos, progress, and AI tutor.</p>
     <div class="trial-gate-actions">
-      <a class="trial-gate-btn" href="payment.html"><i class="fas fa-arrow-right"></i> Start 1 rs Trial</a>
+      <a class="trial-gate-btn" href="payment.html"><i class="fas fa-arrow-right"></i> Start ₹299 Access</a>
       <a class="trial-gate-btn secondary" href="courses.html">Browse Courses</a>
     </div>
   </div>
@@ -3222,7 +3222,7 @@ async function canOpenDashboard() {
       <article class="help-card">
         <i class="fas fa-video"></i>
         <h2>Course Videos</h2>
-        <p>Video access requires an active trial or subscription. Open <a href="courses.html">Courses</a>, then choose View Course.</p>
+        <p>Video access requires active Skillomate access. Open <a href="courses.html">Courses</a>, then choose View Course.</p>
       </article>
       <article class="help-card">
         <i class="fas fa-receipt"></i>
@@ -4144,7 +4144,7 @@ async function canOpenDashboard() {
           Best Platform to <span class="text-primary">Empower Skills</span>
         </h1>
         <p class="text-on-surface-variant text-lg xl:text-xl leading-relaxed max-w-[660px]">
-          Master the future of work with AI-driven personalized learning paths and expert-led certifications. Start your journey today for just ₹1.
+          Master the future of work with AI-driven personalized learning paths and expert-led certifications. Start your journey for ₹299.
         </p>
         <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
           <a href="login.html" class="hero-cta-primary w-full sm:w-auto">
@@ -4167,7 +4167,7 @@ async function canOpenDashboard() {
           </div>
           <div class="glass-card rounded-2xl px-4 py-3">
             <div class="text-primary text-xl font-bold">₹1</div>
-            <div class="text-on-surface-variant text-xs">Trial Access</div>
+            <div class="text-on-surface-variant text-xs">Skillomate Access</div>
           </div>
         </div>
       </div>
@@ -6220,7 +6220,7 @@ f'(x) = 1 if x > 0 else 0</div>
     <div class="checkout-card">
       <div class="checkout-header">
         <h2 style="display:flex;align-items:center;gap:8px;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;flex-shrink:0"><path d="M22 10v6M2 10l10-5 10 5-10 5-10-5z"/><path d="M6 12v5c0 1.66 2.69 3 6 3s6-1.34 6-3v-5"/></svg> Get Full Access</h2>
-        <p>Unlimited courses · Cancel anytime</p>
+        <p>Unlimited courses · Secure PhonePe</p>
       </div>
       <div class="checkout-body">
 
@@ -6259,11 +6259,11 @@ f'(x) = 1 if x > 0 else 0</div>
               <input type="radio" name="plan" value="trial" checked>
               <div class="plan-radio"></div>
               <div class="plan-info">
-                <div class="plan-name">1-Day Trial</div>
-                <div class="plan-desc">Full access · Cancel before day 1</div>
+                <div class="plan-name">Skillomate Access</div>
+                <div class="plan-desc">Full access after PhonePe payment</div>
               </div>
               <div class="plan-price">
-                <div class="amount">₹1</div>
+                <div class="amount">₹299</div>
                 <span class="per">one time</span>
               </div>
               <div class="plan-badge">Most Popular</div>
@@ -6277,8 +6277,8 @@ f'(x) = 1 if x > 0 else 0</div>
                 <div class="plan-desc">Unlimited access · Billed monthly</div>
               </div>
               <div class="plan-price">
-                <div class="amount">₹1</div>
-                <span class="per">/ month</span>
+                <div class="amount">₹299</div>
+                <span class="per">access</span>
               </div>
             </label>
 
@@ -6288,7 +6288,7 @@ f'(x) = 1 if x > 0 else 0</div>
 
           <button class="pay-btn" id="payBtn" type="button">
             <span id="payBtnIcon"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:middle;flex-shrink:0"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></span>
-            <span id="payBtnText">Start ₹1 Trial</span>
+            <span id="payBtnText">Start ₹299 Access</span>
           </button>
           <div class="pay-divider"><span>or</span></div>
           <a href="/courses.html" class="pay-btn-secondary">← Back to Courses</a>
@@ -6298,7 +6298,7 @@ f'(x) = 1 if x > 0 else 0</div>
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;flex-shrink:0"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg> Secured by PhonePe
             </div>
             <div style="display:flex;gap:12px;font-size:11px;">
-              <span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;flex-shrink:0"><polyline points="20 6 9 17 4 12"/></svg> Cancel anytime</span>
+              <span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;flex-shrink:0"><polyline points="20 6 9 17 4 12"/></svg> Secure PhonePe</span>
               <span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;flex-shrink:0"><polyline points="20 6 9 17 4 12"/></svg> Instant access</span>
               <span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;flex-shrink:0"><polyline points="20 6 9 17 4 12"/></svg> All courses</span>
             </div>
@@ -6472,7 +6472,7 @@ function courseThumbnailSrc(course){
 function fallbackCoursePreview(){
   return {
     title: 'Skillomate Course Library',
-    description: 'Start your trial and choose from the real Skillomate courses available in your course catalogue.',
+    description: 'Start your access and choose from the real Skillomate courses available in your course catalogue.',
     category: { name: 'Skillomate AI' },
     averageRating: 4.8,
     videoCount: 0
@@ -6615,14 +6615,14 @@ document.getElementById('planTrial').addEventListener('click', ()=>{
   selectedPlan = 'trial';
   document.getElementById('planTrial').classList.add('selected');
   document.getElementById('planMonthly').classList.remove('selected');
-  document.getElementById('payBtnText').textContent = 'Start ₹1 Trial';
+  document.getElementById('payBtnText').textContent = 'Pay ₹299';
   document.getElementById('payBtnIcon').textContent = '⚡';
 });
 document.getElementById('planMonthly').addEventListener('click', ()=>{
   selectedPlan = 'monthly';
   document.getElementById('planMonthly').classList.add('selected');
   document.getElementById('planTrial').classList.remove('selected');
-  document.getElementById('payBtnText').textContent = 'Subscribe — ₹1/mo';
+  document.getElementById('payBtnText').textContent = 'Pay ₹299';
   document.getElementById('payBtnIcon').textContent = '🚀';
 });
 
@@ -6636,7 +6636,7 @@ document.getElementById('payBtn').addEventListener('click', async ()=>{
     const res = await authFetch('/api/payment/initiate-trial',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ paymentType: selectedPlan })
+      body: JSON.stringify({ paymentType: 'one_time' })
     });
     const data = await res.json();
     if(res.status === 409){
@@ -6655,7 +6655,7 @@ document.getElementById('payBtn').addEventListener('click', async ()=>{
   } catch(err){
     showPayMsg(err.message, 'error');
     btn.disabled = false;
-    document.getElementById('payBtnText').textContent = selectedPlan==='trial' ? 'Start ₹1 Trial' : 'Subscribe — ₹1/mo';
+    document.getElementById('payBtnText').textContent = 'Pay ₹299';
   }
 });
 
@@ -7985,7 +7985,7 @@ function setStoredUser(user) {
       </div>
       <a href="#" class="sp-photo-cta">
         <i class="fas fa-plus-circle"></i>
-        Start your journey today for just ₹1
+        Start your journey for ₹299
       </a>
     </div>
   </div>
@@ -7996,7 +7996,7 @@ function setStoredUser(user) {
     <!-- STEP 1: Phone entry -->
     <div class="sp-step active" id="step1">
       <h2 class="sp-form-title">Create your account</h2>
-      <p class="sp-form-sub">Start your journey with a ₹1 trial.</p>
+      <p class="sp-form-sub">Start your journey with Skillomate access for ₹299.</p>
 
       <label class="sp-field-label">Phone Number</label>
       <div class="sp-input-row">
@@ -8018,7 +8018,7 @@ function setStoredUser(user) {
     <!-- STEP 2: OTP entry -->
     <div class="sp-step" id="step2">
       <h2 class="sp-form-title">Create your account</h2>
-      <p class="sp-form-sub">Start your journey with a ₹1 trial.</p>
+      <p class="sp-form-sub">Start your journey with Skillomate access for ₹299.</p>
 
       <p class="sp-otp-label">Enter OTP</p>
       <p class="sp-otp-desc">We've sent a 6-digit code to your phone.</p>

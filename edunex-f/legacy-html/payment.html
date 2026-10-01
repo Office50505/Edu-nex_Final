@@ -735,7 +735,7 @@
     <div class="checkout-card">
       <div class="checkout-header">
         <h1 style="display:flex;align-items:center;gap:8px;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;flex-shrink:0"><path d="M22 10v6M2 10l10-5 10 5-10 5-10-5z"/><path d="M6 12v5c0 1.66 2.69 3 6 3s6-1.34 6-3v-5"/></svg> Get Full Access</h1>
-        <p>Unlimited courses · Cancel anytime</p>
+        <p>Unlimited courses · Secure PhonePe</p>
       </div>
       <div class="checkout-body">
 
@@ -774,26 +774,26 @@
               <input type="radio" name="plan" value="trial" checked>
               <div class="plan-radio"></div>
               <div class="plan-info">
-                <div class="plan-name">1-Day Trial</div>
-                <div class="plan-desc">Full access · Cancel before day 1</div>
+                <div class="plan-name">Skillomate Access</div>
+                <div class="plan-desc">Full access after PhonePe payment</div>
               </div>
               <div class="plan-price">
-                <div class="amount">₹1</div>
+                <div class="amount">₹299</div>
                 <span class="per">one time</span>
               </div>
               <div class="plan-badge">Most Popular</div>
             </label>
 
             <label class="plan-option" id="planMonthly">
-              <input type="radio" name="plan" value="monthly">
+              <input type="radio" name="plan" value="trial">
               <div class="plan-radio"></div>
               <div class="plan-info">
-                <div class="plan-name">Monthly Plan</div>
-                <div class="plan-desc">Unlimited access · Billed monthly</div>
+                <div class="plan-name">Skillomate Access</div>
+                <div class="plan-desc">Secure PhonePe checkout</div>
               </div>
               <div class="plan-price">
-                <div class="amount">₹1</div>
-                <span class="per">/ month</span>
+                <div class="amount">₹299</div>
+                <span class="per">access</span>
               </div>
             </label>
 
@@ -803,7 +803,7 @@
 
           <button class="pay-btn" id="payBtn" type="button">
             <span id="payBtnIcon"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:middle;flex-shrink:0"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></span>
-            <span id="payBtnText">Start ₹1 Trial</span>
+            <span id="payBtnText">Start ₹299 Access</span>
           </button>
           <div class="pay-divider"><span>or</span></div>
           <a href="/courses.html" class="pay-btn-secondary">← Back to Courses</a>
@@ -813,7 +813,7 @@
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;flex-shrink:0"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg> Secured by PhonePe
             </div>
             <div style="display:flex;gap:12px;font-size:11px;">
-              <span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#C58B2A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;flex-shrink:0"><polyline points="20 6 9 17 4 12"/></svg> Cancel anytime</span>
+              <span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#C58B2A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;flex-shrink:0"><polyline points="20 6 9 17 4 12"/></svg> Secure PhonePe</span>
               <span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#C58B2A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;flex-shrink:0"><polyline points="20 6 9 17 4 12"/></svg> Instant access</span>
               <span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#C58B2A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;flex-shrink:0"><polyline points="20 6 9 17 4 12"/></svg> All courses</span>
             </div>
@@ -985,7 +985,7 @@ function courseThumbnailSrc(course){
 function fallbackCoursePreview(){
   return {
     title: 'Skillomate Course Library',
-    description: 'Start your trial and choose from the real Skillomate courses available in your course catalogue.',
+    description: 'Start your access and choose from the real Skillomate courses available in your course catalogue.',
     category: { name: 'Skillomate AI' },
     averageRating: 4.8,
     videoCount: 0
@@ -1139,7 +1139,7 @@ function syncPlanSelection(){
   const trial = document.getElementById('planTrial');
   const monthly = document.getElementById('planMonthly');
   if(!trialEligible && selectedPlan === 'trial'){
-    selectedPlan = 'monthly';
+    selectedPlan = 'trial';
   }
   trial.classList.toggle('selected', selectedPlan === 'trial');
   monthly.classList.toggle('selected', selectedPlan === 'monthly');
@@ -1150,11 +1150,11 @@ function syncPlanSelection(){
   trial.setAttribute('aria-checked', String(selectedPlan === 'trial'));
   trial.setAttribute('aria-disabled', String(!trialEligible));
   monthly.setAttribute('aria-checked', String(selectedPlan === 'monthly'));
-  document.getElementById('payBtnText').textContent = selectedPlan==='trial' ? 'Start ₹1 Trial' : 'Subscribe — ₹1/mo';
+  document.getElementById('payBtnText').textContent = 'Pay ₹299';
 }
 document.getElementById('planTrial').addEventListener('click', ()=>{
   if(!trialEligible){
-    showPayMsg("You've already used your ₹1 trial. Monthly access is still available.", 'info');
+    showPayMsg("Skillomate access is available for ₹299 through PhonePe.", 'info');
     return;
   }
   selectedPlan = 'trial';
@@ -1188,7 +1188,7 @@ document.getElementById('payBtn').addEventListener('click', async ()=>{
     const res = await authFetch('/api/payment/initiate-trial',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ paymentType: selectedPlan })
+      body: JSON.stringify({ paymentType: 'one_time' })
     });
     const data = await safeJson(res) || {};
     if(res.status === 409){
@@ -1218,7 +1218,7 @@ document.getElementById('payBtn').addEventListener('click', async ()=>{
   } catch(err){
     showPayMsg(err.message, 'error');
     btn.disabled = false;
-    document.getElementById('payBtnText').textContent = selectedPlan==='trial' ? 'Start ₹1 Trial' : 'Subscribe — ₹1/mo';
+    document.getElementById('payBtnText').textContent = 'Pay ₹299';
   }
 });
 

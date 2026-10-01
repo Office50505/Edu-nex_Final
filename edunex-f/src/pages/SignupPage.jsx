@@ -545,14 +545,14 @@ export function SignupPage() {
           <img src="assets/image.png" alt="Student learning AI with Skillomate" />
           <div className="sp-photo-overlay"></div>
           <div className="sp-photo-bottom">
-            <div className="sp-photo-heading">Join the AI Revolution</div>
+            <div className="sp-photo-heading">Start Learning with Skillomate</div>
             <div className="sp-photo-quote">
               <i className="fas fa-check-circle" aria-hidden="true"></i>
               <p>"The personalized AI pathways cut my learning time by 40%. The best investment for my career evolution."</p>
             </div>
             <a href="signup.html" className="sp-photo-cta">
               <i className="fas fa-plus-circle" aria-hidden="true"></i>
-              Start your 24-hour trial for ₹1
+              Start Skillomate for ₹299
             </a>
           </div>
         </div>
@@ -564,7 +564,7 @@ export function SignupPage() {
             ) : (
               <h2 className="sp-form-title">Create your account</h2>
             )}
-            <p className="sp-form-sub">Start with ₹1 for 24 hours, then ₹499/month until cancelled.</p>
+            <p className="sp-form-sub">Create your account, then continue to PhonePe payment for ₹299.</p>
 
             <label className="sp-field-label" htmlFor="phoneInput">Phone Number</label>
             <div className="sp-input-row">
@@ -615,7 +615,7 @@ export function SignupPage() {
             ) : (
               <h2 className="sp-form-title">Create your account</h2>
             )}
-            <p className="sp-form-sub">Start with ₹1 for 24 hours, then ₹499/month until cancelled.</p>
+            <p className="sp-form-sub">Create your account, then continue to PhonePe payment for ₹299.</p>
 
             <p className="sp-otp-label">Enter OTP</p>
             <p className="sp-otp-desc">We've sent a {otp.length}-digit code to your phone.</p>
