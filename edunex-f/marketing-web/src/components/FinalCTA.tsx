@@ -84,7 +84,7 @@ export default function FinalCTA() {
               whileTap={{ scale: 0.97 }}
               className="group inline-flex items-center gap-2.5 px-10 py-4 bg-[#eab308] text-black font-black text-base rounded-xl glow-gold transition-all"
             >
-              <OfferCtaLabel prefix="for" />
+              <OfferCtaLabel />
               <ArrowRight
                 size={18}
                 className="group-hover:translate-x-1 transition-transform duration-200"

@@ -18,6 +18,7 @@ const DEMO_VIDEOS = [
 ]
 
 const SOUND_UNLOCK_STORAGE_KEY = 'skillomate-preview-sound-unlocked'
+const DRAG_SLIDE_DISTANCE = 140
 
 function getReelOffset(index: number, activeIndex: number) {
   const total = DEMO_VIDEOS.length
@@ -32,6 +33,7 @@ function ReelCard({
   index,
   offset,
   active,
+  dragging,
   playbackActive,
   muted,
   soundUnlocked,
@@ -44,6 +46,7 @@ function ReelCard({
   index: number
   offset: number
   active: boolean
+  dragging: boolean
   playbackActive: boolean
   muted: boolean
   soundUnlocked: boolean
@@ -226,12 +229,12 @@ function ReelCard({
       aria-label={`Select Skillomate preview video ${index + 1} of ${DEMO_VIDEOS.length}`}
       className={[
         'premium-reel-card group absolute left-1/2 top-0 w-[min(62vw,244px)] overflow-hidden text-left outline-none min-[480px]:w-[min(72vw,330px)] sm:w-[360px] lg:w-[370px]',
-        'transition-all duration-500 ease-out',
+        dragging ? '' : 'transition-all duration-500 ease-out',
         active ? 'is-active' : 'hover:opacity-70',
         hidden ? 'pointer-events-none opacity-0' : '',
       ].join(' ')}
       style={{
-        transform: `translateX(calc(-50% + ${translateX}%)) translateY(${translateY}px) rotateY(${rotateY}deg) scale(${scale})`,
+        transform: `translate3d(calc(-50% + ${translateX}%), ${translateY}px, 0) rotateY(${rotateY}deg) scale(${scale})`,
         transformOrigin: 'center',
         opacity,
         zIndex: active ? 40 : 30 - distance,
@@ -257,7 +260,6 @@ function ReelCard({
 
         {active && !hasVideoIssue && (
           <button
-            type="button"
             onClick={(event) => {
               event.stopPropagation()
               toggleSound()
@@ -280,8 +282,11 @@ function ManualVideoCarousel() {
   const [muted, setMuted] = useState(false)
   const [soundUnlocked, setSoundUnlocked] = useState(false)
   const [stageInView, setStageInView] = useState(true)
+  const [dragOffset, setDragOffset] = useState(0)
+  const [isDragging, setIsDragging] = useState(false)
   const lastNavigationAt = useRef(0)
   const dragStartX = useRef<number | null>(null)
+  const dragMoved = useRef(false)
 
   const unlockSound = useCallback(() => {
     setMuted(false)
@@ -363,12 +368,27 @@ function ManualVideoCarousel() {
     return () => viewport.removeEventListener('wheel', handleWheel)
   }, [handleWheel])
 
+  const dragProgress = Math.max(-1, Math.min(1, dragOffset / DRAG_SLIDE_DISTANCE))
+
   const handleDragEnd = (clientX: number) => {
     if (dragStartX.current === null) return
     const delta = dragStartX.current - clientX
     dragStartX.current = null
+    setIsDragging(false)
+    setDragOffset(0)
+    window.setTimeout(() => {
+      dragMoved.current = false
+    }, 0)
     if (Math.abs(delta) < 36) return
-    navigateWithThrottle(delta > 0 ? 'next' : 'previous')
+    if (delta > 0) next()
+    else previous()
+  }
+
+  const handleDragMove = (clientX: number) => {
+    if (dragStartX.current === null) return
+    const delta = clientX - dragStartX.current
+    if (Math.abs(delta) > 4) dragMoved.current = true
+    setDragOffset(Math.max(-DRAG_SLIDE_DISTANCE, Math.min(DRAG_SLIDE_DISTANCE, delta)))
   }
 
   return (
@@ -395,15 +415,19 @@ function ManualVideoCarousel() {
       <div
         ref={viewportRef}
         className="premium-reel-viewport relative mx-auto h-[500px] w-full touch-pan-y cursor-grab active:cursor-grabbing sm:h-[615px] lg:h-[650px]"
-        onTouchStart={(event) => { dragStartX.current = event.touches[0]?.clientX ?? null }}
-        onTouchEnd={(event) => { handleDragEnd(event.changedTouches[0]?.clientX ?? 0) }}
         onPointerDown={(event) => {
           dragStartX.current = event.clientX
+          dragMoved.current = false
+          setIsDragging(true)
           event.currentTarget.setPointerCapture(event.pointerId)
         }}
+        onPointerMove={(event) => { handleDragMove(event.clientX) }}
         onPointerUp={(event) => { handleDragEnd(event.clientX) }}
         onPointerCancel={() => {
           dragStartX.current = null
+          dragMoved.current = false
+          setIsDragging(false)
+          setDragOffset(0)
         }}
       >
         <div className="relative h-full">
@@ -412,14 +436,18 @@ function ManualVideoCarousel() {
               key={demo.src}
               demo={demo}
               index={index}
-              offset={getReelOffset(index, activeIndex)}
+              offset={getReelOffset(index, activeIndex) + dragProgress}
               active={index === activeIndex}
+              dragging={isDragging}
               playbackActive={stageInView && index === activeIndex}
               muted={muted}
               soundUnlocked={soundUnlocked}
               onMutedChange={setMuted}
               onSoundUnlocked={unlockSound}
-              onClick={() => setActiveIndex(index)}
+              onClick={() => {
+                if (dragMoved.current) return
+                setActiveIndex(index)
+              }}
               onEnded={next}
             />
           ))}
@@ -458,7 +486,7 @@ function ManualVideoCarousel() {
           href={SKILLOMATE_CHECKOUT_URL}
           className="btn-primary flex w-[min(86vw,330px)] items-center justify-center rounded-full px-4 py-3.5 text-sm font-bold shadow-[0_14px_34px_rgba(208,147,39,0.28)] font-(family-name:--font-grotesk)"
         >
-          Subscribe Now — {OFFER_PRICE} →
+          Subscribe Now — {OFFER_PRICE}
         </a>
       </div>
     </div>

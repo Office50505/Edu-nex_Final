@@ -89,7 +89,7 @@ export default function Pricing() {
               whileTap={{ scale: 0.985 }}
               className="btn-primary block w-full py-4 text-[16px] text-center rounded-full font-(family-name:--font-grotesk)"
             >
-              <OfferCtaLabel prefix="for" />
+              <OfferCtaLabel />
             </motion.a>
 
             <p className="text-center text-gray-500 text-xs mt-3.5 font-(family-name:--font-grotesk)">

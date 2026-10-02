@@ -39,7 +39,7 @@ export default function StickyBar() {
                 href={SKILLOMATE_CHECKOUT_URL}
                 className="btn-primary shrink-0 inline-flex items-center gap-2 rounded-full px-4 py-2.5 text-[13px] font-bold font-(family-name:--font-grotesk)"
               >
-                <OfferCtaLabel arrow />
+                <OfferCtaLabel />
               </a>
               <div aria-hidden="true" className="hidden sm:block" />
             </div>

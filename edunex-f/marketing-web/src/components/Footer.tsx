@@ -31,7 +31,7 @@ export default function Footer() {
             href={SKILLOMATE_CHECKOUT_URL}
             className="btn-primary inline-flex items-center gap-2.5 rounded-full px-5 py-4 text-[13px] font-bold font-(family-name:--font-grotesk)"
           >
-            <OfferCtaLabel arrow />
+            <OfferCtaLabel />
           </a>
 
           {/* Mini trust row */}
