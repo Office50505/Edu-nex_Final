@@ -10,7 +10,11 @@ The main `/api/ai/chat` route uses the published course catalog and local text r
 - `lessons.txt`: master lesson script.
 - `troubleshooting.txt`: common problems and fixes.
 
-These files are mapped only to the published course whose slug is exactly `ai-influencer`. Full document excerpts and lesson example prompts require the same active/trial subscription dates used by the content routes. All signed-in learners can still ask about course overviews or request general teaching examples. No subscription records are modified by this feature.
+`ai-filmmaking/` contains instructor-reviewed chatbot training material for the second course:
+
+- `training.txt`: lessons 1-8, tool guidance, prompt templates, and troubleshooting for the AI Filmmaking course.
+
+These files are mapped only to explicitly configured published course slugs, currently `ai-influencer-course`/`ai-influencer` and `ai-filmmaking-course`/`ai-filmmaking`. Full document excerpts and lesson example prompts require the same active/trial subscription dates used by the content routes. All signed-in learners can still ask about course overviews or request general teaching examples. No subscription records are modified by this feature.
 
 References point to the course page and identify the source document/section. They are not video timestamps or verified transcript-to-video mappings. Model citations identify supplied excerpts, but still need correctness evaluation.
 

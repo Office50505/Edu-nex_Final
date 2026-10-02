@@ -122,11 +122,6 @@ requireProductionEnv([
   'APPLE_IAP_PRIVATE_KEY',
 ]);
 
-if (process.env.APPLE_SUBSCRIPTION_PRODUCT_ID && process.env.APPLE_SUBSCRIPTION_PRODUCT_ID !== 'com.skillomate.premium.monthly') {
-  console.error('APPLE_SUBSCRIPTION_PRODUCT_ID must be com.skillomate.premium.monthly.');
-  process.exit(1);
-}
-
 if (isProduction && process.env.AUTO_VERIFY_OTP === 'true') {
   console.error('AUTO_VERIFY_OTP must not be true in production.');
   process.exit(1);
@@ -157,7 +152,6 @@ const User = require('./models/User');
 const Category = require('./models/Category');
 const Course = require('./models/Course');
 const Subscription = require('./models/Subscription');
-const RazorpayBilling = require('./models/RazorpayBilling');
 const Order = require('./models/Order');
 const Progress = require('./models/Progress');
 const CourseProgress = require('./models/CourseProgress');
@@ -174,11 +168,8 @@ const Notification = require('./models/Notification');
 const Certificate = require('./models/Certificate');
 const AdminUserAction = require('./models/AdminUserAction');
 const Session = require('./models/Session');
-const featureSettings = require('./services/adminFeatureSettings');
-const { resolveSubscriptionAccess: resolveAdminSubscriptionAccess } = require('./services/subscriptionAccess');
 const { presenceFromPing } = require('./services/userPresence');
 const { saveThumbnailUpload } = require('./services/thumbnailStorage');
-const { getClarityDashboardInsights } = require('./services/clarityInsights');
 
 // Import routes
 const authRoutes = require('./routes/auth');
@@ -1282,10 +1273,8 @@ app.use('/api/auth', authRoutes);
 app.use('/api/onboarding', require('./routes/onboarding'));
 app.use('/api/ai', aiRoutes);
 app.use('/api', require('./routes/appleIap'));
-app.use('/api', require('./routes/googlePlayIap'));
 app.use('/api', paymentRoutes);
 app.use('/api', sessionRoutes);
-app.use('/api', require('./routes/notifications'));
 app.use('/api', contentRoutes);
 app.use('/api', mobileCompatRoutes);
 
@@ -1415,22 +1404,96 @@ app.get('/api/admin/payment-audit', protectAdmin, async (req, res) => {
   }
 });
 
+app.get('/api/admin/payments', protectAdmin, async (req, res) => {
+  try {
+    const limit = Math.min(1000, Math.max(25, Number.parseInt(req.query.limit, 10) || 500));
+    const status = String(req.query.status || 'paid').toLowerCase();
+    const match = status === 'all' ? {} : { status };
+    const paidMatch = { status: 'paid' };
+    const autoPayMatch = { ...paidMatch, orderType: 'subscription_charge' };
+    const directMatch = { ...paidMatch, orderType: { $ne: 'subscription_charge' } };
+    const [
+      payments,
+      lifetimeTotals,
+      lifetimeAutoPay,
+      lifetimeDirect,
+      lifetimeBreakdown,
+    ] = await Promise.all([
+      Order.find(match)
+        .sort({ paidAt: -1, createdAt: -1 })
+        .limit(limit)
+        .populate('user', 'fullName email mobileNumber subscriptionStatus avatar')
+        .populate('subscription', 'status subscriptionType currentPeriodEnd gateway razorpaySubscriptionId phonePeSubscriptionId phonePeMandateId')
+        .lean(),
+      Order.aggregate([
+        { $match: paidMatch },
+        { $group: { _id: null, count: { $sum: 1 }, total: { $sum: '$totalAmount' } } },
+      ]),
+      Order.aggregate([
+        { $match: autoPayMatch },
+        { $group: { _id: null, count: { $sum: 1 }, total: { $sum: '$totalAmount' } } },
+      ]),
+      Order.aggregate([
+        { $match: directMatch },
+        { $group: { _id: null, count: { $sum: 1 }, total: { $sum: '$totalAmount' } } },
+      ]),
+      Order.aggregate([
+        { $match: paidMatch },
+        { $group: { _id: '$orderType', count: { $sum: 1 }, amount: { $sum: '$totalAmount' } } },
+        { $sort: { amount: -1 } },
+      ]),
+    ]);
+    const total = lifetimeTotals[0] || {};
+    const autoPay = lifetimeAutoPay[0] || {};
+    const direct = lifetimeDirect[0] || {};
+    res.json({
+      generatedAt: new Date(),
+      limited: payments.length === limit,
+      payments: payments.map((order) => ({
+        _id: order._id,
+        user: order.user || null,
+        subscription: order.subscription || null,
+        totalAmount: order.totalAmount || 0,
+        status: order.status,
+        gateway: order.gateway || order.subscription?.gateway || 'phonepe',
+        orderType: order.orderType,
+        paidAt: order.paidAt,
+        createdAt: order.createdAt,
+        phonePePaymentInstrument: order.phonePePaymentInstrument || null,
+        phonePeMerchantTransactionId: order.phonePeMerchantTransactionId || null,
+        phonePeTransactionId: order.phonePeTransactionId || null,
+        phonePeMerchantSubscriptionId: order.phonePeMerchantSubscriptionId || null,
+        razorpayPaymentId: order.razorpayPaymentId || null,
+        razorpaySubscriptionId: order.razorpaySubscriptionId || order.subscription?.razorpaySubscriptionId || null,
+        providerReference: paymentReference(order),
+      })),
+      summary: {
+        lifetimePaidCount: total.count || 0,
+        lifetimeTotalAmount: total.total || 0,
+        lifetimeAutoPayCount: autoPay.count || 0,
+        lifetimeAutoPayAmount: autoPay.total || 0,
+        lifetimeDirectCount: direct.count || 0,
+        lifetimeDirectAmount: direct.total || 0,
+        lifetimeBreakdown: lifetimeBreakdown.map((row) => ({
+          orderType: row._id || 'unknown',
+          count: row.count || 0,
+          amount: row.amount || 0,
+        })),
+      },
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 app.get('/api/admin/analytics', protectAdmin, async (req, res) => {
   try {
     const { startDate, endDate } = getAnalyticsRange(req.query);
     const rangeFilter = { $gte: startDate, $lte: endDate };
     const rangeStartKey = formatDateKey(startDate);
     const rangeEndKey = formatDateKey(endDate);
-    const testerUsers = await User.find({ isTester: true }).select('_id').lean();
-    const testerObjectIds = testerUsers.map((user) => user._id);
-    const testerIds = testerObjectIds.map(String);
-    const learnerFilter = { isTester: { $ne: true } };
-    const learnerRangeFilter = { ...learnerFilter, createdAt: rangeFilter };
-    const testerUserExclusion = testerObjectIds.length ? { user: { $nin: testerObjectIds } } : {};
-    const testerUserIdExclusion = testerIds.length ? { userId: { $nin: testerIds } } : {};
     const analyticsEventFilter = {
       event: { $in: ['video_start', 'video_progress', 'video_complete', 'video_watch'] },
-      ...testerUserIdExclusion,
       $or: [
         { date: { $gte: rangeStartKey, $lte: rangeEndKey } },
         { createdAt: rangeFilter },
@@ -1438,7 +1501,6 @@ app.get('/api/admin/analytics', protectAdmin, async (req, res) => {
     };
     const analyticsDownloadFilter = {
       event: 'video_download',
-      ...testerUserIdExclusion,
       $or: [
         { date: { $gte: rangeStartKey, $lte: rangeEndKey } },
         { createdAt: rangeFilter },
@@ -1471,9 +1533,6 @@ app.get('/api/admin/analytics', protectAdmin, async (req, res) => {
       cancelledUsers,
       expiredUsers,
       pausedSubscriptions,
-      autoPayActiveSubscriptions,
-      cancelledMandates,
-      renewalPendingSubscriptions,
       usersWithoutSubscriptionDoc,
       newUsers,
       newSubscriptions,
@@ -1517,12 +1576,12 @@ app.get('/api/admin/analytics', protectAdmin, async (req, res) => {
       courseStatusRows,
       categoryRows,
     ] = await Promise.all([
-      User.countDocuments(learnerFilter),
-      User.countDocuments({ ...learnerFilter, isActive: true }),
-      User.countDocuments({ ...learnerFilter, isActive: false }),
-      User.countDocuments({ ...learnerFilter, isMobileVerified: true }),
-      User.countDocuments({ ...learnerFilter, isEmailVerified: true }),
-      User.countDocuments({ ...learnerFilter, marketingOptIn: true }),
+      User.countDocuments(),
+      User.countDocuments({ isActive: true }),
+      User.countDocuments({ isActive: false }),
+      User.countDocuments({ isMobileVerified: true }),
+      User.countDocuments({ isEmailVerified: true }),
+      User.countDocuments({ marketingOptIn: true }),
       Course.countDocuments(),
       Course.countDocuments({ status: 'published' }),
       Course.countDocuments({ status: 'draft' }),
@@ -1530,77 +1589,49 @@ app.get('/api/admin/analytics', protectAdmin, async (req, res) => {
       Lesson.countDocuments({ isPreview: true }),
       Review.countDocuments(),
       Wishlist.countDocuments(),
-      Subscription.countDocuments(testerUserExclusion),
-      Subscription.countDocuments({ ...testerUserExclusion, status: { $in: subscriberStatuses } }),
-      Subscription.countDocuments({ ...testerUserExclusion, status: { $in: trialStatuses } }),
-      User.countDocuments({ ...learnerFilter, subscriptionStatus: '1rs trial' }),
-      User.countDocuments({ ...learnerFilter, subscriptionStatus: 'trial' }),
-      User.countDocuments({ ...learnerFilter, subscriptionStatus: { $in: subscriberStatuses } }),
+      Subscription.countDocuments(),
+      Subscription.countDocuments({ status: { $in: subscriberStatuses } }),
+      Subscription.countDocuments({ status: { $in: trialStatuses } }),
+      User.countDocuments({ subscriptionStatus: '1rs trial' }),
+      User.countDocuments({ subscriptionStatus: 'trial' }),
+      User.countDocuments({ subscriptionStatus: { $in: subscriberStatuses } }),
       User.countDocuments({
-        ...learnerFilter,
         $or: [
           { subscriptionStatus: 'none' },
           { subscriptionStatus: null },
           { subscriptionStatus: { $exists: false } },
         ],
       }),
-      User.countDocuments({ ...learnerFilter, subscriptionStatus: 'cancelled' }),
-      User.countDocuments({ ...learnerFilter, subscriptionStatus: 'expired' }),
-      Subscription.countDocuments({ ...testerUserExclusion, status: 'paused' }),
-      Subscription.countDocuments({
-        ...testerUserExclusion,
-        cancelledAt: null,
-        $or: [
-          { phonePeMandateId: { $nin: [null, ''] } },
-          { razorpaySubscriptionId: { $nin: [null, ''] }, razorpayStatus: { $nin: ['cancelled', 'expired', 'halted', 'paused'] } },
-        ],
-      }),
-      Subscription.countDocuments({
-        ...testerUserExclusion,
-        $or: [
-          { cancelledAt: { $ne: null } },
-          { status: 'cancelled' },
-          { razorpayStatus: 'cancelled' },
-        ],
-      }),
-      Subscription.countDocuments({
-        ...testerUserExclusion,
-        status: { $in: trialStatuses },
-        trialExpiresAt: { $lte: new Date() },
-        $or: [
-          { currentPeriodEnd: null },
-          { currentPeriodEnd: { $exists: false } },
-        ],
-      }),
+      User.countDocuments({ subscriptionStatus: 'cancelled' }),
+      User.countDocuments({ subscriptionStatus: 'expired' }),
+      Subscription.countDocuments({ status: 'paused' }),
       User.countDocuments({
-        ...learnerFilter,
         $or: [
           { subscriptionId: null },
           { subscriptionId: { $exists: false } },
         ],
       }),
-      User.countDocuments(learnerRangeFilter),
-      Subscription.countDocuments({ ...testerUserExclusion, createdAt: rangeFilter }),
+      User.countDocuments({ createdAt: rangeFilter }),
+      Subscription.countDocuments({ createdAt: rangeFilter }),
       Course.countDocuments({ createdAt: rangeFilter }),
-      Order.countDocuments({ ...testerUserExclusion, createdAt: rangeFilter }),
-      Order.countDocuments({ ...testerUserExclusion, status: 'paid', createdAt: rangeFilter }),
-      Order.countDocuments({ ...testerUserExclusion, status: 'failed', createdAt: rangeFilter }),
-      Order.countDocuments({ ...testerUserExclusion, status: 'pending', createdAt: rangeFilter }),
+      Order.countDocuments({ createdAt: rangeFilter }),
+      Order.countDocuments({ status: 'paid', createdAt: rangeFilter }),
+      Order.countDocuments({ status: 'failed', createdAt: rangeFilter }),
+      Order.countDocuments({ status: 'pending', createdAt: rangeFilter }),
       Order.aggregate([
-        { $match: { ...testerUserExclusion, status: 'paid', createdAt: rangeFilter } },
+        { $match: { status: 'paid', createdAt: rangeFilter } },
         { $group: { _id: null, total: { $sum: '$totalAmount' }, average: { $avg: '$totalAmount' } } },
       ]),
       Order.aggregate([
-        { $match: { ...testerUserExclusion, status: 'paid' } },
+        { $match: { status: 'paid' } },
         { $group: { _id: null, total: { $sum: '$totalAmount' } } },
       ]),
-      Order.aggregate([{ $match: testerUserExclusion }, { $group: { _id: '$status', count: { $sum: 1 } } }]),
-      Order.aggregate([{ $match: testerUserExclusion }, { $group: { _id: '$orderType', count: { $sum: 1 }, amount: { $sum: '$totalAmount' } } }]),
-      Order.aggregate([{ $match: testerUserExclusion }, { $group: { _id: '$phonePePaymentInstrument', count: { $sum: 1 } } }]),
-      Subscription.aggregate([{ $match: testerUserExclusion }, { $group: { _id: '$status', count: { $sum: 1 } } }]),
-      User.aggregate([{ $match: learnerFilter }, { $group: { _id: '$subscriptionStatus', count: { $sum: 1 } } }]),
+      Order.aggregate([{ $group: { _id: '$status', count: { $sum: 1 } } }]),
+      Order.aggregate([{ $group: { _id: '$orderType', count: { $sum: 1 }, amount: { $sum: '$totalAmount' } } }]),
+      Order.aggregate([{ $group: { _id: '$phonePePaymentInstrument', count: { $sum: 1 } } }]),
+      Subscription.aggregate([{ $group: { _id: '$status', count: { $sum: 1 } } }]),
+      User.aggregate([{ $group: { _id: '$subscriptionStatus', count: { $sum: 1 } } }]),
       User.aggregate([
-        { $match: learnerFilter },
         {
           $group: {
             _id: {
@@ -1616,7 +1647,6 @@ app.get('/api/admin/analytics', protectAdmin, async (req, res) => {
         { $sort: { count: -1 } },
       ]),
       User.aggregate([
-        { $match: learnerFilter },
         {
           $bucket: {
             groupBy: '$age',
@@ -1627,7 +1657,7 @@ app.get('/api/admin/analytics', protectAdmin, async (req, res) => {
         },
       ]),
       Progress.aggregate([
-        { $match: { ...testerUserExclusion, lastWatchedAt: rangeFilter } },
+        { $match: { lastWatchedAt: rangeFilter } },
         {
           $group: {
             _id: '$course',
@@ -1660,7 +1690,7 @@ app.get('/api/admin/analytics', protectAdmin, async (req, res) => {
         { $sort: { progressRecords: -1, learnerCount: -1, completedRecords: -1 } },
       ]),
       CourseProgress.aggregate([
-        { $match: { courseTitle: { $nin: [null, ''] }, ...testerUserIdExclusion } },
+        { $match: { courseTitle: { $nin: [null, ''] } } },
         {
           $group: {
             _id: '$courseTitle',
@@ -1687,7 +1717,7 @@ app.get('/api/admin/analytics', protectAdmin, async (req, res) => {
         { $limit: 8 },
       ]),
       Progress.aggregate([
-        { $match: { ...testerUserExclusion, lastWatchedAt: rangeFilter } },
+        { $match: { lastWatchedAt: rangeFilter } },
         {
           $lookup: {
             from: 'users',
@@ -1753,7 +1783,7 @@ app.get('/api/admin/analytics', protectAdmin, async (req, res) => {
         { $limit: 24 },
       ]),
       Progress.aggregate([
-        { $match: { ...testerUserExclusion, lastWatchedAt: rangeFilter } },
+        { $match: { lastWatchedAt: rangeFilter } },
         {
           $group: {
             _id: { course: '$course', lesson: '$lesson' },
@@ -1819,7 +1849,7 @@ app.get('/api/admin/analytics', protectAdmin, async (req, res) => {
         { $limit: 12 },
       ]),
       Progress.aggregate([
-        { $match: { ...testerUserExclusion, lastWatchedAt: rangeFilter } },
+        { $match: { lastWatchedAt: rangeFilter } },
         {
           $group: {
             _id: '$course',
@@ -1860,7 +1890,7 @@ app.get('/api/admin/analytics', protectAdmin, async (req, res) => {
         { $limit: 12 },
       ]),
       Progress.aggregate([
-        { $match: { ...testerUserExclusion, lastWatchedAt: rangeFilter } },
+        { $match: { lastWatchedAt: rangeFilter } },
         {
           $group: {
             _id: null,
@@ -2213,36 +2243,36 @@ app.get('/api/admin/analytics', protectAdmin, async (req, res) => {
         { $sort: { _id: 1 } },
       ]),
       User.aggregate([
-        { $match: learnerRangeFilter },
+        { $match: { createdAt: rangeFilter } },
         { $group: { _id: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt', timezone: ANALYTICS_TIMEZONE } }, count: { $sum: 1 } } },
       ]),
       Subscription.aggregate([
-        { $match: { ...testerUserExclusion, createdAt: rangeFilter } },
+        { $match: { createdAt: rangeFilter } },
         { $group: { _id: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt', timezone: ANALYTICS_TIMEZONE } }, count: { $sum: 1 } } },
       ]),
       Order.aggregate([
-        { $match: { ...testerUserExclusion, status: 'paid', createdAt: rangeFilter } },
+        { $match: { status: 'paid', createdAt: rangeFilter } },
         { $group: { _id: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt', timezone: ANALYTICS_TIMEZONE } }, count: { $sum: 1 } } },
       ]),
       Order.aggregate([
-        { $match: { ...testerUserExclusion, status: 'paid', createdAt: rangeFilter } },
+        { $match: { status: 'paid', createdAt: rangeFilter } },
         { $group: { _id: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt', timezone: ANALYTICS_TIMEZONE } }, total: { $sum: '$totalAmount' } } },
       ]),
-      Subscription.find(testerUserExclusion)
+      Subscription.find()
         .sort({ createdAt: -1 })
         .limit(8)
         .populate('user', 'fullName email mobileNumber subscriptionStatus')
-        .select('user gateway status subscriptionType amount trialStartedAt trialExpiresAt currentPeriodStart currentPeriodEnd nextBillingAt cancelledAt cancelReason razorpaySubscriptionId razorpayStatus phonePeSubscriptionId phonePeMandateId createdAt'),
-      User.find(learnerFilter)
+        .select('user status subscriptionType amount trialStartedAt trialExpiresAt currentPeriodEnd nextBillingAt createdAt'),
+      User.find()
         .sort({ createdAt: -1 })
         .limit(8)
         .select('fullName email mobileNumber avatar gender age subscriptionStatus isMobileVerified createdAt lastActiveAt'),
-      Order.find(testerUserExclusion)
+      Order.find()
         .sort({ createdAt: -1 })
         .limit(8)
         .populate('user', 'fullName email')
         .select('user totalAmount status orderType phonePePaymentInstrument paidAt createdAt'),
-      SubscriptionEvent.find(testerUserExclusion)
+      SubscriptionEvent.find()
         .sort({ createdAt: -1 })
         .limit(8)
         .populate('user', 'fullName email')
@@ -2349,10 +2379,6 @@ app.get('/api/admin/analytics', protectAdmin, async (req, res) => {
     const orderStatusCounts = groupCount(orderStatusBreakdown, '_id');
     const instrumentCounts = groupCount(paymentInstrumentBreakdown, '_id');
     const courseStatusCounts = groupCount(courseStatusRows, '_id');
-    const clarityInsights = await getClarityDashboardInsights().catch((error) => ({
-      configured: Boolean(process.env.CLARITY_API_TOKEN || process.env.CLARITY_DATA_EXPORT_TOKEN),
-      error: error.message,
-    }));
     const ageBucketLabels = {
       5: '5-12',
       13: '13-17',
@@ -2392,9 +2418,6 @@ app.get('/api/admin/analytics', protectAdmin, async (req, res) => {
         cancelledUsers,
         expiredUsers,
         pausedSubscriptions,
-        autoPayActiveSubscriptions,
-        cancelledMandates,
-        renewalPendingSubscriptions,
         usersWithoutSubscriptionDoc,
         revenueInRange: rangeRevenue.total || 0,
         averageOrderValue: Math.round(rangeRevenue.average || 0),
@@ -2456,12 +2479,45 @@ app.get('/api/admin/analytics', protectAdmin, async (req, res) => {
       recentEvents,
       recentContactEnquiries,
       videoDownloads: videoDownloadRows,
-      clarity: clarityInsights,
       topSellingCourses: topCourseProgressRows,
       topCourses,
     });
   } catch (error) {
     res.status(500).json({ error: error.message });
+  }
+});
+
+app.get('/api/admin/ai-chats', protectAdmin, async (req, res) => {
+  try {
+    const limit = Math.min(Math.max(Number(req.query.limit) || 200, 1), 500);
+    const sessions = await AiTutorSession.find()
+      .sort({ lastUpdatedAt: -1, updatedAt: -1, createdAt: -1 })
+      .limit(limit)
+      .populate('user', 'fullName email mobileNumber subscriptionStatus avatar isTester')
+      .populate('course', 'title slug status')
+      .select('user course conversationId activeCourseId currentTopic currentIntent lastWorkflow lastTemplateId messages lastUpdatedAt createdAt updatedAt')
+      .lean();
+
+    const totalSessions = await AiTutorSession.countDocuments();
+    const userKeys = new Set();
+    let totalMessages = 0;
+    sessions.forEach((session) => {
+      totalMessages += Array.isArray(session.messages) ? session.messages.length : 0;
+      const userKey = session.user?._id || session.user?.mobileNumber || session.user?.email;
+      if (userKey) userKeys.add(String(userKey));
+    });
+
+    res.json({
+      sessions,
+      summary: {
+        totalSessions,
+        returnedSessions: sessions.length,
+        users: userKeys.size,
+        messages: totalMessages,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message || 'Unable to load Nex AI chat history.' });
   }
 });
 
@@ -2477,293 +2533,6 @@ app.get('/api/admin/users', protectAdmin, async (req, res) => {
   }
 });
 
-app.get('/api/admin/payments', protectAdmin, async (req, res) => {
-  try {
-    const limit = Math.min(Math.max(Number(req.query.limit) || 150, 1), 500);
-    const testerUsers = await User.find({ isTester: true }).select('_id').lean();
-    const testerObjectIds = testerUsers.map((user) => user._id);
-    const testerUserExclusion = testerObjectIds.length ? { user: { $nin: testerObjectIds } } : {};
-    const paidOrderFilter = { ...testerUserExclusion, status: 'paid' };
-    const [rows, lifetimeBreakdownRows] = await Promise.all([
-      Order.find(paidOrderFilter)
-        .sort({ paidAt: -1, createdAt: -1 })
-        .limit(limit)
-        .populate('user', 'fullName email mobileNumber subscriptionStatus')
-        .populate('subscription', 'gateway status subscriptionType amount razorpayStatus razorpaySubscriptionId phonePeSubscriptionId phonePeMandateId nextBillingAt currentPeriodStart currentPeriodEnd cancelledAt')
-        .select('user subscription totalAmount gateway status orderType phonePePaymentInstrument phonePeMerchantTransactionId phonePeTransactionId razorpayPaymentId razorpaySubscriptionId refundedAmount paidAt createdAt')
-        .lean(),
-      Order.aggregate([
-        { $match: paidOrderFilter },
-        { $group: { _id: '$orderType', count: { $sum: 1 }, amount: { $sum: '$totalAmount' } } },
-        { $sort: { amount: -1 } },
-      ]),
-    ]);
-    const orderSubscriptionIds = new Set(rows.map((order) => String(order.razorpaySubscriptionId || order.subscription?.razorpaySubscriptionId || '')).filter(Boolean));
-    const paidSubscriptions = await Subscription.find({
-      gateway: 'razorpay',
-      status: { $in: ['active', 'subscribed'] },
-      currentPeriodStart: { $ne: null },
-      amount: { $gt: 0 },
-    })
-      .sort({ currentPeriodStart: -1 })
-      .limit(limit)
-      .populate('user', 'fullName email mobileNumber subscriptionStatus')
-      .select('user gateway status subscriptionType amount razorpayStatus razorpaySubscriptionId nextBillingAt currentPeriodStart currentPeriodEnd cancelledAt')
-      .lean();
-    const syntheticRows = paidSubscriptions
-      .filter((subscription) => subscription.razorpaySubscriptionId && !orderSubscriptionIds.has(String(subscription.razorpaySubscriptionId)))
-      .map((subscription) => ({
-        _id: `subscription-period:${subscription._id}`,
-        user: subscription.user,
-        subscription,
-        totalAmount: subscription.amount,
-        gateway: 'razorpay',
-        status: 'paid',
-        orderType: 'subscription_charge',
-        razorpaySubscriptionId: subscription.razorpaySubscriptionId,
-        paidAt: subscription.currentPeriodStart,
-        createdAt: subscription.currentPeriodStart,
-        ledgerSource: 'subscription_period',
-      }));
-    const ledgerRows = [...rows, ...syntheticRows]
-      .sort((a, b) => new Date(b.paidAt || b.createdAt || 0) - new Date(a.paidAt || a.createdAt || 0))
-      .slice(0, limit);
-    const totalAmount = ledgerRows.reduce((sum, order) => sum + Number(order.totalAmount || 0), 0);
-    const autoPayRows = ledgerRows.filter((order) => order.orderType === 'subscription_charge');
-    const directRows = ledgerRows.filter((order) => order.orderType !== 'subscription_charge');
-    const lifetimeBreakdown = lifetimeBreakdownRows.map((row) => ({
-      orderType: row._id || 'unknown',
-      count: row.count || 0,
-      amount: row.amount || 0,
-    }));
-    const lifetimeTotalAmount = lifetimeBreakdown.reduce((sum, row) => sum + Number(row.amount || 0), 0);
-    const lifetimeAutoPay = lifetimeBreakdown.filter((row) => row.orderType === 'subscription_charge');
-    const lifetimeAutoPayAmount = lifetimeAutoPay.reduce((sum, row) => sum + Number(row.amount || 0), 0);
-    const lifetimeAutoPayCount = lifetimeAutoPay.reduce((sum, row) => sum + Number(row.count || 0), 0);
-    const lifetimeDirectCount = lifetimeBreakdown.reduce((sum, row) => sum + Number(row.orderType === 'subscription_charge' ? 0 : row.count || 0), 0);
-    res.json({
-      summary: {
-        count: rows.length,
-        totalAmount,
-        autoPayCount: autoPayRows.length,
-        autoPayAmount: autoPayRows.reduce((sum, order) => sum + Number(order.totalAmount || 0), 0),
-        directCount: directRows.length,
-        directAmount: directRows.reduce((sum, order) => sum + Number(order.totalAmount || 0), 0),
-        lifetimeTotalAmount,
-        lifetimeAutoPayCount,
-        lifetimeAutoPayAmount,
-        lifetimeDirectCount,
-        lifetimeDirectAmount: lifetimeTotalAmount - lifetimeAutoPayAmount,
-        lifetimeBreakdown,
-      },
-      payments: ledgerRows,
-    });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
-
-app.get('/api/admin/ai-chats', protectAdmin, async (req, res) => {
-  try {
-    const limit = Math.min(Math.max(Number(req.query.limit) || 100, 1), 300);
-    const sessions = await AiTutorSession.find({})
-      .sort({ lastUpdatedAt: -1 })
-      .limit(limit)
-      .populate('user', 'fullName email mobileNumber subscriptionStatus')
-      .populate('course', 'title slug')
-      .lean();
-    const totalMessages = sessions.reduce((sum, session) => sum + (Array.isArray(session.messages) ? session.messages.length : 0), 0);
-    const users = new Set(sessions.map((session) => String(session.user?._id || session.user || '')).filter(Boolean));
-    res.json({
-      summary: {
-        sessions: sessions.length,
-        users: users.size,
-        messages: totalMessages,
-      },
-      sessions,
-    });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
-
-app.get('/api/admin/feature-settings', protectAdmin, async (_req, res) => {
-  try {
-    res.set('Cache-Control', 'no-store');
-    res.json(await featureSettings.getSettings());
-  } catch (error) {
-    res.status(500).json({ error: 'Unable to load feature settings.' });
-  }
-});
-
-app.put('/api/admin/feature-settings', protectAdmin, async (req, res) => {
-  try {
-    res.set('Cache-Control', 'no-store');
-    const patch = {};
-    if (Object.prototype.hasOwnProperty.call(req.body || {}, 'certificationEnabled')) patch.certificationEnabled = req.body.certificationEnabled !== false;
-    if (Object.prototype.hasOwnProperty.call(req.body || {}, 'progressBarEnabled')) patch.progressBarEnabled = req.body.progressBarEnabled !== false;
-    res.json(await featureSettings.saveSettings(patch, req.admin));
-  } catch (error) {
-    res.status(500).json({ error: 'Unable to save feature settings.' });
-  }
-});
-
-app.get('/api/admin/tester-analytics', protectAdmin, async (req, res) => {
-  try {
-    const { startDate, endDate } = getAnalyticsRange(req.query);
-    const rangeFilter = { $gte: startDate, $lte: endDate };
-    const rangeStartKey = formatDateKey(startDate);
-    const rangeEndKey = formatDateKey(endDate);
-    const testerRows = await User.find({ isTester: true })
-      .sort({ testerSince: -1, createdAt: -1 })
-      .select('fullName email mobileNumber avatar subscriptionStatus isActive isTester testerSince testerAssignedBy testerNotes createdAt lastActiveAt lastLoginAt loginCount purchasedCourses')
-      .lean();
-    const testerObjectIds = testerRows.map((user) => user._id);
-    const testerIds = testerRows.map((user) => String(user._id));
-    const testerIdSet = new Set(testerIds);
-    const analyticsFilter = {
-      userId: { $in: testerIds },
-      $or: [
-        { date: { $gte: rangeStartKey, $lte: rangeEndKey } },
-        { createdAt: rangeFilter },
-      ],
-    };
-    const watchEventNames = ['video_start', 'video_progress', 'video_complete', 'video_watch'];
-    const [
-      activeToday,
-      active7Days,
-      active30Days,
-      watchTotals,
-      courseRows,
-      aiRows,
-      recentEvents,
-      progressRows,
-      latestActions,
-    ] = await Promise.all([
-      User.countDocuments({ isTester: true, lastActiveAt: { $gte: new Date(Date.now() - 24 * 60 * 60 * 1000) } }),
-      User.countDocuments({ isTester: true, lastActiveAt: { $gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) } }),
-      User.countDocuments({ isTester: true, lastActiveAt: { $gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) } }),
-      AnalyticsEvent.aggregate([
-        { $match: { ...analyticsFilter, event: { $in: watchEventNames } } },
-        {
-          $addFields: {
-            watchedSeconds: { $ifNull: ['$watchSeconds', { $ifNull: ['$watchedSeconds', '$durationSeconds'] }] },
-            completedValue: { $cond: [{ $eq: ['$event', 'video_complete'] }, 1, 0] },
-          },
-        },
-        {
-          $group: {
-            _id: null,
-            testerIds: { $addToSet: '$userId' },
-            events: { $sum: 1 },
-            totalWatchSeconds: { $sum: { $ifNull: ['$watchedSeconds', 0] } },
-            completions: { $sum: '$completedValue' },
-          },
-        },
-      ]),
-      AnalyticsEvent.aggregate([
-        { $match: { ...analyticsFilter, event: { $in: watchEventNames } } },
-        {
-          $addFields: {
-            watchedSeconds: { $ifNull: ['$watchSeconds', { $ifNull: ['$watchedSeconds', '$durationSeconds'] }] },
-          },
-        },
-        {
-          $group: {
-            _id: { courseId: '$courseId', courseTitle: '$courseTitle' },
-            testerIds: { $addToSet: '$userId' },
-            events: { $sum: 1 },
-            totalWatchSeconds: { $sum: { $ifNull: ['$watchedSeconds', 0] } },
-            lastEventAt: { $max: '$createdAt' },
-          },
-        },
-        {
-          $project: {
-            courseId: '$_id.courseId',
-            title: { $ifNull: ['$_id.courseTitle', 'Unknown course'] },
-            testerCount: { $size: '$testerIds' },
-            events: 1,
-            watchMinutes: { $round: [{ $divide: ['$totalWatchSeconds', 60] }, 1] },
-            lastEventAt: 1,
-          },
-        },
-        { $sort: { watchMinutes: -1, events: -1, testerCount: -1 } },
-        { $limit: 12 },
-      ]),
-      AnalyticsEvent.aggregate([
-        { $match: { ...analyticsFilter, event: { $in: ['ai_tutor_query', 'ai_chat', 'course_ai_query'] } } },
-        { $group: { _id: '$userId', count: { $sum: 1 }, lastUsedAt: { $max: '$createdAt' } } },
-        { $sort: { count: -1, lastUsedAt: -1 } },
-      ]),
-      AnalyticsEvent.find(analyticsFilter)
-        .sort({ createdAt: -1 })
-        .limit(24)
-        .select('event userId userName userEmail courseId courseTitle videoTitle createdAt date')
-        .lean(),
-      Progress.aggregate([
-        { $match: { user: { $in: testerObjectIds } } },
-        {
-          $group: {
-            _id: '$user',
-            totalWatchSeconds: { $sum: { $ifNull: ['$watchedSeconds', 0] } },
-            watchedVideos: { $sum: { $cond: [{ $gt: [{ $ifNull: ['$watchedSeconds', 0] }, 0] }, 1, 0] } },
-            completedVideos: { $sum: { $cond: ['$completed', 1, 0] } },
-            lastWatchedAt: { $max: '$lastWatchedAt' },
-          },
-        },
-      ]),
-      AdminUserAction.find({ user: { $in: testerObjectIds }, action: { $in: ['tester_enabled', 'tester_disabled'] } })
-        .sort({ createdAt: -1 })
-        .limit(20)
-        .populate('user', 'fullName mobileNumber email isTester')
-        .select('user action reason adminSubject previousState nextState createdAt')
-        .lean(),
-    ]);
-
-    const progressByUser = new Map(progressRows.map((row) => [String(row._id), row]));
-    const aiByUser = new Map(aiRows.map((row) => [String(row._id), row]));
-    const watchSummary = watchTotals[0] || {};
-    const testers = testerRows.map((user) => {
-      const progress = progressByUser.get(String(user._id)) || {};
-      const ai = aiByUser.get(String(user._id)) || {};
-      return {
-        ...user,
-        watchSummary: {
-          watchedMinutes: Math.round(Number(progress.totalWatchSeconds || 0) / 60),
-          watchedVideos: Number(progress.watchedVideos || 0),
-          completedVideos: Number(progress.completedVideos || 0),
-          lastWatchedAt: progress.lastWatchedAt || null,
-        },
-        aiSummary: {
-          messages: Number(ai.count || 0),
-          lastUsedAt: ai.lastUsedAt || null,
-        },
-      };
-    });
-
-    res.json({
-      range: { startDate: rangeStartKey, endDate: rangeEndKey },
-      totals: {
-        testers: testerRows.length,
-        activeToday,
-        active7Days,
-        active30Days,
-        activeInRange: (watchSummary.testerIds || []).filter((id) => testerIdSet.has(String(id))).length,
-        watchEvents: Number(watchSummary.events || 0),
-        watchMinutes: Math.round(Number(watchSummary.totalWatchSeconds || 0) / 60),
-        completedVideos: Number(watchSummary.completions || 0),
-        aiMessages: aiRows.reduce((sum, row) => sum + Number(row.count || 0), 0),
-      },
-      testers,
-      courses: courseRows,
-      recentEvents,
-      recentActions: latestActions,
-    });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
-
 app.post('/api/admin/users', protectAdmin, async (req, res) => {
   try {
     const fullName = String(req.body?.fullName || '').trim().replace(/\s+/g, ' ').slice(0, 120);
@@ -2774,11 +2543,8 @@ app.post('/api/admin/users', protectAdmin, async (req, res) => {
     const courseId = String(req.body?.courseId || '').trim();
     const courseAccessType = String(req.body?.courseAccessType || 'permanent').trim().toLowerCase();
     const courseAccessDays = Math.min(365, Math.max(1, Number.parseInt(req.body?.courseAccessDays, 10) || 7));
-    const isTester = req.body?.isTester === true;
-    const testerNotes = String(req.body?.testerNotes || '').trim().slice(0, 500);
-    const adminSubject = req.admin?.sub || req.admin?.email || 'admin';
 
-    if (fullName.length < 2) return res.status(400).json({ error: `Enter a ${isTester ? 'test account' : 'learner'} name of at least 2 characters.` });
+    if (fullName.length < 2) return res.status(400).json({ error: 'Enter a learner name of at least 2 characters.' });
     if (!/^\d{12,15}$/.test(mobileNumber)) return res.status(400).json({ error: 'Enter a valid mobile number including country code.' });
     if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return res.status(400).json({ error: 'Enter a valid email address.' });
     if (password.length < 8 || password.length > 72) return res.status(400).json({ error: 'Temporary password must contain 8 to 72 characters.' });
@@ -2812,14 +2578,10 @@ app.post('/api/admin/users', protectAdmin, async (req, res) => {
         grantedAt: new Date(),
         expiresAt: courseAccessType === 'permanent' ? null : new Date(Date.now() + (courseAccessType === 'yearly' ? 365 : courseAccessDays) * 86400000),
       }] : [],
-      isTester,
-      testerSince: isTester ? new Date() : null,
-      testerAssignedBy: isTester ? adminSubject : null,
-      testerNotes: isTester ? (testerNotes || 'Planted test account created from admin panel') : '',
     });
 
     return res.status(201).json({
-      message: isTester ? 'Test account created successfully.' : 'Learner ID created successfully.',
+      message: 'Learner ID created successfully.',
       user: {
         _id: user._id,
         fullName: user.fullName,
@@ -2832,16 +2594,12 @@ app.post('/api/admin/users', protectAdmin, async (req, res) => {
         isMobileVerified: user.isMobileVerified,
         isEmailVerified: user.isEmailVerified,
         isActive: user.isActive,
-        isTester: user.isTester,
-        testerSince: user.testerSince,
-        testerAssignedBy: user.testerAssignedBy,
-        testerNotes: user.testerNotes,
         createdAt: user.createdAt,
       },
     });
   } catch (error) {
-    if (error?.code === 11000) return res.status(409).json({ error: 'An account already exists with this mobile number or email.' });
-    return res.status(500).json({ error: 'Unable to create the account.' });
+    if (error?.code === 11000) return res.status(409).json({ error: 'A learner already exists with this mobile number or email.' });
+    return res.status(500).json({ error: 'Unable to create the learner ID.' });
   }
 });
 
@@ -2895,8 +2653,6 @@ app.patch('/api/admin/users/:id/courses', protectAdmin, async (req, res) => {
 
 app.get('/api/admin/user-management', protectAdmin, async (req, res) => {
   try {
-    const audience = String(req.query?.audience || 'learners').trim().toLowerCase();
-    const userFilter = audience === 'testers' ? { isTester: true } : { isTester: { $ne: true } };
     const normalizeAdminIdentityEmail = (value) => String(value || '').trim().toLowerCase();
     const normalizeAdminIdentityMobile = (value) => {
       const digits = String(value || '').replace(/\D/g, '');
@@ -2919,9 +2675,9 @@ app.get('/api/admin/user-management', protectAdmin, async (req, res) => {
     };
     const watchEventNames = ['video_start', 'video_progress', 'video_complete', 'video_watch'];
     const [users, progressRows, progressWatchRows, analyticsWatchRows, latestSessionRows, latestPresenceRows] = await Promise.all([
-      User.find(userFilter)
+      User.find()
         .sort({ createdAt: -1 })
-        .select('fullName email mobileNumber avatar gender age subscriptionStatus subscriptionExpiry purchasedCourses courseEntitlements isMobileVerified isEmailVerified isActive bannedAt banReason deletedAt deletedBy deletionReason marketingOptIn isTester testerSince testerAssignedBy testerNotes createdAt lastActiveAt lastLoginAt loginCount')
+        .select('fullName email mobileNumber avatar gender age subscriptionStatus subscriptionExpiry purchasedCourses courseEntitlements isMobileVerified isEmailVerified isActive bannedAt banReason deletedAt deletedBy deletionReason marketingOptIn createdAt lastActiveAt lastLoginAt loginCount')
         .lean(),
       CourseProgress.aggregate([
         { $match: { userId: { $nin: [null, ''] } } },
@@ -2949,7 +2705,7 @@ app.get('/api/admin/user-management', protectAdmin, async (req, res) => {
             courseId: '$_id.courseId',
             courseTitle: { $ifNull: ['$_id.courseTitle', 'Untitled course'] },
             progressRecords: 1,
-            completedCount: { $ifNull: ['$completedCount', 0] },
+            completedCount: { $ifNull: ['$completedCount'   , 0] },
             progressPercent: { $ifNull: ['$progressPercent', 0] },
             totalVideos: { $ifNull: ['$totalVideos', 0] },
             lastWatchedVideoId: 1,
@@ -3047,85 +2803,6 @@ app.get('/api/admin/user-management', protectAdmin, async (req, res) => {
     ]);
 
     const userIds = new Set(users.map((user) => String(user._id)));
-    const userObjectIds = users.map((user) => user._id);
-    const [subscriptionRows, razorpayBillingRows] = await Promise.all([
-      Subscription.find({ user: { $in: userObjectIds } })
-        .sort({ createdAt: -1 })
-        .select('user gateway status subscriptionType amount trialStartedAt trialExpiresAt trialConverted currentPeriodStart currentPeriodEnd nextBillingAt cancelledAt cancelReason razorpaySubscriptionId razorpayStatus phonePeSubscriptionId phonePeMandateId phonePeAuthRequestId createdAt updatedAt')
-        .lean(),
-      RazorpayBilling.find({ _id: { $in: userObjectIds } })
-        .select('_id mode phase subscriptionId paymentType trialAmount monthlyAmount annualAmount recurringAmount planId trialEnd trialAccessEnd createdAt updatedAt')
-        .lean(),
-    ]);
-    const subscriptionByUser = subscriptionRows.reduce((acc, row) => {
-      const key = String(row.user);
-      if (!acc[key]) acc[key] = row;
-      return acc;
-    }, {});
-    const razorpayBillingByUser = razorpayBillingRows.reduce((acc, row) => {
-      acc[String(row._id)] = row;
-      return acc;
-    }, {});
-    const buildBillingSummary = (user) => {
-      const subscription = subscriptionByUser[String(user._id)] || null;
-      const razorpayBilling = razorpayBillingByUser[String(user._id)] || null;
-      const access = resolveAdminSubscriptionAccess(subscription, user);
-      const inGracePeriod = Boolean(access.grace);
-      const gateway = subscription?.gateway || (razorpayBilling?.subscriptionId ? 'razorpay' : null);
-      const providerStatus = subscription?.razorpayStatus || subscription?.status || razorpayBilling?.phase || null;
-      const providerStatusText = String(providerStatus || '').toLowerCase();
-      const hasRazorpayMandate = Boolean(subscription?.razorpaySubscriptionId || razorpayBilling?.subscriptionId);
-      const hasPhonePeMandate = Boolean(subscription?.phonePeMandateId || subscription?.phonePeSubscriptionId);
-      const isCancelled = Boolean(subscription?.cancelledAt)
-        || ['cancelled', 'canceled', 'expired', 'halted'].includes(providerStatusText)
-        || razorpayBilling?.phase === 'closed';
-      const autoRenewEnabled = !isCancelled && (
-        (gateway === 'phonepe' && hasPhonePeMandate)
-        || (gateway === 'razorpay' && hasRazorpayMandate && (
-          ['active', 'authenticated', 'ready'].includes(providerStatusText)
-          || ['ready'].includes(String(razorpayBilling?.phase || '').toLowerCase())
-        ))
-      );
-      const terminalMandateStatus = ['expired', 'halted'].includes(providerStatusText)
-        ? providerStatusText
-        : 'cancelled';
-      const mandateStatus = isCancelled
-        ? terminalMandateStatus
-        : autoRenewEnabled
-          ? 'active'
-          : (hasPhonePeMandate || hasRazorpayMandate)
-            ? 'pending'
-            : 'not_started';
-
-      return {
-        gateway,
-        providerStatus,
-        subscriptionStatus: subscription?.status || user.subscriptionStatus || null,
-        subscriptionType: subscription?.subscriptionType || razorpayBilling?.paymentType || null,
-        amount: subscription?.amount || razorpayBilling?.recurringAmount || razorpayBilling?.monthlyAmount || null,
-        autoRenewEnabled,
-        inGracePeriod,
-        graceStartedAt: access.graceStartedAt || null,
-        graceExpiresAt: access.graceExpiresAt || null,
-        mandateStatus,
-        subscriptionStartedAt: subscription?.currentPeriodStart || subscription?.trialStartedAt || subscription?.createdAt || razorpayBilling?.createdAt || null,
-        trialStartedAt: subscription?.trialStartedAt || null,
-        trialExpiresAt: subscription?.trialExpiresAt || razorpayBilling?.trialEnd || user.subscriptionExpiry || null,
-        currentPeriodStart: subscription?.currentPeriodStart || null,
-        currentPeriodEnd: subscription?.currentPeriodEnd || null,
-        nextBillingAt: subscription?.nextBillingAt || subscription?.currentPeriodEnd || null,
-        cancelledAt: subscription?.cancelledAt || null,
-        cancelReason: subscription?.cancelReason || null,
-        razorpaySubscriptionId: subscription?.razorpaySubscriptionId || razorpayBilling?.subscriptionId || null,
-        phonePeSubscriptionId: subscription?.phonePeSubscriptionId || null,
-        phonePeMandateId: subscription?.phonePeMandateId || null,
-        phonePeAuthRequestId: subscription?.phonePeAuthRequestId || null,
-        billingPhase: razorpayBilling?.phase || null,
-        billingMode: razorpayBilling?.mode || null,
-        planId: razorpayBilling?.planId || null,
-        updatedAt: subscription?.updatedAt || razorpayBilling?.updatedAt || null,
-      };
-    };
     const usersByEmail = buildUniqueIdentityIndex(users, (user) => normalizeAdminIdentityEmail(user.email));
     const usersByMobile = buildUniqueIdentityIndex(users, (user) => normalizeAdminIdentityMobile(user.mobileNumber));
     const progressByUser = progressRows.reduce((acc, row) => {
@@ -3197,7 +2874,6 @@ app.get('/api/admin/user-management', protectAdmin, async (req, res) => {
         ...user,
         presence: presenceByUser[String(user._id)] || { isOnline: false, lastSeenAt: user.lastActiveAt || null },
         networkSummary: latestSessionByUser[String(user._id)] || null,
-        billingSummary: buildBillingSummary(user),
         progressCourses: userProgress,
         progressSummary: {
           totalCourses: progressCourseCount,
@@ -3258,99 +2934,6 @@ app.patch('/api/admin/users/:id/access', protectAdmin, async (req, res) => {
     res.json({
       message: action === 'ban' ? 'User banned and active sessions revoked' : 'User unbanned',
       user: { _id: user._id, isActive: user.isActive, bannedAt: user.bannedAt, banReason: user.banReason },
-    });
-  } catch (error) {
-    res.status(error.statusCode || 500).json({ error: error.message });
-  }
-});
-
-app.patch('/api/admin/users/:id/tester', protectAdmin, async (req, res) => {
-  try {
-    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
-      return res.status(400).json({ error: 'Invalid user id' });
-    }
-    const action = String(req.body?.action || '').trim().toLowerCase();
-    const notes = String(req.body?.notes || '').trim().slice(0, 500) || null;
-    if (!['enable', 'disable'].includes(action)) {
-      return res.status(400).json({ error: 'Action must be enable or disable.' });
-    }
-    const user = await User.findById(req.params.id);
-    if (!user) return res.status(404).json({ error: 'User not found' });
-    if (user.deletedAt) return res.status(409).json({ error: 'Restore this user before changing tester status.' });
-    const adminSubject = req.admin?.sub || req.admin?.email || 'admin';
-    const previousState = {
-      isTester: Boolean(user.isTester),
-      testerSince: user.testerSince,
-      testerAssignedBy: user.testerAssignedBy,
-      testerNotes: user.testerNotes,
-    };
-    const enabling = action === 'enable';
-    user.isTester = enabling;
-    user.testerSince = enabling ? (user.testerSince || new Date()) : null;
-    user.testerAssignedBy = enabling ? adminSubject : null;
-    user.testerNotes = enabling ? notes : null;
-    await user.save();
-    const nextState = {
-      isTester: Boolean(user.isTester),
-      testerSince: user.testerSince,
-      testerAssignedBy: user.testerAssignedBy,
-      testerNotes: user.testerNotes,
-    };
-    await AdminUserAction.create({
-      user: user._id,
-      action: enabling ? 'tester_enabled' : 'tester_disabled',
-      reason: notes || (enabling ? 'Tester access enabled by admin' : 'Tester access removed by admin'),
-      previousState,
-      nextState,
-      adminSubject,
-    });
-    res.json({
-      message: enabling ? 'Learner moved to tester analytics.' : 'Tester status removed.',
-      user: { _id: user._id, ...nextState },
-    });
-  } catch (error) {
-    res.status(error.statusCode || 500).json({ error: error.message });
-  }
-});
-
-app.patch('/api/admin/users/:id/password', protectAdmin, async (req, res) => {
-  try {
-    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
-      return res.status(400).json({ error: 'Invalid user id' });
-    }
-    const password = String(req.body?.password || '');
-    const reason = String(req.body?.reason || 'Temporary password set by admin').trim().slice(0, 500) || 'Temporary password set by admin';
-    if (password.length < 8 || password.length > 72) {
-      return res.status(400).json({ error: 'Temporary password must contain 8 to 72 characters.' });
-    }
-    const user = await User.findById(req.params.id).select('+activeSessionId +activeSessions');
-    if (!user) return res.status(404).json({ error: 'User not found' });
-    if (user.deletedAt) return res.status(409).json({ error: 'Restore this user before setting a password.' });
-    const previousState = {
-      hadPassword: Boolean(user.passwordHash),
-      activeSessionId: user.activeSessionId || null,
-      activeSessions: Array.isArray(user.activeSessions) ? user.activeSessions.length : 0,
-    };
-    user.passwordHash = await bcrypt.hash(password, 12);
-    user.activeSessionId = null;
-    user.activeSessions = [];
-    user.deviceToken = null;
-    await user.save();
-    await Session.updateMany(
-      { user: user._id, loggedOutAt: null },
-      { $set: { loggedOutAt: new Date(), deviceToken: null, refreshTokenHash: null } }
-    );
-    await AdminUserAction.create({
-      user: user._id,
-      action: 'password_reset',
-      reason,
-      previousState,
-      nextState: { hadPassword: true, sessionsRevoked: true },
-      adminSubject: req.admin?.sub || req.admin?.email || 'admin',
-    });
-    res.json({
-      message: 'Temporary password set. Existing sessions were revoked.',
-      user: { _id: user._id },
     });
   } catch (error) {
     res.status(error.statusCode || 500).json({ error: error.message });
@@ -3812,90 +3395,17 @@ app.get('/api/admin/courses', protectAdmin, async (req, res) => {
   try {
     const query = Course.find();
     if (req.query.summary === '1') {
-      query.select('title slug status category createdAt updatedAt thumbnailUrl thumbnailVerticalUrl totalStarted totalCompleted completionRate totalWatchMinutes averageProgress videos._id videos.title videos.videoUrl videos.embedUrl videos.bunnyVideoId videos.awsKey videos.playbackUrl videos.thumbnailUrl');
+      query.select('title slug status category createdAt updatedAt thumbnailUrl thumbnailVerticalUrl videos._id videos.thumbnailUrl');
     }
     const courses = await query
       .populate('category', 'name slug isActive')
       .sort({ createdAt: -1 })
       .lean();
 
-    if (req.query.summary !== '1' || !courses.length) {
-      return res.json(courses.map((course) => ({
-        ...course,
-        videoCount: Array.isArray(course.videos) ? course.videos.length : 0,
-      })));
-    }
-
-    const courseIds = courses.map((course) => course._id).filter(Boolean);
-    const [lessonProgressRows, courseProgressRows] = await Promise.all([
-      Progress.aggregate([
-        { $match: { course: { $in: courseIds } } },
-        {
-          $group: {
-            _id: '$course',
-            learnerIds: { $addToSet: '$user' },
-            watchedSeconds: { $sum: { $ifNull: ['$watchedSeconds', 0] } },
-            completedRecords: { $sum: { $cond: ['$completed', 1, 0] } },
-            progressRecords: { $sum: 1 },
-          },
-        },
-        {
-          $project: {
-            learnerCount: { $size: '$learnerIds' },
-            watchedSeconds: 1,
-            completedRecords: 1,
-            progressRecords: 1,
-          },
-        },
-      ]),
-      CourseProgress.aggregate([
-        { $match: { courseId: { $in: courseIds.map((id) => String(id)) } } },
-        {
-          $group: {
-            _id: '$courseId',
-            learnerIds: { $addToSet: '$userId' },
-            averageProgress: { $avg: '$progressPercent' },
-            completedRecords: { $sum: { $cond: [{ $gte: ['$progressPercent', 100] }, 1, 0] } },
-          },
-        },
-        {
-          $project: {
-            learnerCount: { $size: '$learnerIds' },
-            averageProgress: { $round: [{ $ifNull: ['$averageProgress', 0] }, 2] },
-            completedRecords: 1,
-          },
-        },
-      ]),
-    ]);
-
-    const lessonProgressByCourse = new Map(lessonProgressRows.map((row) => [String(row._id), row]));
-    const courseProgressByCourse = new Map(courseProgressRows.map((row) => [String(row._id), row]));
-
-    res.json(courses.map((course) => {
-      const id = String(course._id);
-      const lessonProgress = lessonProgressByCourse.get(id) || {};
-      const courseProgress = courseProgressByCourse.get(id) || {};
-      const totalStarted = Math.max(
-        Number(course.totalStarted || 0),
-        Number(lessonProgress.learnerCount || 0),
-        Number(courseProgress.learnerCount || 0)
-      );
-      const totalCompleted = Math.max(
-        Number(course.totalCompleted || 0),
-        Number(lessonProgress.completedRecords || 0),
-        Number(courseProgress.completedRecords || 0)
-      );
-      const completionRate = Number(course.completionRate || 0) || (totalStarted ? Math.round((totalCompleted / totalStarted) * 100) : 0);
-      return {
-        ...course,
-        totalStarted,
-        totalCompleted,
-        completionRate,
-        averageProgress: Number(course.averageProgress || 0) || Number(courseProgress.averageProgress || 0),
-        totalWatchMinutes: Number(course.totalWatchMinutes || 0) || Math.round(Number(lessonProgress.watchedSeconds || 0) / 60),
-        videoCount: Array.isArray(course.videos) ? course.videos.length : 0,
-      };
-    }));
+    res.json(courses.map((course) => ({
+      ...course,
+      videoCount: Array.isArray(course.videos) ? course.videos.length : 0,
+    })));
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

@@ -91,7 +91,7 @@ export function AdminShell({ activePage, title, subtitle, children, actions = nu
           <button className="admin-sidebar-logout" type="button" onClick={logout}>Log out</button>
         </div>
       </aside>
-      <main id="admin-main" tabIndex={-1} className={`app-shell ${shellClass} admin-workspace-main`}>
+      <main key={activePage} id="admin-main" tabIndex={-1} className={`app-shell ${shellClass} admin-workspace-main admin-page-transition`}>
         <header className="admin-workspace-header">
           <div className="admin-header-main">
             <p className="admin-breadcrumb">Workspace / {section}</p>

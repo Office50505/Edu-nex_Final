@@ -5,9 +5,12 @@ export function conversationHistory(messages) {
     .slice(-12).map(({ role, content }) => ({ role, content: content.trim().slice(0, 2000) }));
 }
 
-export async function requestTutor({ baseUrl, user, question, courseId, messages, assistantName = 'AI', session, fetcher = fetch }) {
+export async function requestTutor({ baseUrl, user, question, courseId, activeCourseId, conversationId, messages, assistantName = 'AI', session, fetcher = fetch }) {
   const body = JSON.stringify({ message: question, history: conversationHistory(messages),
-    assistantName, ...(courseId ? { courseId } : {}) });
+    assistantName,
+    ...(conversationId ? { conversationId } : {}),
+    ...(courseId ? { courseId } : {}),
+    ...(!courseId && activeCourseId ? { activeCourseId } : {}) });
   if (session) {
     const current = session.getUser();
     if (!current || current._id !== user?._id || current.sessionId !== user?.sessionId) {

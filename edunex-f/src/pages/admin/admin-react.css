@@ -7780,3 +7780,1797 @@ body.premium-nav-admin .create-learner-check span {
     border-radius: 20px 20px 0 0 !important;
   }
 }
+
+/* Dark theme must override the late light/polish layer above. */
+body.premium-nav-admin.admin-theme-dark {
+  color-scheme: dark;
+  --admin-dark-page: #07090f;
+  --admin-dark-shell: #0b0d13;
+  --admin-dark-sidebar: #0e1118;
+  --admin-dark-panel: #11151f;
+  --admin-dark-panel-soft: #151a25;
+  --admin-dark-border: rgba(226, 232, 240, .11);
+  --admin-dark-text: #eef2f7;
+  --admin-dark-muted: #9aa6b7;
+  --admin-dark-accent: #e5aa34;
+  background: var(--admin-dark-page) !important;
+  color: var(--admin-dark-text) !important;
+}
+
+body.premium-nav-admin.admin-theme-dark .admin-workspace {
+  background: var(--admin-dark-page) !important;
+}
+
+body.premium-nav-admin.admin-theme-dark .admin-sidebar {
+  border-color: var(--admin-dark-border) !important;
+  background: linear-gradient(180deg, #121722, var(--admin-dark-sidebar)) !important;
+  box-shadow: 0 18px 44px rgba(0, 0, 0, .36) !important;
+  scrollbar-color: rgba(229,170,52,.55) transparent !important;
+}
+
+body.premium-nav-admin.admin-theme-dark .admin-sidebar::-webkit-scrollbar-thumb {
+  background: rgba(229,170,52,.5) !important;
+}
+
+body.premium-nav-admin.admin-theme-dark .admin-sidebar:hover::-webkit-scrollbar-thumb {
+  background: rgba(229,170,52,.76) !important;
+}
+
+body.premium-nav-admin.admin-theme-dark .admin-workspace .admin-workspace-main {
+  background: var(--admin-dark-shell) !important;
+  box-shadow: 0 18px 50px rgba(0, 0, 0, .42) !important;
+}
+
+body.premium-nav-admin.admin-theme-dark :where(
+  .admin-workspace-header h1,
+  .admin-section-heading,
+  .dashboard-panel h2,
+  .panel h2,
+  .panel h3,
+  .users-panel h2,
+  .admin-settings-card h2,
+  .admin-data-row strong,
+  .user-card strong,
+  .admin-brand-name,
+  .admin-brand-text,
+  .summary-card strong,
+  .metric-card strong
+) {
+  color: var(--admin-dark-text) !important;
+}
+
+body.premium-nav-admin.admin-theme-dark :where(
+  .admin-header-description,
+  .admin-breadcrumb,
+  .admin-brand-copy small,
+  .admin-nav-group p,
+  .summary-card small,
+  .metric-card small,
+  .admin-data-row span,
+  .user-card span,
+  .panel p,
+  .dashboard-panel p
+) {
+  color: var(--admin-dark-muted) !important;
+}
+
+body.premium-nav-admin.admin-theme-dark .admin-brand-mate {
+  color: var(--admin-dark-accent) !important;
+}
+
+body.premium-nav-admin.admin-theme-dark .admin-nav-group a {
+  color: #aeb8c8 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+body.premium-nav-admin.admin-theme-dark .admin-nav-group a:hover:not(.is-active) {
+  color: #fff !important;
+  background: rgba(229,170,52,.12) !important;
+}
+
+body.premium-nav-admin.admin-theme-dark .admin-nav-group a.is-active {
+  color: #0b0d13 !important;
+  background: linear-gradient(180deg, #f6cc65, var(--admin-dark-accent)) !important;
+  box-shadow: 0 12px 26px rgba(229,170,52,.22) !important;
+}
+
+body.premium-nav-admin.admin-theme-dark .admin-sidebar-toggle,
+body.premium-nav-admin.admin-theme-dark .admin-sidebar-footer a,
+body.premium-nav-admin.admin-theme-dark .admin-sidebar-footer button,
+body.premium-nav-admin.admin-theme-dark .admin-mode-pill,
+body.premium-nav-admin.admin-theme-dark .admin-date-pill,
+body.premium-nav-admin.admin-theme-dark .toolbar-button,
+body.premium-nav-admin.admin-theme-dark .action-button,
+body.premium-nav-admin.admin-theme-dark .date-chip {
+  border-color: var(--admin-dark-border) !important;
+  background: rgba(255, 255, 255, .06) !important;
+  color: #e7edf6 !important;
+}
+
+body.premium-nav-admin.admin-theme-dark .toolbar-button:hover,
+body.premium-nav-admin.admin-theme-dark .action-button:hover,
+body.premium-nav-admin.admin-theme-dark .admin-sidebar-footer a:hover,
+body.premium-nav-admin.admin-theme-dark .admin-sidebar-footer button:hover {
+  border-color: rgba(229,170,52,.35) !important;
+  background: rgba(229,170,52,.13) !important;
+  color: #fff !important;
+}
+
+body.premium-nav-admin.admin-theme-dark .toolbar-button.primary,
+body.premium-nav-admin.admin-theme-dark .action-button.primary,
+body.premium-nav-admin.admin-theme-dark .date-range-actions button:last-child,
+body.premium-nav-admin.admin-theme-dark .dashboard-shell .analytics-controls.admin-range-card > button[type="submit"] {
+  background: linear-gradient(180deg, #efbd56, var(--admin-dark-accent)) !important;
+  color: #111827 !important;
+}
+
+body.premium-nav-admin.admin-theme-dark .admin-command-card,
+body.premium-nav-admin.admin-theme-dark .dashboard-shell .analytics-controls.admin-range-card,
+body.premium-nav-admin.admin-theme-dark :where(.controls-panel, .crm-results-bar, .users-panel, .admin-data-table, .panel, .dashboard-panel, .form-section, .admin-settings-card, .cert-template-shell, .health-check) {
+  border-color: var(--admin-dark-border) !important;
+  background: var(--admin-dark-panel) !important;
+  box-shadow: 0 14px 34px rgba(0, 0, 0, .24) !important;
+}
+
+body.premium-nav-admin.admin-theme-dark .summary-card,
+body.premium-nav-admin.admin-theme-dark .metric-card,
+body.premium-nav-admin.admin-theme-dark .summary-card:nth-child(4n + 2),
+body.premium-nav-admin.admin-theme-dark .metric-card:nth-child(4n + 2),
+body.premium-nav-admin.admin-theme-dark .summary-card:nth-child(4n + 3),
+body.premium-nav-admin.admin-theme-dark .metric-card:nth-child(4n + 3),
+body.premium-nav-admin.admin-theme-dark .summary-card:nth-child(4n + 4),
+body.premium-nav-admin.admin-theme-dark .metric-card:nth-child(4n + 4),
+body.premium-nav-admin.admin-theme-dark .dashboard-shell .summary-card {
+  border-color: var(--admin-dark-border) !important;
+  background: var(--admin-dark-panel) !important;
+  box-shadow: 0 14px 34px rgba(0, 0, 0, .24) !important;
+}
+
+body.premium-nav-admin.admin-theme-dark .summary-card span,
+body.premium-nav-admin.admin-theme-dark .metric-card span {
+  color: #f8fafc !important;
+}
+
+body.premium-nav-admin.admin-theme-dark .summary-card:hover,
+body.premium-nav-admin.admin-theme-dark .metric-card:hover,
+body.premium-nav-admin.admin-theme-dark .user-card:hover,
+body.premium-nav-admin.admin-theme-dark .admin-data-row:hover {
+  border-color: rgba(229,170,52,.28) !important;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, .32) !important;
+}
+
+body.premium-nav-admin.admin-theme-dark .user-card,
+body.premium-nav-admin.admin-theme-dark .admin-data-row {
+  border-color: var(--admin-dark-border) !important;
+  background: var(--admin-dark-panel-soft) !important;
+}
+
+body.premium-nav-admin.admin-theme-dark input,
+body.premium-nav-admin.admin-theme-dark select,
+body.premium-nav-admin.admin-theme-dark textarea {
+  border-color: var(--admin-dark-border) !important;
+  background: rgba(255, 255, 255, .05) !important;
+  color: var(--admin-dark-text) !important;
+}
+
+body.premium-nav-admin.admin-theme-dark input[type="checkbox"]:not(.admin-switch-row input):not(.row-select) {
+  border-color: rgba(226, 232, 240, .24) !important;
+  background: #0f131c !important;
+}
+
+body.premium-nav-admin.admin-theme-dark input[type="checkbox"]:not(.admin-switch-row input):not(.row-select)::after {
+  border-color: #111827 !important;
+}
+
+/* Dashboard metric values stay on one line; longer values scale down. */
+body.premium-nav-admin .dashboard-shell .metric-card .metric-value {
+  display: block !important;
+  max-width: 100% !important;
+  margin-top: 14px !important;
+  overflow: hidden !important;
+  text-overflow: clip !important;
+  white-space: nowrap !important;
+  font-size: clamp(30px, 2vw, 38px) !important;
+  font-variant-numeric: tabular-nums !important;
+  line-height: 1.04 !important;
+}
+
+body.premium-nav-admin .dashboard-shell .metric-card .metric-value.is-compact {
+  font-size: clamp(25px, 1.6vw, 31px) !important;
+}
+
+body.premium-nav-admin .dashboard-shell .metric-card .metric-value.is-tight {
+  font-size: clamp(21px, 1.35vw, 27px) !important;
+}
+
+body.premium-nav-admin .dashboard-shell .metric-card .metric-value.is-tiny {
+  font-size: clamp(18px, 1.15vw, 23px) !important;
+}
+
+/* Dark-theme readability pass for nested admin panel content. */
+body.premium-nav-admin.admin-theme-dark :where(
+  .dashboard-panel,
+  .panel,
+  .users-panel,
+  .courses-panel,
+  .admin-settings-card,
+  .admin-data-table,
+  .controls-panel,
+  .form-section,
+  .health-check,
+  .cert-template-shell
+) :where(h1, h2, h3, h4, h5, h6, .panel-title, strong, b, th, dt, label) {
+  color: var(--admin-dark-text) !important;
+}
+
+body.premium-nav-admin.admin-theme-dark :where(
+  .dashboard-panel,
+  .panel,
+  .users-panel,
+  .courses-panel,
+  .admin-settings-card,
+  .admin-data-table,
+  .controls-panel,
+  .form-section,
+  .health-check,
+  .cert-template-shell
+) :where(p, span, small, td, dd, li) {
+  color: var(--admin-dark-muted) !important;
+}
+
+body.premium-nav-admin.admin-theme-dark :where(.data-row, .action-item, .empty-state, .status-breakdown > div, .purchase-history-row, .report-context-v2 > div) {
+  border-color: rgba(226, 232, 240, .14) !important;
+  background: rgba(17, 21, 31, .96) !important;
+  color: var(--admin-dark-text) !important;
+}
+
+body.premium-nav-admin.admin-theme-dark :where(.data-row, .action-item, .status-breakdown > div) :where(strong, b) {
+  color: var(--admin-dark-text) !important;
+}
+
+body.premium-nav-admin.admin-theme-dark :where(.data-row, .action-item, .status-breakdown > div) :where(span, small) {
+  color: #aeb9ca !important;
+}
+
+body.premium-nav-admin.admin-theme-dark :where(.panel-head p, .dashboard-panel p, .range-summary small, .trend-day small) {
+  color: #aeb9ca !important;
+}
+
+body.premium-nav-admin.admin-theme-dark :where(.dashboard-panel a, .panel a, .admin-data-table a, .action-item:hover strong) {
+  color: #f2b94f !important;
+}
+
+body.premium-nav-admin.admin-theme-dark .badge,
+body.premium-nav-admin.admin-theme-dark .pill {
+  border-color: rgba(226, 232, 240, .14) !important;
+  background: rgba(255, 255, 255, .08) !important;
+  color: #e7edf6 !important;
+}
+
+body.premium-nav-admin.admin-theme-dark .badge.good,
+body.premium-nav-admin.admin-theme-dark .pill.good {
+  background: rgba(34, 197, 94, .16) !important;
+  color: #86efac !important;
+}
+
+body.premium-nav-admin.admin-theme-dark .badge.warn,
+body.premium-nav-admin.admin-theme-dark .pill.warn {
+  background: rgba(229, 170, 52, .16) !important;
+  color: #facc6b !important;
+}
+
+body.premium-nav-admin.admin-theme-dark .badge.bad,
+body.premium-nav-admin.admin-theme-dark .pill.bad {
+  background: rgba(239, 68, 68, .16) !important;
+  color: #fca5a5 !important;
+}
+
+body.premium-nav-admin.admin-theme-dark .metric-card .metric-value {
+  color: #f8fafc !important;
+}
+
+/* Final dark contrast lock: beat earlier direct light-mode row text rules. */
+body.premium-nav-admin.admin-theme-dark .dashboard-panel .action-item,
+body.premium-nav-admin.admin-theme-dark .dashboard-panel .data-row,
+body.premium-nav-admin.admin-theme-dark .dashboard-panel .status-breakdown > div,
+body.premium-nav-admin.admin-theme-dark .panel .data-row,
+body.premium-nav-admin.admin-theme-dark .users-panel .data-row,
+body.premium-nav-admin.admin-theme-dark .admin-data-table .admin-data-row,
+body.premium-nav-admin.admin-theme-dark .admin-action-list > div,
+body.premium-nav-admin.admin-theme-dark .purchase-history-list article {
+  border-color: rgba(226, 232, 240, .22) !important;
+  background: #151a25 !important;
+  color: #eef2f7 !important;
+}
+
+body.premium-nav-admin.admin-theme-dark .dashboard-panel .action-item strong,
+body.premium-nav-admin.admin-theme-dark .dashboard-panel .data-row strong,
+body.premium-nav-admin.admin-theme-dark .dashboard-panel .data-row b,
+body.premium-nav-admin.admin-theme-dark .dashboard-panel .status-breakdown b,
+body.premium-nav-admin.admin-theme-dark .panel .data-row strong,
+body.premium-nav-admin.admin-theme-dark .panel .data-row b,
+body.premium-nav-admin.admin-theme-dark .users-panel .data-row strong,
+body.premium-nav-admin.admin-theme-dark .users-panel .data-row b,
+body.premium-nav-admin.admin-theme-dark .admin-data-table .admin-data-row strong,
+body.premium-nav-admin.admin-theme-dark .admin-action-list strong,
+body.premium-nav-admin.admin-theme-dark .purchase-history-list strong {
+  color: #f8fafc !important;
+}
+
+body.premium-nav-admin.admin-theme-dark .dashboard-panel .action-item span,
+body.premium-nav-admin.admin-theme-dark .dashboard-panel .data-row span,
+body.premium-nav-admin.admin-theme-dark .dashboard-panel .status-breakdown span,
+body.premium-nav-admin.admin-theme-dark .dashboard-panel .panel-head p,
+body.premium-nav-admin.admin-theme-dark .dashboard-panel p,
+body.premium-nav-admin.admin-theme-dark .dashboard-panel small,
+body.premium-nav-admin.admin-theme-dark .panel .data-row span,
+body.premium-nav-admin.admin-theme-dark .panel p,
+body.premium-nav-admin.admin-theme-dark .panel small,
+body.premium-nav-admin.admin-theme-dark .users-panel .data-row span,
+body.premium-nav-admin.admin-theme-dark .admin-data-table .admin-data-row span,
+body.premium-nav-admin.admin-theme-dark .admin-action-list span,
+body.premium-nav-admin.admin-theme-dark .purchase-history-list span {
+  color: #b8c2d2 !important;
+}
+
+body.premium-nav-admin.admin-theme-dark .dashboard-panel .action-item:hover {
+  border-color: rgba(242, 185, 79, .45) !important;
+  background: #1a2030 !important;
+}
+
+body.premium-nav-admin.admin-theme-dark .dashboard-panel .action-item:hover strong {
+  color: #f2b94f !important;
+}
+
+/* Admin-wide dark contrast contract. Keep this last so page-specific polish cannot hide text. */
+body.premium-nav-admin.admin-theme-dark {
+  --aw-bg: #07090f !important;
+  --aw-surface: #0b0d13 !important;
+  --aw-panel: #11151f !important;
+  --aw-panel-soft: #151a25 !important;
+  --aw-border: rgba(226, 232, 240, .18) !important;
+  --aw-text: #f8fafc !important;
+  --aw-muted: #b8c2d2 !important;
+  --admin-bg: #07090f !important;
+  --admin-card: #11151f !important;
+  --admin-panel: #11151f !important;
+  --admin-input: #151a25 !important;
+  --admin-border: rgba(226, 232, 240, .18) !important;
+  --admin-text: #f8fafc !important;
+  --admin-muted: #b8c2d2 !important;
+}
+
+body.premium-nav-admin.admin-theme-dark .admin-workspace,
+body.premium-nav-admin.admin-theme-dark .admin-workspace-main {
+  color: #f8fafc !important;
+}
+
+body.premium-nav-admin.admin-theme-dark .admin-workspace :is(
+  h1, h2, h3, h4, h5, h6,
+  .panel-title,
+  .admin-section-heading,
+  strong,
+  b,
+  th,
+  dt,
+  label,
+  output,
+  summary
+) {
+  color: #f8fafc !important;
+}
+
+body.premium-nav-admin.admin-theme-dark .admin-workspace :is(
+  p,
+  span,
+  small,
+  td,
+  dd,
+  li,
+  figcaption,
+  time
+) {
+  color: #b8c2d2 !important;
+}
+
+body.premium-nav-admin.admin-theme-dark .admin-workspace :is(
+  .dashboard-panel,
+  .panel,
+  .summary-card,
+  .metric-card,
+  .data-row,
+  .action-item,
+  .admin-data-row,
+  .user-card,
+  .course-row,
+  .crm-results-bar,
+  .users-panel,
+  .courses-panel,
+  .controls-panel,
+  .form-section,
+  .admin-settings-card,
+  .admin-data-table,
+  .health-check,
+  .cert-template-shell,
+  .empty-state,
+  .status-breakdown > div,
+  .admin-choice-card,
+  .admin-switch-row,
+  .report-card,
+  .report-card-v2,
+  .payment-audit-card,
+  .purchase-history-list article
+) {
+  border-color: rgba(226, 232, 240, .18) !important;
+  background: #11151f !important;
+  color: #f8fafc !important;
+}
+
+body.premium-nav-admin.admin-theme-dark .admin-workspace :is(input, textarea, select, .admin-global-search) {
+  border-color: rgba(226, 232, 240, .18) !important;
+  background: #151a25 !important;
+  color: #f8fafc !important;
+}
+
+body.premium-nav-admin.admin-theme-dark .admin-workspace :is(input, textarea)::placeholder {
+  color: #9aa6b7 !important;
+  opacity: 1 !important;
+}
+
+body.premium-nav-admin.admin-theme-dark .admin-workspace :is(a, .toolbar-button, .action-button, .secondary-button, .primary-button, button) {
+  color: #f8fafc !important;
+}
+
+body.premium-nav-admin.admin-theme-dark .admin-workspace :is(a[href], .panel-head a, .admin-command-card small) {
+  color: #f2b94f !important;
+}
+
+body.premium-nav-admin.admin-theme-dark .admin-workspace :is(
+  .toolbar-button.primary,
+  .action-button.primary,
+  .primary-button,
+  .submit-button,
+  button[type="submit"],
+  .date-range-actions button:last-child
+) {
+  background: linear-gradient(180deg, #efbd56, #e5aa34) !important;
+  color: #111827 !important;
+}
+
+body.premium-nav-admin.admin-theme-dark .admin-workspace :is(.badge, .pill) {
+  border-color: rgba(226, 232, 240, .18) !important;
+  background: rgba(255, 255, 255, .08) !important;
+  color: #e7edf6 !important;
+}
+
+body.premium-nav-admin.admin-theme-dark .admin-workspace :is(.badge.good, .pill.good, .health-badge.healthy) {
+  background: rgba(34, 197, 94, .16) !important;
+  color: #86efac !important;
+}
+
+body.premium-nav-admin.admin-theme-dark .admin-workspace :is(.badge.warn, .pill.warn, .badge.draft) {
+  background: rgba(229, 170, 52, .16) !important;
+  color: #facc6b !important;
+}
+
+body.premium-nav-admin.admin-theme-dark .admin-workspace :is(.badge.bad, .pill.bad, .health-badge.error, .action-button.danger) {
+  background: rgba(239, 68, 68, .16) !important;
+  color: #fca5a5 !important;
+}
+
+body.premium-nav-admin.admin-theme-dark .admin-workspace :is(.presence-status.is-online, .presence-status.is-online span) {
+  color: #86efac !important;
+}
+
+/* Users/CRM dark lock: inner rows had their own white striping rules. */
+body.premium-nav-admin.admin-theme-dark .admin-workspace :is(
+  .users-head,
+  .user-card,
+  .user-card .user-row,
+  .user-card:nth-child(even) .user-row,
+  .user-card.is-open .user-row,
+  .course-row,
+  .course-row:nth-child(even),
+  .admin-data-row,
+  .admin-data-row:nth-child(even),
+  .crm-detail-section,
+  .crm-detail-stat,
+  .progress-panel,
+  .progress-row,
+  .user-management-actions,
+  .purchase-history-panel,
+  .purchased-course-card,
+  .admin-action-list > div,
+  .learner-detail-drawer
+) {
+  border-color: rgba(226, 232, 240, .18) !important;
+  background: #11151f !important;
+  color: #f8fafc !important;
+}
+
+body.premium-nav-admin.admin-theme-dark .admin-workspace :is(
+  .user-card:hover .user-row,
+  .user-row:hover,
+  .course-row:hover,
+  .admin-data-row:hover,
+  .purchased-course-card:hover
+) {
+  border-color: rgba(242, 185, 79, .32) !important;
+  background: #151a25 !important;
+  color: #f8fafc !important;
+}
+
+body.premium-nav-admin.admin-theme-dark .admin-workspace :is(
+  .users-head span,
+  .user-row span,
+  .user-row small,
+  .course-row span,
+  .course-row small,
+  .crm-detail-stat span,
+  .crm-detail-head span,
+  .progress-row span,
+  .user-management-actions span,
+  .purchase-history-panel span,
+  .purchased-course-card span,
+  .learner-detail-drawer span
+) {
+  color: #b8c2d2 !important;
+}
+
+body.premium-nav-admin.admin-theme-dark .admin-workspace :is(
+  .user-row strong,
+  .course-row strong,
+  .crm-detail-stat strong,
+  .crm-detail-head strong,
+  .progress-row strong,
+  .user-management-actions strong,
+  .purchase-history-panel strong,
+  .purchased-course-card strong,
+  .learner-detail-drawer strong
+) {
+  color: #f8fafc !important;
+}
+
+body.premium-nav-admin.admin-theme-dark .admin-workspace .crm-avatar {
+  border-color: rgba(242, 185, 79, .32) !important;
+  background: #f7e7bd !important;
+  color: #111827 !important;
+}
+
+body.premium-nav-admin.admin-theme-dark .admin-workspace .progress-meter {
+  background: rgba(255, 255, 255, .1) !important;
+}
+
+/* Tester analytics refinement: use clean data tables instead of stacked card outlines. */
+body.premium-nav-admin .tester-analytics-shell {
+  display: grid !important;
+  gap: 18px !important;
+}
+
+body.premium-nav-admin .tester-analytics-panel {
+  padding: 0 !important;
+  overflow: hidden !important;
+  border: 1px solid rgba(15, 23, 42, .08) !important;
+  border-radius: 18px !important;
+  background: #fff !important;
+  box-shadow: none !important;
+}
+
+body.premium-nav-admin .tester-analytics-panel .crm-results-bar {
+  margin: 0 !important;
+  padding: 18px 20px 14px !important;
+  border: 0 !important;
+  border-bottom: 1px solid rgba(15, 23, 42, .08) !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+body.premium-nav-admin .tester-analytics-table {
+  width: 100% !important;
+  overflow-x: auto !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+body.premium-nav-admin .tester-analytics-table .admin-data-head,
+body.premium-nav-admin .tester-analytics-table .admin-data-row {
+  display: grid !important;
+  grid-template-columns: var(--tester-table-columns) !important;
+  align-items: center !important;
+  min-width: 860px !important;
+  margin: 0 !important;
+  padding: 13px 20px !important;
+  border: 0 !important;
+  border-bottom: 1px solid rgba(15, 23, 42, .075) !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+body.premium-nav-admin .tester-analytics-table .admin-data-head {
+  min-height: 42px !important;
+  background: rgba(248, 250, 252, .78) !important;
+}
+
+body.premium-nav-admin .tester-analytics-table .admin-data-row {
+  min-height: 58px !important;
+}
+
+body.premium-nav-admin .tester-analytics-table .admin-data-row:last-child {
+  border-bottom: 0 !important;
+}
+
+body.premium-nav-admin .tester-analytics-table .admin-data-row:hover {
+  background: rgba(217, 154, 34, .055) !important;
+  box-shadow: none !important;
+}
+
+body.premium-nav-admin .tester-analytics-table :is(.admin-data-head, .admin-data-row) > span {
+  min-width: 0 !important;
+  overflow: hidden !important;
+  color: #647084 !important;
+  font-size: 12px !important;
+  line-height: 1.45 !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+body.premium-nav-admin .tester-analytics-table .admin-data-head > span {
+  color: #7a8495 !important;
+  font-size: 11px !important;
+  font-weight: 850 !important;
+  letter-spacing: .055em !important;
+  text-transform: uppercase !important;
+}
+
+body.premium-nav-admin .tester-analytics-table .admin-data-row strong {
+  display: block !important;
+  overflow: hidden !important;
+  color: #172033 !important;
+  font-size: 13px !important;
+  line-height: 1.3 !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+body.premium-nav-admin .tester-analytics-table .admin-data-row span span {
+  display: block !important;
+  margin-top: 2px !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+body.premium-nav-admin.admin-theme-dark .tester-analytics-panel {
+  border-color: rgba(226, 232, 240, .16) !important;
+  background: #11151f !important;
+  box-shadow: none !important;
+}
+
+body.premium-nav-admin.admin-theme-dark .tester-analytics-panel .crm-results-bar {
+  border-bottom-color: rgba(226, 232, 240, .14) !important;
+  background: #11151f !important;
+}
+
+body.premium-nav-admin.admin-theme-dark .tester-analytics-table {
+  background: #11151f !important;
+}
+
+body.premium-nav-admin.admin-theme-dark .tester-analytics-table .admin-data-head,
+body.premium-nav-admin.admin-theme-dark .tester-analytics-table .admin-data-row,
+body.premium-nav-admin.admin-theme-dark .admin-workspace .tester-analytics-table .admin-data-row,
+body.premium-nav-admin.admin-theme-dark .admin-workspace .tester-analytics-table .admin-data-row:nth-child(even) {
+  border-color: rgba(226, 232, 240, .12) !important;
+  background: transparent !important;
+  color: #f8fafc !important;
+  box-shadow: none !important;
+}
+
+body.premium-nav-admin.admin-theme-dark .tester-analytics-table .admin-data-head {
+  background: rgba(255, 255, 255, .035) !important;
+}
+
+body.premium-nav-admin.admin-theme-dark .tester-analytics-table .admin-data-row:hover,
+body.premium-nav-admin.admin-theme-dark .admin-workspace .tester-analytics-table .admin-data-row:hover {
+  border-color: rgba(226, 232, 240, .12) !important;
+  background: rgba(242, 185, 79, .08) !important;
+  color: #f8fafc !important;
+  box-shadow: none !important;
+}
+
+body.premium-nav-admin.admin-theme-dark .tester-analytics-table :is(.admin-data-head, .admin-data-row) > span,
+body.premium-nav-admin.admin-theme-dark .tester-analytics-table .admin-data-row span span {
+  color: #b8c2d2 !important;
+}
+
+body.premium-nav-admin.admin-theme-dark .tester-analytics-table .admin-data-head > span {
+  color: #9aa6b7 !important;
+}
+
+body.premium-nav-admin.admin-theme-dark .tester-analytics-table .admin-data-row strong,
+body.premium-nav-admin.admin-theme-dark .admin-workspace .tester-analytics-table .admin-data-row strong {
+  color: #f8fafc !important;
+}
+
+@media (max-width: 760px) {
+  body.premium-nav-admin .tester-analytics-panel .crm-results-bar {
+    padding-inline: 16px !important;
+  }
+
+  body.premium-nav-admin .tester-analytics-table .admin-data-head,
+  body.premium-nav-admin .tester-analytics-table .admin-data-row {
+    min-width: 720px !important;
+    padding-inline: 16px !important;
+  }
+}
+
+/* Tester analytics table v2: fully detached from global admin-data-row card styling. */
+body.premium-nav-admin .tester-analytics-table-scroll {
+  width: 100% !important;
+  overflow-x: auto !important;
+  background: transparent !important;
+}
+
+body.premium-nav-admin .tester-analytics-table-v2 {
+  width: 100% !important;
+  min-width: 880px !important;
+  table-layout: fixed !important;
+  border-collapse: collapse !important;
+  border-spacing: 0 !important;
+  background: transparent !important;
+}
+
+body.premium-nav-admin .tester-analytics-table-v2 tr {
+  display: grid !important;
+  grid-template-columns: var(--tester-table-columns) !important;
+  align-items: center !important;
+}
+
+body.premium-nav-admin .tester-analytics-table-v2 thead tr {
+  min-height: 38px !important;
+  border-bottom: 1px solid rgba(15, 23, 42, .08) !important;
+  background: rgba(248, 250, 252, .72) !important;
+}
+
+body.premium-nav-admin .tester-analytics-table-v2 tbody tr {
+  min-height: 46px !important;
+  border-bottom: 1px solid rgba(15, 23, 42, .065) !important;
+  background: transparent !important;
+}
+
+body.premium-nav-admin .tester-analytics-table-v2 tbody tr:last-child {
+  border-bottom: 0 !important;
+}
+
+body.premium-nav-admin .tester-analytics-table-v2 tbody tr:hover {
+  background: rgba(217, 154, 34, .055) !important;
+}
+
+body.premium-nav-admin .tester-analytics-table-v2 th,
+body.premium-nav-admin .tester-analytics-table-v2 td {
+  display: block !important;
+  min-width: 0 !important;
+  padding: 10px 14px !important;
+  border: 0 !important;
+  overflow: hidden !important;
+  background: transparent !important;
+  color: #647084 !important;
+  font-size: 12px !important;
+  line-height: 1.35 !important;
+  text-align: left !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+body.premium-nav-admin .tester-analytics-table-v2 th {
+  color: #7a8495 !important;
+  font-size: 10px !important;
+  font-weight: 850 !important;
+  letter-spacing: .06em !important;
+  text-transform: uppercase !important;
+}
+
+body.premium-nav-admin .tester-analytics-table-v2 td strong {
+  display: inline !important;
+  color: #172033 !important;
+  font-size: 12px !important;
+  font-weight: 800 !important;
+  line-height: inherit !important;
+}
+
+body.premium-nav-admin .tester-analytics-table-v2 td span {
+  color: #647084 !important;
+  font-size: 12px !important;
+}
+
+body.premium-nav-admin .tester-analytics-table-v2 td strong + span {
+  margin-left: 6px !important;
+}
+
+body.premium-nav-admin .tester-analytics-table-v2 .tester-analytics-empty {
+  grid-column: 1 / -1 !important;
+  padding: 18px 20px !important;
+  color: #7a8495 !important;
+}
+
+body.premium-nav-admin.admin-theme-dark .tester-analytics-table-v2,
+body.premium-nav-admin.admin-theme-dark .tester-analytics-table-scroll {
+  background: #11151f !important;
+}
+
+body.premium-nav-admin.admin-theme-dark .tester-analytics-table-v2 thead tr {
+  border-bottom-color: rgba(226, 232, 240, .14) !important;
+  background: rgba(255, 255, 255, .035) !important;
+}
+
+body.premium-nav-admin.admin-theme-dark .tester-analytics-table-v2 tbody tr {
+  border-bottom-color: rgba(226, 232, 240, .105) !important;
+  background: transparent !important;
+}
+
+body.premium-nav-admin.admin-theme-dark .tester-analytics-table-v2 tbody tr:hover {
+  background: rgba(242, 185, 79, .08) !important;
+}
+
+body.premium-nav-admin.admin-theme-dark .tester-analytics-table-v2 th {
+  color: #9aa6b7 !important;
+}
+
+body.premium-nav-admin.admin-theme-dark .tester-analytics-table-v2 td,
+body.premium-nav-admin.admin-theme-dark .tester-analytics-table-v2 td span,
+body.premium-nav-admin.admin-theme-dark .tester-analytics-table-v2 .tester-analytics-empty {
+  color: #b8c2d2 !important;
+}
+
+body.premium-nav-admin.admin-theme-dark .tester-analytics-table-v2 td strong {
+  color: #f8fafc !important;
+}
+
+/* Admin page transitions: keep the sidebar steady while page content enters smoothly. */
+body.premium-nav-admin .admin-workspace-main.admin-page-transition {
+  animation: adminPageEnter .24s cubic-bezier(.2, .8, .2, 1) both;
+  transform-origin: top center;
+  will-change: opacity, transform, filter;
+}
+
+body.premium-nav-admin .admin-sidebar .admin-nav-group a {
+  transition:
+    background .18s ease,
+    border-color .18s ease,
+    box-shadow .18s ease,
+    color .18s ease,
+    transform .18s ease;
+}
+
+body.premium-nav-admin .admin-sidebar .admin-nav-group a:hover {
+  transform: translateX(2px);
+}
+
+body.premium-nav-admin .admin-sidebar .admin-nav-group a.is-active {
+  transform: translateX(0);
+}
+
+@keyframes adminPageEnter {
+  from {
+    opacity: 0;
+    filter: blur(2px);
+    transform: translateY(10px) scale(.995);
+  }
+
+  to {
+    opacity: 1;
+    filter: blur(0);
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.premium-nav-admin .admin-workspace-main.admin-page-transition,
+  body.premium-nav-admin .admin-sidebar .admin-nav-group a {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  body.premium-nav-admin .admin-sidebar .admin-nav-group a:hover {
+    transform: none !important;
+  }
+}
+
+/* Sidebar active-state contrast lock: keep every gold-highlighted nav item readable. */
+body.premium-nav-admin .admin-sidebar .admin-nav-group a.is-active,
+body.premium-nav-admin.admin-theme-light .admin-sidebar .admin-nav-group a.is-active,
+body.premium-nav-admin.admin-theme-dark .admin-sidebar .admin-nav-group a.is-active,
+body.premium-nav-admin .admin-sidebar .admin-nav-group a.is-active:hover,
+body.premium-nav-admin .admin-sidebar .admin-nav-group a.is-active:focus-visible {
+  border-color: rgba(92, 58, 4, .28) !important;
+  background: linear-gradient(180deg, #ffd66c 0%, #f2af2f 100%) !important;
+  color: #211505 !important;
+  box-shadow: 0 12px 24px rgba(217, 154, 34, .24) !important;
+  text-shadow: none !important;
+}
+
+body.premium-nav-admin .admin-sidebar .admin-nav-group a.is-active > span,
+body.premium-nav-admin.admin-theme-light .admin-sidebar .admin-nav-group a.is-active > span,
+body.premium-nav-admin.admin-theme-dark .admin-sidebar .admin-nav-group a.is-active > span {
+  color: #211505 !important;
+  opacity: 1 !important;
+  font-weight: 900 !important;
+  text-shadow: none !important;
+}
+
+body.premium-nav-admin .admin-sidebar .admin-nav-group a.is-active .admin-nav-icon,
+body.premium-nav-admin .admin-sidebar .admin-nav-group a.is-active .admin-nav-icon *,
+body.premium-nav-admin.admin-theme-light .admin-sidebar .admin-nav-group a.is-active .admin-nav-icon,
+body.premium-nav-admin.admin-theme-light .admin-sidebar .admin-nav-group a.is-active .admin-nav-icon *,
+body.premium-nav-admin.admin-theme-dark .admin-sidebar .admin-nav-group a.is-active .admin-nav-icon,
+body.premium-nav-admin.admin-theme-dark .admin-sidebar .admin-nav-group a.is-active .admin-nav-icon * {
+  color: #5c3a04 !important;
+  stroke: #5c3a04 !important;
+  opacity: 1 !important;
+}
+
+@media (max-width: 760px) {
+  body.premium-nav-admin .tester-analytics-table-v2 {
+    min-width: 760px !important;
+  }
+
+  body.premium-nav-admin .tester-analytics-table-v2 th,
+  body.premium-nav-admin .tester-analytics-table-v2 td {
+    padding-inline: 12px !important;
+  }
+}
+
+/* Course Management polish: catalog-style rows with readable controls and actions. */
+body.premium-nav-admin .courses-shell {
+  --course-panel: #ffffff;
+  --course-panel-soft: #f8fafc;
+  --course-row: #ffffff;
+  --course-row-hover: #fff8ea;
+  --course-border: rgba(15, 23, 42, .14);
+  --course-text: #0f172a;
+  --course-muted: #64748b;
+  --course-accent: #c58b2a;
+}
+
+body.premium-nav-admin.admin-theme-dark .courses-shell {
+  --course-panel: #0f131d;
+  --course-panel-soft: #151a25;
+  --course-row: #111722;
+  --course-row-hover: #161d2b;
+  --course-border: rgba(226, 232, 240, .16);
+  --course-text: #f8fafc;
+  --course-muted: #aab6c8;
+  --course-accent: #f2b94f;
+}
+
+body.premium-nav-admin .courses-shell .controls-panel {
+  grid-template-columns: minmax(320px, 1.6fr) minmax(150px, .52fr) minmax(190px, .68fr) minmax(170px, .62fr) auto !important;
+  align-items: end !important;
+  gap: 12px !important;
+  padding: 16px !important;
+  border: 1px solid var(--course-border) !important;
+  border-radius: 12px !important;
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--course-accent) 8%, transparent), transparent 42%),
+    var(--course-panel) !important;
+  box-shadow: 0 18px 42px rgba(15, 23, 42, .08) !important;
+}
+
+body.premium-nav-admin .courses-shell .controls-panel label {
+  margin-bottom: 8px !important;
+  color: var(--course-text) !important;
+  font-size: 10px !important;
+  font-weight: 850 !important;
+}
+
+body.premium-nav-admin .courses-shell .controls-panel :is(input, select) {
+  min-height: 44px !important;
+  border-color: transparent !important;
+  border-radius: 10px !important;
+  background: color-mix(in srgb, var(--course-panel-soft) 92%, #061018) !important;
+  box-shadow: inset 0 0 0 1px rgba(148, 163, 184, .08) !important;
+}
+
+body.premium-nav-admin .courses-shell .controls-panel .toolbar-button {
+  min-height: 44px !important;
+  border-radius: 10px !important;
+}
+
+body.premium-nav-admin .course-summary-grid {
+  grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+  gap: 14px !important;
+}
+
+body.premium-nav-admin .courses-shell .summary-card {
+  position: relative !important;
+  min-height: 112px !important;
+  overflow: hidden !important;
+  border: 1px solid var(--course-border) !important;
+  border-radius: 14px !important;
+  background:
+    radial-gradient(circle at 90% 12%, color-mix(in srgb, var(--course-accent) 22%, transparent), transparent 32%),
+    var(--course-panel) !important;
+  box-shadow: 0 16px 34px rgba(15, 23, 42, .08) !important;
+}
+
+body.premium-nav-admin .courses-shell .summary-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 4px;
+  background: linear-gradient(180deg, #ffd66c, var(--course-accent));
+}
+
+body.premium-nav-admin .courses-shell .summary-card strong {
+  color: var(--course-text) !important;
+  font-size: 12px !important;
+  font-weight: 850 !important;
+}
+
+body.premium-nav-admin .courses-shell .summary-card span {
+  margin-top: 18px !important;
+  color: var(--course-text) !important;
+  font-size: 34px !important;
+  font-weight: 850 !important;
+  line-height: 1 !important;
+}
+
+body.premium-nav-admin .courses-shell .crm-results-bar {
+  align-items: center !important;
+  gap: 16px !important;
+  padding: 16px 18px !important;
+  border: 1px solid var(--course-border) !important;
+  border-radius: 12px !important;
+  background: var(--course-panel) !important;
+}
+
+body.premium-nav-admin .courses-shell .crm-results-bar strong {
+  color: var(--course-text) !important;
+  font-size: 14px !important;
+}
+
+body.premium-nav-admin .courses-shell .crm-results-bar span {
+  color: var(--course-muted) !important;
+}
+
+body.premium-nav-admin .courses-shell .crm-results-bar .toolbar-actions {
+  margin-left: auto !important;
+}
+
+body.premium-nav-admin .courses-shell .crm-results-bar .toolbar-button {
+  border-radius: 10px !important;
+  background: color-mix(in srgb, var(--course-panel-soft) 86%, var(--course-accent)) !important;
+  color: var(--course-text) !important;
+  font-weight: 800 !important;
+}
+
+body.premium-nav-admin .courses-panel {
+  display: grid !important;
+  gap: 10px !important;
+  overflow: visible !important;
+  padding: 14px !important;
+  border: 1px solid var(--course-border) !important;
+  border-radius: 14px !important;
+  background: color-mix(in srgb, var(--course-panel) 86%, transparent) !important;
+  box-shadow: 0 20px 46px rgba(15, 23, 42, .1) !important;
+}
+
+body.premium-nav-admin .courses-head,
+body.premium-nav-admin .course-row {
+  grid-template-columns: minmax(320px, 1.6fr) 110px minmax(130px, .6fr) minmax(150px, .68fr) minmax(210px, .9fr) minmax(118px, .48fr) !important;
+}
+
+body.premium-nav-admin .courses-head {
+  padding: 0 14px 6px !important;
+  border: 0 !important;
+  background: transparent !important;
+  color: var(--course-muted) !important;
+}
+
+body.premium-nav-admin .course-card {
+  border: 0 !important;
+  background: transparent !important;
+}
+
+body.premium-nav-admin .course-row,
+body.premium-nav-admin.admin-theme-dark .admin-workspace .course-row,
+body.premium-nav-admin.admin-theme-dark .admin-workspace .course-row:nth-child(even) {
+  min-height: 118px !important;
+  padding: 16px !important;
+  border: 1px solid var(--course-border) !important;
+  border-radius: 14px !important;
+  background:
+    linear-gradient(90deg, color-mix(in srgb, #0f766e 10%, transparent), transparent 38%),
+    var(--course-row) !important;
+  box-shadow: 0 12px 30px rgba(15, 23, 42, .09) !important;
+  transition: background .18s ease, border-color .18s ease, box-shadow .18s ease, transform .18s ease !important;
+}
+
+body.premium-nav-admin .course-row:hover,
+body.premium-nav-admin.admin-theme-dark .admin-workspace .course-row:hover {
+  border-color: color-mix(in srgb, var(--course-accent) 48%, var(--course-border)) !important;
+  background: var(--course-row-hover) !important;
+  box-shadow: 0 18px 42px rgba(15, 23, 42, .14) !important;
+  transform: translateY(-1px) !important;
+}
+
+body.premium-nav-admin .course-title-cell {
+  grid-template-columns: 22px 108px minmax(0, 1fr) !important;
+  gap: 14px !important;
+}
+
+body.premium-nav-admin .course-title-cell > div:last-child {
+  gap: 6px !important;
+}
+
+body.premium-nav-admin .course-title-cell strong,
+body.premium-nav-admin.admin-theme-dark .admin-workspace .course-title-cell strong {
+  color: var(--course-text) !important;
+  font-size: 15px !important;
+  line-height: 1.25 !important;
+}
+
+body.premium-nav-admin .course-title-cell span,
+body.premium-nav-admin.admin-theme-dark .admin-workspace .course-title-cell span {
+  color: var(--course-muted) !important;
+  font-size: 12px !important;
+}
+
+body.premium-nav-admin .course-thumb {
+  width: 108px !important;
+  height: 62px !important;
+  overflow: hidden !important;
+  border: 1px solid color-mix(in srgb, var(--course-accent) 30%, var(--course-border)) !important;
+  border-radius: 12px !important;
+  background: color-mix(in srgb, var(--course-accent) 12%, var(--course-panel-soft)) !important;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .05) !important;
+}
+
+body.premium-nav-admin .course-thumb span {
+  color: var(--course-muted) !important;
+  font-size: 11px !important;
+  font-weight: 800 !important;
+}
+
+body.premium-nav-admin .course-ops-metrics {
+  gap: 5px !important;
+  align-items: start !important;
+}
+
+body.premium-nav-admin .course-ops-metrics strong,
+body.premium-nav-admin.admin-theme-dark .admin-workspace .course-ops-metrics strong {
+  color: var(--course-text) !important;
+  font-size: 14px !important;
+}
+
+body.premium-nav-admin .course-ops-metrics span,
+body.premium-nav-admin.admin-theme-dark .admin-workspace .course-ops-metrics span {
+  color: var(--course-muted) !important;
+  font-size: 12px !important;
+}
+
+body.premium-nav-admin .courses-shell .badge {
+  width: fit-content !important;
+  border-radius: 999px !important;
+  padding: 6px 9px !important;
+  font-size: 10px !important;
+  font-weight: 850 !important;
+}
+
+body.premium-nav-admin .courses-shell .badge.good,
+body.premium-nav-admin.admin-theme-dark .courses-shell .badge.good {
+  border-color: rgba(34, 197, 94, .24) !important;
+  background: rgba(34, 197, 94, .16) !important;
+  color: #86efac !important;
+}
+
+body.premium-nav-admin .courses-shell .badge.warn,
+body.premium-nav-admin.admin-theme-dark .courses-shell .badge.warn {
+  border-color: rgba(242, 185, 79, .24) !important;
+  background: rgba(242, 185, 79, .16) !important;
+  color: #f7d37f !important;
+}
+
+body.premium-nav-admin .courses-shell .flag-list {
+  align-items: flex-start !important;
+}
+
+body.premium-nav-admin .course-actions {
+  display: grid !important;
+  align-items: stretch !important;
+  justify-content: stretch !important;
+  gap: 7px !important;
+}
+
+body.premium-nav-admin .course-actions .secondary-button,
+body.premium-nav-admin.admin-theme-dark .admin-workspace .course-actions .secondary-button,
+body.premium-nav-admin.admin-theme-dark .admin-workspace .course-actions a.secondary-button[href] {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  min-height: 34px !important;
+  padding: 8px 10px !important;
+  border-radius: 9px !important;
+  border-color: var(--course-border) !important;
+  background: color-mix(in srgb, var(--course-panel-soft) 88%, #ffffff) !important;
+  color: var(--course-text) !important;
+  font-size: 11px !important;
+  font-weight: 850 !important;
+  text-decoration: none !important;
+}
+
+body.premium-nav-admin .course-actions a.secondary-button {
+  border-color: rgba(242, 185, 79, .28) !important;
+  background: linear-gradient(180deg, #ffd66c, #efb53d) !important;
+  color: #221602 !important;
+}
+
+body.premium-nav-admin .course-actions .secondary-button.danger,
+body.premium-nav-admin.admin-theme-dark .admin-workspace .course-actions .secondary-button.danger {
+  border-color: rgba(239, 68, 68, .35) !important;
+  background: rgba(239, 68, 68, .15) !important;
+  color: #fecaca !important;
+}
+
+@media (max-width: 1180px) {
+  body.premium-nav-admin .courses-panel {
+    padding: 10px !important;
+  }
+
+  body.premium-nav-admin .course-row,
+  body.premium-nav-admin.admin-theme-dark .admin-workspace .course-row {
+    grid-template-columns: 1fr !important;
+    align-items: start !important;
+  }
+
+  body.premium-nav-admin .course-actions {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  }
+}
+
+@media (max-width: 760px) {
+  body.premium-nav-admin .courses-shell .controls-panel,
+  body.premium-nav-admin .course-summary-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  body.premium-nav-admin .course-title-cell {
+    grid-template-columns: 22px minmax(86px, 108px) minmax(0, 1fr) !important;
+  }
+
+  body.premium-nav-admin .course-actions {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* Subscriptions page polish: readable status mix instead of dense raw table rows. */
+body.premium-nav-admin .subscriptions-shell {
+  --subscription-panel: #ffffff;
+  --subscription-panel-soft: #f8fafc;
+  --subscription-row: #ffffff;
+  --subscription-row-hover: #fff8ea;
+  --subscription-border: rgba(15, 23, 42, .14);
+  --subscription-text: #0f172a;
+  --subscription-muted: #64748b;
+  --subscription-accent: #c58b2a;
+}
+
+body.premium-nav-admin.admin-theme-dark .subscriptions-shell {
+  --subscription-panel: #0f131d;
+  --subscription-panel-soft: #151a25;
+  --subscription-row: #111722;
+  --subscription-row-hover: #161d2b;
+  --subscription-border: rgba(226, 232, 240, .16);
+  --subscription-text: #f8fafc;
+  --subscription-muted: #aab6c8;
+  --subscription-accent: #f2b94f;
+}
+
+body.premium-nav-admin .subscriptions-shell .admin-placeholder-note {
+  border-color: rgba(242, 185, 79, .28) !important;
+  border-radius: 12px !important;
+  background:
+    linear-gradient(135deg, rgba(242, 185, 79, .12), transparent 45%),
+    color-mix(in srgb, var(--subscription-panel-soft) 88%, var(--subscription-accent)) !important;
+  color: var(--subscription-text) !important;
+}
+
+body.premium-nav-admin .subscriptions-shell .admin-v2-summary {
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+}
+
+body.premium-nav-admin .subscriptions-shell .summary-card {
+  position: relative !important;
+  min-height: 112px !important;
+  overflow: hidden !important;
+  border: 1px solid var(--subscription-border) !important;
+  border-radius: 14px !important;
+  background:
+    radial-gradient(circle at 90% 12%, color-mix(in srgb, var(--subscription-accent) 20%, transparent), transparent 32%),
+    var(--subscription-panel) !important;
+  box-shadow: 0 16px 34px rgba(15, 23, 42, .08) !important;
+}
+
+body.premium-nav-admin .subscriptions-shell .summary-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 4px;
+  background: linear-gradient(180deg, #ffd66c, var(--subscription-accent));
+}
+
+body.premium-nav-admin .subscriptions-shell .summary-card strong,
+body.premium-nav-admin.admin-theme-dark .subscriptions-shell .summary-card strong {
+  color: var(--subscription-text) !important;
+  font-size: 12px !important;
+  font-weight: 850 !important;
+}
+
+body.premium-nav-admin .subscriptions-shell .summary-card span,
+body.premium-nav-admin.admin-theme-dark .subscriptions-shell .summary-card span {
+  color: var(--subscription-text) !important;
+  font-size: 34px !important;
+  font-weight: 850 !important;
+  line-height: 1 !important;
+}
+
+body.premium-nav-admin .subscriptions-shell .summary-card small,
+body.premium-nav-admin.admin-theme-dark .subscriptions-shell .summary-card small {
+  color: var(--subscription-muted) !important;
+  font-size: 12px !important;
+}
+
+body.premium-nav-admin .subscription-mix-panel {
+  display: grid !important;
+  gap: 12px !important;
+  padding: 16px !important;
+  border: 1px solid var(--subscription-border) !important;
+  border-radius: 16px !important;
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--subscription-accent) 8%, transparent), transparent 42%),
+    var(--subscription-panel) !important;
+  box-shadow: 0 20px 46px rgba(15, 23, 42, .1) !important;
+}
+
+body.premium-nav-admin .subscription-mix-toolbar {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 14px !important;
+  padding: 4px 2px 10px !important;
+  border-bottom: 1px solid var(--subscription-border) !important;
+}
+
+body.premium-nav-admin .subscription-mix-toolbar > div {
+  display: grid !important;
+  gap: 5px !important;
+}
+
+body.premium-nav-admin .subscription-mix-toolbar strong,
+body.premium-nav-admin.admin-theme-dark .subscription-mix-toolbar strong {
+  color: var(--subscription-text) !important;
+  font-size: 16px !important;
+}
+
+body.premium-nav-admin .subscription-mix-toolbar span,
+body.premium-nav-admin.admin-theme-dark .subscription-mix-toolbar span {
+  color: var(--subscription-muted) !important;
+  font-size: 12px !important;
+}
+
+body.premium-nav-admin .subscription-mix-head,
+body.premium-nav-admin .subscription-mix-row {
+  display: grid !important;
+  grid-template-columns: minmax(300px, 1.35fr) minmax(150px, .55fr) minmax(180px, .7fr) minmax(150px, .45fr) !important;
+  gap: 16px !important;
+  align-items: center !important;
+}
+
+body.premium-nav-admin .subscription-mix-head {
+  padding: 0 14px !important;
+  color: var(--subscription-muted) !important;
+  font-size: 10px !important;
+  font-weight: 900 !important;
+  letter-spacing: .06em !important;
+  text-transform: uppercase !important;
+}
+
+body.premium-nav-admin .subscription-mix-list {
+  display: grid !important;
+  gap: 10px !important;
+}
+
+body.premium-nav-admin .subscription-mix-row,
+body.premium-nav-admin.admin-theme-dark .admin-workspace .subscription-mix-row {
+  min-height: 90px !important;
+  padding: 16px !important;
+  border: 1px solid var(--subscription-border) !important;
+  border-radius: 14px !important;
+  background: var(--subscription-row) !important;
+  color: var(--subscription-text) !important;
+  box-shadow: 0 12px 30px rgba(15, 23, 42, .09) !important;
+  transition: background .18s ease, border-color .18s ease, box-shadow .18s ease, transform .18s ease !important;
+}
+
+body.premium-nav-admin .subscription-mix-row:hover,
+body.premium-nav-admin.admin-theme-dark .admin-workspace .subscription-mix-row:hover {
+  border-color: color-mix(in srgb, var(--subscription-accent) 48%, var(--subscription-border)) !important;
+  background: var(--subscription-row-hover) !important;
+  box-shadow: 0 18px 42px rgba(15, 23, 42, .14) !important;
+  transform: translateY(-1px) !important;
+}
+
+body.premium-nav-admin .subscription-mix-row.is-good {
+  box-shadow: inset 4px 0 0 rgba(34, 197, 94, .74), 0 12px 30px rgba(15, 23, 42, .09) !important;
+}
+
+body.premium-nav-admin .subscription-mix-row.is-warn {
+  box-shadow: inset 4px 0 0 rgba(242, 185, 79, .78), 0 12px 30px rgba(15, 23, 42, .09) !important;
+}
+
+body.premium-nav-admin .subscription-mix-row.is-bad {
+  box-shadow: inset 4px 0 0 rgba(239, 68, 68, .68), 0 12px 30px rgba(15, 23, 42, .09) !important;
+}
+
+body.premium-nav-admin .subscription-status-cell {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+  min-width: 0 !important;
+}
+
+body.premium-nav-admin .subscription-status-cell > div,
+body.premium-nav-admin .subscription-count-cell,
+body.premium-nav-admin .subscription-source-cell {
+  display: grid !important;
+  gap: 5px !important;
+  min-width: 0 !important;
+}
+
+body.premium-nav-admin .subscription-status-cell strong,
+body.premium-nav-admin .subscription-count-cell strong,
+body.premium-nav-admin .subscription-source-cell strong,
+body.premium-nav-admin.admin-theme-dark .admin-workspace .subscription-status-cell strong,
+body.premium-nav-admin.admin-theme-dark .admin-workspace .subscription-count-cell strong,
+body.premium-nav-admin.admin-theme-dark .admin-workspace .subscription-source-cell strong {
+  color: var(--subscription-text) !important;
+}
+
+body.premium-nav-admin .subscription-count-cell strong {
+  font-size: 26px !important;
+  line-height: 1 !important;
+  font-variant-numeric: tabular-nums !important;
+}
+
+body.premium-nav-admin .subscription-status-cell span,
+body.premium-nav-admin .subscription-count-cell span,
+body.premium-nav-admin .subscription-source-cell span,
+body.premium-nav-admin.admin-theme-dark .admin-workspace .subscription-status-cell span,
+body.premium-nav-admin.admin-theme-dark .admin-workspace .subscription-count-cell span,
+body.premium-nav-admin.admin-theme-dark .admin-workspace .subscription-source-cell span {
+  color: var(--subscription-muted) !important;
+  font-size: 12px !important;
+  line-height: 1.35 !important;
+}
+
+body.premium-nav-admin .subscriptions-shell .badge {
+  width: fit-content !important;
+  border-radius: 999px !important;
+  padding: 6px 9px !important;
+  white-space: nowrap !important;
+  font-size: 10px !important;
+  font-weight: 850 !important;
+}
+
+body.premium-nav-admin .subscription-mix-row > .toolbar-button {
+  justify-self: end !important;
+  min-width: 136px !important;
+  min-height: 38px !important;
+  border-radius: 10px !important;
+  background: linear-gradient(180deg, #ffd66c, #efb53d) !important;
+  color: #221602 !important;
+  font-weight: 850 !important;
+}
+
+body.premium-nav-admin .subscriptions-shell .subscription-mix-row > a.toolbar-button[href],
+body.premium-nav-admin.admin-theme-dark .admin-workspace .subscriptions-shell .subscription-mix-row > a.toolbar-button[href] {
+  border-color: rgba(92, 58, 4, .24) !important;
+  background: linear-gradient(180deg, #ffd66c, #efb53d) !important;
+  color: #211505 !important;
+  opacity: 1 !important;
+  text-shadow: none !important;
+}
+
+body.premium-nav-admin .subscriptions-shell .subscription-mix-row > a.toolbar-button[href] *,
+body.premium-nav-admin.admin-theme-dark .admin-workspace .subscriptions-shell .subscription-mix-row > a.toolbar-button[href] * {
+  color: #211505 !important;
+  opacity: 1 !important;
+  text-shadow: none !important;
+}
+
+@media (max-width: 980px) {
+  body.premium-nav-admin .subscriptions-shell .admin-v2-summary {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  body.premium-nav-admin .subscription-mix-head {
+    display: none !important;
+  }
+
+  body.premium-nav-admin .subscription-mix-row {
+    grid-template-columns: 1fr !important;
+    align-items: start !important;
+  }
+
+  body.premium-nav-admin .subscription-mix-row > .toolbar-button {
+    justify-self: stretch !important;
+  }
+}
+
+@media (max-width: 640px) {
+  body.premium-nav-admin .subscriptions-shell .admin-v2-summary {
+    grid-template-columns: 1fr !important;
+  }
+
+  body.premium-nav-admin .subscription-mix-toolbar {
+    align-items: stretch !important;
+    flex-direction: column !important;
+  }
+
+  body.premium-nav-admin .subscription-status-cell {
+    align-items: flex-start !important;
+    flex-direction: column !important;
+  }
+}
+
+/* Payments page polish: ledger panels, readable revenue rows, and calmer empty states. */
+body.premium-nav-admin .payments-shell {
+  --payment-panel: #ffffff;
+  --payment-panel-soft: #f8fafc;
+  --payment-row: #ffffff;
+  --payment-row-hover: #fff8ea;
+  --payment-border: rgba(15, 23, 42, .14);
+  --payment-text: #0f172a;
+  --payment-muted: #64748b;
+  --payment-accent: #c58b2a;
+}
+
+body.premium-nav-admin.admin-theme-dark .payments-shell {
+  --payment-panel: #0f131d;
+  --payment-panel-soft: #151a25;
+  --payment-row: #111722;
+  --payment-row-hover: #161d2b;
+  --payment-border: rgba(226, 232, 240, .16);
+  --payment-text: #f8fafc;
+  --payment-muted: #aab6c8;
+  --payment-accent: #f2b94f;
+}
+
+body.premium-nav-admin .payments-shell .message.error {
+  border-radius: 12px !important;
+}
+
+body.premium-nav-admin .payments-shell .date-filter-panel {
+  grid-template-columns: minmax(320px, 1.1fr) minmax(360px, 1.25fr) auto !important;
+  gap: 12px !important;
+  padding: 16px !important;
+  border: 1px solid var(--payment-border) !important;
+  border-radius: 14px !important;
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--payment-accent) 8%, transparent), transparent 42%),
+    var(--payment-panel) !important;
+  box-shadow: 0 18px 42px rgba(15, 23, 42, .08) !important;
+}
+
+body.premium-nav-admin .payments-shell .date-filter-panel label {
+  margin-bottom: 8px !important;
+  color: var(--payment-text) !important;
+  font-size: 10px !important;
+  font-weight: 850 !important;
+}
+
+body.premium-nav-admin .payments-shell .date-filter-panel input {
+  min-height: 44px !important;
+  border-color: transparent !important;
+  border-radius: 10px !important;
+  background: color-mix(in srgb, var(--payment-panel-soft) 92%, #061018) !important;
+  box-shadow: inset 0 0 0 1px rgba(148, 163, 184, .08) !important;
+}
+
+body.premium-nav-admin .payments-shell .summary-card {
+  position: relative !important;
+  min-height: 122px !important;
+  overflow: hidden !important;
+  border: 1px solid var(--payment-border) !important;
+  border-radius: 14px !important;
+  background:
+    radial-gradient(circle at 90% 12%, color-mix(in srgb, var(--payment-accent) 20%, transparent), transparent 32%),
+    var(--payment-panel) !important;
+  box-shadow: 0 16px 34px rgba(15, 23, 42, .08) !important;
+}
+
+body.premium-nav-admin .payments-shell .summary-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 4px;
+  background: linear-gradient(180deg, #ffd66c, var(--payment-accent));
+}
+
+body.premium-nav-admin .payments-shell .summary-card strong,
+body.premium-nav-admin.admin-theme-dark .payments-shell .summary-card strong {
+  color: var(--payment-text) !important;
+  font-size: 12px !important;
+  font-weight: 850 !important;
+}
+
+body.premium-nav-admin .payments-shell .summary-card span,
+body.premium-nav-admin.admin-theme-dark .payments-shell .summary-card span {
+  color: var(--payment-text) !important;
+  font-size: clamp(26px, 2vw, 34px) !important;
+  font-weight: 850 !important;
+  line-height: 1.05 !important;
+}
+
+body.premium-nav-admin .payments-shell .summary-card small,
+body.premium-nav-admin.admin-theme-dark .payments-shell .summary-card small {
+  color: var(--payment-muted) !important;
+  font-size: 12px !important;
+}
+
+body.premium-nav-admin .payments-shell .dashboard-panel,
+body.premium-nav-admin.admin-theme-dark .admin-workspace .payments-shell .dashboard-panel {
+  padding: 16px !important;
+  border: 1px solid var(--payment-border) !important;
+  border-radius: 16px !important;
+  background: var(--payment-panel) !important;
+  box-shadow: 0 20px 46px rgba(15, 23, 42, .1) !important;
+}
+
+body.premium-nav-admin .payments-shell .panel-title,
+body.premium-nav-admin.admin-theme-dark .payments-shell .panel-title {
+  color: var(--payment-text) !important;
+  font-size: 18px !important;
+  line-height: 1.2 !important;
+}
+
+body.premium-nav-admin .payments-shell .panel-head {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 16px !important;
+  margin-bottom: 14px !important;
+}
+
+body.premium-nav-admin .payments-shell .panel-head p,
+body.premium-nav-admin.admin-theme-dark .payments-shell .panel-head p {
+  margin: 6px 0 0 !important;
+  color: var(--payment-muted) !important;
+  font-size: 12px !important;
+}
+
+body.premium-nav-admin .payments-shell .admin-data-table {
+  display: grid !important;
+  gap: 10px !important;
+  overflow: visible !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+body.premium-nav-admin .payments-shell .admin-data-head,
+body.premium-nav-admin.admin-theme-dark .admin-workspace .payments-shell .admin-data-head {
+  min-height: 0 !important;
+  padding: 0 14px 2px !important;
+  border: 0 !important;
+  background: transparent !important;
+  color: var(--payment-muted) !important;
+  font-size: 10px !important;
+  font-weight: 900 !important;
+  letter-spacing: .06em !important;
+  text-transform: uppercase !important;
+}
+
+body.premium-nav-admin .payments-shell .admin-data-row,
+body.premium-nav-admin.admin-theme-dark .admin-workspace .payments-shell .admin-data-row {
+  min-height: 78px !important;
+  padding: 16px !important;
+  border: 1px solid var(--payment-border) !important;
+  border-radius: 14px !important;
+  background: var(--payment-row) !important;
+  color: var(--payment-text) !important;
+  box-shadow: 0 12px 30px rgba(15, 23, 42, .08) !important;
+  transition: background .18s ease, border-color .18s ease, box-shadow .18s ease, transform .18s ease !important;
+}
+
+body.premium-nav-admin .payments-shell .admin-data-row:hover,
+body.premium-nav-admin.admin-theme-dark .admin-workspace .payments-shell .admin-data-row:hover {
+  border-color: color-mix(in srgb, var(--payment-accent) 48%, var(--payment-border)) !important;
+  background: var(--payment-row-hover) !important;
+  box-shadow: 0 18px 42px rgba(15, 23, 42, .14) !important;
+  transform: translateY(-1px) !important;
+}
+
+body.premium-nav-admin .payments-shell .admin-data-row > span,
+body.premium-nav-admin.admin-theme-dark .payments-shell .admin-data-row > span {
+  display: block !important;
+  min-width: 0 !important;
+  color: var(--payment-muted) !important;
+  font-size: 12px !important;
+  line-height: 1.4 !important;
+}
+
+body.premium-nav-admin .payments-shell .admin-data-row strong,
+body.premium-nav-admin.admin-theme-dark .payments-shell .admin-data-row strong {
+  color: var(--payment-text) !important;
+  font-size: 13px !important;
+  font-weight: 850 !important;
+}
+
+body.premium-nav-admin .payments-shell .admin-data-row small,
+body.premium-nav-admin.admin-theme-dark .payments-shell .admin-data-row small {
+  color: var(--payment-muted) !important;
+  font-size: 11px !important;
+}
+
+body.premium-nav-admin .payments-shell .badge {
+  width: fit-content !important;
+  border-radius: 999px !important;
+  padding: 6px 9px !important;
+  white-space: nowrap !important;
+  font-size: 10px !important;
+  font-weight: 850 !important;
+}
+
+body.premium-nav-admin .payments-shell .revenue-breakdown-table .admin-data-row {
+  min-height: 70px !important;
+}
+
+body.premium-nav-admin .payments-shell .payment-ledger-table .admin-data-head,
+body.premium-nav-admin .payments-shell .payment-ledger-table .admin-data-row {
+  grid-template-columns: minmax(210px, 1.15fr) minmax(120px, .58fr) minmax(170px, .75fr) minmax(130px, .58fr) minmax(130px, .58fr) minmax(110px, .48fr) minmax(220px, 1fr) !important;
+}
+
+body.premium-nav-admin .payments-shell .revenue-breakdown-table .admin-data-head,
+body.premium-nav-admin .payments-shell .revenue-breakdown-table .admin-data-row {
+  grid-template-columns: minmax(230px, 1fr) minmax(140px, .56fr) minmax(120px, .48fr) minmax(260px, 1.1fr) !important;
+}
+
+body.premium-nav-admin .payments-shell .autopay-subscriber-table .admin-data-head,
+body.premium-nav-admin .payments-shell .autopay-subscriber-table .admin-data-row {
+  grid-template-columns: minmax(220px, 1.05fr) minmax(135px, .55fr) minmax(170px, .7fr) minmax(220px, .95fr) minmax(220px, 1fr) !important;
+}
+
+body.premium-nav-admin .payments-shell .empty-state,
+body.premium-nav-admin.admin-theme-dark .admin-workspace .payments-shell .empty-state {
+  min-height: 72px !important;
+  border-color: var(--payment-border) !important;
+  border-radius: 14px !important;
+  background: color-mix(in srgb, var(--payment-panel-soft) 90%, transparent) !important;
+  color: var(--payment-muted) !important;
+}
+
+@media (max-width: 1180px) {
+  body.premium-nav-admin .payments-shell .date-filter-panel {
+    grid-template-columns: 1fr !important;
+  }
+
+  body.premium-nav-admin .payments-shell .admin-data-head {
+    display: none !important;
+  }
+
+  body.premium-nav-admin .payments-shell .admin-data-row,
+  body.premium-nav-admin .payments-shell .payment-ledger-table .admin-data-row,
+  body.premium-nav-admin .payments-shell .revenue-breakdown-table .admin-data-row,
+  body.premium-nav-admin .payments-shell .autopay-subscriber-table .admin-data-row {
+    grid-template-columns: 1fr !important;
+    align-items: start !important;
+  }
+}

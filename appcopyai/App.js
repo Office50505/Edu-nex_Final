@@ -992,6 +992,7 @@ function buildYoutubePlayerHtml(videoId, origin) {
     var player = null;
     var pending = [];
     var pollTimer = null;
+    var ytVolume = 100;
     function post(data) {
       try { window.ReactNativeWebView.postMessage(JSON.stringify(data)); } catch(e) {}
     }
@@ -1055,7 +1056,7 @@ function buildYoutubePlayerHtml(videoId, origin) {
           onReady: function() {
             pending.forEach(function(fn) { try { fn(); } catch(e) {} });
             pending = [];
-            try { player.unMute(); player.playVideo(); } catch(e) {}
+            try { player.setVolume(ytVolume); player.unMute(); player.playVideo(); } catch(e) {}
             startPolling();
             emitQualities();
             post({ type:'ready' });
@@ -1077,7 +1078,13 @@ function buildYoutubePlayerHtml(videoId, origin) {
             player.playVideo();
           }
           else if (func === 'mute') player.mute();
-          else if (func === 'unMute') player.unMute();
+          else if (func === 'unMute') { player.setVolume(ytVolume); player.unMute(); }
+          else if (func === 'setVolume') {
+            ytVolume = Math.max(0, Math.min(100, Number(args[0]) || 0));
+            player.setVolume(ytVolume);
+            if (ytVolume <= 0) player.mute();
+            else player.unMute();
+          }
           else if (func === 'setPlaybackRate') player.setPlaybackRate(Number(args[0]) || 1);
           else if (func === 'setQuality') {
             var quality = ytQualityToken(args[0]);
@@ -1121,6 +1128,7 @@ function buildEmbedPlayerHtml(embedUrl, initialTime = 0) {
     var pollTimer = null;
     var availableQualities = [];
     var wantsMuted = false;
+    var playerVolume = 100;
     var standardQualities = ${JSON.stringify(FALLBACK_QUALITY_OPTIONS.map(q => Number(q.replace('p', ''))))};
     function post(data) {
       try { window.ReactNativeWebView.postMessage(JSON.stringify(data)); } catch(e) {}
@@ -1167,12 +1175,27 @@ function buildEmbedPlayerHtml(embedUrl, initialTime = 0) {
           if (player && player.mute) player.mute();
         } else {
           if (player && player.unmute) player.unmute();
-          if (player && player.setVolume) player.setVolume(100);
+          if (player && player.setVolume) player.setVolume(playerVolume);
         }
       } catch(e) {}
       playerMessage(wantsMuted ? 'mute' : 'unmute');
       playerMessage('setMuted', wantsMuted);
-      if (!wantsMuted) playerMessage('setVolume', 100);
+      if (!wantsMuted) playerMessage('setVolume', playerVolume);
+    }
+    function setPlayerVolume(value) {
+      playerVolume = Math.max(0, Math.min(100, Number(value) || 0));
+      wantsMuted = playerVolume <= 0;
+      try {
+        if (player && player.setVolume) player.setVolume(playerVolume);
+        if (wantsMuted) {
+          if (player && player.mute) player.mute();
+        } else if (player && player.unmute) {
+          player.unmute();
+        }
+      } catch(e) {}
+      playerMessage('setVolume', playerVolume);
+      playerMessage(wantsMuted ? 'mute' : 'unmute');
+      playerMessage('setMuted', wantsMuted);
     }
     function ensureAudible() {
       if (wantsMuted) return;
@@ -1308,6 +1331,11 @@ function buildEmbedPlayerHtml(embedUrl, initialTime = 0) {
     window.bunnyMute  = function(m) {
       exec(function(){
         setMutedState(!!m);
+      });
+    };
+    window.bunnyVolume = function(v) {
+      exec(function(){
+        setPlayerVolume(v);
       });
     };
     window.bunnySpeed = function(r) {
@@ -3528,6 +3556,9 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
   const onHoldSpeedChangeRef = useRef(onHoldSpeedChange);
   const qualityPreferenceRef = useRef(AUTO_QUALITY_LABEL);
   const playbackRateSyncTimerRef = useRef(null);
+  const volumeBarWidth = useRef(1);
+  const previousAudibleVolumeRef = useRef(1);
+  const playerControlActiveRef = useRef(false);
   const sendCmdRef = useRef(() => {});
   const shouldBePlayingRef = useRef(isActive);
   const wasSurfaceSuspendedRef = useRef(suspendSurface);
@@ -3537,6 +3568,7 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
   const [isPlaying, setIsPlaying] = useState(true);
   const [isBuffering, setIsBuffering] = useState(isActive);
   const [isMuted, setIsMuted] = useState(false);
+  const [volume, setVolume] = useState(1);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [isEnded, setIsEnded] = useState(false);
@@ -3555,6 +3587,7 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
   const [playerChromeVisible, setPlayerChromeVisible] = useState(true);
   const [renderPlayerChrome, setRenderPlayerChrome] = useState(true);
   const [hasPlaybackStarted, setHasPlaybackStarted] = useState(false);
+  const [playerControlActive, setPlayerControlActive] = useState(false);
   useEffect(() => {
     latestProgressValueRef.current = { currentTime, duration };
   }, [currentTime, duration]);
@@ -3564,7 +3597,7 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
   }, [isActive, onSettingsOpenChange, showSettings]);
   const chromeSessionKey = video?._id || video?.id || videoProp?._id || videoProp?.id || video?.bunnyGuid || video?.bunnyVideoId || video?.youtubeId || videoIdProp || "video";
   const playbackHasVisibleProgress = hasPlaybackStarted || currentTime > 0.05;
-  const canAutoHideChrome = Boolean(isActive && !suspendSurface && !showSettings && !isEnded && isPlaying && playbackHasVisibleProgress);
+  const canAutoHideChrome = Boolean(isActive && !suspendSurface && !showSettings && !playerControlActive && !isEnded && isPlaying && playbackHasVisibleProgress);
   const localPlayerChromeHidden = canAutoHideChrome && !playerChromeVisible;
   const playerChromeHidden = canAutoHideChrome && (playerChromeHiddenOverride || localPlayerChromeHidden);
   const showPlayerChrome = !playerChromeHidden;
@@ -3653,7 +3686,7 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
     player.timeUpdateEventInterval = VIDEO_TIME_UPDATE_INTERVAL;
   });
   const playbackStateRef = useRef(null);
-  playbackStateRef.current = { isActive, isPlaying, isBuffering, isMuted, playbackRate, isEnded };
+  playbackStateRef.current = { isActive, isPlaying, isBuffering, isMuted, playbackRate, volume, isEnded };
   const runNativePlayer = useCallback((operation) => {
     try {
       return operation(nativePlayer);
@@ -3665,6 +3698,9 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
   const playNativePlayer = useCallback(() => runNativePlayer(player => player.play()), [runNativePlayer]);
   const setNativeTime = useCallback((time) => runNativePlayer(player => { player.currentTime = time; }), [runNativePlayer]);
   const setNativeMuted = useCallback((muted) => runNativePlayer(player => { player.muted = muted; }), [runNativePlayer]);
+  const setNativeVolume = useCallback((nextVolume) => runNativePlayer(player => {
+    if ("volume" in player) player.volume = Math.max(0, Math.min(1, Number(nextVolume) || 0));
+  }), [runNativePlayer]);
   const setNativeRate = useCallback((rate) => runNativePlayer(player => { player.playbackRate = rate || 1; }), [runNativePlayer]);
   const clearAutoPlayTimers = useCallback(() => {
     autoPlayTimersRef.current.forEach(timer => clearTimeout(timer));
@@ -3775,7 +3811,8 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
         await runNativePlayer(player => player.replaceAsync(null));
         await runNativePlayer(player => player.replaceAsync(source));
         runNativePlayer(player => {
-          player.muted = playbackStateRef.current?.isMuted;
+          player.muted = playbackStateRef.current?.isMuted || playbackStateRef.current?.volume <= 0.01;
+          if ("volume" in player) player.volume = playbackStateRef.current?.volume ?? 1;
           player.playbackRate = playbackStateRef.current?.playbackRate || 1;
           player.loop = false;
           player.preservesPitch = true;
@@ -3817,7 +3854,8 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
         if (cancelled) return;
         const latest = playbackStateRef.current;
         runNativePlayer(player => {
-          player.muted = latest.isMuted;
+          player.muted = latest.isMuted || latest.volume <= 0.01;
+          if ("volume" in player) player.volume = latest.volume ?? 1;
           player.playbackRate = latest.playbackRate || 1;
           player.loop = false;
           player.preservesPitch = true;
@@ -3880,10 +3918,11 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
   }, [isNativeVideo, nativeVideoSource]);
 
   useEffect(() => {
-    setNativeMuted(isMuted);
+    setNativeMuted(isMuted || volume <= 0.01);
+    setNativeVolume(volume);
     setNativeRate(playbackRate);
     runNativePlayer(player => { player.loop = false; });
-  }, [isMuted, playbackRate, loopLesson, runNativePlayer, setNativeMuted, setNativeRate]);
+  }, [isMuted, volume, playbackRate, loopLesson, runNativePlayer, setNativeMuted, setNativeRate, setNativeVolume]);
 
   useEffect(() => {
     if (isActive && isNativeVideo && isPlaying) playNativePlayer();
@@ -4025,6 +4064,7 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
       else if (func === "setPlaybackRate") setNativeRate(args[0] || 1);
       else if (func === "mute") setNativeMuted(true);
       else if (func === "unMute") setNativeMuted(false);
+      else if (func === "setVolume") setNativeVolume((Number(args[0]) || 0) / 100);
       return;
     }
     if (isBunny) {
@@ -4033,6 +4073,8 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
         ? `bunnySpeed(${args[0]})`
         : func === "setQuality"
           ? `bunnyQuality(${JSON.stringify(args[0] || "auto")})`
+        : func === "setVolume"
+          ? `bunnyVolume(${Math.max(0, Math.min(100, Number(args[0]) || 0))})`
         : func === "seekAndPlay"
           ? `bunnySeekAndPlay(${args[0]})`
           : func === "seekTo"
@@ -4114,8 +4156,9 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
   }, [isActive, queueAutoPlay, setNativeTime, suspendSurface]);
 
   useEffect(() => {
+    sendCmd("setVolume", [Math.round(volume * 100)]);
     sendCmd(isMuted ? "mute" : "unMute");
-  }, [isMuted, isNativeVideo, isBunny, surfaceRevision]);
+  }, [isMuted, volume, isNativeVideo, isBunny, surfaceRevision]);
 
   useEffect(() => {
     if (isNativeVideo) return;
@@ -4141,6 +4184,7 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
     if (nativeStartupRetryTimerRef.current) clearTimeout(nativeStartupRetryTimerRef.current);
     if (playbackRateSyncTimerRef.current) clearTimeout(playbackRateSyncTimerRef.current);
     if (chromeAutoHideTimerRef.current) clearTimeout(chromeAutoHideTimerRef.current);
+    playerControlActiveRef.current = false;
     onHoldSpeedChangeRef.current?.(false);
     clearAutoPlayTimers();
   }, [clearAutoPlayTimers]);
@@ -4153,16 +4197,34 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
     }
     playerChromeShownAtRef.current = Date.now();
     setPlayerChromeVisible(true);
-    if (!canAutoHideChrome) return;
+    if (!canAutoHideChrome || playerControlActiveRef.current) return;
     chromeAutoHideTimerRef.current = setTimeout(() => {
       chromeAutoHideTimerRef.current = null;
       setPlayerChromeVisible(false);
     }, PLAYER_CHROME_AUTO_HIDE_MS);
   }
 
+  function beginPlayerControlInteraction() {
+    playerControlActiveRef.current = true;
+    onPlayerChromeReveal?.();
+    if (chromeAutoHideTimerRef.current) {
+      clearTimeout(chromeAutoHideTimerRef.current);
+      chromeAutoHideTimerRef.current = null;
+    }
+    playerChromeShownAtRef.current = Date.now();
+    setPlayerChromeVisible(true);
+    setPlayerControlActive(true);
+  }
+
+  function endPlayerControlInteraction() {
+    playerControlActiveRef.current = false;
+    playerChromeShownAtRef.current = Date.now();
+    setPlayerControlActive(false);
+  }
+
   function hidePlayerChromeAfterVisibleDelay() {
     const latest = playbackStateRef.current;
-    if (!playerChromeVisible || !latest?.isActive || !latest?.isPlaying || latest?.isEnded || showSettings || suspendSurface) return;
+    if (!playerChromeVisible || !latest?.isActive || !latest?.isPlaying || latest?.isEnded || showSettings || suspendSurface || playerControlActive || playerControlActiveRef.current) return;
     if (Date.now() - playerChromeShownAtRef.current >= PLAYER_CHROME_AUTO_HIDE_MS) {
       if (chromeAutoHideTimerRef.current) {
         clearTimeout(chromeAutoHideTimerRef.current);
@@ -4401,7 +4463,27 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
     sendCmd(shouldPause ? "pauseVideo" : "playVideo");
     setIsPlaying(!shouldPause);
   }
-  function toggleMute() { sendCmd(isMuted ? "unMute" : "mute"); setIsMuted(m => !m); }
+  function setPlayerVolume(nextVolume) {
+    const normalizedVolume = Math.max(0, Math.min(1, Number(nextVolume) || 0));
+    const shouldMute = normalizedVolume <= 0.01;
+    if (!shouldMute) previousAudibleVolumeRef.current = normalizedVolume;
+    setVolume(normalizedVolume);
+    setIsMuted(shouldMute);
+    sendCmd("setVolume", [Math.round(normalizedVolume * 100)]);
+    sendCmd(shouldMute ? "mute" : "unMute");
+  }
+  function toggleMute() {
+    if (isMuted || volume <= 0.01) {
+      setPlayerVolume(previousAudibleVolumeRef.current || 1);
+      return;
+    }
+    previousAudibleVolumeRef.current = volume;
+    setPlayerVolume(0);
+  }
+  function handleVolumeDrag(locationX) {
+    const width = Math.max(1, volumeBarWidth.current || 1);
+    setPlayerVolume(locationX / width);
+  }
   function syncPlaybackRate(rate = playbackStateRef.current?.playbackRate || 1) {
     const requestedRate = holdSpeedRef.current.active ? HOLD_SPEED_RATE : rate;
     const nextRate = Number.isFinite(Number(requestedRate)) && Number(requestedRate) > 0 ? Number(requestedRate) : 1;
@@ -4523,7 +4605,8 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
           pauseNativePlayer();
           await runNativePlayer(player => player.replaceAsync(nextSource));
           runNativePlayer(player => {
-            player.muted = playbackStateRef.current?.isMuted;
+            player.muted = playbackStateRef.current?.isMuted || playbackStateRef.current?.volume <= 0.01;
+            if ("volume" in player) player.volume = playbackStateRef.current?.volume ?? 1;
             player.playbackRate = playbackStateRef.current?.playbackRate || 1;
             player.loop = false;
             player.preservesPitch = true;
@@ -4585,7 +4668,8 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
         pauseNativePlayer();
         await runNativePlayer(player => player.replaceAsync(nextSource));
         runNativePlayer(player => {
-          player.muted = playbackStateRef.current?.isMuted;
+          player.muted = playbackStateRef.current?.isMuted || playbackStateRef.current?.volume <= 0.01;
+          if ("volume" in player) player.volume = playbackStateRef.current?.volume ?? 1;
           player.playbackRate = playbackStateRef.current?.playbackRate || 1;
           player.loop = false;
           player.preservesPitch = true;
@@ -4844,6 +4928,7 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
         <>
           <Pressable
             style={s.tapLeft}
+            pointerEvents={showSettings ? "none" : "auto"}
             accessible
             accessibilityRole="button"
             accessibilityLabel="Hold left side for 2x speed or double tap to rewind"
@@ -4854,6 +4939,7 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
             key={showPlayerChrome ? "center-tap-visible" : "center-tap-hidden"}
             onPress={handleCenterTap}
             style={s.tapCenter}
+            pointerEvents={showSettings ? "none" : "auto"}
             accessible={showPlayerChrome}
             focusable={showPlayerChrome}
             importantForAccessibility={showPlayerChrome ? "auto" : "no-hide-descendants"}
@@ -4862,6 +4948,7 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
           />
           <Pressable
             style={s.tapRight}
+            pointerEvents={showSettings ? "none" : "auto"}
             accessible
             accessibilityRole="button"
             accessibilityLabel="Hold right side for 2x speed or double tap to fast forward"
@@ -4990,17 +5077,67 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
           <Text style={s.offlineBadgeText}>Offline</Text>
         </View>
       )}
-        <TouchableOpacity
-          onPress={toggleMute}
-          style={s.muteButton}
-          accessibilityRole="button"
-          accessibilityLabel={isMuted ? "Unmute video" : "Mute video"}
+        <View
+          style={s.volumeControl}
+          accessibilityRole="adjustable"
+          accessibilityLabel="Video volume"
+          accessibilityValue={{
+            min: 0,
+            max: 100,
+            now: Math.round(volume * 100),
+            text: isMuted || volume <= 0.01 ? "Muted" : `${Math.round(volume * 100)} percent`,
+          }}
+          accessibilityActions={[
+            { name: "increment", label: "Increase volume" },
+            { name: "decrement", label: "Decrease volume" },
+          ]}
+          onAccessibilityAction={({ nativeEvent }) => {
+            if (nativeEvent.actionName === "increment") setPlayerVolume(volume + 0.1);
+            if (nativeEvent.actionName === "decrement") setPlayerVolume(volume - 0.1);
+          }}
         >
-          <Ionicons name={isMuted ? "volume-mute" : "volume-high"} size={20} color="#fff" />
-        </TouchableOpacity>
+          <TouchableOpacity
+            onPress={toggleMute}
+            onPressIn={beginPlayerControlInteraction}
+            onPressOut={endPlayerControlInteraction}
+            style={s.volumeIconButton}
+            accessibilityRole="button"
+            accessibilityLabel={isMuted || volume <= 0.01 ? "Unmute video" : "Mute video"}
+          >
+            <Ionicons
+              name={isMuted || volume <= 0.01 ? "volume-mute" : volume < 0.5 ? "volume-low" : "volume-high"}
+              size={20}
+              color="#fff"
+            />
+          </TouchableOpacity>
+          <View
+            style={s.volumeSlider}
+            onLayout={e => { volumeBarWidth.current = e.nativeEvent.layout.width; }}
+            onStartShouldSetResponder={() => true}
+            onMoveShouldSetResponder={() => true}
+            onResponderTerminationRequest={() => false}
+            onResponderGrant={e => {
+              beginPlayerControlInteraction();
+              handleVolumeDrag(e.nativeEvent.locationX);
+            }}
+            onResponderMove={e => {
+              revealPlayerChrome();
+              handleVolumeDrag(e.nativeEvent.locationX);
+            }}
+            onResponderRelease={endPlayerControlInteraction}
+            onResponderTerminate={endPlayerControlInteraction}
+          >
+            <View style={s.volumeSliderTrack} pointerEvents="none">
+              <View style={[s.volumeSliderFill, { width: `${Math.max(0, Math.min(1, volume)) * 100}%` }]} />
+            </View>
+            <View style={[s.volumeSliderThumb, { left: `${Math.max(0, Math.min(1, volume)) * 100}%` }]} pointerEvents="none" />
+          </View>
+        </View>
       {!isEnded && !isBuffering && (
         <TouchableOpacity
           onPress={togglePlay}
+          onPressIn={beginPlayerControlInteraction}
+          onPressOut={endPlayerControlInteraction}
           style={s.playPauseButton}
           accessibilityRole="button"
           accessibilityLabel={isPlaying ? "Pause video" : "Play video"}
@@ -5015,6 +5152,8 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
           </View>
           <TouchableOpacity
             onPress={() => setShowSettings(value => !value)}
+            onPressIn={beginPlayerControlInteraction}
+            onPressOut={endPlayerControlInteraction}
             style={[s.playerSettingsButton, showSettings && s.playerSettingsButtonActive]}
             accessibilityRole="button"
             accessibilityLabel="Playback settings"
@@ -5024,6 +5163,8 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
           </TouchableOpacity>
           <TouchableOpacity
             onPress={handleExitFullscreen}
+            onPressIn={beginPlayerControlInteraction}
+            onPressOut={endPlayerControlInteraction}
             style={s.playerExpandButton}
             accessibilityRole="button"
             accessibilityLabel="Exit full screen player"
@@ -5052,10 +5193,23 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
             onLayout={e => { seekBarWidth.current = e.nativeEvent.layout.width; }}
             onStartShouldSetResponder={() => true}
             onMoveShouldSetResponder={() => true}
-            onResponderGrant={e => handleSeekDrag(e.nativeEvent.locationX)}
-            onResponderMove={e => handleSeekDrag(e.nativeEvent.locationX)}
-            onResponderRelease={handleSeekCommit}
-            onResponderTerminate={handleSeekCommit}
+            onResponderTerminationRequest={() => false}
+            onResponderGrant={e => {
+              beginPlayerControlInteraction();
+              handleSeekDrag(e.nativeEvent.locationX);
+            }}
+            onResponderMove={e => {
+              revealPlayerChrome();
+              handleSeekDrag(e.nativeEvent.locationX);
+            }}
+            onResponderRelease={() => {
+              handleSeekCommit();
+              endPlayerControlInteraction();
+            }}
+            onResponderTerminate={() => {
+              handleSeekCommit();
+              endPlayerControlInteraction();
+            }}
           >
             <View style={s.timelineTrack} pointerEvents="none">
               <View style={[s.timelineFill, { width: `${progress * 100}%` }]} />
@@ -8894,6 +9048,7 @@ function AiAssistantScreen({
   onGoToDownloads,
   onGoToProfile,
   onRobotChange,
+  activeCourseHint = null,
   isRootTabActive = true,
 }) {
   const aiMounted = useRef(false);
@@ -8937,6 +9092,9 @@ function AiAssistantScreen({
     () => aiChatStorageKey(user, mode, fixedCourse),
     [fixedCourse?._id, fixedCourse?.id, fixedCourse?.slug, fixedCourse?.title, mode, user?._id, user?.id]
   );
+  const activeCourseHintId = isCourseMode
+    ? null
+    : String(activeCourseHint?._id || activeCourseHint?.id || activeCourseHint?.slug || "").trim();
 
   const introMessages = useCallback((content = null) => [{
     role: "assistant",
@@ -9177,10 +9335,18 @@ function AiAssistantScreen({
       });
   }, [fixedCourse, isCourseMode, replaceActiveConversationMessages, user?._id, user?.sessionId]);
 
+  const scrollAiToEnd = useCallback((animated = true) => {
+    requestAnimationFrame(() => listRef.current?.scrollToEnd?.({ animated }));
+  }, []);
+
   useEffect(() => {
-    const scrollTimer = setTimeout(() => listRef.current?.scrollToEnd?.({ animated: true }), 80);
-    return () => clearTimeout(scrollTimer);
-  }, [messages, loading]);
+    const firstScroll = setTimeout(() => scrollAiToEnd(true), 80);
+    const settledScroll = setTimeout(() => scrollAiToEnd(false), 260);
+    return () => {
+      clearTimeout(firstScroll);
+      clearTimeout(settledScroll);
+    };
+  }, [messages, loading, scrollAiToEnd]);
 
   async function saveAiConsent(granted) {
     if (!session) return null;
@@ -9295,7 +9461,17 @@ function AiAssistantScreen({
     aiInFlight.current = true;
 
     try {
-      const data = await requestTutor({ baseUrl: API_BASE, user, question, courseId, messages, assistantName, session });
+      const data = await requestTutor({
+        baseUrl: API_BASE,
+        user,
+        question,
+        courseId,
+        activeCourseId: activeCourseHintId,
+        conversationId: activeConversationId,
+        messages,
+        assistantName,
+        session,
+      });
       if (!aiMounted.current || requestGeneration !== aiGeneration.current) return;
       setStatus("online");
       appendAiConversationMessage(requestSessionId, { id: data.messageId, role: "assistant", content: data.answer });
@@ -9384,7 +9560,10 @@ function AiAssistantScreen({
             style={s.aiMessageList}
             data={messages}
             keyExtractor={(_, index) => String(index)}
-            contentContainerStyle={s.aiMessages}
+            contentContainerStyle={[
+              s.aiMessages,
+              isCourseMode ? s.aiMessagesCourseInset : s.aiMessagesRootInset,
+            ]}
             initialNumToRender={12}
             maxToRenderPerBatch={8}
             windowSize={9}
@@ -9392,6 +9571,8 @@ function AiAssistantScreen({
             removeClippedSubviews={isRootTabActive ? ANDROID_CLIPPED_SUBVIEWS : false}
             keyboardShouldPersistTaps="handled"
             scrollEventThrottle={16}
+            onLayout={() => scrollAiToEnd(false)}
+            onContentSizeChange={() => scrollAiToEnd(!loading)}
             renderItem={({ item, index }) => {
               const isUser = item.role === "user";
               return (
@@ -9830,6 +10011,7 @@ export default function App() {
   const [mainScreen, setMainScreen] = useState("home");
   const [legalPage, setLegalPage] = useState(null);
   const [selectedCourse, setSelectedCourse] = useState(null);
+  const [aiActiveCourseHint, setAiActiveCourseHint] = useState(null);
   const [startIndex, setStartIndex] = useState(null);
   const [initialTime, setInitialTime] = useState(0);
   const [preloadedVideos, setPreloadedVideos] = useState(null);
@@ -10245,6 +10427,7 @@ export default function App() {
   const openCourse = useCallback(async (course, options = {}) => {
     const u = userRef.current;
     if (!hasCourseAccess(u)) { setShowAppUpgrade(true); return; }
+    if (course?._id || course?.id || course?.slug) setAiActiveCourseHint(course);
     const prepareCourse = source => {
       const sourceVideos = sortLessons(source?.videos || []);
       const requestedIds = Array.isArray(options.videoIds) ? options.videoIds.map(String) : null;
@@ -10263,6 +10446,7 @@ export default function App() {
       : null;
     if (fixtureCourse || course?.__homePlayableVideos || (DEV_UI_QA_ENABLED && Array.isArray(course?.videos) && course.videos.length > 0)) {
       const nextCourse = prepareCourse(fixtureCourse || course);
+      setAiActiveCourseHint(nextCourse);
       setSelectedCourse(nextCourse);
       setPreloadedVideos(nextCourse.videos);
       setIsPreviewOnly(false);
@@ -10273,7 +10457,9 @@ export default function App() {
     }
     try {
       const data = await nativeSession.requestJson(`/api/courses/${encodeURIComponent(course._id)}/videos`);
-      setSelectedCourse(prepareCourse({ ...course, videos: data.videos || [] }));
+      const nextCourse = prepareCourse({ ...course, videos: data.videos || [] });
+      setAiActiveCourseHint(nextCourse);
+      setSelectedCourse(nextCourse);
       setPreloadedVideos(null);
       setIsPreviewOnly(false);
       setInitialTime(options.initialTime || 0);
@@ -11526,6 +11712,7 @@ export default function App() {
       <AiAssistantScreen
         session={nativeSession}
         user={user}
+        activeCourseHint={aiActiveCourseHint}
         isRootTabActive={isActive}
         onGoToHome={() => navigateRootTab("home")}
         onGoToCourses={() => navigateRootTab("courses")}
@@ -13676,11 +13863,18 @@ courseListCard: {
   aiStatusOnline: { backgroundColor: C.success },
   aiStatusOffline: { backgroundColor: C.warning },
   aiMessages: {
+    flexGrow: 1,
     paddingHorizontal: 16, paddingTop: 16, paddingBottom: 18,
+  },
+  aiMessagesRootInset: {
+    paddingBottom: Platform.OS === "ios" ? 188 : 164,
+  },
+  aiMessagesCourseInset: {
+    paddingBottom: Platform.OS === "ios" ? 132 : 112,
   },
   aiKeyboardArea: { flex: 1, minHeight: 0 },
   aiKeyboardAreaWithNav: { marginBottom: Platform.OS === "ios" ? 98 : 82 },
-  aiMessageList: { flex: 1, minHeight: 0, overflow: "hidden" },
+  aiMessageList: { flex: 1, minHeight: 0 },
   aiMessageRow: {
     flexDirection: "row", alignItems: "flex-end", gap: 8,
     marginBottom: 12,
@@ -14091,10 +14285,53 @@ courseListCard: {
     textShadowOffset: { width: 0, height: 1 },
     textShadowRadius: 4,
   },
-  muteButton: {
-    position: "absolute", bottom: 18, left: 66,
-    width: MIN_TOUCH_TARGET, height: MIN_TOUCH_TARGET, alignItems: "center", justifyContent: "center",
-    backgroundColor: "rgba(0,0,0,0.56)", borderRadius: 6, zIndex: 14,
+  volumeControl: {
+    position: "absolute",
+    bottom: 18,
+    left: 66,
+    height: MIN_TOUCH_TARGET,
+    width: 190,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    paddingLeft: 0,
+    paddingRight: 12,
+    backgroundColor: "rgba(0,0,0,0.56)",
+    borderRadius: 6,
+    zIndex: 14,
+  },
+  volumeIconButton: {
+    width: MIN_TOUCH_TARGET,
+    height: MIN_TOUCH_TARGET,
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 6,
+  },
+  volumeSlider: {
+    flex: 1,
+    height: MIN_TOUCH_TARGET,
+    justifyContent: "center",
+  },
+  volumeSliderTrack: {
+    height: 5,
+    borderRadius: 3,
+    overflow: "hidden",
+    backgroundColor: "rgba(255,255,255,0.78)",
+  },
+  volumeSliderFill: {
+    height: "100%",
+    borderRadius: 3,
+    backgroundColor: "#FFFFFF",
+  },
+  volumeSliderThumb: {
+    position: "absolute",
+    top: "50%",
+    width: 16,
+    height: 16,
+    marginTop: -8,
+    marginLeft: -8,
+    borderRadius: 8,
+    backgroundColor: "#FFFFFF",
   },
   playPauseButton: {
     position: "absolute", bottom: 18, left: 14,
@@ -14131,7 +14368,8 @@ courseListCard: {
     right: 20,
     bottom: 94,
     maxHeight: "70%",
-    zIndex: 24,
+    zIndex: 40,
+    elevation: 40,
     borderRadius: 14,
     paddingHorizontal: 14,
     paddingTop: 14,
@@ -14151,7 +14389,7 @@ courseListCard: {
     borderBottomColor: "rgba(255,255,255,0.22)",
   },
   playerSettingsTitle: { color: "#fff", fontSize: 13, fontWeight: "900" },
-  playerSettingsClose: { width: 32, height: 32, alignItems: "center", justifyContent: "center" },
+  playerSettingsClose: { width: MIN_TOUCH_TARGET, height: MIN_TOUCH_TARGET, alignItems: "center", justifyContent: "center", marginRight: -6 },
   playerSettingsSection: {
     paddingTop: 12,
     paddingBottom: 10,

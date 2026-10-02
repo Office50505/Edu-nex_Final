@@ -21,6 +21,38 @@ function Badge({ tone = "", children }) {
   return <span className={`badge ${tone}`}>{children}</span>;
 }
 
+function subscriptionLabel(status) {
+  const value = String(status || "none").toLowerCase();
+  const labels = {
+    active: "Active",
+    subscribed: "Subscribed",
+    trial: "Trial",
+    "1rs trial": "Rs 1 trial",
+    grace: "Grace period",
+    expired: "Expired",
+    cancelled: "Cancelled",
+    none: "No subscription",
+  };
+  return labels[value] || value.replace(/[_-]+/g, " ").replace(/\b\w/g, (letter) => letter.toUpperCase());
+}
+
+function subscriptionTone(status) {
+  const value = String(status || "none").toLowerCase();
+  if (["active", "subscribed"].includes(value)) return "good";
+  if (["trial", "1rs trial", "grace"].includes(value)) return "warn";
+  if (["expired", "cancelled"].includes(value)) return "bad";
+  return "";
+}
+
+function subscriptionHint(status) {
+  const value = String(status || "none").toLowerCase();
+  if (["active", "subscribed"].includes(value)) return "Paid or manually enabled learner access.";
+  if (["trial", "1rs trial"].includes(value)) return "Trial cohort that may need conversion follow-up.";
+  if (value === "grace") return "Temporary access window before renewal or expiry.";
+  if (["expired", "cancelled"].includes(value)) return "Needs retention, billing, or access review.";
+  return "Learners without active subscription access.";
+}
+
 function PlaceholderNote({ children = "Backend API not connected for mutations yet. This page shows only live data returned by the current admin endpoints." }) {
   return <p className="admin-placeholder-note">{children}</p>;
 }
@@ -257,7 +289,7 @@ export function AdminOrdersPage() {
 
 export function AdminPaymentsPage() {
   const { loading, error, analytics, health } = useOperationsData({ analytics: true, health: true });
-  const [ledger, setLedger] = useState({ loading: true, error: "", payments: [], summary: {} });
+  const [ledger, setLedger] = useState({ loading: true, error: "", payments: [], summary: {}, limited: false });
   const [dateRange, setDateRange] = useState(() => defaultDateRange("allTime"));
   const [query, setQuery] = useState("");
   useEffect(() => {
@@ -267,7 +299,7 @@ export function AdminPaymentsPage() {
       setLedger((current) => ({ ...current, loading: true, error: "" }));
       try {
         const data = await adminJson("/api/admin/payments?limit=500", {}, "Unable to load payment ledger.");
-        if (active) setLedger({ loading: false, error: "", payments: data.payments || [], summary: data.summary || {} });
+        if (active) setLedger({ loading: false, error: "", payments: data.payments || [], summary: data.summary || {}, limited: Boolean(data.limited) });
       } catch (error) {
         if (active) setLedger((current) => ({ ...current, loading: false, error: error.message || "Unable to load payment ledger." }));
       }
@@ -333,7 +365,7 @@ export function AdminPaymentsPage() {
     .filter((row, index, rows) => rows.findIndex((candidate) => candidate.id === row.id) === index);
   const autoPayPayments = (ledger.payments || []).filter((order) => paymentMethodLabel(order) === "AutoPay");
   return (
-    <AdminShell activePage="payments" title="Payments" subtitle="Money received, AutoPay cuts, direct payments, and user payment context.">
+    <AdminShell activePage="payments" shellClass="payments-shell" title="Payments" subtitle="Money received, AutoPay cuts, direct payments, and user payment context.">
       <Message text={error} type="error" />
       <Message text={ledger.error} type="error" />
       <section className="controls-panel date-filter-panel">
@@ -387,25 +419,34 @@ export function AdminPaymentsPage() {
           />
         )}
       </section>
-      {ledger.loading ? <div className="loading-state">Loading payment ledger...</div> : (
-        <StatusTable
-          className="payment-ledger-table"
-          columns={["User", "Amount", "Date", "Payment mode", "Customer state", "Gateway", "Reference"]}
-          rows={filteredPayments.map((order) => ({
-            id: order._id || paymentReference(order),
-            cells: [
-              <span className="payment-user-cell"><strong>{order.user?.fullName || "Unknown user"}</strong><small>{order.user?.mobileNumber || "No mobile"}</small></span>,
-              <span className="payment-amount-cell"><strong>{money(order.totalAmount)}</strong><small>{orderTypeLabel(order.orderType)}</small></span>,
-              formatDateTime(order.paidAt || order.createdAt),
-              <Badge tone={paymentMethodLabel(order) === "AutoPay" ? "good" : "warn"}>{paymentMethodLabel(order)}</Badge>,
-              <Badge tone={customerStage(order) === "Customer" ? "good" : customerStage(order) === "Trial" ? "warn" : ""}>{customerStage(order)}</Badge>,
-              valueText(order.gateway || order.subscription?.gateway, "Unknown"),
-              paymentReference(order),
-            ],
-          }))}
-          emptyText="No paid payments returned."
-        />
-      )}
+      <section className="dashboard-panel payment-ledger-panel">
+        <div className="panel-head">
+          <div>
+            <h2 className="panel-title">Payment ledger</h2>
+            <p>{formatNumber(filteredPayments.length)} shown from {formatNumber(ledger.payments.length)} paid records</p>
+          </div>
+          <Badge tone={ledger.limited ? "warn" : "good"}>{ledger.limited ? "Limited" : "Live"}</Badge>
+        </div>
+        {ledger.loading ? <div className="loading-state">Loading payment ledger...</div> : (
+          <StatusTable
+            className="payment-ledger-table"
+            columns={["User", "Amount", "Date", "Payment mode", "Customer state", "Gateway", "Reference"]}
+            rows={filteredPayments.map((order) => ({
+              id: order._id || paymentReference(order),
+              cells: [
+                <span className="payment-user-cell"><strong>{order.user?.fullName || "Unknown user"}</strong><small>{order.user?.mobileNumber || order.user?.email || "No contact"}</small></span>,
+                <span className="payment-amount-cell"><strong>{money(order.totalAmount)}</strong><small>{orderTypeLabel(order.orderType)}</small></span>,
+                formatDateTime(order.paidAt || order.createdAt),
+                <Badge tone={paymentMethodLabel(order) === "AutoPay" ? "good" : "warn"}>{paymentMethodLabel(order)}</Badge>,
+                <Badge tone={customerStage(order) === "Customer" ? "good" : customerStage(order) === "Trial" ? "warn" : ""}>{customerStage(order)}</Badge>,
+                valueText(order.gateway || order.subscription?.gateway, "Unknown"),
+                paymentReference(order),
+              ],
+            }))}
+            emptyText="No paid payments returned."
+          />
+        )}
+      </section>
       <section className="dashboard-panel">
         <h2 className="panel-title">Gateway checks</h2>
         {loading ? <div className="loading-state">Loading payment checks...</div> : (
@@ -631,12 +672,70 @@ export function AdminPaymentAuditorPage() {
 export function AdminSubscriptionsPage() {
   const { loading, error, analytics } = useOperationsData({ analytics: true });
   const mix = analytics?.breakdowns?.userSubscriptionStatus || analytics?.breakdowns?.subscriptionStatus || {};
-  const rows = Object.entries(mix).map(([status, count]) => ({ id: status, cells: [status || "none", formatNumber(count), "Analytics API rollup", <a className="toolbar-button" href={`${adminRoutes.users}?subscription=${encodeURIComponent(status || "none")}`}>Manage learners</a>] }));
+  const rows = Object.entries(mix)
+    .map(([status, count]) => ({ status: String(status || "none").toLowerCase(), count: Number(count || 0) }))
+    .sort((a, b) => {
+      const priority = ["active", "subscribed", "trial", "1rs trial", "grace", "expired", "cancelled", "none"];
+      return (priority.indexOf(a.status) === -1 ? priority.length : priority.indexOf(a.status)) - (priority.indexOf(b.status) === -1 ? priority.length : priority.indexOf(b.status));
+    });
+  const totalLearners = rows.reduce((sum, row) => sum + row.count, 0);
+  const activeLearners = rows.filter((row) => ["active", "subscribed"].includes(row.status)).reduce((sum, row) => sum + row.count, 0);
+  const trialLearners = rows.filter((row) => ["trial", "1rs trial", "grace"].includes(row.status)).reduce((sum, row) => sum + row.count, 0);
+  const reviewLearners = rows.filter((row) => ["expired", "cancelled", "none"].includes(row.status)).reduce((sum, row) => sum + row.count, 0);
   return (
-    <AdminShell activePage="subscriptions" title="Subscriptions" subtitle="Subscription mix, churn signals, and plan operations.">
+    <AdminShell activePage="subscriptions" shellClass="subscriptions-shell" title="Subscriptions" subtitle="Subscription mix, churn signals, and plan operations.">
       <Message text={error} type="error" />
       <PlaceholderNote>Select Manage learners to update subscription status and access duration.</PlaceholderNote>
-      {loading ? <div className="loading-state">Loading subscription mix...</div> : <StatusTable columns={["Status", "Learners", "Source", "Actions"]} rows={rows} />}
+      <MetricStrip items={[
+        ["Tracked learners", formatNumber(totalLearners), "Across subscription statuses"],
+        ["Paid / active", formatNumber(activeLearners), "Currently enabled"],
+        ["Trial / grace", formatNumber(trialLearners), "Conversion follow-up"],
+        ["Needs review", formatNumber(reviewLearners), "Expired, cancelled, or none"],
+      ]} />
+      {loading ? <div className="loading-state">Loading subscription mix...</div> : (
+        <section className="subscription-mix-panel" aria-label="Subscription status mix">
+          <header className="subscription-mix-toolbar">
+            <div>
+              <strong>Subscription status mix</strong>
+              <span>{formatNumber(rows.length)} status groups from Analytics API rollup</span>
+            </div>
+            <a className="toolbar-button" href={adminRoutes.users}>View all learners</a>
+          </header>
+          <div className="subscription-mix-head" aria-hidden="true">
+            <span>Status</span>
+            <span>Learners</span>
+            <span>Source</span>
+            <span>Action</span>
+          </div>
+          <div className="subscription-mix-list">
+            {rows.map((row) => {
+              const tone = subscriptionTone(row.status);
+              const share = totalLearners ? Math.round((row.count / totalLearners) * 100) : 0;
+              return (
+                <article className={`subscription-mix-row ${tone ? `is-${tone}` : "is-neutral"}`} key={row.status}>
+                  <div className="subscription-status-cell">
+                    <Badge tone={tone}>{subscriptionLabel(row.status)}</Badge>
+                    <div>
+                      <strong>{subscriptionLabel(row.status)}</strong>
+                      <span>{subscriptionHint(row.status)}</span>
+                    </div>
+                  </div>
+                  <div className="subscription-count-cell">
+                    <strong>{formatNumber(row.count)}</strong>
+                    <span>{formatNumber(share)}% of tracked learners</span>
+                  </div>
+                  <div className="subscription-source-cell">
+                    <strong>Analytics API</strong>
+                    <span>Live dashboard rollup</span>
+                  </div>
+                  <a className="toolbar-button" href={`${adminRoutes.users}?subscription=${encodeURIComponent(row.status)}`}>Manage learners</a>
+                </article>
+              );
+            })}
+            {!rows.length ? <div className="empty-state">No subscription mix returned yet.</div> : null}
+          </div>
+        </section>
+      )}
     </AdminShell>
   );
 }

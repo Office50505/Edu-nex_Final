@@ -1,11 +1,25 @@
 const fs = require('node:fs');
 const path = require('node:path');
 
-const DOCUMENTS = [
-  ['notes.txt', 'AI Influencer — Notes and Prompts'],
-  ['lessons.txt', 'AI Influencer — Master Lessons'],
-  ['troubleshooting.txt', 'AI Influencer — Troubleshooting'],
+const COURSE_DOCUMENTS = [
+  {
+    slugs: ['ai-influencer-course', 'ai-influencer'],
+    dir: 'ai-influencer',
+    files: [
+      ['notes.txt', 'AI Influencer — Notes and Prompts'],
+      ['lessons.txt', 'AI Influencer — Master Lessons'],
+      ['troubleshooting.txt', 'AI Influencer — Troubleshooting'],
+    ],
+  },
+  {
+    slugs: ['ai-filmmaking-course', 'ai-filmmaking'],
+    dir: 'ai-filmmaking',
+    files: [
+      ['training.txt', 'AI Filmmaking — Chatbot Training Knowledge Base'],
+    ],
+  },
 ];
+const DOCUMENTED_COURSE_SLUGS = new Set(COURSE_DOCUMENTS.flatMap(course => course.slugs));
 const STOP = new Set('the a an and or of to in is it for with my me how what why can do does please explain give tell about that this more elaborate simple simply you your hai ka ki ke ko se mein mujhe kya kaise'.split(' '));
 const SYNONYMS = [
   ['face', 'identity', 'chehra', 'consistency', 'drift'],
@@ -14,13 +28,14 @@ const SYNONYMS = [
   ['realistic', 'realism', 'plastic', 'natural'],
   ['outfit', 'clothes', 'kapde'],
 ];
+const COURSE_COMPARISON_PATTERN = /\b(compare|comparison|versus|vs\.?|difference|differences|different from|between courses|other courses|another course|alternate course|alternative course)\b/i;
 
 function terms(text) {
   return String(text).toLowerCase().match(/[\p{L}\p{N}]+/gu)?.filter(word => word.length > 2 && !STOP.has(word)) || [];
 }
 
 function chunks(text) {
-  const sections = text.replace(/\r/g, '').split(/(?=^\s*(?:Lesson|LESSON)\s+\d+\s*[—:–-])/m);
+  const sections = text.replace(/\r/g, '').split(/(?=^.*\b(?:Lesson|LESSON)\s+\d+\s*[—:–-])/m);
   return sections.flatMap(section => {
     const heading = section.trim().split('\n')[0].slice(0, 160);
     const result = [];
@@ -31,10 +46,10 @@ function chunks(text) {
     return result;
   });
 }
-const localDocuments = DOCUMENTS.flatMap(([file, title]) => {
-  const text = fs.readFileSync(path.join(__dirname, '../knowledge/ai-influencer', file), 'utf8');
-  return chunks(text).map(chunk => ({ ...chunk, title, courseSlug: 'ai-influencer', kind: 'course-material' }));
-});
+const localDocuments = COURSE_DOCUMENTS.flatMap(({ slugs, dir, files }) => files.flatMap(([file, title]) => {
+  const text = fs.readFileSync(path.join(__dirname, '../knowledge', dir, file), 'utf8');
+  return slugs.flatMap(slug => chunks(text).map(chunk => ({ ...chunk, title, courseSlug: slug, kind: 'course-material' })));
+}));
 
 function hasLessonAccess(subscription, now = Date.now()) {
   if (!subscription) return false;
@@ -43,9 +58,52 @@ function hasLessonAccess(subscription, now = Date.now()) {
   return false;
 }
 
-function retrieveKnowledge({ courses, message, history = [], includeMaterials = false, activeLesson = null, activeCourse = null }) {
-  const bySlug = new Map(courses.map(course => [course.slug, course]));
-  const candidates = courses.flatMap(course => [
+function sameCourse(left, right) {
+  if (!left || !right) return false;
+  const leftId = left._id != null ? String(left._id) : '';
+  const rightId = right._id != null ? String(right._id) : '';
+  const leftSlug = String(left.slug || '').toLowerCase();
+  const rightSlug = String(right.slug || '').toLowerCase();
+  return Boolean((leftId && rightId && leftId === rightId) || (leftSlug && rightSlug && leftSlug === rightSlug));
+}
+
+function allowsCourseComparison(message) {
+  return COURSE_COMPARISON_PATTERN.test(String(message || ''));
+}
+
+function detectsFaceConsistencyRetrieval(message, history = []) {
+  const text = [
+    message,
+    ...(Array.isArray(history) ? history.slice(-6).map(item => item?.content || '') : []),
+  ].join('\n').toLowerCase();
+  return /\b(face|identity|character|chehra)\b/.test(text)
+    && /\b(change|changes|changing|drift|drifts|drifting|different|inconsistent|same|consistent|lock|locked|character sheet|last frame|start frame|ingredients|face-fix|badal|badalta)\b/.test(text);
+}
+
+function wantsExactPrompt(message) {
+  return /\b(prompt|template)\b/i.test(message)
+    || /\bexact\s+(?:line|wording|prompt|template)\b/i.test(message)
+    || /\bcopy[-\s]*paste\b/i.test(message);
+}
+
+function retrievalQueryFor({ message, history = [], activeCourse = null }) {
+  if (activeCourse && detectsFaceConsistencyRetrieval(message, history)) {
+    const courseName = String(activeCourse.title || activeCourse.slug || '').trim();
+    const exact = wantsExactPrompt(message) ? ' exact prompt template' : '';
+    return `${courseName} face consistency Ingredients${exact} using saved last frame and character sheet`;
+  }
+  return String(message || '');
+}
+
+function retrieveKnowledge({ courses, message, history = [], includeMaterials = false, activeLesson = null, activeCourse = null, allowCrossCourse = false }) {
+  const scopedToActiveCourse = Boolean(activeCourse && !allowCrossCourse && !allowsCourseComparison(message));
+  const retrievalQuery = retrievalQueryFor({ message, history, activeCourse });
+  const scopedCourses = scopedToActiveCourse
+    ? courses.filter(course => sameCourse(course, activeCourse))
+    : courses;
+  const searchableCourses = scopedCourses.length ? scopedCourses : (scopedToActiveCourse ? [activeCourse] : courses);
+  const bySlug = new Map(searchableCourses.map(course => [course.slug, course]).filter(([slug]) => slug));
+  const candidates = searchableCourses.flatMap(course => [
     { title: course.title, heading: 'Course overview', content: `${course.title}\n${course.description || ''}`, course, kind: 'course-overview' },
     ...(course.videos || []).map(video => ({ title: course.title, heading: video.title, content: `${video.title}\n${video.description || ''}${includeMaterials && video.examplePrompt ? `\nExample prompt: ${video.examplePrompt}` : ''}`, course, active: video === activeLesson, kind: 'lesson-overview' })),
   ]);
@@ -65,7 +123,7 @@ function retrieveKnowledge({ courses, message, history = [], includeMaterials = 
   }
 
   // Short follow-ups need the preceding topic; an explicit new question takes priority.
-  const currentTerms = terms(message);
+  const currentTerms = terms(retrievalQuery);
   const followUp = currentTerms.length < 3 || /\b(that|this|same|previous|example|simpler|elaborate|continue|quiz|samjhao)\b/i.test(message);
   const recent = followUp ? history.slice(-4).map(item => item.content).join(' ') : '';
   const weights = new Map();
@@ -105,10 +163,22 @@ function retrieveKnowledge({ courses, message, history = [], includeMaterials = 
     sources,
     excerpts: selected.map((doc, index) => `[${sources[index].id}] ${doc.title} — ${doc.heading} (${doc.kind})\n${doc.content}`).join('\n\n'),
     bestExcerpt: selected[0]?.content || '',
-    materialsAvailable: includeMaterials && (bySlug.has('ai-influencer') || Boolean(activeLesson?.notes)),
+    materialsAvailable: includeMaterials && ([...DOCUMENTED_COURSE_SLUGS].some(slug => bySlug.has(slug)) || Boolean(activeLesson?.notes)),
+    courseScoped: scopedToActiveCourse,
+    retrievalQuery,
+    debugChunks: selected.map((doc, index) => ({
+      rank: index + 1,
+      courseId: String(doc.course._id),
+      courseSlug: String(doc.course.slug || ''),
+      courseName: String(doc.course.title || ''),
+      section: doc.heading,
+      kind: doc.kind,
+      score: Number(doc.score || 0),
+    })),
+    activeCourse: activeCourse ? { title: activeCourse.title, slug: activeCourse.slug, id: String(activeCourse._id || '') } : null,
     activeLesson: activeLesson ? { title: activeLesson.title, description: activeLesson.description || '' } : null,
     activeLessonExcerpt: selected.filter(doc => doc.active).map(doc => `[${sources[selected.indexOf(doc)].id}] ${doc.content}`).join('\n\n'),
   };
 }
 
-module.exports = { retrieveKnowledge, hasLessonAccess };
+module.exports = { retrieveKnowledge, hasLessonAccess, allowsCourseComparison };

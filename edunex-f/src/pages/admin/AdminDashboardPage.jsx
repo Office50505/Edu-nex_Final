@@ -27,6 +27,14 @@ function money(value) {
   return hasNumber(value) ? new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 2 }).format(Number(value || 0) / 100) : "Not returned";
 }
 
+function metricValueClass(value) {
+  const length = String(value || "").replace(/\s/g, "").length;
+  if (length >= 14) return "metric-value is-tiny";
+  if (length >= 11) return "metric-value is-tight";
+  if (length >= 8) return "metric-value is-compact";
+  return "metric-value";
+}
+
 function textValue(...values) {
   for (const value of values) {
     if (value !== null && value !== undefined && String(value).trim()) return String(value).trim();
@@ -138,7 +146,7 @@ function DashboardMetrics({ data }) {
     <section className="analytics-grid" aria-label="Analytics summary">
       {metrics.map((item) => (
         <div className="metric-card" key={item.label}>
-          <span>{item.value}</span>
+          <span className={metricValueClass(item.value)}>{item.value}</span>
           <strong>{item.label}</strong>
           <small>{item.meta}</small>
         </div>

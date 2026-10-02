@@ -172,6 +172,157 @@ test('provider receives formatted prompts but no page query secrets or contact f
   assert.ok(!JSON.stringify(api.calls[0]).includes('919999999999'));
 });
 
+test('active course scope excludes other course catalog and materials from provider context', async () => {
+  const aiFilmmaking = {
+    _id: '6abe5bb2bced21d7211be185',
+    slug: 'ai-filmmaking-course',
+    title: 'AI Filmmaking Course',
+    description: 'Create AI short films with story, shots, voice, and editing.',
+    videos: [{ _id: 'film-tools', title: 'Tools Setup', description: 'Set up Google Flow.' }],
+  };
+  const aiInfluencer = {
+    _id: '6a9e67c46bcb631b8118d341',
+    slug: 'ai-influencer-course',
+    title: 'AI Influencer Course',
+    description: 'AI_INFLUENCER_SENTINEL should not enter an active AI Filmmaking prompt.',
+    videos: [{ _id: 'influencer-face', title: 'Same Face Every Time', description: 'INFLUENCER_FACE_SENTINEL' }],
+  };
+  const api = backend({ courses: [aiFilmmaking, aiInfluencer], user: { _id: 'learner' }, subscription: { status: 'active', currentPeriodEnd: new Date(Date.now() + 86400000) } });
+  await api.chat({ message: 'Explain the tools setup', courseId: aiFilmmaking._id });
+  const prompt = api.calls[0].messages[0].content;
+  assert.match(prompt, /Active course scope: AI Filmmaking Course/);
+  assert.match(prompt, /AI Filmmaking Course/);
+  assert.doesNotMatch(prompt, /AI Influencer Course|AI_INFLUENCER_SENTINEL|INFLUENCER_FACE_SENTINEL/);
+});
+
+test('active AI Filmmaking face consistency answer does not call provider or merge courses', async () => {
+  const aiFilmmaking = {
+    _id: '6abe5bb2bced21d7211be185',
+    slug: 'ai-filmmaking-course',
+    title: 'AI Filmmaking Course',
+    description: 'Create AI short films.',
+    videos: [],
+  };
+  const aiInfluencer = {
+    _id: '6a9e67c46bcb631b8118d341',
+    slug: 'ai-influencer-course',
+    title: 'AI Influencer Course',
+    description: 'Other course.',
+    videos: [],
+  };
+  const api = backend({ courses: [aiFilmmaking, aiInfluencer], user: { _id: 'learner' }, subscription: { status: 'active', currentPeriodEnd: new Date(Date.now() + 86400000) } });
+  const response = await api.chat({ message: 'face keeps changing every clip what should i do', courseId: aiFilmmaking._id });
+  assert.equal(response.provider, 'course-knowledge-rule');
+  assert.equal(api.calls.length, 0);
+  assert.match(response.reply, /same face, same outfit/i);
+  assert.match(response.reply, /USE THIS IMAGE \[saved last frame\] AS THE FIRST FRAME/);
+  assert.doesNotMatch(response.reply, /AI Influencer|Original Reference Photo|newly generated image/i);
+});
+
+test('production path isolates direct AI Filmmaking course question from AI Influencer chunks', async () => {
+  const aiFilmmaking = {
+    _id: '6abe5bb2bced21d7211be185',
+    slug: 'ai-filmmaking-course',
+    title: 'AI Filmmaking Course',
+    description: 'Create AI short films with consistent characters.',
+    videos: [],
+  };
+  const aiInfluencer = {
+    _id: '6a9e67c46bcb631b8118d341',
+    slug: 'ai-influencer-course',
+    title: 'AI Influencer Course',
+    description: 'AI Influencer same original reference photo and exact same face guidance.',
+    videos: [{ _id: 'influencer-face', title: 'Same Face', description: 'Do not use a newly generated image as reference.' }],
+  };
+  const api = backend({ courses: [aiFilmmaking, aiInfluencer], user: { _id: 'learner' }, subscription: { status: 'active', currentPeriodEnd: new Date(Date.now() + 86400000) } });
+  const response = await api.chat({
+    message: 'How do I keep the same character across clips?',
+    activeCourseId: aiFilmmaking._id,
+    conversationId: 'uat-direct-course-isolation',
+    debugAi: true,
+  });
+  assert.equal(response.provider, 'course-knowledge-rule');
+  assert.match(response.reply, /AI Filmmaking workflow|character reference sheet|same face, same outfit/i);
+  assert.doesNotMatch(response.reply, /AI Influencer|same original reference photo|newly generated image/i);
+  assert.equal(response.debug.retrieved_course_ids.length, 1);
+  assert.equal(response.debug.retrieved_course_ids[0], aiFilmmaking._id);
+  assert.ok(response.debug.retrieved_course_names.every(name => name === 'AI Filmmaking Course'));
+});
+
+test('production path keeps AI Filmmaking topic through exact follow-up prompt lookup', async () => {
+  const aiFilmmaking = {
+    _id: '6abe5bb2bced21d7211be185',
+    slug: 'ai-filmmaking-course',
+    title: 'AI Filmmaking Course',
+    description: 'Create AI short films with consistent characters.',
+    videos: [],
+  };
+  const aiInfluencer = {
+    _id: '6a9e67c46bcb631b8118d341',
+    slug: 'ai-influencer-course',
+    title: 'AI Influencer Course',
+    description: 'AI Influencer exact same face same woman prompts.',
+    videos: [{ _id: 'same-face', title: 'Same Face', description: 'use the exact same face, same woman, same facial features' }],
+  };
+  const api = backend({ courses: [aiFilmmaking, aiInfluencer], user: { _id: 'learner' }, subscription: { status: 'active', currentPeriodEnd: new Date(Date.now() + 86400000) } });
+  const history = [];
+  async function turn(message, extra = {}) {
+    const response = await api.chat({ message, history, conversationId: 'uat-multiturn-exact', debugAi: true, ...extra });
+    history.push({ role: 'user', content: message }, { role: 'assistant', content: response.reply });
+    return response;
+  }
+
+  const first = await turn('My character face changes between shots. How do I fix it?', { activeCourseId: aiFilmmaking._id });
+  const second = await turn('Should I use the last frame too?');
+  const third = await turn('And the character sheet?');
+  const fourth = await turn('What exact line should I use?');
+
+  for (const response of [first, second, third, fourth]) {
+    assert.equal(response.debug.resolved_active_course_id, aiFilmmaking._id);
+    assert.equal(response.debug.current_topic, 'face_consistency');
+    assert.ok(response.debug.retrieved_course_ids.every(id => id === aiFilmmaking._id));
+    assert.doesNotMatch(response.reply, /AI Influencer|same woman, same facial features/i);
+  }
+  assert.match(fourth.reply, /USE THIS IMAGE \[saved last frame\] AS THE FIRST FRAME/);
+  assert.match(fourth.reply, /CHARACTER SHEET \[character reference sheet\]/);
+  assert.equal(fourth.debug.selected_exact_prompt_template_id, 'ai-filmmaking.ingredients_face_fix.template');
+});
+
+test('production path allows explicit AI Influencer comparison without blended course answer', async () => {
+  const aiFilmmaking = {
+    _id: '6abe5bb2bced21d7211be185',
+    slug: 'ai-filmmaking-course',
+    title: 'AI Filmmaking Course',
+    description: 'Use saved last frame and character sheet for film shot continuity.',
+    videos: [],
+  };
+  const aiInfluencer = {
+    _id: '6a9e67c46bcb631b8118d341',
+    slug: 'ai-influencer-course',
+    title: 'AI Influencer Course',
+    description: 'Use one original reference photo for influencer identity.',
+    videos: [],
+  };
+  const api = backend({ courses: [aiFilmmaking, aiInfluencer], user: { _id: 'learner' }, subscription: { status: 'active', currentPeriodEnd: new Date(Date.now() + 86400000) }, reply: 'AI Filmmaking: use saved last frame + character sheet.\n\nAI Influencer: use the original reference photo. These are separate workflows.' });
+  const history = [
+    { role: 'user', content: 'My character face changes between shots. How do I fix it?' },
+    { role: 'assistant', content: 'Use this AI Filmmaking workflow with saved last frame and character sheet.' },
+  ];
+  const response = await api.chat({
+    message: 'How is this different from AI Influencer?',
+    history,
+    conversationId: 'uat-explicit-comparison',
+    debugAi: true,
+  });
+  const prompt = api.calls[0].messages[0].content;
+  assert.equal(response.provider, 'fal-openrouter');
+  assert.match(prompt, /multiple courses may be compared/i);
+  assert.match(prompt, /AI Filmmaking Course/);
+  assert.match(prompt, /AI Influencer Course/);
+  assert.match(response.reply, /AI Filmmaking:/);
+  assert.match(response.reply, /AI Influencer:/);
+});
+
 const selectedCourse = { _id: '6a9e67c46bcb631b8118d341', slug: 'ai-influencer', title: 'AI Influencer', videos: [
   { _id: 'lesson-a', title: 'Introduction', description: 'Create an AI influencer.', notes: 'INTRO_NOTES: choose your audience and define a consistent character.' },
   { _id: 'lesson-b', title: 'Tools Setup', description: 'Set up tools.', notes: 'TOOLS_NOTES: create accounts before generating images.' },

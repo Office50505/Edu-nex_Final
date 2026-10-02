@@ -16,10 +16,16 @@ function StatCard({ label, value, hint }) {
   return <div className="summary-card"><strong>{label}</strong><span>{value}</span>{hint ? <small>{hint}</small> : null}</div>;
 }
 
-function SimpleTable({ columns, rows, empty }) {
-  return <div className="admin-data-table" role="table">
-    <div className="admin-data-head" role="row">{columns.map((column) => <span role="columnheader" key={column}>{column}</span>)}</div>
-    {rows.length ? rows.map((row) => <div className="admin-data-row" role="row" key={row.id}>{row.cells.map((cell, index) => <span role="cell" key={`${row.id}-${index}`}>{cell}</span>)}</div>) : <div className="empty-state">{empty}</div>}
+function SimpleTable({ columns, rows, empty, columnsTemplate = "repeat(4, minmax(0, 1fr))" }) {
+  return <div className="tester-analytics-table-scroll">
+    <table className="tester-analytics-table-v2" style={{ "--tester-table-columns": columnsTemplate }}>
+      <thead>
+        <tr>{columns.map((column) => <th key={column} scope="col">{column}</th>)}</tr>
+      </thead>
+      <tbody>
+        {rows.length ? rows.map((row) => <tr key={row.id}>{row.cells.map((cell, index) => <td key={`${row.id}-${index}`}>{cell}</td>)}</tr>) : <tr><td className="tester-analytics-empty" colSpan={columns.length}>{empty}</td></tr>}
+      </tbody>
+    </table>
   </div>;
 }
 
@@ -99,7 +105,7 @@ export function AdminTesterAnalyticsPage() {
   >
     <Message text={state.error} type="error" />
     {state.loading ? <div className="loading-state">Loading tester analytics...</div> : null}
-    {!state.loading && state.data ? <>
+    {!state.loading && state.data ? <div className="tester-analytics-shell">
       <section className="summary-grid">
         <StatCard label="Testers" value={formatNumber(totals.testers)} hint="Marked tester accounts" />
         <StatCard label="Active today" value={formatNumber(totals.activeToday)} hint="By last activity" />
@@ -108,22 +114,22 @@ export function AdminTesterAnalyticsPage() {
         <StatCard label="Watch time" value={formatWatchDuration(totals.watchMinutes)} hint="Selected range" />
         <StatCard label="AI messages" value={formatNumber(totals.aiMessages)} hint="Selected range" />
       </section>
-      <section className="panel">
+      <section className="panel tester-analytics-panel">
         <div className="crm-results-bar"><div><strong>Tester roster</strong><span>{formatNumber(testerRows.length)} tester accounts</span></div></div>
-        <SimpleTable columns={["Tester", "Status", "Tester since", "Last active", "Watch time", "AI messages"]} rows={testerRows} empty="No testers have been assigned yet." />
+        <SimpleTable columns={["Tester", "Status", "Tester since", "Last active", "Watch time", "AI messages"]} rows={testerRows} empty="No testers have been assigned yet." columnsTemplate="minmax(220px, 1.3fr) minmax(120px, .65fr) minmax(130px, .72fr) minmax(130px, .72fr) minmax(115px, .6fr) minmax(120px, .6fr)" />
       </section>
-      <section className="panel">
+      <section className="panel tester-analytics-panel">
         <div className="crm-results-bar"><div><strong>Course activity by testers</strong><span>Selected range only</span></div></div>
-        <SimpleTable columns={["Course", "Testers", "Events", "Watch time", "Last event"]} rows={courseRows} empty="No tester course activity found in this range." />
+        <SimpleTable columns={["Course", "Testers", "Events", "Watch time", "Last event"]} rows={courseRows} empty="No tester course activity found in this range." columnsTemplate="minmax(260px, 1.5fr) minmax(105px, .5fr) minmax(105px, .5fr) minmax(130px, .65fr) minmax(150px, .75fr)" />
       </section>
-      <section className="panel">
+      <section className="panel tester-analytics-panel">
         <div className="crm-results-bar"><div><strong>Recent tester events</strong><span>Raw tester analytics feed</span></div></div>
-        <SimpleTable columns={["Event", "Tester", "Context", "Recorded"]} rows={eventRows} empty="No tester events found in this range." />
+        <SimpleTable columns={["Event", "Tester", "Context", "Recorded"]} rows={eventRows} empty="No tester events found in this range." columnsTemplate="minmax(150px, .75fr) minmax(240px, 1.2fr) minmax(260px, 1.35fr) minmax(170px, .8fr)" />
       </section>
-      <section className="panel">
+      <section className="panel tester-analytics-panel">
         <div className="crm-results-bar"><div><strong>Tester assignment audit</strong><span>Latest enable/disable actions</span></div></div>
-        <SimpleTable columns={["Action", "Tester", "Reason", "Admin", "When"]} rows={actionRows} empty="No tester assignment actions recorded." />
+        <SimpleTable columns={["Action", "Tester", "Reason", "Admin", "When"]} rows={actionRows} empty="No tester assignment actions recorded." columnsTemplate="minmax(150px, .75fr) minmax(220px, 1.1fr) minmax(260px, 1.3fr) minmax(150px, .7fr) minmax(170px, .8fr)" />
       </section>
-    </> : null}
+    </div> : null}
   </AdminShell>;
 }
