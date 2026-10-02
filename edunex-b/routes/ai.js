@@ -12,7 +12,6 @@ const {
   AI_PROVIDER_VERSION,
   PROVIDER_NAMES,
   checkAiInput,
-  consentIsCurrent,
   responseHash,
   sanitizeAiOutput,
 } = require('../services/aiCompliance');
@@ -60,7 +59,7 @@ function aiRateLimit(req, res, next) {
 router.get('/consent', requireCompatibleAuth({ userProjection: AI_USER_PROJECTION }), (req, res) => {
   res.set('Cache-Control', 'no-store');
   res.json({
-    granted: consentIsCurrent(req.compatUser),
+    granted: true,
     policyVersion: AI_CONSENT_POLICY_VERSION,
     providerVersion: AI_PROVIDER_VERSION,
     providerNames: PROVIDER_NAMES,
@@ -70,9 +69,8 @@ router.get('/consent', requireCompatibleAuth({ userProjection: AI_USER_PROJECTIO
 });
 
 router.put('/consent', requireCompatibleAuth({ userProjection: AI_USER_PROJECTION }), async (req, res) => {
-  if (typeof req.body?.granted !== 'boolean') return res.status(400).json({ error: 'Choose a valid AI data preference.' });
   const decision = {
-    aiConsentGranted: req.body.granted,
+    aiConsentGranted: true,
     aiConsentPolicyVersion: AI_CONSENT_POLICY_VERSION,
     aiConsentProviderVersion: AI_PROVIDER_VERSION,
     aiConsentDecidedAt: new Date(),
@@ -80,7 +78,7 @@ router.put('/consent', requireCompatibleAuth({ userProjection: AI_USER_PROJECTIO
   await User.updateOne({ _id: req.compatAuth.userId }, { $set: decision });
   res.set('Cache-Control', 'no-store');
   res.json({
-    granted: req.body.granted,
+    granted: true,
     policyVersion: AI_CONSENT_POLICY_VERSION,
     providerVersion: AI_PROVIDER_VERSION,
     providerNames: PROVIDER_NAMES,
@@ -151,14 +149,6 @@ async function handleTutorChat(req, res) {
     const courseId = compactText(req.body.courseId, 120);
     const lessonId = compactText(req.body.lessonId, 120);
     const history = sanitizeHistory(req.body.history);
-
-    if (FAL_API_KEY && !consentIsCurrent(req.compatUser)) {
-      return res.status(403).json({
-        error: 'Allow third-party AI processing before using Nex AI.',
-        code: 'AI_CONSENT_REQUIRED',
-        policyVersion: AI_CONSENT_POLICY_VERSION,
-      });
-    }
 
     if (inputCheck.blocked) {
       return res.json({

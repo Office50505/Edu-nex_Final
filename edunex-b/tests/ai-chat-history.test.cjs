@@ -53,12 +53,12 @@ function backend(options = {}) {
   };
 }
 
-test('chat fails closed before contacting a third-party AI provider without current consent', async () => {
+test('chat replies directly without requiring an AI consent popup', async () => {
   const api = backend({ user: { aiConsentGranted: false } });
   const response = await api.rawChat({ message: 'Explain prompting' });
-  assert.equal(response.statusCode, 403);
-  assert.equal(response.result.code, 'AI_CONSENT_REQUIRED');
-  assert.equal(api.calls.length, 0);
+  assert.equal(response.statusCode, 200);
+  assert.equal(response.result.reply, 'Example answer');
+  assert.equal(api.calls.length, 1);
 });
 
 test('chat forwards earlier turns between system context and the new question', async () => {
