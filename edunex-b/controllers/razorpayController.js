@@ -107,7 +107,8 @@ exports.initiate = wrap(async (req, res) => {
       }
       return res.json(checkoutResponse(billing, req.user));
     }
-    if (!['cancelled', 'expired', 'completed'].includes(remote.status)) throw fail('A mandate already exists. Check subscription status before retrying.');
+    if (!['cancelled', 'expired', 'completed', 'paused', 'halted'].includes(remote.status)) throw fail('A mandate already exists. Check subscription status before retrying.');
+    await reconcile(billing);
     await Billing.updateOne({ _id: billing._id, subscriptionId: billing.subscriptionId }, { $set: { phase: 'closed' } });
   }
   const terms = rzp.planTerms(c, type);

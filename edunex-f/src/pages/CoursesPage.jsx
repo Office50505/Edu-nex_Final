@@ -327,6 +327,8 @@ export function CoursesPage() {
 
   const canOpenCourse = (course) => accessPhase === "full" || courseAccessIds.has(course.id) || (accessPhase === "trial" && course.id === primaryTrialCourseId);
 
+  const isCourseLocked = (course) => accessPhase !== "full" && !courseAccessIds.has(course.id) && course.id !== primaryTrialCourseId;
+
   const openCourse = (course) => {
     window.location.href = courseEntryHref(course, { hasAccess: canOpenCourse(course) });
   };
@@ -565,23 +567,24 @@ export function CoursesPage() {
                   const duration = course.duration || (course.lessonCount ? `${course.lessonCount} Lessons` : "Self paced");
                   const saved = wishlist.has(course.id);
                   const canOpen = canOpenCourse(course);
-                  const lockedByTrial = accessPhase === "trial" && !canOpen;
-                  const buttonLabel = lockedByTrial ? "Pay to unlock" : canOpen ? "View Course" : "Start ₹499";
+                  const lockedByAccess = isCourseLocked(course);
+                  const buttonLabel = lockedByAccess ? "Pay to unlock" : canOpen ? "View Course" : "Start ₹499";
                   return (
                     <div
-                      className={`course-card${hasAccess ? " has-access" : ""}${lockedByTrial ? " is-trial-locked" : ""}`}
+                      className={`course-card${hasAccess ? " has-access" : ""}${lockedByAccess ? " is-trial-locked" : ""}`}
                       data-course-card-id={course.id}
                       data-title={course.title.toLowerCase()}
                       data-category={course.categoryName.toLowerCase()}
                       role="link"
                       tabIndex={0}
                       key={course.id}
-                      aria-disabled={lockedByTrial}
-                      onClick={() => { if (!lockedByTrial) openCourse(course); }}
+                      aria-disabled={lockedByAccess}
+                      onClick={() => { if (lockedByAccess) setPreviewModal("locked"); else openCourse(course); }}
                       onKeyDown={(event) => {
                         if (event.key !== "Enter" && event.key !== " ") return;
                         event.preventDefault();
-                        if (!lockedByTrial) openCourse(course);
+                        if (lockedByAccess) setPreviewModal("locked");
+                        else openCourse(course);
                       }}
                     >
                       <div className="course-thumb-wrap">
@@ -592,7 +595,7 @@ export function CoursesPage() {
                           onError={(event) => handleCourseImageError(event, course)}
                         />
                         <span className="course-cat-badge badge-agency">{course.categoryName}</span>
-                        {lockedByTrial ? <span className="course-lock-badge">Locked until AutoPay starts</span> : null}
+                        {lockedByAccess ? <span className="course-lock-badge">Locked until AutoPay starts</span> : null}
                       </div>
                       <div className="course-body">
                         <h3 className="course-title-main">{course.title}</h3>
@@ -607,7 +610,7 @@ export function CoursesPage() {
                           </div>
                         </div>
                         <div className="course-card-actions">
-                          <button className="btn-trial" type="button" data-course-id={course.id} onClick={(event) => { event.stopPropagation(); if (lockedByTrial) openUnlockPayment(); else openCourse(course); }}>
+                          <button className="btn-trial" type="button" data-course-id={course.id} onClick={(event) => { event.stopPropagation(); if (lockedByAccess) openUnlockPayment(); else openCourse(course); }}>
                             {buttonLabel}
                           </button>
                           <button
