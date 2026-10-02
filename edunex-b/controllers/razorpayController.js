@@ -39,7 +39,7 @@ async function reconcile(billing) {
       .filter(invoice => !invoice.billing_end || invoice.billing_end * 1000 > Date.now()).slice(0, 6);
     const payments = await Promise.all(invoices.map(async invoice => ({ invoice, payment: await rzp.api(`/payments/${encodeURIComponent(invoice.payment_id)}`, 'GET', undefined, mode) })));
     const state = rzp.entitlement(billing, remote, payments);
-    const terminal = ['cancelled', 'completed', 'expired'].includes(remote.status);
+    const terminal = ['cancelled', 'completed', 'expired', 'paused', 'halted'].includes(remote.status);
     const subscription = await Subscription.findOneAndUpdate({ user: billing._id }, { $set: {
       gateway: 'razorpay', razorpayMode: mode, razorpaySubscriptionId: remote.id, razorpayStatus: remote.status,
       ...state, amount: billing.monthlyAmount, nextBillingAt: !terminal && remote.charge_at ? new Date(remote.charge_at * 1000) : null,
