@@ -4,7 +4,7 @@ const SubscriptionEvent = require('../models/SubscriptionEvent');
 const User = require('../models/User');
 const phonePeService = require('../services/phonePeService');
 const phonePeEventClaims = require('../services/phonePeEventClaims');
-const { isPhonePeEnabled, isPhonePeNewPaymentsEnabled } = require('../services/phonePePolicy');
+const { isPhonePeEnabled, isPhonePeNewPaymentsEnabled, isPhonePeNewPaymentsSwitchEnabled } = require('../services/phonePePolicy');
 const paymentModes = require('../services/paymentMode');
 const { resolveSubscriptionAccess } = require('../services/subscriptionAccess');
 const { activeCourseEntitlements } = require('../services/courseAccess');
@@ -362,7 +362,11 @@ async function initiateTrial(req, res) {
   try {
     const activeProvider = await paymentModes.activeProvider();
     const ready = phonePeService.readiness();
-    if (!isSimulatedPaymentEnabled() && (activeProvider !== 'phonepe' || !isPhonePeNewPaymentsEnabled(process.env) || !ready.configured)) {
+    const requestProvider = req.onboardingProvider || activeProvider;
+    const phonePeEnabledForRequest = req.onboardingProvider === 'phonepe'
+      ? isPhonePeNewPaymentsSwitchEnabled(process.env)
+      : isPhonePeNewPaymentsEnabled(process.env);
+    if (!isSimulatedPaymentEnabled() && (requestProvider !== 'phonepe' || !phonePeEnabledForRequest || !ready.configured)) {
       return res.status(410).json({ error: 'PhonePe checkout is no longer available.' });
     }
     const existingSubscription = await Subscription.findOne({ user: req.user._id });

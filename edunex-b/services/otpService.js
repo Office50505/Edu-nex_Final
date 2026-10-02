@@ -225,7 +225,7 @@ async function verifyMsg91Otp(mobileNumber, otp) {
   };
 }
 
-async function reserveDelivery(mobileNumber, resend = false) {
+async function reserveDelivery(mobileNumber, resend = false, options = {}) {
   const mobile = normalizeMobileForMsg91(mobileNumber);
   const now = new Date();
   const generation = crypto.randomUUID();
@@ -234,7 +234,10 @@ async function reserveDelivery(mobileNumber, resend = false) {
     if (!current || current.expiresAt <= now) return { ok: false, error: 'Request a new OTP first.' };
   }
   try {
-    const record = await OtpAttempt.findOneAndUpdate({ _id: mobile, $or: [{ nextSendAt: { $lte: now } }, { nextSendAt: { $exists: false } }] },
+    const deliveryWindow = options.bypassCooldown
+      ? { _id: mobile }
+      : { _id: mobile, $or: [{ nextSendAt: { $lte: now } }, { nextSendAt: { $exists: false } }] };
+    const record = await OtpAttempt.findOneAndUpdate(deliveryWindow,
       { $set: { nextSendAt: new Date(Date.now() + 60000), expiresAt: new Date(Date.now() + OTP_TTL_MS), attempts: 0, generation } }, { upsert: true, new: true });
     return { ok: true, record };
   } catch (error) {
@@ -256,17 +259,17 @@ async function sendMobileOtp(mobileNumber, options = {}) {
     return { ok: true, provider: 'development', devOtp: otp };
   }
   if (OTP_PROVIDER !== 'msg91') return { ok: false, error: 'Unsupported OTP provider configuration.' };
-  const reservation = await reserveDelivery(mobileNumber);
+  const reservation = await reserveDelivery(mobileNumber, false, options);
   if (!reservation.ok) return reservation;
   return sendMsg91Otp(mobileNumber);
 }
 
-async function resendMobileOtp(mobileNumber) {
+async function resendMobileOtp(mobileNumber, options = {}) {
   if (shouldUseDevelopmentOtp()) return sendMobileOtp(mobileNumber);
   if (OTP_PROVIDER !== 'msg91' || !process.env.MSG91_AUTH_KEY) return { ok: false, error: 'MSG91 is not configured.' };
   const mobile = normalizeMobileForMsg91(mobileNumber);
   if (!mobile) return { ok: false, error: 'Enter a valid mobile number' };
-  const reservation = await reserveDelivery(mobileNumber, true);
+  const reservation = await reserveDelivery(mobileNumber, true, options);
   if (!reservation.ok) return reservation;
   const url = new URL(`${MSG91_BASE_URL}/otp/retry`);
   url.searchParams.set('mobile', mobile);

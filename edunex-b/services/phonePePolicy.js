@@ -12,6 +12,11 @@ function isPhonePeNewPaymentsEnabled(env = process.env) {
     && String(env.PHONEPE_NEW_PAYMENTS_ENABLED || '').trim().toLowerCase() === 'true';
 }
 
+function isPhonePeNewPaymentsSwitchEnabled(env = process.env) {
+  return isPhonePeEnabled(env)
+    && String(env.PHONEPE_NEW_PAYMENTS_ENABLED || '').trim().toLowerCase() === 'true';
+}
+
 function newCheckoutProvider(env = process.env) {
   const mode = paymentGatewayMode(env);
   if (mode === 'razorpay') return 'razorpay';
@@ -20,4 +25,4 @@ function newCheckoutProvider(env = process.env) {
   return 'disabled';
 }
 
-module.exports = { isPhonePeEnabled, isPhonePeNewPaymentsEnabled, newCheckoutProvider, paymentGatewayMode };
+module.exports = { isPhonePeEnabled, isPhonePeNewPaymentsEnabled, isPhonePeNewPaymentsSwitchEnabled, newCheckoutProvider, paymentGatewayMode };

@@ -29,6 +29,36 @@ function markLocalCourseAccess() {
   localStorage.setItem("edunexHasCourseAccess", JSON.stringify({ active: true, savedAt: Date.now() }));
 }
 
+const MARKETING_ONBOARDING_TOKEN_KEY = "skillomateMarketingOnboardingToken";
+
+function isPaymentReturn(searchParams) {
+  return Boolean(searchParams.get("payment") || searchParams.get("status") || searchParams.get("merchantTransactionId"));
+}
+
+function readOnboardingToken() {
+  try {
+    return sessionStorage.getItem(MARKETING_ONBOARDING_TOKEN_KEY) || "";
+  } catch (_) {
+    return "";
+  }
+}
+
+function saveOnboardingToken(token) {
+  try {
+    sessionStorage.setItem(MARKETING_ONBOARDING_TOKEN_KEY, token);
+  } catch (_) {
+    // Session storage can be unavailable in strict browser contexts.
+  }
+}
+
+function clearOnboardingToken() {
+  try {
+    sessionStorage.removeItem(MARKETING_ONBOARDING_TOKEN_KEY);
+  } catch (_) {
+    // Session storage can be unavailable in strict browser contexts.
+  }
+}
+
 function CheckIcon() {
   return (
     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#C58B2A" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ verticalAlign: "middle", flexShrink: 0 }} aria-hidden="true">
@@ -42,6 +72,8 @@ export function PaymentPage() {
   const query = params();
   const courseId = query.get("courseId");
   const directApp = query.get("source") === "skillomate-direct";
+  const marketingOnboarding = query.get("flow") === "marketing-onboarding";
+  const returnedFromGateway = isPaymentReturn(query);
   const [trialEligible, setTrialEligible] = useState(false);
   const [checkoutState, setCheckoutState] = useState("loading");
   const [payMsg, setPayMsg] = useState({ text: "", type: "" });
@@ -49,11 +81,12 @@ export function PaymentPage() {
   const busyRef = useRef(false);
   const autoLaunchAttemptedRef = useRef(false);
   const [pricing, setPricing] = useState(null);
-  const phonePeOneTime = pricing?.gateway === "phonepe" || pricing?.gateway === "simulated";
+  const phonePeOneTime = marketingOnboarding && (pricing?.gateway === "phonepe" || pricing?.gateway === "simulated");
   const trial = !phonePeOneTime && !["monthly", "annual", "yearly"].includes(query.get("plan")) && trialEligible;
   const paymentType = phonePeOneTime ? "one_time" : trial ? "trial" : "monthly";
   const [paymentCompleted, setPaymentCompleted] = useState(false);
   const [pending, setPending] = useState(false);
+  const [onboardingToken, setOnboardingToken] = useState(() => readOnboardingToken());
   const planAvailable = Boolean(pricing);
   useEffect(() => {
     if (!["annual", "yearly"].includes(query.get("plan"))) return;
@@ -63,12 +96,21 @@ export function PaymentPage() {
   }, []);
   useEffect(() => {
     const controller = new AbortController();
-    apiFetch("/api/payment/config", { signal: controller.signal }).then(async response => {
+    apiFetch(marketingOnboarding ? "/api/onboarding/config" : "/api/payment/config", { signal: controller.signal }).then(async response => {
       if (!response.ok) throw new Error("Pricing is unavailable. Please reload.");
-      const data = await response.json(); setPricing(data);
-    }).catch(error => { if (error.name !== "AbortError") setPayMsg({ text: error.message, type: "error" }); });
+      const data = await response.json();
+      if (marketingOnboarding && !["phonepe", "simulated"].includes(data.gateway)) {
+        throw new Error("PhonePe checkout is not enabled yet.");
+      }
+      setPricing(data);
+    }).catch(error => {
+      if (error.name !== "AbortError") {
+        setPayMsg({ text: error.message, type: "error" });
+        setCheckoutState("error");
+      }
+    });
     return () => controller.abort();
-  }, []);
+  }, [marketingOnboarding]);
   const [watchHref, setWatchHref] = useState("/courses.html");
 
   usePageStyle("react-page-style-payment", paymentPage.styles);
@@ -128,7 +170,66 @@ export function PaymentPage() {
     return response;
   }, [refreshAccessToken]);
 
+  const onboardingFetch = useCallback(async (url, options = {}) => {
+    const token = onboardingToken || readOnboardingToken();
+    if (!token) throw new Error("Checkout session expired. Please start again.");
+    return apiFetch(url, {
+      ...options,
+      headers: {
+        ...options.headers,
+        Authorization: `Bearer ${token}`,
+      },
+    });
+  }, [onboardingToken]);
+
+  const ensureOnboardingToken = useCallback(async () => {
+    const existing = onboardingToken || readOnboardingToken();
+    if (existing) return existing;
+    const response = await apiFetch("/api/onboarding/guest-session", { method: "POST" });
+    const data = await safeJsonResponse(response) || {};
+    if (!response.ok || !data.token) throw new Error(data.error || "Could not start checkout.");
+    saveOnboardingToken(data.token);
+    setOnboardingToken(data.token);
+    return data.token;
+  }, [onboardingToken]);
+
+  const completeMarketingOnboarding = useCallback(async () => {
+    setPayMsg({ text: "Confirming your PhonePe payment…", type: "info" });
+    const response = await onboardingFetch("/api/onboarding/handoff", { method: "POST" });
+    const data = await safeJsonResponse(response) || {};
+    if (!response.ok || !data.code) throw new Error(data.error || "Payment is still awaiting confirmation.");
+    clearOnboardingToken();
+    markLocalCourseAccess();
+    const signupUrl = `/signup.html?next=${encodeURIComponent("/courses.html")}#onboarding=${encodeURIComponent(data.code)}`;
+    window.location.replace(signupUrl);
+  }, [onboardingFetch]);
+
   useEffect(() => {
+    if (!marketingOnboarding) return undefined;
+    let cancelled = false;
+    (async () => {
+      try {
+        await ensureOnboardingToken();
+        if (cancelled) return;
+        if (returnedFromGateway) {
+          await completeMarketingOnboarding();
+          return;
+        }
+        setCheckoutState("pay");
+      } catch (error) {
+        if (!cancelled) {
+          setPayMsg({ text: error.message || "Could not start checkout.", type: "error" });
+          setCheckoutState("error");
+        }
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [completeMarketingOnboarding, ensureOnboardingToken, marketingOnboarding, returnedFromGateway]);
+
+  useEffect(() => {
+    if (marketingOnboarding) return undefined;
     if (!runtimeReady) return undefined;
     let cancelled = false;
     (async () => {
@@ -178,7 +279,7 @@ export function PaymentPage() {
     return () => {
       cancelled = true;
     };
-  }, [authFetch, configureAppOpenButton, runtimeReady, phonePeOneTime]);
+  }, [authFetch, configureAppOpenButton, runtimeReady, phonePeOneTime, marketingOnboarding]);
 
   const initiatePayment = async () => {
     if (busyRef.current || !planAvailable || checkoutState !== "pay") return;
@@ -186,13 +287,23 @@ export function PaymentPage() {
     setSubmitting(true);
     setPayMsg({ text: "", type: "" });
     try {
-      const response = await authFetch("/api/payment/initiate-trial", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(phonePeOneTime
-          ? { paymentType, returnUrl: window.location.href }
-          : { paymentType, mandateConsent: true, returnUrl: window.location.href }),
-      });
+      let response;
+      if (marketingOnboarding) {
+        const token = await ensureOnboardingToken();
+        response = await apiFetch("/api/onboarding/checkout", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+          body: JSON.stringify({ paymentType: "one_time", returnUrl: window.location.href }),
+        });
+      } else {
+        response = await authFetch("/api/payment/initiate-trial", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(phonePeOneTime
+            ? { paymentType, returnUrl: window.location.href }
+            : { paymentType, mandateConsent: true, returnUrl: window.location.href }),
+        });
+      }
       const data = await safeJsonResponse(response) || {};
       if (!response.ok) throw new Error(data.error || data.message || `Payment initiation failed (${response.status})`);
       if (data.gateway === "razorpay") {
@@ -237,15 +348,26 @@ export function PaymentPage() {
   };
 
   useEffect(() => {
+    if (marketingOnboarding) return;
     if (checkoutState !== "pay" || !planAvailable || pending || phonePeOneTime || autoLaunchAttemptedRef.current) return;
     autoLaunchAttemptedRef.current = true;
     void initiatePayment();
-  }, [checkoutState, planAvailable, paymentType, pending, phonePeOneTime]);
+  }, [checkoutState, planAvailable, paymentType, pending, phonePeOneTime, marketingOnboarding]);
+
+  useEffect(() => {
+    if (!marketingOnboarding || returnedFromGateway || checkoutState !== "pay" || !planAvailable || pending || autoLaunchAttemptedRef.current) return;
+    autoLaunchAttemptedRef.current = true;
+    void initiatePayment();
+  }, [checkoutState, marketingOnboarding, planAvailable, pending, returnedFromGateway]);
 
   const checkPayment = async () => {
     if (busyRef.current) return;
     busyRef.current = true; setSubmitting(true);
     try {
+      if (marketingOnboarding) {
+        await completeMarketingOnboarding();
+        return;
+      }
       const response = await authFetch("/api/payment/subscription-status");
       const data = await safeJsonResponse(response);
       if (!response.ok) throw new Error(data?.error || "Unable to check payment status.");
@@ -264,7 +386,25 @@ export function PaymentPage() {
   };
   const amount = (paise) => new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", minimumFractionDigits: 0, maximumFractionDigits: 2 }).format(paise / 100);
   const oneTimePrice = pricing?.oneTimeAmountPaise ? amount(pricing.oneTimeAmountPaise) : "";
-  const planLabel = phonePeOneTime ? `${oneTimePrice} access` : "Skillomate access";
+  const trialPrice = pricing?.trialAmountPaise ? amount(pricing.trialAmountPaise) : "₹1";
+  const monthlyPrice = pricing?.subscriptionAmountPaise ? `${amount(pricing.subscriptionAmountPaise)}/month` : "₹499/month";
+  const currentPlanPrice = phonePeOneTime ? (oneTimePrice || "₹299") : trial ? trialPrice : monthlyPrice;
+  const checkoutProviderName = phonePeOneTime ? "PhonePe" : "Razorpay";
+  const checkoutTitle = phonePeOneTime ? "Skillomate access" : trial ? "Skillomate trial" : "Skillomate monthly access";
+  const checkoutDescription = phonePeOneTime
+    ? "Full course access, lesson notes, progress tracking, and AI learning tools."
+    : trial
+      ? "Try Skillomate for 24 hours, then continue with the monthly plan."
+      : "Continue with monthly access to courses, progress tracking, and AI learning tools.";
+  const checkoutPaymentCopy = phonePeOneTime
+    ? `Pay ${currentPlanPrice} securely through PhonePe to activate your Skillomate account.`
+    : `Continue securely through Razorpay to activate your Skillomate account.`;
+  const checkoutButtonLabel = phonePeOneTime ? `Pay ${currentPlanPrice} once` : "Continue to secure payment";
+  const loginCopy = phonePeOneTime
+    ? `Create an account or log in, then continue to secure PhonePe payment for ${currentPlanPrice}.`
+    : `Create an account or log in, then continue to secure ${checkoutProviderName} payment.`;
+  const signupLabel = phonePeOneTime ? `Create Account & Pay ${currentPlanPrice}` : "Create Account & Continue";
+  const planLabel = phonePeOneTime ? `${currentPlanPrice} access` : trial ? `${trialPrice} trial` : "monthly access";
 
   return (
     <div className={`react-page-root${directApp ? " direct-app-payment" : ""}`} data-page="payment.html">
@@ -287,13 +427,14 @@ export function PaymentPage() {
 
         {checkoutState === "pay" && planAvailable && !submitting && !pending ? (
           <div className="checkout-launcher-card">
-            <h1>Skillomate access</h1>
-            <h2>{oneTimePrice || "₹299"}</h2>
-            <p>Full course access, lesson notes, progress tracking, and AI learning tools.</p>
-            <p>Pay {oneTimePrice || "₹299"} securely through PhonePe to activate your Skillomate account.</p>
+            <h1>{checkoutTitle}</h1>
+            <h2>{currentPlanPrice}</h2>
+            <p>{checkoutDescription}</p>
+            <p>{checkoutPaymentCopy}</p>
+            {phonePeOneTime ? <p>This one-time access does not renew automatically.</p> : null}
             {payMsg.text ? <p role={payMsg.type === "error" ? "alert" : "status"}>{payMsg.text}</p> : null}
             <button className="checkout-launcher-primary" type="button" onClick={initiatePayment}>
-              {payMsg.type === "error" ? "Try Checkout Again" : `Pay ${oneTimePrice || "₹299"} with PhonePe`}
+              {payMsg.type === "error" ? "Try Checkout Again" : checkoutButtonLabel}
             </button>
             <p>After successful payment, your Skillomate access will open on this account.</p>
             <a href="/courses" className="checkout-launcher-secondary">{directApp ? "Back to app" : "Back to courses"}</a>
@@ -303,9 +444,9 @@ export function PaymentPage() {
         {checkoutState === "login" ? (
           <div className="checkout-launcher-card">
             <h1>Log in to continue</h1>
-            <p>Create an account or log in, then continue to secure PhonePe payment for ₹299.</p>
+            <p>{loginCopy}</p>
             <a id="loginBtn" href={`/login.html?next=${encodeURIComponent(window.location.href)}`} className="checkout-launcher-primary">Log In</a>
-            <a id="signupBtn" href={`/signup.html?next=${encodeURIComponent(window.location.href)}`} className="checkout-launcher-secondary">Create Account & Pay ₹299</a>
+            <a id="signupBtn" href={`/signup.html?next=${encodeURIComponent(window.location.href)}`} className="checkout-launcher-secondary">{signupLabel}</a>
           </div>
         ) : null}
 

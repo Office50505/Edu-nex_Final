@@ -48,6 +48,13 @@ function getPaymentInstrumentFromStatus(data) {
   return normalizePaymentInstrument(paymentDetail?.paymentMode || paymentDetail?.instrument || paymentDetail);
 }
 
+function preserveCheckoutTokenQuery(redirect) {
+  if (!redirect) return redirect;
+  return String(redirect).replace(/([?&](?:token|sltTkn)=)([^&#]*)/g, (_match, prefix, value) => {
+    return `${prefix}${String(value).replace(/\+/g, '%2B')}`;
+  });
+}
+
 async function readJson(response) {
   const text = await response.text();
   if (!text) {
@@ -138,7 +145,6 @@ async function createTrialPaymentRequest(userId) {
       Accept: 'application/json',
       'Content-Type': 'application/json',
       Authorization: `O-Bearer ${accessToken}`,
-      'X-MERCHANT-ID': merchantId,
     },
     body: JSON.stringify(payload),
   });
@@ -150,7 +156,7 @@ async function createTrialPaymentRequest(userId) {
   }
 
   return {
-    redirectUrl: redirect,
+    redirectUrl: preserveCheckoutTokenQuery(redirect),
     merchantTransactionId,
     merchantSubscriptionId,
     raw: body,
@@ -164,7 +170,6 @@ async function verifySubscriptionOrderStatus(merchantTransactionId) {
     headers: {
       'Content-Type': 'application/json',
       Authorization: `O-Bearer ${accessToken}`,
-      'X-MERCHANT-ID': merchantId,
     },
   });
   const body = await readJson(response);
@@ -219,7 +224,6 @@ async function createMonthlyPaymentRequest(userId) {
     headers: {
       'Content-Type': 'application/json',
       Authorization: `O-Bearer ${accessToken}`,
-      'X-MERCHANT-ID': merchantId,
     },
     body: JSON.stringify(payload),
   });
@@ -231,7 +235,7 @@ async function createMonthlyPaymentRequest(userId) {
   }
 
   return {
-    redirectUrl: redirect,
+    redirectUrl: preserveCheckoutTokenQuery(redirect),
     merchantTransactionId,
     raw: body,
   };
@@ -252,6 +256,7 @@ async function createOneTimePaymentRequest(userId) {
     },
     paymentFlow: {
       type: 'PG_CHECKOUT',
+      message: 'Skillomate 30-day access',
       merchantUrls: {
         redirectUrl: `${redirectUrl}?merchantTransactionId=${encodeURIComponent(merchantTransactionId)}`,
       },
@@ -262,7 +267,6 @@ async function createOneTimePaymentRequest(userId) {
     headers: {
       'Content-Type': 'application/json',
       Authorization: `O-Bearer ${accessToken}`,
-      'X-MERCHANT-ID': merchantId,
     },
     body: JSON.stringify(payload),
   });
@@ -271,7 +275,7 @@ async function createOneTimePaymentRequest(userId) {
   if (!response.ok || !redirect) {
     throw new Error(body.message || body.error || 'PhonePe payment URL request failed');
   }
-  return { redirectUrl: redirect, merchantTransactionId };
+  return { redirectUrl: preserveCheckoutTokenQuery(redirect), merchantTransactionId };
 }
 
 async function verifyPaymentStatus(merchantTransactionId) {
@@ -281,7 +285,6 @@ async function verifyPaymentStatus(merchantTransactionId) {
     headers: {
       'Content-Type': 'application/json',
       Authorization: `O-Bearer ${accessToken}`,
-      'X-MERCHANT-ID': merchantId,
     },
   });
   const body = await readJson(response);
@@ -396,4 +399,5 @@ module.exports = {
   merchantId,
   oneTimeAmountPaise,
   oneTimeAccessDays,
+  preserveCheckoutTokenQuery,
 };

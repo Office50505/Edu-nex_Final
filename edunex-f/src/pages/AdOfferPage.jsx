@@ -433,7 +433,7 @@ export function AdOfferPage({ offerPage }) {
     setBusy(true);
     setMessage("Sending OTP…");
     try {
-      await api(`/api/auth/${resend ? "resend-mobile-otp" : "send-mobile-otp"}`, { mobileNumber: `+91${phone}` });
+      await api(`/api/auth/${resend ? "resend-mobile-otp" : "send-mobile-otp"}`, { mobileNumber: `+91${phone}`, checkoutFlow: "marketing-onboarding" });
       trackOfferEvent(resend ? "OfferOtpResent" : "OfferOtpSent");
       setOtp("");
       setModalStep("otp");
@@ -453,7 +453,7 @@ export function AdOfferPage({ offerPage }) {
     setBusy(true);
     setMessage("Verifying…");
     try {
-      const proof = await api("/api/auth/verify-mobile-otp", { mobileNumber: `+91${phone}`, mobileOtp: otp });
+      const proof = await api("/api/auth/verify-mobile-otp", { mobileNumber: `+91${phone}`, mobileOtp: otp, checkoutFlow: "marketing-onboarding" });
       trackOfferEvent("Lead", { lead_type: "phone_verified" });
       const session = await api("/api/onboarding/session", { signupToken: proof.signupToken });
       trackOfferEvent("CompleteRegistration", { registration_method: "phone_otp" });

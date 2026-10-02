@@ -6,6 +6,8 @@ import { Menu, X } from 'lucide-react'
 import Image from 'next/image'
 import { SKILLOMATE_CHECKOUT_URL } from '@/lib/links'
 
+const MARKETING_BASE_PATH = '/marketing-web'
+
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false)
   const [open, setOpen] = useState(false)
@@ -29,7 +31,7 @@ export default function Navbar() {
           <div className="flex items-center justify-between h-16">
             <a href="#" className="flex items-center" aria-label="Skillomate home">
               <Image
-                src="/skillomate-logo-navbar.png"
+                src={`${MARKETING_BASE_PATH}/skillomate-logo-navbar.png`}
                 alt="Skillomate"
                 width={180}
                 height={60}

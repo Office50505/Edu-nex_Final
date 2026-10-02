@@ -138,6 +138,10 @@ function resetRateLimit(key) {
   authRateBuckets.delete(key);
 }
 
+function isMarketingOnboardingOtp(req) {
+  return String(req.body?.checkoutFlow || req.body?.flow || '').trim().toLowerCase() === 'marketing-onboarding';
+}
+
 function createTokens(userId, sessionId, options = {}) {
   const remember = options.remember === true;
   const accessToken = jwt.sign(
@@ -477,6 +481,64 @@ async function signup(req, res) {
   }
 }
 
+async function completePaidOnboarding(req, onboarding, onboardingSubscription) {
+  const profile = onboarding?.pendingProfile;
+  const mobileNumber = normalizeMobileNumber(onboarding?.mobileNumber);
+  if (!profile?.fullName || !profile?.passwordHash || !mobileNumber) {
+    const error = new Error('Your account details are incomplete. Please restart checkout.');
+    error.status = 409;
+    throw error;
+  }
+  if (!Number.isInteger(profile.age) || profile.age < 13 || profile.age > 80) {
+    const error = new Error('Your saved age is invalid. Please restart checkout.');
+    error.status = 409;
+    throw error;
+  }
+  if (await User.exists({ mobileNumber })) {
+    const error = new Error('This mobile number is already registered. Please sign in.');
+    error.status = 409;
+    throw error;
+  }
+
+  const sessionId = crypto.randomUUID();
+  const user = await User.create({
+    _id: onboarding._id,
+    subscriptionId: onboardingSubscription._id,
+    subscriptionStatus: onboardingSubscription.status === 'pending' ? 'none' : onboardingSubscription.status,
+    subscriptionExpiry: onboardingSubscription.currentPeriodEnd || onboardingSubscription.trialExpiresAt || null,
+    isOnTrial: onboardingSubscription.status === 'trial',
+    fullName: profile.fullName.trim(),
+    email: null,
+    passwordHash: profile.passwordHash,
+    mobileNumber,
+    avatar: profile.avatar || 'assets/avatars/male1-v1.webp',
+    gender: profile.gender || 'other',
+    age: profile.age,
+    activeSessionId: sessionId,
+    activeSessions: [sessionId],
+    isMobileVerified: true,
+  });
+  const tokens = createTokens(user._id, sessionId, { remember: true });
+  await persistSession({
+    userId: user._id,
+    sessionId,
+    refreshToken: tokens.refreshToken,
+    req,
+    deviceToken: req.body.deviceToken,
+  });
+  await require('../models/OnboardingSession').updateOne({ _id: onboarding._id, completedAt: null }, {
+    $set: { completedAt: new Date() },
+    $unset: { tokenHash: 1, handoffHash: 1, handoffExpiresAt: 1, pendingProfile: 1 },
+  });
+  return {
+    ...tokens,
+    _id: user._id,
+    sessionId,
+    user: toAuthUser(user),
+    wishlist: [],
+  };
+}
+
 router.post('/signup', signup);
 router.post('/register', signup);
 
@@ -492,18 +554,21 @@ async function verifyMobileOtp(req, res) {
     const clientIp = getClientIp(req);
     const phoneOtpKey = getRateLimitKey('otp:phone', normalizedMobile);
     const ipOtpKey = getRateLimitKey('otp:ip', clientIp);
+    const skipOtpRateLimit = isMarketingOnboardingOtp(req);
 
     if (!normalizedMobile || (!mobileOtp && !AUTO_VERIFY_OTP)) {
       return res.status(400).json({ error: 'Mobile number and OTP are required' });
     }
 
-    const phoneBlockedSeconds = isRateLimited(phoneOtpKey);
-    const ipBlockedSeconds = isRateLimited(ipOtpKey);
-    if (phoneBlockedSeconds) {
-      return res.status(429).json({ error: `Too many OTP verification attempts for this phone. Try again in ${phoneBlockedSeconds} seconds.` });
-    }
-    if (ipBlockedSeconds) {
-      return res.status(429).json({ error: `Too many OTP verification attempts from this IP. Try again in ${ipBlockedSeconds} seconds.` });
+    if (!skipOtpRateLimit) {
+      const phoneBlockedSeconds = isRateLimited(phoneOtpKey);
+      const ipBlockedSeconds = isRateLimited(ipOtpKey);
+      if (phoneBlockedSeconds) {
+        return res.status(429).json({ error: `Too many OTP verification attempts for this phone. Try again in ${phoneBlockedSeconds} seconds.` });
+      }
+      if (ipBlockedSeconds) {
+        return res.status(429).json({ error: `Too many OTP verification attempts from this IP. Try again in ${ipBlockedSeconds} seconds.` });
+      }
     }
 
     const existingUser = await User.findOne({ mobileNumber: normalizedMobile });
@@ -514,8 +579,10 @@ async function verifyMobileOtp(req, res) {
     if (!AUTO_VERIFY_OTP) {
       const otpResult = await verifyMobileOtpCode(normalizedMobile, mobileOtp);
       if (!otpResult.ok) {
-        recordRateLimitFailure(phoneOtpKey, authRateConfig.otpByPhone);
-        recordRateLimitFailure(ipOtpKey, authRateConfig.otpByIp);
+        if (!skipOtpRateLimit) {
+          recordRateLimitFailure(phoneOtpKey, authRateConfig.otpByPhone);
+          recordRateLimitFailure(ipOtpKey, authRateConfig.otpByIp);
+        }
         return res.status(400).json({ error: otpResult.error });
       }
     }
@@ -548,18 +615,21 @@ async function sendMobileOtpHandler(req, res) {
     const clientIp = getClientIp(req);
     const phoneOtpKey = getRateLimitKey('otp:phone', normalizedMobile);
     const ipOtpKey = getRateLimitKey('otp:ip', clientIp);
+    const skipOtpRateLimit = isMarketingOnboardingOtp(req);
 
     if (!normalizedMobile) {
       return res.status(400).json({ error: 'Mobile number is required' });
     }
 
-    const phoneBlockedSeconds = isRateLimited(phoneOtpKey);
-    const ipBlockedSeconds = isRateLimited(ipOtpKey);
-    if (phoneBlockedSeconds) {
-      return res.status(429).json({ error: `Too many OTP requests for this phone. Try again in ${phoneBlockedSeconds} seconds.` });
-    }
-    if (ipBlockedSeconds) {
-      return res.status(429).json({ error: `Too many OTP requests from this IP. Try again in ${ipBlockedSeconds} seconds.` });
+    if (!skipOtpRateLimit) {
+      const phoneBlockedSeconds = isRateLimited(phoneOtpKey);
+      const ipBlockedSeconds = isRateLimited(ipOtpKey);
+      if (phoneBlockedSeconds) {
+        return res.status(429).json({ error: `Too many OTP requests for this phone. Try again in ${phoneBlockedSeconds} seconds.` });
+      }
+      if (ipBlockedSeconds) {
+        return res.status(429).json({ error: `Too many OTP requests from this IP. Try again in ${ipBlockedSeconds} seconds.` });
+      }
     }
 
     const existingUser = await User.findOne({ mobileNumber: normalizedMobile });
@@ -567,12 +637,14 @@ async function sendMobileOtpHandler(req, res) {
       return res.status(409).json({ error: 'This mobile number is already registered', code: 'MOBILE_ALREADY_REGISTERED' });
     }
 
-    const attemptBlocked = recordRateLimitAttempt(phoneOtpKey, authRateConfig.otpByPhone) || recordRateLimitAttempt(ipOtpKey, authRateConfig.otpByIp);
-    if (attemptBlocked) {
-      return res.status(429).json({ error: 'Too many OTP requests. Please wait a while and try again.' });
+    if (!skipOtpRateLimit) {
+      const attemptBlocked = recordRateLimitAttempt(phoneOtpKey, authRateConfig.otpByPhone) || recordRateLimitAttempt(ipOtpKey, authRateConfig.otpByIp);
+      if (attemptBlocked) {
+        return res.status(429).json({ error: 'Too many OTP requests. Please wait a while and try again.' });
+      }
     }
 
-    const result = await (req.resendOtp ? resendMobileOtp : sendMobileOtp)(mobileNumber);
+    const result = await (req.resendOtp ? resendMobileOtp : sendMobileOtp)(mobileNumber, { bypassCooldown: skipOtpRateLimit });
     if (!result.ok) {
       return res.status(400).json({ error: result.error });
     }
@@ -1012,4 +1084,5 @@ router.post('/logout-all', protect, async (req, res) => {
   }
 });
 
+router.completePaidOnboarding = completePaidOnboarding;
 module.exports = router;

@@ -231,7 +231,7 @@ app.use(helmet({
   hsts: isProduction
     ? { maxAge: 15552000, includeSubDomains: true }
     : false,
-  referrerPolicy: { policy: 'no-referrer' },
+  referrerPolicy: { policy: 'strict-origin-when-cross-origin' },
   xFrameOptions: { action: 'deny' },
 }));
 

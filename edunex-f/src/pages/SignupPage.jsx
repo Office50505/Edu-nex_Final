@@ -114,6 +114,7 @@ export function SignupPage() {
   const [agreed, setAgreed] = useState(false);
   const [mobileNumber, setMobileNumber] = useState("");
   const [signupToken, setSignupToken] = useState("");
+  const [paidOnboardingToken, setPaidOnboardingToken] = useState("");
   const [otp, setOtp] = useState(() => Array(DEFAULT_OTP_LENGTH).fill(""));
   const [countdown, setCountdown] = useState(59);
   const [step1Error, setStep1Error] = useState("");
@@ -152,6 +153,13 @@ export function SignupPage() {
     let cancelled = false;
     const restore = data => {
       if (cancelled) return;
+      if (data.requiresMobileVerification && data.onboardingToken) {
+        setPaidOnboardingToken(data.onboardingToken);
+        setAgreed(true);
+        setStep(1);
+        setStep1Error("Payment confirmed. Verify your phone to finish account setup.");
+        return;
+      }
       setMobileNumber(data.mobileNumber);
       setPhone(data.mobileNumber.replace(/^\+?91/, ""));
       setSignupToken(data.signupToken);
@@ -353,7 +361,17 @@ export function SignupPage() {
         method: "POST",
         body: JSON.stringify({ mobileNumber, mobileOtp }),
       });
-      setSignupToken(data?.signupToken || "");
+      if (paidOnboardingToken) {
+        const paidData = await request("/api/onboarding/attach-phone", {
+          method: "POST",
+          headers: { Authorization: `Bearer ${paidOnboardingToken}` },
+          body: JSON.stringify({ signupToken: data?.signupToken }),
+        });
+        setMobileNumber(paidData.mobileNumber);
+        setSignupToken(paidData.signupToken || "");
+      } else {
+        setSignupToken(data?.signupToken || "");
+      }
       setStep(3);
     } catch (error) {
       window.alert(safeErrorMessage(error, "Invalid OTP. Please try again."));
@@ -408,6 +426,7 @@ export function SignupPage() {
       saveAuth(data);
       sessionStorage.removeItem("skillomateAdProfile");
       sessionStorage.removeItem("skillomateAdReturn");
+      setPaidOnboardingToken("");
       localStorage.setItem("edunexSignupProfile", JSON.stringify(data?.user || signupProfile));
       window.location.href = safeAuthReturnPath(requestedNext, window.location.origin, route("index.html"));
     } catch (error) {

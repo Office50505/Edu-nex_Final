@@ -1,8 +1,71 @@
 import fs from "node:fs";
+import path from "node:path";
 import { defineConfig, loadEnv } from "vite";
 import react from "@vitejs/plugin-react";
 
 const themePreloadSource = fs.readFileSync(new URL("./js/theme-preload.js", import.meta.url), "utf8");
+const marketingOutDir = path.resolve(process.cwd(), "..", "marketing-web", "out");
+
+const contentTypes = {
+  ".css": "text/css; charset=utf-8",
+  ".html": "text/html; charset=utf-8",
+  ".ico": "image/x-icon",
+  ".js": "text/javascript; charset=utf-8",
+  ".json": "application/json; charset=utf-8",
+  ".png": "image/png",
+  ".svg": "image/svg+xml",
+  ".txt": "text/plain; charset=utf-8",
+  ".webp": "image/webp",
+  ".woff": "font/woff",
+  ".woff2": "font/woff2",
+};
+
+function sendMarketingFile(response, filePath) {
+  response.statusCode = 200;
+  response.setHeader("Content-Type", contentTypes[path.extname(filePath)] || "application/octet-stream");
+  fs.createReadStream(filePath).pipe(response);
+}
+
+function resolveMarketingFile(requestUrl = "") {
+  if (!requestUrl.startsWith("/marketing-web")) return null;
+  if (!fs.existsSync(marketingOutDir)) return null;
+
+  const url = new URL(requestUrl, "http://127.0.0.1");
+  const relativePath = decodeURIComponent(url.pathname.replace(/^\/marketing-web\/?/, ""));
+  const candidates = relativePath
+    ? [
+        path.join(marketingOutDir, relativePath),
+        path.join(marketingOutDir, relativePath, "index.html"),
+      ]
+    : [path.join(marketingOutDir, "index.html")];
+
+  for (const candidate of candidates) {
+    const normalized = path.resolve(candidate);
+    if (!normalized.startsWith(marketingOutDir)) continue;
+    if (fs.existsSync(normalized) && fs.statSync(normalized).isFile()) return normalized;
+  }
+
+  return path.join(marketingOutDir, "404.html");
+}
+
+function useMarketingWeb(server) {
+  server.middlewares.use((request, response, next) => {
+    if (request.url?.startsWith("/marketing-web.html")) {
+      response.statusCode = 301;
+      response.setHeader("Location", request.url.replace(/^\/marketing-web\.html/, "/marketing-web/"));
+      response.end();
+      return;
+    }
+
+    const marketingFile = resolveMarketingFile(request.url);
+    if (marketingFile && fs.existsSync(marketingFile)) {
+      sendMarketingFile(response, marketingFile);
+      return;
+    }
+
+    next();
+  });
+}
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), "");
@@ -21,6 +84,11 @@ export default defineConfig(({ mode }) => {
   return {
     plugins: [
       react(),
+      {
+        name: "skillomate-marketing-web-html-redirect",
+        configureServer: useMarketingWeb,
+        configurePreviewServer: useMarketingWeb,
+      },
       {
         name: "skillomate-api-runtime-config",
         transformIndexHtml: {

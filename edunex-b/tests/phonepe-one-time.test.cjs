@@ -55,9 +55,24 @@ test('PhonePe direct checkout requests exactly 29900 paise without a subscriptio
   const body = JSON.parse(payment.options.body);
   assert.equal(body.amount, 29900);
   assert.equal(body.paymentFlow.type, 'PG_CHECKOUT');
+  assert.equal(body.paymentFlow.message, 'Skillomate 30-day access');
+  assert.equal(body.paymentFlow.paymentModeConfig, undefined);
   assert.equal(body.paymentFlow.subscription, undefined);
   assert.equal(body.merchantOrderId, result.merchantTransactionId);
   assert.match(body.paymentFlow.merchantUrls.redirectUrl, /merchantTransactionId=/);
+  assert.equal(payment.options.headers['X-MERCHANT-ID'], undefined);
+  assert.equal(payment.options.headers.Authorization, 'O-Bearer test-token');
   assert.equal(result.redirectUrl, 'https://checkout.example.test/pay');
   assert.equal(requests.some(request => request.url.includes('/subscriptions/v2/setup')), false);
+});
+
+test('PhonePe checkout URL preserves raw plus signs inside hosted token query params', () => {
+  const redirect = 'https://mercury-t2.phonepe.com/transact/pgv3?token=abc+def%2Bghi+jkl&routingKey=W';
+  const normalized = phonePe.preserveCheckoutTokenQuery(redirect);
+
+  assert.equal(
+    normalized,
+    'https://mercury-t2.phonepe.com/transact/pgv3?token=abc%2Bdef%2Bghi%2Bjkl&routingKey=W'
+  );
+  assert.equal(new URL(normalized).searchParams.get('token'), 'abc+def+ghi+jkl');
 });

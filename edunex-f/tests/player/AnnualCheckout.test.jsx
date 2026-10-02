@@ -86,14 +86,16 @@ it('annual renewal cancellation requires confirmation and keeps the paid expiry 
   expect(api.mock.calls.filter(([url]) => url.endsWith('/cancel-subscription'))).toHaveLength(1);
 });
 
-it('PhonePe one-time checkout shows ₹299 before opening payment', async () => {
+it('normal payment links do not show the marketing ₹299 one-time checkout', async () => {
+  window.history.replaceState(null, '', '/payment?plan=trial');
   const fetcher = mockApi({ gateway: 'phonepe', oneTimeAmountPaise: 29900, accessDays: 30 });
   render(<PaymentPage />);
-  expect(await screen.findByRole('button', { name: 'Pay ₹299 once' })).toBeTruthy();
-  expect(screen.getByText(/does not renew automatically/)).toBeTruthy();
-  expect(fetcher.mock.calls.filter(([url]) => url.endsWith('/initiate-trial'))).toHaveLength(0);
+  await screen.findByText('Payment Successful');
+  expect(screen.queryByRole('button', { name: 'Pay ₹299 once' })).toBeNull();
+  expect(screen.queryByText(/does not renew automatically/)).toBeNull();
+  expect(JSON.parse(fetcher.mock.calls.find(([url]) => url.endsWith('/initiate-trial'))[1].body)).toMatchObject({ paymentType: 'trial', mandateConsent: true });
   expect(window.location.pathname).toBe('/payment');
-  expect(openRazorpay).not.toHaveBeenCalled();
+  expect(openRazorpay).toHaveBeenCalledTimes(1);
 });
 it('keeps provider failures on the paywall with a retry action', async () => {
   mockApi(); openRazorpay.mockRejectedValueOnce(new Error('Payment failed.'));

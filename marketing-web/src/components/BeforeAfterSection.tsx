@@ -1,29 +1,128 @@
 'use client'
 
-import { useRef } from 'react'
+import type Hls from 'hls.js'
+import { useEffect, useRef, useState } from 'react'
 import { motion, useInView } from 'framer-motion'
-import { Bot, GraduationCap, ListChecks } from 'lucide-react'
 
 const PREVIEWS = [
   {
-    icon: GraduationCap,
     title: 'Know where to begin.',
     description: 'Explore a course and follow its lessons in a clear order.',
     asset: 'Course and lesson list screen',
+    videoSrc: 'https://d2vntxz4x493rp.cloudfront.net/landing-page/marketing-videos/3/v1/3.m3u8',
   },
   {
-    icon: Bot,
     title: 'Make room for questions.',
     description: 'Get help understanding what you are learning without leaving the app.',
     asset: 'Built-in AI assistant screen',
+    videoSrc: 'https://d2vntxz4x493rp.cloudfront.net/landing-page/marketing-videos/13/v1/13.m3u8',
   },
   {
-    icon: ListChecks,
     title: 'Pick up where you left off.',
     description: 'Track completed lessons and continue your learning journey.',
     asset: 'Learning progress screen',
+    videoSrc: 'https://d2vntxz4x493rp.cloudfront.net/landing-page/marketing-videos/20/v1/20.m3u8',
   },
 ]
+
+function PreviewVideo({
+  src,
+  label,
+  active,
+}: {
+  src: string
+  label: string
+  active: boolean
+}) {
+  const videoRef = useRef<HTMLVideoElement>(null)
+  const [ready, setReady] = useState(false)
+  const [failed, setFailed] = useState(false)
+
+  useEffect(() => {
+    const video = videoRef.current
+    if (!video || !active) return
+
+    let stopped = false
+    let hls: Hls | null = null
+    const isHls = /\.m3u8(?:[?#]|$)/i.test(src)
+    const canPlayNativeHls = Boolean(video.canPlayType('application/vnd.apple.mpegurl'))
+
+    const markFailed = () => {
+      if (!stopped) setFailed(true)
+    }
+
+    setReady(false)
+    setFailed(false)
+    video.pause()
+    video.removeAttribute('src')
+    video.load()
+
+    if (!isHls || canPlayNativeHls) {
+      video.src = src
+      video.load()
+      video.play().catch(() => {})
+
+      return () => {
+        stopped = true
+        video.pause()
+        video.removeAttribute('src')
+        video.load()
+      }
+    }
+
+    import('hls.js')
+      .then(({ default: Hls }) => {
+        if (stopped) return
+        if (!Hls.isSupported()) {
+          markFailed()
+          return
+        }
+
+        hls = new Hls({
+          enableWorker: true,
+          maxBufferLength: 12,
+        })
+        hls.on(Hls.Events.ERROR, (_event, data) => {
+          if (data.fatal) markFailed()
+        })
+        hls.loadSource(src)
+        hls.attachMedia(video)
+        video.play().catch(() => {})
+      })
+      .catch(markFailed)
+
+    return () => {
+      stopped = true
+      hls?.destroy()
+      video.pause()
+      video.removeAttribute('src')
+      video.load()
+    }
+  }, [active, src])
+
+  return (
+    <>
+      <video
+        ref={videoRef}
+        aria-label={label}
+        muted
+        loop
+        playsInline
+        preload="metadata"
+        onCanPlay={() => {
+          setReady(true)
+          videoRef.current?.play().catch(() => {})
+        }}
+        onError={() => setFailed(true)}
+        className={[
+          'absolute inset-0 h-full w-full object-cover transition-opacity duration-500',
+          ready && !failed ? 'opacity-100' : 'opacity-0',
+        ].join(' ')}
+      />
+      <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/18 to-black/18" />
+    </>
+  )
+}
 
 export default function BeforeAfterSection() {
   const ref = useRef(null)
@@ -49,8 +148,6 @@ export default function BeforeAfterSection() {
 
         <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
           {PREVIEWS.map((preview, index) => {
-            const Icon = preview.icon
-
             return (
               <motion.article
                 key={preview.title}
@@ -61,15 +158,11 @@ export default function BeforeAfterSection() {
               >
                 <div className="relative mb-5 flex aspect-[9/16] items-center justify-center overflow-hidden rounded-xl border border-white/10 bg-black/35">
                   <div className="absolute inset-0 bg-linear-to-br from-lime/10 via-transparent to-white/5" />
-                  <div className="relative max-w-[220px] px-5 text-center">
-                    <span className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full border border-lime/25 bg-lime/10 text-lime">
-                      <Icon size={22} />
-                    </span>
-                    <p className="text-sm font-bold text-white">{preview.asset}</p>
-                    <p className="mt-2 text-xs leading-relaxed text-gray-500 font-(family-name:--font-grotesk)">
-                      Real app screenshot needed.
-                    </p>
-                  </div>
+                  <PreviewVideo
+                    src={preview.videoSrc}
+                    label={`${preview.asset} preview video`}
+                    active={inView}
+                  />
                 </div>
 
                 <h3 className="text-xl font-bold text-white">{preview.title}</h3>
