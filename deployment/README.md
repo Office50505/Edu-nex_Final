@@ -35,7 +35,9 @@ The EC2 script refuses
 dirty worktrees and Git commits that track local configuration files. It
 fetches GitHub without requiring a local `.env` file,
 deploys the pinned commit only while it still equals `origin/main`, installs and
-builds the web frontend, and runs backend `npm ci --omit=dev`. It runs
+builds the web frontend, installs the independent `marketing-web` Next.js app
+from its own lockfile before the delegated marketing build, and runs backend
+`npm ci --omit=dev`. It runs
 `node ssm-bootstrap.js --check` before changing the working tree and again
 before changing PM2, against the 73 SecureStrings under
 `/skillomate/prod/` in `ap-south-1`. A failed preflight check leaves the

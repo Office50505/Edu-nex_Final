@@ -8,10 +8,14 @@ REAL_NODE="$(command -v node)"
 self_test_directory="$(mktemp -d "${TMPDIR:-/tmp}/skillomate-ssm-deploy-test.XXXXXX")"
 trap 'rm -rf -- "$self_test_directory"' EXIT
 
-mkdir -p "$self_test_directory/backend" "$self_test_directory/bin"
+mkdir -p "$self_test_directory/backend" "$self_test_directory/frontend" \
+  "$self_test_directory/marketing-web" "$self_test_directory/bin"
 touch "$self_test_directory/backend/ssm-bootstrap.js" "$self_test_directory/backend/server.js"
+touch "$self_test_directory/marketing-web/package.json" "$self_test_directory/marketing-web/package-lock.json"
 
 export EXPECTED_BACKEND="$self_test_directory/backend"
+export EXPECTED_FRONTEND="$self_test_directory/frontend"
+export EXPECTED_MARKETING="$self_test_directory/marketing-web"
 export SSM_SCRIPT="$EXPECTED_BACKEND/ssm-bootstrap.js"
 export PROCESS_NAME=skillomate_backend
 export READY_URL=http://127.0.0.1:3000/api/ready
@@ -20,7 +24,7 @@ export FAKE_PM2_CALLS="$self_test_directory/pm2-calls.log"
 export FAKE_SSM_CALLS="$self_test_directory/ssm-calls.log"
 export REAL_NODE
 
-for function_name in pm2_process_matches run_ssm_check start_or_restart_pm2_ssm wait_for_readiness; do
+for function_name in pm2_process_matches run_ssm_check start_or_restart_pm2_ssm install_frontend_build_dependencies wait_for_readiness; do
   awk -v function_name="$function_name" '
     $0 == function_name "() {" { copying = 1 }
     copying { print; if ($0 == "}") exit }
@@ -167,9 +171,10 @@ awk '
   copying { print; if ($0 == "}") exit }
 ' "$DEPLOY_SCRIPT" >>"$self_test_directory/functions.sh"
 source "$self_test_directory/functions.sh"
-mkdir -p "$self_test_directory/repository" "$self_test_directory/frontend"
+mkdir -p "$self_test_directory/repository" "$self_test_directory/frontend" "$self_test_directory/marketing-web"
 REPOSITORY="$self_test_directory/repository"
 EXPECTED_FRONTEND="$self_test_directory/frontend"
+EXPECTED_MARKETING="$self_test_directory/marketing-web"
 OLD_COMMIT=0123456789abcdef0123456789abcdef01234567
 FAKE_READY_BODY='{"ok":true,"mongodb":"connected","redis":"connected"}'
 record_result() { printf '%s|%s\n' "$1" "$2" >>"$self_test_directory/rollback-records.log"; }
@@ -183,6 +188,10 @@ if [[ "$*" == *'rev-parse HEAD'* ]]; then printf '%s\n' "$OLD_COMMIT"; fi
 FAKE_GIT
 cat >"$self_test_directory/bin/npm" <<'FAKE_NPM'
 #!/usr/bin/env bash
+set -Eeuo pipefail
+if test -n "${FAKE_NPM_CALLS:-}"; then
+  printf '%s|%s\n' "$PWD" "$*" >>"$FAKE_NPM_CALLS"
+fi
 exit 0
 FAKE_NPM
 cat >"$self_test_directory/bin/ss" <<'FAKE_SS'
@@ -190,7 +199,7 @@ cat >"$self_test_directory/bin/ss" <<'FAKE_SS'
 echo 'LISTEN 0 511 127.0.0.1:3000'
 FAKE_SS
 chmod 700 "$self_test_directory/bin/git" "$self_test_directory/bin/npm" "$self_test_directory/bin/ss"
-export OLD_COMMIT FAKE_READY_BODY
+export OLD_COMMIT FAKE_READY_BODY FAKE_NPM_CALLS="$self_test_directory/npm-calls.log"
 : >"$FAKE_PM2_CALLS"
 : >"$FAKE_SSM_CALLS"
 set +e
@@ -223,6 +232,7 @@ assert 'Current commit lacks the tracked SSM bootstrap needed for an SSM rollbac
 target = source[source.rfind('if ! npm ci --omit=dev --no-audit --no-fund; then'):]
 assert target.index('if ! run_ssm_check; then') < target.index('if ! start_or_restart_pm2_ssm; then')
 assert 'rollback_deployment "SSM check failed before PM2 restart" no' in target
+assert 'install_frontend_build_dependencies' in source
 assert target.index('if ! pm2_process_matches runtime; then') < target.index('if ! pm2 save; then')
 assert target.index('if test "$CURRENT_COMMIT" != "$NEW_COMMIT"; then') < target.index('if ! pm2 save; then')
 no_op = source[source.index('if test "$OLD_COMMIT" = "$NEW_COMMIT"; then'):source.index('DEPLOYMENT_STARTED=1\n\nif ! git checkout main; then')]

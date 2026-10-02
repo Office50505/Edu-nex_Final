@@ -12,8 +12,13 @@ trap 'rm -rf -- "$self_test_directory"' EXIT
 repository="$self_test_directory/repository"
 backend="$repository/edunex-b"
 frontend="$repository/edunex-f"
-mkdir -p "$backend" "$frontend" "$self_test_directory/bin" "$self_test_directory/logs"
-touch "$backend/ssm-bootstrap.js" "$backend/package-lock.json" "$frontend/package-lock.json"
+marketing="$repository/marketing-web"
+mkdir -p "$backend" "$frontend" "$marketing" "$self_test_directory/bin" "$self_test_directory/logs"
+touch "$backend/ssm-bootstrap.js" "$backend/package-lock.json" "$frontend/package-lock.json" \
+  "$marketing/package.json" "$marketing/package-lock.json"
+backend_pwd="$(cd "$backend" && pwd)"
+frontend_pwd="$(cd "$frontend" && pwd)"
+marketing_pwd="$(cd "$marketing" && pwd)"
 ln -s "$backend" "$self_test_directory/active-backend"
 test ! -e "$backend/.env"
 
@@ -135,7 +140,7 @@ FAKE_CURL
 cat >"$self_test_directory/bin/npm" <<'FAKE_NPM'
 #!/usr/bin/env bash
 set -Eeuo pipefail
-printf '%s\n' "$*" >>"$FAKE_NPM_CALLS"
+printf '%s|%s\n' "$PWD" "$*" >>"$FAKE_NPM_CALLS"
 FAKE_NPM
 cat >"$self_test_directory/bin/ss" <<'FAKE_SS'
 #!/usr/bin/env bash
@@ -188,6 +193,11 @@ run_deploy >"$self_test_directory/success.out" 2>&1
 grep -q '^DEPLOYMENT SUCCESS$' "$self_test_directory/success.out"
 test "$(cat "$FAKE_GIT_HEAD")" = "$FAKE_NEW_COMMIT"
 test "$(grep -c '^ssm|production|ssm$' "$FAKE_EVENTS")" -eq 2
+grep -q "^$frontend_pwd|ci --no-audit --no-fund$" "$FAKE_NPM_CALLS"
+grep -q "^$marketing_pwd|ci --no-audit --no-fund$" "$FAKE_NPM_CALLS"
+grep -q "^$frontend_pwd|run build$" "$FAKE_NPM_CALLS"
+grep -q "^$backend_pwd|ci --omit=dev --no-audit --no-fund$" "$FAKE_NPM_CALLS"
+test "$(cut -d'|' -f1,2 "$FAKE_NPM_CALLS" | paste -sd, -)" = "$frontend_pwd|ci --no-audit --no-fund,$marketing_pwd|ci --no-audit --no-fund,$frontend_pwd|run build,$backend_pwd|ci --omit=dev --no-audit --no-fund"
 grep -q "^start|$backend/ssm-bootstrap.js --name skillomate_backend --cwd $backend|production|ssm$" "$FAKE_PM2_CALLS"
 "$REAL_NODE" -e '
   const fs = require("fs");
@@ -290,4 +300,5 @@ echo 'ssm_preflight_failure=no_checkout_or_pm2_restart'
 echo 'post_reset_ssm_failure=rollback_without_pm2_restart'
 echo 'post_restart_failure=ssm_checked_rollback'
 echo 'tracked_config_commits=blocked_before_change'
+echo 'marketing_web_dependencies=installed_before_frontend_build'
 echo 'ssm_server_startup=dotenv_not_loaded'
