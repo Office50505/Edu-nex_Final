@@ -18,7 +18,7 @@ const DEMO_VIDEOS = [
 ]
 
 const SOUND_UNLOCK_STORAGE_KEY = 'skillomate-preview-sound-unlocked'
-const DRAG_SLIDE_DISTANCE = 140
+const DRAG_SLIDE_DISTANCE = 120
 
 function getReelOffset(index: number, activeIndex: number) {
   const total = DEMO_VIDEOS.length
@@ -63,11 +63,9 @@ function ReelCard({
   const hasVideoIssue = hasVideoError || loadTimedOut
   const distance = Math.abs(offset)
   const hidden = distance > 2
-  const translateX = offset * 58
-  const translateY = active ? 0 : distance === 1 ? 30 : 58
-  const rotateY = offset * -24
-  const scale = active ? 1 : distance === 1 ? 0.7 : 0.52
-  const opacity = active ? 1 : distance === 1 ? 0.5 : 0.16
+  const translateX = offset * 116
+  const scale = active ? 1 : distance === 1 ? 0.86 : 0.76
+  const opacity = active ? 1 : distance === 1 ? 0.34 : 0
   const effectiveMuted = muted || !soundUnlocked
   const shouldLoadVideo = !hidden
 
@@ -229,15 +227,15 @@ function ReelCard({
       aria-label={`Select Skillomate preview video ${index + 1} of ${DEMO_VIDEOS.length}`}
       className={[
         'premium-reel-card group absolute left-1/2 top-0 w-[min(62vw,244px)] overflow-hidden text-left outline-none min-[480px]:w-[min(72vw,330px)] sm:w-[360px] lg:w-[370px]',
-        dragging ? '' : 'transition-all duration-500 ease-out',
+        dragging ? '' : 'transition-[transform,opacity] duration-300 ease-out',
         active ? 'is-active' : 'hover:opacity-70',
         hidden ? 'pointer-events-none opacity-0' : '',
       ].join(' ')}
       style={{
-        transform: `translate3d(calc(-50% + ${translateX}%), ${translateY}px, 0) rotateY(${rotateY}deg) scale(${scale})`,
+        transform: `translate3d(calc(-50% + ${translateX}%), 0, 0) scale(${scale})`,
         transformOrigin: 'center',
         opacity,
-        zIndex: active ? 40 : 30 - distance,
+        zIndex: active ? 40 : 30 - Math.round(distance),
       }}
     >
       <div className="premium-video-surface relative aspect-[9/16]">
@@ -348,7 +346,7 @@ function ManualVideoCarousel() {
 
   const navigateWithThrottle = useCallback((direction: 'previous' | 'next') => {
     const now = Date.now()
-    if (now - lastNavigationAt.current < 520) return
+    if (now - lastNavigationAt.current < 320) return
     lastNavigationAt.current = now
     if (direction === 'previous') previous()
     if (direction === 'next') next()
