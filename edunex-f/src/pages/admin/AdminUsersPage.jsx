@@ -38,16 +38,16 @@ function isTrialStatus(status) {
 
 function hasTrialHistory(user) {
   const summary = billing(user);
-  return isTrialStatus(user.subscriptionStatus)
-    || isTrialStatus(summary.subscriptionStatus)
+  return isTrialStatus(effectiveSubscriptionStatus(user))
     || Boolean(summary.trialStartedAt || summary.trialExpiresAt)
     || String(summary.subscriptionType || "").toLowerCase() === "trial";
 }
 
 function hasPaidHistory(user) {
   const summary = billing(user);
-  return ["active", "subscribed"].includes(String(user.subscriptionStatus || "").toLowerCase())
-    || ["active", "subscribed"].includes(String(summary.subscriptionStatus || "").toLowerCase())
+  return ["active", "subscribed"].includes(effectiveSubscriptionStatus(user))
+    || String(summary.mandateStatus || "").toLowerCase() === "active"
+    || Boolean(summary.autoRenewEnabled)
     || Boolean(summary.inGracePeriod)
     || Number(summary.amount || 0) > 0
     || (Array.isArray(user.purchasedCourses) && user.purchasedCourses.length > 0)
@@ -56,6 +56,21 @@ function hasPaidHistory(user) {
 
 function isLeadUser(user) {
   return !hasTrialHistory(user) && !hasPaidHistory(user);
+}
+
+function effectiveSubscriptionStatus(user) {
+  const summary = billing(user);
+  const rawStatus = String(user.subscriptionStatus || "").toLowerCase();
+  const billingStatus = String(summary.subscriptionStatus || "").toLowerCase();
+  if (summary.inGracePeriod) return "grace";
+  if (["active", "subscribed"].includes(billingStatus)) return billingStatus;
+  if (["active", "subscribed"].includes(rawStatus)) return rawStatus;
+  if (isTrialStatus(billingStatus)) return billingStatus;
+  if (isTrialStatus(rawStatus)) return rawStatus;
+  if (["cancelled", "expired"].includes(billingStatus)) return billingStatus;
+  if (["cancelled", "expired"].includes(rawStatus)) return rawStatus;
+  if (String(summary.mandateStatus || "").toLowerCase() === "active" || summary.autoRenewEnabled) return "subscribed";
+  return rawStatus || "none";
 }
 
 function dateHasPassed(value) {
@@ -69,23 +84,23 @@ function trialEndValue(user) {
 }
 
 function isTrialExpired(user) {
-  return isTrialStatus(user.subscriptionStatus) && dateHasPassed(trialEndValue(user));
+  return isTrialStatus(effectiveSubscriptionStatus(user)) && dateHasPassed(trialEndValue(user));
 }
 
 function subscriptionDisplayStatus(user) {
   if (billing(user).inGracePeriod) return "grace period";
-  return isTrialExpired(user) ? "trial expired" : user.subscriptionStatus || "none";
+  return isTrialExpired(user) ? "trial expired" : effectiveSubscriptionStatus(user);
 }
 
 function accessEndLabel(user) {
   if (billing(user).inGracePeriod) return "Grace ends";
   if (isTrialExpired(user)) return "Trial ended";
-  return isTrialStatus(user.subscriptionStatus) ? "Trial ends" : "Subscription ends";
+  return isTrialStatus(effectiveSubscriptionStatus(user)) ? "Trial ends" : "Subscription ends";
 }
 
 function accessEndDate(user) {
   const endValue = billing(user).inGracePeriod ? billing(user).graceExpiresAt : trialEndValue(user) || user.subscriptionExpiry;
-  if (!endValue) return user.subscriptionStatus === "none" || !user.subscriptionStatus ? "No subscription" : "Not recorded";
+  if (!endValue) return effectiveSubscriptionStatus(user) === "none" ? "No subscription" : "Not recorded";
   const date = new Date(endValue);
   if (Number.isNaN(date.getTime())) return "Not recorded";
   return `${date.toLocaleString("en-IN", {
@@ -125,7 +140,7 @@ function isVerified(user) {
 function lifecycleLabel(user) {
   if (billing(user).inGracePeriod) return "Grace period";
   if (isTrialExpired(user)) return "Trial expired";
-  const status = user.subscriptionStatus || "none";
+  const status = effectiveSubscriptionStatus(user);
   if (["active", "subscribed"].includes(status)) return "Customer";
   if (isTrialStatus(status)) return "Trial learner";
   if (["cancelled", "expired"].includes(status)) return "Retention";
@@ -230,7 +245,7 @@ function presenceLabel(user) {
 function matchesSegment(user, segment) {
   if (segment === "trash") return Boolean(user.deletedAt);
   if (user.deletedAt) return false;
-  const status = user.subscriptionStatus || "none";
+  const status = effectiveSubscriptionStatus(user);
   if (segment === "paying") return ["active", "subscribed"].includes(status);
   if (segment === "trial") return isTrialStatus(status);
   if (segment === "needs_attention") return isTrialExpired(user) || !isVerified(user) || ["cancelled", "expired", "none"].includes(status) || totalCourses(user) === 0;
@@ -248,6 +263,8 @@ function userSearchText(user) {
     user.mobileNumber,
     user._id,
     user.subscriptionStatus,
+    effectiveSubscriptionStatus(user),
+    subscriptionDisplayStatus(user),
     user.gender,
     user.age,
     ...(user.progressCourses || []).map((course) => course.courseTitle),
@@ -464,8 +481,7 @@ export function AdminUsersPage({ audience = "learners", paymentGateway = "" } = 
     if (!gatewayFilter) return true;
     const summary = billing(user);
     return matchesGatewayFilter(user) && (
-      ["active", "subscribed"].includes(String(user.subscriptionStatus || "").toLowerCase())
-      || ["active", "subscribed"].includes(String(summary.subscriptionStatus || "").toLowerCase())
+      ["active", "subscribed"].includes(effectiveSubscriptionStatus(user))
       || Boolean(summary.inGracePeriod)
       || Number(summary.amount || 0) > 0
     );
@@ -515,7 +531,8 @@ export function AdminUsersPage({ audience = "learners", paymentGateway = "" } = 
   const filteredUsers = useMemo(() => {
     const audienceUsers = users.filter((user) => matchesAudienceMode(user) && isGatewayPayingUser(user));
     const rows = audienceUsers.filter((user) => {
-      const matchesStatus = status === "all" || user.subscriptionStatus === status || (status === "expired" && isTrialExpired(user)) || (status === "grace" && billing(user).inGracePeriod);
+      const effectiveStatus = effectiveSubscriptionStatus(user);
+      const matchesStatus = status === "all" || effectiveStatus === status || (status === "expired" && isTrialExpired(user)) || (status === "grace" && billing(user).inGracePeriod);
       const matchesAccount = accountStatus === "all" || (accountStatus === "active" ? user.isActive : !user.isActive);
       const matchesPresence = presenceStatus === "all" || (presenceStatus === "online" ? user.presence?.isOnline : !user.presence?.isOnline);
       const matchesDate = dateInRange(user.createdAt, dateRange);
@@ -569,7 +586,7 @@ export function AdminUsersPage({ audience = "learners", paymentGateway = "" } = 
     const totalWatchMinutes = filteredUsers.reduce((sum, user) => sum + watchMinutes(user), 0);
     const activeUsers = filteredUsers.filter((user) => user.isActive).length;
     const onlineUsers = filteredUsers.filter((user) => user.presence?.isOnline).length;
-    const subscribedUsers = filteredUsers.filter((user) => ["active", "subscribed"].includes(user.subscriptionStatus)).length;
+    const subscribedUsers = filteredUsers.filter((user) => ["active", "subscribed"].includes(effectiveSubscriptionStatus(user))).length;
     const graceUsers = filteredUsers.filter((user) => billing(user).inGracePeriod).length;
     const mandateOnUsers = filteredUsers.filter((user) => String(billing(user).mandateStatus || "").toLowerCase() === "active").length;
     const mandateCancelledUsers = filteredUsers.filter((user) => ["cancelled", "expired", "halted"].includes(String(billing(user).mandateStatus || "").toLowerCase())).length;
@@ -694,7 +711,8 @@ export function AdminUsersPage({ audience = "learners", paymentGateway = "" } = 
   }
 
   function openSubscriptionDialog(user) {
-    const status = ["active", "subscribed"].includes(user.subscriptionStatus) ? "subscribed" : ["trial", "1rs trial"].includes(user.subscriptionStatus) ? "trial" : "none";
+    const effectiveStatus = effectiveSubscriptionStatus(user);
+    const status = ["active", "subscribed"].includes(effectiveStatus) ? "subscribed" : ["trial", "1rs trial"].includes(effectiveStatus) ? "trial" : "none";
     setSubscriptionDialog({ user, status, durationDays: status === "trial" ? 1 : 30, reason: "Admin subscription update", error: "" });
   }
 

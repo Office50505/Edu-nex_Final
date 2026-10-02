@@ -7,6 +7,7 @@ readonly ACTIVE_BACKEND="/home/ubuntu/skillomate_backend"
 readonly REPOSITORY="/home/ubuntu/skillomate_repo"
 readonly EXPECTED_BACKEND="/home/ubuntu/skillomate_repo/edunex-b"
 readonly EXPECTED_FRONTEND="/home/ubuntu/skillomate_repo/edunex-f"
+readonly EXPECTED_MARKETING="/home/ubuntu/skillomate_repo/marketing-web"
 readonly EXPECTED_ORIGIN="git@github-skillomate:Office50505/Edu-nex_Final.git"
 readonly PROCESS_NAME="skillomate_backend"
 readonly SSM_SCRIPT="$EXPECTED_BACKEND/ssm-bootstrap.js"
@@ -100,6 +101,20 @@ start_or_restart_pm2_ssm() {
     pm2 start "$SSM_SCRIPT" --name "$PROCESS_NAME" --cwd "$EXPECTED_BACKEND"
 }
 
+install_frontend_build_dependencies() {
+  cd "$EXPECTED_FRONTEND" || return 1
+  npm ci --no-audit --no-fund || return 1
+
+  if test -f "$EXPECTED_MARKETING/package.json"; then
+    if test ! -f "$EXPECTED_MARKETING/package-lock.json"; then
+      echo "marketing-web/package-lock.json is missing in the target commit"
+      return 1
+    fi
+    cd "$EXPECTED_MARKETING" || return 1
+    npm ci --no-audit --no-fund || return 1
+  fi
+}
+
 wait_for_health() {
   local body
   local attempt
@@ -172,8 +187,8 @@ rollback_deployment() {
 
   cd "$REPOSITORY" || rollback_ok=0
   git reset --hard "$OLD_COMMIT" || rollback_ok=0
+  install_frontend_build_dependencies || rollback_ok=0
   cd "$EXPECTED_FRONTEND" || rollback_ok=0
-  npm ci --no-audit --no-fund || rollback_ok=0
   npm run build || rollback_ok=0
   cd "$EXPECTED_BACKEND" || rollback_ok=0
   npm ci --omit=dev --no-audit --no-fund || rollback_ok=0
@@ -404,9 +419,11 @@ fi
 
 cd "$EXPECTED_FRONTEND"
 
-if ! npm ci --no-audit --no-fund; then
-  rollback_deployment "frontend npm ci failed"
+if ! install_frontend_build_dependencies; then
+  rollback_deployment "frontend build dependency install failed"
 fi
+
+cd "$EXPECTED_FRONTEND"
 
 if ! npm run build; then
   rollback_deployment "frontend production build failed"
