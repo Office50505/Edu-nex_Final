@@ -30,7 +30,7 @@ const FALLBACK_COURSES = [
 
 const HERO_CAROUSEL_ITEM_LIMIT = 7;
 const HOME_HERO_VIDEO_SRC = "/assets/offer-video/land%20page.mp4";
-const HOME_HERO_VIDEO_POSTER = "/assets/skillomate-video-loader.png";
+const HOME_HERO_VIDEO_POSTER = "/assets/home-hero-video-poster.jpg";
 
 function courseId(course) {
   return String(course?._id || course?.id || "");
