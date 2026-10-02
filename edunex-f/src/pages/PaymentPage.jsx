@@ -74,6 +74,8 @@ export function PaymentPage() {
   const directApp = query.get("source") === "skillomate-direct";
   const marketingOnboarding = query.get("flow") === "marketing-onboarding";
   const returnedFromGateway = isPaymentReturn(query);
+  const requestedPlan = String(query.get("plan") || "").toLowerCase();
+  const explicitMonthly = ["monthly", "annual", "yearly"].includes(requestedPlan);
   const [trialEligible, setTrialEligible] = useState(false);
   const [checkoutState, setCheckoutState] = useState("loading");
   const [payMsg, setPayMsg] = useState({ text: "", type: "" });
@@ -82,7 +84,7 @@ export function PaymentPage() {
   const autoLaunchAttemptedRef = useRef(false);
   const [pricing, setPricing] = useState(null);
   const phonePeOneTime = marketingOnboarding && (pricing?.gateway === "phonepe" || pricing?.gateway === "simulated");
-  const trial = !phonePeOneTime && !["monthly", "annual", "yearly"].includes(query.get("plan")) && trialEligible;
+  const trial = !phonePeOneTime && !explicitMonthly && trialEligible;
   const paymentType = phonePeOneTime ? "one_time" : trial ? "trial" : "monthly";
   const [paymentCompleted, setPaymentCompleted] = useState(false);
   const [pending, setPending] = useState(false);
@@ -395,16 +397,22 @@ export function PaymentPage() {
     ? "Full course access, lesson notes, progress tracking, and AI learning tools."
     : trial
       ? "Try Skillomate for 24 hours, then continue with the monthly plan."
-      : "Continue with monthly access to courses, progress tracking, and AI learning tools.";
+      : "Start monthly access to unlock the full course library.";
   const checkoutPaymentCopy = phonePeOneTime
     ? `Pay ${currentPlanPrice} securely through PhonePe to activate your Skillomate account.`
     : `Continue securely through Razorpay to activate your Skillomate account.`;
-  const checkoutButtonLabel = phonePeOneTime ? `Pay ${currentPlanPrice} once` : "Continue to secure payment";
+  const checkoutButtonLabel = phonePeOneTime
+    ? `${payMsg.type === "error" ? "Try" : "Pay"} ${currentPlanPrice} once`
+    : explicitMonthly
+      ? `${payMsg.type === "error" ? "Try" : "Pay"} ${monthlyPrice}`
+      : payMsg.type === "error" ? "Try Checkout Again" : "Continue to secure payment";
   const loginCopy = phonePeOneTime
     ? `Create an account or log in, then continue to secure PhonePe payment for ${currentPlanPrice}.`
-    : `Create an account or log in, then continue to secure ${checkoutProviderName} payment.`;
-  const signupLabel = phonePeOneTime ? `Create Account & Pay ${currentPlanPrice}` : "Create Account & Continue";
-  const planLabel = phonePeOneTime ? `${currentPlanPrice} access` : trial ? `${trialPrice} trial` : "monthly access";
+    : explicitMonthly
+      ? `Create an account or log in, then continue to secure checkout for ${monthlyPrice}.`
+      : `Create an account or log in, then continue to secure ${checkoutProviderName} payment.`;
+  const signupLabel = phonePeOneTime ? `Create Account & Pay ${currentPlanPrice}` : explicitMonthly ? "Create Account & Subscribe" : "Create Account & Continue";
+  const planLabel = phonePeOneTime ? `${currentPlanPrice} access` : trial ? `${trialPrice} trial` : `${monthlyPrice} membership`;
 
   return (
     <div className={`react-page-root${directApp ? " direct-app-payment" : ""}`} data-page="payment.html">
@@ -434,7 +442,7 @@ export function PaymentPage() {
             {phonePeOneTime ? <p>This one-time access does not renew automatically.</p> : null}
             {payMsg.text ? <p role={payMsg.type === "error" ? "alert" : "status"}>{payMsg.text}</p> : null}
             <button className="checkout-launcher-primary" type="button" onClick={initiatePayment}>
-              {payMsg.type === "error" ? "Try Checkout Again" : checkoutButtonLabel}
+              {checkoutButtonLabel}
             </button>
             <p>After successful payment, your Skillomate access will open on this account.</p>
             <a href="/courses" className="checkout-launcher-secondary">{directApp ? "Back to app" : "Back to courses"}</a>

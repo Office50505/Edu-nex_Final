@@ -29,7 +29,8 @@ const FALLBACK_COURSES = [
 }));
 
 const HERO_CAROUSEL_ITEM_LIMIT = 7;
-const HOME_HERO_VIDEO_SRC = "/assets/offer-video/Video-65454.mp4";
+const HOME_HERO_VIDEO_SRC = "/assets/offer-video/land%20page.mp4";
+const HOME_HERO_VIDEO_POSTER = "/assets/skillomate-video-loader.png";
 
 function courseId(course) {
   return String(course?._id || course?.id || "");
@@ -338,10 +339,22 @@ function repeatedItems(items, minimum = HERO_CAROUSEL_ITEM_LIMIT) {
     uniqueItems.push(item);
   });
   if (!uniqueItems.length) return { baseCount: 0, rows: [] };
+  if (uniqueItems.length < minimum) {
+    return {
+      baseCount: uniqueItems.length,
+      looped: false,
+      rows: uniqueItems.map((item, index) => ({
+        ...item,
+        loopIndex: index,
+        loopSourceIndex: index,
+      })),
+    };
+  }
   const baseCount = Math.max(minimum, uniqueItems.length);
   const base = Array.from({ length: baseCount }, (_, index) => uniqueItems[index % uniqueItems.length]);
   return {
     baseCount,
+    looped: true,
     rows: Array.from({ length: baseCount * 3 }, (_, index) => ({
       ...base[index % baseCount],
       loopIndex: index,
@@ -443,11 +456,12 @@ function HomeHeroVideo() {
         ref={videoRef}
         className="home-hero-video"
         src={HOME_HERO_VIDEO_SRC}
+        poster={HOME_HERO_VIDEO_POSTER}
         playsInline
         muted
         autoPlay
         loop
-        preload="auto"
+        preload="metadata"
       />
       {!playing ? <button className="home-hero-play-button" type="button" onClick={(event) => { event.stopPropagation(); start(); }} aria-label="Play preview">▶</button> : null}
       <button className={`home-hero-mute-button${muted ? "" : " is-unmuted"}`} type="button" aria-label={muted ? "Unmute preview" : "Mute preview"} onClick={toggleMute}>
@@ -1029,8 +1043,8 @@ export function HomePage() {
       setActiveIndex(HERO_CAROUSEL_ITEM_LIMIT);
       return;
     }
-    setActiveIndex(loop.baseCount);
-  }, [activeTab, loop.baseCount]);
+    setActiveIndex(loop.looped ? loop.baseCount : 0);
+  }, [activeTab, loop.baseCount, loop.looped]);
 
   const setUserScrolling = () => {
     const viewport = viewportRef.current;
@@ -1546,7 +1560,12 @@ export function HomePage() {
                 event.stopPropagation();
               }}
             >
-              <div className={`hero-carousel-track${!currentItems.length ? " is-empty" : ""}`} id="homeHeroCarouselTrack" data-base-count={loop.baseCount || 7} data-looped="true">
+              <div
+                className={`hero-carousel-track${!currentItems.length ? " is-empty" : ""}${loop.looped ? "" : " is-static"}`}
+                id="homeHeroCarouselTrack"
+                data-base-count={loop.baseCount || 7}
+                data-looped={loop.looped ? "true" : "false"}
+              >
                 {activeRows.map((item, index) => item.placeholder ? (
                   <HeroPlaceholderCard index={index} isCenter={index === activeIndex} tab={activeTab} key={`placeholder-${index}`} />
                 ) : (

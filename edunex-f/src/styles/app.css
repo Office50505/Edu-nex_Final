@@ -3666,6 +3666,31 @@ html:has(.enx-page-loading) .enx-nav-hamburger span {
   -webkit-overflow-scrolling: touch;
 }
 
+.react-page-root[data-page="index.html"] .hero-carousel-shell {
+  max-width: min(100%, 1520px) !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  padding-left: clamp(20px, 4vw, 56px) !important;
+  padding-right: clamp(20px, 4vw, 56px) !important;
+}
+
+.react-page-root[data-page="index.html"] .hero-carousel-track.is-static {
+  justify-content: center !important;
+}
+
+.react-page-root[data-page="index.html"] .hero-carousel-track.is-static::before,
+.react-page-root[data-page="index.html"] .hero-carousel-track.is-static::after {
+  display: none !important;
+}
+
+.react-page-root[data-page="index.html"] .hero-carousel-track.is-static .hero-course-card {
+  scroll-snap-align: center;
+}
+
+.react-page-root[data-page="index.html"] .hero-carousel-track.is-static {
+  min-width: 0;
+}
+
 .react-page-root[data-page="index.html"] .hero-carousel-viewport::-webkit-scrollbar {
   display: none;
 }
@@ -5356,9 +5381,14 @@ html[data-theme="light"] .enx-footer .enx-footer-support a {
 }
 
 .react-page-root[data-page="courses.html"] .course-card.is-trial-locked .course-thumb,
-.react-page-root[data-page="courses.html"] .course-card.is-trial-locked .course-body {
+.react-page-root[data-page="courses.html"] .course-card.is-trial-locked .course-body > :not(.course-card-actions) {
   filter: blur(4px);
   opacity: .62;
+}
+
+.react-page-root[data-page="courses.html"] .course-card.is-trial-locked .course-card-actions {
+  position: relative;
+  z-index: 4;
 }
 
 .react-page-root[data-page="courses.html"] .course-card.is-trial-locked .course-lock-badge {
@@ -9779,7 +9809,8 @@ html[data-theme="light"] :where(.navbar .enx-icon, .premium-site-nav .enx-icon, 
     order: 3 !important;
     width: 100% !important;
     margin: 20px 0 18px !important;
-    padding: 0 !important;
+    padding-left: 16px !important;
+    padding-right: 16px !important;
   }
 
   .react-page-root[data-page="index.html"] .hero-carousel-viewport {

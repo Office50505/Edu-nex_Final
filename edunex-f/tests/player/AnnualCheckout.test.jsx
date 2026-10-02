@@ -97,11 +97,47 @@ it('normal payment links do not show the marketing ₹299 one-time checkout', as
   expect(window.location.pathname).toBe('/payment');
   expect(openRazorpay).toHaveBeenCalledTimes(1);
 });
+it('marketing checkout uses the one-time onboarding flow and retains its retry price', async () => {
+  localStorage.clear();
+  sessionStorage.setItem('skillomateMarketingOnboardingToken', 'onboarding-token');
+  window.history.replaceState(null, '', '/payment?flow=marketing-onboarding');
+  const fetcher = mockApi({ gateway: 'phonepe', oneTimeAmountPaise: 29900, accessDays: 30 });
+  const original = fetcher.getMockImplementation();
+  fetcher.mockImplementation((url, options) => url === '/api/onboarding/checkout'
+    ? Promise.resolve(response({ error: 'Checkout unavailable.' }, 503))
+    : original(url, options));
+  render(<PaymentPage />);
+  await screen.findByText('Checkout unavailable.');
+  expect(screen.getByRole('heading', { level: 2 }).textContent).toBe('₹299');
+  expect(screen.getByRole('button', { name: 'Try ₹299 once' })).toBeTruthy();
+  expect(screen.getByText(/does not renew automatically/)).toBeTruthy();
+  const checkoutCalls = fetcher.mock.calls.filter(([url]) => url === '/api/onboarding/checkout');
+  expect(checkoutCalls).toHaveLength(1);
+  expect(JSON.parse(checkoutCalls[0][1].body)).toMatchObject({ paymentType: 'one_time' });
+  expect(checkoutCalls[0][1].headers.Authorization).toBe('Bearer onboarding-token');
+  expect(fetcher.mock.calls.filter(([url]) => url.endsWith('/initiate-trial'))).toHaveLength(0);
+  expect(openRazorpay).not.toHaveBeenCalled();
+});
+it('monthly unlock page shows ₹499 without one-time provider copy', async () => {
+  window.history.replaceState(null, '', '/payment?plan=monthly');
+  const fetcher = mockApi({ gateway: 'phonepe', oneTimeAmountPaise: 29900, subscriptionAmountPaise: 49900, accessDays: 30 });
+  const original = fetcher.getMockImplementation();
+  fetcher.mockImplementation((url, options) => url.endsWith('/initiate-trial')
+    ? Promise.resolve(response({ error: 'Checkout unavailable.' }, 503))
+    : original(url, options));
+  render(<PaymentPage />);
+  await screen.findByText('Checkout unavailable.');
+  expect(screen.getByRole('heading', { level: 2 }).textContent).toBe('₹499/month');
+  expect(screen.getByText(/Start monthly access to unlock the full course library/)).toBeTruthy();
+  expect(screen.getByRole('button', { name: 'Try ₹499/month' })).toBeTruthy();
+  expect(screen.queryByText(/PhonePe/i)).toBeNull();
+  expect(screen.queryByText(/₹299/)).toBeNull();
+});
 it('keeps provider failures on the paywall with a retry action', async () => {
   mockApi(); openRazorpay.mockRejectedValueOnce(new Error('Payment failed.'));
   render(<PaymentPage />);
   await screen.findByText('Payment failed.');
-  expect(screen.getByRole('button', { name: 'Try Checkout Again' })).toBeTruthy();
+  expect(screen.getByRole('button', { name: 'Try ₹499/month' })).toBeTruthy();
   expect(localStorage.getItem('edunexHasCourseAccess')).toBeNull();
 });
 it('does not grant access or start another payment when verification is unavailable', async () => {

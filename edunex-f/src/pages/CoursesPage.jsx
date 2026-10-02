@@ -69,6 +69,7 @@ function normalizeCourse(course) {
   return {
     ...course,
     id,
+    slug: course.slug || "",
     title: course.title || "Untitled course",
     description: plainCourseDescription(course.description) || "Build practical AI skills with guided lessons and projects.",
     categoryName: window.EduNex?.courseCategory?.(course) || (typeof course.category === "string" ? course.category : course.category?.name) || "Course",
@@ -76,6 +77,26 @@ function normalizeCourse(course) {
     lessonCount: Array.isArray(course.videos) ? course.videos.length : 0,
     rating: course.rating || course.averageRating || "4.8",
   };
+}
+
+function isPrimaryTrialCourse(course) {
+  const text = `${course?.title || ""} ${course?.slug || ""}`.toLowerCase();
+  return /\bai\s+influenc(?:er|e)\b/.test(text);
+}
+
+function courseTime(course) {
+  const value = new Date(course?.publishedAt || course?.createdAt || 0).getTime();
+  return Number.isFinite(value) ? value : 0;
+}
+
+function orderCoursesForAccess(courses) {
+  return [...courses].sort((left, right) => {
+    const leftPrimary = isPrimaryTrialCourse(left);
+    const rightPrimary = isPrimaryTrialCourse(right);
+    if (leftPrimary !== rightPrimary) return leftPrimary ? -1 : 1;
+    if (leftPrimary && rightPrimary) return courseTime(left) - courseTime(right);
+    return courseTime(right) - courseTime(left);
+  });
 }
 
 function driveThumbnailFallback(course) {
@@ -118,7 +139,6 @@ function groupCourses(courses) {
 }
 
 const PLANNED_COURSES = [
-  "AI Film Making",
   "AI Video Ads for Business",
   "AI Photography & Product Shoots",
   "AI Music & Songs",
@@ -145,7 +165,7 @@ function PreviewCourseCard({ title, subtitle, badge, image, variant, onOpen }) {
       <div className="course-thumb-wrap">
         {image ? <img className="course-thumb" src={image} alt="" aria-hidden="true" /> : <div className="course-preview-fallback" aria-hidden="true" />}
         <span className="course-cat-badge badge-agency">{badge}</span>
-        <span className="course-preview-lock">{variant === "locked" ? "Locked" : "Coming soon"}</span>
+        <span className="course-preview-lock">Unlocks after completing this course</span>
       </div>
       <div className="course-body">
         <h3 className="course-title-main">{title}</h3>
@@ -155,7 +175,7 @@ function PreviewCourseCard({ title, subtitle, badge, image, variant, onOpen }) {
           <div className="stat-item"><i className="fas fa-star star-icon" aria-hidden="true"></i> Skillomate</div>
         </div>
         <div className="course-card-actions">
-          <span className="btn-trial course-preview-cta">{variant === "locked" ? "Pay to unlock" : "Notify me"}</span>
+          <span className="btn-trial course-preview-cta">Complete current course</span>
         </div>
       </div>
     </button>
@@ -239,7 +259,7 @@ export function CoursesPage() {
     try {
       await Promise.all([hydrateCourseAccess(), hydrateWishlist()]);
       const data = await window.EduNex.request("/api/courses");
-      setCourses(coursesArray(data).map(normalizeCourse));
+      setCourses(orderCoursesForAccess(coursesArray(data).map(normalizeCourse)));
       setState("ready");
     } catch (error) {
       console.error("Courses API failed", error);
@@ -277,9 +297,9 @@ export function CoursesPage() {
   const showSearchSuggestions = suggestionsOpen && searchSuggestions.length > 0;
   const filteredCourses = useMemo(() => {
     const query = search.trim().toLowerCase();
-    return courses.filter((course) => !query || `${course.title} ${course.description} ${course.categoryName}`.toLowerCase().includes(query));
+    return orderCoursesForAccess(courses.filter((course) => !query || `${course.title} ${course.description} ${course.categoryName}`.toLowerCase().includes(query)));
   }, [courses, search]);
-  const firstVisibleCourseId = filteredCourses[0]?.id || "";
+  const primaryTrialCourseId = courses.find(isPrimaryTrialCourse)?.id || courses[0]?.id || "";
 
   const toggleWishlist = async (courseId) => {
     if (!courseId) return;
@@ -304,10 +324,16 @@ export function CoursesPage() {
     } catch (_) {}
   };
 
-  const canOpenCourse = (course) => accessPhase === "full" || courseAccessIds.has(course.id) || (accessPhase === "trial" && course.id === firstVisibleCourseId);
+  const canOpenCourse = (course) => accessPhase === "full" || courseAccessIds.has(course.id) || (accessPhase === "trial" && course.id === primaryTrialCourseId);
+
+  const isCourseLocked = (course) => accessPhase !== "full" && !courseAccessIds.has(course.id) && course.id !== primaryTrialCourseId;
 
   const openCourse = (course) => {
     window.location.href = courseEntryHref(course, { hasAccess: canOpenCourse(course) });
+  };
+
+  const openUnlockPayment = () => {
+    window.location.href = route("payment.html?plan=monthly");
   };
 
   const groupedCourseRows = useMemo(() => groupCourses(filteredCourses), [filteredCourses]);
@@ -540,23 +566,24 @@ export function CoursesPage() {
                   const duration = course.duration || (course.lessonCount ? `${course.lessonCount} Lessons` : "Self paced");
                   const saved = wishlist.has(course.id);
                   const canOpen = canOpenCourse(course);
-                  const lockedByTrial = accessPhase === "trial" && !canOpen;
-                  const buttonLabel = lockedByTrial ? "Locked" : canOpen ? "View Course" : "Start ₹499";
+                  const lockedByAccess = isCourseLocked(course);
+                  const buttonLabel = lockedByAccess ? "Unlock now" : canOpen ? "View Course" : "Start ₹499";
                   return (
                     <div
-                      className={`course-card${hasAccess ? " has-access" : ""}${lockedByTrial ? " is-trial-locked" : ""}`}
+                      className={`course-card${hasAccess ? " has-access" : ""}${lockedByAccess ? " is-trial-locked" : ""}`}
                       data-course-card-id={course.id}
                       data-title={course.title.toLowerCase()}
                       data-category={course.categoryName.toLowerCase()}
                       role="link"
                       tabIndex={0}
                       key={course.id}
-                      aria-disabled={lockedByTrial}
-                      onClick={() => { if (!lockedByTrial) openCourse(course); }}
+                      aria-disabled={lockedByAccess}
+                      onClick={() => { if (lockedByAccess) setPreviewModal("locked"); else openCourse(course); }}
                       onKeyDown={(event) => {
                         if (event.key !== "Enter" && event.key !== " ") return;
                         event.preventDefault();
-                        if (!lockedByTrial) openCourse(course);
+                        if (lockedByAccess) setPreviewModal("locked");
+                        else openCourse(course);
                       }}
                     >
                       <div className="course-thumb-wrap">
@@ -567,7 +594,7 @@ export function CoursesPage() {
                           onError={(event) => handleCourseImageError(event, course)}
                         />
                         <span className="course-cat-badge badge-agency">{course.categoryName}</span>
-                        {lockedByTrial ? <span className="course-lock-badge">Locked until AutoPay starts</span> : null}
+                        {lockedByAccess ? <span className="course-lock-badge">Unlocks after 24 hours</span> : null}
                       </div>
                       <div className="course-body">
                         <h3 className="course-title-main">{course.title}</h3>
@@ -582,7 +609,7 @@ export function CoursesPage() {
                           </div>
                         </div>
                         <div className="course-card-actions">
-                          <button className="btn-trial" type="button" data-course-id={course.id} disabled={lockedByTrial} onClick={(event) => { event.stopPropagation(); if (!lockedByTrial) openCourse(course); }}>
+                          <button className="btn-trial" type="button" data-course-id={course.id} onClick={(event) => { event.stopPropagation(); if (lockedByAccess) openUnlockPayment(); else openCourse(course); }}>
                             {buttonLabel}
                           </button>
                           <button
@@ -652,15 +679,15 @@ export function CoursesPage() {
       {previewModal ? (
         <div className="course-preview-modal-backdrop" role="presentation" onMouseDown={() => setPreviewModal(null)}>
           <div className="course-preview-modal" role="dialog" aria-modal="true" aria-labelledby="coursePreviewTitle" onMouseDown={(event) => event.stopPropagation()}>
-            <h3 id="coursePreviewTitle">{previewModal === "locked" ? "Unlock the next course" : "Coming soon"}</h3>
+            <h3 id="coursePreviewTitle">{previewModal === "locked" ? "Unlock this course now" : "Unlocks after completing this course"}</h3>
             <p>
               {previewModal === "locked"
-                ? "This course opens after your AutoPay mandate starts, or you can pay upfront to unlock full access right away."
-                : "This course is in the upcoming Skillomate roadmap. We will open it once the lessons are ready."}
+                ? "This course unlocks automatically after 24 hours, or you can unlock it right now with full access."
+                : "Finish the current course to unlock this next Skillomate course."}
             </p>
             <div className="course-preview-modal-actions">
               <button type="button" onClick={() => setPreviewModal(null)}>Close</button>
-              {previewModal === "locked" ? <a href={route("payment.html?plan=monthly")}>Pay to unlock</a> : <button type="button" onClick={() => setPreviewModal(null)}>Okay</button>}
+              {previewModal === "locked" ? <a href={route("payment.html?plan=monthly")}>Unlock now</a> : <button type="button" onClick={() => setPreviewModal(null)}>Okay</button>}
             </div>
           </div>
         </div>

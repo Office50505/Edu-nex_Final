@@ -36,6 +36,28 @@ function isTrialStatus(status) {
   return ["trial", "1rs trial"].includes(status);
 }
 
+function hasTrialHistory(user) {
+  const summary = billing(user);
+  return isTrialStatus(user.subscriptionStatus)
+    || isTrialStatus(summary.subscriptionStatus)
+    || Boolean(summary.trialStartedAt || summary.trialExpiresAt)
+    || String(summary.subscriptionType || "").toLowerCase() === "trial";
+}
+
+function hasPaidHistory(user) {
+  const summary = billing(user);
+  return ["active", "subscribed"].includes(String(user.subscriptionStatus || "").toLowerCase())
+    || ["active", "subscribed"].includes(String(summary.subscriptionStatus || "").toLowerCase())
+    || Boolean(summary.inGracePeriod)
+    || Number(summary.amount || 0) > 0
+    || (Array.isArray(user.purchasedCourses) && user.purchasedCourses.length > 0)
+    || (Array.isArray(user.courseEntitlements) && user.courseEntitlements.some((item) => item?.accessType !== "trial"));
+}
+
+function isLeadUser(user) {
+  return !hasTrialHistory(user) && !hasPaidHistory(user);
+}
+
 function dateHasPassed(value) {
   if (!value) return false;
   const date = new Date(value);
@@ -385,15 +407,25 @@ function LearnerDetailDrawer({ user, courses, tab, setTab, onClose, purchaseHist
   );
 }
 
-export function AdminUsersPage({ audience = "learners" } = {}) {
+export function AdminUsersPage({ audience = "learners", paymentGateway = "" } = {}) {
   const testerMode = audience === "testers";
+  const leadsMode = audience === "leads";
+  const trialsMode = audience === "trials";
+  const gatewayFilter = String(paymentGateway || "").trim().toLowerCase();
+  const gatewayTitle = gatewayFilter === "phonepe" ? "PhonePe" : gatewayFilter === "razorpay" ? "Razorpay" : "";
   const entityLabel = testerMode ? "tester" : "learner";
   const entityLabelTitle = testerMode ? "Tester" : "Learner";
-  const pageTitle = testerMode ? "Test Account Management" : "User Management";
+  const pageTitle = testerMode ? "Test Account Management" : leadsMode ? "Lead Management" : trialsMode ? "Trial Learners" : gatewayTitle ? `${gatewayTitle} Payment Users` : "All Learners";
   const pageSubtitle = testerMode
     ? "CRM-style tester records with the same account, subscription, course, and deletion controls."
-    : "CRM-style learner records with subscription status, verification health, engagement, and course progress.";
-  const pageKey = testerMode ? "testerUsers" : "users";
+    : leadsMode
+      ? "People who registered or enquired but have not started a trial or paid access."
+    : trialsMode
+      ? "People who actually entered the trial flow, separate from fresh leads."
+    : gatewayTitle
+      ? `CRM-style user management for ${gatewayTitle} paying users with billing, access, course, and account controls.`
+    : "All non-test learner records with subscription status, verification health, engagement, and course progress.";
+  const pageKey = testerMode ? "testerUsers" : leadsMode ? "leads" : trialsMode ? "trialLearners" : gatewayFilter === "phonepe" ? "phonePeUsers" : gatewayFilter === "razorpay" ? "razorpayUsers" : "users";
   const [page, setPage] = useState(1);
   const [deletingId, setDeletingId] = useState(null);
   const [users, setUsers] = useState([]);
@@ -424,7 +456,28 @@ export function AdminUsersPage({ audience = "learners" } = {}) {
   const [purchaseHistories, setPurchaseHistories] = useState({});
   const [purchaseOpenIds, setPurchaseOpenIds] = useState(new Set());
   const deferredQuery = useDeferredValue(query);
-  const totalAudienceCount = users.filter((user) => testerMode ? user.isTester : !user.isTester).length;
+  const matchesGatewayFilter = (user) => {
+    if (!gatewayFilter) return true;
+    return String(billing(user).gateway || "").trim().toLowerCase() === gatewayFilter;
+  };
+  const isGatewayPayingUser = (user) => {
+    if (!gatewayFilter) return true;
+    const summary = billing(user);
+    return matchesGatewayFilter(user) && (
+      ["active", "subscribed"].includes(String(user.subscriptionStatus || "").toLowerCase())
+      || ["active", "subscribed"].includes(String(summary.subscriptionStatus || "").toLowerCase())
+      || Boolean(summary.inGracePeriod)
+      || Number(summary.amount || 0) > 0
+    );
+  };
+  const matchesAudienceMode = (user) => {
+    if (testerMode) return Boolean(user.isTester);
+    if (user.isTester) return false;
+    if (leadsMode) return isLeadUser(user);
+    if (trialsMode) return hasTrialHistory(user);
+    return true;
+  };
+  const totalAudienceCount = users.filter((user) => matchesAudienceMode(user) && isGatewayPayingUser(user)).length;
 
   async function loadUsers({ silent = false } = {}) {
     if (!requireAdmin()) return;
@@ -460,7 +513,7 @@ export function AdminUsersPage({ audience = "learners" } = {}) {
   }, [pageTitle, testerMode]);
 
   const filteredUsers = useMemo(() => {
-    const audienceUsers = users.filter((user) => testerMode ? user.isTester : !user.isTester);
+    const audienceUsers = users.filter((user) => matchesAudienceMode(user) && isGatewayPayingUser(user));
     const rows = audienceUsers.filter((user) => {
       const matchesStatus = status === "all" || user.subscriptionStatus === status || (status === "expired" && isTrialExpired(user)) || (status === "grace" && billing(user).inGracePeriod);
       const matchesAccount = accountStatus === "all" || (accountStatus === "active" ? user.isActive : !user.isActive);
@@ -476,7 +529,7 @@ export function AdminUsersPage({ audience = "learners" } = {}) {
       if (sort === "name") return String(a.fullName || a.email || "").localeCompare(String(b.fullName || b.email || ""));
       return new Date(b.createdAt || 0) - new Date(a.createdAt || 0);
     });
-  }, [users, deferredQuery, status, accountStatus, presenceStatus, sort, segment, testerMode, dateRange]);
+  }, [users, deferredQuery, status, accountStatus, presenceStatus, sort, segment, testerMode, leadsMode, trialsMode, dateRange, gatewayFilter]);
 
   useEffect(() => { setPage(1); }, [deferredQuery, status, accountStatus, presenceStatus, sort, segment, dateRange]);
 
@@ -524,7 +577,7 @@ export function AdminUsersPage({ audience = "learners" } = {}) {
     const usersWithAge = filteredUsers.filter((user) => user.age != null && Number(user.age) > 0 && Number.isFinite(Number(user.age)));
     const averageAge = usersWithAge.length ? Math.round(usersWithAge.reduce((sum, user) => sum + Number(user.age || 0), 0) / usersWithAge.length) : null;
     return [
-      ["Users", formatNumber(filteredUsers.length)],
+      [leadsMode ? "Leads" : trialsMode ? "Trial learners" : "Users", formatNumber(filteredUsers.length)],
       ["Enabled Accounts", formatNumber(activeUsers)],
       ["Online Now", formatNumber(onlineUsers)],
       ["Paid Subscribers", formatNumber(subscribedUsers)],
@@ -890,7 +943,7 @@ export function AdminUsersPage({ audience = "learners" } = {}) {
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
-    link.download = `${testerMode ? "edunex-test-accounts" : "edunex-users"}-${new Date().toISOString().slice(0, 10)}.csv`;
+    link.download = `${testerMode ? "edunex-test-accounts" : leadsMode ? "edunex-leads" : trialsMode ? "edunex-trial-learners" : "edunex-users"}-${new Date().toISOString().slice(0, 10)}.csv`;
     link.click();
     URL.revokeObjectURL(url);
   }
@@ -939,7 +992,7 @@ export function AdminUsersPage({ audience = "learners" } = {}) {
       </section>
 
       <div className="crm-results-bar">
-        <div><strong>{testerMode ? "Tester pipeline" : "Learner pipeline"}</strong><span>{formatNumber(filteredUsers.length)} shown from {formatNumber(totalAudienceCount)} total {testerMode ? "test accounts" : "learners"}</span></div>
+        <div><strong>{testerMode ? "Tester pipeline" : leadsMode ? "Lead pipeline" : trialsMode ? "Trial learner pipeline" : "Learner pipeline"}</strong><span>{formatNumber(filteredUsers.length)} shown from {formatNumber(totalAudienceCount)} total {testerMode ? "test accounts" : leadsMode ? "leads" : trialsMode ? "trial learners" : "learners"}</span></div>
         <button className="toolbar-button" type="button" onClick={exportCsv} disabled={!filteredUsers.length}>Export CSV</button>
       </div>
 
@@ -989,7 +1042,7 @@ export function AdminUsersPage({ audience = "learners" } = {}) {
       </section>
       <nav className="crm-results-bar" aria-label="Learner pages">
         <button className="toolbar-button" disabled={currentPage <= 1 || loading} onClick={() => setPage(currentPage - 1)}>Previous</button>
-        <span aria-live="polite">Page {currentPage} of {pageCount} · 25 {testerMode ? "test accounts" : "learners"} per page</span>
+        <span aria-live="polite">Page {currentPage} of {pageCount} · 25 {testerMode ? "test accounts" : leadsMode ? "leads" : trialsMode ? "trial learners" : "learners"} per page</span>
         <button className="toolbar-button" disabled={currentPage >= pageCount || loading} onClick={() => setPage(currentPage + 1)}>Next</button>
       </nav>
       <LearnerDetailDrawer activity={drawerActivity[selectedUser?._id]} certificates={drawerCertificates[selectedUser?._id]} onSubscription={openSubscriptionDialog} onAccess={changeAccountAccess} onTesterStatus={changeTesterStatus} onPasswordReset={resetUserPassword} busy={Boolean(updatingId)} user={selectedUser} courses={courses} tab={drawerTab} setTab={setDrawerTab} onClose={() => setSelectedUser(null)} purchaseHistory={selectedUser ? (purchaseHistories[String(selectedUser._id)] || { user: selectedUser, loading: false, error: "", orders: [], courseChanges: [] }) : null} />

@@ -5,17 +5,28 @@ const vm = require('node:vm');
 const crypto = require('node:crypto');
 const service = require('../services/razorpayService');
 
-function setup({ invalidSchedule = false, existing = null } = {}) {
+function setup({ invalidSchedule = false, existing = null, remoteStatus = 'created' } = {}) {
   const calls = [];
   let record = existing;
+  let subscriptionRecord = null;
   const config = { mode: 'live', planId: 'plan_monthly', monthlyAmount: 49900, trialAmount: 100, trialHours: 24, trialAccessHours: 26, cycles: 120 };
   const models = {
     RazorpayBilling: {
       findById: async () => record,
-      findOneAndUpdate: async (_, update) => { record = { _id: 'user', ...record, ...update.$set }; return record; },
-      updateOne: async (_, update) => { Object.assign(record, update.$set); },
+      findOneAndUpdate: async (query, update) => {
+        if (record && query?.phase === 'closed' && record.phase !== 'closed') return null;
+        record = { _id: 'user', ...record, ...update.$set };
+        if (update.$unset) for (const key of Object.keys(update.$unset)) delete record[key];
+        return record;
+      },
+      updateOne: async (_, update) => { Object.assign(record, update.$set); if (update.$unset) for (const key of Object.keys(update.$unset)) delete record[key]; },
     },
-    Subscription: { findOne: async () => null },
+    Subscription: {
+      findOne: async () => subscriptionRecord,
+      findOneAndUpdate: async (_, update) => { subscriptionRecord = { _id: 'subscription', ...update.$setOnInsert, ...update.$set }; return subscriptionRecord; },
+    },
+    Order: { updateOne: async () => {} },
+    User: { findByIdAndUpdate: async () => {} },
   };
   const module = { exports: {} };
   vm.runInNewContext(fs.readFileSync(require.resolve('../controllers/razorpayController'), 'utf8'), {
@@ -28,7 +39,8 @@ function setup({ invalidSchedule = false, existing = null } = {}) {
           calls.push({ route, method, payload });
           if (route.startsWith('/plans/')) return { id: 'plan_monthly', period: 'monthly', interval: 1, item: { amount: 49900, currency: 'INR' } };
           if (method === 'POST') return { id: 'sub_new', start_at: invalidSchedule ? null : payload.start_at };
-          return { id: record.subscriptionId, status: 'created', start_at: new Date(record.trialEnd).getTime() / 1000, expire_by: Math.ceil(Date.now() / 1000) + 600 };
+          if (route.startsWith('/invoices?')) return { items: [] };
+          return { id: record.subscriptionId, status: remoteStatus, start_at: new Date(record.trialEnd).getTime() / 1000, expire_by: Math.ceil(Date.now() / 1000) + 600 };
         },
       };
       if (name.includes('trialEligibility')) return { hasUsedIntroTrial: async () => false };
@@ -66,6 +78,16 @@ test('an older unfinished trial cannot silently reuse an insufficient trial sche
   assert.equal(response.code, 409);
   assert.match(response.data.error, /older checkout/);
   assert.equal(f.calls.filter(call => call.method === 'POST').length, 0);
+});
+test('paused or halted Razorpay mandates are closed locally so checkout can be retried', async () => {
+  for (const remoteStatus of ['paused', 'halted']) {
+    const f = setup({ remoteStatus, existing: { _id: 'user', phase: 'ready', mode: 'live', paymentType: 'monthly', subscriptionId: `sub_${remoteStatus}`, trialEnd: new Date((Math.floor(Date.now() / 1000) + 86400) * 1000) } });
+    const response = await f.initiate({ paymentType: 'monthly', monthlyConsent: true });
+    assert.equal(response.code, 201);
+    assert.equal(f.calls.filter(call => call.method === 'POST').length, 1);
+    assert.equal(f.record.subscriptionId, 'sub_new');
+    assert.equal(f.record.phase, 'ready');
+  }
 });
 test('immediate monthly checkout on the offer page requires separate price consent', async () => {
   const f = setup(); const response = await f.initiate({ paymentType: 'monthly' });

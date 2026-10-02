@@ -93,12 +93,12 @@ it("shows the PhonePe price but blocks checkout when new payments are disabled",
   expect(screen.queryByRole("dialog")).toBeNull();
 });
 
-it("uses Video-65454.mp4 on the main offer and Offer 2", () => {
+it("uses the default video on the main offer and the uploaded video on Offer 2", () => {
   const entries = Object.entries(OFFER_MEDIA);
   expect(entries).toHaveLength(10);
-  expect(new Set(entries.map(([, media]) => media.videoUrl)).size).toBe(9);
+  expect(new Set(entries.map(([, media]) => media.videoUrl)).size).toBe(10);
   expect(offerMediaForPage("offer.html").videoUrl).toBe("/assets/offer-video/Video-65454.mp4");
-  expect(offerMediaForPage("offer2.html").videoUrl).toBe("/assets/offer-video/Video-65454.mp4");
+  expect(offerMediaForPage("offer2.html").videoUrl).toBe("/assets/offer-video/offer page.mp4");
   expect(offerMediaForPage("offer3.html").videoUrl).toBe("/assets/offer-video/offer-3.mov");
   expect(offerMediaForPage("offer4.html").videoUrl).toBe("/assets/offer-video/offer-4.mov");
   expect(offerMediaForPage("offer10.html").videoUrl).toBe("/assets/offers/offer-10.mp4");
@@ -109,7 +109,7 @@ it("selects the video from the current offer route and falls back safely when it
   render(<AdOfferPage />);
   await screen.findByRole("heading", { name: "Skillomate Subscription" });
   const video = document.querySelector("video");
-  expect(video?.getAttribute("src")).toBe("/assets/offer-video/Video-65454.mp4");
+  expect(video?.getAttribute("src")).toBe("/assets/offer-video/offer page.mp4");
   fireEvent.error(video);
   expect(video?.getAttribute("src")).toBe(DEFAULT_OFFER_VIDEO_URL);
 });

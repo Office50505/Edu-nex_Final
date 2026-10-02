@@ -173,7 +173,7 @@ export function CourseMediaPlayer({ course, lesson, lessonIndex, autoNext, autop
       engine.loadSource(source);engine.attachMedia(video);
     }).catch(()=>{if(!stopped)failed();});
     return()=>{stopped=true;playlistController.abort();clearBufferingTimer();Object.entries(listeners).forEach(([name,fn])=>video.removeEventListener(name,fn));document.removeEventListener('visibilitychange',handleVisibilityChange);video.textTracks.removeEventListener('addtrack',tracks);engine?.destroy();hlsRef.current=null;video.pause();video.removeAttribute('src');video.load();};
-  },[source,isHls,reload]);
+  },[source,isHls,reload,access.version]);
   useEffect(()=>{
     const video=videoRef.current;
     if(restored.current||progress.resume===null||!time.duration||!video)return;
@@ -259,7 +259,7 @@ export function CourseMediaPlayer({ course, lesson, lessonIndex, autoNext, autop
     {!source&&!failure?<VideoLoadingBrand label="Authorizing playback…"/>:null}
     {!playing&&!buffering&&!failure&&source?<button className="sm-big-play" onClick={toggle} aria-label={time.current > 0 ? "Resume video" : "Start video"}><PlayerIcon name="play"/></button>:null}
     {source&&buffering&&!failure?<VideoLoadingBrand/>:null}
-    {failure?<div className="sm-failure" role="alert"><p>{failure}</p><button onClick={()=>{setError('');if(lesson.provider==='aws_cloudfront')access.retry();else setReload(n=>n+1);}}>Retry playback</button>{onFallback?<button onClick={onFallback}>Use compatible player</button>:null}</div>:null}
+    {failure?<div className="sm-failure" role="alert"><p>{failure}</p><button onClick={()=>{setError('');setReload(n=>n+1);if(lesson.provider==='aws_cloudfront')access.retry();}}>Retry playback</button>{onFallback?<button onClick={onFallback}>Use compatible player</button>:null}</div>:null}
     {notice?<div className="sm-notice" role="status">{notice}</div>:null}
     {menu?<div className="sm-settings" aria-label="Player settings">
       <div className="sm-settings-header"><span>Playback settings</span><button onClick={closeMenu} aria-label="Close settings">×</button></div>

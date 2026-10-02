@@ -141,9 +141,8 @@ SUBSCRIPTION_AMOUNT_PAISE=49900
 ```
 
 The backend adds the ₹1 upfront amount and schedules the first recurring payment
-24 hours after **checkout creation** via `start_at`. Checkout expires after ten
-minutes. This existing implementation does not promise a full 24 hours measured
-from successful payment; completing checkout later shortens access by that delay.
+24 hours after **checkout expiry** via `start_at`. Checkout expires after ten
+minutes, so successful checkouts still get at least the advertised trial window.
 Monthly renewal follows the provider's billing schedule. Mandate authorization
 alone does not grant access; captured payments are verified. Bank collection
 success and exact debit time are not guaranteed by a configured plan.
