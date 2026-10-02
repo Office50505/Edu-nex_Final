@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { Space_Grotesk, Syne } from 'next/font/google'
+import Script from 'next/script'
 import './globals.css'
 
 const spaceGrotesk = Space_Grotesk({
@@ -20,6 +21,9 @@ export const metadata: Metadata = {
   title: 'Skillomate — Learn AI One Skill at a Time',
   description:
     'Explore practical AI courses in the Skillomate app with step-by-step video lessons, a built-in AI assistant, and progress tracking.',
+  alternates: {
+    canonical: '/marketing-web/',
+  },
   keywords: [
     'learn AI India',
     'AI course India',
@@ -49,7 +53,12 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en-IN" className={`${spaceGrotesk.variable} ${syne.variable}`}>
-      <body className="antialiased">{children}</body>
+      <body className="antialiased">
+        <Script id="canonical-marketing-route" strategy="beforeInteractive">
+          {`if(location.pathname==="/marketing-web/index.html"){history.replaceState(null,"","/marketing-web/"+location.search+location.hash)}`}
+        </Script>
+        {children}
+      </body>
     </html>
   )
 }
