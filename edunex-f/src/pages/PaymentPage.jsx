@@ -42,6 +42,8 @@ export function PaymentPage() {
   const query = params();
   const courseId = query.get("courseId");
   const directApp = query.get("source") === "skillomate-direct";
+  const requestedPlan = String(query.get("plan") || "").toLowerCase();
+  const explicitMonthly = ["monthly", "annual", "yearly"].includes(requestedPlan);
   const [trialEligible, setTrialEligible] = useState(false);
   const [checkoutState, setCheckoutState] = useState("loading");
   const [payMsg, setPayMsg] = useState({ text: "", type: "" });
@@ -49,8 +51,8 @@ export function PaymentPage() {
   const busyRef = useRef(false);
   const autoLaunchAttemptedRef = useRef(false);
   const [pricing, setPricing] = useState(null);
-  const phonePeOneTime = pricing?.gateway === "phonepe" || pricing?.gateway === "simulated";
-  const trial = !phonePeOneTime && !["monthly", "annual", "yearly"].includes(query.get("plan")) && trialEligible;
+  const phonePeOneTime = !explicitMonthly && (pricing?.gateway === "phonepe" || pricing?.gateway === "simulated");
+  const trial = !phonePeOneTime && !explicitMonthly && trialEligible;
   const paymentType = phonePeOneTime ? "one_time" : trial ? "trial" : "monthly";
   const [paymentCompleted, setPaymentCompleted] = useState(false);
   const [pending, setPending] = useState(false);
@@ -264,7 +266,14 @@ export function PaymentPage() {
   };
   const amount = (paise) => new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", minimumFractionDigits: 0, maximumFractionDigits: 2 }).format(paise / 100);
   const oneTimePrice = pricing?.oneTimeAmountPaise ? amount(pricing.oneTimeAmountPaise) : "";
-  const planLabel = phonePeOneTime ? `${oneTimePrice} access` : "Skillomate access";
+  const monthlyPrice = pricing?.subscriptionAmountPaise ? amount(pricing.subscriptionAmountPaise) : "₹499";
+  const displayPrice = explicitMonthly ? monthlyPrice : (oneTimePrice || "₹299");
+  const planLabel = explicitMonthly ? `${monthlyPrice}/month membership` : phonePeOneTime ? `${oneTimePrice} access` : "Skillomate access";
+  const checkoutButtonLabel = explicitMonthly
+    ? `${payMsg.type === "error" ? "Try" : "Pay"} ${monthlyPrice}/month`
+    : phonePeOneTime
+      ? `${payMsg.type === "error" ? "Try" : "Pay"} ${oneTimePrice || "₹299"} once`
+      : payMsg.type === "error" ? "Try Checkout Again" : `Pay ${monthlyPrice}`;
 
   return (
     <div className={`react-page-root${directApp ? " direct-app-payment" : ""}`} data-page="payment.html">
@@ -288,12 +297,12 @@ export function PaymentPage() {
         {checkoutState === "pay" && planAvailable && !submitting && !pending ? (
           <div className="checkout-launcher-card">
             <h1>Skillomate access</h1>
-            <h2>{oneTimePrice || "₹299"}</h2>
+            <h2>{displayPrice}{explicitMonthly ? "/month" : ""}</h2>
             <p>Full course access, lesson notes, progress tracking, and AI learning tools.</p>
-            <p>Pay {oneTimePrice || "₹299"} securely through PhonePe to activate your Skillomate account.</p>
+            <p>{explicitMonthly ? "Start monthly access to unlock the full course library." : `Pay ${displayPrice} once to activate your Skillomate account.`}</p>
             {payMsg.text ? <p role={payMsg.type === "error" ? "alert" : "status"}>{payMsg.text}</p> : null}
             <button className="checkout-launcher-primary" type="button" onClick={initiatePayment}>
-              {payMsg.type === "error" ? "Try Checkout Again" : `Pay ${oneTimePrice || "₹299"} with PhonePe`}
+              {checkoutButtonLabel}
             </button>
             <p>After successful payment, your Skillomate access will open on this account.</p>
             <a href="/courses" className="checkout-launcher-secondary">{directApp ? "Back to app" : "Back to courses"}</a>
@@ -303,9 +312,9 @@ export function PaymentPage() {
         {checkoutState === "login" ? (
           <div className="checkout-launcher-card">
             <h1>Log in to continue</h1>
-            <p>Create an account or log in, then continue to secure PhonePe payment for ₹299.</p>
+            <p>Create an account or log in, then continue to secure checkout for {explicitMonthly ? `${monthlyPrice}/month` : displayPrice}.</p>
             <a id="loginBtn" href={`/login.html?next=${encodeURIComponent(window.location.href)}`} className="checkout-launcher-primary">Log In</a>
-            <a id="signupBtn" href={`/signup.html?next=${encodeURIComponent(window.location.href)}`} className="checkout-launcher-secondary">Create Account & Pay ₹299</a>
+            <a id="signupBtn" href={`/signup.html?next=${encodeURIComponent(window.location.href)}`} className="checkout-launcher-secondary">{explicitMonthly ? "Create Account & Subscribe" : `Create Account & Pay ${displayPrice}`}</a>
           </div>
         ) : null}
 

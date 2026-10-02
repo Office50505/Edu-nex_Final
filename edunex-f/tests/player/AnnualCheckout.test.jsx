@@ -87,19 +87,35 @@ it('annual renewal cancellation requires confirmation and keeps the paid expiry 
 });
 
 it('PhonePe one-time checkout shows ₹299 before opening payment', async () => {
+  window.history.replaceState(null, '', '/payment');
   const fetcher = mockApi({ gateway: 'phonepe', oneTimeAmountPaise: 29900, accessDays: 30 });
   render(<PaymentPage />);
   expect(await screen.findByRole('button', { name: 'Pay ₹299 once' })).toBeTruthy();
-  expect(screen.getByText(/does not renew automatically/)).toBeTruthy();
+  expect(screen.getByText(/Pay ₹299 once to activate/)).toBeTruthy();
   expect(fetcher.mock.calls.filter(([url]) => url.endsWith('/initiate-trial'))).toHaveLength(0);
   expect(window.location.pathname).toBe('/payment');
   expect(openRazorpay).not.toHaveBeenCalled();
+});
+it('monthly unlock page shows ₹499 without one-time provider copy', async () => {
+  window.history.replaceState(null, '', '/payment?plan=monthly');
+  const fetcher = mockApi({ gateway: 'phonepe', oneTimeAmountPaise: 29900, subscriptionAmountPaise: 49900, accessDays: 30 });
+  const original = fetcher.getMockImplementation();
+  fetcher.mockImplementation((url, options) => url.endsWith('/initiate-trial')
+    ? Promise.resolve(response({ error: 'Checkout unavailable.' }, 503))
+    : original(url, options));
+  render(<PaymentPage />);
+  await screen.findByText('Checkout unavailable.');
+  expect(screen.getByRole('heading', { level: 2 }).textContent).toBe('₹499/month');
+  expect(screen.getByText(/Start monthly access to unlock the full course library/)).toBeTruthy();
+  expect(screen.getByRole('button', { name: 'Try ₹499/month' })).toBeTruthy();
+  expect(screen.queryByText(/PhonePe/i)).toBeNull();
+  expect(screen.queryByText(/₹299/)).toBeNull();
 });
 it('keeps provider failures on the paywall with a retry action', async () => {
   mockApi(); openRazorpay.mockRejectedValueOnce(new Error('Payment failed.'));
   render(<PaymentPage />);
   await screen.findByText('Payment failed.');
-  expect(screen.getByRole('button', { name: 'Try Checkout Again' })).toBeTruthy();
+  expect(screen.getByRole('button', { name: 'Try ₹499/month' })).toBeTruthy();
   expect(localStorage.getItem('edunexHasCourseAccess')).toBeNull();
 });
 it('does not grant access or start another payment when verification is unavailable', async () => {
