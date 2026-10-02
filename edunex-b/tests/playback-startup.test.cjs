@@ -61,6 +61,23 @@ test('trial playback unlocks the same primary AI Influencer course shown first i
  assert.equal(allowed,true);
  assert.equal(queries.length,1);
 });
+test('playback authorization uses the same trial course selector as lesson startup',async()=>{
+ const serviceModule={exports:{}};
+ let checkedCourseId='';
+ vm.runInNewContext(fs.readFileSync(require.resolve('../services/certificationService'),'utf8'),{module:serviceModule,require:name=>{
+  if(name==='mongoose')return {Types:{ObjectId:{isValid:()=>true}}};
+  if(name.endsWith('/Course'))return {};
+  if(name.endsWith('/Subscription'))return {findOne:()=>({lean:async()=>({status:'trial',trialExpiresAt:new Date(Date.now()+60000)})})};
+  if(name.includes('subscriptionAccess'))return require('../services/subscriptionAccess');
+  if(name.includes('courseAccess'))return require('../services/courseAccess');
+  if(name.includes('checkSubscription'))return {isTrialUnlockedCourse:async courseId=>{checkedCourseId=String(courseId);return true;}};
+  if(name.includes('adminFeatureSettings'))return {};
+  if(name.includes('completionRules'))return {};
+  return {};
+ },Date,console});
+ await serviceModule.exports.access({_id:'trial-user'},id);
+ assert.equal(checkedCourseId,id);
+});
 test('a purchased course grants access without a subscription',async()=>{
  const checkModule={exports:{}};
  vm.runInNewContext(fs.readFileSync(require.resolve('../middleware/checkSubscription'),'utf8'),{module:checkModule,require:name=>name.includes('subscriptionAccess')?require('../services/subscriptionAccess'):name.includes('courseAccess')?require('../services/courseAccess'):name.endsWith('/Subscription')?{findOne:async()=>null}:name.endsWith('/Course')?{findOne:()=>({sort:()=>({select:()=>({lean:async()=>null})})})}:{},Date});

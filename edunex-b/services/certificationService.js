@@ -11,6 +11,7 @@ const Subscription = require('../models/Subscription');
 const AnalyticsEvent = require('../models/AnalyticsEvent');
 const { resolveSubscriptionAccess } = require('./subscriptionAccess');
 const { activeCourseEntitlement } = require('./courseAccess');
+const { isTrialUnlockedCourse } = require('../middleware/checkSubscription');
 const featureSettings = require('./adminFeatureSettings');
 const rules = require('./completionRules');
 const fail = (message,statusCode=400) => Object.assign(new Error(message),{statusCode});
@@ -27,8 +28,7 @@ async function access(user, courseId = null) {
   const resolvedAccess = resolveSubscriptionAccess(sub,user);
   if(!resolvedAccess.active) throw fail('An active learning entitlement is required.',403);
   if(resolvedAccess.status === 'trial' && !resolvedAccess.grace && courseId) {
-    const firstCourse = await Course.findOne({status:'published'}).sort({publishedAt:-1,createdAt:-1,_id:-1}).select('_id').lean();
-    if(firstCourse && String(firstCourse._id) !== String(courseId)) throw fail('This course unlocks after AutoPay starts or after an upfront purchase.',403);
+    if(!(await isTrialUnlockedCourse(courseId))) throw fail('This course unlocks after AutoPay starts or after an upfront purchase.',403);
   }
 }
 async function state(user, ctx) {
