@@ -165,7 +165,7 @@ function PreviewCourseCard({ title, subtitle, badge, image, variant, onOpen }) {
       <div className="course-thumb-wrap">
         {image ? <img className="course-thumb" src={image} alt="" aria-hidden="true" /> : <div className="course-preview-fallback" aria-hidden="true" />}
         <span className="course-cat-badge badge-agency">{badge}</span>
-        <span className="course-preview-lock">Unlocks after completing this course</span>
+        <span className="course-preview-lock">Unlocks after completing previous course</span>
       </div>
       <div className="course-body">
         <h3 className="course-title-main">{title}</h3>
@@ -404,21 +404,24 @@ export function CoursesPage() {
         }
         .react-page-root[data-page="courses.html"] .course-preview-lock {
           position: absolute;
-          left: 50%;
-          top: 50%;
-          transform: translate(-50%, -50%);
+          left: 18px;
+          right: 18px;
+          bottom: 18px;
           display: inline-flex;
           align-items: center;
           justify-content: center;
-          min-width: 132px;
-          min-height: 44px;
-          border-radius: 999px;
+          min-height: 42px;
+          padding: 8px 14px;
+          border-radius: 16px;
           background: rgba(0, 0, 0, 0.72);
           border: 1px solid rgba(255, 182, 38, 0.58);
           color: #fff;
           font-weight: 900;
-          letter-spacing: 0.02em;
+          line-height: 1.25;
+          text-align: center;
+          letter-spacing: 0;
           backdrop-filter: blur(10px);
+          box-shadow: 0 12px 28px rgba(0, 0, 0, .28);
         }
         .react-page-root[data-page="courses.html"] .course-preview-cta {
           display: inline-flex;
@@ -679,11 +682,11 @@ export function CoursesPage() {
       {previewModal ? (
         <div className="course-preview-modal-backdrop" role="presentation" onMouseDown={() => setPreviewModal(null)}>
           <div className="course-preview-modal" role="dialog" aria-modal="true" aria-labelledby="coursePreviewTitle" onMouseDown={(event) => event.stopPropagation()}>
-            <h3 id="coursePreviewTitle">{previewModal === "locked" ? "Unlock this course now" : "Unlocks after completing this course"}</h3>
+            <h3 id="coursePreviewTitle">{previewModal === "locked" ? "Unlock this course now" : "Unlocks after completing previous course"}</h3>
             <p>
               {previewModal === "locked"
                 ? "This course unlocks automatically after 24 hours, or you can unlock it right now with full access."
-                : "Finish the current course to unlock this next Skillomate course."}
+                : "Finish the previous course to unlock this next Skillomate course."}
             </p>
             <div className="course-preview-modal-actions">
               <button type="button" onClick={() => setPreviewModal(null)}>Close</button>
