@@ -30,6 +30,7 @@ const FALLBACK_COURSES = [
 
 const HERO_CAROUSEL_ITEM_LIMIT = 7;
 const HOME_HERO_VIDEO_SRC = "/assets/offer-video/land%20page.mp4";
+const HOME_HERO_VIDEO_POSTER = "/assets/skillomate-video-loader.png";
 
 function courseId(course) {
   return String(course?._id || course?.id || "");
@@ -455,11 +456,12 @@ function HomeHeroVideo() {
         ref={videoRef}
         className="home-hero-video"
         src={HOME_HERO_VIDEO_SRC}
+        poster={HOME_HERO_VIDEO_POSTER}
         playsInline
         muted
         autoPlay
         loop
-        preload="auto"
+        preload="metadata"
       />
       {!playing ? <button className="home-hero-play-button" type="button" onClick={(event) => { event.stopPropagation(); start(); }} aria-label="Play preview">▶</button> : null}
       <button className={`home-hero-mute-button${muted ? "" : " is-unmuted"}`} type="button" aria-label={muted ? "Unmute preview" : "Mute preview"} onClick={toggleMute}>

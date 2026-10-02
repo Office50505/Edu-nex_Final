@@ -139,7 +139,6 @@ function groupCourses(courses) {
 }
 
 const PLANNED_COURSES = [
-  "AI Film Making",
   "AI Video Ads for Business",
   "AI Photography & Product Shoots",
   "AI Music & Songs",
@@ -166,7 +165,7 @@ function PreviewCourseCard({ title, subtitle, badge, image, variant, onOpen }) {
       <div className="course-thumb-wrap">
         {image ? <img className="course-thumb" src={image} alt="" aria-hidden="true" /> : <div className="course-preview-fallback" aria-hidden="true" />}
         <span className="course-cat-badge badge-agency">{badge}</span>
-        <span className="course-preview-lock">{variant === "locked" ? "Locked" : "Coming soon"}</span>
+        <span className="course-preview-lock">Unlocks after completing this course</span>
       </div>
       <div className="course-body">
         <h3 className="course-title-main">{title}</h3>
@@ -176,7 +175,7 @@ function PreviewCourseCard({ title, subtitle, badge, image, variant, onOpen }) {
           <div className="stat-item"><i className="fas fa-star star-icon" aria-hidden="true"></i> Skillomate</div>
         </div>
         <div className="course-card-actions">
-          <span className="btn-trial course-preview-cta">{variant === "locked" ? "Pay to unlock" : "Notify me"}</span>
+          <span className="btn-trial course-preview-cta">Complete current course</span>
         </div>
       </div>
     </button>
@@ -568,7 +567,7 @@ export function CoursesPage() {
                   const saved = wishlist.has(course.id);
                   const canOpen = canOpenCourse(course);
                   const lockedByAccess = isCourseLocked(course);
-                  const buttonLabel = lockedByAccess ? "Pay to unlock" : canOpen ? "View Course" : "Start ₹499";
+                  const buttonLabel = lockedByAccess ? "Unlock now" : canOpen ? "View Course" : "Start ₹499";
                   return (
                     <div
                       className={`course-card${hasAccess ? " has-access" : ""}${lockedByAccess ? " is-trial-locked" : ""}`}
@@ -595,7 +594,7 @@ export function CoursesPage() {
                           onError={(event) => handleCourseImageError(event, course)}
                         />
                         <span className="course-cat-badge badge-agency">{course.categoryName}</span>
-                        {lockedByAccess ? <span className="course-lock-badge">Locked until AutoPay starts</span> : null}
+                        {lockedByAccess ? <span className="course-lock-badge">Unlocks after 24 hours</span> : null}
                       </div>
                       <div className="course-body">
                         <h3 className="course-title-main">{course.title}</h3>
@@ -680,15 +679,15 @@ export function CoursesPage() {
       {previewModal ? (
         <div className="course-preview-modal-backdrop" role="presentation" onMouseDown={() => setPreviewModal(null)}>
           <div className="course-preview-modal" role="dialog" aria-modal="true" aria-labelledby="coursePreviewTitle" onMouseDown={(event) => event.stopPropagation()}>
-            <h3 id="coursePreviewTitle">{previewModal === "locked" ? "Unlock the next course" : "Coming soon"}</h3>
+            <h3 id="coursePreviewTitle">{previewModal === "locked" ? "Unlock this course now" : "Unlocks after completing this course"}</h3>
             <p>
               {previewModal === "locked"
-                ? "This course opens after your AutoPay mandate starts, or you can pay upfront to unlock full access right away."
-                : "This course is in the upcoming Skillomate roadmap. We will open it once the lessons are ready."}
+                ? "This course unlocks automatically after 24 hours, or you can unlock it right now with full access."
+                : "Finish the current course to unlock this next Skillomate course."}
             </p>
             <div className="course-preview-modal-actions">
               <button type="button" onClick={() => setPreviewModal(null)}>Close</button>
-              {previewModal === "locked" ? <a href={route("payment.html?plan=monthly")}>Pay to unlock</a> : <button type="button" onClick={() => setPreviewModal(null)}>Okay</button>}
+              {previewModal === "locked" ? <a href={route("payment.html?plan=monthly")}>Unlock now</a> : <button type="button" onClick={() => setPreviewModal(null)}>Okay</button>}
             </div>
           </div>
         </div>
