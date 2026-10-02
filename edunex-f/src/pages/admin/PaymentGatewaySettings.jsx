@@ -37,8 +37,9 @@ export function PaymentGatewaySettings() {
     {error ? <p className="admin-inline-message is-error" role="alert">{error}</p> : null}
     {message ? <p className="admin-inline-message is-success" role="status">{message}</p> : null}
     {!settings ? <p>{error ? 'Reload to retry loading payment settings.' : 'Loading payment settings…'}</p> : <form className="admin-settings-form" onSubmit={save}><AdminEditFields>
-      <fieldset className="admin-choice-grid" disabled={saving}>
-        <legend>Gateway for new checkouts</legend>
+      <section className="settings-form-section">
+        <h3>Gateway for new checkouts</h3>
+        <div className="admin-choice-grid" aria-disabled={saving}>
         {['razorpay', 'phonepe'].map(provider => {
           const configured = provider === 'phonepe'
             ? settings.providers?.phonepe?.configured
@@ -46,7 +47,7 @@ export function PaymentGatewaySettings() {
           const active = selectedProvider === provider;
           return <label key={provider} className={`admin-choice-card ${active ? 'is-selected' : ''} ${!configured ? 'is-disabled' : ''}`}>
             <input type="radio" name="gateway-provider" value={provider} checked={active}
-              disabled={!configured} onChange={() => { setSelectedProvider(provider); setMessage(''); }} />
+              disabled={saving || !configured} onChange={() => { setSelectedProvider(provider); setMessage(''); }} />
             <span className="admin-choice-dot" aria-hidden="true"></span>
             <span>
               <strong>{provider === 'phonepe' ? 'PhonePe — redirect checkout' : 'Razorpay — embedded checkout'}</strong>
@@ -54,16 +55,18 @@ export function PaymentGatewaySettings() {
             </span>
           </label>;
         })}
-      </fieldset>
-      {selectedProvider === 'razorpay' ? <fieldset className="admin-choice-grid" disabled={saving}>
-        <legend>Razorpay mode</legend>
+        </div>
+      </section>
+      {selectedProvider === 'razorpay' ? <section className="settings-form-section">
+        <h3>Razorpay mode</h3>
+        <div className="admin-choice-grid" aria-disabled={saving}>
         {['test', 'live'].map(mode => {
           const configured = settings.providers?.razorpay?.modes?.[mode]?.configured ?? settings.modes?.[mode]?.configured;
           const detail = settings.providers?.razorpay?.modes?.[mode]?.detail ?? settings.modes?.[mode]?.detail;
           const active = selectedMode === mode;
           return <label key={mode} className={`admin-choice-card ${active ? 'is-selected' : ''} ${!configured ? 'is-disabled' : ''}`}>
             <input type="radio" name="gateway-mode" value={mode} checked={active}
-              disabled={!configured} onChange={() => { setSelectedMode(mode); setMessage(''); }} />
+              disabled={saving || !configured} onChange={() => { setSelectedMode(mode); setMessage(''); }} />
             <span className="admin-choice-dot" aria-hidden="true"></span>
             <span>
               <strong>{mode === 'live' ? 'Live — charge real money' : 'Test — use Razorpay test payments'}</strong>
@@ -71,7 +74,8 @@ export function PaymentGatewaySettings() {
             </span>
           </label>;
         })}
-      </fieldset> : null}
+        </div>
+      </section> : null}
       <p className="admin-settings-note">This changes checkout for all learners. Existing subscriptions keep their original gateway and are not cancelled by this switch.</p>
       <button className="primary-button admin-save-button" type="submit" disabled={saving || (selectedProvider === settings.provider && (selectedProvider === 'phonepe' || selectedMode === settings.mode)) || (selectedProvider === 'phonepe' ? !settings.providers?.phonepe?.configured : !settings.providers?.razorpay?.modes?.[selectedMode]?.configured && !settings.modes?.[selectedMode]?.configured)}>
         {saving ? 'Checking and saving…' : `Apply ${selectedProvider === 'phonepe' ? 'PhonePe' : `Razorpay ${selectedMode === 'live' ? 'Live' : 'Test'}`}`}

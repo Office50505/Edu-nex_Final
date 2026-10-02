@@ -9574,3 +9574,1291 @@ body.premium-nav-admin.admin-theme-dark .admin-workspace .payments-shell .empty-
     align-items: start !important;
   }
 }
+
+/* Payments final layout pass: compact desktop ledgers, labeled mobile cards. */
+body.premium-nav-admin .payments-shell {
+  --payments-gutter: clamp(14px, 1.8vw, 24px);
+}
+
+body.premium-nav-admin .payments-shell.admin-content,
+body.premium-nav-admin .admin-content.payments-shell {
+  gap: var(--payments-gutter) !important;
+}
+
+body.premium-nav-admin .payments-shell .summary-grid {
+  grid-template-columns: repeat(4, minmax(170px, 1fr)) !important;
+  gap: 14px !important;
+}
+
+body.premium-nav-admin .payments-shell .dashboard-panel {
+  max-width: 100% !important;
+  overflow: hidden !important;
+}
+
+body.premium-nav-admin .payments-shell .payment-ledger-panel {
+  border-color: color-mix(in srgb, var(--payment-accent) 26%, var(--payment-border)) !important;
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--payment-accent) 7%, transparent), transparent 220px),
+    var(--payment-panel) !important;
+}
+
+body.premium-nav-admin .payments-shell .admin-data-table {
+  width: 100% !important;
+  min-width: 0 !important;
+}
+
+body.premium-nav-admin .payments-shell .admin-data-head,
+body.premium-nav-admin .payments-shell .admin-data-row {
+  column-gap: 14px !important;
+}
+
+body.premium-nav-admin .payments-shell .admin-data-head > span,
+body.premium-nav-admin .payments-shell .admin-data-row > span {
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+body.premium-nav-admin .payments-shell .payment-user-cell,
+body.premium-nav-admin .payments-shell .payment-amount-cell {
+  gap: 3px !important;
+}
+
+body.premium-nav-admin .payments-shell .payment-user-cell strong,
+body.premium-nav-admin .payments-shell .payment-amount-cell strong {
+  color: var(--payment-text) !important;
+}
+
+body.premium-nav-admin .payments-shell .payment-user-cell small,
+body.premium-nav-admin .payments-shell .payment-amount-cell small {
+  color: var(--payment-muted) !important;
+}
+
+body.premium-nav-admin .payments-shell .payment-ledger-table .admin-data-head,
+body.premium-nav-admin .payments-shell .payment-ledger-table .admin-data-row {
+  grid-template-columns:
+    minmax(155px, 1.24fr)
+    minmax(88px, .6fr)
+    minmax(128px, .82fr)
+    minmax(112px, .72fr)
+    minmax(104px, .64fr)
+    minmax(82px, .48fr)
+    minmax(135px, 1fr) !important;
+}
+
+body.premium-nav-admin .payments-shell .autopay-subscriber-table .admin-data-head,
+body.premium-nav-admin .payments-shell .autopay-subscriber-table .admin-data-row {
+  grid-template-columns:
+    minmax(170px, 1.1fr)
+    minmax(100px, .58fr)
+    minmax(140px, .76fr)
+    minmax(160px, .94fr)
+    minmax(150px, 1fr) !important;
+}
+
+body.premium-nav-admin .payments-shell .revenue-breakdown-table .admin-data-head,
+body.premium-nav-admin .payments-shell .revenue-breakdown-table .admin-data-row {
+  grid-template-columns:
+    minmax(180px, 1fr)
+    minmax(110px, .58fr)
+    minmax(96px, .48fr)
+    minmax(220px, 1.35fr) !important;
+}
+
+@media (min-width: 821px) {
+  body.premium-nav-admin .payments-shell .admin-data-head {
+    display: grid !important;
+    min-height: 34px !important;
+    padding: 8px 14px !important;
+    border: 1px solid var(--payment-border) !important;
+    border-radius: 12px 12px 0 0 !important;
+    background: color-mix(in srgb, var(--payment-panel-soft) 88%, transparent) !important;
+  }
+
+  body.premium-nav-admin .payments-shell .admin-data-row,
+  body.premium-nav-admin .payments-shell .payment-ledger-table .admin-data-row,
+  body.premium-nav-admin .payments-shell .revenue-breakdown-table .admin-data-row,
+  body.premium-nav-admin .payments-shell .autopay-subscriber-table .admin-data-row {
+    display: grid !important;
+    align-items: center !important;
+    min-height: 66px !important;
+    padding: 12px 14px !important;
+    border-radius: 0 !important;
+    border-width: 0 1px 1px !important;
+    box-shadow: none !important;
+    transform: none !important;
+  }
+
+  body.premium-nav-admin .payments-shell .admin-data-row:first-of-type {
+    border-top-width: 1px !important;
+  }
+
+  body.premium-nav-admin .payments-shell .admin-data-row:last-child {
+    border-radius: 0 0 12px 12px !important;
+  }
+
+  body.premium-nav-admin .payments-shell .admin-data-row:hover {
+    box-shadow: inset 3px 0 0 var(--payment-accent) !important;
+    transform: none !important;
+  }
+
+  body.premium-nav-admin .payments-shell .admin-data-row > span::before {
+    content: none !important;
+  }
+
+  body.premium-nav-admin .payments-shell .payment-ledger-table .admin-data-row > span:last-child,
+  body.premium-nav-admin .payments-shell .autopay-subscriber-table .admin-data-row > span:last-child {
+    color: var(--payment-muted) !important;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace !important;
+    font-size: 11px !important;
+  }
+}
+
+@media (max-width: 1120px) and (min-width: 821px) {
+  body.premium-nav-admin .payments-shell .payment-ledger-table .admin-data-head,
+  body.premium-nav-admin .payments-shell .payment-ledger-table .admin-data-row {
+    grid-template-columns:
+      minmax(145px, 1.25fr)
+      minmax(76px, .52fr)
+      minmax(120px, .78fr)
+      minmax(96px, .62fr)
+      minmax(88px, .56fr)
+      minmax(70px, .42fr)
+      minmax(118px, .9fr) !important;
+    column-gap: 10px !important;
+  }
+
+  body.premium-nav-admin .payments-shell .payment-ledger-table .badge {
+    max-width: 100% !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+}
+
+@media (max-width: 900px) {
+  body.premium-nav-admin .payments-shell .summary-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+}
+
+@media (max-width: 820px) {
+  body.premium-nav-admin .payments-shell .panel-head {
+    align-items: flex-start !important;
+    flex-direction: column !important;
+  }
+
+  body.premium-nav-admin .payments-shell .summary-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  body.premium-nav-admin .payments-shell .admin-data-head {
+    display: none !important;
+  }
+
+  body.premium-nav-admin .payments-shell .admin-data-row,
+  body.premium-nav-admin .payments-shell .payment-ledger-table .admin-data-row,
+  body.premium-nav-admin .payments-shell .revenue-breakdown-table .admin-data-row,
+  body.premium-nav-admin .payments-shell .autopay-subscriber-table .admin-data-row {
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+    min-height: 0 !important;
+    padding: 14px !important;
+    border-radius: 14px !important;
+  }
+
+  body.premium-nav-admin .payments-shell .admin-data-row > span {
+    display: grid !important;
+    grid-template-columns: minmax(92px, .42fr) minmax(0, 1fr) !important;
+    gap: 10px !important;
+    align-items: start !important;
+    white-space: normal !important;
+  }
+
+  body.premium-nav-admin .payments-shell .admin-data-row > span::before {
+    content: attr(data-label);
+    color: var(--payment-muted);
+    font-size: 10px;
+    font-weight: 900;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+  }
+
+  body.premium-nav-admin .payments-shell .payment-user-cell strong,
+  body.premium-nav-admin .payments-shell .payment-amount-cell strong,
+  body.premium-nav-admin .payments-shell .payment-user-cell small,
+  body.premium-nav-admin .payments-shell .payment-amount-cell small {
+    white-space: normal !important;
+  }
+}
+
+/* Course editor dark-theme contrast lock: make sections and nested blocks read as real surfaces. */
+body.premium-nav-admin.admin-theme-dark .course-upload-shell {
+  --course-editor-page: #070b14;
+  --course-editor-panel: #111722;
+  --course-editor-panel-strong: #151d2a;
+  --course-editor-panel-soft: #0d2530;
+  --course-editor-border: rgba(226, 232, 240, .24);
+  --course-editor-border-strong: rgba(242, 185, 79, .34);
+  --course-editor-text: #f8fafc;
+  --course-editor-muted: #b8c4d6;
+  --course-editor-faint: #8fa0b8;
+}
+
+body.premium-nav-admin.admin-theme-dark .course-upload-shell.editor-panel,
+body.premium-nav-admin.admin-theme-dark .course-upload-shell .editor-panel {
+  border-color: rgba(226, 232, 240, .18) !important;
+  background:
+    linear-gradient(180deg, rgba(242, 185, 79, .045), transparent 220px),
+    var(--course-editor-page) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .04), 0 24px 70px rgba(0, 0, 0, .38) !important;
+}
+
+body.premium-nav-admin.admin-theme-dark .course-upload-shell .course-editor-steps {
+  border-color: rgba(242, 185, 79, .28) !important;
+  background:
+    linear-gradient(90deg, rgba(242, 185, 79, .13), transparent 48%),
+    #0d171f !important;
+  box-shadow: 0 14px 34px rgba(0, 0, 0, .36), inset 0 1px 0 rgba(255, 255, 255, .05) !important;
+}
+
+body.premium-nav-admin.admin-theme-dark .course-upload-shell .course-editor-steps a {
+  border-color: rgba(242, 185, 79, .28) !important;
+  background: #121b28 !important;
+  color: #ffd66c !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .04) !important;
+}
+
+body.premium-nav-admin.admin-theme-dark .course-upload-shell .course-editor-steps a:hover {
+  border-color: rgba(242, 185, 79, .58) !important;
+  background: rgba(242, 185, 79, .16) !important;
+  color: #fff3c4 !important;
+}
+
+body.premium-nav-admin.admin-theme-dark .course-upload-shell .form-section,
+body.premium-nav-admin.admin-theme-dark .course-upload-shell .course-preview-panel,
+body.premium-nav-admin.admin-theme-dark .course-upload-shell .course-publish-panel,
+body.premium-nav-admin.admin-theme-dark .course-upload-shell .video-entry {
+  border-color: var(--course-editor-border) !important;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, .035), rgba(255, 255, 255, .012)),
+    var(--course-editor-panel) !important;
+  color: var(--course-editor-text) !important;
+  box-shadow: 0 18px 46px rgba(0, 0, 0, .3), inset 0 1px 0 rgba(255, 255, 255, .05) !important;
+}
+
+body.premium-nav-admin.admin-theme-dark .course-upload-shell .form-section:hover,
+body.premium-nav-admin.admin-theme-dark .course-upload-shell .course-publish-panel:hover,
+body.premium-nav-admin.admin-theme-dark .course-upload-shell .video-entry:hover {
+  border-color: var(--course-editor-border-strong) !important;
+}
+
+body.premium-nav-admin.admin-theme-dark .course-upload-shell .form-section-head,
+body.premium-nav-admin.admin-theme-dark .course-upload-shell .publish-panel-head {
+  border-bottom-color: rgba(226, 232, 240, .28) !important;
+}
+
+body.premium-nav-admin.admin-theme-dark .course-upload-shell :where(h1, h2, h3, strong, b, label, .video-entry-title) {
+  color: var(--course-editor-text) !important;
+}
+
+body.premium-nav-admin.admin-theme-dark .course-upload-shell :where(p, small, span, .preview-copy p, .form-section-head p, .publish-panel-head p) {
+  color: var(--course-editor-muted) !important;
+}
+
+body.premium-nav-admin.admin-theme-dark .course-upload-shell .field label {
+  color: #f3f7fd !important;
+}
+
+body.premium-nav-admin.admin-theme-dark .course-upload-shell :where(input, select, textarea) {
+  border-color: rgba(226, 232, 240, .22) !important;
+  background: #092027 !important;
+  color: #f8fafc !important;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .025) !important;
+}
+
+body.premium-nav-admin.admin-theme-dark .course-upload-shell :where(input, select, textarea):focus {
+  border-color: rgba(242, 185, 79, .68) !important;
+  box-shadow: 0 0 0 3px rgba(242, 185, 79, .18), inset 0 0 0 1px rgba(255, 255, 255, .04) !important;
+}
+
+body.premium-nav-admin.admin-theme-dark .course-upload-shell :where(input, textarea)::placeholder {
+  color: #93a4ba !important;
+  opacity: 1 !important;
+}
+
+body.premium-nav-admin.admin-theme-dark .course-upload-shell .file-upload-control {
+  border-color: rgba(226, 232, 240, .26) !important;
+  background: #1b2432 !important;
+}
+
+body.premium-nav-admin.admin-theme-dark .course-upload-shell .file-upload-button {
+  border-right-color: rgba(226, 232, 240, .2) !important;
+  background: linear-gradient(180deg, rgba(242, 185, 79, .24), rgba(242, 185, 79, .13)) !important;
+  color: #fff3c4 !important;
+}
+
+body.premium-nav-admin.admin-theme-dark .course-upload-shell .file-upload-name {
+  color: var(--course-editor-muted) !important;
+}
+
+body.premium-nav-admin.admin-theme-dark .course-upload-shell .thumbnail-preview-card {
+  border-color: rgba(242, 185, 79, .5) !important;
+  background:
+    linear-gradient(135deg, rgba(242, 185, 79, .18), rgba(92, 58, 4, .42)),
+    #171f2c !important;
+  color: #fff3c4 !important;
+}
+
+body.premium-nav-admin.admin-theme-dark .course-upload-shell .preview-copy span {
+  border: 1px solid rgba(242, 185, 79, .38) !important;
+  background: rgba(242, 185, 79, .14) !important;
+  color: #ffd66c !important;
+}
+
+body.premium-nav-admin.admin-theme-dark .course-upload-shell .publish-checklist {
+  border-color: rgba(226, 232, 240, .32) !important;
+  background: #05070b !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .04) !important;
+}
+
+body.premium-nav-admin.admin-theme-dark .course-upload-shell .publish-checklist span {
+  color: #dce5f2 !important;
+}
+
+body.premium-nav-admin.admin-theme-dark .course-upload-shell .publish-checklist span.is-complete {
+  color: #86efac !important;
+}
+
+body.premium-nav-admin.admin-theme-dark .course-upload-shell .admin-placeholder-note {
+  border-color: rgba(242, 185, 79, .5) !important;
+  background: rgba(92, 58, 4, .34) !important;
+  color: #e8d6ae !important;
+}
+
+body.premium-nav-admin.admin-theme-dark .course-upload-shell .admin-editor-grid {
+  border-color: var(--course-editor-border) !important;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, .03), rgba(255, 255, 255, .01)),
+    var(--course-editor-panel) !important;
+}
+
+body.premium-nav-admin.admin-theme-dark .course-upload-shell .admin-editor-grid > div {
+  min-height: 100px;
+  padding: 16px !important;
+  border: 1px solid rgba(226, 232, 240, .18) !important;
+  border-radius: 10px !important;
+  background: var(--course-editor-panel-strong) !important;
+}
+
+body.premium-nav-admin.admin-theme-dark .course-upload-shell .admin-editor-grid > div h2 {
+  color: var(--course-editor-text) !important;
+}
+
+body.premium-nav-admin.admin-theme-dark .course-upload-shell .admin-editor-grid > div p {
+  color: var(--course-editor-muted) !important;
+}
+
+body.premium-nav-admin.admin-theme-dark .course-upload-shell .secondary-button,
+body.premium-nav-admin.admin-theme-dark .course-upload-shell .toolbar-button {
+  border-color: rgba(226, 232, 240, .22) !important;
+  background: #1b2432 !important;
+  color: #eef2f7 !important;
+}
+
+body.premium-nav-admin.admin-theme-dark .course-upload-shell .secondary-button:hover,
+body.premium-nav-admin.admin-theme-dark .course-upload-shell .toolbar-button:hover {
+  border-color: rgba(242, 185, 79, .48) !important;
+  background: #232d3d !important;
+  color: #ffd66c !important;
+}
+
+/* Course review page: keep QA rows readable in the admin dark theme. */
+body.premium-nav-admin .course-review-shell {
+  --review-panel: #151822;
+  --review-panel-strong: #1b2030;
+  --review-panel-soft: #101923;
+  --review-border: rgba(226, 232, 240, .2);
+  --review-border-strong: rgba(242, 185, 79, .48);
+  --review-text: #f8fafc;
+  --review-muted: #aeb9c9;
+}
+
+body.premium-nav-admin .course-review-shell .admin-placeholder-note {
+  border-color: rgba(242, 185, 79, .45) !important;
+  background: rgba(92, 58, 4, .32) !important;
+  color: #e9d7ad !important;
+}
+
+body.premium-nav-admin .course-review-shell .summary-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+}
+
+body.premium-nav-admin .course-review-shell .summary-card {
+  min-height: 128px !important;
+  border-color: var(--review-border) !important;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, .035), rgba(255, 255, 255, .012)),
+    var(--review-panel) !important;
+}
+
+body.premium-nav-admin .course-review-shell .summary-card::before {
+  background: linear-gradient(180deg, #ffd66c, #d79a1f) !important;
+}
+
+body.premium-nav-admin .course-review-panel {
+  overflow: hidden;
+  border: 1px solid var(--review-border);
+  border-radius: 14px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, .03), rgba(255, 255, 255, .01)),
+    var(--review-panel-soft);
+  box-shadow: 0 18px 44px rgba(0, 0, 0, .28), inset 0 1px 0 rgba(255, 255, 255, .04);
+}
+
+body.premium-nav-admin .course-review-head,
+body.premium-nav-admin .course-review-row {
+  display: grid;
+  grid-template-columns: minmax(220px, 1.15fr) 120px minmax(130px, .65fr) 90px minmax(260px, 1.2fr) 120px;
+  align-items: center;
+  gap: 16px;
+}
+
+body.premium-nav-admin .course-review-head {
+  padding: 14px 18px;
+  border-bottom: 1px solid rgba(226, 232, 240, .14);
+  background: rgba(12, 18, 28, .88);
+  color: #cdd6e4;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+
+body.premium-nav-admin .course-review-list {
+  display: grid;
+  gap: 10px;
+  padding: 12px;
+}
+
+body.premium-nav-admin .course-review-row {
+  min-height: 94px;
+  padding: 16px;
+  border: 1px solid var(--review-border);
+  border-radius: 12px;
+  background:
+    linear-gradient(90deg, rgba(242, 185, 79, .08), transparent 38%),
+    var(--review-panel-strong);
+  color: var(--review-text);
+}
+
+body.premium-nav-admin .course-review-row:hover {
+  border-color: var(--review-border-strong);
+  background:
+    linear-gradient(90deg, rgba(242, 185, 79, .12), transparent 44%),
+    #202637;
+}
+
+body.premium-nav-admin .course-review-cell {
+  min-width: 0;
+  color: var(--review-text);
+}
+
+body.premium-nav-admin .course-review-course {
+  display: grid;
+  gap: 6px;
+}
+
+body.premium-nav-admin .course-review-course strong,
+body.premium-nav-admin.admin-theme-dark .admin-workspace .course-review-course strong {
+  overflow: hidden;
+  color: #ffffff !important;
+  font-size: 14px;
+  font-weight: 900;
+  line-height: 1.25;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+body.premium-nav-admin .course-review-course small,
+body.premium-nav-admin .course-review-text {
+  overflow: hidden;
+  color: var(--review-muted) !important;
+  font-size: 12px;
+  line-height: 1.35;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+body.premium-nav-admin .course-review-count strong {
+  color: #f8fafc !important;
+  font-size: 22px;
+  font-weight: 950;
+}
+
+body.premium-nav-admin .course-review-flags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+body.premium-nav-admin .course-review-shell .badge {
+  width: fit-content;
+  max-width: 100%;
+  border-radius: 999px !important;
+  padding: 6px 9px !important;
+  font-size: 10px !important;
+  font-weight: 900 !important;
+  line-height: 1.1;
+  white-space: normal;
+}
+
+body.premium-nav-admin .course-review-shell .badge.good {
+  border-color: rgba(34, 197, 94, .28) !important;
+  background: rgba(34, 197, 94, .17) !important;
+  color: #86efac !important;
+}
+
+body.premium-nav-admin .course-review-shell .badge.warn {
+  border-color: rgba(242, 185, 79, .28) !important;
+  background: rgba(242, 185, 79, .16) !important;
+  color: #f9d98b !important;
+}
+
+body.premium-nav-admin .course-review-action {
+  display: flex;
+  justify-content: flex-end;
+}
+
+body.premium-nav-admin .course-review-action .toolbar-button,
+body.premium-nav-admin.admin-theme-dark .course-review-action a.toolbar-button[href] {
+  min-width: 94px;
+  justify-content: center;
+  border-color: rgba(242, 185, 79, .42) !important;
+  background: linear-gradient(180deg, #ffd66c, #efb53d) !important;
+  color: #221602 !important;
+  font-weight: 950 !important;
+  text-decoration: none !important;
+}
+
+@media (max-width: 1120px) {
+  body.premium-nav-admin .course-review-head,
+  body.premium-nav-admin .course-review-row {
+    grid-template-columns: minmax(220px, 1fr) 110px 88px minmax(220px, 1fr) 110px;
+  }
+
+  body.premium-nav-admin .course-review-head span:nth-child(3),
+  body.premium-nav-admin .course-review-row .course-review-cell:nth-child(3) {
+    display: none;
+  }
+}
+
+@media (max-width: 780px) {
+  body.premium-nav-admin .course-review-shell .summary-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  body.premium-nav-admin .course-review-head {
+    display: none;
+  }
+
+  body.premium-nav-admin .course-review-list {
+    padding: 10px;
+  }
+
+  body.premium-nav-admin .course-review-row {
+    grid-template-columns: 1fr;
+    gap: 12px;
+    min-height: 0;
+    padding: 14px;
+  }
+
+  body.premium-nav-admin .course-review-cell {
+    display: grid;
+    grid-template-columns: 88px minmax(0, 1fr);
+    gap: 12px;
+    align-items: start;
+  }
+
+  body.premium-nav-admin .course-review-cell::before {
+    content: attr(data-label);
+    color: #95a3b8;
+    font-size: 10px;
+    font-weight: 900;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+  }
+
+  body.premium-nav-admin .course-review-course strong,
+  body.premium-nav-admin .course-review-course small,
+  body.premium-nav-admin .course-review-text {
+    white-space: normal;
+  }
+
+  body.premium-nav-admin .course-review-action {
+    justify-content: stretch;
+  }
+
+  body.premium-nav-admin .course-review-action .toolbar-button {
+    width: 100%;
+  }
+}
+
+/* Certificate preview contrast: preserve certificate ink against its paper surface. */
+body.premium-nav-admin.admin-theme-dark .admin-workspace .certificate-live-preview {
+  border-color: rgba(17, 24, 39, .12) !important;
+  background: var(--cert-bg) !important;
+  color: var(--cert-ink) !important;
+  box-shadow: 0 18px 48px rgba(0, 0, 0, .35) !important;
+}
+
+body.premium-nav-admin.admin-theme-dark .admin-workspace .certificate-preview-card {
+  background: radial-gradient(circle at 50% 44%, #fff 0 50%, var(--cert-soft) 100%), var(--cert-paper) !important;
+  color: var(--cert-ink) !important;
+}
+
+body.premium-nav-admin.admin-theme-dark .admin-workspace .certificate-preview-card :is(
+  header,
+  footer,
+  section,
+  strong,
+  b,
+  em,
+  h3,
+  h4,
+  p,
+  span,
+  small,
+  .preview-subtitle,
+  .preview-motto,
+  .preview-signature
+) {
+  color: var(--cert-ink) !important;
+}
+
+body.premium-nav-admin.admin-theme-dark .admin-workspace .certificate-preview-card .preview-seal {
+  background: var(--cert-gold) !important;
+  color: #ffffff !important;
+}
+
+body.premium-nav-admin.admin-theme-dark .admin-workspace .certificate-live-preview > p {
+  color: color-mix(in srgb, var(--cert-ink) 72%, transparent) !important;
+}
+
+body.premium-nav-admin.admin-theme-dark .admin-workspace .certificate-preview-frame,
+body.premium-nav-admin.admin-theme-dark .admin-workspace .certificate-preview-card::before,
+body.premium-nav-admin.admin-theme-dark .admin-workspace .certificate-preview-card::after {
+  border-color: var(--cert-gold) !important;
+}
+
+/* Certificate editor form contrast: dark panels for inputs, cream only for preview. */
+body.premium-nav-admin.admin-theme-dark .admin-workspace .cert-template-form {
+  border-color: rgba(226, 232, 240, .2) !important;
+  background: #11151f !important;
+  color: #f8fafc !important;
+}
+
+body.premium-nav-admin.admin-theme-dark .admin-workspace .cert-template-form fieldset {
+  border-color: rgba(226, 232, 240, .18) !important;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, .035), rgba(255, 255, 255, .012)),
+    #151a25 !important;
+  color: #f8fafc !important;
+}
+
+body.premium-nav-admin.admin-theme-dark .admin-workspace .cert-template-form legend {
+  padding: 0 8px !important;
+  background: #151a25 !important;
+  color: #f8fafc !important;
+}
+
+body.premium-nav-admin.admin-theme-dark .admin-workspace .cert-template-form label {
+  color: #e6edf7 !important;
+}
+
+body.premium-nav-admin.admin-theme-dark .admin-workspace .cert-template-form :is(input, textarea, select) {
+  border-color: rgba(226, 232, 240, .22) !important;
+  background: #0b2027 !important;
+  color: #ffffff !important;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .025) !important;
+}
+
+body.premium-nav-admin.admin-theme-dark .admin-workspace .cert-template-form :is(input, textarea, select):focus {
+  border-color: rgba(242, 185, 79, .62) !important;
+  box-shadow: 0 0 0 3px rgba(242, 185, 79, .16) !important;
+}
+
+body.premium-nav-admin.admin-theme-dark .admin-workspace .cert-template-form input[type="color"] {
+  background: #0f131c !important;
+}
+
+/* Certificate editor final polish: no sticker legends, no gray wash, no cramped controls. */
+body.premium-nav-admin.admin-theme-dark .admin-workspace .cert-template-heading {
+  gap: 14px !important;
+  overflow: visible !important;
+}
+
+body.premium-nav-admin.admin-theme-dark .admin-workspace .cert-template-heading p {
+  max-width: 74ch !important;
+  color: #c2ccda !important;
+  line-height: 1.65 !important;
+}
+
+body.premium-nav-admin.admin-theme-dark .admin-workspace .cert-template-grid {
+  align-items: start !important;
+  gap: 24px !important;
+}
+
+body.premium-nav-admin.admin-theme-dark .admin-workspace .cert-template-form {
+  display: grid !important;
+  gap: 18px !important;
+  padding: 18px !important;
+  border: 1px solid rgba(226, 232, 240, .18) !important;
+  border-radius: 18px !important;
+  background: #0f131c !important;
+  background-image: none !important;
+  box-shadow: 0 18px 44px rgba(0, 0, 0, .28), inset 0 1px 0 rgba(255, 255, 255, .04) !important;
+}
+
+body.premium-nav-admin.admin-theme-dark .admin-workspace .cert-template-form fieldset {
+  display: grid !important;
+  gap: 14px !important;
+  margin: 0 !important;
+  padding: 18px !important;
+  border: 1px solid rgba(226, 232, 240, .16) !important;
+  border-radius: 16px !important;
+  background: #151a25 !important;
+  background-image: none !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .035) !important;
+}
+
+body.premium-nav-admin.admin-theme-dark .admin-workspace .cert-template-form legend {
+  display: block !important;
+  width: 100% !important;
+  margin: 0 0 2px !important;
+  padding: 0 0 12px !important;
+  border: 0 !important;
+  border-bottom: 1px solid rgba(226, 232, 240, .14) !important;
+  background: transparent !important;
+  color: #ffffff !important;
+  font-size: 15px !important;
+  font-weight: 950 !important;
+  line-height: 1.25 !important;
+}
+
+body.premium-nav-admin.admin-theme-dark .admin-workspace .cert-template-form label {
+  display: grid !important;
+  gap: 8px !important;
+  color: #dce5f2 !important;
+  font-size: 11px !important;
+  font-weight: 900 !important;
+  letter-spacing: .05em !important;
+  line-height: 1.25 !important;
+  text-transform: uppercase !important;
+}
+
+body.premium-nav-admin.admin-theme-dark .admin-workspace .cert-template-form :is(input, textarea, select) {
+  width: 100% !important;
+  min-height: 44px !important;
+  padding: 11px 13px !important;
+  border: 1px solid rgba(226, 232, 240, .18) !important;
+  border-radius: 12px !important;
+  background: #08252b !important;
+  color: #ffffff !important;
+  font-size: 13px !important;
+  font-weight: 850 !important;
+  line-height: 1.4 !important;
+}
+
+body.premium-nav-admin.admin-theme-dark .admin-workspace .cert-template-form textarea {
+  min-height: 84px !important;
+  resize: vertical !important;
+}
+
+body.premium-nav-admin.admin-theme-dark .admin-workspace .cert-template-form :is(input, textarea, select)::placeholder {
+  color: #95a3b8 !important;
+  opacity: 1 !important;
+}
+
+body.premium-nav-admin.admin-theme-dark .admin-workspace .cert-template-form :is(input, textarea, select):hover {
+  border-color: rgba(226, 232, 240, .3) !important;
+}
+
+body.premium-nav-admin.admin-theme-dark .admin-workspace .cert-template-form :is(input, textarea, select):focus {
+  border-color: rgba(242, 185, 79, .7) !important;
+  outline: none !important;
+  box-shadow: 0 0 0 3px rgba(242, 185, 79, .16) !important;
+}
+
+body.premium-nav-admin.admin-theme-dark .admin-workspace .cert-template-form .cert-color-grid {
+  gap: 12px !important;
+}
+
+body.premium-nav-admin.admin-theme-dark .admin-workspace .cert-template-form input[type="color"] {
+  min-height: 48px !important;
+  padding: 5px !important;
+  border-radius: 12px !important;
+  background: #0b0f17 !important;
+}
+
+body.premium-nav-admin.admin-theme-dark .admin-workspace .cert-template-form .toolbar-actions {
+  gap: 10px !important;
+  margin-top: 2px !important;
+}
+
+body.premium-nav-admin.admin-theme-dark .admin-workspace .cert-template-form .toolbar-actions .toolbar-button {
+  border-color: rgba(226, 232, 240, .2) !important;
+  background: #1b2432 !important;
+  color: #eef2f7 !important;
+}
+
+body.premium-nav-admin.admin-theme-dark .admin-workspace .cert-template-form .cert-form-section {
+  display: grid !important;
+  gap: 14px !important;
+  margin: 0 !important;
+  padding: 18px !important;
+  border: 1px solid rgba(226, 232, 240, .18) !important;
+  border-radius: 16px !important;
+  background: #111b20 !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .04) !important;
+}
+
+body.premium-nav-admin.admin-theme-dark .admin-workspace .cert-template-form .cert-form-section h3 {
+  margin: 0 0 2px !important;
+  padding: 0 0 12px !important;
+  border-bottom: 1px solid rgba(226, 232, 240, .16) !important;
+  color: #ffffff !important;
+  font-size: 15px !important;
+  font-weight: 950 !important;
+  letter-spacing: 0 !important;
+  line-height: 1.25 !important;
+}
+
+/* Audit log sectioning: keep each event field visually separated. */
+body.premium-nav-admin .audit-log-shell {
+  --audit-panel: #10151f;
+  --audit-card: #151a25;
+  --audit-card-hover: #1a2130;
+  --audit-border: rgba(226, 232, 240, .2);
+  --audit-text: #f8fafc;
+  --audit-muted: #aeb9ca;
+}
+
+body.premium-nav-admin .audit-log-panel {
+  overflow: hidden;
+  border: 1px solid var(--audit-border);
+  border-radius: 16px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, .03), rgba(255, 255, 255, .01)),
+    var(--audit-panel);
+  box-shadow: 0 18px 44px rgba(0, 0, 0, .28), inset 0 1px 0 rgba(255, 255, 255, .04);
+}
+
+body.premium-nav-admin .audit-log-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 18px 20px;
+  border-bottom: 1px solid rgba(226, 232, 240, .14);
+}
+
+body.premium-nav-admin .audit-log-toolbar div {
+  display: grid;
+  gap: 5px;
+}
+
+body.premium-nav-admin .audit-log-toolbar strong {
+  color: var(--audit-text) !important;
+  font-size: 17px;
+  font-weight: 950;
+}
+
+body.premium-nav-admin .audit-log-toolbar span {
+  color: var(--audit-muted) !important;
+  font-size: 12px;
+}
+
+body.premium-nav-admin .audit-log-head,
+body.premium-nav-admin .audit-log-row {
+  display: grid;
+  grid-template-columns: minmax(150px, .9fr) minmax(150px, .86fr) minmax(130px, .78fr) minmax(130px, .72fr) minmax(260px, 1.45fr);
+  align-items: center;
+  gap: 16px;
+}
+
+body.premium-nav-admin .audit-log-head {
+  padding: 12px 18px;
+  background: rgba(12, 18, 28, .82);
+  color: #cdd6e4;
+  font-size: 11px;
+  font-weight: 950;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+
+body.premium-nav-admin .audit-log-list {
+  display: grid;
+  gap: 10px;
+  padding: 12px;
+}
+
+body.premium-nav-admin .audit-log-row {
+  min-height: 78px;
+  padding: 16px;
+  border: 1px solid var(--audit-border);
+  border-radius: 14px;
+  background: var(--audit-card);
+  color: var(--audit-text);
+}
+
+body.premium-nav-admin .audit-log-row:hover {
+  border-color: rgba(242, 185, 79, .42);
+  background: var(--audit-card-hover);
+}
+
+body.premium-nav-admin .audit-log-cell {
+  min-width: 0;
+  color: var(--audit-text);
+}
+
+body.premium-nav-admin .audit-log-actor,
+body.premium-nav-admin .audit-log-entity {
+  display: grid;
+  gap: 5px;
+}
+
+body.premium-nav-admin .audit-log-cell strong {
+  overflow: hidden;
+  color: var(--audit-text) !important;
+  font-size: 13px;
+  font-weight: 900;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+body.premium-nav-admin .audit-log-cell span,
+body.premium-nav-admin .audit-log-cell time {
+  overflow: hidden;
+  color: var(--audit-muted) !important;
+  font-size: 12px;
+  line-height: 1.4;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+body.premium-nav-admin .audit-log-details span {
+  display: block;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+body.premium-nav-admin .audit-log-shell .badge {
+  width: fit-content;
+  max-width: 100%;
+  border-radius: 999px !important;
+  padding: 7px 10px !important;
+  font-size: 10px !important;
+  font-weight: 950 !important;
+  line-height: 1.1;
+  white-space: normal;
+}
+
+body.premium-nav-admin .audit-log-shell .badge.good {
+  border-color: rgba(34, 197, 94, .28) !important;
+  background: rgba(34, 197, 94, .16) !important;
+  color: #86efac !important;
+}
+
+body.premium-nav-admin .audit-log-shell .badge.warn {
+  border-color: rgba(242, 185, 79, .28) !important;
+  background: rgba(242, 185, 79, .16) !important;
+  color: #f9d98b !important;
+}
+
+body.premium-nav-admin .audit-log-shell .badge.bad {
+  border-color: rgba(239, 68, 68, .3) !important;
+  background: rgba(239, 68, 68, .16) !important;
+  color: #fca5a5 !important;
+}
+
+@media (max-width: 900px) {
+  body.premium-nav-admin .audit-log-head {
+    display: none;
+  }
+
+  body.premium-nav-admin .audit-log-row {
+    grid-template-columns: 1fr;
+    gap: 12px;
+    min-height: 0;
+  }
+
+  body.premium-nav-admin .audit-log-cell {
+    display: grid;
+    grid-template-columns: 92px minmax(0, 1fr);
+    gap: 12px;
+    align-items: start;
+  }
+
+  body.premium-nav-admin .audit-log-cell::before {
+    content: attr(data-label);
+    color: #95a3b8;
+    font-size: 10px;
+    font-weight: 950;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+  }
+
+  body.premium-nav-admin .audit-log-cell strong,
+  body.premium-nav-admin .audit-log-cell span,
+  body.premium-nav-admin .audit-log-cell time {
+    white-space: normal;
+  }
+}
+
+/* Settings page sectioning: distinct panels, inset form groups, readable system rows. */
+body.premium-nav-admin .settings-shell {
+  --settings-panel: #11151f;
+  --settings-panel-soft: #151a25;
+  --settings-inset: #101923;
+  --settings-input: #08252b;
+  --settings-border: rgba(226, 232, 240, .2);
+  --settings-border-strong: rgba(242, 185, 79, .35);
+  --settings-text: #f8fafc;
+  --settings-muted: #aeb9ca;
+}
+
+body.premium-nav-admin .settings-shell .admin-settings-card,
+body.premium-nav-admin .settings-system-panel {
+  overflow: hidden;
+  border: 1px solid var(--settings-border) !important;
+  border-radius: 18px !important;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, .03), rgba(255, 255, 255, .01)),
+    var(--settings-panel) !important;
+  box-shadow: 0 18px 44px rgba(0, 0, 0, .28), inset 0 1px 0 rgba(255, 255, 255, .04) !important;
+}
+
+body.premium-nav-admin .settings-shell .admin-settings-card {
+  padding: 22px !important;
+}
+
+body.premium-nav-admin .settings-shell .admin-settings-card + .admin-settings-card,
+body.premium-nav-admin .settings-shell .settings-system-panel {
+  margin-top: 4px;
+}
+
+body.premium-nav-admin .settings-shell .admin-settings-card-head,
+body.premium-nav-admin .settings-system-head {
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(226, 232, 240, .14);
+}
+
+body.premium-nav-admin .settings-shell .admin-settings-card-head h2,
+body.premium-nav-admin .settings-system-head h2 {
+  margin: 5px 0 7px !important;
+  color: var(--settings-text) !important;
+  font-size: 22px !important;
+  font-weight: 950 !important;
+  letter-spacing: -.02em !important;
+}
+
+body.premium-nav-admin .settings-shell .admin-settings-card-head p,
+body.premium-nav-admin .settings-shell .admin-settings-note,
+body.premium-nav-admin .settings-system-head p {
+  color: var(--settings-muted) !important;
+}
+
+body.premium-nav-admin .settings-shell .admin-settings-eyebrow,
+body.premium-nav-admin .settings-system-head span {
+  color: #f2b94f !important;
+  font-size: 11px;
+  font-weight: 950;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+body.premium-nav-admin .settings-shell .admin-settings-form {
+  gap: 18px !important;
+}
+
+body.premium-nav-admin .settings-shell .admin-settings-form :where(.admin-choice-grid, .admin-fieldset) {
+  min-width: 0;
+  padding: 16px !important;
+  border: 1px solid rgba(226, 232, 240, .17) !important;
+  border-radius: 16px !important;
+  background: var(--settings-inset) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .035) !important;
+}
+
+body.premium-nav-admin .settings-shell .settings-form-section {
+  display: grid;
+  gap: 14px;
+  min-width: 0;
+  padding: 16px;
+  border: 1px solid rgba(226, 232, 240, .17);
+  border-radius: 16px;
+  background: var(--settings-inset);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .035);
+}
+
+body.premium-nav-admin .settings-shell .settings-form-section h3 {
+  margin: 0;
+  padding: 0 0 12px;
+  border-bottom: 1px solid rgba(226, 232, 240, .13);
+  color: #dce5f2 !important;
+  font-size: 11px;
+  font-weight: 950;
+  letter-spacing: .1em;
+  line-height: 1.25;
+  text-transform: uppercase;
+}
+
+body.premium-nav-admin .settings-shell .settings-form-section .admin-choice-grid {
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+body.premium-nav-admin .settings-shell .settings-form-section .admin-field-label {
+  margin: 0;
+}
+
+body.premium-nav-admin .settings-shell .admin-choice-grid {
+  align-items: stretch;
+}
+
+body.premium-nav-admin .settings-shell .admin-choice-grid legend {
+  grid-column: 1 / -1;
+  width: 100%;
+  margin: 0 0 12px !important;
+  padding: 0 0 11px !important;
+  border-bottom: 1px solid rgba(226, 232, 240, .13);
+  color: #dce5f2 !important;
+}
+
+body.premium-nav-admin .settings-shell .admin-choice-card,
+body.premium-nav-admin .settings-shell .admin-switch-row {
+  min-height: 64px;
+  border-color: rgba(226, 232, 240, .2) !important;
+  background: var(--settings-panel-soft) !important;
+}
+
+body.premium-nav-admin .settings-shell .admin-choice-card.is-selected,
+body.premium-nav-admin .settings-shell .admin-switch-row:has(input:checked) {
+  border-color: var(--settings-border-strong) !important;
+  background:
+    linear-gradient(90deg, rgba(242, 185, 79, .1), transparent 58%),
+    var(--settings-panel-soft) !important;
+  box-shadow: inset 3px 0 0 #f2b94f !important;
+}
+
+body.premium-nav-admin .settings-shell .admin-choice-card strong,
+body.premium-nav-admin .settings-shell .admin-switch-row strong {
+  color: var(--settings-text) !important;
+}
+
+body.premium-nav-admin .settings-shell .admin-choice-card small,
+body.premium-nav-admin .settings-shell .admin-switch-row small {
+  color: var(--settings-muted) !important;
+}
+
+body.premium-nav-admin .settings-shell .admin-field-label {
+  display: grid;
+  gap: 8px;
+}
+
+body.premium-nav-admin .settings-shell .admin-field-label span {
+  color: #dce5f2 !important;
+  font-size: 11px;
+  font-weight: 950;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+body.premium-nav-admin .settings-shell :where(input, select, textarea) {
+  border-color: rgba(226, 232, 240, .22) !important;
+  background: var(--settings-input) !important;
+  color: #ffffff !important;
+}
+
+body.premium-nav-admin .settings-shell :where(input, select, textarea):focus {
+  border-color: rgba(242, 185, 79, .65) !important;
+  box-shadow: 0 0 0 3px rgba(242, 185, 79, .16) !important;
+}
+
+body.premium-nav-admin .settings-system-panel {
+  display: grid;
+  gap: 0;
+  padding: 22px;
+}
+
+body.premium-nav-admin .settings-system-list {
+  display: grid;
+  gap: 10px;
+  padding-top: 16px;
+}
+
+body.premium-nav-admin .settings-system-row {
+  display: grid;
+  grid-template-columns: minmax(220px, 1fr) minmax(150px, auto);
+  align-items: center;
+  gap: 18px;
+  min-height: 70px;
+  padding: 15px 16px;
+  border: 1px solid rgba(226, 232, 240, .17);
+  border-radius: 14px;
+  background: var(--settings-panel-soft);
+}
+
+body.premium-nav-admin .settings-system-row div {
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+}
+
+body.premium-nav-admin .settings-system-row strong {
+  color: var(--settings-text) !important;
+  font-size: 13px;
+  font-weight: 950;
+}
+
+body.premium-nav-admin .settings-system-row span {
+  color: var(--settings-muted) !important;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+body.premium-nav-admin .settings-system-row b {
+  justify-self: end;
+  max-width: 280px;
+  overflow: hidden;
+  color: #f8fafc !important;
+  font-size: 13px;
+  font-weight: 950;
+  text-align: right;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (max-width: 820px) {
+  body.premium-nav-admin .settings-shell .admin-settings-card-head,
+  body.premium-nav-admin .settings-system-head {
+    align-items: stretch !important;
+    flex-direction: column !important;
+  }
+
+  body.premium-nav-admin .settings-shell .admin-choice-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  body.premium-nav-admin .settings-system-row {
+    grid-template-columns: 1fr;
+  }
+
+  body.premium-nav-admin .settings-system-row b {
+    justify-self: start;
+    max-width: 100%;
+    text-align: left;
+  }
+}

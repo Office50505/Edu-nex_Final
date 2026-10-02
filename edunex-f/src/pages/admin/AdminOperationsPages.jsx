@@ -74,13 +74,17 @@ function MetricStrip({ items }) {
 function StatusTable({ columns, rows, emptyText = "No records found.", className = "" }) {
   if (!rows.length) return <div className="empty-state">{emptyText}</div>;
   return (
-    <div className={`admin-data-table ${className}`.trim()} role="table">
+    <div className={`admin-data-table ${className}`.trim()} role="table" style={{ "--admin-table-cols": columns.length }}>
       <div className="admin-data-head" role="row">
         {columns.map((column) => <span role="columnheader" key={column}>{column}</span>)}
       </div>
       {rows.map((row, index) => (
         <div className="admin-data-row" role="row" key={row.id || index}>
-          {row.cells.map((cell, cellIndex) => <span role="cell" key={`${row.id || index}-${cellIndex}`}>{cell}</span>)}
+          {row.cells.map((cell, cellIndex) => (
+            <span role="cell" data-label={columns[cellIndex]} key={`${row.id || index}-${cellIndex}`}>
+              {cell}
+            </span>
+          ))}
         </div>
       ))}
     </div>
@@ -223,31 +227,63 @@ function courseQaFlags(course) {
 
 export function AdminCourseReviewPage() {
   const { loading, error, courses } = useOperationsData({ courses: true });
-  const rows = courses.map((course) => ({ ...course, flags: courseQaFlags(course) })).filter((course) => course.flags.length);
+  const rows = useMemo(() => (
+    courses
+      .map((course) => ({ ...course, flags: courseQaFlags(course) }))
+      .filter((course) => course.flags.length)
+  ), [courses]);
+  const reviewMetrics = useMemo(() => ([
+    ["Courses flagged", formatNumber(rows.length), "Need admin attention"],
+    ["Published flagged", formatNumber(rows.filter((course) => course.status === "published").length), "Live courses with QA flags"],
+    ["Draft flagged", formatNumber(rows.filter((course) => course.status !== "published").length), "Drafts awaiting review"],
+  ]), [rows]);
   return (
-    <AdminShell activePage="courseReview" title="Course Review" subtitle="Content QA queue for launch readiness, missing assets, and publish checks.">
+    <AdminShell activePage="courseReview" shellClass="course-review-shell" title="Course Review" subtitle="Content QA queue for launch readiness, missing assets, and publish checks.">
       <Message text={error} type="error" />
       <PlaceholderNote>QA flags are derived from live course fields. Backend review states are still needed for approvals, owners, and history.</PlaceholderNote>
-      <MetricStrip items={[
-        ["Courses flagged", formatNumber(rows.length), "Need admin attention"],
-        ["Published flagged", formatNumber(rows.filter((course) => course.status === "published").length), "Live courses with QA flags"],
-        ["Draft flagged", formatNumber(rows.filter((course) => course.status !== "published").length), "Drafts awaiting review"],
-      ]} />
+      <MetricStrip items={reviewMetrics} />
       {loading ? <div className="loading-state">Loading course review queue...</div> : (
-        <StatusTable
-          columns={["Course", "Status", "Category", "Lessons", "QA flags", "Action"]}
-          rows={rows.map((course) => ({
-            id: course._id,
-            cells: [
-              course.title || "Untitled course",
-              <Badge tone={course.status === "published" ? "good" : "warn"}>{course.status || "draft"}</Badge>,
-              course.category?.name || "Uncategorized",
-              formatNumber(course.videoCount || course.videos?.length || 0),
-              <span className="flag-list">{course.flags.map((flag) => <Badge tone="warn" key={flag}>{flag}</Badge>)}</span>,
-              <AdminWrite><a className="toolbar-button" href={`${adminRoutes.upload}?courseId=${encodeURIComponent(course._id)}`}>Review</a></AdminWrite>,
-            ],
-          }))}
-        />
+        rows.length ? (
+          <section className="course-review-panel" aria-label="Course review queue">
+            <div className="course-review-head" role="row">
+              <span>Course</span>
+              <span>Status</span>
+              <span>Category</span>
+              <span>Lessons</span>
+              <span>QA flags</span>
+              <span>Action</span>
+            </div>
+            <div className="course-review-list">
+              {rows.map((course) => {
+                const courseId = course._id || course.id || "";
+                const lessonCount = Number(course.videoCount || course.videos?.length || 0);
+                return (
+                  <article className="course-review-row" key={courseId || course.title}>
+                    <div className="course-review-cell course-review-course" data-label="Course">
+                      <strong>{course.title || "Untitled course"}</strong>
+                      <small>{course.slug || "No slug saved"}</small>
+                    </div>
+                    <div className="course-review-cell" data-label="Status">
+                      <Badge tone={course.status === "published" ? "good" : "warn"}>{course.status || "draft"}</Badge>
+                    </div>
+                    <div className="course-review-cell" data-label="Category">
+                      <span className="course-review-text">{course.category?.name || "Uncategorized"}</span>
+                    </div>
+                    <div className="course-review-cell course-review-count" data-label="Lessons">
+                      <strong>{formatNumber(lessonCount)}</strong>
+                    </div>
+                    <div className="course-review-cell" data-label="QA flags">
+                      <span className="course-review-flags">{course.flags.map((flag) => <Badge tone="warn" key={flag}>{flag}</Badge>)}</span>
+                    </div>
+                    <div className="course-review-cell course-review-action" data-label="Action">
+                      <AdminWrite><a className="toolbar-button" href={`${adminRoutes.upload}?courseId=${encodeURIComponent(courseId)}`}>Review</a></AdminWrite>
+                    </div>
+                  </article>
+                );
+              })}
+            </div>
+          </section>
+        ) : <div className="empty-state">No courses need review right now.</div>
       )}
     </AdminShell>
   );
@@ -776,25 +812,57 @@ export function AdminProgressPage() {
 
 export function AdminAuditLogPage() {
   const { loading, error, analytics } = useOperationsData({ analytics: true });
-  const events = analytics?.recentEvents || [];
+  const events = useMemo(() => (analytics?.recentEvents || []).slice(0, 50), [analytics]);
   return (
-    <AdminShell activePage="auditLog" title="Audit Log" subtitle="Administrative and platform activity trail.">
+    <AdminShell activePage="auditLog" shellClass="audit-log-shell" title="Audit Log" subtitle="Administrative and platform activity trail.">
       <Message text={error} type="error" />
       {loading ? <div className="loading-state">Loading audit trail...</div> : (
-        <StatusTable
-          columns={["Actor", "Action", "Entity", "Timestamp", "Details"]}
-          rows={events.slice(0, 50).map((event) => ({
-            id: event._id,
-            cells: [
-              event.userId || "system",
-              event.event || "activity",
-              event.courseId || event.videoId || "platform",
-              formatDate(event.createdAt),
-              event.courseTitle || event.videoTitle || event.metadata?.message || "No details",
-            ],
-          }))}
-          emptyText="No audit activity yet."
-        />
+        events.length ? (
+          <section className="audit-log-panel" aria-label="Audit activity">
+            <header className="audit-log-toolbar">
+              <div>
+                <strong>Recent activity</strong>
+                <span>{formatNumber(events.length)} latest platform events</span>
+              </div>
+            </header>
+            <div className="audit-log-head" aria-hidden="true">
+              <span>Actor</span>
+              <span>Action</span>
+              <span>Entity</span>
+              <span>Timestamp</span>
+              <span>Details</span>
+            </div>
+            <div className="audit-log-list">
+              {events.map((event, index) => {
+                const action = event.event || "activity";
+                const actionLabel = String(action).replace(/[_-]+/g, " ").replace(/\b\w/g, (letter) => letter.toUpperCase());
+                const actionTone = action.includes("FAILED") || action.includes("ERROR") ? "bad" : action.includes("SUCCESS") ? "good" : "warn";
+                const entity = event.courseId || event.videoId || "platform";
+                const details = event.courseTitle || event.videoTitle || event.metadata?.message || "No details";
+                return (
+                  <article className="audit-log-row" key={event._id || `${action}-${index}`}>
+                    <div className="audit-log-cell audit-log-actor" data-label="Actor">
+                      <strong>{event.userId || "system"}</strong>
+                      <span>{event.userId ? "User event" : "System event"}</span>
+                    </div>
+                    <div className="audit-log-cell" data-label="Action">
+                      <Badge tone={actionTone}>{actionLabel}</Badge>
+                    </div>
+                    <div className="audit-log-cell audit-log-entity" data-label="Entity">
+                      <strong>{entity}</strong>
+                    </div>
+                    <div className="audit-log-cell audit-log-time" data-label="Timestamp">
+                      <time dateTime={event.createdAt || undefined}>{formatDate(event.createdAt)}</time>
+                    </div>
+                    <div className="audit-log-cell audit-log-details" data-label="Details">
+                      <span>{details}</span>
+                    </div>
+                  </article>
+                );
+              })}
+            </div>
+          </section>
+        ) : <div className="empty-state">No audit activity yet.</div>
       )}
     </AdminShell>
   );
@@ -812,12 +880,31 @@ export function AdminSettingsPage() {
     ["Session", "Active", "Use Log out from the sidebar to end this admin session"],
   ], [admin.name, admin.role, cache]);
   return (
-    <AdminShell activePage="settings" title="Admin Settings" subtitle="Profile, session, environment readiness, and workspace preferences.">
+    <AdminShell activePage="settings" shellClass="settings-shell" title="Admin Settings" subtitle="Profile, session, environment readiness, and workspace preferences.">
       <Message text={error} type="error" />
       <PaymentGatewaySettings />
       <MarketingSettings />
       {loading ? <div className="loading-state">Loading settings...</div> : (
-        <StatusTable columns={["Setting", "Value", "Detail"]} rows={settings.map(([name, value, detail]) => ({ id: name, cells: [name, value, detail] }))} />
+        <section className="settings-system-panel" aria-label="Workspace settings">
+          <header className="settings-system-head">
+            <div>
+              <span>Workspace</span>
+              <h2>Workspace settings</h2>
+              <p>Current profile, session, and environment values used by this admin workspace.</p>
+            </div>
+          </header>
+          <div className="settings-system-list">
+            {settings.map(([name, value, detail]) => (
+              <article className="settings-system-row" key={name}>
+                <div>
+                  <strong>{name}</strong>
+                  <span>{detail}</span>
+                </div>
+                <b>{value}</b>
+              </article>
+            ))}
+          </div>
+        </section>
       )}
     </AdminShell>
   );

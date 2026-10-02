@@ -1,6 +1,6 @@
-import { inferProvider, videoError, importLessons, CLOUDFRONT_HOST } from "./videoForm.js";
+import { inferProvider, videoError, CLOUDFRONT_HOST } from "./videoForm.js";
 import { VideoPreview } from "./VideoPreview.jsx";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { AdminShell, Message } from "./AdminShell.jsx";
 import { adminJson, adminRequest, adminRoutes, errorMessage, formatNumber, requireAdmin, slugify } from "./adminApi.js";
 import "./pdf-extraction.css";
@@ -187,7 +187,6 @@ function lessonEditKey(video, index) {
 }
 
 export function AdminUploadPage() {
-  const [bulk, setBulk] = useState('');
   const [preview, setPreview] = useState(null);
   const [cloudHost, setCloudHost] = useState(CLOUDFRONT_HOST);
   useEffect(() => { adminJson('/api/admin/video-providers').then(data => setCloudHost(data.cloudFrontHost)).catch(() => {}); }, []);
@@ -196,48 +195,9 @@ export function AdminUploadPage() {
     setHasUnsavedChanges(true);
     setForm(current => { const videos=[...current.videos]; const next=index+offset; if(next<0||next>=videos.length)return current; [videos[index],videos[next]]=[videos[next],videos[index]];return {...current,videos}; });
   }
-  const checkingRef = useRef(false);
-  const mountedRef = useRef(true);
-  const [checking, setChecking] = useState(false);
   const [extractingNotesIndex, setExtractingNotesIndex] = useState(null);
   const [notesExtraction, setNotesExtraction] = useState(null);
   const [draggingNotesIndex, setDraggingNotesIndex] = useState(null);
-  useEffect(() => { mountedRef.current=true; return () => { mountedRef.current=false; }; }, []);
-  async function checkLessons(lessons) {
-    if (checkingRef.current) return;
-    checkingRef.current=true;setChecking(true);
-    let cursor=0;
-    async function worker() {
-      while (cursor < lessons.length && mountedRef.current) {
-        const lesson=lessons[cursor++];
-        let result;
-        try {
-          const error=videoError(lesson,cloudHost);if(error)throw new Error(error);
-          result=await adminJson('/api/admin/video-metadata',{method:'POST',body:JSON.stringify(lesson)});
-        } catch(error) { result={message:error.message,error:true}; }
-        if(!mountedRef.current)return;
-        setForm(current=>({...current,videos:current.videos.map(v=>v.key===lesson.key && v.videoUrl===lesson.videoUrl && v.provider===lesson.provider ? {...v,
-          duration: !result.error && String(v.duration)===String(lesson.duration) ? String(result.duration) : v.duration,
-          metadataMessage:result.message,metadataError:!!result.error} : v)}));
-      }
-    }
-    try { await Promise.all(Array.from({length:Math.min(3,lessons.length)},worker)); }
-    finally { checkingRef.current=false;if(mountedRef.current)setChecking(false); }
-  }
-  function importBulk() {
-    try {
-      const imported=importLessons(bulk);
-      for(const lesson of imported){const error=videoError(lesson,cloudHost);if(error)throw new Error(`${lesson.title}: ${error}`);}
-      const existing=form.videos.filter(v=>v.title||v.videoUrl);
-      if(existing.length+imported.length>500)throw new Error('A course can contain at most 500 lessons.');
-      if(imported.some(v=>existing.some(old=>old.videoUrl===v.videoUrl)))throw new Error('One of these URLs is already in the course. Remove it from the import first.');
-      const lessons=imported.map((v,i)=>({...makeVideo(i),...v}));
-      setForm(current=>({...current,videos:[...current.videos.filter(v=>v.title||v.videoUrl),...lessons]}));
-      setHasUnsavedChanges(true);
-      setBulk('');setMessage('Lessons imported. Checking durations; review the generated titles and preview playback.');setMessageType('success');
-      void checkLessons(lessons);
-    } catch(error){setMessage(error.message);setMessageType('error');}
-  }
 
   async function extractLessonNotes(index, file) {
     if (!file) return;
@@ -645,7 +605,7 @@ export function AdminUploadPage() {
         ) : <form className="course-form" onSubmit={handleSubmit}>
           <nav className="course-editor-steps" aria-label="Course editor sections">
             <div className="course-editor-step-links">
-              {["Basic details", "Pricing / access", "Course media", "Modules & lessons", "Certificate settings", "SEO metadata", "Publish settings"].map((step, index) => <a href={index < 3 ? "#title" : "#bulkLessons"} key={step}>{step}</a>)}
+              {["Basic details", "Pricing / access", "Course media", "Modules & lessons", "Certificate settings", "SEO metadata", "Publish settings"].map((step, index) => <a href={index < 3 ? "#title" : "#videos"} key={step}>{step}</a>)}
             </div>
             {isEditing ? <div className="course-editor-save">
               <span className={messageType === "error" && message ? "is-error" : hasPendingChanges ? "is-dirty" : "is-saved"} role={messageType === "error" && message ? "alert" : "status"}>
@@ -676,22 +636,6 @@ export function AdminUploadPage() {
                 <div className="field"><label htmlFor="status">Status</label><select id="status" name="status" value={form.status} onChange={(event) => updateField("status", event.target.value)}><option value="draft">Draft</option><option value="published">Published</option></select></div>
                 <div className="field"><label htmlFor="thumbnailUrl">Horizontal thumbnail URL</label><input id="thumbnailUrl" name="thumbnailUrl" type="url" placeholder="https://..." value={form.thumbnailUrl} onChange={(event) => updateField("thumbnailUrl", event.target.value)} /><small>Google Drive links are supported when the file is shared publicly.</small></div>
                 <div className="field"><label htmlFor="thumbnailVerticalUrl">Vertical thumbnail URL</label><input id="thumbnailVerticalUrl" name="thumbnailVerticalUrl" type="url" placeholder="https://..." value={form.thumbnailVerticalUrl} onChange={(event) => updateField("thumbnailVerticalUrl", event.target.value)} /><small>Use a public image URL or public Google Drive file link.</small></div>
-                <div className="field">
-                  <label htmlFor="thumbnailUpload">Upload horizontal thumbnail</label>
-                  <div className="file-upload-control">
-                    <input className="file-upload-input" id="thumbnailUpload" type="file" accept="image/jpeg,image/png,image/webp" onChange={(event) => updateThumbnailFile("thumbnailDataUrl", "thumbnailFileName", event.target.files?.[0])} />
-                    <label className="file-upload-button" htmlFor="thumbnailUpload">Choose file</label>
-                    <span className="file-upload-name">{form.thumbnailFileName || "No file chosen"}</span>
-                  </div>
-                </div>
-                <div className="field">
-                  <label htmlFor="thumbnailVerticalUpload">Upload vertical thumbnail</label>
-                  <div className="file-upload-control">
-                    <input className="file-upload-input" id="thumbnailVerticalUpload" type="file" accept="image/jpeg,image/png,image/webp" onChange={(event) => updateThumbnailFile("thumbnailVerticalDataUrl", "thumbnailVerticalFileName", event.target.files?.[0])} />
-                    <label className="file-upload-button" htmlFor="thumbnailVerticalUpload">Choose file</label>
-                    <span className="file-upload-name">{form.thumbnailVerticalFileName || "No file chosen"}</span>
-                  </div>
-                </div>
               </div>
             </div>
 
@@ -719,18 +663,8 @@ export function AdminUploadPage() {
             </aside>
           </div>
 
-          <section className="form-section admin-editor-grid" aria-label="Pricing, certificate and SEO placeholders">
-            <div><h2>Pricing / Subscription Access</h2><p>Backend API not connected for price, plan access, free/paid mode, and featured course flags.</p></div>
-            <div><h2>Certificate Settings</h2><p>Use Operations → Certification for live criteria today. Course-level certificate toggles need backend course fields.</p></div>
-            <div><h2>SEO / Metadata</h2><p>Slug, title, description, and thumbnails are saved now. Meta title and search tags need backend fields.</p></div>
-          </section>
-
-          <div className="course-publish-panel">
+          <div className="course-publish-panel" id="videos">
             <div className="publish-panel-head"><div><h2>Videos</h2><p>Add permanent video references, arrange lessons, and preview before publishing.</p></div><span>{formatNumber(form.videos.length)} {form.videos.length === 1 ? "video" : "videos"}</span></div>
-            <div className="field"><label htmlFor="bulkLessons">Paste lesson URLs</label><textarea id="bulkLessons" value={bulk} onChange={e=>setBulk(e.target.value)} placeholder={'https://d2vntxz4x493rp.cloudfront.net/Course/01_Introduction/master.m3u8\nhttps://d2vntxz4x493rp.cloudfront.net/Course/02_Next_Lesson/master.m3u8'}/><button type="button" className="secondary-button" disabled={checking} onClick={importBulk}>Import & detect durations</button></div>
-            <p>One URL per line. Titles and numbering come from filenames or lesson folders; numbered title + URL imports still work.</p>
-            <button type="button" className="secondary-button" disabled={checking} onClick={()=>checkLessons(form.videos)}>{checking?'Checking video details…':'Detect all durations / retry checks'}</button>
-            <p role="status">{checking?'You can keep editing while checks run.': 'Detected duration does not replace a playback preview. Retry failed checks after confirming the video URL and provider access.'}</p>
             {preview ? <VideoPreview key={preview.key} video={preview} onClose={()=>setPreview(null)}/> : null}
             <div className="video-editor">
               {form.videos.map((video, index) => (
@@ -764,7 +698,6 @@ export function AdminUploadPage() {
                     <div className="field"><label htmlFor={`videoTopic${index}`}>Topic</label><input id={`videoTopic${index}`} maxLength={80} placeholder="e.g. Prompt Engineering" value={video.topic} onChange={(event) => updateVideo(index, "topic", event.target.value)} /></div>
                     <div className="field"><label htmlFor={`videoThumbnailUrl${index}`}>Horizontal thumbnail URL</label><input id={`videoThumbnailUrl${index}`} type="url" placeholder="https://..." value={video.thumbnailUrl} onChange={(event) => updateVideo(index, "thumbnailUrl", event.target.value)} /></div>
                     <div className="field"><label htmlFor={`videoThumbnailVerticalUrl${index}`}>Vertical thumbnail URL</label><input id={`videoThumbnailVerticalUrl${index}`} type="url" placeholder="https://..." value={video.thumbnailVerticalUrl} onChange={(event) => updateVideo(index, "thumbnailVerticalUrl", event.target.value)} /></div>
-                    <div className="field span-2"><label htmlFor={`videoNotesUrl${index}`}>Lesson notes URL</label><input id={`videoNotesUrl${index}`} type="url" placeholder="https://..." value={video.notesUrl} onChange={(event) => updateVideo(index, "notesUrl", event.target.value)} /><small>This note opens only for Lesson {index + 1}. Leave blank to use the course notes.</small></div>
                     <div className="field span-2"><label htmlFor={`examplePrompt${index}`}>Example prompt</label><textarea id={`examplePrompt${index}`} placeholder="Example: Create a 30-second ad script for a local bakery using this framework." value={video.examplePrompt} onChange={(event) => updateVideo(index, "examplePrompt", event.target.value)} /></div>
                     <div className="field span-2"><label htmlFor={`videoDescription${index}`}>Description</label><textarea id={`videoDescription${index}`} value={video.description} onChange={(event) => updateVideo(index, "description", event.target.value)} /></div>
                   </div></details>

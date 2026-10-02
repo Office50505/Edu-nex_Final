@@ -53,7 +53,8 @@ export function MarketingSettings() {
     {error ? <p className="admin-inline-message is-error" role="alert">{error}</p> : null}
     {message ? <p className="admin-inline-message is-success" role="status">{message}</p> : null}
     {!settings ? <p>{error ? 'Reload to retry loading marketing settings.' : 'Loading marketing settings…'}</p> : <form className="admin-settings-form" onSubmit={save}><AdminEditFields>
-      <fieldset className="admin-fieldset" disabled={saving}>
+      <section className="settings-form-section">
+        <h3>Tracking controls</h3>
         <label className="admin-field-label" htmlFor="metaPixelId">
           <span>Meta Pixel ID</span>
           <input
@@ -62,19 +63,20 @@ export function MarketingSettings() {
             inputMode="numeric"
             autoComplete="off"
             value={pixelId}
+            disabled={saving}
             onChange={event => { setPixelId(event.target.value.replace(/\D/g, '').slice(0, 30)); setMessage(''); }}
             placeholder="Example: 123456789012345"
           />
         </label>
         <label className="admin-switch-row">
-          <input type="checkbox" checked={enabled} onChange={event => { setEnabled(event.target.checked); setMessage(''); }} />
+          <input type="checkbox" checked={enabled} disabled={saving} onChange={event => { setEnabled(event.target.checked); setMessage(''); }} />
           <span className="admin-switch" aria-hidden="true"></span>
           <span>
             <strong>Enable Meta Pixel on offer pages</strong>
             <small>{enabled ? 'Events will be sent when a Pixel ID is saved.' : 'No Meta Pixel events are sent while this is off.'}</small>
           </span>
         </label>
-      </fieldset>
+      </section>
       <p className="admin-settings-note">Phone numbers, OTPs, and emails are not sent to Meta. Only funnel events and purchase values are tracked.</p>
       <button className="primary-button admin-save-button" type="submit" disabled={saving || !dirty || (enabled && !pixelId)}>
         {saving ? 'Saving…' : 'Save Meta Pixel settings'}
