@@ -4,6 +4,7 @@ import Image from 'next/image'
 import { Check, ChevronLeft, LoaderCircle, LockKeyhole, X } from 'lucide-react'
 import { FormEvent, useCallback, useEffect, useRef, useState } from 'react'
 import styles from './MarketingCheckoutFlow.module.css'
+import { OFFER_PRICE } from '@/lib/pricing'
 
 const BASE_PATH = '/marketing-web'
 const SESSION_KEY = 'skillomateMarketingCheckoutSession'
@@ -56,9 +57,9 @@ export default function MarketingCheckoutFlow() {
 
   useEffect(() => {
     void api<Pricing>('/api/onboarding/config').then((data) => {
-      if (data.gateway === 'phonepe' && data.checkoutEnabled && data.oneTimeAmountPaise === 29900) setPricing(data)
-      else setMessage('The ₹299 PhonePe offer is unavailable right now.')
-    }).catch(() => setMessage('Unable to load the ₹299 offer. Please retry.'))
+      if (data.gateway === 'phonepe' && data.checkoutEnabled && Number.isSafeInteger(data.oneTimeAmountPaise) && data.oneTimeAmountPaise > 0) setPricing(data)
+      else setMessage(`The ${OFFER_PRICE} PhonePe offer is unavailable right now.`)
+    }).catch(() => setMessage(`Unable to load the ${OFFER_PRICE} offer. Please retry.`))
   }, [])
 
   useEffect(() => {
@@ -219,7 +220,7 @@ export default function MarketingCheckoutFlow() {
   }
 
   if (!stage) return null
-  const price = pricing ? `₹${pricing.oneTimeAmountPaise / 100}` : '₹299'
+  const price = pricing ? `₹${pricing.oneTimeAmountPaise / 100}` : OFFER_PRICE
   const canClose = stage === 'account' || stage === 'otp'
 
   return (

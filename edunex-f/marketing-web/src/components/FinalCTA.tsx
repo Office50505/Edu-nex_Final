@@ -4,6 +4,7 @@ import { useRef } from 'react'
 import { motion, useInView } from 'framer-motion'
 import { ArrowRight, Sparkles } from 'lucide-react'
 import { SKILLOMATE_CHECKOUT_URL } from '@/lib/links'
+import OfferCtaLabel from '@/components/OfferCtaLabel'
 
 export default function FinalCTA() {
   const ref = useRef(null)
@@ -65,7 +66,7 @@ export default function FinalCTA() {
             transition={{ duration: 0.7, delay: 0.22 }}
             className="text-lg md:text-xl text-gray-400 max-w-2xl mx-auto mb-10 leading-relaxed"
           >
-            Start your free 14-day trial today. No credit card required, no
+            Subscribe today with a free 14-day trial. No credit card required, no
             engineers needed, no long-term contracts. Just measurable revenue
             growth.
           </motion.p>
@@ -83,7 +84,7 @@ export default function FinalCTA() {
               whileTap={{ scale: 0.97 }}
               className="group inline-flex items-center gap-2.5 px-10 py-4 bg-[#eab308] text-black font-black text-base rounded-xl glow-gold transition-all"
             >
-              Start Learning for ₹299
+              <OfferCtaLabel prefix="for" />
               <ArrowRight
                 size={18}
                 className="group-hover:translate-x-1 transition-transform duration-200"

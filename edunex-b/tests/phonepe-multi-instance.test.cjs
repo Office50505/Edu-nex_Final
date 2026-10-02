@@ -85,7 +85,7 @@ function controllerHarness({ env = {}, failFirstOrderSave = false, providerStatu
     user: 'user-1',
     subscription: 'subscription-1',
     orderType,
-    totalAmount: orderType === 'one_time_access' ? 29900 : 50000,
+    totalAmount: orderType === 'one_time_access' ? 49900 : 50000,
     gateway: 'phonepe',
     status: 'pending',
     phonePeMerchantTransactionId: 'merchant-1',
@@ -151,7 +151,7 @@ function controllerHarness({ env = {}, failFirstOrderSave = false, providerStatu
   };
   const phonePeService = {
     oneTimeAccessDays: 30,
-    oneTimeAmountPaise: 29900,
+    oneTimeAmountPaise: 49900,
     readiness: () => ({ configured: true }),
     verifyWebhookSignature: () => true,
     async verifyPaymentStatus() {
@@ -286,7 +286,7 @@ test('same callback on two instances has one atomic owner and one provider verif
 
 test('one-time PhonePe payment grants 30 days without creating a mandate', async () => {
   const flow = controllerHarness({ orderType: 'one_time_access', providerStatus: {
-    success: true, state: 'COMPLETED', amount: 29900,
+    success: true, state: 'COMPLETED', amount: 49900,
     transactionId: 'provider-transaction-1', paymentInstrument: 'UPI', raw: {},
   } });
   const response = responseRecorder();
@@ -296,14 +296,14 @@ test('one-time PhonePe payment grants 30 days without creating a mandate', async
   assert.equal(flow.counters.subscriptionUpdate.$set.frequency, 'once');
   assert.equal(flow.counters.subscriptionUpdate.$set.phonePeMandateId, null);
   assert.equal(flow.counters.subscriptionUpdate.$set.nextBillingAt, null);
-  assert.equal(flow.counters.subscriptionUpdate.$set.amount, 29900);
+  assert.equal(flow.counters.subscriptionUpdate.$set.amount, 49900);
   assert.equal(flow.counters.subscriptionUpdate.$set.currentPeriodEnd.getTime() - flow.order.paidAt.getTime(), 30 * 24 * 60 * 60 * 1000);
   assert.equal(flow.counters.userFields.subscriptionExpiry.getTime(), flow.counters.subscriptionUpdate.$set.currentPeriodEnd.getTime());
 });
 
 test('standard checkout webhook confirms the one-time order from PhonePe status', async () => {
   const flow = controllerHarness({ orderType: 'one_time_access', providerStatus: {
-    success: true, state: 'COMPLETED', amount: 29900,
+    success: true, state: 'COMPLETED', amount: 49900,
     transactionId: 'provider-transaction-1', paymentInstrument: 'UPI', raw: {},
   } });
   const webhook = responseRecorder();
@@ -311,7 +311,7 @@ test('standard checkout webhook confirms the one-time order from PhonePe status'
     headers: { authorization: 'valid' },
     body: Buffer.from(JSON.stringify({
       event: 'checkout.order.completed',
-      payload: { merchantOrderId: 'merchant-1', state: 'COMPLETED', amount: 29900, paymentDetails: [{ transactionId: 'provider-transaction-1' }] },
+      payload: { merchantOrderId: 'merchant-1', state: 'COMPLETED', amount: 49900, paymentDetails: [{ transactionId: 'provider-transaction-1' }] },
     })),
   }, webhook);
   assert.equal(webhook.statusCode, 200);

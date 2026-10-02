@@ -571,7 +571,7 @@ export function SignupPage() {
             </div>
             <a href="signup.html" className="sp-photo-cta">
               <i className="fas fa-plus-circle" aria-hidden="true"></i>
-              Start Skillomate for ₹299
+              Start Skillomate for ₹499
             </a>
           </div>
         </div>
@@ -583,7 +583,7 @@ export function SignupPage() {
             ) : (
               <h2 className="sp-form-title">Create your account</h2>
             )}
-            <p className="sp-form-sub">Create your account, then continue to PhonePe payment for ₹299.</p>
+            <p className="sp-form-sub">Create your account, then continue to PhonePe payment for ₹499.</p>
 
             <label className="sp-field-label" htmlFor="phoneInput">Phone Number</label>
             <div className="sp-input-row">
@@ -634,7 +634,7 @@ export function SignupPage() {
             ) : (
               <h2 className="sp-form-title">Create your account</h2>
             )}
-            <p className="sp-form-sub">Create your account, then continue to PhonePe payment for ₹299.</p>
+            <p className="sp-form-sub">Create your account, then continue to PhonePe payment for ₹499.</p>
 
             <p className="sp-otp-label">Enter OTP</p>
             <p className="sp-otp-desc">We've sent a {otp.length}-digit code to your phone.</p>

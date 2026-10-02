@@ -4,12 +4,14 @@ import type Hls from 'hls.js'
 import { useEffect, useRef, useState } from 'react'
 import { motion, useInView } from 'framer-motion'
 
+const PRIMARY_PREVIEW_VIDEO = '/marketing-web/videos/skillomate-primary-preview.mp4'
+
 const PREVIEWS = [
   {
     title: 'Know where to begin.',
     description: 'Explore a course and follow its lessons in a clear order.',
-    asset: 'Course and lesson list screen',
-    videoSrc: 'https://d2vntxz4x493rp.cloudfront.net/landing-page/marketing-videos/3/v1/3.m3u8',
+    asset: 'Primary Skillomate preview',
+    videoSrc: PRIMARY_PREVIEW_VIDEO,
   },
   {
     title: 'Make room for questions.',
@@ -130,18 +132,18 @@ export default function BeforeAfterSection() {
 
   return (
     <section ref={ref} id="app-preview" className="section-gap">
-      <div className="container-xl">
+      <div className="container-xl max-w-[370px] sm:max-w-[1200px]">
         <motion.div
           initial={{ opacity: 0, y: 24 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6 }}
-          className="mx-auto mb-12 max-w-2xl text-center"
+          className="mx-auto mb-8 max-w-2xl text-center sm:mb-12"
         >
-          <h2 className="text-4xl font-bold text-white sm:text-5xl">
+          <h2 className="text-[34px] font-bold leading-tight text-white sm:text-5xl">
             Take a look inside{' '}
             <span className="text-gradient">Skillomate.</span>
           </h2>
-          <p className="mt-4 text-gray-400 font-(family-name:--font-grotesk)">
+          <p className="mx-auto mt-3 max-w-[300px] text-gray-400 font-(family-name:--font-grotesk) sm:mt-4 sm:max-w-none">
             Your courses, learning assistant, and progress—together in one place.
           </p>
         </motion.div>
@@ -154,9 +156,9 @@ export default function BeforeAfterSection() {
                 initial={{ opacity: 0, y: 24 }}
                 animate={inView ? { opacity: 1, y: 0 } : {}}
                 transition={{ duration: 0.5, delay: index * 0.08 }}
-                className="glass-card rounded-2xl p-5"
+                className="glass-card rounded-2xl p-4 sm:p-5"
               >
-                <div className="relative mb-5 flex aspect-[9/16] items-center justify-center overflow-hidden rounded-xl border border-white/10 bg-black/35">
+                <div className="relative mb-4 flex aspect-[9/16] items-center justify-center overflow-hidden rounded-xl border border-white/10 bg-black/35 sm:mb-5">
                   <div className="absolute inset-0 bg-linear-to-br from-lime/10 via-transparent to-white/5" />
                   <PreviewVideo
                     src={preview.videoSrc}

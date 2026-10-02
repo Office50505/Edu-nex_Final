@@ -390,7 +390,7 @@ export function PaymentPage() {
   const oneTimePrice = pricing?.oneTimeAmountPaise ? amount(pricing.oneTimeAmountPaise) : "";
   const trialPrice = pricing?.trialAmountPaise ? amount(pricing.trialAmountPaise) : "₹1";
   const monthlyPrice = pricing?.subscriptionAmountPaise ? `${amount(pricing.subscriptionAmountPaise)}/month` : "₹499/month";
-  const currentPlanPrice = phonePeOneTime ? (oneTimePrice || "₹299") : trial ? trialPrice : monthlyPrice;
+  const currentPlanPrice = phonePeOneTime ? (oneTimePrice || "₹499") : trial ? trialPrice : monthlyPrice;
   const checkoutProviderName = phonePeOneTime ? "PhonePe" : "Razorpay";
   const checkoutTitle = phonePeOneTime ? "Skillomate access" : trial ? "Skillomate trial" : "Skillomate monthly access";
   const checkoutDescription = phonePeOneTime

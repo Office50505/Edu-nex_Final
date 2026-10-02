@@ -1,6 +1,5 @@
 import Navbar from '@/components/Navbar'
 import Hero from '@/components/Hero'
-import ProblemSection from '@/components/ProblemSection'
 import BeforeAfterSection from '@/components/BeforeAfterSection'
 import Pricing from '@/components/Pricing'
 import Testimonials from '@/components/Testimonials'
@@ -18,7 +17,6 @@ export default function Home() {
 
       <main>
         <Hero />
-        <ProblemSection />
         <BeforeAfterSection />
         <Pricing />
         <Testimonials />

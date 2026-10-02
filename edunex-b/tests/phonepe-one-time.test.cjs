@@ -35,11 +35,11 @@ test('PhonePe pricing remains readable while the new-payment gate is closed', as
   assert.equal(res.statusCode, 200);
   assert.equal(res.body.gateway, 'phonepe');
   assert.equal(res.body.checkoutEnabled, false);
-  assert.equal(res.body.oneTimeAmountPaise, 29900);
+  assert.equal(res.body.oneTimeAmountPaise, 49900);
   assert.equal(res.body.accessDays, 30);
 });
 
-test('PhonePe direct checkout requests exactly 29900 paise without a subscription setup', async (t) => {
+test('PhonePe direct checkout requests exactly 49900 paise without a subscription setup', async (t) => {
   const originalFetch = global.fetch;
   const requests = [];
   global.fetch = async (url, options) => {
@@ -53,7 +53,7 @@ test('PhonePe direct checkout requests exactly 29900 paise without a subscriptio
   const payment = requests.find(request => request.url.endsWith('/checkout/v2/pay'));
   assert.ok(payment);
   const body = JSON.parse(payment.options.body);
-  assert.equal(body.amount, 29900);
+  assert.equal(body.amount, 49900);
   assert.equal(body.paymentFlow.type, 'PG_CHECKOUT');
   assert.equal(body.paymentFlow.message, 'Skillomate 30-day access');
   assert.equal(body.paymentFlow.paymentModeConfig, undefined);

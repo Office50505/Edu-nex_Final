@@ -23,7 +23,7 @@ export function PricingPage() {
     setPageMeta({
       title: "Pricing | Skillomate",
       description: pricing?.gateway === "phonepe"
-        ? "Skillomate Premium: one-time ₹299 payment for 30 days of access."
+        ? "Skillomate Premium: one-time ₹499 payment for 30 days of access."
         : "Skillomate Premium: ₹499/month, automatically renewing until cancelled.",
       canonicalPath: "/pricing",
     });

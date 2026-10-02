@@ -242,7 +242,7 @@ export function AdOfferPage({ offerPage }) {
   }, [pricingRequest]);
 
   const trackOfferEvent = useCallback((eventName, params = {}, options = {}) => {
-    trackMetaPixel(eventName, { ...OFFER_EVENT_PARAMS, ...(phonePeOneTime ? { content_name: "Skillomate ₹299 Access" } : {}), ...params }, options);
+    trackMetaPixel(eventName, { ...OFFER_EVENT_PARAMS, ...(phonePeOneTime ? { content_name: "Skillomate ₹499 Access" } : {}), ...params }, options);
   }, [phonePeOneTime]);
 
   const trackPurchase = useCallback(() => {
@@ -522,13 +522,13 @@ export function AdOfferPage({ offerPage }) {
       <section className="ad-offer-shell" aria-label="Skillomate subscription offer" inert={Boolean(paymentStage)} aria-hidden={paymentStage ? true : undefined}>
         <PreviewVideo key={offerMedia.videoUrl} media={offerMedia} modalOpen={Boolean(modalStep || paymentStage || busy)} onPixelEvent={trackOfferEvent} />
         <section className="ad-offer-content" aria-labelledby="ad-offer-title">
-          <button type="button" className="ad-special-ribbon" onClick={begin} disabled={busy || pricingUnavailable} aria-label={pricingUnavailable ? "Special offer - checkout unavailable" : phonePeOneTime ? "Special offer - pay ₹299 once" : "Special offer - subscribe for ₹1"}>
+          <button type="button" className="ad-special-ribbon" onClick={begin} disabled={busy || pricingUnavailable} aria-label={pricingUnavailable ? "Special offer - checkout unavailable" : phonePeOneTime ? "Special offer - pay ₹499 once" : "Special offer - subscribe for ₹1"}>
             <span aria-hidden="true">ϟ</span> Special offer
           </button>
           <p className="ad-offer-kicker">Only for you</p>
           <h1 id="ad-offer-title">Skillomate <span>{phonePeOneTime || !offerPricing ? "Premium Access" : "Subscription"}</span></h1>
           <p className="ad-offer-intro">Unlock AI Influencer Course and start your learning journey today.</p>
-          <button type="button" className="ad-price-card" onClick={begin} disabled={busy || pricingUnavailable} aria-label={pricingUnavailable ? "Payment pricing unavailable" : phonePeOneTime ? "View ₹299 offer details" : "View ₹1 offer details"}>
+          <button type="button" className="ad-price-card" onClick={begin} disabled={busy || pricingUnavailable} aria-label={pricingUnavailable ? "Payment pricing unavailable" : phonePeOneTime ? "View ₹499 offer details" : "View ₹1 offer details"}>
             <div className="ad-limited-badge"><span aria-hidden="true">◷</span> Limited time offer</div>
             <strong>{phonePeOneTime ? `₹${offerPricing.oneTimeAmountPaise / 100}` : offerPricing ? "₹1" : "—"}</strong>
             <h2>{phonePeOneTime ? `For ${offerPricing.accessDays} Days` : offerPricing ? "For 24 Hours" : "Pricing unavailable"}</h2>

@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Menu, X } from 'lucide-react'
 import Image from 'next/image'
 import { SKILLOMATE_CHECKOUT_URL } from '@/lib/links'
+import OfferCtaLabel from '@/components/OfferCtaLabel'
 
 const MARKETING_BASE_PATH = '/marketing-web'
 
@@ -42,9 +43,9 @@ export default function Navbar() {
 
             <a
               href={SKILLOMATE_CHECKOUT_URL}
-              className="hidden sm:inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-bold font-(family-name:--font-grotesk) btn-primary"
+              className="hidden sm:inline-flex items-center gap-2 rounded-full px-4 py-2.5 text-[13px] font-bold font-(family-name:--font-grotesk) btn-primary"
             >
-              Start Learning — ₹299
+              <OfferCtaLabel />
             </a>
 
             <button
@@ -70,9 +71,9 @@ export default function Navbar() {
             <a
               href={SKILLOMATE_CHECKOUT_URL}
               onClick={() => setOpen(false)}
-              className="block w-full py-3.5 rounded-full text-sm font-bold text-center font-(family-name:--font-grotesk) btn-primary"
+              className="flex w-full items-center justify-center rounded-full py-3.5 text-[13px] font-bold text-center font-(family-name:--font-grotesk) btn-primary"
             >
-              Start Learning — ₹299
+              <OfferCtaLabel />
             </a>
           </motion.div>
         )}

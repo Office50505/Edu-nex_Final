@@ -1,6 +1,7 @@
 'use client'
 
 import { SKILLOMATE_CHECKOUT_URL } from '@/lib/links'
+import OfferCtaLabel from '@/components/OfferCtaLabel'
 
 export default function Footer() {
   return (
@@ -28,9 +29,9 @@ export default function Footer() {
           </p>
           <a
             href={SKILLOMATE_CHECKOUT_URL}
-            className="btn-primary inline-flex items-center gap-2.5 px-8 py-4 rounded-full text-[15px] font-bold font-(family-name:--font-grotesk)"
+            className="btn-primary inline-flex items-center gap-2.5 rounded-full px-5 py-4 text-[13px] font-bold font-(family-name:--font-grotesk)"
           >
-            Start Learning — ₹299 →
+            <OfferCtaLabel arrow />
           </a>
 
           {/* Mini trust row */}

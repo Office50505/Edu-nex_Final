@@ -21,7 +21,7 @@ const webhookUsername = envValue('PHONEPE_WEBHOOK_USERNAME');
 const webhookPassword = envValue('PHONEPE_WEBHOOK_PASSWORD');
 const trialAmountPaise = Number(process.env.TRIAL_AMOUNT_PAISE || 100);
 const subscriptionAmountPaise = Number(process.env.SUBSCRIPTION_AMOUNT_PAISE || 50000);
-const oneTimeAmountPaise = 29900;
+const oneTimeAmountPaise = 49900;
 const oneTimeAccessDays = 30;
 
 let cachedToken = null;

@@ -4,6 +4,8 @@ import { useRef } from 'react'
 import { motion, useInView } from 'framer-motion'
 import { Check } from 'lucide-react'
 import { SKILLOMATE_CHECKOUT_URL } from '@/lib/links'
+import { OFFER_PRICE, ORIGINAL_PRICE } from '@/lib/pricing'
+import OfferCtaLabel from '@/components/OfferCtaLabel'
 
 const INCLUDED = [
   'Step-by-step video courses',
@@ -31,18 +33,18 @@ export default function Pricing() {
         />
       </div>
 
-      <div className="container-xl max-w-3xl mx-auto relative">
+      <div className="container-xl mx-auto max-w-[370px] relative sm:max-w-3xl">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.55 }}
-          className="text-center mb-12"
+          className="mb-8 text-center sm:mb-12"
         >
-          <h2 className="text-4xl sm:text-5xl font-bold text-white mb-4">
-            Start your next skill{' '}
+          <h2 className="mb-3 text-[34px] font-bold leading-tight text-white sm:mb-4 sm:text-5xl">
+            Subscribe to your next skill{' '}
             <span className="text-gradient">with Skillomate.</span>
           </h2>
-          <p className="text-gray-400 font-(family-name:--font-grotesk) text-[15px]">
+          <p className="mx-auto max-w-[310px] text-gray-400 font-(family-name:--font-grotesk) text-[15px] sm:max-w-none">
             Get access to structured learning, guidance from your AI assistant, and a place to track your progress.
           </p>
         </motion.div>
@@ -53,12 +55,12 @@ export default function Pricing() {
           transition={{ duration: 0.65, delay: 0.15 }}
           className="glass-card-featured rounded-2xl overflow-hidden"
         >
-          <div className="p-8 sm:p-10">
+          <div className="p-5 sm:p-10">
             <div className="mb-2">
               <h3 className="text-2xl font-bold text-white">Skillomate access</h3>
             </div>
             <p className="text-gray-400 text-sm mb-8 font-(family-name:--font-grotesk)">
-              Start learning with Skillomate for ₹299.
+              Subscribe to Skillomate for {OFFER_PRICE}. Limited offer from {ORIGINAL_PRICE}.
             </p>
 
             <ul className="space-y-3.5 mb-10">
@@ -73,10 +75,11 @@ export default function Pricing() {
             </ul>
 
             {/* Price display */}
-            <div className="flex items-end gap-3 mb-6">
-              <span className="text-white text-5xl font-extrabold tracking-tight leading-none">₹299</span>
+            <div className="mb-6 flex flex-wrap items-end gap-3">
+              <span className="text-white text-5xl font-extrabold tracking-tight leading-none">{OFFER_PRICE}</span>
+              <span className="pb-1 text-2xl font-bold leading-none text-gray-500 line-through">{ORIGINAL_PRICE}</span>
               <div className="pb-1">
-                <p className="text-lime text-xs font-semibold font-(family-name:--font-grotesk)">Skillomate access</p>
+                <p className="text-lime text-xs font-semibold uppercase tracking-[0.14em] font-(family-name:--font-grotesk)">Limited offer</p>
               </div>
             </div>
 
@@ -86,7 +89,7 @@ export default function Pricing() {
               whileTap={{ scale: 0.985 }}
               className="btn-primary block w-full py-4 text-[16px] text-center rounded-full font-(family-name:--font-grotesk)"
             >
-              Start Learning for ₹299
+              <OfferCtaLabel prefix="for" />
             </motion.a>
 
             <p className="text-center text-gray-500 text-xs mt-3.5 font-(family-name:--font-grotesk)">

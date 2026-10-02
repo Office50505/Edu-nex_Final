@@ -38,7 +38,7 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'Skillomate — Learn AI One Skill at a Time',
-    description: 'Start learning practical AI skills with Skillomate.',
+    description: 'Subscribe to practical AI skills with Skillomate.',
   },
   robots: {
     index: true,

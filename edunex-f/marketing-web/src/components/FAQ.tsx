@@ -3,6 +3,7 @@
 import { useRef, useState } from 'react'
 import { motion, useInView, AnimatePresence } from 'framer-motion'
 import { Plus, Minus } from 'lucide-react'
+import { OFFER_PRICE, ORIGINAL_PRICE } from '@/lib/pricing'
 
 const ITEMS = [
   {
@@ -31,7 +32,7 @@ const ITEMS = [
   },
   {
     q: "What is the current price?",
-    a: "Skillomate access is currently shown at ₹299. External AI tool subscriptions, paid plans, credits, or generation costs may require separate payment.",
+    a: `Skillomate access is currently shown at ${OFFER_PRICE} as a limited offer, discounted from ${ORIGINAL_PRICE}. External AI tool subscriptions, paid plans, credits, or generation costs may require separate payment.`,
   },
   {
     q: "Can I learn on mobile and web?",
