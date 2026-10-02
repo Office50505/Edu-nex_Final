@@ -3,7 +3,7 @@ export const DEFAULT_OFFER_VIDEO_URL = "/assets/offer-video/Video-65454.mp4";
 const DEFAULT_OFFER_POSTER_URL = "https://d5yxyknp74yz8.cloudfront.net/courses/ai-influencer/lessons/lesson-01.webp";
 
 const UPLOADED_OFFER_VIDEO_URLS = Object.freeze({
-  2: "/assets/offer-video/Video-65454.mp4",
+  2: "/assets/offer-video/offer page.mp4",
   3: "/assets/offer-video/offer-3.mov",
   4: "/assets/offer-video/offer-4.mov",
 });
