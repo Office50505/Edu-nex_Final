@@ -258,7 +258,7 @@ export function AdminOrdersPage() {
 export function AdminPaymentsPage() {
   const { loading, error, analytics, health } = useOperationsData({ analytics: true, health: true });
   const [ledger, setLedger] = useState({ loading: true, error: "", payments: [], summary: {} });
-  const [dateRange, setDateRange] = useState(() => defaultDateRange("today"));
+  const [dateRange, setDateRange] = useState(() => defaultDateRange("allTime"));
   const [query, setQuery] = useState("");
   useEffect(() => {
     let active = true;
@@ -266,7 +266,7 @@ export function AdminPaymentsPage() {
       if (!requireAdmin()) return;
       setLedger((current) => ({ ...current, loading: true, error: "" }));
       try {
-        const data = await adminJson("/api/admin/payments?limit=200", {}, "Unable to load payment ledger.");
+        const data = await adminJson("/api/admin/payments?limit=500", {}, "Unable to load payment ledger.");
         if (active) setLedger({ loading: false, error: "", payments: data.payments || [], summary: data.summary || {} });
       } catch (error) {
         if (active) setLedger((current) => ({ ...current, loading: false, error: error.message || "Unable to load payment ledger." }));
@@ -304,6 +304,34 @@ export function AdminPaymentsPage() {
     autoPayAmount: filteredPayments.filter((order) => paymentMethodLabel(order) === "AutoPay").reduce((sum, order) => sum + Number(order.totalAmount || 0), 0),
     directAmount: filteredPayments.filter((order) => paymentMethodLabel(order) !== "AutoPay").reduce((sum, order) => sum + Number(order.totalAmount || 0), 0),
   }), [filteredPayments]);
+  const lifetimeSummary = ledger.summary || {};
+  const lifetimeTotal = Number(lifetimeSummary.lifetimeTotalAmount ?? totals.totalRevenue ?? 0);
+  const lifetimeBreakdown = Array.isArray(lifetimeSummary.lifetimeBreakdown) ? lifetimeSummary.lifetimeBreakdown : [];
+  const revenueBreakdownRows = [
+    {
+      id: "autopay-total",
+      label: "AutoPay renewals",
+      amount: Number(lifetimeSummary.lifetimeAutoPayAmount || 0),
+      count: Number(lifetimeSummary.lifetimeAutoPayCount || 0),
+      note: "Subscribers charged by recurring renewal",
+    },
+    {
+      id: "direct-total",
+      label: "Direct payments",
+      amount: Number(lifetimeSummary.lifetimeDirectAmount || 0),
+      count: Number(lifetimeSummary.lifetimeDirectCount || 0),
+      note: "Trial, mandate setup, and one-time access payments",
+    },
+    ...lifetimeBreakdown.map((row) => ({
+      id: `type-${row.orderType || "unknown"}`,
+      label: orderTypeLabel(row.orderType),
+      amount: Number(row.amount || 0),
+      count: Number(row.count || 0),
+      note: "Order type detail",
+    })),
+  ].filter((row, index, rows) => row.amount > 0 || row.count > 0 || index < 2)
+    .filter((row, index, rows) => rows.findIndex((candidate) => candidate.id === row.id) === index);
+  const autoPayPayments = (ledger.payments || []).filter((order) => paymentMethodLabel(order) === "AutoPay");
   return (
     <AdminShell activePage="payments" title="Payments" subtitle="Money received, AutoPay cuts, direct payments, and user payment context.">
       <Message text={error} type="error" />
@@ -317,14 +345,48 @@ export function AdminPaymentsPage() {
           <label>Payment date</label>
           <AdminDateRangeFilter value={dateRange} onChange={setDateRange} label="Payment date" />
         </div>
-        <button className="toolbar-button" type="button" onClick={() => { setQuery(""); setDateRange(defaultDateRange("today")); }}>Clear</button>
+        <button className="toolbar-button" type="button" onClick={() => { setQuery(""); setDateRange(defaultDateRange("allTime")); }}>Clear</button>
       </section>
       <MetricStrip items={[
         ["Ledger received", money(filteredSummary.totalAmount), `${formatNumber(filteredSummary.count)} paid rows shown`],
-        ["Lifetime revenue", money(totals.totalRevenue), "All paid orders"],
+        ["Lifetime revenue", money(lifetimeTotal), `${money(lifetimeSummary.lifetimeAutoPayAmount)} AutoPay · ${money(lifetimeSummary.lifetimeDirectAmount)} direct`],
         ["AutoPay cuts", money(filteredSummary.autoPayAmount), `${formatNumber(filteredSummary.autoPayCount)} monthly renewals`],
         ["Direct payments", money(filteredSummary.directAmount), `${formatNumber(filteredSummary.directCount)} trial, mandate, or one-time payments`],
       ]} />
+      <section className="dashboard-panel">
+        <h2 className="panel-title">Revenue breakdown</h2>
+        {ledger.loading ? <div className="loading-state">Loading revenue breakdown...</div> : (
+          <StatusTable
+            className="revenue-breakdown-table"
+            columns={["Source", "Amount", "Paid orders", "Detail"]}
+            rows={revenueBreakdownRows.map((row) => ({
+              id: row.id,
+              cells: [row.label, <strong>{money(row.amount)}</strong>, formatNumber(row.count), row.note],
+            }))}
+            emptyText="No paid revenue returned."
+          />
+        )}
+      </section>
+      <section className="dashboard-panel">
+        <h2 className="panel-title">AutoPay subscribers</h2>
+        {ledger.loading ? <div className="loading-state">Loading AutoPay subscribers...</div> : (
+          <StatusTable
+            className="autopay-subscriber-table"
+            columns={["Subscriber", "Amount paid", "Paid at", "Subscription", "Reference"]}
+            rows={autoPayPayments.map((order) => ({
+              id: order._id || paymentReference(order),
+              cells: [
+                <span className="payment-user-cell"><strong>{order.user?.fullName || "Unknown user"}</strong><small>{order.user?.mobileNumber || order.user?.email || "No contact"}</small></span>,
+                <span className="payment-amount-cell"><strong>{money(order.totalAmount)}</strong><small>{orderTypeLabel(order.orderType)}</small></span>,
+                formatDateTime(order.paidAt || order.createdAt),
+                valueText(order.razorpaySubscriptionId || order.subscription?.razorpaySubscriptionId, "No subscription id"),
+                paymentReference(order),
+              ],
+            }))}
+            emptyText="No AutoPay subscriber payments returned."
+          />
+        )}
+      </section>
       {ledger.loading ? <div className="loading-state">Loading payment ledger...</div> : (
         <StatusTable
           className="payment-ledger-table"

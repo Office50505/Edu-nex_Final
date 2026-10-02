@@ -6371,6 +6371,16 @@ body.premium-nav-admin .payment-ledger-table .admin-data-row {
   padding-inline: 18px !important;
 }
 
+body.premium-nav-admin .revenue-breakdown-table .admin-data-head,
+body.premium-nav-admin .revenue-breakdown-table .admin-data-row {
+  grid-template-columns: minmax(220px, 1fr) minmax(140px, .7fr) minmax(110px, .55fr) minmax(260px, 1.2fr) !important;
+}
+
+body.premium-nav-admin .autopay-subscriber-table .admin-data-head,
+body.premium-nav-admin .autopay-subscriber-table .admin-data-row {
+  grid-template-columns: minmax(220px, 1.1fr) minmax(140px, .7fr) minmax(170px, .8fr) minmax(210px, 1fr) minmax(220px, 1fr) !important;
+}
+
 body.premium-nav-admin .admin-data-head {
   min-height: 48px !important;
   background: rgba(248, 250, 252, .9) !important;

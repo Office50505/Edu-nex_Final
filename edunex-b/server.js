@@ -2480,13 +2480,24 @@ app.get('/api/admin/users', protectAdmin, async (req, res) => {
 app.get('/api/admin/payments', protectAdmin, async (req, res) => {
   try {
     const limit = Math.min(Math.max(Number(req.query.limit) || 150, 1), 500);
-    const rows = await Order.find({ status: 'paid' })
-      .sort({ paidAt: -1, createdAt: -1 })
-      .limit(limit)
-      .populate('user', 'fullName email mobileNumber subscriptionStatus')
-      .populate('subscription', 'gateway status subscriptionType amount razorpayStatus razorpaySubscriptionId phonePeSubscriptionId phonePeMandateId nextBillingAt currentPeriodStart currentPeriodEnd cancelledAt')
-      .select('user subscription totalAmount gateway status orderType phonePePaymentInstrument phonePeMerchantTransactionId phonePeTransactionId razorpayPaymentId razorpaySubscriptionId refundedAmount paidAt createdAt')
-      .lean();
+    const testerUsers = await User.find({ isTester: true }).select('_id').lean();
+    const testerObjectIds = testerUsers.map((user) => user._id);
+    const testerUserExclusion = testerObjectIds.length ? { user: { $nin: testerObjectIds } } : {};
+    const paidOrderFilter = { ...testerUserExclusion, status: 'paid' };
+    const [rows, lifetimeBreakdownRows] = await Promise.all([
+      Order.find(paidOrderFilter)
+        .sort({ paidAt: -1, createdAt: -1 })
+        .limit(limit)
+        .populate('user', 'fullName email mobileNumber subscriptionStatus')
+        .populate('subscription', 'gateway status subscriptionType amount razorpayStatus razorpaySubscriptionId phonePeSubscriptionId phonePeMandateId nextBillingAt currentPeriodStart currentPeriodEnd cancelledAt')
+        .select('user subscription totalAmount gateway status orderType phonePePaymentInstrument phonePeMerchantTransactionId phonePeTransactionId razorpayPaymentId razorpaySubscriptionId refundedAmount paidAt createdAt')
+        .lean(),
+      Order.aggregate([
+        { $match: paidOrderFilter },
+        { $group: { _id: '$orderType', count: { $sum: 1 }, amount: { $sum: '$totalAmount' } } },
+        { $sort: { amount: -1 } },
+      ]),
+    ]);
     const orderSubscriptionIds = new Set(rows.map((order) => String(order.razorpaySubscriptionId || order.subscription?.razorpaySubscriptionId || '')).filter(Boolean));
     const paidSubscriptions = await Subscription.find({
       gateway: 'razorpay',
@@ -2520,6 +2531,16 @@ app.get('/api/admin/payments', protectAdmin, async (req, res) => {
     const totalAmount = ledgerRows.reduce((sum, order) => sum + Number(order.totalAmount || 0), 0);
     const autoPayRows = ledgerRows.filter((order) => order.orderType === 'subscription_charge');
     const directRows = ledgerRows.filter((order) => order.orderType !== 'subscription_charge');
+    const lifetimeBreakdown = lifetimeBreakdownRows.map((row) => ({
+      orderType: row._id || 'unknown',
+      count: row.count || 0,
+      amount: row.amount || 0,
+    }));
+    const lifetimeTotalAmount = lifetimeBreakdown.reduce((sum, row) => sum + Number(row.amount || 0), 0);
+    const lifetimeAutoPay = lifetimeBreakdown.filter((row) => row.orderType === 'subscription_charge');
+    const lifetimeAutoPayAmount = lifetimeAutoPay.reduce((sum, row) => sum + Number(row.amount || 0), 0);
+    const lifetimeAutoPayCount = lifetimeAutoPay.reduce((sum, row) => sum + Number(row.count || 0), 0);
+    const lifetimeDirectCount = lifetimeBreakdown.reduce((sum, row) => sum + Number(row.orderType === 'subscription_charge' ? 0 : row.count || 0), 0);
     res.json({
       summary: {
         count: rows.length,
@@ -2528,6 +2549,12 @@ app.get('/api/admin/payments', protectAdmin, async (req, res) => {
         autoPayAmount: autoPayRows.reduce((sum, order) => sum + Number(order.totalAmount || 0), 0),
         directCount: directRows.length,
         directAmount: directRows.reduce((sum, order) => sum + Number(order.totalAmount || 0), 0),
+        lifetimeTotalAmount,
+        lifetimeAutoPayCount,
+        lifetimeAutoPayAmount,
+        lifetimeDirectCount,
+        lifetimeDirectAmount: lifetimeTotalAmount - lifetimeAutoPayAmount,
+        lifetimeBreakdown,
       },
       payments: ledgerRows,
     });
