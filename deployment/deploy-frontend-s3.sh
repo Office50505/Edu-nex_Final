@@ -41,6 +41,12 @@ if test ! -f "$DIST_DIR/index.html"; then
 fi
 
 destination="s3://${BUCKET#s3://}/"
+bucket_path="${BUCKET#s3://}"
+bucket_name="${bucket_path%%/*}"
+object_prefix=""
+if test "$bucket_path" != "$bucket_name"; then
+  object_prefix="${bucket_path#*/}/"
+fi
 
 # Sync changed files and remove stale objects. HTML is overwritten below with a
 # revalidation policy, while ordinary static files retain a useful fallback TTL.
@@ -55,6 +61,17 @@ destination="s3://${BUCKET#s3://}/"
   --include "*.html" \
   --cache-control "$HTML_CACHE_CONTROL" \
   --only-show-errors
+
+if test -f "$DIST_DIR/marketing-web/index.html"; then
+  "$AWS_COMMAND" s3api put-object \
+    --bucket "$bucket_name" \
+    --key "${object_prefix}marketing-web/" \
+    --body "$DIST_DIR/marketing-web/index.html" \
+    --content-type "text/html; charset=utf-8" \
+    --cache-control "$HTML_CACHE_CONTROL" \
+    --server-side-encryption AES256 \
+    --output text >/dev/null
+fi
 
 immutable_count=0
 while IFS= read -r -d '' file; do

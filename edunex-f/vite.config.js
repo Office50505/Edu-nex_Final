@@ -4,7 +4,7 @@ import { defineConfig, loadEnv } from "vite";
 import react from "@vitejs/plugin-react";
 
 const themePreloadSource = fs.readFileSync(new URL("./js/theme-preload.js", import.meta.url), "utf8");
-const marketingOutDir = path.resolve(process.cwd(), "..", "marketing-web", "out");
+const marketingOutDir = path.resolve(process.cwd(), "marketing-web", "out");
 
 const contentTypes = {
   ".css": "text/css; charset=utf-8",

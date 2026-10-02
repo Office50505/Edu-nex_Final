@@ -3,9 +3,8 @@ import path from "node:path";
 import { route } from "../src/lib/routes.js";
 
 const root = process.cwd();
-const repoRoot = path.resolve(root, "..");
 const dist = path.join(root, "dist");
-const marketingOut = path.join(repoRoot, "marketing-web", "out");
+const marketingOut = path.join(root, "marketing-web", "out");
 const marketingDist = path.join(dist, "marketing-web");
 
 const staticPaths = [
