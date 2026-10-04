@@ -17,8 +17,9 @@ function config(mode = legacyMode()) {
     trialAmount: Number(process.env.TRIAL_AMOUNT_PAISE || 100), monthlyAmount: Number(process.env.SUBSCRIPTION_AMOUNT_PAISE || 49900),
     trialHours: Number(process.env.TRIAL_DURATION_HOURS || 24), cycles: Number(process.env.SUBSCRIPTION_TOTAL_COUNT || 120),
     trialAccessHours: Number(process.env.TRIAL_ACCESS_DURATION_HOURS || process.env.TRIAL_ACCESS_HOURS || 26),
+    checkoutExpiryMinutes: Number(process.env.RAZORPAY_CHECKOUT_EXPIRY_MINUTES || 30),
   };
-  if (![value.trialAmount, value.monthlyAmount, value.trialHours, value.trialAccessHours, value.cycles, value.annualAmount, value.annualCycles].every(n => Number.isSafeInteger(n) && n > 0)) throw new Error('Invalid billing amount, duration or cycle configuration.');
+  if (![value.trialAmount, value.monthlyAmount, value.trialHours, value.trialAccessHours, value.cycles, value.annualAmount, value.annualCycles, value.checkoutExpiryMinutes].every(n => Number.isSafeInteger(n) && n > 0)) throw new Error('Invalid billing amount, duration or cycle configuration.');
   if (value.trialAccessHours < value.trialHours) throw new Error('Trial access window cannot be shorter than the billing trial.');
   return value;
 }
@@ -62,7 +63,8 @@ function validatePlan(plan, c, type) {
 }
 function createPayload(c, type, attempt, now = Date.now()) {
   const terms = planTerms(c, type);
-  const expiresAt = Math.ceil(now / 1000) + 600;
+  const checkoutExpiryMinutes = Number.isSafeInteger(c.checkoutExpiryMinutes) && c.checkoutExpiryMinutes > 0 ? c.checkoutExpiryMinutes : 30;
+  const expiresAt = Math.ceil(now / 1000) + checkoutExpiryMinutes * 60;
   if (type === 'trial' && (!Number.isSafeInteger(c.trialHours) || c.trialHours < 24)) {
     throw Object.assign(new Error('The introductory trial must provide at least 24 hours before renewal.'), { status: 503 });
   }

@@ -32,11 +32,17 @@ test('trial creates upfront fee and future billing; direct monthly has no extra 
   const payload = createPayload(c, 'trial', 'attempt', now);
   assert.equal(payload.addons[0].item.amount, 100);
   assert.equal(payload.start_at, payload.expire_by + 86400);
-  for (const delay of [0, 100, 599, 600]) {
+  for (const delay of [0, 100, 1799, 1800]) {
     assert.ok(payload.start_at - (Math.ceil(now / 1000) + delay) >= 86400);
   }
   assert.ok(payload.expire_by < payload.start_at);
   assert.equal(createPayload(c, 'monthly', 'attempt', now).addons, undefined);
+});
+test('checkout expiry window is configurable without shortening the trial', () => {
+  const c = { planId: 'plan_test', trialAmount: 100, trialHours: 24, cycles: 120, checkoutExpiryMinutes: 45 };
+  const payload = createPayload(c, 'trial', 'attempt', 1700000000000);
+  assert.equal(payload.expire_by, 1700000000 + 45 * 60);
+  assert.equal(payload.start_at, payload.expire_by + 86400);
 });
 test('mandate authorization alone and uncaptured payments grant no access', () => {
   assert.equal(entitlement(billing, remote, [], now).status, 'pending');

@@ -502,21 +502,6 @@ export function AdOfferPage({ offerPage }) {
     setModalStep("phone");
   };
 
-  const cancelMandate = async () => {
-    if (!bearer || busyRef.current || !window.confirm("Cancel automatic renewal for this checkout?")) return;
-    busyRef.current = true;
-    setBusy(true);
-    try {
-      await api("/api/onboarding/cancel", {}, bearer);
-      setMessage("Auto-renewal cancelled. Paid access remains available until its expiry.");
-    } catch (error) {
-      setMessage(error.message);
-    } finally {
-      busyRef.current = false;
-      setBusy(false);
-    }
-  };
-
   return (
     <main className="ad-offer-page" data-page={pageKey}>
       <section className="ad-offer-shell" aria-label="Skillomate subscription offer" inert={Boolean(paymentStage)} aria-hidden={paymentStage ? true : undefined}>
@@ -547,7 +532,6 @@ export function AdOfferPage({ offerPage }) {
               <button type="button" onClick={() => openCheckout()} disabled={busy || pricingUnavailable}>Open checkout again</button>
               <button type="button" onClick={checkPayment} disabled={busy}>Check payment status</button>
               <button type="button" onClick={resetPhone} disabled={busy}>Verify another phone</button>
-              {!phonePeOneTime ? <button type="button" onClick={cancelMandate} disabled={busy}>Cancel unfinished mandate</button> : null}
             </div>
           )}
           {pricingUnavailable ? <p role="status">{offerPricing?.checkoutEnabled === false ? "Checkout is temporarily unavailable. Please try again later." : offerPricingError ? "Payment pricing is temporarily unavailable. Please try again." : "Checking payment options…"}{offerPricing?.checkoutEnabled === false || offerPricingError ? <> <button type="button" className="ad-pricing-retry" onClick={() => setPricingRequest(value => value + 1)} disabled={busy}>Retry</button></> : null}</p> : null}
