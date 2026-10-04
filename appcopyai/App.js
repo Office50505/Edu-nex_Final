@@ -252,7 +252,7 @@ if (__DEV__) {
     "Don't know how to round that drawable",
     "StatusBarModule: Ignored status bar change",
   ]);
-  if (Platform.OS === "android") LogBox.ignoreAllLogs(true);
+  LogBox.ignoreAllLogs(true);
 }
 
 function sanitizeImageUrlForLog(url) {
@@ -477,11 +477,18 @@ const AI_FEATURE_ENABLED = true;
 
 const SPEEDS = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2];
 const HOLD_SPEED_RATE = 2;
-const HOLD_SPEED_DELAY_MS = 140;
+const HOLD_SPEED_DELAY_MS = 320;
 const HOLD_SPEED_SYNC_MS = 120;
 const PLAYER_CHROME_FADE_IN_MS = 170;
 const PLAYER_CHROME_FADE_OUT_MS = 260;
 const PLAYER_CHROME_AUTO_HIDE_MS = 2000;
+const PLAYER_EDGE_BACK_WIDTH = 132;
+const PLAYER_EDGE_BACK_STRIP_WIDTH = 56;
+const PLAYER_EDGE_BACK_DISTANCE = 52;
+const PLAYER_EDGE_BACK_CLAIM_DISTANCE = 4;
+const PLAYER_EDGE_BACK_RELEASE_DISTANCE = 32;
+const PLAYER_EDGE_BACK_RELEASE_VELOCITY = 0.28;
+const PLAYER_EDGE_BACK_RELEASE_VELOCITY_DISTANCE = 10;
 const AUTO_QUALITY_LABEL = "Auto";
 const FALLBACK_QUALITY_OPTIONS = ["144p", "240p", "360p", "480p", "720p", "1080p"];
 const VIDEO_COMPLETE_THRESHOLD = 0.9;
@@ -499,10 +506,11 @@ const _rawHost =
   "";
 const EXPO_HOST = _rawHost.split(":")[0] || "localhost";
 const DEV_API_PORT = process.env.EXPO_PUBLIC_API_PORT || "3000";
+const IOS_SIMULATOR_API_HOST = process.env.EXPO_PUBLIC_IOS_API_HOST || "127.0.0.1";
 const DEFAULT_API_BASE = __DEV__
   ? (Platform.OS === "android"
     ? `http://${EXPO_HOST === "localhost" ? "10.0.2.2" : EXPO_HOST}:${DEV_API_PORT}`
-    : `http://${EXPO_HOST}:${DEV_API_PORT}`)
+    : `http://${IOS_SIMULATOR_API_HOST}:${DEV_API_PORT}`)
   : "https://api.skillomate.in";
 const normalizeBaseUrl = url => String(url || "").replace(/\/+$/, "");
 const API_BASE = normalizeBaseUrl(process.env.EXPO_PUBLIC_API_BASE || DEFAULT_API_BASE);
@@ -510,6 +518,7 @@ const WEB_APP_BASE = normalizeBaseUrl(process.env.EXPO_PUBLIC_WEB_APP_BASE || "h
 const BUNNY_CDN_BASE = normalizeBaseUrl(process.env.EXPO_PUBLIC_BUNNY_CDN_BASE || "https://edunex.b-cdn.net");
 const API_REQUEST_TIMEOUT_MS = 12000;
 const API_NETWORK_RETRY_DELAYS_MS = [0, 600, 1600];
+const SESSION_VALIDATION_INTERVAL_MS = 60 * 1000;
 
 async function openSafeExternalUrl(url, context = "resource") {
   const decision = canOpenExternalUrl(url, Platform.OS);
@@ -1731,19 +1740,11 @@ function normalizeTextList(value) {
 }
 
 function getVideoNotes(video) {
-  const direct = [
-    video?.notes,
-    video?.lectureNotes,
-    video?.lessonNotes,
-    video?.keyNotes,
-    video?.summary,
-  ].find(value => typeof value === "string" && value.trim());
-  if (direct) return direct.trim();
-  return getVideoDescription(video);
+  return firstNonEmptyText(video?.notes, video?.lectureNotes, video?.lessonNotes, video?.keyNotes, video?.studyNotes);
 }
 
 function getVideoPrompts(video) {
-  return normalizeTextList(video?.prompts || video?.lessonPrompts || video?.practicePrompts || video?.aiPrompts);
+  return normalizeTextList(video?.prompts || video?.lessonPrompts || video?.practicePrompts || video?.aiPrompts || video?.examplePrompt);
 }
 
 function getVideoResources(video) {
@@ -1765,6 +1766,66 @@ function getVideoResources(video) {
 
 function getVideoKey(video, index = 0) {
   return String(video?._id || video?.id || video?.bunnyGuid || video?.bunnyVideoId || video?.youtubeId || video?.videoId || index);
+}
+
+function getVideoAliases(video, index = 0) {
+  return [
+    video?._id,
+    video?.id,
+    video?.bunnyGuid,
+    video?.bunnyVideoId,
+    video?.youtubeId,
+    video?.videoId,
+    index,
+  ]
+    .filter(value => value !== undefined && value !== null && value !== "")
+    .map(String);
+}
+
+function firstNonEmptyText(...values) {
+  return values.find(value => typeof value === "string" && value.trim())?.trim() || "";
+}
+
+function firstDefinedValue(...values) {
+  return values.find(value => value !== undefined && value !== null);
+}
+
+function mergeVideoDetails(base = {}, fresh = {}) {
+  const merged = { ...base, ...fresh };
+  const notes = firstNonEmptyText(
+    fresh.notes,
+    fresh.lectureNotes,
+    fresh.lessonNotes,
+    fresh.keyNotes,
+    fresh.studyNotes,
+    base.notes,
+    base.lectureNotes,
+    base.lessonNotes,
+    base.keyNotes,
+    base.studyNotes,
+  );
+  const prompts = firstDefinedValue(fresh.prompts, fresh.lessonPrompts, fresh.practicePrompts, fresh.aiPrompts, fresh.examplePrompt, base.prompts, base.lessonPrompts, base.practicePrompts, base.aiPrompts, base.examplePrompt);
+
+  if (notes) merged.notes = notes;
+  if (prompts !== undefined) merged.prompts = prompts;
+  return merged;
+}
+
+function mergeVideoListWithDetails(previousVideos = [], freshVideos = []) {
+  if (!Array.isArray(previousVideos) || previousVideos.length === 0) return Array.isArray(freshVideos) ? freshVideos : [];
+  if (!Array.isArray(freshVideos) || freshVideos.length === 0) return previousVideos;
+
+  const freshByAlias = new Map();
+  freshVideos.forEach((video, index) => {
+    getVideoAliases(video, index).forEach(alias => {
+      if (!freshByAlias.has(alias)) freshByAlias.set(alias, video);
+    });
+  });
+
+  return previousVideos.map((video, index) => {
+    const fresh = getVideoAliases(video, index).map(alias => freshByAlias.get(alias)).find(Boolean) || freshVideos[index];
+    return fresh ? mergeVideoDetails(video, fresh) : video;
+  });
 }
 
 function isPlayableVideo(video) {
@@ -2727,7 +2788,7 @@ function NotificationPreviewModal({ visible, items: notificationItems = [], load
               <View style={s.notificationIcon}>
                 <Ionicons name={item.icon} size={19} color={C.primary} />
               </View>
-              <View style={{ flex: 1 }}>
+              <View style={s.descriptionHeaderText}>
                 <View style={s.notificationItemTop}>
                   <Text style={s.notificationItemTitle} numberOfLines={1}>{item.title}</Text>
                   <Text style={s.notificationTime}>{item.time}</Text>
@@ -3093,13 +3154,29 @@ function BottomNav({
   };
   return (
     <Animated.View
-      ref={bottomNavRef}
+      pointerEvents="box-none"
       style={[
-        s.bottomNav,
+        s.bottomNavDock,
+        active === "ai" && s.bottomNavDockCompact,
         { transform: [{ translateY: keyboardLiftAnim }] },
-        forceDark && { backgroundColor: "rgba(13,13,11,0.98)", borderTopColor: "#2E2C27" },
+        forceDark && { backgroundColor: "#050504" },
       ]}
     >
+      <Animated.View
+        pointerEvents="none"
+        style={[
+          s.bottomNavScrim,
+          forceDark && { backgroundColor: "#050504" },
+        ]}
+      />
+      <Animated.View
+        ref={bottomNavRef}
+        style={[
+          s.bottomNav,
+          { transform: [{ translateY: keyboardLiftAnim }] },
+          forceDark && { backgroundColor: "rgba(13,13,11,0.98)", borderTopColor: "#2E2C27" },
+        ]}
+      >
       {searchOpen ? (
         <View style={s.bottomNavSearchBar}>
           {normalizedSearch ? (
@@ -3186,6 +3263,7 @@ function BottomNav({
           </Text>
         </TouchableOpacity>
       ))}
+      </Animated.View>
     </Animated.View>
   );
 }
@@ -3844,7 +3922,7 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
       sourceQueue.current = sourceQueue.current.catch(() => {}).then(() => {
         if (!cancelled) return runNativePlayer(player => player.replaceAsync(null));
       }).catch(() => { /* Player may have been released while leaving the screen. */ });
-      return () => { cancelled = true; };
+      return () => { cancelled = true; pauseNativePlayer(); };
     }
     sourceQueue.current = sourceQueue.current.catch(() => {}).then(async () => {
       if (cancelled) return;
@@ -3998,6 +4076,10 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
   useEventListener(nativePlayer, "playToEnd", () => {
     if (!isNativeVideo) return;
     const dur = finiteSeconds(nativePlayer.duration, duration);
+    if (!didReachPlayableEnd(currentTime, dur)) {
+      recoverFromPrematureEndSignal();
+      return;
+    }
     if (dur > 0) setCurrentTime(dur);
     if (loopLesson) {
       flushProgress(dur, dur, true);
@@ -4252,6 +4334,37 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
     completionSentRef.current = true; onComplete?.();
   }
 
+  function didReachPlayableEnd(nextTime = currentTime, nextDuration = duration) {
+    const dur = finiteSeconds(nextDuration, duration);
+    if (dur <= 0) return false;
+    const latest = latestProgressValueRef.current || {};
+    const reportedTime = clampSeconds(finiteSeconds(nextTime, latest.currentTime ?? currentTime), dur);
+    const latestTime = clampSeconds(finiteSeconds(latest.currentTime, currentTime), dur);
+    const trackedTime = clampSeconds(finiteSeconds(lastProgressRef.current?.time, latestTime), dur);
+    const furthestTime = Math.max(reportedTime, latestTime, trackedTime);
+    const playedEnoughToTrustEnd = Boolean(hasPlaybackStarted || latestTime > 0.75 || trackedTime > 0.75);
+    return playedEnoughToTrustEnd && furthestTime >= Math.max(0, dur - 1.25);
+  }
+
+  function recoverFromPrematureEndSignal() {
+    setIsEnded(false);
+    if (!isActive || !shouldBePlayingRef.current) {
+      setIsPlaying(false);
+      setIsBuffering(false);
+      return;
+    }
+    setIsPlaying(true);
+    setIsBuffering(true);
+    clearAutoPlayTimers();
+    [120, 700, 1500].forEach(delay => {
+      const timer = setTimeout(() => {
+        if (!playbackStateRef.current?.isActive || !shouldBePlayingRef.current || playbackStateRef.current?.isEnded) return;
+        sendCmdRef.current("playVideo");
+      }, delay);
+      autoPlayTimersRef.current.push(timer);
+    });
+  }
+
   function handleNativeProgress(nextTime, nextDuration, nextPlaying) {
     if (!isNativeVideo || !isActive) return;
     const dur = finiteSeconds(nextDuration, duration);
@@ -4296,7 +4409,7 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
       setIsBuffering(false);
     }
     else if (shouldKeepTryingPlayback) setIsBuffering(true);
-    if (dur > 0 && ct >= dur - 0.25 && !nextPlaying) {
+    if (didReachPlayableEnd(ct, dur) && !nextPlaying) {
       if (loopLesson) {
         flushProgress(ct, dur, true);
         seekGuardRef.current = { until: Date.now() + 1000, target: 0 };
@@ -4337,6 +4450,10 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
       }
       if (d.type === "stateChange") {
         if (d.playerState === 0) {
+          if (!didReachPlayableEnd(currentTime, duration)) {
+            recoverFromPrematureEndSignal();
+            return;
+          }
           if (loopLesson) {
             flushProgress(duration || currentTime, duration, true);
             shouldBePlayingRef.current = true;
@@ -4412,6 +4529,10 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
         if (nextDuration > 0) setDuration(nextDuration);
         hidePlayerChromeAfterVisibleDelay();
         if (d.playerState === 0) {
+          if (!didReachPlayableEnd(nextTime, nextDuration)) {
+            recoverFromPrematureEndSignal();
+            return;
+          }
           if (loopLesson) {
             flushProgress(nextDuration || nextTime, nextDuration, true);
             shouldBePlayingRef.current = true;
@@ -4824,16 +4945,14 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
       info.count = 1; info.side = side;
       info.timer = setTimeout(() => {
         info.count = 0; info.side = null; info.timer = null;
+        togglePlay();
       }, 280);
     }
   }
 
   function handleCenterTap() {
     if (showSettings) { setShowSettings(false); return; }
-    if (playerChromeHidden) {
-      revealPlayerChrome();
-      return;
-    }
+    revealPlayerChrome();
     togglePlay();
   }
 
@@ -4900,6 +5019,7 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
           onMessage={handleMsg}
           originWhitelist={["*"]} thirdPartyCookiesEnabled
           source={{ html, baseUrl: PLAYER_ORIGIN }}
+          androidLayerType="hardware"
           style={StyleSheet.absoluteFill}
         />
       )}
@@ -4914,7 +5034,11 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
           <ActivityIndicator size="large" color="#fff" />
         </View>
       ) : showLiveSurface && !isPlaying && !isEnded && renderPlayerChrome ? (
-        <Animated.View style={[s.pauseOverlay, playerChromeAnimatedStyle]} pointerEvents="none">
+        <Animated.View
+          style={[s.pauseOverlay, playerChromeAnimatedStyle]}
+          pointerEvents="none"
+          renderToHardwareTextureAndroid={Platform.OS === "android"}
+        >
           <Ionicons name="play-circle" size={72} color="rgba(255,255,255,0.85)" />
         </Animated.View>
       ) : null}
@@ -4931,7 +5055,7 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
             pointerEvents={showSettings ? "none" : "auto"}
             accessible
             accessibilityRole="button"
-            accessibilityLabel="Hold left side for 2x speed or double tap to rewind"
+            accessibilityLabel="Show controls, hold left side for 2x speed, or double tap to rewind"
             onPressIn={() => beginHoldSpeed("left")}
             onPressOut={() => finishSidePress("left")}
           />
@@ -4951,7 +5075,7 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
             pointerEvents={showSettings ? "none" : "auto"}
             accessible
             accessibilityRole="button"
-            accessibilityLabel="Hold right side for 2x speed or double tap to fast forward"
+            accessibilityLabel="Show controls, hold right side for 2x speed, or double tap to fast forward"
             onPressIn={() => beginHoldSpeed("right")}
             onPressOut={() => finishSidePress("right")}
           />
@@ -4982,6 +5106,7 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
           style={[StyleSheet.absoluteFill, playerChromeAnimatedStyle]}
           pointerEvents={showPlayerChrome ? "box-none" : "none"}
           importantForAccessibility={showPlayerChrome ? "auto" : "no-hide-descendants"}
+          renderToHardwareTextureAndroid={Platform.OS === "android"}
         >
           {isEnded ? (
             <TouchableOpacity onPress={restart} style={s.restartOverlay} accessibilityRole="button" accessibilityLabel="Replay lesson">
@@ -5270,6 +5395,7 @@ function ReelsScreen({ courseId, course, initialIndex, initialTime, onBack, onRe
   }
   const activeTitle = activeVideo?.title || "";
   const activeDescription = plainCourseDescription(getVideoDescription(activeVideo)) || "No description available.";
+  const activeDurationLabel = getVideoDurationLabel(activeVideo);
   const activeNotes = getVideoNotes(activeVideo);
   const activePrompts = getVideoPrompts(activeVideo);
   const activeResources = getVideoResources(activeVideo);
@@ -5300,6 +5426,138 @@ function ReelsScreen({ courseId, course, initialIndex, initialTime, onBack, onRe
   const videoUiOverlayOpen = showCourseAi || showDescription || showNotes || showLectures;
   const reelScrollEnabled = videos.length > 1 && !playerHoldSpeedActive;
   const webPlayerChromeOpacity = webPlayerChromeOpacityRef.current;
+  const isIosEdgeBackGuide = Platform.OS === "ios";
+  const [edgeBackHint, setEdgeBackHint] = useState({ active: false, side: "left", progress: 0 });
+  const edgeBackGestureSideRef = useRef(null);
+  const edgeBackLatestGestureRef = useRef({ side: "left", distance: 0, velocity: 0 });
+  const edgeBackTriggeredRef = useRef(false);
+  const getEdgeBackGestureSide = useCallback((gesture) => {
+    if (!isIosEdgeBackGuide || videoUiOverlayOpen || playerSettingsOpen) return null;
+    if (gesture.x0 <= PLAYER_EDGE_BACK_WIDTH) return "left";
+    if (gesture.x0 >= viewportWidth - PLAYER_EDGE_BACK_WIDTH) return "right";
+    return null;
+  }, [isIosEdgeBackGuide, playerSettingsOpen, videoUiOverlayOpen, viewportWidth]);
+  const getEdgeBackGestureDistance = useCallback((side, gesture) => (
+    side === "left" ? Math.max(0, gesture.dx) : Math.max(0, -gesture.dx)
+  ), []);
+  const shouldClaimEdgeBackGesture = useCallback((gesture) => {
+    const side = getEdgeBackGestureSide(gesture);
+    if (!side) return false;
+    const distance = getEdgeBackGestureDistance(side, gesture);
+    if (distance < PLAYER_EDGE_BACK_CLAIM_DISTANCE) return false;
+    return distance > Math.max(6, Math.abs(gesture.dy) * 0.65);
+  }, [getEdgeBackGestureDistance, getEdgeBackGestureSide]);
+  const resetEdgeBackGesture = useCallback((side = "left") => {
+    edgeBackGestureSideRef.current = null;
+    edgeBackLatestGestureRef.current = { side, distance: 0, velocity: 0 };
+    setEdgeBackHint({ active: false, side, progress: 0 });
+  }, []);
+  const triggerEdgeBack = useCallback(() => {
+    if (edgeBackTriggeredRef.current) return;
+    edgeBackTriggeredRef.current = true;
+    onBack?.();
+  }, [onBack]);
+  const triggerEdgeBackHandle = useCallback((side) => {
+    if (!isIosEdgeBackGuide || videoUiOverlayOpen || playerSettingsOpen) return;
+    setEdgeBackHint({ active: true, side, progress: 1 });
+    triggerEdgeBack();
+  }, [isIosEdgeBackGuide, playerSettingsOpen, triggerEdgeBack, videoUiOverlayOpen]);
+  const finishEdgeBackGesture = useCallback((gesture) => {
+    const side = edgeBackGestureSideRef.current || edgeBackLatestGestureRef.current.side || getEdgeBackGestureSide(gesture);
+    if (!side) {
+      resetEdgeBackGesture();
+      return;
+    }
+    const distance = Math.max(
+      getEdgeBackGestureDistance(side, gesture),
+      edgeBackLatestGestureRef.current.distance || 0,
+    );
+    const velocity = Math.max(
+      side === "left" ? Math.max(0, gesture.vx) : Math.max(0, -gesture.vx),
+      edgeBackLatestGestureRef.current.velocity || 0,
+    );
+    const shouldGoBack =
+      distance >= PLAYER_EDGE_BACK_RELEASE_DISTANCE ||
+      (velocity >= PLAYER_EDGE_BACK_RELEASE_VELOCITY && distance >= PLAYER_EDGE_BACK_RELEASE_VELOCITY_DISTANCE);
+
+    resetEdgeBackGesture(side);
+    if (shouldGoBack) triggerEdgeBack();
+  }, [getEdgeBackGestureDistance, getEdgeBackGestureSide, resetEdgeBackGesture, triggerEdgeBack]);
+  const edgeBackPanResponder = useMemo(() => PanResponder.create({
+    onStartShouldSetPanResponder: () => false,
+    onStartShouldSetPanResponderCapture: () => false,
+    onMoveShouldSetPanResponder: (_, gesture) => shouldClaimEdgeBackGesture(gesture),
+    onMoveShouldSetPanResponderCapture: (_, gesture) => shouldClaimEdgeBackGesture(gesture),
+    onPanResponderGrant: (_, gesture) => {
+      const side = getEdgeBackGestureSide(gesture) || "left";
+      edgeBackGestureSideRef.current = side;
+      edgeBackLatestGestureRef.current = { side, distance: 0, velocity: 0 };
+      edgeBackTriggeredRef.current = false;
+      setEdgeBackHint({ active: true, side, progress: 0 });
+    },
+    onPanResponderMove: (_, gesture) => {
+      const side = edgeBackGestureSideRef.current || getEdgeBackGestureSide(gesture);
+      if (!side) return;
+      const distance = getEdgeBackGestureDistance(side, gesture);
+      const velocity = side === "left" ? Math.max(0, gesture.vx) : Math.max(0, -gesture.vx);
+      edgeBackLatestGestureRef.current = { side, distance, velocity };
+      setEdgeBackHint({
+        active: true,
+        side,
+        progress: Math.max(0, Math.min(1, distance / PLAYER_EDGE_BACK_DISTANCE)),
+      });
+    },
+    onPanResponderRelease: (_, gesture) => finishEdgeBackGesture(gesture),
+    onPanResponderTerminate: (_, gesture) => finishEdgeBackGesture(gesture),
+    onPanResponderTerminationRequest: () => false,
+  }), [finishEdgeBackGesture, getEdgeBackGestureDistance, getEdgeBackGestureSide, shouldClaimEdgeBackGesture]);
+  const finishEdgeBackHandleGesture = useCallback((gesture) => {
+    const side = edgeBackGestureSideRef.current || getEdgeBackGestureSide(gesture);
+    if (!side) return;
+    const distance = Math.max(
+      getEdgeBackGestureDistance(side, gesture),
+      edgeBackLatestGestureRef.current.distance || 0,
+    );
+    const velocity = Math.max(
+      side === "left" ? Math.max(0, gesture.vx) : Math.max(0, -gesture.vx),
+      edgeBackLatestGestureRef.current.velocity || 0,
+    );
+    const shouldGoBack =
+      distance < PLAYER_EDGE_BACK_CLAIM_DISTANCE ||
+      distance >= PLAYER_EDGE_BACK_RELEASE_DISTANCE ||
+      (velocity >= PLAYER_EDGE_BACK_RELEASE_VELOCITY && distance >= PLAYER_EDGE_BACK_RELEASE_VELOCITY_DISTANCE);
+
+    resetEdgeBackGesture(side);
+    if (shouldGoBack) triggerEdgeBack();
+  }, [getEdgeBackGestureDistance, getEdgeBackGestureSide, resetEdgeBackGesture, triggerEdgeBack]);
+  const edgeBackHandlePanResponder = useMemo(() => PanResponder.create({
+    onStartShouldSetPanResponder: (_, gesture) => !!getEdgeBackGestureSide(gesture),
+    onStartShouldSetPanResponderCapture: (_, gesture) => !!getEdgeBackGestureSide(gesture),
+    onMoveShouldSetPanResponder: () => true,
+    onMoveShouldSetPanResponderCapture: () => true,
+    onPanResponderGrant: (_, gesture) => {
+      const side = getEdgeBackGestureSide(gesture) || "left";
+      edgeBackGestureSideRef.current = side;
+      edgeBackLatestGestureRef.current = { side, distance: 0, velocity: 0 };
+      edgeBackTriggeredRef.current = false;
+      setEdgeBackHint({ active: true, side, progress: 0.35 });
+    },
+    onPanResponderMove: (_, gesture) => {
+      const side = edgeBackGestureSideRef.current || getEdgeBackGestureSide(gesture);
+      if (!side) return;
+      const distance = getEdgeBackGestureDistance(side, gesture);
+      const velocity = side === "left" ? Math.max(0, gesture.vx) : Math.max(0, -gesture.vx);
+      edgeBackLatestGestureRef.current = { side, distance, velocity };
+      setEdgeBackHint({
+        active: true,
+        side,
+        progress: Math.max(0.35, Math.min(1, distance / PLAYER_EDGE_BACK_DISTANCE)),
+      });
+    },
+    onPanResponderRelease: (_, gesture) => finishEdgeBackHandleGesture(gesture),
+    onPanResponderTerminate: (_, gesture) => finishEdgeBackHandleGesture(gesture),
+    onPanResponderTerminationRequest: () => false,
+  }), [finishEdgeBackHandleGesture, getEdgeBackGestureDistance, getEdgeBackGestureSide]);
   const webPlayerChromeAnimatedStyle = useMemo(() => ({
     opacity: webPlayerChromeOpacity,
     transform: [{
@@ -5391,13 +5649,25 @@ function ReelsScreen({ courseId, course, initialIndex, initialTime, onBack, onRe
   }, []);
 
   useEffect(() => {
-    if (preloadedVideos) return; // already have videos, skip fetch
     if (!user?._id || !user?.sessionId) { setError("Subscription required."); setLoading(false); return; }
+    let cancelled = false;
     session.requestJson(`/api/courses/${courseId}/videos`)
-      .then(d => { setVideos(d.videos || []); })
-      .catch(e => setError(e.message))
-      .finally(() => setLoading(false));
-  }, [courseId, session, user?._id, user?.sessionId]);
+      .then(d => {
+        if (cancelled) return;
+        const freshVideos = Array.isArray(d.videos) ? d.videos : [];
+        setVideos(previous => {
+          if (!preloadedVideos) return freshVideos;
+          return mergeVideoListWithDetails(previous, freshVideos);
+        });
+      })
+      .catch(e => {
+        if (!cancelled && !preloadedVideos) setError(e.message);
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => { cancelled = true; };
+  }, [courseId, preloadedVideos, session, user?._id, user?.sessionId]);
 
   useEffect(() => {
     setCourseAiInput("");
@@ -5540,7 +5810,8 @@ function ReelsScreen({ courseId, course, initialIndex, initialTime, onBack, onRe
 
   return (
     <View style={{ flex: 1, backgroundColor: "#000" }}
-      onLayout={e => setListHeight(e.nativeEvent.layout.height)}>
+      onLayout={e => setListHeight(e.nativeEvent.layout.height)}
+      {...(isIosEdgeBackGuide ? edgeBackPanResponder.panHandlers : {})}>
       <FlatList
         ref={flatListRef}
         data={videos} keyExtractor={i => i._id}
@@ -5592,6 +5863,27 @@ function ReelsScreen({ courseId, course, initialIndex, initialTime, onBack, onRe
         getItemLayout={(_, i) => ({ length: listHeight, offset: listHeight * i, index: i })}
       />
 
+      {isIosEdgeBackGuide && !videoUiOverlayOpen && !playerSettingsOpen && (
+        <>
+          <View
+            style={[s.playerEdgeBackStrip, s.playerEdgeBackStripLeft]}
+            onAccessibilityTap={() => triggerEdgeBackHandle("left")}
+            accessible
+            accessibilityRole="button"
+            accessibilityLabel="Go back"
+            {...edgeBackHandlePanResponder.panHandlers}
+          />
+          <View
+            style={[s.playerEdgeBackStrip, s.playerEdgeBackStripRight]}
+            onAccessibilityTap={() => triggerEdgeBackHandle("right")}
+            accessible
+            accessibilityRole="button"
+            accessibilityLabel="Go back"
+            {...edgeBackHandlePanResponder.panHandlers}
+          />
+        </>
+      )}
+
       {renderWebPlayerChrome && (
       <Animated.View
         style={[s.webPlayerTopBar, webPlayerChromeAnimatedStyle]}
@@ -5608,7 +5900,16 @@ function ReelsScreen({ courseId, course, initialIndex, initialTime, onBack, onRe
           >
             <Ionicons name="arrow-back" size={22} color={C.primary} />
           </TouchableOpacity>
-          <Text style={s.webPlayerLectureLabel} numberOfLines={1}>{activeLessonLabel}</Text>
+          <TouchableOpacity
+            onPress={() => setShowDescription(true)}
+            style={s.webPlayerLecturePill}
+            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+            accessibilityRole="button"
+            accessibilityLabel={`Open lesson information for ${activeLessonLabel}`}
+          >
+            <Text style={s.webPlayerLectureLabel} numberOfLines={1}>{activeLessonLabel}</Text>
+            <Ionicons name="chevron-up-circle-outline" size={14} color={C.primary} />
+          </TouchableOpacity>
           <View style={{ flex: 1 }} />
           <TouchableOpacity
             onPress={() => setShowNotes(true)}
@@ -5671,9 +5972,17 @@ function ReelsScreen({ courseId, course, initialIndex, initialTime, onBack, onRe
         </Animated.View>
       )}
       {!playerSettingsOpen && renderWebPlayerChrome && (
-        <Animated.View style={[s.webPlayerMeta, webPlayerChromeAnimatedStyle]} pointerEvents="none">
+        <Animated.View style={[s.webPlayerMeta, webPlayerChromeAnimatedStyle]} pointerEvents={playerChromeHidden ? "none" : "box-none"}>
+          <TouchableOpacity
+            onPress={() => setShowDescription(true)}
+            activeOpacity={0.86}
+            style={s.webPlayerMetaButton}
+            accessibilityRole="button"
+            accessibilityLabel={`Open lesson information. ${activeTitle || activeLessonLabel}`}
+          >
           <Text style={s.webPlayerTitle} numberOfLines={1}>{activeTitle || "Lesson"}</Text>
           {!!activeSummary && <Text style={s.webPlayerDescription} numberOfLines={2}>{activeLessonLabel} - {activeSummary}</Text>}
+          </TouchableOpacity>
         </Animated.View>
       )}
 
@@ -5683,12 +5992,31 @@ function ReelsScreen({ courseId, course, initialIndex, initialTime, onBack, onRe
           <View style={s.descriptionSheet}>
             <View style={s.descriptionHandle} />
             <View style={s.descriptionHeader}>
-              <Text style={s.descriptionTitle} numberOfLines={2}>{activeTitle || "Video description"}</Text>
+              <View style={{ flex: 1 }}>
+                <Text style={s.descriptionEyebrow} numberOfLines={1}>{course?.title || "Skillomate course"}</Text>
+                <Text style={s.descriptionTitle}>{activeTitle || "Video description"}</Text>
+              </View>
               <TouchableOpacity onPress={() => setShowDescription(false)} style={s.descriptionClose} accessibilityRole="button" accessibilityLabel="Close lesson information">
                 <Ionicons name="close" size={20} color="#fff" />
               </TouchableOpacity>
             </View>
             <ScrollView nestedScrollEnabled keyboardShouldPersistTaps="handled" style={s.descriptionScroll} contentContainerStyle={s.descriptionContent}>
+              <View style={s.descriptionSummaryCard}>
+                <View style={s.descriptionMetaRow}>
+                  <View style={s.descriptionMetaPill}>
+                    <Ionicons name="play-circle-outline" size={14} color={C.primary} />
+                    <Text style={s.descriptionMetaText}>{activeLessonLabel}</Text>
+                  </View>
+                  {!!activeDurationLabel && (
+                    <View style={s.descriptionMetaPill}>
+                      <Ionicons name="time-outline" size={14} color={C.primary} />
+                      <Text style={s.descriptionMetaText}>{activeDurationLabel}</Text>
+                    </View>
+                  )}
+                </View>
+                {!!activeSummary && <Text style={s.descriptionSummaryText} numberOfLines={4}>{activeSummary}</Text>}
+              </View>
+
               <View style={s.lessonNotesBlock}>
                 <View style={s.lessonNotesBlockHeader}>
                   <Ionicons name="information-circle-outline" size={16} color={C.primary} />
@@ -5696,52 +6024,6 @@ function ReelsScreen({ courseId, course, initialIndex, initialTime, onBack, onRe
                 </View>
                 <Text selectable style={s.descriptionBody}>{activeDescription}</Text>
               </View>
-
-              {hasSeparateNotes && (
-                <View style={s.lessonNotesBlock}>
-                  <View style={s.lessonNotesBlockHeader}>
-                    <Ionicons name="reader-outline" size={16} color={C.primary} />
-                    <Text style={s.lessonNotesBlockTitle}>Lecture Notes</Text>
-                  </View>
-                  <Text selectable style={s.lessonNotesBody}>{activeNotes}</Text>
-                </View>
-              )}
-
-              {activePrompts.length > 0 && (
-                <View style={s.lessonNotesBlock}>
-                  <View style={s.lessonNotesBlockHeader}>
-                    <Ionicons name="sparkles-outline" size={16} color={C.primary} />
-                    <Text style={s.lessonNotesBlockTitle}>Practice Prompts</Text>
-                  </View>
-                  {activePrompts.map((prompt, index) => (
-                    <View key={`${prompt}-${index}`} style={s.lessonPromptCard}>
-                      <Text style={s.lessonPromptIndex}>{String(index + 1).padStart(2, "0")}</Text>
-                      <Text selectable style={s.lessonPromptText}>{prompt}</Text>
-                    </View>
-                  ))}
-                </View>
-              )}
-
-              {activeResources.length > 0 && (
-                <View style={s.lessonNotesBlock}>
-                  <View style={s.lessonNotesBlockHeader}>
-                    <Ionicons name="link-outline" size={16} color={C.primary} />
-                    <Text style={s.lessonNotesBlockTitle}>Resources</Text>
-                  </View>
-                  {activeResources.map((resource, index) => (
-                    <TouchableOpacity
-                      key={`${resource.title}-${index}`}
-                      style={s.lessonResourceRow}
-                      onPress={() => resource.url ? openSafeExternalUrl(resource.url, "resource") : null}
-                      accessibilityRole="button"
-                      accessibilityLabel={`Open resource ${resource.title}`}
-                    >
-                      <Text style={s.lessonResourceTitle} numberOfLines={2}>{resource.title}</Text>
-                      <Ionicons name="open-outline" size={16} color={C.primary} />
-                    </TouchableOpacity>
-                  ))}
-                </View>
-              )}
             </ScrollView>
           </View>
         </View>
@@ -6696,7 +6978,8 @@ const homeStyles = StyleSheet.create({
   headerFlagButton: { width: MIN_TOUCH_TARGET, height: MIN_TOUCH_TARGET, borderRadius: MIN_TOUCH_TARGET / 2, alignItems: "center", justifyContent: "center", backgroundColor: "#140707", borderWidth: 1, borderColor: "#A30B0B" },
   headerDot: { position: "absolute", top: 10, right: 11, width: 7, height: 7, borderRadius: 4, backgroundColor: HOME_PALETTE.gold, borderWidth: 1, borderColor: HOME_PALETTE.surface },
   profileButton: { width: MIN_TOUCH_TARGET, height: MIN_TOUCH_TARGET, borderRadius: MIN_TOUCH_TARGET / 2, alignItems: "center", justifyContent: "center", borderWidth: 2, borderColor: HOME_PALETTE.gold },
-  scrollContent: { paddingTop: 10, paddingBottom: 118 },
+  scrollViewport: { flex: 1 },
+  scrollContent: { paddingTop: 10, paddingBottom: Platform.OS === "ios" ? 190 : 220 },
   mediaFallback: { ...StyleSheet.absoluteFill, alignItems: "center", justifyContent: "center", padding: 10, backgroundColor: HOME_PALETTE.surfaceSoft },
   mediaFallbackText: { color: HOME_PALETTE.textSecondary, fontSize: 10, lineHeight: 13, fontWeight: "700", textAlign: "center", marginTop: 5 },
   featuredHero: { position: "relative", width: "auto", aspectRatio: 16 / 9, marginHorizontal: 14, borderRadius: 14, overflow: "hidden", backgroundColor: HOME_PALETTE.surface, borderWidth: 1, borderColor: HOME_PALETTE.borderStrong },
@@ -7431,6 +7714,7 @@ function HomeScreen({
       </View>
 
       <ScrollView
+        style={homeStyles.scrollViewport}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={homeStyles.scrollContent}
         scrollEventThrottle={16}
@@ -10195,7 +10479,7 @@ export default function App() {
       }
     }
     validateSession();
-    const timer = setInterval(validateSession, 15000);
+    const timer = setInterval(validateSession, SESSION_VALIDATION_INTERVAL_MS);
     const subscription = AppState.addEventListener("change", state => {
       if (state === "active") validateSession();
     });
@@ -12420,16 +12704,29 @@ return StyleSheet.create({
     marginTop: 8,
     marginBottom: 18,
   },
-  bottomNav: {
+  bottomNavDock: {
     position: "absolute",
-    left: 14,
-    right: 14,
-    bottom: Platform.OS === "ios" ? 10 : 22,
-    zIndex: 50,
-    elevation: 20,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    height: Platform.OS === "ios" ? 150 : 170,
+    zIndex: 60,
+    elevation: 30,
+    justifyContent: "flex-end",
+    paddingBottom: Platform.OS === "ios" ? 10 : 22,
+    backgroundColor: C.bg,
+    overflow: "visible",
+  },
+  bottomNavDockCompact: {
+    height: Platform.OS === "ios" ? 126 : 112,
+  },
+  bottomNav: {
+    marginHorizontal: 14,
+    zIndex: 61,
+    elevation: 31,
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: C.isDark ? "rgba(18,18,17,0.96)" : "rgba(255,253,248,0.96)",
+    backgroundColor: C.isDark ? "#121211" : "#FFFDFA",
     borderWidth: 1,
     borderColor: C.isDark ? "rgba(231,188,104,0.2)" : "rgba(30,24,16,0.12)",
     borderRadius: 26,
@@ -12439,6 +12736,16 @@ return StyleSheet.create({
     shadowOpacity: C.isDark ? 0.34 : 0.12,
     shadowRadius: 18,
     shadowOffset: { width: 0, height: 8 },
+  },
+  bottomNavScrim: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    bottom: 0,
+    top: 0,
+    zIndex: 60,
+    elevation: 30,
+    backgroundColor: C.bg,
   },
   bottomTab: {
     flex: 1,
@@ -12818,7 +13125,7 @@ return StyleSheet.create({
     marginBottom: SPACE.xs,
   },
   homeScrollContent: {
-    paddingBottom: 116,
+    paddingBottom: Platform.OS === "ios" ? 220 : 260,
   },
   heroDot: {
     width: 6,
@@ -13873,7 +14180,7 @@ courseListCard: {
     paddingBottom: Platform.OS === "ios" ? 132 : 112,
   },
   aiKeyboardArea: { flex: 1, minHeight: 0 },
-  aiKeyboardAreaWithNav: { marginBottom: Platform.OS === "ios" ? 98 : 82 },
+  aiKeyboardAreaWithNav: { marginBottom: Platform.OS === "ios" ? 118 : 108 },
   aiMessageList: { flex: 1, minHeight: 0 },
   aiMessageRow: {
     flexDirection: "row", alignItems: "flex-end", gap: 8,
@@ -14055,9 +14362,9 @@ courseListCard: {
     borderWidth: 1, borderColor: "rgba(255,255,255,0.12)",
     zIndex: 20,
   },
-  tapLeft:   { position: "absolute", left: 0,   top: 0, bottom: 50, width: "38%", zIndex: 30, elevation: 30 },
-  tapCenter: { position: "absolute", left: "38%", top: 0, bottom: 50, width: "24%", zIndex: 30, elevation: 30 },
-  tapRight:  { position: "absolute", right: 0,  top: 0, bottom: 50, width: "38%", zIndex: 30, elevation: 30 },
+  tapLeft:   { position: "absolute", left: 0,   top: 0, bottom: 96, width: "32%", zIndex: 5, elevation: 5 },
+  tapCenter: { position: "absolute", left: "32%", top: 0, bottom: 96, width: "36%", zIndex: 5, elevation: 5 },
+  tapRight:  { position: "absolute", right: 0, top: 0, bottom: 96, width: "32%", zIndex: 5, elevation: 5 },
   holdSpeedIndicator: {
     position: "absolute",
     top: "46%",
@@ -14106,11 +14413,35 @@ courseListCard: {
     height: "78%", paddingTop: 10, borderWidth: 1, borderColor: "rgba(255,255,255,0.12)",
   },
   descriptionHandle: { width: 38, height: 4, borderRadius: 2, backgroundColor: "rgba(255,255,255,0.35)", alignSelf: "center", marginBottom: 12 },
-  descriptionHeader: { flexDirection: "row", alignItems: "center", gap: 12, paddingHorizontal: 18, paddingBottom: 12 },
-  descriptionTitle: { flex: 1, color: "#fff", fontSize: 16, fontWeight: "800", lineHeight: 21 },
+  descriptionHeader: { flexDirection: "row", alignItems: "flex-start", gap: 12, paddingHorizontal: 18, paddingBottom: 16 },
+  descriptionHeaderText: { flex: 1, minWidth: 0 },
+  descriptionEyebrow: { color: C.primary, fontSize: 11, lineHeight: 15, fontWeight: "900", textTransform: "uppercase", marginBottom: 3 },
+  descriptionTitle: { color: "#fff", fontSize: 15, fontWeight: "900", lineHeight: 22, paddingBottom: 2, flexShrink: 1 },
   descriptionClose: { width: MIN_TOUCH_TARGET, height: MIN_TOUCH_TARGET, borderRadius: MIN_TOUCH_TARGET / 2, backgroundColor: "rgba(255,255,255,0.12)", alignItems: "center", justifyContent: "center" },
   descriptionScroll: { flex: 1, minHeight: 0 },
   descriptionContent: { paddingHorizontal: 18, paddingBottom: 28, gap: 14 },
+  descriptionSummaryCard: {
+    borderRadius: 16,
+    padding: 14,
+    borderWidth: 1,
+    borderColor: "rgba(224,172,69,0.28)",
+    backgroundColor: "rgba(224,172,69,0.1)",
+    gap: 10,
+  },
+  descriptionMetaRow: { flexDirection: "row", flexWrap: "wrap", gap: 8 },
+  descriptionMetaPill: {
+    minHeight: 28,
+    paddingHorizontal: 10,
+    borderRadius: 14,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    backgroundColor: "rgba(0,0,0,0.28)",
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.11)",
+  },
+  descriptionMetaText: { color: "#fff", fontSize: 11, lineHeight: 15, fontWeight: "900" },
+  descriptionSummaryText: { color: "rgba(255,255,255,0.88)", fontSize: 13, lineHeight: 20, fontWeight: "600" },
   descriptionBody: { color: "#F5F5F5", fontSize: 16, lineHeight: 25 },
   lessonNotesSheet: {
     backgroundColor: "rgba(14,14,14,0.97)", borderTopLeftRadius: 18, borderTopRightRadius: 18,
@@ -14237,14 +14568,23 @@ courseListCard: {
     width: MIN_TOUCH_TARGET, height: MIN_TOUCH_TARGET,
     alignItems: "center", justifyContent: "center",
   },
+  webPlayerLecturePill: {
+    minHeight: 34,
+    maxWidth: 190,
+    paddingHorizontal: 8,
+    borderRadius: 17,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 5,
+  },
   webPlayerLectureLabel: {
     color: C.primary,
     fontSize: 13,
     fontWeight: "900",
-    maxWidth: 170,
+    flexShrink: 1,
   },
   webPlayerSideRail: {
-    position: "absolute", right: 10, bottom: 178, zIndex: 22,
+    position: "absolute", right: 10, bottom: 178, zIndex: 90, elevation: 90,
     alignItems: "center", gap: 10,
   },
   webPlayerRailBtn: {
@@ -14266,6 +14606,12 @@ courseListCard: {
   webPlayerMeta: {
     position: "absolute", left: 16, right: 82, bottom: 112, zIndex: 11,
   },
+  webPlayerMetaButton: {
+    alignSelf: "flex-start",
+    maxWidth: "100%",
+    paddingVertical: 5,
+    paddingRight: 8,
+  },
   webPlayerTitle: {
     color: "#fff",
     fontSize: 15,
@@ -14285,6 +14631,17 @@ courseListCard: {
     textShadowOffset: { width: 0, height: 1 },
     textShadowRadius: 4,
   },
+  playerEdgeBackStrip: {
+    position: "absolute",
+    top: 92,
+    bottom: 118,
+    width: PLAYER_EDGE_BACK_STRIP_WIDTH,
+    zIndex: 76,
+    elevation: 76,
+    justifyContent: "center",
+  },
+  playerEdgeBackStripLeft: { left: 0, alignItems: "flex-start" },
+  playerEdgeBackStripRight: { right: 0, alignItems: "flex-end" },
   volumeControl: {
     position: "absolute",
     bottom: 18,
