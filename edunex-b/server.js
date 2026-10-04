@@ -2678,7 +2678,7 @@ app.get('/api/admin/user-management', protectAdmin, async (req, res) => {
     const [users, progressRows, progressWatchRows, analyticsWatchRows, latestSessionRows, latestPresenceRows, subscriptions, razorpayBillings] = await Promise.all([
       User.find()
         .sort({ createdAt: -1 })
-        .select('fullName email mobileNumber avatar gender age subscriptionStatus subscriptionExpiry purchasedCourses courseEntitlements isMobileVerified isEmailVerified isActive bannedAt banReason deletedAt deletedBy deletionReason marketingOptIn createdAt lastActiveAt lastLoginAt loginCount')
+        .select('fullName email mobileNumber avatar gender age subscriptionId subscriptionStatus subscriptionExpiry purchasedCourses courseEntitlements isMobileVerified isEmailVerified isActive bannedAt banReason deletedAt deletedBy deletionReason marketingOptIn createdAt lastActiveAt lastLoginAt loginCount')
         .lean(),
       CourseProgress.aggregate([
         { $match: { userId: { $nin: [null, ''] } } },
@@ -2845,13 +2845,17 @@ app.get('/api/admin/user-management', protectAdmin, async (req, res) => {
       if (row.user) acc[String(row.user)] = row;
       return acc;
     }, {});
+    const subscriptionById = subscriptions.reduce((acc, row) => {
+      if (row._id) acc[String(row._id)] = row;
+      return acc;
+    }, {});
     const razorpayBillingByUser = razorpayBillings.reduce((acc, row) => {
       if (row._id) acc[String(row._id)] = row;
       return acc;
     }, {});
     const billingSummaryForUser = (user) => {
       const userId = String(user._id);
-      const subscription = subscriptionByUser[userId] || null;
+      const subscription = subscriptionByUser[userId] || subscriptionById[String(user.subscriptionId || '')] || null;
       const razorpayBilling = razorpayBillingByUser[userId] || null;
       const gateway = subscription?.gateway
         || (razorpayBilling?.subscriptionId ? 'razorpay' : null);
