@@ -152,6 +152,7 @@ const User = require('./models/User');
 const Category = require('./models/Category');
 const Course = require('./models/Course');
 const Subscription = require('./models/Subscription');
+const RazorpayBilling = require('./models/RazorpayBilling');
 const Order = require('./models/Order');
 const Progress = require('./models/Progress');
 const CourseProgress = require('./models/CourseProgress');
@@ -2674,7 +2675,7 @@ app.get('/api/admin/user-management', protectAdmin, async (req, res) => {
       return index;
     };
     const watchEventNames = ['video_start', 'video_progress', 'video_complete', 'video_watch'];
-    const [users, progressRows, progressWatchRows, analyticsWatchRows, latestSessionRows, latestPresenceRows] = await Promise.all([
+    const [users, progressRows, progressWatchRows, analyticsWatchRows, latestSessionRows, latestPresenceRows, subscriptions, razorpayBillings] = await Promise.all([
       User.find()
         .sort({ createdAt: -1 })
         .select('fullName email mobileNumber avatar gender age subscriptionStatus subscriptionExpiry purchasedCourses courseEntitlements isMobileVerified isEmailVerified isActive bannedAt banReason deletedAt deletedBy deletionReason marketingOptIn createdAt lastActiveAt lastLoginAt loginCount')
@@ -2800,6 +2801,12 @@ app.get('/api/admin/user-management', protectAdmin, async (req, res) => {
         { $group: { _id: '$user', lastPingAt: { $max: '$lastPingAt' } } },
         { $project: { _id: 0, userId: { $toString: '$_id' }, lastPingAt: 1 } },
       ]),
+      Subscription.find()
+        .select('user gateway adminBillingSubscriptionId razorpaySubscriptionId razorpayMode razorpayStatus phonePeSubscriptionId phonePeMandateId status subscriptionType trialStartedAt trialExpiresAt currentPeriodStart currentPeriodEnd cancelledAt cancelReason amount frequency nextBillingAt createdAt')
+        .lean(),
+      RazorpayBilling.find()
+        .select('_id mode phase subscriptionId paymentType trialAmount monthlyAmount annualAmount recurringAmount trialEnd trialAccessEnd createdAt updatedAt')
+        .lean(),
     ]);
 
     const userIds = new Set(users.map((user) => String(user._id)));
@@ -2834,6 +2841,51 @@ app.get('/api/admin/user-management', protectAdmin, async (req, res) => {
       acc[row.userId] = presenceFromPing(row.lastPingAt);
       return acc;
     }, {});
+    const subscriptionByUser = subscriptions.reduce((acc, row) => {
+      if (row.user) acc[String(row.user)] = row;
+      return acc;
+    }, {});
+    const razorpayBillingByUser = razorpayBillings.reduce((acc, row) => {
+      if (row._id) acc[String(row._id)] = row;
+      return acc;
+    }, {});
+    const billingSummaryForUser = (user) => {
+      const userId = String(user._id);
+      const subscription = subscriptionByUser[userId] || null;
+      const razorpayBilling = razorpayBillingByUser[userId] || null;
+      const gateway = subscription?.gateway
+        || (razorpayBilling?.subscriptionId ? 'razorpay' : null);
+      if (!subscription && !razorpayBilling) return null;
+      return {
+        gateway,
+        subscriptionStatus: subscription?.status || user.subscriptionStatus || 'none',
+        subscriptionType: subscription?.subscriptionType || razorpayBilling?.paymentType || null,
+        mandateStatus: gateway === 'razorpay'
+          ? (subscription?.razorpayStatus || null)
+          : gateway === 'phonepe' && subscription?.phonePeMandateId
+            ? subscription.status
+            : null,
+        providerStatus: gateway === 'razorpay' ? (subscription?.razorpayStatus || null) : (subscription?.status || null),
+        billingPhase: razorpayBilling?.phase || null,
+        autoRenewEnabled: Boolean(
+          (gateway === 'razorpay' && subscription?.razorpaySubscriptionId && !['cancelled', 'completed', 'expired', 'halted'].includes(String(subscription.razorpayStatus || '').toLowerCase()))
+          || (gateway === 'phonepe' && subscription?.phonePeMandateId && !subscription.cancelledAt)
+        ),
+        subscriptionStartedAt: subscription?.currentPeriodStart || subscription?.trialStartedAt || subscription?.createdAt || razorpayBilling?.createdAt || null,
+        trialStartedAt: subscription?.trialStartedAt || null,
+        trialExpiresAt: subscription?.trialExpiresAt || razorpayBilling?.trialAccessEnd || razorpayBilling?.trialEnd || null,
+        nextBillingAt: subscription?.nextBillingAt || null,
+        cancelledAt: subscription?.cancelledAt || null,
+        cancelReason: subscription?.cancelReason || null,
+        amount: subscription?.amount || razorpayBilling?.recurringAmount || razorpayBilling?.monthlyAmount || razorpayBilling?.annualAmount || razorpayBilling?.trialAmount || 0,
+        currentPeriodEnd: subscription?.currentPeriodEnd || null,
+        inGracePeriod: false,
+        graceExpiresAt: null,
+        razorpaySubscriptionId: subscription?.razorpaySubscriptionId || razorpayBilling?.subscriptionId || null,
+        phonePeSubscriptionId: subscription?.phonePeSubscriptionId || null,
+        phonePeMandateId: subscription?.phonePeMandateId || null,
+      };
+    };
 
     res.json(users.map((user) => {
       const userProgress = progressByUser[String(user._id)] || [];
@@ -2890,6 +2942,7 @@ app.get('/api/admin/user-management', protectAdmin, async (req, res) => {
           completedVideos: Number(watch.completedVideos || 0),
           lastWatchedAt: watch.lastWatchedAt || null,
         },
+        billingSummary: billingSummaryForUser(user),
       };
     }));
   } catch (error) {

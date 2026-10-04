@@ -202,18 +202,22 @@ function mandateLabel(user) {
   const summary = billing(user);
   const status = String(summary.mandateStatus || "").toLowerCase();
   if (status === "active") return "AutoPay active";
+  if (status === "authenticated") return "Mandate authenticated";
+  if (status === "created") return "Mandate created";
   if (status === "cancelled") return "Mandate cancelled";
+  if (status === "completed") return "Mandate completed";
   if (status === "expired") return "Mandate expired";
   if (status === "halted") return "Mandate halted";
   if (status === "pending") return "Mandate pending";
-  return "Mandate not started";
+  if (summary.gateway === "phonepe" && !summary.phonePeMandateId) return "No mandate";
+  return "Mandate not recorded";
 }
 
 function mandateBadgeClass(user) {
   const status = String(billing(user).mandateStatus || "").toLowerCase();
-  if (status === "active") return "good";
+  if (status === "active" || status === "authenticated") return "good";
   if (status === "cancelled" || status === "expired" || status === "halted") return "bad";
-  if (status === "pending") return "warn";
+  if (status === "pending" || status === "created") return "warn";
   return "";
 }
 

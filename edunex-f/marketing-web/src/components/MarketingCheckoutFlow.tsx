@@ -12,8 +12,6 @@ const AWAITING_KEY = 'skillomateMarketingAwaitingPayment'
 
 type Stage = 'account' | 'otp' | 'checking' | 'pending' | 'success' | null
 type Pricing = { gateway: string; checkoutEnabled: boolean; oneTimeAmountPaise: number; accessDays: number }
-type AuthResult = { accessToken: string; refreshToken: string; user: unknown }
-
 async function api<T>(path: string, body?: unknown, bearer = ''): Promise<T> {
   const response = await fetch(path, {
     method: body === undefined ? 'GET' : 'POST',
@@ -34,26 +32,17 @@ function cleanPhone(value: string) {
   return (digits.length > 10 && digits.startsWith('91') ? digits.slice(2) : digits).slice(0, 10)
 }
 
-function saveAuth(data: AuthResult) {
-  localStorage.setItem('edunexAccessToken', data.accessToken)
-  localStorage.setItem('edunexRefreshToken', data.refreshToken)
-  localStorage.setItem('edunexUser', JSON.stringify(data.user))
-}
-
 export default function MarketingCheckoutFlow() {
   const [pricing, setPricing] = useState<Pricing | null>(null)
   const [stage, setStage] = useState<Stage>(null)
   const [bearer, setBearer] = useState('')
-  const [fullName, setFullName] = useState('')
   const [phone, setPhone] = useState('')
-  const [password, setPassword] = useState('')
-  const [age, setAge] = useState('')
-  const [gender, setGender] = useState('other')
   const [otp, setOtp] = useState('')
   const [message, setMessage] = useState('')
   const [busy, setBusy] = useState(false)
   const busyRef = useRef(false)
   const finishingRef = useRef(false)
+  const checkingRef = useRef(false)
 
   useEffect(() => {
     void api<Pricing>('/api/onboarding/config').then((data) => {
@@ -65,18 +54,22 @@ export default function MarketingCheckoutFlow() {
   useEffect(() => {
     const savedBearer = sessionStorage.getItem(SESSION_KEY) || ''
     setBearer(savedBearer)
-    if (savedBearer && sessionStorage.getItem(AWAITING_KEY)) setStage('checking')
+    const awaitingPayment = Boolean(savedBearer && sessionStorage.getItem(AWAITING_KEY))
+    if (awaitingPayment) setStage('checking')
 
     const openFromLink = (event: MouseEvent) => {
       const anchor = (event.target as Element | null)?.closest('a[href]')
       if (!anchor || new URL(anchor.getAttribute('href') || '', window.location.href).hash !== '#checkout') return
       event.preventDefault()
+      if (finishingRef.current) return
       setMessage('')
-      setStage('account')
+      setStage(sessionStorage.getItem(SESSION_KEY)
+        ? sessionStorage.getItem(AWAITING_KEY) ? 'checking' : 'otp'
+        : 'account')
     }
     document.addEventListener('click', openFromLink)
     if (window.location.hash === '#checkout') {
-      setStage('account')
+      setStage(awaitingPayment ? 'checking' : savedBearer ? 'otp' : 'account')
       window.history.replaceState(window.history.state, '', window.location.pathname + window.location.search)
     }
     return () => document.removeEventListener('click', openFromLink)
@@ -100,14 +93,16 @@ export default function MarketingCheckoutFlow() {
     if (finishingRef.current) return
     finishingRef.current = true
     setStage('checking')
-    setMessage('Creating your Skillomate account...')
+    setMessage('Preparing your verified signup...')
     try {
-      const result = await api<AuthResult>('/api/onboarding/complete', {}, token)
-      saveAuth(result)
-      sessionStorage.removeItem(SESSION_KEY)
-      sessionStorage.removeItem(AWAITING_KEY)
+      const result = await api<{ code: string }>('/api/onboarding/handoff', {}, token)
+      if (!result.code) throw new Error('Your signup link is not ready. Please check payment status again.')
       setStage('success')
-      window.setTimeout(() => window.location.assign('/'), 900)
+      window.setTimeout(() => {
+        sessionStorage.removeItem(SESSION_KEY)
+        sessionStorage.removeItem(AWAITING_KEY)
+        window.location.assign(`/signup#onboarding=${encodeURIComponent(result.code)}`)
+      }, 900)
     } catch (error) {
       finishingRef.current = false
       throw error
@@ -115,7 +110,8 @@ export default function MarketingCheckoutFlow() {
   }, [])
 
   const checkPayment = useCallback(async (token = bearer, manual = false) => {
-    if (!token || busyRef.current || finishingRef.current) return
+    if (!token || busyRef.current || finishingRef.current || checkingRef.current) return
+    checkingRef.current = true
     if (manual) setBusy(true)
     try {
       const status = await api<{ accessGranted?: boolean }>('/api/onboarding/status', undefined, token)
@@ -125,8 +121,10 @@ export default function MarketingCheckoutFlow() {
         setMessage('PhonePe has not confirmed the payment yet. Please wait a moment and check again.')
       }
     } catch (error) {
-      if (manual) setMessage(error instanceof Error ? error.message : 'Unable to check payment status.')
+      setStage('pending')
+      setMessage(error instanceof Error ? error.message : 'Unable to check payment status.')
     } finally {
+      checkingRef.current = false
       if (manual) setBusy(false)
     }
   }, [bearer, finish])
@@ -150,6 +148,8 @@ export default function MarketingCheckoutFlow() {
   }, [bearer, checkPayment, stage])
 
   const openPhonePe = useCallback(async (token: string) => {
+    const status = await api<{ accessGranted?: boolean }>('/api/onboarding/status', undefined, token)
+    if (status.accessGranted) { await finish(token); return }
     setMessage('Opening secure PhonePe checkout...')
     const checkout = await api<{ gateway: string; redirectUrl: string }>('/api/onboarding/checkout', {
       paymentType: 'one_time',
@@ -158,16 +158,12 @@ export default function MarketingCheckoutFlow() {
     if (checkout.gateway !== 'phonepe' || !checkout.redirectUrl) throw new Error('Secure PhonePe checkout is unavailable.')
     sessionStorage.setItem(AWAITING_KEY, '1')
     window.location.assign(checkout.redirectUrl)
-  }, [])
+  }, [finish])
 
   const sendOtp = async (event: FormEvent) => {
     event.preventDefault()
     if (busyRef.current) return
-    const numericAge = Number(age)
-    if (fullName.trim().length < 2) return setMessage('Enter your full name.')
     if (phone.length !== 10) return setMessage('Enter a valid 10-digit mobile number.')
-    if (password.length < 8) return setMessage('Password must be at least 8 characters.')
-    if (!Number.isInteger(numericAge) || numericAge < 13 || numericAge > 80) return setMessage('Age must be between 13 and 80.')
     busyRef.current = true
     setBusy(true)
     setMessage('Sending OTP...')
@@ -186,17 +182,19 @@ export default function MarketingCheckoutFlow() {
 
   const verifyAndPay = async (event: FormEvent) => {
     event.preventDefault()
-    if (otp.length !== 6 || busyRef.current) return
+    if ((!bearer && otp.length !== 6) || busyRef.current) return
     busyRef.current = true
     setBusy(true)
     setMessage('Verifying and preparing checkout...')
     try {
+      if (bearer) {
+        await openPhonePe(bearer)
+        return
+      }
       const proof = await api<{ signupToken: string }>('/api/auth/verify-mobile-otp', { mobileNumber: `+91${phone}`, mobileOtp: otp, checkoutFlow: 'marketing-onboarding' })
       const session = await api<{ token: string }>('/api/onboarding/session', { signupToken: proof.signupToken })
-      await api('/api/onboarding/profile', { fullName: fullName.trim(), password, age: Number(age), gender }, session.token)
       sessionStorage.setItem(SESSION_KEY, session.token)
       setBearer(session.token)
-      setPassword('')
       await openPhonePe(session.token)
     } catch (error) {
       setMessage(error instanceof Error ? error.message : 'Unable to continue to PhonePe.')
@@ -208,6 +206,7 @@ export default function MarketingCheckoutFlow() {
 
   const resendOtp = async () => {
     if (busyRef.current) return
+    busyRef.current = true
     setBusy(true)
     try {
       await api('/api/auth/resend-mobile-otp', { mobileNumber: `+91${phone}`, checkoutFlow: 'marketing-onboarding' })
@@ -215,6 +214,7 @@ export default function MarketingCheckoutFlow() {
     } catch (error) {
       setMessage(error instanceof Error ? error.message : 'Unable to resend OTP.')
     } finally {
+      busyRef.current = false
       setBusy(false)
     }
   }
@@ -227,25 +227,19 @@ export default function MarketingCheckoutFlow() {
     <div className={styles.backdrop} role="presentation">
       <section className={styles.dialog} role="dialog" aria-modal="true" aria-labelledby="checkout-title">
         <header>
-          {stage === 'otp' ? <button type="button" onClick={() => setStage('account')} aria-label="Back to account details"><ChevronLeft /></button> : <span />}
+          {stage === 'otp' ? <button type="button" onClick={() => { sessionStorage.removeItem(SESSION_KEY); setBearer(''); setStage('account') }} aria-label="Change mobile number"><ChevronLeft /></button> : <span />}
           <Image src={`${BASE_PATH}/skillomate-logo-navbar.png`} alt="Skillomate" width={180} height={60} priority />
           {canClose ? <button type="button" onClick={() => setStage(null)} aria-label="Close checkout"><X /></button> : <span />}
         </header>
 
         {stage === 'account' ? <form className={styles.form} onSubmit={sendOtp}>
           <div className={styles.heading}>
-            <p><LockKeyhole /> Secure account setup</p>
-            <h2 id="checkout-title">Create your account</h2>
-            <span>Set up your details, verify your phone, then pay {price} once with PhonePe.</span>
+            <p><LockKeyhole /> Secure phone verification</p>
+            <h2 id="checkout-title">Login / Sign up</h2>
+            <span>Verify your phone, then pay {price} once with PhonePe. Complete your account details after payment.</span>
           </div>
-          <label>Full name<input value={fullName} onChange={(event) => setFullName(event.target.value)} autoComplete="name" placeholder="Your full name" autoFocus /></label>
-          <label>Mobile number<div className={styles.phone}><span>+91</span><input value={phone} onChange={(event) => setPhone(cleanPhone(event.target.value))} inputMode="numeric" autoComplete="tel-national" placeholder="98765 43210" /></div></label>
-          <label>Password<input type="password" value={password} onChange={(event) => setPassword(event.target.value)} autoComplete="new-password" placeholder="Minimum 8 characters" /></label>
-          <div className={styles.row}>
-            <label>Age<input value={age} onChange={(event) => setAge(event.target.value.replace(/\D/g, '').slice(0, 2))} inputMode="numeric" placeholder="18" /></label>
-            <fieldset><legend>Gender</legend><div className={styles.segmented}>{['male', 'female', 'other'].map((item) => <button className={gender === item ? styles.selected : ''} type="button" key={item} onClick={() => setGender(item)}>{item[0].toUpperCase() + item.slice(1)}</button>)}</div></fieldset>
-          </div>
-          <button className={styles.primary} type="submit" disabled={busy || !pricing}>{busy ? <><LoaderCircle className={styles.spinner} /> Sending OTP</> : 'Continue securely'}</button>
+          <label>Mobile number<div className={styles.phone}><span>+91</span><input type="tel" value={phone} onChange={(event) => setPhone(cleanPhone(event.target.value))} inputMode="numeric" autoComplete="tel-national" maxLength={13} placeholder="98765 43210" autoFocus required /></div></label>
+          <button className={styles.primary} type="submit" disabled={busy || !pricing || phone.length !== 10}>{busy ? <><LoaderCircle className={styles.spinner} /> Sending OTP</> : 'Send OTP'}</button>
           <p className={styles.status} role="status">{message}</p>
           <small>By continuing, you agree to the Privacy Policy and Terms. This is a one-time payment with no automatic renewal.</small>
           <a className={styles.signin} href="/login">Already have an account? Sign in</a>
@@ -254,12 +248,12 @@ export default function MarketingCheckoutFlow() {
         {stage === 'otp' ? <form className={styles.form} onSubmit={verifyAndPay}>
           <div className={styles.heading}>
             <p><LockKeyhole /> Phone verification</p>
-            <h2 id="checkout-title">Enter your OTP</h2>
-            <span>We sent a 6-digit code to +91 {phone}.</span>
+            <h2 id="checkout-title">{bearer ? 'Phone verified' : 'Enter your OTP'}</h2>
+            <span>{bearer ? 'Continue to secure PhonePe checkout.' : `We sent a 6-digit code to +91 ${phone}.`}</span>
           </div>
-          <label>One-time password<input className={styles.otp} value={otp} onChange={(event) => setOtp(event.target.value.replace(/\D/g, '').slice(0, 6))} inputMode="numeric" autoComplete="one-time-code" placeholder="• • • • • •" autoFocus /></label>
-          <button className={styles.primary} type="submit" disabled={busy || otp.length !== 6}>{busy ? <><LoaderCircle className={styles.spinner} /> Please wait</> : `Verify & pay ${price}`}</button>
-          <button className={styles.textButton} type="button" onClick={resendOtp} disabled={busy}>Resend OTP</button>
+          {!bearer ? <label>One-time password<input className={styles.otp} value={otp} onChange={(event) => setOtp(event.target.value.replace(/\D/g, '').slice(0, 6))} inputMode="numeric" autoComplete="one-time-code" placeholder="• • • • • •" autoFocus /></label> : null}
+          <button className={styles.primary} type="submit" disabled={busy || (!bearer && otp.length !== 6)}>{busy ? <><LoaderCircle className={styles.spinner} /> Please wait</> : bearer ? `Pay ${price}` : `Verify & pay ${price}`}</button>
+          {!bearer ? <button className={styles.textButton} type="button" onClick={resendOtp} disabled={busy}>Resend OTP</button> : null}
           <p className={styles.status} role="status">{message}</p>
           <div className={styles.phonePe}><LockKeyhole /> Secure payment powered by PhonePe</div>
         </form> : null}
@@ -267,8 +261,8 @@ export default function MarketingCheckoutFlow() {
         {(stage === 'checking' || stage === 'pending' || stage === 'success') ? <div className={styles.state} aria-live="polite">
           <div className={stage === 'success' ? styles.success : styles.stateIcon}>{stage === 'success' ? <Check /> : <LoaderCircle className={stage === 'checking' ? styles.spinner : ''} />}</div>
           <p>PhonePe payment</p>
-          <h2 id="checkout-title">{stage === 'success' ? 'You’re ready to learn' : stage === 'pending' ? 'Payment confirmation pending' : 'Confirming your payment'}</h2>
-          <span>{stage === 'success' ? 'Your account is ready. Opening Skillomate...' : stage === 'pending' ? 'If you completed payment, do not pay again. Check the status below.' : message || 'Please stay here while we securely confirm your payment.'}</span>
+          <h2 id="checkout-title">{stage === 'success' ? 'Payment successful' : stage === 'pending' ? 'Payment confirmation pending' : 'Confirming your payment'}</h2>
+          <span>{stage === 'success' ? 'Opening signup to complete your account details...' : stage === 'pending' ? 'If you completed payment, do not pay again. Check the status below.' : message || 'Please stay here while we securely confirm your payment.'}</span>
           {stage === 'pending' ? <button className={styles.primary} type="button" onClick={() => void checkPayment(bearer, true)} disabled={busy}>{busy ? 'Checking...' : 'Check payment status'}</button> : null}
           {stage === 'pending' ? <small className={styles.status}>{message}</small> : null}
         </div> : null}

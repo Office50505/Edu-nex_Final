@@ -1,0 +1,66 @@
+{
+  "result": "passed",
+  "checks": [
+    "phone-only modal",
+    "OTP verification",
+    "PhonePe one-time checkout",
+    "pending payment does not hand off",
+    "confirmed payment hands off to signup",
+    "no profile/complete API calls",
+    "no page runtime errors"
+  ],
+  "calls": [
+    {
+      "path": "/api/onboarding/config",
+      "body": null
+    },
+    {
+      "path": "/api/auth/send-mobile-otp",
+      "body": {
+        "mobileNumber": "+919876543210",
+        "checkoutFlow": "marketing-onboarding"
+      }
+    },
+    {
+      "path": "/api/auth/verify-mobile-otp",
+      "body": {
+        "mobileNumber": "+919876543210",
+        "mobileOtp": "123456",
+        "checkoutFlow": "marketing-onboarding"
+      }
+    },
+    {
+      "path": "/api/onboarding/session",
+      "body": {
+        "signupToken": "verified-phone"
+      }
+    },
+    {
+      "path": "/api/onboarding/status",
+      "body": null
+    },
+    {
+      "path": "/api/onboarding/checkout",
+      "body": {
+        "paymentType": "one_time",
+        "returnUrl": "http://localhost:3105/marketing-web/?payment=return"
+      }
+    },
+    {
+      "path": "/api/onboarding/config",
+      "body": null
+    },
+    {
+      "path": "/api/onboarding/status",
+      "body": null
+    },
+    {
+      "path": "/api/onboarding/status",
+      "body": null
+    },
+    {
+      "path": "/api/onboarding/handoff",
+      "body": {}
+    }
+  ]
+}
