@@ -3917,7 +3917,7 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
       clearTimeout(nativeStartupRetryTimerRef.current);
       nativeStartupRetryTimerRef.current = null;
     }
-    if (!nativeVideoSource) {
+    if (!nativeVideoSource || !isActive || suspendSurface) {
       pauseNativePlayer();
       sourceQueue.current = sourceQueue.current.catch(() => {}).then(() => {
         if (!cancelled) return runNativePlayer(player => player.replaceAsync(null));
@@ -3968,7 +3968,7 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
       }
       pauseNativePlayer();
     };
-  }, [nativeVideoSource, requestedInitialTime, canFallbackToEmbed, pauseNativePlayer, playNativePlayer, runNativePlayer, scheduleNativeStartupRecovery, setNativeTime]);
+  }, [nativeVideoSource, requestedInitialTime, canFallbackToEmbed, isActive, pauseNativePlayer, playNativePlayer, runNativePlayer, scheduleNativeStartupRecovery, setNativeTime, suspendSurface]);
 
   useEffect(() => {
     shouldBePlayingRef.current = isActive;
@@ -4962,7 +4962,7 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
   }
 
   if (video.provider === 'aws_cloudfront' && currentTime > 0) cloudResume.current = currentTime;
-  if (video.provider === 'aws_cloudfront' && (!validCloudLease || cloudError)) return (
+  if (isActive && video.provider === 'aws_cloudfront' && (!validCloudLease || cloudError)) return (
     <View style={[s.player, { height, justifyContent: "center", alignItems: "center" }]}>
       {!cloudError && <ActivityIndicator size="large" color="#fff" />}
       <Text style={{ color: "#fff", padding: 20, textAlign: "center" }}>{cloudError || "Preparing secure playback..."}</Text>
@@ -4983,8 +4983,8 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
       isNativeVideo ? availableNativeQualityOptions : availableEmbedQualityOptions
     ),
   ];
-  const showLiveSurface = !suspendSurface;
-  const suspendedPosterUrl = suspendSurface ? getLessonThumbnailUrl(video, course) : "";
+  const showLiveSurface = isActive && !suspendSurface;
+  const suspendedPosterUrl = !showLiveSurface ? getLessonThumbnailUrl(video, course) : "";
 
   return (
     <View style={[s.player, { height }]}>
