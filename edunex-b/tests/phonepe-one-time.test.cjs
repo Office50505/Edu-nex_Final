@@ -59,6 +59,8 @@ test('PhonePe direct checkout requests exactly 49900 paise without a subscriptio
   assert.equal(body.paymentFlow.paymentModeConfig, undefined);
   assert.equal(body.paymentFlow.subscription, undefined);
   assert.equal(body.merchantOrderId, result.merchantTransactionId);
+  assert.match(result.merchantTransactionId, /^EDX[A-Z0-9]+$/);
+  assert.ok(result.merchantTransactionId.length <= 35);
   assert.match(body.paymentFlow.merchantUrls.redirectUrl, /merchantTransactionId=/);
   assert.equal(payment.options.headers['X-MERCHANT-ID'], undefined);
   assert.equal(payment.options.headers.Authorization, 'O-Bearer test-token');

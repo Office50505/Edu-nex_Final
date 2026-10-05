@@ -12,6 +12,26 @@ const AWAITING_KEY = 'skillomateMarketingAwaitingPayment'
 
 type Stage = 'account' | 'otp' | 'checking' | 'pending' | 'success' | null
 type Pricing = { gateway: string; checkoutEnabled: boolean; oneTimeAmountPaise: number; accessDays: number }
+type PaymentStatus = { accessGranted?: boolean; pendingCheckout?: boolean }
+
+class ApiError extends Error {
+  status: number
+
+  constructor(message: string, status: number) {
+    super(message)
+    this.name = 'ApiError'
+    this.status = status
+  }
+}
+
+function isUnfinishedCheckoutError(error: unknown) {
+  return error instanceof Error && /unfinished checkout|check payment status before paying again/i.test(error.message)
+}
+
+function isExpiredSessionError(error: unknown) {
+  return error instanceof ApiError && error.status === 401
+}
+
 function apiPath(path: string) {
   const configuredBase = process.env.NEXT_PUBLIC_API_BASE_URL || ''
   return configuredBase ? `${configuredBase}${path}` : path
@@ -28,7 +48,7 @@ async function api<T>(path: string, body?: unknown, bearer = ''): Promise<T> {
     ...(body === undefined ? {} : { body: JSON.stringify(body) }),
   })
   const data = await response.json().catch(() => ({}))
-  if (!response.ok) throw new Error(data.error || data.message || 'Request failed. Please retry.')
+  if (!response.ok) throw new ApiError(data.error || data.message || 'Request failed. Please retry.', response.status)
   return data as T
 }
 
@@ -48,6 +68,18 @@ export default function MarketingCheckoutFlow() {
   const busyRef = useRef(false)
   const finishingRef = useRef(false)
   const checkingRef = useRef(false)
+
+  const resetExpiredSession = useCallback(() => {
+    sessionStorage.removeItem(SESSION_KEY)
+    sessionStorage.removeItem(AWAITING_KEY)
+    setBearer('')
+    setOtp('')
+    checkingRef.current = false
+    finishingRef.current = false
+    setBusy(false)
+    setStage('account')
+    setMessage('Your phone verification session expired. Please verify your phone again to continue.')
+  }, [])
 
   useEffect(() => {
     void api<Pricing>('/api/onboarding/config').then((data) => {
@@ -120,20 +152,29 @@ export default function MarketingCheckoutFlow() {
     checkingRef.current = true
     if (manual) setBusy(true)
     try {
-      const status = await api<{ accessGranted?: boolean }>('/api/onboarding/status', undefined, token)
+      const status = await api<PaymentStatus>('/api/onboarding/status', undefined, token)
       if (status.accessGranted) await finish(token)
-      else if (manual) {
+      else if (status.pendingCheckout) {
         setStage('pending')
-        setMessage('PhonePe has not confirmed the payment yet. Please wait a moment and check again.')
+        setMessage('You already have a PhonePe checkout in progress. Check its status before starting another payment.')
+      }
+      else {
+        sessionStorage.removeItem(AWAITING_KEY)
+        setStage('otp')
+        setMessage('Your previous PhonePe checkout expired. You can start a new payment now.')
       }
     } catch (error) {
+      if (isExpiredSessionError(error)) {
+        resetExpiredSession()
+        return
+      }
       setStage('pending')
       setMessage(error instanceof Error ? error.message : 'Unable to check payment status.')
     } finally {
       checkingRef.current = false
       if (manual) setBusy(false)
     }
-  }, [bearer, finish])
+  }, [bearer, finish, resetExpiredSession])
 
   useEffect(() => {
     if (!bearer || (stage !== 'checking' && stage !== 'pending')) return
@@ -154,17 +195,47 @@ export default function MarketingCheckoutFlow() {
   }, [bearer, checkPayment, stage])
 
   const openPhonePe = useCallback(async (token: string) => {
-    const status = await api<{ accessGranted?: boolean }>('/api/onboarding/status', undefined, token)
+    let status: PaymentStatus
+    try {
+      status = await api<PaymentStatus>('/api/onboarding/status', undefined, token)
+    } catch (error) {
+      if (isExpiredSessionError(error)) {
+        resetExpiredSession()
+        return
+      }
+      throw error
+    }
     if (status.accessGranted) { await finish(token); return }
+    if (status.pendingCheckout) {
+      sessionStorage.setItem(AWAITING_KEY, '1')
+      setStage('pending')
+      setMessage('You already have a PhonePe checkout in progress. Check its status before starting another payment.')
+      return
+    }
     setMessage('Opening secure PhonePe checkout...')
-    const checkout = await api<{ gateway: string; redirectUrl: string }>('/api/onboarding/checkout', {
-      paymentType: 'one_time',
-      returnUrl: `${window.location.origin}${BASE_PATH}/?payment=return`,
-    }, token)
+    let checkout: { gateway: string; redirectUrl: string }
+    try {
+      checkout = await api<{ gateway: string; redirectUrl: string }>('/api/onboarding/checkout', {
+        paymentType: 'one_time',
+        returnUrl: `${window.location.origin}${BASE_PATH}/?payment=return`,
+      }, token)
+    } catch (error) {
+      if (isExpiredSessionError(error)) {
+        resetExpiredSession()
+        return
+      }
+      if (isUnfinishedCheckoutError(error)) {
+        sessionStorage.setItem(AWAITING_KEY, '1')
+        setStage('pending')
+        setMessage('You already have a PhonePe checkout in progress. Check its status before starting another payment.')
+        return
+      }
+      throw error
+    }
     if (checkout.gateway !== 'phonepe' || !checkout.redirectUrl) throw new Error('Secure PhonePe checkout is unavailable.')
     sessionStorage.setItem(AWAITING_KEY, '1')
     window.location.assign(checkout.redirectUrl)
-  }, [finish])
+  }, [finish, resetExpiredSession])
 
   const sendOtp = async (event: FormEvent) => {
     event.preventDefault()

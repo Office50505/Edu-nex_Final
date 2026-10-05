@@ -28,7 +28,10 @@ let cachedToken = null;
 let tokenExpiresAt = 0;
 
 function generateMerchantTransactionId(userId) {
-  return `EDUNEX_${userId}_${Date.now()}`;
+  const userDigest = crypto.createHash('sha1').update(String(userId || '')).digest('hex').slice(0, 8).toUpperCase();
+  const timePart = Date.now().toString(36).toUpperCase();
+  const randomPart = crypto.randomBytes(3).toString('hex').toUpperCase();
+  return `EDX${timePart}${userDigest}${randomPart}`.slice(0, 35);
 }
 
 function generateMerchantSubscriptionId(userId) {
@@ -242,7 +245,7 @@ async function createMonthlyPaymentRequest(userId) {
 }
 
 async function createOneTimePaymentRequest(userId) {
-  const merchantTransactionId = `${generateMerchantTransactionId(userId)}_${crypto.randomBytes(4).toString('hex')}`;
+  const merchantTransactionId = generateMerchantTransactionId(userId);
   const accessToken = await getAccessToken();
   const payload = {
     merchantOrderId: merchantTransactionId,

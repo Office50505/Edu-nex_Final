@@ -19,9 +19,27 @@ const frontendDashboardUrl = process.env.FRONTEND_DASHBOARD_URL || (frontendOrig
 const frontendPaymentSuccessUrl = process.env.FRONTEND_PAYMENT_SUCCESS_URL || (frontendOrigin ? `${frontendOrigin}/payment.html?payment=success` : '/payment.html?payment=success');
 const frontendPaymentFailedUrl = process.env.FRONTEND_PAYMENT_FAILED_URL || (frontendOrigin ? `${frontendOrigin}/payment.html?status=failed` : '/payment.html?status=failed');
 const simulatedPaymentModes = ['simulated', 'simulation', 'mock', 'local'];
+const defaultPendingCheckoutExpirySeconds = isProduction ? 20 * 60 : 30;
 
 function isSimulatedPaymentEnabled() {
   return !isProduction && simulatedPaymentModes.includes(paymentGatewayMode);
+}
+
+function pendingCheckoutExpiryMs() {
+  const seconds = Number(process.env.PHONEPE_PENDING_CHECKOUT_EXPIRY_SECONDS || defaultPendingCheckoutExpirySeconds);
+  return Math.max(15, Math.min(Number.isFinite(seconds) ? seconds : defaultPendingCheckoutExpirySeconds, 20 * 60)) * 1000;
+}
+
+function isPendingCheckoutExpired(order, now = Date.now()) {
+  if (!order?.createdAt) return false;
+  const createdAt = new Date(order.createdAt).getTime();
+  return Number.isFinite(createdAt) && now - createdAt >= pendingCheckoutExpiryMs();
+}
+
+async function expireStaleOneTimeOrder(order) {
+  if (!order || order.status !== 'pending' || !isPendingCheckoutExpired(order)) return false;
+  await applyFailedPayment(order, { state: 'EXPIRED' });
+  return true;
 }
 
 function withQueryParams(url, params = {}) {
@@ -354,6 +372,7 @@ async function reconcileOneTimeOrder(order) {
 
 async function reconcilePhonePeForUser(userId) {
   const pendingOrder = await Order.findOne({ user: userId, gateway: 'phonepe', orderType: 'one_time_access', status: 'pending' }).sort({ createdAt: -1 });
+  if (await expireStaleOneTimeOrder(pendingOrder)) return Subscription.findOne({ user: userId, gateway: 'phonepe' });
   if (pendingOrder && !isSimulatedPaymentEnabled()) await reconcileOneTimeOrder(pendingOrder);
   return Subscription.findOne({ user: userId, gateway: 'phonepe' });
 }
@@ -378,7 +397,10 @@ async function initiateTrial(req, res) {
     }
     const pendingOrder = await Order.findOne({ user: req.user._id, gateway: 'phonepe', orderType: 'one_time_access', status: 'pending' }).sort({ createdAt: -1 });
     if (pendingOrder) {
-      const state = isSimulatedPaymentEnabled() ? 'pending' : await reconcileOneTimeOrder(pendingOrder);
+      if (await expireStaleOneTimeOrder(pendingOrder)) {
+        pendingOrder.status = 'failed';
+      }
+      const state = isSimulatedPaymentEnabled() && pendingOrder.status === 'pending' ? 'pending' : await reconcileOneTimeOrder(pendingOrder);
       if (state === 'paid') return res.status(409).json({ error: 'Payment has already succeeded. Refresh your access status.' });
       if (state === 'pending') return res.status(409).json({ error: 'An unfinished checkout exists. Check payment status before paying again.' });
     }
@@ -866,6 +888,9 @@ async function cancelSubscription(req, res) {
 async function subscriptionStatus(req, res) {
   try {
     const pendingOrder = await Order.findOne({ user: req.user._id, gateway: 'phonepe', orderType: 'one_time_access', status: 'pending' }).sort({ createdAt: -1 });
+    if (await expireStaleOneTimeOrder(pendingOrder)) {
+      pendingOrder.status = 'failed';
+    }
     if (pendingOrder && !isSimulatedPaymentEnabled()) {
       try { await reconcileOneTimeOrder(pendingOrder); }
       catch (error) { console.warn('PhonePe payment status check is temporarily unavailable.'); }

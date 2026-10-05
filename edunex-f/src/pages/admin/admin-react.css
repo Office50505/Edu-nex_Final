@@ -10841,7 +10841,27 @@ body.premium-nav-admin .settings-system-row b {
   white-space: nowrap;
 }
 
-/* Keep learner segment filters legible on the dark admin workspace. */
+/* Keep learner segment filters legible in the final admin workspace cascade. */
+body.premium-nav-admin .admin-workspace .crm-segment {
+  background: #f8fafc !important;
+  border: 1px solid rgba(15, 23, 42, .14) !important;
+  color: #334155 !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .82) !important;
+}
+
+body.premium-nav-admin .admin-workspace .crm-segment:hover,
+body.premium-nav-admin .admin-workspace .crm-segment:focus-visible {
+  background: #ffffff !important;
+  border-color: rgba(217, 154, 34, .42) !important;
+  color: #111827 !important;
+}
+
+body.premium-nav-admin .admin-workspace .crm-segment.is-active {
+  background: #111827 !important;
+  border-color: rgba(17, 24, 39, .82) !important;
+  color: #ffffff !important;
+}
+
 body.premium-nav-admin.admin-theme-dark .admin-workspace .crm-segment {
   background: #171c24 !important;
   border: 1px solid rgba(148, 163, 184, .28) !important;
