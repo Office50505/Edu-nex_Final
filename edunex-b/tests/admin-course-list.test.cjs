@@ -8,7 +8,14 @@ async function request(summary) {
   let handler, projection, payload;
   const query = {select(value){projection=value;return this;},populate(){return this;},sort(){return this;},async lean(){return [{_id:'c',title:'Course',videos:[{_id:'a'},{_id:'b'}]}];}};
   const guard = () => {};
-  vm.runInNewContext(route, {app:{get(path,auth,fn){assert.equal(auth,guard);handler=fn;}},protectAdmin:guard,Course:{find:()=>query}});
+  const emptyAggregate = async () => [];
+  vm.runInNewContext(route, {
+    app:{get(path,auth,fn){assert.equal(auth,guard);handler=fn;}},
+    protectAdmin:guard,
+    Course:{find:()=>query},
+    Progress:{aggregate:emptyAggregate},
+    CourseProgress:{aggregate:emptyAggregate},
+  });
   await handler({query:{summary}}, {json(value){payload=value;},status(){throw Error('Unexpected error');}});
   return {projection,payload};
 }

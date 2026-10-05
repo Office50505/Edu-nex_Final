@@ -4,6 +4,51 @@ apply plugin: "com.facebook.react"
 
 def projectRoot = rootDir.getAbsoluteFile().getParentFile().getAbsolutePath()
 
+// Release signing secrets must come from the build environment or private
+// Gradle properties. Never fall back to the repository's debug certificate.
+def releaseKeystoreProperties = new Properties()
+def releaseKeystorePropertiesFile = rootProject.file('keystore.properties')
+if (releaseKeystorePropertiesFile.exists()) {
+    releaseKeystorePropertiesFile.withInputStream { stream ->
+        releaseKeystoreProperties.load(stream)
+    }
+}
+def releaseSigningValue = { String name ->
+    def value = System.getenv(name) ?: findProperty(name) ?: releaseKeystoreProperties.getProperty(name)
+    value?.toString()?.trim()
+}
+def releaseSigning = [
+    storeFile: releaseSigningValue('SKILLOMATE_RELEASE_STORE_FILE'),
+    storePassword: releaseSigningValue('SKILLOMATE_RELEASE_STORE_PASSWORD'),
+    keyAlias: releaseSigningValue('SKILLOMATE_RELEASE_KEY_ALIAS'),
+    keyPassword: releaseSigningValue('SKILLOMATE_RELEASE_KEY_PASSWORD'),
+]
+def hasReleaseSigning = releaseSigning.values().every { it }
+def hasInjectedReleaseSigning = [
+    'android.injected.signing.store.file',
+    'android.injected.signing.store.password',
+    'android.injected.signing.key.alias',
+    'android.injected.signing.key.password',
+].every { name -> findProperty(name)?.toString()?.trim() }
+
+gradle.taskGraph.whenReady { graph ->
+    def packagesReleaseArtifact = graph.allTasks.any { task ->
+        def taskName = task.name.toLowerCase()
+        taskName.contains('release') && (
+            taskName.startsWith('assemble') ||
+            taskName.startsWith('bundle') ||
+            taskName.startsWith('package')
+        )
+    }
+    if (packagesReleaseArtifact && !hasReleaseSigning && !hasInjectedReleaseSigning) {
+        throw new GradleException(
+            'Release signing is not configured. Set SKILLOMATE_RELEASE_STORE_FILE, ' +
+            'SKILLOMATE_RELEASE_STORE_PASSWORD, SKILLOMATE_RELEASE_KEY_ALIAS, and ' +
+            'SKILLOMATE_RELEASE_KEY_PASSWORD (or use injected signing credentials).'
+        )
+    }
+}
+
 /**
  * This is the configuration block to customize your React Native Android app.
  * By default you don't need to apply any configuration, just uncomment the lines you need.
@@ -105,19 +150,26 @@ android {
 
         buildConfigField "String", "REACT_NATIVE_RELEASE_LEVEL", "\"${findProperty('reactNativeReleaseLevel') ?: 'stable'}\""
     }
-    signingConfigs {
-        debug {
-            storeFile file('debug.keystore')
-            storePassword 'android'
-            keyAlias 'androiddebugkey'
-            keyPassword 'android'
+    if (hasReleaseSigning) {
+        signingConfigs {
+            release {
+                storeFile file(releaseSigning.storeFile)
+                storePassword releaseSigning.storePassword
+                keyAlias releaseSigning.keyAlias
+                keyPassword releaseSigning.keyPassword
+            }
         }
     }
     buildTypes {
         debug {
-            signingConfig signingConfigs.debug
+            // Debug builds cannot replace or impersonate the production app.
+            applicationIdSuffix '.debug'
+            versionNameSuffix '-debug'
         }
         release {
+            if (hasReleaseSigning) {
+                signingConfig signingConfigs.release
+            }
             def enableShrinkResources = findProperty('android.enableShrinkResourcesInReleaseBuilds') ?: 'false'
             shrinkResources enableShrinkResources.toBoolean()
             minifyEnabled enableMinifyInReleaseBuilds

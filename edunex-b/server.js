@@ -3568,7 +3568,9 @@ app.get('/api/recommendations/courses', async (req, res) => {
 app.get('/api/courses/checkout-summary', async (req, res) => {
   try {
     const { courseId } = req.query;
-    const cacheKey = courseId ? `course:v3:${courseId}` : 'featured:v3';
+    // Version the cache whenever the public response shape changes so an older
+    // entry cannot keep serving lesson playback metadata after a deployment.
+    const cacheKey = courseId ? `course:v4:${courseId}` : 'featured:v4';
     const cached = await getCachedCheckoutSummary(cacheKey);
 
     if (cached) {
@@ -3611,10 +3613,8 @@ app.get('/api/courses/checkout-summary', async (req, res) => {
           averageRating: 1,
           instructor: 1,
           videoCount: { $size: { $ifNull: ['$videos', []] } },
-          videos: { $slice: ['$videos', 1] },
         },
       },
-      { $unset: 'videos.thumbnail' },
     ]);
 
     if (!course) {
