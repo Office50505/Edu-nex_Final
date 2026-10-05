@@ -317,7 +317,22 @@ fi
 OLD_COMMIT="$(git rev-parse HEAD)"
 
 git fetch --prune origin main
-NEW_COMMIT="$(git rev-parse origin/main)"
+CURRENT_ORIGIN_MAIN="$(git rev-parse origin/main)"
+NEW_COMMIT="$CURRENT_ORIGIN_MAIN"
+
+if test -n "$EXPECTED_TARGET_COMMIT"; then
+  if ! git -C "$REPOSITORY" cat-file -e "$EXPECTED_TARGET_COMMIT^{commit}" >/dev/null 2>&1; then
+    git -C "$REPOSITORY" fetch --prune origin "$EXPECTED_TARGET_COMMIT" || true
+  fi
+  if ! git -C "$REPOSITORY" cat-file -e "$EXPECTED_TARGET_COMMIT^{commit}" >/dev/null 2>&1; then
+    record_result preflight-failed target-unavailable
+    echo "Pinned deployment target cannot be fetched or verified."
+    echo "target_commit=$EXPECTED_TARGET_COMMIT"
+    echo "current_origin_main=$CURRENT_ORIGIN_MAIN"
+    exit 27
+  fi
+  NEW_COMMIT="$EXPECTED_TARGET_COMMIT"
+fi
 
 for config_file in edunex-b/.env edunex-b/.env.local; do
   if git -C "$REPOSITORY" cat-file -e "$NEW_COMMIT:$config_file" >/dev/null 2>&1; then
@@ -327,12 +342,9 @@ for config_file in edunex-b/.env edunex-b/.env.local; do
   fi
 done
 
-if test -n "$EXPECTED_TARGET_COMMIT" && test "$NEW_COMMIT" != "$EXPECTED_TARGET_COMMIT"; then
-  record_result preflight-failed target-moved
-  echo "origin/main changed after the rolling deployment target was selected."
-  echo "expected_commit=$EXPECTED_TARGET_COMMIT"
-  echo "current_origin_main=$NEW_COMMIT"
-  exit 27
+if test -n "$EXPECTED_TARGET_COMMIT" && test "$CURRENT_ORIGIN_MAIN" != "$EXPECTED_TARGET_COMMIT"; then
+  echo "origin/main advanced during rollout; continuing pinned deployment target $EXPECTED_TARGET_COMMIT"
+  echo "current_origin_main=$CURRENT_ORIGIN_MAIN"
 fi
 
 echo "old_commit=$OLD_COMMIT"

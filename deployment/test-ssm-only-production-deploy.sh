@@ -51,7 +51,8 @@ case "$*" in
     if test "${FAKE_TRACKED_CONFIG:-}" = target; then exit 0; fi
     exit 1
     ;;
-  *'diff --quiet'*|*'diff --cached --quiet'*|*'fetch --prune origin main'*|*'checkout main'*|*'ls-files --error-unmatch '*|*'status --short'*) : ;;
+  *'cat-file -e '*'^{commit}'*) : ;;
+  *'diff --quiet'*|*'diff --cached --quiet'*|*'fetch --prune origin main'*|*'fetch --prune origin '*|*'checkout main'*|*'ls-files --error-unmatch '*|*'status --short'*) : ;;
   *'ls-files --others --exclude-standard'*) : ;;
   *'rev-parse origin/main'*) printf '%s\n' "$FAKE_NEW_COMMIT" ;;
   *'rev-parse HEAD'*) cat "$FAKE_GIT_HEAD" ;;
@@ -68,7 +69,7 @@ if test "${1:-}" = ssm-bootstrap.js && test "${2:-}" = --check; then
   printf 'ssm|%s|%s\n' "${NODE_ENV:-missing}" "${SKILLOMATE_CONFIG_SOURCE:-missing}" >>"$FAKE_EVENTS"
   if test "${FAKE_SSM_FAILURE:-}" = always || {
     test "${FAKE_SSM_FAILURE:-}" = after-reset &&
-    test "$(cat "$FAKE_GIT_HEAD")" = "$FAKE_NEW_COMMIT";
+    test "$(cat "$FAKE_GIT_HEAD")" = "${FAKE_DEPLOYED_COMMIT:-$FAKE_NEW_COMMIT}";
   } || {
     test "${FAKE_SSM_FAILURE:-}" = old-only &&
     test "$(cat "$FAKE_GIT_HEAD")" != "$FAKE_NEW_COMMIT";
@@ -188,7 +189,7 @@ reset_case() {
 
 run_deploy() {
   env NODE_ENV=development SKILLOMATE_CONFIG_SOURCE=dotenv \
-    "$@" bash "$self_test_directory/deploy.sh" "$FAKE_NEW_COMMIT"
+    "$@" bash "$self_test_directory/deploy.sh" "${EXPECTED_DEPLOY_COMMIT:-$FAKE_NEW_COMMIT}"
 }
 
 reset_case
@@ -218,6 +219,23 @@ grep -q '^DEPLOYMENT SUCCESS$' "$self_test_directory/target-bootstrap-success.ou
 test "$(cat "$FAKE_GIT_HEAD")" = "$FAKE_NEW_COMMIT"
 test "$(grep -c '^ssm|production|ssm$' "$FAKE_EVENTS")" -eq 2
 test "$(cut -d'|' -f1 "$FAKE_EVENTS" | paste -sd, -)" = 'ssm,ssm,pm2-start'
+test ! -e "$backend/.env"
+
+reset_case
+EXPECTED_DEPLOY_COMMIT=cccccccccccccccccccccccccccccccccccccccc \
+FAKE_DEPLOYED_COMMIT=cccccccccccccccccccccccccccccccccccccccc \
+  run_deploy >"$self_test_directory/pinned-target.out" 2>&1
+grep -q '^DEPLOYMENT SUCCESS$' "$self_test_directory/pinned-target.out"
+grep -q 'origin/main advanced during rollout; continuing pinned deployment target cccccccccccccccccccccccccccccccccccccccc' "$self_test_directory/pinned-target.out"
+grep -q '^current_origin_main=bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb$' "$self_test_directory/pinned-target.out"
+grep -q '^commit=cccccccccccccccccccccccccccccccccccccccc$' "$self_test_directory/pinned-target.out"
+test "$(cat "$FAKE_GIT_HEAD")" = cccccccccccccccccccccccccccccccccccccccc
+grep -q 'reset --hard cccccccccccccccccccccccccccccccccccccccc' "$FAKE_GIT_CALLS"
+if grep -q 'reset --hard bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb' "$FAKE_GIT_CALLS"; then
+  echo 'Pinned rollout deployed the newer origin/main commit.' >&2
+  exit 1
+fi
+unset EXPECTED_DEPLOY_COMMIT FAKE_DEPLOYED_COMMIT
 test ! -e "$backend/.env"
 
 reset_case

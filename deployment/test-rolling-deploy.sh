@@ -4,6 +4,7 @@ set -Eeuo pipefail
 SCRIPT_DIRECTORY="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ORCHESTRATOR="$SCRIPT_DIRECTORY/deploy-skillomate-production.sh"
 TARGET_COMMIT=0123456789abcdef0123456789abcdef01234567
+NEXT_COMMIT=fedcba9876543210fedcba9876543210fedcba98
 self_test_directory="$(mktemp -d "${TMPDIR:-/tmp}/skillomate-rolling-selftest.XXXXXX")"
 live_lock_pid=""
 cleanup() {
@@ -94,6 +95,14 @@ if [[ "$command" == *'rev-parse origin/main'* ]]; then
 fi
 if [[ "$command" == bash\ -s* ]]; then
   cat >/dev/null
+  if test "${FAKE_MAIN_ADVANCED_DURING_ROLLOUT:-}" = yes && [[ "$command" != *"$FAKE_TARGET_COMMIT"* ]]; then
+    echo "deployed an unexpected commit after origin/main advanced"
+    exit 43
+  fi
+  if test "${FAKE_MAIN_ADVANCED_DURING_ROLLOUT:-}" = yes && [[ "$command" == *"$FAKE_NEXT_COMMIT"* ]]; then
+    echo "deployed the next origin/main commit during the active rollout"
+    exit 44
+  fi
   if test "${FAKE_FAIL_HOST:-}" = "$host"; then
     echo 'DEPLOYMENT FAILED'
     echo 'ROLLBACK SUCCESSFUL'
@@ -112,6 +121,7 @@ run_orchestrator() {
     FAKE_SSH_CALLS="$ssh_calls" \
     FAKE_AWS_CALLS="$aws_calls" \
     FAKE_TARGET_COMMIT="$TARGET_COMMIT" \
+    FAKE_NEXT_COMMIT="$NEXT_COMMIT" \
     SKILLOMATE_SSH_COMMAND="$fake_ssh" \
     SKILLOMATE_AWS_COMMAND="$fake_aws" \
     SKILLOMATE_SSH_KEY="$fake_key" \
@@ -129,8 +139,24 @@ grep -q '^ROLLING DEPLOYMENT COMPLETE$' "$success_output"
 test "$(grep -c '^DEPLOY SUCCESS$' "$success_output")" -eq 3
 test "$(find "$self_test_directory/success-logs" -type f -name '*.log' | wc -l | tr -d ' ')" -eq 3
 test "$(grep 'bash -s' "$ssh_calls" | cut -d'|' -f1 | paste -sd, -)" = '198.51.100.11,198.51.100.12,198.51.100.13'
+test "$(grep 'bash -s' "$ssh_calls" | grep -c "$TARGET_COMMIT")" -eq 3
+if grep 'bash -s' "$ssh_calls" | grep -q "$NEXT_COMMIT"; then
+  echo 'Rolling deployment sent the next origin/main commit to a host.' >&2
+  exit 1
+fi
 test "$(grep -c 'autoscaling describe-auto-scaling-instances' "$aws_calls")" -eq 3
 if grep -Ev ' describe-' "$aws_calls" >/dev/null; then echo 'Unexpected AWS mutation' >&2; exit 1; fi
+
+: >"$ssh_calls"
+advanced_output="$self_test_directory/advanced.out"
+run_orchestrator "$advanced_output" advanced FAKE_MAIN_ADVANCED_DURING_ROLLOUT=yes
+grep -q '^ROLLING DEPLOYMENT COMPLETE$' "$advanced_output"
+test "$(grep 'bash -s' "$ssh_calls" | cut -d'|' -f1 | paste -sd, -)" = '198.51.100.11,198.51.100.12,198.51.100.13'
+test "$(grep 'bash -s' "$ssh_calls" | grep -c "$TARGET_COMMIT")" -eq 3
+if grep 'bash -s' "$ssh_calls" | grep -q "$NEXT_COMMIT"; then
+  echo 'Rolling deployment used the next origin/main commit during the active rollout.' >&2
+  exit 1
+fi
 
 : >"$ssh_calls"
 failure_output="$self_test_directory/failure.out"
@@ -223,5 +249,6 @@ test ! -s "$ssh_calls"
 echo 'ROLLING DEPLOYMENT SELF-TEST PASSED'
 echo 'discovery=ASG InService and Healthy instances'
 echo 'order=sorted instance IDs, sequential deployment'
+echo 'pinned_target=origin_main_advancement_does_not_change_active_rollout'
 echo 'private_or_unreachable=blocked_before_deployment'
 echo 'failure_or_membership_change=stops_rollout'
