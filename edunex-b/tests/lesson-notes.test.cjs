@@ -18,3 +18,8 @@ test('admin lesson notes route is protected and uses an atomic positional update
   assert.match(source, /'videos\.\$\.notes': notes/);
   assert.match(source, /clearPublicCourseCaches\(\)/);
 });
+
+test('mobile course projection includes saved per-lesson notes', () => {
+  const source = fs.readFileSync(path.join(__dirname, '..', 'services', 'mobileCompatibilityService.js'), 'utf8');
+  assert.match(source, /LIGHT_COURSE_FIELDS = .*videos\.notes/);
+});

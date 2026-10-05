@@ -8920,6 +8920,32 @@ body.premium-nav-admin.admin-theme-dark .admin-workspace .course-title-cell span
   font-size: 12px !important;
 }
 
+body.premium-nav-admin .course-title-cell .course-inline-edit,
+body.premium-nav-admin.admin-theme-dark .admin-workspace .course-title-cell .course-inline-edit {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: fit-content !important;
+  max-width: 100% !important;
+  min-height: 30px !important;
+  margin-top: 4px !important;
+  padding: 7px 10px !important;
+  border: 1px solid rgba(242, 185, 79, .34) !important;
+  border-radius: 8px !important;
+  background: linear-gradient(180deg, #ffd66c, #efb53d) !important;
+  color: #221602 !important;
+  font-size: 11px !important;
+  font-weight: 850 !important;
+  line-height: 1 !important;
+  text-decoration: none !important;
+  white-space: nowrap !important;
+}
+
+body.premium-nav-admin .course-title-cell .course-inline-edit:hover,
+body.premium-nav-admin.admin-theme-dark .admin-workspace .course-title-cell .course-inline-edit:hover {
+  filter: brightness(1.04) !important;
+}
+
 body.premium-nav-admin .course-thumb {
   width: 108px !important;
   height: 62px !important;
@@ -10882,6 +10908,10 @@ body.premium-nav-admin.admin-theme-dark .admin-workspace .crm-segment.is-active 
   color: #ffffff !important;
 }
 
+body.premium-nav-admin .admin-quick-create-short {
+  display: none;
+}
+
 @media (max-width: 820px) {
   body.premium-nav-admin .settings-shell .admin-settings-card-head,
   body.premium-nav-admin .settings-system-head {
@@ -10901,5 +10931,559 @@ body.premium-nav-admin.admin-theme-dark .admin-workspace .crm-segment.is-active 
     justify-self: start;
     max-width: 100%;
     text-align: left;
+  }
+}
+
+/* Mobile admin final pass: keep controls compact, aligned, and readable on phone widths. */
+@media (max-width: 760px) {
+  body.premium-nav-admin {
+    overflow-x: hidden !important;
+  }
+
+  body.premium-nav-admin .admin-workspace {
+    min-width: 0 !important;
+    overflow-x: hidden !important;
+  }
+
+  body.premium-nav-admin .admin-sidebar,
+  body.premium-nav-admin.admin-sidebar-collapsed .admin-sidebar,
+  body.premium-nav-admin .admin-workspace.is-collapsed .admin-sidebar {
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 200 !important;
+    width: 100% !important;
+    min-height: 64px !important;
+    max-height: none !important;
+    padding: 10px 12px !important;
+    border-right: 0 !important;
+    border-bottom: 1px solid var(--admin-line) !important;
+    border-radius: 0 !important;
+    overflow: visible !important;
+  }
+
+  body.premium-nav-admin .admin-sidebar-top {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) 38px 44px !important;
+    align-items: center !important;
+    gap: 8px !important;
+    min-width: 0 !important;
+  }
+
+  body.premium-nav-admin .admin-workspace-brand {
+    min-width: 0 !important;
+    min-height: 44px !important;
+    padding: 0 !important;
+    gap: 8px !important;
+  }
+
+  body.premium-nav-admin .admin-brand-symbol {
+    width: 36px !important;
+    height: 40px !important;
+    flex-basis: 36px !important;
+    border-radius: 12px !important;
+  }
+
+  body.premium-nav-admin .admin-brand-copy {
+    display: grid !important;
+    min-width: 0 !important;
+  }
+
+  body.premium-nav-admin .admin-workspace-brand .admin-brand-name {
+    max-width: 142px !important;
+    overflow: hidden !important;
+    font-size: 17px !important;
+    line-height: 1.05 !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+  }
+
+  body.premium-nav-admin .admin-workspace-brand small {
+    max-width: 150px !important;
+    overflow: hidden !important;
+    font-size: 7px !important;
+    letter-spacing: .14em !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+  }
+
+  body.premium-nav-admin .admin-sidebar-toggle {
+    width: 36px !important;
+    height: 36px !important;
+    min-width: 0 !important;
+    padding: 0 !important;
+    border-radius: 12px !important;
+  }
+
+  body.premium-nav-admin .admin-mobile-menu-button {
+    width: 44px !important;
+    height: 44px !important;
+    min-width: 0 !important;
+    border-radius: 13px !important;
+  }
+
+  body.premium-nav-admin:not(.admin-mobile-menu-open) .admin-sidebar nav,
+  body.premium-nav-admin:not(.admin-mobile-menu-open) .admin-sidebar-footer {
+    display: none !important;
+  }
+
+  body.premium-nav-admin.admin-mobile-menu-open .admin-sidebar nav {
+    position: static !important;
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+    max-height: min(66dvh, 540px) !important;
+    margin: 12px 0 0 !important;
+    padding: 12px !important;
+    border: 1px solid var(--admin-line) !important;
+    border-radius: 16px !important;
+    background: var(--admin-surface) !important;
+    box-shadow: 0 20px 48px rgba(0, 0, 0, .28) !important;
+    overflow-y: auto !important;
+  }
+
+  body.premium-nav-admin.admin-theme-light.admin-mobile-menu-open .admin-sidebar nav {
+    background: #ffffff !important;
+    box-shadow: 0 20px 48px rgba(15, 23, 42, .12) !important;
+  }
+
+  body.premium-nav-admin.admin-mobile-menu-open .admin-sidebar .admin-nav-group {
+    margin: 0 !important;
+  }
+
+  body.premium-nav-admin.admin-mobile-menu-open .admin-sidebar .admin-nav-group p {
+    display: none !important;
+  }
+
+  body.premium-nav-admin.admin-mobile-menu-open .admin-sidebar .admin-nav-group a {
+    min-height: 46px !important;
+    margin: 0 !important;
+    padding: 11px 12px !important;
+    border-radius: 12px !important;
+    color: var(--admin-muted) !important;
+    font-size: 13px !important;
+    font-weight: 850 !important;
+  }
+
+  body.premium-nav-admin.admin-mobile-menu-open .admin-sidebar .admin-nav-group a span {
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+  }
+
+  body.premium-nav-admin.admin-mobile-menu-open .admin-sidebar-footer {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 8px !important;
+    margin-top: 10px !important;
+    padding-top: 0 !important;
+    border-top: 0 !important;
+  }
+
+  body.premium-nav-admin.admin-mobile-menu-open .admin-sidebar-footer :where(a, button) {
+    min-height: 42px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 10px 12px !important;
+    border: 1px solid var(--admin-line) !important;
+    border-radius: 12px !important;
+    background: var(--admin-card) !important;
+    color: var(--admin-accent) !important;
+    font-size: 13px !important;
+    font-weight: 900 !important;
+  }
+
+  body.premium-nav-admin .admin-workspace .admin-workspace-main,
+  body.premium-nav-admin.admin-sidebar-collapsed .admin-workspace .admin-workspace-main,
+  body.premium-nav-admin .admin-workspace.is-collapsed .admin-workspace-main {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 14px 12px 72px !important;
+    border-radius: 0 !important;
+    overflow-x: hidden !important;
+  }
+
+  body.premium-nav-admin .admin-workspace-main > * {
+    min-width: 0 !important;
+    max-width: 100% !important;
+  }
+
+  body.premium-nav-admin .admin-workspace-header {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+    margin: 0 0 16px !important;
+    padding: 0 0 16px !important;
+    border-radius: 0 !important;
+  }
+
+  body.premium-nav-admin .admin-header-main {
+    min-width: 0 !important;
+  }
+
+  body.premium-nav-admin .admin-breadcrumb {
+    margin-bottom: 5px !important;
+    font-size: 10px !important;
+  }
+
+  body.premium-nav-admin .admin-workspace-header h1 {
+    margin: 0 !important;
+    font-size: 25px !important;
+    line-height: 1.15 !important;
+    letter-spacing: 0 !important;
+  }
+
+  body.premium-nav-admin .admin-header-description {
+    display: none !important;
+  }
+
+  body.premium-nav-admin .admin-header-tools {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 8px !important;
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  body.premium-nav-admin .admin-status-cluster {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 8px !important;
+    width: 100% !important;
+  }
+
+  body.premium-nav-admin .admin-mode-pill,
+  body.premium-nav-admin .admin-date-pill {
+    min-height: 32px !important;
+    padding: 7px 9px !important;
+    border-radius: 10px !important;
+    font-size: 10px !important;
+    line-height: 1.1 !important;
+  }
+
+  body.premium-nav-admin .admin-header-tools > .toolbar-actions {
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 8px !important;
+    width: 100% !important;
+  }
+
+  body.premium-nav-admin .admin-workspace .toolbar-button,
+  body.premium-nav-admin .toolbar-button,
+  body.premium-nav-admin .action-button,
+  body.premium-nav-admin .secondary-button,
+  body.premium-nav-admin .primary-button {
+    width: auto !important;
+    min-width: 0 !important;
+    min-height: 36px !important;
+    padding: 8px 10px !important;
+    border-radius: 10px !important;
+    font-size: 10px !important;
+    line-height: 1.15 !important;
+    white-space: normal !important;
+  }
+
+  body.premium-nav-admin .admin-quick-create-full {
+    display: none !important;
+  }
+
+  body.premium-nav-admin .admin-quick-create-short {
+    display: inline !important;
+  }
+
+  body.premium-nav-admin .admin-theme-button {
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+
+  body.premium-nav-admin .dashboard-shell .admin-command-strip {
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+    margin: 0 !important;
+  }
+
+  body.premium-nav-admin .admin-command-card {
+    min-height: 96px !important;
+    padding: 14px !important;
+    border-radius: 13px !important;
+    gap: 7px !important;
+  }
+
+  body.premium-nav-admin .admin-command-card span {
+    font-size: 10px !important;
+    letter-spacing: .08em !important;
+  }
+
+  body.premium-nav-admin .admin-command-card strong {
+    font-size: 13px !important;
+    line-height: 1.28 !important;
+    max-width: 100% !important;
+    overflow-wrap: anywhere !important;
+  }
+
+  body.premium-nav-admin .admin-command-card small {
+    font-size: 10px !important;
+  }
+
+  body.premium-nav-admin .dashboard-shell .analytics-controls.admin-range-card,
+  body.premium-nav-admin .controls-panel,
+  body.premium-nav-admin .date-controls,
+  body.premium-nav-admin .crm-results-bar,
+  body.premium-nav-admin .editor-panel,
+  body.premium-nav-admin .form-section,
+  body.premium-nav-admin .dashboard-panel,
+  body.premium-nav-admin .courses-panel,
+  body.premium-nav-admin .users-panel,
+  body.premium-nav-admin .admin-settings-card,
+  body.premium-nav-admin .settings-system-panel {
+    width: 100% !important;
+    min-width: 0 !important;
+    padding: 14px !important;
+    border-radius: 13px !important;
+  }
+
+  body.premium-nav-admin .dashboard-shell .analytics-controls.admin-range-card,
+  body.premium-nav-admin .controls-panel,
+  body.premium-nav-admin .date-controls {
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+  }
+
+  body.premium-nav-admin .analytics-grid,
+  body.premium-nav-admin .summary-grid,
+  body.premium-nav-admin .course-summary-grid,
+  body.premium-nav-admin .admin-command-grid,
+  body.premium-nav-admin .admin-chart-grid,
+  body.premium-nav-admin .admin-panels,
+  body.premium-nav-admin .health-check-grid,
+  body.premium-nav-admin .course-review-list,
+  body.premium-nav-admin .audit-log-list,
+  body.premium-nav-admin .settings-system-list {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+  }
+
+  body.premium-nav-admin .dashboard-panel,
+  body.premium-nav-admin .admin-command-grid > *,
+  body.premium-nav-admin .admin-chart-grid > *,
+  body.premium-nav-admin .admin-panels > * {
+    grid-column: 1 / -1 !important;
+    min-height: auto !important;
+  }
+
+  body.premium-nav-admin .metric-card,
+  body.premium-nav-admin .summary-card,
+  body.premium-nav-admin .kpi-card,
+  body.premium-nav-admin .detail-card {
+    min-height: 92px !important;
+    padding: 14px !important;
+    gap: 8px !important;
+    border-radius: 13px !important;
+  }
+
+  body.premium-nav-admin .metric-card span,
+  body.premium-nav-admin .summary-card span,
+  body.premium-nav-admin .kpi-card span,
+  body.premium-nav-admin .detail-card span {
+    font-size: 25px !important;
+    line-height: 1.05 !important;
+  }
+
+  body.premium-nav-admin .panel-head,
+  body.premium-nav-admin .form-section-head,
+  body.premium-nav-admin .publish-panel-head,
+  body.premium-nav-admin .cert-template-heading,
+  body.premium-nav-admin .admin-settings-card-head {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    align-items: start !important;
+    gap: 10px !important;
+  }
+
+  body.premium-nav-admin .panel-title,
+  body.premium-nav-admin .dashboard-panel h2,
+  body.premium-nav-admin .form-section h2,
+  body.premium-nav-admin .admin-section-heading {
+    font-size: 16px !important;
+    line-height: 1.2 !important;
+    letter-spacing: 0 !important;
+  }
+
+  body.premium-nav-admin .admin-section-heading {
+    margin: 22px 0 10px !important;
+  }
+
+  body.premium-nav-admin :where(input, select, textarea) {
+    width: 100% !important;
+    min-width: 0 !important;
+    min-height: 42px !important;
+    font-size: 16px !important;
+  }
+
+  body.premium-nav-admin textarea {
+    min-height: 104px !important;
+  }
+
+  body.premium-nav-admin .admin-data-head,
+  body.premium-nav-admin .users-head,
+  body.premium-nav-admin .courses-head,
+  body.premium-nav-admin .course-review-head,
+  body.premium-nav-admin .audit-log-head {
+    display: none !important;
+  }
+
+  body.premium-nav-admin .admin-data-row,
+  body.premium-nav-admin .user-row,
+  body.premium-nav-admin .course-row,
+  body.premium-nav-admin .course-review-row,
+  body.premium-nav-admin .audit-log-row,
+  body.premium-nav-admin .subscription-mix-row,
+  body.premium-nav-admin .settings-system-row {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+    min-height: 0 !important;
+    padding: 13px !important;
+    border-radius: 13px !important;
+  }
+
+  body.premium-nav-admin .admin-data-row > span,
+  body.premium-nav-admin .course-review-cell,
+  body.premium-nav-admin .audit-log-cell {
+    display: grid !important;
+    grid-template-columns: minmax(84px, .38fr) minmax(0, 1fr) !important;
+    gap: 10px !important;
+    align-items: start !important;
+    min-width: 0 !important;
+  }
+
+  body.premium-nav-admin .admin-data-row > span::before,
+  body.premium-nav-admin .course-review-cell::before,
+  body.premium-nav-admin .audit-log-cell::before {
+    content: attr(data-label) !important;
+    color: var(--admin-muted) !important;
+    font-size: 9px !important;
+    font-weight: 900 !important;
+    letter-spacing: .05em !important;
+    line-height: 1.3 !important;
+    text-transform: uppercase !important;
+  }
+
+  body.premium-nav-admin .course-title-cell,
+  body.premium-nav-admin .crm-contact-cell {
+    grid-template-columns: 56px minmax(0, 1fr) !important;
+    gap: 10px !important;
+  }
+
+  body.premium-nav-admin .course-actions,
+  body.premium-nav-admin .row-actions,
+  body.premium-nav-admin .toolbar-actions {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+  }
+
+  body.premium-nav-admin .course-actions > *,
+  body.premium-nav-admin .row-actions > * {
+    flex: 1 1 112px !important;
+  }
+}
+
+@media (max-width: 420px) {
+  body.premium-nav-admin .admin-sidebar-top {
+    grid-template-columns: minmax(0, 1fr) 34px 40px !important;
+    gap: 6px !important;
+  }
+
+  body.premium-nav-admin .admin-brand-symbol {
+    width: 32px !important;
+    height: 36px !important;
+    flex-basis: 32px !important;
+  }
+
+  body.premium-nav-admin .admin-workspace-brand .admin-brand-name {
+    max-width: 118px !important;
+    font-size: 15px !important;
+  }
+
+  body.premium-nav-admin .admin-workspace-brand small {
+    max-width: 122px !important;
+    font-size: 6.5px !important;
+  }
+
+  body.premium-nav-admin .admin-sidebar-toggle {
+    width: 34px !important;
+    height: 34px !important;
+  }
+
+  body.premium-nav-admin .admin-mobile-menu-button {
+    width: 40px !important;
+    height: 40px !important;
+  }
+
+  body.premium-nav-admin .admin-header-tools > .toolbar-actions {
+    grid-template-columns: 1fr 1fr !important;
+  }
+
+  body.premium-nav-admin .admin-header-tools > .toolbar-actions > :first-child {
+    grid-column: 1 / -1 !important;
+  }
+
+  body.premium-nav-admin .admin-workspace-header h1 {
+    font-size: 23px !important;
+  }
+}
+
+/* Mobile admin scroll container: previews and device frames need an internal scroller. */
+@media (max-width: 980px) {
+  html:has(body.premium-nav-admin),
+  html:has(body.premium-nav-admin) body,
+  body.premium-nav-admin,
+  body.premium-nav-admin #root {
+    height: 100dvh !important;
+    min-height: 100dvh !important;
+    max-height: 100dvh !important;
+    overflow: hidden !important;
+  }
+
+  body.premium-nav-admin .admin-workspace {
+    height: 100dvh !important;
+    min-height: 0 !important;
+    max-height: 100dvh !important;
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: hidden !important;
+  }
+
+  body.premium-nav-admin .admin-sidebar,
+  body.premium-nav-admin.admin-sidebar-collapsed .admin-sidebar,
+  body.premium-nav-admin .admin-workspace.is-collapsed .admin-sidebar {
+    position: relative !important;
+    inset: auto !important;
+    flex: 0 0 auto !important;
+    max-height: none !important;
+  }
+
+  body.premium-nav-admin .admin-workspace .admin-workspace-main,
+  body.premium-nav-admin .admin-workspace-main,
+  body.premium-nav-admin .admin-workspace-main.app-shell,
+  body.premium-nav-admin .app-shell.admin-workspace-main {
+    flex: 1 1 auto !important;
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    -webkit-overflow-scrolling: touch !important;
+    overscroll-behavior: contain !important;
+    touch-action: pan-y !important;
+  }
+
+  body.premium-nav-admin.admin-mobile-menu-open .admin-sidebar {
+    max-height: min(82dvh, 720px) !important;
+    overflow-y: auto !important;
+    overscroll-behavior: contain !important;
+    -webkit-overflow-scrolling: touch !important;
   }
 }

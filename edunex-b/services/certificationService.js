@@ -15,6 +15,14 @@ const { isTrialUnlockedCourse } = require('../middleware/checkSubscription');
 const featureSettings = require('./adminFeatureSettings');
 const rules = require('./completionRules');
 const fail = (message,statusCode=400) => Object.assign(new Error(message),{statusCode});
+async function getFeatureSettings() {
+  if (typeof featureSettings.getSettings === 'function') return featureSettings.getSettings();
+  return { certificationEnabled: true, progressBarEnabled: true };
+}
+async function certificationIsEnabled() {
+  if (typeof featureSettings.certificationIsEnabled === 'function') return featureSettings.certificationIsEnabled();
+  return (await getFeatureSettings()).certificationEnabled !== false;
+}
 async function context(user, courseId) {
   if(!mongoose.Types.ObjectId.isValid(courseId)) throw fail('Invalid course id');
   const course = await Course.findOne({_id:courseId,status:'published'}).select('-thumbnail -thumbnailHorizontal -thumbnailVertical -videos.thumbnail').lean();
@@ -35,7 +43,7 @@ async function state(user, ctx) {
   const userId=String(user._id), courseId=String(ctx.course._id);
   const [rows,assessment] = await Promise.all([Learning.find({userId,courseId,version:ctx.version}).lean(),Assessment.findById(rules.identity(userId,courseId,ctx.version)).lean()]);
   const eligibility = rules.eligibility({...ctx,rows,user,assessment});
-  const settings = await featureSettings.getSettings();
+  const settings = await getFeatureSettings();
   const certificationEnabled = settings.certificationEnabled !== false;
   const progressBarEnabled = settings.progressBarEnabled !== false;
   return {
@@ -52,7 +60,7 @@ async function state(user, ctx) {
 }
 function certificateView(c) { return {_id:String(c._id),certificateId:c.certificateId,courseId:c.courseId,courseTitle:c.courseTitle,courseVersion:c.courseVersion,userName:c.userName,learnerName:c.userName,issuedAt:c.issuedAt,status:c.status || 'active',totalLessons:c.totalLessons || 0,criteria:c.criteria}; }
 async function issue(user,ctx,status) {
-  if(status.certificationEnabled === false || !(await featureSettings.certificationIsEnabled())) return null;
+  if(status.certificationEnabled === false || !(await certificationIsEnabled())) return null;
   if(!status.eligible) return null;
   const key=rules.identity(user._id,ctx.course._id,ctx.version);
   const _id=new mongoose.Types.ObjectId(key.slice(0,24));

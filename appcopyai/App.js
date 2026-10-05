@@ -16,7 +16,7 @@ import { useGooglePlaySubscriptions } from "./services/useGooglePlaySubscription
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as SecureStore from "expo-secure-store";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useWindowDimensions } from "react-native";
+import { useColorScheme, useWindowDimensions } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import {
   ActivityIndicator,
@@ -57,7 +57,7 @@ import * as Sharing from "expo-sharing";
 import * as FileSystem from "expo-file-system/legacy";
 import * as ImagePicker from "expo-image-picker";
 import * as ImageManipulator from "expo-image-manipulator";
-import { DOWNLOADS_STORAGE_KEY, downloadPath, prepareTemporaryDownloads } from "./downloadStorage";
+import { DOWNLOADS_STORAGE_KEY, downloadDir, downloadManifestPath, downloadPath, prepareTemporaryDownloads, safeDownloadId } from "./downloadStorage";
 import { useVideoPlayer, VideoView } from "expo-video";
 import {
   HOME_AI_FOUNDATIONS_CONTENT,
@@ -484,11 +484,17 @@ const PLAYER_CHROME_FADE_OUT_MS = 260;
 const PLAYER_CHROME_AUTO_HIDE_MS = 2000;
 const PLAYER_EDGE_BACK_WIDTH = 132;
 const PLAYER_EDGE_BACK_STRIP_WIDTH = 56;
-const PLAYER_EDGE_BACK_DISTANCE = 52;
-const PLAYER_EDGE_BACK_CLAIM_DISTANCE = 4;
-const PLAYER_EDGE_BACK_RELEASE_DISTANCE = 32;
-const PLAYER_EDGE_BACK_RELEASE_VELOCITY = 0.28;
-const PLAYER_EDGE_BACK_RELEASE_VELOCITY_DISTANCE = 10;
+const PLAYER_EDGE_BACK_DISTANCE = 72;
+const PLAYER_EDGE_BACK_CLAIM_DISTANCE = 12;
+const PLAYER_EDGE_BACK_RELEASE_DISTANCE = 56;
+const PLAYER_EDGE_BACK_RELEASE_VELOCITY = 0.48;
+const PLAYER_EDGE_BACK_RELEASE_VELOCITY_DISTANCE = 24;
+const GLOBAL_EDGE_BACK_WIDTH = 30;
+const GLOBAL_EDGE_BACK_GUIDE_DISTANCE = 96;
+const GLOBAL_EDGE_BACK_CLAIM_DISTANCE = 14;
+const GLOBAL_EDGE_BACK_RELEASE_DISTANCE = 84;
+const GLOBAL_EDGE_BACK_RELEASE_VELOCITY = 0.72;
+const GLOBAL_EDGE_BACK_RELEASE_VELOCITY_DISTANCE = 34;
 const AUTO_QUALITY_LABEL = "Auto";
 const FALLBACK_QUALITY_OPTIONS = ["144p", "240p", "360p", "480p", "720p", "1080p"];
 const VIDEO_COMPLETE_THRESHOLD = 0.9;
@@ -909,9 +915,35 @@ const TYPE = {
 
 const ICON_FAMILY = "Ionicons";
 
-// Skillomate uses one premium dark-and-gold theme across iOS and Android.
+// Skillomate keeps the premium gold identity while allowing learners to choose
+// the surrounding app appearance.
 const EDUNEX_MOBILE_TOKENS = {
   colors: {
+    light: {
+      isDark: false,
+      onPrimary: "#17130B",
+      background: "#FAF7F1",
+      navigation: "#FAF7F1",
+      surface: "#FFFDF8",
+      surfaceWarm: "#F5EFE4",
+      surfaceElevated: "#FFFFFF",
+      surfacePressed: "#ECE2D2",
+      panel: "#F2E3C5",
+      panelSecondary: "#F6EFE2",
+      textStrong: "#17130B",
+      text: "#252017",
+      textSecondary: "#6B6257",
+      textMuted: "#8D8376",
+      border: "#E5D9C7",
+      borderStrong: "#CDBB9F",
+      primary: "#C58B2A",
+      primaryPressed: "#936516",
+      accent: "#A96F18",
+      accentSoft: "#F4E4C4",
+      success: "#607548",
+      warning: "#A96F18",
+      error: "#DC2626",
+    },
     dark: {
       isDark: true,
       onPrimary: "#17130B",
@@ -946,6 +978,13 @@ const EDUNEX_MOBILE_TOKENS = {
   icons: { family: ICON_FAMILY, style: "outline" },
 };
 
+const THEME_STORAGE_KEY = "skillomate_theme_mode";
+const THEME_OPTIONS = [
+  { key: "system", label: "System", icon: "phone-portrait-outline", detail: "Follows device appearance" },
+  { key: "light", label: "Light", icon: "sunny-outline", detail: "Cream and gold" },
+  { key: "dark", label: "Dark", icon: "moon-outline", detail: "Noir gold" },
+];
+
 function buildTheme(mode) {
   const base = EDUNEX_MOBILE_TOKENS.colors[mode];
   return {
@@ -965,8 +1004,24 @@ function buildTheme(mode) {
   };
 }
 
+const LIGHT_THEME = buildTheme("light");
 const DARK_THEME = buildTheme("dark");
 const C = { ...DARK_THEME };
+
+function normalizeThemeMode(mode) {
+  if (mode === "auto") return "system";
+  return THEME_OPTIONS.some(option => option.key === mode) ? mode : "dark";
+}
+
+function resolveThemeMode(mode, systemScheme) {
+  const normalized = normalizeThemeMode(mode);
+  if (normalized === "system") return systemScheme === "dark" ? "dark" : "light";
+  return normalized;
+}
+
+function getTheme(mode) {
+  return mode === "light" ? LIGHT_THEME : DARK_THEME;
+}
 
 function stringToColor(str) {
   const palette = [
@@ -1859,6 +1914,31 @@ function getBunnyLibraryId(video) {
   return "";
 }
 
+function getDownloadId(video, index = 0) {
+  if (video?.downloadId) return safeDownloadId(video.downloadId);
+  const bunnyGuid = getBunnyGuid(video);
+  if (bunnyGuid) return safeDownloadId(bunnyGuid);
+  const stableId = video?._id || video?.id || video?.videoId || video?.cloudfrontVideoId || index;
+  const hlsLikeUrl = String(video?.hlsUrl || video?.playlistUrl || video?.streamUrl || video?.videoUrl || "").trim();
+  if (video?.provider === "aws_cloudfront" || video?.sourceType === "aws_cloudfront" || /\.m3u8(?:[?#]|$)/i.test(hlsLikeUrl)) {
+    return safeDownloadId(`cloud_${stableId}`);
+  }
+  const directUrl = String(video?.videoUrl || video?.streamUrl || "").trim();
+  if (/\.(mp4|m4v|mov|webm)(?:[?#]|$)/i.test(directUrl)) {
+    return safeDownloadId(`media_${stableId}`);
+  }
+  return "";
+}
+
+function getDownloadKind(video) {
+  if (getBunnyGuid(video)) return "bunny";
+  const directUrl = String(video?.videoUrl || video?.streamUrl || "").trim();
+  if (/\.(mp4|m4v|mov|webm)(?:[?#]|$)/i.test(directUrl)) return "direct";
+  const hlsLikeUrl = String(video?.hlsUrl || video?.playlistUrl || video?.streamUrl || video?.videoUrl || "").trim();
+  if (video?.provider === "aws_cloudfront" || video?.sourceType === "aws_cloudfront" || /\.m3u8(?:[?#]|$)/i.test(hlsLikeUrl)) return "hls";
+  return "";
+}
+
 const PLAYBACK_ACCESS_TIMEOUT_MS = 30000;
 const PLAYBACK_ACCESS_MIN_VALID_MS = 60000;
 const PLAYBACK_ACCESS_CACHE = new Map();
@@ -1940,6 +2020,12 @@ function getDownloadFailureMessage(error, status) {
   const statusCode = Number(status || 0);
   const message = String(error?.message || error || "").toLowerCase();
 
+  if (message.includes("incomplete") || message.includes("partial")) {
+    return "The video download was incomplete. Please retry the download.";
+  }
+  if (message.includes("prepare") || message.includes("preparation")) {
+    return "The video could not be prepared for offline viewing. Please retry.";
+  }
   if (statusCode === 401 || statusCode === 403) {
     return "Course access could not be verified. Sign in again, then retry.";
   }
@@ -1950,6 +2036,99 @@ function getDownloadFailureMessage(error, status) {
     return "Check your internet connection, then retry the download.";
   }
   return "This lesson could not be saved. Check your connection and course access, then retry.";
+}
+
+async function waitForPreparedDownload(session, statusUrl, onProgress) {
+  if (!statusUrl) return;
+  const startedAt = Date.now();
+  const timeoutMs = 14 * 60 * 1000;
+  let tick = 0;
+  while (Date.now() - startedAt < timeoutMs) {
+    const status = await session.requestJson(statusUrl);
+    if (status?.status === "ready") {
+      onProgress?.(0.35);
+      return status;
+    }
+    if (status?.status === "error") {
+      throw new Error(status.error || "Download preparation failed.");
+    }
+    tick += 1;
+    onProgress?.(Math.min(0.32, 0.04 + tick * 0.012));
+    await wait(tick < 4 ? 1000 : 1800);
+  }
+  throw new Error("Download preparation timed out.");
+}
+
+function extensionForDownloadResource(url, fallback = "bin") {
+  try {
+    const pathname = new URL(url).pathname;
+    const match = pathname.match(/\.([a-z0-9]+)$/i);
+    if (match?.[1]) return match[1].toLowerCase();
+  } catch {}
+  return fallback;
+}
+
+function rewriteHlsAttributeUris(line, playlistUrl, registerResource) {
+  return String(line || "").replace(/URI="([^"]+)"/g, (match, uri) => {
+    const absolute = absoluteVideoTrackUrl(uri, playlistUrl);
+    if (!absolute) return match;
+    return `URI="${registerResource(absolute, extensionForDownloadResource(absolute, "key"))}"`;
+  });
+}
+
+async function readRemoteText(url) {
+  const response = await fetch(url, { redirect: "follow" });
+  if (!response.ok) throw new Error(`Download source returned ${response.status}`);
+  return response.text();
+}
+
+async function selectHlsMediaPlaylist(masterUrl) {
+  const masterText = await readRemoteText(masterUrl);
+  const variants = parseHlsVariantTracks(masterText, masterUrl);
+  if (!variants.length) return { url: masterUrl, text: masterText };
+  const preferred =
+    findVideoTrackForQuality(variants, "720p") ||
+    findVideoTrackForQuality(variants, "480p") ||
+    variants[0];
+  const mediaUrl = preferred?.url || masterUrl;
+  return { url: mediaUrl, text: await readRemoteText(mediaUrl) };
+}
+
+async function downloadHlsToAppCache({ hlsUrl, targetDir, manifestPath, onProgress }) {
+  await FileSystem.deleteAsync(targetDir, { idempotent: true }).catch(() => {});
+  await FileSystem.makeDirectoryAsync(targetDir, { intermediates: true });
+  const { url: mediaPlaylistUrl, text } = await selectHlsMediaPlaylist(hlsUrl);
+  const resourceMap = new Map();
+  const resourceUrls = [];
+  const registerResource = (absoluteUrl, fallbackExtension = "ts") => {
+    if (!absoluteUrl) return "";
+    if (resourceMap.has(absoluteUrl)) return resourceMap.get(absoluteUrl);
+    const filename = `part-${String(resourceUrls.length + 1).padStart(4, "0")}.${extensionForDownloadResource(absoluteUrl, fallbackExtension)}`;
+    resourceMap.set(absoluteUrl, filename);
+    resourceUrls.push({ url: absoluteUrl, filename });
+    return filename;
+  };
+  const rewrittenLines = String(text || "").split(/\r?\n/).map(line => {
+    const trimmed = line.trim();
+    if (!trimmed) return line;
+    if (trimmed.startsWith("#EXT-X-KEY") || trimmed.startsWith("#EXT-X-MAP")) {
+      return rewriteHlsAttributeUris(line, mediaPlaylistUrl, registerResource);
+    }
+    if (trimmed.startsWith("#")) return line;
+    const absolute = absoluteVideoTrackUrl(trimmed, mediaPlaylistUrl);
+    return absolute ? registerResource(absolute, extensionForDownloadResource(absolute, "ts")) : line;
+  });
+  if (!resourceUrls.length) throw new Error("No downloadable HLS segments were found.");
+  let completed = 0;
+  for (const resource of resourceUrls) {
+    const targetPath = `${targetDir}${resource.filename}`;
+    const dl = FileSystem.createDownloadResumable(resource.url, targetPath, {}, () => {});
+    const result = await dl.downloadAsync();
+    if (result?.status && result.status !== 200) throw new Error(`Segment download failed with ${result.status}`);
+    completed += 1;
+    onProgress?.(completed / resourceUrls.length);
+  }
+  await FileSystem.writeAsStringAsync(manifestPath, rewrittenLines.join("\n"));
 }
 
 function getResumeInfo(course, progressByCourse = {}) {
@@ -2128,6 +2307,98 @@ function SkillomateLogo({ size = "md", mode, style }) {
         resizeMode="contain"
         accessibilityLabel="Skillomate"
       />
+    </View>
+  );
+}
+
+function GlobalEdgeBackGesture({ children, enabled, onBack }) {
+  const progress = useRef(new Animated.Value(0)).current;
+  const enabledRef = useRef(enabled);
+  const onBackRef = useRef(onBack);
+
+  useEffect(() => {
+    enabledRef.current = enabled;
+  }, [enabled]);
+  useEffect(() => {
+    onBackRef.current = onBack;
+  }, [onBack]);
+
+  const resetGuide = useCallback(() => {
+    Animated.timing(progress, {
+      toValue: 0,
+      duration: 150,
+      easing: Easing.out(Easing.cubic),
+      useNativeDriver: true,
+    }).start();
+  }, [progress]);
+
+  const shouldClaimGesture = useCallback((gesture) => {
+    if (Platform.OS !== "ios" || !enabledRef.current) return false;
+    if (gesture.x0 > GLOBAL_EDGE_BACK_WIDTH) return false;
+    const horizontalDistance = Math.max(0, gesture.dx);
+    const verticalDistance = Math.abs(gesture.dy);
+    if (horizontalDistance < GLOBAL_EDGE_BACK_CLAIM_DISTANCE) return false;
+    return horizontalDistance > Math.max(12, verticalDistance * 1.45);
+  }, []);
+
+  const panResponder = useMemo(() => PanResponder.create({
+    onStartShouldSetPanResponder: () => false,
+    onStartShouldSetPanResponderCapture: () => false,
+    onMoveShouldSetPanResponder: (_, gesture) => shouldClaimGesture(gesture),
+    onMoveShouldSetPanResponderCapture: (_, gesture) => shouldClaimGesture(gesture),
+    onPanResponderGrant: () => {
+      progress.stopAnimation();
+    },
+    onPanResponderMove: (_, gesture) => {
+      const distance = Math.max(0, gesture.dx);
+      progress.setValue(Math.max(0, Math.min(1, distance / GLOBAL_EDGE_BACK_GUIDE_DISTANCE)));
+    },
+    onPanResponderRelease: (_, gesture) => {
+      const distance = Math.max(0, gesture.dx);
+      const shouldGoBack =
+        distance >= GLOBAL_EDGE_BACK_RELEASE_DISTANCE ||
+        (gesture.vx >= GLOBAL_EDGE_BACK_RELEASE_VELOCITY && distance >= GLOBAL_EDGE_BACK_RELEASE_VELOCITY_DISTANCE);
+      resetGuide();
+      if (shouldGoBack) onBackRef.current?.();
+    },
+    onPanResponderTerminate: resetGuide,
+    onPanResponderTerminationRequest: () => false,
+    onShouldBlockNativeResponder: () => false,
+  }), [progress, resetGuide, shouldClaimGesture]);
+
+  const guideOpacity = progress.interpolate({
+    inputRange: [0, 0.18, 1],
+    outputRange: [0, 0.65, 1],
+    extrapolate: "clamp",
+  });
+  const guideTranslateX = progress.interpolate({
+    inputRange: [0, 1],
+    outputRange: [-12, 30],
+    extrapolate: "clamp",
+  });
+  const guideScale = progress.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0.88, 1],
+    extrapolate: "clamp",
+  });
+
+  if (Platform.OS !== "ios") return children;
+
+  return (
+    <View style={s.globalEdgeBackRoot} {...panResponder.panHandlers}>
+      {children}
+      <Animated.View
+        pointerEvents="none"
+        style={[
+          s.globalEdgeBackGuide,
+          {
+            opacity: guideOpacity,
+            transform: [{ translateX: guideTranslateX }, { scale: guideScale }],
+          },
+        ]}
+      >
+        <Ionicons name="chevron-back" size={28} color={C.text} />
+      </Animated.View>
     </View>
   );
 }
@@ -3007,6 +3278,7 @@ function BottomNav({
   const [navSearchText, setNavSearchText] = useState("");
   const navSearchInputRef = useRef(null);
   const bottomNavRef = useRef(null);
+  const keyboardVisibleRef = useRef(false);
   const keyboardLiftAnim = useRef(new Animated.Value(0)).current;
   const animateKeyboardLift = useCallback((lift = 0, duration = 180) => {
     Animated.timing(keyboardLiftAnim, {
@@ -3022,10 +3294,15 @@ function BottomNav({
       return;
     }
     const keyboardHeight = Number(event?.endCoordinates?.height) || 0;
+    if (Platform.OS === "android") {
+      animateKeyboardLift(keyboardHeight, event?.duration ?? 120);
+      return;
+    }
     const keyboardScreenY = Number(event?.endCoordinates?.screenY);
+    const screenSize = Dimensions.get("screen");
     const keyboardTop = Number.isFinite(keyboardScreenY) && keyboardScreenY > 0
       ? keyboardScreenY
-      : Dimensions.get("screen").height - keyboardHeight;
+      : screenSize.height - keyboardHeight;
     const gap = Platform.OS === "ios" ? 8 : 10;
     const duration = event?.duration ?? (Platform.OS === "ios" ? 240 : 180);
     requestAnimationFrame(() => {
@@ -3050,21 +3327,48 @@ function BottomNav({
   }, [searchOpen]);
   useEffect(() => {
     if (!searchOpen) {
+      keyboardVisibleRef.current = false;
       animateKeyboardLift(0, 160);
       return undefined;
     }
     const showEvent = Platform.OS === "ios" ? "keyboardWillShow" : "keyboardDidShow";
     const hideEvent = Platform.OS === "ios" ? "keyboardWillHide" : "keyboardDidHide";
-    const showSub = Keyboard.addListener(showEvent, updateKeyboardLift);
-    const hideSub = Keyboard.addListener(hideEvent, event => animateKeyboardLift(0, event?.duration));
+    const showSub = Keyboard.addListener(showEvent, event => {
+      keyboardVisibleRef.current = true;
+      updateKeyboardLift(event);
+    });
+    const hideSub = Keyboard.addListener(hideEvent, event => {
+      keyboardVisibleRef.current = false;
+      animateKeyboardLift(0, event?.duration);
+    });
     const currentKeyboard = Keyboard.metrics?.();
-    if (currentKeyboard?.height) {
+    const screenSize = Dimensions.get("screen");
+    const keyboardTop = Number(currentKeyboard?.screenY);
+    const hasUsableKeyboardFrame = currentKeyboard?.height && Number.isFinite(keyboardTop) && keyboardTop < screenSize.height - 80;
+    if (hasUsableKeyboardFrame) {
+      keyboardVisibleRef.current = true;
       updateKeyboardLift({ endCoordinates: currentKeyboard, duration: 160 });
+    } else {
+      animateKeyboardLift(0, 120);
     }
     return () => {
       showSub.remove();
       hideSub.remove();
     };
+  }, [animateKeyboardLift, searchOpen, updateKeyboardLift]);
+  useEffect(() => {
+    if (!searchOpen || Platform.OS === "android") return undefined;
+    const timer = setInterval(() => {
+      const currentKeyboard = Keyboard.metrics?.();
+      const screenSize = Dimensions.get("screen");
+      const keyboardTop = Number(currentKeyboard?.screenY);
+      const unusableAndroidFrame = !Number.isFinite(keyboardTop) || keyboardTop >= screenSize.height - 80;
+      if (currentKeyboard?.height && !unusableAndroidFrame) {
+        keyboardVisibleRef.current = true;
+        updateKeyboardLift({ endCoordinates: currentKeyboard, duration: 120 });
+      }
+    }, 250);
+    return () => clearInterval(timer);
   }, [animateKeyboardLift, searchOpen, updateKeyboardLift]);
   const inactiveColor = forceDark ? "#AAA297" : C.slateGray;
   const normalizedSearch = navSearchText.trim().toLowerCase().replace(/%20/g, " ");
@@ -3159,21 +3463,16 @@ function BottomNav({
         s.bottomNavDock,
         active === "ai" && s.bottomNavDockCompact,
         { transform: [{ translateY: keyboardLiftAnim }] },
-        forceDark && { backgroundColor: "#050504" },
       ]}
     >
       <Animated.View
         pointerEvents="none"
-        style={[
-          s.bottomNavScrim,
-          forceDark && { backgroundColor: "#050504" },
-        ]}
+        style={s.bottomNavScrim}
       />
       <Animated.View
         ref={bottomNavRef}
         style={[
           s.bottomNav,
-          { transform: [{ translateY: keyboardLiftAnim }] },
           forceDark && { backgroundColor: "rgba(13,13,11,0.98)", borderTopColor: "#2E2C27" },
         ]}
       >
@@ -3536,7 +3835,7 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
   const cloudLeaseRef = useRef(null);
   const sourceQueue = useRef(Promise.resolve());
   useEffect(() => {
-    if (videoProp?.provider !== "aws_cloudfront" || !isActive) return;
+    if (videoProp?.provider !== "aws_cloudfront" || !isActive || localPath) return;
     let disposed = false;
     let retryTimer = null;
     let renewTimer = null;
@@ -3587,7 +3886,7 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
       clearTimeout(retryTimer);
       clearTimeout(renewTimer);
     };
-  }, [courseId,videoProp?._id,videoProp?.provider,isActive,user?._id,user?.sessionId,cloudRetry]);
+  }, [courseId,videoProp?._id,videoProp?.provider,isActive,user?._id,user?.sessionId,cloudRetry,localPath]);
   const validCloudLease = cloudLeaseRef.current?.key === `${courseId}:${videoProp?._id}:${user?.sessionId}` ? cloudLease : null;
   const video = {...(videoProp || (videoIdProp ? {youtubeId:videoIdProp}:{})), ...(validCloudLease || {})};
   const nativeVideoUrl = video.provider === "aws_cloudfront" && !validCloudLease && !localPath
@@ -4409,7 +4708,8 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
       setIsBuffering(false);
     }
     else if (shouldKeepTryingPlayback) setIsBuffering(true);
-    if (didReachPlayableEnd(ct, dur) && !nextPlaying) {
+    const reachedEndWhilePlaybackIntended = shouldBePlayingRef.current && didReachPlayableEnd(ct, dur) && !nextPlaying;
+    if (reachedEndWhilePlaybackIntended) {
       if (loopLesson) {
         flushProgress(ct, dur, true);
         seekGuardRef.current = { until: Date.now() + 1000, target: 0 };
@@ -4576,6 +4876,7 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
     revealPlayerChrome();
     const shouldPause = shouldBePlayingRef.current && (isPlaying || isBuffering);
     shouldBePlayingRef.current = !shouldPause;
+    setIsEnded(false);
     setIsBuffering(false);
     clearAutoPlayTimers();
     if (shouldPause) {
@@ -4962,7 +5263,7 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
   }
 
   if (video.provider === 'aws_cloudfront' && currentTime > 0) cloudResume.current = currentTime;
-  if (isActive && video.provider === 'aws_cloudfront' && (!validCloudLease || cloudError)) return (
+  if (isActive && video.provider === 'aws_cloudfront' && !localPath && (!validCloudLease || cloudError)) return (
     <View style={[s.player, { height, justifyContent: "center", alignItems: "center" }]}>
       {!cloudError && <ActivityIndicator size="large" color="#fff" />}
       <Text style={{ color: "#fff", padding: 20, textAlign: "center" }}>{cloudError || "Preparing secure playback..."}</Text>
@@ -4985,6 +5286,7 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
   ];
   const showLiveSurface = isActive && !suspendSurface;
   const suspendedPosterUrl = !showLiveSurface ? getLessonThumbnailUrl(video, course) : "";
+  const playerPanelOpen = showSettings;
 
   return (
     <View style={[s.player, { height }]}>
@@ -5023,7 +5325,7 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
           style={StyleSheet.absoluteFill}
         />
       )}
-      {showLiveSurface && isBuffering && !isEnded ? (
+      {showLiveSurface && !playerPanelOpen && isBuffering && !isEnded ? (
         <View
           style={s.pauseOverlay}
           pointerEvents="none"
@@ -5033,7 +5335,7 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
         >
           <ActivityIndicator size="large" color="#fff" />
         </View>
-      ) : showLiveSurface && !isPlaying && !isEnded && renderPlayerChrome ? (
+      ) : showLiveSurface && !playerPanelOpen && !isPlaying && !isEnded && renderPlayerChrome ? (
         <Animated.View
           style={[s.pauseOverlay, playerChromeAnimatedStyle]}
           pointerEvents="none"
@@ -5052,7 +5354,7 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
         <>
           <Pressable
             style={s.tapLeft}
-            pointerEvents={showSettings ? "none" : "auto"}
+            pointerEvents={playerPanelOpen ? "none" : "auto"}
             accessible
             accessibilityRole="button"
             accessibilityLabel="Show controls, hold left side for 2x speed, or double tap to rewind"
@@ -5063,7 +5365,7 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
             key={showPlayerChrome ? "center-tap-visible" : "center-tap-hidden"}
             onPress={handleCenterTap}
             style={s.tapCenter}
-            pointerEvents={showSettings ? "none" : "auto"}
+            pointerEvents={playerPanelOpen ? "none" : "auto"}
             accessible={showPlayerChrome}
             focusable={showPlayerChrome}
             importantForAccessibility={showPlayerChrome ? "auto" : "no-hide-descendants"}
@@ -5072,7 +5374,7 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
           />
           <Pressable
             style={s.tapRight}
-            pointerEvents={showSettings ? "none" : "auto"}
+            pointerEvents={playerPanelOpen ? "none" : "auto"}
             accessible
             accessibilityRole="button"
             accessibilityLabel="Show controls, hold right side for 2x speed, or double tap to fast forward"
@@ -5202,6 +5504,7 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
           <Text style={s.offlineBadgeText}>Offline</Text>
         </View>
       )}
+      {!isEnded && (
         <View
           style={s.volumeControl}
           accessibilityRole="adjustable"
@@ -5258,6 +5561,7 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
             <View style={[s.volumeSliderThumb, { left: `${Math.max(0, Math.min(1, volume)) * 100}%` }]} pointerEvents="none" />
           </View>
         </View>
+      )}
       {!isEnded && !isBuffering && (
         <TouchableOpacity
           onPress={togglePlay}
@@ -5404,8 +5708,8 @@ function ReelsScreen({ courseId, course, initialIndex, initialTime, onBack, onRe
   const activeLessonLabel = videos.length ? `Lecture ${activeLessonNumber}/${videos.length}` : "Lecture";
   const activeSummary = activeDescription === "No description available." ? "" : activeDescription;
   const activeShareUrl = `${WEB_APP_BASE}/videos?courseId=${encodeURIComponent(courseId)}`;
-  const activeBunnyGuid = getBunnyGuid(activeVideo);
-  const activeDownload = activeBunnyGuid ? downloads?.[activeBunnyGuid] : null;
+  const activeDownloadId = activeVideo ? getDownloadId(activeVideo, activeIndex) : "";
+  const activeDownload = activeDownloadId ? downloads?.[activeDownloadId] : null;
   const activeDownloadStatus = activeDownload?.status || "";
   const activeDownloadBusy = activeDownloadStatus === "downloading";
   const activeDownloadDone = activeDownloadStatus === "done";
@@ -5699,7 +6003,7 @@ function ReelsScreen({ courseId, course, initialIndex, initialTime, onBack, onRe
 
   function downloadActiveLesson() {
     if (!activeVideo) return;
-    if (!activeBunnyGuid) {
+    if (!activeDownloadId) {
       Alert.alert("Download unavailable", "This lesson is not available for offline download.");
       return;
     }
@@ -5856,7 +6160,7 @@ function ReelsScreen({ courseId, course, initialIndex, initialTime, onBack, onRe
             isActive={index === activeIndex && !videoUiOverlayOpen} height={listHeight}
             suspendSurface={index === activeIndex && videoUiOverlayOpen}
             initialTime={index === (initialIndex ?? 0) ? (initialTime ?? 0) : 0}
-            localPath={downloads?.[getBunnyGuid(item)]?.status === "done" ? downloads[getBunnyGuid(item)].path : null} />
+            localPath={downloads?.[getDownloadId(item, index)]?.status === "done" ? downloads[getDownloadId(item, index)].path : null} />
         )}
         onViewableItemsChanged={onViewable}
         viewabilityConfig={vcRef.current}
@@ -6177,7 +6481,7 @@ function ReelsScreen({ courseId, course, initialIndex, initialTime, onBack, onRe
       </Modal>
 
       <Modal visible={showCourseAi} transparent animationType="slide" onRequestClose={closeCourseAi}>
-        <KeyboardAvoidingView style={s.courseAiOverlay} behavior={Platform.OS === "ios" ? "padding" : "height"}>
+        <KeyboardAvoidingView style={s.courseAiOverlay} behavior={Platform.OS === "ios" ? "padding" : undefined}>
           <Pressable style={StyleSheet.absoluteFill} onPress={closeCourseAi} accessible={false} />
           <View style={s.courseAiSheet}>
             <View style={s.courseAiHandle} />
@@ -6220,6 +6524,7 @@ function ReelsScreen({ courseId, course, initialIndex, initialTime, onBack, onRe
                 onChangeText={setCourseAiInput}
                 onSubmitEditing={() => sendCourseAiMessage()}
                 editable={!courseAiLoading}
+                disableFullscreenUI
                 accessibilityLabel="Message Course AI"
               />
               <TouchableOpacity style={s.courseAiSend} onPress={() => sendCourseAiMessage()} disabled={courseAiLoading} accessibilityRole="button" accessibilityLabel="Send Course AI message">
@@ -6299,12 +6604,6 @@ function VideoListScreen({
   onDownload,
   onDeleteDownload,
   hasAccess,
-  onGoToHome,
-  onGoToCourses,
-  onGoToAI,
-  onGoToDownloads,
-  onGoToProfile,
-  aiRobotId,
 }) {
   const [showCourseNotes, setShowCourseNotes] = useState(false);
   const videos = useMemo(
@@ -6320,21 +6619,6 @@ function VideoListScreen({
   const coursePrompts = useMemo(
     () => [...new Set(videos.flatMap(video => getVideoPrompts(video)))].slice(0, 8),
     [videos]
-  );
-  const lectureSearchReferences = useMemo(
-    () => videos.map((video, index) => {
-      const title = video.title || `Video ${index + 1}`;
-      const durationLabel = getVideoDurationLabel(video);
-      return {
-        key: video._id || `lecture-${index}`,
-        title,
-        subtitle: `Lecture ${index + 1}${durationLabel ? ` · ${durationLabel}` : ""}`,
-        icon: "play-circle",
-        fn: () => onSelectVideo(index),
-        keywords: `${title} lecture ${index + 1} lesson ${index + 1}`,
-      };
-    }),
-    [onSelectVideo, videos]
   );
   const courseResources = useMemo(() => {
     const resources = [];
@@ -6373,7 +6657,7 @@ function VideoListScreen({
       </SafeAreaView>
 
       {videos.length === 0 ? (
-        <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 140 }}>
+        <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: Platform.OS === "ios" ? 40 : 28 }}>
           <ExpandableCourseDescription description={courseDescription} />
           <View style={[s.centered, { minHeight: 260 }]}>
             <Text style={{ color: C.textSub }}>No videos in this course yet.</Text>
@@ -6383,7 +6667,7 @@ function VideoListScreen({
         <FlatList
           data={videos}
           keyExtractor={(item, i) => item._id || String(i)}
-          contentContainerStyle={{ padding: 16, paddingBottom: 140, gap: 10 }}
+          contentContainerStyle={{ padding: 16, paddingBottom: Platform.OS === "ios" ? 40 : 28, gap: 10 }}
           initialNumToRender={8}
           maxToRenderPerBatch={8}
           windowSize={7}
@@ -6394,10 +6678,9 @@ function VideoListScreen({
           ListHeaderComponent={courseDescription ? <ExpandableCourseDescription description={courseDescription} /> : null}
           renderItem={({ item, index }) => {
             const durationLabel = getVideoDurationLabel(item);
-            const bunnyGuid = getBunnyGuid(item);
-            const bunnyLibraryId = getBunnyLibraryId(item);
+            const downloadId = getDownloadId(item, index);
             const thumbnailUrl = getHomeLessonThumbnailUrl(item, course);
-            const dl = bunnyGuid ? downloads?.[bunnyGuid] : null;
+            const dl = downloadId ? downloads?.[downloadId] : null;
             return (
               <TouchableOpacity
                 style={s.videoRow}
@@ -6441,7 +6724,7 @@ function VideoListScreen({
                     </View>
                   )}
                 </View>
-                {bunnyGuid ? (
+                {downloadId ? (
                   <TouchableOpacity
                     style={s.videoDownloadButton}
                     hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
@@ -6452,7 +6735,7 @@ function VideoListScreen({
                       if (dl?.status === "done") {
                         Alert.alert("Downloaded", "This video is saved offline.", [
                           { text: "Cancel", style: "cancel" },
-                          { text: "Delete", style: "destructive", onPress: () => onDeleteDownload?.(bunnyGuid) },
+                          { text: "Delete", style: "destructive", onPress: () => onDeleteDownload?.(downloadId) },
                         ]);
                       } else if (dl?.status !== "downloading") {
                         onDownload?.(item, course._id, course.title);
@@ -6488,20 +6771,6 @@ function VideoListScreen({
           }}
         />
       )}
-
-      <BottomNav
-        active="courses"
-        onHome={onGoToHome || onBack}
-        onCourses={onGoToCourses || (() => {})}
-        onAI={onGoToAI}
-        onDownloads={onGoToDownloads}
-        onProfile={onGoToProfile}
-        aiRobotId={aiRobotId}
-        forceDark
-        persistent
-        searchReferences={lectureSearchReferences}
-        searchPlaceholder="Search lectures"
-      />
 
       <Modal visible={showCourseNotes} transparent animationType="slide" onRequestClose={() => setShowCourseNotes(false)}>
         <View style={s.courseNotesOverlay}>
@@ -6623,20 +6892,46 @@ function HomeAutoplayPreview({ item, fallbackCourse }) {
   );
 }
 
-const HOME_PALETTE = {
-  background: "#0D0D0B",
-  surface: "#171714",
-  surfaceRaised: "#1C1C18",
-  surfaceSoft: "#23231E",
-  border: "#302E28",
-  borderStrong: "#454137",
-  text: "#F5F1E8",
-  textSecondary: "#B8B0A5",
-  textMuted: "#8D867D",
-  gold: "#E7BC68",
-  goldSoft: "#E7BC68",
-  success: "#7F9A67",
-};
+function buildHomePalette(theme) {
+  if (!theme.isDark) {
+    return {
+      background: theme.background,
+      surface: theme.surface,
+      surfaceRaised: theme.surfaceElevated,
+      surfaceSoft: theme.surfaceWarm,
+      border: theme.border,
+      borderStrong: theme.borderStrong,
+      text: theme.text,
+      textSecondary: theme.textSecondary,
+      textMuted: theme.textMuted,
+      gold: theme.primary,
+      goldSoft: "#E7BC68",
+      success: theme.success,
+      onGold: theme.onPrimary,
+      dangerSurface: "#FFF1F1",
+      dangerBorder: "#F3B5B5",
+    };
+  }
+  return {
+    background: "#0D0D0B",
+    surface: "#171714",
+    surfaceRaised: "#1C1C18",
+    surfaceSoft: "#23231E",
+    border: "#302E28",
+    borderStrong: "#454137",
+    text: "#F5F1E8",
+    textSecondary: "#B8B0A5",
+    textMuted: "#8D867D",
+    gold: "#E7BC68",
+    goldSoft: "#E7BC68",
+    success: "#7F9A67",
+    onGold: "#17130B",
+    dangerSurface: "#140707",
+    dangerBorder: "#A30B0B",
+  };
+}
+
+let HOME_PALETTE = buildHomePalette(C);
 
 function getHomeLessonThumbnailUrl(lesson, course) {
   return getLessonThumbnailUrl(lesson, course);
@@ -6693,7 +6988,7 @@ function FeaturedCourseHero({ course, onPress }) {
         pointerEvents="none"
       >
         <Text style={homeStyles.featuredButtonText}>Start Learning</Text>
-        <Ionicons name="arrow-forward" size={15} color="#17130B" />
+        <Ionicons name="arrow-forward" size={15} color={HOME_PALETTE.onGold} />
       </View>
     </View>
   );
@@ -6842,8 +7137,8 @@ function LearningRoadmap({ stages, onPressStage }) {
                 current && homeStyles.roadmapStepCurrent,
               ]}>
                 {complete
-                  ? <Ionicons name="checkmark" size={15} color="#17130B" />
-                  : <Text style={[homeStyles.roadmapStepText, current && { color: "#17130B" }]}>{index + 1}</Text>}
+                  ? <Ionicons name="checkmark" size={15} color={HOME_PALETTE.onGold} />
+                  : <Text style={[homeStyles.roadmapStepText, current && { color: HOME_PALETTE.onGold }]}>{index + 1}</Text>}
               </View>
               {index < stages.length - 1 ? (
                 <View style={[homeStyles.roadmapLine, complete && homeStyles.roadmapLineComplete]} />
@@ -6950,7 +7245,7 @@ function ChallengeCard({ title, steps, completedCount, onPress }) {
   return (
     <TouchableOpacity style={homeStyles.challengeCard} onPress={onPress} activeOpacity={0.9} accessibilityRole="button" accessibilityLabel={`Start the 7-Day Challenge: ${title}`}>
       <View style={homeStyles.challengeIcon}>
-        <Ionicons name="calendar-clear" size={29} color="#17130B" />
+        <Ionicons name="calendar-clear" size={29} color={HOME_PALETTE.onGold} />
       </View>
       <View style={{ flex: 1, minWidth: 0 }}>
         <Text style={homeStyles.challengeKicker}>7-DAY CHALLENGE</Text>
@@ -6958,12 +7253,13 @@ function ChallengeCard({ title, steps, completedCount, onPress }) {
         <Text style={homeStyles.challengeText}>A step-by-step plan using {steps.length} real lessons.</Text>
         <Text style={homeStyles.challengeProgress}>{completedCount}/{steps.length} days complete</Text>
       </View>
-      <Ionicons name="arrow-forward-circle" size={28} color="#17130B" />
+      <Ionicons name="arrow-forward-circle" size={28} color={HOME_PALETTE.onGold} />
     </TouchableOpacity>
   );
 }
 
-const homeStyles = StyleSheet.create({
+function createHomeStyles(HOME_PALETTE) {
+return StyleSheet.create({
   root: { flex: 1, backgroundColor: HOME_PALETTE.background },
   header: { paddingTop: ANDROID_STATUS_BAR_INSET, backgroundColor: HOME_PALETTE.background, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: HOME_PALETTE.border },
   headerInner: { minHeight: 62, paddingHorizontal: 14, paddingVertical: 9, flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
@@ -6975,7 +7271,7 @@ const homeStyles = StyleSheet.create({
   brandTagline: { color: HOME_PALETTE.textSecondary, fontSize: 11.5, lineHeight: 15, marginTop: 1 },
   headerActions: { flexDirection: "row", alignItems: "center", gap: 9 },
   headerButton: { width: MIN_TOUCH_TARGET, height: MIN_TOUCH_TARGET, borderRadius: MIN_TOUCH_TARGET / 2, alignItems: "center", justifyContent: "center", backgroundColor: HOME_PALETTE.surface, borderWidth: 1, borderColor: HOME_PALETTE.border, position: "relative" },
-  headerFlagButton: { width: MIN_TOUCH_TARGET, height: MIN_TOUCH_TARGET, borderRadius: MIN_TOUCH_TARGET / 2, alignItems: "center", justifyContent: "center", backgroundColor: "#140707", borderWidth: 1, borderColor: "#A30B0B" },
+  headerFlagButton: { width: MIN_TOUCH_TARGET, height: MIN_TOUCH_TARGET, borderRadius: MIN_TOUCH_TARGET / 2, alignItems: "center", justifyContent: "center", backgroundColor: HOME_PALETTE.dangerSurface, borderWidth: 1, borderColor: HOME_PALETTE.dangerBorder },
   headerDot: { position: "absolute", top: 10, right: 11, width: 7, height: 7, borderRadius: 4, backgroundColor: HOME_PALETTE.gold, borderWidth: 1, borderColor: HOME_PALETTE.surface },
   profileButton: { width: MIN_TOUCH_TARGET, height: MIN_TOUCH_TARGET, borderRadius: MIN_TOUCH_TARGET / 2, alignItems: "center", justifyContent: "center", borderWidth: 2, borderColor: HOME_PALETTE.gold },
   scrollViewport: { flex: 1 },
@@ -6984,7 +7280,7 @@ const homeStyles = StyleSheet.create({
   mediaFallbackText: { color: HOME_PALETTE.textSecondary, fontSize: 10, lineHeight: 13, fontWeight: "700", textAlign: "center", marginTop: 5 },
   featuredHero: { position: "relative", width: "auto", aspectRatio: 16 / 9, marginHorizontal: 14, borderRadius: 14, overflow: "hidden", backgroundColor: HOME_PALETTE.surface, borderWidth: 1, borderColor: HOME_PALETTE.borderStrong },
   featuredButton: { position: "absolute", left: 14, bottom: 14, zIndex: 6, minHeight: 40, flexDirection: "row", alignItems: "center", gap: 7, paddingHorizontal: 14, borderRadius: 8, backgroundColor: HOME_PALETTE.gold },
-  featuredButtonText: { color: "#17130B", fontSize: 13, lineHeight: 17, fontWeight: "900" },
+  featuredButtonText: { color: HOME_PALETTE.onGold, fontSize: 13, lineHeight: 17, fontWeight: "900" },
   section: { marginTop: 20 },
   sectionHeader: { minHeight: 26, flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 12, paddingHorizontal: 14, marginBottom: 9 },
   sectionTitle: { flex: 1, color: HOME_PALETTE.text, fontSize: 18, lineHeight: 23, fontWeight: "800", letterSpacing: -0.15 },
@@ -7041,16 +7337,19 @@ const homeStyles = StyleSheet.create({
   latestMeta: { color: HOME_PALETTE.textSecondary, fontSize: 10.5, lineHeight: 14, marginTop: 4 },
   challengeCard: { marginHorizontal: 14, minHeight: 146, padding: 16, flexDirection: "row", alignItems: "center", gap: 13, borderRadius: 14, backgroundColor: HOME_PALETTE.goldSoft, borderWidth: 1, borderColor: "#F2D49A" },
   challengeIcon: { width: 48, height: 48, borderRadius: 12, alignItems: "center", justifyContent: "center", backgroundColor: "rgba(255,255,255,0.35)" },
-  challengeKicker: { color: "#5E4012", fontSize: 9.5, lineHeight: 13, fontWeight: "900", letterSpacing: 0.8 },
-  challengeTitle: { color: "#17130B", fontSize: 17, lineHeight: 21, fontWeight: "900", marginTop: 3 },
-  challengeText: { color: "#5A4829", fontSize: 11, lineHeight: 15, marginTop: 4 },
-  challengeProgress: { color: "#17130B", fontSize: 10.5, lineHeight: 14, fontWeight: "800", marginTop: 7 },
+  challengeKicker: { color: HOME_PALETTE.onGold, fontSize: 9.5, lineHeight: 13, fontWeight: "900", letterSpacing: 0.8 },
+  challengeTitle: { color: HOME_PALETTE.onGold, fontSize: 17, lineHeight: 21, fontWeight: "900", marginTop: 3 },
+  challengeText: { color: HOME_PALETTE.onGold, fontSize: 11, lineHeight: 15, marginTop: 4 },
+  challengeProgress: { color: HOME_PALETTE.onGold, fontSize: 10.5, lineHeight: 14, fontWeight: "800", marginTop: 7 },
   stateCard: { minHeight: 220, marginHorizontal: 14, alignItems: "center", justifyContent: "center", padding: 24, borderRadius: 14, backgroundColor: HOME_PALETTE.surface, borderWidth: 1, borderColor: HOME_PALETTE.border },
   stateTitle: { color: HOME_PALETTE.text, fontSize: 17, lineHeight: 22, fontWeight: "800", textAlign: "center", marginTop: 12 },
   stateText: { color: HOME_PALETTE.textSecondary, fontSize: 12, lineHeight: 17, textAlign: "center", marginTop: 6 },
   stateButton: { minHeight: MIN_TOUCH_TARGET, paddingHorizontal: 16, alignItems: "center", justifyContent: "center", borderRadius: 8, backgroundColor: HOME_PALETTE.gold, marginTop: 16 },
-  stateButtonText: { color: "#17130B", fontSize: 12, fontWeight: "900" },
+  stateButtonText: { color: HOME_PALETTE.onGold, fontSize: 12, fontWeight: "900" },
 });
+}
+
+let homeStyles = createHomeStyles(HOME_PALETTE);
 
 // ── HomeScreen ────────────────────────────────────────────────────────────────
 function LegacyHomeScreenDraft({ session, user, onGoToCourses, onGoToAI, onGoToDownloads, onGoToProfile, onGoToSubscription, onStartTrial, trialLoading = false, appleSubscription, onOpenTerms, onOpenPrivacy, onSelectCourse, onResumeCourse, onOpenHeroPreview, onReportProblem, courseProgress = {}, aiRobotId }) {
@@ -7688,7 +7987,7 @@ function HomeScreen({
         <SafeAreaView>
           <View style={[homeStyles.headerInner, width <= 340 && homeStyles.headerInnerCompact]}>
             <View style={homeStyles.brandRow}>
-              <SkillomateLogo size={width <= 340 ? "xs" : "sm"} mode="dark" />
+              <SkillomateLogo size={width <= 340 ? "xs" : "sm"} />
             </View>
             <View style={homeStyles.headerActions}>
               <TouchableOpacity style={homeStyles.headerButton} onPress={openNotifications} accessibilityRole="button" accessibilityLabel="Open notifications">
@@ -8921,11 +9220,13 @@ function DeleteAccountModal({ visible, user, onClose, onDeleteAccount }) {
   );
 }
 
-function ProfileScreen({ user, session, onLogout, onDeleteAccount, onGoToHome, onGoToCourses, onGoToAI, onGoToDownloads, wishlistCount, onGoToWishlist, onGoToCertificates, certificatesCount, onAvatarChange, aiRobotId, onGoToSubscription, onOpenLegal, refreshing = false, onRefresh }) {
+function ProfileScreen({ user, session, onLogout, onDeleteAccount, onGoToHome, onGoToCourses, onGoToAI, onGoToDownloads, wishlistCount, onGoToWishlist, onGoToCertificates, certificatesCount, onAvatarChange, aiRobotId, onGoToSubscription, onOpenLegal, themeMode = "dark", resolvedThemeMode = "dark", onThemeChange, refreshing = false, onRefresh }) {
   const isActive = hasActivePremiumEntitlement(user);
   const memberSince = user?._id
     ? new Date(parseInt(user._id.substring(0, 8), 16) * 1000).toLocaleDateString("en-IN", { month: "short", year: "numeric" })
     : null;
+  const activeThemeMode = normalizeThemeMode(themeMode);
+  const resolvedThemeLabel = resolvedThemeMode === "light" ? "Light" : "Dark";
   const [showAvatarPicker, setShowAvatarPicker] = useState(false);
   const [showDeleteAccount, setShowDeleteAccount] = useState(false);
   const [tempAvatar, setTempAvatar] = useState(user.avatar || "a1");
@@ -8934,7 +9235,7 @@ function ProfileScreen({ user, session, onLogout, onDeleteAccount, onGoToHome, o
   return (
     <View style={{ flex: 1, backgroundColor: C.white }}>
       <StatusBar barStyle={C.isDark ? "light-content" : "dark-content"} backgroundColor={C.white} />
-      <View style={[s.homeTopBar, { paddingBottom: 20, backgroundColor: C.white }]}>
+      <View style={[s.homeTopBar, { paddingBottom: 8, backgroundColor: C.white }]}>
         <SafeAreaView style={{ backgroundColor: C.white }}>
           <View style={[s.homeTopBarInner, s.pageHeaderLogoOnly]}>
             <TouchableOpacity
@@ -8949,7 +9250,22 @@ function ProfileScreen({ user, session, onLogout, onDeleteAccount, onGoToHome, o
             <SkillomateLogo size="sm" />
           </View>
         </SafeAreaView>
-        <View style={{ alignItems: "center", marginTop: 8 }}>
+      </View>
+
+      <ScrollView
+        style={s.profileScroll}
+        contentContainerStyle={{ padding: 16, paddingTop: 10, paddingBottom: 160 }}
+        refreshControl={onRefresh ? (
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            tintColor={C.primary}
+            colors={[C.primary]}
+            progressBackgroundColor={C.cardBg}
+          />
+        ) : undefined}
+      >
+        <View style={s.profileHero}>
           <TouchableOpacity
             onPress={() => { setTempAvatar(user.avatar || "a1"); setShowAvatarPicker(true); }}
             style={{ position: "relative" }}
@@ -9056,21 +9372,7 @@ function ProfileScreen({ user, session, onLogout, onDeleteAccount, onGoToHome, o
             </Text>
           </View>
         </View>
-      </View>
 
-      <ScrollView
-        style={s.profileScroll}
-        contentContainerStyle={{ padding: 16, paddingBottom: 160 }}
-        refreshControl={onRefresh ? (
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={onRefresh}
-            tintColor={C.primary}
-            colors={[C.primary]}
-            progressBackgroundColor={C.cardBg}
-          />
-        ) : undefined}
-      >
         {/* Stats row */}
         <View style={{
           flexDirection: "row", backgroundColor: C.cardBg, borderRadius: 16,
@@ -9111,6 +9413,43 @@ function ProfileScreen({ user, session, onLogout, onDeleteAccount, onGoToHome, o
               </View>
             </View>
           ))}
+        </View>
+
+        <View style={s.themeCard}>
+          <View style={s.themeCardHeader}>
+            <View style={s.profileInfoIcon}>
+              <Ionicons name="color-palette-outline" size={16} color={C.primary} />
+            </View>
+            <View style={{ flex: 1, minWidth: 0 }}>
+              <Text style={s.themeTitle}>App Theme</Text>
+              <Text style={s.themeSubtitle}>
+                {activeThemeMode === "system" ? `System is using ${resolvedThemeLabel}` : `${resolvedThemeLabel} appearance active`}
+              </Text>
+            </View>
+            <View style={s.themeResolvedBadge}>
+              <Text style={s.themeResolvedBadgeText}>{resolvedThemeLabel}</Text>
+            </View>
+          </View>
+          <View style={s.themeToggle}>
+            {THEME_OPTIONS.map(option => {
+              const selected = activeThemeMode === option.key;
+              return (
+                <TouchableOpacity
+                  key={option.key}
+                  style={[s.themeOption, selected && s.themeOptionActive]}
+                  onPress={() => onThemeChange?.(option.key)}
+                  accessibilityRole="radio"
+                  accessibilityLabel={`${option.label} theme`}
+                  accessibilityHint={option.detail}
+                  accessibilityState={{ selected }}
+                  activeOpacity={0.85}
+                >
+                  <Ionicons name={option.icon} size={16} color={selected ? C.onPrimary : C.textSub} />
+                  <Text style={[s.themeOptionText, selected && s.themeOptionTextActive]}>{option.label}</Text>
+                </TouchableOpacity>
+              );
+            })}
+          </View>
         </View>
 
         {/* Menu items */}
@@ -9780,16 +10119,61 @@ function AiAssistantScreen({
       ? courseScopeReady ? "Scoped to this course" : "Course not indexed"
       : "Active now";
   const visibleConversations = conversations.filter(session => session.messages?.some(message => message.role === "user"));
+  const aiTheme = C.isDark
+    ? {
+      screen: "#000000",
+      top: "#050505",
+      topBorder: "rgba(255,255,255,0.12)",
+      identityBorder: "rgba(255,255,255,0.08)",
+      icon: "#D9D2C8",
+      iconStrong: "#F5F1E8",
+      title: "#FFFFFF",
+      text: "#F5F1E8",
+      secondary: "#AFA79C",
+      promptBg: "#111418",
+      promptText: "#B9B2A8",
+      promptBorder: "rgba(231,188,104,0.6)",
+      composerBg: "#111418",
+      composerBorder: "rgba(255,255,255,0.1)",
+      historySheet: "#0B0C0E",
+      historyItem: "#111418",
+      historyItemActive: "#17130B",
+      historyClose: "#14161A",
+      overlay: "rgba(0,0,0,0.72)",
+      statusBar: "light-content",
+    }
+    : {
+      screen: C.background,
+      top: C.navigation,
+      topBorder: C.border,
+      identityBorder: C.border,
+      icon: C.textSecondary,
+      iconStrong: C.text,
+      title: C.textStrong || C.text,
+      text: C.text,
+      secondary: C.textSecondary,
+      promptBg: C.surfaceElevated,
+      promptText: C.text,
+      promptBorder: C.borderStrong,
+      composerBg: C.surfaceElevated,
+      composerBorder: C.borderStrong,
+      historySheet: C.surfaceElevated,
+      historyItem: C.surface,
+      historyItemActive: C.accentSoft || C.panel,
+      historyClose: C.surfaceWarm,
+      overlay: "rgba(23,19,11,0.32)",
+      statusBar: "dark-content",
+    };
   return (
-    <View style={s.aiScreen}>
-      <StatusBar barStyle="light-content" backgroundColor="#050505" />
-      <SafeAreaView style={s.aiTopSafe}>
+    <View style={[s.aiScreen, { backgroundColor: aiTheme.screen }]}>
+      <StatusBar barStyle={aiTheme.statusBar} backgroundColor={aiTheme.top} />
+      <SafeAreaView style={[s.aiTopSafe, { backgroundColor: aiTheme.top, borderBottomColor: aiTheme.topBorder }]}>
         <View style={s.aiTopHeader}>
-          <SkillomateLogo size="xs" mode="dark" />
+          <SkillomateLogo size="xs" mode={C.isDark ? "dark" : "light"} />
           <View style={s.aiTopHeaderSpacer} />
         </View>
 
-        <View style={s.aiIdentityBar}>
+        <View style={[s.aiIdentityBar, { borderTopColor: aiTheme.identityBorder }]}>
           <TouchableOpacity
             style={s.aiIdentityMenu}
             onPress={() => setHistoryOpen(true)}
@@ -9797,7 +10181,7 @@ function AiAssistantScreen({
             accessibilityLabel="Open chat history"
             accessibilityState={{ expanded: historyOpen }}
           >
-            <Ionicons name="menu" size={22} color="#D9D2C8" />
+            <Ionicons name="menu" size={22} color={aiTheme.icon} />
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => setShowRobotPicker(true)}
@@ -9816,10 +10200,10 @@ function AiAssistantScreen({
             accessibilityRole="button"
             accessibilityLabel={`Customize AI name. Current name: ${assistantName}`}
           >
-            <Text style={s.aiIdentityName} numberOfLines={1}>{assistantName}</Text>
+            <Text style={[s.aiIdentityName, { color: aiTheme.text }]} numberOfLines={1}>{assistantName}</Text>
             <View style={s.aiIdentityStatusRow}>
               <View style={[s.aiStatusDot, status === "online" ? s.aiStatusOnline : s.aiStatusOffline]} />
-              <Text style={s.aiIdentityStatus} numberOfLines={1}>{assistantStatusText}</Text>
+              <Text style={[s.aiIdentityStatus, { color: aiTheme.secondary }]} numberOfLines={1}>{assistantStatusText}</Text>
             </View>
           </TouchableOpacity>
           <TouchableOpacity
@@ -9828,7 +10212,7 @@ function AiAssistantScreen({
             accessibilityRole="button"
             accessibilityLabel="Start a new chat"
           >
-            <Ionicons name="add" size={23} color="#F5F1E8" />
+            <Ionicons name="add" size={23} color={aiTheme.iconStrong} />
           </TouchableOpacity>
         </View>
       </SafeAreaView>
@@ -9901,32 +10285,32 @@ function AiAssistantScreen({
             keyboardShouldPersistTaps="handled"
           >
             <RobotAvatar robotId={robotId} size={108} />
-            <Text style={s.aiWelcomeTitle}>What can I help you learn?</Text>
-            <Text style={s.aiWelcomeSubtitle}>Ask about your course, a project problem, or practise with a quiz.</Text>
+            <Text style={[s.aiWelcomeTitle, { color: aiTheme.title }]}>What can I help you learn?</Text>
+            <Text style={[s.aiWelcomeSubtitle, { color: aiTheme.secondary }]}>Ask about your course, a project problem, or practise with a quiz.</Text>
             <View style={s.aiWelcomePrompts}>
               {AI_SUGGESTIONS.map(prompt => (
                 <TouchableOpacity
                   key={prompt}
-                  style={s.aiSuggestion}
+                  style={[s.aiSuggestion, { backgroundColor: aiTheme.promptBg, borderColor: aiTheme.promptBorder }]}
                   onPress={() => sendAiMessage(prompt)}
                   accessibilityRole="button"
                   accessibilityLabel={`Ask ${assistantName}: ${prompt}`}
                 >
-                  <Text style={s.aiSuggestionText}>{prompt}</Text>
+                  <Text style={[s.aiSuggestionText, { color: aiTheme.promptText }]}>{prompt}</Text>
                 </TouchableOpacity>
               ))}
             </View>
           </ScrollView>
         )}
 
-        <View style={[s.aiComposer, isCourseMode && s.aiComposerStandalone]}>
+        <View style={[s.aiComposer, { backgroundColor: aiTheme.composerBg, borderColor: aiTheme.composerBorder }, isCourseMode && s.aiComposerStandalone]}>
           <View style={s.aiComposerRow}>
             <TextInput
-              style={s.aiInput}
+              style={[s.aiInput, { color: aiTheme.text }]}
               value={input}
               onChangeText={setInput}
               placeholder="Ask about your course or project..."
-              placeholderTextColor="#A39D95"
+              placeholderTextColor={C.textMuted}
               editable={!loading}
               multiline
               accessibilityLabel={`Message ${assistantName}`}
@@ -9962,21 +10346,21 @@ function AiAssistantScreen({
         animationType="fade"
         onRequestClose={() => setHistoryOpen(false)}
       >
-        <View style={s.aiHistoryOverlay}>
+        <View style={[s.aiHistoryOverlay, { backgroundColor: aiTheme.overlay }]}>
           <Pressable style={StyleSheet.absoluteFill} onPress={() => setHistoryOpen(false)} accessible={false} />
-          <View style={s.aiHistorySheet}>
+          <View style={[s.aiHistorySheet, { backgroundColor: aiTheme.historySheet, borderColor: aiTheme.topBorder }]}>
             <View style={s.aiHistoryHeader}>
               <View>
                 <Text style={s.aiHistoryEyebrow}>{assistantName} CHATS</Text>
-                <Text style={s.aiHistoryTitle}>Chat history</Text>
+                <Text style={[s.aiHistoryTitle, { color: aiTheme.text }]}>Chat history</Text>
               </View>
               <TouchableOpacity
                 onPress={() => setHistoryOpen(false)}
-                style={s.aiHistoryClose}
+                style={[s.aiHistoryClose, { backgroundColor: aiTheme.historyClose, borderColor: aiTheme.topBorder }]}
                 accessibilityRole="button"
                 accessibilityLabel="Close chat history"
               >
-                <Ionicons name="close" size={20} color="#F5F1E8" />
+                <Ionicons name="close" size={20} color={aiTheme.iconStrong} />
               </TouchableOpacity>
             </View>
 
@@ -9999,26 +10383,30 @@ function AiAssistantScreen({
                     <TouchableOpacity
                       key={item.id}
                       onPress={() => selectConversation(item)}
-                      style={[s.aiHistoryItem, active && s.aiHistoryItemActive]}
+                      style={[
+                        s.aiHistoryItem,
+                        { backgroundColor: aiTheme.historyItem, borderColor: aiTheme.topBorder },
+                        active && [s.aiHistoryItemActive, { backgroundColor: aiTheme.historyItemActive, borderColor: C.primary }],
+                      ]}
                       accessibilityRole="button"
                       accessibilityLabel={`Open chat ${item.title}`}
                       accessibilityState={{ selected: active }}
                     >
-                      <Text style={s.aiHistoryItemTitle} numberOfLines={1}>{item.title}</Text>
-                      <Text style={s.aiHistoryItemMeta} numberOfLines={1}>{aiChatDateLabel(item.updatedAt)} · {item.messages.length} messages</Text>
+                      <Text style={[s.aiHistoryItemTitle, { color: aiTheme.text }]} numberOfLines={1}>{item.title}</Text>
+                      <Text style={[s.aiHistoryItemMeta, { color: aiTheme.secondary }]} numberOfLines={1}>{aiChatDateLabel(item.updatedAt)} · {item.messages.length} messages</Text>
                     </TouchableOpacity>
                   );
                 })}
               </ScrollView>
             ) : (
-              <View style={s.aiHistoryEmpty}>
+              <View style={[s.aiHistoryEmpty, { backgroundColor: aiTheme.historyItem, borderColor: aiTheme.topBorder }]}>
                 <Ionicons name="chatbubble-ellipses-outline" size={26} color="#E7BC68" />
-                <Text style={s.aiHistoryEmptyText}>Your chats will appear here after you send a message.</Text>
+                <Text style={[s.aiHistoryEmptyText, { color: aiTheme.secondary }]}>Your chats will appear here after you send a message.</Text>
               </View>
             )}
             <View style={{ borderTopWidth: 1, borderTopColor: C.border, paddingTop: 14, marginTop: 10, gap: 8 }}>
               <Text style={s.aiHistoryLabel}>AI Data Controls</Text>
-              <Text style={s.aiHistoryItemMeta}>
+              <Text style={[s.aiHistoryItemMeta, { color: aiTheme.secondary }]}>
                 Third-party AI processing: {isAiConsentCurrent(aiConsent) ? "Allowed" : "Not allowed"}
               </Text>
               {isAiConsentCurrent(aiConsent) ? (
@@ -10251,8 +10639,11 @@ function LegalContentScreen({ page = "privacy", onBack }) {
 
 // ── App ───────────────────────────────────────────────────────────────────────
 export default function App() {
+  const systemScheme = useColorScheme();
   const [isRestoring, setIsRestoring] = useState(true);
   const [user, setUserState] = useState(null);
+  const [themeMode, setThemeMode] = useState("dark");
+  const [, setThemeVersion] = useState(0);
   const userRef = useRef(null);
   const sessionRef = useRef(null);
   const secureSessionStorageRef = useRef(null);
@@ -10315,6 +10706,40 @@ export default function App() {
   const [certificates, setCertificates] = useState([]);
   const [certModal, setCertModal] = useState(null);
   const [profileRefreshing, setProfileRefreshing] = useState(false);
+  const routeHistoryRef = useRef([]);
+  const currentRouteRef = useRef(null);
+  const restoringRouteRef = useRef(false);
+  const [canGoBack, setCanGoBack] = useState(false);
+  useEffect(() => {
+    if (user) return;
+    routeHistoryRef.current = [];
+    currentRouteRef.current = null;
+    restoringRouteRef.current = false;
+    setCanGoBack(false);
+  }, [user]);
+  const changeTheme = useCallback((mode) => {
+    const nextMode = normalizeThemeMode(mode);
+    applyAppTheme(nextMode, systemScheme);
+    setThemeMode(nextMode);
+    setThemeVersion(version => version + 1);
+    AsyncStorage.setItem(THEME_STORAGE_KEY, nextMode).catch(() => {});
+  }, [systemScheme]);
+  useEffect(() => {
+    let mounted = true;
+    AsyncStorage.getItem(THEME_STORAGE_KEY).then(savedMode => {
+      if (!mounted) return;
+      const nextMode = normalizeThemeMode(savedMode);
+      applyAppTheme(nextMode, systemScheme);
+      setThemeMode(nextMode);
+      setThemeVersion(version => version + 1);
+    }).catch(() => {});
+    return () => { mounted = false; };
+  }, []);
+  useEffect(() => {
+    if (themeMode !== "system") return;
+    applyAppTheme(themeMode, systemScheme);
+    setThemeVersion(version => version + 1);
+  }, [systemScheme, themeMode]);
   const openLegalPage = useCallback(page => {
     if (page === "privacy") {
       openSafeExternalUrl("https://skillomate.in/privacy", "legal");
@@ -10524,75 +10949,144 @@ export default function App() {
 
   const startDownload = useCallback(async (video, courseId, courseTitle) => {
     const u = userRef.current;
+    const downloadId = getDownloadId(video);
+    const downloadKind = getDownloadKind(video);
     const guid = getBunnyGuid(video);
     const libraryId = getBunnyLibraryId(video);
-    if (!guid || !u?._id || !u?.sessionId) return;
+    const protectedCloudfront = downloadKind === "hls" && (video.provider === "aws_cloudfront" || video.sourceType === "aws_cloudfront");
+    if (!downloadId || !downloadKind || !u?._id || !u?.sessionId) {
+      Alert.alert("Download unavailable", "This lesson is not available for offline download.");
+      return;
+    }
     let filePath;
+    let targetDir;
     try {
       await downloadStorageReady.current;
-      filePath = downloadPath(FileSystem, guid);
-      await FileSystem.makeDirectoryAsync(DOWNLOADS_DIR, { intermediates: true });
+      targetDir = downloadDir(FileSystem, downloadId);
+      filePath = downloadKind === "hls" && !protectedCloudfront ? downloadManifestPath(FileSystem, downloadId) : downloadPath(FileSystem, downloadId);
+      await FileSystem.makeDirectoryAsync(targetDir, { intermediates: true });
     } catch {
       Alert.alert("Download unavailable", "Temporary storage could not be prepared. Restart the app and try again.");
       return;
     }
-    const current = downloadsRef.current[guid];
+    const current = downloadsRef.current[downloadId];
     if (current?.status === "downloading") return;
     if (current?.status === "done" && (await FileSystem.getInfoAsync(filePath)).exists) return;
-    const meta = { title: video.title || "Video", courseId: courseId || "", courseTitle: courseTitle || "", bunnyGuid: guid, bunnyLibraryId: libraryId, videoId: String(video._id || guid) };
+    const meta = {
+      id: downloadId,
+      kind: downloadKind === "hls" && !protectedCloudfront ? "hls" : "mp4",
+      title: video.title || "Video",
+      courseId: courseId || "",
+      courseTitle: courseTitle || "",
+      bunnyGuid: guid,
+      bunnyLibraryId: libraryId,
+      videoId: String(video._id || guid || downloadId),
+      provider: video.provider || video.sourceType || "",
+      videoUrl: video.videoUrl || video.streamUrl || "",
+      thumbnailUrl: getHomeLessonThumbnailUrl(video, { _id: courseId, title: courseTitle }),
+    };
 
-    setDownloads(prev => ({ ...prev, [guid]: { status: "downloading", progress: 0, path: filePath, ...meta } }));
+    setDownloads(prev => ({ ...prev, [downloadId]: { status: "downloading", progress: 0, path: filePath, ...meta } }));
     try {
-      const grant = await nativeSession.requestJson(`/api/videos/${encodeURIComponent(guid)}/download-grant`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ courseId }),
-      });
-      if (!grant?.downloadUrl) throw new Error("The download authorization response was invalid.");
-      const url = `${API_BASE}${grant.downloadUrl}`;
-      const dl = FileSystem.createDownloadResumable(url, filePath, {}, ({ totalBytesWritten, totalBytesExpectedToWrite }) => {
-        const pct = totalBytesExpectedToWrite > 0 ? totalBytesWritten / totalBytesExpectedToWrite : 0;
-        setDownloads(prev => ({ ...prev, [guid]: { ...prev[guid], progress: pct } }));
-      });
-      const result = await dl.downloadAsync();
-      if (result?.status === 200) {
-        const stat = await FileSystem.getInfoAsync(result.uri).catch(() => ({}));
-        const info = { status: "done", path: result.uri, progress: 1, size: stat.size || 0, downloadedAt: new Date().toISOString(), ...meta };
-        // Save from state — avoids race condition when multiple downloads finish simultaneously
-        setDownloads(prev => {
-          const next = { ...prev, [guid]: info };
-          const toSave = Object.fromEntries(Object.entries(next).filter(([, v]) => v.status === "done"));
-          AsyncStorage.setItem(DOWNLOADS_STORAGE_KEY, JSON.stringify(toSave)).catch(() => {});
-          return next;
+      if (downloadKind === "bunny") {
+        const grant = await nativeSession.requestJson(`/api/videos/${encodeURIComponent(guid)}/download-grant`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ courseId }),
         });
-        Alert.alert("Downloaded", "Video saved in temporary app storage for offline viewing. Your device may clear it to free space.");
+        if (!grant?.downloadUrl) throw new Error("The download authorization response was invalid.");
+        const url = `${API_BASE}${grant.downloadUrl}`;
+        const dl = FileSystem.createDownloadResumable(url, filePath, {}, ({ totalBytesWritten, totalBytesExpectedToWrite }) => {
+          const pct = totalBytesExpectedToWrite > 0 ? totalBytesWritten / totalBytesExpectedToWrite : 0;
+          setDownloads(prev => ({ ...prev, [downloadId]: { ...prev[downloadId], progress: pct } }));
+        });
+        const result = await dl.downloadAsync();
+        if (result?.status !== 200) throw Object.assign(new Error("Download failed"), { status: result?.status });
+      } else if (downloadKind === "direct") {
+        const rawUrl = String(video.videoUrl || video.streamUrl || "").trim();
+        const url = /^https?:\/\//i.test(rawUrl) ? rawUrl : `${API_BASE}${rawUrl.startsWith("/") ? "" : "/"}${rawUrl}`;
+        const dl = FileSystem.createDownloadResumable(url, filePath, {}, ({ totalBytesWritten, totalBytesExpectedToWrite }) => {
+          const pct = totalBytesExpectedToWrite > 0 ? totalBytesWritten / totalBytesExpectedToWrite : 0;
+          setDownloads(prev => ({ ...prev, [downloadId]: { ...prev[downloadId], progress: pct } }));
+        });
+        const result = await dl.downloadAsync();
+        if (result?.status !== 200) throw Object.assign(new Error("Download failed"), { status: result?.status });
+      } else if (downloadKind === "hls") {
+        if (protectedCloudfront) {
+          if (!courseId || !video?._id) throw new Error("Download authorization unavailable.");
+          const grant = await nativeSession.requestJson(`/api/courses/${encodeURIComponent(courseId)}/videos/${encodeURIComponent(video._id)}/download-grant`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ prepared: Platform.OS === "android" }),
+          });
+          if (!grant?.downloadUrl) throw new Error("The download authorization response was invalid.");
+          const usesPreparedDownload = Platform.OS === "android" && Boolean(grant.statusUrl);
+          if (usesPreparedDownload) {
+            await waitForPreparedDownload(
+              nativeSession,
+              grant.statusUrl,
+              pct => setDownloads(prev => ({ ...prev, [downloadId]: { ...prev[downloadId], progress: pct } })),
+            );
+          }
+          const url = `${API_BASE}${usesPreparedDownload ? grant.downloadUrl : (grant.directDownloadUrl || grant.downloadUrl)}`;
+          const dl = FileSystem.createDownloadResumable(url, filePath, {}, ({ totalBytesWritten, totalBytesExpectedToWrite }) => {
+            const rawPct = totalBytesExpectedToWrite > 0 ? totalBytesWritten / totalBytesExpectedToWrite : 0;
+            const pct = usesPreparedDownload ? 0.35 + rawPct * 0.65 : rawPct;
+            setDownloads(prev => ({ ...prev, [downloadId]: { ...prev[downloadId], progress: pct } }));
+          });
+          const result = await dl.downloadAsync();
+          if (result?.status !== 200) throw Object.assign(new Error("Download failed"), { status: result?.status });
+        } else {
+          const hlsUrl = getNativeVideoUrl(video, "");
+          if (!hlsUrl) throw new Error("Playback download URL unavailable.");
+          await downloadHlsToAppCache({
+            hlsUrl,
+            targetDir,
+            manifestPath: filePath,
+            onProgress: pct => setDownloads(prev => ({ ...prev, [downloadId]: { ...prev[downloadId], progress: pct } })),
+          });
+        }
       } else {
-        const errorMessage = getDownloadFailureMessage(null, result?.status);
-        setDownloads(prev => ({ ...prev, [guid]: { status: "error", progress: 0, errorMessage, ...meta } }));
-        Alert.alert("Download failed", errorMessage);
+        throw new Error("Unsupported download source.");
       }
+      const stat = await FileSystem.getInfoAsync(filePath).catch(() => ({}));
+      if (protectedCloudfront && (!stat.exists || Number(stat.size || 0) < 1024 * 1024)) {
+        await FileSystem.deleteAsync(filePath, { idempotent: true }).catch(() => {});
+        throw new Error("Incomplete video download.");
+      }
+      const info = { status: "done", path: filePath, progress: 1, size: stat.size || 0, downloadedAt: new Date().toISOString(), ...meta };
+      // Save from state — avoids race condition when multiple downloads finish simultaneously
+      setDownloads(prev => {
+        const next = { ...prev, [downloadId]: info };
+        const toSave = Object.fromEntries(Object.entries(next).filter(([, v]) => v.status === "done"));
+        AsyncStorage.setItem(DOWNLOADS_STORAGE_KEY, JSON.stringify(toSave)).catch(() => {});
+        return next;
+      });
+      Alert.alert("Downloaded", "Video saved in temporary app storage for offline viewing. Your device may clear it to free space.");
     } catch (e) {
-      const errorMessage = getDownloadFailureMessage(e);
-      setDownloads(prev => ({ ...prev, [guid]: { status: "error", progress: 0, errorMessage, ...meta } }));
+      const errorMessage = getDownloadFailureMessage(e, e?.status);
+      setDownloads(prev => ({ ...prev, [downloadId]: { status: "error", progress: 0, errorMessage, ...meta } }));
       Alert.alert("Download failed", errorMessage);
     }
   }, [nativeSession]);
 
   const retryDownload = useCallback((item) => {
-    if (!item?.bunnyGuid || item.status !== "error") return;
+    if (!item?.id || item.status !== "error") return;
     startDownload({
-      _id: item.videoId || item.bunnyGuid,
+      _id: item.videoId || item.bunnyGuid || item.id,
       bunnyGuid: item.bunnyGuid,
       bunnyLibraryId: item.bunnyLibraryId || "",
+      provider: item.provider,
+      videoUrl: item.videoUrl,
       title: item.title || "Video",
     }, item.courseId || "", item.courseTitle || "");
   }, [startDownload]);
 
-  const deleteDownload = useCallback(async (guid) => {
-    await FileSystem.deleteAsync(downloadPath(FileSystem, guid), { idempotent: true }).catch(() => {});
+  const deleteDownload = useCallback(async (downloadId) => {
+    await FileSystem.deleteAsync(downloadDir(FileSystem, downloadId), { idempotent: true }).catch(() => {});
     setDownloads(prev => {
       const next = { ...prev };
-      delete next[guid];
+      delete next[downloadId];
       const toSave = Object.fromEntries(Object.entries(next).filter(([, v]) => v.status === "done"));
       AsyncStorage.setItem(DOWNLOADS_STORAGE_KEY, JSON.stringify(toSave)).catch(() => {});
       return next;
@@ -10662,51 +11156,220 @@ export default function App() {
     setPreloadedVideos(Array.isArray(selectedCourse?.videos) ? selectedCourse.videos : null);
   }, [isPreviewOnly, selectedCourse, loadCourseProgress]);
 
-  useEffect(() => {
-    if (Platform.OS !== "android") return undefined;
-    const sub = BackHandler.addEventListener("hardwareBackPress", () => {
-      if (legalPage) { setLegalPage(null); return true; }
-      if (!userRef.current) {
-        if (resetVisible) { closePasswordReset(); return true; }
-        if (screen === "signup2") { setScreen("signup1"); setSignupError(""); return true; }
-        if (screen === "signup1") {
-          if (otpSent) { setOtpSent(false); setOtp(""); setSignupToken(""); setSignupError(""); return true; }
-          resetSignup();
-          return true;
-        }
-        return true;
-      }
+  const currentRoute = useMemo(() => {
+    if (legalPage) {
+      return {
+        key: `legal:${user ? "app" : "auth"}:${legalPage}`,
+        legalPage,
+        mainScreen,
+        selectedCourse,
+        startIndex,
+        initialTime,
+        preloadedVideos,
+        isPreviewOnly,
+        courseAiTarget,
+      };
+    }
+    if (!user) {
+      return {
+        key: `auth:${screen}:${otpSent ? "otp" : "base"}:${resetVisible ? resetStep : "no-reset"}`,
+        authScreen: screen,
+        otpSent,
+        resetVisible,
+        resetStep,
+      };
+    }
+    if (courseAiTarget) {
+      return {
+        key: `course-ai:${courseAiTarget?._id || courseAiTarget?.id || courseAiTarget?.title || "course"}`,
+        mainScreen,
+        selectedCourse,
+        startIndex,
+        initialTime,
+        preloadedVideos,
+        isPreviewOnly,
+        courseAiTarget,
+      };
+    }
+    if (mainScreen === "courses" && selectedCourse && startIndex !== null) {
+      return {
+        key: `player:${selectedCourse?._id || selectedCourse?.id || selectedCourse?.title || "course"}:${startIndex}`,
+        mainScreen,
+        selectedCourse,
+        startIndex,
+        initialTime,
+        preloadedVideos,
+        isPreviewOnly,
+      };
+    }
+    if (mainScreen === "courses" && selectedCourse) {
+      return {
+        key: `course:${selectedCourse?._id || selectedCourse?.id || selectedCourse?.title || "course"}`,
+        mainScreen,
+        selectedCourse,
+        startIndex: null,
+        initialTime: 0,
+        preloadedVideos,
+        isPreviewOnly,
+      };
+    }
+    return {
+      key: `main:${mainScreen}`,
+      mainScreen,
+      selectedCourse: null,
+      startIndex: null,
+      initialTime: 0,
+      preloadedVideos: null,
+      isPreviewOnly: false,
+      courseAiTarget: null,
+    };
+  }, [
+    courseAiTarget,
+    initialTime,
+    isPreviewOnly,
+    legalPage,
+    mainScreen,
+    otpSent,
+    preloadedVideos,
+    resetStep,
+    resetVisible,
+    screen,
+    selectedCourse,
+    startIndex,
+    user,
+  ]);
 
-      if (courseAiTarget) { setCourseAiTarget(null); return true; }
-      if (certModal) { setCertModal(null); return true; }
-      if (showAppUpgrade) { setShowAppUpgrade(false); return true; }
-      if (mainScreen === "courses" && startIndex !== null) {
-        backToLessons();
-        return true;
+  useEffect(() => {
+    const previousRoute = currentRouteRef.current;
+    if (restoringRouteRef.current) {
+      restoringRouteRef.current = false;
+      currentRouteRef.current = currentRoute;
+      setCanGoBack(routeHistoryRef.current.length > 0);
+      return;
+    }
+    if (previousRoute && previousRoute.key !== currentRoute.key) {
+      routeHistoryRef.current = [
+        ...routeHistoryRef.current.filter(route => route.key !== previousRoute.key),
+        previousRoute,
+      ].slice(-24);
+    }
+    currentRouteRef.current = currentRoute;
+    setCanGoBack(routeHistoryRef.current.length > 0);
+  }, [currentRoute]);
+
+  const restoreRoute = useCallback((route) => {
+    if (!route) return false;
+    restoringRouteRef.current = true;
+    setShowProblemReport(false);
+    setShowAppUpgrade(false);
+    setCertModal(null);
+    setLegalPage(route.legalPage || null);
+
+    if (route.authScreen) {
+      setScreen(route.authScreen);
+      if (!route.otpSent) {
+        setOtpSent(false);
+        setOtp("");
+        setSignupToken("");
+        setSignupError("");
       }
-      if (mainScreen === "courses" && selectedCourse) {
-        loadCourseProgress();
-        setSelectedCourse(null);
-        return true;
-      }
-      if (mainScreen === "wishlist" || mainScreen === "certificates" || mainScreen === "subscription" || mainScreen === "help" || mainScreen === "terms" || mainScreen === "privacy") {
-        setMainScreen("profile");
-        return true;
-      }
-      if (mainScreen !== "home") {
-        setSelectedCourse(null);
-        setStartIndex(null);
-        setInitialTime(0);
-        setPreloadedVideos(null);
-        setIsPreviewOnly(false);
-        loadCourseProgress();
-        setMainScreen("home");
+      if (!route.resetVisible) closePasswordReset();
+      return true;
+    }
+
+    setCourseAiTarget(route.courseAiTarget || null);
+    setSelectedCourse(route.selectedCourse || null);
+    setStartIndex(route.startIndex ?? null);
+    setInitialTime(route.initialTime || 0);
+    setPreloadedVideos(route.preloadedVideos || null);
+    setIsPreviewOnly(Boolean(route.isPreviewOnly));
+    setMainScreen(route.mainScreen || "home");
+    return true;
+  }, []);
+
+  const handleAppBack = useCallback(() => {
+    if (legalPage) { setLegalPage(null); return true; }
+    if (!userRef.current) {
+      if (resetVisible) { closePasswordReset(); return true; }
+      if (screen === "signup2") { setScreen("signup1"); setSignupError(""); return true; }
+      if (screen === "signup1") {
+        if (otpSent) { setOtpSent(false); setOtp(""); setSignupToken(""); setSignupError(""); return true; }
+        resetSignup();
         return true;
       }
       return true;
+    }
+
+    if (showProblemReport) { setShowProblemReport(false); return true; }
+    if (courseAiTarget) {
+      const previous = routeHistoryRef.current.pop();
+      if (previous && restoreRoute(previous)) {
+        setCanGoBack(routeHistoryRef.current.length > 0);
+        return true;
+      }
+      setCourseAiTarget(null);
+      return true;
+    }
+    if (certModal) { setCertModal(null); return true; }
+    if (showAppUpgrade) { setShowAppUpgrade(false); return true; }
+
+    const currentKey = currentRouteRef.current?.key;
+    let previous = routeHistoryRef.current.pop();
+    while (previous && previous.key === currentKey) previous = routeHistoryRef.current.pop();
+    if (previous && restoreRoute(previous)) {
+      setCanGoBack(routeHistoryRef.current.length > 0);
+      return true;
+    }
+
+    if (mainScreen === "courses" && startIndex !== null) {
+      backToLessons();
+      return true;
+    }
+    if (mainScreen === "courses" && selectedCourse) {
+      loadCourseProgress();
+      setSelectedCourse(null);
+      return true;
+    }
+    if (mainScreen === "wishlist" || mainScreen === "certificates" || mainScreen === "subscription" || mainScreen === "help" || mainScreen === "terms" || mainScreen === "privacy") {
+      setMainScreen("profile");
+      return true;
+    }
+    if (mainScreen !== "home") {
+      setSelectedCourse(null);
+      setStartIndex(null);
+      setInitialTime(0);
+      setPreloadedVideos(null);
+      setIsPreviewOnly(false);
+      loadCourseProgress();
+      setMainScreen("home");
+      return true;
+    }
+    return true;
+  }, [
+    backToLessons,
+    certModal,
+    courseAiTarget,
+    legalPage,
+    loadCourseProgress,
+    mainScreen,
+    otpSent,
+    resetVisible,
+    restoreRoute,
+    screen,
+    selectedCourse,
+    showAppUpgrade,
+    showProblemReport,
+    startIndex,
+  ]);
+
+  useEffect(() => {
+    if (Platform.OS !== "android") return undefined;
+    const sub = BackHandler.addEventListener("hardwareBackPress", () => {
+      handleAppBack();
+      return true;
     });
     return () => sub.remove();
-  }, [screen, otpSent, resetVisible, legalPage, courseAiTarget, certModal, showAppUpgrade, mainScreen, startIndex, selectedCourse, isPreviewOnly, loadCourseProgress, backToLessons]);
+  }, [handleAppBack]);
 
   const openCourse = useCallback(async (course, options = {}) => {
     const u = userRef.current;
@@ -11256,6 +11919,25 @@ export default function App() {
     }
   }
 
+  const fallbackBackAvailable = Boolean(
+    legalPage ||
+    courseAiTarget ||
+    certModal ||
+    showAppUpgrade ||
+    showProblemReport ||
+    (mainScreen === "courses" && selectedCourse) ||
+    (mainScreen !== "home")
+  );
+  const iosGlobalBackEnabled = Platform.OS === "ios" && Boolean(user) && (canGoBack || fallbackBackAvailable);
+  const withGlobalBackGesture = useCallback((content, options = {}) => (
+    <GlobalEdgeBackGesture
+      enabled={iosGlobalBackEnabled && options.enabled !== false}
+      onBack={handleAppBack}
+    >
+      {content}
+    </GlobalEdgeBackGesture>
+  ), [handleAppBack, iosGlobalBackEnabled]);
+
   // ── Splash loader — shown while restoring session from storage ──────────────
   if (isRestoring) {
     return (
@@ -11267,7 +11949,9 @@ export default function App() {
   }
 
   if (legalPage) {
-    return <LegalContentScreen page={legalPage} onBack={() => setLegalPage(null)} />;
+    return withGlobalBackGesture(
+      <LegalContentScreen page={legalPage} onBack={handleAppBack} />
+    );
   }
 
   // ── Auth screens ────────────────────────────────────────────────────────────
@@ -11646,19 +12330,19 @@ export default function App() {
 
   // ── Logged-in ───────────────────────────────────────────────────────────────
   if (courseAiTarget) {
-    return (
+    return withGlobalBackGesture(
       <AiAssistantScreen
         session={nativeSession}
         mode="course"
         fixedCourse={courseAiTarget}
         user={user}
-        onBack={() => setCourseAiTarget(null)}
+        onBack={handleAppBack}
       />
     );
   }
 
   if (mainScreen === "courses" && selectedCourse && startIndex !== null) {
-    return (
+    return withGlobalBackGesture((
       <View style={{ flex: 1 }}>
         <ReelsScreen
           courseId={selectedCourse._id}
@@ -11674,7 +12358,7 @@ export default function App() {
           onReportProblem={openProblemReport}
           onGoToDownloads={() => navigateRootTab("downloads")}
           onDownload={(video, courseId, courseTitle) => startDownload(video, courseId, courseTitle)}
-          onBack={backToLessons}
+          onBack={handleAppBack}
         />
         <CertificateModal cert={certModal} onClose={() => setCertModal(null)} />
         <ProblemReportModal
@@ -11684,15 +12368,15 @@ export default function App() {
           route={problemReportRoute}
         />
       </View>
-    );
+    ), { enabled: false });
   }
 
   if (mainScreen === "courses" && selectedCourse) {
-    return (
+    return withGlobalBackGesture(
       <VideoListScreen
         course={selectedCourse}
         onSelectVideo={idx => setStartIndex(idx)}
-        onBack={() => { loadCourseProgress(); setSelectedCourse(null); }}
+        onBack={handleAppBack}
         downloads={downloads}
         onDownload={(video, courseId, courseTitle) => startDownload(video, courseId, courseTitle)}
         onDeleteDownload={deleteDownload}
@@ -11708,21 +12392,21 @@ export default function App() {
   }
 
   if (mainScreen === "certificates") {
-    return (
+    return withGlobalBackGesture(
       <CertificatesScreen
         certificates={certificates}
-        onBack={() => setMainScreen("profile")}
+        onBack={handleAppBack}
       />
     );
   }
 
   if (mainScreen === "subscription") {
-    return (
+    return withGlobalBackGesture(
       <SubscriptionDetailsScreen
         user={user}
         session={nativeSession}
         appleSubscription={storeSubscription}
-        onBack={() => setMainScreen("profile")}
+        onBack={handleAppBack}
         onOpenTerms={() => setLegalPage("terms")}
         onOpenPrivacy={() => openLegalPage("privacy")}
       />
@@ -11730,39 +12414,39 @@ export default function App() {
   }
 
   if (mainScreen === "help") {
-    return (
+    return withGlobalBackGesture(
       <InfoPageScreen
         page={HELP_SUPPORT_CONTENT}
-        onBack={() => setMainScreen("profile")}
+        onBack={handleAppBack}
       />
     );
   }
 
   if (mainScreen === "terms") {
-    return (
+    return withGlobalBackGesture(
       <InfoPageScreen
         page={TERMS_CONTENT}
-        onBack={() => setMainScreen("profile")}
+        onBack={handleAppBack}
       />
     );
   }
 
   if (mainScreen === "privacy") {
-    return (
+    return withGlobalBackGesture(
       <InfoPageScreen
         page={PRIVACY_CONTENT}
-        onBack={() => setMainScreen("profile")}
+        onBack={handleAppBack}
       />
     );
   }
 
   if (mainScreen === "wishlist") {
-    return (
+    return withGlobalBackGesture(
       <WishlistScreen
         wishlist={wishlist}
         onToggleWishlist={toggleWishlist}
         onSelect={c => openCourse(c)}
-        onBack={() => navigateRootTab("profile")}
+        onBack={handleAppBack}
         user={user}
         onGoToSubscription={openSubscriptionDetails}
         appleSubscription={storeSubscription}
@@ -11799,7 +12483,7 @@ export default function App() {
     }
 
   if (tab === "downloads") {
-    const downloadItems = Object.values(downloads).filter(d => d.bunnyGuid);
+    const downloadItems = Object.values(downloads).filter(d => d.id || d.bunnyGuid);
     return (
       <View style={{ flex: 1, backgroundColor: C.bg }}>
         <StatusBar barStyle={C.isDark ? "light-content" : "dark-content"} backgroundColor={C.white} />
@@ -11833,7 +12517,7 @@ export default function App() {
         ) : (
           <FlatList
             data={downloadItems}
-            keyExtractor={(item, i) => item.bunnyGuid || String(i)}
+            keyExtractor={(item, i) => item.id || item.bunnyGuid || String(i)}
             contentContainerStyle={{ padding: 16, gap: 10, paddingBottom: 100 }}
             refreshControl={
               <RefreshControl
@@ -11859,9 +12543,11 @@ export default function App() {
 
               const playDownload = () => {
                 const offlineVideo = {
-                  _id: item.videoId || item.bunnyGuid,
+                  _id: item.videoId || item.bunnyGuid || item.id,
+                  downloadId: item.id || item.bunnyGuid,
                   bunnyGuid: item.bunnyGuid,
                   bunnyLibraryId: item.bunnyLibraryId || "",
+                  provider: item.provider || (item.kind === "hls" ? "aws_cloudfront" : "offline"),
                   title: item.title,
                   order: 0,
                 };
@@ -11896,12 +12582,18 @@ export default function App() {
                       } : {})}
                     >
                       <View style={[s.dlVideoThumb, !isDone && { opacity: 0.72 }]}>
-                        <RemoteThumbnailImage
-                          imageUrl={`${API_BASE}/api/bunny/thumbnail/${item.bunnyGuid}?libraryId=${encodeURIComponent(item.bunnyLibraryId || "")}`}
-                          screen="Downloads thumbnail"
-                          courseId={item.courseId}
-                          borderRadius={10}
-                        />
+                        {item.thumbnailUrl || item.bunnyGuid ? (
+                          <RemoteThumbnailImage
+                            imageUrl={item.thumbnailUrl || `${API_BASE}/api/bunny/thumbnail/${item.bunnyGuid}?libraryId=${encodeURIComponent(item.bunnyLibraryId || "")}`}
+                            screen="Downloads thumbnail"
+                            courseId={item.courseId}
+                            borderRadius={10}
+                          />
+                        ) : (
+                          <View style={[StyleSheet.absoluteFill, { backgroundColor: C.primaryLight, borderRadius: 10, alignItems: "center", justifyContent: "center" }]}>
+                            <Ionicons name="play-circle-outline" size={24} color={C.primary} />
+                          </View>
+                        )}
                         <View style={[StyleSheet.absoluteFill, s.dlVideoThumbOverlay]}>
                           {isDownloading
                             ? <ActivityIndicator size="small" color={C.primary} />
@@ -11947,7 +12639,7 @@ export default function App() {
                       onPress={() => {
                         Alert.alert("Remove Download", `Remove "${item.title}" from downloads?`, [
                           { text: "Cancel", style: "cancel" },
-                          { text: "Remove", style: "destructive", onPress: () => deleteDownload(item.bunnyGuid) },
+                          { text: "Remove", style: "destructive", onPress: () => deleteDownload(item.id || item.bunnyGuid) },
                         ]);
                       }}
                       accessibilityRole="button"
@@ -12035,7 +12727,7 @@ export default function App() {
   }
 
   if (mainScreen === "profile") {
-    return (
+    return withGlobalBackGesture(
       <ProfileScreen
         user={user}
         onLogout={handleLogout}
@@ -12046,6 +12738,9 @@ export default function App() {
         onGoToCertificates={() => setMainScreen("certificates")}
         onGoToSubscription={() => setMainScreen("subscription")}
         onOpenLegal={setLegalPage}
+        themeMode={themeMode}
+        resolvedThemeMode={resolveThemeMode(themeMode, systemScheme)}
+        onThemeChange={changeTheme}
         onGoToHome={() => navigateRootTab("home")}
         onGoToCourses={() => navigateRootTab("courses")}
         onGoToAI={() => navigateRootTab("ai")}
@@ -12064,7 +12759,7 @@ export default function App() {
   }
 
   const activeRootTab = ROOT_TAB_ORDER.includes(mainScreen) ? mainScreen : "home";
-  return (
+  return withGlobalBackGesture(
     <View style={{ flex: 1, backgroundColor: C.bg }}>
       <SwipeableRootTabs
         activeTab={activeRootTab}
@@ -12103,6 +12798,28 @@ return StyleSheet.create({
 	    width: "100%",
 	    height: "100%",
 	  },
+  globalEdgeBackRoot: {
+    flex: 1,
+  },
+  globalEdgeBackGuide: {
+    position: "absolute",
+    left: 0,
+    top: "50%",
+    width: 54,
+    height: 54,
+    marginTop: -27,
+    borderRadius: 27,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: C.surfaceElevated,
+    borderWidth: 1,
+    borderColor: C.border,
+    shadowColor: "#000",
+    shadowOpacity: C.isDark ? 0.28 : 0.16,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 4 },
+    zIndex: 200,
+  },
 	  logoBox: {
 	    backgroundColor: C.surface, alignItems: "center", justifyContent: "center",
 	    borderWidth: 1, borderColor: C.accentSoft,
@@ -12709,16 +13426,16 @@ return StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    height: Platform.OS === "ios" ? 150 : 170,
+    height: Platform.OS === "ios" ? 150 : 96,
     zIndex: 60,
     elevation: 30,
     justifyContent: "flex-end",
-    paddingBottom: Platform.OS === "ios" ? 10 : 22,
-    backgroundColor: C.bg,
+    paddingBottom: Platform.OS === "ios" ? 18 : 24,
+    backgroundColor: "transparent",
     overflow: "visible",
   },
   bottomNavDockCompact: {
-    height: Platform.OS === "ios" ? 126 : 112,
+    height: Platform.OS === "ios" ? 126 : 96,
   },
   bottomNav: {
     marginHorizontal: 14,
@@ -12745,7 +13462,7 @@ return StyleSheet.create({
     top: 0,
     zIndex: 60,
     elevation: 30,
-    backgroundColor: C.bg,
+    backgroundColor: "transparent",
   },
   bottomTab: {
     flex: 1,
@@ -13847,6 +14564,41 @@ courseListCard: {
   },
   profileInfoLabel: { fontSize: 11, color: C.textMuted, fontWeight: "600", marginBottom: 1 },
   profileInfoValue: { fontSize: 14, color: C.text, fontWeight: "600" },
+  profileHero: {
+    alignItems: "center",
+    paddingTop: 6,
+    paddingBottom: 22,
+  },
+  themeCard: {
+    backgroundColor: C.cardBg, borderRadius: RADIUS.lg, borderWidth: 1, borderColor: C.border,
+    padding: 14, marginBottom: 16,
+    ...ELEVATION.hairline,
+  },
+  themeCardHeader: { minHeight: 38, flexDirection: "row", alignItems: "center", gap: 12, marginBottom: 12 },
+  themeTitle: { fontSize: 14, color: C.text, fontWeight: "800" },
+  themeSubtitle: { fontSize: 11, lineHeight: 15, color: C.textMuted, fontWeight: "600", marginTop: 1 },
+  themeResolvedBadge: {
+    minHeight: 28, paddingHorizontal: 10, borderRadius: 14,
+    alignItems: "center", justifyContent: "center",
+    backgroundColor: C.primaryLight, borderWidth: 1, borderColor: C.border,
+  },
+  themeResolvedBadgeText: { color: C.primary, fontSize: 11, fontWeight: "800" },
+  themeToggle: {
+    flexDirection: "row", backgroundColor: C.lightGray, borderRadius: 12,
+    padding: 4, borderWidth: 1, borderColor: C.border, gap: 4,
+  },
+  themeOption: {
+    flex: 1, minHeight: MIN_TOUCH_TARGET, borderRadius: 9,
+    flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 6,
+    paddingHorizontal: 6,
+  },
+  themeOptionActive: {
+    backgroundColor: C.primary,
+    shadowColor: C.primary, shadowOpacity: 0.18, shadowRadius: 5,
+    shadowOffset: { width: 0, height: 2 }, elevation: 2,
+  },
+  themeOptionText: { color: C.textSub, fontSize: 12, fontWeight: "800" },
+  themeOptionTextActive: { color: C.onPrimary },
   profileAvatarLg: {
     width: 90, height: 90, borderRadius: 45,
     backgroundColor: C.primary, alignItems: "center", justifyContent: "center",
@@ -14654,7 +15406,7 @@ courseListCard: {
     paddingLeft: 0,
     paddingRight: 12,
     backgroundColor: "rgba(0,0,0,0.56)",
-    borderRadius: 6,
+    borderRadius: 14,
     zIndex: 14,
   },
   volumeIconButton: {
@@ -14662,7 +15414,7 @@ courseListCard: {
     height: MIN_TOUCH_TARGET,
     alignItems: "center",
     justifyContent: "center",
-    borderRadius: 6,
+    borderRadius: MIN_TOUCH_TARGET / 2,
   },
   volumeSlider: {
     flex: 1,
@@ -14692,14 +15444,14 @@ courseListCard: {
   },
   playPauseButton: {
     position: "absolute", bottom: 18, left: 14,
-    width: MIN_TOUCH_TARGET, height: MIN_TOUCH_TARGET, borderRadius: 6,
+    width: MIN_TOUCH_TARGET, height: MIN_TOUCH_TARGET, borderRadius: MIN_TOUCH_TARGET / 2,
     backgroundColor: "rgba(0,0,0,0.56)",
     alignItems: "center", justifyContent: "center", zIndex: 16,
   },
   speedButton: {
     position: "absolute", bottom: 18, left: 14,
     minWidth: MIN_TOUCH_TARGET, minHeight: MIN_TOUCH_TARGET, alignItems: "center", justifyContent: "center",
-    backgroundColor: "rgba(0,0,0,0.56)", paddingHorizontal: 10, borderRadius: 6, zIndex: 14,
+    backgroundColor: "rgba(0,0,0,0.56)", paddingHorizontal: 10, borderRadius: 14, zIndex: 14,
   },
   speedButtonText: { color: "#fff", fontWeight: "700", fontSize: 13 },
   speedPicker: {
@@ -14714,7 +15466,7 @@ courseListCard: {
     position: "absolute", bottom: 18, right: 14,
     minWidth: MIN_TOUCH_TARGET, minHeight: MIN_TOUCH_TARGET,
     flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 4,
-    backgroundColor: "rgba(0,0,0,0.56)", paddingHorizontal: 10, borderRadius: 6, zIndex: 14,
+    backgroundColor: "rgba(0,0,0,0.56)", paddingHorizontal: 10, borderRadius: 14, zIndex: 14,
   },
   speedOption: { minHeight: MIN_TOUCH_TARGET, paddingHorizontal: 20, alignItems: "center", justifyContent: "center" },
   speedOptionActive: { backgroundColor: "rgba(255,255,255,0.2)" },
@@ -14792,7 +15544,7 @@ courseListCard: {
   playerSwitchThumbActive: { backgroundColor: "#fff" },
   playerSettingsButton: {
     position: "absolute", bottom: 18, right: 66,
-    width: MIN_TOUCH_TARGET, height: MIN_TOUCH_TARGET, borderRadius: 7,
+    width: MIN_TOUCH_TARGET, height: MIN_TOUCH_TARGET, borderRadius: MIN_TOUCH_TARGET / 2,
     alignItems: "center", justifyContent: "center",
     backgroundColor: "rgba(0,0,0,0.56)",
     borderWidth: 1,
@@ -14806,7 +15558,7 @@ courseListCard: {
   },
   playerExpandButton: {
     position: "absolute", bottom: 18, right: 14,
-    width: MIN_TOUCH_TARGET, height: MIN_TOUCH_TARGET, borderRadius: 7,
+    width: MIN_TOUCH_TARGET, height: MIN_TOUCH_TARGET, borderRadius: MIN_TOUCH_TARGET / 2,
     alignItems: "center", justifyContent: "center",
     backgroundColor: "rgba(0,0,0,0.56)",
     borderWidth: 1,
@@ -15027,3 +15779,14 @@ courseListCard: {
 }
 
 let s = createStyles(C);
+
+function applyAppTheme(mode, systemScheme) {
+  const resolvedMode = resolveThemeMode(mode, systemScheme);
+  const nextTheme = getTheme(resolvedMode);
+  Object.keys(C).forEach(key => delete C[key]);
+  Object.assign(C, nextTheme);
+  HOME_PALETTE = buildHomePalette(C);
+  homeStyles = createHomeStyles(HOME_PALETTE);
+  s = createStyles(C);
+  return resolvedMode;
+}

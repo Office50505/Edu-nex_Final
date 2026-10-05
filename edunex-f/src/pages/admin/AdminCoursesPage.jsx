@@ -238,7 +238,15 @@ export function AdminCoursesPage() {
                 <div className="course-title-cell">
                   <input className="row-select" type="checkbox" checked={selectedIds.has(id)} onChange={() => toggleSelected(id)} aria-label={`Select ${course.title || "course"}`} />
                   <div className="course-thumb">{thumbnailSrc ? <img src={thumbnailSrc} alt="" onError={(event) => { event.currentTarget.onerror = null; event.currentTarget.src = window.EduNex?.placeholderImage?.(course.title || "Skillomate") || ""; }} /> : <span>No image</span>}</div>
-                  <div><strong>{course.title || "Untitled course"}</strong><span>{course.slug || course._id || ""}</span></div>
+                  <div>
+                    <strong>{course.title || "Untitled course"}</strong>
+                    <span>{course.slug || course._id || ""}</span>
+                    <AdminWrite>
+                      <a className="course-inline-edit" href={`${adminRoutes.upload}?courseId=${encodeURIComponent(id)}`}>
+                        Edit / Review
+                      </a>
+                    </AdminWrite>
+                  </div>
                 </div>
                 <span><span className={`badge ${statusClass(course.status)}`}>{statusLabel(course.status)}</span></span>
                 <span>{categoryName(course)}</span>

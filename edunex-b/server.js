@@ -2530,11 +2530,71 @@ app.get('/api/admin/ai-chats', protectAdmin, async (req, res) => {
   }
 });
 
+app.get('/api/admin/tester-analytics', protectAdmin, async (req, res) => {
+  try {
+    const testerRows = await User.find({ isTester: true })
+      .sort({ testerSince: -1, createdAt: -1 })
+      .select('fullName email mobileNumber isActive testerSince testerAssignedBy testerNotes lastActiveAt createdAt')
+      .lean();
+    const testerIds = testerRows.map((user) => user._id);
+    const [courseProgressRows, watchRows] = await Promise.all([
+      CourseProgress.aggregate([
+        { $match: { userId: { $in: testerIds.map(String) } } },
+        {
+          $group: {
+            _id: '$userId',
+            courses: { $sum: 1 },
+            averageProgress: { $avg: '$progressPercent' },
+            lastUpdatedAt: { $max: '$updatedAt' },
+          },
+        },
+      ]),
+      Progress.aggregate([
+        { $match: { user: { $in: testerIds } } },
+        {
+          $group: {
+            _id: '$user',
+            totalWatchSeconds: { $sum: { $ifNull: ['$watchedSeconds', 0] } },
+            completedLessons: { $sum: { $cond: ['$completed', 1, 0] } },
+            lastWatchedAt: { $max: '$lastWatchedAt' },
+          },
+        },
+      ]),
+    ]);
+    const courseProgressByUser = new Map(courseProgressRows.map((row) => [String(row._id), row]));
+    const watchByUser = new Map(watchRows.map((row) => [String(row._id), row]));
+    const testers = testerRows.map((user) => {
+      const courseProgress = courseProgressByUser.get(String(user._id)) || {};
+      const watch = watchByUser.get(String(user._id)) || {};
+      return {
+        ...user,
+        courseCount: Number(courseProgress.courses || 0),
+        averageProgress: Math.round(Number(courseProgress.averageProgress || 0)),
+        watchedMinutes: Math.round(Number(watch.totalWatchSeconds || 0) / 60),
+        completedLessons: Number(watch.completedLessons || 0),
+        lastActivityAt: watch.lastWatchedAt || courseProgress.lastUpdatedAt || user.lastActiveAt || null,
+      };
+    });
+    res.json({
+      summary: {
+        testerCount: testers.length,
+        activeTesterCount: testers.filter((user) => user.isActive !== false).length,
+      },
+      testers,
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message || 'Unable to load tester analytics.' });
+  }
+});
+
 app.get('/api/admin/users', protectAdmin, async (req, res) => {
   try {
-    const users = await User.find({ isActive: true })
+    const audience = String(req.query?.audience || 'learners').trim().toLowerCase();
+    const userFilter = audience === 'testers' ? { isTester: true } : { isTester: { $ne: true } };
+    if (req.query?.includeInactive !== '1') userFilter.isActive = true;
+    const users = await User.find(userFilter)
       .sort({ fullName: 1, email: 1 })
-      .select('fullName email isOnTrial createdAt');
+      .select('fullName email mobileNumber isOnTrial subscriptionStatus isTester testerSince testerAssignedBy testerNotes createdAt');
 
     res.json(users);
   } catch (error) {
@@ -3011,17 +3071,16 @@ app.patch('/api/admin/users/:id/tester', protectAdmin, async (req, res) => {
       return res.status(400).json({ error: 'Invalid user id' });
     }
     const action = String(req.body?.action || '').trim().toLowerCase();
-    const notes = String(req.body?.notes || '').trim().slice(0, 500) || null;
-    if (!['enable', 'disable'].includes(action)) {
+    if (action && !['enable', 'disable'].includes(action)) {
       return res.status(400).json({ error: 'Action must be enable or disable' });
     }
-
+    const enabling = action ? action === 'enable' : req.body?.enabled !== false && req.body?.isTester !== false;
+    const testerNotes = String(req.body?.testerNotes || req.body?.notes || '').trim().slice(0, 500) || null;
+    const reason = String(req.body?.reason || (enabling ? 'Marked as tester' : 'Removed tester access')).trim().slice(0, 500);
+    const adminSubject = req.admin?.sub || req.admin?.email || 'admin';
     const user = await User.findById(req.params.id);
     if (!user) return res.status(404).json({ error: 'User not found' });
     if (user.deletedAt) return res.status(409).json({ error: 'Restore this user before changing tester status.' });
-
-    const enabling = action === 'enable';
-    const adminSubject = req.admin?.sub || req.admin?.email || 'admin';
     const previousState = {
       isTester: user.isTester,
       testerSince: user.testerSince,
@@ -3030,29 +3089,26 @@ app.patch('/api/admin/users/:id/tester', protectAdmin, async (req, res) => {
     };
     user.isTester = enabling;
     user.testerSince = enabling ? (user.testerSince || new Date()) : null;
-    user.testerAssignedBy = enabling ? adminSubject : null;
-    user.testerNotes = enabling ? notes : null;
+    user.testerAssignedBy = enabling ? String(adminSubject) : null;
+    user.testerNotes = enabling ? testerNotes : null;
     await user.save();
-
-    const nextState = {
-      isTester: user.isTester,
-      testerSince: user.testerSince,
-      testerAssignedBy: user.testerAssignedBy,
-      testerNotes: user.testerNotes,
-    };
     await AdminUserAction.create({
       user: user._id,
       action: enabling ? 'tester_enabled' : 'tester_disabled',
-      reason: notes,
+      reason,
       previousState,
-      nextState,
+      nextState: {
+        isTester: user.isTester,
+        testerSince: user.testerSince,
+        testerAssignedBy: user.testerAssignedBy,
+        testerNotes: user.testerNotes,
+      },
       adminSubject,
     });
-
-    res.json({
-      message: enabling ? 'Learner moved to tester analytics.' : 'Tester status removed.',
-      user: { _id: user._id, ...nextState },
-    });
+    const updatedUser = await User.findById(user._id)
+      .select('fullName email mobileNumber isTester testerSince testerAssignedBy testerNotes')
+      .lean();
+    res.json({ message: enabling ? 'Learner marked as tester.' : 'Tester access removed.', user: updatedUser });
   } catch (error) {
     res.status(error.statusCode || 500).json({ error: error.message });
   }
@@ -3512,18 +3568,87 @@ app.post('/api/courses', protectAdmin, async (req, res) => {
 app.get('/api/admin/courses', protectAdmin, async (req, res) => {
   try {
     const query = Course.find();
-    if (req.query.summary === '1') {
-      query.select('title slug status category createdAt updatedAt thumbnailUrl thumbnailVerticalUrl videos._id videos.thumbnailUrl');
+    const includeSummary = req.query.summary === '1';
+    if (includeSummary) {
+      query.select('title slug status category totalStarted totalCompleted averageProgress completionRate createdAt updatedAt thumbnailUrl thumbnailVerticalUrl videos._id videos.videoUrl videos.embedUrl videos.bunnyVideoId videos.thumbnailUrl');
     }
     const courses = await query
       .populate('category', 'name slug isActive')
       .sort({ createdAt: -1 })
       .lean();
+    let lessonProgressRows = [];
+    let courseProgressRows = [];
+    if (includeSummary && typeof Progress !== 'undefined' && typeof CourseProgress !== 'undefined') {
+      [lessonProgressRows, courseProgressRows] = await Promise.all([
+        Progress.aggregate([
+        {
+          $group: {
+            _id: '$course',
+            learnerIds: { $addToSet: '$user' },
+            completedLessons: { $sum: { $cond: ['$completed', 1, 0] } },
+            watchedSeconds: { $sum: { $ifNull: ['$watchedSeconds', 0] } },
+            lastWatchedAt: { $max: '$lastWatchedAt' },
+          },
+        },
+        {
+          $project: {
+            _id: 1,
+            learnerCount: { $size: '$learnerIds' },
+            completedLessons: 1,
+            watchedSeconds: 1,
+            lastWatchedAt: 1,
+          },
+        },
+        ]),
+        CourseProgress.aggregate([
+        { $match: { courseId: { $nin: [null, ''] } } },
+        {
+          $group: {
+            _id: '$courseId',
+            learnerIds: { $addToSet: '$userId' },
+            completedVideos: { $sum: { $ifNull: ['$completedCount', 0] } },
+            averageProgress: { $avg: '$progressPercent' },
+            lastUpdatedAt: { $max: '$updatedAt' },
+          },
+        },
+        {
+          $project: {
+            _id: 1,
+            learnerCount: { $size: '$learnerIds' },
+            completedVideos: 1,
+            averageProgress: 1,
+            lastUpdatedAt: 1,
+          },
+        },
+        ]),
+      ]);
+    }
+    const lessonProgressByCourse = new Map(lessonProgressRows.map((row) => [String(row._id), row]));
+    const courseProgressByCourse = new Map(courseProgressRows.map((row) => [String(row._id), row]));
 
-    res.json(courses.map((course) => ({
-      ...course,
-      videoCount: Array.isArray(course.videos) ? course.videos.length : 0,
-    })));
+    res.json(courses.map((course) => {
+      const lessonProgress = lessonProgressByCourse.get(String(course._id)) || {};
+      const courseProgress = courseProgressByCourse.get(String(course._id)) || {};
+      return {
+        ...course,
+        videoCount: Array.isArray(course.videos) ? course.videos.length : 0,
+        totalStarted: Math.max(
+          Number(course.totalStarted || 0),
+          Number(lessonProgress.learnerCount || 0),
+          Number(courseProgress.learnerCount || 0)
+        ),
+        totalCompleted: Math.max(
+          Number(course.totalCompleted || 0),
+          Number(lessonProgress.completedLessons || 0),
+          Number(courseProgress.completedVideos || 0)
+        ),
+        averageProgress: Math.max(
+          Number(course.averageProgress || 0),
+          Number(courseProgress.averageProgress || 0)
+        ),
+        lastLearnerActivityAt: lessonProgress.lastWatchedAt || courseProgress.lastUpdatedAt || null,
+      };
+    }));
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -3899,7 +4024,7 @@ if (SERVE_FRONTEND) {
   });
 }
 
-const HOST = process.env.HOST || '127.0.0.1';
+const HOST = process.env.HOST || (isProduction ? '127.0.0.1' : '0.0.0.0');
 
 app.listen(PORT, HOST, () => {
   console.log(`Skillomate API listening on http://${HOST}:${PORT}`);

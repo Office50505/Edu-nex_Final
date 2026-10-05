@@ -7,7 +7,7 @@
     "scheme": "skillomate",
     "icon": "./assets/icon.png",
     "orientation": "portrait",
-    "userInterfaceStyle": "dark",
+    "userInterfaceStyle": "automatic",
     "platforms": [
       "ios",
       "android"
@@ -31,13 +31,14 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FAF7F1"
       },
-      "softwareKeyboardLayoutMode": "pan",
+      "softwareKeyboardLayoutMode": "resize",
       "userInterfaceStyle": "automatic"
     },
     "ios": {
       "bundleIdentifier": "com.alihussainkhan.edunexfinal",
       "buildNumber": "21",
       "icon": "./assets/icon.png",
+      "userInterfaceStyle": "automatic",
       "supportsTablet": false,
       "config": {
         "usesNonExemptEncryption": false
@@ -55,7 +56,12 @@
     "plugins": [
       "expo-sharing",
       "expo-font",
-      "expo-video",
+      [
+        "expo-video",
+        {
+          "supportsPictureInPicture": true
+        }
+      ],
       "expo-secure-store",
       "react-native-iap"
     ],

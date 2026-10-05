@@ -8,7 +8,7 @@ const AppleSubscription = require('../models/AppleSubscription');
 const GooglePlaySubscription = require('../models/GooglePlaySubscription');
 const User = require('../models/User');
 
-const LIGHT_COURSE_FIELDS = 'title slug description category status publishedAt createdAt thumbnail.mimeType thumbnailHorizontal.mimeType thumbnailVertical.mimeType thumbnailUrl thumbnailVerticalUrl notesUrl completionOrder videos._id videos.title videos.topic videos.description videos.provider videos.sourceType videos.videoUrl videos.embedUrl videos.bunnyVideoId videos.bunnyLibraryId videos.youtubeId videos.thumbnailUrl videos.thumbnailVerticalUrl videos.transcriptUrl videos.notesUrl videos.examplePrompt videos.duration videos.order';
+const LIGHT_COURSE_FIELDS = 'title slug description category status publishedAt createdAt thumbnail.mimeType thumbnailHorizontal.mimeType thumbnailVertical.mimeType thumbnailUrl thumbnailVerticalUrl notesUrl completionOrder videos._id videos.title videos.topic videos.description videos.notes videos.provider videos.sourceType videos.videoUrl videos.embedUrl videos.bunnyVideoId videos.bunnyLibraryId videos.youtubeId videos.thumbnailUrl videos.thumbnailVerticalUrl videos.transcriptUrl videos.notesUrl videos.examplePrompt videos.duration videos.order';
 const API_BASE_URL = String(process.env.API_BASE_URL || '').replace(/\/+$/, '');
 const BUNNY_LIBRARY_ID = process.env.BUNNY_LIBRARY_ID || process.env.BUNNY_STREAM_LIBRARY_ID || '675520';
 const BUNNY_API_KEY = process.env.BUNNY_API_KEY || process.env.BUNNY_STREAM_API_KEY || '';

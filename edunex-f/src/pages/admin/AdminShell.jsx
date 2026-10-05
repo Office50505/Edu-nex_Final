@@ -104,7 +104,7 @@ export function AdminShell({ activePage, title, subtitle, children, actions = nu
               <span className="admin-date-pill">{new Date().toLocaleDateString("en-IN", { day: "2-digit", month: "short" })}</span>
             </div>
             <div className="toolbar-actions">
-              <AdminWrite><a className="toolbar-button admin-quick-create" href={adminRoutes.upload}>+ Create / Upload</a></AdminWrite>
+              <AdminWrite><a className="toolbar-button admin-quick-create" href={adminRoutes.upload}><span className="admin-quick-create-full">+ Create / Upload</span><span className="admin-quick-create-short">Create</span></a></AdminWrite>
               <button className="toolbar-button admin-theme-button" type="button" onClick={() => setTheme(current => current === 'light' ? 'dark' : 'light')} aria-pressed={theme === 'light'}>{theme === 'light' ? 'Dark' : 'Light'}</button>
               {actions}
             </div>
