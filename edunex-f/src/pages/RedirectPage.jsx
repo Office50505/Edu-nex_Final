@@ -45,3 +45,13 @@ export function LessonRedirectPage() {
     />
   );
 }
+
+export function MarketingWebRedirectPage() {
+  return (
+    <RedirectPage
+      destination="/static-pages/skillomate-ai-influencer-courseweb/index.html#paywall"
+      title="Opening Skillomate offer"
+      message="Taking you to the Skillomate marketing checkout."
+    />
+  );
+}

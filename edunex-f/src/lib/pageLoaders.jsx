@@ -32,6 +32,7 @@ const pageModules = {
   "edit-profile.html": () => import("../pages/EditProfilePage.jsx").then(namedPage("EditProfilePage")),
   "help.html": () => import("../pages/HelpPage.jsx").then(namedPage("HelpPage")),
   "lesson.html": () => import("../pages/RedirectPage.jsx").then(namedPage("LessonRedirectPage")),
+  "marketing-web.html": () => import("../pages/RedirectPage.jsx").then(namedPage("MarketingWebRedirectPage")),
   "login.html": () => import("../pages/LoginPage.jsx").then(namedPage("LoginPage")),
   "otp.html": () => import("../pages/RedirectPage.jsx").then(namedPage("SignupRedirectPage")),
   ...offerPageModules,

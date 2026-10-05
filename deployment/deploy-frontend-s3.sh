@@ -65,6 +65,24 @@ fi
 if test -f "$DIST_DIR/static-pages/skillomate-ai-influencer-courseweb/index.html"; then
   "$AWS_COMMAND" s3api put-object \
     --bucket "$bucket_name" \
+    --key "${object_prefix}static-pages/skillomate-ai-influencer-courseweb" \
+    --body "$DIST_DIR/static-pages/skillomate-ai-influencer-courseweb/index.html" \
+    --content-type "text/html; charset=utf-8" \
+    --cache-control "$HTML_CACHE_CONTROL" \
+    --server-side-encryption AES256 \
+    --output text >/dev/null
+
+  "$AWS_COMMAND" s3api put-object \
+    --bucket "$bucket_name" \
+    --key "${object_prefix}static-pages/skillomate-ai-influencer-courseweb/" \
+    --body "$DIST_DIR/static-pages/skillomate-ai-influencer-courseweb/index.html" \
+    --content-type "text/html; charset=utf-8" \
+    --cache-control "$HTML_CACHE_CONTROL" \
+    --server-side-encryption AES256 \
+    --output text >/dev/null
+
+  "$AWS_COMMAND" s3api put-object \
+    --bucket "$bucket_name" \
     --key "${object_prefix}marketing-web" \
     --body "$DIST_DIR/static-pages/skillomate-ai-influencer-courseweb/index.html" \
     --content-type "text/html; charset=utf-8" \
