@@ -81,6 +81,7 @@ export default function MarketingCheckoutFlow() {
   const busyRef = useRef(false)
   const finishingRef = useRef(false)
   const checkingRef = useRef(false)
+  const statusRequestRef = useRef<{ token: string; promise: Promise<PaymentStatus> } | null>(null)
 
   const resetExpiredSession = useCallback(() => {
     sessionStorage.removeItem(SESSION_KEY)
@@ -92,6 +93,29 @@ export default function MarketingCheckoutFlow() {
     setBusy(false)
     setStage('account')
     setMessage('Your phone verification session expired. Please verify your phone again to continue.')
+  }, [])
+
+  const getStatus = useCallback((token: string) => {
+    if (statusRequestRef.current?.token === token) return statusRequestRef.current.promise
+    const promise = api<PaymentStatus>('/api/onboarding/status', undefined, token)
+    const request = { token, promise }
+    statusRequestRef.current = request
+    void promise.finally(() => {
+      if (statusRequestRef.current === request) statusRequestRef.current = null
+    }).catch(() => {})
+    return promise
+  }, [])
+
+  const resetPhone = useCallback(() => {
+    sessionStorage.removeItem(SESSION_KEY)
+    sessionStorage.removeItem(AWAITING_KEY)
+    setBearer('')
+    setOtp('')
+    checkingRef.current = false
+    finishingRef.current = false
+    setBusy(false)
+    setStage('account')
+    setMessage('')
   }, [])
 
   useEffect(() => {
@@ -165,7 +189,7 @@ export default function MarketingCheckoutFlow() {
     checkingRef.current = true
     if (manual) setBusy(true)
     try {
-      const status = await api<PaymentStatus>('/api/onboarding/status', undefined, token)
+      const status = await getStatus(token)
       if (status.accessGranted) await finish(token)
       else if (status.pendingCheckout) {
         setStage('pending')
@@ -187,7 +211,7 @@ export default function MarketingCheckoutFlow() {
       checkingRef.current = false
       if (manual) setBusy(false)
     }
-  }, [bearer, finish, resetExpiredSession])
+  }, [bearer, finish, getStatus, resetExpiredSession])
 
   useEffect(() => {
     if (!bearer || (stage !== 'checking' && stage !== 'pending')) return
@@ -210,7 +234,7 @@ export default function MarketingCheckoutFlow() {
   const openPhonePe = useCallback(async (token: string) => {
     let status: PaymentStatus
     try {
-      status = await api<PaymentStatus>('/api/onboarding/status', undefined, token)
+      status = await getStatus(token)
     } catch (error) {
       if (isExpiredSessionError(error)) {
         resetExpiredSession()
@@ -248,7 +272,7 @@ export default function MarketingCheckoutFlow() {
     if (checkout.gateway !== 'phonepe' || !checkout.redirectUrl) throw new Error('Secure PhonePe checkout is unavailable.')
     sessionStorage.setItem(AWAITING_KEY, '1')
     window.location.assign(checkout.redirectUrl)
-  }, [finish, resetExpiredSession])
+  }, [finish, getStatus, resetExpiredSession])
 
   const sendOtp = async (event: FormEvent) => {
     event.preventDefault()
@@ -358,7 +382,11 @@ export default function MarketingCheckoutFlow() {
           <p>PhonePe payment</p>
           <h2 id="checkout-title">{stage === 'success' ? 'Payment successful' : stage === 'pending' ? 'Payment confirmation pending' : 'Confirming your payment'}</h2>
           <span>{stage === 'success' ? 'Opening signup to complete your account details...' : stage === 'pending' ? 'If you completed payment, do not pay again. Check the status below.' : message || 'Please stay here while we securely confirm your payment.'}</span>
-          {stage === 'pending' ? <button className={styles.primary} type="button" onClick={() => void checkPayment(bearer, true)} disabled={busy}>{busy ? 'Checking...' : 'Check payment status'}</button> : null}
+          {stage === 'pending' ? <div className={styles.stateActions}>
+            <button className={styles.primary} type="button" onClick={() => void checkPayment(bearer, true)} disabled={busy}>{busy ? 'Checking...' : 'Check payment status'}</button>
+            <button className={styles.secondary} type="button" onClick={resetPhone} disabled={busy}>Verify another phone</button>
+            <a href="mailto:support@skillomate.in">Contact support</a>
+          </div> : null}
           {stage === 'pending' ? <small className={styles.status}>{message}</small> : null}
         </div> : null}
       </section>
