@@ -158,7 +158,7 @@ export default function MarketingCheckoutFlow() {
         : 'account')
     }
     document.addEventListener('click', openFromLink)
-    if (CHECKOUT_HASHES.has(window.location.hash) || paymentReturn) {
+    if (paymentReturn) {
       setStage((awaitingPayment || paymentReturn) && savedBearer ? 'checking' : savedBearer ? 'otp' : 'account')
     }
     return () => document.removeEventListener('click', openFromLink)

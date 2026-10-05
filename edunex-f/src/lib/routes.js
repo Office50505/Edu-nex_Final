@@ -1,7 +1,6 @@
 const cleanRoutes = {
   "delete-account.html": "/delete-account",
   "index.html": "/",
-  "marketing-web.html": "/static-pages/skillomate-ai-influencer-courseweb/",
   "home-based.html": "/home-based",
   "about.html": "/about",
   "account-deletion.html": "/account-deletion",
@@ -60,7 +59,6 @@ routeAliases["skillomate-1rs-for-24-hours-full-course-access"] = "offer.html";
 routeAliases["skillomate-1rs-offer-for-24-hours-full-course-access"] = "offer.html";
 routeAliases["static-pages/skillomate-1rs-for-24-hours-full-course-access"] = "offer.html";
 routeAliases["static-pages/skillomate-ai-influencer-course"] = "offer.html";
-routeAliases["static-pages/skillomate-ai-influencer-courseweb"] = "marketing-web.html";
 routeAliases["static-pages/skillomate-ai-influencer-course2"] = "offer2.html";
 routeAliases["privacy-policy"] = "privacy.html";
 routeAliases["delete-account"] = "delete-account.html";
