@@ -401,12 +401,6 @@ if test "$OLD_COMMIT" = "$NEW_COMMIT"; then
   exit 0
 fi
 
-if ! run_ssm_check; then
-  record_result preflight-failed ssm-check-failed
-  echo "SSM check failed before changing production. Backend was not restarted."
-  exit 29
-fi
-
 DEPLOYMENT_STARTED=1
 
 if ! git checkout main; then
@@ -415,6 +409,16 @@ fi
 
 if ! git reset --hard "$NEW_COMMIT"; then
   rollback_deployment "git reset to origin/main failed"
+fi
+
+cd "$EXPECTED_BACKEND"
+
+if test ! -f "$SSM_SCRIPT" || ! git -C "$REPOSITORY" ls-files --error-unmatch edunex-b/ssm-bootstrap.js >/dev/null 2>&1; then
+  rollback_deployment "target commit lacks the tracked SSM bootstrap" no
+fi
+
+if ! run_ssm_check; then
+  rollback_deployment "target SSM check failed before dependency install or PM2 restart" no
 fi
 
 cd "$EXPECTED_FRONTEND"

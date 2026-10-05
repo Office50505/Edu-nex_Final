@@ -37,13 +37,13 @@ fetches GitHub without requiring a local `.env` file,
 deploys the pinned commit only while it still equals `origin/main`, installs and
 builds the web frontend, installs the independent `marketing-web` Next.js app
 from its own lockfile before the delegated marketing build, and runs backend
-`npm ci --omit=dev`. It runs
-`node ssm-bootstrap.js --check` before changing the working tree and again
-before changing PM2, against the required named `String` and `SecureString`
-parameters under `/skillomate/prod/` in `ap-south-1`. A failed preflight check leaves the
-working tree and PM2 untouched. A failed check after switching commits restores
-the previous commit and dependencies without restarting that backend; the
-rolling deployment stops and later EC2 instances are untouched.
+`npm ci --omit=dev`. It checks out the pinned target commit, then runs that
+target commit's `node ssm-bootstrap.js --check` before dependency installation,
+frontend build, or PM2 changes, and checks SSM again before changing PM2. The
+check validates the required named `String` and `SecureString` parameters under
+`/skillomate/prod/` in `ap-south-1`. A failed target SSM check restores the
+previous commit and dependencies without restarting that backend; the rolling
+deployment stops and later EC2 instances are untouched.
 
 The `skillomate_backend` PM2 process runs `ssm-bootstrap.js` with explicit
 `NODE_ENV=production` and `SKILLOMATE_CONFIG_SOURCE=ssm`. If PM2 still points to

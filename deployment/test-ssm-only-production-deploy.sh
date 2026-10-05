@@ -69,6 +69,9 @@ if test "${1:-}" = ssm-bootstrap.js && test "${2:-}" = --check; then
   if test "${FAKE_SSM_FAILURE:-}" = always || {
     test "${FAKE_SSM_FAILURE:-}" = after-reset &&
     test "$(cat "$FAKE_GIT_HEAD")" = "$FAKE_NEW_COMMIT";
+  } || {
+    test "${FAKE_SSM_FAILURE:-}" = old-only &&
+    test "$(cat "$FAKE_GIT_HEAD")" != "$FAKE_NEW_COMMIT";
   }; then
     echo 'SSM CONFIG CHECK FAILURE'
     exit 1
@@ -210,15 +213,33 @@ test "$(cut -d'|' -f1 "$FAKE_EVENTS" | paste -sd, -)" = 'ssm,ssm,pm2-start'
 test ! -e "$backend/.env"
 
 reset_case
+run_deploy FAKE_SSM_FAILURE=old-only >"$self_test_directory/target-bootstrap-success.out" 2>&1
+grep -q '^DEPLOYMENT SUCCESS$' "$self_test_directory/target-bootstrap-success.out"
+test "$(cat "$FAKE_GIT_HEAD")" = "$FAKE_NEW_COMMIT"
+test "$(grep -c '^ssm|production|ssm$' "$FAKE_EVENTS")" -eq 2
+test "$(cut -d'|' -f1 "$FAKE_EVENTS" | paste -sd, -)" = 'ssm,ssm,pm2-start'
+test ! -e "$backend/.env"
+
+reset_case
+"$REAL_NODE" -e '
+  const fs = require("fs");
+  fs.writeFileSync(process.env.FAKE_PM2_STATE, JSON.stringify([{
+    name: "skillomate_backend", pm2_env: { pm_exec_path: process.env.FAKE_BACKEND + "/ssm-bootstrap.js",
+      status: "online", NODE_ENV: "production", SKILLOMATE_CONFIG_SOURCE: "ssm" }
+  }]));
+'
 set +e
-run_deploy FAKE_SSM_FAILURE=always >"$self_test_directory/preflight-failure.out" 2>&1
-preflight_status=$?
+run_deploy FAKE_SSM_FAILURE=always >"$self_test_directory/target-ssm-failure.out" 2>&1
+target_ssm_status=$?
 set -e
-test "$preflight_status" -eq 29
-grep -q 'SSM check failed before changing production' "$self_test_directory/preflight-failure.out"
+test "$target_ssm_status" -eq 1
+grep -q 'target SSM check failed before dependency install or PM2 restart' "$self_test_directory/target-ssm-failure.out"
+grep -q '^ROLLBACK SUCCESSFUL$' "$self_test_directory/target-ssm-failure.out"
 test "$(cat "$FAKE_GIT_HEAD")" = "$old_commit"
 test ! -s "$FAKE_PM2_CALLS"
-! grep -q 'reset --hard' "$FAKE_GIT_CALLS"
+test "$(grep -c '^ssm|production|ssm$' "$FAKE_EVENTS")" -eq 1
+grep -q "reset --hard $FAKE_NEW_COMMIT" "$FAKE_GIT_CALLS"
+grep -q "reset --hard $old_commit" "$FAKE_GIT_CALLS"
 test ! -e "$backend/.env"
 
 reset_case
@@ -240,7 +261,7 @@ fi
 grep -q '^ROLLBACK SUCCESSFUL$' "$self_test_directory/post-reset-failure.out"
 test "$(cat "$FAKE_GIT_HEAD")" = "$old_commit"
 test ! -s "$FAKE_PM2_CALLS"
-test "$(grep -c '^ssm|production|ssm$' "$FAKE_EVENTS")" -eq 2
+test "$(grep -c '^ssm|production|ssm$' "$FAKE_EVENTS")" -eq 1
 test ! -e "$backend/.env"
 
 reset_case
@@ -296,7 +317,8 @@ JS
 
 echo 'SSM-ONLY PRODUCTION DEPLOYMENT SELF-TEST PASSED'
 echo 'missing_env=deployment_success'
-echo 'ssm_preflight_failure=no_checkout_or_pm2_restart'
+echo 'target_bootstrap=used_for_ssm_validation'
+echo 'target_ssm_failure=old_checkout_restored_without_pm2_restart'
 echo 'post_reset_ssm_failure=rollback_without_pm2_restart'
 echo 'post_restart_failure=ssm_checked_rollback'
 echo 'tracked_config_commits=blocked_before_change'
