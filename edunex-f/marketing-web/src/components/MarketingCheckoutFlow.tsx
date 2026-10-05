@@ -142,6 +142,8 @@ export default function MarketingCheckoutFlow() {
     const savedBearer = sessionStorage.getItem(SESSION_KEY) || ''
     setBearer(savedBearer)
     const awaitingPayment = Boolean(savedBearer && sessionStorage.getItem(AWAITING_KEY))
+    const paymentReturn = new URLSearchParams(window.location.search).has('payment')
+    if (paymentReturn && savedBearer) sessionStorage.setItem(AWAITING_KEY, '1')
     if (awaitingPayment) setStage('checking')
 
     const openFromLink = (event: MouseEvent) => {
@@ -156,8 +158,8 @@ export default function MarketingCheckoutFlow() {
         : 'account')
     }
     document.addEventListener('click', openFromLink)
-    if (CHECKOUT_HASHES.has(window.location.hash)) {
-      setStage(awaitingPayment ? 'checking' : savedBearer ? 'otp' : 'account')
+    if (CHECKOUT_HASHES.has(window.location.hash) || paymentReturn) {
+      setStage((awaitingPayment || paymentReturn) && savedBearer ? 'checking' : savedBearer ? 'otp' : 'account')
     }
     return () => document.removeEventListener('click', openFromLink)
   }, [])
@@ -266,7 +268,7 @@ export default function MarketingCheckoutFlow() {
     try {
       checkout = await api<{ gateway: string; redirectUrl: string }>('/api/onboarding/checkout', {
         paymentType: 'one_time',
-        returnUrl: `${window.location.origin}${MARKETING_BASE_PATH}/?payment=return`,
+        returnUrl: `${window.location.origin}${MARKETING_BASE_PATH}/index.html?payment=return#paywall`,
       }, token)
     } catch (error) {
       if (isExpiredSessionError(error)) {
