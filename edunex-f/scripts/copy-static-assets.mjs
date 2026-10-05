@@ -20,6 +20,24 @@ const staticPaths = [
   "premium-nav.js",
 ];
 
+function copyMarketingExport() {
+  if (!fs.existsSync(marketingOut)) return;
+  fs.rmSync(marketingDist, { recursive: true, force: true });
+  fs.mkdirSync(marketingDist, { recursive: true });
+  fs.cpSync(marketingOut, marketingDist, { recursive: true, force: true });
+}
+
+function assertMarketingExport() {
+  const marketingIndex = path.join(marketingDist, "index.html");
+  if (!fs.existsSync(marketingIndex)) {
+    throw new Error(`Marketing export is missing: ${marketingIndex}`);
+  }
+  const html = fs.readFileSync(marketingIndex, "utf8");
+  if (!html.includes("premium-reel-stage") || html.includes("skillomate-api-base-url")) {
+    throw new Error("Marketing courseweb route contains the app shell instead of the marketing export.");
+  }
+}
+
 fs.rmSync(path.join(dist, "admin"), { recursive: true, force: true });
 
 for (const item of staticPaths) {
@@ -33,11 +51,7 @@ for (const item of staticPaths) {
   fs.cpSync(from, to, { recursive: true, force: true });
 }
 
-if (fs.existsSync(marketingOut)) {
-  fs.rmSync(marketingDist, { recursive: true, force: true });
-  fs.mkdirSync(marketingDist, { recursive: true });
-  fs.cpSync(marketingOut, marketingDist, { recursive: true, force: true });
-}
+copyMarketingExport();
 
 const indexHtml = path.join(dist, "index.html");
 const legacyDir = path.join(root, "legacy-html");
@@ -79,4 +93,7 @@ if (fs.existsSync(indexHtml)) {
     fs.copyFileSync(indexHtml, path.join(routeDir, 'index.html'));
   }
 }
+
+copyMarketingExport();
+assertMarketingExport();
 console.log("Copied static frontend assets and route shells into dist.");

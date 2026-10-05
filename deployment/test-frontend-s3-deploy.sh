@@ -8,7 +8,7 @@ trap 'rm -rf "$TEMP_DIR"' EXIT
 
 mkdir -p "$TEMP_DIR/dist/assets" "$TEMP_DIR/dist/static-pages/skillomate-ai-influencer-courseweb"
 printf '<!doctype html><title>Skillomate</title>\n' >"$TEMP_DIR/dist/index.html"
-printf '<!doctype html><title>Marketing</title>\n' >"$TEMP_DIR/dist/static-pages/skillomate-ai-influencer-courseweb/index.html"
+printf '<!doctype html><title>Marketing</title><div class="premium-reel-stage"></div>\n' >"$TEMP_DIR/dist/static-pages/skillomate-ai-influencer-courseweb/index.html"
 printf 'console.log("app");\n' >"$TEMP_DIR/dist/assets/index-AbCd1234.js"
 printf 'logo\n' >"$TEMP_DIR/dist/assets/skillomate-logo-dark-v1.webp"
 printf 'legacy\n' >"$TEMP_DIR/dist/assets/legacy.js"
@@ -37,5 +37,17 @@ grep -Fq "s3api put-object --bucket skillomate-test --key static-pages/skillomat
 grep -Fq "s3api put-object --bucket skillomate-test --key marketing-web --body $TEMP_DIR/dist/static-pages/skillomate-ai-influencer-courseweb/index.html" "$TEMP_DIR/aws.log"
 grep -Fq "s3api put-object --bucket skillomate-test --key marketing-web/ --body $TEMP_DIR/dist/static-pages/skillomate-ai-influencer-courseweb/index.html" "$TEMP_DIR/aws.log"
 grep -Fq 'cloudfront create-invalidation --distribution-id TEST123 --paths /*' "$TEMP_DIR/aws.log"
+
+printf '<!doctype html><meta name="skillomate-api-base-url" content="">\n' >"$TEMP_DIR/dist/static-pages/skillomate-ai-influencer-courseweb/index.html"
+if AWS_CALL_LOG="$TEMP_DIR/aws-bad.log" \
+AWS_COMMAND="$TEMP_DIR/aws" \
+SKILLOMATE_FRONTEND_DIST="$TEMP_DIR/dist" \
+SKILLOMATE_FRONTEND_BUCKET="skillomate-test" \
+SKILLOMATE_FRONTEND_DISTRIBUTION_ID="TEST123" \
+  bash "$SCRIPT_DIR/deploy-frontend-s3.sh" --skip-build >"$TEMP_DIR/bad.out" 2>&1; then
+  echo "Expected deploy to reject app-shell marketing HTML"
+  exit 1
+fi
+grep -Fq "Marketing courseweb export looks like the app shell; refusing to deploy." "$TEMP_DIR/bad.out"
 
 echo "Frontend S3 cache deployment test passed."

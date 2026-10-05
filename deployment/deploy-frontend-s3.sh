@@ -40,6 +40,18 @@ if test ! -f "$DIST_DIR/index.html"; then
   exit 2
 fi
 
+readonly MARKETING_INDEX="$DIST_DIR/static-pages/skillomate-ai-influencer-courseweb/index.html"
+
+if test ! -f "$MARKETING_INDEX"; then
+  echo "Marketing courseweb export is missing: $MARKETING_INDEX"
+  exit 2
+fi
+
+if ! grep -Fq "premium-reel-stage" "$MARKETING_INDEX" || grep -Fq "skillomate-api-base-url" "$MARKETING_INDEX"; then
+  echo "Marketing courseweb export looks like the app shell; refusing to deploy."
+  exit 2
+fi
+
 destination="s3://${BUCKET#s3://}/"
 bucket_path="${BUCKET#s3://}"
 bucket_name="${bucket_path%%/*}"
@@ -62,11 +74,11 @@ fi
   --cache-control "$HTML_CACHE_CONTROL" \
   --only-show-errors
 
-if test -f "$DIST_DIR/static-pages/skillomate-ai-influencer-courseweb/index.html"; then
+if test -f "$MARKETING_INDEX"; then
   "$AWS_COMMAND" s3api put-object \
     --bucket "$bucket_name" \
     --key "${object_prefix}static-pages/skillomate-ai-influencer-courseweb" \
-    --body "$DIST_DIR/static-pages/skillomate-ai-influencer-courseweb/index.html" \
+    --body "$MARKETING_INDEX" \
     --content-type "text/html; charset=utf-8" \
     --cache-control "$HTML_CACHE_CONTROL" \
     --server-side-encryption AES256 \
@@ -75,7 +87,7 @@ if test -f "$DIST_DIR/static-pages/skillomate-ai-influencer-courseweb/index.html
   "$AWS_COMMAND" s3api put-object \
     --bucket "$bucket_name" \
     --key "${object_prefix}static-pages/skillomate-ai-influencer-courseweb/" \
-    --body "$DIST_DIR/static-pages/skillomate-ai-influencer-courseweb/index.html" \
+    --body "$MARKETING_INDEX" \
     --content-type "text/html; charset=utf-8" \
     --cache-control "$HTML_CACHE_CONTROL" \
     --server-side-encryption AES256 \
@@ -84,7 +96,7 @@ if test -f "$DIST_DIR/static-pages/skillomate-ai-influencer-courseweb/index.html
   "$AWS_COMMAND" s3api put-object \
     --bucket "$bucket_name" \
     --key "${object_prefix}marketing-web" \
-    --body "$DIST_DIR/static-pages/skillomate-ai-influencer-courseweb/index.html" \
+    --body "$MARKETING_INDEX" \
     --content-type "text/html; charset=utf-8" \
     --cache-control "$HTML_CACHE_CONTROL" \
     --server-side-encryption AES256 \
@@ -93,7 +105,7 @@ if test -f "$DIST_DIR/static-pages/skillomate-ai-influencer-courseweb/index.html
   "$AWS_COMMAND" s3api put-object \
     --bucket "$bucket_name" \
     --key "${object_prefix}marketing-web/" \
-    --body "$DIST_DIR/static-pages/skillomate-ai-influencer-courseweb/index.html" \
+    --body "$MARKETING_INDEX" \
     --content-type "text/html; charset=utf-8" \
     --cache-control "$HTML_CACHE_CONTROL" \
     --server-side-encryption AES256 \
