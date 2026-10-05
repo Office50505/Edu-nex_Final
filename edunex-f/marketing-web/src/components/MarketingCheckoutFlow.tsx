@@ -5,7 +5,7 @@ import { Check, ChevronLeft, LoaderCircle, LockKeyhole, X } from 'lucide-react'
 import { FormEvent, useCallback, useEffect, useRef, useState } from 'react'
 import styles from './MarketingCheckoutFlow.module.css'
 import { OFFER_PRICE } from '@/lib/pricing'
-import { MARKETING_BASE_PATH } from '@/lib/links'
+import { MARKETING_BASE_PATH, SKILLOMATE_PUBLIC_ORIGIN } from '@/lib/links'
 
 const SESSION_KEY = 'skillomateMarketingCheckoutSession'
 const AWAITING_KEY = 'skillomateMarketingAwaitingPayment'
@@ -190,7 +190,7 @@ export default function MarketingCheckoutFlow() {
       window.setTimeout(() => {
         sessionStorage.removeItem(SESSION_KEY)
         sessionStorage.removeItem(AWAITING_KEY)
-        window.location.assign(`/signup#onboarding=${encodeURIComponent(result.code)}`)
+        window.location.assign(`${SKILLOMATE_PUBLIC_ORIGIN}/signup#onboarding=${encodeURIComponent(result.code)}`)
       }, 900)
     } catch (error) {
       finishingRef.current = false
