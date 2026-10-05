@@ -6,8 +6,23 @@
       "permanent": true
     },
     {
+      "source": "/marketing-web/",
+      "destination": "/static-pages/skillomate-ai-influencer-courseweb/#paywall",
+      "permanent": true
+    },
+    {
       "source": "/marketing-web/index.html",
       "destination": "/static-pages/skillomate-ai-influencer-courseweb/#paywall",
+      "permanent": true
+    },
+    {
+      "source": "/marketing-web.html",
+      "destination": "/static-pages/skillomate-ai-influencer-courseweb/#paywall",
+      "permanent": true
+    },
+    {
+      "source": "/static-pages/skillomate-ai-influencer-courseweb_next/:path*",
+      "destination": "/static-pages/skillomate-ai-influencer-courseweb/_next/:path*",
       "permanent": true
     }
   ],

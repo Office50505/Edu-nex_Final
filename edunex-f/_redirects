@@ -3,6 +3,7 @@
 /marketing-web/  /static-pages/skillomate-ai-influencer-courseweb/#paywall  301
 /marketing-web/index.html  /static-pages/skillomate-ai-influencer-courseweb/#paywall  301
 /marketing-web.html  /static-pages/skillomate-ai-influencer-courseweb/#paywall  301
+/static-pages/skillomate-ai-influencer-courseweb_next/*  /static-pages/skillomate-ai-influencer-courseweb/_next/:splat  301
 /offer  /static-pages/skillomate-ai-influencer-course/#paywall  301
 /offer.html  /static-pages/skillomate-ai-influencer-course/#paywall  301
 /*  /index.html  200

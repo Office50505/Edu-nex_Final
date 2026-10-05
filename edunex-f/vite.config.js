@@ -1,11 +1,14 @@
 import fs from "node:fs";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { defineConfig, loadEnv } from "vite";
 import react from "@vitejs/plugin-react";
 
+const projectRoot = path.dirname(fileURLToPath(import.meta.url));
 const themePreloadSource = fs.readFileSync(new URL("./js/theme-preload.js", import.meta.url), "utf8");
-const marketingOutDir = path.resolve(process.cwd(), "marketing-web", "out");
+const marketingOutDir = path.resolve(projectRoot, "marketing-web", "out");
 const marketingStaticBasePath = "/static-pages/skillomate-ai-influencer-courseweb";
+const malformedMarketingNextPath = "/static-pages/skillomate-ai-influencer-courseweb_next";
 
 const contentTypes = {
   ".css": "text/css; charset=utf-8",
@@ -51,16 +54,23 @@ function resolveMarketingFile(requestUrl = "") {
 
 function useMarketingWeb(server) {
   server.middlewares.use((request, response, next) => {
+    if (request.url?.startsWith(malformedMarketingNextPath)) {
+      response.statusCode = 301;
+      response.setHeader("Location", request.url.replace(malformedMarketingNextPath, `${marketingStaticBasePath}/_next`));
+      response.end();
+      return;
+    }
+
     if (request.url?.startsWith("/marketing-web.html")) {
       response.statusCode = 301;
-      response.setHeader("Location", request.url.replace(/^\/marketing-web\.html/, `${marketingStaticBasePath}/`));
+      response.setHeader("Location", `${marketingStaticBasePath}/#paywall`);
       response.end();
       return;
     }
 
     if (request.url?.startsWith("/marketing-web")) {
       response.statusCode = 301;
-      response.setHeader("Location", request.url.replace(/^\/marketing-web\/?/, `${marketingStaticBasePath}/`));
+      response.setHeader("Location", `${marketingStaticBasePath}/#paywall`);
       response.end();
       return;
     }

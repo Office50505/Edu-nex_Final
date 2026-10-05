@@ -18,6 +18,7 @@ type ApiOptions = { timeoutMs?: number; timeoutMessage?: string }
 const DEFAULT_API_TIMEOUT_MS = 20000
 const OTP_API_TIMEOUT_MS = 60000
 const OTP_TIMEOUT_MESSAGE = 'OTP request is taking longer than usual. Please try again in a moment.'
+const CHECKOUT_HASHES = new Set(['#checkout', '#paywall'])
 
 class ApiError extends Error {
   status: number
@@ -118,6 +119,13 @@ export default function MarketingCheckoutFlow() {
     setMessage('')
   }, [])
 
+  const closeCheckout = useCallback(() => {
+    setStage(null)
+    if (CHECKOUT_HASHES.has(window.location.hash)) {
+      window.history.replaceState(window.history.state, '', window.location.pathname + window.location.search)
+    }
+  }, [])
+
   useEffect(() => {
     void api<Pricing>('/api/onboarding/config').then((data) => {
       if (data.gateway === 'phonepe' && data.checkoutEnabled && Number.isSafeInteger(data.oneTimeAmountPaise) && data.oneTimeAmountPaise > 0) setPricing(data)
@@ -134,18 +142,18 @@ export default function MarketingCheckoutFlow() {
 
     const openFromLink = (event: MouseEvent) => {
       const anchor = (event.target as Element | null)?.closest('a[href]')
-      if (!anchor || !['#checkout', '#paywall'].includes(new URL(anchor.getAttribute('href') || '', window.location.href).hash)) return
+      if (!anchor || !CHECKOUT_HASHES.has(new URL(anchor.getAttribute('href') || '', window.location.href).hash)) return
       event.preventDefault()
       if (finishingRef.current) return
       setMessage('')
+      window.history.replaceState(window.history.state, '', window.location.pathname + window.location.search + '#paywall')
       setStage(sessionStorage.getItem(SESSION_KEY)
         ? sessionStorage.getItem(AWAITING_KEY) ? 'checking' : 'otp'
         : 'account')
     }
     document.addEventListener('click', openFromLink)
-    if (['#checkout', '#paywall'].includes(window.location.hash)) {
+    if (CHECKOUT_HASHES.has(window.location.hash)) {
       setStage(awaitingPayment ? 'checking' : savedBearer ? 'otp' : 'account')
-      window.history.replaceState(window.history.state, '', window.location.pathname + window.location.search)
     }
     return () => document.removeEventListener('click', openFromLink)
   }, [])
@@ -155,14 +163,14 @@ export default function MarketingCheckoutFlow() {
     const previousOverflow = document.body.style.overflow
     document.body.style.overflow = 'hidden'
     const closeOnEscape = (event: KeyboardEvent) => {
-      if (event.key === 'Escape' && (stage === 'account' || stage === 'otp')) setStage(null)
+      if (event.key === 'Escape' && (stage === 'account' || stage === 'otp')) closeCheckout()
     }
     window.addEventListener('keydown', closeOnEscape)
     return () => {
       document.body.style.overflow = previousOverflow
       window.removeEventListener('keydown', closeOnEscape)
     }
-  }, [stage])
+  }, [closeCheckout, stage])
 
   const finish = useCallback(async (token: string) => {
     if (finishingRef.current) return
@@ -349,7 +357,7 @@ export default function MarketingCheckoutFlow() {
         <header>
           {stage === 'otp' ? <button type="button" onClick={() => { sessionStorage.removeItem(SESSION_KEY); setBearer(''); setStage('account') }} aria-label="Change mobile number"><ChevronLeft /></button> : <span />}
           <Image src={`${MARKETING_BASE_PATH}/skillomate-logo-navbar.png`} alt="Skillomate" width={180} height={60} priority />
-          {canClose ? <button type="button" onClick={() => setStage(null)} aria-label="Close checkout"><X /></button> : <span />}
+          {canClose ? <button type="button" onClick={closeCheckout} aria-label="Close checkout"><X /></button> : <span />}
         </header>
 
         {stage === 'account' ? <form className={styles.form} onSubmit={sendOtp}>
