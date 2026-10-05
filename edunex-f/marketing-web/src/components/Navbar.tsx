@@ -4,10 +4,8 @@ import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Menu, X } from 'lucide-react'
 import Image from 'next/image'
-import { SKILLOMATE_CHECKOUT_URL } from '@/lib/links'
+import { MARKETING_BASE_PATH, SKILLOMATE_CHECKOUT_URL } from '@/lib/links'
 import OfferCtaLabel from '@/components/OfferCtaLabel'
-
-const MARKETING_BASE_PATH = '/marketing-web'
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false)

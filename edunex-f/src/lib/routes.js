@@ -17,7 +17,7 @@ const cleanRoutes = {
   "lesson.html": "/lesson",
   "login.html": "/login",
   "otp.html": "/otp",
-  "offer.html": "/static-pages/skillomate-ai-influencer-courseweb/",
+  "offer.html": "/static-pages/skillomate-ai-influencer-course/",
   "offer2.html": "/static-pages/skillomate-ai-influencer-course2/",
   ...Object.fromEntries(Array.from({ length: 8 }, (_, index) => {
     const number = index + 3;
@@ -60,10 +60,8 @@ routeAliases["skillomate-1rs-for-24-hours-full-course-access"] = "offer.html";
 routeAliases["skillomate-1rs-offer-for-24-hours-full-course-access"] = "offer.html";
 routeAliases["static-pages/skillomate-1rs-for-24-hours-full-course-access"] = "offer.html";
 routeAliases["static-pages/skillomate-ai-influencer-course"] = "offer.html";
-routeAliases["static-pages/skillomate-ai-influencer-courseweb"] = "offer.html";
+routeAliases["static-pages/skillomate-ai-influencer-courseweb"] = "marketing-web.html";
 routeAliases["static-pages/skillomate-ai-influencer-course2"] = "offer2.html";
-routeAliases["marketing-web"] = "offer.html";
-routeAliases["marketing-web.html"] = "offer.html";
 routeAliases["privacy-policy"] = "privacy.html";
 routeAliases["delete-account"] = "delete-account.html";
 routeAliases.support = "help.html";
@@ -92,7 +90,7 @@ export function route(value = "/") {
   const pageKey = routeAliases[normalized];
   if (pageKey && cleanRoutes[pageKey]) {
     const next = `${cleanRoutes[pageKey]}${suffix}`;
-    return pageKey === "offer.html" ? withOfferPaywallHash(next) : next;
+    return pageKey === "offer.html" || pageKey === "marketing-web.html" ? withOfferPaywallHash(next) : next;
   }
 
   return pathname.startsWith("/") ? `${pathname}${suffix}` : `/${pathname}${suffix}`;

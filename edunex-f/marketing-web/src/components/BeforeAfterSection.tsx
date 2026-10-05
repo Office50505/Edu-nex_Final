@@ -3,8 +3,9 @@
 import type Hls from 'hls.js'
 import { useEffect, useRef, useState } from 'react'
 import { motion, useInView } from 'framer-motion'
+import { MARKETING_BASE_PATH } from '@/lib/links'
 
-const PRIMARY_PREVIEW_VIDEO = '/marketing-web/videos/skillomate-primary-preview.mp4'
+const PRIMARY_PREVIEW_VIDEO = `${MARKETING_BASE_PATH}/videos/skillomate-primary-preview.mp4`
 
 const PREVIEWS = [
   {

@@ -3,10 +3,10 @@
 import type Hls from 'hls.js'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { ChevronLeft, ChevronRight, Volume2, VolumeX } from 'lucide-react'
-import { SKILLOMATE_CHECKOUT_URL } from '@/lib/links'
+import { MARKETING_BASE_PATH, SKILLOMATE_CHECKOUT_URL } from '@/lib/links'
 import { OFFER_DISCOUNT_PERCENT, OFFER_PRICE, ORIGINAL_PRICE } from '@/lib/pricing'
 
-const PRIMARY_PREVIEW_VIDEO = '/marketing-web/videos/skillomate-primary-preview.mp4'
+const PRIMARY_PREVIEW_VIDEO = `${MARKETING_BASE_PATH}/videos/skillomate-primary-preview.mp4`
 
 const DEMO_VIDEOS = [
   { src: PRIMARY_PREVIEW_VIDEO, title: 'Skillomate in action', meta: 'Primary preview' },

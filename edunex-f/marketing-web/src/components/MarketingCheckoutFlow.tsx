@@ -5,8 +5,8 @@ import { Check, ChevronLeft, LoaderCircle, LockKeyhole, X } from 'lucide-react'
 import { FormEvent, useCallback, useEffect, useRef, useState } from 'react'
 import styles from './MarketingCheckoutFlow.module.css'
 import { OFFER_PRICE } from '@/lib/pricing'
+import { MARKETING_BASE_PATH } from '@/lib/links'
 
-const BASE_PATH = '/marketing-web'
 const SESSION_KEY = 'skillomateMarketingCheckoutSession'
 const AWAITING_KEY = 'skillomateMarketingAwaitingPayment'
 
@@ -134,7 +134,7 @@ export default function MarketingCheckoutFlow() {
 
     const openFromLink = (event: MouseEvent) => {
       const anchor = (event.target as Element | null)?.closest('a[href]')
-      if (!anchor || new URL(anchor.getAttribute('href') || '', window.location.href).hash !== '#checkout') return
+      if (!anchor || !['#checkout', '#paywall'].includes(new URL(anchor.getAttribute('href') || '', window.location.href).hash)) return
       event.preventDefault()
       if (finishingRef.current) return
       setMessage('')
@@ -143,7 +143,7 @@ export default function MarketingCheckoutFlow() {
         : 'account')
     }
     document.addEventListener('click', openFromLink)
-    if (window.location.hash === '#checkout') {
+    if (['#checkout', '#paywall'].includes(window.location.hash)) {
       setStage(awaitingPayment ? 'checking' : savedBearer ? 'otp' : 'account')
       window.history.replaceState(window.history.state, '', window.location.pathname + window.location.search)
     }
@@ -254,7 +254,7 @@ export default function MarketingCheckoutFlow() {
     try {
       checkout = await api<{ gateway: string; redirectUrl: string }>('/api/onboarding/checkout', {
         paymentType: 'one_time',
-        returnUrl: `${window.location.origin}${BASE_PATH}/?payment=return`,
+        returnUrl: `${window.location.origin}${MARKETING_BASE_PATH}/?payment=return`,
       }, token)
     } catch (error) {
       if (isExpiredSessionError(error)) {
@@ -348,7 +348,7 @@ export default function MarketingCheckoutFlow() {
       <section className={styles.dialog} role="dialog" aria-modal="true" aria-labelledby="checkout-title">
         <header>
           {stage === 'otp' ? <button type="button" onClick={() => { sessionStorage.removeItem(SESSION_KEY); setBearer(''); setStage('account') }} aria-label="Change mobile number"><ChevronLeft /></button> : <span />}
-          <Image src={`${BASE_PATH}/skillomate-logo-navbar.png`} alt="Skillomate" width={180} height={60} priority />
+          <Image src={`${MARKETING_BASE_PATH}/skillomate-logo-navbar.png`} alt="Skillomate" width={180} height={60} priority />
           {canClose ? <button type="button" onClick={() => setStage(null)} aria-label="Close checkout"><X /></button> : <span />}
         </header>
 

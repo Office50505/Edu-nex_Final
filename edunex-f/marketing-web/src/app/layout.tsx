@@ -1,28 +1,14 @@
 import type { Metadata } from 'next'
-import { Space_Grotesk, Syne } from 'next/font/google'
 import Script from 'next/script'
 import './globals.css'
-
-const spaceGrotesk = Space_Grotesk({
-  subsets: ['latin'],
-  variable: '--font-grotesk',
-  display: 'swap',
-  weight: ['300', '400', '500', '600', '700'],
-})
-
-const syne = Syne({
-  subsets: ['latin'],
-  variable: '--font-playfair',
-  display: 'swap',
-  weight: ['400', '500', '600', '700', '800'],
-})
+import { MARKETING_BASE_PATH } from '@/lib/links'
 
 export const metadata: Metadata = {
   title: 'Skillomate — Learn AI One Skill at a Time',
   description:
     'Explore practical AI courses in the Skillomate app with step-by-step video lessons, a built-in AI assistant, and progress tracking.',
   alternates: {
-    canonical: '/marketing-web/',
+    canonical: `${MARKETING_BASE_PATH}/`,
   },
   keywords: [
     'learn AI India',
@@ -52,10 +38,13 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en-IN" className={`${spaceGrotesk.variable} ${syne.variable}`}>
+    <html lang="en-IN" style={{
+      '--font-grotesk': 'Space Grotesk, Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
+      '--font-playfair': 'Syne, Fraunces, Georgia, serif',
+    } as React.CSSProperties}>
       <body className="antialiased">
         <Script id="canonical-marketing-route" strategy="beforeInteractive">
-          {`if(location.pathname==="/marketing-web/index.html"){history.replaceState(null,"","/marketing-web/"+location.search+location.hash)}`}
+          {`if(location.pathname==="${MARKETING_BASE_PATH}/index.html"){history.replaceState(null,"","${MARKETING_BASE_PATH}/"+location.search+location.hash)}`}
         </Script>
         {children}
       </body>

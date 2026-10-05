@@ -5,6 +5,7 @@ import react from "@vitejs/plugin-react";
 
 const themePreloadSource = fs.readFileSync(new URL("./js/theme-preload.js", import.meta.url), "utf8");
 const marketingOutDir = path.resolve(process.cwd(), "marketing-web", "out");
+const marketingStaticBasePath = "/static-pages/skillomate-ai-influencer-courseweb";
 
 const contentTypes = {
   ".css": "text/css; charset=utf-8",
@@ -27,11 +28,11 @@ function sendMarketingFile(response, filePath) {
 }
 
 function resolveMarketingFile(requestUrl = "") {
-  if (!requestUrl.startsWith("/marketing-web")) return null;
+  if (!requestUrl.startsWith(marketingStaticBasePath)) return null;
   if (!fs.existsSync(marketingOutDir)) return null;
 
   const url = new URL(requestUrl, "http://127.0.0.1");
-  const relativePath = decodeURIComponent(url.pathname.replace(/^\/marketing-web\/?/, ""));
+  const relativePath = decodeURIComponent(url.pathname.slice(marketingStaticBasePath.length).replace(/^\/+/, ""));
   const candidates = relativePath
     ? [
         path.join(marketingOutDir, relativePath),
@@ -52,7 +53,14 @@ function useMarketingWeb(server) {
   server.middlewares.use((request, response, next) => {
     if (request.url?.startsWith("/marketing-web.html")) {
       response.statusCode = 301;
-      response.setHeader("Location", request.url.replace(/^\/marketing-web\.html/, "/marketing-web/"));
+      response.setHeader("Location", request.url.replace(/^\/marketing-web\.html/, `${marketingStaticBasePath}/`));
+      response.end();
+      return;
+    }
+
+    if (request.url?.startsWith("/marketing-web")) {
+      response.statusCode = 301;
+      response.setHeader("Location", request.url.replace(/^\/marketing-web\/?/, `${marketingStaticBasePath}/`));
       response.end();
       return;
     }

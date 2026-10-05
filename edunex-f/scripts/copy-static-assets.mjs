@@ -4,6 +4,8 @@ import { route } from "../src/lib/routes.js";
 
 const root = process.cwd();
 const dist = path.join(root, "dist");
+const marketingOut = path.join(root, "marketing-web", "out");
+const marketingDist = path.join(dist, "static-pages", "skillomate-ai-influencer-courseweb");
 
 const staticPaths = [
   "_redirects",
@@ -29,6 +31,12 @@ for (const item of staticPaths) {
     fs.rmSync(to, { recursive: true, force: true });
   }
   fs.cpSync(from, to, { recursive: true, force: true });
+}
+
+if (fs.existsSync(marketingOut)) {
+  fs.rmSync(marketingDist, { recursive: true, force: true });
+  fs.mkdirSync(marketingDist, { recursive: true });
+  fs.cpSync(marketingOut, marketingDist, { recursive: true, force: true });
 }
 
 const indexHtml = path.join(dist, "index.html");
@@ -62,7 +70,6 @@ if (fs.existsSync(indexHtml)) {
     'pricing',
     'refund-policy',
     'shipping-policy',
-    'static-pages/skillomate-ai-influencer-courseweb',
     'subscription-policy',
   ];
 
