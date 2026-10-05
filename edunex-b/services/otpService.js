@@ -10,6 +10,7 @@ const MSG91_BASE_URL = String(process.env.MSG91_BASE_URL || 'https://control.msg
 const OTP_PROVIDER = String(process.env.OTP_PROVIDER || process.env.OTP_DELIVERY_PROVIDER || (isProduction ? 'msg91' : 'demo'))
   .trim()
   .toLowerCase();
+const MSG91_REQUEST_TIMEOUT_MS = Math.max(5000, Math.min(Number(process.env.MSG91_REQUEST_TIMEOUT_MS || 25000), 60000));
 
 function shouldUseDevelopmentOtp() {
   return !isProduction && ['development', 'dev', 'demo', 'mock', 'temp', 'temporary'].includes(OTP_PROVIDER);
@@ -107,7 +108,7 @@ function msg91JsonRequest(url, options = {}) {
       });
     });
 
-    request.setTimeout(10000, () => request.destroy(new Error('OTP provider timed out. Please try again.')));
+    request.setTimeout(MSG91_REQUEST_TIMEOUT_MS, () => request.destroy(new Error('OTP provider timed out. Please try again.')));
     request.on('error', reject);
     if (options.body !== undefined) {
       request.write(options.body);
@@ -300,6 +301,7 @@ async function verifyMobileOtp(mobileNumber, otp) {
 
 module.exports = {
   OTP_LENGTH,
+  MSG91_REQUEST_TIMEOUT_MS,
   normalizeMobileNumber,
   normalizeMobileForMsg91,
   sendMobileOtp,

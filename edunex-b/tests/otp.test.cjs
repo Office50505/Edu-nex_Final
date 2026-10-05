@@ -20,8 +20,9 @@ function service(envOverrides = {}) {
     async deleteOne(query) { if (!record || record.generation !== query.generation) return { deletedCount: 0 }; record = null; return { deletedCount: 1 }; },
   };
   const https = { request(url, options, callback) {
-    requests.push({ url: String(url), options });
-    const request = new EventEmitter(); request.setTimeout = () => {}; request.write = () => {};
+    const requestRecord = { url: String(url), options, timeoutMs: null };
+    requests.push(requestRecord);
+    const request = new EventEmitter(); request.setTimeout = (ms) => { requestRecord.timeoutMs = ms; }; request.write = () => {};
     request.end = () => queueMicrotask(() => { const response = new EventEmitter(); response.statusCode = 200; response.setEncoding = () => {}; callback(response); response.emit('data', JSON.stringify(reply)); response.emit('end'); });
     return request;
   } };
@@ -37,6 +38,17 @@ test('MSG91 alias is honored and client development flag cannot bypass SMS', asy
   assert.equal(new URL(s.requests[0].url).searchParams.get('otp_length'), '6');
   assert.doesNotMatch(s.requests[0].url, /fixture-secret/);
   assert.equal(s.requests[0].options.headers.authkey, 'fixture-secret');
+});
+test('MSG91 request timeout is configurable and defaults above the old 10 second ceiling', async () => {
+  const s = service();
+  await s.api.sendMobileOtp('9876543210');
+  assert.equal(s.api.MSG91_REQUEST_TIMEOUT_MS, 25000);
+  assert.equal(s.requests[0].timeoutMs, 25000);
+
+  const custom = service({ MSG91_REQUEST_TIMEOUT_MS: '45000' });
+  await custom.api.sendMobileOtp('9876543210');
+  assert.equal(custom.api.MSG91_REQUEST_TIMEOUT_MS, 45000);
+  assert.equal(custom.requests[0].timeoutMs, 45000);
 });
 test('cooldown blocks repeats; resend uses MSG91 retry endpoint', async () => {
   const s = service(); await s.api.sendMobileOtp('9876543210');

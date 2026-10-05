@@ -1,6 +1,10 @@
 {
   "rewrites": [
     {
+      "source": "/marketing-web",
+      "destination": "/marketing-web/index.html"
+    },
+    {
       "source": "/:path((?!assets/|css/|js/|.*\\..*).*)",
       "destination": "/index.html"
     }
