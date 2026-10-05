@@ -2,7 +2,6 @@
 
 const SSM_REGION = 'ap-south-1';
 const SSM_PATH = '/skillomate/prod/';
-const EXPECTED_PARAMETER_COUNT = 73;
 const REQUIRED_KEYS = Object.freeze([
   'MONGODB_URI',
   'REDIS_URL',
@@ -14,7 +13,11 @@ const REQUIRED_KEYS = Object.freeze([
   'RAZORPAY_WEBHOOK_SECRET',
   'CLOUDFRONT_PRIVATE_KEY',
   'CLOUDFRONT_PUBLIC_KEY_ID',
+  'CLARITY_API_TOKEN',
+  'CLARITY_NUM_DAYS',
 ]);
+const REDACTED_LOG_KEYS = new Set(['CLARITY_API_TOKEN']);
+const STRING_PARAMETER_KEYS = new Set(['CLARITY_NUM_DAYS']);
 const BOOTSTRAP_MARKER = Symbol.for('skillomate.ssm.bootstrap');
 const RETRYABLE_ERROR_NAMES = new Set([
   'Throttling',
@@ -65,9 +68,6 @@ function validateParameters(parameters) {
   if (missing.length) {
     throw new SsmConfigError('MissingRequiredParameters', missing, parameters.size);
   }
-  if (parameters.size !== EXPECTED_PARAMETER_COUNT) {
-    throw new SsmConfigError('ParameterCountMismatch', [], parameters.size);
-  }
   return parameters;
 }
 
@@ -98,7 +98,8 @@ async function readSsmConfig({ client, pause = wait } = {}) {
         if (!/^[A-Za-z_][A-Za-z0-9_]*$/.test(name)) {
           throw new SsmConfigError('InvalidParameterName', [String(fullName || '')], parameters.size);
         }
-        if (parameter.Type !== 'SecureString') {
+        const expectedType = STRING_PARAMETER_KEYS.has(name) ? 'String' : 'SecureString';
+        if (parameter.Type !== expectedType) {
           throw new SsmConfigError('InvalidParameterType', [name], parameters.size);
         }
         if (typeof parameter.Value !== 'string') {
@@ -135,6 +136,12 @@ function safeName(name) {
   return String(name).replace(/[^A-Za-z0-9_./-]/g, '?').slice(0, 128);
 }
 
+function safeNames(names = []) {
+  return names
+    .filter((name) => !REDACTED_LOG_KEYS.has(name))
+    .map(safeName);
+}
+
 function safeErrorType(error) {
   return String(error?.type || error?.name || 'UnknownError')
     .replace(/[^A-Za-z0-9_]/g, '')
@@ -154,11 +161,13 @@ async function main({ args = process.argv.slice(2), env = process.env, client, l
   } catch (error) {
     if (checkOnly) {
       log.log(`parameter count: ${Number.isInteger(error.count) ? error.count : 0}`);
-      if (error.names?.length) log.log(`parameter names: ${error.names.map(safeName).join(', ')}`);
+      const loggableNames = safeNames(error.names);
+      if (loggableNames.length) log.log(`parameter names: ${loggableNames.join(', ')}`);
       log.error('SSM CONFIG CHECK FAILURE');
     } else {
       log.error(`SSM_CONFIG_STARTUP_FAILURE: ${safeErrorType(error)}`);
-      if (error.names?.length) log.error(`parameter names: ${error.names.map(safeName).join(', ')}`);
+      const loggableNames = safeNames(error.names);
+      if (loggableNames.length) log.error(`parameter names: ${loggableNames.join(', ')}`);
     }
     return false;
   }
@@ -186,7 +195,6 @@ if (require.main === module) {
 }
 
 module.exports = {
-  EXPECTED_PARAMETER_COUNT,
   REQUIRED_KEYS,
   SSM_PATH,
   SSM_REGION,

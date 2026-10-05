@@ -42,7 +42,7 @@ if test "${1:-}" = ssm-bootstrap.js; then
     echo 'SSM CONFIG CHECK FAILURE'
     exit "$FAKE_SSM_STATUS"
   fi
-  echo 'parameter count: 73'
+  echo 'parameter count: 75'
   echo 'SSM CONFIG CHECK SUCCESS'
   exit 0
 fi

@@ -39,8 +39,8 @@ builds the web frontend, installs the independent `marketing-web` Next.js app
 from its own lockfile before the delegated marketing build, and runs backend
 `npm ci --omit=dev`. It runs
 `node ssm-bootstrap.js --check` before changing the working tree and again
-before changing PM2, against the 73 SecureStrings under
-`/skillomate/prod/` in `ap-south-1`. A failed preflight check leaves the
+before changing PM2, against the required named `String` and `SecureString`
+parameters under `/skillomate/prod/` in `ap-south-1`. A failed preflight check leaves the
 working tree and PM2 untouched. A failed check after switching commits restores
 the previous commit and dependencies without restarting that backend; the
 rolling deployment stops and later EC2 instances are untouched.
