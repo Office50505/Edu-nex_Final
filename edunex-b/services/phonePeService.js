@@ -22,6 +22,7 @@ const webhookPassword = envValue('PHONEPE_WEBHOOK_PASSWORD');
 const trialAmountPaise = Number(process.env.TRIAL_AMOUNT_PAISE || 100);
 const subscriptionAmountPaise = Number(process.env.SUBSCRIPTION_AMOUNT_PAISE || 50000);
 const oneTimeAmountPaise = 49900;
+const oneTimeChargeAmountPaise = Number(process.env.PHONEPE_ONE_TIME_CHARGE_AMOUNT_PAISE || 100);
 const oneTimeAccessDays = 30;
 
 let cachedToken = null;
@@ -249,7 +250,7 @@ async function createOneTimePaymentRequest(userId) {
   const accessToken = await getAccessToken();
   const payload = {
     merchantOrderId: merchantTransactionId,
-    amount: oneTimeAmountPaise,
+    amount: oneTimeChargeAmountPaise,
     expireAfter: 1200,
     metaInfo: {
       udf1: String(userId),
@@ -401,6 +402,7 @@ module.exports = {
   readiness,
   merchantId,
   oneTimeAmountPaise,
+  oneTimeChargeAmountPaise,
   oneTimeAccessDays,
   preserveCheckoutTokenQuery,
 };

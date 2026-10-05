@@ -18,6 +18,19 @@ const frontendOrigin = (process.env.FRONTEND_ORIGIN || '').replace(/\/$/, '');
 const frontendDashboardUrl = process.env.FRONTEND_DASHBOARD_URL || (frontendOrigin ? `${frontendOrigin}/courses.html` : '/courses.html');
 const frontendPaymentSuccessUrl = process.env.FRONTEND_PAYMENT_SUCCESS_URL || (frontendOrigin ? `${frontendOrigin}/payment.html?payment=success` : '/payment.html?payment=success');
 const frontendPaymentFailedUrl = process.env.FRONTEND_PAYMENT_FAILED_URL || (frontendOrigin ? `${frontendOrigin}/payment.html?status=failed` : '/payment.html?status=failed');
+const allowedCheckoutOrigins = new Set([
+  'https://skillomate.in',
+  'https://www.skillomate.in',
+  frontendOrigin,
+  ...String(process.env.FRONTEND_ORIGINS || '')
+    .split(',')
+    .map((origin) => origin.trim().replace(/\/+$/, ''))
+    .filter(Boolean),
+].filter(Boolean));
+const marketingPaymentReturnPath = '/static-pages/skillomate-ai-influencer-courseweb/index.html?payment=return#paywall';
+const marketingPaymentReturnUrl = process.env.MARKETING_PAYMENT_RETURN_URL
+  || process.env.MARKETING_CHECKOUT_RETURN_URL
+  || (isProduction ? `https://skillomate.in${marketingPaymentReturnPath}` : (frontendOrigin ? `${frontendOrigin}${marketingPaymentReturnPath}` : marketingPaymentReturnPath));
 const simulatedPaymentModes = ['simulated', 'simulation', 'mock', 'local'];
 const defaultPendingCheckoutExpirySeconds = isProduction ? 20 * 60 : 30;
 
@@ -61,14 +74,23 @@ function withQueryParams(url, params = {}) {
   return parsed.toString();
 }
 
+function paymentSuccessUrlForOrder(order) {
+  if (order?.checkoutReturnUrl) return order.checkoutReturnUrl;
+  return order?.orderType === 'one_time_access' ? marketingPaymentReturnUrl : frontendPaymentSuccessUrl;
+}
+
+function paymentFailedUrlForOrder(order) {
+  if (order?.checkoutReturnUrl) return order.checkoutReturnUrl;
+  return order?.orderType === 'one_time_access' ? marketingPaymentReturnUrl : frontendPaymentFailedUrl;
+}
+
 function safeCheckoutReturnUrl(value) {
   const raw = String(value || '').trim();
   if (!raw) return null;
   try {
     const parsed = new URL(raw, frontendOrigin || 'http://localhost');
     if (frontendOrigin) {
-      const allowed = new URL(frontendOrigin);
-      if (parsed.origin !== allowed.origin) return null;
+      if (!allowedCheckoutOrigins.has(parsed.origin)) return null;
     } else if (!raw.startsWith('/')) {
       return null;
     }
@@ -414,7 +436,7 @@ async function initiateTrial(req, res) {
 
     await Order.create({
       user: req.user._id,
-      totalAmount: phonePeService.oneTimeAmountPaise,
+      totalAmount: phonePeService.oneTimeChargeAmountPaise || phonePeService.oneTimeAmountPaise,
       gateway: isSimulatedPaymentEnabled() ? 'simulated' : 'phonepe',
       phonePeMerchantTransactionId: paymentRequest.merchantTransactionId,
       phonePeMerchantSubscriptionId: paymentRequest.merchantSubscriptionId || null,
@@ -527,7 +549,7 @@ async function completeSimulatedPayment(req, res) {
         if (wantsJsonResponse(req)) {
           return res.json({ success: true, merchantTransactionId, simulated: true, alreadyCompleted: true });
         }
-        return res.redirect(withQueryParams(order.checkoutReturnUrl || frontendPaymentSuccessUrl, {
+        return res.redirect(withQueryParams(paymentSuccessUrlForOrder(order), {
           merchantTransactionId,
           simulated: 'true',
         }));
@@ -535,7 +557,7 @@ async function completeSimulatedPayment(req, res) {
       if (wantsJsonResponse(req)) {
         return res.status(409).json({ success: false, error: `Payment order is already ${order.status}` });
       }
-      return res.redirect(withQueryParams(order.checkoutReturnUrl || frontendPaymentFailedUrl, {
+      return res.redirect(withQueryParams(paymentFailedUrlForOrder(order), {
         merchantTransactionId,
         simulated: 'true',
         reason: 'already_completed',
@@ -568,7 +590,7 @@ async function completeSimulatedPayment(req, res) {
         });
       }
 
-      return res.redirect(withQueryParams(order.checkoutReturnUrl || frontendPaymentSuccessUrl, {
+      return res.redirect(withQueryParams(paymentSuccessUrlForOrder(order), {
         merchantTransactionId,
         simulated: 'true',
       }));
@@ -587,7 +609,7 @@ async function completeSimulatedPayment(req, res) {
       });
     }
 
-    return res.redirect(withQueryParams(order.checkoutReturnUrl || frontendPaymentFailedUrl, {
+    return res.redirect(withQueryParams(paymentFailedUrlForOrder(order), {
       merchantTransactionId,
       simulated: 'true',
       reason: result === 'cancelled' ? 'cancelled' : 'failed',
@@ -624,7 +646,7 @@ async function paymentCallback(req, res) {
       eventType: 'PAYMENT_RESULT',
     });
     if (!claim.acquired) {
-      return res.redirect(withQueryParams(order.checkoutReturnUrl || frontendPaymentSuccessUrl, { merchantTransactionId }));
+      return res.redirect(withQueryParams(paymentSuccessUrlForOrder(order), { merchantTransactionId }));
     }
 
     const status = order.orderType === 'one_time_access'
@@ -637,13 +659,13 @@ async function paymentCallback(req, res) {
     } else if (status.state === 'failed' || ['FAILED', 'CANCELLED', 'EXPIRED', 'DECLINED'].includes(status.state)) {
       if (order.orderType !== 'one_time_access') await applyFailedPayment(order, status);
       await phonePeEventClaims.markPhonePeEventProcessed(claim);
-      return res.redirect(withQueryParams(order.checkoutReturnUrl || frontendPaymentFailedUrl, { merchantTransactionId }));
+      return res.redirect(withQueryParams(paymentFailedUrlForOrder(order), { merchantTransactionId }));
     } else {
       throw new Error('PhonePe payment is not in a terminal state.');
     }
 
     await phonePeEventClaims.markPhonePeEventProcessed(claim);
-    return res.redirect(withQueryParams(order.checkoutReturnUrl || frontendPaymentSuccessUrl, { merchantTransactionId, payment: 'success' }));
+    return res.redirect(withQueryParams(paymentSuccessUrlForOrder(order), { merchantTransactionId, payment: 'success' }));
   } catch (error) {
     await phonePeEventClaims.markPhonePeEventFailed(claim, 'callback_processing_error').catch(() => {});
     console.error('PhonePe callback processing failed; the event remains retryable.');
