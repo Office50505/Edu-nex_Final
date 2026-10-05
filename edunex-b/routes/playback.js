@@ -19,6 +19,10 @@ function requestOrigin(req) {
   const proto = req.headers['x-forwarded-proto'] || req.protocol || 'http';
   return `${String(proto).split(',')[0]}://${req.get('host')}`;
 }
+function internalRequestOrigin(req) {
+  const port = req.socket?.localPort || process.env.PORT || 3000;
+  return `http://127.0.0.1:${port}`;
+}
 function removeCloudDownloadJob(jobId) {
   const job = cloudDownloadJobs.get(jobId);
   if(!job) return;
@@ -147,7 +151,7 @@ router.post('/courses/:courseId/videos/:videoId/download-grant',requireCompatibl
   const grantToken = new URL(grant.hlsUrl,'https://local.invalid').searchParams.get('grant');
   const directDownloadUrl = `/api/courses/${encodeURIComponent(String(result.course._id))}/videos/${encodeURIComponent(String(result.video._id))}/download.mp4?grant=${encodeURIComponent(grantToken)}`;
   const shouldPrepare = req.body?.prepared === true;
-  const job = shouldPrepare ? await startCloudDownloadJob({ grant: cf.decodeGrant(grantToken), grantToken, origin: requestOrigin(req) }) : null;
+  const job = shouldPrepare ? await startCloudDownloadJob({ grant: cf.decodeGrant(grantToken), grantToken, origin: internalRequestOrigin(req) }) : null;
   res.json({
     downloadUrl: job ? `${directDownloadUrl}&job=${encodeURIComponent(job.id)}` : directDownloadUrl,
     directDownloadUrl,
@@ -212,7 +216,7 @@ router.get('/courses/:courseId/videos/:videoId/download.mp4',async(req,res)=>{
       });
     }
 
-    const hlsUrl = new URL(`/api/playback/hls.m3u8?grant=${encodeURIComponent(req.query.grant)}`, requestOrigin(req)).href;
+    const hlsUrl = new URL(`/api/playback/hls.m3u8?grant=${encodeURIComponent(req.query.grant)}`, internalRequestOrigin(req)).href;
     const tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), 'skillomate-download-'));
     const outputPath = path.join(tmpDir, 'lesson.mp4');
     const ffmpeg = spawn('ffmpeg', [
@@ -242,6 +246,7 @@ router.get('/courses/:courseId/videos/:videoId/download.mp4',async(req,res)=>{
       conversionComplete = code === 0;
       if(code!==0) {
         cleanup();
+        if(stderr) console.warn('[cloud-download] direct ffmpeg failed:', stderr);
         if(!res.headersSent) res.status(502).json({error:'Video could not be prepared for offline download.'});
         else res.destroy(new Error(stderr || `ffmpeg exited with code ${code}`));
         return;
