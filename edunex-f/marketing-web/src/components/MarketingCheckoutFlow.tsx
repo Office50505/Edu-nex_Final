@@ -13,6 +13,11 @@ const AWAITING_KEY = 'skillomateMarketingAwaitingPayment'
 type Stage = 'account' | 'otp' | 'checking' | 'pending' | 'success' | null
 type Pricing = { gateway: string; checkoutEnabled: boolean; oneTimeAmountPaise: number; accessDays: number }
 type PaymentStatus = { accessGranted?: boolean; pendingCheckout?: boolean }
+type ApiOptions = { timeoutMs?: number; timeoutMessage?: string }
+
+const DEFAULT_API_TIMEOUT_MS = 20000
+const OTP_API_TIMEOUT_MS = 60000
+const OTP_TIMEOUT_MESSAGE = 'OTP request is taking longer than usual. Please try again in a moment.'
 
 class ApiError extends Error {
   status: number
@@ -37,16 +42,24 @@ function apiPath(path: string) {
   return configuredBase ? `${configuredBase}${path}` : path
 }
 
-async function api<T>(path: string, body?: unknown, bearer = ''): Promise<T> {
-  const response = await fetch(apiPath(path), {
-    method: body === undefined ? 'GET' : 'POST',
-    signal: AbortSignal.timeout(20000),
-    headers: {
-      'Content-Type': 'application/json',
-      ...(bearer ? { Authorization: `Bearer ${bearer}` } : {}),
-    },
-    ...(body === undefined ? {} : { body: JSON.stringify(body) }),
-  })
+async function api<T>(path: string, body?: unknown, bearer = '', options: ApiOptions = {}): Promise<T> {
+  let response: Response
+  try {
+    response = await fetch(apiPath(path), {
+      method: body === undefined ? 'GET' : 'POST',
+      signal: AbortSignal.timeout(options.timeoutMs || DEFAULT_API_TIMEOUT_MS),
+      headers: {
+        'Content-Type': 'application/json',
+        ...(bearer ? { Authorization: `Bearer ${bearer}` } : {}),
+      },
+      ...(body === undefined ? {} : { body: JSON.stringify(body) }),
+    })
+  } catch (error) {
+    if (error instanceof DOMException && error.name === 'TimeoutError') {
+      throw new Error(options.timeoutMessage || 'Request timed out. Please retry.')
+    }
+    throw error
+  }
   const data = await response.json().catch(() => ({}))
   if (!response.ok) throw new ApiError(data.error || data.message || 'Request failed. Please retry.', response.status)
   return data as T
@@ -245,7 +258,10 @@ export default function MarketingCheckoutFlow() {
     setBusy(true)
     setMessage('Sending OTP...')
     try {
-      await api('/api/auth/send-mobile-otp', { mobileNumber: `+91${phone}`, checkoutFlow: 'marketing-onboarding' })
+      await api('/api/auth/send-mobile-otp', { mobileNumber: `+91${phone}`, checkoutFlow: 'marketing-onboarding' }, '', {
+        timeoutMs: OTP_API_TIMEOUT_MS,
+        timeoutMessage: OTP_TIMEOUT_MESSAGE,
+      })
       setOtp('')
       setStage('otp')
       setMessage('Enter the OTP sent to your phone.')
@@ -286,7 +302,10 @@ export default function MarketingCheckoutFlow() {
     busyRef.current = true
     setBusy(true)
     try {
-      await api('/api/auth/resend-mobile-otp', { mobileNumber: `+91${phone}`, checkoutFlow: 'marketing-onboarding' })
+      await api('/api/auth/resend-mobile-otp', { mobileNumber: `+91${phone}`, checkoutFlow: 'marketing-onboarding' }, '', {
+        timeoutMs: OTP_API_TIMEOUT_MS,
+        timeoutMessage: OTP_TIMEOUT_MESSAGE,
+      })
       setMessage('A new OTP was sent to your phone.')
     } catch (error) {
       setMessage(error instanceof Error ? error.message : 'Unable to resend OTP.')
