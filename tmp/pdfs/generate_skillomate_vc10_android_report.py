@@ -58,9 +58,9 @@ def main():
         ["Area", "Previous", "New"],
         ["Version name", "1.0", "1.0"],
         ["Android version code", "9", "10"],
-        ["AAB output", "Skillomate-1.0-vc9-debugsigned.aab", "Skillomate-1.0-vc10-debugsigned.aab"],
-        ["APK output", "Skillomate-1.0-vc9-debugsigned.apk", "Skillomate-1.0-vc10-debugsigned.apk"],
-        ["Signing", "Debug keystore", "Debug keystore"],
+        ["AAB output", "Skillomate-1.0-vc9-debugsigned.aab", "Skillomate-1.0-vc10-production.aab"],
+        ["APK output", "Skillomate-1.0-vc9-debugsigned.apk", "Skillomate-1.0-vc10-production.apk"],
+        ["Signing", "Debug keystore", "Play upload keystore"],
     ]
     table = Table(summary_rows, colWidths=[42 * mm, 60 * mm, 60 * mm])
     table.setStyle(
@@ -85,27 +85,27 @@ def main():
             para("appcopyai/android/app/build.gradle: defaultConfig versionCode changed from 9 to 10.", styles["BodyText"]),
             para("No feature or bug-fix code was intentionally changed for this build.", styles["BodyText"]),
             para("Build Outputs", styles["Section"]),
-            para("AAB: appcopyai/releases/android/Skillomate-1.0-vc10-debugsigned.aab", styles["Small"]),
-            para("APK: appcopyai/releases/android/Skillomate-1.0-vc10-debugsigned.apk", styles["Small"]),
+            para("AAB: appcopyai/releases/android/Skillomate-1.0-vc10-production.aab", styles["Small"]),
+            para("APK: appcopyai/releases/android/Skillomate-1.0-vc10-production.apk", styles["Small"]),
             para("AAB size: about 45 MB. APK size: about 41 MB.", styles["BodyText"]),
             para("Signing Note", styles["Section"]),
             para(
-                "The only Android signing key available in this workspace is appcopyai/android/app/debug.keystore. The vc10 files were signed with that debug key so the APK is locally installable.",
+                "The corrected vc10 files were signed with appcopyai/credentials/android/keystore.jks, the Play upload key available in this workspace.",
                 styles["BodyText"],
             ),
             para(
-                "Debug key SHA1: 5E:8F:16:06:2E:A3:CD:2C:4A:0D:54:78:76:BA:A6:F3:8C:AB:F6:25.",
+                "Upload key SHA1: 56:99:2E:CB:07:3A:28:3C:9D:34:12:8E:EE:C4:BD:A5:C1:6F:E4:5C.",
                 styles["Small"],
             ),
             para(
-                "Google Play previously expected a different upload certificate, SHA1 56:99:2E:CB:07:3A:28:3C:9D:34:12:8E:EE:C4:BD:A5:C1:6F:E4:5C. Uploading this debug-signed AAB to that Play app will likely fail with the same wrong-key error.",
+                "This SHA1 matches the certificate fingerprint Google Play reported as expected for the Skillomate app.",
                 styles["BodyText"],
             ),
             para("Testing And Verification", styles["Section"]),
             para("Gradle build completed successfully: :app:clean :app:bundleRelease :app:assembleRelease.", styles["BodyText"]),
             para("APK metadata verified with aapt: package com.skillomate.app, versionName 1.0, versionCode 10.", styles["BodyText"]),
-            para("APK signature verified with apksigner using v2 and v3 schemes.", styles["BodyText"]),
-            para("AAB signature verified with jarsigner. AAB embedded app config shows android.versionCode 10.", styles["BodyText"]),
+            para("APK signature verified with apksigner using v2 and v3 schemes; signer SHA1 matches the Play upload key.", styles["BodyText"]),
+            para("AAB signature verified with jarsigner and keytool; signer SHA1 matches the Play upload key. AAB embedded app config shows android.versionCode 10.", styles["BodyText"]),
         ]
     )
 
