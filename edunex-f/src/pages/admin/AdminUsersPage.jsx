@@ -2,6 +2,7 @@ import { AdminWrite, AdminEditFields } from "./AdminPermissions.jsx";
 import { DeletionRequests } from "./DeletionRequests";
 import { csvEscape } from "./adminExport.js";
 import { useDeferredValue, useEffect, useMemo, useState } from "react";
+import { createPortal } from "react-dom";
 import { AdminShell, Message } from "./AdminShell.jsx";
 import { api, adminJson, formatDate, formatDateTime, formatNumber, formatWatchDuration, requireAdmin } from "./adminApi.js";
 import { AdminDateRangeFilter, dateInRange, defaultDateRange } from "./AdminDateRangeFilter.jsx";
@@ -474,7 +475,7 @@ export function AdminUsersPage({ audience = "learners", paymentGateway = "" } = 
   const [subscriptionDialog, setSubscriptionDialog] = useState(null);
   const [drawerActivity, setDrawerActivity] = useState({});
   const [drawerCertificates, setDrawerCertificates] = useState({});
-  useViewportLock(Boolean(courseDialog || subscriptionDialog));
+  useViewportLock(Boolean(courseDialog || subscriptionDialog || selectedUser));
   const [purchaseHistories, setPurchaseHistories] = useState({});
   const [purchaseOpenIds, setPurchaseOpenIds] = useState(new Set());
   const deferredQuery = useDeferredValue(query);
@@ -1068,9 +1069,9 @@ export function AdminUsersPage({ audience = "learners", paymentGateway = "" } = 
         <span aria-live="polite">Page {currentPage} of {pageCount} · 25 {testerMode ? "test accounts" : leadsMode ? "leads" : trialsMode ? "trial learners" : "learners"} per page</span>
         <button className="toolbar-button" disabled={currentPage >= pageCount || loading} onClick={() => setPage(currentPage + 1)}>Next</button>
       </nav>
-      <LearnerDetailDrawer activity={drawerActivity[selectedUser?._id]} certificates={drawerCertificates[selectedUser?._id]} onSubscription={openSubscriptionDialog} onAccess={changeAccountAccess} onTesterStatus={changeTesterStatus} onPasswordReset={resetUserPassword} busy={Boolean(updatingId)} user={selectedUser} courses={courses} tab={drawerTab} setTab={setDrawerTab} onClose={() => setSelectedUser(null)} purchaseHistory={selectedUser ? (purchaseHistories[String(selectedUser._id)] || { user: selectedUser, loading: false, error: "", orders: [], courseChanges: [] }) : null} />
+      {selectedUser && typeof document !== "undefined" ? createPortal(<div className="learner-detail-backdrop" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setSelectedUser(null); }}><LearnerDetailDrawer activity={drawerActivity[selectedUser?._id]} certificates={drawerCertificates[selectedUser?._id]} onSubscription={openSubscriptionDialog} onAccess={changeAccountAccess} onTesterStatus={changeTesterStatus} onPasswordReset={resetUserPassword} busy={Boolean(updatingId)} user={selectedUser} courses={courses} tab={drawerTab} setTab={setDrawerTab} onClose={() => setSelectedUser(null)} purchaseHistory={purchaseHistories[String(selectedUser._id)] || { user: selectedUser, loading: false, error: "", orders: [], courseChanges: [] }} /></div>, document.body) : null}
 
-      {subscriptionDialog ? <div className="course-access-backdrop">
+      {subscriptionDialog && typeof document !== "undefined" ? createPortal(<div className="course-access-backdrop">
         <form className="course-access-dialog" role="dialog" aria-modal="true" aria-labelledby="subscription-dialog-title" style={{ maxHeight: "calc(100dvh - 48px)", overflowY: "auto" }} onSubmit={saveSubscription}><AdminEditFields disabled={Boolean(updatingId)}>
           <h2 id="subscription-dialog-title">Update subscription</h2>
           <p>{subscriptionDialog.user.fullName || entityLabelTitle}</p>
@@ -1083,8 +1084,8 @@ export function AdminUsersPage({ audience = "learners", paymentGateway = "" } = 
           {subscriptionDialog.error ? <p role="alert">{subscriptionDialog.error}</p> : null}
           <div className="course-access-dialog-actions"><button className="toolbar-button" type="button" disabled={Boolean(updatingId)} onClick={() => setSubscriptionDialog(null)}>Cancel</button><button className="action-button primary" type="submit" disabled={Boolean(updatingId)}>{updatingId ? "Saving…" : "Save subscription"}</button></div>
         </AdminEditFields></form>
-      </div> : null}
-      {courseDialog ? <div className="course-access-backdrop" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget && !updatingId) setCourseDialog(null); }}>
+      </div>, document.body) : null}
+      {courseDialog && typeof document !== "undefined" ? createPortal(<div className="course-access-backdrop" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget && !updatingId) setCourseDialog(null); }}>
         <form className="course-access-dialog" role="dialog" aria-modal="true" aria-labelledby="course-access-title" onSubmit={submitCourseAccess}><AdminEditFields>
           <div className="course-access-dialog-head"><div><span>Course ownership</span><h2 id="course-access-title">{courseDialog.action === "grant" ? "Add purchased course" : "Remove purchased course"}</h2></div><button type="button" aria-label="Close" disabled={Boolean(updatingId)} onClick={() => setCourseDialog(null)}>×</button></div>
           <p>Choose a course for <strong>{courseDialog.user.fullName || formatMobile(courseDialog.user.mobileNumber) || `this ${entityLabel}`}</strong>.</p>
@@ -1094,7 +1095,7 @@ export function AdminUsersPage({ audience = "learners", paymentGateway = "" } = 
           <label><span>Audit reason</span><textarea rows="3" maxLength="500" required value={courseDialog.reason} onChange={(event) => setCourseDialog((current) => ({ ...current, reason: event.target.value }))} /></label>
           <div className="course-access-dialog-actions"><button className="toolbar-button" type="button" disabled={Boolean(updatingId)} onClick={() => setCourseDialog(null)}>Cancel</button><button className={`action-button ${courseDialog.action === "grant" ? "primary" : "danger"}`} type="submit" disabled={Boolean(updatingId) || !courseDialog.reason.trim()}>{updatingId ? "Saving…" : courseDialog.action === "grant" ? "Add course" : "Remove course"}</button></div>
         </AdminEditFields></form>
-      </div> : null}
+      </div>, document.body) : null}
 
     </AdminShell>
   );

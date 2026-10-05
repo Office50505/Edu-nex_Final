@@ -23,7 +23,7 @@ function SimpleTable({ columns, rows, empty, columnsTemplate = "repeat(4, minmax
         <tr>{columns.map((column) => <th key={column} scope="col">{column}</th>)}</tr>
       </thead>
       <tbody>
-        {rows.length ? rows.map((row) => <tr key={row.id}>{row.cells.map((cell, index) => <td key={`${row.id}-${index}`}>{cell}</td>)}</tr>) : <tr><td className="tester-analytics-empty" colSpan={columns.length}>{empty}</td></tr>}
+        {rows.length ? rows.map((row) => <tr key={row.id}>{row.cells.map((cell, index) => <td data-label={columns[index]} key={`${row.id}-${index}`}>{cell}</td>)}</tr>) : <tr><td className="tester-analytics-empty" colSpan={columns.length}>{empty}</td></tr>}
       </tbody>
     </table>
   </div>;

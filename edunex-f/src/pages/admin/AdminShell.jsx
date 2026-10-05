@@ -9,6 +9,13 @@ const sections = [
   { label: 'System', links: [['paymentAuditor', 'Payment auditor', adminRoutes.paymentAuditor, 'audit'], ['health', 'System health', adminRoutes.health, 'pulse'], ['auditLog', 'Audit log', adminRoutes.auditLog, 'log'], ['settings', 'Settings', adminRoutes.settings, 'gear'], ['team', 'Team access', adminRoutes.team, 'users']] },
 ];
 
+const mobileNavLinks = [
+  ['dashboard', 'Dashboard', adminRoutes.dashboard, 'home'],
+  ['courses', 'Courses', adminRoutes.courses, 'book'],
+  ['users', 'Learners', adminRoutes.users, 'users'],
+  ['payments', 'Payments', adminRoutes.payments, 'pay'],
+];
+
 export function Message({ text, type = "success" }) {
   return text ? <div className={`message ${type}`} role={type === 'error' ? 'alert' : 'status'}>{text}</div> : null;
 }
@@ -105,7 +112,7 @@ export function AdminShell({ activePage, title, subtitle, children, actions = nu
             </div>
             <div className="toolbar-actions">
               <AdminWrite><a className="toolbar-button admin-quick-create" href={adminRoutes.upload}><span className="admin-quick-create-full">+ Create / Upload</span><span className="admin-quick-create-short">Create</span></a></AdminWrite>
-              <button className="toolbar-button admin-theme-button" type="button" onClick={() => setTheme(current => current === 'light' ? 'dark' : 'light')} aria-pressed={theme === 'light'}>{theme === 'light' ? 'Dark' : 'Light'}</button>
+              <button className="toolbar-button admin-theme-button" type="button" onClick={() => setTheme(current => current === 'light' ? 'dark' : 'light')} aria-pressed={theme === 'light'} data-label={theme === 'light' ? 'Dark' : 'Light'}>{theme === 'light' ? 'Dark' : 'Light'}</button>
               {actions}
             </div>
           </div>
@@ -113,6 +120,18 @@ export function AdminShell({ activePage, title, subtitle, children, actions = nu
         {!canWrite ? <p className="admin-inline-message" role="status">Read-only access</p> : null}
         {children}
       </main>
+      <nav className="admin-mobile-bottom-nav" aria-label="Primary admin navigation">
+        {mobileNavLinks.map(([key, label, href, icon]) => (
+          <a key={key} href={href} className={activePage === key ? "is-active" : ""} aria-current={activePage === key ? "page" : undefined}>
+            <NavIcon type={icon} />
+            <span>{label}</span>
+          </a>
+        ))}
+        <button className={!mobileNavLinks.some(([key]) => key === activePage) || mobileMenuOpen ? "is-active" : ""} type="button" onClick={() => setMobileMenuOpen(value => !value)} aria-expanded={mobileMenuOpen} aria-controls="admin-mobile-nav" aria-label={mobileMenuOpen ? "Close admin navigation" : "Open all admin pages"}>
+          <NavIcon type="gear" />
+          <span>More</span>
+        </button>
+      </nav>
     </div>
   );
 }

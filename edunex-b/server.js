@@ -2496,6 +2496,205 @@ app.get('/api/admin/analytics', protectAdmin, async (req, res) => {
   }
 });
 
+app.get('/api/admin/tester-analytics', protectAdmin, async (req, res) => {
+  try {
+    const { startDate, endDate } = getAnalyticsRange(req.query);
+    const rangeFilter = { $gte: startDate, $lte: endDate };
+    const rangeStartKey = formatDateKey(startDate);
+    const rangeEndKey = formatDateKey(endDate);
+    const now = new Date();
+    const activeTodayStart = startOfDay(now);
+    const active7DaysStart = new Date(now.getTime() - 7 * 86400000);
+    const active30DaysStart = new Date(now.getTime() - 30 * 86400000);
+
+    const testerRows = await User.find({ isTester: true })
+      .sort({ testerSince: -1, createdAt: -1 })
+      .select('_id fullName email mobileNumber subscriptionStatus isActive testerSince lastActiveAt')
+      .lean();
+
+    const testerIds = testerRows.map((user) => String(user._id));
+    const testerObjectIds = testerRows.map((user) => user._id);
+    const testerIdSet = new Set(testerIds);
+    const activeCountSince = (date) => testerRows.filter((user) => new Date(user.lastActiveAt || 0) >= date).length;
+
+    if (!testerRows.length) {
+      return res.json({
+        totals: {
+          testers: 0,
+          activeToday: 0,
+          active7Days: 0,
+          active30Days: 0,
+          watchMinutes: 0,
+          aiMessages: 0,
+        },
+        testers: [],
+        courses: [],
+        recentEvents: [],
+        recentActions: [],
+      });
+    }
+
+    const testerEventMatch = {
+      $and: [
+        {
+          $or: [
+            { userId: { $in: testerIds } },
+            { userId: { $in: testerObjectIds } },
+          ],
+        },
+        {
+          $or: [
+            { date: { $gte: rangeStartKey, $lte: rangeEndKey } },
+            { createdAt: rangeFilter },
+          ],
+        },
+      ],
+    };
+
+    const [
+      watchByTester,
+      aiByTester,
+      courseRows,
+      recentEvents,
+      recentActions,
+    ] = await Promise.all([
+      AnalyticsEvent.aggregate([
+        {
+          $match: {
+            ...testerEventMatch,
+            event: { $in: ['video_start', 'video_progress', 'video_complete', 'video_watch'] },
+          },
+        },
+        {
+          $addFields: {
+            testerUserId: { $toString: '$userId' },
+            watchedSeconds: { $ifNull: ['$watchSeconds', { $ifNull: ['$watchedSeconds', '$durationSeconds'] }] },
+          },
+        },
+        {
+          $group: {
+            _id: '$testerUserId',
+            totalWatchSeconds: { $sum: { $ifNull: ['$watchedSeconds', 0] } },
+          },
+        },
+      ]),
+      AnalyticsEvent.aggregate([
+        {
+          $match: {
+            ...testerEventMatch,
+            event: { $in: ['ai_message', 'ai_chat_message', 'ai_tutor_message', 'chat_message'] },
+          },
+        },
+        { $addFields: { testerUserId: { $toString: '$userId' } } },
+        { $group: { _id: '$testerUserId', messages: { $sum: 1 } } },
+      ]),
+      CourseProgress.aggregate([
+        {
+          $match: {
+            userId: { $in: testerIds },
+            updatedAt: rangeFilter,
+          },
+        },
+        {
+          $group: {
+            _id: {
+              courseId: '$courseId',
+              courseTitle: '$courseTitle',
+            },
+            testerIds: { $addToSet: '$userId' },
+            events: { $sum: 1 },
+            lastEventAt: { $max: '$updatedAt' },
+          },
+        },
+        {
+          $project: {
+            _id: 0,
+            courseId: '$_id.courseId',
+            title: { $ifNull: ['$_id.courseTitle', 'Unknown course'] },
+            testerCount: { $size: '$testerIds' },
+            events: 1,
+            watchMinutes: { $literal: 0 },
+            lastEventAt: 1,
+          },
+        },
+        { $sort: { events: -1, testerCount: -1, lastEventAt: -1 } },
+        { $limit: 25 },
+      ]),
+      AnalyticsEvent.aggregate([
+        { $match: testerEventMatch },
+        { $addFields: { testerUserId: { $toString: '$userId' } } },
+        { $sort: { createdAt: -1 } },
+        { $limit: 30 },
+        {
+          $project: {
+            _id: 1,
+            event: 1,
+            userId: '$testerUserId',
+            userName: 1,
+            userEmail: 1,
+            courseTitle: 1,
+            videoTitle: 1,
+            createdAt: 1,
+            date: 1,
+          },
+        },
+      ]),
+      AdminUserAction.find({
+        user: { $in: testerObjectIds },
+        action: { $in: ['tester_enabled', 'tester_disabled'] },
+      })
+        .sort({ createdAt: -1 })
+        .limit(25)
+        .populate('user', 'fullName email mobileNumber')
+        .lean(),
+    ]);
+
+    const watchByUser = watchByTester.reduce((acc, row) => {
+      acc[String(row._id)] = Math.round(Number(row.totalWatchSeconds || 0) / 60);
+      return acc;
+    }, {});
+    const aiByUser = aiByTester.reduce((acc, row) => {
+      acc[String(row._id)] = Number(row.messages || 0);
+      return acc;
+    }, {});
+    const testerNameById = testerRows.reduce((acc, user) => {
+      acc[String(user._id)] = user.fullName || user.email || user.mobileNumber || 'Tester';
+      return acc;
+    }, {});
+
+    const testers = testerRows.map((user) => {
+      const userId = String(user._id);
+      return {
+        ...user,
+        watchSummary: { watchedMinutes: watchByUser[userId] || 0 },
+        aiSummary: { messages: aiByUser[userId] || 0 },
+      };
+    });
+
+    res.json({
+      totals: {
+        testers: testers.length,
+        activeToday: activeCountSince(activeTodayStart),
+        active7Days: activeCountSince(active7DaysStart),
+        active30Days: activeCountSince(active30DaysStart),
+        watchMinutes: testers.reduce((sum, user) => sum + Number(user.watchSummary?.watchedMinutes || 0), 0),
+        aiMessages: testers.reduce((sum, user) => sum + Number(user.aiSummary?.messages || 0), 0),
+      },
+      testers,
+      courses: courseRows,
+      recentEvents: recentEvents
+        .map((event) => ({
+          ...event,
+          userName: event.userName || testerNameById[String(event.userId)] || 'Tester',
+        }))
+        .filter((event) => testerIdSet.has(String(event.userId))),
+      recentActions,
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 app.get('/api/admin/ai-chats', protectAdmin, async (req, res) => {
   try {
     const limit = Math.min(Math.max(Number(req.query.limit) || 200, 1), 500);
