@@ -4,7 +4,6 @@
     "slug": "skillomate",
     "version": "1.0",
     "description": "Skillomate learning app",
-    "scheme": "skillomate",
     "icon": "./assets/icon.png",
     "orientation": "portrait",
     "userInterfaceStyle": "dark",
@@ -14,7 +13,7 @@
     ],
     "android": {
       "package": "com.skillomate.app",
-      "versionCode": 8,
+      "versionCode": 9,
       "permissions": [
         "android.permission.POST_NOTIFICATIONS"
       ],

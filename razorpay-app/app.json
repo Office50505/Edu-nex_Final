@@ -4,7 +4,6 @@
     "slug": "skillomate-direct",
     "version": "1.0",
     "description": "Skillomate learning app",
-    "scheme": "skillomate-direct",
     "icon": "./assets/icon.png",
     "orientation": "portrait",
     "userInterfaceStyle": "dark",
@@ -47,8 +46,7 @@
         "ITSAppUsesNonExemptEncryption": false,
         "NSPhotoLibraryUsageDescription": "Allow access only when you choose a profile photo for your Skillomate account.",
         "NSAppTransportSecurity": {
-          "NSAllowsArbitraryLoads": false,
-          "NSAllowsLocalNetworking": true
+          "NSAllowsArbitraryLoads": false
         }
       }
     },

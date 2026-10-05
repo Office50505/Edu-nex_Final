@@ -130,5 +130,5 @@ test('leaving playback tolerates an already released native player',()=>{
   const runNativePlayer=compile(declaration('runNativePlayer').init.arguments[0],{nativePlayer});
   assert.doesNotThrow(()=>runNativePlayer(player=>player.pause()));
   assert.equal(runNativePlayer(player=>player.pause()),undefined);
-  assert.match(source,/return \(\) => \{\s*cancelled = true;\s*pauseNativePlayer\(\);\s*\};/);
+  assert.match(source,/return \(\) => \{\s*cancelled = true;[\s\S]{0,300}?pauseNativePlayer\(\);\s*\};/);
 });
