@@ -4110,12 +4110,8 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
     if (!isActive) {
       setHasPlaybackStarted(false);
       setPlayerChromeVisible(true);
-      setVolumeDrawerOpen(false);
     }
   }, [isActive]);
-  useEffect(() => {
-    if (playerChromeHidden || isEnded || showSettings || suspendSurface) setVolumeDrawerOpen(false);
-  }, [isEnded, playerChromeHidden, showSettings, suspendSurface]);
   useEffect(() => {
     onPlayerChromeHiddenChange?.(Boolean(playerChromeHidden));
   }, [onPlayerChromeHiddenChange, playerChromeHidden]);
@@ -5789,7 +5785,7 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
 }
 
 // ── ReelsScreen ───────────────────────────────────────────────────────────────
-function ReelsScreen({ courseId, course, initialIndex, initialTime, onBack, onReportProblem, onGoToDownloads, onDownload, user, session, onVideoComplete, onVideoProgress, downloads, preloadedVideos }) {
+function ReelsScreen({ courseId, course, initialIndex, initialTime, onBack, onReportProblem, user, session, onVideoComplete, onVideoProgress, downloads, preloadedVideos }) {
   const { width: viewportWidth } = useWindowDimensions();
   const [videos, setVideos] = useState(preloadedVideos || []);
   const [loading, setLoading] = useState(!preloadedVideos);
@@ -5843,12 +5839,6 @@ function ReelsScreen({ courseId, course, initialIndex, initialTime, onBack, onRe
   const activeLessonLabel = videos.length ? `Lecture ${activeLessonNumber}/${videos.length}` : "Lecture";
   const activeSummary = activeDescription === "No description available." ? "" : activeDescription;
   const activeShareUrl = `${WEB_APP_BASE}/videos?courseId=${encodeURIComponent(courseId)}`;
-  const activeDownloadId = activeVideo ? getDownloadId(activeVideo, activeIndex) : "";
-  const activeDownload = activeDownloadId ? downloads?.[activeDownloadId] : null;
-  const activeDownloadStatus = activeDownload?.status || "";
-  const activeDownloadBusy = activeDownloadStatus === "downloading";
-  const activeDownloadDone = activeDownloadStatus === "done";
-  const activeDownloadLabel = activeDownloadBusy ? "Downloading" : activeDownloadDone ? "Saved" : "Download";
   const lecturePageSize = 20;
   const lectureRanges = useMemo(() => {
     const rangeCount = Math.max(1, Math.ceil(videos.length / lecturePageSize));
@@ -6151,48 +6141,6 @@ function ReelsScreen({ courseId, course, initialIndex, initialTime, onBack, onRe
     } catch {}
   }
 
-  function downloadActiveLesson() {
-    if (!activeVideo) return;
-    if (!activeDownloadId) {
-      Alert.alert("Download unavailable", "This lesson is not available for offline download.");
-      return;
-    }
-    if (!hasCourseAccess(user)) {
-      Alert.alert("Subscription Required", "Upgrade your plan to download videos for offline viewing.");
-      return;
-    }
-    if (activeDownloadDone) {
-      Alert.alert("Downloaded", "This video is already saved offline.", [
-        { text: "Cancel", style: "cancel" },
-        { text: "Open Downloads", onPress: onGoToDownloads },
-      ]);
-      return;
-    }
-    if (!activeDownloadBusy) onDownload?.(activeVideo, courseId, course?.title);
-  }
-  function downloadLesson(lesson, index) {
-    if (!lesson) return;
-    const downloadId = getDownloadId(lesson, index);
-    const downloadEntry = downloadId ? downloads?.[downloadId] : null;
-    const downloadStatus = downloadEntry?.status || "";
-    if (!downloadId) {
-      Alert.alert("Download unavailable", "This lesson is not available for offline download.");
-      return;
-    }
-    if (!hasCourseAccess(user)) {
-      Alert.alert("Subscription Required", "Upgrade your plan to download videos for offline viewing.");
-      return;
-    }
-    if (downloadStatus === "done") {
-      Alert.alert("Downloaded", "This video is already saved offline.", [
-        { text: "Cancel", style: "cancel" },
-        { text: "Open Downloads", onPress: onGoToDownloads },
-      ]);
-      return;
-    }
-    if (downloadStatus !== "downloading") onDownload?.(lesson, courseId, course?.title);
-  }
-
   async function sendCourseAiMessage(promptText = courseAiInput) {
     const question = promptText.trim();
     if (!question || courseAiEntry.pending) return;
@@ -6309,12 +6257,6 @@ function ReelsScreen({ courseId, course, initialIndex, initialTime, onBack, onRe
           const itemDescription = plainCourseDescription(getVideoDescription(item)) || "No description available.";
           const itemSummary = itemDescription === "No description available." ? "" : itemDescription;
           const itemLessonLabel = videos.length ? `Lecture ${Math.min(videos.length, index + 1)}/${videos.length}` : "Lecture";
-          const itemDownloadId = getDownloadId(item, index);
-          const itemDownload = itemDownloadId ? downloads?.[itemDownloadId] : null;
-          const itemDownloadStatus = itemDownload?.status || "";
-          const itemDownloadBusy = itemDownloadStatus === "downloading";
-          const itemDownloadDone = itemDownloadStatus === "done";
-          const itemDownloadLabel = itemDownloadBusy ? "Downloading" : itemDownloadDone ? "Saved" : "Download";
           const cellChromePointerEvents = isCurrent && !playerChromeHidden ? "box-none" : "none";
           return (
             <View style={[s.reelItem, { height: listHeight }]}>
@@ -6410,25 +6352,6 @@ function ReelsScreen({ courseId, course, initialIndex, initialTime, onBack, onRe
                   <TouchableOpacity onPress={() => setShowLectures(true)} style={s.webPlayerRailBtn} accessibilityRole="button" accessibilityLabel="Open course lectures">
                     <Ionicons name="layers-outline" size={21} color="#fff" />
                     <Text style={s.webPlayerRailText}>Lectures</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    onPress={() => downloadLesson(item, index)}
-                    style={s.webPlayerRailBtn}
-                    disabled={itemDownloadBusy}
-                    accessibilityRole="button"
-                    accessibilityLabel={
-                      itemDownloadBusy
-                        ? `Downloading ${itemTitle || "current lecture"}, ${Math.round((itemDownload?.progress || 0) * 100)} percent`
-                        : itemDownloadDone
-                          ? `Current lecture is downloaded`
-                          : `Download current lecture ${itemTitle || ""}`.trim()
-                    }
-                    accessibilityState={{ disabled: itemDownloadBusy, busy: itemDownloadBusy }}
-                  >
-                    {itemDownloadBusy
-                      ? <ActivityIndicator size="small" color="#fff" />
-                      : <Ionicons name={itemDownloadDone ? "checkmark-circle" : "download-outline"} size={21} color="#fff" />}
-                    <Text style={s.webPlayerRailText}>{itemDownloadLabel}</Text>
                   </TouchableOpacity>
                   <TouchableOpacity onPress={() => shareLesson(item)} style={s.webPlayerRailBtn} accessibilityRole="button" accessibilityLabel="Share lecture">
                     <Ionicons name="share-social-outline" size={21} color="#fff" />
@@ -6797,9 +6720,6 @@ function VideoListScreen({
   onSelectVideo,
   onBack,
   downloads,
-  onDownload,
-  onDeleteDownload,
-  hasAccess,
 }) {
   const [showCourseNotes, setShowCourseNotes] = useState(false);
   const videos = useMemo(
@@ -6920,48 +6840,7 @@ function VideoListScreen({
                     </View>
                   )}
                 </View>
-                {downloadId ? (
-                  <TouchableOpacity
-                    style={s.videoDownloadButton}
-                    hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-                    disabled={dl?.status === "downloading"}
-                    onPress={event => {
-                      event.stopPropagation?.();
-                      if (!hasAccess) { Alert.alert("Subscription Required", "Upgrade your plan to download videos for offline viewing."); return; }
-                      if (dl?.status === "done") {
-                        Alert.alert("Downloaded", "This video is saved offline.", [
-                          { text: "Cancel", style: "cancel" },
-                          { text: "Delete", style: "destructive", onPress: () => onDeleteDownload?.(downloadId) },
-                        ]);
-                      } else if (dl?.status !== "downloading") {
-                        onDownload?.(item, course._id, course.title);
-                      }
-                    }}
-                    accessibilityRole="button"
-                    accessibilityLabel={
-                      !hasAccess
-                        ? `Download locked for ${item.title || `lesson ${index + 1}`}`
-                        : dl?.status === "done"
-                          ? `Manage downloaded lesson ${item.title || index + 1}`
-                          : dl?.status === "downloading"
-                            ? `Downloading ${item.title || `lesson ${index + 1}`}, ${Math.round((dl.progress || 0) * 100)} percent`
-                            : `Download lesson ${index + 1}: ${item.title || `Video ${index + 1}`}`
-                    }
-                    accessibilityState={{ disabled: dl?.status === "downloading", busy: dl?.status === "downloading" }}
-                  >
-                    {!hasAccess ? (
-                      <Ionicons name="lock-closed" size={20} color={C.textMuted} />
-                    ) : dl?.status === "done" ? (
-                      <Ionicons name="checkmark-circle" size={22} color={C.primary} />
-                    ) : dl?.status === "downloading" ? (
-                      <ActivityIndicator size="small" color={C.primary} />
-                    ) : (
-                      <Ionicons name="download-outline" size={22} color={C.textMuted} />
-                    )}
-                  </TouchableOpacity>
-                ) : (
-                  <Ionicons name="chevron-forward" size={16} color={C.textMuted} />
-                )}
+                <Ionicons name="chevron-forward" size={16} color={C.textMuted} />
               </TouchableOpacity>
             );
           }}
@@ -12812,8 +12691,6 @@ export default function App() {
           onVideoComplete={isPreviewOnly ? undefined : markVideoComplete}
           onVideoProgress={isPreviewOnly ? undefined : saveVideoProgress}
           onReportProblem={openProblemReport}
-          onGoToDownloads={() => navigateRootTab("downloads")}
-          onDownload={(video, courseId, courseTitle) => startDownload(video, courseId, courseTitle)}
           onBack={handleAppBack}
         />
         <CertificateModal cert={certModal} onClose={() => setCertModal(null)} />
@@ -12834,9 +12711,6 @@ export default function App() {
         onSelectVideo={idx => setStartIndex(idx)}
         onBack={handleAppBack}
         downloads={downloads}
-        onDownload={(video, courseId, courseTitle) => startDownload(video, courseId, courseTitle)}
-        onDeleteDownload={deleteDownload}
-        hasAccess={hasCourseAccess(user)}
         onGoToHome={() => { loadCourseProgress(); setSelectedCourse(null); navigateRootTab("home"); }}
         onGoToCourses={() => { loadCourseProgress(); setSelectedCourse(null); navigateRootTab("courses"); }}
         onGoToAI={() => { setSelectedCourse(null); navigateRootTab("ai"); }}
@@ -14945,12 +14819,6 @@ courseListCard: {
   },
   courseResourceTitle: { flex: 1, ...TYPE.bodyMedium, color: C.text },
   videoRowTitle: { flex: 1, ...TYPE.bodyMedium, color: C.text },
-  videoDownloadButton: {
-    width: MIN_TOUCH_TARGET,
-    height: MIN_TOUCH_TARGET,
-    alignItems: "center",
-    justifyContent: "center",
-  },
   videoThumbSmall: {
     width: 90, height: 56, borderRadius: 8, overflow: "hidden",
     backgroundColor: C.lightGray,

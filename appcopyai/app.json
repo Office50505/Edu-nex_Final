@@ -13,7 +13,7 @@
     ],
     "android": {
       "package": "com.skillomate.app",
-      "versionCode": 11,
+      "versionCode": 14,
       "permissions": [
         "android.permission.POST_NOTIFICATIONS"
       ],
