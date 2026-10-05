@@ -62,11 +62,11 @@ fi
   --cache-control "$HTML_CACHE_CONTROL" \
   --only-show-errors
 
-if test -f "$DIST_DIR/marketing-web/index.html"; then
+if test -f "$DIST_DIR/index.html"; then
   "$AWS_COMMAND" s3api put-object \
     --bucket "$bucket_name" \
     --key "${object_prefix}marketing-web" \
-    --body "$DIST_DIR/marketing-web/index.html" \
+    --body "$DIST_DIR/index.html" \
     --content-type "text/html; charset=utf-8" \
     --cache-control "$HTML_CACHE_CONTROL" \
     --server-side-encryption AES256 \
@@ -75,7 +75,7 @@ if test -f "$DIST_DIR/marketing-web/index.html"; then
   "$AWS_COMMAND" s3api put-object \
     --bucket "$bucket_name" \
     --key "${object_prefix}marketing-web/" \
-    --body "$DIST_DIR/marketing-web/index.html" \
+    --body "$DIST_DIR/index.html" \
     --content-type "text/html; charset=utf-8" \
     --cache-control "$HTML_CACHE_CONTROL" \
     --server-side-encryption AES256 \

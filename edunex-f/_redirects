@@ -1,6 +1,10 @@
 # API requests use the build-time VITE_API_BASE_URL; this rule only serves SPA routes.
-/marketing-web  /marketing-web/  301
-/marketing-web.html  /marketing-web/  301
-/offer  /ai  301
-/offer.html  /ai  301
+/marketing-web  /static-pages/skillomate-ai-influencer-courseweb/#paywall  301
+/marketing-web/  /static-pages/skillomate-ai-influencer-courseweb/#paywall  301
+/marketing-web/index.html  /static-pages/skillomate-ai-influencer-courseweb/#paywall  301
+/marketing-web.html  /static-pages/skillomate-ai-influencer-courseweb/#paywall  301
+/static-pages/skillomate-ai-influencer-course  /static-pages/skillomate-ai-influencer-courseweb/#paywall  301
+/static-pages/skillomate-ai-influencer-course/  /static-pages/skillomate-ai-influencer-courseweb/#paywall  301
+/offer  /static-pages/skillomate-ai-influencer-courseweb/#paywall  301
+/offer.html  /static-pages/skillomate-ai-influencer-courseweb/#paywall  301
 /*  /index.html  200

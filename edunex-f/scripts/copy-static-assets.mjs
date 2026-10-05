@@ -4,8 +4,6 @@ import { route } from "../src/lib/routes.js";
 
 const root = process.cwd();
 const dist = path.join(root, "dist");
-const marketingOut = path.join(root, "marketing-web", "out");
-const marketingDist = path.join(dist, "marketing-web");
 
 const staticPaths = [
   "_redirects",
@@ -33,12 +31,6 @@ for (const item of staticPaths) {
   fs.cpSync(from, to, { recursive: true, force: true });
 }
 
-if (fs.existsSync(marketingOut)) {
-  fs.rmSync(marketingDist, { recursive: true, force: true });
-  fs.mkdirSync(marketingDist, { recursive: true });
-  fs.cpSync(marketingOut, marketingDist, { recursive: true, force: true });
-}
-
 const indexHtml = path.join(dist, "index.html");
 const legacyDir = path.join(root, "legacy-html");
 
@@ -47,7 +39,7 @@ if (fs.existsSync(indexHtml) && fs.existsSync(legacyDir)) {
   for (const file of fs.readdirSync(legacyDir)) {
     if (!file.endsWith(".html") || file === "react-index.html" || file === "index.html") continue;
     fs.writeFileSync(path.join(dist, file), shell);
-    const cleanRoute = route(file);
+    const cleanRoute = route(file).replace(/[?#].*$/, "");
     if (cleanRoute !== "/" && cleanRoute.startsWith("/")) {
       const cleanRouteDir = path.join(dist, cleanRoute.replace(/^\/+/, ""));
       fs.mkdirSync(cleanRouteDir, { recursive: true });
@@ -70,6 +62,7 @@ if (fs.existsSync(indexHtml)) {
     'pricing',
     'refund-policy',
     'shipping-policy',
+    'static-pages/skillomate-ai-influencer-courseweb',
     'subscription-policy',
   ];
 

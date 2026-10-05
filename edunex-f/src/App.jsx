@@ -154,6 +154,9 @@ export default function App() {
       "/skillomate-1rs-for-24-hours-full-course-access",
       "/skillomate-1rs-offer-for-24-hours-full-course-access",
       "/static-pages/skillomate-1rs-for-24-hours-full-course-access",
+      "/static-pages/skillomate-ai-influencer-course",
+      "/marketing-web",
+      "/marketing-web/index.html",
     ]);
     const normalizedPath = locationState.pathname.replace(/\/+$/, "");
     const hasRepeatedPaywallHash = /^(?:#paywall){2,}$/i.test(locationState.hash);
