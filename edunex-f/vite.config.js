@@ -9,6 +9,12 @@ const themePreloadSource = fs.readFileSync(new URL("./js/theme-preload.js", impo
 const marketingOutDir = path.resolve(projectRoot, "marketing-web", "out");
 const marketingStaticBasePath = "/static-pages/skillomate-ai-influencer-courseweb";
 const malformedMarketingNextPath = "/static-pages/skillomate-ai-influencer-courseweb_next";
+const marketingLegacyPaths = new Set([
+  "/marketing-web",
+  "/marketing-web.html",
+  "/skillomate-ai-influencer-courseweb",
+  "/skillomate-ai-influencer-courseweb.html",
+]);
 
 const contentTypes = {
   ".css": "text/css; charset=utf-8",
@@ -54,6 +60,7 @@ function resolveMarketingFile(requestUrl = "") {
 
 function useMarketingWeb(server) {
   server.middlewares.use((request, response, next) => {
+    const url = new URL(request.url || "/", "http://127.0.0.1");
     if (request.url?.startsWith(malformedMarketingNextPath)) {
       response.statusCode = 301;
       response.setHeader("Location", request.url.replace(malformedMarketingNextPath, `${marketingStaticBasePath}/_next`));
@@ -61,16 +68,9 @@ function useMarketingWeb(server) {
       return;
     }
 
-    if (request.url?.startsWith("/marketing-web.html")) {
+    if (marketingLegacyPaths.has(url.pathname)) {
       response.statusCode = 301;
-      response.setHeader("Location", `${marketingStaticBasePath}/#paywall`);
-      response.end();
-      return;
-    }
-
-    if (request.url?.startsWith("/marketing-web")) {
-      response.statusCode = 301;
-      response.setHeader("Location", `${marketingStaticBasePath}/#paywall`);
+      response.setHeader("Location", `${marketingStaticBasePath}/${url.search}#paywall`);
       response.end();
       return;
     }

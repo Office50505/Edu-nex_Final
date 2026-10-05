@@ -9,6 +9,8 @@ import { MARKETING_BASE_PATH, SKILLOMATE_PUBLIC_ORIGIN } from '@/lib/links'
 
 const SESSION_KEY = 'skillomateMarketingCheckoutSession'
 const AWAITING_KEY = 'skillomateMarketingAwaitingPayment'
+const PERSISTED_SESSION_KEY = `${SESSION_KEY}:persisted`
+const CHECKOUT_SESSION_TTL_MS = 60 * 60 * 1000
 
 type Stage = 'account' | 'otp' | 'checking' | 'pending' | 'success' | null
 type Pricing = { gateway: string; checkoutEnabled: boolean; oneTimeAmountPaise: number; accessDays: number }
@@ -34,8 +36,79 @@ function isUnfinishedCheckoutError(error: unknown) {
   return error instanceof Error && /unfinished checkout|check payment status before paying again/i.test(error.message)
 }
 
+function isCompletedCheckoutError(error: unknown) {
+  return error instanceof Error && /payment has already succeeded|premium access is already active/i.test(error.message)
+}
+
 function isExpiredSessionError(error: unknown) {
   return error instanceof ApiError && error.status === 401
+}
+
+function readPersistedCheckoutSession() {
+  try {
+    const stored = window.localStorage.getItem(PERSISTED_SESSION_KEY)
+    if (!stored) return ''
+    const parsed = JSON.parse(stored) as { token?: unknown; expiresAt?: unknown }
+    const token = typeof parsed.token === 'string' ? parsed.token : ''
+    const expiresAt = typeof parsed.expiresAt === 'number' ? parsed.expiresAt : 0
+    if (!token || expiresAt <= Date.now()) {
+      window.localStorage.removeItem(PERSISTED_SESSION_KEY)
+      return ''
+    }
+    window.sessionStorage.setItem(SESSION_KEY, token)
+    return token
+  } catch {
+    return ''
+  }
+}
+
+function readCheckoutSession() {
+  try {
+    return window.sessionStorage.getItem(SESSION_KEY) || readPersistedCheckoutSession()
+  } catch {
+    return readPersistedCheckoutSession()
+  }
+}
+
+function saveCheckoutSession(token: string) {
+  window.sessionStorage.setItem(SESSION_KEY, token)
+  try {
+    window.localStorage.setItem(PERSISTED_SESSION_KEY, JSON.stringify({
+      token,
+      expiresAt: Date.now() + CHECKOUT_SESSION_TTL_MS,
+    }))
+  } catch {
+    // Session storage is enough when local storage is blocked.
+  }
+}
+
+function clearCheckoutSession() {
+  window.sessionStorage.removeItem(SESSION_KEY)
+  try {
+    window.localStorage.removeItem(PERSISTED_SESSION_KEY)
+  } catch {}
+}
+
+function readAwaitingPayment() {
+  try {
+    return window.sessionStorage.getItem(AWAITING_KEY) || window.localStorage.getItem(AWAITING_KEY)
+  } catch {
+    return null
+  }
+}
+
+function setAwaitingPayment() {
+  window.sessionStorage.setItem(AWAITING_KEY, '1')
+  try {
+    window.localStorage.setItem(AWAITING_KEY, '1')
+  } catch {}
+}
+
+function clearAwaitingPayment() {
+  window.sessionStorage.removeItem(AWAITING_KEY)
+  try {
+    window.localStorage.removeItem(AWAITING_KEY)
+  } catch {}
 }
 
 function apiPath(path: string) {
@@ -89,8 +162,8 @@ export default function MarketingCheckoutFlow() {
   const statusRequestRef = useRef<{ token: string; promise: Promise<PaymentStatus> } | null>(null)
 
   const resetExpiredSession = useCallback(() => {
-    sessionStorage.removeItem(SESSION_KEY)
-    sessionStorage.removeItem(AWAITING_KEY)
+    clearCheckoutSession()
+    clearAwaitingPayment()
     setBearer('')
     setOtp('')
     checkingRef.current = false
@@ -112,8 +185,8 @@ export default function MarketingCheckoutFlow() {
   }, [])
 
   const resetPhone = useCallback(() => {
-    sessionStorage.removeItem(SESSION_KEY)
-    sessionStorage.removeItem(AWAITING_KEY)
+    clearCheckoutSession()
+    clearAwaitingPayment()
     setBearer('')
     setOtp('')
     checkingRef.current = false
@@ -139,11 +212,11 @@ export default function MarketingCheckoutFlow() {
   }, [])
 
   useEffect(() => {
-    const savedBearer = sessionStorage.getItem(SESSION_KEY) || ''
+    const savedBearer = readCheckoutSession()
     setBearer(savedBearer)
-    const awaitingPayment = Boolean(savedBearer && sessionStorage.getItem(AWAITING_KEY))
+    const awaitingPayment = Boolean(savedBearer && readAwaitingPayment())
     const paymentReturn = new URLSearchParams(window.location.search).has('payment')
-    if (paymentReturn && savedBearer) sessionStorage.setItem(AWAITING_KEY, '1')
+    if (paymentReturn && savedBearer) setAwaitingPayment()
     if (awaitingPayment) setStage('checking')
 
     const openFromLink = (event: MouseEvent) => {
@@ -153,8 +226,8 @@ export default function MarketingCheckoutFlow() {
       if (finishingRef.current) return
       setMessage('')
       window.history.replaceState(window.history.state, '', window.location.pathname + window.location.search + '#paywall')
-      setStage(sessionStorage.getItem(SESSION_KEY)
-        ? sessionStorage.getItem(AWAITING_KEY) ? 'checking' : 'otp'
+      setStage(readCheckoutSession()
+        ? readAwaitingPayment() ? 'checking' : 'otp'
         : 'account')
     }
     document.addEventListener('click', openFromLink)
@@ -188,8 +261,8 @@ export default function MarketingCheckoutFlow() {
       if (!result.code) throw new Error('Your signup link is not ready. Please check payment status again.')
       setStage('success')
       window.setTimeout(() => {
-        sessionStorage.removeItem(SESSION_KEY)
-        sessionStorage.removeItem(AWAITING_KEY)
+        clearCheckoutSession()
+        clearAwaitingPayment()
         window.location.assign(`${SKILLOMATE_PUBLIC_ORIGIN}/signup#onboarding=${encodeURIComponent(result.code)}`)
       }, 900)
     } catch (error) {
@@ -210,7 +283,7 @@ export default function MarketingCheckoutFlow() {
         setMessage('You already have a PhonePe checkout in progress. Check its status before starting another payment.')
       }
       else {
-        sessionStorage.removeItem(AWAITING_KEY)
+        clearAwaitingPayment()
         setStage('otp')
         setMessage('Your previous PhonePe checkout expired. You can start a new payment now.')
       }
@@ -258,7 +331,7 @@ export default function MarketingCheckoutFlow() {
     }
     if (status.accessGranted) { await finish(token); return }
     if (status.pendingCheckout) {
-      sessionStorage.setItem(AWAITING_KEY, '1')
+      setAwaitingPayment()
       setStage('pending')
       setMessage('You already have a PhonePe checkout in progress. Check its status before starting another payment.')
       return
@@ -268,7 +341,7 @@ export default function MarketingCheckoutFlow() {
     try {
       checkout = await api<{ gateway: string; redirectUrl: string }>('/api/onboarding/checkout', {
         paymentType: 'one_time',
-        returnUrl: `${window.location.origin}${MARKETING_BASE_PATH}/index.html?payment=return#paywall`,
+        returnUrl: `${window.location.origin}${MARKETING_BASE_PATH}/?payment=return#paywall`,
       }, token)
     } catch (error) {
       if (isExpiredSessionError(error)) {
@@ -276,17 +349,21 @@ export default function MarketingCheckoutFlow() {
         return
       }
       if (isUnfinishedCheckoutError(error)) {
-        sessionStorage.setItem(AWAITING_KEY, '1')
+        setAwaitingPayment()
         setStage('pending')
         setMessage('You already have a PhonePe checkout in progress. Check its status before starting another payment.')
+        return
+      }
+      if (isCompletedCheckoutError(error)) {
+        await checkPayment(token, false)
         return
       }
       throw error
     }
     if (checkout.gateway !== 'phonepe' || !checkout.redirectUrl) throw new Error('Secure PhonePe checkout is unavailable.')
-    sessionStorage.setItem(AWAITING_KEY, '1')
+    setAwaitingPayment()
     window.location.assign(checkout.redirectUrl)
-  }, [finish, getStatus, resetExpiredSession])
+  }, [checkPayment, finish, getStatus, resetExpiredSession])
 
   const sendOtp = async (event: FormEvent) => {
     event.preventDefault()
@@ -324,7 +401,7 @@ export default function MarketingCheckoutFlow() {
       }
       const proof = await api<{ signupToken: string }>('/api/auth/verify-mobile-otp', { mobileNumber: `+91${phone}`, mobileOtp: otp, checkoutFlow: 'marketing-onboarding' })
       const session = await api<{ token: string }>('/api/onboarding/session', { signupToken: proof.signupToken })
-      sessionStorage.setItem(SESSION_KEY, session.token)
+      saveCheckoutSession(session.token)
       setBearer(session.token)
       await openPhonePe(session.token)
     } catch (error) {
@@ -361,7 +438,7 @@ export default function MarketingCheckoutFlow() {
     <div className={styles.backdrop} role="presentation">
       <section className={styles.dialog} role="dialog" aria-modal="true" aria-labelledby="checkout-title">
         <header>
-          {stage === 'otp' ? <button type="button" onClick={() => { sessionStorage.removeItem(SESSION_KEY); setBearer(''); setStage('account') }} aria-label="Change mobile number"><ChevronLeft /></button> : <span />}
+          {stage === 'otp' ? <button type="button" onClick={() => { clearCheckoutSession(); clearAwaitingPayment(); setBearer(''); setStage('account') }} aria-label="Change mobile number"><ChevronLeft /></button> : <span />}
           <Image src={`${MARKETING_BASE_PATH}/skillomate-logo-navbar.png`} alt="Skillomate" width={180} height={60} priority />
           {canClose ? <button type="button" onClick={closeCheckout} aria-label="Close checkout"><X /></button> : <span />}
         </header>

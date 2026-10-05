@@ -43,6 +43,14 @@ it("keeps the offer2 static page as the canonical route", () => {
   expect(pageKeyFromPath("/static-pages/skillomate-ai-influencer-course2")).toBe("offer2.html");
 });
 
+it("canonicalizes legacy marketing-web routes to the static courseweb paywall", () => {
+  expect(route("marketing-web.html")).toBe("/static-pages/skillomate-ai-influencer-courseweb/#paywall");
+  expect(route("/marketing-web?utm_source=ad")).toBe("/static-pages/skillomate-ai-influencer-courseweb/?utm_source=ad#paywall");
+  expect(route("/skillomate-ai-influencer-courseweb.html#paywall")).toBe("/static-pages/skillomate-ai-influencer-courseweb/#paywall");
+  expect(pageKeyFromPath("/skillomate-ai-influencer-courseweb.html")).toBe("marketing-web.html");
+  expect(pageKeyFromPath("/static-pages/skillomate-ai-influencer-courseweb/index.html")).toBe("marketing-web.html");
+});
+
 it("shows the premium offer and opens phone verification from its CTA", async () => {
   render(<AdOfferPage />);
   expect(await screen.findByRole("heading", { name: "Skillomate Subscription" })).toBeTruthy();
