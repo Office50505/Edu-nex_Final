@@ -12,8 +12,13 @@ const AWAITING_KEY = 'skillomateMarketingAwaitingPayment'
 
 type Stage = 'account' | 'otp' | 'checking' | 'pending' | 'success' | null
 type Pricing = { gateway: string; checkoutEnabled: boolean; oneTimeAmountPaise: number; accessDays: number }
+function apiPath(path: string) {
+  const configuredBase = process.env.NEXT_PUBLIC_API_BASE_URL || ''
+  return configuredBase ? `${configuredBase}${path}` : path
+}
+
 async function api<T>(path: string, body?: unknown, bearer = ''): Promise<T> {
-  const response = await fetch(path, {
+  const response = await fetch(apiPath(path), {
     method: body === undefined ? 'GET' : 'POST',
     signal: AbortSignal.timeout(20000),
     headers: {
@@ -47,8 +52,9 @@ export default function MarketingCheckoutFlow() {
   useEffect(() => {
     void api<Pricing>('/api/onboarding/config').then((data) => {
       if (data.gateway === 'phonepe' && data.checkoutEnabled && Number.isSafeInteger(data.oneTimeAmountPaise) && data.oneTimeAmountPaise > 0) setPricing(data)
-      else setMessage(`The ${OFFER_PRICE} PhonePe offer is unavailable right now.`)
-    }).catch(() => setMessage(`Unable to load the ${OFFER_PRICE} offer. Please retry.`))
+    }).catch(() => {
+      // OTP verification can still proceed; checkout will surface provider/config errors later.
+    })
   }, [])
 
   useEffect(() => {
@@ -239,10 +245,9 @@ export default function MarketingCheckoutFlow() {
             <span>Verify your phone, then pay {price} once with PhonePe. Complete your account details after payment.</span>
           </div>
           <label>Mobile number<div className={styles.phone}><span>+91</span><input type="tel" value={phone} onChange={(event) => setPhone(cleanPhone(event.target.value))} inputMode="numeric" autoComplete="tel-national" maxLength={13} placeholder="98765 43210" autoFocus required /></div></label>
-          <button className={styles.primary} type="submit" disabled={busy || !pricing || phone.length !== 10}>{busy ? <><LoaderCircle className={styles.spinner} /> Sending OTP</> : 'Send OTP'}</button>
+          <button className={styles.primary} type="submit" disabled={busy || phone.length !== 10}>{busy ? <><LoaderCircle className={styles.spinner} /> Sending OTP</> : 'Send OTP'}</button>
           <p className={styles.status} role="status">{message}</p>
           <small>By continuing, you agree to the Privacy Policy and Terms. This is a one-time payment with no automatic renewal.</small>
-          <a className={styles.signin} href="/login">Already have an account? Sign in</a>
         </form> : null}
 
         {stage === 'otp' ? <form className={styles.form} onSubmit={verifyAndPay}>
