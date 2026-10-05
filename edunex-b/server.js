@@ -2997,6 +2997,59 @@ app.patch('/api/admin/users/:id/access', protectAdmin, async (req, res) => {
   }
 });
 
+app.patch('/api/admin/users/:id/tester', protectAdmin, async (req, res) => {
+  try {
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(400).json({ error: 'Invalid user id' });
+    }
+    const action = String(req.body?.action || '').trim().toLowerCase();
+    const notes = String(req.body?.notes || '').trim().slice(0, 500) || null;
+    if (!['enable', 'disable'].includes(action)) {
+      return res.status(400).json({ error: 'Action must be enable or disable' });
+    }
+
+    const user = await User.findById(req.params.id);
+    if (!user) return res.status(404).json({ error: 'User not found' });
+    if (user.deletedAt) return res.status(409).json({ error: 'Restore this user before changing tester status.' });
+
+    const enabling = action === 'enable';
+    const adminSubject = req.admin?.sub || req.admin?.email || 'admin';
+    const previousState = {
+      isTester: user.isTester,
+      testerSince: user.testerSince,
+      testerAssignedBy: user.testerAssignedBy,
+      testerNotes: user.testerNotes,
+    };
+    user.isTester = enabling;
+    user.testerSince = enabling ? (user.testerSince || new Date()) : null;
+    user.testerAssignedBy = enabling ? adminSubject : null;
+    user.testerNotes = enabling ? notes : null;
+    await user.save();
+
+    const nextState = {
+      isTester: user.isTester,
+      testerSince: user.testerSince,
+      testerAssignedBy: user.testerAssignedBy,
+      testerNotes: user.testerNotes,
+    };
+    await AdminUserAction.create({
+      user: user._id,
+      action: enabling ? 'tester_enabled' : 'tester_disabled',
+      reason: notes,
+      previousState,
+      nextState,
+      adminSubject,
+    });
+
+    res.json({
+      message: enabling ? 'Learner moved to tester analytics.' : 'Tester status removed.',
+      user: { _id: user._id, ...nextState },
+    });
+  } catch (error) {
+    res.status(error.statusCode || 500).json({ error: error.message });
+  }
+});
+
 app.patch('/api/admin/users/:id/subscription', protectAdmin, async (req, res) => {
   try {
     if (!mongoose.Types.ObjectId.isValid(req.params.id)) {

@@ -208,6 +208,7 @@ function mandateLabel(user) {
   if (status === "completed") return "Mandate completed";
   if (status === "expired") return "Mandate expired";
   if (status === "halted") return "Mandate halted";
+  if (status === "paused") return "Mandate paused";
   if (status === "pending") return "Mandate pending";
   if (summary.gateway === "phonepe" && !summary.phonePeMandateId) return "No mandate";
   return "Mandate not recorded";
@@ -216,7 +217,7 @@ function mandateLabel(user) {
 function mandateBadgeClass(user) {
   const status = String(billing(user).mandateStatus || "").toLowerCase();
   if (status === "active" || status === "authenticated") return "good";
-  if (status === "cancelled" || status === "expired" || status === "halted") return "bad";
+  if (status === "cancelled" || status === "expired" || status === "halted" || status === "paused") return "bad";
   if (status === "pending" || status === "created") return "warn";
   return "";
 }
