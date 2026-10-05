@@ -3,7 +3,12 @@ const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
 const test = require('node:test');
-const { frontendCacheControl, inlineScriptCspHash } = require('../services/frontendAssets');
+const {
+  frontendCacheControl,
+  inlineScriptCspHash,
+  isMarketingCourseWebHtml,
+  marketingCourseWebCspHeader,
+} = require('../services/frontendAssets');
 
 test('frontend assets receive cache policies that match their revision strategy', () => {
   const root = path.join('/srv', 'skillomate', 'dist');
@@ -33,4 +38,20 @@ test('inline theme script hashes are derived from the built HTML source', (t) =>
   fs.writeFileSync(indexPath, '<script id="skillomate-theme-preload">window.theme="noir";</script>');
   assert.match(inlineScriptCspHash(indexPath, 'skillomate-theme-preload'), /^'sha256-[A-Za-z0-9+/]+=*'$/);
   assert.equal(inlineScriptCspHash(indexPath, 'missing-script'), '');
+});
+
+test('marketing courseweb static HTML allows Next static export bootstrap scripts', () => {
+  const root = path.join('/srv', 'skillomate', 'dist');
+  const marketingIndex = path.join(root, 'static-pages', 'skillomate-ai-influencer-courseweb', 'index.html');
+  const marketingChunk = path.join(root, 'static-pages', 'skillomate-ai-influencer-courseweb', '_next', 'static', 'chunks', 'app.js');
+  const offerIndex = path.join(root, 'static-pages', 'skillomate-ai-influencer-course', 'index.html');
+
+  assert.equal(isMarketingCourseWebHtml(marketingIndex, root), true);
+  assert.equal(isMarketingCourseWebHtml(marketingChunk, root), false);
+  assert.equal(isMarketingCourseWebHtml(offerIndex, root), false);
+
+  const csp = marketingCourseWebCspHeader(["'self'", 'https:', 'wss:', 'https://skillomate.in']);
+  assert.match(csp, /script-src 'self' 'unsafe-inline' https:\/\/checkout\.razorpay\.com/);
+  assert.match(csp, /connect-src 'self' https: wss: https:\/\/skillomate\.in/);
+  assert.match(csp, /frame-ancestors 'none'/);
 });

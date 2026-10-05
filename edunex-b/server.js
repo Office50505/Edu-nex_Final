@@ -24,7 +24,12 @@ const helmet = require('helmet');
 const { getMongoConnectionOptions } = require('./config/mongodb');
 const { ALLOWED_ORIGINS, skillomateCors } = require('./middleware/cors');
 const { createReadinessHandler } = require('./services/readinessService');
-const { frontendCacheControl, inlineScriptCspHash } = require('./services/frontendAssets');
+const {
+  frontendCacheControl,
+  inlineScriptCspHash,
+  isMarketingCourseWebHtml,
+  marketingCourseWebCspHeader,
+} = require('./services/frontendAssets');
 const {
   assertSourceSize,
   imageVariantFromQuery,
@@ -631,6 +636,9 @@ if (SERVE_FRONTEND) {
     setHeaders(res, filePath) {
       const cacheControl = frontendCacheControl(filePath, FRONTEND_DIR);
       if (cacheControl) res.setHeader('Cache-Control', cacheControl);
+      if (isMarketingCourseWebHtml(filePath, FRONTEND_DIR)) {
+        res.setHeader('Content-Security-Policy', marketingCourseWebCspHeader(cspConnectSources));
+      }
     },
   }));
 }
