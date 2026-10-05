@@ -40,7 +40,11 @@ function isExpiredSessionError(error: unknown) {
 
 function apiPath(path: string) {
   const configuredBase = process.env.NEXT_PUBLIC_API_BASE_URL || ''
-  return configuredBase ? `${configuredBase}${path}` : path
+  if (configuredBase) return `${configuredBase}${path}`
+  if (typeof window !== 'undefined' && window.location.hostname === 'skillomate.in') {
+    return `https://api.skillomate.in${path}`
+  }
+  return path
 }
 
 async function api<T>(path: string, body?: unknown, bearer = '', options: ApiOptions = {}): Promise<T> {
