@@ -3933,7 +3933,7 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
   const onHoldSpeedChangeRef = useRef(onHoldSpeedChange);
   const qualityPreferenceRef = useRef(AUTO_QUALITY_LABEL);
   const playbackRateSyncTimerRef = useRef(null);
-  const volumeBarWidth = useRef(1);
+  const volumeSliderHeight = useRef(1);
   const previousAudibleVolumeRef = useRef(1);
   const playerControlActiveRef = useRef(false);
   const sendCmdRef = useRef(() => {});
@@ -3965,6 +3965,7 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
   const [renderPlayerChrome, setRenderPlayerChrome] = useState(true);
   const [hasPlaybackStarted, setHasPlaybackStarted] = useState(false);
   const [playerControlActive, setPlayerControlActive] = useState(false);
+  const [volumeDrawerOpen, setVolumeDrawerOpen] = useState(false);
   useEffect(() => {
     latestProgressValueRef.current = { currentTime, duration };
   }, [currentTime, duration]);
@@ -4020,8 +4021,12 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
     if (!isActive) {
       setHasPlaybackStarted(false);
       setPlayerChromeVisible(true);
+      setVolumeDrawerOpen(false);
     }
   }, [isActive]);
+  useEffect(() => {
+    if (playerChromeHidden || isEnded || showSettings || suspendSurface) setVolumeDrawerOpen(false);
+  }, [isEnded, playerChromeHidden, showSettings, suspendSurface]);
   useEffect(() => {
     onPlayerChromeHiddenChange?.(Boolean(playerChromeHidden));
   }, [onPlayerChromeHiddenChange, playerChromeHidden]);
@@ -4894,17 +4899,13 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
     sendCmd("setVolume", [Math.round(normalizedVolume * 100)]);
     sendCmd(shouldMute ? "mute" : "unMute");
   }
-  function toggleMute() {
-    if (isMuted || volume <= 0.01) {
-      setPlayerVolume(previousAudibleVolumeRef.current || 1);
-      return;
-    }
-    previousAudibleVolumeRef.current = volume;
-    setPlayerVolume(0);
+  function toggleVolumeDrawer() {
+    revealPlayerChrome();
+    setVolumeDrawerOpen(open => !open);
   }
-  function handleVolumeDrag(locationX) {
-    const width = Math.max(1, volumeBarWidth.current || 1);
-    setPlayerVolume(locationX / width);
+  function handleVolumeDrag(locationY) {
+    const height = Math.max(1, volumeSliderHeight.current || 1);
+    setPlayerVolume(1 - (locationY / height));
   }
   function syncPlaybackRate(rate = playbackStateRef.current?.playbackRate || 1) {
     const requestedRate = holdSpeedRef.current.active ? HOLD_SPEED_RATE : rate;
@@ -5505,62 +5506,71 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
         </View>
       )}
       {!isEnded && (
-        <View
-          style={s.volumeControl}
-          accessibilityRole="adjustable"
-          accessibilityLabel="Video volume"
-          accessibilityValue={{
-            min: 0,
-            max: 100,
-            now: Math.round(volume * 100),
-            text: isMuted || volume <= 0.01 ? "Muted" : `${Math.round(volume * 100)} percent`,
-          }}
-          accessibilityActions={[
-            { name: "increment", label: "Increase volume" },
-            { name: "decrement", label: "Decrease volume" },
-          ]}
-          onAccessibilityAction={({ nativeEvent }) => {
-            if (nativeEvent.actionName === "increment") setPlayerVolume(volume + 0.1);
-            if (nativeEvent.actionName === "decrement") setPlayerVolume(volume - 0.1);
-          }}
-        >
-          <TouchableOpacity
-            onPress={toggleMute}
-            onPressIn={beginPlayerControlInteraction}
-            onPressOut={endPlayerControlInteraction}
-            style={s.volumeIconButton}
-            accessibilityRole="button"
-            accessibilityLabel={isMuted || volume <= 0.01 ? "Unmute video" : "Mute video"}
-          >
-            <Ionicons
-              name={isMuted || volume <= 0.01 ? "volume-mute" : volume < 0.5 ? "volume-low" : "volume-high"}
-              size={20}
-              color="#fff"
-            />
-          </TouchableOpacity>
-          <View
-            style={s.volumeSlider}
-            onLayout={e => { volumeBarWidth.current = e.nativeEvent.layout.width; }}
-            onStartShouldSetResponder={() => true}
-            onMoveShouldSetResponder={() => true}
-            onResponderTerminationRequest={() => false}
-            onResponderGrant={e => {
-              beginPlayerControlInteraction();
-              handleVolumeDrag(e.nativeEvent.locationX);
-            }}
-            onResponderMove={e => {
-              revealPlayerChrome();
-              handleVolumeDrag(e.nativeEvent.locationX);
-            }}
-            onResponderRelease={endPlayerControlInteraction}
-            onResponderTerminate={endPlayerControlInteraction}
-          >
-            <View style={s.volumeSliderTrack} pointerEvents="none">
-              <View style={[s.volumeSliderFill, { width: `${Math.max(0, Math.min(1, volume)) * 100}%` }]} />
+        <>
+          {volumeDrawerOpen && (
+            <View
+              style={s.volumeDrawer}
+              accessibilityRole="adjustable"
+              accessibilityLabel="Video volume"
+              accessibilityValue={{
+                min: 0,
+                max: 100,
+                now: Math.round(volume * 100),
+                text: isMuted || volume <= 0.01 ? "Muted" : `${Math.round(volume * 100)} percent`,
+              }}
+              accessibilityActions={[
+                { name: "increment", label: "Increase volume" },
+                { name: "decrement", label: "Decrease volume" },
+              ]}
+              onAccessibilityAction={({ nativeEvent }) => {
+                if (nativeEvent.actionName === "increment") setPlayerVolume(volume + 0.1);
+                if (nativeEvent.actionName === "decrement") setPlayerVolume(volume - 0.1);
+              }}
+            >
+              <Ionicons name="volume-high" size={16} color="#fff" />
+              <View
+                style={s.volumeSlider}
+                onLayout={e => { volumeSliderHeight.current = e.nativeEvent.layout.height; }}
+                onStartShouldSetResponder={() => true}
+                onMoveShouldSetResponder={() => true}
+                onResponderTerminationRequest={() => false}
+                onResponderGrant={e => {
+                  beginPlayerControlInteraction();
+                  handleVolumeDrag(e.nativeEvent.locationY);
+                }}
+                onResponderMove={e => {
+                  revealPlayerChrome();
+                  handleVolumeDrag(e.nativeEvent.locationY);
+                }}
+                onResponderRelease={endPlayerControlInteraction}
+                onResponderTerminate={endPlayerControlInteraction}
+              >
+                <View style={s.volumeSliderTrack} pointerEvents="none">
+                  <View style={[s.volumeSliderFill, { height: `${Math.max(0, Math.min(1, volume)) * 100}%` }]} />
+                </View>
+                <View style={[s.volumeSliderThumb, { bottom: `${Math.max(0, Math.min(1, volume)) * 100}%` }]} pointerEvents="none" />
+              </View>
+              <Ionicons name="volume-mute" size={15} color="rgba(255,255,255,0.78)" />
             </View>
-            <View style={[s.volumeSliderThumb, { left: `${Math.max(0, Math.min(1, volume)) * 100}%` }]} pointerEvents="none" />
+          )}
+          <View style={s.volumeControl}>
+            <TouchableOpacity
+              onPress={toggleVolumeDrawer}
+              onPressIn={beginPlayerControlInteraction}
+              onPressOut={endPlayerControlInteraction}
+              style={s.volumeIconButton}
+              accessibilityRole="button"
+              accessibilityLabel={volumeDrawerOpen ? "Hide volume control" : "Show volume control"}
+              accessibilityState={{ expanded: volumeDrawerOpen }}
+            >
+              <Ionicons
+                name={isMuted || volume <= 0.01 ? "volume-mute" : volume < 0.5 ? "volume-low" : "volume-high"}
+                size={20}
+                color="#fff"
+              />
+            </TouchableOpacity>
           </View>
-        </View>
+        </>
       )}
       {!isEnded && !isBuffering && (
         <TouchableOpacity
@@ -5731,16 +5741,15 @@ function ReelsScreen({ courseId, course, initialIndex, initialTime, onBack, onRe
   const reelScrollEnabled = videos.length > 1 && !playerHoldSpeedActive;
   const webPlayerChromeOpacity = webPlayerChromeOpacityRef.current;
   const isIosEdgeBackGuide = Platform.OS === "ios";
-  const [edgeBackHint, setEdgeBackHint] = useState({ active: false, side: "left", progress: 0 });
+  const playerEdgeBackProgress = useRef(new Animated.Value(0)).current;
   const edgeBackGestureSideRef = useRef(null);
   const edgeBackLatestGestureRef = useRef({ side: "left", distance: 0, velocity: 0 });
   const edgeBackTriggeredRef = useRef(false);
   const getEdgeBackGestureSide = useCallback((gesture) => {
     if (!isIosEdgeBackGuide || videoUiOverlayOpen || playerSettingsOpen) return null;
     if (gesture.x0 <= PLAYER_EDGE_BACK_WIDTH) return "left";
-    if (gesture.x0 >= viewportWidth - PLAYER_EDGE_BACK_WIDTH) return "right";
     return null;
-  }, [isIosEdgeBackGuide, playerSettingsOpen, videoUiOverlayOpen, viewportWidth]);
+  }, [isIosEdgeBackGuide, playerSettingsOpen, videoUiOverlayOpen]);
   const getEdgeBackGestureDistance = useCallback((side, gesture) => (
     side === "left" ? Math.max(0, gesture.dx) : Math.max(0, -gesture.dx)
   ), []);
@@ -5754,18 +5763,18 @@ function ReelsScreen({ courseId, course, initialIndex, initialTime, onBack, onRe
   const resetEdgeBackGesture = useCallback((side = "left") => {
     edgeBackGestureSideRef.current = null;
     edgeBackLatestGestureRef.current = { side, distance: 0, velocity: 0 };
-    setEdgeBackHint({ active: false, side, progress: 0 });
-  }, []);
+    Animated.timing(playerEdgeBackProgress, {
+      toValue: 0,
+      duration: 150,
+      easing: Easing.out(Easing.cubic),
+      useNativeDriver: true,
+    }).start();
+  }, [playerEdgeBackProgress]);
   const triggerEdgeBack = useCallback(() => {
     if (edgeBackTriggeredRef.current) return;
     edgeBackTriggeredRef.current = true;
     onBack?.();
   }, [onBack]);
-  const triggerEdgeBackHandle = useCallback((side) => {
-    if (!isIosEdgeBackGuide || videoUiOverlayOpen || playerSettingsOpen) return;
-    setEdgeBackHint({ active: true, side, progress: 1 });
-    triggerEdgeBack();
-  }, [isIosEdgeBackGuide, playerSettingsOpen, triggerEdgeBack, videoUiOverlayOpen]);
   const finishEdgeBackGesture = useCallback((gesture) => {
     const side = edgeBackGestureSideRef.current || edgeBackLatestGestureRef.current.side || getEdgeBackGestureSide(gesture);
     if (!side) {
@@ -5794,10 +5803,10 @@ function ReelsScreen({ courseId, course, initialIndex, initialTime, onBack, onRe
     onMoveShouldSetPanResponderCapture: (_, gesture) => shouldClaimEdgeBackGesture(gesture),
     onPanResponderGrant: (_, gesture) => {
       const side = getEdgeBackGestureSide(gesture) || "left";
+      playerEdgeBackProgress.stopAnimation();
       edgeBackGestureSideRef.current = side;
       edgeBackLatestGestureRef.current = { side, distance: 0, velocity: 0 };
       edgeBackTriggeredRef.current = false;
-      setEdgeBackHint({ active: true, side, progress: 0 });
     },
     onPanResponderMove: (_, gesture) => {
       const side = edgeBackGestureSideRef.current || getEdgeBackGestureSide(gesture);
@@ -5805,16 +5814,12 @@ function ReelsScreen({ courseId, course, initialIndex, initialTime, onBack, onRe
       const distance = getEdgeBackGestureDistance(side, gesture);
       const velocity = side === "left" ? Math.max(0, gesture.vx) : Math.max(0, -gesture.vx);
       edgeBackLatestGestureRef.current = { side, distance, velocity };
-      setEdgeBackHint({
-        active: true,
-        side,
-        progress: Math.max(0, Math.min(1, distance / PLAYER_EDGE_BACK_DISTANCE)),
-      });
+      playerEdgeBackProgress.setValue(Math.max(0, Math.min(1, distance / PLAYER_EDGE_BACK_DISTANCE)));
     },
     onPanResponderRelease: (_, gesture) => finishEdgeBackGesture(gesture),
     onPanResponderTerminate: (_, gesture) => finishEdgeBackGesture(gesture),
     onPanResponderTerminationRequest: () => false,
-  }), [finishEdgeBackGesture, getEdgeBackGestureDistance, getEdgeBackGestureSide, shouldClaimEdgeBackGesture]);
+  }), [finishEdgeBackGesture, getEdgeBackGestureDistance, getEdgeBackGestureSide, playerEdgeBackProgress, shouldClaimEdgeBackGesture]);
   const finishEdgeBackHandleGesture = useCallback((gesture) => {
     const side = edgeBackGestureSideRef.current || getEdgeBackGestureSide(gesture);
     if (!side) return;
@@ -5827,7 +5832,6 @@ function ReelsScreen({ courseId, course, initialIndex, initialTime, onBack, onRe
       edgeBackLatestGestureRef.current.velocity || 0,
     );
     const shouldGoBack =
-      distance < PLAYER_EDGE_BACK_CLAIM_DISTANCE ||
       distance >= PLAYER_EDGE_BACK_RELEASE_DISTANCE ||
       (velocity >= PLAYER_EDGE_BACK_RELEASE_VELOCITY && distance >= PLAYER_EDGE_BACK_RELEASE_VELOCITY_DISTANCE);
 
@@ -5841,10 +5845,11 @@ function ReelsScreen({ courseId, course, initialIndex, initialTime, onBack, onRe
     onMoveShouldSetPanResponderCapture: () => true,
     onPanResponderGrant: (_, gesture) => {
       const side = getEdgeBackGestureSide(gesture) || "left";
+      playerEdgeBackProgress.stopAnimation();
+      playerEdgeBackProgress.setValue(0.35);
       edgeBackGestureSideRef.current = side;
       edgeBackLatestGestureRef.current = { side, distance: 0, velocity: 0 };
       edgeBackTriggeredRef.current = false;
-      setEdgeBackHint({ active: true, side, progress: 0.35 });
     },
     onPanResponderMove: (_, gesture) => {
       const side = edgeBackGestureSideRef.current || getEdgeBackGestureSide(gesture);
@@ -5852,16 +5857,27 @@ function ReelsScreen({ courseId, course, initialIndex, initialTime, onBack, onRe
       const distance = getEdgeBackGestureDistance(side, gesture);
       const velocity = side === "left" ? Math.max(0, gesture.vx) : Math.max(0, -gesture.vx);
       edgeBackLatestGestureRef.current = { side, distance, velocity };
-      setEdgeBackHint({
-        active: true,
-        side,
-        progress: Math.max(0.35, Math.min(1, distance / PLAYER_EDGE_BACK_DISTANCE)),
-      });
+      playerEdgeBackProgress.setValue(Math.max(0.35, Math.min(1, distance / PLAYER_EDGE_BACK_DISTANCE)));
     },
     onPanResponderRelease: (_, gesture) => finishEdgeBackHandleGesture(gesture),
     onPanResponderTerminate: (_, gesture) => finishEdgeBackHandleGesture(gesture),
     onPanResponderTerminationRequest: () => false,
-  }), [finishEdgeBackHandleGesture, getEdgeBackGestureDistance, getEdgeBackGestureSide]);
+  }), [finishEdgeBackHandleGesture, getEdgeBackGestureDistance, getEdgeBackGestureSide, playerEdgeBackProgress]);
+  const playerEdgeBackGuideOpacity = playerEdgeBackProgress.interpolate({
+    inputRange: [0, 0.18, 1],
+    outputRange: [0, 0.65, 1],
+    extrapolate: "clamp",
+  });
+  const playerEdgeBackGuideTranslateX = playerEdgeBackProgress.interpolate({
+    inputRange: [0, 1],
+    outputRange: [-12, 30],
+    extrapolate: "clamp",
+  });
+  const playerEdgeBackGuideScale = playerEdgeBackProgress.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0.88, 1],
+    extrapolate: "clamp",
+  });
   const webPlayerChromeAnimatedStyle = useMemo(() => ({
     opacity: webPlayerChromeOpacity,
     transform: [{
@@ -6171,20 +6187,26 @@ function ReelsScreen({ courseId, course, initialIndex, initialTime, onBack, onRe
         <>
           <View
             style={[s.playerEdgeBackStrip, s.playerEdgeBackStripLeft]}
-            onAccessibilityTap={() => triggerEdgeBackHandle("left")}
-            accessible
-            accessibilityRole="button"
-            accessibilityLabel="Go back"
+            pointerEvents="box-only"
+            accessible={false}
             {...edgeBackHandlePanResponder.panHandlers}
           />
-          <View
-            style={[s.playerEdgeBackStrip, s.playerEdgeBackStripRight]}
-            onAccessibilityTap={() => triggerEdgeBackHandle("right")}
-            accessible
-            accessibilityRole="button"
-            accessibilityLabel="Go back"
-            {...edgeBackHandlePanResponder.panHandlers}
-          />
+          <Animated.View
+            pointerEvents="none"
+            style={[
+              s.globalEdgeBackGuide,
+              s.playerEdgeBackGuide,
+              {
+                opacity: playerEdgeBackGuideOpacity,
+                transform: [
+                  { translateX: playerEdgeBackGuideTranslateX },
+                  { scale: playerEdgeBackGuideScale },
+                ],
+              },
+            ]}
+          >
+            <Ionicons name="chevron-back" size={28} color={C.text} />
+          </Animated.View>
         </>
       )}
 
@@ -9220,7 +9242,7 @@ function DeleteAccountModal({ visible, user, onClose, onDeleteAccount }) {
   );
 }
 
-function ProfileScreen({ user, session, onLogout, onDeleteAccount, onGoToHome, onGoToCourses, onGoToAI, onGoToDownloads, wishlistCount, onGoToWishlist, onGoToCertificates, certificatesCount, onAvatarChange, aiRobotId, onGoToSubscription, onOpenLegal, themeMode = "dark", resolvedThemeMode = "dark", onThemeChange, refreshing = false, onRefresh }) {
+function ProfileScreen({ user, session, onLogout, onDeleteAccount, onGoToHome, onGoToCourses, onGoToAI, onGoToDownloads, wishlistCount, onGoToWishlist, onGoToCertificates, certificatesCount, onAvatarChange, onProfileChange, aiRobotId, onGoToSubscription, onOpenLegal, themeMode = "dark", resolvedThemeMode = "dark", onThemeChange, refreshing = false, onRefresh }) {
   const isActive = hasActivePremiumEntitlement(user);
   const memberSince = user?._id
     ? new Date(parseInt(user._id.substring(0, 8), 16) * 1000).toLocaleDateString("en-IN", { month: "short", year: "numeric" })
@@ -9230,6 +9252,7 @@ function ProfileScreen({ user, session, onLogout, onDeleteAccount, onGoToHome, o
   const [showAvatarPicker, setShowAvatarPicker] = useState(false);
   const [showDeleteAccount, setShowDeleteAccount] = useState(false);
   const [tempAvatar, setTempAvatar] = useState(user.avatar || "a1");
+  const [tempFullName, setTempFullName] = useState(user.fullName || "");
   const [savingAvatar, setSavingAvatar] = useState(false);
 
   return (
@@ -9267,7 +9290,7 @@ function ProfileScreen({ user, session, onLogout, onDeleteAccount, onGoToHome, o
       >
         <View style={s.profileHero}>
           <TouchableOpacity
-            onPress={() => { setTempAvatar(user.avatar || "a1"); setShowAvatarPicker(true); }}
+            onPress={() => { setTempAvatar(user.avatar || "a1"); setTempFullName(user.fullName || ""); setShowAvatarPicker(true); }}
             style={{ position: "relative" }}
             accessibilityRole="button"
             accessibilityLabel="Change profile avatar"
@@ -9306,7 +9329,7 @@ function ProfileScreen({ user, session, onLogout, onDeleteAccount, onGoToHome, o
                   <Text style={{ color: C.primary, fontWeight: "800" }}>Choose From Photos</Text>
                 </TouchableOpacity>
 
-                <View style={{ flexDirection: "row", flexWrap: "wrap", justifyContent: "center", gap: 12, marginBottom: 24 }}>
+                <View style={{ flexDirection: "row", flexWrap: "wrap", justifyContent: "center", gap: 12, marginBottom: 22 }}>
                   {DEMO_AVATARS.map(av => (
                     <TouchableOpacity
                       key={av.id}
@@ -9324,11 +9347,36 @@ function ProfileScreen({ user, session, onLogout, onDeleteAccount, onGoToHome, o
                   ))}
                 </View>
 
+                <View style={s.profileNameEditor}>
+                  <Text style={s.profileNameEditorLabel}>Name</Text>
+                  <TextInput
+                    value={tempFullName}
+                    onChangeText={setTempFullName}
+                    placeholder="Enter your name"
+                    placeholderTextColor={C.textMuted}
+                    style={s.profileNameEditorInput}
+                    editable={!savingAvatar}
+                    maxLength={80}
+                    returnKeyType="done"
+                    accessibilityLabel="Profile name"
+                  />
+                </View>
+
                 <TouchableOpacity
                   onPress={async () => {
+                    const nextName = String(tempFullName || "").trim().replace(/\s+/g, " ");
+                    if (nextName.length < 2) {
+                      Alert.alert("Name required", "Enter a name of at least 2 characters.");
+                      return;
+                    }
+                    if (!session?.requestJson) {
+                      Alert.alert("Profile not saved", "Please reopen the app and try again.");
+                      return;
+                    }
                     setSavingAvatar(true);
                     try {
-                      let data;
+                      let data = null;
+                      let nextProfile = {};
                       if (tempAvatar?.uri) {
                         const imageResponse = await fetch(tempAvatar.uri);
                         const imageBytes = await imageResponse.blob();
@@ -9344,11 +9392,25 @@ function ProfileScreen({ user, session, onLogout, onDeleteAccount, onGoToHome, o
                           body: JSON.stringify({ avatar: tempAvatar }),
                         });
                       }
-                      if (data?.avatar) { onAvatarChange?.(data.avatar); setShowAvatarPicker(false); }
+                      if (data?.avatar) {
+                        nextProfile.avatar = data.avatar;
+                        onAvatarChange?.(data.avatar);
+                      }
+                      if (nextName !== String(user.fullName || "").trim()) {
+                        const profileData = await session.requestJson("/api/auth/me", {
+                          method: "PATCH",
+                          headers: { "Content-Type": "application/json" },
+                          body: JSON.stringify({ fullName: nextName }),
+                        });
+                        nextProfile = { ...nextProfile, ...(profileData?.user || { fullName: nextName }) };
+                      }
+                      if (Object.keys(nextProfile).length) onProfileChange?.(nextProfile);
+                      setShowAvatarPicker(false);
                     } catch (uploadError) {
-                      Alert.alert("Photo not saved", uploadError.message || "Check your connection and try again.");
+                      Alert.alert("Profile not saved", uploadError.message || "Check your connection and try again.");
+                    } finally {
+                      setSavingAvatar(false);
                     }
-                    setSavingAvatar(false);
                   }}
                   style={[s.btn, s.btnFill, { marginTop: 0 }]}
                   disabled={savingAvatar}
@@ -9358,7 +9420,7 @@ function ProfileScreen({ user, session, onLogout, onDeleteAccount, onGoToHome, o
                 >
                   {savingAvatar
                     ? <ActivityIndicator color={C.onPrimary} />
-                    : <Text style={s.btnText}>Save Avatar</Text>
+                    : <Text style={s.btnText}>Save Profile</Text>
                   }
                 </TouchableOpacity>
               </Pressable>
@@ -12729,6 +12791,7 @@ export default function App() {
   if (mainScreen === "profile") {
     return withGlobalBackGesture(
       <ProfileScreen
+        session={nativeSession}
         user={user}
         onLogout={handleLogout}
         onDeleteAccount={handleDeleteAccount}
@@ -12749,6 +12812,12 @@ export default function App() {
           setUser(prev => {
             if (!prev) return prev;
             return { ...prev, avatar: avatarId };
+          });
+        }}
+        onProfileChange={profilePatch => {
+          setUser(prev => {
+            if (!prev) return prev;
+            return { ...prev, ...profilePatch };
           });
         }}
         aiRobotId={aiRobotId}
@@ -14569,6 +14638,26 @@ courseListCard: {
     paddingTop: 6,
     paddingBottom: 22,
   },
+  profileNameEditor: {
+    marginBottom: 20,
+  },
+  profileNameEditorLabel: {
+    color: C.text,
+    fontSize: 12,
+    fontWeight: "800",
+    marginBottom: 8,
+  },
+  profileNameEditorInput: {
+    minHeight: MIN_TOUCH_TARGET,
+    borderWidth: 1,
+    borderColor: C.border,
+    borderRadius: 12,
+    paddingHorizontal: 14,
+    color: C.text,
+    backgroundColor: C.cardBg,
+    fontSize: 15,
+    fontWeight: "700",
+  },
   themeCard: {
     backgroundColor: C.cardBg, borderRadius: RADIUS.lg, borderWidth: 1, borderColor: C.border,
     padding: 14, marginBottom: 16,
@@ -15393,21 +15482,35 @@ courseListCard: {
     justifyContent: "center",
   },
   playerEdgeBackStripLeft: { left: 0, alignItems: "flex-start" },
-  playerEdgeBackStripRight: { right: 0, alignItems: "flex-end" },
+  playerEdgeBackGuide: {
+    top: "50%",
+    zIndex: 77,
+    elevation: 77,
+  },
   volumeControl: {
     position: "absolute",
     bottom: 18,
     left: 66,
+    width: MIN_TOUCH_TARGET,
     height: MIN_TOUCH_TARGET,
-    width: 190,
-    flexDirection: "row",
     alignItems: "center",
-    gap: 8,
-    paddingLeft: 0,
-    paddingRight: 12,
+    justifyContent: "center",
     backgroundColor: "rgba(0,0,0,0.56)",
-    borderRadius: 14,
+    borderRadius: MIN_TOUCH_TARGET / 2,
     zIndex: 14,
+  },
+  volumeDrawer: {
+    position: "absolute",
+    bottom: 70,
+    left: 66,
+    width: MIN_TOUCH_TARGET,
+    height: 176,
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingVertical: 12,
+    backgroundColor: "rgba(0,0,0,0.62)",
+    borderRadius: 20,
+    zIndex: 16,
   },
   volumeIconButton: {
     width: MIN_TOUCH_TARGET,
@@ -15417,28 +15520,31 @@ courseListCard: {
     borderRadius: MIN_TOUCH_TARGET / 2,
   },
   volumeSlider: {
-    flex: 1,
-    height: MIN_TOUCH_TARGET,
+    width: MIN_TOUCH_TARGET,
+    height: 108,
+    alignItems: "center",
     justifyContent: "center",
   },
   volumeSliderTrack: {
-    height: 5,
+    width: 5,
+    height: "100%",
     borderRadius: 3,
     overflow: "hidden",
     backgroundColor: "rgba(255,255,255,0.78)",
+    justifyContent: "flex-end",
   },
   volumeSliderFill: {
-    height: "100%",
+    width: "100%",
     borderRadius: 3,
     backgroundColor: "#FFFFFF",
   },
   volumeSliderThumb: {
     position: "absolute",
-    top: "50%",
+    left: "50%",
     width: 16,
     height: 16,
-    marginTop: -8,
     marginLeft: -8,
+    marginBottom: -8,
     borderRadius: 8,
     backgroundColor: "#FFFFFF",
   },
