@@ -27,10 +27,10 @@ export async function prepareTemporaryDownloads(fs, storage) {
     let safeId;
     try { safeId = safeDownloadId(id); } catch { continue; }
     if (safeId !== id || info?.status !== 'done') continue;
-    // Older CloudFront downloads saved local HLS manifests. Expo's native player
-    // does not reliably play those file-based HLS folders offline, so force a
-    // fresh MP4 download through the current download flow.
-    if (info.kind === 'hls' && info.provider === 'aws_cloudfront') continue;
+    // Older CloudFront downloads saved local HLS manifests. Keep only the newer
+    // fallback format, which stores every signed resource beside a rewritten
+    // manifest instead of relying on any remote URL at playback time.
+    if (info.kind === 'hls' && info.provider === 'aws_cloudfront' && Number(info.offlineFormatVersion || 0) < 2) continue;
     const target = info.kind === 'hls' ? downloadManifestPath(fs, id) : downloadPath(fs, id);
     const legacyCache = `${cacheDir}${id}.mp4`;
     const legacy = legacyDir && `${legacyDir}${id}.mp4`;

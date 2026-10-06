@@ -2050,6 +2050,19 @@ function getDownloadFailureMessage(error, status) {
   return "This lesson could not be saved. Check your connection and course access, then retry.";
 }
 
+function canFallbackToCloudFrontHlsDownload(error) {
+  const statusCode = Number(error?.status || 0);
+  const message = String(error?.message || error || "").toLowerCase();
+  return (
+    statusCode >= 500 ||
+    statusCode === 425 ||
+    message.includes("conversion") ||
+    message.includes("ffmpeg") ||
+    message.includes("prepared") ||
+    message.includes("temporarily unavailable")
+  );
+}
+
 async function waitForPreparedDownload(session, statusUrl, onProgress) {
   if (!statusUrl) return;
   const startedAt = Date.now();
@@ -11634,7 +11647,7 @@ export default function App() {
     const current = downloadsRef.current[downloadId];
     if (current?.status === "downloading") return;
     if (current?.status === "done" && (await FileSystem.getInfoAsync(filePath)).exists) return;
-    const meta = {
+    let meta = {
       id: downloadId,
       kind: downloadKind === "hls" && !protectedCloudfront ? "hls" : "mp4",
       title: video.title || "Video",
@@ -11677,28 +11690,43 @@ export default function App() {
         if (protectedCloudfront) {
           const protectedVideoId = video?._id || video?.id || video?.videoId;
           if (!courseId || !protectedVideoId) throw new Error("Download authorization unavailable.");
-          const grant = await nativeSession.requestJson(`/api/courses/${encodeURIComponent(courseId)}/videos/${encodeURIComponent(protectedVideoId)}/download-grant`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ prepared: Platform.OS === "android" }),
-          });
-          if (!grant?.downloadUrl) throw new Error("The download authorization response was invalid.");
-          const usesPreparedDownload = Platform.OS === "android" && Boolean(grant.statusUrl);
-          if (usesPreparedDownload) {
-            await waitForPreparedDownload(
-              nativeSession,
-              grant.statusUrl,
-              pct => setDownloads(prev => ({ ...prev, [downloadId]: { ...prev[downloadId], progress: pct } })),
-            );
+          try {
+            const grant = await nativeSession.requestJson(`/api/courses/${encodeURIComponent(courseId)}/videos/${encodeURIComponent(protectedVideoId)}/download-grant`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ prepared: true }),
+            });
+            if (!grant?.downloadUrl) throw new Error("The download authorization response was invalid.");
+            const usesPreparedDownload = Boolean(grant.statusUrl);
+            if (usesPreparedDownload) {
+              await waitForPreparedDownload(
+                nativeSession,
+                grant.statusUrl,
+                pct => setDownloads(prev => ({ ...prev, [downloadId]: { ...prev[downloadId], progress: pct } })),
+              );
+            }
+            const url = `${API_BASE}${usesPreparedDownload ? grant.downloadUrl : (grant.directDownloadUrl || grant.downloadUrl)}`;
+            const dl = FileSystem.createDownloadResumable(url, filePath, {}, ({ totalBytesWritten, totalBytesExpectedToWrite }) => {
+              const rawPct = totalBytesExpectedToWrite > 0 ? totalBytesWritten / totalBytesExpectedToWrite : 0;
+              const pct = usesPreparedDownload ? 0.35 + rawPct * 0.65 : rawPct;
+              setDownloads(prev => ({ ...prev, [downloadId]: { ...prev[downloadId], progress: pct } }));
+            });
+            const result = await dl.downloadAsync();
+            if (result?.status !== 200) throw Object.assign(new Error("Download failed"), { status: result?.status });
+          } catch (error) {
+            if (Platform.OS !== "ios" || !canFallbackToCloudFrontHlsDownload(error)) throw error;
+            const fallbackPath = downloadManifestPath(FileSystem, downloadId);
+            filePath = fallbackPath;
+            meta = { ...meta, kind: "hls", offlineFormatVersion: 2 };
+            setDownloads(prev => ({ ...prev, [downloadId]: { ...prev[downloadId], path: fallbackPath, progress: 0, ...meta } }));
+            const lease = await fetchPlaybackLease({ courseId, video: { ...video, _id: protectedVideoId }, user: u });
+            await downloadHlsToAppCache({
+              hlsUrl: lease.hlsUrl,
+              targetDir,
+              manifestPath: fallbackPath,
+              onProgress: pct => setDownloads(prev => ({ ...prev, [downloadId]: { ...prev[downloadId], progress: pct } })),
+            });
           }
-          const url = `${API_BASE}${usesPreparedDownload ? grant.downloadUrl : (grant.directDownloadUrl || grant.downloadUrl)}`;
-          const dl = FileSystem.createDownloadResumable(url, filePath, {}, ({ totalBytesWritten, totalBytesExpectedToWrite }) => {
-            const rawPct = totalBytesExpectedToWrite > 0 ? totalBytesWritten / totalBytesExpectedToWrite : 0;
-            const pct = usesPreparedDownload ? 0.35 + rawPct * 0.65 : rawPct;
-            setDownloads(prev => ({ ...prev, [downloadId]: { ...prev[downloadId], progress: pct } }));
-          });
-          const result = await dl.downloadAsync();
-          if (result?.status !== 200) throw Object.assign(new Error("Download failed"), { status: result?.status });
         } else {
           const hlsUrl = nativeVideoUrl;
           if (!hlsUrl) throw new Error("Playback download URL unavailable.");
@@ -11713,7 +11741,7 @@ export default function App() {
         throw new Error("Unsupported download source.");
       }
       const stat = await FileSystem.getInfoAsync(filePath).catch(() => ({}));
-      if (protectedCloudfront && (!stat.exists || Number(stat.size || 0) < 1024 * 1024)) {
+      if (protectedCloudfront && meta.kind === "mp4" && (!stat.exists || Number(stat.size || 0) < 1024 * 1024)) {
         await FileSystem.deleteAsync(filePath, { idempotent: true }).catch(() => {});
         throw new Error("Incomplete video download.");
       }
