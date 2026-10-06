@@ -1503,6 +1503,7 @@ app.get('/api/admin/payments', protectAdmin, async (req, res) => {
 
 app.get('/api/admin/analytics', protectAdmin, async (req, res) => {
   try {
+    const { getClarityDashboardInsights } = require('./services/clarityInsights');
     const { startDate, endDate } = getAnalyticsRange(req.query);
     const rangeFilter = { $gte: startDate, $lte: endDate };
     const rangeStartKey = formatDateKey(startDate);
@@ -2403,6 +2404,15 @@ app.get('/api/admin/analytics', protectAdmin, async (req, res) => {
       45: '45-80',
       'not provided': 'Not provided',
     };
+    let clarity;
+    try {
+      clarity = await getClarityDashboardInsights();
+    } catch (error) {
+      clarity = {
+        configured: false,
+        error: error.message || 'Unable to load Microsoft Clarity data.',
+      };
+    }
 
     res.json({
       range: {
@@ -2496,6 +2506,7 @@ app.get('/api/admin/analytics', protectAdmin, async (req, res) => {
       videoDownloads: videoDownloadRows,
       topSellingCourses: topCourseProgressRows,
       topCourses,
+      clarity,
     });
   } catch (error) {
     res.status(500).json({ error: error.message });

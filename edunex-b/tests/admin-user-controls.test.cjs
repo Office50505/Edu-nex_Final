@@ -85,6 +85,12 @@ test('tester analytics is separate from main admin analytics', () => {
   assert.match(actionSource, /tester_disabled/);
 });
 
+test('admin analytics includes Microsoft Clarity insights', () => {
+  assert.match(serverSource, /getClarityDashboardInsights/);
+  assert.match(serverSource, /clarity = await getClarityDashboardInsights\(\)/);
+  assert.match(serverSource, /topCourses,\s*clarity,/);
+});
+
 test('admin purchase history combines payment orders and course ownership changes', () => {
   assert.match(serverSource, /app\.get\('\/api\/admin\/users\/:id\/purchase-history', protectAdmin/);
   assert.match(serverSource, /Order\.find\(\{ user: req\.params\.id \}\)/);
