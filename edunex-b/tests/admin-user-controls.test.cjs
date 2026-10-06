@@ -56,8 +56,9 @@ test('admin learner management exposes only the latest recorded session IP', () 
 
 test('admin user management can be scoped to tester accounts', () => {
   assert.match(serverSource, /const audience = String\(req\.query\?\.audience \|\| 'learners'\)/);
-  assert.match(serverSource, /audience === 'testers' \? \{ isTester: true \} : \{ isTester: \{ \$ne: true \} \}/);
+  assert.match(serverSource, /const userFilter = audience === 'testers' \? \{ isTester: true \} : \{\}/);
   assert.match(serverSource, /User\.find\(userFilter\)/);
+  assert.match(serverSource, /isActive isTester testerSince testerAssignedBy testerNotes/);
 });
 
 test('admin can mark learners as testers without changing learner identity', () => {
@@ -67,6 +68,13 @@ test('admin can mark learners as testers without changing learner identity', () 
   assert.match(serverSource, /app\.patch\('\/api\/admin\/users\/:id\/tester', protectAdmin/);
   assert.match(serverSource, /action:\s*enabling\s*\?\s*'tester_enabled'\s*:\s*'tester_disabled'/);
   assert.match(serverSource, /isTester testerSince testerAssignedBy testerNotes/);
+});
+
+test('admin-created test accounts are persisted as testers', () => {
+  assert.match(serverSource, /const isTester = req\.body\?\.isTester === true/);
+  assert.match(serverSource, /testerSince: isTester \? new Date\(\) : null/);
+  assert.match(serverSource, /testerAssignedBy: isTester \? String\(adminSubject\) : null/);
+  assert.match(serverSource, /testerNotes: isTester \? testerNotes : null/);
 });
 
 test('tester analytics is separate from main admin analytics', () => {

@@ -89,9 +89,16 @@ function summarizeClarity({ urlPayload, devicePayload, countryPayload, sourcePay
 }
 
 async function getClarityDashboardInsights() {
-  const token = process.env.CLARITY_API_TOKEN || process.env.CLARITY_DATA_EXPORT_TOKEN;
+  const token = process.env.CLARITY_API_TOKEN
+    || process.env.CLARITY_DATA_EXPORT_TOKEN
+    || process.env.CLARITY_API_KEY
+    || process.env.MICROSOFT_CLARITY_API_TOKEN
+    || process.env.MS_CLARITY_API_TOKEN;
   if (!token) {
-    return { configured: false, reason: 'CLARITY_API_TOKEN is not configured.' };
+    return {
+      configured: false,
+      reason: 'Backend Clarity Data Export token is not configured. Set CLARITY_API_TOKEN on the API server and restart it.',
+    };
   }
 
   const now = Date.now();

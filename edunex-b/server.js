@@ -2814,6 +2814,9 @@ app.post('/api/admin/users', protectAdmin, async (req, res) => {
     const rawMobile = String(req.body?.mobileNumber || '').replace(/\D/g, '');
     const mobileNumber = rawMobile.length === 10 ? `91${rawMobile}` : rawMobile;
     const password = String(req.body?.password || '');
+    const isTester = req.body?.isTester === true;
+    const testerNotes = String(req.body?.testerNotes || req.body?.notes || '').trim().slice(0, 500) || null;
+    const adminSubject = req.admin?.sub || req.admin?.email || 'admin';
     const courseId = String(req.body?.courseId || '').trim();
     const courseAccessType = String(req.body?.courseAccessType || 'permanent').trim().toLowerCase();
     const courseAccessDays = Math.min(365, Math.max(1, Number.parseInt(req.body?.courseAccessDays, 10) || 7));
@@ -2842,6 +2845,10 @@ app.post('/api/admin/users', protectAdmin, async (req, res) => {
       isMobileVerified: req.body?.isMobileVerified === true,
       isEmailVerified: Boolean(email && req.body?.isEmailVerified === true),
       isActive: true,
+      isTester,
+      testerSince: isTester ? new Date() : null,
+      testerAssignedBy: isTester ? String(adminSubject) : null,
+      testerNotes: isTester ? testerNotes : null,
       isOnTrial: false,
       subscriptionStatus: 'none',
       subscriptionExpiry: null,
@@ -2865,6 +2872,10 @@ app.post('/api/admin/users', protectAdmin, async (req, res) => {
         subscriptionExpiry: user.subscriptionExpiry,
         purchasedCourses: user.purchasedCourses,
         courseEntitlements: user.courseEntitlements,
+        isTester: user.isTester,
+        testerSince: user.testerSince,
+        testerAssignedBy: user.testerAssignedBy,
+        testerNotes: user.testerNotes,
         isMobileVerified: user.isMobileVerified,
         isEmailVerified: user.isEmailVerified,
         isActive: user.isActive,
@@ -2927,6 +2938,8 @@ app.patch('/api/admin/users/:id/courses', protectAdmin, async (req, res) => {
 
 app.get('/api/admin/user-management', protectAdmin, async (req, res) => {
   try {
+    const audience = String(req.query?.audience || 'learners').trim().toLowerCase();
+    const userFilter = audience === 'testers' ? { isTester: true } : {};
     const normalizeAdminIdentityEmail = (value) => String(value || '').trim().toLowerCase();
     const normalizeAdminIdentityMobile = (value) => {
       const digits = String(value || '').replace(/\D/g, '');
@@ -2949,9 +2962,9 @@ app.get('/api/admin/user-management', protectAdmin, async (req, res) => {
     };
     const watchEventNames = ['video_start', 'video_progress', 'video_complete', 'video_watch'];
     const [users, progressRows, progressWatchRows, analyticsWatchRows, latestSessionRows, latestPresenceRows, subscriptions, razorpayBillings] = await Promise.all([
-      User.find()
+      User.find(userFilter)
         .sort({ createdAt: -1 })
-        .select('fullName email mobileNumber avatar gender age subscriptionId subscriptionStatus subscriptionExpiry purchasedCourses courseEntitlements isMobileVerified isEmailVerified isActive bannedAt banReason deletedAt deletedBy deletionReason marketingOptIn createdAt lastActiveAt lastLoginAt loginCount')
+        .select('fullName email mobileNumber avatar gender age subscriptionId subscriptionStatus subscriptionExpiry purchasedCourses courseEntitlements isMobileVerified isEmailVerified isActive isTester testerSince testerAssignedBy testerNotes bannedAt banReason deletedAt deletedBy deletionReason marketingOptIn createdAt lastActiveAt lastLoginAt loginCount')
         .lean(),
       CourseProgress.aggregate([
         { $match: { userId: { $nin: [null, ''] } } },
