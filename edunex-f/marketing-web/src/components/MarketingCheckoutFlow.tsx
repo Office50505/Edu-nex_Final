@@ -337,11 +337,13 @@ export default function MarketingCheckoutFlow() {
       return
     }
     setMessage('Opening secure PhonePe checkout...')
+    const localReturnHost = ['localhost', '127.0.0.1'].includes(window.location.hostname)
+    const returnOrigin = localReturnHost ? window.location.origin : SKILLOMATE_PUBLIC_ORIGIN
     let checkout: { gateway: string; redirectUrl: string }
     try {
       checkout = await api<{ gateway: string; redirectUrl: string }>('/api/onboarding/checkout', {
         paymentType: 'one_time',
-        returnUrl: `${window.location.origin}${MARKETING_BASE_PATH}/?payment=return#paywall`,
+        returnUrl: `${returnOrigin}${MARKETING_BASE_PATH}/index.html?payment=return#paywall`,
       }, token)
     } catch (error) {
       if (isExpiredSessionError(error)) {
