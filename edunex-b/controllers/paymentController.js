@@ -75,9 +75,31 @@ function withQueryParams(url, params = {}) {
   return parsed.toString();
 }
 
+function canonicalMarketingReturnUrl(value) {
+  const candidate = value || marketingPaymentReturnUrl;
+  try {
+    const parsed = new URL(candidate, frontendOrigin || 'https://skillomate.in');
+    if (parsed.hostname === 'api.skillomate.in') {
+      parsed.protocol = 'https:';
+      parsed.hostname = 'skillomate.in';
+      parsed.port = '';
+    }
+    if (parsed.pathname === '/static-pages/skillomate-ai-influencer-courseweb/'
+      || parsed.pathname === '/static-pages/skillomate-ai-influencer-courseweb') {
+      parsed.pathname = '/static-pages/skillomate-ai-influencer-courseweb/index.html';
+    }
+    if (!parsed.searchParams.has('payment')) parsed.searchParams.set('payment', 'return');
+    if (!parsed.hash) parsed.hash = '#paywall';
+    return parsed.toString();
+  } catch {
+    return marketingPaymentReturnUrl;
+  }
+}
+
 function paymentSuccessUrlForOrder(order) {
+  if (order?.orderType === 'one_time_access') return canonicalMarketingReturnUrl(order.checkoutReturnUrl);
   if (order?.checkoutReturnUrl) return order.checkoutReturnUrl;
-  return order?.orderType === 'one_time_access' ? marketingPaymentReturnUrl : frontendPaymentSuccessUrl;
+  return frontendPaymentSuccessUrl;
 }
 
 async function paymentSuccessRedirectUrlForOrder(order) {
@@ -103,8 +125,9 @@ async function paymentSuccessRedirectUrlForOrder(order) {
 }
 
 function paymentFailedUrlForOrder(order) {
+  if (order?.orderType === 'one_time_access') return canonicalMarketingReturnUrl(order.checkoutReturnUrl);
   if (order?.checkoutReturnUrl) return order.checkoutReturnUrl;
-  return order?.orderType === 'one_time_access' ? marketingPaymentReturnUrl : frontendPaymentFailedUrl;
+  return frontendPaymentFailedUrl;
 }
 
 function safeCheckoutReturnUrl(value) {
@@ -464,7 +487,7 @@ async function initiateTrial(req, res) {
       phonePeMerchantTransactionId: paymentRequest.merchantTransactionId,
       phonePeMerchantSubscriptionId: paymentRequest.merchantSubscriptionId || null,
       orderType: 'one_time_access',
-      checkoutReturnUrl: safeCheckoutReturnUrl(req.body?.returnUrl),
+      checkoutReturnUrl: canonicalMarketingReturnUrl(safeCheckoutReturnUrl(req.body?.returnUrl)),
       status: 'pending',
     });
 
