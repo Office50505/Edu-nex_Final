@@ -652,13 +652,15 @@ async function paymentCallback(req, res) {
     return res.status(410).json({ error: 'PhonePe payment confirmation is disabled.' });
   }
   let claim = null;
+  let merchantTransactionId = null;
+  let order = null;
   try {
-    const merchantTransactionId = req.query.merchantTransactionId || req.query.transactionId;
+    merchantTransactionId = req.query.merchantTransactionId || req.query.transactionId;
     if (!merchantTransactionId) {
       return res.redirect(frontendDashboardUrl);
     }
 
-    const order = await Order.findOne({ phonePeMerchantTransactionId: merchantTransactionId });
+    order = await Order.findOne({ phonePeMerchantTransactionId: merchantTransactionId });
     if (!order) {
       return res.redirect(frontendDashboardUrl);
     }
@@ -692,7 +694,18 @@ async function paymentCallback(req, res) {
   } catch (error) {
     await phonePeEventClaims.markPhonePeEventFailed(claim, 'callback_processing_error').catch(() => {});
     console.error('PhonePe callback processing failed; the event remains retryable.');
-    return res.status(503).json({ error: 'Payment confirmation is temporarily unavailable.' });
+    if (order) {
+      return res.redirect(withQueryParams(paymentSuccessUrlForOrder(order), {
+        merchantTransactionId,
+        payment: 'return',
+        confirmation: 'pending',
+      }));
+    }
+    return res.redirect(withQueryParams(marketingPaymentReturnUrl, {
+      merchantTransactionId,
+      payment: 'return',
+      confirmation: 'pending',
+    }));
   }
 }
 
