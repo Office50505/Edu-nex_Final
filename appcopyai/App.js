@@ -15,7 +15,7 @@ import { useGooglePlaySubscriptions } from "./services/useGooglePlaySubscription
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as SecureStore from "expo-secure-store";
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { useColorScheme, useWindowDimensions } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import {
@@ -105,6 +105,7 @@ const AI_AVATAR_STORAGE_KEY = "skillomate_ai_avatar";
 const AI_NAME_STORAGE_PREFIX = "skillomate_ai_name";
 const AI_NAME_SETUP_STORAGE_PREFIX = "skillomate_ai_name_setup";
 const AI_CHAT_STORAGE_PREFIX = "skillomate_ai_chats";
+const SEARCH_HISTORY_STORAGE_KEY = "skillomate_recent_searches_v1";
 const DEFAULT_AI_ROBOT_ID = "nex";
 const DEFAULT_AI_NAME = "AI";
 const MAX_AI_CHAT_SESSIONS = 24;
@@ -1943,6 +1944,10 @@ function getDownloadKind(video) {
   return "";
 }
 
+function getProtectedCourseDownloadKind(video, courseId) {
+  return getDownloadKind(video) || (courseId && (video?._id || video?.id || video?.videoId) ? "hls" : "");
+}
+
 const PLAYBACK_ACCESS_TIMEOUT_MS = 30000;
 const PLAYBACK_ACCESS_MIN_VALID_MS = 60000;
 const PLAYBACK_ACCESS_CACHE = new Map();
@@ -3281,6 +3286,22 @@ function NavIcon({ icon, color, size = 20 }) {
   return <Ionicons name={`${icon}-outline`} size={size} color={color} />;
 }
 
+function normalizeSearchText(value) {
+  return String(value || "")
+    .toLowerCase()
+    .replace(/%20/g, " ")
+    .replace(/film\s*making|filmmaking/g, "film making filmmaking video cinema movie")
+    .replace(/ai\s*film/g, "ai film filmmaking video cinema movie")
+    .replace(/provacy|privcy/g, "privacy")
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim();
+}
+
+function matchesSearchQuery(item, searchTerms = []) {
+  const haystack = normalizeSearchText(`${item?.title || ""} ${item?.subtitle || ""} ${item?.keywords || ""}`);
+  return searchTerms.every(term => haystack.includes(term));
+}
+
 function BottomNav({
   active,
   onHome,
@@ -3292,11 +3313,13 @@ function BottomNav({
   forceDark = false,
   persistent = false,
   searchReferences: searchReferencesOverride = null,
-  searchPlaceholder = "Search this page",
+  searchPlaceholder = "Search Skillomate",
 }) {
+  const appSearchReferences = useContext(AppSearchReferencesContext);
   const rootTabSwipe = React.useContext(RootTabSwipeContext);
   const [searchOpen, setSearchOpen] = useState(false);
   const [navSearchText, setNavSearchText] = useState("");
+  const [recentSearches, setRecentSearches] = useState([]);
   const navSearchInputRef = useRef(null);
   const bottomNavRef = useRef(null);
   const keyboardVisibleRef = useRef(false);
@@ -3347,6 +3370,18 @@ function BottomNav({
     return () => clearTimeout(timer);
   }, [searchOpen]);
   useEffect(() => {
+    if (!searchOpen) return undefined;
+    let mounted = true;
+    AsyncStorage.getItem(SEARCH_HISTORY_STORAGE_KEY)
+      .then(value => {
+        if (!mounted) return;
+        const parsed = JSON.parse(value || "[]");
+        setRecentSearches(Array.isArray(parsed) ? parsed.filter(Boolean).slice(0, 6) : []);
+      })
+      .catch(() => {});
+    return () => { mounted = false; };
+  }, [searchOpen]);
+  useEffect(() => {
     if (!searchOpen) {
       keyboardVisibleRef.current = false;
       animateKeyboardLift(0, 160);
@@ -3392,7 +3427,7 @@ function BottomNav({
     return () => clearInterval(timer);
   }, [animateKeyboardLift, searchOpen, updateKeyboardLift]);
   const inactiveColor = forceDark ? "#AAA297" : C.slateGray;
-  const normalizedSearch = navSearchText.trim().toLowerCase().replace(/%20/g, " ");
+  const normalizedSearch = normalizeSearchText(navSearchText);
   const searchTerms = normalizedSearch.split(/\s+/).filter(Boolean);
   const closeSearch = (clearText = true) => {
     setSearchOpen(false);
@@ -3403,6 +3438,15 @@ function BottomNav({
     if (searchOpen) closeSearch();
     else setSearchOpen(true);
   };
+  const rememberSearch = useCallback(value => {
+    const label = String(value || "").replace(/\s+/g, " ").trim();
+    if (!label) return;
+    setRecentSearches(previous => {
+      const next = [label, ...previous.filter(item => item.toLowerCase() !== label.toLowerCase())].slice(0, 6);
+      AsyncStorage.setItem(SEARCH_HISTORY_STORAGE_KEY, JSON.stringify(next)).catch(() => {});
+      return next;
+    });
+  }, []);
   useEffect(() => {
     if (!searchOpen) return undefined;
     const subscription = BackHandler.addEventListener("hardwareBackPress", () => {
@@ -3426,7 +3470,7 @@ function BottomNav({
       subtitle: "Open the course and related lessons",
       icon: "play-circle",
       fn: onCourses,
-      keywords: "ai influencer course masterclass lessons lecture character face prompts",
+      keywords: "ai influencer ai filmmaking film making course masterclass lessons lecture character face prompts videos reels cinema storytelling",
     },
     {
       key: "course-lessons",
@@ -3434,7 +3478,7 @@ function BottomNav({
       subtitle: "Browse all Skillomate course lessons",
       icon: "albums",
       fn: onCourses,
-      keywords: "course lessons lectures explore browse videos tools setup",
+      keywords: "course lessons lectures explore browse videos tools setup ai filmmaking film making cinema editing prompts storytelling",
     },
     {
       key: "home-progress",
@@ -3461,29 +3505,44 @@ function BottomNav({
       keywords: "download downloads offline saved videos lessons",
     },
   ];
-  const searchReferences = (Array.isArray(searchReferencesOverride) ? searchReferencesOverride : defaultSearchReferences)
-    .filter(item => typeof item.fn === "function");
+  const searchReferences = [
+    ...(Array.isArray(searchReferencesOverride) ? searchReferencesOverride : []),
+    ...(Array.isArray(appSearchReferences) ? appSearchReferences : []),
+    ...defaultSearchReferences,
+  ].filter(item => typeof item.fn === "function")
+    .filter((item, index, items) => items.findIndex(candidate => candidate.key === item.key) === index);
   const searchResults = searchTerms.length
-    ? searchReferences.filter(item => {
-        const haystack = `${item.title} ${item.subtitle} ${item.keywords}`.toLowerCase();
-        return searchTerms.every(term => haystack.includes(term));
-      }).slice(0, 4)
+    ? searchReferences.filter(item => matchesSearchQuery(item, searchTerms)).slice(0, 4)
     : [];
   const openSearchResult = item => {
+    rememberSearch(navSearchText || item?.title);
     closeSearch();
     setNavSearchText("");
     item.fn?.();
   };
   const submitSearch = () => {
     if (searchResults[0]) openSearchResult(searchResults[0]);
+    else rememberSearch(navSearchText);
   };
+  const showSearchSuggestions = searchOpen && !normalizedSearch;
+  const searchSuggestionRows = normalizedSearch
+    ? searchResults.map(item => ({ type: "result", ...item }))
+    : (recentSearches.length ? recentSearches.map((query, index) => ({
+        type: "recent",
+        key: `recent-${index}-${query}`,
+        title: query,
+        subtitle: "Recent search",
+        icon: "time",
+        query,
+      })) : searchReferences.slice(0, 6).map(item => ({ type: "result", ...item })));
   return (
     <Animated.View
       pointerEvents="box-none"
       style={[
         s.bottomNavDock,
         active === "ai" && s.bottomNavDockCompact,
-        { transform: [{ translateY: keyboardLiftAnim }] },
+        searchOpen && s.bottomNavDockSearchOpen,
+        searchOpen ? { transform: [{ translateY: 0 }] } : { transform: [{ translateY: keyboardLiftAnim }] },
       ]}
     >
       <Animated.View
@@ -3494,33 +3553,42 @@ function BottomNav({
         ref={bottomNavRef}
         style={[
           s.bottomNav,
+          searchOpen && s.bottomNavSearchMode,
           forceDark && { backgroundColor: "rgba(13,13,11,0.98)", borderTopColor: "#2E2C27" },
+          searchOpen && forceDark && { backgroundColor: "transparent", borderColor: "transparent" },
         ]}
       >
       {searchOpen ? (
         <View style={s.bottomNavSearchBar}>
-          {normalizedSearch ? (
+          {(normalizedSearch || showSearchSuggestions) ? (
             <View style={s.bottomNavSearchResults}>
-              {searchResults.length ? searchResults.map(item => (
+              {searchSuggestionRows.length ? searchSuggestionRows.map(item => (
                 <TouchableOpacity
                   key={item.key}
                   style={s.bottomNavSearchResult}
-                  onPress={() => openSearchResult(item)}
+                  onPress={() => {
+                    if (item.type === "recent") {
+                      setNavSearchText(item.query);
+                      setTimeout(() => navSearchInputRef.current?.focus?.(), 40);
+                      return;
+                    }
+                    openSearchResult(item);
+                  }}
                   accessibilityRole="button"
                   accessibilityLabel={`${item.title}. ${item.subtitle}`}
                 >
                   <View style={s.bottomNavSearchResultIcon}>
-                    <Ionicons name={`${item.icon}-outline`} size={16} color={C.primary} />
+                    <Ionicons name={item.type === "recent" ? "time-outline" : `${item.icon}-outline`} size={18} color={C.primary} />
                   </View>
                   <View style={{ flex: 1, minWidth: 0 }}>
                     <Text style={s.bottomNavSearchResultTitle} numberOfLines={1}>{item.title}</Text>
-                    <Text style={s.bottomNavSearchResultSubtitle} numberOfLines={1}>{item.subtitle}</Text>
+                    {item.type !== "recent" && <Text style={s.bottomNavSearchResultSubtitle} numberOfLines={1}>{item.subtitle}</Text>}
                   </View>
-                  <Ionicons name="arrow-forward" size={16} color={inactiveColor} />
+                  <Ionicons name={item.type === "recent" ? "arrow-up-outline" : "arrow-forward"} size={18} color={inactiveColor} />
                 </TouchableOpacity>
               )) : (
                 <View style={s.bottomNavSearchEmpty}>
-                  <Text style={s.bottomNavSearchEmptyText}>No matching references</Text>
+                  <Text style={s.bottomNavSearchEmptyText}>No matching app result</Text>
                 </View>
               )}
             </View>
@@ -3588,6 +3656,30 @@ function BottomNav({
   );
 }
 
+function getCourseSearchText(course, lessonLimit = 24) {
+  const categoryName = typeof course?.category === "string"
+    ? course.category
+    : course?.category?.name || "";
+  const lessonKeywords = Array.isArray(course?.videos)
+    ? course.videos.slice(0, lessonLimit).map(video => [
+        video?.title,
+        video?.description,
+        video?.notes,
+        video?.prompt,
+      ].filter(Boolean).join(" ")).filter(Boolean).join(" ")
+    : "";
+  return [
+    course?.title,
+    course?.slug,
+    course?.description,
+    course?.shortDescription,
+    course?.summary,
+    categoryName,
+    lessonKeywords,
+    "course lesson lectures videos learn ai filmmaking film making cinema reels editing storytelling",
+  ].filter(Boolean).join(" ");
+}
+
 function buildCourseSearchReferences(courses, handlers = {}) {
   const safeCourses = (Array.isArray(courses) ? courses : []).filter(course => course && !course.isMock);
   const courseTitles = safeCourses.map(course => course.title).filter(Boolean).join(" ");
@@ -3596,16 +3688,13 @@ function buildCourseSearchReferences(courses, handlers = {}) {
     const categoryName = typeof course.category === "string"
       ? course.category
       : course.category?.name || "";
-    const lessonKeywords = Array.isArray(course.videos)
-      ? course.videos.slice(0, 8).map(video => video?.title).filter(Boolean).join(" ")
-      : "";
     return {
       key: `course-${course._id || index}`,
       title: course.title || `Course ${index + 1}`,
       subtitle: `${lessonCount || "Open"} ${lessonCount === 1 ? "lesson" : "lessons"}${categoryName ? ` · ${categoryName}` : ""}`,
       icon: "play-circle",
       fn: () => handlers.onOpenCourse?.(course),
-      keywords: `${course.title || ""} ${course.description || ""} ${categoryName} ${lessonKeywords} course lesson lectures videos learn`,
+      keywords: getCourseSearchText(course),
     };
   });
   const openCourses = handlers.onCourses || (() => {});
@@ -3654,6 +3743,8 @@ const ROOT_TAB_LABELS = {
   downloads: "Downloads",
   profile: "Profile",
 };
+
+const AppSearchReferencesContext = React.createContext([]);
 
 function StaticRootTabs({ activeTab, onNavigate, renderTab }) {
   const swipeBoundary = useMemo(() => ({ hideEmbeddedNav: true }), []);
@@ -5785,7 +5876,7 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
 }
 
 // ── ReelsScreen ───────────────────────────────────────────────────────────────
-function ReelsScreen({ courseId, course, initialIndex, initialTime, onBack, onReportProblem, user, session, onVideoComplete, onVideoProgress, downloads, preloadedVideos }) {
+function ReelsScreen({ courseId, course, initialIndex, initialTime, onBack, onReportProblem, user, session, onVideoComplete, onVideoProgress, downloads, onDownloadVideo, preloadedVideos }) {
   const { width: viewportWidth } = useWindowDimensions();
   const [videos, setVideos] = useState(preloadedVideos || []);
   const [loading, setLoading] = useState(!preloadedVideos);
@@ -6356,6 +6447,15 @@ function ReelsScreen({ courseId, course, initialIndex, initialTime, onBack, onRe
                   <TouchableOpacity onPress={() => shareLesson(item)} style={s.webPlayerRailBtn} accessibilityRole="button" accessibilityLabel="Share lecture">
                     <Ionicons name="share-social-outline" size={21} color="#fff" />
                     <Text style={s.webPlayerRailText}>Share</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => onDownloadVideo?.(item, courseId, course?.title || "")}
+                    style={s.webPlayerRailBtn}
+                    accessibilityRole="button"
+                    accessibilityLabel={`Download ${itemTitle || itemLessonLabel}`}
+                  >
+                    <Ionicons name="download-outline" size={21} color="#fff" />
+                    <Text style={s.webPlayerRailText}>Download</Text>
                   </TouchableOpacity>
                 </Animated.View>
               )}
@@ -8484,9 +8584,10 @@ function CourseListScreen({ onSelect, user, session, onGoToHome, onGoToCourses, 
   }, [query, searchFocused]);
 
   const filtered = useMemo(() => {
-    const normalizedQuery = query.trim().toLowerCase();
+    const normalizedQuery = normalizeSearchText(query);
     if (!normalizedQuery) return courses;
-    return courses.filter(c => c.title?.toLowerCase().includes(normalizedQuery));
+    const searchTerms = normalizedQuery.split(/\s+/).filter(Boolean);
+    return courses.filter(course => matchesSearchQuery({ keywords: getCourseSearchText(course) }, searchTerms));
   }, [courses, query]);
   const openCourse = useCallback(course => {
     if (!course) return;
@@ -11285,10 +11386,15 @@ export default function App() {
   const startDownload = useCallback(async (video, courseId, courseTitle) => {
     const u = userRef.current;
     const downloadId = getDownloadId(video);
-    const downloadKind = getDownloadKind(video);
+    const downloadKind = getProtectedCourseDownloadKind(video, courseId);
     const guid = getBunnyGuid(video);
     const libraryId = getBunnyLibraryId(video);
-    const protectedCloudfront = downloadKind === "hls" && (video.provider === "aws_cloudfront" || video.sourceType === "aws_cloudfront");
+    const nativeVideoUrl = getNativeVideoUrl(video, "");
+    const protectedCloudfront = downloadKind === "hls" && (
+      video.provider === "aws_cloudfront" ||
+      video.sourceType === "aws_cloudfront" ||
+      (courseId && (video?._id || video?.id || video?.videoId) && !nativeVideoUrl)
+    );
     if (!downloadId || !downloadKind || !u?._id || !u?.sessionId) {
       Alert.alert("Download unavailable", "This lesson is not available for offline download.");
       return;
@@ -11348,8 +11454,9 @@ export default function App() {
         if (result?.status !== 200) throw Object.assign(new Error("Download failed"), { status: result?.status });
       } else if (downloadKind === "hls") {
         if (protectedCloudfront) {
-          if (!courseId || !video?._id) throw new Error("Download authorization unavailable.");
-          const grant = await nativeSession.requestJson(`/api/courses/${encodeURIComponent(courseId)}/videos/${encodeURIComponent(video._id)}/download-grant`, {
+          const protectedVideoId = video?._id || video?.id || video?.videoId;
+          if (!courseId || !protectedVideoId) throw new Error("Download authorization unavailable.");
+          const grant = await nativeSession.requestJson(`/api/courses/${encodeURIComponent(courseId)}/videos/${encodeURIComponent(protectedVideoId)}/download-grant`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ prepared: Platform.OS === "android" }),
@@ -11372,7 +11479,7 @@ export default function App() {
           const result = await dl.downloadAsync();
           if (result?.status !== 200) throw Object.assign(new Error("Download failed"), { status: result?.status });
         } else {
-          const hlsUrl = getNativeVideoUrl(video, "");
+          const hlsUrl = nativeVideoUrl;
           if (!hlsUrl) throw new Error("Playback download URL unavailable.");
           await downloadHlsToAppCache({
             hlsUrl,
@@ -12263,6 +12370,77 @@ export default function App() {
     (mainScreen === "courses" && selectedCourse) ||
     (mainScreen !== "home")
   );
+  const appSearchReferences = useMemo(() => ([
+    {
+      key: "privacy-policy",
+      title: "Privacy Policy",
+      subtitle: "How Skillomate handles your data",
+      icon: "shield-checkmark",
+      fn: () => setLegalPage("privacy"),
+      keywords: "privacy provacy privcy policy data security information personal terms legal",
+    },
+    {
+      key: "terms-conditions",
+      title: "Terms and Conditions",
+      subtitle: "Rules for using Skillomate",
+      icon: "document-text",
+      fn: () => setLegalPage("terms"),
+      keywords: "terms conditions legal rules refund download certificate account",
+    },
+    {
+      key: "support-help",
+      title: "Support",
+      subtitle: "Help with accounts, payments and lessons",
+      icon: "help-circle",
+      fn: () => setMainScreen("help"),
+      keywords: "support help contact issue problem report login otp video payment",
+    },
+    {
+      key: "subscription-details",
+      title: "Subscription Details",
+      subtitle: "Plan, billing and app store subscription",
+      icon: "card",
+      fn: openSubscriptionDetails,
+      keywords: "subscription detail details plan billing payment premium access cancel renew apple google razorpay phonepe",
+    },
+    {
+      key: "profile-settings",
+      title: "Profile",
+      subtitle: "Account, avatar and app settings",
+      icon: "person-circle",
+      fn: () => navigateRootTab("profile"),
+      keywords: "profile account settings avatar theme dark light logout delete account name age gender",
+    },
+    {
+      key: "certificates",
+      title: "Certificates",
+      subtitle: "Completed course certificates",
+      icon: "ribbon",
+      fn: () => setMainScreen("certificates"),
+      keywords: "certificate certificates completion download achievement course",
+    },
+    {
+      key: "saved-courses",
+      title: "Saved Courses",
+      subtitle: "Wishlist and bookmarked courses",
+      icon: "heart",
+      fn: () => setMainScreen("wishlist"),
+      keywords: "wishlist saved liked favourite favorite bookmarked courses",
+    },
+    {
+      key: "report-problem",
+      title: "Report Issue",
+      subtitle: "Tell Skillomate about a problem",
+      icon: "flag",
+      fn: () => openProblemReport("search"),
+      keywords: "report issue problem bug error complaint feedback",
+    },
+  ]), [navigateRootTab, openProblemReport, openSubscriptionDetails]);
+  const withAppSearch = useCallback(content => (
+    <AppSearchReferencesContext.Provider value={appSearchReferences}>
+      {content}
+    </AppSearchReferencesContext.Provider>
+  ), [appSearchReferences]);
   const iosGlobalBackEnabled = Platform.OS === "ios" && Boolean(user) && (canGoBack || fallbackBackAvailable);
   const withGlobalBackGesture = useCallback((content, options = {}) => (
     <GlobalEdgeBackGesture
@@ -12685,6 +12863,7 @@ export default function App() {
           initialIndex={startIndex}
           initialTime={initialTime}
           downloads={downloads}
+          onDownloadVideo={startDownload}
           preloadedVideos={preloadedVideos || (DEV_UI_QA_ENABLED ? selectedCourse.videos : null)}
           user={user}
           session={nativeSession}
@@ -13060,7 +13239,7 @@ export default function App() {
 
   if (mainScreen === "profile") {
     return withGlobalBackGesture(
-      <ProfileScreen
+      withAppSearch(<ProfileScreen
         session={nativeSession}
         user={user}
         onLogout={handleLogout}
@@ -13093,13 +13272,13 @@ export default function App() {
         aiRobotId={aiRobotId}
         refreshing={profileRefreshing}
         onRefresh={refreshProfile}
-      />
+      />)
     );
   }
 
   const activeRootTab = ROOT_TAB_ORDER.includes(mainScreen) ? mainScreen : "home";
   return withGlobalBackGesture(
-    <View style={{ flex: 1, backgroundColor: C.bg }}>
+    withAppSearch(<View style={{ flex: 1, backgroundColor: C.bg }}>
       <SwipeableRootTabs
         activeTab={activeRootTab}
         onNavigate={navigateRootTab}
@@ -13120,7 +13299,7 @@ export default function App() {
         onOpenTerms={openSubscriptionTerms}
         onOpenPrivacy={openSubscriptionPrivacy}
       />
-    </View>
+    </View>)
   );
 }
 
@@ -13776,6 +13955,14 @@ return StyleSheet.create({
   bottomNavDockCompact: {
     height: Platform.OS === "ios" ? 126 : 96,
   },
+  bottomNavDockSearchOpen: {
+    top: 0,
+    height: "100%",
+    justifyContent: "flex-start",
+    paddingTop: Platform.OS === "ios" ? 58 : 28,
+    paddingBottom: 0,
+    backgroundColor: C.isDark ? "rgba(0,0,0,0.72)" : "rgba(250,247,241,0.92)",
+  },
   bottomNav: {
     marginHorizontal: 14,
     zIndex: 61,
@@ -13792,6 +13979,16 @@ return StyleSheet.create({
     shadowOpacity: C.isDark ? 0.34 : 0.12,
     shadowRadius: 18,
     shadowOffset: { width: 0, height: 8 },
+  },
+  bottomNavSearchMode: {
+    backgroundColor: "transparent",
+    borderColor: "transparent",
+    shadowOpacity: 0,
+    shadowRadius: 0,
+    elevation: 0,
+    paddingHorizontal: 0,
+    paddingVertical: 0,
+    marginHorizontal: 20,
   },
   bottomNavScrim: {
     position: "absolute",
@@ -13830,9 +14027,11 @@ return StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 10,
-    borderRadius: 20,
-    paddingHorizontal: 10,
-    backgroundColor: C.isDark ? "rgba(255,255,255,0.055)" : "rgba(20,18,15,0.06)",
+    borderRadius: 18,
+    paddingHorizontal: 12,
+    backgroundColor: C.isDark ? "#1F1F1F" : "#FFFFFF",
+    borderWidth: 1,
+    borderColor: C.isDark ? "rgba(255,255,255,0.1)" : "rgba(30,24,16,0.14)",
   },
   bottomNavSearchIcon: {
     width: 42,
@@ -13863,12 +14062,12 @@ return StyleSheet.create({
     position: "absolute",
     left: 0,
     right: 0,
-    bottom: 74,
-    borderRadius: 16,
+    top: 72,
+    borderRadius: 20,
     overflow: "hidden",
-    backgroundColor: C.isDark ? "rgba(24,24,23,0.98)" : "rgba(255,253,248,0.98)",
+    backgroundColor: C.isDark ? "rgba(27,27,27,0.99)" : "rgba(255,253,248,0.99)",
     borderWidth: 1,
-    borderColor: C.isDark ? "rgba(231,188,104,0.2)" : "rgba(30,24,16,0.12)",
+    borderColor: C.isDark ? "rgba(255,255,255,0.08)" : "rgba(30,24,16,0.12)",
     shadowColor: "#000",
     shadowOpacity: C.isDark ? 0.28 : 0.12,
     shadowRadius: 16,
@@ -13876,27 +14075,27 @@ return StyleSheet.create({
     elevation: 24,
   },
   bottomNavSearchResult: {
-    minHeight: 58,
+    minHeight: 64,
     flexDirection: "row",
     alignItems: "center",
-    gap: 10,
-    paddingHorizontal: 12,
+    gap: 14,
+    paddingHorizontal: 16,
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: C.border,
+    borderBottomColor: C.isDark ? "rgba(255,255,255,0.1)" : C.border,
   },
   bottomNavSearchResultIcon: {
-    width: 34,
-    height: 34,
-    borderRadius: 17,
+    width: 38,
+    height: 38,
+    borderRadius: 19,
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: C.isDark ? "rgba(231,188,104,0.14)" : C.primaryLight,
   },
   bottomNavSearchResultTitle: {
     color: C.text,
-    fontSize: 13,
-    lineHeight: 17,
-    fontWeight: "900",
+    fontSize: 16,
+    lineHeight: 21,
+    fontWeight: "800",
   },
   bottomNavSearchResultSubtitle: {
     color: C.textSub,
