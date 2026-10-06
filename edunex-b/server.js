@@ -204,25 +204,31 @@ const RECOMMENDATION_LIMIT_DEFAULT = 4;
 const RECOMMENDATION_LIMIT_MAX = 12;
 
 const cspConnectSources = [...new Set(["'self'", 'https:', 'wss:', ...FRONTEND_ORIGINS])];
+const baseScriptSources = ["'self'", ...(THEME_PRELOAD_CSP_HASH ? [THEME_PRELOAD_CSP_HASH] : []), 'https://checkout.razorpay.com'];
 
-app.use(helmet({
+function contentSecurityPolicyDirectives(req) {
+  const servesLegacyStaticPage = req.path.startsWith('/static-pages/');
+  return {
+    defaultSrc: ["'self'"],
+    baseUri: ["'self'"],
+    objectSrc: ["'none'"],
+    scriptSrc: servesLegacyStaticPage ? [...baseScriptSources, "'unsafe-inline'"] : baseScriptSources,
+    frameSrc: ["'self'", 'https://api.razorpay.com', 'https://checkout.razorpay.com'],
+    styleSrc: ["'self'", "'unsafe-inline'", 'https:'],
+    imgSrc: ["'self'", 'data:', 'blob:', 'https:'],
+    workerSrc: ["'self'", 'blob:'],
+    mediaSrc: ["'self'", 'blob:', 'https:'],
+    fontSrc: ["'self'", 'data:', 'https:'],
+    connectSrc: cspConnectSources,
+    frameAncestors: ["'none'"],
+    upgradeInsecureRequests: isProduction ? [] : null,
+  };
+}
+
+app.use((req, res, next) => helmet({
   contentSecurityPolicy: {
     useDefaults: true,
-    directives: {
-      defaultSrc: ["'self'"],
-      baseUri: ["'self'"],
-      objectSrc: ["'none'"],
-      scriptSrc: ["'self'", ...(THEME_PRELOAD_CSP_HASH ? [THEME_PRELOAD_CSP_HASH] : []), 'https://checkout.razorpay.com'],
-      frameSrc: ["'self'", 'https://api.razorpay.com', 'https://checkout.razorpay.com'],
-      styleSrc: ["'self'", "'unsafe-inline'", 'https:'],
-      imgSrc: ["'self'", 'data:', 'blob:', 'https:'],
-      workerSrc: ["'self'", 'blob:'],
-      mediaSrc: ["'self'", 'blob:', 'https:'],
-      fontSrc: ["'self'", 'data:', 'https:'],
-      connectSrc: cspConnectSources,
-      frameAncestors: ["'none'"],
-      upgradeInsecureRequests: isProduction ? [] : null,
-    },
+    directives: contentSecurityPolicyDirectives(req),
   },
   crossOriginResourcePolicy: { policy: 'cross-origin' },
   hsts: isProduction
@@ -230,7 +236,7 @@ app.use(helmet({
     : false,
   referrerPolicy: { policy: 'strict-origin-when-cross-origin' },
   xFrameOptions: { action: 'deny' },
-}));
+})(req, res, next));
 
 async function getCachedPublicRead(key) {
   return getJsonCache(PUBLIC_READ_CACHE_NAMESPACE, key);

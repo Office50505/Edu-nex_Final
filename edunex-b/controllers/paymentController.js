@@ -1,4 +1,5 @@
 const Order = require('../models/Order');
+const Onboarding = require('../models/OnboardingSession');
 const Subscription = require('../models/Subscription');
 const SubscriptionEvent = require('../models/SubscriptionEvent');
 const User = require('../models/User');
@@ -77,6 +78,28 @@ function withQueryParams(url, params = {}) {
 function paymentSuccessUrlForOrder(order) {
   if (order?.checkoutReturnUrl) return order.checkoutReturnUrl;
   return order?.orderType === 'one_time_access' ? marketingPaymentReturnUrl : frontendPaymentSuccessUrl;
+}
+
+async function paymentSuccessRedirectUrlForOrder(order) {
+  if (order?.orderType !== 'one_time_access' || order.status !== 'paid') return paymentSuccessUrlForOrder(order);
+  const subscription = order.subscription
+    ? await Subscription.findById(order.subscription)
+    : await Subscription.findOne({ user: order.user });
+  if (!resolveSubscriptionAccess(subscription, {}).active) return paymentSuccessUrlForOrder(order);
+
+  const code = crypto.randomBytes(32).toString('hex');
+  const result = await Onboarding.updateOne(
+    { _id: order.user, completedAt: null },
+    {
+      $set: {
+        handoffHash: crypto.createHash('sha256').update(code).digest('hex'),
+        handoffExpiresAt: new Date(Date.now() + 5 * 60 * 1000),
+      },
+    }
+  );
+  if (!result.matchedCount) return paymentSuccessUrlForOrder(order);
+  const signupUrl = frontendOrigin ? `${frontendOrigin}/signup` : '/signup';
+  return `${signupUrl}#onboarding=${encodeURIComponent(code)}`;
 }
 
 function paymentFailedUrlForOrder(order) {
@@ -549,7 +572,7 @@ async function completeSimulatedPayment(req, res) {
         if (wantsJsonResponse(req)) {
           return res.json({ success: true, merchantTransactionId, simulated: true, alreadyCompleted: true });
         }
-        return res.redirect(withQueryParams(paymentSuccessUrlForOrder(order), {
+        return res.redirect(withQueryParams(await paymentSuccessRedirectUrlForOrder(order), {
           merchantTransactionId,
           simulated: 'true',
         }));
@@ -590,7 +613,7 @@ async function completeSimulatedPayment(req, res) {
         });
       }
 
-      return res.redirect(withQueryParams(paymentSuccessUrlForOrder(order), {
+      return res.redirect(withQueryParams(await paymentSuccessRedirectUrlForOrder(order), {
         merchantTransactionId,
         simulated: 'true',
       }));
@@ -646,7 +669,7 @@ async function paymentCallback(req, res) {
       eventType: 'PAYMENT_RESULT',
     });
     if (!claim.acquired) {
-      return res.redirect(withQueryParams(paymentSuccessUrlForOrder(order), { merchantTransactionId }));
+      return res.redirect(withQueryParams(await paymentSuccessRedirectUrlForOrder(order), { merchantTransactionId }));
     }
 
     const status = order.orderType === 'one_time_access'
@@ -665,7 +688,7 @@ async function paymentCallback(req, res) {
     }
 
     await phonePeEventClaims.markPhonePeEventProcessed(claim);
-    return res.redirect(withQueryParams(paymentSuccessUrlForOrder(order), { merchantTransactionId, payment: 'success' }));
+    return res.redirect(withQueryParams(await paymentSuccessRedirectUrlForOrder(order), { merchantTransactionId, payment: 'success' }));
   } catch (error) {
     await phonePeEventClaims.markPhonePeEventFailed(claim, 'callback_processing_error').catch(() => {});
     console.error('PhonePe callback processing failed; the event remains retryable.');

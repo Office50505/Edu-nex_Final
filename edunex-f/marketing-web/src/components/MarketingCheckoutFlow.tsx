@@ -205,7 +205,7 @@ export default function MarketingCheckoutFlow() {
 
   useEffect(() => {
     void api<Pricing>('/api/onboarding/config').then((data) => {
-      if (data.gateway === 'phonepe' && data.checkoutEnabled && Number.isSafeInteger(data.oneTimeAmountPaise) && data.oneTimeAmountPaise > 0) setPricing(data)
+      if ((data.gateway === 'phonepe' || data.gateway === 'simulated') && data.checkoutEnabled && Number.isSafeInteger(data.oneTimeAmountPaise) && data.oneTimeAmountPaise > 0) setPricing(data)
     }).catch(() => {
       // OTP verification can still proceed; checkout will surface provider/config errors later.
     })
@@ -360,7 +360,7 @@ export default function MarketingCheckoutFlow() {
       }
       throw error
     }
-    if (checkout.gateway !== 'phonepe' || !checkout.redirectUrl) throw new Error('Secure PhonePe checkout is unavailable.')
+    if (!['phonepe', 'simulated'].includes(checkout.gateway) || !checkout.redirectUrl) throw new Error('Secure checkout is unavailable.')
     setAwaitingPayment()
     window.location.assign(checkout.redirectUrl)
   }, [checkPayment, finish, getStatus, resetExpiredSession])
