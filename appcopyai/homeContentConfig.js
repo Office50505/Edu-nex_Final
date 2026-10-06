@@ -141,6 +141,36 @@ export function sortLessons(lessons = []) {
   return [...lessons].sort((left, right) => Number(left?.order || 0) - Number(right?.order || 0));
 }
 
+export function getLessonUploadTime(lesson) {
+  const dateValue = [
+    lesson?.uploadedAt,
+    lesson?.dateUploaded,
+    lesson?.createdAt,
+    lesson?.publishedAt,
+    lesson?.releasedAt,
+    lesson?.updatedAt,
+    lesson?.lastChanged,
+    lesson?.dateModified,
+  ].find(Boolean);
+  const dateTime = dateValue ? new Date(dateValue).getTime() : 0;
+  if (Number.isFinite(dateTime) && dateTime > 0) return dateTime;
+
+  const id = String(lesson?._id || lesson?.id || "");
+  if (/^[a-f0-9]{24}$/i.test(id)) {
+    return parseInt(id.slice(0, 8), 16) * 1000;
+  }
+
+  return 0;
+}
+
+export function sortLessonsByUploadTime(lessons = []) {
+  return [...lessons].sort((left, right) => {
+    const timeDifference = getLessonUploadTime(right) - getLessonUploadTime(left);
+    if (timeDifference) return timeDifference;
+    return Number(right?.order || 0) - Number(left?.order || 0);
+  });
+}
+
 export function resolveLessonNumbers(orderedLessons, lessonNumbers) {
   if (!Array.isArray(orderedLessons) || !Array.isArray(lessonNumbers)) return [];
   return lessonNumbers.map(number => orderedLessons[number - 1]).filter(Boolean);

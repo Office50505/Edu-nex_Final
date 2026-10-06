@@ -503,6 +503,24 @@ function sanitizeOptionalUrl(value) {
   return normalized;
 }
 
+function dateFromObjectId(value) {
+  const id = String(value || '');
+  if (!/^[a-f0-9]{24}$/i.test(id)) return null;
+  return new Date(parseInt(id.slice(0, 8), 16) * 1000);
+}
+
+function sanitizeUploadDate(video) {
+  const candidate = video.uploadedAt
+    || video.dateUploaded
+    || video.createdAt
+    || video.lastChanged
+    || video.dateModified
+    || dateFromObjectId(video._id || video.id)
+    || new Date();
+  const parsed = new Date(candidate);
+  return Number.isNaN(parsed.getTime()) ? new Date() : parsed;
+}
+
 function sanitizeCourseVideos(rawVideos) {
   if (!Array.isArray(rawVideos)) return null;
 
@@ -515,9 +533,14 @@ function sanitizeCourseVideos(rawVideos) {
       const transcriptUrl = String(video.transcriptUrl || '').trim() || null;
       const duration = Number(video.duration) || 0;
       const youtubeId = String(video.youtubeId || '').trim();
+      const uploadedAt = sanitizeUploadDate(video);
+      const existingVideoId = mongoose.Types.ObjectId.isValid(video._id || video.id)
+        ? video._id || video.id
+        : null;
 
       if (youtubeId) {
         return {
+          ...(existingVideoId ? { _id: existingVideoId } : {}),
           title,
           topic,
           description,
@@ -532,6 +555,7 @@ function sanitizeCourseVideos(rawVideos) {
           transcriptUrl,
           duration,
           order: index + 1,
+          uploadedAt,
         };
       }
 
@@ -541,6 +565,7 @@ function sanitizeCourseVideos(rawVideos) {
       }
 
       return {
+        ...(existingVideoId ? { _id: existingVideoId } : {}),
         title,
         topic,
         description,
@@ -551,6 +576,7 @@ function sanitizeCourseVideos(rawVideos) {
         transcriptUrl,
         duration,
         order: index + 1,
+        uploadedAt,
       };
     })
     .filter(Boolean);

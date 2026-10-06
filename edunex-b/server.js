@@ -89,6 +89,9 @@ const BUNNY_PULL_ZONE_URL = process.env.BUNNY_PULL_ZONE_URL
   || 'https://edunex.b-cdn.net/';
 const BUNNY_STREAM_LIBRARY_ID = process.env.BUNNY_STREAM_LIBRARY_ID || '';
 const BUNNY_STREAM_API_KEY = process.env.BUNNY_STREAM_API_KEY || '';
+const LESSON_AI_API_KEY = process.env.FAL_API_KEY || process.env.FAL_KEY || '';
+const LESSON_AI_MODEL = process.env.FAL_OPENROUTER_MODEL || process.env.FAL_GEMINI_MODEL || 'google/gemini-2.5-flash';
+const LESSON_AI_URL = process.env.FAL_OPENROUTER_URL || 'https://fal.run/openrouter/router/openai/v1/chat/completions';
 const OTP_PROVIDER = String(process.env.OTP_PROVIDER || process.env.OTP_DELIVERY_PROVIDER || '').trim().toLowerCase();
 const PAYMENT_GATEWAY_MODE = String(process.env.PAYMENT_GATEWAY_MODE || '').trim().toLowerCase();
 const AD_PAYMENT_MODE = String(process.env.AD_PAYMENT_MODE || '').trim().toLowerCase();
@@ -623,6 +626,63 @@ app.use((req, res, next) => {
   return jsonParser(req, res, next);
 });
 app.use(urlencodedParser);
+
+app.post('/api/admin/lesson-ai/generate', protectAdmin, async (req, res) => {
+  try {
+    const prompt = compactAdminText(req.body?.prompt, 3000);
+    if (prompt.length < 10) {
+      return res.status(400).json({ error: 'Enter a clear lesson prompt with at least 10 characters.' });
+    }
+
+    const courseId = compactAdminText(req.body?.courseId, 80);
+    const videoId = compactAdminText(req.body?.videoId, 80);
+    const lessonIndex = Math.max(1, Number(req.body?.lessonIndex || 1));
+    let course = null;
+    let existingLesson = req.body?.existingLesson && typeof req.body.existingLesson === 'object'
+      ? req.body.existingLesson
+      : null;
+
+    if (courseId && mongoose.Types.ObjectId.isValid(courseId)) {
+      course = await Course.findById(courseId).select('title description videos');
+      if (!course) return res.status(404).json({ error: 'Course not found for Lesson AI.' });
+      const match = Array.isArray(course.videos)
+        ? course.videos.find((video) => String(video._id) === String(videoId))
+        : null;
+      if (videoId && !match) return res.status(404).json({ error: 'Lesson not found for this course.' });
+      existingLesson = match || existingLesson;
+    }
+
+    const lesson = await generateLessonWithAi({
+      prompt,
+      courseTitle: req.body?.courseTitle || course?.title,
+      courseDescription: req.body?.courseDescription || course?.description,
+      lessonIndex,
+      existingLesson,
+    });
+
+    let saved = false;
+    if (course && videoId) {
+      const video = course.videos.id(videoId);
+      if (!video) return res.status(404).json({ error: 'Lesson not found for this course.' });
+      video.title = lesson.title;
+      video.topic = lesson.topic;
+      video.description = lesson.description;
+      video.notes = lesson.notes;
+      video.examplePrompt = lesson.examplePrompt;
+      await course.save();
+      await clearPublicCourseCaches();
+      saved = true;
+    }
+
+    res.json({ lesson, saved });
+  } catch (error) {
+    const status = error.statusCode || (error.name === 'TimeoutError' ? 504 : 500);
+    res.status(status).json({
+      error: error.message || 'Lesson AI failed. Check the prompt and try again.',
+      recoverable: true,
+    });
+  }
+});
 app.use((error, req, res, next) => {
   if (error?.type === 'entity.too.large') {
     return res.status(413).json({
@@ -984,6 +1044,110 @@ function applyCourseThumbnailToVideos(videos, courseThumbnail, courseThumbnailUr
     thumbnailUrl: sanitizeOptionalUrl(video.thumbnailUrl) || sharedThumbnailUrl,
     thumbnailVerticalUrl: sanitizeOptionalUrl(video.thumbnailVerticalUrl) || sharedThumbnailVerticalUrl,
   }));
+}
+
+function compactAdminText(value, max = 1200) {
+  return String(value || '').replace(/\s+/g, ' ').trim().slice(0, max);
+}
+
+function lessonAiTextFromProvider(data) {
+  if (!data) return '';
+  if (typeof data === 'string') return data;
+  if (typeof data.output === 'string') return data.output;
+  if (typeof data.text === 'string') return data.text;
+  if (typeof data.response === 'string') return data.response;
+  if (typeof data.answer === 'string') return data.answer;
+  if (typeof data.content === 'string') return data.content;
+  const choice = data.choices?.[0];
+  if (typeof choice?.message?.content === 'string') return choice.message.content;
+  if (Array.isArray(choice?.message?.content)) return choice.message.content.map((part) => part?.text || '').filter(Boolean).join('\n');
+  if (typeof choice?.text === 'string') return choice.text;
+  return '';
+}
+
+function parseLessonAiJson(text) {
+  const raw = String(text || '').trim();
+  const fenced = raw.match(/```(?:json)?\s*([\s\S]*?)```/i)?.[1]?.trim();
+  const candidate = fenced || raw.match(/\{[\s\S]*\}/)?.[0] || raw;
+  try {
+    return JSON.parse(candidate);
+  } catch {
+    const error = new Error('Lesson AI returned an unreadable result. Try a shorter, clearer prompt.');
+    error.statusCode = 502;
+    throw error;
+  }
+}
+
+function normalizeLessonAiResult(value) {
+  const source = value && typeof value === 'object' ? value : {};
+  const result = {
+    title: compactAdminText(source.title, 120),
+    topic: compactAdminText(source.topic, 80),
+    description: compactAdminText(source.description, 1200),
+    notes: String(source.notes || '').replace(/\r\n/g, '\n').trim().slice(0, 20000),
+    examplePrompt: String(source.examplePrompt || source.example_prompt || '').trim().slice(0, 3000),
+  };
+  if (!result.title || !result.description || !result.notes) {
+    const error = new Error('Lesson AI returned an incomplete lesson. Try adding the topic, audience, and desired outcome.');
+    error.statusCode = 502;
+    throw error;
+  }
+  return result;
+}
+
+async function generateLessonWithAi({ prompt, courseTitle, courseDescription, lessonIndex, existingLesson }) {
+  if (!LESSON_AI_API_KEY) {
+    const error = new Error('Lesson AI is not configured. Set FAL_API_KEY on the backend and try again.');
+    error.statusCode = 503;
+    throw error;
+  }
+
+  const response = await fetch(LESSON_AI_URL, {
+    method: 'POST',
+    signal: AbortSignal.timeout(30000),
+    headers: {
+      Authorization: `Key ${LESSON_AI_API_KEY}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      model: LESSON_AI_MODEL,
+      temperature: 0.35,
+      max_tokens: 1800,
+      messages: [
+        {
+          role: 'system',
+          content: [
+            'You create admin-ready Skillomate lesson drafts.',
+            'Return only valid JSON with these keys: title, topic, description, notes, examplePrompt.',
+            'The notes must be practical, structured, learner-facing, and safe for an online course.',
+            'Do not include markdown fences, comments, nulls, or extra keys.',
+          ].join('\n'),
+        },
+        {
+          role: 'user',
+          content: [
+            `Course title: ${compactAdminText(courseTitle, 160) || 'Untitled course'}`,
+            courseDescription ? `Course description: ${compactAdminText(courseDescription, 1000)}` : '',
+            `Lesson number: ${Number(lessonIndex) || 1}`,
+            existingLesson?.title ? `Existing lesson title: ${compactAdminText(existingLesson.title, 160)}` : '',
+            existingLesson?.description ? `Existing lesson description: ${compactAdminText(existingLesson.description, 800)}` : '',
+            '',
+            `Admin prompt: ${compactAdminText(prompt, 3000)}`,
+          ].filter(Boolean).join('\n'),
+        },
+      ],
+    }),
+  });
+
+  const contentType = response.headers.get('content-type') || '';
+  const body = contentType.includes('application/json') ? await response.json() : await response.text();
+  if (!response.ok) {
+    const detail = typeof body === 'string' ? body : body?.detail || body?.error || body?.message;
+    const error = new Error(`Lesson AI provider returned ${response.status}${detail ? `: ${detail}` : ''}`);
+    error.statusCode = 502;
+    throw error;
+  }
+  return normalizeLessonAiResult(parseLessonAiJson(lessonAiTextFromProvider(body)));
 }
 
 async function listBunnyStorageVideos(folderPath = '') {

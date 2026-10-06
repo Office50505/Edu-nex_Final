@@ -9,7 +9,7 @@ const Subscription = require('../models/Subscription');
 const User = require('../models/User');
 
 const VIDEO_COMPLETE_THRESHOLD = Number(process.env.VIDEO_COMPLETE_THRESHOLD || 0.85);
-const LIGHT_COURSE_FIELDS = 'title slug description category status publishedAt createdAt thumbnail.mimeType thumbnailHorizontal.mimeType thumbnailVertical.mimeType thumbnailUrl thumbnailVerticalUrl notesUrl completionOrder videos._id videos.title videos.topic videos.description videos.provider videos.sourceType videos.videoUrl videos.embedUrl videos.bunnyVideoId videos.bunnyLibraryId videos.youtubeId videos.thumbnailUrl videos.thumbnailVerticalUrl videos.transcriptUrl videos.examplePrompt videos.duration videos.order';
+const LIGHT_COURSE_FIELDS = 'title slug description category status publishedAt createdAt thumbnail.mimeType thumbnailHorizontal.mimeType thumbnailVertical.mimeType thumbnailUrl thumbnailVerticalUrl notesUrl completionOrder videos._id videos.title videos.topic videos.description videos.provider videos.sourceType videos.videoUrl videos.embedUrl videos.bunnyVideoId videos.bunnyLibraryId videos.youtubeId videos.thumbnailUrl videos.thumbnailVerticalUrl videos.transcriptUrl videos.examplePrompt videos.duration videos.order videos.uploadedAt videos.dateUploaded videos.createdAt videos.updatedAt videos.lastChanged videos.dateModified';
 const API_BASE_URL = String(process.env.API_BASE_URL || '').replace(/\/+$/, '');
 const BUNNY_LIBRARY_ID = process.env.BUNNY_LIBRARY_ID || process.env.BUNNY_STREAM_LIBRARY_ID || '675520';
 const BUNNY_API_KEY = process.env.BUNNY_API_KEY || process.env.BUNNY_STREAM_API_KEY || '';
@@ -120,6 +120,9 @@ function publicVideoInfo(video = {}, index = 0) {
     topic: video.topic || null,
     order: video.order ?? index + 1,
     duration: video.duration ?? video.durationSeconds ?? video.lengthSeconds ?? video.videoDuration ?? null,
+    uploadedAt: video.uploadedAt || video.dateUploaded || video.createdAt || video.lastChanged || null,
+    createdAt: video.createdAt || null,
+    updatedAt: video.updatedAt || video.dateModified || null,
   };
 }
 

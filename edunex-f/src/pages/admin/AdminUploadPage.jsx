@@ -269,6 +269,7 @@ export function AdminUploadPage() {
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [dirtyLessonNotes, setDirtyLessonNotes] = useState(() => new Set());
   const [savingLessonNotes, setSavingLessonNotes] = useState("");
+  const [lessonAiState, setLessonAiState] = useState({});
   const [lessonNotesStatus, setLessonNotesStatus] = useState({});
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState("success");
@@ -380,6 +381,105 @@ export function AdminUploadPage() {
       ...current,
       videos: current.videos.map((video, videoIndex) => videoIndex === index ? { ...video, [field]: value, ...(['videoUrl','provider'].includes(field) ? {duration:'',metadataMessage:'',metadataError:false} : {}) } : video),
     }));
+  }
+
+  function lessonAiKey(video, index) {
+    return lessonEditKey(video, index);
+  }
+
+  function updateLessonAiPrompt(index, value) {
+    const key = lessonAiKey(form.videos[index], index);
+    setLessonAiState((current) => ({
+      ...current,
+      [key]: { ...(current[key] || {}), prompt: value, error: "", message: "" },
+    }));
+  }
+
+  async function generateLessonWithAi(index) {
+    const video = form.videos[index];
+    const key = lessonAiKey(video, index);
+    const prompt = String(lessonAiState[key]?.prompt || "").trim();
+    if (prompt.length < 10) {
+      setLessonAiState((current) => ({
+        ...current,
+        [key]: { ...(current[key] || {}), error: "Enter a clearer lesson prompt first.", loading: false },
+      }));
+      return;
+    }
+
+    setLessonAiState((current) => ({
+      ...current,
+      [key]: { ...(current[key] || {}), loading: true, error: "", message: "Generating lesson..." },
+    }));
+    setMessage("");
+
+    try {
+      const data = await adminJson("/api/admin/lesson-ai/generate", {
+        method: "POST",
+        body: JSON.stringify({
+          prompt,
+          courseId: editCourseId || "",
+          videoId: video?._id || "",
+          courseTitle: form.title,
+          courseDescription: form.description,
+          lessonIndex: index + 1,
+          existingLesson: {
+            title: video?.title || "",
+            topic: video?.topic || "",
+            description: video?.description || "",
+            notes: video?.notes || "",
+            examplePrompt: video?.examplePrompt || "",
+          },
+        }),
+      }, "Lesson AI could not generate this lesson.");
+
+      const lesson = data.lesson || {};
+      setForm((current) => ({
+        ...current,
+        videos: current.videos.map((item, videoIndex) => videoIndex === index ? {
+          ...item,
+          title: lesson.title || item.title,
+          topic: lesson.topic || item.topic,
+          description: lesson.description || item.description,
+          notes: lesson.notes || item.notes,
+          examplePrompt: lesson.examplePrompt || item.examplePrompt,
+        } : item),
+      }));
+
+      if (data.saved) {
+        setDirtyLessonNotes((current) => {
+          const next = new Set(current);
+          next.delete(key);
+          return next;
+        });
+        setLessonNotesStatus((current) => ({
+          ...current,
+          [key]: { type: "success", message: "Lesson AI generated and saved." },
+        }));
+      } else {
+        setHasUnsavedChanges(true);
+      }
+
+      setLessonAiState((current) => ({
+        ...current,
+        [key]: {
+          ...(current[key] || {}),
+          loading: false,
+          error: "",
+          message: data.saved ? "Lesson generated and saved." : "Lesson generated. Save the course to publish it.",
+        },
+      }));
+      setMessageType("success");
+      setMessage(data.saved ? `Lesson ${index + 1} generated and saved.` : `Lesson ${index + 1} generated. Save the course to keep it.`);
+    } catch (error) {
+      const detail = error.message || "Lesson AI failed. Check the prompt and try again.";
+      setLessonAiState((current) => ({
+        ...current,
+        [key]: { ...(current[key] || {}), loading: false, error: detail, message: "" },
+      }));
+      setMessageType("error");
+      setMessage(detail);
+    }
   }
 
   function addVideo() {
@@ -670,6 +770,29 @@ export function AdminUploadPage() {
               {form.videos.map((video, index) => (
                 <article className="video-entry" key={video.key}>
                   <div className="video-entry-head"><strong className="video-entry-title">Lesson {index + 1}</strong><button type="button" className="toolbar-button" disabled={index===0} onClick={()=>moveVideo(index,-1)}>Move up</button><button type="button" className="toolbar-button" disabled={index===form.videos.length-1} onClick={()=>moveVideo(index,1)}>Move down</button><button type="button" className="toolbar-button" onClick={()=>{const error=videoError(video,cloudHost);if(error){setMessageType('error');setMessage(error);}else setPreview({...video,key:Date.now()});}}>Preview</button><button className="action-button danger" type="button" onClick={() => removeVideo(index)}>Remove</button></div>
+                  <div className="lesson-ai-panel">
+                    <label htmlFor={`lessonAiPrompt${index}`}>New Lesson AI prompt</label>
+                    <textarea
+                      id={`lessonAiPrompt${index}`}
+                      rows="3"
+                      maxLength={3000}
+                      placeholder="Describe the lesson outcome, audience, language, and key points. Example: Generate a beginner lesson on writing a cinematic Google Flow prompt."
+                      value={lessonAiState[lessonAiKey(video, index)]?.prompt || ""}
+                      onChange={(event) => updateLessonAiPrompt(index, event.target.value)}
+                    />
+                    <div className="lesson-ai-actions">
+                      <button
+                        className="secondary-button compact-button"
+                        type="button"
+                        disabled={Boolean(lessonAiState[lessonAiKey(video, index)]?.loading) || submitting || savingLessonNotes === "all"}
+                        onClick={() => generateLessonWithAi(index)}
+                      >
+                        {lessonAiState[lessonAiKey(video, index)]?.loading ? "Generating..." : "Generate with AI"}
+                      </button>
+                      {lessonAiState[lessonAiKey(video, index)]?.error ? <span className="lesson-notes-save-status is-error" role="alert">{lessonAiState[lessonAiKey(video, index)].error}</span> : null}
+                      {lessonAiState[lessonAiKey(video, index)]?.message ? <span className="lesson-notes-save-status is-success" role="status">{lessonAiState[lessonAiKey(video, index)].message}</span> : null}
+                    </div>
+                  </div>
                   <div className="form-grid">
                     <div className="field"><label htmlFor={`videoProvider${index}`}>Video provider</label><select id={`videoProvider${index}`} value={video.provider} onChange={e=>updateVideo(index,'provider',e.target.value)}><option value="aws_cloudfront">AWS CloudFront</option><option value="bunny_stream">Bunny Stream</option>{video.provider==='youtube'?<option value="youtube">YouTube (existing)</option>:null}</select></div>
                     <div className="field"><label htmlFor={`videoTitle${index}`}>Title</label><input id={`videoTitle${index}`} value={video.title} required onChange={(event) => updateVideo(index, "title", event.target.value)} /></div>

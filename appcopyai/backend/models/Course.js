@@ -74,6 +74,7 @@ videos: [
          transcriptUrl: { type: String, trim: true, default: null },
          duration: { type: Number, default: 0 },
          order: { type: Number, required: true },
+         uploadedAt: { type: Date, default: Date.now },
        },
      ],
      notesUrl: {

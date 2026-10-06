@@ -65,6 +65,7 @@ import {
   buildLessonTopics,
   resolveLessonNumbers,
   sortLessons,
+  sortLessonsByUploadTime,
 } from "./homeContentConfig";
 
 const PLAYER_ORIGIN = "https://protected-video.local";
@@ -3139,11 +3140,13 @@ async function submitProblemReportFromApp({ user, category, message, route = "ho
 }
 
 function ProblemReportModal({ visible, onClose, user, route = "home" }) {
+  const { height: windowHeight } = useWindowDimensions();
   const [category, setCategory] = useState("technical");
   const [message, setMessage] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [reference, setReference] = useState("");
+  const reportSheetMaxHeight = Math.round(windowHeight * (Platform.OS === "android" ? 0.82 : 0.92));
 
   useEffect(() => {
     if (!visible) {
@@ -3177,9 +3180,13 @@ function ProblemReportModal({ visible, onClose, user, route = "home" }) {
 
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={() => { if (!busy) onClose?.(); }}>
-      <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : undefined} style={s.reportOverlay}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        keyboardVerticalOffset={Platform.OS === "android" ? (StatusBar.currentHeight || 0) : 0}
+        style={s.reportOverlay}
+      >
         <Pressable style={StyleSheet.absoluteFill} onPress={busy ? undefined : onClose} accessible={false} />
-        <View style={s.reportSheet}>
+        <View style={[s.reportSheet, { maxHeight: reportSheetMaxHeight }]}>
           <View style={s.reportHeader}>
             <View style={s.reportMark}>
               <Ionicons name="flag-outline" size={24} color="#FFFFFF" />
@@ -3211,7 +3218,13 @@ function ProblemReportModal({ visible, onClose, user, route = "home" }) {
               </TouchableOpacity>
             </View>
           ) : (
-            <ScrollView keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
+            <ScrollView
+              style={s.reportScroll}
+              contentContainerStyle={s.reportScrollContent}
+              keyboardShouldPersistTaps="handled"
+              keyboardDismissMode="interactive"
+              showsVerticalScrollIndicator={false}
+            >
               <Text style={s.reportDescription}>
                 Tell us what went wrong. We automatically include this app screen and basic device details, never passwords or payment information.
               </Text>
@@ -3313,7 +3326,7 @@ function BottomNav({
   forceDark = false,
   persistent = false,
   searchReferences: searchReferencesOverride = null,
-  searchPlaceholder = "Search Skillomate",
+  searchPlaceholder = "Search courses",
 }) {
   const appSearchReferences = useContext(AppSearchReferencesContext);
   const rootTabSwipe = React.useContext(RootTabSwipeContext);
@@ -3463,56 +3476,25 @@ function BottomNav({
     { key: "ai", icon: "sparkles", label: "Nex AI", fn: onAI },
     { key: "downloads", icon: "download", label: "Downloads", fn: onDownloads },
   ];
-  const defaultSearchReferences = [
-    {
-      key: "ai-influencer-course",
-      title: "AI Influencer Course",
-      subtitle: "Open the course and related lessons",
-      icon: "play-circle",
-      fn: onCourses,
-      keywords: "ai influencer ai filmmaking film making course masterclass lessons lecture character face prompts videos reels cinema storytelling",
-    },
-    {
-      key: "course-lessons",
-      title: "Course Lessons",
-      subtitle: "Browse all Skillomate course lessons",
-      icon: "albums",
-      fn: onCourses,
-      keywords: "course lessons lectures explore browse videos tools setup ai filmmaking film making cinema editing prompts storytelling",
-    },
-    {
-      key: "home-progress",
-      title: "Continue Learning",
-      subtitle: "Return to your active course progress",
-      icon: "home",
-      fn: onHome,
-      keywords: "continue learning progress resume home ai influencer course",
-    },
-    {
-      key: "nex-ai",
-      title: "Nex AI",
-      subtitle: "Ask questions about your course",
-      icon: "sparkles",
-      fn: onAI,
-      keywords: "ai chat nex assistant doubt question prompt help",
-    },
-    {
-      key: "downloads",
-      title: "Downloads",
-      subtitle: "Find offline saved lessons",
-      icon: "download",
-      fn: onDownloads,
-      keywords: "download downloads offline saved videos lessons",
-    },
-  ];
-  const searchReferences = [
-    ...(Array.isArray(searchReferencesOverride) ? searchReferencesOverride : []),
-    ...(Array.isArray(appSearchReferences) ? appSearchReferences : []),
-    ...defaultSearchReferences,
-  ].filter(item => typeof item.fn === "function")
-    .filter((item, index, items) => items.findIndex(candidate => candidate.key === item.key) === index);
+  const defaultSearchReferences = [];
+  const searchReferences = (Array.isArray(searchReferencesOverride) ? searchReferencesOverride : defaultSearchReferences)
+    .filter(item => typeof item.fn === "function");
   const searchResults = searchTerms.length
-    ? searchReferences.filter(item => matchesSearchQuery(item, searchTerms)).slice(0, 4)
+    ? searchReferences.map((item, index) => {
+        const title = String(item.title || "").toLowerCase();
+        const haystack = `${item.title} ${item.subtitle} ${item.keywords}`.toLowerCase();
+        const matched = searchTerms.every(term => haystack.includes(term));
+        if (!matched) return null;
+        const firstTerm = searchTerms[0] || "";
+        const score = title === normalizedSearch
+          ? 0
+          : title.startsWith(normalizedSearch)
+            ? 1
+            : title.split(/\s+/).some(word => word.startsWith(firstTerm))
+              ? 2
+              : 3;
+        return { item, score, index };
+      }).filter(Boolean).sort((left, right) => left.score - right.score || left.index - right.index).slice(0, 5).map(result => result.item)
     : [];
   const openSearchResult = item => {
     rememberSearch(navSearchText || item?.title);
@@ -3575,7 +3557,7 @@ function BottomNav({
                     openSearchResult(item);
                   }}
                   accessibilityRole="button"
-                  accessibilityLabel={`${item.title}. ${item.subtitle}`}
+                  accessibilityLabel={`Open course suggestion ${item.title}. ${item.subtitle}`}
                 >
                   <View style={s.bottomNavSearchResultIcon}>
                     <Ionicons name={item.type === "recent" ? "time-outline" : `${item.icon}-outline`} size={18} color={C.primary} />
@@ -3588,7 +3570,7 @@ function BottomNav({
                 </TouchableOpacity>
               )) : (
                 <View style={s.bottomNavSearchEmpty}>
-                  <Text style={s.bottomNavSearchEmptyText}>No matching app result</Text>
+                  <Text style={s.bottomNavSearchEmptyText}>No matching courses</Text>
                 </View>
               )}
             </View>
@@ -3609,7 +3591,7 @@ function BottomNav({
             placeholderTextColor={forceDark ? "#AAA297" : C.textMuted}
             style={s.bottomNavSearchInput}
             returnKeyType="search"
-            accessibilityLabel="Search this page"
+            accessibilityLabel="Search courses"
             onSubmitEditing={submitSearch}
           />
           <TouchableOpacity
@@ -3682,8 +3664,7 @@ function getCourseSearchText(course, lessonLimit = 24) {
 
 function buildCourseSearchReferences(courses, handlers = {}) {
   const safeCourses = (Array.isArray(courses) ? courses : []).filter(course => course && !course.isMock);
-  const courseTitles = safeCourses.map(course => course.title).filter(Boolean).join(" ");
-  const courseRefs = safeCourses.map((course, index) => {
+  return safeCourses.map((course, index) => {
     const lessonCount = Number(course.lessonCount ?? course.videoCount ?? course.videos?.length ?? 0);
     const categoryName = typeof course.category === "string"
       ? course.category
@@ -3696,43 +3677,7 @@ function buildCourseSearchReferences(courses, handlers = {}) {
       fn: () => handlers.onOpenCourse?.(course),
       keywords: getCourseSearchText(course),
     };
-  });
-  const openCourses = handlers.onCourses || (() => {});
-  return [
-    ...courseRefs,
-    {
-      key: "course-lessons",
-      title: "Course Lessons",
-      subtitle: "Browse all Skillomate course lessons",
-      icon: "albums",
-      fn: openCourses,
-      keywords: `${courseTitles} course lessons lectures explore browse videos tools setup`,
-    },
-    {
-      key: "home-progress",
-      title: "Continue Learning",
-      subtitle: "Return to your active course progress",
-      icon: "home",
-      fn: handlers.onHome || openCourses,
-      keywords: `${courseTitles} continue learning progress resume home course`,
-    },
-    {
-      key: "nex-ai",
-      title: "Nex AI",
-      subtitle: "Ask questions about your course",
-      icon: "sparkles",
-      fn: handlers.onAI,
-      keywords: "ai chat nex assistant doubt question prompt help course lessons",
-    },
-    {
-      key: "downloads",
-      title: "Downloads",
-      subtitle: "Find offline saved lessons",
-      icon: "download",
-      fn: handlers.onDownloads,
-      keywords: "download downloads offline saved videos lessons courses",
-    },
-  ].filter(item => typeof item.fn === "function");
+  }).filter(item => typeof item.fn === "function");
 }
 
 const ROOT_TAB_ORDER = ["home", "courses", "ai", "downloads"];
@@ -3746,7 +3691,7 @@ const ROOT_TAB_LABELS = {
 
 const AppSearchReferencesContext = React.createContext([]);
 
-function StaticRootTabs({ activeTab, onNavigate, renderTab }) {
+function StaticRootTabs({ activeTab, onNavigate, renderTab, searchReferences = null }) {
   const swipeBoundary = useMemo(() => ({ hideEmbeddedNav: true }), []);
   const stationaryNavActions = useMemo(() => ({
     home: () => onNavigate?.("home"),
@@ -3770,6 +3715,7 @@ function StaticRootTabs({ activeTab, onNavigate, renderTab }) {
           onDownloads={stationaryNavActions.downloads}
           onAI={stationaryNavActions.ai}
           onProfile={stationaryNavActions.profile}
+          searchReferences={searchReferences}
         />
       </View>
     </RootTabSwipeContext.Provider>
@@ -3780,7 +3726,7 @@ function SwipeableRootTabs(props) {
   return ROOT_TAB_SWIPE_ENABLED ? <SwipeableRootTabsPager {...props} /> : <StaticRootTabs {...props} />;
 }
 
-function SwipeableRootTabsPager({ activeTab, onNavigate, renderTab }) {
+function SwipeableRootTabsPager({ activeTab, onNavigate, renderTab, searchReferences = null }) {
   const { width, height } = useWindowDimensions();
   const pageGap = ROOT_TAB_PAGE_GAP;
   const pageStride = width + pageGap;
@@ -3990,6 +3936,7 @@ function SwipeableRootTabsPager({ activeTab, onNavigate, renderTab }) {
           onDownloads={stationaryNavActions.downloads}
           onAI={stationaryNavActions.ai}
           onProfile={stationaryNavActions.profile}
+          searchReferences={searchReferences}
         />
       </View>
     </RootTabSwipeContext.Provider>
@@ -5175,12 +5122,8 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
     const dy = Math.abs(point.y - hold.startY);
     if (Math.max(dx, dy) < HOLD_SPEED_CANCEL_MOVE) return;
     hold.moved = true;
+    if (hold.active) return;
     hold.cancelled = true;
-    if (hold.active) {
-      endHoldSpeed();
-      hold.cancelled = true;
-      return;
-    }
     if (hold.timer) clearTimeout(hold.timer);
     hold.timer = null;
     hold.side = null;
@@ -5467,8 +5410,15 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
 
   function handleCenterTap() {
     if (showSettings) { setShowSettings(false); return; }
+    if (showPlayerChrome && canAutoHideChrome) {
+      if (chromeAutoHideTimerRef.current) {
+        clearTimeout(chromeAutoHideTimerRef.current);
+        chromeAutoHideTimerRef.current = null;
+      }
+      setPlayerChromeVisible(false);
+      return;
+    }
     revealPlayerChrome();
-    togglePlay();
   }
 
   function beginCenterTap(event) {
@@ -5605,8 +5555,11 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
           <Pressable
             style={s.tapLeft}
             pointerEvents={playerPanelOpen ? "none" : "auto"}
-            onStartShouldSetResponderCapture={() => false}
-            onMoveShouldSetResponder={() => false}
+            onStartShouldSetResponder={() => true}
+            onStartShouldSetResponderCapture={() => true}
+            onMoveShouldSetResponder={() => true}
+            onMoveShouldSetResponderCapture={() => true}
+            onResponderTerminationRequest={() => false}
             accessible
             accessibilityRole="button"
             accessibilityLabel="Show controls, hold left side for 2x speed, or double tap to rewind"
@@ -5627,13 +5580,16 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
             focusable={showPlayerChrome}
             importantForAccessibility={showPlayerChrome ? "auto" : "no-hide-descendants"}
             accessibilityRole={showPlayerChrome ? "button" : undefined}
-            accessibilityLabel={showPlayerChrome ? (isPlaying || isBuffering ? "Pause video" : "Play video") : ""}
+            accessibilityLabel={showPlayerChrome ? "Hide playback controls" : ""}
           />
           <Pressable
             style={s.tapRight}
             pointerEvents={playerPanelOpen ? "none" : "auto"}
-            onStartShouldSetResponderCapture={() => false}
-            onMoveShouldSetResponder={() => false}
+            onStartShouldSetResponder={() => true}
+            onStartShouldSetResponderCapture={() => true}
+            onMoveShouldSetResponder={() => true}
+            onMoveShouldSetResponderCapture={() => true}
+            onResponderTerminationRequest={() => false}
             accessible
             accessibilityRole="button"
             accessibilityLabel="Show controls, hold right side for 2x speed, or double tap to fast forward"
@@ -7420,22 +7376,27 @@ function LessonListSection({ course, lessons, onPressLesson, screen = "Home less
     <View style={homeStyles.latestList}>
       {lessons.map((lesson, index) => {
         const duration = getVideoDurationLabel(lesson);
+        const itemCourse = lesson.__homeCourse || course;
+        const showCourseTitle = itemCourse?.title && itemCourse?._id !== course?._id;
+        const rowKey = lesson.__homeKey || getVideoKey(lesson, index);
         return (
           <TouchableOpacity
-            key={getVideoKey(lesson, index)}
+            key={rowKey}
             style={homeStyles.latestRow}
-            onPress={() => onPressLesson(lesson)}
+            onPress={() => onPressLesson(lesson, itemCourse)}
             activeOpacity={0.86}
             accessibilityRole="button"
             accessibilityLabel={`Open lesson ${lesson.order || index + 1}: ${lesson.title}`}
           >
             <View style={homeStyles.latestThumb}>
-              <HomeMedia course={course} lesson={lesson} borderRadius={9} screen={screen} />
+              <HomeMedia course={itemCourse} lesson={lesson} borderRadius={9} screen={screen} />
               <View style={homeStyles.latestPlay}><Ionicons name="play" size={9} color="#FFFFFF" /></View>
             </View>
             <View style={{ flex: 1, minWidth: 0 }}>
               <Text style={homeStyles.latestTitle} numberOfLines={2}>{lesson.title}</Text>
-              <Text style={homeStyles.latestMeta}>Lesson {lesson.order || index + 1}{duration ? ` • ${duration}` : ""}</Text>
+              <Text style={homeStyles.latestMeta} numberOfLines={1}>
+                {showCourseTitle ? `${itemCourse.title} • ` : ""}Lesson {lesson.order || index + 1}{duration ? ` • ${duration}` : ""}
+              </Text>
             </View>
             <Ionicons name="chevron-forward" size={17} color={HOME_PALETTE.textMuted} />
           </TouchableOpacity>
@@ -7965,6 +7926,7 @@ function HomeScreen({
   onReportProblem,
   courseProgress = {},
   aiRobotId,
+  onCatalogCoursesChange,
 }) {
   const { width } = useWindowDimensions();
   const hasAccess = hasCourseAccess(user);
@@ -8068,6 +8030,9 @@ function HomeScreen({
       .map(item => ({ ...item, videos: sortLessons(item.videos || []) })),
     [catalogCourses]
   );
+  useEffect(() => {
+    onCatalogCoursesChange?.(homeCourses);
+  }, [homeCourses, onCatalogCoursesChange]);
   const primaryCourse = homeCourses[0] || null;
   const lessons = useMemo(() => sortLessons(primaryCourse?.videos || []), [primaryCourse?.videos]);
   const course = useMemo(
@@ -8147,14 +8112,14 @@ function HomeScreen({
   );
   const completedChallengeCount = challengeSteps.filter(step => isLessonComplete(step.lesson)).length;
   const latestLessons = useMemo(() => {
-    const withDates = lessons.filter(lesson => lesson.createdAt || lesson.publishedAt || lesson.releasedAt);
-    if (withDates.length) {
-      return [...withDates]
-        .sort((left, right) => new Date(right.createdAt || right.publishedAt || right.releasedAt).getTime() - new Date(left.createdAt || left.publishedAt || left.releasedAt).getTime())
-        .slice(0, 3);
-    }
-    return lessons.slice(-3).reverse();
-  }, [lessons]);
+    return sortLessonsByUploadTime(homeCourses.flatMap(item => (
+      (item.videos || []).map((lesson, index) => ({
+        ...lesson,
+        __homeCourse: item,
+        __homeKey: `${item._id || item.title || "course"}-${getVideoKey(lesson, index)}`,
+      }))
+    ))).slice(0, 3);
+  }, [homeCourses]);
   const homeCourseSummaries = useMemo(
     () => homeCourses.map(item => {
       const itemLessons = sortLessons(item.videos || []);
@@ -8516,7 +8481,7 @@ function HomeScreen({
 }
 
 // ── CourseListScreen ──────────────────────────────────────────────────────────
-function CourseListScreen({ onSelect, user, session, onGoToHome, onGoToCourses, onGoToAI, onGoToDownloads, onGoToProfile, onGoToSubscription, appleSubscription, onOpenTerms, onOpenPrivacy, onReportProblem, wishlist = [], onToggleWishlist, courseProgress = {}, onRefreshProgress, aiRobotId, keepPreviewMounted = false, activeTab = "courses" }) {
+function CourseListScreen({ onSelect, user, session, onGoToHome, onGoToCourses, onGoToAI, onGoToDownloads, onGoToProfile, onGoToSubscription, appleSubscription, onOpenTerms, onOpenPrivacy, onReportProblem, wishlist = [], onToggleWishlist, courseProgress = {}, onRefreshProgress, aiRobotId, keepPreviewMounted = false, activeTab = "courses", onCatalogCoursesChange }) {
   const hasAccess = hasCourseAccess(user);
   const [showUpgrade, setShowUpgrade] = useState(false);
   const [courses, setCourses] = useState([]);
@@ -8557,6 +8522,10 @@ function CourseListScreen({ onSelect, user, session, onGoToHome, onGoToCourses, 
   useEffect(() => {
     loadCourses();
   }, [loadCourses]);
+
+  useEffect(() => {
+    onCatalogCoursesChange?.(courses);
+  }, [courses, onCatalogCoursesChange]);
 
   useEffect(() => {
     onRefreshProgress?.();
@@ -9616,7 +9585,8 @@ function DeleteAccountModal({ visible, user, onClose, onDeleteAccount }) {
   );
 }
 
-function ProfileScreen({ user, session, onLogout, onDeleteAccount, onGoToHome, onGoToCourses, onGoToAI, onGoToDownloads, wishlistCount, onGoToWishlist, onGoToCertificates, certificatesCount, onAvatarChange, onProfileChange, aiRobotId, onGoToSubscription, onOpenLegal, themeMode = "dark", resolvedThemeMode = "dark", onThemeChange, refreshing = false, onRefresh }) {
+function ProfileScreen({ user, session, onLogout, onDeleteAccount, onGoToHome, onGoToCourses, onGoToAI, onGoToDownloads, wishlistCount, onGoToWishlist, onGoToCertificates, certificatesCount, onAvatarChange, onProfileChange, aiRobotId, onGoToSubscription, onOpenLegal, themeMode = "dark", resolvedThemeMode = "dark", onThemeChange, refreshing = false, onRefresh, searchReferences = null }) {
+  const { height: windowHeight } = useWindowDimensions();
   const isActive = hasActivePremiumEntitlement(user);
   const memberSince = user?._id
     ? new Date(parseInt(user._id.substring(0, 8), 16) * 1000).toLocaleDateString("en-IN", { month: "short", year: "numeric" })
@@ -9624,10 +9594,80 @@ function ProfileScreen({ user, session, onLogout, onDeleteAccount, onGoToHome, o
   const activeThemeMode = normalizeThemeMode(themeMode);
   const resolvedThemeLabel = resolvedThemeMode === "light" ? "Light" : "Dark";
   const [showAvatarPicker, setShowAvatarPicker] = useState(false);
+  const [showPersonalDetails, setShowPersonalDetails] = useState(false);
   const [showDeleteAccount, setShowDeleteAccount] = useState(false);
   const [tempAvatar, setTempAvatar] = useState(user.avatar || "a1");
   const [tempFullName, setTempFullName] = useState(user.fullName || "");
+  const [detailFullName, setDetailFullName] = useState(user.fullName || "");
+  const [detailEmail, setDetailEmail] = useState(user.email || "");
+  const [detailGender, setDetailGender] = useState(user.gender || "");
+  const [detailAge, setDetailAge] = useState(user.age ? String(user.age) : "");
   const [savingAvatar, setSavingAvatar] = useState(false);
+  const [savingDetails, setSavingDetails] = useState(false);
+  const detailSheetMaxHeight = Math.round(windowHeight * (Platform.OS === "android" ? 0.84 : 0.92));
+  const displayGender = user.gender
+    ? String(user.gender).charAt(0).toUpperCase() + String(user.gender).slice(1)
+    : "Not set";
+  const displayAge = user.age ? `${user.age}` : "Not set";
+
+  const openPersonalDetails = useCallback(() => {
+    setDetailFullName(user.fullName || "");
+    setDetailEmail(user.email || "");
+    setDetailGender(user.gender || "");
+    setDetailAge(user.age ? String(user.age) : "");
+    setShowPersonalDetails(true);
+  }, [user.age, user.email, user.fullName, user.gender]);
+
+  const savePersonalDetails = useCallback(async () => {
+    const nextName = String(detailFullName || "").trim().replace(/\s+/g, " ");
+    const nextEmail = String(detailEmail || "").trim().toLowerCase();
+    const nextGender = ["male", "female", "other"].includes(detailGender) ? detailGender : null;
+    const nextAge = detailAge === "" ? null : Number(detailAge);
+
+    if (nextName.length < 2) {
+      Alert.alert("Name required", "Enter a name of at least 2 characters.");
+      return;
+    }
+    if (nextEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(nextEmail)) {
+      Alert.alert("Invalid email", "Enter a valid email address or leave it blank.");
+      return;
+    }
+    if (nextAge !== null && (!Number.isFinite(nextAge) || nextAge < 13 || nextAge > 80)) {
+      Alert.alert("Invalid age", "Select an age between 13 and 80.");
+      return;
+    }
+    if (!session?.requestJson) {
+      Alert.alert("Profile not saved", "Please reopen the app and try again.");
+      return;
+    }
+
+    setSavingDetails(true);
+    try {
+      const result = await session.requestJson("/api/auth/me", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          fullName: nextName,
+          email: nextEmail || null,
+          gender: nextGender,
+          age: nextAge,
+        }),
+      });
+      const nextUser = result?.user || {
+        fullName: nextName,
+        email: nextEmail || null,
+        gender: nextGender,
+        age: nextAge,
+      };
+      onProfileChange?.(nextUser);
+      setShowPersonalDetails(false);
+      Alert.alert("Profile updated", "Your personal details were saved.");
+    } catch (error) {
+      Alert.alert("Profile not saved", error.message || "Check your connection and try again.");
+    } finally {
+      setSavingDetails(false);
+    }
+  }, [detailAge, detailEmail, detailFullName, detailGender, onProfileChange, session]);
 
   return (
     <View style={{ flex: 1, backgroundColor: C.white }}>
@@ -9831,11 +9871,24 @@ function ProfileScreen({ user, session, onLogout, onDeleteAccount, onGoToHome, o
 
         {/* Account Info */}
         <View style={s.profileInfoCard}>
-          <Text style={s.profileInfoCardTitle}>Account Info</Text>
+          <View style={s.profileInfoCardHeader}>
+            <Text style={s.profileInfoCardTitle}>Account Info</Text>
+            <TouchableOpacity
+              style={s.profileInfoEditButton}
+              onPress={openPersonalDetails}
+              accessibilityRole="button"
+              accessibilityLabel="Edit personal details"
+            >
+              <Ionicons name="create-outline" size={16} color={C.primary} />
+              <Text style={s.profileInfoEditText}>Edit</Text>
+            </TouchableOpacity>
+          </View>
           {[
             { icon: "person-outline", label: "Full Name", value: user.fullName },
-            user.email && { icon: "mail-outline", label: "Email", value: user.email },
+            { icon: "mail-outline", label: "Email", value: user.email || "Not set" },
             user.mobileNumber && { icon: "call-outline", label: "Phone", value: user.mobileNumber },
+            { icon: "person-circle-outline", label: "Gender", value: displayGender },
+            { icon: "hourglass-outline", label: "Age", value: displayAge },
             memberSince && { icon: "calendar-outline", label: "Member Since", value: memberSince },
             { icon: "shield-checkmark-outline", label: "Plan", value: user.subscriptionStatus === "none" ? "Free" : user.subscriptionStatus },
           ].filter(Boolean).map((row, i, arr) => (
@@ -9963,7 +10016,125 @@ function ProfileScreen({ user, session, onLogout, onDeleteAccount, onGoToHome, o
         onClose={() => setShowDeleteAccount(false)}
         onDeleteAccount={onDeleteAccount}
       />
-      <BottomNav active="" onHome={onGoToHome} onCourses={onGoToCourses} onAI={onGoToAI} onDownloads={onGoToDownloads} aiRobotId={aiRobotId} persistent />
+      <Modal visible={showPersonalDetails} transparent animationType="slide" onRequestClose={() => { if (!savingDetails) setShowPersonalDetails(false); }}>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          keyboardVerticalOffset={Platform.OS === "android" ? (StatusBar.currentHeight || 0) : 0}
+          style={s.personalDetailsOverlay}
+        >
+          <Pressable style={StyleSheet.absoluteFill} onPress={savingDetails ? undefined : () => setShowPersonalDetails(false)} accessible={false} />
+          <View style={[s.personalDetailsSheet, { maxHeight: detailSheetMaxHeight }]}>
+            <View style={s.personalDetailsHeader}>
+              <View>
+                <Text style={s.personalDetailsEyebrow}>Profile</Text>
+                <Text style={s.personalDetailsTitle}>Personal Details</Text>
+              </View>
+              <TouchableOpacity
+                onPress={() => setShowPersonalDetails(false)}
+                disabled={savingDetails}
+                style={s.personalDetailsClose}
+                accessibilityRole="button"
+                accessibilityLabel="Close personal details"
+                accessibilityState={{ disabled: savingDetails }}
+              >
+                <Ionicons name="close" size={20} color={C.text} />
+              </TouchableOpacity>
+            </View>
+
+            <ScrollView
+              style={s.personalDetailsScroll}
+              contentContainerStyle={s.personalDetailsContent}
+              keyboardShouldPersistTaps="handled"
+              keyboardDismissMode="interactive"
+              showsVerticalScrollIndicator={false}
+            >
+              <Text style={s.profileNameEditorLabel}>Full Name</Text>
+              <TextInput
+                value={detailFullName}
+                onChangeText={setDetailFullName}
+                placeholder="Enter your name"
+                placeholderTextColor={C.textMuted}
+                style={s.profileNameEditorInput}
+                editable={!savingDetails}
+                maxLength={80}
+                returnKeyType="next"
+                accessibilityLabel="Edit full name"
+              />
+
+              <Text style={[s.profileNameEditorLabel, { marginTop: 14 }]}>Email</Text>
+              <TextInput
+                value={detailEmail}
+                onChangeText={setDetailEmail}
+                placeholder="Enter email address"
+                placeholderTextColor={C.textMuted}
+                style={s.profileNameEditorInput}
+                editable={!savingDetails}
+                autoCapitalize="none"
+                autoCorrect={false}
+                keyboardType="email-address"
+                maxLength={120}
+                returnKeyType="done"
+                accessibilityLabel="Edit email address"
+              />
+
+              <Text style={[s.profileNameEditorLabel, { marginTop: 14 }]}>Gender</Text>
+              <View style={s.personalDetailsGenderRow}>
+                {["male", "female", "other"].map(value => {
+                  const selected = detailGender === value;
+                  const label = value.charAt(0).toUpperCase() + value.slice(1);
+                  return (
+                    <TouchableOpacity
+                      key={value}
+                      style={[s.genderOption, selected && s.genderOptionActive]}
+                      onPress={() => setDetailGender(value)}
+                      disabled={savingDetails}
+                      accessibilityRole="radio"
+                      accessibilityLabel={`${label} gender identity`}
+                      accessibilityState={{ selected, disabled: savingDetails }}
+                    >
+                      <Text style={[s.genderOptionText, selected && s.genderOptionTextActive]}>{label}</Text>
+                    </TouchableOpacity>
+                  );
+                })}
+              </View>
+
+              <Text style={[s.profileNameEditorLabel, { marginTop: 14 }]}>Age</Text>
+              <AgePicker value={detailAge} onChange={setDetailAge} />
+
+              <View style={s.personalDetailsReadOnly}>
+                <Ionicons name="lock-closed-outline" size={16} color={C.textMuted} />
+                <Text style={s.personalDetailsReadOnlyText}>
+                  Phone number is used for login and cannot be changed here.
+                </Text>
+              </View>
+            </ScrollView>
+
+            <View style={s.personalDetailsActions}>
+              <TouchableOpacity
+                style={[s.btn, s.btnOutline, s.personalDetailsActionButton]}
+                onPress={() => setShowPersonalDetails(false)}
+                disabled={savingDetails}
+                accessibilityRole="button"
+                accessibilityLabel="Cancel editing personal details"
+                accessibilityState={{ disabled: savingDetails }}
+              >
+                <Text style={[s.btnText, { color: C.primary }]}>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[s.btn, s.btnFill, s.personalDetailsActionButton]}
+                onPress={savePersonalDetails}
+                disabled={savingDetails}
+                accessibilityRole="button"
+                accessibilityLabel="Save personal details"
+                accessibilityState={{ disabled: savingDetails, busy: savingDetails }}
+              >
+                {savingDetails ? <ActivityIndicator color={C.onPrimary} /> : <Text style={s.btnText}>Save</Text>}
+              </TouchableOpacity>
+            </View>
+          </View>
+        </KeyboardAvoidingView>
+      </Modal>
+      <BottomNav active="" onHome={onGoToHome} onCourses={onGoToCourses} onAI={onGoToAI} onDownloads={onGoToDownloads} aiRobotId={aiRobotId} persistent searchReferences={searchReferences} />
     </View>
   );
 }
@@ -11139,6 +11310,7 @@ export default function App() {
   const [courseAiTarget, setCourseAiTarget] = useState(null);
   const [wishlist, setWishlist] = useState([]);
   const [courseProgress, setCourseProgress] = useState({});
+  const [navSearchCourses, setNavSearchCourses] = useState(() => homeCatalogCourses || []);
   const [certificates, setCertificates] = useState([]);
   const [certModal, setCertModal] = useState(null);
   const [profileRefreshing, setProfileRefreshing] = useState(false);
@@ -11729,6 +11901,23 @@ export default function App() {
     return true;
   }, []);
 
+  const resetToHomeFromBack = useCallback(() => {
+    setShowAppUpgrade(false);
+    setCourseAiTarget(null);
+    setCertModal(null);
+    setLegalPage(null);
+    setSelectedCourse(null);
+    setStartIndex(null);
+    setInitialTime(0);
+    setPreloadedVideos(null);
+    setIsPreviewOnly(false);
+    routeHistoryRef.current = [];
+    currentRouteRef.current = null;
+    setCanGoBack(false);
+    loadCourseProgress();
+    setMainScreen("home");
+  }, [loadCourseProgress]);
+
   const handleAppBack = useCallback(() => {
     if (legalPage) { setLegalPage(null); return true; }
     if (!userRef.current) {
@@ -11743,60 +11932,27 @@ export default function App() {
     }
 
     if (showProblemReport) { setShowProblemReport(false); return true; }
-    if (courseAiTarget) {
-      const previous = routeHistoryRef.current.pop();
-      if (previous && restoreRoute(previous)) {
-        setCanGoBack(routeHistoryRef.current.length > 0);
-        return true;
-      }
-      setCourseAiTarget(null);
-      return true;
-    }
     if (certModal) { setCertModal(null); return true; }
     if (showAppUpgrade) { setShowAppUpgrade(false); return true; }
 
-    const currentKey = currentRouteRef.current?.key;
-    let previous = routeHistoryRef.current.pop();
-    while (previous && previous.key === currentKey) previous = routeHistoryRef.current.pop();
-    if (previous && restoreRoute(previous)) {
-      setCanGoBack(routeHistoryRef.current.length > 0);
-      return true;
-    }
-
-    if (mainScreen === "courses" && startIndex !== null) {
-      backToLessons();
-      return true;
-    }
-    if (mainScreen === "courses" && selectedCourse) {
-      loadCourseProgress();
-      setSelectedCourse(null);
-      return true;
-    }
-    if (mainScreen === "wishlist" || mainScreen === "certificates" || mainScreen === "subscription" || mainScreen === "help" || mainScreen === "terms" || mainScreen === "privacy") {
-      setMainScreen("profile");
-      return true;
-    }
-    if (mainScreen !== "home") {
-      setSelectedCourse(null);
-      setStartIndex(null);
-      setInitialTime(0);
-      setPreloadedVideos(null);
-      setIsPreviewOnly(false);
-      loadCourseProgress();
-      setMainScreen("home");
+    if (
+      courseAiTarget
+      || selectedCourse
+      || startIndex !== null
+      || mainScreen !== "home"
+    ) {
+      resetToHomeFromBack();
       return true;
     }
     return true;
   }, [
-    backToLessons,
     certModal,
     courseAiTarget,
     legalPage,
-    loadCourseProgress,
     mainScreen,
     otpSent,
+    resetToHomeFromBack,
     resetVisible,
-    restoreRoute,
     screen,
     selectedCourse,
     showAppUpgrade,
@@ -11863,6 +12019,25 @@ export default function App() {
       Alert.alert("Course unavailable", accessMessage || "Could not open course.");
     }
   }, [nativeSession]);
+
+  const updateNavSearchCourses = useCallback((courses = []) => {
+    const nextCourses = (Array.isArray(courses) ? courses : []).filter(course => course && !course.isMock);
+    setNavSearchCourses(previous => {
+      if (previous.length === nextCourses.length && previous.every((course, index) => (
+        String(course?._id || course?.id || course?.title || index) === String(nextCourses[index]?._id || nextCourses[index]?.id || nextCourses[index]?.title || index)
+      ))) {
+        return previous;
+      }
+      return nextCourses;
+    });
+  }, []);
+
+  const navCourseSearchReferences = useMemo(
+    () => buildCourseSearchReferences(navSearchCourses, {
+      onOpenCourse: course => openCourse(course),
+    }),
+    [navSearchCourses, openCourse]
+  );
 
   const openHeroPreview = useCallback(async (course, video, videoIndex = 0) => {
     const previewVideo = video || course?.videos?.[videoIndex] || course?.videos?.[0];
@@ -12989,6 +13164,7 @@ export default function App() {
           aiRobotId={aiRobotId}
           keepPreviewMounted
           activeTab="courses"
+          onCatalogCoursesChange={updateNavSearchCourses}
         />
       );
     }
@@ -13232,6 +13408,7 @@ export default function App() {
         onOpenHeroPreview={openHeroPreview}
         courseProgress={courseProgress}
         aiRobotId={aiRobotId}
+        onCatalogCoursesChange={updateNavSearchCourses}
       />
     </View>
   );
@@ -13272,6 +13449,7 @@ export default function App() {
         aiRobotId={aiRobotId}
         refreshing={profileRefreshing}
         onRefresh={refreshProfile}
+        searchReferences={navCourseSearchReferences}
       />)
     );
   }
@@ -13283,6 +13461,7 @@ export default function App() {
         activeTab={activeRootTab}
         onNavigate={navigateRootTab}
         renderTab={renderRootTab}
+        searchReferences={navCourseSearchReferences}
       />
       <CertificateModal cert={certModal} onClose={() => setCertModal(null)} />
       <ProblemReportModal
@@ -13751,7 +13930,7 @@ return StyleSheet.create({
   },
   reportSheet: {
     width: "100%",
-    maxHeight: "92%",
+    flexShrink: 1,
     backgroundColor: "#101113",
     borderTopLeftRadius: 22,
     borderTopRightRadius: 22,
@@ -13766,6 +13945,12 @@ return StyleSheet.create({
     alignItems: "center",
     gap: 12,
     marginBottom: 16,
+  },
+  reportScroll: {
+    flexShrink: 1,
+  },
+  reportScrollContent: {
+    paddingBottom: Platform.OS === "android" ? 34 : 10,
   },
   reportMark: {
     width: 46,
@@ -15084,9 +15269,33 @@ courseListCard: {
     marginBottom: 16, overflow: "hidden",
     ...ELEVATION.hairline,
   },
+  profileInfoCardHeader: {
+    minHeight: 52,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingLeft: 16,
+    paddingRight: 8,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: C.border,
+  },
   profileInfoCardTitle: {
     ...TYPE.label, color: C.textMuted,
-    textTransform: "uppercase", paddingHorizontal: 16, paddingTop: 14, paddingBottom: 10,
+    textTransform: "uppercase",
+  },
+  profileInfoEditButton: {
+    minHeight: MIN_TOUCH_TARGET,
+    paddingHorizontal: 10,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 5,
+  },
+  profileInfoEditText: {
+    color: C.primary,
+    fontSize: 12,
+    lineHeight: 16,
+    fontWeight: "800",
   },
   profileInfoRow: { flexDirection: "row", alignItems: "center", gap: 12, paddingHorizontal: 16, paddingVertical: 12 },
   profileInfoRowBorder: { borderBottomWidth: 1, borderBottomColor: C.border },
@@ -15120,6 +15329,96 @@ courseListCard: {
     backgroundColor: C.cardBg,
     fontSize: 15,
     fontWeight: "700",
+  },
+  personalDetailsOverlay: {
+    flex: 1,
+    justifyContent: "flex-end",
+    backgroundColor: "rgba(0,0,0,0.52)",
+  },
+  personalDetailsSheet: {
+    width: "100%",
+    flexShrink: 1,
+    backgroundColor: C.white,
+    borderTopLeftRadius: 22,
+    borderTopRightRadius: 22,
+    paddingTop: 18,
+    borderWidth: 1,
+    borderColor: C.border,
+  },
+  personalDetailsHeader: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    justifyContent: "space-between",
+    gap: 12,
+    paddingHorizontal: 20,
+    paddingBottom: 14,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: C.border,
+  },
+  personalDetailsEyebrow: {
+    ...TYPE.label,
+    color: C.primary,
+    textTransform: "uppercase",
+    marginBottom: 3,
+  },
+  personalDetailsTitle: {
+    ...TYPE.h2,
+    color: C.text,
+  },
+  personalDetailsClose: {
+    width: MIN_TOUCH_TARGET,
+    height: MIN_TOUCH_TARGET,
+    borderRadius: MIN_TOUCH_TARGET / 2,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: C.surface,
+    borderWidth: 1,
+    borderColor: C.border,
+  },
+  personalDetailsScroll: {
+    flexShrink: 1,
+  },
+  personalDetailsContent: {
+    paddingHorizontal: 20,
+    paddingTop: 16,
+    paddingBottom: Platform.OS === "android" ? 22 : 16,
+  },
+  personalDetailsGenderRow: {
+    flexDirection: "row",
+    gap: 8,
+  },
+  personalDetailsReadOnly: {
+    minHeight: 44,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    borderRadius: 12,
+    backgroundColor: C.lightGray,
+    borderWidth: 1,
+    borderColor: C.border,
+  },
+  personalDetailsReadOnlyText: {
+    flex: 1,
+    color: C.textMuted,
+    fontSize: 12,
+    lineHeight: 17,
+    fontWeight: "600",
+  },
+  personalDetailsActions: {
+    flexDirection: "row",
+    gap: 10,
+    paddingHorizontal: 20,
+    paddingTop: 12,
+    paddingBottom: Platform.OS === "ios" ? 34 : 18,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: C.border,
+    backgroundColor: C.white,
+  },
+  personalDetailsActionButton: {
+    flex: 1,
+    minWidth: 0,
   },
   themeCard: {
     backgroundColor: C.cardBg, borderRadius: RADIUS.lg, borderWidth: 1, borderColor: C.border,

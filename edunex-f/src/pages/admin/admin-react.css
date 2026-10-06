@@ -2609,6 +2609,35 @@ body.premium-nav-admin.admin-theme-light .report-card-badges :is(.report-status-
   gap: 12px;
 }
 
+.lesson-ai-panel {
+  display: grid;
+  gap: 8px;
+  margin: 14px 0;
+  padding: 14px;
+  border: 1px solid color-mix(in srgb, var(--aw-accent) 28%, var(--aw-border));
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--aw-surface) 92%, var(--aw-accent) 8%);
+}
+
+.lesson-ai-panel label {
+  color: var(--aw-text);
+  font-size: .76rem;
+  font-weight: 800;
+}
+
+.lesson-ai-panel textarea {
+  min-height: 92px;
+  resize: vertical;
+  line-height: 1.5;
+}
+
+.lesson-ai-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+}
+
 .lesson-pdf-dropzone {
   display: grid;
   place-items: center;
