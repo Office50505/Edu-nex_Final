@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AppState, Platform } from "react-native";
-import { ErrorCode, getAvailablePurchases as readAvailablePurchases, useIAP } from "react-native-iap";
+import { ErrorCode, getAvailablePurchases as readAvailablePurchases } from "react-native-iap";
+import { useDeferredIapConnection } from "./useDeferredIapConnection";
 import { APPLE_SUBSCRIPTION_PRODUCT_IDS } from "./subscriptions";
 
 const UNAVAILABLE_APPLE_SUBSCRIPTION = {
@@ -77,7 +78,8 @@ export function useAppleSubscriptions({ session, user, onEntitlementChanged }) {
     }
   }, [onEntitlementChanged, session, userId]);
 
-  const iap = useIAP({
+  const iap = useDeferredIapConnection({
+    enabled: Boolean(userId),
     onPurchaseSuccess: purchase => { verifyAndFinish(purchase); },
     onPurchaseError: purchaseError => {
       setWorking(false);

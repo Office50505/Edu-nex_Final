@@ -38,7 +38,7 @@
       "buildNumber": "22",
       "icon": "./assets/icon.png",
       "userInterfaceStyle": "automatic",
-      "supportsTablet": false,
+      "supportsTablet": true,
       "config": {
         "usesNonExemptEncryption": false
       },

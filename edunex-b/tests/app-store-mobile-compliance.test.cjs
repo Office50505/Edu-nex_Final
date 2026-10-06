@@ -20,6 +20,7 @@ const upgradeModalSource = appSource.slice(
   appSource.indexOf('function notificationIconForType'),
 );
 const appleHookSource = fs.readFileSync(path.join(mobileRoot, 'services/useAppleSubscriptions.js'), 'utf8');
+const deferredIapSource = fs.readFileSync(path.join(mobileRoot, 'services/useDeferredIapConnection.js'), 'utf8');
 const googlePlayHookSource = fs.readFileSync(path.join(mobileRoot, 'services/useGooglePlaySubscriptions.js'), 'utf8');
 const privacyManifest = fs.readFileSync(path.join(mobileRoot, 'ios/ProtectedVideo/PrivacyInfo.xcprivacy'), 'utf8');
 const infoPlist = fs.readFileSync(path.join(mobileRoot, 'ios/ProtectedVideo/Info.plist'), 'utf8');
@@ -251,6 +252,10 @@ test('StoreKit client verifies before finishing, handles cancellation, and resto
   assert.match(appleHookSource, /transaction intentionally remains unfinished/);
   assert.match(appleHookSource, /fetchProducts\(\{ skus: \[APPLE_SUBSCRIPTION_PRODUCT_IDS\.monthly\], type: "subs" \}\)/);
   assert.match(appleHookSource, /productFetchAttempted\.current && !retry/);
+  assert.match(appleHookSource, /useDeferredIapConnection\(\{/);
+  assert.match(appleHookSource, /enabled: Boolean\(userId\)/);
+  assert.match(deferredIapSource, /if \(!enabled\)/);
+  assert.match(deferredIapSource, /initConnection\(\)/);
   assert.match(appSource, />Retry \{storeName\}</);
 });
 
@@ -273,6 +278,33 @@ test('iOS privacy manifest declares uploaded photos without claiming device iden
 test('iOS native bundle explains photo-library access used by the editable profile picker', () => {
   assert.match(appSource, /launchImageLibraryAsync\([\s\S]+allowsEditing: true/);
   assert.match(infoPlist, /<key>NSPhotoLibraryUsageDescription<\/key>\s*<string>[^<]+<\/string>/);
+});
+
+test('logged-in tablet screens constrain content and bottom navigation width', () => {
+  assert.match(appSource, /tabletContentFrame: \{\s+width: "100%",\s+maxWidth: 760,\s+alignSelf: "center"/);
+  assert.match(appSource, /tabletScrollContent: \{ width: "100%", maxWidth: 760, alignSelf: "center" \}/);
+  assert.match(appSource, /const isTabletNav = navViewportWidth >= 768/);
+  assert.match(appSource, /Math\.min\(navViewportWidth - 56, searchOpen \? 720 : 640\)/);
+  assert.match(appSource, /homeStyles\.tabletScrollContent/);
+  assert.match(appSource, /s\.tabletListContent/);
+  assert.match(appSource, /s\.tabletContentFrame/);
+});
+
+test('secondary account tablet screens use the shared centered content frame', () => {
+  for (const screenName of [
+    'WishlistScreen',
+    'CertificatesScreen',
+    'InfoPageScreen',
+    'SubscriptionDetailsScreen',
+    'LegalContentScreen',
+  ]) {
+    const start = appSource.indexOf(`function ${screenName}`);
+    assert.notEqual(start, -1, `${screenName} is present`);
+    const nextFunction = appSource.indexOf('\nfunction ', start + 10);
+    const source = appSource.slice(start, nextFunction === -1 ? undefined : nextFunction);
+    assert.match(source, /const isTablet = width >= 768/, `${screenName} detects tablet width`);
+    assert.match(source, /s\.tabletContentFrame|s\.tabletListContent/, `${screenName} applies tablet frame`);
+  }
 });
 
 test('profile avatar picker keeps unique bundled choices and falls back from unknown legacy values', () => {

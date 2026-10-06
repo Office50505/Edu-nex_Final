@@ -19,6 +19,7 @@
     "eval:ai": "node scripts/eval-tutor.cjs",
     "test:integrations": "node --test tests/auth-navigation.test.cjs tests/otp.test.cjs tests/password-reset.test.cjs tests/razorpay.test.cjs",
     "integrations:check": "node scripts/check-integrations.cjs",
+    "reviewer:seed": "node scripts/seed-reviewer-account.cjs",
     "payment:create-plan": "node scripts/create-razorpay-plan.cjs",
     "test:maintenance": "node --test tests/admin-maintenance.test.cjs tests/system-health.test.cjs",
     "test:cache": "node --test tests/shared-cache.test.cjs",

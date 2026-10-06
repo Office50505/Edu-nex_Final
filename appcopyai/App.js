@@ -247,6 +247,8 @@ const ROOT_TAB_PAGE_GAP = Platform.OS === "android" ? 0 : 10;
 const ROOT_TAB_SWITCH_DURATION_MS = Platform.OS === "android" ? 165 : 210;
 const MIN_TOUCH_TARGET = Platform.OS === "ios" ? 44 : 48;
 const ANDROID_STATUS_BAR_INSET = Platform.OS === "android" ? (StatusBar.currentHeight || 0) : 0;
+const IOS_REELS_SAFE_TOP = Platform.OS === "ios" ? Math.max(54, Number(Constants.statusBarHeight) || 0) : 0;
+const IOS_REELS_SAFE_BOTTOM = Platform.OS === "ios" ? 26 : 0;
 
 if (__DEV__) {
   LogBox.ignoreLogs([
@@ -3328,6 +3330,7 @@ function BottomNav({
   searchReferences: searchReferencesOverride = null,
   searchPlaceholder = "Search courses",
 }) {
+  const { width: navViewportWidth } = useWindowDimensions();
   const appSearchReferences = useContext(AppSearchReferencesContext);
   const rootTabSwipe = React.useContext(RootTabSwipeContext);
   const [searchOpen, setSearchOpen] = useState(false);
@@ -3335,6 +3338,8 @@ function BottomNav({
   const [recentSearches, setRecentSearches] = useState([]);
   const navSearchInputRef = useRef(null);
   const bottomNavRef = useRef(null);
+  const isTabletNav = navViewportWidth >= 768;
+  const tabletNavWidth = Math.max(320, Math.min(navViewportWidth - 56, searchOpen ? 720 : 640));
   const keyboardVisibleRef = useRef(false);
   const keyboardLiftAnim = useRef(new Animated.Value(0)).current;
   const animateKeyboardLift = useCallback((lift = 0, duration = 180) => {
@@ -3538,6 +3543,7 @@ function BottomNav({
           searchOpen && s.bottomNavSearchMode,
           forceDark && { backgroundColor: "rgba(13,13,11,0.98)", borderTopColor: "#2E2C27" },
           searchOpen && forceDark && { backgroundColor: "transparent", borderColor: "transparent" },
+          isTabletNav && { width: tabletNavWidth, alignSelf: "center", marginHorizontal: 0 },
         ]}
       >
       {searchOpen ? (
@@ -5418,7 +5424,7 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
       setPlayerChromeVisible(false);
       return;
     }
-    revealPlayerChrome();
+    togglePlay();
   }
 
   function beginCenterTap(event) {
@@ -5839,6 +5845,7 @@ function ReelsScreen({ courseId, course, initialIndex, initialTime, onBack, onRe
   const [error, setError] = useState(null);
   const [activeIndex, setActiveIndex] = useState(initialIndex ?? 0);
   const [listHeight, setListHeight] = useState(Dimensions.get("window").height);
+  const reelFrameHeight = Math.max(320, listHeight - IOS_REELS_SAFE_TOP - IOS_REELS_SAFE_BOTTOM);
   const [showDescription, setShowDescription] = useState(false);
   const [showNotes, setShowNotes] = useState(false);
   const [showLectures, setShowLectures] = useState(false);
@@ -6283,12 +6290,13 @@ function ReelsScreen({ courseId, course, initialIndex, initialTime, onBack, onRe
     <View style={{ flex: 1, backgroundColor: "#000" }}
       onLayout={e => setListHeight(e.nativeEvent.layout.height)}
       {...(isIosEdgeBackGuide ? edgeBackPanResponder.panHandlers : {})}>
+      <View style={s.reelsSafeFrame}>
       <FlatList
         ref={flatListRef}
         data={videos} keyExtractor={i => i._id}
         showsVerticalScrollIndicator={false}
         initialScrollIndex={initialIndex ?? 0}
-        snapToInterval={listHeight} snapToAlignment="start"
+        snapToInterval={reelFrameHeight} snapToAlignment="start"
         decelerationRate="fast" disableIntervalMomentum
         scrollEnabled={reelScrollEnabled}
         initialNumToRender={3}
@@ -6306,7 +6314,7 @@ function ReelsScreen({ courseId, course, initialIndex, initialTime, onBack, onRe
           const itemLessonLabel = videos.length ? `Lecture ${Math.min(videos.length, index + 1)}/${videos.length}` : "Lecture";
           const cellChromePointerEvents = isCurrent && !playerChromeHidden ? "box-none" : "none";
           return (
-            <View style={[s.reelItem, { height: listHeight }]}>
+            <View style={[s.reelItem, { height: reelFrameHeight }]}>
               <VideoItem video={item} courseId={courseId} course={course} user={user}
                 onComplete={() => { /* Completion comes from validated progress responses. */ }}
                 onProgress={async (currentTime, duration) => {
@@ -6333,7 +6341,7 @@ function ReelsScreen({ courseId, course, initialIndex, initialTime, onBack, onRe
                     flatListRef.current?.scrollToIndex({ index: index + 1, animated: true });
                   }
                 }}
-                isActive={isCurrent && !videoUiOverlayOpen} height={listHeight}
+                isActive={isCurrent && !videoUiOverlayOpen} height={reelFrameHeight}
                 suspendSurface={isCurrent && videoUiOverlayOpen}
                 initialTime={index === (initialIndex ?? 0) ? (initialTime ?? 0) : 0}
                 localPath={downloads?.[getDownloadId(item, index)]?.status === "done" ? downloads[getDownloadId(item, index)].path : null}
@@ -6435,8 +6443,9 @@ function ReelsScreen({ courseId, course, initialIndex, initialTime, onBack, onRe
         }}
         onViewableItemsChanged={onViewable}
         viewabilityConfig={vcRef.current}
-        getItemLayout={(_, i) => ({ length: listHeight, offset: listHeight * i, index: i })}
+        getItemLayout={(_, i) => ({ length: reelFrameHeight, offset: reelFrameHeight * i, index: i })}
       />
+      </View>
 
       {isIosEdgeBackGuide && !videoUiOverlayOpen && !playerSettingsOpen && (
         <>
@@ -7429,6 +7438,8 @@ return StyleSheet.create({
   header: { paddingTop: ANDROID_STATUS_BAR_INSET, backgroundColor: HOME_PALETTE.background, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: HOME_PALETTE.border },
   headerInner: { minHeight: 62, paddingHorizontal: 14, paddingVertical: 9, flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
   headerInnerCompact: { paddingHorizontal: 10 },
+  tabletFrame: { width: "100%", maxWidth: 760, alignSelf: "center" },
+  tabletScrollContent: { width: "100%", maxWidth: 760, alignSelf: "center" },
   brandRow: { flexDirection: "row", alignItems: "center", gap: 9 },
   brandCopy: { flexShrink: 1 },
   brandIcon: { width: 36, height: 36, borderRadius: 9, alignItems: "center", justifyContent: "center", backgroundColor: HOME_PALETTE.surface, borderWidth: 1, borderColor: HOME_PALETTE.border },
@@ -7929,6 +7940,7 @@ function HomeScreen({
   onCatalogCoursesChange,
 }) {
   const { width } = useWindowDimensions();
+  const isTablet = width >= 768;
   const hasAccess = hasCourseAccess(user);
   const [catalogCourses, setCatalogCourses] = useState(() => homeCatalogCourses || []);
   const [loading, setLoading] = useState(() => !homeCatalogCourses);
@@ -8278,7 +8290,7 @@ function HomeScreen({
       <StatusBar barStyle="light-content" backgroundColor={HOME_PALETTE.background} />
       <View style={homeStyles.header}>
         <SafeAreaView>
-          <View style={[homeStyles.headerInner, width <= 340 && homeStyles.headerInnerCompact]}>
+          <View style={[homeStyles.headerInner, isTablet && homeStyles.tabletFrame, width <= 340 && homeStyles.headerInnerCompact]}>
             <View style={homeStyles.brandRow}>
               <SkillomateLogo size={width <= 340 ? "xs" : "sm"} />
             </View>
@@ -8308,7 +8320,7 @@ function HomeScreen({
       <ScrollView
         style={homeStyles.scrollViewport}
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={homeStyles.scrollContent}
+        contentContainerStyle={[homeStyles.scrollContent, isTablet && homeStyles.tabletScrollContent]}
         scrollEventThrottle={16}
         keyboardShouldPersistTaps="handled"
         overScrollMode="always"
@@ -8482,6 +8494,8 @@ function HomeScreen({
 
 // ── CourseListScreen ──────────────────────────────────────────────────────────
 function CourseListScreen({ onSelect, user, session, onGoToHome, onGoToCourses, onGoToAI, onGoToDownloads, onGoToProfile, onGoToSubscription, appleSubscription, onOpenTerms, onOpenPrivacy, onReportProblem, wishlist = [], onToggleWishlist, courseProgress = {}, onRefreshProgress, aiRobotId, keepPreviewMounted = false, activeTab = "courses", onCatalogCoursesChange }) {
+  const { width } = useWindowDimensions();
+  const isTablet = width >= 768;
   const hasAccess = hasCourseAccess(user);
   const [showUpgrade, setShowUpgrade] = useState(false);
   const [courses, setCourses] = useState([]);
@@ -8605,7 +8619,7 @@ function CourseListScreen({ onSelect, user, session, onGoToHome, onGoToCourses, 
     <View style={{ flex: 1, backgroundColor: C.white }}>
       <StatusBar barStyle={C.isDark ? "light-content" : "dark-content"} backgroundColor={C.white} />
       <SafeAreaView style={{ backgroundColor: C.white }}>
-        <View style={[s.pageHeader, s.pageHeaderLogoOnly, { justifyContent: "space-between" }]}>
+        <View style={[s.pageHeader, s.pageHeaderLogoOnly, { justifyContent: "space-between" }, isTablet && s.tabletContentFrame]}>
           <SkillomateLogo size="sm" onPress={onGoToHome} />
           <View style={homeStyles.headerActions}>
             <TouchableOpacity style={homeStyles.headerButton} onPress={openNotifications} accessibilityRole="button" accessibilityLabel="Open notifications">
@@ -8629,7 +8643,7 @@ function CourseListScreen({ onSelect, user, session, onGoToHome, onGoToCourses, 
         </View>
       </SafeAreaView>
 
-      <View style={s.searchBox}>
+      <View style={[s.searchBox, isTablet && s.tabletContentFrame, isTablet && { marginHorizontal: 0 }]}>
         <Ionicons name="search-outline" size={18} color={C.textMuted} />
         <TextInput
           placeholder="Search courses here"
@@ -8657,7 +8671,7 @@ function CourseListScreen({ onSelect, user, session, onGoToHome, onGoToCourses, 
 <FlatList
         data={filtered}
         keyExtractor={item => item._id}
-        contentContainerStyle={{ paddingHorizontal: 16, paddingTop: 12, gap: 16, paddingBottom: 100 }}
+        contentContainerStyle={[{ paddingHorizontal: 16, paddingTop: 12, gap: 16, paddingBottom: 100 }, isTablet && s.tabletListContent]}
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
@@ -8794,6 +8808,8 @@ function CourseListScreen({ onSelect, user, session, onGoToHome, onGoToCourses, 
 
 // ── WishlistScreen ────────────────────────────────────────────────────────────
 function WishlistScreen({ wishlist, onToggleWishlist, onSelect, onBack, user, onGoToSubscription, appleSubscription, onOpenTerms, onOpenPrivacy }) {
+  const { width } = useWindowDimensions();
+  const isTablet = width >= 768;
   const hasAccess = hasCourseAccess(user);
   const [showUpgrade, setShowUpgrade] = useState(false);
   const [courses, setCourses] = useState([]);
@@ -8822,7 +8838,7 @@ function WishlistScreen({ wishlist, onToggleWishlist, onSelect, onBack, user, on
     <View style={{ flex: 1, backgroundColor: C.white }}>
       <StatusBar barStyle={C.isDark ? "light-content" : "dark-content"} backgroundColor={C.white} />
       <SafeAreaView style={{ backgroundColor: C.white }}>
-        <View style={s.pageHeader}>
+        <View style={[s.pageHeader, isTablet && s.tabletContentFrame]}>
           <TouchableOpacity onPress={onBack} style={s.iconBtn}
             hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
             accessibilityRole="button"
@@ -8835,20 +8851,21 @@ function WishlistScreen({ wishlist, onToggleWishlist, onSelect, onBack, user, on
       </SafeAreaView>
 
       {loading ? (
-        <View style={s.centered}><ActivityIndicator size="large" color={C.primary} /></View>
+        <View style={[s.centered, isTablet && s.tabletContentFrame]}><ActivityIndicator size="large" color={C.primary} /></View>
       ) : courses.length === 0 ? (
-        <View style={s.centered}>
+        <View style={[s.centered, isTablet && s.tabletContentFrame]}>
           <Ionicons name="heart-outline" size={52} color={C.textMuted} />
           <Text style={{ color: C.textSub, fontSize: 16, fontWeight: "600", marginTop: 14 }}>No saved courses</Text>
           <Text style={{ color: C.textMuted, fontSize: 13, marginTop: 6 }}>Tap ♡ on any course to save it here</Text>
         </View>
       ) : (
         <FlatList
+          key={isTablet ? "tablet-wishlist" : "phone-wishlist"}
           data={courses}
           keyExtractor={item => item._id}
           numColumns={2}
           columnWrapperStyle={{ gap: 12 }}
-          contentContainerStyle={{ padding: 16, gap: 12, paddingBottom: 40 }}
+          contentContainerStyle={[{ padding: 16, gap: 12, paddingBottom: 40 }, isTablet && s.tabletListContent]}
           initialNumToRender={6}
           maxToRenderPerBatch={6}
           windowSize={7}
@@ -9047,12 +9064,14 @@ function CertificateModal({ cert, onClose }) {
 }
 
 function CertificatesScreen({ certificates, onBack }) {
+  const { width } = useWindowDimensions();
+  const isTablet = width >= 768;
   return (
     <View style={{ flex: 1, backgroundColor: C.bg }}>
       <StatusBar barStyle={C.isDark ? "light-content" : "dark-content"} backgroundColor={C.white} />
       <View style={[s.homeTopBar, { paddingBottom: 12, backgroundColor: C.white }]}>
         <SafeAreaView style={{ backgroundColor: C.white }}>
-          <View style={s.homeTopBarInner}>
+          <View style={[s.homeTopBarInner, isTablet && s.tabletContentFrame]}>
             <TouchableOpacity onPress={onBack} style={s.iconBtn} accessibilityRole="button" accessibilityLabel="Back to profile">
               <Ionicons name="arrow-back" size={22} color={C.text} />
             </TouchableOpacity>
@@ -9064,7 +9083,7 @@ function CertificatesScreen({ certificates, onBack }) {
         </SafeAreaView>
       </View>
       {certificates.length === 0 ? (
-        <View style={s.centered}>
+        <View style={[s.centered, isTablet && s.tabletContentFrame]}>
           <View style={{ width: 72, height: 72, borderRadius: 36, backgroundColor: C.primaryLight, alignItems: "center", justifyContent: "center", marginBottom: 16 }}>
             <Ionicons name="ribbon-outline" size={34} color={C.primary} />
           </View>
@@ -9074,7 +9093,7 @@ function CertificatesScreen({ certificates, onBack }) {
           </Text>
         </View>
       ) : (
-        <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 40 }}>
+        <ScrollView contentContainerStyle={[{ padding: 16, paddingBottom: 40 }, isTablet && s.tabletListContent]}>
           <Text style={{ fontSize: 13, color: C.textSub, marginBottom: 16 }}>{certificates.length} certificate{certificates.length !== 1 ? "s" : ""} earned</Text>
           {certificates.map((cert, i) => (
             <CertificateCard key={cert.certificateId || i} cert={cert} style={{ marginBottom: 20 }} showDownload />
@@ -9086,12 +9105,14 @@ function CertificatesScreen({ certificates, onBack }) {
 }
 
 function InfoPageScreen({ page, onBack }) {
+  const { width } = useWindowDimensions();
+  const isTablet = width >= 768;
   return (
     <View style={{ flex: 1, backgroundColor: C.bg }}>
       <StatusBar barStyle={C.isDark ? "light-content" : "dark-content"} backgroundColor={C.white} />
       <View style={[s.homeTopBar, { paddingBottom: 12, backgroundColor: C.white }]}>
         <SafeAreaView style={{ backgroundColor: C.white }}>
-          <View style={s.homeTopBarInner}>
+          <View style={[s.homeTopBarInner, isTablet && s.tabletContentFrame]}>
             <TouchableOpacity onPress={onBack} style={s.iconBtn} accessibilityRole="button" accessibilityLabel="Back to profile">
               <Ionicons name="arrow-back" size={22} color={C.text} />
             </TouchableOpacity>
@@ -9103,7 +9124,7 @@ function InfoPageScreen({ page, onBack }) {
         </SafeAreaView>
       </View>
 
-      <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 40 }} showsVerticalScrollIndicator={false}>
+      <ScrollView contentContainerStyle={[{ padding: 16, paddingBottom: 40 }, isTablet && s.tabletListContent]} showsVerticalScrollIndicator={false}>
         <View style={s.infoHeroCard}>
           <View style={s.infoHeroIcon}>
             <Ionicons name={page.icon} size={30} color={C.primary} />
@@ -9144,6 +9165,8 @@ function InfoPageScreen({ page, onBack }) {
 }
 
 function SubscriptionDetailsScreen({ user, onBack, session, appleSubscription, onOpenTerms, onOpenPrivacy }) {
+  const { width } = useWindowDimensions();
+  const isTablet = width >= 768;
   const [loading, setLoading] = useState(true);
   const [subData, setSubData] = useState(null);
   const [error, setError] = useState(null);
@@ -9190,7 +9213,7 @@ function SubscriptionDetailsScreen({ user, onBack, session, appleSubscription, o
       <StatusBar barStyle={C.isDark ? "light-content" : "dark-content"} backgroundColor={C.white} />
       <View style={[s.homeTopBar, { paddingBottom: 12, backgroundColor: C.white }]}>
         <SafeAreaView style={{ backgroundColor: C.white }}>
-          <View style={s.homeTopBarInner}>
+          <View style={[s.homeTopBarInner, isTablet && s.tabletContentFrame]}>
             <TouchableOpacity onPress={onBack} style={s.iconBtn} accessibilityRole="button" accessibilityLabel="Back to profile">
               <Ionicons name="arrow-back" size={22} color={C.text} />
             </TouchableOpacity>
@@ -9203,11 +9226,11 @@ function SubscriptionDetailsScreen({ user, onBack, session, appleSubscription, o
       </View>
 
       {loading ? (
-        <View style={s.centered}>
+        <View style={[s.centered, isTablet && s.tabletContentFrame]}>
           <ActivityIndicator size="large" color={C.primary} />
         </View>
       ) : error ? (
-        <View style={[s.centered, { paddingHorizontal: 24 }]}>
+        <View style={[s.centered, { paddingHorizontal: 24 }, isTablet && s.tabletContentFrame]}>
           <View style={{ width: 64, height: 64, borderRadius: 32, backgroundColor: C.primaryLight, alignItems: "center", justifyContent: "center", marginBottom: 14 }}>
             <Ionicons name="receipt-outline" size={30} color={C.primary} />
           </View>
@@ -9218,7 +9241,7 @@ function SubscriptionDetailsScreen({ user, onBack, session, appleSubscription, o
           </TouchableOpacity>
         </View>
       ) : (
-        <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 40 }}>
+        <ScrollView contentContainerStyle={[{ padding: 16, paddingBottom: 40 }, isTablet && s.tabletListContent]}>
 
           {/* Current plan card */}
           <View style={[s.profileInfoCard, { marginBottom: 16 }]}>
@@ -9586,7 +9609,8 @@ function DeleteAccountModal({ visible, user, onClose, onDeleteAccount }) {
 }
 
 function ProfileScreen({ user, session, onLogout, onDeleteAccount, onGoToHome, onGoToCourses, onGoToAI, onGoToDownloads, wishlistCount, onGoToWishlist, onGoToCertificates, certificatesCount, onAvatarChange, onProfileChange, aiRobotId, onGoToSubscription, onOpenLegal, themeMode = "dark", resolvedThemeMode = "dark", onThemeChange, refreshing = false, onRefresh, searchReferences = null }) {
-  const { height: windowHeight } = useWindowDimensions();
+  const { width, height: windowHeight } = useWindowDimensions();
+  const isTablet = width >= 768;
   const isActive = hasActivePremiumEntitlement(user);
   const memberSince = user?._id
     ? new Date(parseInt(user._id.substring(0, 8), 16) * 1000).toLocaleDateString("en-IN", { month: "short", year: "numeric" })
@@ -9674,7 +9698,7 @@ function ProfileScreen({ user, session, onLogout, onDeleteAccount, onGoToHome, o
       <StatusBar barStyle={C.isDark ? "light-content" : "dark-content"} backgroundColor={C.white} />
       <View style={[s.homeTopBar, { paddingBottom: 8, backgroundColor: C.white }]}>
         <SafeAreaView style={{ backgroundColor: C.white }}>
-          <View style={[s.homeTopBarInner, s.pageHeaderLogoOnly]}>
+          <View style={[s.homeTopBarInner, s.pageHeaderLogoOnly, isTablet && s.tabletContentFrame]}>
             <TouchableOpacity
               onPress={onGoToHome}
               style={{ position: "absolute", left: 16, width: MIN_TOUCH_TARGET, height: MIN_TOUCH_TARGET, alignItems: "center", justifyContent: "center" }}
@@ -9691,7 +9715,7 @@ function ProfileScreen({ user, session, onLogout, onDeleteAccount, onGoToHome, o
 
       <ScrollView
         style={s.profileScroll}
-        contentContainerStyle={{ padding: 16, paddingTop: 10, paddingBottom: 160 }}
+        contentContainerStyle={[{ padding: 16, paddingTop: 10, paddingBottom: 160 }, isTablet && s.tabletListContent]}
         refreshControl={onRefresh ? (
           <RefreshControl
             refreshing={refreshing}
@@ -10281,6 +10305,8 @@ function AiAssistantScreen({
   activeCourseHint = null,
   isRootTabActive = true,
 }) {
+  const { width } = useWindowDimensions();
+  const isTablet = width >= 768;
   const aiMounted = useRef(false);
   useEffect(() => { aiMounted.current = true; return () => { aiMounted.current = false; }; }, []);
   const aiInFlight = useRef(false);
@@ -10775,12 +10801,12 @@ function AiAssistantScreen({
     <View style={[s.aiScreen, { backgroundColor: aiTheme.screen }]}>
       <StatusBar barStyle={aiTheme.statusBar} backgroundColor={aiTheme.top} />
       <SafeAreaView style={[s.aiTopSafe, { backgroundColor: aiTheme.top, borderBottomColor: aiTheme.topBorder }]}>
-        <View style={s.aiTopHeader}>
+        <View style={[s.aiTopHeader, isTablet && s.tabletContentFrame]}>
           <SkillomateLogo size="xs" mode={C.isDark ? "dark" : "light"} onPress={onGoToHome} />
           <View style={s.aiTopHeaderSpacer} />
         </View>
 
-        <View style={[s.aiIdentityBar, { borderTopColor: aiTheme.identityBorder }]}>
+        <View style={[s.aiIdentityBar, { borderTopColor: aiTheme.identityBorder }, isTablet && s.tabletContentFrame]}>
           <TouchableOpacity
             style={s.aiIdentityMenu}
             onPress={() => setHistoryOpen(true)}
@@ -10838,6 +10864,7 @@ function AiAssistantScreen({
             contentContainerStyle={[
               s.aiMessages,
               isCourseMode ? s.aiMessagesCourseInset : s.aiMessagesRootInset,
+              isTablet && s.tabletListContent,
             ]}
             initialNumToRender={12}
             maxToRenderPerBatch={8}
@@ -10887,7 +10914,7 @@ function AiAssistantScreen({
         ) : (
           <ScrollView
             style={s.aiWelcomeScroll}
-            contentContainerStyle={s.aiWelcomeContent}
+            contentContainerStyle={[s.aiWelcomeContent, isTablet && s.tabletListContent]}
             showsVerticalScrollIndicator={false}
             keyboardShouldPersistTaps="handled"
           >
@@ -10910,7 +10937,7 @@ function AiAssistantScreen({
           </ScrollView>
         )}
 
-        <View style={[s.aiComposer, { backgroundColor: aiTheme.composerBg, borderColor: aiTheme.composerBorder }, isCourseMode && s.aiComposerStandalone]}>
+        <View style={[s.aiComposer, { backgroundColor: aiTheme.composerBg, borderColor: aiTheme.composerBorder }, isCourseMode && s.aiComposerStandalone, isTablet && s.tabletContentFrame, isTablet && { marginHorizontal: 0 }]}>
           <View style={s.aiComposerRow}>
             <TextInput
               style={[s.aiInput, { color: aiTheme.text }]}
@@ -11191,13 +11218,15 @@ function AiAssistantScreen({
 }
 
 function LegalContentScreen({ page = "privacy", onBack }) {
+  const { width } = useWindowDimensions();
+  const isTablet = width >= 768;
   const config = LEGAL_APP_PAGES[page] || LEGAL_APP_PAGES.privacy;
 
   return (
     <View style={s.legalScreen}>
       <StatusBar barStyle="light-content" backgroundColor={C.bg} />
       <SafeAreaView style={s.legalSafeArea}>
-        <View style={s.legalHeader}>
+        <View style={[s.legalHeader, isTablet && s.tabletContentFrame]}>
           <TouchableOpacity
             onPress={onBack}
             style={s.legalBackButton}
@@ -11218,7 +11247,7 @@ function LegalContentScreen({ page = "privacy", onBack }) {
 
       <ScrollView
         style={s.legalContentScroll}
-        contentContainerStyle={s.legalContent}
+        contentContainerStyle={[s.legalContent, isTablet && s.tabletListContent]}
         showsVerticalScrollIndicator={false}
       >
         <View style={s.legalIntroCard}>
@@ -11247,6 +11276,8 @@ function LegalContentScreen({ page = "privacy", onBack }) {
 // ── App ───────────────────────────────────────────────────────────────────────
 export default function App() {
   const systemScheme = useColorScheme();
+  const { width: appViewportWidth } = useWindowDimensions();
+  const isTabletLayout = appViewportWidth >= 768;
   const [isRestoring, setIsRestoring] = useState(true);
   const [user, setUserState] = useState(null);
   const [themeMode, setThemeMode] = useState("light");
@@ -13175,14 +13206,14 @@ export default function App() {
       <View style={{ flex: 1, backgroundColor: C.bg }}>
         <StatusBar barStyle={C.isDark ? "light-content" : "dark-content"} backgroundColor={C.white} />
         <SafeAreaView style={{ backgroundColor: C.white }}>
-          <View style={[s.pageHeader, s.pageHeaderLogoOnly]}>
+          <View style={[s.pageHeader, s.pageHeaderLogoOnly, isTabletLayout && s.tabletContentFrame]}>
             <SkillomateLogo size="sm" onPress={() => navigateRootTab("home")} />
           </View>
         </SafeAreaView>
 
         {downloadItems.length === 0 ? (
           <ScrollView
-            contentContainerStyle={[s.centered, { flexGrow: 1 }]}
+            contentContainerStyle={[s.centered, { flexGrow: 1 }, isTabletLayout && s.tabletListContent]}
             refreshControl={
               <RefreshControl
                 refreshing={downloadsRefreshing}
@@ -13205,7 +13236,7 @@ export default function App() {
           <FlatList
             data={downloadItems}
             keyExtractor={(item, i) => item.id || item.bunnyGuid || String(i)}
-            contentContainerStyle={{ padding: 16, gap: 10, paddingBottom: 100 }}
+            contentContainerStyle={[{ padding: 16, gap: 10, paddingBottom: 100 }, isTabletLayout && s.tabletListContent]}
             refreshControl={
               <RefreshControl
                 refreshing={downloadsRefreshing}
@@ -13497,6 +13528,16 @@ return StyleSheet.create({
 	  },
   globalEdgeBackRoot: {
     flex: 1,
+  },
+  tabletContentFrame: {
+    width: "100%",
+    maxWidth: 760,
+    alignSelf: "center",
+  },
+  tabletListContent: {
+    width: "100%",
+    maxWidth: 760,
+    alignSelf: "center",
   },
   globalEdgeBackGuide: {
     position: "absolute",
@@ -15920,6 +15961,12 @@ courseListCard: {
 
   // Video Player
   centered: { flex: 1, alignItems: "center", justifyContent: "center", backgroundColor: C.bg },
+  reelsSafeFrame: {
+    flex: 1,
+    paddingTop: IOS_REELS_SAFE_TOP,
+    paddingBottom: IOS_REELS_SAFE_BOTTOM,
+    backgroundColor: "#000",
+  },
   reelItem: { position: "relative", width: "100%", overflow: "hidden", backgroundColor: "#000" },
   player: { width: "100%", flexGrow: 0, flexShrink: 0, position: "relative", overflow: "hidden", backgroundColor: "#000" },
   nativeVideoBalancedFill: { transform: [{ scale: 0.98 }] },
