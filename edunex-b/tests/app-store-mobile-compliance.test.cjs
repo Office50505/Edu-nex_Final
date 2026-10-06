@@ -290,6 +290,14 @@ test('logged-in tablet screens constrain content and bottom navigation width', (
   assert.match(appSource, /s\.tabletContentFrame/);
 });
 
+test('course search suggestions hide internal category identifiers', () => {
+  assert.match(appSource, /function isInternalIdentifier\(value\)/);
+  assert.match(appSource, /\^\[a-f0-9\]\{24\}\$/);
+  assert.match(appSource, /function getCourseCategoryName\(course\)/);
+  assert.match(appSource, /return categoryName && !isInternalIdentifier\(categoryName\) \? categoryName : ""/);
+  assert.match(appSource, /const categoryName = getCourseCategoryName\(course\)/);
+});
+
 test('secondary account tablet screens use the shared centered content frame', () => {
   for (const screenName of [
     'WishlistScreen',
@@ -305,6 +313,18 @@ test('secondary account tablet screens use the shared centered content frame', (
     assert.match(source, /const isTablet = width >= 768/, `${screenName} detects tablet width`);
     assert.match(source, /s\.tabletContentFrame|s\.tabletListContent/, `${screenName} applies tablet frame`);
   }
+});
+
+test('course detail tablet screen constrains lesson list and notes sheet', () => {
+  const start = appSource.indexOf('function VideoListScreen');
+  assert.notEqual(start, -1, 'VideoListScreen is present');
+  const nextFunction = appSource.indexOf('\nfunction ', start + 10);
+  const source = appSource.slice(start, nextFunction === -1 ? undefined : nextFunction);
+  assert.match(source, /const isTablet = width >= 768/);
+  assert.match(source, /isTablet && s\.tabletContentFrame/);
+  assert.match(source, /isTablet && s\.tabletListContent/);
+  assert.match(source, /isTablet && s\.courseNotesSheetTablet/);
+  assert.match(appSource, /courseNotesSheetTablet: \{\s+width: "100%",\s+maxWidth: 760,\s+alignSelf: "center"/);
 });
 
 test('profile avatar picker keeps unique bundled choices and falls back from unknown legacy values', () => {

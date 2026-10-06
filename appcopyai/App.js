@@ -3317,6 +3317,19 @@ function matchesSearchQuery(item, searchTerms = []) {
   return searchTerms.every(term => haystack.includes(term));
 }
 
+function isInternalIdentifier(value) {
+  const text = String(value || "").trim();
+  return /^[a-f0-9]{24}$/i.test(text) || /^[a-f0-9]{16,}$/i.test(text);
+}
+
+function getCourseCategoryName(course) {
+  const rawCategory = typeof course?.category === "string"
+    ? course.category
+    : course?.category?.name || course?.category?.title || "";
+  const categoryName = String(rawCategory || "").replace(/\s+/g, " ").trim();
+  return categoryName && !isInternalIdentifier(categoryName) ? categoryName : "";
+}
+
 function BottomNav({
   active,
   onHome,
@@ -3387,6 +3400,11 @@ function BottomNav({
     const timer = setTimeout(() => navSearchInputRef.current?.focus?.(), 120);
     return () => clearTimeout(timer);
   }, [searchOpen]);
+  useEffect(() => {
+    if (!searchOpen || !rootTabSwipe?.begin || !rootTabSwipe?.end) return undefined;
+    rootTabSwipe.begin();
+    return () => rootTabSwipe.end();
+  }, [rootTabSwipe, searchOpen]);
   useEffect(() => {
     if (!searchOpen) return undefined;
     let mounted = true;
@@ -3645,9 +3663,7 @@ function BottomNav({
 }
 
 function getCourseSearchText(course, lessonLimit = 24) {
-  const categoryName = typeof course?.category === "string"
-    ? course.category
-    : course?.category?.name || "";
+  const categoryName = getCourseCategoryName(course);
   const lessonKeywords = Array.isArray(course?.videos)
     ? course.videos.slice(0, lessonLimit).map(video => [
         video?.title,
@@ -3672,9 +3688,7 @@ function buildCourseSearchReferences(courses, handlers = {}) {
   const safeCourses = (Array.isArray(courses) ? courses : []).filter(course => course && !course.isMock);
   return safeCourses.map((course, index) => {
     const lessonCount = Number(course.lessonCount ?? course.videoCount ?? course.videos?.length ?? 0);
-    const categoryName = typeof course.category === "string"
-      ? course.category
-      : course.category?.name || "";
+    const categoryName = getCourseCategoryName(course);
     return {
       key: `course-${course._id || index}`,
       title: course.title || `Course ${index + 1}`,
@@ -3840,19 +3854,21 @@ function SwipeableRootTabsPager({ activeTab, onNavigate, renderTab, searchRefere
     });
   }, [activeIndex, pageStride, returnToActive, settleChrome, trackX]);
 
+  const shouldClaimRootSwipe = useCallback((gesture) => {
+    if (transitionInProgressRef.current || horizontalChildActiveRef.current) return false;
+    const horizontalDistance = Math.abs(gesture.dx);
+    const verticalDistance = Math.abs(gesture.dy);
+    const direction = gesture.dx < 0 ? 1 : -1;
+    const targetTab = ROOT_TAB_ORDER[activeIndex + direction];
+    return Boolean(targetTab)
+      && horizontalDistance > (Platform.OS === "android" ? 10 : 14)
+      && horizontalDistance > verticalDistance * (Platform.OS === "android" ? 1.55 : 1.35);
+  }, [activeIndex]);
+
   const panResponder = useMemo(() => PanResponder.create({
     onStartShouldSetPanResponder: () => false,
-    onMoveShouldSetPanResponder: (_, gesture) => {
-      if (transitionInProgressRef.current || horizontalChildActiveRef.current) return false;
-      const horizontalDistance = Math.abs(gesture.dx);
-      const verticalDistance = Math.abs(gesture.dy);
-      const direction = gesture.dx < 0 ? 1 : -1;
-      const targetTab = ROOT_TAB_ORDER[activeIndex + direction];
-      const shouldStart = Boolean(targetTab)
-        && horizontalDistance > (Platform.OS === "android" ? 10 : 14)
-        && horizontalDistance > verticalDistance * (Platform.OS === "android" ? 1.55 : 1.35);
-      return shouldStart;
-    },
+    onMoveShouldSetPanResponder: (_, gesture) => shouldClaimRootSwipe(gesture),
+    onMoveShouldSetPanResponderCapture: (_, gesture) => shouldClaimRootSwipe(gesture),
     onPanResponderGrant: () => {
       trackX.stopAnimation();
       if (ROOT_TAB_CHROME_ENABLED) {
@@ -3882,7 +3898,7 @@ function SwipeableRootTabsPager({ activeTab, onNavigate, renderTab, searchRefere
     onPanResponderTerminate: returnToActive,
     onPanResponderTerminationRequest: () => true,
     onShouldBlockNativeResponder: () => false,
-  }), [activeIndex, navigateByDirection, pageChrome, pageStride, returnToActive, trackX, width]);
+  }), [activeIndex, navigateByDirection, pageChrome, pageStride, returnToActive, shouldClaimRootSwipe, trackX, width]);
 
   const renderedTabs = mountedTabs;
   const pageCornerRadius = ROOT_TAB_CHROME_ENABLED
@@ -6786,6 +6802,8 @@ function VideoListScreen({
   onBack,
   downloads,
 }) {
+  const { width } = useWindowDimensions();
+  const isTablet = width >= 768;
   const [showCourseNotes, setShowCourseNotes] = useState(false);
   const videos = useMemo(
     () => (course.videos || []).slice().sort((a, b) => a.order - b.order),
@@ -6814,7 +6832,7 @@ function VideoListScreen({
     <View style={{ flex: 1, backgroundColor: C.bg }}>
       <StatusBar barStyle={C.isDark ? "light-content" : "dark-content"} backgroundColor={C.white} />
       <SafeAreaView style={{ backgroundColor: C.white }}>
-        <View style={s.pageHeader}>
+        <View style={[s.pageHeader, isTablet && s.tabletContentFrame]}>
           <TouchableOpacity onPress={onBack} style={s.iconBtn}
             hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
             accessibilityRole="button"
@@ -6838,7 +6856,7 @@ function VideoListScreen({
       </SafeAreaView>
 
       {videos.length === 0 ? (
-        <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: Platform.OS === "ios" ? 40 : 28 }}>
+        <ScrollView contentContainerStyle={[{ padding: 16, paddingBottom: Platform.OS === "ios" ? 40 : 28 }, isTablet && s.tabletListContent]}>
           <ExpandableCourseDescription description={courseDescription} />
           <View style={[s.centered, { minHeight: 260 }]}>
             <Text style={{ color: C.textSub }}>No videos in this course yet.</Text>
@@ -6848,7 +6866,7 @@ function VideoListScreen({
         <FlatList
           data={videos}
           keyExtractor={(item, i) => item._id || String(i)}
-          contentContainerStyle={{ padding: 16, paddingBottom: Platform.OS === "ios" ? 40 : 28, gap: 10 }}
+          contentContainerStyle={[{ padding: 16, paddingBottom: Platform.OS === "ios" ? 40 : 28, gap: 10 }, isTablet && s.tabletListContent]}
           initialNumToRender={8}
           maxToRenderPerBatch={8}
           windowSize={7}
@@ -6915,7 +6933,7 @@ function VideoListScreen({
       <Modal visible={showCourseNotes} transparent animationType="slide" onRequestClose={() => setShowCourseNotes(false)}>
         <View style={s.courseNotesOverlay}>
           <Pressable style={StyleSheet.absoluteFill} onPress={() => setShowCourseNotes(false)} accessible={false} />
-          <View style={s.courseNotesSheet}>
+          <View style={[s.courseNotesSheet, isTablet && s.courseNotesSheetTablet]}>
             <View style={s.courseNotesHandle} />
             <View style={s.courseNotesHeader}>
               <View style={{ flex: 1 }}>
@@ -15182,6 +15200,11 @@ courseListCard: {
     borderWidth: 1,
     borderColor: C.border,
     paddingTop: 10,
+  },
+  courseNotesSheetTablet: {
+    width: "100%",
+    maxWidth: 760,
+    alignSelf: "center",
   },
   courseNotesHandle: {
     width: 38,
