@@ -2,22 +2,22 @@
   "redirects": [
     {
       "source": "/marketing-web",
-      "destination": "/static-pages/skillomate-ai-influencer-courseweb/#paywall",
+      "destination": "/static-pages/skillomate-ai-influencer-courseweb/index.html#paywall",
       "permanent": true
     },
     {
       "source": "/marketing-web/",
-      "destination": "/static-pages/skillomate-ai-influencer-courseweb/#paywall",
+      "destination": "/static-pages/skillomate-ai-influencer-courseweb/index.html#paywall",
       "permanent": true
     },
     {
       "source": "/marketing-web/index.html",
-      "destination": "/static-pages/skillomate-ai-influencer-courseweb/#paywall",
+      "destination": "/static-pages/skillomate-ai-influencer-courseweb/index.html#paywall",
       "permanent": true
     },
     {
       "source": "/marketing-web.html",
-      "destination": "/static-pages/skillomate-ai-influencer-courseweb/#paywall",
+      "destination": "/static-pages/skillomate-ai-influencer-courseweb/index.html#paywall",
       "permanent": true
     },
     {

@@ -70,7 +70,7 @@ function useMarketingWeb(server) {
 
     if (marketingLegacyPaths.has(url.pathname)) {
       response.statusCode = 301;
-      response.setHeader("Location", `${marketingStaticBasePath}/${url.search}#paywall`);
+      response.setHeader("Location", `${marketingStaticBasePath}/index.html${url.search}#paywall`);
       response.end();
       return;
     }

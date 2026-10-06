@@ -44,9 +44,9 @@ it("keeps the offer2 static page as the canonical route", () => {
 });
 
 it("canonicalizes legacy marketing-web routes to the static courseweb paywall", () => {
-  expect(route("marketing-web.html")).toBe("/static-pages/skillomate-ai-influencer-courseweb/#paywall");
-  expect(route("/marketing-web?utm_source=ad")).toBe("/static-pages/skillomate-ai-influencer-courseweb/?utm_source=ad#paywall");
-  expect(route("/skillomate-ai-influencer-courseweb.html#paywall")).toBe("/static-pages/skillomate-ai-influencer-courseweb/#paywall");
+  expect(route("marketing-web.html")).toBe("/static-pages/skillomate-ai-influencer-courseweb/index.html#paywall");
+  expect(route("/marketing-web?utm_source=ad")).toBe("/static-pages/skillomate-ai-influencer-courseweb/index.html?utm_source=ad#paywall");
+  expect(route("/skillomate-ai-influencer-courseweb.html#paywall")).toBe("/static-pages/skillomate-ai-influencer-courseweb/index.html#paywall");
   expect(pageKeyFromPath("/skillomate-ai-influencer-courseweb.html")).toBe("marketing-web.html");
   expect(pageKeyFromPath("/static-pages/skillomate-ai-influencer-courseweb/index.html")).toBe("marketing-web.html");
 });

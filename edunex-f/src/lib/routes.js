@@ -15,7 +15,7 @@ const cleanRoutes = {
   "help.html": "/help",
   "lesson.html": "/lesson",
   "login.html": "/login",
-  "marketing-web.html": "/static-pages/skillomate-ai-influencer-courseweb/",
+  "marketing-web.html": "/static-pages/skillomate-ai-influencer-courseweb/index.html",
   "otp.html": "/otp",
   "offer.html": "/static-pages/skillomate-ai-influencer-course/",
   "offer2.html": "/static-pages/skillomate-ai-influencer-course2/",
