@@ -4,6 +4,7 @@ import { requestTutor } from "./services/aiClient";
 import { AI_CONSENT_POLICY_VERSION, isAiConsentCurrent } from "./services/aiConsent";
 import { createNativeSession } from "./services/nativeSession";
 import { createSecureSessionStorage } from "./services/secureSessionStorage";
+import { requestPreparedCloudfrontDownload } from "./services/cloudfrontDownload";
 import {
   APPLE_SUBSCRIPTION_MANAGEMENT_URL,
   GOOGLE_PLAY_SUBSCRIPTION_MANAGEMENT_URL,
@@ -2056,27 +2057,6 @@ function getDownloadFailureMessage(error, status) {
     return "Check your internet connection, then retry the download.";
   }
   return "This lesson could not be saved. Check your connection and course access, then retry.";
-}
-
-function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
-
-async function requestPreparedCloudfrontDownload({ session, courseId, videoId }) {
-  const grant = await session.requestJson(`/api/courses/${encodeURIComponent(courseId)}/videos/${encodeURIComponent(videoId)}/download-grant`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ prepared: true }),
-  });
-  if (!grant?.downloadUrl) throw new Error("The download authorization response was invalid.");
-  if (!grant.statusUrl) return grant;
-  for (let attempt = 0; attempt < 120; attempt += 1) {
-    const status = await session.requestJson(grant.statusUrl);
-    if (status?.status === "ready") return grant;
-    if (status?.status === "error") throw new Error(status.error || "Video could not be prepared for offline download.");
-    await sleep(1000);
-  }
-  throw new Error("Video is still being prepared. Please retry shortly.");
 }
 
 function formatDownloadSize(bytes) {
