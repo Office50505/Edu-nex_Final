@@ -4004,7 +4004,13 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
       return () => { cancelled = true; };
     }
     setOfflinePlaybackUrl("");
-    NativeModules.OfflineMediaServer?.start(localPath)
+    const offlineMediaServer = NativeModules.OfflineMediaServer;
+    if (typeof offlineMediaServer?.start !== "function") {
+      console.warn("[offline-playback] local server module is unavailable");
+      setOfflinePlaybackUrl(localPath);
+      return () => { cancelled = true; };
+    }
+    Promise.resolve(offlineMediaServer.start(localPath))
       .then(url => {
         if (!cancelled) setOfflinePlaybackUrl(String(url || ""));
       })

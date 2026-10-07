@@ -5,16 +5,13 @@ import React
 import ReactAppDependencyProvider
 
 @objc(OfflineMediaServer)
-final class OfflineMediaServer: NSObject, RCTBridgeModule {
+final class OfflineMediaServer: NSObject {
   private static let queue = DispatchQueue(label: "com.skillomate.offline-media")
   private static var listener: NWListener?
   private static var directoryURL: URL?
   private static var manifestURL: URL?
   private static var accessToken = ""
   private static var playbackURL = ""
-
-  static func moduleName() -> String! { "OfflineMediaServer" }
-  static func requiresMainQueueSetup() -> Bool { false }
 
   @objc(start:resolver:rejecter:)
   func start(
@@ -201,7 +198,6 @@ class AppDelegate: ExpoAppDelegate {
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
   ) -> Bool {
-    RCTRegisterModule(OfflineMediaServer.self)
     let delegate = ReactNativeDelegate()
     let factory = ExpoReactNativeFactory(delegate: delegate)
     delegate.dependencyProvider = RCTAppDependencyProvider()
