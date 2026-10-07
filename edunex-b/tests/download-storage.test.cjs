@@ -18,8 +18,8 @@ test('evicted downloads and paths outside the private download directory are dis
  const h=setup({a:{status:'done',path:'cache/skillomate_dl/a.mp4'},b:{status:'done',path:'docs/personal.mp4'}},['docs/personal.mp4']);
  assert.equal(Object.keys(await api.prepareTemporaryDownloads(h.disk,h.store)).length,0);assert.ok(h.files.has('docs/personal.mp4'));
 });
-test('hls downloads are kept only when every local resource exists',async()=>{
- const saved={a:{status:'done',kind:'hls',provider:'bunny_stream',offlineFormatVersion:2,path:'file://cache/skillomate_dl/a/index.m3u8'}};
+test('protected CloudFront HLS downloads are kept only when every local resource exists',async()=>{
+ const saved={a:{status:'done',kind:'hls',provider:'aws_cloudfront',offlineFormatVersion:4,path:'file://cache/skillomate_dl/a/index.m3u8'}};
  const text='#EXTM3U\n#EXT-X-KEY:METHOD=AES-128,URI="key.bin"\n#EXTINF:4,\npart-0001.ts\n#EXT-X-ENDLIST';
  const h=setup(saved,['file://cache/skillomate_dl/a/index.m3u8','file://cache/skillomate_dl/a/key.bin','file://cache/skillomate_dl/a/part-0001.ts']);
  h.disk.cacheDirectory='file://cache/';

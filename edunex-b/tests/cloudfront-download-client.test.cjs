@@ -2,7 +2,7 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const path = require('node:path');
 
-const { requestPreparedCloudfrontDownload } = require(path.join(
+const { canFallbackToCloudFrontHlsDownload, requestPreparedCloudfrontDownload } = require(path.join(
   __dirname,
   '../../appcopyai/services/cloudfrontDownload.js',
 ));
@@ -58,4 +58,10 @@ test('authorization failures do not retry through the direct route', async () =>
     error => error === forbidden,
   );
   assert.equal(calls, 2);
+});
+
+test('iOS HLS fallback is limited to server conversion failures', () => {
+  assert.equal(canFallbackToCloudFrontHlsDownload({ status: 502, message: 'Download failed' }), true);
+  assert.equal(canFallbackToCloudFrontHlsDownload({ status: 425, message: 'Still preparing' }), true);
+  assert.equal(canFallbackToCloudFrontHlsDownload({ status: 403, message: 'Course access denied' }), false);
 });

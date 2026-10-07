@@ -6,6 +6,19 @@ function downloadGrantPath(courseId, videoId) {
   return `/api/courses/${encodeURIComponent(courseId)}/videos/${encodeURIComponent(videoId)}/download-grant`;
 }
 
+function canFallbackToCloudFrontHlsDownload(error) {
+  const status = Number(error?.status || 0);
+  const message = String(error?.message || error || "").toLowerCase();
+  return (
+    status === 425
+    || status >= 500
+    || message.includes("conversion")
+    || message.includes("ffmpeg")
+    || message.includes("prepared")
+    || message.includes("temporarily unavailable")
+  );
+}
+
 async function requestPreparedCloudfrontDownload({
   session,
   courseId,
@@ -50,4 +63,4 @@ async function requestPreparedCloudfrontDownload({
   }
 }
 
-module.exports = { requestPreparedCloudfrontDownload };
+module.exports = { canFallbackToCloudFrontHlsDownload, requestPreparedCloudfrontDownload };

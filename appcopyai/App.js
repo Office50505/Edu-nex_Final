@@ -4,7 +4,7 @@ import { requestTutor } from "./services/aiClient";
 import { AI_CONSENT_POLICY_VERSION, isAiConsentCurrent } from "./services/aiConsent";
 import { createNativeSession } from "./services/nativeSession";
 import { createSecureSessionStorage } from "./services/secureSessionStorage";
-import { requestPreparedCloudfrontDownload } from "./services/cloudfrontDownload";
+import { canFallbackToCloudFrontHlsDownload, requestPreparedCloudfrontDownload } from "./services/cloudfrontDownload";
 import {
   APPLE_SUBSCRIPTION_MANAGEMENT_URL,
   GOOGLE_PLAY_SUBSCRIPTION_MANAGEMENT_URL,
@@ -11713,14 +11713,29 @@ export default function App() {
         setDownloads(prev => ({ ...prev, [downloadId]: { ...prev[downloadId], ...meta } }));
         await FileSystem.deleteAsync(downloadManifestPath(FileSystem, downloadId), { idempotent: true }).catch(() => {});
         await FileSystem.deleteAsync(filePath, { idempotent: true }).catch(() => {});
-        const grant = await requestPreparedCloudfrontDownload({ session: nativeSession, courseId, videoId: protectedVideoId });
-        const url = /^https?:\/\//i.test(grant.downloadUrl) ? grant.downloadUrl : `${API_BASE}${grant.downloadUrl}`;
-        const dl = FileSystem.createDownloadResumable(url, filePath, {}, ({ totalBytesWritten, totalBytesExpectedToWrite }) => {
-          const pct = totalBytesExpectedToWrite > 0 ? totalBytesWritten / totalBytesExpectedToWrite : 0;
-          setDownloads(prev => ({ ...prev, [downloadId]: { ...prev[downloadId], progress: pct } }));
-        });
-        const result = await dl.downloadAsync();
-        if (result?.status !== 200) throw Object.assign(new Error("Download failed"), { status: result?.status });
+        try {
+          const grant = await requestPreparedCloudfrontDownload({ session: nativeSession, courseId, videoId: protectedVideoId });
+          const url = /^https?:\/\//i.test(grant.downloadUrl) ? grant.downloadUrl : `${API_BASE}${grant.downloadUrl}`;
+          const dl = FileSystem.createDownloadResumable(url, filePath, {}, ({ totalBytesWritten, totalBytesExpectedToWrite }) => {
+            const pct = totalBytesExpectedToWrite > 0 ? totalBytesWritten / totalBytesExpectedToWrite : 0;
+            setDownloads(prev => ({ ...prev, [downloadId]: { ...prev[downloadId], progress: pct } }));
+          });
+          const result = await dl.downloadAsync();
+          if (result?.status !== 200) throw Object.assign(new Error("Download failed"), { status: result?.status });
+        } catch (error) {
+          if (Platform.OS !== "ios" || !canFallbackToCloudFrontHlsDownload(error)) throw error;
+          filePath = downloadManifestPath(FileSystem, downloadId);
+          meta = { ...meta, kind: "hls", offlineFormatVersion: 4 };
+          setDownloads(prev => ({ ...prev, [downloadId]: { ...prev[downloadId], path: filePath, progress: 0, ...meta } }));
+          await FileSystem.deleteAsync(downloadPath(FileSystem, downloadId), { idempotent: true }).catch(() => {});
+          const lease = await fetchPlaybackLease({ courseId, video: { ...video, _id: protectedVideoId }, user: u });
+          hlsValidation = await downloadHlsToAppCache({
+            hlsUrl: lease.hlsUrl,
+            targetDir,
+            manifestPath: filePath,
+            onProgress: pct => setDownloads(prev => ({ ...prev, [downloadId]: { ...prev[downloadId], progress: pct } })),
+          });
+        }
       } else if (downloadKind === "bunny") {
         const grant = await nativeSession.requestJson(`/api/videos/${encodeURIComponent(guid)}/download-grant`, {
           method: "POST",
