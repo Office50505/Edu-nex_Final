@@ -4,6 +4,7 @@ const { spawn } = require('node:child_process');
 const fs = require('node:fs/promises');
 const os = require('node:os');
 const path = require('node:path');
+const ffmpegBinary = require('../services/ffmpegBinary');
 const {requireCompatibleAuth,isSessionValidForUser}=require('../middleware/compatAuth');
 const {protectAdmin, protectAdminRead}=require('../middleware/adminAuth');
 const {access}=require('../services/certificationService');
@@ -51,7 +52,7 @@ async function startCloudDownloadJob({ grant, grantToken, origin }) {
   };
   job.cleanupTimer = setTimeout(() => removeCloudDownloadJob(jobId), CLOUD_DOWNLOAD_JOB_TTL_MS);
   cloudDownloadJobs.set(jobId, job);
-  const ffmpeg = spawn('ffmpeg', [
+  const ffmpeg = spawn(ffmpegBinary(), [
     '-hide_banner',
     '-loglevel', 'error',
     '-nostdin',
@@ -219,7 +220,7 @@ router.get('/courses/:courseId/videos/:videoId/download.mp4',async(req,res)=>{
     const hlsUrl = new URL(`/api/playback/hls.m3u8?grant=${encodeURIComponent(req.query.grant)}`, internalRequestOrigin(req)).href;
     const tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), 'skillomate-download-'));
     const outputPath = path.join(tmpDir, 'lesson.mp4');
-    const ffmpeg = spawn('ffmpeg', [
+    const ffmpeg = spawn(ffmpegBinary(), [
       '-hide_banner',
       '-loglevel', 'error',
       '-nostdin',

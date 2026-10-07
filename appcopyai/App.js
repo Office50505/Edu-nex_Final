@@ -2058,27 +2058,6 @@ function getDownloadFailureMessage(error, status) {
   return "This lesson could not be saved. Check your connection and course access, then retry.";
 }
 
-function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
-
-async function requestPreparedCloudfrontDownload({ session, courseId, videoId }) {
-  const grant = await session.requestJson(`/api/courses/${encodeURIComponent(courseId)}/videos/${encodeURIComponent(videoId)}/download-grant`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ prepared: true }),
-  });
-  if (!grant?.downloadUrl) throw new Error("The download authorization response was invalid.");
-  if (!grant.statusUrl) return grant;
-  for (let attempt = 0; attempt < 120; attempt += 1) {
-    const status = await session.requestJson(grant.statusUrl);
-    if (status?.status === "ready") return grant;
-    if (status?.status === "error") throw new Error(status.error || "Video could not be prepared for offline download.");
-    await sleep(1000);
-  }
-  throw new Error("Video is still being prepared. Please retry shortly.");
-}
-
 function formatDownloadSize(bytes) {
   const value = Number(bytes || 0);
   if (!Number.isFinite(value) || value <= 0) return "";
@@ -6375,7 +6354,7 @@ function ReelsScreen({ courseId, course, initialIndex, initialTime, onBack, onRe
           const itemLessonLabel = videos.length ? `Lecture ${Math.min(videos.length, index + 1)}/${videos.length}` : "Lecture";
           const cellChromePointerEvents = isCurrent && !playerChromeHidden ? "box-none" : "none";
           const itemDownload = downloads?.[getDownloadId(item, index)];
-          const itemLocalPath = itemDownload?.status === "done" ? (itemDownload.playbackPath || itemDownload.path) : null;
+          const itemLocalPath = itemDownload?.status === "done" ? itemDownload.path : null;
           const itemIsOffline = !!itemLocalPath;
           return (
             <View style={[s.reelItem, { height: reelFrameHeight }]}>
@@ -11729,11 +11708,16 @@ export default function App() {
       if (protectedCloudfront) {
         const protectedVideoId = video?._id || video?.id || video?.videoId;
         if (!courseId || !protectedVideoId) throw new Error("Download authorization unavailable.");
-        meta = { ...meta, kind: "mp4", offlineFormatVersion: 3 };
+        meta = { ...meta, kind: "mp4", offlineFormatVersion: 5 };
         setDownloads(prev => ({ ...prev, [downloadId]: { ...prev[downloadId], ...meta } }));
         await FileSystem.deleteAsync(downloadManifestPath(FileSystem, downloadId), { idempotent: true }).catch(() => {});
-        await FileSystem.deleteAsync(filePath, { idempotent: true }).catch(() => {});
-        const grant = await requestPreparedCloudfrontDownload({ session: nativeSession, courseId, videoId: protectedVideoId });
+        await FileSystem.deleteAsync(downloadPath(FileSystem, downloadId), { idempotent: true }).catch(() => {});
+        const grant = await nativeSession.requestJson(`/api/courses/${encodeURIComponent(courseId)}/videos/${encodeURIComponent(protectedVideoId)}/download-grant`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({}),
+        });
+        if (!grant?.downloadUrl) throw new Error("The download authorization response was invalid.");
         const url = /^https?:\/\//i.test(grant.downloadUrl) ? grant.downloadUrl : `${API_BASE}${grant.downloadUrl}`;
         const dl = FileSystem.createDownloadResumable(url, filePath, {}, ({ totalBytesWritten, totalBytesExpectedToWrite }) => {
           const pct = totalBytesExpectedToWrite > 0 ? totalBytesWritten / totalBytesExpectedToWrite : 0;

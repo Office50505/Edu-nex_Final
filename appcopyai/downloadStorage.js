@@ -136,8 +136,8 @@ export async function prepareTemporaryDownloads(fs, storage) {
     let safeId;
     try { safeId = safeDownloadId(id); } catch { continue; }
     if (safeId !== id || info?.status !== 'done') continue;
-    // CloudFront offline playback must use the backend-prepared MP4 download.
-    // Local HLS bundles are not reliable with iOS AVPlayer/expo-video.
+    // Local CloudFront HLS bundles are not reliably playable in iOS AVPlayer.
+    // Drop them so the app can replace them with direct MP4 offline downloads.
     if (info.kind === 'hls' && info.provider === 'aws_cloudfront') continue;
     const target = info.kind === 'hls' ? downloadManifestPath(fs, id) : downloadPath(fs, id);
     const legacyCache = `${cacheDir}${id}.mp4`;
