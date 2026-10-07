@@ -244,8 +244,12 @@ const DEMO_AVATARS = Array.from({ length: 15 }, (_, index) => ({
 const HOME_FALLBACK_COURSES = [];
 const ANDROID_CLIPPED_SUBVIEWS = Platform.OS === "android";
 const ROOT_TAB_SWIPE_ENABLED = true;
-const ROOT_TAB_CHROME_ENABLED = true;
-const ROOT_TAB_PAGE_GAP = Platform.OS === "android" ? 8 : 10;
+// iOS feels most natural when the neighbouring tab stays flush with the
+// current one. Animating rounded corners through JS while the page itself is
+// following a native-driven gesture caused visible gutters and dropped frames
+// when a swipe changed direction halfway through.
+const ROOT_TAB_CHROME_ENABLED = Platform.OS === "android";
+const ROOT_TAB_PAGE_GAP = Platform.OS === "android" ? 8 : 0;
 const ROOT_TAB_SWIPE_THRESHOLD_RATIO = Platform.OS === "android" ? 0.13 : 0.12;
 const ROOT_TAB_SWIPE_MIN_DISTANCE = Platform.OS === "android" ? 38 : 42;
 const ROOT_TAB_SWIPE_MAX_DISTANCE = Platform.OS === "android" ? 78 : 84;
@@ -253,7 +257,7 @@ const ROOT_TAB_SWIPE_FLICK_VELOCITY = Platform.OS === "android" ? 0.42 : 0.46;
 const ROOT_TAB_SWIPE_FLICK_DISTANCE = Platform.OS === "android" ? 18 : 20;
 const ROOT_TAB_SWIPE_SPRING = Platform.OS === "android"
   ? { tension: 88, friction: 12 }
-  : { tension: 82, friction: 13 };
+  : { stiffness: 310, damping: 32, mass: 0.86, overshootClamping: true };
 const MIN_TOUCH_TARGET = Platform.OS === "ios" ? 44 : 48;
 const ANDROID_STATUS_BAR_INSET = Platform.OS === "android" ? (StatusBar.currentHeight || 0) : 0;
 const IOS_REELS_SAFE_TOP = Platform.OS === "ios" ? Math.max(54, Number(Constants.statusBarHeight) || 0) : 0;
@@ -3986,7 +3990,10 @@ function SwipeableRootTabsPager({ activeTab, onNavigate, renderTab, searchRefere
       navigateByDirection(direction);
     },
     onPanResponderTerminate: returnToActive,
-    onPanResponderTerminationRequest: () => true,
+    // Once the horizontal pager owns the swipe, keep it until release. Letting
+    // a nested scroll view take over mid-gesture made the page appear to split
+    // or lag behind the finger when the user reversed direction.
+    onPanResponderTerminationRequest: () => false,
     onShouldBlockNativeResponder: () => false,
   }), [activeIndex, navigateByDirection, pageChrome, pageStride, returnToActive, shouldClaimRootSwipe, trackX, width]);
 
@@ -4022,6 +4029,7 @@ function SwipeableRootTabsPager({ activeTab, onNavigate, renderTab, searchRefere
           {renderedTabs.map(tab => {
             const tabIndex = ROOT_TAB_ORDER.indexOf(tab);
             const isInteractive = tab === activeTab;
+            const shouldRenderContent = Math.abs(tabIndex - activeIndex) <= 1;
             return (
               <Animated.View
                 key={tab}
@@ -4043,7 +4051,7 @@ function SwipeableRootTabsPager({ activeTab, onNavigate, renderTab, searchRefere
                 renderToHardwareTextureAndroid={Platform.OS === "android"}
                 needsOffscreenAlphaCompositing={Platform.OS === "android"}
               >
-                {renderTab(tab, { isActive: tab === activeTab })}
+                {shouldRenderContent ? renderTab(tab, { isActive: tab === activeTab }) : null}
               </Animated.View>
             );
           })}
