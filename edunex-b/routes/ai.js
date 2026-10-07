@@ -25,6 +25,7 @@ const {
   AI_PROVIDER_VERSION,
   PROVIDER_NAMES,
   checkAiInput,
+  consentIsCurrent,
   responseHash,
   sanitizeAiOutput,
 } = require('../services/aiCompliance');
@@ -117,7 +118,7 @@ function aiRateLimit(req, res, next) {
 router.get('/consent', requireCompatibleAuth({ userProjection: AI_USER_PROJECTION }), (req, res) => {
   res.set('Cache-Control', 'no-store');
   res.json({
-    granted: true,
+    granted: consentIsCurrent(req.compatUser),
     policyVersion: AI_CONSENT_POLICY_VERSION,
     providerVersion: AI_PROVIDER_VERSION,
     providerNames: PROVIDER_NAMES,
@@ -127,16 +128,17 @@ router.get('/consent', requireCompatibleAuth({ userProjection: AI_USER_PROJECTIO
 });
 
 router.put('/consent', requireCompatibleAuth({ userProjection: AI_USER_PROJECTION }), async (req, res) => {
+  const granted = req.body?.granted === true;
   const decision = {
-    aiConsentGranted: true,
-    aiConsentPolicyVersion: AI_CONSENT_POLICY_VERSION,
-    aiConsentProviderVersion: AI_PROVIDER_VERSION,
+    aiConsentGranted: granted,
+    aiConsentPolicyVersion: granted ? AI_CONSENT_POLICY_VERSION : null,
+    aiConsentProviderVersion: granted ? AI_PROVIDER_VERSION : null,
     aiConsentDecidedAt: new Date(),
   };
   await User.updateOne({ _id: req.compatAuth.userId }, { $set: decision });
   res.set('Cache-Control', 'no-store');
   res.json({
-    granted: true,
+    granted,
     policyVersion: AI_CONSENT_POLICY_VERSION,
     providerVersion: AI_PROVIDER_VERSION,
     providerNames: PROVIDER_NAMES,
@@ -197,6 +199,16 @@ router.get('/courses', requireCompatibleAuth(), async (_req, res) => {
 
 async function handleTutorChat(req, res) {
   try {
+    if (!consentIsCurrent(req.compatUser)) {
+      return res.status(403).json({
+        error: 'Allow third-party AI processing before using Nex AI.',
+        code: 'AI_CONSENT_REQUIRED',
+        recoverable: true,
+        policyVersion: AI_CONSENT_POLICY_VERSION,
+        providerVersion: AI_PROVIDER_VERSION,
+        providerNames: PROVIDER_NAMES,
+      });
+    }
     const inputCheck = checkAiInput(req.body?.message);
     if (!inputCheck.ok && !inputCheck.blocked) {
       return res.status(inputCheck.statusCode).json({ error: inputCheck.error });

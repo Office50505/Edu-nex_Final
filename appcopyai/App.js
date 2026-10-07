@@ -2408,39 +2408,11 @@ function GlobalEdgeBackGesture({ children, enabled, onBack }) {
     onShouldBlockNativeResponder: () => false,
   }), [progress, resetGuide, shouldClaimGesture]);
 
-  const guideOpacity = progress.interpolate({
-    inputRange: [0, 0.18, 1],
-    outputRange: [0, 0.65, 1],
-    extrapolate: "clamp",
-  });
-  const guideTranslateX = progress.interpolate({
-    inputRange: [0, 1],
-    outputRange: [-12, 30],
-    extrapolate: "clamp",
-  });
-  const guideScale = progress.interpolate({
-    inputRange: [0, 1],
-    outputRange: [0.88, 1],
-    extrapolate: "clamp",
-  });
-
   if (Platform.OS !== "ios") return children;
 
   return (
     <View style={s.globalEdgeBackRoot} {...panResponder.panHandlers}>
       {children}
-      <Animated.View
-        pointerEvents="none"
-        style={[
-          s.globalEdgeBackGuide,
-          {
-            opacity: guideOpacity,
-            transform: [{ translateX: guideTranslateX }, { scale: guideScale }],
-          },
-        ]}
-      >
-        <Ionicons name="chevron-back" size={28} color={C.text} />
-      </Animated.View>
     </View>
   );
 }
@@ -3236,7 +3208,7 @@ function ProblemReportModal({ visible, onClose, user, route = "home" }) {
             <ScrollView
               style={s.reportScroll}
               contentContainerStyle={s.reportScrollContent}
-              keyboardShouldPersistTaps="handled"
+              keyboardShouldPersistTaps="always"
               keyboardDismissMode="interactive"
               showsVerticalScrollIndicator={false}
             >
@@ -3365,7 +3337,7 @@ function BottomNav({
   const navSearchInputRef = useRef(null);
   const bottomNavRef = useRef(null);
   const isTabletNav = navViewportWidth >= 768;
-  const tabletNavWidth = Math.max(320, Math.min(navViewportWidth - 56, searchOpen ? 720 : 640));
+  const tabletNavWidth = Math.max(320, Math.min(navViewportWidth - 72, searchOpen ? 920 : 760));
   const keyboardVisibleRef = useRef(false);
   const keyboardLiftAnim = useRef(new Animated.Value(0)).current;
   const animateKeyboardLift = useCallback((lift = 0, duration = 180) => {
@@ -6061,21 +6033,6 @@ function ReelsScreen({ courseId, course, initialIndex, initialTime, onBack, onRe
     onPanResponderTerminate: (_, gesture) => finishEdgeBackHandleGesture(gesture),
     onPanResponderTerminationRequest: () => false,
   }), [finishEdgeBackHandleGesture, getEdgeBackGestureDistance, getEdgeBackGestureSide, playerEdgeBackProgress]);
-  const playerEdgeBackGuideOpacity = playerEdgeBackProgress.interpolate({
-    inputRange: [0, 0.18, 1],
-    outputRange: [0, 0.65, 1],
-    extrapolate: "clamp",
-  });
-  const playerEdgeBackGuideTranslateX = playerEdgeBackProgress.interpolate({
-    inputRange: [0, 1],
-    outputRange: [-12, 30],
-    extrapolate: "clamp",
-  });
-  const playerEdgeBackGuideScale = playerEdgeBackProgress.interpolate({
-    inputRange: [0, 1],
-    outputRange: [0.88, 1],
-    extrapolate: "clamp",
-  });
   const webPlayerChromeAnimatedStyle = useMemo(() => ({
     opacity: webPlayerChromeOpacity,
     transform: [{
@@ -6477,30 +6434,12 @@ function ReelsScreen({ courseId, course, initialIndex, initialTime, onBack, onRe
       </View>
 
       {isIosEdgeBackGuide && !videoUiOverlayOpen && !playerSettingsOpen && (
-        <>
-          <View
-            style={[s.playerEdgeBackStrip, s.playerEdgeBackStripLeft]}
-            pointerEvents="box-only"
-            accessible={false}
-            {...edgeBackHandlePanResponder.panHandlers}
-          />
-          <Animated.View
-            pointerEvents="none"
-            style={[
-              s.globalEdgeBackGuide,
-              s.playerEdgeBackGuide,
-              {
-                opacity: playerEdgeBackGuideOpacity,
-                transform: [
-                  { translateX: playerEdgeBackGuideTranslateX },
-                  { scale: playerEdgeBackGuideScale },
-                ],
-              },
-            ]}
-          >
-            <Ionicons name="chevron-back" size={28} color={C.text} />
-          </Animated.View>
-        </>
+        <View
+          style={[s.playerEdgeBackStrip, s.playerEdgeBackStripLeft]}
+          pointerEvents="box-only"
+          accessible={false}
+          {...edgeBackHandlePanResponder.panHandlers}
+        />
       )}
 
       <Modal visible={showDescription} transparent animationType="slide" onRequestClose={() => setShowDescription(false)}>
@@ -6814,6 +6753,7 @@ function VideoListScreen({
   onSelectVideo,
   onBack,
   downloads,
+  onDownloadVideo,
 }) {
   const { width } = useWindowDimensions();
   const isTablet = width >= 768;
@@ -6893,6 +6833,15 @@ function VideoListScreen({
             const downloadId = getDownloadId(item, index);
             const thumbnailUrl = getHomeLessonThumbnailUrl(item, course);
             const dl = downloadId ? downloads?.[downloadId] : null;
+            const isDownloading = dl?.status === "downloading";
+            const isDownloaded = dl?.status === "done";
+            const canDownload = typeof onDownloadVideo === "function";
+            const downloadProgress = Math.max(0, Math.min(100, Math.round((dl?.progress || 0) * 100)));
+            const downloadAccessibility = isDownloaded
+              ? `${item.title || `Video ${index + 1}`} is downloaded`
+              : isDownloading
+                ? `Downloading ${item.title || `Video ${index + 1}`}, ${downloadProgress} percent`
+                : `Download ${item.title || `Video ${index + 1}`}`;
             return (
               <TouchableOpacity
                 style={s.videoRow}
@@ -6930,12 +6879,38 @@ function VideoListScreen({
                 </View>
                 <View style={{ flex: 1 }}>
                   <Text style={s.videoRowTitle} numberOfLines={2}>{item.title || `Video ${index + 1}`}</Text>
-                  {dl?.status === "downloading" && (
+                  {isDownloading && (
                     <View style={s.dlProgressBar}>
-                      <View style={[s.dlProgressFill, { width: `${Math.round((dl.progress || 0) * 100)}%` }]} />
+                      <View style={[s.dlProgressFill, { width: `${downloadProgress}%` }]} />
                     </View>
                   )}
                 </View>
+                <TouchableOpacity
+                  style={[
+                    s.videoDownloadButton,
+                    isDownloaded && s.videoDownloadButtonDone,
+                    isDownloading && s.videoDownloadButtonBusy,
+                  ]}
+                  onPress={() => {
+                    if (!canDownload || isDownloading || isDownloaded) return;
+                    onDownloadVideo(item, course?._id, course?.title || "");
+                  }}
+                  disabled={!canDownload || isDownloading || isDownloaded}
+                  accessibilityRole="button"
+                  accessibilityLabel={downloadAccessibility}
+                  accessibilityState={{ disabled: !canDownload || isDownloading || isDownloaded, busy: isDownloading }}
+                  hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                >
+                  {isDownloading ? (
+                    <ActivityIndicator size="small" color={C.primary} />
+                  ) : (
+                    <Ionicons
+                      name={isDownloaded ? "checkmark-circle" : "download-outline"}
+                      size={19}
+                      color={isDownloaded ? C.success : C.primary}
+                    />
+                  )}
+                </TouchableOpacity>
                 <Ionicons name="chevron-forward" size={16} color={C.textMuted} />
               </TouchableOpacity>
             );
@@ -7467,16 +7442,16 @@ function createHomeStyles(HOME_PALETTE) {
 return StyleSheet.create({
   root: { flex: 1, backgroundColor: HOME_PALETTE.background },
   header: { paddingTop: ANDROID_STATUS_BAR_INSET, backgroundColor: HOME_PALETTE.background, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: HOME_PALETTE.border },
-  headerInner: { minHeight: 62, paddingHorizontal: 14, paddingVertical: 9, flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
+  headerInner: { minHeight: 62, paddingHorizontal: 14, paddingVertical: 9, flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 10 },
   headerInnerCompact: { paddingHorizontal: 10 },
-  tabletFrame: { width: "100%", maxWidth: 760, alignSelf: "center" },
-  tabletScrollContent: { width: "100%", maxWidth: 760, alignSelf: "center" },
-  brandRow: { flexDirection: "row", alignItems: "center", gap: 9 },
+  tabletFrame: { width: "100%", maxWidth: 920, alignSelf: "center" },
+  tabletScrollContent: { width: "100%", maxWidth: 920, alignSelf: "center" },
+  brandRow: { flex: 1, minWidth: 112, flexDirection: "row", alignItems: "center", gap: 9, overflow: "visible" },
   brandCopy: { flexShrink: 1 },
   brandIcon: { width: 36, height: 36, borderRadius: 9, alignItems: "center", justifyContent: "center", backgroundColor: HOME_PALETTE.surface, borderWidth: 1, borderColor: HOME_PALETTE.border },
   brandName: { color: HOME_PALETTE.text, fontSize: 17, lineHeight: 21, fontWeight: "800" },
   brandTagline: { color: HOME_PALETTE.textSecondary, fontSize: 11.5, lineHeight: 15, marginTop: 1 },
-  headerActions: { flexDirection: "row", alignItems: "center", gap: 9 },
+  headerActions: { flexShrink: 0, flexDirection: "row", alignItems: "center", gap: 7 },
   headerButton: { width: MIN_TOUCH_TARGET, height: MIN_TOUCH_TARGET, borderRadius: MIN_TOUCH_TARGET / 2, alignItems: "center", justifyContent: "center", backgroundColor: HOME_PALETTE.surface, borderWidth: 1, borderColor: HOME_PALETTE.border, position: "relative" },
   headerFlagButton: { width: MIN_TOUCH_TARGET, height: MIN_TOUCH_TARGET, borderRadius: MIN_TOUCH_TARGET / 2, alignItems: "center", justifyContent: "center", backgroundColor: HOME_PALETTE.dangerSurface, borderWidth: 1, borderColor: HOME_PALETTE.dangerBorder },
   headerDot: { position: "absolute", top: 10, right: 11, width: 7, height: 7, borderRadius: 4, backgroundColor: HOME_PALETTE.gold, borderWidth: 1, borderColor: HOME_PALETTE.surface },
@@ -8270,7 +8245,9 @@ function HomeScreen({
     [hasAccess, homeCourses, onGoToAI, onGoToCourses, onGoToDownloads, onSelectCourse]
   );
 
-  const lessonCardWidth = Math.min(174, Math.max(144, width * 0.42));
+  const lessonCardWidth = isTablet
+    ? Math.min(216, Math.max(176, width * 0.2))
+    : Math.min(174, Math.max(144, width * 0.42));
 
   const requireAccess = useCallback(action => {
     if (!hasAccess) {
@@ -10099,7 +10076,7 @@ function ProfileScreen({ user, session, onLogout, onDeleteAccount, onGoToHome, o
             <ScrollView
               style={s.personalDetailsScroll}
               contentContainerStyle={s.personalDetailsContent}
-              keyboardShouldPersistTaps="handled"
+              keyboardShouldPersistTaps="always"
               keyboardDismissMode="interactive"
               showsVerticalScrollIndicator={false}
             >
@@ -10162,30 +10139,30 @@ function ProfileScreen({ user, session, onLogout, onDeleteAccount, onGoToHome, o
                   Phone number is used for login and cannot be changed here.
                 </Text>
               </View>
-            </ScrollView>
 
-            <View style={s.personalDetailsActions}>
-              <TouchableOpacity
-                style={[s.btn, s.btnOutline, s.personalDetailsActionButton]}
-                onPress={() => setShowPersonalDetails(false)}
-                disabled={savingDetails}
-                accessibilityRole="button"
-                accessibilityLabel="Cancel editing personal details"
-                accessibilityState={{ disabled: savingDetails }}
-              >
-                <Text style={[s.btnText, { color: C.primary }]}>Cancel</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[s.btn, s.btnFill, s.personalDetailsActionButton]}
-                onPress={savePersonalDetails}
-                disabled={savingDetails}
-                accessibilityRole="button"
-                accessibilityLabel="Save personal details"
-                accessibilityState={{ disabled: savingDetails, busy: savingDetails }}
-              >
-                {savingDetails ? <ActivityIndicator color={C.onPrimary} /> : <Text style={s.btnText}>Save</Text>}
-              </TouchableOpacity>
-            </View>
+              <View style={s.personalDetailsActions}>
+                <TouchableOpacity
+                  style={[s.btn, s.btnOutline, s.personalDetailsActionButton]}
+                  onPress={() => setShowPersonalDetails(false)}
+                  disabled={savingDetails}
+                  accessibilityRole="button"
+                  accessibilityLabel="Cancel editing personal details"
+                  accessibilityState={{ disabled: savingDetails }}
+                >
+                  <Text style={[s.btnText, { color: C.primary }]}>Cancel</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[s.btn, s.btnFill, s.personalDetailsActionButton]}
+                  onPress={savePersonalDetails}
+                  disabled={savingDetails}
+                  accessibilityRole="button"
+                  accessibilityLabel="Save personal details"
+                  accessibilityState={{ disabled: savingDetails, busy: savingDetails }}
+                >
+                  {savingDetails ? <ActivityIndicator color={C.onPrimary} /> : <Text style={s.btnText}>Save</Text>}
+                </TouchableOpacity>
+              </View>
+            </ScrollView>
           </View>
         </KeyboardAvoidingView>
       </Modal>
@@ -12731,12 +12708,19 @@ export default function App() {
       </TouchableOpacity>
     </SafeAreaView>
     <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1 }}>
-      <ScrollView contentContainerStyle={{ flexGrow: 1, paddingHorizontal: 24, paddingBottom: 40 }}>
+      <ScrollView
+        contentContainerStyle={[s.authSignupScrollContent, isTabletLayout && s.authSignupScrollContentTablet]}
+        keyboardShouldPersistTaps="handled"
+        keyboardDismissMode={Platform.OS === "ios" ? "interactive" : "on-drag"}
+        automaticallyAdjustKeyboardInsets={Platform.OS === "ios"}
+        showsVerticalScrollIndicator={false}
+      >
+        <View style={[s.authSignupContent, isTabletLayout && s.authSignupContentTablet]}>
         {/* Hero */}
-        <View style={{ alignItems: "center", marginBottom: 32 }}>
+        <View style={[s.authSignupHero, isTabletLayout && s.authSignupHeroTablet]}>
           <SkillomateLogo size="lg" />
-          <Text style={{ color: C.text, fontSize: 26, fontWeight: "900", marginTop: 20, textAlign: "center" }}>Join the AI Revolution</Text>
-          <Text style={{ color: C.textSub, fontSize: 14, marginTop: 8, textAlign: "center", lineHeight: 20 }}>Learn the skills that turn AI into income.</Text>
+          <Text style={[s.authSignupHeroTitle, isTabletLayout && s.authSignupHeroTitleTablet]}>Join the AI Revolution</Text>
+          <Text style={[s.authSignupHeroText, isTabletLayout && s.authSignupHeroTextTablet]}>Learn the skills that turn AI into income.</Text>
         </View>
 
         <StepBar current={1} />
@@ -12804,6 +12788,7 @@ export default function App() {
             <Text style={{ color: C.primary, fontWeight: "700" }}>Log in</Text>
           </Text>
         </TouchableOpacity>
+        </View>
       </ScrollView>
     </KeyboardAvoidingView>
   </View>
@@ -12825,12 +12810,19 @@ export default function App() {
       </TouchableOpacity>
     </SafeAreaView>
     <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1 }}>
-      <ScrollView contentContainerStyle={{ flexGrow: 1, paddingHorizontal: 24, paddingBottom: 40 }}>
-        <View style={{ alignItems: "center", marginBottom: 24 }}>
+      <ScrollView
+        contentContainerStyle={[s.authSignupScrollContent, isTabletLayout && s.authSignupScrollContentTablet]}
+        keyboardShouldPersistTaps="handled"
+        keyboardDismissMode={Platform.OS === "ios" ? "interactive" : "on-drag"}
+        automaticallyAdjustKeyboardInsets={Platform.OS === "ios"}
+        showsVerticalScrollIndicator={false}
+      >
+        <View style={[s.authSignupContent, isTabletLayout && s.authSignupContentTablet]}>
+        <View style={[s.authSignupHero, isTabletLayout && s.authSignupHeroTablet, { marginBottom: 24 }]}>
           <SkillomateLogo size="lg" />
           <Text style={{ color: C.primary, fontSize: 11, fontWeight: "700", letterSpacing: 2, marginTop: 6, textTransform: "uppercase" }}>Step 2 of 2 — Profile Setup</Text>
-          <Text style={{ color: C.text, fontSize: 22, fontWeight: "900", marginTop: 12, textAlign: "center" }}>Tell us about yourself</Text>
-          <Text style={{ color: C.textSub, fontSize: 13, marginTop: 6, textAlign: "center" }}>Customize your learning experience with AI-driven personalization.</Text>
+          <Text style={[s.authSignupHeroTitle, isTabletLayout && s.authSignupHeroTitleTablet, { marginTop: 12 }]}>Tell us about yourself</Text>
+          <Text style={[s.authSignupHeroText, isTabletLayout && s.authSignupHeroTextTablet, { marginTop: 6 }]}>Customize your learning experience with AI-driven personalization.</Text>
         </View>
 
         <StepBar current={2} />
@@ -12940,6 +12932,7 @@ export default function App() {
             <Text style={{ color: C.primary, fontWeight: "700" }}>Log in</Text>
           </Text>
         </TouchableOpacity>
+        </View>
       </ScrollView>
     </KeyboardAvoidingView>
   </View>
@@ -12953,21 +12946,21 @@ export default function App() {
     <SafeAreaView style={s.authSafeArea}>
       <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={s.authKeyboardView}>
         <ScrollView
-          contentContainerStyle={s.authScrollContent}
+          contentContainerStyle={[s.authScrollContent, isTabletLayout && s.authScrollContentTablet]}
           keyboardShouldPersistTaps="handled"
           keyboardDismissMode={Platform.OS === "ios" ? "interactive" : "on-drag"}
           automaticallyAdjustKeyboardInsets={Platform.OS === "ios"}
           showsVerticalScrollIndicator={false}
         >
-          <View style={s.authContent}>
+          <View style={[s.authContent, isTabletLayout && s.authContentTablet]}>
             <View style={s.authBrand}>
-              <SkillomateLogo size="md" />
-              <Text style={s.authBrandTagline}>LEARN · GROW · EARN</Text>
+              <SkillomateLogo size={isTabletLayout ? "lg" : "md"} />
+              <Text style={[s.authBrandTagline, isTabletLayout && s.authBrandTaglineTablet]}>LEARN · GROW · EARN</Text>
             </View>
 
-            <View style={s.authHeadingBlock}>
-              <Text style={s.authWelcome}>Welcome back</Text>
-              <Text style={s.authWelcomeSub}>Continue your AI learning journey.</Text>
+            <View style={[s.authHeadingBlock, isTabletLayout && s.authHeadingBlockTablet]}>
+              <Text style={[s.authWelcome, isTabletLayout && s.authWelcomeTablet]}>Welcome back</Text>
+              <Text style={[s.authWelcomeSub, isTabletLayout && s.authWelcomeSubTablet]}>Continue your AI learning journey.</Text>
             </View>
 
             <View style={s.authForm}>
@@ -13142,6 +13135,7 @@ export default function App() {
         onSelectVideo={idx => setStartIndex(idx)}
         onBack={handleAppBack}
         downloads={downloads}
+        onDownloadVideo={startDownload}
         onGoToHome={() => { loadCourseProgress(); setSelectedCourse(null); navigateRootTab("home"); }}
         onGoToCourses={() => { loadCourseProgress(); setSelectedCourse(null); navigateRootTab("courses"); }}
         onGoToAI={() => { setSelectedCourse(null); navigateRootTab("ai"); }}
@@ -13555,7 +13549,8 @@ export default function App() {
         onOpenTerms={openSubscriptionTerms}
         onOpenPrivacy={openSubscriptionPrivacy}
       />
-    </View>)
+    </View>),
+    { enabled: false }
   );
 }
 
@@ -13585,25 +13580,6 @@ return StyleSheet.create({
     maxWidth: 760,
     alignSelf: "center",
   },
-  globalEdgeBackGuide: {
-    position: "absolute",
-    left: 0,
-    top: "50%",
-    width: 54,
-    height: 54,
-    marginTop: -27,
-    borderRadius: 27,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: C.surfaceElevated,
-    borderWidth: 1,
-    borderColor: C.border,
-    shadowColor: "#000",
-    shadowOpacity: C.isDark ? 0.28 : 0.16,
-    shadowRadius: 10,
-    shadowOffset: { width: 0, height: 4 },
-    zIndex: 200,
-  },
 	  logoBox: {
 	    backgroundColor: C.surface, alignItems: "center", justifyContent: "center",
 	    borderWidth: 1, borderColor: C.accentSoft,
@@ -13621,6 +13597,10 @@ return StyleSheet.create({
   authSafeArea: { flex: 1, backgroundColor: C.bg },
   authKeyboardView: { flex: 1 },
   authScrollContent: { flexGrow: 1 },
+  authScrollContentTablet: {
+    justifyContent: "center",
+    paddingVertical: 44,
+  },
   authContent: {
     flex: 1,
     width: "100%",
@@ -13632,6 +13612,15 @@ return StyleSheet.create({
     paddingTop: Platform.OS === "android" ? 87 : 24,
     paddingBottom: Platform.OS === "android" ? 44 : 8,
   },
+  authContentTablet: {
+    flex: 0,
+    maxWidth: 620,
+    minHeight: 690,
+    paddingHorizontal: 0,
+    paddingTop: 28,
+    paddingBottom: 8,
+    justifyContent: "center",
+  },
   authBrand: { alignItems: "center" },
   authBrandTagline: {
     ...TYPE.caption,
@@ -13640,9 +13629,18 @@ return StyleSheet.create({
     letterSpacing: 1.8,
     marginTop: 5,
   },
+  authBrandTaglineTablet: {
+    fontSize: 13,
+    lineHeight: 18,
+    letterSpacing: 2.8,
+    marginTop: 10,
+  },
   authHeadingBlock: { marginTop: 52, marginBottom: 30 },
+  authHeadingBlockTablet: { marginTop: 58, marginBottom: 34 },
   authWelcome: { ...TYPE.display, color: C.text, fontWeight: "800", lineHeight: 39 },
+  authWelcomeTablet: { fontSize: 36, lineHeight: 44 },
   authWelcomeSub: { fontSize: 16, lineHeight: 23, color: C.textSub, marginTop: 8 },
+  authWelcomeSubTablet: { fontSize: 17, lineHeight: 25 },
   authForm: { width: "100%" },
   authPasswordLabelRow: {
     minHeight: MIN_TOUCH_TARGET,
@@ -13701,6 +13699,56 @@ return StyleSheet.create({
   authFooterLink: { minHeight: MIN_TOUCH_TARGET, justifyContent: "center", paddingHorizontal: 10 },
   authFooterLinkText: { ...TYPE.caption, color: C.textMuted },
   authFooterSeparator: { color: C.borderStrong, fontSize: 12 },
+  authSignupScrollContent: {
+    flexGrow: 1,
+    paddingHorizontal: 24,
+    paddingBottom: 40,
+  },
+  authSignupScrollContentTablet: {
+    justifyContent: "center",
+    paddingHorizontal: 48,
+    paddingTop: 20,
+    paddingBottom: 56,
+  },
+  authSignupContent: {
+    width: "100%",
+    maxWidth: 480,
+    alignSelf: "center",
+  },
+  authSignupContentTablet: {
+    maxWidth: 620,
+  },
+  authSignupHero: {
+    alignItems: "center",
+    marginBottom: 32,
+  },
+  authSignupHeroTablet: {
+    marginBottom: 38,
+  },
+  authSignupHeroTitle: {
+    color: C.text,
+    fontSize: 26,
+    lineHeight: 32,
+    fontWeight: "900",
+    marginTop: 20,
+    textAlign: "center",
+  },
+  authSignupHeroTitleTablet: {
+    fontSize: 34,
+    lineHeight: 41,
+  },
+  authSignupHeroText: {
+    color: C.textSub,
+    fontSize: 14,
+    lineHeight: 20,
+    marginTop: 8,
+    textAlign: "center",
+  },
+  authSignupHeroTextTablet: {
+    fontSize: 16,
+    lineHeight: 24,
+    maxWidth: 480,
+  },
   authTagline: { ...TYPE.label, color: C.textSub, marginTop: 6, textTransform: "uppercase" },
   authTitle: { ...TYPE.h1, color: C.text, marginBottom: 6 },
   authSub: { ...TYPE.body, color: C.textSub, marginBottom: SPACE.xl },
@@ -14037,7 +14085,8 @@ return StyleSheet.create({
     flexShrink: 1,
   },
   reportScrollContent: {
-    paddingBottom: Platform.OS === "android" ? 34 : 10,
+    flexGrow: 1,
+    paddingBottom: Platform.OS === "ios" ? 88 : 72,
   },
   reportMark: {
     width: 46,
@@ -15295,6 +15344,23 @@ courseListCard: {
   },
   courseResourceTitle: { flex: 1, ...TYPE.bodyMedium, color: C.text },
   videoRowTitle: { flex: 1, ...TYPE.bodyMedium, color: C.text },
+  videoDownloadButton: {
+    width: MIN_TOUCH_TARGET,
+    height: MIN_TOUCH_TARGET,
+    borderRadius: MIN_TOUCH_TARGET / 2,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: C.primaryLight,
+    borderWidth: 1,
+    borderColor: C.accentSoft,
+  },
+  videoDownloadButtonBusy: {
+    opacity: 0.78,
+  },
+  videoDownloadButtonDone: {
+    backgroundColor: C.isDark ? "rgba(111,125,82,0.24)" : "#EEF4E8",
+    borderColor: C.success,
+  },
   videoThumbSmall: {
     width: 90, height: 56, borderRadius: 8, overflow: "hidden",
     backgroundColor: C.lightGray,
@@ -15473,7 +15539,7 @@ courseListCard: {
   personalDetailsContent: {
     paddingHorizontal: 20,
     paddingTop: 16,
-    paddingBottom: Platform.OS === "android" ? 22 : 16,
+    paddingBottom: Platform.OS === "ios" ? 92 : 76,
   },
   personalDetailsGenderRow: {
     flexDirection: "row",
@@ -15501,12 +15567,11 @@ courseListCard: {
   personalDetailsActions: {
     flexDirection: "row",
     gap: 10,
-    paddingHorizontal: 20,
-    paddingTop: 12,
-    paddingBottom: Platform.OS === "ios" ? 34 : 18,
+    paddingTop: 18,
     borderTopWidth: StyleSheet.hairlineWidth,
     borderTopColor: C.border,
     backgroundColor: C.white,
+    marginTop: 18,
   },
   personalDetailsActionButton: {
     flex: 1,
@@ -16343,11 +16408,6 @@ courseListCard: {
     justifyContent: "center",
   },
   playerEdgeBackStripLeft: { left: 0, alignItems: "flex-start" },
-  playerEdgeBackGuide: {
-    top: "50%",
-    zIndex: 77,
-    elevation: 77,
-  },
   volumeControl: {
     position: "absolute",
     bottom: 18,

@@ -78,6 +78,48 @@ test('mute and playback speed changes do not trigger a source reload', () => {
   for (const state of ['isMuted', 'playbackRate', 'isActive']) assert.equal(dependencies.includes(state), false);
 });
 
+test('center player tap hides visible controls before toggling playback', () => {
+  const handleCenterTap = nodes.find(n => n.type === 'FunctionDeclaration' && n.id.name === 'handleCenterTap');
+  assert.ok(handleCenterTap);
+  const body = source.slice(handleCenterTap.start, handleCenterTap.end);
+  const hideControlsIndex = body.indexOf('if (showPlayerChrome && canAutoHideChrome)');
+  const toggleIndex = body.indexOf('togglePlay();');
+  assert.ok(hideControlsIndex > -1, 'center tap handles visible chrome first');
+  assert.ok(toggleIndex > hideControlsIndex, 'playback toggle remains the fallback path');
+  assert.match(body, /setPlayerChromeVisible\(false\);\s+return;/);
+
+  const finishCenterTap = source.slice(
+    nodes.find(n => n.type === 'FunctionDeclaration' && n.id.name === 'finishCenterTap').start,
+    nodes.find(n => n.type === 'FunctionDeclaration' && n.id.name === 'finishCenterTap').end
+  );
+  assert.match(finishCenterTap, /if \(shouldToggle\) handleCenterTap\(\)/);
+  assert.match(finishCenterTap, /else if \(!tap\.moved && !showSettings && !isEnded && showLiveSurface\) revealPlayerChrome\(\)/);
+});
+
+test('2x edge hold gestures consume movement and do not let the page pan underneath', () => {
+  for (const styleName of ['s.tapLeft', 's.tapRight']) {
+    const opening = nodes.find(n => n.type === 'JSXOpeningElement'
+      && n.name.name === 'Pressable'
+      && n.attributes.some(attr => attr.name?.name === 'style' && source.slice(attr.value.start, attr.value.end).includes(styleName)));
+    assert.ok(opening, `${styleName} edge pressable exists`);
+    const attrs = Object.fromEntries(opening.attributes
+      .filter(attr => attr.name?.name && attr.value)
+      .map(attr => [attr.name.name, source.slice(attr.value.start, attr.value.end)]));
+    assert.match(attrs.onStartShouldSetResponder, /\(\) => true/);
+    assert.match(attrs.onStartShouldSetResponderCapture, /\(\) => true/);
+    assert.match(attrs.onMoveShouldSetResponder, /\(\) => true/);
+    assert.match(attrs.onMoveShouldSetResponderCapture, /\(\) => true/);
+    assert.match(attrs.onResponderTerminationRequest, /\(\) => false/);
+    assert.match(attrs.onTouchMove, /cancelPendingHoldSpeed/);
+    assert.match(attrs.onPressOut, /finishSidePress/);
+  }
+  const cancelPendingHoldSpeed = source.slice(
+    nodes.find(n => n.type === 'FunctionDeclaration' && n.id.name === 'cancelPendingHoldSpeed').start,
+    nodes.find(n => n.type === 'FunctionDeclaration' && n.id.name === 'cancelPendingHoldSpeed').end
+  );
+  assert.match(cancelPendingHoldSpeed, /if \(hold\.active\) return/);
+});
+
 test('AI suggestions disappear after the first user message', () => {
   const hasConversation = declaration('hasConversation').init;
   assert.equal(compile(hasConversation, { messages: [{ role: 'assistant' }], loading: false }), false);

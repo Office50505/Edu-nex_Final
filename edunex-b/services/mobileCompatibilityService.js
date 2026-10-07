@@ -420,6 +420,12 @@ async function getBunnyPullZone(guid, libraryId = BUNNY_LIBRARY_ID) {
     }
   }
 
+  const defaultHost = hostFromUrl(BUNNY_DEFAULT_PULL_ZONE_URL);
+  if (defaultHost) {
+    bunnyPullZoneCache.set(cacheKey, defaultHost);
+    return defaultHost;
+  }
+
   return '';
 }
 

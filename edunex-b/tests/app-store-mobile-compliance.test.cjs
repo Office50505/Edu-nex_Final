@@ -25,6 +25,7 @@ const googlePlayHookSource = fs.readFileSync(path.join(mobileRoot, 'services/use
 const privacyManifest = fs.readFileSync(path.join(mobileRoot, 'ios/ProtectedVideo/PrivacyInfo.xcprivacy'), 'utf8');
 const infoPlist = fs.readFileSync(path.join(mobileRoot, 'ios/ProtectedVideo/Info.plist'), 'utf8');
 const localStoreKit = JSON.parse(fs.readFileSync(path.join(mobileRoot, 'ios/Skillomate-IN.storekit'), 'utf8'));
+const mobileCompatServiceSource = fs.readFileSync(path.join(__dirname, '..', 'services/mobileCompatibilityService.js'), 'utf8');
 
 test('iOS external-link policy allows legal/support/resources and blocks purchase steering', () => {
   assert.equal(canOpenExternalUrl('https://skillomate.in/privacy', 'ios').allowed, true);
@@ -282,12 +283,21 @@ test('iOS native bundle explains photo-library access used by the editable profi
 
 test('logged-in tablet screens constrain content and bottom navigation width', () => {
   assert.match(appSource, /tabletContentFrame: \{\s+width: "100%",\s+maxWidth: 760,\s+alignSelf: "center"/);
-  assert.match(appSource, /tabletScrollContent: \{ width: "100%", maxWidth: 760, alignSelf: "center" \}/);
+  assert.match(appSource, /tabletListContent: \{\s+width: "100%",\s+maxWidth: 760,\s+alignSelf: "center"/);
+  assert.match(appSource, /tabletFrame: \{ width: "100%", maxWidth: 920, alignSelf: "center" \}/);
+  assert.match(appSource, /tabletScrollContent: \{ width: "100%", maxWidth: 920, alignSelf: "center" \}/);
   assert.match(appSource, /const isTabletNav = navViewportWidth >= 768/);
-  assert.match(appSource, /Math\.min\(navViewportWidth - 56, searchOpen \? 720 : 640\)/);
+  assert.match(appSource, /Math\.min\(navViewportWidth - 72, searchOpen \? 920 : 760\)/);
   assert.match(appSource, /homeStyles\.tabletScrollContent/);
   assert.match(appSource, /s\.tabletListContent/);
   assert.match(appSource, /s\.tabletContentFrame/);
+});
+
+test('home header keeps the logo visible beside action buttons on phones', () => {
+  assert.match(appSource, /headerInner: \{[^}]+justifyContent: "space-between", gap: 10/);
+  assert.match(appSource, /brandRow: \{ flex: 1, minWidth: 112,[^}]+overflow: "visible"/);
+  assert.match(appSource, /headerActions: \{ flexShrink: 0,[^}]+gap: 7/);
+  assert.match(appSource, /<SkillomateLogo size=\{width <= 340 \? "xs" : "sm"\}/);
 });
 
 test('course search suggestions hide internal category identifiers', () => {
@@ -296,6 +306,53 @@ test('course search suggestions hide internal category identifiers', () => {
   assert.match(appSource, /function getCourseCategoryName\(course\)/);
   assert.match(appSource, /return categoryName && !isInternalIdentifier\(categoryName\) \? categoryName : ""/);
   assert.match(appSource, /const categoryName = getCourseCategoryName\(course\)/);
+});
+
+test('root page swipe is bidirectional and disabled while search is open', () => {
+  const bottomNavStart = appSource.indexOf('function BottomNav');
+  const bottomNavEnd = appSource.indexOf('\nfunction getCourseSearchText', bottomNavStart);
+  const bottomNavSource = appSource.slice(bottomNavStart, bottomNavEnd);
+  assert.match(bottomNavSource, /if \(!searchOpen \|\| !rootTabSwipe\?\.begin \|\| !rootTabSwipe\?\.end\) return undefined/);
+  assert.match(bottomNavSource, /rootTabSwipe\.begin\(\);\s+return \(\) => rootTabSwipe\.end\(\)/);
+
+  const pagerStart = appSource.indexOf('function SwipeableRootTabsPager');
+  const pagerEnd = appSource.indexOf('\n\/\/ ── VideoItem', pagerStart);
+  const pagerSource = appSource.slice(pagerStart, pagerEnd);
+  assert.match(pagerSource, /const direction = gesture\.dx < 0 \? 1 : -1/, 'left swipe advances and right swipe returns to the previous tab');
+  assert.match(pagerSource, /ROOT_TAB_ORDER\[activeIndex \+ direction\]/);
+  assert.match(pagerSource, /onMoveShouldSetPanResponder: \(_, gesture\) => shouldClaimRootSwipe\(gesture\)/);
+  assert.match(pagerSource, /onMoveShouldSetPanResponderCapture: \(_, gesture\) => shouldClaimRootSwipe\(gesture\)/);
+  assert.match(appSource, /<SwipeableRootTabs[\s\S]+<\/View>\),\s+\{ enabled: false \}\s+\);/);
+});
+
+test('app does not render a visible left-edge back button', () => {
+  const globalBackStart = appSource.indexOf('function GlobalEdgeBackGesture');
+  const globalBackEnd = appSource.indexOf('\nfunction StepBar', globalBackStart);
+  const globalBackSource = appSource.slice(globalBackStart, globalBackEnd);
+  assert.match(globalBackSource, /<View style=\{s\.globalEdgeBackRoot\} \{\.\.\.panResponder\.panHandlers\}>/);
+  assert.doesNotMatch(globalBackSource, /chevron-back|globalEdgeBackGuide/);
+
+  assert.doesNotMatch(appSource, /playerEdgeBackGuide/);
+  assert.doesNotMatch(appSource, /<Ionicons name="chevron-back"/);
+});
+
+test('report and personal detail dialogs keep fields and actions reachable above the keyboard', () => {
+  const reportStart = appSource.indexOf('function ProblemReportModal');
+  const reportEnd = appSource.indexOf('\nfunction NavIcon', reportStart);
+  const reportSource = appSource.slice(reportStart, reportEnd);
+  assert.match(reportSource, /<KeyboardAvoidingView[\s\S]+behavior=\{Platform\.OS === "ios" \? "padding" : "height"\}/);
+  assert.match(reportSource, /keyboardVerticalOffset=\{Platform\.OS === "android" \? \(StatusBar\.currentHeight \|\| 0\) : 0\}/);
+  assert.match(reportSource, /keyboardShouldPersistTaps="always"/);
+  assert.match(reportSource, /contentContainerStyle=\{s\.reportScrollContent\}/);
+  assert.match(appSource, /reportScrollContent: \{\s+flexGrow: 1,\s+paddingBottom: Platform\.OS === "ios" \? 88 : 72/);
+
+  const profileStart = appSource.indexOf('function ProfileScreen');
+  const profileEnd = appSource.indexOf('\nfunction AiAssistantScreen', profileStart);
+  const profileSource = appSource.slice(profileStart, profileEnd);
+  assert.match(profileSource, /<KeyboardAvoidingView[\s\S]+style=\{s\.personalDetailsOverlay\}/);
+  assert.match(profileSource, /keyboardShouldPersistTaps="always"/);
+  assert.match(profileSource, /<View style=\{s\.personalDetailsActions\}>[\s\S]+<\/View>\s+<\/ScrollView>/);
+  assert.match(appSource, /personalDetailsContent: \{\s+paddingHorizontal: 20,\s+paddingTop: 16,\s+paddingBottom: Platform\.OS === "ios" \? 92 : 76/);
 });
 
 test('secondary account tablet screens use the shared centered content frame', () => {
@@ -325,6 +382,47 @@ test('course detail tablet screen constrains lesson list and notes sheet', () =>
   assert.match(source, /isTablet && s\.tabletListContent/);
   assert.match(source, /isTablet && s\.courseNotesSheetTablet/);
   assert.match(appSource, /courseNotesSheetTablet: \{\s+width: "100%",\s+maxWidth: 760,\s+alignSelf: "center"/);
+});
+
+test('course lesson list exposes per-lesson download actions', () => {
+  const start = appSource.indexOf('function VideoListScreen');
+  assert.notEqual(start, -1, 'VideoListScreen is present');
+  const nextFunction = appSource.indexOf('\nfunction ', start + 10);
+  const source = appSource.slice(start, nextFunction === -1 ? undefined : nextFunction);
+  assert.match(source, /onDownloadVideo,/);
+  assert.match(source, /const isDownloading = dl\?\.status === "downloading"/);
+  assert.match(source, /const isDownloaded = dl\?\.status === "done"/);
+  assert.match(source, /style=\{\[\s+s\.videoDownloadButton,/);
+  assert.match(source, /onDownloadVideo\(item, course\?\._id, course\?\.title \|\| ""\)/);
+  assert.match(source, /accessibilityLabel=\{downloadAccessibility\}/);
+  assert.match(appSource, /onDownloadVideo=\{startDownload\}/);
+  assert.match(appSource, /videoDownloadButton: \{/);
+});
+
+test('protected course downloads use prepared grants on both iOS and Android', () => {
+  assert.match(appSource, /body: JSON\.stringify\(\{ prepared: true \}\)/);
+  assert.match(appSource, /const usesPreparedDownload = Boolean\(grant\.statusUrl\)/);
+  assert.doesNotMatch(appSource, /prepared: Platform\.OS === "android"/);
+  assert.doesNotMatch(appSource, /Platform\.OS === "android" && Boolean\(grant\.statusUrl\)/);
+});
+
+test('Bunny lesson downloads fall back to the default pull-zone host instead of 503', () => {
+  assert.match(mobileCompatServiceSource, /const BUNNY_DEFAULT_PULL_ZONE_URL = 'https:\/\/edunex\.b-cdn\.net\/'/);
+  assert.match(mobileCompatServiceSource, /const defaultHost = hostFromUrl\(BUNNY_DEFAULT_PULL_ZONE_URL\)/);
+  assert.match(mobileCompatServiceSource, /bunnyPullZoneCache\.set\(cacheKey, defaultHost\);\s+return defaultHost/);
+});
+
+test('login and signup screens use larger tablet auth frames', () => {
+  assert.match(appSource, /const isTabletLayout = appViewportWidth >= 768/);
+  assert.match(appSource, /contentContainerStyle=\{\[s\.authScrollContent, isTabletLayout && s\.authScrollContentTablet\]\}/);
+  assert.match(appSource, /<View style=\{\[s\.authContent, isTabletLayout && s\.authContentTablet\]\}>/);
+  assert.match(appSource, /<SkillomateLogo size=\{isTabletLayout \? "lg" : "md"\}/);
+  assert.match(appSource, /authContentTablet: \{\s+flex: 0,\s+maxWidth: 620/);
+  assert.match(appSource, /authWelcomeTablet: \{ fontSize: 36, lineHeight: 44 \}/);
+  assert.match(appSource, /contentContainerStyle=\{\[s\.authSignupScrollContent, isTabletLayout && s\.authSignupScrollContentTablet\]\}/);
+  assert.match(appSource, /<View style=\{\[s\.authSignupContent, isTabletLayout && s\.authSignupContentTablet\]\}>/);
+  assert.match(appSource, /authSignupContentTablet: \{\s+maxWidth: 620/);
+  assert.match(appSource, /authSignupHeroTitleTablet: \{\s+fontSize: 34/);
 });
 
 test('profile avatar picker keeps unique bundled choices and falls back from unknown legacy values', () => {
