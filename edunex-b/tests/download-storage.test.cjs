@@ -30,6 +30,7 @@ test('protected CloudFront HLS downloads are kept only when every local resource
  };
  const result=await api.prepareTemporaryDownloads(h.disk,h.store);
  assert.equal(result.a.size,4186);
+ assert.equal(result.a.playbackPath,'file://cache/skillomate_dl/a/index.m3u8');
  assert.match(h.contents.get('file://cache/skillomate_dl/a/index.m3u8'),/file:\/\/cache\/skillomate_dl\/a\/part-0001\.ts/);
  h.files.delete('file://cache/skillomate_dl/a/part-0001.ts');
  assert.equal(Object.keys(await api.prepareTemporaryDownloads(h.disk,h.store)).length,0);

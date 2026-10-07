@@ -43,12 +43,6 @@ function collectHlsResourceRefs(manifestText) {
   });
   return [...refs];
 }
-function collectHlsMediaRefs(manifestText) {
-  return String(manifestText || '').split(/\r?\n/)
-    .map(line => line.trim())
-    .filter(line => line && !line.startsWith('#'))
-    .map(stripHlsUriSuffix);
-}
 function localHlsResourcePath(baseDir, ref) {
   const value = String(ref || '').trim();
   if (!value || value.startsWith('//') || value.includes('..')) return '';
@@ -86,23 +80,11 @@ export async function normalizeLocalHlsManifest(fs, manifestPath) {
 }
 export async function createLocalHlsProgressiveFile(fs, manifestPath) {
   const validation = await normalizeLocalHlsManifest(fs, manifestPath);
-  const manifestText = await fs.readAsStringAsync(manifestPath);
-  const baseDir = hlsManifestBaseDir(manifestPath);
-  const outputPath = `${baseDir}offline.ts`;
-  await fs.deleteAsync(outputPath, { idempotent: true }).catch(() => {});
-  let wrote = false;
-  for (const ref of collectHlsMediaRefs(manifestText)) {
-    const sourcePath = localHlsResourcePath(baseDir, ref);
-    if (!sourcePath) throw new Error('Offline video still points to remote media.');
-    const chunk = await fs.readAsStringAsync(sourcePath, { encoding: 'base64' });
-    await fs.writeAsStringAsync(outputPath, chunk, { encoding: 'base64', append: wrote });
-    wrote = true;
-  }
-  const outputInfo = await fs.getInfoAsync(outputPath).catch(() => ({}));
-  if (!outputInfo.exists || outputInfo.isDirectory || Number(outputInfo.size || 0) <= 0) {
-    throw new Error('Offline video could not be prepared for playback.');
-  }
-  return { ...validation, playbackPath: outputPath, playbackBytes: Number(outputInfo.size || 0) };
+  // AVPlayer can resolve a local HLS manifest whose resource URIs are absolute
+  // file URLs. Concatenating arbitrary HLS segments into a .ts file is unsafe:
+  // fragmented MP4 streams require their initialization segment and Expo's
+  // legacy write API does not provide binary append semantics.
+  return { ...validation, playbackPath: manifestPath, playbackBytes: validation.totalBytes };
 }
 export async function validateHlsDownloadBundle(fs, manifestPath) {
   const manifestInfo = await fs.getInfoAsync(manifestPath).catch(() => ({}));
