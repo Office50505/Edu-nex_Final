@@ -4,6 +4,7 @@ const { spawn } = require('node:child_process');
 const fs = require('node:fs/promises');
 const os = require('node:os');
 const path = require('node:path');
+const { Readable } = require('node:stream');
 const ffmpegBinary = require('../services/ffmpegBinary');
 const {requireCompatibleAuth,isSessionValidForUser}=require('../middleware/compatAuth');
 const {protectAdmin, protectAdminRead}=require('../middleware/adminAuth');
@@ -294,5 +295,17 @@ router.get('/playback/hls.m3u8',run(async(req,res)=>{
     if(inferProvider(video)!=='aws_cloudfront'||video.videoUrl!==grant.reference)return res.status(403).json({error:'Video reference changed. Renew playback.'});
   }
   res.type('application/vnd.apple.mpegurl').send(await cf.fetchPlaylist(grant));
+}));
+router.get('/playback/resource',run(async(req,res)=>{
+  let grant;try{grant=cf.decodeGrant(req.query.grant);}catch{return res.status(401).json({error:'Download access expired. Start the download again.'});}
+  const upstream=await cf.fetchResource(grant,req.headers.range);
+  res.status(upstream.status);
+  for(const header of ['content-type','content-length','content-range','accept-ranges']) {
+    const value=upstream.headers.get(header);if(value)res.setHeader(header,value);
+  }
+  if(!upstream.body)return res.end();
+  const stream=Readable.fromWeb(upstream.body);
+  stream.on('error',error=>res.destroy(error));
+  stream.pipe(res);
 }));
 module.exports=router;
