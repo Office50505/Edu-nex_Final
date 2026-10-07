@@ -244,7 +244,14 @@ const ANDROID_CLIPPED_SUBVIEWS = Platform.OS === "android";
 const ROOT_TAB_SWIPE_ENABLED = true;
 const ROOT_TAB_CHROME_ENABLED = Platform.OS !== "android";
 const ROOT_TAB_PAGE_GAP = Platform.OS === "android" ? 0 : 10;
-const ROOT_TAB_SWITCH_DURATION_MS = Platform.OS === "android" ? 165 : 210;
+const ROOT_TAB_SWIPE_THRESHOLD_RATIO = Platform.OS === "android" ? 0.13 : 0.12;
+const ROOT_TAB_SWIPE_MIN_DISTANCE = Platform.OS === "android" ? 38 : 42;
+const ROOT_TAB_SWIPE_MAX_DISTANCE = Platform.OS === "android" ? 78 : 84;
+const ROOT_TAB_SWIPE_FLICK_VELOCITY = Platform.OS === "android" ? 0.42 : 0.46;
+const ROOT_TAB_SWIPE_FLICK_DISTANCE = Platform.OS === "android" ? 18 : 20;
+const ROOT_TAB_SWIPE_SPRING = Platform.OS === "android"
+  ? { tension: 88, friction: 12 }
+  : { tension: 82, friction: 13 };
 const MIN_TOUCH_TARGET = Platform.OS === "ios" ? 44 : 48;
 const ANDROID_STATUS_BAR_INSET = Platform.OS === "android" ? (StatusBar.currentHeight || 0) : 0;
 const IOS_REELS_SAFE_TOP = Platform.OS === "ios" ? Math.max(54, Number(Constants.statusBarHeight) || 0) : 0;
@@ -3754,10 +3761,11 @@ function SwipeableRootTabsPager({ activeTab, onNavigate, renderTab, searchRefere
     if (activeIndex < 0) return;
     transitionInProgressRef.current = true;
     Animated.parallel([
-      Animated.timing(trackX, {
+      Animated.spring(trackX, {
         toValue: -activeIndex * pageStride,
-        duration: 170,
-        easing: Easing.out(Easing.cubic),
+        ...ROOT_TAB_SWIPE_SPRING,
+        restDisplacementThreshold: 0.5,
+        restSpeedThreshold: 0.5,
         useNativeDriver: true,
       }),
       settleChrome(),
@@ -3782,10 +3790,11 @@ function SwipeableRootTabsPager({ activeTab, onNavigate, renderTab, searchRefere
     }
 
     Animated.parallel([
-      Animated.timing(trackX, {
+      Animated.spring(trackX, {
         toValue: -targetIndex * pageStride,
-        duration: Math.max(140, Math.min(220, ROOT_TAB_SWITCH_DURATION_MS - Math.abs(direction) * 18)),
-        easing: Easing.out(Easing.cubic),
+        ...ROOT_TAB_SWIPE_SPRING,
+        restDisplacementThreshold: 0.5,
+        restSpeedThreshold: 0.5,
         useNativeDriver: true,
       }),
       settleChrome(),
@@ -3831,13 +3840,16 @@ function SwipeableRootTabsPager({ activeTab, onNavigate, renderTab, searchRefere
       const direction = gesture.dx < 0 ? 1 : -1;
       const hasTarget = Boolean(ROOT_TAB_ORDER[activeIndex + direction]);
       const clampedDistance = Math.max(-pageStride, Math.min(pageStride, gesture.dx));
-      const resistedDistance = hasTarget ? clampedDistance : clampedDistance * 0.18;
+      const resistedDistance = hasTarget ? clampedDistance : clampedDistance * 0.24;
       trackX.setValue((-activeIndex * pageStride) + resistedDistance);
     },
     onPanResponderRelease: (_, gesture) => {
-      const distanceThreshold = Math.min(92, Math.max(54, width * 0.16));
+      const distanceThreshold = Math.min(
+        ROOT_TAB_SWIPE_MAX_DISTANCE,
+        Math.max(ROOT_TAB_SWIPE_MIN_DISTANCE, width * ROOT_TAB_SWIPE_THRESHOLD_RATIO),
+      );
       const crossedDistance = Math.abs(gesture.dx) >= distanceThreshold;
-      const quickFlick = Math.abs(gesture.vx) >= 0.55 && Math.abs(gesture.dx) >= 24;
+      const quickFlick = Math.abs(gesture.vx) >= ROOT_TAB_SWIPE_FLICK_VELOCITY && Math.abs(gesture.dx) >= ROOT_TAB_SWIPE_FLICK_DISTANCE;
       const direction = gesture.dx < 0 ? 1 : -1;
       const hasTarget = Boolean(ROOT_TAB_ORDER[activeIndex + direction]);
       if (!hasTarget || (!crossedDistance && !quickFlick)) {
@@ -5687,12 +5699,6 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
           </ScrollView>
         </View>
       )}
-      {isOffline && (
-        <View style={s.offlineBadge} pointerEvents="none">
-          <Ionicons name="arrow-down-circle" size={11} color="#fff" />
-          <Text style={s.offlineBadgeText}>Offline</Text>
-        </View>
-      )}
       {!isEnded && (
         <View style={s.volumeControl}>
           <TouchableOpacity
@@ -6265,6 +6271,9 @@ function ReelsScreen({ courseId, course, initialIndex, initialTime, onBack, onRe
           const itemSummary = itemDescription === "No description available." ? "" : itemDescription;
           const itemLessonLabel = videos.length ? `Lecture ${Math.min(videos.length, index + 1)}/${videos.length}` : "Lecture";
           const cellChromePointerEvents = isCurrent && !playerChromeHidden ? "box-none" : "none";
+          const itemDownload = downloads?.[getDownloadId(item, index)];
+          const itemLocalPath = itemDownload?.status === "done" ? itemDownload.path : null;
+          const itemIsOffline = !!itemLocalPath;
           return (
             <View style={[s.reelItem, { height: reelFrameHeight }]}>
               <VideoItem video={item} courseId={courseId} course={course} user={user}
@@ -6296,7 +6305,7 @@ function ReelsScreen({ courseId, course, initialIndex, initialTime, onBack, onRe
                 isActive={isCurrent && !videoUiOverlayOpen} height={reelFrameHeight}
                 suspendSurface={isCurrent && videoUiOverlayOpen}
                 initialTime={index === (initialIndex ?? 0) ? (initialTime ?? 0) : 0}
-                localPath={downloads?.[getDownloadId(item, index)]?.status === "done" ? downloads[getDownloadId(item, index)].path : null}
+                localPath={itemLocalPath}
               >
               {isNearActive && renderWebPlayerChrome && (
                 <Animated.View
@@ -6322,6 +6331,12 @@ function ReelsScreen({ courseId, course, initialIndex, initialTime, onBack, onRe
                       accessibilityLabel={`Open lesson information for ${itemLessonLabel}`}
                     >
                       <Text style={s.webPlayerLectureLabel} numberOfLines={1}>{itemLessonLabel}</Text>
+                      {itemIsOffline && (
+                        <View style={s.webPlayerOfflineBadge} pointerEvents="none">
+                          <Ionicons name="arrow-down-circle" size={11} color="#fff" />
+                          <Text style={s.webPlayerOfflineText} numberOfLines={1}>Offline</Text>
+                        </View>
+                      )}
                       <Ionicons name="chevron-up-circle-outline" size={14} color={C.primary} />
                     </TouchableOpacity>
                     <View style={{ flex: 1 }} />
@@ -7409,20 +7424,20 @@ function createHomeStyles(HOME_PALETTE) {
 return StyleSheet.create({
   root: { flex: 1, backgroundColor: HOME_PALETTE.background },
   header: { paddingTop: ANDROID_STATUS_BAR_INSET, backgroundColor: HOME_PALETTE.background, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: HOME_PALETTE.border },
-  headerInner: { minHeight: 62, paddingHorizontal: 14, paddingVertical: 9, flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 10 },
+  headerInner: { minHeight: 62, paddingHorizontal: 14, paddingVertical: 9, flexDirection: "row", alignItems: "center", justifyContent: "flex-start", gap: 10 },
   headerInnerCompact: { paddingHorizontal: 10 },
   tabletFrame: { width: "100%", maxWidth: 920, alignSelf: "center" },
   tabletScrollContent: { width: "100%", maxWidth: 920, alignSelf: "center" },
-  brandRow: { flex: 1, minWidth: 112, flexDirection: "row", alignItems: "center", gap: 9, overflow: "visible" },
+  brandRow: { flex: 1, minWidth: 126, flexDirection: "row", alignItems: "center", gap: 9, overflow: "visible" },
   brandCopy: { flexShrink: 1 },
   brandIcon: { width: 36, height: 36, borderRadius: 9, alignItems: "center", justifyContent: "center", backgroundColor: HOME_PALETTE.surface, borderWidth: 1, borderColor: HOME_PALETTE.border },
   brandName: { color: HOME_PALETTE.text, fontSize: 17, lineHeight: 21, fontWeight: "800" },
   brandTagline: { color: HOME_PALETTE.textSecondary, fontSize: 11.5, lineHeight: 15, marginTop: 1 },
-  headerActions: { flexShrink: 0, flexDirection: "row", alignItems: "center", gap: 7 },
+  headerActions: { marginLeft: "auto", flexShrink: 0, flexDirection: "row", alignItems: "center", gap: 7 },
   headerButton: { width: MIN_TOUCH_TARGET, height: MIN_TOUCH_TARGET, borderRadius: MIN_TOUCH_TARGET / 2, alignItems: "center", justifyContent: "center", backgroundColor: HOME_PALETTE.surface, borderWidth: 1, borderColor: HOME_PALETTE.border, position: "relative" },
   headerFlagButton: { width: MIN_TOUCH_TARGET, height: MIN_TOUCH_TARGET, borderRadius: MIN_TOUCH_TARGET / 2, alignItems: "center", justifyContent: "center", backgroundColor: HOME_PALETTE.dangerSurface, borderWidth: 1, borderColor: HOME_PALETTE.dangerBorder },
   headerDot: { position: "absolute", top: 10, right: 11, width: 7, height: 7, borderRadius: 4, backgroundColor: HOME_PALETTE.gold, borderWidth: 1, borderColor: HOME_PALETTE.surface },
-  profileButton: { width: MIN_TOUCH_TARGET, height: MIN_TOUCH_TARGET, borderRadius: MIN_TOUCH_TARGET / 2, alignItems: "center", justifyContent: "center", borderWidth: 2, borderColor: HOME_PALETTE.gold },
+  profileButton: { width: MIN_TOUCH_TARGET, height: MIN_TOUCH_TARGET, borderRadius: MIN_TOUCH_TARGET / 2, alignItems: "center", justifyContent: "center", overflow: "hidden", backgroundColor: HOME_PALETTE.surface, borderWidth: 2, borderColor: HOME_PALETTE.gold },
   scrollViewport: { flex: 1 },
   scrollContent: { paddingTop: 10, paddingBottom: Platform.OS === "ios" ? 190 : 220 },
   mediaFallback: { ...StyleSheet.absoluteFill, alignItems: "center", justifyContent: "center", padding: 10, backgroundColor: HOME_PALETTE.surfaceSoft },
@@ -11927,6 +11942,21 @@ export default function App() {
     if (certModal) { setCertModal(null); return true; }
     if (showAppUpgrade) { setShowAppUpgrade(false); return true; }
 
+    if (mainScreen === "courses" && selectedCourse && startIndex !== null) {
+      backToLessons();
+      return true;
+    }
+
+    if (mainScreen === "courses" && selectedCourse) {
+      loadCourseProgress();
+      setSelectedCourse(null);
+      setStartIndex(null);
+      setInitialTime(0);
+      setPreloadedVideos(null);
+      setIsPreviewOnly(false);
+      return true;
+    }
+
     if (
       courseAiTarget
       || selectedCourse
@@ -11938,9 +11968,11 @@ export default function App() {
     }
     return true;
   }, [
+    backToLessons,
     certModal,
     courseAiTarget,
     legalPage,
+    loadCourseProgress,
     mainScreen,
     otpSent,
     resetToHomeFromBack,
@@ -13053,7 +13085,7 @@ export default function App() {
           onVideoComplete={isPreviewOnly ? undefined : markVideoComplete}
           onVideoProgress={isPreviewOnly ? undefined : saveVideoProgress}
           onReportProblem={openProblemReport}
-          onBack={handleAppBack}
+          onBack={backToLessons}
         />
         <CertificateModal cert={certModal} onClose={() => setCertModal(null)} />
         <ProblemReportModal
@@ -16275,8 +16307,9 @@ courseListCard: {
   },
   webPlayerLecturePill: {
     minHeight: 34,
-    maxWidth: 190,
-    paddingHorizontal: 8,
+    maxWidth: "58%",
+    minWidth: 0,
+    paddingHorizontal: 9,
     borderRadius: 17,
     flexDirection: "row",
     alignItems: "center",
@@ -16287,6 +16320,23 @@ courseListCard: {
     fontSize: 13,
     fontWeight: "900",
     flexShrink: 1,
+    minWidth: 0,
+  },
+  webPlayerOfflineBadge: {
+    flexShrink: 0,
+    minHeight: 22,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 3,
+    paddingHorizontal: 6,
+    borderRadius: 11,
+    backgroundColor: "rgba(224,172,69,0.92)",
+  },
+  webPlayerOfflineText: {
+    color: "#fff",
+    fontSize: 10,
+    lineHeight: 13,
+    fontWeight: "900",
   },
   webPlayerSideRail: {
     position: "absolute", right: 10, bottom: 178, zIndex: 90, elevation: 90,

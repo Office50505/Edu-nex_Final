@@ -294,9 +294,10 @@ test('logged-in tablet screens constrain content and bottom navigation width', (
 });
 
 test('home header keeps the logo visible beside action buttons on phones', () => {
-  assert.match(appSource, /headerInner: \{[^}]+justifyContent: "space-between", gap: 10/);
-  assert.match(appSource, /brandRow: \{ flex: 1, minWidth: 112,[^}]+overflow: "visible"/);
-  assert.match(appSource, /headerActions: \{ flexShrink: 0,[^}]+gap: 7/);
+  assert.match(appSource, /headerInner: \{[^}]+justifyContent: "flex-start", gap: 10/);
+  assert.match(appSource, /brandRow: \{ flex: 1, minWidth: 126,[^}]+overflow: "visible"/);
+  assert.match(appSource, /headerActions: \{ marginLeft: "auto", flexShrink: 0,[^}]+gap: 7/);
+  assert.match(appSource, /profileButton: \{[^}]+overflow: "hidden", backgroundColor: HOME_PALETTE\.surface/);
   assert.match(appSource, /<SkillomateLogo size=\{width <= 340 \? "xs" : "sm"\}/);
 });
 
@@ -322,6 +323,12 @@ test('root page swipe is bidirectional and disabled while search is open', () =>
   assert.match(pagerSource, /ROOT_TAB_ORDER\[activeIndex \+ direction\]/);
   assert.match(pagerSource, /onMoveShouldSetPanResponder: \(_, gesture\) => shouldClaimRootSwipe\(gesture\)/);
   assert.match(pagerSource, /onMoveShouldSetPanResponderCapture: \(_, gesture\) => shouldClaimRootSwipe\(gesture\)/);
+  assert.match(appSource, /const ROOT_TAB_SWIPE_THRESHOLD_RATIO = Platform\.OS === "android" \? 0\.13 : 0\.12/);
+  assert.match(appSource, /const ROOT_TAB_SWIPE_SPRING = Platform\.OS === "android"[\s\S]+friction: 13 \}/);
+  assert.match(pagerSource, /Animated\.spring\(trackX,\s+\{\s+toValue: -activeIndex \* pageStride,\s+\.\.\.ROOT_TAB_SWIPE_SPRING/);
+  assert.match(pagerSource, /Animated\.spring\(trackX,\s+\{\s+toValue: -targetIndex \* pageStride,\s+\.\.\.ROOT_TAB_SWIPE_SPRING/);
+  assert.match(pagerSource, /width \* ROOT_TAB_SWIPE_THRESHOLD_RATIO/);
+  assert.match(pagerSource, /ROOT_TAB_SWIPE_FLICK_VELOCITY/);
   assert.match(appSource, /<SwipeableRootTabs[\s\S]+<\/View>\),\s+\{ enabled: false \}\s+\);/);
 });
 
@@ -382,6 +389,40 @@ test('course detail tablet screen constrains lesson list and notes sheet', () =>
   assert.match(source, /isTablet && s\.tabletListContent/);
   assert.match(source, /isTablet && s\.courseNotesSheetTablet/);
   assert.match(appSource, /courseNotesSheetTablet: \{\s+width: "100%",\s+maxWidth: 760,\s+alignSelf: "center"/);
+});
+
+test('lecture player back returns to the current course detail screen', () => {
+  assert.match(appSource, /const backToLessons = useCallback\(\(\) => \{\s+if \(!isPreviewOnly\) loadCourseProgress\(\);\s+setStartIndex\(null\)/);
+  assert.match(appSource, /if \(mainScreen === "courses" && selectedCourse && startIndex !== null\) \{\s+backToLessons\(\);\s+return true;\s+\}/);
+  const loggedInStart = appSource.indexOf('// ── Logged-in');
+  assert.notEqual(loggedInStart, -1, 'logged-in render section is present');
+  const playerStart = appSource.indexOf('if (mainScreen === "courses" && selectedCourse && startIndex !== null)', loggedInStart);
+  assert.notEqual(playerStart, -1, 'player route is present');
+  const playerEnd = appSource.indexOf('if (mainScreen === "courses" && selectedCourse)', playerStart + 1);
+  const playerSource = appSource.slice(playerStart, playerEnd === -1 ? undefined : playerEnd);
+  assert.match(playerSource, /onBack=\{backToLessons\}/);
+  assert.doesNotMatch(playerSource, /onBack=\{handleAppBack\}/);
+});
+
+test('downloaded lecture player shows offline status inside the top lecture pill', () => {
+  assert.match(appSource, /const itemLocalPath = itemDownload\?\.status === "done" \? itemDownload\.path : null/);
+  assert.match(appSource, /const itemIsOffline = !!itemLocalPath/);
+  assert.match(appSource, /localPath=\{itemLocalPath\}/);
+  assert.match(appSource, /\{itemIsOffline && \(\s+<View style=\{s\.webPlayerOfflineBadge\}/);
+  assert.match(appSource, /webPlayerLecturePill: \{\s+minHeight: 34,\s+maxWidth: "58%",\s+minWidth: 0/);
+  assert.match(appSource, /webPlayerLectureLabel: \{[\s\S]*?minWidth: 0/);
+  assert.match(appSource, /webPlayerOfflineBadge: \{/);
+  assert.doesNotMatch(appSource, /\{isOffline && \(\s+<View style=\{s\.offlineBadge\}/);
+});
+
+test('course detail back returns to the courses page instead of home', () => {
+  assert.match(appSource, /if \(mainScreen === "courses" && selectedCourse\) \{\s+loadCourseProgress\(\);\s+setSelectedCourse\(null\);\s+setStartIndex\(null\);\s+setInitialTime\(0\);\s+setPreloadedVideos\(null\);\s+setIsPreviewOnly\(false\);\s+return true;\s+\}/);
+  const courseDetailStart = appSource.indexOf('if (mainScreen === "courses" && selectedCourse) {', appSource.indexOf('// ── Logged-in'));
+  assert.notEqual(courseDetailStart, -1, 'course detail render route is present');
+  const courseDetailEnd = appSource.indexOf('return withGlobalBackGesture((', courseDetailStart);
+  const courseDetailSource = appSource.slice(courseDetailStart, courseDetailEnd === -1 ? undefined : courseDetailEnd);
+  assert.match(courseDetailSource, /<VideoListScreen/);
+  assert.match(courseDetailSource, /onBack=\{handleAppBack\}/);
 });
 
 test('course lesson list exposes per-lesson download actions', () => {
