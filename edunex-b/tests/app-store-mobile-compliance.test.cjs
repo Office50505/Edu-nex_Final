@@ -332,6 +332,17 @@ test('root page swipe is bidirectional and disabled while search is open', () =>
   assert.match(appSource, /<SwipeableRootTabs[\s\S]+<\/View>\),\s+\{ enabled: false \}\s+\);/);
 });
 
+test('AI chat composer sits directly above the keyboard on iOS', () => {
+  const aiStart = appSource.indexOf('function AiAssistantScreen');
+  const aiEnd = appSource.indexOf('\n// ── App', aiStart);
+  const aiSource = appSource.slice(aiStart, aiEnd === -1 ? undefined : aiEnd);
+  assert.match(aiSource, /<KeyboardAvoidingView[\s\S]+behavior=\{Platform\.OS === "ios" \? "padding" : "height"\}/);
+  assert.match(aiSource, /keyboardVerticalOffset=\{0\}/);
+  assert.match(appSource, /aiComposerStandalone: \{ paddingBottom: 10 \}/);
+  assert.doesNotMatch(aiSource, /keyboardVerticalOffset=\{Platform\.OS === "ios" \? 74 : 0\}/);
+  assert.doesNotMatch(appSource, /aiComposerStandalone: \{ paddingBottom: Platform\.OS === "ios" \? 28 : 10 \}/);
+});
+
 test('app does not render a visible left-edge back button', () => {
   const globalBackStart = appSource.indexOf('function GlobalEdgeBackGesture');
   const globalBackEnd = appSource.indexOf('\nfunction StepBar', globalBackStart);

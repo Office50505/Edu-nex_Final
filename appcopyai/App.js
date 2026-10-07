@@ -10842,7 +10842,7 @@ function AiAssistantScreen({
 
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
-        keyboardVerticalOffset={Platform.OS === "ios" ? 74 : 0}
+        keyboardVerticalOffset={0}
         style={[s.aiKeyboardArea, !isCourseMode && s.aiKeyboardAreaWithNav]}
       >
         {hasConversation ? (
@@ -15999,7 +15999,7 @@ courseListCard: {
     borderWidth: 1,
     borderColor: "rgba(255,255,255,0.1)",
   },
-  aiComposerStandalone: { paddingBottom: Platform.OS === "ios" ? 28 : 10 },
+  aiComposerStandalone: { paddingBottom: 10 },
   aiComposerRow: {
     flexDirection: "row",
     alignItems: "flex-end",
