@@ -1,5 +1,4 @@
 const express = require('express');
-const { Readable } = require('stream');
 const Course = require('../models/Course');
 const CourseProgress = require('../models/CourseProgress');
 const Subscription = require('../models/Subscription');
@@ -31,7 +30,8 @@ const {
 } = require('../services/mobileCompatibilityService');
 const Certificate = require('../models/Certificate');
 const { deleteProfileImage, uploadProfileImage } = require('../services/profileImageStorage');
-const { createDownloadGrantService } = require('../services/downloadGrantService');
+const { createDownloadGrantService, normalizeGuid } = require('../services/downloadGrantService');
+const { pipeDownloadBody } = require('../services/downloadStream');
 const { sensitiveRateLimit } = require('../middleware/sensitiveRateLimit');
 
 const router = express.Router();
@@ -362,11 +362,24 @@ router.post(
       return res.status(403).json({ error: 'Subscription required' });
     }
 
-    const guid = String(req.params.guid || '').trim();
-    const course = await Course.findOne({ status: 'published', 'videos.bunnyVideoId': guid })
-      .select('_id title videos.bunnyVideoId videos.bunnyLibraryId videos.title')
+    const guid = normalizeGuid(req.params.guid);
+    const course = await Course.findOne({
+      status: 'published',
+      $or: [
+        { 'videos.bunnyVideoId': guid },
+        { 'videos.bunnyGuid': guid },
+        { 'videos.videoUrl': { $regex: guid, $options: 'i' } },
+        { 'videos.embedUrl': { $regex: guid, $options: 'i' } },
+      ],
+    })
+      .select('_id title videos.bunnyVideoId videos.bunnyGuid videos.bunnyLibraryId videos.videoUrl videos.embedUrl videos.title')
       .lean();
-    const video = course?.videos?.find(item => String(item.bunnyVideoId || '') === guid);
+    const video = course?.videos?.find(item => (
+      String(item.bunnyVideoId || '') === guid
+      || String(item.bunnyGuid || '') === guid
+      || String(item.videoUrl || '').includes(guid)
+      || String(item.embedUrl || '').includes(guid)
+    ));
     if (!course || !video) return res.status(404).json({ error: 'Video is not available for download' });
     const libraryId = video.bunnyLibraryId || await findBunnyLibraryIdForGuid(guid);
     const cdnHost = await getBunnyPullZone(guid, libraryId);
@@ -445,9 +458,7 @@ router.get(
       fileSizeBytes: contentLength ? Number(contentLength) : 0,
     });
 
-    const stream = Readable.fromWeb(upstream.body);
-    stream.pipe(res);
-    req.on('close', () => stream.destroy());
+    await pipeDownloadBody(upstream.body, res);
   })
 );
 

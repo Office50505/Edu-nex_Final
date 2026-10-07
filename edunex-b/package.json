@@ -30,7 +30,7 @@
     "cleanup:phonepe": "node scripts/cleanup-phonepe.cjs",
     "test:certification": "node --test tests/certification.test.cjs",
     "test:thumbnail-storage": "node --test tests/thumbnail-cdn.test.cjs",
-    "test:video": "node --test tests/cloudfront.test.cjs tests/video-import.test.cjs"
+    "test:video": "node --test tests/cloudfront.test.cjs tests/video-import.test.cjs tests/download-grant.test.cjs tests/download-stream.test.cjs"
   },
   "keywords": [],
   "author": "",
