@@ -2050,40 +2050,6 @@ function getDownloadFailureMessage(error, status) {
   return "This lesson could not be saved. Check your connection and course access, then retry.";
 }
 
-function canFallbackToCloudFrontHlsDownload(error) {
-  const statusCode = Number(error?.status || 0);
-  const message = String(error?.message || error || "").toLowerCase();
-  return (
-    statusCode >= 500 ||
-    statusCode === 425 ||
-    message.includes("conversion") ||
-    message.includes("ffmpeg") ||
-    message.includes("prepared") ||
-    message.includes("temporarily unavailable")
-  );
-}
-
-async function waitForPreparedDownload(session, statusUrl, onProgress) {
-  if (!statusUrl) return;
-  const startedAt = Date.now();
-  const timeoutMs = 14 * 60 * 1000;
-  let tick = 0;
-  while (Date.now() - startedAt < timeoutMs) {
-    const status = await session.requestJson(statusUrl);
-    if (status?.status === "ready") {
-      onProgress?.(0.35);
-      return status;
-    }
-    if (status?.status === "error") {
-      throw new Error(status.error || "Download preparation failed.");
-    }
-    tick += 1;
-    onProgress?.(Math.min(0.32, 0.04 + tick * 0.012));
-    await wait(tick < 4 ? 1000 : 1800);
-  }
-  throw new Error("Download preparation timed out.");
-}
-
 function extensionForDownloadResource(url, fallback = "bin") {
   try {
     const pathname = new URL(url).pathname;
@@ -6399,7 +6365,7 @@ function ReelsScreen({ courseId, course, initialIndex, initialTime, onBack, onRe
                     <Text style={s.webPlayerRailText}>Share</Text>
                   </TouchableOpacity>
                   <TouchableOpacity
-                    onPress={() => onDownloadVideo?.(item, courseId, course?.title || "")}
+                    onPress={() => onDownloadVideo?.(item, courseId, course?.title || "", index)}
                     style={s.webPlayerRailBtn}
                     accessibilityRole="button"
                     accessibilityLabel={`Download ${itemTitle || itemLessonLabel}`}
@@ -6893,7 +6859,8 @@ function VideoListScreen({
                   ]}
                   onPress={() => {
                     if (!canDownload || isDownloading || isDownloaded) return;
-                    onDownloadVideo(item, course?._id, course?.title || "");
+                    event?.stopPropagation?.();
+                    onDownloadVideo(item, course?._id, course?.title || "", index);
                   }}
                   disabled={!canDownload || isDownloading || isDownloaded}
                   accessibilityRole="button"
@@ -11594,9 +11561,9 @@ export default function App() {
     }
   }, []);
 
-  const startDownload = useCallback(async (video, courseId, courseTitle) => {
+  const startDownload = useCallback(async (video, courseId, courseTitle, videoIndex = 0) => {
     const u = userRef.current;
-    const downloadId = getDownloadId(video);
+    const downloadId = getDownloadId(video, videoIndex);
     const downloadKind = getProtectedCourseDownloadKind(video, courseId);
     const guid = getBunnyGuid(video);
     const libraryId = getBunnyLibraryId(video);
@@ -11615,7 +11582,7 @@ export default function App() {
     try {
       await downloadStorageReady.current;
       targetDir = downloadDir(FileSystem, downloadId);
-      filePath = downloadKind === "hls" && !protectedCloudfront ? downloadManifestPath(FileSystem, downloadId) : downloadPath(FileSystem, downloadId);
+      filePath = downloadKind === "hls" ? downloadManifestPath(FileSystem, downloadId) : downloadPath(FileSystem, downloadId);
       await FileSystem.makeDirectoryAsync(targetDir, { intermediates: true });
     } catch {
       Alert.alert("Download unavailable", "Temporary storage could not be prepared. Restart the app and try again.");
@@ -11626,7 +11593,7 @@ export default function App() {
     if (current?.status === "done" && (await FileSystem.getInfoAsync(filePath)).exists) return;
     let meta = {
       id: downloadId,
-      kind: downloadKind === "hls" && !protectedCloudfront ? "hls" : "mp4",
+      kind: downloadKind === "hls" ? "hls" : "mp4",
       title: video.title || "Video",
       courseId: courseId || "",
       courseTitle: courseTitle || "",
@@ -11667,43 +11634,15 @@ export default function App() {
         if (protectedCloudfront) {
           const protectedVideoId = video?._id || video?.id || video?.videoId;
           if (!courseId || !protectedVideoId) throw new Error("Download authorization unavailable.");
-          try {
-            const grant = await nativeSession.requestJson(`/api/courses/${encodeURIComponent(courseId)}/videos/${encodeURIComponent(protectedVideoId)}/download-grant`, {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ prepared: true }),
-            });
-            if (!grant?.downloadUrl) throw new Error("The download authorization response was invalid.");
-            const usesPreparedDownload = Boolean(grant.statusUrl);
-            if (usesPreparedDownload) {
-              await waitForPreparedDownload(
-                nativeSession,
-                grant.statusUrl,
-                pct => setDownloads(prev => ({ ...prev, [downloadId]: { ...prev[downloadId], progress: pct } })),
-              );
-            }
-            const url = `${API_BASE}${usesPreparedDownload ? grant.downloadUrl : (grant.directDownloadUrl || grant.downloadUrl)}`;
-            const dl = FileSystem.createDownloadResumable(url, filePath, {}, ({ totalBytesWritten, totalBytesExpectedToWrite }) => {
-              const rawPct = totalBytesExpectedToWrite > 0 ? totalBytesWritten / totalBytesExpectedToWrite : 0;
-              const pct = usesPreparedDownload ? 0.35 + rawPct * 0.65 : rawPct;
-              setDownloads(prev => ({ ...prev, [downloadId]: { ...prev[downloadId], progress: pct } }));
-            });
-            const result = await dl.downloadAsync();
-            if (result?.status !== 200) throw Object.assign(new Error("Download failed"), { status: result?.status });
-          } catch (error) {
-            if (Platform.OS !== "ios" || !canFallbackToCloudFrontHlsDownload(error)) throw error;
-            const fallbackPath = downloadManifestPath(FileSystem, downloadId);
-            filePath = fallbackPath;
-            meta = { ...meta, kind: "hls", offlineFormatVersion: 2 };
-            setDownloads(prev => ({ ...prev, [downloadId]: { ...prev[downloadId], path: fallbackPath, progress: 0, ...meta } }));
-            const lease = await fetchPlaybackLease({ courseId, video: { ...video, _id: protectedVideoId }, user: u });
-            await downloadHlsToAppCache({
-              hlsUrl: lease.hlsUrl,
-              targetDir,
-              manifestPath: fallbackPath,
-              onProgress: pct => setDownloads(prev => ({ ...prev, [downloadId]: { ...prev[downloadId], progress: pct } })),
-            });
-          }
+          meta = { ...meta, kind: "hls", offlineFormatVersion: 2 };
+          setDownloads(prev => ({ ...prev, [downloadId]: { ...prev[downloadId], ...meta } }));
+          const lease = await fetchPlaybackLease({ courseId, video: { ...video, _id: protectedVideoId }, user: u });
+          await downloadHlsToAppCache({
+            hlsUrl: lease.hlsUrl,
+            targetDir,
+            manifestPath: filePath,
+            onProgress: pct => setDownloads(prev => ({ ...prev, [downloadId]: { ...prev[downloadId], progress: pct } })),
+          });
         } else {
           const hlsUrl = nativeVideoUrl;
           if (!hlsUrl) throw new Error("Playback download URL unavailable.");
@@ -11730,7 +11669,6 @@ export default function App() {
         AsyncStorage.setItem(DOWNLOADS_STORAGE_KEY, JSON.stringify(toSave)).catch(() => {});
         return next;
       });
-      Alert.alert("Downloaded", "Video saved in temporary app storage for offline viewing. Your device may clear it to free space.");
     } catch (e) {
       const errorMessage = getDownloadFailureMessage(e, e?.status);
       setDownloads(prev => ({ ...prev, [downloadId]: { status: "error", progress: 0, errorMessage, ...meta } }));

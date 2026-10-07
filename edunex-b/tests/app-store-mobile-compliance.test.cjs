@@ -393,17 +393,23 @@ test('course lesson list exposes per-lesson download actions', () => {
   assert.match(source, /const isDownloading = dl\?\.status === "downloading"/);
   assert.match(source, /const isDownloaded = dl\?\.status === "done"/);
   assert.match(source, /style=\{\[\s+s\.videoDownloadButton,/);
-  assert.match(source, /onDownloadVideo\(item, course\?\._id, course\?\.title \|\| ""\)/);
+  assert.match(source, /event\?\.stopPropagation\?\.\(\)/);
+  assert.match(source, /onDownloadVideo\(item, course\?\._id, course\?\.title \|\| "", index\)/);
   assert.match(source, /accessibilityLabel=\{downloadAccessibility\}/);
+  assert.match(appSource, /const startDownload = useCallback\(async \(video, courseId, courseTitle, videoIndex = 0\)/);
+  assert.match(appSource, /const downloadId = getDownloadId\(video, videoIndex\)/);
   assert.match(appSource, /onDownloadVideo=\{startDownload\}/);
   assert.match(appSource, /videoDownloadButton: \{/);
+  assert.doesNotMatch(appSource, /Alert\.alert\("Downloaded"/);
 });
 
-test('protected course downloads use prepared grants on both iOS and Android', () => {
-  assert.match(appSource, /body: JSON\.stringify\(\{ prepared: true \}\)/);
-  assert.match(appSource, /const usesPreparedDownload = Boolean\(grant\.statusUrl\)/);
-  assert.doesNotMatch(appSource, /prepared: Platform\.OS === "android"/);
-  assert.doesNotMatch(appSource, /Platform\.OS === "android" && Boolean\(grant\.statusUrl\)/);
+test('protected course downloads save offline HLS without server-side preparation', () => {
+  assert.match(appSource, /filePath = downloadKind === "hls" \? downloadManifestPath\(FileSystem, downloadId\) : downloadPath\(FileSystem, downloadId\)/);
+  assert.match(appSource, /kind: downloadKind === "hls" \? "hls" : "mp4"/);
+  assert.match(appSource, /fetchPlaybackLease\(\{ courseId, video: \{ \.\.\.video, _id: protectedVideoId \}, user: u \}\)/);
+  assert.match(appSource, /downloadHlsToAppCache\(\{\s+hlsUrl: lease\.hlsUrl,\s+targetDir,\s+manifestPath: filePath,/);
+  assert.doesNotMatch(appSource, /body: JSON\.stringify\(\{ prepared: true \}\)/);
+  assert.doesNotMatch(appSource, /waitForPreparedDownload/);
 });
 
 test('Bunny lesson downloads fall back to the default pull-zone host instead of 503', () => {
