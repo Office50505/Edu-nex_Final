@@ -2358,6 +2358,7 @@ function GlobalEdgeBackGesture({ children, enabled, onBack }) {
   const progress = useRef(new Animated.Value(0)).current;
   const enabledRef = useRef(enabled);
   const onBackRef = useRef(onBack);
+  const completingRef = useRef(false);
 
   useEffect(() => {
     enabledRef.current = enabled;
@@ -2367,12 +2368,31 @@ function GlobalEdgeBackGesture({ children, enabled, onBack }) {
   }, [onBack]);
 
   const resetGuide = useCallback(() => {
-    Animated.timing(progress, {
+    completingRef.current = false;
+    Animated.spring(progress, {
       toValue: 0,
-      duration: 150,
+      stiffness: 320,
+      damping: 28,
+      mass: 0.72,
+      useNativeDriver: true,
+      isInteraction: false,
+    }).start();
+  }, [progress]);
+
+  const completeGuide = useCallback(() => {
+    if (completingRef.current) return;
+    completingRef.current = true;
+    Animated.timing(progress, {
+      toValue: 1.16,
+      duration: 120,
       easing: Easing.out(Easing.cubic),
       useNativeDriver: true,
-    }).start();
+      isInteraction: false,
+    }).start(({ finished }) => {
+      progress.setValue(0);
+      completingRef.current = false;
+      if (finished) onBackRef.current?.();
+    });
   }, [progress]);
 
   const shouldClaimGesture = useCallback((gesture) => {
@@ -2391,29 +2411,91 @@ function GlobalEdgeBackGesture({ children, enabled, onBack }) {
     onMoveShouldSetPanResponderCapture: (_, gesture) => shouldClaimGesture(gesture),
     onPanResponderGrant: () => {
       progress.stopAnimation();
+      completingRef.current = false;
     },
     onPanResponderMove: (_, gesture) => {
       const distance = Math.max(0, gesture.dx);
-      progress.setValue(Math.max(0, Math.min(1, distance / GLOBAL_EDGE_BACK_GUIDE_DISTANCE)));
+      const ratio = Math.max(0, Math.min(1, distance / GLOBAL_EDGE_BACK_GUIDE_DISTANCE));
+      progress.setValue(Math.pow(ratio, 0.86));
     },
     onPanResponderRelease: (_, gesture) => {
       const distance = Math.max(0, gesture.dx);
       const shouldGoBack =
         distance >= GLOBAL_EDGE_BACK_RELEASE_DISTANCE ||
         (gesture.vx >= GLOBAL_EDGE_BACK_RELEASE_VELOCITY && distance >= GLOBAL_EDGE_BACK_RELEASE_VELOCITY_DISTANCE);
-      resetGuide();
-      if (shouldGoBack) onBackRef.current?.();
+      if (shouldGoBack) completeGuide();
+      else resetGuide();
     },
     onPanResponderTerminate: resetGuide,
     onPanResponderTerminationRequest: () => false,
     onShouldBlockNativeResponder: () => false,
-  }), [progress, resetGuide, shouldClaimGesture]);
+  }), [completeGuide, progress, resetGuide, shouldClaimGesture]);
 
   if (Platform.OS !== "ios") return children;
 
   return (
     <View style={s.globalEdgeBackRoot} {...panResponder.panHandlers}>
-      {children}
+      <Animated.View
+        style={[
+          s.globalEdgeBackContent,
+          {
+            opacity: progress.interpolate({
+              inputRange: [0, 1, 1.16],
+              outputRange: [1, 0.995, 0.98],
+              extrapolate: "clamp",
+            }),
+            transform: [
+              {
+                translateX: progress.interpolate({
+                  inputRange: [0, 1, 1.16],
+                  outputRange: [0, 22, 30],
+                  extrapolate: "clamp",
+                }),
+              },
+              {
+                scale: progress.interpolate({
+                  inputRange: [0, 1, 1.16],
+                  outputRange: [1, 0.996, 0.992],
+                  extrapolate: "clamp",
+                }),
+              },
+            ],
+          },
+        ]}
+      >
+        {children}
+      </Animated.View>
+      <Animated.View
+        pointerEvents="none"
+        style={[
+          s.globalEdgeBackCue,
+          {
+            opacity: progress.interpolate({
+              inputRange: [0, 0.08, 0.45, 1],
+              outputRange: [0, 0.12, 0.72, 1],
+              extrapolate: "clamp",
+            }),
+            transform: [
+              {
+                translateX: progress.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: [-18, 4],
+                  extrapolate: "clamp",
+                }),
+              },
+              {
+                scale: progress.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: [0.82, 1],
+                  extrapolate: "clamp",
+                }),
+              },
+            ],
+          },
+        ]}
+      >
+        <Ionicons name="chevron-back" size={22} color={C.text} />
+      </Animated.View>
     </View>
   );
 }
@@ -6022,11 +6104,13 @@ function ReelsScreen({ courseId, course, initialIndex, initialTime, onBack, onRe
   const resetEdgeBackGesture = useCallback((side = "left") => {
     edgeBackGestureSideRef.current = null;
     edgeBackLatestGestureRef.current = { side, distance: 0, velocity: 0 };
-    Animated.timing(playerEdgeBackProgress, {
+    Animated.spring(playerEdgeBackProgress, {
       toValue: 0,
-      duration: 150,
-      easing: Easing.out(Easing.cubic),
+      stiffness: 340,
+      damping: 29,
+      mass: 0.7,
       useNativeDriver: true,
+      isInteraction: false,
     }).start();
   }, [playerEdgeBackProgress]);
   const triggerEdgeBack = useCallback(() => {
@@ -6034,6 +6118,20 @@ function ReelsScreen({ courseId, course, initialIndex, initialTime, onBack, onRe
     edgeBackTriggeredRef.current = true;
     onBack?.();
   }, [onBack]);
+  const completeEdgeBackGesture = useCallback((side = "left") => {
+    edgeBackGestureSideRef.current = null;
+    edgeBackLatestGestureRef.current = { side, distance: 0, velocity: 0 };
+    Animated.timing(playerEdgeBackProgress, {
+      toValue: 1.16,
+      duration: 120,
+      easing: Easing.out(Easing.cubic),
+      useNativeDriver: true,
+      isInteraction: false,
+    }).start(({ finished }) => {
+      playerEdgeBackProgress.setValue(0);
+      if (finished) triggerEdgeBack();
+    });
+  }, [playerEdgeBackProgress, triggerEdgeBack]);
   const finishEdgeBackGesture = useCallback((gesture) => {
     const side = edgeBackGestureSideRef.current || edgeBackLatestGestureRef.current.side || getEdgeBackGestureSide(gesture);
     if (!side) {
@@ -6052,9 +6150,9 @@ function ReelsScreen({ courseId, course, initialIndex, initialTime, onBack, onRe
       distance >= PLAYER_EDGE_BACK_RELEASE_DISTANCE ||
       (velocity >= PLAYER_EDGE_BACK_RELEASE_VELOCITY && distance >= PLAYER_EDGE_BACK_RELEASE_VELOCITY_DISTANCE);
 
-    resetEdgeBackGesture(side);
-    if (shouldGoBack) triggerEdgeBack();
-  }, [getEdgeBackGestureDistance, getEdgeBackGestureSide, resetEdgeBackGesture, triggerEdgeBack]);
+    if (shouldGoBack) completeEdgeBackGesture(side);
+    else resetEdgeBackGesture(side);
+  }, [completeEdgeBackGesture, getEdgeBackGestureDistance, getEdgeBackGestureSide, resetEdgeBackGesture]);
   const edgeBackPanResponder = useMemo(() => PanResponder.create({
     onStartShouldSetPanResponder: () => false,
     onStartShouldSetPanResponderCapture: () => false,
@@ -6073,7 +6171,8 @@ function ReelsScreen({ courseId, course, initialIndex, initialTime, onBack, onRe
       const distance = getEdgeBackGestureDistance(side, gesture);
       const velocity = side === "left" ? Math.max(0, gesture.vx) : Math.max(0, -gesture.vx);
       edgeBackLatestGestureRef.current = { side, distance, velocity };
-      playerEdgeBackProgress.setValue(Math.max(0, Math.min(1, distance / PLAYER_EDGE_BACK_DISTANCE)));
+      const ratio = Math.max(0, Math.min(1, distance / PLAYER_EDGE_BACK_DISTANCE));
+      playerEdgeBackProgress.setValue(Math.pow(ratio, 0.86));
     },
     onPanResponderRelease: (_, gesture) => finishEdgeBackGesture(gesture),
     onPanResponderTerminate: (_, gesture) => finishEdgeBackGesture(gesture),
@@ -6094,9 +6193,9 @@ function ReelsScreen({ courseId, course, initialIndex, initialTime, onBack, onRe
       distance >= PLAYER_EDGE_BACK_RELEASE_DISTANCE ||
       (velocity >= PLAYER_EDGE_BACK_RELEASE_VELOCITY && distance >= PLAYER_EDGE_BACK_RELEASE_VELOCITY_DISTANCE);
 
-    resetEdgeBackGesture(side);
-    if (shouldGoBack) triggerEdgeBack();
-  }, [getEdgeBackGestureDistance, getEdgeBackGestureSide, resetEdgeBackGesture, triggerEdgeBack]);
+    if (shouldGoBack) completeEdgeBackGesture(side);
+    else resetEdgeBackGesture(side);
+  }, [completeEdgeBackGesture, getEdgeBackGestureDistance, getEdgeBackGestureSide, resetEdgeBackGesture]);
   const edgeBackHandlePanResponder = useMemo(() => PanResponder.create({
     onStartShouldSetPanResponder: (_, gesture) => !!getEdgeBackGestureSide(gesture),
     onStartShouldSetPanResponderCapture: (_, gesture) => !!getEdgeBackGestureSide(gesture),
@@ -6116,12 +6215,59 @@ function ReelsScreen({ courseId, course, initialIndex, initialTime, onBack, onRe
       const distance = getEdgeBackGestureDistance(side, gesture);
       const velocity = side === "left" ? Math.max(0, gesture.vx) : Math.max(0, -gesture.vx);
       edgeBackLatestGestureRef.current = { side, distance, velocity };
-      playerEdgeBackProgress.setValue(Math.max(0.35, Math.min(1, distance / PLAYER_EDGE_BACK_DISTANCE)));
+      const ratio = Math.max(0.35, Math.min(1, distance / PLAYER_EDGE_BACK_DISTANCE));
+      playerEdgeBackProgress.setValue(Math.pow(ratio, 0.86));
     },
     onPanResponderRelease: (_, gesture) => finishEdgeBackHandleGesture(gesture),
     onPanResponderTerminate: (_, gesture) => finishEdgeBackHandleGesture(gesture),
     onPanResponderTerminationRequest: () => false,
   }), [finishEdgeBackHandleGesture, getEdgeBackGestureDistance, getEdgeBackGestureSide, playerEdgeBackProgress]);
+  const playerEdgeBackAnimatedStyle = useMemo(() => ({
+    opacity: playerEdgeBackProgress.interpolate({
+      inputRange: [0, 1, 1.16],
+      outputRange: [1, 0.995, 0.98],
+      extrapolate: "clamp",
+    }),
+    transform: [
+      {
+        translateX: playerEdgeBackProgress.interpolate({
+          inputRange: [0, 1, 1.16],
+          outputRange: [0, 20, 30],
+          extrapolate: "clamp",
+        }),
+      },
+      {
+        scale: playerEdgeBackProgress.interpolate({
+          inputRange: [0, 1, 1.16],
+          outputRange: [1, 0.997, 0.994],
+          extrapolate: "clamp",
+        }),
+      },
+    ],
+  }), [playerEdgeBackProgress]);
+  const playerEdgeBackCueStyle = useMemo(() => ({
+    opacity: playerEdgeBackProgress.interpolate({
+      inputRange: [0, 0.08, 0.45, 1],
+      outputRange: [0, 0.12, 0.78, 1],
+      extrapolate: "clamp",
+    }),
+    transform: [
+      {
+        translateX: playerEdgeBackProgress.interpolate({
+          inputRange: [0, 1],
+          outputRange: [-18, 5],
+          extrapolate: "clamp",
+        }),
+      },
+      {
+        scale: playerEdgeBackProgress.interpolate({
+          inputRange: [0, 1],
+          outputRange: [0.82, 1],
+          extrapolate: "clamp",
+        }),
+      },
+    ],
+  }), [playerEdgeBackProgress]);
   const webPlayerChromeAnimatedStyle = useMemo(() => ({
     opacity: webPlayerChromeOpacity,
     transform: [{
@@ -6362,7 +6508,7 @@ function ReelsScreen({ courseId, course, initialIndex, initialTime, onBack, onRe
   );
 
   return (
-    <View style={{ flex: 1, backgroundColor: "#000" }}
+    <Animated.View style={[{ flex: 1, backgroundColor: "#000" }, playerEdgeBackAnimatedStyle]}
       onLayout={e => setListHeight(e.nativeEvent.layout.height)}
       {...(isIosEdgeBackGuide ? edgeBackPanResponder.panHandlers : {})}>
       <View style={s.reelsSafeFrame}>
@@ -6537,7 +6683,11 @@ function ReelsScreen({ courseId, course, initialIndex, initialTime, onBack, onRe
           pointerEvents="box-only"
           accessible={false}
           {...edgeBackHandlePanResponder.panHandlers}
-        />
+        >
+          <Animated.View style={[s.playerEdgeBackCue, playerEdgeBackCueStyle]} pointerEvents="none">
+            <Ionicons name="chevron-back" size={23} color="#fff" />
+          </Animated.View>
+        </View>
       )}
 
       <Modal visible={showDescription} transparent animationType="slide" onRequestClose={() => setShowDescription(false)}>
@@ -6784,7 +6934,7 @@ function ReelsScreen({ courseId, course, initialIndex, initialTime, onBack, onRe
           </View>
         </KeyboardAvoidingView>
       </Modal>
-    </View>
+    </Animated.View>
   );
 }
 
@@ -13682,6 +13832,28 @@ return StyleSheet.create({
 	  },
   globalEdgeBackRoot: {
     flex: 1,
+    overflow: "hidden",
+    backgroundColor: C.bg,
+  },
+  globalEdgeBackContent: { flex: 1 },
+  globalEdgeBackCue: {
+    position: "absolute",
+    left: 8,
+    top: "50%",
+    marginTop: -20,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: C.surface,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: C.border,
+    shadowColor: "#000",
+    shadowOpacity: 0.16,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 3 },
+    zIndex: 200,
   },
   tabletContentFrame: {
     width: "100%",
@@ -16553,6 +16725,20 @@ courseListCard: {
     justifyContent: "center",
   },
   playerEdgeBackStripLeft: { left: 0, alignItems: "flex-start" },
+  playerEdgeBackCue: {
+    width: 42,
+    height: 42,
+    borderRadius: 21,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "rgba(16,16,18,0.78)",
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: "rgba(255,255,255,0.28)",
+    shadowColor: "#000",
+    shadowOpacity: 0.28,
+    shadowRadius: 9,
+    shadowOffset: { width: 0, height: 4 },
+  },
   volumeControl: {
     position: "absolute",
     bottom: 18,
