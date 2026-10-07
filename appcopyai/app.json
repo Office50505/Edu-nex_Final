@@ -35,7 +35,7 @@
     },
     "ios": {
       "bundleIdentifier": "com.alihussainkhan.edunexfinal",
-      "buildNumber": "24",
+      "buildNumber": "25",
       "icon": "./assets/icon.png",
       "userInterfaceStyle": "automatic",
       "supportsTablet": true,
