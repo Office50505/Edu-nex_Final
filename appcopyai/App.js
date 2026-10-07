@@ -242,8 +242,8 @@ const DEMO_AVATARS = Array.from({ length: 15 }, (_, index) => ({
 const HOME_FALLBACK_COURSES = [];
 const ANDROID_CLIPPED_SUBVIEWS = Platform.OS === "android";
 const ROOT_TAB_SWIPE_ENABLED = true;
-const ROOT_TAB_CHROME_ENABLED = Platform.OS !== "android";
-const ROOT_TAB_PAGE_GAP = Platform.OS === "android" ? 0 : 10;
+const ROOT_TAB_CHROME_ENABLED = true;
+const ROOT_TAB_PAGE_GAP = Platform.OS === "android" ? 8 : 10;
 const ROOT_TAB_SWIPE_THRESHOLD_RATIO = Platform.OS === "android" ? 0.13 : 0.12;
 const ROOT_TAB_SWIPE_MIN_DISTANCE = Platform.OS === "android" ? 38 : 42;
 const ROOT_TAB_SWIPE_MAX_DISTANCE = Platform.OS === "android" ? 78 : 84;
@@ -3364,6 +3364,10 @@ function BottomNav({
     return () => rootTabSwipe.end();
   }, [rootTabSwipe, searchOpen]);
   useEffect(() => {
+    rootTabSwipe?.setSearchActive?.(searchOpen);
+    return () => rootTabSwipe?.setSearchActive?.(false);
+  }, [rootTabSwipe, searchOpen]);
+  useEffect(() => {
     if (!searchOpen) return undefined;
     let mounted = true;
     AsyncStorage.getItem(SEARCH_HISTORY_STORAGE_KEY)
@@ -3670,7 +3674,11 @@ const ROOT_TAB_LABELS = {
 const AppSearchReferencesContext = React.createContext([]);
 
 function StaticRootTabs({ activeTab, onNavigate, renderTab, searchReferences = null }) {
-  const swipeBoundary = useMemo(() => ({ hideEmbeddedNav: true }), []);
+  const [searchOverlayActive, setSearchOverlayActive] = useState(false);
+  const swipeBoundary = useMemo(() => ({
+    hideEmbeddedNav: true,
+    setSearchActive: setSearchOverlayActive,
+  }), []);
   const stationaryNavActions = useMemo(() => ({
     home: () => onNavigate?.("home"),
     courses: () => onNavigate?.("courses"),
@@ -3685,6 +3693,13 @@ function StaticRootTabs({ activeTab, onNavigate, renderTab, searchReferences = n
         <View style={s.staticRootTabPage}>
           {renderTab(activeTab, { isActive: true })}
         </View>
+        {searchOverlayActive && (
+          <View
+            style={s.rootSearchInteractionShield}
+            pointerEvents="auto"
+            accessible={false}
+          />
+        )}
         <BottomNav
           persistent
           active={activeTab}
@@ -3715,6 +3730,7 @@ function SwipeableRootTabsPager({ activeTab, onNavigate, renderTab, searchRefere
   const transitionInProgressRef = useRef(false);
   const horizontalChildActiveRef = useRef(false);
   const pendingIndexRef = useRef(null);
+  const [searchOverlayActive, setSearchOverlayActive] = useState(false);
   const mountedTabs = ROOT_TAB_ORDER;
 
   useEffect(() => {
@@ -3735,6 +3751,7 @@ function SwipeableRootTabsPager({ activeTab, onNavigate, renderTab, searchRefere
   const swipeBoundary = useMemo(() => ({
     begin: () => { horizontalChildActiveRef.current = true; },
     end: () => { horizontalChildActiveRef.current = false; },
+    setSearchActive: setSearchOverlayActive,
     hideEmbeddedNav: true,
   }), []);
 
@@ -3871,6 +3888,13 @@ function SwipeableRootTabsPager({ activeTab, onNavigate, renderTab, searchRefere
         extrapolate: "clamp",
       })
     : 0;
+  const pageScale = ROOT_TAB_CHROME_ENABLED
+    ? pageChrome.interpolate({
+        inputRange: [0, 1],
+        outputRange: [1, 0.985],
+        extrapolate: "clamp",
+      })
+    : 1;
 
   return (
     <RootTabSwipeContext.Provider value={swipeBoundary}>
@@ -3902,6 +3926,7 @@ function SwipeableRootTabsPager({ activeTab, onNavigate, renderTab, searchRefere
                     height,
                     marginRight: tabIndex === ROOT_TAB_ORDER.length - 1 ? 0 : pageGap,
                     borderRadius: pageCornerRadius,
+                    transform: [{ scale: pageScale }],
                   },
                 ]}
                 collapsable={false}
@@ -3913,6 +3938,13 @@ function SwipeableRootTabsPager({ activeTab, onNavigate, renderTab, searchRefere
             );
           })}
         </Animated.View>
+        {searchOverlayActive && (
+          <View
+            style={s.rootSearchInteractionShield}
+            pointerEvents="auto"
+            accessible={false}
+          />
+        )}
         <BottomNav
           persistent
           active={activeTab}
@@ -14425,6 +14457,12 @@ return StyleSheet.create({
     top: 0,
     left: 0,
     flexDirection: "row",
+  },
+  rootSearchInteractionShield: {
+    ...StyleSheet.absoluteFillObject,
+    zIndex: 40,
+    elevation: 20,
+    backgroundColor: "transparent",
   },
   swipePagerPage: {
     zIndex: 1,

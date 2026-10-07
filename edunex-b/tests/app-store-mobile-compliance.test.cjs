@@ -315,6 +315,8 @@ test('root page swipe is bidirectional and disabled while search is open', () =>
   const bottomNavSource = appSource.slice(bottomNavStart, bottomNavEnd);
   assert.match(bottomNavSource, /if \(!searchOpen \|\| !rootTabSwipe\?\.begin \|\| !rootTabSwipe\?\.end\) return undefined/);
   assert.match(bottomNavSource, /rootTabSwipe\.begin\(\);\s+return \(\) => rootTabSwipe\.end\(\)/);
+  assert.match(bottomNavSource, /rootTabSwipe\?\.setSearchActive\?\.\(searchOpen\)/);
+  assert.match(bottomNavSource, /return \(\) => rootTabSwipe\?\.setSearchActive\?\.\(false\)/);
 
   const pagerStart = appSource.indexOf('function SwipeableRootTabsPager');
   const pagerEnd = appSource.indexOf('\n\/\/ ── VideoItem', pagerStart);
@@ -323,12 +325,20 @@ test('root page swipe is bidirectional and disabled while search is open', () =>
   assert.match(pagerSource, /ROOT_TAB_ORDER\[activeIndex \+ direction\]/);
   assert.match(pagerSource, /onMoveShouldSetPanResponder: \(_, gesture\) => shouldClaimRootSwipe\(gesture\)/);
   assert.match(pagerSource, /onMoveShouldSetPanResponderCapture: \(_, gesture\) => shouldClaimRootSwipe\(gesture\)/);
+  assert.match(appSource, /const ROOT_TAB_CHROME_ENABLED = true/);
+  assert.match(appSource, /const ROOT_TAB_PAGE_GAP = Platform\.OS === "android" \? 8 : 10/);
   assert.match(appSource, /const ROOT_TAB_SWIPE_THRESHOLD_RATIO = Platform\.OS === "android" \? 0\.13 : 0\.12/);
   assert.match(appSource, /const ROOT_TAB_SWIPE_SPRING = Platform\.OS === "android"[\s\S]+friction: 13 \}/);
   assert.match(pagerSource, /Animated\.spring\(trackX,\s+\{\s+toValue: -activeIndex \* pageStride,\s+\.\.\.ROOT_TAB_SWIPE_SPRING/);
   assert.match(pagerSource, /Animated\.spring\(trackX,\s+\{\s+toValue: -targetIndex \* pageStride,\s+\.\.\.ROOT_TAB_SWIPE_SPRING/);
+  assert.match(pagerSource, /const pageScale = ROOT_TAB_CHROME_ENABLED[\s\S]+outputRange: \[1, 0\.985\]/);
+  assert.match(pagerSource, /transform: \[\{ scale: pageScale \}\]/);
   assert.match(pagerSource, /width \* ROOT_TAB_SWIPE_THRESHOLD_RATIO/);
   assert.match(pagerSource, /ROOT_TAB_SWIPE_FLICK_VELOCITY/);
+  assert.match(pagerSource, /const \[searchOverlayActive, setSearchOverlayActive\] = useState\(false\)/);
+  assert.match(pagerSource, /setSearchActive: setSearchOverlayActive/);
+  assert.match(pagerSource, /\{searchOverlayActive && \(\s+<View\s+style=\{s\.rootSearchInteractionShield\}\s+pointerEvents="auto"/);
+  assert.match(appSource, /rootSearchInteractionShield: \{\s+\.\.\.StyleSheet\.absoluteFillObject,\s+zIndex: 40/);
   assert.match(appSource, /<SwipeableRootTabs[\s\S]+<\/View>\),\s+\{ enabled: false \}\s+\);/);
 });
 
