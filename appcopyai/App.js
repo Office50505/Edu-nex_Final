@@ -35,6 +35,7 @@ import {
   Linking,
   LogBox,
   Modal,
+  NativeModules,
   PanResponder,
   Platform,
   Pressable,
@@ -3995,6 +3996,26 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
   const cloudResume = useRef(0);
   const cloudLeaseRef = useRef(null);
   const sourceQueue = useRef(Promise.resolve());
+  const [offlinePlaybackUrl, setOfflinePlaybackUrl] = useState(() => localPath || "");
+  useEffect(() => {
+    let cancelled = false;
+    if (!localPath || Platform.OS !== "ios" || !/\.m3u8(?:[?#]|$)/i.test(localPath)) {
+      setOfflinePlaybackUrl(localPath || "");
+      return () => { cancelled = true; };
+    }
+    setOfflinePlaybackUrl("");
+    NativeModules.OfflineMediaServer?.start(localPath)
+      .then(url => {
+        if (!cancelled) setOfflinePlaybackUrl(String(url || ""));
+      })
+      .catch(error => {
+        if (!cancelled) {
+          console.warn("[offline-playback] local server failed", error?.message || String(error));
+          setOfflinePlaybackUrl(localPath);
+        }
+      });
+    return () => { cancelled = true; };
+  }, [localPath]);
   useEffect(() => {
     if (videoProp?.provider !== "aws_cloudfront" || !isActive || localPath) return;
     let disposed = false;
@@ -4051,7 +4072,7 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
   const validCloudLease = cloudLeaseRef.current?.key === `${courseId}:${videoProp?._id}:${user?.sessionId}` ? cloudLease : null;
   const video = {...(videoProp || (videoIdProp ? {youtubeId:videoIdProp}:{})), ...(validCloudLease || {})};
   const nativeVideoUrl = video.provider === "aws_cloudfront" && !validCloudLease && !localPath
-    ? "" : getNativeVideoUrl(video, localPath);
+    ? "" : getNativeVideoUrl(video, offlinePlaybackUrl);
   const hasNativeVideo = !!nativeVideoUrl;
   const isOffline = !!localPath;
   const bunnyGuid = getBunnyGuid(video);
@@ -4587,7 +4608,14 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
     onEnded?.();
   });
 
-  useEventListener(nativePlayer, "statusChange", ({ status }) => {
+  useEventListener(nativePlayer, "statusChange", ({ status, error }) => {
+    if (__DEV__ && isOffline) {
+      console.warn("[offline-playback]", {
+        status,
+        message: error?.message || "",
+        sourceType: /\.m3u8(?:[?#]|$)/i.test(localPath || "") ? "hls" : "file",
+      });
+    }
     if (status === "loading" && isNativeVideo && isActive && shouldBePlayingRef.current) {
       setIsBuffering(true);
       return;

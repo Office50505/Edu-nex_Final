@@ -20,7 +20,7 @@ test('evicted downloads and paths outside the private download directory are dis
 });
 test('protected CloudFront HLS downloads are kept only when every local resource exists',async()=>{
  const saved={a:{status:'done',kind:'hls',provider:'aws_cloudfront',offlineFormatVersion:4,path:'file://cache/skillomate_dl/a/index.m3u8'}};
- const text='#EXTM3U\n#EXT-X-KEY:METHOD=AES-128,URI="key.bin"\n#EXTINF:4,\npart-0001.ts\n#EXT-X-ENDLIST';
+ const text='#EXTM3U\n#EXT-X-KEY:METHOD=AES-128,URI="file://cache/skillomate_dl/a/key.bin"\n#EXTINF:4,\nfile://cache/skillomate_dl/a/part-0001.ts\n#EXT-X-ENDLIST';
  const h=setup(saved,['file://cache/skillomate_dl/a/index.m3u8','file://cache/skillomate_dl/a/key.bin','file://cache/skillomate_dl/a/part-0001.ts']);
  h.disk.cacheDirectory='file://cache/';
  h.contents.set('file://cache/skillomate_dl/a/index.m3u8',text);
@@ -31,7 +31,9 @@ test('protected CloudFront HLS downloads are kept only when every local resource
  const result=await api.prepareTemporaryDownloads(h.disk,h.store);
  assert.equal(result.a.size,4186);
  assert.equal(result.a.playbackPath,'file://cache/skillomate_dl/a/index.m3u8');
- assert.match(h.contents.get('file://cache/skillomate_dl/a/index.m3u8'),/file:\/\/cache\/skillomate_dl\/a\/part-0001\.ts/);
+ assert.match(h.contents.get('file://cache/skillomate_dl/a/index.m3u8'),/URI="key\.bin"/);
+ assert.match(h.contents.get('file://cache/skillomate_dl/a/index.m3u8'),/\npart-0001\.ts\n/);
+ assert.doesNotMatch(h.contents.get('file://cache/skillomate_dl/a/index.m3u8'),/URI="file:\/\//);
  h.files.delete('file://cache/skillomate_dl/a/part-0001.ts');
  assert.equal(Object.keys(await api.prepareTemporaryDownloads(h.disk,h.store)).length,0);
 });

@@ -50,6 +50,16 @@ function localHlsResourcePath(baseDir, ref) {
   if (/^[a-z][a-z0-9+.-]*:/i.test(value)) return '';
   return `${baseDir}${value.replace(/^\/+/, '')}`;
 }
+function relativeLocalHlsRef(baseDir, ref) {
+  const clean = stripHlsUriSuffix(ref);
+  if (!clean || clean.startsWith('//') || clean.includes('..')) return '';
+  if (/^file:\/\//i.test(clean)) {
+    if (!clean.startsWith(baseDir)) return '';
+    return clean.slice(baseDir.length).replace(/^\/+/, '');
+  }
+  if (/^[a-z][a-z0-9+.-]*:/i.test(clean)) return '';
+  return clean.replace(/^\/+/, '');
+}
 export async function normalizeLocalHlsManifest(fs, manifestPath) {
   const manifestInfo = await fs.getInfoAsync(manifestPath).catch(() => ({}));
   if (!manifestInfo.exists || manifestInfo.isDirectory) throw new Error('Incomplete offline video download.');
@@ -60,16 +70,16 @@ export async function normalizeLocalHlsManifest(fs, manifestPath) {
     const trimmed = line.trim();
     if (!trimmed) return line;
     let nextLine = line.replace(/URI="([^"]+)"/g, (match, uri) => {
-      const clean = stripHlsUriSuffix(uri);
-      if (!clean || /^file:\/\//i.test(clean) || /^[a-z][a-z0-9+.-]*:/i.test(clean) || clean.startsWith('//') || clean.includes('..')) return match;
-      changed = true;
-      return `URI="${baseDir}${clean.replace(/^\/+/, '')}"`;
+      const relative = relativeLocalHlsRef(baseDir, uri);
+      if (!relative) return match;
+      const replacement = `URI="${relative}"`;
+      if (replacement !== match) changed = true;
+      return replacement;
     });
-    if (!trimmed.startsWith('#') && !/^file:\/\//i.test(trimmed) && !/^[a-z][a-z0-9+.-]*:/i.test(trimmed) && !trimmed.startsWith('//') && !trimmed.includes('..')) {
-      const clean = stripHlsUriSuffix(trimmed).replace(/^\/+/, '');
-      const suffix = trimmed.slice(stripHlsUriSuffix(trimmed).length);
-      nextLine = `${baseDir}${clean}${suffix}`;
-      changed = true;
+    if (!trimmed.startsWith('#')) {
+      const relative = relativeLocalHlsRef(baseDir, trimmed);
+      if (relative && relative !== trimmed) changed = true;
+      if (relative) nextLine = relative;
     }
     return nextLine;
   });
@@ -80,8 +90,10 @@ export async function normalizeLocalHlsManifest(fs, manifestPath) {
 }
 export async function createLocalHlsProgressiveFile(fs, manifestPath) {
   const validation = await normalizeLocalHlsManifest(fs, manifestPath);
-  // AVPlayer can resolve a local HLS manifest whose resource URIs are absolute
-  // file URLs. Concatenating arbitrary HLS segments into a .ts file is unsafe:
+  // AVPlayer resolves media and key files relative to a local HLS manifest.
+  // Keeping those references relative also avoids iOS rejecting file URLs
+  // embedded inside a file-backed playlist. Concatenating arbitrary HLS
+  // segments into a .ts file is unsafe:
   // fragmented MP4 streams require their initialization segment and Expo's
   // legacy write API does not provide binary append semantics.
   return { ...validation, playbackPath: manifestPath, playbackBytes: validation.totalBytes };
