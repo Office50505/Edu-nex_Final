@@ -2255,8 +2255,12 @@ function getCourseThumbnailSource(course, preferVertical = false, uriIndex = 0) 
 function ThumbnailBrandBadge({ large = false }) {
   return (
     <View pointerEvents="none" style={[s.thumbnailBrandBadge, large && s.thumbnailBrandBadgeLarge]}>
-      <Ionicons name="school" size={11} color={C.primary} />
-      <Text style={s.thumbnailBrandText}>Skillomate</Text>
+      <Image
+        source={BRAND_LOGOS.dark}
+        style={[s.thumbnailBrandLogo, large && s.thumbnailBrandLogoLarge]}
+        resizeMode="contain"
+        accessibilityIgnoresInvertColors
+      />
     </View>
   );
 }
@@ -9100,7 +9104,7 @@ function CertificateCard({ cert, style, showDownload }) {
         <Text style={{ fontSize: 11, color: C.textMuted }}>ID: {cert.certificateId}</Text>
       </View>
       <View style={{ marginTop: 16, borderTopWidth: 1, borderTopColor: C.border, paddingTop: 10, alignItems: "center" }}>
-        <Text style={{ fontSize: 12, fontWeight: "700", color: C.primary }}>Skillomate</Text>
+        <SkillomateLogo size="xs" mode={C.isDark ? "dark" : "light"} style={{ alignSelf: "center" }} />
         <Text style={{ fontSize: 10, color: C.textMuted }}>Learn · Grow · Succeed</Text>
       </View>
       {showDownload && (
@@ -14675,17 +14679,20 @@ return StyleSheet.create({
     position: "absolute",
     top: 0,
     left: 0,
-    width: 104,
+    width: 118,
     minHeight: 32,
-    flexDirection: "row",
     alignItems: "center",
-    gap: 4,
-    paddingHorizontal: 9,
-    paddingVertical: 7,
+    justifyContent: "center",
+    paddingHorizontal: 10,
+    paddingVertical: 6,
     borderBottomRightRadius: 10,
     backgroundColor: "#0D0D0B",
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: "rgba(231,188,104,0.45)",
+  },
+  thumbnailBrandLogo: {
+    width: 94,
+    height: 31,
   },
   thumbnailBrandText: {
     color: "#F5F1E8",
@@ -14694,9 +14701,14 @@ return StyleSheet.create({
     fontWeight: "900",
   },
   thumbnailBrandBadgeLarge: {
-    width: 114,
-    minHeight: 42,
-    paddingVertical: 10,
+    width: 136,
+    minHeight: 44,
+    paddingHorizontal: 12,
+    paddingVertical: 7,
+  },
+  thumbnailBrandLogoLarge: {
+    width: 108,
+    height: 36,
   },
   streamingHeroPhotoWash: {
     ...StyleSheet.absoluteFill,
