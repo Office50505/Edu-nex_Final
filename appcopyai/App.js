@@ -57,7 +57,7 @@ import * as Sharing from "expo-sharing";
 import * as FileSystem from "expo-file-system/legacy";
 import * as ImagePicker from "expo-image-picker";
 import * as ImageManipulator from "expo-image-manipulator";
-import { DOWNLOADS_STORAGE_KEY, downloadDir, downloadManifestPath, downloadPath, prepareTemporaryDownloads, safeDownloadId } from "./downloadStorage";
+import { createLocalHlsProgressiveFile, DOWNLOADS_STORAGE_KEY, downloadDir, downloadManifestPath, downloadPath, prepareTemporaryDownloads, safeDownloadId, validateHlsDownloadBundle } from "./downloadStorage";
 import { useVideoPlayer, VideoView } from "expo-video";
 import {
   HOME_AI_FOUNDATIONS_CONTENT,
@@ -527,11 +527,12 @@ const _rawHost =
   "";
 const EXPO_HOST = _rawHost.split(":")[0] || "localhost";
 const DEV_API_PORT = process.env.EXPO_PUBLIC_API_PORT || "3000";
-const IOS_SIMULATOR_API_HOST = process.env.EXPO_PUBLIC_IOS_API_HOST || "127.0.0.1";
+const IOS_DEV_API_HOST = process.env.EXPO_PUBLIC_IOS_API_HOST
+  || (EXPO_HOST && EXPO_HOST !== "localhost" ? EXPO_HOST : "127.0.0.1");
 const DEFAULT_API_BASE = __DEV__
   ? (Platform.OS === "android"
     ? `http://${EXPO_HOST === "localhost" ? "10.0.2.2" : EXPO_HOST}:${DEV_API_PORT}`
-    : `http://${IOS_SIMULATOR_API_HOST}:${DEV_API_PORT}`)
+    : `http://${IOS_DEV_API_HOST}:${DEV_API_PORT}`)
   : "https://api.skillomate.in";
 const normalizeBaseUrl = url => String(url || "").replace(/\/+$/, "");
 const API_BASE = normalizeBaseUrl(process.env.EXPO_PUBLIC_API_BASE || DEFAULT_API_BASE);
@@ -2057,6 +2058,35 @@ function getDownloadFailureMessage(error, status) {
   return "This lesson could not be saved. Check your connection and course access, then retry.";
 }
 
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function requestPreparedCloudfrontDownload({ session, courseId, videoId }) {
+  const grant = await session.requestJson(`/api/courses/${encodeURIComponent(courseId)}/videos/${encodeURIComponent(videoId)}/download-grant`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ prepared: true }),
+  });
+  if (!grant?.downloadUrl) throw new Error("The download authorization response was invalid.");
+  if (!grant.statusUrl) return grant;
+  for (let attempt = 0; attempt < 120; attempt += 1) {
+    const status = await session.requestJson(grant.statusUrl);
+    if (status?.status === "ready") return grant;
+    if (status?.status === "error") throw new Error(status.error || "Video could not be prepared for offline download.");
+    await sleep(1000);
+  }
+  throw new Error("Video is still being prepared. Please retry shortly.");
+}
+
+function formatDownloadSize(bytes) {
+  const value = Number(bytes || 0);
+  if (!Number.isFinite(value) || value <= 0) return "";
+  if (value >= 1024 * 1024 * 1024) return `${(value / (1024 * 1024 * 1024)).toFixed(1)} GB`;
+  if (value >= 1024 * 1024) return `${Math.max(1, Math.round(value / (1024 * 1024)))} MB`;
+  return `${Math.max(1, Math.round(value / 1024))} KB`;
+}
+
 function extensionForDownloadResource(url, fallback = "bin") {
   try {
     const pathname = new URL(url).pathname;
@@ -2093,8 +2123,12 @@ async function selectHlsMediaPlaylist(masterUrl) {
 }
 
 async function downloadHlsToAppCache({ hlsUrl, targetDir, manifestPath, onProgress }) {
-  await FileSystem.deleteAsync(targetDir, { idempotent: true }).catch(() => {});
-  await FileSystem.makeDirectoryAsync(targetDir, { intermediates: true });
+  const cleanTargetDir = String(targetDir || "").replace(/\/+$/, "");
+  const parentDir = cleanTargetDir.slice(0, cleanTargetDir.lastIndexOf("/") + 1);
+  const tempDir = `${parentDir}${cleanTargetDir.slice(cleanTargetDir.lastIndexOf("/") + 1)}_partial_${Date.now()}/`;
+  const tempManifestPath = `${tempDir}index.m3u8`;
+  await FileSystem.deleteAsync(tempDir, { idempotent: true }).catch(() => {});
+  await FileSystem.makeDirectoryAsync(tempDir, { intermediates: true });
   const { url: mediaPlaylistUrl, text } = await selectHlsMediaPlaylist(hlsUrl);
   const resourceMap = new Map();
   const resourceUrls = [];
@@ -2117,16 +2151,25 @@ async function downloadHlsToAppCache({ hlsUrl, targetDir, manifestPath, onProgre
     return absolute ? registerResource(absolute, extensionForDownloadResource(absolute, "ts")) : line;
   });
   if (!resourceUrls.length) throw new Error("No downloadable HLS segments were found.");
-  let completed = 0;
-  for (const resource of resourceUrls) {
-    const targetPath = `${targetDir}${resource.filename}`;
-    const dl = FileSystem.createDownloadResumable(resource.url, targetPath, {}, () => {});
-    const result = await dl.downloadAsync();
-    if (result?.status && result.status !== 200) throw new Error(`Segment download failed with ${result.status}`);
-    completed += 1;
-    onProgress?.(completed / resourceUrls.length);
+  try {
+    let completed = 0;
+    for (const resource of resourceUrls) {
+      const targetPath = `${tempDir}${resource.filename}`;
+      const dl = FileSystem.createDownloadResumable(resource.url, targetPath, {}, () => {});
+      const result = await dl.downloadAsync();
+      if (result?.status && result.status !== 200) throw new Error(`Segment download failed with ${result.status}`);
+      completed += 1;
+      onProgress?.(completed / resourceUrls.length);
+    }
+    await FileSystem.writeAsStringAsync(tempManifestPath, rewrittenLines.join("\n"));
+    await validateHlsDownloadBundle(FileSystem, tempManifestPath);
+    await FileSystem.deleteAsync(targetDir, { idempotent: true }).catch(() => {});
+    await FileSystem.moveAsync({ from: tempDir, to: targetDir });
+    return createLocalHlsProgressiveFile(FileSystem, manifestPath);
+  } catch (error) {
+    await FileSystem.deleteAsync(tempDir, { idempotent: true }).catch(() => {});
+    throw error;
   }
-  await FileSystem.writeAsStringAsync(manifestPath, rewrittenLines.join("\n"));
 }
 
 function getResumeInfo(course, progressByCourse = {}) {
@@ -4099,6 +4142,7 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
   const [qualities, setQualities] = useState([]);
   const [nativeVideoTracks, setNativeVideoTracks] = useState([]);
   const [hlsVariantTracks, setHlsVariantTracks] = useState([]);
+  const [offlinePlaybackError, setOfflinePlaybackError] = useState("");
   const [currentQuality, setCurrentQuality] = useState("Auto");
   const [showSettings, setShowSettings] = useState(false);
   const [loopLesson, setLoopLesson] = useState(false);
@@ -4160,7 +4204,20 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
   useEffect(() => {
     setHasPlaybackStarted(false);
     setPlayerChromeVisible(true);
+    setOfflinePlaybackError("");
   }, [chromeSessionKey]);
+  useEffect(() => {
+    if (!isActive || !isOffline || !localPath || !/\.m3u8(?:[?#]|$)/i.test(localPath)) return undefined;
+    let cancelled = false;
+    validateHlsDownloadBundle(FileSystem, localPath)
+      .then(() => {
+        if (!cancelled) setOfflinePlaybackError("");
+      })
+      .catch(() => {
+        if (!cancelled) setOfflinePlaybackError("This offline video is incomplete. Remove it from Downloads and download it again.");
+      });
+    return () => { cancelled = true; };
+  }, [isActive, isOffline, localPath]);
   useEffect(() => {
     if (!isActive) {
       setHasPlaybackStarted(false);
@@ -4558,7 +4615,10 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
       playNativePlayer();
       return;
     }
-    if (status === "error") setIsBuffering(false);
+    if (status === "error") {
+      setIsBuffering(false);
+      if (isOffline) setOfflinePlaybackError("This offline video could not be played. Remove it from Downloads and download it again.");
+    }
     if (status === "error" && isNativeVideo && canFallbackToEmbed) {
       setIsBuffering(false);
       setNativePlaybackFailed(true);
@@ -5491,6 +5551,13 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
       )}
     </View>
   );
+  if (isActive && isOffline && offlinePlaybackError) return (
+    <View style={[s.player, { height, justifyContent: "center", alignItems: "center", padding: 24 }]}>
+      <Ionicons name="alert-circle-outline" size={38} color={C.primary} />
+      <Text style={{ color: "#fff", paddingTop: 14, textAlign: "center", fontWeight: "800", fontSize: 16 }}>Offline video unavailable</Text>
+      <Text style={{ color: "rgba(255,255,255,0.78)", paddingTop: 8, textAlign: "center", lineHeight: 20 }}>{offlinePlaybackError}</Text>
+    </View>
+  );
   const progress = duration > 0 ? Math.max(0, Math.min(1, currentTime / duration)) : 0;
   const availableNativeQualityOptions = normalizeVideoQualityOptions(mergeVideoTracks(hlsVariantTracks, nativeVideoTracks));
   const availableEmbedQualityOptions = normalizeVideoQualityOptions(qualities);
@@ -6304,7 +6371,7 @@ function ReelsScreen({ courseId, course, initialIndex, initialTime, onBack, onRe
           const itemLessonLabel = videos.length ? `Lecture ${Math.min(videos.length, index + 1)}/${videos.length}` : "Lecture";
           const cellChromePointerEvents = isCurrent && !playerChromeHidden ? "box-none" : "none";
           const itemDownload = downloads?.[getDownloadId(item, index)];
-          const itemLocalPath = itemDownload?.status === "done" ? itemDownload.path : null;
+          const itemLocalPath = itemDownload?.status === "done" ? (itemDownload.playbackPath || itemDownload.path) : null;
           const itemIsOffline = !!itemLocalPath;
           return (
             <View style={[s.reelItem, { height: reelFrameHeight }]}>
@@ -11629,7 +11696,7 @@ export default function App() {
     try {
       await downloadStorageReady.current;
       targetDir = downloadDir(FileSystem, downloadId);
-      filePath = downloadKind === "hls" ? downloadManifestPath(FileSystem, downloadId) : downloadPath(FileSystem, downloadId);
+      filePath = downloadKind === "hls" && !protectedCloudfront ? downloadManifestPath(FileSystem, downloadId) : downloadPath(FileSystem, downloadId);
       await FileSystem.makeDirectoryAsync(targetDir, { intermediates: true });
     } catch {
       Alert.alert("Download unavailable", "Temporary storage could not be prepared. Restart the app and try again.");
@@ -11637,10 +11704,10 @@ export default function App() {
     }
     const current = downloadsRef.current[downloadId];
     if (current?.status === "downloading") return;
-    if (current?.status === "done" && (await FileSystem.getInfoAsync(filePath)).exists) return;
+    if (current?.status === "done" && !(protectedCloudfront && current.kind === "hls") && (await FileSystem.getInfoAsync(filePath)).exists) return;
     let meta = {
       id: downloadId,
-      kind: downloadKind === "hls" ? "hls" : "mp4",
+      kind: downloadKind === "hls" && !protectedCloudfront ? "hls" : "mp4",
       title: video.title || "Video",
       courseId: courseId || "",
       courseTitle: courseTitle || "",
@@ -11654,7 +11721,23 @@ export default function App() {
 
     setDownloads(prev => ({ ...prev, [downloadId]: { status: "downloading", progress: 0, path: filePath, ...meta } }));
     try {
-      if (downloadKind === "bunny") {
+      let hlsValidation = null;
+      if (protectedCloudfront) {
+        const protectedVideoId = video?._id || video?.id || video?.videoId;
+        if (!courseId || !protectedVideoId) throw new Error("Download authorization unavailable.");
+        meta = { ...meta, kind: "mp4", offlineFormatVersion: 3 };
+        setDownloads(prev => ({ ...prev, [downloadId]: { ...prev[downloadId], ...meta } }));
+        await FileSystem.deleteAsync(downloadManifestPath(FileSystem, downloadId), { idempotent: true }).catch(() => {});
+        await FileSystem.deleteAsync(filePath, { idempotent: true }).catch(() => {});
+        const grant = await requestPreparedCloudfrontDownload({ session: nativeSession, courseId, videoId: protectedVideoId });
+        const url = /^https?:\/\//i.test(grant.downloadUrl) ? grant.downloadUrl : `${API_BASE}${grant.downloadUrl}`;
+        const dl = FileSystem.createDownloadResumable(url, filePath, {}, ({ totalBytesWritten, totalBytesExpectedToWrite }) => {
+          const pct = totalBytesExpectedToWrite > 0 ? totalBytesWritten / totalBytesExpectedToWrite : 0;
+          setDownloads(prev => ({ ...prev, [downloadId]: { ...prev[downloadId], progress: pct } }));
+        });
+        const result = await dl.downloadAsync();
+        if (result?.status !== 200) throw Object.assign(new Error("Download failed"), { status: result?.status });
+      } else if (downloadKind === "bunny") {
         const grant = await nativeSession.requestJson(`/api/videos/${encodeURIComponent(guid)}/download-grant`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -11678,37 +11761,26 @@ export default function App() {
         const result = await dl.downloadAsync();
         if (result?.status !== 200) throw Object.assign(new Error("Download failed"), { status: result?.status });
       } else if (downloadKind === "hls") {
-        if (protectedCloudfront) {
-          const protectedVideoId = video?._id || video?.id || video?.videoId;
-          if (!courseId || !protectedVideoId) throw new Error("Download authorization unavailable.");
-          meta = { ...meta, kind: "hls", offlineFormatVersion: 2 };
-          setDownloads(prev => ({ ...prev, [downloadId]: { ...prev[downloadId], ...meta } }));
-          const lease = await fetchPlaybackLease({ courseId, video: { ...video, _id: protectedVideoId }, user: u });
-          await downloadHlsToAppCache({
-            hlsUrl: lease.hlsUrl,
-            targetDir,
-            manifestPath: filePath,
-            onProgress: pct => setDownloads(prev => ({ ...prev, [downloadId]: { ...prev[downloadId], progress: pct } })),
-          });
-        } else {
-          const hlsUrl = nativeVideoUrl;
-          if (!hlsUrl) throw new Error("Playback download URL unavailable.");
-          await downloadHlsToAppCache({
-            hlsUrl,
-            targetDir,
-            manifestPath: filePath,
-            onProgress: pct => setDownloads(prev => ({ ...prev, [downloadId]: { ...prev[downloadId], progress: pct } })),
-          });
-        }
+        const hlsUrl = nativeVideoUrl;
+        if (!hlsUrl) throw new Error("Playback download URL unavailable.");
+        hlsValidation = await downloadHlsToAppCache({
+          hlsUrl,
+          targetDir,
+          manifestPath: filePath,
+          onProgress: pct => setDownloads(prev => ({ ...prev, [downloadId]: { ...prev[downloadId], progress: pct } })),
+        });
       } else {
         throw new Error("Unsupported download source.");
       }
       const stat = await FileSystem.getInfoAsync(filePath).catch(() => ({}));
+      if (meta.kind === "hls") {
+        hlsValidation = hlsValidation || await validateHlsDownloadBundle(FileSystem, filePath);
+      }
       if (protectedCloudfront && meta.kind === "mp4" && (!stat.exists || Number(stat.size || 0) < 1024 * 1024)) {
         await FileSystem.deleteAsync(filePath, { idempotent: true }).catch(() => {});
         throw new Error("Incomplete video download.");
       }
-      const info = { status: "done", path: filePath, progress: 1, size: stat.size || 0, downloadedAt: new Date().toISOString(), ...meta };
+      const info = { status: "done", path: filePath, playbackPath: hlsValidation?.playbackPath || "", progress: 1, size: hlsValidation?.totalBytes || stat.size || 0, downloadedAt: new Date().toISOString(), ...meta };
       // Save from state — avoids race condition when multiple downloads finish simultaneously
       setDownloads(prev => {
         const next = { ...prev, [downloadId]: info };
@@ -11717,6 +11789,14 @@ export default function App() {
         return next;
       });
     } catch (e) {
+      console.warn("[download] failed", {
+        downloadId,
+        courseId,
+        videoId: meta.videoId,
+        kind: meta.kind,
+        status: e?.status,
+        message: e?.message || String(e),
+      });
       const errorMessage = getDownloadFailureMessage(e, e?.status);
       setDownloads(prev => ({ ...prev, [downloadId]: { status: "error", progress: 0, errorMessage, ...meta } }));
       Alert.alert("Download failed", errorMessage);
@@ -13386,9 +13466,7 @@ export default function App() {
                           )}
                           {isDone && item.size > 0 && (
                             <Text style={{ color: C.textMuted, fontSize: 11 }}>
-                              {item.size > 1024 * 1024 * 1024
-                                ? `${(item.size / (1024 * 1024 * 1024)).toFixed(1)} GB`
-                                : `${Math.round(item.size / (1024 * 1024))} MB`}
+                              {formatDownloadSize(item.size)}
                             </Text>
                           )}
                         </View>
