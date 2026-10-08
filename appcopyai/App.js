@@ -13977,7 +13977,7 @@ return StyleSheet.create({
     backgroundColor: "#000",
   },
   globalEdgeBackSurface: {
-    ...StyleSheet.absoluteFillObject,
+    flex: 1,
     zIndex: 1,
     backgroundColor: C.bg,
     shadowColor: "#000",
