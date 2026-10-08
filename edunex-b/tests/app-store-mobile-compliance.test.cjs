@@ -465,11 +465,11 @@ test('course lesson list exposes per-lesson download actions', () => {
   assert.doesNotMatch(appSource, /Alert\.alert\("Downloaded"/);
 });
 
-test('protected course downloads save offline HLS without server-side preparation', () => {
-  assert.match(appSource, /filePath = downloadKind === "hls" \? downloadManifestPath\(FileSystem, downloadId\) : downloadPath\(FileSystem, downloadId\)/);
-  assert.match(appSource, /kind: downloadKind === "hls" \? "hls" : "mp4"/);
-  assert.match(appSource, /fetchPlaybackLease\(\{ courseId, video: \{ \.\.\.video, _id: protectedVideoId \}, user: u \}\)/);
-  assert.match(appSource, /downloadHlsToAppCache\(\{\s+hlsUrl: lease\.hlsUrl,\s+targetDir,\s+manifestPath: filePath,/);
+test('protected course downloads save direct MP4 without prepared server jobs', () => {
+  assert.match(appSource, /filePath = downloadKind === "hls" && !protectedCloudfront \? downloadManifestPath\(FileSystem, downloadId\) : downloadPath\(FileSystem, downloadId\)/);
+  assert.match(appSource, /kind: downloadKind === "hls" && !protectedCloudfront \? "hls" : "mp4"/);
+  assert.match(appSource, /\/download-grant`/);
+  assert.match(appSource, /body: JSON\.stringify\(\{\}\)/);
   assert.doesNotMatch(appSource, /body: JSON\.stringify\(\{ prepared: true \}\)/);
   assert.doesNotMatch(appSource, /waitForPreparedDownload/);
 });

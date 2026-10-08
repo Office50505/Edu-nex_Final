@@ -12081,7 +12081,7 @@ export default function App() {
       if (protectedCloudfront) {
         const protectedVideoId = video?._id || video?.id || video?.videoId;
         if (!courseId || !protectedVideoId) throw new Error("Download authorization unavailable.");
-        meta = { ...meta, kind: "mp4", offlineFormatVersion: 3 };
+        meta = { ...meta, kind: "mp4", offlineFormatVersion: 5 };
         setDownloads(prev => ({ ...prev, [downloadId]: { ...prev[downloadId], ...meta } }));
         await FileSystem.deleteAsync(downloadManifestPath(FileSystem, downloadId), { idempotent: true }).catch(() => {});
         await FileSystem.deleteAsync(filePath, { idempotent: true }).catch(() => {});

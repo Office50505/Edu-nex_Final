@@ -38,6 +38,13 @@ function issueGrant(reference, identity) {
   return {provider:'aws_cloudfront',sourceType:'aws_cloudfront',hlsUrl:`/api/playback/hls.m3u8?grant=${encodeURIComponent(token)}`,expiresAt:expiresAt*1000};
 }
 function decodeGrant(token) { return jwt.verify(token,secret(),{algorithms:['HS256'],audience:'cloudfront-hls'}); }
+function scopedProxyUrl(raw, grant, endpoint) {
+  const remaining=grant.expiresAt-Math.floor(Date.now()/1000);
+  if(remaining<=0)throw problem('Playback grant expired.');
+  const {iat,exp,aud,...payload}=grant;
+  const token=jwt.sign({...payload,url:raw},secret(),{algorithm:'HS256',audience:'cloudfront-hls',expiresIn:remaining});
+  return `/api/playback/${endpoint}?grant=${encodeURIComponent(token)}`;
+}
 function resolveResource(reference, base, root) {
   const raw=/^https:\/\//i.test(reference) ? reference : new URL(reference,base).href;
   const parsed=parseHttps(raw),scope=new URL(root);
@@ -53,12 +60,11 @@ function rewritePlaylist(text, grant) {
   const rewrite=(reference,playlist=false)=>{
     const raw=resolveResource(reference,grant.url,grant.root);
     if(playlist || /\.m3u8(?:%20)*$/i.test(new URL(raw).pathname)) {
-      const remaining=grant.expiresAt-Math.floor(Date.now()/1000);
-      if(remaining<=0)throw problem('Playback grant expired.');
-      const {iat,exp,aud,...payload}=grant;
-      const token=jwt.sign({...payload,url:raw},secret(),{algorithm:'HS256',audience:'cloudfront-hls',expiresIn:remaining});
-      return `/api/playback/hls.m3u8?grant=${encodeURIComponent(token)}`;
+      return scopedProxyUrl(raw,grant,'hls.m3u8');
     }
+    // The bundled Linux ARM FFmpeg cannot reliably resolve CloudFront DNS.
+    // Keep download conversion on loopback and let Node fetch signed resources.
+    if(grant.download)return scopedProxyUrl(raw,grant,'resource');
     return signedUrl(raw,grant.expiresAt);
   };
   let variantNext=false;
@@ -80,4 +86,16 @@ async function fetchPlaylist(grant, fetcher=fetch) {
   try {while(true){const {done,value}=await reader.read();if(done)break;length+=value.length;if(length>1024*1024)throw problem('Playlist exceeds the 1 MB limit.');chunks.push(Buffer.from(value));}}finally{await reader.cancel();}
   return rewritePlaylist(Buffer.concat(chunks).toString('utf8'),grant);
 }
-module.exports={TTL_SECONDS,signedUrl,issueGrant,decodeGrant,resolveResource,rewritePlaylist,fetchPlaylist};
+async function fetchResource(grant, range, fetcher=fetch) {
+  if(!grant.download)throw Object.assign(new Error('Resource proxy requires a download grant.'),{statusCode:403});
+  const raw=resolveResource(grant.url,grant.reference,grant.root);
+  const headers={};
+  if(range) {
+    if(!/^bytes=\d*-\d*$/.test(range))throw problem('Invalid media byte range.');
+    headers.Range=range;
+  }
+  const response=await fetcher(signedUrl(raw,grant.expiresAt),{headers,redirect:'error',signal:AbortSignal.timeout(30000)});
+  if(!response.ok)throw Object.assign(new Error(`CloudFront returned HTTP ${response.status} for a download resource.`),{statusCode:502});
+  return response;
+}
+module.exports={TTL_SECONDS,signedUrl,issueGrant,decodeGrant,resolveResource,rewritePlaylist,fetchPlaylist,fetchResource};
