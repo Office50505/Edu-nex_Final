@@ -2501,51 +2501,19 @@ const GlobalEdgeBackGesture = React.forwardRef(function GlobalEdgeBackGesture({
 
   return (
     <View style={s.globalEdgeBackRoot} {...panResponder.panHandlers}>
-      <Animated.View
+      <View
         collapsable={false}
         pointerEvents="none"
         accessibilityElementsHidden
         importantForAccessibility="no-hide-descendants"
-        style={[
-          s.globalEdgeBackUnderlay,
-          {
-            transform: [
-              {
-                translateX: progress.interpolate({
-                  inputRange: [0, 1],
-                  outputRange: [-Math.min(42, viewportWidth * 0.08), 0],
-                  extrapolate: "clamp",
-                }),
-              },
-              {
-                scale: progress.interpolate({
-                  inputRange: [0, 1],
-                  outputRange: [0.985, 1],
-                  extrapolate: "clamp",
-                }),
-              },
-            ],
-          },
-        ]}
+        style={s.globalEdgeBackUnderlay}
       >
         <View style={s.globalEdgeBackDestination} collapsable={false}>
           {destinationScene || (
             <View style={s.globalEdgeBackFallback} />
           )}
         </View>
-        <Animated.View
-          style={[
-            s.globalEdgeBackScrim,
-            {
-              opacity: progress.interpolate({
-                inputRange: [0, 1],
-                outputRange: [0.16, 0],
-                extrapolate: "clamp",
-              }),
-            },
-          ]}
-        />
-      </Animated.View>
+      </View>
       <Animated.View
         collapsable={false}
         style={[
@@ -13951,7 +13919,7 @@ return StyleSheet.create({
     backgroundColor: C.bg,
   },
   globalEdgeBackUnderlay: {
-    flex: 1,
+    ...StyleSheet.absoluteFillObject,
     zIndex: 0,
     backgroundColor: C.bg,
   },
@@ -13968,12 +13936,8 @@ return StyleSheet.create({
     paddingHorizontal: 28,
     backgroundColor: C.bg,
   },
-  globalEdgeBackScrim: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: "#000",
-  },
   globalEdgeBackSurface: {
-    ...StyleSheet.absoluteFillObject,
+    flex: 1,
     zIndex: 1,
     backgroundColor: C.bg,
     shadowColor: "#000",
