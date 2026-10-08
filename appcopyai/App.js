@@ -511,7 +511,6 @@ const PLAYER_EDGE_BACK_RELEASE_DISTANCE = 56;
 const PLAYER_EDGE_BACK_RELEASE_VELOCITY = 0.48;
 const PLAYER_EDGE_BACK_RELEASE_VELOCITY_DISTANCE = 24;
 const GLOBAL_EDGE_BACK_WIDTH = 30;
-const GLOBAL_EDGE_BACK_GUIDE_DISTANCE = 96;
 const GLOBAL_EDGE_BACK_CLAIM_DISTANCE = 14;
 const GLOBAL_EDGE_BACK_RELEASE_DISTANCE = 84;
 const GLOBAL_EDGE_BACK_RELEASE_VELOCITY = 0.72;
@@ -2358,11 +2357,45 @@ function SkillomateLogo({ size = "md", mode, style, onPress }) {
   );
 }
 
-function GlobalEdgeBackGesture({ children, enabled, onBack }) {
+const GlobalEdgeBackGesture = React.forwardRef(function GlobalEdgeBackGesture({
+  children,
+  enabled,
+  onBack,
+  routeKey,
+  collapseHistory = false,
+}, ref) {
+  const { width: viewportWidth } = useWindowDimensions();
   const progress = useRef(new Animated.Value(0)).current;
   const enabledRef = useRef(enabled);
   const onBackRef = useRef(onBack);
   const completingRef = useRef(false);
+  const backNavigationPendingRef = useRef(false);
+  const sceneStackRef = useRef([{ key: routeKey, element: children }]);
+  const [transitionActive, setTransitionActive] = useState(false);
+
+  const sceneStack = sceneStackRef.current;
+  const currentScene = sceneStack[sceneStack.length - 1];
+  if (currentScene?.key === routeKey) {
+    currentScene.element = children;
+  } else if (backNavigationPendingRef.current) {
+    const targetIndex = sceneStack.map(scene => scene.key).lastIndexOf(routeKey);
+    if (targetIndex >= 0) {
+      sceneStack.splice(targetIndex + 1);
+      sceneStack[targetIndex].element = children;
+    } else {
+      sceneStack.push({ key: routeKey, element: children });
+    }
+    backNavigationPendingRef.current = false;
+  } else if (collapseHistory) {
+    sceneStack.splice(0, sceneStack.length, { key: routeKey, element: children });
+  } else {
+    sceneStack.push({ key: routeKey, element: children });
+    if (sceneStack.length > 24) sceneStack.splice(0, sceneStack.length - 24);
+  }
+
+  const previousScene = sceneStack.length > 1
+    ? sceneStack[sceneStack.length - 2]?.element
+    : null;
 
   useEffect(() => {
     enabledRef.current = enabled;
@@ -2380,24 +2413,45 @@ function GlobalEdgeBackGesture({ children, enabled, onBack }) {
       mass: 0.72,
       useNativeDriver: true,
       isInteraction: false,
-    }).start();
+    }).start(({ finished }) => {
+      if (finished) setTransitionActive(false);
+    });
   }, [progress]);
 
   const completeGuide = useCallback(() => {
     if (completingRef.current) return;
     completingRef.current = true;
+    setTransitionActive(true);
     Animated.timing(progress, {
-      toValue: 1.16,
-      duration: 120,
-      easing: Easing.out(Easing.cubic),
+      toValue: 1,
+      duration: 210,
+      easing: Easing.out(Easing.quad),
       useNativeDriver: true,
       isInteraction: false,
     }).start(({ finished }) => {
-      progress.setValue(0);
-      completingRef.current = false;
-      if (finished) onBackRef.current?.();
+      if (!finished) {
+        resetGuide();
+        return;
+      }
+      backNavigationPendingRef.current = true;
+      onBackRef.current?.();
+      requestAnimationFrame(() => {
+        backNavigationPendingRef.current = false;
+        progress.setValue(0);
+        completingRef.current = false;
+        setTransitionActive(false);
+      });
     });
-  }, [progress]);
+  }, [progress, resetGuide]);
+
+  React.useImperativeHandle(ref, () => ({
+    goBack: () => {
+      if (completingRef.current) return false;
+      progress.stopAnimation();
+      completeGuide();
+      return true;
+    },
+  }), [completeGuide, progress]);
 
   const shouldClaimGesture = useCallback((gesture) => {
     if (Platform.OS !== "ios" || !enabledRef.current) return false;
@@ -2416,11 +2470,12 @@ function GlobalEdgeBackGesture({ children, enabled, onBack }) {
     onPanResponderGrant: () => {
       progress.stopAnimation();
       completingRef.current = false;
+      setTransitionActive(true);
     },
     onPanResponderMove: (_, gesture) => {
       const distance = Math.max(0, gesture.dx);
-      const ratio = Math.max(0, Math.min(1, distance / GLOBAL_EDGE_BACK_GUIDE_DISTANCE));
-      progress.setValue(Math.pow(ratio, 0.86));
+      const ratio = Math.max(0, Math.min(1, distance / Math.max(viewportWidth, 1)));
+      progress.setValue(ratio);
     },
     onPanResponderRelease: (_, gesture) => {
       const distance = Math.max(0, gesture.dx);
@@ -2433,33 +2488,67 @@ function GlobalEdgeBackGesture({ children, enabled, onBack }) {
     onPanResponderTerminate: resetGuide,
     onPanResponderTerminationRequest: () => false,
     onShouldBlockNativeResponder: () => false,
-  }), [completeGuide, progress, resetGuide, shouldClaimGesture]);
+  }), [completeGuide, progress, resetGuide, shouldClaimGesture, viewportWidth]);
 
   if (Platform.OS !== "ios") return children;
 
   return (
     <View style={s.globalEdgeBackRoot} {...panResponder.panHandlers}>
-      <Animated.View
-        style={[
-          s.globalEdgeBackContent,
-          {
-            opacity: progress.interpolate({
-              inputRange: [0, 1, 1.16],
-              outputRange: [1, 0.995, 0.98],
-              extrapolate: "clamp",
-            }),
-            transform: [
+      {(previousScene || transitionActive) && (
+        <Animated.View
+          pointerEvents="none"
+          accessibilityElementsHidden
+          importantForAccessibility="no-hide-descendants"
+          style={[
+            s.globalEdgeBackUnderlay,
+            {
+              transform: [
+                {
+                  translateX: progress.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [-Math.min(42, viewportWidth * 0.08), 0],
+                    extrapolate: "clamp",
+                  }),
+                },
+                {
+                  scale: progress.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [0.985, 1],
+                    extrapolate: "clamp",
+                  }),
+                },
+              ],
+            },
+          ]}
+        >
+          {previousScene || (
+            <View style={s.globalEdgeBackFallback}>
+              <SkillomateLogo size="md" />
+            </View>
+          )}
+          <Animated.View
+            style={[
+              s.globalEdgeBackScrim,
               {
-                translateX: progress.interpolate({
-                  inputRange: [0, 1, 1.16],
-                  outputRange: [0, 22, 30],
+                opacity: progress.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: [0.16, 0],
                   extrapolate: "clamp",
                 }),
               },
+            ]}
+          />
+        </Animated.View>
+      )}
+      <Animated.View
+        style={[
+          s.globalEdgeBackSurface,
+          {
+            transform: [
               {
-                scale: progress.interpolate({
-                  inputRange: [0, 1, 1.16],
-                  outputRange: [1, 0.996, 0.992],
+                translateX: progress.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: [0, viewportWidth],
                   extrapolate: "clamp",
                 }),
               },
@@ -2467,42 +2556,13 @@ function GlobalEdgeBackGesture({ children, enabled, onBack }) {
           },
         ]}
       >
-        {children}
-      </Animated.View>
-      <Animated.View
-        pointerEvents="none"
-        style={[
-          s.globalEdgeBackCue,
-          {
-            opacity: progress.interpolate({
-              inputRange: [0, 0.08, 0.45, 1],
-              outputRange: [0, 0.12, 0.72, 1],
-              extrapolate: "clamp",
-            }),
-            transform: [
-              {
-                translateX: progress.interpolate({
-                  inputRange: [0, 1],
-                  outputRange: [-18, 4],
-                  extrapolate: "clamp",
-                }),
-              },
-              {
-                scale: progress.interpolate({
-                  inputRange: [0, 1],
-                  outputRange: [0.82, 1],
-                  extrapolate: "clamp",
-                }),
-              },
-            ],
-          },
-        ]}
-      >
-        <Ionicons name="chevron-back" size={22} color={C.text} />
+        <View style={[s.globalEdgeBackContent, transitionActive && s.globalEdgeBackContentActive]}>
+          {children}
+        </View>
       </Animated.View>
     </View>
   );
-}
+});
 
 function StepBar({ current }) {
   return (
@@ -11613,6 +11673,7 @@ export default function App() {
   const routeHistoryRef = useRef([]);
   const currentRouteRef = useRef(null);
   const restoringRouteRef = useRef(false);
+  const globalBackGestureRef = useRef(null);
   const [canGoBack, setCanGoBack] = useState(false);
   useEffect(() => {
     if (user) return;
@@ -12229,6 +12290,17 @@ export default function App() {
   }, [loadCourseProgress]);
 
   const handleAppBack = useCallback(() => {
+    if (showProblemReport) { setShowProblemReport(false); return true; }
+    if (certModal) { setCertModal(null); return true; }
+    if (showAppUpgrade) { setShowAppUpgrade(false); return true; }
+
+    const previousRoute = routeHistoryRef.current[routeHistoryRef.current.length - 1];
+    if (previousRoute) {
+      routeHistoryRef.current = routeHistoryRef.current.slice(0, -1);
+      setCanGoBack(routeHistoryRef.current.length > 0);
+      if (restoreRoute(previousRoute)) return true;
+    }
+
     if (legalPage) { setLegalPage(null); return true; }
     if (!userRef.current) {
       if (resetVisible) { closePasswordReset(); return true; }
@@ -12240,10 +12312,6 @@ export default function App() {
       }
       return true;
     }
-
-    if (showProblemReport) { setShowProblemReport(false); return true; }
-    if (certModal) { setCertModal(null); return true; }
-    if (showAppUpgrade) { setShowAppUpgrade(false); return true; }
 
     if (mainScreen === "courses" && selectedCourse && startIndex !== null) {
       backToLessons();
@@ -12280,6 +12348,7 @@ export default function App() {
     otpSent,
     resetToHomeFromBack,
     resetVisible,
+    restoreRoute,
     screen,
     selectedCourse,
     showAppUpgrade,
@@ -12944,14 +13013,21 @@ export default function App() {
     </AppSearchReferencesContext.Provider>
   ), [appSearchReferences]);
   const iosGlobalBackEnabled = Platform.OS === "ios" && Boolean(user) && (canGoBack || fallbackBackAvailable);
+  const requestAnimatedBack = useCallback(() => {
+    if (Platform.OS === "ios" && globalBackGestureRef.current?.goBack?.()) return true;
+    return handleAppBack();
+  }, [handleAppBack]);
   const withGlobalBackGesture = useCallback((content, options = {}) => (
     <GlobalEdgeBackGesture
+      ref={globalBackGestureRef}
       enabled={iosGlobalBackEnabled && options.enabled !== false}
       onBack={handleAppBack}
+      routeKey={currentRoute.key}
+      collapseHistory={Boolean(options.collapseHistory)}
     >
       {content}
     </GlobalEdgeBackGesture>
-  ), [handleAppBack, iosGlobalBackEnabled]);
+  ), [currentRoute.key, handleAppBack, iosGlobalBackEnabled]);
 
   // ── Splash loader — shown while restoring session from storage ──────────────
   if (isRestoring) {
@@ -12965,7 +13041,7 @@ export default function App() {
 
   if (legalPage) {
     return withGlobalBackGesture(
-      <LegalContentScreen page={legalPage} onBack={handleAppBack} />
+      <LegalContentScreen page={legalPage} onBack={requestAnimatedBack} />
     );
   }
 
@@ -13367,7 +13443,7 @@ export default function App() {
         mode="course"
         fixedCourse={courseAiTarget}
         user={user}
-        onBack={handleAppBack}
+        onBack={requestAnimatedBack}
       />
     );
   }
@@ -13388,7 +13464,7 @@ export default function App() {
           onVideoComplete={isPreviewOnly ? undefined : markVideoComplete}
           onVideoProgress={isPreviewOnly ? undefined : saveVideoProgress}
           onReportProblem={openProblemReport}
-          onBack={backToLessons}
+          onBack={requestAnimatedBack}
         />
         <CertificateModal cert={certModal} onClose={() => setCertModal(null)} />
         <ProblemReportModal
@@ -13406,7 +13482,7 @@ export default function App() {
       <VideoListScreen
         course={selectedCourse}
         onSelectVideo={idx => setStartIndex(idx)}
-        onBack={handleAppBack}
+        onBack={requestAnimatedBack}
         downloads={downloads}
         onDownloadVideo={startDownload}
         onGoToHome={() => { loadCourseProgress(); setSelectedCourse(null); navigateRootTab("home"); }}
@@ -13423,7 +13499,7 @@ export default function App() {
     return withGlobalBackGesture(
       <CertificatesScreen
         certificates={certificates}
-        onBack={handleAppBack}
+        onBack={requestAnimatedBack}
       />
     );
   }
@@ -13434,7 +13510,7 @@ export default function App() {
         user={user}
         session={nativeSession}
         appleSubscription={storeSubscription}
-        onBack={handleAppBack}
+        onBack={requestAnimatedBack}
         onOpenTerms={() => setLegalPage("terms")}
         onOpenPrivacy={() => openLegalPage("privacy")}
       />
@@ -13445,7 +13521,7 @@ export default function App() {
     return withGlobalBackGesture(
       <InfoPageScreen
         page={HELP_SUPPORT_CONTENT}
-        onBack={handleAppBack}
+        onBack={requestAnimatedBack}
       />
     );
   }
@@ -13454,7 +13530,7 @@ export default function App() {
     return withGlobalBackGesture(
       <InfoPageScreen
         page={TERMS_CONTENT}
-        onBack={handleAppBack}
+        onBack={requestAnimatedBack}
       />
     );
   }
@@ -13463,7 +13539,7 @@ export default function App() {
     return withGlobalBackGesture(
       <InfoPageScreen
         page={PRIVACY_CONTENT}
-        onBack={handleAppBack}
+        onBack={requestAnimatedBack}
       />
     );
   }
@@ -13474,7 +13550,7 @@ export default function App() {
         wishlist={wishlist}
         onToggleWishlist={toggleWishlist}
         onSelect={c => openCourse(c)}
-        onBack={handleAppBack}
+        onBack={requestAnimatedBack}
         user={user}
         onGoToSubscription={openSubscriptionDetails}
         appleSubscription={storeSubscription}
@@ -13821,7 +13897,7 @@ export default function App() {
         onOpenPrivacy={openSubscriptionPrivacy}
       />
     </View>),
-    { enabled: false }
+    { enabled: false, collapseHistory: true }
   );
 }
 
@@ -13843,25 +13919,37 @@ return StyleSheet.create({
     overflow: "hidden",
     backgroundColor: C.bg,
   },
-  globalEdgeBackContent: { flex: 1 },
-  globalEdgeBackCue: {
-    position: "absolute",
-    left: 8,
-    top: "50%",
-    marginTop: -20,
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+  globalEdgeBackUnderlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: C.bg,
+  },
+  globalEdgeBackFallback: {
+    flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: C.surface,
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: C.border,
+    paddingHorizontal: 28,
+    backgroundColor: C.bg,
+  },
+  globalEdgeBackScrim: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: "#000",
+  },
+  globalEdgeBackSurface: {
+    flex: 1,
+    backgroundColor: C.bg,
     shadowColor: "#000",
-    shadowOpacity: 0.16,
-    shadowRadius: 8,
-    shadowOffset: { width: 0, height: 3 },
-    zIndex: 200,
+    shadowOpacity: 0.24,
+    shadowRadius: 14,
+    shadowOffset: { width: -5, height: 0 },
+  },
+  globalEdgeBackContent: {
+    flex: 1,
+    backgroundColor: C.bg,
+  },
+  globalEdgeBackContentActive: {
+    borderTopLeftRadius: 24,
+    borderBottomLeftRadius: 24,
+    overflow: "hidden",
   },
   tabletContentFrame: {
     width: "100%",
