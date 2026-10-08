@@ -2400,7 +2400,7 @@ const GlobalEdgeBackGesture = React.forwardRef(function GlobalEdgeBackGesture({
   const previousScene = sceneStack.length > 1
     ? sceneStack[sceneStack.length - 2]?.element
     : null;
-  const destinationScene = previousScene || backPreview;
+  const destinationScene = backPreview || previousScene;
 
   useEffect(() => {
     enabledRef.current = enabled;
