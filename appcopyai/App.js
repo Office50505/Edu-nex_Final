@@ -2539,6 +2539,139 @@ const GlobalEdgeBackGesture = React.forwardRef(function GlobalEdgeBackGesture({
   );
 });
 
+const InteractiveBackPager = React.forwardRef(function InteractiveBackPager({
+  destination,
+  children,
+  onBack,
+  routeKey,
+}, ref) {
+  const { width: viewportWidth } = useWindowDimensions();
+  const progress = useRef(new Animated.Value(0)).current;
+  const completingRef = useRef(false);
+  const onBackRef = useRef(onBack);
+  const [transitionActive, setTransitionActive] = useState(false);
+
+  useEffect(() => {
+    onBackRef.current = onBack;
+  }, [onBack]);
+  useEffect(() => {
+    completingRef.current = false;
+    progress.setValue(0);
+    setTransitionActive(false);
+  }, [progress, routeKey]);
+
+  const reset = useCallback(() => {
+    completingRef.current = false;
+    Animated.spring(progress, {
+      toValue: 0,
+      stiffness: 320,
+      damping: 28,
+      mass: 0.72,
+      useNativeDriver: true,
+      isInteraction: false,
+    }).start(({ finished }) => {
+      if (finished) setTransitionActive(false);
+    });
+  }, [progress]);
+
+  const complete = useCallback(() => {
+    if (completingRef.current) return false;
+    completingRef.current = true;
+    setTransitionActive(true);
+    Animated.timing(progress, {
+      toValue: 1,
+      duration: 210,
+      easing: Easing.out(Easing.quad),
+      useNativeDriver: true,
+      isInteraction: false,
+    }).start(({ finished }) => {
+      if (!finished) {
+        reset();
+        return;
+      }
+      onBackRef.current?.();
+    });
+    return true;
+  }, [progress, reset]);
+
+  React.useImperativeHandle(ref, () => ({
+    goBack: () => {
+      if (completingRef.current) return false;
+      progress.stopAnimation();
+      return complete();
+    },
+  }), [complete, progress]);
+
+  const shouldClaimGesture = useCallback((gesture) => {
+    if (Platform.OS !== "ios") return false;
+    if (gesture.x0 > GLOBAL_EDGE_BACK_WIDTH) return false;
+    const horizontalDistance = Math.max(0, gesture.dx);
+    const verticalDistance = Math.abs(gesture.dy);
+    if (horizontalDistance < GLOBAL_EDGE_BACK_CLAIM_DISTANCE) return false;
+    return horizontalDistance > Math.max(12, verticalDistance * 1.45);
+  }, []);
+
+  const panResponder = useMemo(() => PanResponder.create({
+    onStartShouldSetPanResponder: () => false,
+    onStartShouldSetPanResponderCapture: () => false,
+    onMoveShouldSetPanResponder: (_, gesture) => shouldClaimGesture(gesture),
+    onMoveShouldSetPanResponderCapture: (_, gesture) => shouldClaimGesture(gesture),
+    onPanResponderGrant: () => {
+      progress.stopAnimation();
+      completingRef.current = false;
+      setTransitionActive(true);
+    },
+    onPanResponderMove: (_, gesture) => {
+      progress.setValue(Math.max(0, Math.min(1, gesture.dx / Math.max(viewportWidth, 1))));
+    },
+    onPanResponderRelease: (_, gesture) => {
+      const distance = Math.max(0, gesture.dx);
+      const shouldGoBack =
+        distance >= GLOBAL_EDGE_BACK_RELEASE_DISTANCE ||
+        (gesture.vx >= GLOBAL_EDGE_BACK_RELEASE_VELOCITY && distance >= GLOBAL_EDGE_BACK_RELEASE_VELOCITY_DISTANCE);
+      if (shouldGoBack) complete();
+      else reset();
+    },
+    onPanResponderTerminate: reset,
+    onPanResponderTerminationRequest: () => false,
+    onShouldBlockNativeResponder: () => false,
+  }), [complete, progress, reset, shouldClaimGesture, viewportWidth]);
+
+  return (
+    <View style={s.interactiveBackPager}>
+      <Animated.View
+        collapsable={false}
+        style={[
+          s.interactiveBackTrack,
+          { width: viewportWidth * 2 },
+          {
+            transform: [{
+              translateX: progress.interpolate({
+                inputRange: [0, 1],
+                outputRange: [-viewportWidth, 0],
+                extrapolate: "clamp",
+              }),
+            }],
+          },
+        ]}
+        {...(Platform.OS === "ios" ? panResponder.panHandlers : {})}
+      >
+        <View
+          style={[s.interactiveBackPage, { width: viewportWidth }]}
+          pointerEvents="none"
+          accessibilityElementsHidden={!transitionActive}
+          importantForAccessibility={transitionActive ? "auto" : "no-hide-descendants"}
+        >
+          {destination}
+        </View>
+        <View style={[s.interactiveBackPage, { width: viewportWidth }]}>
+          {children}
+        </View>
+      </Animated.View>
+    </View>
+  );
+});
+
 function StepBar({ current }) {
   return (
     <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "center", marginBottom: 28 }}>
@@ -11649,6 +11782,8 @@ export default function App() {
   const currentRouteRef = useRef(null);
   const restoringRouteRef = useRef(false);
   const globalBackGestureRef = useRef(null);
+  const courseBackLayerRef = useRef(null);
+  const playerBackLayerRef = useRef(null);
   const [canGoBack, setCanGoBack] = useState(false);
   useEffect(() => {
     if (user) return;
@@ -12992,6 +13127,14 @@ export default function App() {
     if (Platform.OS === "ios" && globalBackGestureRef.current?.goBack?.()) return true;
     return handleAppBack();
   }, [handleAppBack]);
+  const requestCourseBack = useCallback(() => {
+    if (Platform.OS === "ios" && courseBackLayerRef.current?.goBack?.()) return true;
+    return handleAppBack();
+  }, [handleAppBack]);
+  const requestPlayerBack = useCallback(() => {
+    if (Platform.OS === "ios" && playerBackLayerRef.current?.goBack?.()) return true;
+    return handleAppBack();
+  }, [handleAppBack]);
   const withGlobalBackGesture = useCallback((content, options = {}) => (
     <GlobalEdgeBackGesture
       ref={globalBackGestureRef}
@@ -13424,9 +13567,45 @@ export default function App() {
     );
   }
 
-  if (mainScreen === "courses" && selectedCourse && startIndex !== null) {
-    return withGlobalBackGesture((
-      <View style={{ flex: 1 }}>
+  if (mainScreen === "courses" && selectedCourse) {
+    const previewRoute = [...routeHistoryRef.current]
+      .reverse()
+      .find(route => !route.selectedCourse && ROOT_TAB_ORDER.includes(route.mainScreen));
+    const previewTab = ROOT_TAB_ORDER.includes(previewRoute?.mainScreen)
+      ? previewRoute.mainScreen
+      : "courses";
+    const courseRouteKey = `course-pager:${selectedCourse?._id || selectedCourse?.id || selectedCourse?.title || "course"}`;
+    const playerRouteKey = `${courseRouteKey}:player:${startIndex ?? "none"}`;
+    const courseScreen = (
+      <VideoListScreen
+        course={selectedCourse}
+        onSelectVideo={idx => setStartIndex(idx)}
+        onBack={requestCourseBack}
+        downloads={downloads}
+        onDownloadVideo={startDownload}
+        onGoToHome={() => { loadCourseProgress(); setSelectedCourse(null); navigateRootTab("home"); }}
+        onGoToCourses={() => { loadCourseProgress(); setSelectedCourse(null); navigateRootTab("courses"); }}
+        onGoToAI={() => { setSelectedCourse(null); navigateRootTab("ai"); }}
+        onGoToDownloads={() => { setSelectedCourse(null); navigateRootTab("downloads"); }}
+        onGoToProfile={() => { setSelectedCourse(null); navigateRootTab("profile"); }}
+        aiRobotId={aiRobotId}
+      />
+    );
+    const rootScreen = (
+      <SwipeableRootTabs
+        activeTab={previewTab}
+        onNavigate={navigateRootTab}
+        renderTab={renderRootTab}
+        searchReferences={navCourseSearchReferences}
+      />
+    );
+    const activeCoursePager = startIndex !== null ? (
+      <InteractiveBackPager
+        ref={playerBackLayerRef}
+        destination={courseScreen}
+        onBack={handleAppBack}
+        routeKey={playerRouteKey}
+      >
         <ReelsScreen
           courseId={selectedCourse._id}
           course={selectedCourse}
@@ -13440,9 +13619,23 @@ export default function App() {
           onVideoComplete={isPreviewOnly ? undefined : markVideoComplete}
           onVideoProgress={isPreviewOnly ? undefined : saveVideoProgress}
           onReportProblem={openProblemReport}
-          onBack={requestAnimatedBack}
+          onBack={requestPlayerBack}
           useAppBackTransition
         />
+      </InteractiveBackPager>
+    ) : (
+      <InteractiveBackPager
+        ref={courseBackLayerRef}
+        destination={rootScreen}
+        onBack={handleAppBack}
+        routeKey={courseRouteKey}
+      >
+        {courseScreen}
+      </InteractiveBackPager>
+    );
+    return withAppSearch(
+      <View style={s.courseBackStack}>
+        {activeCoursePager}
         <CertificateModal cert={certModal} onClose={() => setCertModal(null)} />
         <ProblemReportModal
           visible={showProblemReport}
@@ -13451,45 +13644,6 @@ export default function App() {
           route={problemReportRoute}
         />
       </View>
-    ), {
-      backPreview: (
-        <VideoListScreen
-          course={selectedCourse}
-          onSelectVideo={() => {}}
-          onBack={() => {}}
-          downloads={downloads}
-          onDownloadVideo={undefined}
-        />
-      ),
-    });
-  }
-
-  if (mainScreen === "courses" && selectedCourse) {
-    const previewRoute = routeHistoryRef.current[routeHistoryRef.current.length - 1];
-    const previewTab = ROOT_TAB_ORDER.includes(previewRoute?.mainScreen)
-      ? previewRoute.mainScreen
-      : "courses";
-    return withGlobalBackGesture(
-      <VideoListScreen
-        course={selectedCourse}
-        onSelectVideo={idx => setStartIndex(idx)}
-        onBack={requestAnimatedBack}
-        downloads={downloads}
-        onDownloadVideo={startDownload}
-        onGoToHome={() => { loadCourseProgress(); setSelectedCourse(null); navigateRootTab("home"); }}
-        onGoToCourses={() => { loadCourseProgress(); setSelectedCourse(null); navigateRootTab("courses"); }}
-        onGoToAI={() => { setSelectedCourse(null); navigateRootTab("ai"); }}
-        onGoToDownloads={() => { setSelectedCourse(null); navigateRootTab("downloads"); }}
-        onGoToProfile={() => { setSelectedCourse(null); navigateRootTab("profile"); }}
-        aiRobotId={aiRobotId}
-      />,
-      {
-        backPreview: withAppSearch(
-          <View style={{ flex: 1, backgroundColor: C.bg }}>
-            {renderRootTab(previewTab, { isActive: true })}
-          </View>
-        ),
-      }
     );
   }
 
@@ -13953,6 +14107,28 @@ return StyleSheet.create({
     borderTopLeftRadius: 24,
     borderBottomLeftRadius: 24,
     overflow: "hidden",
+  },
+  courseBackStack: {
+    flex: 1,
+    overflow: "hidden",
+    backgroundColor: C.bg,
+  },
+  interactiveBackPager: {
+    flex: 1,
+    overflow: "hidden",
+    backgroundColor: C.bg,
+  },
+  interactiveBackTrack: {
+    height: "100%",
+    flexDirection: "row",
+    shadowColor: "#000",
+    shadowOpacity: 0.24,
+    shadowRadius: 14,
+    shadowOffset: { width: -5, height: 0 },
+  },
+  interactiveBackPage: {
+    height: "100%",
+    backgroundColor: C.bg,
   },
   tabletContentFrame: {
     width: "100%",
