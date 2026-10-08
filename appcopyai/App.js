@@ -2501,55 +2501,51 @@ const GlobalEdgeBackGesture = React.forwardRef(function GlobalEdgeBackGesture({
 
   return (
     <View style={s.globalEdgeBackRoot} {...panResponder.panHandlers}>
-      {(destinationScene || transitionActive) && (
-        <Animated.View
-          collapsable={false}
-          pointerEvents="none"
-          accessibilityElementsHidden
-          importantForAccessibility="no-hide-descendants"
-          style={[
-            s.globalEdgeBackUnderlay,
-            {
-              transform: [
-                {
-                  translateX: progress.interpolate({
-                    inputRange: [0, 1],
-                    outputRange: [-Math.min(42, viewportWidth * 0.08), 0],
-                    extrapolate: "clamp",
-                  }),
-                },
-                {
-                  scale: progress.interpolate({
-                    inputRange: [0, 1],
-                    outputRange: [0.985, 1],
-                    extrapolate: "clamp",
-                  }),
-                },
-              ],
-            },
-          ]}
-        >
-          <View style={s.globalEdgeBackDestination} collapsable={false}>
-            {destinationScene || (
-              <View style={s.globalEdgeBackFallback}>
-                <SkillomateLogo size="md" />
-              </View>
-            )}
-          </View>
-          <Animated.View
-            style={[
-              s.globalEdgeBackScrim,
+      <Animated.View
+        collapsable={false}
+        pointerEvents="none"
+        accessibilityElementsHidden
+        importantForAccessibility="no-hide-descendants"
+        style={[
+          s.globalEdgeBackUnderlay,
+          {
+            transform: [
               {
-                opacity: progress.interpolate({
+                translateX: progress.interpolate({
                   inputRange: [0, 1],
-                  outputRange: [0.16, 0],
+                  outputRange: [-Math.min(42, viewportWidth * 0.08), 0],
                   extrapolate: "clamp",
                 }),
               },
-            ]}
-          />
-        </Animated.View>
-      )}
+              {
+                scale: progress.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: [0.985, 1],
+                  extrapolate: "clamp",
+                }),
+              },
+            ],
+          },
+        ]}
+      >
+        <View style={s.globalEdgeBackDestination} collapsable={false}>
+          {destinationScene || (
+            <View style={s.globalEdgeBackFallback} />
+          )}
+        </View>
+        <Animated.View
+          style={[
+            s.globalEdgeBackScrim,
+            {
+              opacity: progress.interpolate({
+                inputRange: [0, 1],
+                outputRange: [0.16, 0],
+                extrapolate: "clamp",
+              }),
+            },
+          ]}
+        />
+      </Animated.View>
       <Animated.View
         collapsable={false}
         style={[
@@ -13955,7 +13951,7 @@ return StyleSheet.create({
     backgroundColor: C.bg,
   },
   globalEdgeBackUnderlay: {
-    ...StyleSheet.absoluteFillObject,
+    flex: 1,
     zIndex: 0,
     backgroundColor: C.bg,
   },
@@ -13977,7 +13973,7 @@ return StyleSheet.create({
     backgroundColor: "#000",
   },
   globalEdgeBackSurface: {
-    flex: 1,
+    ...StyleSheet.absoluteFillObject,
     zIndex: 1,
     backgroundColor: C.bg,
     shadowColor: "#000",
