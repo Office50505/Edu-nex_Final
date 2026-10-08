@@ -515,6 +515,7 @@ const GLOBAL_EDGE_BACK_CLAIM_DISTANCE = 14;
 const GLOBAL_EDGE_BACK_RELEASE_DISTANCE = 84;
 const GLOBAL_EDGE_BACK_RELEASE_VELOCITY = 0.72;
 const GLOBAL_EDGE_BACK_RELEASE_VELOCITY_DISTANCE = 34;
+const globalEdgeBackMemory = { scenes: [], backPending: false };
 const AUTO_QUALITY_LABEL = "Auto";
 const FALLBACK_QUALITY_OPTIONS = ["144p", "240p", "360p", "480p", "720p", "1080p"];
 const VIDEO_COMPLETE_THRESHOLD = 0.9;
@@ -2363,6 +2364,7 @@ const GlobalEdgeBackGesture = React.forwardRef(function GlobalEdgeBackGesture({
   onBack,
   routeKey,
   collapseHistory = false,
+  backPreview = null,
 }, ref) {
   const { width: viewportWidth } = useWindowDimensions();
   const progress = useRef(new Animated.Value(0)).current;
@@ -2370,14 +2372,15 @@ const GlobalEdgeBackGesture = React.forwardRef(function GlobalEdgeBackGesture({
   const onBackRef = useRef(onBack);
   const completingRef = useRef(false);
   const backNavigationPendingRef = useRef(false);
-  const sceneStackRef = useRef([{ key: routeKey, element: children }]);
+  const sceneStackRef = useRef(globalEdgeBackMemory.scenes);
   const [transitionActive, setTransitionActive] = useState(false);
 
   const sceneStack = sceneStackRef.current;
+  if (sceneStack.length === 0) sceneStack.push({ key: routeKey, element: children });
   const currentScene = sceneStack[sceneStack.length - 1];
   if (currentScene?.key === routeKey) {
     currentScene.element = children;
-  } else if (backNavigationPendingRef.current) {
+  } else if (backNavigationPendingRef.current || globalEdgeBackMemory.backPending) {
     const targetIndex = sceneStack.map(scene => scene.key).lastIndexOf(routeKey);
     if (targetIndex >= 0) {
       sceneStack.splice(targetIndex + 1);
@@ -2386,6 +2389,7 @@ const GlobalEdgeBackGesture = React.forwardRef(function GlobalEdgeBackGesture({
       sceneStack.push({ key: routeKey, element: children });
     }
     backNavigationPendingRef.current = false;
+    globalEdgeBackMemory.backPending = false;
   } else if (collapseHistory) {
     sceneStack.splice(0, sceneStack.length, { key: routeKey, element: children });
   } else {
@@ -2396,6 +2400,7 @@ const GlobalEdgeBackGesture = React.forwardRef(function GlobalEdgeBackGesture({
   const previousScene = sceneStack.length > 1
     ? sceneStack[sceneStack.length - 2]?.element
     : null;
+  const destinationScene = previousScene || backPreview;
 
   useEffect(() => {
     enabledRef.current = enabled;
@@ -2434,9 +2439,11 @@ const GlobalEdgeBackGesture = React.forwardRef(function GlobalEdgeBackGesture({
         return;
       }
       backNavigationPendingRef.current = true;
+      globalEdgeBackMemory.backPending = true;
       onBackRef.current?.();
       requestAnimationFrame(() => {
         backNavigationPendingRef.current = false;
+        globalEdgeBackMemory.backPending = false;
         progress.setValue(0);
         completingRef.current = false;
         setTransitionActive(false);
@@ -2494,7 +2501,7 @@ const GlobalEdgeBackGesture = React.forwardRef(function GlobalEdgeBackGesture({
 
   return (
     <View style={s.globalEdgeBackRoot} {...panResponder.panHandlers}>
-      {(previousScene || transitionActive) && (
+      {(destinationScene || transitionActive) && (
         <Animated.View
           pointerEvents="none"
           accessibilityElementsHidden
@@ -2521,7 +2528,7 @@ const GlobalEdgeBackGesture = React.forwardRef(function GlobalEdgeBackGesture({
             },
           ]}
         >
-          {previousScene || (
+          {destinationScene || (
             <View style={s.globalEdgeBackFallback}>
               <SkillomateLogo size="md" />
             </View>
@@ -6078,7 +6085,7 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
 }
 
 // ── ReelsScreen ───────────────────────────────────────────────────────────────
-function ReelsScreen({ courseId, course, initialIndex, initialTime, onBack, onReportProblem, user, session, onVideoComplete, onVideoProgress, downloads, onDownloadVideo, preloadedVideos }) {
+function ReelsScreen({ courseId, course, initialIndex, initialTime, onBack, onReportProblem, user, session, onVideoComplete, onVideoProgress, downloads, onDownloadVideo, preloadedVideos, useAppBackTransition = false }) {
   const { width: viewportWidth } = useWindowDimensions();
   const [videos, setVideos] = useState(preloadedVideos || []);
   const [loading, setLoading] = useState(!preloadedVideos);
@@ -6149,7 +6156,7 @@ function ReelsScreen({ courseId, course, initialIndex, initialTime, onBack, onRe
   const videoUiOverlayOpen = showCourseAi || showDescription || showNotes || showLectures;
   const reelScrollEnabled = videos.length > 1 && !playerHoldSpeedActive;
   const webPlayerChromeOpacity = webPlayerChromeOpacityRef.current;
-  const isIosEdgeBackGuide = Platform.OS === "ios";
+  const isIosEdgeBackGuide = Platform.OS === "ios" && !useAppBackTransition;
   const playerEdgeBackProgress = useRef(new Animated.Value(0)).current;
   const edgeBackGestureSideRef = useRef(null);
   const edgeBackLatestGestureRef = useRef({ side: "left", distance: 0, velocity: 0 });
@@ -13024,6 +13031,7 @@ export default function App() {
       onBack={handleAppBack}
       routeKey={currentRoute.key}
       collapseHistory={Boolean(options.collapseHistory)}
+      backPreview={options.backPreview || null}
     >
       {content}
     </GlobalEdgeBackGesture>
@@ -13465,6 +13473,7 @@ export default function App() {
           onVideoProgress={isPreviewOnly ? undefined : saveVideoProgress}
           onReportProblem={openProblemReport}
           onBack={requestAnimatedBack}
+          useAppBackTransition
         />
         <CertificateModal cert={certModal} onClose={() => setCertModal(null)} />
         <ProblemReportModal
@@ -13474,10 +13483,24 @@ export default function App() {
           route={problemReportRoute}
         />
       </View>
-    ), { enabled: false });
+    ), {
+      backPreview: (
+        <VideoListScreen
+          course={selectedCourse}
+          onSelectVideo={() => {}}
+          onBack={() => {}}
+          downloads={downloads}
+          onDownloadVideo={undefined}
+        />
+      ),
+    });
   }
 
   if (mainScreen === "courses" && selectedCourse) {
+    const previewRoute = routeHistoryRef.current[routeHistoryRef.current.length - 1];
+    const previewTab = ROOT_TAB_ORDER.includes(previewRoute?.mainScreen)
+      ? previewRoute.mainScreen
+      : "courses";
     return withGlobalBackGesture(
       <VideoListScreen
         course={selectedCourse}
@@ -13491,7 +13514,14 @@ export default function App() {
         onGoToDownloads={() => { setSelectedCourse(null); navigateRootTab("downloads"); }}
         onGoToProfile={() => { setSelectedCourse(null); navigateRootTab("profile"); }}
         aiRobotId={aiRobotId}
-      />
+      />,
+      {
+        backPreview: withAppSearch(
+          <View style={{ flex: 1, backgroundColor: C.bg }}>
+            {renderRootTab(previewTab, { isActive: true })}
+          </View>
+        ),
+      }
     );
   }
 
