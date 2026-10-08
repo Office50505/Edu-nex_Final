@@ -8350,6 +8350,7 @@ function LegacyHomeScreenDraft({ session, user, onGoToCourses, onGoToAI, onGoToD
 
 // Only public catalog metadata survives Home unmounts; never cache playback grants.
 let homeCatalogCourses = null;
+let courseListCache = null;
 
 function HomeScreen({
   session,
@@ -8931,8 +8932,8 @@ function CourseListScreen({ onSelect, user, session, onGoToHome, onGoToCourses, 
   const isTablet = width >= 768;
   const hasAccess = hasCourseAccess(user);
   const [showUpgrade, setShowUpgrade] = useState(false);
-  const [courses, setCourses] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [courses, setCourses] = useState(() => Array.isArray(courseListCache) ? courseListCache : []);
+  const [loading, setLoading] = useState(() => !Array.isArray(courseListCache));
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState(null);
   const [query, setQuery] = useState("");
@@ -8947,19 +8948,27 @@ function CourseListScreen({ onSelect, user, session, onGoToHome, onGoToCourses, 
   const loadCourses = useCallback(async (options = {}) => {
     const isRefresh = Boolean(options.refresh);
     if (isRefresh) setRefreshing(true);
-    else setLoading(true);
+    else {
+      setLoading(!Array.isArray(courseListCache));
+      if (Array.isArray(courseListCache)) setCourses(courseListCache);
+    }
     setError(null);
     try {
       const response = await fetch(`${API_BASE}/api/courses`);
       const data = await response.json();
       if (data.error) throw new Error(data.error);
-      setCourses(DEV_UI_QA_ENABLED && (!Array.isArray(data) || data.length === 0) ? UI_QA_COURSES : data);
+      const nextCourses = DEV_UI_QA_ENABLED && (!Array.isArray(data) || data.length === 0)
+        ? UI_QA_COURSES
+        : data;
+      courseListCache = nextCourses;
+      setCourses(nextCourses);
     } catch (e) {
       if (DEV_UI_QA_ENABLED) {
+        courseListCache = UI_QA_COURSES;
         setCourses(UI_QA_COURSES);
         return;
       }
-      setError(e.message);
+      if (!Array.isArray(courseListCache)) setError(e.message);
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -13568,7 +13577,17 @@ export default function App() {
   }
 
   if (mainScreen === "courses" && selectedCourse) {
-    const previewRoute = [...routeHistoryRef.current]
+    const immediateBackRoute = currentRouteRef.current?.key !== currentRoute.key
+      ? currentRouteRef.current
+      : routeHistoryRef.current[routeHistoryRef.current.length - 1];
+    const playerReturnsToCourse = Boolean(
+      startIndex !== null && immediateBackRoute?.selectedCourse
+    );
+    const previewRoute = [
+      ...routeHistoryRef.current,
+      currentRouteRef.current,
+    ]
+      .filter(Boolean)
       .reverse()
       .find(route => !route.selectedCourse && ROOT_TAB_ORDER.includes(route.mainScreen));
     const previewTab = ROOT_TAB_ORDER.includes(previewRoute?.mainScreen)
@@ -13599,32 +13618,35 @@ export default function App() {
         searchReferences={navCourseSearchReferences}
       />
     );
+    const playerDestination = playerReturnsToCourse ? courseScreen : rootScreen;
     const activeCoursePager = startIndex !== null ? (
       <InteractiveBackPager
+        key={playerRouteKey}
         ref={playerBackLayerRef}
-        destination={courseScreen}
+        destination={playerDestination}
         onBack={handleAppBack}
         routeKey={playerRouteKey}
       >
-        <ReelsScreen
-          courseId={selectedCourse._id}
-          course={selectedCourse}
-          initialIndex={startIndex}
-          initialTime={initialTime}
-          downloads={downloads}
-          onDownloadVideo={startDownload}
-          preloadedVideos={preloadedVideos || (DEV_UI_QA_ENABLED ? selectedCourse.videos : null)}
-          user={user}
-          session={nativeSession}
-          onVideoComplete={isPreviewOnly ? undefined : markVideoComplete}
-          onVideoProgress={isPreviewOnly ? undefined : saveVideoProgress}
-          onReportProblem={openProblemReport}
-          onBack={requestPlayerBack}
-          useAppBackTransition
-        />
+          <ReelsScreen
+            courseId={selectedCourse._id}
+            course={selectedCourse}
+            initialIndex={startIndex}
+            initialTime={initialTime}
+            downloads={downloads}
+            onDownloadVideo={startDownload}
+            preloadedVideos={preloadedVideos || (DEV_UI_QA_ENABLED ? selectedCourse.videos : null)}
+            user={user}
+            session={nativeSession}
+            onVideoComplete={isPreviewOnly ? undefined : markVideoComplete}
+            onVideoProgress={isPreviewOnly ? undefined : saveVideoProgress}
+            onReportProblem={openProblemReport}
+            onBack={requestPlayerBack}
+            useAppBackTransition
+          />
       </InteractiveBackPager>
     ) : (
       <InteractiveBackPager
+        key={courseRouteKey}
         ref={courseBackLayerRef}
         destination={rootScreen}
         onBack={handleAppBack}
