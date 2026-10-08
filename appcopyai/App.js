@@ -2503,6 +2503,7 @@ const GlobalEdgeBackGesture = React.forwardRef(function GlobalEdgeBackGesture({
     <View style={s.globalEdgeBackRoot} {...panResponder.panHandlers}>
       {(destinationScene || transitionActive) && (
         <Animated.View
+          collapsable={false}
           pointerEvents="none"
           accessibilityElementsHidden
           importantForAccessibility="no-hide-descendants"
@@ -2528,11 +2529,13 @@ const GlobalEdgeBackGesture = React.forwardRef(function GlobalEdgeBackGesture({
             },
           ]}
         >
-          {destinationScene || (
-            <View style={s.globalEdgeBackFallback}>
-              <SkillomateLogo size="md" />
-            </View>
-          )}
+          <View style={s.globalEdgeBackDestination} collapsable={false}>
+            {destinationScene || (
+              <View style={s.globalEdgeBackFallback}>
+                <SkillomateLogo size="md" />
+              </View>
+            )}
+          </View>
           <Animated.View
             style={[
               s.globalEdgeBackScrim,
@@ -2548,6 +2551,7 @@ const GlobalEdgeBackGesture = React.forwardRef(function GlobalEdgeBackGesture({
         </Animated.View>
       )}
       <Animated.View
+        collapsable={false}
         style={[
           s.globalEdgeBackSurface,
           {
@@ -13946,11 +13950,19 @@ return StyleSheet.create({
 	  },
   globalEdgeBackRoot: {
     flex: 1,
+    position: "relative",
     overflow: "hidden",
     backgroundColor: C.bg,
   },
   globalEdgeBackUnderlay: {
     ...StyleSheet.absoluteFillObject,
+    zIndex: 0,
+    backgroundColor: C.bg,
+  },
+  globalEdgeBackDestination: {
+    flex: 1,
+    width: "100%",
+    height: "100%",
     backgroundColor: C.bg,
   },
   globalEdgeBackFallback: {
@@ -13965,7 +13977,8 @@ return StyleSheet.create({
     backgroundColor: "#000",
   },
   globalEdgeBackSurface: {
-    flex: 1,
+    ...StyleSheet.absoluteFillObject,
+    zIndex: 1,
     backgroundColor: C.bg,
     shadowColor: "#000",
     shadowOpacity: 0.24,
