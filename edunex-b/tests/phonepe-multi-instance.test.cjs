@@ -188,6 +188,7 @@ function controllerHarness({ env = {}, failFirstOrderSave = false, providerStatu
       if (name.includes('phonePeService')) return phonePeService;
       if (name.includes('paymentMode')) return { activeProvider: async () => policy.newCheckoutProvider(sandboxProcess.env) === 'phonepe' ? 'phonepe' : 'razorpay' };
       if (name.includes('subscriptionAccess')) return { resolveSubscriptionAccess: () => ({ active: false, status: 'expired', expiresAt: null }) };
+      if (name.includes('accountEntitlement')) return { loadAccountEntitlement: async () => ({ access: { active: false, status: 'none', source: 'none' } }) };
       if (name.includes('courseAccess')) return { activeCourseEntitlements: () => [] };
       if (name.includes('trialEligibility')) return { hasUsedIntroTrial: async () => false };
       return models[name.split('/').at(-1)];

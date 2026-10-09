@@ -8,6 +8,7 @@ function harness({subscription={status:'active',currentPeriodEnd:new Date(Date.n
   if(name.includes('subscriptionAccess'))return require('../services/subscriptionAccess');
   if(name.includes('courseAccess'))return require('../services/courseAccess');
   if(name.endsWith('/Subscription'))return {findOne:async()=>subscription};
+  if(name.endsWith('/AppleSubscription')||name.endsWith('/GooglePlaySubscription'))return {findOne:async()=>null};
   if(name.endsWith('/Course'))return {findOne:()=>({sort:()=>({select:()=>({lean:async()=>trialCourse})})})};
   return {};
  },Date});
@@ -52,6 +53,7 @@ test('trial playback unlocks the same primary AI Influencer course shown first i
   if(name.includes('subscriptionAccess'))return require('../services/subscriptionAccess');
   if(name.includes('courseAccess'))return require('../services/courseAccess');
   if(name.endsWith('/Subscription'))return {findOne:async()=>({status:'trial',trialExpiresAt:new Date(Date.now()+60000)})};
+  if(name.endsWith('/AppleSubscription')||name.endsWith('/GooglePlaySubscription'))return {findOne:async()=>null};
   if(name.endsWith('/Course'))return {findOne:query=>{queries.push(query);return {sort:sort=>({select:()=>({lean:async()=>queries.length===1?{_id:aiCourse}: {_id:newerCourse}})})};}};
   return {};
  },Date});
@@ -68,6 +70,7 @@ test('playback authorization uses the same trial course selector as lesson start
   if(name==='mongoose')return {Types:{ObjectId:{isValid:()=>true}}};
   if(name.endsWith('/Course'))return {};
   if(name.endsWith('/Subscription'))return {findOne:()=>({lean:async()=>({status:'trial',trialExpiresAt:new Date(Date.now()+60000)})})};
+  if(name.endsWith('/AppleSubscription')||name.endsWith('/GooglePlaySubscription'))return {findOne:()=>({lean:async()=>null})};
   if(name.includes('subscriptionAccess'))return require('../services/subscriptionAccess');
   if(name.includes('courseAccess'))return require('../services/courseAccess');
   if(name.includes('checkSubscription'))return {isTrialUnlockedCourse:async courseId=>{checkedCourseId=String(courseId);return true;}};
@@ -80,7 +83,7 @@ test('playback authorization uses the same trial course selector as lesson start
 });
 test('a purchased course grants access without a subscription',async()=>{
  const checkModule={exports:{}};
- vm.runInNewContext(fs.readFileSync(require.resolve('../middleware/checkSubscription'),'utf8'),{module:checkModule,require:name=>name.includes('subscriptionAccess')?require('../services/subscriptionAccess'):name.includes('courseAccess')?require('../services/courseAccess'):name.endsWith('/Subscription')?{findOne:async()=>null}:name.endsWith('/Course')?{findOne:()=>({sort:()=>({select:()=>({lean:async()=>null})})})}:{},Date});
+ vm.runInNewContext(fs.readFileSync(require.resolve('../middleware/checkSubscription'),'utf8'),{module:checkModule,require:name=>name.includes('subscriptionAccess')?require('../services/subscriptionAccess'):name.includes('courseAccess')?require('../services/courseAccess'):/\/(?:Subscription|AppleSubscription|GooglePlaySubscription)$/.test(name)?{findOne:async()=>null}:name.endsWith('/Course')?{findOne:()=>({sort:()=>({select:()=>({lean:async()=>null})})})}:{},Date});
  const req={params:{id},user:{_id:'course-owner',subscriptionStatus:'none',purchasedCourses:[id]}};
  const res={code:200,status(n){this.code=n;return this;},json(v){this.body=v;return this;}};
  let allowed=false;await checkModule.exports.checkSubscription(req,res,()=>{allowed=true;});
@@ -97,7 +100,7 @@ test('course trial and yearly access expire while permanent access remains activ
 });
 test('admin-granted user access works without a payment subscription document',async()=>{
  const checkModule={exports:{}};
- vm.runInNewContext(fs.readFileSync(require.resolve('../middleware/checkSubscription'),'utf8'),{module:checkModule,require:name=>name.includes('subscriptionAccess')?require('../services/subscriptionAccess'):name.includes('courseAccess')?require('../services/courseAccess'):name.endsWith('/Subscription')?{findOne:async()=>null}:name.endsWith('/Course')?{findOne:()=>({sort:()=>({select:()=>({lean:async()=>null})})})}:{},Date});
+ vm.runInNewContext(fs.readFileSync(require.resolve('../middleware/checkSubscription'),'utf8'),{module:checkModule,require:name=>name.includes('subscriptionAccess')?require('../services/subscriptionAccess'):name.includes('courseAccess')?require('../services/courseAccess'):/\/(?:Subscription|AppleSubscription|GooglePlaySubscription)$/.test(name)?{findOne:async()=>null}:name.endsWith('/Course')?{findOne:()=>({sort:()=>({select:()=>({lean:async()=>null})})})}:{},Date});
  const req={user:{_id:'manual-user',subscriptionStatus:'active',subscriptionExpiry:new Date(Date.now()+60000)}};
  const res={code:200,status(n){this.code=n;return this;},json(v){this.body=v;return this;}};
  let allowed=false;await checkModule.exports.checkSubscription(req,res,()=>{allowed=true;});

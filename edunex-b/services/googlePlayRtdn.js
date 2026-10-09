@@ -17,11 +17,13 @@ function decodeGooglePlayRtdnMessage(body) {
     throw new GooglePlayIapError('Google Play notification package does not match.', 403, 'GOOGLE_PLAY_RTDN_PACKAGE_MISMATCH');
   }
   if (notification.testNotification) return { test: true, purchaseToken: null };
-  const purchaseToken = notification.subscriptionNotification?.purchaseToken;
+  const voided = notification.voidedPurchaseNotification;
+  if (voided && voided.productType !== 1) return { test: false, ignored: true, purchaseToken: null };
+  const purchaseToken = notification.subscriptionNotification?.purchaseToken || voided?.purchaseToken;
   if (typeof purchaseToken !== 'string' || purchaseToken.length < 20 || purchaseToken.length > 4096) {
     throw new GooglePlayIapError('Google Play notification purchase token is invalid.', 400, 'GOOGLE_PLAY_RTDN_TOKEN_INVALID');
   }
-  return { test: false, purchaseToken };
+  return { test: false, purchaseToken, ...(voided ? { voided: true } : {}) };
 }
 
 async function verifyGooglePlayPubSubAuthorization(

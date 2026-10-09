@@ -9,7 +9,7 @@ const {
 const AppleSubscription = require('../models/AppleSubscription');
 const AppleTransaction = require('../models/AppleTransaction');
 const AppleNotification = require('../models/AppleNotification');
-const User = require('../models/User');
+const { syncUserSubscriptionMirror } = require('./subscriptionMirror');
 const {
   APPLE_PRODUCT_ID,
   deriveAppleEntitlement,
@@ -90,19 +90,13 @@ function validateSignedTransaction(transaction, expectedToken) {
   }
 }
 
-function userSubscriptionFields(entitlement) {
-  return entitlement.entitlementActive
-    ? { subscriptionStatus: 'active', subscriptionExpiry: entitlement.gracePeriodExpiresAt || entitlement.expiresAt, isOnTrial: false }
-    : { subscriptionStatus: 'expired', subscriptionExpiry: entitlement.expiresAt || null, isOnTrial: false };
-}
-
 function createAppleIapService(dependencies = {}) {
   const models = {
     AppleSubscription: dependencies.AppleSubscription || AppleSubscription,
     AppleTransaction: dependencies.AppleTransaction || AppleTransaction,
     AppleNotification: dependencies.AppleNotification || AppleNotification,
-    User: dependencies.User || User,
   };
+  const syncMirror = dependencies.syncUserSubscriptionMirror || syncUserSubscriptionMirror;
   const verifyPayload = dependencies.verifyPayload || verifyWithAvailableEnvironment;
   const serverApiClientFactory = dependencies.serverApiClientFactory || createServerApiClient;
   const now = dependencies.now || (() => Date.now());
@@ -189,7 +183,7 @@ function createAppleIapService(dependencies = {}) {
       const current = await models.AppleSubscription.findOne({ user: userId });
       return { subscription: current, entitlement: publicAppleEntitlement(current, new Date(now())), duplicate: true };
     }
-    await models.User.updateOne({ _id: userId }, { $set: userSubscriptionFields(entitlement) });
+    await syncMirror(userId);
     return { subscription: saved, entitlement, duplicate: Boolean(existing) };
   }
 

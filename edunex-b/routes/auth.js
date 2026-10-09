@@ -224,6 +224,7 @@ function toAuthUser(user) {
     age: user.age,
     isOnTrial: user.isOnTrial,
     subscriptionStatus: user.subscriptionStatus,
+    subscriptionExpiry: user.subscriptionExpiry || null,
   };
 }
 

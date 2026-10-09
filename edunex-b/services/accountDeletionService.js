@@ -17,6 +17,7 @@ const AnalyticsEvent = require('../models/AnalyticsEvent');
 const AppleSubscription = require('../models/AppleSubscription');
 const AppleTransaction = require('../models/AppleTransaction');
 const GooglePlaySubscription = require('../models/GooglePlaySubscription');
+const GooglePlayReconciliation = require('../models/GooglePlayReconciliation');
 const BillingCancellationJob = require('../models/BillingCancellationJob');
 const DownloadGrant = require('../models/DownloadGrant');
 const AiResponseReport = require('../models/AiResponseReport');
@@ -148,6 +149,7 @@ async function deleteUserAccount(userId, options = {}) {
     require('../models/OnboardingSession').deleteMany({ _id: user._id }),
     DownloadGrant.deleteMany({ user: user._id }),
     AiResponseReport.deleteMany({ user: user._id }),
+    GooglePlayReconciliation.deleteMany({ $or: [{ user: user._id }, { candidateUser: user._id }] }),
   ]);
 
   if (user.avatarStorageKey) await deleteProfileImage(user.avatarStorageKey).catch(() => {});
@@ -181,6 +183,7 @@ async function deleteUserAccount(userId, options = {}) {
     onboardingSessions: results[20].deletedCount || 0,
     downloadGrants: results[21].deletedCount || 0,
     aiResponseReports: results[22].deletedCount || 0,
+    googlePlayReconciliation: results[23].deletedCount || 0,
     billingCancellationQueued,
   };
 }

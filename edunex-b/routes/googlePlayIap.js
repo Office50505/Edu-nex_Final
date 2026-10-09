@@ -49,11 +49,12 @@ router.get('/google-play-iap/config', requireCompatibleAuth(), handler(async (re
   const status = await service.statusForUser(req.compatAuth.userId);
   res.set('Cache-Control', 'no-store');
   res.json({
+    ...status,
+    // Purchase configuration must not be replaced by an older stored product.
     packageName: GOOGLE_PLAY_PACKAGE_NAME,
     productId: GOOGLE_PLAY_PRODUCT_ID,
     introductoryOfferId: GOOGLE_PLAY_INTRODUCTORY_OFFER_ID,
     managementUrl: `https://play.google.com/store/account/subscriptions?sku=${encodeURIComponent(GOOGLE_PLAY_PRODUCT_ID)}&package=${encodeURIComponent(GOOGLE_PLAY_PACKAGE_NAME)}`,
-    ...status,
   });
 }));
 
@@ -78,7 +79,7 @@ router.post(
   handler(async (req, res) => {
     await verifyGooglePlayPubSubAuthorization(req.get('authorization'));
     const notification = decodeGooglePlayRtdnMessage(req.body);
-    if (!notification.test) await service.processDeveloperNotification(notification.purchaseToken);
+    if (!notification.test && !notification.ignored) await service.processDeveloperNotification(notification.purchaseToken);
     res.status(204).end();
   })
 );

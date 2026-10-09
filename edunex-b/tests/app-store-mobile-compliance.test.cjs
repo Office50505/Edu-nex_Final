@@ -141,7 +141,7 @@ test('premium gate popup starts the platform store subscription and exposes requ
   assert.match(upgradeModalSource, /accessibilityLabel="Read subscription Privacy Policy"/);
 });
 
-test('Google Play offer normalization selects the dedicated ₹1 one-day phase and ₹499 monthly renewal', () => {
+test('Google Play offer normalization selects the dedicated ₹9 three-day phase and ₹499 monthly renewal', () => {
   const result = normalizeGooglePlaySubscriptionOffers({
     displayPrice: '₹499.00',
     subscriptionOfferDetailsAndroid: [
@@ -150,6 +150,7 @@ test('Google Play offer normalization selects the dedicated ₹1 one-day phase a
         offerToken: 'base-token',
         pricingPhases: { pricingPhaseList: [{
           billingCycleCount: 0,
+          recurrenceMode: 1,
           billingPeriod: 'P1M',
           formattedPrice: '₹499.00',
           priceAmountMicros: '499000000',
@@ -176,17 +177,19 @@ test('Google Play offer normalization selects the dedicated ₹1 one-day phase a
       },
       {
         basePlanId: 'monthly',
-        offerId: GOOGLE_PLAY_SUBSCRIPTION_OFFER_IDS.introductory24Hour,
-        offerToken: '24-hour-intro-token',
+        offerId: GOOGLE_PLAY_SUBSCRIPTION_OFFER_IDS.introductory,
+        offerToken: 'three-day-intro-token',
         pricingPhases: { pricingPhaseList: [
           {
-            billingCycleCount: 1,
-            billingPeriod: 'P1D',
-            formattedPrice: '₹1.00',
-            priceAmountMicros: '1000000',
+            billingCycleCount: 0,
+            recurrenceMode: 3,
+            billingPeriod: 'P3D',
+            formattedPrice: '₹9.00',
+            priceAmountMicros: '9000000',
           },
           {
             billingCycleCount: 0,
+            recurrenceMode: 1,
             billingPeriod: 'P1M',
             formattedPrice: '₹499.00',
             priceAmountMicros: '499000000',
@@ -195,15 +198,17 @@ test('Google Play offer normalization selects the dedicated ₹1 one-day phase a
       },
     ],
   });
-  assert.equal(result.introductoryOffer.displayText, '₹1.00 for the first day');
+  assert.equal(result.introductoryOffer.displayText, '₹9.00 for the first 3 days');
   assert.equal(result.introductoryOffer.periodUnit, 'day');
-  assert.equal(result.introductoryOffer.periodValue, 1);
+  assert.equal(result.introductoryOffer.periodValue, 3);
   assert.equal(result.recurring.localizedPrice, '₹499.00');
-  assert.deepEqual(result.purchaseOffer, {
+  const { termsKey, ...purchaseOffer } = result.purchaseOffer;
+  assert.deepEqual(purchaseOffer, {
     basePlanId: 'monthly',
-    offerId: GOOGLE_PLAY_SUBSCRIPTION_OFFER_IDS.introductory24Hour,
-    offerToken: '24-hour-intro-token',
+    offerId: GOOGLE_PLAY_SUBSCRIPTION_OFFER_IDS.introductory,
+    offerToken: 'three-day-intro-token',
   });
+  assert.equal(JSON.parse(termsKey).phases[0].amountMicros, 9000000);
 });
 
 test('Google Play client uses the eligible offer token and verifies before acknowledging', () => {

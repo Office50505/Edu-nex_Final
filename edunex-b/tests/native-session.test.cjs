@@ -43,6 +43,16 @@ test('concurrent 401 responses share one refresh; profile updates preserve rotat
   pending.resolve(reply(200, rotated)); await Promise.all([a, b]);
   assert.equal(refreshes, 1); assert.equal(h.saved().avatar, 'new'); assert.equal(h.saved().refreshToken, 'r2');
 });
+test('a successful token rotation triggers one backend entitlement synchronization callback', async () => {
+  let refreshed = 0;
+  const h = await setup(async (url, options) => url.endsWith('/refresh')
+    ? reply(200, rotated)
+    : options.headers.Authorization === 'Bearer expired' ? reply(401) : reply(200, {}), {
+    onRefreshed(user) { refreshed += 1; assert.equal(user.accessToken, 'fresh'); },
+  });
+  await h.session.requestJson('/api/account-data');
+  assert.equal(refreshed, 1);
+});
 test('temporary refresh errors preserve login and never retry the AI request', async () => {
   for (const failure of [() => reply(503), () => { throw Error('offline'); }, () => reply(200, {})]) {
     let chats = 0;

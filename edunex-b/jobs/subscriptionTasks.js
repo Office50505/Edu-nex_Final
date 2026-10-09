@@ -1,17 +1,10 @@
 const cron = require('node-cron');
-const User = require('../models/User');
 const Subscription = require('../models/Subscription');
-const Order = require('../models/Order');
 const SubscriptionEvent = require('../models/SubscriptionEvent');
 const { scheduleLockedJob } = require('../services/distributedLock');
+const { syncUserSubscriptionMirror } = require('../services/subscriptionMirror');
 
 const SUBSCRIPTION_EXPIRY_LOCK_TTL_MS = 15 * 60 * 1000;
-
-function addMonths(date, months) {
-  const result = new Date(date);
-  result.setMonth(result.getMonth() + months);
-  return result;
-}
 
 // Paid access is granted only by verified provider reconciliation, never by a mandate timer.
 
@@ -51,27 +44,27 @@ async function expireOverdueSubscriptions() {
       return;
     }
 
-    const userIds = overdue.map((item) => item.user);
-    const subIds = overdue.map((item) => item._id);
+    const expired = [];
+    for (const sub of overdue) {
+      // Expired timestamps already deny access in the resolver. Reconcile
+      // first so a failed mirror write leaves this row eligible for retry.
+      await syncUserSubscriptionMirror(sub.user, { now });
+      const updated = await Subscription.findOneAndUpdate({
+        _id: sub._id,
+        status: sub.status,
+        currentPeriodEnd: sub.currentPeriodEnd ?? null,
+        trialExpiresAt: sub.trialExpiresAt ?? null,
+        razorpayStatus: sub.razorpayStatus ?? null,
+        cancelledAt: sub.cancelledAt ?? null,
+      }, { $set: { status: 'expired' } }, { new: true });
+      if (updated) expired.push(sub);
+      // A renewal/cancellation changed the row after the scan. Preserve it
+      // and refresh the mirror against that newer provider state.
+      else await syncUserSubscriptionMirror(sub.user, { now });
+    }
 
-    await Subscription.updateMany(
-      { _id: { $in: subIds } },
-      {
-        $set: {
-          status: 'expired',
-        },
-      }
-    );
-
-    await User.updateMany(
-      { _id: { $in: userIds } },
-      {
-        $set: { subscriptionStatus: 'expired' },
-      }
-    );
-
-    await SubscriptionEvent.insertMany(
-      overdue.map((sub) => ({
+    if (expired.length) await SubscriptionEvent.insertMany(
+      expired.map((sub) => ({
         subscription: sub._id,
         user: sub.user,
         event: 'PAYMENT_FAILED',
@@ -89,7 +82,7 @@ async function expireOverdueSubscriptions() {
       }))
     );
 
-    console.log(`[CRON] Expired ${overdue.length} subscription(s)`);
+    console.log(`[CRON] Expired ${expired.length} subscription(s)`);
   } catch (err) {
     console.error(`[CRON] Expire overdue subscriptions failed (${err?.code || err?.name || 'unknown'})`);
   }

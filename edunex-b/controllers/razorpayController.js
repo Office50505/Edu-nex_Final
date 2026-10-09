@@ -8,6 +8,8 @@ const rzp = require('../services/razorpayService');
 const modes = require('../services/paymentMode');
 const { hasUsedIntroTrial } = require('../services/trialEligibility');
 const { resolveSubscriptionAccess } = require('../services/subscriptionAccess');
+const { loadAccountEntitlement } = require('../services/accountEntitlement');
+const { syncUserSubscriptionMirror } = require('../services/subscriptionMirror');
 const { activeCourseEntitlements } = require('../services/courseAccess');
 const billingMode = billing => billing?.mode || rzp.legacyMode();
 const fail = (message, status = 409) => Object.assign(new Error(message), { status });
@@ -53,9 +55,8 @@ async function reconcile(billing) {
         razorpaySubscriptionId: remote.id, totalAmount: payment.amount,
         orderType: invoice.billing_start ? 'subscription_charge' : 'trial_charge', paidAt: new Date(payment.created_at * 1000) } }, { upsert: true });
     }
-    const active = ['active', 'trial'].includes(state.status);
-    await User.findByIdAndUpdate(billing._id, { subscriptionId: subscription._id, subscriptionStatus: state.status === 'pending' ? 'none' : state.status,
-      subscriptionExpiry: active ? state.currentPeriodEnd || state.trialExpiresAt : null, isOnTrial: state.status === 'trial' });
+    await User.findByIdAndUpdate(billing._id, { subscriptionId: subscription._id });
+    await syncUserSubscriptionMirror(billing._id);
     if (terminal) await Billing.updateOne({ _id: billing._id, lease }, { $set: { phase: 'closed' } });
     return subscription;
   } finally {
@@ -87,6 +88,10 @@ exports.initiate = wrap(async (req, res) => {
     throw fail('Please confirm the ₹499 monthly subscription before continuing.', 400);
   }
   const existing = await Subscription.findOne({ user: req.user._id });
+  const { access: accountAccess } = await loadAccountEntitlement(req.user);
+  if (accountAccess.active && ['apple', 'google_play'].includes(accountAccess.source)) {
+    throw fail('This Skillomate account already has premium access. Manage the existing store subscription instead of starting another checkout.');
+  }
   const activePaidPeriod = existing && ['active', 'subscribed'].includes(existing.status) && (!existing.currentPeriodEnd || new Date(existing.currentPeriodEnd) > new Date());
   const activeTrial = existing && ['trial', '1rs trial'].includes(existing.status) && new Date(existing.trialExpiresAt) > new Date();
   const replacingCancelledTrialMandate = type === 'monthly'
@@ -149,26 +154,37 @@ exports.verify = wrap(async (req, res) => {
 exports.status = wrap(async (req, res) => {
   const courseEntitlements = activeCourseEntitlements(req.user);
   const courseIds = courseEntitlements.map((item) => item.courseId);
-  const billing = await Billing.findById(req.user._id);
-  const existingSubscription = await Subscription.findOne({ user: req.user._id });
+  const [billing, existingSubscription, initialEntitlement] = await Promise.all([
+    Billing.findById(req.user._id),
+    Subscription.findOne({ user: req.user._id }),
+    loadAccountEntitlement(req.user),
+  ]);
   const existingAccess = resolveSubscriptionAccess(existingSubscription, req.user);
-  const subscription = existingSubscription?.gateway === 'admin' && existingAccess.active
+  const independentStoreAccess = initialEntitlement.access.active
+    && ['apple', 'google_play'].includes(initialEntitlement.access.source);
+  const subscription = independentStoreAccess || existingSubscription?.gateway === 'admin' && existingAccess.active
     ? existingSubscription
     : billing?.subscriptionId ? await reconcile(billing) : existingSubscription;
   const trialUsed = await hasUsedIntroTrial(req.user._id, subscription, req.user);
-  const access = resolveSubscriptionAccess(subscription, req.user);
+  const providerAccess = resolveSubscriptionAccess(subscription, req.user);
+  const { access } = await loadAccountEntitlement(req.user);
   const effectiveStatus = access.status;
   const valid = access.active;
-  const adminManaged = subscription?.gateway === 'admin' && valid;
+  const adminManaged = subscription?.gateway === 'admin' && providerAccess.active;
   res.json({ status: effectiveStatus, subscriptionStatus: effectiveStatus, subscriptionDocStatus: subscription?.status || 'none',
     trialExpiresAt: subscription?.trialExpiresAt, currentPeriodEnd: subscription?.currentPeriodEnd, nextBillingAt: subscription?.nextBillingAt,
     verified: valid, sameAccount: true, paid: valid,
     mandateStatus: subscription?.razorpayStatus || null, accessGranted: valid, hasActiveAccess: valid,
     hasCourseAccess: courseIds.length > 0, courseIds, courseEntitlements,
     trialUsed, trialEligible: !trialUsed, subscriptionType: subscription?.subscriptionType || null,
-    accessSource: adminManaged ? 'admin' : subscription?.gateway || 'none',
-    autoRenewEnabled: Boolean(!adminManaged && billing?.phase === 'ready' && billing?.subscriptionId && !['cancelled', 'expired', 'completed', 'paused'].includes(String(subscription?.razorpayStatus || '').toLowerCase())),
-    pendingCheckout: Boolean(!adminManaged && billing?.phase === 'ready') });
+    entitlementState: access.entitlementState || (valid ? 'ACTIVE' : 'NONE'),
+    entitlementSource: access.source || 'none',
+    subscriptionExpiry: access.expiresAt || null,
+    accessSource: adminManaged ? 'admin' : access.source || subscription?.gateway || 'none',
+    autoRenewEnabled: Boolean(!adminManaged && ['razorpay', 'legacy'].includes(access.source)
+      && billing?.phase === 'ready' && billing?.subscriptionId
+      && !['cancelled', 'expired', 'completed', 'paused'].includes(String(subscription?.razorpayStatus || '').toLowerCase())),
+    pendingCheckout: Boolean(!valid && !adminManaged && billing?.phase === 'ready') });
 });
 exports.cancel = wrap(async (req, res) => {
   const billing = await Billing.findById(req.user._id);

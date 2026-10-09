@@ -3,6 +3,7 @@ const assert = require('node:assert/strict');
 const { spawnSync } = require('node:child_process');
 const path = require('node:path');
 const {
+  GOOGLE_PLAY_CREDENTIAL_KEYS,
   REQUIRED_KEYS,
   SSM_PATH,
   main,
@@ -14,7 +15,7 @@ const EXISTING_PRODUCTION_PARAMETER_COUNT = 73;
 const CURRENT_PRODUCTION_PARAMETER_COUNT = EXISTING_PRODUCTION_PARAMETER_COUNT + 2;
 
 function productionParameters() {
-  const names = [...REQUIRED_KEYS];
+  const names = [...REQUIRED_KEYS, GOOGLE_PLAY_CREDENTIAL_KEYS[0]];
   while (names.length < CURRENT_PRODUCTION_PARAMETER_COUNT) names.push(`OPTIONAL_${names.length}`);
   return names.map((name) => ({
     Name: `${SSM_PATH}${name}`,
@@ -103,6 +104,23 @@ test('missing critical key fails closed and logs only its name', async () => {
   const result = await main({ env: { SKILLOMATE_CONFIG_SOURCE: 'ssm' }, client: pagedClient(parameters), log, startServer: () => assert.fail('server started') });
   assert.equal(result, false);
   assert.ok(log.lines.join('\n').includes('MONGODB_URI'));
+  assert.ok(!log.lines.join('\n').includes(SECRET));
+});
+
+test('Google Play service-account credential accepts raw JSON or base64 and fails when both are absent', async () => {
+  const raw = productionParameters();
+  const rawIndex = raw.findIndex((parameter) => parameter.Name.endsWith(`/${GOOGLE_PLAY_CREDENTIAL_KEYS[0]}`));
+  raw[rawIndex] = {
+    Name: `${SSM_PATH}${GOOGLE_PLAY_CREDENTIAL_KEYS[1]}`,
+    Type: 'SecureString',
+    Value: SECRET,
+  };
+  assert.equal((await readSsmConfig({ client: pagedClient(raw) })).get(GOOGLE_PLAY_CREDENTIAL_KEYS[1]), SECRET);
+
+  const log = logger();
+  const missing = productionParameters().filter((parameter) => !GOOGLE_PLAY_CREDENTIAL_KEYS.some((name) => parameter.Name.endsWith(`/${name}`)));
+  assert.equal(await main({ args: ['--check'], client: pagedClient(missing), log, startServer: () => assert.fail('server started') }), false);
+  assert.ok(log.lines.join('\n').includes('GOOGLE_PLAY_SERVICE_ACCOUNT_JSON'));
   assert.ok(!log.lines.join('\n').includes(SECRET));
 });
 

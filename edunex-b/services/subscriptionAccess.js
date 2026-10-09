@@ -1,3 +1,5 @@
+const { publicGooglePlayEntitlement } = require('./googlePlayEntitlement');
+
 function futureDate(value, now = Date.now()) {
   if (!value) return false;
   const time = new Date(value).getTime();
@@ -72,21 +74,7 @@ function resolveSubscriptionAccess(subscription, user = {}, now = Date.now()) {
 }
 
 function resolveCombinedSubscriptionAccess(subscription, appleSubscription, user = {}, now = Date.now()) {
-  if (appleSubscription) {
-    const state = String(appleSubscription.entitlementState || 'UNKNOWN').toUpperCase();
-    const expiresAt = state === 'GRACE_PERIOD'
-      ? appleSubscription.gracePeriodExpiresAt
-      : appleSubscription.expiresAt;
-    if (['ACTIVE', 'ACTIVE_CANCELS_AT_PERIOD_END', 'GRACE_PERIOD'].includes(state) && futureDate(expiresAt, now)) {
-      return { active: true, status: 'active', entitlementState: state, expiresAt, source: 'apple' };
-    }
-  }
-  const legacy = resolveSubscriptionAccess(subscription, user, now);
-  return {
-    ...legacy,
-    entitlementState: legacy.active ? 'ACTIVE' : (legacy.rawStatus === 'expired' ? 'EXPIRED' : 'NONE'),
-    source: legacy.active ? 'legacy' : 'none',
-  };
+  return resolveAllSubscriptionAccess(subscription, appleSubscription, null, user, now);
 }
 
 function resolveAllSubscriptionAccess(subscription, appleSubscription, googlePlaySubscription, user = {}, now = Date.now()) {
@@ -100,24 +88,24 @@ function resolveAllSubscriptionAccess(subscription, appleSubscription, googlePla
     }
   }
   if (googlePlaySubscription) {
-    const state = String(googlePlaySubscription.entitlementState || 'UNKNOWN').toUpperCase();
-    const expiresAt = googlePlaySubscription.expiresAt || null;
-    if (['ACTIVE', 'ACTIVE_CANCELS_AT_PERIOD_END', 'GRACE_PERIOD'].includes(state) && futureDate(expiresAt, now)) {
-      return { active: true, status: 'active', entitlementState: state, expiresAt, source: 'google_play' };
+    const entitlement = publicGooglePlayEntitlement(googlePlaySubscription, new Date(now));
+    if (entitlement.entitlementActive) {
+      return { active: true, status: 'active', entitlementState: entitlement.entitlementState,
+        expiresAt: entitlement.expiresAt, source: 'google_play' };
     }
   }
-  // Once a store record exists, do not let a stale denormalized User status
-  // reactivate an expired/revoked store entitlement. A separate legacy billing
-  // Subscription record can still grant its own paid period.
+  // Provider records are authoritative. A stale User mirror must not extend
+  // an expired provider period. Keep the fallback for manual legacy accounts
+  // which have no provider record at all.
   const legacy = resolveSubscriptionAccess(
     subscription,
-    (appleSubscription || googlePlaySubscription) ? {} : user,
+    (subscription || appleSubscription || googlePlaySubscription) ? {} : user,
     now
   );
   return {
     ...legacy,
-    entitlementState: legacy.active ? 'ACTIVE' : (legacy.rawStatus === 'expired' ? 'EXPIRED' : 'NONE'),
-    source: legacy.active ? 'legacy' : 'none',
+    entitlementState: legacy.entitlementState || (legacy.active ? 'ACTIVE' : (legacy.rawStatus === 'expired' ? 'EXPIRED' : 'NONE')),
+    source: legacy.active ? String(subscription?.gateway || 'legacy').trim().toLowerCase() : 'none',
   };
 }
 

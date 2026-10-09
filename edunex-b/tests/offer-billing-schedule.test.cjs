@@ -46,6 +46,8 @@ function setup({ invalidSchedule = false, existing = null, remoteStatus = 'creat
       if (name.includes('trialEligibility')) return { hasUsedIntroTrial: async () => false };
       if (name.includes('paymentMode')) return { activeMode: async () => 'live' };
       if (name.includes('subscriptionAccess')) return {};
+      if (name.includes('accountEntitlement')) return { loadAccountEntitlement: async () => ({ access: { active: false, status: 'none', source: 'none' } }) };
+      if (name.includes('subscriptionMirror')) return { syncUserSubscriptionMirror: async () => {} };
       return models[name.split('/').at(-1)] || {};
     },
   });

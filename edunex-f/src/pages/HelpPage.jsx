@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { CheckList, LegalLayout, LegalSection } from "../components/legal/LegalLayout.jsx";
-import { SUPPORT_EMAIL, businessInfo, setPageMeta } from "../lib/siteMeta.js";
+import { SUPPORT_EMAIL, businessInfo, setPageMeta, subscriptionOffer, storeSubscriptionDisclosures } from "../lib/siteMeta.js";
 import { route } from "../lib/routes.js";
 import { EnxIcon } from "../components/EnxIcon.jsx";
 
@@ -15,7 +15,7 @@ const supportSections = [
     id: "subscriptions",
     icon: "receipt",
     title: "Subscriptions",
-    items: ["₹1 for 24 hours", "₹499/month renewal after trial", "Automatic mandate", "Cancelling subscription"],
+    items: [subscriptionOffer.disclosure, storeSubscriptionDisclosures.googlePlay, storeSubscriptionDisclosures.apple, "Cancellation stops future renewals; already-paid access continues until its verified expiry."],
   },
   {
     id: "payments",

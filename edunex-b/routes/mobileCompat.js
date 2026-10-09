@@ -1,9 +1,6 @@
 const express = require('express');
 const Course = require('../models/Course');
 const CourseProgress = require('../models/CourseProgress');
-const Subscription = require('../models/Subscription');
-const AppleSubscription = require('../models/AppleSubscription');
-const GooglePlaySubscription = require('../models/GooglePlaySubscription');
 const User = require('../models/User');
 const Wishlist = require('../models/Wishlist');
 const { protectAdmin } = require('../middleware/adminAuth');
@@ -33,6 +30,7 @@ const { deleteProfileImage, uploadProfileImage } = require('../services/profileI
 const { createDownloadGrantService, normalizeGuid } = require('../services/downloadGrantService');
 const { pipeDownloadBody } = require('../services/downloadStream');
 const { sensitiveRateLimit } = require('../middleware/sensitiveRateLimit');
+const { loadAccountEntitlement, publicAccountEntitlement } = require('../services/accountEntitlement');
 
 const router = express.Router();
 const { handleTutorChat } = require('./ai');
@@ -61,10 +59,10 @@ router.get(
   requireCompatibleAuth({ userIdNames: ['id', 'userId'] }),
   asyncHandler(async (req, res) => {
     requireSameUser(req, req.params.id);
-
+    const entitlement = publicAccountEntitlement(await loadAccountEntitlement(req.compatUser));
     res.json({
       valid: true,
-      user: publicUser(req.compatUser),
+      user: { ...publicUser(req.compatUser), ...entitlement },
       wishlist: await wishlistForUser(req.compatUser),
     });
   })
@@ -75,23 +73,12 @@ router.get(
   requireCompatibleAuth({ userIdNames: ['id', 'userId'] }),
   asyncHandler(async (req, res) => {
     requireSameUser(req, req.params.id);
-    const [subscription, appleSubscription, googlePlaySubscription] = await Promise.all([
-      Subscription.findOne({ user: req.compatUser._id }).lean(),
-      AppleSubscription.findOne({ user: req.compatUser._id }).lean(),
-      GooglePlaySubscription.findOne({ user: req.compatUser._id }).lean(),
-    ]);
-    const access = require('../services/subscriptionAccess')
-      .resolveAllSubscriptionAccess(subscription, appleSubscription, googlePlaySubscription, req.compatUser);
-    const status = access.active ? 'active' : (subscription?.status || req.compatUser.subscriptionStatus || 'none');
+    const result = await loadAccountEntitlement(req.compatUser);
+    const entitlement = publicAccountEntitlement(result);
+    const { subscription } = result;
 
     res.json({
-      subscriptionStatus: status,
-      entitlementState: access.entitlementState,
-      entitlementActive: access.active,
-      entitlementSource: access.source,
-      serverNow: new Date(),
-      subscriptionDocStatus: subscription?.status || null,
-      subscriptionExpiry: access.expiresAt || null,
+      ...entitlement,
       trialExpiresAt: subscription?.trialExpiresAt || null,
       currentPeriodEnd: subscription?.currentPeriodEnd || null,
       nextBillingAt: subscription?.nextBillingAt || null,

@@ -1,6 +1,8 @@
 const Subscription = require('../models/Subscription');
+const AppleSubscription = require('../models/AppleSubscription');
+const GooglePlaySubscription = require('../models/GooglePlaySubscription');
 const Course = require('../models/Course');
-const { resolveSubscriptionAccess } = require('../services/subscriptionAccess');
+const { resolveAllSubscriptionAccess } = require('../services/subscriptionAccess');
 const { activeCourseEntitlement } = require('../services/courseAccess');
 
 function primaryTrialCourseFilter() {
@@ -41,10 +43,14 @@ async function checkSubscription(req, res, next) {
       req.courseAccess = { type: 'purchase', courseId, accessType: entitlement.accessType, expiresAt: entitlement.expiresAt || null };
       return next();
     }
-    const subscription = await Subscription.findOne({ user: req.user._id });
-    const access = resolveSubscriptionAccess(subscription, req.user);
+    const [subscription, appleSubscription, googlePlaySubscription] = await Promise.all([
+      Subscription.findOne({ user: req.user._id }),
+      AppleSubscription.findOne({ user: req.user._id }),
+      GooglePlaySubscription.findOne({ user: req.user._id }),
+    ]);
+    const access = resolveAllSubscriptionAccess(subscription, appleSubscription, googlePlaySubscription, req.user);
     if (!access.active) {
-      return res.status(403).json({ error: subscription ? 'subscription_expired' : 'no_subscription' });
+      return res.status(403).json({ error: subscription || appleSubscription || googlePlaySubscription ? 'subscription_expired' : 'no_subscription' });
     }
     const limitedTrial = access.status === 'trial' && !access.grace;
     if (limitedTrial && !(await isTrialUnlockedCourse(courseId))) {

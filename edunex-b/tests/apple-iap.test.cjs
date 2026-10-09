@@ -25,14 +25,15 @@ function modelHarness({ account, verifyPayload, serverResponse } = {}) {
     findOne: async query => notifications.get(query.notificationUUID) || null,
     create: async value => { notifications.set(value.notificationUUID, value); return value; },
   };
-  const User = { updateOne: async () => ({ modifiedCount: 1 }) };
+  let mirrorSyncs = 0;
   const service = createAppleIapService({
-    AppleSubscription, AppleTransaction, AppleNotification, User,
+    AppleSubscription, AppleTransaction, AppleNotification,
+    syncUserSubscriptionMirror: async userId => { assert.equal(userId, 'user-a'); mirrorSyncs += 1; },
     now: () => now,
     verifyPayload,
     serverApiClientFactory: () => serverResponse ? { getAllSubscriptionStatuses: async () => serverResponse } : null,
   });
-  return { service, transactions, get subscription() { return subscription; } };
+  return { service, transactions, get mirrorSyncs() { return mirrorSyncs; }, get subscription() { return subscription; } };
 }
 
 function transaction(overrides = {}) {
@@ -72,6 +73,7 @@ test('server verification checks current Apple status, is idempotent, and reject
   assert.equal(first.entitlementActive, true);
   assert.equal(duplicate.duplicate, true);
   assert.equal(harness.transactions.size, 1);
+  assert.equal(harness.mirrorSyncs, 2);
 
   for (const bad of [
     { bundleId: 'wrong.bundle' },

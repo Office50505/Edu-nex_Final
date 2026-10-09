@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { CheckList, InfoGrid, LegalLayout, LegalSection, PlainList, BusinessAddress } from "../components/legal/LegalLayout.jsx";
-import { POLICY_LAST_UPDATED, SUPPORT_EMAIL, businessInfo, setPageMeta, subscriptionOffer } from "../lib/siteMeta.js";
+import { POLICY_LAST_UPDATED, SUPPORT_EMAIL, businessInfo, setPageMeta, subscriptionOffer, storeSubscriptionDisclosures } from "../lib/siteMeta.js";
 import { route } from "../lib/routes.js";
 
 const learningServices = [
@@ -72,6 +72,8 @@ const deliveryFacts = [
 const subscriptionFacts = [
   "PhonePe one-time access costs ₹499 for 30 days and does not create a mandate or renew automatically.",
   "Where a Razorpay recurring offer is available, the introductory 24-hour trial is ₹1, followed by ₹499 per month until cancelled.",
+  storeSubscriptionDisclosures.googlePlay,
+  storeSubscriptionDisclosures.apple,
   "Recurring billing requires approval of a payment mandate or subscription.",
   "Users may cancel recurring billing. Existing paid access continues until the end of its applicable period.",
 ];
@@ -120,7 +122,7 @@ const policyContent = {
       ["acceptance", "Acceptance of terms", <p>By creating an account, browsing courses, purchasing access or using Skillomate, you agree to these Terms & Conditions and related policies.</p>],
       ["eligibility", "Eligibility and accounts", <><p>Skillomate is available to users in India and is intended for users aged 13 years and above. Accounts use phone number and OTP authentication, and users must provide accurate account information.</p><CheckList items={termsItems} /></>],
       ["course-access", "Course and subscription access", <p>Skillomate provides digital access to online courses, video lessons, educational resources, certificates, downloads, progress tracking, wishlists, search and AI-assisted learning tools through the user's Skillomate account.</p>],
-      ["subscription-billing", "Payment and access", <><div className="legal-callout"><strong>PhonePe one-time access is ₹499 for 30 days, with no automatic renewal.</strong></div><p>Where a recurring subscription is offered, {subscriptionOffer.disclosure} Cancellation stops future renewals and preserves already-paid access until its expiry.</p></>],
+      ["subscription-billing", "Payment and access", <><div className="legal-callout"><strong>PhonePe one-time access is ₹499 for 30 days, with no automatic renewal.</strong></div><p>{subscriptionOffer.disclosure}</p><p>{storeSubscriptionDisclosures.googlePlay}</p><p>{storeSubscriptionDisclosures.apple}</p><p>Cancellation stops future renewals and preserves already-paid access until its expiry.</p></>],
       ["payments", "Payments", <p>One-time web payments may be processed through PhonePe and eligible recurring web subscriptions through Razorpay. Android purchases may be handled by Google Play Billing where applicable. iOS purchases may be handled through Apple's in-app purchasing system where applicable. Platform-specific subscriptions may need to be managed through the relevant platform account.</p>],
       ["ai", "AI-assisted learning features", <p>AI tools are educational assistance features. AI output may be inaccurate, incomplete or unsuitable for a particular purpose. Users should verify important information independently.</p>],
       ["certificates-downloads", "Certificates and downloads", <p>Certificates are Skillomate course-completion records. Downloadable educational content and offline access, where available, are for personal learning only and do not permit redistribution.</p>],
@@ -141,7 +143,7 @@ const policyContent = {
     canonicalPath: "/refund-policy",
     sections: [
       ["overview", "General policy", <p>Skillomate provides digital course and subscription access. Digital course/subscription purchases are generally non-refundable once access has been successfully provided, except where required by applicable law or the policies of the payment platform involved.</p>],
-      ["subscription", "Subscription cancellation", <><p>PhonePe one-time access expires after 30 days without automatic renewal. Users can cancel eligible recurring subscriptions at any time. Cancellation prevents future billing after it takes effect, while paid access remains until the end of the current period.</p><div className="legal-callout"><strong>For recurring offers where available: {subscriptionOffer.disclosure}</strong></div></>],
+      ["subscription", "Subscription cancellation", <><p>PhonePe one-time access expires after 30 days without automatic renewal. Users can cancel eligible recurring subscriptions at any time. Cancellation prevents future billing after it takes effect, while paid access remains until the end of the current period.</p><p>{subscriptionOffer.disclosure}</p><p>{storeSubscriptionDisclosures.googlePlay}</p><p>{storeSubscriptionDisclosures.apple}</p></>],
       ["exceptional", "Exceptional cases we may investigate", <><p>Skillomate does not promise automatic refunds. We may investigate exceptional situations after verification, subject to applicable law and payment-provider rules.</p><PlainList items={refundExceptions} /></>],
       ["platforms", "Google Play and Apple purchases", <p>For purchases completed through Google Play or the Apple App Store, cancellation and refund requests may be governed and processed through the applicable platform billing/refund mechanisms.</p>],
       ["web", "Razorpay/web payments", <p>For eligible web payment concerns, contact <a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a> with your account phone number, transaction reference if available and a short description. Do not send card, UPI PIN, OTP or password details.</p>],
@@ -167,7 +169,7 @@ const policyContent = {
     sections: [
       ["current-offer", "Payment options", <><div className="legal-callout"><strong>PhonePe: ₹499 once for 30 days of access, with no mandate or automatic renewal.</strong></div><CheckList items={subscriptionFacts} /></>],
       ["authorization", "Recurring billing authorization", <p>For recurring offers only, approving the mandate or subscription authorizes recurring billing through the selected provider until cancellation. The PhonePe one-time payment does not authorize recurring billing.</p>],
-      ["web-android-ios", "Web, Android and iOS billing", <InfoGrid items={[{ icon: "receipt", title: "Web", copy: "PhonePe may process one-time access payments. Razorpay may process eligible recurring subscriptions." }, { icon: "playStore", title: "Android", copy: "Purchases may be handled by Google Play Billing where applicable and may need to be managed through Google Play." }, { icon: "apple", title: "iOS", copy: "Purchases may be handled through Apple's in-app purchasing system where applicable and may need to be managed through Apple account settings." }]} />],
+      ["web-android-ios", "Web, Android and iOS billing", <InfoGrid items={[{ icon: "receipt", title: "Web", copy: "PhonePe may process one-time access payments. Razorpay may process eligible recurring subscriptions." }, { icon: "playStore", title: "Android", copy: storeSubscriptionDisclosures.googlePlay }, { icon: "apple", title: "iOS", copy: storeSubscriptionDisclosures.apple }]} />],
       ["cancellation", "Cancellation", <p>PhonePe one-time access expires automatically after 30 days. For recurring subscriptions, cancellation stops future renewals after it takes effect; existing paid access continues until the end of the applicable billing period.</p>],
       ["support", "Billing support", <p>For billing questions, email <a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a>. Never share OTPs, passwords, full card numbers or UPI PINs with support.</p>],
     ],

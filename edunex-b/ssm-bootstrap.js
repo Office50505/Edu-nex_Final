@@ -15,6 +15,15 @@ const REQUIRED_KEYS = Object.freeze([
   'CLOUDFRONT_PUBLIC_KEY_ID',
   'CLARITY_API_TOKEN',
   'CLARITY_NUM_DAYS',
+  'GOOGLE_PLAY_PACKAGE_NAME',
+  'GOOGLE_PLAY_SUBSCRIPTION_PRODUCT_ID',
+  'GOOGLE_PLAY_INTRODUCTORY_OFFER_ID',
+  'GOOGLE_PLAY_RTDN_AUDIENCE',
+  'GOOGLE_PLAY_RTDN_SERVICE_ACCOUNT_EMAIL',
+]);
+const GOOGLE_PLAY_CREDENTIAL_KEYS = Object.freeze([
+  'GOOGLE_PLAY_SERVICE_ACCOUNT_JSON',
+  'GOOGLE_PLAY_SERVICE_ACCOUNT_JSON_BASE64',
 ]);
 const REDACTED_LOG_KEYS = new Set(['CLARITY_API_TOKEN']);
 const STRING_PARAMETER_KEYS = new Set(['CLARITY_NUM_DAYS']);
@@ -65,6 +74,10 @@ function validateParameters(parameters) {
     const value = parameters.get(name);
     return typeof value !== 'string' || value.trim() === '';
   });
+  if (!GOOGLE_PLAY_CREDENTIAL_KEYS.some((name) => {
+    const value = parameters.get(name);
+    return typeof value === 'string' && value.trim() !== '';
+  })) missing.push(GOOGLE_PLAY_CREDENTIAL_KEYS.join('|'));
   if (missing.length) {
     throw new SsmConfigError('MissingRequiredParameters', missing, parameters.size);
   }
@@ -195,6 +208,7 @@ if (require.main === module) {
 }
 
 module.exports = {
+  GOOGLE_PLAY_CREDENTIAL_KEYS,
   REQUIRED_KEYS,
   SSM_PATH,
   SSM_REGION,

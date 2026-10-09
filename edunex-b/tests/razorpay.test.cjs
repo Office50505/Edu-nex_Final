@@ -93,6 +93,8 @@ function controller(billing = {}) {
       if (name.includes('razorpayService')) return { validSignature, legacyMode: () => 'test', config: (mode = 'test') => ({ webhookSecret: mode === 'test' ? 'secret' : 'live-secret' }), requireConfig: () => ({ secret: 'secret' }), api: () => { upstreamCalls++; } };
       if (name.includes('trialEligibility')) return { hasUsedIntroTrial: async () => false };
       if (name.includes('subscriptionAccess')) return { resolveSubscriptionAccess };
+      if (name.includes('accountEntitlement')) return { loadAccountEntitlement: async user => ({ access: resolveSubscriptionAccess(null, user) }) };
+      if (name.includes('subscriptionMirror')) return { syncUserSubscriptionMirror: async () => {} };
       if (name.includes('courseAccess')) return { activeCourseEntitlements };
       return { findById: async () => billing };
     },
@@ -139,6 +141,8 @@ function flow(mode = 'test') {
       } };
       if (name.includes('trialEligibility')) return { hasUsedIntroTrial: async () => false };
       if (name.includes('subscriptionAccess')) return { resolveSubscriptionAccess };
+      if (name.includes('accountEntitlement')) return { loadAccountEntitlement: async user => ({ access: resolveSubscriptionAccess(local, user) }) };
+      if (name.includes('subscriptionMirror')) return { syncUserSubscriptionMirror: async () => {} };
       if (name.includes('courseAccess')) return { activeCourseEntitlements };
       return models[name.split('/').at(-1)];
     },
@@ -201,7 +205,7 @@ test('a renewal failure during a paid trial does not block signup or remove paid
   assert.equal(entitlement(billing, { status: 'halted' }, [trial], now).status, 'trial');
 });
 
-function statusFlow({ billingRecord = null, subscriptionRecord = null } = {}) {
+function statusFlow({ billingRecord = null, subscriptionRecord = null, accountAccess = null } = {}) {
   let providerCalls = 0;
   const module = { exports: {} };
   vm.runInNewContext(fs.readFileSync(path.join(__dirname, '../controllers/razorpayController.js'), 'utf8'), {
@@ -215,6 +219,8 @@ function statusFlow({ billingRecord = null, subscriptionRecord = null } = {}) {
       };
       if (name.includes('trialEligibility')) return { hasUsedIntroTrial: async () => false };
       if (name.includes('subscriptionAccess')) return { resolveSubscriptionAccess };
+      if (name.includes('accountEntitlement')) return { loadAccountEntitlement: async user => ({ access: accountAccess || resolveSubscriptionAccess(subscriptionRecord, user) }) };
+      if (name.includes('subscriptionMirror')) return { syncUserSubscriptionMirror: async () => {} };
       if (name.includes('courseAccess')) return { activeCourseEntitlements };
       if (name.endsWith('/RazorpayBilling')) return { findById: async () => billingRecord };
       if (name.endsWith('/Subscription')) return { findOne: async () => subscriptionRecord };
@@ -265,6 +271,21 @@ test('Razorpay status exposes admin-assigned course access without claiming a gl
   assert.equal(body.hasActiveAccess, false);
   assert.equal(body.hasCourseAccess, true);
   assert.deepEqual(Array.from(body.courseIds), ['course-one']);
+});
+
+test('web status recognizes verified Google Play and Apple access without reconciling or starting Razorpay', async () => {
+  for (const source of ['google_play', 'apple']) {
+    const f = statusFlow({
+      billingRecord: { _id: 'learner', phase: 'ready', subscriptionId: 'sub_unrelated' },
+      accountAccess: { active: true, status: 'active', entitlementState: 'ACTIVE', expiresAt: new Date(now + 86400000), source },
+    });
+    const { body, statusCode } = await f.status({ _id: 'learner', subscriptionStatus: 'expired' });
+    assert.equal(statusCode, 200);
+    assert.equal(body.hasActiveAccess, true);
+    assert.equal(body.entitlementSource, source);
+    assert.equal(body.pendingCheckout, false);
+    assert.equal(f.calls(), 0);
+  }
 });
 
 test('a revoked admin subscription is not restored by reconciliation of the old closed mandate', async () => {

@@ -3,7 +3,7 @@ const accessToken = user => user?.accessToken || user?.token || '';
 const identity = user => user ? `${user._id}:${user.sessionId}` : '';
 export const sessionChanged = () => Object.assign(new Error('The signed-in account changed.'), { code: 'SESSION_CHANGED' });
 
-export function createNativeSession({ baseUrl, storage, onChange, onExpired = () => {}, fetcher = fetch, requestTimeoutMs = 30000, refreshTimeoutMs = 15000 }) {
+export function createNativeSession({ baseUrl, storage, onChange, onExpired = () => {}, onRefreshed = () => {}, fetcher = fetch, requestTimeoutMs = 30000, refreshTimeoutMs = 15000 }) {
   let current = null;
   let generation = 0;
   let refreshFlight = null;
@@ -64,6 +64,7 @@ export function createNativeSession({ baseUrl, storage, onChange, onExpired = ()
       try { await persistence; }
       catch { throw new Error('Your refreshed session could not be saved on this device. Please retry.'); }
       assertCurrent(version);
+      onRefreshed(current);
     })().finally(() => { if (refreshFlight === flight) refreshFlight = null; });
     refreshFlight = flight;
     return flight.promise;

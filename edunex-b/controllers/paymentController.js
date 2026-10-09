@@ -8,6 +8,7 @@ const phonePeEventClaims = require('../services/phonePeEventClaims');
 const { isPhonePeEnabled, isPhonePeNewPaymentsEnabled, isPhonePeNewPaymentsSwitchEnabled } = require('../services/phonePePolicy');
 const paymentModes = require('../services/paymentMode');
 const { resolveSubscriptionAccess } = require('../services/subscriptionAccess');
+const { loadAccountEntitlement } = require('../services/accountEntitlement');
 const { activeCourseEntitlements } = require('../services/courseAccess');
 const { hasUsedIntroTrial } = require('../services/trialEligibility');
 
@@ -979,21 +980,19 @@ async function subscriptionStatus(req, res) {
     const pendingCheckout = pendingOrder?.status === 'pending';
     const courseEntitlements = activeCourseEntitlements(req.user);
     const courseIds = courseEntitlements.map((item) => item.courseId);
-    const userSubscriptionStatus = req.user.subscriptionStatus || 'none';
-    const userHasAccess = hasValidAccess(
-      userSubscriptionStatus,
-      req.user.subscriptionExpiry,
-      req.user.subscriptionExpiry,
-    );
     const subscription = await Subscription.findOne({ user: req.user._id });
     const trialUsed = await hasUsedIntroTrial(req.user._id, subscription, req.user);
     if (!subscription) {
+      const { access } = await loadAccountEntitlement(req.user);
       return res.json({
-        status: userHasAccess ? userSubscriptionStatus : 'none',
-        subscriptionStatus: userHasAccess ? userSubscriptionStatus : userSubscriptionStatus,
-        source: 'user',
-        accessGranted: userHasAccess,
-        hasActiveAccess: userHasAccess,
+        status: access.status,
+        subscriptionStatus: access.status,
+        subscriptionExpiry: access.expiresAt || null,
+        entitlementState: access.entitlementState || (access.active ? 'ACTIVE' : 'NONE'),
+        entitlementSource: access.source || 'none',
+        source: access.source || 'none',
+        accessGranted: access.active,
+        hasActiveAccess: access.active,
         hasCourseAccess: courseIds.length > 0,
         courseIds,
         courseEntitlements,
@@ -1008,7 +1007,7 @@ async function subscriptionStatus(req, res) {
 
     await promoteTrialToSubscribedIfEligible(subscription, req.user._id);
     const latest = await Subscription.findById(subscription._id);
-    const access = resolveSubscriptionAccess(latest, req.user);
+    const { access } = await loadAccountEntitlement(req.user);
 
     res.json({
       status: access.status,
@@ -1016,13 +1015,15 @@ async function subscriptionStatus(req, res) {
       subscriptionDocStatus: latest.status,
       hasActiveAccess: access.active,
       entitlementState: access.entitlementState || (access.active ? 'ACTIVE' : 'NONE'),
+      entitlementSource: access.source || 'none',
+      subscriptionExpiry: access.expiresAt || null,
       grace: Boolean(access.grace),
       graceExpiresAt: access.graceExpiresAt || null,
       hasCourseAccess: courseIds.length > 0,
       courseIds,
       courseEntitlements,
       accessGranted: access.active,
-      source: 'subscription',
+      source: access.source || 'none',
       trialExpiresAt: latest.trialExpiresAt || null,
       currentPeriodEnd: latest.currentPeriodEnd || null,
       nextBillingAt: latest.nextBillingAt,

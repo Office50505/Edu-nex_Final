@@ -21,7 +21,10 @@ function backend(options = {}) {
       if (name.includes('AiResponseReport')) return { create: async () => ({}) };
       if (name.includes('/models/User')) return { updateOne: async () => ({}) };
       if (name.includes('tutorKnowledge')) return require('../services/tutorKnowledge');
-      if (name.includes('Subscription')) return { findOne: () => ({ lean: async () => options.subscription || null }) };
+      if (name.endsWith('/subscriptionAccess')) return require('../services/subscriptionAccess');
+      if (name.endsWith('/AppleSubscription')) return { findOne: () => ({ lean: async () => options.apple || null }) };
+      if (name.endsWith('/GooglePlaySubscription')) return { findOne: () => ({ lean: async () => options.google || null }) };
+      if (name.endsWith('/Subscription')) return { findOne: () => ({ lean: async () => options.subscription || null }) };
       if (name.includes('Course')) return { find: () => query };
       return { requireCompatibleAuth: () => () => {} };
     },
@@ -52,6 +55,26 @@ function backend(options = {}) {
     async chat(body) { return (await rawChat(body)).result; },
   };
 }
+
+test('AI lesson materials use independent store access and reject revoked store mirrors', async () => {
+  const courseId = '6a9e67c46bcb631b8118d341';
+  const lessonId = 'lesson-verified';
+  const courses = [{ _id: courseId, slug: 'learning-course', title: 'Learning Course', videos: [
+    { _id: lessonId, title: 'Prompting', notes: 'PROVIDER_ACCESS_SENTINEL teaches how to structure a clear prompt.' },
+  ] }];
+  const expiresAt = new Date(Date.now() + 60000);
+  for (const [store, active] of [
+    [{ google: { entitlementState: 'ACTIVE', expiresAt } }, true],
+    [{ apple: { entitlementState: 'ACTIVE', expiresAt } }, true],
+    [{ google: { entitlementState: 'REVOKED', expiresAt } }, false],
+    [{ google: { entitlementState: 'BILLING_RETRY', expiresAt } }, false],
+  ]) {
+    const api = backend({ courses, ...store, user: { _id: 'learner', subscriptionStatus: active ? 'expired' : 'active', subscriptionExpiry: expiresAt } });
+    await api.chat({ courseId, lessonId, message: 'Explain this video' });
+    assert.equal(api.calls.length, 1);
+    assert.equal(api.calls[0].messages[0].content.includes('PROVIDER_ACCESS_SENTINEL'), active);
+  }
+});
 
 test('chat requires current AI consent before sending data to providers', async () => {
   const api = backend({ user: { aiConsentGranted: false } });

@@ -16,11 +16,17 @@ export const businessInfo = {
   responseTime: "Within 5 business days",
 };
 
+// Web/Razorpay terms are independent of the offers shown by mobile app stores.
 export const subscriptionOffer = {
   trialPrice: "₹1",
   trialHours: 24,
   renewal: "₹499/month",
-  disclosure: "Get 24 hours of Skillomate access for ₹1. After the 24-hour trial, your subscription automatically renews at ₹499/month using your authorized payment method until cancelled.",
+  disclosure: "Web (Razorpay): Get 24 hours of Skillomate access for ₹1. After the 24-hour trial, your subscription automatically renews at ₹499/month using your authorized payment method until cancelled.",
+};
+
+export const storeSubscriptionDisclosures = {
+  googlePlay: "Android (Google Play): Eligible customers in India pay ₹9 for the first 3 days, then ₹499/month. Automatically renews until cancelled. Google Play determines offer eligibility and shows the applicable localized prices and billing terms before purchase. Customers without the introductory offer see the regular monthly price. Manage or cancel in Google Play subscriptions.",
+  apple: "iOS (Apple App Store): Apple subscriptions follow the prices, eligibility and renewal terms shown in the App Store purchase sheet. Manage or cancel through your Apple account subscriptions.",
 };
 
 function ensureMeta(name, attr, value) {

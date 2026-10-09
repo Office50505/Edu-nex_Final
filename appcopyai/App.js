@@ -3013,6 +3013,16 @@ function UpgradeModal({
   ];
   const isIOS = Platform.OS === "ios";
   const storeName = isIOS ? "App Store" : "Google Play";
+  const entitlementSource = subData?.entitlementSource || user?.entitlementSource || "none";
+  const sourceLabel = {
+    apple: "App Store",
+    google_play: "Google Play",
+    legacy: "Skillomate web billing",
+    razorpay: "Skillomate web billing",
+    phonepe: "Skillomate web billing",
+    admin: "Skillomate",
+    razorpay_grace: "Skillomate web billing",
+  }[entitlementSource] || "Skillomate";
   const purchaseBusy = Boolean(appleSubscription?.working);
   const purchaseReady = appleSubscription?.purchaseReady ?? Boolean(
     appleSubscription?.product && appleSubscription?.entitlement?.appAccountToken
@@ -9633,9 +9643,10 @@ function SubscriptionDetailsScreen({ user, onBack, session, appleSubscription, o
   const purchaseReady = appleSubscription.purchaseReady ?? Boolean(
     appleSubscription.product && appleSubscription.entitlement?.appAccountToken
   );
-  const managementUrl = isIOS
-    ? APPLE_SUBSCRIPTION_MANAGEMENT_URL
-    : appleSubscription.managementUrl;
+  const currentStoreOwnsEntitlement = entitlementSource === (isIOS ? "apple" : "google_play");
+  const managementUrl = currentStoreOwnsEntitlement
+    ? (isIOS ? APPLE_SUBSCRIPTION_MANAGEMENT_URL : appleSubscription.managementUrl)
+    : null;
   const priceCopy = appleSubscriptionPriceCopy(appleSubscription);
 
   function formatDate(dateStr) {
@@ -9713,6 +9724,7 @@ function SubscriptionDetailsScreen({ user, onBack, session, appleSubscription, o
                 <Text style={s.profileInfoValue}>
                   {subData?.subscriptionExpiry ? formatDate(subData.subscriptionExpiry) : (isActive ? "Lifetime / Manual" : "—")}
                 </Text>
+                {isActive ? <Text style={s.profileInfoLabel}>Billed through {sourceLabel}</Text> : null}
               </View>
             </View>
 
@@ -11726,6 +11738,7 @@ export default function App() {
   const [, setThemeVersion] = useState(0);
   const userRef = useRef(null);
   const sessionRef = useRef(null);
+  const refreshAccountEntitlementRef = useRef(null);
   const secureSessionStorageRef = useRef(null);
   if (!secureSessionStorageRef.current) {
     secureSessionStorageRef.current = createSecureSessionStorage({ secureStore: SecureStore, legacyStorage: AsyncStorage });
@@ -11733,6 +11746,7 @@ export default function App() {
   if (!sessionRef.current) sessionRef.current = createNativeSession({
     baseUrl: API_BASE, storage: secureSessionStorageRef.current,
     onChange: next => { userRef.current = next; setUserState(next); },
+    onRefreshed: () => { refreshAccountEntitlementRef.current?.().catch(() => {}); },
     onExpired: () => {
       setSelectedCourse(null); setStartIndex(null); setCourseAiTarget(null); setMainScreen("home");
       setLoginError("Your session has ended. Please log in again.");
@@ -11740,27 +11754,44 @@ export default function App() {
   });
   const nativeSession = sessionRef.current;
   const setUser = useCallback(value => sessionRef.current.setUser(value), []);
-  const mergeStoreEntitlement = useCallback(entitlement => {
-    setUser(previous => previous ? ({
-      ...previous,
-      entitlementState: entitlement.entitlementState,
-      entitlementActive: entitlement.entitlementActive,
-      entitlementExpiresAt: entitlement.entitlementState === "GRACE_PERIOD" ? entitlement.gracePeriodExpiresAt : entitlement.expiresAt,
-      gracePeriodExpiresAt: entitlement.gracePeriodExpiresAt,
-      entitlementSource: Platform.OS === "android" ? "google_play" : "apple",
-      subscriptionExpiry: entitlement.entitlementState === "GRACE_PERIOD" ? entitlement.gracePeriodExpiresAt : entitlement.expiresAt,
-      subscriptionStatus: entitlement.entitlementActive ? "active" : "expired",
-    }) : previous);
+  const mergeAccountEntitlement = useCallback((entitlement, ownerId, ownerSessionId) => {
+    setUser(previous => {
+      if (!previous || previous._id !== ownerId || previous.sessionId !== ownerSessionId) return previous;
+      return {
+        ...previous,
+        entitlementState: entitlement.entitlementState,
+        entitlementActive: entitlement.entitlementActive === true,
+        entitlementExpiresAt: entitlement.subscriptionExpiry || null,
+        entitlementSource: entitlement.entitlementSource || "none",
+        subscriptionExpiry: entitlement.subscriptionExpiry || null,
+        subscriptionStatus: entitlement.subscriptionStatus || "expired",
+      };
+    });
   }, [setUser]);
+  const refreshAccountEntitlement = useCallback(async () => {
+    const owner = userRef.current;
+    if (!owner?._id || !owner?.sessionId) return null;
+    const entitlement = await nativeSession.requestJson(`/api/user/${encodeURIComponent(owner._id)}/subscription`);
+    mergeAccountEntitlement(entitlement, owner._id, owner.sessionId);
+    return entitlement;
+  }, [mergeAccountEntitlement, nativeSession]);
+  refreshAccountEntitlementRef.current = refreshAccountEntitlement;
+  // Store hooks verify their own provider. Access decisions are then refreshed
+  // from the backend's all-provider resolver so one inactive store cannot hide
+  // an active Razorpay, Apple, Google Play, or administrative entitlement.
+  const onStoreEntitlementChanged = useCallback(
+    () => refreshAccountEntitlement(),
+    [refreshAccountEntitlement],
+  );
   const appleSubscription = useAppleSubscriptions({
     session: nativeSession,
     user,
-    onEntitlementChanged: mergeStoreEntitlement,
+    onEntitlementChanged: onStoreEntitlementChanged,
   });
   const googlePlaySubscription = useGooglePlaySubscriptions({
     session: nativeSession,
     user,
-    onEntitlementChanged: mergeStoreEntitlement,
+    onEntitlementChanged: onStoreEntitlementChanged,
   });
   const storeSubscription = Platform.OS === "android" ? googlePlaySubscription : appleSubscription;
   const [mainScreen, setMainScreen] = useState("home");
@@ -11843,6 +11874,10 @@ export default function App() {
   const openSubscriptionPrivacy = useCallback(() => openLegalPage("privacy"), [openLegalPage]);
 
   const currentUserHasCourseAccess = hasCourseAccess(user);
+  useEffect(() => {
+    if (!user?._id || !user?.sessionId) return;
+    refreshAccountEntitlement().catch(() => {});
+  }, [refreshAccountEntitlement, user?._id, user?.sessionId]);
   useEffect(() => {
     const currentUserId = user?._id || user?.id;
     if (!currentUserId) {
@@ -11978,7 +12013,7 @@ export default function App() {
       if (pending || disposed || AppState.currentState === "background") return;
       pending = true;
       try {
-        await nativeSession.requestJson(`/api/auth/validate/${encodeURIComponent(id)}`);
+        await refreshUser(id, null, sid);
       } catch (error) {
         if (disposed || error?.code !== "SESSION_EXPIRED" || userRef.current?.sessionId !== sid) return;
         setLoginError("Your account is logged in on a different device.");
@@ -11997,7 +12032,7 @@ export default function App() {
       clearInterval(timer);
       subscription.remove();
     };
-  }, [nativeSession, setUser, user?._id, user?.sessionId]);
+  }, [refreshUser, user?._id, user?.sessionId]);
 
   useEffect(() => { downloadsRef.current = downloads; }, [downloads]);
 

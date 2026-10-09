@@ -718,6 +718,7 @@ if (!/^mongodb(\+srv)?:\/\//.test(MONGODB_URI)) {
     if (process.env.DISABLE_BACKGROUND_JOBS !== 'true') {
       require('./jobs/courseStatsJob');
       require('./jobs/subscriptionTasks');
+      require('./jobs/googlePlayReconciliationTasks');
       require('./jobs/billingCancellationTasks');
     }
   }).catch((err) => {
@@ -1452,6 +1453,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/onboarding', require('./routes/onboarding'));
 app.use('/api/ai', aiRoutes);
 app.use('/api', require('./routes/appleIap'));
+app.use('/api', require('./routes/googlePlayIap'));
 app.use('/api', paymentRoutes);
 app.use('/api', sessionRoutes);
 app.use('/api', contentRoutes);

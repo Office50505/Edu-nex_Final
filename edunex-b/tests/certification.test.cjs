@@ -71,7 +71,7 @@ function harness(options={}){
  const course={_id:'course',title:'Course',status:'published',videos:[{_id:'a',duration:100}]};
  const query=value=>({lean:async()=>value});
  const subscription=Object.prototype.hasOwnProperty.call(options,'subscription') ? options.subscription : {status:'active',currentPeriodEnd:new Date(Date.now()+60000)};
- const models={Course:{findOne:()=>({select:projection=>{assert.equal(projection,'-thumbnail -thumbnailHorizontal -thumbnailVertical -videos.thumbnail');return query(course);}})},CertificationPolicy:{findById:()=>query(null)},LearningProgress:{find:()=>query([])},AssessmentResult:{findById:()=>query(null)},Subscription:{findOne:()=>query(subscription)},Certificate:{findOneAndUpdate:({_id},update)=>{const key=String(_id);if(!stored.has(key))stored.set(key,{_id:key,...update.$setOnInsert});return query(stored.get(key));}}};
+ const models={Course:{findOne:()=>({select:projection=>{assert.equal(projection,'-thumbnail -thumbnailHorizontal -thumbnailVertical -videos.thumbnail');return query(course);}})},CertificationPolicy:{findById:()=>query(null)},LearningProgress:{find:()=>query([])},AssessmentResult:{findById:()=>query(null)},Subscription:{findOne:()=>query(subscription)},AppleSubscription:{findOne:()=>query(options.apple||null)},GooglePlaySubscription:{findOne:()=>query(options.google||null)},Certificate:{findOneAndUpdate:({_id},update)=>{const key=String(_id);if(!stored.has(key))stored.set(key,{_id:key,...update.$setOnInsert});return query(stored.get(key));}}};
  const sandbox={module:{exports:{}},require(name){if(name==='node:crypto')return require('node:crypto');if(name==='mongoose')return{Types:{ObjectId:class{constructor(id){this.id=id;}toString(){return this.id;}static isValid(){return true;}}}};if(name.includes('completionRules'))return rules;if(name.includes('subscriptionAccess'))return require('../services/subscriptionAccess');if(name.includes('courseAccess'))return require('../services/courseAccess');return models[name.split('/').at(-1)]||{};}};
  vm.runInNewContext(fs.readFileSync(path.join(__dirname,'../services/certificationService.js'),'utf8'),sandbox);
  return{api:sandbox.module.exports,stored,course};
@@ -85,6 +85,19 @@ test('entitlement check honors mobile-compatible user access when subscription r
  await api.access({_id:'u',subscriptionStatus:'active',subscriptionExpiry:new Date(Date.now()+60000)});
  await assert.rejects(api.access({_id:'u',subscriptionStatus:'active',subscriptionExpiry:new Date(Date.now()-60000)}),e=>e.statusCode===403);
  await assert.rejects(api.access({_id:'u',subscriptionStatus:'none'}),e=>e.statusCode===403);
+});
+test('playback and certification read current Google and Apple access instead of an expired mirror',async()=>{
+ const expiresAt=new Date(Date.now()+60000);
+ for(const store of [{google:{entitlementState:'ACTIVE',expiresAt}},{apple:{entitlementState:'ACTIVE',expiresAt}}]){
+  const {api}=harness({...store,subscription:{status:'expired',currentPeriodEnd:new Date(0)}});
+  await api.access({_id:'u',subscriptionStatus:'expired'},'course');
+ }
+});
+test('revoked or pending Google purchases cannot use a stale active mirror for playback or certification',async()=>{
+ for(const entitlementState of ['REVOKED','BILLING_RETRY']){
+  const {api}=harness({subscription:null,google:{entitlementState,expiresAt:new Date(Date.now()+60000)}});
+  await assert.rejects(api.access({_id:'u',subscriptionStatus:'active'},'course'),e=>e.statusCode===403);
+ }
 });
 test('repeated issuance shares a deterministic primary key and never restores revoked records',async()=>{
  const {api,stored,course}=harness();const ctx={course,version:'v1'},status={eligible:true,totalLessons:1,assessmentRequired:false};

@@ -8,8 +8,10 @@ const Certificate = require('../models/Certificate');
 const CourseProgress = require('../models/CourseProgress');
 const User = require('../models/User');
 const Subscription = require('../models/Subscription');
+const AppleSubscription = require('../models/AppleSubscription');
+const GooglePlaySubscription = require('../models/GooglePlaySubscription');
 const AnalyticsEvent = require('../models/AnalyticsEvent');
-const { resolveSubscriptionAccess } = require('./subscriptionAccess');
+const { resolveAllSubscriptionAccess } = require('./subscriptionAccess');
 const { activeCourseEntitlement } = require('./courseAccess');
 const { isTrialUnlockedCourse } = require('../middleware/checkSubscription');
 const featureSettings = require('./adminFeatureSettings');
@@ -32,8 +34,12 @@ async function context(user, courseId) {
 }
 async function access(user, courseId = null) {
   if (activeCourseEntitlement(user,courseId)) return;
-  const sub=await Subscription.findOne({user:user._id}).lean();
-  const resolvedAccess = resolveSubscriptionAccess(sub,user);
+  const [sub, apple, google] = await Promise.all([
+    Subscription.findOne({user:user._id}).lean(),
+    AppleSubscription.findOne({user:user._id}).lean(),
+    GooglePlaySubscription.findOne({user:user._id}).lean(),
+  ]);
+  const resolvedAccess = resolveAllSubscriptionAccess(sub,apple,google,user);
   if(!resolvedAccess.active) throw fail('An active learning entitlement is required.',403);
   if(resolvedAccess.status === 'trial' && !resolvedAccess.grace && courseId) {
     if(!(await isTrialUnlockedCourse(courseId))) throw fail('This course unlocks after AutoPay starts or after an upfront purchase.',403);

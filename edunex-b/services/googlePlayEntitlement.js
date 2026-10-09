@@ -1,6 +1,6 @@
-const GOOGLE_PLAY_PACKAGE_NAME = process.env.GOOGLE_PLAY_PACKAGE_NAME || 'com.skillomate.app';
-const GOOGLE_PLAY_PRODUCT_ID = process.env.GOOGLE_PLAY_SUBSCRIPTION_PRODUCT_ID || 'skillomate_premium_monthly';
-const GOOGLE_PLAY_INTRODUCTORY_OFFER_ID = process.env.GOOGLE_PLAY_INTRODUCTORY_OFFER_ID || 'new-subscriber-1rs-24h';
+const GOOGLE_PLAY_PACKAGE_NAME = String(process.env.GOOGLE_PLAY_PACKAGE_NAME || '').trim() || 'com.skillomate.app';
+const GOOGLE_PLAY_PRODUCT_ID = String(process.env.GOOGLE_PLAY_SUBSCRIPTION_PRODUCT_ID || '').trim() || 'skillomate_premium_monthly';
+const GOOGLE_PLAY_INTRODUCTORY_OFFER_ID = String(process.env.GOOGLE_PLAY_INTRODUCTORY_OFFER_ID || '').trim() || 'intro-9rs-3days';
 
 const STATES = Object.freeze({
   ACTIVE: 'ACTIVE',
@@ -19,15 +19,27 @@ const ACTIVE_STATES = new Set([
   STATES.GRACE_PERIOD,
 ]);
 
+function validDate(value) {
+  if (!value) return null;
+  const date = new Date(value);
+  return Number.isFinite(date.getTime()) ? date : null;
+}
+
+function currentEntitlementState(state, expiresAt, now) {
+  if (!ACTIVE_STATES.has(state)) return state;
+  if (!expiresAt) return STATES.UNKNOWN;
+  return expiresAt.getTime() > now ? state : STATES.EXPIRED;
+}
+
 function latestMatchingLineItem(snapshot = {}) {
   return (Array.isArray(snapshot.lineItems) ? snapshot.lineItems : [])
     .filter(item => item?.productId === GOOGLE_PLAY_PRODUCT_ID)
-    .sort((left, right) => new Date(right?.expiryTime || 0) - new Date(left?.expiryTime || 0))[0] || null;
+    .sort((left, right) => (validDate(right?.expiryTime)?.getTime() || 0) - (validDate(left?.expiryTime)?.getTime() || 0))[0] || null;
 }
 
 function deriveGooglePlayEntitlement(snapshot = {}, now = Date.now()) {
   const lineItem = latestMatchingLineItem(snapshot);
-  const expiresAt = lineItem?.expiryTime ? new Date(lineItem.expiryTime) : null;
+  const expiresAt = validDate(lineItem?.expiryTime);
   const autoRenewEnabled = lineItem?.autoRenewingPlan?.autoRenewEnabled ?? null;
   const playState = String(snapshot.subscriptionState || '').toUpperCase();
   let entitlementState = STATES.UNKNOWN;
@@ -46,6 +58,7 @@ function deriveGooglePlayEntitlement(snapshot = {}, now = Date.now()) {
     entitlementState = STATES.REVOKED;
   }
 
+  entitlementState = currentEntitlementState(entitlementState, expiresAt, now);
   const entitlementActive = ACTIVE_STATES.has(entitlementState)
     && Boolean(expiresAt && expiresAt.getTime() > now);
   return {
@@ -68,17 +81,28 @@ function publicGooglePlayEntitlement(subscription, serverNow = new Date()) {
       entitlementState: STATES.NONE,
       entitlementActive: false,
       expiresAt: null,
+      gracePeriodExpiresAt: null,
+      acknowledgementState: null,
       productId: GOOGLE_PLAY_PRODUCT_ID,
       serverNow,
     };
   }
-  const expiresAt = subscription.expiresAt || null;
-  const entitlementActive = ACTIVE_STATES.has(subscription.entitlementState)
-    && new Date(expiresAt || 0).getTime() > serverNow.getTime();
+  const expiresAt = validDate(subscription.expiresAt);
+  const productMatches = !subscription.productId || subscription.productId === GOOGLE_PLAY_PRODUCT_ID;
+  const packageMatches = !subscription.packageName || subscription.packageName === GOOGLE_PLAY_PACKAGE_NAME;
+  const entitlementState = productMatches && packageMatches
+    ? currentEntitlementState(subscription.entitlementState || STATES.UNKNOWN, expiresAt, serverNow.getTime())
+    : STATES.UNKNOWN;
+  const entitlementActive = ACTIVE_STATES.has(entitlementState)
+    && Boolean(expiresAt && expiresAt.getTime() > serverNow.getTime());
   return {
-    entitlementState: subscription.entitlementState || STATES.UNKNOWN,
+    entitlementState,
     entitlementActive,
     expiresAt,
+    // Play extends expiryTime during grace; the mobile entitlement contract uses this field.
+    gracePeriodExpiresAt: entitlementState === STATES.GRACE_PERIOD ? expiresAt : null,
+    acknowledgementState: subscription.acknowledgementState || null,
+    subscriptionState: subscription.subscriptionState || null,
     autoRenewEnabled: subscription.autoRenewEnabled ?? null,
     productId: subscription.productId || GOOGLE_PLAY_PRODUCT_ID,
     basePlanId: subscription.basePlanId || null,
