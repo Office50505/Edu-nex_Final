@@ -3,6 +3,7 @@ const CLARITY_PROJECT_ID = String(import.meta.env.VITE_CLARITY_PROJECT_ID || "")
 
 let gaInitialized = false;
 let clarityInitialized = false;
+let latestPageView = null;
 
 function appendAsyncScript(src, id) {
   if (typeof document === "undefined") return null;
@@ -37,13 +38,11 @@ export function initAnalytics() {
     appendAsyncScript(`https://www.clarity.ms/tag/${encodeURIComponent(CLARITY_PROJECT_ID)}`, "skillomate-clarity");
     clarityInitialized = true;
   }
+
+  if (latestPageView) sendPageView(latestPageView);
 }
 
-export function trackPageView(path, title = document.title) {
-  if (typeof window === "undefined") return;
-  const pagePath = path || `${window.location.pathname}${window.location.search}${window.location.hash}`;
-  const pageLocation = `${window.location.origin}${pagePath}`;
-
+function sendPageView({ pagePath, pageLocation, title }) {
   if (gaInitialized && typeof window.gtag === "function") {
     window.gtag("event", "page_view", {
       page_title: title,
@@ -55,4 +54,15 @@ export function trackPageView(path, title = document.title) {
   if (clarityInitialized && typeof window.clarity === "function") {
     window.clarity("set", "page_path", pagePath);
   }
+}
+
+export function trackPageView(path, title = document.title) {
+  if (typeof window === "undefined") return;
+  const pagePath = path || `${window.location.pathname}${window.location.search}${window.location.hash}`;
+  latestPageView = {
+    pagePath,
+    pageLocation: `${window.location.origin}${pagePath}`,
+    title,
+  };
+  sendPageView(latestPageView);
 }

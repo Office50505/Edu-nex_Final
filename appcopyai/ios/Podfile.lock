@@ -1,7 +1,7 @@
 PODS:
-  - EXConstants (57.0.20):
+  - EXConstants (57.0.21):
     - ExpoModulesCore
-  - Expo (57.0.26):
+  - Expo (57.0.27):
     - ExpoModulesCore
     - ExpoModulesJSI
     - hermes-engine
@@ -27,7 +27,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - ExpoAsset (57.0.18):
+  - ExpoAsset (57.0.19):
     - ExpoModulesCore
   - ExpoDomWebView (57.0.1):
     - ExpoModulesCore
@@ -35,7 +35,7 @@ PODS:
     - ExpoModulesCore
   - ExpoFont (57.0.4):
     - ExpoModulesCore
-  - ExpoImageManipulator (57.0.20):
+  - ExpoImageManipulator (57.0.21):
     - ExpoModulesCore
   - ExpoImagePicker (57.0.20):
     - ExpoModulesCore
@@ -43,7 +43,7 @@ PODS:
     - ExpoModulesCore
   - ExpoLogBox (57.0.4):
     - React-Core
-  - ExpoModulesCore (57.0.20):
+  - ExpoModulesCore (57.0.21):
     - ExpoModulesJSI
     - hermes-engine
     - RCTRequired
@@ -70,12 +70,12 @@ PODS:
   - ExpoModulesJSI (57.1.1):
     - React-Core
     - ReactCommon
-  - ExpoModulesWorklets (57.0.20):
+  - ExpoModulesWorklets (57.0.21):
     - ExpoModulesCore
     - ExpoModulesJSI
   - ExpoPrint (57.0.2):
     - ExpoModulesCore
-  - ExpoScreenCapture (57.0.3):
+  - ExpoScreenCapture (57.0.4):
     - ExpoModulesCore
   - ExpoSecureStore (57.0.4):
     - ExpoModulesCore
@@ -2304,21 +2304,21 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
 SPEC CHECKSUMS:
-  EXConstants: fdc6f92b1559e5bd69df9e684e8c7ba5d912890e
-  Expo: 404a8f48f74f2d062911f965440380d98bfa879b
-  ExpoAsset: a917b756b2e4fe12cef1ac3bca5fd849ddb2b919
+  EXConstants: b4e9051547ee9b8337155565fbdbe66036865120
+  Expo: ad082d060a56d674d482aa528689e7eda8d8480f
+  ExpoAsset: 78dbecc7bc9f60d839fb37ba8b10317b64779685
   ExpoDomWebView: beaec034e51bd028428b98bb1f2633ab79c6d095
   ExpoFileSystem: 28778f942725170102f7c6cf4dee05a526ddacd0
   ExpoFont: f8198a952ba2ff53c9b393b5269ea435f232cfc3
-  ExpoImageManipulator: e795a8d623905815a335edda5c967a88e25b5539
+  ExpoImageManipulator: 9dc637d77a29941bbbff5ec9cfc6ef3d6772d875
   ExpoImagePicker: 661e13a7616fbcea630cfb9409b7483094978e02
   ExpoKeepAwake: 72af0b3be3615e59bc819d26061ff4e06b155ee0
   ExpoLogBox: 80957303325cd4439137765c90a87d7f22aaf2ff
-  ExpoModulesCore: 78c9f140091776255974d0b85827f2e5514fc671
+  ExpoModulesCore: 56ec9aae02c7ee99a58d66cd9a69ac3bc8141657
   ExpoModulesJSI: 383849017851b1ebacbd78cfaa32b18b6152585e
-  ExpoModulesWorklets: 40d29262efc034e4357f2713e6037a41a27218d6
+  ExpoModulesWorklets: 1916bfde983876e6caf849398b91a0b492b73869
   ExpoPrint: 460476a4b6291114e4d515e8df4c0225b92161b0
-  ExpoScreenCapture: bd0a12b12fb7f487d8d2ce7b7c780145d308d420
+  ExpoScreenCapture: 9895600e6d3aeeadbdfd776f8d7b309b8fd33a33
   ExpoSecureStore: ff1fd5e073957417ba8f9dec0bebcbd55a60e747
   ExpoSharing: 5cc46810cfba71e331f649d947660213082094c1
   ExpoVideo: 31d5dc617d913808aeba05c3ab900712637b0e47

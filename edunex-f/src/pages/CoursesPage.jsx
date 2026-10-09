@@ -73,7 +73,7 @@ function normalizeCourse(course) {
     title: course.title || "Untitled course",
     description: plainCourseDescription(course.description) || "Build practical AI skills with guided lessons and projects.",
     categoryName: window.EduNex?.courseCategory?.(course) || (typeof course.category === "string" ? course.category : course.category?.name) || "Course",
-    image: window.EduNex?.courseImage?.(course) || course.thumbnail || course.image || "",
+    image: window.EduNex?.courseImage?.(course, { width: 960, quality: 76 }) || course.thumbnail || course.image || "",
     lessonCount: Array.isArray(course.videos) ? course.videos.length : 0,
     rating: course.rating || course.averageRating || "4.8",
   };
@@ -205,7 +205,7 @@ export function CoursesPage() {
 
   const sharedRuntimePage = useMemo(() => ({
     ...coursesPage,
-    scripts: coursesPage.scripts.filter((script) => script.src),
+    scripts: coursesPage.scripts.filter((script) => script.src && !/animations\.js(?:\?.*)?$/i.test(script.src)),
   }), []);
 
   useEffect(() => {
@@ -257,10 +257,12 @@ export function CoursesPage() {
   const loadBackendCourses = async () => {
     setState("loading");
     try {
-      await Promise.all([hydrateCourseAccess(), hydrateWishlist()]);
-      const data = await window.EduNex.request("/api/courses");
+      const catalogueRequest = window.EduNex.request("/api/courses");
+      const supportingRequests = Promise.allSettled([hydrateCourseAccess(), hydrateWishlist()]);
+      const data = await catalogueRequest;
       setCourses(orderCoursesForAccess(coursesArray(data).map(normalizeCourse)));
       setState("ready");
+      void supportingRequests;
     } catch (error) {
       console.error("Courses API failed", error);
       setState("error");
@@ -299,6 +301,7 @@ export function CoursesPage() {
     const query = search.trim().toLowerCase();
     return orderCoursesForAccess(courses.filter((course) => !query || `${course.title} ${course.description} ${course.categoryName}`.toLowerCase().includes(query)));
   }, [courses, search]);
+  const priorityCourseId = filteredCourses[0]?.id;
   const primaryTrialCourseId = courses.find(isPrimaryTrialCourse)?.id || courses[0]?.id || "";
 
   const toggleWishlist = async (courseId) => {
@@ -594,6 +597,11 @@ export function CoursesPage() {
                           className="course-thumb"
                           src={course.image}
                           alt={course.title}
+                          width="1200"
+                          height="675"
+                          loading={course.id === priorityCourseId ? "eager" : "lazy"}
+                          decoding="async"
+                          fetchPriority={course.id === priorityCourseId ? "high" : "low"}
                           onError={(event) => handleCourseImageError(event, course)}
                         />
                         <span className="course-cat-badge badge-agency">{course.categoryName}</span>

@@ -26,6 +26,7 @@ const privacyManifest = fs.readFileSync(path.join(mobileRoot, 'ios/ProtectedVide
 const infoPlist = fs.readFileSync(path.join(mobileRoot, 'ios/ProtectedVideo/Info.plist'), 'utf8');
 const localStoreKit = JSON.parse(fs.readFileSync(path.join(mobileRoot, 'ios/Skillomate-IN.storekit'), 'utf8'));
 const mobileCompatServiceSource = fs.readFileSync(path.join(__dirname, '..', 'services/mobileCompatibilityService.js'), 'utf8');
+const cloudfrontDownloadSource = fs.readFileSync(path.join(mobileRoot, 'services/cloudfrontDownload.js'), 'utf8');
 
 test('iOS external-link policy allows legal/support/resources and blocks purchase steering', () => {
   assert.equal(canOpenExternalUrl('https://skillomate.in/privacy', 'ios').allowed, true);
@@ -330,10 +331,10 @@ test('root page swipe is bidirectional and disabled while search is open', () =>
   assert.match(pagerSource, /ROOT_TAB_ORDER\[activeIndex \+ direction\]/);
   assert.match(pagerSource, /onMoveShouldSetPanResponder: \(_, gesture\) => shouldClaimRootSwipe\(gesture\)/);
   assert.match(pagerSource, /onMoveShouldSetPanResponderCapture: \(_, gesture\) => shouldClaimRootSwipe\(gesture\)/);
-  assert.match(appSource, /const ROOT_TAB_CHROME_ENABLED = true/);
-  assert.match(appSource, /const ROOT_TAB_PAGE_GAP = Platform\.OS === "android" \? 8 : 10/);
+  assert.match(appSource, /const ROOT_TAB_CHROME_ENABLED = Platform\.OS === "android"/);
+  assert.match(appSource, /const ROOT_TAB_PAGE_GAP = Platform\.OS === "android" \? 8 : 0/);
   assert.match(appSource, /const ROOT_TAB_SWIPE_THRESHOLD_RATIO = Platform\.OS === "android" \? 0\.13 : 0\.12/);
-  assert.match(appSource, /const ROOT_TAB_SWIPE_SPRING = Platform\.OS === "android"[\s\S]+friction: 13 \}/);
+  assert.match(appSource, /const ROOT_TAB_SWIPE_SPRING = Platform\.OS === "android"\s+\? \{ tension: 88, friction: 12 \}\s+: \{ stiffness: 310, damping: 32, mass: 0\.86, overshootClamping: true \}/);
   assert.match(pagerSource, /Animated\.spring\(trackX,\s+\{\s+toValue: -activeIndex \* pageStride,\s+\.\.\.ROOT_TAB_SWIPE_SPRING/);
   assert.match(pagerSource, /Animated\.spring\(trackX,\s+\{\s+toValue: -targetIndex \* pageStride,\s+\.\.\.ROOT_TAB_SWIPE_SPRING/);
   assert.match(pagerSource, /const pageScale = ROOT_TAB_CHROME_ENABLED[\s\S]+outputRange: \[1, 0\.985\]/);
@@ -344,7 +345,7 @@ test('root page swipe is bidirectional and disabled while search is open', () =>
   assert.match(pagerSource, /setSearchActive: setSearchOverlayActive/);
   assert.match(pagerSource, /\{searchOverlayActive && \(\s+<View\s+style=\{s\.rootSearchInteractionShield\}\s+pointerEvents="auto"/);
   assert.match(appSource, /rootSearchInteractionShield: \{\s+\.\.\.StyleSheet\.absoluteFillObject,\s+zIndex: 40/);
-  assert.match(appSource, /<SwipeableRootTabs[\s\S]+<\/View>\),\s+\{ enabled: false \}\s+\);/);
+  assert.match(appSource, /<SwipeableRootTabs[\s\S]+<\/View>\),\s+\{ enabled: false, collapseHistory: true \}\s+\);/);
 });
 
 test('AI chat composer sits directly above the keyboard on iOS', () => {
@@ -358,15 +359,21 @@ test('AI chat composer sits directly above the keyboard on iOS', () => {
   assert.doesNotMatch(appSource, /aiComposerStandalone: \{ paddingBottom: Platform\.OS === "ios" \? 28 : 10 \}/);
 });
 
-test('app does not render a visible left-edge back button', () => {
+test('global back gesture stays invisible while the player exposes its intentional edge-back cue', () => {
   const globalBackStart = appSource.indexOf('function GlobalEdgeBackGesture');
   const globalBackEnd = appSource.indexOf('\nfunction StepBar', globalBackStart);
   const globalBackSource = appSource.slice(globalBackStart, globalBackEnd);
   assert.match(globalBackSource, /<View style=\{s\.globalEdgeBackRoot\} \{\.\.\.panResponder\.panHandlers\}>/);
   assert.doesNotMatch(globalBackSource, /chevron-back|globalEdgeBackGuide/);
 
-  assert.doesNotMatch(appSource, /playerEdgeBackGuide/);
-  assert.doesNotMatch(appSource, /<Ionicons name="chevron-back"/);
+  const reelsStart = appSource.indexOf('function ReelsScreen');
+  const reelsEnd = appSource.indexOf('\nfunction DownloadsScreen', reelsStart);
+  const reelsSource = appSource.slice(reelsStart, reelsEnd === -1 ? undefined : reelsEnd);
+  assert.match(reelsSource, /isIosEdgeBackGuide && !videoUiOverlayOpen && !playerSettingsOpen/);
+  assert.match(reelsSource, /style=\{\[s\.playerEdgeBackStrip, s\.playerEdgeBackStripLeft\]\}/);
+  assert.match(reelsSource, /style=\{\[s\.playerEdgeBackCue, playerEdgeBackCueStyle\]\}/);
+  assert.match(reelsSource, /<Ionicons name="chevron-back" size=\{23\} color="#fff"/);
+  assert.match(appSource, /playerEdgeBackCue: \{\s+width: 42,\s+height: 42/);
 });
 
 test('report and personal detail dialogs keep fields and actions reachable above the keyboard', () => {
@@ -417,21 +424,24 @@ test('course detail tablet screen constrains lesson list and notes sheet', () =>
   assert.match(appSource, /courseNotesSheetTablet: \{\s+width: "100%",\s+maxWidth: 760,\s+alignSelf: "center"/);
 });
 
-test('lecture player back returns to the current course detail screen', () => {
+test('lecture player back uses the interactive pager and preserves its route-aware destination', () => {
   assert.match(appSource, /const backToLessons = useCallback\(\(\) => \{\s+if \(!isPreviewOnly\) loadCourseProgress\(\);\s+setStartIndex\(null\)/);
   assert.match(appSource, /if \(mainScreen === "courses" && selectedCourse && startIndex !== null\) \{\s+backToLessons\(\);\s+return true;\s+\}/);
+  assert.match(appSource, /const requestPlayerBack = useCallback\(\(\) => \{\s+if \(Platform\.OS === "ios" && playerBackLayerRef\.current\?\.goBack\?\.\(\)\) return true;\s+return handleAppBack\(\)/);
   const loggedInStart = appSource.indexOf('// ── Logged-in');
   assert.notEqual(loggedInStart, -1, 'logged-in render section is present');
-  const playerStart = appSource.indexOf('if (mainScreen === "courses" && selectedCourse && startIndex !== null)', loggedInStart);
-  assert.notEqual(playerStart, -1, 'player route is present');
-  const playerEnd = appSource.indexOf('if (mainScreen === "courses" && selectedCourse)', playerStart + 1);
-  const playerSource = appSource.slice(playerStart, playerEnd === -1 ? undefined : playerEnd);
-  assert.match(playerSource, /onBack=\{backToLessons\}/);
-  assert.doesNotMatch(playerSource, /onBack=\{handleAppBack\}/);
+  const courseRouteStart = appSource.indexOf('if (mainScreen === "courses" && selectedCourse)', loggedInStart);
+  assert.notEqual(courseRouteStart, -1, 'course and player route is present');
+  const courseRouteEnd = appSource.indexOf('\n  if (mainScreen === "certificates")', courseRouteStart);
+  const courseRouteSource = appSource.slice(courseRouteStart, courseRouteEnd === -1 ? undefined : courseRouteEnd);
+  assert.match(courseRouteSource, /const playerReturnsToCourse = Boolean\([\s\S]+startIndex !== null && immediateBackRoute\?\.selectedCourse/);
+  assert.match(courseRouteSource, /const playerDestination = playerReturnsToCourse \? courseScreen : rootScreen/);
+  assert.match(courseRouteSource, /<InteractiveBackPager[\s\S]+ref=\{playerBackLayerRef\}[\s\S]+destination=\{playerDestination\}[\s\S]+onBack=\{handleAppBack\}/);
+  assert.match(courseRouteSource, /<ReelsScreen[\s\S]+onBack=\{requestPlayerBack\}[\s\S]+useAppBackTransition/);
 });
 
 test('downloaded lecture player shows offline status inside the top lecture pill', () => {
-  assert.match(appSource, /const itemLocalPath = itemDownload\?\.status === "done" \? itemDownload\.path : null/);
+  assert.match(appSource, /const itemLocalPath = itemDownload\?\.status === "done" \? \(itemDownload\.playbackPath \|\| itemDownload\.path\) : null/);
   assert.match(appSource, /const itemIsOffline = !!itemLocalPath/);
   assert.match(appSource, /localPath=\{itemLocalPath\}/);
   assert.match(appSource, /\{itemIsOffline && \(\s+<View style=\{s\.webPlayerOfflineBadge\}/);
@@ -470,13 +480,18 @@ test('course lesson list exposes per-lesson download actions', () => {
   assert.doesNotMatch(appSource, /Alert\.alert\("Downloaded"/);
 });
 
-test('protected course downloads save direct MP4 without prepared server jobs', () => {
+test('protected course downloads prefer prepared MP4 and securely fall back to authorized HLS', () => {
   assert.match(appSource, /filePath = downloadKind === "hls" && !protectedCloudfront \? downloadManifestPath\(FileSystem, downloadId\) : downloadPath\(FileSystem, downloadId\)/);
   assert.match(appSource, /kind: downloadKind === "hls" && !protectedCloudfront \? "hls" : "mp4"/);
-  assert.match(appSource, /\/download-grant`/);
-  assert.match(appSource, /body: JSON\.stringify\(\{\}\)/);
-  assert.doesNotMatch(appSource, /body: JSON\.stringify\(\{ prepared: true \}\)/);
-  assert.doesNotMatch(appSource, /waitForPreparedDownload/);
+  assert.match(appSource, /requestPreparedCloudfrontDownload\(\{ session: nativeSession, courseId, videoId: protectedVideoId \}\)/);
+  assert.match(appSource, /if \(Platform\.OS !== "ios" \|\| !canFallbackToCloudFrontHlsDownload\(error\)\) throw error/);
+  assert.match(appSource, /const lease = await fetchPlaybackLease\(\{ courseId, video: \{ \.\.\.video, _id: protectedVideoId \}, user: u \}\)/);
+  assert.match(appSource, /hlsValidation = await downloadHlsToAppCache\(\{\s+hlsUrl: lease\.hlsUrl/);
+  assert.match(cloudfrontDownloadSource, /session\.requestJson\(grantPath, \{\s+method: "POST"/);
+  assert.match(cloudfrontDownloadSource, /body: JSON\.stringify\(\{ prepared: true \}\)/);
+  assert.match(cloudfrontDownloadSource, /for \(let attempt = 0; attempt < maxStatusAttempts; attempt \+= 1\)/);
+  assert.match(cloudfrontDownloadSource, /if \(status\?\.status === "ready"\) return grant/);
+  assert.match(cloudfrontDownloadSource, /body: JSON\.stringify\(\{ prepared: false \}\)/);
 });
 
 test('Bunny lesson downloads fall back to the default pull-zone host instead of 503', () => {
