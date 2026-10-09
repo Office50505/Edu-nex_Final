@@ -56,7 +56,7 @@ test('admin learner management exposes only the latest recorded session IP', () 
 
 test('admin user management can be scoped to tester accounts', () => {
   assert.match(serverSource, /const audience = String\(req\.query\?\.audience \|\| 'learners'\)/);
-  assert.match(serverSource, /const userFilter = audience === 'testers' \? \{ isTester: true \} : \{\}/);
+  assert.match(serverSource, /const userFilter = \{[\s\S]*audience === 'testers' \? \{ isTester: true \} : \{\}[\s\S]*platformUserIds \? \{ _id: \{ \$in: platformUserIds \} \} : \{\}[\s\S]*\};/);
   assert.match(serverSource, /User\.find\(userFilter\)/);
   assert.match(serverSource, /isActive isTester testerSince testerAssignedBy testerNotes/);
 });

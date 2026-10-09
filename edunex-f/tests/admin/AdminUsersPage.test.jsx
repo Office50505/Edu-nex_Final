@@ -16,7 +16,7 @@ vi.mock("../../src/pages/admin/adminApi.js", () => ({
 }));
 
 vi.mock("../../src/pages/admin/AdminShell.jsx", () => ({
-  AdminShell: ({ children }) => <main>{children}</main>,
+  AdminShell: ({ children, title, subtitle }) => <main><h1>{title}</h1><p>{subtitle}</p>{children}</main>,
   Message: ({ text, type }) => text ? <div role={type === "error" ? "alert" : "status"}>{text}</div> : null,
 }));
 
@@ -94,6 +94,38 @@ it("assigns a published course and gives immediate visible confirmation", async 
   });
   expect(screen.getByText(/1 courses owned/)).toBeTruthy();
   expect(screen.getAllByText("AI Influencer Course").length).toBeGreaterThanOrEqual(2);
+});
+
+it("loads the iOS app audience with device, build, and session data", async () => {
+  adminJson.mockImplementation(async (path) => {
+    if (path === "/api/admin/user-management?platform=ios") return [{
+      ...learner,
+      mobileSession: {
+        platform: "ios",
+        deviceName: "Ali's iPhone",
+        deviceModel: "iPhone 16 Pro",
+        osVersion: "26.0",
+        appVersion: "2.4.1",
+        appBuild: "91",
+        firstSeenAt: "2026-08-01T00:00:00.000Z",
+        lastSeenAt: "2026-10-09T00:00:00.000Z",
+        sessionCount: 4,
+        activeSessionCount: 1,
+        pushEnabled: true,
+      },
+    }];
+    if (path === "/api/admin/courses?summary=1") return [course];
+    throw new Error(`Unexpected request: ${path}`);
+  });
+
+  render(<AdminUsersPage mobilePlatform="ios" />);
+
+  expect(await screen.findByRole("heading", { name: "iOS App Users" })).toBeTruthy();
+  expect(screen.getByText("iPhone 16 Pro")).toBeTruthy();
+  expect(screen.getByText("App 2.4.1 (91)")).toBeTruthy();
+  expect(screen.getByText("Push on")).toBeTruthy();
+  expect(adminJson).toHaveBeenCalledWith("/api/admin/user-management?platform=ios", {}, "Unable to load users.");
+  expect(screen.queryByText("Create learner ID")).toBeNull();
 });
 
 it("explains why assignment cannot start when no course is published", async () => {

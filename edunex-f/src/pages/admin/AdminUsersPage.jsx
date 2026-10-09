@@ -273,6 +273,11 @@ function userSearchText(user) {
     subscriptionDisplayStatus(user),
     user.gender,
     user.age,
+    user.mobileSession?.deviceName,
+    user.mobileSession?.deviceModel,
+    user.mobileSession?.osVersion,
+    user.mobileSession?.appVersion,
+    user.mobileSession?.appBuild,
     ...(user.progressCourses || []).map((course) => course.courseTitle),
   ].filter(Boolean).join(" ").toLowerCase();
 }
@@ -412,7 +417,7 @@ function LearnerDetailDrawer({ user, courses, tab, setTab, onClose, purchaseHist
       </div>
       {tab === "Overview" ? (
         <div className="crm-detail-grid">
-          <DetailStat label="User ID" value={user._id || "No ID"} /><DetailStat label="Presence" value={user.presence?.isOnline ? "Online now" : `Offline · ${formatDateTime(user.presence?.lastSeenAt || user.lastActiveAt)}`} /><DetailStat label="Lifecycle" value={lifecycleLabel(user)} /><DetailStat label="Subscription" value={subscriptionDisplayStatus(user)} /><DetailStat label="Gateway" value={billingGatewayLabel(user)} /><DetailStat label="Mandate" value={mandateLabel(user)} /><DetailStat label="Provider status" value={billing(user).providerStatus || billing(user).billingPhase || "Not recorded"} /><DetailStat label="Subscription started" value={billingDate(billing(user).subscriptionStartedAt)} /><DetailStat label="Trial started" value={billingDate(billing(user).trialStartedAt)} /><DetailStat label="Trial ends" value={billingDate(billing(user).trialExpiresAt)} /><DetailStat label="Next billing" value={billingDate(billing(user).nextBillingAt)} /><DetailStat label="Cancelled at" value={billingDate(billing(user).cancelledAt)} /><DetailStat label={accessEndLabel(user)} value={accessEndDate(user)} /><DetailStat label="Verified" value={isVerified(user) ? "Yes" : "Pending"} /><DetailStat label="Joined" value={formatDateTime(user.createdAt)} /><DetailStat label="Last active" value={formatDate(user.presence?.lastSeenAt || user.lastActiveAt || watch.lastWatchedAt)} /><DetailStat label="Last IP address" value={user.networkSummary?.ipAddress || "Not recorded"} /><DetailStat label="IP recorded" value={user.networkSummary?.recordedAt ? formatDateTime(user.networkSummary.recordedAt) : "Not recorded"} /><DetailStat label="Watch time" value={formatWatchDuration(watchMinutes(user))} /><DetailStat label="Average completion" value={`${formatNumber(progressAverage(user))}%`} />
+          <DetailStat label="User ID" value={user._id || "No ID"} /><DetailStat label="Presence" value={user.presence?.isOnline ? "Online now" : `Offline · ${formatDateTime(user.presence?.lastSeenAt || user.lastActiveAt)}`} /><DetailStat label="Lifecycle" value={lifecycleLabel(user)} /><DetailStat label="Subscription" value={subscriptionDisplayStatus(user)} /><DetailStat label="Gateway" value={billingGatewayLabel(user)} /><DetailStat label="Mandate" value={mandateLabel(user)} /><DetailStat label="Provider status" value={billing(user).providerStatus || billing(user).billingPhase || "Not recorded"} /><DetailStat label="Subscription started" value={billingDate(billing(user).subscriptionStartedAt)} /><DetailStat label="Trial started" value={billingDate(billing(user).trialStartedAt)} /><DetailStat label="Trial ends" value={billingDate(billing(user).trialExpiresAt)} /><DetailStat label="Next billing" value={billingDate(billing(user).nextBillingAt)} /><DetailStat label="Cancelled at" value={billingDate(billing(user).cancelledAt)} /><DetailStat label={accessEndLabel(user)} value={accessEndDate(user)} /><DetailStat label="Verified" value={isVerified(user) ? "Yes" : "Pending"} /><DetailStat label="Joined" value={formatDateTime(user.createdAt)} /><DetailStat label="Last active" value={formatDate(user.presence?.lastSeenAt || user.lastActiveAt || watch.lastWatchedAt)} /><DetailStat label="Last IP address" value={user.networkSummary?.ipAddress || "Not recorded"} /><DetailStat label="IP recorded" value={user.networkSummary?.recordedAt ? formatDateTime(user.networkSummary.recordedAt) : "Not recorded"} />{user.mobileSession ? <><DetailStat label="Mobile platform" value={user.mobileSession.platform?.toUpperCase() || "Not recorded"} /><DetailStat label="Device" value={user.mobileSession.deviceModel || user.mobileSession.deviceName || "Not recorded"} /><DetailStat label="OS version" value={user.mobileSession.osVersion || "Not recorded"} /><DetailStat label="App version" value={user.mobileSession.appVersion ? `${user.mobileSession.appVersion}${user.mobileSession.appBuild ? ` (${user.mobileSession.appBuild})` : ""}` : "Not recorded"} /><DetailStat label="First app session" value={user.mobileSession.firstSeenAt ? formatDateTime(user.mobileSession.firstSeenAt) : "Not recorded"} /><DetailStat label="Last app session" value={user.mobileSession.lastSeenAt ? formatDateTime(user.mobileSession.lastSeenAt) : "Not recorded"} /><DetailStat label="App sessions" value={formatNumber(user.mobileSession.sessionCount)} /><DetailStat label="Push enabled" value={user.mobileSession.pushEnabled ? "Yes" : "No"} /></> : null}<DetailStat label="Watch time" value={formatWatchDuration(watchMinutes(user))} /><DetailStat label="Average completion" value={`${formatNumber(progressAverage(user))}%`} />
         </div>
       ) : null}
       {tab === "Registration" ? <RegistrationDetails user={user} /> : null}
@@ -430,15 +435,18 @@ function LearnerDetailDrawer({ user, courses, tab, setTab, onClose, purchaseHist
   );
 }
 
-export function AdminUsersPage({ audience = "learners", paymentGateway = "" } = {}) {
+export function AdminUsersPage({ audience = "learners", paymentGateway = "", mobilePlatform = "" } = {}) {
   const testerMode = audience === "testers";
   const leadsMode = audience === "leads";
   const trialsMode = audience === "trials";
   const gatewayFilter = String(paymentGateway || "").trim().toLowerCase();
+  const platformFilter = ["ios", "android"].includes(String(mobilePlatform || "").trim().toLowerCase()) ? String(mobilePlatform).trim().toLowerCase() : "";
+  const mobileMode = Boolean(platformFilter);
+  const platformTitle = platformFilter === "ios" ? "iOS" : platformFilter === "android" ? "Android" : "";
   const gatewayTitle = gatewayFilter === "phonepe" ? "PhonePe" : gatewayFilter === "razorpay" ? "Razorpay" : "";
   const entityLabel = testerMode ? "tester" : "learner";
   const entityLabelTitle = testerMode ? "Tester" : "Learner";
-  const pageTitle = testerMode ? "Test Account Management" : leadsMode ? "Lead Management" : trialsMode ? "Trial Learners" : gatewayTitle ? `${gatewayTitle} Payment Users` : "All Learners";
+  const pageTitle = mobileMode ? `${platformTitle} App Users` : testerMode ? "Test Account Management" : leadsMode ? "Lead Management" : trialsMode ? "Trial Learners" : gatewayTitle ? `${gatewayTitle} Payment Users` : "All Learners";
   const pageSubtitle = testerMode
     ? "CRM-style tester records with the same account, subscription, course, and deletion controls."
     : leadsMode
@@ -447,8 +455,10 @@ export function AdminUsersPage({ audience = "learners", paymentGateway = "" } = 
       ? "People who actually entered the trial flow, separate from fresh leads."
     : gatewayTitle
       ? `CRM-style user management for ${gatewayTitle} paying users with billing, access, course, and account controls.`
+    : mobileMode
+      ? `Learners seen in the ${platformTitle} app, with their latest device, OS, app build, activity, subscription, and course data.`
     : "All non-test learner records with subscription status, verification health, engagement, and course progress.";
-  const pageKey = testerMode ? "testerUsers" : leadsMode ? "leads" : trialsMode ? "trialLearners" : gatewayFilter === "phonepe" ? "phonePeUsers" : gatewayFilter === "razorpay" ? "razorpayUsers" : "users";
+  const pageKey = platformFilter === "ios" ? "iosUsers" : platformFilter === "android" ? "androidUsers" : testerMode ? "testerUsers" : leadsMode ? "leads" : trialsMode ? "trialLearners" : gatewayFilter === "phonepe" ? "phonePeUsers" : gatewayFilter === "razorpay" ? "razorpayUsers" : "users";
   const [page, setPage] = useState(1);
   const [deletingId, setDeletingId] = useState(null);
   const [users, setUsers] = useState([]);
@@ -509,7 +519,7 @@ export function AdminUsersPage({ audience = "learners", paymentGateway = "" } = 
     }
     try {
       const [rows, courseRows] = await Promise.all([
-        adminJson(`/api/admin/user-management${testerMode ? "?audience=testers" : ""}`, {}, "Unable to load users."),
+        adminJson(`/api/admin/user-management${platformFilter ? `?platform=${encodeURIComponent(platformFilter)}` : testerMode ? "?audience=testers" : ""}`, {}, "Unable to load users."),
         adminJson("/api/admin/courses?summary=1", {}, "Unable to load courses."),
       ]);
       setUsers(Array.isArray(rows) ? rows : []);
@@ -532,7 +542,7 @@ export function AdminUsersPage({ audience = "learners", paymentGateway = "" } = 
     loadUsers();
     const presenceRefresh = window.setInterval(() => loadUsers({ silent: true }), 30000);
     return () => window.clearInterval(presenceRefresh);
-  }, [pageTitle, testerMode]);
+  }, [pageTitle, testerMode, platformFilter]);
 
   const filteredUsers = useMemo(() => {
     const audienceUsers = users.filter((user) => matchesAudienceMode(user) && isGatewayPayingUser(user));
@@ -597,8 +607,22 @@ export function AdminUsersPage({ audience = "learners", paymentGateway = "" } = 
     const mandateOnUsers = filteredUsers.filter((user) => String(billing(user).mandateStatus || "").toLowerCase() === "active").length;
     const mandateCancelledUsers = filteredUsers.filter((user) => ["cancelled", "expired", "halted"].includes(String(billing(user).mandateStatus || "").toLowerCase())).length;
     const complete = filteredUsers.reduce((sum, user) => sum + completedCourses(user), 0);
+    const pushEnabledUsers = filteredUsers.filter((user) => user.mobileSession?.pushEnabled).length;
+    const activeMobileSessions = filteredUsers.reduce((sum, user) => sum + Number(user.mobileSession?.activeSessionCount || 0), 0);
+    const appVersions = new Set(filteredUsers.map((user) => user.mobileSession?.appVersion).filter(Boolean));
     const usersWithAge = filteredUsers.filter((user) => user.age != null && Number(user.age) > 0 && Number.isFinite(Number(user.age)));
     const averageAge = usersWithAge.length ? Math.round(usersWithAge.reduce((sum, user) => sum + Number(user.age || 0), 0) / usersWithAge.length) : null;
+    if (mobileMode) return [
+      [`${platformTitle} users`, formatNumber(filteredUsers.length)],
+      ["Enabled Accounts", formatNumber(activeUsers)],
+      ["Online Now", formatNumber(onlineUsers)],
+      ["Push Enabled", formatNumber(pushEnabledUsers)],
+      ["Active App Sessions", formatNumber(activeMobileSessions)],
+      ["App Versions", formatNumber(appVersions.size)],
+      ["Paid Subscribers", formatNumber(subscribedUsers)],
+      ["Watch Time", formatWatchDuration(totalWatchMinutes)],
+      ["Progress Courses", `${formatNumber(totalProgressCourses)} / ${formatNumber(complete)}`],
+    ];
     return [
       [leadsMode ? "Leads" : trialsMode ? "Trial learners" : "Users", formatNumber(filteredUsers.length)],
       ["Enabled Accounts", formatNumber(activeUsers)],
@@ -611,7 +635,7 @@ export function AdminUsersPage({ audience = "learners", paymentGateway = "" } = 
       ["Average Age", averageAge ? `${formatNumber(averageAge)} years` : "No age"],
       ["Progress Courses", `${formatNumber(totalProgressCourses)} / ${formatNumber(complete)}`],
     ];
-  }, [filteredUsers]);
+  }, [filteredUsers, mobileMode, platformTitle]);
 
   async function toggleOpen(userId) {
     setOpenIds((current) => {
@@ -928,7 +952,7 @@ export function AdminUsersPage({ audience = "learners", paymentGateway = "" } = 
       setMessage("No visible users to export.");
       return;
     }
-    const headers = ["User ID", "Name", "Email", "Mobile", "Lifecycle", "Subscription", "Gateway", "Mandate", "Provider Status", "Subscription Started", "Trial Started", "Trial Ends", "Next Billing", "Cancelled At", "Cancel Reason", "Mobile Verified", "Email Verified", "Gender", "Age", "Avatar", "Marketing Opt-in", "Registered At", "Last Login", "Courses", "Completed", "Average Progress", "Watch Minutes", "Watched Videos"];
+    const headers = ["User ID", "Name", "Email", "Mobile", "Lifecycle", "Subscription", "Gateway", "Mandate", "Provider Status", "Subscription Started", "Trial Started", "Trial Ends", "Next Billing", "Cancelled At", "Cancel Reason", "Mobile Verified", "Email Verified", "Gender", "Age", "Avatar", "Marketing Opt-in", "Registered At", "Last Login", "Courses", "Completed", "Average Progress", "Watch Minutes", "Watched Videos", ...(mobileMode ? ["App Platform", "Device Name", "Device Model", "OS Version", "App Version", "App Build", "First App Session", "Last App Session", "Session Count", "Active Session Count", "Push Enabled"] : [])];
     const csvRows = [
       headers.map(csvEscape).join(","),
       ...filteredUsers.map((user) => [
@@ -960,6 +984,19 @@ export function AdminUsersPage({ audience = "learners", paymentGateway = "" } = 
         `${progressAverage(user)}%`,
         watchMinutes(user),
         Number(user.watchSummary?.watchedVideos || 0),
+        ...(mobileMode ? [
+          user.mobileSession?.platform || platformFilter,
+          user.mobileSession?.deviceName || "",
+          user.mobileSession?.deviceModel || "",
+          user.mobileSession?.osVersion || "",
+          user.mobileSession?.appVersion || "",
+          user.mobileSession?.appBuild || "",
+          formatDateTime(user.mobileSession?.firstSeenAt),
+          formatDateTime(user.mobileSession?.lastSeenAt),
+          Number(user.mobileSession?.sessionCount || 0),
+          Number(user.mobileSession?.activeSessionCount || 0),
+          user.mobileSession?.pushEnabled ? "yes" : "no",
+        ] : []),
       ].map(csvEscape).join(",")),
     ];
 
@@ -967,7 +1004,7 @@ export function AdminUsersPage({ audience = "learners", paymentGateway = "" } = 
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
-    link.download = `${testerMode ? "edunex-test-accounts" : leadsMode ? "edunex-leads" : trialsMode ? "edunex-trial-learners" : "edunex-users"}-${new Date().toISOString().slice(0, 10)}.csv`;
+    link.download = `${mobileMode ? `edunex-${platformFilter}-app-users` : testerMode ? "edunex-test-accounts" : leadsMode ? "edunex-leads" : trialsMode ? "edunex-trial-learners" : "edunex-users"}-${new Date().toISOString().slice(0, 10)}.csv`;
     link.click();
     URL.revokeObjectURL(url);
   }
@@ -981,7 +1018,7 @@ export function AdminUsersPage({ audience = "learners", paymentGateway = "" } = 
       actions={<button className="toolbar-button" type="button" onClick={loadUsers} disabled={loading}>Refresh</button>}
     >
       <Message text={message} type={messageType} />
-      <AdminWrite><details className="create-learner-panel">
+      {!mobileMode ? <AdminWrite><details className="create-learner-panel">
         <summary><span>{testerMode ? "Create planted test account" : "Create learner ID"}</span><small>{testerMode ? "Add a maintained tester login for smoke checks, payment QA, and support reproduction." : "Add a learner manually and set initial access."}</small></summary>
         <form className="create-learner-form" onSubmit={submitCreateLearner}><AdminEditFields>
           <label><span>Full name</span><input value={createLearner.fullName} onChange={(event) => updateCreateLearner("fullName", event.target.value)} minLength="2" maxLength="120" required autoComplete="off" /></label>
@@ -994,8 +1031,8 @@ export function AdminUsersPage({ audience = "learners", paymentGateway = "" } = 
           <label className="create-learner-check"><input type="checkbox" checked={createLearner.isMobileVerified} onChange={(event) => updateCreateLearner("isMobileVerified", event.target.checked)} /><span>Mobile verified</span></label>
           <div className="create-learner-actions"><button className="toolbar-button primary" type="submit" disabled={creatingLearner}>{creatingLearner ? "Creating…" : testerMode ? "Create test account" : "Create learner ID"}</button>{createdLearnerId ? <output>Created ID: <strong>{createdLearnerId}</strong></output> : null}</div>
         </AdminEditFields></form>
-      </details></AdminWrite>
-      <DeletionRequests />
+      </details></AdminWrite> : null}
+      {!mobileMode ? <DeletionRequests /> : null}
 
       <form className="controls-panel" onSubmit={(event) => event.preventDefault()}>
         <div><label htmlFor="searchInput">Search</label><input id="searchInput" type="search" placeholder="Name, email, phone number, course" value={query} onChange={(event) => setQuery(event.target.value)} /></div>
@@ -1016,12 +1053,12 @@ export function AdminUsersPage({ audience = "learners", paymentGateway = "" } = 
       </section>
 
       <div className="crm-results-bar">
-        <div><strong>{testerMode ? "Tester pipeline" : leadsMode ? "Lead pipeline" : trialsMode ? "Trial learner pipeline" : "Learner pipeline"}</strong><span>{formatNumber(filteredUsers.length)} shown from {formatNumber(totalAudienceCount)} total {testerMode ? "test accounts" : leadsMode ? "leads" : trialsMode ? "trial learners" : "learners"}</span></div>
+        <div><strong>{mobileMode ? `${platformTitle} app audience` : testerMode ? "Tester pipeline" : leadsMode ? "Lead pipeline" : trialsMode ? "Trial learner pipeline" : "Learner pipeline"}</strong><span>{formatNumber(filteredUsers.length)} shown from {formatNumber(totalAudienceCount)} total {mobileMode ? `${platformTitle} app users` : testerMode ? "test accounts" : leadsMode ? "leads" : trialsMode ? "trial learners" : "learners"}</span></div>
         <button className="toolbar-button" type="button" onClick={exportCsv} disabled={!filteredUsers.length}>Export CSV</button>
       </div>
 
       <section className="users-panel" aria-label="Users">
-        <div className="users-head"><span>{entityLabelTitle}</span><span>Status / subscription</span><span>Phone / email</span><span>Courses / watch time</span><span>Completion / dates</span><span>Actions</span></div>
+        <div className="users-head"><span>{entityLabelTitle}</span><span>Status / subscription</span><span>Phone / email</span><span>{mobileMode ? "Device / app" : "Courses / watch time"}</span><span>{mobileMode ? "App activity" : "Completion / dates"}</span><span>Actions</span></div>
         {loading ? <div className="loading-state">Loading users...</div> : null}
         {!loading && !filteredUsers.length ? <div className="empty-state">No users found.</div> : null}
         {!loading && visibleUsers.map((user) => {
@@ -1038,14 +1075,14 @@ export function AdminUsersPage({ audience = "learners", paymentGateway = "" } = 
                 <div className="crm-contact-cell"><div className="crm-avatar" aria-hidden="true">{initials(user)}</div><div><strong>{user.fullName || entityLabelTitle}</strong><span className={`presence-status ${user.presence?.isOnline ? "is-online" : "is-offline"}`}><i aria-hidden="true" />{presenceLabel(user)}</span><span>ID {user._id || "No ID"}</span></div></div>
                 <div><strong>{user.deletedAt ? "In Trash" : user.isActive === false ? "Banned account" : lifecycleLabel(user)}</strong><span><span className={`badge ${user.deletedAt || user.isActive === false ? "bad" : statusBadgeClass(statusValue)}`}>{user.deletedAt ? "trashed" : user.isActive === false ? "banned" : statusValue}</span> <span className={`badge ${mandateBadgeClass(user)}`}>{mandateLabel(user)}</span></span><span>{user.deletedAt ? `Deleted ${formatDate(user.deletedAt)}` : billingOneLine(user)}</span></div>
                 <div><strong>{formatMobile(user.mobileNumber)}</strong><span>{user.email || "No email"}</span></div>
-                <div className="crm-engagement-cell"><strong>{engagementLabel(user)}</strong><div className="mini-stats"><span className="pill">{formatNumber(summaryData.totalCourses)} courses</span><span className="pill">{formatNumber(summaryData.completedCourses)} done</span><span className="pill">{formatWatchDuration(watchMinutes(user))}</span></div></div>
-                <div className="crm-engagement-cell"><strong>{formatNumber(average)}% completion</strong><div className="progress-meter" aria-hidden="true"><div className="progress-fill" style={{ width: `${average}%` }} /></div><span>Joined {formatDateTime(user.createdAt)} · Last {formatDate(user.lastActiveAt || watch.lastWatchedAt)}</span></div>
+                {mobileMode ? <div className="crm-engagement-cell"><strong>{user.mobileSession?.deviceModel || user.mobileSession?.deviceName || `${platformTitle} device`}</strong><div className="mini-stats"><span className="pill">{platformTitle} {user.mobileSession?.osVersion || "OS unknown"}</span><span className="pill">App {user.mobileSession?.appVersion || "unknown"}{user.mobileSession?.appBuild ? ` (${user.mobileSession.appBuild})` : ""}</span><span className="pill">{user.mobileSession?.pushEnabled ? "Push on" : "Push not recorded"}</span></div></div> : <div className="crm-engagement-cell"><strong>{engagementLabel(user)}</strong><div className="mini-stats"><span className="pill">{formatNumber(summaryData.totalCourses)} courses</span><span className="pill">{formatNumber(summaryData.completedCourses)} done</span><span className="pill">{formatWatchDuration(watchMinutes(user))}</span></div></div>}
+                {mobileMode ? <div className="crm-engagement-cell"><strong>{user.presence?.isOnline ? "Active now" : `Last ${formatDateTime(user.mobileSession?.lastSeenAt)}`}</strong><div className="mini-stats"><span className="pill">{formatNumber(user.mobileSession?.sessionCount)} sessions</span><span className="pill">{formatNumber(user.mobileSession?.activeSessionCount)} active</span><span className="pill">{formatNumber(average)}% progress</span></div><span>First seen {formatDateTime(user.mobileSession?.firstSeenAt)}</span></div> : <div className="crm-engagement-cell"><strong>{formatNumber(average)}% completion</strong><div className="progress-meter" aria-hidden="true"><div className="progress-fill" style={{ width: `${average}%` }} /></div><span>Joined {formatDateTime(user.createdAt)} · Last {formatDate(user.lastActiveAt || watch.lastWatchedAt)}</span></div>}
                 <div className="row-actions"><button className="action-button" type="button" onClick={() => openDrawer(user)}>View</button><button className="action-button" type="button" aria-expanded={isOpen} onClick={() => toggleOpen(user._id)}>{isOpen ? "Close" : "Manage"}</button><button className="action-button" type="button" aria-expanded={isPurchaseOpen} onClick={() => togglePurchaseHistory(user)}>{isPurchaseOpen ? "Close history" : "Purchase history"}</button>{user.deletedAt ? <><AdminWrite><button className="action-button primary" type="button" disabled={Boolean(updatingId) || Boolean(deletingId)} onClick={() => restoreUser(user)}>{updatingId === user._id ? "Restoring…" : "Restore"}</button></AdminWrite><AdminWrite><button className="action-button danger" type="button" disabled={Boolean(deletingId) || Boolean(updatingId)} onClick={() => deletePermanently(user)}>{deletingId === user._id ? "Deleting…" : "Delete permanently"}</button></AdminWrite></> : <><AdminWrite><button className="action-button primary" type="button" disabled={Boolean(updatingId)} onClick={() => changeTesterStatus(user)}>{updatingId === user._id ? "Updating…" : user.isTester ? "Remove tester" : "Make tester"}</button></AdminWrite><AdminWrite><button className="action-button" type="button" disabled={Boolean(updatingId)} onClick={() => resetUserPassword(user)}>{updatingId === user._id ? "Updating…" : "Set password"}</button></AdminWrite><AdminWrite><button className={`action-button ${user.isActive === false ? "success" : "danger"}`} type="button" disabled={Boolean(updatingId)} onClick={() => changeAccountAccess(user)}>{updatingId === user._id ? "Updating…" : user.isActive === false ? "Unban" : "Ban"}</button></AdminWrite><AdminWrite><button className="action-button danger" type="button" disabled={Boolean(deletingId) || Boolean(updatingId)} onClick={() => moveToTrash(user)}>{deletingId === user._id ? "Moving…" : "Move to Trash"}</button></AdminWrite></>}</div>
               </div>
               {isOpen ? (
                 <div className="progress-panel">
                   <div className="crm-detail-grid">
-                    <DetailStat label="Gender" value={formatGender(user.gender)} /><DetailStat label="Age" value={formatAge(user.age)} /><DetailStat label="Gateway" value={billingGatewayLabel(user)} /><DetailStat label="Mandate" value={mandateLabel(user)} /><DetailStat label="Subscription started" value={billingDate(billing(user).subscriptionStartedAt)} /><DetailStat label="Next billing" value={billingDate(billing(user).nextBillingAt)} /><DetailStat label="Cancelled at" value={billingDate(billing(user).cancelledAt)} /><DetailStat label="Provider status" value={billing(user).providerStatus || billing(user).billingPhase || "Not recorded"} /><DetailStat label="Courses started" value={formatNumber(summaryData.totalCourses)} /><DetailStat label="Completed courses" value={formatNumber(summaryData.completedCourses)} /><DetailStat label="Average progress" value={`${formatNumber(summaryData.averageProgress)}%`} /><DetailStat label="Watch time" value={formatWatchDuration(watchMinutes(user))} /><DetailStat label="Watched videos" value={formatNumber(watch.watchedVideos)} /><DetailStat label="Last watched" value={formatDate(watch.lastWatchedAt)} /><DetailStat label="Last login" value={formatDateTime(user.lastLoginAt)} /><DetailStat label="Last IP address" value={user.networkSummary?.ipAddress || "Not recorded"} /><DetailStat label="IP recorded" value={user.networkSummary?.recordedAt ? formatDateTime(user.networkSummary.recordedAt) : "Not recorded"} /><DetailStat label="Login platform" value={user.networkSummary?.platform || "Not recorded"} /><DetailStat label="Login count" value={formatNumber(user.loginCount)} /><DetailStat label={accessEndLabel(user)} value={accessEndDate(user)} /><DetailStat label="User ID" value={user._id || "No ID"} />
+                    {mobileMode ? <><DetailStat label="Mobile platform" value={user.mobileSession?.platform?.toUpperCase() || platformTitle} /><DetailStat label="Device" value={user.mobileSession?.deviceModel || user.mobileSession?.deviceName || "Not recorded"} /><DetailStat label="OS version" value={user.mobileSession?.osVersion || "Not recorded"} /><DetailStat label="App version" value={user.mobileSession?.appVersion ? `${user.mobileSession.appVersion}${user.mobileSession.appBuild ? ` (${user.mobileSession.appBuild})` : ""}` : "Not recorded"} /><DetailStat label="First app session" value={user.mobileSession?.firstSeenAt ? formatDateTime(user.mobileSession.firstSeenAt) : "Not recorded"} /><DetailStat label="Last app session" value={user.mobileSession?.lastSeenAt ? formatDateTime(user.mobileSession.lastSeenAt) : "Not recorded"} /><DetailStat label="App sessions" value={formatNumber(user.mobileSession?.sessionCount)} /><DetailStat label="Push enabled" value={user.mobileSession?.pushEnabled ? "Yes" : "No"} /></> : null}<DetailStat label="Gender" value={formatGender(user.gender)} /><DetailStat label="Age" value={formatAge(user.age)} /><DetailStat label="Gateway" value={billingGatewayLabel(user)} /><DetailStat label="Mandate" value={mandateLabel(user)} /><DetailStat label="Subscription started" value={billingDate(billing(user).subscriptionStartedAt)} /><DetailStat label="Next billing" value={billingDate(billing(user).nextBillingAt)} /><DetailStat label="Cancelled at" value={billingDate(billing(user).cancelledAt)} /><DetailStat label="Provider status" value={billing(user).providerStatus || billing(user).billingPhase || "Not recorded"} /><DetailStat label="Courses started" value={formatNumber(summaryData.totalCourses)} /><DetailStat label="Completed courses" value={formatNumber(summaryData.completedCourses)} /><DetailStat label="Average progress" value={`${formatNumber(summaryData.averageProgress)}%`} /><DetailStat label="Watch time" value={formatWatchDuration(watchMinutes(user))} /><DetailStat label="Watched videos" value={formatNumber(watch.watchedVideos)} /><DetailStat label="Last watched" value={formatDate(watch.lastWatchedAt)} /><DetailStat label="Last login" value={formatDateTime(user.lastLoginAt)} /><DetailStat label="Last IP address" value={user.networkSummary?.ipAddress || "Not recorded"} /><DetailStat label="IP recorded" value={user.networkSummary?.recordedAt ? formatDateTime(user.networkSummary.recordedAt) : "Not recorded"} /><DetailStat label="Login platform" value={user.networkSummary?.platform || "Not recorded"} /><DetailStat label="Login count" value={formatNumber(user.loginCount)} /><DetailStat label={accessEndLabel(user)} value={accessEndDate(user)} /><DetailStat label="User ID" value={user._id || "No ID"} />
                   </div>
                   <RegistrationDetails user={user} />
                   {user.banReason ? <div className="admin-alert bad"><strong>Ban reason</strong><span>{user.banReason}</span></div> : null}

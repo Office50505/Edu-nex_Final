@@ -9,6 +9,13 @@ const sections = [
   { label: 'System', links: [['paymentAuditor', 'Payment auditor', adminRoutes.paymentAuditor, 'audit'], ['health', 'System health', adminRoutes.health, 'pulse'], ['auditLog', 'Audit log', adminRoutes.auditLog, 'log'], ['settings', 'Settings', adminRoutes.settings, 'gear'], ['team', 'Team access', adminRoutes.team, 'users']] },
 ];
 
+sections[1].links.splice(
+  3,
+  0,
+  ['iosUsers', 'iOS app users', adminRoutes.iosUsers, 'phone'],
+  ['androidUsers', 'Android app users', adminRoutes.androidUsers, 'phone'],
+);
+
 const mobileNavLinks = [
   ['dashboard', 'Dashboard', adminRoutes.dashboard, 'home'],
   ['courses', 'Courses', adminRoutes.courses, 'book'],
@@ -25,6 +32,7 @@ function NavIcon({ type }) {
   const paths = {
     home: <><path d="M3 11.5 12 4l9 7.5" /><path d="M5 10.5V20h14v-9.5" /><path d="M9 20v-6h6v6" /></>,
     users: <><path d="M16 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2" /><circle cx="9.5" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></>,
+    phone: <><rect x="7" y="2" width="10" height="20" rx="2" /><path d="M11 18h2" /></>,
     test: <><path d="M9 3h6" /><path d="M10 3v5l-5 9a3 3 0 0 0 2.6 4.5h8.8A3 3 0 0 0 19 17l-5-9V3" /><path d="M8 14h8" /><path d="M10 18h4" /></>,
     card: <><rect x="3" y="5" width="18" height="14" rx="2" /><path d="M3 10h18" /><path d="M7 15h4" /></>,
     book: <><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" /><path d="M4 4v15.5" /><path d="M6.5 4H20v13H6.5A2.5 2.5 0 0 0 4 19.5" /></>,

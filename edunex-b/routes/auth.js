@@ -177,7 +177,18 @@ function compactSessionText(value, max = 300) {
 }
 
 function requestPlatform(req) {
-  return normalizePlatform(req.body.platform || req.headers['x-platform']);
+  return normalizePlatform(req.body?.platform || req.headers['x-platform']);
+}
+
+function requestSessionMetadata(req) {
+  return {
+    platform: requestPlatform(req),
+    deviceName: compactSessionText(req.body?.deviceName || req.headers['x-device-name'], 120),
+    deviceModel: compactSessionText(req.body?.deviceModel || req.headers['x-device-model'], 120),
+    osVersion: compactSessionText(req.body?.osVersion || req.headers['x-os-version'], 80),
+    appVersion: compactSessionText(req.body?.appVersion || req.headers['x-app-version'], 80),
+    appBuild: compactSessionText(req.body?.appBuild || req.headers['x-app-build'], 80),
+  };
 }
 
 async function persistSession({ userId, sessionId, refreshToken, req, deviceToken }) {
@@ -187,8 +198,7 @@ async function persistSession({ userId, sessionId, refreshToken, req, deviceToke
     {
       $set: {
         user: userId,
-        platform: requestPlatform(req),
-        deviceName: compactSessionText(req.body.deviceName || req.headers['x-device-name'], 120),
+        ...requestSessionMetadata(req),
         deviceToken: deviceToken || null,
         refreshTokenHash: hashToken(refreshToken),
         ipAddress: getClientIp(req),

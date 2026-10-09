@@ -3116,7 +3116,17 @@ app.patch('/api/admin/users/:id/courses', protectAdmin, async (req, res) => {
 app.get('/api/admin/user-management', protectAdmin, async (req, res) => {
   try {
     const audience = String(req.query?.audience || 'learners').trim().toLowerCase();
-    const userFilter = audience === 'testers' ? { isTester: true } : {};
+    const requestedPlatform = String(req.query?.platform || '').trim().toLowerCase();
+    if (requestedPlatform && !['ios', 'android'].includes(requestedPlatform)) {
+      return res.status(400).json({ error: 'Platform must be ios or android.' });
+    }
+    const platformUserIds = requestedPlatform
+      ? await Session.distinct('user', { platform: requestedPlatform })
+      : null;
+    const userFilter = {
+      ...(audience === 'testers' ? { isTester: true } : {}),
+      ...(platformUserIds ? { _id: { $in: platformUserIds } } : {}),
+    };
     const normalizeAdminIdentityEmail = (value) => String(value || '').trim().toLowerCase();
     const normalizeAdminIdentityMobile = (value) => {
       const digits = String(value || '').replace(/\D/g, '');
@@ -3138,7 +3148,7 @@ app.get('/api/admin/user-management', protectAdmin, async (req, res) => {
       return index;
     };
     const watchEventNames = ['video_start', 'video_progress', 'video_complete', 'video_watch'];
-    const [users, progressRows, progressWatchRows, analyticsWatchRows, latestSessionRows, latestPresenceRows, subscriptions, razorpayBillings] = await Promise.all([
+    const [users, progressRows, progressWatchRows, analyticsWatchRows, latestSessionRows, latestPresenceRows, subscriptions, razorpayBillings, mobileSessionRows] = await Promise.all([
       User.find(userFilter)
         .sort({ createdAt: -1 })
         .select('fullName email mobileNumber avatar gender age subscriptionId subscriptionStatus subscriptionExpiry purchasedCourses courseEntitlements isMobileVerified isEmailVerified isActive isTester testerSince testerAssignedBy testerNotes bannedAt banReason deletedAt deletedBy deletionReason marketingOptIn createdAt lastActiveAt lastLoginAt loginCount')
@@ -3246,7 +3256,7 @@ app.get('/api/admin/user-management', protectAdmin, async (req, res) => {
         },
       ]),
       Session.aggregate([
-        { $match: { ipAddress: { $nin: [null, ''] } } },
+        { $match: { ipAddress: { $nin: [null, ''] }, ...(requestedPlatform ? { platform: requestedPlatform } : {}) } },
         { $sort: { lastPingAt: -1, loggedInAt: -1 } },
         {
           $group: {
@@ -3254,13 +3264,17 @@ app.get('/api/admin/user-management', protectAdmin, async (req, res) => {
             ipAddress: { $first: '$ipAddress' },
             platform: { $first: '$platform' },
             deviceName: { $first: '$deviceName' },
+            deviceModel: { $first: '$deviceModel' },
+            osVersion: { $first: '$osVersion' },
+            appVersion: { $first: '$appVersion' },
+            appBuild: { $first: '$appBuild' },
             recordedAt: { $first: { $ifNull: ['$lastPingAt', '$loggedInAt'] } },
           },
         },
-        { $project: { _id: 0, userId: { $toString: '$_id' }, ipAddress: 1, platform: 1, deviceName: 1, recordedAt: 1 } },
+        { $project: { _id: 0, userId: { $toString: '$_id' }, ipAddress: 1, platform: 1, deviceName: 1, deviceModel: 1, osVersion: 1, appVersion: 1, appBuild: 1, recordedAt: 1 } },
       ]),
       Session.aggregate([
-        { $match: { loggedOutAt: null } },
+        { $match: { loggedOutAt: null, ...(requestedPlatform ? { platform: requestedPlatform } : {}) } },
         { $group: { _id: '$user', lastPingAt: { $max: '$lastPingAt' } } },
         { $project: { _id: 0, userId: { $toString: '$_id' }, lastPingAt: 1 } },
       ]),
@@ -3270,6 +3284,43 @@ app.get('/api/admin/user-management', protectAdmin, async (req, res) => {
       RazorpayBilling.find()
         .select('_id mode phase subscriptionId paymentType trialAmount monthlyAmount annualAmount recurringAmount trialEnd trialAccessEnd createdAt updatedAt')
         .lean(),
+      requestedPlatform ? Session.aggregate([
+        { $match: { platform: requestedPlatform } },
+        { $sort: { lastPingAt: -1, loggedInAt: -1 } },
+        {
+          $group: {
+            _id: '$user',
+            platform: { $first: '$platform' },
+            deviceName: { $first: '$deviceName' },
+            deviceModel: { $first: '$deviceModel' },
+            osVersion: { $first: '$osVersion' },
+            appVersion: { $first: '$appVersion' },
+            appBuild: { $first: '$appBuild' },
+            firstSeenAt: { $min: '$loggedInAt' },
+            lastSeenAt: { $max: { $ifNull: ['$lastPingAt', '$loggedInAt'] } },
+            sessionCount: { $sum: 1 },
+            activeSessionCount: { $sum: { $cond: [{ $eq: ['$loggedOutAt', null] }, 1, 0] } },
+            pushEnabled: { $max: { $cond: [{ $and: [{ $ne: ['$deviceToken', null] }, { $ne: ['$deviceToken', ''] }] }, 1, 0] } },
+          },
+        },
+        {
+          $project: {
+            _id: 0,
+            userId: { $toString: '$_id' },
+            platform: 1,
+            deviceName: 1,
+            deviceModel: 1,
+            osVersion: 1,
+            appVersion: 1,
+            appBuild: 1,
+            firstSeenAt: 1,
+            lastSeenAt: 1,
+            sessionCount: 1,
+            activeSessionCount: 1,
+            pushEnabled: { $eq: ['$pushEnabled', 1] },
+          },
+        },
+      ]) : Promise.resolve([]),
     ]);
 
     const userIds = new Set(users.map((user) => String(user._id)));
@@ -3302,6 +3353,10 @@ app.get('/api/admin/user-management', protectAdmin, async (req, res) => {
     }, {});
     const presenceByUser = latestPresenceRows.reduce((acc, row) => {
       acc[row.userId] = presenceFromPing(row.lastPingAt);
+      return acc;
+    }, {});
+    const mobileSessionByUser = mobileSessionRows.reduce((acc, row) => {
+      acc[row.userId] = row;
       return acc;
     }, {});
     const subscriptionByUser = subscriptions.reduce((acc, row) => {
@@ -3393,6 +3448,7 @@ app.get('/api/admin/user-management', protectAdmin, async (req, res) => {
         ...user,
         presence: presenceByUser[String(user._id)] || { isOnline: false, lastSeenAt: user.lastActiveAt || null },
         networkSummary: latestSessionByUser[String(user._id)] || null,
+        mobileSession: mobileSessionByUser[String(user._id)] || null,
         progressCourses: userProgress,
         progressSummary: {
           totalCourses: progressCourseCount,

@@ -37,6 +37,8 @@ const adminPages = {
   analytics: AdminAnalyticsPage,
   aiChats: AdminAiChatsPage,
   users: AdminUsersPage,
+  iosUsers: () => <AdminUsersPage mobilePlatform="ios" />,
+  androidUsers: () => <AdminUsersPage mobilePlatform="android" />,
   leads: () => <AdminUsersPage audience="leads" />,
   trialLearners: () => <AdminUsersPage audience="trials" />,
   phonePeUsers: () => <AdminUsersPage paymentGateway="phonepe" />,

@@ -2,6 +2,7 @@ import { plainCourseDescription } from "./services/courseDescription";
 import { chatKey, readChat, updateChat } from "./courseAiCache";
 import { requestTutor } from "./services/aiClient";
 import { createNativeSession } from "./services/nativeSession";
+import { mobileSessionMetadata } from "./services/mobileSessionMetadata";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -895,7 +896,7 @@ async function postApiJson(paths, body) {
     const res = await fetch(`${API_BASE}${path}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
+      body: JSON.stringify({ ...body, ...mobileSessionMetadata() }),
     });
     const data = await readJsonResponse(res);
     last = { res, data };
@@ -7543,6 +7544,29 @@ export default function App() {
     }).catch(() => {}).finally(() => setIsRestoring(false));
     AsyncStorage.getItem(AI_AVATAR_STORAGE_KEY).then(v => { if (v) setAiRobotId(v); }).catch(() => {});
   }, [nativeSession, refreshUser]);
+
+  useEffect(() => {
+    if (!user?._id || !user?.sessionId) return undefined;
+    let disposed = false;
+    const recordMobileSession = () => {
+      if (disposed || AppState.currentState === "background") return;
+      nativeSession.requestJson("/api/sessions/ping", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(mobileSessionMetadata()),
+      }).catch(() => {});
+    };
+    recordMobileSession();
+    const timer = setInterval(recordMobileSession, 60000);
+    const subscription = AppState.addEventListener("change", state => {
+      if (state === "active") recordMobileSession();
+    });
+    return () => {
+      disposed = true;
+      clearInterval(timer);
+      subscription.remove();
+    };
+  }, [nativeSession, user?._id, user?.sessionId]);
 
   // Check independently of WebSocket support so a replaced login stops playback.
   useEffect(() => {
