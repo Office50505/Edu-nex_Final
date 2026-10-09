@@ -2998,6 +2998,18 @@ function appleSubscriptionPriceCopy(appleSubscription) {
   };
 }
 
+function subscriptionSourceLabel(entitlementSource) {
+  return {
+    apple: "App Store",
+    google_play: "Google Play",
+    legacy: "Skillomate web billing",
+    razorpay: "Skillomate web billing",
+    phonepe: "Skillomate web billing",
+    admin: "Skillomate",
+    razorpay_grace: "Skillomate web billing",
+  }[entitlementSource] || "Skillomate";
+}
+
 function UpgradeModal({
   visible,
   onClose,
@@ -3014,16 +3026,6 @@ function UpgradeModal({
   ];
   const isIOS = Platform.OS === "ios";
   const storeName = isIOS ? "App Store" : "Google Play";
-  const entitlementSource = subData?.entitlementSource || user?.entitlementSource || "none";
-  const sourceLabel = {
-    apple: "App Store",
-    google_play: "Google Play",
-    legacy: "Skillomate web billing",
-    razorpay: "Skillomate web billing",
-    phonepe: "Skillomate web billing",
-    admin: "Skillomate",
-    razorpay_grace: "Skillomate web billing",
-  }[entitlementSource] || "Skillomate";
   const purchaseBusy = Boolean(appleSubscription?.working);
   const purchaseReady = appleSubscription?.purchaseReady ?? Boolean(
     appleSubscription?.product && appleSubscription?.entitlement?.appAccountToken
@@ -9641,6 +9643,8 @@ function SubscriptionDetailsScreen({ user, onBack, session, appleSubscription, o
     : hasActivePremiumEntitlement(user);
   const isIOS = Platform.OS === "ios";
   const storeName = isIOS ? "App Store" : "Google Play";
+  const entitlementSource = subData?.entitlementSource || user?.entitlementSource || "none";
+  const sourceLabel = subscriptionSourceLabel(entitlementSource);
   const purchaseReady = appleSubscription.purchaseReady ?? Boolean(
     appleSubscription.product && appleSubscription.entitlement?.appAccountToken
   );

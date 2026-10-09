@@ -19,6 +19,14 @@ const upgradeModalSource = appSource.slice(
   appSource.indexOf('function UpgradeModal'),
   appSource.indexOf('function notificationIconForType'),
 );
+const subscriptionDetailsSource = appSource.slice(
+  appSource.indexOf('function SubscriptionDetailsScreen'),
+  appSource.indexOf('function DeleteAccountModal'),
+);
+const sourceLabelFunctionSource = appSource.slice(
+  appSource.indexOf('function subscriptionSourceLabel'),
+  appSource.indexOf('function UpgradeModal'),
+);
 const appleHookSource = fs.readFileSync(path.join(mobileRoot, 'services/useAppleSubscriptions.js'), 'utf8');
 const deferredIapSource = fs.readFileSync(path.join(mobileRoot, 'services/useDeferredIapConnection.js'), 'utf8');
 const googlePlayHookSource = fs.readFileSync(path.join(mobileRoot, 'services/useGooglePlaySubscriptions.js'), 'utf8');
@@ -140,6 +148,24 @@ test('premium gate popup starts the platform store subscription and exposes requ
   assert.match(upgradeModalSource, /renews automatically unless cancelled at least 24 hours/);
   assert.match(upgradeModalSource, /accessibilityLabel="Read subscription Terms of Use"/);
   assert.match(upgradeModalSource, /accessibilityLabel="Read subscription Privacy Policy"/);
+});
+
+test('subscription provider labels stay in Subscription Details scope for every supported provider', () => {
+  assert.doesNotMatch(upgradeModalSource, /\bsubData\b|\buser\b|\bentitlementSource\b|\bsourceLabel\b/);
+  assert.match(subscriptionDetailsSource,
+    /const entitlementSource = subData\?\.entitlementSource \|\| user\?\.entitlementSource \|\| "none"/);
+  assert.match(subscriptionDetailsSource, /const sourceLabel = subscriptionSourceLabel\(entitlementSource\)/);
+  assert.match(subscriptionDetailsSource,
+    /const currentStoreOwnsEntitlement = entitlementSource === \(isIOS \? "apple" : "google_play"\)/);
+
+  const sourceLabel = Function(`${sourceLabelFunctionSource}\nreturn subscriptionSourceLabel;`)();
+  assert.equal(sourceLabel('apple'), 'App Store');
+  assert.equal(sourceLabel('google_play'), 'Google Play');
+  for (const provider of ['legacy', 'razorpay', 'phonepe', 'razorpay_grace']) {
+    assert.equal(sourceLabel(provider), 'Skillomate web billing');
+  }
+  assert.equal(sourceLabel('admin'), 'Skillomate');
+  assert.equal(sourceLabel('none'), 'Skillomate');
 });
 
 test('Google Play offer normalization selects the dedicated ₹9 three-day phase and ₹499 monthly renewal', () => {
