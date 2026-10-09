@@ -71,7 +71,8 @@
         }
       ],
       "expo-secure-store",
-      "react-native-iap"
+      "react-native-iap",
+      "expo-asset"
     ],
     "extra": {
       "eas": {
