@@ -1185,7 +1185,10 @@ export function VideosPage() {
       const isMobile = Boolean(media?.matches);
       setMobilePlayerViewport(isMobile);
       if (!isMobile) setMobilePlayerMinimized(false);
-      document.body.classList.toggle(BODY_MOBILE_REEL_CLASS, Boolean(selectedCourseId && isMobile && !mobilePlayerMinimized));
+      document.body.classList.toggle(BODY_MOBILE_REEL_CLASS, Boolean(
+        selectedCourseId && isMobile && !mobilePlayerMinimized && !subscriptionRequired
+      ));
+      if (subscriptionRequired) document.body.classList.remove(BODY_FULLSCREEN_CLASS);
     };
     syncMobileReel();
     if (media?.addEventListener) media.addEventListener("change", syncMobileReel);
@@ -1195,7 +1198,7 @@ export function VideosPage() {
       else media?.removeListener?.(syncMobileReel);
       document.body.classList.remove(BODY_MOBILE_REEL_CLASS);
     };
-  }, [selectedCourseId, mobilePlayerMinimized]);
+  }, [selectedCourseId, mobilePlayerMinimized, subscriptionRequired]);
 
 
   useEffect(() => {
@@ -1789,7 +1792,7 @@ export function VideosPage() {
   };
 
   if (subscriptionRequired) return (
-    <main className="skillomate-recovery" aria-labelledby="course-access-title">
+    <main className="react-page-root skillomate-recovery" data-page="videos.html" aria-labelledby="course-access-title">
       <section className="skillomate-recovery-card" role="region" aria-label="Subscription required">
         <h1 id="course-access-title">Subscribe to continue</h1>
         <p>This course requires Skillomate Premium. Subscribe or renew your membership to start learning.</p>

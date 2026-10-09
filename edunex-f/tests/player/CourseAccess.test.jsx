@@ -25,7 +25,20 @@ it.each(['no_subscription', 'subscription_expired'])('shows a subscription promp
   expect(target.pathname).toBe('/payment');
   expect(target.searchParams.get('next')).toBe('/videos?courseId=course-1&video=2');
   expect(screen.getByRole('link', { name: 'Back to courses' }).getAttribute('href')).toBe('/courses');
+  expect(screen.getByRole('main').classList.contains('react-page-root')).toBe(true);
+  expect(screen.getByRole('main').getAttribute('data-page')).toBe('videos.html');
   expect(document.querySelector('video')).toBeNull();
+});
+it('releases the mobile player scroll lock when subscription access is required', async () => {
+  vi.stubGlobal('matchMedia', vi.fn(() => ({ matches: true, addEventListener: vi.fn(), removeEventListener: vi.fn() })));
+  document.body.classList.add('has-edunex-player-fullscreen');
+  respond(403, { error: 'no_subscription' });
+
+  render(<VideosPage />);
+
+  expect(await screen.findByRole('heading', { name: 'Subscribe to continue' })).toBeTruthy();
+  expect(document.body.classList.contains('has-edunex-mobile-reel')).toBe(false);
+  expect(document.body.classList.contains('has-edunex-player-fullscreen')).toBe(false);
 });
 it('does not sell a subscription for an unrelated forbidden response', async () => {
   respond(403, { error: 'Course is not published' });

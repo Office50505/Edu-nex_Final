@@ -1,7 +1,87 @@
-.skillomate-recovery { min-height: 65vh; display: grid; place-items: center; padding: 96px 20px 40px; background: #0b0b0d; color: #fff; }
-.skillomate-recovery-card { width: 100%; max-width: 520px; box-sizing: border-box; padding: clamp(24px, 5vw, 40px); background: #171719; border: 1px solid #59431f; border-radius: 20px; }
-.skillomate-recovery-card h1 { font-size: clamp(24px, 5vw, 32px); line-height: 1.25; margin: 0 0 16px; }
-.skillomate-recovery-card p { color: #d4d4d8; line-height: 1.6; }
-.skillomate-recovery-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; margin-top: 24px; }
-.skillomate-recovery-actions a { color: #efbd62; }
-.skillomate-recovery-actions .skillomate-recovery-primary { background: #c58b2a; color: #111; border: 0; border-radius: 10px; padding: 14px 18px; font: inherit; font-weight: 700; text-decoration: none; cursor: pointer; }
+.skillomate-recovery {
+  display: grid;
+  min-height: 65vh;
+  box-sizing: border-box;
+  place-items: center;
+  padding: 96px 20px 40px;
+  background: #0b0b0d;
+  color: #fff;
+}
+
+.skillomate-recovery-card {
+  width: 100%;
+  max-width: 520px;
+  box-sizing: border-box;
+  padding: clamp(24px, 5vw, 40px);
+  border: 1px solid #59431f;
+  border-radius: 20px;
+  background: #171719;
+}
+
+.skillomate-recovery-card h1 {
+  margin: 0 0 16px;
+  color: #fff;
+  font-size: clamp(24px, 5vw, 32px);
+  line-height: 1.25;
+}
+
+.skillomate-recovery-card p {
+  color: #d4d4d8;
+  line-height: 1.6;
+}
+
+.skillomate-recovery-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px;
+  margin-top: 24px;
+}
+
+.skillomate-recovery-actions a {
+  color: #efbd62;
+}
+
+.skillomate-recovery-actions .skillomate-recovery-primary {
+  padding: 14px 18px;
+  border: 0;
+  border-radius: 10px;
+  background: #c58b2a;
+  color: #111;
+  font: inherit;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.skillomate-recovery-actions :where(a, button):focus-visible {
+  outline: 3px solid #efbd62;
+  outline-offset: 3px;
+}
+
+html[data-theme="light"] .skillomate-recovery {
+  background: #f8fafc !important;
+  color: #0f172a !important;
+}
+
+html[data-theme="light"] .skillomate-recovery-card {
+  border-color: #e2e8f0 !important;
+  background: #fff !important;
+  box-shadow: 0 18px 48px rgba(15, 23, 42, .08) !important;
+}
+
+html[data-theme="light"] .skillomate-recovery-card h1 {
+  color: #0f172a !important;
+}
+
+html[data-theme="light"] .skillomate-recovery-card p {
+  color: #475569 !important;
+}
+
+html[data-theme="light"] .skillomate-recovery-actions a:not(.skillomate-recovery-primary) {
+  color: #8a5a10 !important;
+}
+
+html[data-theme="light"] .skillomate-recovery-actions :where(a, button):focus-visible {
+  outline-color: #8a5a10;
+}
