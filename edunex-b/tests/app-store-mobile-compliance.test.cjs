@@ -170,6 +170,7 @@ test('subscription provider labels stay in Subscription Details scope for every 
 
 test('Google Play offer normalization selects the dedicated ₹9 three-day phase and ₹499 monthly renewal', () => {
   const result = normalizeGooglePlaySubscriptionOffers({
+    id: 'skillomate_premium_monthly',
     displayPrice: '₹499.00',
     subscriptionOfferDetailsAndroid: [
       {
@@ -181,6 +182,7 @@ test('Google Play offer normalization selects the dedicated ₹9 three-day phase
           billingPeriod: 'P1M',
           formattedPrice: '₹499.00',
           priceAmountMicros: '499000000',
+          priceCurrencyCode: 'INR',
         }] },
       },
       {
@@ -193,12 +195,14 @@ test('Google Play offer normalization selects the dedicated ₹9 three-day phase
             billingPeriod: 'P1M',
             formattedPrice: '₹1.00',
             priceAmountMicros: '1000000',
+            priceCurrencyCode: 'INR',
           },
           {
             billingCycleCount: 0,
             billingPeriod: 'P1M',
             formattedPrice: '₹499.00',
             priceAmountMicros: '499000000',
+            priceCurrencyCode: 'INR',
           },
         ] },
       },
@@ -213,6 +217,7 @@ test('Google Play offer normalization selects the dedicated ₹9 three-day phase
             billingPeriod: 'P3D',
             formattedPrice: '₹9.00',
             priceAmountMicros: '9000000',
+            priceCurrencyCode: 'INR',
           },
           {
             billingCycleCount: 0,
@@ -220,6 +225,7 @@ test('Google Play offer normalization selects the dedicated ₹9 three-day phase
             billingPeriod: 'P1M',
             formattedPrice: '₹499.00',
             priceAmountMicros: '499000000',
+            priceCurrencyCode: 'INR',
           },
         ] },
       },
@@ -250,7 +256,7 @@ test('Google Play client uses the eligible offer token and verifies before ackno
   assert.match(googlePlayHookSource, /entitlementActive\) restored = true/);
   assert.match(googlePlayHookSource, /const delays = \[1200, 3500, 8000\]/);
   assert.match(googlePlayHookSource, /expiresAt - Date\.now\(\) \+ 5000/);
-  assert.match(googlePlayHookSource, /normalizeGooglePlaySubscriptionOffers\(product, configuredIntroductoryOfferId\)/);
+  assert.match(googlePlayHookSource, /normalizeGooglePlaySubscriptionOffers\(product, configuredIntroductoryOfferId, configuredProductId\)/);
   assert.match(googlePlayHookSource, /iapRef\.current\.reconnect\(\)/);
   assert.match(googlePlayHookSource, /Open Play Store, sign in, then return and retry/);
   assert.doesNotMatch(googlePlayHookSource, /Razorpay|skillomate\.in\/(?:payment|pricing|checkout)/i);

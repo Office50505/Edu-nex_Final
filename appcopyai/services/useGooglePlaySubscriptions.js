@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { AppState, Platform } from "react-native";
+import { AppState, NativeModules, Platform } from "react-native";
 import {
   ErrorCode,
   fetchProducts as readProducts,
@@ -12,11 +12,12 @@ import {
   diagnoseGooglePlaySubscriptionOffers,
   normalizeGooglePlaySubscriptionOffers,
 } from "./subscriptions";
+import { createGooglePlayBillingDiagnostics } from "./googlePlayBillingDiagnostics";
 
 const GOOGLE_PLAY_CONNECTION_HELP = "Google Play is not ready. Open Play Store, sign in, then return and retry.";
 const GOOGLE_PLAY_PRODUCT_TIMEOUT_MS = 12_000;
-const GOOGLE_PLAY_BILLING_DIAGNOSTICS_ENABLED = Boolean(
-  __DEV__ || process.env.EXPO_PUBLIC_GOOGLE_PLAY_BILLING_DIAGNOSTICS === "1",
+const googlePlayDiagnostics = createGooglePlayBillingDiagnostics(
+  Platform.OS === "android" ? NativeModules.SkillomateBillingDiagnostics : null,
 );
 
 const UNAVAILABLE_GOOGLE_PLAY_SUBSCRIPTION = {
@@ -196,6 +197,9 @@ export function useGooglePlaySubscriptions({ session, user, onEntitlementChanged
     setError("");
     const next = await session.requestJson("/api/google-play-iap/config");
     if (currentUserId.current !== userId) return null;
+    googlePlayDiagnostics.configuration(next,
+      next?.productId || GOOGLE_PLAY_SUBSCRIPTION_PRODUCT_IDS.monthly,
+      next?.introductoryOfferId || GOOGLE_PLAY_SUBSCRIPTION_OFFER_IDS.introductory);
     setConfiguration(next);
     setConfigurationOwner(userId);
     if (next?.entitlementState && next.entitlementState !== "NONE") {
@@ -271,16 +275,13 @@ export function useGooglePlaySubscriptions({ session, user, onEntitlementChanged
       const next = (Array.isArray(products) ? products : [])
         .find(item => item.id === productId || item.productId === productId) || null;
       setLoadedProduct(next);
-      const offers = normalizeGooglePlaySubscriptionOffers(next, configuredIntroductoryOfferId);
-      const diagnostics = GOOGLE_PLAY_BILLING_DIAGNOSTICS_ENABLED
-        ? diagnoseGooglePlaySubscriptionOffers(next, configuredIntroductoryOfferId)
+      googlePlayDiagnostics.rawProduct(next, productId);
+      const offers = normalizeGooglePlaySubscriptionOffers(next, configuredIntroductoryOfferId, productId);
+      const diagnostics = googlePlayDiagnostics.enabled
+        ? diagnoseGooglePlaySubscriptionOffers(next, configuredIntroductoryOfferId, productId)
         : null;
       setBillingDiagnostics(diagnostics);
-      if (diagnostics) {
-        // Non-sensitive Internal Testing diagnostics only: never log purchase
-        // tokens, account identifiers, credentials, or raw offer tokens.
-        console.info("[SkillomateGooglePlayBillingDiagnostics]", diagnostics);
-      }
+      googlePlayDiagnostics.selection(diagnostics);
       if (!offers.purchaseOffer) {
         setProductLoadStatus("error");
         setError("No available Skillomate subscription offer was returned by Google Play. Please retry.");
@@ -323,8 +324,8 @@ export function useGooglePlaySubscriptions({ session, user, onEntitlementChanged
   const product = loadedProduct && (loadedProduct.id === configuredProductId
     || loadedProduct.productId === configuredProductId) ? loadedProduct : null;
   const offerDetails = useMemo(
-    () => normalizeGooglePlaySubscriptionOffers(product, configuredIntroductoryOfferId),
-    [configuredIntroductoryOfferId, product],
+    () => normalizeGooglePlaySubscriptionOffers(product, configuredIntroductoryOfferId, configuredProductId),
+    [configuredIntroductoryOfferId, configuredProductId, product],
   );
 
   const purchase = useCallback(async () => {
@@ -345,15 +346,14 @@ export function useGooglePlaySubscriptions({ session, user, onEntitlementChanged
     try {
       const freshProduct = await loadProduct(true);
       if (currentCheckoutContext.current !== checkoutContext) return;
-      const freshOffers = normalizeGooglePlaySubscriptionOffers(freshProduct, configuredIntroductoryOfferId);
+      const freshOffers = normalizeGooglePlaySubscriptionOffers(freshProduct, configuredIntroductoryOfferId, productId);
       if (!freshOffers.purchaseOffer) return;
       if (freshOffers.purchaseOffer.termsKey !== offerDetails.purchaseOffer.termsKey) {
         setNotice("Google Play's available terms have changed. Review the updated price and tap Subscribe again to confirm.");
         return;
       }
       const offerToken = freshOffers.purchaseOffer.offerToken;
-      purchaseStarted = true;
-      await iapRef.current.requestPurchase({
+      const purchaseRequest = {
         request: {
           google: {
             skus: [productId],
@@ -362,7 +362,11 @@ export function useGooglePlaySubscriptions({ session, user, onEntitlementChanged
           },
         },
         type: "subs",
-      });
+      };
+      googlePlayDiagnostics.checkout(freshProduct, freshOffers.purchaseOffer,
+        purchaseRequest.request.google.subscriptionOffers[0].offerToken);
+      purchaseStarted = true;
+      await iapRef.current.requestPurchase(purchaseRequest);
     } catch (purchaseError) {
       purchaseStarted = false;
       if (currentCheckoutContext.current !== checkoutContext) return;

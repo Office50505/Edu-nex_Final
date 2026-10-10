@@ -22,12 +22,16 @@ class MainApplication : Application(), ReactApplication {
       packageList =
         PackageList(this).packages.apply {
           // Packages that cannot be autolinked yet can be added manually here.
+          add(SkillomateBillingDiagnosticsPackage())
         }
     )
   }
 
   override fun onCreate() {
     super.onCreate()
+    SkillomateBillingDiagnosticsModule.emit("native_startup", mapOf(
+      "diagnosticsEnabled" to true, "versionCode" to BuildConfig.VERSION_CODE,
+    ))
     DefaultNewArchitectureEntryPoint.releaseLevel = try {
       ReleaseLevel.valueOf(BuildConfig.REACT_NATIVE_RELEASE_LEVEL.uppercase())
     } catch (e: IllegalArgumentException) {

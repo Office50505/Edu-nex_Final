@@ -5,17 +5,18 @@ const path = require('node:path');
 const vm = require('node:vm');
 
 const subscriptions = require('../../appcopyai/services/subscriptions');
+const { createGooglePlayBillingDiagnostics } = require('../../appcopyai/services/googlePlayBillingDiagnostics');
 const { GOOGLE_PLAY_SUBSCRIPTION_PRODUCT_IDS, GOOGLE_PLAY_SUBSCRIPTION_OFFER_IDS,
   normalizeGooglePlaySubscriptionOffers } = subscriptions;
 const productId = GOOGLE_PLAY_SUBSCRIPTION_PRODUCT_IDS.monthly;
 const offerId = GOOGLE_PLAY_SUBSCRIPTION_OFFER_IDS.introductory;
 const monthly = (overrides = {}) => ({
   billingCycleCount: 0, billingPeriod: 'P1M', recurrenceMode: 1,
-  formattedPrice: '₹499.00', priceAmountMicros: '499000000', ...overrides,
+  formattedPrice: '₹499.00', priceAmountMicros: '499000000', priceCurrencyCode: 'INR', ...overrides,
 });
 const firstThreeDays = (overrides = {}) => ({
   billingCycleCount: 0, billingPeriod: 'P3D', recurrenceMode: 3,
-  formattedPrice: '₹9.00', priceAmountMicros: '9000000', ...overrides,
+  formattedPrice: '₹9.00', priceAmountMicros: '9000000', priceCurrencyCode: 'INR', ...overrides,
 });
 const offer = (id, token, phases, overrides = {}) => ({
   basePlanId: 'monthly', offerId: id, offerToken: token,
@@ -100,11 +101,12 @@ test('free, repeated, multi-phase and non-recurring renewal offers cannot be adv
   ])).purchaseOffer, null);
 });
 
-test('a finite one-cycle introductory phase is rejected because the offer must be single payment', () => {
+test('a finite one-cycle P3D introductory phase represents exactly one paid charge', () => {
   const result = normalizeGooglePlaySubscriptionOffers(product([
     offer(offerId, 'one-cycle-token', [firstThreeDays({ recurrenceMode: 2, billingCycleCount: 1 }), monthly()]),
   ]));
-  assert.equal(result.purchaseOffer, null);
+  assert.equal(result.purchaseOffer.offerToken, 'one-cycle-token');
+  assert.equal(result.introductoryOffer.displayText, '₹9.00 for the first 3 days');
 });
 
 test('old Google offer IDs and a different base plan cannot be selected for new checkout', () => {
@@ -126,7 +128,8 @@ const hookSource = fs.readFileSync(path.join(__dirname, '../../appcopyai/service
   .replace('export function useGooglePlaySubscriptions', 'function useGooglePlaySubscriptions');
 
 function hookHarness({ configuration = {}, products = [product()], availablePurchases = [],
-  verifyError = null, verifyResponse = {}, connected = true, fetchProducts, finishError = null } = {}) {
+  verifyError = null, verifyResponse = {}, connected = true, fetchProducts, finishError = null,
+  diagnosticsEnabled = false } = {}) {
   const config = { productId, introductoryOfferId: offerId, obfuscatedAccountId: 'account-hash', ...configuration };
   const events = [];
   const states = [];
@@ -159,6 +162,12 @@ function hookHarness({ configuration = {}, products = [product()], availablePurc
   };
   const context = vm.createContext({
     ...subscriptions,
+    createGooglePlayBillingDiagnostics,
+    NativeModules: { SkillomateBillingDiagnostics: {
+      enabled: diagnosticsEnabled,
+      logEvent(event, fields) { events.push({ kind: 'diagnostic', event, fields }); },
+      queryProduct(id) { events.push({ kind: 'native-query', productId: id }); },
+    } },
     __DEV__: false,
     process: { env: {} },
     Platform: { OS: 'android' },
@@ -226,6 +235,44 @@ test('Android purchase uses base token when Google does not return eligible intr
   assert.equal(h.events.find(event => event.kind === 'purchase').request.request.google.subscriptionOffers[0].offerToken,
     'base-token');
   assert.equal(h.render().introductoryOfferEligible, false);
+});
+
+test('explicit native diagnostic build logs authenticated config, raw finite offer and same checkout token safely', async () => {
+  const h = hookHarness({ diagnosticsEnabled: true,
+    configuration: { packageName: 'com.skillomate.app' },
+    products: [product([base(), offer(offerId, 'fake-finite-token', [
+      firstThreeDays({ recurrenceMode: 2, billingCycleCount: 1 }), monthly(),
+    ])])] });
+  await h.ready();
+  await h.render().purchase();
+  const diagnostics = h.events.filter(event => event.kind === 'diagnostic');
+  assert.ok(diagnostics.some(item => item.event === 'js_startup'));
+  const configuration = diagnostics.find(item => item.event === 'configuration').fields;
+  assert.equal(configuration.introductoryOfferId, offerId);
+  assert.equal(configuration.accountBindingPresent, true);
+  const phase = diagnostics.find(item => item.event === 'raw_phase' && item.fields.billingPeriod === 'P3D').fields;
+  assert.equal(phase.recurrenceMode, 2);
+  assert.equal(phase.billingCycleCount, 1);
+  assert.equal(phase.priceCurrencyCode, 'INR');
+  const validation = diagnostics.find(item => item.event === 'validation' && item.fields.offerId === offerId).fields;
+  assert.equal(validation.oldValidatorAccepted, false);
+  assert.equal(validation.rejectionReason, null);
+  const checkout = diagnostics.find(item => item.event === 'checkout').fields;
+  assert.equal(checkout.selectedOfferId, offerId);
+  assert.equal(checkout.selectedTokenMatchesReturnedOffer, true);
+  assert.equal(checkout.submittedTokenMatchesSelectedOffer, true);
+  const serialized = JSON.stringify(diagnostics);
+  for (const secret of ['fake-finite-token', 'base-token', 'account-hash', 'user-1', 'obfuscatedAccountId', 'purchaseToken']) {
+    assert.equal(serialized.includes(secret), false, secret);
+  }
+});
+
+test('default production build emits no diagnostics and does not start a native probe', async () => {
+  const h = hookHarness();
+  await h.ready();
+  await h.render().purchase();
+  assert.equal(h.events.some(event => ['diagnostic', 'native-query'].includes(event.kind)), false);
+  assert.equal(h.events.filter(event => event.kind === 'purchase').length, 1);
 });
 
 test('Android cannot purchase without returned offers or backend account binding', async () => {

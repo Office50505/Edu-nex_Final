@@ -1,0 +1,561 @@
+{
+  "artifact": "Skillomate-VC20-INTRO-DIAGNOSTIC-TEST-ONLY-2026-10-10.apk",
+  "startupMarkersObserved": {
+    "native_startup": true,
+    "js_startup": true
+  },
+  "authenticatedConfigurationObserved": {
+    "packageName": "com.skillomate.app",
+    "productId": "skillomate_premium_monthly",
+    "introductoryOfferId": "intro-9rs-3days",
+    "accountBindingPresent": true
+  },
+  "checkoutUiResult": "Google error: this version of the application is not configured for billing through Google Play",
+  "paymentConfirmed": false,
+  "currentProfileGoogleAccountCount": 4,
+  "licenseTesterListed": "User-confirmed; actual billing-account selection not independently verified",
+  "separateProfile": "User declined; none created",
+  "capturedSanitizedEvents": [
+    {
+      "event": "raw_product",
+      "productId": "skillomate_premium_monthly",
+      "returnedSubscriptionOfferCount": 4,
+      "androidOfferCount": 2,
+      "unifiedOfferCount": 2
+    },
+    {
+      "event": "raw_offer",
+      "productId": "skillomate_premium_monthly",
+      "shape": "subscriptionOfferDetailsAndroid",
+      "offerIndex": 0,
+      "basePlanId": "monthly",
+      "offerId": "intro-9rs-3days",
+      "returnedOfferId": "intro-9rs-3days",
+      "offerTokenPresent": true,
+      "phaseCount": 2
+    },
+    {
+      "event": "raw_phase",
+      "shape": "subscriptionOfferDetailsAndroid",
+      "offerIndex": 0,
+      "phaseIndex": 0,
+      "billingPeriod": "P3D",
+      "priceCurrencyCode": "INR",
+      "formattedPrice": "₹9.00",
+      "recurrenceMode": 2,
+      "billingCycleCount": 1
+    },
+    {
+      "event": "raw_phase",
+      "shape": "subscriptionOfferDetailsAndroid",
+      "offerIndex": 0,
+      "phaseIndex": 1,
+      "billingPeriod": "P1M",
+      "priceCurrencyCode": "INR",
+      "formattedPrice": "₹499.00",
+      "recurrenceMode": 1,
+      "billingCycleCount": 0
+    },
+    {
+      "event": "raw_offer",
+      "productId": "skillomate_premium_monthly",
+      "shape": "subscriptionOfferDetailsAndroid",
+      "offerIndex": 1,
+      "basePlanId": "monthly",
+      "offerId": null,
+      "returnedOfferId": null,
+      "offerTokenPresent": true,
+      "phaseCount": 1
+    },
+    {
+      "event": "raw_phase",
+      "shape": "subscriptionOfferDetailsAndroid",
+      "offerIndex": 1,
+      "phaseIndex": 0,
+      "billingPeriod": "P1M",
+      "priceCurrencyCode": "INR",
+      "formattedPrice": "₹499.00",
+      "recurrenceMode": 1,
+      "billingCycleCount": 0
+    },
+    {
+      "event": "raw_offer",
+      "productId": "skillomate_premium_monthly",
+      "shape": "subscriptionOffers",
+      "offerIndex": 2,
+      "basePlanId": "monthly",
+      "offerId": "intro-9rs-3days",
+      "returnedOfferId": "intro-9rs-3days",
+      "offerTokenPresent": true,
+      "phaseCount": 2
+    },
+    {
+      "event": "raw_phase",
+      "shape": "subscriptionOffers",
+      "offerIndex": 2,
+      "phaseIndex": 0,
+      "billingPeriod": "P3D",
+      "priceCurrencyCode": "INR",
+      "formattedPrice": "₹9.00",
+      "recurrenceMode": 2,
+      "billingCycleCount": 1
+    },
+    {
+      "event": "raw_phase",
+      "shape": "subscriptionOffers",
+      "offerIndex": 2,
+      "phaseIndex": 1,
+      "billingPeriod": "P1M",
+      "priceCurrencyCode": "INR",
+      "formattedPrice": "₹499.00",
+      "recurrenceMode": 1,
+      "billingCycleCount": 0
+    },
+    {
+      "event": "raw_offer",
+      "productId": "skillomate_premium_monthly",
+      "shape": "subscriptionOffers",
+      "offerIndex": 3,
+      "basePlanId": "monthly",
+      "offerId": null,
+      "returnedOfferId": "monthly",
+      "offerTokenPresent": true,
+      "phaseCount": 1
+    },
+    {
+      "event": "raw_phase",
+      "shape": "subscriptionOffers",
+      "offerIndex": 3,
+      "phaseIndex": 0,
+      "billingPeriod": "P1M",
+      "priceCurrencyCode": "INR",
+      "formattedPrice": "₹499.00",
+      "recurrenceMode": 1,
+      "billingCycleCount": 0
+    },
+    {
+      "event": "selection",
+      "productId": "skillomate_premium_monthly",
+      "configuredIntroductoryOfferId": "intro-9rs-3days",
+      "selectedBasePlanId": "monthly",
+      "selectedOfferId": "intro-9rs-3days",
+      "introductoryOfferReturned": true,
+      "introductoryOfferStatus": "selected",
+      "rejectionReason": null
+    },
+    {
+      "event": "validation",
+      "shape": "subscriptionOfferDetailsAndroid",
+      "offerIndex": 0,
+      "basePlanId": "monthly",
+      "offerId": "intro-9rs-3days",
+      "rejectionReason": null,
+      "failedValidationCheck": null,
+      "failedPhaseIndex": null,
+      "oldValidatorAccepted": false
+    },
+    {
+      "event": "validation",
+      "shape": "subscriptionOfferDetailsAndroid",
+      "offerIndex": 1,
+      "basePlanId": "monthly",
+      "offerId": null,
+      "rejectionReason": null,
+      "failedValidationCheck": null,
+      "failedPhaseIndex": null,
+      "oldValidatorAccepted": false
+    },
+    {
+      "event": "validation",
+      "shape": "subscriptionOffers",
+      "offerIndex": 2,
+      "basePlanId": "monthly",
+      "offerId": "intro-9rs-3days",
+      "rejectionReason": null,
+      "failedValidationCheck": null,
+      "failedPhaseIndex": null,
+      "oldValidatorAccepted": false
+    },
+    {
+      "event": "validation",
+      "shape": "subscriptionOffers",
+      "offerIndex": 3,
+      "basePlanId": "monthly",
+      "offerId": null,
+      "rejectionReason": null,
+      "failedValidationCheck": null,
+      "failedPhaseIndex": null,
+      "oldValidatorAccepted": false
+    },
+    {
+      "event": "checkout",
+      "productId": "skillomate_premium_monthly",
+      "selectedBasePlanId": "monthly",
+      "selectedOfferId": "intro-9rs-3days",
+      "offerTokenPresent": true,
+      "selectedTokenMatchesReturnedOffer": true,
+      "submittedTokenMatchesSelectedOffer": true
+    },
+    {
+      "event": "raw_product",
+      "productId": "skillomate_premium_monthly",
+      "returnedSubscriptionOfferCount": 4,
+      "androidOfferCount": 2,
+      "unifiedOfferCount": 2
+    },
+    {
+      "event": "raw_offer",
+      "productId": "skillomate_premium_monthly",
+      "shape": "subscriptionOfferDetailsAndroid",
+      "offerIndex": 0,
+      "basePlanId": "monthly",
+      "offerId": "intro-9rs-3days",
+      "returnedOfferId": "intro-9rs-3days",
+      "offerTokenPresent": true,
+      "phaseCount": 2
+    },
+    {
+      "event": "raw_phase",
+      "shape": "subscriptionOfferDetailsAndroid",
+      "offerIndex": 0,
+      "phaseIndex": 0,
+      "billingPeriod": "P3D",
+      "priceCurrencyCode": "INR",
+      "formattedPrice": "₹9.00",
+      "recurrenceMode": 2,
+      "billingCycleCount": 1
+    },
+    {
+      "event": "raw_phase",
+      "shape": "subscriptionOfferDetailsAndroid",
+      "offerIndex": 0,
+      "phaseIndex": 1,
+      "billingPeriod": "P1M",
+      "priceCurrencyCode": "INR",
+      "formattedPrice": "₹499.00",
+      "recurrenceMode": 1,
+      "billingCycleCount": 0
+    },
+    {
+      "event": "raw_offer",
+      "productId": "skillomate_premium_monthly",
+      "shape": "subscriptionOfferDetailsAndroid",
+      "offerIndex": 1,
+      "basePlanId": "monthly",
+      "offerId": null,
+      "returnedOfferId": null,
+      "offerTokenPresent": true,
+      "phaseCount": 1
+    },
+    {
+      "event": "raw_phase",
+      "shape": "subscriptionOfferDetailsAndroid",
+      "offerIndex": 1,
+      "phaseIndex": 0,
+      "billingPeriod": "P1M",
+      "priceCurrencyCode": "INR",
+      "formattedPrice": "₹499.00",
+      "recurrenceMode": 1,
+      "billingCycleCount": 0
+    },
+    {
+      "event": "raw_offer",
+      "productId": "skillomate_premium_monthly",
+      "shape": "subscriptionOffers",
+      "offerIndex": 2,
+      "basePlanId": "monthly",
+      "offerId": "intro-9rs-3days",
+      "returnedOfferId": "intro-9rs-3days",
+      "offerTokenPresent": true,
+      "phaseCount": 2
+    },
+    {
+      "event": "raw_phase",
+      "shape": "subscriptionOffers",
+      "offerIndex": 2,
+      "phaseIndex": 0,
+      "billingPeriod": "P3D",
+      "priceCurrencyCode": "INR",
+      "formattedPrice": "₹9.00",
+      "recurrenceMode": 2,
+      "billingCycleCount": 1
+    },
+    {
+      "event": "raw_phase",
+      "shape": "subscriptionOffers",
+      "offerIndex": 2,
+      "phaseIndex": 1,
+      "billingPeriod": "P1M",
+      "priceCurrencyCode": "INR",
+      "formattedPrice": "₹499.00",
+      "recurrenceMode": 1,
+      "billingCycleCount": 0
+    },
+    {
+      "event": "raw_offer",
+      "productId": "skillomate_premium_monthly",
+      "shape": "subscriptionOffers",
+      "offerIndex": 3,
+      "basePlanId": "monthly",
+      "offerId": null,
+      "returnedOfferId": "monthly",
+      "offerTokenPresent": true,
+      "phaseCount": 1
+    },
+    {
+      "event": "raw_phase",
+      "shape": "subscriptionOffers",
+      "offerIndex": 3,
+      "phaseIndex": 0,
+      "billingPeriod": "P1M",
+      "priceCurrencyCode": "INR",
+      "formattedPrice": "₹499.00",
+      "recurrenceMode": 1,
+      "billingCycleCount": 0
+    },
+    {
+      "event": "selection",
+      "productId": "skillomate_premium_monthly",
+      "configuredIntroductoryOfferId": "intro-9rs-3days",
+      "selectedBasePlanId": "monthly",
+      "selectedOfferId": "intro-9rs-3days",
+      "introductoryOfferReturned": true,
+      "introductoryOfferStatus": "selected",
+      "rejectionReason": null
+    },
+    {
+      "event": "validation",
+      "shape": "subscriptionOfferDetailsAndroid",
+      "offerIndex": 0,
+      "basePlanId": "monthly",
+      "offerId": "intro-9rs-3days",
+      "rejectionReason": null,
+      "failedValidationCheck": null,
+      "failedPhaseIndex": null,
+      "oldValidatorAccepted": false
+    },
+    {
+      "event": "validation",
+      "shape": "subscriptionOfferDetailsAndroid",
+      "offerIndex": 1,
+      "basePlanId": "monthly",
+      "offerId": null,
+      "rejectionReason": null,
+      "failedValidationCheck": null,
+      "failedPhaseIndex": null,
+      "oldValidatorAccepted": false
+    },
+    {
+      "event": "validation",
+      "shape": "subscriptionOffers",
+      "offerIndex": 2,
+      "basePlanId": "monthly",
+      "offerId": "intro-9rs-3days",
+      "rejectionReason": null,
+      "failedValidationCheck": null,
+      "failedPhaseIndex": null,
+      "oldValidatorAccepted": false
+    },
+    {
+      "event": "validation",
+      "shape": "subscriptionOffers",
+      "offerIndex": 3,
+      "basePlanId": "monthly",
+      "offerId": null,
+      "rejectionReason": null,
+      "failedValidationCheck": null,
+      "failedPhaseIndex": null,
+      "oldValidatorAccepted": false
+    },
+    {
+      "event": "configuration",
+      "packageName": "com.skillomate.app",
+      "productId": "skillomate_premium_monthly",
+      "introductoryOfferId": "intro-9rs-3days",
+      "configuredProductId": "skillomate_premium_monthly",
+      "configuredBasePlanId": "monthly",
+      "configuredIntroductoryOfferId": "intro-9rs-3days",
+      "accountBindingPresent": true
+    },
+    {
+      "event": "raw_product",
+      "productId": "skillomate_premium_monthly",
+      "returnedSubscriptionOfferCount": 4,
+      "androidOfferCount": 2,
+      "unifiedOfferCount": 2
+    },
+    {
+      "event": "raw_offer",
+      "productId": "skillomate_premium_monthly",
+      "shape": "subscriptionOfferDetailsAndroid",
+      "offerIndex": 0,
+      "basePlanId": "monthly",
+      "offerId": "intro-9rs-3days",
+      "returnedOfferId": "intro-9rs-3days",
+      "offerTokenPresent": true,
+      "phaseCount": 2
+    },
+    {
+      "event": "raw_phase",
+      "shape": "subscriptionOfferDetailsAndroid",
+      "offerIndex": 0,
+      "phaseIndex": 0,
+      "billingPeriod": "P3D",
+      "priceCurrencyCode": "INR",
+      "formattedPrice": "₹9.00",
+      "recurrenceMode": 2,
+      "billingCycleCount": 1
+    },
+    {
+      "event": "raw_phase",
+      "shape": "subscriptionOfferDetailsAndroid",
+      "offerIndex": 0,
+      "phaseIndex": 1,
+      "billingPeriod": "P1M",
+      "priceCurrencyCode": "INR",
+      "formattedPrice": "₹499.00",
+      "recurrenceMode": 1,
+      "billingCycleCount": 0
+    },
+    {
+      "event": "raw_offer",
+      "productId": "skillomate_premium_monthly",
+      "shape": "subscriptionOfferDetailsAndroid",
+      "offerIndex": 1,
+      "basePlanId": "monthly",
+      "offerId": null,
+      "returnedOfferId": null,
+      "offerTokenPresent": true,
+      "phaseCount": 1
+    },
+    {
+      "event": "raw_phase",
+      "shape": "subscriptionOfferDetailsAndroid",
+      "offerIndex": 1,
+      "phaseIndex": 0,
+      "billingPeriod": "P1M",
+      "priceCurrencyCode": "INR",
+      "formattedPrice": "₹499.00",
+      "recurrenceMode": 1,
+      "billingCycleCount": 0
+    },
+    {
+      "event": "raw_offer",
+      "productId": "skillomate_premium_monthly",
+      "shape": "subscriptionOffers",
+      "offerIndex": 2,
+      "basePlanId": "monthly",
+      "offerId": "intro-9rs-3days",
+      "returnedOfferId": "intro-9rs-3days",
+      "offerTokenPresent": true,
+      "phaseCount": 2
+    },
+    {
+      "event": "raw_phase",
+      "shape": "subscriptionOffers",
+      "offerIndex": 2,
+      "phaseIndex": 0,
+      "billingPeriod": "P3D",
+      "priceCurrencyCode": "INR",
+      "formattedPrice": "₹9.00",
+      "recurrenceMode": 2,
+      "billingCycleCount": 1
+    },
+    {
+      "event": "raw_phase",
+      "shape": "subscriptionOffers",
+      "offerIndex": 2,
+      "phaseIndex": 1,
+      "billingPeriod": "P1M",
+      "priceCurrencyCode": "INR",
+      "formattedPrice": "₹499.00",
+      "recurrenceMode": 1,
+      "billingCycleCount": 0
+    },
+    {
+      "event": "raw_offer",
+      "productId": "skillomate_premium_monthly",
+      "shape": "subscriptionOffers",
+      "offerIndex": 3,
+      "basePlanId": "monthly",
+      "offerId": null,
+      "returnedOfferId": "monthly",
+      "offerTokenPresent": true,
+      "phaseCount": 1
+    },
+    {
+      "event": "raw_phase",
+      "shape": "subscriptionOffers",
+      "offerIndex": 3,
+      "phaseIndex": 0,
+      "billingPeriod": "P1M",
+      "priceCurrencyCode": "INR",
+      "formattedPrice": "₹499.00",
+      "recurrenceMode": 1,
+      "billingCycleCount": 0
+    },
+    {
+      "event": "selection",
+      "productId": "skillomate_premium_monthly",
+      "configuredIntroductoryOfferId": "intro-9rs-3days",
+      "selectedBasePlanId": "monthly",
+      "selectedOfferId": "intro-9rs-3days",
+      "introductoryOfferReturned": true,
+      "introductoryOfferStatus": "selected",
+      "rejectionReason": null
+    },
+    {
+      "event": "validation",
+      "shape": "subscriptionOfferDetailsAndroid",
+      "offerIndex": 0,
+      "basePlanId": "monthly",
+      "offerId": "intro-9rs-3days",
+      "rejectionReason": null,
+      "failedValidationCheck": null,
+      "failedPhaseIndex": null,
+      "oldValidatorAccepted": false
+    },
+    {
+      "event": "validation",
+      "shape": "subscriptionOfferDetailsAndroid",
+      "offerIndex": 1,
+      "basePlanId": "monthly",
+      "offerId": null,
+      "rejectionReason": null,
+      "failedValidationCheck": null,
+      "failedPhaseIndex": null,
+      "oldValidatorAccepted": false
+    },
+    {
+      "event": "validation",
+      "shape": "subscriptionOffers",
+      "offerIndex": 2,
+      "basePlanId": "monthly",
+      "offerId": "intro-9rs-3days",
+      "rejectionReason": null,
+      "failedValidationCheck": null,
+      "failedPhaseIndex": null,
+      "oldValidatorAccepted": false
+    },
+    {
+      "event": "validation",
+      "shape": "subscriptionOffers",
+      "offerIndex": 3,
+      "basePlanId": "monthly",
+      "offerId": null,
+      "rejectionReason": null,
+      "failedValidationCheck": null,
+      "failedPhaseIndex": null,
+      "oldValidatorAccepted": false
+    },
+    {
+      "event": "checkout",
+      "productId": "skillomate_premium_monthly",
+      "selectedBasePlanId": "monthly",
+      "selectedOfferId": "intro-9rs-3days",
+      "offerTokenPresent": true,
+      "selectedTokenMatchesReturnedOffer": true,
+      "submittedTokenMatchesSelectedOffer": true
+    }
+  ]
+}

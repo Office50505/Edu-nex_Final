@@ -51,78 +51,136 @@ function parseGoogleBillingPeriod(value) {
   return { value: normalizedPositiveInteger(match[1]), unit: units[match[2]] || "month" };
 }
 
+// react-native-iap 14.7.20 exposes both the Android detail array and the
+// standardized offers. Preserve raw entries for diagnostics; never log this
+// helper's result, which includes the Google-returned purchase token.
+function readGooglePlaySubscriptionOfferEntries(product) {
+  const entries = [];
+  for (const shape of ["subscriptionOfferDetailsAndroid", "subscriptionOffers"]) {
+    const offers = Array.isArray(product?.[shape]) ? product[shape] : [];
+    for (const offer of offers) {
+      const standardized = shape === "subscriptionOffers";
+      const basePlanId = standardized ? offer?.basePlanIdAndroid : offer?.basePlanId;
+      const returnedOfferId = standardized ? offer?.id : offer?.offerId;
+      // OpenIAP uses the base-plan ID as the standardized ID for base offers.
+      const offerId = standardized && returnedOfferId === basePlanId ? null : returnedOfferId;
+      const pricingPhases = standardized ? offer?.pricingPhasesAndroid : offer?.pricingPhases;
+      entries.push({
+        shape, offer, basePlanId, offerId, returnedOfferId,
+        offerToken: standardized ? offer?.offerTokenAndroid : offer?.offerToken,
+        phases: Array.isArray(pricingPhases?.pricingPhaseList) ? pricingPhases.pricingPhaseList : [],
+      });
+    }
+  }
+  return entries;
+}
+
+function googlePlayProductMatches(product, expectedProductId) {
+  const identifiers = [product?.id, product?.productId].filter(value => value !== undefined && value !== null);
+  return typeof expectedProductId === "string" && Boolean(expectedProductId.trim())
+    && identifiers.length > 0 && identifiers.every(value => value === expectedProductId)
+    && (!product?.platform || product.platform === "android");
+}
+
+function googlePlayPriceMicros(value) {
+  if (typeof value !== "number" && !(typeof value === "string" && /^\d+$/.test(value))) return null;
+  const amount = Number(value);
+  return Number.isSafeInteger(amount) && amount > 0 ? amount : null;
+}
+
+function googlePlayPhaseTermsKey(phases) {
+  // Only compare billing fields, never raw objects or tokens. Android and the
+  // standardized alias may represent micros as a number or decimal string.
+  return JSON.stringify(phases.map(phase => [
+    typeof phase?.billingPeriod === "string" ? phase.billingPeriod : null,
+    Number.isSafeInteger(phase?.recurrenceMode) ? phase.recurrenceMode : null,
+    Number.isSafeInteger(phase?.billingCycleCount) ? phase.billingCycleCount : null,
+    typeof phase?.priceCurrencyCode === "string" ? phase.priceCurrencyCode : null,
+    googlePlayPriceMicros(phase?.priceAmountMicros),
+    typeof phase?.formattedPrice === "string" ? phase.formattedPrice : null,
+  ]));
+}
+
+function validateGooglePlayOffer(entry, product, preferredIntroductoryOfferId, expectedProductId, entries) {
+  const fail = (rejectionReason, failedValidationCheck, failedPhaseIndex = null) => ({
+    rejectionReason, failedValidationCheck, failedPhaseIndex, phases: null,
+  });
+  if (!googlePlayProductMatches(product, expectedProductId)) return fail("wrong_product_id", "product_identity");
+  if (entry.basePlanId !== "monthly") return fail("wrong_base_plan", "base_plan_identity");
+  if (entry.shape === "subscriptionOffers" && (typeof entry.returnedOfferId !== "string"
+    || !entry.returnedOfferId.trim())) return fail("wrong_offer_id", "offer_identity");
+  const isIntro = typeof preferredIntroductoryOfferId === "string" && Boolean(preferredIntroductoryOfferId.trim())
+    && entry.offerId === preferredIntroductoryOfferId;
+  if (entry.offerId !== undefined && entry.offerId !== null && !isIntro) return fail("wrong_offer_id", "offer_identity");
+  if (typeof entry.offerToken !== "string" || !entry.offerToken.trim()) return fail("missing_offer_token", "offer_token_present");
+  if (entry.phases.length !== (isIntro ? 2 : 1)) return fail("wrong_phase_count", "phase_count");
+  const phases = [];
+  for (const [index, phase] of entry.phases.entries()) {
+    if (!phase || typeof phase !== "object") return fail("invalid_phase", "phase_object", index);
+    const amountMicros = googlePlayPriceMicros(phase.priceAmountMicros);
+    if (amountMicros === null) return fail("invalid_price", "positive_price_micros", index);
+    if (typeof phase.formattedPrice !== "string" || !phase.formattedPrice.trim()) return fail("missing_formatted_price", "formatted_price", index);
+    if (typeof phase.priceCurrencyCode !== "string" || !/^[A-Z]{3}$/.test(phase.priceCurrencyCode)) return fail("invalid_currency", "currency_code", index);
+    if (index > 0 && phase.priceCurrencyCode !== phases[0].priceCurrencyCode) return fail("currency_mismatch", "consistent_currency", index);
+    if (typeof product.currency === "string" && product.currency && phase.priceCurrencyCode !== product.currency) return fail("currency_mismatch", "product_currency", index);
+    const period = parseGoogleBillingPeriod(phase.billingPeriod);
+    const introPhase = isIntro && index === 0;
+    if (!period || phase.billingPeriod !== (introPhase ? "P3D" : "P1M")) return fail("wrong_period", introPhase ? "intro_period_p3d" : "renewal_period_p1m", index);
+    // Do not coerce missing/null/blank values to zero. Both native fields are numbers.
+    if (![1, 2, 3].includes(phase.recurrenceMode) || !Number.isSafeInteger(phase.billingCycleCount)
+      || phase.billingCycleCount < 0) return fail("invalid_recurrence_fields", "recurrence_fields", index);
+    const onePayment = (phase.recurrenceMode === 2 && phase.billingCycleCount === 1)
+      || (phase.recurrenceMode === 3 && phase.billingCycleCount === 0);
+    if (introPhase ? !onePayment : phase.recurrenceMode !== 1 || phase.billingCycleCount !== 0) {
+      return fail("wrong_recurrence", introPhase ? "intro_single_charge" : "renewal_infinite_monthly", index);
+    }
+    phases.push({ ...phase, amountMicros, period });
+  }
+  if (isIntro && phases[0].amountMicros >= phases[1].amountMicros) return fail("intro_not_discounted", "intro_below_renewal", 0);
+  const phaseTerms = googlePlayPhaseTermsKey(entry.phases);
+  if (entries.some(other => other !== entry && other.basePlanId === entry.basePlanId
+    && (other.offerId ?? null) === (entry.offerId ?? null) && other.offerToken === entry.offerToken
+    && googlePlayPhaseTermsKey(other.phases) !== phaseTerms)) {
+    return fail("conflicting_offer_metadata", "matching_token_phase_terms");
+  }
+  return { rejectionReason: null, failedValidationCheck: null, failedPhaseIndex: null, phases };
+}
+
 function normalizeGooglePlaySubscriptionOffers(
   product,
   preferredIntroductoryOfferId = GOOGLE_PLAY_SUBSCRIPTION_OFFER_IDS.introductory,
+  expectedProductId = GOOGLE_PLAY_SUBSCRIPTION_PRODUCT_IDS.monthly,
 ) {
-  if (!product || typeof product !== "object") {
-    return { introductoryOffer: null, purchaseOffer: null, recurring: null };
-  }
-  const offers = Array.isArray(product.subscriptionOfferDetailsAndroid)
-    ? product.subscriptionOfferDetailsAndroid
-    : [];
-  const normalized = offers
-    .map(offer => {
-      if (offer?.basePlanId !== "monthly") return null;
-      const phases = Array.isArray(offer?.pricingPhases?.pricingPhaseList)
-        ? offer.pricingPhases.pricingPhaseList
-        : [];
-      if (typeof offer?.offerToken !== "string" || !offer.offerToken.trim() || !phases.length) return null;
-      const normalizedPhases = phases.map(phase => {
-        if (!phase || typeof phase !== "object") return null;
-        const amountMicros = Number(phase.priceAmountMicros);
-        const period = parseGoogleBillingPeriod(phase.billingPeriod);
-        if (!Number.isFinite(amountMicros) || amountMicros < 0 || !period
-          || typeof phase.formattedPrice !== "string" || !phase.formattedPrice.trim()) return null;
-        return { ...phase, amountMicros, period };
-      });
-      if (normalizedPhases.some(phase => !phase)) return null;
-      return { ...offer, phases: normalizedPhases };
-    })
-    .filter(Boolean);
-
-  const isMonthlyRecurringPhase = phase => phase.amountMicros > 0
-    && phase.period.value === 1 && phase.period.unit === "month"
-    && phase.recurrenceMode === 1 && phase.billingCycleCount === 0;
-  const baseOffer = normalized.find(offer => !offer.offerId
-    && offer.phases.length === 1 && isMonthlyRecurringPhase(offer.phases[0])) || null;
-  const introductory = normalized.find(offer => {
-    if (offer.offerId !== preferredIntroductoryOfferId || offer.phases.length !== 2) return false;
-    const first = offer.phases[0];
-    const last = offer.phases[1];
-    // Play's confirmed offer is one paid, non-recurring P3D phase followed
-    // by the auto-renewing monthly base plan. Amounts remain store-localized.
-    const onePayment = first.billingCycleCount === 0 && first.recurrenceMode === 3;
-    return first.amountMicros > 0
-      && first.amountMicros < last.amountMicros
-      && first.period.value === 3
-      && first.period.unit === "day"
-      && onePayment
-      && isMonthlyRecurringPhase(last);
-  }) || null;
+  const entries = readGooglePlaySubscriptionOfferEntries(product);
+  const normalized = entries.map(entry => {
+    const validation = validateGooglePlayOffer(entry, product, preferredIntroductoryOfferId, expectedProductId, entries);
+    return validation.rejectionReason ? null : { ...entry, phases: validation.phases };
+  }).filter(Boolean);
+  const baseOffer = normalized.find(offer => offer.offerId == null) || null;
+  const introductory = normalized.find(offer => offer.offerId === preferredIntroductoryOfferId) || null;
   const selected = introductory || baseOffer;
   const recurringPhase = selected?.phases?.[selected.phases.length - 1] || null;
   const introductoryPhase = introductory?.phases?.[0] || null;
   const recurring = recurringPhase ? {
-    localizedPrice: recurringPhase.formattedPrice || product.displayPrice || "",
+    localizedPrice: recurringPhase.formattedPrice,
     period: periodLabel(recurringPhase.period.value, recurringPhase.period.unit),
     periodUnit: recurringPhase.period.unit,
     periodValue: recurringPhase.period.value,
   } : null;
   const introductoryOffer = introductory && introductoryPhase ? {
-    basePlanId: introductory.basePlanId || null,
+    basePlanId: introductory.basePlanId,
     displayText: `${introductoryPhase.formattedPrice} for the first ${periodLabel(introductoryPhase.period.value, introductoryPhase.period.unit)}`,
-    localizedPrice: introductoryPhase.formattedPrice || "",
-    offerId: introductory.offerId || null,
+    localizedPrice: introductoryPhase.formattedPrice,
+    offerId: introductory.offerId,
     offerToken: introductory.offerToken,
-    periodCount: normalizedPositiveInteger(introductoryPhase.billingCycleCount),
+    periodCount: 1,
     periodUnit: introductoryPhase.period.unit,
     periodValue: introductoryPhase.period.value,
   } : null;
   return {
     introductoryOffer,
     purchaseOffer: selected ? {
-      basePlanId: selected.basePlanId || null,
+      basePlanId: selected.basePlanId,
       offerId: selected.offerId || null,
       offerToken: selected.offerToken,
       // Compare the actual terms before checkout, without treating a rotated
@@ -132,7 +190,7 @@ function normalizeGooglePlaySubscriptionOffers(
         offerId: selected.offerId || null,
         phases: selected.phases.map(phase => ({
           amountMicros: phase.amountMicros,
-          currency: phase.priceCurrencyCode || product.currency || null,
+          currency: phase.priceCurrencyCode,
           formattedPrice: phase.formattedPrice,
           period: phase.period,
           billingCycleCount: phase.billingCycleCount,
@@ -146,86 +204,83 @@ function normalizeGooglePlaySubscriptionOffers(
 
 function googlePlayPhaseDiagnostic(phase) {
   if (!phase || typeof phase !== "object") return null;
-  const period = parseGoogleBillingPeriod(phase.billingPeriod);
   return {
-    billingPeriod: phase.billingPeriod || null,
-    formattedPrice: phase.formattedPrice || null,
-    billingCycleCount: Number.isFinite(Number(phase.billingCycleCount)) ? Number(phase.billingCycleCount) : null,
-    recurrenceMode: Number.isFinite(Number(phase.recurrenceMode)) ? Number(phase.recurrenceMode) : null,
-    period,
+    billingPeriod: typeof phase.billingPeriod === "string" ? phase.billingPeriod : null,
+    formattedPrice: typeof phase.formattedPrice === "string" ? phase.formattedPrice : null,
+    priceCurrencyCode: typeof phase.priceCurrencyCode === "string" ? phase.priceCurrencyCode : null,
+    billingCycleCount: Number.isSafeInteger(phase.billingCycleCount) ? phase.billingCycleCount : null,
+    recurrenceMode: Number.isSafeInteger(phase.recurrenceMode) ? phase.recurrenceMode : null,
+    period: parseGoogleBillingPeriod(phase.billingPeriod),
   };
+}
+
+// Mirrors the VC20 introductory selector only for sanitized before/after evidence.
+// No purchase decision uses this legacy check.
+function oldGooglePlayIntroValidatorAccepted(entry, preferredIntroductoryOfferId) {
+  if (entry.shape !== "subscriptionOfferDetailsAndroid" || entry.basePlanId !== "monthly"
+    || entry.offerId !== preferredIntroductoryOfferId || entry.phases.length !== 2
+    || typeof entry.offerToken !== "string" || !entry.offerToken.trim()) return false;
+  if (entry.phases.some(phase => !phase || typeof phase !== "object"
+    || !Number.isFinite(Number(phase.priceAmountMicros)) || Number(phase.priceAmountMicros) < 0
+    || typeof phase.formattedPrice !== "string" || !phase.formattedPrice.trim())) return false;
+  const [first, last] = entry.phases;
+  const firstPeriod = parseGoogleBillingPeriod(first.billingPeriod);
+  const lastPeriod = parseGoogleBillingPeriod(last.billingPeriod);
+  return Number(first.priceAmountMicros) > 0 && Number(first.priceAmountMicros) < Number(last.priceAmountMicros)
+    && firstPeriod?.value === 3 && firstPeriod?.unit === "day"
+    && first.recurrenceMode === 3 && first.billingCycleCount === 0
+    && lastPeriod?.value === 1 && lastPeriod?.unit === "month"
+    && last.recurrenceMode === 1 && last.billingCycleCount === 0;
 }
 
 function diagnoseGooglePlaySubscriptionOffers(
   product,
   preferredIntroductoryOfferId = GOOGLE_PLAY_SUBSCRIPTION_OFFER_IDS.introductory,
+  expectedProductId = GOOGLE_PLAY_SUBSCRIPTION_PRODUCT_IDS.monthly,
 ) {
-  const offers = Array.isArray(product?.subscriptionOfferDetailsAndroid)
-    ? product.subscriptionOfferDetailsAndroid
-    : [];
-  const productId = product?.id || product?.productId || null;
-  const diagnostics = offers.map(offer => {
-    const phases = Array.isArray(offer?.pricingPhases?.pricingPhaseList)
-      ? offer.pricingPhases.pricingPhaseList
-      : [];
-    const introPhase = googlePlayPhaseDiagnostic(phases[0]);
-    const renewalPhase = googlePlayPhaseDiagnostic(phases[phases.length - 1]);
-    let rejectionReason = null;
-    if (offer?.offerId && offer.offerId !== preferredIntroductoryOfferId) rejectionReason = "wrong_offer_id";
-    else if (offer?.basePlanId !== "monthly") rejectionReason = "wrong_base_plan";
-    else if (offer?.offerId === preferredIntroductoryOfferId) {
-      if (phases.length !== 2) rejectionReason = "wrong_phase_count";
-      else if (!introPhase?.period || introPhase.period.value !== 3 || introPhase.period.unit !== "day"
-        || !renewalPhase?.period || renewalPhase.period.value !== 1 || renewalPhase.period.unit !== "month") {
-        rejectionReason = "wrong_period";
-      } else if (introPhase.recurrenceMode !== 3 || introPhase.billingCycleCount !== 0
-        || renewalPhase.recurrenceMode !== 1 || renewalPhase.billingCycleCount !== 0) {
-        rejectionReason = "wrong_recurrence";
-      } else if (typeof offer?.offerToken !== "string" || !offer.offerToken.trim()) {
-        rejectionReason = "missing_offer_token";
-      }
-    }
-    return {
-      productId,
-      configuredIntroductoryOfferId: preferredIntroductoryOfferId,
-      returnedSubscriptionOfferCount: offers.length,
-      basePlanId: offer?.basePlanId || null,
-      offerId: offer?.offerId || null,
-      introductoryPhaseBillingPeriod: introPhase?.billingPeriod || null,
-      introductoryPhaseFormattedPrice: introPhase?.formattedPrice || null,
-      billingCycleCount: introPhase?.billingCycleCount,
-      recurrenceMode: introPhase?.recurrenceMode,
-      offerTokenPresent: typeof offer?.offerToken === "string" && Boolean(offer.offerToken.trim()),
-      selectedBasePlanId: null,
-      selectedOfferId: null,
-      rejectionReason,
-    };
-  });
-  const normalized = normalizeGooglePlaySubscriptionOffers(product, preferredIntroductoryOfferId);
+  const entries = readGooglePlaySubscriptionOfferEntries(product);
+  const normalized = normalizeGooglePlaySubscriptionOffers(product, preferredIntroductoryOfferId, expectedProductId);
   const selectedBasePlanId = normalized.purchaseOffer?.basePlanId || null;
   const selectedOfferId = normalized.purchaseOffer?.offerId || null;
-  const preferredOfferDiagnostic = diagnostics.find(item => item.offerId === preferredIntroductoryOfferId) || null;
-  const returnedDifferentOffer = diagnostics.some(item => Boolean(item.offerId));
-  const rejectionReason = normalized.introductoryOffer
-    ? null
-    : preferredOfferDiagnostic?.rejectionReason
-      || (!offers.length
-        ? "offer_not_returned"
-        : returnedDifferentOffer
-          ? "wrong_offer_id"
-          : "account_not_eligible_or_offer_unavailable");
-  return {
-    productId,
-    configuredIntroductoryOfferId: preferredIntroductoryOfferId,
-    returnedSubscriptionOfferCount: offers.length,
-    selectedBasePlanId,
-    selectedOfferId,
-    rejectionReason,
-    offers: diagnostics.map(item => ({
-      ...item,
+  const productId = typeof product?.id === "string" ? product.id
+    : typeof product?.productId === "string" ? product.productId : null;
+  const offers = entries.map(entry => {
+    const validation = validateGooglePlayOffer(entry, product, preferredIntroductoryOfferId, expectedProductId, entries);
+    const phases = entry.phases.map(googlePlayPhaseDiagnostic);
+    return {
+      shape: entry.shape,
+      basePlanId: typeof entry.basePlanId === "string" ? entry.basePlanId : null,
+      offerId: typeof entry.offerId === "string" ? entry.offerId : null,
+      returnedOfferId: typeof entry.returnedOfferId === "string" ? entry.returnedOfferId : null,
+      phases,
+      offerTokenPresent: typeof entry.offerToken === "string" && Boolean(entry.offerToken.trim()),
+      rejectionReason: validation.rejectionReason,
+      failedValidationCheck: validation.failedValidationCheck,
+      failedPhaseIndex: validation.failedPhaseIndex,
+      oldValidatorAccepted: oldGooglePlayIntroValidatorAccepted(entry, preferredIntroductoryOfferId),
       selectedBasePlanId,
       selectedOfferId,
-    })),
+    };
+  });
+  const preferred = offers.find(offer => offer.offerId === preferredIntroductoryOfferId);
+  return {
+    productId,
+    configuredProductId: expectedProductId,
+    configuredBasePlanId: "monthly",
+    configuredIntroductoryOfferId: preferredIntroductoryOfferId,
+    returnedSubscriptionOfferCount: entries.length,
+    returnedOfferCountsByShape: {
+      subscriptionOfferDetailsAndroid: entries.filter(entry => entry.shape === "subscriptionOfferDetailsAndroid").length,
+      subscriptionOffers: entries.filter(entry => entry.shape === "subscriptionOffers").length,
+    },
+    introductoryOfferReturned: Boolean(preferred),
+    introductoryOfferStatus: normalized.introductoryOffer ? "selected" : preferred ? "rejected" : "absent",
+    selectedBasePlanId,
+    selectedOfferId,
+    // Absence does not establish whether account history, availability or the
+    // native bridge caused the missing offer. Report only the observed fact.
+    rejectionReason: normalized.introductoryOffer ? null : preferred?.rejectionReason || "offer_not_returned",
+    offers,
   };
 }
 
@@ -274,6 +329,7 @@ module.exports = {
   diagnoseGooglePlaySubscriptionOffers,
   hasActivePremiumEntitlement,
   normalizeGooglePlaySubscriptionOffers,
+  readGooglePlaySubscriptionOfferEntries,
   normalizeEntitlement,
   periodLabel,
   validFutureTimestamp,
