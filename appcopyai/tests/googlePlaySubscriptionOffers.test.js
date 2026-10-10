@@ -1,4 +1,6 @@
 const assert = require("assert");
+const fs = require("fs");
+const path = require("path");
 const {
   diagnoseGooglePlaySubscriptionOffers,
   normalizeGooglePlaySubscriptionOffers,
@@ -84,6 +86,7 @@ const introOffer = {
     diagnostics.offers.find(offer => offer.offerId === "intro-9rs-3days").rejectionReason,
     "wrong_period",
   );
+  assert.strictEqual(diagnostics.rejectionReason, "wrong_period");
 }
 
 {
@@ -93,6 +96,29 @@ const introOffer = {
   const diagnostics = diagnoseGooglePlaySubscriptionOffers(product([missingToken]));
   assert.strictEqual(diagnostics.offers[0].offerTokenPresent, false);
   assert.strictEqual(diagnostics.offers[0].rejectionReason, "missing_offer_token");
+  assert.strictEqual(diagnostics.rejectionReason, "missing_offer_token");
+}
+
+{
+  const baseOnly = diagnoseGooglePlaySubscriptionOffers(product([monthlyBasePlan]));
+  assert.strictEqual(baseOnly.rejectionReason, "account_not_eligible_or_offer_unavailable");
+  const noOffers = diagnoseGooglePlaySubscriptionOffers(product([]));
+  assert.strictEqual(noOffers.rejectionReason, "offer_not_returned");
+}
+
+{
+  const differentOffer = { ...introOffer, offerId: "different-intro" };
+  const diagnostics = diagnoseGooglePlaySubscriptionOffers(product([monthlyBasePlan, differentOffer]));
+  assert.strictEqual(diagnostics.rejectionReason, "wrong_offer_id");
+}
+
+{
+  const hookSource = fs.readFileSync(
+    path.join(__dirname, "../services/useGooglePlaySubscriptions.js"),
+    "utf8",
+  );
+  assert.match(hookSource, /product \? "not_returned" : "unknown"/);
+  assert.doesNotMatch(hookSource, /product \? "ineligible" : "unknown"/);
 }
 
 console.log("Google Play subscription offer regression tests passed.");

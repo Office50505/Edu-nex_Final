@@ -159,6 +159,8 @@ function hookHarness({ configuration = {}, products = [product()], availablePurc
   };
   const context = vm.createContext({
     ...subscriptions,
+    __DEV__: false,
+    process: { env: {} },
     Platform: { OS: 'android' },
     AppState: {},
     ErrorCode: { UserCancelled: 'cancelled', Pending: 'pending', DeferredPayment: 'deferred' },

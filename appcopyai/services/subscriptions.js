@@ -204,15 +204,23 @@ function diagnoseGooglePlaySubscriptionOffers(
   const normalized = normalizeGooglePlaySubscriptionOffers(product, preferredIntroductoryOfferId);
   const selectedBasePlanId = normalized.purchaseOffer?.basePlanId || null;
   const selectedOfferId = normalized.purchaseOffer?.offerId || null;
+  const preferredOfferDiagnostic = diagnostics.find(item => item.offerId === preferredIntroductoryOfferId) || null;
+  const returnedDifferentOffer = diagnostics.some(item => Boolean(item.offerId));
+  const rejectionReason = normalized.introductoryOffer
+    ? null
+    : preferredOfferDiagnostic?.rejectionReason
+      || (!offers.length
+        ? "offer_not_returned"
+        : returnedDifferentOffer
+          ? "wrong_offer_id"
+          : "account_not_eligible_or_offer_unavailable");
   return {
     productId,
     configuredIntroductoryOfferId: preferredIntroductoryOfferId,
     returnedSubscriptionOfferCount: offers.length,
     selectedBasePlanId,
     selectedOfferId,
-    rejectionReason: normalized.introductoryOffer
-      ? null
-      : (offers.length ? "account_not_eligible_or_offer_unavailable" : "offer_not_returned"),
+    rejectionReason,
     offers: diagnostics.map(item => ({
       ...item,
       selectedBasePlanId,

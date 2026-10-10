@@ -421,7 +421,9 @@ export function useGooglePlaySubscriptions({ session, user, onEntitlementChanged
     entitlement: configuration,
     error,
     introductoryOffer: offerDetails.introductoryOffer,
-    introductoryOfferEligibility: offerDetails.introductoryOffer ? "eligible" : (product ? "ineligible" : "unknown"),
+    // ProductDetails contains offers returned for the current Play account, but
+    // absence alone cannot distinguish eligibility, region, rollout, or config.
+    introductoryOfferEligibility: offerDetails.introductoryOffer ? "eligible" : (product ? "not_returned" : "unknown"),
     introductoryOfferEligible: Boolean(offerDetails.introductoryOffer),
     localizedPrice: recurring?.localizedPrice || "",
     managementUrl: configuration?.managementUrl || "https://play.google.com/store/account/subscriptions",
