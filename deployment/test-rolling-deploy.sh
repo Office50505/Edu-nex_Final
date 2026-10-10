@@ -24,7 +24,7 @@ ssh_calls="$self_test_directory/ssh-calls.log"
 aws_calls="$self_test_directory/aws-calls.log"
 touch "$fake_key"
 chmod 600 "$fake_key"
-printf '#!/usr/bin/env bash\n# SKILLOMATE_SSM_DEPLOY_CONTRACT_V1\nexit 0\n' >"$fake_remote_deployer"
+printf '#!/usr/bin/env bash\n# SKILLOMATE_SSM_DEPLOY_CONTRACT_V1\n# SKILLOMATE_BACKEND_ONLY_DEPLOY_CONTRACT_V1\nexit 0\n' >"$fake_remote_deployer"
 
 cat >"$fake_aws" <<'FAKE_AWS'
 #!/usr/bin/env bash
@@ -117,6 +117,10 @@ run_orchestrator() {
   local output_file=$1
   local name=$2
   shift 2
+  local command=(bash "$ORCHESTRATOR")
+  if test "${TEST_BACKEND_ONLY:-no}" = yes; then
+    command+=(--backend-only)
+  fi
   env \
     FAKE_SSH_CALLS="$ssh_calls" \
     FAKE_AWS_CALLS="$aws_calls" \
@@ -128,7 +132,7 @@ run_orchestrator() {
     SKILLOMATE_REMOTE_DEPLOY_SCRIPT="$fake_remote_deployer" \
     SKILLOMATE_DEPLOY_LOG_DIRECTORY="$self_test_directory/$name-logs" \
     SKILLOMATE_DEPLOY_LOCK_DIRECTORY="$self_test_directory/$name.lock" \
-    "$@" bash "$ORCHESTRATOR" >"$output_file" 2>&1
+    "$@" "${command[@]}" >"$output_file" 2>&1
 }
 
 : >"$ssh_calls"
@@ -146,6 +150,33 @@ if grep 'bash -s' "$ssh_calls" | grep -q "$NEXT_COMMIT"; then
 fi
 test "$(grep -c 'autoscaling describe-auto-scaling-instances' "$aws_calls")" -eq 3
 if grep -Ev ' describe-' "$aws_calls" >/dev/null; then echo 'Unexpected AWS mutation' >&2; exit 1; fi
+if grep -q -- '--backend-only' "$ssh_calls"; then
+  echo 'Default deployment unexpectedly selected backend-only mode.' >&2
+  exit 1
+fi
+
+: >"$ssh_calls"
+backend_only_output="$self_test_directory/backend-only.out"
+TEST_BACKEND_ONLY=yes run_orchestrator "$backend_only_output" backend-only
+grep -q '^ROLLING DEPLOYMENT COMPLETE$' "$backend_only_output"
+grep -q '^scope=backend-only$' "$backend_only_output"
+test "$(grep -c "bash -s -- '$TARGET_COMMIT' --backend-only$" "$ssh_calls")" -eq 3
+test "$(grep 'bash -s' "$ssh_calls" | cut -d'|' -f1 | paste -sd, -)" = '198.51.100.11,198.51.100.12,198.51.100.13'
+
+ssm_only_deployer="$self_test_directory/ssm-only-deploy.sh"
+printf '#!/usr/bin/env bash\n# SKILLOMATE_SSM_DEPLOY_CONTRACT_V1\nexit 0\n' >"$ssm_only_deployer"
+: >"$ssh_calls"
+: >"$aws_calls"
+unsupported_output="$self_test_directory/unsupported-backend-only.out"
+set +e
+TEST_BACKEND_ONLY=yes run_orchestrator "$unsupported_output" unsupported-backend-only \
+  SKILLOMATE_REMOTE_DEPLOY_SCRIPT="$ssm_only_deployer"
+unsupported_status=$?
+set -e
+test "$unsupported_status" -eq 1
+grep -q 'does not support backend-only deployment' "$unsupported_output"
+test ! -s "$ssh_calls"
+test ! -s "$aws_calls"
 
 : >"$ssh_calls"
 advanced_output="$self_test_directory/advanced.out"
@@ -250,5 +281,6 @@ echo 'ROLLING DEPLOYMENT SELF-TEST PASSED'
 echo 'discovery=ASG InService and Healthy instances'
 echo 'order=sorted instance IDs, sequential deployment'
 echo 'pinned_target=origin_main_advancement_does_not_change_active_rollout'
+echo 'backend_only=propagated_to_every_instance_and_requires_deployer_support'
 echo 'private_or_unreachable=blocked_before_deployment'
 echo 'failure_or_membership_change=stops_rollout'

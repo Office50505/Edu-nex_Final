@@ -7,15 +7,25 @@ const path = require('node:path');
 function backend(options = {}) {
   const routes = {};
   const calls = [];
+  const authCalls = [];
   const query = { select() { return this; }, populate() { return this; }, sort() { return this; }, limit() { return this; }, async lean() { return options.courses || []; } };
   const sandbox = {
     require(name) {
       if (name === 'node:crypto') return require('node:crypto');
       if (name.includes('aiTutorService')) return serviceModule.exports;
       if (name === 'express') return { Router: () => ({
-        get() {}, put() {}, delete() {},
-        post: (url, ...handlers) => { routes[url] = handlers.at(-1); },
+        delete() {},
+        get: (url, ...handlers) => { routes[`GET ${url}`] = handlers; },
+        put: (url, ...handlers) => { routes[`PUT ${url}`] = handlers; },
+        post: (url, ...handlers) => { routes[`POST ${url}`] = handlers; },
       }) };
+      if (name.includes('compatAuth')) return {
+        requireCompatibleAuth: config => (req, res, next) => {
+          authCalls.push(config);
+          if (!req.compatAuth) return res.status(401).json({ error: 'Invalid session' });
+          return next();
+        },
+      };
       if (name.includes('aiCompliance')) return require('../services/aiCompliance');
       if (name.includes('AiTutorSession')) return { deleteMany: async () => ({ deletedCount: 0 }) };
       if (name.includes('AiResponseReport')) return { create: async () => ({}) };
@@ -38,18 +48,40 @@ function backend(options = {}) {
   const serviceModule = { exports: {} };
   vm.runInNewContext(fs.readFileSync(path.join(__dirname, '../services/aiTutorService.js'), 'utf8'), { ...sandbox, module: serviceModule });
   vm.runInNewContext(fs.readFileSync(path.join(__dirname, '../routes/ai.js'), 'utf8'), sandbox);
-  async function rawChat(body) {
+  async function request(method, url, body = {}, authenticated = true) {
     let result;
     let statusCode = 200;
+    const headers = {};
     const response = {
       json(data) { result = data; return data; },
       status(code) { statusCode = code; return this; },
+      set(name, value) { headers[name.toLowerCase()] = value; return this; },
     };
-    await routes['/chat']({ body, compatUser: options.user || {}, compatAuth: { userId: 'learner' }, ip: '127.0.0.1' }, response);
-    return { result, statusCode };
+    const req = {
+      body,
+      compatUser: options.user || {},
+      compatAuth: authenticated ? { userId: 'learner' } : undefined,
+      ip: '127.0.0.1',
+    };
+    const handlers = routes[`${method} ${url}`];
+    assert.ok(handlers, `Missing ${method} ${url} route`);
+    async function dispatch(index) {
+      if (index >= handlers.length) return;
+      let downstream;
+      await handlers[index](req, response, () => {
+        downstream = dispatch(index + 1);
+        return downstream;
+      });
+      await downstream;
+    }
+    await dispatch(0);
+    return { result, statusCode, headers };
   }
+  const rawChat = body => request('POST', '/chat', body);
   return {
     calls,
+    authCalls,
+    request,
     rawChat,
     async chat(body) { return (await rawChat(body)).result; },
   };
@@ -75,13 +107,57 @@ test('AI lesson materials use independent store access and reject revoked store 
   }
 });
 
-test('chat sends a valid prompt without a separate processing gate', async () => {
-  const api = backend({ user: {} });
-  const response = await api.rawChat({ message: 'Explain prompting' });
-  assert.equal(response.statusCode, 200);
-  assert.equal(response.result.reply, 'Example answer');
-  assert.equal(api.calls.length, 1);
+// Preserve the validation contract in already-installed mobile clients, even after
+// their consent helper has been removed from the current app source.
+function legacyMobileAcceptsConsent(consent) {
+  return consent?.granted === true
+    && consent.policyVersion === '2026-09-25'
+    && typeof consent.providerVersion === 'string'
+    && consent.providerVersion.length > 0;
+}
+
+for (const [method, body] of [['GET', {}], ['PUT', { granted: true }], ['PUT', { granted: false }]]) {
+  test(`legacy mobile client accepts ${method} /consent ${JSON.stringify(body)} without a cached gate`, async () => {
+    const api = backend({ user: { aiConsentGranted: false } });
+    const response = await api.request(method, '/consent', body);
+    assert.equal(response.statusCode, 200);
+    assert.equal(legacyMobileAcceptsConsent(response.result), true);
+    assert.equal(response.headers['cache-control'], 'no-store');
+    assert.equal(api.authCalls.length, 1);
+    assert.equal(api.calls.length, 0);
+  });
+}
+
+test('legacy consent compatibility and chat retain authentication before their handlers', async () => {
+  for (const [method, url, body] of [
+    ['GET', '/consent', {}],
+    ['PUT', '/consent', { granted: true }],
+    ['POST', '/chat', { message: 'Explain prompting' }],
+  ]) {
+    const api = backend();
+    const response = await api.request(method, url, body, false);
+    assert.equal(response.statusCode, 401, `${method} ${url}`);
+    assert.equal(response.result.error, 'Invalid session');
+    assert.equal(response.result.granted, undefined);
+    assert.equal(api.authCalls.length, 1);
+    assert.match(api.authCalls[0].userProjection, /\+activeSessionId\b/);
+    assert.equal(api.calls.length, 0);
+  }
 });
+
+for (const [state, user] of [
+  ['absent', {}],
+  ['declined', { aiConsentGranted: false }],
+  ['outdated', { aiConsentGranted: true, aiConsentPolicyVersion: '2026-01-01', aiConsentProviderVersion: 'old-provider' }],
+]) {
+  test(`chat answers a valid prompt with ${state} retired consent data`, async () => {
+    const api = backend({ user });
+    const response = await api.rawChat({ message: 'Explain prompting' });
+    assert.equal(response.statusCode, 200);
+    assert.equal(response.result.reply, 'Example answer');
+    assert.equal(api.calls.length, 1);
+  });
+}
 
 test('chat forwards earlier turns between system context and the new question', async () => {
   const api = backend();

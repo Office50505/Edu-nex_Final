@@ -2,6 +2,14 @@
 
 set -Eeuo pipefail
 
+DEPLOYMENT_SCOPE=full
+for argument in "$@"; do
+  case "$argument" in
+    --backend-only) DEPLOYMENT_SCOPE=backend-only ;;
+    *) echo "Usage: $0 [--backend-only]"; exit 64 ;;
+  esac
+done
+
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 readonly LOCAL_REPOSITORY="${SKILLOMATE_LOCAL_REPOSITORY:-$(cd "$SCRIPT_DIR/.." && pwd)}"
 readonly REMOTE_DEPLOY_SCRIPT="${SKILLOMATE_REMOTE_DEPLOY_SCRIPT:-$LOCAL_REPOSITORY/deployment/deploy-skillomate.sh}"
@@ -64,6 +72,12 @@ fi
 
 if ! grep -Fxq '# SKILLOMATE_SSM_DEPLOY_CONTRACT_V1' "$REMOTE_DEPLOY_SCRIPT"; then
   echo "Remote deployment script does not declare the SSM production contract."
+  exit 1
+fi
+
+if test "$DEPLOYMENT_SCOPE" = backend-only &&
+  ! grep -Fxq '# SKILLOMATE_BACKEND_ONLY_DEPLOY_CONTRACT_V1' "$REMOTE_DEPLOY_SCRIPT"; then
+  echo "Remote deployment script does not support backend-only deployment."
   exit 1
 fi
 
@@ -254,6 +268,11 @@ if [[ ! "$TARGET_COMMIT" =~ ^[0-9a-f]{40}$ ]]; then
 fi
 
 echo "Rolling deployment target: $TARGET_COMMIT"
+echo "scope=$DEPLOYMENT_SCOPE"
+remote_command="bash -s -- '$TARGET_COMMIT'"
+if test "$DEPLOYMENT_SCOPE" = backend-only; then
+  remote_command="$remote_command --backend-only"
+fi
 
 while IFS='|' read -r instance_id host; do
   echo "=== $instance_id ==="
@@ -303,10 +322,11 @@ PY
   echo "host=$host" >>"$log_file"
   echo "target_commit=$TARGET_COMMIT" >>"$log_file"
   echo "config_source=ssm" >>"$log_file"
+  echo "scope=$DEPLOYMENT_SCOPE" >>"$log_file"
   chmod 600 "$log_file"
 
   if "$SSH_COMMAND" "${SSH_OPTIONS[@]}" "ubuntu@$host" \
-    "bash -s -- '$TARGET_COMMIT'" <"$REMOTE_DEPLOY_SCRIPT" 2>&1 | /usr/bin/tee -a "$log_file"; then
+    "$remote_command" <"$REMOTE_DEPLOY_SCRIPT" 2>&1 | /usr/bin/tee -a "$log_file"; then
     echo "DEPLOY SUCCESS" | /usr/bin/tee -a "$log_file"
   else
     deployment_status=${PIPESTATUS[0]}

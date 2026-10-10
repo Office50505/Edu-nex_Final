@@ -188,8 +188,12 @@ reset_case() {
 }
 
 run_deploy() {
+  local deploy_arguments=("${EXPECTED_DEPLOY_COMMIT:-$FAKE_NEW_COMMIT}")
+  if test "${TEST_BACKEND_ONLY:-no}" = yes; then
+    deploy_arguments+=(--backend-only)
+  fi
   env NODE_ENV=development SKILLOMATE_CONFIG_SOURCE=dotenv \
-    "$@" bash "$self_test_directory/deploy.sh" "${EXPECTED_DEPLOY_COMMIT:-$FAKE_NEW_COMMIT}"
+    "$@" bash "$self_test_directory/deploy.sh" "${deploy_arguments[@]}"
 }
 
 reset_case
@@ -212,6 +216,32 @@ grep -q "^start|$backend/ssm-bootstrap.js --name skillomate_backend --cwd $backe
 '
 test "$(cut -d'|' -f1 "$FAKE_EVENTS" | paste -sd, -)" = 'ssm,ssm,pm2-start'
 test ! -e "$backend/.env"
+
+reset_case
+# A backend-only rollout must work without any frontend or marketing checkout.
+mv "$frontend" "$repository/frontend-saved"
+mv "$marketing" "$repository/marketing-saved"
+TEST_BACKEND_ONLY=yes run_deploy >"$self_test_directory/backend-only.out" 2>&1
+grep -q '^DEPLOYMENT SUCCESS$' "$self_test_directory/backend-only.out"
+grep -q '^scope=backend-only$' "$self_test_directory/backend-only.out"
+test "$(cat "$FAKE_GIT_HEAD")" = "$FAKE_NEW_COMMIT"
+test "$(cat "$FAKE_NPM_CALLS")" = "$backend_pwd|ci --omit=dev --no-audit --no-fund"
+test "$(cut -d'|' -f1 "$FAKE_EVENTS" | paste -sd, -)" = 'ssm,ssm,pm2-start'
+
+reset_case
+set +e
+TEST_BACKEND_ONLY=yes run_deploy FAKE_READY_FAILURE=on-new >"$self_test_directory/backend-only-rollback.out" 2>&1
+backend_rollback_status=$?
+set -e
+test "$backend_rollback_status" -eq 1
+grep -q '^ROLLBACK SUCCESSFUL$' "$self_test_directory/backend-only-rollback.out"
+test "$(cat "$FAKE_GIT_HEAD")" = "$old_commit"
+test "$(wc -l <"$FAKE_NPM_CALLS" | tr -d ' ')" -eq 2
+test "$(grep -c "^$backend_pwd|ci --omit=dev --no-audit --no-fund$" "$FAKE_NPM_CALLS")" -eq 2
+test "$(grep -c '^ssm|production|ssm$' "$FAKE_EVENTS")" -eq 3
+grep -q '^restart|skillomate_backend --update-env|production|ssm$' "$FAKE_PM2_CALLS"
+mv "$repository/frontend-saved" "$frontend"
+mv "$repository/marketing-saved" "$marketing"
 
 reset_case
 run_deploy FAKE_SSM_FAILURE=old-only >"$self_test_directory/target-bootstrap-success.out" 2>&1
@@ -341,4 +371,5 @@ echo 'post_reset_ssm_failure=rollback_without_pm2_restart'
 echo 'post_restart_failure=ssm_checked_rollback'
 echo 'tracked_config_commits=blocked_before_change'
 echo 'marketing_web_dependencies=installed_before_frontend_build'
+echo 'backend_only=skips_frontend_and_marketing_on_deploy_and_rollback'
 echo 'ssm_server_startup=dotenv_not_loaded'

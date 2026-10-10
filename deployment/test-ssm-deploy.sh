@@ -14,6 +14,7 @@ touch "$self_test_directory/backend/ssm-bootstrap.js" "$self_test_directory/back
 touch "$self_test_directory/marketing-web/package.json" "$self_test_directory/marketing-web/package-lock.json"
 
 export EXPECTED_BACKEND="$self_test_directory/backend"
+export DEPLOYMENT_SCOPE=full
 export EXPECTED_FRONTEND="$self_test_directory/frontend"
 export EXPECTED_MARKETING="$self_test_directory/marketing-web"
 export SSM_SCRIPT="$EXPECTED_BACKEND/ssm-bootstrap.js"

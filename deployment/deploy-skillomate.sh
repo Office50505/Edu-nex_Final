@@ -1,7 +1,28 @@
 #!/usr/bin/env bash
 # SKILLOMATE_SSM_DEPLOY_CONTRACT_V1
+# SKILLOMATE_BACKEND_ONLY_DEPLOY_CONTRACT_V1
 
 set -Eeuo pipefail
+
+DEPLOYMENT_SCOPE=full
+EXPECTED_TARGET_COMMIT=""
+for argument in "$@"; do
+  case "$argument" in
+    --backend-only) DEPLOYMENT_SCOPE=backend-only ;;
+    --*) echo "Unknown deployment option: $argument"; exit 64 ;;
+    *)
+      if test -n "$EXPECTED_TARGET_COMMIT"; then
+        echo "Usage: $0 [--backend-only] [full-git-sha]"
+        exit 64
+      fi
+      EXPECTED_TARGET_COMMIT="$argument"
+      ;;
+  esac
+done
+if test -n "$EXPECTED_TARGET_COMMIT" && [[ ! "$EXPECTED_TARGET_COMMIT" =~ ^[0-9a-f]{40}$ ]]; then
+  echo "Expected deployment commit must be a full lowercase Git SHA."
+  exit 26
+fi
 
 readonly ACTIVE_BACKEND="/home/ubuntu/skillomate_backend"
 readonly REPOSITORY="/home/ubuntu/skillomate_repo"
@@ -32,7 +53,6 @@ HEALTH_RESULT=""
 READINESS_RESULT=""
 COURSES_RESULT=""
 DEPLOYMENT_STARTED=0
-EXPECTED_TARGET_COMMIT="${1:-}"
 
 exec 9>"$LOCK_FILE"
 if ! flock -n 9; then
@@ -47,6 +67,7 @@ record_result() {
     printf 'timestamp=%s\n' "$DEPLOYMENT_TIMESTAMP"
     printf 'old_commit=%s\n' "${OLD_COMMIT:-unknown}"
     printf 'new_commit=%s\n' "${NEW_COMMIT:-unknown}"
+    printf 'scope=%s\n' "$DEPLOYMENT_SCOPE"
     printf 'result=%s\n' "$result"
     printf 'rollback=%s\n' "$rollback_result"
   } >>"$LOG_FILE"
@@ -187,9 +208,11 @@ rollback_deployment() {
 
   cd "$REPOSITORY" || rollback_ok=0
   git reset --hard "$OLD_COMMIT" || rollback_ok=0
-  install_frontend_build_dependencies || rollback_ok=0
-  cd "$EXPECTED_FRONTEND" || rollback_ok=0
-  npm run build || rollback_ok=0
+  if test "$DEPLOYMENT_SCOPE" != backend-only; then
+    install_frontend_build_dependencies || rollback_ok=0
+    cd "$EXPECTED_FRONTEND" || rollback_ok=0
+    npm run build || rollback_ok=0
+  fi
   cd "$EXPECTED_BACKEND" || rollback_ok=0
   npm ci --omit=dev --no-audit --no-fund || rollback_ok=0
   if test "$restart_backend" = yes; then
@@ -283,14 +306,16 @@ if test ! -f package-lock.json; then
   exit 18
 fi
 
-if test ! -f "$EXPECTED_FRONTEND/package-lock.json"; then
-  echo "Frontend package-lock.json is missing."
-  exit 24
-fi
+if test "$DEPLOYMENT_SCOPE" != backend-only; then
+  if test ! -f "$EXPECTED_FRONTEND/package-lock.json"; then
+    echo "Frontend package-lock.json is missing."
+    exit 24
+  fi
 
-if ! git -C "$REPOSITORY" ls-files --error-unmatch edunex-f/package-lock.json >/dev/null 2>&1; then
-  echo "Frontend package-lock.json is not tracked."
-  exit 25
+  if ! git -C "$REPOSITORY" ls-files --error-unmatch edunex-f/package-lock.json >/dev/null 2>&1; then
+    echo "Frontend package-lock.json is not tracked."
+    exit 25
+  fi
 fi
 
 if ! git ls-files --error-unmatch package-lock.json >/dev/null 2>&1; then
@@ -301,11 +326,6 @@ fi
 if test ! -f "$SSM_SCRIPT" || ! git -C "$REPOSITORY" ls-files --error-unmatch edunex-b/ssm-bootstrap.js >/dev/null 2>&1; then
   echo "Current commit lacks the tracked SSM bootstrap needed for an SSM rollback."
   exit 31
-fi
-
-if test -n "$EXPECTED_TARGET_COMMIT" && [[ ! "$EXPECTED_TARGET_COMMIT" =~ ^[0-9a-f]{40}$ ]]; then
-  echo "Expected deployment commit must be a full lowercase Git SHA."
-  exit 26
 fi
 
 if ! git diff --quiet || ! git diff --cached --quiet || test -n "$(git ls-files --others --exclude-standard)"; then
@@ -349,6 +369,7 @@ fi
 
 echo "old_commit=$OLD_COMMIT"
 echo "new_commit=$NEW_COMMIT"
+echo "scope=$DEPLOYMENT_SCOPE"
 
 if test "$OLD_COMMIT" = "$NEW_COMMIT"; then
   if ! run_ssm_check; then
@@ -433,16 +454,15 @@ if ! run_ssm_check; then
   rollback_deployment "target SSM check failed before dependency install or PM2 restart" no
 fi
 
-cd "$EXPECTED_FRONTEND"
+if test "$DEPLOYMENT_SCOPE" != backend-only; then
+  if ! install_frontend_build_dependencies; then
+    rollback_deployment "frontend build dependency install failed"
+  fi
 
-if ! install_frontend_build_dependencies; then
-  rollback_deployment "frontend build dependency install failed"
-fi
-
-cd "$EXPECTED_FRONTEND"
-
-if ! npm run build; then
-  rollback_deployment "frontend production build failed"
+  cd "$EXPECTED_FRONTEND"
+  if ! npm run build; then
+    rollback_deployment "frontend production build failed"
+  fi
 fi
 
 cd "$EXPECTED_BACKEND"

@@ -8,6 +8,13 @@ copied from a developer machine.
 - Stable PM2 path: `/home/ubuntu/skillomate_backend`
 - EC2 deployment command: `/home/ubuntu/bin/deploy-skillomate.sh`
 - Local command, from any checkout: `bash deployment/deploy-skillomate-production.sh`.
+- For a backend fix that must reuse the existing web/mobile builds:
+  `bash deployment/deploy-skillomate-production.sh --backend-only`.
+  This mode skips frontend and marketing dependency installation and builds,
+  including during automatic rollback. It retains the same pinned Git commit,
+  SSM validation, locks, backend dependency installation, rolling health checks,
+  and rollback checks. It does not publish any frontend or mobile artifact.
+  The per-instance deployer also accepts `--backend-only [full-git-sha]`.
 - Repository orchestrator: `deployment/deploy-skillomate-production.sh`.
   It discovers the current healthy `InService` instances in
   `skillomate-backend-asg` in `ap-south-1`, sorts their instance IDs, and
@@ -34,7 +41,7 @@ commit to contain the tracked SSM bootstrap so rollback can remain in SSM mode.
 The EC2 script refuses
 dirty worktrees and Git commits that track local configuration files. It
 fetches GitHub without requiring a local `.env` file,
-deploys the pinned commit only while it still equals `origin/main`, installs and
+deploys the pinned commit even if `origin/main` advances during rollout, installs and
 builds the web frontend, installs the independent `marketing-web` Next.js app
 from its own lockfile before the delegated marketing build, and runs backend
 `npm ci --omit=dev`. It checks out the pinned target commit, then runs that
@@ -44,6 +51,9 @@ check validates the required named `String` and `SecureString` parameters under
 `/skillomate/prod/` in `ap-south-1`. A failed target SSM check restores the
 previous commit and dependencies without restarting that backend; the rolling
 deployment stops and later EC2 instances are untouched.
+Frontend installation and build steps apply to the default full deployment;
+`--backend-only` records `scope=backend-only` in the deployment logs and skips
+those steps.
 
 The `skillomate_backend` PM2 process runs `ssm-bootstrap.js` with explicit
 `NODE_ENV=production` and `SKILLOMATE_CONFIG_SOURCE=ssm`. If PM2 still points to
