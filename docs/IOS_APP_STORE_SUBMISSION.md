@@ -31,8 +31,8 @@ ATS arbitrary loads remain disabled. The app does not contain an advertising ide
 5. With an inactive account, the subscription popup appears once after login and entitlement refresh. Dismiss it to continue browsing; selecting a protected course or Downloads opens it again. It shows the same localized App Store price and can start the Apple purchase directly.
 6. Use Apple's Sandbox purchase environment if premium access must be acquired. The app sends the signed StoreKit transaction to Skillomate's backend; premium access changes only after server verification.
 7. Open a protected lesson from the course curriculum to test playback, progress, notes/resources, downloads where available, and lesson-scoped Nex AI.
-8. The first intentional Nex AI request displays a neutral Allow / Not Now disclosure before any third-party AI transmission.
-9. Open **Nex AI → chat menu → AI Data Controls** to review/withdraw consent and delete AI history.
+8. Send an intentional Nex AI request and verify the response begins without an extra processing-consent prompt.
+9. Open **Nex AI → chat menu → AI Data Controls** and verify that AI history can be deleted.
 10. Open **Profile → Danger Zone → Delete Account**. Deletion requires the current password and explicit `DELETE` confirmation.
 
 ## Apple subscription behavior

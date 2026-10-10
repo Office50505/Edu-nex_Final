@@ -2,7 +2,6 @@ const express = require('express');
 const crypto = require('node:crypto');
 const mongoose = require('mongoose');
 const Course = require('../models/Course');
-const User = require('../models/User');
 const AiTutorSession = require('../models/AiTutorSession');
 const AiResponseReport = require('../models/AiResponseReport');
 const { requireCompatibleAuth } = require('../middleware/compatAuth');
@@ -21,17 +20,20 @@ const {
   OUT_OF_SCOPE_REPLY,
 } = require('../services/aiTutorService');
 const {
-  AI_CONSENT_POLICY_VERSION,
-  AI_PROVIDER_VERSION,
-  PROVIDER_NAMES,
   checkAiInput,
-  consentIsCurrent,
   responseHash,
   sanitizeAiOutput,
 } = require('../services/aiCompliance');
 const router = express.Router();
-const AI_USER_PROJECTION = '+activeSessionId +activeSessions +aiConsentGranted +aiConsentPolicyVersion +aiConsentProviderVersion +aiConsentDecidedAt';
+const AI_USER_PROJECTION = '+activeSessionId +activeSessions';
 const aiRateState = new Map();
+const LEGACY_CONSENT_RESPONSE = Object.freeze({
+  granted: true,
+  policyVersion: '2026-09-25',
+  providerVersion: 'consent-not-required',
+  providerNames: ['fal.ai', 'OpenRouter', 'Google Gemini'],
+  decidedAt: null,
+});
 
 function aiMessageRecord(role, content) {
   return {
@@ -115,35 +117,15 @@ function aiRateLimit(req, res, next) {
   return next();
 }
 
-router.get('/consent', requireCompatibleAuth({ userProjection: AI_USER_PROJECTION }), (req, res) => {
+// Compatibility for already-installed clients: report AI as ready so their retired consent UI never opens.
+router.get('/consent', requireCompatibleAuth({ userProjection: AI_USER_PROJECTION }), (_req, res) => {
   res.set('Cache-Control', 'no-store');
-  res.json({
-    granted: consentIsCurrent(req.compatUser),
-    policyVersion: AI_CONSENT_POLICY_VERSION,
-    providerVersion: AI_PROVIDER_VERSION,
-    providerNames: PROVIDER_NAMES,
-    decidedAt: req.compatUser.aiConsentDecidedAt || null,
-    transmittedData: ['your question', 'up to 12 recent chat messages', 'relevant course and lesson context'],
-  });
+  res.json(LEGACY_CONSENT_RESPONSE);
 });
 
-router.put('/consent', requireCompatibleAuth({ userProjection: AI_USER_PROJECTION }), async (req, res) => {
-  const granted = req.body?.granted === true;
-  const decision = {
-    aiConsentGranted: granted,
-    aiConsentPolicyVersion: granted ? AI_CONSENT_POLICY_VERSION : null,
-    aiConsentProviderVersion: granted ? AI_PROVIDER_VERSION : null,
-    aiConsentDecidedAt: new Date(),
-  };
-  await User.updateOne({ _id: req.compatAuth.userId }, { $set: decision });
+router.put('/consent', requireCompatibleAuth({ userProjection: AI_USER_PROJECTION }), (_req, res) => {
   res.set('Cache-Control', 'no-store');
-  res.json({
-    granted,
-    policyVersion: AI_CONSENT_POLICY_VERSION,
-    providerVersion: AI_PROVIDER_VERSION,
-    providerNames: PROVIDER_NAMES,
-    decidedAt: decision.aiConsentDecidedAt,
-  });
+  res.json(LEGACY_CONSENT_RESPONSE);
 });
 
 router.delete('/history', requireCompatibleAuth({ userProjection: AI_USER_PROJECTION }), async (req, res) => {
@@ -199,16 +181,6 @@ router.get('/courses', requireCompatibleAuth(), async (_req, res) => {
 
 async function handleTutorChat(req, res) {
   try {
-    if (!consentIsCurrent(req.compatUser)) {
-      return res.status(403).json({
-        error: 'Allow third-party AI processing before using Nex AI.',
-        code: 'AI_CONSENT_REQUIRED',
-        recoverable: true,
-        policyVersion: AI_CONSENT_POLICY_VERSION,
-        providerVersion: AI_PROVIDER_VERSION,
-        providerNames: PROVIDER_NAMES,
-      });
-    }
     const inputCheck = checkAiInput(req.body?.message);
     if (!inputCheck.ok && !inputCheck.blocked) {
       return res.status(inputCheck.statusCode).json({ error: inputCheck.error });

@@ -65,7 +65,6 @@ async function deleteUserAccount(userId, options = {}) {
         deviceToken: null,
         activeSessionId: null,
         activeSessions: [],
-        aiConsentGranted: false,
       },
     }),
     Session.updateMany(

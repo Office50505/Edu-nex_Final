@@ -6,7 +6,6 @@ const path = require('node:path');
 const mobileRoot = path.join(__dirname, '..', '..', 'appcopyai');
 const { canOpenExternalUrl } = require(path.join(mobileRoot, 'services/externalLinks.js'));
 const { createSecureSessionStorage, SECURE_SESSION_KEY } = require(path.join(mobileRoot, 'services/secureSessionStorage.js'));
-const { consentDecision, isAiConsentCurrent } = require(path.join(mobileRoot, 'services/aiConsent.js'));
 const {
   GOOGLE_PLAY_SUBSCRIPTION_OFFER_IDS,
   hasActivePremiumEntitlement,
@@ -35,6 +34,9 @@ const infoPlist = fs.readFileSync(path.join(mobileRoot, 'ios/ProtectedVideo/Info
 const localStoreKit = JSON.parse(fs.readFileSync(path.join(mobileRoot, 'ios/Skillomate-IN.storekit'), 'utf8'));
 const mobileCompatServiceSource = fs.readFileSync(path.join(__dirname, '..', 'services/mobileCompatibilityService.js'), 'utf8');
 const cloudfrontDownloadSource = fs.readFileSync(path.join(mobileRoot, 'services/cloudfrontDownload.js'), 'utf8');
+const androidManifest = fs.readFileSync(path.join(mobileRoot, 'android/app/src/main/AndroidManifest.xml'), 'utf8');
+const androidMainActivity = fs.readFileSync(path.join(mobileRoot, 'android/app/src/main/java/com/skillomate/app/MainActivity.kt'), 'utf8');
+const appConfig = JSON.parse(fs.readFileSync(path.join(mobileRoot, 'app.json'), 'utf8'));
 
 test('iOS external-link policy allows legal/support/resources and blocks purchase steering', () => {
   assert.equal(canOpenExternalUrl('https://skillomate.in/privacy', 'ios').allowed, true);
@@ -95,21 +97,36 @@ test('native session migration verifies Keychain write and removes plaintext Asy
   assert.equal(secureValues.has(SECURE_SESSION_KEY), false);
 });
 
-test('AI consent expires when the policy version changes and records explicit decline', () => {
-  const allowed = consentDecision(true, 'providers-v1', new Date('2026-09-25T00:00:00Z'));
-  assert.equal(isAiConsentCurrent(allowed), true);
-  assert.equal(isAiConsentCurrent({ ...allowed, policyVersion: 'older' }), false);
-  assert.equal(isAiConsentCurrent({ ...allowed, providerVersion: '' }), false);
-  assert.equal(consentDecision(false).granted, false);
+test('mobile AI surfaces send prompts without a consent popup and retain history deletion', () => {
+  assert.doesNotMatch(appSource, /services\/aiConsent|\/api\/ai\/consent|showAiConsent|consentOverride/);
+  assert.doesNotMatch(appSource, /Allow external AI processing|Withdraw AI data consent|AI privacy unavailable/);
+  assert.match(appSource, /async function sendAiMessage\(value = input\)/);
+  assert.match(appSource, /accessibilityLabel="Delete AI chat history"/);
 });
 
-test('mobile AI surfaces require explicit, withdrawable consent before sending a prompt', () => {
-  assert.match(appSource, /AI_CONSENT_POLICY_VERSION, isAiConsentCurrent/);
-  assert.match(appSource, /session\.requestJson\("\/api\/ai\/consent"\)/);
-  assert.match(appSource, /if \(!options\.consentOverride && !isAiConsentCurrent\(aiConsent\)\)/);
-  assert.match(appSource, /accessibilityLabel="Allow external AI processing"/);
-  assert.match(appSource, /accessibilityLabel="Withdraw AI data consent"/);
-  assert.match(appSource, /AI privacy unavailable[\s\S]+No AI request was sent/);
+test('Android player omits the non-functional fullscreen control', () => {
+  assert.doesNotMatch(appSource, /playerExpandButton|handleExitFullscreen|onExitFullscreen|contract-outline/);
+  assert.match(appSource, /allowsFullscreenVideo=\{false\}/);
+  assert.match(appSource, /disableFullscreenUI/);
+});
+
+test('Android app links route verified Skillomate video URLs into the running app', () => {
+  assert.match(androidManifest, /android:screenOrientation="portrait"/);
+  assert.match(androidManifest, /intent-filter android:autoVerify="true"/);
+  assert.match(androidManifest, /android:host="skillomate\.in" android:pathPrefix="\/videos"/);
+  assert.match(appSource, /Linking\.getInitialURL\(\)/);
+  assert.match(appSource, /Linking\.addEventListener\("url"/);
+  assert.match(appSource, /buildSkillomateVideoUrl\(WEB_APP_BASE/);
+  assert.equal(appConfig.expo.orientation, 'portrait');
+  assert.equal(appConfig.expo.android.intentFilters[0].autoVerify, true);
+});
+
+test('Android back stays inside the app and dismisses focused course search first', () => {
+  assert.match(androidMainActivity, /override fun invokeDefaultOnBackPressed\(\)/);
+  assert.doesNotMatch(androidMainActivity, /super\.invokeDefaultOnBackPressed|moveTaskToBack/);
+  assert.match(appSource, /searchInputRef\.current\?\.blur\?\.\(\)/);
+  assert.match(appSource, /TextInput\.State\?\.currentlyFocusedInput\?\.\(\)/);
+  assert.match(appSource, /BackHandler\.addEventListener\("hardwareBackPress"/);
 });
 
 test('premium access is fail-closed for unknown, retry, revoked and expired states', () => {

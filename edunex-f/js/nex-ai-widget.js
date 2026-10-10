@@ -1209,20 +1209,6 @@
           </div>
         </div>
 
-        <div class="nai-setup-panel" id="nai-consent-panel" hidden>
-          <div class="nai-setup-card" role="dialog" aria-modal="true" aria-labelledby="nai-consent-title">
-            <div class="nai-setup-kicker">Optional AI data sharing</div>
-            <h3 id="nai-consent-title">Allow third-party AI processing?</h3>
-            <p>Skillomate will send your question, up to 12 recent chat messages, and relevant course or lesson context to fal.ai, OpenRouter, and the selected Google Gemini model. Your profile name is not sent.</p>
-            <p>You can keep using courses without AI, withdraw consent later, and delete AI history from AI Data Controls.</p>
-            <div class="nai-setup-error" id="nai-consent-error" role="alert" aria-live="assertive"></div>
-            <div style="display:flex;gap:10px;justify-content:flex-end">
-              <button class="nai-setup-save" id="nai-consent-decline" type="button" style="background:#25262b;color:#fff">Not Now</button>
-              <button class="nai-setup-save" id="nai-consent-allow" type="button">Allow</button>
-            </div>
-          </div>
-        </div>
-
       </div>
     </div>
   `;
@@ -1259,13 +1245,6 @@
   const setupSave = document.getElementById('nai-setup-save');
   const setupError = document.getElementById('nai-setup-error');
   const setupCard = setupPanel?.querySelector('.nai-setup-card');
-  const consentPanel = document.getElementById('nai-consent-panel');
-  const consentAllow = document.getElementById('nai-consent-allow');
-  const consentDecline = document.getElementById('nai-consent-decline');
-  const consentError = document.getElementById('nai-consent-error');
-  let aiConsentLoaded = false;
-  let aiConsentGranted = false;
-
   function currentBotAvatarMarkup() {
     return botAvatarMarkup;
   }
@@ -1786,9 +1765,6 @@
     if (owner !== conversationOwner) {
       conversationOwner = owner;
       conversationVersion += 1;
-      aiConsentLoaded = false;
-      aiConsentGranted = false;
-      consentPanel.hidden = true;
       loadConversationSessions();
     }
   }
@@ -1878,53 +1854,12 @@
     return data;
   }
 
-  async function ensureAiConsent() {
-    if (aiConsentGranted) return true;
-    if (!aiConsentLoaded) {
-      try {
-        const state = await EduNex.authRequest('/api/ai/consent');
-        aiConsentGranted = state?.granted === true;
-      } catch (_) {
-        aiConsentGranted = false;
-      }
-      aiConsentLoaded = true;
-    }
-    if (aiConsentGranted) return true;
-    consentError.textContent = '';
-    consentPanel.hidden = false;
-    setTimeout(() => consentAllow.focus(), 40);
-    return false;
-  }
-
-  async function saveAiConsent(granted) {
-    consentAllow.disabled = true;
-    consentDecline.disabled = true;
-    consentError.textContent = '';
-    try {
-      const decision = await EduNex.authRequest('/api/ai/consent', {
-        method: 'PUT',
-        body: JSON.stringify({ granted }),
-      });
-      aiConsentLoaded = true;
-      aiConsentGranted = decision?.granted === true;
-      consentPanel.hidden = true;
-      if (aiConsentGranted) await sendMessage(true);
-      else input.focus();
-    } catch (error) {
-      consentError.textContent = error.message || 'Could not save AI data preference.';
-    } finally {
-      consentAllow.disabled = false;
-      consentDecline.disabled = false;
-    }
-  }
-
-  async function sendMessage(consentOverride = false) {
+  async function sendMessage() {
     if (sending) return;
     syncConversationOwner();
     if (!requireAiAccess(rootEl.parentElement)) return;
     const text = input.value.trim();
     if (!text) return;
-    if (!consentOverride && !await ensureAiConsent()) return;
     if (sending) return;
 
     sending = true;
@@ -1983,8 +1918,6 @@
   }
 
   sendBtn.addEventListener('click', () => sendMessage());
-  consentAllow.addEventListener('click', () => saveAiConsent(true));
-  consentDecline.addEventListener('click', () => saveAiConsent(false));
   input.addEventListener('keydown', (e) => {
     if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
   });

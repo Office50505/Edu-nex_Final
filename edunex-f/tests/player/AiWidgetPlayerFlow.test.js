@@ -34,10 +34,7 @@ it("fits the first-time AI setup and chat flow when opened from the mobile video
   const api = {
     getAccessToken: vi.fn(() => "active-token"),
     getUser: vi.fn(() => ({ _id: "learner-1", fullName: "Learner" })),
-    authRequest: vi.fn(async (path, options) => {
-      if (path === "/api/ai/consent") return options ? { granted: true } : { granted: true };
-      return { reply: "Hello! How can I help?" };
-    }),
+    authRequest: vi.fn(async () => ({ reply: "Hello! How can I help?" })),
   };
   window.EduNex = api;
   vi.stubGlobal("EduNex", api);
@@ -65,6 +62,8 @@ it("fits the first-time AI setup and chat flow when opened from the mobile video
   fireEvent.click(document.getElementById("nai-send"));
   await waitFor(() => expect(document.getElementById("nai-messages").textContent).toContain("Hello! How can I help?"));
   expect(api.authRequest).toHaveBeenCalledWith("/api/ai/chat", expect.any(Object));
+  expect(api.authRequest).not.toHaveBeenCalledWith("/api/ai/consent");
+  expect(document.getElementById("nai-consent-panel")).toBeNull();
 
   visualViewport.height = 480;
   visualViewport.width = 320;

@@ -13,6 +13,12 @@ describe("responsive AI widget setup", () => {
     expect(widgetSource).not.toContain("edunexAiBotAvatar");
   });
 
+  it("does not interrupt Nex AI with a third-party processing consent dialog", () => {
+    expect(widgetSource).not.toContain("nai-consent-panel");
+    expect(widgetSource).not.toContain("/api/ai/consent");
+    expect(widgetSource).not.toContain("Allow third-party AI processing");
+  });
+
   it("keeps the mobile player chat inside the iPhone visual viewport", () => {
     expect(widgetSource).toContain("--nai-viewport-height: 100dvh");
     expect(widgetSource).toContain("--nai-viewport-width: 100vw");

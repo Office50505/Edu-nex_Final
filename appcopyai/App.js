@@ -1,7 +1,6 @@
 import { plainCourseDescription } from "./services/courseDescription";
 import { chatKey, readChat, updateChat } from "./courseAiCache";
 import { requestTutor } from "./services/aiClient";
-import { AI_CONSENT_POLICY_VERSION, isAiConsentCurrent } from "./services/aiConsent";
 import { createNativeSession } from "./services/nativeSession";
 import { mobileSessionMetadata } from "./services/mobileSessionMetadata";
 import { createSecureSessionStorage } from "./services/secureSessionStorage";
@@ -11,6 +10,7 @@ import {
   GOOGLE_PLAY_SUBSCRIPTION_MANAGEMENT_URL,
   canOpenExternalUrl,
 } from "./services/externalLinks";
+import { buildSkillomateVideoUrl, parseSkillomateAppLink } from "./services/appLinks";
 import { hasActivePremiumEntitlement } from "./services/subscriptions";
 import { useAppleSubscriptions } from "./services/useAppleSubscriptions";
 import { useGooglePlaySubscriptions } from "./services/useGooglePlaySubscriptions";
@@ -593,7 +593,7 @@ const LEGAL_APP_PAGES = {
     sections: [
       { title: "Information we collect", body: "We may process your name, mobile number, age, gender, avatar or optional profile photo, login and IP security records, course progress, wishlist, certificates, payment status, device context, and support messages." },
       { title: "How information is used", body: "Information is used to create and secure accounts, provide learning features, track progress, process subscriptions, answer support requests, and prevent abuse." },
-      { title: "Nex AI data", body: "Only after you choose Allow, fal.ai, OpenRouter, and Google Gemini may process your question, up to 12 recent messages, and relevant course material. Your profile name is not sent. You can withdraw consent and delete history in AI Data Controls." },
+      { title: "Nex AI data", body: "When you use Nex AI, fal.ai, OpenRouter, and Google Gemini may process your question, up to 12 recent messages, and relevant course material. Your profile name is not sent. Avoid sensitive information; you can delete AI history in AI Data Controls." },
       { title: "Payments and service providers", body: "Payment, verification, media, hosting, storage, and AI providers may process the information required to deliver their services. Sensitive payment credentials are entered through the payment provider." },
       { title: "Device storage and permissions", body: "The app may use internet, storage, vibration, and screen-capture controls for account, media, downloads, exports, and protected learning features. Permissions can be managed in device settings." },
       { title: "Security and retention", body: "We use technical and organizational safeguards, but no online service can guarantee absolute security. Information is kept only as long as needed for product, legal, payment, security, and support purposes." },
@@ -737,7 +737,7 @@ const PRIVACY_CONTENT = {
     {
       title: "Nex AI",
       icon: "sparkles-outline",
-      body: "Only after you choose Allow, fal.ai, OpenRouter, and Google Gemini may process your question, up to 12 recent messages, and relevant course context. Your profile name is not sent. AI Data Controls let you withdraw consent and delete history.",
+      body: "When you use Nex AI, fal.ai, OpenRouter, and Google Gemini may process your question, up to 12 recent messages, and relevant course context. Your profile name is not sent. Avoid sensitive information; AI Data Controls let you delete history.",
     },
     {
       title: "Payments And Subscriptions",
@@ -4261,7 +4261,7 @@ function SwipeableRootTabsPager({ activeTab, onNavigate, renderTab, searchRefere
 }
 
 // ── VideoItem ─────────────────────────────────────────────────────────────────
-function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdProp, isActive, height, onComplete, onProgress, onEnded, onSettingsOpenChange, onExitFullscreen, onPlayerChromeHiddenChange, onPlayerChromeReveal, onHoldSpeedChange, playerChromeHiddenOverride = false, initialTime = 0, localPath, suspendSurface = false, children }) {
+function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdProp, isActive, height, onComplete, onProgress, onEnded, onSettingsOpenChange, onPlayerChromeHiddenChange, onPlayerChromeReveal, onHoldSpeedChange, playerChromeHiddenOverride = false, initialTime = 0, localPath, suspendSurface = false, children }) {
   const [cloudLease, setCloudLease] = useState(null);
   const [cloudError, setCloudError] = useState('');
   const [cloudRetry, setCloudRetry] = useState(0);
@@ -5824,11 +5824,6 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
     else if (!tap.moved && !showSettings && !isEnded && showLiveSurface) revealPlayerChrome();
   }
 
-  function handleExitFullscreen() {
-    setShowSettings(false);
-    if (isActive) onExitFullscreen?.();
-  }
-
   if (video.provider === 'aws_cloudfront' && currentTime > 0) cloudResume.current = currentTime;
   if (isActive && video.provider === 'aws_cloudfront' && !localPath && (!validCloudLease || cloudError)) return (
     <View style={[s.player, { height, justifyContent: "center", alignItems: "center" }]}>
@@ -6135,16 +6130,6 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
           >
             <Ionicons name="settings-outline" size={22} color="#fff" />
           </TouchableOpacity>
-          <TouchableOpacity
-            onPress={handleExitFullscreen}
-            onPressIn={beginPlayerControlInteraction}
-            onPressOut={endPlayerControlInteraction}
-            style={s.playerExpandButton}
-            accessibilityRole="button"
-            accessibilityLabel="Exit full screen player"
-          >
-            <Ionicons name="contract-outline" size={22} color="#fff" />
-          </TouchableOpacity>
           <View
             style={s.timeline}
             accessible
@@ -6254,7 +6239,10 @@ function ReelsScreen({ courseId, course, initialIndex, initialTime, onBack, onRe
   const activeLessonNumber = Math.min(videos.length, Math.max(1, activeIndex + 1));
   const activeLessonLabel = videos.length ? `Lecture ${activeLessonNumber}/${videos.length}` : "Lecture";
   const activeSummary = activeDescription === "No description available." ? "" : activeDescription;
-  const activeShareUrl = `${WEB_APP_BASE}/videos?courseId=${encodeURIComponent(courseId)}`;
+  const activeShareUrl = buildSkillomateVideoUrl(WEB_APP_BASE, {
+    courseId,
+    videoId: activeVideo ? getVideoKey(activeVideo, activeIndex) : null,
+  });
   const lecturePageSize = 20;
   const lectureRanges = useMemo(() => {
     const rangeCount = Math.max(1, Math.ceil(videos.length / lecturePageSize));
@@ -6598,10 +6586,15 @@ function ReelsScreen({ courseId, course, initialIndex, initialTime, onBack, onRe
   }
   async function shareLesson(lesson) {
     try {
+      const lessonIndex = videos.indexOf(lesson);
+      const lessonShareUrl = buildSkillomateVideoUrl(WEB_APP_BASE, {
+        courseId,
+        videoId: getVideoKey(lesson, lessonIndex >= 0 ? lessonIndex : 0),
+      });
       await Share.share({
         title: lesson?.title || "Skillomate lecture",
-        message: `${lesson?.title || "Skillomate lecture"}\n${activeShareUrl}`,
-        url: activeShareUrl,
+        message: `${lesson?.title || "Skillomate lecture"}\n${lessonShareUrl}`,
+        url: lessonShareUrl,
       });
     } catch {}
   }
@@ -6615,50 +6608,6 @@ function ReelsScreen({ courseId, course, initialIndex, initialTime, onBack, onRe
     }
     if (!user?._id || !user?.sessionId) {
       updateCourseAi([...courseAiEntry.messages, { role: "assistant", content: "Please log in again before using Course AI." }]);
-      return;
-    }
-    try {
-      const consent = await session.requestJson("/api/ai/consent");
-      if (!isAiConsentCurrent(consent)) {
-        const allowed = await new Promise(resolve => {
-          Alert.alert(
-            "Nex AI Privacy",
-            `Your question, up to 12 recent chat messages, and relevant lesson context will be processed by ${(consent.providerNames || ["external AI providers"]).join(", ")}. Your name is not sent.`,
-            [
-              {
-                text: "Not Now",
-                style: "cancel",
-                onPress: async () => {
-                  await session.requestJson("/api/ai/consent", {
-                    method: "PUT",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ granted: false }),
-                  }).catch(() => {});
-                  resolve(false);
-                },
-              },
-              {
-                text: "Allow",
-                onPress: async () => {
-                  try {
-                    const saved = await session.requestJson("/api/ai/consent", {
-                      method: "PUT",
-                      headers: { "Content-Type": "application/json" },
-                      body: JSON.stringify({ granted: true }),
-                    });
-                    resolve(isAiConsentCurrent(saved));
-                  } catch (_) {
-                    resolve(false);
-                  }
-                },
-              },
-            ]
-          );
-        });
-        if (!allowed) return;
-      }
-    } catch (_) {
-      Alert.alert("AI privacy unavailable", "Your privacy choice could not be checked. No AI request was sent.");
       return;
     }
     const messagesWithQuestion = [...courseAiEntry.messages, { role: "user", content: question }];
@@ -6746,9 +6695,6 @@ function ReelsScreen({ courseId, course, initialIndex, initialTime, onBack, onRe
                 }}
                 onHoldSpeedChange={active => {
                   if (isCurrent) setPlayerHoldSpeedActive(active);
-                }}
-                onExitFullscreen={() => {
-                  if (isCurrent) onBack?.();
                 }}
                 onEnded={() => {
                   if (isCurrent && index < videos.length - 1) {
@@ -8952,6 +8898,7 @@ function CourseListScreen({ onSelect, user, session, onGoToHome, onGoToCourses, 
   const [error, setError] = useState(null);
   const [query, setQuery] = useState("");
   const [searchFocused, setSearchFocused] = useState(false);
+  const searchInputRef = useRef(null);
   const [showNotifications, setShowNotifications] = useState(false);
   const { notifications, notificationsLoading, hasUnreadNotifications, markNotificationsViewed } = useNotificationReadState({ session, user });
   const openNotifications = useCallback(() => {
@@ -9010,6 +8957,8 @@ function CourseListScreen({ onSelect, user, session, onGoToHome, onGoToCourses, 
     if (Platform.OS !== "android") return undefined;
     const sub = BackHandler.addEventListener("hardwareBackPress", () => {
       if (searchFocused) {
+        searchInputRef.current?.blur?.();
+        setSearchFocused(false);
         Keyboard.dismiss();
         return true;
       }
@@ -9102,6 +9051,7 @@ function CourseListScreen({ onSelect, user, session, onGoToHome, onGoToCourses, 
       <View style={[s.searchBox, isTablet && s.tabletContentFrame, isTablet && { marginHorizontal: 0 }]}>
         <Ionicons name="search-outline" size={18} color={C.textMuted} />
         <TextInput
+          ref={searchInputRef}
           placeholder="Search courses here"
           placeholderTextColor={C.textMuted}
           style={s.searchInput}
@@ -10793,14 +10743,6 @@ function AiAssistantScreen({
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState("checking");
-  const [aiConsent, setAiConsent] = useState({
-    granted: false,
-    policyVersion: AI_CONSENT_POLICY_VERSION,
-    providerNames: ["fal.ai", "OpenRouter", "Google Gemini"],
-  });
-  const [aiConsentLoading, setAiConsentLoading] = useState(true);
-  const [showAiConsent, setShowAiConsent] = useState(false);
-  const pendingAiPrompt = useRef("");
   const [robotId, setRobotId] = useState(DEFAULT_AI_ROBOT_ID);
   const [showRobotPicker, setShowRobotPicker] = useState(false);
   const [assistantName, setAssistantName] = useState(DEFAULT_AI_NAME);
@@ -10895,31 +10837,6 @@ function AiAssistantScreen({
     setInput("");
     setHistoryOpen(false);
   }, [introMessages]);
-
-  useEffect(() => {
-    if (!user?._id || !session) {
-      setAiConsentLoading(false);
-      setAiConsent({
-        granted: false,
-        policyVersion: AI_CONSENT_POLICY_VERSION,
-        providerNames: ["fal.ai", "OpenRouter", "Google Gemini"],
-      });
-      return;
-    }
-    let cancelled = false;
-    setAiConsentLoading(true);
-    session.requestJson("/api/ai/consent")
-      .then(value => {
-        if (!cancelled) setAiConsent(value);
-      })
-      .catch(() => {
-        if (!cancelled) setAiConsent(current => ({ ...current, granted: false }));
-      })
-      .finally(() => {
-        if (!cancelled) setAiConsentLoading(false);
-      });
-    return () => { cancelled = true; };
-  }, [session, user?._id]);
 
   useEffect(() => {
     AsyncStorage.getItem(AI_AVATAR_STORAGE_KEY).then(saved => {
@@ -11072,39 +10989,6 @@ function AiAssistantScreen({
     };
   }, [messages, loading, scrollAiToEnd]);
 
-  async function saveAiConsent(granted) {
-    if (!session) return null;
-    setAiConsentLoading(true);
-    try {
-      const next = await session.requestJson("/api/ai/consent", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ granted }),
-      });
-      setAiConsent(next);
-      setShowAiConsent(false);
-      return next;
-    } catch (_) {
-      Alert.alert("Privacy choice not saved", "Check your connection and try again.");
-      return null;
-    } finally {
-      setAiConsentLoading(false);
-    }
-  }
-
-  async function allowAiAndContinue() {
-    const next = await saveAiConsent(true);
-    if (!isAiConsentCurrent(next)) return;
-    const queued = pendingAiPrompt.current;
-    pendingAiPrompt.current = "";
-    if (queued) sendAiMessage(queued, { consentOverride: true });
-  }
-
-  async function declineAiConsent() {
-    pendingAiPrompt.current = "";
-    await saveAiConsent(false);
-  }
-
   async function clearAiHistory() {
     try {
       await session.requestJson("/api/ai/history", { method: "DELETE" });
@@ -11153,14 +11037,9 @@ function AiAssistantScreen({
     ]);
   }
 
-  async function sendAiMessage(value = input, options = {}) {
+  async function sendAiMessage(value = input) {
     const question = value.trim();
     if (!question || loading || aiInFlight.current) return;
-    if (!options.consentOverride && !isAiConsentCurrent(aiConsent)) {
-      pendingAiPrompt.current = question;
-      setShowAiConsent(true);
-      return;
-    }
     if (!AI_FEATURE_ENABLED) {
       setInput("");
       const targetSessionId = activeConversationId || createAiConversationSession(introMessages()).id;
@@ -11508,30 +11387,6 @@ function AiAssistantScreen({
             )}
             <View style={{ borderTopWidth: 1, borderTopColor: C.border, paddingTop: 14, marginTop: 10, gap: 8 }}>
               <Text style={s.aiHistoryLabel}>AI Data Controls</Text>
-              <Text style={[s.aiHistoryItemMeta, { color: aiTheme.secondary }]}>
-                Third-party AI processing: {isAiConsentCurrent(aiConsent) ? "Allowed" : "Not allowed"}
-              </Text>
-              {isAiConsentCurrent(aiConsent) ? (
-                <TouchableOpacity
-                  onPress={() => saveAiConsent(false)}
-                  style={[s.aiHistoryNewChat, { backgroundColor: C.cardBg, borderWidth: 1, borderColor: C.border }]}
-                  accessibilityRole="button"
-                  accessibilityLabel="Withdraw AI data consent"
-                >
-                  <Text style={[s.aiHistoryNewChatText, { color: C.text }]}>Withdraw consent</Text>
-                  <Ionicons name="shield-outline" size={18} color={C.primary} />
-                </TouchableOpacity>
-              ) : (
-                <TouchableOpacity
-                  onPress={() => setShowAiConsent(true)}
-                  style={[s.aiHistoryNewChat, { backgroundColor: C.cardBg, borderWidth: 1, borderColor: C.border }]}
-                  accessibilityRole="button"
-                  accessibilityLabel="Review AI privacy consent"
-                >
-                  <Text style={[s.aiHistoryNewChatText, { color: C.text }]}>Review AI privacy</Text>
-                  <Ionicons name="shield-checkmark-outline" size={18} color={C.primary} />
-                </TouchableOpacity>
-              )}
               <TouchableOpacity
                 onPress={() => Alert.alert("Delete AI history?", "This removes your Nex AI conversations from this device and the server.", [
                   { text: "Cancel", style: "cancel" },
@@ -11545,41 +11400,6 @@ function AiAssistantScreen({
                 <Ionicons name="trash-outline" size={18} color={C.danger} />
               </TouchableOpacity>
             </View>
-          </View>
-        </View>
-      </Modal>
-
-      <Modal visible={showAiConsent} transparent animationType="fade" onRequestClose={declineAiConsent}>
-        <View style={{ flex: 1, backgroundColor: "rgba(0,0,0,0.76)", alignItems: "center", justifyContent: "center", padding: 24 }}>
-          <View style={{ backgroundColor: C.white, borderRadius: 20, borderWidth: 1, borderColor: C.border, width: "100%", maxWidth: 430, padding: 22 }}>
-            <View style={{ width: 48, height: 48, borderRadius: 24, backgroundColor: C.primaryLight, alignItems: "center", justifyContent: "center", alignSelf: "center" }}>
-              <Ionicons name="shield-checkmark-outline" size={26} color={C.primary} />
-            </View>
-            <Text style={{ color: C.text, fontSize: 21, fontWeight: "800", textAlign: "center", marginTop: 14 }}>Nex AI Privacy</Text>
-            <Text style={{ color: C.textSub, fontSize: 13, lineHeight: 20, marginTop: 10 }}>
-              To answer you, Skillomate sends your question, up to 12 recent chat messages, and relevant course or lesson context to {Array.isArray(aiConsent.providerNames) ? aiConsent.providerNames.join(", ") : "external AI providers"}.
-            </Text>
-            <Text style={{ color: C.textSub, fontSize: 13, lineHeight: 20, marginTop: 8 }}>
-              Your name is not sent. Avoid including passwords, payment details, or other sensitive personal information. You can withdraw consent and delete AI history from AI Data Controls.
-            </Text>
-            <TouchableOpacity
-              onPress={allowAiAndContinue}
-              disabled={aiConsentLoading}
-              style={[s.btn, s.btnFill, { marginTop: 18 }, aiConsentLoading && { opacity: 0.55 }]}
-              accessibilityRole="button"
-              accessibilityLabel="Allow external AI processing"
-            >
-              {aiConsentLoading ? <ActivityIndicator color={C.onPrimary} /> : <Text style={s.btnText}>Allow</Text>}
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={declineAiConsent}
-              disabled={aiConsentLoading}
-              style={[s.btn, { marginTop: 8, borderWidth: 1, borderColor: C.border }]}
-              accessibilityRole="button"
-              accessibilityLabel="Do not allow external AI processing"
-            >
-              <Text style={[s.btnText, { color: C.text }]}>Not Now</Text>
-            </TouchableOpacity>
           </View>
         </View>
       </Modal>
@@ -11748,6 +11568,7 @@ export default function App() {
   const isTabletLayout = appViewportWidth >= 768;
   const [isRestoring, setIsRestoring] = useState(true);
   const [user, setUserState] = useState(null);
+  const [pendingAppLink, setPendingAppLink] = useState(null);
   const [themeMode, setThemeMode] = useState(DEFAULT_THEME_MODE);
   const [, setThemeVersion] = useState(0);
   const userRef = useRef(null);
@@ -11839,6 +11660,27 @@ export default function App() {
   const courseBackLayerRef = useRef(null);
   const playerBackLayerRef = useRef(null);
   const [canGoBack, setCanGoBack] = useState(false);
+  const appLinkOpeningRef = useRef("");
+  useEffect(() => {
+    if (Platform.OS !== "android") return undefined;
+    let mounted = true;
+    const acceptIncomingUrl = rawUrl => {
+      if (!mounted) return;
+      const target = parseSkillomateAppLink(rawUrl);
+      if (!target) return;
+      setPendingAppLink(current => (
+        current?.courseId === target.courseId && current?.videoId === target.videoId
+          ? current
+          : target
+      ));
+    };
+    Linking.getInitialURL().then(acceptIncomingUrl).catch(() => {});
+    const subscription = Linking.addEventListener("url", event => acceptIncomingUrl(event?.url));
+    return () => {
+      mounted = false;
+      subscription.remove();
+    };
+  }, []);
   useEffect(() => {
     if (user) return;
     routeHistoryRef.current = [];
@@ -12550,6 +12392,12 @@ export default function App() {
   useEffect(() => {
     if (Platform.OS !== "android") return undefined;
     const sub = BackHandler.addEventListener("hardwareBackPress", () => {
+      const focusedInput = TextInput.State?.currentlyFocusedInput?.();
+      if (focusedInput) {
+        focusedInput.blur?.();
+        Keyboard.dismiss();
+        return true;
+      }
       handleAppBack();
       return true;
     });
@@ -12558,8 +12406,10 @@ export default function App() {
 
   const openCourse = useCallback(async (course, options = {}) => {
     const u = userRef.current;
-    if (!hasCourseAccess(u)) { setShowAppUpgrade(true); return; }
-    if (course?._id || course?.id || course?.slug) setAiActiveCourseHint(course);
+    if (!hasCourseAccess(u)) { setShowAppUpgrade(true); return false; }
+    const targetCourseId = course?._id || course?.id;
+    if (!targetCourseId) return false;
+    setAiActiveCourseHint(course);
     const prepareCourse = source => {
       const sourceVideos = sortLessons(source?.videos || []);
       const requestedIds = Array.isArray(options.videoIds) ? options.videoIds.map(String) : null;
@@ -12573,8 +12423,21 @@ export default function App() {
         videos,
       };
     };
+    const requestedStartIndex = nextCourse => {
+      if (Number.isInteger(options.startIndex)) {
+        return options.startIndex >= 0 && options.startIndex < nextCourse.videos.length
+          ? options.startIndex
+          : null;
+      }
+      const requestedVideoId = String(options.videoId || "").trim();
+      if (!requestedVideoId) return null;
+      const index = nextCourse.videos.findIndex((video, videoIndex) => (
+        getVideoKey(video, videoIndex) === requestedVideoId
+      ));
+      return index >= 0 ? index : null;
+    };
     const fixtureCourse = DEV_UI_QA_ENABLED
-      ? UI_QA_COURSES.find(item => item._id === course?._id)
+      ? UI_QA_COURSES.find(item => item._id === targetCourseId)
       : null;
     if (fixtureCourse || course?.__homePlayableVideos || (DEV_UI_QA_ENABLED && Array.isArray(course?.videos) && course.videos.length > 0)) {
       const nextCourse = prepareCourse(fixtureCourse || course);
@@ -12583,29 +12446,51 @@ export default function App() {
       setPreloadedVideos(nextCourse.videos);
       setIsPreviewOnly(false);
       setInitialTime(options.initialTime || 0);
-      setStartIndex(Number.isInteger(options.startIndex) ? options.startIndex : null);
+      setStartIndex(requestedStartIndex(nextCourse));
       setMainScreen("courses");
-      return;
+      return true;
     }
     try {
-      const data = await nativeSession.requestJson(`/api/courses/${encodeURIComponent(course._id)}/videos`);
-      const nextCourse = prepareCourse({ ...course, videos: data.videos || [] });
+      const data = await nativeSession.requestJson(`/api/courses/${encodeURIComponent(targetCourseId)}/videos`);
+      const nextCourse = prepareCourse({
+        ...course,
+        _id: targetCourseId,
+        title: course?.title || data.courseTitle || "Course",
+        videos: data.videos || [],
+      });
       setAiActiveCourseHint(nextCourse);
       setSelectedCourse(nextCourse);
       setPreloadedVideos(null);
       setIsPreviewOnly(false);
       setInitialTime(options.initialTime || 0);
-      setStartIndex(Number.isInteger(options.startIndex) ? options.startIndex : null);
+      setStartIndex(requestedStartIndex(nextCourse));
       setMainScreen("courses");
+      return true;
     } catch (e) {
       const accessMessage = String(e?.message || "");
       if (/subscription|expired|course access|entitlement/i.test(accessMessage)) {
         setShowAppUpgrade(true);
-        return;
+        return false;
       }
       Alert.alert("Course unavailable", accessMessage || "Could not open course.");
+      return false;
     }
   }, [nativeSession]);
+
+  useEffect(() => {
+    if (isRestoring || !user?._id || !user?.sessionId || !pendingAppLink) return;
+    const target = pendingAppLink;
+    const linkKey = `${target.courseId}:${target.videoId || "course"}`;
+    if (appLinkOpeningRef.current === linkKey) return;
+    appLinkOpeningRef.current = linkKey;
+    setPendingAppLink(null);
+    openCourse(
+      { _id: target.courseId },
+      { videoId: target.videoId },
+    ).finally(() => {
+      if (appLinkOpeningRef.current === linkKey) appLinkOpeningRef.current = "";
+    });
+  }, [isRestoring, openCourse, pendingAppLink, user?._id, user?.sessionId]);
 
   const updateNavSearchCourses = useCallback((courses = []) => {
     const nextCourses = (Array.isArray(courses) ? courses : []).filter(course => course && !course.isMock);
@@ -17240,15 +17125,6 @@ courseListCard: {
     borderColor: C.primary,
     borderWidth: 2,
     backgroundColor: "rgba(224,172,69,0.18)",
-  },
-  playerExpandButton: {
-    position: "absolute", bottom: 18, right: 14,
-    width: MIN_TOUCH_TARGET, height: MIN_TOUCH_TARGET, borderRadius: MIN_TOUCH_TARGET / 2,
-    alignItems: "center", justifyContent: "center",
-    backgroundColor: "rgba(0,0,0,0.56)",
-    borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.18)",
-    zIndex: 16,
   },
   timeDisplay: { position: "absolute", bottom: 82, left: 0, right: 0, alignItems: "center", zIndex: 12 },
   timeText: { color: "#fff", fontSize: 12, fontWeight: "600", textShadowColor: "rgba(0,0,0,0.8)", textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 3 },

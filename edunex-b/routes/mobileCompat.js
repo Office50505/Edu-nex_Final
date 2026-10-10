@@ -451,7 +451,7 @@ router.get(
 
 router.post(
   '/course-ai/chat',
-  requireCompatibleAuth({ userProjection: '+activeSessionId +activeSessions +aiConsentGranted +aiConsentPolicyVersion +aiConsentProviderVersion +aiConsentDecidedAt' }),
+  requireCompatibleAuth({ userProjection: '+activeSessionId +activeSessions' }),
   asyncHandler(async (req, res) => {
     const { userId, question } = req.body;
     if (!userId || typeof question !== 'string' || !question.trim()) {

@@ -30,6 +30,23 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#000000"
       },
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "autoVerify": true,
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ],
+          "data": [
+            {
+              "scheme": "https",
+              "host": "skillomate.in",
+              "pathPrefix": "/videos"
+            }
+          ]
+        }
+      ],
       "softwareKeyboardLayoutMode": "resize",
       "userInterfaceStyle": "dark"
     },

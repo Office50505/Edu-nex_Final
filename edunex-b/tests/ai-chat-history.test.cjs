@@ -41,12 +41,11 @@ function backend(options = {}) {
   async function rawChat(body) {
     let result;
     let statusCode = 200;
-    const consented = { aiConsentGranted: true, aiConsentPolicyVersion: '2026-09-25', aiConsentProviderVersion: 'fal-openrouter:google/gemini-2.5-flash', ...(options.user || {}) };
     const response = {
       json(data) { result = data; return data; },
       status(code) { statusCode = code; return this; },
     };
-    await routes['/chat']({ body, compatUser: consented, compatAuth: { userId: 'learner' }, ip: '127.0.0.1' }, response);
+    await routes['/chat']({ body, compatUser: options.user || {}, compatAuth: { userId: 'learner' }, ip: '127.0.0.1' }, response);
     return { result, statusCode };
   }
   return {
@@ -76,13 +75,12 @@ test('AI lesson materials use independent store access and reject revoked store 
   }
 });
 
-test('chat requires current AI consent before sending data to providers', async () => {
-  const api = backend({ user: { aiConsentGranted: false } });
+test('chat sends a valid prompt without a separate processing gate', async () => {
+  const api = backend({ user: {} });
   const response = await api.rawChat({ message: 'Explain prompting' });
-  assert.equal(response.statusCode, 403);
-  assert.equal(response.result.code, 'AI_CONSENT_REQUIRED');
-  assert.equal(response.result.recoverable, true);
-  assert.equal(api.calls.length, 0);
+  assert.equal(response.statusCode, 200);
+  assert.equal(response.result.reply, 'Example answer');
+  assert.equal(api.calls.length, 1);
 });
 
 test('chat forwards earlier turns between system context and the new question', async () => {
@@ -112,10 +110,7 @@ function widget() {
   const input = node(); const messages = node(); const sendBtn = node();
   let owner = 'learner-a'; let pending;
   const calls = [];
-  const consentAllow = node(); const consentDecline = node(); const consentError = node(); const consentPanel = node(); consentPanel.hidden = true;
   const api = { getUser: () => ({ _id: owner }), getAccessToken: () => owner ? 'token' : '', authRequest: async (url, options) => {
-    if (url === '/api/ai/consent' && !options) return { granted: true };
-    if (url === '/api/ai/consent') return { granted: JSON.parse(options.body).granted };
     calls.push(JSON.parse(options.body));
     return new Promise((resolve, reject) => { pending = { resolve, reject }; });
   } };
@@ -123,8 +118,7 @@ function widget() {
     document: { getElementById(id) { if (!elements.has(id)) elements.set(id, node()); return elements.get(id); }, createElement: node },
     localStorage: { getItem: () => null }, botNameInput: { value: 'Nex' }, normalizeBotName: v => v,
     escHtml: value => String(value).replace(/[&<>"']/g, character => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[character])),
-    input, messages, sendBtn, consentAllow, consentDecline, consentError, consentPanel,
-    aiConsentLoaded: true, aiConsentGranted: true,
+    input, messages, sendBtn,
     rootEl: {}, requireAiAccess: () => Boolean(owner), learnerAvatar: '', currentBotAvatarMarkup: () => '',
   };
   const source = fs.readFileSync(path.join(__dirname, '../../edunex-f/js/nex-ai-widget.js'), 'utf8');
