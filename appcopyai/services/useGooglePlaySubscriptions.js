@@ -9,11 +9,15 @@ import {
 import {
   GOOGLE_PLAY_SUBSCRIPTION_OFFER_IDS,
   GOOGLE_PLAY_SUBSCRIPTION_PRODUCT_IDS,
+  diagnoseGooglePlaySubscriptionOffers,
   normalizeGooglePlaySubscriptionOffers,
 } from "./subscriptions";
 
 const GOOGLE_PLAY_CONNECTION_HELP = "Google Play is not ready. Open Play Store, sign in, then return and retry.";
 const GOOGLE_PLAY_PRODUCT_TIMEOUT_MS = 12_000;
+const GOOGLE_PLAY_BILLING_DIAGNOSTICS_ENABLED = Boolean(
+  __DEV__ || process.env.EXPO_PUBLIC_GOOGLE_PLAY_BILLING_DIAGNOSTICS === "1",
+);
 
 const UNAVAILABLE_GOOGLE_PLAY_SUBSCRIPTION = {
   connected: false,
@@ -44,6 +48,7 @@ export function useGooglePlaySubscriptions({ session, user, onEntitlementChanged
   const [workingContext, setWorkingContext] = useState(null);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
+  const [billingDiagnostics, setBillingDiagnostics] = useState(null);
   const [productLoadStatus, setProductLoadStatus] = useState("loading");
   const [loadedProduct, setLoadedProduct] = useState(null);
   const handled = useRef(new Set());
@@ -267,6 +272,15 @@ export function useGooglePlaySubscriptions({ session, user, onEntitlementChanged
         .find(item => item.id === productId || item.productId === productId) || null;
       setLoadedProduct(next);
       const offers = normalizeGooglePlaySubscriptionOffers(next, configuredIntroductoryOfferId);
+      const diagnostics = GOOGLE_PLAY_BILLING_DIAGNOSTICS_ENABLED
+        ? diagnoseGooglePlaySubscriptionOffers(next, configuredIntroductoryOfferId)
+        : null;
+      setBillingDiagnostics(diagnostics);
+      if (diagnostics) {
+        // Non-sensitive Internal Testing diagnostics only: never log purchase
+        // tokens, account identifiers, credentials, or raw offer tokens.
+        console.info("[SkillomateGooglePlayBillingDiagnostics]", diagnostics);
+      }
       if (!offers.purchaseOffer) {
         setProductLoadStatus("error");
         setError("No available Skillomate subscription offer was returned by Google Play. Please retry.");
@@ -277,6 +291,7 @@ export function useGooglePlaySubscriptions({ session, user, onEntitlementChanged
     } catch (_) {
       if (isCurrentRequest()) {
         setLoadedProduct(null);
+        setBillingDiagnostics(null);
         setProductLoadStatus("error");
         setError("Could not load the Skillomate subscription from Google Play. Please retry.");
       }
@@ -402,6 +417,7 @@ export function useGooglePlaySubscriptions({ session, user, onEntitlementChanged
   const recurring = offerDetails.recurring;
   return {
     connected: iap.connected,
+    billingDiagnostics,
     entitlement: configuration,
     error,
     introductoryOffer: offerDetails.introductoryOffer,

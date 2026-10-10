@@ -1029,11 +1029,12 @@ function buildTheme(mode) {
 
 const LIGHT_THEME = buildTheme("light");
 const DARK_THEME = buildTheme("dark");
-const C = { ...LIGHT_THEME };
+const DEFAULT_THEME_MODE = "dark";
+const C = { ...DARK_THEME };
 
 function normalizeThemeMode(mode) {
   if (mode === "auto") return "system";
-  return THEME_OPTIONS.some(option => option.key === mode) ? mode : "light";
+  return THEME_OPTIONS.some(option => option.key === mode) ? mode : DEFAULT_THEME_MODE;
 }
 
 function resolveThemeMode(mode, systemScheme) {
@@ -11747,7 +11748,7 @@ export default function App() {
   const isTabletLayout = appViewportWidth >= 768;
   const [isRestoring, setIsRestoring] = useState(true);
   const [user, setUserState] = useState(null);
-  const [themeMode, setThemeMode] = useState("light");
+  const [themeMode, setThemeMode] = useState(DEFAULT_THEME_MODE);
   const [, setThemeVersion] = useState(0);
   const userRef = useRef(null);
   const sessionRef = useRef(null);

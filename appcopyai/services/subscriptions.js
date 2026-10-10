@@ -144,6 +144,83 @@ function normalizeGooglePlaySubscriptionOffers(
   };
 }
 
+function googlePlayPhaseDiagnostic(phase) {
+  if (!phase || typeof phase !== "object") return null;
+  const period = parseGoogleBillingPeriod(phase.billingPeriod);
+  return {
+    billingPeriod: phase.billingPeriod || null,
+    formattedPrice: phase.formattedPrice || null,
+    billingCycleCount: Number.isFinite(Number(phase.billingCycleCount)) ? Number(phase.billingCycleCount) : null,
+    recurrenceMode: Number.isFinite(Number(phase.recurrenceMode)) ? Number(phase.recurrenceMode) : null,
+    period,
+  };
+}
+
+function diagnoseGooglePlaySubscriptionOffers(
+  product,
+  preferredIntroductoryOfferId = GOOGLE_PLAY_SUBSCRIPTION_OFFER_IDS.introductory,
+) {
+  const offers = Array.isArray(product?.subscriptionOfferDetailsAndroid)
+    ? product.subscriptionOfferDetailsAndroid
+    : [];
+  const productId = product?.id || product?.productId || null;
+  const diagnostics = offers.map(offer => {
+    const phases = Array.isArray(offer?.pricingPhases?.pricingPhaseList)
+      ? offer.pricingPhases.pricingPhaseList
+      : [];
+    const introPhase = googlePlayPhaseDiagnostic(phases[0]);
+    const renewalPhase = googlePlayPhaseDiagnostic(phases[phases.length - 1]);
+    let rejectionReason = null;
+    if (offer?.offerId && offer.offerId !== preferredIntroductoryOfferId) rejectionReason = "wrong_offer_id";
+    else if (offer?.basePlanId !== "monthly") rejectionReason = "wrong_base_plan";
+    else if (offer?.offerId === preferredIntroductoryOfferId) {
+      if (phases.length !== 2) rejectionReason = "wrong_phase_count";
+      else if (!introPhase?.period || introPhase.period.value !== 3 || introPhase.period.unit !== "day"
+        || !renewalPhase?.period || renewalPhase.period.value !== 1 || renewalPhase.period.unit !== "month") {
+        rejectionReason = "wrong_period";
+      } else if (introPhase.recurrenceMode !== 3 || introPhase.billingCycleCount !== 0
+        || renewalPhase.recurrenceMode !== 1 || renewalPhase.billingCycleCount !== 0) {
+        rejectionReason = "wrong_recurrence";
+      } else if (typeof offer?.offerToken !== "string" || !offer.offerToken.trim()) {
+        rejectionReason = "missing_offer_token";
+      }
+    }
+    return {
+      productId,
+      configuredIntroductoryOfferId: preferredIntroductoryOfferId,
+      returnedSubscriptionOfferCount: offers.length,
+      basePlanId: offer?.basePlanId || null,
+      offerId: offer?.offerId || null,
+      introductoryPhaseBillingPeriod: introPhase?.billingPeriod || null,
+      introductoryPhaseFormattedPrice: introPhase?.formattedPrice || null,
+      billingCycleCount: introPhase?.billingCycleCount,
+      recurrenceMode: introPhase?.recurrenceMode,
+      offerTokenPresent: typeof offer?.offerToken === "string" && Boolean(offer.offerToken.trim()),
+      selectedBasePlanId: null,
+      selectedOfferId: null,
+      rejectionReason,
+    };
+  });
+  const normalized = normalizeGooglePlaySubscriptionOffers(product, preferredIntroductoryOfferId);
+  const selectedBasePlanId = normalized.purchaseOffer?.basePlanId || null;
+  const selectedOfferId = normalized.purchaseOffer?.offerId || null;
+  return {
+    productId,
+    configuredIntroductoryOfferId: preferredIntroductoryOfferId,
+    returnedSubscriptionOfferCount: offers.length,
+    selectedBasePlanId,
+    selectedOfferId,
+    rejectionReason: normalized.introductoryOffer
+      ? null
+      : (offers.length ? "account_not_eligible_or_offer_unavailable" : "offer_not_returned"),
+    offers: diagnostics.map(item => ({
+      ...item,
+      selectedBasePlanId,
+      selectedOfferId,
+    })),
+  };
+}
+
 function validFutureTimestamp(value, serverNow = Date.now()) {
   const timestamp = new Date(value || 0).getTime();
   return Number.isFinite(timestamp) && timestamp > Number(serverNow);
@@ -186,6 +263,7 @@ module.exports = {
   GOOGLE_PLAY_SUBSCRIPTION_OFFER_IDS,
   GOOGLE_PLAY_SUBSCRIPTION_PRODUCT_IDS,
   PREMIUM_STATES,
+  diagnoseGooglePlaySubscriptionOffers,
   hasActivePremiumEntitlement,
   normalizeGooglePlaySubscriptionOffers,
   normalizeEntitlement,
