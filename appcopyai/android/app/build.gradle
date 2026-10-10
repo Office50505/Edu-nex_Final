@@ -145,7 +145,7 @@ android {
         applicationId 'com.skillomate.app'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 20
+        versionCode 21
         versionName "1.0"
 
         // Opt in for a local device diagnostic build only. Release default is off.
