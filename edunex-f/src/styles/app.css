@@ -9805,6 +9805,16 @@ body {
     content-visibility: auto;
     contain-intrinsic-size: auto 1400px;
   }
+
+  .react-page-root[data-page="courses.html"] .course-card {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 430px;
+  }
+
+  .react-page-root[data-page="courses.html"] .path-section {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 760px;
+  }
 }
 
 @media (max-width: 1120px) {

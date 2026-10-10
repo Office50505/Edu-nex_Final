@@ -603,6 +603,56 @@ describe("reported frontend regressions", () => {
     expect(screen.queryByRole("button", { name: "Start ₹1 trial" })).toBeNull();
   });
 
+  it("starts the course catalogue request without waiting for account metadata", async () => {
+    let releaseSupportingRequests;
+    const supportingRequest = new Promise((resolve) => { releaseSupportingRequests = resolve; });
+    window.EduNex = {
+      request: vi.fn(async (path) => path === "/api/courses" ? [{
+        _id: "course-fast",
+        title: "Fast Course",
+        category: "AI Basics",
+      }] : {}),
+      authRequest: vi.fn(() => supportingRequest),
+      getAccessToken: vi.fn(() => "active-token"),
+      hasCourseAccess: vi.fn(() => false),
+      courseCategory: vi.fn((course) => course.category),
+      courseImage: vi.fn(() => "course.jpg"),
+      placeholderImage: vi.fn(() => "fallback.jpg"),
+    };
+
+    render(<CoursesPage />);
+
+    expect(await screen.findByRole("heading", { name: "Fast Course" })).toBeTruthy();
+    expect(window.EduNex.request).toHaveBeenCalledWith("/api/courses");
+    releaseSupportingRequests({ courses: [] });
+  });
+
+  it("requests responsive course images and lazily loads cards below the fold", async () => {
+    window.EduNex = {
+      request: vi.fn(async () => [
+        { _id: "course-1", title: "Priority Course", category: "AI Basics" },
+        { _id: "course-2", title: "Deferred Course", category: "AI Basics" },
+      ]),
+      getAccessToken: vi.fn(() => ""),
+      courseCategory: vi.fn((course) => course.category),
+      courseImage: vi.fn((course) => `${course._id}.jpg`),
+      placeholderImage: vi.fn(() => "fallback.jpg"),
+    };
+
+    render(<CoursesPage />);
+
+    const priorityImage = await screen.findByAltText("Priority Course");
+    const deferredImage = screen.getByAltText("Deferred Course");
+    expect(window.EduNex.courseImage).toHaveBeenCalledWith(expect.any(Object), { width: 960, quality: 76 });
+    expect(priorityImage.getAttribute("loading")).toBe("eager");
+    expect(priorityImage.getAttribute("fetchpriority")).toBe("high");
+    expect(deferredImage.getAttribute("loading")).toBe("lazy");
+    expect(deferredImage.getAttribute("fetchpriority")).toBe("low");
+    expect(deferredImage.getAttribute("decoding")).toBe("async");
+    expect(deferredImage.getAttribute("width")).toBe("1200");
+    expect(deferredImage.getAttribute("height")).toBe("675");
+  });
+
   it("sends non-subscribers straight to checkout and subscribers to the player", () => {
     const course = { _id: "course-1" };
     expect(courseEntryHref(course)).toBe("/payment?courseId=course-1&next=%2Fvideos%3FcourseId%3Dcourse-1");
