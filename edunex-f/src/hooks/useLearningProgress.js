@@ -2,10 +2,11 @@ import { useEffect, useRef, useState } from 'react';
 export function progressCacheKey(courseId) { return `edunexCourseProgress:${window.EduNex?.getUser?.()?._id || 'guest'}:${courseId}`; }
 export function useLearningProgress(courseId, videoId, time, playing) {
   const latest=useRef({time,playing}); latest.current={time,playing};
+  const lastSentPosition=useRef({videoId:'',current:-1,duration:0});
   const [resume,setResume]=useState(null);
   const [notice,setNotice]=useState('Loading saved progress…');
   useEffect(()=>{
-    let disposed=false,busy=false,ready=false;
+    let disposed=false,busy=false,ready=false,pendingForce=false;
     const publish=status=>{
       if(disposed)return;
       try {
@@ -44,24 +45,34 @@ export function useLearningProgress(courseId, videoId, time, playing) {
       const lesson=status.lessons.find(l=>l.id===String(videoId));
       setResume(lesson?.resumePosition || 0);setNotice('Progress loaded');publish(status);ready=true;send();
     }).catch(()=>{if(!disposed){setResume(0);setNotice('Could not load saved progress. Reopen this lesson to retry.');ready=true;}});
-    const send=async()=>{
-      if(busy||!ready||!latest.current.time.duration||disposed)return;
+    const send=async(force=false)=>{
+      const playback=latest.current;
+      const current=Math.max(0,Number(playback.time.current)||0);
+      const duration=Math.max(0,Number(playback.time.duration)||0);
+      const previous=lastSentPosition.current;
+      if(disposed||!ready||!duration||(!force&&!playback.playing))return;
+      if(busy){if(force)pendingForce=true;return;}
+      if(previous.videoId===String(videoId)&&Math.abs(previous.current-current)<.01&&Math.abs(previous.duration-duration)<.01)return;
       busy=true;
       try {
-        const data=await window.EduNex.authRequest(`/api/learning/${courseId}/progress`,{method:'POST',keepalive:true,body:JSON.stringify({videoId,currentTime:latest.current.time.current,duration:latest.current.time.duration})});
+        const data=await window.EduNex.authRequest(`/api/learning/${courseId}/progress`,{method:'POST',keepalive:true,body:JSON.stringify({videoId,currentTime:current,duration})});
+        lastSentPosition.current={videoId:String(videoId),current,duration};
         if(!disposed){setNotice(data.watchMore?'Course complete — more lessons are ready for you.':data.certificate?'Certificate earned — open My Certificates':'Progress saved');publish(data.eligibility);}
       } catch(e){if(!disposed)setNotice(e.message || 'Progress not saved. Retrying when connected.');}
-      finally{busy=false;}
+      finally{
+        busy=false;
+        if(pendingForce&&!disposed){pendingForce=false;void send(true);}
+      }
     };
-    const timer=setInterval(send,5000);
-    const flush=()=>{send();};
-    const hidden=()=>{if(document.visibilityState==='hidden')send();};
+    const timer=setInterval(()=>send(false),5000);
+    const flush=()=>{send(true);};
+    const hidden=()=>{if(document.visibilityState==='hidden')send(true);};
     window.addEventListener('pagehide',flush);
     document.addEventListener('visibilitychange',hidden);
     window.addEventListener('learning-flush',flush);
-    return()=>{send();disposed=true;clearInterval(timer);window.removeEventListener('learning-flush',flush);window.removeEventListener('pagehide',flush);document.removeEventListener('visibilitychange',hidden);};
+    return()=>{send(true);disposed=true;clearInterval(timer);window.removeEventListener('learning-flush',flush);window.removeEventListener('pagehide',flush);document.removeEventListener('visibilitychange',hidden);};
   },[courseId,videoId]);
-  useEffect(()=>{window.dispatchEvent(new Event('learning-flush'));},[time.duration]);
+  useEffect(()=>{if(time.duration)window.dispatchEvent(new Event('learning-flush'));},[time.duration]);
   useEffect(()=>{if(!playing)window.dispatchEvent(new Event('learning-flush'));},[playing]);
   return {resume,notice};
 }

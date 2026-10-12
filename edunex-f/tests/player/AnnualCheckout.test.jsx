@@ -24,12 +24,29 @@ function mockApi(config = pricing, eligible = true) {
 }
 beforeEach(() => { localStorage.clear(); sessionStorage.clear(); localStorage.setItem('edunexAccessToken', 'token'); window.history.replaceState(null, '', '/payment?plan=annual'); vi.clearAllMocks(); });
 afterEach(() => { cleanup(); vi.unstubAllGlobals(); delete window.EduNex; });
-it('pricing page only offers the monthly subscription', async () => {
+it('pricing page shows the one-rupee trial followed by only the monthly subscription', async () => {
   mockApi();
   render(<PricingPage />);
-  expect(await screen.findByRole('heading', { name: 'Monthly subscription' })).toBeTruthy();
+  expect(await screen.findByRole('heading', { name: '24-hour trial' })).toBeTruthy();
+  expect(screen.getAllByText(/₹499\/month/).length).toBeGreaterThan(0);
   expect(screen.queryByText(/annual|yearly|4,999/i)).toBeNull();
   expect(screen.getAllByRole('link', { name: /Continue with UPI/ })).toHaveLength(2);
+});
+it('PhonePe Standard AutoPay marketing checkout creates a recurring trial and redirects', async () => {
+  localStorage.clear();
+  sessionStorage.setItem('skillomateMarketingOnboardingToken', 'onboarding-token');
+  window.history.replaceState(null, '', '/payment?flow=marketing-onboarding');
+  const fetcher = mockApi({ gateway: 'phonepe', autoRenewEnabled: true, trialAmountPaise: 100, subscriptionAmountPaise: 49900, trialHours: 24 });
+  const original = fetcher.getMockImplementation();
+  fetcher.mockImplementation((url, options) => url === '/api/onboarding/checkout'
+    ? Promise.resolve(response({ error: 'Standard checkout stopped for test.' }, 503))
+    : original(url, options));
+  render(<PaymentPage />);
+  await screen.findByText('Standard checkout stopped for test.');
+  const checkout = fetcher.mock.calls.find(([url]) => url === '/api/onboarding/checkout');
+  expect(JSON.parse(checkout[1].body)).toMatchObject({ paymentType: 'trial', mandateConsent: true });
+  expect(screen.getByText(/PhonePe/)).toBeTruthy();
+  expect(openRazorpay).not.toHaveBeenCalled();
 });
 it('PhonePe pricing shows the one-time payment and no renewal', async () => {
   mockApi({ gateway: 'phonepe', oneTimeAmountPaise: 29900, accessDays: 30 });

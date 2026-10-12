@@ -28,6 +28,7 @@ import { AdminUploadPage } from "./AdminUploadPage.jsx";
 import { AdminUsersPage } from "./AdminUsersPage.jsx";
 import { AdminReportsPage } from "./AdminReportsPage.jsx";
 import { AdminTesterAnalyticsPage } from "./AdminTesterAnalyticsPage.jsx";
+import { AdminNotificationsPage } from "./AdminNotificationsPage.jsx";
 import { adminPageFromPath, canonicalAdminPath, adminJson, adminRoutes, getToken, saveSession } from "./adminApi.js";
 
 const adminPages = {
@@ -45,6 +46,7 @@ const adminPages = {
   razorpayUsers: () => <AdminUsersPage paymentGateway="razorpay" />,
   testerUsers: () => <AdminUsersPage audience="testers" />,
   testerAnalytics: AdminTesterAnalyticsPage,
+  notifications: AdminNotificationsPage,
   subscribers: AdminSubscribersPage,
   courses: AdminCoursesPage,
   upload: AdminUploadPage,

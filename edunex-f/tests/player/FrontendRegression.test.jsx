@@ -13,7 +13,7 @@ import { AiTutorPage } from "../../src/pages/AiTutorPage.jsx";
 import { plainCourseDescription } from "../../src/pages/CourseDetailsPage.jsx";
 import { buildDashboardActivity, DashboardPage, dashCourseProgress } from "../../src/pages/DashboardPage.jsx";
 import { PaymentPage } from "../../src/pages/PaymentPage.jsx";
-import { activeProgressLessons, CurriculumShowcase } from "../../src/pages/HomePage.jsx";
+import { activeProgressLessons, courseLectureRows, CurriculumShowcase, interleavedLessonItems } from "../../src/pages/HomePage.jsx";
 import { courseEntryHref } from "../../src/lib/courseNavigation.js";
 import { openRazorpay } from "../../src/lib/razorpayCheckout.js";
 
@@ -113,6 +113,38 @@ describe("reported frontend regressions", () => {
     expect(screen.getByText("Lecture 1 of 34")).toBeTruthy();
     expect(screen.getByText("Lecture 34 of 34")).toBeTruthy();
     expect(screen.getAllByText("Open lecture")).toHaveLength(34);
+  });
+
+  it("uses actual course counts instead of placeholder lesson or module totals", () => {
+    const videos = Array.from({ length: 15 }, (_, index) => ({
+      _id: `real-lesson-${index + 1}`,
+      title: `Real lesson ${index + 1}`,
+      duration: 90,
+    }));
+    const { container } = render(<CurriculumShowcase courses={[{ _id: "course-15", title: "Real Course", videos }]} status="ready" authUserId="user-1" hasAccess />);
+
+    expect(container.querySelector(".curriculum-overview-stats strong")?.textContent).toBe("15");
+    expect(container.textContent).not.toContain("34 video lessons");
+    expect(container.textContent).not.toContain("modules");
+  });
+
+  it("mixes hero lessons across courses and alternates four-lecture course rows", () => {
+    const course = (id) => ({
+      _id: id,
+      title: `Course ${id}`,
+      videos: Array.from({ length: 5 }, (_, index) => ({ _id: `${id}-${index + 1}`, title: `${id}${index + 1}` })),
+    });
+    const courses = [course("A"), course("B")];
+
+    expect(interleavedLessonItems(courses).slice(0, 6).map((item) => item.video.title)).toEqual(["A1", "B1", "A2", "B2", "A3", "B3"]);
+    const rows = courseLectureRows(courses);
+    expect(rows.map((row) => row.course._id)).toEqual(["A", "B", "A", "B"]);
+    expect(rows.map((row) => row.items.map((item) => item.video.title))).toEqual([
+      ["A1", "A2", "A3", "A4"],
+      ["B1", "B2", "B3", "B4"],
+      ["A5"],
+      ["B5"],
+    ]);
   });
 
   it("does not render app download badges in the shared footer", () => {

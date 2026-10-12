@@ -120,6 +120,12 @@ describe("cross-viewport UX", () => {
     expect(appStyles).toMatch(/@media \(min-width: 1181px\), \(min-width: 821px\) and \(pointer: fine\)[\s\S]*body:not\(\.has-edunex-player-fullscreen\):has\(\.react-page-root\[data-page="videos\.html"\]\)[\s\S]*overflow-y: auto !important;[\s\S]*\.watch-page[\s\S]*overflow-y: visible !important;/);
   });
 
+  it("uses a black, borderless lesson canvas in normal and fullscreen light mode", () => {
+    expect(appStyles).toMatch(/data-page="videos\.html"\][\s\S]*#playerFrame,[\s\S]*#playerFrame > iframe,[\s\S]*#playerFrame > video[\s\S]*background-color: #000 !important;/);
+    expect(appStyles).toMatch(/#playerFrame:fullscreen \{[\s\S]*border: 0 !important;[\s\S]*background: #000 !important;[\s\S]*box-shadow: none !important;/);
+    expect(appStyles).toMatch(/#playerFrame:-webkit-full-screen \{[\s\S]*border: 0 !important;[\s\S]*background: #000 !important;[\s\S]*box-shadow: none !important;/);
+  });
+
   it("prevents iPhone Safari from auto-zooming small form fields", () => {
     expect(appStyles).toMatch(/iOS Safari zooms the visual viewport[\s\S]*@media \(max-width: 900px\)[\s\S]*textarea,[\s\S]*select[\s\S]*font-size: 16px !important;/);
   });

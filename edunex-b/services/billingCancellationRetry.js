@@ -1,10 +1,15 @@
 const BillingCancellationJob = require('../models/BillingCancellationJob');
 const razorpay = require('./razorpayService');
 const phonePe = require('./phonePeService');
+const standardPhonePe = require('./phonePeStandardAutoPayService');
 
 const TERMINAL_RAZORPAY_STATES = new Set(['cancelled', 'completed', 'expired']);
 
 async function cancelTarget(target) {
+  if (target.provider === 'phonepe_standard') {
+    await standardPhonePe.cancel(target.referenceId);
+    return;
+  }
   if (target.provider === 'phonepe') {
     const result = await phonePe.cancelMandate(target.referenceId);
     if (!result?.success) throw Object.assign(new Error('PhonePe mandate cancellation was not confirmed'), { code: 'PHONEPE_NOT_CONFIRMED' });

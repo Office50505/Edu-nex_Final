@@ -2,6 +2,8 @@ const mongoose = require('mongoose');
 
 const notificationSchema = new mongoose.Schema({
   recipient: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  broadcast: { type: mongoose.Schema.Types.ObjectId, ref: 'NotificationBroadcast', default: null },
+  course: { type: mongoose.Schema.Types.ObjectId, ref: 'Course', default: null },
   type: { type: String, required: true },
   channel: { type: String, enum: ['push', 'whatsapp', 'email'], required: true },
   title: { type: String, required: true },
@@ -12,5 +14,7 @@ const notificationSchema = new mongoose.Schema({
 
 notificationSchema.index({ recipient: 1 });
 notificationSchema.index({ isRead: 1 });
+notificationSchema.index({ recipient: 1, createdAt: -1 });
+notificationSchema.index({ broadcast: 1 });
 
 module.exports = mongoose.model('Notification', notificationSchema);

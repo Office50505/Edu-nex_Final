@@ -215,7 +215,7 @@ export function AdOfferPage({ offerPage }) {
   const [offerPricing, setOfferPricing] = useState(null);
   const [offerPricingError, setOfferPricingError] = useState(false);
   const [pricingRequest, setPricingRequest] = useState(0);
-  const phonePeOneTime = offerPricing?.gateway === "phonepe";
+  const phonePeOneTime = offerPricing?.gateway === "phonepe" && offerPricing?.autoRenewEnabled !== true;
   const pricingUnavailable = !offerPricing || offerPricing.checkoutEnabled === false;
   const statusRequestRef = useRef(null);
   const verifyingRef = useRef(false);
@@ -233,8 +233,9 @@ export function AdOfferPage({ offerPage }) {
       .then(data => {
         if (!active) return;
         if (!["razorpay", "phonepe", "simulated"].includes(data.gateway)) throw new Error("Unknown payment gateway");
-        if (data.gateway === "phonepe" && (!Number.isSafeInteger(data.oneTimeAmountPaise) || data.oneTimeAmountPaise <= 0 || !Number.isSafeInteger(data.accessDays) || data.accessDays <= 0)) throw new Error("Invalid PhonePe pricing");
-        if (data.gateway === "phonepe") checkoutPaymentTypeRef.current = "one_time";
+        if (data.gateway === "phonepe" && data.autoRenewEnabled !== true
+          && (!Number.isSafeInteger(data.oneTimeAmountPaise) || data.oneTimeAmountPaise <= 0 || !Number.isSafeInteger(data.accessDays) || data.accessDays <= 0)) throw new Error("Invalid PhonePe pricing");
+        if (data.gateway === "phonepe" && data.autoRenewEnabled !== true) checkoutPaymentTypeRef.current = "one_time";
         setOfferPricing(data);
       })
       .catch(() => { if (active) setOfferPricingError(true); });
@@ -363,7 +364,9 @@ export function AdOfferPage({ offerPage }) {
       ]);
       if (state.accessGranted) return await finish(token);
       if (!["razorpay", "phonepe", "simulated"].includes(pricing.gateway) || pricing.checkoutEnabled === false) throw new Error("Secure checkout is unavailable. Please retry later.");
-      const paymentType = pricing.gateway === "phonepe" ? "one_time" : state.trialEligible === false ? "monthly" : "trial";
+      const paymentType = pricing.gateway === "phonepe" && pricing.autoRenewEnabled !== true
+        ? "one_time"
+        : state.trialEligible === false ? "monthly" : "trial";
       checkoutPaymentTypeRef.current = paymentType;
       if (paymentType === "monthly" && !monthlyConsent) { setModalStep("monthly"); return; }
       const checkout = await api("/api/onboarding/checkout", paymentType === "one_time"
@@ -507,7 +510,7 @@ export function AdOfferPage({ offerPage }) {
       <section className="ad-offer-shell" aria-label="Skillomate subscription offer" inert={Boolean(paymentStage)} aria-hidden={paymentStage ? true : undefined}>
         <PreviewVideo key={offerMedia.videoUrl} media={offerMedia} modalOpen={Boolean(modalStep || paymentStage || busy)} onPixelEvent={trackOfferEvent} />
         <section className="ad-offer-content" aria-labelledby="ad-offer-title">
-          <button type="button" className="ad-special-ribbon" onClick={begin} disabled={busy || pricingUnavailable} aria-label={pricingUnavailable ? "Special offer - checkout unavailable" : phonePeOneTime ? "Special offer - pay ₹499 once" : "Special offer - subscribe for ₹1"}>
+          <button type="button" className="ad-special-ribbon" onClick={begin} disabled={busy || pricingUnavailable} aria-label={pricingUnavailable ? "Special offer - checkout unavailable" : phonePeOneTime ? `Special offer - pay ₹${offerPricing.oneTimeAmountPaise / 100} once` : "Special offer - subscribe for ₹1"}>
             <span aria-hidden="true">ϟ</span> Special offer
           </button>
           <p className="ad-offer-kicker">Only for you</p>

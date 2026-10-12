@@ -349,6 +349,10 @@ export function DashboardPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ paymentType: "trial", mandateConsent: true }),
       });
+      if (["phonepe", "simulated"].includes(checkout?.gateway) && checkout?.redirectUrl) {
+        window.location.assign(checkout.redirectUrl);
+        return;
+      }
       if (checkout?.gateway !== "razorpay") throw new Error("Secure checkout is unavailable. Please try again later.");
 
       const result = await openRazorpay(checkout);

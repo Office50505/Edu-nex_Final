@@ -11,6 +11,8 @@ const subscriptionSchema = new mongoose.Schema({
   phonePeSubscriptionId: { type: String, default: null },
   phonePeMandateId: { type: String, default: null },
   phonePeAuthRequestId: { type: String, default: null },
+  phonePeStatus: { type: String, default: null },
+  phonePeLastRedemptionOrderId: { type: String, default: null },
   status: {
     type: String,
     enum: ['pending', '1rs trial', 'trial', 'active', 'subscribed', 'cancelled', 'expired', 'paused'],

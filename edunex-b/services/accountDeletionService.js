@@ -11,6 +11,7 @@ const Subscription = require('../models/Subscription');
 const SubscriptionEvent = require('../models/SubscriptionEvent');
 const Order = require('../models/Order');
 const RazorpayBilling = require('../models/RazorpayBilling');
+const PhonePeAutoPayBilling = require('../models/PhonePeAutoPayBilling');
 const AiTutorSession = require('../models/AiTutorSession');
 const ContactEnquiry = require('../models/ContactEnquiry');
 const AnalyticsEvent = require('../models/AnalyticsEvent');
@@ -46,9 +47,13 @@ async function deleteUserAccount(userId, options = {}) {
   }
 
   const billing = await RazorpayBilling.findById(userId);
+  const standardPhonePeQuery = PhonePeAutoPayBilling.findById(userId);
+  const standardPhonePeBilling = await (typeof standardPhonePeQuery?.lean === 'function'
+    ? standardPhonePeQuery.lean()
+    : standardPhonePeQuery);
   const userIdString = String(user._id);
   const subscriptions = await Subscription.find({ user: user._id })
-    .select('_id phonePeMandateId status gateway razorpaySubscriptionId razorpayMode')
+    .select('_id user phonePeMandateId phonePeSubscriptionId status gateway razorpaySubscriptionId razorpayMode')
     .lean();
   const subscriptionIds = subscriptions.map((subscription) => subscription._id);
   const accountReferenceHash = crypto
@@ -76,13 +81,20 @@ async function deleteUserAccount(userId, options = {}) {
   let billingCancellationQueued = false;
   if (!options.skipBillingCancellation) {
     try {
-      await require('./cancelAccountBilling').cancelAccountBilling(billing, subscriptions);
+      await require('./cancelAccountBilling').cancelAccountBilling(billing, subscriptions, standardPhonePeBilling);
     } catch (error) {
       const cancellationTargets = [
         ...(billing?.subscriptionId ? [{ provider: 'razorpay', referenceId: billing.subscriptionId, mode: billing.mode || null }] : []),
+        ...(standardPhonePeBilling?.merchantSubscriptionId && !standardPhonePeBilling.cancelledAt
+          ? [{ provider: 'phonepe_standard', referenceId: standardPhonePeBilling.merchantSubscriptionId, mode: null }]
+          : []),
         ...subscriptions.flatMap(subscription => [
           ...(subscription.razorpaySubscriptionId ? [{ provider: 'razorpay', referenceId: subscription.razorpaySubscriptionId, mode: subscription.razorpayMode || null }] : []),
-          ...(subscription.phonePeMandateId && subscription.gateway !== 'razorpay' && subscription.gateway !== 'simulated' && !/^SIM_MANDATE_/.test(subscription.phonePeMandateId)
+          ...(subscription.phonePeMandateId
+            && subscription.phonePeSubscriptionId !== standardPhonePeBilling?.merchantSubscriptionId
+            && subscription.gateway !== 'razorpay'
+            && subscription.gateway !== 'simulated'
+            && !/^SIM_MANDATE_/.test(subscription.phonePeMandateId)
             ? [{ provider: 'phonepe', referenceId: subscription.phonePeMandateId, mode: null }]
             : []),
         ]),
@@ -149,6 +161,7 @@ async function deleteUserAccount(userId, options = {}) {
     DownloadGrant.deleteMany({ user: user._id }),
     AiResponseReport.deleteMany({ user: user._id }),
     GooglePlayReconciliation.deleteMany({ $or: [{ user: user._id }, { candidateUser: user._id }] }),
+    PhonePeAutoPayBilling.deleteMany({ _id: user._id }),
   ]);
 
   if (user.avatarStorageKey) await deleteProfileImage(user.avatarStorageKey).catch(() => {});
@@ -183,6 +196,7 @@ async function deleteUserAccount(userId, options = {}) {
     downloadGrants: results[21].deletedCount || 0,
     aiResponseReports: results[22].deletedCount || 0,
     googlePlayReconciliation: results[23].deletedCount || 0,
+    phonePeAutoPayBilling: results[24].deletedCount || 0,
     billingCancellationQueued,
   };
 }

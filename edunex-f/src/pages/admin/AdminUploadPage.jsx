@@ -665,7 +665,13 @@ export function AdminUploadPage() {
         await savePendingLessonNotes();
       }
       setMessageType("success");
-      setMessage(isEditing ? "Course and lesson notes saved." : "Course created successfully.");
+      if (savedCourse.notificationBroadcast?.sent) {
+        setMessage(`${isEditing ? "Course and lesson notes saved" : "Course created successfully"}. ${formatNumber(savedCourse.notificationBroadcast.recipientCount)} active account${savedCourse.notificationBroadcast.recipientCount === 1 ? " was" : "s were"} notified.`);
+      } else if (payload.status === "published" && savedCourse.notificationBroadcast?.sent === false) {
+        setMessage(`${isEditing ? "Course and lesson notes saved" : "Course created successfully"}, but the automatic notification could not be sent.`);
+      } else {
+        setMessage(isEditing ? "Course and lesson notes saved." : "Course created successfully.");
+      }
       if (isEditing) {
         setForm(courseForm(savedCourse));
         setSlugTouched(true);

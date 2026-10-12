@@ -177,6 +177,7 @@ const Notification = require('./models/Notification');
 const Certificate = require('./models/Certificate');
 const AdminUserAction = require('./models/AdminUserAction');
 const Session = require('./models/Session');
+const { broadcastNotification } = require('./services/notificationService');
 const { presenceFromPing } = require('./services/userPresence');
 const { saveThumbnailUpload } = require('./services/thumbnailStorage');
 
@@ -282,6 +283,28 @@ async function clearPublicCourseCaches() {
     clearCheckoutSummaryCache(),
     clearPublicReadCache(),
   ]);
+}
+
+async function broadcastCourseChange(course, change, adminSubject) {
+  if (!course || course.status !== 'published') return null;
+  const isNew = change === 'new';
+  try {
+    const result = await broadcastNotification({
+      title: isNew ? `New course: ${course.title}` : `Course updated: ${course.title}`,
+      body: isNew
+        ? `A new course, "${course.title}", is now available. Open Courses to start learning.`
+        : `"${course.title}" has new or updated learning content. Open Courses to see what changed.`,
+      type: isNew ? 'course_new' : 'course_update',
+      audience: 'all',
+      source: 'course',
+      courseId: course._id,
+      createdBy: adminSubject || 'system:course',
+    });
+    return { sent: true, recipientCount: result.recipientCount, broadcastId: result.broadcast.id };
+  } catch (error) {
+    console.error(`Automatic course notification failed for ${course._id}: ${error.message}`);
+    return { sent: false, recipientCount: 0 };
+  }
 }
 
 function clampRecommendationLimit(value) {
@@ -619,7 +642,7 @@ app.post('/api/admin/extract-pdf-notes', protectAdmin, express.raw({ type: 'appl
   }
 });
 app.use((req, res, next) => {
-  if (['/api/webhooks/phonepe', '/api/webhooks/razorpay'].includes(req.path)) {
+  if (req.path.startsWith('/api/webhooks/phonepe') || req.path === '/api/webhooks/razorpay') {
     return next();
   }
 
@@ -720,6 +743,7 @@ if (!/^mongodb(\+srv)?:\/\//.test(MONGODB_URI)) {
       require('./jobs/subscriptionTasks');
       require('./jobs/googlePlayReconciliationTasks');
       require('./jobs/billingCancellationTasks');
+      require('./jobs/phonePeAutoPayTasks');
     }
   }).catch((err) => {
     const safeCode = typeof err?.code === 'string' && /^[A-Z0-9_]+$/.test(err.code)
@@ -1448,6 +1472,7 @@ app.use('/api', require('./routes/certification'));
 app.use('/api', problemReportRoutes);
 app.use('/api/admin', require('./routes/adminHealth'));
 app.use('/api/admin', require('./routes/paymentSettings'));
+app.use('/api/admin', require('./routes/adminNotifications'));
 app.use('/api', require('./routes/marketingSettings'));
 app.use('/api/auth', authRoutes);
 app.use('/api/onboarding', require('./routes/onboarding'));
@@ -1456,6 +1481,7 @@ app.use('/api', require('./routes/appleIap'));
 app.use('/api', require('./routes/googlePlayIap'));
 app.use('/api', paymentRoutes);
 app.use('/api', sessionRoutes);
+app.use('/api', require('./routes/notifications'));
 app.use('/api', contentRoutes);
 app.use('/api', mobileCompatRoutes);
 
@@ -3565,6 +3591,50 @@ app.patch('/api/admin/users/:id/tester', protectAdmin, async (req, res) => {
   }
 });
 
+app.patch('/api/admin/users/:id/password', protectAdmin, async (req, res) => {
+  try {
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(400).json({ error: 'Invalid user id' });
+    }
+    const password = String(req.body?.password || '');
+    const reason = String(req.body?.reason || 'Temporary password set by admin').trim().slice(0, 500) || 'Temporary password set by admin';
+    if (password.length < 8 || password.length > 72) {
+      return res.status(400).json({ error: 'Temporary password must contain 8 to 72 characters.' });
+    }
+    const user = await User.findById(req.params.id).select('+activeSessionId +activeSessions');
+    if (!user) return res.status(404).json({ error: 'User not found' });
+    if (user.deletedAt) return res.status(409).json({ error: 'Restore this user before setting a password.' });
+    const previousState = {
+      hadPassword: Boolean(user.passwordHash),
+      activeSessionId: user.activeSessionId || null,
+      activeSessions: Array.isArray(user.activeSessions) ? user.activeSessions.length : 0,
+    };
+    user.passwordHash = await bcrypt.hash(password, 12);
+    user.activeSessionId = null;
+    user.activeSessions = [];
+    user.deviceToken = null;
+    await user.save();
+    await Session.updateMany(
+      { user: user._id, loggedOutAt: null },
+      { $set: { loggedOutAt: new Date(), deviceToken: null, refreshTokenHash: null } }
+    );
+    await AdminUserAction.create({
+      user: user._id,
+      action: 'password_reset',
+      reason,
+      previousState,
+      nextState: { hadPassword: true, sessionsRevoked: true },
+      adminSubject: req.admin?.sub || req.admin?.email || 'admin',
+    });
+    res.json({
+      message: 'Temporary password set. Existing sessions were revoked.',
+      user: { _id: user._id },
+    });
+  } catch (error) {
+    res.status(error.statusCode || 500).json({ error: error.message });
+  }
+});
+
 app.patch('/api/admin/users/:id/subscription', protectAdmin, async (req, res) => {
   try {
     if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
@@ -3987,7 +4057,12 @@ app.post('/api/courses', protectAdmin, async (req, res) => {
     });
     const savedCourse = await course.save();
     await clearPublicCourseCaches();
-    res.status(201).json(savedCourse);
+    const notificationBroadcast = await broadcastCourseChange(
+      savedCourse,
+      'new',
+      req.admin?.sub || req.admin?.email || 'admin'
+    );
+    res.status(201).json({ ...savedCourse.toObject(), notificationBroadcast });
   } catch (error) {
     if (error.code === 11000) {
       return res.status(409).json({ error: 'A course with this slug already exists' });
@@ -4111,7 +4186,7 @@ app.patch('/api/admin/courses/:id', protectAdmin, async (req, res) => {
       return res.status(400).json({ error: 'Invalid course id' });
     }
 
-    const existingCourse = await Course.findById(req.params.id).select('completionOrder videos thumbnail thumbnailHorizontal thumbnailVertical thumbnailUrl thumbnailVerticalUrl');
+    const existingCourse = await Course.findById(req.params.id).select('title status completionOrder videos thumbnail thumbnailHorizontal thumbnailVertical thumbnailUrl thumbnailVerticalUrl');
     if (!existingCourse) {
       return res.status(404).json({ error: 'Course not found' });
     }
@@ -4217,9 +4292,15 @@ app.patch('/api/admin/courses/:id', protectAdmin, async (req, res) => {
     }
 
     await clearPublicCourseCaches();
+    const notificationBroadcast = await broadcastCourseChange(
+      course,
+      existingCourse.status === 'published' ? 'update' : 'new',
+      req.admin?.sub || req.admin?.email || 'admin'
+    );
     res.json({
       ...course.toObject(),
       videoCount: course.videos?.length || 0,
+      notificationBroadcast,
     });
   } catch (error) {
     if (error.code === 11000) {

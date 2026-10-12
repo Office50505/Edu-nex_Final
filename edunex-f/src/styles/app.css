@@ -4027,6 +4027,20 @@ html[data-theme="light"] .react-page-root .lp-prefix {
   height: auto !important;
   border-radius: 16px !important;
   border: 1px solid rgba(255,255,255,.08);
+  background: #000 !important;
+}
+
+.react-page-root[data-page="videos.html"] :where(
+  #playerFrame,
+  #playerFrame > iframe,
+  #playerFrame > video,
+  #playerFrame .custom-video-player,
+  #playerFrame .custom-video-player > iframe,
+  #playerFrame .custom-video-player > video,
+  #playerFrame .sm-player,
+  #playerFrame .sm-player > video
+) {
+  background-color: #000 !important;
 }
 
 .react-page-root[data-page="videos.html"] .custom-video-controls {
@@ -4097,9 +4111,16 @@ html[data-theme="light"] .react-page-root .lp-prefix {
   height: 100vh !important;
   max-width: none !important;
   aspect-ratio: auto !important;
+  border: 0 !important;
   border-radius: 0 !important;
+  background: #000 !important;
+  box-shadow: none !important;
   touch-action: pan-y !important;
   overscroll-behavior: none !important;
+}
+
+.react-page-root[data-page="videos.html"] #playerFrame:fullscreen::backdrop {
+  background: #000;
 }
 
 .react-page-root[data-page="videos.html"] #playerFrame:-webkit-full-screen {
@@ -4107,7 +4128,10 @@ html[data-theme="light"] .react-page-root .lp-prefix {
   height: 100vh !important;
   max-width: none !important;
   aspect-ratio: auto !important;
+  border: 0 !important;
   border-radius: 0 !important;
+  background: #000 !important;
+  box-shadow: none !important;
   touch-action: pan-y !important;
   overscroll-behavior: none !important;
 }
@@ -4148,6 +4172,8 @@ body.has-edunex-player-fullscreen #nai-float-btn {
   aspect-ratio: auto !important;
   border: 0 !important;
   border-radius: 0 !important;
+  background: #000 !important;
+  box-shadow: none !important;
   touch-action: pan-y !important;
   overscroll-behavior: none !important;
 }
@@ -5293,11 +5319,8 @@ html[data-theme="light"] .enx-footer .enx-footer-support a {
 .react-page-root[data-page="index.html"] .home-hero-mute-button svg {
   width: 20px;
   height: 20px;
-  fill: currentColor;
-}
-
-.react-page-root[data-page="index.html"] .home-hero-mute-button.is-unmuted svg path:last-child {
-  display: none;
+  fill: none;
+  stroke: currentColor;
 }
 
 .react-page-root[data-page="index.html"] .home-hero-play-button {
@@ -8874,6 +8897,41 @@ html[data-theme="light"] .react-page-root[data-page="index.html"] .continue-lear
 
 .react-page-root[data-page="index.html"] .watched-grid {
   grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.react-page-root[data-page="index.html"] .watched-course-rows,
+.react-page-root[data-page="index.html"] .watched-course-row {
+  display: grid;
+  gap: 14px;
+}
+
+.react-page-root[data-page="index.html"] .watched-course-rows {
+  gap: 28px;
+}
+
+.react-page-root[data-page="index.html"] .watched-row-heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(148, 163, 184, .24);
+}
+
+.react-page-root[data-page="index.html"] .watched-row-heading strong {
+  color: #0F172A;
+  font-size: .94rem;
+  font-weight: 850;
+}
+
+.react-page-root[data-page="index.html"] .watched-row-heading small {
+  color: #64748B;
+  font-size: .72rem;
+  font-weight: 750;
+}
+
+html:not([data-theme="light"]) .react-page-root[data-page="index.html"] .watched-row-heading strong {
+  color: #F8FAFC;
 }
 
 .react-page-root[data-page="index.html"] .watched-card {

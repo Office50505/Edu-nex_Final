@@ -56,6 +56,21 @@ it('PhonePe offer charges ₹299 once without mandate consent', async () => {
   expect(openRazorpay).not.toHaveBeenCalled();
 });
 
+it('PhonePe Standard AutoPay starts the ₹1 recurring offer without Razorpay', async () => {
+  const standard = requests.getMockImplementation();
+  requests.mockImplementation((url, options) => {
+    if (url.endsWith('/config')) return Promise.resolve({ ok: true, json: async () => ({ gateway: 'phonepe', autoRenewEnabled: true, trialAmountPaise: 100, subscriptionAmountPaise: 49900, trialHours: 24 }) });
+    if (url.endsWith('/checkout')) return Promise.resolve({ ok: true, json: async () => ({ gateway: 'phonepe', redirectUrl: 'https://checkout.example.test/autopay' }) });
+    return standard(url, options);
+  });
+  await mount();
+  await act(async () => { fireEvent.click(screen.getByRole('button', { name: /^Subscribe for ₹1 →$/i })); });
+  const checkout = requests.mock.calls.find(([url]) => url.endsWith('/checkout'));
+  expect(JSON.parse(checkout[1].body)).toMatchObject({ paymentType: 'trial', mandateConsent: true });
+  expect(navigate).toHaveBeenCalledWith('https://checkout.example.test/autopay');
+  expect(openRazorpay).not.toHaveBeenCalled();
+});
+
 it('automatically redirects after initially pending payment confirmation without another click', async () => {
   await mount();
   await act(async () => { fireEvent.click(screen.getByRole('button', { name: /^Subscribe for ₹1 →$/i })); });

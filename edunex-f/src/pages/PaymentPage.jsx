@@ -83,8 +83,9 @@ export function PaymentPage() {
   const busyRef = useRef(false);
   const autoLaunchAttemptedRef = useRef(false);
   const [pricing, setPricing] = useState(null);
-  const phonePeOneTime = marketingOnboarding && (pricing?.gateway === "phonepe" || pricing?.gateway === "simulated");
-  const trial = !phonePeOneTime && !explicitMonthly && trialEligible;
+  const phonePeOneTime = marketingOnboarding
+    && (pricing?.gateway === "simulated" || (pricing?.gateway === "phonepe" && pricing?.autoRenewEnabled !== true));
+  const trial = !phonePeOneTime && !explicitMonthly && (marketingOnboarding || trialEligible);
   const paymentType = phonePeOneTime ? "one_time" : trial ? "trial" : "monthly";
   const [paymentCompleted, setPaymentCompleted] = useState(false);
   const [pending, setPending] = useState(false);
@@ -295,7 +296,9 @@ export function PaymentPage() {
         response = await apiFetch("/api/onboarding/checkout", {
           method: "POST",
           headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-          body: JSON.stringify({ paymentType: "one_time", returnUrl: window.location.href }),
+          body: JSON.stringify(phonePeOneTime
+            ? { paymentType: "one_time", returnUrl: window.location.href }
+            : { paymentType, mandateConsent: true, returnUrl: window.location.href }),
         });
       } else {
         response = await authFetch("/api/payment/initiate-trial", {
@@ -391,7 +394,7 @@ export function PaymentPage() {
   const trialPrice = pricing?.trialAmountPaise ? amount(pricing.trialAmountPaise) : "₹1";
   const monthlyPrice = pricing?.subscriptionAmountPaise ? `${amount(pricing.subscriptionAmountPaise)}/month` : "₹499/month";
   const currentPlanPrice = phonePeOneTime ? (oneTimePrice || "₹499") : trial ? trialPrice : monthlyPrice;
-  const checkoutProviderName = phonePeOneTime ? "PhonePe" : "Razorpay";
+  const checkoutProviderName = pricing?.gateway === "phonepe" && pricing?.autoRenewEnabled === true ? "PhonePe" : "Razorpay";
   const checkoutTitle = phonePeOneTime ? "Skillomate access" : trial ? "Skillomate trial" : "Skillomate monthly access";
   const checkoutDescription = phonePeOneTime
     ? "Full course access, lesson notes, progress tracking, and AI learning tools."
@@ -400,7 +403,7 @@ export function PaymentPage() {
       : "Start monthly access to unlock the full course library.";
   const checkoutPaymentCopy = phonePeOneTime
     ? `Pay ${currentPlanPrice} securely through PhonePe to activate your Skillomate account.`
-    : `Continue securely through Razorpay to activate your Skillomate account.`;
+    : `Continue securely through ${checkoutProviderName} to activate your Skillomate account.`;
   const checkoutButtonLabel = phonePeOneTime
     ? `${payMsg.type === "error" ? "Try" : "Pay"} ${currentPlanPrice} once`
     : explicitMonthly

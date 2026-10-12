@@ -12,6 +12,14 @@ test('admin user access route is protected and revokes sessions when banning', (
   assert.match(serverSource, /if \(action === 'ban' && !reason\)/);
 });
 
+test('admin password route is protected, hashes passwords, and revokes sessions', () => {
+  assert.match(serverSource, /app\.patch\('\/api\/admin\/users\/:id\/password', protectAdmin/);
+  assert.match(serverSource, /user\.passwordHash = await bcrypt\.hash\(password, 12\)/);
+  assert.match(serverSource, /user\.activeSessionId = null;[\s\S]*user\.activeSessions = \[\];/);
+  assert.match(serverSource, /Session\.updateMany\([\s\S]*loggedOutAt: null[\s\S]*refreshTokenHash: null/);
+  assert.match(serverSource, /action: 'password_reset'/);
+});
+
 test('admin can create a learner id with bounded validated credentials', () => {
   assert.match(serverSource, /app\.post\('\/api\/admin\/users', protectAdmin/);
   assert.match(serverSource, /await bcrypt\.hash\(password, 12\)/);

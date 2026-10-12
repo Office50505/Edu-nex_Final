@@ -6,6 +6,7 @@ import { useEduNexRuntimeReady } from "../hooks/useEduNexRuntimeReady.js";
 import { route } from "../lib/routes.js";
 import { courseEntryHref } from "../lib/courseNavigation.js";
 import { EnxIcon } from "../components/EnxIcon.jsx";
+import { PlayerIcon } from "../components/media/PlayerIcon.jsx";
 
 const FALLBACK_COURSES = [
   ["fallback-video-editing", "Video Editing Mastery", "Video Editing", 22, "4.8", 12500, 499],
@@ -277,31 +278,60 @@ function pathItem(courses) {
   return { type: "path", category: best[0], courses: best[1], course: best[1][0] };
 }
 
-function lessonItems(courses) {
-  return courses.flatMap((course) => {
-    const videos = Array.isArray(course?.videos) ? course.videos : [];
-    return videos.map((video, lessonIndex) => ({
-      type: "lesson",
-      course,
-      video,
-      lessonIndex,
-    }));
-  });
+function lessonItem(course, video, lessonIndex) {
+  return {
+    type: "lesson",
+    course,
+    video,
+    lessonIndex,
+  };
+}
+
+export function interleavedLessonItems(courses) {
+  const courseLessons = courses
+    .map((course) => ({ course, videos: Array.isArray(course?.videos) ? course.videos : [] }))
+    .filter((item) => item.videos.length);
+  const items = [];
+  const longestCourse = courseLessons.reduce((longest, item) => Math.max(longest, item.videos.length), 0);
+
+  for (let lessonIndex = 0; lessonIndex < longestCourse; lessonIndex += 1) {
+    courseLessons.forEach(({ course, videos }) => {
+      if (videos[lessonIndex]) items.push(lessonItem(course, videos[lessonIndex], lessonIndex));
+    });
+  }
+  return items;
+}
+
+export function courseLectureRows(courses, rowSize = 4) {
+  const safeRowSize = Math.max(1, Number(rowSize) || 4);
+  const courseChunks = courses
+    .map((course) => {
+      const videos = Array.isArray(course?.videos) ? course.videos : [];
+      const chunks = [];
+      for (let offset = 0; offset < videos.length; offset += safeRowSize) {
+        chunks.push(videos.slice(offset, offset + safeRowSize).map((video, index) => (
+          lessonItem(course, video, offset + index)
+        )));
+      }
+      return { course, chunks };
+    })
+    .filter((item) => item.chunks.length);
+  const rows = [];
+  const longestCourse = courseChunks.reduce((longest, item) => Math.max(longest, item.chunks.length), 0);
+
+  for (let chunkIndex = 0; chunkIndex < longestCourse; chunkIndex += 1) {
+    courseChunks.forEach(({ course, chunks }) => {
+      if (chunks[chunkIndex]) rows.push({ course, items: chunks[chunkIndex] });
+    });
+  }
+  return rows;
 }
 
 function itemsForTab(tab, courses) {
   const enrolled = enrolledItems(courses);
-  const lessons = lessonItems(courses);
+  const lessons = interleavedLessonItems(courses);
   if (tab === "my-courses") {
-    const enrolledLessons = enrolled.flatMap((item) => {
-      const videos = Array.isArray(item.course?.videos) ? item.course.videos : [];
-      return videos.map((video, lessonIndex) => ({
-        type: "lesson",
-        course: item.course,
-        video,
-        lessonIndex,
-      }));
-    });
+    const enrolledLessons = interleavedLessonItems(enrolled.map((item) => item.course));
     return enrolledLessons.length
       ? enrolledLessons.slice(0, HERO_CAROUSEL_ITEM_LIMIT)
       : enrolled.slice(0, HERO_CAROUSEL_ITEM_LIMIT).map((item) => ({ type: "enrolled", course: item.course, progress: item.progress }));
@@ -465,7 +495,7 @@ function HomeHeroVideo() {
       />
       {!playing ? <button className="home-hero-play-button" type="button" onClick={(event) => { event.stopPropagation(); start(); }} aria-label="Play preview">▶</button> : null}
       <button className={`home-hero-mute-button${muted ? "" : " is-unmuted"}`} type="button" aria-label={muted ? "Unmute preview" : "Mute preview"} onClick={toggleMute}>
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4Z"/><path d="m17 9 4 6m0-6-4 6"/></svg>
+        <PlayerIcon name={muted ? "mute" : "volume"} />
       </button>
     </div>
   );
@@ -511,17 +541,6 @@ export function activeProgressLessons(courses, ownerId) {
     .slice(0, 4);
 }
 
-function watchedLectureItems(course) {
-  const videos = Array.isArray(course?.videos) ? course.videos : [];
-  return videos.map((video, index) => ({
-    course,
-    video,
-    lessonIndex: index,
-    title: video?.title || `Lesson ${index + 1}`,
-    duration: video?.duration ? formatDuration(video.duration) : "Lecture",
-  }));
-}
-
 function handleCurriculumImageError(event, course, fallback = "/assets/avatars/female1-v1.webp") {
   const image = event.currentTarget;
   const next = courseFallbackImage(course, fallback);
@@ -534,13 +553,16 @@ function handleCurriculumImageError(event, course, fallback = "/assets/avatars/f
 }
 
 export function CurriculumShowcase({ courses, status, authUserId, hasAccess, accessResolved = true }) {
-  const course = courses.find((item) => !item.isFallback) || courses[0] || null;
+  const publishedCourses = courses.filter((item) => !item.isFallback);
+  const curriculumCourses = publishedCourses.length ? publishedCourses : courses;
+  const course = curriculumCourses[0] || null;
   const continueLessons = activeProgressLessons(courses, authUserId);
-  const watchedItems = watchedLectureItems(course);
+  const lectureRows = courseLectureRows(curriculumCourses);
+  const lectureCount = lectureRows.reduce((total, row) => total + row.items.length, 0);
   const courseHref = course ? courseEntryHref(course, { hasAccess }) : route("courses.html");
   const courseTitle = course?.title || "AI Influencer Course";
   const courseImage = courseFallbackImage(course);
-  const totalLessons = Math.max(lessonCount(course), 34);
+  const totalLessons = lessonCount(course);
   const courseCategory = course ? categoryName(course) : "AI Basics";
   return (
     <section className="curriculum-home" aria-labelledby="curriculumHomeTitle">
@@ -550,11 +572,10 @@ export function CurriculumShowcase({ courses, status, authUserId, hasAccess, acc
           <div className="curriculum-overview-copy">
             <span>{courseCategory}</span>
             <h2 id="curriculumHomeTitle">{courseTitle}</h2>
-            <p>A single guided workspace for lessons, modules, projects, and certification.</p>
+            <p>A single guided workspace for lessons, projects, and certification.</p>
           </div>
           <div className="curriculum-overview-stats" aria-label="Course summary">
             <span><strong>{totalLessons}</strong><small>video lessons</small></span>
-            <span><strong>7</strong><small>modules</small></span>
           </div>
           <a href={courseHref}>Open Course <MaterialIcon>arrow_forward</MaterialIcon></a>
         </div>
@@ -606,24 +627,40 @@ export function CurriculumShowcase({ courses, status, authUserId, hasAccess, acc
         <div className="curriculum-section-head" id="popular-lessons">
           <div>
             <h2>Lectures</h2>
-            <p>{course?.title ? `All ${watchedItems.length} lectures from ${course.title}, in order.` : "All lectures from your uploaded course, in order."}</p>
+            <p>{lectureCount
+              ? `${lectureCount} lectures across ${curriculumCourses.length} course${curriculumCourses.length === 1 ? "" : "s"}, grouped in course order.`
+              : "All lectures from your uploaded courses, grouped in course order."}</p>
           </div>
-          {sectionAction("View All Lessons", courseHref)}
+          {sectionAction("View All Lessons", curriculumCourses.length === 1 ? courseHref : route("courses.html"))}
         </div>
-        <div className="watched-grid">
-          {watchedItems.length ? watchedItems.map((item) => {
-            const href = courseEntryHref(item.course, { hasAccess, lessonIndex: item.lessonIndex });
-            return (
-            <button className="watched-card" type="button" key={item.video?._id || `${item.title}-${item.lessonIndex}`} onClick={() => { window.location.href = href; }}>
-              <div className="watched-media">
-                <img src={lessonImage(item.course, item.video)} alt="" loading="lazy" decoding="async" onError={(event) => handleCurriculumImageError(event, item.course)} />
-                <span>{item.duration}</span>
+        <div className="watched-course-rows">
+          {lectureRows.length ? lectureRows.map((row) => {
+            const firstLecture = row.items[0].lessonIndex + 1;
+            const lastLecture = row.items.at(-1).lessonIndex + 1;
+            return <section className="watched-course-row" key={`${courseId(row.course)}-${firstLecture}`} aria-label={`${row.course.title || "Course"} lectures ${firstLecture} to ${lastLecture}`}>
+              <div className="watched-row-heading">
+                <strong>{row.course.title || "Skillomate course"}</strong>
+                <small>Lectures {firstLecture}–{lastLecture}</small>
               </div>
-              <strong>{item.title}</strong>
-              <small>Lecture {item.lessonIndex + 1} of {lessonCount(item.course)}</small>
-              <em><MaterialIcon>play_circle</MaterialIcon>Open lecture</em>
-            </button>
-            );
+              <div className="watched-grid">
+                {row.items.map((item) => {
+                  const title = item.video?.title || `Lesson ${item.lessonIndex + 1}`;
+                  const duration = item.video?.duration ? formatDuration(item.video.duration) : "Lecture";
+                  const href = courseEntryHref(item.course, { hasAccess, lessonIndex: item.lessonIndex });
+                  return (
+                    <button className="watched-card" type="button" key={item.video?._id || `${courseId(item.course)}-${item.lessonIndex}`} onClick={() => { window.location.href = href; }}>
+                      <div className="watched-media">
+                        <img src={lessonImage(item.course, item.video)} alt="" loading="lazy" decoding="async" onError={(event) => handleCurriculumImageError(event, item.course)} />
+                        <span>{duration}</span>
+                      </div>
+                      <strong>{title}</strong>
+                      <small>Lecture {item.lessonIndex + 1} of {lessonCount(item.course)}</small>
+                      <em><MaterialIcon>play_circle</MaterialIcon>Open lecture</em>
+                    </button>
+                  );
+                })}
+              </div>
+            </section>;
           }) : (
             <div className="watched-empty">
               <strong>No lectures published yet</strong>

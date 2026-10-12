@@ -1,6 +1,7 @@
 const Settings = require('../models/PaymentSettings');
 const rzp = require('./razorpayService');
 const phonePe = require('./phonePeService');
+const standardPhonePe = require('./phonePeStandardAutoPayService');
 
 function formatRupees(paise) {
   return `₹${(Number(paise || 0) / 100).toLocaleString('en-IN', { maximumFractionDigits: 2 })}`;
@@ -56,6 +57,14 @@ function razorpayReadiness(mode) {
   }
   catch (error) { return { configured: false, detail: error.message }; }
 }
+function phonePeReadiness() {
+  let c;
+  try { c = standardPhonePe.config(); }
+  catch (error) { return { configured: false, detail: error.message }; }
+  return c.enabled || c.webEnabled
+    ? standardPhonePe.readiness()
+    : phonePe.readiness();
+}
 async function summary() {
   const current = await activeSettings();
   return {
@@ -66,7 +75,7 @@ async function summary() {
         configured: razorpayReadiness(current.mode).configured,
         modes: { test: razorpayReadiness('test'), live: razorpayReadiness('live') },
       },
-      phonepe: phonePe.readiness(),
+      phonepe: phonePeReadiness(),
     },
     modes: { test: razorpayReadiness('test'), live: razorpayReadiness('live') },
   };
@@ -75,7 +84,7 @@ async function select(mode, admin, provider = 'razorpay') {
   const selectedProvider = String(provider || 'razorpay').trim().toLowerCase();
   if (!['razorpay', 'phonepe'].includes(selectedProvider)) throw Object.assign(new Error('Choose Razorpay or PhonePe.'), { status: 400 });
   if (selectedProvider === 'phonepe') {
-    const ready = phonePe.readiness();
+    const ready = phonePeReadiness();
     if (!ready.configured) throw Object.assign(new Error(ready.detail), { status: 409 });
     const current = await activeSettings();
     await Settings.findByIdAndUpdate('gateway', { $set: { provider: 'phonepe', mode: current.mode, updatedBy: String(admin?.id || admin?._id || 'admin') } }, { upsert: true, runValidators: true });

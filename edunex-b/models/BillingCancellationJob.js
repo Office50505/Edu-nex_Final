@@ -2,10 +2,10 @@ const mongoose = require('mongoose');
 
 const billingCancellationJobSchema = new mongoose.Schema({
   accountReferenceHash: { type: String, required: true, index: true },
-  provider: { type: String, enum: ['razorpay', 'phonepe', 'apple', 'mixed', 'unknown'], default: 'unknown' },
+  provider: { type: String, enum: ['razorpay', 'phonepe', 'phonepe_standard', 'apple', 'mixed', 'unknown'], default: 'unknown' },
   providerReferenceIds: { type: [String], default: [] },
   cancellationTargets: [{
-    provider: { type: String, enum: ['razorpay', 'phonepe'] },
+    provider: { type: String, enum: ['razorpay', 'phonepe', 'phonepe_standard'] },
     referenceId: { type: String, required: true },
     mode: { type: String, enum: ['test', 'live', null], default: null },
   }],

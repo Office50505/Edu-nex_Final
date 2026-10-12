@@ -22,14 +22,14 @@ export function PricingPage() {
   useEffect(() => {
     setPageMeta({
       title: "Pricing | Skillomate",
-      description: pricing?.gateway === "phonepe"
+      description: pricing?.gateway === "phonepe" && pricing?.autoRenewEnabled !== true
         ? "Skillomate Premium: one-time ₹499 payment for 30 days of access."
         : "Skillomate Premium: ₹499/month, automatically renewing until cancelled.",
       canonicalPath: "/pricing",
     });
   }, [pricing]);
 
-  if (pricing?.gateway === "phonepe" || pricing?.gateway === "simulated") {
+  if ((pricing?.gateway === "phonepe" && pricing?.autoRenewEnabled !== true) || pricing?.gateway === "simulated") {
     return (
       <LegalLayout pageKey="pricing.html" title="Pricing" description="Simple digital access pricing for Skillomate learning." updated={false}
         actions={<a className="legal-button" href={route("payment.html")}>Continue with PhonePe <EnxIcon name="arrowRight" /></a>}
@@ -73,15 +73,15 @@ export function PricingPage() {
         <div className="pricing-plan-grid">
           <div className="pricing-card featured">
             <div className="pricing-badge">Skillomate Premium</div>
-            <h2>Monthly subscription</h2>
+            <h2>{pricing.trialAmountPaise ? `${pricing.trialHours || 24}-hour trial` : "Monthly subscription"}</h2>
             <div className="pricing-price-row">
-              <div className="pricing-price">₹499</div>
+              <div className="pricing-price">₹{pricing.trialAmountPaise ? pricing.trialAmountPaise / 100 : pricing.subscriptionAmountPaise / 100}</div>
               <div>
-                <p className="pricing-renewal">per month</p>
-                <p>Renews at <strong>{subscriptionOffer.renewal}</strong> until cancelled.</p>
+                <p className="pricing-renewal">{pricing.trialAmountPaise ? "for the first 24 hours" : "per month"}</p>
+                <p>{pricing.trialAmountPaise ? <>Then <strong>₹{pricing.subscriptionAmountPaise / 100}/month</strong> until cancelled.</> : <>Renews at <strong>{subscriptionOffer.renewal}</strong> until cancelled.</>}</p>
               </div>
             </div>
-            <div className="legal-callout"><strong>₹499/month. Your subscription automatically renews every month through UPI AutoPay until cancelled.</strong></div>
+            <div className="legal-callout"><strong>{pricing.trialAmountPaise ? `₹${pricing.trialAmountPaise / 100} now, then ₹${pricing.subscriptionAmountPaise / 100}/month after ${pricing.trialHours || 24} hours.` : `₹${pricing.subscriptionAmountPaise / 100}/month.`} Your subscription automatically renews every month through UPI AutoPay until cancelled.</strong></div>
             <div className="pricing-includes">
               <span>Automatic renewal</span>
               <span>Cancel anytime</span>
@@ -103,7 +103,7 @@ export function PricingPage() {
         ]} />
       </LegalSection>
       <LegalSection id="billing" title="Billing terms">
-        <p>The monthly subscription costs ₹499, charged now and renewed every month through UPI AutoPay until cancelled.</p>
+        <p>{pricing.trialAmountPaise ? `The introductory charge is ₹${pricing.trialAmountPaise / 100}. After ${pricing.trialHours || 24} hours, ₹${pricing.subscriptionAmountPaise / 100} is charged and the subscription then renews monthly through UPI AutoPay until cancelled.` : `The monthly subscription costs ₹${pricing.subscriptionAmountPaise / 100}, charged now and renewed every month through UPI AutoPay until cancelled.`}</p>
         <p>Users may cancel eligible recurring subscriptions anytime. After cancellation, access continues through the current paid period and future renewals stop after cancellation takes effect.</p>
         <p>No physical delivery applies because Skillomate provides digital educational services only.</p>
       </LegalSection>

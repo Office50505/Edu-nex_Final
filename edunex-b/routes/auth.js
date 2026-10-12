@@ -33,6 +33,21 @@ const SIGNUP_TOKEN_SECRET = envSecret('JWT_SIGNUP_SECRET', 'edunex-development-s
 const realOtp = (process.env.OTP_PROVIDER || process.env.OTP_DELIVERY_PROVIDER || (isProduction ? 'msg91' : 'demo')).toLowerCase() === 'msg91';
 const AUTO_VERIFY_OTP = !isProduction && !realOtp && process.env.AUTO_VERIFY_OTP === 'true';
 
+async function reconcilePaidOnboarding(userId) {
+  const standardAutoPayEnabled = String(process.env.PHONEPE_AUTOPAY_ENABLED || '').trim().toLowerCase() === 'true';
+  const [standardPhonePeBilling, legacyPhonePeOrder] = await Promise.all([
+    standardAutoPayEnabled ? require('../models/PhonePeAutoPayBilling').exists({ _id: userId }) : null,
+    require('../models/Order').exists({ user: userId, gateway: 'phonepe', orderType: 'one_time_access' }),
+  ]);
+  if (standardPhonePeBilling) {
+    return require('../controllers/phonePeStandardAutoPayController').reconcileForUser(userId);
+  }
+  if (legacyPhonePeOrder) {
+    return require('../controllers/paymentController').reconcilePhonePeForUser(userId);
+  }
+  return require('../controllers/razorpayController').reconcileForUser(userId);
+}
+
 const authRateBuckets = new Map();
 const authRateConfig = {
   loginByPhone: isProduction
@@ -417,10 +432,7 @@ async function signup(req, res) {
       const Onboarding = require('../models/OnboardingSession');
       onboarding = await Onboarding.findOne({ _id: decodedSignup.onboardingId, mobileNumber: normalizedMobile, completedAt: null });
       if (!onboarding) return res.status(401).json({ error: 'Signup session is no longer available' });
-      const phonePeOrder = await require('../models/Order').exists({ user: onboarding._id, gateway: 'phonepe', orderType: 'one_time_access' });
-      onboardingSubscription = phonePeOrder
-        ? await require('../controllers/paymentController').reconcilePhonePeForUser(onboarding._id)
-        : await require('../controllers/razorpayController').reconcileForUser(onboarding._id);
+      onboardingSubscription = await reconcilePaidOnboarding(onboarding._id);
       if (!require('../services/subscriptionAccess').resolveSubscriptionAccess(onboardingSubscription, {}).active) {
         return res.status(409).json({ error: 'Payment has not been confirmed. Return to checkout to check its status.' });
       }
@@ -430,10 +442,7 @@ async function signup(req, res) {
       // A normal OTP signup must claim the same reserved identity, not orphan an ad payment.
       onboarding = await require('../models/OnboardingSession').findOne({ mobileNumber: normalizedMobile, completedAt: null });
       if (onboarding) {
-        const phonePeOrder = await require('../models/Order').exists({ user: onboarding._id, gateway: 'phonepe', orderType: 'one_time_access' });
-        onboardingSubscription = phonePeOrder
-          ? await require('../controllers/paymentController').reconcilePhonePeForUser(onboarding._id)
-          : await require('../controllers/razorpayController').reconcileForUser(onboarding._id);
+        onboardingSubscription = await reconcilePaidOnboarding(onboarding._id);
       }
     }
     const existingMobileUser = await User.findOne({ mobileNumber: normalizedMobile });

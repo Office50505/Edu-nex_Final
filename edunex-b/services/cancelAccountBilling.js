@@ -1,7 +1,8 @@
 const rzp = require('./razorpayService');
 const phonePe = require('./phonePeService');
+const standardPhonePe = require('./phonePeStandardAutoPayService');
 const terminal = new Set(['cancelled','completed','expired']);
-async function cancelAccountBilling(billing, subscriptions) {
+async function cancelAccountBilling(billing, subscriptions, standardBilling = null) {
   if (billing && !billing.subscriptionId && billing.phase !== 'closed') {
     throw new Error('Payment setup is still being confirmed. Please retry account deletion shortly.');
   }
@@ -16,7 +17,12 @@ async function cancelAccountBilling(billing, subscriptions) {
     }
     if (!terminal.has(remote.status)) throw new Error('Subscription cancellation is still processing. Please retry account deletion shortly.');
   }
+  if (standardBilling?.merchantSubscriptionId && !standardBilling.cancelledAt) {
+    await standardPhonePe.cancel(standardBilling.merchantSubscriptionId);
+  }
   for (const sub of subscriptions) {
+    if (standardBilling?.merchantSubscriptionId
+      && sub.phonePeSubscriptionId === standardBilling.merchantSubscriptionId) continue;
     if (!sub.phonePeMandateId || sub.gateway === 'razorpay' || sub.gateway === 'simulated' || /^SIM_MANDATE_/.test(sub.phonePeMandateId)) continue;
     const result = await phonePe.cancelMandate(sub.phonePeMandateId);
     if (!result.success) throw new Error('We could not automatically cancel your payment mandate. Your account has not been deleted. Please contact support.');

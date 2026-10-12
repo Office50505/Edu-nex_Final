@@ -12,10 +12,14 @@ function graceHours() {
 }
 
 function hasActiveMandate(subscription) {
+  if (subscription?.cancelledAt) return false;
+  const gateway = String(subscription?.gateway || '').trim().toLowerCase();
+  if (gateway === 'phonepe') {
+    const status = String(subscription?.phonePeStatus || '').trim().toLowerCase();
+    return Boolean(subscription?.phonePeMandateId) && status === 'active';
+  }
   const status = String(subscription?.razorpayStatus || '').trim().toLowerCase();
-  return Boolean(subscription?.razorpaySubscriptionId)
-    && !subscription?.cancelledAt
-    && ['active', 'authenticated'].includes(status);
+  return Boolean(subscription?.razorpaySubscriptionId) && ['active', 'authenticated'].includes(status);
 }
 
 function resolveRazorpayGrace(subscription, now = Date.now()) {
@@ -34,7 +38,7 @@ function resolveRazorpayGrace(subscription, now = Date.now()) {
     expiresAt,
     rawStatus: status,
     entitlementState: 'GRACE_PERIOD',
-    source: 'razorpay_grace',
+    source: `${String(subscription?.gateway || 'razorpay').toLowerCase()}_grace`,
     grace: true,
     graceStartedAt: new Date(anchorTime),
     graceExpiresAt: expiresAt,

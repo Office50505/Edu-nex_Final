@@ -4,6 +4,11 @@ const { requireCompatibleAuth } = require('../middleware/compatAuth');
 
 const router = express.Router();
 
+router.use((_req, res, next) => {
+  res.set('Cache-Control', 'no-store');
+  next();
+});
+
 function publicNotification(row) {
   return {
     _id: String(row._id),

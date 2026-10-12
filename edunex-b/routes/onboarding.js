@@ -6,11 +6,26 @@ const Onboarding = require('../models/OnboardingSession');
 const User = require('../models/User');
 const billing = require('../controllers/razorpayController');
 const phonePeBilling = require('../controllers/paymentController');
+const standardPhonePeBilling = require('../controllers/phonePeStandardAutoPayController');
+const standardPhonePeService = require('../services/phonePeStandardAutoPayService');
+const PhonePeAutoPayBilling = require('../models/PhonePeAutoPayBilling');
 const phonePeService = require('../services/phonePeService');
 const { isPhonePeNewPaymentsEnabled, isPhonePeNewPaymentsSwitchEnabled } = require('../services/phonePePolicy');
 const rzp = require('../services/razorpayService');
 const paymentModes = require('../services/paymentMode');
 const marketing = require('../services/marketingSettings');
+function standardPhonePeEnabled() {
+  try {
+    const config = standardPhonePeService.config();
+    return config.enabled && config.webEnabled;
+  } catch {
+    return false;
+  }
+}
+function standardPhonePeRecordsEnabled() {
+  try { return standardPhonePeService.config().enabled; }
+  catch { return false; }
+}
 function adMode() {
   const mode = process.env.AD_PAYMENT_MODE || (process.env.NODE_ENV !== 'production' ? 'test' : '');
   if (!['test', 'live'].includes(mode)) throw fail('Configure AD_PAYMENT_MODE before opening checkout.', 503);
@@ -37,6 +52,17 @@ router.get('/config', wrap(async (_req, res) => {
   const provider = await marketingCheckoutProvider();
   const publicMarketing = await marketing.publicConfig();
   if (provider === 'phonepe') {
+    if (standardPhonePeEnabled()) {
+      return res.json({
+        gateway: 'phonepe',
+        checkoutEnabled: true,
+        trialAmountPaise: standardPhonePeService.SETUP_AMOUNT_PAISE,
+        subscriptionAmountPaise: standardPhonePeService.MONTHLY_AMOUNT_PAISE,
+        trialHours: standardPhonePeService.TRIAL_HOURS,
+        autoRenewEnabled: true,
+        ...publicMarketing,
+      });
+    }
     return res.json({ gateway: 'phonepe', checkoutEnabled: isPhonePeNewPaymentsSwitchEnabled(process.env), oneTimeAmountPaise: phonePeService.oneTimeAmountPaise, accessDays: phonePeService.oneTimeAccessDays, ...publicMarketing });
   }
   const c = rzp.requireConfig(adMode());
@@ -80,11 +106,19 @@ async function requireSession(req, res, next) {
     next();
   } catch (error) { res.status(error.status || 500).json({ error: error.status ? error.message : 'Unable to resume onboarding.' }); }
 }
+async function useStandardPhonePeForSession(req) {
+  if (!standardPhonePeRecordsEnabled()) return false;
+  if (standardPhonePeEnabled()) return true;
+  return Boolean(await PhonePeAutoPayBilling.exists({ _id: req.onboarding._id }));
+}
 router.post('/checkout', requireSession, async (req, res, next) => {
   const provider = req.onboardingProvider || await marketingCheckoutProvider();
-  if (provider === 'phonepe' && req.body.paymentType !== 'one_time') return res.status(400).json({ error: 'Choose the one-time PhonePe payment.' });
+  if (provider === 'phonepe' && standardPhonePeEnabled() && !['trial', 'monthly'].includes(req.body.paymentType)) return res.status(400).json({ error: 'Choose the ₹1 trial or ₹499 monthly plan.' });
+  if (provider === 'phonepe' && !standardPhonePeEnabled() && req.body.paymentType !== 'one_time') return res.status(400).json({ error: 'Choose the one-time PhonePe payment.' });
   if (provider !== 'phonepe' && !['trial', 'monthly'].includes(req.body.paymentType)) return res.status(400).json({ error: 'Choose a supported plan.' });
-  if (provider === 'phonepe') return phonePeBilling.initiateTrial(req, res, next);
+  if (provider === 'phonepe') return standardPhonePeEnabled()
+    ? standardPhonePeBilling.initiate(req, res, next)
+    : phonePeBilling.initiateTrial(req, res, next);
   return billing.initiate(req, res, next);
 });
 router.post('/profile', requireSession, wrap(async (req, res) => {
@@ -111,10 +145,15 @@ router.post('/profile', requireSession, wrap(async (req, res) => {
 }));
 router.post('/complete', requireSession, wrap(async (req, res) => {
   const provider = req.onboardingProvider || await marketingCheckoutProvider();
+  const standardBilling = provider === 'phonepe' && standardPhonePeRecordsEnabled()
+    ? await PhonePeAutoPayBilling.exists({ _id: req.onboarding._id })
+    : null;
   const phonePeOrder = provider === 'phonepe'
     ? await require('../models/Order').exists({ user: req.onboarding._id, gateway: 'phonepe', orderType: 'one_time_access' })
     : false;
-  const subscription = phonePeOrder
+  const subscription = standardBilling
+    ? await standardPhonePeBilling.reconcileForUser(req.onboarding._id)
+    : phonePeOrder
     ? await phonePeBilling.reconcilePhonePeForUser(req.onboarding._id)
     : await billing.reconcileForUser(req.onboarding._id);
   if (!resolveSubscriptionAccess(subscription, {}).active) throw fail('Payment is still awaiting confirmation.', 409);
@@ -124,22 +163,33 @@ router.post('/complete', requireSession, wrap(async (req, res) => {
 }));
 router.post('/verify', requireSession, async (req, res, next) => {
   const provider = req.onboardingProvider || await marketingCheckoutProvider();
-  if (provider === 'phonepe') return phonePeBilling.verifyAppAccess(req, res, next);
+  if (provider === 'phonepe') return await useStandardPhonePeForSession(req)
+    ? standardPhonePeBilling.verifyAccess(req, res, next)
+    : phonePeBilling.verifyAppAccess(req, res, next);
   return billing.verify(req, res, next);
 });
 router.get('/status', requireSession, async (req, res, next) => {
   const provider = req.onboardingProvider || await marketingCheckoutProvider();
-  if (provider === 'phonepe') return phonePeBilling.subscriptionStatus(req, res, next);
+  if (provider === 'phonepe') return await useStandardPhonePeForSession(req)
+    ? standardPhonePeBilling.status(req, res, next)
+    : phonePeBilling.subscriptionStatus(req, res, next);
   return billing.status(req, res, next);
 });
 router.post('/cancel', requireSession, async (req, res, next) => {
   const provider = req.onboardingProvider || await marketingCheckoutProvider();
-  if (provider === 'phonepe') return phonePeBilling.cancelSubscription(req, res, next);
+  if (provider === 'phonepe') return await useStandardPhonePeForSession(req)
+    ? standardPhonePeBilling.cancel(req, res, next)
+    : phonePeBilling.cancelSubscription(req, res, next);
   return billing.cancel(req, res, next);
 });
 router.post('/handoff', requireSession, wrap(async (req, res) => {
+  const standardBilling = standardPhonePeRecordsEnabled()
+    ? await PhonePeAutoPayBilling.exists({ _id: req.onboarding._id })
+    : null;
   const phonePeOrder = await require('../models/Order').exists({ user: req.onboarding._id, gateway: 'phonepe', orderType: 'one_time_access' });
-  const subscription = phonePeOrder
+  const subscription = standardBilling
+    ? await standardPhonePeBilling.reconcileForUser(req.onboarding._id)
+    : phonePeOrder
     ? await phonePeBilling.reconcilePhonePeForUser(req.onboarding._id)
     : await billing.reconcileForUser(req.onboarding._id);
   if (!resolveSubscriptionAccess(subscription, {}).active) throw fail('Payment is still awaiting confirmation.', 409);
