@@ -92,10 +92,8 @@ export function PaymentPage() {
   const busyRef = useRef(false);
   const autoLaunchAttemptedRef = useRef(false);
   const [pricing, setPricing] = useState(null);
-  const phonePeOneTime = marketingOnboarding
-    && (pricing?.gateway === "simulated" || (pricing?.gateway === "phonepe" && pricing?.autoRenewEnabled !== true));
-  const trial = !phonePeOneTime && !explicitMonthly && (marketingOnboarding || trialEligible);
-  const paymentType = phonePeOneTime ? "one_time" : trial ? "trial" : "monthly";
+  const trial = !explicitMonthly && (marketingOnboarding || trialEligible);
+  const paymentType = trial ? "trial" : "monthly";
   const [paymentCompleted, setPaymentCompleted] = useState(false);
   const [existingAccessKind, setExistingAccessKind] = useState("premium");
   const [pending, setPending] = useState(false);
@@ -114,6 +112,9 @@ export function PaymentPage() {
       const data = await response.json();
       if (marketingOnboarding && !["phonepe", "simulated"].includes(data.gateway)) {
         throw new Error("PhonePe checkout is not enabled yet.");
+      }
+      if (marketingOnboarding && data.gateway === "phonepe" && data.autoRenewEnabled !== true) {
+        throw new Error("PhonePe AutoPay is unavailable. Please retry later.");
       }
       setPricing(data);
     }).catch(error => {
@@ -264,7 +265,7 @@ export function PaymentPage() {
           setTrialEligible(nextTrialEligible);
         }
         if (!response.ok) throw new Error(data.error || "Could not check access.");
-        const cancelledTrialMandate = !phonePeOneTime && !nextTrialEligible
+        const cancelledTrialMandate = !nextTrialEligible
           && data.autoRenewEnabled === false
           && String(data.subscriptionType || "").toLowerCase() === "trial";
         const currentAccessKind = accessKind(data);
@@ -282,12 +283,10 @@ export function PaymentPage() {
         } else if (!cancelled) {
           const mandateStatus = String(data.mandateStatus || "").toLowerCase();
           const pendingPayment = data.pendingCheckout === true
-            && (phonePeOneTime || !["cancelled", "expired", "completed", "paused"].includes(mandateStatus));
+            && !["cancelled", "expired", "completed", "paused"].includes(mandateStatus);
           setPending(pendingPayment);
           if (pendingPayment) {
-            setPayMsg({ text: phonePeOneTime
-              ? "Your PhonePe payment is being confirmed. Check its status before starting another payment."
-              : "An existing payment mandate is being confirmed. Check its status before starting another payment.", type: "info" });
+            setPayMsg({ text: "An existing payment mandate is being confirmed. Check its status before starting another payment.", type: "info" });
           }
           setCheckoutState("pay");
         }
@@ -298,7 +297,7 @@ export function PaymentPage() {
     return () => {
       cancelled = true;
     };
-  }, [authFetch, configureAppOpenButton, runtimeReady, phonePeOneTime, marketingOnboarding]);
+  }, [authFetch, configureAppOpenButton, runtimeReady, marketingOnboarding]);
 
   const initiatePayment = async () => {
     if (busyRef.current || !planAvailable || checkoutState !== "pay") return;
@@ -312,17 +311,13 @@ export function PaymentPage() {
         response = await apiFetch("/api/onboarding/checkout", {
           method: "POST",
           headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-          body: JSON.stringify(phonePeOneTime
-            ? { paymentType: "one_time", returnUrl: window.location.href }
-            : { paymentType, mandateConsent: true, returnUrl: window.location.href }),
+          body: JSON.stringify({ paymentType, mandateConsent: true, returnUrl: window.location.href }),
         });
       } else {
         response = await authFetch("/api/payment/initiate-trial", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(phonePeOneTime
-            ? { paymentType, returnUrl: window.location.href }
-            : { paymentType, mandateConsent: true, returnUrl: window.location.href }),
+          body: JSON.stringify({ paymentType, mandateConsent: true, returnUrl: window.location.href }),
         });
       }
       const data = await safeJsonResponse(response) || {};
@@ -356,9 +351,7 @@ export function PaymentPage() {
       const message = error.message || "Payment initiation failed";
       if (/mandate already exists|unfinished checkout/i.test(message)) {
         setPending(true);
-        setPayMsg({ text: phonePeOneTime
-          ? "Your PhonePe payment is being confirmed. Check its status before starting another payment."
-          : "An existing payment mandate is being confirmed. Check its status before starting another payment.", type: "info" });
+        setPayMsg({ text: "An existing payment mandate is being confirmed. Check its status before starting another payment.", type: "info" });
       } else {
         setPayMsg({ text: message, type: "error" });
       }
@@ -370,10 +363,10 @@ export function PaymentPage() {
 
   useEffect(() => {
     if (marketingOnboarding) return;
-    if (checkoutState !== "pay" || !planAvailable || pending || phonePeOneTime || autoLaunchAttemptedRef.current) return;
+    if (checkoutState !== "pay" || !planAvailable || pending || autoLaunchAttemptedRef.current) return;
     autoLaunchAttemptedRef.current = true;
     void initiatePayment();
-  }, [checkoutState, planAvailable, paymentType, pending, phonePeOneTime, marketingOnboarding]);
+  }, [checkoutState, planAvailable, paymentType, pending, marketingOnboarding]);
 
   useEffect(() => {
     if (!marketingOnboarding || returnedFromGateway || checkoutState !== "pay" || !planAvailable || pending || autoLaunchAttemptedRef.current) return;
@@ -396,7 +389,7 @@ export function PaymentPage() {
       if (["premium", "trial-subscription"].includes(currentAccessKind)) {
         setPaymentCompleted(true); markLocalCourseAccess(); configureAppOpenButton(); setCheckoutState("subscribed");
       } else if (data?.pendingCheckout === false
-        && (phonePeOneTime || ["cancelled", "expired", "completed", "paused"].includes(String(data?.mandateStatus || "").toLowerCase()))) {
+        && ["cancelled", "expired", "completed", "paused"].includes(String(data?.mandateStatus || "").toLowerCase())) {
         setPending(false);
         setPayMsg({ text: "The previous checkout is no longer pending. You can start checkout again.", type: "info" });
       } else {
@@ -407,32 +400,23 @@ export function PaymentPage() {
     finally { busyRef.current = false; setSubmitting(false); }
   };
   const amount = (paise) => new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", minimumFractionDigits: 0, maximumFractionDigits: 2 }).format(paise / 100);
-  const oneTimePrice = pricing?.oneTimeAmountPaise ? amount(pricing.oneTimeAmountPaise) : "";
   const trialPrice = pricing?.trialAmountPaise ? amount(pricing.trialAmountPaise) : "₹1";
   const monthlyPrice = pricing?.subscriptionAmountPaise ? `${amount(pricing.subscriptionAmountPaise)}/month` : "₹499/month";
-  const currentPlanPrice = phonePeOneTime ? (oneTimePrice || "₹499") : trial ? trialPrice : monthlyPrice;
+  const currentPlanPrice = trial ? trialPrice : monthlyPrice;
   const checkoutProviderName = pricing?.gateway === "phonepe" && pricing?.autoRenewEnabled === true ? "PhonePe" : "Razorpay";
-  const checkoutTitle = phonePeOneTime ? "Skillomate access" : trial ? "Skillomate trial" : "Skillomate monthly access";
-  const checkoutDescription = phonePeOneTime
-    ? "Full course access, lesson notes, progress tracking, and AI learning tools."
-    : trial
+  const checkoutTitle = trial ? "Skillomate trial" : "Skillomate monthly access";
+  const checkoutDescription = trial
       ? "Try Skillomate for 24 hours, then continue with the monthly plan."
       : "Start monthly access to unlock the full course library.";
-  const checkoutPaymentCopy = phonePeOneTime
-    ? `Pay ${currentPlanPrice} securely through PhonePe to activate your Skillomate account.`
-    : `Continue securely through ${checkoutProviderName} to activate your Skillomate account.`;
-  const checkoutButtonLabel = phonePeOneTime
-    ? `${payMsg.type === "error" ? "Try" : "Pay"} ${currentPlanPrice} once`
-    : explicitMonthly
+  const checkoutPaymentCopy = `Continue securely through ${checkoutProviderName} to activate your Skillomate account.`;
+  const checkoutButtonLabel = explicitMonthly
       ? `${payMsg.type === "error" ? "Try" : "Pay"} ${monthlyPrice}`
       : payMsg.type === "error" ? "Try Checkout Again" : "Continue to secure payment";
-  const loginCopy = phonePeOneTime
-    ? `Create an account or log in, then continue to secure PhonePe payment for ${currentPlanPrice}.`
-    : explicitMonthly
+  const loginCopy = explicitMonthly
       ? `Create an account or log in, then continue to secure checkout for ${monthlyPrice}.`
       : `Create an account or log in, then continue to secure ${checkoutProviderName} payment.`;
-  const signupLabel = phonePeOneTime ? `Create Account & Pay ${currentPlanPrice}` : explicitMonthly ? "Create Account & Subscribe" : "Create Account & Continue";
-  const planLabel = phonePeOneTime ? `${currentPlanPrice} access` : trial ? `${trialPrice} trial` : `${monthlyPrice} membership`;
+  const signupLabel = explicitMonthly ? "Create Account & Subscribe" : "Create Account & Continue";
+  const planLabel = trial ? `${trialPrice} trial` : `${monthlyPrice} membership`;
 
   return (
     <div className={`react-page-root${directApp ? " direct-app-payment" : ""}`} data-page="payment.html">
@@ -459,7 +443,6 @@ export function PaymentPage() {
             <h2>{currentPlanPrice}</h2>
             <p>{checkoutDescription}</p>
             <p>{checkoutPaymentCopy}</p>
-            {phonePeOneTime ? <p>This one-time access does not renew automatically.</p> : null}
             {payMsg.text ? <p role={payMsg.type === "error" ? "alert" : "status"}>{payMsg.text}</p> : null}
             <button className="checkout-launcher-primary" type="button" onClick={initiatePayment}>
               {checkoutButtonLabel}

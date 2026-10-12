@@ -215,7 +215,6 @@ export function AdOfferPage({ offerPage }) {
   const [offerPricing, setOfferPricing] = useState(null);
   const [offerPricingError, setOfferPricingError] = useState(false);
   const [pricingRequest, setPricingRequest] = useState(0);
-  const phonePeOneTime = offerPricing?.gateway === "phonepe" && offerPricing?.autoRenewEnabled !== true;
   const pricingUnavailable = !offerPricing || offerPricing.checkoutEnabled === false;
   const statusRequestRef = useRef(null);
   const verifyingRef = useRef(false);
@@ -233,9 +232,7 @@ export function AdOfferPage({ offerPage }) {
       .then(data => {
         if (!active) return;
         if (!["razorpay", "phonepe", "simulated"].includes(data.gateway)) throw new Error("Unknown payment gateway");
-        if (data.gateway === "phonepe" && data.autoRenewEnabled !== true
-          && (!Number.isSafeInteger(data.oneTimeAmountPaise) || data.oneTimeAmountPaise <= 0 || !Number.isSafeInteger(data.accessDays) || data.accessDays <= 0)) throw new Error("Invalid PhonePe pricing");
-        if (data.gateway === "phonepe" && data.autoRenewEnabled !== true) checkoutPaymentTypeRef.current = "one_time";
+        if (data.gateway === "phonepe" && data.autoRenewEnabled !== true) throw new Error("PhonePe AutoPay is unavailable");
         setOfferPricing(data);
       })
       .catch(() => { if (active) setOfferPricingError(true); });
@@ -243,17 +240,17 @@ export function AdOfferPage({ offerPage }) {
   }, [pricingRequest]);
 
   const trackOfferEvent = useCallback((eventName, params = {}, options = {}) => {
-    trackMetaPixel(eventName, { ...OFFER_EVENT_PARAMS, ...(phonePeOneTime ? { content_name: "Skillomate ₹499 Access" } : {}), ...params }, options);
-  }, [phonePeOneTime]);
+    trackMetaPixel(eventName, { ...OFFER_EVENT_PARAMS, ...params }, options);
+  }, []);
 
   const trackPurchase = useCallback(() => {
     if (purchaseTrackedRef.current) return;
     purchaseTrackedRef.current = true;
     const paymentType = checkoutPaymentTypeRef.current;
-    const value = paymentType === "one_time" ? 299 : paymentType === "monthly" ? 499 : 1;
+    const value = paymentType === "monthly" ? 499 : 1;
     const eventId = metaEventId("offer-purchase");
     trackOfferEvent("Purchase", { value, subscription_type: paymentType }, { eventID: eventId });
-    if (paymentType !== "one_time") trackOfferEvent("Subscribe", { value, subscription_type: paymentType }, { eventID: metaEventId("offer-subscribe") });
+    trackOfferEvent("Subscribe", { value, subscription_type: paymentType }, { eventID: metaEventId("offer-subscribe") });
   }, [trackOfferEvent]);
 
   useEffect(() => {
@@ -364,15 +361,12 @@ export function AdOfferPage({ offerPage }) {
       ]);
       if (state.accessGranted) return await finish(token);
       if (!["razorpay", "phonepe", "simulated"].includes(pricing.gateway) || pricing.checkoutEnabled === false) throw new Error("Secure checkout is unavailable. Please retry later.");
-      const paymentType = pricing.gateway === "phonepe" && pricing.autoRenewEnabled !== true
-        ? "one_time"
-        : state.trialEligible === false ? "monthly" : "trial";
+      if (pricing.gateway === "phonepe" && pricing.autoRenewEnabled !== true) throw new Error("PhonePe AutoPay is unavailable. Please retry later.");
+      const paymentType = state.trialEligible === false ? "monthly" : "trial";
       checkoutPaymentTypeRef.current = paymentType;
       if (paymentType === "monthly" && !monthlyConsent) { setModalStep("monthly"); return; }
-      const checkout = await api("/api/onboarding/checkout", paymentType === "one_time"
-        ? { paymentType, returnUrl: window.location.href }
-        : { paymentType, mandateConsent: true, monthlyConsent, returnUrl: window.location.href }, token);
-      trackOfferEvent("InitiateCheckout", { value: paymentType === "one_time" ? 299 : paymentType === "monthly" ? 499 : 1, subscription_type: paymentType }, { eventID: metaEventId("offer-checkout") });
+      const checkout = await api("/api/onboarding/checkout", { paymentType, mandateConsent: true, monthlyConsent, returnUrl: window.location.href }, token);
+      trackOfferEvent("InitiateCheckout", { value: paymentType === "monthly" ? 499 : 1, subscription_type: paymentType }, { eventID: metaEventId("offer-checkout") });
       setCheckoutAttempt(attempt => attempt + 1);
       checkoutStarted = true;
       if ((checkout.gateway === "phonepe" || checkout.gateway === "simulated") && checkout.redirectUrl) {
@@ -510,26 +504,26 @@ export function AdOfferPage({ offerPage }) {
       <section className="ad-offer-shell" aria-label="Skillomate subscription offer" inert={Boolean(paymentStage)} aria-hidden={paymentStage ? true : undefined}>
         <PreviewVideo key={offerMedia.videoUrl} media={offerMedia} modalOpen={Boolean(modalStep || paymentStage || busy)} onPixelEvent={trackOfferEvent} />
         <section className="ad-offer-content" aria-labelledby="ad-offer-title">
-          <button type="button" className="ad-special-ribbon" onClick={begin} disabled={busy || pricingUnavailable} aria-label={pricingUnavailable ? "Special offer - checkout unavailable" : phonePeOneTime ? `Special offer - pay ₹${offerPricing.oneTimeAmountPaise / 100} once` : "Special offer - subscribe for ₹1"}>
+          <button type="button" className="ad-special-ribbon" onClick={begin} disabled={busy || pricingUnavailable} aria-label={pricingUnavailable ? "Special offer - checkout unavailable" : "Special offer - subscribe for ₹1"}>
             <span aria-hidden="true">ϟ</span> Special offer
           </button>
           <p className="ad-offer-kicker">Only for you</p>
-          <h1 id="ad-offer-title">Skillomate <span>{phonePeOneTime || !offerPricing ? "Premium Access" : "Subscription"}</span></h1>
+          <h1 id="ad-offer-title">Skillomate <span>{offerPricing ? "Subscription" : "Premium Access"}</span></h1>
           <p className="ad-offer-intro">Unlock AI Influencer Course and start your learning journey today.</p>
-          <button type="button" className="ad-price-card" onClick={begin} disabled={busy || pricingUnavailable} aria-label={pricingUnavailable ? "Payment pricing unavailable" : phonePeOneTime ? "View ₹499 offer details" : "View ₹1 offer details"}>
+          <button type="button" className="ad-price-card" onClick={begin} disabled={busy || pricingUnavailable} aria-label={pricingUnavailable ? "Payment pricing unavailable" : "View ₹1 offer details"}>
             <div className="ad-limited-badge"><span aria-hidden="true">◷</span> Limited time offer</div>
-            <strong>{phonePeOneTime ? `₹${offerPricing.oneTimeAmountPaise / 100}` : offerPricing ? "₹1" : "—"}</strong>
-            <h2>{phonePeOneTime ? `For ${offerPricing.accessDays} Days` : offerPricing ? "For 24 Hours" : "Pricing unavailable"}</h2>
+            <strong>{offerPricing ? "₹1" : "—"}</strong>
+            <h2>{offerPricing ? "For 24 Hours" : "Pricing unavailable"}</h2>
             <div className="ad-offer-rule" />
-            <p>{phonePeOneTime ? "One-time payment · No automatic renewal" : offerPricing ? <>Then ₹499/month <span>·</span> Cancel anytime</> : "Please check again shortly"}</p>
+            <p>{offerPricing ? <>Then ₹499/month <span>·</span> Cancel anytime</> : "Please check again shortly"}</p>
           </button>
           <div className="ad-offer-brief">
             <span>What you get</span>
-            <p>{phonePeOneTime ? `Full Skillomate access for ${offerPricing.accessDays} days with a one-time PhonePe payment.` : offerPricing ? "Full Skillomate access for 24 hours at ₹1, including practical AI, content, and digital skill lessons before your monthly plan begins." : "Explore Skillomate learning while we check the current payment options."}</p>
+            <p>{offerPricing ? "Full Skillomate access for 24 hours at ₹1, including practical AI, content, and digital skill lessons before your monthly plan begins." : "Explore Skillomate learning while we check the current payment options."}</p>
           </div>
         </section>
         <div className="ad-action-bar">
-          {!recovery ? <button type="button" onClick={begin} disabled={busy || pricingUnavailable}>{pricingUnavailable ? "Checkout unavailable" : phonePeOneTime ? `Pay ₹${offerPricing.oneTimeAmountPaise / 100} once` : "Subscribe for ₹1"} <span>→</span></button> : (
+          {!recovery ? <button type="button" onClick={begin} disabled={busy || pricingUnavailable}>{pricingUnavailable ? "Checkout unavailable" : "Subscribe for ₹1"} <span>→</span></button> : (
             <div className="ad-recovery">
               <p role="status" aria-live="polite">{message}</p>
               <button type="button" onClick={() => openCheckout()} disabled={busy || pricingUnavailable}>Open checkout again</button>
@@ -539,7 +533,7 @@ export function AdOfferPage({ offerPage }) {
           )}
           {pricingUnavailable ? <p role="status">{offerPricing?.checkoutEnabled === false ? "Checkout is temporarily unavailable. Please try again later." : offerPricingError ? "Payment pricing is temporarily unavailable. Please try again." : "Checking payment options…"}{offerPricing?.checkoutEnabled === false || offerPricingError ? <> <button type="button" className="ad-pricing-retry" onClick={() => setPricingRequest(value => value + 1)} disabled={busy}>Retry</button></> : null}</p> : null}
           <div className="ad-secure-payment"><span aria-hidden="true">✓</span> Secure payments powered by Skillomate payment partners</div>
-          <p>{phonePeOneTime ? `Access lasts ${offerPricing.accessDays} days and will not renew automatically.` : offerPricing ? "To enjoy uninterrupted learning, your subscription will auto-renew. You can cancel it anytime." : "Payment terms will appear when pricing is available."}</p>
+          <p>{offerPricing ? "To enjoy uninterrupted learning, your subscription will auto-renew. You can cancel it anytime." : "Payment terms will appear when pricing is available."}</p>
           <nav className="ad-legal-links" aria-label="Offer legal links">
             <a href={route("about.html")}>About Us</a>
             <a href={route("privacy.html")}>Privacy Policy</a>
@@ -574,7 +568,7 @@ export function AdOfferPage({ offerPage }) {
             <label htmlFor="ad-otp">One-time password</label>
             <input className="ad-otp-input" id="ad-otp" value={otp} onChange={(event) => setOtp(event.target.value.replace(/\D/g, "").slice(0, 6))} inputMode="numeric" autoComplete="one-time-code" maxLength="6" placeholder="• • • • • •" required autoFocus />
             <button type="submit" disabled={busy || otp.length !== 6}>Pay now</button>
-            <p className="ad-payment-consent">{phonePeOneTime ? `By clicking Pay now, you agree to our Terms & Conditions and a one-time ₹${offerPricing.oneTimeAmountPaise / 100} payment for ${offerPricing.accessDays} days of access.` : "By clicking Pay now, you agree to our Terms & Conditions and authorize ₹1 for 24 hours, followed by ₹499/month through AutoPay until cancelled."}</p>
+            <p className="ad-payment-consent">By clicking Pay now, you agree to our Terms &amp; Conditions and authorize ₹1 for 24 hours, followed by ₹499/month through AutoPay until cancelled.</p>
             <button className="ad-resend-otp" type="button" onClick={(event) => sendOtp(event, true)} disabled={busy}>Resend OTP</button>
             <p className="ad-form-status" role="status">{message}</p>
           </form>}

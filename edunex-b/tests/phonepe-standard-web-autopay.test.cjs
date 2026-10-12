@@ -179,7 +179,7 @@ test('new PhonePe web paths preserve Razorpay and mobile store integrations', ()
   assert.match(server, /require\('\.\/routes\/appleIap'\)/);
   assert.match(server, /require\('\.\/routes\/googlePlayIap'\)/);
   assert.match(frontend, /window\.location\.assign\(data\.redirectUrl\)/);
-  assert.match(frontend, /trialAccess/);
+  assert.match(frontend, /accessKind/);
   assert.match(frontend, /Trial subscription is active/);
   assert.match(fs.readFileSync(path.join(__dirname, '../controllers/phonePeStandardAutoPayController.js'), 'utf8'), /account\.access\.status !== 'trial'/);
 });

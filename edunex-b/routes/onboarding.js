@@ -9,18 +9,15 @@ const phonePeBilling = require('../controllers/paymentController');
 const standardPhonePeBilling = require('../controllers/phonePeStandardAutoPayController');
 const standardPhonePeService = require('../services/phonePeStandardAutoPayService');
 const PhonePeAutoPayBilling = require('../models/PhonePeAutoPayBilling');
-const phonePeService = require('../services/phonePeService');
-const { isPhonePeNewPaymentsEnabled, isPhonePeNewPaymentsSwitchEnabled } = require('../services/phonePePolicy');
+const { isPhonePeNewPaymentsSwitchEnabled } = require('../services/phonePePolicy');
 const rzp = require('../services/razorpayService');
 const paymentModes = require('../services/paymentMode');
 const marketing = require('../services/marketingSettings');
 function standardPhonePeEnabled() {
-  try {
-    const config = standardPhonePeService.config();
-    return config.enabled && config.webEnabled;
-  } catch {
-    return false;
-  }
+  const readiness = standardPhonePeService.readiness();
+  return readiness.configured
+    && readiness.schedulerEnabled
+    && (readiness.mode !== 'live' || readiness.liveRecurringEnabled);
 }
 function standardPhonePeRecordsEnabled() {
   try { return standardPhonePeService.config().enabled; }
@@ -63,7 +60,7 @@ router.get('/config', wrap(async (_req, res) => {
         ...publicMarketing,
       });
     }
-    return res.json({ gateway: 'phonepe', checkoutEnabled: isPhonePeNewPaymentsSwitchEnabled(process.env), oneTimeAmountPaise: phonePeService.oneTimeAmountPaise, accessDays: phonePeService.oneTimeAccessDays, ...publicMarketing });
+    throw fail('PhonePe Standard AutoPay checkout is temporarily unavailable.', 503);
   }
   const c = rzp.requireConfig(adMode());
   res.json({ mode: c.mode, gateway: provider, trialAmountPaise: c.trialAmount, subscriptionAmountPaise: c.monthlyAmount, trialHours: c.trialHours, ...publicMarketing });
@@ -113,12 +110,12 @@ async function useStandardPhonePeForSession(req) {
 }
 router.post('/checkout', requireSession, async (req, res, next) => {
   const provider = req.onboardingProvider || await marketingCheckoutProvider();
+  if (provider === 'phonepe' && !standardPhonePeEnabled()) {
+    return res.status(503).json({ error: 'PhonePe Standard AutoPay checkout is temporarily unavailable.' });
+  }
   if (provider === 'phonepe' && standardPhonePeEnabled() && !['trial', 'monthly'].includes(req.body.paymentType)) return res.status(400).json({ error: 'Choose the ₹1 trial or ₹499 monthly plan.' });
-  if (provider === 'phonepe' && !standardPhonePeEnabled() && req.body.paymentType !== 'one_time') return res.status(400).json({ error: 'Choose the one-time PhonePe payment.' });
   if (provider !== 'phonepe' && !['trial', 'monthly'].includes(req.body.paymentType)) return res.status(400).json({ error: 'Choose a supported plan.' });
-  if (provider === 'phonepe') return standardPhonePeEnabled()
-    ? standardPhonePeBilling.initiate(req, res, next)
-    : phonePeBilling.initiateTrial(req, res, next);
+  if (provider === 'phonepe') return standardPhonePeBilling.initiate(req, res, next);
   return billing.initiate(req, res, next);
 });
 router.post('/profile', requireSession, wrap(async (req, res) => {

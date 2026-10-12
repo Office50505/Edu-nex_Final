@@ -11,41 +11,29 @@ const RazorpayBilling = require('../models/RazorpayBilling');
 const Subscription = require('../models/Subscription');
 const autoPayTestRoutes = require('./phonePeAutoPayTest');
 const autoPayTestController = require('../controllers/phonePeAutoPayTestController');
-const { newCheckoutProvider } = require('../services/phonePePolicy');
 const modes = require('../services/paymentMode');
 
 function standardPhonePeEnabled() {
-  try {
-    const config = standardPhonePeService.config();
-    return config.enabled && config.webEnabled;
-  } catch {
-    return false;
-  }
+  const readiness = standardPhonePeService.readiness();
+  return readiness.configured
+    && readiness.schedulerEnabled
+    && (readiness.mode !== 'live' || readiness.liveRecurringEnabled);
 }
 
 async function configuredProvider() {
   const provider = await modes.activeProvider();
   if (provider === 'phonepe') {
-    if (standardPhonePeEnabled()) return 'phonepe';
-    return newCheckoutProvider({ ...process.env, PAYMENT_GATEWAY_MODE: 'phonepe' });
+    return standardPhonePeEnabled() ? 'phonepe' : 'disabled';
   }
   if (provider === 'razorpay') return 'razorpay';
   return 'disabled';
 }
 
-const useConfiguredPaymentProvider = (modern, legacy) => async (req, res, next) => {
-  const provider = await configuredProvider();
-  if (provider === 'razorpay') return modern(req, res, next);
-  if (provider === 'phonepe' || provider === 'simulated') return legacy(req, res, next);
-  return res.status(503).json({ error: 'Payment service is unavailable.' });
-};
 router.get('/payment/config', async (req, res, next) => {
   try {
     const provider = await configuredProvider();
     if (provider === 'phonepe') {
-      return standardPhonePeEnabled()
-        ? standardPhonePe.pricing(req, res, next)
-        : paymentController.phonePePricing(req, res);
+      return standardPhonePe.pricing(req, res, next);
     }
     if (provider === 'simulated') return paymentController.phonePePricing(req, res);
     if (provider === 'disabled') return res.status(503).json({ error: 'Payment checkout is unavailable.' });
@@ -59,9 +47,7 @@ router.post('/payment/initiate-trial', protect, async (req, res, next) => {
   const provider = await configuredProvider();
   if (provider === 'razorpay') return razorpay.initiate(req, res, next);
   if (provider === 'phonepe') {
-    return standardPhonePeEnabled()
-      ? standardPhonePe.initiate(req, res, next)
-      : paymentController.initiateTrial(req, res, next);
+    return standardPhonePe.initiate(req, res, next);
   }
   if (provider === 'simulated') return paymentController.initiateTrial(req, res, next);
   return res.status(503).json({ error: 'Payment checkout is unavailable.' });

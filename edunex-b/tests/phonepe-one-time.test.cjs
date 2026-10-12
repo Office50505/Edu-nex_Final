@@ -1,5 +1,7 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const path = require('node:path');
 
 process.env.PHONEPE_CLIENT_ID = 'test-client';
 process.env.PHONEPE_CLIENT_SECRET = 'test-secret';
@@ -9,7 +11,7 @@ process.env.PHONEPE_REDIRECT_URL = 'https://api.example.test/api/payment/callbac
 
 const phonePe = require('../services/phonePeService');
 
-test('PhonePe pricing remains readable while the new-payment gate is closed', async (t) => {
+test('marketing checkout fails closed when PhonePe Standard AutoPay is unavailable', async (t) => {
   const paymentModes = require('../services/paymentMode');
   const marketing = require('../services/marketingSettings');
   t.mock.method(paymentModes, 'activeProvider', async () => 'phonepe');
@@ -32,11 +34,21 @@ test('PhonePe pricing remains readable while the new-payment gate is closed', as
   const handler = router.stack.find(layer => layer.route?.path === '/config').route.stack[0].handle;
   const res = { statusCode: 200, status(code) { this.statusCode = code; return this; }, json(body) { this.body = body; return this; } };
   await handler({}, res);
-  assert.equal(res.statusCode, 200);
-  assert.equal(res.body.gateway, 'phonepe');
-  assert.equal(res.body.checkoutEnabled, false);
-  assert.equal(res.body.oneTimeAmountPaise, 49900);
-  assert.equal(res.body.accessDays, 30);
+  assert.equal(res.statusCode, 503);
+  assert.match(res.body.error, /Standard AutoPay checkout is temporarily unavailable/);
+});
+
+test('marketing checkout cannot silently fall back to the legacy one-time PhonePe controller', () => {
+  const routeSource = fs.readFileSync(path.join(__dirname, '../routes/onboarding.js'), 'utf8');
+  const paymentRouteSource = fs.readFileSync(path.join(__dirname, '../routes/payment.js'), 'utf8');
+  const initiateRouteSource = paymentRouteSource.slice(
+    paymentRouteSource.indexOf("router.post('/payment/initiate-trial'"),
+    paymentRouteSource.indexOf("router.get('/payment/simulate'")
+  );
+  assert.doesNotMatch(routeSource, /phonePeBilling\.initiateTrial\(req, res, next\)/);
+  assert.match(routeSource, /standardPhonePeBilling\.initiate\(req, res, next\)/);
+  assert.match(initiateRouteSource, /provider === 'phonepe'[\s\S]{0,80}standardPhonePe\.initiate/);
+  assert.match(initiateRouteSource, /provider === 'simulated'[\s\S]{0,80}paymentController\.initiateTrial/);
 });
 
 test('PhonePe direct checkout requests the temporary one-time charge without a subscription setup', async (t) => {
