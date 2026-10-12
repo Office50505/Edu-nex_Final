@@ -6723,6 +6723,19 @@ function ReelsScreen({ courseId, course, initialIndex, initialTime, onBack, onRe
     Keyboard.dismiss();
     setShowCourseAi(false);
   }, []);
+  useEffect(() => {
+    if (Platform.OS !== "android") return undefined;
+    const sub = BackHandler.addEventListener("hardwareBackPress", () => {
+      if (showCourseAi) { closeCourseAi(); return true; }
+      if (showLectures) { setShowLectures(false); return true; }
+      if (showNotes) { setShowNotes(false); return true; }
+      if (showDescription) { setShowDescription(false); return true; }
+      if (playerSettingsOpen) { setPlayerSettingsOpen(false); return true; }
+      onBack?.();
+      return true;
+    });
+    return () => sub.remove();
+  }, [closeCourseAi, onBack, playerSettingsOpen, showCourseAi, showDescription, showLectures, showNotes]);
   const goToLecture = useCallback((index) => {
     if (!Number.isInteger(index) || index < 0 || index >= videos.length) return;
     setShowLectures(false);
