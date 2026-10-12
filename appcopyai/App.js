@@ -64,12 +64,15 @@ import { createLocalHlsProgressiveFile, DOWNLOADS_STORAGE_KEY, downloadDir, down
 import { useVideoPlayer, VideoView } from "expo-video";
 import {
   HOME_AI_FOUNDATIONS_CONTENT,
+  HOME_FILMMAKING_CONTENT,
   HOME_INFLUENCER_CONTENT,
   buildLessonTopics,
   resolveLessonNumbers,
   sortLessons,
   sortLessonsByUploadTime,
 } from "./homeContentConfig";
+
+const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 const PLAYER_ORIGIN = "https://protected-video.local";
 
@@ -522,6 +525,154 @@ const FALLBACK_QUALITY_OPTIONS = ["144p", "240p", "360p", "480p", "720p", "1080p
 const VIDEO_COMPLETE_THRESHOLD = 0.9;
 const PROTECTED_VIDEO_CAPTURE_KEY = "skillomate-course-video";
 const SHOW_DRAFT_HOME_RECOMMENDATIONS = false;
+const MOTION_FAST_MS = 140;
+const MOTION_MEDIUM_MS = 220;
+let cachedReducedMotion = false;
+let reducedMotionSubscription = null;
+const reducedMotionListeners = new Set();
+
+function publishReducedMotion(enabled) {
+  cachedReducedMotion = Boolean(enabled);
+  reducedMotionListeners.forEach(listener => listener(cachedReducedMotion));
+}
+
+function ensureReducedMotionSubscription() {
+  if (reducedMotionSubscription) return;
+  AccessibilityInfo.isReduceMotionEnabled?.()
+    .then(publishReducedMotion)
+    .catch(() => {});
+  reducedMotionSubscription = AccessibilityInfo.addEventListener?.("reduceMotionChanged", publishReducedMotion) || { remove: () => {} };
+}
+
+function useReducedMotionPreference() {
+  const [reduceMotion, setReduceMotion] = useState(cachedReducedMotion);
+
+  useEffect(() => {
+    let mounted = true;
+    const listener = enabled => {
+      if (mounted) setReduceMotion(Boolean(enabled));
+    };
+    reducedMotionListeners.add(listener);
+    ensureReducedMotionSubscription();
+    return () => {
+      mounted = false;
+      reducedMotionListeners.delete(listener);
+      if (reducedMotionListeners.size === 0) {
+        reducedMotionSubscription?.remove?.();
+        reducedMotionSubscription = null;
+      }
+    };
+  }, []);
+
+  return reduceMotion;
+}
+
+function MotionPressable({
+  style,
+  disabled,
+  pressScale = 0.985,
+  pressOpacity = 0.94,
+  feedbackDuration = MOTION_FAST_MS,
+  onPressIn,
+  onPressOut,
+  ...props
+}) {
+  const reduceMotion = useReducedMotionPreference();
+  const pressAnim = useRef(new Animated.Value(0)).current;
+
+  const animatePress = useCallback((pressed) => {
+    if (reduceMotion || disabled) {
+      pressAnim.setValue(0);
+      return;
+    }
+    Animated.timing(pressAnim, {
+      toValue: pressed ? 1 : 0,
+      duration: feedbackDuration,
+      easing: Easing.out(Easing.cubic),
+      useNativeDriver: true,
+    }).start();
+  }, [disabled, feedbackDuration, pressAnim, reduceMotion]);
+
+  useEffect(() => () => pressAnim.stopAnimation(), [pressAnim]);
+
+  return (
+    <AnimatedPressable
+      {...props}
+      disabled={disabled}
+      onPressIn={event => {
+        animatePress(true);
+        onPressIn?.(event);
+      }}
+      onPressOut={event => {
+        animatePress(false);
+        onPressOut?.(event);
+      }}
+      style={[
+        style,
+        {
+          opacity: pressAnim.interpolate({ inputRange: [0, 1], outputRange: [1, pressOpacity] }),
+          transform: [{ scale: pressAnim.interpolate({ inputRange: [0, 1], outputRange: [1, pressScale] }) }],
+        },
+      ]}
+    />
+  );
+}
+
+function ScreenTransition({ children, transitionKey, axis = "x", distance = 18, duration = MOTION_MEDIUM_MS }) {
+  const reduceMotion = useReducedMotionPreference();
+  const opacity = useRef(new Animated.Value(1)).current;
+  const offset = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    opacity.stopAnimation();
+    offset.stopAnimation();
+    if (reduceMotion) {
+      opacity.setValue(1);
+      offset.setValue(0);
+      return undefined;
+    }
+    opacity.setValue(0.96);
+    offset.setValue(distance);
+    const animation = Animated.parallel([
+      Animated.timing(opacity, {
+        toValue: 1,
+        duration,
+        easing: Easing.out(Easing.cubic),
+        useNativeDriver: true,
+      }),
+      Animated.timing(offset, {
+        toValue: 0,
+        duration,
+        easing: Easing.out(Easing.cubic),
+        useNativeDriver: true,
+      }),
+    ]);
+    animation.start();
+    return () => {
+      animation.stop();
+    };
+  }, [axis, distance, duration, offset, opacity, reduceMotion, transitionKey]);
+
+  const translate = axis === "y" ? { translateY: offset } : { translateX: offset };
+
+  return (
+    <Animated.View style={{ flex: 1, opacity, transform: [translate] }}>
+      {children}
+    </Animated.View>
+  );
+}
+
+const isFilmmakingCourseTitle = title => /ai\s*(film|filmmaking|film\s*making)|film\s*making|filmmaking/i.test(String(title || ""));
+const isInfluencerCourseTitle = title => /ai\s*influencer/i.test(String(title || ""));
+const isAiFoundationsCourseTitle = title => /ai\s*basic/i.test(String(title || ""));
+
+function getHomeContentForCourse(course, lessons = []) {
+  const lessonCount = lessons.length || Number(course?.lessonCount || course?.videoCount || 0);
+  if (lessonCount >= 8 && isFilmmakingCourseTitle(course?.title)) return HOME_FILMMAKING_CONTENT;
+  if (lessonCount >= 35 && isInfluencerCourseTitle(course?.title)) return HOME_INFLUENCER_CONTENT;
+  if (lessonCount >= 10 && isAiFoundationsCourseTitle(course?.title)) return HOME_AI_FOUNDATIONS_CONTENT;
+  return null;
+}
 
 // SDK 51: host may live in manifest2.extra.expoGo.debuggerHost, not at the root
 const _m1 = Constants.__unsafeNoWarnManifest || Constants.expoConfig || {};
@@ -3584,6 +3735,79 @@ function getCourseCategoryName(course) {
   return categoryName && !isInternalIdentifier(categoryName) ? categoryName : "";
 }
 
+function BottomNavItem({ item, isActive, inactiveColor, forceDark, onBeforePress }) {
+  const reduceMotion = useReducedMotionPreference();
+  const activeMotion = useRef(new Animated.Value(isActive ? 1 : 0)).current;
+
+  useEffect(() => {
+    Animated.timing(activeMotion, {
+      toValue: isActive ? 1 : 0,
+      duration: reduceMotion ? 0 : 180,
+      easing: Easing.out(Easing.cubic),
+      useNativeDriver: true,
+    }).start();
+  }, [activeMotion, isActive, reduceMotion]);
+
+  useEffect(() => () => activeMotion.stopAnimation(), [activeMotion]);
+
+  const activeScale = activeMotion.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0.96, 1],
+  });
+  const activeOpacity = activeMotion.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0.78, 1],
+  });
+
+  return (
+    <Pressable
+      onPress={() => {
+        onBeforePress?.(item);
+        item.fn?.();
+      }}
+      android_ripple={{ color: C.isDark ? "rgba(231,188,104,0.12)" : "rgba(197,139,42,0.12)", borderless: false }}
+      style={({ pressed }) => [s.bottomTab, pressed && s.bottomTabPressed]}
+      accessibilityRole="button"
+      accessibilityLabel={item.label}
+      accessibilityState={{ selected: isActive }}
+    >
+      <Animated.View
+        pointerEvents="none"
+        style={[
+          s.bottomTabMotion,
+          {
+            opacity: activeOpacity,
+            transform: [{ scale: activeScale }],
+          },
+        ]}
+      >
+        <View style={[s.bottomTabIcon, isActive && s.bottomTabIconActive]}>
+          <NavIcon icon={item.icon} color={isActive ? C.primary : inactiveColor} />
+        </View>
+        <Text
+          style={[
+            s.bottomTabLabel,
+            forceDark && { color: "#AAA297" },
+            isActive && { color: C.primary },
+          ]}
+          numberOfLines={1}
+        >
+          {item.label}
+        </Text>
+        <Animated.View
+          style={[
+            s.bottomTabIndicator,
+            {
+              opacity: activeMotion,
+              transform: [{ scaleX: activeMotion }],
+            },
+          ]}
+        />
+      </Animated.View>
+    </Pressable>
+  );
+}
+
 function BottomNav({
   active,
   onHome,
@@ -3889,31 +4113,16 @@ function BottomNav({
           </TouchableOpacity>
         </View>
       ) : tabs.map(t => (
-        <TouchableOpacity
+        <BottomNavItem
           key={t.key}
-          onPress={() => {
-            if (t.key !== "search") closeSearch();
-            t.fn?.();
+          item={t}
+          isActive={active === t.key}
+          inactiveColor={inactiveColor}
+          forceDark={forceDark}
+          onBeforePress={(item) => {
+            if (item.key !== "search") closeSearch();
           }}
-          style={s.bottomTab}
-          accessibilityRole="button"
-          accessibilityLabel={t.label}
-          accessibilityState={{ selected: active === t.key }}
-        >
-          <View style={[s.bottomTabIcon, active === t.key && s.bottomTabIconActive]}>
-            <NavIcon icon={t.icon} color={active === t.key ? C.primary : inactiveColor} />
-          </View>
-          <Text
-            style={[
-              s.bottomTabLabel,
-              forceDark && { color: "#AAA297" },
-              active === t.key && { color: C.primary },
-            ]}
-            numberOfLines={1}
-          >
-            {t.label}
-          </Text>
-        </TouchableOpacity>
+        />
       ))}
       </Animated.View>
     </Animated.View>
@@ -4020,6 +4229,7 @@ function SwipeableRootTabsPager({ activeTab, onNavigate, renderTab, searchRefere
   const pageGap = ROOT_TAB_PAGE_GAP;
   const pageStride = width + pageGap;
   const activeIndex = ROOT_TAB_ORDER.indexOf(activeTab);
+  const activeTabForMount = activeIndex >= 0 ? activeTab : ROOT_TAB_ORDER[0];
   const trackX = useRef(new Animated.Value(-Math.max(activeIndex, 0) * pageStride)).current;
   const pageChrome = useRef(new Animated.Value(0)).current;
   const navigateRef = useRef(onNavigate);
@@ -4027,14 +4237,29 @@ function SwipeableRootTabsPager({ activeTab, onNavigate, renderTab, searchRefere
   const horizontalChildActiveRef = useRef(false);
   const pendingIndexRef = useRef(null);
   const [searchOverlayActive, setSearchOverlayActive] = useState(false);
-  const mountedTabs = ROOT_TAB_ORDER;
+  const [mountedTabs, setMountedTabs] = useState(() => new Set([activeTabForMount]));
+
+  const ensureTabMounted = useCallback((tab) => {
+    if (!ROOT_TAB_ORDER.includes(tab)) return;
+    setMountedTabs(previousTabs => {
+      if (previousTabs.has(tab)) return previousTabs;
+      const nextTabs = new Set(previousTabs);
+      nextTabs.add(tab);
+      return nextTabs;
+    });
+  }, []);
 
   useEffect(() => {
     navigateRef.current = onNavigate;
   }, [onNavigate]);
 
+  useEffect(() => {
+    ensureTabMounted(activeTabForMount);
+  }, [activeTabForMount, ensureTabMounted]);
+
   React.useLayoutEffect(() => {
     if (activeIndex < 0) return;
+    if (pendingIndexRef.current === activeIndex) return;
     trackX.stopAnimation();
     trackX.setValue(-activeIndex * pageStride);
     pageChrome.stopAnimation();
@@ -4102,6 +4327,15 @@ function SwipeableRootTabsPager({ activeTab, onNavigate, renderTab, searchRefere
       return;
     }
 
+    pendingIndexRef.current = targetIndex;
+    ensureTabMounted(targetTab);
+    const didNavigate = navigateRef.current?.(targetTab);
+    if (didNavigate === false) {
+      pendingIndexRef.current = null;
+      returnToActive();
+      return;
+    }
+
     Animated.parallel([
       Animated.spring(trackX, {
         toValue: -targetIndex * pageStride,
@@ -4116,16 +4350,14 @@ function SwipeableRootTabsPager({ activeTab, onNavigate, renderTab, searchRefere
         returnToActive();
         return;
       }
-      pendingIndexRef.current = targetIndex;
-      const didNavigate = navigateRef.current?.(targetTab);
-      if (didNavigate === false) {
-        pendingIndexRef.current = null;
-        returnToActive();
-        return;
-      }
+      trackX.setValue(-targetIndex * pageStride);
+      pageChrome.setValue(0);
+      pendingIndexRef.current = null;
+      transitionInProgressRef.current = false;
+      horizontalChildActiveRef.current = false;
       AccessibilityInfo.announceForAccessibility(`${ROOT_TAB_LABELS[targetTab]} tab`);
     });
-  }, [activeIndex, pageStride, returnToActive, settleChrome, trackX]);
+  }, [activeIndex, ensureTabMounted, pageChrome, pageStride, returnToActive, settleChrome, trackX]);
 
   const shouldClaimRootSwipe = useCallback((gesture) => {
     if (transitionInProgressRef.current || horizontalChildActiveRef.current) return false;
@@ -4179,7 +4411,6 @@ function SwipeableRootTabsPager({ activeTab, onNavigate, renderTab, searchRefere
     onShouldBlockNativeResponder: () => false,
   }), [activeIndex, navigateByDirection, pageChrome, pageStride, returnToActive, shouldClaimRootSwipe, trackX, width]);
 
-  const renderedTabs = mountedTabs;
   const pageCornerRadius = ROOT_TAB_CHROME_ENABLED
     ? pageChrome.interpolate({
         inputRange: [0, 1],
@@ -4208,10 +4439,10 @@ function SwipeableRootTabsPager({ activeTab, onNavigate, renderTab, searchRefere
             },
           ]}
         >
-          {renderedTabs.map(tab => {
+          {ROOT_TAB_ORDER.map(tab => {
             const tabIndex = ROOT_TAB_ORDER.indexOf(tab);
             const isInteractive = tab === activeTab;
-            const shouldRenderContent = Math.abs(tabIndex - activeIndex) <= 1;
+            const shouldRenderTab = mountedTabs.has(tab) || isInteractive;
             return (
               <Animated.View
                 key={tab}
@@ -4233,7 +4464,7 @@ function SwipeableRootTabsPager({ activeTab, onNavigate, renderTab, searchRefere
                 renderToHardwareTextureAndroid={Platform.OS === "android"}
                 needsOffscreenAlphaCompositing={Platform.OS === "android"}
               >
-                {shouldRenderContent ? renderTab(tab, { isActive: tab === activeTab }) : null}
+                {shouldRenderTab ? renderTab(tab, { isActive: isInteractive }) : null}
               </Animated.View>
             );
           })}
@@ -7138,6 +7369,9 @@ function VideoListScreen({
   onBack,
   downloads,
   onDownloadVideo,
+  loadingLessons = false,
+  lessonLoadError = "",
+  onRetryLessons,
 }) {
   const { width } = useWindowDimensions();
   const isTablet = width >= 768;
@@ -7195,8 +7429,34 @@ function VideoListScreen({
       {videos.length === 0 ? (
         <ScrollView contentContainerStyle={[{ padding: 16, paddingBottom: Platform.OS === "ios" ? 40 : 28 }, isTablet && s.tabletListContent]}>
           <ExpandableCourseDescription description={courseDescription} />
-          <View style={[s.centered, { minHeight: 260 }]}>
-            <Text style={{ color: C.textSub }}>No videos in this course yet.</Text>
+          <View style={[s.centered, { minHeight: 260, paddingHorizontal: 20 }]}>
+            {loadingLessons ? (
+              <>
+                <ActivityIndicator color={C.primary} />
+                <Text style={{ color: C.text, fontSize: 16, fontWeight: "800", marginTop: 14 }}>Loading lessons</Text>
+                <Text style={{ color: C.textSub, fontSize: 13, lineHeight: 19, textAlign: "center", marginTop: 6 }}>
+                  Opening the course now. Lesson data will appear in a moment.
+                </Text>
+              </>
+            ) : lessonLoadError ? (
+              <>
+                <Ionicons name="cloud-offline-outline" size={36} color={C.primary} />
+                <Text style={{ color: C.text, fontSize: 16, fontWeight: "800", marginTop: 14 }}>Could not load lessons</Text>
+                <Text style={{ color: C.textSub, fontSize: 13, lineHeight: 19, textAlign: "center", marginTop: 6 }}>{lessonLoadError}</Text>
+                {typeof onRetryLessons === "function" ? (
+                  <TouchableOpacity
+                    style={[s.btn, s.btnFill, { minWidth: 132, marginTop: 16 }]}
+                    onPress={onRetryLessons}
+                    accessibilityRole="button"
+                    accessibilityLabel="Retry loading course lessons"
+                  >
+                    <Text style={s.btnText}>Retry</Text>
+                  </TouchableOpacity>
+                ) : null}
+              </>
+            ) : (
+              <Text style={{ color: C.textSub }}>No videos in this course yet.</Text>
+            )}
           </View>
         </ScrollView>
       ) : (
@@ -7227,9 +7487,12 @@ function VideoListScreen({
                 ? `Downloading ${item.title || `Video ${index + 1}`}, ${downloadProgress} percent`
                 : `Download ${item.title || `Video ${index + 1}`}`;
             return (
-              <TouchableOpacity
+              <MotionPressable
                 style={s.videoRow}
                 onPress={() => onSelectVideo(index)}
+                pressScale={0.99}
+                pressOpacity={0.92}
+                android_ripple={{ color: C.isDark ? "rgba(231,188,104,0.1)" : "rgba(197,139,42,0.1)", borderless: false }}
                 accessibilityRole="button"
                 accessibilityLabel={`Play lesson ${index + 1}: ${item.title || `Video ${index + 1}`}${durationLabel ? `, ${durationLabel}` : ""}`}
                 accessibilityHint="Opens the lesson player"
@@ -7275,9 +7538,9 @@ function VideoListScreen({
                     isDownloaded && s.videoDownloadButtonDone,
                     isDownloading && s.videoDownloadButtonBusy,
                   ]}
-                  onPress={() => {
-                    if (!canDownload || isDownloading || isDownloaded) return;
+                  onPress={event => {
                     event?.stopPropagation?.();
+                    if (!canDownload || isDownloading || isDownloaded) return;
                     onDownloadVideo(item, course?._id, course?.title || "", index);
                   }}
                   disabled={!canDownload || isDownloading || isDownloaded}
@@ -7297,7 +7560,7 @@ function VideoListScreen({
                   )}
                 </TouchableOpacity>
                 <Ionicons name="chevron-forward" size={16} color={C.textMuted} />
-              </TouchableOpacity>
+              </MotionPressable>
             );
           }}
         />
@@ -7506,9 +7769,12 @@ function HomeSectionHeader({ title, onSeeAll, actionLabel = "See All" }) {
 
 function FeaturedCourseHero({ course, onPress }) {
   return (
-    <View
+    <MotionPressable
       style={homeStyles.featuredHero}
-      onTouchEnd={onPress}
+      onPress={onPress}
+      pressScale={0.995}
+      pressOpacity={0.92}
+      android_ripple={{ color: "rgba(231,188,104,0.18)", borderless: false }}
       accessible
       accessibilityRole="button"
       accessibilityLabel={`Start learning ${course.title}`}
@@ -7521,7 +7787,7 @@ function FeaturedCourseHero({ course, onPress }) {
         <Text style={homeStyles.featuredButtonText}>Start Learning</Text>
         <Ionicons name="arrow-forward" size={15} color={HOME_PALETTE.onGold} />
       </View>
-    </View>
+    </MotionPressable>
   );
 }
 
@@ -7535,10 +7801,12 @@ function ContinueLearningCard({ course, lessonCount, resumeIndex, progressPercen
   const action = isComplete ? "Review Course" : isStarted ? "Continue" : "Start Course";
 
   return (
-    <TouchableOpacity
+    <MotionPressable
       style={homeStyles.continueCard}
       onPress={onPress}
-      activeOpacity={0.88}
+      pressScale={0.99}
+      pressOpacity={0.9}
+      android_ripple={{ color: "rgba(231,188,104,0.12)", borderless: false }}
       accessibilityRole="button"
       accessibilityLabel={`${action}: ${course.title}`}
     >
@@ -7562,7 +7830,7 @@ function ContinueLearningCard({ course, lessonCount, resumeIndex, progressPercen
         </Text>
       </View>
       <Ionicons name="chevron-forward" size={18} color={HOME_PALETTE.gold} />
-    </TouchableOpacity>
+    </MotionPressable>
   );
 }
 
@@ -7595,10 +7863,12 @@ function HomeLessonCard({ course, lesson, index, width, displayTitle, onPress, c
   const duration = getVideoDurationLabel(lesson);
   const order = Number(lesson?.order) || index + 1;
   return (
-    <TouchableOpacity
+    <MotionPressable
       style={[compact ? homeStyles.quickCard : homeStyles.lessonCard, width ? { width } : null]}
       onPress={onPress}
-      activeOpacity={0.88}
+      pressScale={0.985}
+      pressOpacity={0.9}
+      android_ripple={{ color: "rgba(231,188,104,0.12)", borderless: false }}
       accessibilityRole="button"
       accessibilityLabel={`Play lesson ${order}: ${lesson?.title || "Lesson"}`}
     >
@@ -7611,7 +7881,7 @@ function HomeLessonCard({ course, lesson, index, width, displayTitle, onPress, c
       </View>
       <Text style={compact ? homeStyles.quickTitle : homeStyles.lessonTitle} numberOfLines={2}>{displayTitle || lesson?.title}</Text>
       {!compact ? <Text style={homeStyles.lessonNumber}>Lesson {order}</Text> : null}
-    </TouchableOpacity>
+    </MotionPressable>
   );
 }
 
@@ -7846,6 +8116,7 @@ return StyleSheet.create({
   mediaFallback: { ...StyleSheet.absoluteFill, alignItems: "center", justifyContent: "center", padding: 10, backgroundColor: HOME_PALETTE.surfaceSoft },
   mediaFallbackText: { color: HOME_PALETTE.textSecondary, fontSize: 10, lineHeight: 13, fontWeight: "700", textAlign: "center", marginTop: 5 },
   featuredHero: { position: "relative", width: "auto", aspectRatio: 16 / 9, marginHorizontal: 14, borderRadius: 14, overflow: "hidden", backgroundColor: HOME_PALETTE.surface, borderWidth: 1, borderColor: HOME_PALETTE.borderStrong },
+  featuredHeroPressed: { opacity: 0.92, transform: [{ scale: 0.995 }] },
   featuredButton: { position: "absolute", left: 14, bottom: 14, zIndex: 6, minHeight: 40, flexDirection: "row", alignItems: "center", gap: 7, paddingHorizontal: 14, borderRadius: 8, backgroundColor: HOME_PALETTE.gold },
   featuredButtonText: { color: HOME_PALETTE.onGold, fontSize: 13, lineHeight: 17, fontWeight: "900" },
   section: { marginTop: 20 },
@@ -8373,14 +8644,27 @@ function HomeScreen({
         if (cancelled) return;
 
         const richCourses = (Array.isArray(richResponse) ? richResponse : richResponse?.courses || []).filter(course => !course?.isMock);
-        const fallbackResponse = richCourses.length ? [] : await fetchApiJson("/api/courses", [], homeAbort.signal);
+        const fallbackResponse = await fetchApiJson("/api/courses", [], homeAbort.signal).catch(error => {
+          if (homeAbort.signal.aborted) throw error;
+          return [];
+        });
         const fallbackCourses = (Array.isArray(fallbackResponse) ? fallbackResponse : fallbackResponse?.courses || []).filter(course => !course?.isMock);
-        const candidates = [...(richCourses.length ? richCourses : fallbackCourses)];
+        const candidatesById = new Map();
+        [...richCourses, ...fallbackCourses].forEach(course => {
+          const key = String(course?._id || course?.slug || course?.title || "");
+          if (key) candidatesById.set(key, { ...(candidatesById.get(key) || {}), ...course });
+        });
+        const candidates = [...candidatesById.values()];
         candidates.sort((left, right) => {
           const rightLessonCount = right.videos?.length || right.lessonCount || 0;
           const leftLessonCount = left.videos?.length || left.lessonCount || 0;
-          const rightIsInfluencerMasterclass = rightLessonCount >= 35 && /ai\s*influencer/i.test(String(right?.title || "")) ? 1 : 0;
-          const leftIsInfluencerMasterclass = leftLessonCount >= 35 && /ai\s*influencer/i.test(String(left?.title || "")) ? 1 : 0;
+          const rightIsFilmmakingMasterclass = rightLessonCount >= 8 && isFilmmakingCourseTitle(right?.title) ? 1 : 0;
+          const leftIsFilmmakingMasterclass = leftLessonCount >= 8 && isFilmmakingCourseTitle(left?.title) ? 1 : 0;
+          if (rightIsFilmmakingMasterclass !== leftIsFilmmakingMasterclass) {
+            return rightIsFilmmakingMasterclass - leftIsFilmmakingMasterclass;
+          }
+          const rightIsInfluencerMasterclass = rightLessonCount >= 35 && isInfluencerCourseTitle(right?.title) ? 1 : 0;
+          const leftIsInfluencerMasterclass = leftLessonCount >= 35 && isInfluencerCourseTitle(left?.title) ? 1 : 0;
           if (rightIsInfluencerMasterclass !== leftIsInfluencerMasterclass) {
             return rightIsInfluencerMasterclass - leftIsInfluencerMasterclass;
           }
@@ -8463,13 +8747,7 @@ function HomeScreen({
   const resume = course ? getResumeInfo(course, courseProgress) : { index: 0, seconds: 0 };
   const resumeLesson = lessons[resume.index] || lessons[0] || null;
   const lessonCount = lessons.length || Number(course?.lessonCount || course?.videoCount || 0);
-  const hasFullMasterclass = lessons.length >= 35 && /ai\s*influencer/i.test(String(course?.title || ""));
-  const hasAiFoundationsCourse = lessons.length >= 10 && /ai\s*basic/i.test(String(course?.title || ""));
-  const homeContent = hasFullMasterclass
-    ? HOME_INFLUENCER_CONTENT
-    : hasAiFoundationsCourse
-      ? HOME_AI_FOUNDATIONS_CONTENT
-      : null;
+  const homeContent = getHomeContentForCourse(course, lessons);
 
   const topics = useMemo(
     () => buildLessonTopics(lessons, homeContent?.topicDefinitions),
@@ -8565,13 +8843,7 @@ function HomeScreen({
   );
   const allRecommendedLessons = useMemo(
     () => homeCourseSummaries.flatMap(summary => {
-      const summaryHasFullMasterclass = summary.lessons.length >= 35 && /ai\s*influencer/i.test(String(summary.course?.title || ""));
-      const summaryHasAiFoundationsCourse = summary.lessons.length >= 10 && /ai\s*basic/i.test(String(summary.course?.title || ""));
-      const summaryContent = summaryHasFullMasterclass
-        ? HOME_INFLUENCER_CONTENT
-        : summaryHasAiFoundationsCourse
-          ? HOME_AI_FOUNDATIONS_CONTENT
-          : null;
+      const summaryContent = getHomeContentForCourse(summary.course, summary.lessons);
       const selected = summaryContent
         ? resolveLessonNumbers(summary.lessons, summaryContent.recommendedLessonNumbers).slice(0, 3)
         : summary.lessons.slice(0, 3);
@@ -8586,13 +8858,7 @@ function HomeScreen({
   );
   const allTopics = useMemo(
     () => homeCourseSummaries.flatMap((summary, index) => {
-      const summaryHasFullMasterclass = summary.lessons.length >= 35 && /ai\s*influencer/i.test(String(summary.course?.title || ""));
-      const summaryHasAiFoundationsCourse = summary.lessons.length >= 10 && /ai\s*basic/i.test(String(summary.course?.title || ""));
-      const summaryContent = summaryHasFullMasterclass
-        ? HOME_INFLUENCER_CONTENT
-        : summaryHasAiFoundationsCourse
-          ? HOME_AI_FOUNDATIONS_CONTENT
-          : null;
+      const summaryContent = getHomeContentForCourse(summary.course, summary.lessons);
       const builtTopics = buildLessonTopics(summary.lessons, summaryContent?.topicDefinitions).slice(0, 2);
       if (builtTopics.length) {
         return builtTopics.map(topic => ({
@@ -9105,9 +9371,11 @@ function CourseListScreen({ onSelect, user, session, onGoToHome, onGoToCourses, 
           const isWishlisted = wishlist.includes(item._id);
           const progressPct = getCourseProgressPercent(item, courseProgress);
           return (
-            <TouchableOpacity
+            <MotionPressable
               style={s.clCard}
-              activeOpacity={0.93}
+              pressScale={0.99}
+              pressOpacity={0.92}
+              android_ripple={{ color: C.isDark ? "rgba(231,188,104,0.1)" : "rgba(197,139,42,0.1)", borderless: false }}
               accessibilityRole="button"
               accessibilityLabel={`${item.title}. ${lessonCount} ${lessonCount === 1 ? "lesson" : "lessons"}. ${progressPct}% complete`}
               onPress={() => openCourse(item)}
@@ -9166,7 +9434,7 @@ function CourseListScreen({ onSelect, user, session, onGoToHome, onGoToCourses, 
                   <View style={[s.clProgressFill, { width: `${progressPct}%` }]} />
                 </View>
               </View>
-            </TouchableOpacity>
+            </MotionPressable>
           );
         }}
         ListEmptyComponent={
@@ -10901,6 +11169,10 @@ function AiAssistantScreen({
   }
 
   useEffect(() => {
+    if (!isCourseMode && !isRootTabActive) {
+      return;
+    }
+
     if (!AI_FEATURE_ENABLED) {
       setStatus("offline");
       setCourseScopeReady(false);
@@ -10974,7 +11246,7 @@ function AiAssistantScreen({
           ]);
         }
       });
-  }, [fixedCourse, isCourseMode, replaceActiveConversationMessages, user?._id, user?.sessionId]);
+  }, [fixedCourse, isCourseMode, isRootTabActive, replaceActiveConversationMessages, user?._id, user?.sessionId]);
 
   const scrollAiToEnd = useCallback((animated = true) => {
     requestAnimationFrame(() => listRef.current?.scrollToEnd?.({ animated }));
@@ -11637,6 +11909,9 @@ export default function App() {
   const [initialTime, setInitialTime] = useState(0);
   const [preloadedVideos, setPreloadedVideos] = useState(null);
   const [isPreviewOnly, setIsPreviewOnly] = useState(false);
+  const [courseOpenStatus, setCourseOpenStatus] = useState({ key: "", loading: false, error: "" });
+  const courseOpenRequestRef = useRef(0);
+  const courseOpenRetryRef = useRef(null);
   const [downloads, setDownloads] = useState({});
   const downloadsRef = useRef({});
   const downloadStorageReady = useRef(null);
@@ -11812,6 +12087,7 @@ export default function App() {
       if (options.validateOnly) return true;
       setShowAppUpgrade(false);
       setSelectedCourse(null);
+      setCourseOpenStatus({ key: "", loading: false, error: "" });
       setStartIndex(null);
       setInitialTime(0);
       setPreloadedVideos(null);
@@ -11829,6 +12105,7 @@ export default function App() {
 
     setShowAppUpgrade(false);
     setSelectedCourse(null);
+    setCourseOpenStatus({ key: "", loading: false, error: "" });
     setStartIndex(null);
     setInitialTime(0);
     setPreloadedVideos(null);
@@ -12311,6 +12588,7 @@ export default function App() {
     setCertModal(null);
     setLegalPage(null);
     setSelectedCourse(null);
+    setCourseOpenStatus({ key: "", loading: false, error: "" });
     setStartIndex(null);
     setInitialTime(0);
     setPreloadedVideos(null);
@@ -12354,6 +12632,7 @@ export default function App() {
     if (mainScreen === "courses" && selectedCourse) {
       loadCourseProgress();
       setSelectedCourse(null);
+      setCourseOpenStatus({ key: "", loading: false, error: "" });
       setStartIndex(null);
       setInitialTime(0);
       setPreloadedVideos(null);
@@ -12409,6 +12688,10 @@ export default function App() {
     if (!hasCourseAccess(u)) { setShowAppUpgrade(true); return false; }
     const targetCourseId = course?._id || course?.id;
     if (!targetCourseId) return false;
+    const requestId = courseOpenRequestRef.current + 1;
+    courseOpenRequestRef.current = requestId;
+    const courseKey = String(targetCourseId || course?.slug || course?.title || requestId);
+    const isCurrentRequest = () => courseOpenRequestRef.current === requestId;
     setAiActiveCourseHint(course);
     const prepareCourse = source => {
       const sourceVideos = sortLessons(source?.videos || []);
@@ -12443,6 +12726,7 @@ export default function App() {
       const nextCourse = prepareCourse(fixtureCourse || course);
       setAiActiveCourseHint(nextCourse);
       setSelectedCourse(nextCourse);
+      setCourseOpenStatus({ key: courseKey, loading: false, error: "" });
       setPreloadedVideos(nextCourse.videos);
       setIsPreviewOnly(false);
       setInitialTime(options.initialTime || 0);
@@ -12450,6 +12734,17 @@ export default function App() {
       setMainScreen("courses");
       return true;
     }
+
+    const placeholderCourse = prepareCourse({ ...course, videos: [] });
+    courseOpenRetryRef.current = () => openCourse(course, options);
+    setSelectedCourse(placeholderCourse);
+    setCourseOpenStatus({ key: courseKey, loading: true, error: "" });
+    setPreloadedVideos(Array.isArray(placeholderCourse.videos) && placeholderCourse.videos.length ? placeholderCourse.videos : null);
+    setIsPreviewOnly(false);
+    setInitialTime(options.initialTime || 0);
+    setStartIndex(null);
+    setMainScreen("courses");
+
     try {
       const data = await nativeSession.requestJson(`/api/courses/${encodeURIComponent(targetCourseId)}/videos`);
       const nextCourse = prepareCourse({
@@ -12458,8 +12753,10 @@ export default function App() {
         title: course?.title || data.courseTitle || "Course",
         videos: data.videos || [],
       });
+      if (!isCurrentRequest()) return false;
       setAiActiveCourseHint(nextCourse);
       setSelectedCourse(nextCourse);
+      setCourseOpenStatus({ key: courseKey, loading: false, error: "" });
       setPreloadedVideos(null);
       setIsPreviewOnly(false);
       setInitialTime(options.initialTime || 0);
@@ -12467,12 +12764,14 @@ export default function App() {
       setMainScreen("courses");
       return true;
     } catch (e) {
+      if (!isCurrentRequest()) return false;
       const accessMessage = String(e?.message || "");
       if (/subscription|expired|course access|entitlement/i.test(accessMessage)) {
+        setCourseOpenStatus({ key: courseKey, loading: false, error: accessMessage || "Course access could not be verified." });
         setShowAppUpgrade(true);
         return false;
       }
-      Alert.alert("Course unavailable", accessMessage || "Could not open course.");
+      setCourseOpenStatus({ key: courseKey, loading: false, error: accessMessage || "Could not open course." });
       return false;
     }
   }, [nativeSession]);
@@ -12519,6 +12818,7 @@ export default function App() {
     }
     const previewCourse = course || { _id: "hero-preview", title: "Preview" };
     setSelectedCourse({ ...previewCourse, videos: [previewVideo] });
+    setCourseOpenStatus({ key: "", loading: false, error: "" });
     setPreloadedVideos([previewVideo]);
     setInitialTime(0);
     setStartIndex(0);
@@ -13552,6 +13852,7 @@ export default function App() {
       : "courses";
     const courseRouteKey = `course-pager:${selectedCourse?._id || selectedCourse?.id || selectedCourse?.title || "course"}`;
     const playerRouteKey = `${courseRouteKey}:player:${startIndex ?? "none"}`;
+    const clearCourseOpenStatus = () => setCourseOpenStatus({ key: "", loading: false, error: "" });
     const courseScreen = (
       <VideoListScreen
         course={selectedCourse}
@@ -13559,11 +13860,14 @@ export default function App() {
         onBack={requestCourseBack}
         downloads={downloads}
         onDownloadVideo={startDownload}
-        onGoToHome={() => { loadCourseProgress(); setSelectedCourse(null); navigateRootTab("home"); }}
-        onGoToCourses={() => { loadCourseProgress(); setSelectedCourse(null); navigateRootTab("courses"); }}
-        onGoToAI={() => { setSelectedCourse(null); navigateRootTab("ai"); }}
-        onGoToDownloads={() => { setSelectedCourse(null); navigateRootTab("downloads"); }}
-        onGoToProfile={() => { setSelectedCourse(null); navigateRootTab("profile"); }}
+        loadingLessons={courseOpenStatus.loading}
+        lessonLoadError={courseOpenStatus.error}
+        onRetryLessons={() => courseOpenRetryRef.current?.()}
+        onGoToHome={() => { loadCourseProgress(); setSelectedCourse(null); clearCourseOpenStatus(); navigateRootTab("home"); }}
+        onGoToCourses={() => { loadCourseProgress(); setSelectedCourse(null); clearCourseOpenStatus(); navigateRootTab("courses"); }}
+        onGoToAI={() => { setSelectedCourse(null); clearCourseOpenStatus(); navigateRootTab("ai"); }}
+        onGoToDownloads={() => { setSelectedCourse(null); clearCourseOpenStatus(); navigateRootTab("downloads"); }}
+        onGoToProfile={() => { setSelectedCourse(null); clearCourseOpenStatus(); navigateRootTab("profile"); }}
         aiRobotId={aiRobotId}
       />
     );
@@ -13792,6 +14096,7 @@ export default function App() {
                 const offlineCourseId = item.courseId && /^[a-f0-9]{24}$/i.test(item.courseId)
                   ? item.courseId : "000000000000000000000000";
                 setSelectedCourse({ _id: offlineCourseId, title: item.courseTitle || "Downloaded Video", videos: [offlineVideo] });
+                setCourseOpenStatus({ key: "", loading: false, error: "" });
                 setPreloadedVideos([offlineVideo]);
                 setStartIndex(0);
                 setInitialTime(0);
@@ -14869,6 +15174,25 @@ return StyleSheet.create({
     justifyContent: "center",
     gap: 3,
     borderRadius: 20,
+  },
+  bottomTabPressed: {
+    opacity: 0.72,
+    transform: [{ scale: 0.98 }],
+  },
+  bottomTabMotion: {
+    width: "100%",
+    minHeight: 58,
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 3,
+  },
+  bottomTabIndicator: {
+    position: "absolute",
+    bottom: 2,
+    width: 18,
+    height: 3,
+    borderRadius: 2,
+    backgroundColor: C.primary,
   },
   bottomTabIcon: {
     width: 42,

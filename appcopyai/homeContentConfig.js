@@ -137,6 +137,49 @@ export const HOME_AI_FOUNDATIONS_CONTENT = {
   ],
 };
 
+export const HOME_FILMMAKING_CONTENT = {
+  heroTagline: "Write, shoot, edit, and publish cinematic AI films.",
+  topicDefinitions: [
+    { key: "foundation", title: "Foundation", icon: "bulb", color: "#E6B96B", lessonNumbers: range(1, 3) },
+    { key: "story", title: "Story & Character", icon: "create", color: "#27C6A4", lessonNumbers: range(4, 5) },
+    { key: "shots", title: "Shot Generation", icon: "videocam", color: "#D94F85", lessonNumbers: range(6, 8) },
+    { key: "cinema", title: "Cinematic Control", icon: "aperture", color: "#8D6BE8", lessonNumbers: range(9, 12) },
+    { key: "finish", title: "Editing & Voiceover", icon: "film", color: "#22BCA1", lessonNumbers: range(13, 14) },
+    { key: "tips", title: "Pro Tips", icon: "rocket", color: "#E6B96B", lessonNumbers: [15] },
+  ],
+  roadmapDefinitions: [
+    { key: "foundation", title: "Understand the Workflow", lessonNumbers: range(1, 3) },
+    { key: "story", title: "Build Story and Character", lessonNumbers: range(4, 5) },
+    { key: "shots", title: "Generate and Connect Shots", lessonNumbers: range(6, 8) },
+    { key: "cinema", title: "Control Emotion and Mood", lessonNumbers: range(9, 12) },
+    { key: "finish", title: "Edit, Voiceover, and Finish", lessonNumbers: range(13, 15) },
+  ],
+  recommendedLessonNumbers: [1, 4, 6, 7, 13, 15],
+  quickLearnDefinitions: [
+    { key: "workflow", title: "Complete Workflow", lessonNumber: 3 },
+    { key: "character", title: "Character Sheet", lessonNumber: 5 },
+    { key: "camera", title: "Camera Movement", lessonNumber: 7 },
+    { key: "editing", title: "Editing", lessonNumber: 13 },
+  ],
+  projectDefinitions: [
+    { key: "short-film", title: "AI Short Film", icon: "film", lessonNumbers: range(1, 8) },
+    { key: "story", title: "Story Plan", icon: "create", lessonNumbers: [3, 4, 5] },
+    { key: "shots", title: "Shot Sequence", icon: "videocam", lessonNumbers: [6, 7, 8, 12] },
+    { key: "mood", title: "Mood Scene", icon: "aperture", lessonNumbers: [9, 10, 11] },
+    { key: "final", title: "Final Edit", icon: "share-social", lessonNumbers: [13, 14, 15] },
+  ],
+  challengeTitle: "Make Your First AI Film",
+  challengeDefinitions: [
+    { day: 1, title: "Understand AI filmmaking", lessonNumber: 1 },
+    { day: 2, title: "Set up your tools", lessonNumber: 2 },
+    { day: 3, title: "Build the workflow", lessonNumber: 3 },
+    { day: 4, title: "Shape story and emotion", lessonNumber: 4 },
+    { day: 5, title: "Create a character sheet", lessonNumber: 5 },
+    { day: 6, title: "Generate connected shots", lessonNumber: 6 },
+    { day: 7, title: "Edit and avoid mistakes", lessonNumber: 15 },
+  ],
+};
+
 export function sortLessons(lessons = []) {
   return [...lessons].sort((left, right) => Number(left?.order || 0) - Number(right?.order || 0));
 }
