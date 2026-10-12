@@ -6,7 +6,6 @@ import { initAnalytics } from "./lib/analytics.js";
 import "./styles/fonts.css";
 import "./styles/app.css";
 import "./styles/mobile-footer-fix.css";
-import "../css/theme.css";
 
 function loadDeferredAiWidget() {
   void import("../js/nex-ai-widget.js").catch((error) => {

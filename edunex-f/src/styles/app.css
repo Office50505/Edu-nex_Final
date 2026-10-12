@@ -562,7 +562,6 @@ html:not([data-theme="light"]) .brand-logo-image-light {
   flex-shrink: 0 !important;
 }
 
-.enx-nav-theme-toggle,
 .enx-mobile-report-toggle {
   width: 36px !important;
   height: 36px !important;
@@ -576,12 +575,6 @@ html:not([data-theme="light"]) .brand-logo-image-light {
   color: var(--text2, #9ca3af) !important;
   cursor: pointer !important;
   transition: color .2s, border-color .2s, background .2s !important;
-}
-
-.enx-nav-theme-toggle:hover {
-  border-color: rgba(197, 139, 42, .38) !important;
-  background: rgba(197, 139, 42, .08) !important;
-  color: var(--cyan, #C58B2A) !important;
 }
 
 .enx-mobile-report-toggle:hover,

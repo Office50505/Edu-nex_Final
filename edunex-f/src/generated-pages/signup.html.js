@@ -33,7 +33,7 @@ export const page = {
     .sp-nav {
       position: sticky; top: 0; z-index: 200;
       background: rgba(0,0,0,0.96);
-
+      backdrop-filter: blur(20px);
       border-bottom: 1px solid var(--border);
       padding: 14px 0; flex-shrink: 0;
     }

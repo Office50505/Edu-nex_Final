@@ -589,7 +589,7 @@ export const pages = {
 
 `,
     scripts: [
-      { code: `(function(){var t=localStorage.getItem('enx-theme')||'noir';var L={'--bg':'#f3f4f6','--card':'#ffffff','--card2':'#f9fafb','--border':'rgba(0,0,0,0.08)','--border2':'rgba(0,0,0,0.12)','--text':'#111827','--text2':'#4b5563','--nav-bg':'rgba(255,255,255,0.95)'};var N={'--bg':'#000000','--card':'#0d0d0d','--card2':'#111318','--border':'rgba(255,255,255,0.07)','--border2':'rgba(255,255,255,0.10)','--text':'#ffffff','--text2':'#9ca3af','--nav-bg':'rgba(0,0,0,0.92)'};var v=t==='light'?L:(t==='system'?(window.matchMedia('(prefers-color-scheme:dark)').matches?N:L):N);var r=document.documentElement;Object.keys(v).forEach(function(k){r.style.setProperty(k,v[k]);});r.style.background=v['--bg'];document.addEventListener('DOMContentLoaded',function(){document.body.style.background=v['--bg'];document.body.style.color=v['--text'];});})();` },
+      { code: `(function(){localStorage.setItem('enx-theme','noir');var t='noir';var L={'--bg':'#f3f4f6','--card':'#ffffff','--card2':'#f9fafb','--border':'rgba(0,0,0,0.08)','--border2':'rgba(0,0,0,0.12)','--text':'#111827','--text2':'#4b5563','--nav-bg':'rgba(255,255,255,0.95)'};var N={'--bg':'#000000','--card':'#0d0d0d','--card2':'#111318','--border':'rgba(255,255,255,0.07)','--border2':'rgba(255,255,255,0.10)','--text':'#ffffff','--text2':'#9ca3af','--nav-bg':'rgba(0,0,0,0.92)'};var v=t==='light'?L:(t==='system'?(window.matchMedia('(prefers-color-scheme:dark)').matches?N:L):N);var r=document.documentElement;Object.keys(v).forEach(function(k){r.style.setProperty(k,v[k]);});r.style.background=v['--bg'];document.addEventListener('DOMContentLoaded',function(){document.body.style.background=v['--bg'];document.body.style.color=v['--text'];});})();` },
       { src: `js/edunex-api.js` },
       { src: `assets/bot-avatars/manifest.js` },
       { src: `js/nex-ai-widget.js` },
@@ -1190,7 +1190,7 @@ export const pages = {
 
 `,
     scripts: [
-      { code: `(function(){var t=localStorage.getItem('enx-theme')||'noir';var L={'--bg':'#f3f4f6','--card':'#ffffff','--card2':'#f9fafb','--border':'rgba(0,0,0,0.08)','--border2':'rgba(0,0,0,0.12)','--text':'#111827','--text2':'#4b5563','--nav-bg':'rgba(255,255,255,0.95)'};var N={'--bg':'#000000','--card':'#0d0d0d','--card2':'#111318','--border':'rgba(255,255,255,0.07)','--border2':'rgba(255,255,255,0.10)','--text':'#ffffff','--text2':'#9ca3af','--nav-bg':'rgba(0,0,0,0.92)'};var v=t==='light'?L:(t==='system'?(window.matchMedia('(prefers-color-scheme:dark)').matches?N:L):N);var r=document.documentElement;Object.keys(v).forEach(function(k){r.style.setProperty(k,v[k]);});r.style.background=v['--bg'];document.addEventListener('DOMContentLoaded',function(){document.body.style.background=v['--bg'];document.body.style.color=v['--text'];});})();` },
+      { code: `(function(){localStorage.setItem('enx-theme','noir');var t='noir';var L={'--bg':'#f3f4f6','--card':'#ffffff','--card2':'#f9fafb','--border':'rgba(0,0,0,0.08)','--border2':'rgba(0,0,0,0.12)','--text':'#111827','--text2':'#4b5563','--nav-bg':'rgba(255,255,255,0.95)'};var N={'--bg':'#000000','--card':'#0d0d0d','--card2':'#111318','--border':'rgba(255,255,255,0.07)','--border2':'rgba(255,255,255,0.10)','--text':'#ffffff','--text2':'#9ca3af','--nav-bg':'rgba(0,0,0,0.92)'};var v=t==='light'?L:(t==='system'?(window.matchMedia('(prefers-color-scheme:dark)').matches?N:L):N);var r=document.documentElement;Object.keys(v).forEach(function(k){r.style.setProperty(k,v[k]);});r.style.background=v['--bg'];document.addEventListener('DOMContentLoaded',function(){document.body.style.background=v['--bg'];document.body.style.color=v['--text'];});})();` },
       { src: `js/edunex-api.js` },
       { src: `assets/bot-avatars/manifest.js` },
       { src: `js/nex-ai-widget.js` },
@@ -1659,7 +1659,7 @@ export const pages = {
 
 `,
     scripts: [
-      { code: `(function(){var t=localStorage.getItem('enx-theme')||'noir';var L={'--bg':'#f3f4f6','--card':'#ffffff','--card2':'#f9fafb','--border':'rgba(0,0,0,0.08)','--border2':'rgba(0,0,0,0.12)','--text':'#111827','--text2':'#4b5563','--nav-bg':'rgba(255,255,255,0.95)','--gray':'#6b7280','--light':'#374151'};var N={'--bg':'#000000','--card':'#0d0d0d','--card2':'#111318','--border':'rgba(255,255,255,0.07)','--border2':'rgba(255,255,255,0.10)','--text':'#ffffff','--text2':'#9ca3af','--nav-bg':'rgba(0,0,0,0.92)','--gray':'#888888','--light':'#bbbbbb'};var v=t==='light'?L:(t==='system'?(window.matchMedia('(prefers-color-scheme:dark)').matches?N:L):N);var r=document.documentElement;Object.keys(v).forEach(function(k){r.style.setProperty(k,v[k]);});r.style.background=v['--bg'];document.addEventListener('DOMContentLoaded',function(){document.body.style.background=v['--bg'];document.body.style.color=v['--text'];});})();` },
+      { code: `(function(){localStorage.setItem('enx-theme','noir');var t='noir';var L={'--bg':'#f3f4f6','--card':'#ffffff','--card2':'#f9fafb','--border':'rgba(0,0,0,0.08)','--border2':'rgba(0,0,0,0.12)','--text':'#111827','--text2':'#4b5563','--nav-bg':'rgba(255,255,255,0.95)','--gray':'#6b7280','--light':'#374151'};var N={'--bg':'#000000','--card':'#0d0d0d','--card2':'#111318','--border':'rgba(255,255,255,0.07)','--border2':'rgba(255,255,255,0.10)','--text':'#ffffff','--text2':'#9ca3af','--nav-bg':'rgba(0,0,0,0.92)','--gray':'#888888','--light':'#bbbbbb'};var v=t==='light'?L:(t==='system'?(window.matchMedia('(prefers-color-scheme:dark)').matches?N:L):N);var r=document.documentElement;Object.keys(v).forEach(function(k){r.style.setProperty(k,v[k]);});r.style.background=v['--bg'];document.addEventListener('DOMContentLoaded',function(){document.body.style.background=v['--bg'];document.body.style.color=v['--text'];});})();` },
       { src: `js/edunex-api.js` },
       { code: `
   const courseState = { courses: [], filtered: [], hasAccess: false, wishlist: new Set() };
@@ -2450,7 +2450,7 @@ document.querySelector('.search-input-wrap input')?.addEventListener('input', re
 
 `,
     scripts: [
-      { code: `(function(){var t=localStorage.getItem('enx-theme')||'noir';var L={'--bg':'#f3f4f6','--card':'#ffffff','--card2':'#f9fafb','--border':'rgba(0,0,0,0.08)','--border2':'rgba(0,0,0,0.12)','--text':'#111827','--text2':'#4b5563','--nav-bg':'rgba(255,255,255,0.95)'};var N={'--bg':'#000000','--card':'#0d0d0d','--card2':'#111318','--border':'rgba(255,255,255,0.07)','--border2':'rgba(255,255,255,0.10)','--text':'#ffffff','--text2':'#9ca3af','--nav-bg':'rgba(0,0,0,0.92)'};var v=t==='light'?L:(t==='system'?(window.matchMedia('(prefers-color-scheme:dark)').matches?N:L):N);var r=document.documentElement;Object.keys(v).forEach(function(k){r.style.setProperty(k,v[k]);});var isLight=v['--bg']!=='#000000';r.dataset.theme=isLight?'light':'noir';r.classList.toggle('dark',!isLight);r.style.background=v['--bg'];document.addEventListener('DOMContentLoaded',function(){document.body.style.background=v['--bg'];document.body.style.color=v['--text'];});})();` },
+      { code: `(function(){localStorage.setItem('enx-theme','noir');var t='noir';var L={'--bg':'#f3f4f6','--card':'#ffffff','--card2':'#f9fafb','--border':'rgba(0,0,0,0.08)','--border2':'rgba(0,0,0,0.12)','--text':'#111827','--text2':'#4b5563','--nav-bg':'rgba(255,255,255,0.95)'};var N={'--bg':'#000000','--card':'#0d0d0d','--card2':'#111318','--border':'rgba(255,255,255,0.07)','--border2':'rgba(255,255,255,0.10)','--text':'#ffffff','--text2':'#9ca3af','--nav-bg':'rgba(0,0,0,0.92)'};var v=t==='light'?L:(t==='system'?(window.matchMedia('(prefers-color-scheme:dark)').matches?N:L):N);var r=document.documentElement;Object.keys(v).forEach(function(k){r.style.setProperty(k,v[k]);});var isLight=v['--bg']!=='#000000';r.dataset.theme=isLight?'light':'noir';r.classList.toggle('dark',!isLight);r.style.background=v['--bg'];document.addEventListener('DOMContentLoaded',function(){document.body.style.background=v['--bg'];document.body.style.color=v['--text'];});})();` },
       { src: `js/edunex-api.js` },
       { src: `assets/bot-avatars/manifest.js` },
       { src: `js/nex-ai-widget.js` },
@@ -2935,7 +2935,7 @@ async function canOpenDashboard() {
 
 `,
     scripts: [
-      { code: `(function(){var t=localStorage.getItem('enx-theme')||'noir';var L={'--bg':'#f3f4f6','--card':'#ffffff','--card2':'#f9fafb','--border':'rgba(0,0,0,0.08)','--border2':'rgba(0,0,0,0.12)','--text':'#111827','--text2':'#4b5563','--nav-bg':'rgba(255,255,255,0.95)'};var N={'--bg':'#000000','--card':'#0d0d0d','--card2':'#111318','--border':'rgba(255,255,255,0.07)','--border2':'rgba(255,255,255,0.10)','--text':'#ffffff','--text2':'#9ca3af','--nav-bg':'rgba(0,0,0,0.92)'};var v=t==='light'?L:(t==='system'?(window.matchMedia('(prefers-color-scheme:dark)').matches?N:L):N);var r=document.documentElement;Object.keys(v).forEach(function(k){r.style.setProperty(k,v[k]);});r.style.background=v['--bg'];document.addEventListener('DOMContentLoaded',function(){document.body.style.background=v['--bg'];document.body.style.color=v['--text'];});})();` },
+      { code: `(function(){localStorage.setItem('enx-theme','noir');var t='noir';var L={'--bg':'#f3f4f6','--card':'#ffffff','--card2':'#f9fafb','--border':'rgba(0,0,0,0.08)','--border2':'rgba(0,0,0,0.12)','--text':'#111827','--text2':'#4b5563','--nav-bg':'rgba(255,255,255,0.95)'};var N={'--bg':'#000000','--card':'#0d0d0d','--card2':'#111318','--border':'rgba(255,255,255,0.07)','--border2':'rgba(255,255,255,0.10)','--text':'#ffffff','--text2':'#9ca3af','--nav-bg':'rgba(0,0,0,0.92)'};var v=t==='light'?L:(t==='system'?(window.matchMedia('(prefers-color-scheme:dark)').matches?N:L):N);var r=document.documentElement;Object.keys(v).forEach(function(k){r.style.setProperty(k,v[k]);});r.style.background=v['--bg'];document.addEventListener('DOMContentLoaded',function(){document.body.style.background=v['--bg'];document.body.style.color=v['--text'];});})();` },
       { src: `js/edunex-api.js` },
       { src: `assets/bot-avatars/manifest.js` },
       { src: `js/nex-ai-widget.js` },
@@ -3656,7 +3656,7 @@ async function canOpenDashboard() {
   "index.html": {
     title: `Skillomate AI — Best Platform to Empower Skills`,
     lang: `en`,
-    stylesheets: [`css/theme.css`],
+    stylesheets: [],
     styles: `
     :root {
       --cyan: #00E5FF;
@@ -4244,37 +4244,23 @@ async function canOpenDashboard() {
     scripts: [
       { code: `
     (function () {
-      const saved = localStorage.getItem('enx-theme') || 'noir';
-      const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-      const resolved = saved === 'light' ? 'light' : (saved === 'system' ? (prefersDark ? 'noir' : 'light') : 'noir');
-      const vars = resolved === 'light'
-        ? {
-          '--bg': '#f3f4f6',
-          '--card': '#ffffff',
-          '--card2': '#f9fafb',
-          '--border': 'rgba(0,0,0,0.08)',
-          '--border2': 'rgba(0,0,0,0.12)',
-          '--text': '#111827',
-          '--text2': '#4b5563',
-          '--nav-bg': 'rgba(255,255,255,0.95)',
-          '--gray': '#6b7280',
-          '--light': '#374151'
-        }
-        : {
-          '--bg': '#000000',
-          '--card': '#0d0d0d',
-          '--card2': '#111318',
-          '--border': 'rgba(255,255,255,0.07)',
-          '--border2': 'rgba(255,255,255,0.10)',
-          '--text': '#ffffff',
-          '--text2': '#9ca3af',
-          '--nav-bg': 'rgba(0,0,0,0.92)',
-          '--gray': '#888888',
-          '--light': '#bbbbbb'
-        };
+      localStorage.setItem('enx-theme', 'noir');
+      const resolved = 'noir';
+      const vars = {
+        '--bg': '#000000',
+        '--card': '#0d0d0d',
+        '--card2': '#111318',
+        '--border': 'rgba(255,255,255,0.07)',
+        '--border2': 'rgba(255,255,255,0.10)',
+        '--text': '#ffffff',
+        '--text2': '#9ca3af',
+        '--nav-bg': 'rgba(0,0,0,0.92)',
+        '--gray': '#888888',
+        '--light': '#bbbbbb'
+      };
       const root = document.documentElement;
       root.dataset.theme = resolved;
-      root.classList.toggle('dark', resolved !== 'light');
+      root.classList.add('dark');
       Object.keys(vars).forEach(key => root.style.setProperty(key, vars[key]));
       root.style.background = vars['--bg'];
     })();
@@ -7153,40 +7139,8 @@ init();
     </div>
   </div>
 
-  <!-- Theme + Activity row -->
+  <!-- Activity row -->
   <div class="pf-row-2">
-
-    <!-- Interface Theme -->
-    <div class="pf-card">
-      <div class="pf-card-heading">
-        <i class="fas fa-palette"></i>
-        Interface Theme
-      </div>
-      <div class="pf-theme-grid">
-        <div class="pf-theme-opt" data-theme="light" onclick="selectTheme(this)">
-          <div class="pf-theme-preview">
-            <div class="pf-theme-bar"></div>
-            <div class="pf-theme-bar" style="width:60%"></div>
-          </div>
-          <div class="pf-theme-label">Light</div>
-        </div>
-        <div class="pf-theme-opt" data-theme="noir" onclick="selectTheme(this)">
-          <div class="pf-theme-preview">
-            <div class="pf-theme-bar"></div>
-            <div class="pf-theme-bar" style="width:60%"></div>
-          </div>
-          <div class="pf-theme-label">Noir Blue</div>
-        </div>
-        <div class="pf-theme-opt" data-theme="system" onclick="selectTheme(this)">
-          <div class="pf-theme-preview">
-            <div class="pf-theme-bar"></div>
-            <div class="pf-theme-bar" style="width:60%"></div>
-          </div>
-          <div class="pf-theme-label">System</div>
-        </div>
-      </div>
-    </div>
-
     <!-- Learning & Activity -->
     <div class="pf-card">
       <div class="pf-card-heading">
@@ -7269,23 +7223,17 @@ init();
     scripts: [
       { code: `
     (function(){
-      const t = localStorage.getItem('enx-theme') || 'noir';
-      const light = {
-        '--bg':'#f3f4f6','--bg2':'#ffffff','--card':'#ffffff','--card2':'#f9fafb',
-        '--border':'rgba(0,0,0,0.08)','--border2':'rgba(0,0,0,0.12)',
-        '--text':'#111827','--text2':'#4b5563','--nav-bg':'rgba(255,255,255,0.95)','--input-bg':'#f9fafb'
-      };
+      localStorage.setItem('enx-theme', 'noir');
       const noir = {
         '--bg':'#000000','--bg2':'#0d0d0d','--card':'#0d0d0d','--card2':'#111318',
         '--border':'rgba(255,255,255,0.07)','--border2':'rgba(255,255,255,0.10)',
         '--text':'#ffffff','--text2':'#9ca3af','--nav-bg':'rgba(0,0,0,0.92)','--input-bg':'#111111'
       };
-      const vars = t === 'light' ? light : (t === 'system' ? (window.matchMedia('(prefers-color-scheme:dark)').matches ? noir : light) : noir);
+      const vars = noir;
       const r = document.documentElement;
       Object.entries(vars).forEach(([k,v]) => r.style.setProperty(k,v));
-      const isLight = vars['--bg'] !== '#000000';
-      r.dataset.theme = isLight ? 'light' : 'noir';
-      r.classList.toggle('dark', !isLight);
+      r.dataset.theme = 'noir';
+      r.classList.add('dark');
       document.documentElement.style.background = vars['--bg'];
     })();
   ` },
@@ -7294,33 +7242,19 @@ init();
       { src: `js/nex-ai-widget.js` },
       { src: `js/animations.js` },
       { code: `
-  function applyProfileTheme(name) {
-    EduNex.applyTheme(name);
-    const saved = localStorage.getItem('enx-theme') || 'noir';
-    document.querySelectorAll('.pf-theme-opt').forEach(opt => {
-      opt.classList.toggle('selected', opt.dataset.theme === saved);
-    });
+  function applyProfileTheme() {
+    localStorage.setItem('enx-theme', 'noir');
+    EduNex.applyTheme('noir');
   }
 
-  function selectTheme(el) {
-    const name = el.dataset.theme;
-    localStorage.setItem('enx-theme', name);
-    applyProfileTheme(name);
-  }
-
-  // On load: restore saved theme and highlight correct option
+  // On load: enforce the dark Skillomate interface.
   (function() {
-    const saved = localStorage.getItem('enx-theme') || 'noir';
-    applyProfileTheme(saved);
+    applyProfileTheme();
     window.addEventListener('DOMContentLoaded', () => {
-      applyProfileTheme(localStorage.getItem('enx-theme') || 'noir');
-    });
-    // Listen for system preference changes when "system" is selected
-    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
-      if (localStorage.getItem('enx-theme') === 'system') applyProfileTheme('system');
+      applyProfileTheme();
     });
     window.addEventListener('storage', (event) => {
-      if (event.key === 'enx-theme') applyProfileTheme(event.newValue || 'noir');
+      if (event.key === 'enx-theme') applyProfileTheme();
     });
   })();
 function setStoredUser(user) {
@@ -11290,7 +11224,7 @@ function setStoredUser(user) {
 
 `,
     scripts: [
-      { code: `(function(){var t=localStorage.getItem('enx-theme')||'noir';var L={'--bg':'#f3f4f6','--card':'#ffffff','--card2':'#f9fafb','--border':'rgba(0,0,0,0.08)','--border2':'rgba(0,0,0,0.12)','--text':'#111827','--text2':'#4b5563','--nav-bg':'rgba(255,255,255,0.95)'};var N={'--bg':'#000000','--card':'#0d0d0d','--card2':'#111318','--border':'rgba(255,255,255,0.07)','--border2':'rgba(255,255,255,0.10)','--text':'#ffffff','--text2':'#9ca3af','--nav-bg':'rgba(0,0,0,0.92)'};var v=t==='light'?L:(t==='system'?(window.matchMedia('(prefers-color-scheme:dark)').matches?N:L):N);var r=document.documentElement;Object.keys(v).forEach(function(k){r.style.setProperty(k,v[k]);});r.style.background=v['--bg'];document.addEventListener('DOMContentLoaded',function(){document.body.style.background=v['--bg'];document.body.style.color=v['--text'];});})();` },
+      { code: `(function(){localStorage.setItem('enx-theme','noir');var t='noir';var L={'--bg':'#f3f4f6','--card':'#ffffff','--card2':'#f9fafb','--border':'rgba(0,0,0,0.08)','--border2':'rgba(0,0,0,0.12)','--text':'#111827','--text2':'#4b5563','--nav-bg':'rgba(255,255,255,0.95)'};var N={'--bg':'#000000','--card':'#0d0d0d','--card2':'#111318','--border':'rgba(255,255,255,0.07)','--border2':'rgba(255,255,255,0.10)','--text':'#ffffff','--text2':'#9ca3af','--nav-bg':'rgba(0,0,0,0.92)'};var v=t==='light'?L:(t==='system'?(window.matchMedia('(prefers-color-scheme:dark)').matches?N:L):N);var r=document.documentElement;Object.keys(v).forEach(function(k){r.style.setProperty(k,v[k]);});r.style.background=v['--bg'];document.addEventListener('DOMContentLoaded',function(){document.body.style.background=v['--bg'];document.body.style.color=v['--text'];});})();` },
       { src: `js/edunex-api.js` },
       { src: `assets/bot-avatars/manifest.js` },
       { src: `js/nex-ai-widget.js` },

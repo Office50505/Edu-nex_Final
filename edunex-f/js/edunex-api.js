@@ -38,14 +38,10 @@
   };
 
   function themeName() {
-    return localStorage.getItem("enx-theme") || "noir";
+    return "noir";
   }
 
   function resolvedTheme(name = themeName()) {
-    if (name === "light") return "light";
-    if (name === "system") {
-      return window.matchMedia?.("(prefers-color-scheme: dark)")?.matches ? "noir" : "light";
-    }
     return "noir";
   }
 
@@ -53,6 +49,9 @@
     const resolved = resolvedTheme(name);
     const vars = THEME_VARS[resolved];
     const root = document.documentElement;
+    try {
+      localStorage.setItem("enx-theme", "noir");
+    } catch (_) {}
     Object.keys(vars).forEach((key) => root.style.setProperty(key, vars[key]));
     root.dataset.theme = resolved;
     root.classList.toggle("dark", resolved !== "light");

@@ -1,15 +1,13 @@
 (function () {
   'use strict';
 
-  var theme = 'noir';
   try {
-    theme = localStorage.getItem('enx-theme') || 'noir';
+    localStorage.setItem('enx-theme', 'noir');
   } catch (_) {
     // Storage can be unavailable in strict private-browsing contexts.
   }
 
-  var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-  var isLight = theme === 'light' || (theme === 'system' && !prefersDark);
+  var isLight = false;
   var root = document.documentElement;
   var colors = isLight
     ? { bg: '#F8FAFC', text: '#0F172A', text2: '#475569', nav: '#F8FAFC', border: '#E2E8F0' }
