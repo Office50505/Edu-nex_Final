@@ -5,6 +5,7 @@ const path = require('node:path');
 
 const phonePe = require('../services/phonePeStandardAutoPayService');
 const scheduler = require('../services/phonePeAutoPayScheduler');
+const standardController = require('../controllers/phonePeStandardAutoPayController');
 
 function sandboxEnv(overrides = {}) {
   return {
@@ -133,6 +134,39 @@ test('scheduler notifies 24 hours before the first billing time', () => {
   );
 });
 
+test('an uncertain setup becomes retryable only after PhonePe confirms the order does not exist', async () => {
+  const updates = [];
+  const billing = {
+    _id: 'user-1',
+    attempt: 'attempt-1',
+    phase: 'uncertain',
+    setupMerchantOrderId: 'PPS_MISSING_1',
+  };
+  const recovered = await standardController.recoverMissingUncertainSetup(billing, {
+    provider: {
+      getOrderStatus: async () => {
+        throw Object.assign(new Error('not found'), { providerCode: 'ORDER_NOT_FOUND', providerStatus: 400 });
+      },
+    },
+    billingModel: { updateOne: async (...args) => updates.push(['billing', ...args]) },
+    orderModel: { updateOne: async (...args) => updates.push(['order', ...args]) },
+  });
+  assert.equal(recovered.phase, 'failed');
+  assert.equal(recovered.providerState, 'ORDER_NOT_FOUND');
+  assert.equal(updates.length, 2);
+
+  const stillUncertain = await standardController.recoverMissingUncertainSetup(billing, {
+    provider: {
+      getOrderStatus: async () => {
+        throw Object.assign(new Error('timeout'), { providerCode: 'TIMEOUT', providerStatus: 504 });
+      },
+    },
+    billingModel: { updateOne: async () => assert.fail('must not unlock an ambiguous checkout') },
+    orderModel: { updateOne: async () => assert.fail('must not unlock an ambiguous checkout') },
+  });
+  assert.equal(stillUncertain.phase, 'uncertain');
+});
+
 test('new PhonePe web paths preserve Razorpay and mobile store integrations', () => {
   const paymentRoutes = fs.readFileSync(path.join(__dirname, '../routes/payment.js'), 'utf8');
   const server = fs.readFileSync(path.join(__dirname, '../server.js'), 'utf8');
@@ -145,4 +179,7 @@ test('new PhonePe web paths preserve Razorpay and mobile store integrations', ()
   assert.match(server, /require\('\.\/routes\/appleIap'\)/);
   assert.match(server, /require\('\.\/routes\/googlePlayIap'\)/);
   assert.match(frontend, /window\.location\.assign\(data\.redirectUrl\)/);
+  assert.match(frontend, /trialAccess/);
+  assert.match(frontend, /Trial subscription is active/);
+  assert.match(fs.readFileSync(path.join(__dirname, '../controllers/phonePeStandardAutoPayController.js'), 'utf8'), /account\.access\.status !== 'trial'/);
 });

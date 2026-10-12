@@ -88,6 +88,7 @@ export function PaymentPage() {
   const trial = !phonePeOneTime && !explicitMonthly && (marketingOnboarding || trialEligible);
   const paymentType = phonePeOneTime ? "one_time" : trial ? "trial" : "monthly";
   const [paymentCompleted, setPaymentCompleted] = useState(false);
+  const [existingAccessKind, setExistingAccessKind] = useState("premium");
   const [pending, setPending] = useState(false);
   const [onboardingToken, setOnboardingToken] = useState(() => readOnboardingToken());
   const planAvailable = Boolean(pricing);
@@ -257,9 +258,17 @@ export function PaymentPage() {
         const cancelledTrialMandate = !phonePeOneTime && !nextTrialEligible
           && data.autoRenewEnabled === false
           && String(data.subscriptionType || "").toLowerCase() === "trial";
-        if ((data.accessGranted === true || data.hasActiveAccess === true) && !cancelledTrialMandate) {
+        const accessActive = data.accessGranted === true || data.hasActiveAccess === true;
+        const accessStatus = String(data.subscriptionStatus || data.status || data.subscriptionDocStatus || "").toLowerCase();
+        const trialAccess = ["trial", "1rs trial"].includes(accessStatus);
+        // An active trial grants limited learning access, but it is not full
+        // premium. Only treat it as a completed subscription when an active
+        // recurring mandate is already attached to it.
+        const existingSubscriptionReady = accessActive && (!trialAccess || data.autoRenewEnabled === true);
+        if (existingSubscriptionReady && !cancelledTrialMandate) {
           markLocalCourseAccess();
           if (!cancelled) {
+            setExistingAccessKind(trialAccess ? "trial-subscription" : "premium");
             configureAppOpenButton();
             setCheckoutState("subscribed");
           }
@@ -464,8 +473,12 @@ export function PaymentPage() {
         {checkoutState === "subscribed" ? (
           <div className="checkout-launcher-card">
             <CheckIcon />
-            <h1>{paymentCompleted ? "Payment Successful" : "Premium access is active"}</h1>
-            <p>{paymentCompleted ? "Your payment was verified and access is ready." : "No additional payment is required."}</p>
+            <h1>{paymentCompleted ? "Payment Successful" : existingAccessKind === "trial-subscription" ? "Trial subscription is active" : "Premium access is active"}</h1>
+            <p>{paymentCompleted
+              ? "Your payment was verified and access is ready."
+              : existingAccessKind === "trial-subscription"
+                ? "Your trial is active and monthly renewal is already set up."
+                : "No additional payment is required."}</p>
             <a id="watchNowBtn" href={watchHref} className="checkout-launcher-primary">Start Learning</a>
           </div>
         ) : null}

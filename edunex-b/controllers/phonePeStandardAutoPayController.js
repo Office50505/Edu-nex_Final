@@ -23,6 +23,33 @@ function generatedId(prefix) {
   return `${prefix}_${Date.now().toString(36)}_${crypto.randomBytes(7).toString('hex')}`.toUpperCase();
 }
 
+async function recoverMissingUncertainSetup(billing, dependencies = {}) {
+  if (billing?.phase !== 'uncertain' || !billing.setupMerchantOrderId) return billing;
+  const provider = dependencies.provider || service;
+  const billingModel = dependencies.billingModel || PhonePeBilling;
+  const orderModel = dependencies.orderModel || Order;
+  try {
+    await provider.getOrderStatus(billing.setupMerchantOrderId);
+    return billing;
+  } catch (error) {
+    const missingAtProvider = error?.providerCode === 'ORDER_NOT_FOUND'
+      && [400, 404].includes(Number(error?.providerStatus));
+    if (!missingAtProvider) return billing;
+    await Promise.all([
+      billingModel.updateOne(
+        { _id: billing._id, attempt: billing.attempt, phase: 'uncertain' },
+        { $set: { phase: 'failed', providerState: 'ORDER_NOT_FOUND' } }
+      ),
+      orderModel.updateOne(
+        { phonePeMerchantTransactionId: billing.setupMerchantOrderId, status: 'pending' },
+        { $set: { status: 'failed' } }
+      ),
+    ]);
+    const plainBilling = typeof billing.toObject === 'function' ? billing.toObject() : billing;
+    return { ...plainBilling, phase: 'failed', providerState: 'ORDER_NOT_FOUND' };
+  }
+}
+
 function addHours(value, hours) {
   return new Date(new Date(value).getTime() + hours * 60 * 60 * 1000);
 }
@@ -288,7 +315,13 @@ async function initiate(req, res) {
       loadAccountEntitlement(req.user),
       RazorpayBilling.findById(req.user._id),
     ]);
-    if (account.access.active) return res.status(409).json({ error: 'Premium access is already active.' });
+    // A trial is deliberately an active entitlement so the learner can watch
+    // the trial course, but it is not full premium access. In particular,
+    // admin-created trials may not have a payment mandate yet and must still
+    // be allowed to start the monthly AutoPay checkout.
+    if (account.access.active && account.access.status !== 'trial') {
+      return res.status(409).json({ error: 'Premium access is already active.' });
+    }
     if (existingSubscription?.gateway === 'razorpay'
       && existingSubscription.razorpaySubscriptionId
       && !['cancelled', 'expired', 'completed', 'halted'].includes(String(existingSubscription.razorpayStatus || '').toLowerCase())) {
@@ -302,7 +335,8 @@ async function initiate(req, res) {
     const trialUsed = await hasUsedIntroTrial(req.user._id, existingSubscription, req.user);
     if (paymentType === 'trial' && trialUsed) return res.status(409).json({ error: 'The ₹1 trial can only be used once per account. Continue with ₹499 monthly access.' });
 
-    const existing = await PhonePeBilling.findById(req.user._id);
+    let existing = await PhonePeBilling.findById(req.user._id);
+    existing = await recoverMissingUncertainSetup(existing);
     if (existing?.phase === 'setup_pending' && existing.approvalUrl) {
       if (existing.paymentType !== paymentType) return res.status(409).json({ error: 'An unfinished PhonePe checkout already exists.' });
       return res.json({
@@ -379,6 +413,7 @@ async function initiate(req, res) {
       });
     } catch (error) {
       await PhonePeBilling.updateOne({ _id: req.user._id, attempt }, { $set: { phase: 'uncertain' } });
+      console.error(`[PHONEPE_AUTOPAY] action=create_subscription order=${merchantOrderId} code=${error.providerCode || error.code || error.name || 'provider_error'} status=${error.providerStatus || 'unknown'}`);
       throw error;
     }
   } catch (error) {
@@ -589,4 +624,5 @@ module.exports = {
   reconcileCycle,
   completeRedemption,
   applyWebhook,
+  recoverMissingUncertainSetup,
 };

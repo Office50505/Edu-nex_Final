@@ -181,6 +181,32 @@ it('opens monthly checkout directly for a trial-used account', async () => {
  await waitFor(() => expect(openRazorpay).toHaveBeenCalledTimes(1));
  expect(JSON.parse(fetcher.mock.calls.find(([url]) => url.endsWith('/initiate-trial'))[1].body).paymentType).toBe('monthly');
 });
+it('does not label an active trial without a mandate as premium access', async () => {
+ window.history.replaceState(null, '', '/payment?plan=monthly');
+ const fetcher = mockApi({ gateway: 'phonepe', autoRenewEnabled: true, subscriptionAmountPaise: 49900 }, false);
+ const original = fetcher.getMockImplementation();
+ fetcher.mockImplementation((url, options) => url.endsWith('/subscription-status')
+   ? Promise.resolve(response({ status: 'trial', subscriptionStatus: 'trial', accessGranted: true, hasActiveAccess: true, autoRenewEnabled: false, trialEligible: false }))
+   : url.endsWith('/initiate-trial')
+     ? Promise.resolve(response({ error: 'Checkout stopped for test.' }, 503))
+     : original(url, options));
+ render(<PaymentPage />);
+ await screen.findByText('Checkout stopped for test.');
+ expect(screen.queryByText('Premium access is active')).toBeNull();
+ expect(JSON.parse(fetcher.mock.calls.find(([url]) => url.endsWith('/initiate-trial'))[1].body)).toMatchObject({ paymentType: 'monthly' });
+});
+it('describes a trial with an existing recurring mandate accurately', async () => {
+ window.history.replaceState(null, '', '/payment?plan=monthly');
+ const fetcher = mockApi({ gateway: 'phonepe', autoRenewEnabled: true, subscriptionAmountPaise: 49900 }, false);
+ const original = fetcher.getMockImplementation();
+ fetcher.mockImplementation((url, options) => url.endsWith('/subscription-status')
+   ? Promise.resolve(response({ status: 'trial', accessGranted: true, autoRenewEnabled: true, trialEligible: false }))
+   : original(url, options));
+ render(<PaymentPage />);
+ expect(await screen.findByText('Trial subscription is active')).toBeTruthy();
+ expect(screen.getByText(/monthly renewal is already set up/i)).toBeTruthy();
+ expect(fetcher.mock.calls.filter(([url]) => url.endsWith('/initiate-trial'))).toHaveLength(0);
+});
 it('blocks purchasing when eligibility could not be checked', async () => {
  const fetcher = mockApi(); const original = fetcher.getMockImplementation();
  fetcher.mockImplementation((url, options) => url.endsWith('/subscription-status') ? Promise.resolve(response({error:'Status unavailable'}, 503)) : original(url, options));
