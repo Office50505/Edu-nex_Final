@@ -4,6 +4,15 @@ The main `/api/ai/chat` route uses the published course catalog and local text r
 
 ## Bundled course content
 
+`platform/skillomate-platform.txt` contains the editable Skillomate platform knowledge base for Nex AI:
+
+- account/login/profile behavior
+- course access, progress, certificates, wishlists, downloads
+- current web payment facts, recurring/app-store terms, refund/cancellation boundaries
+- support contact details and AI tutor behavior rules
+
+Keep this file limited to user-safe product knowledge. Do not put credentials, private environment values, internal-only admin procedures, learner personal data, or unverified marketing claims in platform knowledge.
+
 `ai-influencer/` contains copies of the existing extracted transcripts in `appcopyai/Ai/uploads/transcripts/`:
 
 - `notes.txt`: lesson notes and prompts.
@@ -36,6 +45,7 @@ Edit the corresponding text files after instructor review and restart the backen
 
 - `npm run test:ai`: offline history, retrieval, and subscription-boundary regression tests.
 - `npm run eval:ai`: four live requests against the configured provider, using a fixture course and subscription in an isolated harness. This incurs provider usage, sends the included course excerpts to the provider, and does not access or modify learner accounts. Review the printed Hinglish and quiz answers manually; automated checks cannot establish overall teaching quality.
+- `npm run eval:platform-ai`: live platform-knowledge evaluation for pricing, account setup, failed access, refund, certificates, support, and out-of-scope behavior. This incurs provider usage for non-deterministic answers and does not access or modify learner accounts.
 - `node scripts/eval-tutor.cjs --video-context`: two live fixture requests checking selected-video summaries in English and Roman Hinglish.
 
 Use the popup on `/` or the standalone `/ai-tutor` page. Refresh after frontend changes. Try a specific question, then “explain that simply,” “give an example,” and “quiz me.” Both chats retain six exchanges in page memory; refresh/New chat clears history. This is not durable cross-device memory.

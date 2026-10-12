@@ -46,6 +46,14 @@ function chunks(text) {
     return result;
   });
 }
+const PLATFORM_DOC_PATH = path.join(__dirname, '../knowledge/platform/skillomate-platform.txt');
+const PLATFORM_DOCUMENTS = fs.existsSync(PLATFORM_DOC_PATH)
+  ? chunks(fs.readFileSync(PLATFORM_DOC_PATH, 'utf8')).map(chunk => ({
+      ...chunk,
+      title: 'Skillomate Platform Knowledge Base',
+      kind: 'platform-material',
+    }))
+  : [];
 const localDocuments = COURSE_DOCUMENTS.flatMap(({ slugs, dir, files }) => files.flatMap(([file, title]) => {
   const text = fs.readFileSync(path.join(__dirname, '../knowledge', dir, file), 'utf8');
   return slugs.flatMap(slug => chunks(text).map(chunk => ({ ...chunk, title, courseSlug: slug, kind: 'course-material' })));
@@ -181,4 +189,32 @@ function retrieveKnowledge({ courses, message, history = [], includeMaterials = 
   };
 }
 
-module.exports = { retrieveKnowledge, hasLessonAccess, allowsCourseComparison };
+function retrievePlatformKnowledge({ message, history = [] } = {}) {
+  const retrievalQuery = [
+    message,
+    ...(Array.isArray(history) ? history.slice(-4).map(item => item?.content || '') : []),
+  ].join(' ');
+  const weights = new Map();
+  for (const word of terms(retrievalQuery)) weights.set(word, 1);
+  const indexed = PLATFORM_DOCUMENTS.map(doc => ({ ...doc, tokens: terms(`${doc.heading} ${doc.content}`) }));
+  const frequencies = new Map();
+  for (const doc of indexed) for (const term of new Set(doc.tokens)) frequencies.set(term, (frequencies.get(term) || 0) + 1);
+  const ranked = indexed.map(doc => {
+    let score = 0;
+    const counts = new Map();
+    for (const term of doc.tokens) counts.set(term, (counts.get(term) || 0) + 1);
+    for (const [word, weight] of weights) {
+      const count = counts.get(word) || 0;
+      if (count) score += weight * Math.log(1 + indexed.length / (frequencies.get(word) || 1)) * count / (count + 1.2 + doc.tokens.length / 200);
+    }
+    return { ...doc, score };
+  }).filter(doc => doc.score > 0).sort((a, b) => b.score - a.score).slice(0, 4);
+
+  return {
+    excerpts: ranked.map((doc, index) => `[P${index + 1}] ${doc.title} — ${doc.heading || 'Platform reference'}\n${doc.content}`).join('\n\n'),
+    debugChunks: ranked.map((doc, index) => ({ rank: index + 1, section: doc.heading, kind: doc.kind, score: Number(doc.score || 0) })),
+    available: PLATFORM_DOCUMENTS.length > 0,
+  };
+}
+
+module.exports = { retrieveKnowledge, retrievePlatformKnowledge, hasLessonAccess, allowsCourseComparison };

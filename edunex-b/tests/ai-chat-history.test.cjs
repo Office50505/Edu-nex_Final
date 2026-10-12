@@ -35,6 +35,7 @@ function backend(options = {}) {
       if (name.endsWith('/AppleSubscription')) return { findOne: () => ({ lean: async () => options.apple || null }) };
       if (name.endsWith('/GooglePlaySubscription')) return { findOne: () => ({ lean: async () => options.google || null }) };
       if (name.endsWith('/Subscription')) return { findOne: () => ({ lean: async () => options.subscription || null }) };
+      if (name.endsWith('/Order')) return { findOne: () => ({ select() { return this; }, sort() { return this; }, lean: async () => options.order || null }) };
       if (name.includes('Course')) return { find: () => query };
       return { requireCompatibleAuth: () => () => {} };
     },
@@ -252,6 +253,49 @@ test('empty or failed provider replies fall back without learner-facing outage c
     assert.equal(Array.isArray(result.sources), true);
     assert.equal(result.sources.length, 0);
   }
+});
+
+test('plan questions bypass provider and answer with current Skillomate access facts', async () => {
+  const api = backend();
+  const result = await api.chat({ message: 'but it show 499 me all course access kar sakte' });
+  assert.equal(result.provider, 'skillomate-plan-facts');
+  assert.match(result.reply, /₹499/);
+  assert.match(result.reply, /30 days/);
+  assert.match(result.reply, /all Skillomate courses/);
+  assert.match(result.reply, /PhonePe one-time payment/i);
+  assert.equal(api.calls.length, 0);
+});
+
+test('learner account questions bypass provider with safe profile and payment facts', async () => {
+  const expiresAt = new Date(Date.now() + 3 * 86400000);
+  const api = backend({
+    user: {
+      _id: 'learner',
+      fullName: 'User Five',
+      email: 'user5@example.test',
+      mobileNumber: '919876543210',
+      isMobileVerified: true,
+      subscriptionStatus: 'active',
+      subscriptionExpiry: expiresAt,
+      age: 21,
+      gender: 'male',
+      avatar: 'avatar-1',
+    },
+    order: {
+      gateway: 'phonepe',
+      orderType: 'one_time_access',
+      totalAmount: 49900,
+      paidAt: new Date(),
+      phonePePaymentInstrument: 'UPI',
+      refundedAmount: 0,
+    },
+  });
+  const result = await api.chat({ message: 'my payment details and how many days remaining in my plan?' });
+  assert.equal(result.provider, 'skillomate-learner-facts');
+  assert.match(result.reply, /User Five|₹499|phonepe|UPI|remaining/i);
+  assert.match(result.reply, /3 days? remaining/i);
+  assert.doesNotMatch(result.reply, /919876543210|user5@example\.test/i);
+  assert.equal(api.calls.length, 0);
 });
 
 

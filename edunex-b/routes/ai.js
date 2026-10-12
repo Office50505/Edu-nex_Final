@@ -10,6 +10,8 @@ const {
   compactText,
   sanitizeHistory,
   buildContext,
+  loadLearnerContext,
+  learnerContextDirectReply,
   callFalOpenRouter,
   builtInCourseGuide,
   cleanLearnerReply,
@@ -17,6 +19,8 @@ const {
   resolveRequestedCourseScope,
   resolveConversationState,
   aiFilmmakingTemplateIdForReply,
+  skillomatePlanDirectReply,
+  skillomatePlatformDirectReply,
   OUT_OF_SCOPE_REPLY,
 } = require('../services/aiTutorService');
 const {
@@ -25,7 +29,7 @@ const {
   sanitizeAiOutput,
 } = require('../services/aiCompliance');
 const router = express.Router();
-const AI_USER_PROJECTION = '+activeSessionId +activeSessions';
+const AI_USER_PROJECTION = '+activeSessionId +activeSessions fullName email mobileNumber isMobileVerified isEmailVerified age gender avatar subscriptionStatus subscriptionExpiry isOnTrial purchasedCourses courseEntitlements wishlist courseProgress createdAt lastActiveAt lastLoginAt loginCount';
 const aiRateState = new Map();
 const LEGACY_CONSENT_RESPONSE = Object.freeze({
   granted: true,
@@ -224,12 +228,23 @@ async function handleTutorChat(req, res) {
     let knowledge;
     let selectedTemplateId = '';
     let state = null;
+    const learnerContext = await loadLearnerContext(req.compatUser);
+    const learnerReply = learnerContextDirectReply(message, learnerContext);
+    const planReply = skillomatePlanDirectReply(message);
+    const platformReply = skillomatePlatformDirectReply(message);
+    if (learnerReply) {
+      provider = 'skillomate-learner-facts';
+      reply = learnerReply;
+    } else if (platformReply) {
+      provider = platformReply === planReply ? 'skillomate-plan-facts' : 'skillomate-platform-facts';
+      reply = platformReply;
+    }
     if (FAL_API_KEY) {
       try {
-        knowledge = await buildContext(req.compatUser, courseId, message, history, { lessonId });
-        reply = aiFilmmakingDirectReply({ message, courseId, knowledge, history });
+        if (!reply) knowledge = await buildContext(req.compatUser, courseId, message, history, { lessonId, learnerContext });
+        if (!reply) reply = aiFilmmakingDirectReply({ message, courseId, knowledge, history });
         if (reply) {
-          provider = 'course-knowledge-rule';
+          if (!provider.startsWith('skillomate-')) provider = 'course-knowledge-rule';
           selectedTemplateId = aiFilmmakingTemplateIdForReply(reply);
         } else {
           reply = await callFalOpenRouter({ context: knowledge.context, message, pagePath, assistantName, history });
@@ -242,7 +257,7 @@ async function handleTutorChat(req, res) {
 
     if (!reply) {
       provider = 'built-in-course-guide';
-      if (!knowledge && courseId && lessonId) knowledge = await buildContext(req.compatUser, courseId, message, history, { lessonId });
+      if (!knowledge && courseId && lessonId) knowledge = await buildContext(req.compatUser, courseId, message, history, { lessonId, learnerContext });
       reply = aiFilmmakingDirectReply({ message, courseId, knowledge, history });
       if (reply) {
         provider = 'course-knowledge-rule';

@@ -1,7 +1,7 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const { retrieveKnowledge, hasLessonAccess } = require('../services/tutorKnowledge');
-const { aiFilmmakingDirectReply } = require('../services/aiTutorService');
+const { aiFilmmakingDirectReply, skillomatePlanDirectReply, skillomatePlatformDirectReply, learnerContextDirectReply } = require('../services/aiTutorService');
 const course = { _id: '6a9e67c46bcb631b8118d341', slug: 'ai-influencer-course', title: 'AI Influencer Course', description: 'Create consistent AI characters and videos.', videos: [{ title: 'Prompting', description: 'Write clear prompts.', examplePrompt: 'PAID_EXAMPLE_SENTINEL' }] };
 const filmmakingCourse = { _id: '6abe5bb2bced21d7211be185', slug: 'ai-filmmaking-course', title: 'AI Filmmaking Course', description: 'Create AI short films with story, shots, voice, and editing.', videos: [{ title: 'Tools Setup', description: 'Set up Google Flow, ChatGPT, ElevenLabs, and CapCut.' }] };
 const otherCourse = { _id: '6c0000000000000000000000', slug: 'other-course', title: 'Other Course', description: 'CROSS_COURSE_SENTINEL teaches unrelated material.', videos: [{ title: 'Other Lesson', description: 'CROSS_COURSE_LESSON_SENTINEL' }] };
@@ -206,6 +206,81 @@ test('AI Filmmaking direct replies resolve short follow-ups from recent history'
   assert.match(characterSheet, /Ingredients mode/);
   assert.match(characterSheet, /saved last frame \+ character sheet/);
   assert.match(characterSheet, /FACE CONSISTENT/);
+});
+
+test('Skillomate plan questions get current one-time access facts', () => {
+  const hinglish = skillomatePlanDirectReply('but it show 499 me all course access kar sakte');
+  assert.match(hinglish, /₹499/);
+  assert.match(hinglish, /30 days/);
+  assert.match(hinglish, /all Skillomate courses/);
+  assert.match(hinglish, /PhonePe one-time payment/i);
+  assert.match(hinglish, /Auto-renewal\/mandate nahi/i);
+  assert.doesNotMatch(hinglish, /specific course prices ki jaankari nahi|check kar sakte/i);
+
+  const english = skillomatePlanDirectReply('What is the Skillomate subscription plan?');
+  assert.match(english, /current Skillomate web offer is ₹499/i);
+  assert.match(english, /30 days/);
+  assert.match(english, /all Skillomate courses/);
+  assert.match(english, /does not create an auto-renewing mandate/i);
+});
+
+test('Skillomate platform questions get deterministic product facts', () => {
+  assert.match(skillomatePlatformDirectReply('How do I create account and setup profile on Skillomate?'), /mobile number.*OTP|OTP.*mobile number/i);
+  assert.match(skillomatePlatformDirectReply('I paid but course access is not active'), /same mobile number|payment reference/i);
+  assert.match(skillomatePlatformDirectReply('Refund kab mil sakta hai?'), /duplicate|access.*deliver|support@skillomate\.in/i);
+  assert.match(skillomatePlatformDirectReply('is certificate professional accreditation?'), /not.*professional accreditation/i);
+  assert.match(skillomatePlatformDirectReply('support email and timing batao'), /support@skillomate\.in/i);
+  assert.match(skillomatePlatformDirectReply('Who will win the next cricket world cup?'), /Skillomate courses/i);
+});
+
+test('learner context answers account, payment, and expiry questions from safe facts', () => {
+  const context = {
+    available: true,
+    user: {
+      name: 'User Five',
+      mobile: '******4321',
+      email: 'us***@example.com',
+      mobileVerified: true,
+      emailVerified: false,
+      age: 22,
+      gender: 'male',
+      avatarSet: true,
+      profileMissing: ['email'],
+    },
+    access: {
+      active: true,
+      source: 'phonepe',
+      status: 'active',
+      expiryDate: '2026-11-11',
+      daysRemaining: 30,
+      nextBillingAt: '',
+    },
+    lastPaidOrder: {
+      amount: '₹499',
+      gateway: 'phonepe',
+      paymentInstrument: 'UPI',
+      paidAt: '2026-10-12',
+      orderType: 'one_time_access',
+    },
+  };
+
+  const expiry = learnerContextDirectReply('How many days remaining in my plan?', context);
+  assert.match(expiry, /30 days? remaining/i);
+  assert.match(expiry, /2026-11-11/);
+
+  const payment = learnerContextDirectReply('my payment details batao', context);
+  assert.match(payment, /₹499/);
+  assert.match(payment, /phonepe/i);
+  assert.match(payment, /UPI/);
+  assert.doesNotMatch(payment, /pay_[a-z0-9]+|merchantTransactionId/i);
+
+  const profile = learnerContextDirectReply('my profile details', context);
+  assert.match(profile, /User Five/);
+  assert.match(profile, /\*\*\*\*\*\*4321/);
+  assert.match(profile, /us\*\*\*@example\.com/);
+
+  assert.equal(learnerContextDirectReply('What is the Skillomate subscription plan?', context), '');
+  assert.equal(learnerContextDirectReply('I paid but course access is not active', context), '');
 });
 
 test('active and trial access expire and cancelled access is denied', () => {
