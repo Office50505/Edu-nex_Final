@@ -248,12 +248,9 @@ const DEMO_AVATARS = Array.from({ length: 15 }, (_, index) => ({
 const HOME_FALLBACK_COURSES = [];
 const ANDROID_CLIPPED_SUBVIEWS = Platform.OS === "android";
 const ROOT_TAB_SWIPE_ENABLED = true;
-// iOS feels most natural when the neighbouring tab stays flush with the
-// current one. Animating rounded corners through JS while the page itself is
-// following a native-driven gesture caused visible gutters and dropped frames
-// when a swipe changed direction halfway through.
-const ROOT_TAB_CHROME_ENABLED = Platform.OS === "android";
-const ROOT_TAB_PAGE_GAP = Platform.OS === "android" ? 8 : 0;
+// Keep root-tab paging visually consistent across iOS and Android.
+const ROOT_TAB_CHROME_ENABLED = false;
+const ROOT_TAB_PAGE_GAP = 0;
 const ROOT_TAB_SWIPE_THRESHOLD_RATIO = Platform.OS === "android" ? 0.13 : 0.12;
 const ROOT_TAB_SWIPE_MIN_DISTANCE = Platform.OS === "android" ? 38 : 42;
 const ROOT_TAB_SWIPE_MAX_DISTANCE = Platform.OS === "android" ? 78 : 84;
