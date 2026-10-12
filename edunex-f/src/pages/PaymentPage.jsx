@@ -29,6 +29,15 @@ function markLocalCourseAccess() {
   localStorage.setItem("edunexHasCourseAccess", JSON.stringify({ active: true, savedAt: Date.now() }));
 }
 
+function accessKind(data = {}) {
+  const active = data.accessGranted === true || data.hasActiveAccess === true;
+  if (!active) return "none";
+  const status = String(data.subscriptionStatus || data.status || data.subscriptionDocStatus || "").toLowerCase();
+  const trial = ["trial", "1rs trial"].includes(status);
+  if (trial && data.autoRenewEnabled !== true) return "trial-only";
+  return trial ? "trial-subscription" : "premium";
+}
+
 const MARKETING_ONBOARDING_TOKEN_KEY = "skillomateMarketingOnboardingToken";
 
 function isPaymentReturn(searchParams) {
@@ -258,17 +267,15 @@ export function PaymentPage() {
         const cancelledTrialMandate = !phonePeOneTime && !nextTrialEligible
           && data.autoRenewEnabled === false
           && String(data.subscriptionType || "").toLowerCase() === "trial";
-        const accessActive = data.accessGranted === true || data.hasActiveAccess === true;
-        const accessStatus = String(data.subscriptionStatus || data.status || data.subscriptionDocStatus || "").toLowerCase();
-        const trialAccess = ["trial", "1rs trial"].includes(accessStatus);
+        const currentAccessKind = accessKind(data);
         // An active trial grants limited learning access, but it is not full
         // premium. Only treat it as a completed subscription when an active
         // recurring mandate is already attached to it.
-        const existingSubscriptionReady = accessActive && (!trialAccess || data.autoRenewEnabled === true);
+        const existingSubscriptionReady = ["premium", "trial-subscription"].includes(currentAccessKind);
         if (existingSubscriptionReady && !cancelledTrialMandate) {
           markLocalCourseAccess();
           if (!cancelled) {
-            setExistingAccessKind(trialAccess ? "trial-subscription" : "premium");
+            setExistingAccessKind(currentAccessKind);
             configureAppOpenButton();
             setCheckoutState("subscribed");
           }
@@ -385,7 +392,8 @@ export function PaymentPage() {
       const response = await authFetch("/api/payment/subscription-status");
       const data = await safeJsonResponse(response);
       if (!response.ok) throw new Error(data?.error || "Unable to check payment status.");
-      if (data?.accessGranted === true) {
+      const currentAccessKind = accessKind(data);
+      if (["premium", "trial-subscription"].includes(currentAccessKind)) {
         setPaymentCompleted(true); markLocalCourseAccess(); configureAppOpenButton(); setCheckoutState("subscribed");
       } else if (data?.pendingCheckout === false
         && (phonePeOneTime || ["cancelled", "expired", "completed", "paused"].includes(String(data?.mandateStatus || "").toLowerCase()))) {
@@ -489,9 +497,14 @@ export function PaymentPage() {
             <p className={payMsg.type === "error" || !planAvailable ? "checkout-launcher-error" : ""} role={payMsg.type === "error" || !planAvailable ? "alert" : "status"}>
               {payMsg.text || "Checkout could not be opened. Please try again."}
             </p>
-            <button className="checkout-launcher-primary" type="button" disabled={submitting || !planAvailable} onClick={pending ? checkPayment : initiatePayment}>
-              {submitting ? "Please wait…" : pending ? "Check payment status" : "Try Checkout Again"}
+            <button className="checkout-launcher-primary" type="button" disabled={submitting || !planAvailable} onClick={initiatePayment}>
+              {submitting ? "Please wait…" : pending ? "Resume PhonePe checkout" : "Try Checkout Again"}
             </button>
+            {pending ? (
+              <button className="checkout-launcher-secondary" type="button" disabled={submitting} onClick={checkPayment}>
+                Check payment status
+              </button>
+            ) : null}
             <a href="/courses.html" className="checkout-launcher-secondary">{directApp ? "Back to app" : "Back to Courses"}</a>
           </div>
         ) : null}

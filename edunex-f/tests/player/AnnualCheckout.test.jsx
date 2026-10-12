@@ -169,6 +169,34 @@ it('does not grant access or start another payment when verification is unavaila
   expect(localStorage.getItem('edunexHasCourseAccess')).toBeNull();
   expect(screen.queryByText('Payment Successful')).toBeNull();
 });
+it('resumes the same PhonePe checkout after the learner closes it', async () => {
+  window.history.replaceState(null, '', '/payment?plan=monthly');
+  const fetcher = mockApi({ gateway: 'phonepe', autoRenewEnabled: true, subscriptionAmountPaise: 49900 }, false);
+  const original = fetcher.getMockImplementation();
+  fetcher.mockImplementation((url, options) => url.endsWith('/subscription-status')
+    ? Promise.resolve(response({ status: 'trial', accessGranted: true, autoRenewEnabled: false, pendingCheckout: true, mandateStatus: 'PENDING', trialEligible: false }))
+    : url.endsWith('/initiate-trial')
+      ? Promise.resolve(response({ error: 'Redirect stopped for test.' }, 503))
+      : original(url, options));
+  render(<PaymentPage />);
+  fireEvent.click(await screen.findByRole('button', { name: 'Resume PhonePe checkout' }));
+  await screen.findByText('Redirect stopped for test.');
+  expect(fetcher.mock.calls.filter(([url]) => url.endsWith('/initiate-trial'))).toHaveLength(1);
+  expect(screen.queryByText('Payment Successful')).toBeNull();
+});
+it('does not mistake existing trial access for a successful pending checkout', async () => {
+  window.history.replaceState(null, '', '/payment?plan=monthly');
+  const fetcher = mockApi({ gateway: 'phonepe', autoRenewEnabled: true, subscriptionAmountPaise: 49900 }, false);
+  const original = fetcher.getMockImplementation();
+  fetcher.mockImplementation((url, options) => url.endsWith('/subscription-status')
+    ? Promise.resolve(response({ status: 'trial', accessGranted: true, autoRenewEnabled: false, pendingCheckout: true, mandateStatus: 'PENDING', trialEligible: false }))
+    : original(url, options));
+  render(<PaymentPage />);
+  fireEvent.click(await screen.findByRole('button', { name: 'Check payment status' }));
+  await screen.findByText(/Still waiting for payment confirmation/);
+  expect(screen.queryByText('Payment Successful')).toBeNull();
+  expect(fetcher.mock.calls.filter(([url]) => url.endsWith('/initiate-trial'))).toHaveLength(0);
+});
 it('explicit trial links retain the advertised one-rupee offer', async () => {
   window.history.replaceState(null, '', '/payment?plan=trial');
   const fetcher = mockApi(); render(<PaymentPage />);

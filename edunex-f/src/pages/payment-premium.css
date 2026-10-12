@@ -4,6 +4,26 @@
   color: #f8fafc;
 }
 
+/* The checkout intentionally uses a dark secure-payment canvas in both site
+   themes. Keep the global light-theme palette from overriding its contrast or
+   exposing the light body beneath the page root. */
+html[data-theme="light"] .react-page-root[data-page="payment.html"] {
+  background: #070708 !important;
+  color: #f8fafc !important;
+}
+
+html[data-theme="light"] .react-page-root[data-page="payment.html"] .checkout-launcher-card h1 {
+  color: #f8fafc !important;
+}
+
+html[data-theme="light"] .react-page-root[data-page="payment.html"] .checkout-launcher-card p {
+  color: #a8adb7 !important;
+}
+
+html[data-theme="light"] .react-page-root[data-page="payment.html"] .checkout-launcher-card .checkout-launcher-error {
+  color: #fca5a5 !important;
+}
+
 .react-page-root[data-page="payment.html"] .checkout-launcher {
   min-height: calc(100dvh - 76px);
   padding: 96px 20px 120px;
