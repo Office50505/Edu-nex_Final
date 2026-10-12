@@ -441,18 +441,30 @@ function HorizontalRail({ data, renderItem, contentContainerStyle, keyExtractor 
 
 function AvatarImage({ avatarId, size = 40, style }) {
   const avatarValue = String(avatarId || "");
-  if (/^(file|content|https?):\/\//i.test(avatarValue) || avatarValue.startsWith("/")) {
+  const [failedAvatarUri, setFailedAvatarUri] = useState("");
+  const isRemoteAvatar = /^(file|content|https?):\/\//i.test(avatarValue) || avatarValue.startsWith("/");
+  const fallbackSource = AVATAR_IMAGES.a1;
+  if (isRemoteAvatar && failedAvatarUri !== avatarValue) {
     return (
-      <Image
-        accessible={false}
-        source={{ uri: avatarValue.startsWith("/") ? `${API_BASE}${avatarValue}` : avatarValue }}
-        style={[{ width: size, height: size, borderRadius: size / 2 }, style]}
-        resizeMode="cover"
-      />
+      <View style={[{ width: size, height: size, borderRadius: size / 2, overflow: "hidden" }, style]}>
+        <Image
+          accessible={false}
+          source={fallbackSource}
+          style={StyleSheet.absoluteFillObject}
+          resizeMode="cover"
+        />
+        <Image
+          accessible={false}
+          source={{ uri: avatarValue.startsWith("/") ? `${API_BASE}${avatarValue}` : avatarValue }}
+          style={StyleSheet.absoluteFillObject}
+          resizeMode="cover"
+          onError={() => setFailedAvatarUri(avatarValue)}
+        />
+      </View>
     );
   }
 
-  const src = AVATAR_IMAGES[avatarId] || AVATAR_IMAGES.a1;
+  const src = AVATAR_IMAGES[avatarId] || fallbackSource;
   return <Image accessible={false} source={src} style={[{ width: size, height: size, borderRadius: size / 2 }, style]} resizeMode="cover" />;
 }
 
@@ -684,13 +696,20 @@ const EXPO_HOST = _rawHost.split(":")[0] || "localhost";
 const DEV_API_PORT = process.env.EXPO_PUBLIC_API_PORT || "3000";
 const IOS_DEV_API_HOST = process.env.EXPO_PUBLIC_IOS_API_HOST
   || (EXPO_HOST && EXPO_HOST !== "localhost" ? EXPO_HOST : "127.0.0.1");
+const IOS_DEV_API_BASE = process.env.EXPO_PUBLIC_IOS_API_HOST
+  ? `http://${IOS_DEV_API_HOST}:${DEV_API_PORT}`
+  : "https://api.skillomate.in";
 const DEFAULT_API_BASE = __DEV__
   ? (Platform.OS === "android"
     ? `http://${EXPO_HOST === "localhost" ? "10.0.2.2" : EXPO_HOST}:${DEV_API_PORT}`
-    : `http://${IOS_DEV_API_HOST}:${DEV_API_PORT}`)
+    : IOS_DEV_API_BASE)
   : "https://api.skillomate.in";
 const normalizeBaseUrl = url => String(url || "").replace(/\/+$/, "");
-const API_BASE = normalizeBaseUrl(process.env.EXPO_PUBLIC_API_BASE || DEFAULT_API_BASE);
+const ENV_API_BASE = process.env.EXPO_PUBLIC_API_BASE || "";
+const PLATFORM_API_BASE = (__DEV__ && Platform.OS === "ios")
+  ? ENV_API_BASE.replace(/^http:\/\/10\.0\.2\.2(?=[:/]|$)/, IOS_DEV_API_BASE)
+  : ENV_API_BASE;
+const API_BASE = normalizeBaseUrl(PLATFORM_API_BASE || DEFAULT_API_BASE);
 const WEB_APP_BASE = normalizeBaseUrl(process.env.EXPO_PUBLIC_WEB_APP_BASE || "https://skillomate.in");
 const BUNNY_CDN_BASE = normalizeBaseUrl(process.env.EXPO_PUBLIC_BUNNY_CDN_BASE || "https://edunex.b-cdn.net");
 const API_REQUEST_TIMEOUT_MS = 12000;
@@ -4024,6 +4043,7 @@ function BottomNav({
       pointerEvents="box-none"
       style={[
         s.bottomNavDock,
+        isTabletNav && s.bottomNavDockTablet,
         active === "ai" && s.bottomNavDockCompact,
         searchOpen && s.bottomNavDockSearchOpen,
         searchOpen ? { transform: [{ translateY: 0 }] } : { transform: [{ translateY: keyboardLiftAnim }] },
@@ -4040,7 +4060,7 @@ function BottomNav({
           searchOpen && s.bottomNavSearchMode,
           forceDark && { backgroundColor: "rgba(13,13,11,0.98)", borderTopColor: "#2E2C27" },
           searchOpen && forceDark && { backgroundColor: "transparent", borderColor: "transparent" },
-          isTabletNav && { width: tabletNavWidth, alignSelf: "center", marginHorizontal: 0 },
+          isTabletNav && { width: tabletNavWidth, alignSelf: "center", marginHorizontal: 0, paddingVertical: 9 },
         ]}
       >
       {searchOpen ? (
@@ -8122,7 +8142,8 @@ return StyleSheet.create({
   headerDot: { position: "absolute", top: 10, right: 11, width: 7, height: 7, borderRadius: 4, backgroundColor: HOME_PALETTE.gold, borderWidth: 1, borderColor: HOME_PALETTE.surface },
   profileButton: { width: MIN_TOUCH_TARGET, height: MIN_TOUCH_TARGET, borderRadius: MIN_TOUCH_TARGET / 2, alignItems: "center", justifyContent: "center", overflow: "hidden", backgroundColor: HOME_PALETTE.surface, borderWidth: 2, borderColor: HOME_PALETTE.gold },
   scrollViewport: { flex: 1 },
-  scrollContent: { paddingTop: 10, paddingBottom: Platform.OS === "ios" ? 190 : 220 },
+  tabletScrollViewport: { marginBottom: Platform.OS === "ios" ? 118 : 132 },
+  scrollContent: { paddingTop: 10, paddingBottom: Platform.OS === "ios" ? 230 : 240 },
   mediaFallback: { ...StyleSheet.absoluteFill, alignItems: "center", justifyContent: "center", padding: 10, backgroundColor: HOME_PALETTE.surfaceSoft },
   mediaFallbackText: { color: HOME_PALETTE.textSecondary, fontSize: 10, lineHeight: 13, fontWeight: "700", textAlign: "center", marginTop: 5 },
   featuredHero: { position: "relative", width: "auto", aspectRatio: 16 / 9, marginHorizontal: 14, borderRadius: 14, overflow: "hidden", backgroundColor: HOME_PALETTE.surface, borderWidth: 1, borderColor: HOME_PALETTE.borderStrong },
@@ -8194,6 +8215,7 @@ return StyleSheet.create({
   stateText: { color: HOME_PALETTE.textSecondary, fontSize: 12, lineHeight: 17, textAlign: "center", marginTop: 6 },
   stateButton: { minHeight: MIN_TOUCH_TARGET, paddingHorizontal: 16, alignItems: "center", justifyContent: "center", borderRadius: 8, backgroundColor: HOME_PALETTE.gold, marginTop: 16 },
   stateButtonText: { color: HOME_PALETTE.onGold, fontSize: 12, fontWeight: "900" },
+  bottomNavSpacer: { height: Platform.OS === "ios" ? 72 : 88 },
 });
 }
 
@@ -8988,7 +9010,7 @@ function HomeScreen({
       </View>
 
       <ScrollView
-        style={homeStyles.scrollViewport}
+        style={[homeStyles.scrollViewport, isTablet && homeStyles.tabletScrollViewport]}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={[homeStyles.scrollContent, isTablet && homeStyles.tabletScrollContent]}
         scrollEventThrottle={16}
@@ -9126,6 +9148,7 @@ function HomeScreen({
                   ))}
               </View>
             ) : null}
+            <View style={homeStyles.bottomNavSpacer} />
           </>
         )}
       </ScrollView>
@@ -9253,6 +9276,8 @@ function CourseListScreen({ onSelect, user, session, onGoToHome, onGoToCourses, 
     const searchTerms = normalizedQuery.split(/\s+/).filter(Boolean);
     return courses.filter(course => matchesSearchQuery({ keywords: getCourseSearchText(course) }, searchTerms));
   }, [courses, query]);
+  const courseListFrameWidth = isTablet ? Math.min(920, Math.max(320, width - 96)) : Math.max(288, width - 32);
+  const courseThumbHeight = Math.round(courseListFrameWidth * 9 / 16);
   const openCourse = useCallback(course => {
     if (!course) return;
     if (!hasAccess) {
@@ -9300,7 +9325,7 @@ function CourseListScreen({ onSelect, user, session, onGoToHome, onGoToCourses, 
     <View style={{ flex: 1, backgroundColor: C.white }}>
       <StatusBar barStyle={C.isDark ? "light-content" : "dark-content"} backgroundColor={C.white} />
       <SafeAreaView style={{ backgroundColor: C.white }}>
-        <View style={[s.pageHeader, s.pageHeaderLogoOnly, { justifyContent: "space-between" }, isTablet && s.tabletContentFrame]}>
+        <View style={[s.pageHeader, s.pageHeaderLogoOnly, { justifyContent: "space-between" }, isTablet && s.courseListTabletFrame]}>
           <SkillomateLogo size="sm" onPress={onGoToHome} />
           <View style={homeStyles.headerActions}>
             <TouchableOpacity style={homeStyles.headerButton} onPress={openNotifications} accessibilityRole="button" accessibilityLabel="Open notifications">
@@ -9324,7 +9349,7 @@ function CourseListScreen({ onSelect, user, session, onGoToHome, onGoToCourses, 
         </View>
       </SafeAreaView>
 
-      <View style={[s.searchBox, isTablet && s.tabletContentFrame, isTablet && { marginHorizontal: 0 }]}>
+      <View style={[s.searchBox, isTablet && s.courseListTabletFrame, isTablet && s.courseListSearchTablet]}>
         <Ionicons name="search-outline" size={18} color={C.textMuted} />
         <TextInput
           ref={searchInputRef}
@@ -9351,9 +9376,10 @@ function CourseListScreen({ onSelect, user, session, onGoToHome, onGoToCourses, 
       </View>
 
 <FlatList
+        style={isTablet && s.courseListViewportTablet}
         data={filtered}
         keyExtractor={item => item._id}
-        contentContainerStyle={[{ paddingHorizontal: 16, paddingTop: 12, gap: 16, paddingBottom: 100 }, isTablet && s.tabletListContent]}
+        contentContainerStyle={[s.courseListContent, isTablet && s.courseListTabletContent]}
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
@@ -9391,7 +9417,7 @@ function CourseListScreen({ onSelect, user, session, onGoToHome, onGoToCourses, 
               onPress={() => openCourse(item)}
             >
               {/* Thumbnail */}
-              <View style={s.clThumb}>
+              <View style={[s.clThumb, isTablet && { height: courseThumbHeight }]}>
                 <View style={[StyleSheet.absoluteFill, { backgroundColor: C.primaryLight, alignItems: "center", justifyContent: "center" }]}>
                   <Text style={{ color: C.primary, fontWeight: "900", fontSize: 64 }}>{item.title?.[0]?.toUpperCase()}</Text>
                 </View>
@@ -14434,6 +14460,11 @@ return StyleSheet.create({
     maxWidth: 760,
     alignSelf: "center",
   },
+  courseListTabletFrame: {
+    width: "100%",
+    maxWidth: 920,
+    alignSelf: "center",
+  },
 	  logoBox: {
 	    backgroundColor: C.surface, alignItems: "center", justifyContent: "center",
 	    borderWidth: 1, borderColor: C.accentSoft,
@@ -15127,6 +15158,11 @@ return StyleSheet.create({
     backgroundColor: "transparent",
     overflow: "visible",
   },
+  bottomNavDockTablet: {
+    bottom: Platform.OS === "ios" ? 16 : 12,
+    height: Platform.OS === "ios" ? 136 : 118,
+    paddingBottom: Platform.OS === "ios" ? 22 : 24,
+  },
   bottomNavDockCompact: {
     height: Platform.OS === "ios" ? 126 : 96,
   },
@@ -15179,7 +15215,7 @@ return StyleSheet.create({
     flex: 1,
     flexBasis: "20%",
     minWidth: 0,
-    minHeight: 58,
+    minHeight: 66,
     alignItems: "center",
     justifyContent: "center",
     gap: 3,
@@ -15191,14 +15227,14 @@ return StyleSheet.create({
   },
   bottomTabMotion: {
     width: "100%",
-    minHeight: 58,
+    minHeight: 66,
     alignItems: "center",
     justifyContent: "center",
     gap: 3,
   },
   bottomTabIndicator: {
     position: "absolute",
-    bottom: 2,
+    bottom: -1,
     width: 18,
     height: 3,
     borderRadius: 2,
@@ -16072,6 +16108,9 @@ return StyleSheet.create({
     minHeight: 52, paddingLeft: 14, paddingRight: 4, paddingVertical: 4,
     borderWidth: 1, borderColor: C.isDark ? "rgba(255,255,255,0.08)" : C.border,
   },
+  courseListSearchTablet: {
+    marginHorizontal: 0,
+  },
   searchInput: { flex: 1, minHeight: MIN_TOUCH_TARGET, ...TYPE.body, color: C.text },
   searchClearButton: { width: MIN_TOUCH_TARGET, height: MIN_TOUCH_TARGET, alignItems: "center", justifyContent: "center", borderRadius: MIN_TOUCH_TARGET / 2 },
 courseListCard: {
@@ -16086,6 +16125,22 @@ courseListCard: {
   courseListThumbText: { color: "#fff", fontWeight: "900", fontSize: 22 },
 
   // CourseList vertical cards
+  courseListViewportTablet: {
+    marginBottom: Platform.OS === "ios" ? 118 : 132,
+  },
+  courseListContent: {
+    paddingHorizontal: 16,
+    paddingTop: 12,
+    gap: 16,
+    paddingBottom: Platform.OS === "ios" ? 220 : 240,
+  },
+  courseListTabletContent: {
+    width: "100%",
+    maxWidth: 920,
+    alignSelf: "center",
+    paddingHorizontal: 0,
+    paddingBottom: 120,
+  },
   clCard: {
     backgroundColor: C.cardBg, borderRadius: RADIUS.lg, overflow: "hidden",
     borderWidth: 1, borderColor: C.border,
