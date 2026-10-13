@@ -75,6 +75,7 @@ test('renewal notification is hard-limited to ₹499 and requires explicit redee
     now: 1700000000000,
   });
   assert.equal(request.amount, 49900);
+  assert.equal(request.expireAt, 1700000000000 + (24 * 60 * 60 * 1000));
   assert.equal(request.paymentFlow.type, 'SUBSCRIPTION_CHECKOUT_REDEMPTION');
   assert.equal(request.paymentFlow.autoDebit, false);
   assert.equal(request.paymentFlow.redemptionRetryStrategy, 'STANDARD');

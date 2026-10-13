@@ -5,18 +5,8 @@ import { runLegacyPage } from "../legacyRuntime.js";
 import { usePageStyle } from "../hooks/usePageStyle.js";
 import { useEduNexRuntimeReady } from "../hooks/useEduNexRuntimeReady.js";
 import { courseEntryHref } from "../lib/courseNavigation.js";
+import { canOpenCourseForAccess, courseId, isPrimaryTrialCourse, normalizeAccessPhase, primaryTrialCourseId } from "../lib/courseAccess.js";
 import { route } from "../lib/routes.js";
-
-function normalizeAccessPhase(data, localAccess = false) {
-  const status = String(data?.subscriptionDocStatus || data?.status || data?.subscriptionStatus || "").trim().toLowerCase();
-  const grace = Boolean(data?.grace || String(data?.entitlementState || "").toUpperCase() === "GRACE_PERIOD");
-  const paid = ["active", "subscribed"].includes(status) || grace;
-  const trialExpiry = data?.trialExpiresAt ? new Date(data.trialExpiresAt).getTime() : 0;
-  const activeTrial = ["trial", "1rs trial"].includes(status) && (!trialExpiry || trialExpiry > Date.now()) && !paid;
-  if (paid || (localAccess && !activeTrial)) return "full";
-  if (activeTrial) return "trial";
-  return localAccess ? "full" : "none";
-}
 
 function coursesArray(response) {
   if (Array.isArray(response)) return response;
@@ -34,10 +24,6 @@ function localWishlist() {
 
 function saveLocalWishlist(ids) {
   localStorage.setItem("edunexWishlistLocal", JSON.stringify(Array.from(ids)));
-}
-
-function courseId(course) {
-  return String(course?._id || course?.id || window.EduNex?.courseId?.(course) || "");
 }
 
 function WishlistHeartIcon({ filled }) {
@@ -77,11 +63,6 @@ function normalizeCourse(course) {
     lessonCount: Array.isArray(course.videos) ? course.videos.length : 0,
     rating: course.rating || course.averageRating || "4.8",
   };
-}
-
-function isPrimaryTrialCourse(course) {
-  const text = `${course?.title || ""} ${course?.slug || ""}`.toLowerCase();
-  return /\bai\s+influenc(?:er|e)\b/.test(text);
 }
 
 function courseTime(course) {
@@ -302,7 +283,7 @@ export function CoursesPage() {
     return orderCoursesForAccess(courses.filter((course) => !query || `${course.title} ${course.description} ${course.categoryName}`.toLowerCase().includes(query)));
   }, [courses, search]);
   const priorityCourseId = filteredCourses[0]?.id;
-  const primaryTrialCourseId = courses.find(isPrimaryTrialCourse)?.id || courses[0]?.id || "";
+  const trialCourseId = primaryTrialCourseId(courses);
 
   const toggleWishlist = async (courseId) => {
     if (!courseId) return;
@@ -327,9 +308,9 @@ export function CoursesPage() {
     } catch (_) {}
   };
 
-  const canOpenCourse = (course) => accessPhase === "full" || courseAccessIds.has(course.id) || (accessPhase === "trial" && course.id === primaryTrialCourseId);
+  const canOpenCourse = (course) => canOpenCourseForAccess(course, { accessPhase, courseAccessIds, trialCourseId });
 
-  const isCourseLocked = (course) => accessPhase !== "full" && !courseAccessIds.has(course.id) && course.id !== primaryTrialCourseId;
+  const isCourseLocked = (course) => accessPhase !== "full" && !canOpenCourse(course);
 
   const openCourse = (course) => {
     window.location.href = courseEntryHref(course, { hasAccess: canOpenCourse(course) });

@@ -175,7 +175,10 @@ function buildNotifyRequest({ merchantOrderId, merchantSubscriptionId, userId, c
   return {
     merchantOrderId: compactId(merchantOrderId, 'merchantOrderId'),
     amount: MONTHLY_AMOUNT_PAISE,
-    expireAt: now + (48 * 60 * 60 * 1000),
+    // PhonePe permits redemption only after 24 hours from notification. Keep
+    // this order aligned with the 24-hour trial instead of advertising a
+    // second, 48-hour window to the customer's UPI app.
+    expireAt: now + (TRIAL_HOURS * 60 * 60 * 1000),
     metaInfo: {
       udf1: String(userId || '').slice(0, 256),
       udf2: 'SKILLOMATE_MONTHLY_RENEWAL',

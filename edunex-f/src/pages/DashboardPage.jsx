@@ -6,6 +6,7 @@ import { useEduNexRuntimeReady } from "../hooks/useEduNexRuntimeReady.js";
 import { progressCacheKey } from "../hooks/useLearningProgress.js";
 import { resetViewportLocks } from "../hooks/useViewportLock.js";
 import { courseVideoHref } from "../lib/courseNavigation.js";
+import { canOpenCourseForAccess, courseId, normalizeAccessPhase, primaryTrialCourseId } from "../lib/courseAccess.js";
 import { openRazorpay } from "../lib/razorpayCheckout.js";
 
 function coursesArray(response) {
@@ -199,6 +200,8 @@ function categoryName(course) {
 export function DashboardPage() {
   const [allowed, setAllowed] = useState(null);
   const [subscription, setSubscription] = useState(null);
+  const [accessPhase, setAccessPhase] = useState("none");
+  const [courseAccessIds, setCourseAccessIds] = useState(() => new Set());
   const [courses, setCourses] = useState([]);
   const [recommendations, setRecommendations] = useState([]);
   const [, setLoadError] = useState("");
@@ -225,6 +228,12 @@ export function DashboardPage() {
     window.location.assign(`/login.html?next=${encodeURIComponent(next)}`);
   };
 
+  const applySubscriptionAccess = (data = {}) => {
+    setSubscription(data);
+    setAccessPhase(normalizeAccessPhase(data));
+    setCourseAccessIds(new Set((data.courseIds || data.courseEntitlements?.map((item) => item.courseId) || []).map(String)));
+  };
+
   useEffect(() => {
     document.title = dashboardPage.title;
     document.documentElement.lang = dashboardPage.lang || "en";
@@ -240,7 +249,7 @@ export function DashboardPage() {
     }
     try {
       const nextSubscription = await window.EduNex.checkSubscription();
-      setSubscription(nextSubscription || {});
+      applySubscriptionAccess(nextSubscription || {});
       return {
         data: nextSubscription,
         open: Boolean(window.EduNex.hasCourseAccess(nextSubscription) || nextSubscription?.hasCourseAccess || nextSubscription?.courseIds?.length),
@@ -333,6 +342,9 @@ export function DashboardPage() {
 
   const realCourses = courses;
   const recommendedCourses = recommendations.length ? recommendations : realCourses.slice(0, 4);
+  const trialCourseId = primaryTrialCourseId(realCourses.length ? realCourses : recommendedCourses);
+  const canOpenDashboardCourse = (course) => canOpenCourseForAccess(course, { accessPhase, courseAccessIds, trialCourseId });
+  const availableCourseCount = realCourses.filter(canOpenDashboardCourse).length;
   const activity = useMemo(() => buildDashboardActivity(realCourses, new Date(), progressByCourse), [progressByCourse, progressVersion, realCourses]);
   const subscriptionState = String(subscription?.subscriptionDocStatus || subscription?.subscriptionStatus || subscription?.status || "none").toLowerCase();
   const needsRenewal = subscription?.trialEligible === false || ["expired", "cancelled", "paused"].includes(subscriptionState);
@@ -376,7 +388,7 @@ export function DashboardPage() {
       }
 
       localStorage.setItem("edunexHasCourseAccess", JSON.stringify({ active: true, savedAt: Date.now() }));
-      setSubscription(accessData);
+      applySubscriptionAccess(accessData);
       setAllowed(true);
       await loadDashboardCourses(accessData);
     } catch (error) {
@@ -416,7 +428,7 @@ export function DashboardPage() {
         <div className="welcome-row">
           <div className="welcome-left">
             <h1>Welcome back, {firstName}</h1>
-            <p>{realCourses.length ? `You have ${realCourses.length} Skillomate course${realCourses.length === 1 ? "" : "s"} available. Continue from your latest saved lesson.` : "No purchased courses are available yet."}</p>
+            <p>{availableCourseCount ? `You have ${availableCourseCount} Skillomate course${availableCourseCount === 1 ? "" : "s"} available. Continue from your latest saved lesson.` : "No purchased courses are available yet."}</p>
           </div>
           <div className="stats-row">
             <div className="stat-pill">
@@ -429,7 +441,7 @@ export function DashboardPage() {
             </div>
             <div className="stat-pill">
               <div className="stat-pill-label"><i className="fas fa-graduation-cap" aria-hidden="true"></i> Courses</div>
-              <div className="stat-pill-value">{realCourses.length}</div>
+              <div className="stat-pill-value">{availableCourseCount}</div>
             </div>
           </div>
         </div>
@@ -447,14 +459,16 @@ export function DashboardPage() {
               {allowed ? recommendedCourses.map((course) => {
                 const videos = Number(course.videoCount || 0) || (Array.isArray(course.videos) ? course.videos.length : 0);
                 const reason = course.recommendation?.reason || "Recommended from the current Skillomate catalog";
+                const lockedDuringTrial = accessPhase === "trial" && !canOpenDashboardCourse(course);
                 return (
-                  <div className="rec-card" key={course._id}>
+                  <div className={`rec-card${lockedDuringTrial ? " is-trial-locked" : ""}`} key={course._id}>
                     <div className="rec-thumb-wrap">
                       <img className="rec-thumb" src={window.EduNex?.courseImage?.(course)} alt={course.title} onError={(event) => {
                         event.currentTarget.onerror = null;
                         event.currentTarget.src = window.EduNex?.placeholderImage?.(event.currentTarget.alt || "Skillomate") || "";
                       }} />
                       <span className="rec-badge badge-mono">{categoryName(course)}</span>
+                      {lockedDuringTrial ? <span className="rec-lock-badge">Unlocks after 24 hours</span> : null}
                     </div>
                     <div className="rec-body">
                       <div className="rec-title">{course.title || "Untitled course"}</div>
@@ -463,7 +477,11 @@ export function DashboardPage() {
                         <span><i className="fas fa-star" aria-hidden="true"></i> {course.averageRating || "New"}</span>
                       </div>
                       <div className="rec-reason">{reason}</div>
-                      <div className="rec-price-row"><a className="rec-view-course" href={courseVideoHref(course)}>View Course <i className="fas fa-arrow-right" aria-hidden="true"></i></a></div>
+                      <div className="rec-price-row">
+                        {lockedDuringTrial
+                          ? <span className="rec-view-course rec-view-course--locked">Locked during trial</span>
+                          : <a className="rec-view-course" href={courseVideoHref(course)}>View Course <i className="fas fa-arrow-right" aria-hidden="true"></i></a>}
+                      </div>
                     </div>
                   </div>
                 );
