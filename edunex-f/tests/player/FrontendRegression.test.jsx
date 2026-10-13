@@ -635,6 +635,52 @@ describe("reported frontend regressions", () => {
     expect(screen.queryByRole("button", { name: "Start ₹1 trial" })).toBeNull();
   });
 
+  it("keeps the first course available as a ₹1 checkout entry for an eligible new account", async () => {
+    window.EduNex = {
+      request: vi.fn(async (path) => path === "/api/courses" ? [
+        { _id: "influencer", title: "AI Influencer Course", category: "AI Basics" },
+        { _id: "film", title: "AI Film Making Course", category: "AI Basics" },
+      ] : {}),
+      authRequest: vi.fn(async (path) => path === "/api/payment/subscription-status"
+        ? { status: "none", subscriptionDocStatus: "none", hasActiveAccess: false, trialEligible: true }
+        : { courses: [] }),
+      getAccessToken: vi.fn(() => "active-token"),
+      courseCategory: vi.fn((course) => course.category),
+      courseImage: vi.fn(() => "course.jpg"),
+      placeholderImage: vi.fn(() => "fallback.jpg"),
+    };
+
+    render(<CoursesPage />);
+
+    expect(await screen.findByRole("button", { name: "Start ₹1 trial" })).toBeTruthy();
+    expect(screen.getByText("₹1 trial")).toBeTruthy();
+    expect(screen.getByText("Start the ₹1 trial first")).toBeTruthy();
+    expect(screen.queryByText("Unlocks after 24 hours")).toBeNull();
+    expect(screen.getByAltText("AI Influencer Course").closest(".course-card")?.classList.contains("is-trial-locked")).toBe(false);
+    expect(screen.getByAltText("AI Film Making Course").closest(".course-card")?.classList.contains("is-trial-locked")).toBe(true);
+  });
+
+  it("offers ₹499 on the first course after the one-time trial has been used", async () => {
+    window.EduNex = {
+      request: vi.fn(async (path) => path === "/api/courses" ? [
+        { _id: "influencer", title: "AI Influencer Course", category: "AI Basics" },
+      ] : {}),
+      authRequest: vi.fn(async (path) => path === "/api/payment/subscription-status"
+        ? { status: "none", subscriptionDocStatus: "expired", hasActiveAccess: false, trialEligible: false }
+        : { courses: [] }),
+      getAccessToken: vi.fn(() => "active-token"),
+      courseCategory: vi.fn((course) => course.category),
+      courseImage: vi.fn(() => "course.jpg"),
+      placeholderImage: vi.fn(() => "fallback.jpg"),
+    };
+
+    render(<CoursesPage />);
+
+    expect(await screen.findByRole("button", { name: "Start ₹499" })).toBeTruthy();
+    expect(screen.queryByRole("button", { name: "Start ₹1 trial" })).toBeNull();
+    expect(screen.getByAltText("AI Influencer Course").closest(".course-card")?.classList.contains("is-trial-locked")).toBe(false);
+  });
+
   it("starts the course catalogue request without waiting for account metadata", async () => {
     let releaseSupportingRequests;
     const supportingRequest = new Promise((resolve) => { releaseSupportingRequests = resolve; });

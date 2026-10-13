@@ -1,5 +1,5 @@
 export function normalizeAccessPhase(data, localAccess = false) {
-  const status = String(data?.subscriptionDocStatus || data?.status || data?.subscriptionStatus || "").trim().toLowerCase();
+  const status = String(data?.status || data?.subscriptionStatus || data?.subscriptionDocStatus || "").trim().toLowerCase();
   const grace = Boolean(data?.grace || String(data?.entitlementState || "").toUpperCase() === "GRACE_PERIOD");
   const paid = ["active", "subscribed"].includes(status) || grace;
   const trialExpiry = data?.trialExpiresAt ? new Date(data.trialExpiresAt).getTime() : 0;

@@ -15,6 +15,15 @@ describe("shared course access rules", () => {
     })).toBe("trial");
   });
 
+  it("uses the API's computed active status when the stored subscription document is expired", () => {
+    expect(normalizeAccessPhase({
+      status: "active",
+      subscriptionStatus: "active",
+      subscriptionDocStatus: "expired",
+      hasActiveAccess: true,
+    })).toBe("full");
+  });
+
   it("allows only the primary trial course during a trial", () => {
     const trialCourseId = primaryTrialCourseId(courses);
     const context = { accessPhase: "trial", courseAccessIds: new Set(), trialCourseId };

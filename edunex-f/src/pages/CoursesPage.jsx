@@ -176,6 +176,7 @@ export function CoursesPage() {
   const [suggestionsOpen, setSuggestionsOpen] = useState(false);
   const [hasAccess, setHasAccess] = useState(false);
   const [accessPhase, setAccessPhase] = useState("none");
+  const [trialEligible, setTrialEligible] = useState(null);
   const [courseAccessIds, setCourseAccessIds] = useState(() => new Set());
   const [wishlist, setWishlist] = useState(() => localWishlist());
   const [state, setState] = useState("loading");
@@ -201,6 +202,7 @@ export function CoursesPage() {
     if (!window.EduNex?.getAccessToken?.()) {
       setHasAccess(localAccess);
       setAccessPhase(localAccess ? "full" : "none");
+      setTrialEligible(localAccess ? false : null);
       setCourseAccessIds(new Set());
       return localAccess;
     }
@@ -212,11 +214,13 @@ export function CoursesPage() {
       const active = phase === "full" || localAccess;
       setHasAccess(active);
       setAccessPhase(phase);
+      setTrialEligible(data?.trialEligible !== false);
       setCourseAccessIds(purchasedIds);
       return active;
     } catch (_) {
       setHasAccess(localAccess);
       setAccessPhase(localAccess ? "full" : "none");
+      setTrialEligible(localAccess ? false : null);
       setCourseAccessIds(new Set());
       return localAccess;
     }
@@ -284,6 +288,7 @@ export function CoursesPage() {
   }, [courses, search]);
   const priorityCourseId = filteredCourses[0]?.id;
   const trialCourseId = primaryTrialCourseId(courses);
+  const trialCourse = courses.find((course) => course.id === trialCourseId);
 
   const toggleWishlist = async (courseId) => {
     if (!courseId) return;
@@ -310,7 +315,9 @@ export function CoursesPage() {
 
   const canOpenCourse = (course) => canOpenCourseForAccess(course, { accessPhase, courseAccessIds, trialCourseId });
 
-  const isCourseLocked = (course) => accessPhase !== "full" && !canOpenCourse(course);
+  const isPrimaryCheckoutCourse = (course) => accessPhase === "none" && course.id === trialCourseId;
+
+  const isCourseLocked = (course) => accessPhase !== "full" && !canOpenCourse(course) && !isPrimaryCheckoutCourse(course);
 
   const openCourse = (course) => {
     window.location.href = courseEntryHref(course, { hasAccess: canOpenCourse(course) });
@@ -318,6 +325,14 @@ export function CoursesPage() {
 
   const openUnlockPayment = () => {
     window.location.href = route("payment.html?plan=monthly");
+  };
+
+  const openPrimaryCheckout = (course) => {
+    if (trialEligible === false) {
+      openUnlockPayment();
+      return;
+    }
+    openCourse(course);
   };
 
   const groupedCourseRows = useMemo(() => groupCourses(filteredCourses), [filteredCourses]);
@@ -553,8 +568,29 @@ export function CoursesPage() {
                   const duration = course.duration || (course.lessonCount ? `${course.lessonCount} Lessons` : "Self paced");
                   const saved = wishlist.has(course.id);
                   const canOpen = canOpenCourse(course);
+                  const primaryCheckout = isPrimaryCheckoutCourse(course);
                   const lockedByAccess = isCourseLocked(course);
-                  const buttonLabel = lockedByAccess ? "Unlock now" : canOpen ? "View Course" : "Start ₹499";
+                  const buttonLabel = lockedByAccess
+                    ? accessPhase === "trial"
+                      ? "Unlock now"
+                      : trialEligible === false
+                        ? "Subscribe to unlock"
+                        : "Start trial first"
+                    : canOpen
+                      ? "View Course"
+                      : trialEligible === false
+                        ? "Start ₹499"
+                        : "Start ₹1 trial";
+                  const lockLabel = accessPhase === "trial"
+                    ? "Unlocks after 24 hours"
+                    : trialEligible === false
+                      ? "Subscribe to unlock"
+                      : "Start the ₹1 trial first";
+                  const handleCourseOpen = () => {
+                    if (lockedByAccess) setPreviewModal("locked");
+                    else if (primaryCheckout) openPrimaryCheckout(course);
+                    else openCourse(course);
+                  };
                   return (
                     <div
                       className={`course-card${hasAccess ? " has-access" : ""}${lockedByAccess ? " is-trial-locked" : ""}`}
@@ -565,12 +601,11 @@ export function CoursesPage() {
                       tabIndex={0}
                       key={course.id}
                       aria-disabled={lockedByAccess}
-                      onClick={() => { if (lockedByAccess) setPreviewModal("locked"); else openCourse(course); }}
+                      onClick={handleCourseOpen}
                       onKeyDown={(event) => {
                         if (event.key !== "Enter" && event.key !== " ") return;
                         event.preventDefault();
-                        if (lockedByAccess) setPreviewModal("locked");
-                        else openCourse(course);
+                        handleCourseOpen();
                       }}
                     >
                       <div className="course-thumb-wrap">
@@ -586,7 +621,7 @@ export function CoursesPage() {
                           onError={(event) => handleCourseImageError(event, course)}
                         />
                         <span className="course-cat-badge badge-agency">{course.categoryName}</span>
-                        {lockedByAccess ? <span className="course-lock-badge">Unlocks after 24 hours</span> : null}
+                        {lockedByAccess ? <span className="course-lock-badge">{lockLabel}</span> : null}
                       </div>
                       <div className="course-body">
                         <h3 className="course-title-main">{course.title}</h3>
@@ -597,11 +632,17 @@ export function CoursesPage() {
                         </div>
                         <div className="course-price-row">
                           <div className="price-left">
-                            <span className="price-trial">₹499</span>
+                            <span className="price-trial">{primaryCheckout && trialEligible !== false ? "₹1 trial" : "₹499"}</span>
                           </div>
                         </div>
                         <div className="course-card-actions">
-                          <button className="btn-trial" type="button" data-course-id={course.id} onClick={(event) => { event.stopPropagation(); if (lockedByAccess) openUnlockPayment(); else openCourse(course); }}>
+                          <button className="btn-trial" type="button" data-course-id={course.id} onClick={(event) => {
+                            event.stopPropagation();
+                            if (lockedByAccess && accessPhase === "none") openPrimaryCheckout(trialCourse || course);
+                            else if (lockedByAccess) openUnlockPayment();
+                            else if (primaryCheckout) openPrimaryCheckout(course);
+                            else openCourse(course);
+                          }}>
                             {buttonLabel}
                           </button>
                           <button
