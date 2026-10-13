@@ -21,10 +21,12 @@ async function activeMandate(billing) {
     providerState: mandate.state,
     phonePeSubscriptionId: mandate.subscriptionId || billing.phonePeSubscriptionId,
   } });
+  const expectedAmountType = billing.paymentType === 'trial' ? 'VARIABLE' : 'FIXED';
+  const expectedFrequency = billing.paymentType === 'trial' ? 'ON_DEMAND' : 'MONTHLY';
   return mandate.state === 'ACTIVE'
     && mandate.maxAmount === provider.MONTHLY_AMOUNT_PAISE
-    && mandate.amountType === 'FIXED'
-    && mandate.frequency === 'MONTHLY';
+    && mandate.amountType === expectedAmountType
+    && mandate.frequency === expectedFrequency;
 }
 
 async function reserveCycle(billing, now) {

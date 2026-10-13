@@ -30,7 +30,7 @@ function sandboxEnv(overrides = {}) {
   };
 }
 
-test('trial setup is ₹1 with a fixed ₹499 monthly Standard Checkout mandate', () => {
+test('trial setup is ₹1 with a variable ₹499 on-demand Standard Checkout mandate', () => {
   const request = phonePe.buildSetupRequest({
     merchantOrderId: 'PPS_TEST_1',
     merchantSubscriptionId: 'PPA_TEST_1',
@@ -43,8 +43,8 @@ test('trial setup is ₹1 with a fixed ₹499 monthly Standard Checkout mandate'
   assert.equal(request.paymentFlow.type, 'SUBSCRIPTION_CHECKOUT_SETUP');
   assert.equal(request.paymentFlow.subscriptionDetails.subscriptionType, 'RECURRING');
   assert.equal(request.paymentFlow.subscriptionDetails.maxAmount, 49900);
-  assert.equal(request.paymentFlow.subscriptionDetails.amountType, 'FIXED');
-  assert.equal(request.paymentFlow.subscriptionDetails.frequency, 'MONTHLY');
+  assert.equal(request.paymentFlow.subscriptionDetails.amountType, 'VARIABLE');
+  assert.equal(request.paymentFlow.subscriptionDetails.frequency, 'ON_DEMAND');
 
   const monthly = phonePe.buildSetupRequest({
     merchantOrderId: 'PPS_TEST_2',
@@ -54,6 +54,16 @@ test('trial setup is ₹1 with a fixed ₹499 monthly Standard Checkout mandate'
   });
   assert.equal(monthly.amount, 49900);
   assert.equal(monthly.paymentFlow.subscriptionDetails.maxAmount, 49900);
+  assert.equal(monthly.paymentFlow.subscriptionDetails.amountType, 'FIXED');
+  assert.equal(monthly.paymentFlow.subscriptionDetails.frequency, 'MONTHLY');
+});
+
+test('explicit PhonePe setup rejection is retryable, while ambiguous failures remain uncertain', () => {
+  assert.equal(standardController.isDefinitiveSetupRejection({ providerStatus: 400 }), true);
+  assert.equal(standardController.isDefinitiveSetupRejection({ providerStatus: 422 }), true);
+  assert.equal(standardController.isDefinitiveSetupRejection({ providerStatus: 429 }), false);
+  assert.equal(standardController.isDefinitiveSetupRejection({ providerStatus: 500 }), false);
+  assert.equal(standardController.isDefinitiveSetupRejection(new Error('timeout')), false);
 });
 
 test('renewal notification is hard-limited to ₹499 and requires explicit redeem later', () => {

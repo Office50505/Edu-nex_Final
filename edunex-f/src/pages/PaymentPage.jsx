@@ -97,6 +97,7 @@ export function PaymentPage() {
   const [paymentCompleted, setPaymentCompleted] = useState(false);
   const [existingAccessKind, setExistingAccessKind] = useState("premium");
   const [pending, setPending] = useState(false);
+  const [checkoutResumable, setCheckoutResumable] = useState(false);
   const [onboardingToken, setOnboardingToken] = useState(() => readOnboardingToken());
   const planAvailable = Boolean(pricing);
   useEffect(() => {
@@ -285,6 +286,7 @@ export function PaymentPage() {
           const pendingPayment = data.pendingCheckout === true
             && !["cancelled", "expired", "completed", "paused"].includes(mandateStatus);
           setPending(pendingPayment);
+          setCheckoutResumable(data.checkoutResumable === true);
           if (pendingPayment) {
             setPayMsg({ text: "An existing payment mandate is being confirmed. Check its status before starting another payment.", type: "info" });
           }
@@ -342,6 +344,7 @@ export function PaymentPage() {
       }
       if ((data.gateway === "phonepe" || data.gateway === "simulated") && data.redirectUrl) {
         setPending(true);
+        setCheckoutResumable(true);
         setPayMsg({ text: "Redirecting to secure PhonePe checkout…", type: "info" });
         window.location.assign(data.redirectUrl);
         return;
@@ -353,6 +356,8 @@ export function PaymentPage() {
         setPending(true);
         setPayMsg({ text: "An existing payment mandate is being confirmed. Check its status before starting another payment.", type: "info" });
       } else {
+        setPending(false);
+        setCheckoutResumable(false);
         setPayMsg({ text: message, type: "error" });
       }
     } finally {
@@ -388,12 +393,13 @@ export function PaymentPage() {
       const currentAccessKind = accessKind(data);
       if (["premium", "trial-subscription"].includes(currentAccessKind)) {
         setPaymentCompleted(true); markLocalCourseAccess(); configureAppOpenButton(); setCheckoutState("subscribed");
-      } else if (data?.pendingCheckout === false
-        && ["cancelled", "expired", "completed", "paused"].includes(String(data?.mandateStatus || "").toLowerCase())) {
+      } else if (data?.pendingCheckout === false) {
         setPending(false);
+        setCheckoutResumable(false);
         setPayMsg({ text: "The previous checkout is no longer pending. You can start checkout again.", type: "info" });
       } else {
         setPending(true);
+        setCheckoutResumable(data?.checkoutResumable === true);
         setPayMsg({ text: "Still waiting for payment confirmation. Please check again shortly.", type: "info" });
       }
     } catch (error) { setPayMsg({ text: error.message, type: "error" }); }
@@ -480,9 +486,11 @@ export function PaymentPage() {
             <p className={payMsg.type === "error" || !planAvailable ? "checkout-launcher-error" : ""} role={payMsg.type === "error" || !planAvailable ? "alert" : "status"}>
               {payMsg.text || "Checkout could not be opened. Please try again."}
             </p>
-            <button className="checkout-launcher-primary" type="button" disabled={submitting || !planAvailable} onClick={initiatePayment}>
-              {submitting ? "Please wait…" : pending ? "Resume PhonePe checkout" : "Try Checkout Again"}
-            </button>
+            {(!pending || checkoutResumable) ? (
+              <button className="checkout-launcher-primary" type="button" disabled={submitting || !planAvailable} onClick={initiatePayment}>
+                {submitting ? "Please wait…" : checkoutResumable ? "Resume PhonePe checkout" : "Try Checkout Again"}
+              </button>
+            ) : null}
             {pending ? (
               <button className="checkout-launcher-secondary" type="button" disabled={submitting} onClick={checkPayment}>
                 Check payment status

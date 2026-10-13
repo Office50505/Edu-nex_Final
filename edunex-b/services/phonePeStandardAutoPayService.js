@@ -139,6 +139,7 @@ function buildSetupRequest({
   now = Date.now(),
 }) {
   const setupAmount = allowedSetupAmount(paymentType === 'trial' ? SETUP_AMOUNT_PAISE : MONTHLY_AMOUNT_PAISE);
+  const isTrial = paymentType === 'trial';
   const redirect = httpsUrl(String(redirectUrl || ''), 'PhonePe redirect URL').toString();
   return {
     merchantOrderId: compactId(merchantOrderId, 'merchantOrderId'),
@@ -156,9 +157,14 @@ function buildSetupRequest({
         subscriptionType: 'RECURRING',
         merchantSubscriptionId: compactId(merchantSubscriptionId, 'merchantSubscriptionId'),
         authWorkflowType: 'TRANSACTION',
-        amountType: 'FIXED',
+        // The trial authorizes a ₹499 ceiling with a ₹1 setup transaction.
+        // It cannot be represented as a fixed ₹499 monthly setup because the
+        // setup amount and the later redemption amount are different.
+        amountType: isTrial ? 'VARIABLE' : 'FIXED',
         maxAmount: MONTHLY_AMOUNT_PAISE,
-        frequency: 'MONTHLY',
+        // The first ₹499 redemption is due after 24 hours, so the trial uses
+        // an on-demand mandate and our scheduler controls the billing dates.
+        frequency: isTrial ? 'ON_DEMAND' : 'MONTHLY',
         expireAt: now + (10 * 365 * 24 * 60 * 60 * 1000),
       },
     },

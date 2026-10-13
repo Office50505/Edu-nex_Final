@@ -98,11 +98,18 @@ function validateMandateTerms(status, billing) {
   if (status.merchantSubscriptionId && status.merchantSubscriptionId !== billing.merchantSubscriptionId) {
     throw fail('PhonePe returned a different subscription identifier.', 502);
   }
+  const expectedAmountType = billing.paymentType === 'trial' ? 'VARIABLE' : 'FIXED';
+  const expectedFrequency = billing.paymentType === 'trial' ? 'ON_DEMAND' : 'MONTHLY';
   if (status.maxAmount !== service.MONTHLY_AMOUNT_PAISE
-    || status.amountType !== 'FIXED'
-    || status.frequency !== 'MONTHLY') {
+    || status.amountType !== expectedAmountType
+    || status.frequency !== expectedFrequency) {
     throw fail('PhonePe mandate terms do not match the ₹499 monthly subscription.', 502);
   }
+}
+
+function isDefinitiveSetupRejection(error) {
+  const status = Number(error?.providerStatus);
+  return status >= 400 && status < 500 && ![408, 409, 425, 429].includes(status);
 }
 
 async function applySetupCompletion(billing, orderStatus, mandateStatus, now = new Date()) {
@@ -412,7 +419,20 @@ async function initiate(req, res) {
         paymentType,
       });
     } catch (error) {
-      await PhonePeBilling.updateOne({ _id: req.user._id, attempt }, { $set: { phase: 'uncertain' } });
+      const rejected = isDefinitiveSetupRejection(error);
+      const providerState = String(error.providerDetailedCode || error.providerCode || (rejected ? 'REJECTED' : 'UNCERTAIN')).slice(0, 200);
+      await Promise.all([
+        PhonePeBilling.updateOne(
+          { _id: req.user._id, attempt },
+          { $set: { phase: rejected ? 'failed' : 'uncertain', providerState } }
+        ),
+        rejected
+          ? Order.updateOne(
+            { phonePeMerchantTransactionId: merchantOrderId, status: 'pending' },
+            { $set: { status: 'failed' } }
+          )
+          : Promise.resolve(),
+      ]);
       console.error(`[PHONEPE_AUTOPAY] action=create_subscription order=${merchantOrderId} code=${error.providerCode || error.code || error.name || 'provider_error'} status=${error.providerStatus || 'unknown'}`);
       throw error;
     }
@@ -424,6 +444,9 @@ async function initiate(req, res) {
 async function status(req, res) {
   try {
     let billing = await PhonePeBilling.findById(req.user._id);
+    if (billing?.phase === 'uncertain') {
+      billing = await recoverMissingUncertainSetup(billing);
+    }
     if (billing?.phase === 'setup_pending') {
       try { await reconcileSetup(billing); }
       catch { /* Webhook or a later status check will retry provider reconciliation. */ }
@@ -460,6 +483,7 @@ async function status(req, res) {
       mandateStatus: billing?.providerState || subscription?.phonePeStatus || null,
       autoRenewEnabled: Boolean(billing?.phase === 'active' && !billing.cancelledAt),
       pendingCheckout: Boolean(['creating', 'setup_pending', 'uncertain'].includes(billing?.phase)),
+      checkoutResumable: Boolean(billing?.phase === 'setup_pending' && billing.approvalUrl),
       hasCourseAccess: courseEntitlements.length > 0,
       courseIds: courseEntitlements.map(item => item.courseId),
       courseEntitlements,
@@ -625,4 +649,5 @@ module.exports = {
   completeRedemption,
   applyWebhook,
   recoverMissingUncertainSetup,
+  isDefinitiveSetupRejection,
 };
