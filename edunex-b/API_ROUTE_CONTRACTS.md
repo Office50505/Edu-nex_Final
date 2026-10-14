@@ -68,6 +68,7 @@ Session behavior during migration:
 | Wishlist | `GET` | `/api/wishlist` | JWT | Current web wishlist. |
 | Wishlist toggle | `POST` | `/api/wishlist/toggle` | JWT | Body: `courseId`. |
 | Subscription status | `GET` | `/api/payment/subscription-status` | JWT | Payment/subscription state. |
+| PhonePe mobile AutoPay order | `POST` | `/api/payment/phonepe/autopay/mobile/order` | JWT | Creates a short-lived PhonePe SDK order token for Android/iOS mandate setup. |
 | AI chat | `POST` | `/api/ai/chat` | JWT | Nex AI chat. |
 
 ## Mobile Compatibility Routes

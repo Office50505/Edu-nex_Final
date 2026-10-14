@@ -61,6 +61,43 @@ MongoDB stores delivery cooldowns, expiry, verification attempt counts and one-t
 
 The browser tests and actual SMS/Checkout/mandate lifecycle must still be completed with working credentials/dashboard configuration before production rollout.
 
+## PhonePe AutoPay mobile SDK backend
+
+The appcopyai Android and iOS clients use the same PhonePe Standard Checkout
+AutoPay subscription lifecycle as the website. The backend creates the provider
+order; the mobile app receives only the short-lived SDK order token and never
+receives the merchant client secret or OAuth access token.
+
+Authenticated clients call `POST /api/payment/phonepe/autopay/mobile/order` with:
+
+```json
+{
+  "platform": "android",
+  "paymentType": "trial",
+  "mandateConsent": true
+}
+```
+
+`platform` is `android` or `ios`. `paymentType` is `trial` for the ₹1 setup
+payment followed by the ₹499 on-demand mandate, or `monthly` for immediate ₹499
+monthly setup. The backend creates a `SUBSCRIPTION_CHECKOUT_SETUP` order through
+PhonePe `/checkout/v2/sdk/order` and returns `token`, `orderId`,
+`merchantOrderId`, `merchantSubscriptionId`, and `environment`. The client
+supplies that response to the native
+PhonePe SDK and then polls the existing subscription status API after SDK
+completion. Access is granted only after backend reconciliation or an
+authenticated webhook confirms the setup payment and active mandate.
+
+The Android package (`com.skillomate.app`) and iOS bundle identifier are native
+app configuration. They are not sent in the PhonePe backend SDK-order request.
+
+Set `PHONEPE_AUTOPAY_MOBILE_ENABLED=true` only after the native SDK builds and
+provider production configuration have been validated. The existing
+`PHONEPE_AUTOPAY_ENABLED`, mode, API/auth URLs, merchant/client credentials,
+callback URL, and webhook authentication values are shared with web AutoPay.
+The web redirect URL is not used to create a mobile SDK order. Keep
+`PHONEPE_AUTOPAY_WEB_ENABLED` as an independent web kill switch.
+
 
 ## Admin Test/Live gateway selection
 

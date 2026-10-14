@@ -12,6 +12,7 @@ function sandboxEnv(overrides = {}) {
     NODE_ENV: 'test',
     PHONEPE_AUTOPAY_ENABLED: 'true',
     PHONEPE_AUTOPAY_WEB_ENABLED: 'true',
+    PHONEPE_AUTOPAY_MOBILE_ENABLED: 'true',
     PHONEPE_AUTOPAY_SCHEDULER_ENABLED: 'false',
     PHONEPE_AUTOPAY_LIVE_RECURRING_ENABLED: 'false',
     PHONEPE_AUTOPAY_MODE: 'sandbox',
@@ -56,6 +57,65 @@ test('trial setup is ₹1 with a variable ₹499 on-demand Standard Checkout man
   assert.equal(monthly.paymentFlow.subscriptionDetails.maxAmount, 49900);
   assert.equal(monthly.paymentFlow.subscriptionDetails.amountType, 'FIXED');
   assert.equal(monthly.paymentFlow.subscriptionDetails.frequency, 'MONTHLY');
+});
+
+test('mobile setup adds the required UPI mandate product and omits web redirect fields', () => {
+  const request = phonePe.buildSetupRequest({
+    merchantOrderId: 'PPS_MOBILE_1',
+    merchantSubscriptionId: 'PPA_MOBILE_1',
+    userId: 'learner-mobile-1',
+    paymentType: 'trial',
+    channel: 'mobile',
+    now: 1700000000000,
+  });
+  assert.equal(request.amount, 100);
+  assert.equal(request.metaInfo.udf2, 'SKILLOMATE_MOBILE_AUTOPAY');
+  assert.equal(request.paymentFlow.type, 'SUBSCRIPTION_CHECKOUT_SETUP');
+  assert.equal(request.paymentFlow.subscriptionDetails.productType, 'UPI_MANDATE');
+  assert.equal(request.paymentFlow.subscriptionDetails.amountType, 'VARIABLE');
+  assert.equal(request.paymentFlow.subscriptionDetails.maxAmount, 49900);
+  assert.equal(request.paymentFlow.subscriptionDetails.frequency, 'ON_DEMAND');
+  assert.equal('merchantUrls' in request.paymentFlow, false);
+});
+
+test('mobile service creates an SDK order token without exposing credentials', async () => {
+  const calls = [];
+  const env = sandboxEnv();
+  const fetchImpl = async (url, options = {}) => {
+    calls.push({ url, options });
+    if (url.endsWith('/v1/oauth/token')) {
+      return { ok: true, status: 200, text: async () => JSON.stringify({ access_token: 'mobile-access-token', expires_in: 300 }) };
+    }
+    if (url.endsWith('/checkout/v2/sdk/order')) {
+      return { ok: true, status: 200, text: async () => JSON.stringify({
+        orderId: 'OMO_MOBILE_1', state: 'PENDING', expireAt: 1700003000000, token: 'sdk-order-token',
+      }) };
+    }
+    throw new Error(`Unexpected URL: ${url}`);
+  };
+  const result = await phonePe.createMobileSubscription({
+    merchantOrderId: 'PPS_MOBILE_2',
+    merchantSubscriptionId: 'PPA_MOBILE_2',
+    userId: 'learner-mobile-2',
+    paymentType: 'trial',
+  }, { env, fetchImpl });
+  assert.equal(result.orderId, 'OMO_MOBILE_1');
+  assert.equal(result.token, 'sdk-order-token');
+  assert.equal(result.expireAt, 1700003000000);
+  assert.equal(result.state, 'PENDING');
+  assert.equal(calls.at(-1).url, 'https://api-preprod.phonepe.com/apis/pg-sandbox/checkout/v2/sdk/order');
+  assert.equal(JSON.stringify(result).includes('test-secret'), false);
+});
+
+test('mobile SDK order creation has an independent production kill switch', async () => {
+  await assert.rejects(
+    phonePe.createMobileSubscription({
+      merchantOrderId: 'PPS_MOBILE_DISABLED',
+      merchantSubscriptionId: 'PPA_MOBILE_DISABLED',
+      paymentType: 'trial',
+    }, { env: sandboxEnv({ PHONEPE_AUTOPAY_MOBILE_ENABLED: 'false' }) }),
+    /mobile checkout is disabled/
+  );
 });
 
 test('explicit PhonePe setup rejection is retryable, while ambiguous failures remain uncertain', () => {
@@ -185,6 +245,8 @@ test('new PhonePe web paths preserve Razorpay and mobile store integrations', ()
   assert.match(paymentRoutes, /router\.post\('\/webhooks\/razorpay', razorpay\.webhook\)/);
   assert.match(paymentRoutes, /router\.post\('\/webhooks\/phonepe\/autopay'/);
   assert.match(paymentRoutes, /standardPhonePe\.initiate/);
+  assert.match(paymentRoutes, /\/payment\/phonepe\/autopay\/mobile\/order/);
+  assert.match(paymentRoutes, /standardPhonePe\.initiateMobile/);
   assert.match(paymentRoutes, /PhonePeAutoPayBilling/);
   assert.match(server, /req\.path\.startsWith\('\/api\/webhooks\/phonepe'\)/);
   assert.match(server, /require\('\.\/routes\/appleIap'\)/);

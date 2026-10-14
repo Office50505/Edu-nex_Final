@@ -211,6 +211,7 @@ function mandateLabel(user) {
   if (status === "halted") return "Mandate halted";
   if (status === "paused") return "Mandate paused";
   if (status === "pending") return "Mandate pending";
+  if (summary.gateway === "phonepe" && summary.phonePeMandateId && summary.autoRenewEnabled) return "AutoPay active";
   if (summary.gateway === "phonepe" && !summary.phonePeMandateId) return "No mandate";
   return "Mandate not recorded";
 }

@@ -3305,7 +3305,7 @@ app.get('/api/admin/user-management', protectAdmin, async (req, res) => {
         { $project: { _id: 0, userId: { $toString: '$_id' }, lastPingAt: 1 } },
       ]),
       Subscription.find()
-        .select('user gateway adminBillingSubscriptionId razorpaySubscriptionId razorpayMode razorpayStatus phonePeSubscriptionId phonePeMandateId status subscriptionType trialStartedAt trialExpiresAt currentPeriodStart currentPeriodEnd cancelledAt cancelReason amount frequency nextBillingAt createdAt')
+        .select('user gateway adminBillingSubscriptionId razorpaySubscriptionId razorpayMode razorpayStatus phonePeSubscriptionId phonePeMandateId phonePeStatus status subscriptionType trialStartedAt trialExpiresAt currentPeriodStart currentPeriodEnd cancelledAt cancelReason amount frequency nextBillingAt createdAt')
         .lean(),
       RazorpayBilling.find()
         .select('_id mode phase subscriptionId paymentType trialAmount monthlyAmount annualAmount recurringAmount trialEnd trialAccessEnd createdAt updatedAt')
@@ -3411,9 +3411,13 @@ app.get('/api/admin/user-management', protectAdmin, async (req, res) => {
         mandateStatus: gateway === 'razorpay'
           ? (subscription?.razorpayStatus || null)
           : gateway === 'phonepe' && subscription?.phonePeMandateId
-            ? subscription.status
+            ? (subscription.phonePeStatus || null)
             : null,
-        providerStatus: gateway === 'razorpay' ? (subscription?.razorpayStatus || null) : (subscription?.status || null),
+        providerStatus: gateway === 'razorpay'
+          ? (subscription?.razorpayStatus || null)
+          : gateway === 'phonepe'
+            ? (subscription?.phonePeStatus || null)
+            : null,
         billingPhase: razorpayBilling?.phase || null,
         autoRenewEnabled: Boolean(
           (gateway === 'razorpay' && subscription?.razorpaySubscriptionId && !['cancelled', 'completed', 'expired', 'halted'].includes(String(subscription.razorpayStatus || '').toLowerCase()))

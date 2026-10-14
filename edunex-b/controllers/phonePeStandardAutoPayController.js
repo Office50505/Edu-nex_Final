@@ -168,6 +168,8 @@ async function applySetupCompletion(billing, orderStatus, mandateStatus, now = n
     phase: 'active',
     providerState: mandateStatus.state,
     phonePeSubscriptionId: mandateStatus.subscriptionId,
+    sdkOrderToken: null,
+    sdkTokenExpiresAt: null,
     trialStartedAt: trial ? periodStart : null,
     trialEndsAt,
     nextBillingAt: trialEndsAt || currentPeriodEnd,
@@ -203,7 +205,12 @@ async function reconcileSetup(billing) {
   if (status.state === 'PENDING') return null;
   if (TERMINAL_PROVIDER_STATES.has(status.state)) {
     await Promise.all([
-      PhonePeBilling.updateOne({ _id: billing._id }, { $set: { phase: 'failed', providerState: status.state } }),
+      PhonePeBilling.updateOne({ _id: billing._id }, { $set: {
+        phase: 'failed',
+        providerState: status.state,
+        sdkOrderToken: null,
+        sdkTokenExpiresAt: null,
+      } }),
       Order.updateOne({ phonePeMerchantTransactionId: billing.setupMerchantOrderId, status: 'pending' }, { $set: { status: 'failed' } }),
     ]);
     return null;
@@ -310,13 +317,18 @@ async function reconcileCycle(billing) {
   return null;
 }
 
-async function initiate(req, res) {
+async function initiateCheckout(req, res, channel) {
   try {
+    const mobile = channel === 'mobile';
+    const mobilePlatform = mobile ? String(req.body?.platform || '').trim().toLowerCase() : null;
+    if (mobile && !['android', 'ios'].includes(mobilePlatform)) {
+      return res.status(400).json({ error: 'Choose android or ios as the mobile platform.' });
+    }
     const paymentType = String(req.body?.paymentType || '').toLowerCase();
     if (!['trial', 'monthly'].includes(paymentType)) return res.status(400).json({ error: 'Choose the trial or monthly plan.' });
     if (req.body?.mandateConsent !== true) return res.status(400).json({ error: 'Confirm the recurring payment terms before continuing.' });
     if (!req.onboarding && !req.user?.isMobileVerified) return res.status(403).json({ error: 'Verify your mobile number before subscribing.' });
-    const c = service.requireConfigured();
+    const c = service.requireConfigured(mobile ? { mobile: true } : {});
     const [existingSubscription, account, razorpayBilling] = await Promise.all([
       Subscription.findOne({ user: req.user._id }),
       loadAccountEntitlement(req.user),
@@ -342,16 +354,39 @@ async function initiate(req, res) {
     const trialUsed = await hasUsedIntroTrial(req.user._id, existingSubscription, req.user);
     if (paymentType === 'trial' && trialUsed) return res.status(409).json({ error: 'The ₹1 trial can only be used once per account. Continue with ₹499 monthly access.' });
 
-    let existing = await PhonePeBilling.findById(req.user._id);
+    let existingQuery = PhonePeBilling.findById(req.user._id);
+    if (mobile) existingQuery = existingQuery.select('+sdkOrderToken');
+    let existing = await existingQuery;
     existing = await recoverMissingUncertainSetup(existing);
-    if (existing?.phase === 'setup_pending' && existing.approvalUrl) {
+    if (existing?.phase === 'setup_pending') {
       if (existing.paymentType !== paymentType) return res.status(409).json({ error: 'An unfinished PhonePe checkout already exists.' });
-      return res.json({
-        gateway: 'phonepe',
-        redirectUrl: existing.approvalUrl,
-        merchantTransactionId: existing.setupMerchantOrderId,
-        paymentType,
-      });
+      const existingChannel = existing.checkoutChannel || 'web';
+      if (existingChannel !== channel) {
+        return res.status(409).json({ error: `An unfinished PhonePe ${existing.checkoutChannel || 'web'} checkout already exists.` });
+      }
+      if (mobile && existing.sdkOrderToken && (!existing.sdkTokenExpiresAt || existing.sdkTokenExpiresAt > new Date())) {
+        return res.json({
+          gateway: 'phonepe',
+          channel: 'mobile',
+          platform: existing.mobilePlatform,
+          environment: existing.mode === 'live' ? 'PRODUCTION' : 'SANDBOX',
+          token: existing.sdkOrderToken,
+          orderId: existing.phonePeOrderId,
+          merchantOrderId: existing.setupMerchantOrderId,
+          merchantSubscriptionId: existing.merchantSubscriptionId,
+          expiresAt: existing.sdkTokenExpiresAt || null,
+          paymentType,
+        });
+      }
+      if (!mobile && existing.approvalUrl) {
+        return res.json({
+          gateway: 'phonepe',
+          redirectUrl: existing.approvalUrl,
+          merchantTransactionId: existing.setupMerchantOrderId,
+          paymentType,
+        });
+      }
+      return res.status(409).json({ error: 'The unfinished PhonePe checkout can no longer be resumed. Check its payment status before retrying.' });
     }
     if (existing && !TERMINAL_BILLING_PHASES.has(existing.phase)) {
       return res.status(409).json({ error: 'PhonePe subscription setup is already active or awaiting confirmation.' });
@@ -367,9 +402,12 @@ async function initiate(req, res) {
         { _id: req.user._id, phase: { $in: [...TERMINAL_BILLING_PHASES] } },
         {
           $set: {
-            phase: 'creating', mode: c.mode, paymentType, attempt, merchantSubscriptionId,
+            phase: 'creating', mode: c.mode, checkoutChannel: channel,
+            mobilePlatform,
+            paymentType, attempt, merchantSubscriptionId,
             setupMerchantOrderId: merchantOrderId, setupAmount, recurringAmount: service.MONTHLY_AMOUNT_PAISE,
             providerState: null, phonePeOrderId: null, phonePeSubscriptionId: null, approvalUrl: null,
+            sdkOrderToken: null, sdkTokenExpiresAt: null,
             trialStartedAt: null, trialEndsAt: null, nextBillingAt: null, currentCycle: null,
             cancelledAt: null, cancelRequestedAt: null, lastCompletedMerchantOrderId: null,
           },
@@ -379,7 +417,8 @@ async function initiate(req, res) {
     } else {
       try {
         billing = await PhonePeBilling.create({
-          _id: req.user._id, phase: 'creating', mode: c.mode, paymentType, attempt,
+          _id: req.user._id, phase: 'creating', mode: c.mode, checkoutChannel: channel,
+          mobilePlatform, paymentType, attempt,
           merchantSubscriptionId, setupMerchantOrderId: merchantOrderId,
           setupAmount, recurringAmount: service.MONTHLY_AMOUNT_PAISE,
         });
@@ -399,19 +438,37 @@ async function initiate(req, res) {
       status: 'pending',
     });
     try {
-      const result = await service.createSubscription({
+      const setupInput = {
         merchantOrderId,
         merchantSubscriptionId,
         userId: req.user._id,
         paymentType,
-        redirectUrl: redirectUrl(c, merchantOrderId),
-      });
+      };
+      const result = mobile
+        ? await service.createMobileSubscription(setupInput)
+        : await service.createSubscription({ ...setupInput, redirectUrl: redirectUrl(c, merchantOrderId) });
       billing = await PhonePeBilling.findOneAndUpdate({ _id: req.user._id, attempt }, { $set: {
         phase: 'setup_pending',
         providerState: result.state,
         phonePeOrderId: result.orderId,
-        approvalUrl: result.redirectUrl,
+        approvalUrl: mobile ? null : result.redirectUrl,
+        sdkOrderToken: mobile ? result.token : null,
+        sdkTokenExpiresAt: mobile && result.expireAt ? new Date(result.expireAt) : null,
       } }, { new: true });
+      if (mobile) {
+        return res.status(201).json({
+          gateway: 'phonepe',
+          channel: 'mobile',
+          platform: mobilePlatform,
+          environment: c.mode === 'live' ? 'PRODUCTION' : 'SANDBOX',
+          token: result.token,
+          orderId: result.orderId,
+          merchantOrderId,
+          merchantSubscriptionId,
+          expiresAt: result.expireAt || null,
+          paymentType,
+        });
+      }
       return res.status(201).json({
         gateway: 'phonepe',
         redirectUrl: billing.approvalUrl,
@@ -433,12 +490,20 @@ async function initiate(req, res) {
           )
           : Promise.resolve(),
       ]);
-      console.error(`[PHONEPE_AUTOPAY] action=create_subscription order=${merchantOrderId} code=${error.providerCode || error.code || error.name || 'provider_error'} status=${error.providerStatus || 'unknown'}`);
+      console.error(`[PHONEPE_AUTOPAY] action=create_${channel}_subscription order=${merchantOrderId} code=${error.providerCode || error.code || error.name || 'provider_error'} status=${error.providerStatus || 'unknown'}`);
       throw error;
     }
   } catch (error) {
     return res.status(error.statusCode || error.status || 500).json({ error: error.statusCode || error.status ? error.message : 'PhonePe checkout is temporarily unavailable.' });
   }
+}
+
+async function initiate(req, res) {
+  return initiateCheckout(req, res, 'web');
+}
+
+async function initiateMobile(req, res) {
+  return initiateCheckout(req, res, 'mobile');
 }
 
 async function status(req, res) {
@@ -483,7 +548,9 @@ async function status(req, res) {
       mandateStatus: billing?.providerState || subscription?.phonePeStatus || null,
       autoRenewEnabled: Boolean(billing?.phase === 'active' && !billing.cancelledAt),
       pendingCheckout: Boolean(['creating', 'setup_pending', 'uncertain'].includes(billing?.phase)),
-      checkoutResumable: Boolean(billing?.phase === 'setup_pending' && billing.approvalUrl),
+      checkoutChannel: billing?.checkoutChannel || null,
+      checkoutResumable: Boolean(billing?.phase === 'setup_pending'
+        && (billing.approvalUrl || (billing.sdkTokenExpiresAt && billing.sdkTokenExpiresAt > new Date()))),
       hasCourseAccess: courseEntitlements.length > 0,
       courseIds: courseEntitlements.map(item => item.courseId),
       courseEntitlements,
@@ -553,7 +620,12 @@ async function applyWebhook(payload) {
   if (event === 'checkout.order.completed') await reconcileSetup(billing);
   else if (event === 'checkout.order.failed') {
     await Promise.all([
-      PhonePeBilling.updateOne({ _id: billing._id }, { $set: { phase: 'failed', providerState: 'FAILED' } }),
+      PhonePeBilling.updateOne({ _id: billing._id }, { $set: {
+        phase: 'failed',
+        providerState: 'FAILED',
+        sdkOrderToken: null,
+        sdkTokenExpiresAt: null,
+      } }),
       Order.updateOne({ phonePeMerchantTransactionId: billing.setupMerchantOrderId, status: 'pending' }, { $set: { status: 'failed' } }),
     ]);
   } else if (event === 'subscription.notification.completed') {
@@ -638,6 +710,7 @@ function pricing(_req, res) {
 
 module.exports = {
   initiate,
+  initiateMobile,
   status,
   cancel,
   verifyAccess,

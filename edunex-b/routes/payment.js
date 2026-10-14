@@ -52,6 +52,7 @@ router.post('/payment/initiate-trial', protect, async (req, res, next) => {
   if (provider === 'simulated') return paymentController.initiateTrial(req, res, next);
   return res.status(503).json({ error: 'Payment checkout is unavailable.' });
 });
+router.post('/payment/phonepe/autopay/mobile/order', protect, standardPhonePe.initiateMobile);
 router.get('/payment/simulate', paymentController.renderPaymentSimulator);
 router.post('/payment/simulate/complete', paymentController.completeSimulatedPayment);
 router.get('/payment/callback', paymentController.paymentCallback);

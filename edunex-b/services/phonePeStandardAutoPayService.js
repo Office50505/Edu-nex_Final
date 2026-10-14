@@ -30,6 +30,7 @@ function config(env = process.env) {
     mode,
     enabled: isTrue(env.PHONEPE_AUTOPAY_ENABLED),
     webEnabled: isTrue(env.PHONEPE_AUTOPAY_WEB_ENABLED),
+    mobileEnabled: isTrue(env.PHONEPE_AUTOPAY_MOBILE_ENABLED),
     schedulerEnabled: isTrue(env.PHONEPE_AUTOPAY_SCHEDULER_ENABLED),
     liveRecurringEnabled: isTrue(env.PHONEPE_AUTOPAY_LIVE_RECURRING_ENABLED),
     baseUrl,
@@ -61,7 +62,13 @@ function httpsUrl(value, label) {
 
 function requireConfigured(options = {}) {
   const c = options.env ? config(options.env) : (options.config || config());
-  if (!c.enabled || (!options.allowWebDisabled && !c.webEnabled)) {
+  if (!c.enabled) {
+    throw Object.assign(new Error('PhonePe Standard AutoPay is disabled.'), { statusCode: 503 });
+  }
+  if (options.mobile && !c.mobileEnabled) {
+    throw Object.assign(new Error('PhonePe Standard AutoPay mobile checkout is disabled.'), { statusCode: 503 });
+  }
+  if (!options.mobile && !options.allowWebDisabled && !c.webEnabled) {
     throw Object.assign(new Error('PhonePe Standard AutoPay web checkout is disabled.'), { statusCode: 503 });
   }
   const missing = [];
@@ -70,14 +77,14 @@ function requireConfigured(options = {}) {
   if (!c.clientSecret) missing.push('PHONEPE_AUTOPAY_CLIENT_SECRET');
   if (!c.clientVersion) missing.push('PHONEPE_AUTOPAY_CLIENT_VERSION');
   if (!c.callbackUrl) missing.push('PHONEPE_AUTOPAY_CALLBACK_URL');
-  if (!c.redirectUrl) missing.push('PHONEPE_AUTOPAY_REDIRECT_URL');
+  if (!options.mobile && !c.redirectUrl) missing.push('PHONEPE_AUTOPAY_REDIRECT_URL');
   if (missing.length) {
     throw Object.assign(new Error(`Missing PhonePe Standard AutoPay configuration: ${missing.join(', ')}`), { statusCode: 503 });
   }
   const base = httpsUrl(c.baseUrl, 'PhonePe API URL');
   const auth = httpsUrl(c.authBaseUrl, 'PhonePe authorization URL');
   httpsUrl(c.callbackUrl, 'PhonePe callback URL');
-  httpsUrl(c.redirectUrl, 'PhonePe redirect URL');
+  if (!options.mobile) httpsUrl(c.redirectUrl, 'PhonePe redirect URL');
   if (c.mode === 'sandbox') {
     if (base.hostname !== 'api-preprod.phonepe.com' || !base.pathname.startsWith('/apis/pg-sandbox')) {
       throw Object.assign(new Error('PhonePe sandbox requests must use the official pre-production API.'), { statusCode: 503 });
@@ -106,6 +113,7 @@ function readiness(env = process.env) {
       configured: true,
       mode: c.mode,
       webEnabled: c.webEnabled,
+      mobileEnabled: c.mobileEnabled,
       schedulerEnabled: c.schedulerEnabled,
       liveRecurringEnabled: c.liveRecurringEnabled,
     };
@@ -136,23 +144,28 @@ function buildSetupRequest({
   userId,
   paymentType = 'trial',
   redirectUrl,
+  channel = 'web',
   now = Date.now(),
 }) {
   const setupAmount = allowedSetupAmount(paymentType === 'trial' ? SETUP_AMOUNT_PAISE : MONTHLY_AMOUNT_PAISE);
   const isTrial = paymentType === 'trial';
-  const redirect = httpsUrl(String(redirectUrl || ''), 'PhonePe redirect URL').toString();
+  const mobile = channel === 'mobile';
+  if (!mobile && channel !== 'web') {
+    throw Object.assign(new Error('PhonePe checkout channel must be web or mobile.'), { statusCode: 400 });
+  }
+  const redirect = mobile ? null : httpsUrl(String(redirectUrl || ''), 'PhonePe redirect URL').toString();
   return {
     merchantOrderId: compactId(merchantOrderId, 'merchantOrderId'),
     amount: setupAmount,
     expireAfter: 1800,
     metaInfo: {
       udf1: String(userId || '').slice(0, 256),
-      udf2: 'SKILLOMATE_WEB_AUTOPAY',
+      udf2: mobile ? 'SKILLOMATE_MOBILE_AUTOPAY' : 'SKILLOMATE_WEB_AUTOPAY',
       udf3: paymentType,
     },
     paymentFlow: {
       type: 'SUBSCRIPTION_CHECKOUT_SETUP',
-      merchantUrls: { redirectUrl: redirect },
+      ...(!mobile ? { merchantUrls: { redirectUrl: redirect } } : {}),
       subscriptionDetails: {
         subscriptionType: 'RECURRING',
         merchantSubscriptionId: compactId(merchantSubscriptionId, 'merchantSubscriptionId'),
@@ -165,6 +178,7 @@ function buildSetupRequest({
         // The first ₹499 redemption is due after 24 hours, so the trial uses
         // an on-demand mandate and our scheduler controls the billing dates.
         frequency: isTrial ? 'ON_DEMAND' : 'MONTHLY',
+        ...(mobile ? { productType: 'UPI_MANDATE' } : {}),
         expireAt: now + (10 * 365 * 24 * 60 * 60 * 1000),
       },
     },
@@ -280,6 +294,25 @@ async function createSubscription(input, options = {}) {
     state: String(body.state || body.data?.state || 'PENDING').toUpperCase(),
     orderId: body.orderId || body.data?.orderId || null,
     redirectUrl,
+    request,
+  };
+}
+
+async function createMobileSubscription(input, options = {}) {
+  requireConfigured({ ...options, mobile: true });
+  const request = buildSetupRequest({ ...input, channel: 'mobile' });
+  const body = await providerRequest('/checkout/v2/sdk/order', {
+    method: 'POST',
+    body: request,
+  }, { ...options, mobile: true });
+  const data = body.data || body;
+  const token = data.token || data.orderToken || null;
+  if (!token) throw providerError(body, 'PhonePe did not return a mobile SDK order token.', 502);
+  return {
+    state: String(data.state || 'PENDING').toUpperCase(),
+    orderId: data.orderId || null,
+    token,
+    expireAt: Number(data.expireAt || data.expiryAt) || null,
     request,
   };
 }
@@ -404,6 +437,7 @@ module.exports = {
   buildSetupRequest,
   buildNotifyRequest,
   createSubscription,
+  createMobileSubscription,
   getOrderStatus,
   getSubscriptionStatus,
   notifyRedemption,

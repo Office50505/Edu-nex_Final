@@ -69,6 +69,12 @@ test('admin user management can be scoped to tester accounts', () => {
   assert.match(serverSource, /isActive isTester testerSince testerAssignedBy testerNotes/);
 });
 
+test('admin user management reports the PhonePe provider mandate state', () => {
+  assert.match(serverSource, /phonePeSubscriptionId phonePeMandateId phonePeStatus status/);
+  assert.match(serverSource, /gateway === 'phonepe' && subscription\?\.phonePeMandateId[\s\S]*subscription\.phonePeStatus/);
+  assert.doesNotMatch(serverSource, /gateway === 'phonepe' && subscription\?\.phonePeMandateId\s*\? subscription\.status/);
+});
+
 test('admin can mark learners as testers without changing learner identity', () => {
   assert.match(userSource, /isTester:\s*\{\s*type:\s*Boolean,\s*default:\s*false\s*\}/);
   assert.match(userSource, /testerSince:\s*\{\s*type:\s*Date,\s*default:\s*null\s*\}/);

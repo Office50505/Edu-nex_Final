@@ -128,6 +128,31 @@ it("loads the iOS app audience with device, build, and session data", async () =
   expect(screen.queryByText("Create learner ID")).toBeNull();
 });
 
+it("shows an active PhonePe mandate separately from the learner trial status", async () => {
+  adminJson.mockImplementation(async (path) => {
+    if (path === "/api/admin/user-management") return [{
+      ...learner,
+      subscriptionStatus: "trial",
+      billingSummary: {
+        gateway: "phonepe",
+        subscriptionStatus: "1rs trial",
+        mandateStatus: "ACTIVE",
+        providerStatus: "ACTIVE",
+        phonePeMandateId: "OMS_ACTIVE_MANDATE",
+        autoRenewEnabled: true,
+        nextBillingAt: "2026-10-14T09:31:36.067Z",
+      },
+    }];
+    if (path === "/api/admin/courses?summary=1") return [course];
+    throw new Error(`Unexpected request: ${path}`);
+  });
+
+  render(<AdminUsersPage />);
+
+  expect((await screen.findAllByText("AutoPay active")).length).toBeGreaterThan(0);
+  expect(screen.queryByText("Mandate not recorded")).toBeNull();
+});
+
 it("explains why assignment cannot start when no course is published", async () => {
   mockAdminApi([]);
   render(<AdminUsersPage />);
