@@ -178,6 +178,7 @@ const LessonNote = require('./models/LessonNote');
 const Notification = require('./models/Notification');
 const Certificate = require('./models/Certificate');
 const AdminUserAction = require('./models/AdminUserAction');
+const { hasStoreBillingEvidence } = require('./services/adminBilling');
 const Session = require('./models/Session');
 const { broadcastNotification } = require('./services/notificationService');
 const { presenceFromPing } = require('./services/userPresence');
@@ -3417,8 +3418,10 @@ app.get('/api/admin/user-management', protectAdmin, async (req, res) => {
       const userId = String(user._id);
       const subscription = subscriptionByUser[userId] || subscriptionById[String(user.subscriptionId || '')] || null;
       const razorpayBilling = razorpayBillingByUser[userId] || null;
-      const googlePlay = googlePlayByUser[userId] || null;
-      const apple = appleByUser[userId] || null;
+      const googlePlayRecord = googlePlayByUser[userId] || null;
+      const appleRecord = appleByUser[userId] || null;
+      const googlePlay = hasStoreBillingEvidence('google_play', googlePlayRecord) ? googlePlayRecord : null;
+      const apple = hasStoreBillingEvidence('app_store', appleRecord) ? appleRecord : null;
       const storeSubscription = apple?.entitlementActive
         ? { provider: 'app_store', record: apple }
         : googlePlay?.entitlementActive

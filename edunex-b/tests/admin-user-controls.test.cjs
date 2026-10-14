@@ -1,10 +1,12 @@
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const test = require('node:test');
+const { hasStoreBillingEvidence } = require('../services/adminBilling');
 
 const serverSource = fs.readFileSync(require.resolve('../server.js'), 'utf8');
 const userSource = fs.readFileSync(require.resolve('../models/User.js'), 'utf8');
 const actionSource = fs.readFileSync(require.resolve('../models/AdminUserAction.js'), 'utf8');
+const billingSource = fs.readFileSync(require.resolve('../services/adminBilling.js'), 'utf8');
 
 test('admin user access route is protected and revokes sessions when banning', () => {
   assert.match(serverSource, /app\.patch\('\/api\/admin\/users\/:id\/access', protectAdmin/);
@@ -76,7 +78,24 @@ test('admin user management reports the PhonePe provider mandate state', () => {
   assert.match(serverSource, /AppleSubscription\.find\(\)/);
   assert.match(serverSource, /provider: 'google_play'/);
   assert.match(serverSource, /provider: 'app_store'/);
+  assert.match(serverSource, /hasStoreBillingEvidence/);
+  assert.match(billingSource, /!\['NONE', 'UNKNOWN'\]\.includes\(entitlementState\)/);
+  assert.match(serverSource, /hasStoreBillingEvidence\('app_store', appleRecord\)/);
   assert.doesNotMatch(serverSource, /gateway === 'phonepe' && subscription\?\.phonePeMandateId\s*\? subscription\.status/);
+});
+
+test('admin ignores empty mobile-store placeholders without hiding real store history', () => {
+  assert.equal(hasStoreBillingEvidence('app_store', {
+    entitlementState: 'NONE', entitlementActive: false, productId: null,
+    originalTransactionId: null, latestTransactionId: null, lastVerifiedAt: null,
+  }), false);
+  assert.equal(hasStoreBillingEvidence('app_store', {
+    entitlementState: 'EXPIRED', entitlementActive: false, productId: 'skillomate.monthly',
+    originalTransactionId: 'apple-transaction-1',
+  }), true);
+  assert.equal(hasStoreBillingEvidence('google_play', {
+    entitlementState: 'ACTIVE', entitlementActive: true, productId: 'skillomate_premium_monthly',
+  }), true);
 });
 
 test('admin can mark learners as testers without changing learner identity', () => {

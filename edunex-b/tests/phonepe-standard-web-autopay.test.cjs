@@ -238,6 +238,72 @@ test('an uncertain setup becomes retryable only after PhonePe confirms the order
   assert.equal(stillUncertain.phase, 'uncertain');
 });
 
+test('an uncertain renewal notification is retried after PhonePe confirms the order does not exist', async () => {
+  const updates = [];
+  const notifyCalls = [];
+  const billing = {
+    _id: 'user-renewal-1',
+    merchantSubscriptionId: 'PPA_RENEWAL_1',
+    currentCycle: {
+      sequence: 1,
+      merchantOrderId: 'PPR_RENEWAL_1',
+      phonePeOrderId: null,
+      notifyState: 'UNCERTAIN',
+      redeemState: null,
+    },
+  };
+  await standardController.reconcileCycle(billing, {
+    provider: {
+      getOrderStatus: async () => {
+        throw Object.assign(new Error('not found'), { providerCode: 'ORDER_NOT_FOUND', providerStatus: 400 });
+      },
+      notifyRedemption: async (input) => {
+        notifyCalls.push(input);
+        return { orderId: 'PHONEPE_NOTIFY_RETRY_1', state: 'NOTIFICATION_IN_PROGRESS' };
+      },
+    },
+    billingModel: { updateOne: async (...args) => updates.push(args) },
+    orderModel: { updateOne: async () => assert.fail('a missing notification is not a failed debit') },
+  });
+
+  assert.deepEqual(notifyCalls, [{
+    merchantOrderId: 'PPR_RENEWAL_1',
+    merchantSubscriptionId: 'PPA_RENEWAL_1',
+    userId: 'user-renewal-1',
+    cycle: 1,
+  }]);
+  assert.equal(updates.length, 1);
+  assert.equal(updates[0][0]['currentCycle.notifyState'], 'UNCERTAIN');
+  assert.equal(updates[0][1].$set['currentCycle.phonePeOrderId'], 'PHONEPE_NOTIFY_RETRY_1');
+  assert.equal(updates[0][1].$set['currentCycle.notifyState'], 'NOTIFICATION_IN_PROGRESS');
+});
+
+test('an uncertain renewal notification is not retried after an ambiguous status failure', async () => {
+  const billing = {
+    _id: 'user-renewal-2',
+    merchantSubscriptionId: 'PPA_RENEWAL_2',
+    currentCycle: {
+      sequence: 1,
+      merchantOrderId: 'PPR_RENEWAL_2',
+      notifyState: 'UNCERTAIN',
+      redeemState: null,
+    },
+  };
+  await assert.rejects(
+    standardController.reconcileCycle(billing, {
+      provider: {
+        getOrderStatus: async () => {
+          throw Object.assign(new Error('timeout'), { providerCode: 'TIMEOUT', providerStatus: 504 });
+        },
+        notifyRedemption: async () => assert.fail('ambiguous requests must not be retried'),
+      },
+      billingModel: { updateOne: async () => assert.fail('billing must remain uncertain') },
+      orderModel: { updateOne: async () => assert.fail('order must remain pending') },
+    }),
+    /timeout/
+  );
+});
+
 test('new PhonePe web paths preserve Razorpay and mobile store integrations', () => {
   const paymentRoutes = fs.readFileSync(path.join(__dirname, '../routes/payment.js'), 'utf8');
   const server = fs.readFileSync(path.join(__dirname, '../server.js'), 'utf8');

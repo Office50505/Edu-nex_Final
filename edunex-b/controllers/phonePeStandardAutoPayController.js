@@ -291,10 +291,40 @@ async function completeRedemption(billing, orderStatus, now = new Date()) {
   return subscription;
 }
 
-async function reconcileCycle(billing) {
+async function reconcileCycle(billing, dependencies = {}) {
   const cycle = billing?.currentCycle;
   if (!cycle?.merchantOrderId) return null;
-  const status = await service.getOrderStatus(cycle.merchantOrderId);
+  const provider = dependencies.provider || service;
+  const billingModel = dependencies.billingModel || PhonePeBilling;
+  const orderModel = dependencies.orderModel || Order;
+  let status;
+  try {
+    status = await provider.getOrderStatus(cycle.merchantOrderId);
+  } catch (error) {
+    const missingUncertainNotification = cycle.notifyState === 'UNCERTAIN'
+      && !cycle.redeemState
+      && error?.providerCode === 'ORDER_NOT_FOUND'
+      && [400, 404].includes(Number(error?.providerStatus));
+    if (!missingUncertainNotification) throw error;
+
+    // PhonePe explicitly confirmed that the ambiguous notify request was
+    // never created. Reuse its merchant order id so recovery stays idempotent.
+    const retried = await provider.notifyRedemption({
+      merchantOrderId: cycle.merchantOrderId,
+      merchantSubscriptionId: billing.merchantSubscriptionId,
+      userId: billing._id,
+      cycle: cycle.sequence,
+    });
+    await billingModel.updateOne({
+      _id: billing._id,
+      'currentCycle.merchantOrderId': cycle.merchantOrderId,
+      'currentCycle.notifyState': 'UNCERTAIN',
+    }, { $set: {
+      'currentCycle.phonePeOrderId': retried.orderId || cycle.phonePeOrderId,
+      'currentCycle.notifyState': retried.state,
+    } });
+    return null;
+  }
   const update = {
     'currentCycle.phonePeOrderId': status.orderId || cycle.phonePeOrderId,
   };
@@ -311,9 +341,9 @@ async function reconcileCycle(billing) {
   } else if (status.state === 'FAILED') {
     update['currentCycle.redeemState'] = 'FAILED';
     update['currentCycle.failureCode'] = 'PHONEPE_REDEMPTION_FAILED';
-    await Order.updateOne({ phonePeMerchantTransactionId: cycle.merchantOrderId, status: 'pending' }, { $set: { status: 'failed' } });
+    await orderModel.updateOne({ phonePeMerchantTransactionId: cycle.merchantOrderId, status: 'pending' }, { $set: { status: 'failed' } });
   }
-  await PhonePeBilling.updateOne({ _id: billing._id }, { $set: update });
+  await billingModel.updateOne({ _id: billing._id }, { $set: update });
   return null;
 }
 
