@@ -100,7 +100,12 @@ function accessEndLabel(user) {
 }
 
 function accessEndDate(user) {
-  const endValue = billing(user).inGracePeriod ? billing(user).graceExpiresAt : trialEndValue(user) || user.subscriptionExpiry;
+  const summary = billing(user);
+  const endValue = summary.inGracePeriod
+    ? summary.graceExpiresAt
+    : isTrialStatus(effectiveSubscriptionStatus(user))
+      ? trialEndValue(user)
+      : summary.currentPeriodEnd || user.subscriptionExpiry;
   if (!endValue) return effectiveSubscriptionStatus(user) === "none" ? "No subscription" : "Not recorded";
   const date = new Date(endValue);
   if (Number.isNaN(date.getTime())) return "Not recorded";
@@ -192,6 +197,8 @@ function billingGatewayLabel(user) {
   if (!gateway) return "Gateway not recorded";
   if (gateway.toLowerCase() === "phonepe") return "PhonePe";
   if (gateway.toLowerCase() === "razorpay") return "Razorpay";
+  if (gateway.toLowerCase() === "google_play") return "Google Play";
+  if (gateway.toLowerCase() === "app_store") return "App Store";
   return gateway.replaceAll("_", " ");
 }
 
@@ -201,6 +208,15 @@ function billingDate(value) {
 
 function mandateLabel(user) {
   const summary = billing(user);
+  const gateway = String(summary.gateway || "").toLowerCase();
+  const providerStatus = String(summary.providerStatus || "").toUpperCase();
+  if (["google_play", "app_store"].includes(gateway)) {
+    if (summary.inGracePeriod) return "Store billing grace period";
+    if (summary.autoRenewEnabled && effectiveSubscriptionStatus(user) === "active") return "Store subscription active";
+    if (effectiveSubscriptionStatus(user) === "active") return "Store access active · renewal off";
+    if (["EXPIRED", "REVOKED", "REFUNDED"].some((state) => providerStatus.includes(state))) return "Store subscription ended";
+    return "Store subscription not active";
+  }
   const status = String(summary.mandateStatus || "").toLowerCase();
   if (status === "active") return "AutoPay active";
   if (status === "authenticated") return "Mandate authenticated";
@@ -216,7 +232,18 @@ function mandateLabel(user) {
   return "Mandate not recorded";
 }
 
+function billingAuthorizationTitle(user) {
+  return ["google_play", "app_store"].includes(String(billing(user).gateway || "").toLowerCase())
+    ? "Store billing"
+    : "Mandate";
+}
+
 function mandateBadgeClass(user) {
+  const summary = billing(user);
+  if (["google_play", "app_store"].includes(String(summary.gateway || "").toLowerCase())) {
+    if (summary.inGracePeriod) return "warn";
+    return effectiveSubscriptionStatus(user) === "active" ? "good" : "bad";
+  }
   const status = String(billing(user).mandateStatus || "").toLowerCase();
   if (status === "active" || status === "authenticated") return "good";
   if (status === "cancelled" || status === "expired" || status === "halted" || status === "paused") return "bad";
@@ -418,7 +445,7 @@ function LearnerDetailDrawer({ user, courses, tab, setTab, onClose, purchaseHist
       </div>
       {tab === "Overview" ? (
         <div className="crm-detail-grid">
-          <DetailStat label="User ID" value={user._id || "No ID"} /><DetailStat label="Presence" value={user.presence?.isOnline ? "Online now" : `Offline · ${formatDateTime(user.presence?.lastSeenAt || user.lastActiveAt)}`} /><DetailStat label="Lifecycle" value={lifecycleLabel(user)} /><DetailStat label="Subscription" value={subscriptionDisplayStatus(user)} /><DetailStat label="Gateway" value={billingGatewayLabel(user)} /><DetailStat label="Mandate" value={mandateLabel(user)} /><DetailStat label="Provider status" value={billing(user).providerStatus || billing(user).billingPhase || "Not recorded"} /><DetailStat label="Subscription started" value={billingDate(billing(user).subscriptionStartedAt)} /><DetailStat label="Trial started" value={billingDate(billing(user).trialStartedAt)} /><DetailStat label="Trial ends" value={billingDate(billing(user).trialExpiresAt)} /><DetailStat label="Next billing" value={billingDate(billing(user).nextBillingAt)} /><DetailStat label="Cancelled at" value={billingDate(billing(user).cancelledAt)} /><DetailStat label={accessEndLabel(user)} value={accessEndDate(user)} /><DetailStat label="Verified" value={isVerified(user) ? "Yes" : "Pending"} /><DetailStat label="Joined" value={formatDateTime(user.createdAt)} /><DetailStat label="Last active" value={formatDate(user.presence?.lastSeenAt || user.lastActiveAt || watch.lastWatchedAt)} /><DetailStat label="Last IP address" value={user.networkSummary?.ipAddress || "Not recorded"} /><DetailStat label="IP recorded" value={user.networkSummary?.recordedAt ? formatDateTime(user.networkSummary.recordedAt) : "Not recorded"} />{user.mobileSession ? <><DetailStat label="Mobile platform" value={user.mobileSession.platform?.toUpperCase() || "Not recorded"} /><DetailStat label="Device" value={user.mobileSession.deviceModel || user.mobileSession.deviceName || "Not recorded"} /><DetailStat label="OS version" value={user.mobileSession.osVersion || "Not recorded"} /><DetailStat label="App version" value={user.mobileSession.appVersion ? `${user.mobileSession.appVersion}${user.mobileSession.appBuild ? ` (${user.mobileSession.appBuild})` : ""}` : "Not recorded"} /><DetailStat label="First app session" value={user.mobileSession.firstSeenAt ? formatDateTime(user.mobileSession.firstSeenAt) : "Not recorded"} /><DetailStat label="Last app session" value={user.mobileSession.lastSeenAt ? formatDateTime(user.mobileSession.lastSeenAt) : "Not recorded"} /><DetailStat label="App sessions" value={formatNumber(user.mobileSession.sessionCount)} /><DetailStat label="Push enabled" value={user.mobileSession.pushEnabled ? "Yes" : "No"} /></> : null}<DetailStat label="Watch time" value={formatWatchDuration(watchMinutes(user))} /><DetailStat label="Average completion" value={`${formatNumber(progressAverage(user))}%`} />
+          <DetailStat label="User ID" value={user._id || "No ID"} /><DetailStat label="Presence" value={user.presence?.isOnline ? "Online now" : `Offline · ${formatDateTime(user.presence?.lastSeenAt || user.lastActiveAt)}`} /><DetailStat label="Lifecycle" value={lifecycleLabel(user)} /><DetailStat label="Subscription" value={subscriptionDisplayStatus(user)} /><DetailStat label="Gateway" value={billingGatewayLabel(user)} /><DetailStat label={billingAuthorizationTitle(user)} value={mandateLabel(user)} /><DetailStat label="Provider status" value={billing(user).providerStatus || billing(user).billingPhase || "Not recorded"} /><DetailStat label="Product" value={billing(user).productId || "Not recorded"} /><DetailStat label="Base plan" value={billing(user).basePlanId || "Not recorded"} /><DetailStat label="Offer" value={billing(user).offerId || "Not recorded"} /><DetailStat label="Provider order" value={billing(user).providerOrderId || "Not recorded"} /><DetailStat label="Last provider verification" value={billingDate(billing(user).lastVerifiedAt)} /><DetailStat label="Subscription started" value={billingDate(billing(user).subscriptionStartedAt)} /><DetailStat label="Trial started" value={billingDate(billing(user).trialStartedAt)} /><DetailStat label="Trial ends" value={billingDate(billing(user).trialExpiresAt)} /><DetailStat label="Next billing" value={billingDate(billing(user).nextBillingAt)} /><DetailStat label="Cancelled at" value={billingDate(billing(user).cancelledAt)} /><DetailStat label={accessEndLabel(user)} value={accessEndDate(user)} /><DetailStat label="Verified" value={isVerified(user) ? "Yes" : "Pending"} /><DetailStat label="Joined" value={formatDateTime(user.createdAt)} /><DetailStat label="Last active" value={formatDate(user.presence?.lastSeenAt || user.lastActiveAt || watch.lastWatchedAt)} /><DetailStat label="Last IP address" value={user.networkSummary?.ipAddress || "Not recorded"} /><DetailStat label="IP recorded" value={user.networkSummary?.recordedAt ? formatDateTime(user.networkSummary.recordedAt) : "Not recorded"} />{user.mobileSession ? <><DetailStat label="Mobile platform" value={user.mobileSession.platform?.toUpperCase() || "Not recorded"} /><DetailStat label="Device" value={user.mobileSession.deviceModel || user.mobileSession.deviceName || "Not recorded"} /><DetailStat label="OS version" value={user.mobileSession.osVersion || "Not recorded"} /><DetailStat label="App version" value={user.mobileSession.appVersion ? `${user.mobileSession.appVersion}${user.mobileSession.appBuild ? ` (${user.mobileSession.appBuild})` : ""}` : "Not recorded"} /><DetailStat label="First app session" value={user.mobileSession.firstSeenAt ? formatDateTime(user.mobileSession.firstSeenAt) : "Not recorded"} /><DetailStat label="Last app session" value={user.mobileSession.lastSeenAt ? formatDateTime(user.mobileSession.lastSeenAt) : "Not recorded"} /><DetailStat label="App sessions" value={formatNumber(user.mobileSession.sessionCount)} /><DetailStat label="Push enabled" value={user.mobileSession.pushEnabled ? "Yes" : "No"} /></> : null}<DetailStat label="Watch time" value={formatWatchDuration(watchMinutes(user))} /><DetailStat label="Average completion" value={`${formatNumber(progressAverage(user))}%`} />
         </div>
       ) : null}
       {tab === "Registration" ? <RegistrationDetails user={user} /> : null}
@@ -605,8 +632,8 @@ export function AdminUsersPage({ audience = "learners", paymentGateway = "", mob
     const onlineUsers = filteredUsers.filter((user) => user.presence?.isOnline).length;
     const subscribedUsers = filteredUsers.filter((user) => ["active", "subscribed"].includes(effectiveSubscriptionStatus(user))).length;
     const graceUsers = filteredUsers.filter((user) => billing(user).inGracePeriod).length;
-    const mandateOnUsers = filteredUsers.filter((user) => String(billing(user).mandateStatus || "").toLowerCase() === "active").length;
-    const mandateCancelledUsers = filteredUsers.filter((user) => ["cancelled", "expired", "halted"].includes(String(billing(user).mandateStatus || "").toLowerCase())).length;
+    const autoRenewOnUsers = filteredUsers.filter((user) => billing(user).autoRenewEnabled).length;
+    const autoRenewOffUsers = filteredUsers.filter((user) => billing(user).gateway && !billing(user).autoRenewEnabled).length;
     const complete = filteredUsers.reduce((sum, user) => sum + completedCourses(user), 0);
     const pushEnabledUsers = filteredUsers.filter((user) => user.mobileSession?.pushEnabled).length;
     const activeMobileSessions = filteredUsers.reduce((sum, user) => sum + Number(user.mobileSession?.activeSessionCount || 0), 0);
@@ -630,8 +657,8 @@ export function AdminUsersPage({ audience = "learners", paymentGateway = "", mob
       ["Online Now", formatNumber(onlineUsers)],
       ["Paid Subscribers", formatNumber(subscribedUsers)],
       ["Grace Period", formatNumber(graceUsers)],
-      ["Mandate On", formatNumber(mandateOnUsers)],
-      ["Mandate Cancelled", formatNumber(mandateCancelledUsers)],
+      ["Auto-renew On", formatNumber(autoRenewOnUsers)],
+      ["Auto-renew Off", formatNumber(autoRenewOffUsers)],
       ["Watch Time", formatWatchDuration(totalWatchMinutes)],
       ["Average Age", averageAge ? `${formatNumber(averageAge)} years` : "No age"],
       ["Progress Courses", `${formatNumber(totalProgressCourses)} / ${formatNumber(complete)}`],
@@ -953,7 +980,7 @@ export function AdminUsersPage({ audience = "learners", paymentGateway = "", mob
       setMessage("No visible users to export.");
       return;
     }
-    const headers = ["User ID", "Name", "Email", "Mobile", "Lifecycle", "Subscription", "Gateway", "Mandate", "Provider Status", "Subscription Started", "Trial Started", "Trial Ends", "Next Billing", "Cancelled At", "Cancel Reason", "Mobile Verified", "Email Verified", "Gender", "Age", "Avatar", "Marketing Opt-in", "Registered At", "Last Login", "Courses", "Completed", "Average Progress", "Watch Minutes", "Watched Videos", ...(mobileMode ? ["App Platform", "Device Name", "Device Model", "OS Version", "App Version", "App Build", "First App Session", "Last App Session", "Session Count", "Active Session Count", "Push Enabled"] : [])];
+    const headers = ["User ID", "Name", "Email", "Mobile", "Lifecycle", "Subscription", "Gateway", "Billing Authorization", "Provider Status", "Product ID", "Base Plan", "Offer ID", "Provider Order ID", "Last Provider Verification", "Subscription Started", "Trial Started", "Trial Ends", "Next Billing", "Cancelled At", "Cancel Reason", "Mobile Verified", "Email Verified", "Gender", "Age", "Avatar", "Marketing Opt-in", "Registered At", "Last Login", "Courses", "Completed", "Average Progress", "Watch Minutes", "Watched Videos", ...(mobileMode ? ["App Platform", "Device Name", "Device Model", "OS Version", "App Version", "App Build", "First App Session", "Last App Session", "Session Count", "Active Session Count", "Push Enabled"] : [])];
     const csvRows = [
       headers.map(csvEscape).join(","),
       ...filteredUsers.map((user) => [
@@ -966,6 +993,11 @@ export function AdminUsersPage({ audience = "learners", paymentGateway = "", mob
         billingGatewayLabel(user),
         mandateLabel(user),
         billing(user).providerStatus || billing(user).billingPhase || "",
+        billing(user).productId || "",
+        billing(user).basePlanId || "",
+        billing(user).offerId || "",
+        billing(user).providerOrderId || "",
+        billingDate(billing(user).lastVerifiedAt),
         billingDate(billing(user).subscriptionStartedAt),
         billingDate(billing(user).trialStartedAt),
         billingDate(billing(user).trialExpiresAt),
@@ -1083,7 +1115,7 @@ export function AdminUsersPage({ audience = "learners", paymentGateway = "", mob
               {isOpen ? (
                 <div className="progress-panel">
                   <div className="crm-detail-grid">
-                    {mobileMode ? <><DetailStat label="Mobile platform" value={user.mobileSession?.platform?.toUpperCase() || platformTitle} /><DetailStat label="Device" value={user.mobileSession?.deviceModel || user.mobileSession?.deviceName || "Not recorded"} /><DetailStat label="OS version" value={user.mobileSession?.osVersion || "Not recorded"} /><DetailStat label="App version" value={user.mobileSession?.appVersion ? `${user.mobileSession.appVersion}${user.mobileSession.appBuild ? ` (${user.mobileSession.appBuild})` : ""}` : "Not recorded"} /><DetailStat label="First app session" value={user.mobileSession?.firstSeenAt ? formatDateTime(user.mobileSession.firstSeenAt) : "Not recorded"} /><DetailStat label="Last app session" value={user.mobileSession?.lastSeenAt ? formatDateTime(user.mobileSession.lastSeenAt) : "Not recorded"} /><DetailStat label="App sessions" value={formatNumber(user.mobileSession?.sessionCount)} /><DetailStat label="Push enabled" value={user.mobileSession?.pushEnabled ? "Yes" : "No"} /></> : null}<DetailStat label="Gender" value={formatGender(user.gender)} /><DetailStat label="Age" value={formatAge(user.age)} /><DetailStat label="Gateway" value={billingGatewayLabel(user)} /><DetailStat label="Mandate" value={mandateLabel(user)} /><DetailStat label="Subscription started" value={billingDate(billing(user).subscriptionStartedAt)} /><DetailStat label="Next billing" value={billingDate(billing(user).nextBillingAt)} /><DetailStat label="Cancelled at" value={billingDate(billing(user).cancelledAt)} /><DetailStat label="Provider status" value={billing(user).providerStatus || billing(user).billingPhase || "Not recorded"} /><DetailStat label="Courses started" value={formatNumber(summaryData.totalCourses)} /><DetailStat label="Completed courses" value={formatNumber(summaryData.completedCourses)} /><DetailStat label="Average progress" value={`${formatNumber(summaryData.averageProgress)}%`} /><DetailStat label="Watch time" value={formatWatchDuration(watchMinutes(user))} /><DetailStat label="Watched videos" value={formatNumber(watch.watchedVideos)} /><DetailStat label="Last watched" value={formatDate(watch.lastWatchedAt)} /><DetailStat label="Last login" value={formatDateTime(user.lastLoginAt)} /><DetailStat label="Last IP address" value={user.networkSummary?.ipAddress || "Not recorded"} /><DetailStat label="IP recorded" value={user.networkSummary?.recordedAt ? formatDateTime(user.networkSummary.recordedAt) : "Not recorded"} /><DetailStat label="Login platform" value={user.networkSummary?.platform || "Not recorded"} /><DetailStat label="Login count" value={formatNumber(user.loginCount)} /><DetailStat label={accessEndLabel(user)} value={accessEndDate(user)} /><DetailStat label="User ID" value={user._id || "No ID"} />
+                    {mobileMode ? <><DetailStat label="Mobile platform" value={user.mobileSession?.platform?.toUpperCase() || platformTitle} /><DetailStat label="Device" value={user.mobileSession?.deviceModel || user.mobileSession?.deviceName || "Not recorded"} /><DetailStat label="OS version" value={user.mobileSession?.osVersion || "Not recorded"} /><DetailStat label="App version" value={user.mobileSession?.appVersion ? `${user.mobileSession.appVersion}${user.mobileSession.appBuild ? ` (${user.mobileSession.appBuild})` : ""}` : "Not recorded"} /><DetailStat label="First app session" value={user.mobileSession?.firstSeenAt ? formatDateTime(user.mobileSession.firstSeenAt) : "Not recorded"} /><DetailStat label="Last app session" value={user.mobileSession?.lastSeenAt ? formatDateTime(user.mobileSession.lastSeenAt) : "Not recorded"} /><DetailStat label="App sessions" value={formatNumber(user.mobileSession?.sessionCount)} /><DetailStat label="Push enabled" value={user.mobileSession?.pushEnabled ? "Yes" : "No"} /></> : null}<DetailStat label="Gender" value={formatGender(user.gender)} /><DetailStat label="Age" value={formatAge(user.age)} /><DetailStat label="Gateway" value={billingGatewayLabel(user)} /><DetailStat label={billingAuthorizationTitle(user)} value={mandateLabel(user)} /><DetailStat label="Subscription started" value={billingDate(billing(user).subscriptionStartedAt)} /><DetailStat label="Next billing" value={billingDate(billing(user).nextBillingAt)} /><DetailStat label="Cancelled at" value={billingDate(billing(user).cancelledAt)} /><DetailStat label="Provider status" value={billing(user).providerStatus || billing(user).billingPhase || "Not recorded"} /><DetailStat label="Product" value={billing(user).productId || "Not recorded"} /><DetailStat label="Base plan" value={billing(user).basePlanId || "Not recorded"} /><DetailStat label="Offer" value={billing(user).offerId || "Not recorded"} /><DetailStat label="Provider order" value={billing(user).providerOrderId || "Not recorded"} /><DetailStat label="Last provider verification" value={billingDate(billing(user).lastVerifiedAt)} /><DetailStat label="Courses started" value={formatNumber(summaryData.totalCourses)} /><DetailStat label="Completed courses" value={formatNumber(summaryData.completedCourses)} /><DetailStat label="Average progress" value={`${formatNumber(summaryData.averageProgress)}%`} /><DetailStat label="Watch time" value={formatWatchDuration(watchMinutes(user))} /><DetailStat label="Watched videos" value={formatNumber(watch.watchedVideos)} /><DetailStat label="Last watched" value={formatDate(watch.lastWatchedAt)} /><DetailStat label="Last login" value={formatDateTime(user.lastLoginAt)} /><DetailStat label="Last IP address" value={user.networkSummary?.ipAddress || "Not recorded"} /><DetailStat label="IP recorded" value={user.networkSummary?.recordedAt ? formatDateTime(user.networkSummary.recordedAt) : "Not recorded"} /><DetailStat label="Login platform" value={user.networkSummary?.platform || "Not recorded"} /><DetailStat label="Login count" value={formatNumber(user.loginCount)} /><DetailStat label={accessEndLabel(user)} value={accessEndDate(user)} /><DetailStat label="User ID" value={user._id || "No ID"} />
                   </div>
                   <RegistrationDetails user={user} />
                   {user.banReason ? <div className="admin-alert bad"><strong>Ban reason</strong><span>{user.banReason}</span></div> : null}

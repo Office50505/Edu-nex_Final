@@ -161,6 +161,8 @@ const Category = require('./models/Category');
 const Course = require('./models/Course');
 const Subscription = require('./models/Subscription');
 const RazorpayBilling = require('./models/RazorpayBilling');
+const GooglePlaySubscription = require('./models/GooglePlaySubscription');
+const AppleSubscription = require('./models/AppleSubscription');
 const Order = require('./models/Order');
 const Progress = require('./models/Progress');
 const CourseProgress = require('./models/CourseProgress');
@@ -3174,7 +3176,7 @@ app.get('/api/admin/user-management', protectAdmin, async (req, res) => {
       return index;
     };
     const watchEventNames = ['video_start', 'video_progress', 'video_complete', 'video_watch'];
-    const [users, progressRows, progressWatchRows, analyticsWatchRows, latestSessionRows, latestPresenceRows, subscriptions, razorpayBillings, mobileSessionRows] = await Promise.all([
+    const [users, progressRows, progressWatchRows, analyticsWatchRows, latestSessionRows, latestPresenceRows, subscriptions, razorpayBillings, googlePlaySubscriptions, appleSubscriptions, mobileSessionRows] = await Promise.all([
       User.find(userFilter)
         .sort({ createdAt: -1 })
         .select('fullName email mobileNumber avatar gender age subscriptionId subscriptionStatus subscriptionExpiry purchasedCourses courseEntitlements isMobileVerified isEmailVerified isActive isTester testerSince testerAssignedBy testerNotes bannedAt banReason deletedAt deletedBy deletionReason marketingOptIn createdAt lastActiveAt lastLoginAt loginCount')
@@ -3310,6 +3312,12 @@ app.get('/api/admin/user-management', protectAdmin, async (req, res) => {
       RazorpayBilling.find()
         .select('_id mode phase subscriptionId paymentType trialAmount monthlyAmount annualAmount recurringAmount trialEnd trialAccessEnd createdAt updatedAt')
         .lean(),
+      GooglePlaySubscription.find()
+        .select('user productId packageName basePlanId offerId latestOrderId subscriptionState acknowledgementState entitlementState entitlementActive expiresAt autoRenewEnabled lastVerifiedAt createdAt updatedAt')
+        .lean(),
+      AppleSubscription.find()
+        .select('user productId originalTransactionId latestTransactionId environment entitlementState entitlementActive purchasedAt expiresAt gracePeriodExpiresAt autoRenewEnabled billingRetry revokedAt lastVerifiedAt createdAt updatedAt')
+        .lean(),
       requestedPlatform ? Session.aggregate([
         { $match: { platform: requestedPlatform } },
         { $sort: { lastPingAt: -1, loggedInAt: -1 } },
@@ -3397,10 +3405,65 @@ app.get('/api/admin/user-management', protectAdmin, async (req, res) => {
       if (row._id) acc[String(row._id)] = row;
       return acc;
     }, {});
+    const googlePlayByUser = googlePlaySubscriptions.reduce((acc, row) => {
+      if (row.user) acc[String(row.user)] = row;
+      return acc;
+    }, {});
+    const appleByUser = appleSubscriptions.reduce((acc, row) => {
+      if (row.user) acc[String(row.user)] = row;
+      return acc;
+    }, {});
     const billingSummaryForUser = (user) => {
       const userId = String(user._id);
       const subscription = subscriptionByUser[userId] || subscriptionById[String(user.subscriptionId || '')] || null;
       const razorpayBilling = razorpayBillingByUser[userId] || null;
+      const googlePlay = googlePlayByUser[userId] || null;
+      const apple = appleByUser[userId] || null;
+      const storeSubscription = apple?.entitlementActive
+        ? { provider: 'app_store', record: apple }
+        : googlePlay?.entitlementActive
+          ? { provider: 'google_play', record: googlePlay }
+          : apple
+            ? { provider: 'app_store', record: apple }
+            : googlePlay
+              ? { provider: 'google_play', record: googlePlay }
+              : null;
+      if (storeSubscription) {
+        const record = storeSubscription.record;
+        const isApple = storeSubscription.provider === 'app_store';
+        const entitlementState = String(record.entitlementState || 'UNKNOWN').toUpperCase();
+        const inGracePeriod = entitlementState === 'GRACE_PERIOD';
+        const periodEnd = inGracePeriod && isApple
+          ? record.gracePeriodExpiresAt || record.expiresAt
+          : record.expiresAt;
+        return {
+          gateway: storeSubscription.provider,
+          subscriptionStatus: record.entitlementActive ? 'active' : ['EXPIRED', 'REVOKED', 'REFUNDED'].includes(entitlementState) ? 'expired' : (user.subscriptionStatus || 'none'),
+          subscriptionType: isApple ? record.productId : (record.basePlanId || record.productId),
+          mandateStatus: null,
+          providerStatus: isApple ? entitlementState : (record.subscriptionState || entitlementState),
+          billingPhase: isApple && record.billingRetry ? 'billing_retry' : record.acknowledgementState || null,
+          autoRenewEnabled: record.autoRenewEnabled === true,
+          subscriptionStartedAt: record.purchasedAt || record.createdAt || null,
+          trialStartedAt: null,
+          trialExpiresAt: null,
+          nextBillingAt: record.autoRenewEnabled ? periodEnd : null,
+          cancelledAt: record.revokedAt || null,
+          cancelReason: null,
+          amount: 0,
+          currentPeriodEnd: periodEnd || null,
+          inGracePeriod,
+          graceExpiresAt: inGracePeriod ? periodEnd : null,
+          productId: record.productId || null,
+          basePlanId: record.basePlanId || null,
+          offerId: record.offerId || null,
+          packageName: record.packageName || null,
+          providerOrderId: isApple ? (record.latestTransactionId || record.originalTransactionId) : record.latestOrderId,
+          acknowledgementState: record.acknowledgementState || null,
+          lastVerifiedAt: record.lastVerifiedAt || null,
+          environment: record.environment || null,
+        };
+      }
       const gateway = subscription?.gateway
         || (razorpayBilling?.subscriptionId ? 'razorpay' : null);
       if (!subscription && !razorpayBilling) return null;

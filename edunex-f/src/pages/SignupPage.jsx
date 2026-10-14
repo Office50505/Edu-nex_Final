@@ -116,7 +116,7 @@ export function SignupPage() {
   const [signupToken, setSignupToken] = useState("");
   const [paidOnboardingToken, setPaidOnboardingToken] = useState("");
   const [otp, setOtp] = useState(() => Array(DEFAULT_OTP_LENGTH).fill(""));
-  const [countdown, setCountdown] = useState(59);
+  const [resendingOtp, setResendingOtp] = useState(false);
   const [step1Error, setStep1Error] = useState("");
   const [step3Error, setStep3Error] = useState("");
   const [sendingOtp, setSendingOtp] = useState(false);
@@ -212,16 +212,6 @@ export function SignupPage() {
   }, [step]);
 
   useEffect(() => {
-    if (step !== 2) return undefined;
-
-    setCountdown(59);
-    const timer = window.setInterval(() => {
-      setCountdown((value) => Math.max(0, value - 1));
-    }, 1000);
-    return () => window.clearInterval(timer);
-  }, [step]);
-
-  useEffect(() => {
     if (step !== 3) return;
     const scroller = ageScrollerRef.current;
     if (!scroller) return;
@@ -292,7 +282,6 @@ export function SignupPage() {
   const startOtpStep = (normalizedPhone, devOtp) => {
     setMobileNumber(normalizedPhone);
     setStep(2);
-    setCountdown(59);
     if (devOtp) {
       setOtp(String(devOtp).split(""));
     } else {
@@ -334,15 +323,17 @@ export function SignupPage() {
   };
 
   const resendOTP = async () => {
-    if (!mobileNumber) return;
+    if (!mobileNumber || resendingOtp) return;
+    setResendingOtp(true);
     try {
       await request("/api/auth/resend-mobile-otp", {
         method: "POST",
         body: JSON.stringify({ mobileNumber }),
       });
-      setCountdown(59);
     } catch (error) {
       window.alert(safeErrorMessage(error, "Could not resend OTP."));
+    } finally {
+      setResendingOtp(false);
     }
   };
 
@@ -555,8 +546,6 @@ export function SignupPage() {
     setAvatarModalOpen(false);
     avatarTriggerRef.current?.focus();
   };
-  const countdownText = `0:${countdown < 10 ? "0" : ""}${countdown}`;
-
   return (
     <div className="react-page-root" data-page="signup.html">
       <main className="sp-main">
@@ -672,10 +661,9 @@ export function SignupPage() {
                 id="resendLink"
                 type="button"
                 onClick={resendOTP}
-                style={{ pointerEvents: countdown > 0 ? "none" : "auto" }}
-                aria-disabled={countdown > 0}
+                disabled={resendingOtp}
               >
-                Resend Code (<span id="countdown">{countdownText}</span>)
+                {resendingOtp ? "Sending…" : "Resend Code"}
               </button>
             </p>
             <p className="sp-login-row">Already have an account? <a href={loginHref}>Log in</a></p>

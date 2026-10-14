@@ -72,6 +72,10 @@ test('admin user management can be scoped to tester accounts', () => {
 test('admin user management reports the PhonePe provider mandate state', () => {
   assert.match(serverSource, /phonePeSubscriptionId phonePeMandateId phonePeStatus status/);
   assert.match(serverSource, /gateway === 'phonepe' && subscription\?\.phonePeMandateId[\s\S]*subscription\.phonePeStatus/);
+  assert.match(serverSource, /GooglePlaySubscription\.find\(\)/);
+  assert.match(serverSource, /AppleSubscription\.find\(\)/);
+  assert.match(serverSource, /provider: 'google_play'/);
+  assert.match(serverSource, /provider: 'app_store'/);
   assert.doesNotMatch(serverSource, /gateway === 'phonepe' && subscription\?\.phonePeMandateId\s*\? subscription\.status/);
 });
 

@@ -14,7 +14,6 @@ function service(envOverrides = {}) {
         if (!record || record.attempts >= 5 || record.expiresAt <= new Date()) return null;
         record.attempts++; return { ...record };
       }
-      if (record && record.nextSendAt > new Date()) throw Object.assign(new Error('duplicate'), { code: 11000 });
       record = { _id: query._id, ...update.$set }; return record;
     },
     async deleteOne(query) { if (!record || record.generation !== query.generation) return { deletedCount: 0 }; record = null; return { deletedCount: 1 }; },
@@ -50,11 +49,9 @@ test('MSG91 request timeout is configurable and defaults above the old 10 second
   assert.equal(custom.api.MSG91_REQUEST_TIMEOUT_MS, 45000);
   assert.equal(custom.requests[0].timeoutMs, 45000);
 });
-test('cooldown blocks repeats; resend uses MSG91 retry endpoint', async () => {
+test('resend is immediately available and uses MSG91 retry endpoint', async () => {
   const s = service(); await s.api.sendMobileOtp('9876543210');
-  assert.equal((await s.api.resendMobileOtp('9876543210')).ok, false);
-  assert.equal(s.requests.length, 1);
-  s.expireCooldown(); assert.equal((await s.api.resendMobileOtp('9876543210')).ok, true);
+  assert.equal((await s.api.resendMobileOtp('9876543210')).ok, true);
   assert.match(s.requests[1].url, /otp\/retry/);
 });
 test('verification consumes OTP once and blocks replay', async () => {
@@ -102,6 +99,6 @@ test('Skillomate OTP uses the new OTP template with provider-owned sender/DLT ma
   assert.equal(url.searchParams.get('template_id'), '6aad0fdca0b55cc6b0003083');
   assert.equal(url.searchParams.has('sender'), false);
   assert.equal(url.searchParams.has('authkey'), false);
-  s.expireCooldown(); assert.equal((await s.api.resendMobileOtp('9876543210')).ok, true);
+  assert.equal((await s.api.resendMobileOtp('9876543210')).ok, true);
   assert.equal((await s.api.verifyMobileOtp('9876543210', '012345')).ok, true);
 });

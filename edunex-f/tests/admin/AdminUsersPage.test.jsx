@@ -153,6 +153,37 @@ it("shows an active PhonePe mandate separately from the learner trial status", a
   expect(screen.queryByText("Mandate not recorded")).toBeNull();
 });
 
+it("shows Google Play renewal details instead of a missing mandate", async () => {
+  adminJson.mockImplementation(async (path) => {
+    if (path === "/api/admin/user-management") return [{
+      ...learner,
+      subscriptionStatus: "active",
+      subscriptionExpiry: "2026-10-16T15:31:43.520Z",
+      billingSummary: {
+        gateway: "google_play",
+        subscriptionStatus: "active",
+        providerStatus: "SUBSCRIPTION_STATE_ACTIVE",
+        autoRenewEnabled: true,
+        productId: "skillomate_premium_monthly",
+        basePlanId: "monthly",
+        offerId: "intro-9rs-3days",
+        providerOrderId: "GPA.test-order",
+        currentPeriodEnd: "2026-10-16T15:31:43.520Z",
+        nextBillingAt: "2026-10-16T15:31:43.520Z",
+        lastVerifiedAt: "2026-10-14T07:40:01.069Z",
+      },
+    }];
+    if (path === "/api/admin/courses?summary=1") return [course];
+    throw new Error(`Unexpected request: ${path}`);
+  });
+
+  render(<AdminUsersPage />);
+
+  expect((await screen.findAllByText("Store subscription active")).length).toBeGreaterThan(0);
+  expect(screen.getAllByText(/Google Play/).length).toBeGreaterThan(0);
+  expect(screen.queryByText("Mandate not recorded")).toBeNull();
+});
+
 it("explains why assignment cannot start when no course is published", async () => {
   mockAdminApi([]);
   render(<AdminUsersPage />);
