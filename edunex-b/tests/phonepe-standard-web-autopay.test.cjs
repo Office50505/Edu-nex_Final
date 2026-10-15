@@ -135,7 +135,9 @@ test('renewal notification is hard-limited to ₹499 and requires explicit redee
     now: 1700000000000,
   });
   assert.equal(request.amount, 49900);
-  assert.equal(request.expireAt, 1700000000000 + (24 * 60 * 60 * 1000));
+  assert.equal('expireAt' in request, false);
+  assert.equal('metaInfo' in request, false);
+  assert.deepEqual(Object.keys(request).sort(), ['amount', 'merchantOrderId', 'paymentFlow']);
   assert.equal(request.paymentFlow.type, 'SUBSCRIPTION_CHECKOUT_REDEMPTION');
   assert.equal(request.paymentFlow.autoDebit, false);
   assert.equal(request.paymentFlow.redemptionRetryStrategy, 'STANDARD');
@@ -254,11 +256,21 @@ test('scheduler persists safe PhonePe diagnostics when an uncertain notify retry
   assert.equal(saved['currentCycle.notifyFailureCode'], 'PAYMENT_INSTRUMENT_NOT_SUPPORTED');
   assert.equal(saved['currentCycle.notifyFailureStatus'], 400);
   assert.equal(saved['currentCycle.notifyFailureDetailedCode'], 'NO_SUPPORTED_PAYMENT_INSTRUMENT');
+  assert.equal(saved['currentCycle.notifyFailureMessage'], 'secret provider response');
   assert.equal(saved['currentCycle.notifyLastAttemptAt'], now);
   assert.ok(saved['currentCycle.notifyRetryAt'] > now);
   assert.equal(logs.length, 1);
   assert.match(logs[0], /code=PAYMENT_INSTRUMENT_NOT_SUPPORTED/);
   assert.doesNotMatch(logs[0], /secret provider response/);
+});
+
+test('stored PhonePe provider messages redact authorization values', () => {
+  const failure = scheduler.safeProviderFailure(Object.assign(
+    new Error('Rejected O-Bearer sensitive.token.value'),
+    { providerCode: 'BAD_REQUEST', providerStatus: 400 }
+  ));
+  assert.equal(failure.message, 'Rejected [redacted-auth]');
+  assert.equal(failure.message.includes('sensitive.token.value'), false);
 });
 
 test('scheduler does not retry an uncertain notification outside the PhonePe retry window', async () => {
@@ -363,6 +375,7 @@ test('an uncertain renewal notification is retried after PhonePe confirms the or
   assert.equal(updates[0][1].$set['currentCycle.notifyFailureCode'], null);
   assert.equal(updates[0][1].$set['currentCycle.notifyFailureStatus'], null);
   assert.equal(updates[0][1].$set['currentCycle.notifyFailureDetailedCode'], null);
+  assert.equal(updates[0][1].$set['currentCycle.notifyFailureMessage'], null);
 });
 
 test('an uncertain renewal notification is not retried after an ambiguous status failure', async () => {

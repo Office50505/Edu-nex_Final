@@ -185,19 +185,13 @@ function buildSetupRequest({
   };
 }
 
-function buildNotifyRequest({ merchantOrderId, merchantSubscriptionId, userId, cycle, now = Date.now() }) {
+function buildNotifyRequest({ merchantOrderId, merchantSubscriptionId }) {
   return {
     merchantOrderId: compactId(merchantOrderId, 'merchantOrderId'),
     amount: MONTHLY_AMOUNT_PAISE,
-    // PhonePe permits redemption only after 24 hours from notification. Keep
-    // this order aligned with the 24-hour trial instead of advertising a
-    // second, 48-hour window to the customer's UPI app.
-    expireAt: now + (TRIAL_HOURS * 60 * 60 * 1000),
-    metaInfo: {
-      udf1: String(userId || '').slice(0, 256),
-      udf2: 'SKILLOMATE_MONTHLY_RENEWAL',
-      udf3: String(cycle || 1).slice(0, 50),
-    },
+    // Keep the live Notify body limited to PhonePe's documented fields.
+    // Omitting expireAt uses PhonePe's documented 48-hour processing expiry;
+    // validAfter still controls when Execute may debit the customer.
     paymentFlow: {
       type: 'SUBSCRIPTION_CHECKOUT_REDEMPTION',
       merchantSubscriptionId: compactId(merchantSubscriptionId, 'merchantSubscriptionId'),

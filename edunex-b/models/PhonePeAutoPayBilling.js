@@ -12,6 +12,7 @@ const cycleSchema = new mongoose.Schema({
   notifyFailureCode: { type: String, default: null },
   notifyFailureStatus: { type: Number, default: null },
   notifyFailureDetailedCode: { type: String, default: null },
+  notifyFailureMessage: { type: String, default: null },
   validAfter: { type: Date, default: null },
   validUpto: { type: Date, default: null },
   redeemState: { type: String, default: null },

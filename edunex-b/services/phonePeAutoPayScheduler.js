@@ -48,13 +48,17 @@ function notifyRetryAt(attemptCount, now = new Date()) {
 function safeProviderFailure(error) {
   const clean = value => {
     if (value === undefined || value === null || value === '') return null;
-    return String(value).replace(/[\r\n\t]/g, ' ').slice(0, 200);
+    return String(value)
+      .replace(/(?:O-)?Bearer\s+[A-Za-z0-9._~-]+/gi, '[redacted-auth]')
+      .replace(/[\r\n\t]/g, ' ')
+      .slice(0, 300);
   };
   const status = Number(error?.providerStatus);
   return {
     code: clean(error?.providerCode || error?.code || error?.name || 'PROVIDER_ERROR'),
     status: Number.isFinite(status) ? status : null,
     detailedCode: clean(error?.providerDetailedCode),
+    message: error?.providerStatus ? clean(error?.message) : null,
   };
 }
 
@@ -73,6 +77,7 @@ async function recordNotifyFailure({ billingModel, billing, error, now, logger =
     'currentCycle.notifyFailureCode': failure.code,
     'currentCycle.notifyFailureStatus': failure.status,
     'currentCycle.notifyFailureDetailedCode': failure.detailedCode,
+    'currentCycle.notifyFailureMessage': failure.message,
   } });
   logger.error(`[PHONEPE_AUTOPAY] billing=${billing._id} action=notify_reconcile code=${failure.code || 'PROVIDER_ERROR'} status=${failure.status ?? 'unknown'} detailed=${failure.detailedCode || 'none'} retry_at=${retryAt.toISOString()}`);
   return retryAt;
@@ -165,6 +170,7 @@ async function submitNotification(billing, now = new Date()) {
       'currentCycle.notifyFailureCode': null,
       'currentCycle.notifyFailureStatus': null,
       'currentCycle.notifyFailureDetailedCode': null,
+      'currentCycle.notifyFailureMessage': null,
     } });
     return result;
   } catch (error) {

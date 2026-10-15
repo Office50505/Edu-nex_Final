@@ -326,11 +326,17 @@ async function reconcileCycle(billing, dependencies = {}) {
       'currentCycle.notifyFailureCode': null,
       'currentCycle.notifyFailureStatus': null,
       'currentCycle.notifyFailureDetailedCode': null,
+      'currentCycle.notifyFailureMessage': null,
     } });
     return null;
   }
   const update = {
     'currentCycle.phonePeOrderId': status.orderId || cycle.phonePeOrderId,
+    'currentCycle.notifyRetryAt': null,
+    'currentCycle.notifyFailureCode': null,
+    'currentCycle.notifyFailureStatus': null,
+    'currentCycle.notifyFailureDetailedCode': null,
+    'currentCycle.notifyFailureMessage': null,
   };
   if (status.validAfter) update['currentCycle.validAfter'] = new Date(status.validAfter);
   if (status.validUpto) update['currentCycle.validUpto'] = new Date(status.validUpto);
