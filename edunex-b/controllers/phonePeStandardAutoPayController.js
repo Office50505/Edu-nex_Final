@@ -322,6 +322,10 @@ async function reconcileCycle(billing, dependencies = {}) {
     }, { $set: {
       'currentCycle.phonePeOrderId': retried.orderId || cycle.phonePeOrderId,
       'currentCycle.notifyState': retried.state,
+      'currentCycle.notifyRetryAt': null,
+      'currentCycle.notifyFailureCode': null,
+      'currentCycle.notifyFailureStatus': null,
+      'currentCycle.notifyFailureDetailedCode': null,
     } });
     return null;
   }

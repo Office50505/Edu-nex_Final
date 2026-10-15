@@ -4,6 +4,80 @@ const Order = require('../models/Order');
 const provider = require('./phonePeStandardAutoPayService');
 const controller = require('../controllers/phonePeStandardAutoPayController');
 
+const IST_OFFSET_MINUTES = 330;
+const NOTIFY_RETRY_BACKOFF_MINUTES = [5, 15, 30, 60, 180, 360];
+
+function istMinuteOfDay(value) {
+  const shifted = new Date(new Date(value).getTime() + IST_OFFSET_MINUTES * 60 * 1000);
+  return shifted.getUTCHours() * 60 + shifted.getUTCMinutes();
+}
+
+function isPhonePeRetryWindow(value = new Date()) {
+  const minute = istMinuteOfDay(value);
+  return minute <= 599
+    || (minute >= 781 && minute <= 1019)
+    || minute >= 1291;
+}
+
+function istBoundary(value, hour, minute, addDays = 0) {
+  const shifted = new Date(new Date(value).getTime() + IST_OFFSET_MINUTES * 60 * 1000);
+  return new Date(Date.UTC(
+    shifted.getUTCFullYear(),
+    shifted.getUTCMonth(),
+    shifted.getUTCDate() + addDays,
+    hour,
+    minute,
+  ) - IST_OFFSET_MINUTES * 60 * 1000);
+}
+
+function nextPhonePeRetryWindow(value = new Date()) {
+  const date = new Date(value);
+  if (isPhonePeRetryWindow(date)) return date;
+  const minute = istMinuteOfDay(date);
+  if (minute < 781) return istBoundary(date, 13, 1);
+  if (minute < 1291) return istBoundary(date, 21, 31);
+  return istBoundary(date, 0, 0, 1);
+}
+
+function notifyRetryAt(attemptCount, now = new Date()) {
+  const index = Math.min(Math.max(Number(attemptCount || 1) - 1, 0), NOTIFY_RETRY_BACKOFF_MINUTES.length - 1);
+  const afterBackoff = new Date(new Date(now).getTime() + NOTIFY_RETRY_BACKOFF_MINUTES[index] * 60 * 1000);
+  return nextPhonePeRetryWindow(afterBackoff);
+}
+
+function safeProviderFailure(error) {
+  const clean = value => {
+    if (value === undefined || value === null || value === '') return null;
+    return String(value).replace(/[\r\n\t]/g, ' ').slice(0, 200);
+  };
+  const status = Number(error?.providerStatus);
+  return {
+    code: clean(error?.providerCode || error?.code || error?.name || 'PROVIDER_ERROR'),
+    status: Number.isFinite(status) ? status : null,
+    detailedCode: clean(error?.providerDetailedCode),
+  };
+}
+
+async function recordNotifyFailure({ billingModel, billing, error, now, logger = console }) {
+  const attemptCount = Number(billing.currentCycle?.notifyAttemptCount || 0) + 1;
+  const retryAt = notifyRetryAt(attemptCount, now);
+  const failure = safeProviderFailure(error);
+  await billingModel.updateOne({
+    _id: billing._id,
+    'currentCycle.merchantOrderId': billing.currentCycle.merchantOrderId,
+  }, { $set: {
+    'currentCycle.notifyState': 'UNCERTAIN',
+    'currentCycle.notifyAttemptCount': attemptCount,
+    'currentCycle.notifyLastAttemptAt': now,
+    'currentCycle.notifyRetryAt': retryAt,
+    'currentCycle.notifyFailureCode': failure.code,
+    'currentCycle.notifyFailureStatus': failure.status,
+    'currentCycle.notifyFailureDetailedCode': failure.detailedCode,
+  } });
+  logger.error(`[PHONEPE_AUTOPAY] billing=${billing._id} action=notify_reconcile code=${failure.code || 'PROVIDER_ERROR'} status=${failure.status ?? 'unknown'} detailed=${failure.detailedCode || 'none'} retry_at=${retryAt.toISOString()}`);
+  return retryAt;
+}
+
 function generatedCycleId(sequence) {
   const time = Date.now().toString(36).toUpperCase();
   const random = require('node:crypto').randomBytes(6).toString('hex').toUpperCase();
@@ -85,15 +159,18 @@ async function submitNotification(billing, now = new Date()) {
     }, { $set: {
       'currentCycle.phonePeOrderId': result.orderId,
       'currentCycle.notifyState': result.state,
+      'currentCycle.notifyAttemptCount': 1,
+      'currentCycle.notifyLastAttemptAt': now,
+      'currentCycle.notifyRetryAt': null,
+      'currentCycle.notifyFailureCode': null,
+      'currentCycle.notifyFailureStatus': null,
+      'currentCycle.notifyFailureDetailedCode': null,
     } });
     return result;
   } catch (error) {
     // Do not blindly retry an uncertain provider create. The order-status
     // reconciliation path determines whether PhonePe accepted the request.
-    await PhonePeBilling.updateOne({
-      _id: reserved._id,
-      'currentCycle.merchantOrderId': reserved.currentCycle.merchantOrderId,
-    }, { $set: { 'currentCycle.notifyState': 'UNCERTAIN' } }).catch(() => {});
+    await recordNotifyFailure({ billingModel: PhonePeBilling, billing: reserved, error, now }).catch(() => {});
     throw error;
   }
 }
@@ -134,23 +211,49 @@ async function executeDueRedemption(billing, now = new Date()) {
   }
 }
 
-async function processBilling(record, now = new Date()) {
+async function processBilling(record, now = new Date(), dependencies = {}) {
+  const billingModel = dependencies.billingModel || PhonePeBilling;
+  const billingController = dependencies.controller || controller;
+  const logger = dependencies.logger || console;
   let billing = record;
   if (billing.phase === 'setup_pending') {
-    await controller.reconcileSetup(billing);
-    billing = await PhonePeBilling.findById(billing._id);
+    await billingController.reconcileSetup(billing);
+    billing = await billingModel.findById(billing._id);
   }
   if (billing?.phase !== 'active' || billing.cancelledAt) return;
   if (billing.currentCycle?.merchantOrderId
     && billing.currentCycle.redeemState !== 'COMPLETED') {
-    try { await controller.reconcileCycle(billing); }
-    catch { return; }
-    billing = await PhonePeBilling.findById(billing._id);
+    const uncertainNotification = billing.currentCycle.notifyState === 'UNCERTAIN'
+      && !billing.currentCycle.redeemState;
+    if (uncertainNotification) {
+      const retryAt = billing.currentCycle.notifyRetryAt
+        ? new Date(billing.currentCycle.notifyRetryAt)
+        : nextPhonePeRetryWindow(now);
+      if (retryAt > now || !isPhonePeRetryWindow(now)) {
+        if (!billing.currentCycle.notifyRetryAt) {
+          await billingModel.updateOne({
+            _id: billing._id,
+            'currentCycle.merchantOrderId': billing.currentCycle.merchantOrderId,
+          }, { $set: { 'currentCycle.notifyRetryAt': retryAt } });
+        }
+        return { skipped: 'notify_retry_window', retryAt };
+      }
+    }
+    try {
+      await billingController.reconcileCycle(billing);
+    } catch (error) {
+      if (uncertainNotification) {
+        const retryAt = await recordNotifyFailure({ billingModel, billing, error, now, logger });
+        return { failed: 'notify_reconcile', retryAt };
+      }
+      throw error;
+    }
+    billing = await billingModel.findById(billing._id);
   }
   if (!billing || billing.phase !== 'active' || billing.cancelledAt) return;
   if (!billing.currentCycle || billing.currentCycle.redeemState === 'COMPLETED') {
     await submitNotification(billing, now);
-    billing = await PhonePeBilling.findById(billing._id);
+    billing = await billingModel.findById(billing._id);
   }
   if (billing) await executeDueRedemption(billing, now);
 }
@@ -184,6 +287,11 @@ module.exports = {
   reserveCycle,
   submitNotification,
   executeDueRedemption,
+  isPhonePeRetryWindow,
+  nextPhonePeRetryWindow,
+  notifyRetryAt,
+  safeProviderFailure,
+  recordNotifyFailure,
   processBilling,
   runDueBillings,
 };

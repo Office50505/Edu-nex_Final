@@ -205,6 +205,89 @@ test('scheduler notifies 24 hours before the first billing time', () => {
   );
 });
 
+test('PhonePe notification retries are deferred to an allowed IST retry window', () => {
+  const outsideWindow = new Date('2026-10-14T13:14:00.000Z'); // 18:44 IST
+  assert.equal(scheduler.isPhonePeRetryWindow(outsideWindow), false);
+  assert.equal(
+    scheduler.nextPhonePeRetryWindow(outsideWindow).toISOString(),
+    '2026-10-14T16:01:00.000Z' // 21:31 IST
+  );
+  assert.equal(scheduler.isPhonePeRetryWindow(new Date('2026-10-14T08:00:00.000Z')), true);
+});
+
+test('scheduler persists safe PhonePe diagnostics when an uncertain notify retry fails', async () => {
+  const updates = [];
+  const logs = [];
+  const now = new Date('2026-10-14T08:00:00.000Z'); // 13:30 IST, allowed
+  const billing = {
+    _id: 'user-notify-failure',
+    phase: 'active',
+    cancelledAt: null,
+    currentCycle: {
+      merchantOrderId: 'PPR_NOTIFY_FAILURE',
+      notifyState: 'UNCERTAIN',
+      notifyAttemptCount: 1,
+      redeemState: null,
+    },
+  };
+  const result = await scheduler.processBilling(billing, now, {
+    billingModel: {
+      updateOne: async (...args) => updates.push(args),
+      findById: async () => assert.fail('a failed retry must not continue to redemption'),
+    },
+    controller: {
+      reconcileCycle: async () => {
+        throw Object.assign(new Error('secret provider response'), {
+          providerCode: 'PAYMENT_INSTRUMENT_NOT_SUPPORTED',
+          providerStatus: 400,
+          providerDetailedCode: 'NO_SUPPORTED_PAYMENT_INSTRUMENT',
+        });
+      },
+    },
+    logger: { error: value => logs.push(value) },
+  });
+
+  assert.equal(result.failed, 'notify_reconcile');
+  assert.equal(updates.length, 1);
+  const saved = updates[0][1].$set;
+  assert.equal(saved['currentCycle.notifyAttemptCount'], 2);
+  assert.equal(saved['currentCycle.notifyFailureCode'], 'PAYMENT_INSTRUMENT_NOT_SUPPORTED');
+  assert.equal(saved['currentCycle.notifyFailureStatus'], 400);
+  assert.equal(saved['currentCycle.notifyFailureDetailedCode'], 'NO_SUPPORTED_PAYMENT_INSTRUMENT');
+  assert.equal(saved['currentCycle.notifyLastAttemptAt'], now);
+  assert.ok(saved['currentCycle.notifyRetryAt'] > now);
+  assert.equal(logs.length, 1);
+  assert.match(logs[0], /code=PAYMENT_INSTRUMENT_NOT_SUPPORTED/);
+  assert.doesNotMatch(logs[0], /secret provider response/);
+});
+
+test('scheduler does not retry an uncertain notification outside the PhonePe retry window', async () => {
+  const updates = [];
+  const now = new Date('2026-10-14T13:14:00.000Z'); // 18:44 IST
+  const result = await scheduler.processBilling({
+    _id: 'user-notify-deferred',
+    phase: 'active',
+    cancelledAt: null,
+    currentCycle: {
+      merchantOrderId: 'PPR_NOTIFY_DEFERRED',
+      notifyState: 'UNCERTAIN',
+      redeemState: null,
+    },
+  }, now, {
+    billingModel: {
+      updateOne: async (...args) => updates.push(args),
+      findById: async () => assert.fail('a deferred retry must stop processing'),
+    },
+    controller: {
+      reconcileCycle: async () => assert.fail('PhonePe must not be called outside the retry window'),
+    },
+  });
+
+  assert.equal(result.skipped, 'notify_retry_window');
+  assert.equal(result.retryAt.toISOString(), '2026-10-14T16:01:00.000Z');
+  assert.equal(updates[0][1].$set['currentCycle.notifyRetryAt'].toISOString(), '2026-10-14T16:01:00.000Z');
+});
+
 test('an uncertain setup becomes retryable only after PhonePe confirms the order does not exist', async () => {
   const updates = [];
   const billing = {
@@ -276,6 +359,10 @@ test('an uncertain renewal notification is retried after PhonePe confirms the or
   assert.equal(updates[0][0]['currentCycle.notifyState'], 'UNCERTAIN');
   assert.equal(updates[0][1].$set['currentCycle.phonePeOrderId'], 'PHONEPE_NOTIFY_RETRY_1');
   assert.equal(updates[0][1].$set['currentCycle.notifyState'], 'NOTIFICATION_IN_PROGRESS');
+  assert.equal(updates[0][1].$set['currentCycle.notifyRetryAt'], null);
+  assert.equal(updates[0][1].$set['currentCycle.notifyFailureCode'], null);
+  assert.equal(updates[0][1].$set['currentCycle.notifyFailureStatus'], null);
+  assert.equal(updates[0][1].$set['currentCycle.notifyFailureDetailedCode'], null);
 });
 
 test('an uncertain renewal notification is not retried after an ambiguous status failure', async () => {
