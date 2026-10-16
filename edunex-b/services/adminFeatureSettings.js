@@ -4,6 +4,7 @@ function normalize(row) {
   return {
     certificationEnabled: row?.certificationEnabled !== false,
     progressBarEnabled: row?.progressBarEnabled !== false,
+    screenCaptureAllowed: row?.screenCaptureAllowed === true,
     updatedAt: row?.updatedAt || null,
     updatedBy: row?.updatedBy || null,
   };
@@ -23,6 +24,14 @@ async function saveSettings(input, admin) {
   }
   if (Object.prototype.hasOwnProperty.call(input || {}, 'progressBarEnabled')) {
     next.progressBarEnabled = input.progressBarEnabled !== false;
+  }
+  if (Object.prototype.hasOwnProperty.call(input || {}, 'screenCaptureAllowed')) {
+    if (typeof input.screenCaptureAllowed !== 'boolean') {
+      const error = new Error('screenCaptureAllowed must be a boolean.');
+      error.statusCode = 400;
+      throw error;
+    }
+    next.screenCaptureAllowed = input.screenCaptureAllowed;
   }
   const row = await AdminFeatureSettings.findByIdAndUpdate(
     'features',

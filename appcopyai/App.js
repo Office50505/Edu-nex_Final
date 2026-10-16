@@ -6791,9 +6791,45 @@ function ReelsScreen({ courseId, course, initialIndex, initialTime, onBack, onRe
   }, [activeIndex, courseId, user?._id, user?.sessionId, videos]);
 
   useEffect(() => {
-    ScreenCapture.preventScreenCaptureAsync(PROTECTED_VIDEO_CAPTURE_KEY).catch(() => {});
+    let active = true;
+    let fetching = false;
+    let operations = Promise.resolve();
+    const applyPolicy = (allowed) => {
+      operations = operations.catch(() => {}).then(() => {
+        if (!active) return;
+        return allowed
+          ? ScreenCapture.allowScreenCaptureAsync(PROTECTED_VIDEO_CAPTURE_KEY)
+          : ScreenCapture.preventScreenCaptureAsync(PROTECTED_VIDEO_CAPTURE_KEY);
+      }).catch(() => {});
+    };
+    const refreshPolicy = async () => {
+      if (fetching) return;
+      fetching = true;
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 10000);
+      try {
+        const response = await fetch(`${API_BASE}/api/screen-capture-policy`, { signal: controller.signal, cache: 'no-store' });
+        if (!response.ok) throw new Error('Policy unavailable');
+        const policy = await response.json();
+        applyPolicy(policy.screenCaptureAllowed === true);
+      } catch {
+        applyPolicy(false);
+      } finally {
+        clearTimeout(timeout);
+        fetching = false;
+      }
+    };
+    applyPolicy(false);
+    refreshPolicy();
+    const timer = setInterval(refreshPolicy, 30000);
+    const subscription = AppState.addEventListener('change', state => {
+      if (state === 'active') refreshPolicy();
+    });
     return () => {
-      ScreenCapture.allowScreenCaptureAsync(PROTECTED_VIDEO_CAPTURE_KEY).catch(() => {});
+      active = false;
+      clearInterval(timer);
+      subscription.remove();
+      operations.catch(() => {}).then(() => ScreenCapture.allowScreenCaptureAsync(PROTECTED_VIDEO_CAPTURE_KEY)).catch(() => {});
     };
   }, []);
 

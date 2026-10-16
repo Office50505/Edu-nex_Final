@@ -87,6 +87,11 @@ router.post('/admin/certificate-template/preview',protectAdminRead,run(async(req
   const certificate=templateSettings.previewCertificate(req.body.sample||{});
   res.type('html').send(renderCertificatePage(certificate,template));
 }));
+router.get('/screen-capture-policy',run(async(_req,res)=>{
+  const settings = await featureSettings.getSettings();
+  res.set('Cache-Control','no-store');
+  res.json({screenCaptureAllowed: settings.screenCaptureAllowed});
+}));
 router.get('/admin/certification-settings',protectAdmin,run(async(_req,res)=>{
   res.json(await featureSettings.getSettings());
 }));
@@ -94,6 +99,7 @@ router.put('/admin/certification-settings',protectAdmin,run(async(req,res)=>{
   const patch = {};
   if (Object.prototype.hasOwnProperty.call(req.body || {}, 'certificationEnabled')) patch.certificationEnabled = req.body.certificationEnabled !== false;
   if (Object.prototype.hasOwnProperty.call(req.body || {}, 'progressBarEnabled')) patch.progressBarEnabled = req.body.progressBarEnabled !== false;
+  if (Object.prototype.hasOwnProperty.call(req.body || {}, 'screenCaptureAllowed')) patch.screenCaptureAllowed = req.body.screenCaptureAllowed;
   res.json(await featureSettings.saveSettings(patch,req.admin));
 }));
 router.get('/admin/certifications',protectAdmin,run(async(req,res)=>{
