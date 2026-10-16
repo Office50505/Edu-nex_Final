@@ -8,6 +8,8 @@ copied from a developer machine.
 - Stable PM2 path: `/home/ubuntu/skillomate_backend`
 - EC2 deployment command: `/home/ubuntu/bin/deploy-skillomate.sh`
 - Local command, from any checkout: `bash deployment/deploy-skillomate-production.sh`.
+- AWS profile: the local orchestrator defaults to `skillomate-prod`; override it
+  with `SKILLOMATE_AWS_PROFILE=profile-name` when needed.
 - For a backend fix that must reuse the existing web/mobile builds:
   `bash deployment/deploy-skillomate-production.sh --backend-only`.
   This mode skips frontend and marketing dependency installation and builds,

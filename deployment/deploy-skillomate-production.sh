@@ -17,6 +17,7 @@ readonly SSM_BOOTSTRAP="$LOCAL_REPOSITORY/edunex-b/ssm-bootstrap.js"
 readonly SSH_KEY="${SKILLOMATE_SSH_KEY:-$HOME/Downloads/Skillomate_Key.pem}"
 readonly SSH_COMMAND="${SKILLOMATE_SSH_COMMAND:-ssh}"
 readonly AWS_COMMAND="${SKILLOMATE_AWS_COMMAND:-aws}"
+readonly AWS_PROFILE_NAME="${SKILLOMATE_AWS_PROFILE:-skillomate-prod}"
 readonly REGION="ap-south-1"
 readonly ASG_NAME="skillomate-backend-asg"
 readonly TARGET_GROUP_NAME="skillomate-backend-tg"
@@ -87,7 +88,7 @@ acquire_lock
 discovery_directory="$(mktemp -d "${TMPDIR:-/tmp}/skillomate-asg.XXXXXX")"
 
 aws_read() {
-  "$AWS_COMMAND" --region "$REGION" "$@" --output json
+  AWS_PROFILE="$AWS_PROFILE_NAME" "$AWS_COMMAND" --region "$REGION" "$@" --output json
 }
 
 ssm_guidance() {
