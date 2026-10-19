@@ -18,6 +18,13 @@ const cycleSchema = new mongoose.Schema({
   redeemState: { type: String, default: null },
   phonePeTransactionId: { type: String, default: null },
   executeRequestedAt: { type: Date, default: null },
+  executeAttemptCount: { type: Number, default: 0, min: 0 },
+  executeLastAttemptAt: { type: Date, default: null },
+  executeRetryAt: { type: Date, default: null },
+  executeFailureCode: { type: String, default: null },
+  executeFailureStatus: { type: Number, default: null },
+  executeFailureDetailedCode: { type: String, default: null },
+  executeFailureMessage: { type: String, default: null },
   completedAt: { type: Date, default: null },
   failureCode: { type: String, default: null },
 }, { _id: false });

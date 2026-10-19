@@ -6,6 +6,8 @@ const controller = require('../controllers/phonePeStandardAutoPayController');
 
 const IST_OFFSET_MINUTES = 330;
 const NOTIFY_RETRY_BACKOFF_MINUTES = [5, 15, 30, 60, 180, 360];
+const EXECUTE_RETRY_BACKOFF_MINUTES = [5, 15, 30, 60, 180, 360];
+const TERMINAL_REDEEM_STATES = new Set(['COMPLETED', 'FAILED', 'EXPIRED']);
 
 function istMinuteOfDay(value) {
   const shifted = new Date(new Date(value).getTime() + IST_OFFSET_MINUTES * 60 * 1000);
@@ -43,6 +45,11 @@ function notifyRetryAt(attemptCount, now = new Date()) {
   const index = Math.min(Math.max(Number(attemptCount || 1) - 1, 0), NOTIFY_RETRY_BACKOFF_MINUTES.length - 1);
   const afterBackoff = new Date(new Date(now).getTime() + NOTIFY_RETRY_BACKOFF_MINUTES[index] * 60 * 1000);
   return nextPhonePeRetryWindow(afterBackoff);
+}
+
+function executeRetryAt(attemptCount, now = new Date()) {
+  const index = Math.min(Math.max(Number(attemptCount || 1) - 1, 0), EXECUTE_RETRY_BACKOFF_MINUTES.length - 1);
+  return new Date(new Date(now).getTime() + EXECUTE_RETRY_BACKOFF_MINUTES[index] * 60 * 1000);
 }
 
 function safeProviderFailure(error) {
@@ -83,6 +90,27 @@ async function recordNotifyFailure({ billingModel, billing, error, now, logger =
   return retryAt;
 }
 
+async function recordExecuteFailure({ billingModel, billing, error, now, logger = console }) {
+  const attemptCount = Math.max(Number(billing.currentCycle?.executeAttemptCount || 0), 1);
+  const retryAt = executeRetryAt(attemptCount, now);
+  const failure = safeProviderFailure(error);
+  await billingModel.updateOne({
+    _id: billing._id,
+    'currentCycle.merchantOrderId': billing.currentCycle.merchantOrderId,
+    'currentCycle.redeemState': 'REQUESTING',
+  }, { $set: {
+    'currentCycle.executeAttemptCount': attemptCount,
+    'currentCycle.executeLastAttemptAt': now,
+    'currentCycle.executeRetryAt': retryAt,
+    'currentCycle.executeFailureCode': failure.code,
+    'currentCycle.executeFailureStatus': failure.status,
+    'currentCycle.executeFailureDetailedCode': failure.detailedCode,
+    'currentCycle.executeFailureMessage': failure.message,
+  } });
+  logger.error(`[PHONEPE_AUTOPAY] billing=${billing._id} action=execute_reconcile code=${failure.code || 'PROVIDER_ERROR'} status=${failure.status ?? 'unknown'} detailed=${failure.detailedCode || 'none'} retry_at=${retryAt.toISOString()}`);
+  return retryAt;
+}
+
 function generatedCycleId(sequence) {
   const time = Date.now().toString(36).toUpperCase();
   const random = require('node:crypto').randomBytes(6).toString('hex').toUpperCase();
@@ -94,23 +122,26 @@ function notificationDueAt(billing) {
   return new Date(new Date(billing.nextBillingAt).getTime() - provider.TRIAL_HOURS * 60 * 60 * 1000);
 }
 
-async function activeMandate(billing) {
-  const mandate = await provider.getSubscriptionStatus(billing.merchantSubscriptionId);
-  await PhonePeBilling.updateOne({ _id: billing._id }, { $set: {
+async function activeMandate(billing, dependencies = {}) {
+  const phonePeProvider = dependencies.provider || provider;
+  const billingModel = dependencies.billingModel || PhonePeBilling;
+  const mandate = await phonePeProvider.getSubscriptionStatus(billing.merchantSubscriptionId);
+  await billingModel.updateOne({ _id: billing._id }, { $set: {
     providerState: mandate.state,
     phonePeSubscriptionId: mandate.subscriptionId || billing.phonePeSubscriptionId,
   } });
   const expectedAmountType = billing.paymentType === 'trial' ? 'VARIABLE' : 'FIXED';
   const expectedFrequency = billing.paymentType === 'trial' ? 'ON_DEMAND' : 'MONTHLY';
   return mandate.state === 'ACTIVE'
-    && mandate.maxAmount === provider.MONTHLY_AMOUNT_PAISE
+    && mandate.maxAmount === phonePeProvider.MONTHLY_AMOUNT_PAISE
     && mandate.amountType === expectedAmountType
     && mandate.frequency === expectedFrequency;
 }
 
-async function reserveCycle(billing, now) {
+async function reserveCycle(billing, now, dependencies = {}) {
+  const billingModel = dependencies.billingModel || PhonePeBilling;
   const current = billing.currentCycle;
-  if (current && current.redeemState !== 'COMPLETED') return null;
+  if (current && !TERMINAL_REDEEM_STATES.has(current.redeemState)) return null;
   const dueAt = notificationDueAt(billing);
   if (!dueAt || dueAt > now) return null;
   const sequence = Number(current?.sequence || 0) + 1;
@@ -121,10 +152,10 @@ async function reserveCycle(billing, now) {
     cancelledAt: null,
     nextBillingAt: billing.nextBillingAt,
     ...(current
-      ? { 'currentCycle.merchantOrderId': current.merchantOrderId, 'currentCycle.redeemState': 'COMPLETED' }
+      ? { 'currentCycle.merchantOrderId': current.merchantOrderId, 'currentCycle.redeemState': current.redeemState }
       : { $or: [{ currentCycle: null }, { currentCycle: { $exists: false } }] }),
   };
-  return PhonePeBilling.findOneAndUpdate(predicate, { $set: {
+  return billingModel.findOneAndUpdate(predicate, { $set: {
     currentCycle: {
       sequence,
       merchantOrderId,
@@ -135,29 +166,33 @@ async function reserveCycle(billing, now) {
   } }, { new: true, runValidators: true });
 }
 
-async function submitNotification(billing, now = new Date()) {
-  if (!await activeMandate(billing)) return null;
-  const reserved = await reserveCycle(billing, now);
+async function submitNotification(billing, now = new Date(), dependencies = {}) {
+  const billingModel = dependencies.billingModel || PhonePeBilling;
+  const subscriptionModel = dependencies.subscriptionModel || Subscription;
+  const orderModel = dependencies.orderModel || Order;
+  const phonePeProvider = dependencies.provider || provider;
+  if (!await activeMandate(billing, { billingModel, provider: phonePeProvider })) return null;
+  const reserved = await reserveCycle(billing, now, { billingModel });
   if (!reserved) return null;
-  const subscription = await Subscription.findOne({ user: reserved._id }).select('_id');
+  const subscription = await subscriptionModel.findOne({ user: reserved._id }).select('_id');
   try {
-    await Order.create({
+    await orderModel.create({
       user: reserved._id,
       subscription: subscription?._id || null,
-      totalAmount: provider.MONTHLY_AMOUNT_PAISE,
+      totalAmount: phonePeProvider.MONTHLY_AMOUNT_PAISE,
       gateway: 'phonepe',
       phonePeMerchantTransactionId: reserved.currentCycle.merchantOrderId,
       phonePeMerchantSubscriptionId: reserved.merchantSubscriptionId,
       orderType: 'subscription_charge',
       status: 'pending',
     });
-    const result = await provider.notifyRedemption({
+    const result = await phonePeProvider.notifyRedemption({
       merchantOrderId: reserved.currentCycle.merchantOrderId,
       merchantSubscriptionId: reserved.merchantSubscriptionId,
       userId: reserved._id,
       cycle: reserved.currentCycle.sequence,
     });
-    await PhonePeBilling.updateOne({
+    await billingModel.updateOne({
       _id: reserved._id,
       'currentCycle.merchantOrderId': reserved.currentCycle.merchantOrderId,
       'currentCycle.notifyState': 'REQUESTING',
@@ -176,18 +211,24 @@ async function submitNotification(billing, now = new Date()) {
   } catch (error) {
     // Do not blindly retry an uncertain provider create. The order-status
     // reconciliation path determines whether PhonePe accepted the request.
-    await recordNotifyFailure({ billingModel: PhonePeBilling, billing: reserved, error, now }).catch(() => {});
+    await recordNotifyFailure({ billingModel, billing: reserved, error, now, logger: dependencies.logger }).catch(() => {});
     throw error;
   }
 }
 
-async function executeDueRedemption(billing, now = new Date()) {
+async function executeDueRedemption(billing, now = new Date(), dependencies = {}) {
+  const billingModel = dependencies.billingModel || PhonePeBilling;
+  const phonePeProvider = dependencies.provider || provider;
+  const logger = dependencies.logger || console;
   const cycle = billing.currentCycle;
   if (!cycle?.merchantOrderId || cycle.notifyState !== 'NOTIFIED' || cycle.redeemState === 'COMPLETED') return null;
   if (!cycle.validAfter || new Date(cycle.validAfter) > now) return null;
   if (billing.cancelledAt || billing.phase !== 'active') return null;
-  if (!await activeMandate(billing)) return null;
-  const reserved = await PhonePeBilling.findOneAndUpdate({
+  if (cycle.validUpto && new Date(cycle.validUpto) <= now) return null;
+  if (cycle.executeRetryAt && new Date(cycle.executeRetryAt) > now) return null;
+  if (!await activeMandate(billing, { billingModel, provider: phonePeProvider })) return null;
+  const attemptCount = Number(cycle.executeAttemptCount || 0) + 1;
+  const reserved = await billingModel.findOneAndUpdate({
     _id: billing._id,
     phase: 'active',
     cancelledAt: null,
@@ -197,24 +238,82 @@ async function executeDueRedemption(billing, now = new Date()) {
   }, { $set: {
     'currentCycle.redeemState': 'REQUESTING',
     'currentCycle.executeRequestedAt': now,
+    'currentCycle.executeAttemptCount': attemptCount,
+    'currentCycle.executeLastAttemptAt': now,
   } }, { new: true });
   if (!reserved) return null;
   try {
-    const result = await provider.redeem(cycle.merchantOrderId);
-    await PhonePeBilling.updateOne({
+    const result = await phonePeProvider.redeem(cycle.merchantOrderId);
+    await billingModel.updateOne({
       _id: billing._id,
       'currentCycle.merchantOrderId': cycle.merchantOrderId,
       'currentCycle.redeemState': 'REQUESTING',
     }, { $set: {
       'currentCycle.redeemState': result.state,
       'currentCycle.phonePeTransactionId': result.transactionId,
+      'currentCycle.executeRetryAt': null,
+      'currentCycle.executeFailureCode': null,
+      'currentCycle.executeFailureStatus': null,
+      'currentCycle.executeFailureDetailedCode': null,
+      'currentCycle.executeFailureMessage': null,
     } });
     return result;
   } catch (error) {
-    // An execute timeout can still mean PhonePe accepted the debit. Preserve
-    // REQUESTING and recover only through the read-only order-status API.
+    // A timeout can still mean PhonePe accepted the debit. Keep REQUESTING,
+    // persist safe diagnostics, and retry only after status reconciliation.
+    await recordExecuteFailure({ billingModel, billing: reserved, error, now, logger }).catch(() => {});
     throw error;
   }
+}
+
+async function recoverOrExpireCycle(billing, now = new Date(), dependencies = {}) {
+  const billingModel = dependencies.billingModel || PhonePeBilling;
+  const orderModel = dependencies.orderModel || Order;
+  const cycle = billing?.currentCycle;
+  if (!cycle?.merchantOrderId || TERMINAL_REDEEM_STATES.has(cycle.redeemState)) return null;
+
+  if (cycle.validUpto && new Date(cycle.validUpto) <= now
+    && !['PENDING', 'COMPLETED'].includes(cycle.redeemState)) {
+    const changed = await billingModel.updateOne({
+      _id: billing._id,
+      'currentCycle.merchantOrderId': cycle.merchantOrderId,
+      'currentCycle.redeemState': { $nin: ['PENDING', 'COMPLETED', 'FAILED', 'EXPIRED'] },
+    }, { $set: {
+      'currentCycle.redeemState': 'EXPIRED',
+      'currentCycle.failureCode': 'REDEMPTION_WINDOW_EXPIRED',
+      'currentCycle.executeRetryAt': null,
+    } });
+    if (Number(changed?.modifiedCount || 0) > 0) {
+      await orderModel.updateOne({
+        phonePeMerchantTransactionId: cycle.merchantOrderId,
+        status: 'pending',
+      }, { $set: { status: 'failed' } });
+      return { expired: true };
+    }
+    return null;
+  }
+
+  if (cycle.notifyState !== 'NOTIFIED' || cycle.redeemState !== 'REQUESTING') return null;
+  const retryAt = cycle.executeRetryAt
+    ? new Date(cycle.executeRetryAt)
+    : executeRetryAt(Math.max(Number(cycle.executeAttemptCount || 0), 1), cycle.executeRequestedAt || now);
+  if (retryAt > now) {
+    if (!cycle.executeRetryAt) {
+      await billingModel.updateOne({
+        _id: billing._id,
+        'currentCycle.merchantOrderId': cycle.merchantOrderId,
+        'currentCycle.redeemState': 'REQUESTING',
+      }, { $set: { 'currentCycle.executeRetryAt': retryAt } });
+    }
+    return { deferred: true, retryAt };
+  }
+  const changed = await billingModel.updateOne({
+    _id: billing._id,
+    'currentCycle.merchantOrderId': cycle.merchantOrderId,
+    'currentCycle.notifyState': 'NOTIFIED',
+    'currentCycle.redeemState': 'REQUESTING',
+  }, { $set: { 'currentCycle.redeemState': 'RETRYABLE' } });
+  return { retryable: Number(changed?.modifiedCount || 0) > 0 };
 }
 
 async function processBilling(record, now = new Date(), dependencies = {}) {
@@ -228,7 +327,7 @@ async function processBilling(record, now = new Date(), dependencies = {}) {
   }
   if (billing?.phase !== 'active' || billing.cancelledAt) return;
   if (billing.currentCycle?.merchantOrderId
-    && billing.currentCycle.redeemState !== 'COMPLETED') {
+    && !TERMINAL_REDEEM_STATES.has(billing.currentCycle.redeemState)) {
     const uncertainNotification = billing.currentCycle.notifyState === 'UNCERTAIN'
       && !billing.currentCycle.redeemState;
     if (uncertainNotification) {
@@ -255,13 +354,20 @@ async function processBilling(record, now = new Date(), dependencies = {}) {
       throw error;
     }
     billing = await billingModel.findById(billing._id);
+    if (billing) {
+      await recoverOrExpireCycle(billing, now, {
+        billingModel,
+        orderModel: dependencies.orderModel || Order,
+      });
+      billing = await billingModel.findById(billing._id);
+    }
   }
   if (!billing || billing.phase !== 'active' || billing.cancelledAt) return;
-  if (!billing.currentCycle || billing.currentCycle.redeemState === 'COMPLETED') {
-    await submitNotification(billing, now);
+  if (!billing.currentCycle || TERMINAL_REDEEM_STATES.has(billing.currentCycle.redeemState)) {
+    await submitNotification(billing, now, dependencies);
     billing = await billingModel.findById(billing._id);
   }
-  if (billing) await executeDueRedemption(billing, now);
+  if (billing) await executeDueRedemption(billing, now, dependencies);
 }
 
 async function runDueBillings({ now = new Date(), limit = 50 } = {}) {
@@ -296,8 +402,11 @@ module.exports = {
   isPhonePeRetryWindow,
   nextPhonePeRetryWindow,
   notifyRetryAt,
+  executeRetryAt,
   safeProviderFailure,
   recordNotifyFailure,
+  recordExecuteFailure,
+  recoverOrExpireCycle,
   processBilling,
   runDueBillings,
 };

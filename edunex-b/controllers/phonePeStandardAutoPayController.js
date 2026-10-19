@@ -345,12 +345,15 @@ async function reconcileCycle(billing, dependencies = {}) {
     update['currentCycle.notifyState'] = status.state;
   } else if (status.state === 'PENDING') {
     update['currentCycle.redeemState'] = 'PENDING';
+    update['currentCycle.executeRetryAt'] = null;
   } else if (status.state === 'COMPLETED') {
+    update['currentCycle.executeRetryAt'] = null;
     await PhonePeBilling.updateOne({ _id: billing._id }, { $set: update });
     return completeRedemption(billing, status);
   } else if (status.state === 'FAILED') {
     update['currentCycle.redeemState'] = 'FAILED';
     update['currentCycle.failureCode'] = 'PHONEPE_REDEMPTION_FAILED';
+    update['currentCycle.executeRetryAt'] = null;
     await orderModel.updateOne({ phonePeMerchantTransactionId: cycle.merchantOrderId, status: 'pending' }, { $set: { status: 'failed' } });
   }
   await billingModel.updateOne({ _id: billing._id }, { $set: update });

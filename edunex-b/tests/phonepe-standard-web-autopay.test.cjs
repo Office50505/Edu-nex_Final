@@ -273,6 +273,152 @@ test('stored PhonePe provider messages redact authorization values', () => {
   assert.equal(failure.message.includes('sensitive.token.value'), false);
 });
 
+test('a failed redemption Execute is observable and remains safe to reconcile', async () => {
+  const updates = [];
+  const logs = [];
+  const now = new Date('2026-10-16T09:30:00.000Z');
+  const billing = {
+    _id: 'user-execute-failure',
+    phase: 'active',
+    cancelledAt: null,
+    paymentType: 'trial',
+    merchantSubscriptionId: 'PPA_EXECUTE_FAILURE',
+    currentCycle: {
+      sequence: 1,
+      merchantOrderId: 'PPR_EXECUTE_FAILURE',
+      notifyState: 'NOTIFIED',
+      redeemState: null,
+      validAfter: new Date('2026-10-16T09:23:00.000Z'),
+      validUpto: new Date('2026-10-18T09:23:00.000Z'),
+      executeAttemptCount: 0,
+    },
+  };
+  const reserved = {
+    ...billing,
+    currentCycle: { ...billing.currentCycle, redeemState: 'REQUESTING', executeAttemptCount: 1 },
+  };
+  const billingModel = {
+    updateOne: async (...args) => {
+      updates.push(args);
+      return { modifiedCount: 1 };
+    },
+    findOneAndUpdate: async () => reserved,
+  };
+  const provider = {
+    MONTHLY_AMOUNT_PAISE: 49900,
+    getSubscriptionStatus: async () => ({
+      state: 'ACTIVE',
+      subscriptionId: 'PHONEPE_SUBSCRIPTION_1',
+      maxAmount: 49900,
+      amountType: 'VARIABLE',
+      frequency: 'ON_DEMAND',
+    }),
+    redeem: async () => {
+      throw Object.assign(new Error('provider rejected Execute'), {
+        providerCode: 'BAD_REQUEST',
+        providerStatus: 400,
+        providerDetailedCode: 'INVALID_REDEMPTION',
+      });
+    },
+  };
+
+  await assert.rejects(
+    scheduler.executeDueRedemption(billing, now, {
+      billingModel,
+      provider,
+      logger: { error: value => logs.push(value) },
+    }),
+    /provider rejected Execute/
+  );
+
+  const failureUpdate = updates.at(-1)[1].$set;
+  assert.equal(failureUpdate['currentCycle.executeAttemptCount'], 1);
+  assert.equal(failureUpdate['currentCycle.executeFailureCode'], 'BAD_REQUEST');
+  assert.equal(failureUpdate['currentCycle.executeFailureStatus'], 400);
+  assert.equal(failureUpdate['currentCycle.executeFailureDetailedCode'], 'INVALID_REDEMPTION');
+  assert.equal(failureUpdate['currentCycle.executeFailureMessage'], 'provider rejected Execute');
+  assert.equal(failureUpdate['currentCycle.executeRetryAt'].toISOString(), '2026-10-16T09:35:00.000Z');
+  assert.match(logs[0], /action=execute_reconcile/);
+  assert.doesNotMatch(logs[0], /provider rejected Execute/);
+});
+
+test('a reconciled REQUESTING redemption becomes retryable after backoff', async () => {
+  const updates = [];
+  const now = new Date('2026-10-16T09:40:00.000Z');
+  const result = await scheduler.recoverOrExpireCycle({
+    _id: 'user-execute-retry',
+    currentCycle: {
+      merchantOrderId: 'PPR_EXECUTE_RETRY',
+      notifyState: 'NOTIFIED',
+      redeemState: 'REQUESTING',
+      executeAttemptCount: 1,
+      executeRequestedAt: new Date('2026-10-16T09:30:00.000Z'),
+      executeRetryAt: new Date('2026-10-16T09:35:00.000Z'),
+      validUpto: new Date('2026-10-18T09:23:00.000Z'),
+    },
+  }, now, {
+    billingModel: {
+      updateOne: async (...args) => {
+        updates.push(args);
+        return { modifiedCount: 1 };
+      },
+    },
+    orderModel: { updateOne: async () => assert.fail('a retryable cycle must not fail its order') },
+  });
+
+  assert.deepEqual(result, { retryable: true });
+  assert.equal(updates[0][1].$set['currentCycle.redeemState'], 'RETRYABLE');
+});
+
+test('an expired redemption window is closed so a fresh Notify cycle can be reserved', async () => {
+  const updates = [];
+  const orderUpdates = [];
+  const now = new Date('2026-10-19T09:30:00.000Z');
+  const expiredBilling = {
+    _id: 'user-expired-cycle',
+    phase: 'active',
+    cancelledAt: null,
+    nextBillingAt: new Date('2026-10-16T09:23:00.000Z'),
+    currentCycle: {
+      sequence: 1,
+      merchantOrderId: 'PPR_EXPIRED_1',
+      notifyState: 'NOTIFIED',
+      redeemState: 'REQUESTING',
+      validUpto: new Date('2026-10-18T09:23:00.000Z'),
+    },
+  };
+  const result = await scheduler.recoverOrExpireCycle(expiredBilling, now, {
+    billingModel: {
+      updateOne: async (...args) => {
+        updates.push(args);
+        return { modifiedCount: 1 };
+      },
+    },
+    orderModel: { updateOne: async (...args) => orderUpdates.push(args) },
+  });
+  assert.deepEqual(result, { expired: true });
+  assert.equal(updates[0][1].$set['currentCycle.redeemState'], 'EXPIRED');
+  assert.equal(updates[0][1].$set['currentCycle.failureCode'], 'REDEMPTION_WINDOW_EXPIRED');
+  assert.equal(orderUpdates[0][1].$set.status, 'failed');
+
+  let reservePredicate;
+  const fresh = await scheduler.reserveCycle({
+    ...expiredBilling,
+    currentCycle: { ...expiredBilling.currentCycle, redeemState: 'EXPIRED' },
+  }, now, {
+    billingModel: {
+      findOneAndUpdate: async (predicate, update) => {
+        reservePredicate = predicate;
+        return { ...expiredBilling, currentCycle: update.$set.currentCycle };
+      },
+    },
+  });
+  assert.equal(reservePredicate['currentCycle.redeemState'], 'EXPIRED');
+  assert.equal(fresh.currentCycle.sequence, 2);
+  assert.equal(fresh.currentCycle.notifyState, 'REQUESTING');
+  assert.match(fresh.currentCycle.merchantOrderId, /^PPR_2_/);
+});
+
 test('scheduler does not retry an uncertain notification outside the PhonePe retry window', async () => {
   const updates = [];
   const now = new Date('2026-10-14T13:14:00.000Z'); // 18:44 IST
