@@ -138,12 +138,12 @@ test('renewal notification is hard-limited to ₹499 and requires explicit redee
   assert.equal('expireAt' in request, false);
   assert.equal('metaInfo' in request, false);
   assert.deepEqual(Object.keys(request).sort(), ['amount', 'merchantOrderId', 'paymentFlow']);
-  assert.equal(request.paymentFlow.type, 'SUBSCRIPTION_CHECKOUT_REDEMPTION');
+  assert.equal(request.paymentFlow.type, 'SUBSCRIPTION_REDEMPTION');
   assert.equal(request.paymentFlow.autoDebit, false);
   assert.equal(request.paymentFlow.redemptionRetryStrategy, 'STANDARD');
 });
 
-test('production service calls only Standard Checkout v2 endpoints', async () => {
+test('hosted setup uses Standard Checkout while recurring lifecycle uses Custom Checkout v2 endpoints', async () => {
   const calls = [];
   const env = sandboxEnv();
   const fetchImpl = async (url, options = {}) => {
@@ -154,14 +154,23 @@ test('production service calls only Standard Checkout v2 endpoints', async () =>
     if (url.endsWith('/checkout/v2/pay')) {
       return { ok: true, status: 200, text: async () => JSON.stringify({ orderId: 'PHONEPE_SETUP', state: 'PENDING', redirectUrl: 'https://mercury-t2.phonepe.com/checkout' }) };
     }
-    if (url.endsWith('/checkout/v2/subscriptions/PPA_TEST_3/status')) {
+    if (url.endsWith('/subscriptions/v2/PPA_TEST_3/status?details=true')) {
       return { ok: true, status: 200, text: async () => JSON.stringify({ merchantSubscriptionId: 'PPA_TEST_3', subscriptionId: 'SUBSCRIPTION_3', state: 'ACTIVE', maxAmount: 49900, amountType: 'FIXED', frequency: 'MONTHLY' }) };
     }
-    if (url.endsWith('/checkout/v2/subscriptions/notify')) {
+    if (url.endsWith('/subscriptions/v2/order/PPR_TEST_3/status?details=true')) {
+      return { ok: true, status: 200, text: async () => JSON.stringify({
+        merchantOrderId: 'PPR_TEST_3', orderId: 'PHONEPE_NOTIFY', state: 'NOTIFIED', amount: 49900,
+        paymentFlow: { merchantSubscriptionId: 'PPA_TEST_3', validAfter: 1700000000000, validUpto: 1700172800000 },
+      }) };
+    }
+    if (url.endsWith('/subscriptions/v2/notify')) {
       return { ok: true, status: 200, text: async () => JSON.stringify({ orderId: 'PHONEPE_NOTIFY', state: 'NOTIFICATION_IN_PROGRESS' }) };
     }
-    if (url.endsWith('/checkout/v2/subscriptions/redeem')) {
+    if (url.endsWith('/subscriptions/v2/redeem')) {
       return { ok: true, status: 200, text: async () => JSON.stringify({ transactionId: 'PHONEPE_REDEEM', state: 'PENDING' }) };
+    }
+    if (url.endsWith('/subscriptions/v2/PPA_TEST_3/cancel')) {
+      return { ok: true, status: 204, text: async () => '' };
     }
     throw new Error(`Unexpected URL: ${url}`);
   };
@@ -171,19 +180,24 @@ test('production service calls only Standard Checkout v2 endpoints', async () =>
     userId: 'learner-3', paymentType: 'trial',
   }, { env, fetchImpl });
   await phonePe.getSubscriptionStatus('PPA_TEST_3', { env, fetchImpl });
+  await phonePe.getRedemptionOrderStatus('PPR_TEST_3', { env, fetchImpl });
   await phonePe.notifyRedemption({
     merchantOrderId: 'PPR_TEST_3', merchantSubscriptionId: 'PPA_TEST_3', userId: 'learner-3', cycle: 1,
   }, { env, fetchImpl });
   await phonePe.redeem('PPR_TEST_3', { env, fetchImpl });
+  await phonePe.cancel('PPA_TEST_3', { env, fetchImpl });
 
   const providerCalls = calls.filter(call => !call.url.endsWith('/v1/oauth/token'));
   assert.deepEqual(providerCalls.map(call => call.url), [
     'https://api-preprod.phonepe.com/apis/pg-sandbox/checkout/v2/pay',
-    'https://api-preprod.phonepe.com/apis/pg-sandbox/checkout/v2/subscriptions/PPA_TEST_3/status',
-    'https://api-preprod.phonepe.com/apis/pg-sandbox/checkout/v2/subscriptions/notify',
-    'https://api-preprod.phonepe.com/apis/pg-sandbox/checkout/v2/subscriptions/redeem',
+    'https://api-preprod.phonepe.com/apis/pg-sandbox/subscriptions/v2/PPA_TEST_3/status?details=true',
+    'https://api-preprod.phonepe.com/apis/pg-sandbox/subscriptions/v2/order/PPR_TEST_3/status?details=true',
+    'https://api-preprod.phonepe.com/apis/pg-sandbox/subscriptions/v2/notify',
+    'https://api-preprod.phonepe.com/apis/pg-sandbox/subscriptions/v2/redeem',
+    'https://api-preprod.phonepe.com/apis/pg-sandbox/subscriptions/v2/PPA_TEST_3/cancel',
   ]);
-  assert.equal(JSON.stringify(providerCalls).includes('/subscriptions/v2/'), false);
+  assert.equal(providerCalls[0].url.endsWith('/checkout/v2/pay'), true);
+  assert.equal(providerCalls.slice(1).every(call => call.url.includes('/subscriptions/v2/')), true);
 });
 
 test('live ₹499 notify/redeem stays blocked behind a separate kill switch', () => {
@@ -495,9 +509,10 @@ test('an uncertain renewal notification is retried after PhonePe confirms the or
   };
   await standardController.reconcileCycle(billing, {
     provider: {
-      getOrderStatus: async () => {
+      getRedemptionOrderStatus: async () => {
         throw Object.assign(new Error('not found'), { providerCode: 'ORDER_NOT_FOUND', providerStatus: 400 });
       },
+      getOrderStatus: async () => assert.fail('renewals must use the Custom Checkout order-status endpoint'),
       notifyRedemption: async (input) => {
         notifyCalls.push(input);
         return { orderId: 'PHONEPE_NOTIFY_RETRY_1', state: 'NOTIFICATION_IN_PROGRESS' };
@@ -538,9 +553,10 @@ test('an uncertain renewal notification is not retried after an ambiguous status
   await assert.rejects(
     standardController.reconcileCycle(billing, {
       provider: {
-        getOrderStatus: async () => {
+        getRedemptionOrderStatus: async () => {
           throw Object.assign(new Error('timeout'), { providerCode: 'TIMEOUT', providerStatus: 504 });
         },
+        getOrderStatus: async () => assert.fail('renewals must use the Custom Checkout order-status endpoint'),
         notifyRedemption: async () => assert.fail('ambiguous requests must not be retried'),
       },
       billingModel: { updateOne: async () => assert.fail('billing must remain uncertain') },

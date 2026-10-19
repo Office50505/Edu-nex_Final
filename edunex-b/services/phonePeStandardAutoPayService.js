@@ -193,7 +193,10 @@ function buildNotifyRequest({ merchantOrderId, merchantSubscriptionId }) {
     // Omitting expireAt uses PhonePe's documented 48-hour processing expiry;
     // validAfter still controls when Execute may debit the customer.
     paymentFlow: {
-      type: 'SUBSCRIPTION_CHECKOUT_REDEMPTION',
+      // The live Skillomate merchant is provisioned for PhonePe's Custom
+      // Checkout recurring APIs. Setup still uses the hosted checkout above,
+      // while the post-setup lifecycle uses /subscriptions/v2.
+      type: 'SUBSCRIPTION_REDEMPTION',
       merchantSubscriptionId: compactId(merchantSubscriptionId, 'merchantSubscriptionId'),
       redemptionRetryStrategy: 'STANDARD',
       autoDebit: false,
@@ -337,9 +340,35 @@ async function getOrderStatus(merchantOrderId, options = {}) {
   };
 }
 
+async function getRedemptionOrderStatus(merchantOrderId, options = {}) {
+  const id = compactId(merchantOrderId, 'merchantOrderId');
+  const body = await providerRequest(`/subscriptions/v2/order/${encodeURIComponent(id)}/status?details=true`, {}, { ...options, allowWebDisabled: true });
+  const data = body.data || body;
+  const flow = data.paymentFlow || {};
+  const completedPayment = Array.isArray(data.paymentDetails)
+    ? data.paymentDetails.find(item => String(item?.state || '').toUpperCase() === 'COMPLETED')
+    : null;
+  return {
+    state: String(data.state || 'UNKNOWN').toUpperCase(),
+    amount: Number(data.amount),
+    orderId: data.orderId || null,
+    merchantOrderId: data.merchantOrderId || id,
+    merchantSubscriptionId: flow.merchantSubscriptionId || data.merchantSubscriptionId || null,
+    subscriptionId: flow.subscriptionId || data.subscriptionId || null,
+    maxAmount: Number(flow.maxAmount ?? data.maxAmount),
+    amountType: String(flow.amountType || data.amountType || '').toUpperCase(),
+    frequency: String(flow.frequency || data.frequency || '').toUpperCase(),
+    validAfter: Number(flow.validAfter ?? data.validAfter) || null,
+    validUpto: Number(flow.validUpto ?? data.validUpto) || null,
+    notifiedAt: Number(flow.notifiedAt ?? data.notifiedAt) || null,
+    transactionId: completedPayment?.transactionId || data.transactionId || null,
+    paymentMode: completedPayment?.paymentMode || data.paymentMode || null,
+  };
+}
+
 async function getSubscriptionStatus(merchantSubscriptionId, options = {}) {
   const id = compactId(merchantSubscriptionId, 'merchantSubscriptionId');
-  const body = await providerRequest(`/checkout/v2/subscriptions/${encodeURIComponent(id)}/status`, {}, { ...options, allowWebDisabled: true });
+  const body = await providerRequest(`/subscriptions/v2/${encodeURIComponent(id)}/status?details=true`, {}, { ...options, allowWebDisabled: true });
   const data = body.data || body;
   return {
     state: String(data.state || 'UNKNOWN').toUpperCase(),
@@ -353,7 +382,7 @@ async function getSubscriptionStatus(merchantSubscriptionId, options = {}) {
 
 async function notifyRedemption(input, options = {}) {
   const request = buildNotifyRequest(input);
-  const body = await providerRequest('/checkout/v2/subscriptions/notify', { method: 'POST', body: request }, { ...options, recurringDebit: true, allowWebDisabled: true });
+  const body = await providerRequest('/subscriptions/v2/notify', { method: 'POST', body: request }, { ...options, recurringDebit: true, allowWebDisabled: true });
   const data = body.data || body;
   return {
     state: String(data.state || 'NOTIFICATION_IN_PROGRESS').toUpperCase(),
@@ -365,7 +394,7 @@ async function notifyRedemption(input, options = {}) {
 
 async function redeem(merchantOrderId, options = {}) {
   const id = compactId(merchantOrderId, 'merchantOrderId');
-  const body = await providerRequest('/checkout/v2/subscriptions/redeem', {
+  const body = await providerRequest('/subscriptions/v2/redeem', {
     method: 'POST',
     body: { merchantOrderId: id },
   }, { ...options, recurringDebit: true, allowWebDisabled: true });
@@ -378,7 +407,7 @@ async function redeem(merchantOrderId, options = {}) {
 
 async function cancel(merchantSubscriptionId, options = {}) {
   const id = compactId(merchantSubscriptionId, 'merchantSubscriptionId');
-  await providerRequest(`/checkout/v2/subscriptions/${encodeURIComponent(id)}/cancel`, { method: 'POST' }, { ...options, allowWebDisabled: true });
+  await providerRequest(`/subscriptions/v2/${encodeURIComponent(id)}/cancel`, { method: 'POST' }, { ...options, allowWebDisabled: true });
   return { requested: true };
 }
 
@@ -433,6 +462,7 @@ module.exports = {
   createSubscription,
   createMobileSubscription,
   getOrderStatus,
+  getRedemptionOrderStatus,
   getSubscriptionStatus,
   notifyRedemption,
   redeem,

@@ -299,7 +299,11 @@ async function reconcileCycle(billing, dependencies = {}) {
   const orderModel = dependencies.orderModel || Order;
   let status;
   try {
-    status = await provider.getOrderStatus(cycle.merchantOrderId);
+    // Subscription setup is hosted Standard Checkout, but this merchant's
+    // recurring lifecycle is provisioned on PhonePe Custom Checkout.
+    status = provider.getRedemptionOrderStatus
+      ? await provider.getRedemptionOrderStatus(cycle.merchantOrderId)
+      : await provider.getOrderStatus(cycle.merchantOrderId);
   } catch (error) {
     const missingUncertainNotification = cycle.notifyState === 'UNCERTAIN'
       && !cycle.redeemState
