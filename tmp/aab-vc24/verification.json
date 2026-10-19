@@ -1,0 +1,27 @@
+{
+  "previous": {
+    "filename": "Skillomate-1.0-vc23-production.aab",
+    "bytes": 47400940,
+    "sha256": "e4ee8b870127370ba50b14034e06bdb7a1d40f42f990e88f71c7626e61bce913",
+    "manifest": {
+      "package": "com.skillomate.app",
+      "versionCode": "23",
+      "versionName": "1.0"
+    },
+    "bundle_sha256": "a4e26ab3a774e00361c1d674ea5db0d6573986279e2f285d11b8f8daeb80c6bf",
+    "signer_sha256": "SHA256: BA:50:3D:E5:86:B3:0E:E0:27:27:F8:87:F0:78:3C:56:8D:28:A0:57:A9:C1:F4:BE:41:3F:93:DB:0F:88:90:56"
+  },
+  "new": {
+    "filename": "Skillomate-1.0-vc24-production.aab",
+    "bytes": 47403136,
+    "sha256": "bfa00c093272e0f3303bb75be7e19d5abce0623247542d7fbe51b175c282f819",
+    "manifest": {
+      "package": "com.skillomate.app",
+      "versionCode": "24",
+      "versionName": "1.0"
+    },
+    "bundle_sha256": "071bb46c8300fa2f0cceb5ed0895a7f278df8db7f0dce77e107558ab20e8d485",
+    "signer_sha256": "SHA256: BA:50:3D:E5:86:B3:0E:E0:27:27:F8:87:F0:78:3C:56:8D:28:A0:57:A9:C1:F4:BE:41:3F:93:DB:0F:88:90:56"
+  },
+  "signature_verified": true
+}
