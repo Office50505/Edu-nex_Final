@@ -5,6 +5,7 @@ import { usePageStyle } from "../hooks/usePageStyle.js";
 import { useEduNexRuntimeReady } from "../hooks/useEduNexRuntimeReady.js";
 import { useViewportLock } from "../hooks/useViewportLock.js";
 import { route } from "../lib/routes.js";
+import { profileAvatarSrc } from "../lib/avatarAssets.js";
 import "./ProfilePage.css";
 
 const FALLBACK_AVATAR = "data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20width=%27160%27%20height=%27160%27%20viewBox=%270%200%20160%20160%27%3E%3Crect%20width=%27160%27%20height=%27160%27%20rx=%2780%27%20fill=%27%230d0d0d%27/%3E%3Crect%20x=%272%27%20y=%272%27%20width=%27156%27%20height=%27156%27%20rx=%2778%27%20fill=%27%23111318%27%20stroke=%27%23C58B2A%27%20stroke-width=%274%27%20stroke-opacity=%27.45%27/%3E%3Ctext%20x=%2780%27%20y=%2796%27%20text-anchor=%27middle%27%20fill=%27%23C58B2A%27%20font-family=%27Arial%27%20font-size=%2762%27%20font-weight=%27800%27%3EE%3C/text%3E%3C/svg%3E";
@@ -195,7 +196,7 @@ export function ProfilePage() {
 
   const fallbackAvatar = window.EduNex?.avatarFallback?.(user) || FALLBACK_AVATAR;
   const avatar = user?.avatar
-    ? (window.EduNex?.normalizeImageSrc?.(user.avatar) || user.avatar)
+    ? (profileAvatarSrc(user.avatar) || window.EduNex?.normalizeImageSrc?.(user.avatar) || user.avatar)
     : fallbackAvatar;
   const displayName = user?.fullName || user?.mobileNumber || "Learner";
   const email = user?.email || user?.mobileNumber || "No email saved";

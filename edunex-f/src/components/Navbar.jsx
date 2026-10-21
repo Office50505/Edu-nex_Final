@@ -3,6 +3,7 @@ import { BrandLogo } from "./BrandLogo.jsx";
 import { EnxIcon } from "./EnxIcon.jsx";
 import { preloadPage } from "../lib/pageLoaders.jsx";
 import { route } from "../lib/routes.js";
+import { profileAvatarSrc } from "../lib/avatarAssets.js";
 
 const homeNavItem = { pageKey: "index.html", href: route("index.html"), label: "Home", icon: "home" };
 const coursesNavItem = { pageKey: "courses.html", href: route("courses.html"), label: "Courses", icon: "bookOpen" };
@@ -101,7 +102,7 @@ export function Navbar({ pageKey, onReportProblem }) {
   const profileLabel = auth.user?.fullName || auth.user?.email || auth.user?.mobileNumber || "Profile Settings";
   const navAvatarFallback = useMemo(() => avatarFallback(auth.user), [auth.user]);
   const avatarSrc = auth.user?.avatar
-    ? (window.EduNex?.normalizeImageSrc?.(auth.user.avatar) || auth.user.avatar)
+    ? (profileAvatarSrc(auth.user.avatar) || window.EduNex?.normalizeImageSrc?.(auth.user.avatar) || auth.user.avatar)
     : navAvatarFallback;
   const greeting = auth.token ? `Hi, ${firstName(auth.user)}` : "";
   const preloadNavPage = (targetPageKey) => {

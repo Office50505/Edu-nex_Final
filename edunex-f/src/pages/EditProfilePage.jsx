@@ -4,21 +4,9 @@ import { runLegacyPage } from "../legacyRuntime.js";
 import { usePageStyle } from "../hooks/usePageStyle.js";
 import { useEduNexRuntimeReady } from "../hooks/useEduNexRuntimeReady.js";
 import { route } from "../lib/routes.js";
+import { PROFILE_AVATARS, normalizeProfileAvatarPath, profileAvatarSrc } from "../lib/avatarAssets.js";
 
-const ALLOWED_AVATARS = [
-  "assets/avatars/male1-v1.webp",
-  "assets/avatars/male2-v1.webp",
-  "assets/avatars/male3-v1.webp",
-  "assets/avatars/male4-v1.webp",
-  "assets/avatars/male5-v1.webp",
-  "assets/avatars/male6-v1.webp",
-  "assets/avatars/female1-v1.webp",
-  "assets/avatars/female2-v1.webp",
-  "assets/avatars/female3-v1.webp",
-  "assets/avatars/female4-v1.webp",
-  "assets/avatars/female5-v1.webp",
-  "assets/avatars/female6-v1.webp",
-];
+const ALLOWED_AVATARS = PROFILE_AVATARS;
 
 function storedUserTarget() {
   return localStorage.getItem("edunexAccessToken") ? localStorage : sessionStorage;
@@ -53,20 +41,7 @@ function splitName(fullName = "") {
 }
 
 function normalizedAvatarPath(value) {
-  const raw = String(value || "").trim();
-  if (!raw) return "";
-  try {
-    const parsed = new URL(raw, window.location.origin);
-    const path = parsed.pathname.replace(/^\/+/, "");
-    const assetIndex = path.lastIndexOf("assets/");
-    const normalized = assetIndex >= 0 ? path.slice(assetIndex) : raw;
-    return normalized.replace(/^assets\/(male[1-6]|female[1-6])\.jpeg$/i, (_, name) => `assets/avatars/${name.toLowerCase()}-v1.webp`);
-  } catch (_) {
-    const cleaned = raw.replace(/^\/+/, "");
-    const assetIndex = cleaned.lastIndexOf("assets/");
-    const normalized = assetIndex >= 0 ? cleaned.slice(assetIndex) : cleaned;
-    return normalized.replace(/^assets\/(male[1-6]|female[1-6])\.jpeg$/i, (_, name) => `assets/avatars/${name.toLowerCase()}-v1.webp`);
-  }
+  return normalizeProfileAvatarPath(value, window.location.origin);
 }
 
 function readStoredProfileUser() {
@@ -238,7 +213,7 @@ export function EditProfilePage() {
 
         <div className="ava-edit-wrap">
           <div className="ava-edit-circle">
-            <img id="avaImg" src={form.avatar} alt="Avatar" data-avatar={form.avatar} />
+            <img id="avaImg" src={profileAvatarSrc(form.avatar)} alt="Avatar" data-avatar={form.avatar} />
             <div className="ava-edit-overlay"><i className="fas fa-user-check" aria-hidden="true"></i></div>
           </div>
           <div className="ava-edit-name">{form.fullName || fullName || "Skillomate Learner"}</div>
@@ -254,7 +229,7 @@ export function EditProfilePage() {
           <div className="ava-picker" id="avatarPicker">
             {ALLOWED_AVATARS.map((path) => (
               <button className={`ava-choice${path === form.avatar ? " selected" : ""}`} type="button" data-avatar={path} aria-label="Select avatar" key={path} onClick={() => setField("avatar", path)}>
-                <img src={path} alt="" />
+                <img src={profileAvatarSrc(path)} alt="" />
               </button>
             ))}
           </div>

@@ -1171,6 +1171,15 @@
     const raw = String(value || "").trim();
     if (!raw) return "";
 
+    const appAvatarAliases = {
+      f1: "a1", f2: "a4", f3: "a5", f4: "a6", f5: "a7", f6: "a13",
+      m1: "a2", m2: "a3", m3: "a8", m4: "a9", m5: "a10", m6: "a11",
+    };
+    const appAvatarToken = appAvatarAliases[raw.toLowerCase()] || raw.toLowerCase();
+    if (/^a(?:1[0-5]|[1-9])$/.test(appAvatarToken)) {
+      return `/assets/avatars/${appAvatarToken}.jpeg`;
+    }
+
     try {
       const imageOptions = normalizedImageOptions(options);
       const parsed = new URL(raw, window.location.origin);

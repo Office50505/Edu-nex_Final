@@ -256,7 +256,7 @@ function toAuthUser(user) {
 function sanitizeProfileAvatar(value) {
   const avatar = String(value || '').trim();
   if (!avatar) return null;
-  const allowed = /^(?:assets\/(?:male[1-6]|female[1-6]|_stylized_3D_character_illustration,_semi-realistic_20260604\d{4}(?: \(\d\))?)\.jpeg|assets\/avatars\/(?:male[1-6]|female[1-6])-v1\.webp)$/;
+  const allowed = /^(?:assets\/(?:male[1-6]|female[1-6]|_stylized_3D_character_illustration,_semi-realistic_20260604\d{4}(?: \(\d\))?)\.jpeg|assets\/avatars\/(?:(?:male[1-6]|female[1-6])-v1\.webp|a(?:1[0-5]|[1-9])\.jpeg))$/;
   return allowed.test(avatar) ? avatar : undefined;
 }
 
