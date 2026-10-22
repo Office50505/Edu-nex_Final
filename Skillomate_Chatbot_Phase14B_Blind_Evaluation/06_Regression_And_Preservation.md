@@ -1,0 +1,9 @@
+# Regression and preservation
+
+Backend chatbot regression suite: 476/476 passed, 0 failed, 0 skipped. Python evaluator suite: 167/167 passed, 0 failed, 0 skipped. Commands, complete logs, individual results and fixture-provider observations are under `evidence/regression/final`.
+
+The 40 previously passing Phase 12 cases (48 turns) were replayed through the actual historical pipeline with explicitly recorded upstream replies. All 40 responses were byte-identical; changed cases: none. Eleven provider replies were fixtures; no external invocation occurred. This establishes deterministic replay preservation, not fresh model accuracy. The unexecuted blind functional categories remain unknown.
+
+The first suite run passed all 476 individual tests but had 12 process-wrapper failures because an evidence output directory was missing. Those logs remain under `regression/attempt1_observer_directory_error`. After creating the artifact directory, the complete suite passed. A sandbox loopback denial occurred before replay execution; the authorized local replay then passed. An initial local-only socket guard rejected its own loopback request before the handler (zero DB/log/provider operations); its raw failed transport evidence is under `infrastructure_attempts`. Recognizing Node normalized socket arguments corrected that evaluation guard, preserving every failed attempt. Candidate code/tests/rubric were not altered.
+
+Final SHA-256 checks cover all frozen application source, tests, assets, evaluator and protected historical/configuration files, with zero mismatches. Frozen questions, expected outcomes and rubric are unchanged. No reset, stash, overwrite of unrelated changes, commit, push, migration, model retraining, production configuration change or deployment occurred. Only review/evaluation artifacts were created. The existing preparation ZIP is preserved as a separate preparation archive when the final ZIP is generated.

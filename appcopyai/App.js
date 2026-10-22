@@ -4685,6 +4685,7 @@ function VideoItem({ courseId, course, user, video: videoProp, videoId: videoIdP
   const [renderPlayerChrome, setRenderPlayerChrome] = useState(true);
   const [hasPlaybackStarted, setHasPlaybackStarted] = useState(false);
   const [playerControlActive, setPlayerControlActive] = useState(false);
+  const [, setVolumeDrawerOpen] = useState(false);
   useEffect(() => {
     latestProgressValueRef.current = { currentTime, duration };
   }, [currentTime, duration]);

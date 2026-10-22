@@ -1,0 +1,361 @@
+{
+  "id": "FRESH-MT-013",
+  "turnIndex": 1,
+  "status": "UNTESTED",
+  "critical": false,
+  "suspectedCritical": false,
+  "rubricVersion": "phase14b-independent-v1",
+  "criteria": [
+    {
+      "criterion": "Recommend normal home room, handheld look, natural light, not polished studio look.",
+      "status": "UNTESTED",
+      "excerpts": [
+        "Lesson 01\n\nAI Product Photoshoot & Ads has 8 lessons: 01 Course Intro; 02 Phone Photo Se Studio Photo (phone photos, Product Sheet, white studio/lifestyle/dark premium); 03 Model Ke Saath Product (character and product references, model shots and hands); 04 Festive Shoot + Colour Variants (Diwali, wedding scenes and a sheet for each colour); 05 ChatGPT Se Ad Plan (buyers, problems, angles, hooks, script, caption and Flow prompts); 06 Photo Se Product Video (one movement with Ingredients); 07 UGC-Style Video (honest phone-style AI-presenter videos); 08 Finale (complete workflow, common mistakes, honesty and final project). You learn to create product photos, product videos and honest ads for your own products or clients. You need a phone, laptop and a product. Tools: Google Flow, ChatGPT and CapCut; a full CapCut editing tutorial is not taught. Course prompts are in lesson notes."
+      ],
+      "reason": "Saved course overview does not recommend the required home room, handheld look and natural lighting corrections. Required semantic troubleshooting depends on unavailable provider inference. Necessary actual provider response absent for this essential requirement; no fallback/model pass inferred."
+    }
+  ],
+  "dimensions": {
+    "grounding": "UNTESTED",
+    "facts": "UNTESTED",
+    "taskCompleteness": "UNTESTED",
+    "language": "UNTESTED",
+    "authorization": "PASS",
+    "isolation": "PASS",
+    "httpStatus": "PASS"
+  },
+  "requestedExactBodyChecks": [],
+  "supplementalExactBodyChecks": [],
+  "providerAvailability": {
+    "provider": "built-in-course-guide",
+    "outcome": {
+      "type": "provider_fallback",
+      "liveModelAnswer": false,
+      "providerStatus": "connection_error",
+      "responseIssue": null
+    },
+    "attempts": [
+      {
+        "index": 1,
+        "startedAt": "2026-10-16T11:06:50.896Z",
+        "requestSha256": "de634ff038c1bbceea461a010fb28b5b49cae29526c38b181e3a24f4bbb97b74",
+        "promptModified": false,
+        "recordedFixture": false,
+        "error": {
+          "name": "Error",
+          "code": "PROVIDER_PAYLOAD_NOT_APPROVED"
+        },
+        "durationMs": 0,
+        "completedAt": "2026-10-16T11:06:50.896Z"
+      },
+      {
+        "index": 2,
+        "startedAt": "2026-10-16T11:06:50.998Z",
+        "requestSha256": "de634ff038c1bbceea461a010fb28b5b49cae29526c38b181e3a24f4bbb97b74",
+        "promptModified": false,
+        "recordedFixture": false,
+        "error": {
+          "name": "Error",
+          "code": "PROVIDER_PAYLOAD_NOT_APPROVED"
+        },
+        "durationMs": 0,
+        "completedAt": "2026-10-16T11:06:50.999Z"
+      }
+    ],
+    "inferenceNecessaryForThisTurn": true,
+    "reason": "Actual configured provider requests blocked before external transport. No model/fixture response. Saved fallback cannot establish required semantic response."
+  },
+  "ownershipPayloadReview": {
+    "reviewed": true,
+    "actor": "A",
+    "actorId": "e21ce3aa484b3f5dcde7ab51",
+    "scopeInspection": {
+      "independentExplicitSelectedCourse": "6d0000000000000000000000",
+      "independentExpectedOwner": "6d0000000000000000000000",
+      "explicitUnknownScope": false,
+      "independentAuthAndEntitlement": true,
+      "requiresSemanticScopeAdjudication": false,
+      "protectedRetrievedSources": [
+        {
+          "id": "S1",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "Course overview and prerequisites",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_1",
+          "lessonName": "Course overview and prerequisites",
+          "contentType": "overview",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:overview:course-overview-and-prerequisites"
+        },
+        {
+          "id": "S2",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "L07 UGC 2",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_7",
+          "lessonName": "L07 UGC 2",
+          "contentType": "exact-template",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:exact-template:l07-ugc-2"
+        },
+        {
+          "id": "S3",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "Lesson 07 — UGC-Style Video",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_7",
+          "lessonName": "Lesson 07 — UGC-Style Video",
+          "contentType": "lesson-summary",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:lesson-summary:lesson-07-ugc-style-video"
+        },
+        {
+          "id": "S4",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "Vertical clip landscape mein side",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "",
+          "lessonName": "Vertical clip landscape mein side",
+          "contentType": "faq",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:faq:vertical-clip-landscape-mein-side"
+        },
+        {
+          "id": "S5",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "L07 UGC 1",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_7",
+          "lessonName": "L07 UGC 1",
+          "contentType": "exact-template",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:exact-template:l07-ugc-1"
+        },
+        {
+          "id": "S6",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "Lesson 02 — Phone Photo Se Studio Photo",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_2",
+          "lessonName": "Lesson 02 — Phone Photo Se Studio Photo",
+          "contentType": "lesson-summary",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:lesson-summary:lesson-02-phone-photo-se-studio-photo"
+        }
+      ],
+      "retrievalProductBodies": [
+        {
+          "heading": "Course overview and prerequisites",
+          "contentType": "overview",
+          "owner": "6d0000000000000000000000",
+          "sha256": "46c6d59dfbfcf34bb540732e5795832daaaaa3947d2a6fce4eccd03c2c309cf5"
+        },
+        {
+          "heading": "Lesson 02 — Phone Photo Se Studio Photo",
+          "contentType": "lesson-summary",
+          "owner": "6d0000000000000000000000",
+          "sha256": "21582da9e3555afbf289672cf4d95cd09b1a1c240369ed1dc47895eeed208f95"
+        },
+        {
+          "heading": "Lesson 07 — UGC-Style Video",
+          "contentType": "lesson-summary",
+          "owner": "6d0000000000000000000000",
+          "sha256": "5e53bfc5f6557841a077ab14aaa77ca906c232cda4b7f47416b81fdd3f8ace14"
+        },
+        {
+          "heading": "Vertical clip landscape mein side",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "291a875f9fd18ebc266d99276fbc7d51d505a78e3cbc1c0e83d3e2fa10ea0836"
+        },
+        {
+          "heading": "L07 UGC 1",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "1ba8b33414b57b7cab8e193c33582b1aa00ea22d5445ccddef44614be39f75d0"
+        },
+        {
+          "heading": "L07 UGC 2",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "53eb271c5fc4c05464b8faed0aa24829a9d7512bed69ef924775342e95e6810f"
+        }
+      ],
+      "assembledContextProductBodies": [
+        {
+          "heading": "Course overview and prerequisites",
+          "contentType": "overview",
+          "owner": "6d0000000000000000000000",
+          "sha256": "46c6d59dfbfcf34bb540732e5795832daaaaa3947d2a6fce4eccd03c2c309cf5"
+        },
+        {
+          "heading": "Lesson 02 — Phone Photo Se Studio Photo",
+          "contentType": "lesson-summary",
+          "owner": "6d0000000000000000000000",
+          "sha256": "21582da9e3555afbf289672cf4d95cd09b1a1c240369ed1dc47895eeed208f95"
+        },
+        {
+          "heading": "Lesson 07 — UGC-Style Video",
+          "contentType": "lesson-summary",
+          "owner": "6d0000000000000000000000",
+          "sha256": "5e53bfc5f6557841a077ab14aaa77ca906c232cda4b7f47416b81fdd3f8ace14"
+        },
+        {
+          "heading": "Vertical clip landscape mein side",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "291a875f9fd18ebc266d99276fbc7d51d505a78e3cbc1c0e83d3e2fa10ea0836"
+        },
+        {
+          "heading": "L07 UGC 1",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "1ba8b33414b57b7cab8e193c33582b1aa00ea22d5445ccddef44614be39f75d0"
+        },
+        {
+          "heading": "L07 UGC 2",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "53eb271c5fc4c05464b8faed0aa24829a9d7512bed69ef924775342e95e6810f"
+        }
+      ],
+      "assembledPayloads": [
+        {
+          "sha256": "de634ff038c1bbceea461a010fb28b5b49cae29526c38b181e3a24f4bbb97b74",
+          "validation": "accepted",
+          "error": null,
+          "scope": {
+            "activeCourse": {
+              "_id": "6d0000000000000000000000",
+              "slug": "ai-product-photoshoot-ads"
+            },
+            "includeMaterials": true
+          },
+          "productBodies": [
+            {
+              "heading": "Course overview and prerequisites",
+              "contentType": "overview",
+              "owner": "6d0000000000000000000000",
+              "sha256": "46c6d59dfbfcf34bb540732e5795832daaaaa3947d2a6fce4eccd03c2c309cf5"
+            },
+            {
+              "heading": "Lesson 02 — Phone Photo Se Studio Photo",
+              "contentType": "lesson-summary",
+              "owner": "6d0000000000000000000000",
+              "sha256": "21582da9e3555afbf289672cf4d95cd09b1a1c240369ed1dc47895eeed208f95"
+            },
+            {
+              "heading": "Lesson 07 — UGC-Style Video",
+              "contentType": "lesson-summary",
+              "owner": "6d0000000000000000000000",
+              "sha256": "5e53bfc5f6557841a077ab14aaa77ca906c232cda4b7f47416b81fdd3f8ace14"
+            },
+            {
+              "heading": "Vertical clip landscape mein side",
+              "contentType": "faq",
+              "owner": "6d0000000000000000000000",
+              "sha256": "291a875f9fd18ebc266d99276fbc7d51d505a78e3cbc1c0e83d3e2fa10ea0836"
+            },
+            {
+              "heading": "L07 UGC 1",
+              "contentType": "exact-template",
+              "owner": "6d0000000000000000000000",
+              "sha256": "1ba8b33414b57b7cab8e193c33582b1aa00ea22d5445ccddef44614be39f75d0"
+            },
+            {
+              "heading": "L07 UGC 2",
+              "contentType": "exact-template",
+              "owner": "6d0000000000000000000000",
+              "sha256": "53eb271c5fc4c05464b8faed0aa24829a9d7512bed69ef924775342e95e6810f"
+            }
+          ],
+          "messageCount": 2
+        }
+      ],
+      "providerAdapterProductBodies": [
+        {
+          "heading": "Course overview and prerequisites",
+          "contentType": "overview",
+          "owner": "6d0000000000000000000000",
+          "sha256": "46c6d59dfbfcf34bb540732e5795832daaaaa3947d2a6fce4eccd03c2c309cf5"
+        },
+        {
+          "heading": "Lesson 02 — Phone Photo Se Studio Photo",
+          "contentType": "lesson-summary",
+          "owner": "6d0000000000000000000000",
+          "sha256": "21582da9e3555afbf289672cf4d95cd09b1a1c240369ed1dc47895eeed208f95"
+        },
+        {
+          "heading": "Lesson 07 — UGC-Style Video",
+          "contentType": "lesson-summary",
+          "owner": "6d0000000000000000000000",
+          "sha256": "5e53bfc5f6557841a077ab14aaa77ca906c232cda4b7f47416b81fdd3f8ace14"
+        },
+        {
+          "heading": "Vertical clip landscape mein side",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "291a875f9fd18ebc266d99276fbc7d51d505a78e3cbc1c0e83d3e2fa10ea0836"
+        },
+        {
+          "heading": "L07 UGC 1",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "1ba8b33414b57b7cab8e193c33582b1aa00ea22d5445ccddef44614be39f75d0"
+        },
+        {
+          "heading": "L07 UGC 2",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "53eb271c5fc4c05464b8faed0aa24829a9d7512bed69ef924775342e95e6810f"
+        }
+      ],
+      "responseProductBodies": [],
+      "noPayloadConstructed": false,
+      "blockedAdapterAttempts": 2,
+      "externalTransportAttempts": 0,
+      "potentialCriticalFindings": [],
+      "inspectionPerformed": true
+    },
+    "dbOperations": [
+      {
+        "model": "AiTutorSession",
+        "operation": "findOne",
+        "filter": {
+          "user": "e21ce3aa484b3f5dcde7ab51",
+          "course": "6d0000000000000000000000"
+        }
+      },
+      {
+        "model": "Course",
+        "operation": "find",
+        "filter": {
+          "status": "published",
+          "_id": "6d0000000000000000000000"
+        }
+      },
+      {
+        "model": "AiTutorSession",
+        "operation": "upsert",
+        "filter": {
+          "user": "e21ce3aa484b3f5dcde7ab51",
+          "course": "6d0000000000000000000000"
+        }
+      }
+    ],
+    "reason": "All six retrieval/context/adapter bodies belong to entitled selected owner 6d0000000000000000000000. Full assembled payload reviewed, exact repeated blocks plus present own pouch request/product parsing and safe account context. No other actor secrets or foreign protected course material. Session operations scoped to e21ce3aa484b3f5dcde7ab51/course; both blocked provider requests equal assembly, no actual transport."
+  },
+  "gradedAt": "2026-10-16T11:07:00.665979+00:00"
+}

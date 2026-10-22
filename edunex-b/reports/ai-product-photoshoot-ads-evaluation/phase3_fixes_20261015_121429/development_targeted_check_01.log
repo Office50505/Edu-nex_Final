@@ -1,0 +1,113 @@
+✔ comma-delimited explicit product fills the complete saved body: felt camera sleeve (8.971291ms)
+✔ comma-delimited explicit product fills the complete saved body: brass incense holder (1.68825ms)
+✔ comma-delimited explicit product fills the complete saved body: knitted book pouch (0.9725ms)
+✔ history determiners do not corrupt the approved scaffold: an olive-wood spoon (1.176917ms)
+✔ history determiners do not corrupt the approved scaffold: a quilted tablet case (1.289333ms)
+✔ history determiners do not corrupt the approved scaffold: the hand-thrown teapot (0.975333ms)
+✔ a referring phrase cannot overwrite the remembered entity: the product I mentioned (0.833625ms)
+✔ a referring phrase cannot overwrite the remembered entity: the same item (0.849625ms)
+✔ a referring phrase cannot overwrite the remembered entity: it (0.828417ms)
+✔ sales prices, channels and trailing instructions are not part of a product noun (0.38725ms)
+✔ unknown values remain unknown, and assistant claims are never product facts (1.490417ms)
+✔ a new product clears the previous product attributes and price (0.181083ms)
+✖ saved user facts preserve explicit attributes, price, channel and selected angle (0.6315ms)
+✔ Lesson 08 workflow selection uses the matching final assembly rather than an unrelated workflow (0.889792ms)
+✔ the prerequisites source covers phone, laptop, product and course tools (0.658167ms)
+✔ overview facts come from source-derived guidance and preserve course limitations (0.767708ms)
+✔ exact phone troubleshooting returns the entire approved instruction and its lesson (1.028375ms)
+✖ latest Hindi movement intent outranks the preceding logo-blur FAQ (7.888959ms)
+✖ a style-specific recovery selects the relevant asset instead of generic consistency advice (0.710333ms)
+✔ deliver the requested practice output without inventing benefits: Hooks (1.20675ms)
+✔ deliver the requested practice output without inventing benefits: Caption: (0.682ms)
+✔ deliver the requested practice output without inventing benefits: 15-second script (1.398417ms)
+✔ deliver the requested practice output without inventing benefits: Selected ad angle: (0.674958ms)
+✔ deliver the requested practice output without inventing benefits: Google Flow image prompts (0.907208ms)
+✔ a follow-up preserves pending script and caption deliverables from an ad plan (0.751958ms)
+✔ draft language follows the latest request: hindi (1.351791ms)
+✔ draft language follows the latest request: hinglish (0.974625ms)
+✔ draft language follows the latest request: english (0.589583ms)
+✔ a missing deliverable is replaced while a complete valid deliverable survives (1.13275ms)
+✔ provider references and exact troubleshooting strings are validated against selected metadata (1.331916ms)
+✔ unrelated negations cannot excuse affirmative invented endorsements in the same sentence (0.286916ms)
+✔ other-course active scope and denied access cannot use product practice generators (0.613042ms)
+ℹ tests 32
+ℹ suites 0
+ℹ pass 29
+ℹ fail 3
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 98.378875
+
+✖ failing tests:
+
+test at tests/product-tutor-phase3.test.cjs:58:1
+✖ saved user facts preserve explicit attributes, price, channel and selected angle (0.6315ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  
+    [
+      'caption',
+  +   'angle'
+    ]
+  
+      at TestContext.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase3.test.cjs:62:98)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [ 'caption', 'angle' ],
+    expected: [ 'caption' ],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at tests/product-tutor-phase3.test.cjs:87:1
+✖ latest Hindi movement intent outranks the preceding logo-blur FAQ (7.888959ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /stays perfectly still, no morphing/. Input:
+  
+  'Lesson 06\n' +
+    '\n' +
+    'Flow में Video → Ingredients चुनकर तस्वीर लगाएँ। कोर्स की रिकॉर्ड की गई सेटिंग्स: 16:9, Omni 1.1 Flash, 720p, 6 sec, x1। केवल एक धीमा मूवमेंट चुनें: push-in, arc या light sweep। प्रोडक्ट स्थिर रहे, morphing या warping न हो। संगीत बाद में एडिटिंग में जोड़ें।'
+  
+      at TestContext.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase3.test.cjs:90:49)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'Lesson 06\n\nFlow में Video → Ingredients चुनकर तस्वीर लगाएँ। कोर्स की रिकॉर्ड की गई सेटिंग्स: 16:9, Omni 1.1 Flash, 720p, 6 sec, x1। केवल एक धीमा मूवमेंट चुनें: push-in, arc या light sweep। प्रोडक्ट स्थिर रहे, morphing या warping न हो। संगीत बाद में एडिटिंग में जोड़ें।',
+    expected: /stays perfectly still, no morphing/,
+    operator: 'match',
+    diff: 'simple'
+  }
+
+test at tests/product-tutor-phase3.test.cjs:93:1
+✖ a style-specific recovery selects the relevant asset instead of generic consistency advice (0.710333ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /matte black|dark premium/i. Input:
+  
+  'Lesson 02\n' +
+    '\n' +
+    'Use only the product sheet as reference. Start the prompt by keeping the product unchanged, then describe the place, 2–3 objects, lighting and angle. Keep decoration behind and the product in front.'
+  
+      at TestContext.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase3.test.cjs:96:48)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'Lesson 02\n\nUse only the product sheet as reference. Start the prompt by keeping the product unchanged, then describe the place, 2–3 objects, lighting and angle. Keep decoration behind and the product in front.',
+    expected: /matte black|dark premium/i,
+    operator: 'match',
+    diff: 'simple'
+  }

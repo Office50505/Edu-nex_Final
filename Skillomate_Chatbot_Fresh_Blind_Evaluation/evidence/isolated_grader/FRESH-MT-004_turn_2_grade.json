@@ -1,0 +1,134 @@
+{
+  "id": "FRESH-MT-004",
+  "turnIndex": 2,
+  "status": "UNTESTED",
+  "critical": false,
+  "suspectedCritical": false,
+  "rubricVersion": "phase14b-independent-v1",
+  "criteria": [
+    {
+      "criterion": "Change only shade colour, preserve material/form/details and make full new colour sheet.",
+      "status": "UNTESTED",
+      "excerpts": [
+        "मैं AI Product Photoshoot & Ads कोर्स में मदद कर सकता हूँ। किस पाठ या प्रोडक्ट कार्य में मदद चाहिए? विस्तृत सामग्री के लिए सक्रिय पाठ-एक्सेस चाहिए।"
+      ],
+      "reason": "Saved generic help fallback omits shade-only colour change, preservation and complete new sheet instructions. Necessary actual provider response absent for this essential requirement; no fallback/model pass inferred."
+    }
+  ],
+  "dimensions": {
+    "grounding": "UNTESTED",
+    "facts": "UNTESTED",
+    "taskCompleteness": "UNTESTED",
+    "language": "UNTESTED",
+    "authorization": "PASS",
+    "isolation": "PASS",
+    "httpStatus": "PASS"
+  },
+  "requestedExactBodyChecks": [],
+  "supplementalExactBodyChecks": [],
+  "providerAvailability": {
+    "provider": "built-in-course-guide",
+    "outcome": {
+      "type": "provider_fallback",
+      "liveModelAnswer": false,
+      "providerStatus": "connection_error",
+      "responseIssue": null
+    },
+    "attempts": [
+      {
+        "index": 3,
+        "startedAt": "2026-10-16T11:01:30.958Z",
+        "requestSha256": "3a35be50b71e873cde787114a7740f3319a58cd43247acc38529d2498497dac1",
+        "promptModified": false,
+        "recordedFixture": false,
+        "error": {
+          "name": "Error",
+          "code": "PROVIDER_PAYLOAD_NOT_APPROVED"
+        },
+        "durationMs": 0,
+        "completedAt": "2026-10-16T11:01:30.958Z"
+      },
+      {
+        "index": 4,
+        "startedAt": "2026-10-16T11:01:31.060Z",
+        "requestSha256": "3a35be50b71e873cde787114a7740f3319a58cd43247acc38529d2498497dac1",
+        "promptModified": false,
+        "recordedFixture": false,
+        "error": {
+          "name": "Error",
+          "code": "PROVIDER_PAYLOAD_NOT_APPROVED"
+        },
+        "durationMs": 0,
+        "completedAt": "2026-10-16T11:01:31.060Z"
+      }
+    ],
+    "inferenceNecessaryForThisTurn": true,
+    "reason": "Actual configured provider requests blocked before external transport. No model/fixture response. Saved fallback cannot establish required semantic response."
+  },
+  "ownershipPayloadReview": {
+    "reviewed": true,
+    "actor": "A",
+    "actorId": "9607f991f6b5c6f195210d46",
+    "scopeInspection": {
+      "independentExplicitSelectedCourse": "6d0000000000000000000000",
+      "independentExpectedOwner": "6d0000000000000000000000",
+      "explicitUnknownScope": false,
+      "independentAuthAndEntitlement": true,
+      "requiresSemanticScopeAdjudication": false,
+      "protectedRetrievedSources": [],
+      "retrievalProductBodies": [],
+      "assembledContextProductBodies": [],
+      "assembledPayloads": [
+        {
+          "sha256": "3a35be50b71e873cde787114a7740f3319a58cd43247acc38529d2498497dac1",
+          "validation": "accepted",
+          "error": null,
+          "scope": {
+            "activeCourse": {
+              "_id": "6d0000000000000000000000",
+              "slug": "ai-product-photoshoot-ads"
+            },
+            "includeMaterials": true
+          },
+          "productBodies": [],
+          "messageCount": 4
+        }
+      ],
+      "providerAdapterProductBodies": [],
+      "responseProductBodies": [],
+      "noPayloadConstructed": false,
+      "blockedAdapterAttempts": 2,
+      "externalTransportAttempts": 0,
+      "potentialCriticalFindings": [],
+      "inspectionPerformed": true
+    },
+    "dbOperations": [
+      {
+        "model": "AiTutorSession",
+        "operation": "findOne",
+        "filter": {
+          "user": "9607f991f6b5c6f195210d46",
+          "course": "6d0000000000000000000000"
+        }
+      },
+      {
+        "model": "Course",
+        "operation": "find",
+        "filter": {
+          "status": "published",
+          "_id": "6d0000000000000000000000"
+        }
+      },
+      {
+        "model": "AiTutorSession",
+        "operation": "upsert",
+        "filter": {
+          "user": "9607f991f6b5c6f195210d46",
+          "course": "6d0000000000000000000000"
+        }
+      }
+    ],
+    "reason": "Full relevant assembled system context plus all four messages reviewed, common prefix equal SA011. Own prior lampshade brief/history only, no retrieved sources. Selected product scope entitled; current actor safe profile/session, all flags reviewed, both adapters equal assembly. No foreign/private state."
+  },
+  "gradedAt": "2026-10-16T11:01:41.227127+00:00"
+}

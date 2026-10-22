@@ -1,0 +1,7 @@
+{
+  "pid": 7301,
+  "method": "Provider adapter invocations in tests with external networking denied; custom fetch functions are injected fixtures",
+  "adapterInvocations": 0,
+  "transportAttempts": 0,
+  "calls": []
+}

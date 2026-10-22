@@ -1,0 +1,53 @@
+{
+  "generatedAt": "2026-10-15T11:09:29.524489+00:00",
+  "sourceFrozenAt": "2026-10-15T11:00:01.770700+00:00",
+  "testsFrozenAt": "2026-10-15T11:02:38.702144+00:00",
+  "firstProviderRequestAt": "2026-10-15T11:03:05.694Z",
+  "provider": {
+    "name": "fal.run OpenRouter router",
+    "endpoint": "https://fal.run/openrouter/router/openai/v1/chat/completions",
+    "model": "google/gemini-2.5-flash",
+    "credentialValuesRecorded": false,
+    "existingUserAuthorization": "Approved course-specific synthetic evaluation content only."
+  },
+  "environment": {
+    "os": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
+    "node": "v26.7.0",
+    "python": "3.14.6",
+    "backend": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b",
+    "gitCommit": "c38bc2afdaeebf8d751edba462cbfb570540f833"
+  },
+  "executionPhases": {
+    "unseen": {
+      "file": "unseen_application_raw_results.json",
+      "sha256": "24edb541ee62b4500b8514fa72731f1dcf5e03863d31ba5ba9bf9ea5d6a9c5fb",
+      "startedAt": "2026-10-15T11:03:28.792Z",
+      "completedAt": "2026-10-15T11:04:09.080Z",
+      "executedCases": 40
+    },
+    "existing": {
+      "file": "existing_application_raw_results.json",
+      "sha256": "6f9208c4556110f02943334128d80adabc78a3e5b7d7cc6097ffe9d70469362a",
+      "startedAt": "2026-10-15T11:04:18.519Z",
+      "completedAt": "2026-10-15T11:04:21.462Z",
+      "executedCases": 20
+    }
+  },
+  "pipeline": "Real loopback HTTP POST /api/ai/chat through Express and the unchanged application router, rate limiter, handler, routing, retrieval, prompt assembly, fal provider adapter and response guards. Synthetic auth/account/course/entitlement fixtures and in-memory persisted conversation storage replace the production data boundary. No production DB.",
+  "outboundProjection": "Only course context and evaluation messages leave the process. Transport excludes unrelated platform context and synthetic learner summaries after actual prompt assembly; tutor instructions and retrieved course material remain unchanged.",
+  "scoredCases": 60,
+  "providerRequestsIncludingProbe": 17,
+  "validationRepairCallsObserved": 0,
+  "codeOrEvaluatorChanged": false,
+  "productionResourcesChanged": false,
+  "deployed": false,
+  "committed": false,
+  "pushed": false,
+  "limits": [
+    "Agent-authored and reviewed, not a separate human blind panel.",
+    "Actual application route uses synthetic auth/course/entitlement and in-memory sessions; production DB/auth, deployed UI and load are not tested.",
+    "Most ad outputs are local; no successful/failed live validation repair was observed.",
+    "Frozen v7 retains confirmed false failures and missed quality defects; no adjusted headline score is substituted.",
+    "Different new questions and a different regression mix prevent a paired performance comparison with Phase 10."
+  ]
+}

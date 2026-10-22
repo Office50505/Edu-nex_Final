@@ -1,0 +1,106 @@
+{
+  "baselineBackend": {
+    "tests": 1072,
+    "pass": 1048,
+    "fail": 24,
+    "cancelled": 0,
+    "skipped": 0
+  },
+  "finalBackend": {
+    "tests": 1195,
+    "pass": 1171,
+    "fail": 24,
+    "cancelled": 0,
+    "skipped": 0
+  },
+  "preexistingBackendFailures": [
+    "Back exits enrolled playback one level and keeps lessons",
+    "Back exits preview playback one level and keeps lessons",
+    "Home displays course metadata before its playback request finishes",
+    "PDF extraction reads selectable text from a real PDF",
+    "PhonePe amount mismatch never grants one-time access",
+    "annual checkout selects server-owned plan/price and returns annual checkout metadata",
+    "appcopyai disables backups, cleartext traffic, overlays, and unverified deep links",
+    "blank vertical URL clears legacy storage while preserving the horizontal thumbnail",
+    "config, status and verification reject unauthenticated and revoked sessions before billing work",
+    "course detail back returns to the courses page instead of home",
+    "environment overrides control purchase configuration even when a stored purchase has an older product",
+    "mute and playback speed changes do not trigger a source reload",
+    "nonterminal callback state remains retryable for a later provider success event",
+    "notifications require Pub/Sub authentication and the correct package before processing",
+    "on-screen Back uses the same lesson-preserving transition",
+    "pending monthly checkout cannot be reused as annual; invalid types and wrong plans cannot create mandates",
+    "profile avatar picker keeps unique bundled choices and falls back from unknown legacy values",
+    "root page swipe is bidirectional and disabled while search is open",
+    "server exposes authenticated Google config under /api exactly once with the confirmed defaults",
+    "status returns authenticated entitlement state without caching",
+    "verification errors preserve safe client codes and hide provider internals",
+    "verification rate limit applies before another verification call",
+    "verification rejects missing, malformed and oversized tokens and malformed JSON",
+    "verification uses the authenticated owner and token, ignoring client-claimed product/package/status"
+  ],
+  "newBackendFailures": [],
+  "resolvedBaselineBackendFailures": [],
+  "newTests": 123,
+  "newTestsBaseline": {
+    "tests": 123,
+    "pass": 13,
+    "fail": 110,
+    "cancelled": 0,
+    "skipped": 0
+  },
+  "newTestsFinal": {
+    "tests": 123,
+    "pass": 123,
+    "fail": 0
+  },
+  "pythonEvaluators": {
+    "tests": 167,
+    "pass": 167,
+    "fail": 0
+  },
+  "sourceFilesChanged": 8,
+  "testFilesAdded": 1,
+  "externalRequests": 0,
+  "deployed": false,
+  "knownDiagnosticCases": 59,
+  "knownDiagnosticTurns": 72,
+  "diagnosticStatuses": {
+    "EXACT_BODY_PASS": 19,
+    "PROVIDER_DEPENDENT_UNTESTED": 24,
+    "LOCAL_RESPONSE_OBSERVED_NOT_REBLIND_SCORED": 16
+  },
+  "knownExactFullBodyMatches": 19,
+  "beforeExecution": {
+    "cases": 59,
+    "turns": 72,
+    "providerAdapterAttempts": 12,
+    "externalRequests": 0,
+    "providerDependentTurns": 6,
+    "scopeAlerts": 0
+  },
+  "afterExecution": {
+    "cases": 59,
+    "turns": 72,
+    "providerAdapterAttempts": 56,
+    "externalRequests": 0,
+    "providerDependentTurns": 28,
+    "scopeAlerts": 0
+  },
+  "phase12RecordedComparison": {
+    "cases": 40,
+    "turns": 48,
+    "byteIdenticalCases": 40,
+    "changedCases": [],
+    "replayedProviderInvocations": 11,
+    "unexpectedTransportRequests": 0,
+    "externalProviderInvocations": 0
+  },
+  "criticalOriginalCases": {
+    "cases": 4,
+    "turns": 5,
+    "completeBodyMatches": 5,
+    "externalRequests": 0
+  },
+  "generatedAt": "2026-10-16T12:24:46.627360+00:00"
+}

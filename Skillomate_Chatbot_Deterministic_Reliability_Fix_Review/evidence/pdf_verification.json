@@ -1,0 +1,17 @@
+{
+  "file": "output/pdf/Skillomate_Deterministic_Reliability_Comparison.pdf",
+  "pages": [
+    {
+      "page": 1,
+      "textCharacters": 1540,
+      "renderedPNG": "output/pdf/comparison_page_1.png"
+    },
+    {
+      "page": 2,
+      "textCharacters": 2091,
+      "renderedPNG": "output/pdf/comparison_page_2.png"
+    }
+  ],
+  "rendered": true,
+  "tool": "reportlab + PyMuPDF in existing local venv; no download"
+}

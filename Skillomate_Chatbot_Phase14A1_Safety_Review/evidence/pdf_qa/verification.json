@@ -1,0 +1,8 @@
+{
+  "pages": 2,
+  "textChecksPassed": true,
+  "textBoundsPassed": true,
+  "renderer": "PyMuPDF (Poppler unavailable)",
+  "pdfBytes": 5699,
+  "visualReview": "Both rendered pages inspected: readable, no clipping/overlap, consistent table and footer"
+}

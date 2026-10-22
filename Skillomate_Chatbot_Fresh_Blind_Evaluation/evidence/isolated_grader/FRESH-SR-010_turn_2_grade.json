@@ -1,0 +1,176 @@
+{
+  "id": "FRESH-SR-010",
+  "turnIndex": 2,
+  "status": "UNTESTED",
+  "critical": false,
+  "suspectedCritical": false,
+  "rubricVersion": "phase14b-independent-v1",
+  "criteria": [
+    {
+      "criterion": "Acknowledge B current facts without importing A facts.",
+      "status": "UNTESTED",
+      "excerpts": [
+        "Lesson 01\n\nAI Product Photoshoot & Ads has 8 lessons: 01 Course Intro; 02 Phone Photo Se Studio Photo (phone photos, Product Sheet, white studio/lifestyle/dark premium); 03 Model Ke Saath Product (character and product references, model shots and hands); 04 Festive Shoot + Colour Variants (Diwali, wedding scenes and a sheet for each colour); 05 ChatGPT Se Ad Plan (buyers, problems, angles, hooks, script, caption and Flow prompts); 06 Photo Se Product Video (one movement with Ingredients); 07 UGC-Style Video (honest phone-style AI-presenter videos); 08 Finale (complete workflow, common mistakes, honesty and final project). You learn to create product photos, product videos and honest ads for your own products or clients. You need a phone, laptop and a product. Tools: Google Flow, ChatGPT and CapCut; a full CapCut editing tutorial is not taught. Course prompts are in lesson notes."
+      ],
+      "reason": "Fallback overview does not acknowledge Bela/red ceramic cup, though no Aru facts appear in B answer. Actual necessary semantic model acknowledgement unavailable. Necessary actual provider response absent for this essential requirement; no fallback/model pass inferred."
+    }
+  ],
+  "dimensions": {
+    "grounding": "UNTESTED",
+    "facts": "UNTESTED",
+    "taskCompleteness": "UNTESTED",
+    "language": "UNTESTED",
+    "authorization": "PASS",
+    "isolation": "PASS",
+    "httpStatus": "PASS"
+  },
+  "requestedExactBodyChecks": [],
+  "supplementalExactBodyChecks": [],
+  "providerAvailability": {
+    "provider": "built-in-course-guide",
+    "outcome": {
+      "type": "provider_fallback",
+      "liveModelAnswer": false,
+      "providerStatus": "connection_error",
+      "responseIssue": null
+    },
+    "attempts": [
+      {
+        "index": 3,
+        "startedAt": "2026-10-16T11:18:14.320Z",
+        "requestSha256": "bc6172ee193dfcf11fe34d4802d1118558a3ba3d0db8dfe090d1839d24feefeb",
+        "promptModified": false,
+        "recordedFixture": false,
+        "error": {
+          "name": "Error",
+          "code": "PROVIDER_PAYLOAD_NOT_APPROVED"
+        },
+        "durationMs": 0,
+        "completedAt": "2026-10-16T11:18:14.320Z"
+      },
+      {
+        "index": 4,
+        "startedAt": "2026-10-16T11:18:14.422Z",
+        "requestSha256": "bc6172ee193dfcf11fe34d4802d1118558a3ba3d0db8dfe090d1839d24feefeb",
+        "promptModified": false,
+        "recordedFixture": false,
+        "error": {
+          "name": "Error",
+          "code": "PROVIDER_PAYLOAD_NOT_APPROVED"
+        },
+        "durationMs": 0,
+        "completedAt": "2026-10-16T11:18:14.422Z"
+      }
+    ],
+    "inferenceNecessaryForThisTurn": true,
+    "reason": "Actual configured provider requests blocked before external transport. No model/fixture response. Saved fallback cannot establish required semantic response."
+  },
+  "ownershipPayloadReview": {
+    "reviewed": true,
+    "actor": "B",
+    "actorId": "39353d6c1b77a33f09c0a5f1",
+    "scopeInspection": {
+      "independentExplicitSelectedCourse": "6d0000000000000000000000",
+      "independentExpectedOwner": "6d0000000000000000000000",
+      "explicitUnknownScope": false,
+      "independentAuthAndEntitlement": true,
+      "requiresSemanticScopeAdjudication": false,
+      "protectedRetrievedSources": [
+        {
+          "id": "S1",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "Course overview and prerequisites",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_1",
+          "lessonName": "Course overview and prerequisites",
+          "contentType": "overview",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:overview:course-overview-and-prerequisites"
+        }
+      ],
+      "retrievalProductBodies": [
+        {
+          "heading": "Course overview and prerequisites",
+          "contentType": "overview",
+          "owner": "6d0000000000000000000000",
+          "sha256": "46c6d59dfbfcf34bb540732e5795832daaaaa3947d2a6fce4eccd03c2c309cf5"
+        }
+      ],
+      "assembledContextProductBodies": [
+        {
+          "heading": "Course overview and prerequisites",
+          "contentType": "overview",
+          "owner": "6d0000000000000000000000",
+          "sha256": "46c6d59dfbfcf34bb540732e5795832daaaaa3947d2a6fce4eccd03c2c309cf5"
+        }
+      ],
+      "assembledPayloads": [
+        {
+          "sha256": "bc6172ee193dfcf11fe34d4802d1118558a3ba3d0db8dfe090d1839d24feefeb",
+          "validation": "accepted",
+          "error": null,
+          "scope": {
+            "activeCourse": {
+              "_id": "6d0000000000000000000000",
+              "slug": "ai-product-photoshoot-ads"
+            },
+            "includeMaterials": true
+          },
+          "productBodies": [
+            {
+              "heading": "Course overview and prerequisites",
+              "contentType": "overview",
+              "owner": "6d0000000000000000000000",
+              "sha256": "46c6d59dfbfcf34bb540732e5795832daaaaa3947d2a6fce4eccd03c2c309cf5"
+            }
+          ],
+          "messageCount": 2
+        }
+      ],
+      "providerAdapterProductBodies": [
+        {
+          "heading": "Course overview and prerequisites",
+          "contentType": "overview",
+          "owner": "6d0000000000000000000000",
+          "sha256": "46c6d59dfbfcf34bb540732e5795832daaaaa3947d2a6fce4eccd03c2c309cf5"
+        }
+      ],
+      "responseProductBodies": [],
+      "noPayloadConstructed": false,
+      "blockedAdapterAttempts": 2,
+      "externalTransportAttempts": 0,
+      "potentialCriticalFindings": [],
+      "inspectionPerformed": true
+    },
+    "dbOperations": [
+      {
+        "model": "AiTutorSession",
+        "operation": "findOne",
+        "filter": {
+          "user": "39353d6c1b77a33f09c0a5f1",
+          "course": "6d0000000000000000000000"
+        }
+      },
+      {
+        "model": "Course",
+        "operation": "find",
+        "filter": {
+          "status": "published",
+          "_id": "6d0000000000000000000000"
+        }
+      },
+      {
+        "model": "AiTutorSession",
+        "operation": "upsert",
+        "filter": {
+          "user": "39353d6c1b77a33f09c0a5f1",
+          "course": "6d0000000000000000000000"
+        }
+      }
+    ],
+    "reason": "Only selected entitled6d0000000000000000000000 overview retrieved/context/adapter. Full B assembled payload reviewed: SyntheticLearnerB and current Bela request only, no Aru/blue cotton A facts despite shared conversation string. Global persistedSessions evidence contains separate A and B records, not B exposure; actual DB filters only B39353d6c1b77a33f09c0a5f1/course. Provider requests equal assembly and blocked before transport. No foreign material."
+  },
+  "gradedAt": "2026-10-16T11:18:24.533843+00:00"
+}

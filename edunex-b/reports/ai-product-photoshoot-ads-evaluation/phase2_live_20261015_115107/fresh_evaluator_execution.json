@@ -1,0 +1,7 @@
+{
+  "command": "python3 -B -m unittest discover -s tests -p test_product_evaluator.py -v",
+  "startedAt": "2026-10-15T06:23:18.711965+00:00",
+  "completedAt": "2026-10-15T06:23:18.842113+00:00",
+  "durationSeconds": 0.1300941250001415,
+  "exitCode": 0
+}

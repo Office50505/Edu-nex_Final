@@ -1,0 +1,146 @@
+{
+  "generatedAt": "2026-10-16T10:01:53.198200+00:00",
+  "gate": "FAIL_CRITICAL_COURSE_ISOLATION",
+  "plannedCases": 120,
+  "plannedTurns": 178,
+  "executedCases": 11,
+  "executedTurns": 12,
+  "unexecutedCases": 109,
+  "statuses": {
+    "UNTESTED": 110,
+    "PASS": 8,
+    "FAIL": 2
+  },
+  "overallFixedDenominatorAccuracy": 0.06666666666666667,
+  "executedCasePassRate": 0.7272727272727273,
+  "categoryScores": {
+    "exact_template": {
+      "planned": 25,
+      "executed": 0,
+      "statuses": {
+        "UNTESTED": 25
+      },
+      "plannedAccuracy": 0.0,
+      "executedPassRate": null
+    },
+    "multilingual_extraction": {
+      "planned": 20,
+      "executed": 0,
+      "statuses": {
+        "UNTESTED": 20
+      },
+      "plannedAccuracy": 0.0,
+      "executedPassRate": null
+    },
+    "multi_turn": {
+      "planned": 20,
+      "executed": 0,
+      "statuses": {
+        "UNTESTED": 20
+      },
+      "plannedAccuracy": 0.0,
+      "executedPassRate": null
+    },
+    "education_generation": {
+      "planned": 20,
+      "executed": 0,
+      "statuses": {
+        "UNTESTED": 20
+      },
+      "plannedAccuracy": 0.0,
+      "executedPassRate": null
+    },
+    "safety_access_isolation": {
+      "planned": 20,
+      "executed": 11,
+      "statuses": {
+        "PASS": 8,
+        "FAIL": 2,
+        "UNTESTED": 10
+      },
+      "plannedAccuracy": 0.4,
+      "executedPassRate": 0.7272727272727273
+    },
+    "state_routing_edges": {
+      "planned": 15,
+      "executed": 0,
+      "statuses": {
+        "UNTESTED": 15
+      },
+      "plannedAccuracy": 0.0,
+      "executedPassRate": null
+    }
+  },
+  "criticalCases": [
+    "B14-SAFETY_ACCESS_ISOLATION-009",
+    "B14-SAFETY_ACCESS_ISOLATION-010"
+  ],
+  "criticalFailureModes": [
+    "Cross-course protected-material retrieval/context assembly"
+  ],
+  "exactTemplateFidelity": {
+    "plannedRequestedBodyChecks": 25,
+    "approvedAssetsInFrozenSet": 19,
+    "executedRequestedBodyChecks": 0,
+    "passedRequestedBodyChecks": 0,
+    "untestedRequestedBodyChecks": 25,
+    "correctlySelectedApprovedAssetDenominator": 0,
+    "conditionalFidelity": null,
+    "supplementalReturnedBodyChecks": 0,
+    "note": "No exact-template case executed before critical stop; no fidelity claim. Runtime-context source bodies are security evidence, not successful template responses."
+  },
+  "identityPreservation": {
+    "status": "UNTESTED",
+    "reason": "Functional extraction/switching categories were not executed."
+  },
+  "multilingualQuality": {
+    "status": "UNTESTED",
+    "plannedCases": 20,
+    "executedCases": 0
+  },
+  "multiTurnContextCorrectness": {
+    "status": "UNTESTED",
+    "plannedFunctionalCases": 20,
+    "executedFunctionalCases": 0,
+    "note": "One separate safety cross-user case executed with blocked inference; no cross-user disclosure observed, but it did not pass full semantic requirements."
+  },
+  "authorizationAndIsolation": {
+    "status": "FAIL",
+    "confirmedCrossCourseRetrievalCases": 2,
+    "noUserFacingCompletePaidBodyDisclosuresObserved": true,
+    "remainingCoverage": "Incomplete; not a 100% compliance claim."
+  },
+  "provider": {
+    "configuredModel": "google/gemini-2.5-flash",
+    "configuredEndpoint": "https://fal.run/openrouter/router/openai/v1/chat/completions",
+    "adapterTransportAttempts": 8,
+    "blockedBeforeExternalTransport": 8,
+    "externalRequestsSent": 0,
+    "successfulUpstreamResponses": 0,
+    "finalLiveModelAnswers": 0,
+    "providerOriginCoverageOfExecutedTurns": 0.0,
+    "fixtureResponsesUsedInBlindCases": 0,
+    "origins": {
+      "local_rule": 4,
+      "http_auth_denial": 4,
+      "provider_fallback": 4
+    },
+    "fallbackTurns": 4,
+    "fallbackFrequencyOfExecutedTurns": 0.3333333333333333,
+    "repairTurns": 0
+  },
+  "latencyMs": {
+    "count": 12,
+    "min": 18,
+    "median": 23.0,
+    "mean": 61.75,
+    "max": 156,
+    "note": "Local guarded execution only; not live-provider latency."
+  },
+  "httpStatusCounts": {
+    "200": 8,
+    "401": 4
+  },
+  "missingCandidateResponses": 0,
+  "infrastructureTransportAttemptsOutsideScoredCases": 1
+}

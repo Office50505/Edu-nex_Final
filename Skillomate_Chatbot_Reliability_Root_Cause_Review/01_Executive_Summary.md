@@ -1,0 +1,19 @@
+# Reliability root-cause review
+
+The fresh evaluation exposed substantial deterministic reliability problems, but its 67 FAIL cases should not all be called confirmed application defects. This source-aware audit classifies **59 cases as confirmed local implementation/capability mismatches, seven as grading ambiguities, and one as a security-policy/expectation conflict**. These are case classifications, not 59 independent bugs, proven regressions, or a new accuracy measurement. Original results remain **18 PASS / 67 FAIL / 35 UNTESTED**.
+
+All 70 turns graded FAIL ran local logic and made zero provider-adapter attempts. Current pure product-response helpers reproduced all 63 product-rule failure replies exactly outside the VM harness; the remaining seven replies came from account, pricing or the intentional safety filter. Eight failed multi-turn scenarios also contain blocked earlier turns. Their failed local turns are analyzed separately; unavailable inference is never treated as a failed live model response.
+
+The 114 attempts are **57 unique provider turns × two retries**, each denied before transport by the evaluation guard. The adapter maps the deliberate denial to connection_error and retries once. They are not 114 external requests or evidence that Gemini failed. There were zero transmitted application-provider requests and zero real model replies. The 35 UNTESTED cases remain untested; no model-quality result can be inferred from their fallbacks.
+
+All 19 failed exact-template cases already contained their correct requested asset in retrieval. Failures occur in copy-intent selection, phantom identities, missing explicit slot assignments and the limited renderer. Broad platform/account matchers also preempt course requests; narrow declaration and replacement patterns lose names and preserve old identities; local replies bypass the completeness/language validator used after model responses.
+
+There is no located intermediate translation service. Multilingual behavior is implemented through regex-based intent/entity/language handling and reviewed source translations. Missing names are often failed extraction or wrong routing, not demonstrated Unicode normalization damage. The separate original-name/NFKC-security-view protection remains present and must be preserved.
+
+No new authorization or course-isolation failure is confirmed by this archive audit. This is not a security certification: the VM uses synthetic memory models/global subscriptions and lacks purchase-only/trial and explicit same-conversation course-transition coverage. Never weaken safety or widen protected retrieval to improve a reliability score. In particular, SA-012's hard rejection follows the existing leakage policy; its optional May criterion was treated as mandatory by grading.
+
+Recommended order: preserve security invariants and resolve disputed grading policy; correct deterministic copy/fill and request planning; fix atomic state transitions; unify multilingual/per-part language and count handling; then conduct explicitly approved non-production inference tests. No source, evaluator, approved knowledge, configuration or production data was changed. Only read-only diagnostics and review artifacts were created. No external request was made for inference or pricing.
+
+The controlled provider plan estimates 57 previously provider-eligible turns at roughly **276k–553k input tokens** plus at most **51.3k configured output tokens** on a single-attempt replay, before optional smoke tests/retries/repairs. These are character-based planning estimates, not billed usage. Current fal/OpenRouter/Gemini pricing is not verified in local evidence; the report gives cost formulas and approval requirements rather than inventing a dollar quote.
+
+**Release remains blocked.** No improved accuracy, fix, production readiness or deployment is claimed. Stop after packaging and await approval.

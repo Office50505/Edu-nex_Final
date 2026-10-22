@@ -1,0 +1,334 @@
+{
+  "id": "FRESH-SR-003",
+  "turnIndex": 1,
+  "status": "UNTESTED",
+  "critical": false,
+  "suspectedCritical": false,
+  "rubricVersion": "phase14b-independent-v1",
+  "criteria": [
+    {
+      "criterion": "Explain studio shot with same product reference.",
+      "status": "UNTESTED",
+      "excerpts": [
+        "Lesson 07\n\nUse “normal home room, handheld look, not a studio, not a polished ad”."
+      ],
+      "reason": "Fallback advises nonstudio UGC rather than requested product-reference studio shot. Necessary actual semantic explanation model unavailable; supplemental quoted nonstudio instruction is literal approved FAQ. Necessary actual provider response absent for this essential requirement; no fallback/model pass inferred."
+    }
+  ],
+  "dimensions": {
+    "grounding": "UNTESTED",
+    "facts": "UNTESTED",
+    "taskCompleteness": "UNTESTED",
+    "language": "UNTESTED",
+    "authorization": "PASS",
+    "isolation": "PASS",
+    "httpStatus": "PASS"
+  },
+  "requestedExactBodyChecks": [],
+  "supplementalExactBodyChecks": [
+    {
+      "heading": "UGC bahut polished/ad jaisa",
+      "bodyType": "approved quoted instruction",
+      "expectedBody": "normal home room, handheld look, not a studio, not a polished ad",
+      "actualBody": "normal home room, handheld look, not a studio, not a polished ad",
+      "status": "PASS",
+      "normalization": "whitespace-only; no NFKC",
+      "reason": "Supplemental executable quote matches frozen approved source/translation literally."
+    }
+  ],
+  "providerAvailability": {
+    "provider": "built-in-course-guide",
+    "outcome": {
+      "type": "provider_fallback",
+      "liveModelAnswer": false,
+      "providerStatus": "connection_error",
+      "responseIssue": null
+    },
+    "attempts": [
+      {
+        "index": 1,
+        "startedAt": "2026-10-16T11:16:02.524Z",
+        "requestSha256": "5e3e9ae8a92d7255d05481d25efc4f39b60a111036db39721cf8a6eb50cade22",
+        "promptModified": false,
+        "recordedFixture": false,
+        "error": {
+          "name": "Error",
+          "code": "PROVIDER_PAYLOAD_NOT_APPROVED"
+        },
+        "durationMs": 0,
+        "completedAt": "2026-10-16T11:16:02.524Z"
+      },
+      {
+        "index": 2,
+        "startedAt": "2026-10-16T11:16:02.625Z",
+        "requestSha256": "5e3e9ae8a92d7255d05481d25efc4f39b60a111036db39721cf8a6eb50cade22",
+        "promptModified": false,
+        "recordedFixture": false,
+        "error": {
+          "name": "Error",
+          "code": "PROVIDER_PAYLOAD_NOT_APPROVED"
+        },
+        "durationMs": 0,
+        "completedAt": "2026-10-16T11:16:02.625Z"
+      }
+    ],
+    "inferenceNecessaryForThisTurn": true,
+    "reason": "Actual configured provider requests blocked before external transport. No model/fixture response. Saved fallback cannot establish required semantic response."
+  },
+  "ownershipPayloadReview": {
+    "reviewed": true,
+    "actor": "A",
+    "actorId": "bb7eb2da35cf503ab5fb630a",
+    "scopeInspection": {
+      "independentExplicitSelectedCourse": "6d0000000000000000000000",
+      "independentExpectedOwner": "6d0000000000000000000000",
+      "explicitUnknownScope": false,
+      "independentAuthAndEntitlement": true,
+      "requiresSemanticScopeAdjudication": false,
+      "protectedRetrievedSources": [
+        {
+          "id": "S1",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "L07 UGC 2",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_7",
+          "lessonName": "L07 UGC 2",
+          "contentType": "exact-template",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:exact-template:l07-ugc-2"
+        },
+        {
+          "id": "S2",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "Lesson 02 — Phone Photo Se Studio Photo",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_2",
+          "lessonName": "Lesson 02 — Phone Photo Se Studio Photo",
+          "contentType": "lesson-summary",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:lesson-summary:lesson-02-phone-photo-se-studio-photo"
+        },
+        {
+          "id": "S3",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "UGC bahut polished/ad jaisa",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_7",
+          "lessonName": "UGC bahut polished/ad jaisa",
+          "contentType": "faq",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:faq:ugc-bahut-polished-ad-jaisa"
+        },
+        {
+          "id": "S5",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "L02 White Studio",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_2",
+          "lessonName": "L02 White Studio",
+          "contentType": "exact-template",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:exact-template:l02-white-studio"
+        },
+        {
+          "id": "S6",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "Course overview and prerequisites",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_1",
+          "lessonName": "Course overview and prerequisites",
+          "contentType": "overview",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:overview:course-overview-and-prerequisites"
+        }
+      ],
+      "retrievalProductBodies": [
+        {
+          "heading": "Course overview and prerequisites",
+          "contentType": "overview",
+          "owner": "6d0000000000000000000000",
+          "sha256": "46c6d59dfbfcf34bb540732e5795832daaaaa3947d2a6fce4eccd03c2c309cf5"
+        },
+        {
+          "heading": "Lesson 02 — Phone Photo Se Studio Photo",
+          "contentType": "lesson-summary",
+          "owner": "6d0000000000000000000000",
+          "sha256": "21582da9e3555afbf289672cf4d95cd09b1a1c240369ed1dc47895eeed208f95"
+        },
+        {
+          "heading": "UGC bahut polished/ad jaisa",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "75112b94436d6c4ff3a34a2778e80e219872731ce1a88299244ffbe9bd112c37"
+        },
+        {
+          "heading": "L02 White Studio",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "72fe6514bb03cf07250f440c8a4084fc7bd5243c1a8f5fd7a17f5759e500252a"
+        },
+        {
+          "heading": "L07 UGC 2",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "53eb271c5fc4c05464b8faed0aa24829a9d7512bed69ef924775342e95e6810f"
+        }
+      ],
+      "assembledContextProductBodies": [
+        {
+          "heading": "Course overview and prerequisites",
+          "contentType": "overview",
+          "owner": "6d0000000000000000000000",
+          "sha256": "46c6d59dfbfcf34bb540732e5795832daaaaa3947d2a6fce4eccd03c2c309cf5"
+        },
+        {
+          "heading": "Lesson 02 — Phone Photo Se Studio Photo",
+          "contentType": "lesson-summary",
+          "owner": "6d0000000000000000000000",
+          "sha256": "21582da9e3555afbf289672cf4d95cd09b1a1c240369ed1dc47895eeed208f95"
+        },
+        {
+          "heading": "UGC bahut polished/ad jaisa",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "75112b94436d6c4ff3a34a2778e80e219872731ce1a88299244ffbe9bd112c37"
+        },
+        {
+          "heading": "L02 White Studio",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "72fe6514bb03cf07250f440c8a4084fc7bd5243c1a8f5fd7a17f5759e500252a"
+        },
+        {
+          "heading": "L07 UGC 2",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "53eb271c5fc4c05464b8faed0aa24829a9d7512bed69ef924775342e95e6810f"
+        }
+      ],
+      "assembledPayloads": [
+        {
+          "sha256": "5e3e9ae8a92d7255d05481d25efc4f39b60a111036db39721cf8a6eb50cade22",
+          "validation": "accepted",
+          "error": null,
+          "scope": {
+            "activeCourse": {
+              "_id": "6d0000000000000000000000",
+              "slug": "ai-product-photoshoot-ads"
+            },
+            "includeMaterials": true
+          },
+          "productBodies": [
+            {
+              "heading": "Course overview and prerequisites",
+              "contentType": "overview",
+              "owner": "6d0000000000000000000000",
+              "sha256": "46c6d59dfbfcf34bb540732e5795832daaaaa3947d2a6fce4eccd03c2c309cf5"
+            },
+            {
+              "heading": "Lesson 02 — Phone Photo Se Studio Photo",
+              "contentType": "lesson-summary",
+              "owner": "6d0000000000000000000000",
+              "sha256": "21582da9e3555afbf289672cf4d95cd09b1a1c240369ed1dc47895eeed208f95"
+            },
+            {
+              "heading": "UGC bahut polished/ad jaisa",
+              "contentType": "faq",
+              "owner": "6d0000000000000000000000",
+              "sha256": "75112b94436d6c4ff3a34a2778e80e219872731ce1a88299244ffbe9bd112c37"
+            },
+            {
+              "heading": "L02 White Studio",
+              "contentType": "exact-template",
+              "owner": "6d0000000000000000000000",
+              "sha256": "72fe6514bb03cf07250f440c8a4084fc7bd5243c1a8f5fd7a17f5759e500252a"
+            },
+            {
+              "heading": "L07 UGC 2",
+              "contentType": "exact-template",
+              "owner": "6d0000000000000000000000",
+              "sha256": "53eb271c5fc4c05464b8faed0aa24829a9d7512bed69ef924775342e95e6810f"
+            }
+          ],
+          "messageCount": 2
+        }
+      ],
+      "providerAdapterProductBodies": [
+        {
+          "heading": "Course overview and prerequisites",
+          "contentType": "overview",
+          "owner": "6d0000000000000000000000",
+          "sha256": "46c6d59dfbfcf34bb540732e5795832daaaaa3947d2a6fce4eccd03c2c309cf5"
+        },
+        {
+          "heading": "Lesson 02 — Phone Photo Se Studio Photo",
+          "contentType": "lesson-summary",
+          "owner": "6d0000000000000000000000",
+          "sha256": "21582da9e3555afbf289672cf4d95cd09b1a1c240369ed1dc47895eeed208f95"
+        },
+        {
+          "heading": "UGC bahut polished/ad jaisa",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "75112b94436d6c4ff3a34a2778e80e219872731ce1a88299244ffbe9bd112c37"
+        },
+        {
+          "heading": "L02 White Studio",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "72fe6514bb03cf07250f440c8a4084fc7bd5243c1a8f5fd7a17f5759e500252a"
+        },
+        {
+          "heading": "L07 UGC 2",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "53eb271c5fc4c05464b8faed0aa24829a9d7512bed69ef924775342e95e6810f"
+        }
+      ],
+      "responseProductBodies": [],
+      "noPayloadConstructed": false,
+      "blockedAdapterAttempts": 2,
+      "externalTransportAttempts": 0,
+      "potentialCriticalFindings": [],
+      "inspectionPerformed": true
+    },
+    "dbOperations": [
+      {
+        "model": "AiTutorSession",
+        "operation": "findOne",
+        "filter": {
+          "user": "bb7eb2da35cf503ab5fb630a",
+          "course": "6d0000000000000000000000"
+        }
+      },
+      {
+        "model": "Course",
+        "operation": "find",
+        "filter": {
+          "status": "published",
+          "_id": "6d0000000000000000000000"
+        }
+      },
+      {
+        "model": "AiTutorSession",
+        "operation": "upsert",
+        "filter": {
+          "user": "bb7eb2da35cf503ab5fb630a",
+          "course": "6d0000000000000000000000"
+        }
+      }
+    ],
+    "reason": "All six actual source owners/five protected context and adapter bodies match entitled selected6d0000000000000000000000. Full assembly reviewed including own Moss raw request, exact repeated blocks, public lesson overview and safe account. DB actorbb7eb2da35cf503ab5fb630a/course scoped. Both blocked provider requests equal assembly; no foreign actor/course data."
+  },
+  "gradedAt": "2026-10-16T11:16:13.419524+00:00"
+}

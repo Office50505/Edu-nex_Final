@@ -1,0 +1,142 @@
+{
+  "id": "FRESH-EG-019",
+  "turnIndex": 1,
+  "status": "UNTESTED",
+  "critical": false,
+  "suspectedCritical": false,
+  "rubricVersion": "phase14b-independent-v1",
+  "criteria": [
+    {
+      "criterion": "Remove unsupported waterproof claim; use only supplied features.",
+      "status": "UNTESTED",
+      "excerpts": [
+        "मैं AI Product Photoshoot & Ads कोर्स में मदद कर सकता हूँ। किस पाठ या प्रोडक्ट कार्य में मदद चाहिए? विस्तृत सामग्री के लिए सक्रिय पाठ-एक्सेस चाहिए।"
+      ],
+      "reason": "Fallback offers generic course help without removing unsupported claim or providing safe Hindi replacement line. Required actual semantic rewrite model is unavailable; no unsupported waterproof or substitute protection claim is affirmed. Necessary actual provider response absent for this essential requirement; no fallback/model pass inferred."
+    },
+    {
+      "criterion": "Give a grounded Hindi line that does not preserve or soften into another unproven protection claim.",
+      "status": "UNTESTED",
+      "excerpts": [
+        "मैं AI Product Photoshoot & Ads कोर्स में मदद कर सकता हूँ। किस पाठ या प्रोडक्ट कार्य में मदद चाहिए? विस्तृत सामग्री के लिए सक्रिय पाठ-एक्सेस चाहिए।"
+      ],
+      "reason": "Fallback offers generic course help without removing unsupported claim or providing safe Hindi replacement line. Required actual semantic rewrite model is unavailable; no unsupported waterproof or substitute protection claim is affirmed. Necessary actual provider response absent for this essential requirement; no fallback/model pass inferred."
+    }
+  ],
+  "dimensions": {
+    "grounding": "UNTESTED",
+    "facts": "UNTESTED",
+    "taskCompleteness": "UNTESTED",
+    "language": "UNTESTED",
+    "authorization": "PASS",
+    "isolation": "PASS",
+    "httpStatus": "PASS"
+  },
+  "requestedExactBodyChecks": [],
+  "supplementalExactBodyChecks": [],
+  "providerAvailability": {
+    "provider": "built-in-course-guide",
+    "outcome": {
+      "type": "provider_fallback",
+      "liveModelAnswer": false,
+      "providerStatus": "connection_error",
+      "responseIssue": null
+    },
+    "attempts": [
+      {
+        "index": 1,
+        "startedAt": "2026-10-16T11:14:54.702Z",
+        "requestSha256": "7304ea40ab3ae2f0d8f73fc985ef5d33543e29f0480316b686623738ac7958cc",
+        "promptModified": false,
+        "recordedFixture": false,
+        "error": {
+          "name": "Error",
+          "code": "PROVIDER_PAYLOAD_NOT_APPROVED"
+        },
+        "durationMs": 0,
+        "completedAt": "2026-10-16T11:14:54.702Z"
+      },
+      {
+        "index": 2,
+        "startedAt": "2026-10-16T11:14:54.804Z",
+        "requestSha256": "7304ea40ab3ae2f0d8f73fc985ef5d33543e29f0480316b686623738ac7958cc",
+        "promptModified": false,
+        "recordedFixture": false,
+        "error": {
+          "name": "Error",
+          "code": "PROVIDER_PAYLOAD_NOT_APPROVED"
+        },
+        "durationMs": 0,
+        "completedAt": "2026-10-16T11:14:54.804Z"
+      }
+    ],
+    "inferenceNecessaryForThisTurn": true,
+    "reason": "Actual configured provider requests blocked before external transport. No model/fixture response. Saved fallback cannot establish required semantic response."
+  },
+  "ownershipPayloadReview": {
+    "reviewed": true,
+    "actor": "A",
+    "actorId": "6b48bca5d57dffee51e5f419",
+    "scopeInspection": {
+      "independentExplicitSelectedCourse": "6d0000000000000000000000",
+      "independentExpectedOwner": "6d0000000000000000000000",
+      "explicitUnknownScope": false,
+      "independentAuthAndEntitlement": true,
+      "requiresSemanticScopeAdjudication": false,
+      "protectedRetrievedSources": [],
+      "retrievalProductBodies": [],
+      "assembledContextProductBodies": [],
+      "assembledPayloads": [
+        {
+          "sha256": "7304ea40ab3ae2f0d8f73fc985ef5d33543e29f0480316b686623738ac7958cc",
+          "validation": "accepted",
+          "error": null,
+          "scope": {
+            "activeCourse": {
+              "_id": "6d0000000000000000000000",
+              "slug": "ai-product-photoshoot-ads"
+            },
+            "includeMaterials": true
+          },
+          "productBodies": [],
+          "messageCount": 2
+        }
+      ],
+      "providerAdapterProductBodies": [],
+      "responseProductBodies": [],
+      "noPayloadConstructed": false,
+      "blockedAdapterAttempts": 2,
+      "externalTransportAttempts": 0,
+      "potentialCriticalFindings": [],
+      "inspectionPerformed": true
+    },
+    "dbOperations": [
+      {
+        "model": "AiTutorSession",
+        "operation": "findOne",
+        "filter": {
+          "user": "6b48bca5d57dffee51e5f419",
+          "course": "6d0000000000000000000000"
+        }
+      },
+      {
+        "model": "Course",
+        "operation": "find",
+        "filter": {
+          "status": "published",
+          "_id": "6d0000000000000000000000"
+        }
+      },
+      {
+        "model": "AiTutorSession",
+        "operation": "upsert",
+        "filter": {
+          "user": "6b48bca5d57dffee51e5f419",
+          "course": "6d0000000000000000000000"
+        }
+      }
+    ],
+    "reason": "Retrieval/context/adapter protected-body lists empty; selected entitled course scope remains6d0000000000000000000000. Full assembly reviewed including common exact blocks, current own pouch/request and safe account. No foreign actor or course material. DB actor6b48bca5d57dffee51e5f419/course scoped; both provider payloads equal assembly and blocked before transport."
+  },
+  "gradedAt": "2026-10-16T11:15:04.734236+00:00"
+}

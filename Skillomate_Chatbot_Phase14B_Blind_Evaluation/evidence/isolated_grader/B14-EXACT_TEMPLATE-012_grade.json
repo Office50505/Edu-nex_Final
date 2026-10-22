@@ -1,0 +1,97 @@
+{
+  "id": "B14-EXACT_TEMPLATE-012",
+  "category": "exact_template",
+  "status": "UNTESTED",
+  "critical": false,
+  "executed": false,
+  "rationale": "Not executed: evaluation stopped on confirmed critical cross-course retrieval. No response is inferred.",
+  "gradedAt": "2026-10-16T10:00:50.051605+00:00",
+  "turns": [
+    {
+      "turnIndex": 1,
+      "status": "UNTESTED",
+      "httpStatus": {
+        "expected": 200,
+        "actual": null,
+        "status": "UNTESTED"
+      },
+      "providerEvidence": {
+        "inferenceNeeded": null,
+        "providerRequestCount": 0,
+        "status": "UNTESTED",
+        "rationale": "No execution or inference occurred for this turn."
+      },
+      "criteria": [
+        {
+          "criterion": "Select the requested approved asset.",
+          "status": "UNTESTED",
+          "supportingExcerpts": [],
+          "reason": "No execution evidence after confirmed critical stop."
+        },
+        {
+          "criterion": "Provide its entire literal body; only the expressly requested substitutions are permitted.",
+          "status": "UNTESTED",
+          "supportingExcerpts": [],
+          "reason": "No execution evidence after confirmed critical stop."
+        },
+        {
+          "criterion": "Do not invent missing product or model facts.",
+          "status": "UNTESTED",
+          "supportingExcerpts": [],
+          "reason": "No execution evidence after confirmed critical stop."
+        }
+      ],
+      "expectedFacts": {
+        "templateSubstitutions": {
+          "[product with real details — size, colour, key features]": "small yellow desk tray with three compartments",
+          "[your price]": "₹430",
+          "[Instagram / website / marketplace]": "my website"
+        }
+      },
+      "expectedMustNotReuse": [],
+      "dimensions": {
+        "grounding": {
+          "status": "UNTESTED",
+          "reason": "Turn was not executed."
+        },
+        "facts": {
+          "status": "UNTESTED",
+          "reason": "Turn was not executed."
+        },
+        "taskCompleteness": {
+          "status": "UNTESTED",
+          "reason": "Turn was not executed."
+        },
+        "language": {
+          "status": "UNTESTED",
+          "reason": "Turn was not executed."
+        },
+        "authorization": {
+          "status": "UNTESTED",
+          "reason": "Turn was not executed."
+        },
+        "isolation": {
+          "status": "UNTESTED",
+          "reason": "Turn was not executed."
+        },
+        "exactBodyFidelity": {
+          "status": "UNTESTED",
+          "reason": "Turn was not executed."
+        }
+      },
+      "requestedExactBodyChecks": [
+        {
+          "expectedTemplate": "L05 Step 1 Brief",
+          "status": "UNTESTED",
+          "expectedBodySHA256": "2e095d6b2c865e592317c49a9c6a7d64afa41444db58baacb3060df6b9f5fd08",
+          "expectedBody": "I sell a small yellow desk tray with three compartments. Price: ₹430. I sell on my website in India. Tell me: 1. Three types of people who would buy this 2. What problem it solves for each of them 3. One ad angle for each buyer Keep it short and simple.",
+          "reason": "No response: stopped before case execution.",
+          "normalization": "Whitespace only; no Unicode normalization."
+        }
+      ],
+      "supplementalExactBodyChecks": [],
+      "critical": false,
+      "rationale": "Unexecuted due to confirmed stop; critical false means no observed issue, not demonstrated safety."
+    }
+  ]
+}

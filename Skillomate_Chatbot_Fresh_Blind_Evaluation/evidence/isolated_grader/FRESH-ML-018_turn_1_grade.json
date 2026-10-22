@@ -1,0 +1,256 @@
+{
+  "id": "FRESH-ML-018",
+  "turnIndex": 1,
+  "status": "FAIL",
+  "critical": false,
+  "suspectedCritical": false,
+  "criteria": [
+    {
+      "status": "FAIL",
+      "excerpts": [
+        "L05 hook se chhota dialogue Hindi Devanagari mein likho."
+      ],
+      "reason": "Tells learner to write dialogue; supplies no actual short Devanagari demo line. Hinglish explanation alone incomplete.",
+      "criterion": "Explain in Hinglish and supply a short Devanagari Hindi demo line."
+    },
+    {
+      "status": "PASS",
+      "excerpts": [
+        "AI actor ko asli customer review mat batao."
+      ],
+      "reason": "No sanitizer/liquid inclusion, antibacterial effect or fake customer experience claimed.",
+      "criterion": "Do not imply sanitizer/liquid included or antibacterial properties; do not fake customer experience."
+    }
+  ],
+  "dimensions": {
+    "grounding": "PASS",
+    "facts": "PASS",
+    "taskCompleteness": "FAIL",
+    "language": "PASS",
+    "authorization": "PASS",
+    "isolation": "PASS",
+    "httpStatus": "PASS"
+  },
+  "requestedExactBodyChecks": [],
+  "supplementalExactBodyChecks": [],
+  "rubricVersion": "phase14b-independent-v1",
+  "gradedAt": "2026-10-16T10:59:16.746661+00:00",
+  "providerAvailability": {
+    "provider": "course-knowledge-rule",
+    "outcome": {
+      "type": "local_rule",
+      "liveModelAnswer": false,
+      "providerStatus": "not_requested",
+      "responseIssue": null
+    },
+    "providerRequests": [],
+    "inferenceNecessaryForThisTurn": false,
+    "reason": "Actual deterministic response directly judged; no live model success inferred."
+  },
+  "ownershipPayloadReview": {
+    "reviewed": true,
+    "actor": "A",
+    "actorId": "faab64b0259d88856c50efc8",
+    "scopeInspection": {
+      "independentExplicitSelectedCourse": "6d0000000000000000000000",
+      "independentExpectedOwner": "6d0000000000000000000000",
+      "explicitUnknownScope": false,
+      "independentAuthAndEntitlement": true,
+      "requiresSemanticScopeAdjudication": false,
+      "protectedRetrievedSources": [
+        {
+          "id": "S1",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "UGC video",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_7",
+          "lessonName": "UGC video",
+          "contentType": "workflow",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:workflow:ugc-video"
+        },
+        {
+          "id": "S2",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "Kya AI model ko customer review",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_7",
+          "lessonName": "Kya AI model ko customer review",
+          "contentType": "faq",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:faq:kya-ai-model-ko-customer-review"
+        },
+        {
+          "id": "S3",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "L07 UGC 2",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_7",
+          "lessonName": "L07 UGC 2",
+          "contentType": "exact-template",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:exact-template:l07-ugc-2"
+        },
+        {
+          "id": "S4",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "L07 UGC 1",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_7",
+          "lessonName": "L07 UGC 1",
+          "contentType": "exact-template",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:exact-template:l07-ugc-1"
+        },
+        {
+          "id": "S5",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "UGC bahut polished/ad jaisa",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_7",
+          "lessonName": "UGC bahut polished/ad jaisa",
+          "contentType": "faq",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:faq:ugc-bahut-polished-ad-jaisa"
+        },
+        {
+          "id": "S6",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "UGC video mein phone dikh raha",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_7",
+          "lessonName": "UGC video mein phone dikh raha",
+          "contentType": "faq",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:faq:ugc-video-mein-phone-dikh-raha"
+        }
+      ],
+      "retrievalProductBodies": [
+        {
+          "heading": "UGC video",
+          "contentType": "workflow",
+          "owner": "6d0000000000000000000000",
+          "sha256": "0ddcd4cd92bef6253f0f689cb53e6540ce491d6a7657e509c0d314d47104d126"
+        },
+        {
+          "heading": "UGC video mein phone dikh raha",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "987d95ff060fecdc5edd8cac3455253b74f974f6576c540c9d69b44c44ecbab4"
+        },
+        {
+          "heading": "UGC bahut polished/ad jaisa",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "75112b94436d6c4ff3a34a2778e80e219872731ce1a88299244ffbe9bd112c37"
+        },
+        {
+          "heading": "Kya AI model ko customer review",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "89eba378016693fccba2770d72a92a7ed5615f10877ba7d4a67357f587a72502"
+        },
+        {
+          "heading": "L07 UGC 1",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "1ba8b33414b57b7cab8e193c33582b1aa00ea22d5445ccddef44614be39f75d0"
+        },
+        {
+          "heading": "L07 UGC 2",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "53eb271c5fc4c05464b8faed0aa24829a9d7512bed69ef924775342e95e6810f"
+        }
+      ],
+      "assembledContextProductBodies": [
+        {
+          "heading": "UGC video",
+          "contentType": "workflow",
+          "owner": "6d0000000000000000000000",
+          "sha256": "0ddcd4cd92bef6253f0f689cb53e6540ce491d6a7657e509c0d314d47104d126"
+        },
+        {
+          "heading": "UGC video mein phone dikh raha",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "987d95ff060fecdc5edd8cac3455253b74f974f6576c540c9d69b44c44ecbab4"
+        },
+        {
+          "heading": "UGC bahut polished/ad jaisa",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "75112b94436d6c4ff3a34a2778e80e219872731ce1a88299244ffbe9bd112c37"
+        },
+        {
+          "heading": "Kya AI model ko customer review",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "89eba378016693fccba2770d72a92a7ed5615f10877ba7d4a67357f587a72502"
+        },
+        {
+          "heading": "L07 UGC 1",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "1ba8b33414b57b7cab8e193c33582b1aa00ea22d5445ccddef44614be39f75d0"
+        },
+        {
+          "heading": "L07 UGC 2",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "53eb271c5fc4c05464b8faed0aa24829a9d7512bed69ef924775342e95e6810f"
+        }
+      ],
+      "assembledPayloads": [],
+      "providerAdapterProductBodies": [],
+      "responseProductBodies": [],
+      "noPayloadConstructed": true,
+      "blockedAdapterAttempts": 0,
+      "externalTransportAttempts": 0,
+      "potentialCriticalFindings": [],
+      "inspectionPerformed": true
+    },
+    "dbOperations": [
+      {
+        "model": "AiTutorSession",
+        "operation": "findOne",
+        "filter": {
+          "user": "faab64b0259d88856c50efc8",
+          "course": "6d0000000000000000000000"
+        }
+      },
+      {
+        "model": "Course",
+        "operation": "find",
+        "filter": {
+          "status": "published",
+          "_id": "6d0000000000000000000000"
+        }
+      },
+      {
+        "model": "AiTutorSession",
+        "operation": "upsert",
+        "filter": {
+          "user": "faab64b0259d88856c50efc8",
+          "course": "6d0000000000000000000000"
+        }
+      }
+    ],
+    "retrievalObservationCount": 1,
+    "contextObservationCount": 1,
+    "payloadObservationCount": 0,
+    "reason": "Six authorized product retrieval/context owners, no payload/provider, current actor session and all scope flags inspected. No foreign/private state or literal executable quote. Short dialogue missing despite sufficient supplied empty-bottle facts."
+  }
+}

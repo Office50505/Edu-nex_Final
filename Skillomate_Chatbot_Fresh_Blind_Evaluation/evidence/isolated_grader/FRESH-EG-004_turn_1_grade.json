@@ -1,0 +1,262 @@
+{
+  "id": "FRESH-EG-004",
+  "turnIndex": 1,
+  "status": "FAIL",
+  "critical": false,
+  "suspectedCritical": false,
+  "criteria": [
+    {
+      "status": "FAIL",
+      "excerpt": "Attach both the character sheet and product sheet. Match the model’s clothes and look ... same face ... natural hands with five fingers",
+      "reason": "Correct references/face/outfit/hands but omits essential realistic scale.",
+      "criterion": "Use character and product sheets, same face/outfit, realistic scale and natural hands with five fingers."
+    },
+    {
+      "status": "FAIL",
+      "excerpt": "Generate 2–3 versions and check the result.",
+      "reason": "No actual original desk-scene prompt; vague result check omits explicit face/clothes/fingers/product checks.",
+      "criterion": "Give an original desk scene and check face/clothes/fingers/product, suggesting 2–3 versions."
+    }
+  ],
+  "dimensions": {
+    "grounding": "PASS",
+    "facts": "PASS",
+    "completeness": "FAIL",
+    "language": "PASS",
+    "authorization": "PASS",
+    "isolation": "PASS",
+    "http": "PASS"
+  },
+  "requestedExactBodyChecks": [],
+  "supplementalExactBodyChecks": [
+    {
+      "heading": "Model shots",
+      "bodyType": "approved quoted instruction",
+      "expectedBody": "natural hands with five fingers",
+      "actualBody": "natural hands with five fingers",
+      "status": "PASS",
+      "normalization": "whitespace-only; no NFKC",
+      "reason": "Supplemental executable quote matches frozen approved source/translation literally."
+    }
+  ],
+  "rubricVersion": "phase14b-independent-v1",
+  "gradedAt": "2026-10-16T11:12:01.685542+00:00",
+  "providerAvailability": {
+    "provider": "course-knowledge-rule",
+    "outcome": {
+      "type": "local_rule",
+      "liveModelAnswer": false,
+      "providerStatus": "not_requested",
+      "responseIssue": null
+    },
+    "providerRequests": [],
+    "inferenceNecessaryForThisTurn": false,
+    "reason": "Actual deterministic response directly judged; no live model success inferred."
+  },
+  "ownershipPayloadReview": {
+    "reviewed": true,
+    "actor": "A",
+    "actorId": "0351a89aed790ab6d685fe12",
+    "scopeInspection": {
+      "independentExplicitSelectedCourse": "6d0000000000000000000000",
+      "independentExpectedOwner": "6d0000000000000000000000",
+      "explicitUnknownScope": false,
+      "independentAuthAndEntitlement": true,
+      "requiresSemanticScopeAdjudication": false,
+      "protectedRetrievedSources": [
+        {
+          "id": "S1",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "Model shots",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_3",
+          "lessonName": "Model shots",
+          "contentType": "workflow",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:workflow:model-shots"
+        },
+        {
+          "id": "S2",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "Model ke haath kisi aur ke lag rahe",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_3",
+          "lessonName": "Model ke haath kisi aur ke lag rahe",
+          "contentType": "faq",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:faq:model-ke-haath-kisi-aur-ke-lag-rahe"
+        },
+        {
+          "id": "S3",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "Model ka chehra badal gaya",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_3",
+          "lessonName": "Model ka chehra badal gaya",
+          "contentType": "faq",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:faq:model-ka-chehra-badal-gaya"
+        },
+        {
+          "id": "S4",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "Model ki ungliyan judi / extra",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_3",
+          "lessonName": "Model ki ungliyan judi / extra",
+          "contentType": "faq",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:faq:model-ki-ungliyan-judi-extra"
+        },
+        {
+          "id": "S5",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "L03 Character Sheet (bonus)",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_3",
+          "lessonName": "L03 Character Sheet (bonus)",
+          "contentType": "exact-template",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:exact-template:l03-character-sheet-bonus"
+        },
+        {
+          "id": "S6",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "L03 Desk",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_3",
+          "lessonName": "L03 Desk",
+          "contentType": "exact-template",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:exact-template:l03-desk"
+        }
+      ],
+      "retrievalProductBodies": [
+        {
+          "heading": "Model shots",
+          "contentType": "workflow",
+          "owner": "6d0000000000000000000000",
+          "sha256": "7330ca2d85402e3d0891dd36150f2c0c1b8f1bf8cba3e6c5340c67dc0a6f3883"
+        },
+        {
+          "heading": "Model ki ungliyan judi / extra",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "3bc6348931cabad8319c64178b2df7f0196fcbc3434c07c18e3c49b05308215b"
+        },
+        {
+          "heading": "Model ke haath kisi aur ke lag rahe",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "b5c912b9714291493fa6f2e446cfd0b9a6ad5af46c5c7565a0168d0492f87395"
+        },
+        {
+          "heading": "Model ka chehra badal gaya",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "9ab8a63b3ef374896329933757a49ab82736589dc493c5bdb2371b77dca025db"
+        },
+        {
+          "heading": "L03 Character Sheet (bonus)",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "5fa6b4f9183b5f814290c94cda7285d2d5c14939b1ac7494bcac14987f3aa86f"
+        },
+        {
+          "heading": "L03 Desk",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "596f2727d5567b00b03b2522ba43a38f4b02a338be90c99fa1c3bab800eb4f52"
+        }
+      ],
+      "assembledContextProductBodies": [
+        {
+          "heading": "Model shots",
+          "contentType": "workflow",
+          "owner": "6d0000000000000000000000",
+          "sha256": "7330ca2d85402e3d0891dd36150f2c0c1b8f1bf8cba3e6c5340c67dc0a6f3883"
+        },
+        {
+          "heading": "Model ki ungliyan judi / extra",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "3bc6348931cabad8319c64178b2df7f0196fcbc3434c07c18e3c49b05308215b"
+        },
+        {
+          "heading": "Model ke haath kisi aur ke lag rahe",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "b5c912b9714291493fa6f2e446cfd0b9a6ad5af46c5c7565a0168d0492f87395"
+        },
+        {
+          "heading": "Model ka chehra badal gaya",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "9ab8a63b3ef374896329933757a49ab82736589dc493c5bdb2371b77dca025db"
+        },
+        {
+          "heading": "L03 Character Sheet (bonus)",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "5fa6b4f9183b5f814290c94cda7285d2d5c14939b1ac7494bcac14987f3aa86f"
+        },
+        {
+          "heading": "L03 Desk",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "596f2727d5567b00b03b2522ba43a38f4b02a338be90c99fa1c3bab800eb4f52"
+        }
+      ],
+      "assembledPayloads": [],
+      "providerAdapterProductBodies": [],
+      "responseProductBodies": [],
+      "noPayloadConstructed": true,
+      "blockedAdapterAttempts": 0,
+      "externalTransportAttempts": 0,
+      "potentialCriticalFindings": [],
+      "inspectionPerformed": true
+    },
+    "dbOperations": [
+      {
+        "model": "AiTutorSession",
+        "operation": "findOne",
+        "filter": {
+          "user": "0351a89aed790ab6d685fe12",
+          "course": "6d0000000000000000000000"
+        }
+      },
+      {
+        "model": "Course",
+        "operation": "find",
+        "filter": {
+          "status": "published",
+          "_id": "6d0000000000000000000000"
+        }
+      },
+      {
+        "model": "AiTutorSession",
+        "operation": "upsert",
+        "filter": {
+          "user": "0351a89aed790ab6d685fe12",
+          "course": "6d0000000000000000000000"
+        }
+      }
+    ],
+    "retrievalObservationCount": 1,
+    "contextObservationCount": 1,
+    "payloadObservationCount": 0,
+    "reason": "All six retrieved/context protected bodies owned by entitled selected6d0000000000000000000000. Complete scope flags and own character/pen-stand session reviewed. No assembled payload/provider/adapter requests. Session operations actor0351a89aed790ab6d685fe12/course scoped with no foreign actor/course data."
+  }
+}

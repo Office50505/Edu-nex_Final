@@ -1,0 +1,157 @@
+{
+  "v6Original": {
+    "total": 80,
+    "passed": 51,
+    "failed": 29,
+    "skipped": 0,
+    "inconclusive": 0,
+    "provider_fallback": 0,
+    "provider_fallback_cases": 0,
+    "live_provider_turns": 20,
+    "local_quality_turns": 76,
+    "score_all_cases_pct": 63.8,
+    "score_executed_cases_pct": 63.8,
+    "dimension_turn_counts": {
+      "correctness": {
+        "passed": 65,
+        "failed": 31
+      },
+      "language": {
+        "passed": 93,
+        "failed": 3
+      },
+      "lesson_references": {
+        "passed": 93,
+        "failed": 3
+      },
+      "safety": {
+        "passed": 96
+      },
+      "prompt_accuracy": {
+        "passed": 95,
+        "failed": 1
+      },
+      "task_completion": {
+        "passed": 93,
+        "failed": 3
+      },
+      "context_retention": {
+        "passed": 1
+      }
+    }
+  },
+  "v7SavedResponseOnly": {
+    "total": 80,
+    "passed": 51,
+    "failed": 29,
+    "skipped": 0,
+    "inconclusive": 0,
+    "provider_fallback": 0,
+    "provider_fallback_cases": 0,
+    "live_provider_turns": 20,
+    "local_quality_turns": 76,
+    "score_all_cases_pct": 63.8,
+    "score_executed_cases_pct": 63.8,
+    "dimension_turn_counts": {
+      "correctness": {
+        "passed": 72,
+        "failed": 24
+      },
+      "language": {
+        "passed": 96
+      },
+      "lesson_references": {
+        "passed": 95,
+        "failed": 1
+      },
+      "safety": {
+        "passed": 94,
+        "failed": 2
+      },
+      "prompt_accuracy": {
+        "passed": 89,
+        "failed": 7
+      },
+      "task_completion": {
+        "passed": 84,
+        "failed": 12
+      },
+      "context_retention": {
+        "passed": 2
+      }
+    }
+  },
+  "changedCases": [
+    {
+      "id": "phase10_unseen_012",
+      "v6": "failed",
+      "v7": "passed"
+    },
+    {
+      "id": "phase10_unseen_013",
+      "v6": "failed",
+      "v7": "passed"
+    },
+    {
+      "id": "phase10_unseen_016",
+      "v6": "passed",
+      "v7": "failed"
+    },
+    {
+      "id": "phase10_unseen_019",
+      "v6": "failed",
+      "v7": "passed"
+    },
+    {
+      "id": "phase10_unseen_022",
+      "v6": "failed",
+      "v7": "passed"
+    },
+    {
+      "id": "phase10_unseen_024",
+      "v6": "passed",
+      "v7": "failed"
+    },
+    {
+      "id": "phase10_unseen_027",
+      "v6": "passed",
+      "v7": "failed"
+    },
+    {
+      "id": "phase10_unseen_028",
+      "v6": "passed",
+      "v7": "failed"
+    },
+    {
+      "id": "phase10_unseen_035",
+      "v6": "passed",
+      "v7": "failed"
+    },
+    {
+      "id": "phase10_unseen_037",
+      "v6": "failed",
+      "v7": "passed"
+    },
+    {
+      "id": "phase10_unseen_042",
+      "v6": "failed",
+      "v7": "passed"
+    },
+    {
+      "id": "phase10_unseen_043",
+      "v6": "passed",
+      "v7": "failed"
+    },
+    {
+      "id": "phase10_unseen_045",
+      "v6": "passed",
+      "v7": "failed"
+    },
+    {
+      "id": "phase10_unseen_048",
+      "v6": "failed",
+      "v7": "passed"
+    }
+  ],
+  "interpretation": "Same Phase 10 raw answers; outcome changes are evaluation corrections only. Integrated total remains 51/80. No new live score exists."
+}

@@ -1,0 +1,141 @@
+{
+  "id": "FRESH-EG-017",
+  "category": "education_generation",
+  "startedAt": "2026-10-16T11:14:31.039Z",
+  "completedAt": "2026-10-16T11:14:42.092Z",
+  "complete": true,
+  "traces": [
+    {
+      "turn": 1,
+      "request": {
+        "message": "Mera ad generic lag raha hai: sirf “nice bag” likha tha. Course ke ad-planning method se kaun si details deni hain aur kis order mein kaam karun?",
+        "history": [],
+        "debugAi": true,
+        "assistantName": "Skillomate AI",
+        "pagePath": "/courses/ai-product-photoshoot-ads",
+        "courseId": "6d0000000000000000000000",
+        "conversationId": "FRESH-EG-017-conversation"
+      },
+      "syntheticActor": "A",
+      "syntheticActorId": "b25837c4025e75cae13cb8ef",
+      "authMode": "valid",
+      "access": "active",
+      "statusCode": 200,
+      "response": {
+        "answer": "Aapka Skillomate profile: name Synthetic Learner A; mobile not added; email not added; mobile verified no; email verified no; age not set; gender not set; avatar not set.\nMissing profile fields: mobile number, email, age, gender, avatar.\nAapka plan/access active hai via legacy. Expiry: 2026-10-17. Lagbhag 1 day remaining hain. Status: active.\nMujhe safe summary me aapke account ka successful payment record nahi dikh raha.\nPrivacy ke liye main masked account/payment summary hi dikha sakta hoon, full transaction IDs ya sensitive payment details nahi.",
+        "reply": "Aapka Skillomate profile: name Synthetic Learner A; mobile not added; email not added; mobile verified no; email verified no; age not set; gender not set; avatar not set.\nMissing profile fields: mobile number, email, age, gender, avatar.\nAapka plan/access active hai via legacy. Expiry: 2026-10-17. Lagbhag 1 day remaining hain. Status: active.\nMujhe safe summary me aapke account ka successful payment record nahi dikh raha.\nPrivacy ke liye main masked account/payment summary hi dikha sakta hoon, full transaction IDs ya sensitive payment details nahi.",
+        "provider": "skillomate-learner-facts",
+        "sources": [],
+        "messageId": "f3f24975-0776-4732-b4e6-22126afc2485",
+        "notice": null,
+        "outcome": {
+          "type": "local_rule",
+          "liveModelAnswer": false,
+          "providerStatus": "not_requested",
+          "responseIssue": null
+        },
+        "knowledge": "course-overviews",
+        "debug": {
+          "conversation_id": "FRESH-EG-017-conversation",
+          "request_active_course_id": "6d0000000000000000000000",
+          "resolved_active_course_id": "6d0000000000000000000000",
+          "current_topic": "",
+          "current_intent": "",
+          "rewritten_retrieval_query": "Mera ad generic lag raha hai: sirf “nice bag” likha tha. Course ke ad-planning method se kaun si details deni hain aur kis order mein kaam karun?",
+          "retrieved_chunk_ids": [],
+          "retrieved_chunk_hashes": [],
+          "retrieved_source_hashes": [],
+          "retrieved_translation_hashes": [],
+          "retrieved_course_ids": [],
+          "retrieved_course_names": [],
+          "scores_ranks": [],
+          "selected_exact_prompt_template_id": "",
+          "provider_model_path": "skillomate-learner-facts",
+          "response_selection": null,
+          "history_restored": false,
+          "provider": {
+            "status": "not_requested",
+            "attempts": []
+          },
+          "validation_repair": null
+        }
+      },
+      "error": null,
+      "latencyMs": 22,
+      "retrievalObservations": [],
+      "contextObservations": [],
+      "payloadObservations": [],
+      "providerRequests": [],
+      "applicationLogs": [
+        {
+          "level": "info",
+          "text": "[nex-ai-debug] {\"conversation_id\":\"FRESH-EG-017-conversation\",\"request_active_course_id\":\"6d0000000000000000000000\",\"resolved_active_course_id\":\"6d0000000000000000000000\",\"current_topic\":\"\",\"current_intent\":\"\",\"rewritten_retrieval_query\":\"Mera ad generic lag raha hai: sirf “nice bag” likha tha. Course ke ad-planning method se kaun si details deni hain aur kis order mein kaam karun?\",\"retrieved_chunk_ids\":[],\"retrieved_chunk_hashes\":[],\"retrieved_source_hashes\":[],\"retrieved_translation_hashes\":[],\"retrieved_course_ids\":[],\"retrieved_course_names\":[],\"scores_ranks\":[],\"selected_exact_prompt_template_id\":\"\",\"provider_model_path\":\"skillomate-learner-facts\"}"
+        }
+      ],
+      "dbOperations": [
+        {
+          "model": "AiTutorSession",
+          "operation": "findOne",
+          "filter": {
+            "user": "b25837c4025e75cae13cb8ef",
+            "course": "6d0000000000000000000000"
+          }
+        },
+        {
+          "model": "AiTutorSession",
+          "operation": "upsert",
+          "filter": {
+            "user": "b25837c4025e75cae13cb8ef",
+            "course": "6d0000000000000000000000"
+          }
+        }
+      ],
+      "persistedSessions": [
+        {
+          "scope": "b25837c4025e75cae13cb8ef:6d0000000000000000000000",
+          "user": "b25837c4025e75cae13cb8ef",
+          "course": "6d0000000000000000000000",
+          "conversationId": "FRESH-EG-017-conversation",
+          "activeCourseId": "",
+          "currentTopic": "",
+          "currentIntent": "",
+          "lastWorkflow": "",
+          "lastTemplateId": "",
+          "messages": [
+            {
+              "role": "user",
+              "content": "Mera ad generic lag raha hai: sirf “nice bag” likha tha. Course ke ad-planning method se kaun si details deni hain aur kis order mein kaam karun?",
+              "createdAt": 1792149271059
+            },
+            {
+              "role": "assistant",
+              "content": "Aapka Skillomate profile: name Synthetic Learner A; mobile not added; email not added; mobile verified no; email verified no; age not set; gender not set; avatar not set. Missing profile fields: mobile number, email, age, gender, avatar. Aapka plan/access active hai via legacy. Expiry: 2026-10-17. Lagbhag 1 day remaining hain. Status: active. Mujhe safe summary me aapke account ka successful payment record nahi dikh raha. Privacy ke liye main masked account/payment summary hi dikha sakta hoon, full transaction IDs ya sensitive payment details nahi.",
+              "createdAt": 1792149271059
+            }
+          ],
+          "lastUpdatedAt": "2026-10-16T11:14:31.059Z"
+        }
+      ],
+      "transport": "Actual unmodified Express /api/ai pipeline and compatible JWT auth; synthetic models and memory sessions",
+      "externalPromptModification": false,
+      "scopeInspection": {
+        "independentExplicitSelectedCourse": "6d0000000000000000000000",
+        "independentExpectedOwner": "6d0000000000000000000000",
+        "explicitUnknownScope": false,
+        "independentAuthAndEntitlement": true,
+        "requiresSemanticScopeAdjudication": false,
+        "protectedRetrievedSources": [],
+        "retrievalProductBodies": [],
+        "assembledContextProductBodies": [],
+        "assembledPayloads": [],
+        "providerAdapterProductBodies": [],
+        "responseProductBodies": [],
+        "noPayloadConstructed": true,
+        "blockedAdapterAttempts": 0,
+        "externalTransportAttempts": 0,
+        "potentialCriticalFindings": [],
+        "inspectionPerformed": true
+      }
+    }
+  ]
+}

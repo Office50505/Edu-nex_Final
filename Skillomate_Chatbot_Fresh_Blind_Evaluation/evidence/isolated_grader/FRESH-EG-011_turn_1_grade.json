@@ -1,0 +1,269 @@
+{
+  "id": "FRESH-EG-011",
+  "turnIndex": 1,
+  "status": "FAIL",
+  "critical": false,
+  "suspectedCritical": false,
+  "criteria": [
+    {
+      "status": "FAIL",
+      "excerpt": "The [PRODUCT] stays perfectly still ... The camera stays completely still. A soft band of warm light ... left to right",
+      "reason": "Movement constraints correct, but supplies unfilled saved template rather than usable original purple-vase prompt; already supplied product must be inserted.",
+      "criterion": "Write a usable prompt with still unchanged product/no morphing, still camera, warm band left-to-right."
+    },
+    {
+      "status": "PASS",
+      "excerpt": "No people, no hands, no text on screen. Soft quiet room ambience only — NO music, NO voice.",
+      "reason": "All exclusions and ambience constraints present.",
+      "criterion": "No people/hands/on-screen text; quiet ambience without music or voice."
+    }
+  ],
+  "dimensions": {
+    "grounding": "PASS",
+    "facts": "FAIL",
+    "completeness": "FAIL",
+    "language": "PASS",
+    "authorization": "PASS",
+    "isolation": "PASS",
+    "http": "PASS"
+  },
+  "requestedExactBodyChecks": [],
+  "supplementalExactBodyChecks": [
+    {
+      "heading": "L06 Light Sweep",
+      "bodyType": "unrequested executable saved template",
+      "expectedBody": "Use the uploaded image as the first frame. The [PRODUCT] stays perfectly still and exactly the same the whole time — same shape, same colour, same details, same text and logo, no morphing, no warping. The camera stays completely still. A soft band of warm light slowly sweeps across the [PRODUCT] from left to right, the shadows moving gently with it. Clean premium product video. No people, no hands, no text on screen. Soft quiet room ambience only — NO music, NO voice.",
+      "actualBody": "Use the uploaded image as the first frame. The [PRODUCT] stays perfectly still and exactly the same the whole time — same shape, same colour, same details, same text and logo, no morphing, no warping. The camera stays completely still. A soft band of warm light slowly sweeps across the [PRODUCT] from left to right, the shadows moving gently with it. Clean premium product video. No people, no hands, no text on screen. Soft quiet room ambience only — NO music, NO voice.",
+      "status": "PASS",
+      "normalization": "whitespace-only; no NFKC",
+      "reason": "Supplemental body fidelity only; does not establish requested original generation."
+    }
+  ],
+  "rubricVersion": "phase14b-independent-v1",
+  "gradedAt": "2026-10-16T11:13:33.090086+00:00",
+  "providerAvailability": {
+    "provider": "course-knowledge-rule",
+    "outcome": {
+      "type": "local_rule",
+      "liveModelAnswer": false,
+      "providerStatus": "not_requested",
+      "responseIssue": null
+    },
+    "providerRequests": [],
+    "inferenceNecessaryForThisTurn": false,
+    "reason": "Actual deterministic response directly judged; no live model success inferred."
+  },
+  "ownershipPayloadReview": {
+    "reviewed": true,
+    "actor": "A",
+    "actorId": "e45c520663d604e7ecb2644f",
+    "scopeInspection": {
+      "independentExplicitSelectedCourse": "6d0000000000000000000000",
+      "independentExpectedOwner": "6d0000000000000000000000",
+      "explicitUnknownScope": false,
+      "independentAuthAndEntitlement": true,
+      "requiresSemanticScopeAdjudication": false,
+      "protectedRetrievedSources": [
+        {
+          "id": "S1",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "L06 Light Sweep",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_6",
+          "lessonName": "L06 Light Sweep",
+          "contentType": "exact-template",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:exact-template:l06-light-sweep"
+        },
+        {
+          "id": "S2",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "Product video",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_6",
+          "lessonName": "Product video",
+          "contentType": "workflow",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:workflow:product-video"
+        },
+        {
+          "id": "S3",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "UGC video",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_7",
+          "lessonName": "UGC video",
+          "contentType": "workflow",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:workflow:ugc-video"
+        },
+        {
+          "id": "S4",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "Course overview and prerequisites",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_1",
+          "lessonName": "Course overview and prerequisites",
+          "contentType": "overview",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:overview:course-overview-and-prerequisites"
+        },
+        {
+          "id": "S5",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "Lesson 06 — Photo Se Product Video",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_6",
+          "lessonName": "Lesson 06 — Photo Se Product Video",
+          "contentType": "lesson-summary",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:lesson-summary:lesson-06-photo-se-product-video"
+        },
+        {
+          "id": "S6",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "UGC video mein phone dikh raha",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_7",
+          "lessonName": "UGC video mein phone dikh raha",
+          "contentType": "faq",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:faq:ugc-video-mein-phone-dikh-raha"
+        }
+      ],
+      "retrievalProductBodies": [
+        {
+          "heading": "Course overview and prerequisites",
+          "contentType": "overview",
+          "owner": "6d0000000000000000000000",
+          "sha256": "46c6d59dfbfcf34bb540732e5795832daaaaa3947d2a6fce4eccd03c2c309cf5"
+        },
+        {
+          "heading": "Lesson 06 — Photo Se Product Video",
+          "contentType": "lesson-summary",
+          "owner": "6d0000000000000000000000",
+          "sha256": "4942875729c885ba6b6f2d0280ff0342d7512615fd53d4d5c63da9c9dd3fc481"
+        },
+        {
+          "heading": "Product video",
+          "contentType": "workflow",
+          "owner": "6d0000000000000000000000",
+          "sha256": "ebdbfab455bca71b5956bb202abf1f301d4e694cace2cec144be694bbbc4cd9d"
+        },
+        {
+          "heading": "UGC video",
+          "contentType": "workflow",
+          "owner": "6d0000000000000000000000",
+          "sha256": "0ddcd4cd92bef6253f0f689cb53e6540ce491d6a7657e509c0d314d47104d126"
+        },
+        {
+          "heading": "UGC video mein phone dikh raha",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "987d95ff060fecdc5edd8cac3455253b74f974f6576c540c9d69b44c44ecbab4"
+        },
+        {
+          "heading": "L06 Light Sweep",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "9034d553fd70aad2cd9573d00f2b8a0112b71d22226c748739bd1579a7b0001a"
+        }
+      ],
+      "assembledContextProductBodies": [
+        {
+          "heading": "Course overview and prerequisites",
+          "contentType": "overview",
+          "owner": "6d0000000000000000000000",
+          "sha256": "46c6d59dfbfcf34bb540732e5795832daaaaa3947d2a6fce4eccd03c2c309cf5"
+        },
+        {
+          "heading": "Lesson 06 — Photo Se Product Video",
+          "contentType": "lesson-summary",
+          "owner": "6d0000000000000000000000",
+          "sha256": "4942875729c885ba6b6f2d0280ff0342d7512615fd53d4d5c63da9c9dd3fc481"
+        },
+        {
+          "heading": "Product video",
+          "contentType": "workflow",
+          "owner": "6d0000000000000000000000",
+          "sha256": "ebdbfab455bca71b5956bb202abf1f301d4e694cace2cec144be694bbbc4cd9d"
+        },
+        {
+          "heading": "UGC video",
+          "contentType": "workflow",
+          "owner": "6d0000000000000000000000",
+          "sha256": "0ddcd4cd92bef6253f0f689cb53e6540ce491d6a7657e509c0d314d47104d126"
+        },
+        {
+          "heading": "UGC video mein phone dikh raha",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "987d95ff060fecdc5edd8cac3455253b74f974f6576c540c9d69b44c44ecbab4"
+        },
+        {
+          "heading": "L06 Light Sweep",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "9034d553fd70aad2cd9573d00f2b8a0112b71d22226c748739bd1579a7b0001a"
+        }
+      ],
+      "assembledPayloads": [],
+      "providerAdapterProductBodies": [],
+      "responseProductBodies": [
+        {
+          "heading": "L06 Light Sweep",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "9034d553fd70aad2cd9573d00f2b8a0112b71d22226c748739bd1579a7b0001a"
+        }
+      ],
+      "noPayloadConstructed": true,
+      "blockedAdapterAttempts": 0,
+      "externalTransportAttempts": 0,
+      "potentialCriticalFindings": [],
+      "inspectionPerformed": true
+    },
+    "dbOperations": [
+      {
+        "model": "AiTutorSession",
+        "operation": "findOne",
+        "filter": {
+          "user": "e45c520663d604e7ecb2644f",
+          "course": "6d0000000000000000000000"
+        }
+      },
+      {
+        "model": "Course",
+        "operation": "find",
+        "filter": {
+          "status": "published",
+          "_id": "6d0000000000000000000000"
+        }
+      },
+      {
+        "model": "AiTutorSession",
+        "operation": "upsert",
+        "filter": {
+          "user": "e45c520663d604e7ecb2644f",
+          "course": "6d0000000000000000000000"
+        }
+      }
+    ],
+    "retrievalObservationCount": 1,
+    "contextObservationCount": 1,
+    "payloadObservationCount": 0,
+    "reason": "All six protected retrieved/context bodies and emitted exact body have entitled selected owner6d0000000000000000000000. All flags and own purple-vase session reviewed; no assembled payload/adapter/provider calls. DB actore45c520663d604e7ecb2644f/course scoped; no foreign actor/material."
+  }
+}

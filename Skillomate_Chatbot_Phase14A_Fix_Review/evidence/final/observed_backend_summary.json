@@ -1,0 +1,30 @@
+{
+  "executedAt": "2026-10-16T09:09:27.816457+00:00",
+  "command": [
+    "node",
+    "--test",
+    "--test-reporter=junit",
+    "tests/product-tutor-phase14a.test.cjs",
+    "tests/ai-chat-history.test.cjs",
+    "tests/tutor-knowledge.test.cjs",
+    "tests/product-tutor-quality.test.cjs",
+    "tests/product-tutor-phase3.test.cjs",
+    "tests/product-tutor-phase5.test.cjs",
+    "tests/product-tutor-phase7.test.cjs",
+    "tests/product-tutor-phase9.test.cjs",
+    "tests/product-tutor-phase11.test.cjs",
+    "tests/mobile-course-ai.test.cjs",
+    "tests/mobile-course-ai-cache.test.cjs"
+  ],
+  "exitCode": 0,
+  "tests": {
+    "passed": 409,
+    "failed": 0,
+    "skipped": 0,
+    "total": 409
+  },
+  "providerAdapterInvocations": 62,
+  "fixtureTransportAttempts": 70,
+  "externalNetwork": "Denied using existing test helper",
+  "externalProviderRequests": 0
+}

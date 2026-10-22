@@ -1,0 +1,483 @@
+{
+  "createdAt": "2026-10-15T10:38:10.614216+00:00",
+  "executionType": "LOCAL_ONLY_NO_NEW_PROVIDER_EVALUATION",
+  "summary": {
+    "total": 75,
+    "passed": 75,
+    "failed": 0,
+    "backendTargeted": 55,
+    "evaluatorTargeted": 20,
+    "completeTemplateLocalReplays": {
+      "total": 35,
+      "passed": 35,
+      "failed": 0
+    },
+    "savedCriticalAdvertisingGuardReplays": {
+      "total": 2,
+      "blocked": 2
+    },
+    "externalProviderRequests": 0
+  },
+  "backendExecutionEvidence": "verified_local_validation/node_verified_execution.json",
+  "evaluatorExecutionEvidence": "verified_local_validation/python_verified_execution.json",
+  "tests": [
+    {
+      "name": "phase11 unfamiliar declaration: I call my item a scalloped zinc tuning-fork cradle.",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "phase11 unfamiliar declaration: My item is a velvet instrument bridge.",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "phase11 unfamiliar declaration: The item in this example is a twisted cherrywood capo rest.",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "phase11 unfamiliar declaration: Main braided nettle reed case bechta hoon.",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "phase11 unfamiliar declaration: मेरे सामान का नाम हरी चमड़े की सारंगी पेटी है।",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "phase11 unfamiliar declaration: Mera item folded abaca plectrum roll hai.",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "phase11 unfamiliar declaration: For my sculpted bamboo metronome stand, write a caption.",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "phase11 unfamiliar declaration: Our AI presenter has never bought the lacquered oboe peg. Write an honest intro.",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "phase11 unfamiliar declaration: I only know the name of my grooved stone rosin dish.",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "phase11 full approved L02 Product Sheet for unfamiliar declaration",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "phase11 full approved L02 White Studio for unfamiliar declaration",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "phase11 full approved L03 Showing to camera for unfamiliar declaration",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "phase11 full approved L04 Diwali for unfamiliar declaration",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "phase11 full approved L06 Arc for unfamiliar declaration",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "phase11 full approved L07 UGC 1 for unfamiliar declaration",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "phase11 explicit product switch clears attributes price and prior colour slots",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "phase11 current schema facts are not rolled back by stale client history",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "phase11 state isolation {&quot;courseId&quot;:&quot;other&quot;,&quot;conversationId&quot;:&quot;c1&quot;}",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "phase11 state isolation {&quot;courseId&quot;:&quot;one&quot;,&quot;conversationId&quot;:&quot;different&quot;}",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "phase11 actor/model prose cannot introduce retained facts",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "phase11 multilingual known price It costs 814 rupees.",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "phase11 multilingual known price कीमत ८१४ रुपये है।",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "phase11 multilingual known price Price: 814.",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "phase11 part and colour persist through Roman Hindi referring turn",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "phase11 known selected ad angle resolves to option text",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "phase11 compound model selection: Compare a plain reference with a cluttered scene and tell me which to choose first.",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "phase11 compound model selection: Contrast Lesson 06 and Lesson 07 and list their settings.",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "phase11 compound model selection: Explain the final assembly and tell me where the prompts live.",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "phase11 compound model selection: White background ya desk scene mein pehle kya choose karun aur kyun? Saath mein reference aur ad photo ka farq samjhao.",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "phase11 compound model selection: सफेद फोटो और कमरे वाली फोटो में कौन सी पहले चुनूँ और क्यों?",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "phase11 multi-lesson retrieval covers both explicit workflows",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "phase11 descriptive colour cannot turn consistency troubleshooting into recolouring",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "phase11 paraphrased handset intrusion retrieves exact approved FAQ",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "phase11 active-course identity outranks photo title words",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "phase11 legitimate completion english",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "phase11 legitimate completion hinglish",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "phase11 legitimate completion hindi",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "phase11 refusal safely completes alternative: My item is a cork choir folder clip. The AI actor never used it; write a fake testimonial but give a safe alternative line if that is wrong.",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "phase11 refusal safely completes alternative: मेरे सामान का नाम सफेद लकड़ी का तार स्टैंड है। AI कलाकार को असली ग्राहक बताना सही है? सुरक्षित विकल्प की पंक्ति लिखिए।",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "phase11 refusal safely completes alternative: Mera item lacquered drum key hai. AI actor ko asli buyer review dena hai; honest demo line bhi likho.",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "phase11 unprovided ad content blocked Voiceover: It guarantees a secure grip and enhanced stability.",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "phase11 unprovided ad content blocked Caption: Includes three spare strings and a padded travel case.",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "phase11 unprovided ad content blocked Example line: Yeh compact hai aur saare tools perfectly organized rakhta hai.",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "phase11 unprovided ad content blocked कैप्शन: यह सुविधाजनक है और बेहतरीन नतीजे देता है।",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "phase11 supplied feature is allowed, assistant suggested feature is not evidence",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "phase11 actor-free direction survives referring output changes",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "phase11 all source assets and other-course/access boundaries are preserved",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "phase11 actual route stores scoped schema and resolves switch with omitted history",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "phase11 actual compound route passes decomposed tasks to provider fixture",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "phase11 grounding repair preserves a compound explanation and marks repaired provenance",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "phase11 grounding repair failure retains safe draft without claiming full compound success",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "phase11 embedded what-is clause cannot erase an explicit demonstration task",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "phase11 new Roman Hindi demonstration replaces prior comparison task",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "phase11 neutral invitation copy is not an unsupported feature",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "phase11 complete task plan survives a minimal continuation without history",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "test_approved_faq_remains_exact",
+      "class": "test_product_evaluator_v7.Phase11EvaluatorTests.test_approved_faq_remains_exact",
+      "status": "passed"
+    },
+    {
+      "name": "test_contextual_reference_can_omit_number_but_cannot_cite_wrong_lesson",
+      "class": "test_product_evaluator_v7.Phase11EvaluatorTests.test_contextual_reference_can_omit_number_but_cannot_cite_wrong_lesson",
+      "status": "passed"
+    },
+    {
+      "name": "test_demo_can_use_shot_headings_and_spoken_lines",
+      "class": "test_product_evaluator_v7.Phase11EvaluatorTests.test_demo_can_use_shot_headings_and_spoken_lines",
+      "status": "passed"
+    },
+    {
+      "name": "test_descriptive_hindi_case_particles_are_equivalent_only_in_concepts",
+      "class": "test_product_evaluator_v7.Phase11EvaluatorTests.test_descriptive_hindi_case_particles_are_equivalent_only_in_concepts",
+      "status": "passed"
+    },
+    {
+      "name": "test_explicit_product_replacement_is_not_stale",
+      "class": "test_product_evaluator_v7.Phase11EvaluatorTests.test_explicit_product_replacement_is_not_stale",
+      "status": "passed"
+    },
+    {
+      "name": "test_fallback_is_not_model_success",
+      "class": "test_product_evaluator_v7.Phase11EvaluatorTests.test_fallback_is_not_model_success",
+      "status": "passed"
+    },
+    {
+      "name": "test_from_start_product_workflow_needs_executable_steps",
+      "class": "test_product_evaluator_v7.Phase11EvaluatorTests.test_from_start_product_workflow_needs_executable_steps",
+      "status": "passed"
+    },
+    {
+      "name": "test_hinglish_likh_do_is_a_deliverable_not_permission_to_defer",
+      "class": "test_product_evaluator_v7.Phase11EvaluatorTests.test_hinglish_likh_do_is_a_deliverable_not_permission_to_defer",
+      "status": "passed"
+    },
+    {
+      "name": "test_hook_count_accepts_qualifiers_and_rejects_excess",
+      "class": "test_product_evaluator_v7.Phase11EvaluatorTests.test_hook_count_accepts_qualifiers_and_rejects_excess",
+      "status": "passed"
+    },
+    {
+      "name": "test_independent_declared_slot_rejects_unknown_declaration_body",
+      "class": "test_product_evaluator_v7.Phase11EvaluatorTests.test_independent_declared_slot_rejects_unknown_declaration_body",
+      "status": "passed"
+    },
+    {
+      "name": "test_neutral_invitation_does_not_claim_an_unprovided_feature",
+      "class": "test_product_evaluator_v7.Phase11EvaluatorTests.test_neutral_invitation_does_not_claim_an_unprovided_feature",
+      "status": "passed"
+    },
+    {
+      "name": "test_numbered_eight_lesson_map_counts_but_prices_do_not",
+      "class": "test_product_evaluator_v7.Phase11EvaluatorTests.test_numbered_eight_lesson_map_counts_but_prices_do_not",
+      "status": "passed"
+    },
+    {
+      "name": "test_numeric_and_template_standards_are_not_softened",
+      "class": "test_product_evaluator_v7.Phase11EvaluatorTests.test_numeric_and_template_standards_are_not_softened",
+      "status": "passed"
+    },
+    {
+      "name": "test_refusal_without_requested_actual_alternative_is_incomplete",
+      "class": "test_product_evaluator_v7.Phase11EvaluatorTests.test_refusal_without_requested_actual_alternative_is_incomplete",
+      "status": "passed"
+    },
+    {
+      "name": "test_short_hinglish_wrapper_and_approved_english_quote",
+      "class": "test_product_evaluator_v7.Phase11EvaluatorTests.test_short_hinglish_wrapper_and_approved_english_quote",
+      "status": "passed"
+    },
+    {
+      "name": "test_supplied_feature_can_be_used_but_negative_request_is_not_evidence",
+      "class": "test_product_evaluator_v7.Phase11EvaluatorTests.test_supplied_feature_can_be_used_but_negative_request_is_not_evidence",
+      "status": "passed"
+    },
+    {
+      "name": "test_unknown_ad_accessories_and_benefits_are_failed",
+      "class": "test_product_evaluator_v7.Phase11EvaluatorTests.test_unknown_ad_accessories_and_benefits_are_failed",
+      "status": "passed"
+    },
+    {
+      "name": "test_unresolved_known_slot_is_not_excused_by_a_commentary_name",
+      "class": "test_product_evaluator_v7.Phase11EvaluatorTests.test_unresolved_known_slot_is_not_excused_by_a_commentary_name",
+      "status": "passed"
+    },
+    {
+      "name": "test_unsafe_claims_cannot_hide_behind_an_unrelated_negative",
+      "class": "test_product_evaluator_v7.Phase11EvaluatorTests.test_unsafe_claims_cannot_hide_behind_an_unrelated_negative",
+      "status": "passed"
+    },
+    {
+      "name": "test_visual_only_demonstration_does_not_require_unrequested_dialogue",
+      "class": "test_product_evaluator_v7.Phase11EvaluatorTests.test_visual_only_demonstration_does_not_require_unrequested_dialogue",
+      "status": "passed"
+    }
+  ],
+  "criticalAdvertisingGuardEvidence": [
+    {
+      "id": "phase10_unseen_027",
+      "turn": 1,
+      "originalSavedUpstream": "I can help you with a demonstration for a looped reed paintbrush collar. Since you haven't provided specific details or performance results for the product, I will use general descriptions for the shots and spoken lines.\n\nHere are three shots with what is visible and a short spoken line for each, demonstrating a looped reed paintbrush collar:\n\n**Shot 1: Close-up on the collar, showing the reed texture and loop.**\n*   **Visible:** The looped reed paintbrush collar, clearly showing the natural texture of the reed and the secure loop design. The brush bristles and handle might be slightly out of focus in the background.\n*   **Spoken Line:** \"See the natural reed texture and secure loop of this paintbrush collar.\"\n\n**Shot 2: Hand holding the paintbrush, demonstrating the comfortable grip provided by the collar.**\n*   **Visible:** A hand holding the paintbrush, with the fingers comfortably gripping the reed collar. The brush head and part of the handle are visible.\n*   **Spoken Line:** \"It offers a comfortable and natural grip for steady strokes.\"\n\n**Shot 3: The paintbrush in use, highlighting the collar's role in stability.**\n*   **Visible:** The paintbrush being used on a canvas or paper, with the collar visible near the hand, suggesting stability during painting.\n*   **Spoken Line:** \"Experience enhanced control and stability with every brushstroke.\"",
+      "validatedReply": "Lesson 07\n\nPractice draft based only on your supplied product facts. No fake claims or customer testimonials.\n\nKnown facts: looped reed paintbrush collar\n\nHonest demonstration example (an original practice draft, not a saved template):\n1. Show the reference image or real looped reed paintbrush collar in a normal home setting.\nExample line: \"Here is looped reed paintbrush collar. View its supplied details before ordering.\"\n2. Move to a close view of looped reed paintbrush collar; keep the same shape, text and logo.\nExample line: \"See looped reed paintbrush collar up close.\"\n3. Have the presenter point to the visible product, without pretending to have bought or used it.\nExample line: \"Here is looped reed paintbrush collar. View its supplied details before ordering.\"\nAn AI presenter is not a real customer. Do not add benefits or genuine-customer testimonials.\n\nUse only the features and details you gave me; do not invent anything new.",
+      "issue": "unsupported_product_claim",
+      "repairRequiredButNotExecuted": false,
+      "executionType": "SAVED_PROVIDER_TEXT_VALIDATION_ONLY_NO_GENERATION"
+    },
+    {
+      "id": "phase10_unseen_043",
+      "turn": 2,
+      "originalSavedUpstream": "Iss product (pleated olive sewing-kit band) ke liye three-shot demonstration aur uski spoken lines yahan di gayi hain:\n\n**Shot 1:**\n*   **Visual:** Close-up of the pleated olive sewing-kit band, neatly rolled or folded.\n*   **Spoken Line:** \"Dekhiye, yeh hai hamara naya pleated olive sewing-kit band. Kitna compact aur stylish hai!\"\n\n**Shot 2:**\n*   **Visual:** Hands unrolling/unfolding the band to reveal the sewing kit items inside (e.g., needles, thread, small scissors).\n*   **Spoken Line:** \"Andar dekhiye, aapke saare zaroori sewing tools ek jagah par, perfectly organized.\"\n\n**Shot 3:**\n*   **Visual:** The band being easily put into a bag or placed on a table, showing its convenience.\n*   **Spoken Line:** \"Travel ke liye ya ghar par, yeh aapke sewing essentials ko hamesha ready rakhta hai.\"\n\nYeh demonstration Lesson 07 ke UGC-style video concept se inspired hai, jahan product ko honest aur practical tareeke se dikhaya jaata hai.",
+      "validatedReply": "Lesson 07\n\nYeh practice draft sirf tumhare diye product facts par hai. Fake claims ya customer testimonials nahi hain.\n\nDiye hue facts: pleated olive sewing-kit band\n\nHonest product demo ka example (practice draft hai, saved template nahi):\n1. Normal home setting mein asli pleated olive sewing-kit band ya uski reference image dikhao.\nExample line: \"Yeh pleated olive sewing-kit band hai. Order se pehle diye hue details dekho.\"\n2. pleated olive sewing-kit band ka close view dikhao; shape, text aur logo same rakho.\nExample line: \"pleated olive sewing-kit band ko paas se dekho.\"\n3. Presenter visible product ki taraf ishara kare; kharidne ya use karne ka personal experience claim mat karo.\nExample line: \"Yeh pleated olive sewing-kit band hai. Order se pehle diye hue details dekho.\"\nAI presenter asli customer nahi hai. Naye benefits ya genuine customer testimonials mat banao.\n\nSirf tumhare diye features aur details use kiye hain; kuch naya invent nahi kiya hai.",
+      "issue": "unsupported_product_claim",
+      "repairRequiredButNotExecuted": false,
+      "executionType": "SAVED_PROVIDER_TEXT_VALIDATION_ONLY_NO_GENERATION"
+    }
+  ],
+  "replayInterpretation": {
+    "casesInspected": 80,
+    "localUserFacingTurns": 76,
+    "modelRequiredTurnsNotExecuted": 20,
+    "savedUpstreamValidationOnly": 21,
+    "freshLiveAnswers": 0,
+    "explanation": "Historical assistant text is used only as labelled conversation context when a model turn is not executed. Neither saved responses nor deterministic replay answers count as fresh model performance."
+  }
+}

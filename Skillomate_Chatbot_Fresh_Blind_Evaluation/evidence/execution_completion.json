@@ -1,0 +1,16 @@
+{
+  "capturedAt": "2026-10-16T11:20:55.660102+00:00",
+  "observedQueueExitCode": 0,
+  "observedFinalQueueConsoleEvent": {
+    "event": "queue_finished",
+    "safetyStop": false,
+    "at": "2026-10-16T11:20:20.221Z"
+  },
+  "source": "Actual exec session54947 completion returned exit_code0; final orchestration event copied verbatim from tool output, not synthesized from case results",
+  "all120CasesComplete": true,
+  "observedTurns": 153,
+  "turnGradeFiles": 153,
+  "candidateExecutionNowFinished": true,
+  "noFurtherCandidateRunsAuthorizedByThisArtifact": true,
+  "loggingScope": "Complete child stdout/stderr, per-turn journal and traces are retained. Parent-only case_start console messages were visible in tool output but were not separately streamed to a file."
+}

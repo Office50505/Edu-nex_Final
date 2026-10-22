@@ -4,9 +4,11 @@ const { retrieveKnowledge, hasLessonAccess } = require('../services/tutorKnowled
 const { aiFilmmakingDirectReply, skillomatePlanDirectReply, skillomatePlatformDirectReply, learnerContextDirectReply } = require('../services/aiTutorService');
 const course = { _id: '6a9e67c46bcb631b8118d341', slug: 'ai-influencer-course', title: 'AI Influencer Course', description: 'Create consistent AI characters and videos.', videos: [{ title: 'Prompting', description: 'Write clear prompts.', examplePrompt: 'PAID_EXAMPLE_SENTINEL' }] };
 const filmmakingCourse = { _id: '6abe5bb2bced21d7211be185', slug: 'ai-filmmaking-course', title: 'AI Filmmaking Course', description: 'Create AI short films with story, shots, voice, and editing.', videos: [{ title: 'Tools Setup', description: 'Set up Google Flow, ChatGPT, ElevenLabs, and CapCut.' }] };
+const productPhotoshootCourse = { _id: '6d0000000000000000000000', slug: 'ai-product-photoshoot-ads', title: 'AI Product Photoshoot & Ads', description: 'Create AI product photos, product videos, and honest ad assets.', videos: [{ title: 'Lesson 02 - Phone Photo Se Studio Photo', description: 'Create product sheets and studio photos.' }] };
 const otherCourse = { _id: '6c0000000000000000000000', slug: 'other-course', title: 'Other Course', description: 'CROSS_COURSE_SENTINEL teaches unrelated material.', videos: [{ title: 'Other Lesson', description: 'CROSS_COURSE_LESSON_SENTINEL' }] };
 const retrieve = (message, options = {}) => retrieveKnowledge({ courses: [course], message, includeMaterials: true, ...options });
 const retrieveFilmmaking = (message, options = {}) => retrieveKnowledge({ courses: [filmmakingCourse], message, includeMaterials: true, ...options });
+const retrieveProductPhotoshoot = (message, options = {}) => retrieveKnowledge({ courses: [productPhotoshootCourse], message, includeMaterials: true, ...options });
 
 for (const [question, expected] of [
   ['My character face changes between clips. How do I keep the same identity?', /same face|locked|reference/i],
@@ -25,6 +27,18 @@ test('a short follow-up retrieves the preceding topic', () => {
   const result = retrieve('elaborate', { history: [{ role: 'user', content: 'My character face changes between clips' }, { role: 'assistant', content: 'Use one locked reference still for identity consistency.' }] });
   assert.match(result.excerpts, /face|reference/i);
   assert.ok(result.sources.length > 0);
+});
+
+test('phase14a full approved text resolves the authorized asset despite identity symptom words',()=>{
+ const K=require('../services/productTutorKnowledge');
+ const activeCourse={_id:'6d0000000000000000000000',slug:'ai-product-photoshoot-ads',title:'AI Product Photoshoot & Ads',videos:[]};
+ const message='The object I am photographing is a linen label quiver. Return the full approved L02 Product Sheet text.';
+ const facts=K.productFacts(message);
+ const result=retrieveKnowledge({courses:[activeCourse],activeCourse,message,includeMaterials:true,conversationContext:facts});
+ assert.notEqual(result.requestContext.topic,'blur');assert.equal(result.debugChunks[0].section,'L02 Product Sheet');
+ assert.ok(result.sources.every(s=>s.courseId===activeCourse._id));
+ const locked=retrieveKnowledge({courses:[activeCourse],activeCourse,message,includeMaterials:false,conversationContext:facts});
+ assert.equal(locked.materialsAvailable,false);assert.ok(locked.records.every(r=>r.contentType!=='exact-template'));
 });
 
 test('paid documents and example prompts are not retrieved without lesson access', () => {
@@ -76,7 +90,62 @@ test('retrieves AI Filmmaking material only for the filmmaking course slug', () 
   assert.doesNotMatch(wrongCourse.excerpts, /AI Filmmaking — Chatbot Training Knowledge Base|Tools taught in THIS course/i);
 });
 
-test('AI Filmmaking direct replies preserve approved prompts and map-only lesson guardrails', () => {
+test('retrieves AI Filmmaking continuation material for lessons 9-15 in the same course', () => {
+  const result = retrieveFilmmaking('Lesson 12 B-roll cutaways types and rule');
+  assert.ok(result.sources.some(source => source.kind === 'course-material'));
+  assert.ok(result.sources.every(source => source.courseId === String(filmmakingCourse._id)));
+  assert.match(result.excerpts, /LESSON 12|B-ROLL|CUTAWAYS/i);
+  assert.match(result.excerpts, /Object\/detail|Establishing|Texture\/mood|Reaction/i);
+  assert.match(result.excerpts, /Har main shot ke beech 1-2 b-roll/i);
+  assert.ok(result.debugChunks.some(chunk => chunk.sourceDocument === 'training-l9-15.txt' && chunk.lessonId === 'lesson_12'));
+
+  const earlier = retrieveFilmmaking('Lesson 3 story structure Hook Build Twist End');
+  assert.match(earlier.excerpts, /HOOK|BUILD|TWIST|END/i);
+  assert.ok(earlier.debugChunks.some(chunk => chunk.sourceDocument === 'training.txt'));
+
+  const voiceover = retrieveFilmmaking('Lesson 14 ElevenLabs Hindi voiceover settings');
+  assert.match(voiceover.excerpts, /LESSON 14|VOICEOVER|ElevenLabs/i);
+  assert.match(voiceover.excerpts, /Eleven v4|Stability ~50|Similarity ~50/i);
+});
+
+test('retrieves AI Product Photoshoot & Ads material for exact prompts and troubleshooting', () => {
+  const productSheet = retrieveProductPhotoshoot('Give exact L02 Product Sheet prompt for perfume bottle');
+  assert.ok(productSheet.sources.some(source => source.kind === 'course-material'));
+  assert.ok(productSheet.sources.every(source => source.courseId === String(productPhotoshootCourse._id)));
+  assert.match(productSheet.excerpts, /L02 Product Sheet/i);
+  assert.match(productSheet.excerpts, /Create a clean product reference sheet/i);
+  assert.match(productSheet.excerpts, /same shape, same colour, same details, same\s+text and logo/i);
+  assert.ok(productSheet.debugChunks.some(chunk => chunk.sourceDocument === 'training.txt' && chunk.lessonId === 'lesson_2'));
+
+  const ugc = retrieveProductPhotoshoot('UGC video mein phone dikh raha hai, exact fix kya hai?');
+  assert.match(ugc.excerpts, /The camera itself is her phone\. NO phone visible anywhere in the\s+frame/i);
+  assert.ok(ugc.debugChunks.some(chunk => chunk.sourceDocument === 'training.txt'));
+
+  const ethics = retrieveProductPhotoshoot('AI model se fake customer review bana sakte hain?');
+  assert.match(ethics.excerpts, /fake reviews|fake testimonials|asli grahak|dhokha/i);
+  assert.match(ethics.excerpts, /Lesson 07/i);
+});
+
+test('AI Product Photoshoot & Ads material stays isolated from other courses', () => {
+  const wrongCourse = retrieveKnowledge({
+    courses: [{ ...productPhotoshootCourse, slug: 'other-course' }],
+    message: 'L06 push-in product video settings Omni 1.1 Flash',
+    includeMaterials: true,
+  });
+  assert.doesNotMatch(wrongCourse.excerpts, /Omni 1\.1 Flash|AI Product Photoshoot & Ads — Chatbot Transcript/i);
+
+  const scoped = retrieveKnowledge({
+    courses: [productPhotoshootCourse, otherCourse],
+    message: 'CROSS_COURSE_SENTINEL',
+    includeMaterials: true,
+    activeCourse: productPhotoshootCourse,
+  });
+  assert.equal(scoped.courseScoped, true);
+  assert.doesNotMatch(scoped.excerpts, /CROSS_COURSE_SENTINEL|CROSS_COURSE_LESSON_SENTINEL/);
+  assert.ok(scoped.sources.every(source => source.courseId === String(productPhotoshootCourse._id)));
+});
+
+test('AI Filmmaking direct replies preserve approved prompts and defer lessons 9-15 to retrieved material', () => {
   const knowledge = { courseSlugs: ['ai-filmmaking-course'] };
 
   const prompt = aiFilmmakingDirectReply({ message: 'Presenter 9:16 studio prompt do', courseId: 'ai-filmmaking-course', knowledge });
@@ -154,16 +223,10 @@ test('AI Filmmaking direct replies preserve approved prompts and map-only lesson
   assert.match(hindiVoice, /add\/sync/i);
 
   const lesson12 = aiFilmmakingDirectReply({ message: 'Lesson 12 ke 7 B-roll rules batao', courseId: 'ai-filmmaking-course', knowledge });
-  assert.match(lesson12, /Lesson 12 exists/);
-  assert.match(lesson12, /B-roll & Cutaways/);
-  assert.match(lesson12, /detailed.*available nahi|detailed.*not available|available nahi.*detail/i);
-  assert.doesNotMatch(lesson12, /course mein total 8 lessons/i);
+  assert.equal(lesson12, '');
 
   const lesson15 = aiFilmmakingDirectReply({ message: 'Lesson 15 me clients se kitna charge karna sikhaya hai?', courseId: 'ai-filmmaking-course', knowledge });
-  assert.match(lesson15, /Lesson 15 exists/);
-  assert.match(lesson15, /Publish \+ Clients\/Paisa/);
-  assert.match(lesson15, /pricing.*available nahi|pricing.*not available|available nahi.*pricing/i);
-  assert.doesNotMatch(lesson15, /₹5000|₹10000|₹20000/);
+  assert.equal(lesson15, '');
 });
 
 test('AI Filmmaking direct replies resolve short follow-ups from recent history', () => {
@@ -180,13 +243,10 @@ test('AI Filmmaking direct replies resolve short follow-ups from recent history'
 
   const lesson12History = [
     { role: 'user', content: 'Lesson 12 kya hai?' },
-    { role: 'assistant', content: 'Lesson 12 exists in the AI Filmmaking course map: B-roll & Cutaways. Detailed content is not available.' },
+    { role: 'assistant', content: 'Lesson 12 is B-roll & Cutaways.' },
   ];
   const rules = aiFilmmakingDirectReply({ message: '7 rules batao', courseId: 'ai-filmmaking-course', knowledge, history: lesson12History });
-  assert.match(rules, /Lesson 12 exists/);
-  assert.match(rules, /B-roll & Cutaways/);
-  assert.match(rules, /available nahi|not available/i);
-  assert.match(rules, /invent nahi/i);
+  assert.equal(rules, '');
 
   const faceHistory = [
     { role: 'user', content: 'Face fix kaise karu?' },
@@ -209,6 +269,9 @@ test('AI Filmmaking direct replies resolve short follow-ups from recent history'
 });
 
 test('Skillomate plan questions get current one-time access facts', () => {
+  assert.equal(skillomatePlanDirectReply('I sell a copper water bottle on Instagram. Price is 899. Plan an ad.'), '');
+  assert.equal(skillomatePlanDirectReply('My product price is 899, write hooks and a caption'), '');
+
   const hinglish = skillomatePlanDirectReply('but it show 499 me all course access kar sakte');
   assert.match(hinglish, /₹499/);
   assert.match(hinglish, /30 days/);

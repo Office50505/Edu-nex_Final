@@ -1,0 +1,56 @@
+{
+  "originalBlindCounts": {
+    "PASS": 18,
+    "FAIL": 67,
+    "UNTESTED": 35
+  },
+  "originalScoreUnchanged": true,
+  "auditOf67FailedCases": {
+    "CONFIRMED_DETERMINISTIC_DEFECT": 59,
+    "GRADING_AMBIGUITY": 7,
+    "SECURITY_POLICY_EXPECTATION_CONFLICT": 1
+  },
+  "failedTurns": 70,
+  "failedTurnsWithProviderAttempt": 0,
+  "productRuleResponsesReproduced": 63,
+  "productRuleReplayMatches": 63,
+  "soleProviderOrHarnessCauseEstablishedAmong67": 0,
+  "failedCasesWithOtherBlockedTurns": [
+    "FRESH-MT-002",
+    "FRESH-MT-003",
+    "FRESH-MT-006",
+    "FRESH-MT-013",
+    "FRESH-MT-016",
+    "FRESH-MT-019",
+    "FRESH-SR-001",
+    "FRESH-SR-013"
+  ],
+  "ambiguousCases": [
+    "FRESH-ML-003",
+    "FRESH-ML-005",
+    "FRESH-MT-013",
+    "FRESH-MT-016",
+    "FRESH-EG-006",
+    "FRESH-EG-012",
+    "FRESH-SA-016"
+  ],
+  "policyConflictCases": [
+    "FRESH-SA-012"
+  ],
+  "failedExactCasesWithCorrectAssetPresent": 19,
+  "rootGroupCaseAssociations": {
+    "RC3": 32,
+    "RC4": 20,
+    "RC6": 20,
+    "RC2": 33,
+    "RC7": 24,
+    "RC9": 8,
+    "RC5": 6,
+    "RC8": 1,
+    "RC1": 6,
+    "RC10": 1
+  },
+  "noNewAccuracyMeasurement": true,
+  "newExternalRequests": 0,
+  "implementationChanged": false
+}

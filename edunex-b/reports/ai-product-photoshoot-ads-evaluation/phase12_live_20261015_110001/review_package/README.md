@@ -1,0 +1,16 @@
+# Skillomate Phase 12 controlled live review
+
+Fresh evaluation of the unchanged Phase 11 AI Product Photoshoot & Ads chatbot with frozen v7. All six requested reports, raw user-facing/upstream answers, safe provider diagnostics/payloads, original and new definitions, independent template/advertising/manual audits, source/criteria hashes and executed regression evidence are included.
+
+**Actual totals:** 60 cases, 76 user-facing turns; **40 passed, 20 failed, 0 skipped, 0 inconclusive, 0 provider fallbacks**. New questions 20/40 (50.0%); regressions 20/20 (100%); overall 66.67%. The two sets ran separately; all questions and expected slots were frozen before responses. Twenty-four requested exact-template checks cover all 19 headings: 20 pass, four fail. Three extra complete workflow quotes also use pre-frozen expected bodies: one pass, two fail. All expectations combined 21/27; 26 actual literal bodies plus one absent requested body.
+
+**Origins:** 60 local, 16 live model, 0 repaired, 0 replacement, 0 fallback. Eight live answers are raw-byte identical; eight have citation cleanup. All 16 scored provider calls and one separate connectivity probe succeeded with HTTP 200. No live repair occurred. Provider: https://fal.run/openrouter/router/openai/v1/chat/completions; model google/gemini-2.5-flash. Existing explicit authorization covers only synthetic course-specific material; no personal learner data/credentials or unrelated files were sent. Outbound transport removes unrelated platform/profile context after actual application prompt assembly.
+
+**Independent findings:** four critical requested-template cases; zero critical affirmative advertising-safety failures across 19 specifically reviewed advertising turns and the full 76-turn screening. Three v7 safety flags are false positives. Five pure false failures, three mixed failures, three false passes and two borderline passes are documented; no adjusted headline score is invented. New ad answers are mainly safe deterministic drafts, so model-only ad safety is not established.
+
+**Regression evidence:** backend 351/351 and evaluator 167/167 pass, no failures/skips. Eight lessons and 19 complete assets accessible; all 14 omitted-history turns restore history, though semantic task switching still fails in some cases. All prior evidence and ZIPs remain unchanged. No source/evaluator updates, deployment, commit, push or production change.
+
+**Environment and limits:** macOS-26.6.2-arm64-arm-64bit-Mach-O, Node v26.7.0, Python 3.14.6. Actual Express /api/ai/chat route, scope/retrieval, state, generation and guards execute with synthetic auth/course/entitlement and in-memory session persistence. This is not deployed production auth/DB/UI/load testing, live other-course generation or a separate human blind panel. The previous Phase 10 51/80 and Phase 11 local results are different evidence, not a matched comparison or fresh post-fix score. **NOT READY**: overall, unseen and template targets fail.
+
+`integrity_manifest.json` records ZIP member hashes. Frozen source snapshots include the evaluator/auditor and approved course material. No environment files, credentials, auth headers or personal learner records are collected. All raw outputs are actual saved responses; no retries were selected by score and no answers were fabricated.
+

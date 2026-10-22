@@ -1,0 +1,93 @@
+{
+  "id": "B14-EXACT_TEMPLATE-020",
+  "category": "exact_template",
+  "status": "UNTESTED",
+  "critical": false,
+  "executed": false,
+  "rationale": "Not executed: evaluation stopped on confirmed critical cross-course retrieval. No response is inferred.",
+  "gradedAt": "2026-10-16T10:00:50.051605+00:00",
+  "turns": [
+    {
+      "turnIndex": 1,
+      "status": "UNTESTED",
+      "httpStatus": {
+        "expected": 200,
+        "actual": null,
+        "status": "UNTESTED"
+      },
+      "providerEvidence": {
+        "inferenceNeeded": null,
+        "providerRequestCount": 0,
+        "status": "UNTESTED",
+        "rationale": "No execution or inference occurred for this turn."
+      },
+      "criteria": [
+        {
+          "criterion": "Select the requested approved asset.",
+          "status": "UNTESTED",
+          "supportingExcerpts": [],
+          "reason": "No execution evidence after confirmed critical stop."
+        },
+        {
+          "criterion": "Provide its entire literal body; only the expressly requested substitutions are permitted.",
+          "status": "UNTESTED",
+          "supportingExcerpts": [],
+          "reason": "No execution evidence after confirmed critical stop."
+        },
+        {
+          "criterion": "Do not invent missing product or model facts.",
+          "status": "UNTESTED",
+          "supportingExcerpts": [],
+          "reason": "No execution evidence after confirmed critical stop."
+        }
+      ],
+      "expectedFacts": {
+        "templateSubstitutions": {}
+      },
+      "expectedMustNotReuse": [],
+      "dimensions": {
+        "grounding": {
+          "status": "UNTESTED",
+          "reason": "Turn was not executed."
+        },
+        "facts": {
+          "status": "UNTESTED",
+          "reason": "Turn was not executed."
+        },
+        "taskCompleteness": {
+          "status": "UNTESTED",
+          "reason": "Turn was not executed."
+        },
+        "language": {
+          "status": "UNTESTED",
+          "reason": "Turn was not executed."
+        },
+        "authorization": {
+          "status": "UNTESTED",
+          "reason": "Turn was not executed."
+        },
+        "isolation": {
+          "status": "UNTESTED",
+          "reason": "Turn was not executed."
+        },
+        "exactBodyFidelity": {
+          "status": "UNTESTED",
+          "reason": "Turn was not executed."
+        }
+      },
+      "requestedExactBodyChecks": [
+        {
+          "expectedTemplate": "L02 Product Sheet",
+          "status": "UNTESTED",
+          "expectedBodySHA256": "1e76a13b224293da7aee0d7994b4d53e231ae3fca4613116d763c5719c0a492d",
+          "expectedBody": "Use all the uploaded photos of this [PRODUCT]. Create a clean product reference sheet on a plain white background showing the exact same [PRODUCT] in four views arranged in a neat grid: front view, top-down view, side view and three-quarter angle view. Keep the [PRODUCT] exactly the same in every view — same shape, same colour, same details, same text and logo, do not redesign it. Even soft studio lighting, no extra objects, no text labels, realistic product photography.",
+          "reason": "No response: stopped before case execution.",
+          "normalization": "Whitespace only; no Unicode normalization."
+        }
+      ],
+      "supplementalExactBodyChecks": [],
+      "critical": false,
+      "rationale": "Unexecuted due to confirmed stop; critical false means no observed issue, not demonstrated safety."
+    }
+  ]
+}

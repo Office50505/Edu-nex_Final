@@ -1,0 +1,10 @@
+{
+  "createdAt": "2026-10-16T10:35:30.162756+00:00",
+  "providerAuthorization": "Not granted for external course-text payload. All external networking denied. No request for approval needed to run offline.",
+  "providerResponses": "No fake or recorded model responses in blind evaluation; necessary inference unavailable => UNTESTED.",
+  "criteria": "Original phase14b-independent-v1 rubric copied byte-for-byte.",
+  "independence": "Fresh agent contexts and allowlisted sanitized folders. Shared filesystem has no OS-enforced per-agent barrier. Not a human panel.",
+  "order": "Safety/access/isolation cases first, then remaining frozen categories; every turn independently adjudicated with retrieval and payload evidence before next turn. Critical or suspect issue pauses execution.",
+  "candidate": "Unmodified actual local Express/JWT/service/retrieval/response pipeline, synthetic users and memory-only models.",
+  "deployment": false
+}

@@ -1,0 +1,155 @@
+{
+  "pid": 5890,
+  "method": "Provider adapter invocations in tests with external networking denied; custom fetch functions are injected fixtures",
+  "adapterInvocations": 9,
+  "transportAttempts": 14,
+  "calls": [
+    {
+      "index": 1,
+      "customFetchProvided": true,
+      "status": "success",
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": "upstream_error",
+          "httpStatus": 503,
+          "durationMs": 0
+        },
+        {
+          "attempt": 2,
+          "status": "success",
+          "httpStatus": 200,
+          "durationMs": 0
+        }
+      ]
+    },
+    {
+      "index": 2,
+      "customFetchProvided": true,
+      "status": "timeout",
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": "timeout",
+          "httpStatus": null,
+          "durationMs": 0
+        },
+        {
+          "attempt": 2,
+          "status": "timeout",
+          "httpStatus": null,
+          "durationMs": 0
+        }
+      ]
+    },
+    {
+      "index": 3,
+      "customFetchProvided": true,
+      "status": "dns_error",
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": "dns_error",
+          "httpStatus": null,
+          "durationMs": 0
+        },
+        {
+          "attempt": 2,
+          "status": "dns_error",
+          "httpStatus": null,
+          "durationMs": 0
+        }
+      ]
+    },
+    {
+      "index": 4,
+      "customFetchProvided": true,
+      "status": "connection_error",
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": "connection_error",
+          "httpStatus": null,
+          "durationMs": 0
+        },
+        {
+          "attempt": 2,
+          "status": "connection_error",
+          "httpStatus": null,
+          "durationMs": 0
+        }
+      ]
+    },
+    {
+      "index": 5,
+      "customFetchProvided": true,
+      "status": "request_rejected",
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": "request_rejected",
+          "httpStatus": 401,
+          "durationMs": 0
+        }
+      ]
+    },
+    {
+      "index": 6,
+      "customFetchProvided": true,
+      "status": "empty_response",
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": "empty_response",
+          "httpStatus": 200,
+          "durationMs": 1
+        }
+      ]
+    },
+    {
+      "index": 7,
+      "customFetchProvided": true,
+      "status": "timeout",
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": "timeout",
+          "httpStatus": null,
+          "durationMs": 51
+        }
+      ]
+    },
+    {
+      "index": 8,
+      "customFetchProvided": true,
+      "status": "rate_limited",
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": "rate_limited",
+          "httpStatus": 429,
+          "durationMs": 1
+        },
+        {
+          "attempt": 2,
+          "status": "rate_limited",
+          "httpStatus": 429,
+          "durationMs": 0
+        }
+      ]
+    },
+    {
+      "index": 9,
+      "customFetchProvided": true,
+      "status": "invalid_response",
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": "invalid_response",
+          "httpStatus": 200,
+          "durationMs": 0
+        }
+      ]
+    }
+  ]
+}

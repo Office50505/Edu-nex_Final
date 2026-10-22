@@ -1,0 +1,13 @@
+appcopyai/App.js
+ 11375     try {
+ 11376       const data = await requestTutor({
+ 11377         baseUrl: API_BASE,
+ 11378         user,
+ 11379         question,
+ 11380         courseId,
+ 11381         activeCourseId: activeCourseHintId,
+ 11382         conversationId: activeConversationId,
+ 11383         messages,
+ 11384         assistantName,
+ 11385         session,
+ 11386       });

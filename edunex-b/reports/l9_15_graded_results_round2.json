@@ -1,0 +1,511 @@
+{
+  "suite": "AI_Filmmaking_L9_15_Knowledge_Eval",
+  "summary": {
+    "total": 53,
+    "passed": 44,
+    "failed": 9,
+    "score_pct": 83.0,
+    "failedIds": [
+      "L10_002",
+      "L13_003",
+      "L13_005",
+      "L13_006",
+      "L14_003",
+      "L14_004",
+      "L15_004",
+      "LANG_002",
+      "CONVO_903"
+    ],
+    "languageValidationFailures": [
+      "L10_002",
+      "L14_003"
+    ]
+  },
+  "results": [
+    {
+      "id": "L9_001",
+      "category": "lesson9_factual",
+      "query": "What expression words should I use for crying?",
+      "answer": "For crying, you should use prompt words like \"tears welling and falling, trembling lips, red eyes.\"",
+      "pass": true,
+      "reasons": []
+    },
+    {
+      "id": "L9_002",
+      "category": "lesson9_factual",
+      "query": "How should I prompt happiness instead of just saying happy?",
+      "answer": "To prompt happiness effectively, instead of just using \"happy,\" you should use more specific facial expressions and descriptions.\n\nFor happiness, you can use prompt words like:\n*   **soft genuine smile**\n*   **warm eyes**\n*   **slight laugh**\n\nThese specific terms help the AI generate a more authentic and nuanced portrayal of happiness, as taught in Lesson 9 of the AI Filmmaking course.",
+      "pass": true,
+      "reasons": []
+    },
+    {
+      "id": "L9_003",
+      "category": "lesson9_factual",
+      "query": "Gussa dikhane ke liye face prompt me kya likhu?",
+      "answer": "Gussa dikhane ke liye aap face prompt mein yeh words use kar sakte hain:\n\n**Gussa:** furrowed brow, clenched jaw, intense stare\n\nYeh specific words likhne se AI aapke character ke face par sahi emotion la payega.",
+      "pass": true,
+      "reasons": []
+    },
+    {
+      "id": "L9_004",
+      "category": "lesson9_factual",
+      "query": "What facial cues are taught for fear?",
+      "answer": "For expressing fear, the course teaches these facial cues: **wide eyes, tense face, slight trembling.**",
+      "pass": true,
+      "reasons": []
+    },
+    {
+      "id": "L9_005",
+      "category": "lesson9_factual",
+      "query": "How do I prompt surprise on the face?",
+      "answer": "To prompt surprise on a face, you should use specific words that describe the facial expression. Instead of just writing \"surprised,\" use terms like:\n\n*   **raised eyebrows**\n*   **mouth open**\n*   **wide eyes**\n\nThese detailed descriptions help the AI generate the desired emotion more accurately.",
+      "pass": true,
+      "reasons": []
+    },
+    {
+      "id": "L9_006",
+      "category": "lesson9_troubleshooting",
+      "query": "My face changes in a close-up. What should I write?",
+      "answer": "If your face is changing in a close-up shot, you should use specific prompt words to maintain consistency and express emotion.\n\nHere's what you can write:\n*   **To keep the face consistent:** \"close-up of her face and shoulders (not too tight)\" + \"EXACT same face as reference, do not change/morph.\"\n*   **To express specific emotions:** Instead of generic terms like \"sad\" or \"happy,\" use descriptive words for facial expressions. For example:\n    *   **Happiness:** \"soft genuine smile, warm eyes, slight laugh\"\n    *   **Sadness:** \"welling eyes, downturned mouth, heavy look\"\n    *   **Crying:** \"tears welling and falling, trembling lips, red eyes\"\n    *   **Anger:** \"furrowed brow, clenched jaw, intense stare\"\n    *   **Fear:** \"wide eyes, tense face, slight trembling\"\n    *   **Surprise:** \"raised eyebrows, mouth open, wide eyes\"\n\nThis approach helps the AI generate the desired emotion while keeping the character's face consistent.",
+      "pass": true,
+      "reasons": []
+    },
+    {
+      "id": "L10_001",
+      "category": "lesson10_factual",
+      "query": "What lighting should I use for a sad scene?",
+      "answer": "For a sad scene, you should use **cold blue light** or **dim low night light**. These lighting choices help to create a mood of sadness or tension.",
+      "pass": true,
+      "reasons": []
+    },
+    {
+      "id": "L10_002",
+      "category": "lesson10_factual",
+      "query": "Romantic ya happy scene ke liye kaunsi light?",
+      "answer": "For a romantic or happy scene, you should use **warm soft light** or **golden hour light**.\n\nThis information comes from Lesson 10 on Lighting & Mood in the AI Filmmaking course.",
+      "pass": false,
+      "reasons": [
+        "language mismatch: expected Hinglish, got English"
+      ]
+    },
+    {
+      "id": "L10_003",
+      "category": "lesson10_factual",
+      "query": "What light is best for the face?",
+      "answer": "For the face, **soft diffused light** is considered the best as it is calm and flattering.",
+      "pass": true,
+      "reasons": []
+    },
+    {
+      "id": "L10_004",
+      "category": "lesson10_troubleshooting",
+      "query": "My scene keeps looking too yellow. How do I fix the white balance?",
+      "answer": "If your scene is looking too yellow, you can fix the white balance by adding \"cool-neutral white balance, NOT warm/golden/yellow\" to your prompt. This tells the AI to avoid warm or yellow tones in the lighting.\n\nThis tip comes from Lesson 10, which covers Lighting & Mood, and Lesson 15, which discusses common mistakes and pro tips.",
+      "pass": true,
+      "reasons": []
+    },
+    {
+      "id": "L10_005",
+      "category": "lesson10_factual",
+      "query": "Which lighting style is taught for an intense dramatic scene?",
+      "answer": "For an intense dramatic scene, the AI Filmmaking course teaches to use **hard dramatic light with strong shadows**.\n\nThis is covered in Lesson 10, which discusses how lighting can set the mood for a scene.",
+      "pass": true,
+      "reasons": []
+    },
+    {
+      "id": "L11_001",
+      "category": "lesson11_factual",
+      "query": "How do I make an AI video look less fake?",
+      "answer": "To make an AI video look less fake and more realistic, here are some key points from the AI Filmmaking course:\n\n*   **What to include in your prompts:**\n    *   Use terms like \"RAW candid iPhone,\" \"real skin with visible pores,\" \"peach-fuzz,\" \"faint freckles,\" \"natural uneven tone,\" \"NOT smoothed,\" \"no filter,\" \"natural/window light,\" \"neutral colours,\" \"handheld shake,\" and \"slightly imperfect framing.\"\n    *   Embrace slight imperfections like a stray hair or minor asymmetry, as these make it look more real.\n    *   For camera realism, use phrases like \"shot on real iPhone, handheld shake, raw amateur footage, NOT cinematic.\"\n\n*   **What to avoid in your prompts:**\n    *   Do NOT use phrases like \"8K / ultra / hyper-detailed\" as these often lead to a waxy, plastic, or overly smooth look.\n    *   Avoid descriptions that suggest beauty filters, heavy color grading, slow motion, or overly perfect studio/posed shots.\n\n*   **Common mistakes and fixes:**\n    *   If the video looks plastic or fake, focus on real skin with visible pores, avoid \"8K ultra,\" and aim for a candid handheld style.\n    *   If the camera looks fake, specify \"shot on real iPhone, handheld shake, raw amateur footage, NOT cinematic.\"\n    *   If the video has a yellow or slow look, use \"cool-neutral white balance, normal real-time speed, raw iPhone.\"",
+      "pass": true,
+      "reasons": []
+    },
+    {
+      "id": "L11_002",
+      "category": "lesson11_troubleshooting",
+      "query": "My video looks plastic and fake. What should I change?",
+      "answer": "If your video looks plastic and fake, you should focus on making it look more real. Here's what to change:\n\n*   **What to include in your prompts:**\n    *   \"RAW candid iPhone look\"\n    *   \"real skin with visible pores, peach-fuzz, faint freckles, natural uneven tone, NOT smoothed, no filter\"\n    *   \"natural/window light\"\n    *   \"neutral colours\"\n    *   \"handheld shake\"\n    *   \"slightly imperfect framing\"\n    *   \"Thodi imperfection (stray hair, slight asymmetry)\"\n\n*   **What NOT to include in your prompts:**\n    *   \"8K / ultra / hyper-detailed\" (this often makes it look plastic)\n    *   \"waxy/plastic/smooth skin\"\n    *   \"beauty filter\"\n    *   \"heavy colour grade\"\n    *   \"slow motion\"\n    *   \"over-perfect studio/posed\"\n\nEssentially, aim for a slightly imperfect, natural, and candid look, like footage shot on a real phone, rather than something overly polished or \"perfect.\"",
+      "pass": true,
+      "reasons": []
+    },
+    {
+      "id": "L11_003",
+      "category": "lesson11_conflict",
+      "query": "Should I add '8K ultra hyper-detailed' to every prompt?",
+      "answer": "No, you should **not** add '8K / ultra / hyper-detailed' to every prompt.\n\nAccording to the AI Filmmaking course material, using terms like \"8K / ultra\" can actually make your AI-generated videos look plastic or waxy, which is the opposite of a realistic look. The course advises against this \"8K / ultra\" spam.\n\nInstead, focus on prompts that describe real skin with visible pores, natural uneven tone, and a candid, unfiltered look to achieve realism.",
+      "pass": true,
+      "reasons": []
+    },
+    {
+      "id": "L11_004",
+      "category": "lesson11_factual",
+      "query": "What tiny imperfections can help realism?",
+      "answer": "Tiny imperfections that can help with realism include:\n\n*   **Stray hair**\n*   **Slight asymmetry**\n*   **Visible pores and peach-fuzz on skin**\n*   **Faint freckles**\n*   **Natural uneven skin tone**\n\nThese details make the AI-generated video look less \"perfect\" and more like real-world footage, avoiding the \"AI look\" or \"plastic\" appearance. (Lesson 11)",
+      "pass": true,
+      "reasons": []
+    },
+    {
+      "id": "L11_005",
+      "category": "lesson11_troubleshooting",
+      "query": "The camera look feels fake. What exact style does the course suggest?",
+      "answer": "The exact course wording is:\n\n\"shot on real iPhone, handheld shake, raw amateur footage, NOT cinematic\"",
+      "pass": true,
+      "reasons": []
+    },
+    {
+      "id": "L12_001",
+      "category": "lesson12_factual",
+      "query": "What are the types of B-roll taught in Lesson 12?",
+      "answer": "Lesson 12 on B-Roll & Cutaways teaches that there are five types of B-roll:\n\n*   **Object/detail:** Shots of things like a cup or a phone.\n*   **Hands/action:** Shots showing actions, such as typing or pouring.\n*   **Establishing:** Wide shots to show the location.\n*   **Texture/mood:** Shots capturing elements like rain, steam, or pages to set a mood.\n*   **Reaction:** Cutaways showing a character's face or eyes reacting.",
+      "pass": true,
+      "reasons": []
+    },
+    {
+      "id": "L12_002",
+      "category": "lesson12_factual",
+      "query": "How many B-roll shots should I put between main shots?",
+      "answer": "You should put 1-2 B-roll shots between each main shot.",
+      "pass": true,
+      "reasons": []
+    },
+    {
+      "id": "L12_003",
+      "category": "lesson12_troubleshooting",
+      "query": "My film feels flat and empty. What should I add?",
+      "answer": "Your film might feel flat or empty because it's missing variety in its shots. You should add **B-roll and cutaways** to fill these gaps.\n\nHere's what you can add:\n*   **Object/detail shots:** Like a cup or a phone.\n*   **Hands/action shots:** Such as typing or pouring.\n*   **Establishing shots:** A wide shot of a location.\n*   **Texture/mood shots:** Rain, steam, or pages turning.\n*   **Reaction shots:** A close-up of a face or eyes to show a character's reaction.\n\nA good rule is to try and include 1-2 B-roll shots between each main shot to make your film richer and more professional.",
+      "pass": true,
+      "reasons": []
+    },
+    {
+      "id": "L12_004",
+      "category": "lesson12_troubleshooting",
+      "query": "My cut looks awkward. How can I hide it?",
+      "answer": "If your cut looks awkward, you can hide it by using a reaction cutaway. This is a type of B-roll shot that shows a character's reaction, which helps to smooth over the cut between main shots.",
+      "pass": true,
+      "reasons": []
+    },
+    {
+      "id": "L12_005",
+      "category": "lesson12_factual",
+      "query": "What is B-roll used for in this course?",
+      "answer": "In the AI Filmmaking course, B-roll is used for several purposes:\n\n*   **Filling gaps and smoothing cuts:** B-roll provides short, extra shots that can fill in awkward pauses or hide cuts between main shots, making the film flow more smoothly.\n*   **Making the film richer and more professional:** Adding B-roll can make your AI-generated film look more polished and professional.\n*   **Addressing common issues:**\n    *   If your film feels \"flat\" or \"empty,\" B-roll (like object, hands, wide, texture, or reaction shots) can add visual interest.\n    *   If a cut feels \"awkward,\" a reaction cutaway can help to conceal it.\n\nThe course suggests a general rule: **include 1-2 B-roll shots between every main shot.**\n\nTypes of B-roll mentioned include:\n*   Object/detail shots (e.g., a cup, a phone)\n*   Hands/action shots (e.g., typing, pouring)\n*   Establishing shots (a wide view of a location)\n*   Texture/mood shots (e.g., rain, steam, pages)\n*   Reaction shots (a close-up of a face or eyes)",
+      "pass": true,
+      "reasons": []
+    },
+    {
+      "id": "L13_001",
+      "category": "lesson13_factual",
+      "query": "In what order should I arrange the clips in CapCut?",
+      "answer": "You should arrange the clips in CapCut in story order: Hook → Build → Twist → End.",
+      "pass": true,
+      "reasons": []
+    },
+    {
+      "id": "L13_002",
+      "category": "lesson13_factual",
+      "query": "What are the four parts of the CapCut breakdown?",
+      "answer": "The four parts of the CapCut breakdown, as taught in the AI Filmmaking course, are:\n\n1.  **Full timeline overview:** This includes the video, sound effects (SFX) tracks, and the main music track.\n2.  **Clips in story order:** Arranging clips in the sequence of Hook → Build → Twist → End.\n3.  **Correct sound placement:** Placing the right sound at the right time, such as office sounds, phone dial/ring/busy tone, voicemail, subtle background music, and silence at emotional peaks.\n4.  **Simplicity of editing:** Demonstrating how simple it is to drag and drop clips onto the timeline, arrange them in sequence, and play.",
+      "pass": true,
+      "reasons": []
+    },
+    {
+      "id": "L13_003",
+      "category": "lesson13_factual",
+      "query": "Where should SFX and music go in the edit?",
+      "answer": "In CapCut, sound effects (SFX) and music should be placed on separate audio tracks. SFX typically go on a track above the main music track. For emotional peaks in your film, the music should be silent.\n\nThe main music track should generally be kept at a low volume (20-30%).",
+      "pass": false,
+      "reasons": [
+        "missing semantic group: under | below | neeche"
+      ]
+    },
+    {
+      "id": "L13_004",
+      "category": "lesson13_factual",
+      "query": "What music level is taught in Lesson 13?",
+      "answer": "Lesson 13 covers editing in CapCut. For music, it teaches that the main music track should be kept at a low level, specifically 20-30% volume, and there should be silence at emotional peaks in the film. Sound effects (SFX) are placed on a separate track above the music.",
+      "pass": true,
+      "reasons": []
+    },
+    {
+      "id": "L13_005",
+      "category": "lesson13_factual",
+      "query": "What should happen to the music at the emotional peak?",
+      "answer": "At the emotional peak of your film, the music should be silent.",
+      "pass": false,
+      "reasons": [
+        "missing semantic group: silence"
+      ]
+    },
+    {
+      "id": "L13_006",
+      "category": "lesson13_factual",
+      "query": "Is editing supposed to be complicated in this lesson?",
+      "answer": "No, editing is not supposed to be complicated in this lesson. The course material states that editing is simple, mainly involving placing clips in sequence and adding sound in the correct places.",
+      "pass": false,
+      "reasons": [
+        "missing semantic group: drag",
+        "missing semantic group: timeline"
+      ]
+    },
+    {
+      "id": "L14_001",
+      "category": "lesson14_factual",
+      "query": "Which ElevenLabs model and settings are taught in Lesson 14?",
+      "answer": "Lesson 14 teaches these ElevenLabs settings:\n\n- Model: Eleven v4\n- Stability: approximately 50%\n- Similarity: approximately 50%\n\nFor Hindi voiceover, it teaches Language Hindi and Gender Female.",
+      "pass": true,
+      "reasons": []
+    },
+    {
+      "id": "L14_002",
+      "category": "lesson14_factual",
+      "query": "How do I get a better Hindi accent in ElevenLabs?",
+      "answer": "For a better Hindi accent in ElevenLabs:\n\n- Select Language Hindi.\n- Select Gender Female.\n- Choose a Hindi voice, for example \"Kahani\".\n- Type the dialogue in Devanagari.\n- If it still sounds robotic, keep Eleven v4 with Stability around 50% and Similarity around 50%, then try another generation.",
+      "pass": true,
+      "reasons": []
+    },
+    {
+      "id": "L14_003",
+      "category": "lesson14_factual",
+      "query": "What are the Lesson 14 voiceover steps?",
+      "answer": "The steps for voiceover in Lesson 14 using ElevenLabs are:\n\n1.  Go to Text-to-Speech and then Voice Library.\n2.  Select Language as Hindi and Gender as Female. Choose a voice (for example, \"Kahani\").\n3.  Type your dialogue in Devanagari script (e.g., बेटा, खाना खा लिया?).\n4.  Set the Model to Eleven v4, Stability to ~50%, and Similarity to ~50%.\n5.  Click Generate, listen to the two options, and download the best one.",
+      "pass": false,
+      "reasons": [
+        "language mismatch: expected English, got Hinglish/Hindi"
+      ]
+    },
+    {
+      "id": "L14_004",
+      "category": "lesson14_troubleshooting",
+      "query": "My ElevenLabs Hindi voice sounds robotic. What does the course suggest?",
+      "answer": "For a better Hindi accent in ElevenLabs:\n\n- Select Language Hindi.\n- Select Gender Female.\n- Choose a Hindi voice, for example \"Kahani\".\n- Type the dialogue in Devanagari.\n- If it still sounds robotic, keep Eleven v4 with Stability around 50% and Similarity around 50%, then try another generation.",
+      "pass": false,
+      "reasons": [
+        "missing semantic group: settings"
+      ]
+    },
+    {
+      "id": "L14_005",
+      "category": "lesson14_scope",
+      "query": "Does Lesson 14 teach CapCut editing?",
+      "answer": "No, Lesson 14 focuses on voiceovers using ElevenLabs only. It does not teach CapCut editing. CapCut editing is covered in Lesson 13.",
+      "pass": true,
+      "reasons": []
+    },
+    {
+      "id": "L14_006",
+      "category": "lesson14_factual",
+      "query": "For lip-sync workflow, what does the course say to do with the clip and voice?",
+      "answer": "If Hindi dialogue/lip-sync does not sound natural, use this course workflow:\n1. Generate the video muted.\n2. Make the Hindi voiceover in ElevenLabs.\n3. Prefer Devanagari script.\n4. Where appropriate, use Speed approx 0.9.\n5. Add/sync the voiceover during editing.",
+      "pass": true,
+      "reasons": []
+    },
+    {
+      "id": "L15_001",
+      "category": "lesson15_troubleshooting",
+      "query": "What should I do if the video creates a third hand or extra limbs?",
+      "answer": "Use the full Lesson 15 fix:\n\n- one clip = one simple action\n- add: \"natural hands with five fingers, no extra limbs\"",
+      "pass": true,
+      "reasons": []
+    },
+    {
+      "id": "L15_002",
+      "category": "lesson15_troubleshooting",
+      "query": "What does Lesson 15 say to do if the face changes every clip?",
+      "answer": "Use this AI Filmmaking workflow:\n1. Use the character reference sheet / locked character reference.\n2. Add \"same face, same outfit\" in the shot prompt.\n3. Save the previous clip's last frame.\n4. Use that saved last frame as the next Start frame.\n5. If face still drifts, use Ingredients mode.\n6. Attach:\n   - saved last frame\n   - character reference sheet\n7. Use this approved template:\n\nUSE THIS IMAGE [saved last frame] AS THE FIRST FRAME AND TO KEEP THE FACE CONSISTENT THIS IS THE CHARACTER SHEET [character reference sheet]. [character description]. [location]. [shot action]. Realistic, cinematic, 9:16, no on-screen text, no watermark, NO background music.",
+      "pass": true,
+      "reasons": []
+    },
+    {
+      "id": "L15_003",
+      "category": "lesson15_troubleshooting",
+      "query": "What does Lesson 15 say if the video looks AI/fake?",
+      "answer": "Lesson 15 addresses the issue of a video looking AI/fake. It suggests the following fixes:\n\n*   Use real skin textures.\n*   Employ candid handheld camera work.\n*   Avoid using \"8K ultra\" in your prompts.",
+      "pass": true,
+      "reasons": []
+    },
+    {
+      "id": "L15_004",
+      "category": "lesson15_safety",
+      "query": "What wording should I remove if a Flow clip is getting violations?",
+      "answer": "For Flow violation troubleshooting, remove or soften the risky wording:\n\n- Remove fall/hit wording.\n- Remove revealing wording; keep the person modest and fully clothed.\n- Do not speak prices inside the generated clip; put the price as text overlay during editing.\n- If needed, make the person clearly adult.\n\nThis is safe rewriting, not bypassing filters.",
+      "pass": false,
+      "reasons": [
+        "missing semantic group: spoken-price | spoken price"
+      ]
+    },
+    {
+      "id": "L15_005",
+      "category": "lesson15_troubleshooting",
+      "query": "According to Lesson 15, what should I do if 16:9 has blurred sides?",
+      "answer": "According to Lesson 15, if your 16:9 video has blurred sides, you should use a **LANDSCAPE 16:9 reference**.",
+      "pass": true,
+      "reasons": []
+    },
+    {
+      "id": "L15_006",
+      "category": "lesson15_troubleshooting",
+      "query": "My output is too yellow and slow. What wording is taught?",
+      "answer": "To fix a yellow or slow look in your output, the AI Filmmaking course suggests using these prompt words:\n\n*   For yellow look: \"cool-neutral white balance, NOT warm/golden/yellow\"\n*   For slow look: \"normal real-time speed, raw iPhone\"\n\nThese phrases help ensure your generated video has a natural color balance and realistic speed.",
+      "pass": true,
+      "reasons": []
+    },
+    {
+      "id": "L15_007",
+      "category": "lesson15_troubleshooting",
+      "query": "Text is glitching in Flow. What should I do?",
+      "answer": "If text is glitching in Flow, you should not generate text within Flow itself. Instead, create your text in CapCut and add it there.\n\nThis is a common issue, and the solution is to use CapCut for any text overlays or motion graphics.",
+      "pass": true,
+      "reasons": []
+    },
+    {
+      "id": "L15_008",
+      "category": "lesson15_factual",
+      "query": "What is the final course workflow after the finale?",
+      "answer": "The AI Filmmaking course concludes with a recap of all the key topics: story, character, shots, camera, emotion, light, editing, and sound. After completing the course, you are ready to make your first film.\n\nThe suggested workflow after the finale is:\n1.  **Story**: Develop your story (you can use ChatGPT for this).\n2.  **Character Sheet**: Create a character sheet.\n3.  **Generate Shots**: Generate the shots for your film.\n4.  **Edit**: Edit your film.\n5.  **Voice**: Add voiceover.\n6.  **Publish**: Publish your film.\n\nIf you encounter any issues, you can refer back to the cheat-sheet provided in Lesson 15 for common problems and their fixes.",
+      "pass": true,
+      "reasons": []
+    },
+    {
+      "id": "GLOBAL_001",
+      "category": "global_rule",
+      "query": "Which tools are taught in this AI Filmmaking course?",
+      "answer": "The AI Filmmaking course teaches the following tools:\n\n*   **Google Flow** (for video generation)\n*   **ChatGPT** (for story and prompt creation)\n*   **ElevenLabs** (for voice generation)\n*   **CapCut** (for editing)",
+      "pass": true,
+      "reasons": []
+    },
+    {
+      "id": "GLOBAL_002",
+      "category": "global_rule",
+      "query": "Should I call the Flow mode image-to-video?",
+      "answer": "Use \"Reference-to-video\", not \"image-to-video\", for the Google Flow mode taught in this course.",
+      "pass": true,
+      "reasons": []
+    },
+    {
+      "id": "GLOBAL_003",
+      "category": "global_rule",
+      "query": "What should every generation prompt include at the end?",
+      "answer": "Every generation prompt should end with: realism + consistency + anti-glitch + \"NO background music, NO soundtrack\".\n\nAdditionally, for prompts related to character generation, it should include: real skin, no filter, natural hands with five fingers, no morphing/flicker/watermark, NO background music.",
+      "pass": true,
+      "reasons": []
+    },
+    {
+      "id": "HALLUC_901",
+      "category": "hallucination",
+      "query": "What Kelvin value does Lesson 10 require for sad scenes?",
+      "answer": "Lesson 10, \"LIGHTING & MOOD,\" does not specify Kelvin values for sad scenes. Instead, it suggests using descriptive prompt words like \"cold blue light\" or \"dim low night light\" to create a sad mood.",
+      "pass": true,
+      "reasons": []
+    },
+    {
+      "id": "HALLUC_902",
+      "category": "hallucination",
+      "query": "Which exact CapCut transition names are taught in Lesson 13?",
+      "answer": "The available material for Lesson 13, \"EDITING (CapCut Breakdown),\" does not mention specific CapCut transition names. It focuses on the overall editing process, such as sequencing clips and adding sound.",
+      "pass": true,
+      "reasons": []
+    },
+    {
+      "id": "HALLUC_903",
+      "category": "hallucination",
+      "query": "What exact music genre is required in Lesson 13?",
+      "answer": "Lesson 13, which covers editing in CapCut, does not specify a particular music genre. Instead, it focuses on the strategic placement of sound effects and background music to enhance the emotional impact of the film.\n\nThe key points regarding music and sound in Lesson 13 are:\n*   **Sound Effects (SFX):** Place relevant sound effects (e.g., office sounds, phone dial, phone ring, busy tone, voicemail) on a separate audio track.\n*   **Background Music:** Use light background music (20-30% volume) on another audio track.\n*   **Emotional Peak:** Create silence at emotional peaks in the story.\n*   **Simplicity:** The editing process for sound is described as simple: drag and drop clips and sounds into the timeline in the correct sequence.",
+      "pass": true,
+      "reasons": []
+    },
+    {
+      "id": "HALLUC_904",
+      "category": "hallucination",
+      "query": "Does Lesson 14 require a specific ElevenLabs voice named Kahani?",
+      "answer": "\"Kahani\" is an example voice from the course, not a required voice. The course says to choose a Hindi Female voice.",
+      "pass": true,
+      "reasons": []
+    },
+    {
+      "id": "LANG_001",
+      "category": "language",
+      "query": "What lighting is best for a calm flattering face?",
+      "answer": "For a calm and flattering look on a face, **soft diffused light** is best.",
+      "pass": true,
+      "reasons": []
+    },
+    {
+      "id": "LANG_002",
+      "category": "language",
+      "query": "bhai video plastic lg rha kya likhu",
+      "answer": "Exact course wording ye hai:\n\n\"shot on real iPhone, handheld shake, raw amateur footage, NOT cinematic\"",
+      "pass": false,
+      "reasons": [
+        "missing semantic group: real skin",
+        "missing semantic group: pores",
+        "missing semantic group: 8k | ultra"
+      ]
+    },
+    {
+      "id": "CONVO_901",
+      "category": "conversation",
+      "pass": true,
+      "turns": [
+        {
+          "user": "What are the B-roll types taught in Lesson 12?",
+          "answer": "Lesson 12 of AI Filmmaking teaches about B-roll and cutaways. The course outlines five types of B-roll:\n\n*   **Object/detail:** Shots of specific items like a cup or a phone.\n*   **Hands/action:** Shots showing actions, such as typing or pouring.\n*   **Establishing:** Wide shots that show the location.\n*   **Texture/mood:** Shots that convey a feeling or texture, like rain, steam, or pages.\n*   **Reaction:** Cutaways showing a character's face or eyes reacting to something.",
+          "pass": true,
+          "reasons": []
+        },
+        {
+          "user": "How many should I use between main shots?",
+          "answer": "The course suggests that you should include **1-2 B-roll shots between every main shot** to make your film richer and more professional.",
+          "pass": true,
+          "reasons": []
+        }
+      ],
+      "reasons": []
+    },
+    {
+      "id": "CONVO_902",
+      "category": "conversation",
+      "pass": true,
+      "turns": [
+        {
+          "user": "Which ElevenLabs settings are taught?",
+          "answer": "Lesson 14 teaches these ElevenLabs settings:\n\n- Model: Eleven v4\n- Stability: approximately 50%\n- Similarity: approximately 50%\n\nFor Hindi voiceover, it teaches Language Hindi and Gender Female.",
+          "pass": true,
+          "reasons": []
+        },
+        {
+          "user": "And how do I make the Hindi accent better?",
+          "answer": "For a better Hindi accent in ElevenLabs:\n\n- Select Language Hindi.\n- Select Gender Female.\n- Choose a Hindi voice, for example \"Kahani\".\n- Type the dialogue in Devanagari.\n- If it still sounds robotic, keep Eleven v4 with Stability around 50% and Similarity around 50%, then try another generation.",
+          "pass": true,
+          "reasons": []
+        }
+      ],
+      "reasons": []
+    },
+    {
+      "id": "CONVO_903",
+      "category": "conversation",
+      "pass": false,
+      "turns": [
+        {
+          "user": "My AI video looks fake and plastic.",
+          "answer": "Your AI video looks fake and plastic because of a few common issues.\n\nHere's why it might be happening and how to fix it:\n\n*   **\"8K / ultra / hyper-detailed\" spam in prompts:** Using these terms often makes the video look artificial and waxy.\n    *   **Fix:** Avoid these keywords.\n*   **Smoothed or waxy skin:** AI models can sometimes over-smooth skin, making it look unnatural.\n    *   **Fix:** Focus on prompts that emphasize \"real skin with visible pores,\" \"peach-fuzz,\" \"faint freckles,\" and \"natural uneven tone.\" Explicitly state \"NOT smoothed\" and \"no filter.\"\n*   **Overly perfect or studio-like settings:** Too much perfection can signal \"fake.\"\n    *   **Fix:** Aim for a \"RAW candid iPhone look,\" \"natural/window light,\" \"neutral colours,\" \"handheld shake,\" and \"slightly imperfect framing.\" A little imperfection, like a stray hair or slight asymmetry, makes it look more real.\n*   **Heavy color grading or slow motion:** These can also contribute to an artificial feel.\n    *   **Fix:** Avoid heavy color grading and unnecessary slow motion.\n\nIn summary, to make your AI video look more real, focus on natural, slightly imperfect elements in your prompts and avoid terms that push for hyper-perfection or \"AI\" aesthetics.",
+          "pass": true,
+          "reasons": []
+        },
+        {
+          "user": "What should I avoid exactly?",
+          "answer": "To avoid your AI video looking fake or plastic, you should specifically avoid these things in your prompts and settings:\n\n*   **\"8K / ultra / hyper-detailed\"**: Do not spam these terms in your prompts.\n*   **Smoothed skin**: Avoid prompts that lead to overly smoothed or waxy skin.\n*   **Beauty filters**: Do not use prompts that suggest beauty filters.\n*   **Unnecessary slow-motion**: Avoid adding slow-motion unless it's truly essential for the scene.\n*   **Too many actions in one clip**: This can lead to glitches. Keep one simple action per clip.\n*   **Flow VIOLATION triggers**: Avoid content that depicts minor-looking faces (always specify \"clearly adult, mid-20s\"), revealing/tight/cleavage outfits (use \"modest, fully clothed\"), or words related to harm like \"fall / slip / hit / crash / harm / death\" (soften or handle in editing).\n*   **Spoken price/financial claims**: Avoid including these in your content.",
+          "pass": false,
+          "reasons": [
+            "missing semantic group: heavy colour grade | heavy color grade",
+            "missing semantic group: slow motion",
+            "missing semantic group: over-perfect | posed"
+          ]
+        }
+      ],
+      "reasons": [
+        "turn 2: missing semantic group: heavy colour grade | heavy color grade; missing semantic group: slow motion; missing semantic group: over-perfect | posed"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "updatedAt": "2026-10-16T09:43:31.431422+00:00",
+  "status": "AWAITING_DELEGATION_CHOICE",
+  "candidate14A1Verified": true,
+  "candidateFilesUnchanged": true,
+  "casesRequired": 120,
+  "casesAuthored": 0,
+  "casesExecuted": 0,
+  "providerInvocations": 0,
+  "applicationRequests": 0,
+  "question": "May separate isolated agents author and grade the cases?",
+  "reason": "The main agent implemented the candidate; separate authorship/grading would support independence, and session instructions require explicit permission for delegation.",
+  "prepared": [
+    "candidate_manifest.json",
+    "approved_records.json",
+    "provider_preflight.json",
+    "pipeline.cjs",
+    "scoring_rubric.json",
+    "case_schema.json"
+  ],
+  "productionInteraction": false,
+  "deployment": false,
+  "zipComplete": false
+}

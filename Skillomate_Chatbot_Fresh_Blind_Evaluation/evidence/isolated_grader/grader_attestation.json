@@ -1,0 +1,69 @@
+{
+  "grader": "fresh_blind_grader",
+  "kind": "independent AI semantic grader; not a human panel",
+  "createdAt": "2026-10-16T10:36:20.548849+00:00",
+  "readAllowlistRoot": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader",
+  "initialInputsRead": [
+    "curriculum.json",
+    "case_schema.json",
+    "scoring_rubric.json"
+  ],
+  "inputSHA256": {
+    "curriculum.json": "54a919abcbec2d0bbf5b13c7b9c87034dd3922b0325c912ec0fd8639daffd302",
+    "case_schema.json": "c163ba2258d42806140f02ada5f289a2900ebdcd31b734da4cc23dae1cf31d3e",
+    "scoring_rubric.json": "80c4347805a5fe5e25ca6c06d6fb3b894ff0a40e0a147cd0be976e1b52bb1995"
+  },
+  "candidateImplementationRead": false,
+  "candidateTestsRead": false,
+  "historicalDiagnosticsRead": false,
+  "oldQuestionsRead": false,
+  "otherFilesOutsideAllowlistRead": false,
+  "sourceEvidenceModification": false,
+  "isolation": "Instructional allowlist on shared filesystem; not an OS sandbox. Parent task context only; no candidate implementation or prior diagnostics supplied.",
+  "writesRestrictedTo": "grader protocol, attestations, per-turn and per-case grading outputs in isolated_grader",
+  "futureReads": "Frozen cases.json and explicitly delivered response/runtime ownership and assembled-payload evidence inside allowlist only.",
+  "finalizedAt": "2026-10-16T11:21:23.111556+00:00",
+  "status": "completed",
+  "casesSHA256": "bd6ebe8a9adbe9b6bbf088634af1fce57fa149789987e96e2d84ed5e63da766f",
+  "finalInputSHA256": {
+    "curriculum.json": "54a919abcbec2d0bbf5b13c7b9c87034dd3922b0325c912ec0fd8639daffd302",
+    "case_schema.json": "c163ba2258d42806140f02ada5f289a2900ebdcd31b734da4cc23dae1cf31d3e",
+    "scoring_rubric.json": "80c4347805a5fe5e25ca6c06d6fb3b894ff0a40e0a147cd0be976e1b52bb1995",
+    "cases.json": "bd6ebe8a9adbe9b6bbf088634af1fce57fa149789987e96e2d84ed5e63da766f",
+    "grader_protocol.json": "8d5f7dfc02bdf465499c788450efa88cc2390894b5ebe131da9dbb634497524e",
+    "grader_attestation_pre_execution.json": "4117b2eb49490e9af7faed752c88a347379c363a0a793b0239bda47fb513cca7"
+  },
+  "allowedInputsActuallyRead": [
+    "curriculum.json",
+    "case_schema.json",
+    "scoring_rubric.json",
+    "cases.json",
+    "grader_protocol.json",
+    "per-turn *_response.json evidence",
+    "own grading outputs"
+  ],
+  "responseFilesReviewed": 153,
+  "allTurnRetrievalOwnershipFlagsReviewed": true,
+  "allRelevantAssembledPayloadsReviewed": true,
+  "payloadDuplicateReview": "Full relevant assembly reviewed, with repeated immutable source/common blocks deduplicated only after exact equality to previously reviewed blocks. All current private facts, account fields, actor histories and changed blocks inspected directly; provider request equality checked.",
+  "individualAdjudicationsPreservedAtFinalization": true,
+  "casesRubricCurriculumProtocolAndResponseEvidenceModified": false,
+  "actualProviderInferenceAvailable": false,
+  "modelFixturesUsed": false,
+  "candidateExecutedByGrader": false,
+  "deployedByGrader": false,
+  "gradingOutputs": [
+    "153 individual *_grade.json",
+    "grades.json",
+    "findings.md",
+    "grader_attestation.json"
+  ],
+  "limitations": [
+    "Independent AI semantic grader, not human blind panel.",
+    "Instructional shared-filesystem allowlist, not OS sandbox.",
+    "Provider attempts blocked before external transport; necessary actual inference marked UNTESTED even with plausible fallback.",
+    "No source/tests/history/old questions or other files outside allowlist read.",
+    "No historical regression set read or graded; cannot assert zero regressions.",
+    "Public catalog descriptions/lesson overviews distinguished from protected material; global evaluator session snapshots distinguished from actor-visible payloads."
+  ]
+}

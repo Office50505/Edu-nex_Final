@@ -1,0 +1,140 @@
+{
+  "schema_version": "1.0",
+  "packaged_at": "2026-10-15T11:05:15+05:30",
+  "evaluation_run_directory": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/reports/ai-product-photoshoot-ads-evaluation/live_20261014_182739",
+  "counts": {
+    "total": 55,
+    "passed": 18,
+    "failed_executed_original_rubric": 35,
+    "skipped": 2,
+    "original_failed_including_skips": 37,
+    "inconclusive_cause_cases": 2,
+    "regression_passed": 52,
+    "regression_failed": 0,
+    "live_turns": 59,
+    "fallback_turns": 2,
+    "unexecuted_turns": 2
+  },
+  "source_reports_missing": [],
+  "all_55_cases_accounted_for": true,
+  "source_response_and_question_consistency_verified": true,
+  "merged_attempt_provenance_verified": true,
+  "tests_or_evaluations_rerun": false,
+  "source_files_modified": false,
+  "credentials_or_learner_exports_included": false,
+  "manifest_self_hash_omitted": true,
+  "files": [
+    {
+      "path": "failure_analysis_detailed.md",
+      "source_absolute_path": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/reports/ai-product-photoshoot-ads-evaluation/live_20261014_182739/failure_analysis_detailed.md",
+      "sha256": "008ddcd0510c8b7b627d35dd276ee4f13822a9246cb38503e61ca4da4bf302de",
+      "bytes": 147849,
+      "copy_status": "byte_identical"
+    },
+    {
+      "path": "failure_categories.json",
+      "source_absolute_path": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/reports/ai-product-photoshoot-ads-evaluation/live_20261014_182739/failure_categories.json",
+      "sha256": "4704c091ec37c425845facd488066814c363401c9e52bf7cca87b4130c72f246",
+      "bytes": 302826,
+      "copy_status": "byte_identical"
+    },
+    {
+      "path": "recommended_fixes.md",
+      "source_absolute_path": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/reports/ai-product-photoshoot-ads-evaluation/live_20261014_182739/recommended_fixes.md",
+      "sha256": "6f7c5139513aca5ee1b2a494bd9bae182ddc780a9394ab44689f81df87f12697",
+      "bytes": 15260,
+      "copy_status": "byte_identical"
+    },
+    {
+      "path": "live_merged_raw_results.json",
+      "source_absolute_path": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/reports/ai-product-photoshoot-ads-evaluation/live_20261014_182739/live_merged_raw_results.json",
+      "sha256": "6afc2802bedab6ba583c098481541e0e1f988ec654b5bff34bfd131c10166a02",
+      "bytes": 209135,
+      "copy_status": "byte_identical"
+    },
+    {
+      "path": "live_raw_results.json",
+      "source_absolute_path": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/reports/ai-product-photoshoot-ads-evaluation/live_20261014_182739/live_raw_results.json",
+      "sha256": "344e3786740f29676c602681d09d0861a4d41a4709e2b6e838adead8d77aa066",
+      "bytes": 205407,
+      "copy_status": "byte_identical"
+    },
+    {
+      "path": "live_retry_raw_results.json",
+      "source_absolute_path": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/reports/ai-product-photoshoot-ads-evaluation/live_20261014_182739/live_retry_raw_results.json",
+      "sha256": "a3c43ce0e7a1a0ec09566c0efcad90c2375aadf7d818cd70d81ba1418aafc81c",
+      "bytes": 56393,
+      "copy_status": "byte_identical"
+    },
+    {
+      "path": "live_retry2_raw_results.json",
+      "source_absolute_path": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/reports/ai-product-photoshoot-ads-evaluation/live_20261014_182739/live_retry2_raw_results.json",
+      "sha256": "f36fc771a7f02b57337aae52af158bfd23df4c5b621fca1ca4b9a1b6e513d756",
+      "bytes": 16777,
+      "copy_status": "byte_identical"
+    },
+    {
+      "path": "live_merged_graded_results.json",
+      "source_absolute_path": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/reports/ai-product-photoshoot-ads-evaluation/live_20261014_182739/live_merged_graded_results.json",
+      "sha256": "fb538a9a55c13904896be15b32190d342525255b741e2f841db063c765d07c1e",
+      "bytes": 63582,
+      "copy_status": "byte_identical"
+    },
+    {
+      "path": "live_evaluation_summary.md",
+      "source_absolute_path": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/reports/ai-product-photoshoot-ads-evaluation/live_20261014_182739/live_evaluation_summary.md",
+      "sha256": "3db1de68373fff794327993bfe194750b4276703ccbb76a204f2c081de07a86e",
+      "bytes": 2382,
+      "copy_status": "byte_identical"
+    },
+    {
+      "path": "live_evaluation_summary_data.json",
+      "source_absolute_path": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/reports/ai-product-photoshoot-ads-evaluation/live_20261014_182739/live_evaluation_summary_data.json",
+      "sha256": "2b248c14b37a307fcd99df66548f7dee589e177e2fc483e9df22b99b1022b088",
+      "bytes": 4760,
+      "copy_status": "byte_identical"
+    },
+    {
+      "path": "regression_evidence.md",
+      "source_absolute_path": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/reports/ai-product-photoshoot-ads-evaluation/live_20261014_182739/regression_evidence.md",
+      "sha256": "ff43a44c3551896ca422f12dc5108160132efa933d098ee13603e99212e8cea2",
+      "bytes": 530,
+      "copy_status": "byte_identical"
+    },
+    {
+      "path": "provider_connectivity_report.md",
+      "source_absolute_path": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/reports/ai-product-photoshoot-ads-evaluation/live_20261014_182739/provider_connectivity_report.md",
+      "sha256": "8882aeaeb3499cbc1022b215d8d4dd65d5cac74512465eb72860d1313094671d",
+      "bytes": 808,
+      "copy_status": "byte_identical"
+    },
+    {
+      "path": "product_photoshoot_ads_test_cases.json",
+      "source_absolute_path": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/scripts/eval/product_photoshoot_ads_test_cases.json",
+      "sha256": "4b8f22be87e1c754eccda7f5e766acf96a906f359d5fd8254a58b1e0c24b3691",
+      "bytes": 25844,
+      "copy_status": "byte_identical"
+    },
+    {
+      "path": "grade_product_photoshoot_ads_results.py",
+      "source_absolute_path": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/scripts/eval/grade_product_photoshoot_ads_results.py",
+      "sha256": "798114fa88a892773821b34b7545c7b838dbf5cf048f9479a222b3a292613b7d",
+      "bytes": 7323,
+      "copy_status": "byte_identical"
+    },
+    {
+      "path": "knowledge/ai-product-photoshoot-ads/training.txt",
+      "source_absolute_path": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/knowledge/ai-product-photoshoot-ads/training.txt",
+      "sha256": "96471b6991c3724f9b8315fc7b3d1bb73b409eb0272517432cbfdd98882127df",
+      "bytes": 21621,
+      "copy_status": "byte_identical"
+    },
+    {
+      "path": "README.md",
+      "source_absolute_path": null,
+      "sha256": "0055c75ff3948250518c596e15f21b7be4fcc84121846ecdd36ccd2ba7dfa6b1",
+      "bytes": 5968,
+      "copy_status": "new_packaging_document"
+    }
+  ]
+}

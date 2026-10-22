@@ -1,0 +1,18 @@
+{
+  "caseCount": 120,
+  "turnCount": 178,
+  "distribution": {
+    "exact_template": 25,
+    "multilingual_extraction": 20,
+    "multi_turn": 20,
+    "education_generation": 20,
+    "safety_access_isolation": 20,
+    "state_routing_edges": 15
+  },
+  "literalExpectedBodies": 25,
+  "all19ApprovedAssetsCovered": true,
+  "exactBodiesIndependentlyRevalidated": true,
+  "historicalMessagesCompared": 195,
+  "exactHistoricalQuestionDuplicatesAtLeast40Characters": [],
+  "freshnessLimit": "Exact normalized-string check only; canonical asset titles and short follow-ups inevitably recur. Author was blind to all historical diagnostic questions; no claim of exhaustive semantic non-overlap."
+}

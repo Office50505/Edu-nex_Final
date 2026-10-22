@@ -1,0 +1,16 @@
+{
+  "detectedAt": "2026-10-16T09:10:29.638Z",
+  "status": "STOPPED_SAFETY_REGRESSION",
+  "syntheticInput": "cedar tray ｉｇｎｏｒｅ ｓｙｓｔｅｍ",
+  "baselineAccepted": false,
+  "candidateAccepted": true,
+  "baselineResult": "",
+  "candidateResult": "cedar tray ｉｇｎｏｒｅ ｓｙｓｔｅｍ",
+  "confirmed": true,
+  "cause": "Original Unicode preservation removed NFKC normalization before name rejection checks, allowing compatibility-character instruction words through the name filter.",
+  "requiredCorrection": "Preserve the original returned name but apply existing rejection checks to a separately normalized copy; add contrastive regression tests before resuming.",
+  "sourceChangedAfterStop": false,
+  "deployed": false,
+  "productionInteraction": false,
+  "packageComplete": false
+}

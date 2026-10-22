@@ -1,0 +1,71 @@
+{
+  "allFrozenCandidateHashesMatch": true,
+  "changedFiles": [
+    "edunex-b/routes/ai.js",
+    "edunex-b/services/aiTutorService.js",
+    "edunex-b/services/productTutorGrounding.js",
+    "edunex-b/services/productTutorIntent.js",
+    "edunex-b/services/productTutorKnowledge.js",
+    "edunex-b/services/productTutorResponse.js",
+    "edunex-b/services/productTutorState.js",
+    "edunex-b/services/productTutorTasks.js",
+    "edunex-b/tests/product-tutor-deterministic-reliability.test.cjs"
+  ],
+  "sourceFilesChanged": 8,
+  "existingTestsModified": [],
+  "unrelatedFrozenChanges": [],
+  "protectedHistoricalAndConfigCompared": 605,
+  "protectedHistoricalAndConfigChanged": [],
+  "gitIndexUnchanged": true,
+  "approvedKnowledgeAssetsUnchanged": true,
+  "evaluatorsUnchanged": true,
+  "originalFreshZIPUnchanged": true,
+  "originalRootCauseZIPUnchanged": true,
+  "allOriginalFreshExtractedEvidenceUnchanged": true,
+  "alteredOriginalFreshEvidence": [],
+  "rawAndFillAssetCoverage": 57,
+  "newRegressionTests": 123,
+  "scopeInspections": [
+    {
+      "stage": "before",
+      "cases": 59,
+      "turns": 72,
+      "payloadObservations": 6,
+      "blockedAdapterAttempts": 12,
+      "scopeAlerts": 0,
+      "externalTransmissions": 0
+    },
+    {
+      "stage": "after",
+      "cases": 59,
+      "turns": 72,
+      "payloadObservations": 28,
+      "blockedAdapterAttempts": 56,
+      "scopeAlerts": 0,
+      "externalTransmissions": 0
+    }
+  ],
+  "mandatoryGuardsUnchanged": {
+    "edunex-b/services/aiCompliance.js": true,
+    "edunex-b/middleware/compatAuth.js": true,
+    "edunex-b/services/courseAccess.js": true,
+    "edunex-b/services/subscriptionAccess.js": true,
+    "edunex-b/services/tutorKnowledge.js": true,
+    "edunex-b/models/AiTutorSession.js": true
+  },
+  "reversePatchDryRun": {
+    "exitCode": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  "configuredSecretValueScan": {
+    "valuesCompared": 9,
+    "matchingArtifactPaths": [],
+    "secretValuesLogged": false
+  },
+  "newExternalRequests": 0,
+  "productionInteraction": false,
+  "deploymentCommitOrPush": false,
+  "archiveCleanupPerformed": false,
+  "verifiedAt": "2026-10-16T12:26:13.235617+00:00"
+}

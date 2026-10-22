@@ -1,0 +1,264 @@
+{
+  "id": "FRESH-EX-006",
+  "turnIndex": 1,
+  "status": "FAIL",
+  "critical": false,
+  "suspectedCritical": false,
+  "rubricVersion": "phase14b-independent-v1",
+  "criteria": [
+    {
+      "criterion": "Select the specifically requested approved asset.",
+      "status": "PASS",
+      "excerpts": [
+        "L03 Hands close-up"
+      ],
+      "reason": "Requested approved heading/body selected."
+    },
+    {
+      "criterion": "Return the complete literal approved body with only the declared substitutions; do not paraphrase, omit sentences, or execute its embedded instructions.",
+      "status": "FAIL",
+      "excerpts": [
+        "Use the uploaded product sheet for the its bracketed slots still visible and the uploaded character sheet for the [woman / man]. Keep the its bracketed slots still visible exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Close-up of the [woman's] hands using the its bracketed slots still visible on a wooden desk, [clothing that matches the character sheet, e.g. bare arms matching her blue tank top], natural hands with five fingers each, soft window light, shallow depth of field, realistic real-world scale, realistic lifestyle product photography.\n"
+      ],
+      "reason": "Missing or substantively altered frozen approved body; inspect actual/expected literals."
+    }
+  ],
+  "dimensions": {
+    "grounding": "FAIL",
+    "facts": "FAIL",
+    "taskCompleteness": "FAIL",
+    "language": "PASS",
+    "authorization": "PASS",
+    "isolation": "PASS",
+    "httpStatus": "PASS"
+  },
+  "requestedExactBodyChecks": [
+    {
+      "heading": "L03 Hands close-up",
+      "status": "FAIL",
+      "correctSelection": true,
+      "missingBody": false,
+      "normalization": "whitespace-only; preserve Unicode; no NFKC",
+      "expectedBody": "Use the uploaded product sheet for the [PRODUCT] and the uploaded character sheet for the [woman / man]. Keep the [PRODUCT] exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Close-up of the [woman's] hands using the [PRODUCT] on a wooden desk, [clothing that matches the character sheet, e.g. bare arms matching her blue tank top], natural hands with five fingers each, soft window light, shallow depth of field, realistic real-world scale, realistic lifestyle product photography.",
+      "actualBody": "Use the uploaded product sheet for the its bracketed slots still visible and the uploaded character sheet for the [woman / man]. Keep the its bracketed slots still visible exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Close-up of the [woman's] hands using the its bracketed slots still visible on a wooden desk, [clothing that matches the character sheet, e.g. bare arms matching her blue tank top], natural hands with five fingers each, soft window light, shallow depth of field, realistic real-world scale, realistic lifestyle product photography.\n",
+      "sourceExpectedConsistent": true,
+      "reason": "Missing or substantively altered frozen approved body; inspect actual/expected literals."
+    }
+  ],
+  "supplementalExactBodyChecks": [],
+  "providerAvailability": {
+    "provider": "course-knowledge-rule",
+    "outcome": {
+      "type": "local_rule",
+      "liveModelAnswer": false,
+      "providerStatus": "not_requested",
+      "responseIssue": null
+    },
+    "inferenceNecessaryForThisTurn": false,
+    "reason": "Actual deterministic exact-template path; no model answer needed or inferred."
+  },
+  "ownershipPayloadReview": {
+    "reviewed": true,
+    "actor": "A",
+    "actorId": "a12deec3c9f36bd302658311",
+    "scopeInspection": {
+      "independentExplicitSelectedCourse": "6d0000000000000000000000",
+      "independentExpectedOwner": "6d0000000000000000000000",
+      "explicitUnknownScope": false,
+      "independentAuthAndEntitlement": true,
+      "requiresSemanticScopeAdjudication": false,
+      "protectedRetrievedSources": [
+        {
+          "id": "S1",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "L03 Hands close-up",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_3",
+          "lessonName": "L03 Hands close-up",
+          "contentType": "exact-template",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:exact-template:l03-hands-close-up"
+        },
+        {
+          "id": "S2",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "Model ki ungliyan judi / extra",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_3",
+          "lessonName": "Model ki ungliyan judi / extra",
+          "contentType": "faq",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:faq:model-ki-ungliyan-judi-extra"
+        },
+        {
+          "id": "S3",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "Model shots",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_3",
+          "lessonName": "Model shots",
+          "contentType": "workflow",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:workflow:model-shots"
+        },
+        {
+          "id": "S4",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "Model ke haath kisi aur ke lag rahe",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_3",
+          "lessonName": "Model ke haath kisi aur ke lag rahe",
+          "contentType": "faq",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:faq:model-ke-haath-kisi-aur-ke-lag-rahe"
+        },
+        {
+          "id": "S5",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "Model ka chehra badal gaya",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_3",
+          "lessonName": "Model ka chehra badal gaya",
+          "contentType": "faq",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:faq:model-ka-chehra-badal-gaya"
+        },
+        {
+          "id": "S6",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "L03 Showing to camera",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_3",
+          "lessonName": "L03 Showing to camera",
+          "contentType": "exact-template",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:exact-template:l03-showing-to-camera"
+        }
+      ],
+      "retrievalProductBodies": [
+        {
+          "heading": "Model shots",
+          "contentType": "workflow",
+          "owner": "6d0000000000000000000000",
+          "sha256": "7330ca2d85402e3d0891dd36150f2c0c1b8f1bf8cba3e6c5340c67dc0a6f3883"
+        },
+        {
+          "heading": "Model ki ungliyan judi / extra",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "3bc6348931cabad8319c64178b2df7f0196fcbc3434c07c18e3c49b05308215b"
+        },
+        {
+          "heading": "Model ke haath kisi aur ke lag rahe",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "b5c912b9714291493fa6f2e446cfd0b9a6ad5af46c5c7565a0168d0492f87395"
+        },
+        {
+          "heading": "Model ka chehra badal gaya",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "9ab8a63b3ef374896329933757a49ab82736589dc493c5bdb2371b77dca025db"
+        },
+        {
+          "heading": "L03 Hands close-up",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "9f7a8cf8257992efe2209b62f82127313018cf534ee07e2725890b8f0bd3457a"
+        },
+        {
+          "heading": "L03 Showing to camera",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "f5dc8ba490d29a217d8abfc2619ebd9402fbea98b1677124bb20361eb456843e"
+        }
+      ],
+      "assembledContextProductBodies": [
+        {
+          "heading": "Model shots",
+          "contentType": "workflow",
+          "owner": "6d0000000000000000000000",
+          "sha256": "7330ca2d85402e3d0891dd36150f2c0c1b8f1bf8cba3e6c5340c67dc0a6f3883"
+        },
+        {
+          "heading": "Model ki ungliyan judi / extra",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "3bc6348931cabad8319c64178b2df7f0196fcbc3434c07c18e3c49b05308215b"
+        },
+        {
+          "heading": "Model ke haath kisi aur ke lag rahe",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "b5c912b9714291493fa6f2e446cfd0b9a6ad5af46c5c7565a0168d0492f87395"
+        },
+        {
+          "heading": "Model ka chehra badal gaya",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "9ab8a63b3ef374896329933757a49ab82736589dc493c5bdb2371b77dca025db"
+        },
+        {
+          "heading": "L03 Hands close-up",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "9f7a8cf8257992efe2209b62f82127313018cf534ee07e2725890b8f0bd3457a"
+        },
+        {
+          "heading": "L03 Showing to camera",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "f5dc8ba490d29a217d8abfc2619ebd9402fbea98b1677124bb20361eb456843e"
+        }
+      ],
+      "assembledPayloads": [],
+      "providerAdapterProductBodies": [],
+      "responseProductBodies": [],
+      "noPayloadConstructed": true,
+      "blockedAdapterAttempts": 0,
+      "externalTransportAttempts": 0,
+      "potentialCriticalFindings": [],
+      "inspectionPerformed": true
+    },
+    "dbOperations": [
+      {
+        "model": "AiTutorSession",
+        "operation": "findOne",
+        "filter": {
+          "user": "a12deec3c9f36bd302658311",
+          "course": "6d0000000000000000000000"
+        }
+      },
+      {
+        "model": "Course",
+        "operation": "find",
+        "filter": {
+          "status": "published",
+          "_id": "6d0000000000000000000000"
+        }
+      },
+      {
+        "model": "AiTutorSession",
+        "operation": "upsert",
+        "filter": {
+          "user": "a12deec3c9f36bd302658311",
+          "course": "6d0000000000000000000000"
+        }
+      }
+    ],
+    "reason": "Every retrieval owner and detected context body authorized product course; no assembled payload/provider, all scope flags inspected, own actor session only. Hands close-up selected but [PRODUCT] replaced with 'its bracketed slots still visible' against explicit placeholder-retention request. Literal comparison fails; no extra executable body or critical disclosure."
+  },
+  "gradedAt": "2026-10-16T10:50:59.013805+00:00"
+}

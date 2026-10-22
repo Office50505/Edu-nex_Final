@@ -1,0 +1,96 @@
+{
+  "id": "B14-EXACT_TEMPLATE-018",
+  "category": "exact_template",
+  "status": "UNTESTED",
+  "critical": false,
+  "executed": false,
+  "rationale": "Not executed: evaluation stopped on confirmed critical cross-course retrieval. No response is inferred.",
+  "gradedAt": "2026-10-16T10:00:50.051605+00:00",
+  "turns": [
+    {
+      "turnIndex": 1,
+      "status": "UNTESTED",
+      "httpStatus": {
+        "expected": 200,
+        "actual": null,
+        "status": "UNTESTED"
+      },
+      "providerEvidence": {
+        "inferenceNeeded": null,
+        "providerRequestCount": 0,
+        "status": "UNTESTED",
+        "rationale": "No execution or inference occurred for this turn."
+      },
+      "criteria": [
+        {
+          "criterion": "Select the requested approved asset.",
+          "status": "UNTESTED",
+          "supportingExcerpts": [],
+          "reason": "No execution evidence after confirmed critical stop."
+        },
+        {
+          "criterion": "Provide its entire literal body; only the expressly requested substitutions are permitted.",
+          "status": "UNTESTED",
+          "supportingExcerpts": [],
+          "reason": "No execution evidence after confirmed critical stop."
+        },
+        {
+          "criterion": "Do not invent missing product or model facts.",
+          "status": "UNTESTED",
+          "supportingExcerpts": [],
+          "reason": "No execution evidence after confirmed critical stop."
+        }
+      ],
+      "expectedFacts": {
+        "templateSubstitutions": {
+          "[PRODUCT]": "red lunch pouch",
+          "[your hook line in Hindi]": "देखिए यह लाल लंच पाउच।"
+        }
+      },
+      "expectedMustNotReuse": [],
+      "dimensions": {
+        "grounding": {
+          "status": "UNTESTED",
+          "reason": "Turn was not executed."
+        },
+        "facts": {
+          "status": "UNTESTED",
+          "reason": "Turn was not executed."
+        },
+        "taskCompleteness": {
+          "status": "UNTESTED",
+          "reason": "Turn was not executed."
+        },
+        "language": {
+          "status": "UNTESTED",
+          "reason": "Turn was not executed."
+        },
+        "authorization": {
+          "status": "UNTESTED",
+          "reason": "Turn was not executed."
+        },
+        "isolation": {
+          "status": "UNTESTED",
+          "reason": "Turn was not executed."
+        },
+        "exactBodyFidelity": {
+          "status": "UNTESTED",
+          "reason": "Turn was not executed."
+        }
+      },
+      "requestedExactBodyChecks": [
+        {
+          "expectedTemplate": "L07 UGC 1",
+          "status": "UNTESTED",
+          "expectedBodySHA256": "1e0de31dea8d8f6b7f23bd7053223dbf17d5e33dbc291c39c19eec70efee756d",
+          "expectedBody": "Use the uploaded character sheet for the [woman] and the uploaded product sheet for the red lunch pouch. Keep her face, hair and outfit exactly the same as the character sheet. Keep the red lunch pouch exactly the same — same shape, same colour, same details, same text and logo, no morphing. Selfie-style vertical video: the camera itself is her phone, held at arm's length, so we see her from the chest up looking straight into the lens. NO phone visible anywhere in the frame, no second camera, no screen. She sits at a desk in a normal home room, holding the red lunch pouch up near her chest to show it, casual and friendly. Handheld look with slight natural shake, natural window light, a real lived-in room, not a studio, not a polished ad. ONLY she speaks, one voice only, natural Hindi lip-sync, casual friendly tone. She says: \"देखिए यह लाल लंच पाउच।\" real skin, no filter, clearly adult, modest, natural hands with five fingers, no text on screen, no watermark. Clean natural audio only — NO background music.",
+          "reason": "No response: stopped before case execution.",
+          "normalization": "Whitespace only; no Unicode normalization."
+        }
+      ],
+      "supplementalExactBodyChecks": [],
+      "critical": false,
+      "rationale": "Unexecuted due to confirmed stop; critical false means no observed issue, not demonstrated safety."
+    }
+  ]
+}

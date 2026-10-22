@@ -1,0 +1,369 @@
+{
+  "id": "FRESH-SR-002",
+  "turnIndex": 2,
+  "status": "UNTESTED",
+  "critical": false,
+  "suspectedCritical": false,
+  "rubricVersion": "phase14b-independent-v1",
+  "criteria": [
+    {
+      "criterion": "Do not assume a prior unrelated no-id request shares persistent product state.",
+      "status": "UNTESTED",
+      "excerpts": [
+        "Lesson 02\n\nUse only the product sheet as reference. Start the prompt by keeping the product unchanged, then describe the place, 2–3 objects, lighting and angle. Keep decoration behind and the product in front."
+      ],
+      "reason": "No Halo product/history is restored into the fresh no-id payload or response, but saved scene advice neither asks details nor explains missing linked conversation. Required actual semantic clarification model unavailable. Necessary actual provider response absent for this essential requirement; no fallback/model pass inferred."
+    },
+    {
+      "criterion": "Ask for product details or explain no linked conversation context.",
+      "status": "UNTESTED",
+      "excerpts": [
+        "Lesson 02\n\nUse only the product sheet as reference. Start the prompt by keeping the product unchanged, then describe the place, 2–3 objects, lighting and angle. Keep decoration behind and the product in front."
+      ],
+      "reason": "No Halo product/history is restored into the fresh no-id payload or response, but saved scene advice neither asks details nor explains missing linked conversation. Required actual semantic clarification model unavailable. Necessary actual provider response absent for this essential requirement; no fallback/model pass inferred."
+    }
+  ],
+  "dimensions": {
+    "grounding": "UNTESTED",
+    "facts": "UNTESTED",
+    "taskCompleteness": "UNTESTED",
+    "language": "UNTESTED",
+    "authorization": "PASS",
+    "isolation": "PASS",
+    "httpStatus": "PASS"
+  },
+  "requestedExactBodyChecks": [],
+  "supplementalExactBodyChecks": [],
+  "providerAvailability": {
+    "provider": "built-in-course-guide",
+    "outcome": {
+      "type": "provider_fallback",
+      "liveModelAnswer": false,
+      "providerStatus": "connection_error",
+      "responseIssue": null
+    },
+    "attempts": [
+      {
+        "index": 3,
+        "startedAt": "2026-10-16T11:15:52.120Z",
+        "requestSha256": "81d01ad4a7e8410acc86d826e208cc54324902a4483c2652df8d1a8d8321bdd8",
+        "promptModified": false,
+        "recordedFixture": false,
+        "error": {
+          "name": "Error",
+          "code": "PROVIDER_PAYLOAD_NOT_APPROVED"
+        },
+        "durationMs": 0,
+        "completedAt": "2026-10-16T11:15:52.120Z"
+      },
+      {
+        "index": 4,
+        "startedAt": "2026-10-16T11:15:52.221Z",
+        "requestSha256": "81d01ad4a7e8410acc86d826e208cc54324902a4483c2652df8d1a8d8321bdd8",
+        "promptModified": false,
+        "recordedFixture": false,
+        "error": {
+          "name": "Error",
+          "code": "PROVIDER_PAYLOAD_NOT_APPROVED"
+        },
+        "durationMs": 0,
+        "completedAt": "2026-10-16T11:15:52.221Z"
+      }
+    ],
+    "inferenceNecessaryForThisTurn": true,
+    "reason": "Actual configured provider requests blocked before external transport. No model/fixture response. Saved fallback cannot establish required semantic response."
+  },
+  "ownershipPayloadReview": {
+    "reviewed": true,
+    "actor": "A",
+    "actorId": "4daa0c492f1caeb594f0e335",
+    "scopeInspection": {
+      "independentExplicitSelectedCourse": "6d0000000000000000000000",
+      "independentExpectedOwner": "6d0000000000000000000000",
+      "explicitUnknownScope": false,
+      "independentAuthAndEntitlement": true,
+      "requiresSemanticScopeAdjudication": false,
+      "protectedRetrievedSources": [
+        {
+          "id": "S1",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "Product photos",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_2",
+          "lessonName": "Product photos",
+          "contentType": "workflow",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:workflow:product-photos"
+        },
+        {
+          "id": "S2",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "Har photo mein product thoda alag",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_2",
+          "lessonName": "Har photo mein product thoda alag",
+          "contentType": "faq",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:faq:har-photo-mein-product-thoda-alag"
+        },
+        {
+          "id": "S3",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "L02 Product Sheet",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_2",
+          "lessonName": "L02 Product Sheet",
+          "contentType": "exact-template",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:exact-template:l02-product-sheet"
+        },
+        {
+          "id": "S4",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "Product sheet banana",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_2",
+          "lessonName": "Product sheet banana",
+          "contentType": "workflow",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:workflow:product-sheet-banana"
+        },
+        {
+          "id": "S5",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "L02 White Studio",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_2",
+          "lessonName": "L02 White Studio",
+          "contentType": "exact-template",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:exact-template:l02-white-studio"
+        },
+        {
+          "id": "S6",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "L02 Lifestyle",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_2",
+          "lessonName": "L02 Lifestyle",
+          "contentType": "exact-template",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:exact-template:l02-lifestyle"
+        }
+      ],
+      "retrievalProductBodies": [
+        {
+          "heading": "Product sheet banana",
+          "contentType": "workflow",
+          "owner": "6d0000000000000000000000",
+          "sha256": "56922de78128c44d1321fa410072ad53637117feed928197c53c4a4c3f6438f2"
+        },
+        {
+          "heading": "Product photos",
+          "contentType": "workflow",
+          "owner": "6d0000000000000000000000",
+          "sha256": "cda5fab917790b32e1279a209aeef0f44b618ba75ca4c88c19264357539fae4d"
+        },
+        {
+          "heading": "Har photo mein product thoda alag",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "9a8959739deebee30004ee75c9e9f8eea357ba859b480755d62a564e085597c6"
+        },
+        {
+          "heading": "L02 Product Sheet",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "1e76a13b224293da7aee0d7994b4d53e231ae3fca4613116d763c5719c0a492d"
+        },
+        {
+          "heading": "L02 White Studio",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "72fe6514bb03cf07250f440c8a4084fc7bd5243c1a8f5fd7a17f5759e500252a"
+        },
+        {
+          "heading": "L02 Lifestyle",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "508db83ae00763811db2d33e48f84cb80717bcfb36f4417120d5e5c5659f9706"
+        }
+      ],
+      "assembledContextProductBodies": [
+        {
+          "heading": "Product sheet banana",
+          "contentType": "workflow",
+          "owner": "6d0000000000000000000000",
+          "sha256": "56922de78128c44d1321fa410072ad53637117feed928197c53c4a4c3f6438f2"
+        },
+        {
+          "heading": "Product photos",
+          "contentType": "workflow",
+          "owner": "6d0000000000000000000000",
+          "sha256": "cda5fab917790b32e1279a209aeef0f44b618ba75ca4c88c19264357539fae4d"
+        },
+        {
+          "heading": "Har photo mein product thoda alag",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "9a8959739deebee30004ee75c9e9f8eea357ba859b480755d62a564e085597c6"
+        },
+        {
+          "heading": "L02 Product Sheet",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "1e76a13b224293da7aee0d7994b4d53e231ae3fca4613116d763c5719c0a492d"
+        },
+        {
+          "heading": "L02 White Studio",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "72fe6514bb03cf07250f440c8a4084fc7bd5243c1a8f5fd7a17f5759e500252a"
+        },
+        {
+          "heading": "L02 Lifestyle",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "508db83ae00763811db2d33e48f84cb80717bcfb36f4417120d5e5c5659f9706"
+        }
+      ],
+      "assembledPayloads": [
+        {
+          "sha256": "81d01ad4a7e8410acc86d826e208cc54324902a4483c2652df8d1a8d8321bdd8",
+          "validation": "accepted",
+          "error": null,
+          "scope": {
+            "activeCourse": {
+              "_id": "6d0000000000000000000000",
+              "slug": "ai-product-photoshoot-ads"
+            },
+            "includeMaterials": true
+          },
+          "productBodies": [
+            {
+              "heading": "Product sheet banana",
+              "contentType": "workflow",
+              "owner": "6d0000000000000000000000",
+              "sha256": "56922de78128c44d1321fa410072ad53637117feed928197c53c4a4c3f6438f2"
+            },
+            {
+              "heading": "Product photos",
+              "contentType": "workflow",
+              "owner": "6d0000000000000000000000",
+              "sha256": "cda5fab917790b32e1279a209aeef0f44b618ba75ca4c88c19264357539fae4d"
+            },
+            {
+              "heading": "Har photo mein product thoda alag",
+              "contentType": "faq",
+              "owner": "6d0000000000000000000000",
+              "sha256": "9a8959739deebee30004ee75c9e9f8eea357ba859b480755d62a564e085597c6"
+            },
+            {
+              "heading": "L02 Product Sheet",
+              "contentType": "exact-template",
+              "owner": "6d0000000000000000000000",
+              "sha256": "1e76a13b224293da7aee0d7994b4d53e231ae3fca4613116d763c5719c0a492d"
+            },
+            {
+              "heading": "L02 White Studio",
+              "contentType": "exact-template",
+              "owner": "6d0000000000000000000000",
+              "sha256": "72fe6514bb03cf07250f440c8a4084fc7bd5243c1a8f5fd7a17f5759e500252a"
+            },
+            {
+              "heading": "L02 Lifestyle",
+              "contentType": "exact-template",
+              "owner": "6d0000000000000000000000",
+              "sha256": "508db83ae00763811db2d33e48f84cb80717bcfb36f4417120d5e5c5659f9706"
+            }
+          ],
+          "messageCount": 2
+        }
+      ],
+      "providerAdapterProductBodies": [
+        {
+          "heading": "Product sheet banana",
+          "contentType": "workflow",
+          "owner": "6d0000000000000000000000",
+          "sha256": "56922de78128c44d1321fa410072ad53637117feed928197c53c4a4c3f6438f2"
+        },
+        {
+          "heading": "Product photos",
+          "contentType": "workflow",
+          "owner": "6d0000000000000000000000",
+          "sha256": "cda5fab917790b32e1279a209aeef0f44b618ba75ca4c88c19264357539fae4d"
+        },
+        {
+          "heading": "Har photo mein product thoda alag",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "9a8959739deebee30004ee75c9e9f8eea357ba859b480755d62a564e085597c6"
+        },
+        {
+          "heading": "L02 Product Sheet",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "1e76a13b224293da7aee0d7994b4d53e231ae3fca4613116d763c5719c0a492d"
+        },
+        {
+          "heading": "L02 White Studio",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "72fe6514bb03cf07250f440c8a4084fc7bd5243c1a8f5fd7a17f5759e500252a"
+        },
+        {
+          "heading": "L02 Lifestyle",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "508db83ae00763811db2d33e48f84cb80717bcfb36f4417120d5e5c5659f9706"
+        }
+      ],
+      "responseProductBodies": [],
+      "noPayloadConstructed": false,
+      "blockedAdapterAttempts": 2,
+      "externalTransportAttempts": 0,
+      "potentialCriticalFindings": [],
+      "inspectionPerformed": true
+    },
+    "dbOperations": [
+      {
+        "model": "AiTutorSession",
+        "operation": "findOne",
+        "filter": {
+          "user": "4daa0c492f1caeb594f0e335",
+          "course": "6d0000000000000000000000"
+        }
+      },
+      {
+        "model": "Course",
+        "operation": "find",
+        "filter": {
+          "status": "published",
+          "_id": "6d0000000000000000000000"
+        }
+      },
+      {
+        "model": "AiTutorSession",
+        "operation": "upsert",
+        "filter": {
+          "user": "4daa0c492f1caeb594f0e335",
+          "course": "6d0000000000000000000000"
+        }
+      }
+    ],
+    "reason": "All six retrieval/context/adapter owners match entitled selected6d0000000000000000000000. Full assembly reviewed: empty conversationId, no prior Halo user turn/product facts; only present request and safe actor context. Current session messages replace old no-id request. DB actor4daa0c492f1caeb594f0e335/course scoped. Both provider requests match assembly and block before transport; no foreign actor or protected scope data."
+  },
+  "gradedAt": "2026-10-16T11:16:02.121664+00:00"
+}

@@ -1,0 +1,369 @@
+{
+  "id": "FRESH-EG-018",
+  "turnIndex": 1,
+  "status": "UNTESTED",
+  "critical": false,
+  "suspectedCritical": false,
+  "rubricVersion": "phase14b-independent-v1",
+  "criteria": [
+    {
+      "criterion": "Cover reference photos/sheet, consistent photos, model/festive where relevant, grounded ad plan, single-movement video, honest UGC and final edit.",
+      "status": "UNTESTED",
+      "excerpts": [
+        "Lesson 01\n\nAI Product Photoshoot & Ads has 8 lessons: 01 Course Intro; 02 Phone Photo Se Studio Photo (phone photos, Product Sheet, white studio/lifestyle/dark premium); 03 Model Ke Saath Product (character and product references, model shots and hands); 04 Festive Shoot + Colour Variants (Diwali, wedding scenes and a sheet for each colour); 05 ChatGPT Se Ad Plan (buyers, problems, angles, hooks, script, caption and Flow prompts); 06 Photo Se Product Video (one movement with Ingredients); 07 UGC-Style Video (honest phone-style AI-presenter videos); 08 Finale (complete workflow, common mistakes, honesty and final project). You learn to create product photos, product videos and honest ads for your own products or clients. You need a phone, laptop and a product. Tools: Google Flow, ChatGPT and CapCut; a full CapCut editing tutorial is not taught. Course prompts are in lesson notes."
+      ],
+      "reason": "Fallback course overview covers some topics but is not practical final-project checklist and omits required detailed checks. Necessary synthesis model unavailable; no unsupported earnings/product claims observed in fallback. Necessary actual provider response absent for this essential requirement; no fallback/model pass inferred."
+    },
+    {
+      "criterion": "Include checking product/text/hands/face/scale and no unsupported product or earnings claims.",
+      "status": "UNTESTED",
+      "excerpts": [
+        "Lesson 01\n\nAI Product Photoshoot & Ads has 8 lessons: 01 Course Intro; 02 Phone Photo Se Studio Photo (phone photos, Product Sheet, white studio/lifestyle/dark premium); 03 Model Ke Saath Product (character and product references, model shots and hands); 04 Festive Shoot + Colour Variants (Diwali, wedding scenes and a sheet for each colour); 05 ChatGPT Se Ad Plan (buyers, problems, angles, hooks, script, caption and Flow prompts); 06 Photo Se Product Video (one movement with Ingredients); 07 UGC-Style Video (honest phone-style AI-presenter videos); 08 Finale (complete workflow, common mistakes, honesty and final project). You learn to create product photos, product videos and honest ads for your own products or clients. You need a phone, laptop and a product. Tools: Google Flow, ChatGPT and CapCut; a full CapCut editing tutorial is not taught. Course prompts are in lesson notes."
+      ],
+      "reason": "Fallback course overview covers some topics but is not practical final-project checklist and omits required detailed checks. Necessary synthesis model unavailable; no unsupported earnings/product claims observed in fallback. Necessary actual provider response absent for this essential requirement; no fallback/model pass inferred."
+    }
+  ],
+  "dimensions": {
+    "grounding": "UNTESTED",
+    "facts": "UNTESTED",
+    "taskCompleteness": "UNTESTED",
+    "language": "UNTESTED",
+    "authorization": "PASS",
+    "isolation": "PASS",
+    "httpStatus": "PASS"
+  },
+  "requestedExactBodyChecks": [],
+  "supplementalExactBodyChecks": [],
+  "providerAvailability": {
+    "provider": "built-in-course-guide",
+    "outcome": {
+      "type": "provider_fallback",
+      "liveModelAnswer": false,
+      "providerStatus": "connection_error",
+      "responseIssue": null
+    },
+    "attempts": [
+      {
+        "index": 1,
+        "startedAt": "2026-10-16T11:14:42.287Z",
+        "requestSha256": "d6d1bdcffc7c24d5074d0ee4200f8f6388ffb386491053bbd216985c54bee1e6",
+        "promptModified": false,
+        "recordedFixture": false,
+        "error": {
+          "name": "Error",
+          "code": "PROVIDER_PAYLOAD_NOT_APPROVED"
+        },
+        "durationMs": 0,
+        "completedAt": "2026-10-16T11:14:42.287Z"
+      },
+      {
+        "index": 2,
+        "startedAt": "2026-10-16T11:14:42.387Z",
+        "requestSha256": "d6d1bdcffc7c24d5074d0ee4200f8f6388ffb386491053bbd216985c54bee1e6",
+        "promptModified": false,
+        "recordedFixture": false,
+        "error": {
+          "name": "Error",
+          "code": "PROVIDER_PAYLOAD_NOT_APPROVED"
+        },
+        "durationMs": 0,
+        "completedAt": "2026-10-16T11:14:42.387Z"
+      }
+    ],
+    "inferenceNecessaryForThisTurn": true,
+    "reason": "Actual configured provider requests blocked before external transport. No model/fixture response. Saved fallback cannot establish required semantic response."
+  },
+  "ownershipPayloadReview": {
+    "reviewed": true,
+    "actor": "A",
+    "actorId": "2409efab360865050d3ec6d2",
+    "scopeInspection": {
+      "independentExplicitSelectedCourse": "6d0000000000000000000000",
+      "independentExpectedOwner": "6d0000000000000000000000",
+      "explicitUnknownScope": false,
+      "independentAuthAndEntitlement": true,
+      "requiresSemanticScopeAdjudication": false,
+      "protectedRetrievedSources": [
+        {
+          "id": "S1",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "Course overview and prerequisites",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_1",
+          "lessonName": "Course overview and prerequisites",
+          "contentType": "overview",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:overview:course-overview-and-prerequisites"
+        },
+        {
+          "id": "S2",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "Product sheet banana",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_2",
+          "lessonName": "Product sheet banana",
+          "contentType": "workflow",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:workflow:product-sheet-banana"
+        },
+        {
+          "id": "S3",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "Vertical clip landscape mein side",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "",
+          "lessonName": "Vertical clip landscape mein side",
+          "contentType": "faq",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:faq:vertical-clip-landscape-mein-side"
+        },
+        {
+          "id": "S4",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "Lesson 08 — Finale",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_8",
+          "lessonName": "Lesson 08 — Finale",
+          "contentType": "lesson-summary",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:lesson-summary:lesson-08-finale"
+        },
+        {
+          "id": "S5",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "Final ad kaise edit karein?",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_8",
+          "lessonName": "Final ad kaise edit karein?",
+          "contentType": "faq",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:faq:final-ad-kaise-edit-karein"
+        },
+        {
+          "id": "S6",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "Har photo mein product thoda alag",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_2",
+          "lessonName": "Har photo mein product thoda alag",
+          "contentType": "faq",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:faq:har-photo-mein-product-thoda-alag"
+        }
+      ],
+      "retrievalProductBodies": [
+        {
+          "heading": "Course overview and prerequisites",
+          "contentType": "overview",
+          "owner": "6d0000000000000000000000",
+          "sha256": "46c6d59dfbfcf34bb540732e5795832daaaaa3947d2a6fce4eccd03c2c309cf5"
+        },
+        {
+          "heading": "Lesson 08 — Finale",
+          "contentType": "lesson-summary",
+          "owner": "6d0000000000000000000000",
+          "sha256": "a3db35658b7782ec2ec3a49b2b564a99dc6152317348b0460bbba1b252f0eb9d"
+        },
+        {
+          "heading": "Product sheet banana",
+          "contentType": "workflow",
+          "owner": "6d0000000000000000000000",
+          "sha256": "56922de78128c44d1321fa410072ad53637117feed928197c53c4a4c3f6438f2"
+        },
+        {
+          "heading": "Har photo mein product thoda alag",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "9a8959739deebee30004ee75c9e9f8eea357ba859b480755d62a564e085597c6"
+        },
+        {
+          "heading": "Vertical clip landscape mein side",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "291a875f9fd18ebc266d99276fbc7d51d505a78e3cbc1c0e83d3e2fa10ea0836"
+        },
+        {
+          "heading": "Final ad kaise edit karein?",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "c66fd88eb8f1255df76918353d8e74299fa68aae487fe05887b4d5cb8cc6da53"
+        }
+      ],
+      "assembledContextProductBodies": [
+        {
+          "heading": "Course overview and prerequisites",
+          "contentType": "overview",
+          "owner": "6d0000000000000000000000",
+          "sha256": "46c6d59dfbfcf34bb540732e5795832daaaaa3947d2a6fce4eccd03c2c309cf5"
+        },
+        {
+          "heading": "Lesson 08 — Finale",
+          "contentType": "lesson-summary",
+          "owner": "6d0000000000000000000000",
+          "sha256": "a3db35658b7782ec2ec3a49b2b564a99dc6152317348b0460bbba1b252f0eb9d"
+        },
+        {
+          "heading": "Product sheet banana",
+          "contentType": "workflow",
+          "owner": "6d0000000000000000000000",
+          "sha256": "56922de78128c44d1321fa410072ad53637117feed928197c53c4a4c3f6438f2"
+        },
+        {
+          "heading": "Har photo mein product thoda alag",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "9a8959739deebee30004ee75c9e9f8eea357ba859b480755d62a564e085597c6"
+        },
+        {
+          "heading": "Vertical clip landscape mein side",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "291a875f9fd18ebc266d99276fbc7d51d505a78e3cbc1c0e83d3e2fa10ea0836"
+        },
+        {
+          "heading": "Final ad kaise edit karein?",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "c66fd88eb8f1255df76918353d8e74299fa68aae487fe05887b4d5cb8cc6da53"
+        }
+      ],
+      "assembledPayloads": [
+        {
+          "sha256": "d6d1bdcffc7c24d5074d0ee4200f8f6388ffb386491053bbd216985c54bee1e6",
+          "validation": "accepted",
+          "error": null,
+          "scope": {
+            "activeCourse": {
+              "_id": "6d0000000000000000000000",
+              "slug": "ai-product-photoshoot-ads"
+            },
+            "includeMaterials": true
+          },
+          "productBodies": [
+            {
+              "heading": "Course overview and prerequisites",
+              "contentType": "overview",
+              "owner": "6d0000000000000000000000",
+              "sha256": "46c6d59dfbfcf34bb540732e5795832daaaaa3947d2a6fce4eccd03c2c309cf5"
+            },
+            {
+              "heading": "Lesson 08 — Finale",
+              "contentType": "lesson-summary",
+              "owner": "6d0000000000000000000000",
+              "sha256": "a3db35658b7782ec2ec3a49b2b564a99dc6152317348b0460bbba1b252f0eb9d"
+            },
+            {
+              "heading": "Product sheet banana",
+              "contentType": "workflow",
+              "owner": "6d0000000000000000000000",
+              "sha256": "56922de78128c44d1321fa410072ad53637117feed928197c53c4a4c3f6438f2"
+            },
+            {
+              "heading": "Har photo mein product thoda alag",
+              "contentType": "faq",
+              "owner": "6d0000000000000000000000",
+              "sha256": "9a8959739deebee30004ee75c9e9f8eea357ba859b480755d62a564e085597c6"
+            },
+            {
+              "heading": "Vertical clip landscape mein side",
+              "contentType": "faq",
+              "owner": "6d0000000000000000000000",
+              "sha256": "291a875f9fd18ebc266d99276fbc7d51d505a78e3cbc1c0e83d3e2fa10ea0836"
+            },
+            {
+              "heading": "Final ad kaise edit karein?",
+              "contentType": "faq",
+              "owner": "6d0000000000000000000000",
+              "sha256": "c66fd88eb8f1255df76918353d8e74299fa68aae487fe05887b4d5cb8cc6da53"
+            }
+          ],
+          "messageCount": 2
+        }
+      ],
+      "providerAdapterProductBodies": [
+        {
+          "heading": "Course overview and prerequisites",
+          "contentType": "overview",
+          "owner": "6d0000000000000000000000",
+          "sha256": "46c6d59dfbfcf34bb540732e5795832daaaaa3947d2a6fce4eccd03c2c309cf5"
+        },
+        {
+          "heading": "Lesson 08 — Finale",
+          "contentType": "lesson-summary",
+          "owner": "6d0000000000000000000000",
+          "sha256": "a3db35658b7782ec2ec3a49b2b564a99dc6152317348b0460bbba1b252f0eb9d"
+        },
+        {
+          "heading": "Product sheet banana",
+          "contentType": "workflow",
+          "owner": "6d0000000000000000000000",
+          "sha256": "56922de78128c44d1321fa410072ad53637117feed928197c53c4a4c3f6438f2"
+        },
+        {
+          "heading": "Har photo mein product thoda alag",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "9a8959739deebee30004ee75c9e9f8eea357ba859b480755d62a564e085597c6"
+        },
+        {
+          "heading": "Vertical clip landscape mein side",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "291a875f9fd18ebc266d99276fbc7d51d505a78e3cbc1c0e83d3e2fa10ea0836"
+        },
+        {
+          "heading": "Final ad kaise edit karein?",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "c66fd88eb8f1255df76918353d8e74299fa68aae487fe05887b4d5cb8cc6da53"
+        }
+      ],
+      "responseProductBodies": [],
+      "noPayloadConstructed": false,
+      "blockedAdapterAttempts": 2,
+      "externalTransportAttempts": 0,
+      "potentialCriticalFindings": [],
+      "inspectionPerformed": true
+    },
+    "dbOperations": [
+      {
+        "model": "AiTutorSession",
+        "operation": "findOne",
+        "filter": {
+          "user": "2409efab360865050d3ec6d2",
+          "course": "6d0000000000000000000000"
+        }
+      },
+      {
+        "model": "Course",
+        "operation": "find",
+        "filter": {
+          "status": "published",
+          "_id": "6d0000000000000000000000"
+        }
+      },
+      {
+        "model": "AiTutorSession",
+        "operation": "upsert",
+        "filter": {
+          "user": "2409efab360865050d3ec6d2",
+          "course": "6d0000000000000000000000"
+        }
+      }
+    ],
+    "reason": "All six retrieved/context/adapter bodies owned by entitled selected6d0000000000000000000000. Full relevant assembly reviewed including exact prior blocks, current red ceramic planter and safe learner context; no foreign actor/course secrets. DB actor2409efab360865050d3ec6d2/course scoped. Both blocked provider payloads exactly equal reviewed assembly; no transport."
+  },
+  "gradedAt": "2026-10-16T11:14:54.230470+00:00"
+}

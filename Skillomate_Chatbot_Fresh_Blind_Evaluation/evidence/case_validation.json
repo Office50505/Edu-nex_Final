@@ -1,0 +1,168 @@
+{
+  "at": "2026-10-16T10:44:03.721113+00:00",
+  "caseCount": 120,
+  "turnCount": 153,
+  "distribution": {
+    "exact_template": 25,
+    "multilingual_extraction": 20,
+    "multi_turn": 20,
+    "education_generation": 20,
+    "safety_access_isolation": 20,
+    "state_routing_edges": 15
+  },
+  "exactChecks": [
+    {
+      "id": "FRESH-EX-001",
+      "turn": 1,
+      "asset": "L02 Product Sheet",
+      "expectedBodySHA256": "0e5b627a2d3e104f61a318dac540e424ff748ab661d399c83a7062dc9a332394"
+    },
+    {
+      "id": "FRESH-EX-002",
+      "turn": 1,
+      "asset": "L02 White Studio",
+      "expectedBodySHA256": "72fe6514bb03cf07250f440c8a4084fc7bd5243c1a8f5fd7a17f5759e500252a"
+    },
+    {
+      "id": "FRESH-EX-003",
+      "turn": 1,
+      "asset": "L02 Lifestyle",
+      "expectedBodySHA256": "906a16e57769131494f509941f6537836dc62a60398245f8e1be8b6d7ac676ed"
+    },
+    {
+      "id": "FRESH-EX-004",
+      "turn": 1,
+      "asset": "L02 Dark Premium",
+      "expectedBodySHA256": "17f2dc357493995bb820b8463a3fdb0fe34d4bbe2de81608f6db9f35dcdd6cc4"
+    },
+    {
+      "id": "FRESH-EX-005",
+      "turn": 1,
+      "asset": "L03 Character Sheet (bonus)",
+      "expectedBodySHA256": "5e590906bba60955230fbd7b8507e91d9c81eacc2ceab2791584f8b5dc38b87e"
+    },
+    {
+      "id": "FRESH-EX-006",
+      "turn": 1,
+      "asset": "L03 Hands close-up",
+      "expectedBodySHA256": "9f7a8cf8257992efe2209b62f82127313018cf534ee07e2725890b8f0bd3457a"
+    },
+    {
+      "id": "FRESH-EX-007",
+      "turn": 1,
+      "asset": "L03 Desk",
+      "expectedBodySHA256": "7b9348de28df81fef8572b9c30c7ec9cf41dce891514a446a8c64e870ab057d5"
+    },
+    {
+      "id": "FRESH-EX-008",
+      "turn": 1,
+      "asset": "L03 Showing to camera",
+      "expectedBodySHA256": "1164a3d17be399f07cb825677617ac7e993e1f4a9055c3cfd6b10e1f866412ac"
+    },
+    {
+      "id": "FRESH-EX-009",
+      "turn": 1,
+      "asset": "L04 Diwali",
+      "expectedBodySHA256": "36951953433a5d93b926d05e865a6af8fa01dab77e13cbbb1cc7a4ebda6be936"
+    },
+    {
+      "id": "FRESH-EX-010",
+      "turn": 1,
+      "asset": "L04 Wedding Gift",
+      "expectedBodySHA256": "0e12b11efd12b715363523fe97ca0fa15ae37be04149a7572507e103abcca0cb"
+    },
+    {
+      "id": "FRESH-EX-011",
+      "turn": 1,
+      "asset": "L04 Colour Variant Sheet",
+      "expectedBodySHA256": "78106ce2a73f989ff829e5412c3f0e8b812965ea231350c11a2cf07a6949a6d6"
+    },
+    {
+      "id": "FRESH-EX-012",
+      "turn": 1,
+      "asset": "L05 Step 1 Brief",
+      "expectedBodySHA256": "2be2b3daf5c0d3820c42792c848e258af73247640ab666dcd6f4bcc0a4718783"
+    },
+    {
+      "id": "FRESH-EX-013",
+      "turn": 1,
+      "asset": "L05 Step 2 Hooks + Script",
+      "expectedBodySHA256": "09c6857231ea263d02e9645e86b0a852e3763c625d7de7182049fd931f51f1a3"
+    },
+    {
+      "id": "FRESH-EX-014",
+      "turn": 1,
+      "asset": "L05 Step 3 Flow prompts",
+      "expectedBodySHA256": "39053f16cc2cb546abdc2f6cf30958876dd99550142a9f1d2761bdf054e46879"
+    },
+    {
+      "id": "FRESH-EX-015",
+      "turn": 1,
+      "asset": "L06 Push-in",
+      "expectedBodySHA256": "6d5ab1eac5f9e62f5276afbf5b833beba065d30e0989c6607810b150a262d2cf"
+    },
+    {
+      "id": "FRESH-EX-016",
+      "turn": 1,
+      "asset": "L06 Arc",
+      "expectedBodySHA256": "fe93820322ce61e5e765a6400c3e47992cd1979bc856ed87388518c8b649942a"
+    },
+    {
+      "id": "FRESH-EX-017",
+      "turn": 1,
+      "asset": "L06 Light Sweep",
+      "expectedBodySHA256": "7de52335525223122772953f66e0331bf404b978e1cb5bd89f05fbb821e754c5"
+    },
+    {
+      "id": "FRESH-EX-018",
+      "turn": 1,
+      "asset": "L07 UGC 1",
+      "expectedBodySHA256": "aa6c5dd82c930a9329c14dc6dc424131d54ffbf3322fc01057246465a0d5c34e"
+    },
+    {
+      "id": "FRESH-EX-019",
+      "turn": 1,
+      "asset": "L07 UGC 2",
+      "expectedBodySHA256": "854a37e655d9951169a4d6f37ebb1d6e43501372b5eca474868123ec7a567d8a"
+    },
+    {
+      "id": "FRESH-EX-020",
+      "turn": 1,
+      "asset": "L02 Product Sheet",
+      "expectedBodySHA256": "1e76a13b224293da7aee0d7994b4d53e231ae3fca4613116d763c5719c0a492d"
+    },
+    {
+      "id": "FRESH-EX-021",
+      "turn": 1,
+      "asset": "L03 Hands close-up",
+      "expectedBodySHA256": "688d9cc1134e2d2aa93dde4d712ed915453cc0fe7af1a6e53647e23d0746da6a"
+    },
+    {
+      "id": "FRESH-EX-022",
+      "turn": 1,
+      "asset": "L04 Colour Variant Sheet",
+      "expectedBodySHA256": "3747f22b03f5c271408a1fc0997b6473824a951c350f55c11356c9c265372d64"
+    },
+    {
+      "id": "FRESH-EX-023",
+      "turn": 1,
+      "asset": "L05 Step 1 Brief",
+      "expectedBodySHA256": "e76825ea5a9ff2a9095f6d333195ca0dbb236257b6347d7cb8b645147c8c8d47"
+    },
+    {
+      "id": "FRESH-EX-024",
+      "turn": 1,
+      "asset": "L06 Arc",
+      "expectedBodySHA256": "992f66aff234ec81babb39441e2d33802678302beb67b68834b21be8fd69f362"
+    },
+    {
+      "id": "FRESH-EX-025",
+      "turn": 1,
+      "asset": "L07 UGC 2",
+      "expectedBodySHA256": "53eb271c5fc4c05464b8faed0aa24829a9d7512bed69ef924775342e95e6810f"
+    }
+  ],
+  "all19AssetsCovered": true,
+  "expectedBodiesIndependentlyVerified": true,
+  "candidateNotExecuted": true
+}

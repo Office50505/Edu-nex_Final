@@ -1,0 +1,73 @@
+{
+  "pid": 6978,
+  "method": "Provider adapter invocations in tests with external networking denied; custom fetch functions are injected fixtures",
+  "adapterInvocations": 5,
+  "transportAttempts": 5,
+  "calls": [
+    {
+      "index": 1,
+      "customFetchProvided": true,
+      "status": "success",
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": "success",
+          "httpStatus": 200,
+          "durationMs": 0
+        }
+      ]
+    },
+    {
+      "index": 2,
+      "customFetchProvided": true,
+      "status": "success",
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": "success",
+          "httpStatus": 200,
+          "durationMs": 1
+        }
+      ]
+    },
+    {
+      "index": 3,
+      "customFetchProvided": true,
+      "status": "success",
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": "success",
+          "httpStatus": 200,
+          "durationMs": 0
+        }
+      ]
+    },
+    {
+      "index": 4,
+      "customFetchProvided": true,
+      "status": "success",
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": "success",
+          "httpStatus": 200,
+          "durationMs": 1
+        }
+      ]
+    },
+    {
+      "index": 5,
+      "customFetchProvided": true,
+      "status": "connection_error",
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": "connection_error",
+          "httpStatus": null,
+          "durationMs": 0
+        }
+      ]
+    }
+  ]
+}

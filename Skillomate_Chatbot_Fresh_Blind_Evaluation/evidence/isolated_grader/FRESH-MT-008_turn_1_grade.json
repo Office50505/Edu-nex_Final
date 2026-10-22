@@ -1,0 +1,361 @@
+{
+  "id": "FRESH-MT-008",
+  "turnIndex": 1,
+  "status": "UNTESTED",
+  "critical": false,
+  "suspectedCritical": false,
+  "rubricVersion": "phase14b-independent-v1",
+  "criteria": [
+    {
+      "criterion": "Explain phone angles to product sheet to scene photos; preserve Unicode name.",
+      "status": "UNTESTED",
+      "excerpts": [
+        "Lesson 02\n\nTake 5–7 clear phone photos from different angles in daylight, with flash off. In Google Flow choose New project → Image → Nano Banana Pro. Upload all photos as references and run the Product Sheet template. Review, regenerate if needed, and save the best sheet for later shots."
+      ],
+      "reason": "Saved sheet-preparation guidance lacks full sheet-to-scene workflow and applied original-script name; intended semantic response unavailable. Necessary actual provider response absent for this essential requirement; no fallback/model pass inferred."
+    }
+  ],
+  "dimensions": {
+    "grounding": "UNTESTED",
+    "facts": "UNTESTED",
+    "taskCompleteness": "UNTESTED",
+    "language": "UNTESTED",
+    "authorization": "PASS",
+    "isolation": "PASS",
+    "httpStatus": "PASS"
+  },
+  "requestedExactBodyChecks": [],
+  "supplementalExactBodyChecks": [],
+  "providerAvailability": {
+    "provider": "built-in-course-guide",
+    "outcome": {
+      "type": "provider_fallback",
+      "liveModelAnswer": false,
+      "providerStatus": "connection_error",
+      "responseIssue": null
+    },
+    "attempts": [
+      {
+        "index": 1,
+        "startedAt": "2026-10-16T11:03:00.065Z",
+        "requestSha256": "3a1d9123176063f8d27eeee7c82cdedd571c49e10b78a348026b14ccae8f68a7",
+        "promptModified": false,
+        "recordedFixture": false,
+        "error": {
+          "name": "Error",
+          "code": "PROVIDER_PAYLOAD_NOT_APPROVED"
+        },
+        "durationMs": 0,
+        "completedAt": "2026-10-16T11:03:00.065Z"
+      },
+      {
+        "index": 2,
+        "startedAt": "2026-10-16T11:03:00.168Z",
+        "requestSha256": "3a1d9123176063f8d27eeee7c82cdedd571c49e10b78a348026b14ccae8f68a7",
+        "promptModified": false,
+        "recordedFixture": false,
+        "error": {
+          "name": "Error",
+          "code": "PROVIDER_PAYLOAD_NOT_APPROVED"
+        },
+        "durationMs": 0,
+        "completedAt": "2026-10-16T11:03:00.168Z"
+      }
+    ],
+    "inferenceNecessaryForThisTurn": true,
+    "reason": "Actual configured provider requests blocked before external transport. No model/fixture response. Saved fallback cannot establish required semantic response."
+  },
+  "ownershipPayloadReview": {
+    "reviewed": true,
+    "actor": "A",
+    "actorId": "b3aec85e9944979b25bbc82c",
+    "scopeInspection": {
+      "independentExplicitSelectedCourse": "6d0000000000000000000000",
+      "independentExpectedOwner": "6d0000000000000000000000",
+      "explicitUnknownScope": false,
+      "independentAuthAndEntitlement": true,
+      "requiresSemanticScopeAdjudication": false,
+      "protectedRetrievedSources": [
+        {
+          "id": "S1",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "Course overview and prerequisites",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_1",
+          "lessonName": "Course overview and prerequisites",
+          "contentType": "overview",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:overview:course-overview-and-prerequisites"
+        },
+        {
+          "id": "S2",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "Product sheet banana",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_2",
+          "lessonName": "Product sheet banana",
+          "contentType": "workflow",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:workflow:product-sheet-banana"
+        },
+        {
+          "id": "S3",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "Ad plan",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_5",
+          "lessonName": "Ad plan",
+          "contentType": "workflow",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:workflow:ad-plan"
+        },
+        {
+          "id": "S4",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "Product photos",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_2",
+          "lessonName": "Product photos",
+          "contentType": "workflow",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:workflow:product-photos"
+        },
+        {
+          "id": "S5",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "Product video",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_6",
+          "lessonName": "Product video",
+          "contentType": "workflow",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:workflow:product-video"
+        },
+        {
+          "id": "S6",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "Lesson 02 — Phone Photo Se Studio Photo",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_2",
+          "lessonName": "Lesson 02 — Phone Photo Se Studio Photo",
+          "contentType": "lesson-summary",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:lesson-summary:lesson-02-phone-photo-se-studio-photo"
+        }
+      ],
+      "retrievalProductBodies": [
+        {
+          "heading": "Course overview and prerequisites",
+          "contentType": "overview",
+          "owner": "6d0000000000000000000000",
+          "sha256": "46c6d59dfbfcf34bb540732e5795832daaaaa3947d2a6fce4eccd03c2c309cf5"
+        },
+        {
+          "heading": "Lesson 02 — Phone Photo Se Studio Photo",
+          "contentType": "lesson-summary",
+          "owner": "6d0000000000000000000000",
+          "sha256": "21582da9e3555afbf289672cf4d95cd09b1a1c240369ed1dc47895eeed208f95"
+        },
+        {
+          "heading": "Product sheet banana",
+          "contentType": "workflow",
+          "owner": "6d0000000000000000000000",
+          "sha256": "56922de78128c44d1321fa410072ad53637117feed928197c53c4a4c3f6438f2"
+        },
+        {
+          "heading": "Product photos",
+          "contentType": "workflow",
+          "owner": "6d0000000000000000000000",
+          "sha256": "cda5fab917790b32e1279a209aeef0f44b618ba75ca4c88c19264357539fae4d"
+        },
+        {
+          "heading": "Ad plan",
+          "contentType": "workflow",
+          "owner": "6d0000000000000000000000",
+          "sha256": "d6f78ee930b9429a7609a63d027430fee7986270c0f8717d52ab63d877839c00"
+        },
+        {
+          "heading": "Product video",
+          "contentType": "workflow",
+          "owner": "6d0000000000000000000000",
+          "sha256": "ebdbfab455bca71b5956bb202abf1f301d4e694cace2cec144be694bbbc4cd9d"
+        }
+      ],
+      "assembledContextProductBodies": [
+        {
+          "heading": "Course overview and prerequisites",
+          "contentType": "overview",
+          "owner": "6d0000000000000000000000",
+          "sha256": "46c6d59dfbfcf34bb540732e5795832daaaaa3947d2a6fce4eccd03c2c309cf5"
+        },
+        {
+          "heading": "Lesson 02 — Phone Photo Se Studio Photo",
+          "contentType": "lesson-summary",
+          "owner": "6d0000000000000000000000",
+          "sha256": "21582da9e3555afbf289672cf4d95cd09b1a1c240369ed1dc47895eeed208f95"
+        },
+        {
+          "heading": "Product sheet banana",
+          "contentType": "workflow",
+          "owner": "6d0000000000000000000000",
+          "sha256": "56922de78128c44d1321fa410072ad53637117feed928197c53c4a4c3f6438f2"
+        },
+        {
+          "heading": "Product photos",
+          "contentType": "workflow",
+          "owner": "6d0000000000000000000000",
+          "sha256": "cda5fab917790b32e1279a209aeef0f44b618ba75ca4c88c19264357539fae4d"
+        },
+        {
+          "heading": "Ad plan",
+          "contentType": "workflow",
+          "owner": "6d0000000000000000000000",
+          "sha256": "d6f78ee930b9429a7609a63d027430fee7986270c0f8717d52ab63d877839c00"
+        },
+        {
+          "heading": "Product video",
+          "contentType": "workflow",
+          "owner": "6d0000000000000000000000",
+          "sha256": "ebdbfab455bca71b5956bb202abf1f301d4e694cace2cec144be694bbbc4cd9d"
+        }
+      ],
+      "assembledPayloads": [
+        {
+          "sha256": "3a1d9123176063f8d27eeee7c82cdedd571c49e10b78a348026b14ccae8f68a7",
+          "validation": "accepted",
+          "error": null,
+          "scope": {
+            "activeCourse": {
+              "_id": "6d0000000000000000000000",
+              "slug": "ai-product-photoshoot-ads"
+            },
+            "includeMaterials": true
+          },
+          "productBodies": [
+            {
+              "heading": "Course overview and prerequisites",
+              "contentType": "overview",
+              "owner": "6d0000000000000000000000",
+              "sha256": "46c6d59dfbfcf34bb540732e5795832daaaaa3947d2a6fce4eccd03c2c309cf5"
+            },
+            {
+              "heading": "Lesson 02 — Phone Photo Se Studio Photo",
+              "contentType": "lesson-summary",
+              "owner": "6d0000000000000000000000",
+              "sha256": "21582da9e3555afbf289672cf4d95cd09b1a1c240369ed1dc47895eeed208f95"
+            },
+            {
+              "heading": "Product sheet banana",
+              "contentType": "workflow",
+              "owner": "6d0000000000000000000000",
+              "sha256": "56922de78128c44d1321fa410072ad53637117feed928197c53c4a4c3f6438f2"
+            },
+            {
+              "heading": "Product photos",
+              "contentType": "workflow",
+              "owner": "6d0000000000000000000000",
+              "sha256": "cda5fab917790b32e1279a209aeef0f44b618ba75ca4c88c19264357539fae4d"
+            },
+            {
+              "heading": "Ad plan",
+              "contentType": "workflow",
+              "owner": "6d0000000000000000000000",
+              "sha256": "d6f78ee930b9429a7609a63d027430fee7986270c0f8717d52ab63d877839c00"
+            },
+            {
+              "heading": "Product video",
+              "contentType": "workflow",
+              "owner": "6d0000000000000000000000",
+              "sha256": "ebdbfab455bca71b5956bb202abf1f301d4e694cace2cec144be694bbbc4cd9d"
+            }
+          ],
+          "messageCount": 2
+        }
+      ],
+      "providerAdapterProductBodies": [
+        {
+          "heading": "Course overview and prerequisites",
+          "contentType": "overview",
+          "owner": "6d0000000000000000000000",
+          "sha256": "46c6d59dfbfcf34bb540732e5795832daaaaa3947d2a6fce4eccd03c2c309cf5"
+        },
+        {
+          "heading": "Lesson 02 — Phone Photo Se Studio Photo",
+          "contentType": "lesson-summary",
+          "owner": "6d0000000000000000000000",
+          "sha256": "21582da9e3555afbf289672cf4d95cd09b1a1c240369ed1dc47895eeed208f95"
+        },
+        {
+          "heading": "Product sheet banana",
+          "contentType": "workflow",
+          "owner": "6d0000000000000000000000",
+          "sha256": "56922de78128c44d1321fa410072ad53637117feed928197c53c4a4c3f6438f2"
+        },
+        {
+          "heading": "Product photos",
+          "contentType": "workflow",
+          "owner": "6d0000000000000000000000",
+          "sha256": "cda5fab917790b32e1279a209aeef0f44b618ba75ca4c88c19264357539fae4d"
+        },
+        {
+          "heading": "Ad plan",
+          "contentType": "workflow",
+          "owner": "6d0000000000000000000000",
+          "sha256": "d6f78ee930b9429a7609a63d027430fee7986270c0f8717d52ab63d877839c00"
+        },
+        {
+          "heading": "Product video",
+          "contentType": "workflow",
+          "owner": "6d0000000000000000000000",
+          "sha256": "ebdbfab455bca71b5956bb202abf1f301d4e694cace2cec144be694bbbc4cd9d"
+        }
+      ],
+      "responseProductBodies": [],
+      "noPayloadConstructed": false,
+      "blockedAdapterAttempts": 2,
+      "externalTransportAttempts": 0,
+      "potentialCriticalFindings": [],
+      "inspectionPerformed": true
+    },
+    "dbOperations": [
+      {
+        "model": "AiTutorSession",
+        "operation": "findOne",
+        "filter": {
+          "user": "b3aec85e9944979b25bbc82c",
+          "course": "6d0000000000000000000000"
+        }
+      },
+      {
+        "model": "Course",
+        "operation": "find",
+        "filter": {
+          "status": "published",
+          "_id": "6d0000000000000000000000"
+        }
+      },
+      {
+        "model": "AiTutorSession",
+        "operation": "upsert",
+        "filter": {
+          "user": "b3aec85e9944979b25bbc82c",
+          "course": "6d0000000000000000000000"
+        }
+      }
+    ],
+    "reason": "Read full relevant assembly/context and current user body; common prefix equal SA011. All six source/context/adapter owners match entitled product course. Own original-script brief and safe A profile/session only, every flag inspected, both adapter requests equal assembly. No foreign/private content."
+  },
+  "gradedAt": "2026-10-16T11:03:16.256380+00:00"
+}

@@ -1,0 +1,361 @@
+{
+  "id": "FRESH-MT-008",
+  "turnIndex": 2,
+  "status": "UNTESTED",
+  "critical": false,
+  "suspectedCritical": false,
+  "rubricVersion": "phase14b-independent-v1",
+  "criteria": [
+    {
+      "criterion": "Explain the workflow in Hindi while preserving the original-script name.",
+      "status": "UNTESTED",
+      "excerpts": [
+        "Lesson 02\n\nदिन की रोशनी में, फ्लैश बंद करके अलग कोणों से प्रोडक्ट की 5–7 साफ़ तस्वीरें लें। Google Flow में New project → Image → Nano Banana Pro चुनें। सभी तस्वीरें reference में लगाकर Product Sheet प्रॉम्प्ट चलाएँ। परिणाम जाँचें, ज़रूरत हो तो फिर बनाएँ और अच्छी शीट सेव करें।"
+      ],
+      "reason": "Saved Hindi sheet-preparation guidance omits applied original-script name and full scene-photo continuation; no necessary live conversational translation response. Necessary actual provider response absent for this essential requirement; no fallback/model pass inferred."
+    }
+  ],
+  "dimensions": {
+    "grounding": "UNTESTED",
+    "facts": "UNTESTED",
+    "taskCompleteness": "UNTESTED",
+    "language": "UNTESTED",
+    "authorization": "PASS",
+    "isolation": "PASS",
+    "httpStatus": "PASS"
+  },
+  "requestedExactBodyChecks": [],
+  "supplementalExactBodyChecks": [],
+  "providerAvailability": {
+    "provider": "built-in-course-guide",
+    "outcome": {
+      "type": "provider_fallback",
+      "liveModelAnswer": false,
+      "providerStatus": "connection_error",
+      "responseIssue": null
+    },
+    "attempts": [
+      {
+        "index": 3,
+        "startedAt": "2026-10-16T11:03:16.331Z",
+        "requestSha256": "b8429bd63d07d015f1b797b340d86f90e039e6a6ba80aef56970d02e7dc13ce1",
+        "promptModified": false,
+        "recordedFixture": false,
+        "error": {
+          "name": "Error",
+          "code": "PROVIDER_PAYLOAD_NOT_APPROVED"
+        },
+        "durationMs": 0,
+        "completedAt": "2026-10-16T11:03:16.332Z"
+      },
+      {
+        "index": 4,
+        "startedAt": "2026-10-16T11:03:16.434Z",
+        "requestSha256": "b8429bd63d07d015f1b797b340d86f90e039e6a6ba80aef56970d02e7dc13ce1",
+        "promptModified": false,
+        "recordedFixture": false,
+        "error": {
+          "name": "Error",
+          "code": "PROVIDER_PAYLOAD_NOT_APPROVED"
+        },
+        "durationMs": 0,
+        "completedAt": "2026-10-16T11:03:16.434Z"
+      }
+    ],
+    "inferenceNecessaryForThisTurn": true,
+    "reason": "Actual configured provider requests blocked before external transport. No model/fixture response. Saved fallback cannot establish required semantic response."
+  },
+  "ownershipPayloadReview": {
+    "reviewed": true,
+    "actor": "A",
+    "actorId": "b3aec85e9944979b25bbc82c",
+    "scopeInspection": {
+      "independentExplicitSelectedCourse": "6d0000000000000000000000",
+      "independentExpectedOwner": "6d0000000000000000000000",
+      "explicitUnknownScope": false,
+      "independentAuthAndEntitlement": true,
+      "requiresSemanticScopeAdjudication": false,
+      "protectedRetrievedSources": [
+        {
+          "id": "S1",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "Product sheet banana",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_2",
+          "lessonName": "Product sheet banana",
+          "contentType": "workflow",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:workflow:product-sheet-banana"
+        },
+        {
+          "id": "S2",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "Product photos",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_2",
+          "lessonName": "Product photos",
+          "contentType": "workflow",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:workflow:product-photos"
+        },
+        {
+          "id": "S3",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "Lesson 02 — Phone Photo Se Studio Photo",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_2",
+          "lessonName": "Lesson 02 — Phone Photo Se Studio Photo",
+          "contentType": "lesson-summary",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:lesson-summary:lesson-02-phone-photo-se-studio-photo"
+        },
+        {
+          "id": "S4",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "Har photo mein product thoda alag",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_2",
+          "lessonName": "Har photo mein product thoda alag",
+          "contentType": "faq",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:faq:har-photo-mein-product-thoda-alag"
+        },
+        {
+          "id": "S5",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "Label ke akshar / keys ke letters",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_2",
+          "lessonName": "Label ke akshar / keys ke letters",
+          "contentType": "faq",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:faq:label-ke-akshar-keys-ke-letters"
+        },
+        {
+          "id": "S6",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "L02 Product Sheet",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_2",
+          "lessonName": "L02 Product Sheet",
+          "contentType": "exact-template",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:exact-template:l02-product-sheet"
+        }
+      ],
+      "retrievalProductBodies": [
+        {
+          "heading": "Lesson 02 — Phone Photo Se Studio Photo",
+          "contentType": "lesson-summary",
+          "owner": "6d0000000000000000000000",
+          "sha256": "21582da9e3555afbf289672cf4d95cd09b1a1c240369ed1dc47895eeed208f95"
+        },
+        {
+          "heading": "Product sheet banana",
+          "contentType": "workflow",
+          "owner": "6d0000000000000000000000",
+          "sha256": "56922de78128c44d1321fa410072ad53637117feed928197c53c4a4c3f6438f2"
+        },
+        {
+          "heading": "Product photos",
+          "contentType": "workflow",
+          "owner": "6d0000000000000000000000",
+          "sha256": "cda5fab917790b32e1279a209aeef0f44b618ba75ca4c88c19264357539fae4d"
+        },
+        {
+          "heading": "Label ke akshar / keys ke letters",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "566a7b4772832b93a791f298b56c9b3e3c4280cf676ee275a69644183dd05d4e"
+        },
+        {
+          "heading": "Har photo mein product thoda alag",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "9a8959739deebee30004ee75c9e9f8eea357ba859b480755d62a564e085597c6"
+        },
+        {
+          "heading": "L02 Product Sheet",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "1e76a13b224293da7aee0d7994b4d53e231ae3fca4613116d763c5719c0a492d"
+        }
+      ],
+      "assembledContextProductBodies": [
+        {
+          "heading": "Lesson 02 — Phone Photo Se Studio Photo",
+          "contentType": "lesson-summary",
+          "owner": "6d0000000000000000000000",
+          "sha256": "21582da9e3555afbf289672cf4d95cd09b1a1c240369ed1dc47895eeed208f95"
+        },
+        {
+          "heading": "Product sheet banana",
+          "contentType": "workflow",
+          "owner": "6d0000000000000000000000",
+          "sha256": "56922de78128c44d1321fa410072ad53637117feed928197c53c4a4c3f6438f2"
+        },
+        {
+          "heading": "Product photos",
+          "contentType": "workflow",
+          "owner": "6d0000000000000000000000",
+          "sha256": "cda5fab917790b32e1279a209aeef0f44b618ba75ca4c88c19264357539fae4d"
+        },
+        {
+          "heading": "Label ke akshar / keys ke letters",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "566a7b4772832b93a791f298b56c9b3e3c4280cf676ee275a69644183dd05d4e"
+        },
+        {
+          "heading": "Har photo mein product thoda alag",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "9a8959739deebee30004ee75c9e9f8eea357ba859b480755d62a564e085597c6"
+        },
+        {
+          "heading": "L02 Product Sheet",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "1e76a13b224293da7aee0d7994b4d53e231ae3fca4613116d763c5719c0a492d"
+        }
+      ],
+      "assembledPayloads": [
+        {
+          "sha256": "b8429bd63d07d015f1b797b340d86f90e039e6a6ba80aef56970d02e7dc13ce1",
+          "validation": "accepted",
+          "error": null,
+          "scope": {
+            "activeCourse": {
+              "_id": "6d0000000000000000000000",
+              "slug": "ai-product-photoshoot-ads"
+            },
+            "includeMaterials": true
+          },
+          "productBodies": [
+            {
+              "heading": "Lesson 02 — Phone Photo Se Studio Photo",
+              "contentType": "lesson-summary",
+              "owner": "6d0000000000000000000000",
+              "sha256": "21582da9e3555afbf289672cf4d95cd09b1a1c240369ed1dc47895eeed208f95"
+            },
+            {
+              "heading": "Product sheet banana",
+              "contentType": "workflow",
+              "owner": "6d0000000000000000000000",
+              "sha256": "56922de78128c44d1321fa410072ad53637117feed928197c53c4a4c3f6438f2"
+            },
+            {
+              "heading": "Product photos",
+              "contentType": "workflow",
+              "owner": "6d0000000000000000000000",
+              "sha256": "cda5fab917790b32e1279a209aeef0f44b618ba75ca4c88c19264357539fae4d"
+            },
+            {
+              "heading": "Label ke akshar / keys ke letters",
+              "contentType": "faq",
+              "owner": "6d0000000000000000000000",
+              "sha256": "566a7b4772832b93a791f298b56c9b3e3c4280cf676ee275a69644183dd05d4e"
+            },
+            {
+              "heading": "Har photo mein product thoda alag",
+              "contentType": "faq",
+              "owner": "6d0000000000000000000000",
+              "sha256": "9a8959739deebee30004ee75c9e9f8eea357ba859b480755d62a564e085597c6"
+            },
+            {
+              "heading": "L02 Product Sheet",
+              "contentType": "exact-template",
+              "owner": "6d0000000000000000000000",
+              "sha256": "1e76a13b224293da7aee0d7994b4d53e231ae3fca4613116d763c5719c0a492d"
+            }
+          ],
+          "messageCount": 4
+        }
+      ],
+      "providerAdapterProductBodies": [
+        {
+          "heading": "Lesson 02 — Phone Photo Se Studio Photo",
+          "contentType": "lesson-summary",
+          "owner": "6d0000000000000000000000",
+          "sha256": "21582da9e3555afbf289672cf4d95cd09b1a1c240369ed1dc47895eeed208f95"
+        },
+        {
+          "heading": "Product sheet banana",
+          "contentType": "workflow",
+          "owner": "6d0000000000000000000000",
+          "sha256": "56922de78128c44d1321fa410072ad53637117feed928197c53c4a4c3f6438f2"
+        },
+        {
+          "heading": "Product photos",
+          "contentType": "workflow",
+          "owner": "6d0000000000000000000000",
+          "sha256": "cda5fab917790b32e1279a209aeef0f44b618ba75ca4c88c19264357539fae4d"
+        },
+        {
+          "heading": "Label ke akshar / keys ke letters",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "566a7b4772832b93a791f298b56c9b3e3c4280cf676ee275a69644183dd05d4e"
+        },
+        {
+          "heading": "Har photo mein product thoda alag",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "9a8959739deebee30004ee75c9e9f8eea357ba859b480755d62a564e085597c6"
+        },
+        {
+          "heading": "L02 Product Sheet",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "1e76a13b224293da7aee0d7994b4d53e231ae3fca4613116d763c5719c0a492d"
+        }
+      ],
+      "responseProductBodies": [],
+      "noPayloadConstructed": false,
+      "blockedAdapterAttempts": 2,
+      "externalTransportAttempts": 0,
+      "potentialCriticalFindings": [],
+      "inspectionPerformed": true
+    },
+    "dbOperations": [
+      {
+        "model": "AiTutorSession",
+        "operation": "findOne",
+        "filter": {
+          "user": "b3aec85e9944979b25bbc82c",
+          "course": "6d0000000000000000000000"
+        }
+      },
+      {
+        "model": "Course",
+        "operation": "find",
+        "filter": {
+          "status": "published",
+          "_id": "6d0000000000000000000000"
+        }
+      },
+      {
+        "model": "AiTutorSession",
+        "operation": "upsert",
+        "filter": {
+          "user": "b3aec85e9944979b25bbc82c",
+          "course": "6d0000000000000000000000"
+        }
+      }
+    ],
+    "reason": "Read full relevant context and all four messages; verified common prefix SA011. Six authorized product material owners/body arrays, own previous original-script brief/history/safe A profile/session only. All flags reviewed; both adapter bodies equal assembly. No foreign/private material, Unicode preserved in own input history."
+  },
+  "gradedAt": "2026-10-16T11:03:27.957556+00:00"
+}

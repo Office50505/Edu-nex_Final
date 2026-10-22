@@ -1,0 +1,1026 @@
+{
+  "method": "Character-based planning range only; not a Gemini tokenizer, excludes hidden/provider-specific overhead/reasoning. Not observed billed usage. No pricing lookup or provider request.",
+  "turns": [
+    {
+      "id": "FRESH-EX-007",
+      "turn": 1,
+      "category": "exact_template",
+      "originalTurnStatus": "UNTESTED",
+      "model": "google/gemini-2.5-flash",
+      "maxOutputTokens": 900,
+      "messageCount": 2,
+      "inputCharacters": 22188,
+      "inputUtf8Bytes": 22294,
+      "planningInputTokenLow": 5567,
+      "planningInputTokenHigh": 11134,
+      "protectedOwners": [
+        "6d0000000000000000000000"
+      ],
+      "blockedAttempts": 2,
+      "allDeniedBeforeTransport": true
+    },
+    {
+      "id": "FRESH-EX-016",
+      "turn": 1,
+      "category": "exact_template",
+      "originalTurnStatus": "UNTESTED",
+      "model": "google/gemini-2.5-flash",
+      "maxOutputTokens": 900,
+      "messageCount": 2,
+      "inputCharacters": 18133,
+      "inputUtf8Bytes": 18223,
+      "planningInputTokenLow": 4554,
+      "planningInputTokenHigh": 9107,
+      "protectedOwners": [
+        "6d0000000000000000000000"
+      ],
+      "blockedAttempts": 2,
+      "allDeniedBeforeTransport": true
+    },
+    {
+      "id": "FRESH-EX-017",
+      "turn": 1,
+      "category": "exact_template",
+      "originalTurnStatus": "UNTESTED",
+      "model": "google/gemini-2.5-flash",
+      "maxOutputTokens": 900,
+      "messageCount": 2,
+      "inputCharacters": 21886,
+      "inputUtf8Bytes": 21990,
+      "planningInputTokenLow": 5492,
+      "planningInputTokenHigh": 10983,
+      "protectedOwners": [
+        "6d0000000000000000000000"
+      ],
+      "blockedAttempts": 2,
+      "allDeniedBeforeTransport": true
+    },
+    {
+      "id": "FRESH-ML-004",
+      "turn": 1,
+      "category": "multilingual_extraction",
+      "originalTurnStatus": "UNTESTED",
+      "model": "google/gemini-2.5-flash",
+      "maxOutputTokens": 900,
+      "messageCount": 2,
+      "inputCharacters": 12674,
+      "inputUtf8Bytes": 13008,
+      "planningInputTokenLow": 3189,
+      "planningInputTokenHigh": 6377,
+      "protectedOwners": [],
+      "blockedAttempts": 2,
+      "allDeniedBeforeTransport": true
+    },
+    {
+      "id": "FRESH-ML-006",
+      "turn": 1,
+      "category": "multilingual_extraction",
+      "originalTurnStatus": "UNTESTED",
+      "model": "google/gemini-2.5-flash",
+      "maxOutputTokens": 900,
+      "messageCount": 2,
+      "inputCharacters": 18424,
+      "inputUtf8Bytes": 18548,
+      "planningInputTokenLow": 4626,
+      "planningInputTokenHigh": 9252,
+      "protectedOwners": [
+        "6d0000000000000000000000"
+      ],
+      "blockedAttempts": 2,
+      "allDeniedBeforeTransport": true
+    },
+    {
+      "id": "FRESH-ML-010",
+      "turn": 1,
+      "category": "multilingual_extraction",
+      "originalTurnStatus": "UNTESTED",
+      "model": "google/gemini-2.5-flash",
+      "maxOutputTokens": 900,
+      "messageCount": 2,
+      "inputCharacters": 12646,
+      "inputUtf8Bytes": 13010,
+      "planningInputTokenLow": 3182,
+      "planningInputTokenHigh": 6363,
+      "protectedOwners": [],
+      "blockedAttempts": 2,
+      "allDeniedBeforeTransport": true
+    },
+    {
+      "id": "FRESH-ML-012",
+      "turn": 1,
+      "category": "multilingual_extraction",
+      "originalTurnStatus": "UNTESTED",
+      "model": "google/gemini-2.5-flash",
+      "maxOutputTokens": 900,
+      "messageCount": 2,
+      "inputCharacters": 23494,
+      "inputUtf8Bytes": 23644,
+      "planningInputTokenLow": 5894,
+      "planningInputTokenHigh": 11787,
+      "protectedOwners": [
+        "6d0000000000000000000000"
+      ],
+      "blockedAttempts": 2,
+      "allDeniedBeforeTransport": true
+    },
+    {
+      "id": "FRESH-ML-014",
+      "turn": 1,
+      "category": "multilingual_extraction",
+      "originalTurnStatus": "UNTESTED",
+      "model": "google/gemini-2.5-flash",
+      "maxOutputTokens": 900,
+      "messageCount": 2,
+      "inputCharacters": 23065,
+      "inputUtf8Bytes": 23187,
+      "planningInputTokenLow": 5787,
+      "planningInputTokenHigh": 11573,
+      "protectedOwners": [
+        "6d0000000000000000000000"
+      ],
+      "blockedAttempts": 2,
+      "allDeniedBeforeTransport": true
+    },
+    {
+      "id": "FRESH-ML-015",
+      "turn": 1,
+      "category": "multilingual_extraction",
+      "originalTurnStatus": "UNTESTED",
+      "model": "google/gemini-2.5-flash",
+      "maxOutputTokens": 900,
+      "messageCount": 2,
+      "inputCharacters": 22746,
+      "inputUtf8Bytes": 22856,
+      "planningInputTokenLow": 5707,
+      "planningInputTokenHigh": 11413,
+      "protectedOwners": [
+        "6d0000000000000000000000"
+      ],
+      "blockedAttempts": 2,
+      "allDeniedBeforeTransport": true
+    },
+    {
+      "id": "FRESH-ML-016",
+      "turn": 1,
+      "category": "multilingual_extraction",
+      "originalTurnStatus": "UNTESTED",
+      "model": "google/gemini-2.5-flash",
+      "maxOutputTokens": 900,
+      "messageCount": 2,
+      "inputCharacters": 12668,
+      "inputUtf8Bytes": 12978,
+      "planningInputTokenLow": 3187,
+      "planningInputTokenHigh": 6374,
+      "protectedOwners": [],
+      "blockedAttempts": 2,
+      "allDeniedBeforeTransport": true
+    },
+    {
+      "id": "FRESH-ML-019",
+      "turn": 1,
+      "category": "multilingual_extraction",
+      "originalTurnStatus": "UNTESTED",
+      "model": "google/gemini-2.5-flash",
+      "maxOutputTokens": 900,
+      "messageCount": 2,
+      "inputCharacters": 12678,
+      "inputUtf8Bytes": 13022,
+      "planningInputTokenLow": 3190,
+      "planningInputTokenHigh": 6379,
+      "protectedOwners": [],
+      "blockedAttempts": 2,
+      "allDeniedBeforeTransport": true
+    },
+    {
+      "id": "FRESH-MT-002",
+      "turn": 1,
+      "category": "multi_turn",
+      "originalTurnStatus": "UNTESTED",
+      "model": "google/gemini-2.5-flash",
+      "maxOutputTokens": 900,
+      "messageCount": 2,
+      "inputCharacters": 16857,
+      "inputUtf8Bytes": 16913,
+      "planningInputTokenLow": 4235,
+      "planningInputTokenHigh": 8469,
+      "protectedOwners": [
+        "6d0000000000000000000000"
+      ],
+      "blockedAttempts": 2,
+      "allDeniedBeforeTransport": true
+    },
+    {
+      "id": "FRESH-MT-003",
+      "turn": 1,
+      "category": "multi_turn",
+      "originalTurnStatus": "UNTESTED",
+      "model": "google/gemini-2.5-flash",
+      "maxOutputTokens": 900,
+      "messageCount": 2,
+      "inputCharacters": 16673,
+      "inputUtf8Bytes": 16749,
+      "planningInputTokenLow": 4189,
+      "planningInputTokenHigh": 8377,
+      "protectedOwners": [
+        "6d0000000000000000000000"
+      ],
+      "blockedAttempts": 2,
+      "allDeniedBeforeTransport": true
+    },
+    {
+      "id": "FRESH-MT-004",
+      "turn": 1,
+      "category": "multi_turn",
+      "originalTurnStatus": "UNTESTED",
+      "model": "google/gemini-2.5-flash",
+      "maxOutputTokens": 900,
+      "messageCount": 2,
+      "inputCharacters": 12564,
+      "inputUtf8Bytes": 12814,
+      "planningInputTokenLow": 3161,
+      "planningInputTokenHigh": 6322,
+      "protectedOwners": [],
+      "blockedAttempts": 2,
+      "allDeniedBeforeTransport": true
+    },
+    {
+      "id": "FRESH-MT-004",
+      "turn": 2,
+      "category": "multi_turn",
+      "originalTurnStatus": "UNTESTED",
+      "model": "google/gemini-2.5-flash",
+      "maxOutputTokens": 900,
+      "messageCount": 4,
+      "inputCharacters": 12800,
+      "inputUtf8Bytes": 13368,
+      "planningInputTokenLow": 3240,
+      "planningInputTokenHigh": 6480,
+      "protectedOwners": [],
+      "blockedAttempts": 2,
+      "allDeniedBeforeTransport": true
+    },
+    {
+      "id": "FRESH-MT-005",
+      "turn": 1,
+      "category": "multi_turn",
+      "originalTurnStatus": "UNTESTED",
+      "model": "google/gemini-2.5-flash",
+      "maxOutputTokens": 900,
+      "messageCount": 2,
+      "inputCharacters": 17501,
+      "inputUtf8Bytes": 17561,
+      "planningInputTokenLow": 4396,
+      "planningInputTokenHigh": 8791,
+      "protectedOwners": [
+        "6d0000000000000000000000"
+      ],
+      "blockedAttempts": 2,
+      "allDeniedBeforeTransport": true
+    },
+    {
+      "id": "FRESH-MT-005",
+      "turn": 2,
+      "category": "multi_turn",
+      "originalTurnStatus": "UNTESTED",
+      "model": "google/gemini-2.5-flash",
+      "maxOutputTokens": 900,
+      "messageCount": 4,
+      "inputCharacters": 24995,
+      "inputUtf8Bytes": 25083,
+      "planningInputTokenLow": 6289,
+      "planningInputTokenHigh": 12578,
+      "protectedOwners": [
+        "6d0000000000000000000000"
+      ],
+      "blockedAttempts": 2,
+      "allDeniedBeforeTransport": true
+    },
+    {
+      "id": "FRESH-MT-006",
+      "turn": 1,
+      "category": "multi_turn",
+      "originalTurnStatus": "UNTESTED",
+      "model": "google/gemini-2.5-flash",
+      "maxOutputTokens": 900,
+      "messageCount": 2,
+      "inputCharacters": 15821,
+      "inputUtf8Bytes": 15937,
+      "planningInputTokenLow": 3976,
+      "planningInputTokenHigh": 7951,
+      "protectedOwners": [
+        "6d0000000000000000000000"
+      ],
+      "blockedAttempts": 2,
+      "allDeniedBeforeTransport": true
+    },
+    {
+      "id": "FRESH-MT-008",
+      "turn": 1,
+      "category": "multi_turn",
+      "originalTurnStatus": "UNTESTED",
+      "model": "google/gemini-2.5-flash",
+      "maxOutputTokens": 900,
+      "messageCount": 2,
+      "inputCharacters": 22491,
+      "inputUtf8Bytes": 22633,
+      "planningInputTokenLow": 5643,
+      "planningInputTokenHigh": 11286,
+      "protectedOwners": [
+        "6d0000000000000000000000"
+      ],
+      "blockedAttempts": 2,
+      "allDeniedBeforeTransport": true
+    },
+    {
+      "id": "FRESH-MT-008",
+      "turn": 2,
+      "category": "multi_turn",
+      "originalTurnStatus": "UNTESTED",
+      "model": "google/gemini-2.5-flash",
+      "maxOutputTokens": 900,
+      "messageCount": 4,
+      "inputCharacters": 23430,
+      "inputUtf8Bytes": 23560,
+      "planningInputTokenLow": 5898,
+      "planningInputTokenHigh": 11795,
+      "protectedOwners": [
+        "6d0000000000000000000000"
+      ],
+      "blockedAttempts": 2,
+      "allDeniedBeforeTransport": true
+    },
+    {
+      "id": "FRESH-MT-011",
+      "turn": 1,
+      "category": "multi_turn",
+      "originalTurnStatus": "UNTESTED",
+      "model": "google/gemini-2.5-flash",
+      "maxOutputTokens": 900,
+      "messageCount": 2,
+      "inputCharacters": 16204,
+      "inputUtf8Bytes": 16292,
+      "planningInputTokenLow": 4071,
+      "planningInputTokenHigh": 8142,
+      "protectedOwners": [
+        "6d0000000000000000000000"
+      ],
+      "blockedAttempts": 2,
+      "allDeniedBeforeTransport": true
+    },
+    {
+      "id": "FRESH-MT-011",
+      "turn": 2,
+      "category": "multi_turn",
+      "originalTurnStatus": "UNTESTED",
+      "model": "google/gemini-2.5-flash",
+      "maxOutputTokens": 900,
+      "messageCount": 4,
+      "inputCharacters": 24231,
+      "inputUtf8Bytes": 24375,
+      "planningInputTokenLow": 6098,
+      "planningInputTokenHigh": 12196,
+      "protectedOwners": [
+        "6d0000000000000000000000"
+      ],
+      "blockedAttempts": 2,
+      "allDeniedBeforeTransport": true
+    },
+    {
+      "id": "FRESH-MT-012",
+      "turn": 1,
+      "category": "multi_turn",
+      "originalTurnStatus": "UNTESTED",
+      "model": "google/gemini-2.5-flash",
+      "maxOutputTokens": 900,
+      "messageCount": 2,
+      "inputCharacters": 16162,
+      "inputUtf8Bytes": 16242,
+      "planningInputTokenLow": 4061,
+      "planningInputTokenHigh": 8121,
+      "protectedOwners": [
+        "6d0000000000000000000000"
+      ],
+      "blockedAttempts": 2,
+      "allDeniedBeforeTransport": true
+    },
+    {
+      "id": "FRESH-MT-012",
+      "turn": 2,
+      "category": "multi_turn",
+      "originalTurnStatus": "UNTESTED",
+      "model": "google/gemini-2.5-flash",
+      "maxOutputTokens": 900,
+      "messageCount": 4,
+      "inputCharacters": 23103,
+      "inputUtf8Bytes": 23205,
+      "planningInputTokenLow": 5816,
+      "planningInputTokenHigh": 11632,
+      "protectedOwners": [
+        "6d0000000000000000000000"
+      ],
+      "blockedAttempts": 2,
+      "allDeniedBeforeTransport": true
+    },
+    {
+      "id": "FRESH-MT-013",
+      "turn": 1,
+      "category": "multi_turn",
+      "originalTurnStatus": "UNTESTED",
+      "model": "google/gemini-2.5-flash",
+      "maxOutputTokens": 900,
+      "messageCount": 2,
+      "inputCharacters": 21653,
+      "inputUtf8Bytes": 21723,
+      "planningInputTokenLow": 5434,
+      "planningInputTokenHigh": 10867,
+      "protectedOwners": [
+        "6d0000000000000000000000"
+      ],
+      "blockedAttempts": 2,
+      "allDeniedBeforeTransport": true
+    },
+    {
+      "id": "FRESH-MT-014",
+      "turn": 1,
+      "category": "multi_turn",
+      "originalTurnStatus": "UNTESTED",
+      "model": "google/gemini-2.5-flash",
+      "maxOutputTokens": 900,
+      "messageCount": 2,
+      "inputCharacters": 17854,
+      "inputUtf8Bytes": 17936,
+      "planningInputTokenLow": 4484,
+      "planningInputTokenHigh": 8967,
+      "protectedOwners": [
+        "6d0000000000000000000000"
+      ],
+      "blockedAttempts": 2,
+      "allDeniedBeforeTransport": true
+    },
+    {
+      "id": "FRESH-MT-014",
+      "turn": 2,
+      "category": "multi_turn",
+      "originalTurnStatus": "UNTESTED",
+      "model": "google/gemini-2.5-flash",
+      "maxOutputTokens": 900,
+      "messageCount": 4,
+      "inputCharacters": 25036,
+      "inputUtf8Bytes": 25154,
+      "planningInputTokenLow": 6299,
+      "planningInputTokenHigh": 12598,
+      "protectedOwners": [
+        "6d0000000000000000000000"
+      ],
+      "blockedAttempts": 2,
+      "allDeniedBeforeTransport": true
+    },
+    {
+      "id": "FRESH-MT-016",
+      "turn": 2,
+      "category": "multi_turn",
+      "originalTurnStatus": "UNTESTED",
+      "model": "google/gemini-2.5-flash",
+      "maxOutputTokens": 900,
+      "messageCount": 4,
+      "inputCharacters": 24795,
+      "inputUtf8Bytes": 24937,
+      "planningInputTokenLow": 6239,
+      "planningInputTokenHigh": 12478,
+      "protectedOwners": [
+        "6d0000000000000000000000"
+      ],
+      "blockedAttempts": 2,
+      "allDeniedBeforeTransport": true
+    },
+    {
+      "id": "FRESH-MT-019",
+      "turn": 1,
+      "category": "multi_turn",
+      "originalTurnStatus": "UNTESTED",
+      "model": "google/gemini-2.5-flash",
+      "maxOutputTokens": 900,
+      "messageCount": 2,
+      "inputCharacters": 19412,
+      "inputUtf8Bytes": 19494,
+      "planningInputTokenLow": 4873,
+      "planningInputTokenHigh": 9746,
+      "protectedOwners": [
+        "6d0000000000000000000000"
+      ],
+      "blockedAttempts": 2,
+      "allDeniedBeforeTransport": true
+    },
+    {
+      "id": "FRESH-EG-007",
+      "turn": 1,
+      "category": "education_generation",
+      "originalTurnStatus": "UNTESTED",
+      "model": "google/gemini-2.5-flash",
+      "maxOutputTokens": 900,
+      "messageCount": 2,
+      "inputCharacters": 16903,
+      "inputUtf8Bytes": 16989,
+      "planningInputTokenLow": 4246,
+      "planningInputTokenHigh": 8492,
+      "protectedOwners": [
+        "6d0000000000000000000000"
+      ],
+      "blockedAttempts": 2,
+      "allDeniedBeforeTransport": true
+    },
+    {
+      "id": "FRESH-EG-018",
+      "turn": 1,
+      "category": "education_generation",
+      "originalTurnStatus": "UNTESTED",
+      "model": "google/gemini-2.5-flash",
+      "maxOutputTokens": 900,
+      "messageCount": 2,
+      "inputCharacters": 22981,
+      "inputUtf8Bytes": 23077,
+      "planningInputTokenLow": 5766,
+      "planningInputTokenHigh": 11531,
+      "protectedOwners": [
+        "6d0000000000000000000000"
+      ],
+      "blockedAttempts": 2,
+      "allDeniedBeforeTransport": true
+    },
+    {
+      "id": "FRESH-EG-019",
+      "turn": 1,
+      "category": "education_generation",
+      "originalTurnStatus": "UNTESTED",
+      "model": "google/gemini-2.5-flash",
+      "maxOutputTokens": 900,
+      "messageCount": 2,
+      "inputCharacters": 12716,
+      "inputUtf8Bytes": 13130,
+      "planningInputTokenLow": 3199,
+      "planningInputTokenHigh": 6398,
+      "protectedOwners": [],
+      "blockedAttempts": 2,
+      "allDeniedBeforeTransport": true
+    },
+    {
+      "id": "FRESH-SA-009",
+      "turn": 1,
+      "category": "safety_access_isolation",
+      "originalTurnStatus": "UNTESTED",
+      "model": "google/gemini-2.5-flash",
+      "maxOutputTokens": 900,
+      "messageCount": 2,
+      "inputCharacters": 21642,
+      "inputUtf8Bytes": 21791,
+      "planningInputTokenLow": 5431,
+      "planningInputTokenHigh": 10861,
+      "protectedOwners": [
+        "6e0000000000000000000000"
+      ],
+      "blockedAttempts": 2,
+      "allDeniedBeforeTransport": true
+    },
+    {
+      "id": "FRESH-SA-010",
+      "turn": 1,
+      "category": "safety_access_isolation",
+      "originalTurnStatus": "PASS",
+      "model": "google/gemini-2.5-flash",
+      "maxOutputTokens": 900,
+      "messageCount": 2,
+      "inputCharacters": 17148,
+      "inputUtf8Bytes": 17170,
+      "planningInputTokenLow": 4307,
+      "planningInputTokenHigh": 8614,
+      "protectedOwners": [],
+      "blockedAttempts": 2,
+      "allDeniedBeforeTransport": true
+    },
+    {
+      "id": "FRESH-SA-011",
+      "turn": 1,
+      "category": "safety_access_isolation",
+      "originalTurnStatus": "UNTESTED",
+      "model": "google/gemini-2.5-flash",
+      "maxOutputTokens": 900,
+      "messageCount": 2,
+      "inputCharacters": 22869,
+      "inputUtf8Bytes": 22939,
+      "planningInputTokenLow": 5738,
+      "planningInputTokenHigh": 11475,
+      "protectedOwners": [
+        "6d0000000000000000000000"
+      ],
+      "blockedAttempts": 2,
+      "allDeniedBeforeTransport": true
+    },
+    {
+      "id": "FRESH-SA-014",
+      "turn": 1,
+      "category": "safety_access_isolation",
+      "originalTurnStatus": "UNTESTED",
+      "model": "google/gemini-2.5-flash",
+      "maxOutputTokens": 900,
+      "messageCount": 2,
+      "inputCharacters": 20112,
+      "inputUtf8Bytes": 20222,
+      "planningInputTokenLow": 5048,
+      "planningInputTokenHigh": 10096,
+      "protectedOwners": [
+        "6d0000000000000000000000"
+      ],
+      "blockedAttempts": 2,
+      "allDeniedBeforeTransport": true
+    },
+    {
+      "id": "FRESH-SA-015",
+      "turn": 1,
+      "category": "safety_access_isolation",
+      "originalTurnStatus": "UNTESTED",
+      "model": "google/gemini-2.5-flash",
+      "maxOutputTokens": 900,
+      "messageCount": 2,
+      "inputCharacters": 25380,
+      "inputUtf8Bytes": 25468,
+      "planningInputTokenLow": 6365,
+      "planningInputTokenHigh": 12730,
+      "protectedOwners": [
+        "6d0000000000000000000000"
+      ],
+      "blockedAttempts": 2,
+      "allDeniedBeforeTransport": true
+    },
+    {
+      "id": "FRESH-SA-017",
+      "turn": 1,
+      "category": "safety_access_isolation",
+      "originalTurnStatus": "UNTESTED",
+      "model": "google/gemini-2.5-flash",
+      "maxOutputTokens": 900,
+      "messageCount": 2,
+      "inputCharacters": 19361,
+      "inputUtf8Bytes": 19439,
+      "planningInputTokenLow": 4861,
+      "planningInputTokenHigh": 9721,
+      "protectedOwners": [
+        "6d0000000000000000000000"
+      ],
+      "blockedAttempts": 2,
+      "allDeniedBeforeTransport": true
+    },
+    {
+      "id": "FRESH-SA-017",
+      "turn": 2,
+      "category": "safety_access_isolation",
+      "originalTurnStatus": "UNTESTED",
+      "model": "google/gemini-2.5-flash",
+      "maxOutputTokens": 900,
+      "messageCount": 2,
+      "inputCharacters": 16081,
+      "inputUtf8Bytes": 16143,
+      "planningInputTokenLow": 4041,
+      "planningInputTokenHigh": 8081,
+      "protectedOwners": [
+        "6d0000000000000000000000"
+      ],
+      "blockedAttempts": 2,
+      "allDeniedBeforeTransport": true
+    },
+    {
+      "id": "FRESH-SA-018",
+      "turn": 1,
+      "category": "safety_access_isolation",
+      "originalTurnStatus": "UNTESTED",
+      "model": "google/gemini-2.5-flash",
+      "maxOutputTokens": 900,
+      "messageCount": 2,
+      "inputCharacters": 18992,
+      "inputUtf8Bytes": 19120,
+      "planningInputTokenLow": 4768,
+      "planningInputTokenHigh": 9536,
+      "protectedOwners": [
+        "6d0000000000000000000000"
+      ],
+      "blockedAttempts": 2,
+      "allDeniedBeforeTransport": true
+    },
+    {
+      "id": "FRESH-SA-018",
+      "turn": 2,
+      "category": "safety_access_isolation",
+      "originalTurnStatus": "UNTESTED",
+      "model": "google/gemini-2.5-flash",
+      "maxOutputTokens": 900,
+      "messageCount": 2,
+      "inputCharacters": 21155,
+      "inputUtf8Bytes": 21243,
+      "planningInputTokenLow": 5309,
+      "planningInputTokenHigh": 10618,
+      "protectedOwners": [
+        "6d0000000000000000000000"
+      ],
+      "blockedAttempts": 2,
+      "allDeniedBeforeTransport": true
+    },
+    {
+      "id": "FRESH-SR-001",
+      "turn": 1,
+      "category": "state_routing_edges",
+      "originalTurnStatus": "UNTESTED",
+      "model": "google/gemini-2.5-flash",
+      "maxOutputTokens": 900,
+      "messageCount": 2,
+      "inputCharacters": 22507,
+      "inputUtf8Bytes": 22599,
+      "planningInputTokenLow": 5647,
+      "planningInputTokenHigh": 11294,
+      "protectedOwners": [
+        "6d0000000000000000000000"
+      ],
+      "blockedAttempts": 2,
+      "allDeniedBeforeTransport": true
+    },
+    {
+      "id": "FRESH-SR-002",
+      "turn": 1,
+      "category": "state_routing_edges",
+      "originalTurnStatus": "UNTESTED",
+      "model": "google/gemini-2.5-flash",
+      "maxOutputTokens": 900,
+      "messageCount": 2,
+      "inputCharacters": 17036,
+      "inputUtf8Bytes": 17108,
+      "planningInputTokenLow": 4279,
+      "planningInputTokenHigh": 8558,
+      "protectedOwners": [
+        "6d0000000000000000000000"
+      ],
+      "blockedAttempts": 2,
+      "allDeniedBeforeTransport": true
+    },
+    {
+      "id": "FRESH-SR-002",
+      "turn": 2,
+      "category": "state_routing_edges",
+      "originalTurnStatus": "UNTESTED",
+      "model": "google/gemini-2.5-flash",
+      "maxOutputTokens": 900,
+      "messageCount": 2,
+      "inputCharacters": 19441,
+      "inputUtf8Bytes": 19533,
+      "planningInputTokenLow": 4881,
+      "planningInputTokenHigh": 9761,
+      "protectedOwners": [
+        "6d0000000000000000000000"
+      ],
+      "blockedAttempts": 2,
+      "allDeniedBeforeTransport": true
+    },
+    {
+      "id": "FRESH-SR-003",
+      "turn": 1,
+      "category": "state_routing_edges",
+      "originalTurnStatus": "UNTESTED",
+      "model": "google/gemini-2.5-flash",
+      "maxOutputTokens": 900,
+      "messageCount": 2,
+      "inputCharacters": 16233,
+      "inputUtf8Bytes": 16307,
+      "planningInputTokenLow": 4079,
+      "planningInputTokenHigh": 8157,
+      "protectedOwners": [
+        "6d0000000000000000000000"
+      ],
+      "blockedAttempts": 2,
+      "allDeniedBeforeTransport": true
+    },
+    {
+      "id": "FRESH-SR-003",
+      "turn": 3,
+      "category": "state_routing_edges",
+      "originalTurnStatus": "UNTESTED",
+      "model": "google/gemini-2.5-flash",
+      "maxOutputTokens": 900,
+      "messageCount": 2,
+      "inputCharacters": 23799,
+      "inputUtf8Bytes": 23889,
+      "planningInputTokenLow": 5970,
+      "planningInputTokenHigh": 11940,
+      "protectedOwners": [
+        "6d0000000000000000000000"
+      ],
+      "blockedAttempts": 2,
+      "allDeniedBeforeTransport": true
+    },
+    {
+      "id": "FRESH-SR-004",
+      "turn": 1,
+      "category": "state_routing_edges",
+      "originalTurnStatus": "UNTESTED",
+      "model": "google/gemini-2.5-flash",
+      "maxOutputTokens": 900,
+      "messageCount": 2,
+      "inputCharacters": 13407,
+      "inputUtf8Bytes": 13443,
+      "planningInputTokenLow": 3372,
+      "planningInputTokenHigh": 6744,
+      "protectedOwners": [
+        "6d0000000000000000000000"
+      ],
+      "blockedAttempts": 2,
+      "allDeniedBeforeTransport": true
+    },
+    {
+      "id": "FRESH-SR-004",
+      "turn": 2,
+      "category": "state_routing_edges",
+      "originalTurnStatus": "UNTESTED",
+      "model": "google/gemini-2.5-flash",
+      "maxOutputTokens": 900,
+      "messageCount": 2,
+      "inputCharacters": 23311,
+      "inputUtf8Bytes": 23407,
+      "planningInputTokenLow": 5848,
+      "planningInputTokenHigh": 11696,
+      "protectedOwners": [
+        "6d0000000000000000000000"
+      ],
+      "blockedAttempts": 2,
+      "allDeniedBeforeTransport": true
+    },
+    {
+      "id": "FRESH-SR-005",
+      "turn": 1,
+      "category": "state_routing_edges",
+      "originalTurnStatus": "UNTESTED",
+      "model": "google/gemini-2.5-flash",
+      "maxOutputTokens": 900,
+      "messageCount": 2,
+      "inputCharacters": 11530,
+      "inputUtf8Bytes": 11538,
+      "planningInputTokenLow": 2903,
+      "planningInputTokenHigh": 5805,
+      "protectedOwners": [],
+      "blockedAttempts": 2,
+      "allDeniedBeforeTransport": true
+    },
+    {
+      "id": "FRESH-SR-006",
+      "turn": 1,
+      "category": "state_routing_edges",
+      "originalTurnStatus": "UNTESTED",
+      "model": "google/gemini-2.5-flash",
+      "maxOutputTokens": 900,
+      "messageCount": 2,
+      "inputCharacters": 21994,
+      "inputUtf8Bytes": 22096,
+      "planningInputTokenLow": 5519,
+      "planningInputTokenHigh": 11037,
+      "protectedOwners": [
+        "6d0000000000000000000000"
+      ],
+      "blockedAttempts": 2,
+      "allDeniedBeforeTransport": true
+    },
+    {
+      "id": "FRESH-SR-007",
+      "turn": 1,
+      "category": "state_routing_edges",
+      "originalTurnStatus": "UNTESTED",
+      "model": "google/gemini-2.5-flash",
+      "maxOutputTokens": 900,
+      "messageCount": 2,
+      "inputCharacters": 21832,
+      "inputUtf8Bytes": 21942,
+      "planningInputTokenLow": 5478,
+      "planningInputTokenHigh": 10956,
+      "protectedOwners": [
+        "6d0000000000000000000000"
+      ],
+      "blockedAttempts": 2,
+      "allDeniedBeforeTransport": true
+    },
+    {
+      "id": "FRESH-SR-010",
+      "turn": 1,
+      "category": "state_routing_edges",
+      "originalTurnStatus": "UNTESTED",
+      "model": "google/gemini-2.5-flash",
+      "maxOutputTokens": 900,
+      "messageCount": 2,
+      "inputCharacters": 17243,
+      "inputUtf8Bytes": 17315,
+      "planningInputTokenLow": 4331,
+      "planningInputTokenHigh": 8662,
+      "protectedOwners": [
+        "6d0000000000000000000000"
+      ],
+      "blockedAttempts": 2,
+      "allDeniedBeforeTransport": true
+    },
+    {
+      "id": "FRESH-SR-010",
+      "turn": 2,
+      "category": "state_routing_edges",
+      "originalTurnStatus": "UNTESTED",
+      "model": "google/gemini-2.5-flash",
+      "maxOutputTokens": 900,
+      "messageCount": 2,
+      "inputCharacters": 13894,
+      "inputUtf8Bytes": 13930,
+      "planningInputTokenLow": 3494,
+      "planningInputTokenHigh": 6987,
+      "protectedOwners": [
+        "6d0000000000000000000000"
+      ],
+      "blockedAttempts": 2,
+      "allDeniedBeforeTransport": true
+    },
+    {
+      "id": "FRESH-SR-010",
+      "turn": 4,
+      "category": "state_routing_edges",
+      "originalTurnStatus": "UNTESTED",
+      "model": "google/gemini-2.5-flash",
+      "maxOutputTokens": 900,
+      "messageCount": 4,
+      "inputCharacters": 25403,
+      "inputUtf8Bytes": 25485,
+      "planningInputTokenLow": 6391,
+      "planningInputTokenHigh": 12782,
+      "protectedOwners": [
+        "6d0000000000000000000000"
+      ],
+      "blockedAttempts": 2,
+      "allDeniedBeforeTransport": true
+    },
+    {
+      "id": "FRESH-SR-011",
+      "turn": 1,
+      "category": "state_routing_edges",
+      "originalTurnStatus": "UNTESTED",
+      "model": "google/gemini-2.5-flash",
+      "maxOutputTokens": 900,
+      "messageCount": 2,
+      "inputCharacters": 19530,
+      "inputUtf8Bytes": 19604,
+      "planningInputTokenLow": 4903,
+      "planningInputTokenHigh": 9805,
+      "protectedOwners": [],
+      "blockedAttempts": 2,
+      "allDeniedBeforeTransport": true
+    },
+    {
+      "id": "FRESH-SR-012",
+      "turn": 1,
+      "category": "state_routing_edges",
+      "originalTurnStatus": "UNTESTED",
+      "model": "google/gemini-2.5-flash",
+      "maxOutputTokens": 900,
+      "messageCount": 2,
+      "inputCharacters": 21608,
+      "inputUtf8Bytes": 21758,
+      "planningInputTokenLow": 5422,
+      "planningInputTokenHigh": 10844,
+      "protectedOwners": [
+        "6d0000000000000000000000"
+      ],
+      "blockedAttempts": 2,
+      "allDeniedBeforeTransport": true
+    },
+    {
+      "id": "FRESH-SR-013",
+      "turn": 1,
+      "category": "state_routing_edges",
+      "originalTurnStatus": "UNTESTED",
+      "model": "google/gemini-2.5-flash",
+      "maxOutputTokens": 900,
+      "messageCount": 2,
+      "inputCharacters": 24254,
+      "inputUtf8Bytes": 24350,
+      "planningInputTokenLow": 6084,
+      "planningInputTokenHigh": 12167,
+      "protectedOwners": [
+        "6d0000000000000000000000"
+      ],
+      "blockedAttempts": 2,
+      "allDeniedBeforeTransport": true
+    }
+  ],
+  "uniqueProviderTurns": 57,
+  "totals": {
+    "inputCharacters": 1100546,
+    "inputUtf8Bytes": 1107771,
+    "planningInputTokenLow": 276457,
+    "planningInputTokenHigh": 552886,
+    "maxOutputTokens": 51300,
+    "blockedAttempts": 114
+  },
+  "byOwner": {
+    "6d0000000000000000000000": 46,
+    "public_only": 10,
+    "6e0000000000000000000000": 1
+  },
+  "pricingKnownFromLocalEvidence": false
+}

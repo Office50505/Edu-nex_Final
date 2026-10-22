@@ -1,0 +1,1948 @@
+{
+  "mode": "LOCAL_VALIDATION_ONLY",
+  "new_live_evaluation": false,
+  "external_provider_requests": 0,
+  "summary": {
+    "targeted_unit_checks": 54,
+    "passed": 54,
+    "failed": 0,
+    "node_targeted": 36,
+    "python_v3_targeted": 18
+  },
+  "targeted_node_cases": [
+    {
+      "name": "phase3 negated platform terms cannot reroute a supplied product price to subscription facts",
+      "file": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/ai-chat-history.test.cjs",
+      "status": "passed"
+    },
+    {
+      "name": "phase3 persisted product memory survives omitted client history and stays within learner and conversation",
+      "file": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/ai-chat-history.test.cjs",
+      "status": "passed"
+    },
+    {
+      "name": "phase3 persisted facts from a different active course are not reused",
+      "file": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/ai-chat-history.test.cjs",
+      "status": "passed"
+    },
+    {
+      "name": "comma-delimited explicit product fills the complete saved body: felt camera sleeve",
+      "file": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase3.test.cjs",
+      "status": "passed"
+    },
+    {
+      "name": "comma-delimited explicit product fills the complete saved body: brass incense holder",
+      "file": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase3.test.cjs",
+      "status": "passed"
+    },
+    {
+      "name": "comma-delimited explicit product fills the complete saved body: knitted book pouch",
+      "file": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase3.test.cjs",
+      "status": "passed"
+    },
+    {
+      "name": "history determiners do not corrupt the approved scaffold: an olive-wood spoon",
+      "file": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase3.test.cjs",
+      "status": "passed"
+    },
+    {
+      "name": "history determiners do not corrupt the approved scaffold: a quilted tablet case",
+      "file": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase3.test.cjs",
+      "status": "passed"
+    },
+    {
+      "name": "history determiners do not corrupt the approved scaffold: the hand-thrown teapot",
+      "file": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase3.test.cjs",
+      "status": "passed"
+    },
+    {
+      "name": "a referring phrase cannot overwrite the remembered entity: the product I mentioned",
+      "file": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase3.test.cjs",
+      "status": "passed"
+    },
+    {
+      "name": "a referring phrase cannot overwrite the remembered entity: the same item",
+      "file": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase3.test.cjs",
+      "status": "passed"
+    },
+    {
+      "name": "a referring phrase cannot overwrite the remembered entity: it",
+      "file": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase3.test.cjs",
+      "status": "passed"
+    },
+    {
+      "name": "sales prices, channels and trailing instructions are not part of a product noun",
+      "file": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase3.test.cjs",
+      "status": "passed"
+    },
+    {
+      "name": "unknown values remain unknown, and assistant claims are never product facts",
+      "file": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase3.test.cjs",
+      "status": "passed"
+    },
+    {
+      "name": "a new product clears the previous product attributes and price",
+      "file": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase3.test.cjs",
+      "status": "passed"
+    },
+    {
+      "name": "saved user facts preserve explicit attributes, price, channel and selected angle",
+      "file": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase3.test.cjs",
+      "status": "passed"
+    },
+    {
+      "name": "Lesson 08 workflow selection uses the matching final assembly rather than an unrelated workflow",
+      "file": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase3.test.cjs",
+      "status": "passed"
+    },
+    {
+      "name": "an explicitly requested new lesson outranks an earlier selected video",
+      "file": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase3.test.cjs",
+      "status": "passed"
+    },
+    {
+      "name": "the prerequisites source covers phone, laptop, product and course tools",
+      "file": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase3.test.cjs",
+      "status": "passed"
+    },
+    {
+      "name": "overview facts come from source-derived guidance and preserve course limitations",
+      "file": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase3.test.cjs",
+      "status": "passed"
+    },
+    {
+      "name": "exact phone troubleshooting returns the entire approved instruction and its lesson",
+      "file": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase3.test.cjs",
+      "status": "passed"
+    },
+    {
+      "name": "latest Hindi movement intent outranks the preceding logo-blur FAQ",
+      "file": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase3.test.cjs",
+      "status": "passed"
+    },
+    {
+      "name": "a style-specific recovery selects the relevant asset instead of generic consistency advice",
+      "file": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase3.test.cjs",
+      "status": "passed"
+    },
+    {
+      "name": "deliver the requested practice output without inventing benefits: Hooks",
+      "file": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase3.test.cjs",
+      "status": "passed"
+    },
+    {
+      "name": "deliver the requested practice output without inventing benefits: Caption:",
+      "file": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase3.test.cjs",
+      "status": "passed"
+    },
+    {
+      "name": "deliver the requested practice output without inventing benefits: 15-second script",
+      "file": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase3.test.cjs",
+      "status": "passed"
+    },
+    {
+      "name": "deliver the requested practice output without inventing benefits: Selected ad angle:",
+      "file": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase3.test.cjs",
+      "status": "passed"
+    },
+    {
+      "name": "deliver the requested practice output without inventing benefits: Google Flow image prompts",
+      "file": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase3.test.cjs",
+      "status": "passed"
+    },
+    {
+      "name": "a follow-up preserves pending script and caption deliverables from an ad plan",
+      "file": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase3.test.cjs",
+      "status": "passed"
+    },
+    {
+      "name": "draft language follows the latest request: hindi",
+      "file": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase3.test.cjs",
+      "status": "passed"
+    },
+    {
+      "name": "draft language follows the latest request: hinglish",
+      "file": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase3.test.cjs",
+      "status": "passed"
+    },
+    {
+      "name": "draft language follows the latest request: english",
+      "file": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase3.test.cjs",
+      "status": "passed"
+    },
+    {
+      "name": "a missing deliverable is replaced while a complete valid deliverable survives",
+      "file": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase3.test.cjs",
+      "status": "passed"
+    },
+    {
+      "name": "provider references and exact troubleshooting strings are validated against selected metadata",
+      "file": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase3.test.cjs",
+      "status": "passed"
+    },
+    {
+      "name": "unrelated negations cannot excuse affirmative invented endorsements in the same sentence",
+      "file": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase3.test.cjs",
+      "status": "passed"
+    },
+    {
+      "name": "other-course active scope and denied access cannot use product practice generators",
+      "file": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase3.test.cjs",
+      "status": "passed"
+    }
+  ],
+  "targeted_python_cases": [
+    {
+      "name": "test_a_lesson_reference_is_not_a_lesson_count",
+      "class": "test_product_evaluator_v3.Phase3EvaluatorTests.test_a_lesson_reference_is_not_a_lesson_count",
+      "status": "passed"
+    },
+    {
+      "name": "test_a_timed_script_is_not_a_promise_to_write_one",
+      "class": "test_product_evaluator_v3.Phase3EvaluatorTests.test_a_timed_script_is_not_a_promise_to_write_one",
+      "status": "passed"
+    },
+    {
+      "name": "test_actual_caption_and_angle_with_supplied_facts_pass",
+      "class": "test_product_evaluator_v3.Phase3EvaluatorTests.test_actual_caption_and_angle_with_supplied_facts_pass",
+      "status": "passed"
+    },
+    {
+      "name": "test_all_nineteen_complete_assets_still_pass_independent_source_checks",
+      "class": "test_product_evaluator_v3.Phase3EvaluatorTests.test_all_nineteen_complete_assets_still_pass_independent_source_checks",
+      "status": "passed"
+    },
+    {
+      "name": "test_anaphoric_nouns_do_not_override_an_explicit_product",
+      "class": "test_product_evaluator_v3.Phase3EvaluatorTests.test_anaphoric_nouns_do_not_override_an_explicit_product",
+      "status": "passed"
+    },
+    {
+      "name": "test_comma_delimited_known_product_cannot_remain_a_placeholder",
+      "class": "test_product_evaluator_v3.Phase3EvaluatorTests.test_comma_delimited_known_product_cannot_remain_a_placeholder",
+      "status": "passed"
+    },
+    {
+      "name": "test_contextual_modifiers_and_actor_synonyms_do_not_cause_false_failures",
+      "class": "test_product_evaluator_v3.Phase3EvaluatorTests.test_contextual_modifiers_and_actor_synonyms_do_not_cause_false_failures",
+      "status": "passed"
+    },
+    {
+      "name": "test_contextual_no_answers_a_direct_course_identity_question",
+      "class": "test_product_evaluator_v3.Phase3EvaluatorTests.test_contextual_no_answers_a_direct_course_identity_question",
+      "status": "passed"
+    },
+    {
+      "name": "test_fallback_and_local_replacement_provenance_is_not_live_success",
+      "class": "test_product_evaluator_v3.Phase3EvaluatorTests.test_fallback_and_local_replacement_provenance_is_not_live_success",
+      "status": "passed"
+    },
+    {
+      "name": "test_full_template_omissions_and_added_executable_advice_still_fail",
+      "class": "test_product_evaluator_v3.Phase3EvaluatorTests.test_full_template_omissions_and_added_executable_advice_still_fail",
+      "status": "passed"
+    },
+    {
+      "name": "test_history_determiners_are_independently_normalized",
+      "class": "test_product_evaluator_v3.Phase3EvaluatorTests.test_history_determiners_are_independently_normalized",
+      "status": "passed"
+    },
+    {
+      "name": "test_hook_counts_are_checked_against_actual_delivered_items",
+      "class": "test_product_evaluator_v3.Phase3EvaluatorTests.test_hook_counts_are_checked_against_actual_delivered_items",
+      "status": "passed"
+    },
+    {
+      "name": "test_keyword_presence_is_not_a_caption_or_ad_angle",
+      "class": "test_product_evaluator_v3.Phase3EvaluatorTests.test_keyword_presence_is_not_a_caption_or_ad_angle",
+      "status": "passed"
+    },
+    {
+      "name": "test_later_negation_does_not_excuse_an_affirmative_forbidden_platform_answer",
+      "class": "test_product_evaluator_v3.Phase3EvaluatorTests.test_later_negation_does_not_excuse_an_affirmative_forbidden_platform_answer",
+      "status": "passed"
+    },
+    {
+      "name": "test_safe_refusal_and_demo_meaning_survive_without_literal_keywords",
+      "class": "test_product_evaluator_v3.Phase3EvaluatorTests.test_safe_refusal_and_demo_meaning_survive_without_literal_keywords",
+      "status": "passed"
+    },
+    {
+      "name": "test_semantic_aliases_do_not_erase_numeric_or_technical_requirements",
+      "class": "test_product_evaluator_v3.Phase3EvaluatorTests.test_semantic_aliases_do_not_erase_numeric_or_technical_requirements",
+      "status": "passed"
+    },
+    {
+      "name": "test_short_valid_roman_hinglish_is_not_english",
+      "class": "test_product_evaluator_v3.Phase3EvaluatorTests.test_short_valid_roman_hinglish_is_not_english",
+      "status": "passed"
+    },
+    {
+      "name": "test_unrelated_negation_does_not_hide_unsafe_claims",
+      "class": "test_product_evaluator_v3.Phase3EvaluatorTests.test_unrelated_negation_does_not_hide_unsafe_claims",
+      "status": "passed"
+    }
+  ],
+  "full_node_regression": {
+    "suite": "node",
+    "command": [
+      "node",
+      "--test",
+      "--test-reporter=junit",
+      "tests/ai-chat-history.test.cjs",
+      "tests/tutor-knowledge.test.cjs",
+      "tests/product-tutor-quality.test.cjs",
+      "tests/product-tutor-phase3.test.cjs",
+      "tests/mobile-course-ai.test.cjs",
+      "tests/mobile-course-ai-cache.test.cjs"
+    ],
+    "environment_overrides": {
+      "NODE_OPTIONS": "--require=./tests/helpers/deny-network.cjs"
+    },
+    "startedAt": "2026-10-15T07:04:10.602794+00:00",
+    "completedAt": "2026-10-15T07:04:11.336576+00:00",
+    "durationSeconds": 0.7337187499997526,
+    "exitCode": 0,
+    "externalProviderRequests": 0,
+    "cases": [
+      {
+        "name": "AI lesson materials use independent store access and reject revoked store mirrors",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "legacy mobile client accepts GET /consent {} without a cached gate",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "legacy mobile client accepts PUT /consent {&quot;granted&quot;:true} without a cached gate",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "legacy mobile client accepts PUT /consent {&quot;granted&quot;:false} without a cached gate",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "legacy consent compatibility and chat retain authentication before their handlers",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "chat answers a valid prompt with absent retired consent data",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "chat answers a valid prompt with declined retired consent data",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "chat answers a valid prompt with outdated retired consent data",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "chat forwards earlier turns between system context and the new question",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "history rejects injected roles and malformed entries, bounds size, and remains optional",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "popup sends successful history, blocks overlapping sends, and clears on New chat",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "popup omits failures and discards late replies after reset or account change",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "source markers and reference lists are hidden from learner replies",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "empty or failed provider replies fall back without learner-facing outage copy",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "plan questions bypass provider and answer with current Skillomate access facts",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "product ad price questions stay in active course flow instead of subscription facts",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "active product course still answers explicit Skillomate subscription questions deterministically",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "ambiguous product ad follow-ups keep active course context",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "learner account questions bypass provider with safe profile and payment facts",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "provider receives formatted prompts but no page query secrets or contact fallback",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "active course scope excludes other course catalog and materials from provider context",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "active AI Filmmaking face consistency answer does not call provider or merge courses",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "production path isolates direct AI Filmmaking course question from AI Influencer chunks",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "production path keeps AI Filmmaking topic through exact follow-up prompt lookup",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "production path allows explicit AI Influencer comparison without blended course answer",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "current video reaches provider for: what is in this video",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "current video reaches provider for: summarize this video",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "current video reaches provider for: is video mein kya sikhaya hai",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "current video reaches provider for: iska summary batao",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "invalid or cross-course lesson selection does not leak lesson notes",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "selected paid notes stay inaccessible without an active subscription",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "provider outage still identifies the selected video in Roman Hinglish",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "widget uses the current lesson at send time and clears it away from the player",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "product exact prompt route uses a complete authorized template without a provider request",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "product procedural questions use source-linked localized workflow facts",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "product route never gives paid template bodies to an inactive learner",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "product provider output with wrong language is marked as a local replacement",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "product policy catches an invented first-person endorsement in an otherwise successful provider answer",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "product safety refusal works without paid material and without calling a provider",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "product provider failures retain relevant guidance with safe diagnostic status",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "unconfigured provider is explicitly fallback rather than a live answer",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "phase3 negated platform terms cannot reroute a supplied product price to subscription facts",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "phase3 persisted product memory survives omitted client history and stays within learner and conversation",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "phase3 persisted facts from a different active course are not reused",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "lesson chat survives switching lessons and keeps late replies in their original lesson",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "accounts, sessions and courses have separate conversations",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "cache bounds messages and conversations, expires and ignores evicted replies",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "legacy mobile chat uses integrated tutor with course and conversation history",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "legacy route rejects another user and malformed questions",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "comma-delimited explicit product fills the complete saved body: felt camera sleeve",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "comma-delimited explicit product fills the complete saved body: brass incense holder",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "comma-delimited explicit product fills the complete saved body: knitted book pouch",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "history determiners do not corrupt the approved scaffold: an olive-wood spoon",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "history determiners do not corrupt the approved scaffold: a quilted tablet case",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "history determiners do not corrupt the approved scaffold: the hand-thrown teapot",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "a referring phrase cannot overwrite the remembered entity: the product I mentioned",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "a referring phrase cannot overwrite the remembered entity: the same item",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "a referring phrase cannot overwrite the remembered entity: it",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "sales prices, channels and trailing instructions are not part of a product noun",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "unknown values remain unknown, and assistant claims are never product facts",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "a new product clears the previous product attributes and price",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "saved user facts preserve explicit attributes, price, channel and selected angle",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "Lesson 08 workflow selection uses the matching final assembly rather than an unrelated workflow",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "an explicitly requested new lesson outranks an earlier selected video",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "the prerequisites source covers phone, laptop, product and course tools",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "overview facts come from source-derived guidance and preserve course limitations",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "exact phone troubleshooting returns the entire approved instruction and its lesson",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "latest Hindi movement intent outranks the preceding logo-blur FAQ",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "a style-specific recovery selects the relevant asset instead of generic consistency advice",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "deliver the requested practice output without inventing benefits: Hooks",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "deliver the requested practice output without inventing benefits: Caption:",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "deliver the requested practice output without inventing benefits: 15-second script",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "deliver the requested practice output without inventing benefits: Selected ad angle:",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "deliver the requested practice output without inventing benefits: Google Flow image prompts",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "a follow-up preserves pending script and caption deliverables from an ad plan",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "draft language follows the latest request: hindi",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "draft language follows the latest request: hinglish",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "draft language follows the latest request: english",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "a missing deliverable is replaced while a complete valid deliverable survives",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "provider references and exact troubleshooting strings are validated against selected metadata",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "unrelated negations cannot excuse affirmative invented endorsements in the same sentence",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "other-course active scope and denied access cannot use product practice generators",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "all eight lessons, nineteen complete templates, seven workflows and eighteen FAQs have distinct source identities",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "complete source template is independently retrievable and rendered: L02 Product Sheet",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "complete source template is independently retrievable and rendered: L02 White Studio",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "complete source template is independently retrievable and rendered: L02 Lifestyle",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "complete source template is independently retrievable and rendered: L02 Dark Premium",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "complete source template is independently retrievable and rendered: L03 Character Sheet (bonus)",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "complete source template is independently retrievable and rendered: L03 Hands close-up",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "complete source template is independently retrievable and rendered: L03 Desk",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "complete source template is independently retrievable and rendered: L03 Showing to camera",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "complete source template is independently retrievable and rendered: L04 Diwali",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "complete source template is independently retrievable and rendered: L04 Wedding Gift",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "complete source template is independently retrievable and rendered: L04 Colour Variant Sheet",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "complete source template is independently retrievable and rendered: L05 Step 1 Brief",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "complete source template is independently retrievable and rendered: L05 Step 2 Hooks + Script",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "complete source template is independently retrievable and rendered: L05 Step 3 Flow prompts",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "complete source template is independently retrievable and rendered: L06 Push-in",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "complete source template is independently retrievable and rendered: L06 Arc",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "complete source template is independently retrievable and rendered: L06 Light Sweep",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "complete source template is independently retrievable and rendered: L07 UGC 1",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "complete source template is independently retrievable and rendered: L07 UGC 2",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "paraphrased retrieval covers the source record: How do I turn phone images into a reusable product sheet?",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "paraphrased retrieval covers the source record: My logo is unreadable during motion in a video.",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "paraphrased retrieval covers the source record: The ad copy is vague. What product information should I supply?",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "paraphrased retrieval covers the source record: Which settings and references are used for UGC video?",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "paraphrased retrieval covers the source record: What is the final ad editing order?",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "paraphrased retrieval covers the source record: Where can I find the saved course prompts?",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "follow-up preserves a user-supplied product without trusting assistant-invented specifications",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "variant follow-ups keep workflow context without dragging an explicit new topic back",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "unknown product and creative details remain editable; supplied colour/part/gender slots are clean",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "material access and active course boundaries gate templates and translated source facts",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "requested language governs local guidance: english",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "requested language governs local guidance: hindi",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "requested language governs local guidance: hinglish",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "requested language governs local guidance: english",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "advertising meaning, including negation: No, the course cannot promise earnings. It depends on your work, not on a guaranteed number.",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "advertising meaning, including negation: Do not present the AI model as a real customer. Use an honest product demo.",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "advertising meaning, including negation: Just got my hands on this product. It is better than I expected!",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "advertising meaning, including negation: No fake claims. I personally loved this product.",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "advertising meaning, including negation: You will earn a guaranteed income.",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "advertising meaning, including negation: AI ko asli customer mat batao.",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "unsafe generated endorsements are replaced and cannot be reported as original live text",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "transient upstream error retries once and records success separately",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "provider timeout stays bounded and diagnostics omit sensitive text",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "provider DNS stays bounded and diagnostics omit sensitive text",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "provider connection stays bounded and diagnostics omit sensitive text",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "rejected credentials and empty successful bodies do not trigger unbounded retries",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "a spent total provider budget prevents another attempt",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "unprovided factual benefits are rejected while supplied benefits and explicit warnings are retained",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "provider rate limits are distinct from invalid provider responses",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "a shared source workflow is attributed to the requested supported lesson",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "Hindi and Hinglish product declarations fill known slots while unknown details remain unset",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "a denied or questioned feature is not treated as a verified product claim",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "retrieves supporting course material: My character face changes between clips. How do I keep the same identity?",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "retrieves supporting course material: Mera chehra har video mein badal jaata hai",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "retrieves supporting course material: My voice sounds robotic. How do I fix the audio?",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "retrieves supporting course material: How can I make skin look realistic instead of plastic?",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "a short follow-up retrieves the preceding topic",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "paid documents and example prompts are not retrieved without lesson access",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "documents cannot be retrieved under another course or unpublished course",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "active course retrieval does not mix another course unless comparison is explicit",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "retrieves AI Filmmaking material only for the filmmaking course slug",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "retrieves AI Filmmaking continuation material for lessons 9-15 in the same course",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "retrieves AI Product Photoshoot & Ads material for exact prompts and troubleshooting",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "AI Product Photoshoot & Ads material stays isolated from other courses",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "AI Filmmaking direct replies preserve approved prompts and defer lessons 9-15 to retrieved material",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "AI Filmmaking direct replies resolve short follow-ups from recent history",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "Skillomate plan questions get current one-time access facts",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "Skillomate platform questions get deterministic product facts",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "learner context answers account, payment, and expiry questions from safe facts",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "active and trial access expire and cancelled access is denied",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      },
+      {
+        "name": "vague video questions prioritize the selected lesson notes and matching course script",
+        "classname": "test",
+        "status": "passed",
+        "failure": null
+      }
+    ],
+    "summary": {
+      "passed": 153,
+      "failed": 0,
+      "skipped": 0,
+      "total": 153
+    }
+  },
+  "full_python_regression": {
+    "suite": "python",
+    "command": [
+      "python3",
+      "-B",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "tests",
+      "-p",
+      "test_product_evaluator*.py",
+      "-v"
+    ],
+    "environment_overrides": {},
+    "startedAt": "2026-10-15T07:04:10.602950+00:00",
+    "completedAt": "2026-10-15T07:04:10.753601+00:00",
+    "durationSeconds": 0.15065975000015897,
+    "exitCode": 0,
+    "externalProviderRequests": 0,
+    "cases": [
+      {
+        "name": "test_affirmative_deception_is_not_saved_by_a_disclaimer",
+        "class": "test_product_evaluator.CorrectedEvaluatorTests.test_affirmative_deception_is_not_saved_by_a_disclaimer",
+        "status": "passed"
+      },
+      {
+        "name": "test_all_nineteen_templates_are_complete",
+        "class": "test_product_evaluator.CorrectedEvaluatorTests.test_all_nineteen_templates_are_complete",
+        "status": "passed"
+      },
+      {
+        "name": "test_colour_only_invariance_entails_unchanged_shape_but_a_shape_change_does_not",
+        "class": "test_product_evaluator.CorrectedEvaluatorTests.test_colour_only_invariance_entails_unchanged_shape_but_a_shape_change_does_not",
+        "status": "passed"
+      },
+      {
+        "name": "test_duplicate_bookkeeping_cannot_overwrite_a_real_provider_answer",
+        "class": "test_product_evaluator.CorrectedEvaluatorTests.test_duplicate_bookkeeping_cannot_overwrite_a_real_provider_answer",
+        "status": "passed"
+      },
+      {
+        "name": "test_duration_units_and_plural_ad_angles_are_equivalent",
+        "class": "test_product_evaluator.CorrectedEvaluatorTests.test_duration_units_and_plural_ad_angles_are_equivalent",
+        "status": "passed"
+      },
+      {
+        "name": "test_end_to_end_quality_can_assess_local_rules_without_counting_a_model_call",
+        "class": "test_product_evaluator.CorrectedEvaluatorTests.test_end_to_end_quality_can_assess_local_rules_without_counting_a_model_call",
+        "status": "passed"
+      },
+      {
+        "name": "test_english_hindi_and_hinglish_are_separate",
+        "class": "test_product_evaluator.CorrectedEvaluatorTests.test_english_hindi_and_hinglish_are_separate",
+        "status": "passed"
+      },
+      {
+        "name": "test_every_template_passes_full_fidelity_with_known_product",
+        "class": "test_product_evaluator.CorrectedEvaluatorTests.test_every_template_passes_full_fidelity_with_known_product",
+        "status": "passed"
+      },
+      {
+        "name": "test_explanatory_placeholder_does_not_invalidate_instantiated_body",
+        "class": "test_product_evaluator.CorrectedEvaluatorTests.test_explanatory_placeholder_does_not_invalidate_instantiated_body",
+        "status": "passed"
+      },
+      {
+        "name": "test_explicit_local_replacement_cannot_be_mislabelled_as_a_live_answer",
+        "class": "test_product_evaluator.CorrectedEvaluatorTests.test_explicit_local_replacement_cannot_be_mislabelled_as_a_live_answer",
+        "status": "passed"
+      },
+      {
+        "name": "test_extra_instructions_inside_executable_block_fail",
+        "class": "test_product_evaluator.CorrectedEvaluatorTests.test_extra_instructions_inside_executable_block_fail",
+        "status": "passed"
+      },
+      {
+        "name": "test_full_template_omission_fails_even_when_old_fragment_is_present",
+        "class": "test_product_evaluator.CorrectedEvaluatorTests.test_full_template_omission_fails_even_when_old_fragment_is_present",
+        "status": "passed"
+      },
+      {
+        "name": "test_grammatical_reference_and_regeneration_variants",
+        "class": "test_product_evaluator.CorrectedEvaluatorTests.test_grammatical_reference_and_regeneration_variants",
+        "status": "passed"
+      },
+      {
+        "name": "test_hindi_concepts_do_not_require_english_words",
+        "class": "test_product_evaluator.CorrectedEvaluatorTests.test_hindi_concepts_do_not_require_english_words",
+        "status": "passed"
+      },
+      {
+        "name": "test_lesson_zero_padding_and_model_punctuation_are_equivalent",
+        "class": "test_product_evaluator.CorrectedEvaluatorTests.test_lesson_zero_padding_and_model_punctuation_are_equivalent",
+        "status": "passed"
+      },
+      {
+        "name": "test_missing_real_numeric_setting_still_fails",
+        "class": "test_product_evaluator.CorrectedEvaluatorTests.test_missing_real_numeric_setting_still_fails",
+        "status": "passed"
+      },
+      {
+        "name": "test_missing_turn_and_fallback_are_not_empty_live_answers",
+        "class": "test_product_evaluator.CorrectedEvaluatorTests.test_missing_turn_and_fallback_are_not_empty_live_answers",
+        "status": "passed"
+      },
+      {
+        "name": "test_negated_earnings_guarantee_is_not_an_affirmative_claim",
+        "class": "test_product_evaluator.CorrectedEvaluatorTests.test_negated_earnings_guarantee_is_not_an_affirmative_claim",
+        "status": "passed"
+      },
+      {
+        "name": "test_promised_earnings_still_fail",
+        "class": "test_product_evaluator.CorrectedEvaluatorTests.test_promised_earnings_still_fail",
+        "status": "passed"
+      },
+      {
+        "name": "test_quoted_source_text_does_not_determine_narrative_language",
+        "class": "test_product_evaluator.CorrectedEvaluatorTests.test_quoted_source_text_does_not_determine_narrative_language",
+        "status": "passed"
+      },
+      {
+        "name": "test_safe_refusal_and_demo_alternative_are_semantically_recognized",
+        "class": "test_product_evaluator.CorrectedEvaluatorTests.test_safe_refusal_and_demo_alternative_are_semantically_recognized",
+        "status": "passed"
+      },
+      {
+        "name": "test_saved_corpus_all_ids_accounted_without_new_model_text",
+        "class": "test_product_evaluator.CorrectedEvaluatorTests.test_saved_corpus_all_ids_accounted_without_new_model_text",
+        "status": "passed"
+      },
+      {
+        "name": "test_unresolved_or_bracketed_known_product_fails",
+        "class": "test_product_evaluator.CorrectedEvaluatorTests.test_unresolved_or_bracketed_known_product_fails",
+        "status": "passed"
+      },
+      {
+        "name": "test_variant_slot_article_equivalence_does_not_allow_template_rewriting",
+        "class": "test_product_evaluator.CorrectedEvaluatorTests.test_variant_slot_article_equivalence_does_not_allow_template_rewriting",
+        "status": "passed"
+      },
+      {
+        "name": "test_word_boundaries_do_not_confuse_no_with_normal",
+        "class": "test_product_evaluator.CorrectedEvaluatorTests.test_word_boundaries_do_not_confuse_no_with_normal",
+        "status": "passed"
+      },
+      {
+        "name": "test_a_lesson_reference_is_not_a_lesson_count",
+        "class": "test_product_evaluator_v3.Phase3EvaluatorTests.test_a_lesson_reference_is_not_a_lesson_count",
+        "status": "passed"
+      },
+      {
+        "name": "test_a_timed_script_is_not_a_promise_to_write_one",
+        "class": "test_product_evaluator_v3.Phase3EvaluatorTests.test_a_timed_script_is_not_a_promise_to_write_one",
+        "status": "passed"
+      },
+      {
+        "name": "test_actual_caption_and_angle_with_supplied_facts_pass",
+        "class": "test_product_evaluator_v3.Phase3EvaluatorTests.test_actual_caption_and_angle_with_supplied_facts_pass",
+        "status": "passed"
+      },
+      {
+        "name": "test_all_nineteen_complete_assets_still_pass_independent_source_checks",
+        "class": "test_product_evaluator_v3.Phase3EvaluatorTests.test_all_nineteen_complete_assets_still_pass_independent_source_checks",
+        "status": "passed"
+      },
+      {
+        "name": "test_anaphoric_nouns_do_not_override_an_explicit_product",
+        "class": "test_product_evaluator_v3.Phase3EvaluatorTests.test_anaphoric_nouns_do_not_override_an_explicit_product",
+        "status": "passed"
+      },
+      {
+        "name": "test_comma_delimited_known_product_cannot_remain_a_placeholder",
+        "class": "test_product_evaluator_v3.Phase3EvaluatorTests.test_comma_delimited_known_product_cannot_remain_a_placeholder",
+        "status": "passed"
+      },
+      {
+        "name": "test_contextual_modifiers_and_actor_synonyms_do_not_cause_false_failures",
+        "class": "test_product_evaluator_v3.Phase3EvaluatorTests.test_contextual_modifiers_and_actor_synonyms_do_not_cause_false_failures",
+        "status": "passed"
+      },
+      {
+        "name": "test_contextual_no_answers_a_direct_course_identity_question",
+        "class": "test_product_evaluator_v3.Phase3EvaluatorTests.test_contextual_no_answers_a_direct_course_identity_question",
+        "status": "passed"
+      },
+      {
+        "name": "test_fallback_and_local_replacement_provenance_is_not_live_success",
+        "class": "test_product_evaluator_v3.Phase3EvaluatorTests.test_fallback_and_local_replacement_provenance_is_not_live_success",
+        "status": "passed"
+      },
+      {
+        "name": "test_full_template_omissions_and_added_executable_advice_still_fail",
+        "class": "test_product_evaluator_v3.Phase3EvaluatorTests.test_full_template_omissions_and_added_executable_advice_still_fail",
+        "status": "passed"
+      },
+      {
+        "name": "test_history_determiners_are_independently_normalized",
+        "class": "test_product_evaluator_v3.Phase3EvaluatorTests.test_history_determiners_are_independently_normalized",
+        "status": "passed"
+      },
+      {
+        "name": "test_hook_counts_are_checked_against_actual_delivered_items",
+        "class": "test_product_evaluator_v3.Phase3EvaluatorTests.test_hook_counts_are_checked_against_actual_delivered_items",
+        "status": "passed"
+      },
+      {
+        "name": "test_keyword_presence_is_not_a_caption_or_ad_angle",
+        "class": "test_product_evaluator_v3.Phase3EvaluatorTests.test_keyword_presence_is_not_a_caption_or_ad_angle",
+        "status": "passed"
+      },
+      {
+        "name": "test_later_negation_does_not_excuse_an_affirmative_forbidden_platform_answer",
+        "class": "test_product_evaluator_v3.Phase3EvaluatorTests.test_later_negation_does_not_excuse_an_affirmative_forbidden_platform_answer",
+        "status": "passed"
+      },
+      {
+        "name": "test_safe_refusal_and_demo_meaning_survive_without_literal_keywords",
+        "class": "test_product_evaluator_v3.Phase3EvaluatorTests.test_safe_refusal_and_demo_meaning_survive_without_literal_keywords",
+        "status": "passed"
+      },
+      {
+        "name": "test_semantic_aliases_do_not_erase_numeric_or_technical_requirements",
+        "class": "test_product_evaluator_v3.Phase3EvaluatorTests.test_semantic_aliases_do_not_erase_numeric_or_technical_requirements",
+        "status": "passed"
+      },
+      {
+        "name": "test_short_valid_roman_hinglish_is_not_english",
+        "class": "test_product_evaluator_v3.Phase3EvaluatorTests.test_short_valid_roman_hinglish_is_not_english",
+        "status": "passed"
+      },
+      {
+        "name": "test_unrelated_negation_does_not_hide_unsafe_claims",
+        "class": "test_product_evaluator_v3.Phase3EvaluatorTests.test_unrelated_negation_does_not_hide_unsafe_claims",
+        "status": "passed"
+      }
+    ],
+    "summary": {
+      "passed": 43,
+      "failed": 0,
+      "skipped": 0,
+      "total": 43
+    }
+  },
+  "complete_template_replay": {
+    "mode": "LOCAL_HANDLER_REPLAY_NO_MODEL_CALLS",
+    "interpretation": "Validation of local fixes against saved test inputs and independent source-derived template expectations; not a new live evaluation or replacement of historical scores.",
+    "total": 25,
+    "passed": 25,
+    "failed": 0,
+    "providerRequests": 0,
+    "criticalCases": [
+      {
+        "id": "new15_002",
+        "turn": 1,
+        "question": "Please copy the exact L02 White Studio template for a linen notebook, with its full original wording.",
+        "history": [],
+        "expectedCompleteBody": "Use the uploaded product sheet as the reference. Keep the linen notebook exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a clean seamless white background, soft even studio lighting, a soft natural shadow under it, slight top-down angle, sharp focus, realistic product photography.",
+        "actualLocalResponse": "L02 White Studio\n\n```text\nUse the uploaded product sheet as the reference. Keep the linen notebook exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a clean seamless white background, soft even studio lighting, a soft natural shadow under it, slight top-down angle, sharp focus, realistic product photography.\n```",
+        "origin": "local_knowledge_handler",
+        "providerRequests": 0,
+        "templateId": "ai-product-photoshoot-ads:training:exact-template:l02-white-studio",
+        "passed": true
+      },
+      {
+        "id": "new15_conv_001",
+        "turn": 2,
+        "question": "Please give the exact L02 Lifestyle prompt for that product, using its known name and no invented features.",
+        "history": [
+          {
+            "role": "user",
+            "content": "My product is an embroidered cushion cover. I need a lifestyle product photo from Lesson 02."
+          },
+          {
+            "role": "assistant",
+            "content": "To create a lifestyle product photo for your embroidered cushion cover, you'll need to use a product sheet as a reference.\n\nHere's how you can do it, based on Lesson 02:\n\n1.  **Create a Product Sheet:** If you haven't already, take 5-7 clear photos of your embroidered cushion cover from different angles in daylight, with the flash off. Then, use Google Flow (New project → Image → Nano Banana Pro) to upload these photos and run the Product Sheet template. This will create a consistent reference for your product. (Lesson 02)\n2.  **Use the Product Sheet as Reference:** When generating your lifestyle photo, make sure to use the product sheet you created as the primary reference. This ensures your cushion cover remains consistent in shape, color, details, and any text/logo. (Lesson 02)\n3.  **Describe the Lifestyle Scene:** In your prompt, describe the scene where you want your cushion cover to appear. For example, you could say: \"Place it on a warm wooden desk next to a white coffee mug and a small green plant, soft morning window light from the left, shallow depth of field, realistic lifestyle product photography.\" (Lesson 02)\n\nRemember, the key is to keep the product exactly the same as it appears in your product sheet, and then describe the desired scene around it."
+          }
+        ],
+        "expectedCompleteBody": "Use the uploaded product sheet as the reference. Keep the embroidered cushion cover exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a warm wooden desk next to a white coffee mug and a small green plant, soft morning window light from the left, shallow depth of field, realistic lifestyle product photography.",
+        "actualLocalResponse": "L02 Lifestyle\n\n```text\nUse the uploaded product sheet as the reference. Keep the embroidered cushion cover exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a warm wooden desk next to a white coffee mug and a small green plant, soft morning window light from the left, shallow depth of field, realistic lifestyle product photography.\n```",
+        "origin": "local_knowledge_handler",
+        "providerRequests": 0,
+        "templateId": "ai-product-photoshoot-ads:training:exact-template:l02-lifestyle",
+        "passed": true
+      },
+      {
+        "id": "new15_conv_005",
+        "turn": 2,
+        "question": "Give the exact L06 Arc prompt for the product I mentioned. Keep every approved constraint.",
+        "history": [
+          {
+            "role": "user",
+            "content": "I sell a cork yoga block. I want a slow arc product video in Lesson 06."
+          },
+          {
+            "role": "assistant",
+            "content": "To create a slow arc product video for your cork yoga block using the Lesson 06 method, you will use the \"Ingredients\" mode in Flow.\n\nHere's the prompt template you can use:\n\n\"Use the uploaded image as the first frame. The cork yoga block stays perfectly still and exactly the same the whole time — same shape, same colour, same details, same text and logo, no morphing, no warping. The camera slowly arcs a little to the right around the cork yoga block, smooth and steady, while the lights in the background glow softly. Moody cinematic look, realistic product video. No people, no hands, no text on screen. Soft quiet room ambience only — NO music, NO voice.\"\n\nRemember to upload an image of your cork yoga block as the first frame. The course recommends using settings like 16:9 aspect ratio, Omni 1.1 Flash, 720p resolution, and a 6-second duration. You should add music later during editing."
+          }
+        ],
+        "expectedCompleteBody": "Use the uploaded image as the first frame. The cork yoga block stays perfectly still and exactly the same the whole time — same shape, same colour, same details, same text and logo, no morphing, no warping. The camera slowly arcs a little to the right around the cork yoga block, smooth and steady, while the lights in the background glow softly. Moody cinematic look, realistic product video. No people, no hands, no text on screen. Soft quiet room ambience only — NO music, NO voice.",
+        "actualLocalResponse": "L06 Arc\n\n```text\nUse the uploaded image as the first frame. The cork yoga block stays perfectly still and exactly the same the whole time — same shape, same colour, same details, same text and logo, no morphing, no warping. The camera slowly arcs a little to the right around the cork yoga block, smooth and steady, while the lights in the background glow softly. Moody cinematic look, realistic product video. No people, no hands, no text on screen. Soft quiet room ambience only — NO music, NO voice.\n```",
+        "origin": "local_knowledge_handler",
+        "providerRequests": 0,
+        "templateId": "ai-product-photoshoot-ads:training:exact-template:l06-arc",
+        "passed": true
+      }
+    ],
+    "results": [
+      {
+        "id": "ppads_005",
+        "turn": 1,
+        "question": "Give the exact L02 Product Sheet prompt for a perfume bottle.",
+        "history": [],
+        "expectedCompleteBody": "Use all the uploaded photos of this perfume bottle. Create a clean product reference sheet on a plain white background showing the exact same perfume bottle in four views arranged in a neat grid: front view, top-down view, side view and three-quarter angle view. Keep the perfume bottle exactly the same in every view — same shape, same colour, same details, same text and logo, do not redesign it. Even soft studio lighting, no extra objects, no text labels, realistic product photography.",
+        "actualLocalResponse": "L02 Product Sheet\n\n```text\nUse all the uploaded photos of this perfume bottle. Create a clean product reference sheet on a plain white background showing the exact same perfume bottle in four views arranged in a neat grid: front view, top-down view, side view and three-quarter angle view. Keep the perfume bottle exactly the same in every view — same shape, same colour, same details, same text and logo, do not redesign it. Even soft studio lighting, no extra objects, no text labels, realistic product photography.\n```",
+        "origin": "local_knowledge_handler",
+        "providerRequests": 0,
+        "templateId": "ai-product-photoshoot-ads:training:exact-template:l02-product-sheet",
+        "passed": true
+      },
+      {
+        "id": "ppads_006",
+        "turn": 1,
+        "question": "Copy-paste the L02 White Studio prompt for a skincare jar.",
+        "history": [],
+        "expectedCompleteBody": "Use the uploaded product sheet as the reference. Keep the skincare jar exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a clean seamless white background, soft even studio lighting, a soft natural shadow under it, slight top-down angle, sharp focus, realistic product photography.",
+        "actualLocalResponse": "L02 White Studio\n\n```text\nUse the uploaded product sheet as the reference. Keep the skincare jar exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a clean seamless white background, soft even studio lighting, a soft natural shadow under it, slight top-down angle, sharp focus, realistic product photography.\n```",
+        "origin": "local_knowledge_handler",
+        "providerRequests": 0,
+        "templateId": "ai-product-photoshoot-ads:training:exact-template:l02-white-studio",
+        "passed": true
+      },
+      {
+        "id": "ppads_007",
+        "turn": 1,
+        "question": "What is the exact L02 Lifestyle prompt for a water bottle?",
+        "history": [],
+        "expectedCompleteBody": "Use the uploaded product sheet as the reference. Keep the water bottle exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a warm wooden desk next to a white coffee mug and a small green plant, soft morning window light from the left, shallow depth of field, realistic lifestyle product photography.",
+        "actualLocalResponse": "L02 Lifestyle\n\n```text\nUse the uploaded product sheet as the reference. Keep the water bottle exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a warm wooden desk next to a white coffee mug and a small green plant, soft morning window light from the left, shallow depth of field, realistic lifestyle product photography.\n```",
+        "origin": "local_knowledge_handler",
+        "providerRequests": 0,
+        "templateId": "ai-product-photoshoot-ads:training:exact-template:l02-lifestyle",
+        "passed": true
+      },
+      {
+        "id": "ppads_008",
+        "turn": 1,
+        "question": "Give me the exact L02 Dark Premium prompt for sunglasses.",
+        "history": [],
+        "expectedCompleteBody": "Use the uploaded product sheet as the reference. Keep the sunglasses exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a matte black surface against a dark background, a single soft rim light outlining its edges, a subtle reflection on the surface, premium moody look, realistic product photography.",
+        "actualLocalResponse": "L02 Dark Premium\n\n```text\nUse the uploaded product sheet as the reference. Keep the sunglasses exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a matte black surface against a dark background, a single soft rim light outlining its edges, a subtle reflection on the surface, premium moody look, realistic product photography.\n```",
+        "origin": "local_knowledge_handler",
+        "providerRequests": 0,
+        "templateId": "ai-product-photoshoot-ads:training:exact-template:l02-dark-premium",
+        "passed": true
+      },
+      {
+        "id": "ppads_012",
+        "turn": 1,
+        "question": "Give the exact L03 Character Sheet bonus prompt for a young Indian woman.",
+        "history": [],
+        "expectedCompleteBody": "Create a character reference sheet of one realistic young Indian woman, clearly adult, [hair, outfit details]. Show the exact same person in one image: a close-up of the face, and full-body front view, side view and back view on a plain light grey background. Same face, same hair, same outfit in every view. Soft even light, RAW realistic photo look, real skin texture, no text labels.",
+        "actualLocalResponse": "L03 Character Sheet (bonus)\n\n```text\nCreate a character reference sheet of one realistic young Indian woman, clearly adult, [hair, outfit details]. Show the exact same person in one image: a close-up of the face, and full-body front view, side view and back view on a plain light grey background. Same face, same hair, same outfit in every view. Soft even light, RAW realistic photo look, real skin texture, no text labels.\n```\n\nFields still in brackets need your details; I have not invented them.",
+        "origin": "local_knowledge_handler",
+        "providerRequests": 0,
+        "templateId": "ai-product-photoshoot-ads:training:exact-template:l03-character-sheet-bonus",
+        "passed": true
+      },
+      {
+        "id": "ppads_013",
+        "turn": 1,
+        "question": "Give exact L03 Hands close-up prompt for a coffee mug.",
+        "history": [],
+        "expectedCompleteBody": "Use the uploaded product sheet for the coffee mug and the uploaded character sheet for the [woman / man]. Keep the coffee mug exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Close-up of the [woman's] hands using the coffee mug on a wooden desk, [clothing that matches the character sheet, e.g. bare arms matching her blue tank top], natural hands with five fingers each, soft window light, shallow depth of field, realistic real-world scale, realistic lifestyle product photography.",
+        "actualLocalResponse": "L03 Hands close-up\n\n```text\nUse the uploaded product sheet for the coffee mug and the uploaded character sheet for the [woman / man]. Keep the coffee mug exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Close-up of the [woman's] hands using the coffee mug on a wooden desk, [clothing that matches the character sheet, e.g. bare arms matching her blue tank top], natural hands with five fingers each, soft window light, shallow depth of field, realistic real-world scale, realistic lifestyle product photography.\n```\n\nFields still in brackets need your details; I have not invented them.",
+        "origin": "local_knowledge_handler",
+        "providerRequests": 0,
+        "templateId": "ai-product-photoshoot-ads:training:exact-template:l03-hands-close-up",
+        "passed": true
+      },
+      {
+        "id": "ppads_014",
+        "turn": 1,
+        "question": "Copy the L03 Desk prompt for a compact keyboard.",
+        "history": [],
+        "expectedCompleteBody": "Use the uploaded product sheet for the compact keyboard and the uploaded character sheet for the [woman / man]. Keep the compact keyboard exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Keep the [woman's] face exactly the same as the character sheet. [She] sits at a clean desk using the compact keyboard, side three-quarter angle, natural hands with five fingers, bright natural daylight, realistic real-world scale, realistic lifestyle photography.",
+        "actualLocalResponse": "L03 Desk\n\n```text\nUse the uploaded product sheet for the compact keyboard and the uploaded character sheet for the [woman / man]. Keep the compact keyboard exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Keep the [woman's] face exactly the same as the character sheet. [She] sits at a clean desk using the compact keyboard, side three-quarter angle, natural hands with five fingers, bright natural daylight, realistic real-world scale, realistic lifestyle photography.\n```\n\nFields still in brackets need your details; I have not invented them.",
+        "origin": "local_knowledge_handler",
+        "providerRequests": 0,
+        "templateId": "ai-product-photoshoot-ads:training:exact-template:l03-desk",
+        "passed": true
+      },
+      {
+        "id": "ppads_015",
+        "turn": 1,
+        "question": "What is the exact L03 Showing to camera prompt for a handmade soap box?",
+        "history": [],
+        "expectedCompleteBody": "Use the uploaded product sheet for the handmade soap box and the uploaded character sheet for the [woman / man]. Keep the handmade soap box exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Keep the [woman's] face exactly the same as the character sheet. [She] holds the handmade soap box with both hands in front of [her] chest, showing it to the camera with a small natural smile, plain light background, soft studio light, natural hands with five fingers, realistic real-world scale, realistic product photography.",
+        "actualLocalResponse": "L03 Showing to camera\n\n```text\nUse the uploaded product sheet for the handmade soap box and the uploaded character sheet for the [woman / man]. Keep the handmade soap box exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Keep the [woman's] face exactly the same as the character sheet. [She] holds the handmade soap box with both hands in front of [her] chest, showing it to the camera with a small natural smile, plain light background, soft studio light, natural hands with five fingers, realistic real-world scale, realistic product photography.\n```\n\nFields still in brackets need your details; I have not invented them.",
+        "origin": "local_knowledge_handler",
+        "providerRequests": 0,
+        "templateId": "ai-product-photoshoot-ads:training:exact-template:l03-showing-to-camera",
+        "passed": true
+      },
+      {
+        "id": "ppads_019",
+        "turn": 1,
+        "question": "Give exact L04 Diwali prompt for a chocolate gift box.",
+        "history": [],
+        "expectedCompleteBody": "Use the uploaded product sheet as the reference. Keep the chocolate gift box exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a wooden table during Diwali night, a few lit clay diyas and orange marigold flowers placed behind and beside it, soft warm fairy lights glowing out of focus in the background, the chocolate gift box sharp and clearly the hero in the foreground, warm golden light, realistic real-world scale, realistic festive product photography.",
+        "actualLocalResponse": "L04 Diwali\n\n```text\nUse the uploaded product sheet as the reference. Keep the chocolate gift box exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a wooden table during Diwali night, a few lit clay diyas and orange marigold flowers placed behind and beside it, soft warm fairy lights glowing out of focus in the background, the chocolate gift box sharp and clearly the hero in the foreground, warm golden light, realistic real-world scale, realistic festive product photography.\n```",
+        "origin": "local_knowledge_handler",
+        "providerRequests": 0,
+        "templateId": "ai-product-photoshoot-ads:training:exact-template:l04-diwali",
+        "passed": true
+      },
+      {
+        "id": "ppads_020",
+        "turn": 1,
+        "question": "Give exact L04 Wedding Gift prompt for a jewellery box.",
+        "history": [],
+        "expectedCompleteBody": "Use the uploaded product sheet as the reference. Keep the jewellery box exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a soft silk cloth next to an open premium gift box with gold ribbon and a few rose petals, elegant wedding gifting mood, soft warm light, jewellery box sharp in the foreground, realistic real-world scale, realistic festive product photography.",
+        "actualLocalResponse": "L04 Wedding Gift\n\n```text\nUse the uploaded product sheet as the reference. Keep the jewellery box exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a soft silk cloth next to an open premium gift box with gold ribbon and a few rose petals, elegant wedding gifting mood, soft warm light, jewellery box sharp in the foreground, realistic real-world scale, realistic festive product photography.\n```",
+        "origin": "local_knowledge_handler",
+        "providerRequests": 0,
+        "templateId": "ai-product-photoshoot-ads:training:exact-template:l04-wedding-gift",
+        "passed": true
+      },
+      {
+        "id": "ppads_021",
+        "turn": 1,
+        "question": "Give exact L04 Colour Variant Sheet prompt for changing all bottle caps to matte black.",
+        "history": [],
+        "expectedCompleteBody": "Use the uploaded product sheet as the reference. Only change the colour of all bottle caps to matte black. Keep everything else exactly the same — same shape, same layout, same details, same text and logo, same four views, same background, same lighting. Output a full product sheet in the new colour.",
+        "actualLocalResponse": "L04 Colour Variant Sheet\n\n```text\nUse the uploaded product sheet as the reference. Only change the colour of all bottle caps to matte black. Keep everything else exactly the same — same shape, same layout, same details, same text and logo, same four views, same background, same lighting. Output a full product sheet in the new colour.\n```",
+        "origin": "local_knowledge_handler",
+        "providerRequests": 0,
+        "templateId": "ai-product-photoshoot-ads:training:exact-template:l04-colour-variant-sheet",
+        "passed": true
+      },
+      {
+        "id": "ppads_025",
+        "turn": 1,
+        "question": "Give the exact L05 Step 1 Brief prompt.",
+        "history": [],
+        "expectedCompleteBody": "I sell a [product with real details — size, colour, key features]. Price: [your price]. I sell on [Instagram / website / marketplace] in India. Tell me: 1. Three types of people who would buy this 2. What problem it solves for each of them 3. One ad angle for each buyer Keep it short and simple.",
+        "actualLocalResponse": "L05 Step 1 Brief\n\n```text\nI sell a [product with real details — size, colour, key features]. Price: [your price]. I sell on [Instagram / website / marketplace] in India. Tell me: 1. Three types of people who would buy this 2. What problem it solves for each of them 3. One ad angle for each buyer Keep it short and simple.\n```\n\nFields still in brackets need your details; I have not invented them.",
+        "origin": "local_knowledge_handler",
+        "providerRequests": 0,
+        "templateId": "ai-product-photoshoot-ads:training:exact-template:l05-step-1-brief",
+        "passed": true
+      },
+      {
+        "id": "ppads_026",
+        "turn": 1,
+        "question": "Give exact L05 Step 2 Hooks + Script prompt.",
+        "history": [],
+        "expectedCompleteBody": "Pick angle [number]. Write 5 scroll-stopping hooks in natural Hinglish, like a friend talking — not cheesy, no fake claims. Then write a 15-second ad script: what to show on screen and what the voiceover says. Also write one Instagram caption. Use only the features I gave you, don't add anything new.",
+        "actualLocalResponse": "L05 Step 2 Hooks + Script\n\n```text\nPick angle [number]. Write 5 scroll-stopping hooks in natural Hinglish, like a friend talking — not cheesy, no fake claims. Then write a 15-second ad script: what to show on screen and what the voiceover says. Also write one Instagram caption. Use only the features I gave you, don't add anything new.\n```\n\nFields still in brackets need your details; I have not invented them.",
+        "origin": "local_knowledge_handler",
+        "providerRequests": 0,
+        "templateId": "ai-product-photoshoot-ads:training:exact-template:l05-step-2-hooks-script",
+        "passed": true
+      },
+      {
+        "id": "ppads_027",
+        "turn": 1,
+        "question": "Give exact L05 Step 3 Flow prompts instruction.",
+        "history": [],
+        "expectedCompleteBody": "Now write 3 image prompts for Google Flow (Nano Banana) for this ad. Each prompt must start with: \"Use the uploaded product sheet as the reference. Keep the [product] exactly the same — same shape, same colour, same details, same text and logo, do not redesign it.\" Then describe one scene for the ad.",
+        "actualLocalResponse": "L05 Step 3 Flow prompts\n\n```text\nNow write 3 image prompts for Google Flow (Nano Banana) for this ad. Each prompt must start with: \"Use the uploaded product sheet as the reference. Keep the [product] exactly the same — same shape, same colour, same details, same text and logo, do not redesign it.\" Then describe one scene for the ad.\n```\n\nFields still in brackets need your details; I have not invented them.",
+        "origin": "local_knowledge_handler",
+        "providerRequests": 0,
+        "templateId": "ai-product-photoshoot-ads:training:exact-template:l05-step-3-flow-prompts",
+        "passed": true
+      },
+      {
+        "id": "ppads_031",
+        "turn": 1,
+        "question": "Give exact L06 Push-in prompt for a face serum bottle.",
+        "history": [],
+        "expectedCompleteBody": "Use the uploaded image as the first frame. The face serum bottle stays perfectly still and exactly the same the whole time — same shape, same colour, same details, same text and logo, no morphing, no warping. The camera slowly and smoothly pushes in toward the face serum bottle. Soft natural window light, shallow depth of field, realistic product video. No people, no hands, no text on screen. Soft quiet room ambience only — NO music, NO voice.",
+        "actualLocalResponse": "L06 Push-in\n\n```text\nUse the uploaded image as the first frame. The face serum bottle stays perfectly still and exactly the same the whole time — same shape, same colour, same details, same text and logo, no morphing, no warping. The camera slowly and smoothly pushes in toward the face serum bottle. Soft natural window light, shallow depth of field, realistic product video. No people, no hands, no text on screen. Soft quiet room ambience only — NO music, NO voice.\n```",
+        "origin": "local_knowledge_handler",
+        "providerRequests": 0,
+        "templateId": "ai-product-photoshoot-ads:training:exact-template:l06-push-in",
+        "passed": true
+      },
+      {
+        "id": "ppads_032",
+        "turn": 1,
+        "question": "Give exact L06 Arc prompt for a leather wallet.",
+        "history": [],
+        "expectedCompleteBody": "Use the uploaded image as the first frame. The leather wallet stays perfectly still and exactly the same the whole time — same shape, same colour, same details, same text and logo, no morphing, no warping. The camera slowly arcs a little to the right around the leather wallet, smooth and steady, while the lights in the background glow softly. Moody cinematic look, realistic product video. No people, no hands, no text on screen. Soft quiet room ambience only — NO music, NO voice.",
+        "actualLocalResponse": "L06 Arc\n\n```text\nUse the uploaded image as the first frame. The leather wallet stays perfectly still and exactly the same the whole time — same shape, same colour, same details, same text and logo, no morphing, no warping. The camera slowly arcs a little to the right around the leather wallet, smooth and steady, while the lights in the background glow softly. Moody cinematic look, realistic product video. No people, no hands, no text on screen. Soft quiet room ambience only — NO music, NO voice.\n```",
+        "origin": "local_knowledge_handler",
+        "providerRequests": 0,
+        "templateId": "ai-product-photoshoot-ads:training:exact-template:l06-arc",
+        "passed": true
+      },
+      {
+        "id": "ppads_033",
+        "turn": 1,
+        "question": "Copy exact L06 Light Sweep prompt for a gold bracelet.",
+        "history": [],
+        "expectedCompleteBody": "Use the uploaded image as the first frame. The gold bracelet stays perfectly still and exactly the same the whole time — same shape, same colour, same details, same text and logo, no morphing, no warping. The camera stays completely still. A soft band of warm light slowly sweeps across the gold bracelet from left to right, the shadows moving gently with it. Clean premium product video. No people, no hands, no text on screen. Soft quiet room ambience only — NO music, NO voice.",
+        "actualLocalResponse": "L06 Light Sweep\n\n```text\nUse the uploaded image as the first frame. The gold bracelet stays perfectly still and exactly the same the whole time — same shape, same colour, same details, same text and logo, no morphing, no warping. The camera stays completely still. A soft band of warm light slowly sweeps across the gold bracelet from left to right, the shadows moving gently with it. Clean premium product video. No people, no hands, no text on screen. Soft quiet room ambience only — NO music, NO voice.\n```",
+        "origin": "local_knowledge_handler",
+        "providerRequests": 0,
+        "templateId": "ai-product-photoshoot-ads:training:exact-template:l06-light-sweep",
+        "passed": true
+      },
+      {
+        "id": "ppads_037",
+        "turn": 1,
+        "question": "Give exact L07 UGC 1 prompt for a protein shaker.",
+        "history": [],
+        "expectedCompleteBody": "Use the uploaded character sheet for the [woman] and the uploaded product sheet for the protein shaker. Keep her face, hair and outfit exactly the same as the character sheet. Keep the protein shaker exactly the same — same shape, same colour, same details, same text and logo, no morphing. Selfie-style vertical video: the camera itself is her phone, held at arm's length, so we see her from the chest up looking straight into the lens. NO phone visible anywhere in the frame, no second camera, no screen. She sits at a desk in a normal home room, holding the protein shaker up near her chest to show it, casual and friendly. Handheld look with slight natural shake, natural window light, a real lived-in room, not a studio, not a polished ad. ONLY she speaks, one voice only, natural Hindi lip-sync, casual friendly tone. She says: \"[your hook line in Hindi]\" real skin, no filter, clearly adult, modest, natural hands with five fingers, no text on screen, no watermark. Clean natural audio only — NO background music.",
+        "actualLocalResponse": "L07 UGC 1\n\n```text\nUse the uploaded character sheet for the [woman] and the uploaded product sheet for the protein shaker. Keep her face, hair and outfit exactly the same as the character sheet. Keep the protein shaker exactly the same — same shape, same colour, same details, same text and logo, no morphing. Selfie-style vertical video: the camera itself is her phone, held at arm's length, so we see her from the chest up looking straight into the lens. NO phone visible anywhere in the frame, no second camera, no screen. She sits at a desk in a normal home room, holding the protein shaker up near her chest to show it, casual and friendly. Handheld look with slight natural shake, natural window light, a real lived-in room, not a studio, not a polished ad. ONLY she speaks, one voice only, natural Hindi lip-sync, casual friendly tone. She says: \"[your hook line in Hindi]\" real skin, no filter, clearly adult, modest, natural hands with five fingers, no text on screen, no watermark. Clean natural audio only — NO background music.\n```\n\nFields still in brackets need your details; I have not invented them.",
+        "origin": "local_knowledge_handler",
+        "providerRequests": 0,
+        "templateId": "ai-product-photoshoot-ads:training:exact-template:l07-ugc-1",
+        "passed": true
+      },
+      {
+        "id": "ppads_038",
+        "turn": 1,
+        "question": "Give exact L07 UGC 2 prompt for a ceramic cup.",
+        "history": [],
+        "expectedCompleteBody": "Use the uploaded character sheet for the [woman] and the uploaded product sheet for the ceramic cup. Keep her face, hair and outfit exactly the same as the character sheet. Keep the ceramic cup exactly the same — same shape, same colour, same details, same text and logo, no morphing. Vertical video shot from her own phone resting on the desk in front of her: the camera itself is the phone, so we see her and the ceramic cup from a low front angle. NO phone visible anywhere in the frame, no second camera, no screen facing us. She uses the ceramic cup for a moment, then looks up straight into the lens and talks, casual and natural. Natural window light, a real lived-in room, not a studio, not a polished ad. ONLY she speaks, one voice only, natural Hindi lip-sync, casual friendly tone. She says: \"[your second line in Hindi]\" real skin, no filter, clearly adult, modest, natural hands with five fingers, no text on screen, no watermark. Clean natural audio only — NO background music.",
+        "actualLocalResponse": "L07 UGC 2\n\n```text\nUse the uploaded character sheet for the [woman] and the uploaded product sheet for the ceramic cup. Keep her face, hair and outfit exactly the same as the character sheet. Keep the ceramic cup exactly the same — same shape, same colour, same details, same text and logo, no morphing. Vertical video shot from her own phone resting on the desk in front of her: the camera itself is the phone, so we see her and the ceramic cup from a low front angle. NO phone visible anywhere in the frame, no second camera, no screen facing us. She uses the ceramic cup for a moment, then looks up straight into the lens and talks, casual and natural. Natural window light, a real lived-in room, not a studio, not a polished ad. ONLY she speaks, one voice only, natural Hindi lip-sync, casual friendly tone. She says: \"[your second line in Hindi]\" real skin, no filter, clearly adult, modest, natural hands with five fingers, no text on screen, no watermark. Clean natural audio only — NO background music.\n```\n\nFields still in brackets need your details; I have not invented them.",
+        "origin": "local_knowledge_handler",
+        "providerRequests": 0,
+        "templateId": "ai-product-photoshoot-ads:training:exact-template:l07-ugc-2",
+        "passed": true
+      },
+      {
+        "id": "ppads_conv_001",
+        "turn": 2,
+        "question": "Now give me the exact prompt for that.",
+        "history": [
+          {
+            "role": "user",
+            "content": "I am making a product sheet for a perfume bottle."
+          },
+          {
+            "role": "assistant",
+            "content": "To make a product sheet for your perfume bottle, follow these steps from Lesson 02:\n\n1.  **Take Photos:** Capture 5-7 clear photos of your perfume bottle from different angles. Make sure to use daylight and turn off the flash. The details of the bottle should be clear.\n2.  **Start a New Project in Google Flow:** Go to Google Flow, select \"New project,\" then \"Image,\" and choose \"Nano Banana Pro.\"\n3.  **Upload Photos:** Upload all the photos you took as references in Google Flow.\n4.  **Run Product Sheet Prompt:** Use the product sheet prompt to generate the sheet.\n5.  **Review and Save:** Check the generated product sheet. If it's not good, regenerate it. Once you have a good sheet, save it, as you will use it as a reference throughout the course for all your product shots."
+          }
+        ],
+        "expectedCompleteBody": "Use all the uploaded photos of this perfume bottle. Create a clean product reference sheet on a plain white background showing the exact same perfume bottle in four views arranged in a neat grid: front view, top-down view, side view and three-quarter angle view. Keep the perfume bottle exactly the same in every view — same shape, same colour, same details, same text and logo, do not redesign it. Even soft studio lighting, no extra objects, no text labels, realistic product photography.",
+        "actualLocalResponse": "L02 Product Sheet\n\n```text\nUse all the uploaded photos of this perfume bottle. Create a clean product reference sheet on a plain white background showing the exact same perfume bottle in four views arranged in a neat grid: front view, top-down view, side view and three-quarter angle view. Keep the perfume bottle exactly the same in every view — same shape, same colour, same details, same text and logo, do not redesign it. Even soft studio lighting, no extra objects, no text labels, realistic product photography.\n```",
+        "origin": "local_knowledge_handler",
+        "providerRequests": 0,
+        "templateId": "ai-product-photoshoot-ads:training:exact-template:l02-product-sheet",
+        "passed": true
+      },
+      {
+        "id": "new15_001",
+        "turn": 1,
+        "question": "Send the approved exact L02 Product Sheet prompt for an enamel camping bowl. Preserve the entire saved template.",
+        "history": [],
+        "expectedCompleteBody": "Use all the uploaded photos of this enamel camping bowl. Create a clean product reference sheet on a plain white background showing the exact same enamel camping bowl in four views arranged in a neat grid: front view, top-down view, side view and three-quarter angle view. Keep the enamel camping bowl exactly the same in every view — same shape, same colour, same details, same text and logo, do not redesign it. Even soft studio lighting, no extra objects, no text labels, realistic product photography.",
+        "actualLocalResponse": "L02 Product Sheet\n\n```text\nUse all the uploaded photos of this enamel camping bowl. Create a clean product reference sheet on a plain white background showing the exact same enamel camping bowl in four views arranged in a neat grid: front view, top-down view, side view and three-quarter angle view. Keep the enamel camping bowl exactly the same in every view — same shape, same colour, same details, same text and logo, do not redesign it. Even soft studio lighting, no extra objects, no text labels, realistic product photography.\n```",
+        "origin": "local_knowledge_handler",
+        "providerRequests": 0,
+        "templateId": "ai-product-photoshoot-ads:training:exact-template:l02-product-sheet",
+        "passed": true
+      },
+      {
+        "id": "new15_002",
+        "turn": 1,
+        "question": "Please copy the exact L02 White Studio template for a linen notebook, with its full original wording.",
+        "history": [],
+        "expectedCompleteBody": "Use the uploaded product sheet as the reference. Keep the linen notebook exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a clean seamless white background, soft even studio lighting, a soft natural shadow under it, slight top-down angle, sharp focus, realistic product photography.",
+        "actualLocalResponse": "L02 White Studio\n\n```text\nUse the uploaded product sheet as the reference. Keep the linen notebook exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a clean seamless white background, soft even studio lighting, a soft natural shadow under it, slight top-down angle, sharp focus, realistic product photography.\n```",
+        "origin": "local_knowledge_handler",
+        "providerRequests": 0,
+        "templateId": "ai-product-photoshoot-ads:training:exact-template:l02-white-studio",
+        "passed": true
+      },
+      {
+        "id": "new15_003",
+        "turn": 1,
+        "question": "Give the exact L04 Colour Variant Sheet prompt for changing all zipper pulls to forest green.",
+        "history": [],
+        "expectedCompleteBody": "Use the uploaded product sheet as the reference. Only change the colour of all zipper pulls to forest green. Keep everything else exactly the same — same shape, same layout, same details, same text and logo, same four views, same background, same lighting. Output a full product sheet in the new colour.",
+        "actualLocalResponse": "L04 Colour Variant Sheet\n\n```text\nUse the uploaded product sheet as the reference. Only change the colour of all zipper pulls to forest green. Keep everything else exactly the same — same shape, same layout, same details, same text and logo, same four views, same background, same lighting. Output a full product sheet in the new colour.\n```",
+        "origin": "local_knowledge_handler",
+        "providerRequests": 0,
+        "templateId": "ai-product-photoshoot-ads:training:exact-template:l04-colour-variant-sheet",
+        "passed": true
+      },
+      {
+        "id": "new15_conv_001",
+        "turn": 2,
+        "question": "Please give the exact L02 Lifestyle prompt for that product, using its known name and no invented features.",
+        "history": [
+          {
+            "role": "user",
+            "content": "My product is an embroidered cushion cover. I need a lifestyle product photo from Lesson 02."
+          },
+          {
+            "role": "assistant",
+            "content": "To create a lifestyle product photo for your embroidered cushion cover, you'll need to use a product sheet as a reference.\n\nHere's how you can do it, based on Lesson 02:\n\n1.  **Create a Product Sheet:** If you haven't already, take 5-7 clear photos of your embroidered cushion cover from different angles in daylight, with the flash off. Then, use Google Flow (New project → Image → Nano Banana Pro) to upload these photos and run the Product Sheet template. This will create a consistent reference for your product. (Lesson 02)\n2.  **Use the Product Sheet as Reference:** When generating your lifestyle photo, make sure to use the product sheet you created as the primary reference. This ensures your cushion cover remains consistent in shape, color, details, and any text/logo. (Lesson 02)\n3.  **Describe the Lifestyle Scene:** In your prompt, describe the scene where you want your cushion cover to appear. For example, you could say: \"Place it on a warm wooden desk next to a white coffee mug and a small green plant, soft morning window light from the left, shallow depth of field, realistic lifestyle product photography.\" (Lesson 02)\n\nRemember, the key is to keep the product exactly the same as it appears in your product sheet, and then describe the desired scene around it."
+          }
+        ],
+        "expectedCompleteBody": "Use the uploaded product sheet as the reference. Keep the embroidered cushion cover exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a warm wooden desk next to a white coffee mug and a small green plant, soft morning window light from the left, shallow depth of field, realistic lifestyle product photography.",
+        "actualLocalResponse": "L02 Lifestyle\n\n```text\nUse the uploaded product sheet as the reference. Keep the embroidered cushion cover exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a warm wooden desk next to a white coffee mug and a small green plant, soft morning window light from the left, shallow depth of field, realistic lifestyle product photography.\n```",
+        "origin": "local_knowledge_handler",
+        "providerRequests": 0,
+        "templateId": "ai-product-photoshoot-ads:training:exact-template:l02-lifestyle",
+        "passed": true
+      },
+      {
+        "id": "new15_conv_005",
+        "turn": 2,
+        "question": "Give the exact L06 Arc prompt for the product I mentioned. Keep every approved constraint.",
+        "history": [
+          {
+            "role": "user",
+            "content": "I sell a cork yoga block. I want a slow arc product video in Lesson 06."
+          },
+          {
+            "role": "assistant",
+            "content": "To create a slow arc product video for your cork yoga block using the Lesson 06 method, you will use the \"Ingredients\" mode in Flow.\n\nHere's the prompt template you can use:\n\n\"Use the uploaded image as the first frame. The cork yoga block stays perfectly still and exactly the same the whole time — same shape, same colour, same details, same text and logo, no morphing, no warping. The camera slowly arcs a little to the right around the cork yoga block, smooth and steady, while the lights in the background glow softly. Moody cinematic look, realistic product video. No people, no hands, no text on screen. Soft quiet room ambience only — NO music, NO voice.\"\n\nRemember to upload an image of your cork yoga block as the first frame. The course recommends using settings like 16:9 aspect ratio, Omni 1.1 Flash, 720p resolution, and a 6-second duration. You should add music later during editing."
+          }
+        ],
+        "expectedCompleteBody": "Use the uploaded image as the first frame. The cork yoga block stays perfectly still and exactly the same the whole time — same shape, same colour, same details, same text and logo, no morphing, no warping. The camera slowly arcs a little to the right around the cork yoga block, smooth and steady, while the lights in the background glow softly. Moody cinematic look, realistic product video. No people, no hands, no text on screen. Soft quiet room ambience only — NO music, NO voice.",
+        "actualLocalResponse": "L06 Arc\n\n```text\nUse the uploaded image as the first frame. The cork yoga block stays perfectly still and exactly the same the whole time — same shape, same colour, same details, same text and logo, no morphing, no warping. The camera slowly arcs a little to the right around the cork yoga block, smooth and steady, while the lights in the background glow softly. Moody cinematic look, realistic product video. No people, no hands, no text on screen. Soft quiet room ambience only — NO music, NO voice.\n```",
+        "origin": "local_knowledge_handler",
+        "providerRequests": 0,
+        "templateId": "ai-product-photoshoot-ads:training:exact-template:l06-arc",
+        "passed": true
+      }
+    ]
+  },
+  "historical_score_notice": "Phase 2 remains 45/70 (64.3%) under its unchanged v2 grader. New tutor live accuracy is unmeasured. Saved-response v3 regrading below changes the rubric, not model answers or chatbot behavior.",
+  "saved_response_v3_regrade": {
+    "original": {
+      "total": 55,
+      "passed": 46,
+      "failed": 9,
+      "skipped": 0,
+      "inconclusive": 0,
+      "provider_fallback": 0,
+      "provider_fallback_cases": 0,
+      "live_provider_turns": 16,
+      "local_quality_turns": 47,
+      "score_all_cases_pct": 83.6,
+      "score_executed_cases_pct": 83.6,
+      "dimension_turn_counts": {
+        "correctness": {
+          "failed": 7,
+          "passed": 56
+        },
+        "language": {
+          "passed": 63
+        },
+        "lesson_references": {
+          "passed": 59,
+          "failed": 4
+        },
+        "safety": {
+          "passed": 63
+        },
+        "prompt_accuracy": {
+          "passed": 62,
+          "failed": 1
+        },
+        "task_completion": {
+          "passed": 61,
+          "failed": 2
+        }
+      }
+    },
+    "held_out": {
+      "total": 15,
+      "passed": 9,
+      "failed": 6,
+      "skipped": 0,
+      "inconclusive": 0,
+      "provider_fallback": 0,
+      "provider_fallback_cases": 0,
+      "live_provider_turns": 6,
+      "local_quality_turns": 14,
+      "score_all_cases_pct": 60.0,
+      "score_executed_cases_pct": 60.0,
+      "dimension_turn_counts": {
+        "correctness": {
+          "passed": 17,
+          "failed": 3
+        },
+        "language": {
+          "passed": 20
+        },
+        "lesson_references": {
+          "passed": 19,
+          "failed": 1
+        },
+        "safety": {
+          "passed": 20
+        },
+        "prompt_accuracy": {
+          "passed": 17,
+          "failed": 3
+        },
+        "task_completion": {
+          "passed": 17,
+          "failed": 3
+        }
+      }
+    }
+  }
+}

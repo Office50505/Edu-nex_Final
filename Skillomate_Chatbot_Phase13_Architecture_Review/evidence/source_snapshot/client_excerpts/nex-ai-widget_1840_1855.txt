@@ -1,0 +1,17 @@
+edunex-f/js/nex-ai-widget.js
+  1840   async function getAiReply(text, history = conversationHistory) {
+  1841     const data = await EduNex.authRequest('/api/ai/chat', {
+  1842       method: 'POST',
+  1843       body: JSON.stringify({
+  1844         message: text,
+  1845         history,
+  1846         courseId: window.SkillomateLessonContext?.courseId || '',
+  1847         lessonId: window.SkillomateLessonContext?.lessonId || '',
+  1848         pagePath: window.location.pathname + window.location.search,
+  1849         assistantName: normalizeBotName(botNameInput?.value) || localStorage.getItem(botNameStorageKey) || 'AI',
+  1850       }),
+  1851     });
+  1852 
+  1853     if (typeof data?.reply !== 'string' || !data.reply.trim()) throw new Error('No answer returned. Please try again.');
+  1854     return data;
+  1855   }

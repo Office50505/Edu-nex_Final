@@ -1,0 +1,256 @@
+{
+  "id": "FRESH-ML-003",
+  "turnIndex": 1,
+  "status": "FAIL",
+  "critical": false,
+  "suspectedCritical": false,
+  "criteria": [
+    {
+      "status": "FAIL",
+      "excerpts": [
+        "phir jagah, 2–3 objects, roshni aur angle likho"
+      ],
+      "reason": "Generic advice supplies no actual lifestyle scene or lavender cotton scarf identity/material; Zïa Wrap omitted.",
+      "criterion": "Explain a lifestyle scene in Hinglish preserving scarf identity and supplied colour/material."
+    },
+    {
+      "status": "FAIL",
+      "excerpts": [
+        "Sirf product sheet ko reference banao. Pehle product bilkul same rakhne ko bolo"
+      ],
+      "reason": "Correct reference/unchanged guidance, but essential realistic scale instruction omitted and no scene applied to given scarf.",
+      "criterion": "Use its product sheet, keep product unchanged and realistic scale."
+    }
+  ],
+  "dimensions": {
+    "grounding": "PASS",
+    "facts": "FAIL",
+    "taskCompleteness": "FAIL",
+    "language": "PASS",
+    "authorization": "PASS",
+    "isolation": "PASS",
+    "httpStatus": "PASS"
+  },
+  "requestedExactBodyChecks": [],
+  "supplementalExactBodyChecks": [],
+  "rubricVersion": "phase14b-independent-v1",
+  "gradedAt": "2026-10-16T10:55:43.810314+00:00",
+  "providerAvailability": {
+    "provider": "course-knowledge-rule",
+    "outcome": {
+      "type": "local_rule",
+      "liveModelAnswer": false,
+      "providerStatus": "not_requested",
+      "responseIssue": null
+    },
+    "providerRequests": [],
+    "inferenceNecessaryForThisTurn": false,
+    "reason": "Actual deterministic response directly judged; no live model success inferred."
+  },
+  "ownershipPayloadReview": {
+    "reviewed": true,
+    "actor": "A",
+    "actorId": "121a8a61d0bec8cad737ec96",
+    "scopeInspection": {
+      "independentExplicitSelectedCourse": "6d0000000000000000000000",
+      "independentExpectedOwner": "6d0000000000000000000000",
+      "explicitUnknownScope": false,
+      "independentAuthAndEntitlement": true,
+      "requiresSemanticScopeAdjudication": false,
+      "protectedRetrievedSources": [
+        {
+          "id": "S1",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "Product photos",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_2",
+          "lessonName": "Product photos",
+          "contentType": "workflow",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:workflow:product-photos"
+        },
+        {
+          "id": "S2",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "Product sheet banana",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_2",
+          "lessonName": "Product sheet banana",
+          "contentType": "workflow",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:workflow:product-sheet-banana"
+        },
+        {
+          "id": "S3",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "L02 Lifestyle",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_2",
+          "lessonName": "L02 Lifestyle",
+          "contentType": "exact-template",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:exact-template:l02-lifestyle"
+        },
+        {
+          "id": "S4",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "Lesson 02 — Phone Photo Se Studio Photo",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_2",
+          "lessonName": "Lesson 02 — Phone Photo Se Studio Photo",
+          "contentType": "lesson-summary",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:lesson-summary:lesson-02-phone-photo-se-studio-photo"
+        },
+        {
+          "id": "S5",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "Label ke akshar / keys ke letters",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_2",
+          "lessonName": "Label ke akshar / keys ke letters",
+          "contentType": "faq",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:faq:label-ke-akshar-keys-ke-letters"
+        },
+        {
+          "id": "S6",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "Har photo mein product thoda alag",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_2",
+          "lessonName": "Har photo mein product thoda alag",
+          "contentType": "faq",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:faq:har-photo-mein-product-thoda-alag"
+        }
+      ],
+      "retrievalProductBodies": [
+        {
+          "heading": "Lesson 02 — Phone Photo Se Studio Photo",
+          "contentType": "lesson-summary",
+          "owner": "6d0000000000000000000000",
+          "sha256": "21582da9e3555afbf289672cf4d95cd09b1a1c240369ed1dc47895eeed208f95"
+        },
+        {
+          "heading": "Product sheet banana",
+          "contentType": "workflow",
+          "owner": "6d0000000000000000000000",
+          "sha256": "56922de78128c44d1321fa410072ad53637117feed928197c53c4a4c3f6438f2"
+        },
+        {
+          "heading": "Product photos",
+          "contentType": "workflow",
+          "owner": "6d0000000000000000000000",
+          "sha256": "cda5fab917790b32e1279a209aeef0f44b618ba75ca4c88c19264357539fae4d"
+        },
+        {
+          "heading": "Label ke akshar / keys ke letters",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "566a7b4772832b93a791f298b56c9b3e3c4280cf676ee275a69644183dd05d4e"
+        },
+        {
+          "heading": "Har photo mein product thoda alag",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "9a8959739deebee30004ee75c9e9f8eea357ba859b480755d62a564e085597c6"
+        },
+        {
+          "heading": "L02 Lifestyle",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "508db83ae00763811db2d33e48f84cb80717bcfb36f4417120d5e5c5659f9706"
+        }
+      ],
+      "assembledContextProductBodies": [
+        {
+          "heading": "Lesson 02 — Phone Photo Se Studio Photo",
+          "contentType": "lesson-summary",
+          "owner": "6d0000000000000000000000",
+          "sha256": "21582da9e3555afbf289672cf4d95cd09b1a1c240369ed1dc47895eeed208f95"
+        },
+        {
+          "heading": "Product sheet banana",
+          "contentType": "workflow",
+          "owner": "6d0000000000000000000000",
+          "sha256": "56922de78128c44d1321fa410072ad53637117feed928197c53c4a4c3f6438f2"
+        },
+        {
+          "heading": "Product photos",
+          "contentType": "workflow",
+          "owner": "6d0000000000000000000000",
+          "sha256": "cda5fab917790b32e1279a209aeef0f44b618ba75ca4c88c19264357539fae4d"
+        },
+        {
+          "heading": "Label ke akshar / keys ke letters",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "566a7b4772832b93a791f298b56c9b3e3c4280cf676ee275a69644183dd05d4e"
+        },
+        {
+          "heading": "Har photo mein product thoda alag",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "9a8959739deebee30004ee75c9e9f8eea357ba859b480755d62a564e085597c6"
+        },
+        {
+          "heading": "L02 Lifestyle",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "508db83ae00763811db2d33e48f84cb80717bcfb36f4417120d5e5c5659f9706"
+        }
+      ],
+      "assembledPayloads": [],
+      "providerAdapterProductBodies": [],
+      "responseProductBodies": [],
+      "noPayloadConstructed": true,
+      "blockedAdapterAttempts": 0,
+      "externalTransportAttempts": 0,
+      "potentialCriticalFindings": [],
+      "inspectionPerformed": true
+    },
+    "dbOperations": [
+      {
+        "model": "AiTutorSession",
+        "operation": "findOne",
+        "filter": {
+          "user": "121a8a61d0bec8cad737ec96",
+          "course": "6d0000000000000000000000"
+        }
+      },
+      {
+        "model": "Course",
+        "operation": "find",
+        "filter": {
+          "status": "published",
+          "_id": "6d0000000000000000000000"
+        }
+      },
+      {
+        "model": "AiTutorSession",
+        "operation": "upsert",
+        "filter": {
+          "user": "121a8a61d0bec8cad737ec96",
+          "course": "6d0000000000000000000000"
+        }
+      }
+    ],
+    "retrievalObservationCount": 1,
+    "contextObservationCount": 1,
+    "payloadObservationCount": 0,
+    "reason": "All six owners/context bodies authorized product course, no assembled/provider payload. Full flags and own-actor session reviewed; supplied scarf not misused as foreign identity. No executable quotation or boundary violation."
+  }
+}

@@ -1,0 +1,361 @@
+{
+  "id": "FRESH-MT-016",
+  "turnIndex": 2,
+  "status": "UNTESTED",
+  "critical": false,
+  "suspectedCritical": false,
+  "rubricVersion": "phase14b-independent-v1",
+  "criteria": [
+    {
+      "criterion": "Use the exact corrected Gurmukhi name in grounded caption.",
+      "status": "UNTESTED",
+      "excerpts": [
+        "Lesson 05\n\nProvide real product details, price and where you sell. First ask for three buyer types, their problems and an ad angle for each. Choose one angle, then request 5 hooks, a 15-second script and an Instagram caption. Use only supplied features; add no unsupported claims. Next request 3 Google Flow image prompts and run them with the product sheet. Review and remove false or unproven claims."
+      ],
+      "reason": "Saved ad-plan workflow is not the requested corrected-name caption. Actual semantic generation is unavailable; current user input retains ਕਿਰਣ Tray unchanged while previous raw user history retains its superseded spelling as history only. Necessary actual provider response absent for this essential requirement; no fallback/model pass inferred."
+    }
+  ],
+  "dimensions": {
+    "grounding": "UNTESTED",
+    "facts": "UNTESTED",
+    "taskCompleteness": "UNTESTED",
+    "language": "UNTESTED",
+    "authorization": "PASS",
+    "isolation": "PASS",
+    "httpStatus": "PASS"
+  },
+  "requestedExactBodyChecks": [],
+  "supplementalExactBodyChecks": [],
+  "providerAvailability": {
+    "provider": "built-in-course-guide",
+    "outcome": {
+      "type": "provider_fallback",
+      "liveModelAnswer": false,
+      "providerStatus": "connection_error",
+      "responseIssue": null
+    },
+    "attempts": [
+      {
+        "index": 1,
+        "startedAt": "2026-10-16T11:09:29.432Z",
+        "requestSha256": "959d34b99e497e06f83f171fe662f26cc94b6ed44164ee5899f05a27c8c6e7af",
+        "promptModified": false,
+        "recordedFixture": false,
+        "error": {
+          "name": "Error",
+          "code": "PROVIDER_PAYLOAD_NOT_APPROVED"
+        },
+        "durationMs": 0,
+        "completedAt": "2026-10-16T11:09:29.432Z"
+      },
+      {
+        "index": 2,
+        "startedAt": "2026-10-16T11:09:29.534Z",
+        "requestSha256": "959d34b99e497e06f83f171fe662f26cc94b6ed44164ee5899f05a27c8c6e7af",
+        "promptModified": false,
+        "recordedFixture": false,
+        "error": {
+          "name": "Error",
+          "code": "PROVIDER_PAYLOAD_NOT_APPROVED"
+        },
+        "durationMs": 0,
+        "completedAt": "2026-10-16T11:09:29.534Z"
+      }
+    ],
+    "inferenceNecessaryForThisTurn": true,
+    "reason": "Actual configured provider requests blocked before external transport. No model/fixture response. Saved fallback cannot establish required semantic response."
+  },
+  "ownershipPayloadReview": {
+    "reviewed": true,
+    "actor": "A",
+    "actorId": "8f0e831fb041548668be0f0f",
+    "scopeInspection": {
+      "independentExplicitSelectedCourse": "6d0000000000000000000000",
+      "independentExpectedOwner": "6d0000000000000000000000",
+      "explicitUnknownScope": false,
+      "independentAuthAndEntitlement": true,
+      "requiresSemanticScopeAdjudication": false,
+      "protectedRetrievedSources": [
+        {
+          "id": "S1",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "Ad plan",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_5",
+          "lessonName": "Ad plan",
+          "contentType": "workflow",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:workflow:ad-plan"
+        },
+        {
+          "id": "S2",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "UGC video",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_7",
+          "lessonName": "UGC video",
+          "contentType": "workflow",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:workflow:ugc-video"
+        },
+        {
+          "id": "S3",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "L05 Step 2 Hooks + Script",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_5",
+          "lessonName": "L05 Step 2 Hooks + Script",
+          "contentType": "exact-template",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:exact-template:l05-step-2-hooks-script"
+        },
+        {
+          "id": "S4",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "L05 Step 1 Brief",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_5",
+          "lessonName": "L05 Step 1 Brief",
+          "contentType": "exact-template",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:exact-template:l05-step-1-brief"
+        },
+        {
+          "id": "S5",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "Lesson 05 — chat G.P.T Se Ad Plan",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_5",
+          "lessonName": "Lesson 05 — chat G.P.T Se Ad Plan",
+          "contentType": "lesson-summary",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:lesson-summary:lesson-05-chat-g-p-t-se-ad-plan"
+        },
+        {
+          "id": "S6",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "Course overview and prerequisites",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_1",
+          "lessonName": "Course overview and prerequisites",
+          "contentType": "overview",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:overview:course-overview-and-prerequisites"
+        }
+      ],
+      "retrievalProductBodies": [
+        {
+          "heading": "Course overview and prerequisites",
+          "contentType": "overview",
+          "owner": "6d0000000000000000000000",
+          "sha256": "46c6d59dfbfcf34bb540732e5795832daaaaa3947d2a6fce4eccd03c2c309cf5"
+        },
+        {
+          "heading": "Lesson 05 — chat G.P.T Se Ad Plan",
+          "contentType": "lesson-summary",
+          "owner": "6d0000000000000000000000",
+          "sha256": "72a4ef4ed4204234ee1f7964af36810398c959fc9fee0feb73ccc6aa1b4d95c0"
+        },
+        {
+          "heading": "Ad plan",
+          "contentType": "workflow",
+          "owner": "6d0000000000000000000000",
+          "sha256": "d6f78ee930b9429a7609a63d027430fee7986270c0f8717d52ab63d877839c00"
+        },
+        {
+          "heading": "UGC video",
+          "contentType": "workflow",
+          "owner": "6d0000000000000000000000",
+          "sha256": "0ddcd4cd92bef6253f0f689cb53e6540ce491d6a7657e509c0d314d47104d126"
+        },
+        {
+          "heading": "L05 Step 1 Brief",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "e76825ea5a9ff2a9095f6d333195ca0dbb236257b6347d7cb8b645147c8c8d47"
+        },
+        {
+          "heading": "L05 Step 2 Hooks + Script",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "c5bf17854cb94d9d0d5021168ee3aea64c27a7e48fa949186564d29054a3fe38"
+        }
+      ],
+      "assembledContextProductBodies": [
+        {
+          "heading": "Course overview and prerequisites",
+          "contentType": "overview",
+          "owner": "6d0000000000000000000000",
+          "sha256": "46c6d59dfbfcf34bb540732e5795832daaaaa3947d2a6fce4eccd03c2c309cf5"
+        },
+        {
+          "heading": "Lesson 05 — chat G.P.T Se Ad Plan",
+          "contentType": "lesson-summary",
+          "owner": "6d0000000000000000000000",
+          "sha256": "72a4ef4ed4204234ee1f7964af36810398c959fc9fee0feb73ccc6aa1b4d95c0"
+        },
+        {
+          "heading": "Ad plan",
+          "contentType": "workflow",
+          "owner": "6d0000000000000000000000",
+          "sha256": "d6f78ee930b9429a7609a63d027430fee7986270c0f8717d52ab63d877839c00"
+        },
+        {
+          "heading": "UGC video",
+          "contentType": "workflow",
+          "owner": "6d0000000000000000000000",
+          "sha256": "0ddcd4cd92bef6253f0f689cb53e6540ce491d6a7657e509c0d314d47104d126"
+        },
+        {
+          "heading": "L05 Step 1 Brief",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "e76825ea5a9ff2a9095f6d333195ca0dbb236257b6347d7cb8b645147c8c8d47"
+        },
+        {
+          "heading": "L05 Step 2 Hooks + Script",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "c5bf17854cb94d9d0d5021168ee3aea64c27a7e48fa949186564d29054a3fe38"
+        }
+      ],
+      "assembledPayloads": [
+        {
+          "sha256": "959d34b99e497e06f83f171fe662f26cc94b6ed44164ee5899f05a27c8c6e7af",
+          "validation": "accepted",
+          "error": null,
+          "scope": {
+            "activeCourse": {
+              "_id": "6d0000000000000000000000",
+              "slug": "ai-product-photoshoot-ads"
+            },
+            "includeMaterials": true
+          },
+          "productBodies": [
+            {
+              "heading": "Course overview and prerequisites",
+              "contentType": "overview",
+              "owner": "6d0000000000000000000000",
+              "sha256": "46c6d59dfbfcf34bb540732e5795832daaaaa3947d2a6fce4eccd03c2c309cf5"
+            },
+            {
+              "heading": "Lesson 05 — chat G.P.T Se Ad Plan",
+              "contentType": "lesson-summary",
+              "owner": "6d0000000000000000000000",
+              "sha256": "72a4ef4ed4204234ee1f7964af36810398c959fc9fee0feb73ccc6aa1b4d95c0"
+            },
+            {
+              "heading": "Ad plan",
+              "contentType": "workflow",
+              "owner": "6d0000000000000000000000",
+              "sha256": "d6f78ee930b9429a7609a63d027430fee7986270c0f8717d52ab63d877839c00"
+            },
+            {
+              "heading": "UGC video",
+              "contentType": "workflow",
+              "owner": "6d0000000000000000000000",
+              "sha256": "0ddcd4cd92bef6253f0f689cb53e6540ce491d6a7657e509c0d314d47104d126"
+            },
+            {
+              "heading": "L05 Step 1 Brief",
+              "contentType": "exact-template",
+              "owner": "6d0000000000000000000000",
+              "sha256": "e76825ea5a9ff2a9095f6d333195ca0dbb236257b6347d7cb8b645147c8c8d47"
+            },
+            {
+              "heading": "L05 Step 2 Hooks + Script",
+              "contentType": "exact-template",
+              "owner": "6d0000000000000000000000",
+              "sha256": "c5bf17854cb94d9d0d5021168ee3aea64c27a7e48fa949186564d29054a3fe38"
+            }
+          ],
+          "messageCount": 4
+        }
+      ],
+      "providerAdapterProductBodies": [
+        {
+          "heading": "Course overview and prerequisites",
+          "contentType": "overview",
+          "owner": "6d0000000000000000000000",
+          "sha256": "46c6d59dfbfcf34bb540732e5795832daaaaa3947d2a6fce4eccd03c2c309cf5"
+        },
+        {
+          "heading": "Lesson 05 — chat G.P.T Se Ad Plan",
+          "contentType": "lesson-summary",
+          "owner": "6d0000000000000000000000",
+          "sha256": "72a4ef4ed4204234ee1f7964af36810398c959fc9fee0feb73ccc6aa1b4d95c0"
+        },
+        {
+          "heading": "Ad plan",
+          "contentType": "workflow",
+          "owner": "6d0000000000000000000000",
+          "sha256": "d6f78ee930b9429a7609a63d027430fee7986270c0f8717d52ab63d877839c00"
+        },
+        {
+          "heading": "UGC video",
+          "contentType": "workflow",
+          "owner": "6d0000000000000000000000",
+          "sha256": "0ddcd4cd92bef6253f0f689cb53e6540ce491d6a7657e509c0d314d47104d126"
+        },
+        {
+          "heading": "L05 Step 1 Brief",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "e76825ea5a9ff2a9095f6d333195ca0dbb236257b6347d7cb8b645147c8c8d47"
+        },
+        {
+          "heading": "L05 Step 2 Hooks + Script",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "c5bf17854cb94d9d0d5021168ee3aea64c27a7e48fa949186564d29054a3fe38"
+        }
+      ],
+      "responseProductBodies": [],
+      "noPayloadConstructed": false,
+      "blockedAdapterAttempts": 2,
+      "externalTransportAttempts": 0,
+      "potentialCriticalFindings": [],
+      "inspectionPerformed": true
+    },
+    "dbOperations": [
+      {
+        "model": "AiTutorSession",
+        "operation": "findOne",
+        "filter": {
+          "user": "8f0e831fb041548668be0f0f",
+          "course": "6d0000000000000000000000"
+        }
+      },
+      {
+        "model": "Course",
+        "operation": "find",
+        "filter": {
+          "status": "published",
+          "_id": "6d0000000000000000000000"
+        }
+      },
+      {
+        "model": "AiTutorSession",
+        "operation": "upsert",
+        "filter": {
+          "user": "8f0e831fb041548668be0f0f",
+          "course": "6d0000000000000000000000"
+        }
+      }
+    ],
+    "reason": "All six retrieval/context/adapter bodies belong to entitled selected6d0000000000000000000000. Full assembly reviewed with exact previous blocks plus own Gurmukhi correction history/current request and safe learner context. No foreign actor/course secrets. Session operations filter actor8f0e831fb041548668be0f0f/course. Both blocked provider payloads exactly equal reviewed assembly, no transport."
+  },
+  "gradedAt": "2026-10-16T11:09:42.878356+00:00"
+}

@@ -1,0 +1,31 @@
+Run from Untitled/edunex-b.
+
+The isolated evaluator backend is currently running at http://127.0.0.1:3127.
+Its actual chatbot endpoint is POST /api/ai/chat.
+Authentication requires a valid bearer JWT and matching active server-side session (legacy user/session authentication is also supported by the route).
+Protected materials require server-verified course access or valid subscription access; request text cannot grant access.
+The evaluation uses synthetic accounts and a fresh local skillomate_mvp_eval_* database, with background jobs disabled.
+Tokens live in private /private/tmp runtime files. No credentials appear in this report.
+
+Start the evaluation backend only if it is stopped:
+node scripts/eval/mvp-local-backend.cjs
+
+Offline evaluation (provider access blocked):
+python3 -B chatbot_eval.py --mode offline
+
+After the user's explicit approval has been recorded by the operator:
+python3 -B chatbot_eval.py --mode live
+
+The live command refuses to run without a matching approval. Provider access is limited to the configured fal endpoint, model, frozen cases, 60 attempts, 900 output tokens per attempt, 120000 payload characters, and approval expiry. Attempts persist across backend restarts.
+
+Model: google/gemini-2.5-flash via fal/OpenRouter.
+Cases: 30, with the requested 6/6/5/5/5/3 categories; 40 HTTP turns including follow-ups.
+Estimate: $0.15-$0.50, $3 planning allowance; actual fal/gateway billing is unverified. OpenRouter lists $0.30/M input and $2.50/M output tokens: https://openrouter.ai/google/gemini-2.5-flash
+Configured key comes from development environment files; vendor account production/non-production status is unverified.
+Provider requests remain blocked until explicit approval. No deployment, push, production configuration change, or ZIP performed.
+
+Focused regressions:
+NODE_OPTIONS='--require=./tests/helpers/deny-network.cjs' node --test tests/product-tutor-mvp-reassessment.test.cjs tests/product-tutor-mvp-launch.test.cjs tests/tutor-course-isolation.test.cjs tests/product-tutor-quality.test.cjs
+python3 -B -m unittest discover -s tests -p 'test_*.py' -v
+
+See last_results.json for complete case responses and the pending launch decision.

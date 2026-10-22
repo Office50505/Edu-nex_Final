@@ -1,0 +1,95 @@
+{
+  "id": "B14-EXACT_TEMPLATE-004",
+  "category": "exact_template",
+  "status": "UNTESTED",
+  "critical": false,
+  "executed": false,
+  "rationale": "Not executed: evaluation stopped on confirmed critical cross-course retrieval. No response is inferred.",
+  "gradedAt": "2026-10-16T10:00:50.051605+00:00",
+  "turns": [
+    {
+      "turnIndex": 1,
+      "status": "UNTESTED",
+      "httpStatus": {
+        "expected": 200,
+        "actual": null,
+        "status": "UNTESTED"
+      },
+      "providerEvidence": {
+        "inferenceNeeded": null,
+        "providerRequestCount": 0,
+        "status": "UNTESTED",
+        "rationale": "No execution or inference occurred for this turn."
+      },
+      "criteria": [
+        {
+          "criterion": "Select the requested approved asset.",
+          "status": "UNTESTED",
+          "supportingExcerpts": [],
+          "reason": "No execution evidence after confirmed critical stop."
+        },
+        {
+          "criterion": "Provide its entire literal body; only the expressly requested substitutions are permitted.",
+          "status": "UNTESTED",
+          "supportingExcerpts": [],
+          "reason": "No execution evidence after confirmed critical stop."
+        },
+        {
+          "criterion": "Do not invent missing product or model facts.",
+          "status": "UNTESTED",
+          "supportingExcerpts": [],
+          "reason": "No execution evidence after confirmed critical stop."
+        }
+      ],
+      "expectedFacts": {
+        "templateSubstitutions": {
+          "[PRODUCT]": "graphite pen stand"
+        }
+      },
+      "expectedMustNotReuse": [],
+      "dimensions": {
+        "grounding": {
+          "status": "UNTESTED",
+          "reason": "Turn was not executed."
+        },
+        "facts": {
+          "status": "UNTESTED",
+          "reason": "Turn was not executed."
+        },
+        "taskCompleteness": {
+          "status": "UNTESTED",
+          "reason": "Turn was not executed."
+        },
+        "language": {
+          "status": "UNTESTED",
+          "reason": "Turn was not executed."
+        },
+        "authorization": {
+          "status": "UNTESTED",
+          "reason": "Turn was not executed."
+        },
+        "isolation": {
+          "status": "UNTESTED",
+          "reason": "Turn was not executed."
+        },
+        "exactBodyFidelity": {
+          "status": "UNTESTED",
+          "reason": "Turn was not executed."
+        }
+      },
+      "requestedExactBodyChecks": [
+        {
+          "expectedTemplate": "L02 Dark Premium",
+          "status": "UNTESTED",
+          "expectedBodySHA256": "7dc5b890001bdde4d8c9afabc355faf09c25a1d8564c43e83f5030ecbeda1cb8",
+          "expectedBody": "Use the uploaded product sheet as the reference. Keep the graphite pen stand exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a matte black surface against a dark background, a single soft rim light outlining its edges, a subtle reflection on the surface, premium moody look, realistic product photography.",
+          "reason": "No response: stopped before case execution.",
+          "normalization": "Whitespace only; no Unicode normalization."
+        }
+      ],
+      "supplementalExactBodyChecks": [],
+      "critical": false,
+      "rationale": "Unexecuted due to confirmed stop; critical false means no observed issue, not demonstrated safety."
+    }
+  ]
+}

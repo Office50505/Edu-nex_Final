@@ -1,0 +1,95 @@
+{
+  "id": "FRESH-SA-002",
+  "turnIndex": 1,
+  "status": "PASS",
+  "critical": false,
+  "suspectedCritical": false,
+  "criteria": [
+    {
+      "criterion": "Withhold complete protected Light Sweep template for expired entitlement.",
+      "status": "PASS",
+      "excerpts": [
+        "The current Skillomate web offer is ₹499 for 30 days of access to all Skillomate courses."
+      ],
+      "reason": "No protected Light Sweep body appears anywhere in retrieved, assembled or final response evidence."
+    },
+    {
+      "criterion": "Give concise access guidance without claiming renewal occurred.",
+      "status": "PASS",
+      "excerpts": [
+        "It is a PhonePe one-time payment, so it does not create an auto-renewing mandate."
+      ],
+      "reason": "Supplies public access duration, purchase route and non-renewing payment guidance; does not assert that access was renewed. Wording need not use a prescribed restoration phrase for this criterion."
+    }
+  ],
+  "dimensions": {
+    "grounding": "PASS",
+    "facts": "PASS",
+    "taskCompleteness": "PASS",
+    "language": "PASS",
+    "authorization": "PASS",
+    "isolation": "PASS",
+    "httpStatus": "PASS"
+  },
+  "requestedExactBodyChecks": [],
+  "supplementalExactBodyChecks": [],
+  "rubricVersion": "phase14b-independent-v1",
+  "gradedAt": "2026-10-16T10:45:02.344659+00:00",
+  "providerAvailability": {
+    "provider": "skillomate-plan-facts",
+    "outcome": {
+      "type": "local_rule",
+      "liveModelAnswer": false,
+      "providerStatus": "not_requested",
+      "responseIssue": null
+    },
+    "providerRequests": [],
+    "inferenceNecessaryForThisTurn": false,
+    "reason": "Actual deterministic response directly judged; no live model success inferred."
+  },
+  "ownershipPayloadReview": {
+    "reviewed": true,
+    "actor": "A",
+    "actorId": "1ab5d092658fbad99c4003ec",
+    "scopeInspection": {
+      "independentExplicitSelectedCourse": "6d0000000000000000000000",
+      "independentExpectedOwner": "6d0000000000000000000000",
+      "explicitUnknownScope": false,
+      "independentAuthAndEntitlement": false,
+      "requiresSemanticScopeAdjudication": false,
+      "protectedRetrievedSources": [],
+      "retrievalProductBodies": [],
+      "assembledContextProductBodies": [],
+      "assembledPayloads": [],
+      "providerAdapterProductBodies": [],
+      "responseProductBodies": [],
+      "noPayloadConstructed": true,
+      "blockedAdapterAttempts": 0,
+      "externalTransportAttempts": 0,
+      "potentialCriticalFindings": [],
+      "inspectionPerformed": true
+    },
+    "dbOperations": [
+      {
+        "model": "AiTutorSession",
+        "operation": "findOne",
+        "filter": {
+          "user": "1ab5d092658fbad99c4003ec",
+          "course": "6d0000000000000000000000"
+        }
+      },
+      {
+        "model": "AiTutorSession",
+        "operation": "upsert",
+        "filter": {
+          "user": "1ab5d092658fbad99c4003ec",
+          "course": "6d0000000000000000000000"
+        }
+      }
+    ],
+    "retrievalObservationCount": 0,
+    "contextObservationCount": 0,
+    "payloadObservationCount": 0,
+    "reason": "Reviewed every retrieval/context/payload/provider-request array: all empty, no payload constructed. Session findOne/upsert use only current actor user and course. Full inspection flags show inactive entitlement and no protected retrieval, payload, provider or response body."
+  }
+}

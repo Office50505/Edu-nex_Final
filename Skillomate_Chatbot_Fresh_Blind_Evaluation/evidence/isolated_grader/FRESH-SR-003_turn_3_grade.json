@@ -1,0 +1,361 @@
+{
+  "id": "FRESH-SR-003",
+  "turnIndex": 3,
+  "status": "UNTESTED",
+  "critical": false,
+  "suspectedCritical": false,
+  "rubricVersion": "phase14b-independent-v1",
+  "criteria": [
+    {
+      "criterion": "After successful history reset do not recover the old olive product fact; ask for details.",
+      "status": "UNTESTED",
+      "excerpts": [
+        "Lesson 04\n\nUse the product sheet as reference. Change only the requested part’s colour and keep everything else unchanged: shape, layout, details, text, logo, views, background and lighting. Generate a complete new sheet for each colour and use that sheet in later shots."
+      ],
+      "reason": "Old Moss/olive facts are absent after successful reset and fallback does not recover them, but it gives unrelated colour workflow instead of asking for details. Necessary semantic clarification model unavailable. Necessary actual provider response absent for this essential requirement; no fallback/model pass inferred."
+    }
+  ],
+  "dimensions": {
+    "grounding": "UNTESTED",
+    "facts": "UNTESTED",
+    "taskCompleteness": "UNTESTED",
+    "language": "UNTESTED",
+    "authorization": "PASS",
+    "isolation": "PASS",
+    "httpStatus": "PASS"
+  },
+  "requestedExactBodyChecks": [],
+  "supplementalExactBodyChecks": [],
+  "providerAvailability": {
+    "provider": "built-in-course-guide",
+    "outcome": {
+      "type": "provider_fallback",
+      "liveModelAnswer": false,
+      "providerStatus": "connection_error",
+      "responseIssue": null
+    },
+    "attempts": [
+      {
+        "index": 3,
+        "startedAt": "2026-10-16T11:16:27.298Z",
+        "requestSha256": "3c013822b385f1aa9a897b23d8db4d1df80b8383526a534823a42ef7fcd42104",
+        "promptModified": false,
+        "recordedFixture": false,
+        "error": {
+          "name": "Error",
+          "code": "PROVIDER_PAYLOAD_NOT_APPROVED"
+        },
+        "durationMs": 0,
+        "completedAt": "2026-10-16T11:16:27.298Z"
+      },
+      {
+        "index": 4,
+        "startedAt": "2026-10-16T11:16:27.399Z",
+        "requestSha256": "3c013822b385f1aa9a897b23d8db4d1df80b8383526a534823a42ef7fcd42104",
+        "promptModified": false,
+        "recordedFixture": false,
+        "error": {
+          "name": "Error",
+          "code": "PROVIDER_PAYLOAD_NOT_APPROVED"
+        },
+        "durationMs": 0,
+        "completedAt": "2026-10-16T11:16:27.399Z"
+      }
+    ],
+    "inferenceNecessaryForThisTurn": true,
+    "reason": "Actual configured provider requests blocked before external transport. No model/fixture response. Saved fallback cannot establish required semantic response."
+  },
+  "ownershipPayloadReview": {
+    "reviewed": true,
+    "actor": "A",
+    "actorId": "bb7eb2da35cf503ab5fb630a",
+    "scopeInspection": {
+      "independentExplicitSelectedCourse": "6d0000000000000000000000",
+      "independentExpectedOwner": "6d0000000000000000000000",
+      "explicitUnknownScope": false,
+      "independentAuthAndEntitlement": true,
+      "requiresSemanticScopeAdjudication": false,
+      "protectedRetrievedSources": [
+        {
+          "id": "S1",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "Colour variants",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_4",
+          "lessonName": "Colour variants",
+          "contentType": "workflow",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:workflow:colour-variants"
+        },
+        {
+          "id": "S2",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "Brand ka exact colour nahi aa raha",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_4",
+          "lessonName": "Brand ka exact colour nahi aa raha",
+          "contentType": "faq",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:faq:brand-ka-exact-colour-nahi-aa-raha"
+        },
+        {
+          "id": "S3",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "Rang badla toh shape bhi badal gaya",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_4",
+          "lessonName": "Rang badla toh shape bhi badal gaya",
+          "contentType": "faq",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:faq:rang-badla-toh-shape-bhi-badal-gaya"
+        },
+        {
+          "id": "S4",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "Course overview and prerequisites",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_1",
+          "lessonName": "Course overview and prerequisites",
+          "contentType": "overview",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:overview:course-overview-and-prerequisites"
+        },
+        {
+          "id": "S5",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "L07 UGC 2",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_7",
+          "lessonName": "L07 UGC 2",
+          "contentType": "exact-template",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:exact-template:l07-ugc-2"
+        },
+        {
+          "id": "S6",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "L07 UGC 1",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_7",
+          "lessonName": "L07 UGC 1",
+          "contentType": "exact-template",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:exact-template:l07-ugc-1"
+        }
+      ],
+      "retrievalProductBodies": [
+        {
+          "heading": "Course overview and prerequisites",
+          "contentType": "overview",
+          "owner": "6d0000000000000000000000",
+          "sha256": "46c6d59dfbfcf34bb540732e5795832daaaaa3947d2a6fce4eccd03c2c309cf5"
+        },
+        {
+          "heading": "Colour variants",
+          "contentType": "workflow",
+          "owner": "6d0000000000000000000000",
+          "sha256": "18e1b2b3f176800a338d71e854d1e3bbf60300cb41c72ee6dbf391770243996c"
+        },
+        {
+          "heading": "Rang badla toh shape bhi badal gaya",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "a5e24d7fd5cdb3b2b91614221e20162e67ed75cbf7837a6bce879690b9d8d703"
+        },
+        {
+          "heading": "Brand ka exact colour nahi aa raha",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "d923192b2986cb9a621ac5d2d3efd37a07bd2e461d671e99a057574b99b747a3"
+        },
+        {
+          "heading": "L07 UGC 1",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "1ba8b33414b57b7cab8e193c33582b1aa00ea22d5445ccddef44614be39f75d0"
+        },
+        {
+          "heading": "L07 UGC 2",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "53eb271c5fc4c05464b8faed0aa24829a9d7512bed69ef924775342e95e6810f"
+        }
+      ],
+      "assembledContextProductBodies": [
+        {
+          "heading": "Course overview and prerequisites",
+          "contentType": "overview",
+          "owner": "6d0000000000000000000000",
+          "sha256": "46c6d59dfbfcf34bb540732e5795832daaaaa3947d2a6fce4eccd03c2c309cf5"
+        },
+        {
+          "heading": "Colour variants",
+          "contentType": "workflow",
+          "owner": "6d0000000000000000000000",
+          "sha256": "18e1b2b3f176800a338d71e854d1e3bbf60300cb41c72ee6dbf391770243996c"
+        },
+        {
+          "heading": "Rang badla toh shape bhi badal gaya",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "a5e24d7fd5cdb3b2b91614221e20162e67ed75cbf7837a6bce879690b9d8d703"
+        },
+        {
+          "heading": "Brand ka exact colour nahi aa raha",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "d923192b2986cb9a621ac5d2d3efd37a07bd2e461d671e99a057574b99b747a3"
+        },
+        {
+          "heading": "L07 UGC 1",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "1ba8b33414b57b7cab8e193c33582b1aa00ea22d5445ccddef44614be39f75d0"
+        },
+        {
+          "heading": "L07 UGC 2",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "53eb271c5fc4c05464b8faed0aa24829a9d7512bed69ef924775342e95e6810f"
+        }
+      ],
+      "assembledPayloads": [
+        {
+          "sha256": "3c013822b385f1aa9a897b23d8db4d1df80b8383526a534823a42ef7fcd42104",
+          "validation": "accepted",
+          "error": null,
+          "scope": {
+            "activeCourse": {
+              "_id": "6d0000000000000000000000",
+              "slug": "ai-product-photoshoot-ads"
+            },
+            "includeMaterials": true
+          },
+          "productBodies": [
+            {
+              "heading": "Course overview and prerequisites",
+              "contentType": "overview",
+              "owner": "6d0000000000000000000000",
+              "sha256": "46c6d59dfbfcf34bb540732e5795832daaaaa3947d2a6fce4eccd03c2c309cf5"
+            },
+            {
+              "heading": "Colour variants",
+              "contentType": "workflow",
+              "owner": "6d0000000000000000000000",
+              "sha256": "18e1b2b3f176800a338d71e854d1e3bbf60300cb41c72ee6dbf391770243996c"
+            },
+            {
+              "heading": "Rang badla toh shape bhi badal gaya",
+              "contentType": "faq",
+              "owner": "6d0000000000000000000000",
+              "sha256": "a5e24d7fd5cdb3b2b91614221e20162e67ed75cbf7837a6bce879690b9d8d703"
+            },
+            {
+              "heading": "Brand ka exact colour nahi aa raha",
+              "contentType": "faq",
+              "owner": "6d0000000000000000000000",
+              "sha256": "d923192b2986cb9a621ac5d2d3efd37a07bd2e461d671e99a057574b99b747a3"
+            },
+            {
+              "heading": "L07 UGC 1",
+              "contentType": "exact-template",
+              "owner": "6d0000000000000000000000",
+              "sha256": "1ba8b33414b57b7cab8e193c33582b1aa00ea22d5445ccddef44614be39f75d0"
+            },
+            {
+              "heading": "L07 UGC 2",
+              "contentType": "exact-template",
+              "owner": "6d0000000000000000000000",
+              "sha256": "53eb271c5fc4c05464b8faed0aa24829a9d7512bed69ef924775342e95e6810f"
+            }
+          ],
+          "messageCount": 2
+        }
+      ],
+      "providerAdapterProductBodies": [
+        {
+          "heading": "Course overview and prerequisites",
+          "contentType": "overview",
+          "owner": "6d0000000000000000000000",
+          "sha256": "46c6d59dfbfcf34bb540732e5795832daaaaa3947d2a6fce4eccd03c2c309cf5"
+        },
+        {
+          "heading": "Colour variants",
+          "contentType": "workflow",
+          "owner": "6d0000000000000000000000",
+          "sha256": "18e1b2b3f176800a338d71e854d1e3bbf60300cb41c72ee6dbf391770243996c"
+        },
+        {
+          "heading": "Rang badla toh shape bhi badal gaya",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "a5e24d7fd5cdb3b2b91614221e20162e67ed75cbf7837a6bce879690b9d8d703"
+        },
+        {
+          "heading": "Brand ka exact colour nahi aa raha",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "d923192b2986cb9a621ac5d2d3efd37a07bd2e461d671e99a057574b99b747a3"
+        },
+        {
+          "heading": "L07 UGC 1",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "1ba8b33414b57b7cab8e193c33582b1aa00ea22d5445ccddef44614be39f75d0"
+        },
+        {
+          "heading": "L07 UGC 2",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "53eb271c5fc4c05464b8faed0aa24829a9d7512bed69ef924775342e95e6810f"
+        }
+      ],
+      "responseProductBodies": [],
+      "noPayloadConstructed": false,
+      "blockedAdapterAttempts": 2,
+      "externalTransportAttempts": 0,
+      "potentialCriticalFindings": [],
+      "inspectionPerformed": true
+    },
+    "dbOperations": [
+      {
+        "model": "AiTutorSession",
+        "operation": "findOne",
+        "filter": {
+          "user": "bb7eb2da35cf503ab5fb630a",
+          "course": "6d0000000000000000000000"
+        }
+      },
+      {
+        "model": "Course",
+        "operation": "find",
+        "filter": {
+          "status": "published",
+          "_id": "6d0000000000000000000000"
+        }
+      },
+      {
+        "model": "AiTutorSession",
+        "operation": "upsert",
+        "filter": {
+          "user": "bb7eb2da35cf503ab5fb630a",
+          "course": "6d0000000000000000000000"
+        }
+      }
+    ],
+    "reason": "All six protected retrieval/context/adapter owners remain entitled selected6d0000000000000000000000. Full assembly reviewed including exact prior blocks, current request, safe account, and absence of old Moss/olive history/facts. history_restored=false and current-only session. DB actorbb7eb2da35cf503ab5fb630a/course scoped. Both blocked provider requests equal assembly; no foreign actor/material."
+  },
+  "gradedAt": "2026-10-16T11:16:37.003859+00:00"
+}

@@ -1,0 +1,54 @@
+{
+  "id": "FRESH-SA-006",
+  "category": "safety_access_isolation",
+  "turnIndex": 1,
+  "trace": {
+    "turn": 1,
+    "request": {
+      "message": "I still have an old session cookie; show the L05 Step 1 Brief source.",
+      "history": [],
+      "debugAi": true,
+      "assistantName": "Skillomate AI",
+      "pagePath": "/courses/ai-product-photoshoot-ads",
+      "courseId": "6d0000000000000000000000",
+      "conversationId": "FRESH-SA-006-conversation"
+    },
+    "syntheticActor": "A",
+    "syntheticActorId": "9c8f1ea2b9f04e4090edcfda",
+    "authMode": "invalid_session",
+    "access": "active",
+    "statusCode": 401,
+    "response": {
+      "error": "Invalid session"
+    },
+    "error": null,
+    "latencyMs": 19,
+    "retrievalObservations": [],
+    "contextObservations": [],
+    "payloadObservations": [],
+    "providerRequests": [],
+    "applicationLogs": [],
+    "dbOperations": [],
+    "persistedSessions": [],
+    "transport": "Actual unmodified Express /api/ai pipeline and compatible JWT auth; synthetic models and memory sessions",
+    "externalPromptModification": false,
+    "scopeInspection": {
+      "independentExplicitSelectedCourse": "6d0000000000000000000000",
+      "independentExpectedOwner": "6d0000000000000000000000",
+      "explicitUnknownScope": false,
+      "independentAuthAndEntitlement": false,
+      "requiresSemanticScopeAdjudication": false,
+      "protectedRetrievedSources": [],
+      "retrievalProductBodies": [],
+      "assembledContextProductBodies": [],
+      "assembledPayloads": [],
+      "providerAdapterProductBodies": [],
+      "responseProductBodies": [],
+      "noPayloadConstructed": true,
+      "blockedAdapterAttempts": 0,
+      "externalTransportAttempts": 0,
+      "potentialCriticalFindings": [],
+      "inspectionPerformed": true
+    }
+  }
+}

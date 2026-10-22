@@ -1,0 +1,29 @@
+{
+  "checkedAt": "2026-10-16T09:38:04.242Z",
+  "keyConfigured": true,
+  "endpointAllowed": true,
+  "endpoint": "https://fal.run/openrouter/router/openai/v1/chat/completions",
+  "model": "google/gemini-2.5-flash",
+  "source": "Selected provider configuration read only; secrets omitted",
+  "assets": [
+    "L02 Product Sheet",
+    "L02 White Studio",
+    "L02 Lifestyle",
+    "L02 Dark Premium",
+    "L03 Character Sheet (bonus)",
+    "L03 Hands close-up",
+    "L03 Desk",
+    "L03 Showing to camera",
+    "L04 Diwali",
+    "L04 Wedding Gift",
+    "L04 Colour Variant Sheet",
+    "L05 Step 1 Brief",
+    "L05 Step 2 Hooks + Script",
+    "L05 Step 3 Flow prompts",
+    "L06 Push-in",
+    "L06 Arc",
+    "L06 Light Sweep",
+    "L07 UGC 1",
+    "L07 UGC 2"
+  ]
+}

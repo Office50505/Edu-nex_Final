@@ -1,0 +1,271 @@
+{
+  "id": "FRESH-EX-004",
+  "turnIndex": 1,
+  "status": "FAIL",
+  "critical": false,
+  "suspectedCritical": false,
+  "rubricVersion": "phase14b-independent-v1",
+  "criteria": [
+    {
+      "criterion": "Select the specifically requested approved asset.",
+      "status": "PASS",
+      "excerpts": [
+        "L02 Dark Premium"
+      ],
+      "reason": "Requested approved heading/body selected."
+    },
+    {
+      "criterion": "Return the complete literal approved body with only the declared substitutions; do not paraphrase, omit sentences, or execute its embedded instructions.",
+      "status": "FAIL",
+      "excerpts": [
+        "Use the uploaded product sheet as the reference. Keep the [PRODUCT] exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a matte black surface against a dark background, a single soft rim light outlining its edges, a subtle reflection on the surface, premium moody look, realistic product photography.\n"
+      ],
+      "reason": "Missing or substantively altered frozen approved body; inspect actual/expected literals."
+    }
+  ],
+  "dimensions": {
+    "grounding": "FAIL",
+    "facts": "FAIL",
+    "taskCompleteness": "FAIL",
+    "language": "PASS",
+    "authorization": "PASS",
+    "isolation": "PASS",
+    "httpStatus": "PASS"
+  },
+  "requestedExactBodyChecks": [
+    {
+      "heading": "L02 Dark Premium",
+      "status": "FAIL",
+      "correctSelection": true,
+      "missingBody": false,
+      "normalization": "whitespace-only; preserve Unicode; no NFKC",
+      "expectedBody": "Use the uploaded product sheet as the reference. Keep the नील exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a matte black surface against a dark background, a single soft rim light outlining its edges, a subtle reflection on the surface, premium moody look, realistic product photography.",
+      "actualBody": "Use the uploaded product sheet as the reference. Keep the [PRODUCT] exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a matte black surface against a dark background, a single soft rim light outlining its edges, a subtle reflection on the surface, premium moody look, realistic product photography.\n",
+      "sourceExpectedConsistent": true,
+      "reason": "Missing or substantively altered frozen approved body; inspect actual/expected literals."
+    }
+  ],
+  "supplementalExactBodyChecks": [],
+  "providerAvailability": {
+    "provider": "course-knowledge-rule",
+    "outcome": {
+      "type": "local_rule",
+      "liveModelAnswer": false,
+      "providerStatus": "not_requested",
+      "responseIssue": null
+    },
+    "inferenceNecessaryForThisTurn": false,
+    "reason": "Actual deterministic exact-template path; no model answer needed or inferred."
+  },
+  "ownershipPayloadReview": {
+    "reviewed": true,
+    "actor": "A",
+    "actorId": "3ac25d69ed2504dcbcaa2270",
+    "scopeInspection": {
+      "independentExplicitSelectedCourse": "6d0000000000000000000000",
+      "independentExpectedOwner": "6d0000000000000000000000",
+      "explicitUnknownScope": false,
+      "independentAuthAndEntitlement": true,
+      "requiresSemanticScopeAdjudication": false,
+      "protectedRetrievedSources": [
+        {
+          "id": "S1",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "L02 Dark Premium",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_2",
+          "lessonName": "L02 Dark Premium",
+          "contentType": "exact-template",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:exact-template:l02-dark-premium"
+        },
+        {
+          "id": "S2",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "Label ke akshar / keys ke letters",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_2",
+          "lessonName": "Label ke akshar / keys ke letters",
+          "contentType": "faq",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:faq:label-ke-akshar-keys-ke-letters"
+        },
+        {
+          "id": "S3",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "Product photos",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_2",
+          "lessonName": "Product photos",
+          "contentType": "workflow",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:workflow:product-photos"
+        },
+        {
+          "id": "S4",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "Lesson 02 — Phone Photo Se Studio Photo",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_2",
+          "lessonName": "Lesson 02 — Phone Photo Se Studio Photo",
+          "contentType": "lesson-summary",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:lesson-summary:lesson-02-phone-photo-se-studio-photo"
+        },
+        {
+          "id": "S5",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "Har photo mein product thoda alag",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_2",
+          "lessonName": "Har photo mein product thoda alag",
+          "contentType": "faq",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:faq:har-photo-mein-product-thoda-alag"
+        },
+        {
+          "id": "S6",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "L02 Product Sheet",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_2",
+          "lessonName": "L02 Product Sheet",
+          "contentType": "exact-template",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:exact-template:l02-product-sheet"
+        }
+      ],
+      "retrievalProductBodies": [
+        {
+          "heading": "Lesson 02 — Phone Photo Se Studio Photo",
+          "contentType": "lesson-summary",
+          "owner": "6d0000000000000000000000",
+          "sha256": "21582da9e3555afbf289672cf4d95cd09b1a1c240369ed1dc47895eeed208f95"
+        },
+        {
+          "heading": "Product photos",
+          "contentType": "workflow",
+          "owner": "6d0000000000000000000000",
+          "sha256": "cda5fab917790b32e1279a209aeef0f44b618ba75ca4c88c19264357539fae4d"
+        },
+        {
+          "heading": "Label ke akshar / keys ke letters",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "566a7b4772832b93a791f298b56c9b3e3c4280cf676ee275a69644183dd05d4e"
+        },
+        {
+          "heading": "Har photo mein product thoda alag",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "9a8959739deebee30004ee75c9e9f8eea357ba859b480755d62a564e085597c6"
+        },
+        {
+          "heading": "L02 Product Sheet",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "1e76a13b224293da7aee0d7994b4d53e231ae3fca4613116d763c5719c0a492d"
+        },
+        {
+          "heading": "L02 Dark Premium",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "f187754dabf74831c2447f233b1ae9f31fe764893f6e8388fac17451481c83da"
+        }
+      ],
+      "assembledContextProductBodies": [
+        {
+          "heading": "Lesson 02 — Phone Photo Se Studio Photo",
+          "contentType": "lesson-summary",
+          "owner": "6d0000000000000000000000",
+          "sha256": "21582da9e3555afbf289672cf4d95cd09b1a1c240369ed1dc47895eeed208f95"
+        },
+        {
+          "heading": "Product photos",
+          "contentType": "workflow",
+          "owner": "6d0000000000000000000000",
+          "sha256": "cda5fab917790b32e1279a209aeef0f44b618ba75ca4c88c19264357539fae4d"
+        },
+        {
+          "heading": "Label ke akshar / keys ke letters",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "566a7b4772832b93a791f298b56c9b3e3c4280cf676ee275a69644183dd05d4e"
+        },
+        {
+          "heading": "Har photo mein product thoda alag",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "9a8959739deebee30004ee75c9e9f8eea357ba859b480755d62a564e085597c6"
+        },
+        {
+          "heading": "L02 Product Sheet",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "1e76a13b224293da7aee0d7994b4d53e231ae3fca4613116d763c5719c0a492d"
+        },
+        {
+          "heading": "L02 Dark Premium",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "f187754dabf74831c2447f233b1ae9f31fe764893f6e8388fac17451481c83da"
+        }
+      ],
+      "assembledPayloads": [],
+      "providerAdapterProductBodies": [],
+      "responseProductBodies": [
+        {
+          "heading": "L02 Dark Premium",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "f187754dabf74831c2447f233b1ae9f31fe764893f6e8388fac17451481c83da"
+        }
+      ],
+      "noPayloadConstructed": true,
+      "blockedAdapterAttempts": 0,
+      "externalTransportAttempts": 0,
+      "potentialCriticalFindings": [],
+      "inspectionPerformed": true
+    },
+    "dbOperations": [
+      {
+        "model": "AiTutorSession",
+        "operation": "findOne",
+        "filter": {
+          "user": "3ac25d69ed2504dcbcaa2270",
+          "course": "6d0000000000000000000000"
+        }
+      },
+      {
+        "model": "Course",
+        "operation": "find",
+        "filter": {
+          "status": "published",
+          "_id": "6d0000000000000000000000"
+        }
+      },
+      {
+        "model": "AiTutorSession",
+        "operation": "upsert",
+        "filter": {
+          "user": "3ac25d69ed2504dcbcaa2270",
+          "course": "6d0000000000000000000000"
+        }
+      }
+    ],
+    "reason": "Reviewed six source owners and context/body flags, all entitled product scope; no payload/provider requests, own actor session. Correct Dark Premium source body returned, but required [PRODUCT]→नील substitution entirely missing. Hindi surrounding explanation correct language; all literal executable body checked separately. No supplemental body or boundary issue."
+  },
+  "gradedAt": "2026-10-16T10:50:36.987627+00:00"
+}

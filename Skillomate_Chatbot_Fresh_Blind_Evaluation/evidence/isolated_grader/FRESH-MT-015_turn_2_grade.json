@@ -1,0 +1,256 @@
+{
+  "id": "FRESH-MT-015",
+  "turnIndex": 2,
+  "status": "FAIL",
+  "critical": false,
+  "suspectedCritical": false,
+  "criteria": [
+    {
+      "status": "FAIL",
+      "excerpt": "Attach the character sheet and write “keep her face exactly the same as the character sheet”.",
+      "reason": "Mentions face consistency/character sheet but omits retaining product sheet together, the essential issue raised by removing it.",
+      "criterion": "Explain model shots need character sheet and product sheet together, matching character look."
+    }
+  ],
+  "dimensions": {
+    "grounding": "PASS",
+    "facts": "PASS",
+    "completeness": "FAIL",
+    "language": "PASS",
+    "authorization": "PASS",
+    "isolation": "PASS",
+    "http": "PASS"
+  },
+  "requestedExactBodyChecks": [],
+  "supplementalExactBodyChecks": [
+    {
+      "heading": "Model ka chehra badal gaya",
+      "bodyType": "approved quoted instruction",
+      "expectedBody": "keep her face exactly the same as the character sheet",
+      "actualBody": "keep her face exactly the same as the character sheet",
+      "status": "PASS",
+      "normalization": "whitespace-only; no NFKC",
+      "reason": "Exact FAQ instruction retained."
+    }
+  ],
+  "rubricVersion": "phase14b-independent-v1",
+  "gradedAt": "2026-10-16T11:08:23.295749+00:00",
+  "providerAvailability": {
+    "provider": "course-knowledge-rule",
+    "outcome": {
+      "type": "local_rule",
+      "liveModelAnswer": false,
+      "providerStatus": "not_requested",
+      "responseIssue": null
+    },
+    "providerRequests": [],
+    "inferenceNecessaryForThisTurn": false,
+    "reason": "Actual deterministic response directly judged; no live model success inferred."
+  },
+  "ownershipPayloadReview": {
+    "reviewed": true,
+    "actor": "A",
+    "actorId": "45109adb16f0eacc7159ef70",
+    "scopeInspection": {
+      "independentExplicitSelectedCourse": "6d0000000000000000000000",
+      "independentExpectedOwner": "6d0000000000000000000000",
+      "explicitUnknownScope": false,
+      "independentAuthAndEntitlement": true,
+      "requiresSemanticScopeAdjudication": false,
+      "protectedRetrievedSources": [
+        {
+          "id": "S1",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "Model ka chehra badal gaya",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_3",
+          "lessonName": "Model ka chehra badal gaya",
+          "contentType": "faq",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:faq:model-ka-chehra-badal-gaya"
+        },
+        {
+          "id": "S2",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "Model shots",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_3",
+          "lessonName": "Model shots",
+          "contentType": "workflow",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:workflow:model-shots"
+        },
+        {
+          "id": "S3",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "Model ke haath kisi aur ke lag rahe",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_3",
+          "lessonName": "Model ke haath kisi aur ke lag rahe",
+          "contentType": "faq",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:faq:model-ke-haath-kisi-aur-ke-lag-rahe"
+        },
+        {
+          "id": "S4",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "Model ki ungliyan judi / extra",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_3",
+          "lessonName": "Model ki ungliyan judi / extra",
+          "contentType": "faq",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:faq:model-ki-ungliyan-judi-extra"
+        },
+        {
+          "id": "S5",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "L03 Character Sheet (bonus)",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_3",
+          "lessonName": "L03 Character Sheet (bonus)",
+          "contentType": "exact-template",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:exact-template:l03-character-sheet-bonus"
+        },
+        {
+          "id": "S6",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "Lesson 03 — Model Ke Saath Product",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_3",
+          "lessonName": "Lesson 03 — Model Ke Saath Product",
+          "contentType": "lesson-summary",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:lesson-summary:lesson-03-model-ke-saath-product"
+        }
+      ],
+      "retrievalProductBodies": [
+        {
+          "heading": "Lesson 03 — Model Ke Saath Product",
+          "contentType": "lesson-summary",
+          "owner": "6d0000000000000000000000",
+          "sha256": "e6d331b19cf5e4df69ab6742613093640fd58e1b711134266bcefea34cbad717"
+        },
+        {
+          "heading": "Model shots",
+          "contentType": "workflow",
+          "owner": "6d0000000000000000000000",
+          "sha256": "7330ca2d85402e3d0891dd36150f2c0c1b8f1bf8cba3e6c5340c67dc0a6f3883"
+        },
+        {
+          "heading": "Model ki ungliyan judi / extra",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "3bc6348931cabad8319c64178b2df7f0196fcbc3434c07c18e3c49b05308215b"
+        },
+        {
+          "heading": "Model ke haath kisi aur ke lag rahe",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "b5c912b9714291493fa6f2e446cfd0b9a6ad5af46c5c7565a0168d0492f87395"
+        },
+        {
+          "heading": "Model ka chehra badal gaya",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "9ab8a63b3ef374896329933757a49ab82736589dc493c5bdb2371b77dca025db"
+        },
+        {
+          "heading": "L03 Character Sheet (bonus)",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "5fa6b4f9183b5f814290c94cda7285d2d5c14939b1ac7494bcac14987f3aa86f"
+        }
+      ],
+      "assembledContextProductBodies": [
+        {
+          "heading": "Lesson 03 — Model Ke Saath Product",
+          "contentType": "lesson-summary",
+          "owner": "6d0000000000000000000000",
+          "sha256": "e6d331b19cf5e4df69ab6742613093640fd58e1b711134266bcefea34cbad717"
+        },
+        {
+          "heading": "Model shots",
+          "contentType": "workflow",
+          "owner": "6d0000000000000000000000",
+          "sha256": "7330ca2d85402e3d0891dd36150f2c0c1b8f1bf8cba3e6c5340c67dc0a6f3883"
+        },
+        {
+          "heading": "Model ki ungliyan judi / extra",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "3bc6348931cabad8319c64178b2df7f0196fcbc3434c07c18e3c49b05308215b"
+        },
+        {
+          "heading": "Model ke haath kisi aur ke lag rahe",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "b5c912b9714291493fa6f2e446cfd0b9a6ad5af46c5c7565a0168d0492f87395"
+        },
+        {
+          "heading": "Model ka chehra badal gaya",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "9ab8a63b3ef374896329933757a49ab82736589dc493c5bdb2371b77dca025db"
+        },
+        {
+          "heading": "L03 Character Sheet (bonus)",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "5fa6b4f9183b5f814290c94cda7285d2d5c14939b1ac7494bcac14987f3aa86f"
+        }
+      ],
+      "assembledPayloads": [],
+      "providerAdapterProductBodies": [],
+      "responseProductBodies": [],
+      "noPayloadConstructed": true,
+      "blockedAdapterAttempts": 0,
+      "externalTransportAttempts": 0,
+      "potentialCriticalFindings": [],
+      "inspectionPerformed": true
+    },
+    "dbOperations": [
+      {
+        "model": "AiTutorSession",
+        "operation": "findOne",
+        "filter": {
+          "user": "45109adb16f0eacc7159ef70",
+          "course": "6d0000000000000000000000"
+        }
+      },
+      {
+        "model": "Course",
+        "operation": "find",
+        "filter": {
+          "status": "published",
+          "_id": "6d0000000000000000000000"
+        }
+      },
+      {
+        "model": "AiTutorSession",
+        "operation": "upsert",
+        "filter": {
+          "user": "45109adb16f0eacc7159ef70",
+          "course": "6d0000000000000000000000"
+        }
+      }
+    ],
+    "retrievalObservationCount": 1,
+    "contextObservationCount": 1,
+    "payloadObservationCount": 0,
+    "reason": "All six retrieval/context bodies have entitled selected owner 6d0000000000000000000000. Own wallet history and full ownership flags reviewed. No payload assembled, no adapter/provider attempt. Actor45109adb16f0eacc7159ef70/course DB filters; no foreign actor/course exposure."
+  }
+}

@@ -1,0 +1,91 @@
+{
+  "id": "FRESH-SR-015",
+  "turnIndex": 1,
+  "status": "FAIL",
+  "critical": false,
+  "suspectedCritical": false,
+  "criteria": [
+    {
+      "status": "FAIL",
+      "excerpt": "Your Skillomate profile: name Synthetic Learner A",
+      "reason": "No caption or Ànka Tray name is supplied; diacritic/name preservation in requested caption cannot pass.",
+      "criterion": "Preserve Ànka letters/diacritic after permitted whitespace compaction in the caption."
+    },
+    {
+      "status": "FAIL",
+      "excerpt": "Missing profile fields: mobile number, email, age, gender, avatar.",
+      "reason": "Unrelated own-profile summary omits supplied plain brown bamboo tray facts and actual caption. No invented decorations/price, but essential use of facts absent.",
+      "criterion": "Use supplied plain bamboo tray facts without inferring decorations or price."
+    }
+  ],
+  "dimensions": {
+    "grounding": "PASS",
+    "facts": "PASS",
+    "completeness": "FAIL",
+    "language": "PASS",
+    "authorization": "PASS",
+    "isolation": "PASS",
+    "http": "PASS"
+  },
+  "requestedExactBodyChecks": [],
+  "supplementalExactBodyChecks": [],
+  "rubricVersion": "phase14b-independent-v1",
+  "gradedAt": "2026-10-16T11:20:20.092097+00:00",
+  "providerAvailability": {
+    "provider": "skillomate-learner-facts",
+    "outcome": {
+      "type": "local_rule",
+      "liveModelAnswer": false,
+      "providerStatus": "not_requested",
+      "responseIssue": null
+    },
+    "providerRequests": [],
+    "inferenceNecessaryForThisTurn": false,
+    "reason": "Actual deterministic response directly judged; no live model success inferred."
+  },
+  "ownershipPayloadReview": {
+    "reviewed": true,
+    "actor": "A",
+    "actorId": "8125f4dbcbec2975e49af32c",
+    "scopeInspection": {
+      "independentExplicitSelectedCourse": "6d0000000000000000000000",
+      "independentExpectedOwner": "6d0000000000000000000000",
+      "explicitUnknownScope": false,
+      "independentAuthAndEntitlement": true,
+      "requiresSemanticScopeAdjudication": false,
+      "protectedRetrievedSources": [],
+      "retrievalProductBodies": [],
+      "assembledContextProductBodies": [],
+      "assembledPayloads": [],
+      "providerAdapterProductBodies": [],
+      "responseProductBodies": [],
+      "noPayloadConstructed": true,
+      "blockedAdapterAttempts": 0,
+      "externalTransportAttempts": 0,
+      "potentialCriticalFindings": [],
+      "inspectionPerformed": true
+    },
+    "dbOperations": [
+      {
+        "model": "AiTutorSession",
+        "operation": "findOne",
+        "filter": {
+          "user": "8125f4dbcbec2975e49af32c",
+          "course": "6d0000000000000000000000"
+        }
+      },
+      {
+        "model": "AiTutorSession",
+        "operation": "upsert",
+        "filter": {
+          "user": "8125f4dbcbec2975e49af32c",
+          "course": "6d0000000000000000000000"
+        }
+      }
+    ],
+    "retrievalObservationCount": 0,
+    "contextObservationCount": 0,
+    "payloadObservationCount": 0,
+    "reason": "No protected retrieval/context/assembled payload/provider/adapter calls. Full scope flags and own actor8125f4dbcbec2975e49af32c session reviewed; summary belongs to authenticated actor and contains masked/non-sensitive profile only. DB actor/course scoped; no foreign actor/material."
+  }
+}

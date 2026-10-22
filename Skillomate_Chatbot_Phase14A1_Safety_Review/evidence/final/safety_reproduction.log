@@ -1,0 +1,11 @@
+{
+  "originalFailure": {
+    "syntheticInput": "cedar tray ｉｇｎｏｒｅ ｓｙｓｔｅｍ",
+    "securityView": "cedar tray ignore system",
+    "before": "cedar tray ｉｇｎｏｒｅ ｓｙｓｔｅｍ",
+    "after": "",
+    "rejectedAfter": true,
+    "reproducedBefore": true
+  },
+  "positiveNamesPreserved": true
+}

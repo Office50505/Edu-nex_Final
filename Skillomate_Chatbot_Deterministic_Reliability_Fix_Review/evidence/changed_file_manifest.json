@@ -1,0 +1,515 @@
+[
+  {
+    "path": "edunex-b/routes/ai.js",
+    "beforeSHA256": "e514c48126d61574ed1599246e5680d9b32eb2d621305205be87b1beb34e0895",
+    "afterSHA256": "900747155be22874876779892a6eb3620098a338e484e4a009c0ccc5d88bd430",
+    "linesAdded": 16,
+    "linesRemoved": 11,
+    "functions": [
+      {
+        "name": "aiMessageRecord",
+        "line": 48
+      },
+      {
+        "name": "loadTutorState",
+        "line": 56
+      },
+      {
+        "name": "persistTutorChat",
+        "line": 69
+      },
+      {
+        "name": "aiDebugPayload",
+        "line": 98
+      },
+      {
+        "name": "logAiDebug",
+        "line": 119
+      },
+      {
+        "name": "aiRateLimit",
+        "line": 123
+      },
+      {
+        "name": "handleTutorChat",
+        "line": 198
+      }
+    ]
+  },
+  {
+    "path": "edunex-b/services/aiTutorService.js",
+    "beforeSHA256": "547ca63794ebaa8bea69284d010e62c5f82deedccd31d8d16a9802520d2da147",
+    "afterSHA256": "070e9cfae4ed20d61a576453336b8c28d41068cc31bb0e03bc50f5c4bdec40f2",
+    "linesAdded": 20,
+    "linesRemoved": 8,
+    "functions": [
+      {
+        "name": "compactText",
+        "line": 276
+      },
+      {
+        "name": "sanitizeHistory",
+        "line": 283
+      },
+      {
+        "name": "resolveProductHistory",
+        "line": 294
+      },
+      {
+        "name": "siteContext",
+        "line": 301
+      },
+      {
+        "name": "isSkillomatePlanQuestion",
+        "line": 313
+      },
+      {
+        "name": "skillomatePlanDirectReply",
+        "line": 326
+      },
+      {
+        "name": "skillomatePlatformDirectReply",
+        "line": 348
+      },
+      {
+        "name": "courseContextLine",
+        "line": 408
+      },
+      {
+        "name": "isAiFilmmakingCourse",
+        "line": 422
+      },
+      {
+        "name": "isAiProductPhotoshootCourse",
+        "line": 426
+      },
+      {
+        "name": "aiFilmmakingKnowledgeGuard",
+        "line": 430
+      },
+      {
+        "name": "aiProductPhotoshootKnowledgeGuard",
+        "line": 440
+      },
+      {
+        "name": "recentConversationText",
+        "line": 453
+      },
+      {
+        "name": "normalizeCourseScopeInput",
+        "line": 461
+      },
+      {
+        "name": "courseScopeFromText",
+        "line": 468
+      },
+      {
+        "name": "resolveRequestedCourseScope",
+        "line": 482
+      },
+      {
+        "name": "detectsFaceConsistencyTopic",
+        "line": 497
+      },
+      {
+        "name": "detectsExactPromptIntent",
+        "line": 506
+      },
+      {
+        "name": "isRealismQuestion",
+        "line": 515
+      },
+      {
+        "name": "isAmbiguousFollowUp",
+        "line": 521
+      },
+      {
+        "name": "detectsRealismTopic",
+        "line": 526
+      },
+      {
+        "name": "resolveConversationState",
+        "line": 531
+      },
+      {
+        "name": "aiFilmmakingTemplateIdForReply",
+        "line": 559
+      },
+      {
+        "name": "latestMessageLanguage",
+        "line": 565
+      },
+      {
+        "name": "explicitLanguagePreference",
+        "line": 574
+      },
+      {
+        "name": "responseLanguage",
+        "line": 593
+      },
+      {
+        "name": "localizedReply",
+        "line": 597
+      },
+      {
+        "name": "maskEmail",
+        "line": 601
+      },
+      {
+        "name": "maskPhone",
+        "line": 608
+      },
+      {
+        "name": "formatDate",
+        "line": 614
+      },
+      {
+        "name": "daysRemaining",
+        "line": 620
+      },
+      {
+        "name": "rupeesFromPaise",
+        "line": 626
+      },
+      {
+        "name": "loadLearnerContext",
+        "line": 632
+      },
+      {
+        "name": "isLearnerContextQuestion",
+        "line": 714
+      },
+      {
+        "name": "learnerContextDirectReply",
+        "line": 723
+      },
+      {
+        "name": "isConfirmedAiFilmmakingScope",
+        "line": 792
+      },
+      {
+        "name": "isFaceConsistencyQuestion",
+        "line": 804
+      },
+      {
+        "name": "isFaceConsistencyFollowUp",
+        "line": 811
+      },
+      {
+        "name": "isSafeReframeQuestion",
+        "line": 819
+      },
+      {
+        "name": "isSafetyBypassRequest",
+        "line": 827
+      },
+      {
+        "name": "isFlowViolationTroubleshooting",
+        "line": 833
+      },
+      {
+        "name": "aiFilmmakingDirectReply",
+        "line": 840
+      },
+      {
+        "name": "buildContext",
+        "line": 974
+      },
+      {
+        "name": "significantWords",
+        "line": 1062
+      },
+      {
+        "name": "localCourseSummary",
+        "line": 1069
+      },
+      {
+        "name": "builtInCourseGuide",
+        "line": 1078
+      },
+      {
+        "name": "buildSystemPrompt",
+        "line": 1158
+      },
+      {
+        "name": "buildUserPrompt",
+        "line": 1202
+      },
+      {
+        "name": "extractChatText",
+        "line": 1218
+      },
+      {
+        "name": "cleanLearnerReply",
+        "line": 1243
+      },
+      {
+        "name": "scopedProviderPayload",
+        "line": 1256
+      },
+      {
+        "name": "callFalOpenRouter",
+        "line": 1261
+      }
+    ]
+  },
+  {
+    "path": "edunex-b/services/productTutorGrounding.js",
+    "beforeSHA256": "ad24c1a6ab80d7abf87d20329af0bf631e51d4dbf1c5fcdff7128afc9765656b",
+    "afterSHA256": "17d15879beb8020fcb3bf0d55396290ef5a11238fd6d642f72e5d8809ff15a75",
+    "linesAdded": 1,
+    "linesRemoved": 1,
+    "functions": [
+      {
+        "name": "unsupportedAdClaims",
+        "line": 5
+      }
+    ]
+  },
+  {
+    "path": "edunex-b/services/productTutorIntent.js",
+    "beforeSHA256": "cb3f217ec8d2cfbe9d3f38f137ea816aac482e23357f55664f49c53cd5ad45e7",
+    "afterSHA256": "28e036a232cb7305a49fceb42d25fd1895ae353718c31329709f4fe1852dc17b",
+    "linesAdded": 60,
+    "linesRemoved": 21,
+    "functions": [
+      {
+        "name": "productCopyIntent",
+        "line": 3
+      },
+      {
+        "name": "productIntentSignals",
+        "line": 17
+      },
+      {
+        "name": "productResponseSelection",
+        "line": 32
+      },
+      {
+        "name": "explicitProductLanguage",
+        "line": 46
+      },
+      {
+        "name": "productResponseLanguage",
+        "line": 54
+      },
+      {
+        "name": "productCourseDomain",
+        "line": 68
+      },
+      {
+        "name": "requestedOutputCount",
+        "line": 75
+      },
+      {
+        "name": "productRequestPlan",
+        "line": 82
+      }
+    ]
+  },
+  {
+    "path": "edunex-b/services/productTutorKnowledge.js",
+    "beforeSHA256": "104b598b1ffd816356d9b4c27e270a80db597e624c30a0b3d7841b2b66377ae1",
+    "afterSHA256": "777eb3c532e34c8c8d52e9f4064569502ad5990fb9f952d3c60cc971543c1ef6",
+    "linesAdded": 131,
+    "linesRemoved": 79,
+    "functions": [
+      {
+        "name": "cleanPdfText",
+        "line": 15
+      },
+      {
+        "name": "parseProductKnowledge",
+        "line": 21
+      },
+      {
+        "name": "wantsProductPrompt",
+        "line": 80
+      },
+      {
+        "name": "wantsProductScene",
+        "line": 91
+      },
+      {
+        "name": "templateQuery",
+        "line": 100
+      },
+      {
+        "name": "findProductTemplate",
+        "line": 112
+      },
+      {
+        "name": "cleanProductName",
+        "line": 128
+      },
+      {
+        "name": "suppliedSlot",
+        "line": 140
+      },
+      {
+        "name": "explicitTemplateSlots",
+        "line": 145
+      },
+      {
+        "name": "productSlots",
+        "line": 179
+      },
+      {
+        "name": "renderProductTemplate",
+        "line": 201
+      },
+      {
+        "name": "productLessonNumber",
+        "line": 216
+      },
+      {
+        "name": "requestedProductOutputs",
+        "line": 221
+      },
+      {
+        "name": "productFacts",
+        "line": 246
+      },
+      {
+        "name": "productRequestContext",
+        "line": 317
+      }
+    ]
+  },
+  {
+    "path": "edunex-b/services/productTutorResponse.js",
+    "beforeSHA256": "f6989efae2fc11aeab6543ba6f945cae589bcacb683c25325d8ed68b0f97663e",
+    "afterSHA256": "940d078e0d2f865ea394310455fd18bc2ef6f44596ecbaeebf656a83c1e28f1e",
+    "linesAdded": 46,
+    "linesRemoved": 9,
+    "functions": [
+      {
+        "name": "explanationLanguageMatches",
+        "line": 7
+      },
+      {
+        "name": "advertisingRisk",
+        "line": 19
+      },
+      {
+        "name": "isProductKnowledge",
+        "line": 45
+      },
+      {
+        "name": "productAccessReply",
+        "line": 50
+      },
+      {
+        "name": "productSafetyRequest",
+        "line": 59
+      },
+      {
+        "name": "selectProductGuidance",
+        "line": 63
+      },
+      {
+        "name": "localizedGuidance",
+        "line": 76
+      },
+      {
+        "name": "resolveProductTutorReply",
+        "line": 108
+      },
+      {
+        "name": "productTutorReply",
+        "line": 176
+      },
+      {
+        "name": "validateProductReply",
+        "line": 199
+      },
+      {
+        "name": "productFallbackNotice",
+        "line": 263
+      }
+    ]
+  },
+  {
+    "path": "edunex-b/services/productTutorState.js",
+    "beforeSHA256": "1b0148e1978a8067ea8cd337d0892ace9e8d2e1197ea140d72f334e6d1647eac",
+    "afterSHA256": "07056c35a112c9d922c4a649bea59bf770ae91eeeafc0f68e854d9bcacaf0c9f",
+    "linesAdded": 87,
+    "linesRemoved": 32,
+    "functions": [
+      {
+        "name": "productNameSecurityText",
+        "line": 6
+      },
+      {
+        "name": "entity",
+        "line": 19
+      },
+      {
+        "name": "declaration",
+        "line": 31
+      },
+      {
+        "name": "extractEntity",
+        "line": 86
+      },
+      {
+        "name": "productOperations",
+        "line": 93
+      },
+      {
+        "name": "maskProductOperations",
+        "line": 136
+      },
+      {
+        "name": "extraSlots",
+        "line": 141
+      },
+      {
+        "name": "scopeProductState",
+        "line": 149
+      },
+      {
+        "name": "captureProductOptions",
+        "line": 153
+      },
+      {
+        "name": "taskConstraints",
+        "line": 163
+      }
+    ]
+  },
+  {
+    "path": "edunex-b/services/productTutorTasks.js",
+    "beforeSHA256": "bc7c081634d80dcea4fe5b9d96b071feacb969294631773c17face6496573d75",
+    "afterSHA256": "86dc7195675741a81b156eb888c522e7f1c901837b86553a90173034ae4cee5a",
+    "linesAdded": 19,
+    "linesRemoved": 11,
+    "functions": [
+      {
+        "name": "requestedHookCount",
+        "line": 49
+      },
+      {
+        "name": "draftProductAd",
+        "line": 51
+      },
+      {
+        "name": "missingProductDeliverables",
+        "line": 130
+      }
+    ]
+  },
+  {
+    "path": "edunex-b/tests/product-tutor-deterministic-reliability.test.cjs",
+    "beforeSHA256": null,
+    "afterSHA256": "94e769176f3c647fbbc2f2db46edd28d1450447c64f2399daabe86973df5f7cc",
+    "linesAdded": 89,
+    "linesRemoved": 0,
+    "functions": [
+      {
+        "name": "run",
+        "line": 8
+      }
+    ]
+  }
+]

@@ -1,0 +1,15 @@
+{
+  "at": "2026-10-16T10:03:13.985073+00:00",
+  "priorPreparationArchive": {
+    "path": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/Skillomate_Chatbot_Phase14B_Preparation_Archive_20261016.zip",
+    "sha256": "4b73b8e90cecbda616053e69431f80281f365db362872764953759119906b5dd",
+    "description": "Preserved earlier pending preparation ZIP, superseded by complete evidence package."
+  },
+  "candidateExecutionAfterCriticalPause": false,
+  "codeChanges": false,
+  "commitsOrPushes": false,
+  "deploymentsOrProductionInteractions": false,
+  "externalProviderRequestsSent": 0,
+  "releaseGate": "FAIL",
+  "reviewRequired": true
+}

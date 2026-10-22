@@ -1,0 +1,44 @@
+appcopyai/services/aiClient.js
+     1 // Transport and history policy are independent of screen state and rendering.
+     2 export function conversationHistory(messages) {
+     3   return (Array.isArray(messages) ? messages : [])
+     4     .filter(item => item && !item.failed && ['user', 'assistant'].includes(item.role) && typeof item.content === 'string' && item.content.trim())
+     5     .slice(-12).map(({ role, content }) => ({ role, content: content.trim().slice(0, 2000) }));
+     6 }
+     7 
+     8 export async function requestTutor({ baseUrl, user, question, courseId, activeCourseId, conversationId, messages, assistantName = 'AI', session, fetcher = fetch }) {
+     9   const body = JSON.stringify({ message: question, history: conversationHistory(messages),
+    10     assistantName,
+    11     ...(conversationId ? { conversationId } : {}),
+    12     ...(courseId ? { courseId } : {}),
+    13     ...(!courseId && activeCourseId ? { activeCourseId } : {}) });
+    14   if (session) {
+    15     const current = session.getUser();
+    16     if (!current || current._id !== user?._id || current.sessionId !== user?.sessionId) {
+    17       throw Object.assign(new Error('The signed-in account changed.'), { code: 'SESSION_CHANGED' });
+    18     }
+    19     const data = await session.requestJson('/api/ai/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body });
+    20     return tutorAnswer(data);
+    21   }
+    22   const controller = new AbortController();
+    23   const timer = setTimeout(() => controller.abort(), 30000);
+    24   try {
+    25     const response = await fetcher(`${baseUrl}/api/ai/chat`, {
+    26       method: 'POST',
+    27       signal: controller.signal,
+    28       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${user?.accessToken || user?.token || ''}` },
+    29       body,
+    30     });
+    31     if (!response.ok) throw new Error(response.status === 401 ? 'Please log in again to continue chatting.' : 'AI is unavailable. Please try again.');
+    32     const data = await response.json();
+    33     return tutorAnswer(data);
+    34   } finally {
+    35     clearTimeout(timer);
+    36   }
+    37 }
+    38 
+    39 function tutorAnswer(data) {
+    40   const answer = data?.answer || data?.reply;
+    41   if (typeof answer !== 'string' || !answer.trim()) throw new Error('AI returned an empty answer. Please try again.');
+    42   return { answer, messageId: data?.messageId || null, notice: data.notice || null, sources: Array.isArray(data.sources) ? data.sources : [] };
+    43 }

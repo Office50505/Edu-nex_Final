@@ -1,0 +1,19 @@
+{
+  "verifiedAt": "2026-10-16T10:03:14.065976+00:00",
+  "absoluteZipPath": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/Skillomate_Chatbot_Phase14B_Blind_Evaluation.zip",
+  "zipSHA256": "0b4d4a833273eb8422b1336901ddeae07c03a7e3a78013cc4053b855ecdec479",
+  "zipBytes": 688180,
+  "archiveEntries": 235,
+  "crcCheck": "PASS",
+  "allArtifactSHA256Checks": "PASS",
+  "frozenCases": 120,
+  "executedCases": 11,
+  "grades": {
+    "PASS": 8,
+    "FAIL": 2,
+    "UNTESTED": 110
+  },
+  "criticalStop": true,
+  "externalProviderRequestsSent": 0,
+  "candidateChanged": false
+}

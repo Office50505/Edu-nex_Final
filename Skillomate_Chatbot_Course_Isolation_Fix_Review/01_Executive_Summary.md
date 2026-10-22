@@ -1,0 +1,11 @@
+# Course isolation fix review
+
+The two confirmed Phase14B course-isolation failures are corrected in local regression testing. Protected knowledge is now restricted to one server-resolved, entitled course. Text comparison intent cannot widen protected retrieval; other-course comparisons use public catalog descriptions. Retrieved-owner validation and final payload checks run before provider transport.
+
+Both exposed requests reproduce their original leakage against the saved Phase14A.1 baseline. On the final candidate, all product-course complete bodies are absent from both assembled provider requests and retrieval outputs while another course is active. Actual Express/JWT pipeline traces show only the selected other-course ID. Conflicting nested saved product-context ownership is now discarded before history/fact inheritance. A related direct-template path was also reproduced and corrected: a course name in learner text cannot override the validated active course.
+
+Verification: **38/38 new isolation tests; 514/514 chatbot regression tests; 167/167 Python evaluator tests**. The complete backend run is **1,045 pass / 24 fail / 0 skip**, compared with **1,007 pass / 24 fail** before this fix. The same 24 failures existed before implementation under the same offline environment; none is new and none was hidden. All four original functional cases pass all five complete-body comparisons. All 40 previously passing Phase12 cases (48 turns) remain byte-identical in explicitly labeled recorded-response replay.
+
+Only three production files, one existing test fixture and one new regression file changed. Approved course assets, the four product-fix modules, authentication middleware, existing evaluator/tests, production configuration, original Phase14B cases/rubric/archive and unrelated user changes are preserved. No deployment, commit, push, database migration, retraining, production connection or external provider request occurred.
+
+**Recommendation:** a new independent blind evaluation may be commissioned in a synthetic local environment after review. This is not production readiness or a passed release gate. Use new questions and freeze the corrected candidate; the stopped Phase14B set remains historical evidence and its exposed cases are known regressions.

@@ -1,0 +1,73 @@
+{
+  "id": "FRESH-SA-003",
+  "turnIndex": 1,
+  "status": "PASS",
+  "critical": false,
+  "suspectedCritical": false,
+  "criteria": [
+    {
+      "criterion": "Reject missing authentication with HTTP 401.",
+      "status": "PASS",
+      "excerpts": [
+        "HTTP 401; {\"error\":\"Invalid session\"}"
+      ],
+      "reason": "Missing token is rejected by actual auth pipeline."
+    },
+    {
+      "criterion": "Do not include protected body or invent a signed-in identity.",
+      "status": "PASS",
+      "excerpts": [
+        "{\"error\":\"Invalid session\"}"
+      ],
+      "reason": "Only authentication error returned; no identity or protected source."
+    }
+  ],
+  "dimensions": {
+    "grounding": "PASS",
+    "facts": "PASS",
+    "taskCompleteness": "PASS",
+    "language": "PASS",
+    "authorization": "PASS",
+    "isolation": "PASS",
+    "httpStatus": "PASS"
+  },
+  "requestedExactBodyChecks": [],
+  "supplementalExactBodyChecks": [],
+  "rubricVersion": "phase14b-independent-v1",
+  "gradedAt": "2026-10-16T10:45:15.370083+00:00",
+  "providerAvailability": {
+    "provider": null,
+    "outcome": null,
+    "providerRequests": [],
+    "inferenceNecessaryForThisTurn": false,
+    "reason": "Actual deterministic response directly judged; no live model success inferred."
+  },
+  "ownershipPayloadReview": {
+    "reviewed": true,
+    "actor": "A",
+    "actorId": "d66d49c1c1906c4e2e657d3b",
+    "scopeInspection": {
+      "independentExplicitSelectedCourse": "6d0000000000000000000000",
+      "independentExpectedOwner": "6d0000000000000000000000",
+      "explicitUnknownScope": false,
+      "independentAuthAndEntitlement": false,
+      "requiresSemanticScopeAdjudication": false,
+      "protectedRetrievedSources": [],
+      "retrievalProductBodies": [],
+      "assembledContextProductBodies": [],
+      "assembledPayloads": [],
+      "providerAdapterProductBodies": [],
+      "responseProductBodies": [],
+      "noPayloadConstructed": true,
+      "blockedAdapterAttempts": 0,
+      "externalTransportAttempts": 0,
+      "potentialCriticalFindings": [],
+      "inspectionPerformed": true
+    },
+    "dbOperations": [],
+    "retrievalObservationCount": 0,
+    "contextObservationCount": 0,
+    "payloadObservationCount": 0,
+    "reason": "Inspected full trace: retrieval/context/payload/provider arrays empty, no database operations or sessions, no constructed payload; all inspection flags reviewed. No protected access or foreign state."
+  }
+}

@@ -1,0 +1,62 @@
+edunex-f/js/nex-ai-widget.js
+  1690     conversationSessions = readStoredSessions();
+  1691     if (!conversationSessions.length) conversationSessions = [createConversationSession()];
+  1692     currentSessionId = conversationSessions[0].id;
+  1693     syncHistoryFromActiveSession();
+  1694     renderMessagesForSession(activeSession());
+  1695     renderConversationList();
+  1696   }
+  1697 
+  1698   function beginNewConversation() {
+  1699     const current = activeSession();
+  1700     if (!current.messages.length) {
+  1701       conversationHistory = [];
+  1702       renderMessagesForSession(current);
+  1703       renderConversationList();
+  1704       return;
+  1705     }
+  1706 
+  1707     const session = createConversationSession();
+  1708     conversationSessions.unshift(session);
+  1709     currentSessionId = session.id;
+  1710     conversationHistory = [];
+  1711     conversationVersion += 1;
+  1712     renderMessagesForSession(session);
+  1713     renderConversationList();
+  1714     writeStoredSessions();
+  1715   }
+  1716 
+  1717   function switchConversation(sessionId) {
+  1718     const session = conversationSessions.find((item) => item.id === sessionId);
+  1719     if (!session) return;
+  1720     currentSessionId = session.id;
+  1721     conversationVersion += 1;
+  1722     syncHistoryFromActiveSession();
+  1723     renderMessagesForSession(session);
+  1724     renderConversationList();
+  1725     input.value = '';
+  1726     input.focus();
+  1727   }
+  1728 
+  1729   function appendConversationMessage(message) {
+  1730     const session = activeSession();
+  1731     const record = {
+  1732       role: message.role,
+  1733       content: (message.role === 'assistant' ? cleanAssistantReply(message.content) : String(message.content || '')).slice(0, 4000),
+  1734       notice: typeof message.notice === 'string' ? message.notice.slice(0, 1000) : '',
+  1735       createdAt: Date.now(),
+  1736     };
+  1737     session.messages.push(record);
+  1738     session.messages = session.messages.slice(-MAX_MESSAGES_PER_SESSION);
+  1739     if (record.role === 'user' && (!session.title || session.title === 'New chat')) {
+  1740       session.title = titleFromMessage(record.content);
+  1741     }
+  1742     session.updatedAt = Date.now();
+  1743     conversationSessions = [
+  1744       session,
+  1745       ...conversationSessions.filter((item) => item.id !== session.id),
+  1746     ].slice(0, MAX_STORED_SESSIONS);
+  1747     syncHistoryFromActiveSession();
+  1748     writeStoredSessions();
+  1749     renderConversationList();
+  1750     return record;

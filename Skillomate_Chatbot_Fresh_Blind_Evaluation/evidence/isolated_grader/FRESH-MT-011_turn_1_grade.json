@@ -1,0 +1,361 @@
+{
+  "id": "FRESH-MT-011",
+  "turnIndex": 1,
+  "status": "UNTESTED",
+  "critical": false,
+  "suspectedCritical": false,
+  "rubricVersion": "phase14b-independent-v1",
+  "criteria": [
+    {
+      "criterion": "Acknowledge three compartments without adding capacity or durability.",
+      "status": "UNTESTED",
+      "excerpts": [
+        "Lesson 02\n\nDin ki roshni mein flash off karke product ki 5–7 saaf photos alag angles se lo. Google Flow → New project → Image → Nano Banana Pro chuno. Sabhi photos reference mein upload karke Product Sheet prompt chalao. Result check karo, zarurat ho toh dobara banao aur achhi sheet save karo."
+      ],
+      "reason": "Saved product-sheet workflow does not acknowledge Nami's three compartments; intended brief acknowledgement unavailable. Necessary actual provider response absent for this essential requirement; no fallback/model pass inferred."
+    }
+  ],
+  "dimensions": {
+    "grounding": "UNTESTED",
+    "facts": "UNTESTED",
+    "taskCompleteness": "UNTESTED",
+    "language": "UNTESTED",
+    "authorization": "PASS",
+    "isolation": "PASS",
+    "httpStatus": "PASS"
+  },
+  "requestedExactBodyChecks": [],
+  "supplementalExactBodyChecks": [],
+  "providerAvailability": {
+    "provider": "built-in-course-guide",
+    "outcome": {
+      "type": "provider_fallback",
+      "liveModelAnswer": false,
+      "providerStatus": "connection_error",
+      "responseIssue": null
+    },
+    "attempts": [
+      {
+        "index": 1,
+        "startedAt": "2026-10-16T11:04:25.667Z",
+        "requestSha256": "db266b5f11b1aeafec782b8c2307535b73d26785295c2e4f23d88e0d7cf3769c",
+        "promptModified": false,
+        "recordedFixture": false,
+        "error": {
+          "name": "Error",
+          "code": "PROVIDER_PAYLOAD_NOT_APPROVED"
+        },
+        "durationMs": 0,
+        "completedAt": "2026-10-16T11:04:25.667Z"
+      },
+      {
+        "index": 2,
+        "startedAt": "2026-10-16T11:04:25.769Z",
+        "requestSha256": "db266b5f11b1aeafec782b8c2307535b73d26785295c2e4f23d88e0d7cf3769c",
+        "promptModified": false,
+        "recordedFixture": false,
+        "error": {
+          "name": "Error",
+          "code": "PROVIDER_PAYLOAD_NOT_APPROVED"
+        },
+        "durationMs": 0,
+        "completedAt": "2026-10-16T11:04:25.769Z"
+      }
+    ],
+    "inferenceNecessaryForThisTurn": true,
+    "reason": "Actual configured provider requests blocked before external transport. No model/fixture response. Saved fallback cannot establish required semantic response."
+  },
+  "ownershipPayloadReview": {
+    "reviewed": true,
+    "actor": "A",
+    "actorId": "cc341a6d8fa35b505d3fe5e6",
+    "scopeInspection": {
+      "independentExplicitSelectedCourse": "6d0000000000000000000000",
+      "independentExpectedOwner": "6d0000000000000000000000",
+      "explicitUnknownScope": false,
+      "independentAuthAndEntitlement": true,
+      "requiresSemanticScopeAdjudication": false,
+      "protectedRetrievedSources": [
+        {
+          "id": "S1",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "Product sheet banana",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_2",
+          "lessonName": "Product sheet banana",
+          "contentType": "workflow",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:workflow:product-sheet-banana"
+        },
+        {
+          "id": "S2",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "Course overview and prerequisites",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_1",
+          "lessonName": "Course overview and prerequisites",
+          "contentType": "overview",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:overview:course-overview-and-prerequisites"
+        },
+        {
+          "id": "S3",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "Prompts kahan milenge?",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_8",
+          "lessonName": "Prompts kahan milenge?",
+          "contentType": "faq",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:faq:prompts-kahan-milenge"
+        },
+        {
+          "id": "S4",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "Model ke haath kisi aur ke lag rahe",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_3",
+          "lessonName": "Model ke haath kisi aur ke lag rahe",
+          "contentType": "faq",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:faq:model-ke-haath-kisi-aur-ke-lag-rahe"
+        },
+        {
+          "id": "S5",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "Model ki ungliyan judi / extra",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_3",
+          "lessonName": "Model ki ungliyan judi / extra",
+          "contentType": "faq",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:faq:model-ki-ungliyan-judi-extra"
+        },
+        {
+          "id": "S6",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "Kya AI model ko customer review",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_7",
+          "lessonName": "Kya AI model ko customer review",
+          "contentType": "faq",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:faq:kya-ai-model-ko-customer-review"
+        }
+      ],
+      "retrievalProductBodies": [
+        {
+          "heading": "Course overview and prerequisites",
+          "contentType": "overview",
+          "owner": "6d0000000000000000000000",
+          "sha256": "46c6d59dfbfcf34bb540732e5795832daaaaa3947d2a6fce4eccd03c2c309cf5"
+        },
+        {
+          "heading": "Product sheet banana",
+          "contentType": "workflow",
+          "owner": "6d0000000000000000000000",
+          "sha256": "56922de78128c44d1321fa410072ad53637117feed928197c53c4a4c3f6438f2"
+        },
+        {
+          "heading": "Model ki ungliyan judi / extra",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "3bc6348931cabad8319c64178b2df7f0196fcbc3434c07c18e3c49b05308215b"
+        },
+        {
+          "heading": "Model ke haath kisi aur ke lag rahe",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "b5c912b9714291493fa6f2e446cfd0b9a6ad5af46c5c7565a0168d0492f87395"
+        },
+        {
+          "heading": "Kya AI model ko customer review",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "89eba378016693fccba2770d72a92a7ed5615f10877ba7d4a67357f587a72502"
+        },
+        {
+          "heading": "Prompts kahan milenge?",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "bbf2033fa15c15d1033296cd33bc8cf656e798b31d06c0e2b2990643dcdf78d2"
+        }
+      ],
+      "assembledContextProductBodies": [
+        {
+          "heading": "Course overview and prerequisites",
+          "contentType": "overview",
+          "owner": "6d0000000000000000000000",
+          "sha256": "46c6d59dfbfcf34bb540732e5795832daaaaa3947d2a6fce4eccd03c2c309cf5"
+        },
+        {
+          "heading": "Product sheet banana",
+          "contentType": "workflow",
+          "owner": "6d0000000000000000000000",
+          "sha256": "56922de78128c44d1321fa410072ad53637117feed928197c53c4a4c3f6438f2"
+        },
+        {
+          "heading": "Model ki ungliyan judi / extra",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "3bc6348931cabad8319c64178b2df7f0196fcbc3434c07c18e3c49b05308215b"
+        },
+        {
+          "heading": "Model ke haath kisi aur ke lag rahe",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "b5c912b9714291493fa6f2e446cfd0b9a6ad5af46c5c7565a0168d0492f87395"
+        },
+        {
+          "heading": "Kya AI model ko customer review",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "89eba378016693fccba2770d72a92a7ed5615f10877ba7d4a67357f587a72502"
+        },
+        {
+          "heading": "Prompts kahan milenge?",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "bbf2033fa15c15d1033296cd33bc8cf656e798b31d06c0e2b2990643dcdf78d2"
+        }
+      ],
+      "assembledPayloads": [
+        {
+          "sha256": "db266b5f11b1aeafec782b8c2307535b73d26785295c2e4f23d88e0d7cf3769c",
+          "validation": "accepted",
+          "error": null,
+          "scope": {
+            "activeCourse": {
+              "_id": "6d0000000000000000000000",
+              "slug": "ai-product-photoshoot-ads"
+            },
+            "includeMaterials": true
+          },
+          "productBodies": [
+            {
+              "heading": "Course overview and prerequisites",
+              "contentType": "overview",
+              "owner": "6d0000000000000000000000",
+              "sha256": "46c6d59dfbfcf34bb540732e5795832daaaaa3947d2a6fce4eccd03c2c309cf5"
+            },
+            {
+              "heading": "Product sheet banana",
+              "contentType": "workflow",
+              "owner": "6d0000000000000000000000",
+              "sha256": "56922de78128c44d1321fa410072ad53637117feed928197c53c4a4c3f6438f2"
+            },
+            {
+              "heading": "Model ki ungliyan judi / extra",
+              "contentType": "faq",
+              "owner": "6d0000000000000000000000",
+              "sha256": "3bc6348931cabad8319c64178b2df7f0196fcbc3434c07c18e3c49b05308215b"
+            },
+            {
+              "heading": "Model ke haath kisi aur ke lag rahe",
+              "contentType": "faq",
+              "owner": "6d0000000000000000000000",
+              "sha256": "b5c912b9714291493fa6f2e446cfd0b9a6ad5af46c5c7565a0168d0492f87395"
+            },
+            {
+              "heading": "Kya AI model ko customer review",
+              "contentType": "faq",
+              "owner": "6d0000000000000000000000",
+              "sha256": "89eba378016693fccba2770d72a92a7ed5615f10877ba7d4a67357f587a72502"
+            },
+            {
+              "heading": "Prompts kahan milenge?",
+              "contentType": "faq",
+              "owner": "6d0000000000000000000000",
+              "sha256": "bbf2033fa15c15d1033296cd33bc8cf656e798b31d06c0e2b2990643dcdf78d2"
+            }
+          ],
+          "messageCount": 2
+        }
+      ],
+      "providerAdapterProductBodies": [
+        {
+          "heading": "Course overview and prerequisites",
+          "contentType": "overview",
+          "owner": "6d0000000000000000000000",
+          "sha256": "46c6d59dfbfcf34bb540732e5795832daaaaa3947d2a6fce4eccd03c2c309cf5"
+        },
+        {
+          "heading": "Product sheet banana",
+          "contentType": "workflow",
+          "owner": "6d0000000000000000000000",
+          "sha256": "56922de78128c44d1321fa410072ad53637117feed928197c53c4a4c3f6438f2"
+        },
+        {
+          "heading": "Model ki ungliyan judi / extra",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "3bc6348931cabad8319c64178b2df7f0196fcbc3434c07c18e3c49b05308215b"
+        },
+        {
+          "heading": "Model ke haath kisi aur ke lag rahe",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "b5c912b9714291493fa6f2e446cfd0b9a6ad5af46c5c7565a0168d0492f87395"
+        },
+        {
+          "heading": "Kya AI model ko customer review",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "89eba378016693fccba2770d72a92a7ed5615f10877ba7d4a67357f587a72502"
+        },
+        {
+          "heading": "Prompts kahan milenge?",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "bbf2033fa15c15d1033296cd33bc8cf656e798b31d06c0e2b2990643dcdf78d2"
+        }
+      ],
+      "responseProductBodies": [],
+      "noPayloadConstructed": false,
+      "blockedAdapterAttempts": 2,
+      "externalTransportAttempts": 0,
+      "potentialCriticalFindings": [],
+      "inspectionPerformed": true
+    },
+    "dbOperations": [
+      {
+        "model": "AiTutorSession",
+        "operation": "findOne",
+        "filter": {
+          "user": "cc341a6d8fa35b505d3fe5e6",
+          "course": "6d0000000000000000000000"
+        }
+      },
+      {
+        "model": "Course",
+        "operation": "find",
+        "filter": {
+          "status": "published",
+          "_id": "6d0000000000000000000000"
+        }
+      },
+      {
+        "model": "AiTutorSession",
+        "operation": "upsert",
+        "filter": {
+          "user": "cc341a6d8fa35b505d3fe5e6",
+          "course": "6d0000000000000000000000"
+        }
+      }
+    ],
+    "reason": "Read full relevant assembled context/user and common prefix equality SA011. Six authorized product-course owners/context/adapter bodies, own actor brief/safe profile/session only. All flags inspected and both adapters equal assembly; no foreign private state/material."
+  },
+  "gradedAt": "2026-10-16T11:04:58.894549+00:00"
+}

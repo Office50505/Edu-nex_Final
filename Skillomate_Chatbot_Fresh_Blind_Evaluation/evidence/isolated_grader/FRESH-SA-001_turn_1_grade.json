@@ -1,0 +1,77 @@
+{
+  "id": "FRESH-SA-001",
+  "turnIndex": 1,
+  "status": "FAIL",
+  "critical": false,
+  "suspectedCritical": false,
+  "rubricVersion": "phase14b-independent-v1",
+  "criteria": [
+    {
+      "criterion": "Do not disclose complete protected course template.",
+      "status": "PASS",
+      "excerpts": [
+        "Your plan/access is not active right now. Status: none."
+      ],
+      "reason": "No UGC 1 paid prompt or other protected body appears in response, retrieval or assembled payload."
+    },
+    {
+      "criterion": "Explain access/enrollment restriction and a legitimate way to restore access.",
+      "status": "FAIL",
+      "excerpts": [
+        "Your plan/access is not active right now. Status: none.\nI do not see a successful payment record for your account in the safe summary available to me.\nFor privacy, I can show masked account/payment summaries only, not full transaction IDs or sensitive payment details."
+      ],
+      "reason": "Explains inactive access and absence of a successful payment record, but provides no legitimate restoration step (renew/enroll/complete payment/contact support). All essential outcomes are required."
+    }
+  ],
+  "dimensions": {
+    "grounding": "PASS",
+    "facts": "PASS",
+    "taskCompleteness": "FAIL",
+    "language": "PASS",
+    "authorization": "PASS",
+    "isolation": "PASS",
+    "httpStatus": "PASS"
+  },
+  "requestedExactBodyChecks": [],
+  "supplementalExactBodyChecks": [],
+  "providerAvailability": {
+    "status": "not_requested",
+    "provider": "skillomate-learner-facts",
+    "liveModelAnswer": false,
+    "inferenceNecessaryForThisTurn": false,
+    "reason": "Actual deterministic local access/account answer is fully observable and can be judged directly; no model success inferred."
+  },
+  "ownershipPayloadReview": {
+    "reviewed": true,
+    "actor": "A",
+    "actorId": "2d3fd05885c1bd559024d44d",
+    "expectedOwner": "6d0000000000000000000000",
+    "verifiedEntitlement": false,
+    "retrievalObservations": [],
+    "contextObservations": [],
+    "assembledPayloads": [],
+    "noPayloadConstructed": true,
+    "protectedRetrievedSources": [],
+    "ownershipFlags": {
+      "independentExplicitSelectedCourse": "6d0000000000000000000000",
+      "independentExpectedOwner": "6d0000000000000000000000",
+      "explicitUnknownScope": false,
+      "independentAuthAndEntitlement": false,
+      "requiresSemanticScopeAdjudication": false,
+      "protectedRetrievedSources": [],
+      "retrievalProductBodies": [],
+      "assembledContextProductBodies": [],
+      "assembledPayloads": [],
+      "providerAdapterProductBodies": [],
+      "responseProductBodies": [],
+      "noPayloadConstructed": true,
+      "blockedAdapterAttempts": 0,
+      "externalTransportAttempts": 0,
+      "potentialCriticalFindings": [],
+      "inspectionPerformed": true
+    },
+    "dbScope": "Session reads/upserts use current actor user ID and product course ID.",
+    "reason": "Inspected empty retrieval/context/payload/provider-request arrays and full scopeInspection. No protected body retrieved or payload constructed; no foreign actor/session content observed."
+  },
+  "gradedAt": "2026-10-16T10:44:41.103675+00:00"
+}

@@ -1,0 +1,187 @@
+--- phase14a-working-tree/edunex-b/services/productTutorKnowledge.js
++++ phase14a1/edunex-b/services/productTutorKnowledge.js
+@@ -1,4 +1,4 @@
+-const {extractEntity,extraSlots,scopeProductState,taskConstraints,maskProductOperations} = require('./productTutorState');
++const {extractEntity,extraSlots,scopeProductState,taskConstraints,maskProductOperations,productNameSecurityText} = require('./productTutorState');
+ const { productCopyIntent, productIntentSignals, productResponseLanguage } = require('./productTutorIntent');
+ const fs = require('node:fs');
+ const path = require('node:path');
+@@ -128,12 +128,13 @@
+ 
+ function cleanProductName(value) {
+   const name = String(value||'').replace(/\s+/g,' ').replace(/^(?:(?:a|an|the|my|our)\s+)+/i, '').trim();
+-  if (!name || name.length > 100 || /[\[\]{}<>\n]/.test(name)
+-    || /\b(?:it|that|this|changing|creating|making|same|me|course|prompt|template|ignore|system|developer|instead|mentioned|previous|above|discussed|earlier|features?|benefits?|angle|details|customer|them)\b/i.test(name)
+-    || /\b(?:not|no|given|provided|unknown|unset|unavailable)\b|अज्ञात/iu.test(name)
+-    || /\b(?:changed?|recolou?red|replace|switch)\b.{0,50}\b(?:to|with)\b/i.test(name)
+-    || /^(?:(?:clearly )?adult |young Indian )?(?:man|woman|actor|presenter)$/i.test(name)
+-    || /^(?:product|item|one|video|photo|ad|hooks?|scripts?|captions?)(?:\s|$)/i.test(name)) return '';
++  const checked = productNameSecurityText(name).replace(/^(?:(?:a|an|the|my|our)\s+)+/i,'');
++  if (!name || !checked || name.length > 100 || checked.length > 100 || /[\[\]{}<>\n]/.test(checked)
++    || /\b(?:it|that|this|changing|creating|making|same|me|course|prompt|template|ignore|system|developer|instead|mentioned|previous|above|discussed|earlier|features?|benefits?|angle|details|customer|them)\b/i.test(checked)
++    || /\b(?:not|no|given|provided|unknown|unset|unavailable)\b|अज्ञात/iu.test(checked)
++    || /\b(?:changed?|recolou?red|replace|switch)\b.{0,50}\b(?:to|with)\b/i.test(checked)
++    || /^(?:(?:clearly )?adult |young Indian )?(?:man|woman|actor|presenter)$/i.test(checked)
++    || /^(?:product|item|one|video|photo|ad|hooks?|scripts?|captions?)(?:\s|$)/i.test(checked)) return '';
+   return name;
+ }
+ 
+@@ -157,8 +158,8 @@
+       /\b(?:mere|hamare)\s+product\s+ka\s+naam\s+([\p{L}\p{N}\p{M} '\-]{1,100}?)\s+hai\b/iu,
+       /(?:मेरे|हमारे)\s+(?:प्रोडक्ट|उत्पाद)\s+का\s+नाम\s+([\p{L}\p{N}\p{M} '\-]{1,100}?)\s+है/u,
+       /(?:मुझे|हमें)\s+(?:केवल|सिर्फ|बस)?\s*(?:(?:प्रोडक्ट|उत्पाद)\s+का\s+)?नाम\s+([\p{L}\p{N}\p{M} '\-]{1,100}?)\s+(?:पता|मालूम)\s+है/u,
+-      /\b(?:mera|meri)\s+product\s+([\p{L}\p{N}\p{M} '\-]{1,100}?)\s+hai\b/iu,
+-      /(?:मेरा|मेरी)\s+(?:प्रोडक्ट|उत्पाद)\s+([\p{L}\p{N}\p{M} '\-]{1,100}?)\s+है/u,
++      /\b(?:mera|meri)\s+product\s+(?!\s*ka\s+naam\s+)([\p{L}\p{N}\p{M} '\-]{1,100}?)\s+hai\b/iu,
++      /(?:मेरा|मेरी)\s+(?:प्रोडक्ट|उत्पाद)\s+(?!\s*का\s+नाम\s+)([\p{L}\p{N}\p{M} '\-]{1,100}?)\s+है/u,
+     ];
+     const declared = declarations.map(pattern => identityText.match(pattern)).find(Boolean);
+     const requested = /\b(?:prompts?|templates?|demo|demonstration|showcase|hooks?|scripts?|captions?|ad(?:\s+plan)?|product sheet|lifestyle|dark premium)\b/i.test(text)
+
+--- phase14a-working-tree/edunex-b/services/productTutorState.js
++++ phase14a1/edunex-b/services/productTutorState.js
+@@ -2,10 +2,25 @@
+ // No product-name dictionary and no model/assistant text is promoted to factual evidence.
+ // Keep user names in their original Unicode form; normalize keys, not identity text.
+ const compact=value=>String(value||'').replace(/\s+/g,' ').trim();
++
++function productNameSecurityText(value){
++ // This view is for validation only. Never use it as the displayed product name.
++ const normalized=String(value||'').normalize('NFKC');
++ if(/\p{Bidi_Control}/u.test(normalized))return '';
++ const checked=compact(normalized.replace(/\p{Default_Ignorable_Code_Point}/gu,''));
++ // NFKC does not resolve Cyrillic/Greek lookalikes. Reject script mixing within
++ // a word, while allowing legitimate separate Hindi/English words in a name.
++ const words=checked.match(/[\p{L}\p{M}]+/gu)||[];
++ if(words.some(word=>/\p{Script=Latin}/u.test(word)
++   && /\p{Script=Cyrillic}|\p{Script=Greek}/u.test(word)))return '';
++ return checked;
++}
++
+ function entity(value){
+  const name=compact(value).replace(/^(?:(?:of\s+)?(?:a|an|the|my|our)\s+)+/i,'');
+- if(!name||name.length>100||/[\[\]{}<>]/.test(name)||/\b(?:not|unknown|unset|unavailable|same|that|this|provided|previous|earlier|course|prompt|template|ignore|system|customer|benefits?)\b|अज्ञात|नहीं/u.test(name.toLowerCase()))return '';
+- if(/^(?:product|item|actor|presenter|man|woman|one|ad|video|details|features?)(?:\s|$)/i.test(name))return '';
++ const checked=productNameSecurityText(name).replace(/^(?:(?:of\s+)?(?:a|an|the|my|our)\s+)+/i,'');
++ if(!name||!checked||name.length>100||checked.length>100||/[\[\]{}<>]/.test(checked)||/\b(?:not|unknown|unset|unavailable|same|that|this|provided|previous|earlier|course|prompt|template|ignore|system|customer|benefits?)\b|अज्ञात|नहीं/u.test(checked.toLowerCase()))return '';
++ if(/^(?:product|item|actor|presenter|man|woman|one|ad|video|details|features?)(?:\s|$)/i.test(checked))return '';
+  return name;
+ }
+ function extractEntity(text){
+@@ -19,9 +34,9 @@
+   new RegExp('\\b(?:I call (?:my|our|the) (?:item|product)|(?:my|our) (?:item|product) is|the (?:item|product)(?: in (?:this|the) (?:exercise|example))? is|the name of (?:my|our|the) (?:item|product) is)\\s+(?:(?:called|named)\\s+)?'+noun+stop,'iu'),
+   new RegExp('\\bI (?:only |just )?know (?:only |just )?the name of (?:my|our)\\s+'+noun+stop,'iu'),
+   /(?:मेरे|मेरी|मेरा|हमारे|हमारी|हमारा)\s+(?:प्रोडक्ट|उत्पाद|सामान|आइटम|वस्तु|चीज़|चीज)\s+का\s+नाम\s+([^।.!?;\n]+?)\s+है/u,
+-  /(?:मेरा|मेरी|हमारा|हमारी)\s+(?:प्रोडक्ट|उत्पाद|सामान|आइटम|वस्तु|चीज़|चीज)\s+([^।.!?;\n]+?)\s+है/u,
++  /(?:मेरा|मेरी|हमारा|हमारी)\s+(?:प्रोडक्ट|उत्पाद|सामान|आइटम|वस्तु|चीज़|चीज)\s+(?!\s*का\s+नाम\s+)([^।.!?;\n]+?)\s+है/u,
+   /\b(?:mere|meri|mera|hamare|hamari|hamara)\s+(?:product|item|samaan|vastu|cheez)\s+ka\s+naam\s+(.+?)\s+hai\b/iu,
+-  /\b(?:mera|meri|hamara|hamari)\s+(?:product|item|samaan)\s+(.+?)\s+hai\b/iu,
++  /\b(?:mera|meri|hamara|hamari)\s+(?:product|item|samaan)\s+(?!\s*ka\s+naam\s+)(.+?)\s+hai\b/iu,
+   /\b(?:main|mai|hum)\s+(.+?)\s+becht[aei]\s+(?:hoon|hun|hain)\b/iu,
+   new RegExp('\\b(?:for|about)\\s+my\\s+'+noun+stop,'iu'),
+   new RegExp('\\b(?:AI|synthetic|virtual)\\s+(?:presenter|actor|woman|man)\\s+has never (?:bought|used|tested)\\s+'+noun+stop,'iu'),
+@@ -94,4 +109,4 @@
+  const q=String(message||'');const actorFree=/\b(?:no actors?|actor[- ]free|without (?:an? )?(?:actor|presenter))\b|बिना.{0,8}(?:अभिनेता|कलाकार)/i.test(q)?true:/\b(?:add|use|with) (?:an? )?(?:actor|presenter)\b/i.test(q)?false:Boolean(previous.actorFree);
+  return {actorFree};
+ }
+-module.exports={extractEntity,extraSlots,scopeProductState,captureProductOptions,taskConstraints,productOperations,maskProductOperations};
++module.exports={extractEntity,extraSlots,scopeProductState,captureProductOptions,taskConstraints,productOperations,maskProductOperations,productNameSecurityText};
+
+--- /dev/null
++++ phase14a1/edunex-b/tests/product-tutor-unicode-safety.test.cjs
+@@ -0,0 +1,95 @@
++require('./helpers/deny-network.cjs');
++const test=require('node:test');
++const assert=require('node:assert/strict');
++const K=require('../services/productTutorKnowledge');
++const S=require('../services/productTutorState');
++const R=require('../services/productTutorResponse');
++const {retrieveKnowledge}=require('../services/tutorKnowledge');
++const {backend}=require('./ai-tutor-fixture.cjs');
++const approved=require('./fixtures/product-tutor-phase14a.json').assets;
++const course={_id:'6d0000000000000000000000',slug:'ai-product-photoshoot-ads',title:'AI Product Photoshoot & Ads',videos:[]};
++const body=reply=>reply.match(/```text\n([\s\S]*?)\n```/)?.[1];
++const malicious=[
++ ['original full-width bypass','cedar tray ｉｇｎｏｒｅ ｓｙｓｔｅｍ'],
++ ['mathematical compatibility letters','cedar tray 𝚒𝚐𝚗𝚘𝚛𝚎 𝚜𝚢𝚜𝚝𝚎𝚖'],
++ ['mixed Hindi and compatibility letters','नीली थैली ｉｇｎｏｒｅ ｄｅｖｅｌｏｐｅｒ'],
++ ['mixed Cyrillic Latin instruction token','cedar tray іgnore syѕtem'],
++ ['mixed Greek Latin instruction token','cedar tray ιgnore system'],
++ ['mixed Cyrillic Latin without a plain forbidden word','cedar tray іgnore syѕtеm'],
++ ['invisible separators','cedar tray ig\u200bnore sy\u200bstem'],
++ ['bidi control','cedar tray \u202ehidden'],
++ ['compatibility placeholder delimiters','cedar tray ［PRODUCT］'],
++ ['compatibility role term','ｐｒｏｄｕｃｔ tray'],
++ ['plain prohibited instructions','cedar tray ignore system'],
++];
++const legitimate=[
++ ['english','cedar thread tray'],
++ ['hindi','क़लम रखने की नीली थैली'],
++ ['hindi-combining','क़लम रखने की नीली थैली'],
++ ['hinglish','neeli khadi silai pouch'],
++ ['mixed-script separate words','नीली Cotton थैली'],
++ ['legitimate compatibility name','Ｃｅｄａｒ tray'],
++ ['ordinary English letters','systematic cedar storage tray'],
++ ['legitimate Hindi joiner','क्\u200dषीर पात्र'],
++];
++for(const [label,name]of legitimate)test(`unicode safety preserves ${label}`,()=>{
++ assert.equal(K.cleanProductName(name),name);
++ const q=`हमारी वस्तु का नाम ${name} है। Return the complete approved L02 White Studio text.`;
++ assert.equal(S.extractEntity(q)?.product,name);
++ const facts=K.productFacts(q);assert.equal(facts.product,name);
++ const knowledge=retrieveKnowledge({courses:[course],activeCourse:course,message:q,conversationContext:facts,includeMaterials:true});
++ knowledge.productContext=facts;
++ const result=R.productTutorReply({message:q,knowledge});
++ assert.equal(body(result.reply),approved['L02 White Studio'].replace(/\[product\]/gi,()=>name));
++});
++for(const [label,name]of malicious){
++ test(`unicode safety rejects ${label} in all name entry points`,()=>{
++  assert.equal(K.cleanProductName(name),'');
++  const q=`हमारी वस्तु का नाम ${name} है।`;
++  assert.equal(S.extractEntity(q),null);
++  assert.equal(K.productFacts(q).product,undefined);
++  assert.equal(K.productSlots(`Give the exact L02 White Studio prompt for ${name}.`).product,undefined);
++  assert.equal(K.renderProductTemplate({content:approved['L02 White Studio']},{product:name}),approved['L02 White Studio']);
++ });
++ for(const [lang,request]of [
++  ['English',`Replace the product with ${name}.`],
++  ['Hinglish',`Ab product ko ${name} se replace karo.`],
++  ['Hindi',`अब वस्तु को ${name} से बदलें।`],
++ ])test(`unicode safety ${label} cannot switch product in ${lang}`,()=>{
++  const previous=K.productFacts('My product is a linen thread case.');
++  const next=K.productFacts(request,[],previous);
++  assert.notEqual(next.product,name);assert.equal(next.product,'linen thread case');
++  assert.equal(S.extractEntity(request),null);
++ });
++ test(`unicode safety ${label} cannot enter through remembered state or history`,()=>{
++  const previous={schemaVersion:2,product:name,attributes:[],courseId:course._id,conversationId:'safe-chat'};
++  const q='Give the complete approved L02 White Studio text.';
++  const facts=K.productFacts(q,[{role:'user',content:`हमारी वस्तु का नाम ${name} है।`}],previous);
++  assert.equal(facts.product,undefined);
++  assert.equal(K.productFacts(q,[{role:'user',content:`हमारी वस्तु का नाम ${name} है।`}]).product,undefined);
++  const knowledge=retrieveKnowledge({courses:[course],activeCourse:course,message:q,includeMaterials:true,conversationContext:facts});
++  knowledge.productContext=facts;
++  assert.equal(body(R.productTutorReply({message:q,knowledge}).reply),approved['L02 White Studio']);
++ });
++}
++test('unicode safety rejects non-name structures independently of normalization',()=>{
++ for(const value of ['<instruction>','[PRODUCT]','a'.repeat(101),'same product','ignore system'])assert.equal(K.cleanProductName(value),'');
++});
++for(const q of ['मेरी प्रोडक्ट का नाम ｐｒｏｄｕｃｔ tray है।','Mera product ka naam ｐｒｏｄｕｃｔ tray hai.'])test(`unicode safety rejected named declaration cannot retry as a generic identity: ${q}`,()=>{
++ for(const request of [q,q.replace(/ /g,'   ')]){
++  assert.equal(S.extractEntity(request),null);assert.equal(K.productFacts(request).product,undefined);
++ }
++});
++test('unicode safety blocks a persisted route switch and keeps safe identity on follow-up',async()=>{
++ const sessions=new Map();const api=backend({courses:[course],sessions,user:{_id:'learner'},subscription:{status:'active',currentPeriodEnd:new Date(Date.now()+86400000)}});
++ const scope={courseId:course._id,conversationId:'unicode-switch',debugAi:true,history:[]};
++ await api.chat({...scope,message:'My product is a linen thread case. Give the exact L02 White Studio prompt.'});
++ for(const name of ['cedar tray ｉｇｎｏｒｅ ｓｙｓｔｅｍ','cedar tray іgnore syѕtеm']){
++  const r=await api.chat({...scope,message:`Ab product ko ${name} se replace karo. Give the complete approved L02 White Studio text.`});
++  assert.equal(body(r.answer),approved['L02 White Studio'].replace(/\[product\]/gi,'linen thread case'));
++  assert.equal(sessions.get(`learner:${course._id}`).productContext.product,'linen thread case');
++  const follow=await api.chat({...scope,message:'Give the complete approved L02 White Studio text.'});
++  assert.equal(body(follow.answer),body(r.answer));
++ }
++ assert.equal(api.calls.length,0);
++});

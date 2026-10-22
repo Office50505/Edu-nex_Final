@@ -1,0 +1,2732 @@
+{
+  "capturedAt": "2026-10-16T11:31:35.796000+00:00",
+  "archivePath": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/Skillomate_Chatbot_Fresh_Blind_Evaluation.zip",
+  "archiveSHA256": "c70c77fe946a53ff7de18a1f112a22409aaa81903bee0f21c07bf5e8d36de95c",
+  "archiveAll489EntriesRead": 489,
+  "uncompressedBytesRead": 44265426,
+  "jsonFilesParsed": 462,
+  "utf8BytesDecoded": 44265426,
+  "archiveManifestHashesMatch": true,
+  "archiveInventory": [
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/01_Executive_Summary.md",
+      "bytes": 2274,
+      "sha256": "45a5176f70bfef40a878f29de0da57bacf94bc609282a44cde98746a54aada37"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/02_Method_And_Freeze.md",
+      "bytes": 4740,
+      "sha256": "cbbe51dd5cdc419f1e198f641c6cb97c48297aa703f831630d85226a881536f8"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/03_Results.md",
+      "bytes": 3785,
+      "sha256": "db8b6c24bcdbaf2b8227fafb59445b91de66cabe7b7d1fa4b8797f76448cd5ca"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/04_Failures_And_Safety.md",
+      "bytes": 51017,
+      "sha256": "a814c0dfe2d2ee2cd50ae9b50b805a1f17874704dddc4f5ee80de26eb2458898"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/05_Ownership_And_Provider.md",
+      "bytes": 2571,
+      "sha256": "d41c96c44f37274cfd4eb0b6d6df98af9640a61be5040ab1d74a81d7f09fada9"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/06_Release_Gate.md",
+      "bytes": 1601,
+      "sha256": "0f82a70659bfbceb0af5e098e6097b57dcf6c0fefbe181a319936da4b32f8e97"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/07_Limitations_And_Regression_Context.md",
+      "bytes": 4493,
+      "sha256": "7c8c162efb1ecd699adbb3047d83277bba847331d8de5c024c4b154c03f5acd1"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/README.md",
+      "bytes": 2886,
+      "sha256": "fe762a58b4b52de89d7a591c1954f175b6afd7ce4f0d60fda97ce2afcdcd9478"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/approved_records.json",
+      "bytes": 76852,
+      "sha256": "f174c642e47191e2367058ca4ff9ab755d3fd5b0b35a5bbc4cdb133d12450821"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/candidate_manifest.json",
+      "bytes": 149332,
+      "sha256": "f953744c9c03c6c48bd6adcb6343c20c22aa0a9c1e392ef67e1dd03d8b2dd2c2"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/case_results.csv",
+      "bytes": 29313,
+      "sha256": "d46002c289f5d6a4c3faf9c5164df05e6c1118332b7bc8787c012a15ecd4af9f"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/case_schema.json",
+      "bytes": 1881,
+      "sha256": "c163ba2258d42806140f02ada5f289a2900ebdcd31b734da4cc23dae1cf31d3e"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/case_validation.json",
+      "bytes": 5115,
+      "sha256": "ad0563069c7a600c8ad396e4d1d2fd0fc7d522da007561875bf6cb6d0dfb3555"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/collect_summary.py",
+      "bytes": 11054,
+      "sha256": "5a7c166720dd0ff72dd685b030ba440af3a12c12b7ee183b4310dfc98e1ba556"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/coverage_inventory.json",
+      "bytes": 1141,
+      "sha256": "bc6faef1d66d50e9b7121370ff315b7d776a48fa0e9bb28db0f44b0dcde3980a"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/evaluation_freeze.json",
+      "bytes": 4565,
+      "sha256": "5d0a3d63c1b9561f3fa9eee958f96466b3e61494b7d0948625cd841eb2426140"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/exact_body_diffs.json",
+      "bytes": 44899,
+      "sha256": "af0f95ecf17afe5f2a79cb24fd1fe392a384b8f1ecf042e07bb6f5f0d970b3f7"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/execution_completion.json",
+      "bytes": 770,
+      "sha256": "54a2da039b09a8a29946d44ca780d2d67f9bd0a06324e90c4f2357814f5b39b9"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/execution_journal.jsonl",
+      "bytes": 59588,
+      "sha256": "5c85dab497f5a7a1d9551f1fb71e4ab54d9f237ade629eef30eb85a81635df51"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/execution_policy.json",
+      "bytes": 941,
+      "sha256": "5d92fd9aff11027fc557df9a8f6d91e558d61dc544508e7c0688559e33c1ea77"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/execution_stderr.log",
+      "bytes": 20040,
+      "sha256": "6c38ca59c0e8b054a23b8b1a41fc59e0cd3251cfa460934d23e64dcc4a1845db"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/execution_stdout.log",
+      "bytes": 7680,
+      "sha256": "3cdb25fdf331090996c35a34dfa0ec28252baddca76a23fe6fc0d29cc300251e"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/final_integrity.json",
+      "bytes": 349930,
+      "sha256": "106e63396bfbbf6a91edc4ae0c51ba65f9f128e50523ef4367b779dbec2b3aec"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/frozen_cases.json",
+      "bytes": 135588,
+      "sha256": "bd6ebe8a9adbe9b6bbf088634af1fce57fa149789987e96e2d84ed5e63da766f"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/git_status_after.txt",
+      "bytes": 4259,
+      "sha256": "9f14115b16437fee66637e07790d5b8fec3fc4adff409ecc826c6cd8bbec5002"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/harness_design_verification.json",
+      "bytes": 231,
+      "sha256": "3af9b3fe2febd9a3dcf218b149370f16d055a02d8d8e09e717ae46fc9238f9e0"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/historical_review_context.json",
+      "bytes": 1601,
+      "sha256": "29224dae37e1f07ee0e10b5a976c1cd3201d1718c7ca364b6cf65595bb66e44a"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/inspect_scope.cjs",
+      "bytes": 4475,
+      "sha256": "d567516f11d0dd865db275dbe9241e7dd87e4eadcc89d17e586b0fa0fb0d4250"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_author/author_attestation.draft_v1.txt",
+      "bytes": 981,
+      "sha256": "621c431e12460b3aea2854b72513e7b173302264cd3aae8b8f4bd265d409c3b3"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_author/author_attestation.txt",
+      "bytes": 1323,
+      "sha256": "4551402b350133a2be924ddd7687effb0dc56e8e47d512db4d3e93a7f62db0f7"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_author/author_cases.draft_v1.py",
+      "bytes": 59870,
+      "sha256": "8a0b8badfa592df1354c627c2f9d9f63cd34ffc63610696c9d917222e152c202"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_author/author_cases.py",
+      "bytes": 62436,
+      "sha256": "81945aaffd54e497867e21fcc1674f6d4785085fdbde908b55a25864d23779c9"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_author/case_schema.json",
+      "bytes": 1881,
+      "sha256": "c163ba2258d42806140f02ada5f289a2900ebdcd31b734da4cc23dae1cf31d3e"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_author/cases.draft_v1.json",
+      "bytes": 133290,
+      "sha256": "598d4fa1d49ad3beca557f267508c09ce308fcbc106722900f620717dc78714f"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_author/cases.json",
+      "bytes": 135588,
+      "sha256": "bd6ebe8a9adbe9b6bbf088634af1fce57fa149789987e96e2d84ed5e63da766f"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_author/curriculum.json",
+      "bytes": 52837,
+      "sha256": "54a919abcbec2d0bbf5b13c7b9c87034dd3922b0325c912ec0fd8639daffd302"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_author/scoring_rubric.json",
+      "bytes": 4560,
+      "sha256": "80c4347805a5fe5e25ca6c06d6fb3b894ff0a40e0a147cd0be976e1b52bb1995"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_author/validation.draft_v1.json",
+      "bytes": 1542,
+      "sha256": "3cce5eab4f15f6d6817544973c0b2542cbf47172a78c7aa51c9372a9e170ec0a"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_author/validation.json",
+      "bytes": 1713,
+      "sha256": "a42617ad7a5f56644dca02865db8c8be2ff2fabadc8bb3173b21f2e27c91cf58"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-EG-001_turn_1_grade.json",
+      "bytes": 9590,
+      "sha256": "16f39fdfc31ff2b44025aae0e768a830bcb205132efe3904b883b0d971c17806"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-EG-001_turn_1_response.json",
+      "bytes": 120449,
+      "sha256": "648ccc98b95ca9ead92072ae09fe8feea22e6ce9ad406a4123674f3fe0f8ef72"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-EG-002_turn_1_grade.json",
+      "bytes": 10023,
+      "sha256": "559fae5e9e9d6793b4235b91eba9c2fd19bdb748ed027fa37b5912e532906fcf"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-EG-002_turn_1_response.json",
+      "bytes": 107791,
+      "sha256": "156da7bfe5a769a7ca050a6e817bef2bdc65cc3ebb227917466dd51952614317"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-EG-003_turn_1_grade.json",
+      "bytes": 11076,
+      "sha256": "9981de5f6d02ab1a005de870fbc2539dcf2e8091d04ab5987abde2c4f1a5eb04"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-EG-003_turn_1_response.json",
+      "bytes": 100663,
+      "sha256": "72fa6240f0e50353ce3b1e4388204a6082038f53b7e75a2599cb203f4895c5a8"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-EG-004_turn_1_grade.json",
+      "bytes": 10248,
+      "sha256": "fd5499988b530c9671c3807605ee97fb299275ccfec73bfb2b44bfaf08ca589b"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-EG-004_turn_1_response.json",
+      "bytes": 103031,
+      "sha256": "bbffefcaa9b647dd803b1d51119ec31227caffa1da17b2a5b093441cc0e0b59d"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-EG-005_turn_1_grade.json",
+      "bytes": 10066,
+      "sha256": "c4ba3221df4e84e65d7525fa556add008e0931516a8fb9c43b748f86d7db5406"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-EG-005_turn_1_response.json",
+      "bytes": 110143,
+      "sha256": "3c6c770f3c3daaa4865e20c280e7e6bfc4202dd904e91424a6110888c047ee0e"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-EG-006_turn_1_grade.json",
+      "bytes": 9757,
+      "sha256": "da5a8a0d0cda9c9a252683ef14dd86d58072651d24c999ed2b93c07f62f7a3d7"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-EG-006_turn_1_response.json",
+      "bytes": 112019,
+      "sha256": "011b189635a90daacb32153bb09fbb85f5da0370407e9ada699eb9efd29a13b5"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-EG-007_turn_1_grade.json",
+      "bytes": 15381,
+      "sha256": "f3e1b98ced905769566796e87b89cef79953fb67a57130c1b471ab08564c3bbd"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-EG-007_turn_1_response.json",
+      "bytes": 169047,
+      "sha256": "4904277d45d885e89ee8caf9fd2e7d170250d1aa1e50751fdd577c6baf322999"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-EG-008_turn_1_grade.json",
+      "bytes": 9974,
+      "sha256": "94d18fb44298f73cdf3ee235ce383221448f1c2599fab6159e9cb4eee2df041c"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-EG-008_turn_1_response.json",
+      "bytes": 99635,
+      "sha256": "db7c3553a8b47804bb1f6057947cd4f344b87053380ed888946f925ad359f15b"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-EG-009_turn_1_grade.json",
+      "bytes": 9863,
+      "sha256": "f55adcff37149e9fe23411d61684f7826ceae93e234cf337d0086f6a144cbcf4"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-EG-009_turn_1_response.json",
+      "bytes": 97525,
+      "sha256": "9c7e0dad273ddd98a93c0692a6a642133c2dc361744e8338af6bfdcb4b5b1fdd"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-EG-010_turn_1_grade.json",
+      "bytes": 9675,
+      "sha256": "6192ecaa75e361cbe74e328d01b48ee1bf98d227d649a0c6e193082c51da1609"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-EG-010_turn_1_response.json",
+      "bytes": 103652,
+      "sha256": "d81ac70f15c9aa0af186d1e5e3537ef392edd0e6eca8f72fc7a38198ede45290"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-EG-011_turn_1_grade.json",
+      "bytes": 11437,
+      "sha256": "3335e76ccc611c8d53128d38db5ad2d015d28062f4b43b153804db8a9f3f0617"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-EG-011_turn_1_response.json",
+      "bytes": 116540,
+      "sha256": "2fa075d0eb07cfb64603ca14e57c210c510f9611e1352eac2dac219b9f5c64a6"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-EG-012_turn_1_grade.json",
+      "bytes": 10019,
+      "sha256": "e421b9e8e7d10288909c636e797a4e95881b08f8ec9559cff4655cd224de7316"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-EG-012_turn_1_response.json",
+      "bytes": 96046,
+      "sha256": "d2447f98209846d0b17f586de7110c016c0d2ce5d6140ad92b01859f152b95eb"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-EG-013_turn_1_grade.json",
+      "bytes": 3297,
+      "sha256": "70daa631b1db339006659c5777751b5bec1cb85b2b8408895218ea4dd2271e8b"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-EG-013_turn_1_response.json",
+      "bytes": 6398,
+      "sha256": "a5b9526a7094b1aff3be1c16f63c8f9c689ce28ce31b21d5a2774da365817ba5"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-EG-014_turn_1_grade.json",
+      "bytes": 9644,
+      "sha256": "fc632ef3caeb497622558b9fcf57e910e7d269f6ec7f5b7b64f97b6ab65bc0f7"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-EG-014_turn_1_response.json",
+      "bytes": 107716,
+      "sha256": "e2a4171856ee2793d7ad44b02fef33de9ffada4674061c86d4517c948d90a82a"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-EG-015_turn_1_grade.json",
+      "bytes": 10228,
+      "sha256": "62a87864bd2c5d4a072773e32fa0d1aed4c0ec7f124ee6a9327c1828f4106402"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-EG-015_turn_1_response.json",
+      "bytes": 100934,
+      "sha256": "5caf489f4bbdff333baaec1183a2dd78aadf0413f4cb3ccf66fcfa12009e13cb"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-EG-016_turn_1_grade.json",
+      "bytes": 10458,
+      "sha256": "53c81c14f44adde78fe007a93f3028f5e3d0eab9360f0d4a658f4a10d211dda6"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-EG-016_turn_1_response.json",
+      "bytes": 98614,
+      "sha256": "0f36ebd8979bae28ed7826c186d6763eef7294cefc6e2e9fff76ea160b874a12"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-EG-017_turn_1_grade.json",
+      "bytes": 3270,
+      "sha256": "a75941a5f7014c0f11bea152cfc3e88644e3ce979b08cfd59140f7cfbc7c1e3a"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-EG-017_turn_1_response.json",
+      "bytes": 6973,
+      "sha256": "fcfd33ba97d94ed10c93a232c0e2a415508506cdc557f0da337e915ccc838b28"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-EG-018_turn_1_grade.json",
+      "bytes": 16602,
+      "sha256": "2c733538041d9076cc009c53260f9f2076c9f4610f515a4351fec8128cb09e0a"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-EG-018_turn_1_response.json",
+      "bytes": 198678,
+      "sha256": "81ba6f70a0a3a6eedb16d05f7c004adbd8cf9e42b808f0dbf7607a2b87ce91bc"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-EG-019_turn_1_grade.json",
+      "bytes": 5916,
+      "sha256": "fdaf308339441e4e4fbeedc7278dac03a49c967ee3c86a3f2e3aa3b4512e34d5"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-EG-019_turn_1_response.json",
+      "bytes": 61846,
+      "sha256": "50330d75b089956ac7c90a4c9d7ceda006446473e8e7ba00d34b5b7d69379866"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-EG-020_turn_1_grade.json",
+      "bytes": 9914,
+      "sha256": "ef2a175dcb9be8ded23f31ee022bfa3bcd12d8d0e3c4160b366fa0d58bf74822"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-EG-020_turn_1_response.json",
+      "bytes": 130370,
+      "sha256": "f04fab44e8bff3ae540883761540c4e7d45a0cc7f0ff2050cffec764d9875d18"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-EX-001_turn_1_grade.json",
+      "bytes": 11531,
+      "sha256": "ca5b9d136207e605423cb8a7540253293a3f25d6418fa69e05e2bd5f6dc80fc0"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-EX-001_turn_1_response.json",
+      "bytes": 112305,
+      "sha256": "462d9cbe069f1112b13d6639bcda3f0e04136a76f9a51a653a78c68389b332c3"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-EX-002_turn_1_grade.json",
+      "bytes": 11270,
+      "sha256": "70717316e93f1e3823787d759c7fe6595f15932640345a4073715b7d3ff87da3"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-EX-002_turn_1_response.json",
+      "bytes": 90829,
+      "sha256": "3c450a18a82dd1ddbbeae3d50a6cb4906ef887941fe5b863287cf13e5993e8f4"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-EX-003_turn_1_grade.json",
+      "bytes": 11127,
+      "sha256": "3ca4df4390d103541b369cdb60579e08c2b9e7d7d18491876189848633be872b"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-EX-003_turn_1_response.json",
+      "bytes": 94211,
+      "sha256": "001602d8cfe765c72559b1dea294631959b6eca8c873dd63661af0878838a9a6"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-EX-004_turn_1_grade.json",
+      "bytes": 11486,
+      "sha256": "a64e7092708d69337036628bdd92156bfc6e9d6d068b25bf85c85e66aeee3173"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-EX-004_turn_1_response.json",
+      "bytes": 98183,
+      "sha256": "1a2a6d740899c3b6cb320a9754a7e4d65f180e9f67908cfbaa59db49ffbb8395"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-EX-005_turn_1_grade.json",
+      "bytes": 10411,
+      "sha256": "0a2d33688e9acc082829b385b522a0237f74ce1a2cf16fea0196af084cb4aeef"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-EX-005_turn_1_response.json",
+      "bytes": 102646,
+      "sha256": "40051e1b7ed2c385f81b2935aa2f72a219ff0d329a700c9eb9fdd52ede361a3c"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-EX-006_turn_1_grade.json",
+      "bytes": 11792,
+      "sha256": "ca8521f83a94c247b4eacb8376cd2550a23bc222ffbe1115418bbc38b9651fa7"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-EX-006_turn_1_response.json",
+      "bytes": 106531,
+      "sha256": "7bf14fee697d6b2ac1b035e6a0c9b135cd49a3dfa012f2d6ddd30945fb3c88b9"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-EX-007_turn_1_grade.json",
+      "bytes": 60932,
+      "sha256": "a36d8fe253b882f572f73c752d36cabe5b82d4124062a1dba86e33da09bb55c5"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-EX-007_turn_1_response.json",
+      "bytes": 177200,
+      "sha256": "ffb1b20256c3ea4aea124c33f5d1bb945ee1d7cf63b99d672e2aec8991a841c2"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-EX-008_turn_1_grade.json",
+      "bytes": 11937,
+      "sha256": "1a21d218a6dab75814fbed17438a8bd8d6b39d12246cf257ffdf660ffd067dbb"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-EX-008_turn_1_response.json",
+      "bytes": 101805,
+      "sha256": "ea3d01a4086634dabb3743ac597391558212adc10f72341e8dc33d03f016e7fa"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-EX-009_turn_1_grade.json",
+      "bytes": 10838,
+      "sha256": "46e594bb24236de63dd6e97c16f19fbb1dadf1e8771e9299020ce94a3c46f268"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-EX-009_turn_1_response.json",
+      "bytes": 110088,
+      "sha256": "17502a922f275edd6890a412f4127e6b695db821278e8655848fa00ad49a1b65"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-EX-010_turn_1_grade.json",
+      "bytes": 10728,
+      "sha256": "46281e036a5a35967c3e042d45b41c584a5e58589c34f3f1c9b6a0d34100a2dc"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-EX-010_turn_1_response.json",
+      "bytes": 104028,
+      "sha256": "284581972a5b5ccb6c7f62a40df95e66560863dcba005c8d555c44f87fced97e"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-EX-011_turn_1_grade.json",
+      "bytes": 10353,
+      "sha256": "3862f09dde26b295dbf929d9b6847a8d254ba87ec5ee6cfe5fd15c128ce037cf"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-EX-011_turn_1_response.json",
+      "bytes": 115913,
+      "sha256": "6bd167b5f23aebf6a5c2f72c2918822a48c00ef8b5df102caad5cc0cd3734858"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-EX-012_turn_1_grade.json",
+      "bytes": 11174,
+      "sha256": "f618990bb8b1cf1711ff4361d7fe389e099d5a71d18f7f5b16f3b9aaf46c3d64"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-EX-012_turn_1_response.json",
+      "bytes": 105515,
+      "sha256": "6de28c6ed787e10860c1ab89038bd2bab1939f3ee0faa2989366174ff4504b22"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-EX-013_turn_1_grade.json",
+      "bytes": 11190,
+      "sha256": "e2a7ab7b3f3e3d40100784b9f6b89a6d69d90bcdb40d761fd10dd20418368f4c"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-EX-013_turn_1_response.json",
+      "bytes": 103531,
+      "sha256": "b13be96b39df1093f8b1dfca778a1f3c6886e57d2be5a4d719b79f3357bb12de"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-EX-014_turn_1_grade.json",
+      "bytes": 10512,
+      "sha256": "07902ec1ab9615ecf0f19cad51f0e7d0e4be5ccf7727b76a71e7dad25c07d1ca"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-EX-014_turn_1_response.json",
+      "bytes": 94895,
+      "sha256": "c2e91a7cddf7d23105420514dfca29e9f293f0d3409780a076dd2e52a53d4914"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-EX-015_turn_1_grade.json",
+      "bytes": 11559,
+      "sha256": "c1b7603efa2ac939aa08c39ef0d535cf2e2fac0bb8b4dfd79f92dad89c415a8e"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-EX-015_turn_1_response.json",
+      "bytes": 94485,
+      "sha256": "c94c16bc7ca7e73699c012874e99510f29e01144c7a4cfbfde9b0c25a7c32748"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-EX-016_turn_1_grade.json",
+      "bytes": 14210,
+      "sha256": "d95da49240b00db6fb4ed1f49ea01652e3da9eb8f1d67cf061342ed232d4e202"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-EX-016_turn_1_response.json",
+      "bytes": 155023,
+      "sha256": "ec153f72bb72c27471d1af70679b5ddd78e92d193be5d1f67e358555d6e9291d"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-EX-017_turn_1_grade.json",
+      "bytes": 14292,
+      "sha256": "e7585b3e6f7f6ae13dda1c746eaba1d29f6cd42783c15606a8d475c1a402a853"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-EX-017_turn_1_response.json",
+      "bytes": 171109,
+      "sha256": "635afd5806a9e3278a94b94e3b08243a5c87791f6c9b1d5262ac1610cdda6614"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-EX-018_turn_1_grade.json",
+      "bytes": 11001,
+      "sha256": "21156813aa21036678f7d4798773307b6c6f120901130dc9328de86b09876430"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-EX-018_turn_1_response.json",
+      "bytes": 113429,
+      "sha256": "35fad379fa4f8c6a777bdcdb44c7bee701c0a8cff002a24120bfad7a4cedce1c"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-EX-019_turn_1_grade.json",
+      "bytes": 11056,
+      "sha256": "7776146cfc7fe5dae0eadcc68503b07bbcfe0e25b18d2a8b235e31b88f829d27"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-EX-019_turn_1_response.json",
+      "bytes": 116311,
+      "sha256": "3798df1cbe96b039c55f652e2300a9d9b3996a69613ee1edc0b913519a1407fb"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-EX-020_turn_1_grade.json",
+      "bytes": 11678,
+      "sha256": "8aa1b67fde28099a6e480af5ad566b6759c803637e75278b12cc9fc6348b9623"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-EX-020_turn_1_response.json",
+      "bytes": 107560,
+      "sha256": "846bb30ab0797d3928ba30e5a488688d42070a58322e97a5ecd8ad45e6c029d4"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-EX-021_turn_1_grade.json",
+      "bytes": 11675,
+      "sha256": "9915fd04505e6a0cc6b5de870ca5887c10300b6094a866fc3a209c2bbf1e39d3"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-EX-021_turn_1_response.json",
+      "bytes": 108409,
+      "sha256": "bc1ef5c550f6ac1ff9ae5406888a0bf00a4bc3a25f3755b9fb50ff2471f73dd9"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-EX-022_turn_1_grade.json",
+      "bytes": 10942,
+      "sha256": "90968a045bb57d4df08ec619f361b125ff29832bd76e536dc7e8de5251923a30"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-EX-022_turn_1_response.json",
+      "bytes": 112729,
+      "sha256": "7248e9971fa6aaa54608a2d91f429e4c24e61d173076c7310ec58db74ebe9363"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-EX-023_turn_1_grade.json",
+      "bytes": 11336,
+      "sha256": "9ac735da9e5d07715051bf38ea174369de3ad9ec7be7d6a259de9b18e28a1908"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-EX-023_turn_1_response.json",
+      "bytes": 91352,
+      "sha256": "cd4727653af5b4018417899dfaef30452055ba6c10548a2bbedca4db4e4923cd"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-EX-024_turn_1_grade.json",
+      "bytes": 11314,
+      "sha256": "c8658991d29608a871347555b35da7f78be2a9d7cf69dd5b1931e87b732b5a6e"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-EX-024_turn_1_response.json",
+      "bytes": 92850,
+      "sha256": "83ef5f9e8f00e1d8cadc8d8efea17fec589faa8687f18631faaea1d4a86fdcf3"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-EX-025_turn_1_grade.json",
+      "bytes": 13002,
+      "sha256": "deb23164d9a42662fface0519bff7590efa9b34619db11f1446f4f88ca9e8cec"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-EX-025_turn_1_response.json",
+      "bytes": 121995,
+      "sha256": "4d3b041b44324bc3a6bab45b166d90465450348eb880428ef252c3fb4d15382c"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-ML-001_turn_1_grade.json",
+      "bytes": 10004,
+      "sha256": "f28883206421c48b7420e7fe155679907844b2cb68d4f061bc784a666f450312"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-ML-001_turn_1_response.json",
+      "bytes": 102131,
+      "sha256": "7047c92d6cba0ec23eee6e791a9f73c9f78d63c3077d8b326f0e6418827cf2a2"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-ML-002_turn_1_grade.json",
+      "bytes": 10033,
+      "sha256": "9cadd4f9f6f26a4f772951f7ed6db69c090fe81cdd2fcb263956cd8313599f1e"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-ML-002_turn_1_response.json",
+      "bytes": 99260,
+      "sha256": "35cc9bfcafb64bf2ec5681e9666a7357ed1d43d776f1364ad0f461ee3678865a"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-ML-003_turn_1_grade.json",
+      "bytes": 9894,
+      "sha256": "477b702a2ddc8900d3fa7b0c14384765f86c19d81d2402a278c7ca3f78e258c4"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-ML-003_turn_1_response.json",
+      "bytes": 99083,
+      "sha256": "e344c8115bf6af3801463a1d0a3e45dbebd54d74932c0acdb472c66886baf4de"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-ML-004_turn_1_grade.json",
+      "bytes": 32065,
+      "sha256": "851dc2f2f6b8a999da6ed777d5975e176a98f3ecbee48a2067a7e9d7a6672a56"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-ML-004_turn_1_response.json",
+      "bytes": 60894,
+      "sha256": "255ed6fe6e6abeff12903fb1ba991822c52cb507f5f37de6cae87dfea2521579"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-ML-005_turn_1_grade.json",
+      "bytes": 9958,
+      "sha256": "b4f26991c513f2843874e89b6ed73cb2c19508bae7d7dc1229c4627e1f6fede3"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-ML-005_turn_1_response.json",
+      "bytes": 113239,
+      "sha256": "394b2670616c3fac5f421f1faf7caeef7e5a29cb8f0229c972d7098a19000566"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-ML-006_turn_1_grade.json",
+      "bytes": 52639,
+      "sha256": "40af2656e1325627a32e1378af4a68a891c4b3fc1a35d50959653f97d5fb0b7d"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-ML-006_turn_1_response.json",
+      "bytes": 176542,
+      "sha256": "15a0cf705c150f74ba5bbc2a0af988319a321f2d9908180d8894a071107bd157"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-ML-007_turn_1_grade.json",
+      "bytes": 9889,
+      "sha256": "fcd3936a8ced72653eeb5c5c0e277dc0f73f98366de29cbc13f956aa5221ca00"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-ML-007_turn_1_response.json",
+      "bytes": 102005,
+      "sha256": "50a594fbb75e6d59a0ca7f0455bdfee7a25c23e13a2cd000dc27f260805c3a6b"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-ML-008_turn_1_grade.json",
+      "bytes": 9760,
+      "sha256": "e53803081ce31c0737306bdbbf7b6642ac1c071f36bf723513329a521d8cb5f5"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-ML-008_turn_1_response.json",
+      "bytes": 97857,
+      "sha256": "54a18a5b209d06177233dbabddce72efed84c3afe03b3daebec9aa92d1413a54"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-ML-009_turn_1_grade.json",
+      "bytes": 9855,
+      "sha256": "0415280e2fb9c7d4f35152cb70663eca49493d1aa7e020d0aaa70734c9217130"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-ML-009_turn_1_response.json",
+      "bytes": 105743,
+      "sha256": "05e2f913ea085e56847931904a76a78fe8356957430d1a6f5774ecb2a01eb465"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-ML-010_turn_1_grade.json",
+      "bytes": 31980,
+      "sha256": "c478ada3cdf9e767028e1beefe314e92330be93c34fdbc4668e8b866b790511f"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-ML-010_turn_1_response.json",
+      "bytes": 60829,
+      "sha256": "505df56a0655e03bd6d1ff30230793686511e91bddbf5c0ae6b7ca394a90d5bc"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-ML-011_turn_1_grade.json",
+      "bytes": 9666,
+      "sha256": "8140721e6eae8e364a34f03bfa2f3197692446fd011735af347130572053b7d9"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-ML-011_turn_1_response.json",
+      "bytes": 100747,
+      "sha256": "8b3a138ff0206c54a725b2031895fb66179e7097a841a93cfeb5375babb0a39c"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-ML-012_turn_1_grade.json",
+      "bytes": 62740,
+      "sha256": "07ee6628c03c7c28374f92bd1beb1b2f99ca2da5f23578e2d748e0687e514d3e"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-ML-012_turn_1_response.json",
+      "bytes": 205434,
+      "sha256": "16971e32bcb8822cc98907d0ddfcc21fa9af9a4e3bc098a293cb2d513d46f0e7"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-ML-013_turn_1_grade.json",
+      "bytes": 9817,
+      "sha256": "a539e425ec287208a99d2fcbfcdf376a65ee6c7406f5ea040902f956b00202ac"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-ML-013_turn_1_response.json",
+      "bytes": 109068,
+      "sha256": "bc0094ddadbd88650ae563cdc85da9499c60ef9872cd9d9971445cdaae1fdb22"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-ML-014_turn_1_grade.json",
+      "bytes": 61711,
+      "sha256": "7fb0a1072140534c93c01bc9394a46afbe0fec978210d6ec80dbc95de5bfa9f6"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-ML-014_turn_1_response.json",
+      "bytes": 194082,
+      "sha256": "8ae399588154dab60ab7cf853aa01be75106a1a01c44e0a549aa9f662bbec5c7"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-ML-015_turn_1_grade.json",
+      "bytes": 61179,
+      "sha256": "293d8566742f0f3003e8b5778dcbce41faf9d70123c54ff8275acf47f263d30d"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-ML-015_turn_1_response.json",
+      "bytes": 189066,
+      "sha256": "0fb28fdc0fe81988bfbc4945ce06b85ceb42ccadb2ac43ac697435d87c79dcaf"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-ML-016_turn_1_grade.json",
+      "bytes": 31873,
+      "sha256": "1129621745a0d06bbc2be891ba028c8243b245ca14bf84846641cf91faa19257"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-ML-016_turn_1_response.json",
+      "bytes": 60557,
+      "sha256": "5146d64ee68ef3c7671f7f5c9819b4c58174c25dd5af09d3d4940e9963e26ddf"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-ML-017_turn_1_grade.json",
+      "bytes": 9742,
+      "sha256": "1ac35dc26e1b92af39bfd4d4cb6d42ea2dc71a009009bd6522e10914eba3ee22"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-ML-017_turn_1_response.json",
+      "bytes": 95612,
+      "sha256": "27fe0c758dd3e22ceffc8e577f43245360845d1f2e50c34a6f8f3f82b315beb1"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-ML-018_turn_1_grade.json",
+      "bytes": 9655,
+      "sha256": "df23c15f9913da484a355de06a2c9a266f4630190cfe31911d49807c83c52b49"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-ML-018_turn_1_response.json",
+      "bytes": 111989,
+      "sha256": "d0e5d7c4baec27b798002a4fc57ef8eeb2e391badc81f2e708c3016c6cfb079d"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-ML-019_turn_1_grade.json",
+      "bytes": 31993,
+      "sha256": "772a6b3f73b792b2b536299d639a9b1cbe892d586271bfb3265a3bf59d838350"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-ML-019_turn_1_response.json",
+      "bytes": 60984,
+      "sha256": "f81bd85518a02aa32058258fdf8168b4243bf59f44deba2ef48ecc136f1c47c0"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-ML-020_turn_1_grade.json",
+      "bytes": 10194,
+      "sha256": "5a20a2da647305b589b58254d2d0c2fef144d9dbcebcfd7e310a7b4288440f8d"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-ML-020_turn_1_response.json",
+      "bytes": 96956,
+      "sha256": "2e5fa0895d8fe110dc3c7050799c7d291f5181354355cf43b61c145ea36721f9"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-MT-001_turn_1_grade.json",
+      "bytes": 9516,
+      "sha256": "249762cea64fe6094f1f5503cba01b2785f3e5fddb34d8fa625c2821b23a1079"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-MT-001_turn_1_response.json",
+      "bytes": 108667,
+      "sha256": "88359bddd14643f4b077f6628edd080a2b240f66c166fe0c9ddc62956abc8375"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-MT-001_turn_2_grade.json",
+      "bytes": 9787,
+      "sha256": "b91508831871f03acb3f0f79672360feecf797d1ad7ace7ce0971cbff4924ee7"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-MT-001_turn_2_response.json",
+      "bytes": 96855,
+      "sha256": "12ca360bfd941f114a9fd8e28000a7a7b01153e74ef65972e8e07fb4eb882470"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-MT-002_turn_1_grade.json",
+      "bytes": 6275,
+      "sha256": "d08e1236322ac7402db91e313524a08c6e143430d4c1387093f2c290ccb82a94"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-MT-002_turn_1_response.json",
+      "bytes": 88169,
+      "sha256": "dea49a7331c09c0921612d95fd96c3ac425e45a64406ff0d5fd96bb5bca9c51b"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-MT-002_turn_2_grade.json",
+      "bytes": 9569,
+      "sha256": "e56a6cc781353f2a25fea70c7741164080f780ff10698f933498f58bc0bd020d"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-MT-002_turn_2_response.json",
+      "bytes": 100858,
+      "sha256": "ff31b5c3709f795bc3fb1d3804d39092f203e97244119daf22e339c2b0caf636"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-MT-003_turn_1_grade.json",
+      "bytes": 14072,
+      "sha256": "149221b26c684eb30f8a153a8582df34ab1e1ca4c378b4fe14f1964399bcf92a"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-MT-003_turn_1_response.json",
+      "bytes": 170933,
+      "sha256": "3c81c2060b269d43ec8b3c6ad57da5266a90b2e78535562e5d03850c9dfc15ff"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-MT-003_turn_2_grade.json",
+      "bytes": 9709,
+      "sha256": "715479e80672edad2b7c1b6dcaf740858aa1c9a8a0eb86045f079787785b0e15"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-MT-003_turn_2_response.json",
+      "bytes": 100168,
+      "sha256": "02c85a45033ad2d36a6c3975856e8370cd677db343cff19de6e8c4b08bc1319e"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-MT-004_turn_1_grade.json",
+      "bytes": 4797,
+      "sha256": "63b102f2cff5675abfcd4b829aa4c8ca14a3255c36f680712edd044681391c72"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-MT-004_turn_1_response.json",
+      "bytes": 59150,
+      "sha256": "db6e8ba72c83dfcbe44ac42bbb312e5a7817d1c1346a165372ed104313fdad5d"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-MT-004_turn_2_grade.json",
+      "bytes": 4844,
+      "sha256": "8ad3ea941fcb58b12a1d5e35996270bfb77db32736654016637a0419ca1eaf85"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-MT-004_turn_2_response.json",
+      "bytes": 63659,
+      "sha256": "2e760764fe3c89091190bc91297adbdb78de546b2455fd0aedca13a5931ba7ba"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-MT-005_turn_1_grade.json",
+      "bytes": 13982,
+      "sha256": "22315522220745ed73498bf83968d6ab430356031efb398bd25cfcb6bb0be5f2"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-MT-005_turn_1_response.json",
+      "bytes": 163938,
+      "sha256": "74e454a7c0381ccbeb29b82f09c353de87d657898a0387e678d95c6d851dabc7"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-MT-005_turn_2_grade.json",
+      "bytes": 14515,
+      "sha256": "f1ebd5cf029ded58a12421bfb95661055ffdde6ec5b64a7cfe71631c291f2270"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-MT-005_turn_2_response.json",
+      "bytes": 199401,
+      "sha256": "9be0c8de40a9a0ca6df7de2693efab4bd6adeb021e3996c426c80f468eb01217"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-MT-006_turn_1_grade.json",
+      "bytes": 14318,
+      "sha256": "28b86a50381e02ddf5984cdadf4aa7468aca30e0c0943aba276801e66b3f8c56"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-MT-006_turn_1_response.json",
+      "bytes": 151543,
+      "sha256": "4da5f9203a7183371b4906df7d782ac6b36ef4dcfd34d189133343e365256ecf"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-MT-006_turn_2_grade.json",
+      "bytes": 9825,
+      "sha256": "7e29a737515d2ff20a5c562f353fce1a0562b08eb1216a0ecc6056acb395faac"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-MT-006_turn_2_response.json",
+      "bytes": 99792,
+      "sha256": "5e07a31e44ab339870a531c6d78d11b2cc3f22e6cc71ee1af81ab64957615015"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-MT-007_turn_1_grade.json",
+      "bytes": 9692,
+      "sha256": "272fbd6a469dd8edfd0fc1661d780cbe18e8d1cae36967f5c79e19d9d5d7e55d"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-MT-007_turn_1_response.json",
+      "bytes": 106218,
+      "sha256": "176b6837e1a804764fec6121de98c3d688f0b4440a2233562b83b2d23797d1c6"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-MT-007_turn_2_grade.json",
+      "bytes": 10114,
+      "sha256": "1fd74a8e5abc6e048b9316cfe943c7813be3e9835fbc7113c209a660afd392c9"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-MT-007_turn_2_response.json",
+      "bytes": 115663,
+      "sha256": "1577339d095fe54e87eb9641336dad913425a985623483e7c198714b186e4d7d"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-MT-008_turn_1_grade.json",
+      "bytes": 14181,
+      "sha256": "97ea0bbc8926d211dfabc541ff79c70a56c3cf4ba22e51a4f5e09a6b003e0dad"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-MT-008_turn_1_response.json",
+      "bytes": 202329,
+      "sha256": "c3dfd016b09fcb09978aa66a1c6e55bad3d44787f94d3f2c736054b0755005f5"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-MT-008_turn_2_grade.json",
+      "bytes": 14701,
+      "sha256": "672baa571b9adf9db882683661b2ac6326d9e61ff4ca3a46900727665a05b044"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-MT-008_turn_2_response.json",
+      "bytes": 188051,
+      "sha256": "183959fa536cae36ed2f3c1d08121d35165dd7d2e1622f037a6a2e7284e3eba0"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-MT-009_turn_1_grade.json",
+      "bytes": 10216,
+      "sha256": "46be6b821f12b427734744f91c90f4698551b48e8dd29e7541027aa946abd13d"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-MT-009_turn_1_response.json",
+      "bytes": 97927,
+      "sha256": "0efaaed0cad675cbcd0f7c61c0ab4ee966574215e36460bea6b085b0e3974b07"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-MT-009_turn_2_grade.json",
+      "bytes": 10439,
+      "sha256": "aad0a83aeee995ba0babfea690fdf725892e390e02e067b3894958c28eec8981"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-MT-009_turn_2_response.json",
+      "bytes": 99972,
+      "sha256": "5a5aa7cd118bed48a14dceaa9b093bf0ee8246240377b36cb4506a3899d509fa"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-MT-010_turn_1_grade.json",
+      "bytes": 9596,
+      "sha256": "fa3e25ffb868d22ad01b09f60729136352657677c3eb75821699cabf7b0a7a7c"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-MT-010_turn_1_response.json",
+      "bytes": 96725,
+      "sha256": "4b04e08a98957f91f18b177f5b6470dda484ba748639699d20e97fe736a232b0"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-MT-010_turn_2_grade.json",
+      "bytes": 10143,
+      "sha256": "8f6a95a11e28f7bb7b667e9fd43b4797ab4790d40ab9bb5ce3e41fd21132f76e"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-MT-010_turn_2_response.json",
+      "bytes": 105269,
+      "sha256": "3f873df2747c4ca8f0d8ff44301cb727dd0a684789f7c32b06c59338b6adc178"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-MT-011_turn_1_grade.json",
+      "bytes": 14272,
+      "sha256": "37cd7d74e9df690d420c1d393019597e4a5c0bf0ffa7848721c0043acccb5e9a"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-MT-011_turn_1_response.json",
+      "bytes": 167793,
+      "sha256": "713ea0d45cd9dc1f5a89590994b28efe4d25a61bbd71ec6fdffbfa263b3e0636"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-MT-011_turn_2_grade.json",
+      "bytes": 14112,
+      "sha256": "91677e0f85048a8fac3e454dca8550cb826cf20b734907521017578435632133"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-MT-011_turn_2_response.json",
+      "bytes": 201238,
+      "sha256": "2b326e60f98bd7867bf734df5b327630403151a13b8ef1f2e8fa0d3f68be782c"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-MT-012_turn_1_grade.json",
+      "bytes": 14453,
+      "sha256": "5185d2f12c842e2972d570d89171876e6f32c492d4f7262f9890e1d682164090"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-MT-012_turn_1_response.json",
+      "bytes": 160771,
+      "sha256": "6f3f8a42edecb5b4cad385c99a223d747b92e9c96d6694edb66054d476af7319"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-MT-012_turn_2_grade.json",
+      "bytes": 15250,
+      "sha256": "464926717d61bb9c4ad4fd8b5b641b6d410d60402921783af1a41e0fb9f5f34b"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-MT-012_turn_2_response.json",
+      "bytes": 175847,
+      "sha256": "69856e7ebfbf70089ba5bf63eccc703af65b5f229c406ba5683ca310c90eb250"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-MT-013_turn_1_grade.json",
+      "bytes": 15197,
+      "sha256": "74fba4916e5db4fdff3aad6903b7b4c7e640df2279e734741cb545129874672a"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-MT-013_turn_1_response.json",
+      "bytes": 190787,
+      "sha256": "082c34c8eefb381671f03ede964210abc246529f8f7f175a5d7f86f6412cd1a8"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-MT-013_turn_2_grade.json",
+      "bytes": 9867,
+      "sha256": "73e5b0a974210894e7cb47f08d9de8a9c72ec4c8240fab4e8222131483fa2043"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-MT-013_turn_2_response.json",
+      "bytes": 114833,
+      "sha256": "30212d877935591c116de657608df9e419fd4c281937476f54915aa370727199"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-MT-014_turn_1_grade.json",
+      "bytes": 13067,
+      "sha256": "80198cf144b06eb4385de45ae9e423094355fd4604bae6db84a1a8946739a7b2"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-MT-014_turn_1_response.json",
+      "bytes": 158519,
+      "sha256": "0714e93bef6e5a8ded1836c43e2f57021c7733411d711dade5dab8572183b1db"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-MT-014_turn_2_grade.json",
+      "bytes": 14768,
+      "sha256": "a9b00c27851dca70b3654f7de091be883f3a30765d221c86abd87ccc7a4a3f14"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-MT-014_turn_2_response.json",
+      "bytes": 218558,
+      "sha256": "5192edb41912b3d16f3f5f2ef39539eeb7441859f53e654f487480414fa06069"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-MT-015_turn_1_grade.json",
+      "bytes": 9779,
+      "sha256": "360dbfaf54e9db583886d97a2dcdec164cdff5b25e18b224f5b14fe626f3f429"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-MT-015_turn_1_response.json",
+      "bytes": 105290,
+      "sha256": "60f4cc942e213ffffb4c63114660514efbd2f5999930b8a6e7d760df34a6ff20"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-MT-015_turn_2_grade.json",
+      "bytes": 10016,
+      "sha256": "8748898a49286b8a75bac0710dc7f76c17bb49dba48f5a5a1dd6ec70b24369e0"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-MT-015_turn_2_response.json",
+      "bytes": 98619,
+      "sha256": "46a3e7e98cc343ea944cd424b3f8c5494590e712dc1ad397819ef0d118f3ba6b"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-MT-016_turn_1_grade.json",
+      "bytes": 9993,
+      "sha256": "739f62a3b0a5454e8441f0011cac7a01b8e6a469063ade48310b19d3a875bcb7"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-MT-016_turn_1_response.json",
+      "bytes": 108307,
+      "sha256": "c6f2a932cd0f9a561a471c02c1725ef4ee921d7ccbf0e4e0822c812e382e2b36"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-MT-016_turn_2_grade.json",
+      "bytes": 14519,
+      "sha256": "1a4e0320dddc391fa3005c0339f9365354033aa570afc6d267c9351f341c2af0"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-MT-016_turn_2_response.json",
+      "bytes": 204913,
+      "sha256": "40b9ca53844a91523de48050dd4c4fe9258849f37e556de239fc4f4ec01d6b89"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-MT-017_turn_1_grade.json",
+      "bytes": 9836,
+      "sha256": "bfe65d60e0854e7d5f238928cf2fe3ed674e88b54b49b400299c8d2fc7cd3963"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-MT-017_turn_1_response.json",
+      "bytes": 93541,
+      "sha256": "eb98ca8e1cc9990d31f8c4767dfb0afb9e83ba02b8564b894d658dc8c8770e70"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-MT-017_turn_2_grade.json",
+      "bytes": 9960,
+      "sha256": "e082538521afe9546f6b4b987a56d8aa92240ba223c790620bebf349ade1e190"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-MT-017_turn_2_response.json",
+      "bytes": 99262,
+      "sha256": "c96a2afd31c9a303f874c168349f2da33d4ecc8c28dc39259f4d1e6e07c1c6e4"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-MT-018_turn_1_grade.json",
+      "bytes": 10351,
+      "sha256": "15be4db6584abf7d7496442881fc79d61ff3370d19f2578aa7a2053dfd8c32d4"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-MT-018_turn_1_response.json",
+      "bytes": 99749,
+      "sha256": "c66a87b1aef3090898b44a28d29dd230145f1978b3d90a281a368b5ae8aedfe7"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-MT-018_turn_2_grade.json",
+      "bytes": 10362,
+      "sha256": "96e1d218d00f4c4b22cb1eb784b81a4aa16e6a452f23361c98d2a47c84973cd9"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-MT-018_turn_2_response.json",
+      "bytes": 109811,
+      "sha256": "aa351056c4c0a935bb4c8936c8b68080cd90b91df944054ac36b00c92ddee726"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-MT-019_turn_1_grade.json",
+      "bytes": 14101,
+      "sha256": "e5861e27865a7a8b20aebb6052a29231d5c8cda6df6097349156a2f40e0aa51d"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-MT-019_turn_1_response.json",
+      "bytes": 186318,
+      "sha256": "c050a11e837b31f05c00921c0c56d6831e08ba2dba15395aa759facd98d8e7fa"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-MT-019_turn_2_grade.json",
+      "bytes": 9660,
+      "sha256": "fe274a011132662087ec92e67e178adff5a00f5b3dfc21a7ae6f09830f68667b"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-MT-019_turn_2_response.json",
+      "bytes": 111308,
+      "sha256": "19c05c7bfaf05b5c6cb48d05aa2929be8072c777a00ecf5ef6cf01a4fb1776f6"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-MT-020_turn_1_grade.json",
+      "bytes": 9623,
+      "sha256": "a792158ecbf24ca08154b31434590b3a7da34c034a0d9673a19e9870c0cf4ea2"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-MT-020_turn_1_response.json",
+      "bytes": 98568,
+      "sha256": "47a35322f250b6b5598a2f311572a6cd9ee4991bfc35d001c3fe876c17aea3f7"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-MT-020_turn_2_grade.json",
+      "bytes": 9538,
+      "sha256": "f56eb937e176fa4a7b7d8ba68c6d9c6a2a1a44379aa6ffcbb8bba7d264d77932"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-MT-020_turn_2_response.json",
+      "bytes": 104003,
+      "sha256": "715cdde2a443b622972481a602eadc6af9d4ad11a458bf3ad7dd341829a5c700"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-SA-001_turn_1_grade.json",
+      "bytes": 3177,
+      "sha256": "a8e58905cf8e949d8d9aba15ecd69ef31f34b3846c3ad2b66ceb252248561eaa"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-SA-001_turn_1_response.json",
+      "bytes": 6309,
+      "sha256": "8a2818adde3dca52823843ab5e03a405530394468ca08cbea0585e8d687a38c4"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-SA-002_turn_1_grade.json",
+      "bytes": 3401,
+      "sha256": "42f094c597c55ef3e1bc4231d22d97bea65b061bc352fd5f38deb31e5702dde8"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-SA-002_turn_1_response.json",
+      "bytes": 6163,
+      "sha256": "16ec510fc9ef96c49f831d6fdadfac7c08d03b607f56b4e46c798b8f0540de49"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-SA-003_turn_1_grade.json",
+      "bytes": 2451,
+      "sha256": "8642b7b2f07261cd950d2dc3d1d81b74c5cecdba93787611aaf35c4f89ac544b"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-SA-003_turn_1_response.json",
+      "bytes": 1810,
+      "sha256": "5403885d42fac41febe7526f1b502f24689b40877eef3408ad516e2de6db03e2"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-SA-004_turn_1_grade.json",
+      "bytes": 2188,
+      "sha256": "de3c2c94d4ea84abfa136a998989dab2f4e3cddce2be11d1b11ea28bf028c9b6"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-SA-004_turn_1_response.json",
+      "bytes": 1797,
+      "sha256": "b70857688882ec2f85e0eb58cba8e1fae4a3d9714b95c755da6cd90728ab9cf6"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-SA-005_turn_1_grade.json",
+      "bytes": 2559,
+      "sha256": "570bf41195ff0573687a205a2e81a15dbd7732a066a2a7eb02bcbe7733ad3d63"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-SA-005_turn_1_response.json",
+      "bytes": 1803,
+      "sha256": "889ca0aa24ea37df2782553f7dca1776493bc51b67d0e1913afd85b598818e8a"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-SA-006_turn_1_grade.json",
+      "bytes": 2230,
+      "sha256": "87ed433c8e89c168332228e4cad7b93876d97d77a204252d3705a7e5329f19b6"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-SA-006_turn_1_response.json",
+      "bytes": 1803,
+      "sha256": "19c6e8a97b6f1108abf9f45199ec927f390f8e340c2810796c3c4cf6ca9fba51"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-SA-007_turn_1_grade.json",
+      "bytes": 3235,
+      "sha256": "52b1302f8074b4ef8806db95ada2f2a2968fcbe48eafa88fdb99c0c8fe4af76d"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-SA-007_turn_1_response.json",
+      "bytes": 6437,
+      "sha256": "0146dfb88f7bc3d6aba38abb2e260e036b05d03f5539ee8dca85237f93bbcba7"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-SA-008_turn_1_grade.json",
+      "bytes": 3307,
+      "sha256": "21ca81f251fe5298d6e1c6294b2334333c4cc553fe6a1a9432411f6b21fc5bff"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-SA-008_turn_1_response.json",
+      "bytes": 6292,
+      "sha256": "c41048544c891b131e41b0ad0f188679f63852b37084ee46842066dfcf2b515c"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-SA-009_turn_1_grade.json",
+      "bytes": 54197,
+      "sha256": "a6fc5609dbf481b48a8f77074e58cd0274e66cb26cd74207b34e012f875413d0"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-SA-009_turn_1_response.json",
+      "bytes": 181921,
+      "sha256": "8b9e5508c5542e4814d48008fdf57c820c7db0d3839c0a419fc580d1646483f9"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-SA-010_turn_1_grade.json",
+      "bytes": 40839,
+      "sha256": "fb678fa4804f1fac329167f7f94e99784c80b2bd9880decaee7fa92614e77802"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-SA-010_turn_1_response.json",
+      "bytes": 72738,
+      "sha256": "b73899b87cd1707fe0fe053c3b32d1ae75d72a4753c0a9ea6cfe20a9b2dd40dd"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-SA-011_turn_1_grade.json",
+      "bytes": 54976,
+      "sha256": "305da3138b798027ceff8f4d0e3203b99c85b96ef9a3f9de19400f1900f3e0f0"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-SA-011_turn_1_response.json",
+      "bytes": 152756,
+      "sha256": "3db487d37dfcfc31a7ce4af4211ba9444744e49db9664d0dd92f1129f5b10d91"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-SA-012_turn_1_grade.json",
+      "bytes": 3138,
+      "sha256": "0ffd13b03eb6c77dd466ed4413adc62605a96a78e2a90ee6b7fd92abb851baa9"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-SA-012_turn_1_response.json",
+      "bytes": 2604,
+      "sha256": "ed19fdae7e5072e9dedecb142ea06468351639556c8fd441c39b7cf81201c744"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-SA-013_turn_1_grade.json",
+      "bytes": 10138,
+      "sha256": "12b9ca748d12524d8ba3b43f48688f39369e9af3c40ed084db5143c3bb509edb"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-SA-013_turn_1_response.json",
+      "bytes": 124751,
+      "sha256": "043ae835113b17baf4d9a75cca06bdc6fe19174699de9159d3980e50e504ffc4"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-SA-014_turn_1_grade.json",
+      "bytes": 56330,
+      "sha256": "e1a6da84daa734712ca07ecf282860c0df422776a15fb2931b7a2763145059cd"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-SA-014_turn_1_response.json",
+      "bytes": 176849,
+      "sha256": "9d445f9c82e3a4f4ddb27ac562f58fc2bfe24b7b080f530f853b6c4d1f182b4a"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-SA-015_turn_1_grade.json",
+      "bytes": 67165,
+      "sha256": "644110e42e01d3fc8d78c7775ca501121e48e87ac0c34bccf55fea0e2757e2ae"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-SA-015_turn_1_response.json",
+      "bytes": 212758,
+      "sha256": "9a43e3f151ae2f014eff4c715e23c91f35ca776fe6dc3325a79e2a76261e0542"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-SA-016_turn_1_grade.json",
+      "bytes": 9941,
+      "sha256": "816c5d919cd9a82ea9d29b81bdf5ad331469d508a5be89b6cec84a111f458c9b"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-SA-016_turn_1_response.json",
+      "bytes": 126006,
+      "sha256": "1990f42f5351c0951a003d423736e1550d1e87b783948c5792d49c6b31d54b5b"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-SA-017_turn_1_grade.json",
+      "bytes": 54083,
+      "sha256": "8b245290f54e358f57d32a072760ce38ed3725988df492c6d053d9a198d9cb8a"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-SA-017_turn_1_response.json",
+      "bytes": 193575,
+      "sha256": "c7a1e683e40d294449717a4f4a0280e6ed6287cad2a47ba04ea58a9d7eef0431"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-SA-017_turn_2_grade.json",
+      "bytes": 43530,
+      "sha256": "f34e2379ea81e94724c8ff1e6a08f891857720317854895e0d90ab12294e8b55"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-SA-017_turn_2_response.json",
+      "bytes": 117964,
+      "sha256": "6e60441709dc491375adb9706e7bdec1a54b09d79faf3cecc77f2bf694ff21cb"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-SA-018_turn_1_grade.json",
+      "bytes": 53640,
+      "sha256": "826e6ebe35611e1a8b9a39ca713cff079be7bb448c78c5e35a4dbb2e65e4b066"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-SA-018_turn_1_response.json",
+      "bytes": 189141,
+      "sha256": "a169d81c6e386bb5f9349c9e9dff6122371d0588c5fbeab3570d82daf23e9492"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-SA-018_turn_2_grade.json",
+      "bytes": 57902,
+      "sha256": "c29caeab9d58e0362cc07916e2453664019bec840dc532ffeb45731b22056948"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-SA-018_turn_2_response.json",
+      "bytes": 178583,
+      "sha256": "f1e84e9c01fca6d54afa1269c830ba403f6814906718f705dadf51fbaec41365"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-SA-019_turn_1_grade.json",
+      "bytes": 3248,
+      "sha256": "1ba1e6c658fefd748d192d44987383014b93dcec35f283e194f5ae615acd1232"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-SA-019_turn_1_response.json",
+      "bytes": 6318,
+      "sha256": "d272862a5a6e6294be0b0bf7d1ed75bda284e65079f184fa6dd1dcb795d46584"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-SA-020_turn_1_grade.json",
+      "bytes": 3375,
+      "sha256": "2778b574daf4f848a0f76d49251331f5ef477b49375e55da262c88b0acbf13c7"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-SA-020_turn_1_response.json",
+      "bytes": 6721,
+      "sha256": "bce98e5b8ae1862c20a230574b53c208b05699f1eb5c27d1204195a2e7704753"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-SR-001_turn_1_grade.json",
+      "bytes": 14266,
+      "sha256": "d55f301f7829a146c65e2c1a28fc9151e58e6c66da532b5c80954f7e96edcf3a"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-SR-001_turn_1_response.json",
+      "bytes": 184708,
+      "sha256": "92467f5843f2b2f620dcbb0a10f81d37f2850d81e6c2406fef4ed7131253113e"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-SR-001_turn_2_grade.json",
+      "bytes": 9630,
+      "sha256": "1b85864294155a81d02d158e6117cb9c8a17135bf889081f9a8d8ada05b7d573"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-SR-001_turn_2_response.json",
+      "bytes": 94451,
+      "sha256": "a0696e41091136fa96b4cd5c8dc1e1f7699c573fed602cd3d0f7f70e672082a1"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-SR-002_turn_1_grade.json",
+      "bytes": 14215,
+      "sha256": "17aa9859f1788d1cb019f5e03339de82ef79a1caa26847eb2c3df1c259cba649"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-SR-002_turn_1_response.json",
+      "bytes": 178196,
+      "sha256": "4602f6c2597b6f6241922ce1eceaf46e758add6a478f5a498019af403f4d65ad"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-SR-002_turn_2_grade.json",
+      "bytes": 14975,
+      "sha256": "a16c142394c4ac5cdbc40f0082a346b9702a5fa7630e08fde253e213d292327c"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-SR-002_turn_2_response.json",
+      "bytes": 165370,
+      "sha256": "9c13352e0f2e905ec0d77ff795be151114c5eb81cc659acf607362007df6770c"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-SR-003_turn_1_grade.json",
+      "bytes": 13166,
+      "sha256": "cb2decf3b493cd8c7cbf3cb875252ef12b26113d3ade00e9ecee04b2f06e5af6"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-SR-003_turn_1_response.json",
+      "bytes": 154438,
+      "sha256": "b2a82a04532f1be74e58548f8589af3c49741d6252ca5982b3fcf055411daa4c"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-SR-003_turn_2_grade.json",
+      "bytes": 2723,
+      "sha256": "cc72fad252b9cb5a7fb52d2f88faa8206a9a57c44d96b4cec71ec17167d3639e"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-SR-003_turn_2_response.json",
+      "bytes": 2203,
+      "sha256": "c42449cc976aca971d5b3a59cbc7f98205aa4c3478f8720892713d0a6c5704f8"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-SR-003_turn_3_grade.json",
+      "bytes": 14371,
+      "sha256": "c05748b5f4d47c8941a3338ff259356cc1929e274f8d03200b65e168e559112a"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-SR-003_turn_3_response.json",
+      "bytes": 206862,
+      "sha256": "2f10aff2f56cd29693c1cfc7eb67c6534eeb19f3a662787b01eaece640fa790a"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-SR-004_turn_1_grade.json",
+      "bytes": 6414,
+      "sha256": "70ca2d1b809495f5229382b2a280f5a80a12517112d608c33f601d9aacd59b75"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-SR-004_turn_1_response.json",
+      "bytes": 80424,
+      "sha256": "0739f39db8a7e495b073efad7da70ba24a81259cb952b640e01932bbf85c706c"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-SR-004_turn_2_grade.json",
+      "bytes": 14055,
+      "sha256": "e6bf579498209ddea460a0a8b905bdedcdf458d7c02645ea5343c401cb3f4ef6"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-SR-004_turn_2_response.json",
+      "bytes": 196056,
+      "sha256": "9403b41f0e16f123dde645f93cc41283ab87c16c13a30baf657050a0ea5701f0"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-SR-005_turn_1_grade.json",
+      "bytes": 5366,
+      "sha256": "b0c702ebb46c1de98a3551109121938b316c73f5d383a2defe3016b645a8f326"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-SR-005_turn_1_response.json",
+      "bytes": 49210,
+      "sha256": "30264b7f4fcd5d6f7161e5f209acc486f3934a175501b28bba3b0c9b7830f277"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-SR-006_turn_1_grade.json",
+      "bytes": 13600,
+      "sha256": "021188a945a5b8b4475a652cfd6776fe1317e88d51a3860fc5c964d85459d0c0"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-SR-006_turn_1_response.json",
+      "bytes": 163940,
+      "sha256": "9910a23c5ea4600ce98e3844b8b08009d999e93885875f2c965cc27476a11e03"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-SR-007_turn_1_grade.json",
+      "bytes": 13803,
+      "sha256": "2f90658ea2d2887b97451f9f6b37e2bc6165839e72058e4815db6baf94b50459"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-SR-007_turn_1_response.json",
+      "bytes": 170349,
+      "sha256": "0154b7bf8aae047705487ceaf5b953d11bba310518655f855fd7f3ea30d76c34"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-SR-008_turn_1_grade.json",
+      "bytes": 9757,
+      "sha256": "ff7a386691904c880b45cf6348c6f020ad685602805ac6ecd7897ef4e3cd51b5"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-SR-008_turn_1_response.json",
+      "bytes": 99935,
+      "sha256": "45b39ac150507e4ecd68266c7cfe6bafa3ff27c9fcb731fd482cc131915b3fdd"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-SR-009_turn_1_grade.json",
+      "bytes": 9582,
+      "sha256": "c42b84cd5c54a3e28ad1364a6d05b4e23a52ec286e036916c282029c41953cf6"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-SR-009_turn_1_response.json",
+      "bytes": 92834,
+      "sha256": "22fa3a9a651d53039dd1c3f203087446e4a8f2f402738e63bf6dca1bdb90e402"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-SR-010_turn_1_grade.json",
+      "bytes": 14785,
+      "sha256": "0e314646b7741e3ccd63ab5e08e041454a23e9ef8d258e7ff076daef070209d5"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-SR-010_turn_1_response.json",
+      "bytes": 183816,
+      "sha256": "56449e2a8af32315ebc7926400940313960bf1640e544ca73863f2a8e2dba757"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-SR-010_turn_2_grade.json",
+      "bytes": 7231,
+      "sha256": "7c69f7446425587a4855b40c16d6d1b476fcd014661b1a6a392bdb7d387ecc8b"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-SR-010_turn_2_response.json",
+      "bytes": 94837,
+      "sha256": "35ac290f3136c6bff19d8cee1b5c84bc531e04712e918aafbafc150ac4431774"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-SR-010_turn_3_grade.json",
+      "bytes": 2477,
+      "sha256": "e2308c1f5c6d931d29cc93d8500cc0d652703ace21127933a92c3adef8eb12ff"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-SR-010_turn_3_response.json",
+      "bytes": 5273,
+      "sha256": "d4d883d97cea768e3fa098b31ae582586cf55768ea8111339ea89d474f00e75b"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-SR-010_turn_4_grade.json",
+      "bytes": 14213,
+      "sha256": "73044ecb48a7ef77ce37dcc1971cd33c3424652d7eda594e7d8830af1be9e2c8"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-SR-010_turn_4_response.json",
+      "bytes": 216619,
+      "sha256": "65e0506701ae260e3a02b528a5293118b14b5b1d3716a40632390f128f5ea828"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-SR-011_turn_1_grade.json",
+      "bytes": 5582,
+      "sha256": "cc42e03859ce3bd4dd78e1c0ff570e5b744cba73a72d72f0eec5a4066e44bf0c"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-SR-011_turn_1_response.json",
+      "bytes": 104621,
+      "sha256": "c508bbe4230a06227c8a5971bca002063ab6ae5233f694177d0ece35728e9082"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-SR-012_turn_1_grade.json",
+      "bytes": 14396,
+      "sha256": "caef48eeb04c7bbf54e2c671b9bc45814114482bd9042e5d573f36551f652119"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-SR-012_turn_1_response.json",
+      "bytes": 185662,
+      "sha256": "3b695cf30e99397104e945ae9697adc41b77efd9877ce886fee0dd0f4c77a1f8"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-SR-012_turn_2_grade.json",
+      "bytes": 9458,
+      "sha256": "a1bfd6743fde6e99772fae4ae432e72d7f88c512d5121c3f6f2647f06d5e6455"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-SR-012_turn_2_response.json",
+      "bytes": 118276,
+      "sha256": "89b9e50782a1b3eb1ec0f12b04afed85007dd7a5f37c6b1b92956c2e9b3e874d"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-SR-012_turn_3_grade.json",
+      "bytes": 9824,
+      "sha256": "e1cdc3d57a43f96217aa40791707bd089b5bea95d45fb7999ebd4b6b07ac7841"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-SR-012_turn_3_response.json",
+      "bytes": 115182,
+      "sha256": "641dab9320d26e393da833a059f22897d790943ad563fa6b139b7ce164644481"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-SR-013_turn_1_grade.json",
+      "bytes": 14829,
+      "sha256": "fa7dd0d73fb0079ffd1f003c698eee9af59828fc51ec5ac02d4684c9cb607ced"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-SR-013_turn_1_response.json",
+      "bytes": 207440,
+      "sha256": "ad8f519895c924cca5d0224dbd74aff7400c49781f1305a26c8f83a3eb1ebf5c"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-SR-013_turn_2_grade.json",
+      "bytes": 9702,
+      "sha256": "6f2282ad3d4d2f07035ade662360c2da11ed02747c866c5cfb929c0e4a77d92d"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-SR-013_turn_2_response.json",
+      "bytes": 108684,
+      "sha256": "d7f8de090868212399e6a8d82064d04d2dab78b7cfcd7291a871484b94172986"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-SR-014_turn_1_grade.json",
+      "bytes": 8379,
+      "sha256": "d2aa8127ff2902133925abe77eb13f5372d2a03591b5edd4e9fd5ed43ea63daf"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-SR-014_turn_1_response.json",
+      "bytes": 122517,
+      "sha256": "ad0cf1dbdcc4c66be56e83f276153caee468658a59748787ddf2bf10b1ba193f"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-SR-015_turn_1_grade.json",
+      "bytes": 3303,
+      "sha256": "15dc2920518952951a74000af1d0e0a4a04612131a2c1a4b4b7ce1c55b8bce4a"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/FRESH-SR-015_turn_1_response.json",
+      "bytes": 6460,
+      "sha256": "9d89b6bf4c61ad729d6f31da8c1670e66ab60e2780658cfb39263e73d1d42e96"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/case_schema.json",
+      "bytes": 1881,
+      "sha256": "c163ba2258d42806140f02ada5f289a2900ebdcd31b734da4cc23dae1cf31d3e"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/cases.json",
+      "bytes": 135588,
+      "sha256": "bd6ebe8a9adbe9b6bbf088634af1fce57fa149789987e96e2d84ed5e63da766f"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/curriculum.json",
+      "bytes": 52837,
+      "sha256": "54a919abcbec2d0bbf5b13c7b9c87034dd3922b0325c912ec0fd8639daffd302"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/findings.md",
+      "bytes": 7315,
+      "sha256": "0717d765db2d5edeb39eb53003f10a81b267895df0dcc20956ff6773bfb73719"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/grader_attestation.json",
+      "bytes": 3800,
+      "sha256": "0d9cb931465e42da41fe7ef8b04f412dc48417e11ef8eef21ac6587bbf6f7c16"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/grader_attestation_pre_execution.json",
+      "bytes": 1349,
+      "sha256": "4117b2eb49490e9af7faed752c88a347379c363a0a793b0239bda47fb513cca7"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/grader_protocol.json",
+      "bytes": 2410,
+      "sha256": "8d5f7dfc02bdf465499c788450efa88cc2390894b5ebe131da9dbb634497524e"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/grades.json",
+      "bytes": 59591,
+      "sha256": "ca9f021fc05136a55009d0cde809bfc815a39b7ca3b7df9ff8f564675bacde61"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/isolated_grader/scoring_rubric.json",
+      "bytes": 4560,
+      "sha256": "80c4347805a5fe5e25ca6c06d6fb3b894ff0a40e0a147cd0be976e1b52bb1995"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/local_only_guard.cjs",
+      "bytes": 1244,
+      "sha256": "2ded19aafc45b830dc95cb79ae7ba6e314017158fd07dd84ebb98665674ad1e7"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/novelty_all_length_audit.json",
+      "bytes": 469,
+      "sha256": "5aaf90c2efcb748f01fade3ff0fc2e6d29d347c854c3d2f95c0b8a7f17973a09"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/novelty_precheck.json",
+      "bytes": 646,
+      "sha256": "4b2f3b44572d8f253f67df5a31fdf6d557beb3def238d59a5f7698780945ac19"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/ownership_payload_index.json",
+      "bytes": 2336168,
+      "sha256": "b9d3366792df623922e8ecd51c6d7efdc3bb56c6d8ccad976d5cd322bee81f7f"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/package_review.py",
+      "bytes": 2729,
+      "sha256": "7139ebc8f35c7cf4342effbac58f1d004bf1c04da968c0d80addd6ccbfe3988d"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/pipeline.cjs",
+      "bytes": 12328,
+      "sha256": "019d35ad28ffa402bd218ffa78bfec74a43954baaf079c3c1e2644aac15c176d"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/provider_accounting.json",
+      "bytes": 2403699,
+      "sha256": "e4707390ef9281a6b0e1c408b80501ee1c53486bb8fb6ae9842569db4d736d5b"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/results_summary.json",
+      "bytes": 83801,
+      "sha256": "25c1336d3d8c1cacb916a74f235f5460de1643e4d36469532363dfbbbcdc36f5"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/run_case.cjs",
+      "bytes": 4927,
+      "sha256": "e3b9a18d2705d47fecdf7389765618f3c449c1777043e6fd4c15f45b9447af06"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/run_queue.cjs",
+      "bytes": 1553,
+      "sha256": "a06cf4d437dc78bc06ce30539fa8a5d36bd44e7f275e264949df42479183b89e"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/runtime_environment.json",
+      "bytes": 1108,
+      "sha256": "94311c94486530f918bd85707c5aa700405a02ce2f4ca35e61224609460cffa2"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/scoring_rubric.json",
+      "bytes": 4560,
+      "sha256": "80c4347805a5fe5e25ca6c06d6fb3b894ff0a40e0a147cd0be976e1b52bb1995"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/traces/FRESH-EG-001.json",
+      "bytes": 124756,
+      "sha256": "019e177c50bf0e9805d6fe4b559aa830d220384faf44b3ccd2c3c5c9456bfb29"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/traces/FRESH-EG-002.json",
+      "bytes": 111830,
+      "sha256": "2946043e87a3caba36c8ae2b382e2519eb62b65bbdae0060fe9b051bf22b9f4b"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/traces/FRESH-EG-003.json",
+      "bytes": 104430,
+      "sha256": "a39dd1b77e54a385a2e9f820c7168f5e29b5a56dbbcdcda575bf53422de009ae"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/traces/FRESH-EG-004.json",
+      "bytes": 106806,
+      "sha256": "69a519d26ee3636ebb142d1a93e48bb0d32f644b7dd77f4128d89f7028d39499"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/traces/FRESH-EG-005.json",
+      "bytes": 114162,
+      "sha256": "d924a4b53ab9648e62dc22239d6b01e7e4fcdfe2403a3e1af26c85aed6a974b1"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/traces/FRESH-EG-006.json",
+      "bytes": 116154,
+      "sha256": "d6b73afed65fcd2a38bf74bf0d58d271ecfcd58ce6eba963400e334c30811b3a"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/traces/FRESH-EG-007.json",
+      "bytes": 173640,
+      "sha256": "b1a16b99b56d0356f1592b8beb433749aa08bb77c53df863474dfe9790418c5d"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/traces/FRESH-EG-008.json",
+      "bytes": 103222,
+      "sha256": "d8b48189e37d57d1338bd4e377e7d9545cad04f3d13f34f51a61b4d957d10efe"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/traces/FRESH-EG-009.json",
+      "bytes": 101252,
+      "sha256": "8c4a1c53421e650b1ab9d88cd133b640160a947093c8c30026753c808e040f8d"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/traces/FRESH-EG-010.json",
+      "bytes": 107491,
+      "sha256": "f9003497939839e18d75495439573fa05370f75b47b37401577e462ed0387a07"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/traces/FRESH-EG-011.json",
+      "bytes": 120877,
+      "sha256": "77473035cbb4ee5c19f3cc33d2ad2a629d4ac4eae045aa7aefbf5ed1ba696883"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/traces/FRESH-EG-012.json",
+      "bytes": 99707,
+      "sha256": "7dc3fcd269358e8ad5e51efffc7b9119dfdbda7c769ba38dd99d3e26941926f4"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/traces/FRESH-EG-013.json",
+      "bytes": 6761,
+      "sha256": "b31fa187e3e5ec2c0124b6fa7a1f6e112187afec959c4d20a8c3df71c40d576f"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/traces/FRESH-EG-014.json",
+      "bytes": 112043,
+      "sha256": "23ea6a886f0c7d71cd3ba5ebff747893e3f7710da634cb8d42feae8530a19740"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/traces/FRESH-EG-015.json",
+      "bytes": 104775,
+      "sha256": "28f5354b1478e23b101a4ee88f44bd23d96cff76448ca8d7c365913eba89cf21"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/traces/FRESH-EG-016.json",
+      "bytes": 102269,
+      "sha256": "b1e5f7f15fb989ef05096bc16aaf8603e258a5125ee0e124738e08a182c76402"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/traces/FRESH-EG-017.json",
+      "bytes": 7336,
+      "sha256": "27686c69f4b71c5d5ce64b641e000f4b6a1a0092ef11a948c9f217f81ed06a45"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/traces/FRESH-EG-018.json",
+      "bytes": 203385,
+      "sha256": "6750a056126460195065759ac9701b83aebc6a6f172abf4e6448dc1654fdeba7"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/traces/FRESH-EG-019.json",
+      "bytes": 62709,
+      "sha256": "10a4a1a1b93b9e2b833268d1cebb7b6ac8e52f6de5a113089ab8ad78502b48f2"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/traces/FRESH-EG-020.json",
+      "bytes": 135105,
+      "sha256": "a2cbd09d825e726827c1c8a2908454f0f390c5e5549c04aa5595017e37a74fc1"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/traces/FRESH-EX-001.json",
+      "bytes": 116364,
+      "sha256": "3851342728401db2000f0c75c312e68ac566297212f5278c72ca0dee2fde244e"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/traces/FRESH-EX-002.json",
+      "bytes": 94348,
+      "sha256": "177072466e955c36bca04c005a16f87dc6c29c1e7785cdee90f6ecf7138dd9d9"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/traces/FRESH-EX-003.json",
+      "bytes": 97902,
+      "sha256": "63ede9dd40d0fbcb39a157593a384c652c7489a7bbb7db562e7e2c610460ed8a"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/traces/FRESH-EX-004.json",
+      "bytes": 101876,
+      "sha256": "17c7e2fdc8926fb6b6fed53ba298f5fbe2cc9cfc29976685459cab2baac78830"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/traces/FRESH-EX-005.json",
+      "bytes": 106421,
+      "sha256": "a17156c35e99454823566b0591b713df4fbb1e2ee27b844d5f8e30a0115a6a33"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/traces/FRESH-EX-006.json",
+      "bytes": 110358,
+      "sha256": "3e3ee4ef08c289fd08c43351757e2557ca3cdbd7160fbfb212859e9dd59ef957"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/traces/FRESH-EX-007.json",
+      "bytes": 181455,
+      "sha256": "74ea9f1739f55b31bd8dead8e51a1565841f9b908c9234252d4c3c141da81b52"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/traces/FRESH-EX-008.json",
+      "bytes": 105582,
+      "sha256": "3f0338d31c1876396f44c6665c86ae1596c7827ec3f727aa233095bd85517b45"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/traces/FRESH-EX-009.json",
+      "bytes": 114075,
+      "sha256": "e9f7cb8e49ebb30c09642e33e8e1e8b27008ae6afe33fb8e92f2a9c62545b2d6"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/traces/FRESH-EX-010.json",
+      "bytes": 107965,
+      "sha256": "a29c01fc00344805e28ec5720974a36f93b704bd5c6094c3b6c9deb6e293a40f"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/traces/FRESH-EX-011.json",
+      "bytes": 120140,
+      "sha256": "7e02ded09b53a1f4da0b202871dc4b5ea90e9f84c8de7b0fa53ceb9436327fe5"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/traces/FRESH-EX-012.json",
+      "bytes": 109252,
+      "sha256": "a1e834aecee769d95d0ae5a04da944c9764007d24a2852bf379dff44fe7d7fd1"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/traces/FRESH-EX-013.json",
+      "bytes": 107296,
+      "sha256": "e6badc572dc80db450cf53d195d9c2150c20cbeb983f4073ce7e4f2d3eefa02a"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/traces/FRESH-EX-014.json",
+      "bytes": 98604,
+      "sha256": "82069f9368ee5d36a90f6d21cdd2258e71ffd1c05278e94d4447f600b4e9a0c4"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/traces/FRESH-EX-015.json",
+      "bytes": 98126,
+      "sha256": "44385676855562ede5cd4d908a76c89cbec04ae02fc10b0a9ca67464f74054df"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/traces/FRESH-EX-016.json",
+      "bytes": 159042,
+      "sha256": "f3441171b9260583d671ac97bb7947c8337f164a32eb9665049eccb785853fbe"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/traces/FRESH-EX-017.json",
+      "bytes": 175152,
+      "sha256": "c5ab3f689958cbfd66bae80e0b84b43a2338f3cf813c4cc9fc99ceada643727e"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/traces/FRESH-EX-018.json",
+      "bytes": 117856,
+      "sha256": "bb693aeeea48e571e53977471c9c4495aaacc3cb509257338684c5cc10be953b"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/traces/FRESH-EX-019.json",
+      "bytes": 120750,
+      "sha256": "10dd97d58c7f1a834806d265c50cdc16c70bdfcc5e14ea40eef11d09be5fed8f"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/traces/FRESH-EX-020.json",
+      "bytes": 111537,
+      "sha256": "5057d42bbee62f5c70d988260e88c05939aca960bbbd6921edeb3a9f8eb88978"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/traces/FRESH-EX-021.json",
+      "bytes": 112220,
+      "sha256": "4c084043fe0aad380f40952a0e75831091fed3c002109bc83d62933768ae6f73"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/traces/FRESH-EX-022.json",
+      "bytes": 116932,
+      "sha256": "4e777bd69832fb61a8777d074dbfe4463cce459d80b5af5d8ee1f0f4535c66bd"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/traces/FRESH-EX-023.json",
+      "bytes": 94681,
+      "sha256": "595ab8cc05a1bec0960008413bf976954717224c284cf88dfe0d221915c5a376"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/traces/FRESH-EX-024.json",
+      "bytes": 96477,
+      "sha256": "7740e888c9ff96a1440a493cbc7a9f2d41aacc813d6d9b8308159da721399967"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/traces/FRESH-EX-025.json",
+      "bytes": 126470,
+      "sha256": "1994a1cb70394cb1ac19424fcc8e3eb4db8c426e4b2a78c2dcdcce4565c9792c"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/traces/FRESH-ML-001.json",
+      "bytes": 105914,
+      "sha256": "7174b01b65af2b808c64d6a236bd154adecb7278dd0c22d0f3fd5b574271a6ba"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/traces/FRESH-ML-002.json",
+      "bytes": 102849,
+      "sha256": "8b5241b8ac816121b5cb27d14c1cf508bf7eee1974f7088fdb80ad01c175a10f"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/traces/FRESH-ML-003.json",
+      "bytes": 102906,
+      "sha256": "356ded49908470998a5725a44c8da61d1be2bdebf8c15ee7435bca34381ba43c"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/traces/FRESH-ML-004.json",
+      "bytes": 61773,
+      "sha256": "f938fb2c7ad054d7eb5e49deff946456772d56f4046d15f752c5b2dc8d92725b"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/traces/FRESH-ML-005.json",
+      "bytes": 117394,
+      "sha256": "642aa56bf0e173540a129af7fefc3498f6c5c885ba634c777df6627162d6be29"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/traces/FRESH-ML-006.json",
+      "bytes": 181185,
+      "sha256": "53628c3f05074a75533c3462cd59697b3eb94fc5d4e1e758269af3258f200479"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/traces/FRESH-ML-007.json",
+      "bytes": 105878,
+      "sha256": "d22651b441c9c66828c2377e32468261757f47d1808b3136f8cf562fc13752d7"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/traces/FRESH-ML-008.json",
+      "bytes": 101424,
+      "sha256": "a30fd7bd3eea56b78c089afb8d5c9ac086105a654ed748158888766409933f96"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/traces/FRESH-ML-009.json",
+      "bytes": 109662,
+      "sha256": "7fc05f5c0f8d91bbe2321d052910f6241acff47e5bce800337eb9cdde47c425e"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/traces/FRESH-ML-010.json",
+      "bytes": 61692,
+      "sha256": "10aa14f2adbb053be8df9f747dfe09663176addf226d75fce752954cb9d0e8a6"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/traces/FRESH-ML-011.json",
+      "bytes": 104498,
+      "sha256": "711acf62e784ad292b5b6e0ff17ce7186c414ba3d52042e44cb08c144bc7b178"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/traces/FRESH-ML-012.json",
+      "bytes": 210365,
+      "sha256": "2b17fc851e28a3a319e0f17a69e3a70d2141344feb0daaeff484b9979b19cf8f"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/traces/FRESH-ML-013.json",
+      "bytes": 113185,
+      "sha256": "cb604ea94db870a8e84f4d76e4789f878adc92f63fd62f8c4d10b667f0941f78"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/traces/FRESH-ML-014.json",
+      "bytes": 198841,
+      "sha256": "7474d42c3336c810e219df9ab88feb99559e2e5dd1a10cb6b9972c538ae8ec52"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/traces/FRESH-ML-015.json",
+      "bytes": 193601,
+      "sha256": "f77ed45b69996b0a392d25e11071b5ea3e36b74fffe8c62be6c48174590c5501"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/traces/FRESH-ML-016.json",
+      "bytes": 61420,
+      "sha256": "fa8abc84ef7986db3b7ff5488cc9c7b5fbd00dcb91ffbd4efa9baec5b0cb0a3e"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/traces/FRESH-ML-017.json",
+      "bytes": 99211,
+      "sha256": "4eda81e7e68d7035b55fa3bb5e1c5c94315540deb3d57e4503be73b70abdd197"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/traces/FRESH-ML-018.json",
+      "bytes": 116408,
+      "sha256": "7189d2315e5bd9d4f33b9c1e0395e215ee0c0afa912a45bf433478f85a2a8e0e"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/traces/FRESH-ML-019.json",
+      "bytes": 61863,
+      "sha256": "7e4da9336856d17545c49594371d1adb6453ca2f61cca0885ed5936bc1c3d8d2"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/traces/FRESH-ML-020.json",
+      "bytes": 100615,
+      "sha256": "d2f1ab4e244f109cf6c641cfdcf4cb6d1e365f314c4bd0c950c53305e15c47be"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/traces/FRESH-MT-001.json",
+      "bytes": 212980,
+      "sha256": "9fe665b8c281e9dd60e88c4f77ebf8bdb7f4478b4b1cc1c05c72f2339b398e68"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/traces/FRESH-MT-002.json",
+      "bytes": 194029,
+      "sha256": "2f304373ab6dc9257363a62fd6d2dcf3475710d38fe8c5754cf7e0de718c0615"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/traces/FRESH-MT-003.json",
+      "bytes": 279337,
+      "sha256": "ecea8883094d808b2a7641a1a6a6709d979579adb6b01cea0869776c3c3bc881"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/traces/FRESH-MT-004.json",
+      "bytes": 124459,
+      "sha256": "22dbaa6926b7383f07aa51bcbe72a59bd726b88411c8e159b6faff815488fd03"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/traces/FRESH-MT-005.json",
+      "bytes": 372759,
+      "sha256": "ac8785ae5abce02d0b319f0efbcd823d2df46c0986cc84fae454099b4ac38b57"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/traces/FRESH-MT-006.json",
+      "bytes": 258939,
+      "sha256": "f30d1b794ba30a0e29b88f1681cde5fecfd092b914ef3f07724ce4067ae5ecf4"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/traces/FRESH-MT-007.json",
+      "bytes": 229993,
+      "sha256": "54122352f39497a3e1accf01683b33edbf8f163785c2fd7ce1fbabcc32fbc755"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/traces/FRESH-MT-008.json",
+      "bytes": 399634,
+      "sha256": "db117d4c5f209b79e1846e72d8fb00b2c9b5ecda8093f782cdef693b4e349710"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/traces/FRESH-MT-009.json",
+      "bytes": 205053,
+      "sha256": "06f8fe07100cf617e14d8af5ef871b6eff28d10fc854166856930bc73f9e120d"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/traces/FRESH-MT-010.json",
+      "bytes": 209430,
+      "sha256": "330976fcfcccdb8001a95edfa040154b6c20f01582b4b597fdb23c513cfceb39"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/traces/FRESH-MT-011.json",
+      "bytes": 378307,
+      "sha256": "ab34454ee77c14ea3e2b870cf067cce309035146f63b50a3a04561b15ff103bc"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/traces/FRESH-MT-012.json",
+      "bytes": 345010,
+      "sha256": "40f4a6f3473e0539788c75fd06146a6cbc04240b9b32e8ba89912e45636b6124"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/traces/FRESH-MT-013.json",
+      "bytes": 314550,
+      "sha256": "d9a7b581a575781ab5c80bf92d3a1726d12469963dffdabb4dadb271a98df838"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/traces/FRESH-MT-014.json",
+      "bytes": 386119,
+      "sha256": "da9180619cae8f6d4c6d365742b3d9925323098d22240ad89837e29f54372079"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/traces/FRESH-MT-015.json",
+      "bytes": 211291,
+      "sha256": "934f39820b782a43eff4e8aebaf5f921e835bb927ac4f68506e870cd5512b507"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/traces/FRESH-MT-016.json",
+      "bytes": 321874,
+      "sha256": "fc7e096f462445ad7f79e76f2e7dd9e6a5b5db3a9756ad207ae8812fb30e264d"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/traces/FRESH-MT-017.json",
+      "bytes": 199821,
+      "sha256": "0aca85e8061f717312ede11a86c0b07248151d5db4953f706274da87897a07e7"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/traces/FRESH-MT-018.json",
+      "bytes": 217168,
+      "sha256": "daf4fd0ba9a73465b80049ea98afe50beaf8cdea16fab3cad7a392ab2ec15b59"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/traces/FRESH-MT-019.json",
+      "bytes": 306836,
+      "sha256": "c365e1556a52b4b4814b1d85a37bab64a2a600e2b1733a1487530358b3c0717a"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/traces/FRESH-MT-020.json",
+      "bytes": 210125,
+      "sha256": "39d08bc1df5e1fc6780d41ea061b80362701b7369ceeaa50b17abcff8e23b2b2"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/traces/FRESH-SA-001.json",
+      "bytes": 6672,
+      "sha256": "64544f1471b71037e43d17e3d2ae6cea4a038b599da71ad84d8a7c2f4adbdef6"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/traces/FRESH-SA-002.json",
+      "bytes": 6526,
+      "sha256": "72dd596ff3a9a067dd21f80c7414c5eb9d279887929b97c19c43240ce5bada10"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/traces/FRESH-SA-003.json",
+      "bytes": 2007,
+      "sha256": "084726d8b4155dbdaa94f128f76157fb7a9850b04bc891e569ad259607fc18b8"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/traces/FRESH-SA-004.json",
+      "bytes": 1994,
+      "sha256": "15b861896468e18f11f294bffb21335536ac74c807cf81dcaa531aca9c4d4783"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/traces/FRESH-SA-005.json",
+      "bytes": 2000,
+      "sha256": "389c22640ec0478b7150a48f19c2657fa8a72acf2ea56eb052d59b912fcfe463"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/traces/FRESH-SA-006.json",
+      "bytes": 2000,
+      "sha256": "3a5649f32b3c9c5089514a75f32e71ad08114d72c32443f91c8fd7d2a0c3b61e"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/traces/FRESH-SA-007.json",
+      "bytes": 6806,
+      "sha256": "ab0ae4e29837f8ee9c7894182beb28c46f95c7501a05961ed31be9790bf94e2b"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/traces/FRESH-SA-008.json",
+      "bytes": 6655,
+      "sha256": "b4810410782c1bb8044ff66b4e411d17a2afceb916acd7d9effacd5dfa20c7ba"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/traces/FRESH-SA-009.json",
+      "bytes": 186822,
+      "sha256": "08e8059e0fa1732df2b06e054714abe23c881d6cebeac6f58c43c46606b3958f"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/traces/FRESH-SA-010.json",
+      "bytes": 73489,
+      "sha256": "7174dfde045659668b227d9529908a93ec613cd04dcb39f3551bdcf73e40386d"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/traces/FRESH-SA-011.json",
+      "bytes": 155625,
+      "sha256": "69e8d685b952b155328e7a7b8eaeb0145c6c50f6e07d5ceecf63d97f74267492"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/traces/FRESH-SA-012.json",
+      "bytes": 2837,
+      "sha256": "72695b1a3bc771c2cfe3ce41a4e6f0fb654980b019b114ead2b803c4e1c466d6"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/traces/FRESH-SA-013.json",
+      "bytes": 129236,
+      "sha256": "7396ccc73100b7c116cbc9f887e364548b6e553eae37e8302de6a50e2ba8ac52"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/traces/FRESH-SA-014.json",
+      "bytes": 181232,
+      "sha256": "ad727c0d60635c21ff085b5b781e502cb64daec673196d9b57785752f6e0c727"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/traces/FRESH-SA-015.json",
+      "bytes": 217627,
+      "sha256": "8e1b6700181e1e64867182223f9d7d9b0ae099a669a92d8f98d1f654f2538d58"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/traces/FRESH-SA-016.json",
+      "bytes": 130683,
+      "sha256": "848d500a05057daad52f3090b470f0b004f343f2d8f3fb917d81256f7f0f01cd"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/traces/FRESH-SA-017.json",
+      "bytes": 319298,
+      "sha256": "f0aba09876b7baa7026fdeaec937d57ec9469450f3aa3ef79b5951c1465bacb1"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/traces/FRESH-SA-018.json",
+      "bytes": 376911,
+      "sha256": "306a9d732c378dec500af428729fa7684ffda3b024f9f5f0d1c37da687487697"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/traces/FRESH-SA-019.json",
+      "bytes": 6681,
+      "sha256": "370a7c869d2d911075272314f1cef98e866486d11b000f57392f0b616aa549b3"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/traces/FRESH-SA-020.json",
+      "bytes": 7084,
+      "sha256": "c6b096c31e530ca96640242d4e84326b9b50846397c8d02ce551808020c01224"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/traces/FRESH-SR-001.json",
+      "bytes": 287262,
+      "sha256": "61ee9bb0a5f4f69e229799471f5fcea3765f26b4574d5ab4798dbb3f23006e60"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/traces/FRESH-SR-002.json",
+      "bytes": 352673,
+      "sha256": "e6b20e10b47db28d7f3b2198a920fb0e95d795a0fdefe7586cbfa65a2c24a818"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/traces/FRESH-SR-003.json",
+      "bytes": 372790,
+      "sha256": "abd289ff37c74baca29a563f3e5d83dc3359b12061b359d68c817303f2d35b9e"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/traces/FRESH-SR-004.json",
+      "bytes": 282867,
+      "sha256": "a946b3512c1eac286ec2beee2b78ec06c18da16bcc69ac68c6c82f0cc6aa9acf"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/traces/FRESH-SR-005.json",
+      "bytes": 49925,
+      "sha256": "b0474f88682e532580284891289e212695d5159c6f8cabc71ecf72d0f2a9afc9"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/traces/FRESH-SR-006.json",
+      "bytes": 167627,
+      "sha256": "e31b3e1cc5b295d791ef3fe16bb9c9a12b2cffb21a53aa23a9d49eec4a299301"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/traces/FRESH-SR-007.json",
+      "bytes": 174268,
+      "sha256": "c3d79bddf046530789ab6ef8d090ec6ab585b7516830ad140d9b0549c1e880e8"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/traces/FRESH-SR-008.json",
+      "bytes": 103620,
+      "sha256": "1f785b089dcdde93a8d0b778b3edf93d59ac408733ab54411eb521e95ac4648f"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/traces/FRESH-SR-009.json",
+      "bytes": 96383,
+      "sha256": "5a2e3e2f65a483a63f489c51130455a486ce7c49e1dfd8036040724d6b84820c"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/traces/FRESH-SR-010.json",
+      "bytes": 512638,
+      "sha256": "0135d4ba952ac151fc6e9489c6f369f80a990509fdb6538fcbd80e9b8fd4d74a"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/traces/FRESH-SR-011.json",
+      "bytes": 106254,
+      "sha256": "019e3c6db7d6d7e2196a1ba4dcf46fc79f166ad44a44fdd1dc7d0bc9e88ca05c"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/traces/FRESH-SR-012.json",
+      "bytes": 431785,
+      "sha256": "578b5d70523940919d8e3b6ec64253f469213dbe423df9d3f4f4215511cd5f3f"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/traces/FRESH-SR-013.json",
+      "bytes": 324777,
+      "sha256": "4c196330d7dcfcf179baa5b702e9ef35704af92628592af05c342c9ad29c3676"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/traces/FRESH-SR-014.json",
+      "bytes": 126876,
+      "sha256": "8f90de2f4275cd8e741131738770f5bb9021609a05f7936244dd7857b1d1e5f4"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/traces/FRESH-SR-015.json",
+      "bytes": 6823,
+      "sha256": "ebb63bdd324e2af96bc4272561e32baa40677e3c964e43bcd212652d3c0c65d6"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/verify_integrity.py",
+      "bytes": 7060,
+      "sha256": "473aba08d98a6342b75884ef760895e5cda63482555ad313d3ed96ea95ee20b0"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/evidence/write_reports.py",
+      "bytes": 14963,
+      "sha256": "1ee2feabc0b3e42e0311bdd7dd3f9ba6f04d738dd859aead353b84ef9dfaadbe"
+    },
+    {
+      "path": "Skillomate_Chatbot_Fresh_Blind_Evaluation/integrity_manifest.json",
+      "bytes": 82993,
+      "sha256": "4c35e5946791ebaafa86cd75bfecb80ac814ef40d991d41f3c45b02211eea9d5"
+    }
+  ],
+  "currentCandidateGroups": {
+    "application": {
+      "edunex-b/config/mongodb.js": "834fd6b73dc8414b63fc23769210601ede7c76f664fdea5ec9e179277a1bc876",
+      "edunex-b/middleware/adminAuth.js": "e0d54b012e7e4b9b7cf3c6eeb8db42177e80809955325ef09f2d1c1297bee471",
+      "edunex-b/middleware/auth.js": "1dee47e0d08e9d74951610d3371ac0362e53d01757082665ab9278d0fee134dd",
+      "edunex-b/middleware/checkSubscription.js": "692fe1ec21fbb3bcd70b7011c863d589da6b2cf2e7650d0db695ea89083e4222",
+      "edunex-b/middleware/compatAuth.js": "10e041d66261b61271911f0e0731518a89c635aad55b238d9fa17f68e17858a8",
+      "edunex-b/middleware/cors.js": "5ddc9eec8b0636e0741c0208294f41930d827a7a301f6ff35491d2753b14308d",
+      "edunex-b/middleware/sensitiveRateLimit.js": "c110f7b84591be724a909a2a8ff2c625a4440d5a2453b09c7ebce53c5a1aa11e",
+      "edunex-b/models/AdminAccount.js": "b75c8b1233d8ff7d54995bfd25ec2188c78c7bf4b54fe17065058388c30b7021",
+      "edunex-b/models/AdminFeatureSettings.js": "5705a2563df9967fae0c41abe5b1bdca30979e53225eeb4a3cd1804e39f42c78",
+      "edunex-b/models/AdminUserAction.js": "d8b6c75d01e590aeeb72929d49da208a75660ed31a782c350b5f2b32a0120f99",
+      "edunex-b/models/AiResponseReport.js": "99a2275f23a9986affbca934d1dbe70cdfeae3ab34cf7ef49e985f170db737f1",
+      "edunex-b/models/AiTutorSession.js": "29a73980a06f69d74ddd720f6148cc652d4b8f354cda6b72ab3f8d35c5febced",
+      "edunex-b/models/AnalyticsEvent.js": "b4a6b13534ab2e82ec5a38e162a53e2c6513be1a9e1e17c795e1436125a85b86",
+      "edunex-b/models/AppleNotification.js": "88444c293a7cf375776de46342c087f9776f4395d58f8fc48af3b9e0ce4b9919",
+      "edunex-b/models/AppleSubscription.js": "b6973e2c100d3f7088c9fa128fce397f42c262d85151c2b0ef19bd086fbfddbf",
+      "edunex-b/models/AppleTransaction.js": "0e9bd75ec362e2e8d6264732732b9a9cf7dac2bf52dcb4b17b0336e982515dc4",
+      "edunex-b/models/AssessmentResult.js": "516967c10d18683d0d5043a8d56bfb15e2925dba7680ec0621d71a994b0ed9d5",
+      "edunex-b/models/BillingCancellationJob.js": "11f3ac6dcd4b4c5e27e887f5824a8eaac9493961d16c16cc1a9484ea7bb1b96f",
+      "edunex-b/models/BillingWebhook.js": "a2925681a11c48d4dde35ae415af82b947c56243d114073ec73ed73464ea5abc",
+      "edunex-b/models/Category.js": "ff797e679f3b13eb6897054365df3fc647ec861646c69bfa0b0708d2f9f6f73a",
+      "edunex-b/models/Certificate.js": "5675323d9c194a01c110051f9e7ec89d72d47c834cda5aa3c1d459b14907c3ac",
+      "edunex-b/models/CertificateTemplate.js": "a81772fd1bb12ebbda274d99f40366a9df5524ffb73406ee097595f35bf459fb",
+      "edunex-b/models/CertificationPolicy.js": "60aad83a4b98d43eb2790049dade19eb0013561de413c4a2b9136db6de070151",
+      "edunex-b/models/ContactEnquiry.js": "dc476213802ad11430000c299bd64814c7a9604ade15a44999af90a101902a4d",
+      "edunex-b/models/Coupon.js": "89f0a517bbd3227b6389f208f1bac6fa19c3c18be598cd0306e5ad3116e476da",
+      "edunex-b/models/Course.js": "0000902a66c1e64bc7d0a266927f32b56de78be5e1d3ead1501f1d767fe1dc12",
+      "edunex-b/models/CourseAnalytics.js": "f1bb0d58fe422fa56d3dda92e5e7d05580cb71f85725c7686a3570d5fe0eeb3b",
+      "edunex-b/models/CourseProgress.js": "397d14b2fc512e118adab26961e868b0ebb146686b97a8266401633525ee9734",
+      "edunex-b/models/DeletionRequest.js": "4d0f736f798e8ec4772ede0ca105f0c321122de4eb95638e6cc260755c97d8d3",
+      "edunex-b/models/DownloadGrant.js": "9f72aa7ebcc0f0c78e0a10b325023892ccf93b43efafdfbf2a150291bf236725",
+      "edunex-b/models/GooglePlayReconciliation.js": "bff0cd6f3b6a2e2c4232f1a66273f28395377df40d443ea250ef0bdb719b0d01",
+      "edunex-b/models/GooglePlaySubscription.js": "403a6abd57014701c75a0953e3ad908807d4808f76d2fcf3dc0aa2a852e4f278",
+      "edunex-b/models/LearningProgress.js": "315d8b4a87ebf48978a98cc3e80afa35e0dc0a31e22189a6177f8063005d94ca",
+      "edunex-b/models/Lesson.js": "907f846129450b51186d697955c53a7c6ebbe74fd837830999ff0462aa24075e",
+      "edunex-b/models/LessonNote.js": "cbacf0e127676a8dfa9be049f0005ef1df794e7e0c852c5bee28672c76dc5145",
+      "edunex-b/models/MarketingSettings.js": "b5d4a14d1e6668319cd914deba29bc4ec4c313599fe30a2209b42f7e2cceb438",
+      "edunex-b/models/Notification.js": "75c1bb33ab192218c9ebf8381227de7978478f5985d921bc89e30357855f11ed",
+      "edunex-b/models/NotificationBroadcast.js": "6b1427452a85085be5f9a6ff4641c313d614486eb8c528579beb2d04ebf08b01",
+      "edunex-b/models/OnboardingSession.js": "8c76b4cf1154bb53632a9a677ad1b36dfe469a00f477df92d1dff333d887e715",
+      "edunex-b/models/Order.js": "291e419942704a79c78f3763fb46ab624515e3c32018820744e719496031890a",
+      "edunex-b/models/OtpAttempt.js": "4fd2bf5d74aa330a18aadb130c33f45a14e7304d733e842c60a1d1b69c15ab80",
+      "edunex-b/models/PaymentSettings.js": "3f78185ab52c4e8889e974a84d9aaa7a7aef4a8613ec6fe07c42edc49b0bd3d8",
+      "edunex-b/models/PhonePeAutoPayBilling.js": "d5f3e5b4ba54783cc376e20fab8ac52628a4f0aa926bd8e703064007582b8a78",
+      "edunex-b/models/PhonePeAutoPayTest.js": "987ea7c6d3e2f88e79bf2d4964a40e351b95de48e484e13173fc568aee10f953",
+      "edunex-b/models/PhonePeEventClaim.js": "8461140394be924b0b2e49a2abd696a598fcdb8340fd72ffb986bd77c63381ae",
+      "edunex-b/models/ProblemReport.js": "e2edb246545112e9f0f8e4891a416348d427ce8dcd4389bd217608f2297ebc16",
+      "edunex-b/models/Progress.js": "f0bb3a60c7636d5afafea9253eddaac2afa135a7f385c17e521463c26672294c",
+      "edunex-b/models/RazorpayBilling.js": "b10d65c9c67259c8a192d199dd222f1397f0eaeaa2fb817609c7571768a81d8f",
+      "edunex-b/models/Review.js": "832e3920783a9029118d643d3ddb06f183f7076feae0ad6c2f1e6fb7ce4ed7e8",
+      "edunex-b/models/Session.js": "a15499139e3a883595b132a52556c24ab66d2bf7e42625cdddcf55df3e0e297c",
+      "edunex-b/models/Subscription.js": "bf9c1e0e699ff755b38ab4b8a1ad6f973d97dabc34e07690600a3400d8baef8a",
+      "edunex-b/models/SubscriptionEvent.js": "3742eb53100cbbe0e7306c7329b4dedbd70d2b9846b312d3426bf033cc5ae105",
+      "edunex-b/models/User.js": "9d6178860ddef77dc2db1a3a4cad9fec37b0775a6265882e40544c747060d20e",
+      "edunex-b/models/Wishlist.js": "9bdec8ed3cb817e789b8af64594b83d256343315b702878eef124fac855a56b3",
+      "edunex-b/package-lock.json": "41620513eb92f8b0f0c5ca2ef9c452fd70e30172367bac9d80aa2c34b641f7a0",
+      "edunex-b/package.json": "2db221ab4c6cae835405824ab29f2af363c52808c910b4581fc09deaf03d55d0",
+      "edunex-b/routes/adminAccounts.js": "a554741d41917b1b65b580b61418a5e39cf0e9079df21e6c9fb4dd380a71eabf",
+      "edunex-b/routes/adminHealth.js": "9b59ecf107c410c2d65671f890094d67a34c1aa839372948766a482047381e9d",
+      "edunex-b/routes/adminNotifications.js": "25f9afef43b1656e6d0c94a0c0644d93aee8bdfda7fcde69d99c0b1ee65b376b",
+      "edunex-b/routes/ai.js": "e514c48126d61574ed1599246e5680d9b32eb2d621305205be87b1beb34e0895",
+      "edunex-b/routes/appleIap.js": "0df6854fe9350be2f54f009f69dcadb6dc186a9eaaf3567ff5f52463801718d2",
+      "edunex-b/routes/auth.js": "2f0653e854ac4c530d59539179baae9fa2369d34064adf46f222b8ba13736ece",
+      "edunex-b/routes/certification.js": "38f82f8805589ea443ff6cad1bdf559d288c4cdb78c4a33d42ff9ccab0f87175",
+      "edunex-b/routes/content.js": "41419b66c003e8e9720690554ff175aa1c541af41c85a4b7597f250a1a5e5f16",
+      "edunex-b/routes/deletionRequests.js": "e26b8a586ffe054c84bc5180bcd8b2640129089955458edd7c356930949e690f",
+      "edunex-b/routes/googlePlayIap.js": "e889acdae5c0226817ca58c0556db16589facea89b23dd61873d8c7cc1a02817",
+      "edunex-b/routes/marketingSettings.js": "b78a944b0f11973208dadc358ad3b2c8339b215431aa26f892cda9bbcfd3fb5b",
+      "edunex-b/routes/mobileCompat.js": "267124efdee82d3f22a80ac86b851c83075cee9d3421b5f121b2c3d1d138fc7d",
+      "edunex-b/routes/notifications.js": "713ac563c886db8952ebd141e8aa5be6b9e94a8ac53ed877340230f14db399e7",
+      "edunex-b/routes/onboarding.js": "d60696c57ee4f55de3f6249167ed52411c59dd4c397ea0fc5ff99edc938ccfa8",
+      "edunex-b/routes/payment.js": "fb40df7fb23a30ee5edd5b3d7697d5c7a87df73848fe9a322e1675d8f1f3169e",
+      "edunex-b/routes/paymentSettings.js": "c46eb00d03c43b56f75e101b019f423a5e25984000ee7ffc3732bef942084631",
+      "edunex-b/routes/phonePeAutoPayTest.js": "216b03291106c5923862a4d52fb51de64b0b136e7d43c97bd0e6b9bb9fa3676e",
+      "edunex-b/routes/playback.js": "fe8758d9ba4655e40c85b671522eef933ddacfb25bb24ffe135f4cd436cb1831",
+      "edunex-b/routes/problemReports.js": "1473c236d4682ca6704ad5d734d1babbe64a5f5285dd4e03decde43ea755f247",
+      "edunex-b/routes/sessions.js": "6789ae1ac38268e1a8965cc53458194a6234fa2aa0d4513394c88153206d549e",
+      "edunex-b/server.js": "415e07235625dcadae46fca16877976dd34272c24a0e236a44f3f3434931c3ef",
+      "edunex-b/services/accountDeletionService.js": "2e4892f844ba18348dc0bfd98e4827526d0df80d908289faeb184a393938feec",
+      "edunex-b/services/accountEntitlement.js": "ebc773e06b4d5982e4defbbecc244f1896afc1b806d22868bb1ca60d504150bb",
+      "edunex-b/services/adminBilling.js": "144589fa7a69803fc0e2333fdbf9f30c60495acf61aaa4751b464c6383c37145",
+      "edunex-b/services/adminFeatureSettings.js": "4da9f468dd5cafa837c91ce665c67eec6ecc2584b237d4247364bb1a89363883",
+      "edunex-b/services/adminIdentity.js": "f8592088a173e0cfcd1f3f17dbd95d16d59ece884e7f35ec9f3571217bed1ec1",
+      "edunex-b/services/adminSubscription.js": "5d2dde564cd94acdc98881db6d022424aa902844affebec2bdde0c35002c60c9",
+      "edunex-b/services/aiCompliance.js": "4ade54cd78363f803195267d0721befdd8821c9fe79acf6449945c06c13118c1",
+      "edunex-b/services/aiTutorService.js": "547ca63794ebaa8bea69284d010e62c5f82deedccd31d8d16a9802520d2da147",
+      "edunex-b/services/appleEntitlement.js": "b66f8bfdc788e23b52134297bac87964ae14755a50430db169fc74534c2a6404",
+      "edunex-b/services/appleIapService.js": "ab41b2de44d7d9183a89c9f76fde3a0406c65e81663bc8b8cc460abfa753f567",
+      "edunex-b/services/billingCancellationRetry.js": "149787198645d595177dbd93dca98400e4bb4330b5d99639398484534b2445e2",
+      "edunex-b/services/cacheService.js": "0da6fdce01e94aa5fb686a8943c0462f07e1cfb4a0b552c1f1f9fae0a2364453",
+      "edunex-b/services/cancelAccountBilling.js": "0d507b8a504b46a7359a9f8c3c6d9f39688618ffd34b7385551d8662dae1fb6b",
+      "edunex-b/services/certificateTemplate.js": "a9709f9bd840b48bdf6b86e4f948b75cd74f548c5616c9a8aaede81fa3332bc4",
+      "edunex-b/services/certificateTemplateSettings.js": "38659e3b8cdc40c9fb0fe21f2fc09dcd59e2b7ca3ac6c2b3ecf84f1ebbb03643",
+      "edunex-b/services/certificationService.js": "414a329845fece90ed23429624b94a1afbc56eb161583d47461abaa3d9c2cbe6",
+      "edunex-b/services/clarityInsights.js": "2db423bc166d625e50a63f34c69ca18cb670e594e009db3246a11c62ca478b2f",
+      "edunex-b/services/cloudFrontPlayback.js": "4ec25b80ee29e2d17a6efcc705e3c9c77af6df154509e04d3b8c2d148638fff4",
+      "edunex-b/services/completionRules.js": "666b42c43075bb8d61ae5d93b29a8f62eee9cac9ec5adb4b335689394a143311",
+      "edunex-b/services/courseAccess.js": "c073f0f1cb7244c5ddee3bc1388d074110dfe364a84b31c9afa7b904f2318da1",
+      "edunex-b/services/coursePlaylist.js": "e9f2963f3fd784a25f8390f379f724380a56b092338c2687eb8b9343e25adc76",
+      "edunex-b/services/deletionRequestValidation.js": "233b3fff641d3d9eaaa1c7f5cd3d9411a892496afee980903449e2b3bb8bb068",
+      "edunex-b/services/distributedLock.js": "0d2d53c789a87bf18d30f2402273f71da719d7250480d7eac07c100e65fbb783",
+      "edunex-b/services/downloadGrantService.js": "3fbbb41fdc3d5ac460fa16a66daa6081d1399fc4ed1f672d2f38cfa3cb264280",
+      "edunex-b/services/downloadStream.js": "9c0ee9d0575f6a900c724850b37d30fbfbe348ecacba54546a6b6f6af0174937",
+      "edunex-b/services/ffmpegBinary.js": "273a66304cc9b5d03cd93201c88943d0a79fe03291c3585a9776bce4235a3b69",
+      "edunex-b/services/frontendAssets.js": "cad1209e2a3ab1e8976b28f57a4ad9540373dfeb1192f0f66be7bdae076819a4",
+      "edunex-b/services/googlePlayEntitlement.js": "3541dd48b9e3732f66136053849e8594b64f434bf31c1d510f38b68889750ae6",
+      "edunex-b/services/googlePlayIapService.js": "a466090ead10dba104b5a596ad0112dbce3b977f10445114327f807ffe51c8d2",
+      "edunex-b/services/googlePlayRtdn.js": "9a168949714dc6f60b5511d97650d97407c2ad3638cae747fbe370105fc85374",
+      "edunex-b/services/imageProxy.js": "5768773aec376e7ece7b7580b822370e1e775cc55ca46f2b6b3abd3307b58019",
+      "edunex-b/services/lessonNotes.js": "99954d2eaa7c0ad2381b1254e3934b6474fbed4448c3db2c2ad0f6009b193ae4",
+      "edunex-b/services/marketingSettings.js": "b9720957959764c407dca41ed569829e13f717d4e5d516ccea4e3793b6c624e2",
+      "edunex-b/services/mobileCompatibilityService.js": "cbb13c529c64b36660f69159c0a7b658837f99ccd79bcb070ccfa65bab59a3b9",
+      "edunex-b/services/notificationService.js": "bc85b34b1d7fb062557c04e3e6700494cf8064c3fb0aa879d044405d99203b5b",
+      "edunex-b/services/otpService.js": "d9fe022f6a3748e6c4a37422e32de3785b613b733d5bd73bb38f8a7a8c350266",
+      "edunex-b/services/paymentAuditService.js": "9642720e84c0ae87d8dc236ff54be81312ffb0b9f558527f8ff7ddd41897a9c2",
+      "edunex-b/services/paymentMode.js": "c920fae117da3770058d3a06d62340341437d5e7ba76c19f4002c062b4189747",
+      "edunex-b/services/pdfTextExtraction.js": "cb909bec4f8eb966406e628ad8f8d86b86c5ae78ea90ca26d96dd60f3ed605b2",
+      "edunex-b/services/pdfTextWorker.js": "cba4045bc33ea4ba97749947735d346b7bb9fba69f0707bb5a2eb9724d1ecd39",
+      "edunex-b/services/phonePeAutoPayScheduler.js": "3dd820e0545acd7257757791b954856064b73e5ace082c1610136fa5c34323d9",
+      "edunex-b/services/phonePeAutoPayService.js": "d2ca43fca88c40efe6782f9037a664a7b24601ffeb75ecbdd734e7c11c40a8fc",
+      "edunex-b/services/phonePeCleanup.js": "b4cec9be75d80e60136d63138c9ae30b98b38db395eddbaba2fd4b5771602b7a",
+      "edunex-b/services/phonePeCleanupAudit.js": "c254c8c838c1af65495583113413ec94ee10f33342ddd6a2c5c5fafb73e68999",
+      "edunex-b/services/phonePeEventClaims.js": "590487ca0b087082e1ca6ec1521bf0cdba48f4fadcf905ec71ea538b68a45c53",
+      "edunex-b/services/phonePePolicy.js": "0c32acca682dd0323dd85b9ddfb29ba7ab99b00d7d7f9e8e7e8336dfb40e8aa7",
+      "edunex-b/services/phonePeService.js": "f78044d071152c9ce3f3a265ab431ee4b8033a694da3a38c2faa82de37e0e2f9",
+      "edunex-b/services/phonePeStandardAutoPayService.js": "0ed3ca682241f7b12538112cd2e97f40e4dd53112decc09e94fefc6b062bcfdc",
+      "edunex-b/services/productTutorGrounding.js": "ad24c1a6ab80d7abf87d20329af0bf631e51d4dbf1c5fcdff7128afc9765656b",
+      "edunex-b/services/productTutorIntent.js": "cb3f217ec8d2cfbe9d3f38f137ea816aac482e23357f55664f49c53cd5ad45e7",
+      "edunex-b/services/productTutorKnowledge.js": "104b598b1ffd816356d9b4c27e270a80db597e624c30a0b3d7841b2b66377ae1",
+      "edunex-b/services/productTutorResponse.js": "f6989efae2fc11aeab6543ba6f945cae589bcacb683c25325d8ed68b0f97663e",
+      "edunex-b/services/productTutorState.js": "1b0148e1978a8067ea8cd337d0892ace9e8d2e1197ea140d72f334e6d1647eac",
+      "edunex-b/services/productTutorTasks.js": "bc7c081634d80dcea4fe5b9d96b071feacb969294631773c17face6496573d75",
+      "edunex-b/services/profileImageStorage.js": "bcda5ace45f4ac053006abfc225febe17c1506ef6a214057f96570a6f4517778",
+      "edunex-b/services/pushService.js": "322b35d1bc27fcf741c9d0462aeb6d8a32eb019041517ccfd4779b5a04850be2",
+      "edunex-b/services/rateLimitToggle.js": "a3294841e29a2bc378aea637af9a8f79aa5b6340db86c7a821840ece55a85dee",
+      "edunex-b/services/razorpayService.js": "6fbcb529e790f176f4074420619610fa458817971a4042a3baf56e6228b18d37",
+      "edunex-b/services/readinessService.js": "9a3d88e3ac28e3879b1e5c796ecc700cf598b73640ece450aabea4b3eb85f992",
+      "edunex-b/services/subscriptionAccess.js": "19f77a134d270297b88c3bddc30bec3e20a203abab1a3770ae2d836418905e0d",
+      "edunex-b/services/subscriptionMirror.js": "29ce99316b601fc6b24f76593829421d0d483a802d763d03e0103d1ae05acdb4",
+      "edunex-b/services/supportMailer.js": "3beaea88b66169e1ae60ddfb02e632542f5fdc1fd440364f275cffdf84e07844",
+      "edunex-b/services/systemHealthService.js": "e0da8d1c4d307758b0ba565f12b374827a2e3993417343116671e23cd68f5d11",
+      "edunex-b/services/thumbnailCdn.js": "5784d0fe114a9cdcbad98e15654d14d78e5385332b3b604f0bb979f3805ba662",
+      "edunex-b/services/thumbnailStorage.js": "ebe4ec22e2f3f859553d0576eabcdcd78255d31b9247535f7d417fc7b00e9a87",
+      "edunex-b/services/trialEligibility.js": "552d63ce4378e8a505e33a6cfd114218618db9846328243b912545bf710d43f6",
+      "edunex-b/services/tutorKnowledge.js": "b3999eaeb4e631c9049cf6e686d4470298e5317c900e29469e97103d3eef6753",
+      "edunex-b/services/tutorProvider.js": "501ed3b619515e2d8eda3a36e2acd80b99b28697de7dd9ddf5b6b5682121d064",
+      "edunex-b/services/userPresence.js": "eeb1451a62d00a40f138eceb39c22d37648892cf0ba66d9936c7645f2d28a2dd",
+      "edunex-b/services/videoMetadata.js": "5d0cc4485b4cd84a5efa8d855831649e516a78d2d55cbb0f71cb10d25a645d00",
+      "edunex-b/services/videoSources.js": "0c19da64f4ff0d2a2ca507a7a008b97adfa44fc13d5ce3c21b533d884df3dee2"
+    },
+    "tests": {
+      "edunex-b/tests/account-entitlement.test.cjs": "abb63cdad6900f89d362e7e198c401f73e2951fe38d9e72c33df23bc74e09138",
+      "edunex-b/tests/admin-course-list.test.cjs": "127a597682fff10e6fd97244c31daa085aacec1d27e98e3ae3eae105031549b3",
+      "edunex-b/tests/admin-maintenance.test.cjs": "eee2fb1f5d198a4d7b7368050147957b2b94afefdcbc5e9b2ffa8268159f1160",
+      "edunex-b/tests/admin-rbac.test.cjs": "c0995a12ef2f6991443e2c4420d4c91c3a0562d8a53c052a73eb890105dae65c",
+      "edunex-b/tests/admin-subscription.test.cjs": "be4b34287b794cc9aaded907876ada4c50954c0ea4fae3ad1a0c731fbbffa491",
+      "edunex-b/tests/admin-user-controls.test.cjs": "7b10268736746f69f4eec0ebb200a89785a7a66335648c45f622d3ae4ddd8086",
+      "edunex-b/tests/ai-chat-history.test.cjs": "ddc6467496c60d94ba93becb81d903ff0487c92ace4c54212d9dad75dde1abc4",
+      "edunex-b/tests/ai-tutor-fixture.cjs": "a13cb7447ce79320ea5069c50aa16aff215517f0f959f0a65efa42108ab15173",
+      "edunex-b/tests/android-hardening.test.cjs": "6292140a437c6d9cefe3923f6f25c785b30d2efba52c489913967893999ea39b",
+      "edunex-b/tests/annual-billing.test.cjs": "29c9e18e06b86dd14b08648b80217b6ff499a89cc82bf9d66e00208d6f5bad72",
+      "edunex-b/tests/app-store-mobile-compliance.test.cjs": "451afbf0b72dc5aaf4534c9a8a83a6407f7fd1437ff90bcba444901def5ac753",
+      "edunex-b/tests/apple-iap.test.cjs": "d0bb5d6611163e4cbe4c0881e28aafe694ccd5a0fa5418ff50cb18d93737d298",
+      "edunex-b/tests/architecture_validation_tests.json": "cc2e11f5c2a0ef140ad93de51961bfd24c3eed6e8e66a81f489355ae2ff82a79",
+      "edunex-b/tests/auth-navigation.test.cjs": "0bc3276982205c98f3b6d5bf7c1d535caef67c1e6842b51da9edb7ee2615177b",
+      "edunex-b/tests/cancel-account-billing.test.cjs": "0bcf6575b90f52cba6aab9daad728d8e0a04bd4d951f954d6989b7d7fdd8e5f6",
+      "edunex-b/tests/certification.test.cjs": "eb900d1dda9e636a7789d2f58e9c5d237cb1501cc2f2df2f5766228d7d96b047",
+      "edunex-b/tests/checkout-summary-security.test.cjs": "81c99aca7be20a0ac3b9ebe5fa2a093a75cb78a3fbb3c15e4c03db332ee6c599",
+      "edunex-b/tests/clarity-insights.test.cjs": "a423f341307e735e03836fdfcbd40c29bb6e1da761f0100939211178184ccf5a",
+      "edunex-b/tests/cloudfront-download-client.test.cjs": "f7b66a2b1812aeb3c114c44127d3766819b2536d157061b950af85d0ed40e9b2",
+      "edunex-b/tests/cloudfront.test.cjs": "9cd679284d5d75f2c4070e239a07fb211172988ba044e5a05c62fb53df124f28",
+      "edunex-b/tests/cors.test.cjs": "459a01194d04f6f46497213f933a72cb063bc43f792076a303cef0bc912ece8f",
+      "edunex-b/tests/course-playlist.test.cjs": "899d674aeb65bb0c535916df49acae896e09e466007f7187752b0c474d7bed54",
+      "edunex-b/tests/deletion-request.test.cjs": "915dc2726c7d9cdc07f96603c5ec35ffef96fb848aae85bcc0ec31c353c0f16b",
+      "edunex-b/tests/distributed-lock.test.cjs": "02ad6be1299edfab8d24c8ac29f3db976925bd16b6c5babce2d189abeab01260",
+      "edunex-b/tests/download-grant.test.cjs": "95e2f701f4947970635f2962587edf49ff72eec6cfa017f92563ca3f1c5655d5",
+      "edunex-b/tests/download-storage.test.cjs": "a62a0bc3ca797e12b10fca01c2a46ae26d1e40ec036bf3ebf40df0717258ca0e",
+      "edunex-b/tests/download-stream.test.cjs": "435fb325acf5a5e064c0c2b4bacd66d3fee01f61ac8927e3ca9e2b24c0ba2f4e",
+      "edunex-b/tests/fixtures/product-tutor-phase14a.json": "94f1e3fd2238cfac6f15f2bc517b765263dfc517dd95f461751457f143567013",
+      "edunex-b/tests/frontend-assets.test.cjs": "bcb4ce5a91dfad86a95d082c919b85c10819b1d27d049e27d44cab8be4fc536c",
+      "edunex-b/tests/google-play-account-deletion.test.cjs": "9c5628e500108acf2042adf7b646ee06e5a0819d1311ad011d57739ce2ee778b",
+      "edunex-b/tests/google-play-iap.test.cjs": "617518c3bad202cb7614af0706513ae72bff4dd1ffe9982e6a23935ae864bb40",
+      "edunex-b/tests/google-play-mobile.test.cjs": "4ddf59afad7c693189f14f94dcaa76fa75cb947f23fd975f64cdcb570308c055",
+      "edunex-b/tests/google-play-routes.test.cjs": "b95d0365b81cf9d08f61267cdf2bb9c33c9271ffb4e3d1a33998efb2888bfaad",
+      "edunex-b/tests/google-play-worker.test.cjs": "4d0115a0f49f9210e47bb31abc740dffddd1dbc804d39580ef12e9ed7cc5e6fb",
+      "edunex-b/tests/helpers/deny-network.cjs": "67607ea4825b2e220a964da4ce06f2c13ba8ae43df88c00f1f915b3d7bfe0443",
+      "edunex-b/tests/image-proxy.test.cjs": "da0b5ad1f9481a25fd54c88ea5c61282d40ad38bdcb4b93818b836eda25485b5",
+      "edunex-b/tests/k6/common-api-load.js": "984711615b48af245bee3f12e06e8f9e38c97f2843f9690f7e19185d0fd453ee",
+      "edunex-b/tests/k6/complete-local-software.js": "d2fe70e6976e0e2540f5652bf58e395db28012966ecbb80ef934e8a3afcbe9b4",
+      "edunex-b/tests/lesson-notes.test.cjs": "80a944a291d5d51e54847fd7f0ccae9b8619ac6eefa03c927969be4e21f81a91",
+      "edunex-b/tests/marketing-settings.test.cjs": "89969d9e262406478633d2b51ec1f8de3e549fc3912b6ab4b98b3a3939b4fe36",
+      "edunex-b/tests/mobile-admin-users.test.cjs": "f078d25d8a5041797092bcedcbca5a66042d27516742e26223da6bc1c46a8b6e",
+      "edunex-b/tests/mobile-course-ai-cache.test.cjs": "04b32ea256a5661ec99655064aa62973f710a94f5c5cc0a554343b081faf852c",
+      "edunex-b/tests/mobile-course-ai.test.cjs": "8033d8d12a84a299990d1900430ba32ef66f3de06432688f25a0c8c120795c93",
+      "edunex-b/tests/mobile-player.test.cjs": "f112cb91d0499730d647b8c66472a79b97d1aae8b7dc3ec8e7c223df6eb55c55",
+      "edunex-b/tests/native-session.test.cjs": "d72f4272f95a170739bb8b3fca906a8c5b63a438cd5094de7f6114aecb99c27d",
+      "edunex-b/tests/notification-broadcast.test.cjs": "35e5d74af79e88dd54fc62921125f83e34506dec587839ebef1f235a3988347c",
+      "edunex-b/tests/offer-billing-schedule.test.cjs": "9bd09586b37fd3c5291996c837097f706f0feac82def5b06d00b0b9f8ba0d5cc",
+      "edunex-b/tests/onboarding.test.cjs": "b4435ef0d022bc034102596f616d0b7247703216ce99fcdb6698ad20c373c000",
+      "edunex-b/tests/otp.test.cjs": "0dbc326f16179a5647c401b16cff4acfc006911f98b96f05f2991b0ea3ce6e25",
+      "edunex-b/tests/password-reset.test.cjs": "f76b83031e05b24023489951b10dd6c97bad3ca756b78d481c183c236dc33554",
+      "edunex-b/tests/payment-audit.test.cjs": "8848f27502553bfbaaa22b2efe6a4b586aa8736aeec08c6e0a47e7e525280f51",
+      "edunex-b/tests/payment-mode.test.cjs": "83490164d7aa1675ff53a607975b5cac6b29f199821d998bb4d3314bea8b5939",
+      "edunex-b/tests/payment-simulator.test.cjs": "375dce9b1a29b69abc91f9fc1faabe7c6dc8762c0304e779cd7f79156098b082",
+      "edunex-b/tests/pdf-text-extraction.test.cjs": "02709861b526bc3ca8792823ea982c6443ff6365239b94da413153eb930ed039",
+      "edunex-b/tests/phonepe-autopay-test-harness.test.cjs": "298a1bf50c0f7f6ceb2fd45cfaffe5ecf8dd77203197585383174a172e3f5060",
+      "edunex-b/tests/phonepe-cleanup-audit.test.cjs": "2a0964f9840ddcd53a4d5b0bc2f4dc29299c486d58197e0536f1d134a62ac3b3",
+      "edunex-b/tests/phonepe-multi-instance.test.cjs": "29036b37d42e3db94e02c7c85b54588c378a6c194dbbfa4ce9c8361514a7afa8",
+      "edunex-b/tests/phonepe-one-time.test.cjs": "08d32a71488b52059dbaf9610b3c7053e1099e1cfd50d4fde1710983136dfa91",
+      "edunex-b/tests/phonepe-standard-web-autopay.test.cjs": "eb581871fa3db579eb37d371b533c37ffe8987306d0efd3751691f4c3a0d4909",
+      "edunex-b/tests/playback-startup.test.cjs": "438c1865afb46b4256b99d63366a08718c8ded6fbc415c69fa9baeb671108295",
+      "edunex-b/tests/problem-reports.test.cjs": "5ad0997e443611562c6459545eef97bcb0030e1d7975fc095a6deb2a111e57d3",
+      "edunex-b/tests/product-tutor-phase11.test.cjs": "1f688c358d148c3aea3d0d5e83e4771afff8edef4b716a10ad1eb73d04d9afcf",
+      "edunex-b/tests/product-tutor-phase14a.test.cjs": "a81d198675e1b5140eeb9fa3a1071eaaa0ab89004d8a00628ec0f2c1020d473f",
+      "edunex-b/tests/product-tutor-phase3.test.cjs": "9802722a948bfd13e591d300777d730a60cc7c4efaf5f49accb1cd37fba4232f",
+      "edunex-b/tests/product-tutor-phase5.test.cjs": "2fcb556c91f932410f9d4ab68d99b32555981e2645f5437ed4cb9d9d8009d234",
+      "edunex-b/tests/product-tutor-phase7.test.cjs": "0485b32b63f485547232aa0f570c545727698f23b13a3df4654038ba72d24769",
+      "edunex-b/tests/product-tutor-phase9.test.cjs": "512b9435fbd57088219a802b0a9cb6a7b303c10672add977228c83098a2a6de0",
+      "edunex-b/tests/product-tutor-quality.test.cjs": "3561213acacd5235e45101d19ec0768018af530bc10e5e22ab41e6445b0253d6",
+      "edunex-b/tests/product-tutor-unicode-safety.test.cjs": "a59183f64a99d868727739f17359afb85c570cc7f5d5c22c276280d7c4a990a5",
+      "edunex-b/tests/profile-image-storage.test.cjs": "93b62b4ee518270cca50aba12d5ffab00e789666f2b315018d376bd05e57c6f3",
+      "edunex-b/tests/razorpay.test.cjs": "42b31a7fa19405d3e40bf7e6f62845c49f213bd5b54186f120843dff89e71fd8",
+      "edunex-b/tests/readiness.test.cjs": "9aa9b755f69249a4a61b5b693a3ddb8321ac0fcc19a0d54c65221cb1c25ccece",
+      "edunex-b/tests/reviewer-account-seed.test.cjs": "5205873993b723cb18e769fe4df26d93e8732b655cd2c0433dcab066e6a0e71a",
+      "edunex-b/tests/sensitive-rate-limit.test.cjs": "4fad45065b2f302b6f88d26d016c5cd8e0f3fdf1efab4a9df04504711c67e429",
+      "edunex-b/tests/shared-cache.test.cjs": "b31acb12c4f3d89a6fc61ec96aa1c482c85dc9d2d51a35e6369888cc6f8a4c90",
+      "edunex-b/tests/single-session.test.cjs": "1cffcc4c5ba59680dad9df5331733ada207812c4ab4f786df052e8eb109a2661",
+      "edunex-b/tests/ssm-bootstrap.test.cjs": "d3d1b1321f967f5575a7b68120796a8211a1c4dae8426d30832013bc86543fe3",
+      "edunex-b/tests/subscription-access.test.cjs": "f361b46125ccf7e49053eab5a32d69eaf4c04bbd047005fc14fca6a8a232c2cb",
+      "edunex-b/tests/subscription-consistency.test.cjs": "cb97e3b3ab62461e787240f72763ae297309851d80b6ba8fa3fb971f61cb1201",
+      "edunex-b/tests/system-health.test.cjs": "706ea55570379c785a8ca4a318beac5f524ddbbe91b3f3d53498a4d5fb2dfb25",
+      "edunex-b/tests/test_product_evaluator.py": "ba40f2e9ef459f3aebdd70a551711d59f6fbbf1908686413aa8ba4eef0de1563",
+      "edunex-b/tests/test_product_evaluator_v3.py": "c9a9f4f094876c07278ed9811189e6c2b26bd5c6210f58212612c92d054a3657",
+      "edunex-b/tests/test_product_evaluator_v4.py": "e756d4e3f246639eccc03e5e885f43d4fd4888a3dc9a3998be96183f163a619e",
+      "edunex-b/tests/test_product_evaluator_v5.py": "bca1ea78dbc99611aef80da8eb1c4d9603f6826bc1d749f0bf498713fa37ef83",
+      "edunex-b/tests/test_product_evaluator_v6.py": "46c46430134c26118551a3f2aee55427924f51bfcfb4e64afee55163d91bd1e9",
+      "edunex-b/tests/test_product_evaluator_v7.py": "22fc4ef9f9e5d70386900a8d120f1a40b8b2a356c8c39ec8b2c76107dd250aed",
+      "edunex-b/tests/thumbnail-cdn.test.cjs": "f358c82e629c91cfdb7a51c2c88dba0a5470a21c03a30d61f8274ff0bc012e40",
+      "edunex-b/tests/tutor-knowledge.test.cjs": "1ca23b0e51711c08cf141b9ccf071a07c06ec211b0c19062290260694d98af5e",
+      "edunex-b/tests/user-presence.test.cjs": "0fc4423526bd72fcb16f1650cdefc5e6514e7ae4d8fbf30cce558ece7a93ba54",
+      "edunex-b/tests/video-import.test.cjs": "9cbf6aad58442594d719950ba521e9817745c05397bf573b9c96a889b8e595d3",
+      "edunex-b/tests/web-session-refresh.test.cjs": "0c3811cd71155c636e7ce35507f441609576c9801c81f4db8dddd888be65ddbd",
+      "edunex-b/tests/tutor-course-isolation.test.cjs": "5f1d4a4c539ec813735b8e8ab44dc3b7dfdf5f08008c897777b977589de18618"
+    },
+    "courseAssets": {
+      "edunex-b/knowledge/README.md": "11e388e0b8faea336d1f28d46c02bf1a13bbbeb06e5acff1eab5939478cf490f",
+      "edunex-b/knowledge/ai-filmmaking/training-l9-15.txt": "e0090a6eef0c0ac244fe494b6c19e015e58208d722b21ade7e24ee3de11fe180",
+      "edunex-b/knowledge/ai-filmmaking/training.txt": "19d9b79de6f3994cfaa2f58822384a6f15b32da651e050e4d1293208cd65a3cd",
+      "edunex-b/knowledge/ai-influencer/lessons.txt": "9ee1ddbd1b2b1f7d95e6580324a1d3f886344d515b41c31325a6b42a7978c7dd",
+      "edunex-b/knowledge/ai-influencer/notes.txt": "8bdd286a9b1a1486ca1d6f7c98c2293b601ed038dab1f770f3ef1a70ea4574c1",
+      "edunex-b/knowledge/ai-influencer/troubleshooting.txt": "84f7dfd9299037441bc5269e6ea6edee251ec1fbbfefa1047863b4dab0ccd5ab",
+      "edunex-b/knowledge/ai-product-photoshoot-ads/guidance.json": "a9160a567a4428bfa5c5ca64ef9f2f8c5fd930890b995bbded638b5b9b7b1e1e",
+      "edunex-b/knowledge/ai-product-photoshoot-ads/training.txt": "96471b6991c3724f9b8315fc7b3d1bb73b409eb0272517432cbfdd98882127df",
+      "edunex-b/knowledge/platform/skillomate-platform.txt": "603ad7be91e415aa3b71831d6c7ffabb545a63074c4aac0e6d65cfe5b0660d5f"
+    },
+    "evaluators": {
+      "edunex-b/scripts/eval/README.md": "fc4d1ecc3a76198656b868dbb994ace02f8e88552d2a10d22d8b115fd01f34a0",
+      "edunex-b/scripts/eval/README_v7.md": "007d50d04a75ba1a399d3549ac96c745841dfad9a8a68adc93f10360474be2e4",
+      "edunex-b/scripts/eval/audit_product_templates.py": "f23c18608408441aa049aa52098da953a2ff32bb6e84517b75a6cbaf7fb881eb",
+      "edunex-b/scripts/eval/grade_l9_15_results.py": "e64736579e34801ed492827aad12b5cce2cf94425c858d66cb251b1bc40c50f1",
+      "edunex-b/scripts/eval/grade_product_photoshoot_ads_results.py": "798114fa88a892773821b34b7545c7b838dbf5cf048f9479a222b3a292613b7d",
+      "edunex-b/scripts/eval/grade_product_photoshoot_ads_results_v2.py": "d838e7bcc63df8cfca13642f0e8d387a8ad89e9ca6b8be169d0427498e86a3a5",
+      "edunex-b/scripts/eval/grade_product_photoshoot_ads_results_v3.py": "0585242679ac4edce267c033556cc108d0e18f79d285cd2a745bfe4552cda409",
+      "edunex-b/scripts/eval/grade_product_photoshoot_ads_results_v4.py": "d87133ca60b570d55fc836e566d3e63b45dec9fe38a58db36b2a30c2d00c8634",
+      "edunex-b/scripts/eval/grade_product_photoshoot_ads_results_v5.py": "3e3ce3fd3b857ad50a8a407d3797c973ab2d7a651a582f67694004d8412474cd",
+      "edunex-b/scripts/eval/grade_product_photoshoot_ads_results_v6.py": "161801b0462e3c276e05e82685ff9af6ba2e0cba912e49037de94bda00afac78",
+      "edunex-b/scripts/eval/grade_product_photoshoot_ads_results_v7.py": "c805afc0c82307d5a4cd8bb29024ab7d82ee8d85e92ba086126fc82edbb87986",
+      "edunex-b/scripts/eval/product_photoshoot_ads_phase10_cases_v7.json": "9c099e4d582e2bf8f333e956739ef15f27af4e9121bc96a31a142f6b46f0a84a",
+      "edunex-b/scripts/eval/product_photoshoot_ads_test_cases.json": "4b8f22be87e1c754eccda7f5e766acf96a906f359d5fd8254a58b1e0c24b3691"
+    }
+  },
+  "changesSinceBlindCandidate": [],
+  "readOnlyReview": true,
+  "externalRequestsAuthorized": false
+}

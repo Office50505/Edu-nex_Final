@@ -1,0 +1,318 @@
+{
+  "method": "Independent original source, predeclared known slots and entire executable-block comparison; no runtime/grader entity extraction; only whitespace/quote normalization.",
+  "total": 24,
+  "passed": 20,
+  "failed": 4,
+  "results": [
+    {
+      "id": "ppads_007",
+      "turn": 1,
+      "template": "L02 Lifestyle",
+      "knownSlots": {
+        "product": "water bottle"
+      },
+      "expectedCompleteBody": "Use the uploaded product sheet as the reference. Keep the water bottle exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a warm wooden desk next to a white coffee mug and a small green plant, soft morning window light from the left, shallow depth of field, realistic lifestyle product photography.",
+      "passed": true,
+      "reasons": [],
+      "actualResponse": "L02 Lifestyle\n\n```text\nUse the uploaded product sheet as the reference. Keep the water bottle exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a warm wooden desk next to a white coffee mug and a small green plant, soft morning window light from the left, shallow depth of field, realistic lifestyle product photography.\n```"
+    },
+    {
+      "id": "ppads_012",
+      "turn": 1,
+      "template": "L03 Character Sheet (bonus)",
+      "knownSlots": {
+        "person": "woman"
+      },
+      "expectedCompleteBody": "Create a character reference sheet of one realistic young Indian woman, clearly adult, [hair, outfit details]. Show the exact same person in one image: a close-up of the face, and full-body front view, side view and back view on a plain light grey background. Same face, same hair, same outfit in every view. Soft even light, RAW realistic photo look, real skin texture, no text labels.",
+      "passed": true,
+      "reasons": [],
+      "actualResponse": "L03 Character Sheet (bonus)\n\n```text\nCreate a character reference sheet of one realistic young Indian woman, clearly adult, [hair, outfit details]. Show the exact same person in one image: a close-up of the face, and full-body front view, side view and back view on a plain light grey background. Same face, same hair, same outfit in every view. Soft even light, RAW realistic photo look, real skin texture, no text labels.\n```\n\nFields still in brackets need your details; I have not invented them."
+    },
+    {
+      "id": "ppads_014",
+      "turn": 1,
+      "template": "L03 Desk",
+      "knownSlots": {
+        "product": "compact keyboard"
+      },
+      "expectedCompleteBody": "Use the uploaded product sheet for the compact keyboard and the uploaded character sheet for the [woman / man]. Keep the compact keyboard exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Keep the [woman's] face exactly the same as the character sheet. [She] sits at a clean desk using the compact keyboard, side three-quarter angle, natural hands with five fingers, bright natural daylight, realistic real-world scale, realistic lifestyle photography.",
+      "passed": true,
+      "reasons": [],
+      "actualResponse": "L03 Desk\n\n```text\nUse the uploaded product sheet for the compact keyboard and the uploaded character sheet for the [woman / man]. Keep the compact keyboard exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Keep the [woman's] face exactly the same as the character sheet. [She] sits at a clean desk using the compact keyboard, side three-quarter angle, natural hands with five fingers, bright natural daylight, realistic real-world scale, realistic lifestyle photography.\n```\n\nFields still in brackets need your details; I have not invented them."
+    },
+    {
+      "id": "ppads_019",
+      "turn": 1,
+      "template": "L04 Diwali",
+      "knownSlots": {
+        "product": "chocolate gift box"
+      },
+      "expectedCompleteBody": "Use the uploaded product sheet as the reference. Keep the chocolate gift box exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a wooden table during Diwali night, a few lit clay diyas and orange marigold flowers placed behind and beside it, soft warm fairy lights glowing out of focus in the background, the chocolate gift box sharp and clearly the hero in the foreground, warm golden light, realistic real-world scale, realistic festive product photography.",
+      "passed": true,
+      "reasons": [],
+      "actualResponse": "L04 Diwali\n\n```text\nUse the uploaded product sheet as the reference. Keep the chocolate gift box exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a wooden table during Diwali night, a few lit clay diyas and orange marigold flowers placed behind and beside it, soft warm fairy lights glowing out of focus in the background, the chocolate gift box sharp and clearly the hero in the foreground, warm golden light, realistic real-world scale, realistic festive product photography.\n```"
+    },
+    {
+      "id": "ppads_020",
+      "turn": 1,
+      "template": "L04 Wedding Gift",
+      "knownSlots": {
+        "product": "jewellery box"
+      },
+      "expectedCompleteBody": "Use the uploaded product sheet as the reference. Keep the jewellery box exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a soft silk cloth next to an open premium gift box with gold ribbon and a few rose petals, elegant wedding gifting mood, soft warm light, jewellery box sharp in the foreground, realistic real-world scale, realistic festive product photography.",
+      "passed": true,
+      "reasons": [],
+      "actualResponse": "L04 Wedding Gift\n\n```text\nUse the uploaded product sheet as the reference. Keep the jewellery box exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a soft silk cloth next to an open premium gift box with gold ribbon and a few rose petals, elegant wedding gifting mood, soft warm light, jewellery box sharp in the foreground, realistic real-world scale, realistic festive product photography.\n```"
+    },
+    {
+      "id": "ppads_025",
+      "turn": 1,
+      "template": "L05 Step 1 Brief",
+      "knownSlots": {},
+      "expectedCompleteBody": "I sell a [product with real details — size, colour, key features]. Price: [your price]. I sell on [Instagram / website / marketplace] in India. Tell me: 1. Three types of people who would buy this 2. What problem it solves for each of them 3. One ad angle for each buyer Keep it short and simple.",
+      "passed": true,
+      "reasons": [],
+      "actualResponse": "L05 Step 1 Brief\n\n```text\nI sell a [product with real details — size, colour, key features]. Price: [your price]. I sell on [Instagram / website / marketplace] in India. Tell me: 1. Three types of people who would buy this 2. What problem it solves for each of them 3. One ad angle for each buyer Keep it short and simple.\n```\n\nFields still in brackets need your details; I have not invented them."
+    },
+    {
+      "id": "ppads_027",
+      "turn": 1,
+      "template": "L05 Step 3 Flow prompts",
+      "knownSlots": {},
+      "expectedCompleteBody": "Now write 3 image prompts for Google Flow (Nano Banana) for this ad. Each prompt must start with: \"Use the uploaded product sheet as the reference. Keep the [product] exactly the same — same shape, same colour, same details, same text and logo, do not redesign it.\" Then describe one scene for the ad.",
+      "passed": true,
+      "reasons": [],
+      "actualResponse": "L05 Step 3 Flow prompts\n\n```text\nNow write 3 image prompts for Google Flow (Nano Banana) for this ad. Each prompt must start with: \"Use the uploaded product sheet as the reference. Keep the [product] exactly the same — same shape, same colour, same details, same text and logo, do not redesign it.\" Then describe one scene for the ad.\n```\n\nFields still in brackets need your details; I have not invented them."
+    },
+    {
+      "id": "ppads_031",
+      "turn": 1,
+      "template": "L06 Push-in",
+      "knownSlots": {
+        "product": "face serum bottle"
+      },
+      "expectedCompleteBody": "Use the uploaded image as the first frame. The face serum bottle stays perfectly still and exactly the same the whole time — same shape, same colour, same details, same text and logo, no morphing, no warping. The camera slowly and smoothly pushes in toward the face serum bottle. Soft natural window light, shallow depth of field, realistic product video. No people, no hands, no text on screen. Soft quiet room ambience only — NO music, NO voice.",
+      "passed": true,
+      "reasons": [],
+      "actualResponse": "L06 Push-in\n\n```text\nUse the uploaded image as the first frame. The face serum bottle stays perfectly still and exactly the same the whole time — same shape, same colour, same details, same text and logo, no morphing, no warping. The camera slowly and smoothly pushes in toward the face serum bottle. Soft natural window light, shallow depth of field, realistic product video. No people, no hands, no text on screen. Soft quiet room ambience only — NO music, NO voice.\n```"
+    },
+    {
+      "id": "ppads_037",
+      "turn": 1,
+      "template": "L07 UGC 1",
+      "knownSlots": {
+        "product": "protein shaker"
+      },
+      "expectedCompleteBody": "Use the uploaded character sheet for the [woman] and the uploaded product sheet for the protein shaker. Keep her face, hair and outfit exactly the same as the character sheet. Keep the protein shaker exactly the same — same shape, same colour, same details, same text and logo, no morphing. Selfie-style vertical video: the camera itself is her phone, held at arm's length, so we see her from the chest up looking straight into the lens. NO phone visible anywhere in the frame, no second camera, no screen. She sits at a desk in a normal home room, holding the protein shaker up near her chest to show it, casual and friendly. Handheld look with slight natural shake, natural window light, a real lived-in room, not a studio, not a polished ad. ONLY she speaks, one voice only, natural Hindi lip-sync, casual friendly tone. She says: \"[your hook line in Hindi]\" real skin, no filter, clearly adult, modest, natural hands with five fingers, no text on screen, no watermark. Clean natural audio only — NO background music.",
+      "passed": true,
+      "reasons": [],
+      "actualResponse": "L07 UGC 1\n\n```text\nUse the uploaded character sheet for the [woman] and the uploaded product sheet for the protein shaker. Keep her face, hair and outfit exactly the same as the character sheet. Keep the protein shaker exactly the same — same shape, same colour, same details, same text and logo, no morphing. Selfie-style vertical video: the camera itself is her phone, held at arm's length, so we see her from the chest up looking straight into the lens. NO phone visible anywhere in the frame, no second camera, no screen. She sits at a desk in a normal home room, holding the protein shaker up near her chest to show it, casual and friendly. Handheld look with slight natural shake, natural window light, a real lived-in room, not a studio, not a polished ad. ONLY she speaks, one voice only, natural Hindi lip-sync, casual friendly tone. She says: \"[your hook line in Hindi]\" real skin, no filter, clearly adult, modest, natural hands with five fingers, no text on screen, no watermark. Clean natural audio only — NO background music.\n```\n\nFields still in brackets need your details; I have not invented them."
+    },
+    {
+      "id": "ppads_conv_001",
+      "turn": 2,
+      "template": "L02 Product Sheet",
+      "knownSlots": {
+        "product": "perfume bottle"
+      },
+      "expectedCompleteBody": "Use all the uploaded photos of this perfume bottle. Create a clean product reference sheet on a plain white background showing the exact same perfume bottle in four views arranged in a neat grid: front view, top-down view, side view and three-quarter angle view. Keep the perfume bottle exactly the same in every view — same shape, same colour, same details, same text and logo, do not redesign it. Even soft studio lighting, no extra objects, no text labels, realistic product photography.",
+      "passed": true,
+      "reasons": [],
+      "actualResponse": "L02 Product Sheet\n\n```text\nUse all the uploaded photos of this perfume bottle. Create a clean product reference sheet on a plain white background showing the exact same perfume bottle in four views arranged in a neat grid: front view, top-down view, side view and three-quarter angle view. Keep the perfume bottle exactly the same in every view — same shape, same colour, same details, same text and logo, do not redesign it. Even soft studio lighting, no extra objects, no text labels, realistic product photography.\n```"
+    },
+    {
+      "id": "phase12_new_001",
+      "turn": 1,
+      "template": "L02 Product Sheet",
+      "knownSlots": {
+        "product": "folded sisal seed-label quiver"
+      },
+      "expectedCompleteBody": "Use all the uploaded photos of this folded sisal seed-label quiver. Create a clean product reference sheet on a plain white background showing the exact same folded sisal seed-label quiver in four views arranged in a neat grid: front view, top-down view, side view and three-quarter angle view. Keep the folded sisal seed-label quiver exactly the same in every view — same shape, same colour, same details, same text and logo, do not redesign it. Even soft studio lighting, no extra objects, no text labels, realistic product photography.",
+      "passed": false,
+      "reasons": [
+        "complete executable body differs, is missing, or known slots remain unresolved"
+      ],
+      "actualResponse": "Lesson 02\n\nUse the product sheet reference and start with “keep exactly the same, same text and logo”. Small text is an AI limitation. Generate 2–3 versions and choose the clearest; perfect lettering is not guaranteed."
+    },
+    {
+      "id": "phase12_new_002",
+      "turn": 1,
+      "template": "L02 White Studio",
+      "knownSlots": {
+        "product": "केसरिया सूत की बीज गिनने की थैली"
+      },
+      "expectedCompleteBody": "Use the uploaded product sheet as the reference. Keep the केसरिया सूत की बीज गिनने की थैली exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a clean seamless white background, soft even studio lighting, a soft natural shadow under it, slight top-down angle, sharp focus, realistic product photography.",
+      "passed": false,
+      "reasons": [
+        "complete executable body differs, is missing, or known slots remain unresolved"
+      ],
+      "actualResponse": "L02 White Studio\n\n```text\nUse the uploaded product sheet as the reference. Keep the [PRODUCT] exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a clean seamless white background, soft even studio lighting, a soft natural shadow under it, slight top-down angle, sharp focus, realistic product photography.\n```\n\nबचे हुए कोष्ठकों में अपनी जानकारी भरें; कोई विवरण गढ़ा नहीं गया है।"
+    },
+    {
+      "id": "phase12_new_003",
+      "turn": 1,
+      "template": "L03 Hands close-up",
+      "knownSlots": {
+        "product": "russet bamboo pan-lid cradle"
+      },
+      "expectedCompleteBody": "Use the uploaded product sheet for the russet bamboo pan-lid cradle and the uploaded character sheet for the [woman / man]. Keep the russet bamboo pan-lid cradle exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Close-up of the [woman's] hands using the russet bamboo pan-lid cradle on a wooden desk, [clothing that matches the character sheet, e.g. bare arms matching her blue tank top], natural hands with five fingers each, soft window light, shallow depth of field, realistic real-world scale, realistic lifestyle product photography.",
+      "passed": true,
+      "reasons": [],
+      "actualResponse": "L03 Hands close-up\n\n```text\nUse the uploaded product sheet for the russet bamboo pan-lid cradle and the uploaded character sheet for the [woman / man]. Keep the russet bamboo pan-lid cradle exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Close-up of the [woman's] hands using the russet bamboo pan-lid cradle on a wooden desk, [clothing that matches the character sheet, e.g. bare arms matching her blue tank top], natural hands with five fingers each, soft window light, shallow depth of field, realistic real-world scale, realistic lifestyle product photography.\n```\n\nBache hue brackets mein apni details bharo; maine koi details invent nahi ki hain."
+    },
+    {
+      "id": "phase12_new_004",
+      "turn": 1,
+      "template": "L03 Showing to camera",
+      "knownSlots": {
+        "product": "etched basalt pastry weight"
+      },
+      "expectedCompleteBody": "Use the uploaded product sheet for the etched basalt pastry weight and the uploaded character sheet for the [woman / man]. Keep the etched basalt pastry weight exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Keep the [woman's] face exactly the same as the character sheet. [She] holds the etched basalt pastry weight with both hands in front of [her] chest, showing it to the camera with a small natural smile, plain light background, soft studio light, natural hands with five fingers, realistic real-world scale, realistic product photography.",
+      "passed": true,
+      "reasons": [],
+      "actualResponse": "L03 Showing to camera\n\n```text\nUse the uploaded product sheet for the etched basalt pastry weight and the uploaded character sheet for the [woman / man]. Keep the etched basalt pastry weight exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Keep the [woman's] face exactly the same as the character sheet. [She] holds the etched basalt pastry weight with both hands in front of [her] chest, showing it to the camera with a small natural smile, plain light background, soft studio light, natural hands with five fingers, realistic real-world scale, realistic product photography.\n```\n\nFields still in brackets need your details; I have not invented them."
+    },
+    {
+      "id": "phase12_new_007",
+      "turn": 1,
+      "template": "L06 Arc",
+      "knownSlots": {
+        "product": "नीली खादी की औज़ार पट्टी"
+      },
+      "expectedCompleteBody": "Use the uploaded image as the first frame. The नीली खादी की औज़ार पट्टी stays perfectly still and exactly the same the whole time — same shape, same colour, same details, same text and logo, no morphing, no warping. The camera slowly arcs a little to the right around the नीली खादी की औज़ार पट्टी, smooth and steady, while the lights in the background glow softly. Moody cinematic look, realistic product video. No people, no hands, no text on screen. Soft quiet room ambience only — NO music, NO voice.",
+      "passed": true,
+      "reasons": [],
+      "actualResponse": "L06 Arc\n\n```text\nUse the uploaded image as the first frame. The नीली खादी की औज़ार पट्टी stays perfectly still and exactly the same the whole time — same shape, same colour, same details, same text and logo, no morphing, no warping. The camera slowly arcs a little to the right around the नीली खादी की औज़ार पट्टी, smooth and steady, while the lights in the background glow softly. Moody cinematic look, realistic product video. No people, no hands, no text on screen. Soft quiet room ambience only — NO music, NO voice.\n```"
+    },
+    {
+      "id": "phase12_new_008",
+      "turn": 1,
+      "template": "L07 UGC 2",
+      "knownSlots": {
+        "product": "knotted hemp watering-tag sling"
+      },
+      "expectedCompleteBody": "Use the uploaded character sheet for the [woman] and the uploaded product sheet for the knotted hemp watering-tag sling. Keep her face, hair and outfit exactly the same as the character sheet. Keep the knotted hemp watering-tag sling exactly the same — same shape, same colour, same details, same text and logo, no morphing. Vertical video shot from her own phone resting on the desk in front of her: the camera itself is the phone, so we see her and the knotted hemp watering-tag sling from a low front angle. NO phone visible anywhere in the frame, no second camera, no screen facing us. She uses the knotted hemp watering-tag sling for a moment, then looks up straight into the lens and talks, casual and natural. Natural window light, a real lived-in room, not a studio, not a polished ad. ONLY she speaks, one voice only, natural Hindi lip-sync, casual friendly tone. She says: \"[your second line in Hindi]\" real skin, no filter, clearly adult, modest, natural hands with five fingers, no text on screen, no watermark. Clean natural audio only — NO background music.",
+      "passed": true,
+      "reasons": [],
+      "actualResponse": "L07 UGC 2\n\n```text\nUse the uploaded character sheet for the [woman] and the uploaded product sheet for the knotted hemp watering-tag sling. Keep her face, hair and outfit exactly the same as the character sheet. Keep the knotted hemp watering-tag sling exactly the same — same shape, same colour, same details, same text and logo, no morphing. Vertical video shot from her own phone resting on the desk in front of her: the camera itself is the phone, so we see her and the knotted hemp watering-tag sling from a low front angle. NO phone visible anywhere in the frame, no second camera, no screen facing us. She uses the knotted hemp watering-tag sling for a moment, then looks up straight into the lens and talks, casual and natural. Natural window light, a real lived-in room, not a studio, not a polished ad. ONLY she speaks, one voice only, natural Hindi lip-sync, casual friendly tone. She says: \"[your second line in Hindi]\" real skin, no filter, clearly adult, modest, natural hands with five fingers, no text on screen, no watermark. Clean natural audio only — NO background music.\n```\n\nBache hue brackets mein apni details bharo; maine koi details invent nahi ki hain."
+    },
+    {
+      "id": "phase12_new_005",
+      "turn": 1,
+      "template": "L04 Colour Variant Sheet",
+      "knownSlots": {
+        "part": "the two removable hinge pins",
+        "colour": "pale saffron"
+      },
+      "expectedCompleteBody": "Use the uploaded product sheet as the reference. Only change the colour of the two removable hinge pins to pale saffron. Keep everything else exactly the same — same shape, same layout, same details, same text and logo, same four views, same background, same lighting. Output a full product sheet in the new colour.",
+      "passed": false,
+      "reasons": [
+        "complete executable body differs, is missing, or known slots remain unresolved"
+      ],
+      "actualResponse": "L04 Colour Variant Sheet\n\n```text\nUse the uploaded product sheet as the reference. Only change the colour of [the part, e.g. all the keycaps] to [new colour, e.g. soft pastel pink]. Keep everything else exactly the same — same shape, same layout, same details, same text and logo, same four views, same background, same lighting. Output a full product sheet in the new colour.\n```\n\nFields still in brackets need your details; I have not invented them."
+    },
+    {
+      "id": "phase12_new_006",
+      "turn": 1,
+      "template": "L05 Step 2 Hooks + Script",
+      "knownSlots": {},
+      "expectedCompleteBody": "Pick angle [number]. Write 5 scroll-stopping hooks in natural Hinglish, like a friend talking — not cheesy, no fake claims. Then write a 15-second ad script: what to show on screen and what the voiceover says. Also write one Instagram caption. Use only the features I gave you, don't add anything new.",
+      "passed": true,
+      "reasons": [],
+      "actualResponse": "L05 Step 2 Hooks + Script\n\n```text\nPick angle [number]. Write 5 scroll-stopping hooks in natural Hinglish, like a friend talking — not cheesy, no fake claims. Then write a 15-second ad script: what to show on screen and what the voiceover says. Also write one Instagram caption. Use only the features I gave you, don't add anything new.\n```\n\nBache hue brackets mein apni details bharo; maine koi details invent nahi ki hain."
+    },
+    {
+      "id": "phase12_new_027",
+      "turn": 2,
+      "template": "L02 White Studio",
+      "knownSlots": {
+        "product": "pleated birch propagating-pot collar"
+      },
+      "expectedCompleteBody": "Use the uploaded product sheet as the reference. Keep the pleated birch propagating-pot collar exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a clean seamless white background, soft even studio lighting, a soft natural shadow under it, slight top-down angle, sharp focus, realistic product photography.",
+      "passed": true,
+      "reasons": [],
+      "actualResponse": "L02 White Studio\n\n```text\nUse the uploaded product sheet as the reference. Keep the pleated birch propagating-pot collar exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a clean seamless white background, soft even studio lighting, a soft natural shadow under it, slight top-down angle, sharp focus, realistic product photography.\n```"
+    },
+    {
+      "id": "phase12_new_029",
+      "turn": 1,
+      "template": "L02 White Studio",
+      "knownSlots": {
+        "product": "woven willow bulb-measuring sleeve"
+      },
+      "expectedCompleteBody": "Use the uploaded product sheet as the reference. Keep the woven willow bulb-measuring sleeve exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a clean seamless white background, soft even studio lighting, a soft natural shadow under it, slight top-down angle, sharp focus, realistic product photography.",
+      "passed": true,
+      "reasons": [],
+      "actualResponse": "L02 White Studio\n\n```text\nUse the uploaded product sheet as the reference. Keep the woven willow bulb-measuring sleeve exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a clean seamless white background, soft even studio lighting, a soft natural shadow under it, slight top-down angle, sharp focus, realistic product photography.\n```"
+    },
+    {
+      "id": "phase12_new_029",
+      "turn": 2,
+      "template": "L02 Dark Premium",
+      "knownSlots": {
+        "product": "polished alder dovetail spacer"
+      },
+      "expectedCompleteBody": "Use the uploaded product sheet as the reference. Keep the polished alder dovetail spacer exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a matte black surface against a dark background, a single soft rim light outlining its edges, a subtle reflection on the surface, premium moody look, realistic product photography.",
+      "passed": false,
+      "reasons": [
+        "complete executable body differs, is missing, or known slots remain unresolved"
+      ],
+      "actualResponse": "L02 Dark Premium\n\n```text\nUse the uploaded product sheet as the reference. Keep the woven willow bulb-measuring sleeve exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a matte black surface against a dark background, a single soft rim light outlining its edges, a subtle reflection on the surface, premium moody look, realistic product photography.\n```"
+    },
+    {
+      "id": "phase12_new_031",
+      "turn": 2,
+      "template": "L06 Light Sweep",
+      "knownSlots": {
+        "product": "hammered clay watering-spout rest"
+      },
+      "expectedCompleteBody": "Use the uploaded image as the first frame. The hammered clay watering-spout rest stays perfectly still and exactly the same the whole time — same shape, same colour, same details, same text and logo, no morphing, no warping. The camera stays completely still. A soft band of warm light slowly sweeps across the hammered clay watering-spout rest from left to right, the shadows moving gently with it. Clean premium product video. No people, no hands, no text on screen. Soft quiet room ambience only — NO music, NO voice.",
+      "passed": true,
+      "reasons": [],
+      "actualResponse": "L06 Light Sweep\n\n```text\nUse the uploaded image as the first frame. The hammered clay watering-spout rest stays perfectly still and exactly the same the whole time — same shape, same colour, same details, same text and logo, no morphing, no warping. The camera stays completely still. A soft band of warm light slowly sweeps across the hammered clay watering-spout rest from left to right, the shadows moving gently with it. Clean premium product video. No people, no hands, no text on screen. Soft quiet room ambience only — NO music, NO voice.\n```"
+    },
+    {
+      "id": "phase12_new_032",
+      "turn": 2,
+      "template": "L04 Colour Variant Sheet",
+      "knownSlots": {
+        "part": "all the removable corner tabs",
+        "colour": "warm mauve"
+      },
+      "expectedCompleteBody": "Use the uploaded product sheet as the reference. Only change the colour of all the removable corner tabs to warm mauve. Keep everything else exactly the same — same shape, same layout, same details, same text and logo, same four views, same background, same lighting. Output a full product sheet in the new colour.",
+      "passed": true,
+      "reasons": [],
+      "actualResponse": "L04 Colour Variant Sheet\n\n```text\nUse the uploaded product sheet as the reference. Only change the colour of all the removable corner tabs to warm mauve. Keep everything else exactly the same — same shape, same layout, same details, same text and logo, same four views, same background, same lighting. Output a full product sheet in the new colour.\n```"
+    },
+    {
+      "id": "phase12_new_038",
+      "turn": 2,
+      "template": "L02 Product Sheet",
+      "knownSlots": {
+        "product": "quilted nettle kneading-bowl cover"
+      },
+      "expectedCompleteBody": "Use all the uploaded photos of this quilted nettle kneading-bowl cover. Create a clean product reference sheet on a plain white background showing the exact same quilted nettle kneading-bowl cover in four views arranged in a neat grid: front view, top-down view, side view and three-quarter angle view. Keep the quilted nettle kneading-bowl cover exactly the same in every view — same shape, same colour, same details, same text and logo, do not redesign it. Even soft studio lighting, no extra objects, no text labels, realistic product photography.",
+      "passed": true,
+      "reasons": [],
+      "actualResponse": "L02 Product Sheet\n\n```text\nUse all the uploaded photos of this quilted nettle kneading-bowl cover. Create a clean product reference sheet on a plain white background showing the exact same quilted nettle kneading-bowl cover in four views arranged in a neat grid: front view, top-down view, side view and three-quarter angle view. Keep the quilted nettle kneading-bowl cover exactly the same in every view — same shape, same colour, same details, same text and logo, do not redesign it. Even soft studio lighting, no extra objects, no text labels, realistic product photography.\n```"
+    }
+  ],
+  "provenance": {
+    "knowledge": {
+      "path": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/knowledge/ai-product-photoshoot-ads/training.txt",
+      "sha256": "96471b6991c3724f9b8315fc7b3d1bb73b409eb0272517432cbfdd98882127df"
+    },
+    "expectations": {
+      "path": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/reports/ai-product-photoshoot-ads-evaluation/phase12_live_20261015_110001/independent_template_expectations_frozen.json",
+      "sha256": "7f7112c7375f85821ee433f7d5a8bb4238585bcc31a6c9557d65bb80bec864a6"
+    },
+    "responses": {
+      "path": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/reports/ai-product-photoshoot-ads-evaluation/phase12_live_20261015_110001/application_raw_results.json",
+      "sha256": "d17dc17de262b1827548c9a947b8b6063b2f3202c084a17455c581291e661654"
+    },
+    "auditor": {
+      "path": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/scripts/eval/audit_product_templates.py",
+      "sha256": "f23c18608408441aa049aa52098da953a2ff32bb6e84517b75a6cbaf7fb881eb"
+    }
+  }
+}

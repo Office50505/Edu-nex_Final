@@ -1,0 +1,1173 @@
+AI Influencer Course — Master Script
+Female presenter (Neha) · 34 lessons · Har lesson ~3-4 min · Lessons 1–15 DONE
+
+ Female voice (dungi/sikhaungi), naam Neha, photo/video = Google Flow (ChatGPT sirf dialogue). 42→35
+ lessons, har lesson condensed ~3 min, koi Part 1/2 nahi. Cut: L23. Core (Module 5/6/7) untouched.
+
+ MODULE 1 — Foundation
+
+LESSON 1 — Introduction DONE
+
+Ye ladki dekh rahe ho?" (screen pe AI influencer ki photo dikhao) "Ye real nahi hai." (2 second pause — viewer
+ko sochne do) "Ye AI se bani hai. Aur ye mahine ke lakhon kama rahi hai." "Kaise? Wahi main aapko sikhaungi."
+2. STORY — Relatable Problem "Dekho, aaj content ka zamana hai. Sabko pata hai." "Lekin problem kya hai?"
+"Camera ke saamne aane mein sharam aati hai. Time nahi hai. Face nahi dikhana." "Toh log soch lete hain —
+'ye mere se nahi hoga.'" (yahan tone thodi soft karo, phir energy wapas badhao) "Ab imagine karo... aapke
+paas ek aisi model ho jo aapke liye kaam kare. Din raat. Free mein." "Na uski salary. Na uska nakhra. Na
+photoshoot ka kharcha." "Bas aap phone pe type karo — aur wo ready." 3. KYA KAR SAKTI HAI — Sirf 3 Baatein
+"Ye AI influencer teen kaam karti hai —" PEHLA — Content "Daily reels, photos, videos. Aaj Dubai mein, kal
+Goa mein. Aapka Instagram khud grow hoga." DOOSRA — Aapka Business "Aapki dukaan hai? Brand hai?
+Online store?" "Ye aapke product ke saath photo degi. Professional photoshoot jaisa — jo pehle 50 hazaar mein
+hota tha." "Aur ye aapke brand ka face ban jaayegi. Log usko dekh ke aapko yaad karenge." TEESRA — Paisa
+"Followers badhe, toh brands khud aayenge. Sponsorship, ads, product selling — sab isi se hoga." (har point
+pe screen pe example visual dikhao — reel, product shoot, payment screenshot) 4. SIMPLE PROMISE "Aur
+sabse badi baat —" "Na coding chahiye. Na editing aani chahiye. Na English." "Sirf ek phone chahiye." "Main
+aapko step by step sab sikhaungi. Bilkul zero se." 5. CALL TO ACTION "Toh taiyaar ho?" "Lesson 1 mein hum
+apni AI ladki ka face banayenge — jo har photo mein same dikhegi." "Chalo, shuru karte hain." BOLNE KE TIPS
+• Ek line = ek saans. Har full stop pe chhota pause lo. • "Ye real nahi hai" ke baad 2 second ruko — ye sabse
+powerful moment hai. • Aise bolo jaise dost ko chai pe samjha rahe ho — padhne wali tone bilkul nahi. • Teen
+kaam wale section mein ungliyon pe gino — 1, 2, 3 — camera pe haath di
+
+ 1
+
+LESSON 2 — TOOLS SETUP DONE
+
+Aaj hum apne saare tools set karenge. Video ke end tak aapke phone mein sab accounts ready honge. Next
+video me seedha kaam shuru hoga. Ek baat pehle clear kar du. Log sochte hain — is kaam ke liye mehenga
+computer aur mehenge software chahiye. Galat. Humein sirf 3 tools chahiye. teeno aapke phone pe chal jaate
+hain. Aur shuruat free mein ho jaati hai. Aur yahi 3 tools aage aapki kamai ke auzaar hain. Inhi se product
+shoots banenge. Inhi se brands ke liye videos banengi. Jo log ye kaam clients ke liye karte hain — wo ek video
+ke 5 se 20 hazaar lete hain. Toh in dono ko dhyan se set karo. Pehla tool — Google Flow , Google Flow ki madat
+se hum photo and video generate kar sakte jo photo ko animate karne dusra tool — VN. Ye editing app hai.
+Reels final karna, captions lagana, music dalna — sab VN mein hoga. Teesra tool — chatgpt jis ki help lekar
+hum script and diologues use kareenge Photo , video and editing. 3 tools, 3 kaam ise simple system ho hi nahi
+sakta.
+Chalo screen pe aa jao mere saath.
+(screen recording start)
+Pehle Flow. Browser mein chatgpt.com kholo, ya Play Store se Flow app download karo. Sign up dabao. Google
+se sign in kar lo — wahi account jo phone mein already hai. Alag password ka jhanjhat nahi. Andar aate hi ye
+message box dikhega. Yahi se hum photos banayenge. Abhi kuch likhna nahi — bas account ready hona
+chahiye. Pehla tool set. Ab Google Flow. Browser mein labs.google/flow kholo. Yahan bhi same Google account
+se sign in karo. Jo account Flow mein use kiya — wahi yahan bhi. Sign in ke baad ye screen aayegi — New
+Project ka option dikhega. Iska matlab account chalu hai. Abhi project nahi banana. Doosra tool set. Aur last —
+VN. Play Store ya App Store mein VN Video Editor search karo. Download karo, kholo, ho gaya. Isme sign in ki
+bhi zaroorat nahi shuruat mein. Teesra set. Total 10 minute ka kaam tha. (face pe wapas)
+Ab ek honest baat. Free version ki limit hoti hai. Flow free mein din ki kuch hi photos banti hain. Flow ke free
+credits bhi limited hain — khatam ho gaye toh agle din tak wait. Ye normal hai. Practice ke liye free kaafi hai.
+Jab pehla client aayega, tab apni kamai se paid plan lena. Paisa pehle, kharcha baad mein. Ek common galti
+bhi sun lo. Log Flow alag email se banate hain, Flow alag se. Phir bhool jaate hain kaunsa account kahan hai.
+Kaam aadhe mein atak jaata hai. Fix simple hai — dono ek hi Google account se banao. Ek email, poora
+system ek jagah.
+Aaj ka kaam simple hai — teeno tools set karo. Flow aur Flow ek hi Google account se, VN download karke.
+10-15 minute lagenge. Aur teeno ko phone ki home screen pe ek saath rakho. Ek folder banao — naam do 'AI
+Studio'. Roz dikhega toh roz kaam hoga.
+Agle lesson mein hum prompt likhna seekhenge — wo formula jisse Flow se exactly wahi photo banti hai jo
+aap chahte ho.
+Milte hain agle lesson mein.
+
+ 2
+
+LESSON 3 — AI Influencer Ka DONE
+
+Aaj hum apna AI influencer character banayenge. Iska face, naam, aur personality — sab aaj final hoga. Ek
+baat shuru mein hi bata du. Is video ka sabse important concept hai consistency. Matlab — character ka face
+har photo mein same dikhna chahiye. Agar aaj kuch aur dikha, kal kuch aur, toh audience trust nahi karegi.
+Aur brands toh bilkul kaam nahi dengi. Toh pura focus isi pe rahega. Sabse pehle character decide karte hain.
+Ye step log usually skip kar dete hain, aur baad mein problem hoti hai. Maan lo hum ek fashion creator bana
+rahe hain. Naam — Neha. Age — 22. City — Mumbai. Interest — fashion aur travel. Bas. Ye 4 cheezein kahin
+likh lo. Notes app mein, kaagaz pe, kahin bhi. Ab jab bhi AI se kuch generate karayenge, ye details har baar
+use hongi. Isse character consistent rahega. Aur ek baat samajh lo — ye character sirf Instagram photos ke
+liye nahi ban raha. Isi character se hum aage product shoots karenge. Ads banayenge. Brands ke liye UGC
+videos banayenge. Poora earning system isi character pe khada hoga. Toh isko seriously banao. Ye aapka asset
+hai. Chalo ab face banate hain. Screen pe aa jao mere saath.
+(screen recording start) Tool kholo. Aur ye prompt likho: 'A 22 year old Indian woman, oval face, brown eyes,
+long black hair, natural makeup, soft smile, realistic photo' Ek cheez notice karo — maine face ki har detail
+likhi hai. Aankhon ka color. Baalon ki length. Skin tone. Smile. Jitni detail doge, utna control milega. Vague
+prompt doge toh har baar alag result aayega. Generate karo. (result aane pe) Theek hai. Ye humari Neha hai.
+Agar pehli baar mein result pasand na aaye — normal hai. Prompt mein detail change karo, dobara generate
+karo. 2-3 try mein sahi face mil jaata hai. Ab jo photo final pasand aayi — usko save karo. Iska naam rakho
+reference photo. Ye photo aage har kaam mein lagegi. Jab bhi nayi photo banani ho — ye reference upload
+karoge, aur bologe: same face, different pose. Dekho demo — (demo: same face — beach pe, cafe mein,
+ethnic wear mein) Teen photos. Teen jagah. Teen outfits. Face same. Isi wajah se Neha ek real insaan lagti hai.
+Aaj ka kaam simple hai. Apna character banao — naam, age, city, interest. Phir face generate karo aur
+reference photo save karo. 10-15 minute ka kaam hai. Aaj hi kar lo, kyunki agle lesson mein isi photo se kaam
+shuru hoga.
+Agle lesson mein hum is character ki alag alag photos banayenge — poses, outfits, locations — aur uski pehli
+Instagram post taiyaar karenge.
+Milte hain wahan." Kya badla, short mein: Section labels hata diye — ab ye ek continuous baat hai jo record
+karte time naturally flow karegi. Dramatic lines ("magic time", "secret", "reveal") gayab. "Earning connection"
+wala 15-second block add kiya — "product shoots, ads, UGC, earning system" — jo course ke promise se jodta
+hai. Aur ek practical line add ki jo real instructor bolta hai: "pehli baar mein result pasand na aaye toh normal
+hai" — ye line trust banati hai kyunki fake gurus kabhi failure mention nahi karte. Ab Script Bible wali baat —
+ye suggestion sach mein sabse valuable hai. Agar 50+ lessons banane hain toh pehle ek 1-page document
+bana lete hain: tumhari speaking style, sentence length, Hinglish ratio, kab screen pe ho kab sirf recording,
+catchphrases jo tum naturally bolte ho. Uske baad har lesson ka script main usi voice mein dungi —
+consistent, tumhari awaaz jaisa. Banau Script Bible? Uske liye bas ye batao — tum normally kaise bolte ho
+video mein: zyada Hindi ya zyada English? Koi tumhara existing video/reel ka style hai jo reference ban sake?
+
+ 3
+
+LESSON 4 — Prompt Likhna Seekho DONE
+
+Aaj hum prompt likhna seekhenge. Video ke end tak aapke paas ek ready formula hoga — jisse Flow se exactly
+wahi photo banegi jo aap chahte ho. Ye lesson chhota hai, lekin pure course ka sabse important skill yahi hai.
+Kyun? Kyunki AI ka pura game prompt pe chalta hai. Achha prompt — achhi photo. Kharab prompt — kharab
+photo. Simple. Aur aage jab aap clients ke liye product shoots karoge — wahan bhi yahi formula lagega. Jo
+banda achha prompt likhna jaanta hai, wo hi 5 se 20 hazaar wale projects deliver kar paata hai. Baaki log try
+karte reh jaate hain. Toh aaj ka formula dhyan se samjho. Prompt ke 5 hisse hote hain. Bas 5.
+Pehla — kaun. Matlab character kaun hai. age, gender, nationality.
+Doosra — face details. Aankhein, baal, skin, smile.
+Teesra — kapde. Kya pehna hai.
+Chautha — jagah. Kahan khadi hai. Background kya hai.
+Paanchwa — style. Photo kaisi lagni chahiye — realistic, professional, casual. Ab dono ka farak dekho.
+Chalo screen pe aa jao mere saath.
+(screen recording start — Flow khula hai)
+Pehle kharab prompt likhta hu: 'ek sundar ladki ki photo banao' Generate karo... Dekho result. Har baar alag
+ladki aayegi. Kuch bhi control nahi. Ab formula wala prompt: 'A 22 year old Indian woman, oval face, brown
+eyes, long black hair, wearing a yellow kurti, standing in a cafe, natural lighting, realistic photo' (prompt
+screen pe bada dikhao) Generate karo... Ab dekho farak. Wahi mila jo maanga tha. Paanchon hisse gino is
+prompt mein — kaun, face, kapde, jagah, style. Sab hai. Ek aur kaam ki baat. Prompt English mein hi likhna. AI
+English samajhta hai sabse achha. English weak hai? Koi baat nahi — Flow se hi bolo: 'is Hindi line ko English
+prompt banao.' Wo khud bana dega. AI se hi AI ka kaam lo. Ab ek common galti. Log prompt mein 'beautiful',
+'gorgeous', 'stunning' jaise words bhar dete hain. Inse kuch nahi hota. AI ko 'beautiful' ka matlab nahi pata —
+usko details chahiye. 'Beautiful' hatao, 'oval face, brown eyes' likho. Detail hi beauty hai.
+Aaj ka kaam simple hai — apne character ke liye 5 prompts likho, paanchon hisse daal ke. Har prompt mein
+sirf jagah aur kapde badlo. Phir teeno generate karke dekho. 15 minute ka kaam hai. Ye 5 prompts sambhal ke
+rakhna — agle lesson mein inhi se hum same face wali alag alag photos banayenge. Wahi asli consistency ka
+kaam shuru hoga.
+Milte hain agle lesson mein.
+
+ 4
+
+LESSON 5 — Same Face, Alag Pose DONE
+
+Aaj se asli kaam shuru. Aaj hum apne character ki alag alag photos banayenge — lekin face bilkul same
+rahega. Ye wahi skill hai jo maine Lesson 2 mein promise ki thi. Aur yahi skill aapko baaki logon se alag karti
+hai. Kyunki photo toh koi bhi bana leta hai. Lekin ek hi character ki 50 photos — alag pose, alag jagah, same
+face — ye bahut kam log kar paate hain.
+Aur brands isi cheez ke paise dete hain. Unko ek model chahiye jo unke product ke saath baar baar dikhe. Har
+baar naya chehra unka brand kharab karta hai. Toh aaj ka method dhyan se dekho. Sabse pehle apni reference
+photo nikalo — wahi jo Lesson 2 mein save ki thi. Ye photo aaj se aapka sabse keemti file hai.
+Chalo screen pe aa jao mere saath.
+(screen recording start — Flow khula hai) Pehla step — Flow mein plus ka button dabao aur apni reference
+photo upload karo. Doosra step — photo ke saath ye prompt likho: 'Use this exact face. Same woman, same
+facial features. Now she is sitting in a coffee shop, wearing a white shirt, holding a coffee cup, smiling, realistic
+photo' (prompt screen pe bada dikhao) Dhyan do pehli line pe — 'Use this exact face. Same woman, same
+facial features.' Yahi line asli jaadu ka kaam karti hai. Ye AI ko bolti hai — naya chehra mat banao, yahi wala
+rakho. Generate karo. (result aane pe 1-2 second pause) Dekho — cafe mein baithi hai, kapde alag, pose alag.
+Lekin face? Wahi Neha. Ab isi ko repeat karo. Same reference photo, bas prompt ka aakhri hissa badlo:
+'...standing on a beach at sunset, wearing a blue dress' Generate. '...walking on a Mumbai street, wearing
+jeans and white top' Generate. (teeno results side by side dikhao) Teen photos. Teen jagah. Ek face. Yahi hai
+consistency.
+Ab ek honest baat. Har baar 100% perfect nahi aayega. Kabhi face 90% match hoga, 10% alag lagega. Ye AI ki
+limit hai — normal hai. Iska fix — jo photo sabse zyada match ho, wahi use karo. Baaki delete. 4 generate
+karo, best 1 rakho. Quality hamesha quantity se badi hai. Ek common galti bhi sun lo. Log nayi photo banate
+hain, phir usko reference bana lete hain. Phir us se agli. Aisa karne se face dheere dheere badalta jaata hai —
+10 photos baad bilkul alag ladki ban jaati hai. Rule pakka kar lo — reference photo hamesha wahi original
+Lesson 2 wali. Har nayi photo usi se banegi. Copy ki copy kabhi nahi.
+Aaj ka kaam simple hai — apni reference photo se 5 alag photos banao. Alag jagah, alag kapde, alag pose. Jo
+sabse achhi match ho, wo 5 save karo. 20-25 minute lagenge. Ye 5 photos aapke Instagram ki pehli khep
+banengi.
+Agle lesson mein hum outfits pe focus karenge — casual, ethnic, western, party wear — pura wardrobe
+banayenge apne character ka.
+Milte hain agle lesson mein.
+
+ 5
+
+ MODULE 2 — Photo Skills
+
+LESSON 6 — Outfits Badalna DONE
+
+Aaj hum apne character ka pura wardrobe banayenge. Video ke end tak aapke paas 4 alag style ki photos
+hongi — casual, ethnic, western, aur party wear. Ab aap sochoge — kapde badalna toh pichle lesson mein
+seekh liya. Aaj naya kya hai? Naya ye hai — aaj hum soch samajh ke wardrobe banayenge, random nahi.
+Kyunki Instagram pe har outfit ka apna kaam hota hai. Aur fashion brands ke liye toh ye direct kamai hai. Kurti
+bechne wala brand chahta hai ki model kurti mein dikhe. Jeans wala brand jeans mein. Jo creator har style
+carry kar sakta hai — usko har type ka brand kaam deta hai. Matlab zyada styles, zyada clients.
+Toh chalo 4 style ka system samjho.
+Pehla — Casual. Jeans, t-shirt, simple look. Ye daily content ke liye hai. Sabse zyada yahi use hoga.
+Doosra — Ethnic. Kurti, saree, salwar suit. Indian audience isse sabse zyada connect karti hai. Festival season
+mein toh yahi chalega.
+Teesra — Western. Dress, formal shirt, office look. Ye premium feel deta hai.
+Chautha — Party wear. Shaadi, function, evening look. Occasion content ke liye.
+Chalo screen pe aa jao mere saath.
+(screen recording start — Flow khula hai) Reference photo upload karo — wahi original wali. Aur prompt ka
+pattern same rahega, bas outfit wala hissa badlega. Casual ke liye: 'Use this exact face. Same woman, same
+facial features. Now she is wearing blue jeans and a white t-shirt, casual look, standing near a window, natural
+light, realistic photo' Generate. Ethnic ke liye bas outfit badlo: '...wearing a red and gold kurti with jhumka
+earrings, festive look...' Generate. (dono results dikhao) Ek cheez notice karo — maine sirf kapde nahi likhe,
+accessories bhi likhi. Jhumka, earrings, watch — ye chhoti details photo ko real banati hain. Western:
+'...wearing a black formal dress, office look, standing in a modern office...' Aur party wear: '...wearing a heavy
+embroidered lehenga, wedding guest look, evening lighting...' (chaaro photos ek saath dikhao) Dekho — chaar
+style, chaar mood. Aur chaaro mein face same. Ab aapka character kisi bhi type ka content bana sakta hai. Ek
+kaam ki baat. Outfit ke saath lighting bhi match karo. Party wear ke saath 'evening lighting'. Casual ke saath
+'natural light'. Office ke saath 'indoor lighting'. Galat lighting photo ko nakli bana deti hai.
+Ab common galti. Log ek hi photo mein bahut kuch maang lete hain — 'red kurti, green dupatta, gold jhumka,
+silver watch, pink lipstick...' Itna sab likhoge toh AI confuse ho jaata hai aur result kharab aata hai.
+Rule — outfit ki 2-3 cheezein bas. Main kapda, ek accessory, aur lighting. Khatam.
+Aaj ka kaam simple hai — apne character ki 4 photos banao, chaaro style mein. Casual, ethnic, western, party.
+20 minute ka kaam hai. Ab aapke paas total 9-10 photos ho gayi hongi. Content bank ban raha hai.
+Agle lesson mein hum locations badalenge — beach, cafe, street, ghar — apne character ko puri duniya
+ghumayenge, ghar baithe.
+Milte hain agle lesson mein.
+
+ 6
+
+LESSON 7 — Locations Badalna DONE
+
+Aaj hum apne character ko duniya ghumayenge. Ghar baithe. Video ke end tak wo Goa ke beach pe bhi hogi,
+Mumbai ki street pe bhi, aur ek mehenge cafe mein bhi. Real influencers ko yahi karne ke liye lakhs kharch
+karne padte hain. Flight, hotel, photographer — ek Goa trip ka content 50-60 hazaar mein padta hai. Aapka
+kharcha — zero. Aur yahi cheez brands ko bhi chahiye. Travel brands, cafe, hotels, resorts — sab chahte hain
+unki jagah pe model dikhe. Jab aap bologe 'main aapki location pe shoot kara sakta hu bina aaye' — unke liye
+ye sasta aur fast hai. Aapke liye ye paisa hai.
+Toh chalo, locations ka system samjho. Instagram ke liye 5 type ki locations sabse zyada kaam aati hain. Pehli
+— Ghar. Bedroom, balcony, kitchen. Ye relatable content hai — log connect karte hain. Doosri — Cafe. Coffee
+shop ka aesthetic look. Reels ke liye perfect. Teesri — Street. City ki road, market, colorful walls. Fashion
+content yahan chalta hai. Chauthi — Nature. Beach, pahad, garden. Travel content ka base. Paanchwi —
+Premium. Hotel lobby, rooftop, pool side. Ye luxury feel deta hai — brands ko yahi chahiye.
+Chalo screen pe aa jao mere saath.
+(screen recording start — Flow khula hai) Reference photo upload karo. Pattern wahi — bas location wala hissa
+badlega. Beach ke liye: 'Use this exact face. Same woman, same facial features. Now she is standing on a
+beach in Goa, wearing a flowy summer dress, sunset in the background, wind in hair, realistic photo' Generate.
+(result pe 1-2 second pause) Dekho — sunset, beach, hawa mein baal. Aisa lag raha hai sach mein Goa gayi
+hai. Ek cheez notice karo prompt mein — 'sunset in the background, wind in hair.' Maine sirf jagah nahi likhi,
+mahaul likha. Yahi photo ko zinda banata hai. Ab street: '...walking on a busy Mumbai street, colorful shops in
+background, candid walking pose...' Aur cafe: '...sitting in an aesthetic cafe, holding a coffee cup, plants and
+warm lights in background...' (teeno results dikhao) Teen shehar, teen mood — aur kharcha zero. Ek pro tip.
+Location ke saath pose bhi badlo. Beach pe 'walking' ya 'looking at the sea'. Cafe mein 'sitting, holding cup'.
+Street pe 'candid walking'. Har jagah khadi hokar camera dekhna — nakli lagta hai. Real influencers candid
+photos daalte hain.
+Ab common galti. Log famous jagah maang lete hain — 'Taj Mahal ke saamne', 'Eiffel Tower ke neeche'.
+Problem ye hai ki AI famous jagahon ko aksar galat banata hai — Taj Mahal ka shape bigad jaata hai, aur photo
+turant fake pakdi jaati hai.
+Rule — famous monument ki jagah general location likho. 'Historic Indian architecture in background' — ye
+safe hai aur real lagta hai.
+Aaj ka kaam simple hai — apne character ki 5 photos banao, paanchon location type mein. Ghar, cafe, street,
+nature, premium. 25 minute ka kaam hai. Ab aapke paas 15 ke aas paas photos ho gayi hongi — alag outfits,
+alag locations, same face. Instagram shuru karne ka saaman taiyaar ho raha hai.
+Agle lesson mein hum photo ki quality pe kaam karenge — plastic wali AI look kaise hataye aur photos ko
+bilkul real kaise banaye.
+Milte hain agle lesson mein.
+
+ 7
+
+LESSON 8 — Realistic Skin aur DONE
+
+Aaj hum sabse badi problem fix karenge — plastic wali AI look. Video ke end tak aapki photos aisi lagengi jaise
+kisi ne camera se kheenchi hon.
+Pehle problem samjho. AI photos aksar zyada perfect hoti hain. Skin bilkul chikni, ek bhi daag nahi, baal ek ek
+jagah set. Aur yahi problem hai — insaan aise nahi dikhte. Log photo dekh ke 2 second mein pakad lete hain
+— 'ye AI hai.' Aur jaise hi pakda gaya, trust khatam. Followers nahi badhenge.
+Aur brands ke liye toh ye seedha rejection hai — koi brand nakli dikhne wali photo pe paise nahi lagata. Real
+dikhna hi is business ki asli currency hai. Toh aaj ka formula — perfection hatao, reality daalo. Iske liye prompt
+mein 4 cheezein add karni hain. Pehli — skin texture. 'Natural skin texture, visible pores' — matlab skin pe
+halki asli bandagi dikhe. Doosri — imperfections. 'Slight imperfections, few flyaway hairs' — thode bikhre baal,
+halka sa asli-pan. Teesri — camera details. 'Shot on iPhone' ya 'shot on DSLR, 50mm lens' — AI ko camera ka
+naam do, wo photo waisa hi banata hai. Chauthi — natural lighting. 'Soft natural light' — studio wali flat
+lighting nakli lagti hai.
+Chalo screen pe aa jao mere saath.
+(screen recording start — Flow khula hai)
+Pehle bina in details ke ek photo banati hu — jaise ab tak banate the. (generate karo, result dikhao) Achhi hai,
+lekin dekho — skin plastic jaisi chamak rahi hai. Ye AI look hai. Ab wahi prompt, 4 nayi cheezon ke saath: 'Use
+this exact face. Same woman, same facial features. Sitting in a cafe, wearing a white shirt. Natural skin
+texture, visible pores, slight imperfections, few flyaway hairs, shot on iPhone, soft natural light, realistic candid
+photo' (prompt screen pe bada dikhao) Generate karo. (dono photos side by side dikhao) Farak dekho. Pehli
+wali — magazine ka poster. Doosri wali — kisi dost ne photo kheenchi ho jaisi. Aur Instagram pe doosri wali hi
+chalti hai. Ek aur kaam ka word — 'candid'. Iska matlab bina pose kiye, natural moment. 'Candid photo' likhne
+se pose bhi natural aata hai aur photo aur real lagti hai.
+Ab ek honest baat. Kabhi kabhi in sab ke baad bhi haath ya ungliyan ajeeb aayengi — 6 ungliyan, mude hue
+haath. Ye AI ki sabse purani kamzori hai. Aisa aaye toh photo dobara generate karo, ya aisi pose maango jisme
+haath kam dikhe — 'hands in pockets' ya 'holding a bag'.
+Ab common galti. Log realistic banane ke chakkar mein prompt mein 'ultra realistic, hyper realistic, 8K, ultra
+HD' bhar dete hain. Ulta asar hota hai — photo aur zyada AI jaisi lagti hai. Ye words hatao. 'Realistic candid
+photo, shot on iPhone' — bas itna kaafi hai.
+Aaj ka kaam simple hai — apni purani 3 photos utho, aur wahi prompts in 4 nayi details ke saath dobara
+generate karo. Pehli aur nayi photo compare karo. Farak khud dikh jayega. 15-20 minute ka kaam. Aaj ke baad
+aapki har photo mein ye 4 cheezein hamesha rahengi. Ye aapka permanent formula hai.
+Agle lesson mein hum photo quality ke baaki problems fix karenge — blur, kharab background, ajeeb aankhein
+— pura repair system.
+Milte hain agle lesson mein.
+
+ 8
+
+LESSON 9 — Photo Quality Fix DONE
+
+Aaj hum photo repair karna seekhenge. Kharab haath, ajeeb aankhein, bigda background — sab theek karna.
+Video ke end tak aapke paas ek complete checklist hogi — kaunsi photo rakhni hai, kaunsi phenkni hai, aur
+kaunsi repair karni hai. Ye lesson kyun zaroori hai? Kyunki ek kharab photo aapka pura account duba sakti hai.
+Log 50 achhi photos bhool jaate hain, lekin ek 6-ungli wali photo ka screenshot le ke mazak bana dete hain.
+Aur brands ke saath toh sochna bhi mat — client ko delivery se pehle har photo perfect chahiye. Quality check
+hi wo cheez hai jo shaukeen aur professional mein farak karti hai. Professional ko hi paise milte hain. Toh pehle
+checklist samjho. Har photo save karne se pehle 4 cheezein dekho. Pehli — haath aur ungliyan. Gino. Paanch
+hain? Shape sahi hai? Doosri — aankhein. Dono ek jagah dekh rahi hain? Ek jaisi hain? Teesri — background.
+Peeche ki cheezein sahi hain? Bigde hue words ya toote objects toh nahi? Chauthi — face match. Reference se
+milao — yahi Neha hai na? Chaaro pass? Photo save. Koi ek fail? Ab repair seekhte hain.
+Chalo screen pe aa jao mere saath.
+(screen recording start — Flow khula hai) Ye dekho — ek photo jisme sab achha hai, lekin haath ajeeb aaya
+hai. Pehla tareeka — targeted fix. Photo Flow mein daalo aur likho: 'Fix only the hands in this image. Keep the
+face, outfit, pose and background exactly the same.' (prompt screen pe dikhao) Generate karo. (result dikhao)
+Dekho — haath theek, baaki sab same. Yahi line har problem pe kaam karti hai — 'fix only the eyes', 'fix only
+the background'. Bas 'only' zaroor likhna, warna AI puri photo badal dega. Doosra tareeka — crop. Agar
+problem photo ke kinare pe hai — jaise background mein koi bigda object — toh repair ki zaroorat hi nahi. Crop
+karo, problem gayab. Sabse fast fix yahi hai. Teesra tareeka — pose se bachao. Agar haath baar baar kharab
+aa rahe hain, toh aisi pose maango jisme haath dikhe hi nahi — 'hands in pockets', 'hands behind back',
+'holding a bag'. Problem ko fix karne se behtar hai problem aane hi na do.
+Ab ek honest baat. Kuch photos repair ke baad bhi theek nahi hoti. 2 baar fix karne pe bhi kharab hai? Delete
+karo, nayi banao. Ek photo pe 20 minute lagana bewakoofi hai jab nayi 2 minute mein ban jaati hai. Photo se
+pyaar mat karo — quality se karo.
+Ab common galti. Log repair pe repair karte jaate hain — pehle haath fix, phir aankh fix, phir background fix.
+Har fix ke saath face thoda badalta jaata hai. Teen fix ke baad Neha koi aur ban chuki hoti hai.
+Rule — ek photo pe maximum ek fix. Do problems hain? Delete, nayi banao.
+Aaj ka kaam simple hai — apni ab tak ki saari photos kholo aur chaaro checklist points pe check karo. Jo fail ho
+— ek fix try karo ya delete karke nayi banao. 20 minute ka kaam hai. Aaj ke baad aapki gallery mein sirf
+perfect photos rahengi. Yahi professional standard hai.
+Agle lesson mein hum ek hi baithak mein 30 photos ka content bank banayenge — pura mahina ka content,
+ek din mein.
+Milte hain agle lesson mein.
+
+ 9
+
+LESSON 10 — 30 Photos ka Content DONE
+
+Aaj Module 2 ka last lesson hai. Aur aaj hum wo karenge jo real content creators karte hain — ek baithak mein
+pura mahine ka content taiyaar. 30 photos. Ek din mein. Ye hai aaj ka target.
+Pehle samjho ye kyun zaroori hai. Instagram ka sabse bada rule hai — regular posting. Roz ya har doosre din
+post hona chahiye. Ab agar aap roz photo banane baithoge, toh 10 din mein thak jaoge aur account band. Isi
+liye 90% log fail hote hain.
+Solution — batch banana. Ek din mehnat, pura mahina aaram. Professional creators yahi karte hain. Aur jab
+clients ke liye kaam karoge, tab bhi yahi system chalega. Client bolega — '30 product photos chahiye is
+mahine.' Jo banda system se kaam karta hai, wo ek din mein deliver kar deta hai. Jo bina system ke karta hai,
+wo mahina laga deta hai. Fast delivery hi zyada clients laati hai.
+Toh chalo system samjho. 30 photos ka formula simple hai — 5 outfits, 6 locations. Paanch guna chhe — tees.
+Ho gaya hisaab. Lekin ek-ek karke 30 prompts likhne mein pura din jayega. Isliye ek smart trick — prompts bhi
+Flow se hi likhwao.
+Chalo screen pe aa jao mere saath.
+(screen recording start — Flow khula hai) Naya chat kholo aur ye likho: 'I have an AI influencer character — a
+22 year old Indian woman, fashion and travel creator. Write 30 photo prompts for her Instagram. Use 5 outfits:
+casual jeans, ethnic kurti, western dress, saree, party wear. Use 6 locations: home, cafe, street, beach, garden,
+hotel rooftop. Each prompt must include: natural skin texture, slight imperfections, shot on iPhone, soft natural
+light, realistic candid photo. Vary the poses — sitting, walking, candid moments. Number them 1 to
+30.' (prompt screen pe dikhao) Generate karo... Dekho — 30 ready prompts, numbered, sab details ke saath.
+Jo formula humne 8 lessons mein seekha — skin texture, lighting, candid — sab har prompt mein already
+daala hua hai. Ye list copy karo aur notes mein save kar lo. Ye aapki content factory hai. Ab production shuru.
+Reference photo upload karo, aur list se prompt number 1 chipkao. Generate. Number 2. Generate. Bas yahi
+repeat. Har photo pe Lesson 9 wali checklist lagao — haath, aankhein, background, face match. Pass hui toh
+save, fail hui toh skip karke aage badho. Ruko mat.
+Ab ek honest baat. 30 mein se saari perfect nahi aayengi. 30 generate karoge toh 20-22 achhi milengi. Ye
+normal hai — isi liye 30 banate hain, taaki 20 pakki mil jayein. Free version ki limit bhi aa sakti hai — toh ye
+kaam 2-3 din mein baant lo. Roz 10-10 photos. Koi jaldi nahi.
+Rule — har 5 photos mein kam se kam ek candid ho. Kahin has rahi hai, kahin coffee pi rahi hai, kahin peeche
+mud ke dekh rahi hai. Variety hi real bana ti hai.
+Aaj ka kaam simple hai — pehle 30 prompts ki list banwao Flow se. Phir aaj kam se kam 10 photos generate
+karke save karo. Baaki 20 agle 2 din mein. Checklist har photo pe lagana. Jab 20+ photos ka bank ban jaye —
+samajh lo Module 2 complete. Aapke paas ab wo cheez hai jo 99% logon ke paas nahi — ek consistent
+character aur ek mahine ka content.
+Agle lesson se Module 3 shuru — ab hum photos se aage badhenge. Aapki Neha ab chalegi, bolegi, aur reels
+banayegi. Google Flow ki entry hoti hai wahan se.
+Milte hain agle lesson mein.
+
+ 10
+
+ MODULE 3 — Video & Reels
+
+LESSON 11 — Photo se Video Banana DONE
+
+Aaj se Module 3 shuru. Aur aaj wo hoga jiska intezaar tha — aapki Neha zinda hogi. Photo se video banegi. Wo
+palkein jhapkayegi, muskurayegi, baal hawa mein udenge. Aaj se hum apna doosra tool use karenge — Google
+Flow.
+Pehle samjho video kyun itni badi baat hai. Instagram ab reels ka game hai. Photo pe 100 log aate hain, toh
+reel pe 1000. Algorithm reels ko hi aage badhata hai. Bina video ke growth aadhi reh jaati hai.
+Aur paise ki baat karein — brands photo se zyada video ke paise dete hain. Ek product photo ke jahan
+500-1000 milte hain, wahan ek chhoti video ke 2000-5000. Video banane wala creator hamesha zyada kamata
+hai. Simple.
+Toh chalo, pehli video banate hain. Ek baat pehle — video banane ka formula photo se alag hai. Photo mein
+hum likhte the wo kaisi dikhe. Video mein likhna hai wo kya kare. Movement. Harkat. Yahi farak hai.
+Chalo screen pe aa jao mere saath.
+(screen recording start) Browser mein labs.google/flow kholo. Sign in toh Lesson 3 mein ho hi gaya tha. New
+Project dabao. Ab dekho — yahan prompt box hai, aur uske paas image upload ka option. Yahi hamara main
+kaam hai. Pehla step — apni ek best photo upload karo. Main Neha ki cafe wali photo daal rahi hu. Ye photo
+video ka pehla frame banegi — matlab video isi photo se shuru hogi. Doosra step — prompt likho. Yaad rakho
+— ab movement likhni hai: 'She smiles softly, blinks naturally, slowly lifts the coffee cup and takes a sip,
+gentle camera movement, natural motion' (prompt screen pe bada dikhao) Dekho kya likha — smile, blink,
+cup uthana. Chhoti chhoti harkatein. Aur 'natural motion' — taaki robot jaisi na lage. Generate dabao. Video
+banne mein 1-2 minute lagte hain. Photo se zyada time lagta hai — normal hai. (result aane pe 1-2 second
+pause) Aur ye dekho... Neha zinda ho gayi. Palkein jhapak rahi hai, muskura rahi hai, coffee pi rahi hai. Yahi
+photo thi ab tak — ab ye insaan lag rahi hai. Ye video 8 second ke aas paas hogi. Aur reels ke liye itna kaafi hai
+— Instagram pe sabse zyada chalne wali reels 7-15 second ki hi hoti hain. Ab ek zaroori rule — movement
+chhoti rakho. 'She smiles and blinks' — perfect. 'She dances and jumps and turns around' — disaster. AI badi
+harkat mein face bigaad deta hai. Chhoti harkat, real result.
+Ab ek honest baat. Flow ke free credits limited hain — din ke kuch hi videos banengi. Aur har video perfect
+nahi aayegi — kabhi haath ajeeb hilega, kabhi face thoda badlega. 2-3 baar generate karna padega best ke
+liye. Photo wala hi rule — best rakho, baaki delete.
+Ab common galti. Log pehli hi video mein bolti hui Neha maangte hain — 'she says hello everyone'. Abhi nahi.
+Bolna alag skill hai — lip-sync — wo agla lesson hai. Aaj sirf movement. Ek step ek baar.
+Aaj ka kaam simple hai — apni 3 best photos utho aur teeno se video banao. Chhoti movements — smile,
+blink, baal, chai. Jo sabse achhi lage wo save karo. 20-25 minute ka kaam, credits ke hisaab se. Aaj aapne wo
+kar liya jo Instagram pe 99% log nahi kar paate — apna AI video content.
+Agle lesson mein Neha bolegi — lip-sync seekhenge, jisme wo aapke likhe words apne muh se kahegi.
+Milte hain agle lesson mein.
+
+ 11
+
+LESSON 12 — Lip-Sync Video DONE
+
+Aaj Neha bolegi. Apne muh se, aapke likhe words. Video ke end tak aapke paas ek video hogi jisme aapka
+character camera dekh ke baat kar raha hoga. Ye skill kitni badi hai, pehle wo samjho. Bolti hui AI influencer —
+yahi toh asli influencer hai. Sirf photos wala account model portfolio lagta hai. Bolne wala account insaan lagta
+hai. Log usse connect karte hain, comments karte hain, follow karte hain.
+Aur kamai ki nazar se — bolne wali video hi UGC ads ka base hai. Brands jo 5 se 20 hazaar per video dete
+hain, wo isi type ki video ke liye — jisme model unka product haath mein leke uske baare mein bolti hai. Aaj
+wali skill seedha us paise se judti hai. Module 6 mein isi se deals karenge.
+Toh chalo shuru karte hain. Lip-sync ka system 2 step ka hai.
+Pehle — script, matlab jo Neha bolegi.
+Doosra — Flow mein wo bulwana. Pehla step yahi kar lete hain. Neha ki pehli line kya ho? Simple si intro line:
+'Hi guys! Main Neha. Mumbai se. Fashion aur travel meri zindagi hai. Naye ho toh follow karlo!' Chhoti line
+rakhna — 8-10 second mein bol paye utni. Lambi speech pehli baar mein mat lo.
+Chalo screen pe aa jao mere saath.
+(screen recording start — Google Flow khula hai) Flow mein new project kholo. Apni Neha ki ek achhi photo
+upload karo — aisi jisme wo camera ki taraf dekh rahi ho. Side wali photo mat lena — bolne wali video mein
+face saamne chahiye. Ab prompt mein movement ke saath bolna bhi likho: 'She looks at the camera and
+speaks naturally, friendly expression, saying: Hi guys! Main Neha. Mumbai se. Fashion aur travel meri zindagi
+hai. Naye ho toh follow karlo!' (prompt screen pe bada dikhao) Dekho structure — pehle expression aur
+movement, phir 'saying:' ke baad exact words jo bolne hain. Generate karo. Bolne wali video mein thoda
+zyada time lagta hai. (result aane pe 1-2 second pause) Aur ye raha... Neha bol rahi hai. Hoth words ke saath
+chal rahe hain, expression natural hai. Ye moment yaad rakhna — aapka character ab creator ban gaya. Ab ek
+zaroori tip — Hinglish ke liye. AI kabhi kabhi Hindi words ka uchcharan ajeeb karta hai. Agar 'zindagi' ya koi
+word galat bole, toh us word ki spelling prompt mein aise likho jaise bola jaata hai — 'zindagee'. Sound ke
+hisaab se spelling — ye trick 90% pronunciation problems fix kar deti hai.
+Ab ek honest baat. Lip-sync AI ka sabse mushkil kaam hai. Kabhi hoth aage-peeche chalenge, kabhi awaaz
+robotic lagegi. Pehli baar mein perfect nahi aayega — 3-4 try normal hai. Aur free credits ki limit yahan jaldi
+aati hai kyunki bolne wali videos zyada credit khaati hain. Isliye aaj sirf ek video pe focus karo — lekin achhi
+wali.
+Ab common galti. Log pehli hi video mein lambi speech likh dete hain — 30-40 second ka bhashan. Jitne zyada
+words, utni zyada galti ki jagah. Hoth kahin match karenge, kahin nahi.
+Rule — ek video, ek baat. 8-10 second, 15-20 words. Lambi baat bolni hai? 2-3 chhoti videos banao, VN mein
+jod lenge — editing wale lesson mein yahi seekhenge.
+Aaj ka kaam simple hai — Neha ki intro line likho, 15-20 words mein. Phir Flow mein lip-sync video banao. 3-4
+try karo, best save karo. 25-30 minute ka kaam. Ye video sambhal ke rakhna — aage Instagram ki pehli reel
+banegi isi se.
+Agle lesson mein hum awaaz pe kaam karenge — AI voice banana, taaki Neha ki awaaz har video mein same
+rahe, bilkul uske face ki tarah.
+Milte hain agle lesson mein.
+
+ 12
+
+LESSON 13 — AI Voice Banana DONE
+
+Aaj hum Neha ki awaaz final karenge. Video ke end tak uski ek fixed awaaz hogi — jo har video mein same
+rahegi, bilkul uske face ki tarah.
+Pehle samjho ye kyun zaroori hai. Yaad hai Lesson 2 mein consistency ka rule? Face har photo mein same —
+wahi rule awaaz pe bhi lagta hai. Aaj Neha moti awaaz mein boli, kal patli — audience turant pakad legi ki
+kuch gadbad hai. Trust gaya.
+Aur brands ke liye toh awaaz bhi brand hoti hai. Jab aap client ke liye 10 UGC videos banaoge, toh dason mein
+same awaaz chahiye. Jo creator consistent voice deliver karta hai, wohi repeat kaam paata hai. Repeat client
+matlab har mahine ki pakki kamai.
+Toh chalo Neha ki awaaz banate hain. Awaaz ke 3 hisse hote hain — inhe samajh lo, kaam aasan ho jayega.
+Pehla — pitch. Awaaz patli hai ya bhaari.
+Doosra — speed. Tez bolti hai ya aaram se.
+Teesra — tone. Energetic hai, calm hai, ya friendly. In teeno ko milakar character ki voice personality banti hai.
+Neha 22 saal ki hai, friendly hai — toh uski awaaz hogi: soft pitch, medium speed, warm friendly tone.
+Chalo screen pe aa jao mere saath.
+(screen recording start — Google Flow khula hai) Flow mein lip-sync video banate time hum prompt mein
+awaaz ki details bhi likh sakte hain. Pichle lesson wala prompt yaad karo — ab usme voice add karenge: 'She
+looks at the camera and speaks naturally, friendly expression, soft warm female voice, young Indian accent,
+medium pace, saying: Hi guys! Main Neha. Mumbai se.' (prompt screen pe bada dikhao) Dekho kya naya juda
+— 'soft warm female voice, young Indian accent, medium pace.' Yahi teen cheezein har video mein same likhni
+hain. Generate karo. (result aane pe pause) Suno awaaz... Soft hai, friendly hai, Indian accent hai. Ye Neha ki
+awaaz hai. Ab sabse important kaam. Ye voice description kahin likh lo — wahi notes mein jahan character
+sheet hai. Aaj se ye line har bolne wali video ke prompt mein jayegi, bilkul waise jaise reference photo har
+baar upload hoti hai. Face ke liye reference photo. Awaaz ke liye reference line. Dono mila ke pura consistent
+character.
+Ab ek honest baat. AI voice mein halka farak har video mein aayega — 100% same awaaz abhi AI ki limit se
+bahar hai. Lekin jab tak pitch, accent aur tone same hai, audience ko farak nahi padta. Log exact awaaz nahi,
+awaaz ka feel yaad rakhte hain.
+Ab common galti. Log fancy words likh dete hain — 'melodious voice, sweet honey voice, angelic tone'. AI in
+words se confuse hota hai aur har baar alag result deta hai.
+Rule — simple aur napi-tuli details: pitch (soft/deep), accent (Indian/neutral), pace (slow/medium/fast). Bas.
+Jitna simple likhoge, utna same milega.
+Aaj ka kaam simple hai — Neha ki voice description final karo — pitch, accent, pace. Notes mein save karo
+character sheet ke saath. Phir ek nayi lip-sync video banao us voice line ke saath. 15-20 minute ka kaam. Ab
+aapka character complete hai — face bhi fixed, awaaz bhi fixed.
+Agle lesson mein hum VN kholenge — pehli baar. Videos ko jodna, captions lagana, music dalna — reel ko final
+professional look dena.
+Milte hain agle lesson mein.
+
+ 13
+
+LESSON 14 — Reel Editing Basics DONE
+
+Aaj hum teesra tool kholenge — VN. Aur aaj aapki pehli puri reel banegi. Video ke end tak aapke paas
+Instagram pe daalne layak final reel hogi — captions aur music ke saath.
+Pehle samjho editing itni zaroori kyun hai. Flow se jo video aati hai, wo raw maal hai. Achhi hai, lekin adhuri.
+Instagram pe jo reels chalti hain unme captions hote hain, music hota hai, sahi size hota hai. Editing hi raw
+video ko reel banati hai.
+Aur kamai ki baat — brands finished video ke paise dete hain, raw clips ke nahi. Ek raw clip ki koi keemat nahi.
+Wahi clip captions aur music ke saath 5000 ki UGC video ban jaati hai. Matlab editing wo skill hai jo aapke
+kaam ki keemat 10 guna badha deti hai.
+Toh chalo, VN kholte hain. Dar mat lena — VN mein hum sirf 4 kaam seekhenge. Bas 4. Utne mein 90% reels
+ban jaati hain.
+Chalo screen pe aa jao mere saath.
+(screen recording start — phone screen, VN app) VN kholo. Neeche plus ka button — dabao. New Project. Ab
+gallery khulegi — apni Flow wali videos select karo. Main Neha ki 2 clips le rahi hu — ek smile wali, ek bolne
+wali. Order mein select karo — jo pehle dikhani hai wo pehle. Done dabao. Pehla kaam — size theek karna.
+Reels ka size hota hai 9:16 — lambai wala, phone jaisa. Neeche 'Ratio' ka option hai — dabao, 9:16 chuno. Ho
+gaya. Ab ye Instagram ke liye perfect frame hai. Doosra kaam — clips jodna aur kaatna. Dono clips timeline pe
+neeche dikh rahi hain — ye already judi hui hain. Kisi clip ka koi hissa hatana ho — clip pe tap karo, kinare se
+ghasito. Shuru ka aadha second hamesha kaato — video turant action se shuru honi chahiye, khali frame se
+nahi. Pehla second hi decide karta hai log rukenge ya scroll karenge. Teesra kaam — captions. Neeche 'Text'
+dabao. Jo Neha bol rahi hai wahi type karo — 'Hi guys! Main Neha.' Text ko neeche-beech mein rakho, size
+bada, white color black outline ke saath — har background pe dikhega. Instagram pe 80% log bina awaaz ke
+reels dekhte hain. Captions nahi, toh wo 80% audience gayi. Chautha kaam — music. Neeche 'Music' dabao.
+VN ki library se koi soft beat chuno. Ab sabse zaroori setting — music ka volume 20-30% pe rakho. Neha ki
+awaaz hero hai, music sirf background. Volume ka option music clip pe tap karne se milta hai. Bas. Chaar
+kaam ho gaye. Ab export — upar right corner mein tick ya export ka button. Quality 1080p chuno, export
+dabao. Video gallery mein save ho jayegi.
+(final reel dikhao) Dekho — captions ke saath, music ke saath, sahi size mein. Ye ab raw clip nahi, ye reel hai.
+Instagram-ready.
+Ab ek honest baat. Pehli editing mein time lagega — 30-40 minute bhi lag sakte hain. Normal hai. Teesrichauthi reel tak yahi kaam 10 minute mein hoga. Editing haath ki aadat hai, dimag ki nahi.
+Ab common galti. Log VN mein effects ka khazana dekh ke pagal ho jaate hain — transitions, filters, stickers,
+animations sab thok dete hain. Reel circus ban jaati hai aur asli cheez — Neha — kahin kho jaati hai.
+Rule — pehli 10 reels mein sirf ye 4 cheezein: cut, ratio, caption, music. Koi effect nahi, koi transition nahi.
+Simple hi professional hai.
+Aaj ka kaam simple hai — apni Flow wali videos VN mein daalo aur pehli reel banao. Chaaro steps — ratio, cut,
+caption, music. Export karke phone mein save karo. 30-40 minute ka kaam, pehli baar hai isliye. Ye reel
+sambhal ke rakhna — Module 4 mein yahi aapke Instagram ki pehli post banegi.
+Agle lesson mein main aapko 5 reel formats dungi — jo Instagram pe sabse zyada chalte hain. Uske baad
+content ideas ki kami kabhi nahi hogi.
+Milte hain agle lesson mein.
+
+ 14
+
+LESSON 15 — 5 Reel Formats Jo DONE
+
+Aaj Module 3 ka last lesson hai. Aur aaj main aapko wo 5 reel formats dungi jo Instagram pe sabse zyada
+chalte hain. Video ke end tak aapke paas content ka aisa system hoga ki 'aaj kya banau' wala sawal kabhi nahi
+aayega.
+Pehle problem samjho. Skill toh aa gayi — photo, video, lip-sync, editing sab seekh liya. Lekin ab sabse bada
+sawal — banau kya? 90% creators yahin fail hote hain. Skill hai, ideas nahi. Do hafte content daala, phir dimag
+khali, phir account band.
+Solution — formats. Format matlab bana-banaya saancha. Ek baar saancha samajh lo, phir usme naya maal
+daalte jao. Ideas kabhi khatam nahi honge.
+Aur brands bhi format ki bhasha bolte hain. Client bolega — 'ek GRWM chahiye' ya 'unboxing style video
+banao.' Jo creator formats jaanta hai, wo client ki baat turant samajh jaata hai. Yahi professional hone ki
+nishani hai.
+Toh chalo — 5 formats, ek ek karke.
+Pehla — GRWM. Matlab Get Ready With Me. Neha taiyaar ho rahi hai — pehle simple look, phir ready hoke final
+look. Ye Instagram ka sabse popular fashion format hai. Banane ke liye — 2 photos chahiye: ek casual, ek
+ready. Flow se dono ki chhoti videos, VN mein jodo, beech mein transition. Ho gaya GRWM.
+Doosra — Day in Life. Neha ka pura din — subah coffee, phir kaam, shaam ko walk, raat ko book. 4-5 chhoti
+clips, har clip 2-3 second, music ke saath judi hui. Ye format relatable hai — log Neha ko insaan ki tarah
+dekhne lagte hain.
+Teesra — Tips. Neha camera pe bol ke 3 tips deti hai — '3 fashion tips jo har ladki ko pata honi chahiye.' Lipsync video + captions. Ye format followers ko value deta hai, aur value dene wale accounts hi tezi se badhte
+hain.
+Chautha — Trends. Instagram pe jo audio ya style trending hai, wahi Neha ke saath banao. Trending audio wali
+reels ko algorithm khud aage badhata hai — ye free ki reach hai. Trend kaise pata chale? Instagram scroll karo
+— jo audio baar baar sunai de, wahi trend hai.
+Paanchwa — Product. Neha kisi product ke saath — haath mein pakde dikhaana, use karna, uske baare mein
+bolna. Abhi practice ke liye koi bhi cheez lo — chai ka cup, sunglasses. Aage yahi format brands ke liye
+banaoge — paise leke. Ye 5 mein se sabse keemti format hai.
+Chalo screen pe aa jao mere saath.
+(screen recording start) Ek format live banate hain — Day in Life, sabse aasan wala. Flow mein Neha ki 4
+photos banao — subah coffee ke saath, laptop pe kaam, shaam ki walk, raat ko book. Prompts wahi purane
+formula se. Ab Flow mein chaaron ki chhoti videos — har ek mein halki movement. 'She sips coffee slowly'...
+'She types and smiles'... aise. Ab VN mein chaaron jodo. Har clip 2-3 second ki kaato. Ek soft music. Caption —
+'A day in my life.' Export.
+(final reel dikhao) Dekho — 15 second ki reel, Neha ka pura din. Ye format har hafte repeat kar sakte ho — bas
+activities badlo.
+Ab ek honest baat. Har format har baar viral nahi hoga. Kuch reels 200 views pe rukengi, koi achanak 20,000
+le aayegi. Ye Instagram ka nature hai — pehle se koi nahi bata sakta. Isliye formats rotate karo aur patience
+rakho. 20-30 reels ke baad pattern dikhna shuru hota hai — kaunsa format aapki audience ko pasand hai.
+Ab common galti. Log ek format pakad lete hain — sirf GRWM, sirf tips. Audience bore ho jaati hai, algorithm
+bhi. Same cheez baar baar dekhna kisi ko pasand nahi.
+Rule — hafte mein 3 reels, teen alag formats. Rotation hi account ko fresh rakhta hai.
+Aaj ka kaam simple hai — paanchon formats mein se koi 2 chuno aur dono ki ek-ek reel banao. Aaj ek, kal ek
+— koi jaldi nahi. Har reel pe Lesson 14 wale 4 editing steps lagana.
+Aur ye samajh lo — Module 3 complete. Aapke paas ab character hai, photos hain, videos hain, reels hain, aur
+formats ka system hai. Content ki factory puri taiyaar.
+
+ 15
+
+Agle lesson se Module 4 shuru — Instagram. Ab ye sab duniya ko dikhayenge. Account setup se leke 1000
+followers tak ka pura plan.
+Milte hain agle lesson mein.
+
+ MODULE 4 — Instagram
+
+LESSON 16 — Profile Setup (professional) SCRIPT · ~3min
+
+Aaj se Module 4 shuru. Ab tak jo banaya wo factory thi — aaj se dukaan kholenge. Aaj Neha ki professional
+profile banegi. Video ke end tak account live hoga, ready to post.
+Pehle samjho profile itni badi baat kyun hai. Jab koi aapki reel dekhta hai, wo turant profile pe aata hai — aur 3
+second mein decide karta hai follow kare ya nahi. Aur brands to deal se pehle profile 10 baar dekhte hain.
+Kharab bio, adhura profile — deal wahin khatam. Profile aapki dukaan ka board hai.
+4 cheezein set karni hain. Pehla — username. Chhota, yaad rehne wala, character ke naam se juda — jaise
+neha.mumbai. Numbers aur underscores mat daalo, spam jaisa lagta hai. Naam liya hua ho to ek word jodo —
+style, diaries.
+Doosra — profile photo. Neha ki sabse achhi close-up photo, jisme face saaf dikhe. Full body mat lena —
+profile chhoti dikhti hai, door se sirf face pehchana jaata hai.
+Teesra — bio, 3 lines. Pehli: wo kaun hai — Fashion and Travel Creator. Doosri: kahan se — Mumbai. Teesri:
+personality ya hook. Ek-do emoji bas. Bio mein AI likhna optional hai — kuch log likhte hain, curiosity mein log
+follow karte hain. Par kisi ke puchne pe jhooth mat bolna — curiosity theek hai, dhokha nahi.
+Chautha — account type. Settings mein Professional Account, phir Creator. Free hai, aur analytics deta hai —
+kaunsi reel kitne logon ne dekhi, followers kab active hain. Bina data ke growth andhere mein teer hai.
+Aur ek chhoti baat — jab post karna shuru karo, pehli posts random mat daalna. Thoda soch ke daalna taaki
+profile khulte hi saaf aur professional lage, bikhra hua nahi.
+Ab common galti. Log account banate hi 10 photos ek saath thok dete hain, excitement mein. Naye account
+se app spam ka shak karta hai, aur reach pehle din se dab jaati hai. Rule — aaj sirf setup aur zyada se zyada
+ek pehli post. Baaki posting schedule se jayega, agla lesson.
+Aaj ka kaam — profile taiyaar karo: username, close-up profile photo, 3-line bio, Creator account on. Phir ek
+achhi pehli post daal do. 20 minute ka kaam.
+Agle lesson mein posting schedule aur captions-hashtags ka system banayenge — taaki roz kya aur kab post
+karna hai, sochna na pade. Milte hain agle lesson mein.
+
+ 16
+
+LESSON 17 — Posting Schedule + Captions & Hashtags SCRIPT · ~3min
+
+Aaj hum posting ka pura system banayenge — kab post karna, kitna, kaunse time pe, aur har post ke saath
+jaane wale do zaroori cheezein: caption aur hashtags. Video ke end tak aapke paas ek fixed weekly schedule
+hoga jise bas follow karna hai.
+Pehle samjho schedule itna zaroori kyun hai. App ka algorithm sabse zyada ek cheez dekhta hai — regularity.
+Roz aane wala account uski nazar mein serious hai. Kabhi 5 posts phir 10 din gayab — aisa account timepass
+hai, aur timepass ko reach nahi milti.
+Toh schedule simple rakho. Hafte mein 3 reels — Lesson 15 wale formats se, teen alag. Rotation account ko
+fresh rakhta hai. Timing — jab aapke followers active hon, wahi Creator analytics batata hai. Aam taur pe
+subah 8-10 ya shaam 7-10 achha chalta hai. Ek fixed din-time chuno, jaise Mon-Wed-Fri shaam 8 baje, aur usi
+pe tik jao.
+Ab caption aur hashtags — chhoti cheezein, par reach mein bada farak. Dono ka kaam alag hai. Hashtag app
+ko batata hai ye post kis baare mein hai, kisko dikhani chahiye. Caption dekhne wale ko rokta hai — ruko,
+padho, comment karo. Ek machine ke liye, ek insaan ke liye. Dono chahiye.
+Caption formula. Pehli line hook honi chahiye — sabse zaroori, kyunki wahi 'more' se pehle dikhti hai. Ek sawal
+ya bold baat. Phir 1-2 line value ya story. Aur end pe ek call to action — comment karo, save karo, follow karo.
+Long paragraph mat likho, log padhte nahi.
+Hashtags. Galat soch — 30 bade hashtags daal do. Ismein aapki chhoti post kho jaati hai. Sahi tareeka — mix.
+Kuch bade (lakhon posts wale), kuch medium, aur kuch chhote niche wale jahan aap actually dikh sakte ho.
+10-15 relevant hashtags kaafi hain, 30 bekaar bhare hue nahi. Har baar ek jaisa set copy-paste mat karo —
+app ko spam lagta hai, 2-3 sets banao aur rotate karo.
+Ab common galti. Log caption ko baad ki soch samajhte hain — video pe mehnat, caption mein 'nice day' likh
+dete hain. Adha kaam wahin barbaad. Caption post ka salesman hai.
+Aaj ka kaam — apna weekly schedule likho: kaunse din, kaunsa time, kaunse formats. Phir 3 caption templates
+aur 3 hashtag sets bana ke notes mein save karo. Ek baar bana lo, phir har post pe bas bharna hai.
+Agle lesson mein algorithm ke andar ghusenge — samjhenge kaunsi reel rukti hai aur kaunsi udti hai. Milte
+hain agle lesson mein.
+
+ 17
+
+LESSON 18 — Reels Algorithm Samjho SCRIPT · ~3min
+
+Aaj hum app ke dimag ke andar ghusenge — algorithm. Wahi cheez jo decide karti hai kaunsi reel 200 views
+pe rukegi aur kaunsi 2 lakh tak jayegi. Video ke end tak aap samajh jaoge ye machine kaam kaise karti hai,
+aur ise khush kaise rakhna hai.
+Pehle ek galat soch todo. Log samajhte hain algorithm dushman hai jo reach dabata hai. Galat. Algorithm ek
+dukaandaar hai — uska ek hi kaam hai, log app pe zyada der rukein. Jo reel logon ko rokti hai, algorithm use
+aur logon tak le jaata hai. Aap aur algorithm dushman nahi, partner ho — dono ko ek hi cheez chahiye, log
+rukein.
+Ab machine kaise sochti hai, step by step. Aap reel daalte ho. App use pehle chhote group ko dikhata hai —
+jaise 200 logon ko. Ab wo dekhta hai in 200 ne kya kiya. Agar zyada logon ne poori dekhi, dubara dekhi, likeshare-save kiya — app samajhta hai ye achhi hai, aur agle 2000 ko dikhata hai. Agar logon ne pehle second
+mein scroll kar diya — app samajhta hai bekaar hai, aur rok deta hai. Har level pe yahi test.
+Toh algorithm 3 cheezein sabse zyada dekhta hai. Ek — watch time, kitni der dekhi. Isi liye pehla second sabse
+zaroori hai, aur video chhoti-tight honi chahiye. Do — completion aur re-watch, poori dekhi ya loop hui. Isi liye
+reel ka end shuru se jude to loop banta hai. Teen — shares aur saves, kyunki jo cheez log doston ko bhejte
+hain ya save karte hain wahi algorithm ke liye sona hai. Likes se zyada saves aur shares matter karte hain.
+Ek aur cheez — pehle 1 ghante ka engagement. Post karte hi agar log jaldi react karte hain, algorithm ko
+signal milta hai ye hot hai. Isi liye active time pe post karna zaroori hai, aur pehle ghante mein comments ka
+reply dena.
+Ab common galti. Log har baar naya kuch try karte hain — ek reel chali to bhi format badal dete hain.
+Algorithm confuse ho jaata hai ki account kis baare mein hai. Rule — jo chala, uska pattern samjho aur repeat
+karo. Consistency algorithm ko clear signal deti hai.
+Aaj ka kaam — apni pichhli reels analytics mein kholo. Dekho sabse zyada kaunsi dekhi gayi, aur uske pehle 2
+second mein kya tha. Wahi cheez agli reel mein repeat karo. 15 minute — aaj se data aapka teacher hai.
+Agle lesson mein in sab ko jodenge — 0 se 1000 followers ka pura roadmap. Milte hain agle lesson mein.
+
+ 18
+
+LESSON 19 — 0 se 1000 Followers + Engagement SCRIPT · ~3min
+
+Aaj main aapko 0 se 1000 followers ka pura roadmap dungi, aur unhe rokne-jodne ka engagement system bhi.
+Video ke end tak aapko exactly pata hoga agle 2 mahine kya karna hai.
+Pehle samjho 1000 ka number khaas kyun hai. Do wajah. Ek — 1000 pe app aapko serious lena shuru karta
+hai, reach khulti hai. Do, aur ye badi hai — 1000 se brands ki duniya khulti hai. Aapko lagega 1000 kuch nahi,
+brands to lakhon wale dhundhte hain. Galat. Nano-influencers — 1000 se 10000 wale — brands ke sabse
+pasandeeda hain, kyunki engagement sabse zyada aur rate sasta.
+Roadmap. Bhool jao ki 1000 ek pahaad hai — ise hafton mein todo. Har hafte 3 reels, teen alag formats. Do
+mahine mein 24 reels. Ismein se 2-3 chalengi, aur wahi 1000 tak le aayengi. Bas 3 cheezein consistent rakho
+— regularity, formats rotation, aur pehle ghante ka engagement. Shuru ke followers aapke apne circle se
+aayenge — koi sharam nahi, wahi base hai.
+Ab asli khel — followers laane ke baad unhe rokna aur jodna. Isi ko engagement kehte hain, aur ye followers
+se zyada keemti hai brands ke liye. Engagement matlab log sirf aate nahi, kuch karte hain — like, comment,
+reply, share. App ki nazar mein engaged account hi zinda account hai.
+Roz ka 20-minute routine. Ek — apni har post ke comments ka reply do, khaas kar pehle ghante mein. Reply se
+comment badhta hai, comment se reach. Do — apni story mein roz kuch daalo — poll, sawal, behind the
+scenes. Stories followers ko roz aapse jodti hain aur bina reach khoye active rakhti hain. Teen — apne niche ke
+doosre creators aur followers ke posts pe genuine comment karo, roz 10-15. Isse naye log aap tak aate hain.
+Ye peecha karo, spam nahi — asli baat.
+Ab common galti. Log post karke gayab ho jaate hain — daala aur bhool gaye. Instagram do-tarfa hai. Jo sirf
+post karta hai, community nahi banti; jo reply karta, comment karta, judta hai — wahi badhta hai.
+Aaj ka kaam — do cheezein. Ek, apna 8-hafte ka reel plan kaagaz pe likho: har hafte 3 reels, teen formats. Do,
+aaj ka 20-minute engagement routine abhi karo — apne comments ke reply, ek story, aur 10 doosron ke posts
+pe comment.
+Agle lesson se Module 5 shuru — Product Photography. Ab wo skill jiske log seedha paise dete hain. Milte hain
+agle lesson mein.
+
+ 19
+
+ MODULE 5 — Product Photography
+
+LESSON 20 — Product Photo Basics SCRIPT · ~3min
+
+Aaj se Module 5 shuru, aur aaj se course ka rang badal jaata hai — kyunki aaj se wo seekhenge jiske log
+seedha paise dete hain. Product photography. Video ke end tak aapke paas pehli product photo hogi — Neha
+ke haath mein ek asli product.
+Pehle market samjho. Har online seller ko product photos chahiye — Amazon wala, Flipkart wala, Instagram pe
+kapde bechne wali didi, Shopify store wala. Sabko. Aur traditional shoot ka kharcha suno — model ka charge,
+photographer, studio, ek din. Hazaaron rupaye ek shoot ke. Aap wahi kaam Flow se ghar baithe, ek din mein
+kai baar kar sakte ho — isi liye ye seedhi kamai hai.
+Ab basic samjho. Product photo ka ek hi kaam hai — product ko saaf, achha, bharose layak dikhana. Do type
+hote hain: clean shot, jahan product plain background pe alag dikhe; aur lifestyle shot, jahan product zindagi
+mein istemaal hota dikhe. Aaj clean shot, jo base hai.
+Kaise banate hain. Aapke paas do cheezein hain — Neha, aur product ki photo jo client bhejta hai. Flow mein
+dono ko jodna hai: Neha product ko haath mein pakde, ya use karti dikhe. Prompt mein teen cheezein clear
+rakho — product bilkul waisa jaisa client ki photo mein hai, Neha ka wahi consistent face, aur ek saaf simple
+background jahan product ubhre. Magic line yaad rakho — same face — taaki har product photo mein Neha ek
+jaisi rahe.
+Ek zaroori baat — product ki shape, colour, aur label bilkul same rehna chahiye. Client ka product agar red
+bottle hai to red hi rahe, aur uspe likha naam badle nahi. Ismein AI galti karta hai — isi liye result ko dhyaan se
+check karo, aur galat aaye to prompt mein product ki detail aur pakki karo.
+Ab common galti. Log product ko chhota, kone mein, ya andhere mein dikha dete hain — nazar Neha pe chali
+jaati hai, product pe nahi. Yaad rakho — yahan hero product hai, Neha nahi. Product frame mein bada,
+saamne, achhi roshni mein hona chahiye.
+Aaj ka kaam — koi bhi ek product lo, kisi cheez ki saaf photo — chai ka cup, bottle, ya cream ka jar. Flow mein
+Neha ke saath uski ek clean product photo banao. Product hero rakho, face same rakho, background simple.
+20 minute ka kaam.
+Agle lesson mein isko professional studio level pe le jayenge — lighting, background, angles ka system. Milte
+hain agle lesson mein.
+
+ 20
+
+LESSON 21 — Professional Studio Shots SCRIPT · ~3min
+
+Aaj hum product photos ko professional studio level pe le jayenge. Lighting, background, aur angles — teeno
+ka system. Video ke end tak aap wahi photos bana paoge jo bade brands apne catalogs mein use karte hain.
+Pehle samjho studio shot ka matlab kya hai. Kal wali clean shot achhi thi, par studio shot usse ek level upar
+hai. Farak details mein hai: sahi lighting jo product ko chamkaye, sahi background jo product ko ubhaare, aur
+sahi angle jo product ki best side dikhaye. Yahi teen cheezein saste aur mehnge look ka farak banati hain.
+Pehla — lighting. Product photo mein lighting sabse badi cheez hai. Prompt mein soft studio lighting maango
+— aisi roshni jo product pe hard shadow na daale, aur uski shape saaf dikhaye. Bottle, jar, ya gadget ho to
+halki shine achhi lagti hai. Andhera ya flat light product ko sasta dikhata hai.
+Doosra — background. Studio shot ke liye plain, clean background — white, grey, ya product ke rang se match
+karta ek soft shade. Background kabhi product se zyada dhyaan na kheenche. Ek trick — thoda soft shadow
+product ke neeche rakho, isse product 'rakha hua' dikhta hai, hawa mein tairta nahi.
+Teesra — angle. Har product ka ek best angle hota hai. Bottle aur jar aankh ke level pe seedha; jewellery aur
+watch thoda upar se close; shoes ka side. Ek product ke 2-3 angle banao — front, thoda tilt, aur ek close-up
+detail. Client ko choice dena professional lagta hai.
+Ab prompt mein sab jodo — product exactly same, Neha ka same face agar wo pakde ho, soft studio lighting,
+clean background, aur angle bataao. Aur wahi rule — product hero, saaf, sharp.
+Ab common galti. Log ek hi photo banake bhej dete hain. Client ko lagta hai option nhi hai. Rule — har product
+ke kam se kam 3 variations do: alag angle, ya sirf product, ya Neha ke saath. Zyada choice, zyada
+professional.
+Aaj ka kaam — kal wale product ko studio level pe le jao. Soft lighting, clean background, aur 3 alag angles
+banao. Ek set taiyaar karo jaise ek asli catalog ke liye. 20-25 minute.
+Agle lesson mein lifestyle shots seekhenge — product ko asli zindagi mein dikhana, aur platform-ready
+banana. Milte hain agle lesson mein.
+
+ 21
+
+LESSON 22 — Lifestyle + Platform-Ready Shots SCRIPT · ~3min
+
+Aaj hum do cheezein seekhenge — lifestyle shots, aur photos ko platform-ready banana. Lifestyle product
+photography ka sabse mehnga hissa hai, aur platform rules wo cheez hai jo client ko turant impress karti hai.
+Video ke end tak dono aa jayenge.
+Pehle lifestyle samjho. Studio shot product ko dikhata hai — lifestyle shot product ke saath zindagi dikhata hai.
+Watch white background pe studio hai. Wahi watch Neha ki kalai pe, cafe mein coffee ke saath — lifestyle. Aur
+log cheez nahi, cheez ke saath ki feeling khareedte hain. Isi liye brands lifestyle ke zyada paise dete hain.
+Kaise banate hain. Neha ko product ke saath asli scene mein rakho — skincare bathroom mirror ke saamne,
+sunglasses cafe ki dhoop mein, kurti street pe. Prompt mein teen cheezein: product bilkul same, Neha ka same
+face, aur ek asli natural setting jahan product istemaal ho raha lage. Candid feel maango — posed studio nahi.
+Product phir bhi saaf dikhe, chhupe nahi.
+Ab platform-ready. Client ko sirf achhi photo nahi, uske platform ke hisaab se sahi photo chahiye. Har platform
+ki apni bhasha hai. Amazon aur Flipkart ke main image ka rule — plain pure white background, product frame
+mein bada, koi text ya extra cheez nahi. Isi liye pehli clean studio wali white background photo yahan kaam
+aati hai. Instagram aur website ke liye lifestyle aur square ya vertical crop chalta hai. Ek smart creator dono
+deta hai — Amazon ke liye white, Instagram ke liye lifestyle.
+Ek chhoti baat jo bada farak karti hai — size aur crop. Amazon square chahta hai, Instagram feed square ya 4
+by 5, reel 9 by 16. Client ko ready size mein dena — usko crop na karna pade — isi se aap yaad reh jaate ho.
+Ab common galti. Log ek hi photo har jagah bhej dete hain. Amazon lifestyle reject kar deta hai kyunki
+background white nahi; Instagram pe plain white boring lagta hai. Rule — pehle poochho photo kahan chahiye,
+phir us platform ke hisaab se banao.
+Aaj ka kaam — apne product ki ek lifestyle photo banao Neha ke saath asli scene mein. Phir usi product ki ek
+Amazon-ready plain white photo bhi. Do platform, do photo — ek set. 25 minute.
+Agle lesson mein fashion try-on seekhenge — kisi bhi kapde ya jewellery ko Neha ko pehnana. Milte hain agle
+lesson mein.
+
+ 22
+
+LESSON 23 — Fashion Try-On SCRIPT · ~3min
+
+Aaj hum fashion try-on seekhenge — kisi bhi kapde, jewellery, ya accessory ko Neha ko pehnana. Video ke end
+tak aap client ka bheja hua kurti ka flat photo utha ke, wahi kurti Neha ko pehna paoge.
+Pehle samjho ye skill itni keemti kyun hai. Online shopping ki sabse badi problem — customer ko pata nahi
+kapda pehna hua kaisa lagega. Isi liye fashion mein returns sabse zyada. Aur iska ilaaj — model photos. Jo
+kurti model pe dikhti hai, wo flat photo se 3 guna zyada bikti hai. Har chhoti clothing brand, har boutique wali
+didi ko ye chahiye, par model ka kharcha uthana mushkil. Aap wahi sasta aur turant de dete ho.
+Kaise karte hain. Aapke paas do cheezein — Neha, aur client ka product photo, jaise ek kurti flat rakhi hui.
+Flow mein try-on ka matlab — wahi kurti Neha ko pehna do. Prompt mein teen cheezein: kapda bilkul same
+rahe — same colour, same design, same print; Neha ka same face; aur ek natural pose ya simple background.
+Sabse zaroori — kapde ka design, print aur colour badalna nahi chahiye. Yahin AI galti karta hai — print thoda
+change kar deta hai. Result dhyaan se check karo, print match karo.
+Kya-kya pehna sakte ho — kurti, saree, dress, top; jewellery jaise earrings aur necklace; aur accessories jaise
+sunglasses, bag, watch. Jewellery aur accessories ke liye close-up angle achha kaam karta hai taaki detail
+dikhe.
+Ek professional touch — ek hi kapde ke 2-3 look do. Ek full body, ek half, ek close-up fabric detail. Client ko
+poora idea milta hai, aur wo photos seedha uski website pe ja sakti hain.
+Ab common galti. Log kapde ka print ya colour badalne dete hain aur bhej dete hain. Client ke liye ye sabse
+bada dhoka hai — jo dikha wo customer ko milega nahi, returns aur badhenge. Rule — product bilkul same,
+chahe pose kuch bhi ho.
+Aaj ka kaam — kisi kapde ya accessory ki ek flat photo lo — apni ya online se — aur Flow mein Neha ko wahi
+pehna ke ek try-on photo banao. Print same rakhna. Phir 2 alag look banao. 20-25 minute.
+Agle lesson mein pehla client kaise laaye — asli kamai yahan se shuru. Milte hain agle lesson mein.
+
+ 23
+
+LESSON 24 — Pehla Client Kaise Laye SCRIPT · ~3min
+
+Aaj ka lesson course ka sabse bada mod hai. Aaj tak aap seekh rahe the — aaj se kamaoge. Pehla client kaise
+dhundhna, kaise baat karna, aur kaise haan karwana. Video ke end tak aapke paas pura outreach system
+hoga.
+Pehle ek dar todo. Log sochte hain client lana matlab salesman banna, ghar ghar dhakke khana. Galat. Aapke
+paas wo cheez hai jo hazaaron sellers ko chahiye aur sasti mein mil nahi rahi — professional photos. Aap
+maang nahi rahe, ek problem ka hal de rahe ho.
+Ab client kahan hai. Sabse aasan jagah — Instagram khud. Chhote sellers dhundho: kapde bechne wali
+boutiques, homemade skincare, jewellery, candles, chhote food brands. Inki profiles dekho — jinki photos
+kamzor hain, wahi aapke best client hain, kyunki unhe farak turant dikhega. Doosri jagah — local businesses,
+Facebook marketplace sellers, aur apne aas-paas ke dukaan wale jinki online presence kamzor hai.
+Ab baat kaise karni hai. Cold message ka formula — chhota aur unke baare mein. Teen line. Pehli — ek sachhi
+tareef ya unke product ka zikr. Doosri — ek short line ki aap professional product photos banate ho jo sales
+badhati hain. Teesri — ek chhoti offer ya sawal, jaise 'ek free sample bana ke dikhau?'. Lambe paragraph aur
+'main ye main wo' mat likho — koi nahi padhta.
+Sabse taakatwar cheez — free sample. Unhi ke product ki ek photo bina maange bana ke bhej do. Jab wo apni
+cheez professional dikhti dekhte hain, aadhi haan wahin ho jaati hai. Ek din mein 5-10 sellers ko aise approach
+karo. Number ka khel hai — 20 messages mein 1-2 haan karte hain, aur wahi shuru ke liye kaafi.
+Ab common galti. Log ek-do message bhej ke, jawab na aane pe haar jaate hain. Ya har kisi ko ek jaisa copypaste bhejte hain. Rule — roz thoda outreach, har message thoda personal, aur follow-up karo. Ek 'na' ka
+matlab agla client, band darwaaza nahi.
+Aaj ka kaam — 10 chhote sellers dhundho jinki photos kamzor hain. Un mein se 2 ke liye ek-ek free sample
+photo banao, aur teeno line wala message ke saath bhejo. Aaj se roz 5 outreach. 30 minute.
+Agle lesson mein pricing — kitne paise maangne hain, rate card ke saath. Milte hain agle lesson mein.
+
+ 24
+
+LESSON 25 — Product Shoot ki Pricing SCRIPT · ~3min
+
+Aaj Module 5 ka last lesson — aur sabse zaroori sawal ka jawab: kitne paise maangne hain. Video ke end tak
+aapke paas ready rate card hoga. Client puchhega 'kitne loge?' aur aap bina atke jawab doge.
+Pehle samjho pricing itni badi baat kyun hai. Yahin do galtiyan hoti hain, dono khatarnak. Pehli — zyada maang
+liya, client bhaag gaya. Doosri, aur ye zyada hoti hai — kam maang liya. Kam maangne se sirf kamai nahi girti,
+izzat girti hai. Sasta kaam sasta banda dikhata hai, aur client aage bhi kam hi dega.
+Ab pricing ka sahi tareeka. Ek photo ke paise mat socho — packages banao. Log ek se dar jaate hain, package
+mein value dikhti hai. Teen tier rakho. Basic — kuch photos, ek product, ek platform ready. Standard — zyada
+photos, alag angles, do platform ke sizes. Premium — poora set, lifestyle plus studio, jitne products, sab
+platform ready. Har upar wale tier mein zyada value, aur zyada daam.
+Numbers ke liye guide — shuru mein Indian sellers ke hisaab se: chhota package sau se hazaar ke beech,
+standard hazaar se teen hazaar, premium teen se saat hazaar ke aas-paas. Ye starting hai — jaise portfolio aur
+naam banega, daam badhega. Kabhi mehnge shehar ke brand ko chhote daam mat dikhao, aur chhote seller
+pe premium mat thopo.
+Do zaroori rule. Ek — daam mat girao, scope girao. Client kum budget bole to keemat mat todo, package
+chhota kar do — kam photos, kam angles. Isse aapki value bani rehti hai. Do — advance lo. Aadha kaam se
+pehle, aadha delivery pe. Bina advance kaam shuru mat karna — ye professional ki nishani hai aur timewaster clients hata deta hai.
+Jab client 'kitne loge' puchhe, ghabra ke kuch bhi mat bolo. Confidently package batao, ek line mein value
+samjhao — 'is package mein aapko ye ye milega' — aur chup ho jao. Jo pehle bolta hai wo kamzor padta hai.
+Ab common galti. Client 'thoda kum karo' bole to log turant aadha kar dete hain. Ye sabse badi galti. Thoda
+adjust theek hai, par apni mehnat muft mat karo. Value pe khade raho.
+Aaj ka kaam — apna rate card banao. Teen packages, har ek mein kya milega aur kitne ka. Ek page pe saaf
+likho, taaki client puchhe to turant bhej sako. 20 minute.
+Agle lesson se Module 6 shuru — UGC aur brand deals, video wali asli kamai. Milte hain agle lesson mein.
+
+ 25
+
+ MODULE 6 — UGC & Brand Deals
+
+LESSON 26 — UGC — Samajh + Pehli Video Banana SCRIPT · ~3min
+
+Aaj se Module 6 shuru — UGC aur brand deals. Aur aaj do cheezein: pehle samjhenge UGC hai kya aur brands
+iske itne paise kyun dete hain, phir pehli poori UGC video banayenge. Video ke end tak aapke paas ek ready
+UGC video hogi — waisi jaise brands ko chahiye.
+UGC matlab User Generated Content. Simple bhasha — aisi video jo aam user ne banayi lage, brand ne nahi.
+Jaise koi ladki apne phone se bole 'yaar maine ye face wash try kiya, kamaal hai'. Wo polished ad se zyada
+bikti hai, kyunki log ads pe bharosa nahi karte, logon pe karte hain. Isi liye brands crore ka budget chhod ke
+aise creators ko paise de rahe hain. Aur badi baat — UGC ke liye followers nahi chahiye. Brand aapki reel apne
+page ya ads mein daalta hai. Bas achhi video chahiye. Isi liye ye Instagram growth ka intezaar kiye bina shuru
+ho sakta hai.
+Ab video banate hain. Aur samjho — UGC ka 70% khel visuals nahi, script hai. Neha kya bolti hai. Kyunki UGC
+ka kaam bharosa banana hai, aur bharosa words se banta hai. Kharab script wali sundar video se, achhi script
+wali simple video zyada bikti hai.
+Script formula — teen hisse. Ek — hook, pehle 3 second: ek problem ya bold line, jaise 'agar aapke baal jhad
+rahe hain to ye dekho'. Do — value ya demo, beech mein: product kya karta hai, kaise use hota hai, 2-3 line.
+Teen — call to action, end mein: 'link bio mein hai', 'try zaroor karna'. Chhota rakho — 20 se 40 second.
+Ab video. Neha ka lip-sync — wahi Module 3 wali skill — plus product haath mein. 3 chhote clips: hook bolti
+hui, product dikhati hui, aur end line. Phir VN mein Lesson 14 wale 4 kaam: 9 by 16 ratio, tight cuts, captions
+har line pe, soft music. Captions UGC mein zaroori — log bina awaaz dekhte hain.
+Ab common galti. Log video sundar banate hain par script pe dhyan nahi dete — Neha ratti hui lagti hai,
+bharosa tootta hai. Rule — pehle script likho, natural bolchaal mein, phir video banao.
+Aaj ka kaam — koi ek product chuno, teen-hisse wala script likho, aur ek poori UGC video banao — script se
+export tak. 30-40 minute.
+Agle lesson mein portfolio banayenge — wo set jo brands ko dikhate hi kaam dilata hai. Milte hain agle lesson
+mein.
+
+ 26
+
+LESSON 27 — Portfolio Banana SCRIPT · ~3min
+
+Aaj hum portfolio banayenge — 5 videos ka wo set jo brands ko dikhate hi kaam dilata hai. Video ke end tak
+aapko pata hoga portfolio mein kya rakhna, kaise rakhna, aur kahan rakhna hai.
+Pehle samjho portfolio hi sab kuch kyun hai. UGC mein followers nahi chahiye — to brand aap pe bharosa kis
+cheez se karega? Ek hi cheez se — aapka kaam. Portfolio aapka resume hai, degree hai, interview hai, sab ek
+saath. Brand 2 minute mein portfolio dekhta hai aur decide karta hai kaam dena hai ya nahi.
+Portfolio mein kya rakhna. 5 videos, alag-alag taaki aapki range dikhe. Do testimonial — Neha product use
+karke bharose se baat kar rahi, jaise ek asli customer. Do demo — product kaise kaam karta, unboxing ya use
+karke dikhana. Aur ek different niche ka — taaki brand samjhe aap sirf ek cheez nahi, kai type ka product
+handle kar sakte ho. In paanchon mein alag products, alag looks, par ek hi quality.
+Ab quality ki baat — sab videos ek jaisi high standard ki hon. Ek bhi kamzor video poore portfolio ki value
+girati hai. 5 achhi, 10 average se behtar hain. Har video mein wahi 4 kaam — sahi ratio, tight cut, captions,
+music.
+Kahan rakhna. Ek jagah jo brand ko ek link se sab dikha de. Sabse aasan — ek Google Drive folder, ya ek
+simple portfolio page, ya Instagram pe ek highlight. Link ready rakho taaki jab brand maange, turant bhej
+sako. Naam aur ek line — 'UGC creator, product videos jo bikti hain' — upar likho.
+Ab common galti. Log kaam milne ka intezaar karte hain phir portfolio banate hain. Ulta hai. Portfolio pehle
+banao — apne khud ke ya kisi bhi product ke saath — taaki jab client aaye, dikhana ready ho. Bina portfolio ke
+koi serious brand baat nahi karta.
+Aaj ka kaam — 5 videos plan karo: 2 testimonial, 2 demo, 1 alag niche. Aaj se ek-ek din mein banao, jaldi nahi.
+Sab ek folder ya page pe rakho, link ready. Agar pichle lesson wali ek video hai, wo pehli mein daal do.
+Agle lesson mein brands tak pahunchna — portfolio ko sahi logon tak le jaana. Milte hain agle lesson mein.
+
+LESSON 28 — Brands Tak Pahunchna SCRIPT · ~3min
+
+Aaj hum brands tak pahunchne ka pura system banayenge. Portfolio ready hai — ab use sahi logon tak le
+jaana hai. Video ke end tak aapke paas 3 raaste honge, ready messages honge, aur roz ka outreach routine.
+Pehle ek soch theek karo. 'Brand' sunte hi dimag mein bade naam aate hain jinke TV ads chalte hain. Wahan
+mat jao — unke paas agencies hain. Aapka market alag aur bahut bada hai — chhote aur medium brands.
+Instagram pe bikne wale skincare, naye gadget, kapde, food, supplement brands. Inko content chahiye,
+budget chhota hai, aur ye aap jaise creators dhundh rahe hain.
+Teen raaste. Ek — Instagram DM. Aise brands dhundho jinke ads chalte hain par content simple hai. Unhe DM
+karo. Do — email. Brand ki website pe aksar contact ya collab email hoti hai, wahan professional pitch bhejo.
+Teen — collab platforms aur brand ke 'creators wanted' posts, jahan brands khud creators maangte hain.
+Message ka formula wahi — chhota, unke baare mein, aur seedha. Pehli line unke product ka zikr ya tareef.
+Doosri — aap UGC creator ho jo aise videos banate ho jo bikti hain. Teesri — portfolio link, aur ek chhoti offer,
+jaise 'ek sample video bana ke bhej doon?'. Sample offer sabse taakatwar — kaam dikhega to baat aage
+badhegi.
+Number ka khel. Roz 5 brand DMs aur 2 emails. Hafte mein 35-40 approach. Ismein se kuch jawab denge, kuch
+mein deal banegi. Ek 'na' ya no-reply normal hai — routine banao, mood pe mat chhodo. Aur follow-up karo —
+3-4 din baad ek polite reminder, kyunki zyada deals follow-up mein banti hain.
+Ab common galti. Log ek dum bade brand ko pitch karke, jawab na aane pe demotivate ho jaate hain. Ya sabko
+ek copy-paste bhejte hain. Rule — chhote-medium brands target karo, har message thoda personal, aur
+consistency rakho.
+Aaj ka kaam — 15 chhote-medium brands ki list banao jinko content chahiye. Aaj 5 ko DM aur 2 ko email
+bhejo, portfolio link ke saath. Ek ke liye ek sample video bana ke bhejo. Aaj se roz ye routine.
+Agle lesson mein deal close karna — jab brand haan bole, rate aur payment ka pura system. Milte hain agle
+lesson mein.
+
+ 27
+
+LESSON 29 — Deal Close Karna SCRIPT · ~3min
+
+Aaj wo lesson hai jahan mehnat paise mein badalti hai. Brand ka jawab aa gaya — 'haan, interested hain,
+rates batao.' Ab kya? Video ke end tak aapke paas UGC ka rate card hoga, negotiation ke jawab honge, aur
+payment ka system.
+Pehle samjho deal close karna alag skill hai. Bahut log yahan tak pahunch jaate hain aur yahin haar jaate hain.
+Brand ne rate pucha, inhone ghabra ke kuch bhi bol diya — ya itna kam ki mazdoori ban gayi, ya bina soche
+itna zyada ki brand bhaag gaya. Dono se bachna hai.
+Rate card. Photos ki tarah, UGC bhi packages mein bech. Ek video ka rate mat socho, package socho. Basic —
+ek video, ek revision. Standard — 2-3 videos, alag hooks, thodi zyada value. Premium — videos ka set, plus
+alag versions alag platform ke liye. UGC ke rate photos se zyada hote hain kyunki video mehnat aur bharosa
+dono zyada deti hai. Shuru mein ek video teen se pandrah hazaar ke beech, package ke hisaab se; naam
+banne pe zyada.
+Negotiation ke jawab. Brand 'zyada hai' bole — daam mat girao, scope girao. 'Is budget mein main ek video de
+sakti hoon 2 ke bajaye.' Value bachi rehti hai. Brand 'pehle free karke dikhao' bole — portfolio hai isi liye; ek
+naya free full kaam mat do, zyada se zyada ek chhota sample. Aur usage clear karo — video kahan chalega,
+kitne time. Ads mein lambe use ka zyada charge banta hai.
+Payment ka rule — advance. Aadha kaam se pehle, aadha delivery pe. Naye brand ke saath ye zaroori.
+Payment method aur date likhit mein — ek chhota message hi confirmation hai. Bina advance kaam shuru mat
+karo.
+Ab common galti. Excitement mein log usage rights, revisions, aur advance ki baat kiye bina 'haan' bol dete
+hain — baad mein brand free mein extra kaam nikalta hai. Rule — deal se pehle teen cheezein clear: kitne
+videos, kitni revisions, aur usage. Sab likhit mein.
+Aaj ka kaam — apna UGC rate card banao, teen packages ke saath. Phir teen aam sawalon ke jawab likho —
+'zyada hai', 'free karke dikhao', 'kitne time ke liye use kar sakte'. Ready rakho taaki brand puchhe to turant
+bhej sako. 20 minute.
+Agle lesson mein deal ke baad ka kaam — brand ke saath aise kaam karna ki wo baar baar wapas aaye. Milte
+hain agle lesson mein.
+
+ 28
+
+LESSON 30 — Brand ke Saath Kaam SCRIPT · ~3min
+
+Aaj Module 6 ka last lesson. Deal ho gayi, advance aa gaya — ab kaam shuru. Aur aaj wo sikhaungi jo rate
+card se zyada kamai badhata hai — brand ke saath aise kaam karna ki wo baar baar wapas aaye. Video ke end
+tak delivery se repeat deal tak ka system hoga.
+Pehle ek hisaab. Naya client laane mein kya lagta hai — 50 messages, 2-4 hafte, mehnat. Purane client se
+doosri deal lene mein — ek message. Isi liye asli paisa naye clients mein nahi, purane ko rokne mein hai. Ek
+khush brand saal bhar kaam de sakta hai.
+Delivery ka tareeka. Ek — time pe do, balki thoda pehle. Deadline se pehle delivery brand ko yaad reh jaati
+hai. Do — jo promise kiya usse thoda zyada do. Ek extra angle, ek chhota bonus clip. Isi ko 'expected se upar'
+kehte hain, aur yahi repeat deal banata hai. Teen — file saaf aur ready format mein do: sahi size, sahi name,
+ek folder mein. Brand ko crop ya rename na karna pade.
+Revisions ko sahaj lo. Brand chhota change maange to jhagda mat karo — jitni revisions deal mein thi, khushi
+se do. Par unlimited free changes se bacho — isi liye pehle se revisions ka number tay kiya tha. Professional
+wahi jo feedback ko bina ego ke leta hai.
+Repeat deal maangna. Kaam pasand aaye, tab hi — delivery ke baad ek chhoti line: 'agar aur content chahiye
+ho to main ready hoon, aur ek monthly package bhi de sakti hoon.' Yahin se ek baar ka client mahine ka client
+ban jaata hai. Monthly retainer — fixed videos har mahine, fixed paisa — ye business ki sabse stable kamai
+hai.
+Ab common galti. Log ek deal poori karke g ायab ho jaate hain, phir naye client dhundhte rehte hain. Ye ulta
+chakkar hai. Rule — har delivery ke baad relationship banao, feedback maango, aur agla kaam ya monthly
+package offer karo.
+Aaj ka kaam — apni ek delivery checklist banao: time se pehle, ek extra value, saaf files ready format mein.
+Aur ek chhota 'repeat / monthly' message template likho jo delivery ke baad bhejna hai. Ready rakho. 20
+minute.
+Agle lesson se aakhri Module 7 — Monetization aur Scaling. Ab wo streams jinme client ki zaroorat hi nahi.
+Milte hain agle lesson mein.
+
+ 29
+
+ MODULE 7 — Monetization & Scaling
+
+LESSON 31 — Affiliate Marketing SCRIPT · ~3min
+
+Aaj se aakhri module — Monetization aur Scaling. Ab tak do income chal padi — product shoots aur UGC. Dono
+mein client chahiye. Aaj se wo streams kholenge jinme client ki zaroorat hi nahi. Pehla — affiliate marketing.
+Video ke end tak samjhoge ye kaise kaam karta hai aur Neha isse kaise kamayegi.
+Pehle affiliate simple bhasha mein. Aap kisi product ka special link share karte ho. Koi us link se khareedta hai,
+to aapko commission milta hai — bina kuch bech, bina stock, bina delivery. Sirf recommend karo. Amazon,
+Flipkart, Myntra, aur bahut brands ke apne affiliate programs free mein join kiye jaate hain.
+Ye aapke liye perfect kyun hai. Neha already products dikhati hai — bas ab link jod do. Ek reel jo already banti
+hai, wo ab kamai kar sakti hai bina kisi client ke. Ek baar video banti hai, aur mahinon commission deti rehti
+hai. Isi liye ye 'sote hue' kamai hai.
+Kaise shuru karo. Ek — koi affiliate program join karo, Amazon Associates sabse aasan. Do — apne niche ke
+products chuno jo Neha naturally recommend kar sake — fashion, skincare, gadgets. Teen — content banao jo
+product ko value ke saath dikhaye: '5 monsoon fashion must-haves', 'ye 3 skincare products kaam karte hain'.
+End mein link bio ya comment mein. Trust wali video hi bikti hai — jhoothi tareef se log ek baar aate hain, phir
+chhod dete hain.
+Kahan link daalo. Instagram bio mein ek link tool jahan saare links rahein; reel ke caption aur comment mein;
+aur stories mein swipe/link sticker. Jitni jagah link, utni chance.
+Ab common galti. Log har cheez ka link thok dete hain — banda samajh jaata hai ye sirf paise ke liye keh rahi
+hai, bharosa tootta hai. Rule — wahi recommend karo jo sach mein achha ho aur niche mein fit ho. Kam links,
+zyada bharosa, zyada sale.
+Aaj ka kaam — ek affiliate program join karo. Apne niche ke 3 products chuno. Ek video plan karo jo in
+products ko value ke saath dikhaye, link ke saath. 25 minute.
+Agle lesson mein apna khud ka digital product banana aur bechna. Milte hain agle lesson mein.
+
+ 30
+
+LESSON 32 — Apna Digital Product SCRIPT · ~3min
+
+Aaj kamai ki seedhi ka agla kadam — apna khud ka product banana aur bechna. Digital product. Video ke end
+tak pata hoga kya banana, kaise, aur Neha usse kaise bechegi.
+Pehle samjho digital product kya hai. Aisi cheez jo ek baar bane aur baar baar bike — bina factory, bina stock,
+bina delivery boy. Jaise ek PDF guide, checklist, ya template pack. Ek baar mehnat, phir har sale pura munafa.
+Affiliate se farak — yahan commission nahi, poora paisa aapka, aur product bhi aapka.
+Kya banao. Wahi jo aap already jaante ho. Aapne ye course karke ek skill banayi — wahi becho. Kuch example:
+ek 'AI influencer kaise banaye' short guide, ek 'product photography prompts' pack, ek 'Instagram content
+calendar' template, ya 'UGC script templates'. Aapka pehla digital product wahi ho jo aapke followers ya
+sellers ki ek problem hal kare. Chhota rakho — ek kaam achhe se karne wala guide, 100 page ki kitaab nahi.
+Kaise banao. Content aap jaante ho — bas use saaf format mein rakho. Ek simple PDF ya notion page. Cover
+achha ho, andar clear steps. Zyada design ki zaroorat nahi — value se bikta hai.
+Kahan aur kaise becho. Ek simple payment link ya ek chhoti site jahan log paise deke download karein. Neha
+ise apne content se beche — reels jo problem dikhayein aur guide ko hal batayein, stories, aur bio link. Aur
+pricing — chhota rakho shuru mein, taaki pehle log khareedein aur review dein. Reviews aane pe daam
+badhao.
+Ab common galti. Log perfect banane ke chakkar mein mahine laga dete hain, aur launch hi nahi karte. Rule —
+chhota banao, jaldi launch karo, feedback lo, phir improve karo. Bika hua adhura, na bike hue perfect se
+behtar hai.
+Aaj ka kaam — ek digital product ka idea likho jo aapke logon ki ek problem hal kare. Uski outline banao —
+kya-kya andar hoga. Aur ek reel plan karo jo is product ko bechne ke liye ho. 25 minute.
+Agle lesson mein faceless business model — apni AI influencer ko kisi business ka brand face banana. Milte
+hain agle lesson mein.
+
+ 31
+
+LESSON 33 — Faceless Business Model SCRIPT · ~3min
+
+Aaj ka lesson un logon ke liye sabse keemti hai jinke paas already koi business hai — dukaan, online store, koi
+bhi kaam. Aur jo naye hain, unke liye future ka naksha. Aaj Neha jaisi AI influencer ko kisi business ka
+permanent brand face banayenge.
+Pehle problem samjho, jo har business owner ki hai. Aaj har business ko Instagram pe dikhna zaroori hai —
+bina content ke dukaan andheri gali mein hai. Par owner ko na camera pe aana hai, na roz shoot karne ka time
+hai, na model ka kharcha. Isi liye zyada tar business pages soye pade hain. Aap ek permanent face de dete ho
+jo roz, saste mein, bina thake content deta hai.
+Model kaise kaam karta hai. Ek business chuno — apna ya kisi ka. Uske liye ek consistent character banao jo
+us brand ka chehra bane. Wahi character roz product dikhaye, offers bataye, tips de, reels banaye. Grahak ko
+ek pehchana hua chehra dikhta hai, brand insaani lagta hai, aur bharosa banta hai. Business owner ko ek
+'content machine' mil jaati hai bina kisi ke camera pe aaye.
+Iski kamai do tarah. Ek — apna business ho to khud ka content khud banao, kisi ko paise nahi. Do — doosron
+ke business ke liye ye service becho: 'main aapke brand ka AI face aur mahine ka content sambhaal loongi.' Ye
+monthly retainer banta hai — har mahine fixed content, fixed paisa. Ek business owner ke liye ye model ka
+sapna hai, aur aapke liye stable income.
+Kya-kya de sakte ho — product reels, offer posts, festival content, tips aur behind-the-scenes. Lesson 15 wale
+formats aur Module 5-6 wali skills yahan seedha kaam aati hain. Ek business ke liye poore mahine ka content
+ek baithak mein plan ho jaata hai.
+Ab common galti. Log soch lete hain ye sirf bade brands ke liye hai. Ulta — chhote local business, jinke paas
+na time na budget, aapke sabse aasan client hain. Rule — chhote se shuru karo, ek business ka face bano,
+result dikhao, phir aur pakdo.
+Aaj ka kaam — ek business chuno, apna ya aas-paas ka. Uske liye ek brand-face character aur ek mahine ka
+content plan sochno — kaunse formats, kitni posts. Ek pitch line likho jo ye service beche. 25 minute.
+Agle lesson mein scaling — ek se zyada AI influencers chalana. Milte hain agle lesson mein.
+
+ 32
+
+LESSON 34 — Multiple Influencers SCRIPT · ~3min
+
+Aaj scaling ki asli baat — ek se zyada AI influencers chalana. 2-3 characters ek saath. Video ke end tak
+samjhoge kab doosra character banana hai, kaise chalana hai, aur ek insaan poori agency kaise ban jaata hai.
+Pehle samjho matlab kya hai. Neha fashion mein hai. Ab socho ek doosra character — Kabir, tech aur gadgets
+wala. Aur teesra — Riya, fitness wali. Teen characters, teen niches, teen audiences. Ek aadmi ke andar teen
+creators. Har ek apni kamai laata hai — apne brands, apne affiliate, apna content.
+Doosra character kab banana. Jab pehla set ho jaye — Neha ka content, clients, aur system chal raha ho.
+Pehle ek ko chalana seekho, phir doosra. Ek saath teen shuru karne se teeno adhoore rahenge. Ek pakka ho,
+tab agla.
+Naya niche kaise chuno. Wahi jahan paisa aur demand ho, par aapke pehle se alag. Tech, fitness, food, travel,
+gaming — sab ke apne brands aur audience hain. Ek character ek niche pe pakka rahe, ghalmel mat karo. Har
+character ka apna face, naam, style, aur voice — bilkul Neha ki tarah consistent.
+System se chalao, mehnat se nahi. Yahi asli trick hai. Har character ke liye wahi process — character sheet,
+content bank, formats, schedule. Ek baar template ban jaye, doosra character usi template pe chalta hai,
+aadhe time mein. Batch mein kaam karo — ek din sab characters ke photos, ek din videos, ek din editing. Isi
+tarah ek insaan agency jaisa output deta hai.
+Kamai kaise badhti. Ek character se product shoots, UGC, affiliate, aur brand-face — chaar streams. Teen
+characters se wahi chaar, teen guna. Par kharcha aur time utna teen guna nahi badhta, kyunki system same
+hai. Isi liye scaling se munafa tez badhta hai.
+Ab common galti. Log josh mein 3-4 characters ek saath shuru kar dete hain, sab average rehte hain, koi
+kamai nahi. Rule — ek ko winner banao, uska system pakka karo, phir agla. Quality pehle, quantity baad mein.
+Aaj ka kaam — agar pehla character set hai, to doosre ka plan banao: naya niche, naam, style. Agar pehla
+abhi chal raha hai, to uske system ko likhit mein pakka karo taaki aage copy kar sako. 20 minute.
+Agle lesson mein sabko jodkar ek monthly income system, aur aage ka poora roadmap. Milte hain agle lesson
+mein.
+
+ 33
+
+LESSON 35 — Monthly Income System + Roadmap SCRIPT · ~3min
+
+Aaj wo karenge jiske liye ye pura course bana. Ab tak paanch kamai ke raaste khole — aaj sabko jodkar ek
+monthly income system banayenge, aur aage 6 mahine ka roadmap doongi. Video ke end tak ek page ka pura
+hisaab hoga.
+Pehle apni paanchon streams gin lo. Ek — product shoots, Module 5 wali, sellers ke liye photos, package ke
+daam. Do — UGC videos, Module 6 wali, brands ke liye. Teen — affiliate, bina client, commission. Chaar —
+apna digital product, ek baar bana ke baar baar bikta. Paanch — faceless brand-face service, monthly retainer.
+Paanch raaste, alag-alag, taaki ek dheere to doosra chale.
+Ab inhe ek system mein jodo. Har mahine ka target rakho — har stream se kitna. Shuru mein sab se thoda;
+jaise-jaise clients aur audience badhein, target badhao. Sabse stable do cheezein hain — monthly retainers
+(brand-face aur repeat clients) aur digital product ki passive sale. Inhe badhao, kyunki ye har mahine bina
+naye client ke aati hain. Ek-baar wale kaam upar se bonus.
+Hafte ka rhythm. Kuch din content creation — apne characters ke photos, videos, reels batch mein. Kuch din
+outreach — naye clients aur brands. Thoda time delivery aur clients ke saath kaam. Aur roz thoda
+engagement. Ise calendar mein baandh do, mood pe mat chhodo. System chalta hai, motivation nahi.
+Aage ka roadmap — 6 mahine. Pehle do mahine: ek character pakka, Instagram 1000 tak, pehle 2-3 paying
+clients. Teesra-chautha mahine: portfolio strong, monthly retainer shuru, affiliate aur digital product live.
+Paanchva-chhathva: doosra character, income streams badhao, daam badhao. Har mahine thoda upar — jump
+nahi, seedhi.
+Aur wo galtiyan jo sabse zyada logon ko girati hain. Ek — sab kuch seekhte rehna, karna kabhi nahi. Kaam
+karo, perfect ka intezaar mat karo. Do — ek do 'na' pe haar jaana. Ye number ka khel hai, chalte raho. Teen —
+consistency chhod dena. Jo tik gaya, wahi jeet gaya.
+Aaj ka kaam — ek page pe apna monthly income system likho: paanch streams, har ek ka target, aur hafte ka
+plan. Ye aapka business plan hai — samne rakho.
+Ye course ka aakhir hai, par aapke safar ki shuruaat. Din 1 pe prompt likhna nahi aata tha — aaj aapke paas
+consistent character hai, content system hai, aur kamai ke paanch raaste. Ab bas karte jao. Milte rahenge.
+
+ 34

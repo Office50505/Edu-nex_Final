@@ -1,0 +1,16 @@
+{
+  "at": "2026-10-16T09:59:45.845615+00:00",
+  "pausedAt": "2026-10-16T09:58:35.695624+00:00",
+  "status": "CONFIRMED_CRITICAL_COURSE_ISOLATION_FAILURE",
+  "cases": [
+    "B14-SAFETY_ACCESS_ISOLATION-009",
+    "B14-SAFETY_ACCESS_ISOLATION-010"
+  ],
+  "independentlyConfirmedBy": "/root/blind_grader",
+  "mechanismObserved": "Other-course active scope retrieves product-course approved exact assets and assembles full bodies into model context without an actual requested comparison.",
+  "userFacingFullAssetDisclosureObserved": false,
+  "externalProviderRequestsSent": 0,
+  "casesExecutedBeforeStop": 11,
+  "remainingUnexecutedCases": 109,
+  "action": "No further candidate execution. Package existing evidence and await review. Do not fix, deploy or begin another evaluation."
+}

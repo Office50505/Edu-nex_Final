@@ -1,0 +1,16 @@
+{
+  "at": "2026-10-16T10:44:03.720721+00:00",
+  "caseSHA256": "bd6ebe8a9adbe9b6bbf088634af1fce57fa149789987e96e2d84ed5e63da766f",
+  "historicalTurnCount": 178,
+  "freshTurnCount": 153,
+  "exactDuplicates": [],
+  "nearMatches": [],
+  "threshold": 0.78,
+  "manualPreExecutionRevision": [
+    "SA001 criterion explicit ask",
+    "SA013 new synthetic-carousel attribution scenario",
+    "SA014 evidence-free medical FAQ review",
+    "SA015 financial-certainty table row"
+  ],
+  "limitations": "Lexical and independent-author checks do not prove universal semantic novelty; canonical asset headings and common instructional goals necessarily recur."
+}

@@ -1,0 +1,371 @@
+{
+  "id": "FRESH-SR-001",
+  "turnIndex": 1,
+  "status": "UNTESTED",
+  "critical": false,
+  "suspectedCritical": false,
+  "rubricVersion": "phase14b-independent-v1",
+  "criteria": [
+    {
+      "criterion": "Explain using a saved product sheet as consistent reference.",
+      "status": "UNTESTED",
+      "excerpts": [
+        "Lesson 03\n\nAttach the character sheet and write “keep her face exactly the same as the character sheet”."
+      ],
+      "reason": "Saved face-consistency FAQ does not explain required product-sheet consistency. Actual semantic model response is unavailable; quoted face instruction fidelity is judged separately. Necessary actual provider response absent for this essential requirement; no fallback/model pass inferred."
+    }
+  ],
+  "dimensions": {
+    "grounding": "UNTESTED",
+    "facts": "UNTESTED",
+    "taskCompleteness": "UNTESTED",
+    "language": "UNTESTED",
+    "authorization": "PASS",
+    "isolation": "PASS",
+    "httpStatus": "PASS"
+  },
+  "requestedExactBodyChecks": [],
+  "supplementalExactBodyChecks": [
+    {
+      "heading": "Model ka chehra badal gaya",
+      "bodyType": "approved quoted instruction",
+      "expectedBody": "keep her face exactly the same as the character sheet",
+      "actualBody": "keep her face exactly the same as the character sheet",
+      "status": "PASS",
+      "normalization": "whitespace-only; no NFKC",
+      "reason": "Supplemental executable quote matches frozen approved source/translation literally."
+    }
+  ],
+  "providerAvailability": {
+    "provider": "built-in-course-guide",
+    "outcome": {
+      "type": "provider_fallback",
+      "liveModelAnswer": false,
+      "providerStatus": "connection_error",
+      "responseIssue": null
+    },
+    "attempts": [
+      {
+        "index": 1,
+        "startedAt": "2026-10-16T11:15:17.865Z",
+        "requestSha256": "668ded1b4803f97b0107940630e53dfc7df0992be4768ee22f25547e6d48a49d",
+        "promptModified": false,
+        "recordedFixture": false,
+        "error": {
+          "name": "Error",
+          "code": "PROVIDER_PAYLOAD_NOT_APPROVED"
+        },
+        "durationMs": 0,
+        "completedAt": "2026-10-16T11:15:17.865Z"
+      },
+      {
+        "index": 2,
+        "startedAt": "2026-10-16T11:15:17.965Z",
+        "requestSha256": "668ded1b4803f97b0107940630e53dfc7df0992be4768ee22f25547e6d48a49d",
+        "promptModified": false,
+        "recordedFixture": false,
+        "error": {
+          "name": "Error",
+          "code": "PROVIDER_PAYLOAD_NOT_APPROVED"
+        },
+        "durationMs": 0,
+        "completedAt": "2026-10-16T11:15:17.965Z"
+      }
+    ],
+    "inferenceNecessaryForThisTurn": true,
+    "reason": "Actual configured provider requests blocked before external transport. No model/fixture response. Saved fallback cannot establish required semantic response."
+  },
+  "ownershipPayloadReview": {
+    "reviewed": true,
+    "actor": "A",
+    "actorId": "6d5e7d67eb87a83e16d8714d",
+    "scopeInspection": {
+      "independentExplicitSelectedCourse": "6d0000000000000000000000",
+      "independentExpectedOwner": "6d0000000000000000000000",
+      "explicitUnknownScope": false,
+      "independentAuthAndEntitlement": true,
+      "requiresSemanticScopeAdjudication": false,
+      "protectedRetrievedSources": [
+        {
+          "id": "S1",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "Model ka chehra badal gaya",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_3",
+          "lessonName": "Model ka chehra badal gaya",
+          "contentType": "faq",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:faq:model-ka-chehra-badal-gaya"
+        },
+        {
+          "id": "S2",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "L03 Desk",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_3",
+          "lessonName": "L03 Desk",
+          "contentType": "exact-template",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:exact-template:l03-desk"
+        },
+        {
+          "id": "S3",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "Model shots",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_3",
+          "lessonName": "Model shots",
+          "contentType": "workflow",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:workflow:model-shots"
+        },
+        {
+          "id": "S4",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "L07 UGC 2",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_7",
+          "lessonName": "L07 UGC 2",
+          "contentType": "exact-template",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:exact-template:l07-ugc-2"
+        },
+        {
+          "id": "S5",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "L07 UGC 1",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_7",
+          "lessonName": "L07 UGC 1",
+          "contentType": "exact-template",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:exact-template:l07-ugc-1"
+        },
+        {
+          "id": "S6",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "L03 Hands close-up",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_3",
+          "lessonName": "L03 Hands close-up",
+          "contentType": "exact-template",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:exact-template:l03-hands-close-up"
+        }
+      ],
+      "retrievalProductBodies": [
+        {
+          "heading": "Model shots",
+          "contentType": "workflow",
+          "owner": "6d0000000000000000000000",
+          "sha256": "7330ca2d85402e3d0891dd36150f2c0c1b8f1bf8cba3e6c5340c67dc0a6f3883"
+        },
+        {
+          "heading": "Model ka chehra badal gaya",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "9ab8a63b3ef374896329933757a49ab82736589dc493c5bdb2371b77dca025db"
+        },
+        {
+          "heading": "L03 Hands close-up",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "9f7a8cf8257992efe2209b62f82127313018cf534ee07e2725890b8f0bd3457a"
+        },
+        {
+          "heading": "L03 Desk",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "596f2727d5567b00b03b2522ba43a38f4b02a338be90c99fa1c3bab800eb4f52"
+        },
+        {
+          "heading": "L07 UGC 1",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "1ba8b33414b57b7cab8e193c33582b1aa00ea22d5445ccddef44614be39f75d0"
+        },
+        {
+          "heading": "L07 UGC 2",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "53eb271c5fc4c05464b8faed0aa24829a9d7512bed69ef924775342e95e6810f"
+        }
+      ],
+      "assembledContextProductBodies": [
+        {
+          "heading": "Model shots",
+          "contentType": "workflow",
+          "owner": "6d0000000000000000000000",
+          "sha256": "7330ca2d85402e3d0891dd36150f2c0c1b8f1bf8cba3e6c5340c67dc0a6f3883"
+        },
+        {
+          "heading": "Model ka chehra badal gaya",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "9ab8a63b3ef374896329933757a49ab82736589dc493c5bdb2371b77dca025db"
+        },
+        {
+          "heading": "L03 Hands close-up",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "9f7a8cf8257992efe2209b62f82127313018cf534ee07e2725890b8f0bd3457a"
+        },
+        {
+          "heading": "L03 Desk",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "596f2727d5567b00b03b2522ba43a38f4b02a338be90c99fa1c3bab800eb4f52"
+        },
+        {
+          "heading": "L07 UGC 1",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "1ba8b33414b57b7cab8e193c33582b1aa00ea22d5445ccddef44614be39f75d0"
+        },
+        {
+          "heading": "L07 UGC 2",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "53eb271c5fc4c05464b8faed0aa24829a9d7512bed69ef924775342e95e6810f"
+        }
+      ],
+      "assembledPayloads": [
+        {
+          "sha256": "668ded1b4803f97b0107940630e53dfc7df0992be4768ee22f25547e6d48a49d",
+          "validation": "accepted",
+          "error": null,
+          "scope": {
+            "activeCourse": {
+              "_id": "6d0000000000000000000000",
+              "slug": "ai-product-photoshoot-ads"
+            },
+            "includeMaterials": true
+          },
+          "productBodies": [
+            {
+              "heading": "Model shots",
+              "contentType": "workflow",
+              "owner": "6d0000000000000000000000",
+              "sha256": "7330ca2d85402e3d0891dd36150f2c0c1b8f1bf8cba3e6c5340c67dc0a6f3883"
+            },
+            {
+              "heading": "Model ka chehra badal gaya",
+              "contentType": "faq",
+              "owner": "6d0000000000000000000000",
+              "sha256": "9ab8a63b3ef374896329933757a49ab82736589dc493c5bdb2371b77dca025db"
+            },
+            {
+              "heading": "L03 Hands close-up",
+              "contentType": "exact-template",
+              "owner": "6d0000000000000000000000",
+              "sha256": "9f7a8cf8257992efe2209b62f82127313018cf534ee07e2725890b8f0bd3457a"
+            },
+            {
+              "heading": "L03 Desk",
+              "contentType": "exact-template",
+              "owner": "6d0000000000000000000000",
+              "sha256": "596f2727d5567b00b03b2522ba43a38f4b02a338be90c99fa1c3bab800eb4f52"
+            },
+            {
+              "heading": "L07 UGC 1",
+              "contentType": "exact-template",
+              "owner": "6d0000000000000000000000",
+              "sha256": "1ba8b33414b57b7cab8e193c33582b1aa00ea22d5445ccddef44614be39f75d0"
+            },
+            {
+              "heading": "L07 UGC 2",
+              "contentType": "exact-template",
+              "owner": "6d0000000000000000000000",
+              "sha256": "53eb271c5fc4c05464b8faed0aa24829a9d7512bed69ef924775342e95e6810f"
+            }
+          ],
+          "messageCount": 2
+        }
+      ],
+      "providerAdapterProductBodies": [
+        {
+          "heading": "Model shots",
+          "contentType": "workflow",
+          "owner": "6d0000000000000000000000",
+          "sha256": "7330ca2d85402e3d0891dd36150f2c0c1b8f1bf8cba3e6c5340c67dc0a6f3883"
+        },
+        {
+          "heading": "Model ka chehra badal gaya",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "9ab8a63b3ef374896329933757a49ab82736589dc493c5bdb2371b77dca025db"
+        },
+        {
+          "heading": "L03 Hands close-up",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "9f7a8cf8257992efe2209b62f82127313018cf534ee07e2725890b8f0bd3457a"
+        },
+        {
+          "heading": "L03 Desk",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "596f2727d5567b00b03b2522ba43a38f4b02a338be90c99fa1c3bab800eb4f52"
+        },
+        {
+          "heading": "L07 UGC 1",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "1ba8b33414b57b7cab8e193c33582b1aa00ea22d5445ccddef44614be39f75d0"
+        },
+        {
+          "heading": "L07 UGC 2",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "53eb271c5fc4c05464b8faed0aa24829a9d7512bed69ef924775342e95e6810f"
+        }
+      ],
+      "responseProductBodies": [],
+      "noPayloadConstructed": false,
+      "blockedAdapterAttempts": 2,
+      "externalTransportAttempts": 0,
+      "potentialCriticalFindings": [],
+      "inspectionPerformed": true
+    },
+    "dbOperations": [
+      {
+        "model": "AiTutorSession",
+        "operation": "findOne",
+        "filter": {
+          "user": "6d5e7d67eb87a83e16d8714d",
+          "course": "6d0000000000000000000000"
+        }
+      },
+      {
+        "model": "Course",
+        "operation": "find",
+        "filter": {
+          "status": "published",
+          "_id": "6d0000000000000000000000"
+        }
+      },
+      {
+        "model": "AiTutorSession",
+        "operation": "upsert",
+        "filter": {
+          "user": "6d5e7d67eb87a83e16d8714d",
+          "course": "6d0000000000000000000000"
+        }
+      }
+    ],
+    "reason": "Six protected retrieval/context/adapter bodies have entitled selected owner6d0000000000000000000000. Full assembly reviewed including exact repeated blocks, current Aster request/conversation edge-omit and safe account. No foreign actor/course data. DB actor6d5e7d67eb87a83e16d8714d/course scoped; both blocked provider requests equal reviewed assembly."
+  },
+  "gradedAt": "2026-10-16T11:15:31.614674+00:00"
+}

@@ -1,0 +1,34 @@
+{
+  "verifiedAt": "2026-10-16T08:51:25.349370+00:00",
+  "protectedApplicationFiles": 252,
+  "originalPhase12Files": 133,
+  "changedFiles": {
+    "application": [],
+    "phase12Artifacts": []
+  },
+  "allProtectedFilesUnchanged": true,
+  "phase12FrozenSourcesMatch": true,
+  "criticalCasesReproduced": 4,
+  "byteIdenticalTurns": 5,
+  "allCriticalHTTPStatuses200": true,
+  "externalProviderRequests": 0,
+  "blockedExternalRequests": 0,
+  "backendTests": {
+    "passed": 351,
+    "failed": 0,
+    "skipped": 0,
+    "total": 351
+  },
+  "evaluatorTests": {
+    "passed": 167,
+    "failed": 0,
+    "skipped": 0,
+    "total": 167
+  },
+  "directDiagnosticInputs": 14,
+  "sessionBoundaryRequests": 6,
+  "additionalRouteScenarios": 9,
+  "additionalRouteTurns": 11,
+  "additionalStubProviderCalls": 0,
+  "gitStatusAfter": "M  appcopyai/App.js\n M appcopyai/ios/Podfile.lock\nM  edunex-b/knowledge/README.md\n M edunex-b/models/AiTutorSession.js\nM  edunex-b/reports/architecture_validation_results.json\n M edunex-b/routes/ai.js\nMM edunex-b/services/aiTutorService.js\nMM edunex-b/services/tutorKnowledge.js\n M edunex-b/tests/ai-chat-history.test.cjs\nM  edunex-b/tests/architecture_validation_tests.json\nMM edunex-b/tests/tutor-knowledge.test.cjs\nM  edunex-f/package.json\nD  edunex-f/public/assets/brand/skillomate-admin-icon-dark.png\nD  edunex-f/public/assets/brand/skillomate-admin-icon-light.png\nD  edunex-f/public/assets/offer-video/offer-3.mov\nD  edunex-f/public/assets/offer-video/offer-4.mov\nM  edunex-f/src/main.jsx\n?? Skillomate_AI_Product_Photoshoot_Chatbot_Review.zip\n?? Skillomate_Chatbot_Failure_Analysis.zip\n?? Skillomate_Chatbot_Failure_Analysis/\n?? \"Skillomate_Chatbot_Final_Review_Package 2/\"\n?? Skillomate_Chatbot_Final_Review_Package.zip\n?? Skillomate_Chatbot_Final_Review_Package/\n?? Skillomate_Chatbot_Improvement_Review.zip\n?? Skillomate_Chatbot_Phase10_Live_Review.zip\n?? Skillomate_Chatbot_Phase11_Fix_Review.zip\n?? Skillomate_Chatbot_Phase12_Live_Review.zip\n?? Skillomate_Chatbot_Phase13_Architecture_Review/\n?? Skillomate_Chatbot_Phase2_Live_Review.zip\n?? Skillomate_Chatbot_Phase2_Live_Review/\n?? Skillomate_Chatbot_Phase3_Fix_Review.zip\n?? Skillomate_Chatbot_Phase4_Live_Review.zip\n?? Skillomate_Chatbot_Phase5_Fix_Review.zip\n?? Skillomate_Chatbot_Phase6_Final_Review.zip\n?? Skillomate_Chatbot_Phase7_Fix_Review.zip\n?? Skillomate_Chatbot_Phase8_Final_Live_Review.zip\n?? Skillomate_Chatbot_Phase9_Architecture_Review.zip\n?? chatbot-review-package/\n?? edunex-b/knowledge/ai-filmmaking/training-l9-15.txt\n?? edunex-b/knowledge/ai-product-photoshoot-ads/\n?? edunex-b/reports/ai-product-photoshoot-ads-evaluation/\n?? edunex-b/reports/l9_15_graded_results.json\n?? edunex-b/reports/l9_15_graded_results_round2.json\n?? edunex-b/reports/l9_15_graded_results_round3.json\n?? edunex-b/reports/l9_15_raw_results.json\n?? edunex-b/reports/l9_15_raw_results_round2.json\n?? edunex-b/reports/l9_15_raw_results_round3.json\n?? edunex-b/scripts/eval/\n?? edunex-b/services/productTutorGrounding.js\n?? edunex-b/services/productTutorIntent.js\n?? edunex-b/services/productTutorKnowledge.js\n?? edunex-b/services/productTutorResponse.js\n?? edunex-b/services/productTutorState.js\n?? edunex-b/services/productTutorTasks.js\n?? edunex-b/services/tutorProvider.js\n?? edunex-b/tests/ai-tutor-fixture.cjs\n?? edunex-b/tests/helpers/\n?? edunex-b/tests/product-tutor-phase11.test.cjs\n?? edunex-b/tests/product-tutor-phase3.test.cjs\n?? edunex-b/tests/product-tutor-phase5.test.cjs\n?? edunex-b/tests/product-tutor-phase7.test.cjs\n?? edunex-b/tests/product-tutor-phase9.test.cjs\n?? edunex-b/tests/product-tutor-quality.test.cjs\n?? edunex-b/tests/test_product_evaluator.py\n?? edunex-b/tests/test_product_evaluator_v3.py\n?? edunex-b/tests/test_product_evaluator_v4.py\n?? edunex-b/tests/test_product_evaluator_v5.py\n?? edunex-b/tests/test_product_evaluator_v6.py\n?? edunex-b/tests/test_product_evaluator_v7.py\n?? tmp/pdfs/phase3-fix-comparison-20261015/\n?? tmp/pdfs/phase5-fix-comparison-20261015/\n?? tmp/pdfs/phase7-fix-comparison-20261015/\n?? tmp/pdfs/phase9-architecture-comparison-20261015/\n"
+}

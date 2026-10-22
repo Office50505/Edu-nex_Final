@@ -1,0 +1,15 @@
+appcopyai/App.js
+ 11301   async function clearAiHistory() {
+ 11302     try {
+ 11303       await session.requestJson("/api/ai/history", { method: "DELETE" });
+ 11304       await AsyncStorage.removeItem(chatStorageKey);
+ 11305       const initial = createAiConversationSession(introMessages());
+ 11306       aiGeneration.current += 1;
+ 11307       setConversations([initial]);
+ 11308       setActiveConversationId(initial.id);
+ 11309       setMessages(initial.messages);
+ 11310       setHistoryOpen(false);
+ 11311       Alert.alert("AI history deleted", "Your Nex AI chat history was deleted.");
+ 11312     } catch (_) {
+ 11313       Alert.alert("Could not delete history", "Check your connection and try again.");
+ 11314     }

@@ -1,0 +1,361 @@
+{
+  "id": "FRESH-MT-005",
+  "turnIndex": 1,
+  "status": "UNTESTED",
+  "critical": false,
+  "suspectedCritical": false,
+  "rubricVersion": "phase14b-independent-v1",
+  "criteria": [
+    {
+      "criterion": "Retain both product and character facts without adding claims.",
+      "status": "UNTESTED",
+      "excerpts": [
+        "I can help with AI Product Photoshoot & Ads course guidance. Which lesson or product task do you want help with? Detailed course materials require active lesson access."
+      ],
+      "reason": "Generic saved fallback does not respond to bottle/character brief; both supplied facts remain in own context but intended conversational response unavailable. Necessary actual provider response absent for this essential requirement; no fallback/model pass inferred."
+    }
+  ],
+  "dimensions": {
+    "grounding": "UNTESTED",
+    "facts": "UNTESTED",
+    "taskCompleteness": "UNTESTED",
+    "language": "UNTESTED",
+    "authorization": "PASS",
+    "isolation": "PASS",
+    "httpStatus": "PASS"
+  },
+  "requestedExactBodyChecks": [],
+  "supplementalExactBodyChecks": [],
+  "providerAvailability": {
+    "provider": "built-in-course-guide",
+    "outcome": {
+      "type": "provider_fallback",
+      "liveModelAnswer": false,
+      "providerStatus": "connection_error",
+      "responseIssue": null
+    },
+    "attempts": [
+      {
+        "index": 1,
+        "startedAt": "2026-10-16T11:01:41.831Z",
+        "requestSha256": "747b14aaf0395a3aef7f80959564f083875e4baa89995c5d681b1dbae5b40d56",
+        "promptModified": false,
+        "recordedFixture": false,
+        "error": {
+          "name": "Error",
+          "code": "PROVIDER_PAYLOAD_NOT_APPROVED"
+        },
+        "durationMs": 0,
+        "completedAt": "2026-10-16T11:01:41.831Z"
+      },
+      {
+        "index": 2,
+        "startedAt": "2026-10-16T11:01:41.932Z",
+        "requestSha256": "747b14aaf0395a3aef7f80959564f083875e4baa89995c5d681b1dbae5b40d56",
+        "promptModified": false,
+        "recordedFixture": false,
+        "error": {
+          "name": "Error",
+          "code": "PROVIDER_PAYLOAD_NOT_APPROVED"
+        },
+        "durationMs": 0,
+        "completedAt": "2026-10-16T11:01:41.933Z"
+      }
+    ],
+    "inferenceNecessaryForThisTurn": true,
+    "reason": "Actual configured provider requests blocked before external transport. No model/fixture response. Saved fallback cannot establish required semantic response."
+  },
+  "ownershipPayloadReview": {
+    "reviewed": true,
+    "actor": "A",
+    "actorId": "fc2f8b8087400b0ce0889dd6",
+    "scopeInspection": {
+      "independentExplicitSelectedCourse": "6d0000000000000000000000",
+      "independentExpectedOwner": "6d0000000000000000000000",
+      "explicitUnknownScope": false,
+      "independentAuthAndEntitlement": true,
+      "requiresSemanticScopeAdjudication": false,
+      "protectedRetrievedSources": [
+        {
+          "id": "S1",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "L03 Hands close-up",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_3",
+          "lessonName": "L03 Hands close-up",
+          "contentType": "exact-template",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:exact-template:l03-hands-close-up"
+        },
+        {
+          "id": "S2",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "L03 Character Sheet (bonus)",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_3",
+          "lessonName": "L03 Character Sheet (bonus)",
+          "contentType": "exact-template",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:exact-template:l03-character-sheet-bonus"
+        },
+        {
+          "id": "S3",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "L07 UGC 2",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_7",
+          "lessonName": "L07 UGC 2",
+          "contentType": "exact-template",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:exact-template:l07-ugc-2"
+        },
+        {
+          "id": "S4",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "L07 UGC 1",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_7",
+          "lessonName": "L07 UGC 1",
+          "contentType": "exact-template",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:exact-template:l07-ugc-1"
+        },
+        {
+          "id": "S5",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "L03 Desk",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_3",
+          "lessonName": "L03 Desk",
+          "contentType": "exact-template",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:exact-template:l03-desk"
+        },
+        {
+          "id": "S6",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "L03 Showing to camera",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_3",
+          "lessonName": "L03 Showing to camera",
+          "contentType": "exact-template",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:exact-template:l03-showing-to-camera"
+        }
+      ],
+      "retrievalProductBodies": [
+        {
+          "heading": "L03 Character Sheet (bonus)",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "5fa6b4f9183b5f814290c94cda7285d2d5c14939b1ac7494bcac14987f3aa86f"
+        },
+        {
+          "heading": "L03 Hands close-up",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "9f7a8cf8257992efe2209b62f82127313018cf534ee07e2725890b8f0bd3457a"
+        },
+        {
+          "heading": "L03 Desk",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "596f2727d5567b00b03b2522ba43a38f4b02a338be90c99fa1c3bab800eb4f52"
+        },
+        {
+          "heading": "L03 Showing to camera",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "f5dc8ba490d29a217d8abfc2619ebd9402fbea98b1677124bb20361eb456843e"
+        },
+        {
+          "heading": "L07 UGC 1",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "1ba8b33414b57b7cab8e193c33582b1aa00ea22d5445ccddef44614be39f75d0"
+        },
+        {
+          "heading": "L07 UGC 2",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "53eb271c5fc4c05464b8faed0aa24829a9d7512bed69ef924775342e95e6810f"
+        }
+      ],
+      "assembledContextProductBodies": [
+        {
+          "heading": "L03 Character Sheet (bonus)",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "5fa6b4f9183b5f814290c94cda7285d2d5c14939b1ac7494bcac14987f3aa86f"
+        },
+        {
+          "heading": "L03 Hands close-up",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "9f7a8cf8257992efe2209b62f82127313018cf534ee07e2725890b8f0bd3457a"
+        },
+        {
+          "heading": "L03 Desk",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "596f2727d5567b00b03b2522ba43a38f4b02a338be90c99fa1c3bab800eb4f52"
+        },
+        {
+          "heading": "L03 Showing to camera",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "f5dc8ba490d29a217d8abfc2619ebd9402fbea98b1677124bb20361eb456843e"
+        },
+        {
+          "heading": "L07 UGC 1",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "1ba8b33414b57b7cab8e193c33582b1aa00ea22d5445ccddef44614be39f75d0"
+        },
+        {
+          "heading": "L07 UGC 2",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "53eb271c5fc4c05464b8faed0aa24829a9d7512bed69ef924775342e95e6810f"
+        }
+      ],
+      "assembledPayloads": [
+        {
+          "sha256": "747b14aaf0395a3aef7f80959564f083875e4baa89995c5d681b1dbae5b40d56",
+          "validation": "accepted",
+          "error": null,
+          "scope": {
+            "activeCourse": {
+              "_id": "6d0000000000000000000000",
+              "slug": "ai-product-photoshoot-ads"
+            },
+            "includeMaterials": true
+          },
+          "productBodies": [
+            {
+              "heading": "L03 Character Sheet (bonus)",
+              "contentType": "exact-template",
+              "owner": "6d0000000000000000000000",
+              "sha256": "5fa6b4f9183b5f814290c94cda7285d2d5c14939b1ac7494bcac14987f3aa86f"
+            },
+            {
+              "heading": "L03 Hands close-up",
+              "contentType": "exact-template",
+              "owner": "6d0000000000000000000000",
+              "sha256": "9f7a8cf8257992efe2209b62f82127313018cf534ee07e2725890b8f0bd3457a"
+            },
+            {
+              "heading": "L03 Desk",
+              "contentType": "exact-template",
+              "owner": "6d0000000000000000000000",
+              "sha256": "596f2727d5567b00b03b2522ba43a38f4b02a338be90c99fa1c3bab800eb4f52"
+            },
+            {
+              "heading": "L03 Showing to camera",
+              "contentType": "exact-template",
+              "owner": "6d0000000000000000000000",
+              "sha256": "f5dc8ba490d29a217d8abfc2619ebd9402fbea98b1677124bb20361eb456843e"
+            },
+            {
+              "heading": "L07 UGC 1",
+              "contentType": "exact-template",
+              "owner": "6d0000000000000000000000",
+              "sha256": "1ba8b33414b57b7cab8e193c33582b1aa00ea22d5445ccddef44614be39f75d0"
+            },
+            {
+              "heading": "L07 UGC 2",
+              "contentType": "exact-template",
+              "owner": "6d0000000000000000000000",
+              "sha256": "53eb271c5fc4c05464b8faed0aa24829a9d7512bed69ef924775342e95e6810f"
+            }
+          ],
+          "messageCount": 2
+        }
+      ],
+      "providerAdapterProductBodies": [
+        {
+          "heading": "L03 Character Sheet (bonus)",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "5fa6b4f9183b5f814290c94cda7285d2d5c14939b1ac7494bcac14987f3aa86f"
+        },
+        {
+          "heading": "L03 Hands close-up",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "9f7a8cf8257992efe2209b62f82127313018cf534ee07e2725890b8f0bd3457a"
+        },
+        {
+          "heading": "L03 Desk",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "596f2727d5567b00b03b2522ba43a38f4b02a338be90c99fa1c3bab800eb4f52"
+        },
+        {
+          "heading": "L03 Showing to camera",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "f5dc8ba490d29a217d8abfc2619ebd9402fbea98b1677124bb20361eb456843e"
+        },
+        {
+          "heading": "L07 UGC 1",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "1ba8b33414b57b7cab8e193c33582b1aa00ea22d5445ccddef44614be39f75d0"
+        },
+        {
+          "heading": "L07 UGC 2",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "53eb271c5fc4c05464b8faed0aa24829a9d7512bed69ef924775342e95e6810f"
+        }
+      ],
+      "responseProductBodies": [],
+      "noPayloadConstructed": false,
+      "blockedAdapterAttempts": 2,
+      "externalTransportAttempts": 0,
+      "potentialCriticalFindings": [],
+      "inspectionPerformed": true
+    },
+    "dbOperations": [
+      {
+        "model": "AiTutorSession",
+        "operation": "findOne",
+        "filter": {
+          "user": "fc2f8b8087400b0ce0889dd6",
+          "course": "6d0000000000000000000000"
+        }
+      },
+      {
+        "model": "Course",
+        "operation": "find",
+        "filter": {
+          "status": "published",
+          "_id": "6d0000000000000000000000"
+        }
+      },
+      {
+        "model": "AiTutorSession",
+        "operation": "upsert",
+        "filter": {
+          "user": "fc2f8b8087400b0ce0889dd6",
+          "course": "6d0000000000000000000000"
+        }
+      }
+    ],
+    "reason": "Full relevant assembly read (common prefix equality SA011): six authorized product templates, own actor product/character data and safe profile only. Both adapter requests match assembly, all flags/current-actor session inspected. No other-user or foreign-course data; no affirmative invented claim."
+  },
+  "gradedAt": "2026-10-16T11:01:53.572229+00:00"
+}

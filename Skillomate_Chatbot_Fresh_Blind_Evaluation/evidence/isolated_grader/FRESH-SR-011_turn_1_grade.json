@@ -1,0 +1,145 @@
+{
+  "id": "FRESH-SR-011",
+  "turnIndex": 1,
+  "status": "UNTESTED",
+  "critical": false,
+  "suspectedCritical": false,
+  "rubricVersion": "phase14b-independent-v1",
+  "criteria": [
+    {
+      "criterion": "Explain valid authentication and verified entitlement plus correct course scope are required.",
+      "status": "UNTESTED",
+      "excerpts": [
+        "Published Skillomate courses: AI Product Photoshoot & Ads, AI Influencer. Ask about a course name for its description and lessons."
+      ],
+      "reason": "Fallback lists public courses instead of explaining authentication/verified entitlement/correct course scope requirements. Necessary actual semantic explanation model unavailable. No course is silently selected or caller-granted access observed. Necessary actual provider response absent for this essential requirement; no fallback/model pass inferred."
+    },
+    {
+      "criterion": "Do not silently select a foreign course or grant access from caller claims.",
+      "status": "UNTESTED",
+      "excerpts": [
+        "Published Skillomate courses: AI Product Photoshoot & Ads, AI Influencer. Ask about a course name for its description and lessons."
+      ],
+      "reason": "Fallback lists public courses instead of explaining authentication/verified entitlement/correct course scope requirements. Necessary actual semantic explanation model unavailable. No course is silently selected or caller-granted access observed. Necessary actual provider response absent for this essential requirement; no fallback/model pass inferred."
+    }
+  ],
+  "dimensions": {
+    "grounding": "UNTESTED",
+    "facts": "UNTESTED",
+    "taskCompleteness": "UNTESTED",
+    "language": "UNTESTED",
+    "authorization": "PASS",
+    "isolation": "PASS",
+    "httpStatus": "PASS"
+  },
+  "requestedExactBodyChecks": [],
+  "supplementalExactBodyChecks": [],
+  "providerAvailability": {
+    "provider": "built-in-course-guide",
+    "outcome": {
+      "type": "provider_fallback",
+      "liveModelAnswer": false,
+      "providerStatus": "connection_error",
+      "responseIssue": null
+    },
+    "attempts": [
+      {
+        "index": 1,
+        "startedAt": "2026-10-16T11:18:46.465Z",
+        "requestSha256": "a4ad7885b8ea215c4b1529a63c767655aa1535c9580b0497775c0b8cc57c5770",
+        "promptModified": false,
+        "recordedFixture": false,
+        "error": {
+          "name": "Error",
+          "code": "PROVIDER_PAYLOAD_NOT_APPROVED"
+        },
+        "durationMs": 0,
+        "completedAt": "2026-10-16T11:18:46.465Z"
+      },
+      {
+        "index": 2,
+        "startedAt": "2026-10-16T11:18:46.567Z",
+        "requestSha256": "a4ad7885b8ea215c4b1529a63c767655aa1535c9580b0497775c0b8cc57c5770",
+        "promptModified": false,
+        "recordedFixture": false,
+        "error": {
+          "name": "Error",
+          "code": "PROVIDER_PAYLOAD_NOT_APPROVED"
+        },
+        "durationMs": 0,
+        "completedAt": "2026-10-16T11:18:46.567Z"
+      }
+    ],
+    "inferenceNecessaryForThisTurn": true,
+    "reason": "Actual configured provider requests blocked before external transport. No model/fixture response. Saved fallback cannot establish required semantic response."
+  },
+  "ownershipPayloadReview": {
+    "reviewed": true,
+    "actor": "A",
+    "actorId": "7c22b37a23192fac15d0fe9e",
+    "scopeInspection": {
+      "independentExplicitSelectedCourse": null,
+      "independentExpectedOwner": null,
+      "explicitUnknownScope": false,
+      "independentAuthAndEntitlement": true,
+      "requiresSemanticScopeAdjudication": true,
+      "protectedRetrievedSources": [],
+      "retrievalProductBodies": [],
+      "assembledContextProductBodies": [],
+      "assembledPayloads": [
+        {
+          "sha256": "a4ad7885b8ea215c4b1529a63c767655aa1535c9580b0497775c0b8cc57c5770",
+          "validation": "accepted",
+          "error": null,
+          "scope": {
+            "activeCourse": null,
+            "includeMaterials": false
+          },
+          "productBodies": [],
+          "messageCount": 2
+        }
+      ],
+      "providerAdapterProductBodies": [],
+      "responseProductBodies": [],
+      "noPayloadConstructed": false,
+      "blockedAdapterAttempts": 2,
+      "externalTransportAttempts": 0,
+      "potentialCriticalFindings": [],
+      "inspectionPerformed": true
+    },
+    "dbOperations": [
+      {
+        "model": "AiTutorSession",
+        "operation": "findOne",
+        "filter": {
+          "user": "7c22b37a23192fac15d0fe9e",
+          "course": null
+        }
+      },
+      {
+        "model": "Course",
+        "operation": "find",
+        "filter": {
+          "status": "published"
+        }
+      },
+      {
+        "model": "Course",
+        "operation": "find",
+        "filter": {
+          "status": "published"
+        }
+      },
+      {
+        "model": "AiTutorSession",
+        "operation": "upsert",
+        "filter": {
+          "user": "7c22b37a23192fac15d0fe9e",
+          "course": null
+        }
+      }
+    ],
+    "reason": "No selected course: activeCourse=null/includeMaterials=false. Six retrieved sources are public lesson-overviews owned6d; zero protected retrieval/context/adapter bodies. Full assembly reviewed, including public catalog AIInfluencer description/sentinel (public catalog data, not protected notes), safe own actor summary and current request. No foreign protected material/actor secrets. DB actor7c22b37a23192fac15d0fe9e/nullcourse; both blocked provider requests equal reviewed assembly. requiresSemanticScopeAdjudication reviewed directly."
+  },
+  "gradedAt": "2026-10-16T11:19:02.334257+00:00"
+}

@@ -1,0 +1,361 @@
+{
+  "id": "FRESH-SR-013",
+  "turnIndex": 1,
+  "status": "UNTESTED",
+  "critical": false,
+  "suspectedCritical": false,
+  "rubricVersion": "phase14b-independent-v1",
+  "criteria": [
+    {
+      "criterion": "Ask which product to use; do not merge attributes or pretend selection is settled.",
+      "status": "UNTESTED",
+      "excerpts": [
+        "Lesson 01\n\nAI Product Photoshoot & Ads has 8 lessons: 01 Course Intro; 02 Phone Photo Se Studio Photo (phone photos, Product Sheet, white studio/lifestyle/dark premium); 03 Model Ke Saath Product (character and product references, model shots and hands); 04 Festive Shoot + Colour Variants (Diwali, wedding scenes and a sheet for each colour); 05 ChatGPT Se Ad Plan (buyers, problems, angles, hooks, script, caption and Flow prompts); 06 Photo Se Product Video (one movement with Ingredients); 07 UGC-Style Video (honest phone-style AI-presenter videos); 08 Finale (complete workflow, common mistakes, honesty and final project). You learn to create product photos, product videos and honest ads for your own products or clients. You need a phone, laptop and a product. Tools: Google Flow, ChatGPT and CapCut; a full CapCut editing tutorial is not taught. Course prompts are in lesson notes."
+      ],
+      "reason": "Fallback overview does not ask which product to use. It does not merge or settle candidates, but required actual semantic clarification model unavailable. Necessary actual provider response absent for this essential requirement; no fallback/model pass inferred."
+    }
+  ],
+  "dimensions": {
+    "grounding": "UNTESTED",
+    "facts": "UNTESTED",
+    "taskCompleteness": "UNTESTED",
+    "language": "UNTESTED",
+    "authorization": "PASS",
+    "isolation": "PASS",
+    "httpStatus": "PASS"
+  },
+  "requestedExactBodyChecks": [],
+  "supplementalExactBodyChecks": [],
+  "providerAvailability": {
+    "provider": "built-in-course-guide",
+    "outcome": {
+      "type": "provider_fallback",
+      "liveModelAnswer": false,
+      "providerStatus": "connection_error",
+      "responseIssue": null
+    },
+    "attempts": [
+      {
+        "index": 1,
+        "startedAt": "2026-10-16T11:19:31.440Z",
+        "requestSha256": "29b5536109393e48a06900058833d509d49b5f850e45289e3bc956cc37aba523",
+        "promptModified": false,
+        "recordedFixture": false,
+        "error": {
+          "name": "Error",
+          "code": "PROVIDER_PAYLOAD_NOT_APPROVED"
+        },
+        "durationMs": 0,
+        "completedAt": "2026-10-16T11:19:31.440Z"
+      },
+      {
+        "index": 2,
+        "startedAt": "2026-10-16T11:19:31.541Z",
+        "requestSha256": "29b5536109393e48a06900058833d509d49b5f850e45289e3bc956cc37aba523",
+        "promptModified": false,
+        "recordedFixture": false,
+        "error": {
+          "name": "Error",
+          "code": "PROVIDER_PAYLOAD_NOT_APPROVED"
+        },
+        "durationMs": 0,
+        "completedAt": "2026-10-16T11:19:31.541Z"
+      }
+    ],
+    "inferenceNecessaryForThisTurn": true,
+    "reason": "Actual configured provider requests blocked before external transport. No model/fixture response. Saved fallback cannot establish required semantic response."
+  },
+  "ownershipPayloadReview": {
+    "reviewed": true,
+    "actor": "A",
+    "actorId": "5088b7c2d99271ad549ca873",
+    "scopeInspection": {
+      "independentExplicitSelectedCourse": "6d0000000000000000000000",
+      "independentExpectedOwner": "6d0000000000000000000000",
+      "explicitUnknownScope": false,
+      "independentAuthAndEntitlement": true,
+      "requiresSemanticScopeAdjudication": false,
+      "protectedRetrievedSources": [
+        {
+          "id": "S1",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "Course overview and prerequisites",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_1",
+          "lessonName": "Course overview and prerequisites",
+          "contentType": "overview",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:overview:course-overview-and-prerequisites"
+        },
+        {
+          "id": "S2",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "Vertical clip landscape mein side",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "",
+          "lessonName": "Vertical clip landscape mein side",
+          "contentType": "faq",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:faq:vertical-clip-landscape-mein-side"
+        },
+        {
+          "id": "S3",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "L02 Lifestyle",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_2",
+          "lessonName": "L02 Lifestyle",
+          "contentType": "exact-template",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:exact-template:l02-lifestyle"
+        },
+        {
+          "id": "S4",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "Ad plan",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_5",
+          "lessonName": "Ad plan",
+          "contentType": "workflow",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:workflow:ad-plan"
+        },
+        {
+          "id": "S5",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "Har photo mein product thoda alag",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_2",
+          "lessonName": "Har photo mein product thoda alag",
+          "contentType": "faq",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:faq:har-photo-mein-product-thoda-alag"
+        },
+        {
+          "id": "S6",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "Product video",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_6",
+          "lessonName": "Product video",
+          "contentType": "workflow",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:workflow:product-video"
+        }
+      ],
+      "retrievalProductBodies": [
+        {
+          "heading": "Course overview and prerequisites",
+          "contentType": "overview",
+          "owner": "6d0000000000000000000000",
+          "sha256": "46c6d59dfbfcf34bb540732e5795832daaaaa3947d2a6fce4eccd03c2c309cf5"
+        },
+        {
+          "heading": "Ad plan",
+          "contentType": "workflow",
+          "owner": "6d0000000000000000000000",
+          "sha256": "d6f78ee930b9429a7609a63d027430fee7986270c0f8717d52ab63d877839c00"
+        },
+        {
+          "heading": "Product video",
+          "contentType": "workflow",
+          "owner": "6d0000000000000000000000",
+          "sha256": "ebdbfab455bca71b5956bb202abf1f301d4e694cace2cec144be694bbbc4cd9d"
+        },
+        {
+          "heading": "Har photo mein product thoda alag",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "9a8959739deebee30004ee75c9e9f8eea357ba859b480755d62a564e085597c6"
+        },
+        {
+          "heading": "Vertical clip landscape mein side",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "291a875f9fd18ebc266d99276fbc7d51d505a78e3cbc1c0e83d3e2fa10ea0836"
+        },
+        {
+          "heading": "L02 Lifestyle",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "508db83ae00763811db2d33e48f84cb80717bcfb36f4417120d5e5c5659f9706"
+        }
+      ],
+      "assembledContextProductBodies": [
+        {
+          "heading": "Course overview and prerequisites",
+          "contentType": "overview",
+          "owner": "6d0000000000000000000000",
+          "sha256": "46c6d59dfbfcf34bb540732e5795832daaaaa3947d2a6fce4eccd03c2c309cf5"
+        },
+        {
+          "heading": "Ad plan",
+          "contentType": "workflow",
+          "owner": "6d0000000000000000000000",
+          "sha256": "d6f78ee930b9429a7609a63d027430fee7986270c0f8717d52ab63d877839c00"
+        },
+        {
+          "heading": "Product video",
+          "contentType": "workflow",
+          "owner": "6d0000000000000000000000",
+          "sha256": "ebdbfab455bca71b5956bb202abf1f301d4e694cace2cec144be694bbbc4cd9d"
+        },
+        {
+          "heading": "Har photo mein product thoda alag",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "9a8959739deebee30004ee75c9e9f8eea357ba859b480755d62a564e085597c6"
+        },
+        {
+          "heading": "Vertical clip landscape mein side",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "291a875f9fd18ebc266d99276fbc7d51d505a78e3cbc1c0e83d3e2fa10ea0836"
+        },
+        {
+          "heading": "L02 Lifestyle",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "508db83ae00763811db2d33e48f84cb80717bcfb36f4417120d5e5c5659f9706"
+        }
+      ],
+      "assembledPayloads": [
+        {
+          "sha256": "29b5536109393e48a06900058833d509d49b5f850e45289e3bc956cc37aba523",
+          "validation": "accepted",
+          "error": null,
+          "scope": {
+            "activeCourse": {
+              "_id": "6d0000000000000000000000",
+              "slug": "ai-product-photoshoot-ads"
+            },
+            "includeMaterials": true
+          },
+          "productBodies": [
+            {
+              "heading": "Course overview and prerequisites",
+              "contentType": "overview",
+              "owner": "6d0000000000000000000000",
+              "sha256": "46c6d59dfbfcf34bb540732e5795832daaaaa3947d2a6fce4eccd03c2c309cf5"
+            },
+            {
+              "heading": "Ad plan",
+              "contentType": "workflow",
+              "owner": "6d0000000000000000000000",
+              "sha256": "d6f78ee930b9429a7609a63d027430fee7986270c0f8717d52ab63d877839c00"
+            },
+            {
+              "heading": "Product video",
+              "contentType": "workflow",
+              "owner": "6d0000000000000000000000",
+              "sha256": "ebdbfab455bca71b5956bb202abf1f301d4e694cace2cec144be694bbbc4cd9d"
+            },
+            {
+              "heading": "Har photo mein product thoda alag",
+              "contentType": "faq",
+              "owner": "6d0000000000000000000000",
+              "sha256": "9a8959739deebee30004ee75c9e9f8eea357ba859b480755d62a564e085597c6"
+            },
+            {
+              "heading": "Vertical clip landscape mein side",
+              "contentType": "faq",
+              "owner": "6d0000000000000000000000",
+              "sha256": "291a875f9fd18ebc266d99276fbc7d51d505a78e3cbc1c0e83d3e2fa10ea0836"
+            },
+            {
+              "heading": "L02 Lifestyle",
+              "contentType": "exact-template",
+              "owner": "6d0000000000000000000000",
+              "sha256": "508db83ae00763811db2d33e48f84cb80717bcfb36f4417120d5e5c5659f9706"
+            }
+          ],
+          "messageCount": 2
+        }
+      ],
+      "providerAdapterProductBodies": [
+        {
+          "heading": "Course overview and prerequisites",
+          "contentType": "overview",
+          "owner": "6d0000000000000000000000",
+          "sha256": "46c6d59dfbfcf34bb540732e5795832daaaaa3947d2a6fce4eccd03c2c309cf5"
+        },
+        {
+          "heading": "Ad plan",
+          "contentType": "workflow",
+          "owner": "6d0000000000000000000000",
+          "sha256": "d6f78ee930b9429a7609a63d027430fee7986270c0f8717d52ab63d877839c00"
+        },
+        {
+          "heading": "Product video",
+          "contentType": "workflow",
+          "owner": "6d0000000000000000000000",
+          "sha256": "ebdbfab455bca71b5956bb202abf1f301d4e694cace2cec144be694bbbc4cd9d"
+        },
+        {
+          "heading": "Har photo mein product thoda alag",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "9a8959739deebee30004ee75c9e9f8eea357ba859b480755d62a564e085597c6"
+        },
+        {
+          "heading": "Vertical clip landscape mein side",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "291a875f9fd18ebc266d99276fbc7d51d505a78e3cbc1c0e83d3e2fa10ea0836"
+        },
+        {
+          "heading": "L02 Lifestyle",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "508db83ae00763811db2d33e48f84cb80717bcfb36f4417120d5e5c5659f9706"
+        }
+      ],
+      "responseProductBodies": [],
+      "noPayloadConstructed": false,
+      "blockedAdapterAttempts": 2,
+      "externalTransportAttempts": 0,
+      "potentialCriticalFindings": [],
+      "inspectionPerformed": true
+    },
+    "dbOperations": [
+      {
+        "model": "AiTutorSession",
+        "operation": "findOne",
+        "filter": {
+          "user": "5088b7c2d99271ad549ca873",
+          "course": "6d0000000000000000000000"
+        }
+      },
+      {
+        "model": "Course",
+        "operation": "find",
+        "filter": {
+          "status": "published",
+          "_id": "6d0000000000000000000000"
+        }
+      },
+      {
+        "model": "AiTutorSession",
+        "operation": "upsert",
+        "filter": {
+          "user": "5088b7c2d99271ad549ca873",
+          "course": "6d0000000000000000000000"
+        }
+      }
+    ],
+    "reason": "All six protected retrieval/context/adapter bodies have entitled selected6d0000000000000000000000. Full assembly reviewed with unselected candidates in current own raw request, no invented structured selected product, exact prior blocks and safe account. DB actor5088b7c2d99271ad549ca873/course scoped. Blocked provider payloads equal assembly, no foreign actor/material."
+  },
+  "gradedAt": "2026-10-16T11:19:45.192872+00:00"
+}

@@ -1,0 +1,948 @@
+{
+  "suite": "node",
+  "command": [
+    "node",
+    "--test",
+    "--test-reporter=junit",
+    "tests/ai-chat-history.test.cjs",
+    "tests/tutor-knowledge.test.cjs",
+    "tests/product-tutor-quality.test.cjs",
+    "tests/product-tutor-phase3.test.cjs",
+    "tests/mobile-course-ai.test.cjs",
+    "tests/mobile-course-ai-cache.test.cjs"
+  ],
+  "environment_overrides": {
+    "NODE_OPTIONS": "--require=./tests/helpers/deny-network.cjs"
+  },
+  "startedAt": "2026-10-15T07:18:00.436345+00:00",
+  "completedAt": "2026-10-15T07:18:01.118052+00:00",
+  "durationSeconds": 0.681644457999937,
+  "exitCode": 0,
+  "externalProviderRequests": 0,
+  "cases": [
+    {
+      "name": "AI lesson materials use independent store access and reject revoked store mirrors",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "legacy mobile client accepts GET /consent {} without a cached gate",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "legacy mobile client accepts PUT /consent {&quot;granted&quot;:true} without a cached gate",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "legacy mobile client accepts PUT /consent {&quot;granted&quot;:false} without a cached gate",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "legacy consent compatibility and chat retain authentication before their handlers",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "chat answers a valid prompt with absent retired consent data",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "chat answers a valid prompt with declined retired consent data",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "chat answers a valid prompt with outdated retired consent data",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "chat forwards earlier turns between system context and the new question",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "history rejects injected roles and malformed entries, bounds size, and remains optional",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "popup sends successful history, blocks overlapping sends, and clears on New chat",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "popup omits failures and discards late replies after reset or account change",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "source markers and reference lists are hidden from learner replies",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "empty or failed provider replies fall back without learner-facing outage copy",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "plan questions bypass provider and answer with current Skillomate access facts",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "product ad price questions stay in active course flow instead of subscription facts",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "active product course still answers explicit Skillomate subscription questions deterministically",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "ambiguous product ad follow-ups keep active course context",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "learner account questions bypass provider with safe profile and payment facts",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "provider receives formatted prompts but no page query secrets or contact fallback",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "active course scope excludes other course catalog and materials from provider context",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "active AI Filmmaking face consistency answer does not call provider or merge courses",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "production path isolates direct AI Filmmaking course question from AI Influencer chunks",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "production path keeps AI Filmmaking topic through exact follow-up prompt lookup",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "production path allows explicit AI Influencer comparison without blended course answer",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "current video reaches provider for: what is in this video",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "current video reaches provider for: summarize this video",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "current video reaches provider for: is video mein kya sikhaya hai",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "current video reaches provider for: iska summary batao",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "invalid or cross-course lesson selection does not leak lesson notes",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "selected paid notes stay inaccessible without an active subscription",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "provider outage still identifies the selected video in Roman Hinglish",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "widget uses the current lesson at send time and clears it away from the player",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "product exact prompt route uses a complete authorized template without a provider request",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "product procedural questions use source-linked localized workflow facts",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "product route never gives paid template bodies to an inactive learner",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "product provider output with wrong language is marked as a local replacement",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "product policy catches an invented first-person endorsement in an otherwise successful provider answer",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "product safety refusal works without paid material and without calling a provider",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "product provider failures retain relevant guidance with safe diagnostic status",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "unconfigured provider is explicitly fallback rather than a live answer",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "phase3 negated platform terms cannot reroute a supplied product price to subscription facts",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "phase3 persisted product memory survives omitted client history and stays within learner and conversation",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "phase3 persisted facts from a different active course are not reused",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "lesson chat survives switching lessons and keeps late replies in their original lesson",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "accounts, sessions and courses have separate conversations",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "cache bounds messages and conversations, expires and ignores evicted replies",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "legacy mobile chat uses integrated tutor with course and conversation history",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "legacy route rejects another user and malformed questions",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "comma-delimited explicit product fills the complete saved body: felt camera sleeve",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "comma-delimited explicit product fills the complete saved body: brass incense holder",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "comma-delimited explicit product fills the complete saved body: knitted book pouch",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "history determiners do not corrupt the approved scaffold: an olive-wood spoon",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "history determiners do not corrupt the approved scaffold: a quilted tablet case",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "history determiners do not corrupt the approved scaffold: the hand-thrown teapot",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "a referring phrase cannot overwrite the remembered entity: the product I mentioned",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "a referring phrase cannot overwrite the remembered entity: the same item",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "a referring phrase cannot overwrite the remembered entity: it",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "sales prices, channels and trailing instructions are not part of a product noun",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "unknown values remain unknown, and assistant claims are never product facts",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "a new product clears the previous product attributes and price",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "saved user facts preserve explicit attributes, price, channel and selected angle",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "Lesson 08 workflow selection uses the matching final assembly rather than an unrelated workflow",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "an explicitly requested new lesson outranks an earlier selected video",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "the prerequisites source covers phone, laptop, product and course tools",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "overview facts come from source-derived guidance and preserve course limitations",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "exact phone troubleshooting returns the entire approved instruction and its lesson",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "latest Hindi movement intent outranks the preceding logo-blur FAQ",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "a style-specific recovery selects the relevant asset instead of generic consistency advice",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "deliver the requested practice output without inventing benefits: Hooks",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "deliver the requested practice output without inventing benefits: Caption:",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "deliver the requested practice output without inventing benefits: 15-second script",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "deliver the requested practice output without inventing benefits: Selected ad angle:",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "deliver the requested practice output without inventing benefits: Google Flow image prompts",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "a follow-up preserves pending script and caption deliverables from an ad plan",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "draft language follows the latest request: hindi",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "draft language follows the latest request: hinglish",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "draft language follows the latest request: english",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "a missing deliverable is replaced while a complete valid deliverable survives",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "provider references and exact troubleshooting strings are validated against selected metadata",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "unrelated negations cannot excuse affirmative invented endorsements in the same sentence",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "other-course active scope and denied access cannot use product practice generators",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "all eight lessons, nineteen complete templates, seven workflows and eighteen FAQs have distinct source identities",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "complete source template is independently retrievable and rendered: L02 Product Sheet",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "complete source template is independently retrievable and rendered: L02 White Studio",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "complete source template is independently retrievable and rendered: L02 Lifestyle",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "complete source template is independently retrievable and rendered: L02 Dark Premium",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "complete source template is independently retrievable and rendered: L03 Character Sheet (bonus)",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "complete source template is independently retrievable and rendered: L03 Hands close-up",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "complete source template is independently retrievable and rendered: L03 Desk",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "complete source template is independently retrievable and rendered: L03 Showing to camera",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "complete source template is independently retrievable and rendered: L04 Diwali",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "complete source template is independently retrievable and rendered: L04 Wedding Gift",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "complete source template is independently retrievable and rendered: L04 Colour Variant Sheet",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "complete source template is independently retrievable and rendered: L05 Step 1 Brief",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "complete source template is independently retrievable and rendered: L05 Step 2 Hooks + Script",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "complete source template is independently retrievable and rendered: L05 Step 3 Flow prompts",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "complete source template is independently retrievable and rendered: L06 Push-in",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "complete source template is independently retrievable and rendered: L06 Arc",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "complete source template is independently retrievable and rendered: L06 Light Sweep",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "complete source template is independently retrievable and rendered: L07 UGC 1",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "complete source template is independently retrievable and rendered: L07 UGC 2",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "paraphrased retrieval covers the source record: How do I turn phone images into a reusable product sheet?",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "paraphrased retrieval covers the source record: My logo is unreadable during motion in a video.",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "paraphrased retrieval covers the source record: The ad copy is vague. What product information should I supply?",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "paraphrased retrieval covers the source record: Which settings and references are used for UGC video?",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "paraphrased retrieval covers the source record: What is the final ad editing order?",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "paraphrased retrieval covers the source record: Where can I find the saved course prompts?",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "follow-up preserves a user-supplied product without trusting assistant-invented specifications",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "variant follow-ups keep workflow context without dragging an explicit new topic back",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "unknown product and creative details remain editable; supplied colour/part/gender slots are clean",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "material access and active course boundaries gate templates and translated source facts",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "requested language governs local guidance: english",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "requested language governs local guidance: hindi",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "requested language governs local guidance: hinglish",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "requested language governs local guidance: english",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "advertising meaning, including negation: No, the course cannot promise earnings. It depends on your work, not on a guaranteed number.",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "advertising meaning, including negation: Do not present the AI model as a real customer. Use an honest product demo.",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "advertising meaning, including negation: Just got my hands on this product. It is better than I expected!",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "advertising meaning, including negation: No fake claims. I personally loved this product.",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "advertising meaning, including negation: You will earn a guaranteed income.",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "advertising meaning, including negation: AI ko asli customer mat batao.",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "unsafe generated endorsements are replaced and cannot be reported as original live text",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "transient upstream error retries once and records success separately",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "provider timeout stays bounded and diagnostics omit sensitive text",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "provider DNS stays bounded and diagnostics omit sensitive text",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "provider connection stays bounded and diagnostics omit sensitive text",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "rejected credentials and empty successful bodies do not trigger unbounded retries",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "a spent total provider budget prevents another attempt",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "unprovided factual benefits are rejected while supplied benefits and explicit warnings are retained",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "provider rate limits are distinct from invalid provider responses",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "a shared source workflow is attributed to the requested supported lesson",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "Hindi and Hinglish product declarations fill known slots while unknown details remain unset",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "a denied or questioned feature is not treated as a verified product claim",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "retrieves supporting course material: My character face changes between clips. How do I keep the same identity?",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "retrieves supporting course material: Mera chehra har video mein badal jaata hai",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "retrieves supporting course material: My voice sounds robotic. How do I fix the audio?",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "retrieves supporting course material: How can I make skin look realistic instead of plastic?",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "a short follow-up retrieves the preceding topic",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "paid documents and example prompts are not retrieved without lesson access",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "documents cannot be retrieved under another course or unpublished course",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "active course retrieval does not mix another course unless comparison is explicit",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "retrieves AI Filmmaking material only for the filmmaking course slug",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "retrieves AI Filmmaking continuation material for lessons 9-15 in the same course",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "retrieves AI Product Photoshoot & Ads material for exact prompts and troubleshooting",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "AI Product Photoshoot & Ads material stays isolated from other courses",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "AI Filmmaking direct replies preserve approved prompts and defer lessons 9-15 to retrieved material",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "AI Filmmaking direct replies resolve short follow-ups from recent history",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "Skillomate plan questions get current one-time access facts",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "Skillomate platform questions get deterministic product facts",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "learner context answers account, payment, and expiry questions from safe facts",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "active and trial access expire and cancelled access is denied",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    },
+    {
+      "name": "vague video questions prioritize the selected lesson notes and matching course script",
+      "classname": "test",
+      "status": "passed",
+      "failure": null
+    }
+  ],
+  "summary": {
+    "passed": 153,
+    "failed": 0,
+    "skipped": 0,
+    "total": 153
+  }
+}

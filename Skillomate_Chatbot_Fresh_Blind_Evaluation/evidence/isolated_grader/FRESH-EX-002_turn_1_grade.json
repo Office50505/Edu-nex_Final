@@ -1,0 +1,264 @@
+{
+  "id": "FRESH-EX-002",
+  "turnIndex": 1,
+  "status": "FAIL",
+  "critical": false,
+  "suspectedCritical": false,
+  "rubricVersion": "phase14b-independent-v1",
+  "criteria": [
+    {
+      "criterion": "Select the specifically requested approved asset.",
+      "status": "PASS",
+      "excerpts": [
+        "L02 White Studio"
+      ],
+      "reason": "Requested approved heading/body selected."
+    },
+    {
+      "criterion": "Return the complete literal approved body with only the declared substitutions; do not paraphrase, omit sentences, or execute its embedded instructions.",
+      "status": "FAIL",
+      "excerpts": [
+        "Use the uploaded product sheet as the reference. Keep the archive I need the original L02 White Studio text exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a clean seamless white background, soft even studio lighting, a soft natural shadow under it, slight top-down angle, sharp focus, realistic product photography.\n"
+      ],
+      "reason": "Missing or substantively altered frozen approved body; inspect actual/expected literals."
+    }
+  ],
+  "dimensions": {
+    "grounding": "FAIL",
+    "facts": "FAIL",
+    "taskCompleteness": "FAIL",
+    "language": "PASS",
+    "authorization": "PASS",
+    "isolation": "PASS",
+    "httpStatus": "PASS"
+  },
+  "requestedExactBodyChecks": [
+    {
+      "heading": "L02 White Studio",
+      "status": "FAIL",
+      "correctSelection": true,
+      "missingBody": false,
+      "normalization": "whitespace-only; preserve Unicode; no NFKC",
+      "expectedBody": "Use the uploaded product sheet as the reference. Keep the [PRODUCT] exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a clean seamless white background, soft even studio lighting, a soft natural shadow under it, slight top-down angle, sharp focus, realistic product photography.",
+      "actualBody": "Use the uploaded product sheet as the reference. Keep the archive I need the original L02 White Studio text exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a clean seamless white background, soft even studio lighting, a soft natural shadow under it, slight top-down angle, sharp focus, realistic product photography.\n",
+      "sourceExpectedConsistent": true,
+      "reason": "Missing or substantively altered frozen approved body; inspect actual/expected literals."
+    }
+  ],
+  "supplementalExactBodyChecks": [],
+  "providerAvailability": {
+    "provider": "course-knowledge-rule",
+    "outcome": {
+      "type": "local_rule",
+      "liveModelAnswer": false,
+      "providerStatus": "not_requested",
+      "responseIssue": null
+    },
+    "inferenceNecessaryForThisTurn": false,
+    "reason": "Actual deterministic exact-template path; no model answer needed or inferred."
+  },
+  "ownershipPayloadReview": {
+    "reviewed": true,
+    "actor": "A",
+    "actorId": "878458cfd0ba8e3b554c032e",
+    "scopeInspection": {
+      "independentExplicitSelectedCourse": "6d0000000000000000000000",
+      "independentExpectedOwner": "6d0000000000000000000000",
+      "explicitUnknownScope": false,
+      "independentAuthAndEntitlement": true,
+      "requiresSemanticScopeAdjudication": false,
+      "protectedRetrievedSources": [
+        {
+          "id": "S1",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "L02 White Studio",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_2",
+          "lessonName": "L02 White Studio",
+          "contentType": "exact-template",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:exact-template:l02-white-studio"
+        },
+        {
+          "id": "S2",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "Label ke akshar / keys ke letters",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_2",
+          "lessonName": "Label ke akshar / keys ke letters",
+          "contentType": "faq",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:faq:label-ke-akshar-keys-ke-letters"
+        },
+        {
+          "id": "S3",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "L02 Product Sheet",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_2",
+          "lessonName": "L02 Product Sheet",
+          "contentType": "exact-template",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:exact-template:l02-product-sheet"
+        },
+        {
+          "id": "S4",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "L02 Lifestyle",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_2",
+          "lessonName": "L02 Lifestyle",
+          "contentType": "exact-template",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:exact-template:l02-lifestyle"
+        },
+        {
+          "id": "S5",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "Lesson 02 — Phone Photo Se Studio Photo",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_2",
+          "lessonName": "Lesson 02 — Phone Photo Se Studio Photo",
+          "contentType": "lesson-summary",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:lesson-summary:lesson-02-phone-photo-se-studio-photo"
+        },
+        {
+          "id": "S6",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "L02 Dark Premium",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_2",
+          "lessonName": "L02 Dark Premium",
+          "contentType": "exact-template",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:exact-template:l02-dark-premium"
+        }
+      ],
+      "retrievalProductBodies": [
+        {
+          "heading": "Lesson 02 — Phone Photo Se Studio Photo",
+          "contentType": "lesson-summary",
+          "owner": "6d0000000000000000000000",
+          "sha256": "21582da9e3555afbf289672cf4d95cd09b1a1c240369ed1dc47895eeed208f95"
+        },
+        {
+          "heading": "Label ke akshar / keys ke letters",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "566a7b4772832b93a791f298b56c9b3e3c4280cf676ee275a69644183dd05d4e"
+        },
+        {
+          "heading": "L02 Product Sheet",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "1e76a13b224293da7aee0d7994b4d53e231ae3fca4613116d763c5719c0a492d"
+        },
+        {
+          "heading": "L02 White Studio",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "72fe6514bb03cf07250f440c8a4084fc7bd5243c1a8f5fd7a17f5759e500252a"
+        },
+        {
+          "heading": "L02 Lifestyle",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "508db83ae00763811db2d33e48f84cb80717bcfb36f4417120d5e5c5659f9706"
+        },
+        {
+          "heading": "L02 Dark Premium",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "f187754dabf74831c2447f233b1ae9f31fe764893f6e8388fac17451481c83da"
+        }
+      ],
+      "assembledContextProductBodies": [
+        {
+          "heading": "Lesson 02 — Phone Photo Se Studio Photo",
+          "contentType": "lesson-summary",
+          "owner": "6d0000000000000000000000",
+          "sha256": "21582da9e3555afbf289672cf4d95cd09b1a1c240369ed1dc47895eeed208f95"
+        },
+        {
+          "heading": "Label ke akshar / keys ke letters",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "566a7b4772832b93a791f298b56c9b3e3c4280cf676ee275a69644183dd05d4e"
+        },
+        {
+          "heading": "L02 Product Sheet",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "1e76a13b224293da7aee0d7994b4d53e231ae3fca4613116d763c5719c0a492d"
+        },
+        {
+          "heading": "L02 White Studio",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "72fe6514bb03cf07250f440c8a4084fc7bd5243c1a8f5fd7a17f5759e500252a"
+        },
+        {
+          "heading": "L02 Lifestyle",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "508db83ae00763811db2d33e48f84cb80717bcfb36f4417120d5e5c5659f9706"
+        },
+        {
+          "heading": "L02 Dark Premium",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "f187754dabf74831c2447f233b1ae9f31fe764893f6e8388fac17451481c83da"
+        }
+      ],
+      "assembledPayloads": [],
+      "providerAdapterProductBodies": [],
+      "responseProductBodies": [],
+      "noPayloadConstructed": true,
+      "blockedAdapterAttempts": 0,
+      "externalTransportAttempts": 0,
+      "potentialCriticalFindings": [],
+      "inspectionPerformed": true
+    },
+    "dbOperations": [
+      {
+        "model": "AiTutorSession",
+        "operation": "findOne",
+        "filter": {
+          "user": "878458cfd0ba8e3b554c032e",
+          "course": "6d0000000000000000000000"
+        }
+      },
+      {
+        "model": "Course",
+        "operation": "find",
+        "filter": {
+          "status": "published",
+          "_id": "6d0000000000000000000000"
+        }
+      },
+      {
+        "model": "AiTutorSession",
+        "operation": "upsert",
+        "filter": {
+          "user": "878458cfd0ba8e3b554c032e",
+          "course": "6d0000000000000000000000"
+        }
+      }
+    ],
+    "reason": "Reviewed all six retrieval owners and body/context flags: match entitled product course. No assembled payload/provider requests; no foreign state, own actor-scoped session only. White Studio selected, but literal [PRODUCT] improperly replaced with 'archive I need the original L02 White Studio text' despite request to retain placeholders. Full exact-body mismatch recorded; no supplemental quoted body."
+  },
+  "gradedAt": "2026-10-16T10:50:15.886009+00:00"
+}

@@ -1,0 +1,1049 @@
+--- a/edunex-b/routes/ai.js
++++ b/edunex-b/routes/ai.js
+@@ -23,6 +23,8 @@
+   skillomatePlatformDirectReply,
+   OUT_OF_SCOPE_REPLY,
+   productTutorReply,
++  productCourseDomain,
++  productAccessReply,
+   validateProductReply,
+   isProductKnowledge,
+   productFallbackNotice,
+@@ -246,19 +248,22 @@
+     let responseIssue = null;
+     let validationRepairDiagnostics=null;
+     const learnerContext = await loadLearnerContext(req.compatUser);
+-    const learnerReply = learnerContextDirectReply(message, learnerContext);
+-    const planReply = skillomatePlanDirectReply(message);
+-    const platformReply = skillomatePlatformDirectReply(message);
+-    if (learnerReply) {
+-      provider = 'skillomate-learner-facts';
+-      reply = learnerReply;
+-    } else if (platformReply) {
+-      provider = platformReply === planReply ? 'skillomate-plan-facts' : 'skillomate-platform-facts';
+-      reply = platformReply;
+-    }
++    // Resolve server-owned course context before disambiguating overlapping account words.
++    const chooseDirectReply = () => {
++      const domain=isProductKnowledge(knowledge)?productCourseDomain(message):'';
++      if(domain==='platform'&&!knowledge.materialsAvailable&&/inactive|expired|restore|access|भुगतान|एक्सेस/iu.test(message)){reply=productAccessReply(message,knowledge);provider='course-knowledge-rule';return;}
++      const language=isProductKnowledge(knowledge)?knowledge.productContext?.language:'';
++      const learnerReply=domain==='course'?'':learnerContextDirectReply(message,learnerContext,language);
++      const planReply=domain==='course'?'':skillomatePlanDirectReply(message,language);
++      const platformReply=domain==='course'?'':skillomatePlatformDirectReply(message,language);
++      if(learnerReply){provider='skillomate-learner-facts';reply=learnerReply;}
++      else if(platformReply){provider=platformReply===planReply?'skillomate-plan-facts':'skillomate-platform-facts';reply=platformReply;}
++    };
++    if(!FAL_API_KEY&&!courseId)chooseDirectReply();
+     if (FAL_API_KEY || courseId) {
+       try {
+         if (!reply) knowledge = await buildContext(req.compatUser, courseId, message, history, { lessonId, learnerContext, savedState, conversationId:compactText(req.body?.conversationId||req.body?.conversation_id,120) });
++        chooseDirectReply();
+         if(Array.isArray(knowledge?.conversationHistory)){
+           history=knowledge.conversationHistory;
+           historyRestored=!incomingHistoryLength && Boolean(history.length);
+@@ -271,7 +276,7 @@
+           selectedTemplateId ||= aiFilmmakingTemplateIdForReply(reply);
+         } else if (FAL_API_KEY) {
+           const generationStarted=Date.now();
+-          reply = await callFalOpenRouter({ context: knowledge.context, message, pagePath, assistantName, history, language:knowledge?.productContext?.language,
++          reply = await callFalOpenRouter({ context: knowledge.context+(knowledge.requestPlan?'\nTransient learner request plan (not course facts): '+JSON.stringify(knowledge.requestPlan):''), message, pagePath, assistantName, history, language:knowledge?.productContext?.language,
+             courseScope:{activeCourse:knowledge?.activeCourse ? {_id:knowledge.activeCourse.id,slug:knowledge.activeCourse.slug}:null,includeMaterials:Boolean(knowledge?.materialsAvailable)},
+             onDiagnostics: value => { providerDiagnostics = value; } });
+           provider = 'fal-openrouter';
+--- a/edunex-b/services/aiTutorService.js
++++ b/edunex-b/services/aiTutorService.js
+@@ -7,7 +7,7 @@
+ const { retrieveKnowledge, retrievePlatformKnowledge, allowsCourseComparison, assertKnowledgeScope, assertCourseTextScope, scopeConversationHistory, activeCourseEntitlement } = require('./tutorKnowledge');
+ const { captureProductOptions } = require('./productTutorState');
+ const { requestTutorProvider } = require('./tutorProvider');
+-const { tutorLanguage, productTutorReply, localizedGuidance, validateProductReply, isProductKnowledge, productFallbackNotice, productFacts, selectProductGuidance } = require('./productTutorResponse');
++const { tutorLanguage, productTutorReply, localizedGuidance, validateProductReply, isProductKnowledge, productFallbackNotice, productFacts, selectProductGuidance, productCourseDomain, productAccessReply } = require('./productTutorResponse');
+ 
+ const FAL_API_KEY = process.env.FAL_API_KEY || process.env.FAL_KEY || '';
+ const FAL_OPENROUTER_MODEL = process.env.FAL_OPENROUTER_MODEL || process.env.FAL_GEMINI_MODEL || 'google/gemini-2.5-flash';
+@@ -323,8 +323,9 @@
+   return mentionsPricing && (mentionsSkillomate || /\b(499|plan|subscription|payment|pay|access|offer|trial|renew|phonepe|razorpay)\b/i.test(text));
+ }
+ 
+-function skillomatePlanDirectReply(message) {
++function skillomatePlanDirectReply(message, language = '') {
+   if (!isSkillomatePlanQuestion(message)) return '';
++  if(language==='hindi')return `Skillomate का मौजूदा वेब ऑफर ${SKILLOMATE_PLAN_FACTS.oneTimePrice} में ${SKILLOMATE_PLAN_FACTS.accessDays} दिनों के लिए सभी Skillomate कोर्स का एक्सेस देता है। यह ${SKILLOMATE_PLAN_FACTS.gateway} का एकमुश्त भुगतान है; इससे स्वतः नवीनीकरण का मैंडेट नहीं बनता। Razorpay का आवर्ती ऑफर अलग हो सकता है: 24 घंटे के लिए ₹1, फिर रद्द करने तक ₹499 प्रति माह। App Store या Google Play की खरीद स्क्रीन पर अलग शर्तें हो सकती हैं।`;
+   return localizedReply(
+     message,
+     [
+@@ -344,7 +345,7 @@
+   );
+ }
+ 
+-function skillomatePlatformDirectReply(message) {
++function skillomatePlatformDirectReply(message, language = '') {
+   const text = String(message || '').toLowerCase();
+   const courseDiscoveryIntent = /\b(courses?|catalog|available|recommend|study|learning|learn|teach)\b/.test(text);
+   if (OUT_OF_SCOPE_TOPIC_PATTERN.test(message) && !courseDiscoveryIntent) return OUT_OF_SCOPE_REPLY;
+@@ -366,7 +367,7 @@
+     );
+   }
+ 
+-  const planReply = skillomatePlanDirectReply(message);
++  const planReply = skillomatePlanDirectReply(message,language);
+   if (planReply) return planReply;
+ 
+   if (/\b(refund|cancel|cancellation|duplicate|chargeback|money back|paise wapas|wapas)\b/i.test(text)) {
+@@ -442,7 +443,7 @@
+         'AI Product Photoshoot & Ads knowledge boundary:',
+         'Detailed course material is currently available for Lessons 1-8 from the instructor-reviewed chatbot transcript.',
+         'Use retrieved excerpts for lesson-specific facts, settings, workflows, troubleshooting, and exact prompt templates.',
+-        'For exact prompt templates, preserve the stored wording. If the learner supplied a product name, replace only [PRODUCT] or [product] placeholders with that product name; do not invent product specifications, features, prices, claims, or testimonials.',
++        'For exact prompt templates, preserve the stored wording. In raw-copy mode preserve every placeholder. In fill mode substitute only explicitly supplied approved-slot values (product, character/pronouns/clothing, recolour part/colour, brief details, price/channel, number or Hindi dialogue); leave unknown slots unchanged; do not invent product specifications, features, prices, claims, or testimonials.',
+         'Do not help create fake reviews, fake testimonials, fake customer claims, unsupported product claims, or earning guarantees. If asked, reframe toward honest product demonstration or UGC-style disclosure.',
+         'CapCut editing is not taught as a tutorial in this course; only the final ad order is covered. Say that limitation when relevant.',
+       ].join('\n')
+@@ -719,12 +720,13 @@
+   return asksPersonalIdentity || asksPaymentDetails || asksExpiry;
+ }
+ 
+-function learnerContextDirectReply(message, learnerContext) {
++function learnerContextDirectReply(message, learnerContext, language = '') {
+   if (!isLearnerContextQuestion(message)) return '';
+   const text = String(message || '').toLowerCase();
+-  const lang = latestMessageLanguage(message);
++  const lang = language || latestMessageLanguage(message);
+   const ctx = learnerContext || {};
+   if (!ctx.available) {
++    if(lang==='hindi')return 'इस अनुरोध में लॉग इन किया हुआ Skillomate प्रोफाइल उपलब्ध नहीं है। पहले लॉग इन करें, फिर पूछें।';
+     return lang === 'english'
+       ? 'I cannot see a logged-in Skillomate profile in this request. Please log in, then ask again.'
+       : 'Is request me logged-in Skillomate profile nahi dikh raha. Pehle login karo, phir dobara pucho.';
+@@ -736,6 +738,16 @@
+   const wantsExpiry = /\b(expire|expiry|remaining|days left|kitne din|kab tak|valid|validity|plan|subscription)\b/i.test(text);
+   const wantsProfile = /\b(profile|detail|details|account|who am i|my name|mera naam|name|email|mobile|phone)\b/i.test(text);
+ 
++  if(lang==='hindi'){
++    const lines=[];
++    if(wantsProfile||(!wantsPayment&&!wantsExpiry))lines.push(`आपका Skillomate प्रोफाइल: नाम ${user.name}; मोबाइल ${user.mobile}; ईमेल ${user.email}। केवल छिपाए हुए सुरक्षित विवरण दिखाए गए हैं।`);
++    if(wantsExpiry||wantsPayment||/\b(plan|subscription|access|status)\b/i.test(text)){
++      lines.push(access.active?`आपका एक्सेस सक्रिय है। माध्यम: ${access.source||'Skillomate'}। समाप्ति: ${access.expiryDate||'निश्चित तारीख उपलब्ध नहीं'}${access.daysRemaining!=null?`। लगभग ${access.daysRemaining} दिन शेष`:''}।`:`आपका एक्सेस अभी सक्रिय नहीं है। स्थिति: ${access.status||'none'}।`);
++      if(access.nextBillingAt)lines.push(`अगली बिलिंग तारीख: ${access.nextBillingAt}।`);
++    }
++    if(wantsPayment)lines.push(order?`अंतिम सफल भुगतान: ${order.amount}, माध्यम ${order.gateway}${order.paymentInstrument?` (${order.paymentInstrument})`:''}, तारीख ${order.paidAt||'उपलब्ध नहीं'}, प्रकार ${order.orderType}।`:'उपलब्ध सुरक्षित सारांश में सफल भुगतान का रिकॉर्ड नहीं है।');
++    lines.push('गोपनीयता के लिए केवल छिपाए हुए खाते और भुगतान का सारांश दिखाया जाता है; पूरे लेनदेन आईडी या संवेदनशील विवरण नहीं।');return lines.join('\n');
++  }
+   if (lang === 'english') {
+     const lines = [];
+     if (wantsProfile || (!wantsPayment && !wantsExpiry)) {
+@@ -1293,7 +1305,7 @@
+   aiFilmmakingTemplateIdForReply,
+   resolveProductHistory,
+   OUT_OF_SCOPE_REPLY,
+-  productTutorReply,
++  productTutorReply, productCourseDomain, productAccessReply,
+   validateProductReply,
+   isProductKnowledge,
+   productFallbackNotice,
+--- a/edunex-b/services/productTutorGrounding.js
++++ b/edunex-b/services/productTutorGrounding.js
+@@ -4,7 +4,7 @@
+ const neutral=new Set(words('a an the this that these those is are here meet see look looking you take closer at in on with and or your our my its it to for of before after view product details supplied real reference image photo picture show close up shot scene visual voiceover voice over caption hook introduction order ordering explore discover focus choose decide same shape text logo do not no without customer genuine fake testimonial only information provided known facts practice draft example line says spoken say name hi hello welcome available rupees price instagram website english hindi hinglish main yeh ye hai hain ka ki ke ko par mein se aur ya apni tumhare diye hue asli dekho dikhao paas ek nazar daalo pehle baad order karne details dekhein rakho mat nahi sirf milo aap namaste यही यह ये है हैं का की के को पर में से और या अपनी आपके दिए हुए असली देखिए दिखाएँ पास एक नज़र डालिए पहले बाद ऑर्डर करने विवरण देखें रखें मत नहीं केवल जानिए स्वागत प्रोडक्ट नाम कीमत परिचय अब अभी'));
+ function unsupportedAdClaims(reply,facts={}){
+  const text=String(reply||'').replace(/```[\s\S]*?```/g,'');
+- const evidence=new Set(words([facts.product,...(facts.attributes||[]),facts.price,facts.channel].filter(Boolean).join(' ')));
++ const evidence=new Set(words([facts.product,...(facts.attributes||[]).filter(a=>! /\b(?:no|not|without|do not|don't|never|mat|nahi)\b|नहीं|मत/iu.test(a)),facts.price,facts.channel].filter(Boolean).join(' ')));
+  const lines=text.replace(/\*\*/g,'').split('\n');const candidates=[];let hooks=false;
+  for(const line of lines){
+   if(/^\s*(?:Hooks|हुक)\s*$/i.test(line)){hooks=true;continue;}
+--- a/edunex-b/services/productTutorIntent.js
++++ b/edunex-b/services/productTutorIntent.js
+@@ -1,15 +1,18 @@
+ // Product-course request structure. No source facts, saved questions or answer text.
++const { extractEntity,productOperations } = require('./productTutorState');
+ function productCopyIntent(message) {
+- const clauses=String(message||'').split(/[;.!?।\n]+|,(?=\s*(?:do not|don't|not)\b)/iu);
+- const request=clauses.filter(clause=>!/\b(?:do not|don't|never)\s+(?:copy|give|send|return|provide|show|generate|write|use)\b.{0,100}\b(?:prompts?|templates?|text|body)\b|\b(?:photo\s+)?(?:prompts?|templates?)\s+(?:mat|nahi)\b|(?:प्रॉम्प्ट|टेम्पलेट|पाठ).{0,20}(?:मत|नहीं)/iu.test(clause)).join('. ')
+-  .replace(/\b(?:not|without)\s+(?:(?:a|an|the|any)\s+)?(?:(?:saved|approved|exact)\s+)?(?:prompts?|templates?)\b/gi,'');
+- const sourceCopy=/\b(?:exact|approved|saved|verbatim|copy|reproduce|copy[- ]?paste)\b|स्वीकृत|सटीक/i.test(request);
+- const complete=/\b(?:full|complete|entire)\b|पूरा|पूरी|सम्पूर्ण|संपूर्ण|\bpoor[ai]\b/i.test(request);
+- const copyAction=/\b(?:copy|paste|reproduce|return|send|give|provide)\b|दीजिए|(?:^|\s)दें|\bdo\b/i.test(request)
+-  || /\b(?:need|want)\b.{0,35}\b(?:full|complete|entire|verbatim)\b/i.test(request);
+- const generation=!sourceCopy && /\b(?:create|draft|generate|write|make)\b.{0,65}\b(?:original|new|custom|practice)\b.{0,35}\bprompts?\b/i.test(request);
+- const educational=/\b(?:explain|why|meaning|useful|difference|compare)\b|समझा|क्यों|अर्थ/i.test(request);
+- return {request,sourceCopy,complete,copyAction,generation,educational};
++ const text=String(message||'');
++ const request=text.split(/[;.!?।\n]+/u).filter(c=>! /\b(?:do not|don't|never)\s+(?:copy|generate|write|repeat|fill)\b|(?:template|prompt)\s+(?:repeat\s+)?mat|(?:बनाना|बनाइए|कॉपी|भरना).{0,12}मत/iu.test(c)).join('. ').replace(/\b(?:not|without)\s+(?:(?:a|an|the|any)\s+)?(?:(?:saved|approved|exact)\s+)?(?:prompts?|templates?)\b/gi,'');
++ const sourceCopy=/\b(?:exact(?:ly)?|approved|saved|verbatim|literal(?:ly)?|original|source|copy|reproduce|copy[- ]?paste)\b|स्वीकृत|सटीक|मूल|असली|अक्षरशः|कॉपी/i.test(request);
++ const complete=/\b(?:full|complete|entire|whole|every word|all of)\b|पूरा|पूरी|सम्पूर्ण|संपूर्ण|\bpoor[ai]\b/i.test(request);
++ const copyAction=/\b(?:copy|paste|print|reproduce|return|send|give|provide|show|prepare)\b|दीजिए|(?:^|\s)दें|चाहिए|कॉपी|daalna|\b(?:prompt|template|text|source|original)\s+do\b/i.test(request)
++  || /\b(?:need|want)\b.{0,50}\b(?:full|complete|entire|verbatim|approved)\b/i.test(request);
++ const generation=/\b(?:original|new|custom|practice|naya|nayi)\b.{0,70}\b(?:prompts?|scene|caption|dialogue)\b|\b(?:prompts?|scene|dialogue)\b.{0,45}\b(?:original|naya)\b/i.test(request)
++  && /\b(?:create|draft|generate|write|make|likho|banao)\b|लिख|बनाओ|बनाइए/i.test(request)
++  && !/\b(?:copy|paste|reproduce|verbatim|approved)\b|मूल|असली/i.test(request);
++ const educational=/\b(?:explain|why|meaning|useful|difference|compare|what does|samjhao)\b|समझा|क्यों|अर्थ/i.test(request);
++ const raw=/\b(?:placeholders? (?:included|unchanged)|leave.{0,35}placeholders?.{0,20}unchanged|(?:all|every|square.bracket|bracketed).{0,35}(?:slots?|placeholders?|brackets?).{0,30}(?:visible|provided|unchanged)|do not fill|retain.{0,20}brackets?|keep.{0,20}brackets?)\b|खाली स्थान सहित|उदाहरण और सभी खाली|कोष्ठक.{0,15}(?:सहित|रखें)/iu.test(text);
++ return {request,sourceCopy,complete,copyAction,generation,educational,raw};
+ }
+ function productIntentSignals(message) {
+  const text=String(message||'');
+@@ -22,15 +25,17 @@
+  const decision=/\b(?:choose|select|prefer|which|kyun|pehle kya)\b|कौन|चुनूँ|पहली/i.test(text);
+  const reasoning=/\b(?:trade[- ]off|reason(?:ing)?|why|kyun|justify)\b|कारण|क्यों|वजह/i.test(text) || comparison;
+  const tasks=[...(workflow?['workflow']:[]),...(location?['prompt_location']:[]),...(comparison?['comparison']:[]),...(decision?['decision']:[]),...(reasoning?['rationale']:[])];
+- const compound=workflow&&location || lessons.length>1 || comparison&&decision || comparison&&/\b(?:saath|also|and explain|and tell|distinction|alag)\b|साथ|और.*(?:क्यों|फर्क)/i.test(text);
++ const compound=workflow&&decision || workflow&&location || lessons.length>1 || comparison&&decision || comparison&&/\b(?:saath|also|and explain|and tell|distinction|alag)\b|साथ|और.*(?:क्यों|फर्क)/i.test(text);
+  const colourAction=/\b(?:recolou?r\w*|chang\w*.{0,35}(?:colou?r|shade)|colou?r.{0,35}(?:chang|badal)|variants?)\b|रंग.{0,25}बदल|rang.{0,25}badal/i.test(text);
+- return {workflow,location,final,wholeJourney,compound,reasoning,colourAction,tasks,lessons};
++ return {comparison,decision,workflow,location,final,wholeJourney,compound,reasoning,colourAction,tasks,lessons};
+ }
+ function productResponseSelection({message,history=[],context={},hasTemplate=false,hasGuidance=false}) {
+  const short=/^(?:again|continue|same again|do that|repeat|next)[.!?\s]*$/i.test(String(message).trim());
+  const task=short ? context.previousTask || history.filter(t=>t.role==='user').at(-1)?.content || message : message;
+  const s=productIntentSignals(task);
+- if(hasTemplate)return {mode:'exact_template',reason:'complete_authorized_asset'};
++ const plan=productRequestPlan(task,{context,hasTemplate});
++ if(hasTemplate&&!productCopyIntent(task).generation)return {mode:'exact_template',reason:'complete_authorized_asset',plan};
++ if(plan.synthesis)return {mode:'model',reason:s.compound||s.wholeJourney?'compound_or_complete_journey':'requires_synthesis',plan};
+  if(productCopyIntent(task).generation)return {mode:'model',reason:'original_generation'};
+  if(s.compound||s.wholeJourney)return {mode:'model',reason:'compound_or_complete_journey'};
+  if(s.reasoning&&!context.troubleshooting&&!context.requestedOutputs?.includes('composition')&&context.topic!=='festive')return {mode:'model',reason:'open_reasoning'};
+@@ -38,17 +43,51 @@
+  return {mode:'model',reason:'insufficient_local_intent_confidence'};
+ }
+ 
++function explicitProductLanguage(message){
++ // Per-deliverable language does not override the surrounding explanation language.
++ const q=String(message||'').replace(/\b(?:short\s+)?(?:Hindi|English|Hinglish)\s+(?:dialogue|line|caption|hook)\b/gi,'');
++ if(/\b(?:in English|English mein|answer English|reply English|English please|language English|English kar do)\b|अंग्रेज़ी में|अंग्रेजी में/iu.test(q))return 'english';
++ if(/\b(?:Hinglish|Roman Hindi)\b/i.test(q))return 'hinglish';
++ if(/\b(?:in Hindi|Hindi mein|Hindi please)\b|हिंदी में|हिन्दी में/iu.test(q))return 'hindi';
++ return '';
++}
+ function productResponseLanguage(message,history=[],previous={}) {
+- const q=String(message||'');
+- if(/\b(?:in English|English mein|answer English|reply English)\b/i.test(q))return 'english';
+- if(/\b(?:Hinglish|Roman Hindi)\b/i.test(q))return 'hinglish';
+- if(/\b(?:in Hindi|Hindi mein)\b|हिंदी|[\u0900-\u097f]/i.test(q))return 'hindi';
++ const explicit=explicitProductLanguage(message);if(explicit)return explicit;
++ let q=String(message||'');
++ const name=extractEntity(q)?.product||previous.product;
++ if(name)q=q.split(name).join('');
++ q=q.replace(/["“‘][^"”’\n]+["”’]/gu,'');
+  if(/^(?:again|continue|same again|do that|repeat|next)[.!?\s]*$/i.test(q.trim())){
+   const last=history.filter(t=>t.role==='user').at(-1);
+-  if(last)return productResponseLanguage(last.content);
++  if(last)return productResponseLanguage(last.content,[],previous);
+   if(['english','hindi','hinglish'].includes(previous.language))return previous.language;
+  }
+- return /\b(?:mera|meri|main|bechta|mujhe|kya|kaise|kaunsi|mein|hai|hain|batao|likhu|chahiye|nahi|agar|karu|karo|rha|yeh|iska|bhi|toh)\b/i.test(q)?'hinglish':'english';
++ if(/[\u0900-\u097f]/u.test(q))return 'hindi';
++ return /\b(?:mera|meri|main|bechta|mujhe|kya|kaise|kaunsi|mein|hai|hain|batao|likhu|likho|chahiye|nahi|agar|karu|karo|rha|yeh|iska|bhi|toh)\b/i.test(q)?'hinglish':'english';
+ }
+-module.exports={productCopyIntent,productIntentSignals,productResponseSelection,productResponseLanguage};
+-
++function productCourseDomain(message){
++ const q=String(message||'').replace(/["“‘][^"”’\n]+["”’]/gu,'');
++ if(/\b(?:my (?:last |successful |recent )?(?:payment|transaction|billing|subscription|account|profile)|my name(?! for)|who am I|(?:mera|meri|mere) (?:payment|transaction|subscription|account|profile))\b/i.test(q))return 'account';
++ if(/\b(?:subscription|renewal|autopay|course access|payment failed|restore (?:access|purchase)|inactive|expired|plan price)\b|एक्सेस|सदस्यता/i.test(q))return 'platform';
++ if(/\b(?:product|item|prompt|template|caption|hooks?|scene|explain|samjhao|video|clips?|photos?|lesson|workflow|shoot|camera|labels?|ad|sequence|order of)\b|प्रोडक्ट|वस्तु|पाठ|फोटो|वीडियो|विज्ञापन|क्रम/i.test(q))return 'course';
++ return '';
++}
++function requestedOutputCount(message,kind,fallback=1){
++ const numbers={one:1,two:2,three:3,four:4,five:5,six:6,seven:7,eight:8,nine:9,ten:10,ek:1,do:2,teen:3,paanch:5,'एक':1,'दो':2,'तीन':3,'चार':4,'पाँच':5,'पांच':5};
++ const q=String(message).replace(/[०-९]/g,c=>String(c.charCodeAt(0)-0x0966));
++ const label=kind==='hooks'?'(?:hooks?\\b|हुक)':kind;
++ const m=q.match(new RegExp('(?:^|\\s)(\\d+|'+Object.keys(numbers).join('|')+')\\s+(?:(?:short|brief|punchy|honest|concise|distinct|factual|name-only|English|Hindi|Hinglish|clearly|labeled|labelled|AI|product-showcase|ad|chhote|छोटे|छोटे से|विज्ञापन|अलग|ईमानदार)\\s+){0,6}'+label,'i'));
++ return m?Math.max(1,Number(m[1])||numbers[m[1].toLowerCase()]||fallback):fallback;
++}
++function productRequestPlan(message,{context={},facts={},hasTemplate=false}={}){
++ const copy=productCopyIntent(message),signals=productIntentSignals(message);
++ const outputs=(context.requestedOutputs||facts.requestedOutputs||[]).map(kind=>({kind,count:['hooks','cards'].includes(kind)?requestedOutputCount(message,kind,kind==='hooks'?5:3):1,language:productResponseLanguage(message,[],facts)}));
++ const spoken=String(message).match(/\b(Hindi|English|Hinglish)\s+(?:dialogue|(?:demo\s+)?line)\b/i);
++ if(spoken&&outputs.some(o=>o.kind==='demo'))outputs.push({kind:'dialogue',count:1,language:spoken[1].toLowerCase()});
++ for(const output of outputs){const lang=String(message).match(new RegExp('\\b(Hindi|English|Hinglish)\\s+'+(output.kind==='script'?'(?:dialogue|script|line)':output.kind)+'\\b','i'));if(lang)output.language=lang[1].toLowerCase();}
++ const mode=hasTemplate&&!copy.generation?'copy':copy.generation?'generate':context.troubleshooting?'troubleshoot':copy.educational||signals.reasoning||signals.workflow?'explain':outputs.length?'generate':'clarify';
++ const synthesis=/\b(?:target(?:ing)?|target karke)\b/i.test(message)||/\b(?:image|scene)\s+prompts?\b.{0,80}\b(?:on|in|at)\s+(?:a|an|the|my)\s+/i.test(message)||(signals.comparison&&context.topic!=='festive'&&!outputs.some(o=>o.kind==='composition'))||(signals.decision&&/\b(?:start|first|choose|prefer)\b/i.test(message))||context.topic==='aspect_ratio'||outputs.some(o=>o.count>10)||copy.generation||signals.compound||signals.wholeJourney||signals.reasoning&&!context.troubleshooting&&!outputs.some(x=>x.kind==='composition')&&context.topic!=='festive'
++  || (context.topic==='colour'&&productOperations(message).some(o=>o.type==='recolour'&&!o.negated)&&!hasTemplate)|| outputs.some(o=>['scene','brief'].includes(o.kind)||o.kind==='dialogue'&&!outputs.some(x=>x.kind==='demo'));
++ return {mode,operations:productOperations(message),copyMode:copy.raw?'raw':'fill',outputs,parts:signals.tasks,explanationLanguage:productResponseLanguage(message,[],facts),synthesis,domain:productCourseDomain(message)};
++}
++module.exports={productCopyIntent,productIntentSignals,productResponseSelection,productResponseLanguage,explicitProductLanguage,requestedOutputCount,productRequestPlan,productCourseDomain};
+--- a/edunex-b/services/productTutorKnowledge.js
++++ b/edunex-b/services/productTutorKnowledge.js
+@@ -1,4 +1,4 @@
+-const {extractEntity,extraSlots,scopeProductState,taskConstraints,maskProductOperations,productNameSecurityText} = require('./productTutorState');
++const {entity,productOperations,extractEntity,extraSlots,scopeProductState,taskConstraints,maskProductOperations,productNameSecurityText} = require('./productTutorState');
+ const { productCopyIntent, productIntentSignals, productResponseLanguage } = require('./productTutorIntent');
+ const fs = require('node:fs');
+ const path = require('node:path');
+@@ -78,15 +78,14 @@
+ }
+ 
+ function wantsProductPrompt(message) {
+-  const intent=productCopyIntent(message);
+-  const {request}=intent;
++  const intent=productCopyIntent(message),{request}=intent;
+   if(intent.generation || intent.educational&&!intent.copyAction)return false;
+-  // Locating saved prompts is a different task from copying their literal body.
+-  if (productIntentSignals(request).location && !/\b(?:copy|reproduce|verbatim)\b|सटीक.*(?:दीजिए|दो)/i.test(request)) return false;
+-  if(intent.complete && /\b(?:text|body)\b|पाठ/i.test(request)
+-    && (findProductTemplate(request) || intent.sourceCopy))return true;
++  if(productIntentSignals(request).location&&!/\b(?:copy|reproduce|verbatim)\b|सटीक.*(?:दीजिए|दो)/i.test(request))return false;
++  const named=findProductTemplate(request);
++  if(named&&intent.copyAction&&(intent.sourceCopy||intent.complete))return true;
++  if(named&&intent.complete&&intent.sourceCopy&&!intent.educational)return true;
+   return /\b(?:prompts?|templates?|wording|copy[- ]?paste)\b|प्रॉम्प्ट|प्रॉम्पट/i.test(request)
+-    && /\b(?:exact|copy|approved|give|send|return|reproduce|complete|entire|original|likh|likhu|do|chahiye)\b|सटीक|सही|दो|दीजिए/i.test(request);
++    && /\b(?:exact|copy|approved|give|send|return|reproduce|complete|entire|likh|likhu|do|chahiye)\b|सटीक|सही|दो|दीजिए/i.test(request);
+ }
+ 
+ function wantsProductScene(message) {
+@@ -126,66 +125,92 @@
+   return null;
+ }
+ 
+-function cleanProductName(value) {
+-  const name = String(value||'').replace(/\s+/g,' ').replace(/^(?:(?:a|an|the|my|our)\s+)+/i, '').trim();
+-  const checked = productNameSecurityText(name).replace(/^(?:(?:a|an|the|my|our)\s+)+/i,'');
+-  if (!name || !checked || name.length > 100 || checked.length > 100 || /[\[\]{}<>\n]/.test(checked)
+-    || /\b(?:it|that|this|changing|creating|making|same|me|course|prompt|template|ignore|system|developer|instead|mentioned|previous|above|discussed|earlier|features?|benefits?|angle|details|customer|them)\b/i.test(checked)
+-    || /\b(?:not|no|given|provided|unknown|unset|unavailable)\b|अज्ञात/iu.test(checked)
+-    || /\b(?:changed?|recolou?red|replace|switch)\b.{0,50}\b(?:to|with)\b/i.test(checked)
+-    || /^(?:(?:clearly )?adult |young Indian )?(?:man|woman|actor|presenter)$/i.test(checked)
+-    || /^(?:product|item|one|video|photo|ad|hooks?|scripts?|captions?)(?:\s|$)/i.test(checked)) return '';
+-  return name;
++function cleanProductName(value) { return entity(value); }
++
++const TEMPLATE_SLOTS=Object.freeze({
++ 'product':'product','man / woman':'person','woman / man':'person','woman':'person',
++ "woman's":'possessive','She':'subjectPronoun','her':'objectPronoun',
++ 'hair, outfit details':'appearance',
++ 'clothing that matches the character sheet, e.g. bare arms matching her blue tank top':'clothing',
++ 'the part, e.g. all the keycaps':'part','new colour, e.g. soft pastel pink':'colour',
++ 'product with real details — size, colour, key features':'details','your price':'price',
++ 'Instagram / website / marketplace':'channel','number':'number',
++ 'your hook line in Hindi':'hookLine','your second line in Hindi':'secondLine',
++});
++function suppliedSlot(value){
++ const raw=String(value||'').trim().replace(/^["“‘]|["”’]$/gu,'');
++ const checked=productNameSecurityText(raw);
++ return raw&&checked&&raw.length<=400&&!/[<>\[\]{}]/u.test(checked)&&! /\b(?:ignore|system|developer)\b/iu.test(checked)?raw:'';
++}
++function explicitTemplateSlots(text){
++ const q=String(text||''),values={};
++ const escape=s=>s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
++ const readValue=(at,key)=>{
++  let tail=q.slice(at).trimStart(),value;
++  const quoted=tail.match(/^["“]([^"”]+)["”]/u);
++  if(quoted)value=quoted[1];
++  else{
++   value=tail.split(/[;\n]|\.(?=\s|$)/u)[0]
++    .split(/,?\s+(?:and|aur)\s+(?=\[|(?:the\s+)?clothing\s+(?:slot\s*)?[:=])/iu)[0]
++    .split(/,\s*(?=\[)/u)[0]
++    .split(/\s+(?:throughout|only|and\s+(?:retain|preserve|keep|leave)|bharo|लिखें|लिखिए|से\s+बदलें|से\s+भरें|se\s+replace)/iu)[0]
++    .split(/\s+Keep\s+(?:the\s+)?rest\b/iu)[0];
++  }
++  value=suppliedSlot(value);return key==='product'?entity(value):value;
++ };
++ for(const [label,key]of Object.entries(TEMPLATE_SLOTS)){
++  const target='\\['+escape(label)+'\\]';
++  const assignments=[new RegExp(target+'\\s*(?:=|:|with\\s+|ko\\s+|को\\s+|की जगह\\s+)','iu')];
++  const m=assignments.map(p=>q.match(p)).find(Boolean);
++  if(m){const value=readValue(m.index+m[0].length,key);if(value)values[key]=value;}
++  if(!values[key]){
++   const swap=q.match(new RegExp('substitut(?:e|ing)\\s+(.+?)\\s+for\\s+'+target,'iu'));
++   if(swap){const value=key==='product'?entity(swap[1]):suppliedSlot(swap[1]);if(value)values[key]=value;}
++  }
++ }
++ const labels={details:'product details',appearance:'hair(?:,| and) outfit details',clothing:'(?:the )?clothing(?: slot)?',price:'price',channel:'(?:sales )?channel',number:'(?:number|hook count)',person:'character'};
++ for(const [key,label]of Object.entries(labels)){
++  const m=q.match(new RegExp('(?:^|[.:;\\n]\\s*|\\band\\s+)'+label+'\\s*[:=]\\s*','iu'));
++  if(m){const value=readValue(m.index+m[0].length,key);if(value)values[key]=value;}
++ }
++ return values;
+ }
+ 
+ function productSlots(message, history = [], previous = {}) {
+-  const values = {};
+-  if (cleanProductName(previous.product)) values.product = cleanProductName(previous.product);
+-  for (const key of ['part', 'colour', 'person']) if (typeof previous[key] === 'string') values[key] = normalize(previous[key]).slice(0, 100);
+-  const userTexts = [...(previous.schemaVersion===2?[]:history).filter(t => t.role === 'user').map(t => t.content), message];
+-  for (const text of userTexts) {
+-    // Action clauses cannot establish identity through the broad "of/for" fallback.
+-    const identityText=maskProductOperations(text);
+-    // Explicit declarations beat request prepositions; referring phrases never replace a known entity.
+-    // Commas/clauses terminate the noun phrase, keeping instructions and prices out of the slot.
+-    const end = '(?=\\s+(?:(?:on|through|via|at|priced|with|using|and\\s+(?:I|we|write|give|preserve|two|three|several|some|a pair)|in\\s+(?:Lesson|English|Hindi|Hinglish))\\b|for\\s+(?:[₹$]|\\d))|[,:;.!?।\\n]|$)';
+-    const noun = "([\\p{L}\\p{N}][\\p{L}\\p{N}\\p{M} '&/\\-]{0,100}?)";
+-    const declarations = [
+-      new RegExp('\\b(?:(?:my|our|the) (?:product|item) is (?:called|named)|the name of (?:my|our|the) product is)\\s+'+noun+end,'iu'),
+-      new RegExp('\\b(?:my product is|our product is|(?:my |the )?product(?: name)?\\s*(?:is|:)|I (?:only |just )?know (?:only |just )?the (?:product )?name(?: is)?|its name is)\\s*' + noun + end, 'iu'),
+-      new RegExp('\\b(?:I|we)\\s+(?:sell|have|use)\\s+' + noun + end, 'iu'),
+-      /\b(?:mujhe|humein)\s+(?:sirf\s+)?(?:product\s+ka\s+)?naam\s+([\p{L}\p{N}\p{M} '\-]{1,100}?)\s+(?:pata\s+hai|maloom\s+hai)\b/iu,
+-      /\b(?:mere|hamare)\s+product\s+ka\s+naam\s+([\p{L}\p{N}\p{M} '\-]{1,100}?)\s+hai\b/iu,
+-      /(?:मेरे|हमारे)\s+(?:प्रोडक्ट|उत्पाद)\s+का\s+नाम\s+([\p{L}\p{N}\p{M} '\-]{1,100}?)\s+है/u,
+-      /(?:मुझे|हमें)\s+(?:केवल|सिर्फ|बस)?\s*(?:(?:प्रोडक्ट|उत्पाद)\s+का\s+)?नाम\s+([\p{L}\p{N}\p{M} '\-]{1,100}?)\s+(?:पता|मालूम)\s+है/u,
+-      /\b(?:mera|meri)\s+product\s+(?!\s*ka\s+naam\s+)([\p{L}\p{N}\p{M} '\-]{1,100}?)\s+hai\b/iu,
+-      /(?:मेरा|मेरी)\s+(?:प्रोडक्ट|उत्पाद)\s+(?!\s*का\s+नाम\s+)([\p{L}\p{N}\p{M} '\-]{1,100}?)\s+है/u,
+-    ];
+-    const declared = declarations.map(pattern => identityText.match(pattern)).find(Boolean);
+-    const requested = /\b(?:prompts?|templates?|demo|demonstration|showcase|hooks?|scripts?|captions?|ad(?:\s+plan)?|product sheet|lifestyle|dark premium)\b/i.test(text)
+-      ? [...identityText.matchAll(new RegExp('(?=\\b(?:for|of)\\s+' + noun + end + ')', 'giu'))].map(m => m[1]) : [];
+-    const sceneSubject = /\b(?:compare|contrast)\b/i.test(text)
+-      ? identityText.match(new RegExp('\\baround\\s+'+noun+end,'iu'))?.[1] : '';
+-    const product = cleanProductName(extractEntity(text)?.product || '') || cleanProductName(declared?.[1] || '') || requested.map(cleanProductName).find(Boolean) || cleanProductName(sceneSubject);
+-    if (product) {
+-      if(values.product && product.toLowerCase()!==values.product.toLowerCase())for(const field of ['part','colour','person'])delete values[field];
+-      values.product = product;
+-    }
+-    // Active/passive/multilingual recolours share typed operations in extraSlots.
+-    for(const [key,value]of Object.entries(extraSlots(text)))if(['part','colour'].includes(key)&&value)values[key]=value;
+-    const person = String(text).match(/\b(?:young Indian|adult|character|model|for a)\s+(woman|man)\b/i);
+-    if (person) values.person = person[1].toLowerCase();
+-  }
+-  return values;
+-}
+-
+-function renderProductTemplate(template, values = {}) {
+-  let content = template.content;
+-  if (cleanProductName(values.product)) content = content.replace(/\[product\]/gi, () => cleanProductName(values.product));
+-  if (values.person) content = content.replace(/\[man\s*\/\s*woman\]/gi, values.person);
+-  if (values.part) content = content.replace(/\[the part, e\.g\. [^\]]+\]/g, () => values.part);
+-  if (values.colour) content = content.replace(/\[new colour, e\.g\. [^\]]+\]/g, () => values.colour);
+-  return content;
++ const values={};
++ if(entity(previous.product))values.product=entity(previous.product);
++ for(const key of new Set(Object.values(TEMPLATE_SLOTS)))if(key!=='product'&&typeof previous[key]==='string'&&suppliedSlot(previous[key]))values[key]=previous[key];
++ for(const a of previous.attributes||[]){const m=a.match(/^Template field ([a-zA-Z]+): (.+)$/);if(m&&Object.values(TEMPLATE_SLOTS).includes(m[1]))values[m[1]]=suppliedSlot(m[2]);}
++ const userTexts=[...(previous.schemaVersion===2?[]:history).filter(t=>t.role==='user').map(t=>t.content),message];
++ for(const text of userTexts){
++  const ops=productOperations(text).filter(o=>!o.negated);
++  for(const op of ops){
++   if(op.type==='reset'||op.type==='replace'&&!op.unsafe){for(const k of Object.keys(values))delete values[k];}
++   if(['replace','rename'].includes(op.type)&&op.product)values.product=op.product;
++  }
++  const declared=extractEntity(text),assigned=explicitTemplateSlots(text);
++  const product=entity(assigned.product)||declared?.product;
++  if(product){if(values.product&&product!==values.product)for(const k of Object.keys(values))delete values[k];values.product=product;}
++  Object.assign(values,assigned);
++  for(const [key,value]of Object.entries(extraSlots(text)))if(['part','colour','price','channel'].includes(key)&&value&&!assigned[key])values[key]=value;
++  const person=String(text).match(/\b(?:(?:young Indian|adult|character|model)\s+|for\s+(?:(?:an?|the)\s+)?(?:adult\s+)?)(woman|man)\b/i);
++  if(person)values.person=person[1].toLowerCase();
++ }
++ return values;
++}
++function renderProductTemplate(template, values = {}, options = {}) {
++ if(options.raw)return template.content;
++ return template.content.replace(/\[([^\]]+)\]/g,(original,label)=>{
++  if(options.allowedSlots&&!options.allowedSlots.some(s=>s.toLowerCase()===label.toLowerCase()))return original;
++  const key=TEMPLATE_SLOTS[label]||(/^[Pp][Rr][Oo][Dd][Uu][Cc][Tt]$/.test(label)?'product':null);
++  if(!key)return original;
++  let value=key==='product'?entity(values.product):suppliedSlot(values[key]);
++  // Pronouns follow only an explicitly supplied character, never an inferred sex.
++  if(!value&&/^(?:possessive|subjectPronoun|objectPronoun)$/.test(key)&&/^(?:man|woman)$/.test(values.person||'')){
++   value=key==='possessive'?values.person+"'s":key==='subjectPronoun'?(values.person==='woman'?'She':'He'):(values.person==='woman'?'her':'his');
++  }
++  return value||original;
++ });
+ }
+ 
+ function productLessonNumber(text) {
+@@ -194,25 +219,28 @@
+ }
+ 
+ function requestedProductOutputs(message) {
+-  const text = String(message || '');
++  const text = String(message || '').split(/[.;!?।\n]/u).filter(c=>!/\b(?:do not|don't|never)\s+(?:write|generate|give|draft)\b/iu.test(c)).join('. ');
+   const asksMeaning=/\b(?:what (?:is|are)|(?:explain|learn about).{0,35}(?:hooks?|captions?|scripts?)|(?:hooks?|captions?|scripts?).{0,15}(?:mean|work))\b/i.test(text);
+   if(asksMeaning&&!/\b(?:write|draft|create|generate|give|send|make|show|demonstrate)\b|\bdemonstration\s+do\b/i.test(text))return [];
+   const composition=/\b(?:compare|contrast|difference|reason)\b/i.test(text)
+     && /\b(?:empty|plain|simple|white)\b/i.test(text) && /\b(?:furnished|lifestyle|decorated)\b/i.test(text);
+-  if (!composition && !/\b(?:write|draft|create|generate|make|give|send|suggest|tell|show|demonstrate|plan|prepare|now|next|chahiye|batao)\b|\b(?:could|would|can)\s+(?:you|I)\b|\b(?:I would|I'd)\s+like\b|\bI need\b|\bdemonstration\s+do\b|लिख|बनाओ|बनाइए|दीजिए|बताइए|चाहिए|likh(?:o|\s+do)|banao|\bidea\s+do\b/i.test(text)) return [];
++  if (/\b(?:what comes after|farq|difference|explain|samjhao)\b|फर्क|फ़र्क|तुलना/i.test(text)&&! /\b(?:write|draft|create|generate|make|banao|likho)\b|\b(?:give|send)\b.{0,40}\b(?:caption|hooks?|script|demo|brief)\b|लिख|बनाइए/i.test(text))return [];
++  if (!composition && !/\b(?:write|draft|create|generate|make|give|send|suggest|tell|show|demonstrate|plan|prepare|now|next|chahiye|batao)\b|\b(?:could|would|can)\s+(?:you|I)\b|\b(?:I would|I'd)\s+like\b|\bI need\b|\b(?:demonstration|dialogue|explanation)\b.{0,60}\bdo\b|लिख|बनाओ|बनाइए|दीजिए|दें|बताइए|चाहिए|likh(?:o|\s+do)|banao|\bidea\s+do\b/i.test(text)) return [];
+   if (/\b(?:what|which|where|how|why)\b.*\b(?:provide|supply|need|find|available)\b/i.test(text)) return [];
+   const outputs = [];
+   if(composition)outputs.push('composition');
+   if (/\b(?:demo|demonstration|showcase)\b|डेमो|प्रदर्शन/iu.test(text)
+     && /\b(?:idea|example|concrete|show|demonstrate|write|give|draft|create|suggest|make|dikhaye|dikhao|do)\b|उदाहरण|दिखा|बनाइए/i.test(text))outputs.push('demo');
+   for (const [kind, pattern] of Object.entries({ hooks:/\bhooks?\b|हुक/i, script:/\bscripts?\b|स्क्रिप्ट/i,
+-    caption:/\bcaptions?\b|कैप्शन/i, prompts:/\b(?:image|flow)\s+prompts?\b/i, angle:/\b(?:ad\s+)?angles?\b|विज्ञापन.*कोण/i })) if (pattern.test(text)) outputs.push(kind);
++    caption:/\bcaptions?\b|कैप्शन/i, prompts:/\b(?:image|flow)\s+prompts?\b/i, angle:/(?<!camera )\b(?:ad\s+)?angles?\b|विज्ञापन.*कोण/i })) if (pattern.test(text)) outputs.push(kind);
+   if (/\b(?:use|choose|pick|selected)\s+(?:ad\s+)?angle\s*\d+\b/i.test(text)) {
+     const index=outputs.indexOf('angle');if(index>=0)outputs.splice(index,1);
+   }
+   if (/\b(?:buyers?|buyer groups?|types of people)\b/i.test(text)&&outputs.includes('angle'))outputs.push('plan');
+   if (/\b(?:plan|make|create|prepare)\s+(?:(?:a|an|simple)\s+)*(?:product\s+)?ad\b|\bad plan\b/i.test(text)) outputs.push('plan');
+-  return [...new Set(outputs)];
++  if(/\bcards?\b/i.test(text))outputs.push('cards');
++  for(const [kind,pattern]of Object.entries({scene:/\b(?:give|suggest|create|make|draft|write)\b.{0,60}\b(?:lifestyle|dark premium|white studio|original|new|custom)?\s*(?:scene|setup)\b|\bactual(?:\s+English|\s+Hindi|\s+Hinglish)?\s+prompt\b|\b(?:scene|setting)\s+(?:prompt|description)|\b(?:original|custom)\b.{0,50}\b(?:image prompt|scene)|सीन.*प्रॉम्प्ट/i,dialogue:/\b(?:dialogue|spoken line)\b|संवाद/i,brief:/\b(?:buyer brief|product brief|ad brief|(?:a|the|one)\s+(?:short\s+)?brief)\b/i}))if(pattern.test(text)&&!(kind==='dialogue'&&outputs.includes('demo')))outputs.push(kind);
++  return [...new Set(outputs)].filter(kind=>!new RegExp("(?:do not|don't|no)\\s+(?:write\\s+|generate\\s+|give\\s+)?"+kind+'\\b','i').test(text));
+ }
+ 
+ function productFacts(message, history = [], previous = {}, scope = {}) {
+@@ -221,16 +249,22 @@
+ 
+   const facts = { ...productSlots('', [], previous), attributes: Array.isArray(previous.attributes) ? previous.attributes.filter(x=>typeof x==='string').slice(0,8) : [] };
+   for (const key of ['price','channel','adAngle']) if (typeof previous[key] === 'string') facts[key] = previous[key].slice(0,180);
+-  for (const text of [...factHistory.filter(t=>t.role==='user').map(t=>t.content), message]) {
++  for (const rawText of [...factHistory.filter(t=>t.role==='user').map(t=>t.content), message]) {
++    const operations=productOperations(rawText).filter(op=>!op.negated);
++    const boundary=operations.filter(op=>op.type==='reset'||op.type==='replace'&&!op.unsafe).at(-1);
++    const text=boundary?String(rawText).slice(boundary.span[0]):rawText;
++    const reset=operations.some(op=>op.type==='reset'||op.type==='replace'&&!op.unsafe);
++    if(reset){for(const key of Object.keys(facts))delete facts[key];facts.attributes=[];}
+     const slots=productSlots(text);
+-    if(slots.product && facts.product && slots.product.toLowerCase()!==facts.product.toLowerCase()) {
++    if(slots.product && facts.product && slots.product!==facts.product && !operations.some(op=>op.type==='rename')) {
+       for(const key of ['price','channel','adAngle','part','colour','person'])delete facts[key];
+       facts.attributes=[];
+     }
+     Object.assign(facts,slots);
++    for(const key of ['appearance','clothing','possessive','subjectPronoun','objectPronoun','details','number','hookLine','secondLine'])if(slots[key]){facts.attributes=facts.attributes.filter(a=>!a.startsWith('Template field '+key+': '));facts.attributes.push('Template field '+key+': '+slots[key]);}
+     const price = String(text).match(/(?:\b(?:price|cost|mrp)\s*(?:is|:|=)?\s*(?:₹|rs\.?\s*)?|₹\s*)(\d[\d,]*(?:\.\d{1,2})?)\b/i)
+       || String(text).match(/\b(?:for|at)\s+(\d[\d,]*(?:\.\d{1,2})?)\s*(?:rupees|rs\b|₹)/i);
+-    if (price) facts.price = price[1];
++    if (price) facts.price = price[1].replace(/,+$/,'');
+     for(const [key,value]of Object.entries(extraSlots(text))){if(value===null)delete facts[key];else facts[key]=value;}
+     const channel = String(text).match(/\b(?:sell(?:ing)?\b.{0,100}?\b(?:on|through|via)|I sell on)\s+(?:(?:my|our|a|the)\s+)?(Instagram|website|marketplace|Amazon|Etsy|WhatsApp)\b/i)
+       || String(text).match(/\b(?:sales channel|channel)\s*:\s*(Instagram|website|marketplace|Amazon|Etsy|WhatsApp)\b/i);
+@@ -241,9 +275,25 @@
+       const option=previous.adAngles?.find(o=>o.id===selected);
+       facts.adAngle=option?.text || selected || normalize(angle[1]);
+     }
+-    for (const match of String(text).matchAll(/\b(?:colou?r|size|material|features?)\s*(?:is|are|:|=)\s*([^;.!?।\n]{1,100})/gi)) {
+-      if (!/\b(?:no|not|don't|without|unknown|invent|claim|ignore|system)\b|नहीं|मत|\?/.test(match[0]) && !String(text).includes('?')) facts.attributes.push(normalize(match[0]));
++    for(const match of String(text).matchAll(/\b(colou?r|size|material|features?)\s*(?:is|are|:|=)\s*([^;.!?।\n]{1,100})/gi)){
++      if(/\b(?:unknown|invent|claim|ignore|system)\b|अज्ञात|\?/.test(match[0]))continue;
++      const field=match[1].toLowerCase().replace('color','colour');
++      facts.attributes=facts.attributes.filter(a=>!new RegExp('^'+field+'\\b','i').test(a));
++      facts.attributes.push(String(match[0]).replace(/\s+/g,' ').trim());
+     }
++    const description=String(text).match(/["”’]\s*,\s*(?:an?\s+)([^;.!?।\n]{2,90})|["”’]\s+is\s+(?:my|our)\s+([^;.!?।\n]{2,90})/u);
++    if(description)facts.attributes.push((description[1]||description[2]).trim());
++    if(slots.product&&!operations.some(o=>o.type==='replace'||o.type==='rename')){
++      const quoted=String(text).match(/^[\s]*(?:My |Our |I sell )?["“‘][^"”’]+["”’]\s+([^;.!?।\n]{1,160})/iu);
++      if(quoted){for(const part of quoted[1].split(/,|\bwith\b/iu)){const value=part.replace(/^(?:is|means)\s+(?:my|our|a|an)\s+|^(?:mera|meri|मेरा|मेरी)\s+/iu,'').replace(/\s+(?:hai|है)$/iu,'').trim();if(value&&!/[₹$]|\b(?:sold|costs?|price|on Instagram|on Etsy)\b/i.test(value))facts.attributes.push(value);}}
++    }
++    const correction=String(text).match(/\bCorrection:\s*(?:it\s+)?has\s+([^;.!?।\n]+?)(?=\s+and\s+costs?|[;.!?।\n]|$)/iu);
++    if(correction){const last=correction[1].trim().split(/\s+/).at(-1);facts.attributes=facts.attributes.filter(a=>!new RegExp('\\b'+last.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'\\b','iu').test(a));facts.attributes.push(correction[1].trim());}
++    for(const match of String(text).matchAll(/(?:^|[.;।]\s*)(No [^;.!?।\n]{2,100}|Do not (?:claim|invent|add) [^;.!?।\n]{2,100})/gi))facts.attributes.push(match[1].trim());
++  }
++  for(const [label,key]of Object.entries({'सामग्री':'material','रंग':'colour','आकार':'size'})){
++    const m=String(message).match(new RegExp(label+'\\s*[:=]\\s*([^;.!?।\\n]{1,100})','iu'));
++    if(m){facts.attributes=facts.attributes.filter(a=>!new RegExp('^(?:'+label+'|'+key+')\\b','iu').test(a));facts.attributes.push(key+': '+m[1].trim());}
+   }
+   facts.attributes = [...new Set(facts.attributes)].slice(-8);
+   const latestOutputs = requestedProductOutputs(message);
+@@ -257,7 +307,7 @@
+   facts.language = productResponseLanguage(message,history,previous);
+   facts.schemaVersion=2;
+   facts.courseId=scope.courseId||previous.courseId||'';facts.conversationId=scope.conversationId||previous.conversationId||'';
+-  facts.currentTask={outputs:facts.requestedOutputs,parts:context.tasks||[],request:/^(?:again|continue|same again|do that|repeat|next)[.!?\s]*$/i.test(String(message).trim())?previous.currentTask?.request||'':String(message).slice(0,500),...taskConstraints(message,previous.currentTask)};
++  facts.currentTask={outputs:facts.requestedOutputs,parts:context.tasks||[],request:/^(?:again|continue|same again|do that|repeat|next)[.!?\s]*$/i.test(String(message).trim())?previous.currentTask?.request||'':String(message).slice(0,500),...taskConstraints(message,productOperations(message).some(op=>op.type==='reset'&&!op.negated&&/conversation|everything/.test(message))?{}:previous.currentTask)};
+   facts.adAngles=facts.product===previous.product?(previous.adAngles||[]):[];
+   facts.evidence={...(facts.product===previous.product?previous.evidence:{} )};
+   for(const field of ['product','part','colour','person','price','channel'])if(facts[field]!==previous[field]&&facts[field])facts.evidence[field]=String(message).slice(0,500);
+@@ -290,16 +340,18 @@
+   else if(overview){topic='overview';inferredLesson=1;}
+   else if (/prerequis|before (?:starting|begin)|what (?:do I )?need.*(?:start|course)|ज़रूरत|शुरू.*चाहिए/i.test(text)) { topic='prerequisites'; inferredLesson=1; }
+   else if (signals.location && !signals.compound) {topic='prompt_location';inferredLesson=8;}
+-  else if (/final\s+(?:(?:ad|project)\s+)?(?:workflow|order|assembly|edit)|finale|capcut|अंतिम|फाइनल/i.test(text)) {topic='final_assembly';inferredLesson=8;}
++  else if (/\b(?:arrange|assemble|order|edit)\b.{0,40}\bfinal ad\b|\bfinal ad\b.{0,40}\bclips\b|final\s+(?:(?:ad|project)\s+)?(?:workflow|order|assembly|edit)|finale|capcut|अंतिम|फाइनल/i.test(text)) {topic='final_assembly';inferredLesson=8;}
+   else if (/\b(?:phone|handset|smartphone|mobile(?: device)?)\b.{0,100}\b(?:visible|frame|on.?screen|appear\w*|show\w*|dikh\w*|enters?|nazar|pok\w*|intrud\w*|protrud\w*)\b|\b(?:visible|appear\w*|show\w*|frame)\b.{0,60}\b(?:phone|handset|mobile(?: device)?)\b|(?:फोन|मोबाइल).*(?:दिख|फ्रेम|नज़र|नजर)/i.test(text)) {topic='phone_visibility';inferredLesson=7;}
+   else if(outputs.includes('composition')){topic='composition';inferredLesson=2;}
+   else if(outputs.includes('demo')){topic='ugc';inferredLesson=7;}
+   else if(explicitLesson===7 && /settings|references|सेटिंग|संदर्भ/i.test(text)){topic='ugc';inferredLesson=7;}
+   else if (/diwali|wedding|festiv|दिवाली|शादी|त्योहार/i.test(text)) {topic='festive';inferredLesson=4;}
+   else if ((signals.colourAction || previous.topic==='colour' || previous.topic==='colour_shape' || (priorLesson===4&&/recolou?r|variants?|rang.*badal|रंग.*बदल/i.test(prior))) && /shape.{0,55}(?:chang|badal|recolou?r)|(?:chang|badal|different).{0,40}shape|आकार.{0,20}बदल/i.test(text)) {topic='colour_shape';inferredLesson=4;}
++  else if (productOperations(message).some(op=>op.type==='recolour'&&!op.negated)) {topic='colour';inferredLesson=4;}
+   else if (/brand.*(?:colou?r|shade)|(?:exact|precise).*(?:shade|colou?r)|रंग.*(?:मिल|सही)/i.test(text)) {topic='colour_shade';inferredLesson=4;}
+   else if (/\b(?:ugc|handheld)\b|\b(?:polished|commercial|studio)\s+(?:looking\s+|style\s+)?(?:ad|video|clip|footage)\b|\b(?:ad|video|clip|footage)\s+(?:(?:looks?|feels?|is|seems?|too|very|so|a|like)\s+){1,5}(?:polished|commercial|studio)\b|यूजीसी/i.test(text)) {topic=/\b(?:polished|commercial|natural|studio)\b/i.test(text)?'natural_ugc':'ugc';inferredLesson=7;}
+-  else if (/\b(?:blur\w*|letters?|lettering|labels?|logos?|small text)\b|धुंध|अक्षर|dhundle/i.test(text)) {topic='blur';inferredLesson=/\bvideo\b|वीडियो/i.test(text+' '+prior)?6:2;}
++  else if (/\b(?:aspect ratio|landscape|portrait)\b.{0,100}(?:Reels|edges|किनार|खींच)|(?:Reels|किनार).{0,100}landscape/i.test(text)){topic='aspect_ratio';inferredLesson=6;}
++  else if (/\b(?:blur\w*|lettering|small text)\b|धुंध|अक्षर|dhundle/i.test(text)) {topic='blur';inferredLesson=/\bvideo\b|वीडियो/i.test(text+' '+prior)?6:2;}
+   else if (/\b(?:morph\w*|warp\w*|melt\w*|pighal\w*|movements?|motion)\b|मूवमेंट|आकार बदल/i.test(text)) {topic='motion';inferredLesson=6;}
+   else if (signals.colourAction) {topic='colour';inferredLesson=4;}
+   else if (/(?:face|chehra|चेहरा).{0,60}(?:chang|same|consistent|badal|बदल|समान)|(?:same|consistent).{0,20}face/i.test(text)) {topic='face_consistency';inferredLesson=3;}
+@@ -327,11 +379,11 @@
+   return { topic, lessonNumber, explicitLesson: Boolean(explicitLesson), exact, carryLesson:inheritsLesson, compound:signals.compound, openReasoning:signals.reasoning, wholeJourney:signals.wholeJourney,
+     troubleshooting: /fix|troubleshoot|problem|wrong|morph|blur|stop|कैसा|कैसे रोक|ठीक|badal|pighal/i.test(text)
+       || ['colour_shape','colour_shade','face_consistency','hand_anatomy','phone_visibility','product_consistency'].includes(topic)
+-      || topic==='motion' && !/settings|workflow|steps/i.test(text),
++      || topic==='motion' && /morph|warp|melt|pighal|problem|wrong|fix|बदल|पिघल|समस्या/i.test(text),
+     procedural: /workflow|steps|settings|references|how (?:do|does|can|to)|तरीका|कदम|शुरुआत|सेटिंग|kaise|tareeka/i.test(text),
+     requestedOutputs: requestedProductOutputs(text), previousTask:previous.currentTask?.request, tasks:signals.tasks, lessons:signals.lessons };
+ }
+ 
+ module.exports = { PRODUCT_SLUGS, PRODUCT_RECORDS, PRODUCT_TEMPLATES, cleanPdfText, parseProductKnowledge,
+   wantsProductPrompt, wantsProductScene, findProductTemplate, productSlots, renderProductTemplate,
+-  cleanProductName, productFacts, productRequestContext, productLessonNumber, requestedProductOutputs };
++  cleanProductName, TEMPLATE_SLOTS, explicitTemplateSlots, productFacts, productRequestContext, productLessonNumber, requestedProductOutputs };
+--- a/edunex-b/services/productTutorResponse.js
++++ b/edunex-b/services/productTutorResponse.js
+@@ -2,7 +2,7 @@
+ const { PRODUCT_SLUGS, findProductTemplate, wantsProductPrompt, wantsProductScene, productSlots, renderProductTemplate, productFacts, productRequestContext } = require('./productTutorKnowledge');
+ const { draftProductAd, missingProductDeliverables } = require('./productTutorTasks');
+ 
+-const { productResponseSelection, productResponseLanguage:tutorLanguage } = require('./productTutorIntent');
++const { productResponseSelection, productResponseLanguage:tutorLanguage,productCopyIntent,productRequestPlan,productCourseDomain } = require('./productTutorIntent');
+ 
+ function explanationLanguageMatches(reply, language, knownProduct = '') {
+   let prose = String(reply).replace(/```[\s\S]*?```/g, '').replace(/[“"][^”"\n]+[”"]/g, '');
+@@ -47,8 +47,17 @@
+   return knowledge?.courseSlugs?.length===1 && PRODUCT_SLUGS.has(knowledge.courseSlugs[0]);
+ }
+ 
++function productAccessReply(message,knowledge){
++ if(!isProductKnowledge(knowledge)||knowledge.materialsAvailable)return '';
++ return {
++  english:'Detailed approved templates require active access to this course. Sign in to the account used for purchase, check its course/subscription status, and use Restore Purchases if you purchased in the app. If access is still inactive, contact Skillomate support with your purchase receipt. Protected template text is unavailable until access is verified.',
++  hindi:'इस कोर्स के पूरे स्वीकृत टेम्पलेट के लिए सक्रिय एक्सेस चाहिए। खरीद वाले खाते में लॉग इन करके कोर्स या सदस्यता की स्थिति जाँचें। ऐप में खरीद हुई हो तो Restore Purchases इस्तेमाल करें। एक्सेस फिर भी निष्क्रिय हो तो खरीद की रसीद के साथ Skillomate सहायता से संपर्क करें। एक्सेस सत्यापित होने तक सुरक्षित टेम्पलेट का पाठ उपलब्ध नहीं है।',
++  hinglish:'Is course ke approved templates ke liye active access chahiye. Purchase wale account mein login karke course/subscription status check karo; app se kharida ho to Restore Purchases use karo. Access phir bhi inactive ho to receipt ke saath Skillomate support se contact karo. Verified access ke bina protected template text available nahi hai.',
++ }[tutorLanguage(message,[],knowledge.productContext)];
++}
++
+ function productSafetyRequest(message) {
+-  return /\b(?:fake (?:review|testimonial)|(?:AI|synthetic|virtual|generated).{0,80}(?:(?:real|genuine|actual)\s+(?:customer|buyer)|personally|loved|review|testimonial)|earnings? guarantee|guaranteed (?:income|earnings)|(?:promise|guarantee).{0,30}(?:earn|income|money)|kamai)\b|नकली.{0,15}समीक्षा|असली ग्राहक|कमाई/iu.test(message);
++  return /\b(?:fake (?:customer )?(?:review|testimonial)|(?:AI|synthetic|virtual|generated).{0,80}(?:(?:real|genuine|actual)\s+(?:customer|buyer)|personally|loved|review|testimonial)|earnings? guarantee|guaranteed (?:income|earnings)|(?:promise|guarantee).{0,30}(?:earn|income|money)|kamai)\b|नकली.{0,15}समीक्षा|असली ग्राहक|कमाई/iu.test(message);
+ }
+ 
+ function selectProductGuidance({ message, knowledge, history = [] }) {
+@@ -58,6 +67,7 @@
+   const scoped = context.lessonNumber ? candidates.filter(r=>r.lessonNumber===context.lessonNumber || r.lessonNumbers?.includes(context.lessonNumber)) : candidates;
+   const topicMatches=scoped.filter(r=>r.intentTags?.includes(context.topic));
+   const pool=topicMatches.length?topicMatches:scoped;
++  if(context.topic==='model_shot'&&/\b(?:remove|drop|without)\b/i.test(message)&&/\b(?:reference|sheet|face)\b/i.test(message)){const full=scoped.find(r=>r.contentType==='workflow'&&r.lessonNumber===3);if(full)return full;}
+   if(context.troubleshooting && topicMatches.length){const faq=pool.find(r=>r.contentType==='faq');if(faq)return faq;}
+   // Only procedural material for this topic/lesson may outrank the best source.
+   return (context.procedural && pool.find(r=>r.contentType==='workflow')) || pool[0] || null;
+@@ -95,7 +105,7 @@
+   }[language];
+ }
+ 
+-function productTutorReply({ message, history = [], knowledge }) {
++function resolveProductTutorReply({ message, history = [], knowledge }) {
+   if (!isProductKnowledge(knowledge)) return null;
+   const language = tutorLanguage(message,history,knowledge.productContext);
+   const factsForSafety=productFacts(message,history,knowledge.productContext);
+@@ -110,8 +120,8 @@
+   }
+   if (productSafetyRequest(message)) {
+     const facts=productFacts(message,history,knowledge.productContext);
+-    const demo=knowledge.materialsAvailable && facts.requestedOutputs.includes('demo')
+-      && draftProductAd({message,facts:{...facts,requestedOutputs:['demo']},language,records:knowledge.records});
++    const demo=knowledge.materialsAvailable && facts.requestedOutputs.some(k=>['demo','cards'].includes(k))
++      && draftProductAd({message,facts:{...facts,requestedOutputs:[facts.requestedOutputs.includes('cards')?'cards':'demo']},language,records:knowledge.records});
+     return { reply: safeAd[language]+(alternativeRequested?'\n\n'+safeLine():demo?`\n\n${demo.reply}`:''), policy: 'advertising_safety', templateId: '' };
+   }
+   if (!knowledge.materialsAvailable) return null;
+@@ -130,8 +140,10 @@
+   if(wantsProductPrompt(message) && !template && !context.troubleshooting)return {reply:{english:'Which approved template heading should I copy in full?',hindi:'किस स्वीकृत टेम्पलेट का पूरा पाठ चाहिए? उसका शीर्षक बताइए।',hinglish:'Kis approved template ka poora text chahiye? Heading batao.'}[language],templateId:'',policy:'missing_exact_asset'};
+   const selection=productResponseSelection({message,history,context,hasTemplate:Boolean(template),hasGuidance:Boolean(creative || selectProductGuidance({message,history,knowledge}))});
+   knowledge.responseSelection=selection;
++  knowledge.requestPlan=productRequestPlan(message,{context,facts,hasTemplate:Boolean(template)});
++  if(!template&&creative?.policy==='missing_product_fact'&&!productCopyIntent(message).generation)return creative;
+   if (!template && selection.mode==='model') return null;
+-  if (!template && creative) return advertisingRisk(creative.reply) ? {reply:safeAd[language],policy:'advertising_safety',templateId:''} : creative;
++  if (!template && creative && !missingProductDeliverables(creative.reply,facts.requestedOutputs,message).length) return advertisingRisk(creative.reply) ? {reply:safeAd[language],policy:'advertising_safety',templateId:''} : creative;
+   if (!wantsProductPrompt(message) && !template) {
+     const first = selectProductGuidance({message,history,knowledge});
+     const context=knowledge.requestContext || productRequestContext(message,history,knowledge.productContext);
+@@ -146,9 +158,11 @@
+     return {reply:{english:'Which approved template heading should I copy in full?',hindi:'किस स्वीकृत टेम्पलेट का पूरा पाठ चाहिए? उसका शीर्षक बताइए।',hinglish:'Kis approved template ka poora text chahiye? Heading batao.'}[language],templateId:'',policy:'missing_exact_asset'};
+   }
+   const values = productSlots(message, history,knowledge.productContext);
+-  const body = renderProductTemplate(template, values);
++  const limitSlots=/\b(?:only|sirf)\s+(?:\[|fill|replace|these.{0,20}slots)|(?:केवल|सिर्फ)\s+\[|\b(?:fill|replace)\b.{0,80}\bonly\b/iu.test(message);
++  const allowedSlots=limitSlots?[...String(message).matchAll(/\[([^\]]+)\]/g)].map(m=>m[1]):null;
++  const body = renderProductTemplate(template, values, {raw:productCopyIntent(message).raw,...(allowedSlots?.length?{allowedSlots}:{})});
+   for(const [field,pattern]of Object.entries({product:/\[product\]/i,part:/\[the part,/i,colour:/\[new colour,/i,person:/\[man\s*\/\s*woman\]/i})){
+-    if(values[field]&&pattern.test(body))throw new Error('Known template field unresolved: '+field);
++    if(!productCopyIntent(message).raw&&!allowedSlots?.length&&values[field]&&pattern.test(body))throw new Error('Known template field unresolved: '+field);
+   }
+   const unresolved = /\[[^\]]+\]/.test(body);
+   const note = unresolved ? {
+@@ -157,6 +171,29 @@
+     hinglish: 'Bache hue brackets mein apni details bharo; maine koi details invent nahi ki hain.',
+   }[language] : '';
+   return { reply: `${template.heading}\n\n\`\`\`text\n${body}\n\`\`\`${note ? `\n\n${note}` : ''}`, templateId: template.chunkId, policy: 'exact_template' };
++}
++
++function productTutorReply(input){
++ const result=resolveProductTutorReply(input);
++ if(!result)return null;
++ // Refusals, exact rendering and genuine clarification have distinct terminal
++ // contracts. Other local artifacts must fulfill every requested deliverable.
++ if(['advertising_safety','earnings_boundary','exact_template','missing_exact_asset','missing_product_fact','conversation_product_facts','active_course_identity'].includes(result.policy))return result;
++ const {message,history=[],knowledge}=input;
++ const facts=productFacts(message,history,knowledge.productContext);
++ const missing=missingProductDeliverables(result.reply,facts.requestedOutputs,message);
++ const plan=knowledge.requestPlan||productRequestPlan(message,{facts});
++ const mixed=plan.outputs.filter(o=>o.language!==plan.explanationLanguage);
++ const languageComplete=mixed.length?mixed.every(o=>{
++  if(o.kind==='dialogue'){const lines=result.reply.split('\n').filter(l=>/^(?:Example line|उदाहरण संवाद):/iu.test(l));return lines.length&&lines.every(l=>explanationLanguageMatches(l,o.language,facts.product));}
++  if(o.kind==='caption'){const line=result.reply.split('\n').find(l=>/^(?:caption|कैप्शन)\s*:/iu.test(l));return line&&explanationLanguageMatches(line,o.language,facts.product);}
++  if(o.kind==='hooks'){const section=result.reply.split(/\nHooks\n/i)[1]?.split('\n\n')[0];return section&&explanationLanguageMatches(section,o.language,facts.product);}
++  return false;
++ }):explanationLanguageMatches(result.reply,tutorLanguage(message,history,facts),facts.product);
++ if(missing.length||!languageComplete){
++  knowledge.responseSelection={mode:'model',reason:'incomplete_local_response',missing};return null;
++ }
++ return result;
+ }
+ 
+ function validateProductReply({ reply, message, history = [], knowledge }) {
+@@ -231,4 +268,4 @@
+ 
+ module.exports = { tutorLanguage, explanationLanguageMatches, advertisingRisk, productSafetyRequest,
+   productTutorReply, localizedGuidance, validateProductReply, isProductKnowledge, productFallbackNotice,
+-  productFacts, productRequestContext, selectProductGuidance };
++  productFacts, productRequestContext, selectProductGuidance, productCourseDomain, productAccessReply };
+--- a/edunex-b/services/productTutorState.js
++++ b/edunex-b/services/productTutorState.js
+@@ -17,63 +17,118 @@
+ }
+ 
+ function entity(value){
+- const name=compact(value).replace(/^(?:(?:of\s+)?(?:a|an|the|my|our)\s+)+/i,'');
++ const name=compact(value).replace(/^["“‘]([\s\S]*)["”’]$/u,'$1').replace(/^(?:(?:of\s+)?(?:a|an|the|my|our)\s+)+/i,'');
+  const checked=productNameSecurityText(name).replace(/^(?:(?:of\s+)?(?:a|an|the|my|our)\s+)+/i,'');
+- if(!name||!checked||name.length>100||checked.length>100||/[\[\]{}<>]/.test(checked)||/\b(?:not|unknown|unset|unavailable|same|that|this|provided|previous|earlier|course|prompt|template|ignore|system|customer|benefits?)\b|अज्ञात|नहीं/u.test(checked.toLowerCase()))return '';
+- if(/^(?:product|item|actor|presenter|man|woman|one|ad|video|details|features?)(?:\s|$)/i.test(checked))return '';
++ if(!name||!checked||/^(?:current|existing|present)\s+(?:item|product|object)$/iu.test(checked)||/^(?:इस|उस|वही|यह|इसका|उसका)(?:\s|$)/u.test(checked)||name.length>100||checked.length>100||/[\[\]{}<>]/.test(checked)
++  || /\b(?:it|them|me|changing|creating|making|not|no|given|unknown|unset|unavailable|same|that|this|provided|previous|earlier|course|prompt|template|ignore|system|developer|instead|mentioned|above|discussed|customer|benefits?|features?|details|angle)\b|अज्ञात|नहीं/iu.test(checked))return '';
++ if(/\b(?:changed?|recolou?red|replace|switch)\b.{0,50}\b(?:to|with)\b/iu.test(checked))return '';
++ if(/^(?:(?:clearly )?adult |young Indian )?(?:product|item|actor|presenter|man|woman|one|ad|video|photo|hooks?|scripts?|captions?)(?:\s|$)/i.test(checked))return '';
+  return name;
+ }
+-function extractEntity(text){
++
++// One declaration parser for state, rendering and language masking. Evidence spans
++// refer to the original input; displayed names never pass through NFKC.
++function declaration(text){
+  const q=String(text||'');
+- const replacements=productOperations(q).filter(op=>op.type==='replace');
+- if(replacements.length){const op=replacements.filter(op=>!op.negated&&op.product).at(-1);return op?{product:op.product,evidence:compact(q.slice(...op.span)),span:op.span}:null;}
+- const stop='(?=\\s+(?:on|through|via|at|with|using|priced|sold|in\\s+(?:a|an|the|Lesson|English|Hindi|Hinglish)|and\\s+(?:I|we|write|give)|for\\s+[₹$0-9])\\b|[,;.!?।\\n]|$)';
+- const noun="([\\p{L}\\p{N}][\\p{L}\\p{N}\\p{M} '&/\\-]{0,100}?)";
++ const quoted='["“‘]([^"”’\\n]{1,160})["”’]';
++ const end='(?=\\s+(?:on|through|via|at|with|using|priced|sold|called|named|in\\s+(?:a|an|the|Lesson|English|Hindi|Hinglish)|and\\s+(?:I|we|write|give|include|preserve|keep|tell|show|use|suggest)|for\\s+[₹$]?\\d+)\\b|[,:;.!?।\\n]|$)';
++ const noun="([\\p{L}\\p{N}][\\p{L}\\p{N}\\p{M} '&/\\-]{0,110}?)";
+  const patterns=[
+-  new RegExp('\\b(?:the (?:object|subject)(?: (?:I am photographing|of (?:these|the) (?:photos|photographs)))?|(?:my|our) object) is\\s+'+noun+stop,'iu'),
+-  new RegExp('\\b(?:I call (?:my|our|the) (?:item|product)|(?:my|our) (?:item|product) is|the (?:item|product)(?: in (?:this|the) (?:exercise|example))? is|the name of (?:my|our|the) (?:item|product) is)\\s+(?:(?:called|named)\\s+)?'+noun+stop,'iu'),
+-  new RegExp('\\bI (?:only |just )?know (?:only |just )?the name of (?:my|our)\\s+'+noun+stop,'iu'),
++  new RegExp('\\b(?:called|named)\\s*'+quoted,'iu'),
++  /^([\p{L}\p{N}][\p{L}\p{N}\p{M} '&/\-]{1,100}?)\s+ka\s+(?=[^;.!?।\n]{0,50}\b(?:video|photo|prompt|caption)\b)/iu,
++  /^([^।;!?\n]{1,100}?)\s+के\s+विज्ञापन\s+के\s+लिए/u,
++  new RegExp('\\[PRODUCT\\]\\s*(?:को|की जगह)\\s*'+quoted,'iu'),
++  new RegExp('\\b(?:the )?label(?: on (?:my|our|the) [^.!?;\\n]{1,50}?)? says\\s*'+quoted,'iu'),
++  new RegExp('\\b(?:my|our)\\s+'+quoted+'\\s+[\\p{L}]','iu'),
++  new RegExp('\\b(?:I|we)\\s+(?:sell|use|have|am selling)\\s+'+quoted,'iu'),
++  new RegExp('^\\s*'+quoted+'\\s+(?:is\\s+(?:a|an|my|our)\\b|means my\\b|(?:mera|meri|my)\\b|नाम\\s+की|[^;.!?।\\n]{1,100}?(?:है|hai)\\b)','iu'),
++  new RegExp('^\\s*'+quoted+'\\s+[^;.!?।\\n]{1,100}?(?:है|hai)(?=[।;.!?\\n]|$)','iu'),
++  new RegExp('\\b(?:called|named)\\s+'+noun+end,'iu'),
++  new RegExp('\\b(?:my|our)\\s+'+noun+'\\s+(?:costs?|is (?:called|named))\\b','iu'),
++  new RegExp('\\bchoose\\s+(?:the|a|an)\\s+'+noun+end,'iu'),
++  new RegExp('\\[PRODUCT\\]\\s*[:=]\\s*(?:'+quoted+'|'+noun+end+')','iu'),
++  new RegExp('\\b(?:product\\s+name|item\\s+name|name\\s+of\\s+(?:my|our|the)\\s+(?:product|item))\\s*[:=]\\s*(?:'+quoted+'|'+noun+end+')','iu'),
++  new RegExp('\\b(?:my name for this (?:item|product) is|(?:my|our) (?:product|item) is(?: called| named)?|I call (?:my|our|the) (?:product|item)|its name is)\\s*'+quoted,'iu'),
++  new RegExp('\\b(?:called|named|the label says|name\\s*:)\\s*'+quoted,'iu'),
++  new RegExp(quoted+'\\s+(?:is my|is our)\\b','iu'),
++  new RegExp('\\b(?:mera|meri|hamara|hamari)\\s+(?:product|item)\\s+(?:ka\\s+)?(?:naam\\s+)?'+quoted+'\\s+hai\\b','iu'),
+   /(?:मेरे|मेरी|मेरा|हमारे|हमारी|हमारा)\s+(?:प्रोडक्ट|उत्पाद|सामान|आइटम|वस्तु|चीज़|चीज)\s+का\s+नाम\s+([^।.!?;\n]+?)\s+है/u,
+   /(?:मेरा|मेरी|हमारा|हमारी)\s+(?:प्रोडक्ट|उत्पाद|सामान|आइटम|वस्तु|चीज़|चीज)\s+(?!\s*का\s+नाम\s+)([^।.!?;\n]+?)\s+है/u,
+   /\b(?:mere|meri|mera|hamare|hamari|hamara)\s+(?:product|item|samaan|vastu|cheez)\s+ka\s+naam\s+(.+?)\s+hai\b/iu,
+   /\b(?:mera|meri|hamara|hamari)\s+(?:product|item|samaan)\s+(?!\s*ka\s+naam\s+)(.+?)\s+hai\b/iu,
+   /\b(?:main|mai|hum)\s+(.+?)\s+becht[aei]\s+(?:hoon|hun|hain)\b/iu,
+-  new RegExp('\\b(?:for|about)\\s+my\\s+'+noun+stop,'iu'),
+-  new RegExp('\\b(?:AI|synthetic|virtual)\\s+(?:presenter|actor|woman|man)\\s+has never (?:bought|used|tested)\\s+'+noun+stop,'iu'),
+-  /\bmere\s+(.+?)\s+ke liye\b/iu,
++  /(?:मुझे|हमें)\s+(?:केवल|सिर्फ|बस)?\s*(?:(?:प्रोडक्ट|उत्पाद)\s+का\s+)?नाम\s+([^।.!?;\n]+?)\s+(?:पता|मालूम)\s+है/u,
++  /\b(?:mujhe|humein)\s+(?:sirf\s+)?(?:product\s+ka\s+)?naam\s+(.+?)\s+(?:pata\s+hai|maloom\s+hai)\b/iu,
++  new RegExp('\\b(?:the (?:object|subject)(?: (?:I am photographing|of (?:these|the) (?:photos|photographs)))?|(?:my|our) object) is\\s+'+noun+end,'iu'),
++  new RegExp('\\b(?:I call (?:my|our|the) (?:item|product)|(?:my|our) (?:item|product) is|the (?:item|product)(?: in (?:this|the) (?:exercise|example))? is|the name of (?:my|our|the) (?:item|product) is)\\s+(?:(?:called|named)\\s+)?'+noun+end,'iu'),
++  new RegExp('\\bI (?:only |just )?know (?:only |just )?the (?:product )?name(?: of (?:my|our)| is)?\\s+'+noun+end,'iu'),
++  new RegExp('\\b(?:I|we)\\s+(?:sell|have|use)\\s+(?!given\\b|no\\b|not\\b|(?:product photos?|reference(?: images?)?|photos?|images?)\\b|active access\\b|only (?:a |an )?(?:AI|synthetic|virtual))'+noun+end,'iu'),
++  new RegExp('\\b(?:AI|synthetic|virtual)\\s+(?:presenter|actor|woman|man)\\s+has never (?:bought|used|tested)\\s+'+noun+end,'iu'),
+  ];
+- for(const pattern of patterns){const m=q.match(pattern);if(m){const p=entity(m[1]);if(p)return {product:p,evidence:compact(m[0]).slice(0,240),span:[m.index,m.index+m[0].length]};}}
++ for(const pattern of patterns){const m=q.match(pattern);if(!m)continue;const raw=m.slice(1).find(Boolean);const product=entity(raw);
++  // A rejected explicit declaration must not be retried as a weaker preposition.
++  if(!product)return null;
++  const at=m.index+m[0].indexOf(raw);return {product,evidence:compact(m[0]).slice(0,240),span:[at,at+raw.length]};
++ }
++ // Bounded referring phrases are accepted only as a supplied subject of a task,
++ // never an arbitrary "of" phrase or a request for archival/source manipulation.
++ const fallback=new RegExp('\\b(?:for|around|about)\\s+(?:a|an|the|my|our)\\s+'+noun+end,'giu');
++ for(const m of q.matchAll(fallback)){
++  const before=q.slice(0,m.index).split(/[.;!?।\n]/u).at(-1),after=q.slice(m.index+m[0].length).split(/[.;!?।\n]/u)[0];
++  if(!/\b(?:prompts?|templates?|scripts?|captions?|hooks?|ad|demo|demonstration|scene|showcase|carousel|testimonial|review|compare|contrast|photos?|product)\b/iu.test(before+' '+after)&&!/^for my\b/i.test(m[0]))continue;
++  if(/\b(?:I|we)\s+(?:need|want)|\b(?:exercise|comparison|archive|analysis|reference|same|this|that|example)\b/i.test(m[1]))continue;
++  const product=entity(m[1]);if(product){const at=m.index+m[0].indexOf(m[1]);return {product,evidence:compact(m[0]),span:[at,at+m[1].length]};}
++ }
++ const hindi=q.match(/(?:मेरे|मेरी)\s+([^।;!?\n]{1,100}?)\s+के\s+लिए/u)||q.match(/\bmere\s+(.+?)\s+ke liye\b/iu);
++ if(hindi){const product=entity(hindi[1]);if(product)return {product,evidence:compact(hindi[0]),span:[hindi.index,hindi.index+hindi[0].length]};}
+  return null;
+ }
++function extractEntity(text){
++ const replacements=productOperations(text).filter(op=>op.type==='replace'||op.type==='rename');
++ if(replacements.length){const op=replacements.filter(op=>!op.negated&&op.product).at(-1);return op?{product:op.product,evidence:compact(String(text).slice(...op.span)),span:op.span}:null;}
++ return declaration(maskProductOperations(text));
++}
+ 
+-// Typed user mutations. Values are opaque supplied strings, never colour/product dictionaries.
++// Typed mutations are parsed before declarations. Only supplied values are used.
+ function productOperations(text){
+- const q=String(text||'');const operations=[];
+- const end='(?=\\s+(?:and|while|but)\\s+(?:keep|preserv\\w*|leav\\w*|retain|do not|don.t)|[,;.!?।\\n]|$)';
++ const q=String(text||''),operations=[];
++ const end='(?=\\s+(?:and|while|but)\\s+(?:keep|preserv\\w*|leav\\w*|retain|do not|don.t)|[,:;.!?।\\n]|$)';
+  const noun="([\\p{L}\\p{N}][\\p{L}\\p{M}\\p{N} '&/\\-]{0,100}?)";
+- const replacementEnd='(?=\\s+(?:with|using|priced|on|at|and\\s+(?:give|write|return|price))\\b|[,;.!?।\\n]|$)';
+- const replacements=[
+-  new RegExp('\\b(?:replace|switch|change)\\s+(?:the |my |our )?(?:product|item|object)\\s+(?:with|to)\\s+'+noun+replacementEnd,'giu'),
+-  /\b(?:product|item|samaan|vastu)\s+ko\s+([^;.!?।\n]{1,100}?)\s+se\s+(?:replace\s+(?:mat\s+)?karo|(?:mat\s+)?badal\s+(?:do|karo))\b/giu,
+-  /(?:प्रोडक्ट|उत्पाद|वस्तु|सामान|आइटम)\s+को\s+([^;.!?।\n]{1,100}?)\s+से\s+(?:मत\s+)?(?:बदलें|बदल दीजिए|बदल दो|बदलो|replace\s+करें)/gu,
+- ];
++ const replacementEnd='(?=\\s+(?:with|using|priced|on|at|and\\s+(?:give|write|return|price))\\b|[,:;.!?।\\n]|$)';
+  const add=(type,m,values)=>{
+   const prefix=q.slice(0,m.index).split(/[.;!?।\n]/u).at(-1);
+-  const negated=/\b(?:do not|don't|never|not|nahi|mat)\s*$|(?:^|\s)(?:नहीं|मत)\s*$/iu.test(prefix)
+-    || /\b(?:not|nahi|mat)\b|(?:^|\s)(?:नहीं|मत)(?=\s|$)/u.test(m[0]);
++  const negated=/\b(?:do not|don't|never|not|nahi|mat)\s*$|(?:^|\s)(?:नहीं|मत)\s*$/iu.test(prefix)||/\b(?:not|nahi|mat)\b|(?:^|\s)(?:नहीं|मत)(?=\s|$)/u.test(m[0]);
+   operations.push({type,...values,negated,span:[m.index,m.index+m[0].length]});
+  };
+- for(const pattern of replacements)for(const m of q.matchAll(pattern))add('replace',m,{product:entity(m[1])});
++ const replacements=[
++  /\b(?:replace|switch|change)\s+(?:it|the product)(?:\s+completely)?\s*:\s*["“‘]([^"”’]+)["”’]/giu,
++  /\b(?:new|naya|nayi)\s+(?:product|item)\s+["“‘]([^"”’]+)["”’](?=\s*[:;,]|\s+hai)/giu,
++  /\b(?:replace|switch|change)\s+(?:(?:the|my|our)\s+(?:product|item|object)|it)(?:\s+completely)?\s+(?:with|to)\s+([^;.!?।\n]+)/giu,
++  new RegExp('\\b(?:new product|new item|naya product|nayi item)\\s*[:=]\\s*([^;.!?।\\n]+)','giu'),
++  /\b(?:naya|nayi)\s+(?:product|item)\s+["“‘]?(.+?)["”’]?\s+hai\b/giu,
++  /(?:नया|नयी|नई)\s+(?:प्रोडक्ट|उत्पाद|वस्तु|सामान)\s+["“‘]?([^।;.!?\n]+?)["”’]?\s+है/gu,
++  /\b(?:product|item|samaan|vastu)\s+ko\s+([^;.!?।\n]{1,160}?)\s+se\s+(?:replace\s+(?:mat\s+)?karo|(?:mat\s+)?badal\s+(?:do|karo))\b/giu,
++  /(?:प्रोडक्ट|उत्पाद|वस्तु|सामान|आइटम)\s+को\s+([^;.!?।\n]{1,160}?)\s+से\s+(?:मत\s+)?(?:बदलें|बदल दीजिए|बदल दो|बदलो|replace\s+करें)/gu,
++ ];
++ for(const pattern of replacements)for(const m of q.matchAll(pattern)){
++  const raw=compact(m[1]).split(/\s+(?:with|using|priced|on|at|and\s+(?:give|write|return|price))\b/i)[0].split(',')[0];
++  const named=raw.match(/\b(?:called|named)\s+["“‘]([^"”’]+)["”’]|["“‘]([^"”’]+)["”’]/iu);
++  const product=entity(named?(named[1]||named[2]):raw);
++  add('replace',m,{product,unsafe:!product&&Boolean(raw)&&! /^(?:unknown|unset|unavailable)$/i.test(raw)});
++ }
++ for(const pattern of [/\b(?:product|item)\s+ka\s+naam\s+["“‘]?(.+?)["”’]?\s+(?:rakho|kar\s+do)\b/giu,/(?:प्रोडक्ट|उत्पाद|वस्तु)\s+का\s+नाम\s+["“‘]?([^।;.!?\n]+?)["”’]?\s+(?:रखें|करें)/gu,/\brename\s+(?:(?:the|my|our)\s+)?(?:product|item|it)\s+to\s+([^;.!?।\n]+)/giu,/(?:नाम बदलकर|नया नाम)\s+["“‘]?([^।;.!?\n]+?)["”’]?\s+(?:करें|रखें|कर दिया है)/gu])for(const m of q.matchAll(pattern))add('rename',m,{product:entity(m[1])});
++ for(const m of q.matchAll(/\b(?:reset|clear|forget)\s+(?:(?:all|the|my|our)\s+)*(?:product facts|product context|conversation|everything)\b|\bforget\s+(?:the\s+)?(?:previous|old)\s+product\b|(?:सारा|पूरा)\s+(?:संदर्भ|प्रोडक्ट).{0,15}(?:हटाएँ|भूल)/giu))add('reset',m,{});
++ if(!operations.some(o=>o.type==='replace')&&/\b(?:switch|change)\s+to\s+(?:a\s+)?new\s+product\b/iu.test(q))operations.push({type:'replace',product:'',negated:false,span:[0,q.length]});
+  const recolours=[
++  /(?:केवल|सिर्फ)\s+([^।;.!?\n]{1,80}?)\s+को\s+([^।;.!?\n]{1,60}?)\s+रंग\s+में/gu,
+   new RegExp('\\b(?:change|changing|recolou?r(?:ing)?)\\s+(?:(?:the\\s+)?colou?r\\s+of\\s+)?'+noun+'\\s+to\\s+'+noun+end,'giu'),
+   new RegExp('\\bcolou?r\\s+of\\s+'+noun+'\\s+(?:(?:should|must|will)\\s+(?:not\\s+)?be\\s+|is\\s+to\\s+(?:be\\s+)?|)(?:changed|recolou?red|become)\\s+(?:to\\s+)?'+noun+end,'giu'),
+   /(?:sirf\s+)?([\p{L}\p{N}][\p{L}\p{N}\p{M} '\-/]{0,79}?)\s+ka\s+(?:rang|colou?r)\s+([\p{L}\p{N}][\p{L}\p{N}\p{M} '\-/]{0,59}?)\s+(?:mat\s+)?(?:karna|kar\s+do|karo|badal)/giu,
+   /(?:केवल|सिर्फ)\s+([^।;.!?\n]{1,80}?)\s+का\s+रंग\s+([^।;.!?\n]{1,60}?)\s+(?:मत\s+)?(?:करें|करना|कर दीजिए)/gu,
+  ];
+  for(const pattern of recolours)for(const m of q.matchAll(pattern)){
+-  const part=compact(m[1]).replace(/^.*?\b(?:mein|sirf)\s+/i,'').replace(/^(?:sirf|only)\s+/i,'');
+-  const colour=compact(m[2]);
+-  if(part.length<=100&&colour.length<=100)add('recolour',m,{part,colour});
++  const part=compact(m[1]).replace(/^.*?\b(?:mein|sirf)\s+/i,'').replace(/^(?:sirf|only)\s+/i,''),colour=compact(m[2]);
++  if(part.length<=100&&colour.length<=100&&!/^(?:product|item|object|it)$/i.test(part))add('recolour',m,{part,colour});
+  }
+  return operations.sort((a,b)=>a.span[0]-b.span[0]);
+ }
+@@ -85,7 +140,7 @@
+ }
+ function extraSlots(text){
+  const q=String(text||'').replace(/[०-९]/g,c=>String(c.charCodeAt(0)-0x0966));const result={};
+- const price=q.match(/(?:\b(?:price|costs?|mrp)(?:\s+is)?\s*[:=]?\s*(?:₹|rs\.?\s*)?|(?:कीमत|मूल्य|दाम)\s*[:=]?\s*|₹\s*)(\d[\d,]*(?:\.\d{1,2})?)/i);if(price)result.price=price[1];
++ const price=q.match(/(?:\b(?:price|costs?|mrp)(?:\s+is)?\s*[:=]?\s*(?:₹|rs\.?\s*)?|(?:कीमत|मूल्य|दाम)\s*[:=]?\s*|₹\s*)(\d[\d,]*(?:\.\d{1,2})?)/i);if(price)result.price=price[1].replace(/,+$/,'');
+  if(/(?:price|कीमत|दाम).{0,12}(?:unknown|unset|अज्ञात|नहीं पता)/iu.test(q))result.price=null;
+  const channel=q.match(/\b(Instagram|website|marketplace|Amazon|Etsy|WhatsApp)\b.{0,20}(?:par|पर|bik|बिक्री)|(?:बिक्री|sales|sell\w*).{0,40}\b(Instagram|website|marketplace|Amazon|Etsy|WhatsApp)\b/i);if(channel)result.channel=channel[1]||channel[2];
+  for(const op of productOperations(text))if(op.type==='recolour'&&!op.negated){result.part=op.part;result.colour=op.colour;}
+@@ -109,4 +164,4 @@
+  const q=String(message||'');const actorFree=/\b(?:no actors?|actor[- ]free|without (?:an? )?(?:actor|presenter))\b|बिना.{0,8}(?:अभिनेता|कलाकार)/i.test(q)?true:/\b(?:add|use|with) (?:an? )?(?:actor|presenter)\b/i.test(q)?false:Boolean(previous.actorFree);
+  return {actorFree};
+ }
+-module.exports={extractEntity,extraSlots,scopeProductState,captureProductOptions,taskConstraints,productOperations,maskProductOperations,productNameSecurityText};
++module.exports={entity,declaration,extractEntity,extraSlots,scopeProductState,captureProductOptions,taskConstraints,productOperations,maskProductOperations,productNameSecurityText};
+--- a/edunex-b/services/productTutorTasks.js
++++ b/edunex-b/services/productTutorTasks.js
+@@ -1,5 +1,6 @@
+ // Conservative practice drafts assembled only from user-supplied facts.
+ // These are original examples, never represented as additional course facts or testimonials.
++const {requestedOutputCount,productRequestPlan}=require('./productTutorIntent');
+ const { renderProductTemplate } = require('./productTutorKnowledge');
+ 
+ const prose = {
+@@ -45,16 +46,14 @@
+   },
+ };
+ 
+-function requestedHookCount(message) {
+-  const numbers={one:1,two:2,three:3,four:4,five:5,six:6,seven:7,eight:8,nine:9,ten:10,ek:1,do:2,teen:3,paanch:5,'एक':1,'दो':2,'तीन':3,'चार':4,'पाँच':5,'पांच':5};
+-  const input=String(message).replace(/[०-९]/g,c=>String(c.charCodeAt(0)-0x0966));
+-  const token=input.match(/(?:^|\s)(\d+|one|two|three|four|five|six|seven|eight|nine|ten|ek|do|teen|paanch|एक|दो|तीन|चार|पाँच|पांच)\s+(?:(?:short|brief|punchy|honest|concise|distinct|factual|name-only|ad|chhote|छोटे|छोटे से)\s+){0,3}(?:hooks?\b|हुक)/i)?.[1]?.toLowerCase();
+-  return Math.max(1,Math.min(10,Number(token)||numbers[token]||5));
+-}
++function requestedHookCount(message) { return requestedOutputCount(message,'hooks',5); }
+ 
+ function draftProductAd({ message, facts, language, records = [] }) {
+   const requested = new Set(facts.requestedOutputs || []);
++  if(requested.has('hooks')&&requestedHookCount(message)>10)return null;
+   if (!requested.size) return null;
++  const plan=productRequestPlan(message,{facts});
++  const section=kind=>prose[plan.outputs.find(o=>o.kind===kind)?.language]||prose[language]||prose.english;
+   const p=prose[language]||prose.english;
+   if(requested.has('composition')){
+     const sources=records.filter(r=>r.contentType==='exact-template'&&r.lessonNumber===2&&/White Studio|Lifestyle/.test(r.heading));
+@@ -69,7 +68,7 @@
+   }
+   if (!facts.product) return {reply:p.missing,policy:'missing_product_fact',templateId:''};
+   const product=facts.product;
+-  const details=[product,...(facts.attributes||[])];
++  const details=[product,...(facts.attributes||[]).filter(a=>! /^(?:Template field |No\b|Do not\b|without\b)|\b(?:nahi|mat)\b|नहीं|मत/iu.test(a))];
+   if(facts.price)details.push(`₹${facts.price}`);
+   if(facts.channel)details.push(facts.channel);
+   const factualLine=details.join(' · ');
+@@ -77,6 +76,11 @@
+   const selectedAngle=facts.adAngle && !/^[123]$/.test(facts.adAngle)?facts.adAngle:p.angles[angleIndex];
+   if(requested.has('demo')&&!records.some(r=>r.lessonNumber===7&&(r.contentType==='workflow'||r.contentType==='exact-template')))return null;
+   const lines=[requested.has('demo')?'Lesson 07':'Lesson 05','',p.intro,'',`${p.facts}: ${factualLine}`];
++  if(requested.has('cards')){
++    const count=requestedOutputCount(message,'cards',3);if(count>10)return null;
++    const label={english:'AI product-showcase card',hindi:'AI प्रोडक्ट प्रदर्शन कार्ड',hinglish:'AI product-showcase card'}[language];
++    for(let i=0;i<count;i++)lines.push('',`${label} ${i+1}`,p.show(product),factualLine);
++  }
+   if(requested.has('demo')){
+     const demo={
+       english:[`Honest demonstration example (an original practice draft, not a saved template):`,`1. Show the reference image or real ${product} in a normal home setting.`,`2. Move to a close view of ${product}; keep the same shape, text and logo.`,`3. Have the presenter point to the visible product, without pretending to have bought or used it.`,`Example line: "Here is ${product}. View its supplied details before ordering."`,`An AI presenter is not a real customer. Do not add benefits or genuine-customer testimonials.`],
+@@ -86,8 +90,10 @@
+     if(facts.currentTask?.actorFree){
+       demo[3]={english:`3. Show the same ${product} alone from another angle; no actor or hands are needed.`,hindi:`3. उसी ${product} को दूसरे कोण से अकेला दिखाएँ; कलाकार या हाथ न दिखाएँ।`,hinglish:`3. Usi ${product} ko doosre angle se akela dikhao; actor ya hands mat dikhao.`}[language];
+     }
++    const dialogueLanguage=plan.outputs.find(o=>o.kind==='dialogue')?.language||language;
++    if(dialogueLanguage!==language)demo[4]={english:`Example line: \"Here is ${product}. View its supplied details before ordering.\"`,hindi:`उदाहरण संवाद: \"यह ${product} है। दिए हुए विवरण देखें।\"`,hinglish:`Example line: \"Yeh ${product} hai. Diye hue details dekho.\"`}[dialogueLanguage];
+     const mute=/\b(?:no (?:voice|dialogue|spoken lines?)|silent|without (?:voice|dialogue))\b/i.test(message);
+-    const spoken=[demo[4],{english:`Example line: \"See ${product} up close.\"`,hindi:`उदाहरण संवाद: \"${product} को पास से देखिए।\"`,hinglish:`Example line: \"${product} ko paas se dekho.\"`}[language],demo[4]];
++    const spoken=[demo[4],{english:`Example line: \"See ${product} up close.\"`,hindi:`उदाहरण संवाद: \"${product} को पास से देखिए।\"`,hinglish:`Example line: \"${product} ko paas se dekho.\"`}[dialogueLanguage],demo[4]];
+     lines.push('',demo[0]);
+     for(let i=1;i<=3;i++){lines.push(demo[i]);if(!mute)lines.push(spoken[i-1]);}
+     lines.push(demo[5]);
+@@ -100,9 +106,9 @@
+   if(requested.has('plan')||requested.has('angle'))lines.push('',`${p.angle}: ${selectedAngle}`,p.show(product),factualLine,p.order);
+   else if(facts.adAngle)lines.push('',`${p.angle}: ${selectedAngle}`);
+   if(requested.has('hooks')){
+-    const hooks=p.hook(product);
++    const hp=section('hooks'),hooks=hp.hook(product);
+     if(facts.price)hooks[3]=`${product} · ₹${facts.price}.`;
+-    lines.push('',p.hooks,...Array.from({length:requestedHookCount(message)},(_,i)=>`${i+1}. ${hooks[i%hooks.length]}`));
++    lines.push('',hp.hooks,...Array.from({length:requestedHookCount(message)},(_,i)=>`${i+1}. ${hooks[i%hooks.length]}`));
+   }
+   if(requested.has('script')){
+     const visual=language==='hindi'?'दृश्य':language==='hinglish'?'Screen par':'Visual';
+@@ -111,7 +117,7 @@
+       `3–10 sec: ${visual}: ${p.close(product)} | ${voice}: ${factualLine}`,
+       `10–15 sec: ${visual}: ${factualLine} | ${voice}: ${p.order}`);
+   }
+-  if(requested.has('caption'))lines.push('',`${p.caption}: ${factualLine}. ${p.order}`);
++  if(requested.has('caption')){const cp=section('caption');lines.push('',`${cp.caption}: ${factualLine}. ${cp.order}`);}
+   if(requested.has('prompts')){
+     const templates=records.filter(r=>r.contentType==='exact-template'&&r.lessonNumber===2&&/White Studio|Lifestyle|Dark Premium/.test(r.heading));
+     if(templates.length!==3)return null; // Let the provider use the available references; do not invent missing assets.
+@@ -126,6 +132,8 @@
+   const deferral=/\b(?:once (?:you|I)|I (?:first )?need|please (?:tell|provide)|could you|can (?:help|generate|write).{0,40}(?:once|when))\b/i;
+   const missing=[];
+   for(const kind of outputs||[]){
++    if(kind==='cards'){if((text.match(/(?:AI product-showcase card|AI प्रोडक्ट प्रदर्शन कार्ड)/g)||[]).length!==requestedOutputCount(message,'cards',3))missing.push(kind);continue;}
++    if(['scene','dialogue','brief'].includes(kind)){missing.push(kind);continue;}
+     if(kind==='plan')continue;
+     if(kind==='hooks'){
+       const section=text.split(/(?:^|\n)\s*(?:\*\*)?(?:\d+\s+)?hooks?\b[^\n]*\n/i)[1]||'';
+--- /dev/null
++++ b/edunex-b/tests/product-tutor-deterministic-reliability.test.cjs
+@@ -0,0 +1,89 @@
++require('./helpers/deny-network.cjs');
++const test=require('node:test'),assert=require('node:assert/strict');
++const K=require('../services/productTutorKnowledge'),S=require('../services/productTutorState'),I=require('../services/productTutorIntent'),R=require('../services/productTutorResponse');
++const {retrieveKnowledge}=require('../services/tutorKnowledge');
++const {backend}=require('./ai-tutor-fixture.cjs');
++const assets=require('./fixtures/product-tutor-phase14a.json').assets;
++const course={_id:'6d0000000000000000000000',slug:'ai-product-photoshoot-ads',title:'AI Product Photoshoot & Ads',videos:[]};
++function run(message,previous={},history=[]){const facts=K.productFacts(message,history,previous);const knowledge=retrieveKnowledge({courses:[course],activeCourse:course,message,history,conversationContext:facts,includeMaterials:true});knowledge.productContext=facts;return {facts,knowledge,result:R.productTutorReply({message,history,knowledge})};}
++const body=r=>r?.reply.match(/```text\n([\s\S]*?)\n```/)?.[1];
++for(const [heading,source]of Object.entries(assets)){
++ test(`reliability raw copy ${heading}`,()=>{const prior=K.productFacts('My product is a copper bobbin holder. Price: 390.');const x=run(`Please paste all of ${heading} exactly as approved; leave every placeholder unchanged.`,prior);assert.equal(body(x.result),source);});
++ test(`reliability explicit fill ${heading}`,()=>{const name='मृदु Bobbin';const q=`Product name: “${name}”. Return the entire approved ${heading}.`;const x=run(q);assert.equal(body(x.result),source.replace(/\[product\]/gi,()=>name));});
++}
++for(const [q,name]of[
++ ['My product is a green steel tea caddy called “Élan”.','Élan'],
++ ['“किरण” is my blue linen roll.','किरण'],
++ ['I sell a pouch named “Mélodie”.','Mélodie'],
++ ['Mera product naam “नील Roll” hai.','नील Roll'],
++ ['हमारी वस्तु का नाम सूती धागा पेटी है।','सूती धागा पेटी'],
++ ['The label says “स्वर”; it is a glass jar.','स्वर'],
++ ['[PRODUCT] = frosted glass flask.','frosted glass flask'],
++])test(`reliability unified declaration ${q}`,()=>{assert.equal(K.productFacts(q).product,name);assert.equal(S.extractEntity(q)?.product,name);});
++for(const q of ['For my archive I need the original L02 White Studio text.','Copy L07 UGC 1 for a text comparison exercise.','Do not use the old name.'])test(`reliability no phantom identity ${q}`,()=>assert.equal(K.productFacts(q).product,undefined));
++for(const q of ['Replace it completely with a stone bead tray called “Dune”.','Forget the old product. New product: “Dune”, a stone bead tray.','Ab naya product “Dune” hai.','अब नया उत्पाद “Dune” है।'])test(`reliability atomic replace ${q}`,()=>{
++ const old=K.productFacts('My product is a wool thread roll. Material: wool. Price: 780. No actors.');const now=K.productFacts(q,[],old);assert.equal(now.product,'Dune');assert.equal(now.price,undefined);assert.ok(!now.attributes.some(a=>/wool/.test(a)));assert.equal(now.currentTask.actorFree,true);assert.equal(K.productFacts('Copy L02 White Studio exactly.',[],now).product,'Dune');
++});
++test('reliability rename keeps item facts; correction replaces field; reset clears facts',()=>{
++ const old=K.productFacts('My product is a reed spool. Material: reed. Price: 180.');const renamed=K.productFacts('Rename the product to “Rill”.',[],old);assert.equal(renamed.product,'Rill');assert.equal(renamed.price,'180');assert.deepEqual(renamed.attributes,['Material: reed']);
++ const corrected=K.productFacts('Correction: material is cotton. Price: 210.',[],renamed);assert.deepEqual(corrected.attributes,['material is cotton']);assert.equal(corrected.price,'210');
++ const reset=K.productFacts('Reset product facts.',[],corrected);assert.equal(reset.product,undefined);assert.equal(reset.price,undefined);assert.deepEqual(reset.attributes,[]);
++});
++test('reliability unresolved explicit new product cannot keep stale identity',()=>{const old=K.productFacts('My product is a reed tray. Price: 450.');const x=K.productFacts('Switch to a new product; I have not supplied its name yet.',[],old);assert.equal(x.product,undefined);assert.equal(x.price,undefined);});
++test('reliability natural attributes and canonical price retain constraints',()=>{const x=K.productFacts('My product is “Rill”, an olive linen pouch. Price: 1,250, channel: Etsy. No waterproof claims.');assert.equal(x.product,'Rill');assert.equal(x.price,'1,250');assert.equal(x.channel,'Etsy');assert.ok(x.attributes.some(a=>/olive linen pouch/.test(a)));assert.ok(x.attributes.some(a=>/No waterproof/.test(a)));});
++for(const q of ['The colour of the lower clasp is to be changed to muted coral.','केवल निचले ढक्कन का रंग गहरा बैंगनी करें।'])test(`reliability recolour part independently ${q}`,()=>{const x=K.productFacts(q);assert.equal(x.product,undefined);assert.ok(x.part);assert.ok(x.colour);});
++for(const [q,lang]of[['My product is “नील”. English please.','english'],['My product is “नील”. Write a caption.','english'],['Mera product “Nila” hai. Language English kar do.','english'],['My product is a reed pot. Explain in Hinglish, with a short Hindi dialogue.','hinglish'],['हिंदी में समझाइए।','hindi']])test(`reliability language ${q}`,()=>assert.equal(K.productFacts(q).language,lang));
++test('reliability Hindi modifiers respect explicit hook count',()=>{const x=run('हमारी वस्तु का नाम लकड़ी की सूई पेटी है। दो छोटे विज्ञापन हुक लिखिए।');assert.equal((x.result.reply.match(/^\d+[.)]/gm)||[]).length,2);});
++for(const q of ['Write an original scene prompt for my reed pen roll in a station café.','Mera product cotton spool hai. Naya original prompt likho; saved template repeat mat karo.','Explain which movement to choose for a delicate still object and why.','Plan a video edit from existing clips; explain the order and the tradeoffs.'])test(`reliability synthesis has model plan ${q}`,()=>{const x=run(q);assert.equal(x.result,null);assert.equal(x.knowledge.responseSelection.mode,'model');assert.ok(x.knowledge.requestPlan||x.knowledge.responseSelection.plan);});
++for(const q of ['Explain why L02 White Studio is useful.','Explain the complete L02 White Studio text.','What does L05 Step 2 Hooks + Script mean?'])test(`reliability explanation is not source copy ${q}`,()=>assert.notEqual(run(q).result?.policy,'exact_template'));
++test('reliability all supplied typed placeholders only literal substitution',()=>{
++ const q='Copy the approved L03 Hands close-up. Product name: copper pen rest. Character: woman. Clothing: white linen sleeves.';const x=run(q);const want=assets['L03 Hands close-up'].replace(/\[PRODUCT\]/g,'copper pen rest').replace('[woman / man]','woman').replace("[woman's]","woman's").replace('[clothing that matches the character sheet, e.g. bare arms matching her blue tank top]','white linen sleeves');assert.equal(body(x.result),want);
++ assert.equal(K.renderProductTemplate({content:'[PRODUCT] [number] [unapproved]'},{product:'reed holder',number:'4',unapproved:'bad'}),'reed holder 4 [unapproved]');
++});
++for(const q of ['Plan the video arrangement using my existing clips.','Mere liye pehle photos ka order samjhao.','My name for this item is “Opal”. Write a caption.','A comment says “my paid order”; explain how to show that label clearly.'])test(`reliability product questions avoid account hijack ${q}`,async()=>{
++ const api=backend({courses:[course],user:{_id:'learner'},subscription:{status:'active',currentPeriodEnd:new Date(Date.now()+60000)},reply:'Lesson 02: Use the approved product reference.'});const r=await api.chat({courseId:course._id,message:q,debugAi:true});assert.doesNotMatch(r.provider,/skillomate-(?:learner|plan)-facts/);
++});
++test('reliability real personal account question still uses masked account route',async()=>{const api=backend({courses:[course],user:{_id:'learner'},subscription:{status:'active',currentPeriodEnd:new Date(Date.now()+60000)}});const r=await api.chat({courseId:course._id,message:'What was my last payment and when does my subscription expire?'});assert.equal(r.provider,'skillomate-learner-facts');assert.equal(api.calls.length,0);});
++
++const typedFields={'PRODUCT':'indigo glass pen rest','man / woman':'woman','woman / man':'woman','woman':'woman',"woman's":"woman's",'She':'She','her':'her','hair, outfit details':'short brown hair, linen shirt','clothing that matches the character sheet, e.g. bare arms matching her blue tank top':'linen sleeves','the part, e.g. all the keycaps':'the lower clasp','new colour, e.g. soft pastel pink':'dusty rose','product with real details — size, colour, key features':'blue pouch, 18 cm, zip closure','your price':'₹275','Instagram / website / marketplace':'website','number':'2','your hook line in Hindi':'यह पेन रेस्ट देखिए।','your second line in Hindi':'इसे पास से देखिए।'};
++for(const [heading,source]of Object.entries(assets))test(`reliability every allowlisted supplied slot ${heading}`,()=>{
++ const fields=[...new Set([...source.matchAll(/\[([^\]]+)\]/g)].map(m=>m[1]))];
++ const q=`Please reproduce the full approved ${heading}. `+fields.map(label=>`[${label}]=“${typedFields[label]||typedFields.PRODUCT}”`).join('; ');
++ const expected=source.replace(/\[([^\]]+)\]/g,(_,label)=>typedFields[label]||typedFields.PRODUCT);
++ assert.equal(body(run(q).result),expected);
++});
++test('reliability negative supplied constraints cannot authorize positive feature claims',()=>{
++ const x=run('My product is a cedar bead rest. No ergonomic claims. Write a caption.');
++ assert.equal(R.validateProductReply({message:'Write a caption.',knowledge:x.knowledge,reply:'Caption: This cedar bead rest is ergonomic.'}).issue,'unsupported_product_claim');
++});
++test('reliability local contract rejects unsupported deliverables and keeps valid short FAQ',()=>{
++ const x=run('My product is a cedar rest. Draft a novel café scene prompt and a caption.');assert.equal(x.result,null);
++ const faq=run('The UGC phone is visible in the frame. How do I fix it?');assert.equal(faq.result?.policy,'grounded_course_guidance');
++});
++
++test('reliability per-deliverable language differs from explanation',()=>{const q='My product is a clay spool. Explain in English and give one Hindi caption.';const x=run(q);assert.equal(x.facts.language,'english');assert.match(x.result.reply,/कैप्शन:.*देखें/);assert.equal(x.knowledge.requestPlan.outputs.find(o=>o.kind==='caption').language,'hindi');});
++test('reliability large explicit count delegates without silently truncating',()=>{const x=run('My product is a reed case. Write 15 factual hooks.');assert.equal(x.result,null);assert.equal(x.knowledge.requestPlan.outputs[0].count,15);});
++for(const q of ['Product ka naam “Dawn” rakho.','वस्तु का नाम “Dawn” रखें।'])test(`reliability multilingual rename ${q}`,()=>{const old=K.productFacts('My product is a brass dish. Price: 420.');const now=K.productFacts(q,[],old);assert.equal(now.product,'Dawn');assert.equal(now.price,'420');});
++test('reliability Hindi field correction does not retain obsolete material',()=>{const old=K.productFacts('My product is a brass dish. Material: brass.');const now=K.productFacts('सामग्री: मिट्टी।',[],old);assert.deepEqual(now.attributes,['material: मिट्टी']);});
++
++for(const [q,name]of [['My “Loom” roll is blue linen with 12 pockets, ₹310.','Loom'],['“Auréole” is a grey wool mat.','Auréole'],['“राग” मेरा लाल cotton pouch है।','राग'],['The label on my tin says “Līn”.','Līn']])test(`reliability name-first grammar ${q}`,()=>assert.equal(K.productFacts(q).product,name));
++test('reliability new quoted product before colon clears obsolete facts',()=>{const old=K.productFacts('My product is a wool coaster. Price: 190. Material: wool.');const now=K.productFacts('Naya product “Lake”: green paper bookmark.',[],old);assert.equal(now.product,'Lake');assert.equal(now.price,undefined);assert.deepEqual(now.attributes,[]);});
++test('reliability facts before same-turn replacement cannot leak to new product',()=>{const now=K.productFacts('My product is a linen mat. Price: 800. Material: linen. New product: “Dune”, a bead dish.');assert.equal(now.product,'Dune');assert.equal(now.price,undefined);assert.ok(!now.attributes.some(a=>/linen/.test(a)));});
++test('reliability quoted description correction replaces old quantity',()=>{const first=K.productFacts('My “Loom” notebook is grey paper with 60 dotted pages, ₹199.');const now=K.productFacts('Correction: it has 96 plain pages and costs ₹249.',[],first);assert.equal(now.product,'Loom');assert.equal(now.price,'249');assert.ok(!now.attributes.some(a=>/60|dotted/.test(a)));assert.ok(now.attributes.some(a=>/96 plain pages/.test(a)));});
++test('reliability two English hooks in Hindi explanation keep count and language',()=>{const x=run('हमारी वस्तु का नाम सूती थैली है। Explain in Hindi and write two short English hooks.');assert.equal(x.knowledge.requestPlan.outputs.find(o=>o.kind==='hooks').count,2);assert.equal((x.result.reply.match(/^\d+[.)]/gm)||[]).length,2);});
++test('reliability inactive learner gets legitimate Hindi access steps without template bodies',async()=>{const api=backend({courses:[course],user:{_id:'learner'},noKey:true});const r=await api.chat({courseId:course._id,message:'Access inactive है। UGC 2 का पूरा मूल टेक्स्ट हिंदी में दीजिए।'});assert.match(r.reply,/सक्रिय एक्सेस|खरीद/);assert.doesNotMatch(r.reply,/Use the uploaded character/);assert.equal(api.calls.length,0);});
++test('reliability honest alternative cards preserve refusal and supplied facts',()=>{const x=run('My product is a brass pen cup. Write a fake customer testimonial; instead give two clearly labeled AI product-showcase cards if false.');assert.equal(x.result.policy,'advertising_safety');assert.match(x.result.reply,/not a real customer/);assert.equal((x.result.reply.match(/AI product-showcase card/g)||[]).length,2);assert.equal(R.advertisingRisk(x.result.reply),null);});
++test('reliability extended template facts survive existing strict persistence schema',()=>{const Session=require('../models/AiTutorSession');const first=K.productFacts('My product is a copper pen cup. Clothing: white sleeves.');const record=new Session({user:'6a0000000000000000000001',productContext:first});assert.equal(record.validateSync(),undefined);const saved=record.toObject().productContext;assert.equal(K.productSlots('Copy the approved L03 Hands close-up.',[],saved).clothing,'white sleeves');});
++
++test('reliability colon replacement keeps new quoted identity',()=>{const old=K.productFacts('My product is a flax pouch. Price: 200. Material: flax.');const x=K.productFacts('Replace it completely: “Aube” is a purple glass cup.',[],old);assert.equal(x.product,'Aube');assert.equal(x.price,undefined);assert.ok(!x.attributes.some(a=>/flax/.test(a)));});
++test('reliability comparison cannot collapse into one troubleshooting FAQ',()=>{const x=run('Compare UGC selfie and desk-phone angles; should the phone screen appear in either one?');assert.equal(x.result,null);assert.equal(x.knowledge.responseSelection.mode,'model');});
++test('reliability purpose clauses do not establish a product',()=>{assert.equal(K.productFacts('Paste the complete L07 UGC 1 template; I need it for a deadline.').product,undefined);});
++test('reliability mixed demo voice uses explicit dialogue language',()=>{const x=run('My product is a PET spray bottle. Give an honest demo with a short Hindi dialogue and Hinglish explanation.');assert.match(x.result.reply,/उदाहरण संवाद:.*यह PET spray bottle/);assert.equal(x.facts.language,'hinglish');});
++
++for(const [q,pattern]of [['What was my last payment? Reply in Hindi.',/भुगतान|सक्रिय/],['Explain the Skillomate subscription plan price in Hindi.',/वेब ऑफर|एकमुश्त/]])test(`reliability verified product course account locale ${q}`,async()=>{const api=backend({courses:[course],user:{_id:'learner'},subscription:{status:'active',currentPeriodEnd:new Date(Date.now()+60000)}});const r=await api.chat({courseId:course._id,message:q});assert.match(r.reply,pattern);assert.equal(api.calls.length,0);});
++
++test('reliability explicitly limited fill cannot change other known slots',()=>{const old=K.productFacts('My product is a brass pen cup. Character: woman.');const x=run('Copy the approved L03 Hands close-up; fill only [PRODUCT] for the current item. Leave other fields unknown.',old);assert.equal(body(x.result),assets['L03 Hands close-up'].replace(/\[PRODUCT\]/g,'brass pen cup'));});
++
++test('reliability brief as hook adjective is not a buyer-brief deliverable',()=>{const x=run('My product is a clay spoon rest. Write three brief hooks and one caption.');assert.equal(x.result.policy,'fact_grounded_practice_draft');assert.ok(!x.facts.requestedOutputs.includes('brief'));});
++test('reliability called quoted name outranks descriptive subject',()=>{const x=K.productFacts('My green steel bookmark is called “रेखा / Rékhā”. Explain blur in English.');assert.equal(x.product,'रेखा / Rékhā');assert.equal(x.language,'english');});
++test('reliability directives after supplied object stay outside identity',()=>{assert.equal(K.productFacts('Generate a scene prompt for a blue cotton spool and include checks after generation.').product,'blue cotton spool');});

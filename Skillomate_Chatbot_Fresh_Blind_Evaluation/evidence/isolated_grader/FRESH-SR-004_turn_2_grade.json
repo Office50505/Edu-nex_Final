@@ -1,0 +1,361 @@
+{
+  "id": "FRESH-SR-004",
+  "turnIndex": 2,
+  "status": "UNTESTED",
+  "critical": false,
+  "suspectedCritical": false,
+  "rubricVersion": "phase14b-independent-v1",
+  "criteria": [
+    {
+      "criterion": "Do not treat another conversation product as current; request product information.",
+      "status": "UNTESTED",
+      "excerpts": [
+        "Lesson 05\n\nRemove the unsupported feature. Tell the ad writer to use only the features you supplied and not invent anything new."
+      ],
+      "reason": "Different conversation carries no old Tara input/product facts and fallback does not name it, but omits requested product-information clarification. Actual semantic response unavailable. Necessary actual provider response absent for this essential requirement; no fallback/model pass inferred."
+    }
+  ],
+  "dimensions": {
+    "grounding": "UNTESTED",
+    "facts": "UNTESTED",
+    "taskCompleteness": "UNTESTED",
+    "language": "UNTESTED",
+    "authorization": "PASS",
+    "isolation": "PASS",
+    "httpStatus": "PASS"
+  },
+  "requestedExactBodyChecks": [],
+  "supplementalExactBodyChecks": [],
+  "providerAvailability": {
+    "provider": "built-in-course-guide",
+    "outcome": {
+      "type": "provider_fallback",
+      "liveModelAnswer": false,
+      "providerStatus": "connection_error",
+      "responseIssue": null
+    },
+    "attempts": [
+      {
+        "index": 3,
+        "startedAt": "2026-10-16T11:16:49.965Z",
+        "requestSha256": "87e1662e67fe3266cc807337828c32c942ccbe8ebcaa70b763831868d2b908d4",
+        "promptModified": false,
+        "recordedFixture": false,
+        "error": {
+          "name": "Error",
+          "code": "PROVIDER_PAYLOAD_NOT_APPROVED"
+        },
+        "durationMs": 0,
+        "completedAt": "2026-10-16T11:16:49.965Z"
+      },
+      {
+        "index": 4,
+        "startedAt": "2026-10-16T11:16:50.066Z",
+        "requestSha256": "87e1662e67fe3266cc807337828c32c942ccbe8ebcaa70b763831868d2b908d4",
+        "promptModified": false,
+        "recordedFixture": false,
+        "error": {
+          "name": "Error",
+          "code": "PROVIDER_PAYLOAD_NOT_APPROVED"
+        },
+        "durationMs": 0,
+        "completedAt": "2026-10-16T11:16:50.066Z"
+      }
+    ],
+    "inferenceNecessaryForThisTurn": true,
+    "reason": "Actual configured provider requests blocked before external transport. No model/fixture response. Saved fallback cannot establish required semantic response."
+  },
+  "ownershipPayloadReview": {
+    "reviewed": true,
+    "actor": "A",
+    "actorId": "c6b0326e9eeed815b0f8e68e",
+    "scopeInspection": {
+      "independentExplicitSelectedCourse": "6d0000000000000000000000",
+      "independentExpectedOwner": "6d0000000000000000000000",
+      "explicitUnknownScope": false,
+      "independentAuthAndEntitlement": true,
+      "requiresSemanticScopeAdjudication": false,
+      "protectedRetrievedSources": [
+        {
+          "id": "S1",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "chat G.P.T ne aisa feature likha jo",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_5",
+          "lessonName": "chat G.P.T ne aisa feature likha jo",
+          "contentType": "faq",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:faq:chat-g-p-t-ne-aisa-feature-likha-jo"
+        },
+        {
+          "id": "S2",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "chat G.P.T ka ad bahut generic",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_5",
+          "lessonName": "chat G.P.T ka ad bahut generic",
+          "contentType": "faq",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:faq:chat-g-p-t-ka-ad-bahut-generic"
+        },
+        {
+          "id": "S3",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "Ad plan",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_5",
+          "lessonName": "Ad plan",
+          "contentType": "workflow",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:workflow:ad-plan"
+        },
+        {
+          "id": "S4",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "L07 UGC 2",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_7",
+          "lessonName": "L07 UGC 2",
+          "contentType": "exact-template",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:exact-template:l07-ugc-2"
+        },
+        {
+          "id": "S5",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "L07 UGC 1",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_7",
+          "lessonName": "L07 UGC 1",
+          "contentType": "exact-template",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:exact-template:l07-ugc-1"
+        },
+        {
+          "id": "S6",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "Final ad kaise edit karein?",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_8",
+          "lessonName": "Final ad kaise edit karein?",
+          "contentType": "faq",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:faq:final-ad-kaise-edit-karein"
+        }
+      ],
+      "retrievalProductBodies": [
+        {
+          "heading": "Ad plan",
+          "contentType": "workflow",
+          "owner": "6d0000000000000000000000",
+          "sha256": "d6f78ee930b9429a7609a63d027430fee7986270c0f8717d52ab63d877839c00"
+        },
+        {
+          "heading": "chat G.P.T ka ad bahut generic",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "b0e611ea11b554c6d1e1be872932b204a231f9e784066f9a9a245df617122669"
+        },
+        {
+          "heading": "chat G.P.T ne aisa feature likha jo",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "9f89437093e5ef64561fa89352044c0815c79e5cf98cd60530aaaf242b04fb8c"
+        },
+        {
+          "heading": "Final ad kaise edit karein?",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "c66fd88eb8f1255df76918353d8e74299fa68aae487fe05887b4d5cb8cc6da53"
+        },
+        {
+          "heading": "L07 UGC 1",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "1ba8b33414b57b7cab8e193c33582b1aa00ea22d5445ccddef44614be39f75d0"
+        },
+        {
+          "heading": "L07 UGC 2",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "53eb271c5fc4c05464b8faed0aa24829a9d7512bed69ef924775342e95e6810f"
+        }
+      ],
+      "assembledContextProductBodies": [
+        {
+          "heading": "Ad plan",
+          "contentType": "workflow",
+          "owner": "6d0000000000000000000000",
+          "sha256": "d6f78ee930b9429a7609a63d027430fee7986270c0f8717d52ab63d877839c00"
+        },
+        {
+          "heading": "chat G.P.T ka ad bahut generic",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "b0e611ea11b554c6d1e1be872932b204a231f9e784066f9a9a245df617122669"
+        },
+        {
+          "heading": "chat G.P.T ne aisa feature likha jo",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "9f89437093e5ef64561fa89352044c0815c79e5cf98cd60530aaaf242b04fb8c"
+        },
+        {
+          "heading": "Final ad kaise edit karein?",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "c66fd88eb8f1255df76918353d8e74299fa68aae487fe05887b4d5cb8cc6da53"
+        },
+        {
+          "heading": "L07 UGC 1",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "1ba8b33414b57b7cab8e193c33582b1aa00ea22d5445ccddef44614be39f75d0"
+        },
+        {
+          "heading": "L07 UGC 2",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "53eb271c5fc4c05464b8faed0aa24829a9d7512bed69ef924775342e95e6810f"
+        }
+      ],
+      "assembledPayloads": [
+        {
+          "sha256": "87e1662e67fe3266cc807337828c32c942ccbe8ebcaa70b763831868d2b908d4",
+          "validation": "accepted",
+          "error": null,
+          "scope": {
+            "activeCourse": {
+              "_id": "6d0000000000000000000000",
+              "slug": "ai-product-photoshoot-ads"
+            },
+            "includeMaterials": true
+          },
+          "productBodies": [
+            {
+              "heading": "Ad plan",
+              "contentType": "workflow",
+              "owner": "6d0000000000000000000000",
+              "sha256": "d6f78ee930b9429a7609a63d027430fee7986270c0f8717d52ab63d877839c00"
+            },
+            {
+              "heading": "chat G.P.T ka ad bahut generic",
+              "contentType": "faq",
+              "owner": "6d0000000000000000000000",
+              "sha256": "b0e611ea11b554c6d1e1be872932b204a231f9e784066f9a9a245df617122669"
+            },
+            {
+              "heading": "chat G.P.T ne aisa feature likha jo",
+              "contentType": "faq",
+              "owner": "6d0000000000000000000000",
+              "sha256": "9f89437093e5ef64561fa89352044c0815c79e5cf98cd60530aaaf242b04fb8c"
+            },
+            {
+              "heading": "Final ad kaise edit karein?",
+              "contentType": "faq",
+              "owner": "6d0000000000000000000000",
+              "sha256": "c66fd88eb8f1255df76918353d8e74299fa68aae487fe05887b4d5cb8cc6da53"
+            },
+            {
+              "heading": "L07 UGC 1",
+              "contentType": "exact-template",
+              "owner": "6d0000000000000000000000",
+              "sha256": "1ba8b33414b57b7cab8e193c33582b1aa00ea22d5445ccddef44614be39f75d0"
+            },
+            {
+              "heading": "L07 UGC 2",
+              "contentType": "exact-template",
+              "owner": "6d0000000000000000000000",
+              "sha256": "53eb271c5fc4c05464b8faed0aa24829a9d7512bed69ef924775342e95e6810f"
+            }
+          ],
+          "messageCount": 2
+        }
+      ],
+      "providerAdapterProductBodies": [
+        {
+          "heading": "Ad plan",
+          "contentType": "workflow",
+          "owner": "6d0000000000000000000000",
+          "sha256": "d6f78ee930b9429a7609a63d027430fee7986270c0f8717d52ab63d877839c00"
+        },
+        {
+          "heading": "chat G.P.T ka ad bahut generic",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "b0e611ea11b554c6d1e1be872932b204a231f9e784066f9a9a245df617122669"
+        },
+        {
+          "heading": "chat G.P.T ne aisa feature likha jo",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "9f89437093e5ef64561fa89352044c0815c79e5cf98cd60530aaaf242b04fb8c"
+        },
+        {
+          "heading": "Final ad kaise edit karein?",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "c66fd88eb8f1255df76918353d8e74299fa68aae487fe05887b4d5cb8cc6da53"
+        },
+        {
+          "heading": "L07 UGC 1",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "1ba8b33414b57b7cab8e193c33582b1aa00ea22d5445ccddef44614be39f75d0"
+        },
+        {
+          "heading": "L07 UGC 2",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "53eb271c5fc4c05464b8faed0aa24829a9d7512bed69ef924775342e95e6810f"
+        }
+      ],
+      "responseProductBodies": [],
+      "noPayloadConstructed": false,
+      "blockedAdapterAttempts": 2,
+      "externalTransportAttempts": 0,
+      "potentialCriticalFindings": [],
+      "inspectionPerformed": true
+    },
+    "dbOperations": [
+      {
+        "model": "AiTutorSession",
+        "operation": "findOne",
+        "filter": {
+          "user": "c6b0326e9eeed815b0f8e68e",
+          "course": "6d0000000000000000000000"
+        }
+      },
+      {
+        "model": "Course",
+        "operation": "find",
+        "filter": {
+          "status": "published",
+          "_id": "6d0000000000000000000000"
+        }
+      },
+      {
+        "model": "AiTutorSession",
+        "operation": "upsert",
+        "filter": {
+          "user": "c6b0326e9eeed815b0f8e68e",
+          "course": "6d0000000000000000000000"
+        }
+      }
+    ],
+    "reason": "Six retrieval/context/adapter protected owners all match entitled selected6d0000000000000000000000. Full assembly reviewed including exact prior blocks, current edge-conv-two request and safe actor summary; no Tara/orange glass vase from edge-conv-one history. Current-only session and history_restored=false. DB actorc6b0326e9eeed815b0f8e68e/course scoped. Provider requests equal assembly and blocked before transport."
+  },
+  "gradedAt": "2026-10-16T11:17:03.704773+00:00"
+}

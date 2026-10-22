@@ -1,0 +1,21 @@
+{
+  "command": [
+    "python3",
+    "-B",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "tests",
+    "-p",
+    "test_product_evaluator.py",
+    "-v"
+  ],
+  "environment_overrides": {},
+  "startedAt": "2026-10-15T06:33:49.335273+00:00",
+  "completedAt": "2026-10-15T06:33:49.460883+00:00",
+  "durationSeconds": 0.12561154200011515,
+  "exitCode": 0,
+  "log": "evaluator_test_output.log",
+  "provider_requests": 0
+}

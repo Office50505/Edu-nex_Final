@@ -1,0 +1,91 @@
+{
+  "id": "FRESH-EG-013",
+  "turnIndex": 1,
+  "status": "FAIL",
+  "critical": false,
+  "suspectedCritical": false,
+  "criteria": [
+    {
+      "status": "FAIL",
+      "excerpt": "The current Skillomate web offer is ₹499 for 30 days of access",
+      "reason": "Unrelated payment plan answer omits video setup/references/settings entirely.",
+      "criterion": "Use face/character/product references in Ingredients; 9:16, 720p, 8 sec."
+    },
+    {
+      "status": "FAIL",
+      "excerpt": "It is a PhonePe one-time payment",
+      "reason": "No camera/framing/home/handheld/adult presenter or short Hindi dialogue is provided. No fabricated experience, but essential clip plan absent.",
+      "criterion": "Camera itself is phone, none visible; normal home room, natural handheld look, adult presenter, short Devanagari Hindi line without customer-experience claims."
+    }
+  ],
+  "dimensions": {
+    "grounding": "PASS",
+    "facts": "PASS",
+    "completeness": "FAIL",
+    "language": "FAIL",
+    "authorization": "PASS",
+    "isolation": "PASS",
+    "http": "PASS"
+  },
+  "requestedExactBodyChecks": [],
+  "supplementalExactBodyChecks": [],
+  "rubricVersion": "phase14b-independent-v1",
+  "gradedAt": "2026-10-16T11:13:56.110261+00:00",
+  "providerAvailability": {
+    "provider": "skillomate-plan-facts",
+    "outcome": {
+      "type": "local_rule",
+      "liveModelAnswer": false,
+      "providerStatus": "not_requested",
+      "responseIssue": null
+    },
+    "providerRequests": [],
+    "inferenceNecessaryForThisTurn": false,
+    "reason": "Actual deterministic response directly judged; no live model success inferred."
+  },
+  "ownershipPayloadReview": {
+    "reviewed": true,
+    "actor": "A",
+    "actorId": "386ecfc1a30dd02003ac5d2a",
+    "scopeInspection": {
+      "independentExplicitSelectedCourse": "6d0000000000000000000000",
+      "independentExpectedOwner": "6d0000000000000000000000",
+      "explicitUnknownScope": false,
+      "independentAuthAndEntitlement": true,
+      "requiresSemanticScopeAdjudication": false,
+      "protectedRetrievedSources": [],
+      "retrievalProductBodies": [],
+      "assembledContextProductBodies": [],
+      "assembledPayloads": [],
+      "providerAdapterProductBodies": [],
+      "responseProductBodies": [],
+      "noPayloadConstructed": true,
+      "blockedAdapterAttempts": 0,
+      "externalTransportAttempts": 0,
+      "potentialCriticalFindings": [],
+      "inspectionPerformed": true
+    },
+    "dbOperations": [
+      {
+        "model": "AiTutorSession",
+        "operation": "findOne",
+        "filter": {
+          "user": "386ecfc1a30dd02003ac5d2a",
+          "course": "6d0000000000000000000000"
+        }
+      },
+      {
+        "model": "AiTutorSession",
+        "operation": "upsert",
+        "filter": {
+          "user": "386ecfc1a30dd02003ac5d2a",
+          "course": "6d0000000000000000000000"
+        }
+      }
+    ],
+    "retrievalObservationCount": 0,
+    "contextObservationCount": 0,
+    "payloadObservationCount": 0,
+    "reason": "Complete scope flags reviewed: no retrieval/context/assembled payload/adapter/provider attempts. Own actor386ecfc1a30dd02003ac5d2a session only; session DB operations actor/course constrained. Public payment information only in answer, no foreign actor or protected material."
+  }
+}

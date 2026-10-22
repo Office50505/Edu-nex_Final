@@ -1,0 +1,62 @@
+{
+  "suite": "node",
+  "command": [
+    "node",
+    "--test",
+    "--test-reporter=junit",
+    "tests/product-tutor-unicode-safety.test.cjs",
+    "tests/product-tutor-phase14a.test.cjs",
+    "tests/ai-chat-history.test.cjs",
+    "tests/tutor-knowledge.test.cjs",
+    "tests/product-tutor-quality.test.cjs",
+    "tests/product-tutor-phase3.test.cjs",
+    "tests/product-tutor-phase5.test.cjs",
+    "tests/product-tutor-phase7.test.cjs",
+    "tests/product-tutor-phase9.test.cjs",
+    "tests/product-tutor-phase11.test.cjs",
+    "tests/mobile-course-ai.test.cjs",
+    "tests/mobile-course-ai-cache.test.cjs"
+  ],
+  "environment_overrides": {
+    "NODE_OPTIONS": "--require=./tests/helpers/deny-network.cjs --require=/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/Skillomate_Chatbot_Phase14A1_Safety_Review/evidence/provider_observer.cjs",
+    "PHASE14A_PROVIDER_EVIDENCE": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/Skillomate_Chatbot_Phase14A1_Safety_Review/evidence/final/provider_invocations"
+  },
+  "startedAt": "2026-10-16T09:21:45.488900+00:00",
+  "completedAt": "2026-10-16T09:21:46.455651+00:00",
+  "durationSeconds": 0.9666879169999447,
+  "exitCode": 0,
+  "externalProviderRequests": 0,
+  "summary": {
+    "passed": 476,
+    "failed": 0,
+    "skipped": 0,
+    "total": 476
+  }
+}
+{
+  "suite": "python",
+  "command": [
+    "python3",
+    "-B",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "tests",
+    "-p",
+    "test_product_evaluator*.py",
+    "-v"
+  ],
+  "environment_overrides": {},
+  "startedAt": "2026-10-16T09:21:45.489042+00:00",
+  "completedAt": "2026-10-16T09:21:45.784514+00:00",
+  "durationSeconds": 0.29548104200057423,
+  "exitCode": 0,
+  "externalProviderRequests": 0,
+  "summary": {
+    "passed": 167,
+    "failed": 0,
+    "skipped": 0,
+    "total": 167
+  }
+}

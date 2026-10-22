@@ -1,0 +1,759 @@
+{
+  "suite": "python",
+  "command": [
+    "python3",
+    "-B",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "tests",
+    "-p",
+    "test_product_evaluator*.py",
+    "-v"
+  ],
+  "environment_overrides": {},
+  "startedAt": "2026-10-15T09:56:58.087594+00:00",
+  "completedAt": "2026-10-15T09:56:58.356338+00:00",
+  "durationSeconds": 0.2687585410021711,
+  "exitCode": 0,
+  "externalProviderRequests": 0,
+  "cases": [
+    {
+      "name": "test_affirmative_deception_is_not_saved_by_a_disclaimer",
+      "class": "test_product_evaluator.CorrectedEvaluatorTests.test_affirmative_deception_is_not_saved_by_a_disclaimer",
+      "status": "passed"
+    },
+    {
+      "name": "test_all_nineteen_templates_are_complete",
+      "class": "test_product_evaluator.CorrectedEvaluatorTests.test_all_nineteen_templates_are_complete",
+      "status": "passed"
+    },
+    {
+      "name": "test_colour_only_invariance_entails_unchanged_shape_but_a_shape_change_does_not",
+      "class": "test_product_evaluator.CorrectedEvaluatorTests.test_colour_only_invariance_entails_unchanged_shape_but_a_shape_change_does_not",
+      "status": "passed"
+    },
+    {
+      "name": "test_duplicate_bookkeeping_cannot_overwrite_a_real_provider_answer",
+      "class": "test_product_evaluator.CorrectedEvaluatorTests.test_duplicate_bookkeeping_cannot_overwrite_a_real_provider_answer",
+      "status": "passed"
+    },
+    {
+      "name": "test_duration_units_and_plural_ad_angles_are_equivalent",
+      "class": "test_product_evaluator.CorrectedEvaluatorTests.test_duration_units_and_plural_ad_angles_are_equivalent",
+      "status": "passed"
+    },
+    {
+      "name": "test_end_to_end_quality_can_assess_local_rules_without_counting_a_model_call",
+      "class": "test_product_evaluator.CorrectedEvaluatorTests.test_end_to_end_quality_can_assess_local_rules_without_counting_a_model_call",
+      "status": "passed"
+    },
+    {
+      "name": "test_english_hindi_and_hinglish_are_separate",
+      "class": "test_product_evaluator.CorrectedEvaluatorTests.test_english_hindi_and_hinglish_are_separate",
+      "status": "passed"
+    },
+    {
+      "name": "test_every_template_passes_full_fidelity_with_known_product",
+      "class": "test_product_evaluator.CorrectedEvaluatorTests.test_every_template_passes_full_fidelity_with_known_product",
+      "status": "passed"
+    },
+    {
+      "name": "test_explanatory_placeholder_does_not_invalidate_instantiated_body",
+      "class": "test_product_evaluator.CorrectedEvaluatorTests.test_explanatory_placeholder_does_not_invalidate_instantiated_body",
+      "status": "passed"
+    },
+    {
+      "name": "test_explicit_local_replacement_cannot_be_mislabelled_as_a_live_answer",
+      "class": "test_product_evaluator.CorrectedEvaluatorTests.test_explicit_local_replacement_cannot_be_mislabelled_as_a_live_answer",
+      "status": "passed"
+    },
+    {
+      "name": "test_extra_instructions_inside_executable_block_fail",
+      "class": "test_product_evaluator.CorrectedEvaluatorTests.test_extra_instructions_inside_executable_block_fail",
+      "status": "passed"
+    },
+    {
+      "name": "test_full_template_omission_fails_even_when_old_fragment_is_present",
+      "class": "test_product_evaluator.CorrectedEvaluatorTests.test_full_template_omission_fails_even_when_old_fragment_is_present",
+      "status": "passed"
+    },
+    {
+      "name": "test_grammatical_reference_and_regeneration_variants",
+      "class": "test_product_evaluator.CorrectedEvaluatorTests.test_grammatical_reference_and_regeneration_variants",
+      "status": "passed"
+    },
+    {
+      "name": "test_hindi_concepts_do_not_require_english_words",
+      "class": "test_product_evaluator.CorrectedEvaluatorTests.test_hindi_concepts_do_not_require_english_words",
+      "status": "passed"
+    },
+    {
+      "name": "test_lesson_zero_padding_and_model_punctuation_are_equivalent",
+      "class": "test_product_evaluator.CorrectedEvaluatorTests.test_lesson_zero_padding_and_model_punctuation_are_equivalent",
+      "status": "passed"
+    },
+    {
+      "name": "test_missing_real_numeric_setting_still_fails",
+      "class": "test_product_evaluator.CorrectedEvaluatorTests.test_missing_real_numeric_setting_still_fails",
+      "status": "passed"
+    },
+    {
+      "name": "test_missing_turn_and_fallback_are_not_empty_live_answers",
+      "class": "test_product_evaluator.CorrectedEvaluatorTests.test_missing_turn_and_fallback_are_not_empty_live_answers",
+      "status": "passed"
+    },
+    {
+      "name": "test_negated_earnings_guarantee_is_not_an_affirmative_claim",
+      "class": "test_product_evaluator.CorrectedEvaluatorTests.test_negated_earnings_guarantee_is_not_an_affirmative_claim",
+      "status": "passed"
+    },
+    {
+      "name": "test_promised_earnings_still_fail",
+      "class": "test_product_evaluator.CorrectedEvaluatorTests.test_promised_earnings_still_fail",
+      "status": "passed"
+    },
+    {
+      "name": "test_quoted_source_text_does_not_determine_narrative_language",
+      "class": "test_product_evaluator.CorrectedEvaluatorTests.test_quoted_source_text_does_not_determine_narrative_language",
+      "status": "passed"
+    },
+    {
+      "name": "test_safe_refusal_and_demo_alternative_are_semantically_recognized",
+      "class": "test_product_evaluator.CorrectedEvaluatorTests.test_safe_refusal_and_demo_alternative_are_semantically_recognized",
+      "status": "passed"
+    },
+    {
+      "name": "test_saved_corpus_all_ids_accounted_without_new_model_text",
+      "class": "test_product_evaluator.CorrectedEvaluatorTests.test_saved_corpus_all_ids_accounted_without_new_model_text",
+      "status": "passed"
+    },
+    {
+      "name": "test_unresolved_or_bracketed_known_product_fails",
+      "class": "test_product_evaluator.CorrectedEvaluatorTests.test_unresolved_or_bracketed_known_product_fails",
+      "status": "passed"
+    },
+    {
+      "name": "test_variant_slot_article_equivalence_does_not_allow_template_rewriting",
+      "class": "test_product_evaluator.CorrectedEvaluatorTests.test_variant_slot_article_equivalence_does_not_allow_template_rewriting",
+      "status": "passed"
+    },
+    {
+      "name": "test_word_boundaries_do_not_confuse_no_with_normal",
+      "class": "test_product_evaluator.CorrectedEvaluatorTests.test_word_boundaries_do_not_confuse_no_with_normal",
+      "status": "passed"
+    },
+    {
+      "name": "test_a_lesson_reference_is_not_a_lesson_count",
+      "class": "test_product_evaluator_v3.Phase3EvaluatorTests.test_a_lesson_reference_is_not_a_lesson_count",
+      "status": "passed"
+    },
+    {
+      "name": "test_a_timed_script_is_not_a_promise_to_write_one",
+      "class": "test_product_evaluator_v3.Phase3EvaluatorTests.test_a_timed_script_is_not_a_promise_to_write_one",
+      "status": "passed"
+    },
+    {
+      "name": "test_actual_caption_and_angle_with_supplied_facts_pass",
+      "class": "test_product_evaluator_v3.Phase3EvaluatorTests.test_actual_caption_and_angle_with_supplied_facts_pass",
+      "status": "passed"
+    },
+    {
+      "name": "test_all_nineteen_complete_assets_still_pass_independent_source_checks",
+      "class": "test_product_evaluator_v3.Phase3EvaluatorTests.test_all_nineteen_complete_assets_still_pass_independent_source_checks",
+      "status": "passed"
+    },
+    {
+      "name": "test_anaphoric_nouns_do_not_override_an_explicit_product",
+      "class": "test_product_evaluator_v3.Phase3EvaluatorTests.test_anaphoric_nouns_do_not_override_an_explicit_product",
+      "status": "passed"
+    },
+    {
+      "name": "test_comma_delimited_known_product_cannot_remain_a_placeholder",
+      "class": "test_product_evaluator_v3.Phase3EvaluatorTests.test_comma_delimited_known_product_cannot_remain_a_placeholder",
+      "status": "passed"
+    },
+    {
+      "name": "test_contextual_modifiers_and_actor_synonyms_do_not_cause_false_failures",
+      "class": "test_product_evaluator_v3.Phase3EvaluatorTests.test_contextual_modifiers_and_actor_synonyms_do_not_cause_false_failures",
+      "status": "passed"
+    },
+    {
+      "name": "test_contextual_no_answers_a_direct_course_identity_question",
+      "class": "test_product_evaluator_v3.Phase3EvaluatorTests.test_contextual_no_answers_a_direct_course_identity_question",
+      "status": "passed"
+    },
+    {
+      "name": "test_fallback_and_local_replacement_provenance_is_not_live_success",
+      "class": "test_product_evaluator_v3.Phase3EvaluatorTests.test_fallback_and_local_replacement_provenance_is_not_live_success",
+      "status": "passed"
+    },
+    {
+      "name": "test_full_template_omissions_and_added_executable_advice_still_fail",
+      "class": "test_product_evaluator_v3.Phase3EvaluatorTests.test_full_template_omissions_and_added_executable_advice_still_fail",
+      "status": "passed"
+    },
+    {
+      "name": "test_history_determiners_are_independently_normalized",
+      "class": "test_product_evaluator_v3.Phase3EvaluatorTests.test_history_determiners_are_independently_normalized",
+      "status": "passed"
+    },
+    {
+      "name": "test_hook_counts_are_checked_against_actual_delivered_items",
+      "class": "test_product_evaluator_v3.Phase3EvaluatorTests.test_hook_counts_are_checked_against_actual_delivered_items",
+      "status": "passed"
+    },
+    {
+      "name": "test_keyword_presence_is_not_a_caption_or_ad_angle",
+      "class": "test_product_evaluator_v3.Phase3EvaluatorTests.test_keyword_presence_is_not_a_caption_or_ad_angle",
+      "status": "passed"
+    },
+    {
+      "name": "test_later_negation_does_not_excuse_an_affirmative_forbidden_platform_answer",
+      "class": "test_product_evaluator_v3.Phase3EvaluatorTests.test_later_negation_does_not_excuse_an_affirmative_forbidden_platform_answer",
+      "status": "passed"
+    },
+    {
+      "name": "test_safe_refusal_and_demo_meaning_survive_without_literal_keywords",
+      "class": "test_product_evaluator_v3.Phase3EvaluatorTests.test_safe_refusal_and_demo_meaning_survive_without_literal_keywords",
+      "status": "passed"
+    },
+    {
+      "name": "test_semantic_aliases_do_not_erase_numeric_or_technical_requirements",
+      "class": "test_product_evaluator_v3.Phase3EvaluatorTests.test_semantic_aliases_do_not_erase_numeric_or_technical_requirements",
+      "status": "passed"
+    },
+    {
+      "name": "test_short_valid_roman_hinglish_is_not_english",
+      "class": "test_product_evaluator_v3.Phase3EvaluatorTests.test_short_valid_roman_hinglish_is_not_english",
+      "status": "passed"
+    },
+    {
+      "name": "test_unrelated_negation_does_not_hide_unsafe_claims",
+      "class": "test_product_evaluator_v3.Phase3EvaluatorTests.test_unrelated_negation_does_not_hide_unsafe_claims",
+      "status": "passed"
+    },
+    {
+      "name": "test_buyer_groups_and_singular_problem_are_semantic_equivalents",
+      "class": "test_product_evaluator_v4.Phase5EvaluatorTests.test_buyer_groups_and_singular_problem_are_semantic_equivalents",
+      "status": "passed"
+    },
+    {
+      "name": "test_colour_field_expectations_are_independent_of_clause_length",
+      "class": "test_product_evaluator_v4.Phase5EvaluatorTests.test_colour_field_expectations_are_independent_of_clause_length",
+      "status": "passed"
+    },
+    {
+      "name": "test_colour_history_and_unknown_fields_are_distinguished",
+      "class": "test_product_evaluator_v4.Phase5EvaluatorTests.test_colour_history_and_unknown_fields_are_distinguished",
+      "status": "passed"
+    },
+    {
+      "name": "test_complete_creative_prompt_without_an_approved_asset_is_not_exact_intent",
+      "class": "test_product_evaluator_v4.Phase5EvaluatorTests.test_complete_creative_prompt_without_an_approved_asset_is_not_exact_intent",
+      "status": "passed"
+    },
+    {
+      "name": "test_declarative_synthetic_customer_claims_are_unsafe",
+      "class": "test_product_evaluator_v4.Phase5EvaluatorTests.test_declarative_synthetic_customer_claims_are_unsafe",
+      "status": "passed"
+    },
+    {
+      "name": "test_exact_faq_requirement_remains_verbatim",
+      "class": "test_product_evaluator_v4.Phase5EvaluatorTests.test_exact_faq_requirement_remains_verbatim",
+      "status": "passed"
+    },
+    {
+      "name": "test_exact_intent_activates_in_any_conversation_category",
+      "class": "test_product_evaluator_v4.Phase5EvaluatorTests.test_exact_intent_activates_in_any_conversation_category",
+      "status": "passed"
+    },
+    {
+      "name": "test_face_equivalence_does_not_accept_negated_preservation",
+      "class": "test_product_evaluator_v4.Phase5EvaluatorTests.test_face_equivalence_does_not_accept_negated_preservation",
+      "status": "passed"
+    },
+    {
+      "name": "test_hindi_one_slow_movement_does_not_accept_two_movements",
+      "class": "test_product_evaluator_v4.Phase5EvaluatorTests.test_hindi_one_slow_movement_does_not_accept_two_movements",
+      "status": "passed"
+    },
+    {
+      "name": "test_honest_demonstration_is_not_a_personal_review",
+      "class": "test_product_evaluator_v4.Phase5EvaluatorTests.test_honest_demonstration_is_not_a_personal_review",
+      "status": "passed"
+    },
+    {
+      "name": "test_multilingual_customer_assertions_keep_negation_meaning",
+      "class": "test_product_evaluator_v4.Phase5EvaluatorTests.test_multilingual_customer_assertions_keep_negation_meaning",
+      "status": "passed"
+    },
+    {
+      "name": "test_name_echo_can_be_replaced_only_by_later_full_template_proof",
+      "class": "test_product_evaluator_v4.Phase5EvaluatorTests.test_name_echo_can_be_replaced_only_by_later_full_template_proof",
+      "status": "passed"
+    },
+    {
+      "name": "test_negated_colour_request_does_not_create_slots",
+      "class": "test_product_evaluator_v4.Phase5EvaluatorTests.test_negated_colour_request_does_not_create_slots",
+      "status": "passed"
+    },
+    {
+      "name": "test_roman_colour_preservation_aliases_keep_required_meaning",
+      "class": "test_product_evaluator_v4.Phase5EvaluatorTests.test_roman_colour_preservation_aliases_keep_required_meaning",
+      "status": "passed"
+    },
+    {
+      "name": "test_roman_postposed_prohibitions_are_safe",
+      "class": "test_product_evaluator_v4.Phase5EvaluatorTests.test_roman_postposed_prohibitions_are_safe",
+      "status": "passed"
+    },
+    {
+      "name": "test_wrong_or_unfilled_later_product_cannot_excuse_a_missing_name",
+      "class": "test_product_evaluator_v4.Phase5EvaluatorTests.test_wrong_or_unfilled_later_product_cannot_excuse_a_missing_name",
+      "status": "passed"
+    },
+    {
+      "name": "test_a_lesson_reference_is_not_a_lesson_count",
+      "class": "test_product_evaluator_v4.V4LegacyContractTests.test_a_lesson_reference_is_not_a_lesson_count",
+      "status": "passed"
+    },
+    {
+      "name": "test_a_timed_script_is_not_a_promise_to_write_one",
+      "class": "test_product_evaluator_v4.V4LegacyContractTests.test_a_timed_script_is_not_a_promise_to_write_one",
+      "status": "passed"
+    },
+    {
+      "name": "test_actual_caption_and_angle_with_supplied_facts_pass",
+      "class": "test_product_evaluator_v4.V4LegacyContractTests.test_actual_caption_and_angle_with_supplied_facts_pass",
+      "status": "passed"
+    },
+    {
+      "name": "test_all_nineteen_complete_assets_still_pass_independent_source_checks",
+      "class": "test_product_evaluator_v4.V4LegacyContractTests.test_all_nineteen_complete_assets_still_pass_independent_source_checks",
+      "status": "passed"
+    },
+    {
+      "name": "test_anaphoric_nouns_do_not_override_an_explicit_product",
+      "class": "test_product_evaluator_v4.V4LegacyContractTests.test_anaphoric_nouns_do_not_override_an_explicit_product",
+      "status": "passed"
+    },
+    {
+      "name": "test_comma_delimited_known_product_cannot_remain_a_placeholder",
+      "class": "test_product_evaluator_v4.V4LegacyContractTests.test_comma_delimited_known_product_cannot_remain_a_placeholder",
+      "status": "passed"
+    },
+    {
+      "name": "test_contextual_modifiers_and_actor_synonyms_do_not_cause_false_failures",
+      "class": "test_product_evaluator_v4.V4LegacyContractTests.test_contextual_modifiers_and_actor_synonyms_do_not_cause_false_failures",
+      "status": "passed"
+    },
+    {
+      "name": "test_contextual_no_answers_a_direct_course_identity_question",
+      "class": "test_product_evaluator_v4.V4LegacyContractTests.test_contextual_no_answers_a_direct_course_identity_question",
+      "status": "passed"
+    },
+    {
+      "name": "test_fallback_and_local_replacement_provenance_is_not_live_success",
+      "class": "test_product_evaluator_v4.V4LegacyContractTests.test_fallback_and_local_replacement_provenance_is_not_live_success",
+      "status": "passed"
+    },
+    {
+      "name": "test_full_template_omissions_and_added_executable_advice_still_fail",
+      "class": "test_product_evaluator_v4.V4LegacyContractTests.test_full_template_omissions_and_added_executable_advice_still_fail",
+      "status": "passed"
+    },
+    {
+      "name": "test_history_determiners_are_independently_normalized",
+      "class": "test_product_evaluator_v4.V4LegacyContractTests.test_history_determiners_are_independently_normalized",
+      "status": "passed"
+    },
+    {
+      "name": "test_hook_counts_are_checked_against_actual_delivered_items",
+      "class": "test_product_evaluator_v4.V4LegacyContractTests.test_hook_counts_are_checked_against_actual_delivered_items",
+      "status": "passed"
+    },
+    {
+      "name": "test_keyword_presence_is_not_a_caption_or_ad_angle",
+      "class": "test_product_evaluator_v4.V4LegacyContractTests.test_keyword_presence_is_not_a_caption_or_ad_angle",
+      "status": "passed"
+    },
+    {
+      "name": "test_later_negation_does_not_excuse_an_affirmative_forbidden_platform_answer",
+      "class": "test_product_evaluator_v4.V4LegacyContractTests.test_later_negation_does_not_excuse_an_affirmative_forbidden_platform_answer",
+      "status": "passed"
+    },
+    {
+      "name": "test_safe_refusal_and_demo_meaning_survive_without_literal_keywords",
+      "class": "test_product_evaluator_v4.V4LegacyContractTests.test_safe_refusal_and_demo_meaning_survive_without_literal_keywords",
+      "status": "passed"
+    },
+    {
+      "name": "test_semantic_aliases_do_not_erase_numeric_or_technical_requirements",
+      "class": "test_product_evaluator_v4.V4LegacyContractTests.test_semantic_aliases_do_not_erase_numeric_or_technical_requirements",
+      "status": "passed"
+    },
+    {
+      "name": "test_short_valid_roman_hinglish_is_not_english",
+      "class": "test_product_evaluator_v4.V4LegacyContractTests.test_short_valid_roman_hinglish_is_not_english",
+      "status": "passed"
+    },
+    {
+      "name": "test_unrelated_negation_does_not_hide_unsafe_claims",
+      "class": "test_product_evaluator_v4.V4LegacyContractTests.test_unrelated_negation_does_not_hide_unsafe_claims",
+      "status": "passed"
+    },
+    {
+      "name": "test_concrete_demo_requires_actions_and_spoken_example",
+      "class": "test_product_evaluator_v5.Phase7EvaluatorTests.test_concrete_demo_requires_actions_and_spoken_example",
+      "status": "passed"
+    },
+    {
+      "name": "test_course_no_after_lesson_label_is_contextual",
+      "class": "test_product_evaluator_v5.Phase7EvaluatorTests.test_course_no_after_lesson_label_is_contextual",
+      "status": "passed"
+    },
+    {
+      "name": "test_demo_for_wrong_product_does_not_pass",
+      "class": "test_product_evaluator_v5.Phase7EvaluatorTests.test_demo_for_wrong_product_does_not_pass",
+      "status": "passed"
+    },
+    {
+      "name": "test_direct_demonstrate_equivalent_and_negation",
+      "class": "test_product_evaluator_v5.Phase7EvaluatorTests.test_direct_demonstrate_equivalent_and_negation",
+      "status": "passed"
+    },
+    {
+      "name": "test_fallback_never_passes_quality_or_live_scope",
+      "class": "test_product_evaluator_v5.Phase7EvaluatorTests.test_fallback_never_passes_quality_or_live_scope",
+      "status": "passed"
+    },
+    {
+      "name": "test_faq_exact_instruction_remains_strict",
+      "class": "test_product_evaluator_v5.Phase7EvaluatorTests.test_faq_exact_instruction_remains_strict",
+      "status": "passed"
+    },
+    {
+      "name": "test_hindi_combining_marks_are_part_of_product_identity",
+      "class": "test_product_evaluator_v5.Phase7EvaluatorTests.test_hindi_combining_marks_are_part_of_product_identity",
+      "status": "passed"
+    },
+    {
+      "name": "test_hindi_hook_quantity_is_not_default_five",
+      "class": "test_product_evaluator_v5.Phase7EvaluatorTests.test_hindi_hook_quantity_is_not_default_five",
+      "status": "passed"
+    },
+    {
+      "name": "test_hindi_product_exact_template_must_be_complete_and_correct",
+      "class": "test_product_evaluator_v5.Phase7EvaluatorTests.test_hindi_product_exact_template_must_be_complete_and_correct",
+      "status": "passed"
+    },
+    {
+      "name": "test_indirect_request_requires_output_but_explanation_does_not",
+      "class": "test_product_evaluator_v5.Phase7EvaluatorTests.test_indirect_request_requires_output_but_explanation_does_not",
+      "status": "passed"
+    },
+    {
+      "name": "test_informational_demo_does_not_require_script",
+      "class": "test_product_evaluator_v5.Phase7EvaluatorTests.test_informational_demo_does_not_require_script",
+      "status": "passed"
+    },
+    {
+      "name": "test_product_change_does_not_keep_old_colour_slots",
+      "class": "test_product_evaluator_v5.Phase7EvaluatorTests.test_product_change_does_not_keep_old_colour_slots",
+      "status": "passed"
+    },
+    {
+      "name": "test_referring_clip_does_not_replace_remembered_product",
+      "class": "test_product_evaluator_v5.Phase7EvaluatorTests.test_referring_clip_does_not_replace_remembered_product",
+      "status": "passed"
+    },
+    {
+      "name": "test_review_object_negation_is_scoped",
+      "class": "test_product_evaluator_v5.Phase7EvaluatorTests.test_review_object_negation_is_scoped",
+      "status": "passed"
+    },
+    {
+      "name": "test_roman_and_natural_name_declarations",
+      "class": "test_product_evaluator_v5.Phase7EvaluatorTests.test_roman_and_natural_name_declarations",
+      "status": "passed"
+    },
+    {
+      "name": "test_supplied_hindi_name_does_not_change_hinglish_narrative",
+      "class": "test_product_evaluator_v5.Phase7EvaluatorTests.test_supplied_hindi_name_does_not_change_hinglish_narrative",
+      "status": "passed"
+    },
+    {
+      "name": "test_three_short_hooks_means_three_actual_hooks",
+      "class": "test_product_evaluator_v5.Phase7EvaluatorTests.test_three_short_hooks_means_three_actual_hooks",
+      "status": "passed"
+    },
+    {
+      "name": "test_unknown_and_personal_name_are_not_product_evidence",
+      "class": "test_product_evaluator_v5.Phase7EvaluatorTests.test_unknown_and_personal_name_are_not_product_evidence",
+      "status": "passed"
+    },
+    {
+      "name": "test_buyer_groups_and_singular_problem_are_semantic_equivalents",
+      "class": "test_product_evaluator_v5.V5CompatibilityTests.test_buyer_groups_and_singular_problem_are_semantic_equivalents",
+      "status": "passed"
+    },
+    {
+      "name": "test_colour_field_expectations_are_independent_of_clause_length",
+      "class": "test_product_evaluator_v5.V5CompatibilityTests.test_colour_field_expectations_are_independent_of_clause_length",
+      "status": "passed"
+    },
+    {
+      "name": "test_colour_history_and_unknown_fields_are_distinguished",
+      "class": "test_product_evaluator_v5.V5CompatibilityTests.test_colour_history_and_unknown_fields_are_distinguished",
+      "status": "passed"
+    },
+    {
+      "name": "test_complete_creative_prompt_without_an_approved_asset_is_not_exact_intent",
+      "class": "test_product_evaluator_v5.V5CompatibilityTests.test_complete_creative_prompt_without_an_approved_asset_is_not_exact_intent",
+      "status": "passed"
+    },
+    {
+      "name": "test_declarative_synthetic_customer_claims_are_unsafe",
+      "class": "test_product_evaluator_v5.V5CompatibilityTests.test_declarative_synthetic_customer_claims_are_unsafe",
+      "status": "passed"
+    },
+    {
+      "name": "test_exact_faq_requirement_remains_verbatim",
+      "class": "test_product_evaluator_v5.V5CompatibilityTests.test_exact_faq_requirement_remains_verbatim",
+      "status": "passed"
+    },
+    {
+      "name": "test_exact_intent_activates_in_any_conversation_category",
+      "class": "test_product_evaluator_v5.V5CompatibilityTests.test_exact_intent_activates_in_any_conversation_category",
+      "status": "passed"
+    },
+    {
+      "name": "test_face_equivalence_does_not_accept_negated_preservation",
+      "class": "test_product_evaluator_v5.V5CompatibilityTests.test_face_equivalence_does_not_accept_negated_preservation",
+      "status": "passed"
+    },
+    {
+      "name": "test_hindi_one_slow_movement_does_not_accept_two_movements",
+      "class": "test_product_evaluator_v5.V5CompatibilityTests.test_hindi_one_slow_movement_does_not_accept_two_movements",
+      "status": "passed"
+    },
+    {
+      "name": "test_honest_demonstration_is_not_a_personal_review",
+      "class": "test_product_evaluator_v5.V5CompatibilityTests.test_honest_demonstration_is_not_a_personal_review",
+      "status": "passed"
+    },
+    {
+      "name": "test_multilingual_customer_assertions_keep_negation_meaning",
+      "class": "test_product_evaluator_v5.V5CompatibilityTests.test_multilingual_customer_assertions_keep_negation_meaning",
+      "status": "passed"
+    },
+    {
+      "name": "test_name_echo_can_be_replaced_only_by_later_full_template_proof",
+      "class": "test_product_evaluator_v5.V5CompatibilityTests.test_name_echo_can_be_replaced_only_by_later_full_template_proof",
+      "status": "passed"
+    },
+    {
+      "name": "test_negated_colour_request_does_not_create_slots",
+      "class": "test_product_evaluator_v5.V5CompatibilityTests.test_negated_colour_request_does_not_create_slots",
+      "status": "passed"
+    },
+    {
+      "name": "test_roman_colour_preservation_aliases_keep_required_meaning",
+      "class": "test_product_evaluator_v5.V5CompatibilityTests.test_roman_colour_preservation_aliases_keep_required_meaning",
+      "status": "passed"
+    },
+    {
+      "name": "test_roman_postposed_prohibitions_are_safe",
+      "class": "test_product_evaluator_v5.V5CompatibilityTests.test_roman_postposed_prohibitions_are_safe",
+      "status": "passed"
+    },
+    {
+      "name": "test_wrong_or_unfilled_later_product_cannot_excuse_a_missing_name",
+      "class": "test_product_evaluator_v5.V5CompatibilityTests.test_wrong_or_unfilled_later_product_cannot_excuse_a_missing_name",
+      "status": "passed"
+    },
+    {
+      "name": "test_comparison_must_explain_both_requested_concepts",
+      "class": "test_product_evaluator_v6.Phase9EvaluatorTests.test_comparison_must_explain_both_requested_concepts",
+      "status": "passed"
+    },
+    {
+      "name": "test_complete_original_character_sheet_requires_full_body",
+      "class": "test_product_evaluator_v6.Phase9EvaluatorTests.test_complete_original_character_sheet_requires_full_body",
+      "status": "passed"
+    },
+    {
+      "name": "test_entire_product_with_negated_template_is_not_exact_intent",
+      "class": "test_product_evaluator_v6.Phase9EvaluatorTests.test_entire_product_with_negated_template_is_not_exact_intent",
+      "status": "passed"
+    },
+    {
+      "name": "test_exact_faq_requirement_stays_verbatim",
+      "class": "test_product_evaluator_v6.Phase9EvaluatorTests.test_exact_faq_requirement_stays_verbatim",
+      "status": "passed"
+    },
+    {
+      "name": "test_hindi_review_prohibition_is_safe_but_affirmation_is_not",
+      "class": "test_product_evaluator_v6.Phase9EvaluatorTests.test_hindi_review_prohibition_is_safe_but_affirmation_is_not",
+      "status": "passed"
+    },
+    {
+      "name": "test_independent_audit_rejects_an_additional_executable_block",
+      "class": "test_product_evaluator_v6.Phase9EvaluatorTests.test_independent_audit_rejects_an_additional_executable_block",
+      "status": "passed"
+    },
+    {
+      "name": "test_independent_expectation_cannot_change_approved_source",
+      "class": "test_product_evaluator_v6.Phase9EvaluatorTests.test_independent_expectation_cannot_change_approved_source",
+      "status": "passed"
+    },
+    {
+      "name": "test_independent_full_body_accepts_exact_known_slot",
+      "class": "test_product_evaluator_v6.Phase9EvaluatorTests.test_independent_full_body_accepts_exact_known_slot",
+      "status": "passed"
+    },
+    {
+      "name": "test_independent_full_body_rejects_extra_executable_instruction",
+      "class": "test_product_evaluator_v6.Phase9EvaluatorTests.test_independent_full_body_rejects_extra_executable_instruction",
+      "status": "passed"
+    },
+    {
+      "name": "test_independent_full_body_rejects_truncation",
+      "class": "test_product_evaluator_v6.Phase9EvaluatorTests.test_independent_full_body_rejects_truncation",
+      "status": "passed"
+    },
+    {
+      "name": "test_independent_full_body_rejects_unresolved_known_product",
+      "class": "test_product_evaluator_v6.Phase9EvaluatorTests.test_independent_full_body_rejects_unresolved_known_product",
+      "status": "passed"
+    },
+    {
+      "name": "test_independent_full_body_rejects_wrong_product",
+      "class": "test_product_evaluator_v6.Phase9EvaluatorTests.test_independent_full_body_rejects_wrong_product",
+      "status": "passed"
+    },
+    {
+      "name": "test_missing_lesson_reference_is_not_excused_by_semantic_equivalence",
+      "class": "test_product_evaluator_v6.Phase9EvaluatorTests.test_missing_lesson_reference_is_not_excused_by_semantic_equivalence",
+      "status": "passed"
+    },
+    {
+      "name": "test_nested_prepositions_cannot_mask_supplied_product",
+      "class": "test_product_evaluator_v6.Phase9EvaluatorTests.test_nested_prepositions_cannot_mask_supplied_product",
+      "status": "passed"
+    },
+    {
+      "name": "test_objective_presentation_is_equivalent_to_no_personal_claim",
+      "class": "test_product_evaluator_v6.Phase9EvaluatorTests.test_objective_presentation_is_equivalent_to_no_personal_claim",
+      "status": "passed"
+    },
+    {
+      "name": "test_regeneration_equivalents_keep_the_next_action",
+      "class": "test_product_evaluator_v6.Phase9EvaluatorTests.test_regeneration_equivalents_keep_the_next_action",
+      "status": "passed"
+    },
+    {
+      "name": "test_roman_negative_claim_keeps_its_scope",
+      "class": "test_product_evaluator_v6.Phase9EvaluatorTests.test_roman_negative_claim_keeps_its_scope",
+      "status": "passed"
+    },
+    {
+      "name": "test_concrete_demo_requires_actions_and_spoken_example",
+      "class": "test_product_evaluator_v6.V6CompatibilityTests.test_concrete_demo_requires_actions_and_spoken_example",
+      "status": "passed"
+    },
+    {
+      "name": "test_course_no_after_lesson_label_is_contextual",
+      "class": "test_product_evaluator_v6.V6CompatibilityTests.test_course_no_after_lesson_label_is_contextual",
+      "status": "passed"
+    },
+    {
+      "name": "test_demo_for_wrong_product_does_not_pass",
+      "class": "test_product_evaluator_v6.V6CompatibilityTests.test_demo_for_wrong_product_does_not_pass",
+      "status": "passed"
+    },
+    {
+      "name": "test_direct_demonstrate_equivalent_and_negation",
+      "class": "test_product_evaluator_v6.V6CompatibilityTests.test_direct_demonstrate_equivalent_and_negation",
+      "status": "passed"
+    },
+    {
+      "name": "test_fallback_never_passes_quality_or_live_scope",
+      "class": "test_product_evaluator_v6.V6CompatibilityTests.test_fallback_never_passes_quality_or_live_scope",
+      "status": "passed"
+    },
+    {
+      "name": "test_faq_exact_instruction_remains_strict",
+      "class": "test_product_evaluator_v6.V6CompatibilityTests.test_faq_exact_instruction_remains_strict",
+      "status": "passed"
+    },
+    {
+      "name": "test_hindi_combining_marks_are_part_of_product_identity",
+      "class": "test_product_evaluator_v6.V6CompatibilityTests.test_hindi_combining_marks_are_part_of_product_identity",
+      "status": "passed"
+    },
+    {
+      "name": "test_hindi_hook_quantity_is_not_default_five",
+      "class": "test_product_evaluator_v6.V6CompatibilityTests.test_hindi_hook_quantity_is_not_default_five",
+      "status": "passed"
+    },
+    {
+      "name": "test_hindi_product_exact_template_must_be_complete_and_correct",
+      "class": "test_product_evaluator_v6.V6CompatibilityTests.test_hindi_product_exact_template_must_be_complete_and_correct",
+      "status": "passed"
+    },
+    {
+      "name": "test_indirect_request_requires_output_but_explanation_does_not",
+      "class": "test_product_evaluator_v6.V6CompatibilityTests.test_indirect_request_requires_output_but_explanation_does_not",
+      "status": "passed"
+    },
+    {
+      "name": "test_informational_demo_does_not_require_script",
+      "class": "test_product_evaluator_v6.V6CompatibilityTests.test_informational_demo_does_not_require_script",
+      "status": "passed"
+    },
+    {
+      "name": "test_product_change_does_not_keep_old_colour_slots",
+      "class": "test_product_evaluator_v6.V6CompatibilityTests.test_product_change_does_not_keep_old_colour_slots",
+      "status": "passed"
+    },
+    {
+      "name": "test_referring_clip_does_not_replace_remembered_product",
+      "class": "test_product_evaluator_v6.V6CompatibilityTests.test_referring_clip_does_not_replace_remembered_product",
+      "status": "passed"
+    },
+    {
+      "name": "test_review_object_negation_is_scoped",
+      "class": "test_product_evaluator_v6.V6CompatibilityTests.test_review_object_negation_is_scoped",
+      "status": "passed"
+    },
+    {
+      "name": "test_roman_and_natural_name_declarations",
+      "class": "test_product_evaluator_v6.V6CompatibilityTests.test_roman_and_natural_name_declarations",
+      "status": "passed"
+    },
+    {
+      "name": "test_supplied_hindi_name_does_not_change_hinglish_narrative",
+      "class": "test_product_evaluator_v6.V6CompatibilityTests.test_supplied_hindi_name_does_not_change_hinglish_narrative",
+      "status": "passed"
+    },
+    {
+      "name": "test_three_short_hooks_means_three_actual_hooks",
+      "class": "test_product_evaluator_v6.V6CompatibilityTests.test_three_short_hooks_means_three_actual_hooks",
+      "status": "passed"
+    },
+    {
+      "name": "test_unknown_and_personal_name_are_not_product_evidence",
+      "class": "test_product_evaluator_v6.V6CompatibilityTests.test_unknown_and_personal_name_are_not_product_evidence",
+      "status": "passed"
+    }
+  ],
+  "summary": {
+    "passed": 146,
+    "failed": 0,
+    "skipped": 0,
+    "total": 146
+  }
+}

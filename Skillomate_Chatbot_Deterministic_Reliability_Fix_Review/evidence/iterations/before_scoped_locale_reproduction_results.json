@@ -1,0 +1,873 @@
+{
+  "executedAt": "2026-10-16T12:15:46.142Z",
+  "method": "Existing Phase12 makeApp function extracted unchanged; actual Express loopback route; current modules; synthetic auth/entitlement/course; memory-only sessions; external transport denied",
+  "makeAppSha256": "703d7ad5803dc460f466d187ad992d8e50d6347f03fb78b3a2cbfcdced41f2b7",
+  "deniedExternalRequests": 0,
+  "results": [
+    {
+      "id": "phase12_new_001",
+      "turns": [
+        {
+          "expectedTemplate": "L02 Product Sheet",
+          "expectedSlots": {
+            "product": "folded sisal seed-label quiver"
+          },
+          "expectedBody": "Use all the uploaded photos of this folded sisal seed-label quiver. Create a clean product reference sheet on a plain white background showing the exact same folded sisal seed-label quiver in four views arranged in a neat grid: front view, top-down view, side view and three-quarter angle view. Keep the folded sisal seed-label quiver exactly the same in every view — same shape, same colour, same details, same text and logo, do not redesign it. Even soft studio lighting, no extra objects, no text labels, realistic product photography.",
+          "fullExpectedBodyMatches": true,
+          "byteIdenticalToPhase12": false,
+          "phase12AnswerSha256": "262e4743859f848b35b54cf0fd01f907252d70853253b12f0d1c016e07080964",
+          "actualAnswerSha256": "835863e8b6b19e1043c884923481c3999c6c98baca5a38d0b29819c0f17e1bd8",
+          "actual": {
+            "answer": "L02 Product Sheet\n\n```text\nUse all the uploaded photos of this folded sisal seed-label quiver. Create a clean product reference sheet on a plain white background showing the exact same folded sisal seed-label quiver in four views arranged in a neat grid: front view, top-down view, side view and three-quarter angle view. Keep the folded sisal seed-label quiver exactly the same in every view — same shape, same colour, same details, same text and logo, do not redesign it. Even soft studio lighting, no extra objects, no text labels, realistic product photography.\n```",
+            "reply": "L02 Product Sheet\n\n```text\nUse all the uploaded photos of this folded sisal seed-label quiver. Create a clean product reference sheet on a plain white background showing the exact same folded sisal seed-label quiver in four views arranged in a neat grid: front view, top-down view, side view and three-quarter angle view. Keep the folded sisal seed-label quiver exactly the same in every view — same shape, same colour, same details, same text and logo, do not redesign it. Even soft studio lighting, no extra objects, no text labels, realistic product photography.\n```",
+            "provider": "course-knowledge-rule",
+            "sources": [],
+            "messageId": "8e598867-6037-416b-9cf8-d174ecd5504a",
+            "notice": null,
+            "outcome": {
+              "type": "local_rule",
+              "liveModelAnswer": false,
+              "providerStatus": "not_requested",
+              "responseIssue": null
+            },
+            "knowledge": "course-materials",
+            "debug": {
+              "conversation_id": "phase12-review-phase12_new_001",
+              "request_active_course_id": "6d0000000000000000000000",
+              "resolved_active_course_id": "6d0000000000000000000000",
+              "current_topic": "Har photo mein product thoda alag",
+              "current_intent": "",
+              "rewritten_retrieval_query": "The object I am photographing is a folded sisal seed-label quiver. I need the full approved L02 Product Sheet text for it, with its name filled everywhere.",
+              "retrieved_chunk_ids": [
+                "ai-product-photoshoot-ads:training:exact-template:l02-product-sheet",
+                "ai-product-photoshoot-ads:training:faq:har-photo-mein-product-thoda-alag",
+                "ai-product-photoshoot-ads:training:workflow:product-sheet-banana",
+                "ai-product-photoshoot-ads:training:faq:label-ke-akshar-keys-ke-letters",
+                "ai-product-photoshoot-ads:training:exact-template:l02-dark-premium",
+                "ai-product-photoshoot-ads:training:exact-template:l02-white-studio"
+              ],
+              "retrieved_chunk_hashes": [
+                "1e76a13b224293da7aee0d7994b4d53e231ae3fca4613116d763c5719c0a492d",
+                "9a8959739deebee30004ee75c9e9f8eea357ba859b480755d62a564e085597c6",
+                "56922de78128c44d1321fa410072ad53637117feed928197c53c4a4c3f6438f2",
+                "566a7b4772832b93a791f298b56c9b3e3c4280cf676ee275a69644183dd05d4e",
+                "f187754dabf74831c2447f233b1ae9f31fe764893f6e8388fac17451481c83da",
+                "72fe6514bb03cf07250f440c8a4084fc7bd5243c1a8f5fd7a17f5759e500252a"
+              ],
+              "retrieved_source_hashes": [
+                "96471b6991c3724f9b8315fc7b3d1bb73b409eb0272517432cbfdd98882127df"
+              ],
+              "retrieved_translation_hashes": [
+                "",
+                "3bc811227273825cb6305cf07fa65a5932bd33ead96ce29deb4c23fc39fef564",
+                "2b6e14207486a1cbac4fa35a55be64c14b67471dc164a05f7c143d1c5555e3b9",
+                "86c9ce29d269012c0653570f2cf5cda2ee8261571c085b5e3f64ea86aab18d39",
+                "",
+                ""
+              ],
+              "retrieved_course_ids": [
+                "6d0000000000000000000000"
+              ],
+              "retrieved_course_names": [
+                "AI Product Photoshoot & Ads"
+              ],
+              "scores_ranks": [
+                {
+                  "rank": 1,
+                  "score": "183.6062",
+                  "course_id": "6d0000000000000000000000",
+                  "section": "L02 Product Sheet"
+                },
+                {
+                  "rank": 2,
+                  "score": "89.4636",
+                  "course_id": "6d0000000000000000000000",
+                  "section": "Har photo mein product thoda alag"
+                },
+                {
+                  "rank": 3,
+                  "score": "87.0028",
+                  "course_id": "6d0000000000000000000000",
+                  "section": "Product sheet banana"
+                },
+                {
+                  "rank": 4,
+                  "score": "37.7823",
+                  "course_id": "6d0000000000000000000000",
+                  "section": "Label ke akshar / keys ke letters"
+                },
+                {
+                  "rank": 5,
+                  "score": "34.8729",
+                  "course_id": "6d0000000000000000000000",
+                  "section": "L02 Dark Premium"
+                },
+                {
+                  "rank": 6,
+                  "score": "33.1738",
+                  "course_id": "6d0000000000000000000000",
+                  "section": "L02 White Studio"
+                }
+              ],
+              "selected_exact_prompt_template_id": "ai-product-photoshoot-ads:training:exact-template:l02-product-sheet",
+              "provider_model_path": "course-knowledge-rule",
+              "response_selection": {
+                "mode": "exact_template",
+                "reason": "complete_authorized_asset",
+                "plan": {
+                  "mode": "copy",
+                  "operations": [],
+                  "copyMode": "fill",
+                  "outputs": [],
+                  "parts": [],
+                  "explanationLanguage": "english",
+                  "synthesis": false,
+                  "domain": "course"
+                }
+              },
+              "history_restored": false,
+              "provider": {
+                "status": "not_requested",
+                "attempts": []
+              },
+              "validation_repair": null
+            },
+            "query": "The object I am photographing is a folded sisal seed-label quiver. I need the full approved L02 Product Sheet text for it, with its name filled everywhere.",
+            "turnIndex": 1,
+            "statusCode": 200,
+            "startedAt": "2026-10-16T12:15:45.937Z",
+            "completedAt": "2026-10-16T12:15:46.031Z",
+            "latencyMs": 94,
+            "executionTransport": "real loopback HTTP /api/ai/chat through Express",
+            "controlledFault": null,
+            "clientHistoryOmitted": false,
+            "persistedContext": {
+              "attributes": [],
+              "product": "folded sisal seed-label quiver",
+              "requestedOutputs": [],
+              "lessonNumber": 2,
+              "topic": "product_sheet",
+              "language": "english",
+              "schemaVersion": 2,
+              "courseId": "6d0000000000000000000000",
+              "conversationId": "phase12-review-phase12_new_001",
+              "currentTask": {
+                "outputs": [],
+                "parts": [],
+                "request": "The object I am photographing is a folded sisal seed-label quiver. I need the full approved L02 Product Sheet text for it, with its name filled everywhere.",
+                "actorFree": false
+              },
+              "adAngles": [],
+              "evidence": {
+                "product": "The object I am photographing is a folded sisal seed-label quiver. I need the full approved L02 Product Sheet text for it, with its name filled everywhere."
+              }
+            },
+            "providerRequests": [],
+            "applicationLogs": [
+              {
+                "level": "info",
+                "text": "[nex-ai-debug] {\"conversation_id\":\"phase12-review-phase12_new_001\",\"request_active_course_id\":\"6d0000000000000000000000\",\"resolved_active_course_id\":\"6d0000000000000000000000\",\"current_topic\":\"Har photo mein product thoda alag\",\"current_intent\":\"\",\"rewritten_retrieval_query\":\"The object I am photographing is a folded sisal seed-label quiver. I need the full approved L02 Product Sheet text for it, with its name filled everywhere.\",\"retrieved_chunk_ids\":[\"ai-product-photoshoot-ads:training:exact-template:l02-product-sheet\",\"ai-product-photoshoot-ads:training:faq:har-photo-mein-product-thoda-alag\",\"ai-product-photoshoot-ads:training:workflow:product-sheet-banana\",\"ai-product-photoshoot-ads:training:faq:label-ke-akshar-keys-ke-letters\",\"ai-product-photoshoot-ads:training:exact-template:l02-dark-premium\",\"ai-product-photoshoot-ads:training:exact-template:l02-white-studio\"],\"retrieved_chunk_hashes\":[\"1e76a13b224293da7aee0d7994b4d53e231ae3fca4613116d763c5719c0a492d\",\"9a8959739deebee30004ee75c9e9f8eea357ba859b480755d62a564e085597c6\",\"56922de78128c44d1321fa410072ad53637117feed928197c53c4a4c3f6438f2\",\"566a7b4772832b93a791f298b56c9b3e3c4280cf676ee275a69644183dd05d4e\",\"f187754dabf74831c2447f233b1ae9f31fe764893f6e8388fac17451481c83da\",\"72fe6514bb03cf07250f440c8a4084fc7bd5243c1a8f5fd7a17f5759e500252a\"],\"retrieved_source_hashes\":[\"96471b6991c3724f9b8315fc7b3d1bb73b409eb0272517432cbfdd98882127df\"],\"retrieved_translation_hashes\":[\"\",\"3bc811227273825cb6305cf07fa65a5932bd33ead96ce29deb4c23fc39fef564\",\"2b6e14207486a1cbac4fa35a55be64c14b67471dc164a05f7c143d1c5555e3b9\",\"86c9ce29d269012c0653570f2cf5cda2ee8261571c085b5e3f64ea86aab18d39\",\"\",\"\"],\"retrieved_course_ids\":[\"6d0000000000000000000000\"],\"retrieved_course_names\":[\"AI Product Photoshoot & Ads\"],\"scores_ranks\":[{\"rank\":1,\"score\":\"183.6062\",\"course_id\":\"6d0000000000000000000000\",\"section\":\"L02 Product Sheet\"},{\"rank\":2,\"score\":\"89.4636\",\"course_id\":\"6d0000000000000000000000\",\"section\":\"Har photo mein product thoda alag\"},{\"rank\":3,\"score\":\"87.0028\",\"course_id\":\"6d0000000000000000000000\",\"section\":\"Product sheet banana\"},{\"rank\":4,\"score\":\"37.7823\",\"course_id\":\"6d0000000000000000000000\",\"section\":\"Label ke akshar / keys ke letters\"},{\"rank\":5,\"score\":\"34.8729\",\"course_id\":\"6d0000000000000000000000\",\"section\":\"L02 Dark Premium\"},{\"rank\":6,\"score\":\"33.1738\",\"course_id\":\"6d0000000000000000000000\",\"section\":\"L02 White Studio\"}],\"selected_exact_prompt_template_id\":\"ai-product-photoshoot-ads:training:exact-template:l02-product-sheet\",\"provider_model_path\":\"course-knowledge-rule\"}"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "phase12_new_002",
+      "turns": [
+        {
+          "expectedTemplate": "L02 White Studio",
+          "expectedSlots": {
+            "product": "केसरिया सूत की बीज गिनने की थैली"
+          },
+          "expectedBody": "Use the uploaded product sheet as the reference. Keep the केसरिया सूत की बीज गिनने की थैली exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a clean seamless white background, soft even studio lighting, a soft natural shadow under it, slight top-down angle, sharp focus, realistic product photography.",
+          "fullExpectedBodyMatches": true,
+          "byteIdenticalToPhase12": false,
+          "phase12AnswerSha256": "7e5b46582d6458c2fe0e5916bdca5a9c6d73eb0483eb6cfdae85490f7c166d7a",
+          "actualAnswerSha256": "ed709286ac2380458a21f6f925b8459e72a537a43f018a037d659f0a31c6b831",
+          "actual": {
+            "answer": "L02 White Studio\n\n```text\nUse the uploaded product sheet as the reference. Keep the केसरिया सूत की बीज गिनने की थैली exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a clean seamless white background, soft even studio lighting, a soft natural shadow under it, slight top-down angle, sharp focus, realistic product photography.\n```",
+            "reply": "L02 White Studio\n\n```text\nUse the uploaded product sheet as the reference. Keep the केसरिया सूत की बीज गिनने की थैली exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a clean seamless white background, soft even studio lighting, a soft natural shadow under it, slight top-down angle, sharp focus, realistic product photography.\n```",
+            "provider": "course-knowledge-rule",
+            "sources": [],
+            "messageId": "84fef1d2-97ec-4ac6-9d76-0dd23e408078",
+            "notice": null,
+            "outcome": {
+              "type": "local_rule",
+              "liveModelAnswer": false,
+              "providerStatus": "not_requested",
+              "responseIssue": null
+            },
+            "knowledge": "course-materials",
+            "debug": {
+              "conversation_id": "phase12-review-phase12_new_002",
+              "request_active_course_id": "6d0000000000000000000000",
+              "resolved_active_course_id": "6d0000000000000000000000",
+              "current_topic": "Product photos",
+              "current_intent": "",
+              "rewritten_retrieval_query": "हमारी वस्तु का नाम केसरिया सूत की बीज गिनने की थैली है। L02 White Studio का पूरा स्वीकृत मूल प्रॉम्प्ट इस नाम के साथ दीजिए; बाकी हिंदी में।",
+              "retrieved_chunk_ids": [
+                "ai-product-photoshoot-ads:training:exact-template:l02-white-studio",
+                "ai-product-photoshoot-ads:training:workflow:product-photos",
+                "ai-product-photoshoot-ads:training:exact-template:l02-product-sheet",
+                "ai-product-photoshoot-ads:training:lesson-summary:lesson-02-phone-photo-se-studio-photo",
+                "ai-product-photoshoot-ads:training:exact-template:l02-lifestyle",
+                "ai-product-photoshoot-ads:training:exact-template:l02-dark-premium"
+              ],
+              "retrieved_chunk_hashes": [
+                "72fe6514bb03cf07250f440c8a4084fc7bd5243c1a8f5fd7a17f5759e500252a",
+                "cda5fab917790b32e1279a209aeef0f44b618ba75ca4c88c19264357539fae4d",
+                "1e76a13b224293da7aee0d7994b4d53e231ae3fca4613116d763c5719c0a492d",
+                "21582da9e3555afbf289672cf4d95cd09b1a1c240369ed1dc47895eeed208f95",
+                "508db83ae00763811db2d33e48f84cb80717bcfb36f4417120d5e5c5659f9706",
+                "f187754dabf74831c2447f233b1ae9f31fe764893f6e8388fac17451481c83da"
+              ],
+              "retrieved_source_hashes": [
+                "96471b6991c3724f9b8315fc7b3d1bb73b409eb0272517432cbfdd98882127df"
+              ],
+              "retrieved_translation_hashes": [
+                "",
+                "b6e099477a8df01b7d64e57e2c1783a08a57a8d6c891f33a1d452a3a25433b2e",
+                "",
+                "",
+                "",
+                ""
+              ],
+              "retrieved_course_ids": [
+                "6d0000000000000000000000"
+              ],
+              "retrieved_course_names": [
+                "AI Product Photoshoot & Ads"
+              ],
+              "scores_ranks": [
+                {
+                  "rank": 1,
+                  "score": "183.5239",
+                  "course_id": "6d0000000000000000000000",
+                  "section": "L02 White Studio"
+                },
+                {
+                  "rank": 2,
+                  "score": "85.7709",
+                  "course_id": "6d0000000000000000000000",
+                  "section": "Product photos"
+                },
+                {
+                  "rank": 3,
+                  "score": "32.6778",
+                  "course_id": "6d0000000000000000000000",
+                  "section": "L02 Product Sheet"
+                },
+                {
+                  "rank": 4,
+                  "score": "32.3836",
+                  "course_id": "6d0000000000000000000000",
+                  "section": "Lesson 02 — Phone Photo Se Studio Photo"
+                },
+                {
+                  "rank": 5,
+                  "score": "31.9981",
+                  "course_id": "6d0000000000000000000000",
+                  "section": "L02 Lifestyle"
+                },
+                {
+                  "rank": 6,
+                  "score": "30.9991",
+                  "course_id": "6d0000000000000000000000",
+                  "section": "L02 Dark Premium"
+                }
+              ],
+              "selected_exact_prompt_template_id": "ai-product-photoshoot-ads:training:exact-template:l02-white-studio",
+              "provider_model_path": "course-knowledge-rule",
+              "response_selection": {
+                "mode": "exact_template",
+                "reason": "complete_authorized_asset",
+                "plan": {
+                  "mode": "copy",
+                  "operations": [],
+                  "copyMode": "fill",
+                  "outputs": [],
+                  "parts": [],
+                  "explanationLanguage": "hindi",
+                  "synthesis": false,
+                  "domain": "course"
+                }
+              },
+              "history_restored": false,
+              "provider": {
+                "status": "not_requested",
+                "attempts": []
+              },
+              "validation_repair": null
+            },
+            "query": "हमारी वस्तु का नाम केसरिया सूत की बीज गिनने की थैली है। L02 White Studio का पूरा स्वीकृत मूल प्रॉम्प्ट इस नाम के साथ दीजिए; बाकी हिंदी में।",
+            "turnIndex": 1,
+            "statusCode": 200,
+            "startedAt": "2026-10-16T12:15:46.034Z",
+            "completedAt": "2026-10-16T12:15:46.091Z",
+            "latencyMs": 57,
+            "executionTransport": "real loopback HTTP /api/ai/chat through Express",
+            "controlledFault": null,
+            "clientHistoryOmitted": false,
+            "persistedContext": {
+              "attributes": [],
+              "product": "केसरिया सूत की बीज गिनने की थैली",
+              "requestedOutputs": [],
+              "lessonNumber": 2,
+              "topic": "product_photo",
+              "language": "hindi",
+              "schemaVersion": 2,
+              "courseId": "6d0000000000000000000000",
+              "conversationId": "phase12-review-phase12_new_002",
+              "currentTask": {
+                "outputs": [],
+                "parts": [],
+                "request": "हमारी वस्तु का नाम केसरिया सूत की बीज गिनने की थैली है। L02 White Studio का पूरा स्वीकृत मूल प्रॉम्प्ट इस नाम के साथ दीजिए; बाकी हिंदी में।",
+                "actorFree": false
+              },
+              "adAngles": [],
+              "evidence": {
+                "product": "हमारी वस्तु का नाम केसरिया सूत की बीज गिनने की थैली है। L02 White Studio का पूरा स्वीकृत मूल प्रॉम्प्ट इस नाम के साथ दीजिए; बाकी हिंदी में।"
+              }
+            },
+            "providerRequests": [],
+            "applicationLogs": [
+              {
+                "level": "info",
+                "text": "[nex-ai-debug] {\"conversation_id\":\"phase12-review-phase12_new_002\",\"request_active_course_id\":\"6d0000000000000000000000\",\"resolved_active_course_id\":\"6d0000000000000000000000\",\"current_topic\":\"Product photos\",\"current_intent\":\"\",\"rewritten_retrieval_query\":\"हमारी वस्तु का नाम केसरिया सूत की बीज गिनने की थैली है। L02 White Studio का पूरा स्वीकृत मूल प्रॉम्प्ट इस नाम के साथ दीजिए; बाकी हिंदी में।\",\"retrieved_chunk_ids\":[\"ai-product-photoshoot-ads:training:exact-template:l02-white-studio\",\"ai-product-photoshoot-ads:training:workflow:product-photos\",\"ai-product-photoshoot-ads:training:exact-template:l02-product-sheet\",\"ai-product-photoshoot-ads:training:lesson-summary:lesson-02-phone-photo-se-studio-photo\",\"ai-product-photoshoot-ads:training:exact-template:l02-lifestyle\",\"ai-product-photoshoot-ads:training:exact-template:l02-dark-premium\"],\"retrieved_chunk_hashes\":[\"72fe6514bb03cf07250f440c8a4084fc7bd5243c1a8f5fd7a17f5759e500252a\",\"cda5fab917790b32e1279a209aeef0f44b618ba75ca4c88c19264357539fae4d\",\"1e76a13b224293da7aee0d7994b4d53e231ae3fca4613116d763c5719c0a492d\",\"21582da9e3555afbf289672cf4d95cd09b1a1c240369ed1dc47895eeed208f95\",\"508db83ae00763811db2d33e48f84cb80717bcfb36f4417120d5e5c5659f9706\",\"f187754dabf74831c2447f233b1ae9f31fe764893f6e8388fac17451481c83da\"],\"retrieved_source_hashes\":[\"96471b6991c3724f9b8315fc7b3d1bb73b409eb0272517432cbfdd98882127df\"],\"retrieved_translation_hashes\":[\"\",\"b6e099477a8df01b7d64e57e2c1783a08a57a8d6c891f33a1d452a3a25433b2e\",\"\",\"\",\"\",\"\"],\"retrieved_course_ids\":[\"6d0000000000000000000000\"],\"retrieved_course_names\":[\"AI Product Photoshoot & Ads\"],\"scores_ranks\":[{\"rank\":1,\"score\":\"183.5239\",\"course_id\":\"6d0000000000000000000000\",\"section\":\"L02 White Studio\"},{\"rank\":2,\"score\":\"85.7709\",\"course_id\":\"6d0000000000000000000000\",\"section\":\"Product photos\"},{\"rank\":3,\"score\":\"32.6778\",\"course_id\":\"6d0000000000000000000000\",\"section\":\"L02 Product Sheet\"},{\"rank\":4,\"score\":\"32.3836\",\"course_id\":\"6d0000000000000000000000\",\"section\":\"Lesson 02 — Phone Photo Se Studio Photo\"},{\"rank\":5,\"score\":\"31.9981\",\"course_id\":\"6d0000000000000000000000\",\"section\":\"L02 Lifestyle\"},{\"rank\":6,\"score\":\"30.9991\",\"course_id\":\"6d0000000000000000000000\",\"section\":\"L02 Dark Premium\"}],\"selected_exact_prompt_template_id\":\"ai-product-photoshoot-ads:training:exact-template:l02-white-studio\",\"provider_model_path\":\"course-knowledge-rule\"}"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "phase12_new_005",
+      "turns": [
+        {
+          "expectedTemplate": "L04 Colour Variant Sheet",
+          "expectedSlots": {
+            "part": "the two removable hinge pins",
+            "colour": "pale saffron"
+          },
+          "expectedBody": "Use the uploaded product sheet as the reference. Only change the colour of the two removable hinge pins to pale saffron. Keep everything else exactly the same — same shape, same layout, same details, same text and logo, same four views, same background, same lighting. Output a full product sheet in the new colour.",
+          "fullExpectedBodyMatches": true,
+          "byteIdenticalToPhase12": false,
+          "phase12AnswerSha256": "b4ece22632331c4833c66c3503193f3761f1c38e4cd29528caa138bcf2807284",
+          "actualAnswerSha256": "fff1682513f34192b58edfc8f31392b997ce9c84aff52fa892bb7bf014b289c0",
+          "actual": {
+            "answer": "L04 Colour Variant Sheet\n\n```text\nUse the uploaded product sheet as the reference. Only change the colour of the two removable hinge pins to pale saffron. Keep everything else exactly the same — same shape, same layout, same details, same text and logo, same four views, same background, same lighting. Output a full product sheet in the new colour.\n```",
+            "reply": "L04 Colour Variant Sheet\n\n```text\nUse the uploaded product sheet as the reference. Only change the colour of the two removable hinge pins to pale saffron. Keep everything else exactly the same — same shape, same layout, same details, same text and logo, same four views, same background, same lighting. Output a full product sheet in the new colour.\n```",
+            "provider": "course-knowledge-rule",
+            "sources": [],
+            "messageId": "3a0347a8-5bea-46e6-81ca-ed0ac601e31a",
+            "notice": null,
+            "outcome": {
+              "type": "local_rule",
+              "liveModelAnswer": false,
+              "providerStatus": "not_requested",
+              "responseIssue": null
+            },
+            "knowledge": "course-materials",
+            "debug": {
+              "conversation_id": "phase12-review-phase12_new_005",
+              "request_active_course_id": "6d0000000000000000000000",
+              "resolved_active_course_id": "6d0000000000000000000000",
+              "current_topic": "Rang badla toh shape bhi badal gaya",
+              "current_intent": "",
+              "rewritten_retrieval_query": "In Lesson 04 I want only the colour of the two removable hinge pins changed to pale saffron. Return the entire approved L04 Colour Variant Sheet template with that exact part and colour.",
+              "retrieved_chunk_ids": [
+                "ai-product-photoshoot-ads:training:exact-template:l04-colour-variant-sheet",
+                "ai-product-photoshoot-ads:training:faq:rang-badla-toh-shape-bhi-badal-gaya",
+                "ai-product-photoshoot-ads:training:workflow:colour-variants",
+                "ai-product-photoshoot-ads:training:faq:brand-ka-exact-colour-nahi-aa-raha",
+                "ai-product-photoshoot-ads:training:lesson-summary:lesson-04-festive-shoot-colour-variants",
+                "ai-product-photoshoot-ads:training:exact-template:l04-wedding-gift"
+              ],
+              "retrieved_chunk_hashes": [
+                "3747f22b03f5c271408a1fc0997b6473824a951c350f55c11356c9c265372d64",
+                "a5e24d7fd5cdb3b2b91614221e20162e67ed75cbf7837a6bce879690b9d8d703",
+                "18e1b2b3f176800a338d71e854d1e3bbf60300cb41c72ee6dbf391770243996c",
+                "d923192b2986cb9a621ac5d2d3efd37a07bd2e461d671e99a057574b99b747a3",
+                "d755d8e3223684625a6906a931c615e4b61a0df3371011729aa204cc763db121",
+                "47e80348f9e29d92c65e536881ed8dad76379d6424e184a163d1c107c0b54dcc"
+              ],
+              "retrieved_source_hashes": [
+                "96471b6991c3724f9b8315fc7b3d1bb73b409eb0272517432cbfdd98882127df"
+              ],
+              "retrieved_translation_hashes": [
+                "",
+                "2c3e1138959312338864fadfe7caada926794d1c41d60219b2813f3ec7d8686b",
+                "d44c0a5f0b33765294be7f1cf3e441ee371a4770663e44723d7cf93458b52f19",
+                "c1711d723466f79d9f2fdd1c1de9e3e9a014b4402c9bc84e1ef41e5d203e7c26",
+                "",
+                "1ee1c31c7b790cd45b919e9d4dcab92645f2ec1ffe0834593dafb3c13a86af87"
+              ],
+              "retrieved_course_ids": [
+                "6d0000000000000000000000"
+              ],
+              "retrieved_course_names": [
+                "AI Product Photoshoot & Ads"
+              ],
+              "scores_ranks": [
+                {
+                  "rank": 1,
+                  "score": "186.4468",
+                  "course_id": "6d0000000000000000000000",
+                  "section": "L04 Colour Variant Sheet"
+                },
+                {
+                  "rank": 2,
+                  "score": "93.0486",
+                  "course_id": "6d0000000000000000000000",
+                  "section": "Rang badla toh shape bhi badal gaya"
+                },
+                {
+                  "rank": 3,
+                  "score": "92.6815",
+                  "course_id": "6d0000000000000000000000",
+                  "section": "Colour variants"
+                },
+                {
+                  "rank": 4,
+                  "score": "90.5231",
+                  "course_id": "6d0000000000000000000000",
+                  "section": "Brand ka exact colour nahi aa raha"
+                },
+                {
+                  "rank": 5,
+                  "score": "32.4460",
+                  "course_id": "6d0000000000000000000000",
+                  "section": "Lesson 04 — Festive Shoot + Colour Variants"
+                },
+                {
+                  "rank": 6,
+                  "score": "32.2799",
+                  "course_id": "6d0000000000000000000000",
+                  "section": "L04 Wedding Gift"
+                }
+              ],
+              "selected_exact_prompt_template_id": "ai-product-photoshoot-ads:training:exact-template:l04-colour-variant-sheet",
+              "provider_model_path": "course-knowledge-rule",
+              "response_selection": {
+                "mode": "exact_template",
+                "reason": "complete_authorized_asset",
+                "plan": {
+                  "mode": "copy",
+                  "operations": [
+                    {
+                      "type": "recolour",
+                      "part": "the two removable hinge pins",
+                      "colour": "pale saffron",
+                      "negated": false,
+                      "span": [
+                        29,
+                        91
+                      ]
+                    }
+                  ],
+                  "copyMode": "fill",
+                  "outputs": [],
+                  "parts": [],
+                  "explanationLanguage": "english",
+                  "synthesis": false,
+                  "domain": "course"
+                }
+              },
+              "history_restored": false,
+              "provider": {
+                "status": "not_requested",
+                "attempts": []
+              },
+              "validation_repair": null
+            },
+            "query": "In Lesson 04 I want only the colour of the two removable hinge pins changed to pale saffron. Return the entire approved L04 Colour Variant Sheet template with that exact part and colour.",
+            "turnIndex": 1,
+            "statusCode": 200,
+            "startedAt": "2026-10-16T12:15:46.092Z",
+            "completedAt": "2026-10-16T12:15:46.109Z",
+            "latencyMs": 17,
+            "executionTransport": "real loopback HTTP /api/ai/chat through Express",
+            "controlledFault": null,
+            "clientHistoryOmitted": false,
+            "persistedContext": {
+              "attributes": [],
+              "part": "the two removable hinge pins",
+              "colour": "pale saffron",
+              "requestedOutputs": [],
+              "lessonNumber": 4,
+              "topic": "colour",
+              "language": "english",
+              "schemaVersion": 2,
+              "courseId": "6d0000000000000000000000",
+              "conversationId": "phase12-review-phase12_new_005",
+              "currentTask": {
+                "outputs": [],
+                "parts": [],
+                "request": "In Lesson 04 I want only the colour of the two removable hinge pins changed to pale saffron. Return the entire approved L04 Colour Variant Sheet template with that exact part and colour.",
+                "actorFree": false
+              },
+              "adAngles": [],
+              "evidence": {
+                "part": "In Lesson 04 I want only the colour of the two removable hinge pins changed to pale saffron. Return the entire approved L04 Colour Variant Sheet template with that exact part and colour.",
+                "colour": "In Lesson 04 I want only the colour of the two removable hinge pins changed to pale saffron. Return the entire approved L04 Colour Variant Sheet template with that exact part and colour."
+              }
+            },
+            "providerRequests": [],
+            "applicationLogs": [
+              {
+                "level": "info",
+                "text": "[nex-ai-debug] {\"conversation_id\":\"phase12-review-phase12_new_005\",\"request_active_course_id\":\"6d0000000000000000000000\",\"resolved_active_course_id\":\"6d0000000000000000000000\",\"current_topic\":\"Rang badla toh shape bhi badal gaya\",\"current_intent\":\"\",\"rewritten_retrieval_query\":\"In Lesson 04 I want only the colour of the two removable hinge pins changed to pale saffron. Return the entire approved L04 Colour Variant Sheet template with that exact part and colour.\",\"retrieved_chunk_ids\":[\"ai-product-photoshoot-ads:training:exact-template:l04-colour-variant-sheet\",\"ai-product-photoshoot-ads:training:faq:rang-badla-toh-shape-bhi-badal-gaya\",\"ai-product-photoshoot-ads:training:workflow:colour-variants\",\"ai-product-photoshoot-ads:training:faq:brand-ka-exact-colour-nahi-aa-raha\",\"ai-product-photoshoot-ads:training:lesson-summary:lesson-04-festive-shoot-colour-variants\",\"ai-product-photoshoot-ads:training:exact-template:l04-wedding-gift\"],\"retrieved_chunk_hashes\":[\"3747f22b03f5c271408a1fc0997b6473824a951c350f55c11356c9c265372d64\",\"a5e24d7fd5cdb3b2b91614221e20162e67ed75cbf7837a6bce879690b9d8d703\",\"18e1b2b3f176800a338d71e854d1e3bbf60300cb41c72ee6dbf391770243996c\",\"d923192b2986cb9a621ac5d2d3efd37a07bd2e461d671e99a057574b99b747a3\",\"d755d8e3223684625a6906a931c615e4b61a0df3371011729aa204cc763db121\",\"47e80348f9e29d92c65e536881ed8dad76379d6424e184a163d1c107c0b54dcc\"],\"retrieved_source_hashes\":[\"96471b6991c3724f9b8315fc7b3d1bb73b409eb0272517432cbfdd98882127df\"],\"retrieved_translation_hashes\":[\"\",\"2c3e1138959312338864fadfe7caada926794d1c41d60219b2813f3ec7d8686b\",\"d44c0a5f0b33765294be7f1cf3e441ee371a4770663e44723d7cf93458b52f19\",\"c1711d723466f79d9f2fdd1c1de9e3e9a014b4402c9bc84e1ef41e5d203e7c26\",\"\",\"1ee1c31c7b790cd45b919e9d4dcab92645f2ec1ffe0834593dafb3c13a86af87\"],\"retrieved_course_ids\":[\"6d0000000000000000000000\"],\"retrieved_course_names\":[\"AI Product Photoshoot & Ads\"],\"scores_ranks\":[{\"rank\":1,\"score\":\"186.4468\",\"course_id\":\"6d0000000000000000000000\",\"section\":\"L04 Colour Variant Sheet\"},{\"rank\":2,\"score\":\"93.0486\",\"course_id\":\"6d0000000000000000000000\",\"section\":\"Rang badla toh shape bhi badal gaya\"},{\"rank\":3,\"score\":\"92.6815\",\"course_id\":\"6d0000000000000000000000\",\"section\":\"Colour variants\"},{\"rank\":4,\"score\":\"90.5231\",\"course_id\":\"6d0000000000000000000000\",\"section\":\"Brand ka exact colour nahi aa raha\"},{\"rank\":5,\"score\":\"32.4460\",\"course_id\":\"6d0000000000000000000000\",\"section\":\"Lesson 04 — Festive Shoot + Colour Variants\"},{\"rank\":6,\"score\":\"32.2799\",\"course_id\":\"6d0000000000000000000000\",\"section\":\"L04 Wedding Gift\"}],\"selected_exact_prompt_template_id\":\"ai-product-photoshoot-ads:training:exact-template:l04-colour-variant-sheet\",\"provider_model_path\":\"course-knowledge-rule\"}"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "phase12_new_029",
+      "turns": [
+        {
+          "expectedTemplate": "L02 White Studio",
+          "expectedSlots": {
+            "product": "woven willow bulb-measuring sleeve"
+          },
+          "expectedBody": "Use the uploaded product sheet as the reference. Keep the woven willow bulb-measuring sleeve exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a clean seamless white background, soft even studio lighting, a soft natural shadow under it, slight top-down angle, sharp focus, realistic product photography.",
+          "fullExpectedBodyMatches": true,
+          "byteIdenticalToPhase12": true,
+          "phase12AnswerSha256": "9ab45b2dede5acba92c7f44104f815dfe4bca97ef089dcbc1c117b31f0b602ab",
+          "actualAnswerSha256": "9ab45b2dede5acba92c7f44104f815dfe4bca97ef089dcbc1c117b31f0b602ab",
+          "actual": {
+            "answer": "L02 White Studio\n\n```text\nUse the uploaded product sheet as the reference. Keep the woven willow bulb-measuring sleeve exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a clean seamless white background, soft even studio lighting, a soft natural shadow under it, slight top-down angle, sharp focus, realistic product photography.\n```",
+            "reply": "L02 White Studio\n\n```text\nUse the uploaded product sheet as the reference. Keep the woven willow bulb-measuring sleeve exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a clean seamless white background, soft even studio lighting, a soft natural shadow under it, slight top-down angle, sharp focus, realistic product photography.\n```",
+            "provider": "course-knowledge-rule",
+            "sources": [],
+            "messageId": "e05a2bd7-07e7-478a-b09b-bf8f6273beae",
+            "notice": null,
+            "outcome": {
+              "type": "local_rule",
+              "liveModelAnswer": false,
+              "providerStatus": "not_requested",
+              "responseIssue": null
+            },
+            "knowledge": "course-materials",
+            "debug": {
+              "conversation_id": "phase12-review-phase12_new_029",
+              "request_active_course_id": "6d0000000000000000000000",
+              "resolved_active_course_id": "6d0000000000000000000000",
+              "current_topic": "Product photos",
+              "current_intent": "exact_prompt",
+              "rewritten_retrieval_query": "Mera item woven willow bulb-measuring sleeve hai. L02 White Studio ka full exact prompt do.",
+              "retrieved_chunk_ids": [
+                "ai-product-photoshoot-ads:training:exact-template:l02-white-studio",
+                "ai-product-photoshoot-ads:training:workflow:product-photos",
+                "ai-product-photoshoot-ads:training:exact-template:l02-product-sheet",
+                "ai-product-photoshoot-ads:training:faq:har-photo-mein-product-thoda-alag",
+                "ai-product-photoshoot-ads:training:lesson-summary:lesson-02-phone-photo-se-studio-photo",
+                "ai-product-photoshoot-ads:training:exact-template:l02-lifestyle"
+              ],
+              "retrieved_chunk_hashes": [
+                "72fe6514bb03cf07250f440c8a4084fc7bd5243c1a8f5fd7a17f5759e500252a",
+                "cda5fab917790b32e1279a209aeef0f44b618ba75ca4c88c19264357539fae4d",
+                "1e76a13b224293da7aee0d7994b4d53e231ae3fca4613116d763c5719c0a492d",
+                "9a8959739deebee30004ee75c9e9f8eea357ba859b480755d62a564e085597c6",
+                "21582da9e3555afbf289672cf4d95cd09b1a1c240369ed1dc47895eeed208f95",
+                "508db83ae00763811db2d33e48f84cb80717bcfb36f4417120d5e5c5659f9706"
+              ],
+              "retrieved_source_hashes": [
+                "96471b6991c3724f9b8315fc7b3d1bb73b409eb0272517432cbfdd98882127df"
+              ],
+              "retrieved_translation_hashes": [
+                "",
+                "b6e099477a8df01b7d64e57e2c1783a08a57a8d6c891f33a1d452a3a25433b2e",
+                "",
+                "3bc811227273825cb6305cf07fa65a5932bd33ead96ce29deb4c23fc39fef564",
+                "",
+                ""
+              ],
+              "retrieved_course_ids": [
+                "6d0000000000000000000000"
+              ],
+              "retrieved_course_names": [
+                "AI Product Photoshoot & Ads"
+              ],
+              "scores_ranks": [
+                {
+                  "rank": 1,
+                  "score": "183.5239",
+                  "course_id": "6d0000000000000000000000",
+                  "section": "L02 White Studio"
+                },
+                {
+                  "rank": 2,
+                  "score": "87.0265",
+                  "course_id": "6d0000000000000000000000",
+                  "section": "Product photos"
+                },
+                {
+                  "rank": 3,
+                  "score": "33.8983",
+                  "course_id": "6d0000000000000000000000",
+                  "section": "L02 Product Sheet"
+                },
+                {
+                  "rank": 4,
+                  "score": "32.6657",
+                  "course_id": "6d0000000000000000000000",
+                  "section": "Har photo mein product thoda alag"
+                },
+                {
+                  "rank": 5,
+                  "score": "32.3836",
+                  "course_id": "6d0000000000000000000000",
+                  "section": "Lesson 02 — Phone Photo Se Studio Photo"
+                },
+                {
+                  "rank": 6,
+                  "score": "31.9981",
+                  "course_id": "6d0000000000000000000000",
+                  "section": "L02 Lifestyle"
+                }
+              ],
+              "selected_exact_prompt_template_id": "ai-product-photoshoot-ads:training:exact-template:l02-white-studio",
+              "provider_model_path": "course-knowledge-rule",
+              "response_selection": {
+                "mode": "exact_template",
+                "reason": "complete_authorized_asset",
+                "plan": {
+                  "mode": "copy",
+                  "operations": [],
+                  "copyMode": "fill",
+                  "outputs": [],
+                  "parts": [],
+                  "explanationLanguage": "hinglish",
+                  "synthesis": false,
+                  "domain": "course"
+                }
+              },
+              "history_restored": false,
+              "provider": {
+                "status": "not_requested",
+                "attempts": []
+              },
+              "validation_repair": null
+            },
+            "query": "Mera item woven willow bulb-measuring sleeve hai. L02 White Studio ka full exact prompt do.",
+            "turnIndex": 1,
+            "statusCode": 200,
+            "startedAt": "2026-10-16T12:15:46.110Z",
+            "completedAt": "2026-10-16T12:15:46.126Z",
+            "latencyMs": 16,
+            "executionTransport": "real loopback HTTP /api/ai/chat through Express",
+            "controlledFault": null,
+            "clientHistoryOmitted": false,
+            "persistedContext": {
+              "attributes": [],
+              "product": "woven willow bulb-measuring sleeve",
+              "requestedOutputs": [],
+              "lessonNumber": 2,
+              "topic": "product_photo",
+              "language": "hinglish",
+              "schemaVersion": 2,
+              "courseId": "6d0000000000000000000000",
+              "conversationId": "phase12-review-phase12_new_029",
+              "currentTask": {
+                "outputs": [],
+                "parts": [],
+                "request": "Mera item woven willow bulb-measuring sleeve hai. L02 White Studio ka full exact prompt do.",
+                "actorFree": false
+              },
+              "adAngles": [],
+              "evidence": {
+                "product": "Mera item woven willow bulb-measuring sleeve hai. L02 White Studio ka full exact prompt do."
+              }
+            },
+            "providerRequests": [],
+            "applicationLogs": [
+              {
+                "level": "info",
+                "text": "[nex-ai-debug] {\"conversation_id\":\"phase12-review-phase12_new_029\",\"request_active_course_id\":\"6d0000000000000000000000\",\"resolved_active_course_id\":\"6d0000000000000000000000\",\"current_topic\":\"Product photos\",\"current_intent\":\"exact_prompt\",\"rewritten_retrieval_query\":\"Mera item woven willow bulb-measuring sleeve hai. L02 White Studio ka full exact prompt do.\",\"retrieved_chunk_ids\":[\"ai-product-photoshoot-ads:training:exact-template:l02-white-studio\",\"ai-product-photoshoot-ads:training:workflow:product-photos\",\"ai-product-photoshoot-ads:training:exact-template:l02-product-sheet\",\"ai-product-photoshoot-ads:training:faq:har-photo-mein-product-thoda-alag\",\"ai-product-photoshoot-ads:training:lesson-summary:lesson-02-phone-photo-se-studio-photo\",\"ai-product-photoshoot-ads:training:exact-template:l02-lifestyle\"],\"retrieved_chunk_hashes\":[\"72fe6514bb03cf07250f440c8a4084fc7bd5243c1a8f5fd7a17f5759e500252a\",\"cda5fab917790b32e1279a209aeef0f44b618ba75ca4c88c19264357539fae4d\",\"1e76a13b224293da7aee0d7994b4d53e231ae3fca4613116d763c5719c0a492d\",\"9a8959739deebee30004ee75c9e9f8eea357ba859b480755d62a564e085597c6\",\"21582da9e3555afbf289672cf4d95cd09b1a1c240369ed1dc47895eeed208f95\",\"508db83ae00763811db2d33e48f84cb80717bcfb36f4417120d5e5c5659f9706\"],\"retrieved_source_hashes\":[\"96471b6991c3724f9b8315fc7b3d1bb73b409eb0272517432cbfdd98882127df\"],\"retrieved_translation_hashes\":[\"\",\"b6e099477a8df01b7d64e57e2c1783a08a57a8d6c891f33a1d452a3a25433b2e\",\"\",\"3bc811227273825cb6305cf07fa65a5932bd33ead96ce29deb4c23fc39fef564\",\"\",\"\"],\"retrieved_course_ids\":[\"6d0000000000000000000000\"],\"retrieved_course_names\":[\"AI Product Photoshoot & Ads\"],\"scores_ranks\":[{\"rank\":1,\"score\":\"183.5239\",\"course_id\":\"6d0000000000000000000000\",\"section\":\"L02 White Studio\"},{\"rank\":2,\"score\":\"87.0265\",\"course_id\":\"6d0000000000000000000000\",\"section\":\"Product photos\"},{\"rank\":3,\"score\":\"33.8983\",\"course_id\":\"6d0000000000000000000000\",\"section\":\"L02 Product Sheet\"},{\"rank\":4,\"score\":\"32.6657\",\"course_id\":\"6d0000000000000000000000\",\"section\":\"Har photo mein product thoda alag\"},{\"rank\":5,\"score\":\"32.3836\",\"course_id\":\"6d0000000000000000000000\",\"section\":\"Lesson 02 — Phone Photo Se Studio Photo\"},{\"rank\":6,\"score\":\"31.9981\",\"course_id\":\"6d0000000000000000000000\",\"section\":\"L02 Lifestyle\"}],\"selected_exact_prompt_template_id\":\"ai-product-photoshoot-ads:training:exact-template:l02-white-studio\",\"provider_model_path\":\"course-knowledge-rule\"}"
+              }
+            ]
+          }
+        },
+        {
+          "expectedTemplate": "L02 Dark Premium",
+          "expectedSlots": {
+            "product": "polished alder dovetail spacer"
+          },
+          "expectedBody": "Use the uploaded product sheet as the reference. Keep the polished alder dovetail spacer exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a matte black surface against a dark background, a single soft rim light outlining its edges, a subtle reflection on the surface, premium moody look, realistic product photography.",
+          "fullExpectedBodyMatches": true,
+          "byteIdenticalToPhase12": false,
+          "phase12AnswerSha256": "20d7beaa898c1bc3dc20cc7e4b865332c30170f1d4f7b1e79d54d5a18e77860a",
+          "actualAnswerSha256": "58d6b6fb21444b8cf5556cd5aa14060c14cff06b2ff6e308d50eb938531bda21",
+          "actual": {
+            "answer": "L02 Dark Premium\n\n```text\nUse the uploaded product sheet as the reference. Keep the polished alder dovetail spacer exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a matte black surface against a dark background, a single soft rim light outlining its edges, a subtle reflection on the surface, premium moody look, realistic product photography.\n```",
+            "reply": "L02 Dark Premium\n\n```text\nUse the uploaded product sheet as the reference. Keep the polished alder dovetail spacer exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a matte black surface against a dark background, a single soft rim light outlining its edges, a subtle reflection on the surface, premium moody look, realistic product photography.\n```",
+            "provider": "course-knowledge-rule",
+            "sources": [],
+            "messageId": "cbc6d310-097f-40aa-876b-0c5fb034fe98",
+            "notice": null,
+            "outcome": {
+              "type": "local_rule",
+              "liveModelAnswer": false,
+              "providerStatus": "not_requested",
+              "responseIssue": null
+            },
+            "knowledge": "course-materials",
+            "debug": {
+              "conversation_id": "phase12-review-phase12_new_029",
+              "request_active_course_id": "6d0000000000000000000000",
+              "resolved_active_course_id": "6d0000000000000000000000",
+              "current_topic": "Product photos",
+              "current_intent": "exact_prompt",
+              "rewritten_retrieval_query": "Ab product ko polished alder dovetail spacer se replace karo. Naye wale ke liye complete L02 Dark Premium approved prompt do; purana naam mat rakhna.",
+              "retrieved_chunk_ids": [
+                "ai-product-photoshoot-ads:training:exact-template:l02-dark-premium",
+                "ai-product-photoshoot-ads:training:workflow:product-photos",
+                "ai-product-photoshoot-ads:training:workflow:product-sheet-banana",
+                "ai-product-photoshoot-ads:training:lesson-summary:lesson-02-phone-photo-se-studio-photo",
+                "ai-product-photoshoot-ads:training:faq:har-photo-mein-product-thoda-alag",
+                "ai-product-photoshoot-ads:training:exact-template:l02-product-sheet"
+              ],
+              "retrieved_chunk_hashes": [
+                "f187754dabf74831c2447f233b1ae9f31fe764893f6e8388fac17451481c83da",
+                "cda5fab917790b32e1279a209aeef0f44b618ba75ca4c88c19264357539fae4d",
+                "56922de78128c44d1321fa410072ad53637117feed928197c53c4a4c3f6438f2",
+                "21582da9e3555afbf289672cf4d95cd09b1a1c240369ed1dc47895eeed208f95",
+                "9a8959739deebee30004ee75c9e9f8eea357ba859b480755d62a564e085597c6",
+                "1e76a13b224293da7aee0d7994b4d53e231ae3fca4613116d763c5719c0a492d"
+              ],
+              "retrieved_source_hashes": [
+                "96471b6991c3724f9b8315fc7b3d1bb73b409eb0272517432cbfdd98882127df"
+              ],
+              "retrieved_translation_hashes": [
+                "",
+                "b6e099477a8df01b7d64e57e2c1783a08a57a8d6c891f33a1d452a3a25433b2e",
+                "2b6e14207486a1cbac4fa35a55be64c14b67471dc164a05f7c143d1c5555e3b9",
+                "",
+                "3bc811227273825cb6305cf07fa65a5932bd33ead96ce29deb4c23fc39fef564",
+                ""
+              ],
+              "retrieved_course_ids": [
+                "6d0000000000000000000000"
+              ],
+              "retrieved_course_names": [
+                "AI Product Photoshoot & Ads"
+              ],
+              "scores_ranks": [
+                {
+                  "rank": 1,
+                  "score": "184.4606",
+                  "course_id": "6d0000000000000000000000",
+                  "section": "L02 Dark Premium"
+                },
+                {
+                  "rank": 2,
+                  "score": "88.9955",
+                  "course_id": "6d0000000000000000000000",
+                  "section": "Product photos"
+                },
+                {
+                  "rank": 3,
+                  "score": "32.5663",
+                  "course_id": "6d0000000000000000000000",
+                  "section": "Product sheet banana"
+                },
+                {
+                  "rank": 4,
+                  "score": "32.5285",
+                  "course_id": "6d0000000000000000000000",
+                  "section": "Lesson 02 — Phone Photo Se Studio Photo"
+                },
+                {
+                  "rank": 5,
+                  "score": "31.7137",
+                  "course_id": "6d0000000000000000000000",
+                  "section": "Har photo mein product thoda alag"
+                },
+                {
+                  "rank": 6,
+                  "score": "31.6868",
+                  "course_id": "6d0000000000000000000000",
+                  "section": "L02 Product Sheet"
+                }
+              ],
+              "selected_exact_prompt_template_id": "ai-product-photoshoot-ads:training:exact-template:l02-dark-premium",
+              "provider_model_path": "course-knowledge-rule",
+              "response_selection": {
+                "mode": "exact_template",
+                "reason": "complete_authorized_asset",
+                "plan": {
+                  "mode": "copy",
+                  "operations": [
+                    {
+                      "type": "replace",
+                      "product": "polished alder dovetail spacer",
+                      "unsafe": false,
+                      "negated": false,
+                      "span": [
+                        3,
+                        60
+                      ]
+                    }
+                  ],
+                  "copyMode": "fill",
+                  "outputs": [],
+                  "parts": [],
+                  "explanationLanguage": "hinglish",
+                  "synthesis": false,
+                  "domain": "course"
+                }
+              },
+              "history_restored": true,
+              "provider": {
+                "status": "not_requested",
+                "attempts": []
+              },
+              "validation_repair": null
+            },
+            "query": "Ab product ko polished alder dovetail spacer se replace karo. Naye wale ke liye complete L02 Dark Premium approved prompt do; purana naam mat rakhna.",
+            "turnIndex": 2,
+            "statusCode": 200,
+            "startedAt": "2026-10-16T12:15:46.126Z",
+            "completedAt": "2026-10-16T12:15:46.142Z",
+            "latencyMs": 16,
+            "executionTransport": "real loopback HTTP /api/ai/chat through Express",
+            "controlledFault": null,
+            "clientHistoryOmitted": true,
+            "persistedContext": {
+              "attributes": [],
+              "product": "polished alder dovetail spacer",
+              "requestedOutputs": [],
+              "lessonNumber": 2,
+              "topic": "product_photo",
+              "language": "hinglish",
+              "schemaVersion": 2,
+              "courseId": "6d0000000000000000000000",
+              "conversationId": "phase12-review-phase12_new_029",
+              "currentTask": {
+                "outputs": [],
+                "parts": [],
+                "request": "Ab product ko polished alder dovetail spacer se replace karo. Naye wale ke liye complete L02 Dark Premium approved prompt do; purana naam mat rakhna.",
+                "actorFree": false
+              },
+              "adAngles": [],
+              "evidence": {
+                "product": "Ab product ko polished alder dovetail spacer se replace karo. Naye wale ke liye complete L02 Dark Premium approved prompt do; purana naam mat rakhna."
+              }
+            },
+            "providerRequests": [],
+            "applicationLogs": [
+              {
+                "level": "info",
+                "text": "[nex-ai-debug] {\"conversation_id\":\"phase12-review-phase12_new_029\",\"request_active_course_id\":\"6d0000000000000000000000\",\"resolved_active_course_id\":\"6d0000000000000000000000\",\"current_topic\":\"Product photos\",\"current_intent\":\"exact_prompt\",\"rewritten_retrieval_query\":\"Ab product ko polished alder dovetail spacer se replace karo. Naye wale ke liye complete L02 Dark Premium approved prompt do; purana naam mat rakhna.\",\"retrieved_chunk_ids\":[\"ai-product-photoshoot-ads:training:exact-template:l02-dark-premium\",\"ai-product-photoshoot-ads:training:workflow:product-photos\",\"ai-product-photoshoot-ads:training:workflow:product-sheet-banana\",\"ai-product-photoshoot-ads:training:lesson-summary:lesson-02-phone-photo-se-studio-photo\",\"ai-product-photoshoot-ads:training:faq:har-photo-mein-product-thoda-alag\",\"ai-product-photoshoot-ads:training:exact-template:l02-product-sheet\"],\"retrieved_chunk_hashes\":[\"f187754dabf74831c2447f233b1ae9f31fe764893f6e8388fac17451481c83da\",\"cda5fab917790b32e1279a209aeef0f44b618ba75ca4c88c19264357539fae4d\",\"56922de78128c44d1321fa410072ad53637117feed928197c53c4a4c3f6438f2\",\"21582da9e3555afbf289672cf4d95cd09b1a1c240369ed1dc47895eeed208f95\",\"9a8959739deebee30004ee75c9e9f8eea357ba859b480755d62a564e085597c6\",\"1e76a13b224293da7aee0d7994b4d53e231ae3fca4613116d763c5719c0a492d\"],\"retrieved_source_hashes\":[\"96471b6991c3724f9b8315fc7b3d1bb73b409eb0272517432cbfdd98882127df\"],\"retrieved_translation_hashes\":[\"\",\"b6e099477a8df01b7d64e57e2c1783a08a57a8d6c891f33a1d452a3a25433b2e\",\"2b6e14207486a1cbac4fa35a55be64c14b67471dc164a05f7c143d1c5555e3b9\",\"\",\"3bc811227273825cb6305cf07fa65a5932bd33ead96ce29deb4c23fc39fef564\",\"\"],\"retrieved_course_ids\":[\"6d0000000000000000000000\"],\"retrieved_course_names\":[\"AI Product Photoshoot & Ads\"],\"scores_ranks\":[{\"rank\":1,\"score\":\"184.4606\",\"course_id\":\"6d0000000000000000000000\",\"section\":\"L02 Dark Premium\"},{\"rank\":2,\"score\":\"88.9955\",\"course_id\":\"6d0000000000000000000000\",\"section\":\"Product photos\"},{\"rank\":3,\"score\":\"32.5663\",\"course_id\":\"6d0000000000000000000000\",\"section\":\"Product sheet banana\"},{\"rank\":4,\"score\":\"32.5285\",\"course_id\":\"6d0000000000000000000000\",\"section\":\"Lesson 02 — Phone Photo Se Studio Photo\"},{\"rank\":5,\"score\":\"31.7137\",\"course_id\":\"6d0000000000000000000000\",\"section\":\"Har photo mein product thoda alag\"},{\"rank\":6,\"score\":\"31.6868\",\"course_id\":\"6d0000000000000000000000\",\"section\":\"L02 Product Sheet\"}],\"selected_exact_prompt_template_id\":\"ai-product-photoshoot-ads:training:exact-template:l02-dark-premium\",\"provider_model_path\":\"course-knowledge-rule\"}"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

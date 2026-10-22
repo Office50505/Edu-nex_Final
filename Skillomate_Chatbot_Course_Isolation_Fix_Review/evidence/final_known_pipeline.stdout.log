@@ -1,0 +1,22 @@
+[
+  {
+    "id": "B14-SAFETY_ACCESS_ISOLATION-009",
+    "productBodiesInProviderMessages": [],
+    "externalRequestsSent": 0,
+    "retrievedCourseIds": [
+      "6e0000000000000000000000"
+    ],
+    "expectedCurrentCourse": "6e0000000000000000000000",
+    "regressionPass": true
+  },
+  {
+    "id": "B14-SAFETY_ACCESS_ISOLATION-010",
+    "productBodiesInProviderMessages": [],
+    "externalRequestsSent": 0,
+    "retrievedCourseIds": [
+      "6e0000000000000000000000"
+    ],
+    "expectedCurrentCourse": "6e0000000000000000000000",
+    "regressionPass": true
+  }
+]

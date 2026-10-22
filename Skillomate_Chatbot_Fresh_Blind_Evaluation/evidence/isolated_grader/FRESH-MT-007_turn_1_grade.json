@@ -1,0 +1,244 @@
+{
+  "id": "FRESH-MT-007",
+  "turnIndex": 1,
+  "status": "PASS",
+  "critical": false,
+  "suspectedCritical": false,
+  "rubricVersion": "phase14b-independent-v1",
+  "criteria": [
+    {
+      "criterion": "Describe festive setup retaining unchanged foreground product and reference sheet.",
+      "status": "PASS",
+      "excerpts": [
+        "Lesson 04\n\nFor Diwali, use the product sheet and keep the product unchanged. Place it on a wooden table with lit clay diyas and orange marigolds behind and beside it, warm fairy lights in the background, and warm golden light. Keep the product sharp and clearly the hero in the foreground at realistic real-world scale."
+      ],
+      "reason": "Diwali setup explicitly uses product sheet, unchanged product, diyas/marigolds/fairy lights/warm golden light and sharp foreground hero at realistic scale; all essential facts satisfied."
+    }
+  ],
+  "dimensions": {
+    "grounding": "PASS",
+    "facts": "PASS",
+    "taskCompleteness": "PASS",
+    "language": "PASS",
+    "authorization": "PASS",
+    "isolation": "PASS",
+    "httpStatus": "PASS"
+  },
+  "requestedExactBodyChecks": [],
+  "supplementalExactBodyChecks": [],
+  "providerAvailability": {
+    "provider": "course-knowledge-rule",
+    "outcome": {
+      "type": "local_rule",
+      "liveModelAnswer": false,
+      "providerStatus": "not_requested",
+      "responseIssue": null
+    },
+    "inferenceNecessaryForThisTurn": false,
+    "reason": "Actual deterministic local response can be judged directly; no model success inferred."
+  },
+  "ownershipPayloadReview": {
+    "reviewed": true,
+    "actor": "A",
+    "actorId": "75fce4d618aa14f8c3bcad86",
+    "scopeInspection": {
+      "independentExplicitSelectedCourse": "6d0000000000000000000000",
+      "independentExpectedOwner": "6d0000000000000000000000",
+      "explicitUnknownScope": false,
+      "independentAuthAndEntitlement": true,
+      "requiresSemanticScopeAdjudication": false,
+      "protectedRetrievedSources": [
+        {
+          "id": "S1",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "L04 Diwali",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_4",
+          "lessonName": "L04 Diwali",
+          "contentType": "exact-template",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:exact-template:l04-diwali"
+        },
+        {
+          "id": "S2",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "L04 Wedding Gift",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_4",
+          "lessonName": "L04 Wedding Gift",
+          "contentType": "exact-template",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:exact-template:l04-wedding-gift"
+        },
+        {
+          "id": "S3",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "Lesson 04 — Festive Shoot + Colour Variants",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_4",
+          "lessonName": "Lesson 04 — Festive Shoot + Colour Variants",
+          "contentType": "lesson-summary",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:lesson-summary:lesson-04-festive-shoot-colour-variants"
+        },
+        {
+          "id": "S4",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "Product photos",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_2",
+          "lessonName": "Product photos",
+          "contentType": "workflow",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:workflow:product-photos"
+        },
+        {
+          "id": "S5",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "Colour variants",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_4",
+          "lessonName": "Colour variants",
+          "contentType": "workflow",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:workflow:colour-variants"
+        },
+        {
+          "id": "S6",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "Rang badla toh shape bhi badal gaya",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_4",
+          "lessonName": "Rang badla toh shape bhi badal gaya",
+          "contentType": "faq",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:faq:rang-badla-toh-shape-bhi-badal-gaya"
+        }
+      ],
+      "retrievalProductBodies": [
+        {
+          "heading": "Lesson 04 — Festive Shoot + Colour Variants",
+          "contentType": "lesson-summary",
+          "owner": "6d0000000000000000000000",
+          "sha256": "d755d8e3223684625a6906a931c615e4b61a0df3371011729aa204cc763db121"
+        },
+        {
+          "heading": "Product photos",
+          "contentType": "workflow",
+          "owner": "6d0000000000000000000000",
+          "sha256": "cda5fab917790b32e1279a209aeef0f44b618ba75ca4c88c19264357539fae4d"
+        },
+        {
+          "heading": "Colour variants",
+          "contentType": "workflow",
+          "owner": "6d0000000000000000000000",
+          "sha256": "18e1b2b3f176800a338d71e854d1e3bbf60300cb41c72ee6dbf391770243996c"
+        },
+        {
+          "heading": "Rang badla toh shape bhi badal gaya",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "a5e24d7fd5cdb3b2b91614221e20162e67ed75cbf7837a6bce879690b9d8d703"
+        },
+        {
+          "heading": "L04 Diwali",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "06e8bd6bec8159c71b3e1df551219617098aeecb44600964181e7c2fafa1226a"
+        },
+        {
+          "heading": "L04 Wedding Gift",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "47e80348f9e29d92c65e536881ed8dad76379d6424e184a163d1c107c0b54dcc"
+        }
+      ],
+      "assembledContextProductBodies": [
+        {
+          "heading": "Lesson 04 — Festive Shoot + Colour Variants",
+          "contentType": "lesson-summary",
+          "owner": "6d0000000000000000000000",
+          "sha256": "d755d8e3223684625a6906a931c615e4b61a0df3371011729aa204cc763db121"
+        },
+        {
+          "heading": "Product photos",
+          "contentType": "workflow",
+          "owner": "6d0000000000000000000000",
+          "sha256": "cda5fab917790b32e1279a209aeef0f44b618ba75ca4c88c19264357539fae4d"
+        },
+        {
+          "heading": "Colour variants",
+          "contentType": "workflow",
+          "owner": "6d0000000000000000000000",
+          "sha256": "18e1b2b3f176800a338d71e854d1e3bbf60300cb41c72ee6dbf391770243996c"
+        },
+        {
+          "heading": "Rang badla toh shape bhi badal gaya",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "a5e24d7fd5cdb3b2b91614221e20162e67ed75cbf7837a6bce879690b9d8d703"
+        },
+        {
+          "heading": "L04 Diwali",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "06e8bd6bec8159c71b3e1df551219617098aeecb44600964181e7c2fafa1226a"
+        },
+        {
+          "heading": "L04 Wedding Gift",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "47e80348f9e29d92c65e536881ed8dad76379d6424e184a163d1c107c0b54dcc"
+        }
+      ],
+      "assembledPayloads": [],
+      "providerAdapterProductBodies": [],
+      "responseProductBodies": [],
+      "noPayloadConstructed": true,
+      "blockedAdapterAttempts": 0,
+      "externalTransportAttempts": 0,
+      "potentialCriticalFindings": [],
+      "inspectionPerformed": true
+    },
+    "dbOperations": [
+      {
+        "model": "AiTutorSession",
+        "operation": "findOne",
+        "filter": {
+          "user": "75fce4d618aa14f8c3bcad86",
+          "course": "6d0000000000000000000000"
+        }
+      },
+      {
+        "model": "Course",
+        "operation": "find",
+        "filter": {
+          "status": "published",
+          "_id": "6d0000000000000000000000"
+        }
+      },
+      {
+        "model": "AiTutorSession",
+        "operation": "upsert",
+        "filter": {
+          "user": "75fce4d618aa14f8c3bcad86",
+          "course": "6d0000000000000000000000"
+        }
+      }
+    ],
+    "reason": "All six retrieved/context owner IDs authorized product scope; no assembled/provider payload, own actor session and all flags reviewed. Generic product reference does not contradict supplied soap dish. No supplemental quote or foreign/private material."
+  },
+  "gradedAt": "2026-10-16T11:02:46.269353+00:00"
+}

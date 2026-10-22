@@ -1,0 +1,141 @@
+{
+  "id": "FRESH-EG-013",
+  "category": "education_generation",
+  "startedAt": "2026-10-16T11:13:45.053Z",
+  "completedAt": "2026-10-16T11:13:56.606Z",
+  "complete": true,
+  "traces": [
+    {
+      "turn": 1,
+      "request": {
+        "message": "Plan an honest eight-second phone-style AI presenter clip for my orange canvas pouch. Include setup, references, framing and one short Hindi dialogue line.",
+        "history": [],
+        "debugAi": true,
+        "assistantName": "Skillomate AI",
+        "pagePath": "/courses/ai-product-photoshoot-ads",
+        "courseId": "6d0000000000000000000000",
+        "conversationId": "FRESH-EG-013-conversation"
+      },
+      "syntheticActor": "A",
+      "syntheticActorId": "386ecfc1a30dd02003ac5d2a",
+      "authMode": "valid",
+      "access": "active",
+      "statusCode": 200,
+      "response": {
+        "answer": "Yes. The current Skillomate web offer is ₹499 for 30 days of access to all Skillomate courses.\n\nIt is a PhonePe one-time payment, so it does not create an auto-renewing mandate.\n\nIf a Razorpay recurring offer is available, that is separate: ₹1 for 24 hours, then ₹499/month until cancelled. App Store/Google Play terms may differ in the purchase sheet.",
+        "reply": "Yes. The current Skillomate web offer is ₹499 for 30 days of access to all Skillomate courses.\n\nIt is a PhonePe one-time payment, so it does not create an auto-renewing mandate.\n\nIf a Razorpay recurring offer is available, that is separate: ₹1 for 24 hours, then ₹499/month until cancelled. App Store/Google Play terms may differ in the purchase sheet.",
+        "provider": "skillomate-plan-facts",
+        "sources": [],
+        "messageId": "4af0d626-6c82-4b91-8248-92c0ad78f5b8",
+        "notice": null,
+        "outcome": {
+          "type": "local_rule",
+          "liveModelAnswer": false,
+          "providerStatus": "not_requested",
+          "responseIssue": null
+        },
+        "knowledge": "course-overviews",
+        "debug": {
+          "conversation_id": "FRESH-EG-013-conversation",
+          "request_active_course_id": "6d0000000000000000000000",
+          "resolved_active_course_id": "6d0000000000000000000000",
+          "current_topic": "",
+          "current_intent": "",
+          "rewritten_retrieval_query": "Plan an honest eight-second phone-style AI presenter clip for my orange canvas pouch. Include setup, references, framing and one short Hindi dialogue line.",
+          "retrieved_chunk_ids": [],
+          "retrieved_chunk_hashes": [],
+          "retrieved_source_hashes": [],
+          "retrieved_translation_hashes": [],
+          "retrieved_course_ids": [],
+          "retrieved_course_names": [],
+          "scores_ranks": [],
+          "selected_exact_prompt_template_id": "",
+          "provider_model_path": "skillomate-plan-facts",
+          "response_selection": null,
+          "history_restored": false,
+          "provider": {
+            "status": "not_requested",
+            "attempts": []
+          },
+          "validation_repair": null
+        }
+      },
+      "error": null,
+      "latencyMs": 22,
+      "retrievalObservations": [],
+      "contextObservations": [],
+      "payloadObservations": [],
+      "providerRequests": [],
+      "applicationLogs": [
+        {
+          "level": "info",
+          "text": "[nex-ai-debug] {\"conversation_id\":\"FRESH-EG-013-conversation\",\"request_active_course_id\":\"6d0000000000000000000000\",\"resolved_active_course_id\":\"6d0000000000000000000000\",\"current_topic\":\"\",\"current_intent\":\"\",\"rewritten_retrieval_query\":\"Plan an honest eight-second phone-style AI presenter clip for my orange canvas pouch. Include setup, references, framing and one short Hindi dialogue line.\",\"retrieved_chunk_ids\":[],\"retrieved_chunk_hashes\":[],\"retrieved_source_hashes\":[],\"retrieved_translation_hashes\":[],\"retrieved_course_ids\":[],\"retrieved_course_names\":[],\"scores_ranks\":[],\"selected_exact_prompt_template_id\":\"\",\"provider_model_path\":\"skillomate-plan-facts\"}"
+        }
+      ],
+      "dbOperations": [
+        {
+          "model": "AiTutorSession",
+          "operation": "findOne",
+          "filter": {
+            "user": "386ecfc1a30dd02003ac5d2a",
+            "course": "6d0000000000000000000000"
+          }
+        },
+        {
+          "model": "AiTutorSession",
+          "operation": "upsert",
+          "filter": {
+            "user": "386ecfc1a30dd02003ac5d2a",
+            "course": "6d0000000000000000000000"
+          }
+        }
+      ],
+      "persistedSessions": [
+        {
+          "scope": "386ecfc1a30dd02003ac5d2a:6d0000000000000000000000",
+          "user": "386ecfc1a30dd02003ac5d2a",
+          "course": "6d0000000000000000000000",
+          "conversationId": "FRESH-EG-013-conversation",
+          "activeCourseId": "",
+          "currentTopic": "",
+          "currentIntent": "",
+          "lastWorkflow": "",
+          "lastTemplateId": "",
+          "messages": [
+            {
+              "role": "user",
+              "content": "Plan an honest eight-second phone-style AI presenter clip for my orange canvas pouch. Include setup, references, framing and one short Hindi dialogue line.",
+              "createdAt": 1792149225072
+            },
+            {
+              "role": "assistant",
+              "content": "Yes. The current Skillomate web offer is ₹499 for 30 days of access to all Skillomate courses. It is a PhonePe one-time payment, so it does not create an auto-renewing mandate. If a Razorpay recurring offer is available, that is separate: ₹1 for 24 hours, then ₹499/month until cancelled. App Store/Google Play terms may differ in the purchase sheet.",
+              "createdAt": 1792149225072
+            }
+          ],
+          "lastUpdatedAt": "2026-10-16T11:13:45.072Z"
+        }
+      ],
+      "transport": "Actual unmodified Express /api/ai pipeline and compatible JWT auth; synthetic models and memory sessions",
+      "externalPromptModification": false,
+      "scopeInspection": {
+        "independentExplicitSelectedCourse": "6d0000000000000000000000",
+        "independentExpectedOwner": "6d0000000000000000000000",
+        "explicitUnknownScope": false,
+        "independentAuthAndEntitlement": true,
+        "requiresSemanticScopeAdjudication": false,
+        "protectedRetrievedSources": [],
+        "retrievalProductBodies": [],
+        "assembledContextProductBodies": [],
+        "assembledPayloads": [],
+        "providerAdapterProductBodies": [],
+        "responseProductBodies": [],
+        "noPayloadConstructed": true,
+        "blockedAdapterAttempts": 0,
+        "externalTransportAttempts": 0,
+        "potentialCriticalFindings": [],
+        "inspectionPerformed": true
+      }
+    }
+  ]
+}

@@ -1,0 +1,91 @@
+{
+  "id": "FRESH-EG-017",
+  "turnIndex": 1,
+  "status": "FAIL",
+  "critical": false,
+  "suspectedCritical": false,
+  "criteria": [
+    {
+      "status": "FAIL",
+      "excerpt": "Aapka Skillomate profile: name Synthetic Learner A",
+      "reason": "Unrelated own-account summary instead of asking for real product details/price/channel.",
+      "criterion": "Ask for real product details, price and selling channel rather than inventing them."
+    },
+    {
+      "status": "FAIL",
+      "excerpt": "Aapka plan/access active hai via legacy.",
+      "reason": "Omits entire requested ad-planning sequence and removal of unsupported claims.",
+      "criterion": "Explain same-chat buyers/problems/angles → chosen angle → five hooks/script/caption → three Flow prompts → remove unproven claims."
+    }
+  ],
+  "dimensions": {
+    "grounding": "PASS",
+    "facts": "PASS",
+    "completeness": "FAIL",
+    "language": "PASS",
+    "authorization": "PASS",
+    "isolation": "PASS",
+    "http": "PASS"
+  },
+  "requestedExactBodyChecks": [],
+  "supplementalExactBodyChecks": [],
+  "rubricVersion": "phase14b-independent-v1",
+  "gradedAt": "2026-10-16T11:14:42.044076+00:00",
+  "providerAvailability": {
+    "provider": "skillomate-learner-facts",
+    "outcome": {
+      "type": "local_rule",
+      "liveModelAnswer": false,
+      "providerStatus": "not_requested",
+      "responseIssue": null
+    },
+    "providerRequests": [],
+    "inferenceNecessaryForThisTurn": false,
+    "reason": "Actual deterministic response directly judged; no live model success inferred."
+  },
+  "ownershipPayloadReview": {
+    "reviewed": true,
+    "actor": "A",
+    "actorId": "b25837c4025e75cae13cb8ef",
+    "scopeInspection": {
+      "independentExplicitSelectedCourse": "6d0000000000000000000000",
+      "independentExpectedOwner": "6d0000000000000000000000",
+      "explicitUnknownScope": false,
+      "independentAuthAndEntitlement": true,
+      "requiresSemanticScopeAdjudication": false,
+      "protectedRetrievedSources": [],
+      "retrievalProductBodies": [],
+      "assembledContextProductBodies": [],
+      "assembledPayloads": [],
+      "providerAdapterProductBodies": [],
+      "responseProductBodies": [],
+      "noPayloadConstructed": true,
+      "blockedAdapterAttempts": 0,
+      "externalTransportAttempts": 0,
+      "potentialCriticalFindings": [],
+      "inspectionPerformed": true
+    },
+    "dbOperations": [
+      {
+        "model": "AiTutorSession",
+        "operation": "findOne",
+        "filter": {
+          "user": "b25837c4025e75cae13cb8ef",
+          "course": "6d0000000000000000000000"
+        }
+      },
+      {
+        "model": "AiTutorSession",
+        "operation": "upsert",
+        "filter": {
+          "user": "b25837c4025e75cae13cb8ef",
+          "course": "6d0000000000000000000000"
+        }
+      }
+    ],
+    "retrievalObservationCount": 0,
+    "contextObservationCount": 0,
+    "payloadObservationCount": 0,
+    "reason": "No retrieval/context/assembled payload/adapter/provider attempt. Full ownership flags, own actorb25837c4025e75cae13cb8ef session and account summary reviewed; answer's Synthetic Learner A/access facts belong to authenticated actor and contain safe summary only. DB actor/course scoped, no foreign actor/course data."
+  }
+}

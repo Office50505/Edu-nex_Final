@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+<testsuites>
+	<testcase name="unicode safety preserves english" time="0.057117" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-unicode-safety.test.cjs"/>
+	<testcase name="unicode safety preserves hindi" time="0.004532" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-unicode-safety.test.cjs"/>
+	<testcase name="unicode safety preserves hindi-combining" time="0.001606" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-unicode-safety.test.cjs"/>
+	<testcase name="unicode safety preserves hinglish" time="0.001526" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-unicode-safety.test.cjs"/>
+	<testcase name="unicode safety preserves mixed-script separate words" time="0.001538" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-unicode-safety.test.cjs"/>
+	<testcase name="unicode safety preserves legitimate compatibility name" time="0.001227" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-unicode-safety.test.cjs"/>
+	<testcase name="unicode safety preserves ordinary English letters" time="0.001373" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-unicode-safety.test.cjs"/>
+	<testcase name="unicode safety preserves legitimate Hindi joiner" time="0.001097" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-unicode-safety.test.cjs"/>
+	<testcase name="unicode safety rejects original full-width bypass in all name entry points" time="0.005955" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-unicode-safety.test.cjs"/>
+	<testcase name="unicode safety original full-width bypass cannot switch product in English" time="0.003786" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-unicode-safety.test.cjs"/>
+	<testcase name="unicode safety original full-width bypass cannot switch product in Hinglish" time="0.000307" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-unicode-safety.test.cjs"/>
+	<testcase name="unicode safety original full-width bypass cannot switch product in Hindi" time="0.000341" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-unicode-safety.test.cjs"/>
+	<testcase name="unicode safety original full-width bypass cannot enter through remembered state or history" time="0.003199" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-unicode-safety.test.cjs"/>
+	<testcase name="unicode safety rejects mathematical compatibility letters in all name entry points" time="0.000228" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-unicode-safety.test.cjs"/>
+	<testcase name="unicode safety mathematical compatibility letters cannot switch product in English" time="0.000225" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-unicode-safety.test.cjs"/>
+	<testcase name="unicode safety mathematical compatibility letters cannot switch product in Hinglish" time="0.000210" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-unicode-safety.test.cjs"/>
+	<testcase name="unicode safety mathematical compatibility letters cannot switch product in Hindi" time="0.000179" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-unicode-safety.test.cjs"/>
+	<testcase name="unicode safety mathematical compatibility letters cannot enter through remembered state or history" time="0.001168" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-unicode-safety.test.cjs"/>
+	<testcase name="unicode safety rejects mixed Hindi and compatibility letters in all name entry points" time="0.000199" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-unicode-safety.test.cjs"/>
+	<testcase name="unicode safety mixed Hindi and compatibility letters cannot switch product in English" time="0.000241" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-unicode-safety.test.cjs"/>
+	<testcase name="unicode safety mixed Hindi and compatibility letters cannot switch product in Hinglish" time="0.000415" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-unicode-safety.test.cjs"/>
+	<testcase name="unicode safety mixed Hindi and compatibility letters cannot switch product in Hindi" time="0.000220" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-unicode-safety.test.cjs"/>
+	<testcase name="unicode safety mixed Hindi and compatibility letters cannot enter through remembered state or history" time="0.001179" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-unicode-safety.test.cjs"/>
+	<testcase name="unicode safety rejects mixed Cyrillic Latin instruction token in all name entry points" time="0.000280" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-unicode-safety.test.cjs"/>
+	<testcase name="unicode safety mixed Cyrillic Latin instruction token cannot switch product in English" time="0.000199" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-unicode-safety.test.cjs"/>
+	<testcase name="unicode safety mixed Cyrillic Latin instruction token cannot switch product in Hinglish" time="0.000192" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-unicode-safety.test.cjs"/>
+	<testcase name="unicode safety mixed Cyrillic Latin instruction token cannot switch product in Hindi" time="0.000172" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-unicode-safety.test.cjs"/>
+	<testcase name="unicode safety mixed Cyrillic Latin instruction token cannot enter through remembered state or history" time="0.001164" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-unicode-safety.test.cjs"/>
+	<testcase name="unicode safety rejects mixed Greek Latin instruction token in all name entry points" time="0.000192" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-unicode-safety.test.cjs"/>
+	<testcase name="unicode safety mixed Greek Latin instruction token cannot switch product in English" time="0.000170" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-unicode-safety.test.cjs"/>
+	<testcase name="unicode safety mixed Greek Latin instruction token cannot switch product in Hinglish" time="0.000173" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-unicode-safety.test.cjs"/>
+	<testcase name="unicode safety mixed Greek Latin instruction token cannot switch product in Hindi" time="0.000154" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-unicode-safety.test.cjs"/>
+	<testcase name="unicode safety mixed Greek Latin instruction token cannot enter through remembered state or history" time="0.001015" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-unicode-safety.test.cjs"/>
+	<testcase name="unicode safety rejects mixed Cyrillic Latin without a plain forbidden word in all name entry points" time="0.000161" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-unicode-safety.test.cjs"/>
+	<testcase name="unicode safety mixed Cyrillic Latin without a plain forbidden word cannot switch product in English" time="0.000165" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-unicode-safety.test.cjs"/>
+	<testcase name="unicode safety mixed Cyrillic Latin without a plain forbidden word cannot switch product in Hinglish" time="0.000168" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-unicode-safety.test.cjs"/>
+	<testcase name="unicode safety mixed Cyrillic Latin without a plain forbidden word cannot switch product in Hindi" time="0.000145" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-unicode-safety.test.cjs"/>
+	<testcase name="unicode safety mixed Cyrillic Latin without a plain forbidden word cannot enter through remembered state or history" time="0.001092" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-unicode-safety.test.cjs"/>
+	<testcase name="unicode safety rejects invisible separators in all name entry points" time="0.000177" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-unicode-safety.test.cjs"/>
+	<testcase name="unicode safety invisible separators cannot switch product in English" time="0.000187" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-unicode-safety.test.cjs"/>
+	<testcase name="unicode safety invisible separators cannot switch product in Hinglish" time="0.000156" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-unicode-safety.test.cjs"/>
+	<testcase name="unicode safety invisible separators cannot switch product in Hindi" time="0.000152" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-unicode-safety.test.cjs"/>
+	<testcase name="unicode safety invisible separators cannot enter through remembered state or history" time="0.001119" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-unicode-safety.test.cjs"/>
+	<testcase name="unicode safety rejects bidi control in all name entry points" time="0.000152" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-unicode-safety.test.cjs"/>
+	<testcase name="unicode safety bidi control cannot switch product in English" time="0.000164" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-unicode-safety.test.cjs"/>
+	<testcase name="unicode safety bidi control cannot switch product in Hinglish" time="0.000148" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-unicode-safety.test.cjs"/>
+	<testcase name="unicode safety bidi control cannot switch product in Hindi" time="0.000133" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-unicode-safety.test.cjs"/>
+	<testcase name="unicode safety bidi control cannot enter through remembered state or history" time="0.001032" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-unicode-safety.test.cjs"/>
+	<testcase name="unicode safety rejects compatibility placeholder delimiters in all name entry points" time="0.000151" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-unicode-safety.test.cjs"/>
+	<testcase name="unicode safety compatibility placeholder delimiters cannot switch product in English" time="0.000150" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-unicode-safety.test.cjs"/>
+	<testcase name="unicode safety compatibility placeholder delimiters cannot switch product in Hinglish" time="0.000141" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-unicode-safety.test.cjs"/>
+	<testcase name="unicode safety compatibility placeholder delimiters cannot switch product in Hindi" time="0.000132" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-unicode-safety.test.cjs"/>
+	<testcase name="unicode safety compatibility placeholder delimiters cannot enter through remembered state or history" time="0.000922" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-unicode-safety.test.cjs"/>
+	<testcase name="unicode safety rejects compatibility role term in all name entry points" time="0.000622" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-unicode-safety.test.cjs" failure="Expected values to be strictly equal:&#10;+ actual - expected&#10;&#10;+ {&#10;+   evidence: 'हमारी वस्तु का नाम ｐｒｏｄｕｃｔ tray है',&#10;+   product: 'का नाम ｐｒｏｄｕｃｔ tray',&#10;+   span: [&#10;+     0,&#10;+     34&#10;+   ]&#10;+ }&#10;- null&#10;">
+		<failure type="testCodeFailure" message="Expected values to be strictly equal:&#10;+ actual - expected&#10;&#10;+ {&#10;+   evidence: 'हमारी वस्तु का नाम ｐｒｏｄｕｃｔ tray है',&#10;+   product: 'का नाम ｐｒｏｄｕｃｔ tray',&#10;+   span: [&#10;+     0,&#10;+     34&#10;+   ]&#10;+ }&#10;- null">
+[Error [ERR_TEST_FAILURE]: Expected values to be strictly equal:
++ actual - expected
+
++ {
++   evidence: 'हमारी वस्तु का नाम ｐｒｏｄｕｃｔ tray है',
++   product: 'का नाम ｐｒｏｄｕｃｔ tray',
++   span: [
++     0,
++     34
++   ]
++ }
+- null
+] {
+  code: 'ERR_TEST_FAILURE',
+  failureType: 'testCodeFailure',
+  cause: AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + {
+  +   evidence: 'हमारी वस्तु का नाम ｐｒｏｄｕｃｔ tray है',
+  +   product: 'का नाम ｐｒｏｄｕｃｔ tray',
+  +   span: [
+  +     0,
+  +     34
+  +   ]
+  + }
+  - null
+  
+      at TestContext.&lt;anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-unicode-safety.test.cjs:49:10)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: { product: 'का नाम ｐｒｏｄｕｃｔ tray', evidence: 'हमारी वस्तु का नाम ｐｒｏｄｕｃｔ tray है', span: [Array] },
+    expected: null,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+}
+		</failure>
+	</testcase>
+	<testcase name="unicode safety compatibility role term cannot switch product in English" time="0.000187" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-unicode-safety.test.cjs"/>
+	<testcase name="unicode safety compatibility role term cannot switch product in Hinglish" time="0.000166" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-unicode-safety.test.cjs"/>
+	<testcase name="unicode safety compatibility role term cannot switch product in Hindi" time="0.000234" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-unicode-safety.test.cjs"/>
+	<testcase name="unicode safety compatibility role term cannot enter through remembered state or history" time="0.000293" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-unicode-safety.test.cjs" failure="Expected values to be strictly equal:&#10;+ actual - expected&#10;&#10;+ 'का नाम ｐｒｏｄｕｃｔ tray'&#10;- undefined&#10;">
+		<failure type="testCodeFailure" message="Expected values to be strictly equal:&#10;+ actual - expected&#10;&#10;+ 'का नाम ｐｒｏｄｕｃｔ tray'&#10;- undefined">
+[Error [ERR_TEST_FAILURE]: Expected values to be strictly equal:
++ actual - expected
+
++ 'का नाम ｐｒｏｄｕｃｔ tray'
+- undefined
+] {
+  code: 'ERR_TEST_FAILURE',
+  failureType: 'testCodeFailure',
+  cause: AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + 'का नाम ｐｒｏｄｕｃｔ tray'
+  - undefined
+  
+      at TestContext.&lt;anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-unicode-safety.test.cjs:69:10)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'का नाम ｐｒｏｄｕｃｔ tray',
+    expected: undefined,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+}
+		</failure>
+	</testcase>
+	<testcase name="unicode safety rejects plain prohibited instructions in all name entry points" time="0.000753" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-unicode-safety.test.cjs"/>
+	<testcase name="unicode safety plain prohibited instructions cannot switch product in English" time="0.000201" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-unicode-safety.test.cjs"/>
+	<testcase name="unicode safety plain prohibited instructions cannot switch product in Hinglish" time="0.000132" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-unicode-safety.test.cjs"/>
+	<testcase name="unicode safety plain prohibited instructions cannot switch product in Hindi" time="0.000162" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-unicode-safety.test.cjs"/>
+	<testcase name="unicode safety plain prohibited instructions cannot enter through remembered state or history" time="0.001028" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-unicode-safety.test.cjs"/>
+	<testcase name="unicode safety rejects non-name structures independently of normalization" time="0.000037" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-unicode-safety.test.cjs"/>
+	<testcase name="unicode safety blocks a persisted route switch and keeps safe identity on follow-up" time="0.077740" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-unicode-safety.test.cjs"/>
+	<!-- tests 65 -->
+	<!-- suites 0 -->
+	<!-- pass 63 -->
+	<!-- fail 2 -->
+	<!-- cancelled 0 -->
+	<!-- skipped 0 -->
+	<!-- todo 0 -->
+	<!-- duration_ms 236.085375 -->
+</testsuites>

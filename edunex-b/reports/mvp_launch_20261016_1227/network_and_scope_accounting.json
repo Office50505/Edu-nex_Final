@@ -1,0 +1,11 @@
+{
+  "run_id": "ab185a0f1f944f0d8f128b352bcb4a75",
+  "retrieval_events": 38,
+  "assembled_context_events": 38,
+  "assembled_provider_payloads_inspected": 20,
+  "external_provider_invocations_all_runs": 0,
+  "critical_security_events_all_runs": 0,
+  "unexpected_network_attempts": [],
+  "case_count": 30,
+  "turn_count": 40
+}

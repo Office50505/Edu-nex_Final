@@ -1,0 +1,10 @@
+{
+  "at": "2026-10-16T09:54:08.805626+00:00",
+  "reason": "Safer alternative after automatic approval review rejected sensitive external payload; destination-specific approval pending.",
+  "guardSHA256": "8ce9bf9df4b0d087b51b9cd02389d0f712755f46bbc64222bc500f57d5e658f4",
+  "mode": "Actual local pipeline; external network blocked before transport; no recorded or fake model responses. Provider-dependent cases UNTESTED.",
+  "candidateChanged": false,
+  "frozenCasesRubricOrHarnessChanged": false,
+  "externalRequestsPermitted": 0,
+  "localRequestsPermitted": "127.0.0.1 ephemeral Express server with synthetic data only"
+}

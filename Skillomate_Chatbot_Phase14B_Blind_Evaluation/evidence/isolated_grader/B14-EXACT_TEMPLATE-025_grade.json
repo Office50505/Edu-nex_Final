@@ -1,0 +1,93 @@
+{
+  "id": "B14-EXACT_TEMPLATE-025",
+  "category": "exact_template",
+  "status": "UNTESTED",
+  "critical": false,
+  "executed": false,
+  "rationale": "Not executed: evaluation stopped on confirmed critical cross-course retrieval. No response is inferred.",
+  "gradedAt": "2026-10-16T10:00:50.051605+00:00",
+  "turns": [
+    {
+      "turnIndex": 1,
+      "status": "UNTESTED",
+      "httpStatus": {
+        "expected": 200,
+        "actual": null,
+        "status": "UNTESTED"
+      },
+      "providerEvidence": {
+        "inferenceNeeded": null,
+        "providerRequestCount": 0,
+        "status": "UNTESTED",
+        "rationale": "No execution or inference occurred for this turn."
+      },
+      "criteria": [
+        {
+          "criterion": "Select the requested approved asset.",
+          "status": "UNTESTED",
+          "supportingExcerpts": [],
+          "reason": "No execution evidence after confirmed critical stop."
+        },
+        {
+          "criterion": "Provide its entire literal body; only the expressly requested substitutions are permitted.",
+          "status": "UNTESTED",
+          "supportingExcerpts": [],
+          "reason": "No execution evidence after confirmed critical stop."
+        },
+        {
+          "criterion": "Do not invent missing product or model facts.",
+          "status": "UNTESTED",
+          "supportingExcerpts": [],
+          "reason": "No execution evidence after confirmed critical stop."
+        }
+      ],
+      "expectedFacts": {
+        "templateSubstitutions": {}
+      },
+      "expectedMustNotReuse": [],
+      "dimensions": {
+        "grounding": {
+          "status": "UNTESTED",
+          "reason": "Turn was not executed."
+        },
+        "facts": {
+          "status": "UNTESTED",
+          "reason": "Turn was not executed."
+        },
+        "taskCompleteness": {
+          "status": "UNTESTED",
+          "reason": "Turn was not executed."
+        },
+        "language": {
+          "status": "UNTESTED",
+          "reason": "Turn was not executed."
+        },
+        "authorization": {
+          "status": "UNTESTED",
+          "reason": "Turn was not executed."
+        },
+        "isolation": {
+          "status": "UNTESTED",
+          "reason": "Turn was not executed."
+        },
+        "exactBodyFidelity": {
+          "status": "UNTESTED",
+          "reason": "Turn was not executed."
+        }
+      },
+      "requestedExactBodyChecks": [
+        {
+          "expectedTemplate": "L07 UGC 2",
+          "status": "UNTESTED",
+          "expectedBodySHA256": "53eb271c5fc4c05464b8faed0aa24829a9d7512bed69ef924775342e95e6810f",
+          "expectedBody": "Use the uploaded character sheet for the [woman] and the uploaded product sheet for the [PRODUCT]. Keep her face, hair and outfit exactly the same as the character sheet. Keep the [PRODUCT] exactly the same — same shape, same colour, same details, same text and logo, no morphing. Vertical video shot from her own phone resting on the desk in front of her: the camera itself is the phone, so we see her and the [PRODUCT] from a low front angle. NO phone visible anywhere in the frame, no second camera, no screen facing us. She uses the [PRODUCT] for a moment, then looks up straight into the lens and talks, casual and natural. Natural window light, a real lived-in room, not a studio, not a polished ad. ONLY she speaks, one voice only, natural Hindi lip-sync, casual friendly tone. She says: \"[your second line in Hindi]\" real skin, no filter, clearly adult, modest, natural hands with five fingers, no text on screen, no watermark. Clean natural audio only — NO background music.",
+          "reason": "No response: stopped before case execution.",
+          "normalization": "Whitespace only; no Unicode normalization."
+        }
+      ],
+      "supplementalExactBodyChecks": [],
+      "critical": false,
+      "rationale": "Unexecuted due to confirmed stop; critical false means no observed issue, not demonstrated safety."
+    }
+  ]
+}

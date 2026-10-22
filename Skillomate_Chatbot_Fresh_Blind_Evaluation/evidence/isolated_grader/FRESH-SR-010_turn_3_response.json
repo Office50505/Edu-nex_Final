@@ -1,0 +1,116 @@
+{
+  "id": "FRESH-SR-010",
+  "category": "state_routing_edges",
+  "turnIndex": 3,
+  "trace": {
+    "turn": 3,
+    "request": {
+      "message": "",
+      "history": [
+        {
+          "role": "user",
+          "content": "“Aru” is my blue cotton pouch. Acknowledge the product."
+        },
+        {
+          "role": "assistant",
+          "content": "Lesson 01\n\nAI Product Photoshoot & Ads has 8 lessons: 01 Course Intro; 02 Phone Photo Se Studio Photo (phone photos, Product Sheet, white studio/lifestyle/dark premium); 03 Model Ke Saath Product (character and product references, model shots and hands); 04 Festive Shoot + Colour Variants (Diwali, wedding scenes and a sheet for each colour); 05 ChatGPT Se Ad Plan (buyers, problems, angles, hooks, script, caption and Flow prompts); 06 Photo Se Product Video (one movement with Ingredients); 07 UGC-Style Video (honest phone-style AI-presenter videos); 08 Finale (complete workflow, common mistakes, honesty and final project). You learn to create product photos, product videos and honest ads for your own products or clients. You need a phone, laptop and a product. Tools: Google Flow, ChatGPT and CapCut; a full CapCut editing tutorial is not taught. Course prompts are in lesson notes."
+        }
+      ],
+      "debugAi": true,
+      "assistantName": "Skillomate AI",
+      "pagePath": "/courses/ai-product-photoshoot-ads",
+      "courseId": "6d0000000000000000000000",
+      "conversationId": "edge-reset-scope"
+    },
+    "syntheticActor": "A",
+    "syntheticActorId": "dad902901118e41c0b36db50",
+    "authMode": "valid",
+    "access": "active",
+    "statusCode": 200,
+    "response": {
+      "success": true,
+      "deletedCount": 1
+    },
+    "error": null,
+    "latencyMs": 7,
+    "retrievalObservations": [],
+    "contextObservations": [],
+    "payloadObservations": [],
+    "providerRequests": [],
+    "applicationLogs": [],
+    "dbOperations": [
+      {
+        "model": "AiTutorSession",
+        "operation": "deleteMany",
+        "filter": {
+          "user": "dad902901118e41c0b36db50"
+        },
+        "count": 1
+      }
+    ],
+    "persistedSessions": [
+      {
+        "scope": "39353d6c1b77a33f09c0a5f1:6d0000000000000000000000",
+        "user": "39353d6c1b77a33f09c0a5f1",
+        "course": "6d0000000000000000000000",
+        "conversationId": "edge-reset-scope",
+        "activeCourseId": "6d0000000000000000000000",
+        "currentTopic": "Course overview and prerequisites",
+        "currentIntent": "",
+        "lastWorkflow": "",
+        "lastTemplateId": "",
+        "productContext": {
+          "attributes": [],
+          "requestedOutputs": [],
+          "lessonNumber": 1,
+          "topic": "",
+          "language": "english",
+          "schemaVersion": 2,
+          "courseId": "6d0000000000000000000000",
+          "conversationId": "edge-reset-scope",
+          "currentTask": {
+            "outputs": [],
+            "parts": [],
+            "request": "“Bela” is my red ceramic cup. Acknowledge it.",
+            "actorFree": false
+          },
+          "adAngles": [],
+          "evidence": {}
+        },
+        "messages": [
+          {
+            "role": "user",
+            "content": "“Bela” is my red ceramic cup. Acknowledge it.",
+            "createdAt": 1792149494423
+          },
+          {
+            "role": "assistant",
+            "content": "Lesson 01 AI Product Photoshoot & Ads has 8 lessons: 01 Course Intro; 02 Phone Photo Se Studio Photo (phone photos, Product Sheet, white studio/lifestyle/dark premium); 03 Model Ke Saath Product (character and product references, model shots and hands); 04 Festive Shoot + Colour Variants (Diwali, wedding scenes and a sheet for each colour); 05 ChatGPT Se Ad Plan (buyers, problems, angles, hooks, script, caption and Flow prompts); 06 Photo Se Product Video (one movement with Ingredients); 07 UGC-Style Video (honest phone-style AI-presenter videos); 08 Finale (complete workflow, common mistakes, honesty and final project). You learn to create product photos, product videos and honest ads for your own products or clients. You need a phone, laptop and a product. Tools: Google Flow, ChatGPT and CapCut; a full CapCut editing tutorial is not taught. Course prompts are in lesson notes.",
+            "createdAt": 1792149494423
+          }
+        ],
+        "lastUpdatedAt": "2026-10-16T11:18:14.423Z"
+      }
+    ],
+    "transport": "Actual unmodified Express /api/ai pipeline and compatible JWT auth; synthetic models and memory sessions",
+    "externalPromptModification": false,
+    "scopeInspection": {
+      "independentExplicitSelectedCourse": "6d0000000000000000000000",
+      "independentExpectedOwner": "6d0000000000000000000000",
+      "explicitUnknownScope": false,
+      "independentAuthAndEntitlement": true,
+      "requiresSemanticScopeAdjudication": false,
+      "protectedRetrievedSources": [],
+      "retrievalProductBodies": [],
+      "assembledContextProductBodies": [],
+      "assembledPayloads": [],
+      "providerAdapterProductBodies": [],
+      "responseProductBodies": [],
+      "noPayloadConstructed": true,
+      "blockedAdapterAttempts": 0,
+      "externalTransportAttempts": 0,
+      "potentialCriticalFindings": [],
+      "inspectionPerformed": true
+    }
+  }
+}

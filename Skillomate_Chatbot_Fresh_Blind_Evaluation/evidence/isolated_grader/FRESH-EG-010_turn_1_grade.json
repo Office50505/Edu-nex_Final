@@ -1,0 +1,252 @@
+{
+  "id": "FRESH-EG-010",
+  "turnIndex": 1,
+  "status": "FAIL",
+  "critical": false,
+  "suspectedCritical": false,
+  "criteria": [
+    {
+      "status": "PASS",
+      "excerpt": "In Flow choose Video → Ingredients and attach the image. ... 16:9, Omni 1.1 Flash, 720p, 6 sec, x1.",
+      "reason": "Includes complete required settings/input sequence.",
+      "criterion": "Explain Flow Video → Ingredients, upload photo, settings 16:9, Omni 1.1 Flash, 720p, 6 sec, x1."
+    },
+    {
+      "status": "FAIL",
+      "excerpt": "Choose one slow movement: push-in, arc or light sweep. ... Add music later during editing.",
+      "reason": "Correct one-at-a-time principle and music timing, but lists all three alternatives without choosing or recommending one as requested.",
+      "criterion": "Choose a single push-in/arc/light sweep; no music during generation, add in editing."
+    }
+  ],
+  "dimensions": {
+    "grounding": "PASS",
+    "facts": "PASS",
+    "completeness": "FAIL",
+    "language": "PASS",
+    "authorization": "PASS",
+    "isolation": "PASS",
+    "http": "PASS"
+  },
+  "requestedExactBodyChecks": [],
+  "supplementalExactBodyChecks": [],
+  "rubricVersion": "phase14b-independent-v1",
+  "gradedAt": "2026-10-16T11:13:13.649159+00:00",
+  "providerAvailability": {
+    "provider": "course-knowledge-rule",
+    "outcome": {
+      "type": "local_rule",
+      "liveModelAnswer": false,
+      "providerStatus": "not_requested",
+      "responseIssue": null
+    },
+    "providerRequests": [],
+    "inferenceNecessaryForThisTurn": false,
+    "reason": "Actual deterministic response directly judged; no live model success inferred."
+  },
+  "ownershipPayloadReview": {
+    "reviewed": true,
+    "actor": "A",
+    "actorId": "7875b0eaf342b5dc6174aa38",
+    "scopeInspection": {
+      "independentExplicitSelectedCourse": "6d0000000000000000000000",
+      "independentExpectedOwner": "6d0000000000000000000000",
+      "explicitUnknownScope": false,
+      "independentAuthAndEntitlement": true,
+      "requiresSemanticScopeAdjudication": false,
+      "protectedRetrievedSources": [
+        {
+          "id": "S1",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "Product video",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_6",
+          "lessonName": "Product video",
+          "contentType": "workflow",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:workflow:product-video"
+        },
+        {
+          "id": "S2",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "Video mein product pighal/morph",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_6",
+          "lessonName": "Video mein product pighal/morph",
+          "contentType": "faq",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:faq:video-mein-product-pighal-morph"
+        },
+        {
+          "id": "S3",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "Video mein letters blur",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_6",
+          "lessonName": "Video mein letters blur",
+          "contentType": "faq",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:faq:video-mein-letters-blur"
+        },
+        {
+          "id": "S4",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "L06 Light Sweep",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_6",
+          "lessonName": "L06 Light Sweep",
+          "contentType": "exact-template",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:exact-template:l06-light-sweep"
+        },
+        {
+          "id": "S5",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "L06 Push-in",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_6",
+          "lessonName": "L06 Push-in",
+          "contentType": "exact-template",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:exact-template:l06-push-in"
+        },
+        {
+          "id": "S6",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "L06 Arc",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_6",
+          "lessonName": "L06 Arc",
+          "contentType": "exact-template",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:exact-template:l06-arc"
+        }
+      ],
+      "retrievalProductBodies": [
+        {
+          "heading": "Product video",
+          "contentType": "workflow",
+          "owner": "6d0000000000000000000000",
+          "sha256": "ebdbfab455bca71b5956bb202abf1f301d4e694cace2cec144be694bbbc4cd9d"
+        },
+        {
+          "heading": "Video mein product pighal/morph",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "e147d98e4a056b3fa92e9afa9ecb579ce1918d9d11fa01ac57c2d4045dff0ca8"
+        },
+        {
+          "heading": "Video mein letters blur",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "8e38c9460fbc6d3221f5be6c82863adc7e0e83a81d5b56e6faeaad248e9be3a0"
+        },
+        {
+          "heading": "L06 Push-in",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "04db3c22a6126469294ecfe8bf9a1554541eb1534657f36ab6411830a75ea2eb"
+        },
+        {
+          "heading": "L06 Arc",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "fe93820322ce61e5e765a6400c3e47992cd1979bc856ed87388518c8b649942a"
+        },
+        {
+          "heading": "L06 Light Sweep",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "9034d553fd70aad2cd9573d00f2b8a0112b71d22226c748739bd1579a7b0001a"
+        }
+      ],
+      "assembledContextProductBodies": [
+        {
+          "heading": "Product video",
+          "contentType": "workflow",
+          "owner": "6d0000000000000000000000",
+          "sha256": "ebdbfab455bca71b5956bb202abf1f301d4e694cace2cec144be694bbbc4cd9d"
+        },
+        {
+          "heading": "Video mein product pighal/morph",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "e147d98e4a056b3fa92e9afa9ecb579ce1918d9d11fa01ac57c2d4045dff0ca8"
+        },
+        {
+          "heading": "Video mein letters blur",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "8e38c9460fbc6d3221f5be6c82863adc7e0e83a81d5b56e6faeaad248e9be3a0"
+        },
+        {
+          "heading": "L06 Push-in",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "04db3c22a6126469294ecfe8bf9a1554541eb1534657f36ab6411830a75ea2eb"
+        },
+        {
+          "heading": "L06 Arc",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "fe93820322ce61e5e765a6400c3e47992cd1979bc856ed87388518c8b649942a"
+        },
+        {
+          "heading": "L06 Light Sweep",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "9034d553fd70aad2cd9573d00f2b8a0112b71d22226c748739bd1579a7b0001a"
+        }
+      ],
+      "assembledPayloads": [],
+      "providerAdapterProductBodies": [],
+      "responseProductBodies": [],
+      "noPayloadConstructed": true,
+      "blockedAdapterAttempts": 0,
+      "externalTransportAttempts": 0,
+      "potentialCriticalFindings": [],
+      "inspectionPerformed": true
+    },
+    "dbOperations": [
+      {
+        "model": "AiTutorSession",
+        "operation": "findOne",
+        "filter": {
+          "user": "7875b0eaf342b5dc6174aa38",
+          "course": "6d0000000000000000000000"
+        }
+      },
+      {
+        "model": "Course",
+        "operation": "find",
+        "filter": {
+          "status": "published",
+          "_id": "6d0000000000000000000000"
+        }
+      },
+      {
+        "model": "AiTutorSession",
+        "operation": "upsert",
+        "filter": {
+          "user": "7875b0eaf342b5dc6174aa38",
+          "course": "6d0000000000000000000000"
+        }
+      }
+    ],
+    "retrievalObservationCount": 1,
+    "contextObservationCount": 1,
+    "payloadObservationCount": 0,
+    "reason": "All six protected source/context owners match entitled selected6d0000000000000000000000. Full flags and own session inspected; no assembled payload/provider/adapter requests. DB actor7875b0eaf342b5dc6174aa38/course constrained, no foreign actor/course exposure."
+  }
+}

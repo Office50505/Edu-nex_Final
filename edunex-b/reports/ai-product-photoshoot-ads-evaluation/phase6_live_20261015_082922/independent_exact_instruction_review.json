@@ -1,0 +1,45 @@
+{
+  "method": "Full frozen exact FAQ strings, separate from full-template fidelity. No score rewriting.",
+  "results": [
+    {
+      "id": "ppads_039",
+      "turn": 1,
+      "question": "My UGC video shows a phone in the frame. What exact fix should I add?",
+      "expectedExactInstructions": [
+        "The camera itself is her phone. NO phone visible anywhere in the frame."
+      ],
+      "actualResponse": "Lesson 07\n\nAdd the course FAQ instruction: “The camera itself is her phone. NO phone visible anywhere in the frame.”",
+      "passed": true
+    },
+    {
+      "id": "phase4_new_007",
+      "turn": 1,
+      "question": "A handset keeps appearing on screen in my Lesson 07 UGC clip. What exact camera clarification from the course should I add to remove that handset?",
+      "expectedExactInstructions": [
+        "The camera itself is her phone. NO phone visible anywhere in the frame."
+      ],
+      "actualResponse": "Lesson 07\n\nAdd the course FAQ instruction: “The camera itself is her phone. NO phone visible anywhere in the frame.”",
+      "passed": true
+    },
+    {
+      "id": "phase6_new_004",
+      "turn": 1,
+      "question": "The mobile device itself keeps showing beside the presenter in my Lesson 07 UGC take. Supply the exact camera clarification sentence from the course, not just a general camera tip.",
+      "expectedExactInstructions": [
+        "The camera itself is her phone. NO phone visible anywhere in the frame."
+      ],
+      "actualResponse": "Lesson 07\n\nIn Flow choose Video → Ingredients and attach the face, character sheet and product sheet. Recorded settings: 9:16, 720p, 8 sec. The camera itself is the phone: no phone should appear in the frame. Use a normal home room and short dialogue written in Hindi Devanagari, based on the L05 hook. Do not present an AI actor as a real reviewing customer.",
+      "passed": false
+    },
+    {
+      "id": "ppads_conv_003",
+      "turn": 2,
+      "question": "And the phone is visible too.",
+      "expectedExactInstructions": [
+        "The camera itself is her phone. NO phone visible anywhere in the frame."
+      ],
+      "actualResponse": "Lesson 07\n\nAdd the course FAQ instruction: “The camera itself is her phone. NO phone visible anywhere in the frame.”",
+      "passed": true
+    }
+  ]
+}

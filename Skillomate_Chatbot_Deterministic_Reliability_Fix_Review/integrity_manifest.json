@@ -1,0 +1,1881 @@
+{
+  "algorithm": "SHA-256",
+  "excludes": "This integrity manifest and __pycache__",
+  "files": [
+    {
+      "path": "01_Executive_Summary.md",
+      "sha256": "26d317261d24cbc82a4bb36ea0d1cbddfc6fc5bf91293eb4db306145ef175b4a",
+      "bytes": 2495
+    },
+    {
+      "path": "02_Changes_And_Root_Cause_Mapping.md",
+      "sha256": "44a82869f771c06f945d1c45e4708b338ba3bc315b72c56c6686a40dc7abf44b",
+      "bytes": 2946
+    },
+    {
+      "path": "03_Test_Results_And_Preexisting_Failures.md",
+      "sha256": "ce00dc7e4d98805cdc2c93abb45770f97f72f578735fbf32fb677de7ab1fc712",
+      "bytes": 4812
+    },
+    {
+      "path": "04_Known_59_Before_After_Diagnostics.md",
+      "sha256": "5ee89c22afcf3e51e8e27d8384a5330d682552bd8c6fffb142c14d9a73b5b9ff",
+      "bytes": 5522
+    },
+    {
+      "path": "05_Safety_And_Provider_Accounting.md",
+      "sha256": "79729921354263594a25f128a423b927faad67333a43f1fd527cf799cc220d1e",
+      "bytes": 2449
+    },
+    {
+      "path": "06_Unresolved_Issues_And_Recommendation.md",
+      "sha256": "c9fcb89a2381b4603c04794754866809228837f53e5da3dca67bac0d24be3336",
+      "bytes": 2539
+    },
+    {
+      "path": "07_Rollback_And_Review_Instructions.md",
+      "sha256": "408473914a1d3a17d3c3cced59b99d6c4cf31c97bd45f36baca93c32f516168f",
+      "bytes": 1740
+    },
+    {
+      "path": "README.md",
+      "sha256": "e8ec958498ffd2e9d0fea9a6ac40a344bcd0e604cb85b26d3107b37375b02343",
+      "bytes": 1785
+    },
+    {
+      "path": "evidence/01_Executive_Summary.md",
+      "sha256": "fb38460dc5c474531012f735173d0b8bdc1817f255b67dcf856d7cc37b55f635",
+      "bytes": 3912
+    },
+    {
+      "path": "evidence/02_All_67_Failed_Case_Classifications.md",
+      "sha256": "bac175d83696eb0aa10eb6ee5d2050d5ae1c37cfaab3287dec64b4273557b397",
+      "bytes": 237771
+    },
+    {
+      "path": "evidence/03_Evaluation_Validity_Assessment.md",
+      "sha256": "66f2baa2a90d02dde1023905a94533a9633708b29c6f6b6ce55ed7a230846047",
+      "bytes": 7576
+    },
+    {
+      "path": "evidence/04_Root_Cause_Groups_And_Corrections.md",
+      "sha256": "cee1b643fd116f293c6a7a1f9e0957da1856595de418aa06d43e8c81dc162670",
+      "bytes": 26276
+    },
+    {
+      "path": "evidence/05_Source_Code_Trace.md",
+      "sha256": "faab1ab39db456d2bcf377da12a167c3d7518a4f47aa2325b63a67d38efe43f7",
+      "bytes": 6671
+    },
+    {
+      "path": "evidence/06_Prioritized_Implementation_Plan.md",
+      "sha256": "323c68aa7f88a04358d08d1c0bba893c361ba497827a0c781a4ee442830c57c2",
+      "bytes": 5728
+    },
+    {
+      "path": "evidence/07_Regression_Test_Plan.md",
+      "sha256": "8321949bce8a6566ce0241db1dcad090298cc071758281316cefc3315732ffa9",
+      "bytes": 7463
+    },
+    {
+      "path": "evidence/08_Controlled_Provider_Test_Plan.md",
+      "sha256": "e682f2d59cfda3d2f3b99467803ee64cc295beff1d81078445939e809933212e",
+      "bytes": 6794
+    },
+    {
+      "path": "evidence/09_Release_Blockers_And_Recommendation.md",
+      "sha256": "5502760259984f6a47f3b5b4610e99bc6074e11579f08c81d05a4c8602ffc675",
+      "bytes": 3481
+    },
+    {
+      "path": "evidence/README.md",
+      "sha256": "6f14cbff14697237d08435a50764f251bd083e906f2af39412921f63e037af6a",
+      "bytes": 3123
+    },
+    {
+      "path": "evidence/after/edunex-b/routes/ai.js",
+      "sha256": "900747155be22874876779892a6eb3620098a338e484e4a009c0ccc5d88bd430",
+      "bytes": 17005
+    },
+    {
+      "path": "evidence/after/edunex-b/services/aiTutorService.js",
+      "sha256": "070e9cfae4ed20d61a576453336b8c28d41068cc31bb0e03bc50f5c4bdec40f2",
+      "bytes": 85827
+    },
+    {
+      "path": "evidence/after/edunex-b/services/productTutorGrounding.js",
+      "sha256": "17d15879beb8020fcb3bf0d55396290ef5a11238fd6d642f72e5d8809ff15a75",
+      "bytes": 3599
+    },
+    {
+      "path": "evidence/after/edunex-b/services/productTutorIntent.js",
+      "sha256": "28e036a232cb7305a49fceb42d25fd1895ae353718c31329709f4fe1852dc17b",
+      "bytes": 10940
+    },
+    {
+      "path": "evidence/after/edunex-b/services/productTutorKnowledge.js",
+      "sha256": "777eb3c532e34c8c8d52e9f4064569502ad5990fb9f952d3c60cc971543c1ef6",
+      "bytes": 32929
+    },
+    {
+      "path": "evidence/after/edunex-b/services/productTutorResponse.js",
+      "sha256": "940d078e0d2f865ea394310455fd18bc2ef6f44596ecbaeebf656a83c1e28f1e",
+      "bytes": 27638
+    },
+    {
+      "path": "evidence/after/edunex-b/services/productTutorState.js",
+      "sha256": "07056c35a112c9d922c4a649bea59bf770ae91eeeafc0f68e854d9bcacaf0c9f",
+      "bytes": 15537
+    },
+    {
+      "path": "evidence/after/edunex-b/services/productTutorTasks.js",
+      "sha256": "86dc7195675741a81b156eb888c522e7f1c901837b86553a90173034ae4cee5a",
+      "bytes": 17458
+    },
+    {
+      "path": "evidence/after/edunex-b/tests/product-tutor-deterministic-reliability.test.cjs",
+      "sha256": "94e769176f3c647fbbc2f2db46edd28d1450447c64f2399daabe86973df5f7cc",
+      "bytes": 17974
+    },
+    {
+      "path": "evidence/all_new_controls_baseline.log",
+      "sha256": "fc1fc9b28d56a9214d732a633d8a88d7123db3863229f8099a89eae292ee7597",
+      "bytes": 173703
+    },
+    {
+      "path": "evidence/all_new_controls_baseline_complete.log",
+      "sha256": "8cc8759977964fbd24ca3265c3e82a3d9275da398cc8630526fe4807d86abf96",
+      "bytes": 189302
+    },
+    {
+      "path": "evidence/all_new_controls_baseline_final.log",
+      "sha256": "e18e5ad422e6a6d622ffba83a910d5496953e5826f1ff263cbe0940fdfc9b031",
+      "bytes": 180393
+    },
+    {
+      "path": "evidence/assemble_review.py",
+      "sha256": "9f326424b644bec80ff922c592011ded369085f7d19c5b8f2599430ee560e0f7",
+      "bytes": 26007
+    },
+    {
+      "path": "evidence/backend_after_first.log",
+      "sha256": "8b4c70621de71e2d5c29dd7ea60a8fd13ef9c4ebe4cbda42ccb9dfd9868097b4",
+      "bytes": 448348
+    },
+    {
+      "path": "evidence/backend_before.log",
+      "sha256": "61810de8a101067547fca11222b3f4a7e804f3275f73528b58e8d853397176ba",
+      "bytes": 427205
+    },
+    {
+      "path": "evidence/backend_complete.log",
+      "sha256": "a3ef9da32f43b4d69f40a0e0436ed59e9599b88a23a32112d2317ae5014b5f89",
+      "bytes": 454211
+    },
+    {
+      "path": "evidence/backend_final.log",
+      "sha256": "87855f10ae2506e42300a763e1d0303189502e6fe7210edcd506efe135ce3c8e",
+      "bytes": 456983
+    },
+    {
+      "path": "evidence/backend_final2.log",
+      "sha256": "e70cbc098359aae1f010e20e6cd39097958f0b538f0c122bbd7429d7996870dc",
+      "bytes": 451736
+    },
+    {
+      "path": "evidence/backend_final3.log",
+      "sha256": "6f6db2557a8cc3aea40a96f957b2974a0cd493c749dba91652503c3dba8e777d",
+      "bytes": 449797
+    },
+    {
+      "path": "evidence/backend_final4.log",
+      "sha256": "a5bd9722fc9192ad7566478489ab11c8593148df8b815ff706ba4201f99990e0",
+      "bytes": 453908
+    },
+    {
+      "path": "evidence/backend_final_all.log",
+      "sha256": "2e91838eb9dd58935dcb0589410162192d2bcd545fc2f61e02763f412cbbe110",
+      "bytes": 454157
+    },
+    {
+      "path": "evidence/backend_verified.log",
+      "sha256": "ba4a6e0edd53ff423a031a80673dc6b961aa6eaaf95da5681ba5f03f090081ae",
+      "bytes": 454564
+    },
+    {
+      "path": "evidence/backend_verified_final.log",
+      "sha256": "ccb233574139ead19bede3502908b7711ede8e614a0a42295e5040fcd7816eba",
+      "bytes": 453927
+    },
+    {
+      "path": "evidence/baseline.json",
+      "sha256": "9781749fe0796528be9a04926be68c32ddd436509aa8e0b38c93cf5c452fe27b",
+      "bytes": 143490
+    },
+    {
+      "path": "evidence/baseline_preload.cjs",
+      "sha256": "e8b1825166f2f3a3b5455a8365d77a110ce14b6f7fd53cf548fe38e8188e5281",
+      "bytes": 445
+    },
+    {
+      "path": "evidence/before/edunex-b/config/mongodb.js",
+      "sha256": "834fd6b73dc8414b63fc23769210601ede7c76f664fdea5ec9e179277a1bc876",
+      "bytes": 1259
+    },
+    {
+      "path": "evidence/before/edunex-b/middleware/adminAuth.js",
+      "sha256": "e0d54b012e7e4b9b7cf3c6eeb8db42177e80809955325ef09f2d1c1297bee471",
+      "bytes": 1179
+    },
+    {
+      "path": "evidence/before/edunex-b/middleware/auth.js",
+      "sha256": "1dee47e0d08e9d74951610d3371ac0362e53d01757082665ab9278d0fee134dd",
+      "bytes": 1659
+    },
+    {
+      "path": "evidence/before/edunex-b/middleware/checkSubscription.js",
+      "sha256": "692fe1ec21fbb3bcd70b7011c863d589da6b2cf2e7650d0db695ea89083e4222",
+      "bytes": 2860
+    },
+    {
+      "path": "evidence/before/edunex-b/middleware/compatAuth.js",
+      "sha256": "10e041d66261b61271911f0e0731518a89c635aad55b238d9fa17f68e17858a8",
+      "bytes": 4176
+    },
+    {
+      "path": "evidence/before/edunex-b/middleware/cors.js",
+      "sha256": "5ddc9eec8b0636e0741c0208294f41930d827a7a301f6ff35491d2753b14308d",
+      "bytes": 1805
+    },
+    {
+      "path": "evidence/before/edunex-b/middleware/sensitiveRateLimit.js",
+      "sha256": "c110f7b84591be724a909a2a8ff2c625a4440d5a2453b09c7ebce53c5a1aa11e",
+      "bytes": 1686
+    },
+    {
+      "path": "evidence/before/edunex-b/models/AdminAccount.js",
+      "sha256": "b75c8b1233d8ff7d54995bfd25ec2188c78c7bf4b54fe17065058388c30b7021",
+      "bytes": 588
+    },
+    {
+      "path": "evidence/before/edunex-b/models/AdminFeatureSettings.js",
+      "sha256": "5705a2563df9967fae0c41abe5b1bdca30979e53225eeb4a3cd1804e39f42c78",
+      "bytes": 374
+    },
+    {
+      "path": "evidence/before/edunex-b/models/AdminUserAction.js",
+      "sha256": "d8b6c75d01e590aeeb72929d49da208a75660ed31a782c350b5f2b32a0120f99",
+      "bytes": 943
+    },
+    {
+      "path": "evidence/before/edunex-b/models/AiResponseReport.js",
+      "sha256": "99a2275f23a9986affbca934d1dbe70cdfeae3ab34cf7ef49e985f170db737f1",
+      "bytes": 772
+    },
+    {
+      "path": "evidence/before/edunex-b/models/AiTutorSession.js",
+      "sha256": "29a73980a06f69d74ddd720f6148cc652d4b8f354cda6b72ab3f8d35c5febced",
+      "bytes": 1808
+    },
+    {
+      "path": "evidence/before/edunex-b/models/AnalyticsEvent.js",
+      "sha256": "b4a6b13534ab2e82ec5a38e162a53e2c6513be1a9e1e17c795e1436125a85b86",
+      "bytes": 228
+    },
+    {
+      "path": "evidence/before/edunex-b/models/AppleNotification.js",
+      "sha256": "88444c293a7cf375776de46342c087f9776f4395d58f8fc48af3b9e0ce4b9919",
+      "bytes": 752
+    },
+    {
+      "path": "evidence/before/edunex-b/models/AppleSubscription.js",
+      "sha256": "b6973e2c100d3f7088c9fa128fce397f42c262d85151c2b0ef19bd086fbfddbf",
+      "bytes": 1807
+    },
+    {
+      "path": "evidence/before/edunex-b/models/AppleTransaction.js",
+      "sha256": "0e9bd75ec362e2e8d6264732732b9a9cf7dac2bf52dcb4b17b0336e982515dc4",
+      "bytes": 970
+    },
+    {
+      "path": "evidence/before/edunex-b/models/AssessmentResult.js",
+      "sha256": "516967c10d18683d0d5043a8d56bfb15e2925dba7680ec0621d71a994b0ed9d5",
+      "bytes": 309
+    },
+    {
+      "path": "evidence/before/edunex-b/models/BillingCancellationJob.js",
+      "sha256": "11f3ac6dcd4b4c5e27e887f5824a8eaac9493961d16c16cc1a9484ea7bb1b96f",
+      "bytes": 1112
+    },
+    {
+      "path": "evidence/before/edunex-b/models/BillingWebhook.js",
+      "sha256": "a2925681a11c48d4dde35ae415af82b947c56243d114073ec73ed73464ea5abc",
+      "bytes": 190
+    },
+    {
+      "path": "evidence/before/edunex-b/models/Category.js",
+      "sha256": "ff797e679f3b13eb6897054365df3fc647ec861646c69bfa0b0708d2f9f6f73a",
+      "bytes": 390
+    },
+    {
+      "path": "evidence/before/edunex-b/models/Certificate.js",
+      "sha256": "5675323d9c194a01c110051f9e7ec89d72d47c834cda5aa3c1d459b14907c3ac",
+      "bytes": 1274
+    },
+    {
+      "path": "evidence/before/edunex-b/models/CertificateTemplate.js",
+      "sha256": "a81772fd1bb12ebbda274d99f40366a9df5524ffb73406ee097595f35bf459fb",
+      "bytes": 1811
+    },
+    {
+      "path": "evidence/before/edunex-b/models/CertificationPolicy.js",
+      "sha256": "60aad83a4b98d43eb2790049dade19eb0013561de413c4a2b9136db6de070151",
+      "bytes": 250
+    },
+    {
+      "path": "evidence/before/edunex-b/models/ContactEnquiry.js",
+      "sha256": "dc476213802ad11430000c299bd64814c7a9604ade15a44999af90a101902a4d",
+      "bytes": 1049
+    },
+    {
+      "path": "evidence/before/edunex-b/models/Coupon.js",
+      "sha256": "89f0a517bbd3227b6389f208f1bac6fa19c3c18be598cd0306e5ad3116e476da",
+      "bytes": 580
+    },
+    {
+      "path": "evidence/before/edunex-b/models/Course.js",
+      "sha256": "0000902a66c1e64bc7d0a266927f32b56de78be5e1d3ead1501f1d767fe1dc12",
+      "bytes": 5622
+    },
+    {
+      "path": "evidence/before/edunex-b/models/CourseAnalytics.js",
+      "sha256": "f1bb0d58fe422fa56d3dda92e5e7d05580cb71f85725c7686a3570d5fe0eeb3b",
+      "bytes": 1179
+    },
+    {
+      "path": "evidence/before/edunex-b/models/CourseProgress.js",
+      "sha256": "397d14b2fc512e118adab26961e868b0ebb146686b97a8266401633525ee9734",
+      "bytes": 1032
+    },
+    {
+      "path": "evidence/before/edunex-b/models/DeletionRequest.js",
+      "sha256": "4d0f736f798e8ec4772ede0ca105f0c321122de4eb95638e6cc260755c97d8d3",
+      "bytes": 496
+    },
+    {
+      "path": "evidence/before/edunex-b/models/DownloadGrant.js",
+      "sha256": "9f72aa7ebcc0f0c78e0a10b325023892ccf93b43efafdfbf2a150291bf236725",
+      "bytes": 796
+    },
+    {
+      "path": "evidence/before/edunex-b/models/GooglePlayReconciliation.js",
+      "sha256": "bff0cd6f3b6a2e2c4232f1a66273f28395377df40d443ea250ef0bdb719b0d01",
+      "bytes": 1112
+    },
+    {
+      "path": "evidence/before/edunex-b/models/GooglePlaySubscription.js",
+      "sha256": "403a6abd57014701c75a0953e3ad908807d4808f76d2fcf3dc0aa2a852e4f278",
+      "bytes": 1673
+    },
+    {
+      "path": "evidence/before/edunex-b/models/LearningProgress.js",
+      "sha256": "315d8b4a87ebf48978a98cc3e80afa35e0dc0a31e22189a6177f8063005d94ca",
+      "bytes": 435
+    },
+    {
+      "path": "evidence/before/edunex-b/models/Lesson.js",
+      "sha256": "907f846129450b51186d697955c53a7c6ebbe74fd837830999ff0462aa24075e",
+      "bytes": 491
+    },
+    {
+      "path": "evidence/before/edunex-b/models/LessonNote.js",
+      "sha256": "cbacf0e127676a8dfa9be049f0005ef1df794e7e0c852c5bee28672c76dc5145",
+      "bytes": 465
+    },
+    {
+      "path": "evidence/before/edunex-b/models/MarketingSettings.js",
+      "sha256": "b5d4a14d1e6668319cd914deba29bc4ec4c313599fe30a2209b42f7e2cceb438",
+      "bytes": 334
+    },
+    {
+      "path": "evidence/before/edunex-b/models/Notification.js",
+      "sha256": "75c1bb33ab192218c9ebf8381227de7978478f5985d921bc89e30357855f11ed",
+      "bytes": 919
+    },
+    {
+      "path": "evidence/before/edunex-b/models/NotificationBroadcast.js",
+      "sha256": "6b1427452a85085be5f9a6ff4641c313d614486eb8c528579beb2d04ebf08b01",
+      "bytes": 1164
+    },
+    {
+      "path": "evidence/before/edunex-b/models/OnboardingSession.js",
+      "sha256": "8c76b4cf1154bb53632a9a677ad1b36dfe469a00f477df92d1dff333d887e715",
+      "bytes": 741
+    },
+    {
+      "path": "evidence/before/edunex-b/models/Order.js",
+      "sha256": "291e419942704a79c78f3763fb46ab624515e3c32018820744e719496031890a",
+      "bytes": 1683
+    },
+    {
+      "path": "evidence/before/edunex-b/models/OtpAttempt.js",
+      "sha256": "4fd2bf5d74aa330a18aadb130c33f45a14e7304d733e842c60a1d1b69c15ab80",
+      "bytes": 311
+    },
+    {
+      "path": "evidence/before/edunex-b/models/PaymentSettings.js",
+      "sha256": "3f78185ab52c4e8889e974a84d9aaa7a7aef4a8613ec6fe07c42edc49b0bd3d8",
+      "bytes": 391
+    },
+    {
+      "path": "evidence/before/edunex-b/models/PhonePeAutoPayBilling.js",
+      "sha256": "d5f3e5b4ba54783cc376e20fab8ac52628a4f0aa926bd8e703064007582b8a78",
+      "bytes": 2883
+    },
+    {
+      "path": "evidence/before/edunex-b/models/PhonePeAutoPayTest.js",
+      "sha256": "987ea7c6d3e2f88e79bf2d4964a40e351b95de48e484e13173fc568aee10f953",
+      "bytes": 2525
+    },
+    {
+      "path": "evidence/before/edunex-b/models/PhonePeEventClaim.js",
+      "sha256": "8461140394be924b0b2e49a2abd696a598fcdb8340fd72ffb986bd77c63381ae",
+      "bytes": 860
+    },
+    {
+      "path": "evidence/before/edunex-b/models/ProblemReport.js",
+      "sha256": "e2edb246545112e9f0f8e4891a416348d427ce8dcd4389bd217608f2297ebc16",
+      "bytes": 2100
+    },
+    {
+      "path": "evidence/before/edunex-b/models/Progress.js",
+      "sha256": "f0bb3a60c7636d5afafea9253eddaac2afa135a7f385c17e521463c26672294c",
+      "bytes": 703
+    },
+    {
+      "path": "evidence/before/edunex-b/models/RazorpayBilling.js",
+      "sha256": "b10d65c9c67259c8a192d199dd222f1397f0eaeaa2fb817609c7571768a81d8f",
+      "bytes": 801
+    },
+    {
+      "path": "evidence/before/edunex-b/models/Review.js",
+      "sha256": "832e3920783a9029118d643d3ddb06f183f7076feae0ad6c2f1e6fb7ce4ed7e8",
+      "bytes": 667
+    },
+    {
+      "path": "evidence/before/edunex-b/models/Session.js",
+      "sha256": "a15499139e3a883595b132a52556c24ab66d2bf7e42625cdddcf55df3e0e297c",
+      "bytes": 1462
+    },
+    {
+      "path": "evidence/before/edunex-b/models/Subscription.js",
+      "sha256": "bf9c1e0e699ff755b38ab4b8a1ad6f973d97dabc34e07690600a3400d8baef8a",
+      "bytes": 1935
+    },
+    {
+      "path": "evidence/before/edunex-b/models/SubscriptionEvent.js",
+      "sha256": "3742eb53100cbbe0e7306c7329b4dedbd70d2b9846b312d3426bf033cc5ae105",
+      "bytes": 1254
+    },
+    {
+      "path": "evidence/before/edunex-b/models/User.js",
+      "sha256": "9d6178860ddef77dc2db1a3a4cad9fec37b0775a6265882e40544c747060d20e",
+      "bytes": 3629
+    },
+    {
+      "path": "evidence/before/edunex-b/models/Wishlist.js",
+      "sha256": "9bdec8ed3cb817e789b8af64594b83d256343315b702878eef124fac855a56b3",
+      "bytes": 313
+    },
+    {
+      "path": "evidence/before/edunex-b/package-lock.json",
+      "sha256": "41620513eb92f8b0f0c5ca2ef9c452fd70e30172367bac9d80aa2c34b641f7a0",
+      "bytes": 109051
+    },
+    {
+      "path": "evidence/before/edunex-b/package.json",
+      "sha256": "2db221ab4c6cae835405824ab29f2af363c52808c910b4581fc09deaf03d55d0",
+      "bytes": 2700
+    },
+    {
+      "path": "evidence/before/edunex-b/routes/adminAccounts.js",
+      "sha256": "a554741d41917b1b65b580b61418a5e39cf0e9079df21e6c9fb4dd380a71eabf",
+      "bytes": 3272
+    },
+    {
+      "path": "evidence/before/edunex-b/routes/adminHealth.js",
+      "sha256": "9b59ecf107c410c2d65671f890094d67a34c1aa839372948766a482047381e9d",
+      "bytes": 1040
+    },
+    {
+      "path": "evidence/before/edunex-b/routes/adminNotifications.js",
+      "sha256": "25f9afef43b1656e6d0c94a0c0644d93aee8bdfda7fcde69d99c0b1ee65b376b",
+      "bytes": 1834
+    },
+    {
+      "path": "evidence/before/edunex-b/routes/ai.js",
+      "sha256": "e514c48126d61574ed1599246e5680d9b32eb2d621305205be87b1beb34e0895",
+      "bytes": 16172
+    },
+    {
+      "path": "evidence/before/edunex-b/routes/appleIap.js",
+      "sha256": "0df6854fe9350be2f54f009f69dcadb6dc186a9eaaf3567ff5f52463801718d2",
+      "bytes": 2380
+    },
+    {
+      "path": "evidence/before/edunex-b/routes/auth.js",
+      "sha256": "2f0653e854ac4c530d59539179baae9fa2369d34064adf46f222b8ba13736ece",
+      "bytes": 39308
+    },
+    {
+      "path": "evidence/before/edunex-b/routes/certification.js",
+      "sha256": "38f82f8805589ea443ff6cad1bdf559d288c4cdb78c4a33d42ff9ccab0f87175",
+      "bytes": 11768
+    },
+    {
+      "path": "evidence/before/edunex-b/routes/content.js",
+      "sha256": "41419b66c003e8e9720690554ff175aa1c541af41c85a4b7597f250a1a5e5f16",
+      "bytes": 13825
+    },
+    {
+      "path": "evidence/before/edunex-b/routes/deletionRequests.js",
+      "sha256": "e26b8a586ffe054c84bc5180bcd8b2640129089955458edd7c356930949e690f",
+      "bytes": 1721
+    },
+    {
+      "path": "evidence/before/edunex-b/routes/googlePlayIap.js",
+      "sha256": "e889acdae5c0226817ca58c0556db16589facea89b23dd61873d8c7cc1a02817",
+      "bytes": 3207
+    },
+    {
+      "path": "evidence/before/edunex-b/routes/marketingSettings.js",
+      "sha256": "b78a944b0f11973208dadc358ad3b2c8339b215431aa26f892cda9bbcfd3fb5b",
+      "bytes": 729
+    },
+    {
+      "path": "evidence/before/edunex-b/routes/mobileCompat.js",
+      "sha256": "267124efdee82d3f22a80ac86b851c83075cee9d3421b5f121b2c3d1d138fc7d",
+      "bytes": 16336
+    },
+    {
+      "path": "evidence/before/edunex-b/routes/notifications.js",
+      "sha256": "713ac563c886db8952ebd141e8aa5be6b9e94a8ac53ed877340230f14db399e7",
+      "bytes": 1848
+    },
+    {
+      "path": "evidence/before/edunex-b/routes/onboarding.js",
+      "sha256": "d60696c57ee4f55de3f6249167ed52411c59dd4c397ea0fc5ff99edc938ccfa8",
+      "bytes": 13696
+    },
+    {
+      "path": "evidence/before/edunex-b/routes/payment.js",
+      "sha256": "fb40df7fb23a30ee5edd5b3d7697d5c7a87df73848fe9a322e1675d8f1f3169e",
+      "bytes": 6609
+    },
+    {
+      "path": "evidence/before/edunex-b/routes/paymentSettings.js",
+      "sha256": "c46eb00d03c43b56f75e101b019f423a5e25984000ee7ffc3732bef942084631",
+      "bytes": 1021
+    },
+    {
+      "path": "evidence/before/edunex-b/routes/phonePeAutoPayTest.js",
+      "sha256": "216b03291106c5923862a4d52fb51de64b0b136e7d43c97bd0e6b9bb9fa3676e",
+      "bytes": 2591
+    },
+    {
+      "path": "evidence/before/edunex-b/routes/playback.js",
+      "sha256": "fe8758d9ba4655e40c85b671522eef933ddacfb25bb24ffe135f4cd436cb1831",
+      "bytes": 16754
+    },
+    {
+      "path": "evidence/before/edunex-b/routes/problemReports.js",
+      "sha256": "1473c236d4682ca6704ad5d734d1babbe64a5f5285dd4e03decde43ea755f247",
+      "bytes": 7267
+    },
+    {
+      "path": "evidence/before/edunex-b/routes/sessions.js",
+      "sha256": "6789ae1ac38268e1a8965cc53458194a6234fa2aa0d4513394c88153206d549e",
+      "bytes": 1913
+    },
+    {
+      "path": "evidence/before/edunex-b/server.js",
+      "sha256": "415e07235625dcadae46fca16877976dd34272c24a0e236a44f3f3434931c3ef",
+      "bytes": 178145
+    },
+    {
+      "path": "evidence/before/edunex-b/services/accountDeletionService.js",
+      "sha256": "2e4892f844ba18348dc0bfd98e4827526d0df80d908289faeb184a393938feec",
+      "bytes": 9147
+    },
+    {
+      "path": "evidence/before/edunex-b/services/accountEntitlement.js",
+      "sha256": "ebc773e06b4d5982e4defbbecc244f1896afc1b806d22868bb1ca60d504150bb",
+      "bytes": 2052
+    },
+    {
+      "path": "evidence/before/edunex-b/services/adminBilling.js",
+      "sha256": "144589fa7a69803fc0e2333fdbf9f30c60495acf61aaa4751b464c6383c37145",
+      "bytes": 798
+    },
+    {
+      "path": "evidence/before/edunex-b/services/adminFeatureSettings.js",
+      "sha256": "4da9f468dd5cafa837c91ce665c67eec6ecc2584b237d4247364bb1a89363883",
+      "bytes": 1381
+    },
+    {
+      "path": "evidence/before/edunex-b/services/adminIdentity.js",
+      "sha256": "f8592088a173e0cfcd1f3f17dbd95d16d59ece884e7f35ec9f3571217bed1ec1",
+      "bytes": 3133
+    },
+    {
+      "path": "evidence/before/edunex-b/services/adminSubscription.js",
+      "sha256": "5d2dde564cd94acdc98881db6d022424aa902844affebec2bdde0c35002c60c9",
+      "bytes": 2902
+    },
+    {
+      "path": "evidence/before/edunex-b/services/aiCompliance.js",
+      "sha256": "4ade54cd78363f803195267d0721befdd8821c9fe79acf6449945c06c13118c1",
+      "bytes": 4153
+    },
+    {
+      "path": "evidence/before/edunex-b/services/aiTutorService.js",
+      "sha256": "547ca63794ebaa8bea69284d010e62c5f82deedccd31d8d16a9802520d2da147",
+      "bytes": 82540
+    },
+    {
+      "path": "evidence/before/edunex-b/services/appleEntitlement.js",
+      "sha256": "b66f8bfdc788e23b52134297bac87964ae14755a50430db169fc74534c2a6404",
+      "bytes": 3609
+    },
+    {
+      "path": "evidence/before/edunex-b/services/appleIapService.js",
+      "sha256": "ab41b2de44d7d9183a89c9f76fde3a0406c65e81663bc8b8cc460abfa753f567",
+      "bytes": 15955
+    },
+    {
+      "path": "evidence/before/edunex-b/services/billingCancellationRetry.js",
+      "sha256": "149787198645d595177dbd93dca98400e4bb4330b5d99639398484534b2445e2",
+      "bytes": 2685
+    },
+    {
+      "path": "evidence/before/edunex-b/services/cacheService.js",
+      "sha256": "0da6fdce01e94aa5fb686a8943c0462f07e1cfb4a0b552c1f1f9fae0a2364453",
+      "bytes": 4867
+    },
+    {
+      "path": "evidence/before/edunex-b/services/cancelAccountBilling.js",
+      "sha256": "0d507b8a504b46a7359a9f8c3c6d9f39688618ffd34b7385551d8662dae1fb6b",
+      "bytes": 1978
+    },
+    {
+      "path": "evidence/before/edunex-b/services/certificateTemplate.js",
+      "sha256": "a9709f9bd840b48bdf6b86e4f948b75cd74f548c5616c9a8aaede81fa3332bc4",
+      "bytes": 3001
+    },
+    {
+      "path": "evidence/before/edunex-b/services/certificateTemplateSettings.js",
+      "sha256": "38659e3b8cdc40c9fb0fe21f2fc09dcd59e2b7ca3ac6c2b3ecf84f1ebbb03643",
+      "bytes": 4148
+    },
+    {
+      "path": "evidence/before/edunex-b/services/certificationService.js",
+      "sha256": "414a329845fece90ed23429624b94a1afbc56eb161583d47461abaa3d9c2cbe6",
+      "bytes": 11251
+    },
+    {
+      "path": "evidence/before/edunex-b/services/clarityInsights.js",
+      "sha256": "2db423bc166d625e50a63f34c69ca18cb670e594e009db3246a11c62ca478b2f",
+      "bytes": 5236
+    },
+    {
+      "path": "evidence/before/edunex-b/services/cloudFrontPlayback.js",
+      "sha256": "4ec25b80ee29e2d17a6efcc705e3c9c77af6df154509e04d3b8c2d148638fff4",
+      "bytes": 6802
+    },
+    {
+      "path": "evidence/before/edunex-b/services/completionRules.js",
+      "sha256": "666b42c43075bb8d61ae5d93b29a8f62eee9cac9ec5adb4b335689394a143311",
+      "bytes": 5002
+    },
+    {
+      "path": "evidence/before/edunex-b/services/courseAccess.js",
+      "sha256": "c073f0f1cb7244c5ddee3bc1388d074110dfe364a84b31c9afa7b904f2318da1",
+      "bytes": 1689
+    },
+    {
+      "path": "evidence/before/edunex-b/services/coursePlaylist.js",
+      "sha256": "e9f2963f3fd784a25f8390f379f724380a56b092338c2687eb8b9343e25adc76",
+      "bytes": 2134
+    },
+    {
+      "path": "evidence/before/edunex-b/services/deletionRequestValidation.js",
+      "sha256": "233b3fff641d3d9eaaa1c7f5cd3d9411a892496afee980903449e2b3bb8bb068",
+      "bytes": 1142
+    },
+    {
+      "path": "evidence/before/edunex-b/services/distributedLock.js",
+      "sha256": "0d2d53c789a87bf18d30f2402273f71da719d7250480d7eac07c100e65fbb783",
+      "bytes": 5500
+    },
+    {
+      "path": "evidence/before/edunex-b/services/downloadGrantService.js",
+      "sha256": "3fbbb41fdc3d5ac460fa16a66daa6081d1399fc4ed1f672d2f38cfa3cb264280",
+      "bytes": 1993
+    },
+    {
+      "path": "evidence/before/edunex-b/services/downloadStream.js",
+      "sha256": "9c0ee9d0575f6a900c724850b37d30fbfbe348ecacba54546a6b6f6af0174937",
+      "bytes": 737
+    },
+    {
+      "path": "evidence/before/edunex-b/services/ffmpegBinary.js",
+      "sha256": "273a66304cc9b5d03cd93201c88943d0a79fe03291c3585a9776bce4235a3b69",
+      "bytes": 193
+    },
+    {
+      "path": "evidence/before/edunex-b/services/frontendAssets.js",
+      "sha256": "cad1209e2a3ab1e8976b28f57a4ad9540373dfeb1192f0f66be7bdae076819a4",
+      "bytes": 2919
+    },
+    {
+      "path": "evidence/before/edunex-b/services/googlePlayEntitlement.js",
+      "sha256": "3541dd48b9e3732f66136053849e8594b64f434bf31c1d510f38b68889750ae6",
+      "bytes": 5123
+    },
+    {
+      "path": "evidence/before/edunex-b/services/googlePlayIapService.js",
+      "sha256": "a466090ead10dba104b5a596ad0112dbce3b977f10445114327f807ffe51c8d2",
+      "bytes": 23536
+    },
+    {
+      "path": "evidence/before/edunex-b/services/googlePlayRtdn.js",
+      "sha256": "9a168949714dc6f60b5511d97650d97407c2ad3638cae747fbe370105fc85374",
+      "bytes": 2818
+    },
+    {
+      "path": "evidence/before/edunex-b/services/imageProxy.js",
+      "sha256": "5768773aec376e7ece7b7580b822370e1e775cc55ca46f2b6b3abd3307b58019",
+      "bytes": 1982
+    },
+    {
+      "path": "evidence/before/edunex-b/services/lessonNotes.js",
+      "sha256": "99954d2eaa7c0ad2381b1254e3934b6474fbed4448c3db2c2ad0f6009b193ae4",
+      "bytes": 453
+    },
+    {
+      "path": "evidence/before/edunex-b/services/marketingSettings.js",
+      "sha256": "b9720957959764c407dca41ed569829e13f717d4e5d516ccea4e3793b6c624e2",
+      "bytes": 1815
+    },
+    {
+      "path": "evidence/before/edunex-b/services/mobileCompatibilityService.js",
+      "sha256": "cbb13c529c64b36660f69159c0a7b658837f99ccd79bcb070ccfa65bab59a3b9",
+      "bytes": 16182
+    },
+    {
+      "path": "evidence/before/edunex-b/services/notificationService.js",
+      "sha256": "bc85b34b1d7fb062557c04e3e6700494cf8064c3fb0aa879d044405d99203b5b",
+      "bytes": 4032
+    },
+    {
+      "path": "evidence/before/edunex-b/services/otpService.js",
+      "sha256": "d9fe022f6a3748e6c4a37422e32de3785b613b733d5bd73bb38f8a7a8c350266",
+      "bytes": 9918
+    },
+    {
+      "path": "evidence/before/edunex-b/services/paymentAuditService.js",
+      "sha256": "9642720e84c0ae87d8dc236ff54be81312ffb0b9f558527f8ff7ddd41897a9c2",
+      "bytes": 3070
+    },
+    {
+      "path": "evidence/before/edunex-b/services/paymentMode.js",
+      "sha256": "c920fae117da3770058d3a06d62340341437d5e7ba76c19f4002c062b4189747",
+      "bytes": 5008
+    },
+    {
+      "path": "evidence/before/edunex-b/services/pdfTextExtraction.js",
+      "sha256": "cb909bec4f8eb966406e628ad8f8d86b86c5ae78ea90ca26d96dd60f3ed605b2",
+      "bytes": 2693
+    },
+    {
+      "path": "evidence/before/edunex-b/services/pdfTextWorker.js",
+      "sha256": "cba4045bc33ea4ba97749947735d346b7bb9fba69f0707bb5a2eb9724d1ecd39",
+      "bytes": 1126
+    },
+    {
+      "path": "evidence/before/edunex-b/services/phonePeAutoPayScheduler.js",
+      "sha256": "3dd820e0545acd7257757791b954856064b73e5ace082c1610136fa5c34323d9",
+      "bytes": 7470
+    },
+    {
+      "path": "evidence/before/edunex-b/services/phonePeAutoPayService.js",
+      "sha256": "d2ca43fca88c40efe6782f9037a664a7b24601ffeb75ecbdd734e7c11c40a8fc",
+      "bytes": 17806
+    },
+    {
+      "path": "evidence/before/edunex-b/services/phonePeCleanup.js",
+      "sha256": "b4cec9be75d80e60136d63138c9ae30b98b38db395eddbaba2fd4b5771602b7a",
+      "bytes": 11855
+    },
+    {
+      "path": "evidence/before/edunex-b/services/phonePeCleanupAudit.js",
+      "sha256": "c254c8c838c1af65495583113413ec94ee10f33342ddd6a2c5c5fafb73e68999",
+      "bytes": 12751
+    },
+    {
+      "path": "evidence/before/edunex-b/services/phonePeEventClaims.js",
+      "sha256": "590487ca0b087082e1ca6ec1521bf0cdba48f4fadcf905ec71ea538b68a45c53",
+      "bytes": 4504
+    },
+    {
+      "path": "evidence/before/edunex-b/services/phonePePolicy.js",
+      "sha256": "0c32acca682dd0323dd85b9ddfb29ba7ab99b00d7d7f9e8e7e8336dfb40e8aa7",
+      "bytes": 1122
+    },
+    {
+      "path": "evidence/before/edunex-b/services/phonePeService.js",
+      "sha256": "f78044d071152c9ce3f3a265ab431ee4b8033a694da3a38c2faa82de37e0e2f9",
+      "bytes": 14014
+    },
+    {
+      "path": "evidence/before/edunex-b/services/phonePeStandardAutoPayService.js",
+      "sha256": "0ed3ca682241f7b12538112cd2e97f40e4dd53112decc09e94fefc6b062bcfdc",
+      "bytes": 19573
+    },
+    {
+      "path": "evidence/before/edunex-b/services/productTutorGrounding.js",
+      "sha256": "ad24c1a6ab80d7abf87d20329af0bf631e51d4dbf1c5fcdff7128afc9765656b",
+      "bytes": 3503
+    },
+    {
+      "path": "evidence/before/edunex-b/services/productTutorIntent.js",
+      "sha256": "cb3f217ec8d2cfbe9d3f38f137ea816aac482e23357f55664f49c53cd5ad45e7",
+      "bytes": 5264
+    },
+    {
+      "path": "evidence/before/edunex-b/services/productTutorKnowledge.js",
+      "sha256": "104b598b1ffd816356d9b4c27e270a80db597e624c30a0b3d7841b2b66377ae1",
+      "bytes": 28478
+    },
+    {
+      "path": "evidence/before/edunex-b/services/productTutorResponse.js",
+      "sha256": "f6989efae2fc11aeab6543ba6f945cae589bcacb683c25325d8ed68b0f97663e",
+      "bytes": 23035
+    },
+    {
+      "path": "evidence/before/edunex-b/services/productTutorState.js",
+      "sha256": "1b0148e1978a8067ea8cd337d0892ace9e8d2e1197ea140d72f334e6d1647eac",
+      "bytes": 8959
+    },
+    {
+      "path": "evidence/before/edunex-b/services/productTutorTasks.js",
+      "sha256": "bc7c081634d80dcea4fe5b9d96b071feacb969294631773c17face6496573d75",
+      "bytes": 16482
+    },
+    {
+      "path": "evidence/before/edunex-b/services/profileImageStorage.js",
+      "sha256": "bcda5ace45f4ac053006abfc225febe17c1506ef6a214057f96570a6f4517778",
+      "bytes": 4626
+    },
+    {
+      "path": "evidence/before/edunex-b/services/pushService.js",
+      "sha256": "322b35d1bc27fcf741c9d0462aeb6d8a32eb019041517ccfd4779b5a04850be2",
+      "bytes": 5814
+    },
+    {
+      "path": "evidence/before/edunex-b/services/rateLimitToggle.js",
+      "sha256": "a3294841e29a2bc378aea637af9a8f79aa5b6340db86c7a821840ece55a85dee",
+      "bytes": 968
+    },
+    {
+      "path": "evidence/before/edunex-b/services/razorpayService.js",
+      "sha256": "6fbcb529e790f176f4074420619610fa458817971a4042a3baf56e6228b18d37",
+      "bytes": 7562
+    },
+    {
+      "path": "evidence/before/edunex-b/services/readinessService.js",
+      "sha256": "9a3d88e3ac28e3879b1e5c796ecc700cf598b73640ece450aabea4b3eb85f992",
+      "bytes": 1233
+    },
+    {
+      "path": "evidence/before/edunex-b/services/subscriptionAccess.js",
+      "sha256": "19f77a134d270297b88c3bddc30bec3e20a203abab1a3770ae2d836418905e0d",
+      "bytes": 5345
+    },
+    {
+      "path": "evidence/before/edunex-b/services/subscriptionMirror.js",
+      "sha256": "29ce99316b601fc6b24f76593829421d0d483a802d763d03e0103d1ae05acdb4",
+      "bytes": 2544
+    },
+    {
+      "path": "evidence/before/edunex-b/services/supportMailer.js",
+      "sha256": "3beaea88b66169e1ae60ddfb02e632542f5fdc1fd440364f275cffdf84e07844",
+      "bytes": 3072
+    },
+    {
+      "path": "evidence/before/edunex-b/services/systemHealthService.js",
+      "sha256": "e0da8d1c4d307758b0ba565f12b374827a2e3993417343116671e23cd68f5d11",
+      "bytes": 8572
+    },
+    {
+      "path": "evidence/before/edunex-b/services/thumbnailCdn.js",
+      "sha256": "5784d0fe114a9cdcbad98e15654d14d78e5385332b3b604f0bb979f3805ba662",
+      "bytes": 4330
+    },
+    {
+      "path": "evidence/before/edunex-b/services/thumbnailStorage.js",
+      "sha256": "ebe4ec22e2f3f859553d0576eabcdcd78255d31b9247535f7d417fc7b00e9a87",
+      "bytes": 1848
+    },
+    {
+      "path": "evidence/before/edunex-b/services/trialEligibility.js",
+      "sha256": "552d63ce4378e8a505e33a6cfd114218618db9846328243b912545bf710d43f6",
+      "bytes": 775
+    },
+    {
+      "path": "evidence/before/edunex-b/services/tutorKnowledge.js",
+      "sha256": "b3999eaeb4e631c9049cf6e686d4470298e5317c900e29469e97103d3eef6753",
+      "bytes": 22622
+    },
+    {
+      "path": "evidence/before/edunex-b/services/tutorProvider.js",
+      "sha256": "501ed3b619515e2d8eda3a36e2acd80b99b28697de7dd9ddf5b6b5682121d064",
+      "bytes": 2960
+    },
+    {
+      "path": "evidence/before/edunex-b/services/userPresence.js",
+      "sha256": "eeb1451a62d00a40f138eceb39c22d37648892cf0ba66d9936c7645f2d28a2dd",
+      "bytes": 565
+    },
+    {
+      "path": "evidence/before/edunex-b/services/videoMetadata.js",
+      "sha256": "5d0cc4485b4cd84a5efa8d855831649e516a78d2d55cbb0f71cb10d25a645d00",
+      "bytes": 3018
+    },
+    {
+      "path": "evidence/before/edunex-b/services/videoSources.js",
+      "sha256": "0c19da64f4ff0d2a2ca507a7a008b97adfa44fc13d5ce3c21b533d884df3dee2",
+      "bytes": 3592
+    },
+    {
+      "path": "evidence/before/edunex-b/tests/account-entitlement.test.cjs",
+      "sha256": "abb63cdad6900f89d362e7e198c401f73e2951fe38d9e72c33df23bc74e09138",
+      "bytes": 4372
+    },
+    {
+      "path": "evidence/before/edunex-b/tests/admin-course-list.test.cjs",
+      "sha256": "127a597682fff10e6fd97244c31daa085aacec1d27e98e3ae3eae105031549b3",
+      "bytes": 1631
+    },
+    {
+      "path": "evidence/before/edunex-b/tests/admin-maintenance.test.cjs",
+      "sha256": "eee2fb1f5d198a4d7b7368050147957b2b94afefdcbc5e9b2ffa8268159f1160",
+      "bytes": 5594
+    },
+    {
+      "path": "evidence/before/edunex-b/tests/admin-rbac.test.cjs",
+      "sha256": "c0995a12ef2f6991443e2c4420d4c91c3a0562d8a53c052a73eb890105dae65c",
+      "bytes": 6852
+    },
+    {
+      "path": "evidence/before/edunex-b/tests/admin-subscription.test.cjs",
+      "sha256": "be4b34287b794cc9aaded907876ada4c50954c0ea4fae3ad1a0c731fbbffa491",
+      "bytes": 4391
+    },
+    {
+      "path": "evidence/before/edunex-b/tests/admin-user-controls.test.cjs",
+      "sha256": "7b10268736746f69f4eec0ebb200a89785a7a66335648c45f622d3ae4ddd8086",
+      "bytes": 8649
+    },
+    {
+      "path": "evidence/before/edunex-b/tests/ai-chat-history.test.cjs",
+      "sha256": "ddc6467496c60d94ba93becb81d903ff0487c92ace4c54212d9dad75dde1abc4",
+      "bytes": 54941
+    },
+    {
+      "path": "evidence/before/edunex-b/tests/ai-tutor-fixture.cjs",
+      "sha256": "a13cb7447ce79320ea5069c50aa16aff215517f0f959f0a65efa42108ab15173",
+      "bytes": 5339
+    },
+    {
+      "path": "evidence/before/edunex-b/tests/android-hardening.test.cjs",
+      "sha256": "6292140a437c6d9cefe3923f6f25c785b30d2efba52c489913967893999ea39b",
+      "bytes": 3123
+    },
+    {
+      "path": "evidence/before/edunex-b/tests/annual-billing.test.cjs",
+      "sha256": "29c9e18e06b86dd14b08648b80217b6ff499a89cc82bf9d66e00208d6f5bad72",
+      "bytes": 5998
+    },
+    {
+      "path": "evidence/before/edunex-b/tests/app-store-mobile-compliance.test.cjs",
+      "sha256": "451afbf0b72dc5aaf4534c9a8a83a6407f7fd1437ff90bcba444901def5ac753",
+      "bytes": 37356
+    },
+    {
+      "path": "evidence/before/edunex-b/tests/apple-iap.test.cjs",
+      "sha256": "d0bb5d6611163e4cbe4c0881e28aafe694ccd5a0fa5418ff50cb18d93737d298",
+      "bytes": 10670
+    },
+    {
+      "path": "evidence/before/edunex-b/tests/architecture_validation_tests.json",
+      "sha256": "cc2e11f5c2a0ef140ad93de51961bfd24c3eed6e8e66a81f489355ae2ff82a79",
+      "bytes": 10223
+    },
+    {
+      "path": "evidence/before/edunex-b/tests/auth-navigation.test.cjs",
+      "sha256": "0bc3276982205c98f3b6d5bf7c1d535caef67c1e6842b51da9edb7ee2615177b",
+      "bytes": 2143
+    },
+    {
+      "path": "evidence/before/edunex-b/tests/cancel-account-billing.test.cjs",
+      "sha256": "0bcf6575b90f52cba6aab9daad728d8e0a04bd4d951f954d6989b7d7fdd8e5f6",
+      "bytes": 1792
+    },
+    {
+      "path": "evidence/before/edunex-b/tests/certification.test.cjs",
+      "sha256": "eb900d1dda9e636a7789d2f58e9c5d237cb1501cc2f2df2f5766228d7d96b047",
+      "bytes": 11118
+    },
+    {
+      "path": "evidence/before/edunex-b/tests/checkout-summary-security.test.cjs",
+      "sha256": "81c99aca7be20a0ac3b9ebe5fa2a093a75cb78a3fbb3c15e4c03db332ee6c599",
+      "bytes": 1508
+    },
+    {
+      "path": "evidence/before/edunex-b/tests/clarity-insights.test.cjs",
+      "sha256": "a423f341307e735e03836fdfcbd40c29bb6e1da761f0100939211178184ccf5a",
+      "bytes": 2223
+    },
+    {
+      "path": "evidence/before/edunex-b/tests/cloudfront-download-client.test.cjs",
+      "sha256": "f7b66a2b1812aeb3c114c44127d3766819b2536d157061b950af85d0ed40e9b2",
+      "bytes": 2879
+    },
+    {
+      "path": "evidence/before/edunex-b/tests/cloudfront.test.cjs",
+      "sha256": "9cd679284d5d75f2c4070e239a07fb211172988ba044e5a05c62fb53df124f28",
+      "bytes": 12396
+    },
+    {
+      "path": "evidence/before/edunex-b/tests/cors.test.cjs",
+      "sha256": "459a01194d04f6f46497213f933a72cb063bc43f792076a303cef0bc912ece8f",
+      "bytes": 2849
+    },
+    {
+      "path": "evidence/before/edunex-b/tests/course-playlist.test.cjs",
+      "sha256": "899d674aeb65bb0c535916df49acae896e09e466007f7187752b0c474d7bed54",
+      "bytes": 5017
+    },
+    {
+      "path": "evidence/before/edunex-b/tests/deletion-request.test.cjs",
+      "sha256": "915dc2726c7d9cdc07f96603c5ec35ffef96fb848aae85bcc0ec31c353c0f16b",
+      "bytes": 999
+    },
+    {
+      "path": "evidence/before/edunex-b/tests/distributed-lock.test.cjs",
+      "sha256": "02ad6be1299edfab8d24c8ac29f3db976925bd16b6c5babce2d189abeab01260",
+      "bytes": 8337
+    },
+    {
+      "path": "evidence/before/edunex-b/tests/download-grant.test.cjs",
+      "sha256": "95e2f701f4947970635f2962587edf49ff72eec6cfa017f92563ca3f1c5655d5",
+      "bytes": 2458
+    },
+    {
+      "path": "evidence/before/edunex-b/tests/download-storage.test.cjs",
+      "sha256": "a62a0bc3ca797e12b10fca01c2a46ae26d1e40ec036bf3ebf40df0717258ca0e",
+      "bytes": 3611
+    },
+    {
+      "path": "evidence/before/edunex-b/tests/download-stream.test.cjs",
+      "sha256": "435fb325acf5a5e064c0c2b4bacd66d3fee01f61ac8927e3ca9e2b24c0ba2f4e",
+      "bytes": 1258
+    },
+    {
+      "path": "evidence/before/edunex-b/tests/fixtures/product-tutor-phase14a.json",
+      "sha256": "94f1e3fd2238cfac6f15f2bc517b765263dfc517dd95f461751457f143567013",
+      "bytes": 14197
+    },
+    {
+      "path": "evidence/before/edunex-b/tests/frontend-assets.test.cjs",
+      "sha256": "bcb4ce5a91dfad86a95d082c919b85c10819b1d27d049e27d44cab8be4fc536c",
+      "bytes": 2788
+    },
+    {
+      "path": "evidence/before/edunex-b/tests/google-play-account-deletion.test.cjs",
+      "sha256": "9c5628e500108acf2042adf7b646ee06e5a0819d1311ad011d57739ce2ee778b",
+      "bytes": 2371
+    },
+    {
+      "path": "evidence/before/edunex-b/tests/google-play-iap.test.cjs",
+      "sha256": "617518c3bad202cb7614af0706513ae72bff4dd1ffe9982e6a23935ae864bb40",
+      "bytes": 44854
+    },
+    {
+      "path": "evidence/before/edunex-b/tests/google-play-mobile.test.cjs",
+      "sha256": "4ddf59afad7c693189f14f94dcaa76fa75cb947f23fd975f64cdcb570308c055",
+      "bytes": 28882
+    },
+    {
+      "path": "evidence/before/edunex-b/tests/google-play-routes.test.cjs",
+      "sha256": "b95d0365b81cf9d08f61267cdf2bb9c33c9271ffb4e3d1a33998efb2888bfaad",
+      "bytes": 12102
+    },
+    {
+      "path": "evidence/before/edunex-b/tests/google-play-worker.test.cjs",
+      "sha256": "4d0115a0f49f9210e47bb31abc740dffddd1dbc804d39580ef12e9ed7cc5e6fb",
+      "bytes": 1824
+    },
+    {
+      "path": "evidence/before/edunex-b/tests/helpers/deny-network.cjs",
+      "sha256": "67607ea4825b2e220a964da4ce06f2c13ba8ae43df88c00f1f915b3d7bfe0443",
+      "bytes": 563
+    },
+    {
+      "path": "evidence/before/edunex-b/tests/image-proxy.test.cjs",
+      "sha256": "da0b5ad1f9481a25fd54c88ea5c61282d40ad38bdcb4b93818b836eda25485b5",
+      "bytes": 1994
+    },
+    {
+      "path": "evidence/before/edunex-b/tests/k6/common-api-load.js",
+      "sha256": "984711615b48af245bee3f12e06e8f9e38c97f2843f9690f7e19185d0fd453ee",
+      "bytes": 3721
+    },
+    {
+      "path": "evidence/before/edunex-b/tests/k6/complete-local-software.js",
+      "sha256": "d2fe70e6976e0e2540f5652bf58e395db28012966ecbb80ef934e8a3afcbe9b4",
+      "bytes": 4373
+    },
+    {
+      "path": "evidence/before/edunex-b/tests/lesson-notes.test.cjs",
+      "sha256": "80a944a291d5d51e54847fd7f0ccae9b8619ac6eefa03c927969be4e21f81a91",
+      "bytes": 1316
+    },
+    {
+      "path": "evidence/before/edunex-b/tests/marketing-settings.test.cjs",
+      "sha256": "89969d9e262406478633d2b51ec1f8de3e549fc3912b6ab4b98b3a3939b4fe36",
+      "bytes": 2651
+    },
+    {
+      "path": "evidence/before/edunex-b/tests/mobile-admin-users.test.cjs",
+      "sha256": "f078d25d8a5041797092bcedcbca5a66042d27516742e26223da6bc1c46a8b6e",
+      "bytes": 2218
+    },
+    {
+      "path": "evidence/before/edunex-b/tests/mobile-course-ai-cache.test.cjs",
+      "sha256": "04b32ea256a5661ec99655064aa62973f710a94f5c5cc0a554343b081faf852c",
+      "bytes": 1699
+    },
+    {
+      "path": "evidence/before/edunex-b/tests/mobile-course-ai.test.cjs",
+      "sha256": "8033d8d12a84a299990d1900430ba32ef66f3de06432688f25a0c8c120795c93",
+      "bytes": 1798
+    },
+    {
+      "path": "evidence/before/edunex-b/tests/mobile-player.test.cjs",
+      "sha256": "f112cb91d0499730d647b8c66472a79b97d1aae8b7dc3ec8e7c223df6eb55c55",
+      "bytes": 11436
+    },
+    {
+      "path": "evidence/before/edunex-b/tests/native-session.test.cjs",
+      "sha256": "d72f4272f95a170739bb8b3fca906a8c5b63a438cd5094de7f6114aecb99c27d",
+      "bytes": 7430
+    },
+    {
+      "path": "evidence/before/edunex-b/tests/notification-broadcast.test.cjs",
+      "sha256": "35e5d74af79e88dd54fc62921125f83e34506dec587839ebef1f235a3988347c",
+      "bytes": 3367
+    },
+    {
+      "path": "evidence/before/edunex-b/tests/offer-billing-schedule.test.cjs",
+      "sha256": "9bd09586b37fd3c5291996c837097f706f0feac82def5b06d00b0b9f8ba0d5cc",
+      "bytes": 6392
+    },
+    {
+      "path": "evidence/before/edunex-b/tests/onboarding.test.cjs",
+      "sha256": "b4435ef0d022bc034102596f616d0b7247703216ce99fcdb6698ad20c373c000",
+      "bytes": 10849
+    },
+    {
+      "path": "evidence/before/edunex-b/tests/otp.test.cjs",
+      "sha256": "0dbc326f16179a5647c401b16cff4acfc006911f98b96f05f2991b0ea3ce6e25",
+      "bytes": 6285
+    },
+    {
+      "path": "evidence/before/edunex-b/tests/password-reset.test.cjs",
+      "sha256": "f76b83031e05b24023489951b10dd6c97bad3ca756b78d481c183c236dc33554",
+      "bytes": 3838
+    },
+    {
+      "path": "evidence/before/edunex-b/tests/payment-audit.test.cjs",
+      "sha256": "8848f27502553bfbaaa22b2efe6a4b586aa8736aeec08c6e0a47e7e525280f51",
+      "bytes": 2365
+    },
+    {
+      "path": "evidence/before/edunex-b/tests/payment-mode.test.cjs",
+      "sha256": "83490164d7aa1675ff53a607975b5cac6b29f199821d998bb4d3314bea8b5939",
+      "bytes": 4603
+    },
+    {
+      "path": "evidence/before/edunex-b/tests/payment-simulator.test.cjs",
+      "sha256": "375dce9b1a29b69abc91f9fc1faabe7c6dc8762c0304e779cd7f79156098b082",
+      "bytes": 3076
+    },
+    {
+      "path": "evidence/before/edunex-b/tests/pdf-text-extraction.test.cjs",
+      "sha256": "02709861b526bc3ca8792823ea982c6443ff6365239b94da413153eb930ed039",
+      "bytes": 1100
+    },
+    {
+      "path": "evidence/before/edunex-b/tests/phonepe-autopay-test-harness.test.cjs",
+      "sha256": "298a1bf50c0f7f6ceb2fd45cfaffe5ecf8dd77203197585383174a172e3f5060",
+      "bytes": 17041
+    },
+    {
+      "path": "evidence/before/edunex-b/tests/phonepe-cleanup-audit.test.cjs",
+      "sha256": "2a0964f9840ddcd53a4d5b0bc2f4dc29299c486d58197e0536f1d134a62ac3b3",
+      "bytes": 6736
+    },
+    {
+      "path": "evidence/before/edunex-b/tests/phonepe-multi-instance.test.cjs",
+      "sha256": "29036b37d42e3db94e02c7c85b54588c378a6c194dbbfa4ce9c8361514a7afa8",
+      "bytes": 18053
+    },
+    {
+      "path": "evidence/before/edunex-b/tests/phonepe-one-time.test.cjs",
+      "sha256": "08d32a71488b52059dbaf9610b3c7053e1099e1cfd50d4fde1710983136dfa91",
+      "bytes": 4971
+    },
+    {
+      "path": "evidence/before/edunex-b/tests/phonepe-standard-web-autopay.test.cjs",
+      "sha256": "eb581871fa3db579eb37d371b533c37ffe8987306d0efd3751691f4c3a0d4909",
+      "bytes": 14744
+    },
+    {
+      "path": "evidence/before/edunex-b/tests/playback-startup.test.cjs",
+      "sha256": "438c1865afb46b4256b99d63366a08718c8ded6fbc415c69fa9baeb671108295",
+      "bytes": 10652
+    },
+    {
+      "path": "evidence/before/edunex-b/tests/problem-reports.test.cjs",
+      "sha256": "5ad0997e443611562c6459545eef97bcb0030e1d7975fc095a6deb2a111e57d3",
+      "bytes": 1171
+    },
+    {
+      "path": "evidence/before/edunex-b/tests/product-tutor-phase11.test.cjs",
+      "sha256": "1f688c358d148c3aea3d0d5e83e4771afff8edef4b716a10ad1eb73d04d9afcf",
+      "bytes": 16655
+    },
+    {
+      "path": "evidence/before/edunex-b/tests/product-tutor-phase14a.test.cjs",
+      "sha256": "a81d198675e1b5140eeb9fa3a1071eaaa0ab89004d8a00628ec0f2c1020d473f",
+      "bytes": 10710
+    },
+    {
+      "path": "evidence/before/edunex-b/tests/product-tutor-phase3.test.cjs",
+      "sha256": "9802722a948bfd13e591d300777d730a60cc7c4efaf5f49accb1cd37fba4232f",
+      "bytes": 11409
+    },
+    {
+      "path": "evidence/before/edunex-b/tests/product-tutor-phase5.test.cjs",
+      "sha256": "2fcb556c91f932410f9d4ab68d99b32555981e2645f5437ed4cb9d9d8009d234",
+      "bytes": 10323
+    },
+    {
+      "path": "evidence/before/edunex-b/tests/product-tutor-phase7.test.cjs",
+      "sha256": "0485b32b63f485547232aa0f570c545727698f23b13a3df4654038ba72d24769",
+      "bytes": 14172
+    },
+    {
+      "path": "evidence/before/edunex-b/tests/product-tutor-phase9.test.cjs",
+      "sha256": "512b9435fbd57088219a802b0a9cb6a7b303c10672add977228c83098a2a6de0",
+      "bytes": 12684
+    },
+    {
+      "path": "evidence/before/edunex-b/tests/product-tutor-quality.test.cjs",
+      "sha256": "3561213acacd5235e45101d19ec0768018af530bc10e5e22ab41e6445b0253d6",
+      "bytes": 12955
+    },
+    {
+      "path": "evidence/before/edunex-b/tests/product-tutor-unicode-safety.test.cjs",
+      "sha256": "a59183f64a99d868727739f17359afb85c570cc7f5d5c22c276280d7c4a990a5",
+      "bytes": 6473
+    },
+    {
+      "path": "evidence/before/edunex-b/tests/profile-image-storage.test.cjs",
+      "sha256": "93b62b4ee518270cca50aba12d5ffab00e789666f2b315018d376bd05e57c6f3",
+      "bytes": 2700
+    },
+    {
+      "path": "evidence/before/edunex-b/tests/razorpay.test.cjs",
+      "sha256": "42b31a7fa19405d3e40bf7e6f62845c49f213bd5b54186f120843dff89e71fd8",
+      "bytes": 18618
+    },
+    {
+      "path": "evidence/before/edunex-b/tests/readiness.test.cjs",
+      "sha256": "9aa9b755f69249a4a61b5b693a3ddb8321ac0fcc19a0d54c65221cb1c25ccece",
+      "bytes": 7585
+    },
+    {
+      "path": "evidence/before/edunex-b/tests/reviewer-account-seed.test.cjs",
+      "sha256": "5205873993b723cb18e769fe4df26d93e8732b655cd2c0433dcab066e6a0e71a",
+      "bytes": 1084
+    },
+    {
+      "path": "evidence/before/edunex-b/tests/sensitive-rate-limit.test.cjs",
+      "sha256": "4fad45065b2f302b6f88d26d016c5cd8e0f3fdf1efab4a9df04504711c67e429",
+      "bytes": 1149
+    },
+    {
+      "path": "evidence/before/edunex-b/tests/shared-cache.test.cjs",
+      "sha256": "b31acb12c4f3d89a6fc61ec96aa1c482c85dc9d2d51a35e6369888cc6f8a4c90",
+      "bytes": 12596
+    },
+    {
+      "path": "evidence/before/edunex-b/tests/single-session.test.cjs",
+      "sha256": "1cffcc4c5ba59680dad9df5331733ada207812c4ab4f786df052e8eb109a2661",
+      "bytes": 7079
+    },
+    {
+      "path": "evidence/before/edunex-b/tests/ssm-bootstrap.test.cjs",
+      "sha256": "d3d1b1321f967f5575a7b68120796a8211a1c4dae8426d30832013bc86543fe3",
+      "bytes": 8798
+    },
+    {
+      "path": "evidence/before/edunex-b/tests/subscription-access.test.cjs",
+      "sha256": "f361b46125ccf7e49053eab5a32d69eaf4c04bbd047005fc14fca6a8a232c2cb",
+      "bytes": 5295
+    },
+    {
+      "path": "evidence/before/edunex-b/tests/subscription-consistency.test.cjs",
+      "sha256": "cb97e3b3ab62461e787240f72763ae297309851d80b6ba8fa3fb971f61cb1201",
+      "bytes": 9526
+    },
+    {
+      "path": "evidence/before/edunex-b/tests/system-health.test.cjs",
+      "sha256": "706ea55570379c785a8ca4a318beac5f524ddbbe91b3f3d53498a4d5fb2dfb25",
+      "bytes": 3677
+    },
+    {
+      "path": "evidence/before/edunex-b/tests/test_product_evaluator.py",
+      "sha256": "ba40f2e9ef459f3aebdd70a551711d59f6fbbf1908686413aa8ba4eef0de1563",
+      "bytes": 11483
+    },
+    {
+      "path": "evidence/before/edunex-b/tests/test_product_evaluator_v3.py",
+      "sha256": "c9a9f4f094876c07278ed9811189e6c2b26bd5c6210f58212612c92d054a3657",
+      "bytes": 10480
+    },
+    {
+      "path": "evidence/before/edunex-b/tests/test_product_evaluator_v4.py",
+      "sha256": "e756d4e3f246639eccc03e5e885f43d4fd4888a3dc9a3998be96183f163a619e",
+      "bytes": 9455
+    },
+    {
+      "path": "evidence/before/edunex-b/tests/test_product_evaluator_v5.py",
+      "sha256": "bca1ea78dbc99611aef80da8eb1c4d9603f6826bc1d749f0bf498713fa37ef83",
+      "bytes": 7843
+    },
+    {
+      "path": "evidence/before/edunex-b/tests/test_product_evaluator_v6.py",
+      "sha256": "46c46430134c26118551a3f2aee55427924f51bfcfb4e64afee55163d91bd1e9",
+      "bytes": 6787
+    },
+    {
+      "path": "evidence/before/edunex-b/tests/test_product_evaluator_v7.py",
+      "sha256": "22fc4ef9f9e5d70386900a8d120f1a40b8b2a356c8c39ec8b2c76107dd250aed",
+      "bytes": 7555
+    },
+    {
+      "path": "evidence/before/edunex-b/tests/thumbnail-cdn.test.cjs",
+      "sha256": "f358c82e629c91cfdb7a51c2c88dba0a5470a21c03a30d61f8274ff0bc012e40",
+      "bytes": 12896
+    },
+    {
+      "path": "evidence/before/edunex-b/tests/tutor-course-isolation.test.cjs",
+      "sha256": "5f1d4a4c539ec813735b8e8ab44dc3b7dfdf5f08008c897777b977589de18618",
+      "bytes": 15159
+    },
+    {
+      "path": "evidence/before/edunex-b/tests/tutor-knowledge.test.cjs",
+      "sha256": "1ca23b0e51711c08cf141b9ccf071a07c06ec211b0c19062290260694d98af5e",
+      "bytes": 21631
+    },
+    {
+      "path": "evidence/before/edunex-b/tests/user-presence.test.cjs",
+      "sha256": "0fc4423526bd72fcb16f1650cdefc5e6514e7ae4d8fbf30cce558ece7a93ba54",
+      "bytes": 742
+    },
+    {
+      "path": "evidence/before/edunex-b/tests/video-import.test.cjs",
+      "sha256": "9cbf6aad58442594d719950ba521e9817745c05397bf573b9c96a889b8e595d3",
+      "bytes": 3533
+    },
+    {
+      "path": "evidence/before/edunex-b/tests/web-session-refresh.test.cjs",
+      "sha256": "0c3811cd71155c636e7ce35507f441609576c9801c81f4db8dddd888be65ddbd",
+      "bytes": 1965
+    },
+    {
+      "path": "evidence/changed_file_manifest.json",
+      "sha256": "403ac167a60f17f1c121c5815d381c896b80706891dec88a2f095fb4d8550586",
+      "bytes": 10872
+    },
+    {
+      "path": "evidence/corrected_candidate_freeze.json",
+      "sha256": "e0349843556fefb078d872fa8dc7fdac1ee269e7221d620bdcf03604617cae9e",
+      "bytes": 30827
+    },
+    {
+      "path": "evidence/create_comparison_pdf.py",
+      "sha256": "b1f8a9c4ffef0663c5a8ef349b288560441776437f86a4d637c0a249e77fba11",
+      "bytes": 6164
+    },
+    {
+      "path": "evidence/diagnostic_harness/approved_records.json",
+      "sha256": "f174c642e47191e2367058ca4ff9ab755d3fd5b0b35a5bbc4cdb133d12450821",
+      "bytes": 76852
+    },
+    {
+      "path": "evidence/diagnostic_harness/frozen_cases.json",
+      "sha256": "bd6ebe8a9adbe9b6bbf088634af1fce57fa149789987e96e2d84ed5e63da766f",
+      "bytes": 135588
+    },
+    {
+      "path": "evidence/diagnostic_harness/inspect_scope.cjs",
+      "sha256": "d567516f11d0dd865db275dbe9241e7dd87e4eadcc89d17e586b0fa0fb0d4250",
+      "bytes": 4475
+    },
+    {
+      "path": "evidence/diagnostic_harness/local_only_guard.cjs",
+      "sha256": "2ded19aafc45b830dc95cb79ae7ba6e314017158fd07dd84ebb98665674ad1e7",
+      "bytes": 1244
+    },
+    {
+      "path": "evidence/diagnostic_harness/pipeline.cjs",
+      "sha256": "f92bef01a26796b0bd50f70d0090b178599fbdbf1e8f0f44361d1a92d6edad0a",
+      "bytes": 12604
+    },
+    {
+      "path": "evidence/diagnostic_harness/run_diagnostics.cjs",
+      "sha256": "b0259cd227c45e67920069b5e799ac82605dc2740704bd72686e35f6aa7710ef",
+      "bytes": 2469
+    },
+    {
+      "path": "evidence/diagnostics_after.json",
+      "sha256": "6ad79890cd80de2f157d698fc2622187542f92a30b7ccdc53890bb6b96f2819e",
+      "bytes": 10296310
+    },
+    {
+      "path": "evidence/diagnostics_after.stderr.log",
+      "sha256": "122e9e7d0e110d70edf0b036b75a45febf96e20ad65bda10907edbbac014ff11",
+      "bytes": 167
+    },
+    {
+      "path": "evidence/diagnostics_after.stdout.log",
+      "sha256": "82a7719c03db28092cdbb8b79f160382ada5018b0c38b6c2a74fd74cfff3a10f",
+      "bytes": 118
+    },
+    {
+      "path": "evidence/diagnostics_after_execution.json",
+      "sha256": "7616468cd2b4a4a9234f7c37ff1f7003879bbda289c78a82e4bf23950e5c92d1",
+      "bytes": 142
+    },
+    {
+      "path": "evidence/diagnostics_before.json",
+      "sha256": "6ecc67e530318f63a4b6571b864ca23d9b4a7161c89dcec7ff6d65a354a6331c",
+      "bytes": 8040742
+    },
+    {
+      "path": "evidence/diagnostics_before.stderr.log",
+      "sha256": "de1846b187abf93bdf6468d5153648a11f70e127c213da5f7495fd3bfe45b8d4",
+      "bytes": 167
+    },
+    {
+      "path": "evidence/diagnostics_before.stdout.log",
+      "sha256": "159a4db650fb8836445502f6806e35575fdb924bb78382b6db0479b64acebc3b",
+      "bytes": 117
+    },
+    {
+      "path": "evidence/diagnostics_before_execution.json",
+      "sha256": "e79da61f6a45da8f69a9b2b2fcd0f09f0d868f225a105117e1de779cbf8337c6",
+      "bytes": 141
+    },
+    {
+      "path": "evidence/four_critical.stderr.log",
+      "sha256": "3994b6e6dfb4d92a6f231697bd2d58cb0fd4013f3d3add68830ffc8d741b6001",
+      "bytes": 167
+    },
+    {
+      "path": "evidence/four_critical.stdout.log",
+      "sha256": "a8fc392551060d578dc313bd75c8ffcb49e4fd0c4d8989a66b208606017bea8d",
+      "bytes": 69
+    },
+    {
+      "path": "evidence/four_critical_reproduce.cjs",
+      "sha256": "1cee9ac291577a6e529862bb1069fb147b65fec0cdbfe63c4207afab196805ba",
+      "bytes": 4723
+    },
+    {
+      "path": "evidence/git_status_after.txt",
+      "sha256": "9e18bc64df76098fefbfdaecd2cc62f73addc798b117482f24568083d584b7d3",
+      "bytes": 4789
+    },
+    {
+      "path": "evidence/git_status_before.txt",
+      "sha256": "0aa3fb6879b5a52dc53baf0f69530326e0aafad050f9c54f30a5f4499af4e73b",
+      "bytes": 4691
+    },
+    {
+      "path": "evidence/iterations/before_adjective_disambiguation_diagnostics_after.json",
+      "sha256": "51d634a38ead2296debbd13b8517d235e4791948709d38fbc0c887dcdec3ff97",
+      "bytes": 10292017
+    },
+    {
+      "path": "evidence/iterations/before_adjective_disambiguation_diagnostics_after_execution.json",
+      "sha256": "7616468cd2b4a4a9234f7c37ff1f7003879bbda289c78a82e4bf23950e5c92d1",
+      "bytes": 142
+    },
+    {
+      "path": "evidence/iterations/before_adjective_disambiguation_phase12_passing_replay.json",
+      "sha256": "8b690c8b03a4856a7c38ecaf379704225376bf258db6432b96d13e5cf551fe34",
+      "bytes": 793611
+    },
+    {
+      "path": "evidence/iterations/before_adjective_disambiguation_reproduction_results.json",
+      "sha256": "210e092c1d6ba0dafba6470372cb8739d538cf80464da77a2e3d5d8c403d3682",
+      "bytes": 59231
+    },
+    {
+      "path": "evidence/iterations/before_common_safety_union_diagnostics_after.json",
+      "sha256": "2431448d1e66459ff63dd3a68424d69df09f93f393fc717d2610729defb93058",
+      "bytes": 10296310
+    },
+    {
+      "path": "evidence/iterations/before_common_safety_union_diagnostics_after_execution.json",
+      "sha256": "7616468cd2b4a4a9234f7c37ff1f7003879bbda289c78a82e4bf23950e5c92d1",
+      "bytes": 142
+    },
+    {
+      "path": "evidence/iterations/before_limited_fill_diagnostics_after.json",
+      "sha256": "aff259e48bf468314f099783863ba97585e3482e361cf769431142048ca6bfdb",
+      "bytes": 10292017
+    },
+    {
+      "path": "evidence/iterations/before_limited_fill_diagnostics_after_execution.json",
+      "sha256": "7616468cd2b4a4a9234f7c37ff1f7003879bbda289c78a82e4bf23950e5c92d1",
+      "bytes": 142
+    },
+    {
+      "path": "evidence/iterations/before_limited_fill_phase12_passing_replay.json",
+      "sha256": "222fde6d11c0240d1a9fdb7e56bf7a11973a5d8708a19088389e5145be19c0d8",
+      "bytes": 793611
+    },
+    {
+      "path": "evidence/iterations/before_limited_fill_reproduction_results.json",
+      "sha256": "e776ca53913fa00e27bbc1e8b6b62751981623d1d9616f893de183381d212aa2",
+      "bytes": 59231
+    },
+    {
+      "path": "evidence/iterations/before_original_generation_contract_diagnostics_after.json",
+      "sha256": "ac00d3e5aecadc4217735e6b09ce1c77d01f832a3dfc4d07f430113526533905",
+      "bytes": 10292017
+    },
+    {
+      "path": "evidence/iterations/before_original_generation_contract_diagnostics_after_execution.json",
+      "sha256": "7616468cd2b4a4a9234f7c37ff1f7003879bbda289c78a82e4bf23950e5c92d1",
+      "bytes": 142
+    },
+    {
+      "path": "evidence/iterations/before_original_generation_contract_phase12_passing_replay.json",
+      "sha256": "73614e70348e5adb0b8b68bead6a315674307201187afa0cb5babd3286199942",
+      "bytes": 793611
+    },
+    {
+      "path": "evidence/iterations/before_original_generation_contract_reproduction_results.json",
+      "sha256": "c7414392e19bc80f5ba7b9d733505784610668739370b5657c155f0af9a7eead",
+      "bytes": 59231
+    },
+    {
+      "path": "evidence/iterations/before_reference_noun_diagnostics_after.json",
+      "sha256": "58f627ebc0c2b6cffa11322bcbc6b3a98f63ec86a886751969b1e0adf40e7fc7",
+      "bytes": 10292017
+    },
+    {
+      "path": "evidence/iterations/before_reference_noun_diagnostics_after_execution.json",
+      "sha256": "7616468cd2b4a4a9234f7c37ff1f7003879bbda289c78a82e4bf23950e5c92d1",
+      "bytes": 142
+    },
+    {
+      "path": "evidence/iterations/before_reference_noun_phase12_passing_replay.json",
+      "sha256": "53f97fbbc7071b5e5ddb2f2c933d1a12c7d1b7912d75597b5ecb32cbbde8132b",
+      "bytes": 793611
+    },
+    {
+      "path": "evidence/iterations/before_reference_noun_reproduction_results.json",
+      "sha256": "94fd9ed2db710c0e192ea51ddfb319a7274f413ee6980dffcb9b8f00d6b30f5d",
+      "bytes": 59231
+    },
+    {
+      "path": "evidence/iterations/before_scoped_locale_diagnostics_after.json",
+      "sha256": "1c10d6fffe316176947bf64cacbf7b2e36698670589c312801623afe051e9868",
+      "bytes": 10292017
+    },
+    {
+      "path": "evidence/iterations/before_scoped_locale_diagnostics_after_execution.json",
+      "sha256": "7616468cd2b4a4a9234f7c37ff1f7003879bbda289c78a82e4bf23950e5c92d1",
+      "bytes": 142
+    },
+    {
+      "path": "evidence/iterations/before_scoped_locale_phase12_passing_replay.json",
+      "sha256": "ad5bdaf5fe3cb6f2e8b6313d5e207e3b9364c9bcf900023e8870607ccd413e1b",
+      "bytes": 793611
+    },
+    {
+      "path": "evidence/iterations/before_scoped_locale_reproduction_results.json",
+      "sha256": "a9b7359a1bd70e9dd67aedbb68c97603df2f0dd5b04420e395cba503a70dad2b",
+      "bytes": 59231
+    },
+    {
+      "path": "evidence/iterations/four_critical_before_final_source.json",
+      "sha256": "c2569bf4b727cf686b2130b505ab2cf97869884e1e30ffa1454a14a26fd86a7c",
+      "bytes": 58329
+    },
+    {
+      "path": "evidence/iterations/initial_DIAGNOSTIC_STOP.json",
+      "sha256": "b429b7ebd3eaa5f73400fd6d2e20d115b178193a04e44b4f46cb6481340f2efd",
+      "bytes": 76
+    },
+    {
+      "path": "evidence/iterations/initial_diagnostics_after.json",
+      "sha256": "2675aa02532763f7528a799165eff11b7c14acb010b575740693bf0b2523daeb",
+      "bytes": 9095238
+    },
+    {
+      "path": "evidence/iterations/initial_diagnostics_after_execution.json",
+      "sha256": "8ea6ab2f8d9134b001916fe061209664c9e61dce2c65ca5e940831889bd47e8c",
+      "bytes": 142
+    },
+    {
+      "path": "evidence/iterations/name_grammar_diagnostics_after.json",
+      "sha256": "1f959e494f17cbe9829869c2b08cb457a81c8623ce89d0c3829e5f4c6c358197",
+      "bytes": 9854159
+    },
+    {
+      "path": "evidence/iterations/name_grammar_diagnostics_after_execution.json",
+      "sha256": "063c7cc079ea695563ee5e76e69d0f136b2fe49feb27329db504db458db32376",
+      "bytes": 142
+    },
+    {
+      "path": "evidence/iterations/phase12_before_final_source.json",
+      "sha256": "5913c6e8e270b76cccf61af157b57d066d16d5a2439722d6fd9b9145a7b047e3",
+      "bytes": 759378
+    },
+    {
+      "path": "evidence/iterations/phase12_last_invocation.stderr.log",
+      "sha256": "8a4ff99664ad761d1abf9e6d7c34e43f24c76ce4b015f604585135b041b3070b",
+      "bytes": 1152
+    },
+    {
+      "path": "evidence/iterations/slot_fixed_diagnostics_after.json",
+      "sha256": "c93b148d6a8c63f5851b79d0967b1c8231cd3707b0bc96101943d0871d37bab3",
+      "bytes": 9202365
+    },
+    {
+      "path": "evidence/iterations/slot_fixed_diagnostics_after_execution.json",
+      "sha256": "70ca6a9d169d1784a525e8852b80cdb5b227a988efddfa72544c4b2496f56303",
+      "bytes": 142
+    },
+    {
+      "path": "evidence/known_59_diagnostic_comparison.json",
+      "sha256": "9bf5b7af3246fe55afc51ba2e529989a83a2a6c490927d50fb4f3c5a9dd0eb9b",
+      "bytes": 250221
+    },
+    {
+      "path": "evidence/new_regressions_before.log",
+      "sha256": "659096e08bab23def86af323670f4e1f81b74e2a1475abf645679250bd28d60d",
+      "bytes": 111670
+    },
+    {
+      "path": "evidence/patch10_chatbot.log",
+      "sha256": "af48002b5156e520718d74cbb092dc638dfd7c419bae25c449a8899a3dac4b3d",
+      "bytes": 308704
+    },
+    {
+      "path": "evidence/patch11_chatbot.log",
+      "sha256": "d321bc43a2e784382e6ce78845cbfdce987f5dd1f1e4f032f79350eac4992726",
+      "bytes": 308327
+    },
+    {
+      "path": "evidence/patch1_controls.log",
+      "sha256": "f3688001bf3a1dc3209013a72883e6551457c068bab24bb9b8c9b3a7838b9c18",
+      "bytes": 90187
+    },
+    {
+      "path": "evidence/patch2_controls.log",
+      "sha256": "dc3949f181456bcc4253be8fb2a8ac045dd73a0cff3a32f45b17925acdd29f59",
+      "bytes": 84470
+    },
+    {
+      "path": "evidence/patch3_chatbot.log",
+      "sha256": "4f8878ee18659140668ff9f4c0b2dc96f17fe79b261cd9832085f7e40b4886c8",
+      "bytes": 304606
+    },
+    {
+      "path": "evidence/patch4_chatbot.log",
+      "sha256": "d81b867ef2b46192b617457564a4fc96000f72d3fef1063549feb1bf85c279dd",
+      "bytes": 303609
+    },
+    {
+      "path": "evidence/patch5_chatbot.log",
+      "sha256": "fa0a051c62a115a0b8b7d8c8b2d807dec0835573b0acc2ca50c59867a0a2a876",
+      "bytes": 305254
+    },
+    {
+      "path": "evidence/patch6_chatbot.log",
+      "sha256": "bdbdd1a637da4429c2a253ccf15c0969f61e410e6aee62f86bbb50b33bbd7500",
+      "bytes": 313744
+    },
+    {
+      "path": "evidence/patch7_chatbot.log",
+      "sha256": "80bc78046afbdbaf2bbc71fd48e3ec27d539006d7a11297d0cdbc803111c7d3f",
+      "bytes": 305740
+    },
+    {
+      "path": "evidence/patch8_chatbot.log",
+      "sha256": "091c2c6c15807ec39e231e425d0b4ad29477d537520d68cd28c33b95229b6f8a",
+      "bytes": 306484
+    },
+    {
+      "path": "evidence/patch9_chatbot.log",
+      "sha256": "d1270869a4843753bc62fd3a6115b4b5f102da04ec4dbbed8a79e2282f74e39a",
+      "bytes": 305712
+    },
+    {
+      "path": "evidence/pdf_verification.json",
+      "sha256": "6c01b4054c2b6c2ad96e79cf9b6e34e70e7561079337ce9779b8757018ae78bd",
+      "bytes": 417
+    },
+    {
+      "path": "evidence/phase12/after/phase12_passing_replay.json",
+      "sha256": "580f74b92316fd6dce0e79269846c7808b4982b15cbdb791a3a72c779431b8c8",
+      "bytes": 757927
+    },
+    {
+      "path": "evidence/phase12/after.stderr.log",
+      "sha256": "56dd0aec7a7621146326e752079d642b8ee99fb59e30a0a1e0833cfa90f843d3",
+      "bytes": 167
+    },
+    {
+      "path": "evidence/phase12/after.stdout.log",
+      "sha256": "3bad6269f1c9e9d65c79c8e7687fd2f1f0b6cb2ade2a0da1e17085ec1a2fc5e0",
+      "bytes": 217
+    },
+    {
+      "path": "evidence/phase12/before/phase12_passing_replay.json",
+      "sha256": "64d5acd90349d217c55bba4f70806d9c6e99be6a5e9b1bd9cf923b637f27607f",
+      "bytes": 748380
+    },
+    {
+      "path": "evidence/phase12/before.stderr.log",
+      "sha256": "25548a3849b5108ae3d8491e3dd238530dd0e292b3d7fe711fe7f91bb2d0fac5",
+      "bytes": 167
+    },
+    {
+      "path": "evidence/phase12/before.stdout.log",
+      "sha256": "39bc3931242c8de96c597db18cffc2f768dca53c2fed82c3be6aa4c0ff080808",
+      "bytes": 192
+    },
+    {
+      "path": "evidence/phase12/compare_phase12.cjs",
+      "sha256": "aa3b2ea37b06ee6663f9a72b590f93041c47d94ae158c13ede6d902f6a5c102e",
+      "bytes": 6559
+    },
+    {
+      "path": "evidence/phase12/final/phase12_passing_replay.json",
+      "sha256": "35f86683f611397c67d1aefdc4aa1998b4f3fcccab2d3c364dd22b14445dfea7",
+      "bytes": 759181
+    },
+    {
+      "path": "evidence/phase12/final.stderr.log",
+      "sha256": "eec7121cb7d2900b058f617160771aee16bda48645580ac67a4033d9015939c5",
+      "bytes": 167
+    },
+    {
+      "path": "evidence/phase12/final.stdout.log",
+      "sha256": "39bc3931242c8de96c597db18cffc2f768dca53c2fed82c3be6aa4c0ff080808",
+      "bytes": 192
+    },
+    {
+      "path": "evidence/phase_changes.patch",
+      "sha256": "d8ef6e3b3914ce7cca214308fcfa99bf67f7cf806aed5368f0acc70a14d7c480",
+      "bytes": 109456
+    },
+    {
+      "path": "evidence/preservation_verification.json",
+      "sha256": "2450d3a598ce7be93e676ab853cd1b5589ec17e001ddca4c081d52cef3233766",
+      "bytes": 2171
+    },
+    {
+      "path": "evidence/python_all_final.log",
+      "sha256": "66dc5efb651e09507c26e18a7c0064ca1348397c8a89aae0e08d57f69bf1977d",
+      "bytes": 28446
+    },
+    {
+      "path": "evidence/python_evaluator.log",
+      "sha256": "0474ee747b7f84876dccf2a08d44a769b388ab834e7e6a9222cfbecbac0cae5d",
+      "bytes": 267
+    },
+    {
+      "path": "evidence/python_evaluator_final.log",
+      "sha256": "cf645dd85e9a0ec591af908a35f79fb20828e5bfe3f78ee9a15bd66bf299fa48",
+      "bytes": 267
+    },
+    {
+      "path": "evidence/reproduction_results.json",
+      "sha256": "f86ca69a0b16cc1f25b0efbc1260ededc31938622f2cc1c6c956edfc0adfc06f",
+      "bytes": 59231
+    },
+    {
+      "path": "evidence/state_identity_observations.json",
+      "sha256": "14e666e0314a57de462b49f3fcc6225af10b161b1ee5d790b61c84a4be23fa52",
+      "bytes": 1706
+    },
+    {
+      "path": "evidence/unchanged_original_scoring_rubric.json",
+      "sha256": "80c4347805a5fe5e25ca6c06d6fb3b894ff0a40e0a147cd0be976e1b52bb1995",
+      "bytes": 4560
+    },
+    {
+      "path": "evidence/validation_iterations.json",
+      "sha256": "f528f2abed60b2d1c0e93797c26bff6dacc34d076a835e76d34b6729ca42a2d6",
+      "bytes": 55575
+    },
+    {
+      "path": "evidence/verification_summary.json",
+      "sha256": "85f2b7c4203877a0f7921ff56d1e99d3f774b5973a587bd1aaecbc941c9c4820",
+      "bytes": 3742
+    },
+    {
+      "path": "evidence/verify_and_package.py",
+      "sha256": "98a767ac9ddd176e65b1d1b4409aa8509e2ee44ad67a38532638cfe2e54980d0",
+      "bytes": 7876
+    },
+    {
+      "path": "output/pdf/Skillomate_Deterministic_Reliability_Comparison.pdf",
+      "sha256": "b4cb569fa1278c33d4baf40cb94b2a8f6c3d86cbfc20284ca8c37ab285038683",
+      "bytes": 5541
+    },
+    {
+      "path": "output/pdf/comparison_page_1.png",
+      "sha256": "4c64bd447d366fa2b5499c54541a7528ad188f18352efdd86595e836e59f6d7c",
+      "bytes": 59431
+    },
+    {
+      "path": "output/pdf/comparison_page_2.png",
+      "sha256": "0744334c3bd6ee220ee4a3cbd160875d8c1dab78d348db667ed55ace9ec356cb",
+      "bytes": 71914
+    }
+  ]
+}

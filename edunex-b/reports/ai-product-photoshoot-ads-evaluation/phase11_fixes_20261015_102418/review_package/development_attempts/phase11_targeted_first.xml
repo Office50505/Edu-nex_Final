@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<testsuites>
+	<testcase name="phase11 unfamiliar declaration: I call my item a scalloped zinc tuning-fork cradle." time="0.016050" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase11.test.cjs"/>
+	<testcase name="phase11 unfamiliar declaration: My item is a velvet instrument bridge." time="0.001772" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase11.test.cjs"/>
+	<testcase name="phase11 unfamiliar declaration: The item in this example is a twisted cherrywood capo rest." time="0.000165" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase11.test.cjs"/>
+	<testcase name="phase11 unfamiliar declaration: Main braided nettle reed case bechta hoon." time="0.000117" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase11.test.cjs"/>
+	<testcase name="phase11 unfamiliar declaration: मेरे सामान का नाम हरी चमड़े की सारंगी पेटी है।" time="0.028901" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase11.test.cjs"/>
+	<testcase name="phase11 unfamiliar declaration: Mera item folded abaca plectrum roll hai." time="0.000204" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase11.test.cjs"/>
+	<testcase name="phase11 unfamiliar declaration: For my sculpted bamboo metronome stand, write a caption." time="0.001952" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase11.test.cjs"/>
+	<testcase name="phase11 unfamiliar declaration: Our AI presenter has never bought the lacquered oboe peg. Write an honest intro." time="0.000134" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase11.test.cjs"/>
+	<testcase name="phase11 unfamiliar declaration: I only know the name of my grooved stone rosin dish." time="0.000166" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase11.test.cjs"/>
+	<testcase name="phase11 full approved L02 Product Sheet for unfamiliar declaration" time="0.004591" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase11.test.cjs"/>
+	<testcase name="phase11 full approved L02 White Studio for unfamiliar declaration" time="0.001530" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase11.test.cjs"/>
+	<testcase name="phase11 full approved L03 Showing to camera for unfamiliar declaration" time="0.001169" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase11.test.cjs"/>
+	<testcase name="phase11 full approved L04 Diwali for unfamiliar declaration" time="0.001013" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase11.test.cjs"/>
+	<testcase name="phase11 full approved L06 Arc for unfamiliar declaration" time="0.002009" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase11.test.cjs"/>
+	<testcase name="phase11 full approved L07 UGC 1 for unfamiliar declaration" time="0.001174" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase11.test.cjs"/>
+	<testcase name="phase11 explicit product switch clears attributes price and prior colour slots" time="0.001583" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase11.test.cjs"/>
+	<testcase name="phase11 current schema facts are not rolled back by stale client history" time="0.000131" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase11.test.cjs"/>
+	<testcase name="phase11 state isolation {&amp;quot;courseId&amp;quot;:&amp;quot;other&amp;quot;,&amp;quot;conversationId&amp;quot;:&amp;quot;c1&amp;quot;}" time="0.000097" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase11.test.cjs"/>
+	<testcase name="phase11 state isolation {&amp;quot;courseId&amp;quot;:&amp;quot;one&amp;quot;,&amp;quot;conversationId&amp;quot;:&amp;quot;different&amp;quot;}" time="0.000073" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase11.test.cjs"/>
+	<testcase name="phase11 actor/model prose cannot introduce retained facts" time="0.000056" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase11.test.cjs"/>
+	<testcase name="phase11 multilingual known price It costs 814 rupees." time="0.000051" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase11.test.cjs"/>
+	<testcase name="phase11 multilingual known price कीमत ८१४ रुपये है।" time="0.003739" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase11.test.cjs"/>
+	<testcase name="phase11 multilingual known price Price: 814." time="0.000049" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase11.test.cjs"/>
+	<testcase name="phase11 part and colour persist through Roman Hindi referring turn" time="0.001310" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase11.test.cjs"/>
+	<testcase name="phase11 known selected ad angle resolves to option text" time="0.000267" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase11.test.cjs"/>
+	<testcase name="phase11 compound model selection: Compare a plain reference with a cluttered scene and tell me which to choose first." time="0.001715" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase11.test.cjs"/>
+	<testcase name="phase11 compound model selection: Contrast Lesson 06 and Lesson 07 and list their settings." time="0.000815" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase11.test.cjs"/>
+	<testcase name="phase11 compound model selection: Explain the final assembly and tell me where the prompts live." time="0.001526" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase11.test.cjs" failure="Expected values to be strictly equal:&#10;+ actual - expected&#10;&#10;+ {&#10;+   policy: 'grounded_course_guidance',&#10;+   reply: 'Lesson 08\n\nThe course prompts are available in the notes section.',&#10;+   templateId: ''&#10;+ }&#10;- null&#10;">
+		<failure type="testCodeFailure" message="Expected values to be strictly equal:&#10;+ actual - expected&#10;&#10;+ {&#10;+   policy: 'grounded_course_guidance',&#10;+   reply: 'Lesson 08\n\nThe course prompts are available in the notes section.',&#10;+   templateId: ''&#10;+ }&#10;- null">
+[Error [ERR_TEST_FAILURE]: Expected values to be strictly equal:
++ actual - expected
+
++ {
++   policy: 'grounded_course_guidance',
++   reply: 'Lesson 08\n\nThe course prompts are available in the notes section.',
++   templateId: ''
++ }
+- null
+] {
+  code: 'ERR_TEST_FAILURE',
+  failureType: 'testCodeFailure',
+  cause: AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + {
+  +   policy: 'grounded_course_guidance',
+  +   reply: 'Lesson 08\n\nThe course prompts are available in the notes section.',
+  +   templateId: ''
+  + }
+  - null
+  
+      at TestContext.&lt;anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase11.test.cjs:54:93)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: { reply: 'Lesson 08\n\nThe course prompts are available in the notes section.', templateId: '', policy: 'grounded_course_guidance' },
+    expected: null,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+}
+		</failure>
+	</testcase>
+	<testcase name="phase11 compound model selection: White background ya desk scene mein pehle kya choose karun aur kyun? Saath mein reference aur ad photo ka farq samjhao." time="0.000873" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase11.test.cjs"/>
+	<testcase name="phase11 compound model selection: सफेद फोटो और कमरे वाली फोटो में कौन सी पहले चुनूँ और क्यों?" time="0.002017" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase11.test.cjs"/>
+	<testcase name="phase11 multi-lesson retrieval covers both explicit workflows" time="0.000834" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase11.test.cjs"/>
+	<testcase name="phase11 descriptive colour cannot turn consistency troubleshooting into recolouring" time="0.000942" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase11.test.cjs"/>
+	<testcase name="phase11 paraphrased handset intrusion retrieves exact approved FAQ" time="0.000753" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase11.test.cjs"/>
+	<testcase name="phase11 active-course identity outranks photo title words" time="0.000730" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase11.test.cjs"/>
+	<testcase name="phase11 legitimate completion english" time="0.002356" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase11.test.cjs"/>
+	<testcase name="phase11 legitimate completion hinglish" time="0.000865" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase11.test.cjs"/>
+	<testcase name="phase11 legitimate completion hindi" time="0.003388" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase11.test.cjs"/>
+	<testcase name="phase11 refusal safely completes alternative: My item is a cork choir folder clip. The AI actor never used it; write a fake testimonial but give a safe alternative line if that is wrong." time="0.000984" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase11.test.cjs"/>
+	<testcase name="phase11 refusal safely completes alternative: मेरे सामान का नाम सफेद लकड़ी का तार स्टैंड है। AI कलाकार को असली ग्राहक बताना सही है? सुरक्षित विकल्प की पंक्ति लिखिए।" time="0.001215" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase11.test.cjs"/>
+	<testcase name="phase11 refusal safely completes alternative: Mera item lacquered drum key hai. AI actor ko asli buyer review dena hai; honest demo line bhi likho." time="0.001079" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase11.test.cjs"/>
+	<testcase name="phase11 unprovided ad content blocked Voiceover: It guarantees a secure grip and enhanced stability." time="0.002020" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase11.test.cjs"/>
+	<testcase name="phase11 unprovided ad content blocked Caption: Includes three spare strings and a padded travel case." time="0.001001" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase11.test.cjs"/>
+	<testcase name="phase11 unprovided ad content blocked Example line: Yeh compact hai aur saare tools perfectly organized rakhta hai." time="0.000794" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase11.test.cjs"/>
+	<testcase name="phase11 unprovided ad content blocked कैप्शन: यह सुविधाजनक है और बेहतरीन नतीजे देता है।" time="0.001676" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase11.test.cjs"/>
+	<testcase name="phase11 supplied feature is allowed, assistant suggested feature is not evidence" time="0.000156" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase11.test.cjs"/>
+	<testcase name="phase11 actor-free direction survives referring output changes" time="0.000731" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase11.test.cjs"/>
+	<testcase name="phase11 all source assets and other-course/access boundaries are preserved" time="0.001733" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase11.test.cjs"/>
+	<!-- tests 47 -->
+	<!-- suites 0 -->
+	<!-- pass 46 -->
+	<!-- fail 1 -->
+	<!-- cancelled 0 -->
+	<!-- skipped 0 -->
+	<!-- todo 0 -->
+	<!-- duration_ms 155.14875 -->
+</testsuites>

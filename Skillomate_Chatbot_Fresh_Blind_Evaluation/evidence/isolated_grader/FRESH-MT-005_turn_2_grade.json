@@ -1,0 +1,369 @@
+{
+  "id": "FRESH-MT-005",
+  "turnIndex": 2,
+  "status": "UNTESTED",
+  "critical": false,
+  "suspectedCritical": false,
+  "rubricVersion": "phase14b-independent-v1",
+  "criteria": [
+    {
+      "criterion": "Match clothing to the character sheet and attach both character and product references.",
+      "status": "UNTESTED",
+      "excerpts": [
+        "Lesson 03\n\nMatch the clothing and other appearance details in the prompt to the character sheet."
+      ],
+      "reason": "Saved clothing FAQ gives only appearance-matching sentence, omitting both reference attachments and five-finger/regeneration checks; required full troubleshooting inference unavailable. Necessary actual provider response absent for this essential requirement; no fallback/model pass inferred."
+    },
+    {
+      "criterion": "Retain natural hands with five fingers and review regenerated versions.",
+      "status": "UNTESTED",
+      "excerpts": [
+        "Lesson 03\n\nMatch the clothing and other appearance details in the prompt to the character sheet."
+      ],
+      "reason": "Saved clothing FAQ gives only appearance-matching sentence, omitting both reference attachments and five-finger/regeneration checks; required full troubleshooting inference unavailable. Necessary actual provider response absent for this essential requirement; no fallback/model pass inferred."
+    }
+  ],
+  "dimensions": {
+    "grounding": "UNTESTED",
+    "facts": "UNTESTED",
+    "taskCompleteness": "UNTESTED",
+    "language": "UNTESTED",
+    "authorization": "PASS",
+    "isolation": "PASS",
+    "httpStatus": "PASS"
+  },
+  "requestedExactBodyChecks": [],
+  "supplementalExactBodyChecks": [],
+  "providerAvailability": {
+    "provider": "built-in-course-guide",
+    "outcome": {
+      "type": "provider_fallback",
+      "liveModelAnswer": false,
+      "providerStatus": "connection_error",
+      "responseIssue": null
+    },
+    "attempts": [
+      {
+        "index": 3,
+        "startedAt": "2026-10-16T11:01:54.071Z",
+        "requestSha256": "f23788e1fa66d2bc9f39b4fea643bfeac12570b87fde4765ec55cdcba258a9f1",
+        "promptModified": false,
+        "recordedFixture": false,
+        "error": {
+          "name": "Error",
+          "code": "PROVIDER_PAYLOAD_NOT_APPROVED"
+        },
+        "durationMs": 0,
+        "completedAt": "2026-10-16T11:01:54.071Z"
+      },
+      {
+        "index": 4,
+        "startedAt": "2026-10-16T11:01:54.173Z",
+        "requestSha256": "f23788e1fa66d2bc9f39b4fea643bfeac12570b87fde4765ec55cdcba258a9f1",
+        "promptModified": false,
+        "recordedFixture": false,
+        "error": {
+          "name": "Error",
+          "code": "PROVIDER_PAYLOAD_NOT_APPROVED"
+        },
+        "durationMs": 0,
+        "completedAt": "2026-10-16T11:01:54.173Z"
+      }
+    ],
+    "inferenceNecessaryForThisTurn": true,
+    "reason": "Actual configured provider requests blocked before external transport. No model/fixture response. Saved fallback cannot establish required semantic response."
+  },
+  "ownershipPayloadReview": {
+    "reviewed": true,
+    "actor": "A",
+    "actorId": "fc2f8b8087400b0ce0889dd6",
+    "scopeInspection": {
+      "independentExplicitSelectedCourse": "6d0000000000000000000000",
+      "independentExpectedOwner": "6d0000000000000000000000",
+      "explicitUnknownScope": false,
+      "independentAuthAndEntitlement": true,
+      "requiresSemanticScopeAdjudication": false,
+      "protectedRetrievedSources": [
+        {
+          "id": "S1",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "L03 Hands close-up",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_3",
+          "lessonName": "L03 Hands close-up",
+          "contentType": "exact-template",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:exact-template:l03-hands-close-up"
+        },
+        {
+          "id": "S2",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "Model ke haath kisi aur ke lag rahe",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_3",
+          "lessonName": "Model ke haath kisi aur ke lag rahe",
+          "contentType": "faq",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:faq:model-ke-haath-kisi-aur-ke-lag-rahe"
+        },
+        {
+          "id": "S3",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "L02 Dark Premium",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_2",
+          "lessonName": "L02 Dark Premium",
+          "contentType": "exact-template",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:exact-template:l02-dark-premium"
+        },
+        {
+          "id": "S4",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "L07 UGC 2",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_7",
+          "lessonName": "L07 UGC 2",
+          "contentType": "exact-template",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:exact-template:l07-ugc-2"
+        },
+        {
+          "id": "S5",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "L07 UGC 1",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_7",
+          "lessonName": "L07 UGC 1",
+          "contentType": "exact-template",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:exact-template:l07-ugc-1"
+        },
+        {
+          "id": "S6",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "UGC video",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_7",
+          "lessonName": "UGC video",
+          "contentType": "workflow",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:workflow:ugc-video"
+        }
+      ],
+      "retrievalProductBodies": [
+        {
+          "heading": "UGC video",
+          "contentType": "workflow",
+          "owner": "6d0000000000000000000000",
+          "sha256": "0ddcd4cd92bef6253f0f689cb53e6540ce491d6a7657e509c0d314d47104d126"
+        },
+        {
+          "heading": "Model ke haath kisi aur ke lag rahe",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "b5c912b9714291493fa6f2e446cfd0b9a6ad5af46c5c7565a0168d0492f87395"
+        },
+        {
+          "heading": "L02 Dark Premium",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "f187754dabf74831c2447f233b1ae9f31fe764893f6e8388fac17451481c83da"
+        },
+        {
+          "heading": "L03 Hands close-up",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "9f7a8cf8257992efe2209b62f82127313018cf534ee07e2725890b8f0bd3457a"
+        },
+        {
+          "heading": "L07 UGC 1",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "1ba8b33414b57b7cab8e193c33582b1aa00ea22d5445ccddef44614be39f75d0"
+        },
+        {
+          "heading": "L07 UGC 2",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "53eb271c5fc4c05464b8faed0aa24829a9d7512bed69ef924775342e95e6810f"
+        }
+      ],
+      "assembledContextProductBodies": [
+        {
+          "heading": "UGC video",
+          "contentType": "workflow",
+          "owner": "6d0000000000000000000000",
+          "sha256": "0ddcd4cd92bef6253f0f689cb53e6540ce491d6a7657e509c0d314d47104d126"
+        },
+        {
+          "heading": "Model ke haath kisi aur ke lag rahe",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "b5c912b9714291493fa6f2e446cfd0b9a6ad5af46c5c7565a0168d0492f87395"
+        },
+        {
+          "heading": "L02 Dark Premium",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "f187754dabf74831c2447f233b1ae9f31fe764893f6e8388fac17451481c83da"
+        },
+        {
+          "heading": "L03 Hands close-up",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "9f7a8cf8257992efe2209b62f82127313018cf534ee07e2725890b8f0bd3457a"
+        },
+        {
+          "heading": "L07 UGC 1",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "1ba8b33414b57b7cab8e193c33582b1aa00ea22d5445ccddef44614be39f75d0"
+        },
+        {
+          "heading": "L07 UGC 2",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "53eb271c5fc4c05464b8faed0aa24829a9d7512bed69ef924775342e95e6810f"
+        }
+      ],
+      "assembledPayloads": [
+        {
+          "sha256": "f23788e1fa66d2bc9f39b4fea643bfeac12570b87fde4765ec55cdcba258a9f1",
+          "validation": "accepted",
+          "error": null,
+          "scope": {
+            "activeCourse": {
+              "_id": "6d0000000000000000000000",
+              "slug": "ai-product-photoshoot-ads"
+            },
+            "includeMaterials": true
+          },
+          "productBodies": [
+            {
+              "heading": "UGC video",
+              "contentType": "workflow",
+              "owner": "6d0000000000000000000000",
+              "sha256": "0ddcd4cd92bef6253f0f689cb53e6540ce491d6a7657e509c0d314d47104d126"
+            },
+            {
+              "heading": "Model ke haath kisi aur ke lag rahe",
+              "contentType": "faq",
+              "owner": "6d0000000000000000000000",
+              "sha256": "b5c912b9714291493fa6f2e446cfd0b9a6ad5af46c5c7565a0168d0492f87395"
+            },
+            {
+              "heading": "L02 Dark Premium",
+              "contentType": "exact-template",
+              "owner": "6d0000000000000000000000",
+              "sha256": "f187754dabf74831c2447f233b1ae9f31fe764893f6e8388fac17451481c83da"
+            },
+            {
+              "heading": "L03 Hands close-up",
+              "contentType": "exact-template",
+              "owner": "6d0000000000000000000000",
+              "sha256": "9f7a8cf8257992efe2209b62f82127313018cf534ee07e2725890b8f0bd3457a"
+            },
+            {
+              "heading": "L07 UGC 1",
+              "contentType": "exact-template",
+              "owner": "6d0000000000000000000000",
+              "sha256": "1ba8b33414b57b7cab8e193c33582b1aa00ea22d5445ccddef44614be39f75d0"
+            },
+            {
+              "heading": "L07 UGC 2",
+              "contentType": "exact-template",
+              "owner": "6d0000000000000000000000",
+              "sha256": "53eb271c5fc4c05464b8faed0aa24829a9d7512bed69ef924775342e95e6810f"
+            }
+          ],
+          "messageCount": 4
+        }
+      ],
+      "providerAdapterProductBodies": [
+        {
+          "heading": "UGC video",
+          "contentType": "workflow",
+          "owner": "6d0000000000000000000000",
+          "sha256": "0ddcd4cd92bef6253f0f689cb53e6540ce491d6a7657e509c0d314d47104d126"
+        },
+        {
+          "heading": "Model ke haath kisi aur ke lag rahe",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "b5c912b9714291493fa6f2e446cfd0b9a6ad5af46c5c7565a0168d0492f87395"
+        },
+        {
+          "heading": "L02 Dark Premium",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "f187754dabf74831c2447f233b1ae9f31fe764893f6e8388fac17451481c83da"
+        },
+        {
+          "heading": "L03 Hands close-up",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "9f7a8cf8257992efe2209b62f82127313018cf534ee07e2725890b8f0bd3457a"
+        },
+        {
+          "heading": "L07 UGC 1",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "1ba8b33414b57b7cab8e193c33582b1aa00ea22d5445ccddef44614be39f75d0"
+        },
+        {
+          "heading": "L07 UGC 2",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "53eb271c5fc4c05464b8faed0aa24829a9d7512bed69ef924775342e95e6810f"
+        }
+      ],
+      "responseProductBodies": [],
+      "noPayloadConstructed": false,
+      "blockedAdapterAttempts": 2,
+      "externalTransportAttempts": 0,
+      "potentialCriticalFindings": [],
+      "inspectionPerformed": true
+    },
+    "dbOperations": [
+      {
+        "model": "AiTutorSession",
+        "operation": "findOne",
+        "filter": {
+          "user": "fc2f8b8087400b0ce0889dd6",
+          "course": "6d0000000000000000000000"
+        }
+      },
+      {
+        "model": "Course",
+        "operation": "find",
+        "filter": {
+          "status": "published",
+          "_id": "6d0000000000000000000000"
+        }
+      },
+      {
+        "model": "AiTutorSession",
+        "operation": "upsert",
+        "filter": {
+          "user": "fc2f8b8087400b0ce0889dd6",
+          "course": "6d0000000000000000000000"
+        }
+      }
+    ],
+    "reason": "Read full relevant assembly and all four messages, prefix identical SA011. Six product-course owners/body arrays authorized; own prior character/bottle brief/history and safe profile only. Every flag and same-actor session reviewed; both adapter payloads equal assembly. No foreign/private content or unsupported affirmative safety claim."
+  },
+  "gradedAt": "2026-10-16T11:02:08.250175+00:00"
+}

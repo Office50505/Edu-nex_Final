@@ -1,0 +1,335 @@
+--- working-tree-before/edunex-b/services/productTutorIntent.js
++++ phase14a/edunex-b/services/productTutorIntent.js
+@@ -1,4 +1,16 @@
+ // Product-course request structure. No source facts, saved questions or answer text.
++function productCopyIntent(message) {
++ const clauses=String(message||'').split(/[;.!?।\n]+|,(?=\s*(?:do not|don't|not)\b)/iu);
++ const request=clauses.filter(clause=>!/\b(?:do not|don't|never)\s+(?:copy|give|send|return|provide|show|generate|write|use)\b.{0,100}\b(?:prompts?|templates?|text|body)\b|\b(?:photo\s+)?(?:prompts?|templates?)\s+(?:mat|nahi)\b|(?:प्रॉम्प्ट|टेम्पलेट|पाठ).{0,20}(?:मत|नहीं)/iu.test(clause)).join('. ')
++  .replace(/\b(?:not|without)\s+(?:(?:a|an|the|any)\s+)?(?:(?:saved|approved|exact)\s+)?(?:prompts?|templates?)\b/gi,'');
++ const sourceCopy=/\b(?:exact|approved|saved|verbatim|copy|reproduce|copy[- ]?paste)\b|स्वीकृत|सटीक/i.test(request);
++ const complete=/\b(?:full|complete|entire)\b|पूरा|पूरी|सम्पूर्ण|संपूर्ण|\bpoor[ai]\b/i.test(request);
++ const copyAction=/\b(?:copy|paste|reproduce|return|send|give|provide)\b|दीजिए|(?:^|\s)दें|\bdo\b/i.test(request)
++  || /\b(?:need|want)\b.{0,35}\b(?:full|complete|entire|verbatim)\b/i.test(request);
++ const generation=!sourceCopy && /\b(?:create|draft|generate|write|make)\b.{0,65}\b(?:original|new|custom|practice)\b.{0,35}\bprompts?\b/i.test(request);
++ const educational=/\b(?:explain|why|meaning|useful|difference|compare)\b|समझा|क्यों|अर्थ/i.test(request);
++ return {request,sourceCopy,complete,copyAction,generation,educational};
++}
+ function productIntentSignals(message) {
+  const text=String(message||'');
+  const workflow=/\b(?:workflow|steps|order|process|assembly)\b|वर्कफ़्लो|क्रम|कदम/i.test(text);
+@@ -19,6 +31,7 @@
+  const task=short ? context.previousTask || history.filter(t=>t.role==='user').at(-1)?.content || message : message;
+  const s=productIntentSignals(task);
+  if(hasTemplate)return {mode:'exact_template',reason:'complete_authorized_asset'};
++ if(productCopyIntent(task).generation)return {mode:'model',reason:'original_generation'};
+  if(s.compound||s.wholeJourney)return {mode:'model',reason:'compound_or_complete_journey'};
+  if(s.reasoning&&!context.troubleshooting&&!context.requestedOutputs?.includes('composition')&&context.topic!=='festive')return {mode:'model',reason:'open_reasoning'};
+  if(hasGuidance&&context.topic)return {mode:'local_guidance',reason:'matched_task_and_source'};
+@@ -37,5 +50,5 @@
+  }
+  return /\b(?:mera|meri|main|bechta|mujhe|kya|kaise|kaunsi|mein|hai|hain|batao|likhu|chahiye|nahi|agar|karu|karo|rha|yeh|iska|bhi|toh)\b/i.test(q)?'hinglish':'english';
+ }
+-module.exports={productIntentSignals,productResponseSelection,productResponseLanguage};
++module.exports={productCopyIntent,productIntentSignals,productResponseSelection,productResponseLanguage};
+ 
+
+--- working-tree-before/edunex-b/services/productTutorKnowledge.js
++++ phase14a/edunex-b/services/productTutorKnowledge.js
+@@ -1,5 +1,5 @@
+-const {extractEntity,extraSlots,scopeProductState,taskConstraints} = require('./productTutorState');
+-const { productIntentSignals, productResponseLanguage } = require('./productTutorIntent');
++const {extractEntity,extraSlots,scopeProductState,taskConstraints,maskProductOperations} = require('./productTutorState');
++const { productCopyIntent, productIntentSignals, productResponseLanguage } = require('./productTutorIntent');
+ const fs = require('node:fs');
+ const path = require('node:path');
+ const crypto = require('node:crypto');
+@@ -78,11 +78,24 @@
+ }
+ 
+ function wantsProductPrompt(message) {
+-  const request=String(message||'').replace(/\b(?:not|without)\s+(?:(?:a|an|the|any)\s+)?(?:(?:saved|approved|exact)\s+)?(?:prompts?|templates?)\b/gi,'');
++  const intent=productCopyIntent(message);
++  const {request}=intent;
++  if(intent.generation || intent.educational&&!intent.copyAction)return false;
+   // Locating saved prompts is a different task from copying their literal body.
+   if (productIntentSignals(request).location && !/\b(?:copy|reproduce|verbatim)\b|सटीक.*(?:दीजिए|दो)/i.test(request)) return false;
++  if(intent.complete && /\b(?:text|body)\b|पाठ/i.test(request)
++    && (findProductTemplate(request) || intent.sourceCopy))return true;
+   return /\b(?:prompts?|templates?|wording|copy[- ]?paste)\b|प्रॉम्प्ट|प्रॉम्पट/i.test(request)
+     && /\b(?:exact|copy|approved|give|send|return|reproduce|complete|entire|original|likh|likhu|do|chahiye)\b|सटीक|सही|दो|दीजिए/i.test(request);
++}
++
++function wantsProductScene(message) {
++  const intent=productCopyIntent(message);
++  // A direct request to make a named course scene may use its saved reference.
++  // Mentioning that scene in an explanation or an original draft is not enough.
++  return !intent.educational&&!intent.generation
++    && /\b(?:make|create|generate)\b/i.test(intent.request)
++    && /white studio|lifestyle|dark premium/i.test(intent.request);
+ }
+ 
+ function templateQuery(value) {
+@@ -114,10 +127,11 @@
+ }
+ 
+ function cleanProductName(value) {
+-  const name = normalize(value).replace(/^(?:(?:a|an|the|my|our)\s+)+/i, '').trim();
++  const name = String(value||'').replace(/\s+/g,' ').replace(/^(?:(?:a|an|the|my|our)\s+)+/i, '').trim();
+   if (!name || name.length > 100 || /[\[\]{}<>\n]/.test(name)
+     || /\b(?:it|that|this|changing|creating|making|same|me|course|prompt|template|ignore|system|developer|instead|mentioned|previous|above|discussed|earlier|features?|benefits?|angle|details|customer|them)\b/i.test(name)
+     || /\b(?:not|no|given|provided|unknown|unset|unavailable)\b|अज्ञात/iu.test(name)
++    || /\b(?:changed?|recolou?red|replace|switch)\b.{0,50}\b(?:to|with)\b/i.test(name)
+     || /^(?:(?:clearly )?adult |young Indian )?(?:man|woman|actor|presenter)$/i.test(name)
+     || /^(?:product|item|one|video|photo|ad|hooks?|scripts?|captions?)(?:\s|$)/i.test(name)) return '';
+   return name;
+@@ -129,6 +143,8 @@
+   for (const key of ['part', 'colour', 'person']) if (typeof previous[key] === 'string') values[key] = normalize(previous[key]).slice(0, 100);
+   const userTexts = [...(previous.schemaVersion===2?[]:history).filter(t => t.role === 'user').map(t => t.content), message];
+   for (const text of userTexts) {
++    // Action clauses cannot establish identity through the broad "of/for" fallback.
++    const identityText=maskProductOperations(text);
+     // Explicit declarations beat request prepositions; referring phrases never replace a known entity.
+     // Commas/clauses terminate the noun phrase, keeping instructions and prices out of the slot.
+     const end = '(?=\\s+(?:(?:on|through|via|at|priced|with|using|and\\s+(?:I|we|write|give|preserve|two|three|several|some|a pair)|in\\s+(?:Lesson|English|Hindi|Hinglish))\\b|for\\s+(?:[₹$]|\\d))|[,:;.!?।\\n]|$)';
+@@ -144,25 +160,17 @@
+       /\b(?:mera|meri)\s+product\s+([\p{L}\p{N}\p{M} '\-]{1,100}?)\s+hai\b/iu,
+       /(?:मेरा|मेरी)\s+(?:प्रोडक्ट|उत्पाद)\s+([\p{L}\p{N}\p{M} '\-]{1,100}?)\s+है/u,
+     ];
+-    const declared = declarations.map(pattern => String(text).match(pattern)).find(Boolean);
++    const declared = declarations.map(pattern => identityText.match(pattern)).find(Boolean);
+     const requested = /\b(?:prompts?|templates?|demo|demonstration|showcase|hooks?|scripts?|captions?|ad(?:\s+plan)?|product sheet|lifestyle|dark premium)\b/i.test(text)
+-      ? [...String(text).matchAll(new RegExp('(?=\\b(?:for|of)\\s+' + noun + end + ')', 'giu'))].map(m => m[1]) : [];
++      ? [...identityText.matchAll(new RegExp('(?=\\b(?:for|of)\\s+' + noun + end + ')', 'giu'))].map(m => m[1]) : [];
+     const sceneSubject = /\b(?:compare|contrast)\b/i.test(text)
+-      ? String(text).match(new RegExp('\\baround\\s+'+noun+end,'iu'))?.[1] : '';
++      ? identityText.match(new RegExp('\\baround\\s+'+noun+end,'iu'))?.[1] : '';
+     const product = cleanProductName(extractEntity(text)?.product || '') || cleanProductName(declared?.[1] || '') || requested.map(cleanProductName).find(Boolean) || cleanProductName(sceneSubject);
+     if (product) {
+       if(values.product && product.toLowerCase()!==values.product.toLowerCase())for(const field of ['part','colour','person'])delete values[field];
+       values.product = product;
+     }
+-    // A modifier belongs to the request, not the colour: stop before punctuation
+-    // or a preservation clause. Keep noun determiners inside the approved slot.
+-    const variant = String(text).match(/\b(?:chang(?:e|ing)|recolou?r(?:ing)?)\s+(?:(?:the\s+)?colou?r\s+of\s+)?([\p{L}\p{N}][\p{L}\p{N}\p{M} '\-/]{0,79}?)\s+to\s+([\p{L}\p{N}][\p{L}\p{N}\p{M} '\-/]{0,59}?)(?=\s+(?:and|while|but)\s+(?:keep|preserv|leav|retain|do\s+not|don't)|[,;.!?।\n]|$)/iu);
+-    if (variant && /^[\p{L}\p{N} '\-]+$/u.test(variant[1]) && /^[\p{L}\p{N} '\-]+$/u.test(variant[2])) {
+-      const prefix=String(text).slice(0,variant.index);
+-      if (!/\b(?:do not|don't|never|not)\s*$/i.test(prefix)) {
+-        values.part = normalize(variant[1]); values.colour = normalize(variant[2]);
+-      }
+-    }
++    // Active/passive/multilingual recolours share typed operations in extraSlots.
+     for(const [key,value]of Object.entries(extraSlots(text)))if(['part','colour'].includes(key)&&value)values[key]=value;
+     const person = String(text).match(/\b(?:young Indian|adult|character|model|for a)\s+(woman|man)\b/i);
+     if (person) values.person = person[1].toLowerCase();
+@@ -257,7 +265,15 @@
+ 
+ function productRequestContext(message, history = [], previous = {}) {
+   // The title names this course; it is not a lesson-task signal.
+-  const text = String(message || '').replace(/\bAI\s+Product\s+Photoshoot\s*(?:&|and)\s*Ads\b/gi,'course');
++  let text = String(message || '');
++  // Entity words are data, not symptoms; retain actual symptom clauses outside them.
++  const declared=extractEntity(text);
++  const identity=declared?.product || previous.product;
++  if(identity){
++    const escaped=identity.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
++    text=text.replace(new RegExp(escaped,'gu'),' '.repeat(identity.length));
++  }
++  text=text.replace(/\bAI\s+Product\s+Photoshoot\s*(?:&|and)\s*Ads\b/gi,'course');
+   const priorUsers = history.filter(t=>t.role==='user').map(t=>t.content);
+   const explicitLesson = productLessonNumber(text);
+   const priorLesson = priorUsers.slice().reverse().map(productLessonNumber).find(Boolean) || previous.lessonNumber || null;
+@@ -316,5 +332,5 @@
+ }
+ 
+ module.exports = { PRODUCT_SLUGS, PRODUCT_RECORDS, PRODUCT_TEMPLATES, cleanPdfText, parseProductKnowledge,
+-  wantsProductPrompt, findProductTemplate, productSlots, renderProductTemplate,
++  wantsProductPrompt, wantsProductScene, findProductTemplate, productSlots, renderProductTemplate,
+   cleanProductName, productFacts, productRequestContext, productLessonNumber, requestedProductOutputs };
+
+--- working-tree-before/edunex-b/services/productTutorResponse.js
++++ phase14a/edunex-b/services/productTutorResponse.js
+@@ -1,5 +1,5 @@
+ const { unsupportedAdClaims } = require('./productTutorGrounding');
+-const { PRODUCT_SLUGS, findProductTemplate, wantsProductPrompt, productSlots, renderProductTemplate, productFacts, productRequestContext } = require('./productTutorKnowledge');
++const { PRODUCT_SLUGS, findProductTemplate, wantsProductPrompt, wantsProductScene, productSlots, renderProductTemplate, productFacts, productRequestContext } = require('./productTutorKnowledge');
+ const { draftProductAd, missingProductDeliverables } = require('./productTutorTasks');
+ 
+ const { productResponseSelection, productResponseLanguage:tutorLanguage } = require('./productTutorIntent');
+@@ -120,8 +120,9 @@
+   const creative=draftProductAd({message,facts,language,records:knowledge.records});
+   // A saved template request takes priority over an original practice draft.
+   const context=knowledge.requestContext || productRequestContext(message,history,knowledge.productContext);
+-  const template = wantsProductPrompt(message) || context.topic==='product_photo'
+-    ? findProductTemplate(message, wantsProductPrompt(message)?history:[], (knowledge.records || []).filter(r=>r.contentType==='exact-template')) : null;
++  const exactRequest = wantsProductPrompt(message);
++  const template = exactRequest || wantsProductScene(message)
++    ? findProductTemplate(message, exactRequest?history:[], (knowledge.records || []).filter(r=>r.contentType==='exact-template')) : null;
+   if (!template && facts.product && /\b(?:which|what|remember)\b.{0,70}\b(?:price|channel|product|details)\b/i.test(message) && /\b(?:I (?:told|gave|mentioned)|did I (?:tell|give)|you (?:remember|recall)|remember|previously supplied)\b/i.test(message)) {
+     const known=[facts.product,...facts.attributes,facts.price?`₹${facts.price}`:'',facts.channel||''].filter(Boolean).join(' · ');
+     return {reply:language==='hindi'?`आपने बताया: ${known}`:language==='hinglish'?`Tumne yeh facts diye hain: ${known}`:`You supplied: ${known}`,policy:'conversation_product_facts',templateId:''};
+
+--- working-tree-before/edunex-b/services/productTutorState.js
++++ phase14a/edunex-b/services/productTutorState.js
+@@ -1,6 +1,7 @@
+ // Product-course state primitives. Only learner declarations establish product facts.
+ // No product-name dictionary and no model/assistant text is promoted to factual evidence.
+-const compact=value=>String(value||'').normalize('NFKC').replace(/\s+/g,' ').trim();
++// Keep user names in their original Unicode form; normalize keys, not identity text.
++const compact=value=>String(value||'').replace(/\s+/g,' ').trim();
+ function entity(value){
+  const name=compact(value).replace(/^(?:(?:of\s+)?(?:a|an|the|my|our)\s+)+/i,'');
+  if(!name||name.length>100||/[\[\]{}<>]/.test(name)||/\b(?:not|unknown|unset|unavailable|same|that|this|provided|previous|earlier|course|prompt|template|ignore|system|customer|benefits?)\b|अज्ञात|नहीं/u.test(name.toLowerCase()))return '';
+@@ -9,31 +10,70 @@
+ }
+ function extractEntity(text){
+  const q=String(text||'');
+- const stop='(?=\\s+(?:on|through|via|at|with|using|priced|sold|and\\s+(?:I|we|write|give)|for\\s+[₹$0-9])\\b|[,;.!?।\\n]|$)';
++ const replacements=productOperations(q).filter(op=>op.type==='replace');
++ if(replacements.length){const op=replacements.filter(op=>!op.negated&&op.product).at(-1);return op?{product:op.product,evidence:compact(q.slice(...op.span)),span:op.span}:null;}
++ const stop='(?=\\s+(?:on|through|via|at|with|using|priced|sold|in\\s+(?:a|an|the|Lesson|English|Hindi|Hinglish)|and\\s+(?:I|we|write|give)|for\\s+[₹$0-9])\\b|[,;.!?।\\n]|$)';
+  const noun="([\\p{L}\\p{N}][\\p{L}\\p{N}\\p{M} '&/\\-]{0,100}?)";
+  const patterns=[
+-  new RegExp('\\b(?:replace|switch|change)\\s+(?:the |my |our )?(?:product|item)\\s+(?:with|to)\\s+'+noun+stop,'iu'),
++  new RegExp('\\b(?:the (?:object|subject)(?: (?:I am photographing|of (?:these|the) (?:photos|photographs)))?|(?:my|our) object) is\\s+'+noun+stop,'iu'),
+   new RegExp('\\b(?:I call (?:my|our|the) (?:item|product)|(?:my|our) (?:item|product) is|the (?:item|product)(?: in (?:this|the) (?:exercise|example))? is|the name of (?:my|our|the) (?:item|product) is)\\s+(?:(?:called|named)\\s+)?'+noun+stop,'iu'),
+   new RegExp('\\bI (?:only |just )?know (?:only |just )?the name of (?:my|our)\\s+'+noun+stop,'iu'),
+-  /(?:मेरे|हमारे)\s+(?:प्रोडक्ट|उत्पाद|सामान|आइटम)\s+का\s+नाम\s+(.+?)\s+है/u,
+-  /(?:मेरा|मेरी|हमारा|हमारी)\s+(?:प्रोडक्ट|उत्पाद|सामान|आइटम)\s+(.+?)\s+है/u,
++  /(?:मेरे|मेरी|मेरा|हमारे|हमारी|हमारा)\s+(?:प्रोडक्ट|उत्पाद|सामान|आइटम|वस्तु|चीज़|चीज)\s+का\s+नाम\s+([^।.!?;\n]+?)\s+है/u,
++  /(?:मेरा|मेरी|हमारा|हमारी)\s+(?:प्रोडक्ट|उत्पाद|सामान|आइटम|वस्तु|चीज़|चीज)\s+([^।.!?;\n]+?)\s+है/u,
++  /\b(?:mere|meri|mera|hamare|hamari|hamara)\s+(?:product|item|samaan|vastu|cheez)\s+ka\s+naam\s+(.+?)\s+hai\b/iu,
+   /\b(?:mera|meri|hamara|hamari)\s+(?:product|item|samaan)\s+(.+?)\s+hai\b/iu,
+   /\b(?:main|mai|hum)\s+(.+?)\s+becht[aei]\s+(?:hoon|hun|hain)\b/iu,
+   new RegExp('\\b(?:for|about)\\s+my\\s+'+noun+stop,'iu'),
+   new RegExp('\\b(?:AI|synthetic|virtual)\\s+(?:presenter|actor|woman|man)\\s+has never (?:bought|used|tested)\\s+'+noun+stop,'iu'),
+   /\bmere\s+(.+?)\s+ke liye\b/iu,
+  ];
+- for(const pattern of patterns){const m=q.match(pattern);if(m){const p=entity(m[1]);if(p)return {product:p,evidence:compact(m[0]).slice(0,240)};}}
++ for(const pattern of patterns){const m=q.match(pattern);if(m){const p=entity(m[1]);if(p)return {product:p,evidence:compact(m[0]).slice(0,240),span:[m.index,m.index+m[0].length]};}}
+  return null;
++}
++
++// Typed user mutations. Values are opaque supplied strings, never colour/product dictionaries.
++function productOperations(text){
++ const q=String(text||'');const operations=[];
++ const end='(?=\\s+(?:and|while|but)\\s+(?:keep|preserv\\w*|leav\\w*|retain|do not|don.t)|[,;.!?।\\n]|$)';
++ const noun="([\\p{L}\\p{N}][\\p{L}\\p{M}\\p{N} '&/\\-]{0,100}?)";
++ const replacementEnd='(?=\\s+(?:with|using|priced|on|at|and\\s+(?:give|write|return|price))\\b|[,;.!?।\\n]|$)';
++ const replacements=[
++  new RegExp('\\b(?:replace|switch|change)\\s+(?:the |my |our )?(?:product|item|object)\\s+(?:with|to)\\s+'+noun+replacementEnd,'giu'),
++  /\b(?:product|item|samaan|vastu)\s+ko\s+([^;.!?।\n]{1,100}?)\s+se\s+(?:replace\s+(?:mat\s+)?karo|(?:mat\s+)?badal\s+(?:do|karo))\b/giu,
++  /(?:प्रोडक्ट|उत्पाद|वस्तु|सामान|आइटम)\s+को\s+([^;.!?।\n]{1,100}?)\s+से\s+(?:मत\s+)?(?:बदलें|बदल दीजिए|बदल दो|बदलो|replace\s+करें)/gu,
++ ];
++ const add=(type,m,values)=>{
++  const prefix=q.slice(0,m.index).split(/[.;!?।\n]/u).at(-1);
++  const negated=/\b(?:do not|don't|never|not|nahi|mat)\s*$|(?:^|\s)(?:नहीं|मत)\s*$/iu.test(prefix)
++    || /\b(?:not|nahi|mat)\b|(?:^|\s)(?:नहीं|मत)(?=\s|$)/u.test(m[0]);
++  operations.push({type,...values,negated,span:[m.index,m.index+m[0].length]});
++ };
++ for(const pattern of replacements)for(const m of q.matchAll(pattern))add('replace',m,{product:entity(m[1])});
++ const recolours=[
++  new RegExp('\\b(?:change|changing|recolou?r(?:ing)?)\\s+(?:(?:the\\s+)?colou?r\\s+of\\s+)?'+noun+'\\s+to\\s+'+noun+end,'giu'),
++  new RegExp('\\bcolou?r\\s+of\\s+'+noun+'\\s+(?:(?:should|must|will)\\s+(?:not\\s+)?be\\s+|is\\s+to\\s+(?:be\\s+)?|)(?:changed|recolou?red|become)\\s+(?:to\\s+)?'+noun+end,'giu'),
++  /(?:sirf\s+)?([\p{L}\p{N}][\p{L}\p{N}\p{M} '\-/]{0,79}?)\s+ka\s+(?:rang|colou?r)\s+([\p{L}\p{N}][\p{L}\p{N}\p{M} '\-/]{0,59}?)\s+(?:mat\s+)?(?:karna|kar\s+do|karo|badal)/giu,
++  /(?:केवल|सिर्फ)\s+([^।;.!?\n]{1,80}?)\s+का\s+रंग\s+([^।;.!?\n]{1,60}?)\s+(?:मत\s+)?(?:करें|करना|कर दीजिए)/gu,
++ ];
++ for(const pattern of recolours)for(const m of q.matchAll(pattern)){
++  const part=compact(m[1]).replace(/^.*?\b(?:mein|sirf)\s+/i,'').replace(/^(?:sirf|only)\s+/i,'');
++  const colour=compact(m[2]);
++  if(part.length<=100&&colour.length<=100)add('recolour',m,{part,colour});
++ }
++ return operations.sort((a,b)=>a.span[0]-b.span[0]);
++}
++
++function maskProductOperations(text){
++ let q=String(text||'');
++ for(const op of productOperations(q).sort((a,b)=>b.span[0]-a.span[0]))q=q.slice(0,op.span[0])+' '.repeat(op.span[1]-op.span[0])+q.slice(op.span[1]);
++ return q;
+ }
+ function extraSlots(text){
+  const q=String(text||'').replace(/[०-९]/g,c=>String(c.charCodeAt(0)-0x0966));const result={};
+  const price=q.match(/(?:\b(?:price|costs?|mrp)(?:\s+is)?\s*[:=]?\s*(?:₹|rs\.?\s*)?|(?:कीमत|मूल्य|दाम)\s*[:=]?\s*|₹\s*)(\d[\d,]*(?:\.\d{1,2})?)/i);if(price)result.price=price[1];
+  if(/(?:price|कीमत|दाम).{0,12}(?:unknown|unset|अज्ञात|नहीं पता)/iu.test(q))result.price=null;
+  const channel=q.match(/\b(Instagram|website|marketplace|Amazon|Etsy|WhatsApp)\b.{0,20}(?:par|पर|bik|बिक्री)|(?:बिक्री|sales|sell\w*).{0,40}\b(Instagram|website|marketplace|Amazon|Etsy|WhatsApp)\b/i);if(channel)result.channel=channel[1]||channel[2];
+- const variant=q.match(/(?:sirf\s+)?([\p{L}\p{N}][\p{L}\p{N}\p{M} '\-/]{0,79}?)\s+ka\s+(?:rang|colou?r)\s+([\p{L}\p{N}][\p{L}\p{N}\p{M} '\-/]{0,59}?)\s+(?:karna|kar\s+do|karo|badal)/iu)
+- ||q.match(/(?:केवल|सिर्फ)\s+(.{1,80}?)\s+का\s+रंग\s+(.{1,60}?)\s+(?:करें|करना|कर दीजिए)/u);
+- if(variant&&!/\b(?:nahi|mat)\b|नहीं|मत/u.test(variant[0])){result.part=compact(variant[1]).replace(/^.*?\b(?:mein|sirf)\s+/i,'').replace(/^(?:sirf|only)\s+/i,'');result.colour=compact(variant[2]);}
++ for(const op of productOperations(text))if(op.type==='recolour'&&!op.negated){result.part=op.part;result.colour=op.colour;}
+  return result;
+ }
+ function scopeProductState(previous={},scope={}){
+@@ -54,4 +94,4 @@
+  const q=String(message||'');const actorFree=/\b(?:no actors?|actor[- ]free|without (?:an? )?(?:actor|presenter))\b|बिना.{0,8}(?:अभिनेता|कलाकार)/i.test(q)?true:/\b(?:add|use|with) (?:an? )?(?:actor|presenter)\b/i.test(q)?false:Boolean(previous.actorFree);
+  return {actorFree};
+ }
+-module.exports={extractEntity,extraSlots,scopeProductState,captureProductOptions,taskConstraints};
++module.exports={extractEntity,extraSlots,scopeProductState,captureProductOptions,taskConstraints,productOperations,maskProductOperations};
+
+--- working-tree-before/edunex-b/services/tutorKnowledge.js
++++ phase14a/edunex-b/services/tutorKnowledge.js
+@@ -1,6 +1,6 @@
+ const fs = require('node:fs');
+ const path = require('node:path');
+-const { PRODUCT_SLUGS, PRODUCT_RECORDS, findProductTemplate, wantsProductPrompt, productRequestContext } = require('./productTutorKnowledge');
++const { PRODUCT_SLUGS, PRODUCT_RECORDS, findProductTemplate, wantsProductPrompt, wantsProductScene, productRequestContext } = require('./productTutorKnowledge');
+ 
+ const COURSE_DOCUMENTS = [
+   {
+@@ -205,7 +205,8 @@
+   const followUp = currentTerms.length < 3 || /\b(that|this|same|previous|example|simpler|elaborate|continue|quiz|samjhao|bhi|iska|uska|then|now)\b|तो|उसका|इसका/i.test(message);
+   // User turns carry product facts; assistant prose must not invent a new retrieval entity.
+   const recent = followUp ? (productScope ? history.filter(item => item.role === 'user').slice(-2) : history.slice(-4)).map(item => item.content).join(' ') : '';
+-  const template = productScope && wantsProductPrompt(message) ? findProductTemplate(message, history) : null;
++  const template = productScope && (wantsProductPrompt(message) || wantsProductScene(message))
++    ? findProductTemplate(message, wantsProductPrompt(message)?history:[]) : null;
+   const workflowIntent = /workflow|steps|settings|references|how (?:do|does|can|to)|तरीका|सेटिंग|kaise|tareeka/i.test(message);
+   const weights = new Map();
+   for (const word of terms(recent)) weights.set(word, 0.3);
+
+--- working-tree-before/edunex-b/tests/ai-chat-history.test.cjs
++++ phase14a/edunex-b/tests/ai-chat-history.test.cjs
+@@ -789,3 +789,22 @@
+  const courseId=qualityProductCourse._id;const sessions=new Map([[`phase9-legacy:${courseId}`,{activeCourseId:courseId,conversationId:'legacy',productContext:{product:'carved ash spool rack'},messages:[{role:'user',content:'Choose between a cropped and full view of my carved ash spool rack.'},{role:'assistant',content:'Keep the full reference because all spindle ends are visible.'}]}]]);
+  const api=qualityBackend({sessions,userId:'phase9-legacy',reply:'Keep that full reference so all spindle ends stay visible.'});const r=await api.chat({courseId,conversationId:'legacy',message:'Explain that choice again in English.',debugAi:true});assert.equal(api.calls.length,1);assert.match(JSON.stringify(api.calls[0].messages),/all spindle ends/);assert.equal(r.debug.history_restored,true);
+ });
++
++test('phase14a omitted-history replacement persists new identity and clears old facts',async()=>{
++ const {backend:make}=require('./ai-tutor-fixture.cjs');
++ const frozen=require('./fixtures/product-tutor-phase14a.json');
++ const course={_id:'6d0000000000000000000000',slug:'ai-product-photoshoot-ads',title:'AI Product Photoshoot & Ads',videos:[]};
++ for(const switchText of ['Replace the product with a cedar thread gauge.','Ab product ko cedar thread gauge se replace karo.','अब वस्तु को cedar thread gauge से बदलें।']){
++  const sessions=new Map();const api=make({courses:[course],sessions,user:{_id:'learner'},subscription:{status:'active',currentPeriodEnd:new Date(Date.now()+86400000)}});
++  const scope={courseId:course._id,conversationId:'phase14a-switch',debugAi:true,history:[]};
++  await api.chat({...scope,message:'My product is a felt pin wallet. Price: 720. Material: felt. I sell on Etsy. Give the exact L02 White Studio prompt.'});
++  const changed=await api.chat({...scope,message:switchText+' Give the complete approved L02 Dark Premium text.'});
++  assert.equal(changed.debug.history_restored,true);
++  assert.equal(changed.answer.match(/```text\n([\s\S]*?)\n```/)[1],frozen.assets['L02 Dark Premium'].replace(/\[product\]/gi,'cedar thread gauge'));
++  const persisted=sessions.get(`learner:${course._id}`).productContext;
++  assert.equal(persisted.product,'cedar thread gauge');assert.equal(persisted.price,undefined);assert.equal(persisted.channel,undefined);assert.deepEqual(persisted.attributes,[]);
++  const next=await api.chat({...scope,message:'Give the complete approved L02 White Studio text.'});
++  assert.equal(next.answer.match(/```text\n([\s\S]*?)\n```/)[1],frozen.assets['L02 White Studio'].replace(/\[product\]/gi,'cedar thread gauge'));
++  assert.doesNotMatch(next.answer,/felt|720|Etsy/);assert.equal(api.calls.length,0);
++ }
++});
+
+--- working-tree-before/edunex-b/tests/tutor-knowledge.test.cjs
++++ phase14a/edunex-b/tests/tutor-knowledge.test.cjs
+@@ -27,6 +27,18 @@
+   const result = retrieve('elaborate', { history: [{ role: 'user', content: 'My character face changes between clips' }, { role: 'assistant', content: 'Use one locked reference still for identity consistency.' }] });
+   assert.match(result.excerpts, /face|reference/i);
+   assert.ok(result.sources.length > 0);
++});
++
++test('phase14a full approved text resolves the authorized asset despite identity symptom words',()=>{
++ const K=require('../services/productTutorKnowledge');
++ const activeCourse={_id:'6d0000000000000000000000',slug:'ai-product-photoshoot-ads',title:'AI Product Photoshoot & Ads',videos:[]};
++ const message='The object I am photographing is a linen label quiver. Return the full approved L02 Product Sheet text.';
++ const facts=K.productFacts(message);
++ const result=retrieveKnowledge({courses:[activeCourse],activeCourse,message,includeMaterials:true,conversationContext:facts});
++ assert.notEqual(result.requestContext.topic,'blur');assert.equal(result.debugChunks[0].section,'L02 Product Sheet');
++ assert.ok(result.sources.every(s=>s.courseId===activeCourse._id));
++ const locked=retrieveKnowledge({courses:[activeCourse],activeCourse,message,includeMaterials:false,conversationContext:facts});
++ assert.equal(locked.materialsAvailable,false);assert.ok(locked.records.every(r=>r.contentType!=='exact-template'));
+ });
+ 
+ test('paid documents and example prompts are not retrieved without lesson access', () => {

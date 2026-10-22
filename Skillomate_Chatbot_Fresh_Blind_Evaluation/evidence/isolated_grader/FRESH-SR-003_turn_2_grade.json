@@ -1,0 +1,78 @@
+{
+  "id": "FRESH-SR-003",
+  "turnIndex": 2,
+  "status": "PASS",
+  "critical": false,
+  "suspectedCritical": false,
+  "criteria": [
+    {
+      "status": "PASS",
+      "excerpt": "{\"success\":true,\"deletedCount\":1}",
+      "reason": "Authenticated actor-filtered deleteMany removed one session, with no remaining persisted session shown.",
+      "criterion": "Delete/reset only this actor’s conversation history successfully."
+    },
+    {
+      "status": "PASS",
+      "excerpt": "retrieval/context/payload/provider arrays empty",
+      "reason": "No paid content retrieval, payload or return; response contains only success/count.",
+      "criterion": "Do not retrieve or return paid prompt content."
+    }
+  ],
+  "dimensions": {
+    "grounding": "PASS",
+    "facts": "PASS",
+    "completeness": "PASS",
+    "language": "PASS",
+    "authorization": "PASS",
+    "isolation": "PASS",
+    "http": "PASS"
+  },
+  "requestedExactBodyChecks": [],
+  "supplementalExactBodyChecks": [],
+  "rubricVersion": "phase14b-independent-v1",
+  "gradedAt": "2026-10-16T11:16:26.828430+00:00",
+  "providerAvailability": {
+    "provider": null,
+    "outcome": null,
+    "providerRequests": [],
+    "inferenceNecessaryForThisTurn": false,
+    "reason": "Actual deterministic response directly judged; no live model success inferred."
+  },
+  "ownershipPayloadReview": {
+    "reviewed": true,
+    "actor": "A",
+    "actorId": "bb7eb2da35cf503ab5fb630a",
+    "scopeInspection": {
+      "independentExplicitSelectedCourse": "6d0000000000000000000000",
+      "independentExpectedOwner": "6d0000000000000000000000",
+      "explicitUnknownScope": false,
+      "independentAuthAndEntitlement": true,
+      "requiresSemanticScopeAdjudication": false,
+      "protectedRetrievedSources": [],
+      "retrievalProductBodies": [],
+      "assembledContextProductBodies": [],
+      "assembledPayloads": [],
+      "providerAdapterProductBodies": [],
+      "responseProductBodies": [],
+      "noPayloadConstructed": true,
+      "blockedAdapterAttempts": 0,
+      "externalTransportAttempts": 0,
+      "potentialCriticalFindings": [],
+      "inspectionPerformed": true
+    },
+    "dbOperations": [
+      {
+        "model": "AiTutorSession",
+        "operation": "deleteMany",
+        "filter": {
+          "user": "bb7eb2da35cf503ab5fb630a"
+        },
+        "count": 1
+      }
+    ],
+    "retrievalObservationCount": 0,
+    "contextObservationCount": 0,
+    "payloadObservationCount": 0,
+    "reason": "Full flags reviewed; no retrieval/context/assembled payload/provider/adapter attempt. deleteMany filter user=bb7eb2da35cf503ab5fb630a affects only authenticated actor, count1, no persisted sessions. No foreign actor or protected material exposed."
+  }
+}

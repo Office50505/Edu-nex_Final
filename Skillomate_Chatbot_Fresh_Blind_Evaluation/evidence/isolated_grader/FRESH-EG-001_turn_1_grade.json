@@ -1,0 +1,240 @@
+{
+  "id": "FRESH-EG-001",
+  "turnIndex": 1,
+  "status": "PASS",
+  "critical": false,
+  "suspectedCritical": false,
+  "criteria": [
+    {
+      "status": "PASS",
+      "excerpt": "8 lessons: 01 Course Intro; 02 Phone Photo Se Studio Photo ... 08 Finale (complete workflow, common mistakes, honesty and final project)",
+      "reason": "Lists all eight stages with reference/studio photos, model/festive variants, ads, video, honest UGC and final workflow.",
+      "criterion": "Explain eight-lesson path covering reference/studio photos, model/festive variants, ad planning, product video, honest UGC and final workflow."
+    },
+    {
+      "status": "PASS",
+      "excerpt": "You need a phone, laptop and a product. Tools: Google Flow, ChatGPT and CapCut; a full CapCut editing tutorial is not taught.",
+      "reason": "States all required prerequisites, tools and editing-tutorial limitation.",
+      "criterion": "State phone/laptop/product prerequisites, Google Flow/ChatGPT/CapCut tools, and no full CapCut editing tutorial."
+    }
+  ],
+  "dimensions": {
+    "grounding": "PASS",
+    "facts": "PASS",
+    "completeness": "PASS",
+    "language": "PASS",
+    "authorization": "PASS",
+    "isolation": "PASS",
+    "http": "PASS"
+  },
+  "requestedExactBodyChecks": [],
+  "supplementalExactBodyChecks": [],
+  "rubricVersion": "phase14b-independent-v1",
+  "gradedAt": "2026-10-16T11:11:20.512353+00:00",
+  "providerAvailability": {
+    "provider": "course-knowledge-rule",
+    "outcome": {
+      "type": "local_rule",
+      "liveModelAnswer": false,
+      "providerStatus": "not_requested",
+      "responseIssue": null
+    },
+    "providerRequests": [],
+    "inferenceNecessaryForThisTurn": false,
+    "reason": "Actual deterministic response directly judged; no live model success inferred."
+  },
+  "ownershipPayloadReview": {
+    "reviewed": true,
+    "actor": "A",
+    "actorId": "452415d0941381aa8e4ba4cc",
+    "scopeInspection": {
+      "independentExplicitSelectedCourse": "6d0000000000000000000000",
+      "independentExpectedOwner": "6d0000000000000000000000",
+      "explicitUnknownScope": false,
+      "independentAuthAndEntitlement": true,
+      "requiresSemanticScopeAdjudication": false,
+      "protectedRetrievedSources": [
+        {
+          "id": "S1",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "Course overview and prerequisites",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_1",
+          "lessonName": "Course overview and prerequisites",
+          "contentType": "overview",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:overview:course-overview-and-prerequisites"
+        },
+        {
+          "id": "S2",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "Lesson 01 — Course Intro",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_1",
+          "lessonName": "Lesson 01 — Course Intro",
+          "contentType": "lesson-summary",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:lesson-summary:lesson-01-course-intro"
+        },
+        {
+          "id": "S3",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "chat G.P.T ne aisa feature likha jo",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_5",
+          "lessonName": "chat G.P.T ne aisa feature likha jo",
+          "contentType": "faq",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:faq:chat-g-p-t-ne-aisa-feature-likha-jo"
+        },
+        {
+          "id": "S4",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "L07 UGC 2",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_7",
+          "lessonName": "L07 UGC 2",
+          "contentType": "exact-template",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:exact-template:l07-ugc-2"
+        },
+        {
+          "id": "S5",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "L06 Light Sweep",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_6",
+          "lessonName": "L06 Light Sweep",
+          "contentType": "exact-template",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:exact-template:l06-light-sweep"
+        },
+        {
+          "id": "S6",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "UGC video mein phone dikh raha",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_7",
+          "lessonName": "UGC video mein phone dikh raha",
+          "contentType": "faq",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:faq:ugc-video-mein-phone-dikh-raha"
+        }
+      ],
+      "retrievalProductBodies": [
+        {
+          "heading": "Course overview and prerequisites",
+          "contentType": "overview",
+          "owner": "6d0000000000000000000000",
+          "sha256": "46c6d59dfbfcf34bb540732e5795832daaaaa3947d2a6fce4eccd03c2c309cf5"
+        },
+        {
+          "heading": "chat G.P.T ne aisa feature likha jo",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "9f89437093e5ef64561fa89352044c0815c79e5cf98cd60530aaaf242b04fb8c"
+        },
+        {
+          "heading": "UGC video mein phone dikh raha",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "987d95ff060fecdc5edd8cac3455253b74f974f6576c540c9d69b44c44ecbab4"
+        },
+        {
+          "heading": "L06 Light Sweep",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "9034d553fd70aad2cd9573d00f2b8a0112b71d22226c748739bd1579a7b0001a"
+        },
+        {
+          "heading": "L07 UGC 2",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "53eb271c5fc4c05464b8faed0aa24829a9d7512bed69ef924775342e95e6810f"
+        }
+      ],
+      "assembledContextProductBodies": [
+        {
+          "heading": "Course overview and prerequisites",
+          "contentType": "overview",
+          "owner": "6d0000000000000000000000",
+          "sha256": "46c6d59dfbfcf34bb540732e5795832daaaaa3947d2a6fce4eccd03c2c309cf5"
+        },
+        {
+          "heading": "chat G.P.T ne aisa feature likha jo",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "9f89437093e5ef64561fa89352044c0815c79e5cf98cd60530aaaf242b04fb8c"
+        },
+        {
+          "heading": "UGC video mein phone dikh raha",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "987d95ff060fecdc5edd8cac3455253b74f974f6576c540c9d69b44c44ecbab4"
+        },
+        {
+          "heading": "L06 Light Sweep",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "9034d553fd70aad2cd9573d00f2b8a0112b71d22226c748739bd1579a7b0001a"
+        },
+        {
+          "heading": "L07 UGC 2",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "53eb271c5fc4c05464b8faed0aa24829a9d7512bed69ef924775342e95e6810f"
+        }
+      ],
+      "assembledPayloads": [],
+      "providerAdapterProductBodies": [],
+      "responseProductBodies": [],
+      "noPayloadConstructed": true,
+      "blockedAdapterAttempts": 0,
+      "externalTransportAttempts": 0,
+      "potentialCriticalFindings": [],
+      "inspectionPerformed": true
+    },
+    "dbOperations": [
+      {
+        "model": "AiTutorSession",
+        "operation": "findOne",
+        "filter": {
+          "user": "452415d0941381aa8e4ba4cc",
+          "course": "6d0000000000000000000000"
+        }
+      },
+      {
+        "model": "Course",
+        "operation": "find",
+        "filter": {
+          "status": "published",
+          "_id": "6d0000000000000000000000"
+        }
+      },
+      {
+        "model": "AiTutorSession",
+        "operation": "upsert",
+        "filter": {
+          "user": "452415d0941381aa8e4ba4cc",
+          "course": "6d0000000000000000000000"
+        }
+      }
+    ],
+    "retrievalObservationCount": 1,
+    "contextObservationCount": 1,
+    "payloadObservationCount": 0,
+    "reason": "All six source owners and five hashed protected/context bodies match entitled selected course6d0000000000000000000000. Full flags and actor452415d0941381aa8e4ba4cc own session reviewed; no assembled payload or adapter/provider calls. DB actor/course scoped and no foreign actor material."
+  }
+}

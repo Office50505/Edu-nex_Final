@@ -1,0 +1,24 @@
+{
+  "executedAt": "2026-10-16T09:20:24.026799+00:00",
+  "command": [
+    "node",
+    "--test",
+    "--test-reporter=junit",
+    "tests/product-tutor-unicode-safety.test.cjs"
+  ],
+  "exitCode": 1,
+  "total": 65,
+  "failed": 2,
+  "skipped": 0,
+  "failures": [
+    {
+      "name": "unicode safety rejects compatibility role term in all name entry points",
+      "details": "\n[Error [ERR_TEST_FAILURE]: Expected values to be strictly equal:\n+ actual - expected\n\n+ {\n+   evidence: '\u0939\u092e\u093e\u0930\u0940 \u0935\u0938\u094d\u0924\u0941 \u0915\u093e \u0928\u093e\u092e \uff50\uff52\uff4f\uff44\uff55\uff43\uff54 tray \u0939\u0948',\n+   product: '\u0915\u093e \u0928\u093e\u092e \uff50\uff52\uff4f\uff44\uff55\uff43\uff54 tray',\n+   span: [\n+     0,\n+     34\n+   ]\n+ }\n- null\n] {\n  code: 'ERR_TEST_FAILURE',\n  failureType: 'testCodeFailure',\n  cause: AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n  + actual - expected\n  \n  + {\n  +   evidence: '\u0939\u092e\u093e\u0930\u0940 \u0935\u0938\u094d\u0924\u0941 \u0915\u093e \u0928\u093e\u092e \uff50\uff52\uff4f\uff44\uff55\uff43\uff54 tray \u0939\u0948',\n  +   product: '\u0915\u093e \u0928\u093e\u092e \uff50\uff52\uff4f\uff44\uff55\uff43\uff54 tray',\n  +   span: [\n  +     0,\n  +     34\n  +   ]\n  + }\n  - null\n  \n      at TestContext.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-unicode-safety.test.cjs:49:10)\n      at Test.runInAsyncScope (node:async_hooks:226:14)\n      at Test.run (node:internal/test_runner/test:1397:25)\n      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)\n      at Test.postRun (node:internal/test_runner/test:1537:19)\n      at Test.run (node:internal/test_runner/test:1462:12)\n      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {\n    generatedMessage: true,\n    code: 'ERR_ASSERTION',\n    actual: { product: '\u0915\u093e \u0928\u093e\u092e \uff50\uff52\uff4f\uff44\uff55\uff43\uff54 tray', evidence: '\u0939\u092e\u093e\u0930\u0940 \u0935\u0938\u094d\u0924\u0941 \u0915\u093e \u0928\u093e\u092e \uff50\uff52\uff4f\uff44\uff55\uff43\uff54 tray \u0939\u0948', span: [Array] },\n    expected: null,\n    operator: 'strictEqual',\n    diff: 'simple'\n  }\n}\n\t\t"
+    },
+    {
+      "name": "unicode safety compatibility role term cannot enter through remembered state or history",
+      "details": "\n[Error [ERR_TEST_FAILURE]: Expected values to be strictly equal:\n+ actual - expected\n\n+ '\u0915\u093e \u0928\u093e\u092e \uff50\uff52\uff4f\uff44\uff55\uff43\uff54 tray'\n- undefined\n] {\n  code: 'ERR_TEST_FAILURE',\n  failureType: 'testCodeFailure',\n  cause: AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n  + actual - expected\n  \n  + '\u0915\u093e \u0928\u093e\u092e \uff50\uff52\uff4f\uff44\uff55\uff43\uff54 tray'\n  - undefined\n  \n      at TestContext.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-unicode-safety.test.cjs:69:10)\n      at Test.runInAsyncScope (node:async_hooks:226:14)\n      at Test.run (node:internal/test_runner/test:1397:25)\n      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)\n      at Test.postRun (node:internal/test_runner/test:1537:19)\n      at Test.run (node:internal/test_runner/test:1462:12)\n      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {\n    generatedMessage: true,\n    code: 'ERR_ASSERTION',\n    actual: '\u0915\u093e \u0928\u093e\u092e \uff50\uff52\uff4f\uff44\uff55\uff43\uff54 tray',\n    expected: undefined,\n    operator: 'strictEqual',\n    diff: 'simple'\n  }\n}\n\t\t"
+    }
+  ],
+  "passed": 63
+}

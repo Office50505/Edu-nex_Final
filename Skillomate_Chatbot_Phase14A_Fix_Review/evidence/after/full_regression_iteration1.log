@@ -1,0 +1,59 @@
+{
+  "suite": "node",
+  "command": [
+    "node",
+    "--test",
+    "--test-reporter=junit",
+    "tests/ai-chat-history.test.cjs",
+    "tests/tutor-knowledge.test.cjs",
+    "tests/product-tutor-quality.test.cjs",
+    "tests/product-tutor-phase3.test.cjs",
+    "tests/product-tutor-phase5.test.cjs",
+    "tests/product-tutor-phase7.test.cjs",
+    "tests/product-tutor-phase9.test.cjs",
+    "tests/product-tutor-phase11.test.cjs",
+    "tests/mobile-course-ai.test.cjs",
+    "tests/mobile-course-ai-cache.test.cjs"
+  ],
+  "environment_overrides": {
+    "NODE_OPTIONS": "--require=./tests/helpers/deny-network.cjs"
+  },
+  "startedAt": "2026-10-16T09:04:48.526201+00:00",
+  "completedAt": "2026-10-16T09:04:49.412971+00:00",
+  "durationSeconds": 0.8867077909999352,
+  "exitCode": 1,
+  "externalProviderRequests": 0,
+  "summary": {
+    "passed": 351,
+    "failed": 2,
+    "skipped": 0,
+    "total": 353
+  }
+}
+{
+  "suite": "python",
+  "command": [
+    "python3",
+    "-B",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "tests",
+    "-p",
+    "test_product_evaluator*.py",
+    "-v"
+  ],
+  "environment_overrides": {},
+  "startedAt": "2026-10-16T09:04:48.527188+00:00",
+  "completedAt": "2026-10-16T09:04:48.798557+00:00",
+  "durationSeconds": 0.27136925000013434,
+  "exitCode": 0,
+  "externalProviderRequests": 0,
+  "summary": {
+    "passed": 167,
+    "failed": 0,
+    "skipped": 0,
+    "total": 167
+  }
+}

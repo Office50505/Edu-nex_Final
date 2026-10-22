@@ -1,0 +1,74 @@
+{
+  "author": "Codex independent subagent /root/blind_author",
+  "createdAt": "2026-10-16T09:51:10.967094+00:00",
+  "authoredBeforeExecution": true,
+  "caseCount": 120,
+  "categoryDistribution": {
+    "exact_template": 25,
+    "multilingual_extraction": 20,
+    "multi_turn": 20,
+    "education_generation": 20,
+    "safety_access_isolation": 20,
+    "state_routing_edges": 15
+  },
+  "exactTemplateAssetsCovered": [
+    "L02 Product Sheet",
+    "L02 White Studio",
+    "L02 Lifestyle",
+    "L02 Dark Premium",
+    "L03 Character Sheet (bonus)",
+    "L03 Hands close-up",
+    "L03 Desk",
+    "L03 Showing to camera",
+    "L04 Diwali",
+    "L04 Wedding Gift",
+    "L04 Colour Variant Sheet",
+    "L05 Step 1 Brief",
+    "L05 Step 2 Hooks + Script",
+    "L05 Step 3 Flow prompts",
+    "L06 Push-in",
+    "L06 Arc",
+    "L06 Light Sweep",
+    "L07 UGC 1",
+    "L07 UGC 2"
+  ],
+  "readBoundary": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/Skillomate_Chatbot_Phase14B_Blind_Evaluation/evidence/isolated_author",
+  "reads": [
+    {
+      "path": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/Skillomate_Chatbot_Phase14B_Blind_Evaluation/evidence/isolated_author/curriculum.json",
+      "sha256": "54a919abcbec2d0bbf5b13c7b9c87034dd3922b0325c912ec0fd8639daffd302"
+    },
+    {
+      "path": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/Skillomate_Chatbot_Phase14B_Blind_Evaluation/evidence/isolated_author/case_schema.json",
+      "sha256": "c163ba2258d42806140f02ada5f289a2900ebdcd31b734da4cc23dae1cf31d3e"
+    },
+    {
+      "path": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/Skillomate_Chatbot_Phase14B_Blind_Evaluation/evidence/isolated_author/scoring_rubric.json",
+      "sha256": "80c4347805a5fe5e25ca6c06d6fb3b894ff0a40e0a147cd0be976e1b52bb1995"
+    }
+  ],
+  "otherReads": [
+    "Directory filenames within isolated_author (rg --files); current working directory string (pwd).",
+    "Self-authored author_cases.py and cases.json during generation/validation only."
+  ],
+  "writes": [
+    "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/Skillomate_Chatbot_Phase14B_Blind_Evaluation/evidence/isolated_author/author_cases.py",
+    "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/Skillomate_Chatbot_Phase14B_Blind_Evaluation/evidence/isolated_author/cases.json",
+    "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/Skillomate_Chatbot_Phase14B_Blind_Evaluation/evidence/isolated_author/author_attestation.json"
+  ],
+  "caseFileSha256": "a9a964a6ca810fac23ed5846c1d6d610c5c346b42008ebc8f383eb1baaebdfba",
+  "candidateExecuted": false,
+  "candidateCodeRead": false,
+  "candidateTestsRead": false,
+  "historicalDiagnosticsRead": false,
+  "otherEvidenceRead": false,
+  "independenceLimits": [
+    "This is model-authored independent case work, not a human blind panel.",
+    "Filesystem isolation was an explicit behavioral boundary, not an operating-system access control.",
+    "Author saw only the delegated task instructions and allowed curriculum, schema and rubric.",
+    "Auth/access/history expectations derive from the delegated evaluation contract and requests; no candidate parser or implementation behavior was used.",
+    "No actual provider responses were available to or used by the author."
+  ],
+  "manualReasoning": "Fresh product identities, language requests, substitutions, safety boundaries and turn-specific current facts were authored semantically. Script enumerates and freezes these independently authored specifications; exact bodies come only from approved curriculum with declared literal substitutions.",
+  "freezeStatus": "Ready for coordinator freeze. Author will not modify after freeze notification."
+}

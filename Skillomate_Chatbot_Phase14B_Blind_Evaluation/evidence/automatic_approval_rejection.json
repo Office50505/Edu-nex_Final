@@ -1,0 +1,11 @@
+{
+  "recordedAt": "2026-10-16T09:53:36.261863+00:00",
+  "action": "Execute run_case.cjs with configured fal.run provider capability",
+  "processCreated": false,
+  "blindCasesExecuted": 0,
+  "providerRequests": 0,
+  "reason": "The run may send proprietary course material or derived prompts to the external configured provider, but the authorization does not specifically approve that sensitive payload for that destination.",
+  "prohibition": "Do not bypass through workaround or indirect execution.",
+  "userClarification": "Async destination-specific approval requested for approved course text and derived prompts with synthetic learner messages only; no production data or credentials in prompt content.",
+  "status": "Awaiting explicit external-payload approval; delegated authoring and frozen outcomes completed."
+}

@@ -1,0 +1,341 @@
+{
+  "checkedAt": "2026-10-15T06:32:33.569Z",
+  "implementationManifestHashMismatches": [],
+  "recordCount": 53,
+  "uniqueRecordIds": 53,
+  "lessons": [
+    {
+      "number": 1,
+      "heading": "Lesson 01 — Course Intro",
+      "retrieved": true
+    },
+    {
+      "number": 2,
+      "heading": "Lesson 02 — Phone Photo Se Studio Photo",
+      "retrieved": true
+    },
+    {
+      "number": 3,
+      "heading": "Lesson 03 — Model Ke Saath Product",
+      "retrieved": true
+    },
+    {
+      "number": 4,
+      "heading": "Lesson 04 — Festive Shoot + Colour Variants",
+      "retrieved": true
+    },
+    {
+      "number": 5,
+      "heading": "Lesson 05 — chat G.P.T Se Ad Plan",
+      "retrieved": true
+    },
+    {
+      "number": 6,
+      "heading": "Lesson 06 — Photo Se Product Video",
+      "retrieved": true
+    },
+    {
+      "number": 7,
+      "heading": "Lesson 07 — UGC-Style Video",
+      "retrieved": true
+    },
+    {
+      "number": 8,
+      "heading": "Lesson 08 — Finale",
+      "retrieved": true
+    }
+  ],
+  "templates": [
+    {
+      "heading": "L02 Product Sheet",
+      "lesson": 2,
+      "chunkId": "ai-product-photoshoot-ads:training:exact-template:l02-product-sheet",
+      "contentHash": "1e76a13b224293da7aee0d7994b4d53e231ae3fca4613116d763c5719c0a492d",
+      "retrievedWholeAsset": true,
+      "courseIds": [
+        "6d0000000000000000000000",
+        "6d0000000000000000000000",
+        "6d0000000000000000000000",
+        "6d0000000000000000000000",
+        "6d0000000000000000000000",
+        "6d0000000000000000000000"
+      ]
+    },
+    {
+      "heading": "L02 White Studio",
+      "lesson": 2,
+      "chunkId": "ai-product-photoshoot-ads:training:exact-template:l02-white-studio",
+      "contentHash": "72fe6514bb03cf07250f440c8a4084fc7bd5243c1a8f5fd7a17f5759e500252a",
+      "retrievedWholeAsset": true,
+      "courseIds": [
+        "6d0000000000000000000000",
+        "6d0000000000000000000000",
+        "6d0000000000000000000000",
+        "6d0000000000000000000000",
+        "6d0000000000000000000000",
+        "6d0000000000000000000000"
+      ]
+    },
+    {
+      "heading": "L02 Lifestyle",
+      "lesson": 2,
+      "chunkId": "ai-product-photoshoot-ads:training:exact-template:l02-lifestyle",
+      "contentHash": "508db83ae00763811db2d33e48f84cb80717bcfb36f4417120d5e5c5659f9706",
+      "retrievedWholeAsset": true,
+      "courseIds": [
+        "6d0000000000000000000000",
+        "6d0000000000000000000000",
+        "6d0000000000000000000000",
+        "6d0000000000000000000000",
+        "6d0000000000000000000000",
+        "6d0000000000000000000000"
+      ]
+    },
+    {
+      "heading": "L02 Dark Premium",
+      "lesson": 2,
+      "chunkId": "ai-product-photoshoot-ads:training:exact-template:l02-dark-premium",
+      "contentHash": "f187754dabf74831c2447f233b1ae9f31fe764893f6e8388fac17451481c83da",
+      "retrievedWholeAsset": true,
+      "courseIds": [
+        "6d0000000000000000000000",
+        "6d0000000000000000000000",
+        "6d0000000000000000000000",
+        "6d0000000000000000000000",
+        "6d0000000000000000000000",
+        "6d0000000000000000000000"
+      ]
+    },
+    {
+      "heading": "L03 Character Sheet (bonus)",
+      "lesson": 3,
+      "chunkId": "ai-product-photoshoot-ads:training:exact-template:l03-character-sheet-bonus",
+      "contentHash": "5fa6b4f9183b5f814290c94cda7285d2d5c14939b1ac7494bcac14987f3aa86f",
+      "retrievedWholeAsset": true,
+      "courseIds": [
+        "6d0000000000000000000000",
+        "6d0000000000000000000000",
+        "6d0000000000000000000000",
+        "6d0000000000000000000000",
+        "6d0000000000000000000000",
+        "6d0000000000000000000000"
+      ]
+    },
+    {
+      "heading": "L03 Hands close-up",
+      "lesson": 3,
+      "chunkId": "ai-product-photoshoot-ads:training:exact-template:l03-hands-close-up",
+      "contentHash": "9f7a8cf8257992efe2209b62f82127313018cf534ee07e2725890b8f0bd3457a",
+      "retrievedWholeAsset": true,
+      "courseIds": [
+        "6d0000000000000000000000",
+        "6d0000000000000000000000",
+        "6d0000000000000000000000",
+        "6d0000000000000000000000",
+        "6d0000000000000000000000",
+        "6d0000000000000000000000"
+      ]
+    },
+    {
+      "heading": "L03 Desk",
+      "lesson": 3,
+      "chunkId": "ai-product-photoshoot-ads:training:exact-template:l03-desk",
+      "contentHash": "596f2727d5567b00b03b2522ba43a38f4b02a338be90c99fa1c3bab800eb4f52",
+      "retrievedWholeAsset": true,
+      "courseIds": [
+        "6d0000000000000000000000",
+        "6d0000000000000000000000",
+        "6d0000000000000000000000",
+        "6d0000000000000000000000",
+        "6d0000000000000000000000",
+        "6d0000000000000000000000"
+      ]
+    },
+    {
+      "heading": "L03 Showing to camera",
+      "lesson": 3,
+      "chunkId": "ai-product-photoshoot-ads:training:exact-template:l03-showing-to-camera",
+      "contentHash": "f5dc8ba490d29a217d8abfc2619ebd9402fbea98b1677124bb20361eb456843e",
+      "retrievedWholeAsset": true,
+      "courseIds": [
+        "6d0000000000000000000000",
+        "6d0000000000000000000000",
+        "6d0000000000000000000000",
+        "6d0000000000000000000000",
+        "6d0000000000000000000000",
+        "6d0000000000000000000000"
+      ]
+    },
+    {
+      "heading": "L04 Diwali",
+      "lesson": 4,
+      "chunkId": "ai-product-photoshoot-ads:training:exact-template:l04-diwali",
+      "contentHash": "06e8bd6bec8159c71b3e1df551219617098aeecb44600964181e7c2fafa1226a",
+      "retrievedWholeAsset": true,
+      "courseIds": [
+        "6d0000000000000000000000",
+        "6d0000000000000000000000",
+        "6d0000000000000000000000",
+        "6d0000000000000000000000",
+        "6d0000000000000000000000",
+        "6d0000000000000000000000"
+      ]
+    },
+    {
+      "heading": "L04 Wedding Gift",
+      "lesson": 4,
+      "chunkId": "ai-product-photoshoot-ads:training:exact-template:l04-wedding-gift",
+      "contentHash": "47e80348f9e29d92c65e536881ed8dad76379d6424e184a163d1c107c0b54dcc",
+      "retrievedWholeAsset": true,
+      "courseIds": [
+        "6d0000000000000000000000",
+        "6d0000000000000000000000",
+        "6d0000000000000000000000",
+        "6d0000000000000000000000",
+        "6d0000000000000000000000",
+        "6d0000000000000000000000"
+      ]
+    },
+    {
+      "heading": "L04 Colour Variant Sheet",
+      "lesson": 4,
+      "chunkId": "ai-product-photoshoot-ads:training:exact-template:l04-colour-variant-sheet",
+      "contentHash": "3747f22b03f5c271408a1fc0997b6473824a951c350f55c11356c9c265372d64",
+      "retrievedWholeAsset": true,
+      "courseIds": [
+        "6d0000000000000000000000",
+        "6d0000000000000000000000",
+        "6d0000000000000000000000",
+        "6d0000000000000000000000",
+        "6d0000000000000000000000",
+        "6d0000000000000000000000"
+      ]
+    },
+    {
+      "heading": "L05 Step 1 Brief",
+      "lesson": 5,
+      "chunkId": "ai-product-photoshoot-ads:training:exact-template:l05-step-1-brief",
+      "contentHash": "e76825ea5a9ff2a9095f6d333195ca0dbb236257b6347d7cb8b645147c8c8d47",
+      "retrievedWholeAsset": true,
+      "courseIds": [
+        "6d0000000000000000000000",
+        "6d0000000000000000000000",
+        "6d0000000000000000000000",
+        "6d0000000000000000000000",
+        "6d0000000000000000000000",
+        "6d0000000000000000000000"
+      ]
+    },
+    {
+      "heading": "L05 Step 2 Hooks + Script",
+      "lesson": 5,
+      "chunkId": "ai-product-photoshoot-ads:training:exact-template:l05-step-2-hooks-script",
+      "contentHash": "c5bf17854cb94d9d0d5021168ee3aea64c27a7e48fa949186564d29054a3fe38",
+      "retrievedWholeAsset": true,
+      "courseIds": [
+        "6d0000000000000000000000",
+        "6d0000000000000000000000",
+        "6d0000000000000000000000",
+        "6d0000000000000000000000",
+        "6d0000000000000000000000",
+        "6d0000000000000000000000"
+      ]
+    },
+    {
+      "heading": "L05 Step 3 Flow prompts",
+      "lesson": 5,
+      "chunkId": "ai-product-photoshoot-ads:training:exact-template:l05-step-3-flow-prompts",
+      "contentHash": "545a93a5584362765244d1b14aa9f7c49a66e19037c70c3547ac09d9d65f4321",
+      "retrievedWholeAsset": true,
+      "courseIds": [
+        "6d0000000000000000000000",
+        "6d0000000000000000000000",
+        "6d0000000000000000000000",
+        "6d0000000000000000000000",
+        "6d0000000000000000000000",
+        "6d0000000000000000000000"
+      ]
+    },
+    {
+      "heading": "L06 Push-in",
+      "lesson": 6,
+      "chunkId": "ai-product-photoshoot-ads:training:exact-template:l06-push-in",
+      "contentHash": "04db3c22a6126469294ecfe8bf9a1554541eb1534657f36ab6411830a75ea2eb",
+      "retrievedWholeAsset": true,
+      "courseIds": [
+        "6d0000000000000000000000",
+        "6d0000000000000000000000",
+        "6d0000000000000000000000",
+        "6d0000000000000000000000",
+        "6d0000000000000000000000",
+        "6d0000000000000000000000"
+      ]
+    },
+    {
+      "heading": "L06 Arc",
+      "lesson": 6,
+      "chunkId": "ai-product-photoshoot-ads:training:exact-template:l06-arc",
+      "contentHash": "fe93820322ce61e5e765a6400c3e47992cd1979bc856ed87388518c8b649942a",
+      "retrievedWholeAsset": true,
+      "courseIds": [
+        "6d0000000000000000000000",
+        "6d0000000000000000000000",
+        "6d0000000000000000000000",
+        "6d0000000000000000000000",
+        "6d0000000000000000000000",
+        "6d0000000000000000000000"
+      ]
+    },
+    {
+      "heading": "L06 Light Sweep",
+      "lesson": 6,
+      "chunkId": "ai-product-photoshoot-ads:training:exact-template:l06-light-sweep",
+      "contentHash": "9034d553fd70aad2cd9573d00f2b8a0112b71d22226c748739bd1579a7b0001a",
+      "retrievedWholeAsset": true,
+      "courseIds": [
+        "6d0000000000000000000000",
+        "6d0000000000000000000000",
+        "6d0000000000000000000000",
+        "6d0000000000000000000000",
+        "6d0000000000000000000000",
+        "6d0000000000000000000000"
+      ]
+    },
+    {
+      "heading": "L07 UGC 1",
+      "lesson": 7,
+      "chunkId": "ai-product-photoshoot-ads:training:exact-template:l07-ugc-1",
+      "contentHash": "1ba8b33414b57b7cab8e193c33582b1aa00ea22d5445ccddef44614be39f75d0",
+      "retrievedWholeAsset": true,
+      "courseIds": [
+        "6d0000000000000000000000",
+        "6d0000000000000000000000",
+        "6d0000000000000000000000",
+        "6d0000000000000000000000",
+        "6d0000000000000000000000",
+        "6d0000000000000000000000"
+      ]
+    },
+    {
+      "heading": "L07 UGC 2",
+      "lesson": 7,
+      "chunkId": "ai-product-photoshoot-ads:training:exact-template:l07-ugc-2",
+      "contentHash": "53eb271c5fc4c05464b8faed0aa24829a9d7512bed69ef924775342e95e6810f",
+      "retrievedWholeAsset": true,
+      "courseIds": [
+        "6d0000000000000000000000",
+        "6d0000000000000000000000",
+        "6d0000000000000000000000",
+        "6d0000000000000000000000",
+        "6d0000000000000000000000",
+        "6d0000000000000000000000"
+      ]
+    }
+  ],
+  "restrictedAccessLeaks": 0,
+  "providerConfigured": true,
+  "model": "google/gemini-2.5-flash",
+  "endpoint": "https://fal.run/openrouter/router/openai/v1/chat/completions",
+  "routing": "Active product course ID 6d0000000000000000000000, published source-derived fixture, active synthetic entitlement; production model data untouched",
+  "pipeline": "Real loopback HTTP POST /api/ai/chat through Express and the unchanged application router, rate limiter, handler, routing, retrieval, prompt assembly, fal provider adapter and response guards. Synthetic auth/account/course/entitlement fixtures and in-memory persisted conversation storage replace the production data boundary. No production DB."
+}

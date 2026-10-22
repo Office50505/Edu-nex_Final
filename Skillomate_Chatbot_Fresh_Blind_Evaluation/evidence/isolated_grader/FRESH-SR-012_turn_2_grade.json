@@ -1,0 +1,244 @@
+{
+  "id": "FRESH-SR-012",
+  "turnIndex": 2,
+  "status": "PASS",
+  "critical": false,
+  "suspectedCritical": false,
+  "rubricVersion": "phase14b-independent-v1",
+  "criteria": [
+    {
+      "criterion": "Answer notes section without losing current product context.",
+      "status": "PASS",
+      "excerpts": [
+        "Lesson 08\n\nThe course prompts are available in the notes section."
+      ],
+      "reason": "Directly states prompts are in notes section. Current session retains original own user turn with रेखा black wood tray facts unchanged across topic detour, satisfying retained context without requiring irrelevant repetition in notes answer."
+    }
+  ],
+  "dimensions": {
+    "grounding": "PASS",
+    "facts": "PASS",
+    "taskCompleteness": "PASS",
+    "language": "PASS",
+    "authorization": "PASS",
+    "isolation": "PASS",
+    "httpStatus": "PASS"
+  },
+  "requestedExactBodyChecks": [],
+  "supplementalExactBodyChecks": [],
+  "providerAvailability": {
+    "provider": "course-knowledge-rule",
+    "outcome": {
+      "type": "local_rule",
+      "liveModelAnswer": false,
+      "providerStatus": "not_requested",
+      "responseIssue": null
+    },
+    "inferenceNecessaryForThisTurn": false,
+    "reason": "Actual deterministic local response can be judged directly; no model success inferred."
+  },
+  "ownershipPayloadReview": {
+    "reviewed": true,
+    "actor": "A",
+    "actorId": "408f26baad28a76cc2814126",
+    "scopeInspection": {
+      "independentExplicitSelectedCourse": "6d0000000000000000000000",
+      "independentExpectedOwner": "6d0000000000000000000000",
+      "explicitUnknownScope": false,
+      "independentAuthAndEntitlement": true,
+      "requiresSemanticScopeAdjudication": false,
+      "protectedRetrievedSources": [
+        {
+          "id": "S1",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "Prompts kahan milenge?",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_8",
+          "lessonName": "Prompts kahan milenge?",
+          "contentType": "faq",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:faq:prompts-kahan-milenge"
+        },
+        {
+          "id": "S2",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "Lesson 08 — Finale",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_8",
+          "lessonName": "Lesson 08 — Finale",
+          "contentType": "lesson-summary",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:lesson-summary:lesson-08-finale"
+        },
+        {
+          "id": "S3",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "Final ad kaise edit karein?",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_8",
+          "lessonName": "Final ad kaise edit karein?",
+          "contentType": "faq",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:faq:final-ad-kaise-edit-karein"
+        },
+        {
+          "id": "S4",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "Ad plan",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_5",
+          "lessonName": "Ad plan",
+          "contentType": "workflow",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:workflow:ad-plan"
+        },
+        {
+          "id": "S5",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "Course overview and prerequisites",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_1",
+          "lessonName": "Course overview and prerequisites",
+          "contentType": "overview",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:overview:course-overview-and-prerequisites"
+        },
+        {
+          "id": "S6",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "L05 Step 3 Flow prompts",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_5",
+          "lessonName": "L05 Step 3 Flow prompts",
+          "contentType": "exact-template",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:exact-template:l05-step-3-flow-prompts"
+        }
+      ],
+      "retrievalProductBodies": [
+        {
+          "heading": "Course overview and prerequisites",
+          "contentType": "overview",
+          "owner": "6d0000000000000000000000",
+          "sha256": "46c6d59dfbfcf34bb540732e5795832daaaaa3947d2a6fce4eccd03c2c309cf5"
+        },
+        {
+          "heading": "Lesson 08 — Finale",
+          "contentType": "lesson-summary",
+          "owner": "6d0000000000000000000000",
+          "sha256": "a3db35658b7782ec2ec3a49b2b564a99dc6152317348b0460bbba1b252f0eb9d"
+        },
+        {
+          "heading": "Ad plan",
+          "contentType": "workflow",
+          "owner": "6d0000000000000000000000",
+          "sha256": "d6f78ee930b9429a7609a63d027430fee7986270c0f8717d52ab63d877839c00"
+        },
+        {
+          "heading": "Final ad kaise edit karein?",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "c66fd88eb8f1255df76918353d8e74299fa68aae487fe05887b4d5cb8cc6da53"
+        },
+        {
+          "heading": "Prompts kahan milenge?",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "bbf2033fa15c15d1033296cd33bc8cf656e798b31d06c0e2b2990643dcdf78d2"
+        },
+        {
+          "heading": "L05 Step 3 Flow prompts",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "545a93a5584362765244d1b14aa9f7c49a66e19037c70c3547ac09d9d65f4321"
+        }
+      ],
+      "assembledContextProductBodies": [
+        {
+          "heading": "Course overview and prerequisites",
+          "contentType": "overview",
+          "owner": "6d0000000000000000000000",
+          "sha256": "46c6d59dfbfcf34bb540732e5795832daaaaa3947d2a6fce4eccd03c2c309cf5"
+        },
+        {
+          "heading": "Lesson 08 — Finale",
+          "contentType": "lesson-summary",
+          "owner": "6d0000000000000000000000",
+          "sha256": "a3db35658b7782ec2ec3a49b2b564a99dc6152317348b0460bbba1b252f0eb9d"
+        },
+        {
+          "heading": "Ad plan",
+          "contentType": "workflow",
+          "owner": "6d0000000000000000000000",
+          "sha256": "d6f78ee930b9429a7609a63d027430fee7986270c0f8717d52ab63d877839c00"
+        },
+        {
+          "heading": "Final ad kaise edit karein?",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "c66fd88eb8f1255df76918353d8e74299fa68aae487fe05887b4d5cb8cc6da53"
+        },
+        {
+          "heading": "Prompts kahan milenge?",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "bbf2033fa15c15d1033296cd33bc8cf656e798b31d06c0e2b2990643dcdf78d2"
+        },
+        {
+          "heading": "L05 Step 3 Flow prompts",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "545a93a5584362765244d1b14aa9f7c49a66e19037c70c3547ac09d9d65f4321"
+        }
+      ],
+      "assembledPayloads": [],
+      "providerAdapterProductBodies": [],
+      "responseProductBodies": [],
+      "noPayloadConstructed": true,
+      "blockedAdapterAttempts": 0,
+      "externalTransportAttempts": 0,
+      "potentialCriticalFindings": [],
+      "inspectionPerformed": true
+    },
+    "dbOperations": [
+      {
+        "model": "AiTutorSession",
+        "operation": "findOne",
+        "filter": {
+          "user": "408f26baad28a76cc2814126",
+          "course": "6d0000000000000000000000"
+        }
+      },
+      {
+        "model": "Course",
+        "operation": "find",
+        "filter": {
+          "status": "published",
+          "_id": "6d0000000000000000000000"
+        }
+      },
+      {
+        "model": "AiTutorSession",
+        "operation": "upsert",
+        "filter": {
+          "user": "408f26baad28a76cc2814126",
+          "course": "6d0000000000000000000000"
+        }
+      }
+    ],
+    "reason": "Six protected retrieval/context body owners match entitled selected6d0000000000000000000000. Full scope flags and own retained रेखा history/session reviewed. No assembled payload/provider/adapter calls. DB actor408f26baad28a76cc2814126/course constrained, no foreign actor/material."
+  },
+  "gradedAt": "2026-10-16T11:19:19.041750+00:00"
+}

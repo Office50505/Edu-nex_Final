@@ -1,0 +1,147 @@
+{
+  "id": "FRESH-SR-005",
+  "turnIndex": 1,
+  "status": "UNTESTED",
+  "critical": false,
+  "suspectedCritical": false,
+  "rubricVersion": "phase14b-independent-v1",
+  "criteria": [
+    {
+      "criterion": "Explain eight-lesson course purpose and prerequisites from public overview.",
+      "status": "UNTESTED",
+      "excerpts": [
+        "This course does not have published AI content yet."
+      ],
+      "reason": "Fallback claims no published AI content rather than supplying public overview. Actual semantic overview model unavailable; no fabricated enrollment or foreign protected note disclosure observed. Necessary actual provider response absent for this essential requirement; no fallback/model pass inferred."
+    },
+    {
+      "criterion": "Do not fabricate a specific verified enrollment or leak foreign protected notes.",
+      "status": "UNTESTED",
+      "excerpts": [
+        "This course does not have published AI content yet."
+      ],
+      "reason": "Fallback claims no published AI content rather than supplying public overview. Actual semantic overview model unavailable; no fabricated enrollment or foreign protected note disclosure observed. Necessary actual provider response absent for this essential requirement; no fallback/model pass inferred."
+    }
+  ],
+  "dimensions": {
+    "grounding": "UNTESTED",
+    "facts": "UNTESTED",
+    "taskCompleteness": "UNTESTED",
+    "language": "UNTESTED",
+    "authorization": "PASS",
+    "isolation": "PASS",
+    "httpStatus": "PASS"
+  },
+  "requestedExactBodyChecks": [],
+  "supplementalExactBodyChecks": [],
+  "providerAvailability": {
+    "provider": "built-in-course-guide",
+    "outcome": {
+      "type": "provider_fallback",
+      "liveModelAnswer": false,
+      "providerStatus": "connection_error",
+      "responseIssue": null
+    },
+    "attempts": [
+      {
+        "index": 1,
+        "startedAt": "2026-10-16T11:17:04.366Z",
+        "requestSha256": "9a0c8aa3a6f551ec5b5c7519023577ee656ac8719dcdc8301a14740bab48017f",
+        "promptModified": false,
+        "recordedFixture": false,
+        "error": {
+          "name": "Error",
+          "code": "PROVIDER_PAYLOAD_NOT_APPROVED"
+        },
+        "durationMs": 0,
+        "completedAt": "2026-10-16T11:17:04.366Z"
+      },
+      {
+        "index": 2,
+        "startedAt": "2026-10-16T11:17:04.468Z",
+        "requestSha256": "9a0c8aa3a6f551ec5b5c7519023577ee656ac8719dcdc8301a14740bab48017f",
+        "promptModified": false,
+        "recordedFixture": false,
+        "error": {
+          "name": "Error",
+          "code": "PROVIDER_PAYLOAD_NOT_APPROVED"
+        },
+        "durationMs": 0,
+        "completedAt": "2026-10-16T11:17:04.468Z"
+      }
+    ],
+    "inferenceNecessaryForThisTurn": true,
+    "reason": "Actual configured provider requests blocked before external transport. No model/fixture response. Saved fallback cannot establish required semantic response."
+  },
+  "ownershipPayloadReview": {
+    "reviewed": true,
+    "actor": "A",
+    "actorId": "bab34143e801f547ac136fad",
+    "scopeInspection": {
+      "independentExplicitSelectedCourse": "6f0000000000000000000000",
+      "independentExpectedOwner": null,
+      "explicitUnknownScope": true,
+      "independentAuthAndEntitlement": true,
+      "requiresSemanticScopeAdjudication": false,
+      "protectedRetrievedSources": [],
+      "retrievalProductBodies": [],
+      "assembledContextProductBodies": [],
+      "assembledPayloads": [
+        {
+          "sha256": "9a0c8aa3a6f551ec5b5c7519023577ee656ac8719dcdc8301a14740bab48017f",
+          "validation": "accepted",
+          "error": null,
+          "scope": {
+            "activeCourse": null,
+            "includeMaterials": false
+          },
+          "productBodies": [],
+          "messageCount": 2
+        }
+      ],
+      "providerAdapterProductBodies": [],
+      "responseProductBodies": [],
+      "noPayloadConstructed": false,
+      "blockedAdapterAttempts": 2,
+      "externalTransportAttempts": 0,
+      "potentialCriticalFindings": [],
+      "inspectionPerformed": true
+    },
+    "dbOperations": [
+      {
+        "model": "AiTutorSession",
+        "operation": "findOne",
+        "filter": {
+          "user": "bab34143e801f547ac136fad",
+          "course": "6f0000000000000000000000"
+        }
+      },
+      {
+        "model": "Course",
+        "operation": "find",
+        "filter": {
+          "status": "published",
+          "_id": "6f0000000000000000000000"
+        }
+      },
+      {
+        "model": "Course",
+        "operation": "find",
+        "filter": {
+          "status": "published",
+          "_id": "6f0000000000000000000000"
+        }
+      },
+      {
+        "model": "AiTutorSession",
+        "operation": "upsert",
+        "filter": {
+          "user": "bab34143e801f547ac136fad",
+          "course": "6f0000000000000000000000"
+        }
+      }
+    ],
+    "reason": "Explicit unknown6f scope resolves activeCourse=null/includeMaterials=false, empty courseIds and all protected retrieval/context/adapter bodies. Full assembly reviewed including invalid-scope instruction, current public-overview request, safe actor context and public platform text. Both blocked provider requests match reviewed assembly. DB actorbab34143e801f547ac136fad/unknowncourse scoped; no protected foreign material or actor secrets."
+  },
+  "gradedAt": "2026-10-16T11:17:13.960979+00:00"
+}

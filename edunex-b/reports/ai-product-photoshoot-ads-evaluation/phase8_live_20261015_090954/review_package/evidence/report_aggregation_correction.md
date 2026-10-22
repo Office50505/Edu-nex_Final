@@ -1,0 +1,1 @@
+Before packaging, exact FAQ counts were separated from literal instruction checks embedded in full-template cases. The final FAQ result is 4/6, separately from 32/35 full-template bodies. The earlier aggregation draft is preserved locally in report_aggregation_draft1. No response, test definition, acceptance criterion, evaluator result or independent body-check outcome changed.

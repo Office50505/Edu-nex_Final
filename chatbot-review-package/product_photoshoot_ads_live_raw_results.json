@@ -1,0 +1,4608 @@
+{
+  "suite": "AI_Product_Photoshoot_Ads_Knowledge_Eval",
+  "liveProvider": true,
+  "provider": "fal-openrouter",
+  "model": "google/gemini-2.5-flash",
+  "totalCases": 102,
+  "skippedCases": 102,
+  "results": [
+    {
+      "id": "ppads_001",
+      "category": "course_understanding",
+      "query": "What does the AI Product Photoshoot & Ads course teach?",
+      "answer": "AI Product Photoshoot & Ads: Create AI product photos, product videos, UGC-style videos, and honest ad assets. Lessons include Lesson 01 - Course Intro, Lesson 02 - Phone Photo Se Studio Photo, Lesson 03 - Model Ke Saath Product, Lesson 04 - Festive Shoot + Colour Variants.",
+      "provider": "built-in-course-guide",
+      "statusCode": 200,
+      "skipped": true,
+      "skipReason": "Expected fal-openrouter provider, got built-in-course-guide",
+      "debug": {
+        "conversation_id": "live-ppads_001",
+        "request_active_course_id": "6d0000000000000000000000",
+        "resolved_active_course_id": "6d0000000000000000000000",
+        "current_topic": "",
+        "current_intent": "",
+        "rewritten_retrieval_query": "What does the AI Product Photoshoot & Ads course teach?",
+        "retrieved_chunk_ids": [
+          "ai-product-photoshoot-ads:SKILLOMATE                                                                  Chatbot Knowledge Base",
+          "ai-product-photoshoot-ads:L07 UGC 2",
+          "ai-product-photoshoot-ads:Course overview",
+          "ai-product-photoshoot-ads:L03 Hands close-up",
+          "ai-product-photoshoot-ads:L05 Step 1 Brief",
+          "ai-product-photoshoot-ads:L07 UGC 1"
+        ],
+        "retrieved_course_ids": [
+          "6d0000000000000000000000"
+        ],
+        "retrieved_course_names": [
+          "AI Product Photoshoot & Ads"
+        ],
+        "scores_ranks": [
+          {
+            "rank": 1,
+            "score": "3.9467",
+            "course_id": "6d0000000000000000000000",
+            "section": "SKILLOMATE                                                                  Chatbot Knowledge Base"
+          },
+          {
+            "rank": 2,
+            "score": "3.1865",
+            "course_id": "6d0000000000000000000000",
+            "section": "L07 UGC 2"
+          },
+          {
+            "rank": 3,
+            "score": "2.8697",
+            "course_id": "6d0000000000000000000000",
+            "section": "Course overview"
+          },
+          {
+            "rank": 4,
+            "score": "1.7524",
+            "course_id": "6d0000000000000000000000",
+            "section": "L03 Hands close-up"
+          },
+          {
+            "rank": 5,
+            "score": "1.6569",
+            "course_id": "6d0000000000000000000000",
+            "section": "L05 Step 1 Brief"
+          },
+          {
+            "rank": 6,
+            "score": "1.5840",
+            "course_id": "6d0000000000000000000000",
+            "section": "L07 UGC 1"
+          }
+        ],
+        "selected_exact_prompt_template_id": "",
+        "provider_model_path": "built-in-course-guide"
+      },
+      "startedAt": "2026-10-14T12:25:24.661Z",
+      "completedAt": "2026-10-14T12:25:24.693Z"
+    },
+    {
+      "id": "ppads_001",
+      "category": "course_understanding",
+      "query": "What does the AI Product Photoshoot & Ads course teach?",
+      "answer": "",
+      "provider": "",
+      "statusCode": 0,
+      "skipped": true,
+      "skipReason": "Expected fal-openrouter provider, got built-in-course-guide",
+      "debug": null,
+      "startedAt": "2026-10-14T12:25:24.661Z",
+      "completedAt": "2026-10-14T12:25:24.693Z"
+    },
+    {
+      "id": "ppads_002",
+      "category": "lesson_1",
+      "query": "In Lesson 01, what do I need before starting this product ad course?",
+      "answer": "AI Product Photoshoot & Ads: Create AI product photos, product videos, UGC-style videos, and honest ad assets. Lessons include Lesson 01 - Course Intro, Lesson 02 - Phone Photo Se Studio Photo, Lesson 03 - Model Ke Saath Product, Lesson 04 - Festive Shoot + Colour Variants.",
+      "provider": "built-in-course-guide",
+      "statusCode": 200,
+      "skipped": true,
+      "skipReason": "Expected fal-openrouter provider, got built-in-course-guide",
+      "debug": {
+        "conversation_id": "live-ppads_002",
+        "request_active_course_id": "6d0000000000000000000000",
+        "resolved_active_course_id": "6d0000000000000000000000",
+        "current_topic": "",
+        "current_intent": "",
+        "rewritten_retrieval_query": "In Lesson 01, what do I need before starting this product ad course?",
+        "retrieved_chunk_ids": [
+          "ai-product-photoshoot-ads:SKILLOMATE                                                                  Chatbot Knowledge Base",
+          "ai-product-photoshoot-ads:L07 UGC 2",
+          "ai-product-photoshoot-ads:Lesson 02 - Phone Photo Se Studio Photo",
+          "ai-product-photoshoot-ads:Course overview",
+          "ai-product-photoshoot-ads:Lesson 01 - Course Intro",
+          "ai-product-photoshoot-ads:Lesson 06 - Photo Se Product Video"
+        ],
+        "retrieved_course_ids": [
+          "6d0000000000000000000000"
+        ],
+        "retrieved_course_names": [
+          "AI Product Photoshoot & Ads"
+        ],
+        "scores_ranks": [
+          {
+            "rank": 1,
+            "score": "3.5085",
+            "course_id": "6d0000000000000000000000",
+            "section": "SKILLOMATE                                                                  Chatbot Knowledge Base"
+          },
+          {
+            "rank": 2,
+            "score": "2.8701",
+            "course_id": "6d0000000000000000000000",
+            "section": "L07 UGC 2"
+          },
+          {
+            "rank": 3,
+            "score": "2.1922",
+            "course_id": "6d0000000000000000000000",
+            "section": "Lesson 02 - Phone Photo Se Studio Photo"
+          },
+          {
+            "rank": 4,
+            "score": "2.1734",
+            "course_id": "6d0000000000000000000000",
+            "section": "Course overview"
+          },
+          {
+            "rank": 5,
+            "score": "1.9471",
+            "course_id": "6d0000000000000000000000",
+            "section": "Lesson 01 - Course Intro"
+          },
+          {
+            "rank": 6,
+            "score": "1.8332",
+            "course_id": "6d0000000000000000000000",
+            "section": "Lesson 06 - Photo Se Product Video"
+          }
+        ],
+        "selected_exact_prompt_template_id": "",
+        "provider_model_path": "built-in-course-guide"
+      },
+      "startedAt": "2026-10-14T12:25:24.693Z",
+      "completedAt": "2026-10-14T12:25:24.696Z"
+    },
+    {
+      "id": "ppads_002",
+      "category": "lesson_1",
+      "query": "In Lesson 01, what do I need before starting this product ad course?",
+      "answer": "",
+      "provider": "",
+      "statusCode": 0,
+      "skipped": true,
+      "skipReason": "Expected fal-openrouter provider, got built-in-course-guide",
+      "debug": null,
+      "startedAt": "2026-10-14T12:25:24.693Z",
+      "completedAt": "2026-10-14T12:25:24.696Z"
+    },
+    {
+      "id": "ppads_003",
+      "category": "lesson_1",
+      "query": "Can this course promise how much money I will make from product ads?",
+      "answer": "AI Product Photoshoot & Ads: Create AI product photos, product videos, UGC-style videos, and honest ad assets. Lessons include Lesson 01 - Course Intro, Lesson 02 - Phone Photo Se Studio Photo, Lesson 03 - Model Ke Saath Product, Lesson 04 - Festive Shoot + Colour Variants.",
+      "provider": "built-in-course-guide",
+      "statusCode": 200,
+      "skipped": true,
+      "skipReason": "Expected fal-openrouter provider, got built-in-course-guide",
+      "debug": {
+        "conversation_id": "live-ppads_003",
+        "request_active_course_id": "6d0000000000000000000000",
+        "resolved_active_course_id": "6d0000000000000000000000",
+        "current_topic": "",
+        "current_intent": "",
+        "rewritten_retrieval_query": "Can this course promise how much money I will make from product ads?",
+        "retrieved_chunk_ids": [
+          "ai-product-photoshoot-ads:L07 UGC 2",
+          "ai-product-photoshoot-ads:SKILLOMATE                                                                  Chatbot Knowledge Base",
+          "ai-product-photoshoot-ads:Course overview",
+          "ai-product-photoshoot-ads:L07 UGC 1",
+          "ai-product-photoshoot-ads:L02 Lifestyle",
+          "ai-product-photoshoot-ads:L06 Light Sweep"
+        ],
+        "retrieved_course_ids": [
+          "6d0000000000000000000000"
+        ],
+        "retrieved_course_names": [
+          "AI Product Photoshoot & Ads"
+        ],
+        "scores_ranks": [
+          {
+            "rank": 1,
+            "score": "4.2318",
+            "course_id": "6d0000000000000000000000",
+            "section": "L07 UGC 2"
+          },
+          {
+            "rank": 2,
+            "score": "3.8431",
+            "course_id": "6d0000000000000000000000",
+            "section": "SKILLOMATE                                                                  Chatbot Knowledge Base"
+          },
+          {
+            "rank": 3,
+            "score": "2.5135",
+            "course_id": "6d0000000000000000000000",
+            "section": "Course overview"
+          },
+          {
+            "rank": 4,
+            "score": "2.1107",
+            "course_id": "6d0000000000000000000000",
+            "section": "L07 UGC 1"
+          },
+          {
+            "rank": 5,
+            "score": "1.4967",
+            "course_id": "6d0000000000000000000000",
+            "section": "L02 Lifestyle"
+          },
+          {
+            "rank": 6,
+            "score": "1.4592",
+            "course_id": "6d0000000000000000000000",
+            "section": "L06 Light Sweep"
+          }
+        ],
+        "selected_exact_prompt_template_id": "",
+        "provider_model_path": "built-in-course-guide"
+      },
+      "startedAt": "2026-10-14T12:25:24.696Z",
+      "completedAt": "2026-10-14T12:25:24.699Z"
+    },
+    {
+      "id": "ppads_003",
+      "category": "lesson_1",
+      "query": "Can this course promise how much money I will make from product ads?",
+      "answer": "",
+      "provider": "",
+      "statusCode": 0,
+      "skipped": true,
+      "skipReason": "Expected fal-openrouter provider, got built-in-course-guide",
+      "debug": null,
+      "startedAt": "2026-10-14T12:25:24.696Z",
+      "completedAt": "2026-10-14T12:25:24.699Z"
+    },
+    {
+      "id": "ppads_004",
+      "category": "lesson_2",
+      "query": "Give me the Lesson 02 workflow for making a product sheet from phone photos.",
+      "answer": "AI Product Photoshoot & Ads: Create AI product photos, product videos, UGC-style videos, and honest ad assets. Lessons include Lesson 01 - Course Intro, Lesson 02 - Phone Photo Se Studio Photo, Lesson 03 - Model Ke Saath Product, Lesson 04 - Festive Shoot + Colour Variants.",
+      "provider": "built-in-course-guide",
+      "statusCode": 200,
+      "skipped": true,
+      "skipReason": "Expected fal-openrouter provider, got built-in-course-guide",
+      "debug": {
+        "conversation_id": "live-ppads_004",
+        "request_active_course_id": "6d0000000000000000000000",
+        "resolved_active_course_id": "6d0000000000000000000000",
+        "current_topic": "",
+        "current_intent": "",
+        "rewritten_retrieval_query": "Give me the Lesson 02 workflow for making a product sheet from phone photos.",
+        "retrieved_chunk_ids": [
+          "ai-product-photoshoot-ads:L02 Product Sheet",
+          "ai-product-photoshoot-ads:L02 Lifestyle",
+          "ai-product-photoshoot-ads:L02 White Studio",
+          "ai-product-photoshoot-ads:L02 Dark Premium",
+          "ai-product-photoshoot-ads:SKILLOMATE                                                                  Chatbot Knowledge Base",
+          "ai-product-photoshoot-ads:L07 UGC 2"
+        ],
+        "retrieved_course_ids": [
+          "6d0000000000000000000000"
+        ],
+        "retrieved_course_names": [
+          "AI Product Photoshoot & Ads"
+        ],
+        "scores_ranks": [
+          {
+            "rank": 1,
+            "score": "32.2567",
+            "course_id": "6d0000000000000000000000",
+            "section": "L02 Product Sheet"
+          },
+          {
+            "rank": 2,
+            "score": "32.1881",
+            "course_id": "6d0000000000000000000000",
+            "section": "L02 Lifestyle"
+          },
+          {
+            "rank": 3,
+            "score": "31.2343",
+            "course_id": "6d0000000000000000000000",
+            "section": "L02 White Studio"
+          },
+          {
+            "rank": 4,
+            "score": "31.2323",
+            "course_id": "6d0000000000000000000000",
+            "section": "L02 Dark Premium"
+          },
+          {
+            "rank": 5,
+            "score": "5.8166",
+            "course_id": "6d0000000000000000000000",
+            "section": "SKILLOMATE                                                                  Chatbot Knowledge Base"
+          },
+          {
+            "rank": 6,
+            "score": "4.7469",
+            "course_id": "6d0000000000000000000000",
+            "section": "L07 UGC 2"
+          }
+        ],
+        "selected_exact_prompt_template_id": "",
+        "provider_model_path": "built-in-course-guide"
+      },
+      "startedAt": "2026-10-14T12:25:24.699Z",
+      "completedAt": "2026-10-14T12:25:24.701Z"
+    },
+    {
+      "id": "ppads_004",
+      "category": "lesson_2",
+      "query": "Give me the Lesson 02 workflow for making a product sheet from phone photos.",
+      "answer": "",
+      "provider": "",
+      "statusCode": 0,
+      "skipped": true,
+      "skipReason": "Expected fal-openrouter provider, got built-in-course-guide",
+      "debug": null,
+      "startedAt": "2026-10-14T12:25:24.699Z",
+      "completedAt": "2026-10-14T12:25:24.701Z"
+    },
+    {
+      "id": "ppads_005",
+      "category": "exact_prompt",
+      "query": "Give the exact L02 Product Sheet prompt for a perfume bottle.",
+      "answer": "AI Product Photoshoot & Ads: Create AI product photos, product videos, UGC-style videos, and honest ad assets. Lessons include Lesson 01 - Course Intro, Lesson 02 - Phone Photo Se Studio Photo, Lesson 03 - Model Ke Saath Product, Lesson 04 - Festive Shoot + Colour Variants.",
+      "provider": "built-in-course-guide",
+      "statusCode": 200,
+      "skipped": true,
+      "skipReason": "Expected fal-openrouter provider, got built-in-course-guide",
+      "debug": {
+        "conversation_id": "live-ppads_005",
+        "request_active_course_id": "6d0000000000000000000000",
+        "resolved_active_course_id": "6d0000000000000000000000",
+        "current_topic": "",
+        "current_intent": "",
+        "rewritten_retrieval_query": "Give the exact L02 Product Sheet prompt for a perfume bottle.",
+        "retrieved_chunk_ids": [
+          "ai-product-photoshoot-ads:L02 Product Sheet",
+          "ai-product-photoshoot-ads:L02 White Studio",
+          "ai-product-photoshoot-ads:L02 Lifestyle",
+          "ai-product-photoshoot-ads:L02 Dark Premium",
+          "ai-product-photoshoot-ads:L07 UGC 2",
+          "ai-product-photoshoot-ads:SKILLOMATE                                                                  Chatbot Knowledge Base"
+        ],
+        "retrieved_course_ids": [
+          "6d0000000000000000000000"
+        ],
+        "retrieved_course_names": [
+          "AI Product Photoshoot & Ads"
+        ],
+        "scores_ranks": [
+          {
+            "rank": 1,
+            "score": "33.6569",
+            "course_id": "6d0000000000000000000000",
+            "section": "L02 Product Sheet"
+          },
+          {
+            "rank": 2,
+            "score": "32.2385",
+            "course_id": "6d0000000000000000000000",
+            "section": "L02 White Studio"
+          },
+          {
+            "rank": 3,
+            "score": "32.2385",
+            "course_id": "6d0000000000000000000000",
+            "section": "L02 Lifestyle"
+          },
+          {
+            "rank": 4,
+            "score": "32.2351",
+            "course_id": "6d0000000000000000000000",
+            "section": "L02 Dark Premium"
+          },
+          {
+            "rank": 5,
+            "score": "5.6466",
+            "course_id": "6d0000000000000000000000",
+            "section": "L07 UGC 2"
+          },
+          {
+            "rank": 6,
+            "score": "5.5333",
+            "course_id": "6d0000000000000000000000",
+            "section": "SKILLOMATE                                                                  Chatbot Knowledge Base"
+          }
+        ],
+        "selected_exact_prompt_template_id": "",
+        "provider_model_path": "built-in-course-guide"
+      },
+      "startedAt": "2026-10-14T12:25:24.701Z",
+      "completedAt": "2026-10-14T12:25:24.703Z"
+    },
+    {
+      "id": "ppads_005",
+      "category": "exact_prompt",
+      "query": "Give the exact L02 Product Sheet prompt for a perfume bottle.",
+      "answer": "",
+      "provider": "",
+      "statusCode": 0,
+      "skipped": true,
+      "skipReason": "Expected fal-openrouter provider, got built-in-course-guide",
+      "debug": null,
+      "startedAt": "2026-10-14T12:25:24.701Z",
+      "completedAt": "2026-10-14T12:25:24.703Z"
+    },
+    {
+      "id": "ppads_006",
+      "category": "exact_prompt",
+      "query": "Copy-paste the L02 White Studio prompt for a skincare jar.",
+      "answer": "AI Product Photoshoot & Ads: Create AI product photos, product videos, UGC-style videos, and honest ad assets. Lessons include Lesson 01 - Course Intro, Lesson 02 - Phone Photo Se Studio Photo, Lesson 03 - Model Ke Saath Product, Lesson 04 - Festive Shoot + Colour Variants.",
+      "provider": "built-in-course-guide",
+      "statusCode": 200,
+      "skipped": true,
+      "skipReason": "Expected fal-openrouter provider, got built-in-course-guide",
+      "debug": {
+        "conversation_id": "live-ppads_006",
+        "request_active_course_id": "6d0000000000000000000000",
+        "resolved_active_course_id": "6d0000000000000000000000",
+        "current_topic": "",
+        "current_intent": "exact_prompt",
+        "rewritten_retrieval_query": "Copy-paste the L02 White Studio prompt for a skincare jar.",
+        "retrieved_chunk_ids": [
+          "ai-product-photoshoot-ads:L02 White Studio",
+          "ai-product-photoshoot-ads:L02 Product Sheet",
+          "ai-product-photoshoot-ads:L02 Lifestyle",
+          "ai-product-photoshoot-ads:L02 Dark Premium",
+          "ai-product-photoshoot-ads:SKILLOMATE                                                                  Chatbot Knowledge Base",
+          "ai-product-photoshoot-ads:L05 Step 3 Flow prompts"
+        ],
+        "retrieved_course_ids": [
+          "6d0000000000000000000000"
+        ],
+        "retrieved_course_names": [
+          "AI Product Photoshoot & Ads"
+        ],
+        "scores_ranks": [
+          {
+            "rank": 1,
+            "score": "33.5445",
+            "course_id": "6d0000000000000000000000",
+            "section": "L02 White Studio"
+          },
+          {
+            "rank": 2,
+            "score": "32.4603",
+            "course_id": "6d0000000000000000000000",
+            "section": "L02 Product Sheet"
+          },
+          {
+            "rank": 3,
+            "score": "31.8764",
+            "course_id": "6d0000000000000000000000",
+            "section": "L02 Lifestyle"
+          },
+          {
+            "rank": 4,
+            "score": "31.0027",
+            "course_id": "6d0000000000000000000000",
+            "section": "L02 Dark Premium"
+          },
+          {
+            "rank": 5,
+            "score": "2.5062",
+            "course_id": "6d0000000000000000000000",
+            "section": "SKILLOMATE                                                                  Chatbot Knowledge Base"
+          },
+          {
+            "rank": 6,
+            "score": "1.2872",
+            "course_id": "6d0000000000000000000000",
+            "section": "L05 Step 3 Flow prompts"
+          }
+        ],
+        "selected_exact_prompt_template_id": "",
+        "provider_model_path": "built-in-course-guide"
+      },
+      "startedAt": "2026-10-14T12:25:24.704Z",
+      "completedAt": "2026-10-14T12:25:24.706Z"
+    },
+    {
+      "id": "ppads_006",
+      "category": "exact_prompt",
+      "query": "Copy-paste the L02 White Studio prompt for a skincare jar.",
+      "answer": "",
+      "provider": "",
+      "statusCode": 0,
+      "skipped": true,
+      "skipReason": "Expected fal-openrouter provider, got built-in-course-guide",
+      "debug": null,
+      "startedAt": "2026-10-14T12:25:24.704Z",
+      "completedAt": "2026-10-14T12:25:24.706Z"
+    },
+    {
+      "id": "ppads_007",
+      "category": "exact_prompt",
+      "query": "What is the exact L02 Lifestyle prompt for a water bottle?",
+      "answer": "AI Product Photoshoot & Ads: Create AI product photos, product videos, UGC-style videos, and honest ad assets. Lessons include Lesson 01 - Course Intro, Lesson 02 - Phone Photo Se Studio Photo, Lesson 03 - Model Ke Saath Product, Lesson 04 - Festive Shoot + Colour Variants.",
+      "provider": "built-in-course-guide",
+      "statusCode": 200,
+      "skipped": true,
+      "skipReason": "Expected fal-openrouter provider, got built-in-course-guide",
+      "debug": {
+        "conversation_id": "live-ppads_007",
+        "request_active_course_id": "6d0000000000000000000000",
+        "resolved_active_course_id": "6d0000000000000000000000",
+        "current_topic": "",
+        "current_intent": "exact_prompt",
+        "rewritten_retrieval_query": "What is the exact L02 Lifestyle prompt for a water bottle?",
+        "retrieved_chunk_ids": [
+          "ai-product-photoshoot-ads:L02 Lifestyle",
+          "ai-product-photoshoot-ads:L02 Product Sheet",
+          "ai-product-photoshoot-ads:L02 White Studio",
+          "ai-product-photoshoot-ads:L02 Dark Premium",
+          "ai-product-photoshoot-ads:SKILLOMATE                                                                  Chatbot Knowledge Base",
+          "ai-product-photoshoot-ads:L07 UGC 2"
+        ],
+        "retrieved_course_ids": [
+          "6d0000000000000000000000"
+        ],
+        "retrieved_course_names": [
+          "AI Product Photoshoot & Ads"
+        ],
+        "scores_ranks": [
+          {
+            "rank": 1,
+            "score": "32.4422",
+            "course_id": "6d0000000000000000000000",
+            "section": "L02 Lifestyle"
+          },
+          {
+            "rank": 2,
+            "score": "31.7541",
+            "course_id": "6d0000000000000000000000",
+            "section": "L02 Product Sheet"
+          },
+          {
+            "rank": 3,
+            "score": "31.0042",
+            "course_id": "6d0000000000000000000000",
+            "section": "L02 White Studio"
+          },
+          {
+            "rank": 4,
+            "score": "31.0027",
+            "course_id": "6d0000000000000000000000",
+            "section": "L02 Dark Premium"
+          },
+          {
+            "rank": 5,
+            "score": "2.5868",
+            "course_id": "6d0000000000000000000000",
+            "section": "SKILLOMATE                                                                  Chatbot Knowledge Base"
+          },
+          {
+            "rank": 6,
+            "score": "1.6518",
+            "course_id": "6d0000000000000000000000",
+            "section": "L07 UGC 2"
+          }
+        ],
+        "selected_exact_prompt_template_id": "",
+        "provider_model_path": "built-in-course-guide"
+      },
+      "startedAt": "2026-10-14T12:25:24.706Z",
+      "completedAt": "2026-10-14T12:25:24.707Z"
+    },
+    {
+      "id": "ppads_007",
+      "category": "exact_prompt",
+      "query": "What is the exact L02 Lifestyle prompt for a water bottle?",
+      "answer": "",
+      "provider": "",
+      "statusCode": 0,
+      "skipped": true,
+      "skipReason": "Expected fal-openrouter provider, got built-in-course-guide",
+      "debug": null,
+      "startedAt": "2026-10-14T12:25:24.706Z",
+      "completedAt": "2026-10-14T12:25:24.707Z"
+    },
+    {
+      "id": "ppads_008",
+      "category": "exact_prompt",
+      "query": "Give me the exact L02 Dark Premium prompt for sunglasses.",
+      "answer": "AI Product Photoshoot & Ads: Create AI product photos, product videos, UGC-style videos, and honest ad assets. Lessons include Lesson 01 - Course Intro, Lesson 02 - Phone Photo Se Studio Photo, Lesson 03 - Model Ke Saath Product, Lesson 04 - Festive Shoot + Colour Variants.",
+      "provider": "built-in-course-guide",
+      "statusCode": 200,
+      "skipped": true,
+      "skipReason": "Expected fal-openrouter provider, got built-in-course-guide",
+      "debug": {
+        "conversation_id": "live-ppads_008",
+        "request_active_course_id": "6d0000000000000000000000",
+        "resolved_active_course_id": "6d0000000000000000000000",
+        "current_topic": "",
+        "current_intent": "",
+        "rewritten_retrieval_query": "Give me the exact L02 Dark Premium prompt for sunglasses.",
+        "retrieved_chunk_ids": [
+          "ai-product-photoshoot-ads:L02 Dark Premium",
+          "ai-product-photoshoot-ads:L02 Product Sheet",
+          "ai-product-photoshoot-ads:L02 White Studio",
+          "ai-product-photoshoot-ads:L02 Lifestyle",
+          "ai-product-photoshoot-ads:SKILLOMATE                                                                  Chatbot Knowledge Base",
+          "ai-product-photoshoot-ads:L05 Step 3 Flow prompts"
+        ],
+        "retrieved_course_ids": [
+          "6d0000000000000000000000"
+        ],
+        "retrieved_course_names": [
+          "AI Product Photoshoot & Ads"
+        ],
+        "scores_ranks": [
+          {
+            "rank": 1,
+            "score": "34.5782",
+            "course_id": "6d0000000000000000000000",
+            "section": "L02 Dark Premium"
+          },
+          {
+            "rank": 2,
+            "score": "31.7541",
+            "course_id": "6d0000000000000000000000",
+            "section": "L02 Product Sheet"
+          },
+          {
+            "rank": 3,
+            "score": "31.0042",
+            "course_id": "6d0000000000000000000000",
+            "section": "L02 White Studio"
+          },
+          {
+            "rank": 4,
+            "score": "31.0042",
+            "course_id": "6d0000000000000000000000",
+            "section": "L02 Lifestyle"
+          },
+          {
+            "rank": 5,
+            "score": "2.5868",
+            "course_id": "6d0000000000000000000000",
+            "section": "SKILLOMATE                                                                  Chatbot Knowledge Base"
+          },
+          {
+            "rank": 6,
+            "score": "1.2872",
+            "course_id": "6d0000000000000000000000",
+            "section": "L05 Step 3 Flow prompts"
+          }
+        ],
+        "selected_exact_prompt_template_id": "",
+        "provider_model_path": "built-in-course-guide"
+      },
+      "startedAt": "2026-10-14T12:25:24.708Z",
+      "completedAt": "2026-10-14T12:25:24.709Z"
+    },
+    {
+      "id": "ppads_008",
+      "category": "exact_prompt",
+      "query": "Give me the exact L02 Dark Premium prompt for sunglasses.",
+      "answer": "",
+      "provider": "",
+      "statusCode": 0,
+      "skipped": true,
+      "skipReason": "Expected fal-openrouter provider, got built-in-course-guide",
+      "debug": null,
+      "startedAt": "2026-10-14T12:25:24.708Z",
+      "completedAt": "2026-10-14T12:25:24.709Z"
+    },
+    {
+      "id": "ppads_009",
+      "category": "troubleshooting",
+      "query": "My perfume label changes every time. How should I fix it?",
+      "answer": "AI Product Photoshoot & Ads: Create AI product photos, product videos, UGC-style videos, and honest ad assets. Lessons include Lesson 01 - Course Intro, Lesson 02 - Phone Photo Se Studio Photo, Lesson 03 - Model Ke Saath Product, Lesson 04 - Festive Shoot + Colour Variants.",
+      "provider": "built-in-course-guide",
+      "statusCode": 200,
+      "skipped": true,
+      "skipReason": "Expected fal-openrouter provider, got built-in-course-guide",
+      "debug": {
+        "conversation_id": "live-ppads_009",
+        "request_active_course_id": "6d0000000000000000000000",
+        "resolved_active_course_id": "6d0000000000000000000000",
+        "current_topic": "",
+        "current_intent": "",
+        "rewritten_retrieval_query": "My perfume label changes every time. How should I fix it?",
+        "retrieved_chunk_ids": [
+          "ai-product-photoshoot-ads:L07 UGC 2",
+          "ai-product-photoshoot-ads:SKILLOMATE                                                                  Chatbot Knowledge Base",
+          "ai-product-photoshoot-ads:L02 Product Sheet",
+          "ai-product-photoshoot-ads:L06 Push-in",
+          "ai-product-photoshoot-ads:L06 Arc",
+          "ai-product-photoshoot-ads:L06 Light Sweep"
+        ],
+        "retrieved_course_ids": [
+          "6d0000000000000000000000"
+        ],
+        "retrieved_course_names": [
+          "AI Product Photoshoot & Ads"
+        ],
+        "scores_ranks": [
+          {
+            "rank": 1,
+            "score": "3.9606",
+            "course_id": "6d0000000000000000000000",
+            "section": "L07 UGC 2"
+          },
+          {
+            "rank": 2,
+            "score": "1.7169",
+            "course_id": "6d0000000000000000000000",
+            "section": "SKILLOMATE                                                                  Chatbot Knowledge Base"
+          },
+          {
+            "rank": 3,
+            "score": "1.6356",
+            "course_id": "6d0000000000000000000000",
+            "section": "L02 Product Sheet"
+          },
+          {
+            "rank": 4,
+            "score": "1.5198",
+            "course_id": "6d0000000000000000000000",
+            "section": "L06 Push-in"
+          },
+          {
+            "rank": 5,
+            "score": "1.5082",
+            "course_id": "6d0000000000000000000000",
+            "section": "L06 Arc"
+          },
+          {
+            "rank": 6,
+            "score": "1.4968",
+            "course_id": "6d0000000000000000000000",
+            "section": "L06 Light Sweep"
+          }
+        ],
+        "selected_exact_prompt_template_id": "",
+        "provider_model_path": "built-in-course-guide"
+      },
+      "startedAt": "2026-10-14T12:25:24.709Z",
+      "completedAt": "2026-10-14T12:25:24.711Z"
+    },
+    {
+      "id": "ppads_009",
+      "category": "troubleshooting",
+      "query": "My perfume label changes every time. How should I fix it?",
+      "answer": "",
+      "provider": "",
+      "statusCode": 0,
+      "skipped": true,
+      "skipReason": "Expected fal-openrouter provider, got built-in-course-guide",
+      "debug": null,
+      "startedAt": "2026-10-14T12:25:24.709Z",
+      "completedAt": "2026-10-14T12:25:24.711Z"
+    },
+    {
+      "id": "ppads_010",
+      "category": "troubleshooting",
+      "query": "Every product photo looks slightly different. What am I missing?",
+      "answer": "AI Product Photoshoot & Ads: Create AI product photos, product videos, UGC-style videos, and honest ad assets. Lessons include Lesson 01 - Course Intro, Lesson 02 - Phone Photo Se Studio Photo, Lesson 03 - Model Ke Saath Product, Lesson 04 - Festive Shoot + Colour Variants.",
+      "provider": "built-in-course-guide",
+      "statusCode": 200,
+      "skipped": true,
+      "skipReason": "Expected fal-openrouter provider, got built-in-course-guide",
+      "debug": {
+        "conversation_id": "live-ppads_010",
+        "request_active_course_id": "6d0000000000000000000000",
+        "resolved_active_course_id": "6d0000000000000000000000",
+        "current_topic": "",
+        "current_intent": "",
+        "rewritten_retrieval_query": "Every product photo looks slightly different. What am I missing?",
+        "retrieved_chunk_ids": [
+          "ai-product-photoshoot-ads:SKILLOMATE                                                                  Chatbot Knowledge Base",
+          "ai-product-photoshoot-ads:L07 UGC 2",
+          "ai-product-photoshoot-ads:Lesson 02 - Phone Photo Se Studio Photo",
+          "ai-product-photoshoot-ads:L02 Product Sheet",
+          "ai-product-photoshoot-ads:L03 Character Sheet (bonus)",
+          "ai-product-photoshoot-ads:Lesson 06 - Photo Se Product Video"
+        ],
+        "retrieved_course_ids": [
+          "6d0000000000000000000000"
+        ],
+        "retrieved_course_names": [
+          "AI Product Photoshoot & Ads"
+        ],
+        "scores_ranks": [
+          {
+            "rank": 1,
+            "score": "2.6698",
+            "course_id": "6d0000000000000000000000",
+            "section": "SKILLOMATE                                                                  Chatbot Knowledge Base"
+          },
+          {
+            "rank": 2,
+            "score": "2.3542",
+            "course_id": "6d0000000000000000000000",
+            "section": "L07 UGC 2"
+          },
+          {
+            "rank": 3,
+            "score": "2.1231",
+            "course_id": "6d0000000000000000000000",
+            "section": "Lesson 02 - Phone Photo Se Studio Photo"
+          },
+          {
+            "rank": 4,
+            "score": "2.1204",
+            "course_id": "6d0000000000000000000000",
+            "section": "L02 Product Sheet"
+          },
+          {
+            "rank": 5,
+            "score": "1.8678",
+            "course_id": "6d0000000000000000000000",
+            "section": "L03 Character Sheet (bonus)"
+          },
+          {
+            "rank": 6,
+            "score": "1.6232",
+            "course_id": "6d0000000000000000000000",
+            "section": "Lesson 06 - Photo Se Product Video"
+          }
+        ],
+        "selected_exact_prompt_template_id": "",
+        "provider_model_path": "built-in-course-guide"
+      },
+      "startedAt": "2026-10-14T12:25:24.711Z",
+      "completedAt": "2026-10-14T12:25:24.713Z"
+    },
+    {
+      "id": "ppads_010",
+      "category": "troubleshooting",
+      "query": "Every product photo looks slightly different. What am I missing?",
+      "answer": "",
+      "provider": "",
+      "statusCode": 0,
+      "skipped": true,
+      "skipReason": "Expected fal-openrouter provider, got built-in-course-guide",
+      "debug": null,
+      "startedAt": "2026-10-14T12:25:24.711Z",
+      "completedAt": "2026-10-14T12:25:24.713Z"
+    },
+    {
+      "id": "ppads_011",
+      "category": "lesson_3",
+      "query": "Explain the Lesson 03 model-shot workflow with product and character sheets.",
+      "answer": "AI Product Photoshoot & Ads: Create AI product photos, product videos, UGC-style videos, and honest ad assets. Lessons include Lesson 01 - Course Intro, Lesson 02 - Phone Photo Se Studio Photo, Lesson 03 - Model Ke Saath Product, Lesson 04 - Festive Shoot + Colour Variants.",
+      "provider": "built-in-course-guide",
+      "statusCode": 200,
+      "skipped": true,
+      "skipReason": "Expected fal-openrouter provider, got built-in-course-guide",
+      "debug": {
+        "conversation_id": "live-ppads_011",
+        "request_active_course_id": "6d0000000000000000000000",
+        "resolved_active_course_id": "6d0000000000000000000000",
+        "current_topic": "",
+        "current_intent": "",
+        "rewritten_retrieval_query": "Explain the Lesson 03 model-shot workflow with product and character sheets.",
+        "retrieved_chunk_ids": [
+          "ai-product-photoshoot-ads:L03 Hands close-up",
+          "ai-product-photoshoot-ads:L03 Showing to camera",
+          "ai-product-photoshoot-ads:L03 Desk",
+          "ai-product-photoshoot-ads:L03 Character Sheet (bonus)",
+          "ai-product-photoshoot-ads:Lesson 03 - Model Ke Saath Product",
+          "ai-product-photoshoot-ads:SKILLOMATE                                                                  Chatbot Knowledge Base"
+        ],
+        "retrieved_course_ids": [
+          "6d0000000000000000000000"
+        ],
+        "retrieved_course_names": [
+          "AI Product Photoshoot & Ads"
+        ],
+        "scores_ranks": [
+          {
+            "rank": 1,
+            "score": "31.9244",
+            "course_id": "6d0000000000000000000000",
+            "section": "L03 Hands close-up"
+          },
+          {
+            "rank": 2,
+            "score": "31.4092",
+            "course_id": "6d0000000000000000000000",
+            "section": "L03 Showing to camera"
+          },
+          {
+            "rank": 3,
+            "score": "31.3883",
+            "course_id": "6d0000000000000000000000",
+            "section": "L03 Desk"
+          },
+          {
+            "rank": 4,
+            "score": "31.2439",
+            "course_id": "6d0000000000000000000000",
+            "section": "L03 Character Sheet (bonus)"
+          },
+          {
+            "rank": 5,
+            "score": "4.8482",
+            "course_id": "6d0000000000000000000000",
+            "section": "Lesson 03 - Model Ke Saath Product"
+          },
+          {
+            "rank": 6,
+            "score": "4.7803",
+            "course_id": "6d0000000000000000000000",
+            "section": "SKILLOMATE                                                                  Chatbot Knowledge Base"
+          }
+        ],
+        "selected_exact_prompt_template_id": "",
+        "provider_model_path": "built-in-course-guide"
+      },
+      "startedAt": "2026-10-14T12:25:24.713Z",
+      "completedAt": "2026-10-14T12:25:24.715Z"
+    },
+    {
+      "id": "ppads_011",
+      "category": "lesson_3",
+      "query": "Explain the Lesson 03 model-shot workflow with product and character sheets.",
+      "answer": "",
+      "provider": "",
+      "statusCode": 0,
+      "skipped": true,
+      "skipReason": "Expected fal-openrouter provider, got built-in-course-guide",
+      "debug": null,
+      "startedAt": "2026-10-14T12:25:24.713Z",
+      "completedAt": "2026-10-14T12:25:24.715Z"
+    },
+    {
+      "id": "ppads_012",
+      "category": "exact_prompt",
+      "query": "Give the exact L03 Character Sheet bonus prompt for a young Indian woman.",
+      "answer": "AI Product Photoshoot & Ads: Create AI product photos, product videos, UGC-style videos, and honest ad assets. Lessons include Lesson 01 - Course Intro, Lesson 02 - Phone Photo Se Studio Photo, Lesson 03 - Model Ke Saath Product, Lesson 04 - Festive Shoot + Colour Variants.",
+      "provider": "built-in-course-guide",
+      "statusCode": 200,
+      "skipped": true,
+      "skipReason": "Expected fal-openrouter provider, got built-in-course-guide",
+      "debug": {
+        "conversation_id": "live-ppads_012",
+        "request_active_course_id": "6d0000000000000000000000",
+        "resolved_active_course_id": "6d0000000000000000000000",
+        "current_topic": "face_consistency",
+        "current_intent": "",
+        "rewritten_retrieval_query": "AI Product Photoshoot & Ads face consistency Ingredients using saved last frame and character sheet",
+        "retrieved_chunk_ids": [
+          "ai-product-photoshoot-ads:L03 Hands close-up",
+          "ai-product-photoshoot-ads:L03 Desk",
+          "ai-product-photoshoot-ads:L03 Character Sheet (bonus)",
+          "ai-product-photoshoot-ads:L03 Showing to camera",
+          "ai-product-photoshoot-ads:SKILLOMATE                                                                  Chatbot Knowledge Base",
+          "ai-product-photoshoot-ads:L07 UGC 1"
+        ],
+        "retrieved_course_ids": [
+          "6d0000000000000000000000"
+        ],
+        "retrieved_course_names": [
+          "AI Product Photoshoot & Ads"
+        ],
+        "scores_ranks": [
+          {
+            "rank": 1,
+            "score": "34.3977",
+            "course_id": "6d0000000000000000000000",
+            "section": "L03 Hands close-up"
+          },
+          {
+            "rank": 2,
+            "score": "34.0849",
+            "course_id": "6d0000000000000000000000",
+            "section": "L03 Desk"
+          },
+          {
+            "rank": 3,
+            "score": "33.3237",
+            "course_id": "6d0000000000000000000000",
+            "section": "L03 Character Sheet (bonus)"
+          },
+          {
+            "rank": 4,
+            "score": "32.8988",
+            "course_id": "6d0000000000000000000000",
+            "section": "L03 Showing to camera"
+          },
+          {
+            "rank": 5,
+            "score": "5.4082",
+            "course_id": "6d0000000000000000000000",
+            "section": "SKILLOMATE                                                                  Chatbot Knowledge Base"
+          },
+          {
+            "rank": 6,
+            "score": "4.2240",
+            "course_id": "6d0000000000000000000000",
+            "section": "L07 UGC 1"
+          }
+        ],
+        "selected_exact_prompt_template_id": "",
+        "provider_model_path": "built-in-course-guide"
+      },
+      "startedAt": "2026-10-14T12:25:24.715Z",
+      "completedAt": "2026-10-14T12:25:24.717Z"
+    },
+    {
+      "id": "ppads_012",
+      "category": "exact_prompt",
+      "query": "Give the exact L03 Character Sheet bonus prompt for a young Indian woman.",
+      "answer": "",
+      "provider": "",
+      "statusCode": 0,
+      "skipped": true,
+      "skipReason": "Expected fal-openrouter provider, got built-in-course-guide",
+      "debug": null,
+      "startedAt": "2026-10-14T12:25:24.715Z",
+      "completedAt": "2026-10-14T12:25:24.717Z"
+    },
+    {
+      "id": "ppads_013",
+      "category": "exact_prompt",
+      "query": "Give exact L03 Hands close-up prompt for a coffee mug.",
+      "answer": "AI Product Photoshoot & Ads: Create AI product photos, product videos, UGC-style videos, and honest ad assets. Lessons include Lesson 01 - Course Intro, Lesson 02 - Phone Photo Se Studio Photo, Lesson 03 - Model Ke Saath Product, Lesson 04 - Festive Shoot + Colour Variants.",
+      "provider": "built-in-course-guide",
+      "statusCode": 200,
+      "skipped": true,
+      "skipReason": "Expected fal-openrouter provider, got built-in-course-guide",
+      "debug": {
+        "conversation_id": "live-ppads_013",
+        "request_active_course_id": "6d0000000000000000000000",
+        "resolved_active_course_id": "6d0000000000000000000000",
+        "current_topic": "",
+        "current_intent": "",
+        "rewritten_retrieval_query": "Give exact L03 Hands close-up prompt for a coffee mug.",
+        "retrieved_chunk_ids": [
+          "ai-product-photoshoot-ads:L03 Hands close-up",
+          "ai-product-photoshoot-ads:L03 Character Sheet (bonus)",
+          "ai-product-photoshoot-ads:L03 Showing to camera",
+          "ai-product-photoshoot-ads:L03 Desk",
+          "ai-product-photoshoot-ads:SKILLOMATE                                                                  Chatbot Knowledge Base",
+          "ai-product-photoshoot-ads:L02 Lifestyle"
+        ],
+        "retrieved_course_ids": [
+          "6d0000000000000000000000"
+        ],
+        "retrieved_course_names": [
+          "AI Product Photoshoot & Ads"
+        ],
+        "scores_ranks": [
+          {
+            "rank": 1,
+            "score": "33.8531",
+            "course_id": "6d0000000000000000000000",
+            "section": "L03 Hands close-up"
+          },
+          {
+            "rank": 2,
+            "score": "32.9336",
+            "course_id": "6d0000000000000000000000",
+            "section": "L03 Character Sheet (bonus)"
+          },
+          {
+            "rank": 3,
+            "score": "31.9451",
+            "course_id": "6d0000000000000000000000",
+            "section": "L03 Showing to camera"
+          },
+          {
+            "rank": 4,
+            "score": "31.7147",
+            "course_id": "6d0000000000000000000000",
+            "section": "L03 Desk"
+          },
+          {
+            "rank": 5,
+            "score": "3.4614",
+            "course_id": "6d0000000000000000000000",
+            "section": "SKILLOMATE                                                                  Chatbot Knowledge Base"
+          },
+          {
+            "rank": 6,
+            "score": "2.9816",
+            "course_id": "6d0000000000000000000000",
+            "section": "L02 Lifestyle"
+          }
+        ],
+        "selected_exact_prompt_template_id": "",
+        "provider_model_path": "built-in-course-guide"
+      },
+      "startedAt": "2026-10-14T12:25:24.717Z",
+      "completedAt": "2026-10-14T12:25:24.718Z"
+    },
+    {
+      "id": "ppads_013",
+      "category": "exact_prompt",
+      "query": "Give exact L03 Hands close-up prompt for a coffee mug.",
+      "answer": "",
+      "provider": "",
+      "statusCode": 0,
+      "skipped": true,
+      "skipReason": "Expected fal-openrouter provider, got built-in-course-guide",
+      "debug": null,
+      "startedAt": "2026-10-14T12:25:24.717Z",
+      "completedAt": "2026-10-14T12:25:24.718Z"
+    },
+    {
+      "id": "ppads_014",
+      "category": "exact_prompt",
+      "query": "Copy the L03 Desk prompt for a compact keyboard.",
+      "answer": "AI Product Photoshoot & Ads: Create AI product photos, product videos, UGC-style videos, and honest ad assets. Lessons include Lesson 01 - Course Intro, Lesson 02 - Phone Photo Se Studio Photo, Lesson 03 - Model Ke Saath Product, Lesson 04 - Festive Shoot + Colour Variants.",
+      "provider": "built-in-course-guide",
+      "statusCode": 200,
+      "skipped": true,
+      "skipReason": "Expected fal-openrouter provider, got built-in-course-guide",
+      "debug": {
+        "conversation_id": "live-ppads_014",
+        "request_active_course_id": "6d0000000000000000000000",
+        "resolved_active_course_id": "6d0000000000000000000000",
+        "current_topic": "",
+        "current_intent": "",
+        "rewritten_retrieval_query": "Copy the L03 Desk prompt for a compact keyboard.",
+        "retrieved_chunk_ids": [
+          "ai-product-photoshoot-ads:L03 Desk",
+          "ai-product-photoshoot-ads:L03 Hands close-up",
+          "ai-product-photoshoot-ads:L03 Character Sheet (bonus)",
+          "ai-product-photoshoot-ads:L03 Showing to camera",
+          "ai-product-photoshoot-ads:SKILLOMATE                                                                  Chatbot Knowledge Base",
+          "ai-product-photoshoot-ads:L05 Step 3 Flow prompts"
+        ],
+        "retrieved_course_ids": [
+          "6d0000000000000000000000"
+        ],
+        "retrieved_course_names": [
+          "AI Product Photoshoot & Ads"
+        ],
+        "scores_ranks": [
+          {
+            "rank": 1,
+            "score": "32.3509",
+            "course_id": "6d0000000000000000000000",
+            "section": "L03 Desk"
+          },
+          {
+            "rank": 2,
+            "score": "31.8128",
+            "course_id": "6d0000000000000000000000",
+            "section": "L03 Hands close-up"
+          },
+          {
+            "rank": 3,
+            "score": "31.1206",
+            "course_id": "6d0000000000000000000000",
+            "section": "L03 Character Sheet (bonus)"
+          },
+          {
+            "rank": 4,
+            "score": "31.1127",
+            "course_id": "6d0000000000000000000000",
+            "section": "L03 Showing to camera"
+          },
+          {
+            "rank": 5,
+            "score": "2.6816",
+            "course_id": "6d0000000000000000000000",
+            "section": "SKILLOMATE                                                                  Chatbot Knowledge Base"
+          },
+          {
+            "rank": 6,
+            "score": "1.2872",
+            "course_id": "6d0000000000000000000000",
+            "section": "L05 Step 3 Flow prompts"
+          }
+        ],
+        "selected_exact_prompt_template_id": "",
+        "provider_model_path": "built-in-course-guide"
+      },
+      "startedAt": "2026-10-14T12:25:24.719Z",
+      "completedAt": "2026-10-14T12:25:24.726Z"
+    },
+    {
+      "id": "ppads_014",
+      "category": "exact_prompt",
+      "query": "Copy the L03 Desk prompt for a compact keyboard.",
+      "answer": "",
+      "provider": "",
+      "statusCode": 0,
+      "skipped": true,
+      "skipReason": "Expected fal-openrouter provider, got built-in-course-guide",
+      "debug": null,
+      "startedAt": "2026-10-14T12:25:24.719Z",
+      "completedAt": "2026-10-14T12:25:24.726Z"
+    },
+    {
+      "id": "ppads_015",
+      "category": "exact_prompt",
+      "query": "What is the exact L03 Showing to camera prompt for a handmade soap box?",
+      "answer": "AI Product Photoshoot & Ads: Create AI product photos, product videos, UGC-style videos, and honest ad assets. Lessons include Lesson 01 - Course Intro, Lesson 02 - Phone Photo Se Studio Photo, Lesson 03 - Model Ke Saath Product, Lesson 04 - Festive Shoot + Colour Variants.",
+      "provider": "built-in-course-guide",
+      "statusCode": 200,
+      "skipped": true,
+      "skipReason": "Expected fal-openrouter provider, got built-in-course-guide",
+      "debug": {
+        "conversation_id": "live-ppads_015",
+        "request_active_course_id": "6d0000000000000000000000",
+        "resolved_active_course_id": "6d0000000000000000000000",
+        "current_topic": "",
+        "current_intent": "exact_prompt",
+        "rewritten_retrieval_query": "What is the exact L03 Showing to camera prompt for a handmade soap box?",
+        "retrieved_chunk_ids": [
+          "ai-product-photoshoot-ads:L03 Showing to camera",
+          "ai-product-photoshoot-ads:L03 Character Sheet (bonus)",
+          "ai-product-photoshoot-ads:L03 Desk",
+          "ai-product-photoshoot-ads:L03 Hands close-up",
+          "ai-product-photoshoot-ads:SKILLOMATE                                                                  Chatbot Knowledge Base",
+          "ai-product-photoshoot-ads:L02 Product Sheet"
+        ],
+        "retrieved_course_ids": [
+          "6d0000000000000000000000"
+        ],
+        "retrieved_course_names": [
+          "AI Product Photoshoot & Ads"
+        ],
+        "scores_ranks": [
+          {
+            "rank": 1,
+            "score": "34.1535",
+            "course_id": "6d0000000000000000000000",
+            "section": "L03 Showing to camera"
+          },
+          {
+            "rank": 2,
+            "score": "31.9037",
+            "course_id": "6d0000000000000000000000",
+            "section": "L03 Character Sheet (bonus)"
+          },
+          {
+            "rank": 3,
+            "score": "31.1254",
+            "course_id": "6d0000000000000000000000",
+            "section": "L03 Desk"
+          },
+          {
+            "rank": 4,
+            "score": "31.1002",
+            "course_id": "6d0000000000000000000000",
+            "section": "L03 Hands close-up"
+          },
+          {
+            "rank": 5,
+            "score": "3.5121",
+            "course_id": "6d0000000000000000000000",
+            "section": "SKILLOMATE                                                                  Chatbot Knowledge Base"
+          },
+          {
+            "rank": 6,
+            "score": "1.9487",
+            "course_id": "6d0000000000000000000000",
+            "section": "L02 Product Sheet"
+          }
+        ],
+        "selected_exact_prompt_template_id": "",
+        "provider_model_path": "built-in-course-guide"
+      },
+      "startedAt": "2026-10-14T12:25:24.731Z",
+      "completedAt": "2026-10-14T12:25:24.738Z"
+    },
+    {
+      "id": "ppads_015",
+      "category": "exact_prompt",
+      "query": "What is the exact L03 Showing to camera prompt for a handmade soap box?",
+      "answer": "",
+      "provider": "",
+      "statusCode": 0,
+      "skipped": true,
+      "skipReason": "Expected fal-openrouter provider, got built-in-course-guide",
+      "debug": null,
+      "startedAt": "2026-10-14T12:25:24.731Z",
+      "completedAt": "2026-10-14T12:25:24.738Z"
+    },
+    {
+      "id": "ppads_016",
+      "category": "troubleshooting",
+      "query": "The AI model has extra fingers while holding my product. What should I write?",
+      "answer": "AI Product Photoshoot & Ads: Create AI product photos, product videos, UGC-style videos, and honest ad assets. Lessons include Lesson 01 - Course Intro, Lesson 02 - Phone Photo Se Studio Photo, Lesson 03 - Model Ke Saath Product, Lesson 04 - Festive Shoot + Colour Variants.",
+      "provider": "built-in-course-guide",
+      "statusCode": 200,
+      "skipped": true,
+      "skipReason": "Expected fal-openrouter provider, got built-in-course-guide",
+      "debug": {
+        "conversation_id": "live-ppads_016",
+        "request_active_course_id": "6d0000000000000000000000",
+        "resolved_active_course_id": "6d0000000000000000000000",
+        "current_topic": "",
+        "current_intent": "",
+        "rewritten_retrieval_query": "The AI model has extra fingers while holding my product. What should I write?",
+        "retrieved_chunk_ids": [
+          "ai-product-photoshoot-ads:SKILLOMATE                                                                  Chatbot Knowledge Base",
+          "ai-product-photoshoot-ads:L07 UGC 1",
+          "ai-product-photoshoot-ads:L07 UGC 2",
+          "ai-product-photoshoot-ads:L05 Step 2 Hooks + Script",
+          "ai-product-photoshoot-ads:L06 Arc",
+          "ai-product-photoshoot-ads:L02 Product Sheet"
+        ],
+        "retrieved_course_ids": [
+          "6d0000000000000000000000"
+        ],
+        "retrieved_course_names": [
+          "AI Product Photoshoot & Ads"
+        ],
+        "scores_ranks": [
+          {
+            "rank": 1,
+            "score": "3.4480",
+            "course_id": "6d0000000000000000000000",
+            "section": "SKILLOMATE                                                                  Chatbot Knowledge Base"
+          },
+          {
+            "rank": 2,
+            "score": "2.8968",
+            "course_id": "6d0000000000000000000000",
+            "section": "L07 UGC 1"
+          },
+          {
+            "rank": 3,
+            "score": "2.4381",
+            "course_id": "6d0000000000000000000000",
+            "section": "L07 UGC 2"
+          },
+          {
+            "rank": 4,
+            "score": "2.0138",
+            "course_id": "6d0000000000000000000000",
+            "section": "L05 Step 2 Hooks + Script"
+          },
+          {
+            "rank": 5,
+            "score": "1.9942",
+            "course_id": "6d0000000000000000000000",
+            "section": "L06 Arc"
+          },
+          {
+            "rank": 6,
+            "score": "1.9704",
+            "course_id": "6d0000000000000000000000",
+            "section": "L02 Product Sheet"
+          }
+        ],
+        "selected_exact_prompt_template_id": "",
+        "provider_model_path": "built-in-course-guide"
+      },
+      "startedAt": "2026-10-14T12:25:24.738Z",
+      "completedAt": "2026-10-14T12:25:24.742Z"
+    },
+    {
+      "id": "ppads_016",
+      "category": "troubleshooting",
+      "query": "The AI model has extra fingers while holding my product. What should I write?",
+      "answer": "",
+      "provider": "",
+      "statusCode": 0,
+      "skipped": true,
+      "skipReason": "Expected fal-openrouter provider, got built-in-course-guide",
+      "debug": null,
+      "startedAt": "2026-10-14T12:25:24.738Z",
+      "completedAt": "2026-10-14T12:25:24.742Z"
+    },
+    {
+      "id": "ppads_017",
+      "category": "troubleshooting",
+      "query": "The model's face changes between product shots. How do I keep it the same?",
+      "answer": "AI Product Photoshoot & Ads: Create AI product photos, product videos, UGC-style videos, and honest ad assets. Lessons include Lesson 01 - Course Intro, Lesson 02 - Phone Photo Se Studio Photo, Lesson 03 - Model Ke Saath Product, Lesson 04 - Festive Shoot + Colour Variants.",
+      "provider": "built-in-course-guide",
+      "statusCode": 200,
+      "skipped": true,
+      "skipReason": "Expected fal-openrouter provider, got built-in-course-guide",
+      "debug": {
+        "conversation_id": "live-ppads_017",
+        "request_active_course_id": "6d0000000000000000000000",
+        "resolved_active_course_id": "6d0000000000000000000000",
+        "current_topic": "face_consistency",
+        "current_intent": "",
+        "rewritten_retrieval_query": "AI Product Photoshoot & Ads face consistency Ingredients using saved last frame and character sheet",
+        "retrieved_chunk_ids": [
+          "ai-product-photoshoot-ads:SKILLOMATE                                                                  Chatbot Knowledge Base",
+          "ai-product-photoshoot-ads:L03 Hands close-up",
+          "ai-product-photoshoot-ads:L07 UGC 1",
+          "ai-product-photoshoot-ads:L03 Desk",
+          "ai-product-photoshoot-ads:L07 UGC 2",
+          "ai-product-photoshoot-ads:L03 Character Sheet (bonus)"
+        ],
+        "retrieved_course_ids": [
+          "6d0000000000000000000000"
+        ],
+        "retrieved_course_names": [
+          "AI Product Photoshoot & Ads"
+        ],
+        "scores_ranks": [
+          {
+            "rank": 1,
+            "score": "5.4082",
+            "course_id": "6d0000000000000000000000",
+            "section": "SKILLOMATE                                                                  Chatbot Knowledge Base"
+          },
+          {
+            "rank": 2,
+            "score": "4.3977",
+            "course_id": "6d0000000000000000000000",
+            "section": "L03 Hands close-up"
+          },
+          {
+            "rank": 3,
+            "score": "4.2240",
+            "course_id": "6d0000000000000000000000",
+            "section": "L07 UGC 1"
+          },
+          {
+            "rank": 4,
+            "score": "4.0849",
+            "course_id": "6d0000000000000000000000",
+            "section": "L03 Desk"
+          },
+          {
+            "rank": 5,
+            "score": "4.0385",
+            "course_id": "6d0000000000000000000000",
+            "section": "L07 UGC 2"
+          },
+          {
+            "rank": 6,
+            "score": "3.3237",
+            "course_id": "6d0000000000000000000000",
+            "section": "L03 Character Sheet (bonus)"
+          }
+        ],
+        "selected_exact_prompt_template_id": "",
+        "provider_model_path": "built-in-course-guide"
+      },
+      "startedAt": "2026-10-14T12:25:24.742Z",
+      "completedAt": "2026-10-14T12:25:24.745Z"
+    },
+    {
+      "id": "ppads_017",
+      "category": "troubleshooting",
+      "query": "The model's face changes between product shots. How do I keep it the same?",
+      "answer": "",
+      "provider": "",
+      "statusCode": 0,
+      "skipped": true,
+      "skipReason": "Expected fal-openrouter provider, got built-in-course-guide",
+      "debug": null,
+      "startedAt": "2026-10-14T12:25:24.742Z",
+      "completedAt": "2026-10-14T12:25:24.745Z"
+    },
+    {
+      "id": "ppads_018",
+      "category": "lesson_4",
+      "query": "How does Lesson 04 handle Diwali and wedding product photos?",
+      "answer": "AI Product Photoshoot & Ads: Create AI product photos, product videos, UGC-style videos, and honest ad assets. Lessons include Lesson 01 - Course Intro, Lesson 02 - Phone Photo Se Studio Photo, Lesson 03 - Model Ke Saath Product, Lesson 04 - Festive Shoot + Colour Variants.",
+      "provider": "built-in-course-guide",
+      "statusCode": 200,
+      "skipped": true,
+      "skipReason": "Expected fal-openrouter provider, got built-in-course-guide",
+      "debug": {
+        "conversation_id": "live-ppads_018",
+        "request_active_course_id": "6d0000000000000000000000",
+        "resolved_active_course_id": "6d0000000000000000000000",
+        "current_topic": "",
+        "current_intent": "",
+        "rewritten_retrieval_query": "How does Lesson 04 handle Diwali and wedding product photos?",
+        "retrieved_chunk_ids": [
+          "ai-product-photoshoot-ads:L04 Wedding Gift",
+          "ai-product-photoshoot-ads:L04 Diwali",
+          "ai-product-photoshoot-ads:L04 Colour Variant Sheet",
+          "ai-product-photoshoot-ads:SKILLOMATE                                                                  Chatbot Knowledge Base",
+          "ai-product-photoshoot-ads:Lesson 04 - Festive Shoot + Colour Variants",
+          "ai-product-photoshoot-ads:Lesson 02 - Phone Photo Se Studio Photo"
+        ],
+        "retrieved_course_ids": [
+          "6d0000000000000000000000"
+        ],
+        "retrieved_course_names": [
+          "AI Product Photoshoot & Ads"
+        ],
+        "scores_ranks": [
+          {
+            "rank": 1,
+            "score": "32.3161",
+            "course_id": "6d0000000000000000000000",
+            "section": "L04 Wedding Gift"
+          },
+          {
+            "rank": 2,
+            "score": "32.3014",
+            "course_id": "6d0000000000000000000000",
+            "section": "L04 Diwali"
+          },
+          {
+            "rank": 3,
+            "score": "30.4651",
+            "course_id": "6d0000000000000000000000",
+            "section": "L04 Colour Variant Sheet"
+          },
+          {
+            "rank": 4,
+            "score": "4.5531",
+            "course_id": "6d0000000000000000000000",
+            "section": "SKILLOMATE                                                                  Chatbot Knowledge Base"
+          },
+          {
+            "rank": 5,
+            "score": "3.7760",
+            "course_id": "6d0000000000000000000000",
+            "section": "Lesson 04 - Festive Shoot + Colour Variants"
+          },
+          {
+            "rank": 6,
+            "score": "2.5867",
+            "course_id": "6d0000000000000000000000",
+            "section": "Lesson 02 - Phone Photo Se Studio Photo"
+          }
+        ],
+        "selected_exact_prompt_template_id": "",
+        "provider_model_path": "built-in-course-guide"
+      },
+      "startedAt": "2026-10-14T12:25:24.746Z",
+      "completedAt": "2026-10-14T12:25:24.748Z"
+    },
+    {
+      "id": "ppads_018",
+      "category": "lesson_4",
+      "query": "How does Lesson 04 handle Diwali and wedding product photos?",
+      "answer": "",
+      "provider": "",
+      "statusCode": 0,
+      "skipped": true,
+      "skipReason": "Expected fal-openrouter provider, got built-in-course-guide",
+      "debug": null,
+      "startedAt": "2026-10-14T12:25:24.746Z",
+      "completedAt": "2026-10-14T12:25:24.748Z"
+    },
+    {
+      "id": "ppads_019",
+      "category": "exact_prompt",
+      "query": "Give exact L04 Diwali prompt for a chocolate gift box.",
+      "answer": "AI Product Photoshoot & Ads: Create AI product photos, product videos, UGC-style videos, and honest ad assets. Lessons include Lesson 01 - Course Intro, Lesson 02 - Phone Photo Se Studio Photo, Lesson 03 - Model Ke Saath Product, Lesson 04 - Festive Shoot + Colour Variants.",
+      "provider": "built-in-course-guide",
+      "statusCode": 200,
+      "skipped": true,
+      "skipReason": "Expected fal-openrouter provider, got built-in-course-guide",
+      "debug": {
+        "conversation_id": "live-ppads_019",
+        "request_active_course_id": "6d0000000000000000000000",
+        "resolved_active_course_id": "6d0000000000000000000000",
+        "current_topic": "",
+        "current_intent": "",
+        "rewritten_retrieval_query": "Give exact L04 Diwali prompt for a chocolate gift box.",
+        "retrieved_chunk_ids": [
+          "ai-product-photoshoot-ads:L04 Wedding Gift",
+          "ai-product-photoshoot-ads:L04 Diwali",
+          "ai-product-photoshoot-ads:L04 Colour Variant Sheet",
+          "ai-product-photoshoot-ads:SKILLOMATE                                                                  Chatbot Knowledge Base",
+          "ai-product-photoshoot-ads:Lesson 04 - Festive Shoot + Colour Variants",
+          "ai-product-photoshoot-ads:L05 Step 3 Flow prompts"
+        ],
+        "retrieved_course_ids": [
+          "6d0000000000000000000000"
+        ],
+        "retrieved_course_names": [
+          "AI Product Photoshoot & Ads"
+        ],
+        "scores_ranks": [
+          {
+            "rank": 1,
+            "score": "34.4112",
+            "course_id": "6d0000000000000000000000",
+            "section": "L04 Wedding Gift"
+          },
+          {
+            "rank": 2,
+            "score": "32.9284",
+            "course_id": "6d0000000000000000000000",
+            "section": "L04 Diwali"
+          },
+          {
+            "rank": 3,
+            "score": "31.2320",
+            "course_id": "6d0000000000000000000000",
+            "section": "L04 Colour Variant Sheet"
+          },
+          {
+            "rank": 4,
+            "score": "3.0663",
+            "course_id": "6d0000000000000000000000",
+            "section": "SKILLOMATE                                                                  Chatbot Knowledge Base"
+          },
+          {
+            "rank": 5,
+            "score": "2.2722",
+            "course_id": "6d0000000000000000000000",
+            "section": "Lesson 04 - Festive Shoot + Colour Variants"
+          },
+          {
+            "rank": 6,
+            "score": "1.2872",
+            "course_id": "6d0000000000000000000000",
+            "section": "L05 Step 3 Flow prompts"
+          }
+        ],
+        "selected_exact_prompt_template_id": "",
+        "provider_model_path": "built-in-course-guide"
+      },
+      "startedAt": "2026-10-14T12:25:24.748Z",
+      "completedAt": "2026-10-14T12:25:24.750Z"
+    },
+    {
+      "id": "ppads_019",
+      "category": "exact_prompt",
+      "query": "Give exact L04 Diwali prompt for a chocolate gift box.",
+      "answer": "",
+      "provider": "",
+      "statusCode": 0,
+      "skipped": true,
+      "skipReason": "Expected fal-openrouter provider, got built-in-course-guide",
+      "debug": null,
+      "startedAt": "2026-10-14T12:25:24.748Z",
+      "completedAt": "2026-10-14T12:25:24.750Z"
+    },
+    {
+      "id": "ppads_020",
+      "category": "exact_prompt",
+      "query": "Give exact L04 Wedding Gift prompt for a jewellery box.",
+      "answer": "AI Product Photoshoot & Ads: Create AI product photos, product videos, UGC-style videos, and honest ad assets. Lessons include Lesson 01 - Course Intro, Lesson 02 - Phone Photo Se Studio Photo, Lesson 03 - Model Ke Saath Product, Lesson 04 - Festive Shoot + Colour Variants.",
+      "provider": "built-in-course-guide",
+      "statusCode": 200,
+      "skipped": true,
+      "skipReason": "Expected fal-openrouter provider, got built-in-course-guide",
+      "debug": {
+        "conversation_id": "live-ppads_020",
+        "request_active_course_id": "6d0000000000000000000000",
+        "resolved_active_course_id": "6d0000000000000000000000",
+        "current_topic": "",
+        "current_intent": "",
+        "rewritten_retrieval_query": "Give exact L04 Wedding Gift prompt for a jewellery box.",
+        "retrieved_chunk_ids": [
+          "ai-product-photoshoot-ads:L04 Wedding Gift",
+          "ai-product-photoshoot-ads:L04 Colour Variant Sheet",
+          "ai-product-photoshoot-ads:L04 Diwali",
+          "ai-product-photoshoot-ads:SKILLOMATE                                                                  Chatbot Knowledge Base",
+          "ai-product-photoshoot-ads:Lesson 04 - Festive Shoot + Colour Variants",
+          "ai-product-photoshoot-ads:L05 Step 3 Flow prompts"
+        ],
+        "retrieved_course_ids": [
+          "6d0000000000000000000000"
+        ],
+        "retrieved_course_names": [
+          "AI Product Photoshoot & Ads"
+        ],
+        "scores_ranks": [
+          {
+            "rank": 1,
+            "score": "36.1419",
+            "course_id": "6d0000000000000000000000",
+            "section": "L04 Wedding Gift"
+          },
+          {
+            "rank": 2,
+            "score": "31.2320",
+            "course_id": "6d0000000000000000000000",
+            "section": "L04 Colour Variant Sheet"
+          },
+          {
+            "rank": 3,
+            "score": "31.2092",
+            "course_id": "6d0000000000000000000000",
+            "section": "L04 Diwali"
+          },
+          {
+            "rank": 4,
+            "score": "3.0663",
+            "course_id": "6d0000000000000000000000",
+            "section": "SKILLOMATE                                                                  Chatbot Knowledge Base"
+          },
+          {
+            "rank": 5,
+            "score": "2.2722",
+            "course_id": "6d0000000000000000000000",
+            "section": "Lesson 04 - Festive Shoot + Colour Variants"
+          },
+          {
+            "rank": 6,
+            "score": "1.2872",
+            "course_id": "6d0000000000000000000000",
+            "section": "L05 Step 3 Flow prompts"
+          }
+        ],
+        "selected_exact_prompt_template_id": "",
+        "provider_model_path": "built-in-course-guide"
+      },
+      "startedAt": "2026-10-14T12:25:24.750Z",
+      "completedAt": "2026-10-14T12:25:24.752Z"
+    },
+    {
+      "id": "ppads_020",
+      "category": "exact_prompt",
+      "query": "Give exact L04 Wedding Gift prompt for a jewellery box.",
+      "answer": "",
+      "provider": "",
+      "statusCode": 0,
+      "skipped": true,
+      "skipReason": "Expected fal-openrouter provider, got built-in-course-guide",
+      "debug": null,
+      "startedAt": "2026-10-14T12:25:24.750Z",
+      "completedAt": "2026-10-14T12:25:24.752Z"
+    },
+    {
+      "id": "ppads_021",
+      "category": "exact_prompt",
+      "query": "Give exact L04 Colour Variant Sheet prompt for changing all bottle caps to matte black.",
+      "answer": "AI Product Photoshoot & Ads: Create AI product photos, product videos, UGC-style videos, and honest ad assets. Lessons include Lesson 01 - Course Intro, Lesson 02 - Phone Photo Se Studio Photo, Lesson 03 - Model Ke Saath Product, Lesson 04 - Festive Shoot + Colour Variants.",
+      "provider": "built-in-course-guide",
+      "statusCode": 200,
+      "skipped": true,
+      "skipReason": "Expected fal-openrouter provider, got built-in-course-guide",
+      "debug": {
+        "conversation_id": "live-ppads_021",
+        "request_active_course_id": "6d0000000000000000000000",
+        "resolved_active_course_id": "6d0000000000000000000000",
+        "current_topic": "",
+        "current_intent": "",
+        "rewritten_retrieval_query": "Give exact L04 Colour Variant Sheet prompt for changing all bottle caps to matte black.",
+        "retrieved_chunk_ids": [
+          "ai-product-photoshoot-ads:L04 Colour Variant Sheet",
+          "ai-product-photoshoot-ads:L04 Wedding Gift",
+          "ai-product-photoshoot-ads:L04 Diwali",
+          "ai-product-photoshoot-ads:SKILLOMATE                                                                  Chatbot Knowledge Base",
+          "ai-product-photoshoot-ads:L02 Dark Premium",
+          "ai-product-photoshoot-ads:L02 Product Sheet"
+        ],
+        "retrieved_course_ids": [
+          "6d0000000000000000000000"
+        ],
+        "retrieved_course_names": [
+          "AI Product Photoshoot & Ads"
+        ],
+        "scores_ranks": [
+          {
+            "rank": 1,
+            "score": "35.9879",
+            "course_id": "6d0000000000000000000000",
+            "section": "L04 Colour Variant Sheet"
+          },
+          {
+            "rank": 2,
+            "score": "32.3052",
+            "course_id": "6d0000000000000000000000",
+            "section": "L04 Wedding Gift"
+          },
+          {
+            "rank": 3,
+            "score": "32.2818",
+            "course_id": "6d0000000000000000000000",
+            "section": "L04 Diwali"
+          },
+          {
+            "rank": 4,
+            "score": "4.9077",
+            "course_id": "6d0000000000000000000000",
+            "section": "SKILLOMATE                                                                  Chatbot Knowledge Base"
+          },
+          {
+            "rank": 5,
+            "score": "4.0811",
+            "course_id": "6d0000000000000000000000",
+            "section": "L02 Dark Premium"
+          },
+          {
+            "rank": 6,
+            "score": "3.3036",
+            "course_id": "6d0000000000000000000000",
+            "section": "L02 Product Sheet"
+          }
+        ],
+        "selected_exact_prompt_template_id": "",
+        "provider_model_path": "built-in-course-guide"
+      },
+      "startedAt": "2026-10-14T12:25:24.752Z",
+      "completedAt": "2026-10-14T12:25:24.753Z"
+    },
+    {
+      "id": "ppads_021",
+      "category": "exact_prompt",
+      "query": "Give exact L04 Colour Variant Sheet prompt for changing all bottle caps to matte black.",
+      "answer": "",
+      "provider": "",
+      "statusCode": 0,
+      "skipped": true,
+      "skipReason": "Expected fal-openrouter provider, got built-in-course-guide",
+      "debug": null,
+      "startedAt": "2026-10-14T12:25:24.752Z",
+      "completedAt": "2026-10-14T12:25:24.753Z"
+    },
+    {
+      "id": "ppads_022",
+      "category": "troubleshooting",
+      "query": "When I change colour, the product shape also changes. What is the course fix?",
+      "answer": "AI Product Photoshoot & Ads: Create AI product photos, product videos, UGC-style videos, and honest ad assets. Lessons include Lesson 01 - Course Intro, Lesson 02 - Phone Photo Se Studio Photo, Lesson 03 - Model Ke Saath Product, Lesson 04 - Festive Shoot + Colour Variants.",
+      "provider": "built-in-course-guide",
+      "statusCode": 200,
+      "skipped": true,
+      "skipReason": "Expected fal-openrouter provider, got built-in-course-guide",
+      "debug": {
+        "conversation_id": "live-ppads_022",
+        "request_active_course_id": "6d0000000000000000000000",
+        "resolved_active_course_id": "6d0000000000000000000000",
+        "current_topic": "",
+        "current_intent": "",
+        "rewritten_retrieval_query": "When I change colour, the product shape also changes. What is the course fix?",
+        "retrieved_chunk_ids": [
+          "ai-product-photoshoot-ads:SKILLOMATE                                                                  Chatbot Knowledge Base",
+          "ai-product-photoshoot-ads:L04 Colour Variant Sheet",
+          "ai-product-photoshoot-ads:L07 UGC 2",
+          "ai-product-photoshoot-ads:Course overview",
+          "ai-product-photoshoot-ads:L03 Hands close-up",
+          "ai-product-photoshoot-ads:L02 Product Sheet"
+        ],
+        "retrieved_course_ids": [
+          "6d0000000000000000000000"
+        ],
+        "retrieved_course_names": [
+          "AI Product Photoshoot & Ads"
+        ],
+        "scores_ranks": [
+          {
+            "rank": 1,
+            "score": "4.3948",
+            "course_id": "6d0000000000000000000000",
+            "section": "SKILLOMATE                                                                  Chatbot Knowledge Base"
+          },
+          {
+            "rank": 2,
+            "score": "2.7474",
+            "course_id": "6d0000000000000000000000",
+            "section": "L04 Colour Variant Sheet"
+          },
+          {
+            "rank": 3,
+            "score": "2.6456",
+            "course_id": "6d0000000000000000000000",
+            "section": "L07 UGC 2"
+          },
+          {
+            "rank": 4,
+            "score": "2.1734",
+            "course_id": "6d0000000000000000000000",
+            "section": "Course overview"
+          },
+          {
+            "rank": 5,
+            "score": "1.9511",
+            "course_id": "6d0000000000000000000000",
+            "section": "L03 Hands close-up"
+          },
+          {
+            "rank": 6,
+            "score": "1.7757",
+            "course_id": "6d0000000000000000000000",
+            "section": "L02 Product Sheet"
+          }
+        ],
+        "selected_exact_prompt_template_id": "",
+        "provider_model_path": "built-in-course-guide"
+      },
+      "startedAt": "2026-10-14T12:25:24.754Z",
+      "completedAt": "2026-10-14T12:25:24.755Z"
+    },
+    {
+      "id": "ppads_022",
+      "category": "troubleshooting",
+      "query": "When I change colour, the product shape also changes. What is the course fix?",
+      "answer": "",
+      "provider": "",
+      "statusCode": 0,
+      "skipped": true,
+      "skipReason": "Expected fal-openrouter provider, got built-in-course-guide",
+      "debug": null,
+      "startedAt": "2026-10-14T12:25:24.754Z",
+      "completedAt": "2026-10-14T12:25:24.755Z"
+    },
+    {
+      "id": "ppads_023",
+      "category": "troubleshooting",
+      "query": "Why is the exact brand colour not matching perfectly?",
+      "answer": "AI Product Photoshoot & Ads: Create AI product photos, product videos, UGC-style videos, and honest ad assets. Lessons include Lesson 01 - Course Intro, Lesson 02 - Phone Photo Se Studio Photo, Lesson 03 - Model Ke Saath Product, Lesson 04 - Festive Shoot + Colour Variants.",
+      "provider": "built-in-course-guide",
+      "statusCode": 200,
+      "skipped": true,
+      "skipReason": "Expected fal-openrouter provider, got built-in-course-guide",
+      "debug": {
+        "conversation_id": "live-ppads_023",
+        "request_active_course_id": "6d0000000000000000000000",
+        "resolved_active_course_id": "6d0000000000000000000000",
+        "current_topic": "",
+        "current_intent": "",
+        "rewritten_retrieval_query": "Why is the exact brand colour not matching perfectly?",
+        "retrieved_chunk_ids": [
+          "ai-product-photoshoot-ads:SKILLOMATE                                                                  Chatbot Knowledge Base",
+          "ai-product-photoshoot-ads:L03 Hands close-up",
+          "ai-product-photoshoot-ads:L02 Product Sheet",
+          "ai-product-photoshoot-ads:L06 Push-in",
+          "ai-product-photoshoot-ads:L06 Arc",
+          "ai-product-photoshoot-ads:L06 Light Sweep"
+        ],
+        "retrieved_course_ids": [
+          "6d0000000000000000000000"
+        ],
+        "retrieved_course_names": [
+          "AI Product Photoshoot & Ads"
+        ],
+        "scores_ranks": [
+          {
+            "rank": 1,
+            "score": "3.6708",
+            "course_id": "6d0000000000000000000000",
+            "section": "SKILLOMATE                                                                  Chatbot Knowledge Base"
+          },
+          {
+            "rank": 2,
+            "score": "2.3048",
+            "course_id": "6d0000000000000000000000",
+            "section": "L03 Hands close-up"
+          },
+          {
+            "rank": 3,
+            "score": "1.6876",
+            "course_id": "6d0000000000000000000000",
+            "section": "L02 Product Sheet"
+          },
+          {
+            "rank": 4,
+            "score": "1.2704",
+            "course_id": "6d0000000000000000000000",
+            "section": "L06 Push-in"
+          },
+          {
+            "rank": 5,
+            "score": "1.2602",
+            "course_id": "6d0000000000000000000000",
+            "section": "L06 Arc"
+          },
+          {
+            "rank": 6,
+            "score": "1.2502",
+            "course_id": "6d0000000000000000000000",
+            "section": "L06 Light Sweep"
+          }
+        ],
+        "selected_exact_prompt_template_id": "",
+        "provider_model_path": "built-in-course-guide"
+      },
+      "startedAt": "2026-10-14T12:25:24.756Z",
+      "completedAt": "2026-10-14T12:25:24.759Z"
+    },
+    {
+      "id": "ppads_023",
+      "category": "troubleshooting",
+      "query": "Why is the exact brand colour not matching perfectly?",
+      "answer": "",
+      "provider": "",
+      "statusCode": 0,
+      "skipped": true,
+      "skipReason": "Expected fal-openrouter provider, got built-in-course-guide",
+      "debug": null,
+      "startedAt": "2026-10-14T12:25:24.756Z",
+      "completedAt": "2026-10-14T12:25:24.759Z"
+    },
+    {
+      "id": "ppads_024",
+      "category": "lesson_5",
+      "query": "Teach me the Lesson 05 ad planning workflow in steps.",
+      "answer": "AI Product Photoshoot & Ads: Create AI product photos, product videos, UGC-style videos, and honest ad assets. Lessons include Lesson 01 - Course Intro, Lesson 02 - Phone Photo Se Studio Photo, Lesson 03 - Model Ke Saath Product, Lesson 04 - Festive Shoot + Colour Variants.",
+      "provider": "built-in-course-guide",
+      "statusCode": 200,
+      "skipped": true,
+      "skipReason": "Expected fal-openrouter provider, got built-in-course-guide",
+      "debug": {
+        "conversation_id": "live-ppads_024",
+        "request_active_course_id": "6d0000000000000000000000",
+        "resolved_active_course_id": "6d0000000000000000000000",
+        "current_topic": "",
+        "current_intent": "",
+        "rewritten_retrieval_query": "Teach me the Lesson 05 ad planning workflow in steps.",
+        "retrieved_chunk_ids": [
+          "ai-product-photoshoot-ads:L05 Step 1 Brief",
+          "ai-product-photoshoot-ads:L05 Step 2 Hooks + Script",
+          "ai-product-photoshoot-ads:L05 Step 3 Flow prompts",
+          "ai-product-photoshoot-ads:SKILLOMATE                                                                  Chatbot Knowledge Base",
+          "ai-product-photoshoot-ads:Lesson 08 - Finale",
+          "ai-product-photoshoot-ads:Lesson 01 - Course Intro"
+        ],
+        "retrieved_course_ids": [
+          "6d0000000000000000000000"
+        ],
+        "retrieved_course_names": [
+          "AI Product Photoshoot & Ads"
+        ],
+        "scores_ranks": [
+          {
+            "rank": 1,
+            "score": "30.0000",
+            "course_id": "6d0000000000000000000000",
+            "section": "L05 Step 1 Brief"
+          },
+          {
+            "rank": 2,
+            "score": "30.0000",
+            "course_id": "6d0000000000000000000000",
+            "section": "L05 Step 2 Hooks + Script"
+          },
+          {
+            "rank": 3,
+            "score": "30.0000",
+            "course_id": "6d0000000000000000000000",
+            "section": "L05 Step 3 Flow prompts"
+          },
+          {
+            "rank": 4,
+            "score": "2.3120",
+            "course_id": "6d0000000000000000000000",
+            "section": "SKILLOMATE                                                                  Chatbot Knowledge Base"
+          },
+          {
+            "rank": 5,
+            "score": "1.9544",
+            "course_id": "6d0000000000000000000000",
+            "section": "Lesson 08 - Finale"
+          },
+          {
+            "rank": 6,
+            "score": "0.7955",
+            "course_id": "6d0000000000000000000000",
+            "section": "Lesson 01 - Course Intro"
+          }
+        ],
+        "selected_exact_prompt_template_id": "",
+        "provider_model_path": "built-in-course-guide"
+      },
+      "startedAt": "2026-10-14T12:25:24.759Z",
+      "completedAt": "2026-10-14T12:25:24.761Z"
+    },
+    {
+      "id": "ppads_024",
+      "category": "lesson_5",
+      "query": "Teach me the Lesson 05 ad planning workflow in steps.",
+      "answer": "",
+      "provider": "",
+      "statusCode": 0,
+      "skipped": true,
+      "skipReason": "Expected fal-openrouter provider, got built-in-course-guide",
+      "debug": null,
+      "startedAt": "2026-10-14T12:25:24.759Z",
+      "completedAt": "2026-10-14T12:25:24.761Z"
+    },
+    {
+      "id": "ppads_025",
+      "category": "exact_prompt",
+      "query": "Give the exact L05 Step 1 Brief prompt.",
+      "answer": "AI Product Photoshoot & Ads: Create AI product photos, product videos, UGC-style videos, and honest ad assets. Lessons include Lesson 01 - Course Intro, Lesson 02 - Phone Photo Se Studio Photo, Lesson 03 - Model Ke Saath Product, Lesson 04 - Festive Shoot + Colour Variants.",
+      "provider": "built-in-course-guide",
+      "statusCode": 200,
+      "skipped": true,
+      "skipReason": "Expected fal-openrouter provider, got built-in-course-guide",
+      "debug": {
+        "conversation_id": "live-ppads_025",
+        "request_active_course_id": "6d0000000000000000000000",
+        "resolved_active_course_id": "6d0000000000000000000000",
+        "current_topic": "",
+        "current_intent": "",
+        "rewritten_retrieval_query": "Give the exact L05 Step 1 Brief prompt.",
+        "retrieved_chunk_ids": [
+          "ai-product-photoshoot-ads:L05 Step 1 Brief",
+          "ai-product-photoshoot-ads:L05 Step 3 Flow prompts",
+          "ai-product-photoshoot-ads:L05 Step 2 Hooks + Script",
+          "ai-product-photoshoot-ads:SKILLOMATE                                                                  Chatbot Knowledge Base",
+          "ai-product-photoshoot-ads:L03 Character Sheet (bonus)",
+          "ai-product-photoshoot-ads:L02 Product Sheet"
+        ],
+        "retrieved_course_ids": [
+          "6d0000000000000000000000"
+        ],
+        "retrieved_course_names": [
+          "AI Product Photoshoot & Ads"
+        ],
+        "scores_ranks": [
+          {
+            "rank": 1,
+            "score": "34.5169",
+            "course_id": "6d0000000000000000000000",
+            "section": "L05 Step 1 Brief"
+          },
+          {
+            "rank": 2,
+            "score": "33.6835",
+            "course_id": "6d0000000000000000000000",
+            "section": "L05 Step 3 Flow prompts"
+          },
+          {
+            "rank": 3,
+            "score": "32.3928",
+            "course_id": "6d0000000000000000000000",
+            "section": "L05 Step 2 Hooks + Script"
+          },
+          {
+            "rank": 4,
+            "score": "2.9892",
+            "course_id": "6d0000000000000000000000",
+            "section": "SKILLOMATE                                                                  Chatbot Knowledge Base"
+          },
+          {
+            "rank": 5,
+            "score": "0.7831",
+            "course_id": "6d0000000000000000000000",
+            "section": "L03 Character Sheet (bonus)"
+          },
+          {
+            "rank": 6,
+            "score": "0.7769",
+            "course_id": "6d0000000000000000000000",
+            "section": "L02 Product Sheet"
+          }
+        ],
+        "selected_exact_prompt_template_id": "",
+        "provider_model_path": "built-in-course-guide"
+      },
+      "startedAt": "2026-10-14T12:25:24.761Z",
+      "completedAt": "2026-10-14T12:25:24.763Z"
+    },
+    {
+      "id": "ppads_025",
+      "category": "exact_prompt",
+      "query": "Give the exact L05 Step 1 Brief prompt.",
+      "answer": "",
+      "provider": "",
+      "statusCode": 0,
+      "skipped": true,
+      "skipReason": "Expected fal-openrouter provider, got built-in-course-guide",
+      "debug": null,
+      "startedAt": "2026-10-14T12:25:24.761Z",
+      "completedAt": "2026-10-14T12:25:24.763Z"
+    },
+    {
+      "id": "ppads_026",
+      "category": "exact_prompt",
+      "query": "Give exact L05 Step 2 Hooks + Script prompt.",
+      "answer": "AI Product Photoshoot & Ads: Create AI product photos, product videos, UGC-style videos, and honest ad assets. Lessons include Lesson 01 - Course Intro, Lesson 02 - Phone Photo Se Studio Photo, Lesson 03 - Model Ke Saath Product, Lesson 04 - Festive Shoot + Colour Variants.",
+      "provider": "built-in-course-guide",
+      "statusCode": 200,
+      "skipped": true,
+      "skipReason": "Expected fal-openrouter provider, got built-in-course-guide",
+      "debug": {
+        "conversation_id": "live-ppads_026",
+        "request_active_course_id": "6d0000000000000000000000",
+        "resolved_active_course_id": "6d0000000000000000000000",
+        "current_topic": "",
+        "current_intent": "",
+        "rewritten_retrieval_query": "Give exact L05 Step 2 Hooks + Script prompt.",
+        "retrieved_chunk_ids": [
+          "ai-product-photoshoot-ads:L05 Step 2 Hooks + Script",
+          "ai-product-photoshoot-ads:L05 Step 3 Flow prompts",
+          "ai-product-photoshoot-ads:L05 Step 1 Brief",
+          "ai-product-photoshoot-ads:SKILLOMATE                                                                  Chatbot Knowledge Base",
+          "ai-product-photoshoot-ads:Lesson 05 - chat G.P.T Se Ad Plan",
+          "ai-product-photoshoot-ads:L03 Character Sheet (bonus)"
+        ],
+        "retrieved_course_ids": [
+          "6d0000000000000000000000"
+        ],
+        "retrieved_course_names": [
+          "AI Product Photoshoot & Ads"
+        ],
+        "scores_ranks": [
+          {
+            "rank": 1,
+            "score": "35.4135",
+            "course_id": "6d0000000000000000000000",
+            "section": "L05 Step 2 Hooks + Script"
+          },
+          {
+            "rank": 2,
+            "score": "33.6835",
+            "course_id": "6d0000000000000000000000",
+            "section": "L05 Step 3 Flow prompts"
+          },
+          {
+            "rank": 3,
+            "score": "32.3928",
+            "course_id": "6d0000000000000000000000",
+            "section": "L05 Step 1 Brief"
+          },
+          {
+            "rank": 4,
+            "score": "4.3478",
+            "course_id": "6d0000000000000000000000",
+            "section": "SKILLOMATE                                                                  Chatbot Knowledge Base"
+          },
+          {
+            "rank": 5,
+            "score": "1.2828",
+            "course_id": "6d0000000000000000000000",
+            "section": "Lesson 05 - chat G.P.T Se Ad Plan"
+          },
+          {
+            "rank": 6,
+            "score": "0.7831",
+            "course_id": "6d0000000000000000000000",
+            "section": "L03 Character Sheet (bonus)"
+          }
+        ],
+        "selected_exact_prompt_template_id": "",
+        "provider_model_path": "built-in-course-guide"
+      },
+      "startedAt": "2026-10-14T12:25:24.763Z",
+      "completedAt": "2026-10-14T12:25:24.765Z"
+    },
+    {
+      "id": "ppads_026",
+      "category": "exact_prompt",
+      "query": "Give exact L05 Step 2 Hooks + Script prompt.",
+      "answer": "",
+      "provider": "",
+      "statusCode": 0,
+      "skipped": true,
+      "skipReason": "Expected fal-openrouter provider, got built-in-course-guide",
+      "debug": null,
+      "startedAt": "2026-10-14T12:25:24.763Z",
+      "completedAt": "2026-10-14T12:25:24.765Z"
+    },
+    {
+      "id": "ppads_027",
+      "category": "exact_prompt",
+      "query": "Give exact L05 Step 3 Flow prompts instruction.",
+      "answer": "AI Product Photoshoot & Ads: Create AI product photos, product videos, UGC-style videos, and honest ad assets. Lessons include Lesson 01 - Course Intro, Lesson 02 - Phone Photo Se Studio Photo, Lesson 03 - Model Ke Saath Product, Lesson 04 - Festive Shoot + Colour Variants.",
+      "provider": "built-in-course-guide",
+      "statusCode": 200,
+      "skipped": true,
+      "skipReason": "Expected fal-openrouter provider, got built-in-course-guide",
+      "debug": {
+        "conversation_id": "live-ppads_027",
+        "request_active_course_id": "6d0000000000000000000000",
+        "resolved_active_course_id": "6d0000000000000000000000",
+        "current_topic": "",
+        "current_intent": "",
+        "rewritten_retrieval_query": "Give exact L05 Step 3 Flow prompts instruction.",
+        "retrieved_chunk_ids": [
+          "ai-product-photoshoot-ads:L05 Step 3 Flow prompts",
+          "ai-product-photoshoot-ads:L05 Step 1 Brief",
+          "ai-product-photoshoot-ads:L05 Step 2 Hooks + Script",
+          "ai-product-photoshoot-ads:SKILLOMATE                                                                  Chatbot Knowledge Base",
+          "ai-product-photoshoot-ads:Lesson 05 - chat G.P.T Se Ad Plan",
+          "ai-product-photoshoot-ads:L03 Character Sheet (bonus)"
+        ],
+        "retrieved_course_ids": [
+          "6d0000000000000000000000"
+        ],
+        "retrieved_course_names": [
+          "AI Product Photoshoot & Ads"
+        ],
+        "scores_ranks": [
+          {
+            "rank": 1,
+            "score": "35.0177",
+            "course_id": "6d0000000000000000000000",
+            "section": "L05 Step 3 Flow prompts"
+          },
+          {
+            "rank": 2,
+            "score": "32.3928",
+            "course_id": "6d0000000000000000000000",
+            "section": "L05 Step 1 Brief"
+          },
+          {
+            "rank": 3,
+            "score": "32.3928",
+            "course_id": "6d0000000000000000000000",
+            "section": "L05 Step 2 Hooks + Script"
+          },
+          {
+            "rank": 4,
+            "score": "3.7158",
+            "course_id": "6d0000000000000000000000",
+            "section": "SKILLOMATE                                                                  Chatbot Knowledge Base"
+          },
+          {
+            "rank": 5,
+            "score": "1.4828",
+            "course_id": "6d0000000000000000000000",
+            "section": "Lesson 05 - chat G.P.T Se Ad Plan"
+          },
+          {
+            "rank": 6,
+            "score": "0.7831",
+            "course_id": "6d0000000000000000000000",
+            "section": "L03 Character Sheet (bonus)"
+          }
+        ],
+        "selected_exact_prompt_template_id": "",
+        "provider_model_path": "built-in-course-guide"
+      },
+      "startedAt": "2026-10-14T12:25:24.765Z",
+      "completedAt": "2026-10-14T12:25:24.767Z"
+    },
+    {
+      "id": "ppads_027",
+      "category": "exact_prompt",
+      "query": "Give exact L05 Step 3 Flow prompts instruction.",
+      "answer": "",
+      "provider": "",
+      "statusCode": 0,
+      "skipped": true,
+      "skipReason": "Expected fal-openrouter provider, got built-in-course-guide",
+      "debug": null,
+      "startedAt": "2026-10-14T12:25:24.765Z",
+      "completedAt": "2026-10-14T12:25:24.767Z"
+    },
+    {
+      "id": "ppads_028",
+      "category": "troubleshooting",
+      "query": "ChatGPT's product ad is too generic. What should I provide it?",
+      "answer": "AI Product Photoshoot & Ads: Create AI product photos, product videos, UGC-style videos, and honest ad assets. Lessons include Lesson 01 - Course Intro, Lesson 02 - Phone Photo Se Studio Photo, Lesson 03 - Model Ke Saath Product, Lesson 04 - Festive Shoot + Colour Variants.",
+      "provider": "built-in-course-guide",
+      "statusCode": 200,
+      "skipped": true,
+      "skipReason": "Expected fal-openrouter provider, got built-in-course-guide",
+      "debug": {
+        "conversation_id": "live-ppads_028",
+        "request_active_course_id": "6d0000000000000000000000",
+        "resolved_active_course_id": "6d0000000000000000000000",
+        "current_topic": "",
+        "current_intent": "",
+        "rewritten_retrieval_query": "ChatGPT's product ad is too generic. What should I provide it?",
+        "retrieved_chunk_ids": [
+          "ai-product-photoshoot-ads:SKILLOMATE                                                                  Chatbot Knowledge Base",
+          "ai-product-photoshoot-ads:L07 UGC 2",
+          "ai-product-photoshoot-ads:Course overview",
+          "ai-product-photoshoot-ads:Lesson 02 - Phone Photo Se Studio Photo",
+          "ai-product-photoshoot-ads:L03 Hands close-up",
+          "ai-product-photoshoot-ads:Lesson 06 - Photo Se Product Video"
+        ],
+        "retrieved_course_ids": [
+          "6d0000000000000000000000"
+        ],
+        "retrieved_course_names": [
+          "AI Product Photoshoot & Ads"
+        ],
+        "scores_ranks": [
+          {
+            "rank": 1,
+            "score": "2.1004",
+            "course_id": "6d0000000000000000000000",
+            "section": "SKILLOMATE                                                                  Chatbot Knowledge Base"
+          },
+          {
+            "rank": 2,
+            "score": "1.4968",
+            "course_id": "6d0000000000000000000000",
+            "section": "L07 UGC 2"
+          },
+          {
+            "rank": 3,
+            "score": "1.4563",
+            "course_id": "6d0000000000000000000000",
+            "section": "Course overview"
+          },
+          {
+            "rank": 4,
+            "score": "1.4028",
+            "course_id": "6d0000000000000000000000",
+            "section": "Lesson 02 - Phone Photo Se Studio Photo"
+          },
+          {
+            "rank": 5,
+            "score": "1.1384",
+            "course_id": "6d0000000000000000000000",
+            "section": "L03 Hands close-up"
+          },
+          {
+            "rank": 6,
+            "score": "1.0413",
+            "course_id": "6d0000000000000000000000",
+            "section": "Lesson 06 - Photo Se Product Video"
+          }
+        ],
+        "selected_exact_prompt_template_id": "",
+        "provider_model_path": "built-in-course-guide"
+      },
+      "startedAt": "2026-10-14T12:25:24.767Z",
+      "completedAt": "2026-10-14T12:25:24.769Z"
+    },
+    {
+      "id": "ppads_028",
+      "category": "troubleshooting",
+      "query": "ChatGPT's product ad is too generic. What should I provide it?",
+      "answer": "",
+      "provider": "",
+      "statusCode": 0,
+      "skipped": true,
+      "skipReason": "Expected fal-openrouter provider, got built-in-course-guide",
+      "debug": null,
+      "startedAt": "2026-10-14T12:25:24.767Z",
+      "completedAt": "2026-10-14T12:25:24.769Z"
+    },
+    {
+      "id": "ppads_029",
+      "category": "ethical_advertising",
+      "query": "ChatGPT added a feature my product does not have. Should I keep it in the ad?",
+      "answer": "AI Product Photoshoot & Ads: Create AI product photos, product videos, UGC-style videos, and honest ad assets. Lessons include Lesson 01 - Course Intro, Lesson 02 - Phone Photo Se Studio Photo, Lesson 03 - Model Ke Saath Product, Lesson 04 - Festive Shoot + Colour Variants.",
+      "provider": "built-in-course-guide",
+      "statusCode": 200,
+      "skipped": true,
+      "skipReason": "Expected fal-openrouter provider, got built-in-course-guide",
+      "debug": {
+        "conversation_id": "live-ppads_029",
+        "request_active_course_id": "6d0000000000000000000000",
+        "resolved_active_course_id": "6d0000000000000000000000",
+        "current_topic": "",
+        "current_intent": "",
+        "rewritten_retrieval_query": "ChatGPT added a feature my product does not have. Should I keep it in the ad?",
+        "retrieved_chunk_ids": [
+          "ai-product-photoshoot-ads:L07 UGC 2",
+          "ai-product-photoshoot-ads:SKILLOMATE                                                                  Chatbot Knowledge Base",
+          "ai-product-photoshoot-ads:L07 UGC 1",
+          "ai-product-photoshoot-ads:L03 Hands close-up",
+          "ai-product-photoshoot-ads:L02 Product Sheet",
+          "ai-product-photoshoot-ads:L03 Showing to camera"
+        ],
+        "retrieved_course_ids": [
+          "6d0000000000000000000000"
+        ],
+        "retrieved_course_names": [
+          "AI Product Photoshoot & Ads"
+        ],
+        "scores_ranks": [
+          {
+            "rank": 1,
+            "score": "2.6389",
+            "course_id": "6d0000000000000000000000",
+            "section": "L07 UGC 2"
+          },
+          {
+            "rank": 2,
+            "score": "2.3265",
+            "course_id": "6d0000000000000000000000",
+            "section": "SKILLOMATE                                                                  Chatbot Knowledge Base"
+          },
+          {
+            "rank": 3,
+            "score": "2.2961",
+            "course_id": "6d0000000000000000000000",
+            "section": "L07 UGC 1"
+          },
+          {
+            "rank": 4,
+            "score": "2.0874",
+            "course_id": "6d0000000000000000000000",
+            "section": "L03 Hands close-up"
+          },
+          {
+            "rank": 5,
+            "score": "1.9145",
+            "course_id": "6d0000000000000000000000",
+            "section": "L02 Product Sheet"
+          },
+          {
+            "rank": 6,
+            "score": "1.7762",
+            "course_id": "6d0000000000000000000000",
+            "section": "L03 Showing to camera"
+          }
+        ],
+        "selected_exact_prompt_template_id": "",
+        "provider_model_path": "built-in-course-guide"
+      },
+      "startedAt": "2026-10-14T12:25:24.769Z",
+      "completedAt": "2026-10-14T12:25:24.771Z"
+    },
+    {
+      "id": "ppads_029",
+      "category": "ethical_advertising",
+      "query": "ChatGPT added a feature my product does not have. Should I keep it in the ad?",
+      "answer": "",
+      "provider": "",
+      "statusCode": 0,
+      "skipped": true,
+      "skipReason": "Expected fal-openrouter provider, got built-in-course-guide",
+      "debug": null,
+      "startedAt": "2026-10-14T12:25:24.769Z",
+      "completedAt": "2026-10-14T12:25:24.771Z"
+    },
+    {
+      "id": "ppads_030",
+      "category": "lesson_6",
+      "query": "What are the Lesson 06 Google Flow video settings?",
+      "answer": "AI Product Photoshoot & Ads: Create AI product photos, product videos, UGC-style videos, and honest ad assets. Lessons include Lesson 01 - Course Intro, Lesson 02 - Phone Photo Se Studio Photo, Lesson 03 - Model Ke Saath Product, Lesson 04 - Festive Shoot + Colour Variants.",
+      "provider": "built-in-course-guide",
+      "statusCode": 200,
+      "skipped": true,
+      "skipReason": "Expected fal-openrouter provider, got built-in-course-guide",
+      "debug": {
+        "conversation_id": "live-ppads_030",
+        "request_active_course_id": "6d0000000000000000000000",
+        "resolved_active_course_id": "6d0000000000000000000000",
+        "current_topic": "",
+        "current_intent": "",
+        "rewritten_retrieval_query": "What are the Lesson 06 Google Flow video settings?",
+        "retrieved_chunk_ids": [
+          "ai-product-photoshoot-ads:L06 Push-in",
+          "ai-product-photoshoot-ads:L06 Arc",
+          "ai-product-photoshoot-ads:L06 Light Sweep",
+          "ai-product-photoshoot-ads:SKILLOMATE                                                                  Chatbot Knowledge Base",
+          "ai-product-photoshoot-ads:Lesson 06 - Photo Se Product Video",
+          "ai-product-photoshoot-ads:L05 Step 3 Flow prompts"
+        ],
+        "retrieved_course_ids": [
+          "6d0000000000000000000000"
+        ],
+        "retrieved_course_names": [
+          "AI Product Photoshoot & Ads"
+        ],
+        "scores_ranks": [
+          {
+            "rank": 1,
+            "score": "30.5023",
+            "course_id": "6d0000000000000000000000",
+            "section": "L06 Push-in"
+          },
+          {
+            "rank": 2,
+            "score": "30.4983",
+            "course_id": "6d0000000000000000000000",
+            "section": "L06 Arc"
+          },
+          {
+            "rank": 3,
+            "score": "30.4943",
+            "course_id": "6d0000000000000000000000",
+            "section": "L06 Light Sweep"
+          },
+          {
+            "rank": 4,
+            "score": "3.3241",
+            "course_id": "6d0000000000000000000000",
+            "section": "SKILLOMATE                                                                  Chatbot Knowledge Base"
+          },
+          {
+            "rank": 5,
+            "score": "3.2133",
+            "course_id": "6d0000000000000000000000",
+            "section": "Lesson 06 - Photo Se Product Video"
+          },
+          {
+            "rank": 6,
+            "score": "1.9867",
+            "course_id": "6d0000000000000000000000",
+            "section": "L05 Step 3 Flow prompts"
+          }
+        ],
+        "selected_exact_prompt_template_id": "",
+        "provider_model_path": "built-in-course-guide"
+      },
+      "startedAt": "2026-10-14T12:25:24.771Z",
+      "completedAt": "2026-10-14T12:25:24.773Z"
+    },
+    {
+      "id": "ppads_030",
+      "category": "lesson_6",
+      "query": "What are the Lesson 06 Google Flow video settings?",
+      "answer": "",
+      "provider": "",
+      "statusCode": 0,
+      "skipped": true,
+      "skipReason": "Expected fal-openrouter provider, got built-in-course-guide",
+      "debug": null,
+      "startedAt": "2026-10-14T12:25:24.771Z",
+      "completedAt": "2026-10-14T12:25:24.773Z"
+    },
+    {
+      "id": "ppads_031",
+      "category": "exact_prompt",
+      "query": "Give exact L06 Push-in prompt for a face serum bottle.",
+      "answer": "AI Product Photoshoot & Ads: Create AI product photos, product videos, UGC-style videos, and honest ad assets. Lessons include Lesson 01 - Course Intro, Lesson 02 - Phone Photo Se Studio Photo, Lesson 03 - Model Ke Saath Product, Lesson 04 - Festive Shoot + Colour Variants.",
+      "provider": "built-in-course-guide",
+      "statusCode": 200,
+      "skipped": true,
+      "skipReason": "Expected fal-openrouter provider, got built-in-course-guide",
+      "debug": {
+        "conversation_id": "live-ppads_031",
+        "request_active_course_id": "6d0000000000000000000000",
+        "resolved_active_course_id": "6d0000000000000000000000",
+        "current_topic": "",
+        "current_intent": "",
+        "rewritten_retrieval_query": "Give exact L06 Push-in prompt for a face serum bottle.",
+        "retrieved_chunk_ids": [
+          "ai-product-photoshoot-ads:L06 Push-in",
+          "ai-product-photoshoot-ads:L06 Arc",
+          "ai-product-photoshoot-ads:L06 Light Sweep",
+          "ai-product-photoshoot-ads:SKILLOMATE                                                                  Chatbot Knowledge Base",
+          "ai-product-photoshoot-ads:L07 UGC 2",
+          "ai-product-photoshoot-ads:L03 Character Sheet (bonus)"
+        ],
+        "retrieved_course_ids": [
+          "6d0000000000000000000000"
+        ],
+        "retrieved_course_names": [
+          "AI Product Photoshoot & Ads"
+        ],
+        "scores_ranks": [
+          {
+            "rank": 1,
+            "score": "32.3974",
+            "course_id": "6d0000000000000000000000",
+            "section": "L06 Push-in"
+          },
+          {
+            "rank": 2,
+            "score": "31.0519",
+            "course_id": "6d0000000000000000000000",
+            "section": "L06 Arc"
+          },
+          {
+            "rank": 3,
+            "score": "31.0460",
+            "course_id": "6d0000000000000000000000",
+            "section": "L06 Light Sweep"
+          },
+          {
+            "rank": 4,
+            "score": "3.9304",
+            "course_id": "6d0000000000000000000000",
+            "section": "SKILLOMATE                                                                  Chatbot Knowledge Base"
+          },
+          {
+            "rank": 5,
+            "score": "2.2459",
+            "course_id": "6d0000000000000000000000",
+            "section": "L07 UGC 2"
+          },
+          {
+            "rank": 6,
+            "score": "1.9037",
+            "course_id": "6d0000000000000000000000",
+            "section": "L03 Character Sheet (bonus)"
+          }
+        ],
+        "selected_exact_prompt_template_id": "",
+        "provider_model_path": "built-in-course-guide"
+      },
+      "startedAt": "2026-10-14T12:25:24.773Z",
+      "completedAt": "2026-10-14T12:25:24.775Z"
+    },
+    {
+      "id": "ppads_031",
+      "category": "exact_prompt",
+      "query": "Give exact L06 Push-in prompt for a face serum bottle.",
+      "answer": "",
+      "provider": "",
+      "statusCode": 0,
+      "skipped": true,
+      "skipReason": "Expected fal-openrouter provider, got built-in-course-guide",
+      "debug": null,
+      "startedAt": "2026-10-14T12:25:24.773Z",
+      "completedAt": "2026-10-14T12:25:24.775Z"
+    },
+    {
+      "id": "ppads_032",
+      "category": "exact_prompt",
+      "query": "Give exact L06 Arc prompt for a leather wallet.",
+      "answer": "AI Product Photoshoot & Ads: Create AI product photos, product videos, UGC-style videos, and honest ad assets. Lessons include Lesson 01 - Course Intro, Lesson 02 - Phone Photo Se Studio Photo, Lesson 03 - Model Ke Saath Product, Lesson 04 - Festive Shoot + Colour Variants.",
+      "provider": "built-in-course-guide",
+      "statusCode": 200,
+      "skipped": true,
+      "skipReason": "Expected fal-openrouter provider, got built-in-course-guide",
+      "debug": {
+        "conversation_id": "live-ppads_032",
+        "request_active_course_id": "6d0000000000000000000000",
+        "resolved_active_course_id": "6d0000000000000000000000",
+        "current_topic": "",
+        "current_intent": "",
+        "rewritten_retrieval_query": "Give exact L06 Arc prompt for a leather wallet.",
+        "retrieved_chunk_ids": [
+          "ai-product-photoshoot-ads:L06 Arc",
+          "ai-product-photoshoot-ads:L06 Push-in",
+          "ai-product-photoshoot-ads:L06 Light Sweep",
+          "ai-product-photoshoot-ads:SKILLOMATE                                                                  Chatbot Knowledge Base",
+          "ai-product-photoshoot-ads:L05 Step 3 Flow prompts",
+          "ai-product-photoshoot-ads:L03 Character Sheet (bonus)"
+        ],
+        "retrieved_course_ids": [
+          "6d0000000000000000000000"
+        ],
+        "retrieved_course_names": [
+          "AI Product Photoshoot & Ads"
+        ],
+        "scores_ranks": [
+          {
+            "rank": 1,
+            "score": "32.3837",
+            "course_id": "6d0000000000000000000000",
+            "section": "L06 Arc"
+          },
+          {
+            "rank": 2,
+            "score": "31.0580",
+            "course_id": "6d0000000000000000000000",
+            "section": "L06 Push-in"
+          },
+          {
+            "rank": 3,
+            "score": "31.0460",
+            "course_id": "6d0000000000000000000000",
+            "section": "L06 Light Sweep"
+          },
+          {
+            "rank": 4,
+            "score": "2.9255",
+            "course_id": "6d0000000000000000000000",
+            "section": "SKILLOMATE                                                                  Chatbot Knowledge Base"
+          },
+          {
+            "rank": 5,
+            "score": "1.2872",
+            "course_id": "6d0000000000000000000000",
+            "section": "L05 Step 3 Flow prompts"
+          },
+          {
+            "rank": 6,
+            "score": "0.7831",
+            "course_id": "6d0000000000000000000000",
+            "section": "L03 Character Sheet (bonus)"
+          }
+        ],
+        "selected_exact_prompt_template_id": "",
+        "provider_model_path": "built-in-course-guide"
+      },
+      "startedAt": "2026-10-14T12:25:24.775Z",
+      "completedAt": "2026-10-14T12:25:24.777Z"
+    },
+    {
+      "id": "ppads_032",
+      "category": "exact_prompt",
+      "query": "Give exact L06 Arc prompt for a leather wallet.",
+      "answer": "",
+      "provider": "",
+      "statusCode": 0,
+      "skipped": true,
+      "skipReason": "Expected fal-openrouter provider, got built-in-course-guide",
+      "debug": null,
+      "startedAt": "2026-10-14T12:25:24.775Z",
+      "completedAt": "2026-10-14T12:25:24.777Z"
+    },
+    {
+      "id": "ppads_033",
+      "category": "exact_prompt",
+      "query": "Copy exact L06 Light Sweep prompt for a gold bracelet.",
+      "answer": "AI Product Photoshoot & Ads: Create AI product photos, product videos, UGC-style videos, and honest ad assets. Lessons include Lesson 01 - Course Intro, Lesson 02 - Phone Photo Se Studio Photo, Lesson 03 - Model Ke Saath Product, Lesson 04 - Festive Shoot + Colour Variants.",
+      "provider": "built-in-course-guide",
+      "statusCode": 200,
+      "skipped": true,
+      "skipReason": "Expected fal-openrouter provider, got built-in-course-guide",
+      "debug": {
+        "conversation_id": "live-ppads_033",
+        "request_active_course_id": "6d0000000000000000000000",
+        "resolved_active_course_id": "6d0000000000000000000000",
+        "current_topic": "",
+        "current_intent": "",
+        "rewritten_retrieval_query": "Copy exact L06 Light Sweep prompt for a gold bracelet.",
+        "retrieved_chunk_ids": [
+          "ai-product-photoshoot-ads:L06 Light Sweep",
+          "ai-product-photoshoot-ads:L06 Push-in",
+          "ai-product-photoshoot-ads:L06 Arc",
+          "ai-product-photoshoot-ads:SKILLOMATE                                                                  Chatbot Knowledge Base",
+          "ai-product-photoshoot-ads:L04 Wedding Gift",
+          "ai-product-photoshoot-ads:L03 Character Sheet (bonus)"
+        ],
+        "retrieved_course_ids": [
+          "6d0000000000000000000000"
+        ],
+        "retrieved_course_names": [
+          "AI Product Photoshoot & Ads"
+        ],
+        "scores_ranks": [
+          {
+            "rank": 1,
+            "score": "33.2291",
+            "course_id": "6d0000000000000000000000",
+            "section": "L06 Light Sweep"
+          },
+          {
+            "rank": 2,
+            "score": "31.5803",
+            "course_id": "6d0000000000000000000000",
+            "section": "L06 Push-in"
+          },
+          {
+            "rank": 3,
+            "score": "31.0519",
+            "course_id": "6d0000000000000000000000",
+            "section": "L06 Arc"
+          },
+          {
+            "rank": 4,
+            "score": "2.9255",
+            "course_id": "6d0000000000000000000000",
+            "section": "SKILLOMATE                                                                  Chatbot Knowledge Base"
+          },
+          {
+            "rank": 5,
+            "score": "1.9801",
+            "course_id": "6d0000000000000000000000",
+            "section": "L04 Wedding Gift"
+          },
+          {
+            "rank": 6,
+            "score": "1.5187",
+            "course_id": "6d0000000000000000000000",
+            "section": "L03 Character Sheet (bonus)"
+          }
+        ],
+        "selected_exact_prompt_template_id": "",
+        "provider_model_path": "built-in-course-guide"
+      },
+      "startedAt": "2026-10-14T12:25:24.777Z",
+      "completedAt": "2026-10-14T12:25:24.778Z"
+    },
+    {
+      "id": "ppads_033",
+      "category": "exact_prompt",
+      "query": "Copy exact L06 Light Sweep prompt for a gold bracelet.",
+      "answer": "",
+      "provider": "",
+      "statusCode": 0,
+      "skipped": true,
+      "skipReason": "Expected fal-openrouter provider, got built-in-course-guide",
+      "debug": null,
+      "startedAt": "2026-10-14T12:25:24.777Z",
+      "completedAt": "2026-10-14T12:25:24.778Z"
+    },
+    {
+      "id": "ppads_034",
+      "category": "troubleshooting",
+      "query": "In my product video the product is melting and morphing. What should I do?",
+      "answer": "AI Product Photoshoot & Ads: Create AI product photos, product videos, UGC-style videos, and honest ad assets. Lessons include Lesson 01 - Course Intro, Lesson 02 - Phone Photo Se Studio Photo, Lesson 03 - Model Ke Saath Product, Lesson 04 - Festive Shoot + Colour Variants.",
+      "provider": "built-in-course-guide",
+      "statusCode": 200,
+      "skipped": true,
+      "skipReason": "Expected fal-openrouter provider, got built-in-course-guide",
+      "debug": {
+        "conversation_id": "live-ppads_034",
+        "request_active_course_id": "6d0000000000000000000000",
+        "resolved_active_course_id": "6d0000000000000000000000",
+        "current_topic": "",
+        "current_intent": "",
+        "rewritten_retrieval_query": "In my product video the product is melting and morphing. What should I do?",
+        "retrieved_chunk_ids": [
+          "ai-product-photoshoot-ads:SKILLOMATE                                                                  Chatbot Knowledge Base",
+          "ai-product-photoshoot-ads:L06 Push-in",
+          "ai-product-photoshoot-ads:L06 Arc",
+          "ai-product-photoshoot-ads:L06 Light Sweep",
+          "ai-product-photoshoot-ads:L07 UGC 2",
+          "ai-product-photoshoot-ads:L07 UGC 1"
+        ],
+        "retrieved_course_ids": [
+          "6d0000000000000000000000"
+        ],
+        "retrieved_course_names": [
+          "AI Product Photoshoot & Ads"
+        ],
+        "scores_ranks": [
+          {
+            "rank": 1,
+            "score": "3.0485",
+            "course_id": "6d0000000000000000000000",
+            "section": "SKILLOMATE                                                                  Chatbot Knowledge Base"
+          },
+          {
+            "rank": 2,
+            "score": "2.2098",
+            "course_id": "6d0000000000000000000000",
+            "section": "L06 Push-in"
+          },
+          {
+            "rank": 3,
+            "score": "2.1940",
+            "course_id": "6d0000000000000000000000",
+            "section": "L06 Arc"
+          },
+          {
+            "rank": 4,
+            "score": "2.1784",
+            "course_id": "6d0000000000000000000000",
+            "section": "L06 Light Sweep"
+          },
+          {
+            "rank": 5,
+            "score": "2.1743",
+            "course_id": "6d0000000000000000000000",
+            "section": "L07 UGC 2"
+          },
+          {
+            "rank": 6,
+            "score": "2.0654",
+            "course_id": "6d0000000000000000000000",
+            "section": "L07 UGC 1"
+          }
+        ],
+        "selected_exact_prompt_template_id": "",
+        "provider_model_path": "built-in-course-guide"
+      },
+      "startedAt": "2026-10-14T12:25:24.779Z",
+      "completedAt": "2026-10-14T12:25:24.780Z"
+    },
+    {
+      "id": "ppads_034",
+      "category": "troubleshooting",
+      "query": "In my product video the product is melting and morphing. What should I do?",
+      "answer": "",
+      "provider": "",
+      "statusCode": 0,
+      "skipped": true,
+      "skipReason": "Expected fal-openrouter provider, got built-in-course-guide",
+      "debug": null,
+      "startedAt": "2026-10-14T12:25:24.779Z",
+      "completedAt": "2026-10-14T12:25:24.780Z"
+    },
+    {
+      "id": "ppads_035",
+      "category": "troubleshooting",
+      "query": "The small logo letters blur in the video. Is there a course fix?",
+      "answer": "AI Product Photoshoot & Ads: Create AI product photos, product videos, UGC-style videos, and honest ad assets. Lessons include Lesson 01 - Course Intro, Lesson 02 - Phone Photo Se Studio Photo, Lesson 03 - Model Ke Saath Product, Lesson 04 - Festive Shoot + Colour Variants.",
+      "provider": "built-in-course-guide",
+      "statusCode": 200,
+      "skipped": true,
+      "skipReason": "Expected fal-openrouter provider, got built-in-course-guide",
+      "debug": {
+        "conversation_id": "live-ppads_035",
+        "request_active_course_id": "6d0000000000000000000000",
+        "resolved_active_course_id": "6d0000000000000000000000",
+        "current_topic": "",
+        "current_intent": "",
+        "rewritten_retrieval_query": "The small logo letters blur in the video. Is there a course fix?",
+        "retrieved_chunk_ids": [
+          "ai-product-photoshoot-ads:SKILLOMATE                                                                  Chatbot Knowledge Base",
+          "ai-product-photoshoot-ads:L07 UGC 2",
+          "ai-product-photoshoot-ads:L02 Lifestyle",
+          "ai-product-photoshoot-ads:L03 Showing to camera",
+          "ai-product-photoshoot-ads:L06 Push-in",
+          "ai-product-photoshoot-ads:L06 Arc"
+        ],
+        "retrieved_course_ids": [
+          "6d0000000000000000000000"
+        ],
+        "retrieved_course_names": [
+          "AI Product Photoshoot & Ads"
+        ],
+        "scores_ranks": [
+          {
+            "rank": 1,
+            "score": "3.7852",
+            "course_id": "6d0000000000000000000000",
+            "section": "SKILLOMATE                                                                  Chatbot Knowledge Base"
+          },
+          {
+            "rank": 2,
+            "score": "2.5760",
+            "course_id": "6d0000000000000000000000",
+            "section": "L07 UGC 2"
+          },
+          {
+            "rank": 3,
+            "score": "1.8784",
+            "course_id": "6d0000000000000000000000",
+            "section": "L02 Lifestyle"
+          },
+          {
+            "rank": 4,
+            "score": "1.8045",
+            "course_id": "6d0000000000000000000000",
+            "section": "L03 Showing to camera"
+          },
+          {
+            "rank": 5,
+            "score": "1.2324",
+            "course_id": "6d0000000000000000000000",
+            "section": "L06 Push-in"
+          },
+          {
+            "rank": 6,
+            "score": "1.2231",
+            "course_id": "6d0000000000000000000000",
+            "section": "L06 Arc"
+          }
+        ],
+        "selected_exact_prompt_template_id": "",
+        "provider_model_path": "built-in-course-guide"
+      },
+      "startedAt": "2026-10-14T12:25:24.781Z",
+      "completedAt": "2026-10-14T12:25:24.783Z"
+    },
+    {
+      "id": "ppads_035",
+      "category": "troubleshooting",
+      "query": "The small logo letters blur in the video. Is there a course fix?",
+      "answer": "",
+      "provider": "",
+      "statusCode": 0,
+      "skipped": true,
+      "skipReason": "Expected fal-openrouter provider, got built-in-course-guide",
+      "debug": null,
+      "startedAt": "2026-10-14T12:25:24.781Z",
+      "completedAt": "2026-10-14T12:25:24.783Z"
+    },
+    {
+      "id": "ppads_036",
+      "category": "lesson_7",
+      "query": "What settings and references does Lesson 07 use for UGC-style video?",
+      "answer": "AI Product Photoshoot & Ads: Create AI product photos, product videos, UGC-style videos, and honest ad assets. Lessons include Lesson 01 - Course Intro, Lesson 02 - Phone Photo Se Studio Photo, Lesson 03 - Model Ke Saath Product, Lesson 04 - Festive Shoot + Colour Variants.",
+      "provider": "built-in-course-guide",
+      "statusCode": 200,
+      "skipped": true,
+      "skipReason": "Expected fal-openrouter provider, got built-in-course-guide",
+      "debug": {
+        "conversation_id": "live-ppads_036",
+        "request_active_course_id": "6d0000000000000000000000",
+        "resolved_active_course_id": "6d0000000000000000000000",
+        "current_topic": "",
+        "current_intent": "",
+        "rewritten_retrieval_query": "What settings and references does Lesson 07 use for UGC-style video?",
+        "retrieved_chunk_ids": [
+          "ai-product-photoshoot-ads:L07 UGC 2",
+          "ai-product-photoshoot-ads:L07 UGC 1",
+          "ai-product-photoshoot-ads:SKILLOMATE                                                                  Chatbot Knowledge Base",
+          "ai-product-photoshoot-ads:Lesson 07 - UGC-Style Video",
+          "ai-product-photoshoot-ads:Lesson 06 - Photo Se Product Video",
+          "ai-product-photoshoot-ads:Course overview"
+        ],
+        "retrieved_course_ids": [
+          "6d0000000000000000000000"
+        ],
+        "retrieved_course_names": [
+          "AI Product Photoshoot & Ads"
+        ],
+        "scores_ranks": [
+          {
+            "rank": 1,
+            "score": "33.9200",
+            "course_id": "6d0000000000000000000000",
+            "section": "L07 UGC 2"
+          },
+          {
+            "rank": 2,
+            "score": "32.2079",
+            "course_id": "6d0000000000000000000000",
+            "section": "L07 UGC 1"
+          },
+          {
+            "rank": 3,
+            "score": "4.1585",
+            "course_id": "6d0000000000000000000000",
+            "section": "SKILLOMATE                                                                  Chatbot Knowledge Base"
+          },
+          {
+            "rank": 4,
+            "score": "3.9750",
+            "course_id": "6d0000000000000000000000",
+            "section": "Lesson 07 - UGC-Style Video"
+          },
+          {
+            "rank": 5,
+            "score": "1.5534",
+            "course_id": "6d0000000000000000000000",
+            "section": "Lesson 06 - Photo Se Product Video"
+          },
+          {
+            "rank": 6,
+            "score": "1.5133",
+            "course_id": "6d0000000000000000000000",
+            "section": "Course overview"
+          }
+        ],
+        "selected_exact_prompt_template_id": "",
+        "provider_model_path": "built-in-course-guide"
+      },
+      "startedAt": "2026-10-14T12:25:24.783Z",
+      "completedAt": "2026-10-14T12:25:24.785Z"
+    },
+    {
+      "id": "ppads_036",
+      "category": "lesson_7",
+      "query": "What settings and references does Lesson 07 use for UGC-style video?",
+      "answer": "",
+      "provider": "",
+      "statusCode": 0,
+      "skipped": true,
+      "skipReason": "Expected fal-openrouter provider, got built-in-course-guide",
+      "debug": null,
+      "startedAt": "2026-10-14T12:25:24.783Z",
+      "completedAt": "2026-10-14T12:25:24.785Z"
+    },
+    {
+      "id": "ppads_037",
+      "category": "exact_prompt",
+      "query": "Give exact L07 UGC 1 prompt for a protein shaker.",
+      "answer": "AI Product Photoshoot & Ads: Create AI product photos, product videos, UGC-style videos, and honest ad assets. Lessons include Lesson 01 - Course Intro, Lesson 02 - Phone Photo Se Studio Photo, Lesson 03 - Model Ke Saath Product, Lesson 04 - Festive Shoot + Colour Variants.",
+      "provider": "built-in-course-guide",
+      "statusCode": 200,
+      "skipped": true,
+      "skipReason": "Expected fal-openrouter provider, got built-in-course-guide",
+      "debug": {
+        "conversation_id": "live-ppads_037",
+        "request_active_course_id": "6d0000000000000000000000",
+        "resolved_active_course_id": "6d0000000000000000000000",
+        "current_topic": "",
+        "current_intent": "",
+        "rewritten_retrieval_query": "Give exact L07 UGC 1 prompt for a protein shaker.",
+        "retrieved_chunk_ids": [
+          "ai-product-photoshoot-ads:L07 UGC 2",
+          "ai-product-photoshoot-ads:L07 UGC 1",
+          "ai-product-photoshoot-ads:SKILLOMATE                                                                  Chatbot Knowledge Base",
+          "ai-product-photoshoot-ads:L05 Step 3 Flow prompts",
+          "ai-product-photoshoot-ads:Lesson 07 - UGC-Style Video",
+          "ai-product-photoshoot-ads:L03 Character Sheet (bonus)"
+        ],
+        "retrieved_course_ids": [
+          "6d0000000000000000000000"
+        ],
+        "retrieved_course_names": [
+          "AI Product Photoshoot & Ads"
+        ],
+        "scores_ranks": [
+          {
+            "rank": 1,
+            "score": "32.4587",
+            "course_id": "6d0000000000000000000000",
+            "section": "L07 UGC 2"
+          },
+          {
+            "rank": 2,
+            "score": "31.8565",
+            "course_id": "6d0000000000000000000000",
+            "section": "L07 UGC 1"
+          },
+          {
+            "rank": 3,
+            "score": "5.1926",
+            "course_id": "6d0000000000000000000000",
+            "section": "SKILLOMATE                                                                  Chatbot Knowledge Base"
+          },
+          {
+            "rank": 4,
+            "score": "1.2872",
+            "course_id": "6d0000000000000000000000",
+            "section": "L05 Step 3 Flow prompts"
+          },
+          {
+            "rank": 5,
+            "score": "1.0363",
+            "course_id": "6d0000000000000000000000",
+            "section": "Lesson 07 - UGC-Style Video"
+          },
+          {
+            "rank": 6,
+            "score": "0.7831",
+            "course_id": "6d0000000000000000000000",
+            "section": "L03 Character Sheet (bonus)"
+          }
+        ],
+        "selected_exact_prompt_template_id": "",
+        "provider_model_path": "built-in-course-guide"
+      },
+      "startedAt": "2026-10-14T12:25:24.785Z",
+      "completedAt": "2026-10-14T12:25:24.786Z"
+    },
+    {
+      "id": "ppads_037",
+      "category": "exact_prompt",
+      "query": "Give exact L07 UGC 1 prompt for a protein shaker.",
+      "answer": "",
+      "provider": "",
+      "statusCode": 0,
+      "skipped": true,
+      "skipReason": "Expected fal-openrouter provider, got built-in-course-guide",
+      "debug": null,
+      "startedAt": "2026-10-14T12:25:24.785Z",
+      "completedAt": "2026-10-14T12:25:24.786Z"
+    },
+    {
+      "id": "ppads_038",
+      "category": "exact_prompt",
+      "query": "Give exact L07 UGC 2 prompt for a ceramic cup.",
+      "answer": "AI Product Photoshoot & Ads: Create AI product photos, product videos, UGC-style videos, and honest ad assets. Lessons include Lesson 01 - Course Intro, Lesson 02 - Phone Photo Se Studio Photo, Lesson 03 - Model Ke Saath Product, Lesson 04 - Festive Shoot + Colour Variants.",
+      "provider": "built-in-course-guide",
+      "statusCode": 200,
+      "skipped": true,
+      "skipReason": "Expected fal-openrouter provider, got built-in-course-guide",
+      "debug": {
+        "conversation_id": "live-ppads_038",
+        "request_active_course_id": "6d0000000000000000000000",
+        "resolved_active_course_id": "6d0000000000000000000000",
+        "current_topic": "",
+        "current_intent": "",
+        "rewritten_retrieval_query": "Give exact L07 UGC 2 prompt for a ceramic cup.",
+        "retrieved_chunk_ids": [
+          "ai-product-photoshoot-ads:L07 UGC 2",
+          "ai-product-photoshoot-ads:L07 UGC 1",
+          "ai-product-photoshoot-ads:SKILLOMATE                                                                  Chatbot Knowledge Base",
+          "ai-product-photoshoot-ads:L05 Step 3 Flow prompts",
+          "ai-product-photoshoot-ads:Lesson 07 - UGC-Style Video",
+          "ai-product-photoshoot-ads:L03 Character Sheet (bonus)"
+        ],
+        "retrieved_course_ids": [
+          "6d0000000000000000000000"
+        ],
+        "retrieved_course_names": [
+          "AI Product Photoshoot & Ads"
+        ],
+        "scores_ranks": [
+          {
+            "rank": 1,
+            "score": "32.4587",
+            "course_id": "6d0000000000000000000000",
+            "section": "L07 UGC 2"
+          },
+          {
+            "rank": 2,
+            "score": "31.8565",
+            "course_id": "6d0000000000000000000000",
+            "section": "L07 UGC 1"
+          },
+          {
+            "rank": 3,
+            "score": "5.1926",
+            "course_id": "6d0000000000000000000000",
+            "section": "SKILLOMATE                                                                  Chatbot Knowledge Base"
+          },
+          {
+            "rank": 4,
+            "score": "1.2872",
+            "course_id": "6d0000000000000000000000",
+            "section": "L05 Step 3 Flow prompts"
+          },
+          {
+            "rank": 5,
+            "score": "1.0363",
+            "course_id": "6d0000000000000000000000",
+            "section": "Lesson 07 - UGC-Style Video"
+          },
+          {
+            "rank": 6,
+            "score": "0.7831",
+            "course_id": "6d0000000000000000000000",
+            "section": "L03 Character Sheet (bonus)"
+          }
+        ],
+        "selected_exact_prompt_template_id": "",
+        "provider_model_path": "built-in-course-guide"
+      },
+      "startedAt": "2026-10-14T12:25:24.787Z",
+      "completedAt": "2026-10-14T12:25:24.788Z"
+    },
+    {
+      "id": "ppads_038",
+      "category": "exact_prompt",
+      "query": "Give exact L07 UGC 2 prompt for a ceramic cup.",
+      "answer": "",
+      "provider": "",
+      "statusCode": 0,
+      "skipped": true,
+      "skipReason": "Expected fal-openrouter provider, got built-in-course-guide",
+      "debug": null,
+      "startedAt": "2026-10-14T12:25:24.787Z",
+      "completedAt": "2026-10-14T12:25:24.788Z"
+    },
+    {
+      "id": "ppads_039",
+      "category": "troubleshooting",
+      "query": "My UGC video shows a phone in the frame. What exact fix should I add?",
+      "answer": "AI Product Photoshoot & Ads: Create AI product photos, product videos, UGC-style videos, and honest ad assets. Lessons include Lesson 01 - Course Intro, Lesson 02 - Phone Photo Se Studio Photo, Lesson 03 - Model Ke Saath Product, Lesson 04 - Festive Shoot + Colour Variants.",
+      "provider": "built-in-course-guide",
+      "statusCode": 200,
+      "skipped": true,
+      "skipReason": "Expected fal-openrouter provider, got built-in-course-guide",
+      "debug": {
+        "conversation_id": "live-ppads_039",
+        "request_active_course_id": "6d0000000000000000000000",
+        "resolved_active_course_id": "6d0000000000000000000000",
+        "current_topic": "",
+        "current_intent": "exact_prompt",
+        "rewritten_retrieval_query": "My UGC video shows a phone in the frame. What exact fix should I add?",
+        "retrieved_chunk_ids": [
+          "ai-product-photoshoot-ads:SKILLOMATE                                                                  Chatbot Knowledge Base",
+          "ai-product-photoshoot-ads:L07 UGC 1",
+          "ai-product-photoshoot-ads:L07 UGC 2",
+          "ai-product-photoshoot-ads:Lesson 07 - UGC-Style Video",
+          "ai-product-photoshoot-ads:L06 Push-in",
+          "ai-product-photoshoot-ads:L06 Arc"
+        ],
+        "retrieved_course_ids": [
+          "6d0000000000000000000000"
+        ],
+        "retrieved_course_names": [
+          "AI Product Photoshoot & Ads"
+        ],
+        "scores_ranks": [
+          {
+            "rank": 1,
+            "score": "5.6010",
+            "course_id": "6d0000000000000000000000",
+            "section": "SKILLOMATE                                                                  Chatbot Knowledge Base"
+          },
+          {
+            "rank": 2,
+            "score": "2.5985",
+            "course_id": "6d0000000000000000000000",
+            "section": "L07 UGC 1"
+          },
+          {
+            "rank": 3,
+            "score": "2.4709",
+            "course_id": "6d0000000000000000000000",
+            "section": "L07 UGC 2"
+          },
+          {
+            "rank": 4,
+            "score": "1.7979",
+            "course_id": "6d0000000000000000000000",
+            "section": "Lesson 07 - UGC-Style Video"
+          },
+          {
+            "rank": 5,
+            "score": "1.1615",
+            "course_id": "6d0000000000000000000000",
+            "section": "L06 Push-in"
+          },
+          {
+            "rank": 6,
+            "score": "1.1521",
+            "course_id": "6d0000000000000000000000",
+            "section": "L06 Arc"
+          }
+        ],
+        "selected_exact_prompt_template_id": "",
+        "provider_model_path": "built-in-course-guide"
+      },
+      "startedAt": "2026-10-14T12:25:24.789Z",
+      "completedAt": "2026-10-14T12:25:24.791Z"
+    },
+    {
+      "id": "ppads_039",
+      "category": "troubleshooting",
+      "query": "My UGC video shows a phone in the frame. What exact fix should I add?",
+      "answer": "",
+      "provider": "",
+      "statusCode": 0,
+      "skipped": true,
+      "skipReason": "Expected fal-openrouter provider, got built-in-course-guide",
+      "debug": null,
+      "startedAt": "2026-10-14T12:25:24.789Z",
+      "completedAt": "2026-10-14T12:25:24.791Z"
+    },
+    {
+      "id": "ppads_040",
+      "category": "troubleshooting",
+      "query": "The UGC video looks too polished like a studio ad. How do I make it natural?",
+      "answer": "AI Product Photoshoot & Ads: Create AI product photos, product videos, UGC-style videos, and honest ad assets. Lessons include Lesson 01 - Course Intro, Lesson 02 - Phone Photo Se Studio Photo, Lesson 03 - Model Ke Saath Product, Lesson 04 - Festive Shoot + Colour Variants.",
+      "provider": "built-in-course-guide",
+      "statusCode": 200,
+      "skipped": true,
+      "skipReason": "Expected fal-openrouter provider, got built-in-course-guide",
+      "debug": {
+        "conversation_id": "live-ppads_040",
+        "request_active_course_id": "6d0000000000000000000000",
+        "resolved_active_course_id": "6d0000000000000000000000",
+        "current_topic": "",
+        "current_intent": "",
+        "rewritten_retrieval_query": "The UGC video looks too polished like a studio ad. How do I make it natural?",
+        "retrieved_chunk_ids": [
+          "ai-product-photoshoot-ads:SKILLOMATE                                                                  Chatbot Knowledge Base",
+          "ai-product-photoshoot-ads:L07 UGC 2",
+          "ai-product-photoshoot-ads:L07 UGC 1",
+          "ai-product-photoshoot-ads:L05 Step 2 Hooks + Script",
+          "ai-product-photoshoot-ads:L02 White Studio",
+          "ai-product-photoshoot-ads:L03 Showing to camera"
+        ],
+        "retrieved_course_ids": [
+          "6d0000000000000000000000"
+        ],
+        "retrieved_course_names": [
+          "AI Product Photoshoot & Ads"
+        ],
+        "scores_ranks": [
+          {
+            "rank": 1,
+            "score": "5.2572",
+            "course_id": "6d0000000000000000000000",
+            "section": "SKILLOMATE                                                                  Chatbot Knowledge Base"
+          },
+          {
+            "rank": 2,
+            "score": "4.4358",
+            "course_id": "6d0000000000000000000000",
+            "section": "L07 UGC 2"
+          },
+          {
+            "rank": 3,
+            "score": "3.7277",
+            "course_id": "6d0000000000000000000000",
+            "section": "L07 UGC 1"
+          },
+          {
+            "rank": 4,
+            "score": "2.1076",
+            "course_id": "6d0000000000000000000000",
+            "section": "L05 Step 2 Hooks + Script"
+          },
+          {
+            "rank": 5,
+            "score": "1.9445",
+            "course_id": "6d0000000000000000000000",
+            "section": "L02 White Studio"
+          },
+          {
+            "rank": 6,
+            "score": "1.8033",
+            "course_id": "6d0000000000000000000000",
+            "section": "L03 Showing to camera"
+          }
+        ],
+        "selected_exact_prompt_template_id": "",
+        "provider_model_path": "built-in-course-guide"
+      },
+      "startedAt": "2026-10-14T12:25:24.791Z",
+      "completedAt": "2026-10-14T12:25:24.793Z"
+    },
+    {
+      "id": "ppads_040",
+      "category": "troubleshooting",
+      "query": "The UGC video looks too polished like a studio ad. How do I make it natural?",
+      "answer": "",
+      "provider": "",
+      "statusCode": 0,
+      "skipped": true,
+      "skipReason": "Expected fal-openrouter provider, got built-in-course-guide",
+      "debug": null,
+      "startedAt": "2026-10-14T12:25:24.791Z",
+      "completedAt": "2026-10-14T12:25:24.793Z"
+    },
+    {
+      "id": "ppads_041",
+      "category": "ethical_advertising",
+      "query": "Can I show the AI model as a real customer giving a review?",
+      "answer": "AI Product Photoshoot & Ads: Create AI product photos, product videos, UGC-style videos, and honest ad assets. Lessons include Lesson 01 - Course Intro, Lesson 02 - Phone Photo Se Studio Photo, Lesson 03 - Model Ke Saath Product, Lesson 04 - Festive Shoot + Colour Variants.",
+      "provider": "built-in-course-guide",
+      "statusCode": 200,
+      "skipped": true,
+      "skipReason": "Expected fal-openrouter provider, got built-in-course-guide",
+      "debug": {
+        "conversation_id": "live-ppads_041",
+        "request_active_course_id": "6d0000000000000000000000",
+        "resolved_active_course_id": "6d0000000000000000000000",
+        "current_topic": "",
+        "current_intent": "",
+        "rewritten_retrieval_query": "Can I show the AI model as a real customer giving a review?",
+        "retrieved_chunk_ids": [
+          "ai-product-photoshoot-ads:SKILLOMATE                                                                  Chatbot Knowledge Base",
+          "ai-product-photoshoot-ads:L07 UGC 2",
+          "ai-product-photoshoot-ads:L07 UGC 1",
+          "ai-product-photoshoot-ads:L03 Character Sheet (bonus)",
+          "ai-product-photoshoot-ads:L05 Step 2 Hooks + Script",
+          "ai-product-photoshoot-ads:Lesson 03 - Model Ke Saath Product"
+        ],
+        "retrieved_course_ids": [
+          "6d0000000000000000000000"
+        ],
+        "retrieved_course_names": [
+          "AI Product Photoshoot & Ads"
+        ],
+        "scores_ranks": [
+          {
+            "rank": 1,
+            "score": "4.3106",
+            "course_id": "6d0000000000000000000000",
+            "section": "SKILLOMATE                                                                  Chatbot Knowledge Base"
+          },
+          {
+            "rank": 2,
+            "score": "3.2108",
+            "course_id": "6d0000000000000000000000",
+            "section": "L07 UGC 2"
+          },
+          {
+            "rank": 3,
+            "score": "2.0006",
+            "course_id": "6d0000000000000000000000",
+            "section": "L07 UGC 1"
+          },
+          {
+            "rank": 4,
+            "score": "1.6157",
+            "course_id": "6d0000000000000000000000",
+            "section": "L03 Character Sheet (bonus)"
+          },
+          {
+            "rank": 5,
+            "score": "1.0682",
+            "course_id": "6d0000000000000000000000",
+            "section": "L05 Step 2 Hooks + Script"
+          },
+          {
+            "rank": 6,
+            "score": "1.0564",
+            "course_id": "6d0000000000000000000000",
+            "section": "Lesson 03 - Model Ke Saath Product"
+          }
+        ],
+        "selected_exact_prompt_template_id": "",
+        "provider_model_path": "built-in-course-guide"
+      },
+      "startedAt": "2026-10-14T12:25:24.793Z",
+      "completedAt": "2026-10-14T12:25:24.794Z"
+    },
+    {
+      "id": "ppads_041",
+      "category": "ethical_advertising",
+      "query": "Can I show the AI model as a real customer giving a review?",
+      "answer": "",
+      "provider": "",
+      "statusCode": 0,
+      "skipped": true,
+      "skipReason": "Expected fal-openrouter provider, got built-in-course-guide",
+      "debug": null,
+      "startedAt": "2026-10-14T12:25:24.793Z",
+      "completedAt": "2026-10-14T12:25:24.794Z"
+    },
+    {
+      "id": "ppads_042",
+      "category": "lesson_8",
+      "query": "What is the final ad workflow from Lesson 08?",
+      "answer": "AI Product Photoshoot & Ads: Create AI product photos, product videos, UGC-style videos, and honest ad assets. Lessons include Lesson 01 - Course Intro, Lesson 02 - Phone Photo Se Studio Photo, Lesson 03 - Model Ke Saath Product, Lesson 04 - Festive Shoot + Colour Variants.",
+      "provider": "built-in-course-guide",
+      "statusCode": 200,
+      "skipped": true,
+      "skipReason": "Expected fal-openrouter provider, got built-in-course-guide",
+      "debug": {
+        "conversation_id": "live-ppads_042",
+        "request_active_course_id": "6d0000000000000000000000",
+        "resolved_active_course_id": "6d0000000000000000000000",
+        "current_topic": "",
+        "current_intent": "",
+        "rewritten_retrieval_query": "What is the final ad workflow from Lesson 08?",
+        "retrieved_chunk_ids": [
+          "ai-product-photoshoot-ads:Lesson 08 - Finale",
+          "ai-product-photoshoot-ads:SKILLOMATE                                                                  Chatbot Knowledge Base",
+          "ai-product-photoshoot-ads:L07 UGC 2",
+          "ai-product-photoshoot-ads:L02 Lifestyle",
+          "ai-product-photoshoot-ads:L06 Light Sweep",
+          "ai-product-photoshoot-ads:L07 UGC 1"
+        ],
+        "retrieved_course_ids": [
+          "6d0000000000000000000000"
+        ],
+        "retrieved_course_names": [
+          "AI Product Photoshoot & Ads"
+        ],
+        "scores_ranks": [
+          {
+            "rank": 1,
+            "score": "2.9045",
+            "course_id": "6d0000000000000000000000",
+            "section": "Lesson 08 - Finale"
+          },
+          {
+            "rank": 2,
+            "score": "2.0004",
+            "course_id": "6d0000000000000000000000",
+            "section": "SKILLOMATE                                                                  Chatbot Knowledge Base"
+          },
+          {
+            "rank": 3,
+            "score": "1.4687",
+            "course_id": "6d0000000000000000000000",
+            "section": "L07 UGC 2"
+          },
+          {
+            "rank": 4,
+            "score": "0.9538",
+            "course_id": "6d0000000000000000000000",
+            "section": "L02 Lifestyle"
+          },
+          {
+            "rank": 5,
+            "score": "0.9254",
+            "course_id": "6d0000000000000000000000",
+            "section": "L06 Light Sweep"
+          },
+          {
+            "rank": 6,
+            "score": "0.8081",
+            "course_id": "6d0000000000000000000000",
+            "section": "L07 UGC 1"
+          }
+        ],
+        "selected_exact_prompt_template_id": "",
+        "provider_model_path": "built-in-course-guide"
+      },
+      "startedAt": "2026-10-14T12:25:24.795Z",
+      "completedAt": "2026-10-14T12:25:24.796Z"
+    },
+    {
+      "id": "ppads_042",
+      "category": "lesson_8",
+      "query": "What is the final ad workflow from Lesson 08?",
+      "answer": "",
+      "provider": "",
+      "statusCode": 0,
+      "skipped": true,
+      "skipReason": "Expected fal-openrouter provider, got built-in-course-guide",
+      "debug": null,
+      "startedAt": "2026-10-14T12:25:24.795Z",
+      "completedAt": "2026-10-14T12:25:24.796Z"
+    },
+    {
+      "id": "ppads_043",
+      "category": "lesson_8",
+      "query": "Where are the course prompts available according to Lesson 08?",
+      "answer": "AI Product Photoshoot & Ads: Create AI product photos, product videos, UGC-style videos, and honest ad assets. Lessons include Lesson 01 - Course Intro, Lesson 02 - Phone Photo Se Studio Photo, Lesson 03 - Model Ke Saath Product, Lesson 04 - Festive Shoot + Colour Variants.",
+      "provider": "built-in-course-guide",
+      "statusCode": 200,
+      "skipped": true,
+      "skipReason": "Expected fal-openrouter provider, got built-in-course-guide",
+      "debug": {
+        "conversation_id": "live-ppads_043",
+        "request_active_course_id": "6d0000000000000000000000",
+        "resolved_active_course_id": "6d0000000000000000000000",
+        "current_topic": "",
+        "current_intent": "",
+        "rewritten_retrieval_query": "Where are the course prompts available according to Lesson 08?",
+        "retrieved_chunk_ids": [
+          "ai-product-photoshoot-ads:SKILLOMATE                                                                  Chatbot Knowledge Base",
+          "ai-product-photoshoot-ads:Lesson 01 - Course Intro",
+          "ai-product-photoshoot-ads:Lesson 05 - chat G.P.T Se Ad Plan",
+          "ai-product-photoshoot-ads:L05 Step 3 Flow prompts",
+          "ai-product-photoshoot-ads:L07 UGC 2",
+          "ai-product-photoshoot-ads:Lesson 08 - Finale"
+        ],
+        "retrieved_course_ids": [
+          "6d0000000000000000000000"
+        ],
+        "retrieved_course_names": [
+          "AI Product Photoshoot & Ads"
+        ],
+        "scores_ranks": [
+          {
+            "rank": 1,
+            "score": "2.3243",
+            "course_id": "6d0000000000000000000000",
+            "section": "SKILLOMATE                                                                  Chatbot Knowledge Base"
+          },
+          {
+            "rank": 2,
+            "score": "1.9471",
+            "course_id": "6d0000000000000000000000",
+            "section": "Lesson 01 - Course Intro"
+          },
+          {
+            "rank": 3,
+            "score": "1.5545",
+            "course_id": "6d0000000000000000000000",
+            "section": "Lesson 05 - chat G.P.T Se Ad Plan"
+          },
+          {
+            "rank": 4,
+            "score": "1.5142",
+            "course_id": "6d0000000000000000000000",
+            "section": "L05 Step 3 Flow prompts"
+          },
+          {
+            "rank": 5,
+            "score": "1.3957",
+            "course_id": "6d0000000000000000000000",
+            "section": "L07 UGC 2"
+          },
+          {
+            "rank": 6,
+            "score": "0.7980",
+            "course_id": "6d0000000000000000000000",
+            "section": "Lesson 08 - Finale"
+          }
+        ],
+        "selected_exact_prompt_template_id": "",
+        "provider_model_path": "built-in-course-guide"
+      },
+      "startedAt": "2026-10-14T12:25:24.797Z",
+      "completedAt": "2026-10-14T12:25:24.799Z"
+    },
+    {
+      "id": "ppads_043",
+      "category": "lesson_8",
+      "query": "Where are the course prompts available according to Lesson 08?",
+      "answer": "",
+      "provider": "",
+      "statusCode": 0,
+      "skipped": true,
+      "skipReason": "Expected fal-openrouter provider, got built-in-course-guide",
+      "debug": null,
+      "startedAt": "2026-10-14T12:25:24.797Z",
+      "completedAt": "2026-10-14T12:25:24.799Z"
+    },
+    {
+      "id": "ppads_044",
+      "category": "limitations",
+      "query": "Can you teach me full CapCut editing for this final ad?",
+      "answer": "AI Product Photoshoot & Ads: Create AI product photos, product videos, UGC-style videos, and honest ad assets. Lessons include Lesson 01 - Course Intro, Lesson 02 - Phone Photo Se Studio Photo, Lesson 03 - Model Ke Saath Product, Lesson 04 - Festive Shoot + Colour Variants.",
+      "provider": "built-in-course-guide",
+      "statusCode": 200,
+      "skipped": true,
+      "skipReason": "Expected fal-openrouter provider, got built-in-course-guide",
+      "debug": {
+        "conversation_id": "live-ppads_044",
+        "request_active_course_id": "6d0000000000000000000000",
+        "resolved_active_course_id": "6d0000000000000000000000",
+        "current_topic": "",
+        "current_intent": "",
+        "rewritten_retrieval_query": "Can you teach me full CapCut editing for this final ad?",
+        "retrieved_chunk_ids": [
+          "ai-product-photoshoot-ads:SKILLOMATE                                                                  Chatbot Knowledge Base",
+          "ai-product-photoshoot-ads:L04 Colour Variant Sheet",
+          "ai-product-photoshoot-ads:L03 Character Sheet (bonus)",
+          "ai-product-photoshoot-ads:Lesson 08 - Finale"
+        ],
+        "retrieved_course_ids": [
+          "6d0000000000000000000000"
+        ],
+        "retrieved_course_names": [
+          "AI Product Photoshoot & Ads"
+        ],
+        "scores_ranks": [
+          {
+            "rank": 1,
+            "score": "2.9535",
+            "course_id": "6d0000000000000000000000",
+            "section": "SKILLOMATE                                                                  Chatbot Knowledge Base"
+          },
+          {
+            "rank": 2,
+            "score": "1.2099",
+            "course_id": "6d0000000000000000000000",
+            "section": "L04 Colour Variant Sheet"
+          },
+          {
+            "rank": 3,
+            "score": "1.1811",
+            "course_id": "6d0000000000000000000000",
+            "section": "L03 Character Sheet (bonus)"
+          },
+          {
+            "rank": 4,
+            "score": "0.9501",
+            "course_id": "6d0000000000000000000000",
+            "section": "Lesson 08 - Finale"
+          }
+        ],
+        "selected_exact_prompt_template_id": "",
+        "provider_model_path": "built-in-course-guide"
+      },
+      "startedAt": "2026-10-14T12:25:24.799Z",
+      "completedAt": "2026-10-14T12:25:24.800Z"
+    },
+    {
+      "id": "ppads_044",
+      "category": "limitations",
+      "query": "Can you teach me full CapCut editing for this final ad?",
+      "answer": "",
+      "provider": "",
+      "statusCode": 0,
+      "skipped": true,
+      "skipReason": "Expected fal-openrouter provider, got built-in-course-guide",
+      "debug": null,
+      "startedAt": "2026-10-14T12:25:24.799Z",
+      "completedAt": "2026-10-14T12:25:24.800Z"
+    },
+    {
+      "id": "ppads_045",
+      "category": "language_hindi",
+      "query": "मुझे Lesson 02 में product sheet बनाने का तरीका हिंदी में समझाओ।",
+      "answer": "AI Product Photoshoot & Ads: Create AI product photos, product videos, UGC-style videos, and honest ad assets. Lessons include Lesson 01 - Course Intro, Lesson 02 - Phone Photo Se Studio Photo, Lesson 03 - Model Ke Saath Product, Lesson 04 - Festive Shoot + Colour Variants.",
+      "provider": "built-in-course-guide",
+      "statusCode": 200,
+      "skipped": true,
+      "skipReason": "Expected fal-openrouter provider, got built-in-course-guide",
+      "debug": {
+        "conversation_id": "live-ppads_045",
+        "request_active_course_id": "6d0000000000000000000000",
+        "resolved_active_course_id": "6d0000000000000000000000",
+        "current_topic": "",
+        "current_intent": "",
+        "rewritten_retrieval_query": "मुझे Lesson 02 में product sheet बनाने का तरीका हिंदी में समझाओ।",
+        "retrieved_chunk_ids": [
+          "ai-product-photoshoot-ads:L02 Product Sheet",
+          "ai-product-photoshoot-ads:L02 White Studio",
+          "ai-product-photoshoot-ads:L02 Lifestyle",
+          "ai-product-photoshoot-ads:L02 Dark Premium",
+          "ai-product-photoshoot-ads:SKILLOMATE                                                                  Chatbot Knowledge Base",
+          "ai-product-photoshoot-ads:L07 UGC 2"
+        ],
+        "retrieved_course_ids": [
+          "6d0000000000000000000000"
+        ],
+        "retrieved_course_names": [
+          "AI Product Photoshoot & Ads"
+        ],
+        "scores_ranks": [
+          {
+            "rank": 1,
+            "score": "31.9028",
+            "course_id": "6d0000000000000000000000",
+            "section": "L02 Product Sheet"
+          },
+          {
+            "rank": 2,
+            "score": "31.2343",
+            "course_id": "6d0000000000000000000000",
+            "section": "L02 White Studio"
+          },
+          {
+            "rank": 3,
+            "score": "31.2343",
+            "course_id": "6d0000000000000000000000",
+            "section": "L02 Lifestyle"
+          },
+          {
+            "rank": 4,
+            "score": "31.2323",
+            "course_id": "6d0000000000000000000000",
+            "section": "L02 Dark Premium"
+          },
+          {
+            "rank": 5,
+            "score": "3.5693",
+            "course_id": "6d0000000000000000000000",
+            "section": "SKILLOMATE                                                                  Chatbot Knowledge Base"
+          },
+          {
+            "rank": 6,
+            "score": "2.3315",
+            "course_id": "6d0000000000000000000000",
+            "section": "L07 UGC 2"
+          }
+        ],
+        "selected_exact_prompt_template_id": "",
+        "provider_model_path": "built-in-course-guide"
+      },
+      "startedAt": "2026-10-14T12:25:24.801Z",
+      "completedAt": "2026-10-14T12:25:24.806Z"
+    },
+    {
+      "id": "ppads_045",
+      "category": "language_hindi",
+      "query": "मुझे Lesson 02 में product sheet बनाने का तरीका हिंदी में समझाओ।",
+      "answer": "",
+      "provider": "",
+      "statusCode": 0,
+      "skipped": true,
+      "skipReason": "Expected fal-openrouter provider, got built-in-course-guide",
+      "debug": null,
+      "startedAt": "2026-10-14T12:25:24.801Z",
+      "completedAt": "2026-10-14T12:25:24.806Z"
+    },
+    {
+      "id": "ppads_046",
+      "category": "language_hinglish",
+      "query": "Mera product video pighal rha hai, iska fix Hinglish mein batao.",
+      "answer": "AI Product Photoshoot & Ads: Create AI product photos, product videos, UGC-style videos, and honest ad assets. Lessons include Lesson 01 - Course Intro, Lesson 02 - Phone Photo Se Studio Photo, Lesson 03 - Model Ke Saath Product, Lesson 04 - Festive Shoot + Colour Variants.",
+      "provider": "built-in-course-guide",
+      "statusCode": 200,
+      "skipped": true,
+      "skipReason": "Expected fal-openrouter provider, got built-in-course-guide",
+      "debug": {
+        "conversation_id": "live-ppads_046",
+        "request_active_course_id": "6d0000000000000000000000",
+        "resolved_active_course_id": "6d0000000000000000000000",
+        "current_topic": "",
+        "current_intent": "",
+        "rewritten_retrieval_query": "Mera product video pighal rha hai, iska fix Hinglish mein batao.",
+        "retrieved_chunk_ids": [
+          "ai-product-photoshoot-ads:SKILLOMATE                                                                  Chatbot Knowledge Base",
+          "ai-product-photoshoot-ads:L07 UGC 2",
+          "ai-product-photoshoot-ads:L06 Push-in",
+          "ai-product-photoshoot-ads:L06 Arc",
+          "ai-product-photoshoot-ads:Lesson 06 - Photo Se Product Video",
+          "ai-product-photoshoot-ads:L06 Light Sweep"
+        ],
+        "retrieved_course_ids": [
+          "6d0000000000000000000000"
+        ],
+        "retrieved_course_names": [
+          "AI Product Photoshoot & Ads"
+        ],
+        "scores_ranks": [
+          {
+            "rank": 1,
+            "score": "6.0609",
+            "course_id": "6d0000000000000000000000",
+            "section": "SKILLOMATE                                                                  Chatbot Knowledge Base"
+          },
+          {
+            "rank": 2,
+            "score": "2.9637",
+            "course_id": "6d0000000000000000000000",
+            "section": "L07 UGC 2"
+          },
+          {
+            "rank": 3,
+            "score": "1.8260",
+            "course_id": "6d0000000000000000000000",
+            "section": "L06 Push-in"
+          },
+          {
+            "rank": 4,
+            "score": "1.8132",
+            "course_id": "6d0000000000000000000000",
+            "section": "L06 Arc"
+          },
+          {
+            "rank": 5,
+            "score": "1.8028",
+            "course_id": "6d0000000000000000000000",
+            "section": "Lesson 06 - Photo Se Product Video"
+          },
+          {
+            "rank": 6,
+            "score": "1.8007",
+            "course_id": "6d0000000000000000000000",
+            "section": "L06 Light Sweep"
+          }
+        ],
+        "selected_exact_prompt_template_id": "",
+        "provider_model_path": "built-in-course-guide"
+      },
+      "startedAt": "2026-10-14T12:25:24.807Z",
+      "completedAt": "2026-10-14T12:25:24.808Z"
+    },
+    {
+      "id": "ppads_046",
+      "category": "language_hinglish",
+      "query": "Mera product video pighal rha hai, iska fix Hinglish mein batao.",
+      "answer": "",
+      "provider": "",
+      "statusCode": 0,
+      "skipped": true,
+      "skipReason": "Expected fal-openrouter provider, got built-in-course-guide",
+      "debug": null,
+      "startedAt": "2026-10-14T12:25:24.807Z",
+      "completedAt": "2026-10-14T12:25:24.808Z"
+    },
+    {
+      "id": "ppads_047",
+      "category": "language_english",
+      "query": "Explain how to make a lifestyle shot, and answer in English.",
+      "answer": "AI Product Photoshoot & Ads: Create AI product photos, product videos, UGC-style videos, and honest ad assets. Lessons include Lesson 01 - Course Intro, Lesson 02 - Phone Photo Se Studio Photo, Lesson 03 - Model Ke Saath Product, Lesson 04 - Festive Shoot + Colour Variants.",
+      "provider": "built-in-course-guide",
+      "statusCode": 200,
+      "skipped": true,
+      "skipReason": "Expected fal-openrouter provider, got built-in-course-guide",
+      "debug": {
+        "conversation_id": "live-ppads_047",
+        "request_active_course_id": "6d0000000000000000000000",
+        "resolved_active_course_id": "6d0000000000000000000000",
+        "current_topic": "",
+        "current_intent": "",
+        "rewritten_retrieval_query": "Explain how to make a lifestyle shot, and answer in English.",
+        "retrieved_chunk_ids": [
+          "ai-product-photoshoot-ads:SKILLOMATE                                                                  Chatbot Knowledge Base",
+          "ai-product-photoshoot-ads:L02 Lifestyle",
+          "ai-product-photoshoot-ads:L07 UGC 2",
+          "ai-product-photoshoot-ads:L03 Desk",
+          "ai-product-photoshoot-ads:L03 Hands close-up"
+        ],
+        "retrieved_course_ids": [
+          "6d0000000000000000000000"
+        ],
+        "retrieved_course_names": [
+          "AI Product Photoshoot & Ads"
+        ],
+        "scores_ranks": [
+          {
+            "rank": 1,
+            "score": "2.1647",
+            "course_id": "6d0000000000000000000000",
+            "section": "SKILLOMATE                                                                  Chatbot Knowledge Base"
+          },
+          {
+            "rank": 2,
+            "score": "1.4380",
+            "course_id": "6d0000000000000000000000",
+            "section": "L02 Lifestyle"
+          },
+          {
+            "rank": 3,
+            "score": "0.8961",
+            "course_id": "6d0000000000000000000000",
+            "section": "L07 UGC 2"
+          },
+          {
+            "rank": 4,
+            "score": "0.8513",
+            "course_id": "6d0000000000000000000000",
+            "section": "L03 Desk"
+          },
+          {
+            "rank": 5,
+            "score": "0.8249",
+            "course_id": "6d0000000000000000000000",
+            "section": "L03 Hands close-up"
+          }
+        ],
+        "selected_exact_prompt_template_id": "",
+        "provider_model_path": "built-in-course-guide"
+      },
+      "startedAt": "2026-10-14T12:25:24.809Z",
+      "completedAt": "2026-10-14T12:25:24.810Z"
+    },
+    {
+      "id": "ppads_047",
+      "category": "language_english",
+      "query": "Explain how to make a lifestyle shot, and answer in English.",
+      "answer": "",
+      "provider": "",
+      "statusCode": 0,
+      "skipped": true,
+      "skipReason": "Expected fal-openrouter provider, got built-in-course-guide",
+      "debug": null,
+      "startedAt": "2026-10-14T12:25:24.809Z",
+      "completedAt": "2026-10-14T12:25:24.810Z"
+    },
+    {
+      "id": "ppads_conv_001",
+      "category": "multi_turn_exact_prompt",
+      "turns": [
+        {
+          "user": "I am making a product sheet for a perfume bottle.",
+          "answer": "AI Product Photoshoot & Ads: Create AI product photos, product videos, UGC-style videos, and honest ad assets. Lessons include Lesson 01 - Course Intro, Lesson 02 - Phone Photo Se Studio Photo, Lesson 03 - Model Ke Saath Product, Lesson 04 - Festive Shoot + Colour Variants.",
+          "provider": "built-in-course-guide",
+          "statusCode": 200,
+          "skipped": true,
+          "skipReason": "Expected fal-openrouter provider, got built-in-course-guide",
+          "debug": {
+            "conversation_id": "live-ppads_conv_001",
+            "request_active_course_id": "6d0000000000000000000000",
+            "resolved_active_course_id": "6d0000000000000000000000",
+            "current_topic": "",
+            "current_intent": "",
+            "rewritten_retrieval_query": "I am making a product sheet for a perfume bottle.",
+            "retrieved_chunk_ids": [
+              "ai-product-photoshoot-ads:L07 UGC 2",
+              "ai-product-photoshoot-ads:SKILLOMATE                                                                  Chatbot Knowledge Base",
+              "ai-product-photoshoot-ads:L02 Product Sheet",
+              "ai-product-photoshoot-ads:L03 Hands close-up",
+              "ai-product-photoshoot-ads:L07 UGC 1",
+              "ai-product-photoshoot-ads:L04 Colour Variant Sheet"
+            ],
+            "retrieved_course_ids": [
+              "6d0000000000000000000000"
+            ],
+            "retrieved_course_names": [
+              "AI Product Photoshoot & Ads"
+            ],
+            "scores_ranks": [
+              {
+                "rank": 1,
+                "score": "5.0921",
+                "course_id": "6d0000000000000000000000",
+                "section": "L07 UGC 2"
+              },
+              {
+                "rank": 2,
+                "score": "3.3978",
+                "course_id": "6d0000000000000000000000",
+                "section": "SKILLOMATE                                                                  Chatbot Knowledge Base"
+              },
+              {
+                "rank": 3,
+                "score": "1.9028",
+                "course_id": "6d0000000000000000000000",
+                "section": "L02 Product Sheet"
+              },
+              {
+                "rank": 4,
+                "score": "1.8464",
+                "course_id": "6d0000000000000000000000",
+                "section": "L03 Hands close-up"
+              },
+              {
+                "rank": 5,
+                "score": "1.6985",
+                "course_id": "6d0000000000000000000000",
+                "section": "L07 UGC 1"
+              },
+              {
+                "rank": 6,
+                "score": "1.5046",
+                "course_id": "6d0000000000000000000000",
+                "section": "L04 Colour Variant Sheet"
+              }
+            ],
+            "selected_exact_prompt_template_id": "",
+            "provider_model_path": "built-in-course-guide"
+          }
+        }
+      ],
+      "skipped": true,
+      "skipReason": "turn 1: expected fal-openrouter provider, got built-in-course-guide",
+      "startedAt": "2026-10-14T12:25:24.811Z",
+      "completedAt": "2026-10-14T12:25:24.812Z"
+    },
+    {
+      "id": "ppads_conv_002",
+      "category": "multi_turn_ad_plan",
+      "turns": [
+        {
+          "user": "I sell a copper water bottle on Instagram. Price is 899. Plan an ad.",
+          "answer": "Yes. The current Skillomate web offer is ₹499 for 30 days of access to all Skillomate courses.\n\nIt is a PhonePe one-time payment, so it does not create an auto-renewing mandate.\n\nIf a Razorpay recurring offer is available, that is separate: ₹1 for 24 hours, then ₹499/month until cancelled. App Store/Google Play terms may differ in the purchase sheet.",
+          "provider": "skillomate-plan-facts",
+          "statusCode": 200,
+          "skipped": true,
+          "skipReason": "Expected fal-openrouter provider, got skillomate-plan-facts",
+          "debug": {
+            "conversation_id": "live-ppads_conv_002",
+            "request_active_course_id": "6d0000000000000000000000",
+            "resolved_active_course_id": "6d0000000000000000000000",
+            "current_topic": "",
+            "current_intent": "",
+            "rewritten_retrieval_query": "I sell a copper water bottle on Instagram. Price is 899. Plan an ad.",
+            "retrieved_chunk_ids": [],
+            "retrieved_course_ids": [],
+            "retrieved_course_names": [],
+            "scores_ranks": [],
+            "selected_exact_prompt_template_id": "",
+            "provider_model_path": "skillomate-plan-facts"
+          }
+        }
+      ],
+      "skipped": true,
+      "skipReason": "turn 1: expected fal-openrouter provider, got skillomate-plan-facts",
+      "startedAt": "2026-10-14T12:25:24.813Z",
+      "completedAt": "2026-10-14T12:25:24.813Z"
+    },
+    {
+      "id": "ppads_conv_003",
+      "category": "multi_turn_troubleshooting",
+      "turns": [
+        {
+          "user": "My UGC clip looks too much like a polished commercial.",
+          "answer": "AI Product Photoshoot & Ads: Create AI product photos, product videos, UGC-style videos, and honest ad assets. Lessons include Lesson 01 - Course Intro, Lesson 02 - Phone Photo Se Studio Photo, Lesson 03 - Model Ke Saath Product, Lesson 04 - Festive Shoot + Colour Variants.",
+          "provider": "built-in-course-guide",
+          "statusCode": 200,
+          "skipped": true,
+          "skipReason": "Expected fal-openrouter provider, got built-in-course-guide",
+          "debug": {
+            "conversation_id": "live-ppads_conv_003",
+            "request_active_course_id": "6d0000000000000000000000",
+            "resolved_active_course_id": "6d0000000000000000000000",
+            "current_topic": "",
+            "current_intent": "",
+            "rewritten_retrieval_query": "My UGC clip looks too much like a polished commercial.",
+            "retrieved_chunk_ids": [
+              "ai-product-photoshoot-ads:SKILLOMATE                                                                  Chatbot Knowledge Base",
+              "ai-product-photoshoot-ads:L07 UGC 2",
+              "ai-product-photoshoot-ads:L07 UGC 1",
+              "ai-product-photoshoot-ads:L05 Step 2 Hooks + Script",
+              "ai-product-photoshoot-ads:Lesson 07 - UGC-Style Video",
+              "ai-product-photoshoot-ads:Course overview"
+            ],
+            "retrieved_course_ids": [
+              "6d0000000000000000000000"
+            ],
+            "retrieved_course_names": [
+              "AI Product Photoshoot & Ads"
+            ],
+            "scores_ranks": [
+              {
+                "rank": 1,
+                "score": "5.9153",
+                "course_id": "6d0000000000000000000000",
+                "section": "SKILLOMATE                                                                  Chatbot Knowledge Base"
+              },
+              {
+                "rank": 2,
+                "score": "2.5616",
+                "course_id": "6d0000000000000000000000",
+                "section": "L07 UGC 2"
+              },
+              {
+                "rank": 3,
+                "score": "1.6588",
+                "course_id": "6d0000000000000000000000",
+                "section": "L07 UGC 1"
+              },
+              {
+                "rank": 4,
+                "score": "1.5000",
+                "course_id": "6d0000000000000000000000",
+                "section": "L05 Step 2 Hooks + Script"
+              },
+              {
+                "rank": 5,
+                "score": "1.0363",
+                "course_id": "6d0000000000000000000000",
+                "section": "Lesson 07 - UGC-Style Video"
+              },
+              {
+                "rank": 6,
+                "score": "0.6476",
+                "course_id": "6d0000000000000000000000",
+                "section": "Course overview"
+              }
+            ],
+            "selected_exact_prompt_template_id": "",
+            "provider_model_path": "built-in-course-guide"
+          }
+        }
+      ],
+      "skipped": true,
+      "skipReason": "turn 1: expected fal-openrouter provider, got built-in-course-guide",
+      "startedAt": "2026-10-14T12:25:24.814Z",
+      "completedAt": "2026-10-14T12:25:24.816Z"
+    },
+    {
+      "id": "ppads_conv_004",
+      "category": "multi_turn_colour_variant",
+      "turns": [
+        {
+          "user": "Mujhe same product ka pink colour variant banana hai.",
+          "answer": "AI Product Photoshoot & Ads: Create AI product photos, product videos, UGC-style videos, and honest ad assets. Lessons include Lesson 01 - Course Intro, Lesson 02 - Phone Photo Se Studio Photo, Lesson 03 - Model Ke Saath Product, Lesson 04 - Festive Shoot + Colour Variants.",
+          "provider": "built-in-course-guide",
+          "statusCode": 200,
+          "skipped": true,
+          "skipReason": "Expected fal-openrouter provider, got built-in-course-guide",
+          "debug": {
+            "conversation_id": "live-ppads_conv_004",
+            "request_active_course_id": "6d0000000000000000000000",
+            "resolved_active_course_id": "6d0000000000000000000000",
+            "current_topic": "",
+            "current_intent": "",
+            "rewritten_retrieval_query": "Mujhe same product ka pink colour variant banana hai.",
+            "retrieved_chunk_ids": [
+              "ai-product-photoshoot-ads:L04 Colour Variant Sheet",
+              "ai-product-photoshoot-ads:SKILLOMATE                                                                  Chatbot Knowledge Base",
+              "ai-product-photoshoot-ads:L07 UGC 2",
+              "ai-product-photoshoot-ads:L05 Step 3 Flow prompts",
+              "ai-product-photoshoot-ads:Lesson 04 - Festive Shoot + Colour Variants",
+              "ai-product-photoshoot-ads:L03 Hands close-up"
+            ],
+            "retrieved_course_ids": [
+              "6d0000000000000000000000"
+            ],
+            "retrieved_course_names": [
+              "AI Product Photoshoot & Ads"
+            ],
+            "scores_ranks": [
+              {
+                "rank": 1,
+                "score": "5.3128",
+                "course_id": "6d0000000000000000000000",
+                "section": "L04 Colour Variant Sheet"
+              },
+              {
+                "rank": 2,
+                "score": "3.9264",
+                "course_id": "6d0000000000000000000000",
+                "section": "SKILLOMATE                                                                  Chatbot Knowledge Base"
+              },
+              {
+                "rank": 3,
+                "score": "2.9058",
+                "course_id": "6d0000000000000000000000",
+                "section": "L07 UGC 2"
+              },
+              {
+                "rank": 4,
+                "score": "2.4405",
+                "course_id": "6d0000000000000000000000",
+                "section": "L05 Step 3 Flow prompts"
+              },
+              {
+                "rank": 5,
+                "score": "2.3369",
+                "course_id": "6d0000000000000000000000",
+                "section": "Lesson 04 - Festive Shoot + Colour Variants"
+              },
+              {
+                "rank": 6,
+                "score": "2.3041",
+                "course_id": "6d0000000000000000000000",
+                "section": "L03 Hands close-up"
+              }
+            ],
+            "selected_exact_prompt_template_id": "",
+            "provider_model_path": "built-in-course-guide"
+          }
+        }
+      ],
+      "skipped": true,
+      "skipReason": "turn 1: expected fal-openrouter provider, got built-in-course-guide",
+      "startedAt": "2026-10-14T12:25:24.816Z",
+      "completedAt": "2026-10-14T12:25:24.818Z"
+    },
+    {
+      "id": "ppads_conv_005",
+      "category": "multi_turn_hindi",
+      "turns": [
+        {
+          "user": "मेरा product video में logo blur हो रहा है।",
+          "answer": "AI Product Photoshoot & Ads: Create AI product photos, product videos, UGC-style videos, and honest ad assets. Lessons include Lesson 01 - Course Intro, Lesson 02 - Phone Photo Se Studio Photo, Lesson 03 - Model Ke Saath Product, Lesson 04 - Festive Shoot + Colour Variants.",
+          "provider": "built-in-course-guide",
+          "statusCode": 200,
+          "skipped": true,
+          "skipReason": "Expected fal-openrouter provider, got built-in-course-guide",
+          "debug": {
+            "conversation_id": "live-ppads_conv_005",
+            "request_active_course_id": "6d0000000000000000000000",
+            "resolved_active_course_id": "6d0000000000000000000000",
+            "current_topic": "",
+            "current_intent": "",
+            "rewritten_retrieval_query": "मेरा product video में logo blur हो रहा है।",
+            "retrieved_chunk_ids": [
+              "ai-product-photoshoot-ads:SKILLOMATE                                                                  Chatbot Knowledge Base",
+              "ai-product-photoshoot-ads:L07 UGC 2",
+              "ai-product-photoshoot-ads:L07 UGC 1",
+              "ai-product-photoshoot-ads:Lesson 06 - Photo Se Product Video",
+              "ai-product-photoshoot-ads:L06 Push-in",
+              "ai-product-photoshoot-ads:L03 Hands close-up"
+            ],
+            "retrieved_course_ids": [
+              "6d0000000000000000000000"
+            ],
+            "retrieved_course_names": [
+              "AI Product Photoshoot & Ads"
+            ],
+            "scores_ranks": [
+              {
+                "rank": 1,
+                "score": "3.7679",
+                "course_id": "6d0000000000000000000000",
+                "section": "SKILLOMATE                                                                  Chatbot Knowledge Base"
+              },
+              {
+                "rank": 2,
+                "score": "3.0767",
+                "course_id": "6d0000000000000000000000",
+                "section": "L07 UGC 2"
+              },
+              {
+                "rank": 3,
+                "score": "2.1026",
+                "course_id": "6d0000000000000000000000",
+                "section": "L07 UGC 1"
+              },
+              {
+                "rank": 4,
+                "score": "1.8028",
+                "course_id": "6d0000000000000000000000",
+                "section": "Lesson 06 - Photo Se Product Video"
+              },
+              {
+                "rank": 5,
+                "score": "1.7711",
+                "course_id": "6d0000000000000000000000",
+                "section": "L06 Push-in"
+              },
+              {
+                "rank": 6,
+                "score": "1.7635",
+                "course_id": "6d0000000000000000000000",
+                "section": "L03 Hands close-up"
+              }
+            ],
+            "selected_exact_prompt_template_id": "",
+            "provider_model_path": "built-in-course-guide"
+          }
+        }
+      ],
+      "skipped": true,
+      "skipReason": "turn 1: expected fal-openrouter provider, got built-in-course-guide",
+      "startedAt": "2026-10-14T12:25:24.818Z",
+      "completedAt": "2026-10-14T12:25:24.820Z"
+    },
+    {
+      "id": "ppads_conv_006",
+      "category": "multi_turn_ethics",
+      "turns": [
+        {
+          "user": "Can I make the AI woman say she personally loved my product?",
+          "answer": "AI Product Photoshoot & Ads: Create AI product photos, product videos, UGC-style videos, and honest ad assets. Lessons include Lesson 01 - Course Intro, Lesson 02 - Phone Photo Se Studio Photo, Lesson 03 - Model Ke Saath Product, Lesson 04 - Festive Shoot + Colour Variants.",
+          "provider": "built-in-course-guide",
+          "statusCode": 200,
+          "skipped": true,
+          "skipReason": "Expected fal-openrouter provider, got built-in-course-guide",
+          "debug": {
+            "conversation_id": "live-ppads_conv_006",
+            "request_active_course_id": "6d0000000000000000000000",
+            "resolved_active_course_id": "6d0000000000000000000000",
+            "current_topic": "",
+            "current_intent": "",
+            "rewritten_retrieval_query": "Can I make the AI woman say she personally loved my product?",
+            "retrieved_chunk_ids": [
+              "ai-product-photoshoot-ads:L07 UGC 2",
+              "ai-product-photoshoot-ads:L07 UGC 1",
+              "ai-product-photoshoot-ads:L03 Showing to camera",
+              "ai-product-photoshoot-ads:L03 Desk",
+              "ai-product-photoshoot-ads:L03 Hands close-up",
+              "ai-product-photoshoot-ads:SKILLOMATE                                                                  Chatbot Knowledge Base"
+            ],
+            "retrieved_course_ids": [
+              "6d0000000000000000000000"
+            ],
+            "retrieved_course_names": [
+              "AI Product Photoshoot & Ads"
+            ],
+            "scores_ranks": [
+              {
+                "rank": 1,
+                "score": "3.1646",
+                "course_id": "6d0000000000000000000000",
+                "section": "L07 UGC 2"
+              },
+              {
+                "rank": 2,
+                "score": "3.1485",
+                "course_id": "6d0000000000000000000000",
+                "section": "L07 UGC 1"
+              },
+              {
+                "rank": 3,
+                "score": "2.6432",
+                "course_id": "6d0000000000000000000000",
+                "section": "L03 Showing to camera"
+              },
+              {
+                "rank": 4,
+                "score": "2.6407",
+                "course_id": "6d0000000000000000000000",
+                "section": "L03 Desk"
+              },
+              {
+                "rank": 5,
+                "score": "2.2386",
+                "course_id": "6d0000000000000000000000",
+                "section": "L03 Hands close-up"
+              },
+              {
+                "rank": 6,
+                "score": "2.1004",
+                "course_id": "6d0000000000000000000000",
+                "section": "SKILLOMATE                                                                  Chatbot Knowledge Base"
+              }
+            ],
+            "selected_exact_prompt_template_id": "",
+            "provider_model_path": "built-in-course-guide"
+          }
+        }
+      ],
+      "skipped": true,
+      "skipReason": "turn 1: expected fal-openrouter provider, got built-in-course-guide",
+      "startedAt": "2026-10-14T12:25:24.821Z",
+      "completedAt": "2026-10-14T12:25:24.822Z"
+    },
+    {
+      "id": "ppads_conv_007",
+      "category": "multi_turn_course_isolation",
+      "turns": [
+        {
+          "user": "Is this the AI Filmmaking course?",
+          "answer": "AI Product Photoshoot & Ads: Create AI product photos, product videos, UGC-style videos, and honest ad assets. Lessons include Lesson 01 - Course Intro, Lesson 02 - Phone Photo Se Studio Photo, Lesson 03 - Model Ke Saath Product, Lesson 04 - Festive Shoot + Colour Variants.",
+          "provider": "built-in-course-guide",
+          "statusCode": 200,
+          "skipped": true,
+          "skipReason": "Expected fal-openrouter provider, got built-in-course-guide",
+          "debug": {
+            "conversation_id": "live-ppads_conv_007",
+            "request_active_course_id": "6d0000000000000000000000",
+            "resolved_active_course_id": "6d0000000000000000000000",
+            "current_topic": "",
+            "current_intent": "",
+            "rewritten_retrieval_query": "Is this the AI Filmmaking course?",
+            "retrieved_chunk_ids": [
+              "ai-product-photoshoot-ads:SKILLOMATE                                                                  Chatbot Knowledge Base",
+              "ai-product-photoshoot-ads:Lesson 01 - Course Intro",
+              "ai-product-photoshoot-ads:L07 UGC 2",
+              "ai-product-photoshoot-ads:Course overview"
+            ],
+            "retrieved_course_ids": [
+              "6d0000000000000000000000"
+            ],
+            "retrieved_course_names": [
+              "AI Product Photoshoot & Ads"
+            ],
+            "scores_ranks": [
+              {
+                "rank": 1,
+                "score": "1.3301",
+                "course_id": "6d0000000000000000000000",
+                "section": "SKILLOMATE                                                                  Chatbot Knowledge Base"
+              },
+              {
+                "rank": 2,
+                "score": "1.1516",
+                "course_id": "6d0000000000000000000000",
+                "section": "Lesson 01 - Course Intro"
+              },
+              {
+                "rank": 3,
+                "score": "0.8891",
+                "course_id": "6d0000000000000000000000",
+                "section": "L07 UGC 2"
+              },
+              {
+                "rank": 4,
+                "score": "0.7171",
+                "course_id": "6d0000000000000000000000",
+                "section": "Course overview"
+              }
+            ],
+            "selected_exact_prompt_template_id": "",
+            "provider_model_path": "built-in-course-guide"
+          }
+        }
+      ],
+      "skipped": true,
+      "skipReason": "turn 1: expected fal-openrouter provider, got built-in-course-guide",
+      "startedAt": "2026-10-14T12:25:24.823Z",
+      "completedAt": "2026-10-14T12:25:24.825Z"
+    },
+    {
+      "id": "ppads_conv_008",
+      "category": "multi_turn_out_of_scope_recovery",
+      "turns": [
+        {
+          "user": "Tell me today's stock market prediction.",
+          "answer": "AI Product Photoshoot & Ads: Create AI product photos, product videos, UGC-style videos, and honest ad assets. Lessons include Lesson 01 - Course Intro, Lesson 02 - Phone Photo Se Studio Photo, Lesson 03 - Model Ke Saath Product, Lesson 04 - Festive Shoot + Colour Variants.",
+          "provider": "built-in-course-guide",
+          "statusCode": 200,
+          "skipped": true,
+          "skipReason": "Expected fal-openrouter provider, got built-in-course-guide",
+          "debug": {
+            "conversation_id": "live-ppads_conv_008",
+            "request_active_course_id": "6d0000000000000000000000",
+            "resolved_active_course_id": "6d0000000000000000000000",
+            "current_topic": "",
+            "current_intent": "",
+            "rewritten_retrieval_query": "Tell me today's stock market prediction.",
+            "retrieved_chunk_ids": [],
+            "retrieved_course_ids": [],
+            "retrieved_course_names": [],
+            "scores_ranks": [],
+            "selected_exact_prompt_template_id": "",
+            "provider_model_path": "built-in-course-guide"
+          }
+        }
+      ],
+      "skipped": true,
+      "skipReason": "turn 1: expected fal-openrouter provider, got built-in-course-guide",
+      "startedAt": "2026-10-14T12:25:24.826Z",
+      "completedAt": "2026-10-14T12:25:24.827Z"
+    }
+  ]
+}

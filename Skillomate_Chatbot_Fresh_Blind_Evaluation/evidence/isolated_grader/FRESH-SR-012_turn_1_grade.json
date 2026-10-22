@@ -1,0 +1,361 @@
+{
+  "id": "FRESH-SR-012",
+  "turnIndex": 1,
+  "status": "UNTESTED",
+  "critical": false,
+  "suspectedCritical": false,
+  "rubricVersion": "phase14b-independent-v1",
+  "criteria": [
+    {
+      "criterion": "Explain reference photo to saved sheet workflow.",
+      "status": "UNTESTED",
+      "excerpts": [
+        "Lesson 07\n\nFlow में Video → Ingredients चुनें और चेहरा, character sheet व product sheet लगाएँ। कोर्स की सेटिंग्स: 9:16, 720p, 8 sec। कैमरा ही फोन है; फ्रेम में फोन न दिखे। सामान्य घरेलू कमरा रखें। L05 hook से छोटा संवाद देवनागरी हिंदी में लिखें। AI कलाकार को असली ग्राहक की समीक्षा की तरह न दिखाएँ।"
+      ],
+      "reason": "Fallback gives Hindi UGC workflow rather than English sheet creation. Necessary actual semantic explanation unavailable; current raw रेखा/tray request is preserved but not answered. Necessary actual provider response absent for this essential requirement; no fallback/model pass inferred."
+    }
+  ],
+  "dimensions": {
+    "grounding": "UNTESTED",
+    "facts": "UNTESTED",
+    "taskCompleteness": "UNTESTED",
+    "language": "UNTESTED",
+    "authorization": "PASS",
+    "isolation": "PASS",
+    "httpStatus": "PASS"
+  },
+  "requestedExactBodyChecks": [],
+  "supplementalExactBodyChecks": [],
+  "providerAvailability": {
+    "provider": "built-in-course-guide",
+    "outcome": {
+      "type": "provider_fallback",
+      "liveModelAnswer": false,
+      "providerStatus": "connection_error",
+      "responseIssue": null
+    },
+    "attempts": [
+      {
+        "index": 1,
+        "startedAt": "2026-10-16T11:19:02.885Z",
+        "requestSha256": "3f1fdaf42292f695ba6150172c654337812ec59197a60bac76d8415196fdd61a",
+        "promptModified": false,
+        "recordedFixture": false,
+        "error": {
+          "name": "Error",
+          "code": "PROVIDER_PAYLOAD_NOT_APPROVED"
+        },
+        "durationMs": 0,
+        "completedAt": "2026-10-16T11:19:02.885Z"
+      },
+      {
+        "index": 2,
+        "startedAt": "2026-10-16T11:19:02.986Z",
+        "requestSha256": "3f1fdaf42292f695ba6150172c654337812ec59197a60bac76d8415196fdd61a",
+        "promptModified": false,
+        "recordedFixture": false,
+        "error": {
+          "name": "Error",
+          "code": "PROVIDER_PAYLOAD_NOT_APPROVED"
+        },
+        "durationMs": 0,
+        "completedAt": "2026-10-16T11:19:02.986Z"
+      }
+    ],
+    "inferenceNecessaryForThisTurn": true,
+    "reason": "Actual configured provider requests blocked before external transport. No model/fixture response. Saved fallback cannot establish required semantic response."
+  },
+  "ownershipPayloadReview": {
+    "reviewed": true,
+    "actor": "A",
+    "actorId": "408f26baad28a76cc2814126",
+    "scopeInspection": {
+      "independentExplicitSelectedCourse": "6d0000000000000000000000",
+      "independentExpectedOwner": "6d0000000000000000000000",
+      "explicitUnknownScope": false,
+      "independentAuthAndEntitlement": true,
+      "requiresSemanticScopeAdjudication": false,
+      "protectedRetrievedSources": [
+        {
+          "id": "S1",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "L02 Dark Premium",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_2",
+          "lessonName": "L02 Dark Premium",
+          "contentType": "exact-template",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:exact-template:l02-dark-premium"
+        },
+        {
+          "id": "S2",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "Har photo mein product thoda alag",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_2",
+          "lessonName": "Har photo mein product thoda alag",
+          "contentType": "faq",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:faq:har-photo-mein-product-thoda-alag"
+        },
+        {
+          "id": "S3",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "UGC video",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_7",
+          "lessonName": "UGC video",
+          "contentType": "workflow",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:workflow:ugc-video"
+        },
+        {
+          "id": "S4",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "Product sheet banana",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_2",
+          "lessonName": "Product sheet banana",
+          "contentType": "workflow",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:workflow:product-sheet-banana"
+        },
+        {
+          "id": "S5",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "Model shots",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_3",
+          "lessonName": "Model shots",
+          "contentType": "workflow",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:workflow:model-shots"
+        },
+        {
+          "id": "S6",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "Colour variants",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_4",
+          "lessonName": "Colour variants",
+          "contentType": "workflow",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:workflow:colour-variants"
+        }
+      ],
+      "retrievalProductBodies": [
+        {
+          "heading": "Product sheet banana",
+          "contentType": "workflow",
+          "owner": "6d0000000000000000000000",
+          "sha256": "56922de78128c44d1321fa410072ad53637117feed928197c53c4a4c3f6438f2"
+        },
+        {
+          "heading": "Model shots",
+          "contentType": "workflow",
+          "owner": "6d0000000000000000000000",
+          "sha256": "7330ca2d85402e3d0891dd36150f2c0c1b8f1bf8cba3e6c5340c67dc0a6f3883"
+        },
+        {
+          "heading": "Colour variants",
+          "contentType": "workflow",
+          "owner": "6d0000000000000000000000",
+          "sha256": "18e1b2b3f176800a338d71e854d1e3bbf60300cb41c72ee6dbf391770243996c"
+        },
+        {
+          "heading": "UGC video",
+          "contentType": "workflow",
+          "owner": "6d0000000000000000000000",
+          "sha256": "0ddcd4cd92bef6253f0f689cb53e6540ce491d6a7657e509c0d314d47104d126"
+        },
+        {
+          "heading": "Har photo mein product thoda alag",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "9a8959739deebee30004ee75c9e9f8eea357ba859b480755d62a564e085597c6"
+        },
+        {
+          "heading": "L02 Dark Premium",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "f187754dabf74831c2447f233b1ae9f31fe764893f6e8388fac17451481c83da"
+        }
+      ],
+      "assembledContextProductBodies": [
+        {
+          "heading": "Product sheet banana",
+          "contentType": "workflow",
+          "owner": "6d0000000000000000000000",
+          "sha256": "56922de78128c44d1321fa410072ad53637117feed928197c53c4a4c3f6438f2"
+        },
+        {
+          "heading": "Model shots",
+          "contentType": "workflow",
+          "owner": "6d0000000000000000000000",
+          "sha256": "7330ca2d85402e3d0891dd36150f2c0c1b8f1bf8cba3e6c5340c67dc0a6f3883"
+        },
+        {
+          "heading": "Colour variants",
+          "contentType": "workflow",
+          "owner": "6d0000000000000000000000",
+          "sha256": "18e1b2b3f176800a338d71e854d1e3bbf60300cb41c72ee6dbf391770243996c"
+        },
+        {
+          "heading": "UGC video",
+          "contentType": "workflow",
+          "owner": "6d0000000000000000000000",
+          "sha256": "0ddcd4cd92bef6253f0f689cb53e6540ce491d6a7657e509c0d314d47104d126"
+        },
+        {
+          "heading": "Har photo mein product thoda alag",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "9a8959739deebee30004ee75c9e9f8eea357ba859b480755d62a564e085597c6"
+        },
+        {
+          "heading": "L02 Dark Premium",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "f187754dabf74831c2447f233b1ae9f31fe764893f6e8388fac17451481c83da"
+        }
+      ],
+      "assembledPayloads": [
+        {
+          "sha256": "3f1fdaf42292f695ba6150172c654337812ec59197a60bac76d8415196fdd61a",
+          "validation": "accepted",
+          "error": null,
+          "scope": {
+            "activeCourse": {
+              "_id": "6d0000000000000000000000",
+              "slug": "ai-product-photoshoot-ads"
+            },
+            "includeMaterials": true
+          },
+          "productBodies": [
+            {
+              "heading": "Product sheet banana",
+              "contentType": "workflow",
+              "owner": "6d0000000000000000000000",
+              "sha256": "56922de78128c44d1321fa410072ad53637117feed928197c53c4a4c3f6438f2"
+            },
+            {
+              "heading": "Model shots",
+              "contentType": "workflow",
+              "owner": "6d0000000000000000000000",
+              "sha256": "7330ca2d85402e3d0891dd36150f2c0c1b8f1bf8cba3e6c5340c67dc0a6f3883"
+            },
+            {
+              "heading": "Colour variants",
+              "contentType": "workflow",
+              "owner": "6d0000000000000000000000",
+              "sha256": "18e1b2b3f176800a338d71e854d1e3bbf60300cb41c72ee6dbf391770243996c"
+            },
+            {
+              "heading": "UGC video",
+              "contentType": "workflow",
+              "owner": "6d0000000000000000000000",
+              "sha256": "0ddcd4cd92bef6253f0f689cb53e6540ce491d6a7657e509c0d314d47104d126"
+            },
+            {
+              "heading": "Har photo mein product thoda alag",
+              "contentType": "faq",
+              "owner": "6d0000000000000000000000",
+              "sha256": "9a8959739deebee30004ee75c9e9f8eea357ba859b480755d62a564e085597c6"
+            },
+            {
+              "heading": "L02 Dark Premium",
+              "contentType": "exact-template",
+              "owner": "6d0000000000000000000000",
+              "sha256": "f187754dabf74831c2447f233b1ae9f31fe764893f6e8388fac17451481c83da"
+            }
+          ],
+          "messageCount": 2
+        }
+      ],
+      "providerAdapterProductBodies": [
+        {
+          "heading": "Product sheet banana",
+          "contentType": "workflow",
+          "owner": "6d0000000000000000000000",
+          "sha256": "56922de78128c44d1321fa410072ad53637117feed928197c53c4a4c3f6438f2"
+        },
+        {
+          "heading": "Model shots",
+          "contentType": "workflow",
+          "owner": "6d0000000000000000000000",
+          "sha256": "7330ca2d85402e3d0891dd36150f2c0c1b8f1bf8cba3e6c5340c67dc0a6f3883"
+        },
+        {
+          "heading": "Colour variants",
+          "contentType": "workflow",
+          "owner": "6d0000000000000000000000",
+          "sha256": "18e1b2b3f176800a338d71e854d1e3bbf60300cb41c72ee6dbf391770243996c"
+        },
+        {
+          "heading": "UGC video",
+          "contentType": "workflow",
+          "owner": "6d0000000000000000000000",
+          "sha256": "0ddcd4cd92bef6253f0f689cb53e6540ce491d6a7657e509c0d314d47104d126"
+        },
+        {
+          "heading": "Har photo mein product thoda alag",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "9a8959739deebee30004ee75c9e9f8eea357ba859b480755d62a564e085597c6"
+        },
+        {
+          "heading": "L02 Dark Premium",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "f187754dabf74831c2447f233b1ae9f31fe764893f6e8388fac17451481c83da"
+        }
+      ],
+      "responseProductBodies": [],
+      "noPayloadConstructed": false,
+      "blockedAdapterAttempts": 2,
+      "externalTransportAttempts": 0,
+      "potentialCriticalFindings": [],
+      "inspectionPerformed": true
+    },
+    "dbOperations": [
+      {
+        "model": "AiTutorSession",
+        "operation": "findOne",
+        "filter": {
+          "user": "408f26baad28a76cc2814126",
+          "course": "6d0000000000000000000000"
+        }
+      },
+      {
+        "model": "Course",
+        "operation": "find",
+        "filter": {
+          "status": "published",
+          "_id": "6d0000000000000000000000"
+        }
+      },
+      {
+        "model": "AiTutorSession",
+        "operation": "upsert",
+        "filter": {
+          "user": "408f26baad28a76cc2814126",
+          "course": "6d0000000000000000000000"
+        }
+      }
+    ],
+    "reason": "Six protected retrieval/context/adapter bodies owned by entitled selected6d0000000000000000000000. Full assembly reviewed with current own रेखा raw input/conversation, exact prior blocks and safe profile; no foreign actor/course material. DB actor408f26baad28a76cc2814126/course scoped. Both blocked provider requests equal reviewed assembly, no transport."
+  },
+  "gradedAt": "2026-10-16T11:19:13.039409+00:00"
+}

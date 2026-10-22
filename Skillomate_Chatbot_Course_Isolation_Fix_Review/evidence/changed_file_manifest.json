@@ -1,0 +1,37 @@
+[
+  {
+    "path": "edunex-b/services/aiTutorService.js",
+    "beforeSHA256": "fccbe1b9b160f2e7d092814b4499b5967f9ecaa54226b91738493954c5a459a5",
+    "afterSHA256": "547ca63794ebaa8bea69284d010e62c5f82deedccd31d8d16a9802520d2da147",
+    "linesAdded": 62,
+    "linesRemoved": 19
+  },
+  {
+    "path": "edunex-b/services/tutorKnowledge.js",
+    "beforeSHA256": "90efdc54ccc14d1b8746b50f699cc37a485b014ffe26b67ad976cb7546cfb6a7",
+    "afterSHA256": "b3999eaeb4e631c9049cf6e686d4470298e5317c900e29469e97103d3eef6753",
+    "linesAdded": 64,
+    "linesRemoved": 13
+  },
+  {
+    "path": "edunex-b/routes/ai.js",
+    "beforeSHA256": "d72d8bc900e629b80176ef5b9f6474019980741000039ebf329d50c04f29d00d",
+    "afterSHA256": "e514c48126d61574ed1599246e5680d9b32eb2d621305205be87b1beb34e0895",
+    "linesAdded": 13,
+    "linesRemoved": 4
+  },
+  {
+    "path": "edunex-b/tests/ai-tutor-fixture.cjs",
+    "beforeSHA256": "6478cd87f39509d65632ab1b6cf40b3d93e20424451ef7f0572df1dd1be300c3",
+    "afterSHA256": "a13cb7447ce79320ea5069c50aa16aff215517f0f959f0a65efa42108ab15173",
+    "linesAdded": 6,
+    "linesRemoved": 2
+  },
+  {
+    "path": "edunex-b/tests/tutor-course-isolation.test.cjs",
+    "beforeSHA256": null,
+    "afterSHA256": "5f1d4a4c539ec813735b8e8ab44dc3b7dfdf5f08008c897777b977589de18618",
+    "linesAdded": 203,
+    "linesRemoved": 0
+  }
+]

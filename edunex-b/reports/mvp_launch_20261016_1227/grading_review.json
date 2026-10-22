@@ -1,0 +1,19 @@
+{
+  "raw_grades_preserved": true,
+  "MVP-05": {
+    "classification": "expected-slot oracle error, not a confirmed approved-wording defect",
+    "evidence": "Input supplies “the lower hinge”; extraction preserves that part. Frozen expected body drops “the”. Actual body equals approved source with only the supplied part and colour inserted.",
+    "full_body_literal_substitution_verified": true,
+    "automatic_status_retained": "FAIL"
+  },
+  "MVP-14": {
+    "classification": "response specificity gap / finite keyword grader limitation",
+    "evidence": "The Hinglish answer provides 5–7 clear phone photos, Product Sheet workflow, result review, and reuse of the same reference. It does not explicitly name shape checkpoints.",
+    "automatic_status_retained": "FAIL",
+    "launch_risk": "Low functional risk; assess with live model responses and learner review."
+  },
+  "fixes": {
+    "MVP-18": "All three real HTTP turns now pass: new English switch replaces identity and clears old price/material.",
+    "MVP-09": "Comparison intent now delegates to provider; final generation remains UNTESTED until approved."
+  }
+}

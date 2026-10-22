@@ -1,0 +1,20 @@
+# Remaining issues and next validation
+
+Recorded: 2026-10-15T11:33:12+05:30. Implementation and local validation are complete. Stop here before any new live evaluation; no deployment, commit or push is part of this work.
+
+## Not established by this task
+
+1. **New live tutor quality is unmeasured.** The corrected 26/55 score concerns old answers. The 117 Node and 25 evaluator checks use fixtures. No 95% readiness, live language accuracy or live safety guarantee is claimed.
+2. **Provider incidents remain historically incomplete.** ppads_conv_003 and ppads_conv_006 have only fallback answers for turn 1 and no executed second turn. The saved evidence strongly suggests the old 25-second timeout, but raw upstream exceptions/status are unavailable. New bounded retries/diagnostics are locally tested, not measured against real latency, 429 behavior or provider billing.
+3. **Finite semantic evaluation.** V2 supports explicit course concepts, equivalent wording, Hindi/Hinglish translations and negation; it is not an unrestricted semantic judge. Unfamiliar paraphrases, complex negation, mixed quoted narrative or hidden contradictory instructions may require independent human review. There is no model-assisted judging in this task. Do not assume all remaining historical failures are definitive without review, or loosen valid requirements to reach a target score.
+4. **Conservative response guards.** Local template rendering is exact and entitlement-gated; selected workflows/FAQs use source-linked translations. Creative provider outputs still require future live scrutiny. The factual-benefit and endorsement detectors cover known forms, not every possible invented attribute or subtle testimonial. They can conservatively replace an answer rather than complete a requested creative deliverable; the outcome explicitly identifies that replacement. A supplied authentic quote is not automatically verified as an authentic customer experience.
+5. **Ambiguous details and extended context.** Only explicit user-supplied product/part/colour/gender fields are substituted. Unknown identity, clothing or dialogue fields remain labeled editable. Unusual product-declaration grammar, translated template aliases outside the supported concepts and references beyond the existing 12-message history window may need clarification. No new durable entity database was added.
+6. **Translations need instructor review.** guidance.json contains source-linked English/Hindi/Hinglish translations authored in this change. The original transcript is intact. An instructor should review wording, lesson associations and the typed workflow/FAQ metadata before production rollout. Vendor settings are recorded course facts, not newly verified current specifications.
+7. **Historical attribution remains limited.** ppads_038 and ppads_043 are failed answers whose original retrieval-versus-model cause remains inconclusive because full historical excerpts/request bodies and an immutable code snapshot were not retained. New stable chunk/source/translation hashes improve future traceability; no historical payload was invented.
+8. **No broad deployment/client validation.** The earlier-course and mobile compatibility checks passed locally, but no production, AWS, browser or app-store state was touched or exercised. Shared provider retry behavior is bounded to the original total deadline and can incur an extra attempted call during future live use; it has not been live-tested here.
+
+## Proposed next action, only after approval
+
+Run an authorized fresh live evaluation with the same 55 cases and a small held-out paraphrase/product set. Capture code/config/knowledge/evaluator hashes, first-attempt versus eventual outcomes, complete safe source provenance and provider diagnostics. Review all critical safety, language, exact-template and course-isolation cases independently. Explicitly retry the two previously unexecuted conversations. Compare new behavior against the corrected historical rubric, without changing historical inputs.
+
+This document is a recommendation, not authorization to run that evaluation. No new provider request has been made.

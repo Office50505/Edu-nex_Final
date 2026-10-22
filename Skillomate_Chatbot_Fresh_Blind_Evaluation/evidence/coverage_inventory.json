@@ -1,0 +1,37 @@
+{
+  "generatedAt": "2026-10-16T10:58:06.985797+00:00",
+  "descriptiveOnlyNoCriteriaChange": true,
+  "caseAccessModes": {
+    "active": 115,
+    "inactive": 4,
+    "expired": 1
+  },
+  "caseAuthModes": {
+    "valid": 116,
+    "missing": 1,
+    "invalid": 1,
+    "expired": 1,
+    "invalid_session": 1
+  },
+  "turnSelectedCourses": {
+    "product": 149,
+    "other": 1,
+    "unknown": 2,
+    "missing": 1
+  },
+  "turnRequestLanguages": {
+    "english": 104,
+    "hinglish": 21,
+    "hindi": 26,
+    "none": 2
+  },
+  "multiTurnCaseCount": 29,
+  "deletionTurns": 2,
+  "explicitCrossCourseTransitionCases": [],
+  "limitations": [
+    "Only two published synthetic courses and one unknown-course selector are modeled.",
+    "Global active/inactive/expired subscription fixtures; no course-purchase-only or limited-trial entitlement scenario.",
+    "No same-conversation transition between two explicit distinct course selectors in the frozen set. Cross-course requests/comparison and source/payload ownership checks are covered; full switching matrix is not.",
+    "These coverage limitations do not alter frozen case outcomes or thresholds."
+  ]
+}

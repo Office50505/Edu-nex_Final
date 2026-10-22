@@ -1,0 +1,73 @@
+{
+  "id": "FRESH-SR-003",
+  "category": "state_routing_edges",
+  "turnIndex": 2,
+  "trace": {
+    "turn": 2,
+    "request": {
+      "message": "",
+      "history": [
+        {
+          "role": "user",
+          "content": "My “Moss” pouch is olive linen; explain a studio shot."
+        },
+        {
+          "role": "assistant",
+          "content": "Lesson 07\n\nUse “normal home room, handheld look, not a studio, not a polished ad”."
+        }
+      ],
+      "debugAi": true,
+      "assistantName": "Skillomate AI",
+      "pagePath": "/courses/ai-product-photoshoot-ads",
+      "courseId": "6d0000000000000000000000",
+      "conversationId": "edge-delete"
+    },
+    "syntheticActor": "A",
+    "syntheticActorId": "bb7eb2da35cf503ab5fb630a",
+    "authMode": "valid",
+    "access": "active",
+    "statusCode": 200,
+    "response": {
+      "success": true,
+      "deletedCount": 1
+    },
+    "error": null,
+    "latencyMs": 5,
+    "retrievalObservations": [],
+    "contextObservations": [],
+    "payloadObservations": [],
+    "providerRequests": [],
+    "applicationLogs": [],
+    "dbOperations": [
+      {
+        "model": "AiTutorSession",
+        "operation": "deleteMany",
+        "filter": {
+          "user": "bb7eb2da35cf503ab5fb630a"
+        },
+        "count": 1
+      }
+    ],
+    "persistedSessions": [],
+    "transport": "Actual unmodified Express /api/ai pipeline and compatible JWT auth; synthetic models and memory sessions",
+    "externalPromptModification": false,
+    "scopeInspection": {
+      "independentExplicitSelectedCourse": "6d0000000000000000000000",
+      "independentExpectedOwner": "6d0000000000000000000000",
+      "explicitUnknownScope": false,
+      "independentAuthAndEntitlement": true,
+      "requiresSemanticScopeAdjudication": false,
+      "protectedRetrievedSources": [],
+      "retrievalProductBodies": [],
+      "assembledContextProductBodies": [],
+      "assembledPayloads": [],
+      "providerAdapterProductBodies": [],
+      "responseProductBodies": [],
+      "noPayloadConstructed": true,
+      "blockedAdapterAttempts": 0,
+      "externalTransportAttempts": 0,
+      "potentialCriticalFindings": [],
+      "inspectionPerformed": true
+    }
+  }
+}

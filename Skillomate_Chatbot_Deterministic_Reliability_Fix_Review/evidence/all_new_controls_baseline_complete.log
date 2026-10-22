@@ -1,0 +1,2685 @@
+[nex-ai-debug] {"conversation_id":"","request_active_course_id":"6d0000000000000000000000","resolved_active_course_id":"6d0000000000000000000000","current_topic":"","current_intent":"","rewritten_retrieval_query":"Plan the video arrangement using my existing clips.","retrieved_chunk_ids":[],"retrieved_chunk_hashes":[],"retrieved_source_hashes":[],"retrieved_translation_hashes":[],"retrieved_course_ids":[],"retrieved_course_names":[],"scores_ranks":[],"selected_exact_prompt_template_id":"","provider_model_path":"skillomate-plan-facts"}
+[nex-ai-debug] {"conversation_id":"","request_active_course_id":"6d0000000000000000000000","resolved_active_course_id":"6d0000000000000000000000","current_topic":"","current_intent":"","rewritten_retrieval_query":"Mere liye pehle photos ka order samjhao.","retrieved_chunk_ids":[],"retrieved_chunk_hashes":[],"retrieved_source_hashes":[],"retrieved_translation_hashes":[],"retrieved_course_ids":[],"retrieved_course_names":[],"scores_ranks":[],"selected_exact_prompt_template_id":"","provider_model_path":"skillomate-learner-facts"}
+[nex-ai-debug] {"conversation_id":"","request_active_course_id":"6d0000000000000000000000","resolved_active_course_id":"6d0000000000000000000000","current_topic":"","current_intent":"","rewritten_retrieval_query":"My name for this item is “Opal”. Write a caption.","retrieved_chunk_ids":[],"retrieved_chunk_hashes":[],"retrieved_source_hashes":[],"retrieved_translation_hashes":[],"retrieved_course_ids":[],"retrieved_course_names":[],"scores_ranks":[],"selected_exact_prompt_template_id":"","provider_model_path":"skillomate-learner-facts"}
+[nex-ai-debug] {"conversation_id":"","request_active_course_id":"6d0000000000000000000000","resolved_active_course_id":"6d0000000000000000000000","current_topic":"","current_intent":"","rewritten_retrieval_query":"A comment says “my paid order”; explain how to show that label clearly.","retrieved_chunk_ids":[],"retrieved_chunk_hashes":[],"retrieved_source_hashes":[],"retrieved_translation_hashes":[],"retrieved_course_ids":[],"retrieved_course_names":[],"scores_ranks":[],"selected_exact_prompt_template_id":"","provider_model_path":"skillomate-learner-facts"}
+[nex-ai-debug] {"conversation_id":"","request_active_course_id":"6d0000000000000000000000","resolved_active_course_id":"6d0000000000000000000000","current_topic":"","current_intent":"","rewritten_retrieval_query":"What was my last payment and when does my subscription expire?","retrieved_chunk_ids":[],"retrieved_chunk_hashes":[],"retrieved_source_hashes":[],"retrieved_translation_hashes":[],"retrieved_course_ids":[],"retrieved_course_names":[],"scores_ranks":[],"selected_exact_prompt_template_id":"","provider_model_path":"skillomate-learner-facts"}
+[nex-ai-debug] {"conversation_id":"","request_active_course_id":"6d0000000000000000000000","resolved_active_course_id":"6d0000000000000000000000","current_topic":"","current_intent":"","rewritten_retrieval_query":"Access inactive है। UGC 2 का पूरा मूल टेक्स्ट हिंदी में दीजिए।","retrieved_chunk_ids":[],"retrieved_chunk_hashes":[],"retrieved_source_hashes":[],"retrieved_translation_hashes":[],"retrieved_course_ids":[],"retrieved_course_names":[],"scores_ranks":[],"selected_exact_prompt_template_id":"","provider_model_path":"skillomate-plan-facts"}
+[nex-ai-debug] {"conversation_id":"","request_active_course_id":"6d0000000000000000000000","resolved_active_course_id":"6d0000000000000000000000","current_topic":"","current_intent":"","rewritten_retrieval_query":"What was my last payment? Reply in Hindi.","retrieved_chunk_ids":[],"retrieved_chunk_hashes":[],"retrieved_source_hashes":[],"retrieved_translation_hashes":[],"retrieved_course_ids":[],"retrieved_course_names":[],"scores_ranks":[],"selected_exact_prompt_template_id":"","provider_model_path":"skillomate-learner-facts"}
+[nex-ai-debug] {"conversation_id":"","request_active_course_id":"6d0000000000000000000000","resolved_active_course_id":"6d0000000000000000000000","current_topic":"","current_intent":"","rewritten_retrieval_query":"Explain the Skillomate subscription plan price in Hindi.","retrieved_chunk_ids":[],"retrieved_chunk_hashes":[],"retrieved_source_hashes":[],"retrieved_translation_hashes":[],"retrieved_course_ids":[],"retrieved_course_names":[],"scores_ranks":[],"selected_exact_prompt_template_id":"","provider_model_path":"skillomate-plan-facts"}
+(node:13381) [MONGOOSE] Warning: Mongoose: `Document.prototype.validateSync()` is deprecated and will be removed in Mongoose 10. Use `Document.prototype.validate()` instead.
+(Use `node --trace-warnings ...` to show where the warning was created)
+✖ reliability raw copy L02 Product Sheet (27.412583ms)
+✖ reliability explicit fill L02 Product Sheet (41.864209ms)
+✖ reliability raw copy L02 White Studio (1.734709ms)
+✖ reliability explicit fill L02 White Studio (1.269292ms)
+✖ reliability raw copy L02 Lifestyle (1.458833ms)
+✖ reliability explicit fill L02 Lifestyle (1.026416ms)
+✖ reliability raw copy L02 Dark Premium (1.14675ms)
+✖ reliability explicit fill L02 Dark Premium (0.990834ms)
+✖ reliability raw copy L03 Character Sheet (bonus) (1.254958ms)
+✖ reliability explicit fill L03 Character Sheet (bonus) (1.325625ms)
+✖ reliability raw copy L03 Hands close-up (1.098ms)
+✖ reliability explicit fill L03 Hands close-up (1.010833ms)
+✖ reliability raw copy L03 Desk (1.101ms)
+✖ reliability explicit fill L03 Desk (1.083167ms)
+✖ reliability raw copy L03 Showing to camera (0.975625ms)
+✖ reliability explicit fill L03 Showing to camera (1.0335ms)
+✖ reliability raw copy L04 Diwali (1.128084ms)
+✖ reliability explicit fill L04 Diwali (0.947416ms)
+✖ reliability raw copy L04 Wedding Gift (1.083125ms)
+✖ reliability explicit fill L04 Wedding Gift (0.918833ms)
+✖ reliability raw copy L04 Colour Variant Sheet (0.962625ms)
+✖ reliability explicit fill L04 Colour Variant Sheet (1.077875ms)
+✖ reliability raw copy L05 Step 1 Brief (0.911708ms)
+✖ reliability explicit fill L05 Step 1 Brief (0.875333ms)
+✖ reliability raw copy L05 Step 2 Hooks + Script (0.953625ms)
+✖ reliability explicit fill L05 Step 2 Hooks + Script (0.908084ms)
+✖ reliability raw copy L05 Step 3 Flow prompts (1.703958ms)
+✖ reliability explicit fill L05 Step 3 Flow prompts (1.792583ms)
+✖ reliability raw copy L06 Push-in (0.974625ms)
+✖ reliability explicit fill L06 Push-in (0.932209ms)
+✖ reliability raw copy L06 Arc (1.025292ms)
+✖ reliability explicit fill L06 Arc (0.88475ms)
+✖ reliability raw copy L06 Light Sweep (0.910417ms)
+✖ reliability explicit fill L06 Light Sweep (0.995833ms)
+✖ reliability raw copy L07 UGC 1 (0.993417ms)
+✖ reliability explicit fill L07 UGC 1 (0.901583ms)
+✖ reliability raw copy L07 UGC 2 (0.961125ms)
+✖ reliability explicit fill L07 UGC 2 (0.883042ms)
+✖ reliability unified declaration My product is a green steel tea caddy called “Élan”. (0.326375ms)
+✖ reliability unified declaration “किरण” is my blue linen roll. (0.1065ms)
+✖ reliability unified declaration I sell a pouch named “Mélodie”. (0.106167ms)
+✖ reliability unified declaration Mera product naam “नील Roll” hai. (2.307125ms)
+✔ reliability unified declaration हमारी वस्तु का नाम सूती धागा पेटी है। (0.165083ms)
+✖ reliability unified declaration The label says “स्वर”; it is a glass jar. (0.121166ms)
+✖ reliability unified declaration [PRODUCT] = frosted glass flask. (0.094375ms)
+✖ reliability no phantom identity For my archive I need the original L02 White Studio text. (0.534417ms)
+✔ reliability no phantom identity Copy L07 UGC 1 for a text comparison exercise. (0.083834ms)
+✔ reliability no phantom identity Do not use the old name. (0.065834ms)
+✖ reliability atomic replace Replace it completely with a stone bead tray called “Dune”. (0.301084ms)
+✖ reliability atomic replace Forget the old product. New product: “Dune”, a stone bead tray. (0.24425ms)
+✖ reliability atomic replace Ab naya product “Dune” hai. (0.17675ms)
+✖ reliability atomic replace अब नया उत्पाद “Dune” है। (0.156959ms)
+✖ reliability rename keeps item facts; correction replaces field; reset clears facts (0.172417ms)
+✖ reliability unresolved explicit new product cannot keep stale identity (0.156583ms)
+✖ reliability natural attributes and canonical price retain constraints (0.147792ms)
+✔ reliability recolour part independently The colour of the lower clasp is to be changed to muted coral. (0.391334ms)
+✔ reliability recolour part independently केवल निचले ढक्कन का रंग गहरा बैंगनी करें। (0.274625ms)
+✖ reliability language My product is “नील”. English please. (0.235583ms)
+✖ reliability language My product is “नील”. Write a caption. (0.738542ms)
+✖ reliability language Mera product “Nila” hai. Language English kar do. (0.133459ms)
+✔ reliability language My product is a reed pot. Explain in Hinglish, with a short Hindi dialogue. (0.097917ms)
+✔ reliability language हिंदी में समझाइए। (0.074708ms)
+✖ reliability Hindi modifiers respect explicit hook count (3.921333ms)
+✖ reliability synthesis has model plan Write an original scene prompt for my reed pen roll in a station café. (2.861916ms)
+✖ reliability synthesis has model plan Mera product cotton spool hai. Naya original prompt likho; saved template repeat mat karo. (1.437667ms)
+✖ reliability synthesis has model plan Explain which movement to choose for a delicate still object and why. (1.034375ms)
+✖ reliability synthesis has model plan Plan a video edit from existing clips; explain the order and the tradeoffs. (1.169834ms)
+✔ reliability explanation is not source copy Explain why L02 White Studio is useful. (1.010084ms)
+✔ reliability explanation is not source copy Explain the complete L02 White Studio text. (0.872833ms)
+✔ reliability explanation is not source copy What does L05 Step 2 Hooks + Script mean? (0.936125ms)
+✖ reliability all supplied typed placeholders only literal substitution (0.986166ms)
+✖ reliability product questions avoid account hijack Plan the video arrangement using my existing clips. (63.222916ms)
+✖ reliability product questions avoid account hijack Mere liye pehle photos ka order samjhao. (2.092833ms)
+✖ reliability product questions avoid account hijack My name for this item is “Opal”. Write a caption. (3.589458ms)
+✖ reliability product questions avoid account hijack A comment says “my paid order”; explain how to show that label clearly. (1.05225ms)
+✔ reliability real personal account question still uses masked account route (1.154959ms)
+✖ reliability every allowlisted supplied slot L02 Product Sheet (1.648541ms)
+✖ reliability every allowlisted supplied slot L02 White Studio (1.19075ms)
+✖ reliability every allowlisted supplied slot L02 Lifestyle (1.226041ms)
+✖ reliability every allowlisted supplied slot L02 Dark Premium (1.27325ms)
+✖ reliability every allowlisted supplied slot L03 Character Sheet (bonus) (1.404625ms)
+✖ reliability every allowlisted supplied slot L03 Hands close-up (1.613708ms)
+✖ reliability every allowlisted supplied slot L03 Desk (1.204792ms)
+✖ reliability every allowlisted supplied slot L03 Showing to camera (1.249833ms)
+✖ reliability every allowlisted supplied slot L04 Diwali (1.557208ms)
+✖ reliability every allowlisted supplied slot L04 Wedding Gift (1.113708ms)
+✖ reliability every allowlisted supplied slot L04 Colour Variant Sheet (1.248167ms)
+✖ reliability every allowlisted supplied slot L05 Step 1 Brief (1.381167ms)
+✖ reliability every allowlisted supplied slot L05 Step 2 Hooks + Script (1.048833ms)
+✖ reliability every allowlisted supplied slot L05 Step 3 Flow prompts (1.338291ms)
+✖ reliability every allowlisted supplied slot L06 Push-in (1.090958ms)
+✖ reliability every allowlisted supplied slot L06 Arc (1.066958ms)
+✖ reliability every allowlisted supplied slot L06 Light Sweep (1.174916ms)
+✖ reliability every allowlisted supplied slot L07 UGC 1 (1.247042ms)
+✖ reliability every allowlisted supplied slot L07 UGC 2 (1.218ms)
+✔ reliability negative supplied constraints cannot authorize positive feature claims (2.84125ms)
+✖ reliability local contract rejects unsupported deliverables and keeps valid short FAQ (1.120667ms)
+✖ reliability per-deliverable language differs from explanation (1.064917ms)
+✖ reliability large explicit count delegates without silently truncating (1.318ms)
+✖ reliability multilingual rename Product ka naam “Dawn” rakho. (0.236583ms)
+✖ reliability multilingual rename वस्तु का नाम “Dawn” रखें। (0.156875ms)
+✖ reliability Hindi field correction does not retain obsolete material (0.446084ms)
+✖ reliability name-first grammar My “Loom” roll is blue linen with 12 pockets, ₹310. (0.13575ms)
+✖ reliability name-first grammar “Auréole” is a grey wool mat. (0.095167ms)
+✖ reliability name-first grammar “राग” मेरा लाल cotton pouch है। (0.102083ms)
+✖ reliability name-first grammar The label on my tin says “Līn”. (0.116208ms)
+✖ reliability new quoted product before colon clears obsolete facts (0.173208ms)
+✖ reliability facts before same-turn replacement cannot leak to new product (0.278375ms)
+✖ reliability quoted description correction replaces old quantity (0.223708ms)
+✖ reliability two English hooks in Hindi explanation keep count and language (1.447917ms)
+✖ reliability inactive learner gets legitimate Hindi access steps without template bodies (1.712125ms)
+✖ reliability honest alternative cards preserve refusal and supplied facts (1.304ms)
+✖ reliability extended template facts survive existing strict persistence schema (7.255209ms)
+✖ reliability colon replacement keeps new quoted identity (0.261583ms)
+✖ reliability comparison cannot collapse into one troubleshooting FAQ (1.880583ms)
+✖ reliability purpose clauses do not establish a product (0.127459ms)
+✖ reliability mixed demo voice uses explicit dialogue language (1.380584ms)
+✖ reliability verified product course account locale What was my last payment? Reply in Hindi. (0.929625ms)
+✖ reliability verified product course account locale Explain the Skillomate subscription plan price in Hindi. (0.731792ms)
+✖ reliability explicitly limited fill cannot change other known slots (1.080542ms)
+✔ reliability brief as hook adjective is not a buyer-brief deliverable (1.009208ms)
+✖ reliability called quoted name outranks descriptive subject (0.156042ms)
+✖ reliability directives after supplied object stay outside identity (0.144166ms)
+ℹ tests 123
+ℹ suites 0
+ℹ pass 13
+ℹ fail 110
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 318.448458
+
+✖ failing tests:
+
+test at tests/product-tutor-deterministic-reliability.test.cjs:11:2
+✖ reliability raw copy L02 Product Sheet (27.412583ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + undefined
+  - 'Use all the uploaded photos of this [PRODUCT]. Create a clean product reference sheet on a plain white background showing the exact same [PRODUCT] in four views arranged in a neat grid: front view, top-down view, side view and three-quarter angle view. Keep the [PRODUCT] exactly the same in every view — same shape, same colour, same details, same text and logo, do not redesign it. Even soft studio lighting, no extra objects, no text labels, realistic product photography.'
+  
+      at TestContext.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-deterministic-reliability.test.cjs:11:241)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.start (node:internal/test_runner/test:1257:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: 'Use all the uploaded photos of this [PRODUCT]. Create a clean product reference sheet on a plain white background showing the exact same [PRODUCT] in four views arranged in a neat grid: front view, top-down view, side view and three-quarter angle view. Keep the [PRODUCT] exactly the same in every view — same shape, same colour, same details, same text and logo, do not redesign it. Even soft studio lighting, no extra objects, no text labels, realistic product photography.',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/product-tutor-deterministic-reliability.test.cjs:12:2
+✖ reliability explicit fill L02 Product Sheet (41.864209ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + undefined
+  - 'Use all the uploaded photos of this मृदु Bobbin. Create a clean product reference sheet on a plain white background showing the exact same मृदु Bobbin in four views arranged in a neat grid: front view, top-down view, side view and three-quarter angle view. Keep the मृदु Bobbin exactly the same in every view — same shape, same colour, same details, same text and logo, do not redesign it. Even soft studio lighting, no extra objects, no text labels, realistic product photography.'
+  
+      at TestContext.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-deterministic-reliability.test.cjs:12:172)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: 'Use all the uploaded photos of this मृदु Bobbin. Create a clean product reference sheet on a plain white background showing the exact same मृदु Bobbin in four views arranged in a neat grid: front view, top-down view, side view and three-quarter angle view. Keep the मृदु Bobbin exactly the same in every view — same shape, same colour, same details, same text and logo, do not redesign it. Even soft studio lighting, no extra objects, no text labels, realistic product photography.',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/product-tutor-deterministic-reliability.test.cjs:11:2
+✖ reliability raw copy L02 White Studio (1.734709ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + undefined
+  - 'Use the uploaded product sheet as the reference. Keep the [PRODUCT] exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a clean seamless white background, soft even studio lighting, a soft natural shadow under it, slight top-down angle, sharp focus, realistic product photography.'
+  
+      at TestContext.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-deterministic-reliability.test.cjs:11:241)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: 'Use the uploaded product sheet as the reference. Keep the [PRODUCT] exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a clean seamless white background, soft even studio lighting, a soft natural shadow under it, slight top-down angle, sharp focus, realistic product photography.',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/product-tutor-deterministic-reliability.test.cjs:12:2
+✖ reliability explicit fill L02 White Studio (1.269292ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + undefined
+  - 'Use the uploaded product sheet as the reference. Keep the मृदु Bobbin exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a clean seamless white background, soft even studio lighting, a soft natural shadow under it, slight top-down angle, sharp focus, realistic product photography.'
+  
+      at TestContext.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-deterministic-reliability.test.cjs:12:172)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: 'Use the uploaded product sheet as the reference. Keep the मृदु Bobbin exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a clean seamless white background, soft even studio lighting, a soft natural shadow under it, slight top-down angle, sharp focus, realistic product photography.',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/product-tutor-deterministic-reliability.test.cjs:11:2
+✖ reliability raw copy L02 Lifestyle (1.458833ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + undefined
+  - 'Use the uploaded product sheet as the reference. Keep the [PRODUCT] exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a warm wooden desk next to a white coffee mug and a small green plant, soft morning window light from the left, shallow depth of field, realistic lifestyle product photography.'
+  
+      at TestContext.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-deterministic-reliability.test.cjs:11:241)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: 'Use the uploaded product sheet as the reference. Keep the [PRODUCT] exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a warm wooden desk next to a white coffee mug and a small green plant, soft morning window light from the left, shallow depth of field, realistic lifestyle product photography.',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/product-tutor-deterministic-reliability.test.cjs:12:2
+✖ reliability explicit fill L02 Lifestyle (1.026416ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + undefined
+  - 'Use the uploaded product sheet as the reference. Keep the मृदु Bobbin exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a warm wooden desk next to a white coffee mug and a small green plant, soft morning window light from the left, shallow depth of field, realistic lifestyle product photography.'
+  
+      at TestContext.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-deterministic-reliability.test.cjs:12:172)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: 'Use the uploaded product sheet as the reference. Keep the मृदु Bobbin exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a warm wooden desk next to a white coffee mug and a small green plant, soft morning window light from the left, shallow depth of field, realistic lifestyle product photography.',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/product-tutor-deterministic-reliability.test.cjs:11:2
+✖ reliability raw copy L02 Dark Premium (1.14675ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + undefined
+  - 'Use the uploaded product sheet as the reference. Keep the [PRODUCT] exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a matte black surface against a dark background, a single soft rim light outlining its edges, a subtle reflection on the surface, premium moody look, realistic product photography.'
+  
+      at TestContext.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-deterministic-reliability.test.cjs:11:241)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: 'Use the uploaded product sheet as the reference. Keep the [PRODUCT] exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a matte black surface against a dark background, a single soft rim light outlining its edges, a subtle reflection on the surface, premium moody look, realistic product photography.',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/product-tutor-deterministic-reliability.test.cjs:12:2
+✖ reliability explicit fill L02 Dark Premium (0.990834ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + undefined
+  - 'Use the uploaded product sheet as the reference. Keep the मृदु Bobbin exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a matte black surface against a dark background, a single soft rim light outlining its edges, a subtle reflection on the surface, premium moody look, realistic product photography.'
+  
+      at TestContext.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-deterministic-reliability.test.cjs:12:172)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: 'Use the uploaded product sheet as the reference. Keep the मृदु Bobbin exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a matte black surface against a dark background, a single soft rim light outlining its edges, a subtle reflection on the surface, premium moody look, realistic product photography.',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/product-tutor-deterministic-reliability.test.cjs:11:2
+✖ reliability raw copy L03 Character Sheet (bonus) (1.254958ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + undefined
+  - 'Create a character reference sheet of one realistic young Indian [man / woman], clearly adult, [hair, outfit details]. Show the exact same person in one image: a close-up of the face, and full-body front view, side view and back view on a plain light grey background. Same face, same hair, same outfit in every view. Soft even light, RAW realistic photo look, real skin texture, no text labels.'
+  
+      at TestContext.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-deterministic-reliability.test.cjs:11:241)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: 'Create a character reference sheet of one realistic young Indian [man / woman], clearly adult, [hair, outfit details]. Show the exact same person in one image: a close-up of the face, and full-body front view, side view and back view on a plain light grey background. Same face, same hair, same outfit in every view. Soft even light, RAW realistic photo look, real skin texture, no text labels.',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/product-tutor-deterministic-reliability.test.cjs:12:2
+✖ reliability explicit fill L03 Character Sheet (bonus) (1.325625ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + undefined
+  - 'Create a character reference sheet of one realistic young Indian [man / woman], clearly adult, [hair, outfit details]. Show the exact same person in one image: a close-up of the face, and full-body front view, side view and back view on a plain light grey background. Same face, same hair, same outfit in every view. Soft even light, RAW realistic photo look, real skin texture, no text labels.'
+  
+      at TestContext.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-deterministic-reliability.test.cjs:12:172)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: 'Create a character reference sheet of one realistic young Indian [man / woman], clearly adult, [hair, outfit details]. Show the exact same person in one image: a close-up of the face, and full-body front view, side view and back view on a plain light grey background. Same face, same hair, same outfit in every view. Soft even light, RAW realistic photo look, real skin texture, no text labels.',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/product-tutor-deterministic-reliability.test.cjs:11:2
+✖ reliability raw copy L03 Hands close-up (1.098ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + undefined
+  - "Use the uploaded product sheet for the [PRODUCT] and the uploaded character sheet for the [woman / man]. Keep the [PRODUCT] exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Close-up of the [woman's] hands using the [PRODUCT] on a wooden desk, [clothing that matches the character sheet, e.g. bare arms matching her blue tank top], natural hands with five fingers each, soft window light, shallow depth of field, realistic real-world scale, realistic lifestyle product photography."
+  
+      at TestContext.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-deterministic-reliability.test.cjs:11:241)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: "Use the uploaded product sheet for the [PRODUCT] and the uploaded character sheet for the [woman / man]. Keep the [PRODUCT] exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Close-up of the [woman's] hands using the [PRODUCT] on a wooden desk, [clothing that matches the character sheet, e.g. bare arms matching her blue tank top], natural hands with five fingers each, soft window light, shallow depth of field, realistic real-world scale, realistic lifestyle product photography.",
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/product-tutor-deterministic-reliability.test.cjs:12:2
+✖ reliability explicit fill L03 Hands close-up (1.010833ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + undefined
+  - "Use the uploaded product sheet for the मृदु Bobbin and the uploaded character sheet for the [woman / man]. Keep the मृदु Bobbin exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Close-up of the [woman's] hands using the मृदु Bobbin on a wooden desk, [clothing that matches the character sheet, e.g. bare arms matching her blue tank top], natural hands with five fingers each, soft window light, shallow depth of field, realistic real-world scale, realistic lifestyle product photography."
+  
+      at TestContext.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-deterministic-reliability.test.cjs:12:172)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: "Use the uploaded product sheet for the मृदु Bobbin and the uploaded character sheet for the [woman / man]. Keep the मृदु Bobbin exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Close-up of the [woman's] hands using the मृदु Bobbin on a wooden desk, [clothing that matches the character sheet, e.g. bare arms matching her blue tank top], natural hands with five fingers each, soft window light, shallow depth of field, realistic real-world scale, realistic lifestyle product photography.",
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/product-tutor-deterministic-reliability.test.cjs:11:2
+✖ reliability raw copy L03 Desk (1.101ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + undefined
+  - "Use the uploaded product sheet for the [PRODUCT] and the uploaded character sheet for the [woman / man]. Keep the [PRODUCT] exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Keep the [woman's] face exactly the same as the character sheet. [She] sits at a clean desk using the [PRODUCT], side three-quarter angle, natural hands with five fingers, bright natural daylight, realistic real-world scale, realistic lifestyle photography."
+  
+      at TestContext.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-deterministic-reliability.test.cjs:11:241)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: "Use the uploaded product sheet for the [PRODUCT] and the uploaded character sheet for the [woman / man]. Keep the [PRODUCT] exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Keep the [woman's] face exactly the same as the character sheet. [She] sits at a clean desk using the [PRODUCT], side three-quarter angle, natural hands with five fingers, bright natural daylight, realistic real-world scale, realistic lifestyle photography.",
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/product-tutor-deterministic-reliability.test.cjs:12:2
+✖ reliability explicit fill L03 Desk (1.083167ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + undefined
+  - "Use the uploaded product sheet for the मृदु Bobbin and the uploaded character sheet for the [woman / man]. Keep the मृदु Bobbin exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Keep the [woman's] face exactly the same as the character sheet. [She] sits at a clean desk using the मृदु Bobbin, side three-quarter angle, natural hands with five fingers, bright natural daylight, realistic real-world scale, realistic lifestyle photography."
+  
+      at TestContext.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-deterministic-reliability.test.cjs:12:172)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: "Use the uploaded product sheet for the मृदु Bobbin and the uploaded character sheet for the [woman / man]. Keep the मृदु Bobbin exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Keep the [woman's] face exactly the same as the character sheet. [She] sits at a clean desk using the मृदु Bobbin, side three-quarter angle, natural hands with five fingers, bright natural daylight, realistic real-world scale, realistic lifestyle photography.",
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/product-tutor-deterministic-reliability.test.cjs:11:2
+✖ reliability raw copy L03 Showing to camera (0.975625ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + undefined
+  - "Use the uploaded product sheet for the [PRODUCT] and the uploaded character sheet for the [woman / man]. Keep the [PRODUCT] exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Keep the [woman's] face exactly the same as the character sheet. [She] holds the [PRODUCT] with both hands in front of [her] chest, showing it to the camera with a small natural smile, plain light background, soft studio light, natural hands with five fingers, realistic real-world scale, realistic product photography."
+  
+      at TestContext.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-deterministic-reliability.test.cjs:11:241)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: "Use the uploaded product sheet for the [PRODUCT] and the uploaded character sheet for the [woman / man]. Keep the [PRODUCT] exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Keep the [woman's] face exactly the same as the character sheet. [She] holds the [PRODUCT] with both hands in front of [her] chest, showing it to the camera with a small natural smile, plain light background, soft studio light, natural hands with five fingers, realistic real-world scale, realistic product photography.",
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/product-tutor-deterministic-reliability.test.cjs:12:2
+✖ reliability explicit fill L03 Showing to camera (1.0335ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + undefined
+  - "Use the uploaded product sheet for the मृदु Bobbin and the uploaded character sheet for the [woman / man]. Keep the मृदु Bobbin exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Keep the [woman's] face exactly the same as the character sheet. [She] holds the मृदु Bobbin with both hands in front of [her] chest, showing it to the camera with a small natural smile, plain light background, soft studio light, natural hands with five fingers, realistic real-world scale, realistic product photography."
+  
+      at TestContext.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-deterministic-reliability.test.cjs:12:172)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: "Use the uploaded product sheet for the मृदु Bobbin and the uploaded character sheet for the [woman / man]. Keep the मृदु Bobbin exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Keep the [woman's] face exactly the same as the character sheet. [She] holds the मृदु Bobbin with both hands in front of [her] chest, showing it to the camera with a small natural smile, plain light background, soft studio light, natural hands with five fingers, realistic real-world scale, realistic product photography.",
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/product-tutor-deterministic-reliability.test.cjs:11:2
+✖ reliability raw copy L04 Diwali (1.128084ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + undefined
+  - 'Use the uploaded product sheet as the reference. Keep the [PRODUCT] exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a wooden table during Diwali night, a few lit clay diyas and orange marigold flowers placed behind and beside it, soft warm fairy lights glowing out of focus in the background, the [PRODUCT] sharp and clearly the hero in the foreground, warm golden light, realistic real-world scale, realistic festive product photography.'
+  
+      at TestContext.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-deterministic-reliability.test.cjs:11:241)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: 'Use the uploaded product sheet as the reference. Keep the [PRODUCT] exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a wooden table during Diwali night, a few lit clay diyas and orange marigold flowers placed behind and beside it, soft warm fairy lights glowing out of focus in the background, the [PRODUCT] sharp and clearly the hero in the foreground, warm golden light, realistic real-world scale, realistic festive product photography.',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/product-tutor-deterministic-reliability.test.cjs:12:2
+✖ reliability explicit fill L04 Diwali (0.947416ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + undefined
+  - 'Use the uploaded product sheet as the reference. Keep the मृदु Bobbin exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a wooden table during Diwali night, a few lit clay diyas and orange marigold flowers placed behind and beside it, soft warm fairy lights glowing out of focus in the background, the मृदु Bobbin sharp and clearly the hero in the foreground, warm golden light, realistic real-world scale, realistic festive product photography.'
+  
+      at TestContext.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-deterministic-reliability.test.cjs:12:172)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: 'Use the uploaded product sheet as the reference. Keep the मृदु Bobbin exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a wooden table during Diwali night, a few lit clay diyas and orange marigold flowers placed behind and beside it, soft warm fairy lights glowing out of focus in the background, the मृदु Bobbin sharp and clearly the hero in the foreground, warm golden light, realistic real-world scale, realistic festive product photography.',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/product-tutor-deterministic-reliability.test.cjs:11:2
+✖ reliability raw copy L04 Wedding Gift (1.083125ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + undefined
+  - 'Use the uploaded product sheet as the reference. Keep the [PRODUCT] exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a soft silk cloth next to an open premium gift box with gold ribbon and a few rose petals, elegant wedding gifting mood, soft warm light, [PRODUCT] sharp in the foreground, realistic real-world scale, realistic festive product photography.'
+  
+      at TestContext.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-deterministic-reliability.test.cjs:11:241)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: 'Use the uploaded product sheet as the reference. Keep the [PRODUCT] exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a soft silk cloth next to an open premium gift box with gold ribbon and a few rose petals, elegant wedding gifting mood, soft warm light, [PRODUCT] sharp in the foreground, realistic real-world scale, realistic festive product photography.',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/product-tutor-deterministic-reliability.test.cjs:12:2
+✖ reliability explicit fill L04 Wedding Gift (0.918833ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + undefined
+  - 'Use the uploaded product sheet as the reference. Keep the मृदु Bobbin exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a soft silk cloth next to an open premium gift box with gold ribbon and a few rose petals, elegant wedding gifting mood, soft warm light, मृदु Bobbin sharp in the foreground, realistic real-world scale, realistic festive product photography.'
+  
+      at TestContext.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-deterministic-reliability.test.cjs:12:172)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: 'Use the uploaded product sheet as the reference. Keep the मृदु Bobbin exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a soft silk cloth next to an open premium gift box with gold ribbon and a few rose petals, elegant wedding gifting mood, soft warm light, मृदु Bobbin sharp in the foreground, realistic real-world scale, realistic festive product photography.',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/product-tutor-deterministic-reliability.test.cjs:11:2
+✖ reliability raw copy L04 Colour Variant Sheet (0.962625ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + undefined
+  - 'Use the uploaded product sheet as the reference. Only change the colour of [the part, e.g. all the keycaps] to [new colour, e.g. soft pastel pink]. Keep everything else exactly the same — same shape, same layout, same details, same text and logo, same four views, same background, same lighting. Output a full product sheet in the new colour.'
+  
+      at TestContext.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-deterministic-reliability.test.cjs:11:241)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: 'Use the uploaded product sheet as the reference. Only change the colour of [the part, e.g. all the keycaps] to [new colour, e.g. soft pastel pink]. Keep everything else exactly the same — same shape, same layout, same details, same text and logo, same four views, same background, same lighting. Output a full product sheet in the new colour.',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/product-tutor-deterministic-reliability.test.cjs:12:2
+✖ reliability explicit fill L04 Colour Variant Sheet (1.077875ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + undefined
+  - 'Use the uploaded product sheet as the reference. Only change the colour of [the part, e.g. all the keycaps] to [new colour, e.g. soft pastel pink]. Keep everything else exactly the same — same shape, same layout, same details, same text and logo, same four views, same background, same lighting. Output a full product sheet in the new colour.'
+  
+      at TestContext.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-deterministic-reliability.test.cjs:12:172)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: 'Use the uploaded product sheet as the reference. Only change the colour of [the part, e.g. all the keycaps] to [new colour, e.g. soft pastel pink]. Keep everything else exactly the same — same shape, same layout, same details, same text and logo, same four views, same background, same lighting. Output a full product sheet in the new colour.',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/product-tutor-deterministic-reliability.test.cjs:11:2
+✖ reliability raw copy L05 Step 1 Brief (0.911708ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + undefined
+  - 'I sell a [product with real details — size, colour, key features]. Price: [your price]. I sell on [Instagram / website / marketplace] in India. Tell me: 1. Three types of people who would buy this 2. What problem it solves for each of them 3. One ad angle for each buyer Keep it short and simple.'
+  
+      at TestContext.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-deterministic-reliability.test.cjs:11:241)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: 'I sell a [product with real details — size, colour, key features]. Price: [your price]. I sell on [Instagram / website / marketplace] in India. Tell me: 1. Three types of people who would buy this 2. What problem it solves for each of them 3. One ad angle for each buyer Keep it short and simple.',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/product-tutor-deterministic-reliability.test.cjs:12:2
+✖ reliability explicit fill L05 Step 1 Brief (0.875333ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + undefined
+  - 'I sell a [product with real details — size, colour, key features]. Price: [your price]. I sell on [Instagram / website / marketplace] in India. Tell me: 1. Three types of people who would buy this 2. What problem it solves for each of them 3. One ad angle for each buyer Keep it short and simple.'
+  
+      at TestContext.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-deterministic-reliability.test.cjs:12:172)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: 'I sell a [product with real details — size, colour, key features]. Price: [your price]. I sell on [Instagram / website / marketplace] in India. Tell me: 1. Three types of people who would buy this 2. What problem it solves for each of them 3. One ad angle for each buyer Keep it short and simple.',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/product-tutor-deterministic-reliability.test.cjs:11:2
+✖ reliability raw copy L05 Step 2 Hooks + Script (0.953625ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + undefined
+  - "Pick angle [number]. Write 5 scroll-stopping hooks in natural Hinglish, like a friend talking — not cheesy, no fake claims. Then write a 15-second ad script: what to show on screen and what the voiceover says. Also write one Instagram caption. Use only the features I gave you, don't add anything new."
+  
+      at TestContext.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-deterministic-reliability.test.cjs:11:241)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: "Pick angle [number]. Write 5 scroll-stopping hooks in natural Hinglish, like a friend talking — not cheesy, no fake claims. Then write a 15-second ad script: what to show on screen and what the voiceover says. Also write one Instagram caption. Use only the features I gave you, don't add anything new.",
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/product-tutor-deterministic-reliability.test.cjs:12:2
+✖ reliability explicit fill L05 Step 2 Hooks + Script (0.908084ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + undefined
+  - "Pick angle [number]. Write 5 scroll-stopping hooks in natural Hinglish, like a friend talking — not cheesy, no fake claims. Then write a 15-second ad script: what to show on screen and what the voiceover says. Also write one Instagram caption. Use only the features I gave you, don't add anything new."
+  
+      at TestContext.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-deterministic-reliability.test.cjs:12:172)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: "Pick angle [number]. Write 5 scroll-stopping hooks in natural Hinglish, like a friend talking — not cheesy, no fake claims. Then write a 15-second ad script: what to show on screen and what the voiceover says. Also write one Instagram caption. Use only the features I gave you, don't add anything new.",
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/product-tutor-deterministic-reliability.test.cjs:11:2
+✖ reliability raw copy L05 Step 3 Flow prompts (1.703958ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + 'Now write 3 image prompts for Google Flow (Nano Banana) for this ad. Each prompt must start with: "Use the uploaded product sheet as the reference. Keep the L05 Step 3 Flow prompts exactly as approved exactly the same — same shape, same colour, same details, same text and logo, do not redesign it." Then describe one scene for the ad.'
+  - 'Now write 3 image prompts for Google Flow (Nano Banana) for this ad. Each prompt must start with: "Use the uploaded product sheet as the reference. Keep the [product] exactly the same — same shape, same colour, same details, same text and logo, do not redesign it." Then describe one scene for the ad.'
+  
+      at TestContext.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-deterministic-reliability.test.cjs:11:241)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'Now write 3 image prompts for Google Flow (Nano Banana) for this ad. Each prompt must start with: "Use the uploaded product sheet as the reference. Keep the L05 Step 3 Flow prompts exactly as approved exactly the same — same shape, same colour, same details, same text and logo, do not redesign it." Then describe one scene for the ad.',
+    expected: 'Now write 3 image prompts for Google Flow (Nano Banana) for this ad. Each prompt must start with: "Use the uploaded product sheet as the reference. Keep the [product] exactly the same — same shape, same colour, same details, same text and logo, do not redesign it." Then describe one scene for the ad.',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/product-tutor-deterministic-reliability.test.cjs:12:2
+✖ reliability explicit fill L05 Step 3 Flow prompts (1.792583ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + 'Now write 3 image prompts for Google Flow (Nano Banana) for this ad. Each prompt must start with: "Use the uploaded product sheet as the reference. Keep the [product] exactly the same — same shape, same colour, same details, same text and logo, do not redesign it." Then describe one scene for the ad.'
+  - 'Now write 3 image prompts for Google Flow (Nano Banana) for this ad. Each prompt must start with: "Use the uploaded product sheet as the reference. Keep the मृदु Bobbin exactly the same — same shape, same colour, same details, same text and logo, do not redesign it." Then describe one scene for the ad.'
+  
+      at TestContext.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-deterministic-reliability.test.cjs:12:172)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'Now write 3 image prompts for Google Flow (Nano Banana) for this ad. Each prompt must start with: "Use the uploaded product sheet as the reference. Keep the [product] exactly the same — same shape, same colour, same details, same text and logo, do not redesign it." Then describe one scene for the ad.',
+    expected: 'Now write 3 image prompts for Google Flow (Nano Banana) for this ad. Each prompt must start with: "Use the uploaded product sheet as the reference. Keep the मृदु Bobbin exactly the same — same shape, same colour, same details, same text and logo, do not redesign it." Then describe one scene for the ad.',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/product-tutor-deterministic-reliability.test.cjs:11:2
+✖ reliability raw copy L06 Push-in (0.974625ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + undefined
+  - 'Use the uploaded image as the first frame. The [PRODUCT] stays perfectly still and exactly the same the whole time — same shape, same colour, same details, same text and logo, no morphing, no warping. The camera slowly and smoothly pushes in toward the [PRODUCT]. Soft natural window light, shallow depth of field, realistic product video. No people, no hands, no text on screen. Soft quiet room ambience only — NO music, NO voice.'
+  
+      at TestContext.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-deterministic-reliability.test.cjs:11:241)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: 'Use the uploaded image as the first frame. The [PRODUCT] stays perfectly still and exactly the same the whole time — same shape, same colour, same details, same text and logo, no morphing, no warping. The camera slowly and smoothly pushes in toward the [PRODUCT]. Soft natural window light, shallow depth of field, realistic product video. No people, no hands, no text on screen. Soft quiet room ambience only — NO music, NO voice.',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/product-tutor-deterministic-reliability.test.cjs:12:2
+✖ reliability explicit fill L06 Push-in (0.932209ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + undefined
+  - 'Use the uploaded image as the first frame. The मृदु Bobbin stays perfectly still and exactly the same the whole time — same shape, same colour, same details, same text and logo, no morphing, no warping. The camera slowly and smoothly pushes in toward the मृदु Bobbin. Soft natural window light, shallow depth of field, realistic product video. No people, no hands, no text on screen. Soft quiet room ambience only — NO music, NO voice.'
+  
+      at TestContext.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-deterministic-reliability.test.cjs:12:172)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: 'Use the uploaded image as the first frame. The मृदु Bobbin stays perfectly still and exactly the same the whole time — same shape, same colour, same details, same text and logo, no morphing, no warping. The camera slowly and smoothly pushes in toward the मृदु Bobbin. Soft natural window light, shallow depth of field, realistic product video. No people, no hands, no text on screen. Soft quiet room ambience only — NO music, NO voice.',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/product-tutor-deterministic-reliability.test.cjs:11:2
+✖ reliability raw copy L06 Arc (1.025292ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + undefined
+  - 'Use the uploaded image as the first frame. The [PRODUCT] stays perfectly still and exactly the same the whole time — same shape, same colour, same details, same text and logo, no morphing, no warping. The camera slowly arcs a little to the right around the [PRODUCT], smooth and steady, while the lights in the background glow softly. Moody cinematic look, realistic product video. No people, no hands, no text on screen. Soft quiet room ambience only — NO music, NO voice.'
+  
+      at TestContext.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-deterministic-reliability.test.cjs:11:241)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: 'Use the uploaded image as the first frame. The [PRODUCT] stays perfectly still and exactly the same the whole time — same shape, same colour, same details, same text and logo, no morphing, no warping. The camera slowly arcs a little to the right around the [PRODUCT], smooth and steady, while the lights in the background glow softly. Moody cinematic look, realistic product video. No people, no hands, no text on screen. Soft quiet room ambience only — NO music, NO voice.',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/product-tutor-deterministic-reliability.test.cjs:12:2
+✖ reliability explicit fill L06 Arc (0.88475ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + undefined
+  - 'Use the uploaded image as the first frame. The मृदु Bobbin stays perfectly still and exactly the same the whole time — same shape, same colour, same details, same text and logo, no morphing, no warping. The camera slowly arcs a little to the right around the मृदु Bobbin, smooth and steady, while the lights in the background glow softly. Moody cinematic look, realistic product video. No people, no hands, no text on screen. Soft quiet room ambience only — NO music, NO voice.'
+  
+      at TestContext.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-deterministic-reliability.test.cjs:12:172)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: 'Use the uploaded image as the first frame. The मृदु Bobbin stays perfectly still and exactly the same the whole time — same shape, same colour, same details, same text and logo, no morphing, no warping. The camera slowly arcs a little to the right around the मृदु Bobbin, smooth and steady, while the lights in the background glow softly. Moody cinematic look, realistic product video. No people, no hands, no text on screen. Soft quiet room ambience only — NO music, NO voice.',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/product-tutor-deterministic-reliability.test.cjs:11:2
+✖ reliability raw copy L06 Light Sweep (0.910417ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + undefined
+  - 'Use the uploaded image as the first frame. The [PRODUCT] stays perfectly still and exactly the same the whole time — same shape, same colour, same details, same text and logo, no morphing, no warping. The camera stays completely still. A soft band of warm light slowly sweeps across the [PRODUCT] from left to right, the shadows moving gently with it. Clean premium product video. No people, no hands, no text on screen. Soft quiet room ambience only — NO music, NO voice.'
+  
+      at TestContext.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-deterministic-reliability.test.cjs:11:241)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: 'Use the uploaded image as the first frame. The [PRODUCT] stays perfectly still and exactly the same the whole time — same shape, same colour, same details, same text and logo, no morphing, no warping. The camera stays completely still. A soft band of warm light slowly sweeps across the [PRODUCT] from left to right, the shadows moving gently with it. Clean premium product video. No people, no hands, no text on screen. Soft quiet room ambience only — NO music, NO voice.',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/product-tutor-deterministic-reliability.test.cjs:12:2
+✖ reliability explicit fill L06 Light Sweep (0.995833ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + undefined
+  - 'Use the uploaded image as the first frame. The मृदु Bobbin stays perfectly still and exactly the same the whole time — same shape, same colour, same details, same text and logo, no morphing, no warping. The camera stays completely still. A soft band of warm light slowly sweeps across the मृदु Bobbin from left to right, the shadows moving gently with it. Clean premium product video. No people, no hands, no text on screen. Soft quiet room ambience only — NO music, NO voice.'
+  
+      at TestContext.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-deterministic-reliability.test.cjs:12:172)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: 'Use the uploaded image as the first frame. The मृदु Bobbin stays perfectly still and exactly the same the whole time — same shape, same colour, same details, same text and logo, no morphing, no warping. The camera stays completely still. A soft band of warm light slowly sweeps across the मृदु Bobbin from left to right, the shadows moving gently with it. Clean premium product video. No people, no hands, no text on screen. Soft quiet room ambience only — NO music, NO voice.',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/product-tutor-deterministic-reliability.test.cjs:11:2
+✖ reliability raw copy L07 UGC 1 (0.993417ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + undefined
+  - `Use the uploaded character sheet for the [woman] and the uploaded product sheet for the [PRODUCT]. Keep her face, hair and outfit exactly the same as the character sheet. Keep the [PRODUCT] exactly the same — same shape, same colour, same details, same text and logo, no morphing. Selfie-style vertical video: the camera itself is her phone, held at arm's length, so we see her from the chest up looking straight into the lens. NO phone visible anywhere in the frame, no second camera, no screen. She sits at a desk in a normal home room, holding the [PRODUCT] up near her chest to show it, casual and friendly. Handheld look with slight natural shake, natural window light, a real lived-in room, not a studio, not a polished ad. ONLY she speaks, one voice only, natural Hindi lip-sync, casual friendly tone. She says: "[your hook line in Hindi]" real skin, no filter, clearly adult, modest, natural hands with five fingers, no text on screen, no watermark. Clean natural audio only — NO background music.`
+  
+      at TestContext.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-deterministic-reliability.test.cjs:11:241)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: `Use the uploaded character sheet for the [woman] and the uploaded product sheet for the [PRODUCT]. Keep her face, hair and outfit exactly the same as the character sheet. Keep the [PRODUCT] exactly the same — same shape, same colour, same details, same text and logo, no morphing. Selfie-style vertical video: the camera itself is her phone, held at arm's length, so we see her from the chest up looking straight into the lens. NO phone visible anywhere in the frame, no second camera, no screen. She sits at a desk in a normal home room, holding the [PRODUCT] up near her chest to show it, casual and friendly. Handheld look with slight natural shake, natural window light, a real lived-in room, not a studio, not a polished ad. ONLY she speaks, one voice only, natural Hindi lip-sync, casual friendly tone. She says: "[your hook line in Hindi]" real skin, no filter, clearly adult, modest, natural hands with five fingers, no text on screen, no watermark. Clean natural audio only — NO background music.`,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/product-tutor-deterministic-reliability.test.cjs:12:2
+✖ reliability explicit fill L07 UGC 1 (0.901583ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + undefined
+  - `Use the uploaded character sheet for the [woman] and the uploaded product sheet for the मृदु Bobbin. Keep her face, hair and outfit exactly the same as the character sheet. Keep the मृदु Bobbin exactly the same — same shape, same colour, same details, same text and logo, no morphing. Selfie-style vertical video: the camera itself is her phone, held at arm's length, so we see her from the chest up looking straight into the lens. NO phone visible anywhere in the frame, no second camera, no screen. She sits at a desk in a normal home room, holding the मृदु Bobbin up near her chest to show it, casual and friendly. Handheld look with slight natural shake, natural window light, a real lived-in room, not a studio, not a polished ad. ONLY she speaks, one voice only, natural Hindi lip-sync, casual friendly tone. She says: "[your hook line in Hindi]" real skin, no filter, clearly adult, modest, natural hands with five fingers, no text on screen, no watermark. Clean natural audio only — NO background music.`
+  
+      at TestContext.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-deterministic-reliability.test.cjs:12:172)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: `Use the uploaded character sheet for the [woman] and the uploaded product sheet for the मृदु Bobbin. Keep her face, hair and outfit exactly the same as the character sheet. Keep the मृदु Bobbin exactly the same — same shape, same colour, same details, same text and logo, no morphing. Selfie-style vertical video: the camera itself is her phone, held at arm's length, so we see her from the chest up looking straight into the lens. NO phone visible anywhere in the frame, no second camera, no screen. She sits at a desk in a normal home room, holding the मृदु Bobbin up near her chest to show it, casual and friendly. Handheld look with slight natural shake, natural window light, a real lived-in room, not a studio, not a polished ad. ONLY she speaks, one voice only, natural Hindi lip-sync, casual friendly tone. She says: "[your hook line in Hindi]" real skin, no filter, clearly adult, modest, natural hands with five fingers, no text on screen, no watermark. Clean natural audio only — NO background music.`,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/product-tutor-deterministic-reliability.test.cjs:11:2
+✖ reliability raw copy L07 UGC 2 (0.961125ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + undefined
+  - 'Use the uploaded character sheet for the [woman] and the uploaded product sheet for the [PRODUCT]. Keep her face, hair and outfit exactly the same as the character sheet. Keep the [PRODUCT] exactly the same — same shape, same colour, same details, same text and logo, no morphing. Vertical video shot from her own phone resting on the desk in front of her: the camera itself is the phone, so we see her and the [PRODUCT] from a low front angle. NO phone visible anywhere in the frame, no second camera, no screen facing us. She uses the [PRODUCT] for a moment, then looks up straight into the lens and talks, casual and natural. Natural window light, a real lived-in room, not a studio, not a polished ad. ONLY she speaks, one voice only, natural Hindi lip-sync, casual friendly tone. She says: "[your second line in Hindi]" real skin, no filter, clearly adult, modest, natural hands with five fingers, no text on screen, no watermark. Clean natural audio only — NO background music.'
+  
+      at TestContext.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-deterministic-reliability.test.cjs:11:241)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: 'Use the uploaded character sheet for the [woman] and the uploaded product sheet for the [PRODUCT]. Keep her face, hair and outfit exactly the same as the character sheet. Keep the [PRODUCT] exactly the same — same shape, same colour, same details, same text and logo, no morphing. Vertical video shot from her own phone resting on the desk in front of her: the camera itself is the phone, so we see her and the [PRODUCT] from a low front angle. NO phone visible anywhere in the frame, no second camera, no screen facing us. She uses the [PRODUCT] for a moment, then looks up straight into the lens and talks, casual and natural. Natural window light, a real lived-in room, not a studio, not a polished ad. ONLY she speaks, one voice only, natural Hindi lip-sync, casual friendly tone. She says: "[your second line in Hindi]" real skin, no filter, clearly adult, modest, natural hands with five fingers, no text on screen, no watermark. Clean natural audio only — NO background music.',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/product-tutor-deterministic-reliability.test.cjs:12:2
+✖ reliability explicit fill L07 UGC 2 (0.883042ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + undefined
+  - 'Use the uploaded character sheet for the [woman] and the uploaded product sheet for the मृदु Bobbin. Keep her face, hair and outfit exactly the same as the character sheet. Keep the मृदु Bobbin exactly the same — same shape, same colour, same details, same text and logo, no morphing. Vertical video shot from her own phone resting on the desk in front of her: the camera itself is the phone, so we see her and the मृदु Bobbin from a low front angle. NO phone visible anywhere in the frame, no second camera, no screen facing us. She uses the मृदु Bobbin for a moment, then looks up straight into the lens and talks, casual and natural. Natural window light, a real lived-in room, not a studio, not a polished ad. ONLY she speaks, one voice only, natural Hindi lip-sync, casual friendly tone. She says: "[your second line in Hindi]" real skin, no filter, clearly adult, modest, natural hands with five fingers, no text on screen, no watermark. Clean natural audio only — NO background music.'
+  
+      at TestContext.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-deterministic-reliability.test.cjs:12:172)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: 'Use the uploaded character sheet for the [woman] and the uploaded product sheet for the मृदु Bobbin. Keep her face, hair and outfit exactly the same as the character sheet. Keep the मृदु Bobbin exactly the same — same shape, same colour, same details, same text and logo, no morphing. Vertical video shot from her own phone resting on the desk in front of her: the camera itself is the phone, so we see her and the मृदु Bobbin from a low front angle. NO phone visible anywhere in the frame, no second camera, no screen facing us. She uses the मृदु Bobbin for a moment, then looks up straight into the lens and talks, casual and natural. Natural window light, a real lived-in room, not a studio, not a polished ad. ONLY she speaks, one voice only, natural Hindi lip-sync, casual friendly tone. She says: "[your second line in Hindi]" real skin, no filter, clearly adult, modest, natural hands with five fingers, no text on screen, no watermark. Clean natural audio only — NO background music.',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/product-tutor-deterministic-reliability.test.cjs:22:3
+✖ reliability unified declaration My product is a green steel tea caddy called “Élan”. (0.326375ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + undefined
+  - 'Élan'
+  
+      at TestContext.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-deterministic-reliability.test.cjs:22:59)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: 'Élan',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/product-tutor-deterministic-reliability.test.cjs:22:3
+✖ reliability unified declaration “किरण” is my blue linen roll. (0.1065ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + undefined
+  - 'किरण'
+  
+      at TestContext.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-deterministic-reliability.test.cjs:22:59)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: 'किरण',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/product-tutor-deterministic-reliability.test.cjs:22:3
+✖ reliability unified declaration I sell a pouch named “Mélodie”. (0.106167ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + undefined
+  - 'Mélodie'
+  
+      at TestContext.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-deterministic-reliability.test.cjs:22:59)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: 'Mélodie',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/product-tutor-deterministic-reliability.test.cjs:22:3
+✖ reliability unified declaration Mera product naam “नील Roll” hai. (2.307125ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + 'naam “नील Roll”'
+  - 'नील Roll'
+  
+      at TestContext.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-deterministic-reliability.test.cjs:22:59)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'naam “नील Roll”',
+    expected: 'नील Roll',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/product-tutor-deterministic-reliability.test.cjs:22:3
+✖ reliability unified declaration The label says “स्वर”; it is a glass jar. (0.121166ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + undefined
+  - 'स्वर'
+  
+      at TestContext.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-deterministic-reliability.test.cjs:22:59)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: 'स्वर',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/product-tutor-deterministic-reliability.test.cjs:22:3
+✖ reliability unified declaration [PRODUCT] = frosted glass flask. (0.094375ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + undefined
+  - 'frosted glass flask'
+  
+      at TestContext.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-deterministic-reliability.test.cjs:22:59)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: 'frosted glass flask',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/product-tutor-deterministic-reliability.test.cjs:23:154
+✖ reliability no phantom identity For my archive I need the original L02 White Studio text. (0.534417ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + 'archive I need the original L02 White Studio text'
+  - undefined
+  
+      at TestContext.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-deterministic-reliability.test.cjs:23:209)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'archive I need the original L02 White Studio text',
+    expected: undefined,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/product-tutor-deterministic-reliability.test.cjs:24:203
+✖ reliability atomic replace Replace it completely with a stone bead tray called “Dune”. (0.301084ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + 'wool thread roll'
+  - 'Dune'
+  
+      at TestContext.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-deterministic-reliability.test.cjs:25:145)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'wool thread roll',
+    expected: 'Dune',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/product-tutor-deterministic-reliability.test.cjs:24:203
+✖ reliability atomic replace Forget the old product. New product: “Dune”, a stone bead tray. (0.24425ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + 'wool thread roll'
+  - 'Dune'
+  
+      at TestContext.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-deterministic-reliability.test.cjs:25:145)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'wool thread roll',
+    expected: 'Dune',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/product-tutor-deterministic-reliability.test.cjs:24:203
+✖ reliability atomic replace Ab naya product “Dune” hai. (0.17675ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + 'wool thread roll'
+  - 'Dune'
+  
+      at TestContext.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-deterministic-reliability.test.cjs:25:145)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'wool thread roll',
+    expected: 'Dune',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/product-tutor-deterministic-reliability.test.cjs:24:203
+✖ reliability atomic replace अब नया उत्पाद “Dune” है। (0.156959ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + 'wool thread roll'
+  - 'Dune'
+  
+      at TestContext.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-deterministic-reliability.test.cjs:25:145)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'wool thread roll',
+    expected: 'Dune',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/product-tutor-deterministic-reliability.test.cjs:27:1
+✖ reliability rename keeps item facts; correction replaces field; reset clears facts (0.172417ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + 'reed spool'
+  - 'Rill'
+  
+      at TestContext.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-deterministic-reliability.test.cjs:28:162)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'reed spool',
+    expected: 'Rill',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/product-tutor-deterministic-reliability.test.cjs:32:1
+✖ reliability unresolved explicit new product cannot keep stale identity (0.156583ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + 'reed tray'
+  - undefined
+  
+      at TestContext.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-deterministic-reliability.test.cjs:32:250)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'reed tray',
+    expected: undefined,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/product-tutor-deterministic-reliability.test.cjs:33:1
+✖ reliability natural attributes and canonical price retain constraints (0.147792ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + undefined
+  - 'Rill'
+  
+      at TestContext.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-deterministic-reliability.test.cjs:33:211)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: 'Rill',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/product-tutor-deterministic-reliability.test.cjs:35:311
+✖ reliability language My product is “नील”. English please. (0.235583ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  'hindi' !== 'english'
+  
+      at TestContext.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-deterministic-reliability.test.cjs:35:355)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'hindi',
+    expected: 'english',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/product-tutor-deterministic-reliability.test.cjs:35:311
+✖ reliability language My product is “नील”. Write a caption. (0.738542ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  'hindi' !== 'english'
+  
+      at TestContext.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-deterministic-reliability.test.cjs:35:355)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'hindi',
+    expected: 'english',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/product-tutor-deterministic-reliability.test.cjs:35:311
+✖ reliability language Mera product “Nila” hai. Language English kar do. (0.133459ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + 'hinglish'
+  - 'english'
+  
+      at TestContext.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-deterministic-reliability.test.cjs:35:355)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'hinglish',
+    expected: 'english',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/product-tutor-deterministic-reliability.test.cjs:36:1
+✖ reliability Hindi modifiers respect explicit hook count (3.921333ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  5 !== 2
+  
+      at TestContext.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-deterministic-reliability.test.cjs:36:160)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 5,
+    expected: 2,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/product-tutor-deterministic-reliability.test.cjs:37:334
+✖ reliability synthesis has model plan Write an original scene prompt for my reed pen roll in a station café. (2.861916ms)
+  AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+  
+    assert.ok(x.knowledge.requestPlan||x.knowledge.responseSelection.plan)
+  
+      at TestContext.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-deterministic-reliability.test.cjs:37:495)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at tests/product-tutor-deterministic-reliability.test.cjs:37:334
+✖ reliability synthesis has model plan Mera product cotton spool hai. Naya original prompt likho; saved template repeat mat karo. (1.437667ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + {
+  +   policy: 'missing_exact_asset',
+  +   reply: 'Kis approved template ka poora text chahiye? Heading batao.',
+  +   templateId: ''
+  + }
+  - null
+  
+      at TestContext.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-deterministic-reliability.test.cjs:37:410)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: { reply: 'Kis approved template ka poora text chahiye? Heading batao.', templateId: '', policy: 'missing_exact_asset' },
+    expected: null,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/product-tutor-deterministic-reliability.test.cjs:37:334
+✖ reliability synthesis has model plan Explain which movement to choose for a delicate still object and why. (1.034375ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + {
+  +   policy: 'grounded_course_guidance',
+  +   reply: 'Lesson 06\n' +
+  +     '\n' +
+  +     'Choose only one slow movement. Keep the product “stays perfectly still, no morphing”, and preserve the template’s “no warping” constraint.',
+  +   templateId: ''
+  + }
+  - null
+  
+      at TestContext.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-deterministic-reliability.test.cjs:37:410)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: { reply: 'Lesson 06\n\nChoose only one slow movement. Keep the product “stays perfectly still, no morphing”, and preserve the template’s “no warping” constraint.', templateId: '', policy: 'grounded_course_guidance' },
+    expected: null,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/product-tutor-deterministic-reliability.test.cjs:37:334
+✖ reliability synthesis has model plan Plan a video edit from existing clips; explain the order and the tradeoffs. (1.169834ms)
+  AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+  
+    assert.ok(x.knowledge.requestPlan||x.knowledge.responseSelection.plan)
+  
+      at TestContext.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-deterministic-reliability.test.cjs:37:495)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at tests/product-tutor-deterministic-reliability.test.cjs:39:1
+✖ reliability all supplied typed placeholders only literal substitution (0.986166ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + undefined
+  - "Use the uploaded product sheet for the copper pen rest and the uploaded character sheet for the woman. Keep the copper pen rest exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Close-up of the woman's hands using the copper pen rest on a wooden desk, white linen sleeves, natural hands with five fingers each, soft window light, shallow depth of field, realistic real-world scale, realistic lifestyle product photography."
+  
+      at TestContext.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-deterministic-reliability.test.cjs:40:418)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: "Use the uploaded product sheet for the copper pen rest and the uploaded character sheet for the woman. Keep the copper pen rest exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Close-up of the woman's hands using the copper pen rest on a wooden desk, white linen sleeves, natural hands with five fingers each, soft window light, shallow depth of field, realistic real-world scale, realistic lifestyle product photography.",
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/product-tutor-deterministic-reliability.test.cjs:43:241
+✖ reliability product questions avoid account hijack Plan the video arrangement using my existing clips. (63.222916ms)
+  AssertionError [ERR_ASSERTION]: The input was expected to not match the regular expression /skillomate-(?:learner|plan)-facts/. Input:
+  
+  'skillomate-plan-facts'
+  
+      at TestContext.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-deterministic-reliability.test.cjs:44:267)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'skillomate-plan-facts',
+    expected: /skillomate-(?:learner|plan)-facts/,
+    operator: 'doesNotMatch',
+    diff: 'simple'
+  }
+
+test at tests/product-tutor-deterministic-reliability.test.cjs:43:241
+✖ reliability product questions avoid account hijack Mere liye pehle photos ka order samjhao. (2.092833ms)
+  AssertionError [ERR_ASSERTION]: The input was expected to not match the regular expression /skillomate-(?:learner|plan)-facts/. Input:
+  
+  'skillomate-learner-facts'
+  
+      at TestContext.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-deterministic-reliability.test.cjs:44:267)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'skillomate-learner-facts',
+    expected: /skillomate-(?:learner|plan)-facts/,
+    operator: 'doesNotMatch',
+    diff: 'simple'
+  }
+
+test at tests/product-tutor-deterministic-reliability.test.cjs:43:241
+✖ reliability product questions avoid account hijack My name for this item is “Opal”. Write a caption. (3.589458ms)
+  AssertionError [ERR_ASSERTION]: The input was expected to not match the regular expression /skillomate-(?:learner|plan)-facts/. Input:
+  
+  'skillomate-learner-facts'
+  
+      at TestContext.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-deterministic-reliability.test.cjs:44:267)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'skillomate-learner-facts',
+    expected: /skillomate-(?:learner|plan)-facts/,
+    operator: 'doesNotMatch',
+    diff: 'simple'
+  }
+
+test at tests/product-tutor-deterministic-reliability.test.cjs:43:241
+✖ reliability product questions avoid account hijack A comment says “my paid order”; explain how to show that label clearly. (1.05225ms)
+  AssertionError [ERR_ASSERTION]: The input was expected to not match the regular expression /skillomate-(?:learner|plan)-facts/. Input:
+  
+  'skillomate-learner-facts'
+  
+      at TestContext.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-deterministic-reliability.test.cjs:44:267)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'skillomate-learner-facts',
+    expected: /skillomate-(?:learner|plan)-facts/,
+    operator: 'doesNotMatch',
+    diff: 'simple'
+  }
+
+test at tests/product-tutor-deterministic-reliability.test.cjs:49:53
+✖ reliability every allowlisted supplied slot L02 Product Sheet (1.648541ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + undefined
+  - 'Use all the uploaded photos of this indigo glass pen rest. Create a clean product reference sheet on a plain white background showing the exact same indigo glass pen rest in four views arranged in a neat grid: front view, top-down view, side view and three-quarter angle view. Keep the indigo glass pen rest exactly the same in every view — same shape, same colour, same details, same text and logo, do not redesign it. Even soft studio lighting, no extra objects, no text labels, realistic product photography.'
+  
+      at TestContext.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-deterministic-reliability.test.cjs:53:9)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: 'Use all the uploaded photos of this indigo glass pen rest. Create a clean product reference sheet on a plain white background showing the exact same indigo glass pen rest in four views arranged in a neat grid: front view, top-down view, side view and three-quarter angle view. Keep the indigo glass pen rest exactly the same in every view — same shape, same colour, same details, same text and logo, do not redesign it. Even soft studio lighting, no extra objects, no text labels, realistic product photography.',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/product-tutor-deterministic-reliability.test.cjs:49:53
+✖ reliability every allowlisted supplied slot L02 White Studio (1.19075ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + undefined
+  - 'Use the uploaded product sheet as the reference. Keep the indigo glass pen rest exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a clean seamless white background, soft even studio lighting, a soft natural shadow under it, slight top-down angle, sharp focus, realistic product photography.'
+  
+      at TestContext.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-deterministic-reliability.test.cjs:53:9)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: 'Use the uploaded product sheet as the reference. Keep the indigo glass pen rest exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a clean seamless white background, soft even studio lighting, a soft natural shadow under it, slight top-down angle, sharp focus, realistic product photography.',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/product-tutor-deterministic-reliability.test.cjs:49:53
+✖ reliability every allowlisted supplied slot L02 Lifestyle (1.226041ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + undefined
+  - 'Use the uploaded product sheet as the reference. Keep the indigo glass pen rest exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a warm wooden desk next to a white coffee mug and a small green plant, soft morning window light from the left, shallow depth of field, realistic lifestyle product photography.'
+  
+      at TestContext.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-deterministic-reliability.test.cjs:53:9)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: 'Use the uploaded product sheet as the reference. Keep the indigo glass pen rest exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a warm wooden desk next to a white coffee mug and a small green plant, soft morning window light from the left, shallow depth of field, realistic lifestyle product photography.',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/product-tutor-deterministic-reliability.test.cjs:49:53
+✖ reliability every allowlisted supplied slot L02 Dark Premium (1.27325ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + undefined
+  - 'Use the uploaded product sheet as the reference. Keep the indigo glass pen rest exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a matte black surface against a dark background, a single soft rim light outlining its edges, a subtle reflection on the surface, premium moody look, realistic product photography.'
+  
+      at TestContext.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-deterministic-reliability.test.cjs:53:9)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: 'Use the uploaded product sheet as the reference. Keep the indigo glass pen rest exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a matte black surface against a dark background, a single soft rim light outlining its edges, a subtle reflection on the surface, premium moody look, realistic product photography.',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/product-tutor-deterministic-reliability.test.cjs:49:53
+✖ reliability every allowlisted supplied slot L03 Character Sheet (bonus) (1.404625ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + undefined
+  - 'Create a character reference sheet of one realistic young Indian woman, clearly adult, short brown hair, linen shirt. Show the exact same person in one image: a close-up of the face, and full-body front view, side view and back view on a plain light grey background. Same face, same hair, same outfit in every view. Soft even light, RAW realistic photo look, real skin texture, no text labels.'
+  
+      at TestContext.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-deterministic-reliability.test.cjs:53:9)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: 'Create a character reference sheet of one realistic young Indian woman, clearly adult, short brown hair, linen shirt. Show the exact same person in one image: a close-up of the face, and full-body front view, side view and back view on a plain light grey background. Same face, same hair, same outfit in every view. Soft even light, RAW realistic photo look, real skin texture, no text labels.',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/product-tutor-deterministic-reliability.test.cjs:49:53
+✖ reliability every allowlisted supplied slot L03 Hands close-up (1.613708ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + undefined
+  - "Use the uploaded product sheet for the indigo glass pen rest and the uploaded character sheet for the woman. Keep the indigo glass pen rest exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Close-up of the woman's hands using the indigo glass pen rest on a wooden desk, linen sleeves, natural hands with five fingers each, soft window light, shallow depth of field, realistic real-world scale, realistic lifestyle product photography."
+  
+      at TestContext.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-deterministic-reliability.test.cjs:53:9)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: "Use the uploaded product sheet for the indigo glass pen rest and the uploaded character sheet for the woman. Keep the indigo glass pen rest exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Close-up of the woman's hands using the indigo glass pen rest on a wooden desk, linen sleeves, natural hands with five fingers each, soft window light, shallow depth of field, realistic real-world scale, realistic lifestyle product photography.",
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/product-tutor-deterministic-reliability.test.cjs:49:53
+✖ reliability every allowlisted supplied slot L03 Desk (1.204792ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + undefined
+  - "Use the uploaded product sheet for the indigo glass pen rest and the uploaded character sheet for the woman. Keep the indigo glass pen rest exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Keep the woman's face exactly the same as the character sheet. She sits at a clean desk using the indigo glass pen rest, side three-quarter angle, natural hands with five fingers, bright natural daylight, realistic real-world scale, realistic lifestyle photography."
+  
+      at TestContext.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-deterministic-reliability.test.cjs:53:9)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: "Use the uploaded product sheet for the indigo glass pen rest and the uploaded character sheet for the woman. Keep the indigo glass pen rest exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Keep the woman's face exactly the same as the character sheet. She sits at a clean desk using the indigo glass pen rest, side three-quarter angle, natural hands with five fingers, bright natural daylight, realistic real-world scale, realistic lifestyle photography.",
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/product-tutor-deterministic-reliability.test.cjs:49:53
+✖ reliability every allowlisted supplied slot L03 Showing to camera (1.249833ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + undefined
+  - "Use the uploaded product sheet for the indigo glass pen rest and the uploaded character sheet for the woman. Keep the indigo glass pen rest exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Keep the woman's face exactly the same as the character sheet. She holds the indigo glass pen rest with both hands in front of her chest, showing it to the camera with a small natural smile, plain light background, soft studio light, natural hands with five fingers, realistic real-world scale, realistic product photography."
+  
+      at TestContext.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-deterministic-reliability.test.cjs:53:9)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: "Use the uploaded product sheet for the indigo glass pen rest and the uploaded character sheet for the woman. Keep the indigo glass pen rest exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Keep the woman's face exactly the same as the character sheet. She holds the indigo glass pen rest with both hands in front of her chest, showing it to the camera with a small natural smile, plain light background, soft studio light, natural hands with five fingers, realistic real-world scale, realistic product photography.",
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/product-tutor-deterministic-reliability.test.cjs:49:53
+✖ reliability every allowlisted supplied slot L04 Diwali (1.557208ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + undefined
+  - 'Use the uploaded product sheet as the reference. Keep the indigo glass pen rest exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a wooden table during Diwali night, a few lit clay diyas and orange marigold flowers placed behind and beside it, soft warm fairy lights glowing out of focus in the background, the indigo glass pen rest sharp and clearly the hero in the foreground, warm golden light, realistic real-world scale, realistic festive product photography.'
+  
+      at TestContext.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-deterministic-reliability.test.cjs:53:9)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: 'Use the uploaded product sheet as the reference. Keep the indigo glass pen rest exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a wooden table during Diwali night, a few lit clay diyas and orange marigold flowers placed behind and beside it, soft warm fairy lights glowing out of focus in the background, the indigo glass pen rest sharp and clearly the hero in the foreground, warm golden light, realistic real-world scale, realistic festive product photography.',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/product-tutor-deterministic-reliability.test.cjs:49:53
+✖ reliability every allowlisted supplied slot L04 Wedding Gift (1.113708ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + undefined
+  - 'Use the uploaded product sheet as the reference. Keep the indigo glass pen rest exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a soft silk cloth next to an open premium gift box with gold ribbon and a few rose petals, elegant wedding gifting mood, soft warm light, indigo glass pen rest sharp in the foreground, realistic real-world scale, realistic festive product photography.'
+  
+      at TestContext.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-deterministic-reliability.test.cjs:53:9)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: 'Use the uploaded product sheet as the reference. Keep the indigo glass pen rest exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a soft silk cloth next to an open premium gift box with gold ribbon and a few rose petals, elegant wedding gifting mood, soft warm light, indigo glass pen rest sharp in the foreground, realistic real-world scale, realistic festive product photography.',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/product-tutor-deterministic-reliability.test.cjs:49:53
+✖ reliability every allowlisted supplied slot L04 Colour Variant Sheet (1.248167ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + undefined
+  - 'Use the uploaded product sheet as the reference. Only change the colour of the lower clasp to dusty rose. Keep everything else exactly the same — same shape, same layout, same details, same text and logo, same four views, same background, same lighting. Output a full product sheet in the new colour.'
+  
+      at TestContext.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-deterministic-reliability.test.cjs:53:9)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: 'Use the uploaded product sheet as the reference. Only change the colour of the lower clasp to dusty rose. Keep everything else exactly the same — same shape, same layout, same details, same text and logo, same four views, same background, same lighting. Output a full product sheet in the new colour.',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/product-tutor-deterministic-reliability.test.cjs:49:53
+✖ reliability every allowlisted supplied slot L05 Step 1 Brief (1.381167ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + undefined
+  - 'I sell a blue pouch, 18 cm, zip closure. Price: ₹275. I sell on website in India. Tell me: 1. Three types of people who would buy this 2. What problem it solves for each of them 3. One ad angle for each buyer Keep it short and simple.'
+  
+      at TestContext.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-deterministic-reliability.test.cjs:53:9)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: 'I sell a blue pouch, 18 cm, zip closure. Price: ₹275. I sell on website in India. Tell me: 1. Three types of people who would buy this 2. What problem it solves for each of them 3. One ad angle for each buyer Keep it short and simple.',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/product-tutor-deterministic-reliability.test.cjs:49:53
+✖ reliability every allowlisted supplied slot L05 Step 2 Hooks + Script (1.048833ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + undefined
+  - "Pick angle 2. Write 5 scroll-stopping hooks in natural Hinglish, like a friend talking — not cheesy, no fake claims. Then write a 15-second ad script: what to show on screen and what the voiceover says. Also write one Instagram caption. Use only the features I gave you, don't add anything new."
+  
+      at TestContext.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-deterministic-reliability.test.cjs:53:9)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: "Pick angle 2. Write 5 scroll-stopping hooks in natural Hinglish, like a friend talking — not cheesy, no fake claims. Then write a 15-second ad script: what to show on screen and what the voiceover says. Also write one Instagram caption. Use only the features I gave you, don't add anything new.",
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/product-tutor-deterministic-reliability.test.cjs:49:53
+✖ reliability every allowlisted supplied slot L05 Step 3 Flow prompts (1.338291ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + 'Now write 3 image prompts for Google Flow (Nano Banana) for this ad. Each prompt must start with: "Use the uploaded product sheet as the reference. Keep the [product] exactly the same — same shape, same colour, same details, same text and logo, do not redesign it." Then describe one scene for the ad.'
+  - 'Now write 3 image prompts for Google Flow (Nano Banana) for this ad. Each prompt must start with: "Use the uploaded product sheet as the reference. Keep the indigo glass pen rest exactly the same — same shape, same colour, same details, same text and logo, do not redesign it." Then describe one scene for the ad.'
+  
+      at TestContext.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-deterministic-reliability.test.cjs:53:9)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'Now write 3 image prompts for Google Flow (Nano Banana) for this ad. Each prompt must start with: "Use the uploaded product sheet as the reference. Keep the [product] exactly the same — same shape, same colour, same details, same text and logo, do not redesign it." Then describe one scene for the ad.',
+    expected: 'Now write 3 image prompts for Google Flow (Nano Banana) for this ad. Each prompt must start with: "Use the uploaded product sheet as the reference. Keep the indigo glass pen rest exactly the same — same shape, same colour, same details, same text and logo, do not redesign it." Then describe one scene for the ad.',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/product-tutor-deterministic-reliability.test.cjs:49:53
+✖ reliability every allowlisted supplied slot L06 Push-in (1.090958ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + undefined
+  - 'Use the uploaded image as the first frame. The indigo glass pen rest stays perfectly still and exactly the same the whole time — same shape, same colour, same details, same text and logo, no morphing, no warping. The camera slowly and smoothly pushes in toward the indigo glass pen rest. Soft natural window light, shallow depth of field, realistic product video. No people, no hands, no text on screen. Soft quiet room ambience only — NO music, NO voice.'
+  
+      at TestContext.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-deterministic-reliability.test.cjs:53:9)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: 'Use the uploaded image as the first frame. The indigo glass pen rest stays perfectly still and exactly the same the whole time — same shape, same colour, same details, same text and logo, no morphing, no warping. The camera slowly and smoothly pushes in toward the indigo glass pen rest. Soft natural window light, shallow depth of field, realistic product video. No people, no hands, no text on screen. Soft quiet room ambience only — NO music, NO voice.',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/product-tutor-deterministic-reliability.test.cjs:49:53
+✖ reliability every allowlisted supplied slot L06 Arc (1.066958ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + undefined
+  - 'Use the uploaded image as the first frame. The indigo glass pen rest stays perfectly still and exactly the same the whole time — same shape, same colour, same details, same text and logo, no morphing, no warping. The camera slowly arcs a little to the right around the indigo glass pen rest, smooth and steady, while the lights in the background glow softly. Moody cinematic look, realistic product video. No people, no hands, no text on screen. Soft quiet room ambience only — NO music, NO voice.'
+  
+      at TestContext.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-deterministic-reliability.test.cjs:53:9)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: 'Use the uploaded image as the first frame. The indigo glass pen rest stays perfectly still and exactly the same the whole time — same shape, same colour, same details, same text and logo, no morphing, no warping. The camera slowly arcs a little to the right around the indigo glass pen rest, smooth and steady, while the lights in the background glow softly. Moody cinematic look, realistic product video. No people, no hands, no text on screen. Soft quiet room ambience only — NO music, NO voice.',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/product-tutor-deterministic-reliability.test.cjs:49:53
+✖ reliability every allowlisted supplied slot L06 Light Sweep (1.174916ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + undefined
+  - 'Use the uploaded image as the first frame. The indigo glass pen rest stays perfectly still and exactly the same the whole time — same shape, same colour, same details, same text and logo, no morphing, no warping. The camera stays completely still. A soft band of warm light slowly sweeps across the indigo glass pen rest from left to right, the shadows moving gently with it. Clean premium product video. No people, no hands, no text on screen. Soft quiet room ambience only — NO music, NO voice.'
+  
+      at TestContext.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-deterministic-reliability.test.cjs:53:9)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: 'Use the uploaded image as the first frame. The indigo glass pen rest stays perfectly still and exactly the same the whole time — same shape, same colour, same details, same text and logo, no morphing, no warping. The camera stays completely still. A soft band of warm light slowly sweeps across the indigo glass pen rest from left to right, the shadows moving gently with it. Clean premium product video. No people, no hands, no text on screen. Soft quiet room ambience only — NO music, NO voice.',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/product-tutor-deterministic-reliability.test.cjs:49:53
+✖ reliability every allowlisted supplied slot L07 UGC 1 (1.247042ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + undefined
+  - `Use the uploaded character sheet for the woman and the uploaded product sheet for the indigo glass pen rest. Keep her face, hair and outfit exactly the same as the character sheet. Keep the indigo glass pen rest exactly the same — same shape, same colour, same details, same text and logo, no morphing. Selfie-style vertical video: the camera itself is her phone, held at arm's length, so we see her from the chest up looking straight into the lens. NO phone visible anywhere in the frame, no second camera, no screen. She sits at a desk in a normal home room, holding the indigo glass pen rest up near her chest to show it, casual and friendly. Handheld look with slight natural shake, natural window light, a real lived-in room, not a studio, not a polished ad. ONLY she speaks, one voice only, natural Hindi lip-sync, casual friendly tone. She says: "यह पेन रेस्ट देखिए।" real skin, no filter, clearly adult, modest, natural hands with five fingers, no text on screen, no watermark. Clean natural audio only — NO background music.`
+  
+      at TestContext.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-deterministic-reliability.test.cjs:53:9)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: `Use the uploaded character sheet for the woman and the uploaded product sheet for the indigo glass pen rest. Keep her face, hair and outfit exactly the same as the character sheet. Keep the indigo glass pen rest exactly the same — same shape, same colour, same details, same text and logo, no morphing. Selfie-style vertical video: the camera itself is her phone, held at arm's length, so we see her from the chest up looking straight into the lens. NO phone visible anywhere in the frame, no second camera, no screen. She sits at a desk in a normal home room, holding the indigo glass pen rest up near her chest to show it, casual and friendly. Handheld look with slight natural shake, natural window light, a real lived-in room, not a studio, not a polished ad. ONLY she speaks, one voice only, natural Hindi lip-sync, casual friendly tone. She says: "यह पेन रेस्ट देखिए।" real skin, no filter, clearly adult, modest, natural hands with five fingers, no text on screen, no watermark. Clean natural audio only — NO background music.`,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/product-tutor-deterministic-reliability.test.cjs:49:53
+✖ reliability every allowlisted supplied slot L07 UGC 2 (1.218ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + undefined
+  - 'Use the uploaded character sheet for the woman and the uploaded product sheet for the indigo glass pen rest. Keep her face, hair and outfit exactly the same as the character sheet. Keep the indigo glass pen rest exactly the same — same shape, same colour, same details, same text and logo, no morphing. Vertical video shot from her own phone resting on the desk in front of her: the camera itself is the phone, so we see her and the indigo glass pen rest from a low front angle. NO phone visible anywhere in the frame, no second camera, no screen facing us. She uses the indigo glass pen rest for a moment, then looks up straight into the lens and talks, casual and natural. Natural window light, a real lived-in room, not a studio, not a polished ad. ONLY she speaks, one voice only, natural Hindi lip-sync, casual friendly tone. She says: "इसे पास से देखिए।" real skin, no filter, clearly adult, modest, natural hands with five fingers, no text on screen, no watermark. Clean natural audio only — NO background music.'
+  
+      at TestContext.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-deterministic-reliability.test.cjs:53:9)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: 'Use the uploaded character sheet for the woman and the uploaded product sheet for the indigo glass pen rest. Keep her face, hair and outfit exactly the same as the character sheet. Keep the indigo glass pen rest exactly the same — same shape, same colour, same details, same text and logo, no morphing. Vertical video shot from her own phone resting on the desk in front of her: the camera itself is the phone, so we see her and the indigo glass pen rest from a low front angle. NO phone visible anywhere in the frame, no second camera, no screen facing us. She uses the indigo glass pen rest for a moment, then looks up straight into the lens and talks, casual and natural. Natural window light, a real lived-in room, not a studio, not a polished ad. ONLY she speaks, one voice only, natural Hindi lip-sync, casual friendly tone. She says: "इसे पास से देखिए।" real skin, no filter, clearly adult, modest, natural hands with five fingers, no text on screen, no watermark. Clean natural audio only — NO background music.',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/product-tutor-deterministic-reliability.test.cjs:59:1
+✖ reliability local contract rejects unsupported deliverables and keeps valid short FAQ (1.120667ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + {
+  +   policy: 'fact_grounded_practice_draft',
+  +   reply: 'Lesson 05\n' +
+  +     '\n' +
+  +     'Practice draft based only on your supplied product facts. No fake claims or customer testimonials.\n' +
+  +     '\n' +
+  +     'Known facts: cedar rest\n' +
+  +     '\n' +
+  +     'Caption: cedar rest. View the product details before ordering.\n' +
+  +     '\n' +
+  +     'Use only the features and details you gave me; do not invent anything new.',
+  +   templateId: ''
+  + }
+  - null
+  
+      at TestContext.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-deterministic-reliability.test.cjs:60:99)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: { reply: 'Lesson 05\n\nPractice draft based only on your supplied product facts. No fake claims or customer testimonials.\n\nKnown facts: cedar rest\n\nCaption: cedar rest. View the product details before ordering.\n\nUse only the features and details you gave me; do not invent anything new.', policy: 'fact_grounded_practice_draft', templateId: '' },
+    expected: null,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/product-tutor-deterministic-reliability.test.cjs:64:1
+✖ reliability per-deliverable language differs from explanation (1.064917ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /कैप्शन:.*देखें/. Input:
+  
+  'Lesson 05\n' +
+    '\n' +
+    'Practice draft based only on your supplied product facts. No fake claims or customer testimonials.\n' +
+    '\n' +
+    'Known facts: clay spool\n' +
+    '\n' +
+    'Caption: clay spool. View the product details before ordering.\n' +
+    '\n' +
+    'Use only the features and details you gave me; do not invent anything new.'
+  
+      at TestContext.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-deterministic-reliability.test.cjs:64:223)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'Lesson 05\n\nPractice draft based only on your supplied product facts. No fake claims or customer testimonials.\n\nKnown facts: clay spool\n\nCaption: clay spool. View the product details before ordering.\n\nUse only the features and details you gave me; do not invent anything new.',
+    expected: /कैप्शन:.*देखें/,
+    operator: 'match',
+    diff: 'simple'
+  }
+
+test at tests/product-tutor-deterministic-reliability.test.cjs:65:1
+✖ reliability large explicit count delegates without silently truncating (1.318ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + {
+  +   policy: 'fact_grounded_practice_draft',
+  +   reply: 'Lesson 05\n' +
+  +     '\n' +
+  +     'Practice draft based only on your supplied product facts. No fake claims or customer testimonials.\n' +
+  +     '\n' +
+  +     'Known facts: reed case\n' +
+  +     '\n' +
+  +     'Hooks\n' +
+  +     '1. Meet reed case.\n' +
+  +     '2. Take a closer look at reed case.\n' +
+  +     '3. Looking for reed case? See the details.\n' +
+  +     '4. See reed case in focus.\n' +
+  +     '5. Explore reed case before you decide.\n' +
+  +     '6. Meet reed case.\n' +
+  +     '7. Take a closer look at reed case.\n' +
+  +     '8. Looking for reed case? See the details.\n' +
+  +     '9. See reed case in focus.\n' +
+  +     '10. Explore reed case before you decide.\n' +
+  +     '\n' +
+  +     'Use only the features and details you gave me; do not invent anything new.',
+  +   templateId: ''
+  + }
+  - null
+  
+      at TestContext.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-deterministic-reliability.test.cjs:65:157)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: { reply: 'Lesson 05\n\nPractice draft based only on your supplied product facts. No fake claims or customer testimonials.\n\nKnown facts: reed case\n\nHooks\n1. Meet reed case.\n2. Take a closer look at reed case.\n3. Looking for reed case? See the details.\n4. See reed case in focus.\n5. Explore reed case before you decide.\n6. Meet reed case.\n7. Take a closer look at reed case.\n8. Looking for reed case? See the details.\n9. See reed case in focus.\n10. Explore reed case before you decide.\n\nUse only the features and details you gave me; do not invent anything new.', policy: 'fact_grounded_practice_draft', templateId: '' },
+    expected: null,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/product-tutor-deterministic-reliability.test.cjs:66:78
+✖ reliability multilingual rename Product ka naam “Dawn” rakho. (0.236583ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + 'brass dish'
+  - 'Dawn'
+  
+      at TestContext.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-deterministic-reliability.test.cjs:66:237)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'brass dish',
+    expected: 'Dawn',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/product-tutor-deterministic-reliability.test.cjs:66:78
+✖ reliability multilingual rename वस्तु का नाम “Dawn” रखें। (0.156875ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + 'brass dish'
+  - 'Dawn'
+  
+      at TestContext.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-deterministic-reliability.test.cjs:66:237)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'brass dish',
+    expected: 'Dawn',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/product-tutor-deterministic-reliability.test.cjs:67:1
+✖ reliability Hindi field correction does not retain obsolete material (0.446084ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  
+    [
+  +   'Material: brass'
+  -   'material: मिट्टी'
+    ]
+  
+      at TestContext.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-deterministic-reliability.test.cjs:67:214)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [ 'Material: brass' ],
+    expected: [ 'material: मिट्टी' ],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at tests/product-tutor-deterministic-reliability.test.cjs:69:215
+✖ reliability name-first grammar My “Loom” roll is blue linen with 12 pockets, ₹310. (0.13575ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + undefined
+  - 'Loom'
+  
+      at TestContext.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-deterministic-reliability.test.cjs:69:269)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: 'Loom',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/product-tutor-deterministic-reliability.test.cjs:69:215
+✖ reliability name-first grammar “Auréole” is a grey wool mat. (0.095167ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + undefined
+  - 'Auréole'
+  
+      at TestContext.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-deterministic-reliability.test.cjs:69:269)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: 'Auréole',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/product-tutor-deterministic-reliability.test.cjs:69:215
+✖ reliability name-first grammar “राग” मेरा लाल cotton pouch है। (0.102083ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  undefined !== 'राग'
+  
+      at TestContext.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-deterministic-reliability.test.cjs:69:269)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: 'राग',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/product-tutor-deterministic-reliability.test.cjs:69:215
+✖ reliability name-first grammar The label on my tin says “Līn”. (0.116208ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  undefined !== 'Līn'
+  
+      at TestContext.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-deterministic-reliability.test.cjs:69:269)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: 'Līn',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/product-tutor-deterministic-reliability.test.cjs:70:1
+✖ reliability new quoted product before colon clears obsolete facts (0.173208ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + 'wool coaster'
+  - 'Lake'
+  
+      at TestContext.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-deterministic-reliability.test.cjs:70:250)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'wool coaster',
+    expected: 'Lake',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/product-tutor-deterministic-reliability.test.cjs:71:1
+✖ reliability facts before same-turn replacement cannot leak to new product (0.278375ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + 'linen mat'
+  - 'Dune'
+  
+      at TestContext.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-deterministic-reliability.test.cjs:71:212)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'linen mat',
+    expected: 'Dune',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/product-tutor-deterministic-reliability.test.cjs:72:1
+✖ reliability quoted description correction replaces old quantity (0.223708ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + undefined
+  - 'Loom'
+  
+      at TestContext.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-deterministic-reliability.test.cjs:72:262)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: 'Loom',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/product-tutor-deterministic-reliability.test.cjs:73:1
+✖ reliability two English hooks in Hindi explanation keep count and language (1.447917ms)
+  TypeError: Cannot read properties of undefined (reading 'outputs')
+      at TestContext.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-deterministic-reliability.test.cjs:73:225)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7)
+
+test at tests/product-tutor-deterministic-reliability.test.cjs:74:1
+✖ reliability inactive learner gets legitimate Hindi access steps without template bodies (1.712125ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /सक्रिय एक्सेस|खरीद/. Input:
+  
+  'Haan. Current Skillomate web offer me ₹499 pay karke 30 days ke liye all Skillomate courses ka access milta hai.\n' +
+    '\n' +
+    'Ye PhonePe one-time payment hai. Auto-renewal/mandate nahi banta.\n' +
+    '\n' +
+    'Agar Razorpay recurring offer available ho, wo alag hai: ₹1 for 24 hours, phir ₹499/month until cancelled. App Store/Google Play par purchase sheet ke terms alag dikh sakte hain.'
+  
+      at TestContext.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-deterministic-reliability.test.cjs:74:302)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'Haan. Current Skillomate web offer me ₹499 pay karke 30 days ke liye all Skillomate courses ka access milta hai.\n\nYe PhonePe one-time payment hai. Auto-renewal/mandate nahi banta.\n\nAgar Razorpay recurring offer available ho, wo alag hai: ₹1 for 24 hours, phir ₹499/month until cancelled. App Store/Google Play par purchase sheet ke terms alag dikh sakte hain.',
+    expected: /सक्रिय एक्सेस|खरीद/,
+    operator: 'match',
+    diff: 'simple'
+  }
+
+test at tests/product-tutor-deterministic-reliability.test.cjs:75:1
+✖ reliability honest alternative cards preserve refusal and supplied facts (1.304ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + 'fact_grounded_practice_draft'
+  - 'advertising_safety'
+  
+      at TestContext.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-deterministic-reliability.test.cjs:75:243)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'fact_grounded_practice_draft',
+    expected: 'advertising_safety',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/product-tutor-deterministic-reliability.test.cjs:76:1
+✖ reliability extended template facts survive existing strict persistence schema (7.255209ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + undefined
+  - 'white sleeves'
+  
+      at TestContext.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-deterministic-reliability.test.cjs:76:408)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: 'white sleeves',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/product-tutor-deterministic-reliability.test.cjs:78:1
+✖ reliability colon replacement keeps new quoted identity (0.261583ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + 'flax pouch'
+  - 'Aube'
+  
+      at TestContext.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-deterministic-reliability.test.cjs:78:246)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'flax pouch',
+    expected: 'Aube',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/product-tutor-deterministic-reliability.test.cjs:79:1
+✖ reliability comparison cannot collapse into one troubleshooting FAQ (1.880583ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + {
+  +   policy: 'grounded_course_guidance',
+  +   reply: 'Lesson 07\n' +
+  +     '\n' +
+  +     'Add the course FAQ instruction: “The camera itself is her phone. NO phone visible anywhere in the frame.”',
+  +   templateId: ''
+  + }
+  - null
+  
+      at TestContext.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-deterministic-reliability.test.cjs:79:191)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: { reply: 'Lesson 07\n\nAdd the course FAQ instruction: “The camera itself is her phone. NO phone visible anywhere in the frame.”', templateId: '', policy: 'grounded_course_guidance' },
+    expected: null,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/product-tutor-deterministic-reliability.test.cjs:80:1
+✖ reliability purpose clauses do not establish a product (0.127459ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + 'deadline'
+  - undefined
+  
+      at TestContext.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-deterministic-reliability.test.cjs:80:75)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'deadline',
+    expected: undefined,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/product-tutor-deterministic-reliability.test.cjs:81:1
+✖ reliability mixed demo voice uses explicit dialogue language (1.380584ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /उदाहरण संवाद:.*यह PET spray bottle/. Input:
+  
+  'Lesson 07\n' +
+    '\n' +
+    'Yeh practice draft sirf tumhare diye product facts par hai. Fake claims ya customer testimonials nahi hain.\n' +
+    '\n' +
+    'Diye hue facts: PET spray bottle\n' +
+    '\n' +
+    'Honest product demo ka example (practice draft hai, saved template nahi):\n' +
+    '1. Normal home setting mein asli PET spray bottle ya uski reference image dikhao.\n' +
+    'Example line: "Yeh PET spray bottle hai. Order se pehle diye hue details dekho."\n' +
+    '2. PET spray bottle ka close view dikhao; shape, text aur logo same rakho.\n' +
+    'Example line: "PET spray bottle ko paas se dekho."\n' +
+    '3. Presenter visible product ki taraf ishara kare; kharidne ya use karne ka personal experience claim mat karo.\n' +
+    'Example line: "Yeh PET spray bottle hai. Order se pehle diye hue details dekho."\n' +
+    'AI presenter asli customer nahi hai. Naye benefits ya genuine customer testimonials mat banao.\n' +
+    '\n' +
+    'Sirf tumhare diye features aur details use kiye hain; kuch naya invent nahi kiya hai.'
+  
+      at TestContext.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-deterministic-reliability.test.cjs:81:204)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'Lesson 07\n\nYeh practice draft sirf tumhare diye product facts par hai. Fake claims ya customer testimonials nahi hain.\n\nDiye hue facts: PET spray bottle\n\nHonest product demo ka example (practice draft hai, saved template nahi):\n1. Normal home setting mein asli PET spray bottle ya uski reference image dikhao.\nExample line: "Yeh PET spray bottle hai. Order se pehle diye hue details dekho."\n2. PET spray bottle ka close view dikhao; shape, text aur logo same rakho.\nExample line: "PET spray bottle ko paas se dekho."\n3. Presenter visible product ki taraf ishara kare; kharidne ya use karne ka personal experience claim mat karo.\nExample line: "Yeh PET spray bottle hai. Order se pehle diye hue details dekho."\nAI presenter asli customer nahi hai. Naye benefits ya genuine customer testimonials mat banao.\n\nSirf tumhare diye features aur details use kiye hain; kuch naya invent nahi kiya hai.',
+    expected: /उदाहरण संवाद:.*यह PET spray bottle/,
+    operator: 'match',
+    diff: 'simple'
+  }
+
+test at tests/product-tutor-deterministic-reliability.test.cjs:83:168
+✖ reliability verified product course account locale What was my last payment? Reply in Hindi. (0.929625ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /भुगतान|सक्रिय/. Input:
+  
+  'Your plan/access is active via legacy and expires on 2026-10-16, about 1 day remaining. Status: active.\n' +
+    'I do not see a successful payment record for your account in the safe summary available to me.\n' +
+    'For privacy, I can show masked account/payment summaries only, not full transaction IDs or sensitive payment details.'
+  
+      at TestContext.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-deterministic-reliability.test.cjs:83:438)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'Your plan/access is active via legacy and expires on 2026-10-16, about 1 day remaining. Status: active.\nI do not see a successful payment record for your account in the safe summary available to me.\nFor privacy, I can show masked account/payment summaries only, not full transaction IDs or sensitive payment details.',
+    expected: /भुगतान|सक्रिय/,
+    operator: 'match',
+    diff: 'simple'
+  }
+
+test at tests/product-tutor-deterministic-reliability.test.cjs:83:168
+✖ reliability verified product course account locale Explain the Skillomate subscription plan price in Hindi. (0.731792ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /वेब ऑफर|एकमुश्त/. Input:
+  
+  'Haan. Current Skillomate web offer me ₹499 pay karke 30 days ke liye all Skillomate courses ka access milta hai.\n' +
+    '\n' +
+    'Ye PhonePe one-time payment hai. Auto-renewal/mandate nahi banta.\n' +
+    '\n' +
+    'Agar Razorpay recurring offer available ho, wo alag hai: ₹1 for 24 hours, phir ₹499/month until cancelled. App Store/Google Play par purchase sheet ke terms alag dikh sakte hain.'
+  
+      at TestContext.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-deterministic-reliability.test.cjs:83:438)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'Haan. Current Skillomate web offer me ₹499 pay karke 30 days ke liye all Skillomate courses ka access milta hai.\n\nYe PhonePe one-time payment hai. Auto-renewal/mandate nahi banta.\n\nAgar Razorpay recurring offer available ho, wo alag hai: ₹1 for 24 hours, phir ₹499/month until cancelled. App Store/Google Play par purchase sheet ke terms alag dikh sakte hain.',
+    expected: /वेब ऑफर|एकमुश्त/,
+    operator: 'match',
+    diff: 'simple'
+  }
+
+test at tests/product-tutor-deterministic-reliability.test.cjs:85:1
+✖ reliability explicitly limited fill cannot change other known slots (1.080542ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + undefined
+  - "Use the uploaded product sheet for the brass pen cup and the uploaded character sheet for the [woman / man]. Keep the brass pen cup exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Close-up of the [woman's] hands using the brass pen cup on a wooden desk, [clothing that matches the character sheet, e.g. bare arms matching her blue tank top], natural hands with five fingers each, soft window light, shallow depth of field, realistic real-world scale, realistic lifestyle product photography."
+  
+      at TestContext.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-deterministic-reliability.test.cjs:85:292)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: "Use the uploaded product sheet for the brass pen cup and the uploaded character sheet for the [woman / man]. Keep the brass pen cup exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Close-up of the [woman's] hands using the brass pen cup on a wooden desk, [clothing that matches the character sheet, e.g. bare arms matching her blue tank top], natural hands with five fingers each, soft window light, shallow depth of field, realistic real-world scale, realistic lifestyle product photography.",
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/product-tutor-deterministic-reliability.test.cjs:88:1
+✖ reliability called quoted name outranks descriptive subject (0.156042ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + undefined
+  - 'रेखा / Rékhā'
+  
+      at TestContext.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-deterministic-reliability.test.cjs:88:181)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: 'रेखा / Rékhā',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/product-tutor-deterministic-reliability.test.cjs:89:1
+✖ reliability directives after supplied object stay outside identity (0.144166ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + 'blue cotton spool and include checks after generation'
+  - 'blue cotton spool'
+                      ^
+  
+      at TestContext.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-deterministic-reliability.test.cjs:89:87)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'blue cotton spool and include checks after generation',
+    expected: 'blue cotton spool',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

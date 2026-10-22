@@ -1,0 +1,69 @@
+✔ comma-delimited explicit product fills the complete saved body: felt camera sleeve (9.275375ms)
+✔ comma-delimited explicit product fills the complete saved body: brass incense holder (1.771125ms)
+✔ comma-delimited explicit product fills the complete saved body: knitted book pouch (0.997333ms)
+✔ history determiners do not corrupt the approved scaffold: an olive-wood spoon (1.192291ms)
+✔ history determiners do not corrupt the approved scaffold: a quilted tablet case (1.25775ms)
+✔ history determiners do not corrupt the approved scaffold: the hand-thrown teapot (0.922291ms)
+✔ a referring phrase cannot overwrite the remembered entity: the product I mentioned (0.794ms)
+✔ a referring phrase cannot overwrite the remembered entity: the same item (0.883042ms)
+✔ a referring phrase cannot overwrite the remembered entity: it (0.933125ms)
+✔ sales prices, channels and trailing instructions are not part of a product noun (0.378041ms)
+✔ unknown values remain unknown, and assistant claims are never product facts (1.470458ms)
+✔ a new product clears the previous product attributes and price (0.181041ms)
+✔ saved user facts preserve explicit attributes, price, channel and selected angle (1.598167ms)
+✔ Lesson 08 workflow selection uses the matching final assembly rather than an unrelated workflow (0.816833ms)
+✔ the prerequisites source covers phone, laptop, product and course tools (0.800458ms)
+✔ overview facts come from source-derived guidance and preserve course limitations (0.693667ms)
+✔ exact phone troubleshooting returns the entire approved instruction and its lesson (0.813084ms)
+✔ latest Hindi movement intent outranks the preceding logo-blur FAQ (7.65975ms)
+✖ a style-specific recovery selects the relevant asset instead of generic consistency advice (1.192ms)
+✔ deliver the requested practice output without inventing benefits: Hooks (1.079917ms)
+✔ deliver the requested practice output without inventing benefits: Caption: (0.655792ms)
+✔ deliver the requested practice output without inventing benefits: 15-second script (0.682916ms)
+✔ deliver the requested practice output without inventing benefits: Selected ad angle: (0.793958ms)
+✔ deliver the requested practice output without inventing benefits: Google Flow image prompts (0.773541ms)
+✔ a follow-up preserves pending script and caption deliverables from an ad plan (0.794833ms)
+✔ draft language follows the latest request: hindi (1.557167ms)
+✔ draft language follows the latest request: hinglish (0.828958ms)
+✔ draft language follows the latest request: english (0.613125ms)
+✔ a missing deliverable is replaced while a complete valid deliverable survives (1.114875ms)
+✔ provider references and exact troubleshooting strings are validated against selected metadata (1.242083ms)
+✔ unrelated negations cannot excuse affirmative invented endorsements in the same sentence (0.273292ms)
+✔ other-course active scope and denied access cannot use product practice generators (0.61925ms)
+ℹ tests 32
+ℹ suites 0
+ℹ pass 31
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 96.62575
+
+✖ failing tests:
+
+test at tests/product-tutor-phase3.test.cjs:93:1
+✖ a style-specific recovery selects the relevant asset instead of generic consistency advice (1.192ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /Lesson 02/. Input:
+  
+  'L02 Dark Premium\n' +
+    '\n' +
+    '```text\n' +
+    'Use the uploaded product sheet as the reference. Keep the [PRODUCT] exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a matte black surface against a dark background, a single soft rim light outlining its edges, a subtle reflection on the surface, premium moody look, realistic product photography.\n' +
+    '```\n' +
+    '\n' +
+    'Fields still in brackets need your details; I have not invented them.'
+  
+      at TestContext.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase3.test.cjs:96:9)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'L02 Dark Premium\n\n```text\nUse the uploaded product sheet as the reference. Keep the [PRODUCT] exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a matte black surface against a dark background, a single soft rim light outlining its edges, a subtle reflection on the surface, premium moody look, realistic product photography.\n```\n\nFields still in brackets need your details; I have not invented them.',
+    expected: /Lesson 02/,
+    operator: 'match',
+    diff: 'simple'
+  }

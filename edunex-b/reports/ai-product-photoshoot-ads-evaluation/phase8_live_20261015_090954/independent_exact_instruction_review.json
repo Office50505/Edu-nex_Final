@@ -1,0 +1,68 @@
+{
+  "method": "Verbatim frozen FAQ sentences, whitespace/quote normalization only; separate from full-template audit.",
+  "total": 6,
+  "passed": 4,
+  "failed": 2,
+  "results": [
+    {
+      "id": "ppads_039",
+      "turn": 1,
+      "question": "My UGC video shows a phone in the frame. What exact fix should I add?",
+      "expectedExactInstructions": [
+        "The camera itself is her phone. NO phone visible anywhere in the frame."
+      ],
+      "actualResponse": "Lesson 07\n\nAdd the course FAQ instruction: “The camera itself is her phone. NO phone visible anywhere in the frame.”",
+      "passed": true
+    },
+    {
+      "id": "phase8_unseen_011",
+      "turn": 1,
+      "question": "My UGC presenter seems to be filmed by a second phone that enters the shot. Which exact camera clarification sentence does Lesson 07 prescribe?",
+      "expectedExactInstructions": [
+        "The camera itself is her phone. NO phone visible anywhere in the frame."
+      ],
+      "actualResponse": "Lesson 07\n\nIn Flow choose Video → Ingredients and attach the face, character sheet and product sheet. Recorded settings: 9:16, 720p, 8 sec. The camera itself is the phone: no phone should appear in the frame. Use a normal home room and short dialogue written in Hindi Devanagari, based on the L05 hook. Do not present an AI actor as a real reviewing customer.",
+      "passed": false
+    },
+    {
+      "id": "phase8_unseen_012",
+      "turn": 1,
+      "question": "UGC mein mobile screen ke kone se nazar aa raha hai. Lesson 07 ki exact camera clarification line do, sirf generic advice nahi.",
+      "expectedExactInstructions": [
+        "The camera itself is her phone. NO phone visible anywhere in the frame."
+      ],
+      "actualResponse": "Lesson 07\n\nFlow mein Video → Ingredients chuno aur face, character sheet, product sheet lagao. Course settings: 9:16, 720p, 8 sec. Camera hi phone hai; frame mein phone na dikhe. Normal home room rakho. L05 hook se chhota dialogue Hindi Devanagari mein likho. AI actor ko asli customer review mat batao.",
+      "passed": false
+    },
+    {
+      "id": "phase8_unseen_017",
+      "turn": 1,
+      "question": "Lesson 03 की तीन तस्वीरों में प्रस्तुतकर्ता का चेहरा बदल गया। मूल character sheet रखते हुए किस preservation instruction का इस्तेमाल करूँ?",
+      "expectedExactInstructions": [
+        "keep her face exactly the same as the character sheet"
+      ],
+      "actualResponse": "Lesson 03\n\nCharacter sheet reference में लगाएँ और “keep her face exactly the same as the character sheet” लिखें।",
+      "passed": true
+    },
+    {
+      "id": "phase8_unseen_019",
+      "turn": 1,
+      "question": "My UGC footage feels like a polished commercial rather than a person filming casually at home. Supply the course wording that changes this style.",
+      "expectedExactInstructions": [
+        "normal home room, handheld look, not a studio, not a polished ad"
+      ],
+      "actualResponse": "Lesson 07\n\nUse “normal home room, handheld look, not a studio, not a polished ad”.",
+      "passed": true
+    },
+    {
+      "id": "ppads_conv_003",
+      "turn": 2,
+      "question": "And the phone is visible too.",
+      "expectedExactInstructions": [
+        "The camera itself is her phone. NO phone visible anywhere in the frame."
+      ],
+      "actualResponse": "Lesson 07\n\nAdd the course FAQ instruction: “The camera itself is her phone. NO phone visible anywhere in the frame.”",
+      "passed": true
+    }
+  ]
+}

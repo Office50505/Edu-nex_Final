@@ -1,0 +1,106 @@
+{
+  "verifiedAt": "2026-10-16T09:23:27.562908+00:00",
+  "baselineSafetyTests": {
+    "executedAt": "2026-10-16T09:19:50.574070+00:00",
+    "exitCode": 1,
+    "total": 65,
+    "failed": 43,
+    "skipped": 0,
+    "passed": 22
+  },
+  "finalBackend": {
+    "passed": 476,
+    "failed": 0,
+    "skipped": 0,
+    "total": 476
+  },
+  "finalPythonEvaluator": {
+    "passed": 167,
+    "failed": 0,
+    "skipped": 0,
+    "total": 167
+  },
+  "finalSafetySubset": {
+    "total": 67,
+    "passed": 67,
+    "failed": 0,
+    "skipped": 0
+  },
+  "prior409Regressions": [],
+  "criticalCases": [
+    {
+      "id": "phase12_new_001",
+      "allExactBodiesPass": true,
+      "turns": [
+        {
+          "turn": 1,
+          "answerUnchangedFromPhase14A": true,
+          "fullBodyMatches": true,
+          "providerRequests": 0
+        }
+      ]
+    },
+    {
+      "id": "phase12_new_002",
+      "allExactBodiesPass": true,
+      "turns": [
+        {
+          "turn": 1,
+          "answerUnchangedFromPhase14A": true,
+          "fullBodyMatches": true,
+          "providerRequests": 0
+        }
+      ]
+    },
+    {
+      "id": "phase12_new_005",
+      "allExactBodiesPass": true,
+      "turns": [
+        {
+          "turn": 1,
+          "answerUnchangedFromPhase14A": true,
+          "fullBodyMatches": true,
+          "providerRequests": 0
+        }
+      ]
+    },
+    {
+      "id": "phase12_new_029",
+      "allExactBodiesPass": true,
+      "turns": [
+        {
+          "turn": 1,
+          "answerUnchangedFromPhase14A": true,
+          "fullBodyMatches": true,
+          "providerRequests": 0
+        },
+        {
+          "turn": 2,
+          "answerUnchangedFromPhase14A": true,
+          "fullBodyMatches": true,
+          "providerRequests": 0
+        }
+      ]
+    }
+  ],
+  "phase12PassingReplay": {
+    "cases": 40,
+    "turns": 48,
+    "byteIdenticalCases": 40,
+    "changedCases": [],
+    "replayedProviderInvocations": 11,
+    "unexpectedTransportRequests": 0,
+    "externalProviderInvocations": 0
+  },
+  "providerAdapterFixtureInvocations": 62,
+  "providerFixtureTransportAttempts": 70,
+  "externalProviderRequests": 0,
+  "productionInteraction": false,
+  "deployed": false,
+  "phase14BStarted": false,
+  "knownIterationFailures": [
+    "Initial safety run: 43/65 failures before source changes",
+    "First correction: 2/65 existing failures remained because a rejected named declaration retried as a generic identity; addressed with fallback exclusions",
+    "Two additional whitespace/fallback tests added; final safety subset 67/67 passes"
+  ]
+}

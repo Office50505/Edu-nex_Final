@@ -1,0 +1,174 @@
+{
+  "suite": "Phase5_five_root_cause_local_replays",
+  "course": {
+    "title": "AI Product Photoshoot & Ads",
+    "primary_slug": "ai-product-photoshoot-ads",
+    "lessons": 8,
+    "source": "knowledge/ai-product-photoshoot-ads/training.txt"
+  },
+  "single_turn_tests": [
+    {
+      "id": "ppads_018",
+      "category": "lesson_4",
+      "query": "How does Lesson 04 handle Diwali and wedding product photos?",
+      "expected_language": "english",
+      "required_groups": [
+        [
+          "Lesson 04",
+          "L04"
+        ],
+        [
+          "Diwali"
+        ],
+        [
+          "wedding"
+        ],
+        [
+          "product sheet"
+        ],
+        [
+          "product sharp",
+          "hero"
+        ],
+        [
+          "foreground"
+        ]
+      ],
+      "forbidden_any": [
+        "change the product design"
+      ]
+    },
+    {
+      "id": "ppads_022",
+      "category": "troubleshooting",
+      "query": "When I change colour, the product shape also changes. What is the course fix?",
+      "expected_language": "english",
+      "required_groups": [
+        [
+          "Lesson 04",
+          "L04"
+        ],
+        [
+          "Only change the colour"
+        ],
+        [
+          "keep everything else exactly the same"
+        ]
+      ],
+      "forbidden_any": [
+        "redesign"
+      ]
+    },
+    {
+      "id": "phase4_new_007",
+      "category": "troubleshooting",
+      "query": "A handset keeps appearing on screen in my Lesson 07 UGC clip. What exact camera clarification from the course should I add to remove that handset?",
+      "expected_language": "english",
+      "required_groups": [
+        [
+          "Lesson 07"
+        ],
+        [
+          "camera itself is her phone"
+        ],
+        [
+          "NO phone visible anywhere in the frame"
+        ]
+      ],
+      "exact_required": [
+        "The camera itself is her phone. NO phone visible anywhere in the frame."
+      ]
+    }
+  ],
+  "conversation_tests": [
+    {
+      "id": "ppads_conv_007",
+      "category": "multi_turn_course_isolation",
+      "turns": [
+        {
+          "user": "Is this the AI Filmmaking course?",
+          "expected_language": "english",
+          "required_groups": [
+            [
+              "AI Product Photoshoot & Ads"
+            ],
+            [
+              "not AI Filmmaking",
+              "different course"
+            ],
+            [
+              "product photos",
+              "ads"
+            ]
+          ]
+        },
+        {
+          "user": "Then tell me the product video settings.",
+          "expected_language": "english",
+          "required_groups": [
+            [
+              "Lesson 06",
+              "L06"
+            ],
+            [
+              "16:9"
+            ],
+            [
+              "Omni 1.1 Flash"
+            ],
+            [
+              "720p"
+            ],
+            [
+              "6 sec"
+            ],
+            [
+              "x1"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "phase4_new_002",
+      "category": "multi_turn_exact_prompt",
+      "turns": [
+        {
+          "user": "In Lesson 04 I want to change the colour of the handle to cobalt blue, while preserving everything else. Explain the colour-variant workflow.",
+          "expected_language": "english",
+          "required_groups": [
+            [
+              "Lesson 04"
+            ],
+            [
+              "colour",
+              "color"
+            ]
+          ]
+        },
+        {
+          "user": "Copy the exact L04 Colour Variant Sheet prompt, changing the handle to cobalt blue and leaving all other details untouched.",
+          "expected_language": "english",
+          "required_groups": [
+            [
+              "handle"
+            ],
+            [
+              "cobalt blue"
+            ],
+            [
+              "same shape"
+            ],
+            [
+              "same layout"
+            ]
+          ],
+          "forbidden_any": [
+            "[new colour",
+            "[the part"
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,176 @@
+{
+  "id": "FRESH-MT-002",
+  "turnIndex": 1,
+  "status": "UNTESTED",
+  "critical": false,
+  "suspectedCritical": false,
+  "rubricVersion": "phase14b-independent-v1",
+  "criteria": [
+    {
+      "criterion": "Acknowledge supplied facts without inventing features.",
+      "status": "UNTESTED",
+      "excerpts": [
+        "I can help with AI Product Photoshoot & Ads course guidance. Which lesson or product task do you want help with? Detailed course materials require active lesson access."
+      ],
+      "reason": "Observed saved course-help fallback does not acknowledge the supplied Dori notebook brief. Necessary actual provider response absent for this essential requirement; no fallback/model pass inferred."
+    }
+  ],
+  "dimensions": {
+    "grounding": "UNTESTED",
+    "facts": "UNTESTED",
+    "taskCompleteness": "UNTESTED",
+    "language": "UNTESTED",
+    "authorization": "PASS",
+    "isolation": "PASS",
+    "httpStatus": "PASS"
+  },
+  "requestedExactBodyChecks": [],
+  "supplementalExactBodyChecks": [],
+  "providerAvailability": {
+    "provider": "built-in-course-guide",
+    "outcome": {
+      "type": "provider_fallback",
+      "liveModelAnswer": false,
+      "providerStatus": "connection_error",
+      "responseIssue": null
+    },
+    "attempts": [
+      {
+        "index": 1,
+        "startedAt": "2026-10-16T11:00:15.643Z",
+        "requestSha256": "56c7b1a87802c1151947b8e4f1b549629480920bac61227f854231f5ff5a9b6a",
+        "promptModified": false,
+        "recordedFixture": false,
+        "error": {
+          "name": "Error",
+          "code": "PROVIDER_PAYLOAD_NOT_APPROVED"
+        },
+        "durationMs": 0,
+        "completedAt": "2026-10-16T11:00:15.643Z"
+      },
+      {
+        "index": 2,
+        "startedAt": "2026-10-16T11:00:15.744Z",
+        "requestSha256": "56c7b1a87802c1151947b8e4f1b549629480920bac61227f854231f5ff5a9b6a",
+        "promptModified": false,
+        "recordedFixture": false,
+        "error": {
+          "name": "Error",
+          "code": "PROVIDER_PAYLOAD_NOT_APPROVED"
+        },
+        "durationMs": 0,
+        "completedAt": "2026-10-16T11:00:15.744Z"
+      }
+    ],
+    "inferenceNecessaryForThisTurn": true,
+    "reason": "Actual configured provider requests blocked before external transport. No model/fixture response. Saved fallback cannot establish required semantic response."
+  },
+  "ownershipPayloadReview": {
+    "reviewed": true,
+    "actor": "A",
+    "actorId": "f44dcd9d55d8fad06fbf8e08",
+    "scopeInspection": {
+      "independentExplicitSelectedCourse": "6d0000000000000000000000",
+      "independentExpectedOwner": "6d0000000000000000000000",
+      "explicitUnknownScope": false,
+      "independentAuthAndEntitlement": true,
+      "requiresSemanticScopeAdjudication": false,
+      "protectedRetrievedSources": [
+        {
+          "id": "S1",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "L03 Character Sheet (bonus)",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_3",
+          "lessonName": "L03 Character Sheet (bonus)",
+          "contentType": "exact-template",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:exact-template:l03-character-sheet-bonus"
+        }
+      ],
+      "retrievalProductBodies": [
+        {
+          "heading": "L03 Character Sheet (bonus)",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "5fa6b4f9183b5f814290c94cda7285d2d5c14939b1ac7494bcac14987f3aa86f"
+        }
+      ],
+      "assembledContextProductBodies": [
+        {
+          "heading": "L03 Character Sheet (bonus)",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "5fa6b4f9183b5f814290c94cda7285d2d5c14939b1ac7494bcac14987f3aa86f"
+        }
+      ],
+      "assembledPayloads": [
+        {
+          "sha256": "56c7b1a87802c1151947b8e4f1b549629480920bac61227f854231f5ff5a9b6a",
+          "validation": "accepted",
+          "error": null,
+          "scope": {
+            "activeCourse": {
+              "_id": "6d0000000000000000000000",
+              "slug": "ai-product-photoshoot-ads"
+            },
+            "includeMaterials": true
+          },
+          "productBodies": [
+            {
+              "heading": "L03 Character Sheet (bonus)",
+              "contentType": "exact-template",
+              "owner": "6d0000000000000000000000",
+              "sha256": "5fa6b4f9183b5f814290c94cda7285d2d5c14939b1ac7494bcac14987f3aa86f"
+            }
+          ],
+          "messageCount": 2
+        }
+      ],
+      "providerAdapterProductBodies": [
+        {
+          "heading": "L03 Character Sheet (bonus)",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "5fa6b4f9183b5f814290c94cda7285d2d5c14939b1ac7494bcac14987f3aa86f"
+        }
+      ],
+      "responseProductBodies": [],
+      "noPayloadConstructed": false,
+      "blockedAdapterAttempts": 2,
+      "externalTransportAttempts": 0,
+      "potentialCriticalFindings": [],
+      "inspectionPerformed": true
+    },
+    "dbOperations": [
+      {
+        "model": "AiTutorSession",
+        "operation": "findOne",
+        "filter": {
+          "user": "f44dcd9d55d8fad06fbf8e08",
+          "course": "6d0000000000000000000000"
+        }
+      },
+      {
+        "model": "Course",
+        "operation": "find",
+        "filter": {
+          "status": "published",
+          "_id": "6d0000000000000000000000"
+        }
+      },
+      {
+        "model": "AiTutorSession",
+        "operation": "upsert",
+        "filter": {
+          "user": "f44dcd9d55d8fad06fbf8e08",
+          "course": "6d0000000000000000000000"
+        }
+      }
+    ],
+    "reason": "Read full relevant assembled context/user and common prefix match SA011. Sole retrieved source and detected body authorized product-course Character Sheet; own actor brief/price/safe profile/session only. All flags inspected, both adapter payloads identical assembly. No foreign protected/private state."
+  },
+  "gradedAt": "2026-10-16T11:00:35.018492+00:00"
+}

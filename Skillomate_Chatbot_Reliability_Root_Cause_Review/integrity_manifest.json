@@ -1,0 +1,361 @@
+{
+  "algorithm": "SHA-256",
+  "excluded": "This integrity_manifest.json; Python __pycache__ files",
+  "files": [
+    {
+      "path": "01_Executive_Summary.md",
+      "bytes": 3912,
+      "sha256": "fb38460dc5c474531012f735173d0b8bdc1817f255b67dcf856d7cc37b55f635"
+    },
+    {
+      "path": "02_All_67_Failed_Case_Classifications.md",
+      "bytes": 237771,
+      "sha256": "bac175d83696eb0aa10eb6ee5d2050d5ae1c37cfaab3287dec64b4273557b397"
+    },
+    {
+      "path": "03_Evaluation_Validity_Assessment.md",
+      "bytes": 7576,
+      "sha256": "66f2baa2a90d02dde1023905a94533a9633708b29c6f6b6ce55ed7a230846047"
+    },
+    {
+      "path": "04_Root_Cause_Groups_And_Corrections.md",
+      "bytes": 26276,
+      "sha256": "cee1b643fd116f293c6a7a1f9e0957da1856595de418aa06d43e8c81dc162670"
+    },
+    {
+      "path": "05_Source_Code_Trace.md",
+      "bytes": 6671,
+      "sha256": "faab1ab39db456d2bcf377da12a167c3d7518a4f47aa2325b63a67d38efe43f7"
+    },
+    {
+      "path": "06_Prioritized_Implementation_Plan.md",
+      "bytes": 5728,
+      "sha256": "323c68aa7f88a04358d08d1c0bba893c361ba497827a0c781a4ee442830c57c2"
+    },
+    {
+      "path": "07_Regression_Test_Plan.md",
+      "bytes": 7463,
+      "sha256": "8321949bce8a6566ce0241db1dcad090298cc071758281316cefc3315732ffa9"
+    },
+    {
+      "path": "08_Controlled_Provider_Test_Plan.md",
+      "bytes": 6794,
+      "sha256": "e682f2d59cfda3d2f3b99467803ee64cc295beff1d81078445939e809933212e"
+    },
+    {
+      "path": "09_Release_Blockers_And_Recommendation.md",
+      "bytes": 3481,
+      "sha256": "5502760259984f6a47f3b5b4610e99bc6074e11579f08c81d05a4c8602ffc675"
+    },
+    {
+      "path": "README.md",
+      "bytes": 3123,
+      "sha256": "6f14cbff14697237d08435a50764f251bd083e906f2af39412921f63e037af6a"
+    },
+    {
+      "path": "evidence/all_case_audit_inputs.json",
+      "bytes": 20666298,
+      "sha256": "3208b8fe789939554faa9adf59027e9115d3847f91a1fd86bcf32b6c50a21893"
+    },
+    {
+      "path": "evidence/audit_notes.py",
+      "bytes": 15675,
+      "sha256": "cb423af6552c08b36d9c0ea31b967fd31da9635c30246daed8de4430e5b07bcd"
+    },
+    {
+      "path": "evidence/audit_summary.json",
+      "bytes": 1206,
+      "sha256": "a64b7f57c74064544b0fbac1b854f053b04bea3d16caa82ec7ae1287ce0d08d3"
+    },
+    {
+      "path": "evidence/build_review.py",
+      "bytes": 31539,
+      "sha256": "06d45be4f02bcaa5674a5109315b6885a14d84d20353d46c7db69adcded80161"
+    },
+    {
+      "path": "evidence/failed_case_classifications.csv",
+      "bytes": 19497,
+      "sha256": "d06d3aa9c221244ebc736729be336809226b5137970e2fdbd12f9abd331a6ac6"
+    },
+    {
+      "path": "evidence/failed_case_classifications.json",
+      "bytes": 513118,
+      "sha256": "79b40656a1b238829215b9fe937815f9f65e8ff652dd09c8d7f03021acea7330"
+    },
+    {
+      "path": "evidence/final_preservation_verification.json",
+      "bytes": 1513,
+      "sha256": "187b5f9d55e3787e21552fc839e55a9f0df9d4b5eeba326a94dde4b1462de3c1"
+    },
+    {
+      "path": "evidence/git_status_after.txt",
+      "bytes": 4432,
+      "sha256": "4e2ae6a3baac517aa1157a6919f3af409633a296171157f37b9222a56cabc941"
+    },
+    {
+      "path": "evidence/git_status_before.txt",
+      "bytes": 4432,
+      "sha256": "4e2ae6a3baac517aa1157a6919f3af409633a296171157f37b9222a56cabc941"
+    },
+    {
+      "path": "evidence/input/Skillomate_Chatbot_Fresh_Blind_Evaluation.zip",
+      "bytes": 5615303,
+      "sha256": "c70c77fe946a53ff7de18a1f112a22409aaa81903bee0f21c07bf5e8d36de95c"
+    },
+    {
+      "path": "evidence/intake_and_baseline.json",
+      "bytes": 141618,
+      "sha256": "5838b9fe7963d795124c1fa33f1c3dceef3436fe81642bae1421673143d27a70"
+    },
+    {
+      "path": "evidence/offline_diagnostics.cjs",
+      "bytes": 3866,
+      "sha256": "ebd1e02a285f414751c3b64d2bfa101a5563612d5dbfaa04d27a3328c4ae766d"
+    },
+    {
+      "path": "evidence/offline_diagnostics.json",
+      "bytes": 100306,
+      "sha256": "e52d6522c5327b4343e7445dc9285de0315b7dd3ad4991bad132f887e26e6243"
+    },
+    {
+      "path": "evidence/offline_diagnostics_stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "evidence/offline_diagnostics_stdout.log",
+      "bytes": 82,
+      "sha256": "5b15d1766df8e4aaff0c1d92dcbe798d6ad4dca37782064369e9ca64978b90bf"
+    },
+    {
+      "path": "evidence/original_candidate_manifest.json",
+      "bytes": 149332,
+      "sha256": "f953744c9c03c6c48bd6adcb6343c20c22aa0a9c1e392ef67e1dd03d8b2dd2c2"
+    },
+    {
+      "path": "evidence/original_case_schema.json",
+      "bytes": 1881,
+      "sha256": "c163ba2258d42806140f02ada5f289a2900ebdcd31b734da4cc23dae1cf31d3e"
+    },
+    {
+      "path": "evidence/original_coverage_inventory.json",
+      "bytes": 1141,
+      "sha256": "bc6faef1d66d50e9b7121370ff315b7d776a48fa0e9bb28db0f44b0dcde3980a"
+    },
+    {
+      "path": "evidence/original_evaluation_freeze.json",
+      "bytes": 4565,
+      "sha256": "5d0a3d63c1b9561f3fa9eee958f96466b3e61494b7d0948625cd841eb2426140"
+    },
+    {
+      "path": "evidence/original_execution_policy.json",
+      "bytes": 941,
+      "sha256": "5d92fd9aff11027fc557df9a8f6d91e558d61dc544508e7c0688559e33c1ea77"
+    },
+    {
+      "path": "evidence/original_harness/inspect_scope.cjs",
+      "bytes": 4475,
+      "sha256": "d567516f11d0dd865db275dbe9241e7dd87e4eadcc89d17e586b0fa0fb0d4250"
+    },
+    {
+      "path": "evidence/original_harness/isolated_author/author_attestation.txt",
+      "bytes": 1323,
+      "sha256": "4551402b350133a2be924ddd7687effb0dc56e8e47d512db4d3e93a7f62db0f7"
+    },
+    {
+      "path": "evidence/original_harness/isolated_grader/grader_attestation.json",
+      "bytes": 3800,
+      "sha256": "0d9cb931465e42da41fe7ef8b04f412dc48417e11ef8eef21ac6587bbf6f7c16"
+    },
+    {
+      "path": "evidence/original_harness/isolated_grader/grader_protocol.json",
+      "bytes": 2410,
+      "sha256": "8d5f7dfc02bdf465499c788450efa88cc2390894b5ebe131da9dbb634497524e"
+    },
+    {
+      "path": "evidence/original_harness/local_only_guard.cjs",
+      "bytes": 1244,
+      "sha256": "2ded19aafc45b830dc95cb79ae7ba6e314017158fd07dd84ebb98665674ad1e7"
+    },
+    {
+      "path": "evidence/original_harness/pipeline.cjs",
+      "bytes": 12328,
+      "sha256": "019d35ad28ffa402bd218ffa78bfec74a43954baaf079c3c1e2644aac15c176d"
+    },
+    {
+      "path": "evidence/original_harness/run_case.cjs",
+      "bytes": 4927,
+      "sha256": "e3b9a18d2705d47fecdf7389765618f3c449c1777043e6fd4c15f45b9447af06"
+    },
+    {
+      "path": "evidence/original_harness/run_queue.cjs",
+      "bytes": 1553,
+      "sha256": "a06cf4d437dc78bc06ce30539fa8a5d36bd44e7f275e264949df42479183b89e"
+    },
+    {
+      "path": "evidence/original_harness/scoring_rubric.json",
+      "bytes": 4560,
+      "sha256": "80c4347805a5fe5e25ca6c06d6fb3b894ff0a40e0a147cd0be976e1b52bb1995"
+    },
+    {
+      "path": "evidence/original_results_summary.json",
+      "bytes": 83801,
+      "sha256": "25c1336d3d8c1cacb916a74f235f5460de1643e4d36469532363dfbbbcdc36f5"
+    },
+    {
+      "path": "evidence/original_scoring_rubric.json",
+      "bytes": 4560,
+      "sha256": "80c4347805a5fe5e25ca6c06d6fb3b894ff0a40e0a147cd0be976e1b52bb1995"
+    },
+    {
+      "path": "evidence/provider_payload_budget.json",
+      "bytes": 29294,
+      "sha256": "cbf053a75aa2f1004fc035b2cf09248f9031e2a87d0e3a0072320e0bcdffb91e"
+    },
+    {
+      "path": "evidence/root_cause_groups.json",
+      "bytes": 30508,
+      "sha256": "1bf8222b1bc002d50fb0f059c005ed5de032ee731fd2a39c59a24c50416c4f5d"
+    },
+    {
+      "path": "evidence/source/edunex-b/knowledge/README.md",
+      "bytes": 6094,
+      "sha256": "11e388e0b8faea336d1f28d46c02bf1a13bbbeb06e5acff1eab5939478cf490f"
+    },
+    {
+      "path": "evidence/source/edunex-b/knowledge/ai-filmmaking/training-l9-15.txt",
+      "bytes": 5902,
+      "sha256": "e0090a6eef0c0ac244fe494b6c19e015e58208d722b21ade7e24ee3de11fe180"
+    },
+    {
+      "path": "evidence/source/edunex-b/knowledge/ai-filmmaking/training.txt",
+      "bytes": 22482,
+      "sha256": "19d9b79de6f3994cfaa2f58822384a6f15b32da651e050e4d1293208cd65a3cd"
+    },
+    {
+      "path": "evidence/source/edunex-b/knowledge/ai-influencer/lessons.txt",
+      "bytes": 92120,
+      "sha256": "9ee1ddbd1b2b1f7d95e6580324a1d3f886344d515b41c31325a6b42a7978c7dd"
+    },
+    {
+      "path": "evidence/source/edunex-b/knowledge/ai-influencer/notes.txt",
+      "bytes": 35669,
+      "sha256": "8bdd286a9b1a1486ca1d6f7c98c2293b601ed038dab1f770f3ef1a70ea4574c1"
+    },
+    {
+      "path": "evidence/source/edunex-b/knowledge/ai-influencer/troubleshooting.txt",
+      "bytes": 17479,
+      "sha256": "84f7dfd9299037441bc5269e6ea6edee251ec1fbbfefa1047863b4dab0ccd5ab"
+    },
+    {
+      "path": "evidence/source/edunex-b/knowledge/ai-product-photoshoot-ads/guidance.json",
+      "bytes": 32153,
+      "sha256": "a9160a567a4428bfa5c5ca64ef9f2f8c5fd930890b995bbded638b5b9b7b1e1e"
+    },
+    {
+      "path": "evidence/source/edunex-b/knowledge/ai-product-photoshoot-ads/training.txt",
+      "bytes": 21621,
+      "sha256": "96471b6991c3724f9b8315fc7b3d1bb73b409eb0272517432cbfdd98882127df"
+    },
+    {
+      "path": "evidence/source/edunex-b/knowledge/platform/skillomate-platform.txt",
+      "bytes": 6276,
+      "sha256": "603ad7be91e415aa3b71831d6c7ffabb545a63074c4aac0e6d65cfe5b0660d5f"
+    },
+    {
+      "path": "evidence/source/edunex-b/middleware/compatAuth.js",
+      "bytes": 4176,
+      "sha256": "10e041d66261b61271911f0e0731518a89c635aad55b238d9fa17f68e17858a8"
+    },
+    {
+      "path": "evidence/source/edunex-b/models/AiTutorSession.js",
+      "bytes": 1808,
+      "sha256": "29a73980a06f69d74ddd720f6148cc652d4b8f354cda6b72ab3f8d35c5febced"
+    },
+    {
+      "path": "evidence/source/edunex-b/routes/ai.js",
+      "bytes": 16172,
+      "sha256": "e514c48126d61574ed1599246e5680d9b32eb2d621305205be87b1beb34e0895"
+    },
+    {
+      "path": "evidence/source/edunex-b/services/aiCompliance.js",
+      "bytes": 4153,
+      "sha256": "4ade54cd78363f803195267d0721befdd8821c9fe79acf6449945c06c13118c1"
+    },
+    {
+      "path": "evidence/source/edunex-b/services/aiTutorService.js",
+      "bytes": 82540,
+      "sha256": "547ca63794ebaa8bea69284d010e62c5f82deedccd31d8d16a9802520d2da147"
+    },
+    {
+      "path": "evidence/source/edunex-b/services/courseAccess.js",
+      "bytes": 1689,
+      "sha256": "c073f0f1cb7244c5ddee3bc1388d074110dfe364a84b31c9afa7b904f2318da1"
+    },
+    {
+      "path": "evidence/source/edunex-b/services/googlePlayEntitlement.js",
+      "bytes": 5123,
+      "sha256": "3541dd48b9e3732f66136053849e8594b64f434bf31c1d510f38b68889750ae6"
+    },
+    {
+      "path": "evidence/source/edunex-b/services/productTutorGrounding.js",
+      "bytes": 3503,
+      "sha256": "ad24c1a6ab80d7abf87d20329af0bf631e51d4dbf1c5fcdff7128afc9765656b"
+    },
+    {
+      "path": "evidence/source/edunex-b/services/productTutorIntent.js",
+      "bytes": 5264,
+      "sha256": "cb3f217ec8d2cfbe9d3f38f137ea816aac482e23357f55664f49c53cd5ad45e7"
+    },
+    {
+      "path": "evidence/source/edunex-b/services/productTutorKnowledge.js",
+      "bytes": 28478,
+      "sha256": "104b598b1ffd816356d9b4c27e270a80db597e624c30a0b3d7841b2b66377ae1"
+    },
+    {
+      "path": "evidence/source/edunex-b/services/productTutorResponse.js",
+      "bytes": 23035,
+      "sha256": "f6989efae2fc11aeab6543ba6f945cae589bcacb683c25325d8ed68b0f97663e"
+    },
+    {
+      "path": "evidence/source/edunex-b/services/productTutorState.js",
+      "bytes": 8959,
+      "sha256": "1b0148e1978a8067ea8cd337d0892ace9e8d2e1197ea140d72f334e6d1647eac"
+    },
+    {
+      "path": "evidence/source/edunex-b/services/productTutorTasks.js",
+      "bytes": 16482,
+      "sha256": "bc7c081634d80dcea4fe5b9d96b071feacb969294631773c17face6496573d75"
+    },
+    {
+      "path": "evidence/source/edunex-b/services/subscriptionAccess.js",
+      "bytes": 5345,
+      "sha256": "19f77a134d270297b88c3bddc30bec3e20a203abab1a3770ae2d836418905e0d"
+    },
+    {
+      "path": "evidence/source/edunex-b/services/tutorKnowledge.js",
+      "bytes": 22622,
+      "sha256": "b3999eaeb4e631c9049cf6e686d4470298e5317c900e29469e97103d3eef6753"
+    },
+    {
+      "path": "evidence/source/edunex-b/services/tutorProvider.js",
+      "bytes": 2960,
+      "sha256": "501ed3b619515e2d8eda3a36e2acd80b99b28697de7dd9ddf5b6b5682121d064"
+    },
+    {
+      "path": "evidence/source_snapshots.json",
+      "bytes": 4101,
+      "sha256": "bd52f22187a1dda752d905316b8beb70354502215b3cfd494b4bfc86f3bb0ea4"
+    },
+    {
+      "path": "evidence/state_control_preconditions.json",
+      "bytes": 305841,
+      "sha256": "f86ed18a0b274af9412bce467b5d478943d89c1be2cf1cbd0650bee521294e11"
+    },
+    {
+      "path": "evidence/verify_and_package.py",
+      "bytes": 7768,
+      "sha256": "621eda5537d3c9600f29a45873d367f8b5002c48336df85840bb2a53d614d199"
+    }
+  ]
+}

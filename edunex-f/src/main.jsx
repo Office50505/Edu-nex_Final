@@ -1,11 +1,8 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
-import "../js/edunex-api.js";
-import App from "./App.jsx";
-import { initAnalytics } from "./lib/analytics.js";
 import "./styles/fonts.css";
-import "./styles/app.css";
-import "./styles/mobile-footer-fix.css";
+
+const ADMIN_STANDALONE = import.meta.env.VITE_ADMIN_STANDALONE === "true";
 
 function loadDeferredAiWidget() {
   void import("../js/nex-ai-widget.js").catch((error) => {
@@ -49,9 +46,82 @@ function scheduleDeferredTask(task, delay, { onUserIntent = true } = {}) {
   else window.addEventListener("load", schedule, { once: true });
 }
 
-createRoot(document.getElementById("root")).render(
-  <App />
-);
+function routeFromLocation() {
+  return `${window.location.pathname}${window.location.search}${window.location.hash}`;
+}
 
-scheduleDeferredTask(initAnalytics, 4000);
-scheduleDeferredTask(loadDeferredAiWidget, 6000, { onUserIntent: false });
+function shouldUseAdminNavigation(event, adminPageFromPath) {
+  if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return null;
+  const anchor = event.target.closest?.("a[href]");
+  if (!anchor) return null;
+  if (anchor.target && anchor.target !== "_self") return null;
+  if (anchor.hasAttribute("download")) return null;
+
+  const rawHref = anchor.getAttribute("href") || "";
+  if (!rawHref || rawHref.startsWith("#")) return null;
+  if (/^(mailto:|tel:|sms:|data:|blob:|javascript:)/i.test(rawHref)) return null;
+
+  const url = new URL(anchor.href, window.location.href);
+  if (url.origin !== window.location.origin) return null;
+  if (!adminPageFromPath(url.pathname)) return null;
+  return url;
+}
+
+async function renderAdminStandalone(root) {
+  const { AdminApp, adminPageFromPath } = await import("./pages/admin/AdminApp.jsx");
+
+  function AdminStandaloneRoot() {
+    const [routeKey, setRouteKey] = useState(routeFromLocation);
+    const page = adminPageFromPath(window.location.pathname) || "login";
+
+    useEffect(() => {
+      const syncRoute = () => setRouteKey(routeFromLocation());
+      const handleClick = (event) => {
+        const url = shouldUseAdminNavigation(event, adminPageFromPath);
+        if (!url) return;
+
+        event.preventDefault();
+        const nextRoute = `${url.pathname}${url.search}${url.hash}`;
+        if (nextRoute !== routeFromLocation()) {
+          window.history.pushState(window.history.state, "", nextRoute);
+        }
+        syncRoute();
+      };
+
+      window.addEventListener("popstate", syncRoute);
+      document.addEventListener("click", handleClick);
+      return () => {
+        window.removeEventListener("popstate", syncRoute);
+        document.removeEventListener("click", handleClick);
+      };
+    }, []);
+
+    return <AdminApp key={routeKey} page={page} />;
+  }
+
+  root.render(<AdminStandaloneRoot />);
+}
+
+async function renderMainFrontend(root) {
+  await Promise.all([
+    import("../js/edunex-api.js"),
+    import("./styles/app.css"),
+    import("./styles/mobile-footer-fix.css"),
+    import("../css/theme.css"),
+  ]);
+  const [{ default: App }, { initAnalytics }] = await Promise.all([
+    import("./App.jsx"),
+    import("./lib/analytics.js"),
+  ]);
+
+  root.render(<App />);
+  scheduleDeferredTask(initAnalytics, 4000);
+  scheduleDeferredTask(loadDeferredAiWidget, 6000, { onUserIntent: false });
+}
+
+const root = createRoot(document.getElementById("root"));
+if (ADMIN_STANDALONE) {
+  void renderAdminStandalone(root);
+} else {
+  void renderMainFrontend(root);
+}

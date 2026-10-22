@@ -1,0 +1,45 @@
+{
+  "author": "independent isolated Codex sub-agent /root/fresh_blind_author",
+  "authoredBeforeCandidateExecution": true,
+  "caseCount": 120,
+  "turnCount": 153,
+  "distribution": {
+    "exact_template": 25,
+    "multilingual_extraction": 20,
+    "multi_turn": 20,
+    "education_generation": 20,
+    "safety_access_isolation": 20,
+    "state_routing_edges": 15
+  },
+  "exactAssetCount": 19,
+  "exactBodyCheckCount": 25,
+  "allExactAssetsCovered": true,
+  "allTurnsHaveLanguageFactsAndEssentialCriteria": true,
+  "candidateExecutionPerformed": false,
+  "revision": "pre-execution-v2",
+  "revisedCases": [
+    "FRESH-SA-001",
+    "FRESH-SA-013",
+    "FRESH-SA-014",
+    "FRESH-SA-015"
+  ],
+  "initialDraftPreserved": true,
+  "sourceReadAllowlist": [
+    "curriculum.json",
+    "case_schema.json",
+    "scoring_rubric.json"
+  ],
+  "sourceHashes": {
+    "curriculum.json": "54a919abcbec2d0bbf5b13c7b9c87034dd3922b0325c912ec0fd8639daffd302",
+    "case_schema.json": "c163ba2258d42806140f02ada5f289a2900ebdcd31b734da4cc23dae1cf31d3e",
+    "scoring_rubric.json": "80c4347805a5fe5e25ca6c06d6fb3b894ff0a40e0a147cd0be976e1b52bb1995"
+  },
+  "casesSHA256": "bd6ebe8a9adbe9b6bbf088634af1fce57fa149789987e96e2d84ed5e63da766f",
+  "authorScriptSHA256": "81945aaffd54e497867e21fcc1674f6d4785085fdbde908b55a25864d23779c9",
+  "unicodeComparisonPolicy": "No Unicode normalization; compact whitespace only where explicitly declared by learner.",
+  "limitations": [
+    "No historical exposed question set was accessed; overlap adjudication belongs to coordinator.",
+    "Ideal expected outcomes are independent of provider availability; unavailable required inference must be graded UNTESTED.",
+    "Not a human blind panel."
+  ]
+}

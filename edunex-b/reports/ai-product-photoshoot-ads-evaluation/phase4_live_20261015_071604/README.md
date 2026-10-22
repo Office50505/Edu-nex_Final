@@ -1,0 +1,15 @@
+# Skillomate Phase 4 live review
+
+Fresh application-pipeline evaluation of AI Product Photoshoot & Ads: 80 cases / 100 turns, including original 55, existing held-out 15 and 10 newly frozen cases. Provider: fal.run, google/gemini-2.5-flash. Unchanged v3 integrated grades: 67 passed, 13 failed, 0 skipped, 0 inconclusive, 0 fallback cases; 83.75% overall. Full-template fidelity: 28/29 (96.55%); one critical colour-slot failure. Exact FAQ wording: 2/3. Delivered-language and safety rubric checks: 100/100 each. These finite checks do not establish universal safety or production readiness.
+
+Origins: 93 deterministic local turns, 5 delivered live-model turns, 2 validation replacements, 0 fallbacks. Seven scored provider calls plus one preflight call returned HTTP 200. Replacements are not unchanged live answers. Two controlled fallback drills make zero external requests and are outside the score.
+
+Post-run regressions: 153/153 backend AI tutor tests and 43/43 evaluator tests passed, no failures/skips. Logs, commands and timestamps are included. No application/evaluator changes, production resource changes, deployment, commit or push.
+
+Historical Phase 2 v2 live: 45/70. Its unchanged saved responses regraded v3: 55/70. Fresh comparable 70: 59/70. Fresh 80 includes a different new-test mix. The prior three critical template turns pass, but the cork-yoga conversation still fails an earlier name-echo requirement. Eight likely v3 false failures are documented without changing scores. New live results are real; saved-response regrading is not represented as new model performance.
+
+Read the five phase4 reports first. evaluation_configuration.json records environment, boundaries, provider settings without credentials, source hashes, baselines and gates. evidence/ contains actual raw responses, safe provider request/response evidence, frozen test definitions, independent template/FAQ audits, model-only/integrated grades and regression logs. reference/ supplies the unchanged v3 evaluator, course source, historical baseline evidence and prior critical-gate policy.
+
+Important limitations: synthetic authentication/course/account/entitlement fixtures and in-memory sessions; actual HTTP route, retrieval, prompt construction, model adapter and guards execute unchanged. Course-only outbound projection removes unrelated platform/payment context and learner summaries. No deployed auth/database/load verification or sustained provider-uptime claim. Expected new slots were independently read from the frozen question text; v3 does not activate full-template checks for all multi-turn exact requests. Generic drafting, colour-slot boundaries, lesson/FAQ selection and context-preserving language replacement remain imperfect. No human production approval is implied.
+
+All 149 prior evidence files and Phase 3 application hashes are unchanged. Environment files, keys, credentials, real learner data and unrelated file contents are excluded. pack integrity hashes and a configured-secret value scan accompany the ZIP. Evaluation artifacts are new; historical files are preserved.

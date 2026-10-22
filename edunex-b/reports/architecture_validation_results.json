@@ -1,8 +1,8 @@
 {
   "suite": "skillomate_chatbot_architecture_validation",
   "version": "2026-10-02",
-  "startedAt": "2026-10-02T10:22:16.053Z",
-  "finishedAt": "2026-10-02T10:22:16.137Z",
+  "startedAt": "2026-10-06T05:36:17.682Z",
+  "finishedAt": "2026-10-06T05:36:17.720Z",
   "summary": {
     "total": 22,
     "passed": 22,
@@ -16,6 +16,7 @@
       "status": "pass",
       "failures": [],
       "provider": "course-knowledge-rule",
+
       "outputSample": "Use this AI Filmmaking workflow:\n1. Use the character reference sheet / locked character reference.\n2. Add \"same face, same outfit\" in the shot prompt.\n3. Save the previous clip's last frame.\n4. Use that saved last frame as the next Start frame.\n5. If face still drifts, use Ingredients mode.\n6. Attach:\n   - saved last frame\n   - character reference sheet\n7. Use this approved template:\n\nUSE THIS IMAGE [saved last frame] AS THE FIRST FRAME AND TO KEEP THE FACE CONSISTENT THIS IS THE CHARACTER SHEET [character reference sheet]. [character description]. [location]. [shot action]. Realistic, cinema"
     },
     {
@@ -91,12 +92,12 @@
       "outputSample": "Use this AI Filmmaking workflow:\n1. Use the character reference sheet / locked character reference.\n2. Add \"same face, same outfit\" in the shot prompt.\n3. Save the previous clip's last frame.\n4. Use that saved last frame as the next Start frame.\n5. If face still drifts, use Ingredients mode.\n6. Attach:\n   - saved last frame\n   - character reference sheet\n7. Use this approved template:\n\nUSE THIS IMAGE [saved last frame] AS THE FIRST FRAME AND TO KEEP THE FACE CONSISTENT THIS IS THE CHARACTER SHEET [character reference sheet]. [character description]. [location]. [shot action]. Realistic, cinema"
     },
     {
-      "id": "AV-11-missing-lesson-detail-fallback",
-      "category": "missing_course_detail",
+      "id": "AV-11-filmmaking-l12-continuation-retrieval",
+      "category": "course_detail_retrieval",
       "status": "pass",
       "failures": [],
-      "provider": "course-knowledge-rule",
-      "outputSample": "Lesson 12 exists in the AI Filmmaking course map: B-roll & Cutaways. Lekin detailed Lesson 12 material/rules current knowledge base me available nahi hai.\n\nIsliye main seven rules invent nahi karunga. Detailed material add hoga tab main uske basis par exact rules bata paunga."
+      "provider": null,
+      "outputSample": "[S1] AI Filmmaking — Chatbot Training Knowledge Base L9-15 — LESSON 12 — B-ROLL & CUTAWAYS (course-material)\nLESSON 12 — B-ROLL & CUTAWAYS\nConcept: Beech-beech ke chhote extra shots — gaps bharte, cut chhupate, film rich/pro banate.\nTypes: Object/detail (cup, phone) · Hands/action (typing, pouring) · Establishing (wide of location) · Texture/mood (rain, steam, pages) · Reaction (face/eyes cutaway). Rule: Har main shot ke beech 1-2 b-roll daalo.\nStudent Q&A: - Film flat/empty lag rahी? Beech me b-roll (object/hands/wide/texture/reaction) daalo. - Cut awkward lag raha? Reaction cutaway se cut ch"
     },
     {
       "id": "AV-12-wrong-course-contamination-influencer-active",

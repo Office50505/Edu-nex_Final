@@ -1,0 +1,9 @@
+{
+  "checkedAt": "2026-10-16T08:51:51.098024+00:00",
+  "requiredReports": 7,
+  "allRequiredReportsPresent": true,
+  "jsonFilesParse": true,
+  "environmentFilesIncluded": false,
+  "sourceIntegrityEvidence": "evidence/final_integrity.json",
+  "archiveVerification": "ZIP CRC and all member hashes verified by packaging command; see integrity_manifest.json"
+}

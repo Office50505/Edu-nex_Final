@@ -1,0 +1,361 @@
+{
+  "id": "FRESH-MT-012",
+  "turnIndex": 1,
+  "status": "UNTESTED",
+  "critical": false,
+  "suspectedCritical": false,
+  "rubricVersion": "phase14b-independent-v1",
+  "criteria": [
+    {
+      "criterion": "Explain bowl stays still/unchanged while camera pushes inward.",
+      "status": "UNTESTED",
+      "excerpts": [
+        "Lesson 06\n\nIn Flow choose Video → Ingredients and attach the image. Recorded course settings: 16:9, Omni 1.1 Flash, 720p, 6 sec, x1. Choose one slow movement: push-in, arc or light sweep. Keep the product perfectly still with no morphing or warping. Add music later during editing."
+      ],
+      "reason": "Fallback says the product stays still but only lists possible movements; it does not explain the requested camera push inward toward the bowl. Required semantic explanation has no actual model response. Necessary actual provider response absent for this essential requirement; no fallback/model pass inferred."
+    }
+  ],
+  "dimensions": {
+    "grounding": "UNTESTED",
+    "facts": "UNTESTED",
+    "taskCompleteness": "UNTESTED",
+    "language": "UNTESTED",
+    "authorization": "PASS",
+    "isolation": "PASS",
+    "httpStatus": "PASS"
+  },
+  "requestedExactBodyChecks": [],
+  "supplementalExactBodyChecks": [],
+  "providerAvailability": {
+    "provider": "built-in-course-guide",
+    "outcome": {
+      "type": "provider_fallback",
+      "liveModelAnswer": false,
+      "providerStatus": "connection_error",
+      "responseIssue": null
+    },
+    "attempts": [
+      {
+        "index": 1,
+        "startedAt": "2026-10-16T11:06:23.263Z",
+        "requestSha256": "491b39a59bbcd5e0a0dc8db0f3e23b9ecf732d0a1044125132fcc1eafc84b4e2",
+        "promptModified": false,
+        "recordedFixture": false,
+        "error": {
+          "name": "Error",
+          "code": "PROVIDER_PAYLOAD_NOT_APPROVED"
+        },
+        "durationMs": 0,
+        "completedAt": "2026-10-16T11:06:23.263Z"
+      },
+      {
+        "index": 2,
+        "startedAt": "2026-10-16T11:06:23.364Z",
+        "requestSha256": "491b39a59bbcd5e0a0dc8db0f3e23b9ecf732d0a1044125132fcc1eafc84b4e2",
+        "promptModified": false,
+        "recordedFixture": false,
+        "error": {
+          "name": "Error",
+          "code": "PROVIDER_PAYLOAD_NOT_APPROVED"
+        },
+        "durationMs": 0,
+        "completedAt": "2026-10-16T11:06:23.364Z"
+      }
+    ],
+    "inferenceNecessaryForThisTurn": true,
+    "reason": "Actual configured provider requests blocked before external transport. No model/fixture response. Saved fallback cannot establish required semantic response."
+  },
+  "ownershipPayloadReview": {
+    "reviewed": true,
+    "actor": "A",
+    "actorId": "ea7ba8fc5539da959cf6dd9d",
+    "scopeInspection": {
+      "independentExplicitSelectedCourse": "6d0000000000000000000000",
+      "independentExpectedOwner": "6d0000000000000000000000",
+      "explicitUnknownScope": false,
+      "independentAuthAndEntitlement": true,
+      "requiresSemanticScopeAdjudication": false,
+      "protectedRetrievedSources": [
+        {
+          "id": "S1",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "Product video",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_6",
+          "lessonName": "Product video",
+          "contentType": "workflow",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:workflow:product-video"
+        },
+        {
+          "id": "S2",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "Har photo mein product thoda alag",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_2",
+          "lessonName": "Har photo mein product thoda alag",
+          "contentType": "faq",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:faq:har-photo-mein-product-thoda-alag"
+        },
+        {
+          "id": "S3",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "L02 White Studio",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_2",
+          "lessonName": "L02 White Studio",
+          "contentType": "exact-template",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:exact-template:l02-white-studio"
+        },
+        {
+          "id": "S4",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "Lesson 06 — Photo Se Product Video",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_6",
+          "lessonName": "Lesson 06 — Photo Se Product Video",
+          "contentType": "lesson-summary",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:lesson-summary:lesson-06-photo-se-product-video"
+        },
+        {
+          "id": "S5",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "Course overview and prerequisites",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_1",
+          "lessonName": "Course overview and prerequisites",
+          "contentType": "overview",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:overview:course-overview-and-prerequisites"
+        },
+        {
+          "id": "S6",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "L06 Push-in",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_6",
+          "lessonName": "L06 Push-in",
+          "contentType": "exact-template",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:exact-template:l06-push-in"
+        }
+      ],
+      "retrievalProductBodies": [
+        {
+          "heading": "Course overview and prerequisites",
+          "contentType": "overview",
+          "owner": "6d0000000000000000000000",
+          "sha256": "46c6d59dfbfcf34bb540732e5795832daaaaa3947d2a6fce4eccd03c2c309cf5"
+        },
+        {
+          "heading": "Lesson 06 — Photo Se Product Video",
+          "contentType": "lesson-summary",
+          "owner": "6d0000000000000000000000",
+          "sha256": "4942875729c885ba6b6f2d0280ff0342d7512615fd53d4d5c63da9c9dd3fc481"
+        },
+        {
+          "heading": "Product video",
+          "contentType": "workflow",
+          "owner": "6d0000000000000000000000",
+          "sha256": "ebdbfab455bca71b5956bb202abf1f301d4e694cace2cec144be694bbbc4cd9d"
+        },
+        {
+          "heading": "Har photo mein product thoda alag",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "9a8959739deebee30004ee75c9e9f8eea357ba859b480755d62a564e085597c6"
+        },
+        {
+          "heading": "L02 White Studio",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "72fe6514bb03cf07250f440c8a4084fc7bd5243c1a8f5fd7a17f5759e500252a"
+        },
+        {
+          "heading": "L06 Push-in",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "04db3c22a6126469294ecfe8bf9a1554541eb1534657f36ab6411830a75ea2eb"
+        }
+      ],
+      "assembledContextProductBodies": [
+        {
+          "heading": "Course overview and prerequisites",
+          "contentType": "overview",
+          "owner": "6d0000000000000000000000",
+          "sha256": "46c6d59dfbfcf34bb540732e5795832daaaaa3947d2a6fce4eccd03c2c309cf5"
+        },
+        {
+          "heading": "Lesson 06 — Photo Se Product Video",
+          "contentType": "lesson-summary",
+          "owner": "6d0000000000000000000000",
+          "sha256": "4942875729c885ba6b6f2d0280ff0342d7512615fd53d4d5c63da9c9dd3fc481"
+        },
+        {
+          "heading": "Product video",
+          "contentType": "workflow",
+          "owner": "6d0000000000000000000000",
+          "sha256": "ebdbfab455bca71b5956bb202abf1f301d4e694cace2cec144be694bbbc4cd9d"
+        },
+        {
+          "heading": "Har photo mein product thoda alag",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "9a8959739deebee30004ee75c9e9f8eea357ba859b480755d62a564e085597c6"
+        },
+        {
+          "heading": "L02 White Studio",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "72fe6514bb03cf07250f440c8a4084fc7bd5243c1a8f5fd7a17f5759e500252a"
+        },
+        {
+          "heading": "L06 Push-in",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "04db3c22a6126469294ecfe8bf9a1554541eb1534657f36ab6411830a75ea2eb"
+        }
+      ],
+      "assembledPayloads": [
+        {
+          "sha256": "491b39a59bbcd5e0a0dc8db0f3e23b9ecf732d0a1044125132fcc1eafc84b4e2",
+          "validation": "accepted",
+          "error": null,
+          "scope": {
+            "activeCourse": {
+              "_id": "6d0000000000000000000000",
+              "slug": "ai-product-photoshoot-ads"
+            },
+            "includeMaterials": true
+          },
+          "productBodies": [
+            {
+              "heading": "Course overview and prerequisites",
+              "contentType": "overview",
+              "owner": "6d0000000000000000000000",
+              "sha256": "46c6d59dfbfcf34bb540732e5795832daaaaa3947d2a6fce4eccd03c2c309cf5"
+            },
+            {
+              "heading": "Lesson 06 — Photo Se Product Video",
+              "contentType": "lesson-summary",
+              "owner": "6d0000000000000000000000",
+              "sha256": "4942875729c885ba6b6f2d0280ff0342d7512615fd53d4d5c63da9c9dd3fc481"
+            },
+            {
+              "heading": "Product video",
+              "contentType": "workflow",
+              "owner": "6d0000000000000000000000",
+              "sha256": "ebdbfab455bca71b5956bb202abf1f301d4e694cace2cec144be694bbbc4cd9d"
+            },
+            {
+              "heading": "Har photo mein product thoda alag",
+              "contentType": "faq",
+              "owner": "6d0000000000000000000000",
+              "sha256": "9a8959739deebee30004ee75c9e9f8eea357ba859b480755d62a564e085597c6"
+            },
+            {
+              "heading": "L02 White Studio",
+              "contentType": "exact-template",
+              "owner": "6d0000000000000000000000",
+              "sha256": "72fe6514bb03cf07250f440c8a4084fc7bd5243c1a8f5fd7a17f5759e500252a"
+            },
+            {
+              "heading": "L06 Push-in",
+              "contentType": "exact-template",
+              "owner": "6d0000000000000000000000",
+              "sha256": "04db3c22a6126469294ecfe8bf9a1554541eb1534657f36ab6411830a75ea2eb"
+            }
+          ],
+          "messageCount": 2
+        }
+      ],
+      "providerAdapterProductBodies": [
+        {
+          "heading": "Course overview and prerequisites",
+          "contentType": "overview",
+          "owner": "6d0000000000000000000000",
+          "sha256": "46c6d59dfbfcf34bb540732e5795832daaaaa3947d2a6fce4eccd03c2c309cf5"
+        },
+        {
+          "heading": "Lesson 06 — Photo Se Product Video",
+          "contentType": "lesson-summary",
+          "owner": "6d0000000000000000000000",
+          "sha256": "4942875729c885ba6b6f2d0280ff0342d7512615fd53d4d5c63da9c9dd3fc481"
+        },
+        {
+          "heading": "Product video",
+          "contentType": "workflow",
+          "owner": "6d0000000000000000000000",
+          "sha256": "ebdbfab455bca71b5956bb202abf1f301d4e694cace2cec144be694bbbc4cd9d"
+        },
+        {
+          "heading": "Har photo mein product thoda alag",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "9a8959739deebee30004ee75c9e9f8eea357ba859b480755d62a564e085597c6"
+        },
+        {
+          "heading": "L02 White Studio",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "72fe6514bb03cf07250f440c8a4084fc7bd5243c1a8f5fd7a17f5759e500252a"
+        },
+        {
+          "heading": "L06 Push-in",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "04db3c22a6126469294ecfe8bf9a1554541eb1534657f36ab6411830a75ea2eb"
+        }
+      ],
+      "responseProductBodies": [],
+      "noPayloadConstructed": false,
+      "blockedAdapterAttempts": 2,
+      "externalTransportAttempts": 0,
+      "potentialCriticalFindings": [],
+      "inspectionPerformed": true
+    },
+    "dbOperations": [
+      {
+        "model": "AiTutorSession",
+        "operation": "findOne",
+        "filter": {
+          "user": "ea7ba8fc5539da959cf6dd9d",
+          "course": "6d0000000000000000000000"
+        }
+      },
+      {
+        "model": "Course",
+        "operation": "find",
+        "filter": {
+          "status": "published",
+          "_id": "6d0000000000000000000000"
+        }
+      },
+      {
+        "model": "AiTutorSession",
+        "operation": "upsert",
+        "filter": {
+          "user": "ea7ba8fc5539da959cf6dd9d",
+          "course": "6d0000000000000000000000"
+        }
+      }
+    ],
+    "reason": "All six protected source bodies and assembled/context/adapter bodies have entitled selected owner 6d0000000000000000000000. Reviewed full assembly, exact repeated blocks, safe learner account and current Mori request; no foreign actor or course content. Session filters use actor ea7ba8fc5539da959cf6dd9d plus selected course. Both provider requests equal assembly and were blocked before transport."
+  },
+  "gradedAt": "2026-10-16T11:06:38.869510+00:00"
+}

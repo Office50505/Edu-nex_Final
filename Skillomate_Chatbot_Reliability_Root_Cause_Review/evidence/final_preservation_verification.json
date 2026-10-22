@@ -1,0 +1,50 @@
+{
+  "candidateGroups": {
+    "application": 148,
+    "tests": 92,
+    "courseAssets": 9,
+    "evaluators": 13
+  },
+  "candidateChanges": [],
+  "protectedHistoricalAndConfigCompared": 605,
+  "protectedHistoricalAndConfigChanges": [],
+  "gitIndexUnchanged": true,
+  "originalZIPUnchanged": true,
+  "packagedOriginalZIPIdentical": true,
+  "snapshotCount": 25,
+  "snapshotsMatchSource": true,
+  "all67FailedIDsCoveredExactly": true,
+  "originalCaseCounts": {
+    "PASS": 18,
+    "FAIL": 67,
+    "UNTESTED": 35
+  },
+  "auditClassifications": {
+    "CONFIRMED_DETERMINISTIC_DEFECT": 59,
+    "GRADING_AMBIGUITY": 7,
+    "SECURITY_POLICY_EXPECTATION_CONFLICT": 1
+  },
+  "all120CasesAnd153TurnsRetained": true,
+  "invalidSourceReferences": [],
+  "allFailedEvidenceComplete": true,
+  "csvRows": 67,
+  "pureHelperComparisons": 63,
+  "pureHelperExactMatches": 63,
+  "failedTurns": 70,
+  "failedTurnsWithProviderAttempts": 0,
+  "diagnosticErrors": [],
+  "all19FailedExactAssetsPresent": true,
+  "originalScoreAndCriteriaUnchanged": true,
+  "newExternalProviderRequests": 0,
+  "newPricingNetworkRequests": 0,
+  "fullBackendOrEvaluatorSuitesRerun": false,
+  "applicationSourceModified": false,
+  "deployed": false,
+  "verificationMethod": "File hashes; original trace/audit joins; native guarded pure helper replay; no live provider or server.",
+  "configuredSecretValueScan": {
+    "valuesCompared": 9,
+    "exposedValuesLogged": false,
+    "matchingArtifactPaths": []
+  },
+  "verifiedAt": "2026-10-16T11:50:58.073856+00:00"
+}

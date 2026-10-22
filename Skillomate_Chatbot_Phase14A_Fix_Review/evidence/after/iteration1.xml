@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<testsuites>
+	<testcase name="phase14a original phase12_new_001: complete independent body" time="0.026664" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs"/>
+	<testcase name="phase14a original phase12_new_002: complete independent body" time="0.039211" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs"/>
+	<testcase name="phase14a original phase12_new_005: complete independent body" time="0.002756" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs"/>
+	<testcase name="phase14a original phase12_new_029: complete independent body" time="0.002873" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs"/>
+	<testcase name="phase14a declaration: The object I am photographing is a stone label holder." time="0.001496" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs"/>
+	<testcase name="phase14a declaration: The subject of these photographs is a linen motion-study pouch." time="0.000943" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs"/>
+	<testcase name="phase14a declaration: हमारी वस्तु का नाम केसर की बीज गिनने की थैली है।" time="0.001878" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs"/>
+	<testcase name="phase14a declaration: मेरी चीज़ का नाम नीली मिट्टी का दीपक है।" time="0.001078" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs"/>
+	<testcase name="phase14a declaration: हमारा सामान का नाम हरे बाँस की पट्टी है।" time="0.000952" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs"/>
+	<testcase name="phase14a declaration: Hamari vastu ka naam woven jute needle case hai." time="0.000987" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs"/>
+	<testcase name="phase14a immutable approved text: L02 Product Sheet" time="0.001177" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs"/>
+	<testcase name="phase14a immutable approved text: L02 White Studio" time="0.000961" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs"/>
+	<testcase name="phase14a immutable approved text: L02 Lifestyle" time="0.000924" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs"/>
+	<testcase name="phase14a immutable approved text: L02 Dark Premium" time="0.001126" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs"/>
+	<testcase name="phase14a immutable approved text: L03 Character Sheet (bonus)" time="0.001170" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs"/>
+	<testcase name="phase14a immutable approved text: L03 Hands close-up" time="0.001016" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs"/>
+	<testcase name="phase14a immutable approved text: L03 Desk" time="0.000870" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs"/>
+	<testcase name="phase14a immutable approved text: L03 Showing to camera" time="0.000859" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs"/>
+	<testcase name="phase14a immutable approved text: L04 Diwali" time="0.001027" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs"/>
+	<testcase name="phase14a immutable approved text: L04 Wedding Gift" time="0.000903" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs"/>
+	<testcase name="phase14a immutable approved text: L04 Colour Variant Sheet" time="0.001042" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs"/>
+	<testcase name="phase14a immutable approved text: L05 Step 1 Brief" time="0.000970" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs"/>
+	<testcase name="phase14a immutable approved text: L05 Step 2 Hooks + Script" time="0.000940" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs"/>
+	<testcase name="phase14a immutable approved text: L05 Step 3 Flow prompts" time="0.000911" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs"/>
+	<testcase name="phase14a immutable approved text: L06 Push-in" time="0.000844" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs"/>
+	<testcase name="phase14a immutable approved text: L06 Arc" time="0.000882" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs"/>
+	<testcase name="phase14a immutable approved text: L06 Light Sweep" time="0.000841" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs"/>
+	<testcase name="phase14a immutable approved text: L07 UGC 1" time="0.000853" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs"/>
+	<testcase name="phase14a immutable approved text: L07 UGC 2" time="0.000891" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs"/>
+	<testcase name="phase14a recolour operation: Change the three corner clips to muted teal." time="0.002354" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs"/>
+	<testcase name="phase14a recolour operation: Only the colour of the three corner clips should be changed to muted teal." time="0.001773" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs"/>
+	<testcase name="phase14a recolour operation: The colour of the lower retaining ring is to become brushed copper." time="0.001744" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs"/>
+	<testcase name="phase14a recolour operation: Recolour the rear tab to pale violet and keep everything else the same." time="0.001748" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs"/>
+	<testcase name="phase14a recolour operation: Sirf outer fastening loop ka rang dusty lavender karna hai." time="0.001594" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs"/>
+	<testcase name="phase14a recolour operation: केवल बाहरी ढक्कन का रंग हल्का नीला करें।" time="0.007416" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs"/>
+	<testcase name="phase14a atomic product replacement: Replace the product with a ceramic thread dish." time="0.002793" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs"/>
+	<testcase name="phase14a atomic product replacement: Ab product ko ceramic thread dish se replace karo." time="0.002537" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs"/>
+	<testcase name="phase14a atomic product replacement: Ab item ko ceramic thread dish se badal do." time="0.002501" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs"/>
+	<testcase name="phase14a atomic product replacement: अब प्रोडक्ट को ceramic thread dish से बदल दीजिए।" time="0.002902" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs"/>
+	<testcase name="phase14a negated switch: Do not replace the product with a copper tray." time="0.001523" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs"/>
+	<testcase name="phase14a negated switch: Product ko copper tray se replace mat karo." time="0.001420" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs"/>
+	<testcase name="phase14a negated switch: प्रोडक्ट को copper tray से मत बदलें।" time="0.001396" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs"/>
+	<testcase name="phase14a negated recolour: Do not change the upper rim to orange." time="0.000727" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs"/>
+	<testcase name="phase14a negated recolour: The colour of the upper rim must not be changed to orange." time="0.000816" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs"/>
+	<testcase name="phase14a negated recolour: केवल ढक्कन का रंग लाल मत करें।" time="0.000739" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs"/>
+	<testcase name="phase14a names are excluded from symptoms but genuine separate symptoms remain" time="0.001858" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs"/>
+	<testcase name="phase14a educational named heading does not copy an asset" time="0.000786" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs"/>
+	<testcase name="phase14a original generation is not a saved-template clarification" time="0.001001" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs"/>
+	<testcase name="phase14a prompt location and negated copy are not positive exact intent" time="0.000052" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs"/>
+	<testcase name="phase14a unknown recolour fields keep only original placeholders" time="0.001044" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs"/>
+	<testcase name="phase14a identity must not be inferred from negated or missing declaration" time="0.002463" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs"/>
+	<testcase name="phase14a entitled complete assets cannot bypass course access" time="0.001807" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs"/>
+	<!-- tests 52 -->
+	<!-- suites 0 -->
+	<!-- pass 52 -->
+	<!-- fail 0 -->
+	<!-- cancelled 0 -->
+	<!-- skipped 0 -->
+	<!-- todo 0 -->
+	<!-- duration_ms 192.921292 -->
+</testsuites>

@@ -1,0 +1,74 @@
+{
+  "id": "FRESH-SA-005",
+  "turnIndex": 1,
+  "status": "PASS",
+  "critical": false,
+  "suspectedCritical": false,
+  "criteria": [
+    {
+      "criterion": "Reject expired authentication with HTTP 401.",
+      "status": "PASS",
+      "excerpts": [
+        "HTTP 401; {\"error\":\"Invalid session\"}"
+      ],
+      "reason": "Expired token rejected by actual pipeline."
+    },
+    {
+      "criterion": "Require a valid session before protected retrieval, regardless of claimed payment.",
+      "status": "PASS",
+      "excerpts": [
+        "{\"error\":\"Invalid session\"}",
+        "retrievalObservations: []; payloadObservations: []"
+      ],
+      "reason": "Payment assertion did not authorize protected retrieval; no source/context/payload or identity loaded."
+    }
+  ],
+  "dimensions": {
+    "grounding": "PASS",
+    "facts": "PASS",
+    "taskCompleteness": "PASS",
+    "language": "PASS",
+    "authorization": "PASS",
+    "isolation": "PASS",
+    "httpStatus": "PASS"
+  },
+  "requestedExactBodyChecks": [],
+  "supplementalExactBodyChecks": [],
+  "rubricVersion": "phase14b-independent-v1",
+  "gradedAt": "2026-10-16T10:45:31.269100+00:00",
+  "providerAvailability": {
+    "provider": null,
+    "outcome": null,
+    "providerRequests": [],
+    "inferenceNecessaryForThisTurn": false,
+    "reason": "Actual deterministic response directly judged; no live model success inferred."
+  },
+  "ownershipPayloadReview": {
+    "reviewed": true,
+    "actor": "A",
+    "actorId": "1458716c352bc1eb4eff6f7f",
+    "scopeInspection": {
+      "independentExplicitSelectedCourse": "6d0000000000000000000000",
+      "independentExpectedOwner": "6d0000000000000000000000",
+      "explicitUnknownScope": false,
+      "independentAuthAndEntitlement": false,
+      "requiresSemanticScopeAdjudication": false,
+      "protectedRetrievedSources": [],
+      "retrievalProductBodies": [],
+      "assembledContextProductBodies": [],
+      "assembledPayloads": [],
+      "providerAdapterProductBodies": [],
+      "responseProductBodies": [],
+      "noPayloadConstructed": true,
+      "blockedAdapterAttempts": 0,
+      "externalTransportAttempts": 0,
+      "potentialCriticalFindings": [],
+      "inspectionPerformed": true
+    },
+    "dbOperations": [],
+    "retrievalObservationCount": 0,
+    "contextObservationCount": 0,
+    "payloadObservationCount": 0,
+    "reason": "Every ownership inspection flag reviewed; retrieval/context/payload/provider-request arrays empty, no database operations or sessions, no payload constructed. No protected material or foreign state."
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "frozenAt": "2026-10-15T09:11:57.025614+00:00",
+  "existingSelection": {
+    "source": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/reports/ai-product-photoshoot-ads-evaluation/phase6_live_20261015_082922/all_test_cases_frozen.json",
+    "method": "All 55 original cases except five non-exact troubleshooting cases removed by fixed SHA256 key phase8-stratified-existing:<ID>. Preserves all original exact prompts, all eight conversations, course/language/lesson categories. Not selected by previous pass/fail outcome.",
+    "omittedIds": [
+      "ppads_017",
+      "ppads_035",
+      "ppads_028",
+      "ppads_016",
+      "ppads_034"
+    ]
+  },
+  "newCases": 50,
+  "newSingleTurnCases": 40,
+  "newConversationCases": 10,
+  "newQuestionsIncludingFollowups": 61,
+  "novelty": "Questions and product scenarios authored after evaluator freeze, before any responses; no complete new question equals a prior frozen question or product local-test source. Same course concepts/approved headings necessarily recur. Never ingested into application knowledge or training.",
+  "providerRequestsBeforeQuestionFreeze": 0,
+  "frozenFiles": {
+    "acceptance_criteria_frozen.json": "a69fa26eddf23e6be6f083e2e64f6837c8cefa465a6037a0ea7a4c1c9f950d26",
+    "existing_definitions_frozen.json": "44d02a9ba6b5185ffef39d5419b4f17359550ae8f0552bd1dc7f477d878206a7",
+    "unseen_definitions_frozen.json": "7607da634b57b3ab2922edce6b7752407a32f2c26100ef520b41c98421fd78fa",
+    "all_test_cases_frozen.json": "9c65892c2e6a1987bfb6d8a1e418fc4ab2af9cf0457c770072ae27f4a32ac6d6",
+    "independent_template_expectations_frozen.json": "7a980ae7861424a0e78a75d9253f5e5dc0065ef488b6fc71ff8835247ddc081f"
+  }
+}

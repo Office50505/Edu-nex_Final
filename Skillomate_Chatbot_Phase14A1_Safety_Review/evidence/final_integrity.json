@@ -1,0 +1,25 @@
+{
+  "verifiedAt": "2026-10-16T09:27:06.869852+00:00",
+  "baseline": "Existing Phase14A stopped working tree",
+  "protectedExistingFiles": 523,
+  "intendedChangedFiles": [
+    "edunex-b/services/productTutorKnowledge.js",
+    "edunex-b/services/productTutorState.js"
+  ],
+  "unchangedProtectedFiles": 521,
+  "unexpectedChanges": [],
+  "finalChangedFileHashes": {
+    "edunex-b/services/productTutorKnowledge.js": "104b598b1ffd816356d9b4c27e270a80db597e624c30a0b3d7841b2b66377ae1",
+    "edunex-b/services/productTutorState.js": "1b0148e1978a8067ea8cd337d0892ace9e8d2e1197ea140d72f334e6d1647eac",
+    "edunex-b/tests/product-tutor-unicode-safety.test.cjs": "a59183f64a99d868727739f17359afb85c570cc7f5d5c22c276280d7c4a990a5"
+  },
+  "indexUnchanged": true,
+  "historicalEvidenceUnchanged": true,
+  "v7EvaluatorUnchanged": true,
+  "approvedKnowledgeUnchanged": true,
+  "externalProviderRequests": 0,
+  "deployed": false,
+  "productionChanged": false,
+  "phase14BStarted": false,
+  "pdfVisualReviewPassed": true
+}

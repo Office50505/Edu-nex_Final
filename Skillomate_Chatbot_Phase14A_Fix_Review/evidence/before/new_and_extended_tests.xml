@@ -1,0 +1,1355 @@
+<?xml version="1.0" encoding="utf-8"?>
+<testsuites>
+	<testcase name="phase5 route persists supplied colour fields for a later request without client history" time="0.142182" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/ai-chat-history.test.cjs"/>
+	<testcase name="phase5 route preserves saved video topic across an omitted-history language follow-up" time="0.005677" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/ai-chat-history.test.cjs"/>
+	<testcase name="phase5 colour slots do not cross a new conversation boundary" time="0.004445" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/ai-chat-history.test.cjs"/>
+	<testcase name="AI lesson materials use independent store access and reject revoked store mirrors" time="0.007371" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/ai-chat-history.test.cjs"/>
+	<testcase name="legacy mobile client accepts GET /consent {} without a cached gate" time="0.000622" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/ai-chat-history.test.cjs"/>
+	<testcase name="legacy mobile client accepts PUT /consent {&amp;quot;granted&amp;quot;:true} without a cached gate" time="0.000565" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/ai-chat-history.test.cjs"/>
+	<testcase name="legacy mobile client accepts PUT /consent {&amp;quot;granted&amp;quot;:false} without a cached gate" time="0.000562" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/ai-chat-history.test.cjs"/>
+	<testcase name="legacy consent compatibility and chat retain authentication before their handlers" time="0.001637" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/ai-chat-history.test.cjs"/>
+	<testcase name="chat answers a valid prompt with absent retired consent data" time="0.001289" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/ai-chat-history.test.cjs"/>
+	<testcase name="chat answers a valid prompt with declined retired consent data" time="0.001196" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/ai-chat-history.test.cjs"/>
+	<testcase name="chat answers a valid prompt with outdated retired consent data" time="0.000988" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/ai-chat-history.test.cjs"/>
+	<testcase name="chat forwards earlier turns between system context and the new question" time="0.001373" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/ai-chat-history.test.cjs"/>
+	<testcase name="history rejects injected roles and malformed entries, bounds size, and remains optional" time="0.003210" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/ai-chat-history.test.cjs"/>
+	<testcase name="popup sends successful history, blocks overlapping sends, and clears on New chat" time="0.004228" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/ai-chat-history.test.cjs"/>
+	<testcase name="popup omits failures and discards late replies after reset or account change" time="0.001051" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/ai-chat-history.test.cjs"/>
+	<testcase name="source markers and reference lists are hidden from learner replies" time="0.001579" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/ai-chat-history.test.cjs"/>
+	<testcase name="empty or failed provider replies fall back without learner-facing outage copy" time="0.103201" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/ai-chat-history.test.cjs"/>
+	<testcase name="plan questions bypass provider and answer with current Skillomate access facts" time="0.001609" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/ai-chat-history.test.cjs"/>
+	<testcase name="product ad price questions stay in active course flow instead of subscription facts" time="0.007392" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/ai-chat-history.test.cjs"/>
+	<testcase name="active product course still answers explicit Skillomate subscription questions deterministically" time="0.001053" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/ai-chat-history.test.cjs"/>
+	<testcase name="ambiguous product ad follow-ups keep active course context" time="0.003171" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/ai-chat-history.test.cjs"/>
+	<testcase name="learner account questions bypass provider with safe profile and payment facts" time="0.001321" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/ai-chat-history.test.cjs"/>
+	<testcase name="provider receives formatted prompts but no page query secrets or contact fallback" time="0.001424" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/ai-chat-history.test.cjs"/>
+	<testcase name="active course scope excludes other course catalog and materials from provider context" time="0.004256" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/ai-chat-history.test.cjs"/>
+	<testcase name="active AI Filmmaking face consistency answer does not call provider or merge courses" time="0.002881" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/ai-chat-history.test.cjs"/>
+	<testcase name="production path isolates direct AI Filmmaking course question from AI Influencer chunks" time="0.002330" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/ai-chat-history.test.cjs"/>
+	<testcase name="production path keeps AI Filmmaking topic through exact follow-up prompt lookup" time="0.007029" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/ai-chat-history.test.cjs"/>
+	<testcase name="production path allows explicit AI Influencer comparison without blended course answer" time="0.008369" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/ai-chat-history.test.cjs"/>
+	<testcase name="current video reaches provider for: what is in this video" time="0.007909" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/ai-chat-history.test.cjs"/>
+	<testcase name="current video reaches provider for: summarize this video" time="0.006217" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/ai-chat-history.test.cjs"/>
+	<testcase name="current video reaches provider for: is video mein kya sikhaya hai" time="0.005652" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/ai-chat-history.test.cjs"/>
+	<testcase name="current video reaches provider for: iska summary batao" time="0.005387" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/ai-chat-history.test.cjs"/>
+	<testcase name="invalid or cross-course lesson selection does not leak lesson notes" time="0.000998" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/ai-chat-history.test.cjs"/>
+	<testcase name="selected paid notes stay inaccessible without an active subscription" time="0.000868" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/ai-chat-history.test.cjs"/>
+	<testcase name="provider outage still identifies the selected video in Roman Hinglish" time="0.102680" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/ai-chat-history.test.cjs"/>
+	<testcase name="widget uses the current lesson at send time and clears it away from the player" time="0.001368" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/ai-chat-history.test.cjs"/>
+	<testcase name="product exact prompt route uses a complete authorized template without a provider request" time="0.003813" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/ai-chat-history.test.cjs"/>
+	<testcase name="product procedural questions use source-linked localized workflow facts" time="0.045420" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/ai-chat-history.test.cjs"/>
+	<testcase name="product route never gives paid template bodies to an inactive learner" time="0.001947" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/ai-chat-history.test.cjs"/>
+	<testcase name="product provider output with wrong language is marked as a local replacement" time="0.002188" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/ai-chat-history.test.cjs"/>
+	<testcase name="product policy catches an invented first-person endorsement in an otherwise successful provider answer" time="0.002035" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/ai-chat-history.test.cjs"/>
+	<testcase name="product safety refusal works without paid material and without calling a provider" time="0.000995" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/ai-chat-history.test.cjs"/>
+	<testcase name="product provider failures retain relevant guidance with safe diagnostic status" time="0.104131" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/ai-chat-history.test.cjs"/>
+	<testcase name="unconfigured provider is explicitly fallback rather than a live answer" time="0.003324" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/ai-chat-history.test.cjs"/>
+	<testcase name="phase3 negated platform terms cannot reroute a supplied product price to subscription facts" time="0.010748" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/ai-chat-history.test.cjs"/>
+	<testcase name="phase3 persisted product memory survives omitted client history and stays within learner and conversation" time="0.008294" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/ai-chat-history.test.cjs"/>
+	<testcase name="phase3 persisted facts from a different active course are not reused" time="0.002718" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/ai-chat-history.test.cjs"/>
+	<testcase name="phase7 route keeps a Hindi product through an omitted-history language switch and exact prompt" time="0.011013" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/ai-chat-history.test.cjs"/>
+	<testcase name="phase7 route overview and mobile-framing repair use local sources with accurate provenance" time="0.003308" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/ai-chat-history.test.cjs"/>
+	<testcase name="phase9 route delegates compound tasks with both scoped references and truthful origin" time="0.002313" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/ai-chat-history.test.cjs"/>
+	<testcase name="phase9 route restores prior reasoning messages when the same conversation omits client history" time="0.004022" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/ai-chat-history.test.cjs"/>
+	<testcase name="phase9 route does not restore history across learner or conversation boundaries" time="0.005314" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/ai-chat-history.test.cjs"/>
+	<testcase name="phase9 route performs one language repair and marks the delivered result as replacement" time="0.001983" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/ai-chat-history.test.cjs"/>
+	<testcase name="phase9 literal asset requests bypass provider and preserve declared product" time="0.001820" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/ai-chat-history.test.cjs"/>
+	<testcase name="phase9 a failed second language response stays bounded and explicitly incomplete" time="0.001941" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/ai-chat-history.test.cjs"/>
+	<testcase name="phase9 a transport failure during language repair is bounded and safely diagnosed" time="0.001902" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/ai-chat-history.test.cjs"/>
+	<testcase name="phase9 saved language informs an ambiguous compound continuation without changing its task" time="0.003476" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/ai-chat-history.test.cjs"/>
+	<testcase name="phase9 restored server history is withheld after material access expires" time="0.002730" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/ai-chat-history.test.cjs"/>
+	<testcase name="phase9 a non-product course never restores product message history" time="0.006007" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/ai-chat-history.test.cjs"/>
+	<testcase name="phase9 a safe alternative inherits the supported lesson and retains replacement provenance" time="0.003156" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/ai-chat-history.test.cjs"/>
+	<testcase name="phase9 legacy product sessions restore history without requiring the new language field" time="0.001701" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/ai-chat-history.test.cjs"/>
+	<testcase name="phase14a omitted-history replacement persists new identity and clears old facts" time="0.008048" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/ai-chat-history.test.cjs" failure="Expected values to be strictly equal:&#10;+ actual - expected&#10;&#10;+ 'Use the uploaded product sheet as the reference. Keep the felt pin wallet exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a matte black surface against a dark background, a single soft rim light outlining its edges, a subtle reflection on the surface, premium moody look, realistic product photography.'&#10;- 'Use the uploaded product sheet as the reference. Keep the cedar thread gauge exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a matte black surface against a dark background, a single soft rim light outlining its edges, a subtle reflection on the surface, premium moody look, realistic product photography.'&#10;">
+		<failure type="testCodeFailure" message="Expected values to be strictly equal:&#10;+ actual - expected&#10;&#10;+ 'Use the uploaded product sheet as the reference. Keep the felt pin wallet exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a matte black surface against a dark background, a single soft rim light outlining its edges, a subtle reflection on the surface, premium moody look, realistic product photography.'&#10;- 'Use the uploaded product sheet as the reference. Keep the cedar thread gauge exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a matte black surface against a dark background, a single soft rim light outlining its edges, a subtle reflection on the surface, premium moody look, realistic product photography.'">
+[Error [ERR_TEST_FAILURE]: Expected values to be strictly equal:
++ actual - expected
+
++ 'Use the uploaded product sheet as the reference. Keep the felt pin wallet exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a matte black surface against a dark background, a single soft rim light outlining its edges, a subtle reflection on the surface, premium moody look, realistic product photography.'
+- 'Use the uploaded product sheet as the reference. Keep the cedar thread gauge exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a matte black surface against a dark background, a single soft rim light outlining its edges, a subtle reflection on the surface, premium moody look, realistic product photography.'
+] {
+  code: 'ERR_TEST_FAILURE',
+  failureType: 'testCodeFailure',
+  cause: AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + 'Use the uploaded product sheet as the reference. Keep the felt pin wallet exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a matte black surface against a dark background, a single soft rim light outlining its edges, a subtle reflection on the surface, premium moody look, realistic product photography.'
+  - 'Use the uploaded product sheet as the reference. Keep the cedar thread gauge exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a matte black surface against a dark background, a single soft rim light outlining its edges, a subtle reflection on the surface, premium moody look, realistic product photography.'
+  
+      at TestContext.&lt;anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/ai-chat-history.test.cjs:803:10)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'Use the uploaded product sheet as the reference. Keep the felt pin wallet exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a matte black surface against a dark background, a single soft rim light outlining its edges, a subtle reflection on the surface, premium moody look, realistic product photography.',
+    expected: 'Use the uploaded product sheet as the reference. Keep the cedar thread gauge exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a matte black surface against a dark background, a single soft rim light outlining its edges, a subtle reflection on the surface, premium moody look, realistic product photography.',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+}
+		</failure>
+	</testcase>
+	<testcase name="phase14a original phase12_new_001: complete independent body" time="0.026172" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs" failure="Expected values to be strictly equal:&#10;+ actual - expected&#10;&#10;+ undefined&#10;- 'Use all the uploaded photos of this folded sisal seed-label quiver. Create a clean product reference sheet on a plain white background showing the exact same folded sisal seed-label quiver in four views arranged in a neat grid: front view, top-down view, side view and three-quarter angle view. Keep the folded sisal seed-label quiver exactly the same in every view — same shape, same colour, same details, same text and logo, do not redesign it. Even soft studio lighting, no extra objects, no text labels, realistic product photography.'&#10;">
+		<failure type="testCodeFailure" message="Expected values to be strictly equal:&#10;+ actual - expected&#10;&#10;+ undefined&#10;- 'Use all the uploaded photos of this folded sisal seed-label quiver. Create a clean product reference sheet on a plain white background showing the exact same folded sisal seed-label quiver in four views arranged in a neat grid: front view, top-down view, side view and three-quarter angle view. Keep the folded sisal seed-label quiver exactly the same in every view — same shape, same colour, same details, same text and logo, do not redesign it. Even soft studio lighting, no extra objects, no text labels, realistic product photography.'">
+[Error [ERR_TEST_FAILURE]: Expected values to be strictly equal:
++ actual - expected
+
++ undefined
+- 'Use all the uploaded photos of this folded sisal seed-label quiver. Create a clean product reference sheet on a plain white background showing the exact same folded sisal seed-label quiver in four views arranged in a neat grid: front view, top-down view, side view and three-quarter angle view. Keep the folded sisal seed-label quiver exactly the same in every view — same shape, same colour, same details, same text and logo, do not redesign it. Even soft studio lighting, no extra objects, no text labels, realistic product photography.'
+] {
+  code: 'ERR_TEST_FAILURE',
+  failureType: 'testCodeFailure',
+  cause: AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + undefined
+  - 'Use all the uploaded photos of this folded sisal seed-label quiver. Create a clean product reference sheet on a plain white background showing the exact same folded sisal seed-label quiver in four views arranged in a neat grid: front view, top-down view, side view and three-quarter angle view. Keep the folded sisal seed-label quiver exactly the same in every view — same shape, same colour, same details, same text and logo, do not redesign it. Even soft studio lighting, no extra objects, no text labels, realistic product photography.'
+  
+      at TestContext.&lt;anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs:27:12)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.start (node:internal/test_runner/test:1257:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: 'Use all the uploaded photos of this folded sisal seed-label quiver. Create a clean product reference sheet on a plain white background showing the exact same folded sisal seed-label quiver in four views arranged in a neat grid: front view, top-down view, side view and three-quarter angle view. Keep the folded sisal seed-label quiver exactly the same in every view — same shape, same colour, same details, same text and logo, do not redesign it. Even soft studio lighting, no extra objects, no text labels, realistic product photography.',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+}
+		</failure>
+	</testcase>
+	<testcase name="phase14a original phase12_new_002: complete independent body" time="0.065363" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs" failure="Expected values to be strictly equal:&#10;+ actual - expected&#10;&#10;+ 'Use the uploaded product sheet as the reference. Keep the [PRODUCT] exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a clean seamless white background, soft even studio lighting, a soft natural shadow under it, slight top-down angle, sharp focus, realistic product photography.'&#10;- 'Use the uploaded product sheet as the reference. Keep the केसरिया सूत की बीज गिनने की थैली exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a clean seamless white background, soft even studio lighting, a soft natural shadow under it, slight top-down angle, sharp focus, realistic product photography.'&#10;">
+		<failure type="testCodeFailure" message="Expected values to be strictly equal:&#10;+ actual - expected&#10;&#10;+ 'Use the uploaded product sheet as the reference. Keep the [PRODUCT] exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a clean seamless white background, soft even studio lighting, a soft natural shadow under it, slight top-down angle, sharp focus, realistic product photography.'&#10;- 'Use the uploaded product sheet as the reference. Keep the केसरिया सूत की बीज गिनने की थैली exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a clean seamless white background, soft even studio lighting, a soft natural shadow under it, slight top-down angle, sharp focus, realistic product photography.'">
+[Error [ERR_TEST_FAILURE]: Expected values to be strictly equal:
++ actual - expected
+
++ 'Use the uploaded product sheet as the reference. Keep the [PRODUCT] exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a clean seamless white background, soft even studio lighting, a soft natural shadow under it, slight top-down angle, sharp focus, realistic product photography.'
+- 'Use the uploaded product sheet as the reference. Keep the केसरिया सूत की बीज गिनने की थैली exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a clean seamless white background, soft even studio lighting, a soft natural shadow under it, slight top-down angle, sharp focus, realistic product photography.'
+] {
+  code: 'ERR_TEST_FAILURE',
+  failureType: 'testCodeFailure',
+  cause: AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + 'Use the uploaded product sheet as the reference. Keep the [PRODUCT] exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a clean seamless white background, soft even studio lighting, a soft natural shadow under it, slight top-down angle, sharp focus, realistic product photography.'
+  - 'Use the uploaded product sheet as the reference. Keep the केसरिया सूत की बीज गिनने की थैली exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a clean seamless white background, soft even studio lighting, a soft natural shadow under it, slight top-down angle, sharp focus, realistic product photography.'
+  
+      at TestContext.&lt;anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs:27:12)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'Use the uploaded product sheet as the reference. Keep the [PRODUCT] exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a clean seamless white background, soft even studio lighting, a soft natural shadow under it, slight top-down angle, sharp focus, realistic product photography.',
+    expected: 'Use the uploaded product sheet as the reference. Keep the केसरिया सूत की बीज गिनने की थैली exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a clean seamless white background, soft even studio lighting, a soft natural shadow under it, slight top-down angle, sharp focus, realistic product photography.',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+}
+		</failure>
+	</testcase>
+	<testcase name="phase14a original phase12_new_005: complete independent body" time="0.002756" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs" failure="Expected values to be strictly equal:&#10;+ actual - expected&#10;&#10;+ 'Use the uploaded product sheet as the reference. Only change the colour of [the part, e.g. all the keycaps] to [new colour, e.g. soft pastel pink]. Keep everything else exactly the same — same shape, same layout, same details, same text and logo, same four views, same background, same lighting. Output a full product sheet in the new colour.'&#10;- 'Use the uploaded product sheet as the reference. Only change the colour of the two removable hinge pins to pale saffron. Keep everything else exactly the same — same shape, same layout, same details, same text and logo, same four views, same background, same lighting. Output a full product sheet in the new colour.'&#10;">
+		<failure type="testCodeFailure" message="Expected values to be strictly equal:&#10;+ actual - expected&#10;&#10;+ 'Use the uploaded product sheet as the reference. Only change the colour of [the part, e.g. all the keycaps] to [new colour, e.g. soft pastel pink]. Keep everything else exactly the same — same shape, same layout, same details, same text and logo, same four views, same background, same lighting. Output a full product sheet in the new colour.'&#10;- 'Use the uploaded product sheet as the reference. Only change the colour of the two removable hinge pins to pale saffron. Keep everything else exactly the same — same shape, same layout, same details, same text and logo, same four views, same background, same lighting. Output a full product sheet in the new colour.'">
+[Error [ERR_TEST_FAILURE]: Expected values to be strictly equal:
++ actual - expected
+
++ 'Use the uploaded product sheet as the reference. Only change the colour of [the part, e.g. all the keycaps] to [new colour, e.g. soft pastel pink]. Keep everything else exactly the same — same shape, same layout, same details, same text and logo, same four views, same background, same lighting. Output a full product sheet in the new colour.'
+- 'Use the uploaded product sheet as the reference. Only change the colour of the two removable hinge pins to pale saffron. Keep everything else exactly the same — same shape, same layout, same details, same text and logo, same four views, same background, same lighting. Output a full product sheet in the new colour.'
+] {
+  code: 'ERR_TEST_FAILURE',
+  failureType: 'testCodeFailure',
+  cause: AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + 'Use the uploaded product sheet as the reference. Only change the colour of [the part, e.g. all the keycaps] to [new colour, e.g. soft pastel pink]. Keep everything else exactly the same — same shape, same layout, same details, same text and logo, same four views, same background, same lighting. Output a full product sheet in the new colour.'
+  - 'Use the uploaded product sheet as the reference. Only change the colour of the two removable hinge pins to pale saffron. Keep everything else exactly the same — same shape, same layout, same details, same text and logo, same four views, same background, same lighting. Output a full product sheet in the new colour.'
+  
+      at TestContext.&lt;anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs:27:12)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'Use the uploaded product sheet as the reference. Only change the colour of [the part, e.g. all the keycaps] to [new colour, e.g. soft pastel pink]. Keep everything else exactly the same — same shape, same layout, same details, same text and logo, same four views, same background, same lighting. Output a full product sheet in the new colour.',
+    expected: 'Use the uploaded product sheet as the reference. Only change the colour of the two removable hinge pins to pale saffron. Keep everything else exactly the same — same shape, same layout, same details, same text and logo, same four views, same background, same lighting. Output a full product sheet in the new colour.',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+}
+		</failure>
+	</testcase>
+	<testcase name="phase14a original phase12_new_029: complete independent body" time="0.004630" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs" failure="Expected values to be strictly equal:&#10;+ actual - expected&#10;&#10;+ 'Use the uploaded product sheet as the reference. Keep the woven willow bulb-measuring sleeve exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a matte black surface against a dark background, a single soft rim light outlining its edges, a subtle reflection on the surface, premium moody look, realistic product photography.'&#10;- 'Use the uploaded product sheet as the reference. Keep the polished alder dovetail spacer exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a matte black surface against a dark background, a single soft rim light outlining its edges, a subtle reflection on the surface, premium moody look, realistic product photography.'&#10;">
+		<failure type="testCodeFailure" message="Expected values to be strictly equal:&#10;+ actual - expected&#10;&#10;+ 'Use the uploaded product sheet as the reference. Keep the woven willow bulb-measuring sleeve exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a matte black surface against a dark background, a single soft rim light outlining its edges, a subtle reflection on the surface, premium moody look, realistic product photography.'&#10;- 'Use the uploaded product sheet as the reference. Keep the polished alder dovetail spacer exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a matte black surface against a dark background, a single soft rim light outlining its edges, a subtle reflection on the surface, premium moody look, realistic product photography.'">
+[Error [ERR_TEST_FAILURE]: Expected values to be strictly equal:
++ actual - expected
+
++ 'Use the uploaded product sheet as the reference. Keep the woven willow bulb-measuring sleeve exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a matte black surface against a dark background, a single soft rim light outlining its edges, a subtle reflection on the surface, premium moody look, realistic product photography.'
+- 'Use the uploaded product sheet as the reference. Keep the polished alder dovetail spacer exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a matte black surface against a dark background, a single soft rim light outlining its edges, a subtle reflection on the surface, premium moody look, realistic product photography.'
+] {
+  code: 'ERR_TEST_FAILURE',
+  failureType: 'testCodeFailure',
+  cause: AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + 'Use the uploaded product sheet as the reference. Keep the woven willow bulb-measuring sleeve exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a matte black surface against a dark background, a single soft rim light outlining its edges, a subtle reflection on the surface, premium moody look, realistic product photography.'
+  - 'Use the uploaded product sheet as the reference. Keep the polished alder dovetail spacer exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a matte black surface against a dark background, a single soft rim light outlining its edges, a subtle reflection on the surface, premium moody look, realistic product photography.'
+  
+      at TestContext.&lt;anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs:27:12)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'Use the uploaded product sheet as the reference. Keep the woven willow bulb-measuring sleeve exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a matte black surface against a dark background, a single soft rim light outlining its edges, a subtle reflection on the surface, premium moody look, realistic product photography.',
+    expected: 'Use the uploaded product sheet as the reference. Keep the polished alder dovetail spacer exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a matte black surface against a dark background, a single soft rim light outlining its edges, a subtle reflection on the surface, premium moody look, realistic product photography.',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+}
+		</failure>
+	</testcase>
+	<testcase name="phase14a declaration: The object I am photographing is a stone label holder." time="0.002926" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs" failure="Expected values to be strictly equal:&#10;+ actual - expected&#10;&#10;+ undefined&#10;- 'stone label holder'&#10;">
+		<failure type="testCodeFailure" message="Expected values to be strictly equal:&#10;+ actual - expected&#10;&#10;+ undefined&#10;- 'stone label holder'">
+[Error [ERR_TEST_FAILURE]: Expected values to be strictly equal:
++ actual - expected
+
++ undefined
+- 'stone label holder'
+] {
+  code: 'ERR_TEST_FAILURE',
+  failureType: 'testCodeFailure',
+  cause: AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + undefined
+  - 'stone label holder'
+  
+      at TestContext.&lt;anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs:40:49)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: 'stone label holder',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+}
+		</failure>
+	</testcase>
+	<testcase name="phase14a declaration: The subject of these photographs is a linen motion-study pouch." time="0.002727" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs" failure="Expected values to be strictly equal:&#10;+ actual - expected&#10;&#10;+ undefined&#10;- 'linen motion-study pouch'&#10;">
+		<failure type="testCodeFailure" message="Expected values to be strictly equal:&#10;+ actual - expected&#10;&#10;+ undefined&#10;- 'linen motion-study pouch'">
+[Error [ERR_TEST_FAILURE]: Expected values to be strictly equal:
++ actual - expected
+
++ undefined
+- 'linen motion-study pouch'
+] {
+  code: 'ERR_TEST_FAILURE',
+  failureType: 'testCodeFailure',
+  cause: AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + undefined
+  - 'linen motion-study pouch'
+  
+      at TestContext.&lt;anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs:40:49)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: 'linen motion-study pouch',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+}
+		</failure>
+	</testcase>
+	<testcase name="phase14a declaration: हमारी वस्तु का नाम केसर की बीज गिनने की थैली है।" time="0.002638" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs" failure="Expected values to be strictly equal:&#10;+ actual - expected&#10;&#10;+ undefined&#10;- 'केसर की बीज गिनने की थैली'&#10;">
+		<failure type="testCodeFailure" message="Expected values to be strictly equal:&#10;+ actual - expected&#10;&#10;+ undefined&#10;- 'केसर की बीज गिनने की थैली'">
+[Error [ERR_TEST_FAILURE]: Expected values to be strictly equal:
++ actual - expected
+
++ undefined
+- 'केसर की बीज गिनने की थैली'
+] {
+  code: 'ERR_TEST_FAILURE',
+  failureType: 'testCodeFailure',
+  cause: AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + undefined
+  - 'केसर की बीज गिनने की थैली'
+  
+      at TestContext.&lt;anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs:40:49)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: 'केसर की बीज गिनने की थैली',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+}
+		</failure>
+	</testcase>
+	<testcase name="phase14a declaration: मेरी चीज़ का नाम नीली मिट्टी का दीपक है।" time="0.001081" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs" failure="Expected values to be strictly equal:&#10;+ actual - expected&#10;&#10;+ undefined&#10;- 'नीली मिट्टी का दीपक'&#10;">
+		<failure type="testCodeFailure" message="Expected values to be strictly equal:&#10;+ actual - expected&#10;&#10;+ undefined&#10;- 'नीली मिट्टी का दीपक'">
+[Error [ERR_TEST_FAILURE]: Expected values to be strictly equal:
++ actual - expected
+
++ undefined
+- 'नीली मिट्टी का दीपक'
+] {
+  code: 'ERR_TEST_FAILURE',
+  failureType: 'testCodeFailure',
+  cause: AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + undefined
+  - 'नीली मिट्टी का दीपक'
+  
+      at TestContext.&lt;anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs:40:49)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: 'नीली मिट्टी का दीपक',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+}
+		</failure>
+	</testcase>
+	<testcase name="phase14a declaration: हमारा सामान का नाम हरे बाँस की पट्टी है।" time="0.002492" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs" failure="Expected values to be strictly equal:&#10;+ actual - expected&#10;&#10;+ 'का नाम हरे बाँस की पट्टी'&#10;- 'हरे बाँस की पट्टी'&#10;">
+		<failure type="testCodeFailure" message="Expected values to be strictly equal:&#10;+ actual - expected&#10;&#10;+ 'का नाम हरे बाँस की पट्टी'&#10;- 'हरे बाँस की पट्टी'">
+[Error [ERR_TEST_FAILURE]: Expected values to be strictly equal:
++ actual - expected
+
++ 'का नाम हरे बाँस की पट्टी'
+- 'हरे बाँस की पट्टी'
+] {
+  code: 'ERR_TEST_FAILURE',
+  failureType: 'testCodeFailure',
+  cause: AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + 'का नाम हरे बाँस की पट्टी'
+  - 'हरे बाँस की पट्टी'
+  
+      at TestContext.&lt;anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs:40:49)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'का नाम हरे बाँस की पट्टी',
+    expected: 'हरे बाँस की पट्टी',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+}
+		</failure>
+	</testcase>
+	<testcase name="phase14a declaration: Hamari vastu ka naam woven jute needle case hai." time="0.001597" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs" failure="Expected values to be strictly equal:&#10;+ actual - expected&#10;&#10;+ undefined&#10;- 'woven jute needle case'&#10;">
+		<failure type="testCodeFailure" message="Expected values to be strictly equal:&#10;+ actual - expected&#10;&#10;+ undefined&#10;- 'woven jute needle case'">
+[Error [ERR_TEST_FAILURE]: Expected values to be strictly equal:
++ actual - expected
+
++ undefined
+- 'woven jute needle case'
+] {
+  code: 'ERR_TEST_FAILURE',
+  failureType: 'testCodeFailure',
+  cause: AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + undefined
+  - 'woven jute needle case'
+  
+      at TestContext.&lt;anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs:40:49)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: 'woven jute needle case',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+}
+		</failure>
+	</testcase>
+	<testcase name="phase14a immutable approved text: L02 Product Sheet" time="0.001069" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs" failure="Expected values to be strictly equal:&#10;+ actual - expected&#10;&#10;+ undefined&#10;- 'Use all the uploaded photos of this folded linen tool roll. Create a clean product reference sheet on a plain white background showing the exact same folded linen tool roll in four views arranged in a neat grid: front view, top-down view, side view and three-quarter angle view. Keep the folded linen tool roll exactly the same in every view — same shape, same colour, same details, same text and logo, do not redesign it. Even soft studio lighting, no extra objects, no text labels, realistic product photography.'&#10;">
+		<failure type="testCodeFailure" message="Expected values to be strictly equal:&#10;+ actual - expected&#10;&#10;+ undefined&#10;- 'Use all the uploaded photos of this folded linen tool roll. Create a clean product reference sheet on a plain white background showing the exact same folded linen tool roll in four views arranged in a neat grid: front view, top-down view, side view and three-quarter angle view. Keep the folded linen tool roll exactly the same in every view — same shape, same colour, same details, same text and logo, do not redesign it. Even soft studio lighting, no extra objects, no text labels, realistic product photography.'">
+[Error [ERR_TEST_FAILURE]: Expected values to be strictly equal:
++ actual - expected
+
++ undefined
+- 'Use all the uploaded photos of this folded linen tool roll. Create a clean product reference sheet on a plain white background showing the exact same folded linen tool roll in four views arranged in a neat grid: front view, top-down view, side view and three-quarter angle view. Keep the folded linen tool roll exactly the same in every view — same shape, same colour, same details, same text and logo, do not redesign it. Even soft studio lighting, no extra objects, no text labels, realistic product photography.'
+] {
+  code: 'ERR_TEST_FAILURE',
+  failureType: 'testCodeFailure',
+  cause: AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + undefined
+  - 'Use all the uploaded photos of this folded linen tool roll. Create a clean product reference sheet on a plain white background showing the exact same folded linen tool roll in four views arranged in a neat grid: front view, top-down view, side view and three-quarter angle view. Keep the folded linen tool roll exactly the same in every view — same shape, same colour, same details, same text and logo, do not redesign it. Even soft studio lighting, no extra objects, no text labels, realistic product photography.'
+  
+      at TestContext.&lt;anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs:43:10)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: 'Use all the uploaded photos of this folded linen tool roll. Create a clean product reference sheet on a plain white background showing the exact same folded linen tool roll in four views arranged in a neat grid: front view, top-down view, side view and three-quarter angle view. Keep the folded linen tool roll exactly the same in every view — same shape, same colour, same details, same text and logo, do not redesign it. Even soft studio lighting, no extra objects, no text labels, realistic product photography.',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+}
+		</failure>
+	</testcase>
+	<testcase name="phase14a immutable approved text: L02 White Studio" time="0.000923" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs"/>
+	<testcase name="phase14a immutable approved text: L02 Lifestyle" time="0.001040" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs"/>
+	<testcase name="phase14a immutable approved text: L02 Dark Premium" time="0.000919" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs"/>
+	<testcase name="phase14a immutable approved text: L03 Character Sheet (bonus)" time="0.000992" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs" failure="Expected values to be strictly equal:&#10;+ actual - expected&#10;&#10;+ undefined&#10;- 'Create a character reference sheet of one realistic young Indian [man / woman], clearly adult, [hair, outfit details]. Show the exact same person in one image: a close-up of the face, and full-body front view, side view and back view on a plain light grey background. Same face, same hair, same outfit in every view. Soft even light, RAW realistic photo look, real skin texture, no text labels.'&#10;">
+		<failure type="testCodeFailure" message="Expected values to be strictly equal:&#10;+ actual - expected&#10;&#10;+ undefined&#10;- 'Create a character reference sheet of one realistic young Indian [man / woman], clearly adult, [hair, outfit details]. Show the exact same person in one image: a close-up of the face, and full-body front view, side view and back view on a plain light grey background. Same face, same hair, same outfit in every view. Soft even light, RAW realistic photo look, real skin texture, no text labels.'">
+[Error [ERR_TEST_FAILURE]: Expected values to be strictly equal:
++ actual - expected
+
++ undefined
+- 'Create a character reference sheet of one realistic young Indian [man / woman], clearly adult, [hair, outfit details]. Show the exact same person in one image: a close-up of the face, and full-body front view, side view and back view on a plain light grey background. Same face, same hair, same outfit in every view. Soft even light, RAW realistic photo look, real skin texture, no text labels.'
+] {
+  code: 'ERR_TEST_FAILURE',
+  failureType: 'testCodeFailure',
+  cause: AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + undefined
+  - 'Create a character reference sheet of one realistic young Indian [man / woman], clearly adult, [hair, outfit details]. Show the exact same person in one image: a close-up of the face, and full-body front view, side view and back view on a plain light grey background. Same face, same hair, same outfit in every view. Soft even light, RAW realistic photo look, real skin texture, no text labels.'
+  
+      at TestContext.&lt;anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs:43:10)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: 'Create a character reference sheet of one realistic young Indian [man / woman], clearly adult, [hair, outfit details]. Show the exact same person in one image: a close-up of the face, and full-body front view, side view and back view on a plain light grey background. Same face, same hair, same outfit in every view. Soft even light, RAW realistic photo look, real skin texture, no text labels.',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+}
+		</failure>
+	</testcase>
+	<testcase name="phase14a immutable approved text: L03 Hands close-up" time="0.001032" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs" failure="Expected values to be strictly equal:&#10;+ actual - expected&#10;&#10;+ undefined&#10;- &amp;quot;Use the uploaded product sheet for the folded linen tool roll and the uploaded character sheet for the [woman / man]. Keep the folded linen tool roll exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Close-up of the [woman's] hands using the folded linen tool roll on a wooden desk, [clothing that matches the character sheet, e.g. bare arms matching her blue tank top], natural hands with five fingers each, soft window light, shallow depth of field, realistic real-world scale, realistic lifestyle product photography.&amp;quot;&#10;">
+		<failure type="testCodeFailure" message="Expected values to be strictly equal:&#10;+ actual - expected&#10;&#10;+ undefined&#10;- &amp;quot;Use the uploaded product sheet for the folded linen tool roll and the uploaded character sheet for the [woman / man]. Keep the folded linen tool roll exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Close-up of the [woman's] hands using the folded linen tool roll on a wooden desk, [clothing that matches the character sheet, e.g. bare arms matching her blue tank top], natural hands with five fingers each, soft window light, shallow depth of field, realistic real-world scale, realistic lifestyle product photography.&amp;quot;">
+[Error [ERR_TEST_FAILURE]: Expected values to be strictly equal:
++ actual - expected
+
++ undefined
+- "Use the uploaded product sheet for the folded linen tool roll and the uploaded character sheet for the [woman / man]. Keep the folded linen tool roll exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Close-up of the [woman's] hands using the folded linen tool roll on a wooden desk, [clothing that matches the character sheet, e.g. bare arms matching her blue tank top], natural hands with five fingers each, soft window light, shallow depth of field, realistic real-world scale, realistic lifestyle product photography."
+] {
+  code: 'ERR_TEST_FAILURE',
+  failureType: 'testCodeFailure',
+  cause: AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + undefined
+  - "Use the uploaded product sheet for the folded linen tool roll and the uploaded character sheet for the [woman / man]. Keep the folded linen tool roll exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Close-up of the [woman's] hands using the folded linen tool roll on a wooden desk, [clothing that matches the character sheet, e.g. bare arms matching her blue tank top], natural hands with five fingers each, soft window light, shallow depth of field, realistic real-world scale, realistic lifestyle product photography."
+  
+      at TestContext.&lt;anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs:43:10)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: "Use the uploaded product sheet for the folded linen tool roll and the uploaded character sheet for the [woman / man]. Keep the folded linen tool roll exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Close-up of the [woman's] hands using the folded linen tool roll on a wooden desk, [clothing that matches the character sheet, e.g. bare arms matching her blue tank top], natural hands with five fingers each, soft window light, shallow depth of field, realistic real-world scale, realistic lifestyle product photography.",
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+}
+		</failure>
+	</testcase>
+	<testcase name="phase14a immutable approved text: L03 Desk" time="0.000895" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs" failure="Expected values to be strictly equal:&#10;+ actual - expected&#10;&#10;+ undefined&#10;- &amp;quot;Use the uploaded product sheet for the folded linen tool roll and the uploaded character sheet for the [woman / man]. Keep the folded linen tool roll exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Keep the [woman's] face exactly the same as the character sheet. [She] sits at a clean desk using the folded linen tool roll, side three-quarter angle, natural hands with five fingers, bright natural daylight, realistic real-world scale, realistic lifestyle photography.&amp;quot;&#10;">
+		<failure type="testCodeFailure" message="Expected values to be strictly equal:&#10;+ actual - expected&#10;&#10;+ undefined&#10;- &amp;quot;Use the uploaded product sheet for the folded linen tool roll and the uploaded character sheet for the [woman / man]. Keep the folded linen tool roll exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Keep the [woman's] face exactly the same as the character sheet. [She] sits at a clean desk using the folded linen tool roll, side three-quarter angle, natural hands with five fingers, bright natural daylight, realistic real-world scale, realistic lifestyle photography.&amp;quot;">
+[Error [ERR_TEST_FAILURE]: Expected values to be strictly equal:
++ actual - expected
+
++ undefined
+- "Use the uploaded product sheet for the folded linen tool roll and the uploaded character sheet for the [woman / man]. Keep the folded linen tool roll exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Keep the [woman's] face exactly the same as the character sheet. [She] sits at a clean desk using the folded linen tool roll, side three-quarter angle, natural hands with five fingers, bright natural daylight, realistic real-world scale, realistic lifestyle photography."
+] {
+  code: 'ERR_TEST_FAILURE',
+  failureType: 'testCodeFailure',
+  cause: AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + undefined
+  - "Use the uploaded product sheet for the folded linen tool roll and the uploaded character sheet for the [woman / man]. Keep the folded linen tool roll exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Keep the [woman's] face exactly the same as the character sheet. [She] sits at a clean desk using the folded linen tool roll, side three-quarter angle, natural hands with five fingers, bright natural daylight, realistic real-world scale, realistic lifestyle photography."
+  
+      at TestContext.&lt;anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs:43:10)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: "Use the uploaded product sheet for the folded linen tool roll and the uploaded character sheet for the [woman / man]. Keep the folded linen tool roll exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Keep the [woman's] face exactly the same as the character sheet. [She] sits at a clean desk using the folded linen tool roll, side three-quarter angle, natural hands with five fingers, bright natural daylight, realistic real-world scale, realistic lifestyle photography.",
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+}
+		</failure>
+	</testcase>
+	<testcase name="phase14a immutable approved text: L03 Showing to camera" time="0.000854" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs" failure="Expected values to be strictly equal:&#10;+ actual - expected&#10;&#10;+ undefined&#10;- &amp;quot;Use the uploaded product sheet for the folded linen tool roll and the uploaded character sheet for the [woman / man]. Keep the folded linen tool roll exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Keep the [woman's] face exactly the same as the character sheet. [She] holds the folded linen tool roll with both hands in front of [her] chest, showing it to the camera with a small natural smile, plain light background, soft studio light, natural hands with five fingers, realistic real-world scale, realistic product photography.&amp;quot;&#10;">
+		<failure type="testCodeFailure" message="Expected values to be strictly equal:&#10;+ actual - expected&#10;&#10;+ undefined&#10;- &amp;quot;Use the uploaded product sheet for the folded linen tool roll and the uploaded character sheet for the [woman / man]. Keep the folded linen tool roll exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Keep the [woman's] face exactly the same as the character sheet. [She] holds the folded linen tool roll with both hands in front of [her] chest, showing it to the camera with a small natural smile, plain light background, soft studio light, natural hands with five fingers, realistic real-world scale, realistic product photography.&amp;quot;">
+[Error [ERR_TEST_FAILURE]: Expected values to be strictly equal:
++ actual - expected
+
++ undefined
+- "Use the uploaded product sheet for the folded linen tool roll and the uploaded character sheet for the [woman / man]. Keep the folded linen tool roll exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Keep the [woman's] face exactly the same as the character sheet. [She] holds the folded linen tool roll with both hands in front of [her] chest, showing it to the camera with a small natural smile, plain light background, soft studio light, natural hands with five fingers, realistic real-world scale, realistic product photography."
+] {
+  code: 'ERR_TEST_FAILURE',
+  failureType: 'testCodeFailure',
+  cause: AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + undefined
+  - "Use the uploaded product sheet for the folded linen tool roll and the uploaded character sheet for the [woman / man]. Keep the folded linen tool roll exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Keep the [woman's] face exactly the same as the character sheet. [She] holds the folded linen tool roll with both hands in front of [her] chest, showing it to the camera with a small natural smile, plain light background, soft studio light, natural hands with five fingers, realistic real-world scale, realistic product photography."
+  
+      at TestContext.&lt;anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs:43:10)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: "Use the uploaded product sheet for the folded linen tool roll and the uploaded character sheet for the [woman / man]. Keep the folded linen tool roll exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Keep the [woman's] face exactly the same as the character sheet. [She] holds the folded linen tool roll with both hands in front of [her] chest, showing it to the camera with a small natural smile, plain light background, soft studio light, natural hands with five fingers, realistic real-world scale, realistic product photography.",
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+}
+		</failure>
+	</testcase>
+	<testcase name="phase14a immutable approved text: L04 Diwali" time="0.001219" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs" failure="Expected values to be strictly equal:&#10;+ actual - expected&#10;&#10;+ undefined&#10;- 'Use the uploaded product sheet as the reference. Keep the folded linen tool roll exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a wooden table during Diwali night, a few lit clay diyas and orange marigold flowers placed behind and beside it, soft warm fairy lights glowing out of focus in the background, the folded linen tool roll sharp and clearly the hero in the foreground, warm golden light, realistic real-world scale, realistic festive product photography.'&#10;">
+		<failure type="testCodeFailure" message="Expected values to be strictly equal:&#10;+ actual - expected&#10;&#10;+ undefined&#10;- 'Use the uploaded product sheet as the reference. Keep the folded linen tool roll exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a wooden table during Diwali night, a few lit clay diyas and orange marigold flowers placed behind and beside it, soft warm fairy lights glowing out of focus in the background, the folded linen tool roll sharp and clearly the hero in the foreground, warm golden light, realistic real-world scale, realistic festive product photography.'">
+[Error [ERR_TEST_FAILURE]: Expected values to be strictly equal:
++ actual - expected
+
++ undefined
+- 'Use the uploaded product sheet as the reference. Keep the folded linen tool roll exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a wooden table during Diwali night, a few lit clay diyas and orange marigold flowers placed behind and beside it, soft warm fairy lights glowing out of focus in the background, the folded linen tool roll sharp and clearly the hero in the foreground, warm golden light, realistic real-world scale, realistic festive product photography.'
+] {
+  code: 'ERR_TEST_FAILURE',
+  failureType: 'testCodeFailure',
+  cause: AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + undefined
+  - 'Use the uploaded product sheet as the reference. Keep the folded linen tool roll exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a wooden table during Diwali night, a few lit clay diyas and orange marigold flowers placed behind and beside it, soft warm fairy lights glowing out of focus in the background, the folded linen tool roll sharp and clearly the hero in the foreground, warm golden light, realistic real-world scale, realistic festive product photography.'
+  
+      at TestContext.&lt;anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs:43:10)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: 'Use the uploaded product sheet as the reference. Keep the folded linen tool roll exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a wooden table during Diwali night, a few lit clay diyas and orange marigold flowers placed behind and beside it, soft warm fairy lights glowing out of focus in the background, the folded linen tool roll sharp and clearly the hero in the foreground, warm golden light, realistic real-world scale, realistic festive product photography.',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+}
+		</failure>
+	</testcase>
+	<testcase name="phase14a immutable approved text: L04 Wedding Gift" time="0.001022" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs" failure="Expected values to be strictly equal:&#10;+ actual - expected&#10;&#10;+ undefined&#10;- 'Use the uploaded product sheet as the reference. Keep the folded linen tool roll exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a soft silk cloth next to an open premium gift box with gold ribbon and a few rose petals, elegant wedding gifting mood, soft warm light, folded linen tool roll sharp in the foreground, realistic real-world scale, realistic festive product photography.'&#10;">
+		<failure type="testCodeFailure" message="Expected values to be strictly equal:&#10;+ actual - expected&#10;&#10;+ undefined&#10;- 'Use the uploaded product sheet as the reference. Keep the folded linen tool roll exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a soft silk cloth next to an open premium gift box with gold ribbon and a few rose petals, elegant wedding gifting mood, soft warm light, folded linen tool roll sharp in the foreground, realistic real-world scale, realistic festive product photography.'">
+[Error [ERR_TEST_FAILURE]: Expected values to be strictly equal:
++ actual - expected
+
++ undefined
+- 'Use the uploaded product sheet as the reference. Keep the folded linen tool roll exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a soft silk cloth next to an open premium gift box with gold ribbon and a few rose petals, elegant wedding gifting mood, soft warm light, folded linen tool roll sharp in the foreground, realistic real-world scale, realistic festive product photography.'
+] {
+  code: 'ERR_TEST_FAILURE',
+  failureType: 'testCodeFailure',
+  cause: AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + undefined
+  - 'Use the uploaded product sheet as the reference. Keep the folded linen tool roll exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a soft silk cloth next to an open premium gift box with gold ribbon and a few rose petals, elegant wedding gifting mood, soft warm light, folded linen tool roll sharp in the foreground, realistic real-world scale, realistic festive product photography.'
+  
+      at TestContext.&lt;anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs:43:10)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: 'Use the uploaded product sheet as the reference. Keep the folded linen tool roll exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a soft silk cloth next to an open premium gift box with gold ribbon and a few rose petals, elegant wedding gifting mood, soft warm light, folded linen tool roll sharp in the foreground, realistic real-world scale, realistic festive product photography.',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+}
+		</failure>
+	</testcase>
+	<testcase name="phase14a immutable approved text: L04 Colour Variant Sheet" time="0.000981" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs" failure="Expected values to be strictly equal:&#10;+ actual - expected&#10;&#10;+ undefined&#10;- 'Use the uploaded product sheet as the reference. Only change the colour of [the part, e.g. all the keycaps] to [new colour, e.g. soft pastel pink]. Keep everything else exactly the same — same shape, same layout, same details, same text and logo, same four views, same background, same lighting. Output a full product sheet in the new colour.'&#10;">
+		<failure type="testCodeFailure" message="Expected values to be strictly equal:&#10;+ actual - expected&#10;&#10;+ undefined&#10;- 'Use the uploaded product sheet as the reference. Only change the colour of [the part, e.g. all the keycaps] to [new colour, e.g. soft pastel pink]. Keep everything else exactly the same — same shape, same layout, same details, same text and logo, same four views, same background, same lighting. Output a full product sheet in the new colour.'">
+[Error [ERR_TEST_FAILURE]: Expected values to be strictly equal:
++ actual - expected
+
++ undefined
+- 'Use the uploaded product sheet as the reference. Only change the colour of [the part, e.g. all the keycaps] to [new colour, e.g. soft pastel pink]. Keep everything else exactly the same — same shape, same layout, same details, same text and logo, same four views, same background, same lighting. Output a full product sheet in the new colour.'
+] {
+  code: 'ERR_TEST_FAILURE',
+  failureType: 'testCodeFailure',
+  cause: AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + undefined
+  - 'Use the uploaded product sheet as the reference. Only change the colour of [the part, e.g. all the keycaps] to [new colour, e.g. soft pastel pink]. Keep everything else exactly the same — same shape, same layout, same details, same text and logo, same four views, same background, same lighting. Output a full product sheet in the new colour.'
+  
+      at TestContext.&lt;anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs:43:10)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: 'Use the uploaded product sheet as the reference. Only change the colour of [the part, e.g. all the keycaps] to [new colour, e.g. soft pastel pink]. Keep everything else exactly the same — same shape, same layout, same details, same text and logo, same four views, same background, same lighting. Output a full product sheet in the new colour.',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+}
+		</failure>
+	</testcase>
+	<testcase name="phase14a immutable approved text: L05 Step 1 Brief" time="0.001154" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs" failure="Expected values to be strictly equal:&#10;+ actual - expected&#10;&#10;+ undefined&#10;- 'I sell a [product with real details — size, colour, key features]. Price: [your price]. I sell on [Instagram / website / marketplace] in India. Tell me: 1. Three types of people who would buy this 2. What problem it solves for each of them 3. One ad angle for each buyer Keep it short and simple.'&#10;">
+		<failure type="testCodeFailure" message="Expected values to be strictly equal:&#10;+ actual - expected&#10;&#10;+ undefined&#10;- 'I sell a [product with real details — size, colour, key features]. Price: [your price]. I sell on [Instagram / website / marketplace] in India. Tell me: 1. Three types of people who would buy this 2. What problem it solves for each of them 3. One ad angle for each buyer Keep it short and simple.'">
+[Error [ERR_TEST_FAILURE]: Expected values to be strictly equal:
++ actual - expected
+
++ undefined
+- 'I sell a [product with real details — size, colour, key features]. Price: [your price]. I sell on [Instagram / website / marketplace] in India. Tell me: 1. Three types of people who would buy this 2. What problem it solves for each of them 3. One ad angle for each buyer Keep it short and simple.'
+] {
+  code: 'ERR_TEST_FAILURE',
+  failureType: 'testCodeFailure',
+  cause: AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + undefined
+  - 'I sell a [product with real details — size, colour, key features]. Price: [your price]. I sell on [Instagram / website / marketplace] in India. Tell me: 1. Three types of people who would buy this 2. What problem it solves for each of them 3. One ad angle for each buyer Keep it short and simple.'
+  
+      at TestContext.&lt;anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs:43:10)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: 'I sell a [product with real details — size, colour, key features]. Price: [your price]. I sell on [Instagram / website / marketplace] in India. Tell me: 1. Three types of people who would buy this 2. What problem it solves for each of them 3. One ad angle for each buyer Keep it short and simple.',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+}
+		</failure>
+	</testcase>
+	<testcase name="phase14a immutable approved text: L05 Step 2 Hooks + Script" time="0.000840" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs" failure="Expected values to be strictly equal:&#10;+ actual - expected&#10;&#10;+ undefined&#10;- &amp;quot;Pick angle [number]. Write 5 scroll-stopping hooks in natural Hinglish, like a friend talking — not cheesy, no fake claims. Then write a 15-second ad script: what to show on screen and what the voiceover says. Also write one Instagram caption. Use only the features I gave you, don't add anything new.&amp;quot;&#10;">
+		<failure type="testCodeFailure" message="Expected values to be strictly equal:&#10;+ actual - expected&#10;&#10;+ undefined&#10;- &amp;quot;Pick angle [number]. Write 5 scroll-stopping hooks in natural Hinglish, like a friend talking — not cheesy, no fake claims. Then write a 15-second ad script: what to show on screen and what the voiceover says. Also write one Instagram caption. Use only the features I gave you, don't add anything new.&amp;quot;">
+[Error [ERR_TEST_FAILURE]: Expected values to be strictly equal:
++ actual - expected
+
++ undefined
+- "Pick angle [number]. Write 5 scroll-stopping hooks in natural Hinglish, like a friend talking — not cheesy, no fake claims. Then write a 15-second ad script: what to show on screen and what the voiceover says. Also write one Instagram caption. Use only the features I gave you, don't add anything new."
+] {
+  code: 'ERR_TEST_FAILURE',
+  failureType: 'testCodeFailure',
+  cause: AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + undefined
+  - "Pick angle [number]. Write 5 scroll-stopping hooks in natural Hinglish, like a friend talking — not cheesy, no fake claims. Then write a 15-second ad script: what to show on screen and what the voiceover says. Also write one Instagram caption. Use only the features I gave you, don't add anything new."
+  
+      at TestContext.&lt;anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs:43:10)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: "Pick angle [number]. Write 5 scroll-stopping hooks in natural Hinglish, like a friend talking — not cheesy, no fake claims. Then write a 15-second ad script: what to show on screen and what the voiceover says. Also write one Instagram caption. Use only the features I gave you, don't add anything new.",
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+}
+		</failure>
+	</testcase>
+	<testcase name="phase14a immutable approved text: L05 Step 3 Flow prompts" time="0.000838" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs"/>
+	<testcase name="phase14a immutable approved text: L06 Push-in" time="0.001032" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs" failure="Expected values to be strictly equal:&#10;+ actual - expected&#10;&#10;+ undefined&#10;- 'Use the uploaded image as the first frame. The folded linen tool roll stays perfectly still and exactly the same the whole time — same shape, same colour, same details, same text and logo, no morphing, no warping. The camera slowly and smoothly pushes in toward the folded linen tool roll. Soft natural window light, shallow depth of field, realistic product video. No people, no hands, no text on screen. Soft quiet room ambience only — NO music, NO voice.'&#10;">
+		<failure type="testCodeFailure" message="Expected values to be strictly equal:&#10;+ actual - expected&#10;&#10;+ undefined&#10;- 'Use the uploaded image as the first frame. The folded linen tool roll stays perfectly still and exactly the same the whole time — same shape, same colour, same details, same text and logo, no morphing, no warping. The camera slowly and smoothly pushes in toward the folded linen tool roll. Soft natural window light, shallow depth of field, realistic product video. No people, no hands, no text on screen. Soft quiet room ambience only — NO music, NO voice.'">
+[Error [ERR_TEST_FAILURE]: Expected values to be strictly equal:
++ actual - expected
+
++ undefined
+- 'Use the uploaded image as the first frame. The folded linen tool roll stays perfectly still and exactly the same the whole time — same shape, same colour, same details, same text and logo, no morphing, no warping. The camera slowly and smoothly pushes in toward the folded linen tool roll. Soft natural window light, shallow depth of field, realistic product video. No people, no hands, no text on screen. Soft quiet room ambience only — NO music, NO voice.'
+] {
+  code: 'ERR_TEST_FAILURE',
+  failureType: 'testCodeFailure',
+  cause: AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + undefined
+  - 'Use the uploaded image as the first frame. The folded linen tool roll stays perfectly still and exactly the same the whole time — same shape, same colour, same details, same text and logo, no morphing, no warping. The camera slowly and smoothly pushes in toward the folded linen tool roll. Soft natural window light, shallow depth of field, realistic product video. No people, no hands, no text on screen. Soft quiet room ambience only — NO music, NO voice.'
+  
+      at TestContext.&lt;anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs:43:10)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: 'Use the uploaded image as the first frame. The folded linen tool roll stays perfectly still and exactly the same the whole time — same shape, same colour, same details, same text and logo, no morphing, no warping. The camera slowly and smoothly pushes in toward the folded linen tool roll. Soft natural window light, shallow depth of field, realistic product video. No people, no hands, no text on screen. Soft quiet room ambience only — NO music, NO voice.',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+}
+		</failure>
+	</testcase>
+	<testcase name="phase14a immutable approved text: L06 Arc" time="0.001098" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs" failure="Expected values to be strictly equal:&#10;+ actual - expected&#10;&#10;+ undefined&#10;- 'Use the uploaded image as the first frame. The folded linen tool roll stays perfectly still and exactly the same the whole time — same shape, same colour, same details, same text and logo, no morphing, no warping. The camera slowly arcs a little to the right around the folded linen tool roll, smooth and steady, while the lights in the background glow softly. Moody cinematic look, realistic product video. No people, no hands, no text on screen. Soft quiet room ambience only — NO music, NO voice.'&#10;">
+		<failure type="testCodeFailure" message="Expected values to be strictly equal:&#10;+ actual - expected&#10;&#10;+ undefined&#10;- 'Use the uploaded image as the first frame. The folded linen tool roll stays perfectly still and exactly the same the whole time — same shape, same colour, same details, same text and logo, no morphing, no warping. The camera slowly arcs a little to the right around the folded linen tool roll, smooth and steady, while the lights in the background glow softly. Moody cinematic look, realistic product video. No people, no hands, no text on screen. Soft quiet room ambience only — NO music, NO voice.'">
+[Error [ERR_TEST_FAILURE]: Expected values to be strictly equal:
++ actual - expected
+
++ undefined
+- 'Use the uploaded image as the first frame. The folded linen tool roll stays perfectly still and exactly the same the whole time — same shape, same colour, same details, same text and logo, no morphing, no warping. The camera slowly arcs a little to the right around the folded linen tool roll, smooth and steady, while the lights in the background glow softly. Moody cinematic look, realistic product video. No people, no hands, no text on screen. Soft quiet room ambience only — NO music, NO voice.'
+] {
+  code: 'ERR_TEST_FAILURE',
+  failureType: 'testCodeFailure',
+  cause: AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + undefined
+  - 'Use the uploaded image as the first frame. The folded linen tool roll stays perfectly still and exactly the same the whole time — same shape, same colour, same details, same text and logo, no morphing, no warping. The camera slowly arcs a little to the right around the folded linen tool roll, smooth and steady, while the lights in the background glow softly. Moody cinematic look, realistic product video. No people, no hands, no text on screen. Soft quiet room ambience only — NO music, NO voice.'
+  
+      at TestContext.&lt;anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs:43:10)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: 'Use the uploaded image as the first frame. The folded linen tool roll stays perfectly still and exactly the same the whole time — same shape, same colour, same details, same text and logo, no morphing, no warping. The camera slowly arcs a little to the right around the folded linen tool roll, smooth and steady, while the lights in the background glow softly. Moody cinematic look, realistic product video. No people, no hands, no text on screen. Soft quiet room ambience only — NO music, NO voice.',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+}
+		</failure>
+	</testcase>
+	<testcase name="phase14a immutable approved text: L06 Light Sweep" time="0.000849" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs" failure="Expected values to be strictly equal:&#10;+ actual - expected&#10;&#10;+ undefined&#10;- 'Use the uploaded image as the first frame. The folded linen tool roll stays perfectly still and exactly the same the whole time — same shape, same colour, same details, same text and logo, no morphing, no warping. The camera stays completely still. A soft band of warm light slowly sweeps across the folded linen tool roll from left to right, the shadows moving gently with it. Clean premium product video. No people, no hands, no text on screen. Soft quiet room ambience only — NO music, NO voice.'&#10;">
+		<failure type="testCodeFailure" message="Expected values to be strictly equal:&#10;+ actual - expected&#10;&#10;+ undefined&#10;- 'Use the uploaded image as the first frame. The folded linen tool roll stays perfectly still and exactly the same the whole time — same shape, same colour, same details, same text and logo, no morphing, no warping. The camera stays completely still. A soft band of warm light slowly sweeps across the folded linen tool roll from left to right, the shadows moving gently with it. Clean premium product video. No people, no hands, no text on screen. Soft quiet room ambience only — NO music, NO voice.'">
+[Error [ERR_TEST_FAILURE]: Expected values to be strictly equal:
++ actual - expected
+
++ undefined
+- 'Use the uploaded image as the first frame. The folded linen tool roll stays perfectly still and exactly the same the whole time — same shape, same colour, same details, same text and logo, no morphing, no warping. The camera stays completely still. A soft band of warm light slowly sweeps across the folded linen tool roll from left to right, the shadows moving gently with it. Clean premium product video. No people, no hands, no text on screen. Soft quiet room ambience only — NO music, NO voice.'
+] {
+  code: 'ERR_TEST_FAILURE',
+  failureType: 'testCodeFailure',
+  cause: AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + undefined
+  - 'Use the uploaded image as the first frame. The folded linen tool roll stays perfectly still and exactly the same the whole time — same shape, same colour, same details, same text and logo, no morphing, no warping. The camera stays completely still. A soft band of warm light slowly sweeps across the folded linen tool roll from left to right, the shadows moving gently with it. Clean premium product video. No people, no hands, no text on screen. Soft quiet room ambience only — NO music, NO voice.'
+  
+      at TestContext.&lt;anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs:43:10)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: 'Use the uploaded image as the first frame. The folded linen tool roll stays perfectly still and exactly the same the whole time — same shape, same colour, same details, same text and logo, no morphing, no warping. The camera stays completely still. A soft band of warm light slowly sweeps across the folded linen tool roll from left to right, the shadows moving gently with it. Clean premium product video. No people, no hands, no text on screen. Soft quiet room ambience only — NO music, NO voice.',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+}
+		</failure>
+	</testcase>
+	<testcase name="phase14a immutable approved text: L07 UGC 1" time="0.001050" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs" failure="Expected values to be strictly equal:&#10;+ actual - expected&#10;&#10;+ undefined&#10;- `Use the uploaded character sheet for the [woman] and the uploaded product sheet for the folded linen tool roll. Keep her face, hair and outfit exactly the same as the character sheet. Keep the folded linen tool roll exactly the same — same shape, same colour, same details, same text and logo, no morphing. Selfie-style vertical video: the camera itself is her phone, held at arm's length, so we see her from the chest up looking straight into the lens. NO phone visible anywhere in the frame, no second camera, no screen. She sits at a desk in a normal home room, holding the folded linen tool roll up near her chest to show it, casual and friendly. Handheld look with slight natural shake, natural window light, a real lived-in room, not a studio, not a polished ad. ONLY she speaks, one voice only, natural Hindi lip-sync, casual friendly tone. She says: &amp;quot;[your hook line in Hindi]&amp;quot; real skin, no filter, clearly adult, modest, natural hands with five fingers, no text on screen, no watermark. Clean natural audio only — NO background music.`&#10;">
+		<failure type="testCodeFailure" message="Expected values to be strictly equal:&#10;+ actual - expected&#10;&#10;+ undefined&#10;- `Use the uploaded character sheet for the [woman] and the uploaded product sheet for the folded linen tool roll. Keep her face, hair and outfit exactly the same as the character sheet. Keep the folded linen tool roll exactly the same — same shape, same colour, same details, same text and logo, no morphing. Selfie-style vertical video: the camera itself is her phone, held at arm's length, so we see her from the chest up looking straight into the lens. NO phone visible anywhere in the frame, no second camera, no screen. She sits at a desk in a normal home room, holding the folded linen tool roll up near her chest to show it, casual and friendly. Handheld look with slight natural shake, natural window light, a real lived-in room, not a studio, not a polished ad. ONLY she speaks, one voice only, natural Hindi lip-sync, casual friendly tone. She says: &amp;quot;[your hook line in Hindi]&amp;quot; real skin, no filter, clearly adult, modest, natural hands with five fingers, no text on screen, no watermark. Clean natural audio only — NO background music.`">
+[Error [ERR_TEST_FAILURE]: Expected values to be strictly equal:
++ actual - expected
+
++ undefined
+- `Use the uploaded character sheet for the [woman] and the uploaded product sheet for the folded linen tool roll. Keep her face, hair and outfit exactly the same as the character sheet. Keep the folded linen tool roll exactly the same — same shape, same colour, same details, same text and logo, no morphing. Selfie-style vertical video: the camera itself is her phone, held at arm's length, so we see her from the chest up looking straight into the lens. NO phone visible anywhere in the frame, no second camera, no screen. She sits at a desk in a normal home room, holding the folded linen tool roll up near her chest to show it, casual and friendly. Handheld look with slight natural shake, natural window light, a real lived-in room, not a studio, not a polished ad. ONLY she speaks, one voice only, natural Hindi lip-sync, casual friendly tone. She says: "[your hook line in Hindi]" real skin, no filter, clearly adult, modest, natural hands with five fingers, no text on screen, no watermark. Clean natural audio only — NO background music.`
+] {
+  code: 'ERR_TEST_FAILURE',
+  failureType: 'testCodeFailure',
+  cause: AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + undefined
+  - `Use the uploaded character sheet for the [woman] and the uploaded product sheet for the folded linen tool roll. Keep her face, hair and outfit exactly the same as the character sheet. Keep the folded linen tool roll exactly the same — same shape, same colour, same details, same text and logo, no morphing. Selfie-style vertical video: the camera itself is her phone, held at arm's length, so we see her from the chest up looking straight into the lens. NO phone visible anywhere in the frame, no second camera, no screen. She sits at a desk in a normal home room, holding the folded linen tool roll up near her chest to show it, casual and friendly. Handheld look with slight natural shake, natural window light, a real lived-in room, not a studio, not a polished ad. ONLY she speaks, one voice only, natural Hindi lip-sync, casual friendly tone. She says: "[your hook line in Hindi]" real skin, no filter, clearly adult, modest, natural hands with five fingers, no text on screen, no watermark. Clean natural audio only — NO background music.`
+  
+      at TestContext.&lt;anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs:43:10)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: `Use the uploaded character sheet for the [woman] and the uploaded product sheet for the folded linen tool roll. Keep her face, hair and outfit exactly the same as the character sheet. Keep the folded linen tool roll exactly the same — same shape, same colour, same details, same text and logo, no morphing. Selfie-style vertical video: the camera itself is her phone, held at arm's length, so we see her from the chest up looking straight into the lens. NO phone visible anywhere in the frame, no second camera, no screen. She sits at a desk in a normal home room, holding the folded linen tool roll up near her chest to show it, casual and friendly. Handheld look with slight natural shake, natural window light, a real lived-in room, not a studio, not a polished ad. ONLY she speaks, one voice only, natural Hindi lip-sync, casual friendly tone. She says: "[your hook line in Hindi]" real skin, no filter, clearly adult, modest, natural hands with five fingers, no text on screen, no watermark. Clean natural audio only — NO background music.`,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+}
+		</failure>
+	</testcase>
+	<testcase name="phase14a immutable approved text: L07 UGC 2" time="0.000794" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs" failure="Expected values to be strictly equal:&#10;+ actual - expected&#10;&#10;+ undefined&#10;- 'Use the uploaded character sheet for the [woman] and the uploaded product sheet for the folded linen tool roll. Keep her face, hair and outfit exactly the same as the character sheet. Keep the folded linen tool roll exactly the same — same shape, same colour, same details, same text and logo, no morphing. Vertical video shot from her own phone resting on the desk in front of her: the camera itself is the phone, so we see her and the folded linen tool roll from a low front angle. NO phone visible anywhere in the frame, no second camera, no screen facing us. She uses the folded linen tool roll for a moment, then looks up straight into the lens and talks, casual and natural. Natural window light, a real lived-in room, not a studio, not a polished ad. ONLY she speaks, one voice only, natural Hindi lip-sync, casual friendly tone. She says: &amp;quot;[your second line in Hindi]&amp;quot; real skin, no filter, clearly adult, modest, natural hands with five fingers, no text on screen, no watermark. Clean natural audio only — NO background music.'&#10;">
+		<failure type="testCodeFailure" message="Expected values to be strictly equal:&#10;+ actual - expected&#10;&#10;+ undefined&#10;- 'Use the uploaded character sheet for the [woman] and the uploaded product sheet for the folded linen tool roll. Keep her face, hair and outfit exactly the same as the character sheet. Keep the folded linen tool roll exactly the same — same shape, same colour, same details, same text and logo, no morphing. Vertical video shot from her own phone resting on the desk in front of her: the camera itself is the phone, so we see her and the folded linen tool roll from a low front angle. NO phone visible anywhere in the frame, no second camera, no screen facing us. She uses the folded linen tool roll for a moment, then looks up straight into the lens and talks, casual and natural. Natural window light, a real lived-in room, not a studio, not a polished ad. ONLY she speaks, one voice only, natural Hindi lip-sync, casual friendly tone. She says: &amp;quot;[your second line in Hindi]&amp;quot; real skin, no filter, clearly adult, modest, natural hands with five fingers, no text on screen, no watermark. Clean natural audio only — NO background music.'">
+[Error [ERR_TEST_FAILURE]: Expected values to be strictly equal:
++ actual - expected
+
++ undefined
+- 'Use the uploaded character sheet for the [woman] and the uploaded product sheet for the folded linen tool roll. Keep her face, hair and outfit exactly the same as the character sheet. Keep the folded linen tool roll exactly the same — same shape, same colour, same details, same text and logo, no morphing. Vertical video shot from her own phone resting on the desk in front of her: the camera itself is the phone, so we see her and the folded linen tool roll from a low front angle. NO phone visible anywhere in the frame, no second camera, no screen facing us. She uses the folded linen tool roll for a moment, then looks up straight into the lens and talks, casual and natural. Natural window light, a real lived-in room, not a studio, not a polished ad. ONLY she speaks, one voice only, natural Hindi lip-sync, casual friendly tone. She says: "[your second line in Hindi]" real skin, no filter, clearly adult, modest, natural hands with five fingers, no text on screen, no watermark. Clean natural audio only — NO background music.'
+] {
+  code: 'ERR_TEST_FAILURE',
+  failureType: 'testCodeFailure',
+  cause: AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + undefined
+  - 'Use the uploaded character sheet for the [woman] and the uploaded product sheet for the folded linen tool roll. Keep her face, hair and outfit exactly the same as the character sheet. Keep the folded linen tool roll exactly the same — same shape, same colour, same details, same text and logo, no morphing. Vertical video shot from her own phone resting on the desk in front of her: the camera itself is the phone, so we see her and the folded linen tool roll from a low front angle. NO phone visible anywhere in the frame, no second camera, no screen facing us. She uses the folded linen tool roll for a moment, then looks up straight into the lens and talks, casual and natural. Natural window light, a real lived-in room, not a studio, not a polished ad. ONLY she speaks, one voice only, natural Hindi lip-sync, casual friendly tone. She says: "[your second line in Hindi]" real skin, no filter, clearly adult, modest, natural hands with five fingers, no text on screen, no watermark. Clean natural audio only — NO background music.'
+  
+      at TestContext.&lt;anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs:43:10)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: 'Use the uploaded character sheet for the [woman] and the uploaded product sheet for the folded linen tool roll. Keep her face, hair and outfit exactly the same as the character sheet. Keep the folded linen tool roll exactly the same — same shape, same colour, same details, same text and logo, no morphing. Vertical video shot from her own phone resting on the desk in front of her: the camera itself is the phone, so we see her and the folded linen tool roll from a low front angle. NO phone visible anywhere in the frame, no second camera, no screen facing us. She uses the folded linen tool roll for a moment, then looks up straight into the lens and talks, casual and natural. Natural window light, a real lived-in room, not a studio, not a polished ad. ONLY she speaks, one voice only, natural Hindi lip-sync, casual friendly tone. She says: "[your second line in Hindi]" real skin, no filter, clearly adult, modest, natural hands with five fingers, no text on screen, no watermark. Clean natural audio only — NO background music.',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+}
+		</failure>
+	</testcase>
+	<testcase name="phase14a recolour operation: Change the three corner clips to muted teal." time="0.002686" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs"/>
+	<testcase name="phase14a recolour operation: Only the colour of the three corner clips should be changed to muted teal." time="0.001943" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs" failure="Expected values to be strictly equal:&#10;+ actual - expected&#10;&#10;+ 'three corner clips should be changed to muted teal'&#10;- 'birch repair tray'&#10;">
+		<failure type="testCodeFailure" message="Expected values to be strictly equal:&#10;+ actual - expected&#10;&#10;+ 'three corner clips should be changed to muted teal'&#10;- 'birch repair tray'">
+[Error [ERR_TEST_FAILURE]: Expected values to be strictly equal:
++ actual - expected
+
++ 'three corner clips should be changed to muted teal'
+- 'birch repair tray'
+] {
+  code: 'ERR_TEST_FAILURE',
+  failureType: 'testCodeFailure',
+  cause: AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + 'three corner clips should be changed to muted teal'
+  - 'birch repair tray'
+  
+      at TestContext.&lt;anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs:55:10)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'three corner clips should be changed to muted teal',
+    expected: 'birch repair tray',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+}
+		</failure>
+	</testcase>
+	<testcase name="phase14a recolour operation: The colour of the lower retaining ring is to become brushed copper." time="0.002004" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs" failure="Expected values to be strictly equal:&#10;+ actual - expected&#10;&#10;+ 'lower retaining ring is to become brushed copper'&#10;- 'birch repair tray'&#10;">
+		<failure type="testCodeFailure" message="Expected values to be strictly equal:&#10;+ actual - expected&#10;&#10;+ 'lower retaining ring is to become brushed copper'&#10;- 'birch repair tray'">
+[Error [ERR_TEST_FAILURE]: Expected values to be strictly equal:
++ actual - expected
+
++ 'lower retaining ring is to become brushed copper'
+- 'birch repair tray'
+] {
+  code: 'ERR_TEST_FAILURE',
+  failureType: 'testCodeFailure',
+  cause: AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + 'lower retaining ring is to become brushed copper'
+  - 'birch repair tray'
+  
+      at TestContext.&lt;anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs:55:10)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'lower retaining ring is to become brushed copper',
+    expected: 'birch repair tray',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+}
+		</failure>
+	</testcase>
+	<testcase name="phase14a recolour operation: Recolour the rear tab to pale violet and keep everything else the same." time="0.001846" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs"/>
+	<testcase name="phase14a recolour operation: Sirf outer fastening loop ka rang dusty lavender karna hai." time="0.001650" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs"/>
+	<testcase name="phase14a recolour operation: केवल बाहरी ढक्कन का रंग हल्का नीला करें।" time="0.004071" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs"/>
+	<testcase name="phase14a atomic product replacement: Replace the product with a ceramic thread dish." time="0.002691" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs"/>
+	<testcase name="phase14a atomic product replacement: Ab product ko ceramic thread dish se replace karo." time="0.001694" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs" failure="Expected values to be strictly equal:&#10;+ actual - expected&#10;&#10;+ 'wool needle wallet'&#10;- 'ceramic thread dish'&#10;">
+		<failure type="testCodeFailure" message="Expected values to be strictly equal:&#10;+ actual - expected&#10;&#10;+ 'wool needle wallet'&#10;- 'ceramic thread dish'">
+[Error [ERR_TEST_FAILURE]: Expected values to be strictly equal:
++ actual - expected
+
++ 'wool needle wallet'
+- 'ceramic thread dish'
+] {
+  code: 'ERR_TEST_FAILURE',
+  failureType: 'testCodeFailure',
+  cause: AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + 'wool needle wallet'
+  - 'ceramic thread dish'
+  
+      at TestContext.&lt;anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs:68:10)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'wool needle wallet',
+    expected: 'ceramic thread dish',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+}
+		</failure>
+	</testcase>
+	<testcase name="phase14a atomic product replacement: Ab item ko ceramic thread dish se badal do." time="0.001513" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs" failure="Expected values to be strictly equal:&#10;+ actual - expected&#10;&#10;+ 'wool needle wallet'&#10;- 'ceramic thread dish'&#10;">
+		<failure type="testCodeFailure" message="Expected values to be strictly equal:&#10;+ actual - expected&#10;&#10;+ 'wool needle wallet'&#10;- 'ceramic thread dish'">
+[Error [ERR_TEST_FAILURE]: Expected values to be strictly equal:
++ actual - expected
+
++ 'wool needle wallet'
+- 'ceramic thread dish'
+] {
+  code: 'ERR_TEST_FAILURE',
+  failureType: 'testCodeFailure',
+  cause: AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + 'wool needle wallet'
+  - 'ceramic thread dish'
+  
+      at TestContext.&lt;anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs:68:10)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'wool needle wallet',
+    expected: 'ceramic thread dish',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+}
+		</failure>
+	</testcase>
+	<testcase name="phase14a atomic product replacement: अब प्रोडक्ट को ceramic thread dish से बदल दीजिए।" time="0.001910" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs" failure="Expected values to be strictly equal:&#10;+ actual - expected&#10;&#10;+ 'wool needle wallet'&#10;- 'ceramic thread dish'&#10;">
+		<failure type="testCodeFailure" message="Expected values to be strictly equal:&#10;+ actual - expected&#10;&#10;+ 'wool needle wallet'&#10;- 'ceramic thread dish'">
+[Error [ERR_TEST_FAILURE]: Expected values to be strictly equal:
++ actual - expected
+
++ 'wool needle wallet'
+- 'ceramic thread dish'
+] {
+  code: 'ERR_TEST_FAILURE',
+  failureType: 'testCodeFailure',
+  cause: AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + 'wool needle wallet'
+  - 'ceramic thread dish'
+  
+      at TestContext.&lt;anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs:68:10)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'wool needle wallet',
+    expected: 'ceramic thread dish',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+}
+		</failure>
+	</testcase>
+	<testcase name="phase14a negated switch: Do not replace the product with a copper tray." time="0.001390" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs" failure="Expected values to be strictly equal:&#10;+ actual - expected&#10;&#10;+ 'copper tray'&#10;- 'linen spool pouch'&#10;">
+		<failure type="testCodeFailure" message="Expected values to be strictly equal:&#10;+ actual - expected&#10;&#10;+ 'copper tray'&#10;- 'linen spool pouch'">
+[Error [ERR_TEST_FAILURE]: Expected values to be strictly equal:
++ actual - expected
+
++ 'copper tray'
+- 'linen spool pouch'
+] {
+  code: 'ERR_TEST_FAILURE',
+  failureType: 'testCodeFailure',
+  cause: AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + 'copper tray'
+  - 'linen spool pouch'
+  
+      at TestContext.&lt;anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs:79:10)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'copper tray',
+    expected: 'linen spool pouch',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+}
+		</failure>
+	</testcase>
+	<testcase name="phase14a negated switch: Product ko copper tray se replace mat karo." time="0.001417" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs"/>
+	<testcase name="phase14a negated switch: प्रोडक्ट को copper tray से मत बदलें।" time="0.001352" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs"/>
+	<testcase name="phase14a negated recolour: Do not change the upper rim to orange." time="0.000746" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs"/>
+	<testcase name="phase14a negated recolour: The colour of the upper rim must not be changed to orange." time="0.000681" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs"/>
+	<testcase name="phase14a negated recolour: केवल ढक्कन का रंग लाल मत करें।" time="0.000644" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs"/>
+	<testcase name="phase14a names are excluded from symptoms but genuine separate symptoms remain" time="0.000976" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs" failure="Expected &amp;quot;actual&amp;quot; to be strictly unequal to:&#10;&#10;'blur'">
+		<failure type="testCodeFailure" message="Expected &amp;quot;actual&amp;quot; to be strictly unequal to:&#10;&#10;'blur'">
+[Error [ERR_TEST_FAILURE]: Expected "actual" to be strictly unequal to:
+
+'blur'] {
+  code: 'ERR_TEST_FAILURE',
+  failureType: 'testCodeFailure',
+  cause: AssertionError [ERR_ASSERTION]: Expected "actual" to be strictly unequal to:
+  
+  'blur'
+      at TestContext.&lt;anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs:86:10)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'blur',
+    expected: 'blur',
+    operator: 'notStrictEqual',
+    diff: 'simple'
+  }
+}
+		</failure>
+	</testcase>
+	<testcase name="phase14a educational named heading does not copy an asset" time="0.001206" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs" failure="Expected values to be strictly equal:&#10;+ actual - expected&#10;&#10;+ {&#10;+   policy: 'exact_template',&#10;+   reply: 'L02 White Studio\n' +&#10;+     '\n' +&#10;+     '```text\n' +&#10;+     'Use the uploaded product sheet as the reference. Keep the [PRODUCT] exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a clean seamless white background, soft even studio lighting, a soft natural shadow under it, slight top-down angle, sharp focus, realistic product photography.\n' +&#10;+     '```\n' +&#10;+     '\n' +&#10;+     'Fields still in brackets need your details; I have not invented them.',&#10;+   templateId: 'ai-product-photoshoot-ads:training:exact-template:l02-white-studio'&#10;+ }&#10;- null&#10;">
+		<failure type="testCodeFailure" message="Expected values to be strictly equal:&#10;+ actual - expected&#10;&#10;+ {&#10;+   policy: 'exact_template',&#10;+   reply: 'L02 White Studio\n' +&#10;+     '\n' +&#10;+     '```text\n' +&#10;+     'Use the uploaded product sheet as the reference. Keep the [PRODUCT] exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a clean seamless white background, soft even studio lighting, a soft natural shadow under it, slight top-down angle, sharp focus, realistic product photography.\n' +&#10;+     '```\n' +&#10;+     '\n' +&#10;+     'Fields still in brackets need your details; I have not invented them.',&#10;+   templateId: 'ai-product-photoshoot-ads:training:exact-template:l02-white-studio'&#10;+ }&#10;- null">
+[Error [ERR_TEST_FAILURE]: Expected values to be strictly equal:
++ actual - expected
+
++ {
++   policy: 'exact_template',
++   reply: 'L02 White Studio\n' +
++     '\n' +
++     '```text\n' +
++     'Use the uploaded product sheet as the reference. Keep the [PRODUCT] exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a clean seamless white background, soft even studio lighting, a soft natural shadow under it, slight top-down angle, sharp focus, realistic product photography.\n' +
++     '```\n' +
++     '\n' +
++     'Fields still in brackets need your details; I have not invented them.',
++   templateId: 'ai-product-photoshoot-ads:training:exact-template:l02-white-studio'
++ }
+- null
+] {
+  code: 'ERR_TEST_FAILURE',
+  failureType: 'testCodeFailure',
+  cause: AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + {
+  +   policy: 'exact_template',
+  +   reply: 'L02 White Studio\n' +
+  +     '\n' +
+  +     '```text\n' +
+  +     'Use the uploaded product sheet as the reference. Keep the [PRODUCT] exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a clean seamless white background, soft even studio lighting, a soft natural shadow under it, slight top-down angle, sharp focus, realistic product photography.\n' +
+  +     '```\n' +
+  +     '\n' +
+  +     'Fields still in brackets need your details; I have not invented them.',
+  +   templateId: 'ai-product-photoshoot-ads:training:exact-template:l02-white-studio'
+  + }
+  - null
+  
+      at TestContext.&lt;anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs:91:65)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: { reply: 'L02 White Studio\n\n```text\nUse the uploaded product sheet as the reference. Keep the [PRODUCT] exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a clean seamless white background, soft even studio lighting, a soft natural shadow under it, slight top-down angle, sharp focus, realistic product photography.\n```\n\nFields still in brackets need your details; I have not invented them.', templateId: 'ai-product-photoshoot-ads:training:exact-template:l02-white-studio', policy: 'exact_template' },
+    expected: null,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+}
+		</failure>
+	</testcase>
+	<testcase name="phase14a original generation is not a saved-template clarification" time="0.001135" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs" failure="Expected values to be strictly equal:&#10;&#10;true !== false&#10;">
+		<failure type="testCodeFailure" message="Expected values to be strictly equal:&#10;&#10;true !== false">
+[Error [ERR_TEST_FAILURE]: Expected values to be strictly equal:
+
+true !== false
+] {
+  code: 'ERR_TEST_FAILURE',
+  failureType: 'testCodeFailure',
+  cause: AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  true !== false
+  
+      at TestContext.&lt;anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs:95:10)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: true,
+    expected: false,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+}
+		</failure>
+	</testcase>
+	<testcase name="phase14a prompt location and negated copy are not positive exact intent" time="0.000106" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs" failure="Explain White Studio, do not copy the template.&#10;&#10;true !== false&#10;">
+		<failure type="testCodeFailure" message="Explain White Studio, do not copy the template.&#10;&#10;true !== false">
+[Error [ERR_TEST_FAILURE]: Explain White Studio, do not copy the template.
+
+true !== false
+] {
+  code: 'ERR_TEST_FAILURE',
+  failureType: 'testCodeFailure',
+  cause: AssertionError [ERR_ASSERTION]: Explain White Studio, do not copy the template.
+  
+  true !== false
+  
+      at TestContext.&lt;anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs:99:169)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: true,
+    expected: false,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+}
+		</failure>
+	</testcase>
+	<testcase name="phase14a unknown recolour fields keep only original placeholders" time="0.001023" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs" failure="Expected values to be strictly equal:&#10;+ actual - expected&#10;&#10;+ undefined&#10;- 'Use the uploaded product sheet as the reference. Only change the colour of [the part, e.g. all the keycaps] to [new colour, e.g. soft pastel pink]. Keep everything else exactly the same — same shape, same layout, same details, same text and logo, same four views, same background, same lighting. Output a full product sheet in the new colour.'&#10;">
+		<failure type="testCodeFailure" message="Expected values to be strictly equal:&#10;+ actual - expected&#10;&#10;+ undefined&#10;- 'Use the uploaded product sheet as the reference. Only change the colour of [the part, e.g. all the keycaps] to [new colour, e.g. soft pastel pink]. Keep everything else exactly the same — same shape, same layout, same details, same text and logo, same four views, same background, same lighting. Output a full product sheet in the new colour.'">
+[Error [ERR_TEST_FAILURE]: Expected values to be strictly equal:
++ actual - expected
+
++ undefined
+- 'Use the uploaded product sheet as the reference. Only change the colour of [the part, e.g. all the keycaps] to [new colour, e.g. soft pastel pink]. Keep everything else exactly the same — same shape, same layout, same details, same text and logo, same four views, same background, same lighting. Output a full product sheet in the new colour.'
+] {
+  code: 'ERR_TEST_FAILURE',
+  failureType: 'testCodeFailure',
+  cause: AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + undefined
+  - 'Use the uploaded product sheet as the reference. Only change the colour of [the part, e.g. all the keycaps] to [new colour, e.g. soft pastel pink]. Keep everything else exactly the same — same shape, same layout, same details, same text and logo, same four views, same background, same lighting. Output a full product sheet in the new colour.'
+  
+      at TestContext.&lt;anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs:102:10)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: 'Use the uploaded product sheet as the reference. Only change the colour of [the part, e.g. all the keycaps] to [new colour, e.g. soft pastel pink]. Keep everything else exactly the same — same shape, same layout, same details, same text and logo, same four views, same background, same lighting. Output a full product sheet in the new colour.',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+}
+		</failure>
+	</testcase>
+	<testcase name="phase14a identity must not be inferred from negated or missing declaration" time="0.002255" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs"/>
+	<testcase name="phase14a entitled complete assets cannot bypass course access" time="0.001654" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/product-tutor-phase14a.test.cjs"/>
+	<testcase name="retrieves supporting course material: My character face changes between clips. How do I keep the same identity?" time="0.009711" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/tutor-knowledge.test.cjs"/>
+	<testcase name="retrieves supporting course material: Mera chehra har video mein badal jaata hai" time="0.006157" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/tutor-knowledge.test.cjs"/>
+	<testcase name="retrieves supporting course material: My voice sounds robotic. How do I fix the audio?" time="0.005551" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/tutor-knowledge.test.cjs"/>
+	<testcase name="retrieves supporting course material: How can I make skin look realistic instead of plastic?" time="0.005138" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/tutor-knowledge.test.cjs"/>
+	<testcase name="a short follow-up retrieves the preceding topic" time="0.005626" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/tutor-knowledge.test.cjs"/>
+	<testcase name="phase14a full approved text resolves the authorized asset despite identity symptom words" time="0.020904" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/tutor-knowledge.test.cjs" failure="Expected &amp;quot;actual&amp;quot; to be strictly unequal to:&#10;&#10;'blur'">
+		<failure type="testCodeFailure" message="Expected &amp;quot;actual&amp;quot; to be strictly unequal to:&#10;&#10;'blur'">
+[Error [ERR_TEST_FAILURE]: Expected "actual" to be strictly unequal to:
+
+'blur'] {
+  code: 'ERR_TEST_FAILURE',
+  failureType: 'testCodeFailure',
+  cause: AssertionError [ERR_ASSERTION]: Expected "actual" to be strictly unequal to:
+  
+  'blur'
+      at TestContext.&lt;anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/tutor-knowledge.test.cjs:38:9)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'blur',
+    expected: 'blur',
+    operator: 'notStrictEqual',
+    diff: 'simple'
+  }
+}
+		</failure>
+	</testcase>
+	<testcase name="paid documents and example prompts are not retrieved without lesson access" time="0.000233" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/tutor-knowledge.test.cjs"/>
+	<testcase name="documents cannot be retrieved under another course or unpublished course" time="0.000274" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/tutor-knowledge.test.cjs"/>
+	<testcase name="active course retrieval does not mix another course unless comparison is explicit" time="0.011981" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/tutor-knowledge.test.cjs"/>
+	<testcase name="retrieves AI Filmmaking material only for the filmmaking course slug" time="0.001354" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/tutor-knowledge.test.cjs"/>
+	<testcase name="retrieves AI Filmmaking continuation material for lessons 9-15 in the same course" time="0.003340" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/tutor-knowledge.test.cjs"/>
+	<testcase name="retrieves AI Product Photoshoot &amp; Ads material for exact prompts and troubleshooting" time="0.004437" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/tutor-knowledge.test.cjs"/>
+	<testcase name="AI Product Photoshoot &amp; Ads material stays isolated from other courses" time="0.000924" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/tutor-knowledge.test.cjs"/>
+	<testcase name="AI Filmmaking direct replies preserve approved prompts and defer lessons 9-15 to retrieved material" time="0.002733" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/tutor-knowledge.test.cjs"/>
+	<testcase name="AI Filmmaking direct replies resolve short follow-ups from recent history" time="0.000261" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/tutor-knowledge.test.cjs"/>
+	<testcase name="Skillomate plan questions get current one-time access facts" time="0.000736" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/tutor-knowledge.test.cjs"/>
+	<testcase name="Skillomate platform questions get deterministic product facts" time="0.000530" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/tutor-knowledge.test.cjs"/>
+	<testcase name="learner context answers account, payment, and expiry questions from safe facts" time="0.000567" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/tutor-knowledge.test.cjs"/>
+	<testcase name="active and trial access expire and cancelled access is denied" time="0.000272" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/tutor-knowledge.test.cjs"/>
+	<testcase name="vague video questions prioritize the selected lesson notes and matching course script" time="0.006560" classname="test" file="/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/tests/tutor-knowledge.test.cjs"/>
+	<!-- tests 134 -->
+	<!-- suites 0 -->
+	<!-- pass 96 -->
+	<!-- fail 38 -->
+	<!-- cancelled 0 -->
+	<!-- skipped 0 -->
+	<!-- todo 0 -->
+	<!-- duration_ms 744.558041 -->
+</testsuites>

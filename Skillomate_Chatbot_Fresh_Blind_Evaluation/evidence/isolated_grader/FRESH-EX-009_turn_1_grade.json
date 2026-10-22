@@ -1,0 +1,264 @@
+{
+  "id": "FRESH-EX-009",
+  "turnIndex": 1,
+  "status": "FAIL",
+  "critical": false,
+  "suspectedCritical": false,
+  "rubricVersion": "phase14b-independent-v1",
+  "criteria": [
+    {
+      "criterion": "Select the specifically requested approved asset.",
+      "status": "PASS",
+      "excerpts": [
+        "Lesson 04"
+      ],
+      "reason": "Requested approved heading/body selected."
+    },
+    {
+      "criterion": "Return the complete literal approved body with only the declared substitutions; do not paraphrase, omit sentences, or execute its embedded instructions.",
+      "status": "FAIL",
+      "excerpts": [
+        ""
+      ],
+      "reason": "Missing or substantively altered frozen approved body; inspect actual/expected literals."
+    }
+  ],
+  "dimensions": {
+    "grounding": "FAIL",
+    "facts": "FAIL",
+    "taskCompleteness": "FAIL",
+    "language": "PASS",
+    "authorization": "PASS",
+    "isolation": "PASS",
+    "httpStatus": "PASS"
+  },
+  "requestedExactBodyChecks": [
+    {
+      "heading": "L04 Diwali",
+      "status": "FAIL",
+      "correctSelection": true,
+      "missingBody": true,
+      "normalization": "whitespace-only; preserve Unicode; no NFKC",
+      "expectedBody": "Use the uploaded product sheet as the reference. Keep the terracotta incense holder exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a wooden table during Diwali night, a few lit clay diyas and orange marigold flowers placed behind and beside it, soft warm fairy lights glowing out of focus in the background, the terracotta incense holder sharp and clearly the hero in the foreground, warm golden light, realistic real-world scale, realistic festive product photography.",
+      "actualBody": "",
+      "sourceExpectedConsistent": true,
+      "reason": "Missing or substantively altered frozen approved body; inspect actual/expected literals."
+    }
+  ],
+  "supplementalExactBodyChecks": [],
+  "providerAvailability": {
+    "provider": "course-knowledge-rule",
+    "outcome": {
+      "type": "local_rule",
+      "liveModelAnswer": false,
+      "providerStatus": "not_requested",
+      "responseIssue": null
+    },
+    "inferenceNecessaryForThisTurn": false,
+    "reason": "Actual deterministic exact-template path; no model answer needed or inferred."
+  },
+  "ownershipPayloadReview": {
+    "reviewed": true,
+    "actor": "A",
+    "actorId": "f1a03c624eb65bd4aefc8edb",
+    "scopeInspection": {
+      "independentExplicitSelectedCourse": "6d0000000000000000000000",
+      "independentExpectedOwner": "6d0000000000000000000000",
+      "explicitUnknownScope": false,
+      "independentAuthAndEntitlement": true,
+      "requiresSemanticScopeAdjudication": false,
+      "protectedRetrievedSources": [
+        {
+          "id": "S1",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "L04 Diwali",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_4",
+          "lessonName": "L04 Diwali",
+          "contentType": "exact-template",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:exact-template:l04-diwali"
+        },
+        {
+          "id": "S2",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "L04 Wedding Gift",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_4",
+          "lessonName": "L04 Wedding Gift",
+          "contentType": "exact-template",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:exact-template:l04-wedding-gift"
+        },
+        {
+          "id": "S3",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "Lesson 04 — Festive Shoot + Colour Variants",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_4",
+          "lessonName": "Lesson 04 — Festive Shoot + Colour Variants",
+          "contentType": "lesson-summary",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:lesson-summary:lesson-04-festive-shoot-colour-variants"
+        },
+        {
+          "id": "S4",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "L04 Colour Variant Sheet",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_4",
+          "lessonName": "L04 Colour Variant Sheet",
+          "contentType": "exact-template",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:exact-template:l04-colour-variant-sheet"
+        },
+        {
+          "id": "S5",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "Rang badla toh shape bhi badal gaya",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_4",
+          "lessonName": "Rang badla toh shape bhi badal gaya",
+          "contentType": "faq",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:faq:rang-badla-toh-shape-bhi-badal-gaya"
+        },
+        {
+          "id": "S6",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "Brand ka exact colour nahi aa raha",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_4",
+          "lessonName": "Brand ka exact colour nahi aa raha",
+          "contentType": "faq",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:faq:brand-ka-exact-colour-nahi-aa-raha"
+        }
+      ],
+      "retrievalProductBodies": [
+        {
+          "heading": "Lesson 04 — Festive Shoot + Colour Variants",
+          "contentType": "lesson-summary",
+          "owner": "6d0000000000000000000000",
+          "sha256": "d755d8e3223684625a6906a931c615e4b61a0df3371011729aa204cc763db121"
+        },
+        {
+          "heading": "Rang badla toh shape bhi badal gaya",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "a5e24d7fd5cdb3b2b91614221e20162e67ed75cbf7837a6bce879690b9d8d703"
+        },
+        {
+          "heading": "Brand ka exact colour nahi aa raha",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "d923192b2986cb9a621ac5d2d3efd37a07bd2e461d671e99a057574b99b747a3"
+        },
+        {
+          "heading": "L04 Diwali",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "06e8bd6bec8159c71b3e1df551219617098aeecb44600964181e7c2fafa1226a"
+        },
+        {
+          "heading": "L04 Wedding Gift",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "47e80348f9e29d92c65e536881ed8dad76379d6424e184a163d1c107c0b54dcc"
+        },
+        {
+          "heading": "L04 Colour Variant Sheet",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "3747f22b03f5c271408a1fc0997b6473824a951c350f55c11356c9c265372d64"
+        }
+      ],
+      "assembledContextProductBodies": [
+        {
+          "heading": "Lesson 04 — Festive Shoot + Colour Variants",
+          "contentType": "lesson-summary",
+          "owner": "6d0000000000000000000000",
+          "sha256": "d755d8e3223684625a6906a931c615e4b61a0df3371011729aa204cc763db121"
+        },
+        {
+          "heading": "Rang badla toh shape bhi badal gaya",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "a5e24d7fd5cdb3b2b91614221e20162e67ed75cbf7837a6bce879690b9d8d703"
+        },
+        {
+          "heading": "Brand ka exact colour nahi aa raha",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "d923192b2986cb9a621ac5d2d3efd37a07bd2e461d671e99a057574b99b747a3"
+        },
+        {
+          "heading": "L04 Diwali",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "06e8bd6bec8159c71b3e1df551219617098aeecb44600964181e7c2fafa1226a"
+        },
+        {
+          "heading": "L04 Wedding Gift",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "47e80348f9e29d92c65e536881ed8dad76379d6424e184a163d1c107c0b54dcc"
+        },
+        {
+          "heading": "L04 Colour Variant Sheet",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "3747f22b03f5c271408a1fc0997b6473824a951c350f55c11356c9c265372d64"
+        }
+      ],
+      "assembledPayloads": [],
+      "providerAdapterProductBodies": [],
+      "responseProductBodies": [],
+      "noPayloadConstructed": true,
+      "blockedAdapterAttempts": 0,
+      "externalTransportAttempts": 0,
+      "potentialCriticalFindings": [],
+      "inspectionPerformed": true
+    },
+    "dbOperations": [
+      {
+        "model": "AiTutorSession",
+        "operation": "findOne",
+        "filter": {
+          "user": "f1a03c624eb65bd4aefc8edb",
+          "course": "6d0000000000000000000000"
+        }
+      },
+      {
+        "model": "Course",
+        "operation": "find",
+        "filter": {
+          "status": "published",
+          "_id": "6d0000000000000000000000"
+        }
+      },
+      {
+        "model": "AiTutorSession",
+        "operation": "upsert",
+        "filter": {
+          "user": "f1a03c624eb65bd4aefc8edb",
+          "course": "6d0000000000000000000000"
+        }
+      }
+    ],
+    "reason": "All six retrieval/context owners match entitled selected product course; no payload/provider, current actor only, all flags reviewed. Diwali source correctly chosen semantically (answer reproduces that source's approved English explanatory translation), but complete literal executable body and declared terracotta substitution missing. Exact-body required, so paraphrase is FAIL even though asset selection correct. No supplemental quote or boundary failure."
+  },
+  "gradedAt": "2026-10-16T10:51:50.253926+00:00"
+}

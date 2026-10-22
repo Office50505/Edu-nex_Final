@@ -1,0 +1,162 @@
+{
+  "createdAt": "2026-10-15T09:19:16.363298+00:00",
+  "environment": {
+    "os": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
+    "python": "3.14.6",
+    "node": "v26.7.0",
+    "backend": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b"
+  },
+  "provider": {
+    "host": "fal.run",
+    "model": "google/gemini-2.5-flash",
+    "endpoint": "https://fal.run/openrouter/router/openai/v1/chat/completions",
+    "credentialHandling": "Existing approved credential read privately; used only in Authorization header, never stored or displayed.",
+    "maxAttemptsPerTurn": 2,
+    "totalProviderBudgetMs": 25000
+  },
+  "authorization": "Current user explicitly requests configured-provider live validation. Earlier approved fal.run authorization persists for synthetic course-specific evaluation messages and retrieved course knowledge only. No personal learner data or unrelated files transmitted.",
+  "pipeline": "Real loopback HTTP POST /api/ai/chat through Express and the unchanged application router, rate limiter, handler, routing, retrieval, prompt assembly, fal provider adapter and response guards. Synthetic auth/account/course/entitlement fixtures and in-memory persisted conversation storage replace the production data boundary. No production DB.",
+  "outboundProjection": "Only course context and evaluation messages leave the process. Transport excludes unrelated platform context and synthetic learner summaries after actual prompt assembly; tutor instructions and retrieved course material remain unchanged.",
+  "syntheticBoundaries": [
+    "synthetic authentication, account, course and active entitlement",
+    "in-memory session storage through actual route persistence calls",
+    "loopback HTTP with real Express route/service/retrieval/provider/response guards",
+    "no production database, account, infrastructure, endpoint deployment or business-state mutation"
+  ],
+  "caseCounts": {
+    "existing": 50,
+    "unseen": 50,
+    "total": 100,
+    "turns": 119
+  },
+  "sourceFilesVerifiedUnchanged": 27,
+  "historicalArtifactsVerifiedUnchanged": 361,
+  "historicalZipsVerifiedUnchanged": 6,
+  "runnerHashUnchanged": true,
+  "applicationCodeModified": false,
+  "evaluatorModified": false,
+  "acceptanceCriteriaModified": false,
+  "testDefinitionsModifiedAfterFreeze": false,
+  "productionInfrastructureModified": false,
+  "deployed": false,
+  "committed": false,
+  "pushed": false,
+  "freezeHashes": {
+    "acceptance_criteria_frozen.json": "a69fa26eddf23e6be6f083e2e64f6837c8cefa465a6037a0ea7a4c1c9f950d26",
+    "existing_definitions_frozen.json": "44d02a9ba6b5185ffef39d5419b4f17359550ae8f0552bd1dc7f477d878206a7",
+    "unseen_definitions_frozen.json": "7607da634b57b3ab2922edce6b7752407a32f2c26100ef520b41c98421fd78fa",
+    "all_test_cases_frozen.json": "9c65892c2e6a1987bfb6d8a1e418fc4ab2af9cf0457c770072ae27f4a32ac6d6",
+    "independent_template_expectations_frozen.json": "7a980ae7861424a0e78a75d9253f5e5dc0065ef488b6fc71ff8835247ddc081f"
+  },
+  "priorFullPhase6FreshV4": {
+    "total": 100,
+    "passed": 91,
+    "failed": 9,
+    "skipped": 0,
+    "inconclusive": 0,
+    "provider_fallback": 0,
+    "provider_fallback_cases": 0,
+    "live_provider_turns": 3,
+    "local_quality_turns": 127,
+    "score_all_cases_pct": 91.0,
+    "score_executed_cases_pct": 91.0,
+    "dimension_turn_counts": {
+      "correctness": {
+        "failed": 7,
+        "passed": 123
+      },
+      "language": {
+        "passed": 130
+      },
+      "lesson_references": {
+        "passed": 130
+      },
+      "safety": {
+        "passed": 129,
+        "failed": 1
+      },
+      "prompt_accuracy": {
+        "passed": 127,
+        "failed": 3
+      },
+      "task_completion": {
+        "passed": 129,
+        "failed": 1
+      },
+      "context_retention": {
+        "passed": 2
+      }
+    }
+  },
+  "historicalFullPhase6V5Regrade": {
+    "total": 100,
+    "passed": 95,
+    "failed": 5,
+    "skipped": 0,
+    "inconclusive": 0,
+    "provider_fallback": 0,
+    "provider_fallback_cases": 0,
+    "live_provider_turns": 3,
+    "local_quality_turns": 127,
+    "score_all_cases_pct": 95.0,
+    "score_executed_cases_pct": 95.0,
+    "dimension_turn_counts": {
+      "correctness": {
+        "failed": 5,
+        "passed": 125
+      },
+      "language": {
+        "passed": 130
+      },
+      "lesson_references": {
+        "passed": 130
+      },
+      "safety": {
+        "passed": 130
+      },
+      "prompt_accuracy": {
+        "passed": 129,
+        "failed": 1
+      },
+      "task_completion": {
+        "passed": 128,
+        "failed": 2
+      },
+      "context_retention": {
+        "passed": 2
+      }
+    }
+  },
+  "comparableReused50": {
+    "priorPhase6SavedV5": {
+      "failed": 1,
+      "passed": 49
+    },
+    "phase8FreshV5": {
+      "passed": 49,
+      "failed": 1,
+      "skipped": 0,
+      "inconclusive": 0
+    },
+    "caseTransitions": [
+      {
+        "id": "ppads_001",
+        "sameSavedPhase6V5": "failed",
+        "phase8FreshV5": "passed"
+      },
+      {
+        "id": "ppads_conv_006",
+        "sameSavedPhase6V5": "passed",
+        "phase8FreshV5": "failed"
+      }
+    ]
+  },
+  "limitations": [
+    "The 50 old/50 new composition differs from the prior 100-case suite; full-suite percentages are not like-for-like.",
+    "This is integrated application evaluation: 106 deterministic, 11 live-model and 2 validated replacement turns.",
+    "Production auth/database and full multi-course catalogue are synthetic boundaries, so production multi-user isolation/load and persistent infrastructure are not independently certified.",
+    "Outbound projection removes non-course platform/payment and synthetic learner summaries after actual prompt assembly to honor course-only authorization. Full unprojected production prompts are not evaluated.",
+    "Manual review is evidence-based agent adjudication, not an external human audit. Frozen v5 results are not rewritten.",
+    "No sustained provider reliability, unrelated-course live evaluation or deployment readiness is established."
+  ]
+}

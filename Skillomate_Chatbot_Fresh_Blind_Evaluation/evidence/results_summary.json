@@ -1,0 +1,2453 @@
+{
+  "generatedAt": "2026-10-16T11:21:33.107251+00:00",
+  "independentGradesSHA256": "ca9f021fc05136a55009d0cde809bfc815a39b7ca3b7df9ff8f564675bacde61",
+  "plannedCases": 120,
+  "plannedTurns": 153,
+  "caseCounts": {
+    "FAIL": 67,
+    "INCONCLUSIVE": 0,
+    "MISSING_RESPONSE": 0,
+    "PASS": 18,
+    "UNTESTED": 35
+  },
+  "overallPassOverPlannedPercent": 15.0,
+  "caseAnyTurnExecuted": 120,
+  "caseAllTurnsExecuted": 120,
+  "executedTurns": 153,
+  "independentlyGradedTurns": 153,
+  "unexecutedTurns": 0,
+  "categories": {
+    "education_generation": {
+      "planned": 20,
+      "counts": {
+        "PASS": 4,
+        "FAIL": 13,
+        "UNTESTED": 3
+      },
+      "passOverPlannedPercent": 20.0,
+      "anyTurnExecuted": 20
+    },
+    "exact_template": {
+      "planned": 25,
+      "counts": {
+        "PASS": 3,
+        "FAIL": 19,
+        "UNTESTED": 3
+      },
+      "passOverPlannedPercent": 12.0,
+      "anyTurnExecuted": 25
+    },
+    "multi_turn": {
+      "planned": 20,
+      "counts": {
+        "FAIL": 13,
+        "UNTESTED": 6,
+        "PASS": 1
+      },
+      "passOverPlannedPercent": 5.0,
+      "anyTurnExecuted": 20
+    },
+    "multilingual_extraction": {
+      "planned": 20,
+      "counts": {
+        "FAIL": 11,
+        "UNTESTED": 8,
+        "PASS": 1
+      },
+      "passOverPlannedPercent": 5.0,
+      "anyTurnExecuted": 20
+    },
+    "safety_access_isolation": {
+      "planned": 20,
+      "counts": {
+        "FAIL": 6,
+        "PASS": 8,
+        "UNTESTED": 6
+      },
+      "passOverPlannedPercent": 40.0,
+      "anyTurnExecuted": 20
+    },
+    "state_routing_edges": {
+      "planned": 15,
+      "counts": {
+        "FAIL": 5,
+        "UNTESTED": 9,
+        "PASS": 1
+      },
+      "passOverPlannedPercent": 6.666666666666667,
+      "anyTurnExecuted": 15
+    }
+  },
+  "turnStatuses": {
+    "FAIL": 70,
+    "UNTESTED": 56,
+    "PASS": 27
+  },
+  "dimensionTurnTallies": {
+    "authorization": {
+      "PASS": 153
+    },
+    "completeness": {
+      "UNASSESSED": 128,
+      "FAIL": 19,
+      "PASS": 6
+    },
+    "facts": {
+      "FAIL": 43,
+      "UNTESTED": 54,
+      "PASS": 56
+    },
+    "grounding": {
+      "FAIL": 20,
+      "UNTESTED": 56,
+      "PASS": 77
+    },
+    "http": {
+      "UNASSESSED": 128,
+      "PASS": 25
+    },
+    "httpStatus": {
+      "PASS": 128,
+      "UNASSESSED": 25
+    },
+    "isolation": {
+      "PASS": 153
+    },
+    "language": {
+      "PASS": 105,
+      "UNTESTED": 38,
+      "FAIL": 10
+    },
+    "taskCompleteness": {
+      "FAIL": 51,
+      "UNTESTED": 56,
+      "UNASSESSED": 25,
+      "PASS": 21
+    }
+  },
+  "exactBodyChecks": {
+    "planned": 25,
+    "observedIndependentChecks": [
+      {
+        "caseId": "FRESH-EX-010",
+        "turnIndex": 1,
+        "heading": "L04 Wedding Gift",
+        "status": "FAIL",
+        "correctSelection": true,
+        "missingBody": true,
+        "normalization": "whitespace-only; preserve Unicode; no NFKC",
+        "expectedBody": "Use the uploaded product sheet as the reference. Keep the साँझ Gift Set exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a soft silk cloth next to an open premium gift box with gold ribbon and a few rose petals, elegant wedding gifting mood, soft warm light, साँझ Gift Set sharp in the foreground, realistic real-world scale, realistic festive product photography.",
+        "actualBody": "",
+        "sourceExpectedConsistent": true,
+        "reason": "Missing or substantively altered frozen approved body; inspect actual/expected literals."
+      },
+      {
+        "caseId": "FRESH-EX-024",
+        "turnIndex": 1,
+        "heading": "L06 Arc",
+        "status": "FAIL",
+        "correctSelection": false,
+        "missingBody": true,
+        "normalization": "whitespace-only; preserve Unicode; no NFKC",
+        "expectedBody": "Use the uploaded image as the first frame. The frosted glass perfume bottle stays perfectly still and exactly the same the whole time — same shape, same colour, same details, same text and logo, no morphing, no warping. The camera slowly arcs a little to the right around the frosted glass perfume bottle, smooth and steady, while the lights in the background glow softly. Moody cinematic look, realistic product video. No people, no hands, no text on screen. Soft quiet room ambience only — NO music, NO voice.",
+        "actualBody": "",
+        "sourceExpectedConsistent": true,
+        "reason": "Missing or substantively altered frozen approved body; inspect actual/expected literals."
+      },
+      {
+        "caseId": "FRESH-EX-015",
+        "turnIndex": 1,
+        "heading": "L06 Push-in",
+        "status": "FAIL",
+        "correctSelection": true,
+        "missingBody": false,
+        "normalization": "whitespace-only; preserve Unicode; no NFKC",
+        "expectedBody": "Use the uploaded image as the first frame. The red enamel kettle stays perfectly still and exactly the same the whole time — same shape, same colour, same details, same text and logo, no morphing, no warping. The camera slowly and smoothly pushes in toward the red enamel kettle. Soft natural window light, shallow depth of field, realistic product video. No people, no hands, no text on screen. Soft quiet room ambience only — NO music, NO voice.",
+        "actualBody": "Use the uploaded image as the first frame. The [PRODUCT] stays perfectly still and exactly the same the whole time — same shape, same colour, same details, same text and logo, no morphing, no warping. The camera slowly and smoothly pushes in toward the [PRODUCT]. Soft natural window light, shallow depth of field, realistic product video. No people, no hands, no text on screen. Soft quiet room ambience only — NO music, NO voice.\n",
+        "sourceExpectedConsistent": true,
+        "reason": "Missing or substantively altered frozen approved body; inspect actual/expected literals."
+      },
+      {
+        "caseId": "FRESH-EX-021",
+        "turnIndex": 1,
+        "heading": "L03 Hands close-up",
+        "status": "FAIL",
+        "correctSelection": true,
+        "missingBody": false,
+        "normalization": "whitespace-only; preserve Unicode; no NFKC",
+        "expectedBody": "Use the uploaded product sheet for the walnut pen stand and the uploaded character sheet for the woman. Keep the walnut pen stand exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Close-up of the woman's hands using the walnut pen stand on a wooden desk, white linen sleeves matching her white linen shirt, natural hands with five fingers each, soft window light, shallow depth of field, realistic real-world scale, realistic lifestyle product photography.",
+        "actualBody": "Use the uploaded product sheet for the walnut pen stand and the uploaded character sheet for the [woman / man]. Keep the walnut pen stand exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Close-up of the [woman's] hands using the walnut pen stand on a wooden desk, [clothing that matches the character sheet, e.g. bare arms matching her blue tank top], natural hands with five fingers each, soft window light, shallow depth of field, realistic real-world scale, realistic lifestyle product photography.\n",
+        "sourceExpectedConsistent": true,
+        "reason": "Missing or substantively altered frozen approved body; inspect actual/expected literals."
+      },
+      {
+        "caseId": "FRESH-EX-009",
+        "turnIndex": 1,
+        "heading": "L04 Diwali",
+        "status": "FAIL",
+        "correctSelection": true,
+        "missingBody": true,
+        "normalization": "whitespace-only; preserve Unicode; no NFKC",
+        "expectedBody": "Use the uploaded product sheet as the reference. Keep the terracotta incense holder exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a wooden table during Diwali night, a few lit clay diyas and orange marigold flowers placed behind and beside it, soft warm fairy lights glowing out of focus in the background, the terracotta incense holder sharp and clearly the hero in the foreground, warm golden light, realistic real-world scale, realistic festive product photography.",
+        "actualBody": "",
+        "sourceExpectedConsistent": true,
+        "reason": "Missing or substantively altered frozen approved body; inspect actual/expected literals."
+      },
+      {
+        "caseId": "FRESH-EX-011",
+        "turnIndex": 1,
+        "heading": "L04 Colour Variant Sheet",
+        "status": "FAIL",
+        "correctSelection": false,
+        "missingBody": true,
+        "normalization": "whitespace-only; preserve Unicode; no NFKC",
+        "expectedBody": "Use the uploaded product sheet as the reference. Only change the colour of the lid to deep plum. Keep everything else exactly the same — same shape, same layout, same details, same text and logo, same four views, same background, same lighting. Output a full product sheet in the new colour.",
+        "actualBody": "",
+        "sourceExpectedConsistent": true,
+        "reason": "Missing or substantively altered frozen approved body; inspect actual/expected literals."
+      },
+      {
+        "caseId": "FRESH-EX-025",
+        "turnIndex": 1,
+        "heading": "L07 UGC 2",
+        "status": "FAIL",
+        "correctSelection": true,
+        "missingBody": false,
+        "normalization": "whitespace-only; preserve Unicode; no NFKC",
+        "expectedBody": "Use the uploaded character sheet for the [woman] and the uploaded product sheet for the [PRODUCT]. Keep her face, hair and outfit exactly the same as the character sheet. Keep the [PRODUCT] exactly the same — same shape, same colour, same details, same text and logo, no morphing. Vertical video shot from her own phone resting on the desk in front of her: the camera itself is the phone, so we see her and the [PRODUCT] from a low front angle. NO phone visible anywhere in the frame, no second camera, no screen facing us. She uses the [PRODUCT] for a moment, then looks up straight into the lens and talks, casual and natural. Natural window light, a real lived-in room, not a studio, not a polished ad. ONLY she speaks, one voice only, natural Hindi lip-sync, casual friendly tone. She says: \"[your second line in Hindi]\" real skin, no filter, clearly adult, modest, natural hands with five fingers, no text on screen, no watermark. Clean natural audio only — NO background music.",
+        "actualBody": "Use the uploaded character sheet for the [woman] and the uploaded product sheet for the text-diff exercise. Keep her face, hair and outfit exactly the same as the character sheet. Keep the text-diff exercise exactly the same — same shape, same colour, same details, same text and logo, no morphing. Vertical video shot from her own phone resting on the desk in front of her: the camera itself is the phone, so we see her and the text-diff exercise from a low front angle. NO phone visible anywhere in the frame, no second camera, no screen facing us. She uses the text-diff exercise for a moment, then looks up straight into the lens and talks, casual and natural. Natural window light, a real lived-in room, not a studio, not a polished ad. ONLY she speaks, one voice only, natural Hindi lip-sync, casual friendly tone. She says: \"[your second line in Hindi]\" real skin, no filter, clearly adult, modest, natural hands with five fingers, no text on screen, no watermark. Clean natural audio only — NO background music.\n",
+        "sourceExpectedConsistent": true,
+        "reason": "Missing or substantively altered frozen approved body; inspect actual/expected literals."
+      },
+      {
+        "caseId": "FRESH-EX-014",
+        "turnIndex": 1,
+        "heading": "L05 Step 3 Flow prompts",
+        "status": "FAIL",
+        "correctSelection": false,
+        "missingBody": true,
+        "normalization": "whitespace-only; preserve Unicode; no NFKC",
+        "expectedBody": "Now write 3 image prompts for Google Flow (Nano Banana) for this ad. Each prompt must start with: \"Use the uploaded product sheet as the reference. Keep the चाँद Candle exactly the same — same shape, same colour, same details, same text and logo, do not redesign it.\" Then describe one scene for the ad.",
+        "actualBody": "",
+        "sourceExpectedConsistent": true,
+        "reason": "Missing or substantively altered frozen approved body; inspect actual/expected literals."
+      },
+      {
+        "caseId": "FRESH-EX-020",
+        "turnIndex": 1,
+        "heading": "L02 Product Sheet",
+        "status": "PASS",
+        "correctSelection": true,
+        "missingBody": false,
+        "normalization": "whitespace-only; preserve Unicode; no NFKC",
+        "expectedBody": "Use all the uploaded photos of this [PRODUCT]. Create a clean product reference sheet on a plain white background showing the exact same [PRODUCT] in four views arranged in a neat grid: front view, top-down view, side view and three-quarter angle view. Keep the [PRODUCT] exactly the same in every view — same shape, same colour, same details, same text and logo, do not redesign it. Even soft studio lighting, no extra objects, no text labels, realistic product photography.",
+        "actualBody": "Use all the uploaded photos of this [PRODUCT]. Create a clean product reference sheet on a plain white background showing the exact same [PRODUCT] in four views arranged in a neat grid: front view, top-down view, side view and three-quarter angle view. Keep the [PRODUCT] exactly the same in every view — same shape, same colour, same details, same text and logo, do not redesign it. Even soft studio lighting, no extra objects, no text labels, realistic product photography.\n",
+        "sourceExpectedConsistent": true,
+        "reason": "Complete frozen literal body matches after whitespace-only compaction."
+      },
+      {
+        "caseId": "FRESH-EX-008",
+        "turnIndex": 1,
+        "heading": "L03 Showing to camera",
+        "status": "FAIL",
+        "correctSelection": true,
+        "missingBody": false,
+        "normalization": "whitespace-only; preserve Unicode; no NFKC",
+        "expectedBody": "Use the uploaded product sheet for the रौशनी Desk Lamp and the uploaded character sheet for the woman. Keep the रौशनी Desk Lamp exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Keep the woman's face exactly the same as the character sheet. She holds the रौशनी Desk Lamp with both hands in front of her chest, showing it to the camera with a small natural smile, plain light background, soft studio light, natural hands with five fingers, realistic real-world scale, realistic product photography.",
+        "actualBody": "Use the uploaded product sheet for the [PRODUCT] and the uploaded character sheet for the [woman / man]. Keep the [PRODUCT] exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Keep the [woman's] face exactly the same as the character sheet. [She] holds the [PRODUCT] with both hands in front of [her] chest, showing it to the camera with a small natural smile, plain light background, soft studio light, natural hands with five fingers, realistic real-world scale, realistic product photography.\n",
+        "sourceExpectedConsistent": true,
+        "reason": "Missing or substantively altered frozen approved body; inspect actual/expected literals."
+      },
+      {
+        "caseId": "FRESH-EX-012",
+        "turnIndex": 1,
+        "heading": "L05 Step 1 Brief",
+        "status": "FAIL",
+        "correctSelection": true,
+        "missingBody": false,
+        "normalization": "whitespace-only; preserve Unicode; no NFKC",
+        "expectedBody": "I sell a green canvas pencil pouch, 20 cm long, zip closure. Price: ₹349. I sell on website in India. Tell me: 1. Three types of people who would buy this 2. What problem it solves for each of them 3. One ad angle for each buyer Keep it short and simple.",
+        "actualBody": "I sell a [product with real details — size, colour, key features]. Price: [your price]. I sell on [Instagram / website / marketplace] in India. Tell me: 1. Three types of people who would buy this 2. What problem it solves for each of them 3. One ad angle for each buyer Keep it short and simple.\n",
+        "sourceExpectedConsistent": true,
+        "reason": "Missing or substantively altered frozen approved body; inspect actual/expected literals."
+      },
+      {
+        "caseId": "FRESH-EX-017",
+        "turnIndex": 1,
+        "heading": "L06 Light Sweep",
+        "status": "UNTESTED",
+        "correctSelection": false,
+        "missingBody": true,
+        "normalization": "whitespace-only; preserve Unicode; no NFKC",
+        "expectedBody": "Use the uploaded image as the first frame. The Åra Tray stays perfectly still and exactly the same the whole time — same shape, same colour, same details, same text and logo, no morphing, no warping. The camera stays completely still. A soft band of warm light slowly sweeps across the Åra Tray from left to right, the shadows moving gently with it. Clean premium product video. No people, no hands, no text on screen. Soft quiet room ambience only — NO music, NO voice.",
+        "actualBody": "",
+        "sourceExpectedConsistent": true,
+        "reason": "Requested body unavailable after blocked provider inference; fixed requested denominator and observed missing/selection flags retained."
+      },
+      {
+        "caseId": "FRESH-EX-023",
+        "turnIndex": 1,
+        "heading": "L05 Step 1 Brief",
+        "status": "PASS",
+        "correctSelection": true,
+        "missingBody": false,
+        "normalization": "whitespace-only; preserve Unicode; no NFKC",
+        "expectedBody": "I sell a [product with real details — size, colour, key features]. Price: [your price]. I sell on [Instagram / website / marketplace] in India. Tell me: 1. Three types of people who would buy this 2. What problem it solves for each of them 3. One ad angle for each buyer Keep it short and simple.",
+        "actualBody": "I sell a [product with real details — size, colour, key features]. Price: [your price]. I sell on [Instagram / website / marketplace] in India. Tell me: 1. Three types of people who would buy this 2. What problem it solves for each of them 3. One ad angle for each buyer Keep it short and simple.\n",
+        "sourceExpectedConsistent": true,
+        "reason": "Complete frozen literal body matches after whitespace-only compaction."
+      },
+      {
+        "caseId": "FRESH-EX-013",
+        "turnIndex": 1,
+        "heading": "L05 Step 2 Hooks + Script",
+        "status": "FAIL",
+        "correctSelection": true,
+        "missingBody": false,
+        "normalization": "whitespace-only; preserve Unicode; no NFKC",
+        "expectedBody": "Pick angle 3. Write 5 scroll-stopping hooks in natural Hinglish, like a friend talking — not cheesy, no fake claims. Then write a 15-second ad script: what to show on screen and what the voiceover says. Also write one Instagram caption. Use only the features I gave you, don't add anything new.",
+        "actualBody": "Pick angle [number]. Write 5 scroll-stopping hooks in natural Hinglish, like a friend talking — not cheesy, no fake claims. Then write a 15-second ad script: what to show on screen and what the voiceover says. Also write one Instagram caption. Use only the features I gave you, don't add anything new.\n",
+        "sourceExpectedConsistent": true,
+        "reason": "Missing or substantively altered frozen approved body; inspect actual/expected literals."
+      },
+      {
+        "caseId": "FRESH-EX-016",
+        "turnIndex": 1,
+        "heading": "L06 Arc",
+        "status": "UNTESTED",
+        "correctSelection": false,
+        "missingBody": true,
+        "normalization": "whitespace-only; preserve Unicode; no NFKC",
+        "expectedBody": "Use the uploaded image as the first frame. The [PRODUCT] stays perfectly still and exactly the same the whole time — same shape, same colour, same details, same text and logo, no morphing, no warping. The camera slowly arcs a little to the right around the [PRODUCT], smooth and steady, while the lights in the background glow softly. Moody cinematic look, realistic product video. No people, no hands, no text on screen. Soft quiet room ambience only — NO music, NO voice.",
+        "actualBody": "",
+        "sourceExpectedConsistent": true,
+        "reason": "Requested body unavailable after blocked provider inference; fixed requested denominator and observed missing/selection flags retained."
+      },
+      {
+        "caseId": "FRESH-EX-022",
+        "turnIndex": 1,
+        "heading": "L04 Colour Variant Sheet",
+        "status": "FAIL",
+        "correctSelection": false,
+        "missingBody": true,
+        "normalization": "whitespace-only; preserve Unicode; no NFKC",
+        "expectedBody": "Use the uploaded product sheet as the reference. Only change the colour of [the part, e.g. all the keycaps] to [new colour, e.g. soft pastel pink]. Keep everything else exactly the same — same shape, same layout, same details, same text and logo, same four views, same background, same lighting. Output a full product sheet in the new colour.",
+        "actualBody": "",
+        "sourceExpectedConsistent": true,
+        "reason": "Missing or substantively altered frozen approved body; inspect actual/expected literals."
+      },
+      {
+        "caseId": "FRESH-EX-003",
+        "turnIndex": 1,
+        "heading": "L02 Lifestyle",
+        "status": "FAIL",
+        "correctSelection": true,
+        "missingBody": false,
+        "normalization": "whitespace-only; preserve Unicode; no NFKC",
+        "expectedBody": "Use the uploaded product sheet as the reference. Keep the धरा Mug exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a warm wooden desk next to a white coffee mug and a small green plant, soft morning window light from the left, shallow depth of field, realistic lifestyle product photography.",
+        "actualBody": "Use the uploaded product sheet as the reference. Keep the naam “धरा Mug” exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a warm wooden desk next to a white coffee mug and a small green plant, soft morning window light from the left, shallow depth of field, realistic lifestyle product photography.\n",
+        "sourceExpectedConsistent": true,
+        "reason": "Missing or substantively altered frozen approved body; inspect actual/expected literals."
+      },
+      {
+        "caseId": "FRESH-EX-006",
+        "turnIndex": 1,
+        "heading": "L03 Hands close-up",
+        "status": "FAIL",
+        "correctSelection": true,
+        "missingBody": false,
+        "normalization": "whitespace-only; preserve Unicode; no NFKC",
+        "expectedBody": "Use the uploaded product sheet for the [PRODUCT] and the uploaded character sheet for the [woman / man]. Keep the [PRODUCT] exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Close-up of the [woman's] hands using the [PRODUCT] on a wooden desk, [clothing that matches the character sheet, e.g. bare arms matching her blue tank top], natural hands with five fingers each, soft window light, shallow depth of field, realistic real-world scale, realistic lifestyle product photography.",
+        "actualBody": "Use the uploaded product sheet for the its bracketed slots still visible and the uploaded character sheet for the [woman / man]. Keep the its bracketed slots still visible exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Close-up of the [woman's] hands using the its bracketed slots still visible on a wooden desk, [clothing that matches the character sheet, e.g. bare arms matching her blue tank top], natural hands with five fingers each, soft window light, shallow depth of field, realistic real-world scale, realistic lifestyle product photography.\n",
+        "sourceExpectedConsistent": true,
+        "reason": "Missing or substantively altered frozen approved body; inspect actual/expected literals."
+      },
+      {
+        "caseId": "FRESH-EX-002",
+        "turnIndex": 1,
+        "heading": "L02 White Studio",
+        "status": "FAIL",
+        "correctSelection": true,
+        "missingBody": false,
+        "normalization": "whitespace-only; preserve Unicode; no NFKC",
+        "expectedBody": "Use the uploaded product sheet as the reference. Keep the [PRODUCT] exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a clean seamless white background, soft even studio lighting, a soft natural shadow under it, slight top-down angle, sharp focus, realistic product photography.",
+        "actualBody": "Use the uploaded product sheet as the reference. Keep the archive I need the original L02 White Studio text exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a clean seamless white background, soft even studio lighting, a soft natural shadow under it, slight top-down angle, sharp focus, realistic product photography.\n",
+        "sourceExpectedConsistent": true,
+        "reason": "Missing or substantively altered frozen approved body; inspect actual/expected literals."
+      },
+      {
+        "caseId": "FRESH-EX-007",
+        "turnIndex": 1,
+        "heading": "L03 Desk",
+        "status": "UNTESTED",
+        "correctSelection": false,
+        "missingBody": true,
+        "normalization": "whitespace-only; preserve Unicode; no NFKC",
+        "reason": "Requested exact body absent from saved fallback after unavailable inference. Fixed requested denominator retained; not a fidelity success."
+      },
+      {
+        "caseId": "FRESH-EX-001",
+        "turnIndex": 1,
+        "heading": "L02 Product Sheet",
+        "status": "PASS",
+        "correctSelection": true,
+        "missingBody": false,
+        "normalization": "whitespace-only; preserve Unicode; no NFKC",
+        "expectedBody": "Use all the uploaded photos of this blue ceramic tea cup. Create a clean product reference sheet on a plain white background showing the exact same blue ceramic tea cup in four views arranged in a neat grid: front view, top-down view, side view and three-quarter angle view. Keep the blue ceramic tea cup exactly the same in every view — same shape, same colour, same details, same text and logo, do not redesign it. Even soft studio lighting, no extra objects, no text labels, realistic product photography.",
+        "actualBody": "Use all the uploaded photos of this blue ceramic tea cup. Create a clean product reference sheet on a plain white background showing the exact same blue ceramic tea cup in four views arranged in a neat grid: front view, top-down view, side view and three-quarter angle view. Keep the blue ceramic tea cup exactly the same in every view — same shape, same colour, same details, same text and logo, do not redesign it. Even soft studio lighting, no extra objects, no text labels, realistic product photography.\n",
+        "sourceExpectedConsistent": true,
+        "reason": "Complete frozen literal body matches after whitespace-only compaction."
+      },
+      {
+        "caseId": "FRESH-EX-018",
+        "turnIndex": 1,
+        "heading": "L07 UGC 1",
+        "status": "FAIL",
+        "correctSelection": false,
+        "missingBody": true,
+        "normalization": "whitespace-only; preserve Unicode; no NFKC",
+        "expectedBody": "Use the uploaded character sheet for the woman and the uploaded product sheet for the teal cotton tote. Keep her face, hair and outfit exactly the same as the character sheet. Keep the teal cotton tote exactly the same — same shape, same colour, same details, same text and logo, no morphing. Selfie-style vertical video: the camera itself is her phone, held at arm's length, so we see her from the chest up looking straight into the lens. NO phone visible anywhere in the frame, no second camera, no screen. She sits at a desk in a normal home room, holding the teal cotton tote up near her chest to show it, casual and friendly. Handheld look with slight natural shake, natural window light, a real lived-in room, not a studio, not a polished ad. ONLY she speaks, one voice only, natural Hindi lip-sync, casual friendly tone. She says: \"यह टोट बैग देखिए।\" real skin, no filter, clearly adult, modest, natural hands with five fingers, no text on screen, no watermark. Clean natural audio only — NO background music.",
+        "actualBody": "",
+        "sourceExpectedConsistent": true,
+        "reason": "Missing or substantively altered frozen approved body; inspect actual/expected literals."
+      },
+      {
+        "caseId": "FRESH-EX-004",
+        "turnIndex": 1,
+        "heading": "L02 Dark Premium",
+        "status": "FAIL",
+        "correctSelection": true,
+        "missingBody": false,
+        "normalization": "whitespace-only; preserve Unicode; no NFKC",
+        "expectedBody": "Use the uploaded product sheet as the reference. Keep the नील exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a matte black surface against a dark background, a single soft rim light outlining its edges, a subtle reflection on the surface, premium moody look, realistic product photography.",
+        "actualBody": "Use the uploaded product sheet as the reference. Keep the [PRODUCT] exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a matte black surface against a dark background, a single soft rim light outlining its edges, a subtle reflection on the surface, premium moody look, realistic product photography.\n",
+        "sourceExpectedConsistent": true,
+        "reason": "Missing or substantively altered frozen approved body; inspect actual/expected literals."
+      },
+      {
+        "caseId": "FRESH-EX-019",
+        "turnIndex": 1,
+        "heading": "L07 UGC 2",
+        "status": "FAIL",
+        "correctSelection": false,
+        "missingBody": true,
+        "normalization": "whitespace-only; preserve Unicode; no NFKC",
+        "expectedBody": "Use the uploaded character sheet for the woman and the uploaded product sheet for the अक्षर Notebook. Keep her face, hair and outfit exactly the same as the character sheet. Keep the अक्षर Notebook exactly the same — same shape, same colour, same details, same text and logo, no morphing. Vertical video shot from her own phone resting on the desk in front of her: the camera itself is the phone, so we see her and the अक्षर Notebook from a low front angle. NO phone visible anywhere in the frame, no second camera, no screen facing us. She uses the अक्षर Notebook for a moment, then looks up straight into the lens and talks, casual and natural. Natural window light, a real lived-in room, not a studio, not a polished ad. ONLY she speaks, one voice only, natural Hindi lip-sync, casual friendly tone. She says: \"इसके सादे पन्ने देखिए।\" real skin, no filter, clearly adult, modest, natural hands with five fingers, no text on screen, no watermark. Clean natural audio only — NO background music.",
+        "actualBody": "",
+        "sourceExpectedConsistent": true,
+        "reason": "Missing or substantively altered frozen approved body; inspect actual/expected literals."
+      },
+      {
+        "caseId": "FRESH-EX-005",
+        "turnIndex": 1,
+        "heading": "L03 Character Sheet (bonus)",
+        "status": "FAIL",
+        "correctSelection": false,
+        "missingBody": true,
+        "normalization": "whitespace-only; preserve Unicode; no NFKC",
+        "expectedBody": "Create a character reference sheet of one realistic young Indian woman, clearly adult, short black bob, loose olive shirt. Show the exact same person in one image: a close-up of the face, and full-body front view, side view and back view on a plain light grey background. Same face, same hair, same outfit in every view. Soft even light, RAW realistic photo look, real skin texture, no text labels.",
+        "actualBody": "",
+        "sourceExpectedConsistent": true,
+        "reason": "Missing or substantively altered frozen approved body; inspect actual/expected literals."
+      }
+    ],
+    "note": "Inspect independent exact records for selection versus literal fidelity; never infer pass for unexecuted checks."
+  },
+  "ownershipAndPayload": {
+    "inspectedExecutedTurns": 153,
+    "independentlyReviewedTurns": 153,
+    "protectedSourcesObserved": 735,
+    "payloadObservations": 57,
+    "payloadValidationStatuses": {
+      "accepted": 57
+    },
+    "turnsWithoutAssembledPayload": 96,
+    "machineScopeAlerts": [],
+    "criticalGrades": []
+  },
+  "providerAccounting": {
+    "externalAuthorized": false,
+    "adapterAttemptsBlockedBeforeTransport": 114,
+    "unexpectedExternalTransportEvidence": [],
+    "liveProviderResponses": 0,
+    "fixtureModelResponses": 0,
+    "responseProviderLabels": {
+      "course-knowledge-rule": 80,
+      "built-in-course-guide": 57,
+      "no_provider": 6,
+      "skillomate-plan-facts": 5,
+      "skillomate-learner-facts": 4,
+      "safety-filter": 1
+    },
+    "outcomeTypes": {
+      "local_rule": 90,
+      "provider_fallback": 57,
+      "absent": 6
+    },
+    "fallbackTurns": [
+      {
+        "id": "FRESH-ML-016",
+        "turn": 1,
+        "provider": "built-in-course-guide",
+        "outcome": {
+          "type": "provider_fallback",
+          "liveModelAnswer": false,
+          "providerStatus": "connection_error",
+          "responseIssue": null
+        }
+      },
+      {
+        "id": "FRESH-EG-019",
+        "turn": 1,
+        "provider": "built-in-course-guide",
+        "outcome": {
+          "type": "provider_fallback",
+          "liveModelAnswer": false,
+          "providerStatus": "connection_error",
+          "responseIssue": null
+        }
+      },
+      {
+        "id": "FRESH-MT-006",
+        "turn": 1,
+        "provider": "built-in-course-guide",
+        "outcome": {
+          "type": "provider_fallback",
+          "liveModelAnswer": false,
+          "providerStatus": "connection_error",
+          "responseIssue": null
+        }
+      },
+      {
+        "id": "FRESH-SA-010",
+        "turn": 1,
+        "provider": "built-in-course-guide",
+        "outcome": {
+          "type": "provider_fallback",
+          "liveModelAnswer": false,
+          "providerStatus": "connection_error",
+          "responseIssue": null
+        }
+      },
+      {
+        "id": "FRESH-SA-011",
+        "turn": 1,
+        "provider": "built-in-course-guide",
+        "outcome": {
+          "type": "provider_fallback",
+          "liveModelAnswer": false,
+          "providerStatus": "connection_error",
+          "responseIssue": null
+        }
+      },
+      {
+        "id": "FRESH-MT-011",
+        "turn": 1,
+        "provider": "built-in-course-guide",
+        "outcome": {
+          "type": "provider_fallback",
+          "liveModelAnswer": false,
+          "providerStatus": "connection_error",
+          "responseIssue": null
+        }
+      },
+      {
+        "id": "FRESH-MT-011",
+        "turn": 2,
+        "provider": "built-in-course-guide",
+        "outcome": {
+          "type": "provider_fallback",
+          "liveModelAnswer": false,
+          "providerStatus": "connection_error",
+          "responseIssue": null
+        }
+      },
+      {
+        "id": "FRESH-SR-001",
+        "turn": 1,
+        "provider": "built-in-course-guide",
+        "outcome": {
+          "type": "provider_fallback",
+          "liveModelAnswer": false,
+          "providerStatus": "connection_error",
+          "responseIssue": null
+        }
+      },
+      {
+        "id": "FRESH-EG-018",
+        "turn": 1,
+        "provider": "built-in-course-guide",
+        "outcome": {
+          "type": "provider_fallback",
+          "liveModelAnswer": false,
+          "providerStatus": "connection_error",
+          "responseIssue": null
+        }
+      },
+      {
+        "id": "FRESH-ML-006",
+        "turn": 1,
+        "provider": "built-in-course-guide",
+        "outcome": {
+          "type": "provider_fallback",
+          "liveModelAnswer": false,
+          "providerStatus": "connection_error",
+          "responseIssue": null
+        }
+      },
+      {
+        "id": "FRESH-ML-010",
+        "turn": 1,
+        "provider": "built-in-course-guide",
+        "outcome": {
+          "type": "provider_fallback",
+          "liveModelAnswer": false,
+          "providerStatus": "connection_error",
+          "responseIssue": null
+        }
+      },
+      {
+        "id": "FRESH-SR-006",
+        "turn": 1,
+        "provider": "built-in-course-guide",
+        "outcome": {
+          "type": "provider_fallback",
+          "liveModelAnswer": false,
+          "providerStatus": "connection_error",
+          "responseIssue": null
+        }
+      },
+      {
+        "id": "FRESH-SR-010",
+        "turn": 1,
+        "provider": "built-in-course-guide",
+        "outcome": {
+          "type": "provider_fallback",
+          "liveModelAnswer": false,
+          "providerStatus": "connection_error",
+          "responseIssue": null
+        }
+      },
+      {
+        "id": "FRESH-SR-010",
+        "turn": 2,
+        "provider": "built-in-course-guide",
+        "outcome": {
+          "type": "provider_fallback",
+          "liveModelAnswer": false,
+          "providerStatus": "connection_error",
+          "responseIssue": null
+        }
+      },
+      {
+        "id": "FRESH-SR-010",
+        "turn": 4,
+        "provider": "built-in-course-guide",
+        "outcome": {
+          "type": "provider_fallback",
+          "liveModelAnswer": false,
+          "providerStatus": "connection_error",
+          "responseIssue": null
+        }
+      },
+      {
+        "id": "FRESH-MT-016",
+        "turn": 2,
+        "provider": "built-in-course-guide",
+        "outcome": {
+          "type": "provider_fallback",
+          "liveModelAnswer": false,
+          "providerStatus": "connection_error",
+          "responseIssue": null
+        }
+      },
+      {
+        "id": "FRESH-SR-011",
+        "turn": 1,
+        "provider": "built-in-course-guide",
+        "outcome": {
+          "type": "provider_fallback",
+          "liveModelAnswer": false,
+          "providerStatus": "connection_error",
+          "responseIssue": null
+        }
+      },
+      {
+        "id": "FRESH-SR-007",
+        "turn": 1,
+        "provider": "built-in-course-guide",
+        "outcome": {
+          "type": "provider_fallback",
+          "liveModelAnswer": false,
+          "providerStatus": "connection_error",
+          "responseIssue": null
+        }
+      },
+      {
+        "id": "FRESH-SA-017",
+        "turn": 1,
+        "provider": "built-in-course-guide",
+        "outcome": {
+          "type": "provider_fallback",
+          "liveModelAnswer": false,
+          "providerStatus": "connection_error",
+          "responseIssue": null
+        }
+      },
+      {
+        "id": "FRESH-SA-017",
+        "turn": 2,
+        "provider": "built-in-course-guide",
+        "outcome": {
+          "type": "provider_fallback",
+          "liveModelAnswer": false,
+          "providerStatus": "connection_error",
+          "responseIssue": null
+        }
+      },
+      {
+        "id": "FRESH-EG-007",
+        "turn": 1,
+        "provider": "built-in-course-guide",
+        "outcome": {
+          "type": "provider_fallback",
+          "liveModelAnswer": false,
+          "providerStatus": "connection_error",
+          "responseIssue": null
+        }
+      },
+      {
+        "id": "FRESH-SA-014",
+        "turn": 1,
+        "provider": "built-in-course-guide",
+        "outcome": {
+          "type": "provider_fallback",
+          "liveModelAnswer": false,
+          "providerStatus": "connection_error",
+          "responseIssue": null
+        }
+      },
+      {
+        "id": "FRESH-MT-014",
+        "turn": 1,
+        "provider": "built-in-course-guide",
+        "outcome": {
+          "type": "provider_fallback",
+          "liveModelAnswer": false,
+          "providerStatus": "connection_error",
+          "responseIssue": null
+        }
+      },
+      {
+        "id": "FRESH-MT-014",
+        "turn": 2,
+        "provider": "built-in-course-guide",
+        "outcome": {
+          "type": "provider_fallback",
+          "liveModelAnswer": false,
+          "providerStatus": "connection_error",
+          "responseIssue": null
+        }
+      },
+      {
+        "id": "FRESH-SR-012",
+        "turn": 1,
+        "provider": "built-in-course-guide",
+        "outcome": {
+          "type": "provider_fallback",
+          "liveModelAnswer": false,
+          "providerStatus": "connection_error",
+          "responseIssue": null
+        }
+      },
+      {
+        "id": "FRESH-SR-004",
+        "turn": 1,
+        "provider": "built-in-course-guide",
+        "outcome": {
+          "type": "provider_fallback",
+          "liveModelAnswer": false,
+          "providerStatus": "connection_error",
+          "responseIssue": null
+        }
+      },
+      {
+        "id": "FRESH-SR-004",
+        "turn": 2,
+        "provider": "built-in-course-guide",
+        "outcome": {
+          "type": "provider_fallback",
+          "liveModelAnswer": false,
+          "providerStatus": "connection_error",
+          "responseIssue": null
+        }
+      },
+      {
+        "id": "FRESH-MT-002",
+        "turn": 1,
+        "provider": "built-in-course-guide",
+        "outcome": {
+          "type": "provider_fallback",
+          "liveModelAnswer": false,
+          "providerStatus": "connection_error",
+          "responseIssue": null
+        }
+      },
+      {
+        "id": "FRESH-ML-012",
+        "turn": 1,
+        "provider": "built-in-course-guide",
+        "outcome": {
+          "type": "provider_fallback",
+          "liveModelAnswer": false,
+          "providerStatus": "connection_error",
+          "responseIssue": null
+        }
+      },
+      {
+        "id": "FRESH-ML-004",
+        "turn": 1,
+        "provider": "built-in-course-guide",
+        "outcome": {
+          "type": "provider_fallback",
+          "liveModelAnswer": false,
+          "providerStatus": "connection_error",
+          "responseIssue": null
+        }
+      },
+      {
+        "id": "FRESH-SA-018",
+        "turn": 1,
+        "provider": "built-in-course-guide",
+        "outcome": {
+          "type": "provider_fallback",
+          "liveModelAnswer": false,
+          "providerStatus": "connection_error",
+          "responseIssue": null
+        }
+      },
+      {
+        "id": "FRESH-SA-018",
+        "turn": 2,
+        "provider": "built-in-course-guide",
+        "outcome": {
+          "type": "provider_fallback",
+          "liveModelAnswer": false,
+          "providerStatus": "connection_error",
+          "responseIssue": null
+        }
+      },
+      {
+        "id": "FRESH-MT-003",
+        "turn": 1,
+        "provider": "built-in-course-guide",
+        "outcome": {
+          "type": "provider_fallback",
+          "liveModelAnswer": false,
+          "providerStatus": "connection_error",
+          "responseIssue": null
+        }
+      },
+      {
+        "id": "FRESH-SR-005",
+        "turn": 1,
+        "provider": "built-in-course-guide",
+        "outcome": {
+          "type": "provider_fallback",
+          "liveModelAnswer": false,
+          "providerStatus": "connection_error",
+          "responseIssue": null
+        }
+      },
+      {
+        "id": "FRESH-SR-013",
+        "turn": 1,
+        "provider": "built-in-course-guide",
+        "outcome": {
+          "type": "provider_fallback",
+          "liveModelAnswer": false,
+          "providerStatus": "connection_error",
+          "responseIssue": null
+        }
+      },
+      {
+        "id": "FRESH-SA-015",
+        "turn": 1,
+        "provider": "built-in-course-guide",
+        "outcome": {
+          "type": "provider_fallback",
+          "liveModelAnswer": false,
+          "providerStatus": "connection_error",
+          "responseIssue": null
+        }
+      },
+      {
+        "id": "FRESH-EX-007",
+        "turn": 1,
+        "provider": "built-in-course-guide",
+        "outcome": {
+          "type": "provider_fallback",
+          "liveModelAnswer": false,
+          "providerStatus": "connection_error",
+          "responseIssue": null
+        }
+      },
+      {
+        "id": "FRESH-MT-019",
+        "turn": 1,
+        "provider": "built-in-course-guide",
+        "outcome": {
+          "type": "provider_fallback",
+          "liveModelAnswer": false,
+          "providerStatus": "connection_error",
+          "responseIssue": null
+        }
+      },
+      {
+        "id": "FRESH-MT-012",
+        "turn": 1,
+        "provider": "built-in-course-guide",
+        "outcome": {
+          "type": "provider_fallback",
+          "liveModelAnswer": false,
+          "providerStatus": "connection_error",
+          "responseIssue": null
+        }
+      },
+      {
+        "id": "FRESH-MT-012",
+        "turn": 2,
+        "provider": "built-in-course-guide",
+        "outcome": {
+          "type": "provider_fallback",
+          "liveModelAnswer": false,
+          "providerStatus": "connection_error",
+          "responseIssue": null
+        }
+      },
+      {
+        "id": "FRESH-SR-002",
+        "turn": 1,
+        "provider": "built-in-course-guide",
+        "outcome": {
+          "type": "provider_fallback",
+          "liveModelAnswer": false,
+          "providerStatus": "connection_error",
+          "responseIssue": null
+        }
+      },
+      {
+        "id": "FRESH-SR-002",
+        "turn": 2,
+        "provider": "built-in-course-guide",
+        "outcome": {
+          "type": "provider_fallback",
+          "liveModelAnswer": false,
+          "providerStatus": "connection_error",
+          "responseIssue": null
+        }
+      },
+      {
+        "id": "FRESH-MT-004",
+        "turn": 1,
+        "provider": "built-in-course-guide",
+        "outcome": {
+          "type": "provider_fallback",
+          "liveModelAnswer": false,
+          "providerStatus": "connection_error",
+          "responseIssue": null
+        }
+      },
+      {
+        "id": "FRESH-MT-004",
+        "turn": 2,
+        "provider": "built-in-course-guide",
+        "outcome": {
+          "type": "provider_fallback",
+          "liveModelAnswer": false,
+          "providerStatus": "connection_error",
+          "responseIssue": null
+        }
+      },
+      {
+        "id": "FRESH-ML-014",
+        "turn": 1,
+        "provider": "built-in-course-guide",
+        "outcome": {
+          "type": "provider_fallback",
+          "liveModelAnswer": false,
+          "providerStatus": "connection_error",
+          "responseIssue": null
+        }
+      },
+      {
+        "id": "FRESH-MT-008",
+        "turn": 1,
+        "provider": "built-in-course-guide",
+        "outcome": {
+          "type": "provider_fallback",
+          "liveModelAnswer": false,
+          "providerStatus": "connection_error",
+          "responseIssue": null
+        }
+      },
+      {
+        "id": "FRESH-MT-008",
+        "turn": 2,
+        "provider": "built-in-course-guide",
+        "outcome": {
+          "type": "provider_fallback",
+          "liveModelAnswer": false,
+          "providerStatus": "connection_error",
+          "responseIssue": null
+        }
+      },
+      {
+        "id": "FRESH-EX-016",
+        "turn": 1,
+        "provider": "built-in-course-guide",
+        "outcome": {
+          "type": "provider_fallback",
+          "liveModelAnswer": false,
+          "providerStatus": "connection_error",
+          "responseIssue": null
+        }
+      },
+      {
+        "id": "FRESH-EX-017",
+        "turn": 1,
+        "provider": "built-in-course-guide",
+        "outcome": {
+          "type": "provider_fallback",
+          "liveModelAnswer": false,
+          "providerStatus": "connection_error",
+          "responseIssue": null
+        }
+      },
+      {
+        "id": "FRESH-ML-019",
+        "turn": 1,
+        "provider": "built-in-course-guide",
+        "outcome": {
+          "type": "provider_fallback",
+          "liveModelAnswer": false,
+          "providerStatus": "connection_error",
+          "responseIssue": null
+        }
+      },
+      {
+        "id": "FRESH-ML-015",
+        "turn": 1,
+        "provider": "built-in-course-guide",
+        "outcome": {
+          "type": "provider_fallback",
+          "liveModelAnswer": false,
+          "providerStatus": "connection_error",
+          "responseIssue": null
+        }
+      },
+      {
+        "id": "FRESH-SA-009",
+        "turn": 1,
+        "provider": "built-in-course-guide",
+        "outcome": {
+          "type": "provider_fallback",
+          "liveModelAnswer": false,
+          "providerStatus": "connection_error",
+          "responseIssue": null
+        }
+      },
+      {
+        "id": "FRESH-MT-005",
+        "turn": 1,
+        "provider": "built-in-course-guide",
+        "outcome": {
+          "type": "provider_fallback",
+          "liveModelAnswer": false,
+          "providerStatus": "connection_error",
+          "responseIssue": null
+        }
+      },
+      {
+        "id": "FRESH-MT-005",
+        "turn": 2,
+        "provider": "built-in-course-guide",
+        "outcome": {
+          "type": "provider_fallback",
+          "liveModelAnswer": false,
+          "providerStatus": "connection_error",
+          "responseIssue": null
+        }
+      },
+      {
+        "id": "FRESH-SR-003",
+        "turn": 1,
+        "provider": "built-in-course-guide",
+        "outcome": {
+          "type": "provider_fallback",
+          "liveModelAnswer": false,
+          "providerStatus": "connection_error",
+          "responseIssue": null
+        }
+      },
+      {
+        "id": "FRESH-SR-003",
+        "turn": 3,
+        "provider": "built-in-course-guide",
+        "outcome": {
+          "type": "provider_fallback",
+          "liveModelAnswer": false,
+          "providerStatus": "connection_error",
+          "responseIssue": null
+        }
+      },
+      {
+        "id": "FRESH-MT-013",
+        "turn": 1,
+        "provider": "built-in-course-guide",
+        "outcome": {
+          "type": "provider_fallback",
+          "liveModelAnswer": false,
+          "providerStatus": "connection_error",
+          "responseIssue": null
+        }
+      }
+    ],
+    "explicitOutcomeRepairFlags": [],
+    "rawValidationRepairTelemetry": [
+      {
+        "id": "FRESH-EX-018",
+        "turn": 1,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "local_guidance",
+          "reason": "matched_task_and_source"
+        }
+      },
+      {
+        "id": "FRESH-ML-016",
+        "turn": 1,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "model",
+          "reason": "insufficient_local_intent_confidence"
+        }
+      },
+      {
+        "id": "FRESH-EG-019",
+        "turn": 1,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "model",
+          "reason": "insufficient_local_intent_confidence"
+        }
+      },
+      {
+        "id": "FRESH-EX-022",
+        "turn": 1,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "local_guidance",
+          "reason": "matched_task_and_source"
+        }
+      },
+      {
+        "id": "FRESH-MT-006",
+        "turn": 1,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "model",
+          "reason": "insufficient_local_intent_confidence"
+        }
+      },
+      {
+        "id": "FRESH-MT-006",
+        "turn": 2,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "local_guidance",
+          "reason": "matched_task_and_source"
+        }
+      },
+      {
+        "id": "FRESH-MT-010",
+        "turn": 1,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "local_guidance",
+          "reason": "matched_task_and_source"
+        }
+      },
+      {
+        "id": "FRESH-MT-010",
+        "turn": 2,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "local_guidance",
+          "reason": "matched_task_and_source"
+        }
+      },
+      {
+        "id": "FRESH-SA-010",
+        "turn": 1,
+        "validationRepair": null,
+        "responseSelection": null
+      },
+      {
+        "id": "FRESH-EX-014",
+        "turn": 1,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "local_guidance",
+          "reason": "matched_task_and_source"
+        }
+      },
+      {
+        "id": "FRESH-EG-003",
+        "turn": 1,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "exact_template",
+          "reason": "complete_authorized_asset"
+        }
+      },
+      {
+        "id": "FRESH-EG-015",
+        "turn": 1,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "local_guidance",
+          "reason": "matched_task_and_source"
+        }
+      },
+      {
+        "id": "FRESH-EX-002",
+        "turn": 1,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "exact_template",
+          "reason": "complete_authorized_asset"
+        }
+      },
+      {
+        "id": "FRESH-SA-006",
+        "turn": 1,
+        "validationRepair": null,
+        "responseSelection": null
+      },
+      {
+        "id": "FRESH-ML-020",
+        "turn": 1,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "local_guidance",
+          "reason": "matched_task_and_source"
+        }
+      },
+      {
+        "id": "FRESH-SA-007",
+        "turn": 1,
+        "validationRepair": null,
+        "responseSelection": null
+      },
+      {
+        "id": "FRESH-EG-014",
+        "turn": 1,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "local_guidance",
+          "reason": "matched_task_and_source"
+        }
+      },
+      {
+        "id": "FRESH-EX-003",
+        "turn": 1,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "exact_template",
+          "reason": "complete_authorized_asset"
+        }
+      },
+      {
+        "id": "FRESH-EX-015",
+        "turn": 1,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "exact_template",
+          "reason": "complete_authorized_asset"
+        }
+      },
+      {
+        "id": "FRESH-EG-002",
+        "turn": 1,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "local_guidance",
+          "reason": "matched_task_and_source"
+        }
+      },
+      {
+        "id": "FRESH-SA-011",
+        "turn": 1,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "model",
+          "reason": "open_reasoning"
+        }
+      },
+      {
+        "id": "FRESH-MT-011",
+        "turn": 1,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "model",
+          "reason": "insufficient_local_intent_confidence"
+        }
+      },
+      {
+        "id": "FRESH-MT-011",
+        "turn": 2,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "model",
+          "reason": "insufficient_local_intent_confidence"
+        }
+      },
+      {
+        "id": "FRESH-SR-001",
+        "turn": 1,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "model",
+          "reason": "insufficient_local_intent_confidence"
+        }
+      },
+      {
+        "id": "FRESH-SR-001",
+        "turn": 2,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "local_guidance",
+          "reason": "matched_task_and_source"
+        }
+      },
+      {
+        "id": "FRESH-MT-007",
+        "turn": 1,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "local_guidance",
+          "reason": "matched_task_and_source"
+        }
+      },
+      {
+        "id": "FRESH-MT-007",
+        "turn": 2,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "local_guidance",
+          "reason": "matched_task_and_source"
+        }
+      },
+      {
+        "id": "FRESH-EX-023",
+        "turn": 1,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "exact_template",
+          "reason": "complete_authorized_asset"
+        }
+      },
+      {
+        "id": "FRESH-EG-018",
+        "turn": 1,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "model",
+          "reason": "insufficient_local_intent_confidence"
+        }
+      },
+      {
+        "id": "FRESH-ML-017",
+        "turn": 1,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "local_guidance",
+          "reason": "matched_task_and_source"
+        }
+      },
+      {
+        "id": "FRESH-ML-001",
+        "turn": 1,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "local_guidance",
+          "reason": "matched_task_and_source"
+        }
+      },
+      {
+        "id": "FRESH-EX-019",
+        "turn": 1,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "local_guidance",
+          "reason": "matched_task_and_source"
+        }
+      },
+      {
+        "id": "FRESH-SA-016",
+        "turn": 1,
+        "validationRepair": null,
+        "responseSelection": null
+      },
+      {
+        "id": "FRESH-EX-012",
+        "turn": 1,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "exact_template",
+          "reason": "complete_authorized_asset"
+        }
+      },
+      {
+        "id": "FRESH-EG-005",
+        "turn": 1,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "local_guidance",
+          "reason": "matched_task_and_source"
+        }
+      },
+      {
+        "id": "FRESH-MT-020",
+        "turn": 1,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "local_guidance",
+          "reason": "matched_task_and_source"
+        }
+      },
+      {
+        "id": "FRESH-MT-020",
+        "turn": 2,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "local_guidance",
+          "reason": "matched_task_and_source"
+        }
+      },
+      {
+        "id": "FRESH-EG-013",
+        "turn": 1,
+        "validationRepair": null,
+        "responseSelection": null
+      },
+      {
+        "id": "FRESH-EX-004",
+        "turn": 1,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "exact_template",
+          "reason": "complete_authorized_asset"
+        }
+      },
+      {
+        "id": "FRESH-EG-009",
+        "turn": 1,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "local_guidance",
+          "reason": "matched_task_and_source"
+        }
+      },
+      {
+        "id": "FRESH-ML-006",
+        "turn": 1,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "model",
+          "reason": "insufficient_local_intent_confidence"
+        }
+      },
+      {
+        "id": "FRESH-EX-008",
+        "turn": 1,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "exact_template",
+          "reason": "complete_authorized_asset"
+        }
+      },
+      {
+        "id": "FRESH-ML-010",
+        "turn": 1,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "model",
+          "reason": "insufficient_local_intent_confidence"
+        }
+      },
+      {
+        "id": "FRESH-EX-024",
+        "turn": 1,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "local_guidance",
+          "reason": "matched_task_and_source"
+        }
+      },
+      {
+        "id": "FRESH-SR-006",
+        "turn": 1,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "model",
+          "reason": "insufficient_local_intent_confidence"
+        }
+      },
+      {
+        "id": "FRESH-SA-020",
+        "turn": 1,
+        "validationRepair": null,
+        "responseSelection": null
+      },
+      {
+        "id": "FRESH-SR-010",
+        "turn": 1,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "model",
+          "reason": "insufficient_local_intent_confidence"
+        }
+      },
+      {
+        "id": "FRESH-SR-010",
+        "turn": 2,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "model",
+          "reason": "insufficient_local_intent_confidence"
+        }
+      },
+      {
+        "id": "FRESH-SR-010",
+        "turn": 3,
+        "validationRepair": null,
+        "responseSelection": null
+      },
+      {
+        "id": "FRESH-SR-010",
+        "turn": 4,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "model",
+          "reason": "insufficient_local_intent_confidence"
+        }
+      },
+      {
+        "id": "FRESH-MT-016",
+        "turn": 1,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "local_guidance",
+          "reason": "matched_task_and_source"
+        }
+      },
+      {
+        "id": "FRESH-MT-016",
+        "turn": 2,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "model",
+          "reason": "insufficient_local_intent_confidence"
+        }
+      },
+      {
+        "id": "FRESH-MT-017",
+        "turn": 1,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "local_guidance",
+          "reason": "matched_task_and_source"
+        }
+      },
+      {
+        "id": "FRESH-MT-017",
+        "turn": 2,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "local_guidance",
+          "reason": "matched_task_and_source"
+        }
+      },
+      {
+        "id": "FRESH-SR-011",
+        "turn": 1,
+        "validationRepair": null,
+        "responseSelection": null
+      },
+      {
+        "id": "FRESH-SR-007",
+        "turn": 1,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "local_guidance",
+          "reason": "matched_task_and_source"
+        }
+      },
+      {
+        "id": "FRESH-MT-001",
+        "turn": 1,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "local_guidance",
+          "reason": "matched_task_and_source"
+        }
+      },
+      {
+        "id": "FRESH-MT-001",
+        "turn": 2,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "local_guidance",
+          "reason": "matched_task_and_source"
+        }
+      },
+      {
+        "id": "FRESH-EX-025",
+        "turn": 1,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "exact_template",
+          "reason": "complete_authorized_asset"
+        }
+      },
+      {
+        "id": "FRESH-EX-009",
+        "turn": 1,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "local_guidance",
+          "reason": "matched_task_and_source"
+        }
+      },
+      {
+        "id": "FRESH-ML-011",
+        "turn": 1,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "local_guidance",
+          "reason": "matched_task_and_source"
+        }
+      },
+      {
+        "id": "FRESH-ML-007",
+        "turn": 1,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "local_guidance",
+          "reason": "matched_task_and_source"
+        }
+      },
+      {
+        "id": "FRESH-EG-008",
+        "turn": 1,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "local_guidance",
+          "reason": "matched_task_and_source"
+        }
+      },
+      {
+        "id": "FRESH-SA-001",
+        "turn": 1,
+        "validationRepair": null,
+        "responseSelection": null
+      },
+      {
+        "id": "FRESH-EG-012",
+        "turn": 1,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "local_guidance",
+          "reason": "matched_task_and_source"
+        }
+      },
+      {
+        "id": "FRESH-EX-005",
+        "turn": 1,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "local_guidance",
+          "reason": "matched_task_and_source"
+        }
+      },
+      {
+        "id": "FRESH-EX-013",
+        "turn": 1,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "exact_template",
+          "reason": "complete_authorized_asset"
+        }
+      },
+      {
+        "id": "FRESH-EG-004",
+        "turn": 1,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "local_guidance",
+          "reason": "matched_task_and_source"
+        }
+      },
+      {
+        "id": "FRESH-SA-017",
+        "turn": 1,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "model",
+          "reason": "insufficient_local_intent_confidence"
+        }
+      },
+      {
+        "id": "FRESH-SA-017",
+        "turn": 2,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "model",
+          "reason": "insufficient_local_intent_confidence"
+        }
+      },
+      {
+        "id": "FRESH-MT-018",
+        "turn": 1,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "local_guidance",
+          "reason": "matched_task_and_source"
+        }
+      },
+      {
+        "id": "FRESH-MT-018",
+        "turn": 2,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "local_guidance",
+          "reason": "matched_task_and_source"
+        }
+      },
+      {
+        "id": "FRESH-SR-008",
+        "turn": 1,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "local_guidance",
+          "reason": "matched_task_and_source"
+        }
+      },
+      {
+        "id": "FRESH-SA-002",
+        "turn": 1,
+        "validationRepair": null,
+        "responseSelection": null
+      },
+      {
+        "id": "FRESH-EG-011",
+        "turn": 1,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "exact_template",
+          "reason": "complete_authorized_asset"
+        }
+      },
+      {
+        "id": "FRESH-EX-006",
+        "turn": 1,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "exact_template",
+          "reason": "complete_authorized_asset"
+        }
+      },
+      {
+        "id": "FRESH-EX-010",
+        "turn": 1,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "local_guidance",
+          "reason": "matched_task_and_source"
+        }
+      },
+      {
+        "id": "FRESH-EG-007",
+        "turn": 1,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "model",
+          "reason": "insufficient_local_intent_confidence"
+        }
+      },
+      {
+        "id": "FRESH-ML-008",
+        "turn": 1,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "local_guidance",
+          "reason": "matched_task_and_source"
+        }
+      },
+      {
+        "id": "FRESH-SA-014",
+        "turn": 1,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "model",
+          "reason": "insufficient_local_intent_confidence"
+        }
+      },
+      {
+        "id": "FRESH-MT-014",
+        "turn": 1,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "model",
+          "reason": "insufficient_local_intent_confidence"
+        }
+      },
+      {
+        "id": "FRESH-MT-014",
+        "turn": 2,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "model",
+          "reason": "insufficient_local_intent_confidence"
+        }
+      },
+      {
+        "id": "FRESH-SR-012",
+        "turn": 1,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "model",
+          "reason": "insufficient_local_intent_confidence"
+        }
+      },
+      {
+        "id": "FRESH-SR-012",
+        "turn": 2,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "local_guidance",
+          "reason": "matched_task_and_source"
+        }
+      },
+      {
+        "id": "FRESH-SR-012",
+        "turn": 3,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "local_guidance",
+          "reason": "matched_task_and_source"
+        }
+      },
+      {
+        "id": "FRESH-SR-004",
+        "turn": 1,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "model",
+          "reason": "insufficient_local_intent_confidence"
+        }
+      },
+      {
+        "id": "FRESH-SR-004",
+        "turn": 2,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "model",
+          "reason": "insufficient_local_intent_confidence"
+        }
+      },
+      {
+        "id": "FRESH-MT-002",
+        "turn": 1,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "model",
+          "reason": "insufficient_local_intent_confidence"
+        }
+      },
+      {
+        "id": "FRESH-MT-002",
+        "turn": 2,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "local_guidance",
+          "reason": "matched_task_and_source"
+        }
+      },
+      {
+        "id": "FRESH-ML-012",
+        "turn": 1,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "model",
+          "reason": "insufficient_local_intent_confidence"
+        }
+      },
+      {
+        "id": "FRESH-ML-004",
+        "turn": 1,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "model",
+          "reason": "insufficient_local_intent_confidence"
+        }
+      },
+      {
+        "id": "FRESH-SA-018",
+        "turn": 1,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "model",
+          "reason": "insufficient_local_intent_confidence"
+        }
+      },
+      {
+        "id": "FRESH-SA-018",
+        "turn": 2,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "model",
+          "reason": "insufficient_local_intent_confidence"
+        }
+      },
+      {
+        "id": "FRESH-SA-019",
+        "turn": 1,
+        "validationRepair": null,
+        "responseSelection": null
+      },
+      {
+        "id": "FRESH-ML-005",
+        "turn": 1,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "local_guidance",
+          "reason": "matched_task_and_source"
+        }
+      },
+      {
+        "id": "FRESH-ML-013",
+        "turn": 1,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "local_guidance",
+          "reason": "matched_task_and_source"
+        }
+      },
+      {
+        "id": "FRESH-MT-003",
+        "turn": 1,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "model",
+          "reason": "insufficient_local_intent_confidence"
+        }
+      },
+      {
+        "id": "FRESH-MT-003",
+        "turn": 2,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "local_guidance",
+          "reason": "matched_task_and_source"
+        }
+      },
+      {
+        "id": "FRESH-SR-005",
+        "turn": 1,
+        "validationRepair": null,
+        "responseSelection": null
+      },
+      {
+        "id": "FRESH-SR-013",
+        "turn": 1,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "model",
+          "reason": "insufficient_local_intent_confidence"
+        }
+      },
+      {
+        "id": "FRESH-SR-013",
+        "turn": 2,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "local_guidance",
+          "reason": "matched_task_and_source"
+        }
+      },
+      {
+        "id": "FRESH-MT-015",
+        "turn": 1,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "local_guidance",
+          "reason": "matched_task_and_source"
+        }
+      },
+      {
+        "id": "FRESH-MT-015",
+        "turn": 2,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "local_guidance",
+          "reason": "matched_task_and_source"
+        }
+      },
+      {
+        "id": "FRESH-SA-015",
+        "turn": 1,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "model",
+          "reason": "insufficient_local_intent_confidence"
+        }
+      },
+      {
+        "id": "FRESH-EX-011",
+        "turn": 1,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "local_guidance",
+          "reason": "matched_task_and_source"
+        }
+      },
+      {
+        "id": "FRESH-ML-009",
+        "turn": 1,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "local_guidance",
+          "reason": "matched_task_and_source"
+        }
+      },
+      {
+        "id": "FRESH-EG-006",
+        "turn": 1,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "local_guidance",
+          "reason": "matched_task_and_source"
+        }
+      },
+      {
+        "id": "FRESH-EG-010",
+        "turn": 1,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "local_guidance",
+          "reason": "matched_task_and_source"
+        }
+      },
+      {
+        "id": "FRESH-EX-007",
+        "turn": 1,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "model",
+          "reason": "insufficient_local_intent_confidence"
+        }
+      },
+      {
+        "id": "FRESH-SA-003",
+        "turn": 1,
+        "validationRepair": null,
+        "responseSelection": null
+      },
+      {
+        "id": "FRESH-SR-009",
+        "turn": 1,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "local_guidance",
+          "reason": "matched_task_and_source"
+        }
+      },
+      {
+        "id": "FRESH-MT-019",
+        "turn": 1,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "model",
+          "reason": "insufficient_local_intent_confidence"
+        }
+      },
+      {
+        "id": "FRESH-MT-019",
+        "turn": 2,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "local_guidance",
+          "reason": "matched_task_and_source"
+        }
+      },
+      {
+        "id": "FRESH-MT-012",
+        "turn": 1,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "model",
+          "reason": "insufficient_local_intent_confidence"
+        }
+      },
+      {
+        "id": "FRESH-MT-012",
+        "turn": 2,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "model",
+          "reason": "insufficient_local_intent_confidence"
+        }
+      },
+      {
+        "id": "FRESH-SR-014",
+        "turn": 1,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "local_guidance",
+          "reason": "matched_task_and_source"
+        }
+      },
+      {
+        "id": "FRESH-SR-002",
+        "turn": 1,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "model",
+          "reason": "insufficient_local_intent_confidence"
+        }
+      },
+      {
+        "id": "FRESH-SR-002",
+        "turn": 2,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "model",
+          "reason": "insufficient_local_intent_confidence"
+        }
+      },
+      {
+        "id": "FRESH-MT-004",
+        "turn": 1,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "model",
+          "reason": "insufficient_local_intent_confidence"
+        }
+      },
+      {
+        "id": "FRESH-MT-004",
+        "turn": 2,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "model",
+          "reason": "insufficient_local_intent_confidence"
+        }
+      },
+      {
+        "id": "FRESH-EX-020",
+        "turn": 1,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "exact_template",
+          "reason": "complete_authorized_asset"
+        }
+      },
+      {
+        "id": "FRESH-SA-008",
+        "turn": 1,
+        "validationRepair": null,
+        "responseSelection": null
+      },
+      {
+        "id": "FRESH-ML-014",
+        "turn": 1,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "model",
+          "reason": "insufficient_local_intent_confidence"
+        }
+      },
+      {
+        "id": "FRESH-ML-002",
+        "turn": 1,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "local_guidance",
+          "reason": "matched_task_and_source"
+        }
+      },
+      {
+        "id": "FRESH-MT-008",
+        "turn": 1,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "model",
+          "reason": "insufficient_local_intent_confidence"
+        }
+      },
+      {
+        "id": "FRESH-MT-008",
+        "turn": 2,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "model",
+          "reason": "insufficient_local_intent_confidence"
+        }
+      },
+      {
+        "id": "FRESH-SA-004",
+        "turn": 1,
+        "validationRepair": null,
+        "responseSelection": null
+      },
+      {
+        "id": "FRESH-ML-018",
+        "turn": 1,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "local_guidance",
+          "reason": "matched_task_and_source"
+        }
+      },
+      {
+        "id": "FRESH-EG-017",
+        "turn": 1,
+        "validationRepair": null,
+        "responseSelection": null
+      },
+      {
+        "id": "FRESH-EX-016",
+        "turn": 1,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "model",
+          "reason": "insufficient_local_intent_confidence"
+        }
+      },
+      {
+        "id": "FRESH-EG-001",
+        "turn": 1,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "local_guidance",
+          "reason": "matched_task_and_source"
+        }
+      },
+      {
+        "id": "FRESH-SA-012",
+        "turn": 1,
+        "validationRepair": null,
+        "responseSelection": null
+      },
+      {
+        "id": "FRESH-SA-013",
+        "turn": 1,
+        "validationRepair": null,
+        "responseSelection": null
+      },
+      {
+        "id": "FRESH-EX-017",
+        "turn": 1,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "model",
+          "reason": "insufficient_local_intent_confidence"
+        }
+      },
+      {
+        "id": "FRESH-EG-016",
+        "turn": 1,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "local_guidance",
+          "reason": "matched_task_and_source"
+        }
+      },
+      {
+        "id": "FRESH-ML-019",
+        "turn": 1,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "model",
+          "reason": "open_reasoning"
+        }
+      },
+      {
+        "id": "FRESH-EX-001",
+        "turn": 1,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "exact_template",
+          "reason": "complete_authorized_asset"
+        }
+      },
+      {
+        "id": "FRESH-SA-005",
+        "turn": 1,
+        "validationRepair": null,
+        "responseSelection": null
+      },
+      {
+        "id": "FRESH-MT-009",
+        "turn": 1,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "local_guidance",
+          "reason": "matched_task_and_source"
+        }
+      },
+      {
+        "id": "FRESH-MT-009",
+        "turn": 2,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "local_guidance",
+          "reason": "matched_task_and_source"
+        }
+      },
+      {
+        "id": "FRESH-ML-003",
+        "turn": 1,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "local_guidance",
+          "reason": "matched_task_and_source"
+        }
+      },
+      {
+        "id": "FRESH-ML-015",
+        "turn": 1,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "model",
+          "reason": "open_reasoning"
+        }
+      },
+      {
+        "id": "FRESH-SA-009",
+        "turn": 1,
+        "validationRepair": null,
+        "responseSelection": null
+      },
+      {
+        "id": "FRESH-EX-021",
+        "turn": 1,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "exact_template",
+          "reason": "complete_authorized_asset"
+        }
+      },
+      {
+        "id": "FRESH-MT-005",
+        "turn": 1,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "model",
+          "reason": "insufficient_local_intent_confidence"
+        }
+      },
+      {
+        "id": "FRESH-MT-005",
+        "turn": 2,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "model",
+          "reason": "insufficient_local_intent_confidence"
+        }
+      },
+      {
+        "id": "FRESH-SR-003",
+        "turn": 1,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "model",
+          "reason": "insufficient_local_intent_confidence"
+        }
+      },
+      {
+        "id": "FRESH-SR-003",
+        "turn": 2,
+        "validationRepair": null,
+        "responseSelection": null
+      },
+      {
+        "id": "FRESH-SR-003",
+        "turn": 3,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "model",
+          "reason": "insufficient_local_intent_confidence"
+        }
+      },
+      {
+        "id": "FRESH-SR-015",
+        "turn": 1,
+        "validationRepair": null,
+        "responseSelection": null
+      },
+      {
+        "id": "FRESH-EG-020",
+        "turn": 1,
+        "validationRepair": null,
+        "responseSelection": null
+      },
+      {
+        "id": "FRESH-MT-013",
+        "turn": 1,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "model",
+          "reason": "insufficient_local_intent_confidence"
+        }
+      },
+      {
+        "id": "FRESH-MT-013",
+        "turn": 2,
+        "validationRepair": null,
+        "responseSelection": {
+          "mode": "local_guidance",
+          "reason": "matched_task_and_source"
+        }
+      }
+    ],
+    "turnsWithValidationRepairTelemetry": 0,
+    "turnsWithoutValidationRepairTelemetry": 153,
+    "repairLimitation": "Only explicit emitted repair flags counted; absence of telemetry is not proof that internal repair logic never ran."
+  },
+  "httpStatusCounts": {
+    "200": 149,
+    "401": 4
+  },
+  "latencyMs": {
+    "count": 153,
+    "min": 5,
+    "max": 217,
+    "mean": 110.10457516339869,
+    "median": 96,
+    "note": "Local request time only; excludes independent grading waits."
+  },
+  "safetyStop": null,
+  "productionInteraction": false,
+  "candidateModifiedByEvaluation": false,
+  "executionLogs": {
+    "stderrLineCount": 120,
+    "routerPromiseLikeDeprecations": 120,
+    "journalExecutionErrors": [],
+    "requestTransportErrors": [],
+    "rawStderrPreserved": true
+  }
+}

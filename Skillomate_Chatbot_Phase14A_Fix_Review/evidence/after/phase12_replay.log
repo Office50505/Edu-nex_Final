@@ -1,0 +1,10 @@
+Fri, 16 Oct 2026 09:06:42 GMT router deprecated handlers that are Promise-like are deprecated, use a native Promise instead at node_modules/router/lib/route.js:157:13
+{
+  "cases": 40,
+  "turns": 48,
+  "byteIdenticalCases": 40,
+  "changedCases": [],
+  "replayedProviderInvocations": 11,
+  "unexpectedTransportRequests": 0,
+  "externalProviderInvocations": 0
+}

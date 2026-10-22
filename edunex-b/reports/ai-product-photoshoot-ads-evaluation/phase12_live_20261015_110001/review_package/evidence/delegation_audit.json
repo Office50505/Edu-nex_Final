@@ -1,0 +1,82 @@
+{
+  "turns": [
+    {
+      "id": "phase12_new_018",
+      "turn": 1,
+      "predeclaredExpectedModel": true,
+      "providerCalls": 1,
+      "selection": {
+        "mode": "model",
+        "reason": "compound_or_complete_journey"
+      },
+      "origin": "live_model"
+    },
+    {
+      "id": "phase12_new_019",
+      "turn": 1,
+      "predeclaredExpectedModel": true,
+      "providerCalls": 1,
+      "selection": {
+        "mode": "model",
+        "reason": "insufficient_local_intent_confidence"
+      },
+      "origin": "live_model"
+    },
+    {
+      "id": "phase12_new_020",
+      "turn": 1,
+      "predeclaredExpectedModel": true,
+      "providerCalls": 1,
+      "selection": {
+        "mode": "model",
+        "reason": "compound_or_complete_journey"
+      },
+      "origin": "live_model"
+    },
+    {
+      "id": "phase12_new_034",
+      "turn": 2,
+      "predeclaredExpectedModel": true,
+      "providerCalls": 1,
+      "selection": {
+        "mode": "model",
+        "reason": "compound_or_complete_journey"
+      },
+      "origin": "live_model"
+    },
+    {
+      "id": "phase12_new_035",
+      "turn": 1,
+      "predeclaredExpectedModel": true,
+      "providerCalls": 1,
+      "selection": {
+        "mode": "model",
+        "reason": "compound_or_complete_journey"
+      },
+      "origin": "live_model"
+    },
+    {
+      "id": "phase12_new_039",
+      "turn": 1,
+      "predeclaredExpectedModel": true,
+      "providerCalls": 1,
+      "selection": {
+        "mode": "model",
+        "reason": "compound_or_complete_journey"
+      },
+      "origin": "live_model"
+    },
+    {
+      "id": "phase12_new_039",
+      "turn": 2,
+      "predeclaredExpectedModel": true,
+      "providerCalls": 1,
+      "selection": {
+        "mode": "model",
+        "reason": "insufficient_local_intent_confidence"
+      },
+      "origin": "live_model"
+    }
+  ],
+  "interpretation": "Expected delegation is predeclared; complete local literal outputs and safe drafts remain valid routes. Read model-selection debug and actual provider capture, never infer live origin from answer style."
+}

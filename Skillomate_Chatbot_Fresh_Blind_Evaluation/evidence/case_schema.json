@@ -1,0 +1,34 @@
+{
+  "caseFields": {
+    "id": "Unique fresh ID",
+    "category": "One of six frozen categories",
+    "access": "active | inactive | expired (default active)",
+    "auth": "valid | missing | invalid | expired | invalid_session (default valid)",
+    "turns": "Array of turn objects"
+  },
+  "turnFields": {
+    "message": "Fresh learner text; no copied diagnostic question",
+    "expected": "Independently authored essential semantic criteria and expected facts, with exactTemplate/expectedBody when required",
+    "actor": "A or B synthetic identity, default A",
+    "conversation": "Explicit conversation ID; defaults to case ID conversation",
+    "omitHistory": "Omit client history; default false",
+    "noConversationId": "Omit the conversation ID intentionally",
+    "course": "product | other | unknown, default product",
+    "lesson": "Optional lesson 1..8",
+    "noCourseScope": "Omit explicit course scope for a state-edge case",
+    "method": "POST (default) or DELETE for isolated history reset",
+    "endpoint": "chat (default) or history for synthetic DELETE",
+    "extraBody": "Optional synthetic API-alias or malicious parameter test values"
+  },
+  "expectedFields": {
+    "language": "english | hindi | hinglish | none",
+    "essentialCriteria": "Array of human-readable criteria, all required",
+    "facts": "Expected user facts/current product, independently declared",
+    "mustNotReuse": "Old identities/facts that must not appear as current",
+    "exactTemplate": "Exact approved heading if complete body is required",
+    "expectedBody": "Independent complete literal body with only frozen substitutions",
+    "expectedHTTPStatus": "Default 200; specify 401 for true auth denial",
+    "authorization": "Expected entitlement/scope safety constraint",
+    "criticalViolationDefinition": "Specific observable critical violation for this case, if applicable"
+  }
+}

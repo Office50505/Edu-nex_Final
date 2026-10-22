@@ -1,0 +1,332 @@
+{
+  "id": "FRESH-SR-006",
+  "turnIndex": 1,
+  "status": "UNTESTED",
+  "critical": false,
+  "suspectedCritical": false,
+  "rubricVersion": "phase14b-independent-v1",
+  "criteria": [
+    {
+      "criterion": "Answer the explicit Product Sheet question with 5–7 clear daylight angles/flash off and Flow Image workflow.",
+      "status": "UNTESTED",
+      "excerpts": [
+        "Lesson 06\n\nIn Flow choose Video → Ingredients and attach the image. Recorded course settings: 16:9, Omni 1.1 Flash, 720p, 6 sec, x1. Choose one slow movement: push-in, arc or light sweep. Keep the product perfectly still with no morphing or warping. Add music later during editing."
+      ],
+      "reason": "Saved fallback follows selected Lesson6 video instead of explicit Product Sheet workflow. Necessary actual semantic answer unavailable; observed metadata-biased fallback does not establish live inference outcome. Necessary actual provider response absent for this essential requirement; no fallback/model pass inferred."
+    },
+    {
+      "criterion": "Do not force the answer into product video merely because lesson metadata is 6.",
+      "status": "UNTESTED",
+      "excerpts": [
+        "Lesson 06\n\nIn Flow choose Video → Ingredients and attach the image. Recorded course settings: 16:9, Omni 1.1 Flash, 720p, 6 sec, x1. Choose one slow movement: push-in, arc or light sweep. Keep the product perfectly still with no morphing or warping. Add music later during editing."
+      ],
+      "reason": "Saved fallback follows selected Lesson6 video instead of explicit Product Sheet workflow. Necessary actual semantic answer unavailable; observed metadata-biased fallback does not establish live inference outcome. Necessary actual provider response absent for this essential requirement; no fallback/model pass inferred."
+    }
+  ],
+  "dimensions": {
+    "grounding": "UNTESTED",
+    "facts": "UNTESTED",
+    "taskCompleteness": "UNTESTED",
+    "language": "UNTESTED",
+    "authorization": "PASS",
+    "isolation": "PASS",
+    "httpStatus": "PASS"
+  },
+  "requestedExactBodyChecks": [],
+  "supplementalExactBodyChecks": [],
+  "providerAvailability": {
+    "provider": "built-in-course-guide",
+    "outcome": {
+      "type": "provider_fallback",
+      "liveModelAnswer": false,
+      "providerStatus": "connection_error",
+      "responseIssue": null
+    },
+    "attempts": [
+      {
+        "index": 1,
+        "startedAt": "2026-10-16T11:17:14.217Z",
+        "requestSha256": "a90f8a3ebb8a5b413f7108b424d4d4dbbff7e4b0ec48e87aa32aa92367f6e557",
+        "promptModified": false,
+        "recordedFixture": false,
+        "error": {
+          "name": "Error",
+          "code": "PROVIDER_PAYLOAD_NOT_APPROVED"
+        },
+        "durationMs": 0,
+        "completedAt": "2026-10-16T11:17:14.217Z"
+      },
+      {
+        "index": 2,
+        "startedAt": "2026-10-16T11:17:14.319Z",
+        "requestSha256": "a90f8a3ebb8a5b413f7108b424d4d4dbbff7e4b0ec48e87aa32aa92367f6e557",
+        "promptModified": false,
+        "recordedFixture": false,
+        "error": {
+          "name": "Error",
+          "code": "PROVIDER_PAYLOAD_NOT_APPROVED"
+        },
+        "durationMs": 0,
+        "completedAt": "2026-10-16T11:17:14.319Z"
+      }
+    ],
+    "inferenceNecessaryForThisTurn": true,
+    "reason": "Actual configured provider requests blocked before external transport. No model/fixture response. Saved fallback cannot establish required semantic response."
+  },
+  "ownershipPayloadReview": {
+    "reviewed": true,
+    "actor": "A",
+    "actorId": "7792db6b7c950e2e064fe58c",
+    "scopeInspection": {
+      "independentExplicitSelectedCourse": "6d0000000000000000000000",
+      "independentExpectedOwner": "6d0000000000000000000000",
+      "explicitUnknownScope": false,
+      "independentAuthAndEntitlement": true,
+      "requiresSemanticScopeAdjudication": false,
+      "protectedRetrievedSources": [
+        {
+          "id": "S1",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "Lesson 06 — Photo Se Product Video",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_6",
+          "lessonName": "Lesson 06 — Photo Se Product Video",
+          "contentType": "lesson-summary",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:lesson-summary:lesson-06-photo-se-product-video"
+        },
+        {
+          "id": "S3",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "Product video",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_6",
+          "lessonName": "Product video",
+          "contentType": "workflow",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:workflow:product-video"
+        },
+        {
+          "id": "S4",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "Video mein product pighal/morph",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_6",
+          "lessonName": "Video mein product pighal/morph",
+          "contentType": "faq",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:faq:video-mein-product-pighal-morph"
+        },
+        {
+          "id": "S5",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "L06 Push-in",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_6",
+          "lessonName": "L06 Push-in",
+          "contentType": "exact-template",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:exact-template:l06-push-in"
+        },
+        {
+          "id": "S6",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "L06 Arc",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_6",
+          "lessonName": "L06 Arc",
+          "contentType": "exact-template",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:exact-template:l06-arc"
+        }
+      ],
+      "retrievalProductBodies": [
+        {
+          "heading": "Lesson 06 — Photo Se Product Video",
+          "contentType": "lesson-summary",
+          "owner": "6d0000000000000000000000",
+          "sha256": "4942875729c885ba6b6f2d0280ff0342d7512615fd53d4d5c63da9c9dd3fc481"
+        },
+        {
+          "heading": "Product video",
+          "contentType": "workflow",
+          "owner": "6d0000000000000000000000",
+          "sha256": "ebdbfab455bca71b5956bb202abf1f301d4e694cace2cec144be694bbbc4cd9d"
+        },
+        {
+          "heading": "Video mein product pighal/morph",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "e147d98e4a056b3fa92e9afa9ecb579ce1918d9d11fa01ac57c2d4045dff0ca8"
+        },
+        {
+          "heading": "L06 Push-in",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "04db3c22a6126469294ecfe8bf9a1554541eb1534657f36ab6411830a75ea2eb"
+        },
+        {
+          "heading": "L06 Arc",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "fe93820322ce61e5e765a6400c3e47992cd1979bc856ed87388518c8b649942a"
+        }
+      ],
+      "assembledContextProductBodies": [
+        {
+          "heading": "Lesson 06 — Photo Se Product Video",
+          "contentType": "lesson-summary",
+          "owner": "6d0000000000000000000000",
+          "sha256": "4942875729c885ba6b6f2d0280ff0342d7512615fd53d4d5c63da9c9dd3fc481"
+        },
+        {
+          "heading": "Product video",
+          "contentType": "workflow",
+          "owner": "6d0000000000000000000000",
+          "sha256": "ebdbfab455bca71b5956bb202abf1f301d4e694cace2cec144be694bbbc4cd9d"
+        },
+        {
+          "heading": "Video mein product pighal/morph",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "e147d98e4a056b3fa92e9afa9ecb579ce1918d9d11fa01ac57c2d4045dff0ca8"
+        },
+        {
+          "heading": "L06 Push-in",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "04db3c22a6126469294ecfe8bf9a1554541eb1534657f36ab6411830a75ea2eb"
+        },
+        {
+          "heading": "L06 Arc",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "fe93820322ce61e5e765a6400c3e47992cd1979bc856ed87388518c8b649942a"
+        }
+      ],
+      "assembledPayloads": [
+        {
+          "sha256": "a90f8a3ebb8a5b413f7108b424d4d4dbbff7e4b0ec48e87aa32aa92367f6e557",
+          "validation": "accepted",
+          "error": null,
+          "scope": {
+            "activeCourse": {
+              "_id": "6d0000000000000000000000",
+              "slug": "ai-product-photoshoot-ads"
+            },
+            "includeMaterials": true
+          },
+          "productBodies": [
+            {
+              "heading": "Lesson 06 — Photo Se Product Video",
+              "contentType": "lesson-summary",
+              "owner": "6d0000000000000000000000",
+              "sha256": "4942875729c885ba6b6f2d0280ff0342d7512615fd53d4d5c63da9c9dd3fc481"
+            },
+            {
+              "heading": "Product video",
+              "contentType": "workflow",
+              "owner": "6d0000000000000000000000",
+              "sha256": "ebdbfab455bca71b5956bb202abf1f301d4e694cace2cec144be694bbbc4cd9d"
+            },
+            {
+              "heading": "Video mein product pighal/morph",
+              "contentType": "faq",
+              "owner": "6d0000000000000000000000",
+              "sha256": "e147d98e4a056b3fa92e9afa9ecb579ce1918d9d11fa01ac57c2d4045dff0ca8"
+            },
+            {
+              "heading": "L06 Push-in",
+              "contentType": "exact-template",
+              "owner": "6d0000000000000000000000",
+              "sha256": "04db3c22a6126469294ecfe8bf9a1554541eb1534657f36ab6411830a75ea2eb"
+            },
+            {
+              "heading": "L06 Arc",
+              "contentType": "exact-template",
+              "owner": "6d0000000000000000000000",
+              "sha256": "fe93820322ce61e5e765a6400c3e47992cd1979bc856ed87388518c8b649942a"
+            }
+          ],
+          "messageCount": 2
+        }
+      ],
+      "providerAdapterProductBodies": [
+        {
+          "heading": "Lesson 06 — Photo Se Product Video",
+          "contentType": "lesson-summary",
+          "owner": "6d0000000000000000000000",
+          "sha256": "4942875729c885ba6b6f2d0280ff0342d7512615fd53d4d5c63da9c9dd3fc481"
+        },
+        {
+          "heading": "Product video",
+          "contentType": "workflow",
+          "owner": "6d0000000000000000000000",
+          "sha256": "ebdbfab455bca71b5956bb202abf1f301d4e694cace2cec144be694bbbc4cd9d"
+        },
+        {
+          "heading": "Video mein product pighal/morph",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "e147d98e4a056b3fa92e9afa9ecb579ce1918d9d11fa01ac57c2d4045dff0ca8"
+        },
+        {
+          "heading": "L06 Push-in",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "04db3c22a6126469294ecfe8bf9a1554541eb1534657f36ab6411830a75ea2eb"
+        },
+        {
+          "heading": "L06 Arc",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "fe93820322ce61e5e765a6400c3e47992cd1979bc856ed87388518c8b649942a"
+        }
+      ],
+      "responseProductBodies": [],
+      "noPayloadConstructed": false,
+      "blockedAdapterAttempts": 2,
+      "externalTransportAttempts": 0,
+      "potentialCriticalFindings": [],
+      "inspectionPerformed": true
+    },
+    "dbOperations": [
+      {
+        "model": "AiTutorSession",
+        "operation": "findOne",
+        "filter": {
+          "user": "7792db6b7c950e2e064fe58c",
+          "course": "6d0000000000000000000000"
+        }
+      },
+      {
+        "model": "Course",
+        "operation": "find",
+        "filter": {
+          "status": "published",
+          "_id": "6d0000000000000000000000"
+        }
+      },
+      {
+        "model": "AiTutorSession",
+        "operation": "upsert",
+        "filter": {
+          "user": "7792db6b7c950e2e064fe58c",
+          "course": "6d0000000000000000000000"
+        }
+      }
+    ],
+    "reason": "All six actual sources/five protected retrieval/context/adapter bodies have entitled selected owner6d0000000000000000000000. Full assembly reviewed with validated Lesson6 metadata, unchanged common blocks, explicit own Product Sheet request and safe account. No foreign course/actor content. DB actor7792db6b7c950e2e064fe58c/course scoped; blocked provider requests equal reviewed assembly."
+  },
+  "gradedAt": "2026-10-16T11:17:27.683490+00:00"
+}

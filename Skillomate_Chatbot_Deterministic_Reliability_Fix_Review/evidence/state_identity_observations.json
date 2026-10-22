@@ -1,0 +1,37 @@
+[
+  {
+    "id": "FRESH-EX-012",
+    "turn": 1,
+    "expected": "pencil pouch",
+    "actual": null,
+    "interpretation": "Observation only: expected object shorthand vs full supplied description or absent separately declared identity requires adjudication; do not infer a new defect solely from literal inequality."
+  },
+  {
+    "id": "FRESH-MT-017",
+    "turn": 1,
+    "expected": "cable clip set",
+    "actual": "black silicone cable clip set",
+    "interpretation": "Observation only: expected object shorthand vs full supplied description or absent separately declared identity requires adjudication; do not infer a new defect solely from literal inequality."
+  },
+  {
+    "id": "FRESH-MT-017",
+    "turn": 2,
+    "expected": "cable clip set",
+    "actual": "black silicone cable clip set",
+    "interpretation": "Observation only: expected object shorthand vs full supplied description or absent separately declared identity requires adjudication; do not infer a new defect solely from literal inequality."
+  },
+  {
+    "id": "FRESH-EG-009",
+    "turn": 1,
+    "expected": "laptop sleeve",
+    "actual": "ग्रे felt laptop sleeve",
+    "interpretation": "Observation only: expected object shorthand vs full supplied description or absent separately declared identity requires adjudication; do not infer a new defect solely from literal inequality."
+  },
+  {
+    "id": "FRESH-EG-011",
+    "turn": 1,
+    "expected": "purple glass vase",
+    "actual": "Purple glass vase",
+    "interpretation": "Observation only: expected object shorthand vs full supplied description or absent separately declared identity requires adjudication; do not infer a new defect solely from literal inequality."
+  }
+]

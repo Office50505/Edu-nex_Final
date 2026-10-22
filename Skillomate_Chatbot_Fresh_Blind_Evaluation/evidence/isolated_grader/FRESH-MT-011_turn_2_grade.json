@@ -1,0 +1,361 @@
+{
+  "id": "FRESH-MT-011",
+  "turnIndex": 2,
+  "status": "UNTESTED",
+  "critical": false,
+  "suspectedCritical": false,
+  "rubricVersion": "phase14b-independent-v1",
+  "criteria": [
+    {
+      "criterion": "Provide a short honest demo line, with no personal customer experience.",
+      "status": "UNTESTED",
+      "excerpts": [
+        "Lesson 07\n\nAI actor ko asli customer review mat batao. Genuine customer experience ka daava kiye bina honest product demo ya UGC-style showcase banao."
+      ],
+      "reason": "The fallback gives honest-demo policy but does not supply the requested short product demonstration line; completing that line required the blocked model, so no inference result is available. Necessary actual provider response absent for this essential requirement; no fallback/model pass inferred."
+    }
+  ],
+  "dimensions": {
+    "grounding": "UNTESTED",
+    "facts": "UNTESTED",
+    "taskCompleteness": "UNTESTED",
+    "language": "UNTESTED",
+    "authorization": "PASS",
+    "isolation": "PASS",
+    "httpStatus": "PASS"
+  },
+  "requestedExactBodyChecks": [],
+  "supplementalExactBodyChecks": [],
+  "providerAvailability": {
+    "provider": "built-in-course-guide",
+    "outcome": {
+      "type": "provider_fallback",
+      "liveModelAnswer": false,
+      "providerStatus": "connection_error",
+      "responseIssue": null
+    },
+    "attempts": [
+      {
+        "index": 3,
+        "startedAt": "2026-10-16T11:04:59.009Z",
+        "requestSha256": "6483f102df950726841c53df0e6dd3c61473550d8d0de16cc25a01b8dd2f8e1e",
+        "promptModified": false,
+        "recordedFixture": false,
+        "error": {
+          "name": "Error",
+          "code": "PROVIDER_PAYLOAD_NOT_APPROVED"
+        },
+        "durationMs": 0,
+        "completedAt": "2026-10-16T11:04:59.009Z"
+      },
+      {
+        "index": 4,
+        "startedAt": "2026-10-16T11:04:59.112Z",
+        "requestSha256": "6483f102df950726841c53df0e6dd3c61473550d8d0de16cc25a01b8dd2f8e1e",
+        "promptModified": false,
+        "recordedFixture": false,
+        "error": {
+          "name": "Error",
+          "code": "PROVIDER_PAYLOAD_NOT_APPROVED"
+        },
+        "durationMs": 0,
+        "completedAt": "2026-10-16T11:04:59.112Z"
+      }
+    ],
+    "inferenceNecessaryForThisTurn": true,
+    "reason": "Actual configured provider requests blocked before external transport. No model/fixture response. Saved fallback cannot establish required semantic response."
+  },
+  "ownershipPayloadReview": {
+    "reviewed": true,
+    "actor": "A",
+    "actorId": "cc341a6d8fa35b505d3fe5e6",
+    "scopeInspection": {
+      "independentExplicitSelectedCourse": "6d0000000000000000000000",
+      "independentExpectedOwner": "6d0000000000000000000000",
+      "explicitUnknownScope": false,
+      "independentAuthAndEntitlement": true,
+      "requiresSemanticScopeAdjudication": false,
+      "protectedRetrievedSources": [
+        {
+          "id": "S1",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "Kya AI model ko customer review",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_7",
+          "lessonName": "Kya AI model ko customer review",
+          "contentType": "faq",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:faq:kya-ai-model-ko-customer-review"
+        },
+        {
+          "id": "S2",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "UGC video",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_7",
+          "lessonName": "UGC video",
+          "contentType": "workflow",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:workflow:ugc-video"
+        },
+        {
+          "id": "S3",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "Product sheet banana",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_2",
+          "lessonName": "Product sheet banana",
+          "contentType": "workflow",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:workflow:product-sheet-banana"
+        },
+        {
+          "id": "S4",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "Final ad kaise edit karein?",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_8",
+          "lessonName": "Final ad kaise edit karein?",
+          "contentType": "faq",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:faq:final-ad-kaise-edit-karein"
+        },
+        {
+          "id": "S5",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "Ad plan",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_5",
+          "lessonName": "Ad plan",
+          "contentType": "workflow",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:workflow:ad-plan"
+        },
+        {
+          "id": "S6",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "L05 Step 3 Flow prompts",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_5",
+          "lessonName": "L05 Step 3 Flow prompts",
+          "contentType": "exact-template",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:exact-template:l05-step-3-flow-prompts"
+        }
+      ],
+      "retrievalProductBodies": [
+        {
+          "heading": "Product sheet banana",
+          "contentType": "workflow",
+          "owner": "6d0000000000000000000000",
+          "sha256": "56922de78128c44d1321fa410072ad53637117feed928197c53c4a4c3f6438f2"
+        },
+        {
+          "heading": "Ad plan",
+          "contentType": "workflow",
+          "owner": "6d0000000000000000000000",
+          "sha256": "d6f78ee930b9429a7609a63d027430fee7986270c0f8717d52ab63d877839c00"
+        },
+        {
+          "heading": "UGC video",
+          "contentType": "workflow",
+          "owner": "6d0000000000000000000000",
+          "sha256": "0ddcd4cd92bef6253f0f689cb53e6540ce491d6a7657e509c0d314d47104d126"
+        },
+        {
+          "heading": "Kya AI model ko customer review",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "89eba378016693fccba2770d72a92a7ed5615f10877ba7d4a67357f587a72502"
+        },
+        {
+          "heading": "Final ad kaise edit karein?",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "c66fd88eb8f1255df76918353d8e74299fa68aae487fe05887b4d5cb8cc6da53"
+        },
+        {
+          "heading": "L05 Step 3 Flow prompts",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "545a93a5584362765244d1b14aa9f7c49a66e19037c70c3547ac09d9d65f4321"
+        }
+      ],
+      "assembledContextProductBodies": [
+        {
+          "heading": "Product sheet banana",
+          "contentType": "workflow",
+          "owner": "6d0000000000000000000000",
+          "sha256": "56922de78128c44d1321fa410072ad53637117feed928197c53c4a4c3f6438f2"
+        },
+        {
+          "heading": "Ad plan",
+          "contentType": "workflow",
+          "owner": "6d0000000000000000000000",
+          "sha256": "d6f78ee930b9429a7609a63d027430fee7986270c0f8717d52ab63d877839c00"
+        },
+        {
+          "heading": "UGC video",
+          "contentType": "workflow",
+          "owner": "6d0000000000000000000000",
+          "sha256": "0ddcd4cd92bef6253f0f689cb53e6540ce491d6a7657e509c0d314d47104d126"
+        },
+        {
+          "heading": "Kya AI model ko customer review",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "89eba378016693fccba2770d72a92a7ed5615f10877ba7d4a67357f587a72502"
+        },
+        {
+          "heading": "Final ad kaise edit karein?",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "c66fd88eb8f1255df76918353d8e74299fa68aae487fe05887b4d5cb8cc6da53"
+        },
+        {
+          "heading": "L05 Step 3 Flow prompts",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "545a93a5584362765244d1b14aa9f7c49a66e19037c70c3547ac09d9d65f4321"
+        }
+      ],
+      "assembledPayloads": [
+        {
+          "sha256": "6483f102df950726841c53df0e6dd3c61473550d8d0de16cc25a01b8dd2f8e1e",
+          "validation": "accepted",
+          "error": null,
+          "scope": {
+            "activeCourse": {
+              "_id": "6d0000000000000000000000",
+              "slug": "ai-product-photoshoot-ads"
+            },
+            "includeMaterials": true
+          },
+          "productBodies": [
+            {
+              "heading": "Product sheet banana",
+              "contentType": "workflow",
+              "owner": "6d0000000000000000000000",
+              "sha256": "56922de78128c44d1321fa410072ad53637117feed928197c53c4a4c3f6438f2"
+            },
+            {
+              "heading": "Ad plan",
+              "contentType": "workflow",
+              "owner": "6d0000000000000000000000",
+              "sha256": "d6f78ee930b9429a7609a63d027430fee7986270c0f8717d52ab63d877839c00"
+            },
+            {
+              "heading": "UGC video",
+              "contentType": "workflow",
+              "owner": "6d0000000000000000000000",
+              "sha256": "0ddcd4cd92bef6253f0f689cb53e6540ce491d6a7657e509c0d314d47104d126"
+            },
+            {
+              "heading": "Kya AI model ko customer review",
+              "contentType": "faq",
+              "owner": "6d0000000000000000000000",
+              "sha256": "89eba378016693fccba2770d72a92a7ed5615f10877ba7d4a67357f587a72502"
+            },
+            {
+              "heading": "Final ad kaise edit karein?",
+              "contentType": "faq",
+              "owner": "6d0000000000000000000000",
+              "sha256": "c66fd88eb8f1255df76918353d8e74299fa68aae487fe05887b4d5cb8cc6da53"
+            },
+            {
+              "heading": "L05 Step 3 Flow prompts",
+              "contentType": "exact-template",
+              "owner": "6d0000000000000000000000",
+              "sha256": "545a93a5584362765244d1b14aa9f7c49a66e19037c70c3547ac09d9d65f4321"
+            }
+          ],
+          "messageCount": 4
+        }
+      ],
+      "providerAdapterProductBodies": [
+        {
+          "heading": "Product sheet banana",
+          "contentType": "workflow",
+          "owner": "6d0000000000000000000000",
+          "sha256": "56922de78128c44d1321fa410072ad53637117feed928197c53c4a4c3f6438f2"
+        },
+        {
+          "heading": "Ad plan",
+          "contentType": "workflow",
+          "owner": "6d0000000000000000000000",
+          "sha256": "d6f78ee930b9429a7609a63d027430fee7986270c0f8717d52ab63d877839c00"
+        },
+        {
+          "heading": "UGC video",
+          "contentType": "workflow",
+          "owner": "6d0000000000000000000000",
+          "sha256": "0ddcd4cd92bef6253f0f689cb53e6540ce491d6a7657e509c0d314d47104d126"
+        },
+        {
+          "heading": "Kya AI model ko customer review",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "89eba378016693fccba2770d72a92a7ed5615f10877ba7d4a67357f587a72502"
+        },
+        {
+          "heading": "Final ad kaise edit karein?",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "c66fd88eb8f1255df76918353d8e74299fa68aae487fe05887b4d5cb8cc6da53"
+        },
+        {
+          "heading": "L05 Step 3 Flow prompts",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "545a93a5584362765244d1b14aa9f7c49a66e19037c70c3547ac09d9d65f4321"
+        }
+      ],
+      "responseProductBodies": [],
+      "noPayloadConstructed": false,
+      "blockedAdapterAttempts": 2,
+      "externalTransportAttempts": 0,
+      "potentialCriticalFindings": [],
+      "inspectionPerformed": true
+    },
+    "dbOperations": [
+      {
+        "model": "AiTutorSession",
+        "operation": "findOne",
+        "filter": {
+          "user": "cc341a6d8fa35b505d3fe5e6",
+          "course": "6d0000000000000000000000"
+        }
+      },
+      {
+        "model": "Course",
+        "operation": "find",
+        "filter": {
+          "status": "published",
+          "_id": "6d0000000000000000000000"
+        }
+      },
+      {
+        "model": "AiTutorSession",
+        "operation": "upsert",
+        "filter": {
+          "user": "cc341a6d8fa35b505d3fe5e6",
+          "course": "6d0000000000000000000000"
+        }
+      }
+    ],
+    "reason": "All six retrieval, context and adapter bodies belong to authorized selected course 6d0000000000000000000000. Full assembled payload reviewed including unchanged reviewed blocks, learner access, own Nami history and current request; no other actor information or foreign protected content. Session operations scoped to actor cc341a6d8fa35b505d3fe5e6 and selected course. Both blocked provider requests exactly equal reviewed assembly; no external transport or fixture."
+  },
+  "gradedAt": "2026-10-16T11:06:22.734572+00:00"
+}

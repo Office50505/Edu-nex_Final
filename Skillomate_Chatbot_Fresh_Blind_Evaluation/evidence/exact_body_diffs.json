@@ -1,0 +1,252 @@
+[
+  {
+    "caseId": "FRESH-EX-010",
+    "turnIndex": 1,
+    "heading": "L04 Wedding Gift",
+    "independentStatus": "FAIL",
+    "expectedBody": "Use the uploaded product sheet as the reference. Keep the साँझ Gift Set exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a soft silk cloth next to an open premium gift box with gold ribbon and a few rose petals, elegant wedding gifting mood, soft warm light, साँझ Gift Set sharp in the foreground, realistic real-world scale, realistic festive product photography.",
+    "actualBody": "",
+    "unifiedDiff": "--- frozen_expected\n+++ observed_actual\n@@ -1 +0,0 @@\n-Use the uploaded product sheet as the reference. Keep the साँझ Gift Set exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a soft silk cloth next to an open premium gift box with gold ribbon and a few rose petals, elegant wedding gifting mood, soft warm light, साँझ Gift Set sharp in the foreground, realistic real-world scale, realistic festive product photography.",
+    "note": "Literal diagnostic diff; independent rubric still permits whitespace-only compaction."
+  },
+  {
+    "caseId": "FRESH-EX-024",
+    "turnIndex": 1,
+    "heading": "L06 Arc",
+    "independentStatus": "FAIL",
+    "expectedBody": "Use the uploaded image as the first frame. The frosted glass perfume bottle stays perfectly still and exactly the same the whole time — same shape, same colour, same details, same text and logo, no morphing, no warping. The camera slowly arcs a little to the right around the frosted glass perfume bottle, smooth and steady, while the lights in the background glow softly. Moody cinematic look, realistic product video. No people, no hands, no text on screen. Soft quiet room ambience only — NO music, NO voice.",
+    "actualBody": "",
+    "unifiedDiff": "--- frozen_expected\n+++ observed_actual\n@@ -1 +0,0 @@\n-Use the uploaded image as the first frame. The frosted glass perfume bottle stays perfectly still and exactly the same the whole time — same shape, same colour, same details, same text and logo, no morphing, no warping. The camera slowly arcs a little to the right around the frosted glass perfume bottle, smooth and steady, while the lights in the background glow softly. Moody cinematic look, realistic product video. No people, no hands, no text on screen. Soft quiet room ambience only — NO music, NO voice.",
+    "note": "Literal diagnostic diff; independent rubric still permits whitespace-only compaction."
+  },
+  {
+    "caseId": "FRESH-EX-015",
+    "turnIndex": 1,
+    "heading": "L06 Push-in",
+    "independentStatus": "FAIL",
+    "expectedBody": "Use the uploaded image as the first frame. The red enamel kettle stays perfectly still and exactly the same the whole time — same shape, same colour, same details, same text and logo, no morphing, no warping. The camera slowly and smoothly pushes in toward the red enamel kettle. Soft natural window light, shallow depth of field, realistic product video. No people, no hands, no text on screen. Soft quiet room ambience only — NO music, NO voice.",
+    "actualBody": "Use the uploaded image as the first frame. The [PRODUCT] stays perfectly still and exactly the same the whole time — same shape, same colour, same details, same text and logo, no morphing, no warping. The camera slowly and smoothly pushes in toward the [PRODUCT]. Soft natural window light, shallow depth of field, realistic product video. No people, no hands, no text on screen. Soft quiet room ambience only — NO music, NO voice.\n",
+    "unifiedDiff": "--- frozen_expected\n+++ observed_actual\n@@ -1 +1 @@\n-Use the uploaded image as the first frame. The red enamel kettle stays perfectly still and exactly the same the whole time — same shape, same colour, same details, same text and logo, no morphing, no warping. The camera slowly and smoothly pushes in toward the red enamel kettle. Soft natural window light, shallow depth of field, realistic product video. No people, no hands, no text on screen. Soft quiet room ambience only — NO music, NO voice.+Use the uploaded image as the first frame. The [PRODUCT] stays perfectly still and exactly the same the whole time — same shape, same colour, same details, same text and logo, no morphing, no warping. The camera slowly and smoothly pushes in toward the [PRODUCT]. Soft natural window light, shallow depth of field, realistic product video. No people, no hands, no text on screen. Soft quiet room ambience only — NO music, NO voice.\n",
+    "note": "Literal diagnostic diff; independent rubric still permits whitespace-only compaction."
+  },
+  {
+    "caseId": "FRESH-EX-021",
+    "turnIndex": 1,
+    "heading": "L03 Hands close-up",
+    "independentStatus": "FAIL",
+    "expectedBody": "Use the uploaded product sheet for the walnut pen stand and the uploaded character sheet for the woman. Keep the walnut pen stand exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Close-up of the woman's hands using the walnut pen stand on a wooden desk, white linen sleeves matching her white linen shirt, natural hands with five fingers each, soft window light, shallow depth of field, realistic real-world scale, realistic lifestyle product photography.",
+    "actualBody": "Use the uploaded product sheet for the walnut pen stand and the uploaded character sheet for the [woman / man]. Keep the walnut pen stand exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Close-up of the [woman's] hands using the walnut pen stand on a wooden desk, [clothing that matches the character sheet, e.g. bare arms matching her blue tank top], natural hands with five fingers each, soft window light, shallow depth of field, realistic real-world scale, realistic lifestyle product photography.\n",
+    "unifiedDiff": "--- frozen_expected\n+++ observed_actual\n@@ -1 +1 @@\n-Use the uploaded product sheet for the walnut pen stand and the uploaded character sheet for the woman. Keep the walnut pen stand exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Close-up of the woman's hands using the walnut pen stand on a wooden desk, white linen sleeves matching her white linen shirt, natural hands with five fingers each, soft window light, shallow depth of field, realistic real-world scale, realistic lifestyle product photography.+Use the uploaded product sheet for the walnut pen stand and the uploaded character sheet for the [woman / man]. Keep the walnut pen stand exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Close-up of the [woman's] hands using the walnut pen stand on a wooden desk, [clothing that matches the character sheet, e.g. bare arms matching her blue tank top], natural hands with five fingers each, soft window light, shallow depth of field, realistic real-world scale, realistic lifestyle product photography.\n",
+    "note": "Literal diagnostic diff; independent rubric still permits whitespace-only compaction."
+  },
+  {
+    "caseId": "FRESH-EX-009",
+    "turnIndex": 1,
+    "heading": "L04 Diwali",
+    "independentStatus": "FAIL",
+    "expectedBody": "Use the uploaded product sheet as the reference. Keep the terracotta incense holder exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a wooden table during Diwali night, a few lit clay diyas and orange marigold flowers placed behind and beside it, soft warm fairy lights glowing out of focus in the background, the terracotta incense holder sharp and clearly the hero in the foreground, warm golden light, realistic real-world scale, realistic festive product photography.",
+    "actualBody": "",
+    "unifiedDiff": "--- frozen_expected\n+++ observed_actual\n@@ -1 +0,0 @@\n-Use the uploaded product sheet as the reference. Keep the terracotta incense holder exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a wooden table during Diwali night, a few lit clay diyas and orange marigold flowers placed behind and beside it, soft warm fairy lights glowing out of focus in the background, the terracotta incense holder sharp and clearly the hero in the foreground, warm golden light, realistic real-world scale, realistic festive product photography.",
+    "note": "Literal diagnostic diff; independent rubric still permits whitespace-only compaction."
+  },
+  {
+    "caseId": "FRESH-EX-011",
+    "turnIndex": 1,
+    "heading": "L04 Colour Variant Sheet",
+    "independentStatus": "FAIL",
+    "expectedBody": "Use the uploaded product sheet as the reference. Only change the colour of the lid to deep plum. Keep everything else exactly the same — same shape, same layout, same details, same text and logo, same four views, same background, same lighting. Output a full product sheet in the new colour.",
+    "actualBody": "",
+    "unifiedDiff": "--- frozen_expected\n+++ observed_actual\n@@ -1 +0,0 @@\n-Use the uploaded product sheet as the reference. Only change the colour of the lid to deep plum. Keep everything else exactly the same — same shape, same layout, same details, same text and logo, same four views, same background, same lighting. Output a full product sheet in the new colour.",
+    "note": "Literal diagnostic diff; independent rubric still permits whitespace-only compaction."
+  },
+  {
+    "caseId": "FRESH-EX-025",
+    "turnIndex": 1,
+    "heading": "L07 UGC 2",
+    "independentStatus": "FAIL",
+    "expectedBody": "Use the uploaded character sheet for the [woman] and the uploaded product sheet for the [PRODUCT]. Keep her face, hair and outfit exactly the same as the character sheet. Keep the [PRODUCT] exactly the same — same shape, same colour, same details, same text and logo, no morphing. Vertical video shot from her own phone resting on the desk in front of her: the camera itself is the phone, so we see her and the [PRODUCT] from a low front angle. NO phone visible anywhere in the frame, no second camera, no screen facing us. She uses the [PRODUCT] for a moment, then looks up straight into the lens and talks, casual and natural. Natural window light, a real lived-in room, not a studio, not a polished ad. ONLY she speaks, one voice only, natural Hindi lip-sync, casual friendly tone. She says: \"[your second line in Hindi]\" real skin, no filter, clearly adult, modest, natural hands with five fingers, no text on screen, no watermark. Clean natural audio only — NO background music.",
+    "actualBody": "Use the uploaded character sheet for the [woman] and the uploaded product sheet for the text-diff exercise. Keep her face, hair and outfit exactly the same as the character sheet. Keep the text-diff exercise exactly the same — same shape, same colour, same details, same text and logo, no morphing. Vertical video shot from her own phone resting on the desk in front of her: the camera itself is the phone, so we see her and the text-diff exercise from a low front angle. NO phone visible anywhere in the frame, no second camera, no screen facing us. She uses the text-diff exercise for a moment, then looks up straight into the lens and talks, casual and natural. Natural window light, a real lived-in room, not a studio, not a polished ad. ONLY she speaks, one voice only, natural Hindi lip-sync, casual friendly tone. She says: \"[your second line in Hindi]\" real skin, no filter, clearly adult, modest, natural hands with five fingers, no text on screen, no watermark. Clean natural audio only — NO background music.\n",
+    "unifiedDiff": "--- frozen_expected\n+++ observed_actual\n@@ -1 +1 @@\n-Use the uploaded character sheet for the [woman] and the uploaded product sheet for the [PRODUCT]. Keep her face, hair and outfit exactly the same as the character sheet. Keep the [PRODUCT] exactly the same — same shape, same colour, same details, same text and logo, no morphing. Vertical video shot from her own phone resting on the desk in front of her: the camera itself is the phone, so we see her and the [PRODUCT] from a low front angle. NO phone visible anywhere in the frame, no second camera, no screen facing us. She uses the [PRODUCT] for a moment, then looks up straight into the lens and talks, casual and natural. Natural window light, a real lived-in room, not a studio, not a polished ad. ONLY she speaks, one voice only, natural Hindi lip-sync, casual friendly tone. She says: \"[your second line in Hindi]\" real skin, no filter, clearly adult, modest, natural hands with five fingers, no text on screen, no watermark. Clean natural audio only — NO background music.+Use the uploaded character sheet for the [woman] and the uploaded product sheet for the text-diff exercise. Keep her face, hair and outfit exactly the same as the character sheet. Keep the text-diff exercise exactly the same — same shape, same colour, same details, same text and logo, no morphing. Vertical video shot from her own phone resting on the desk in front of her: the camera itself is the phone, so we see her and the text-diff exercise from a low front angle. NO phone visible anywhere in the frame, no second camera, no screen facing us. She uses the text-diff exercise for a moment, then looks up straight into the lens and talks, casual and natural. Natural window light, a real lived-in room, not a studio, not a polished ad. ONLY she speaks, one voice only, natural Hindi lip-sync, casual friendly tone. She says: \"[your second line in Hindi]\" real skin, no filter, clearly adult, modest, natural hands with five fingers, no text on screen, no watermark. Clean natural audio only — NO background music.\n",
+    "note": "Literal diagnostic diff; independent rubric still permits whitespace-only compaction."
+  },
+  {
+    "caseId": "FRESH-EX-014",
+    "turnIndex": 1,
+    "heading": "L05 Step 3 Flow prompts",
+    "independentStatus": "FAIL",
+    "expectedBody": "Now write 3 image prompts for Google Flow (Nano Banana) for this ad. Each prompt must start with: \"Use the uploaded product sheet as the reference. Keep the चाँद Candle exactly the same — same shape, same colour, same details, same text and logo, do not redesign it.\" Then describe one scene for the ad.",
+    "actualBody": "",
+    "unifiedDiff": "--- frozen_expected\n+++ observed_actual\n@@ -1 +0,0 @@\n-Now write 3 image prompts for Google Flow (Nano Banana) for this ad. Each prompt must start with: \"Use the uploaded product sheet as the reference. Keep the चाँद Candle exactly the same — same shape, same colour, same details, same text and logo, do not redesign it.\" Then describe one scene for the ad.",
+    "note": "Literal diagnostic diff; independent rubric still permits whitespace-only compaction."
+  },
+  {
+    "caseId": "FRESH-EX-020",
+    "turnIndex": 1,
+    "heading": "L02 Product Sheet",
+    "independentStatus": "PASS",
+    "expectedBody": "Use all the uploaded photos of this [PRODUCT]. Create a clean product reference sheet on a plain white background showing the exact same [PRODUCT] in four views arranged in a neat grid: front view, top-down view, side view and three-quarter angle view. Keep the [PRODUCT] exactly the same in every view — same shape, same colour, same details, same text and logo, do not redesign it. Even soft studio lighting, no extra objects, no text labels, realistic product photography.",
+    "actualBody": "Use all the uploaded photos of this [PRODUCT]. Create a clean product reference sheet on a plain white background showing the exact same [PRODUCT] in four views arranged in a neat grid: front view, top-down view, side view and three-quarter angle view. Keep the [PRODUCT] exactly the same in every view — same shape, same colour, same details, same text and logo, do not redesign it. Even soft studio lighting, no extra objects, no text labels, realistic product photography.\n",
+    "unifiedDiff": "--- frozen_expected\n+++ observed_actual\n@@ -1 +1 @@\n-Use all the uploaded photos of this [PRODUCT]. Create a clean product reference sheet on a plain white background showing the exact same [PRODUCT] in four views arranged in a neat grid: front view, top-down view, side view and three-quarter angle view. Keep the [PRODUCT] exactly the same in every view — same shape, same colour, same details, same text and logo, do not redesign it. Even soft studio lighting, no extra objects, no text labels, realistic product photography.+Use all the uploaded photos of this [PRODUCT]. Create a clean product reference sheet on a plain white background showing the exact same [PRODUCT] in four views arranged in a neat grid: front view, top-down view, side view and three-quarter angle view. Keep the [PRODUCT] exactly the same in every view — same shape, same colour, same details, same text and logo, do not redesign it. Even soft studio lighting, no extra objects, no text labels, realistic product photography.\n",
+    "note": "Literal diagnostic diff; independent rubric still permits whitespace-only compaction."
+  },
+  {
+    "caseId": "FRESH-EX-008",
+    "turnIndex": 1,
+    "heading": "L03 Showing to camera",
+    "independentStatus": "FAIL",
+    "expectedBody": "Use the uploaded product sheet for the रौशनी Desk Lamp and the uploaded character sheet for the woman. Keep the रौशनी Desk Lamp exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Keep the woman's face exactly the same as the character sheet. She holds the रौशनी Desk Lamp with both hands in front of her chest, showing it to the camera with a small natural smile, plain light background, soft studio light, natural hands with five fingers, realistic real-world scale, realistic product photography.",
+    "actualBody": "Use the uploaded product sheet for the [PRODUCT] and the uploaded character sheet for the [woman / man]. Keep the [PRODUCT] exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Keep the [woman's] face exactly the same as the character sheet. [She] holds the [PRODUCT] with both hands in front of [her] chest, showing it to the camera with a small natural smile, plain light background, soft studio light, natural hands with five fingers, realistic real-world scale, realistic product photography.\n",
+    "unifiedDiff": "--- frozen_expected\n+++ observed_actual\n@@ -1 +1 @@\n-Use the uploaded product sheet for the रौशनी Desk Lamp and the uploaded character sheet for the woman. Keep the रौशनी Desk Lamp exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Keep the woman's face exactly the same as the character sheet. She holds the रौशनी Desk Lamp with both hands in front of her chest, showing it to the camera with a small natural smile, plain light background, soft studio light, natural hands with five fingers, realistic real-world scale, realistic product photography.+Use the uploaded product sheet for the [PRODUCT] and the uploaded character sheet for the [woman / man]. Keep the [PRODUCT] exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Keep the [woman's] face exactly the same as the character sheet. [She] holds the [PRODUCT] with both hands in front of [her] chest, showing it to the camera with a small natural smile, plain light background, soft studio light, natural hands with five fingers, realistic real-world scale, realistic product photography.\n",
+    "note": "Literal diagnostic diff; independent rubric still permits whitespace-only compaction."
+  },
+  {
+    "caseId": "FRESH-EX-012",
+    "turnIndex": 1,
+    "heading": "L05 Step 1 Brief",
+    "independentStatus": "FAIL",
+    "expectedBody": "I sell a green canvas pencil pouch, 20 cm long, zip closure. Price: ₹349. I sell on website in India. Tell me: 1. Three types of people who would buy this 2. What problem it solves for each of them 3. One ad angle for each buyer Keep it short and simple.",
+    "actualBody": "I sell a [product with real details — size, colour, key features]. Price: [your price]. I sell on [Instagram / website / marketplace] in India. Tell me: 1. Three types of people who would buy this 2. What problem it solves for each of them 3. One ad angle for each buyer Keep it short and simple.\n",
+    "unifiedDiff": "--- frozen_expected\n+++ observed_actual\n@@ -1 +1 @@\n-I sell a green canvas pencil pouch, 20 cm long, zip closure. Price: ₹349. I sell on website in India. Tell me: 1. Three types of people who would buy this 2. What problem it solves for each of them 3. One ad angle for each buyer Keep it short and simple.+I sell a [product with real details — size, colour, key features]. Price: [your price]. I sell on [Instagram / website / marketplace] in India. Tell me: 1. Three types of people who would buy this 2. What problem it solves for each of them 3. One ad angle for each buyer Keep it short and simple.\n",
+    "note": "Literal diagnostic diff; independent rubric still permits whitespace-only compaction."
+  },
+  {
+    "caseId": "FRESH-EX-017",
+    "turnIndex": 1,
+    "heading": "L06 Light Sweep",
+    "independentStatus": "UNTESTED",
+    "expectedBody": "Use the uploaded image as the first frame. The Åra Tray stays perfectly still and exactly the same the whole time — same shape, same colour, same details, same text and logo, no morphing, no warping. The camera stays completely still. A soft band of warm light slowly sweeps across the Åra Tray from left to right, the shadows moving gently with it. Clean premium product video. No people, no hands, no text on screen. Soft quiet room ambience only — NO music, NO voice.",
+    "actualBody": "",
+    "unifiedDiff": "--- frozen_expected\n+++ observed_actual\n@@ -1 +0,0 @@\n-Use the uploaded image as the first frame. The Åra Tray stays perfectly still and exactly the same the whole time — same shape, same colour, same details, same text and logo, no morphing, no warping. The camera stays completely still. A soft band of warm light slowly sweeps across the Åra Tray from left to right, the shadows moving gently with it. Clean premium product video. No people, no hands, no text on screen. Soft quiet room ambience only — NO music, NO voice.",
+    "note": "Literal diagnostic diff; independent rubric still permits whitespace-only compaction."
+  },
+  {
+    "caseId": "FRESH-EX-023",
+    "turnIndex": 1,
+    "heading": "L05 Step 1 Brief",
+    "independentStatus": "PASS",
+    "expectedBody": "I sell a [product with real details — size, colour, key features]. Price: [your price]. I sell on [Instagram / website / marketplace] in India. Tell me: 1. Three types of people who would buy this 2. What problem it solves for each of them 3. One ad angle for each buyer Keep it short and simple.",
+    "actualBody": "I sell a [product with real details — size, colour, key features]. Price: [your price]. I sell on [Instagram / website / marketplace] in India. Tell me: 1. Three types of people who would buy this 2. What problem it solves for each of them 3. One ad angle for each buyer Keep it short and simple.\n",
+    "unifiedDiff": "--- frozen_expected\n+++ observed_actual\n@@ -1 +1 @@\n-I sell a [product with real details — size, colour, key features]. Price: [your price]. I sell on [Instagram / website / marketplace] in India. Tell me: 1. Three types of people who would buy this 2. What problem it solves for each of them 3. One ad angle for each buyer Keep it short and simple.+I sell a [product with real details — size, colour, key features]. Price: [your price]. I sell on [Instagram / website / marketplace] in India. Tell me: 1. Three types of people who would buy this 2. What problem it solves for each of them 3. One ad angle for each buyer Keep it short and simple.\n",
+    "note": "Literal diagnostic diff; independent rubric still permits whitespace-only compaction."
+  },
+  {
+    "caseId": "FRESH-EX-013",
+    "turnIndex": 1,
+    "heading": "L05 Step 2 Hooks + Script",
+    "independentStatus": "FAIL",
+    "expectedBody": "Pick angle 3. Write 5 scroll-stopping hooks in natural Hinglish, like a friend talking — not cheesy, no fake claims. Then write a 15-second ad script: what to show on screen and what the voiceover says. Also write one Instagram caption. Use only the features I gave you, don't add anything new.",
+    "actualBody": "Pick angle [number]. Write 5 scroll-stopping hooks in natural Hinglish, like a friend talking — not cheesy, no fake claims. Then write a 15-second ad script: what to show on screen and what the voiceover says. Also write one Instagram caption. Use only the features I gave you, don't add anything new.\n",
+    "unifiedDiff": "--- frozen_expected\n+++ observed_actual\n@@ -1 +1 @@\n-Pick angle 3. Write 5 scroll-stopping hooks in natural Hinglish, like a friend talking — not cheesy, no fake claims. Then write a 15-second ad script: what to show on screen and what the voiceover says. Also write one Instagram caption. Use only the features I gave you, don't add anything new.+Pick angle [number]. Write 5 scroll-stopping hooks in natural Hinglish, like a friend talking — not cheesy, no fake claims. Then write a 15-second ad script: what to show on screen and what the voiceover says. Also write one Instagram caption. Use only the features I gave you, don't add anything new.\n",
+    "note": "Literal diagnostic diff; independent rubric still permits whitespace-only compaction."
+  },
+  {
+    "caseId": "FRESH-EX-016",
+    "turnIndex": 1,
+    "heading": "L06 Arc",
+    "independentStatus": "UNTESTED",
+    "expectedBody": "Use the uploaded image as the first frame. The [PRODUCT] stays perfectly still and exactly the same the whole time — same shape, same colour, same details, same text and logo, no morphing, no warping. The camera slowly arcs a little to the right around the [PRODUCT], smooth and steady, while the lights in the background glow softly. Moody cinematic look, realistic product video. No people, no hands, no text on screen. Soft quiet room ambience only — NO music, NO voice.",
+    "actualBody": "",
+    "unifiedDiff": "--- frozen_expected\n+++ observed_actual\n@@ -1 +0,0 @@\n-Use the uploaded image as the first frame. The [PRODUCT] stays perfectly still and exactly the same the whole time — same shape, same colour, same details, same text and logo, no morphing, no warping. The camera slowly arcs a little to the right around the [PRODUCT], smooth and steady, while the lights in the background glow softly. Moody cinematic look, realistic product video. No people, no hands, no text on screen. Soft quiet room ambience only — NO music, NO voice.",
+    "note": "Literal diagnostic diff; independent rubric still permits whitespace-only compaction."
+  },
+  {
+    "caseId": "FRESH-EX-022",
+    "turnIndex": 1,
+    "heading": "L04 Colour Variant Sheet",
+    "independentStatus": "FAIL",
+    "expectedBody": "Use the uploaded product sheet as the reference. Only change the colour of [the part, e.g. all the keycaps] to [new colour, e.g. soft pastel pink]. Keep everything else exactly the same — same shape, same layout, same details, same text and logo, same four views, same background, same lighting. Output a full product sheet in the new colour.",
+    "actualBody": "",
+    "unifiedDiff": "--- frozen_expected\n+++ observed_actual\n@@ -1 +0,0 @@\n-Use the uploaded product sheet as the reference. Only change the colour of [the part, e.g. all the keycaps] to [new colour, e.g. soft pastel pink]. Keep everything else exactly the same — same shape, same layout, same details, same text and logo, same four views, same background, same lighting. Output a full product sheet in the new colour.",
+    "note": "Literal diagnostic diff; independent rubric still permits whitespace-only compaction."
+  },
+  {
+    "caseId": "FRESH-EX-003",
+    "turnIndex": 1,
+    "heading": "L02 Lifestyle",
+    "independentStatus": "FAIL",
+    "expectedBody": "Use the uploaded product sheet as the reference. Keep the धरा Mug exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a warm wooden desk next to a white coffee mug and a small green plant, soft morning window light from the left, shallow depth of field, realistic lifestyle product photography.",
+    "actualBody": "Use the uploaded product sheet as the reference. Keep the naam “धरा Mug” exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a warm wooden desk next to a white coffee mug and a small green plant, soft morning window light from the left, shallow depth of field, realistic lifestyle product photography.\n",
+    "unifiedDiff": "--- frozen_expected\n+++ observed_actual\n@@ -1 +1 @@\n-Use the uploaded product sheet as the reference. Keep the धरा Mug exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a warm wooden desk next to a white coffee mug and a small green plant, soft morning window light from the left, shallow depth of field, realistic lifestyle product photography.+Use the uploaded product sheet as the reference. Keep the naam “धरा Mug” exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a warm wooden desk next to a white coffee mug and a small green plant, soft morning window light from the left, shallow depth of field, realistic lifestyle product photography.\n",
+    "note": "Literal diagnostic diff; independent rubric still permits whitespace-only compaction."
+  },
+  {
+    "caseId": "FRESH-EX-006",
+    "turnIndex": 1,
+    "heading": "L03 Hands close-up",
+    "independentStatus": "FAIL",
+    "expectedBody": "Use the uploaded product sheet for the [PRODUCT] and the uploaded character sheet for the [woman / man]. Keep the [PRODUCT] exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Close-up of the [woman's] hands using the [PRODUCT] on a wooden desk, [clothing that matches the character sheet, e.g. bare arms matching her blue tank top], natural hands with five fingers each, soft window light, shallow depth of field, realistic real-world scale, realistic lifestyle product photography.",
+    "actualBody": "Use the uploaded product sheet for the its bracketed slots still visible and the uploaded character sheet for the [woman / man]. Keep the its bracketed slots still visible exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Close-up of the [woman's] hands using the its bracketed slots still visible on a wooden desk, [clothing that matches the character sheet, e.g. bare arms matching her blue tank top], natural hands with five fingers each, soft window light, shallow depth of field, realistic real-world scale, realistic lifestyle product photography.\n",
+    "unifiedDiff": "--- frozen_expected\n+++ observed_actual\n@@ -1 +1 @@\n-Use the uploaded product sheet for the [PRODUCT] and the uploaded character sheet for the [woman / man]. Keep the [PRODUCT] exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Close-up of the [woman's] hands using the [PRODUCT] on a wooden desk, [clothing that matches the character sheet, e.g. bare arms matching her blue tank top], natural hands with five fingers each, soft window light, shallow depth of field, realistic real-world scale, realistic lifestyle product photography.+Use the uploaded product sheet for the its bracketed slots still visible and the uploaded character sheet for the [woman / man]. Keep the its bracketed slots still visible exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Close-up of the [woman's] hands using the its bracketed slots still visible on a wooden desk, [clothing that matches the character sheet, e.g. bare arms matching her blue tank top], natural hands with five fingers each, soft window light, shallow depth of field, realistic real-world scale, realistic lifestyle product photography.\n",
+    "note": "Literal diagnostic diff; independent rubric still permits whitespace-only compaction."
+  },
+  {
+    "caseId": "FRESH-EX-002",
+    "turnIndex": 1,
+    "heading": "L02 White Studio",
+    "independentStatus": "FAIL",
+    "expectedBody": "Use the uploaded product sheet as the reference. Keep the [PRODUCT] exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a clean seamless white background, soft even studio lighting, a soft natural shadow under it, slight top-down angle, sharp focus, realistic product photography.",
+    "actualBody": "Use the uploaded product sheet as the reference. Keep the archive I need the original L02 White Studio text exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a clean seamless white background, soft even studio lighting, a soft natural shadow under it, slight top-down angle, sharp focus, realistic product photography.\n",
+    "unifiedDiff": "--- frozen_expected\n+++ observed_actual\n@@ -1 +1 @@\n-Use the uploaded product sheet as the reference. Keep the [PRODUCT] exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a clean seamless white background, soft even studio lighting, a soft natural shadow under it, slight top-down angle, sharp focus, realistic product photography.+Use the uploaded product sheet as the reference. Keep the archive I need the original L02 White Studio text exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a clean seamless white background, soft even studio lighting, a soft natural shadow under it, slight top-down angle, sharp focus, realistic product photography.\n",
+    "note": "Literal diagnostic diff; independent rubric still permits whitespace-only compaction."
+  },
+  {
+    "caseId": "FRESH-EX-007",
+    "turnIndex": 1,
+    "heading": "L03 Desk",
+    "independentStatus": "UNTESTED",
+    "expectedBody": "",
+    "actualBody": "",
+    "unifiedDiff": "",
+    "note": "Literal diagnostic diff; independent rubric still permits whitespace-only compaction."
+  },
+  {
+    "caseId": "FRESH-EX-001",
+    "turnIndex": 1,
+    "heading": "L02 Product Sheet",
+    "independentStatus": "PASS",
+    "expectedBody": "Use all the uploaded photos of this blue ceramic tea cup. Create a clean product reference sheet on a plain white background showing the exact same blue ceramic tea cup in four views arranged in a neat grid: front view, top-down view, side view and three-quarter angle view. Keep the blue ceramic tea cup exactly the same in every view — same shape, same colour, same details, same text and logo, do not redesign it. Even soft studio lighting, no extra objects, no text labels, realistic product photography.",
+    "actualBody": "Use all the uploaded photos of this blue ceramic tea cup. Create a clean product reference sheet on a plain white background showing the exact same blue ceramic tea cup in four views arranged in a neat grid: front view, top-down view, side view and three-quarter angle view. Keep the blue ceramic tea cup exactly the same in every view — same shape, same colour, same details, same text and logo, do not redesign it. Even soft studio lighting, no extra objects, no text labels, realistic product photography.\n",
+    "unifiedDiff": "--- frozen_expected\n+++ observed_actual\n@@ -1 +1 @@\n-Use all the uploaded photos of this blue ceramic tea cup. Create a clean product reference sheet on a plain white background showing the exact same blue ceramic tea cup in four views arranged in a neat grid: front view, top-down view, side view and three-quarter angle view. Keep the blue ceramic tea cup exactly the same in every view — same shape, same colour, same details, same text and logo, do not redesign it. Even soft studio lighting, no extra objects, no text labels, realistic product photography.+Use all the uploaded photos of this blue ceramic tea cup. Create a clean product reference sheet on a plain white background showing the exact same blue ceramic tea cup in four views arranged in a neat grid: front view, top-down view, side view and three-quarter angle view. Keep the blue ceramic tea cup exactly the same in every view — same shape, same colour, same details, same text and logo, do not redesign it. Even soft studio lighting, no extra objects, no text labels, realistic product photography.\n",
+    "note": "Literal diagnostic diff; independent rubric still permits whitespace-only compaction."
+  },
+  {
+    "caseId": "FRESH-EX-018",
+    "turnIndex": 1,
+    "heading": "L07 UGC 1",
+    "independentStatus": "FAIL",
+    "expectedBody": "Use the uploaded character sheet for the woman and the uploaded product sheet for the teal cotton tote. Keep her face, hair and outfit exactly the same as the character sheet. Keep the teal cotton tote exactly the same — same shape, same colour, same details, same text and logo, no morphing. Selfie-style vertical video: the camera itself is her phone, held at arm's length, so we see her from the chest up looking straight into the lens. NO phone visible anywhere in the frame, no second camera, no screen. She sits at a desk in a normal home room, holding the teal cotton tote up near her chest to show it, casual and friendly. Handheld look with slight natural shake, natural window light, a real lived-in room, not a studio, not a polished ad. ONLY she speaks, one voice only, natural Hindi lip-sync, casual friendly tone. She says: \"यह टोट बैग देखिए।\" real skin, no filter, clearly adult, modest, natural hands with five fingers, no text on screen, no watermark. Clean natural audio only — NO background music.",
+    "actualBody": "",
+    "unifiedDiff": "--- frozen_expected\n+++ observed_actual\n@@ -1 +0,0 @@\n-Use the uploaded character sheet for the woman and the uploaded product sheet for the teal cotton tote. Keep her face, hair and outfit exactly the same as the character sheet. Keep the teal cotton tote exactly the same — same shape, same colour, same details, same text and logo, no morphing. Selfie-style vertical video: the camera itself is her phone, held at arm's length, so we see her from the chest up looking straight into the lens. NO phone visible anywhere in the frame, no second camera, no screen. She sits at a desk in a normal home room, holding the teal cotton tote up near her chest to show it, casual and friendly. Handheld look with slight natural shake, natural window light, a real lived-in room, not a studio, not a polished ad. ONLY she speaks, one voice only, natural Hindi lip-sync, casual friendly tone. She says: \"यह टोट बैग देखिए।\" real skin, no filter, clearly adult, modest, natural hands with five fingers, no text on screen, no watermark. Clean natural audio only — NO background music.",
+    "note": "Literal diagnostic diff; independent rubric still permits whitespace-only compaction."
+  },
+  {
+    "caseId": "FRESH-EX-004",
+    "turnIndex": 1,
+    "heading": "L02 Dark Premium",
+    "independentStatus": "FAIL",
+    "expectedBody": "Use the uploaded product sheet as the reference. Keep the नील exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a matte black surface against a dark background, a single soft rim light outlining its edges, a subtle reflection on the surface, premium moody look, realistic product photography.",
+    "actualBody": "Use the uploaded product sheet as the reference. Keep the [PRODUCT] exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a matte black surface against a dark background, a single soft rim light outlining its edges, a subtle reflection on the surface, premium moody look, realistic product photography.\n",
+    "unifiedDiff": "--- frozen_expected\n+++ observed_actual\n@@ -1 +1 @@\n-Use the uploaded product sheet as the reference. Keep the नील exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a matte black surface against a dark background, a single soft rim light outlining its edges, a subtle reflection on the surface, premium moody look, realistic product photography.+Use the uploaded product sheet as the reference. Keep the [PRODUCT] exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a matte black surface against a dark background, a single soft rim light outlining its edges, a subtle reflection on the surface, premium moody look, realistic product photography.\n",
+    "note": "Literal diagnostic diff; independent rubric still permits whitespace-only compaction."
+  },
+  {
+    "caseId": "FRESH-EX-019",
+    "turnIndex": 1,
+    "heading": "L07 UGC 2",
+    "independentStatus": "FAIL",
+    "expectedBody": "Use the uploaded character sheet for the woman and the uploaded product sheet for the अक्षर Notebook. Keep her face, hair and outfit exactly the same as the character sheet. Keep the अक्षर Notebook exactly the same — same shape, same colour, same details, same text and logo, no morphing. Vertical video shot from her own phone resting on the desk in front of her: the camera itself is the phone, so we see her and the अक्षर Notebook from a low front angle. NO phone visible anywhere in the frame, no second camera, no screen facing us. She uses the अक्षर Notebook for a moment, then looks up straight into the lens and talks, casual and natural. Natural window light, a real lived-in room, not a studio, not a polished ad. ONLY she speaks, one voice only, natural Hindi lip-sync, casual friendly tone. She says: \"इसके सादे पन्ने देखिए।\" real skin, no filter, clearly adult, modest, natural hands with five fingers, no text on screen, no watermark. Clean natural audio only — NO background music.",
+    "actualBody": "",
+    "unifiedDiff": "--- frozen_expected\n+++ observed_actual\n@@ -1 +0,0 @@\n-Use the uploaded character sheet for the woman and the uploaded product sheet for the अक्षर Notebook. Keep her face, hair and outfit exactly the same as the character sheet. Keep the अक्षर Notebook exactly the same — same shape, same colour, same details, same text and logo, no morphing. Vertical video shot from her own phone resting on the desk in front of her: the camera itself is the phone, so we see her and the अक्षर Notebook from a low front angle. NO phone visible anywhere in the frame, no second camera, no screen facing us. She uses the अक्षर Notebook for a moment, then looks up straight into the lens and talks, casual and natural. Natural window light, a real lived-in room, not a studio, not a polished ad. ONLY she speaks, one voice only, natural Hindi lip-sync, casual friendly tone. She says: \"इसके सादे पन्ने देखिए।\" real skin, no filter, clearly adult, modest, natural hands with five fingers, no text on screen, no watermark. Clean natural audio only — NO background music.",
+    "note": "Literal diagnostic diff; independent rubric still permits whitespace-only compaction."
+  },
+  {
+    "caseId": "FRESH-EX-005",
+    "turnIndex": 1,
+    "heading": "L03 Character Sheet (bonus)",
+    "independentStatus": "FAIL",
+    "expectedBody": "Create a character reference sheet of one realistic young Indian woman, clearly adult, short black bob, loose olive shirt. Show the exact same person in one image: a close-up of the face, and full-body front view, side view and back view on a plain light grey background. Same face, same hair, same outfit in every view. Soft even light, RAW realistic photo look, real skin texture, no text labels.",
+    "actualBody": "",
+    "unifiedDiff": "--- frozen_expected\n+++ observed_actual\n@@ -1 +0,0 @@\n-Create a character reference sheet of one realistic young Indian woman, clearly adult, short black bob, loose olive shirt. Show the exact same person in one image: a close-up of the face, and full-body front view, side view and back view on a plain light grey background. Same face, same hair, same outfit in every view. Soft even light, RAW realistic photo look, real skin texture, no text labels.",
+    "note": "Literal diagnostic diff; independent rubric still permits whitespace-only compaction."
+  }
+]

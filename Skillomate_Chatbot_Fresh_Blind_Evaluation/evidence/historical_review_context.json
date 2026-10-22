@@ -1,0 +1,47 @@
+{
+  "copiedAt": "2026-10-16T11:10:06.249562+00:00",
+  "historicalOnlyNotRerun": true,
+  "sourcePath": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/Skillomate_Chatbot_Course_Isolation_Fix_Review/evidence/verification_summary.json",
+  "sourceSHA256": "2de66c1ed3ede887fcbfb1caf63de905cea6456cc50ac9746e1e4cb89a742d4e",
+  "extract": {
+    "at": "2026-10-16T10:32:03.533296+00:00",
+    "newIsolationTests": {
+      "PASS": 38
+    },
+    "chatbotTests": {
+      "PASS": 514
+    },
+    "allBackend": {
+      "PASS": 1045,
+      "FAIL": 24,
+      "SKIP": 0,
+      "total": 1069
+    },
+    "allPythonEvaluators": {
+      "PASS": 167,
+      "FAIL": 0,
+      "SKIP": 0,
+      "total": 167
+    },
+    "baselineBackend": {
+      "total": 1031,
+      "PASS": 1007,
+      "FAIL": 24
+    },
+    "newBackendFailures": [],
+    "originalFunctionalCases": 4,
+    "originalFunctionalTurns": 5,
+    "completeFunctionalBodiesPass": true,
+    "phase12RecordedReplay": {
+      "cases": 40,
+      "turns": 48,
+      "byteIdenticalCases": 40,
+      "changedCases": [],
+      "replayedProviderInvocations": 11,
+      "unexpectedTransportRequests": 0,
+      "externalProviderInvocations": 0
+    },
+    "recommendation": "Suitable for a NEW independent blind evaluation in an isolated synthetic local environment; not production ready. Retain the 24 pre-existing broader-suite failures as outstanding. Live-provider evaluation requires explicit destination/payload authorization."
+  },
+  "scope": "Context only; not part of fresh blind scores; original exposed questions and full old blind result set not copied here."
+}

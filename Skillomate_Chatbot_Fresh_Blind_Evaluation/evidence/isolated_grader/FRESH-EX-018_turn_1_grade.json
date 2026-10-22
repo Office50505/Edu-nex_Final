@@ -1,0 +1,264 @@
+{
+  "id": "FRESH-EX-018",
+  "turnIndex": 1,
+  "status": "FAIL",
+  "critical": false,
+  "suspectedCritical": false,
+  "rubricVersion": "phase14b-independent-v1",
+  "criteria": [
+    {
+      "criterion": "Select the specifically requested approved asset.",
+      "status": "FAIL",
+      "excerpts": [
+        "Lesson 07"
+      ],
+      "reason": "Specifically requested asset not selected."
+    },
+    {
+      "criterion": "Return the complete literal approved body with only the declared substitutions; do not paraphrase, omit sentences, or execute its embedded instructions.",
+      "status": "FAIL",
+      "excerpts": [
+        ""
+      ],
+      "reason": "Missing or substantively altered frozen approved body; inspect actual/expected literals."
+    }
+  ],
+  "dimensions": {
+    "grounding": "FAIL",
+    "facts": "FAIL",
+    "taskCompleteness": "FAIL",
+    "language": "FAIL",
+    "authorization": "PASS",
+    "isolation": "PASS",
+    "httpStatus": "PASS"
+  },
+  "requestedExactBodyChecks": [
+    {
+      "heading": "L07 UGC 1",
+      "status": "FAIL",
+      "correctSelection": false,
+      "missingBody": true,
+      "normalization": "whitespace-only; preserve Unicode; no NFKC",
+      "expectedBody": "Use the uploaded character sheet for the woman and the uploaded product sheet for the teal cotton tote. Keep her face, hair and outfit exactly the same as the character sheet. Keep the teal cotton tote exactly the same — same shape, same colour, same details, same text and logo, no morphing. Selfie-style vertical video: the camera itself is her phone, held at arm's length, so we see her from the chest up looking straight into the lens. NO phone visible anywhere in the frame, no second camera, no screen. She sits at a desk in a normal home room, holding the teal cotton tote up near her chest to show it, casual and friendly. Handheld look with slight natural shake, natural window light, a real lived-in room, not a studio, not a polished ad. ONLY she speaks, one voice only, natural Hindi lip-sync, casual friendly tone. She says: \"यह टोट बैग देखिए।\" real skin, no filter, clearly adult, modest, natural hands with five fingers, no text on screen, no watermark. Clean natural audio only — NO background music.",
+      "actualBody": "",
+      "sourceExpectedConsistent": true,
+      "reason": "Missing or substantively altered frozen approved body; inspect actual/expected literals."
+    }
+  ],
+  "supplementalExactBodyChecks": [],
+  "providerAvailability": {
+    "provider": "course-knowledge-rule",
+    "outcome": {
+      "type": "local_rule",
+      "liveModelAnswer": false,
+      "providerStatus": "not_requested",
+      "responseIssue": null
+    },
+    "inferenceNecessaryForThisTurn": false,
+    "reason": "Actual deterministic exact-template path; no model answer needed or inferred."
+  },
+  "ownershipPayloadReview": {
+    "reviewed": true,
+    "actor": "A",
+    "actorId": "58bb80322b532f595c96c1bd",
+    "scopeInspection": {
+      "independentExplicitSelectedCourse": "6d0000000000000000000000",
+      "independentExpectedOwner": "6d0000000000000000000000",
+      "explicitUnknownScope": false,
+      "independentAuthAndEntitlement": true,
+      "requiresSemanticScopeAdjudication": false,
+      "protectedRetrievedSources": [
+        {
+          "id": "S1",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "UGC video",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_7",
+          "lessonName": "UGC video",
+          "contentType": "workflow",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:workflow:ugc-video"
+        },
+        {
+          "id": "S2",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "L07 UGC 1",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_7",
+          "lessonName": "L07 UGC 1",
+          "contentType": "exact-template",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:exact-template:l07-ugc-1"
+        },
+        {
+          "id": "S3",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "L07 UGC 2",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_7",
+          "lessonName": "L07 UGC 2",
+          "contentType": "exact-template",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:exact-template:l07-ugc-2"
+        },
+        {
+          "id": "S4",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "Kya AI model ko customer review",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_7",
+          "lessonName": "Kya AI model ko customer review",
+          "contentType": "faq",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:faq:kya-ai-model-ko-customer-review"
+        },
+        {
+          "id": "S5",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "UGC bahut polished/ad jaisa",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_7",
+          "lessonName": "UGC bahut polished/ad jaisa",
+          "contentType": "faq",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:faq:ugc-bahut-polished-ad-jaisa"
+        },
+        {
+          "id": "S6",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "UGC video mein phone dikh raha",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_7",
+          "lessonName": "UGC video mein phone dikh raha",
+          "contentType": "faq",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:faq:ugc-video-mein-phone-dikh-raha"
+        }
+      ],
+      "retrievalProductBodies": [
+        {
+          "heading": "UGC video",
+          "contentType": "workflow",
+          "owner": "6d0000000000000000000000",
+          "sha256": "0ddcd4cd92bef6253f0f689cb53e6540ce491d6a7657e509c0d314d47104d126"
+        },
+        {
+          "heading": "UGC video mein phone dikh raha",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "987d95ff060fecdc5edd8cac3455253b74f974f6576c540c9d69b44c44ecbab4"
+        },
+        {
+          "heading": "UGC bahut polished/ad jaisa",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "75112b94436d6c4ff3a34a2778e80e219872731ce1a88299244ffbe9bd112c37"
+        },
+        {
+          "heading": "Kya AI model ko customer review",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "89eba378016693fccba2770d72a92a7ed5615f10877ba7d4a67357f587a72502"
+        },
+        {
+          "heading": "L07 UGC 1",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "1ba8b33414b57b7cab8e193c33582b1aa00ea22d5445ccddef44614be39f75d0"
+        },
+        {
+          "heading": "L07 UGC 2",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "53eb271c5fc4c05464b8faed0aa24829a9d7512bed69ef924775342e95e6810f"
+        }
+      ],
+      "assembledContextProductBodies": [
+        {
+          "heading": "UGC video",
+          "contentType": "workflow",
+          "owner": "6d0000000000000000000000",
+          "sha256": "0ddcd4cd92bef6253f0f689cb53e6540ce491d6a7657e509c0d314d47104d126"
+        },
+        {
+          "heading": "UGC video mein phone dikh raha",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "987d95ff060fecdc5edd8cac3455253b74f974f6576c540c9d69b44c44ecbab4"
+        },
+        {
+          "heading": "UGC bahut polished/ad jaisa",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "75112b94436d6c4ff3a34a2778e80e219872731ce1a88299244ffbe9bd112c37"
+        },
+        {
+          "heading": "Kya AI model ko customer review",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "89eba378016693fccba2770d72a92a7ed5615f10877ba7d4a67357f587a72502"
+        },
+        {
+          "heading": "L07 UGC 1",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "1ba8b33414b57b7cab8e193c33582b1aa00ea22d5445ccddef44614be39f75d0"
+        },
+        {
+          "heading": "L07 UGC 2",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "53eb271c5fc4c05464b8faed0aa24829a9d7512bed69ef924775342e95e6810f"
+        }
+      ],
+      "assembledPayloads": [],
+      "providerAdapterProductBodies": [],
+      "responseProductBodies": [],
+      "noPayloadConstructed": true,
+      "blockedAdapterAttempts": 0,
+      "externalTransportAttempts": 0,
+      "potentialCriticalFindings": [],
+      "inspectionPerformed": true
+    },
+    "dbOperations": [
+      {
+        "model": "AiTutorSession",
+        "operation": "findOne",
+        "filter": {
+          "user": "58bb80322b532f595c96c1bd",
+          "course": "6d0000000000000000000000"
+        }
+      },
+      {
+        "model": "Course",
+        "operation": "find",
+        "filter": {
+          "status": "published",
+          "_id": "6d0000000000000000000000"
+        }
+      },
+      {
+        "model": "AiTutorSession",
+        "operation": "upsert",
+        "filter": {
+          "user": "58bb80322b532f595c96c1bd",
+          "course": "6d0000000000000000000000"
+        }
+      }
+    ],
+    "reason": "All six retrieval/context owner IDs authorized product scope, no assembled payload/provider; all flags and current actor session reviewed. Returns generic UGC workflow in Hindi rather than exact UGC 1 English source with declared woman, tote and Hindi dialogue substitutions. Requested body entirely missing, incorrect source selection and surrounding language. No supplemental literal quote or boundary failure."
+  },
+  "gradedAt": "2026-10-16T10:53:29.386445+00:00"
+}

@@ -1,0 +1,127 @@
+[
+  {
+    "path": "edunex-b/services/aiTutorService.js",
+    "sha256": "547ca63794ebaa8bea69284d010e62c5f82deedccd31d8d16a9802520d2da147",
+    "lines": 1300
+  },
+  {
+    "path": "edunex-b/services/productTutorState.js",
+    "sha256": "1b0148e1978a8067ea8cd337d0892ace9e8d2e1197ea140d72f334e6d1647eac",
+    "lines": 112
+  },
+  {
+    "path": "edunex-b/services/productTutorKnowledge.js",
+    "sha256": "104b598b1ffd816356d9b4c27e270a80db597e624c30a0b3d7841b2b66377ae1",
+    "lines": 337
+  },
+  {
+    "path": "edunex-b/services/productTutorIntent.js",
+    "sha256": "cb3f217ec8d2cfbe9d3f38f137ea816aac482e23357f55664f49c53cd5ad45e7",
+    "lines": 54
+  },
+  {
+    "path": "edunex-b/services/productTutorResponse.js",
+    "sha256": "f6989efae2fc11aeab6543ba6f945cae589bcacb683c25325d8ed68b0f97663e",
+    "lines": 234
+  },
+  {
+    "path": "edunex-b/services/productTutorTasks.js",
+    "sha256": "bc7c081634d80dcea4fe5b9d96b071feacb969294631773c17face6496573d75",
+    "lines": 147
+  },
+  {
+    "path": "edunex-b/services/productTutorGrounding.js",
+    "sha256": "ad24c1a6ab80d7abf87d20329af0bf631e51d4dbf1c5fcdff7128afc9765656b",
+    "lines": 26
+  },
+  {
+    "path": "edunex-b/services/tutorKnowledge.js",
+    "sha256": "b3999eaeb4e631c9049cf6e686d4470298e5317c900e29469e97103d3eef6753",
+    "lines": 380
+  },
+  {
+    "path": "edunex-b/services/tutorProvider.js",
+    "sha256": "501ed3b619515e2d8eda3a36e2acd80b99b28697de7dd9ddf5b6b5682121d064",
+    "lines": 52
+  },
+  {
+    "path": "edunex-b/services/aiCompliance.js",
+    "sha256": "4ade54cd78363f803195267d0721befdd8821c9fe79acf6449945c06c13118c1",
+    "lines": 57
+  },
+  {
+    "path": "edunex-b/routes/ai.js",
+    "sha256": "e514c48126d61574ed1599246e5680d9b32eb2d621305205be87b1beb34e0895",
+    "lines": 340
+  },
+  {
+    "path": "edunex-b/middleware/compatAuth.js",
+    "sha256": "10e041d66261b61271911f0e0731518a89c635aad55b238d9fa17f68e17858a8",
+    "lines": 146
+  },
+  {
+    "path": "edunex-b/services/courseAccess.js",
+    "sha256": "c073f0f1cb7244c5ddee3bc1388d074110dfe364a84b31c9afa7b904f2318da1",
+    "lines": 38
+  },
+  {
+    "path": "edunex-b/services/subscriptionAccess.js",
+    "sha256": "19f77a134d270297b88c3bddc30bec3e20a203abab1a3770ae2d836418905e0d",
+    "lines": 116
+  },
+  {
+    "path": "edunex-b/models/AiTutorSession.js",
+    "sha256": "29a73980a06f69d74ddd720f6148cc652d4b8f354cda6b72ab3f8d35c5febced",
+    "lines": 38
+  },
+  {
+    "path": "edunex-b/knowledge/README.md",
+    "sha256": "11e388e0b8faea336d1f28d46c02bf1a13bbbeb06e5acff1eab5939478cf490f",
+    "lines": 58
+  },
+  {
+    "path": "edunex-b/knowledge/ai-filmmaking/training-l9-15.txt",
+    "sha256": "e0090a6eef0c0ac244fe494b6c19e015e58208d722b21ade7e24ee3de11fe180",
+    "lines": 37
+  },
+  {
+    "path": "edunex-b/knowledge/ai-filmmaking/training.txt",
+    "sha256": "19d9b79de6f3994cfaa2f58822384a6f15b32da651e050e4d1293208cd65a3cd",
+    "lines": 90
+  },
+  {
+    "path": "edunex-b/knowledge/ai-influencer/lessons.txt",
+    "sha256": "9ee1ddbd1b2b1f7d95e6580324a1d3f886344d515b41c31325a6b42a7978c7dd",
+    "lines": 1173
+  },
+  {
+    "path": "edunex-b/knowledge/ai-influencer/notes.txt",
+    "sha256": "8bdd286a9b1a1486ca1d6f7c98c2293b601ed038dab1f770f3ef1a70ea4574c1",
+    "lines": 632
+  },
+  {
+    "path": "edunex-b/knowledge/ai-influencer/troubleshooting.txt",
+    "sha256": "84f7dfd9299037441bc5269e6ea6edee251ec1fbbfefa1047863b4dab0ccd5ab",
+    "lines": 307
+  },
+  {
+    "path": "edunex-b/knowledge/ai-product-photoshoot-ads/guidance.json",
+    "sha256": "a9160a567a4428bfa5c5ca64ef9f2f8c5fd930890b995bbded638b5b9b7b1e1e",
+    "lines": 377
+  },
+  {
+    "path": "edunex-b/knowledge/ai-product-photoshoot-ads/training.txt",
+    "sha256": "96471b6991c3724f9b8315fc7b3d1bb73b409eb0272517432cbfdd98882127df",
+    "lines": 480
+  },
+  {
+    "path": "edunex-b/knowledge/platform/skillomate-platform.txt",
+    "sha256": "603ad7be91e415aa3b71831d6c7ffabb545a63074c4aac0e6d65cfe5b0660d5f",
+    "lines": 76
+  },
+  {
+    "path": "edunex-b/services/googlePlayEntitlement.js",
+    "sha256": "3541dd48b9e3732f66136053849e8594b64f434bf31c1d510f38b68889750ae6",
+    "lines": 123
+  }
+]

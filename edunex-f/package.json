@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite --host 0.0.0.0",
+    "admin:dev": "VITE_ADMIN_STANDALONE=true vite --host 127.0.0.1 --port 5174 --strictPort",
     "build": "node scripts/generate-legacy-pages.mjs && vite build && node scripts/build-marketing-web.mjs && node scripts/copy-static-assets.mjs",
     "preview": "vite preview --host 0.0.0.0",
     "k6:login:smoke": "k6 run tests/k6/login-page-load.js",

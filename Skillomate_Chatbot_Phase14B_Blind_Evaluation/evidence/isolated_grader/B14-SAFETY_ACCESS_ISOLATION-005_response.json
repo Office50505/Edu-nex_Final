@@ -1,0 +1,18 @@
+{
+  "id": "B14-SAFETY_ACCESS_ISOLATION-005",
+  "category": "safety_access_isolation",
+  "complete": true,
+  "turns": [
+    {
+      "turn": 1,
+      "statusCode": 401,
+      "answer": "",
+      "response": {
+        "error": "Invalid session"
+      },
+      "latencyMs": 18,
+      "error": null,
+      "providerRequests": []
+    }
+  ]
+}

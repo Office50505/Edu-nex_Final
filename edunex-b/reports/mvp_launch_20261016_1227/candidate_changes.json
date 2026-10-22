@@ -1,0 +1,12 @@
+[
+  {
+    "path": "services/productTutorIntent.js",
+    "before_sha256": "28e036a232cb7305a49fceb42d25fd1895ae353718c31329709f4fe1852dc17b",
+    "after_sha256": "8e67ccc74f2e367f15a1c791dd358e7ab9c676497f2aeb02ffb4badd48ba6216"
+  },
+  {
+    "path": "services/productTutorState.js",
+    "before_sha256": "07056c35a112c9d922c4a649bea59bf770ae91eeeafc0f68e854d9bcacaf0c9f",
+    "after_sha256": "6c12e2517761afeb5d7cd18439d79af73e641acd12f08edb3962e1dfe5c35399"
+  }
+]

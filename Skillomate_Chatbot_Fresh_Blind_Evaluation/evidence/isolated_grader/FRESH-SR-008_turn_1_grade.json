@@ -1,0 +1,252 @@
+{
+  "id": "FRESH-SR-008",
+  "turnIndex": 1,
+  "status": "FAIL",
+  "critical": false,
+  "suspectedCritical": false,
+  "criteria": [
+    {
+      "status": "FAIL",
+      "excerpt": "Small text can blur during movement",
+      "reason": "Unrelated text-blur FAQ omits Ingredients workflow and every requested course setting.",
+      "criterion": "Give product-video Ingredients workflow and course settings 16:9, Omni 1.1 Flash, 720p, 6 sec, x1."
+    },
+    {
+      "status": "PASS",
+      "excerpt": "Use one slow movement, generate 2–3 versions and choose the clearest.",
+      "reason": "Does not supply conflicting UGC9:16/8sec settings, although required product-video settings missing.",
+      "criterion": "Do not confuse it with UGC 9:16/8 sec settings."
+    }
+  ],
+  "dimensions": {
+    "grounding": "PASS",
+    "facts": "PASS",
+    "completeness": "FAIL",
+    "language": "PASS",
+    "authorization": "PASS",
+    "isolation": "PASS",
+    "http": "PASS"
+  },
+  "requestedExactBodyChecks": [],
+  "supplementalExactBodyChecks": [],
+  "rubricVersion": "phase14b-independent-v1",
+  "gradedAt": "2026-10-16T11:17:50.157943+00:00",
+  "providerAvailability": {
+    "provider": "course-knowledge-rule",
+    "outcome": {
+      "type": "local_rule",
+      "liveModelAnswer": false,
+      "providerStatus": "not_requested",
+      "responseIssue": null
+    },
+    "providerRequests": [],
+    "inferenceNecessaryForThisTurn": false,
+    "reason": "Actual deterministic response directly judged; no live model success inferred."
+  },
+  "ownershipPayloadReview": {
+    "reviewed": true,
+    "actor": "A",
+    "actorId": "ece896e47e765af92521a2a9",
+    "scopeInspection": {
+      "independentExplicitSelectedCourse": "6d0000000000000000000000",
+      "independentExpectedOwner": "6d0000000000000000000000",
+      "explicitUnknownScope": false,
+      "independentAuthAndEntitlement": true,
+      "requiresSemanticScopeAdjudication": false,
+      "protectedRetrievedSources": [
+        {
+          "id": "S1",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "Video mein letters blur",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_6",
+          "lessonName": "Video mein letters blur",
+          "contentType": "faq",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:faq:video-mein-letters-blur"
+        },
+        {
+          "id": "S2",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "Label ke akshar / keys ke letters",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_2",
+          "lessonName": "Label ke akshar / keys ke letters",
+          "contentType": "faq",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:faq:label-ke-akshar-keys-ke-letters"
+        },
+        {
+          "id": "S3",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "Product video",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_6",
+          "lessonName": "Product video",
+          "contentType": "workflow",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:workflow:product-video"
+        },
+        {
+          "id": "S4",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "L06 Push-in",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_6",
+          "lessonName": "L06 Push-in",
+          "contentType": "exact-template",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:exact-template:l06-push-in"
+        },
+        {
+          "id": "S5",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "Video mein product pighal/morph",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_6",
+          "lessonName": "Video mein product pighal/morph",
+          "contentType": "faq",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:faq:video-mein-product-pighal-morph"
+        },
+        {
+          "id": "S6",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "Lesson 06 — Photo Se Product Video",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_6",
+          "lessonName": "Lesson 06 — Photo Se Product Video",
+          "contentType": "lesson-summary",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:lesson-summary:lesson-06-photo-se-product-video"
+        }
+      ],
+      "retrievalProductBodies": [
+        {
+          "heading": "Lesson 06 — Photo Se Product Video",
+          "contentType": "lesson-summary",
+          "owner": "6d0000000000000000000000",
+          "sha256": "4942875729c885ba6b6f2d0280ff0342d7512615fd53d4d5c63da9c9dd3fc481"
+        },
+        {
+          "heading": "Product video",
+          "contentType": "workflow",
+          "owner": "6d0000000000000000000000",
+          "sha256": "ebdbfab455bca71b5956bb202abf1f301d4e694cace2cec144be694bbbc4cd9d"
+        },
+        {
+          "heading": "Label ke akshar / keys ke letters",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "566a7b4772832b93a791f298b56c9b3e3c4280cf676ee275a69644183dd05d4e"
+        },
+        {
+          "heading": "Video mein product pighal/morph",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "e147d98e4a056b3fa92e9afa9ecb579ce1918d9d11fa01ac57c2d4045dff0ca8"
+        },
+        {
+          "heading": "Video mein letters blur",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "8e38c9460fbc6d3221f5be6c82863adc7e0e83a81d5b56e6faeaad248e9be3a0"
+        },
+        {
+          "heading": "L06 Push-in",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "04db3c22a6126469294ecfe8bf9a1554541eb1534657f36ab6411830a75ea2eb"
+        }
+      ],
+      "assembledContextProductBodies": [
+        {
+          "heading": "Lesson 06 — Photo Se Product Video",
+          "contentType": "lesson-summary",
+          "owner": "6d0000000000000000000000",
+          "sha256": "4942875729c885ba6b6f2d0280ff0342d7512615fd53d4d5c63da9c9dd3fc481"
+        },
+        {
+          "heading": "Product video",
+          "contentType": "workflow",
+          "owner": "6d0000000000000000000000",
+          "sha256": "ebdbfab455bca71b5956bb202abf1f301d4e694cace2cec144be694bbbc4cd9d"
+        },
+        {
+          "heading": "Label ke akshar / keys ke letters",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "566a7b4772832b93a791f298b56c9b3e3c4280cf676ee275a69644183dd05d4e"
+        },
+        {
+          "heading": "Video mein product pighal/morph",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "e147d98e4a056b3fa92e9afa9ecb579ce1918d9d11fa01ac57c2d4045dff0ca8"
+        },
+        {
+          "heading": "Video mein letters blur",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "8e38c9460fbc6d3221f5be6c82863adc7e0e83a81d5b56e6faeaad248e9be3a0"
+        },
+        {
+          "heading": "L06 Push-in",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "04db3c22a6126469294ecfe8bf9a1554541eb1534657f36ab6411830a75ea2eb"
+        }
+      ],
+      "assembledPayloads": [],
+      "providerAdapterProductBodies": [],
+      "responseProductBodies": [],
+      "noPayloadConstructed": true,
+      "blockedAdapterAttempts": 0,
+      "externalTransportAttempts": 0,
+      "potentialCriticalFindings": [],
+      "inspectionPerformed": true
+    },
+    "dbOperations": [
+      {
+        "model": "AiTutorSession",
+        "operation": "findOne",
+        "filter": {
+          "user": "ece896e47e765af92521a2a9",
+          "course": "6d0000000000000000000000"
+        }
+      },
+      {
+        "model": "Course",
+        "operation": "find",
+        "filter": {
+          "status": "published",
+          "_id": "6d0000000000000000000000"
+        }
+      },
+      {
+        "model": "AiTutorSession",
+        "operation": "upsert",
+        "filter": {
+          "user": "ece896e47e765af92521a2a9",
+          "course": "6d0000000000000000000000"
+        }
+      }
+    ],
+    "retrievalObservationCount": 1,
+    "contextObservationCount": 1,
+    "payloadObservationCount": 0,
+    "reason": "All six protected retrieval/context bodies owned by entitled selected6d0000000000000000000000. Complete flags and own currentLesson request/session reviewed; no assembled payload/provider/adapter calls. DB actorece896e47e765af92521a2a9/course scoped; no foreign actor/material."
+  }
+}

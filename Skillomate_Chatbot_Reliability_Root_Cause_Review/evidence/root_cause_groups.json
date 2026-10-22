@@ -1,0 +1,395 @@
+{
+  "RC1": {
+    "title": "Platform/account intent collisions before course handling",
+    "status": "CONFIRMED",
+    "explanation": "Account and billing matchers bind unrelated words across the whole message. My/mera plus paid/order can mean paid prompts or work order; bare plan can mean a video plan. The route accepts these replies before buildContext, so product intent, retrieval and product validation never run. Hindi private/platform replies also collapse into a two-language formatter.",
+    "source": [
+      {
+        "file": "edunex-b/services/aiTutorService.js",
+        "function": "isSkillomatePlanQuestion / skillomatePlatformDirectReply",
+        "startLine": 313,
+        "endLine": 404,
+        "snapshot": "evidence/source/edunex-b/services/aiTutorService.js"
+      },
+      {
+        "file": "edunex-b/services/aiTutorService.js",
+        "function": "isLearnerContextQuestion / learnerContextDirectReply",
+        "startLine": 713,
+        "endLine": 777,
+        "snapshot": "evidence/source/edunex-b/services/aiTutorService.js"
+      },
+      {
+        "file": "edunex-b/routes/ai.js",
+        "function": "handleTutorChat early reply selection",
+        "startLine": 248,
+        "endLine": 267,
+        "snapshot": "evidence/source/edunex-b/routes/ai.js"
+      }
+    ],
+    "correction": "Require an affirmative account/platform action with correctly bound referents; distinguish plan-the-ad from subscription-plan and work-order from payment-order. Resolve authorized product-course context before selecting overlapping course intents. Preserve actual personal-payment/profile requests and safe masked replies. Start with product-course-scoped disambiguation at the call site rather than changing unrelated course behavior.",
+    "risks": "Global matchers serve other courses and account requests. Avoid a blanket product-word exemption that suppresses genuine billing questions. Never let a client course ID become authorization. Extra context resolution may add local DB reads.",
+    "tests": "Paired account-vs-item-name, paid-template-vs-my-payment, ad-plan-vs-plan-price, workflow-order-vs-my-order, quoted paid-comment, inactive restoration, Hindi restriction, unrelated-course platform controls.",
+    "improvement": "Remove demonstrated unrelated pricing/profile answers and complete legitimate access guidance. No numeric score forecast.",
+    "verification": "Offline actual route with synthetic users; assert selected route, reply contract, no unexpected provider call, masked own-user data only and no protected material for inactive users."
+  },
+  "RC2": {
+    "title": "Fragmented task intent and overconfident local guidance selection",
+    "status": "CONFIRMED",
+    "explanation": "Copy recognition depends on a small vocabulary and often requires prompt/template/text/body in addition to a named asset. Source/full/reproduce/paste/Hindi variants are missed. Conversely How do + prompts can look like imperative do; negated generation and Hinglish original generation are not consistently scoped. requestedProductOutputs confuses camera angle with advertising angle and misses scene/dialogue/buyer-brief verbs. A topic plus any available guidance is treated as enough for a local response; workflow+decision is not handled as a required compound task.",
+    "source": [
+      {
+        "file": "edunex-b/services/productTutorIntent.js",
+        "function": "productCopyIntent / productIntentSignals / productResponseSelection",
+        "startLine": 2,
+        "endLine": 38,
+        "snapshot": "evidence/source/edunex-b/services/productTutorIntent.js"
+      },
+      {
+        "file": "edunex-b/services/productTutorKnowledge.js",
+        "function": "wantsProductPrompt / wantsProductScene",
+        "startLine": 80,
+        "endLine": 98,
+        "snapshot": "evidence/source/edunex-b/services/productTutorKnowledge.js"
+      },
+      {
+        "file": "edunex-b/services/productTutorKnowledge.js",
+        "function": "requestedProductOutputs / productRequestContext",
+        "startLine": 196,
+        "endLine": 332,
+        "snapshot": "evidence/source/edunex-b/services/productTutorKnowledge.js"
+      },
+      {
+        "file": "edunex-b/services/productTutorResponse.js",
+        "function": "productTutorReply / selectProductGuidance",
+        "startLine": 54,
+        "endLine": 159,
+        "snapshot": "evidence/source/edunex-b/services/productTutorResponse.js"
+      },
+      {
+        "file": "edunex-b/services/tutorKnowledge.js",
+        "function": "retrieveKnowledge ranking and selection",
+        "startLine": 250,
+        "endLine": 308,
+        "snapshot": "evidence/source/edunex-b/services/tutorKnowledge.js"
+      }
+    ],
+    "correction": "Build one transient request plan: copy-approved, explain, generate, troubleshoot, clarify or platform/account, with target asset, required parts, counts, negation and confidence. A complete affirmative request naming an approved asset can copy without magic words. Choose local guidance only when it answers every requested part. Keep course facts in approved references; route unsupported synthesis to provider or a truthful unavailable answer. Resolve named assets from the authorized same-course set, never an unrestricted global asset registry.",
+    "risks": "Too many requests could shift to the provider, increasing cost/latency; too broad copy recognition can suppress education. Preserve negative controls, access gates and immutable source bodies. Do not fix this by hardcoding case questions or adding every symptom as a new exception.",
+    "tests": "All 19 assets with fresh copy paraphrases; retain-placeholders vs fill; exact vs meaning vs original scene; negated hooks; angle-of-camera vs ad-angle; buyer brief vs process; decision plus workflow; labels as data vs real blur; aspect-ratio vs lettering; final arrangement vs motion.",
+    "improvement": "Correct executed routing errors with the approved knowledge already available. All 19 failed exact cases contain their requested asset in retrieval; a retrieval-engine replacement is not justified by those cases.",
+    "verification": "Offline plan/route assertions independent of implementation regexes; actual route tests for deterministic completion and zero unauthorized retrieval; live testing only for the synthesis branch."
+  },
+  "RC3": {
+    "title": "Entity boundaries, naming syntax and incomplete attribute extraction",
+    "status": "CONFIRMED",
+    "explanation": "Two overlapping extractors recognize only selected declaration forms. Broad for/of/for-my fallbacks promote request prose or a presenter into a product. Quote-first, curly-quoted called names, Name:, named, bracket assignments and multilingual constructions are missed. Attributes mostly require colour/material/features is/are/: syntax; natural facts and negative constraints are not represented. Price scanning can consume a trailing comma. Missing extraction is not evidence that accents were normalized away.",
+    "source": [
+      {
+        "file": "edunex-b/services/productTutorState.js",
+        "function": "entity / extractEntity / productOperations / extraSlots",
+        "startLine": 19,
+        "endLine": 92,
+        "snapshot": "evidence/source/edunex-b/services/productTutorState.js"
+      },
+      {
+        "file": "edunex-b/services/productTutorKnowledge.js",
+        "function": "cleanProductName / productSlots",
+        "startLine": 129,
+        "endLine": 179,
+        "snapshot": "evidence/source/edunex-b/services/productTutorKnowledge.js"
+      },
+      {
+        "file": "edunex-b/services/productTutorKnowledge.js",
+        "function": "productFacts",
+        "startLine": 218,
+        "endLine": 264,
+        "snapshot": "evidence/source/edunex-b/services/productTutorKnowledge.js"
+      }
+    ],
+    "correction": "Use one conservative declaration/assignment parser with evidence spans. Separate exact display name, object description and supplied facts; prefer explicit name/slot declarations over referring phrases. Never promote arbitrary request prepositions or an actor into identity. Preserve original Unicode; use the existing separate NFKC security view for every naming path and reject unsafe names. Canonicalize numeric prices independently of punctuation and retain explicit negative facts. Keep an adapter to existing productContext fields; no persistence redesign or migration is needed for the first correction.",
+    "risks": "Over-extraction can turn instructions into facts; under-extraction must ask a focused clarification. Preserve NFKC, bidi/default-ignorable and mixed-script checks; do not simply strip unsafe substrings. Distinguish delimiting quotes from legitimate internal punctuation.",
+    "tests": "Independent English/Hindi/Hinglish declarations, arbitrary accented/decomposed/Indic names, curly quotes, slash/apostrophe names, unnamed described objects, multiple-product ambiguity, actor clauses, request prose, negative features and numeric price separators; unsafe compatibility/mixed-script names at initial and switched turns.",
+    "improvement": "Prevent phantom identities and unnecessary requests for facts already supplied; preserve useful explicit attributes without inventing them.",
+    "verification": "Offline parser/reducer diagnostics using independently declared facts and evidence spans, plus actual-route generation contract tests; do not use runtime extraction as the test oracle."
+  },
+  "RC4": {
+    "title": "Template copy/fill contract lacks a complete per-asset slot schema",
+    "status": "CONFIRMED",
+    "explanation": "renderProductTemplate handles only PRODUCT, man/woman, recolour part and new colour. Source assets also contain woman/man, possessives, clothing, dialogue, brief details, price, channel and number slots. Explicit user assignments are not parsed. productTutorReply applies guessed/context slots even when the user says retain brackets, and its unresolved check only knows four slot categories. This is rendering/selection, not modified knowledge files.",
+    "source": [
+      {
+        "file": "edunex-b/services/productTutorKnowledge.js",
+        "function": "productSlots / renderProductTemplate",
+        "startLine": 141,
+        "endLine": 188,
+        "snapshot": "evidence/source/edunex-b/services/productTutorKnowledge.js"
+      },
+      {
+        "file": "edunex-b/services/productTutorResponse.js",
+        "function": "productTutorReply exact rendering and unresolved fields",
+        "startLine": 143,
+        "endLine": 159,
+        "snapshot": "evidence/source/edunex-b/services/productTutorResponse.js"
+      },
+      {
+        "file": "edunex-b/services/aiTutorService.js",
+        "function": "aiProductPhotoshootKnowledgeGuard",
+        "startLine": 439,
+        "endLine": 449,
+        "snapshot": "evidence/source/edunex-b/services/aiTutorService.js"
+      }
+    ],
+    "correction": "Derive an allowlisted slot schema from each approved asset and represent raw-copy versus fill-copy explicitly. Parse bounded explicit assignments and use only user-supplied values for recognized slots. Preserve all brackets in raw mode and leave only genuinely unknown fields in fill mode. Render by literal span substitution; verify that every other source byte/word is unchanged. Align provider instructions with the same supported slot contract. Do not rewrite approved asset bodies.",
+    "risks": "Gender/pronoun or clothing guesses could invent facts. Generic replacement could interpret dollar/backslash content or instructions. Every lookup must require verified owner and entitlement; a direct asset helper must not reopen the fixed global-registry bypass.",
+    "tests": "Every placeholder from all 19 assets, both pronoun orderings, prices/channels/number/dialogue/clothing, unknown and explicitly preserved slots, Unicode and replacement metacharacters, body-diff checks allowing only declared changes, unauthorized/other-course template denial.",
+    "improvement": "Eliminate confirmed unresolved-known-slot and invented-substitution failures; preserve approved wording. No future fidelity percentage is asserted.",
+    "verification": "Offline exact full-body oracle from immutable source plus explicit substitutions; inspect all executable blocks and negative unknown-slot controls separately from semantic generation."
+  },
+  "RC5": {
+    "title": "State changes depend on successful narrow identity recognition",
+    "status": "CONFIRMED",
+    "explanation": "Replacement operations cover limited product-to/with forms. Forget X; New product:, replace it completely, renames and natural corrections can leave the old identity. productFacts clears old bound facts only after a different identity is recognized, while new price is applied independently. Version-2 state suppresses history reparsing, so missed initial facts remain missing. This explains the old-coaster/new-price hybrid and unsupported follow-ups; it does not establish cross-user leakage.",
+    "source": [
+      {
+        "file": "edunex-b/services/productTutorState.js",
+        "function": "productOperations / scopeProductState",
+        "startLine": 49,
+        "endLine": 96,
+        "snapshot": "evidence/source/edunex-b/services/productTutorState.js"
+      },
+      {
+        "file": "edunex-b/services/productTutorKnowledge.js",
+        "function": "productFacts state update loop",
+        "startLine": 218,
+        "endLine": 264,
+        "snapshot": "evidence/source/edunex-b/services/productTutorKnowledge.js"
+      },
+      {
+        "file": "edunex-b/services/aiTutorService.js",
+        "function": "resolveProductHistory / resolveConversationState",
+        "startLine": 294,
+        "endLine": 298,
+        "snapshot": "evidence/source/edunex-b/services/aiTutorService.js"
+      },
+      {
+        "file": "edunex-b/services/aiTutorService.js",
+        "function": "resolveConversationState",
+        "startLine": 530,
+        "endLine": 555,
+        "snapshot": "evidence/source/edunex-b/services/aiTutorService.js"
+      },
+      {
+        "file": "edunex-b/routes/ai.js",
+        "function": "loadTutorState / persistTutorChat",
+        "startLine": 54,
+        "endLine": 93,
+        "snapshot": "evidence/source/edunex-b/routes/ai.js"
+      }
+    ],
+    "correction": "Reduce typed declare, replace, correct, rename, recolour and reset operations atomically. Explicit new-product intent with unresolved identity must invalidate the obsolete product and ask, not attach new price/material to it. Field corrections replace the affected fact and preserve only deliberate task context. Keep schema-v2 non-resurrection, user/course/conversation filtering and existing API/persistence. Decide legacy missing-conversation-ID semantics explicitly before changing them.",
+    "risks": "Over-clearing loses deliberate inherited facts; under-clearing retains old price/material. Same-product rename differs from replacement. Do not reparse all assistant history or redesign the one-session-per-user/course storage to mask extraction defects.",
+    "tests": "Seed a known recognized product, verify its stored facts, then replace/correct in three languages; old price/material absent, deliberate actor-free task retained; renamed same object; conflicting correction; unknown new name; switch with malicious name; explicit reset, changed conversation and missing-ID legacy behavior; interleaved users and courses.",
+    "improvement": "Prevent confirmed stale identity and mixed old/new facts; make follow-ups reliable after accurate initial capture.",
+    "verification": "Offline reducer and actual multi-turn route tests with before/after state plus provider-payload inspection. Require nonvacuous initial-state assertions and real schema validation before any live evaluation."
+  },
+  "RC6": {
+    "title": "Inconsistent language, count and per-deliverable parsing",
+    "status": "CONFIRMED",
+    "explanation": "Product and generic language functions use different patterns; a Devanagari product name can set explanation language to Hindi. English please, language English kar do and short Hindi line are not consistently recognized. localizedReply and learnerContextDirectReply only have English-versus-Roman-Hinglish output branches even for detected Hindi. Hook count defaults to five when Hindi modifier sequences are unrecognized. There is no located translation/extraction service; localization is source translations plus regex tags.",
+    "source": [
+      {
+        "file": "edunex-b/services/productTutorIntent.js",
+        "function": "productResponseLanguage",
+        "startLine": 41,
+        "endLine": 51,
+        "snapshot": "evidence/source/edunex-b/services/productTutorIntent.js"
+      },
+      {
+        "file": "edunex-b/services/aiTutorService.js",
+        "function": "latestMessageLanguage / explicitLanguagePreference / localizedReply",
+        "startLine": 564,
+        "endLine": 598,
+        "snapshot": "evidence/source/edunex-b/services/aiTutorService.js"
+      },
+      {
+        "file": "edunex-b/services/aiTutorService.js",
+        "function": "learnerContextDirectReply locale branches",
+        "startLine": 739,
+        "endLine": 776,
+        "snapshot": "evidence/source/edunex-b/services/aiTutorService.js"
+      },
+      {
+        "file": "edunex-b/services/productTutorTasks.js",
+        "function": "requestedHookCount / draftProductAd",
+        "startLine": 48,
+        "endLine": 52,
+        "snapshot": "evidence/source/edunex-b/services/productTutorTasks.js"
+      },
+      {
+        "file": "edunex-b/services/productTutorKnowledge.js",
+        "function": "requestedProductOutputs",
+        "startLine": 196,
+        "endLine": 215,
+        "snapshot": "evidence/source/edunex-b/services/productTutorKnowledge.js"
+      }
+    ],
+    "correction": "Use one language decision for explanation after masking only validated identity spans; explicit latest preference wins. Represent separate languages for explanation, source body and dialogue. Parse counts and action morphology consistently in English, Hindi and Hinglish with no silent default when an explicit count is uncertain. Preserve original Unicode identities; keep exact approved bodies in source language.",
+    "risks": "Changing generic localization affects other courses and account replies. Preserve currently passing language switches, quoted source and proper-name exceptions. Do not use NFKC as output normalization.",
+    "tests": "English requests with Indic names; English please and English kar do; Hindi platform restriction; Hinglish explanation plus Hindi dialogue; varied Hindi modifiers/counts; source-English template with Hindi instructions; legitimate and unsafe Unicode name controls.",
+    "improvement": "Correct observed wrong-language output and five-instead-of-two hooks while keeping safe original-script names.",
+    "verification": "Offline expected-language/count assertions independent of parser output; semantic assessment of live multi-part generation only after provider approval."
+  },
+  "RC7": {
+    "title": "Local responses bypass the completion/language validation path",
+    "status": "CONFIRMED",
+    "explanation": "validateProductReply is invoked only after successful provider generation. Local templates, drafts, safety alternatives and FAQs return before that path. A relevant translation can therefore stand in for a requested artifact, missing count, reference, scene or decision. Existing missingProductDeliverables covers selected outputs, not complete scene/comparison/decision contracts. Copy repair also reuses the same faulty parser/renderer, so it is not an independent fidelity oracle.",
+    "source": [
+      {
+        "file": "edunex-b/routes/ai.js",
+        "function": "handleTutorChat local versus provider branches",
+        "startLine": 266,
+        "endLine": 320,
+        "snapshot": "evidence/source/edunex-b/routes/ai.js"
+      },
+      {
+        "file": "edunex-b/services/productTutorResponse.js",
+        "function": "productTutorReply / validateProductReply",
+        "startLine": 98,
+        "endLine": 223,
+        "snapshot": "evidence/source/edunex-b/services/productTutorResponse.js"
+      },
+      {
+        "file": "edunex-b/services/productTutorTasks.js",
+        "function": "draftProductAd / missingProductDeliverables",
+        "startLine": 55,
+        "endLine": 144,
+        "snapshot": "evidence/source/edunex-b/services/productTutorTasks.js"
+      },
+      {
+        "file": "edunex-b/services/productTutorResponse.js",
+        "function": "selectProductGuidance / localizedGuidance",
+        "startLine": 54,
+        "endLine": 95,
+        "snapshot": "evidence/source/edunex-b/services/productTutorResponse.js"
+      }
+    ],
+    "correction": "Apply a bounded shared task-completion contract to every response origin before persistence. Validate required outputs/counts, approved-body fidelity and current facts; distinguish explanation from generation. If local capability cannot fulfill it, route to authorized inference or report honest partial/unavailable status. Keep security rejection terminal; do not force a benign deliverable through a blocked malicious request. Avoid recursive repair loops and a large set of new FAQ-specific rules.",
+    "risks": "A validator using the same wrong parser can approve wrong output; an overly strict validator can reject valid paraphrases or require unnecessary name repetition. Preserve safe refusals and cap repair time/cost.",
+    "tests": "Valid complete local guidance stays unchanged; incomplete local captions/scenes/decisions are not accepted; unknown product clarification only when genuinely missing; alternative grounded to actual product; strict immutable-template checks; semantic equivalent educational answers and safety rejection negative controls.",
+    "improvement": "Stop relevant-but-incomplete local text from being labeled a completed task. Provider quality remains separately untested.",
+    "verification": "Offline origin-independent contracts, actual-route traces, no additional unapproved provider calls. Later measure live response completion, repair and fallback separately."
+  },
+  "RC8": {
+    "title": "Intentional provider denial is flattened into retryable connection error",
+    "status": "CONFIRMED OBSERVATION; NOT A LIVE PROVIDER FAILURE",
+    "explanation": "57 unique provider turns each throw PROVIDER_PAYLOAD_NOT_APPROVED in the evaluation guard before transport. errorCode maps the unrecognized code to connection_error and requestTutorProvider retries once. Thus 57 x 2 = 114 blocked adapter attempts, not 114 transmitted requests. The catch path returns saved guidance and an unavailable notice; it cannot establish generated-answer correctness.",
+    "source": [
+      {
+        "file": "edunex-b/services/tutorProvider.js",
+        "function": "errorCode / requestTutorProvider",
+        "startLine": 5,
+        "endLine": 49,
+        "snapshot": "evidence/source/edunex-b/services/tutorProvider.js"
+      },
+      {
+        "file": "edunex-b/services/aiTutorService.js",
+        "function": "callFalOpenRouter",
+        "startLine": 1249,
+        "endLine": 1274,
+        "snapshot": "evidence/source/edunex-b/services/aiTutorService.js"
+      },
+      {
+        "file": "edunex-b/routes/ai.js",
+        "function": "provider exception and fallback / outcome",
+        "startLine": 298,
+        "endLine": 331,
+        "snapshot": "evidence/source/edunex-b/routes/ai.js"
+      }
+    ],
+    "correction": "Future harness/accounting should distinguish intentional policy denial, transport failure, provider rejection, generation and final answer origin. Make deliberate local policy denial nonretryable at its typed boundary without disabling legitimate transient retries. Preserve unavailable/untested semantics and never inject fixtures as live model replies. Preserve old frozen artifacts and evaluator.",
+    "risks": "Changing retry classification can mask real DNS/upstream failures; changing outcome fields can break clients. Prefer additive diagnostics and keep existing response keys. The source also marks provider-generated local replacements non-live; later accounting must retain provider invocation separately.",
+    "tests": "Local policy-denial control has no wire call; transient/429/5xx retry bounds unchanged; empty/invalid response, timeout, max attempts and shared repair budget; correct origin when provider succeeds then local validation replaces output.",
+    "improvement": "Accurate unavailable accounting and less needless waiting; no justified accuracy improvement or live-provider performance conclusion.",
+    "verification": "Offline injected transport unit tests only; controlled authorized real calls for latency, usage, finish reasons and repair quality."
+  },
+  "RC9": {
+    "title": "Question/rubric alignment and harness coverage limits",
+    "status": "EVALUATION LIMITATION",
+    "explanation": "Seven case failures need semantic completeness adjudication; one conflicts with the existing strict leakage rejection policy. Optional May wording was scored as mandatory, and some correct source explanations fail for omitted unstated sentences or repeated names. The synthetic VM uses memory models, two published courses, one unknown selector, global subscriptions and a subset of environment fields; it is not production DB/config behavior. Shared filesystem isolation was instructional, not OS-enforced. None of the confirmed local responses was shown to be caused by a VM artifact.",
+    "source": [
+      {
+        "file": "edunex-b/services/aiCompliance.js",
+        "function": "checkAiInput / PROMPT_LEAKAGE_PATTERN",
+        "startLine": 7,
+        "endLine": 27,
+        "snapshot": "evidence/source/edunex-b/services/aiCompliance.js"
+      },
+      {
+        "file": "edunex-b/services/productTutorResponse.js",
+        "function": "localizedGuidance",
+        "startLine": 66,
+        "endLine": 95,
+        "snapshot": "evidence/source/edunex-b/services/productTutorResponse.js"
+      }
+    ],
+    "correction": "Retain all original grades and frozen criteria. Store this source-aware audit separately. Resolve these eight questions with explicit product/security policy and a human semantic adjudicator before future scoring; define completeness relative to the actual user request. Future harness should add purchase-only/trial, explicit cross-course multi-turn and schema-validating fixtures, and stronger author isolation where available.",
+    "risks": "Post-hoc regrading could inflate results; changing tests to mirror implementation would hide defects. Do not recalculate blind accuracy from this audit or automatically convert disputed failures to passes.",
+    "tests": "Independent semantic-equivalence examples, mandatory-versus-optional criteria, safe hard refusal, no forced name repetition for generic education; fixture parity and nonvacuous state seeding; freeze future rubric before execution.",
+    "improvement": "More defensible validity claims; the original 18/67/35 remains unchanged.",
+    "verification": "Human-reviewed rubric examples, frozen new protocol and transparent per-case rationale; no current evaluator or question-set edits."
+  },
+  "RC10": {
+    "title": "Course isolation and entitlement guards must remain intact",
+    "status": "NO NEW CONFIRMED SECURITY DEFECT",
+    "explanation": "The archive records 153 ownership/payload inspections, 735 protected source references, 57 validated payloads and no critical finding. Source uses authenticated identity, unique server course resolution, subscription/purchase checks, owner-scoped retrieval, protected-text assertions and pre-provider validation. Global-course active subscriptions and sparse course-switch fixtures limit coverage. Full-body matching is defense in depth, not proof against every partial/transformed leakage path.",
+    "source": [
+      {
+        "file": "edunex-b/middleware/compatAuth.js",
+        "function": "authenticateCompatible / requireCompatibleAuth",
+        "startLine": 78,
+        "endLine": 129,
+        "snapshot": "evidence/source/edunex-b/middleware/compatAuth.js"
+      },
+      {
+        "file": "edunex-b/services/aiTutorService.js",
+        "function": "buildContext authoritative scope and entitlement",
+        "startLine": 962,
+        "endLine": 1047,
+        "snapshot": "evidence/source/edunex-b/services/aiTutorService.js"
+      },
+      {
+        "file": "edunex-b/services/tutorKnowledge.js",
+        "function": "sameCourse / assertKnowledgeScope / scopeConversationHistory",
+        "startLine": 112,
+        "endLine": 166,
+        "snapshot": "evidence/source/edunex-b/services/tutorKnowledge.js"
+      },
+      {
+        "file": "edunex-b/services/tutorKnowledge.js",
+        "function": "retrieveKnowledge owner/materialAccess",
+        "startLine": 217,
+        "endLine": 247,
+        "snapshot": "evidence/source/edunex-b/services/tutorKnowledge.js"
+      },
+      {
+        "file": "edunex-b/services/aiTutorService.js",
+        "function": "scopedProviderPayload",
+        "startLine": 1244,
+        "endLine": 1246,
+        "snapshot": "evidence/source/edunex-b/services/aiTutorService.js"
+      },
+      {
+        "file": "edunex-b/services/courseAccess.js",
+        "function": "activeCourseEntitlement",
+        "startLine": 1,
+        "endLine": 15,
+        "snapshot": "evidence/source/edunex-b/services/courseAccess.js"
+      }
+    ],
+    "correction": "No security relaxation is proposed. Treat ownership, entitlement and Unicode security as invariants for every planned correction. Reuse verified capabilities in any direct exact-asset path; fail closed on ambiguity. Add missing entitlement and explicit cross-course transition coverage before making a release-compliance claim.",
+    "risks": "A direct global template lookup or relaxed safety rule can reopen the corrected vulnerability. Synthetic passing boundaries do not establish production readiness.",
+    "tests": "Known critical isolation regressions, unauthorized/expired/trial/purchase-only/forged selectors, missing scope, user and course changes, protected-template assembly, malicious names across turns, payload absence assertions and partial-fragment controls.",
+    "improvement": "Preserve the reviewed security correction while improving reliability; no new security score is asserted.",
+    "verification": "Offline actual route and provider-payload inspection first; stop on any confirmed security violation; only approved non-production inference later."
+  }
+}

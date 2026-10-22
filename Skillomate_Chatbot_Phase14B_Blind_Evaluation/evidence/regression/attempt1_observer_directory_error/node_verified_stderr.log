@@ -1,0 +1,15 @@
+node:fs:2914
+    return binding.writeFileUtf8(
+                   ^
+
+Error: ENOENT: no such file or directory, open '/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/Skillomate_Chatbot_Phase14B_Blind_Evaluation/evidence/regression/final/provider_invocations/provider-process-5826.json'
+    at Object.writeFileSync (node:fs:2914:20)
+    at process.<anonymous> (/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/Skillomate_Chatbot_Phase14B_Blind_Evaluation/evidence/regression/provider_observer.cjs:20:12)
+    at process.emit (node:events:514:20) {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/Skillomate_Chatbot_Phase14B_Blind_Evaluation/evidence/regression/final/provider_invocations/provider-process-5826.json'
+}
+
+Node.js v26.7.0

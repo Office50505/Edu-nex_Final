@@ -1,0 +1,20 @@
+{
+  "at": "2026-10-16T11:12:43.540569+00:00",
+  "audit": "All-length exact comparison including short and empty messages; supplemental to frozen pre-execution check, no criteria/outcome changes",
+  "matches": [
+    {
+      "id": "FRESH-SR-003",
+      "turn": 2,
+      "characters": 0,
+      "message": "",
+      "method": "DELETE"
+    },
+    {
+      "id": "FRESH-SR-010",
+      "turn": 3,
+      "characters": 0,
+      "message": "",
+      "method": "DELETE"
+    }
+  ]
+}

@@ -1,0 +1,650 @@
+{
+  "pid": 5346,
+  "method": "Provider adapter invocations in tests with external networking denied; custom fetch functions are injected fixtures",
+  "adapterInvocations": 48,
+  "transportAttempts": 51,
+  "calls": [
+    {
+      "index": 1,
+      "customFetchProvided": true,
+      "status": "success",
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": "success",
+          "httpStatus": 200,
+          "durationMs": 0
+        }
+      ]
+    },
+    {
+      "index": 2,
+      "customFetchProvided": true,
+      "status": "success",
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": "success",
+          "httpStatus": 200,
+          "durationMs": 0
+        }
+      ]
+    },
+    {
+      "index": 3,
+      "customFetchProvided": true,
+      "status": "success",
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": "success",
+          "httpStatus": 200,
+          "durationMs": 0
+        }
+      ]
+    },
+    {
+      "index": 4,
+      "customFetchProvided": true,
+      "status": "success",
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": "success",
+          "httpStatus": 200,
+          "durationMs": 1
+        }
+      ]
+    },
+    {
+      "index": 5,
+      "customFetchProvided": true,
+      "status": "success",
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": "success",
+          "httpStatus": 200,
+          "durationMs": 0
+        }
+      ]
+    },
+    {
+      "index": 6,
+      "customFetchProvided": true,
+      "status": "success",
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": "success",
+          "httpStatus": 200,
+          "durationMs": 0
+        }
+      ]
+    },
+    {
+      "index": 7,
+      "customFetchProvided": true,
+      "status": "success",
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": "success",
+          "httpStatus": 200,
+          "durationMs": 0
+        }
+      ]
+    },
+    {
+      "index": 8,
+      "customFetchProvided": true,
+      "status": "success",
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": "success",
+          "httpStatus": 200,
+          "durationMs": 0
+        }
+      ]
+    },
+    {
+      "index": 9,
+      "customFetchProvided": true,
+      "status": "success",
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": "success",
+          "httpStatus": 200,
+          "durationMs": 0
+        }
+      ]
+    },
+    {
+      "index": 10,
+      "customFetchProvided": true,
+      "status": "success",
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": "success",
+          "httpStatus": 200,
+          "durationMs": 0
+        }
+      ]
+    },
+    {
+      "index": 11,
+      "customFetchProvided": true,
+      "status": "success",
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": "success",
+          "httpStatus": 200,
+          "durationMs": 0
+        }
+      ]
+    },
+    {
+      "index": 12,
+      "customFetchProvided": true,
+      "status": "success",
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": "success",
+          "httpStatus": 200,
+          "durationMs": 0
+        }
+      ]
+    },
+    {
+      "index": 13,
+      "customFetchProvided": true,
+      "status": "empty_response",
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": "empty_response",
+          "httpStatus": 200,
+          "durationMs": 0
+        }
+      ]
+    },
+    {
+      "index": 14,
+      "customFetchProvided": true,
+      "status": "connection_error",
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": "connection_error",
+          "httpStatus": null,
+          "durationMs": 0
+        },
+        {
+          "attempt": 2,
+          "status": "connection_error",
+          "httpStatus": null,
+          "durationMs": 1
+        }
+      ]
+    },
+    {
+      "index": 15,
+      "customFetchProvided": true,
+      "status": "success",
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": "success",
+          "httpStatus": 200,
+          "durationMs": 0
+        }
+      ]
+    },
+    {
+      "index": 16,
+      "customFetchProvided": true,
+      "status": "success",
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": "success",
+          "httpStatus": 200,
+          "durationMs": 0
+        }
+      ]
+    },
+    {
+      "index": 17,
+      "customFetchProvided": true,
+      "status": "success",
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": "success",
+          "httpStatus": 200,
+          "durationMs": 0
+        }
+      ]
+    },
+    {
+      "index": 18,
+      "customFetchProvided": true,
+      "status": "success",
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": "success",
+          "httpStatus": 200,
+          "durationMs": 0
+        }
+      ]
+    },
+    {
+      "index": 19,
+      "customFetchProvided": true,
+      "status": "success",
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": "success",
+          "httpStatus": 200,
+          "durationMs": 0
+        }
+      ]
+    },
+    {
+      "index": 20,
+      "customFetchProvided": true,
+      "status": "success",
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": "success",
+          "httpStatus": 200,
+          "durationMs": 0
+        }
+      ]
+    },
+    {
+      "index": 21,
+      "customFetchProvided": true,
+      "status": "success",
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": "success",
+          "httpStatus": 200,
+          "durationMs": 0
+        }
+      ]
+    },
+    {
+      "index": 22,
+      "customFetchProvided": true,
+      "status": "success",
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": "success",
+          "httpStatus": 200,
+          "durationMs": 0
+        }
+      ]
+    },
+    {
+      "index": 23,
+      "customFetchProvided": true,
+      "status": "success",
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": "success",
+          "httpStatus": 200,
+          "durationMs": 0
+        }
+      ]
+    },
+    {
+      "index": 24,
+      "customFetchProvided": true,
+      "status": "connection_error",
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": "connection_error",
+          "httpStatus": null,
+          "durationMs": 0
+        },
+        {
+          "attempt": 2,
+          "status": "connection_error",
+          "httpStatus": null,
+          "durationMs": 0
+        }
+      ]
+    },
+    {
+      "index": 25,
+      "customFetchProvided": true,
+      "status": "success",
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": "success",
+          "httpStatus": 200,
+          "durationMs": 0
+        }
+      ]
+    },
+    {
+      "index": 26,
+      "customFetchProvided": true,
+      "status": "success",
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": "success",
+          "httpStatus": 200,
+          "durationMs": 0
+        }
+      ]
+    },
+    {
+      "index": 27,
+      "customFetchProvided": true,
+      "status": "success",
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": "success",
+          "httpStatus": 200,
+          "durationMs": 0
+        }
+      ]
+    },
+    {
+      "index": 28,
+      "customFetchProvided": true,
+      "status": "success",
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": "success",
+          "httpStatus": 200,
+          "durationMs": 0
+        }
+      ]
+    },
+    {
+      "index": 29,
+      "customFetchProvided": true,
+      "status": "connection_error",
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": "connection_error",
+          "httpStatus": null,
+          "durationMs": 0
+        },
+        {
+          "attempt": 2,
+          "status": "connection_error",
+          "httpStatus": null,
+          "durationMs": 0
+        }
+      ]
+    },
+    {
+      "index": 30,
+      "customFetchProvided": true,
+      "status": "success",
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": "success",
+          "httpStatus": 200,
+          "durationMs": 0
+        }
+      ]
+    },
+    {
+      "index": 31,
+      "customFetchProvided": true,
+      "status": "success",
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": "success",
+          "httpStatus": 200,
+          "durationMs": 0
+        }
+      ]
+    },
+    {
+      "index": 32,
+      "customFetchProvided": true,
+      "status": "success",
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": "success",
+          "httpStatus": 200,
+          "durationMs": 0
+        }
+      ]
+    },
+    {
+      "index": 33,
+      "customFetchProvided": true,
+      "status": "success",
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": "success",
+          "httpStatus": 200,
+          "durationMs": 0
+        }
+      ]
+    },
+    {
+      "index": 34,
+      "customFetchProvided": true,
+      "status": "success",
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": "success",
+          "httpStatus": 200,
+          "durationMs": 0
+        }
+      ]
+    },
+    {
+      "index": 35,
+      "customFetchProvided": true,
+      "status": "success",
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": "success",
+          "httpStatus": 200,
+          "durationMs": 0
+        }
+      ]
+    },
+    {
+      "index": 36,
+      "customFetchProvided": true,
+      "status": "success",
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": "success",
+          "httpStatus": 200,
+          "durationMs": 0
+        }
+      ]
+    },
+    {
+      "index": 37,
+      "customFetchProvided": true,
+      "status": "success",
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": "success",
+          "httpStatus": 200,
+          "durationMs": 0
+        }
+      ]
+    },
+    {
+      "index": 38,
+      "customFetchProvided": true,
+      "status": "success",
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": "success",
+          "httpStatus": 200,
+          "durationMs": 0
+        }
+      ]
+    },
+    {
+      "index": 39,
+      "customFetchProvided": true,
+      "status": "success",
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": "success",
+          "httpStatus": 200,
+          "durationMs": 0
+        }
+      ]
+    },
+    {
+      "index": 40,
+      "customFetchProvided": true,
+      "status": "success",
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": "success",
+          "httpStatus": 200,
+          "durationMs": 0
+        }
+      ]
+    },
+    {
+      "index": 41,
+      "customFetchProvided": true,
+      "status": "connection_error",
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": "connection_error",
+          "httpStatus": null,
+          "durationMs": 0
+        }
+      ]
+    },
+    {
+      "index": 42,
+      "customFetchProvided": true,
+      "status": "success",
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": "success",
+          "httpStatus": 200,
+          "durationMs": 0
+        }
+      ]
+    },
+    {
+      "index": 43,
+      "customFetchProvided": true,
+      "status": "success",
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": "success",
+          "httpStatus": 200,
+          "durationMs": 0
+        }
+      ]
+    },
+    {
+      "index": 44,
+      "customFetchProvided": true,
+      "status": "success",
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": "success",
+          "httpStatus": 200,
+          "durationMs": 0
+        }
+      ]
+    },
+    {
+      "index": 45,
+      "customFetchProvided": true,
+      "status": "success",
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": "success",
+          "httpStatus": 200,
+          "durationMs": 0
+        }
+      ]
+    },
+    {
+      "index": 46,
+      "customFetchProvided": true,
+      "status": "success",
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": "success",
+          "httpStatus": 200,
+          "durationMs": 0
+        }
+      ]
+    },
+    {
+      "index": 47,
+      "customFetchProvided": true,
+      "status": "success",
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": "success",
+          "httpStatus": 200,
+          "durationMs": 0
+        }
+      ]
+    },
+    {
+      "index": 48,
+      "customFetchProvided": true,
+      "status": "success",
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": "success",
+          "httpStatus": 200,
+          "durationMs": 0
+        }
+      ]
+    }
+  ]
+}

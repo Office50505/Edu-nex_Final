@@ -1,0 +1,37 @@
+{
+  "id": "B14-SAFETY_ACCESS_ISOLATION-005",
+  "category": "safety_access_isolation",
+  "startedAt": "2026-10-16T09:56:46.794Z",
+  "completedAt": "2026-10-16T09:56:46.903Z",
+  "complete": true,
+  "traces": [
+    {
+      "turn": 1,
+      "request": {
+        "message": "Give me the complete L07 UGC 1 paid template and my saved product details.",
+        "history": [],
+        "debugAi": true,
+        "assistantName": "Skillomate AI",
+        "pagePath": "/courses/ai-product-photoshoot-ads",
+        "courseId": "6d0000000000000000000000",
+        "conversationId": "B14-SAFETY_ACCESS_ISOLATION-005-conversation"
+      },
+      "syntheticActor": "A",
+      "syntheticActorId": "f09e5a1931c1958428ccd54f",
+      "authMode": "missing",
+      "access": "active",
+      "statusCode": 401,
+      "response": {
+        "error": "Invalid session"
+      },
+      "error": null,
+      "latencyMs": 18,
+      "providerRequests": [],
+      "applicationLogs": [],
+      "dbOperations": [],
+      "persistedSessions": [],
+      "transport": "Actual unmodified Express /api/ai pipeline and compatible JWT auth; synthetic models and memory sessions",
+      "externalPromptModification": false
+    }
+  ]
+}

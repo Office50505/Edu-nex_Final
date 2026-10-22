@@ -1,0 +1,1022 @@
+{
+  "suite": "Phase8_100_frozen_v5_application_cases",
+  "course": {
+    "title": "AI Product Photoshoot & Ads",
+    "primary_slug": "ai-product-photoshoot-ads",
+    "lessons": 8,
+    "source": "knowledge/ai-product-photoshoot-ads/training.txt"
+  },
+  "single_turn_tests": [
+    {
+      "id": "ppads_001",
+      "category": "course_understanding",
+      "query": "What does the AI Product Photoshoot & Ads course teach?",
+      "expected_language": "english",
+      "required_groups": [
+        [
+          "AI Product Photoshoot & Ads"
+        ],
+        [
+          "8",
+          "eight"
+        ],
+        [
+          "product photos",
+          "product photography"
+        ],
+        [
+          "ads",
+          "ad"
+        ],
+        [
+          "Google Flow"
+        ],
+        [
+          "ChatGPT",
+          "chat G.P.T"
+        ],
+        [
+          "CapCut"
+        ]
+      ],
+      "forbidden_any": [
+        "guaranteed income",
+        "earnings guarantee",
+        "AI Filmmaking",
+        "AI Influencer"
+      ],
+      "evaluation_set": "existing"
+    },
+    {
+      "id": "ppads_002",
+      "category": "lesson_1",
+      "query": "In Lesson 01, what do I need before starting this product ad course?",
+      "expected_language": "english",
+      "required_groups": [
+        [
+          "Lesson 01",
+          "L01"
+        ],
+        [
+          "phone"
+        ],
+        [
+          "laptop"
+        ],
+        [
+          "product"
+        ],
+        [
+          "tools",
+          "Google Flow"
+        ]
+      ],
+      "forbidden_any": [
+        "DSLR is mandatory",
+        "paid studio required"
+      ],
+      "evaluation_set": "existing"
+    },
+    {
+      "id": "ppads_004",
+      "category": "lesson_2",
+      "query": "Give me the Lesson 02 workflow for making a product sheet from phone photos.",
+      "expected_language": "english",
+      "required_groups": [
+        [
+          "Lesson 02",
+          "L02"
+        ],
+        [
+          "5-7",
+          "5 to 7"
+        ],
+        [
+          "angles"
+        ],
+        [
+          "Google Flow"
+        ],
+        [
+          "Nano Banana Pro"
+        ],
+        [
+          "product sheet"
+        ],
+        [
+          "save"
+        ]
+      ],
+      "forbidden_any": [
+        "AI Filmmaking",
+        "face consistency"
+      ],
+      "evaluation_set": "existing"
+    },
+    {
+      "id": "ppads_005",
+      "category": "exact_prompt",
+      "query": "Give the exact L02 Product Sheet prompt for a perfume bottle.",
+      "expected_language": "english",
+      "required_groups": [
+        [
+          "L02 Product Sheet",
+          "Lesson 02"
+        ],
+        [
+          "perfume bottle"
+        ],
+        [
+          "front view"
+        ],
+        [
+          "top-down view"
+        ],
+        [
+          "side view"
+        ],
+        [
+          "three-quarter angle view"
+        ]
+      ],
+      "exact_required": [
+        "Create a clean product reference sheet on a plain white background",
+        "same shape, same colour, same details, same text and logo, do not redesign it"
+      ],
+      "forbidden_any": [
+        "keyboard",
+        "[PRODUCT]"
+      ],
+      "evaluation_set": "existing"
+    },
+    {
+      "id": "ppads_006",
+      "category": "exact_prompt",
+      "query": "Copy-paste the L02 White Studio prompt for a skincare jar.",
+      "expected_language": "english",
+      "required_groups": [
+        [
+          "L02 White Studio",
+          "Lesson 02"
+        ],
+        [
+          "skincare jar"
+        ],
+        [
+          "seamless white background"
+        ],
+        [
+          "soft natural shadow"
+        ],
+        [
+          "realistic product photography"
+        ]
+      ],
+      "exact_required": [
+        "Use the uploaded product sheet as the reference.",
+        "slight top-down angle, sharp focus"
+      ],
+      "forbidden_any": [
+        "[PRODUCT]"
+      ],
+      "evaluation_set": "existing"
+    },
+    {
+      "id": "ppads_007",
+      "category": "exact_prompt",
+      "query": "What is the exact L02 Lifestyle prompt for a water bottle?",
+      "expected_language": "english",
+      "required_groups": [
+        [
+          "L02 Lifestyle",
+          "Lesson 02"
+        ],
+        [
+          "water bottle"
+        ],
+        [
+          "warm wooden desk"
+        ],
+        [
+          "white coffee mug"
+        ],
+        [
+          "small green plant"
+        ],
+        [
+          "soft morning window light"
+        ]
+      ],
+      "exact_required": [
+        "shallow depth of field, realistic lifestyle product photography"
+      ],
+      "forbidden_any": [
+        "[PRODUCT]"
+      ],
+      "evaluation_set": "existing"
+    },
+    {
+      "id": "ppads_008",
+      "category": "exact_prompt",
+      "query": "Give me the exact L02 Dark Premium prompt for sunglasses.",
+      "expected_language": "english",
+      "required_groups": [
+        [
+          "L02 Dark Premium",
+          "Lesson 02"
+        ],
+        [
+          "sunglasses"
+        ],
+        [
+          "matte black surface"
+        ],
+        [
+          "single soft rim light"
+        ],
+        [
+          "premium moody look"
+        ]
+      ],
+      "exact_required": [
+        "a subtle reflection on the surface"
+      ],
+      "forbidden_any": [
+        "[PRODUCT]"
+      ],
+      "evaluation_set": "existing"
+    },
+    {
+      "id": "ppads_011",
+      "category": "lesson_3",
+      "query": "Explain the Lesson 03 model-shot workflow with product and character sheets.",
+      "expected_language": "english",
+      "required_groups": [
+        [
+          "Lesson 03",
+          "L03"
+        ],
+        [
+          "character sheet"
+        ],
+        [
+          "product sheet"
+        ],
+        [
+          "same face"
+        ],
+        [
+          "natural hands with five fingers"
+        ],
+        [
+          "2-3",
+          "versions"
+        ]
+      ],
+      "forbidden_any": [
+        "AI Influencer course"
+      ],
+      "evaluation_set": "existing"
+    },
+    {
+      "id": "ppads_012",
+      "category": "exact_prompt",
+      "query": "Give the exact L03 Character Sheet bonus prompt for a young Indian woman.",
+      "expected_language": "english",
+      "required_groups": [
+        [
+          "L03 Character Sheet",
+          "Lesson 03"
+        ],
+        [
+          "young Indian woman"
+        ],
+        [
+          "close-up of the face"
+        ],
+        [
+          "front view"
+        ],
+        [
+          "side view"
+        ],
+        [
+          "back view"
+        ]
+      ],
+      "exact_required": [
+        "Same face, same hair, same outfit in every view.",
+        "real skin texture, no text labels"
+      ],
+      "forbidden_any": [
+        "[man / woman]"
+      ],
+      "evaluation_set": "existing"
+    },
+    {
+      "id": "ppads_013",
+      "category": "exact_prompt",
+      "query": "Give exact L03 Hands close-up prompt for a coffee mug.",
+      "expected_language": "english",
+      "required_groups": [
+        [
+          "L03 Hands close-up",
+          "Lesson 03"
+        ],
+        [
+          "coffee mug"
+        ],
+        [
+          "hands using"
+        ],
+        [
+          "natural hands with five fingers each"
+        ],
+        [
+          "wooden desk"
+        ]
+      ],
+      "exact_required": [
+        "Use the uploaded product sheet for the coffee mug and the uploaded character sheet"
+      ],
+      "forbidden_any": [
+        "[PRODUCT]"
+      ],
+      "evaluation_set": "existing"
+    },
+    {
+      "id": "ppads_014",
+      "category": "exact_prompt",
+      "query": "Copy the L03 Desk prompt for a compact keyboard.",
+      "expected_language": "english",
+      "required_groups": [
+        [
+          "L03 Desk",
+          "Lesson 03"
+        ],
+        [
+          "compact keyboard"
+        ],
+        [
+          "clean desk"
+        ],
+        [
+          "side three-quarter angle"
+        ],
+        [
+          "natural daylight"
+        ]
+      ],
+      "exact_required": [
+        "Keep the compact keyboard exactly the same"
+      ],
+      "forbidden_any": [
+        "[PRODUCT]"
+      ],
+      "evaluation_set": "existing"
+    },
+    {
+      "id": "ppads_015",
+      "category": "exact_prompt",
+      "query": "What is the exact L03 Showing to camera prompt for a handmade soap box?",
+      "expected_language": "english",
+      "required_groups": [
+        [
+          "L03 Showing to camera",
+          "Lesson 03"
+        ],
+        [
+          "handmade soap box"
+        ],
+        [
+          "holds"
+        ],
+        [
+          "both hands"
+        ],
+        [
+          "small natural smile"
+        ]
+      ],
+      "exact_required": [
+        "showing it to the camera with a small natural smile"
+      ],
+      "forbidden_any": [
+        "[PRODUCT]"
+      ],
+      "evaluation_set": "existing"
+    },
+    {
+      "id": "ppads_019",
+      "category": "exact_prompt",
+      "query": "Give exact L04 Diwali prompt for a chocolate gift box.",
+      "expected_language": "english",
+      "required_groups": [
+        [
+          "L04 Diwali",
+          "Lesson 04"
+        ],
+        [
+          "chocolate gift box"
+        ],
+        [
+          "lit clay diyas"
+        ],
+        [
+          "orange marigold flowers"
+        ],
+        [
+          "warm golden light"
+        ]
+      ],
+      "exact_required": [
+        "the chocolate gift box sharp and clearly the hero in the foreground"
+      ],
+      "forbidden_any": [
+        "[PRODUCT]"
+      ],
+      "evaluation_set": "existing"
+    },
+    {
+      "id": "ppads_020",
+      "category": "exact_prompt",
+      "query": "Give exact L04 Wedding Gift prompt for a jewellery box.",
+      "expected_language": "english",
+      "required_groups": [
+        [
+          "L04 Wedding Gift",
+          "Lesson 04"
+        ],
+        [
+          "jewellery box"
+        ],
+        [
+          "soft silk cloth"
+        ],
+        [
+          "open premium gift box"
+        ],
+        [
+          "gold ribbon"
+        ],
+        [
+          "rose petals"
+        ]
+      ],
+      "exact_required": [
+        "elegant wedding gifting mood"
+      ],
+      "forbidden_any": [
+        "[PRODUCT]"
+      ],
+      "evaluation_set": "existing"
+    },
+    {
+      "id": "ppads_021",
+      "category": "exact_prompt",
+      "query": "Give exact L04 Colour Variant Sheet prompt for changing all bottle caps to matte black.",
+      "expected_language": "english",
+      "required_groups": [
+        [
+          "L04 Colour Variant Sheet",
+          "Lesson 04"
+        ],
+        [
+          "Only change the colour"
+        ],
+        [
+          "bottle caps"
+        ],
+        [
+          "matte black"
+        ],
+        [
+          "same shape"
+        ],
+        [
+          "same layout"
+        ]
+      ],
+      "exact_required": [
+        "Keep everything else exactly the same"
+      ],
+      "forbidden_any": [
+        "[the part, e.g.",
+        "[new colour"
+      ],
+      "evaluation_set": "existing"
+    },
+    {
+      "id": "ppads_024",
+      "category": "lesson_5",
+      "query": "Teach me the Lesson 05 ad planning workflow in steps.",
+      "expected_language": "english",
+      "required_groups": [
+        [
+          "Lesson 05",
+          "L05"
+        ],
+        [
+          "details"
+        ],
+        [
+          "price"
+        ],
+        [
+          "where you sell"
+        ],
+        [
+          "3 buyers"
+        ],
+        [
+          "problems"
+        ],
+        [
+          "ad angle"
+        ],
+        [
+          "hooks"
+        ],
+        [
+          "15-second"
+        ],
+        [
+          "caption"
+        ],
+        [
+          "Flow prompts"
+        ]
+      ],
+      "forbidden_any": [
+        "invent features"
+      ],
+      "evaluation_set": "existing"
+    },
+    {
+      "id": "ppads_025",
+      "category": "exact_prompt",
+      "query": "Give the exact L05 Step 1 Brief prompt.",
+      "expected_language": "english",
+      "required_groups": [
+        [
+          "L05 Step 1 Brief",
+          "Lesson 05"
+        ],
+        [
+          "Three types of people"
+        ],
+        [
+          "problem it solves"
+        ],
+        [
+          "ad angle"
+        ]
+      ],
+      "exact_required": [
+        "I sell a [product with real details — size, colour, key features]. Price: [your price]. I sell on [Instagram / website / marketplace] in India.",
+        "Keep it short and simple."
+      ],
+      "forbidden_any": [],
+      "evaluation_set": "existing"
+    },
+    {
+      "id": "ppads_026",
+      "category": "exact_prompt",
+      "query": "Give exact L05 Step 2 Hooks + Script prompt.",
+      "expected_language": "english",
+      "required_groups": [
+        [
+          "L05 Step 2 Hooks + Script",
+          "Lesson 05"
+        ],
+        [
+          "5 scroll-stopping hooks"
+        ],
+        [
+          "15-second ad script"
+        ],
+        [
+          "Instagram caption"
+        ],
+        [
+          "Use only the features I gave you"
+        ]
+      ],
+      "exact_required": [
+        "not cheesy, no fake claims",
+        "don't add anything new"
+      ],
+      "forbidden_any": [],
+      "evaluation_set": "existing"
+    },
+    {
+      "id": "ppads_027",
+      "category": "exact_prompt",
+      "query": "Give exact L05 Step 3 Flow prompts instruction.",
+      "expected_language": "english",
+      "required_groups": [
+        [
+          "L05 Step 3 Flow prompts",
+          "Lesson 05"
+        ],
+        [
+          "3 image prompts"
+        ],
+        [
+          "Google Flow"
+        ],
+        [
+          "Nano Banana"
+        ],
+        [
+          "Each prompt must start"
+        ]
+      ],
+      "exact_required": [
+        "Use the uploaded product sheet as the reference. Keep the [product] exactly the same — same shape, same colour, same details, same text and logo, do not redesign it."
+      ],
+      "forbidden_any": [],
+      "evaluation_set": "existing"
+    },
+    {
+      "id": "ppads_030",
+      "category": "lesson_6",
+      "query": "What are the Lesson 06 Google Flow video settings?",
+      "expected_language": "english",
+      "required_groups": [
+        [
+          "Lesson 06",
+          "L06"
+        ],
+        [
+          "Video"
+        ],
+        [
+          "Ingredients"
+        ],
+        [
+          "16:9"
+        ],
+        [
+          "Omni 1.1 Flash"
+        ],
+        [
+          "720p"
+        ],
+        [
+          "6 sec"
+        ],
+        [
+          "x1"
+        ]
+      ],
+      "forbidden_any": [
+        "Kling",
+        "Runway"
+      ],
+      "evaluation_set": "existing"
+    },
+    {
+      "id": "ppads_031",
+      "category": "exact_prompt",
+      "query": "Give exact L06 Push-in prompt for a face serum bottle.",
+      "expected_language": "english",
+      "required_groups": [
+        [
+          "L06 Push-in",
+          "Lesson 06"
+        ],
+        [
+          "face serum bottle"
+        ],
+        [
+          "stays perfectly still"
+        ],
+        [
+          "camera slowly and smoothly pushes in"
+        ],
+        [
+          "NO music, NO voice"
+        ]
+      ],
+      "exact_required": [
+        "no morphing, no warping",
+        "No people, no hands, no text on screen."
+      ],
+      "forbidden_any": [
+        "[PRODUCT]"
+      ],
+      "evaluation_set": "existing"
+    },
+    {
+      "id": "ppads_032",
+      "category": "exact_prompt",
+      "query": "Give exact L06 Arc prompt for a leather wallet.",
+      "expected_language": "english",
+      "required_groups": [
+        [
+          "L06 Arc",
+          "Lesson 06"
+        ],
+        [
+          "leather wallet"
+        ],
+        [
+          "slowly arcs a little to the right"
+        ],
+        [
+          "Moody cinematic look"
+        ],
+        [
+          "NO music, NO voice"
+        ]
+      ],
+      "exact_required": [
+        "The leather wallet stays perfectly still and exactly the same"
+      ],
+      "forbidden_any": [
+        "[PRODUCT]"
+      ],
+      "evaluation_set": "existing"
+    },
+    {
+      "id": "ppads_033",
+      "category": "exact_prompt",
+      "query": "Copy exact L06 Light Sweep prompt for a gold bracelet.",
+      "expected_language": "english",
+      "required_groups": [
+        [
+          "L06 Light Sweep",
+          "Lesson 06"
+        ],
+        [
+          "gold bracelet"
+        ],
+        [
+          "camera stays completely still"
+        ],
+        [
+          "soft band of warm light"
+        ],
+        [
+          "left to right"
+        ]
+      ],
+      "exact_required": [
+        "Clean premium product video."
+      ],
+      "forbidden_any": [
+        "[PRODUCT]"
+      ],
+      "evaluation_set": "existing"
+    },
+    {
+      "id": "ppads_036",
+      "category": "lesson_7",
+      "query": "What settings and references does Lesson 07 use for UGC-style video?",
+      "expected_language": "english",
+      "required_groups": [
+        [
+          "Lesson 07",
+          "L07"
+        ],
+        [
+          "Video"
+        ],
+        [
+          "Ingredients"
+        ],
+        [
+          "character sheet"
+        ],
+        [
+          "product sheet"
+        ],
+        [
+          "9:16"
+        ],
+        [
+          "720p"
+        ],
+        [
+          "8 sec"
+        ],
+        [
+          "phone not visible"
+        ]
+      ],
+      "forbidden_any": [
+        "studio testimonial"
+      ],
+      "evaluation_set": "existing"
+    },
+    {
+      "id": "ppads_037",
+      "category": "exact_prompt",
+      "query": "Give exact L07 UGC 1 prompt for a protein shaker.",
+      "expected_language": "english",
+      "required_groups": [
+        [
+          "L07 UGC 1",
+          "Lesson 07"
+        ],
+        [
+          "protein shaker"
+        ],
+        [
+          "Selfie-style vertical video"
+        ],
+        [
+          "NO phone visible anywhere"
+        ],
+        [
+          "normal home room"
+        ],
+        [
+          "ONLY she speaks"
+        ]
+      ],
+      "exact_required": [
+        "the camera itself is her phone",
+        "Clean natural audio only — NO background music."
+      ],
+      "forbidden_any": [
+        "[PRODUCT]"
+      ],
+      "evaluation_set": "existing"
+    },
+    {
+      "id": "ppads_038",
+      "category": "exact_prompt",
+      "query": "Give exact L07 UGC 2 prompt for a ceramic cup.",
+      "expected_language": "english",
+      "required_groups": [
+        [
+          "L07 UGC 2",
+          "Lesson 07"
+        ],
+        [
+          "ceramic cup"
+        ],
+        [
+          "Vertical video shot from her own phone resting on the desk"
+        ],
+        [
+          "NO phone visible anywhere"
+        ],
+        [
+          "looks up straight into the lens"
+        ]
+      ],
+      "exact_required": [
+        "no second camera, no screen facing us"
+      ],
+      "forbidden_any": [
+        "[PRODUCT]"
+      ],
+      "evaluation_set": "existing"
+    },
+    {
+      "id": "ppads_039",
+      "category": "troubleshooting",
+      "query": "My UGC video shows a phone in the frame. What exact fix should I add?",
+      "expected_language": "english",
+      "required_groups": [
+        [
+          "Lesson 07",
+          "L07"
+        ],
+        [
+          "camera itself is her phone"
+        ],
+        [
+          "NO phone visible anywhere in the frame"
+        ]
+      ],
+      "exact_required": [
+        "The camera itself is her phone. NO phone visible anywhere in the frame."
+      ],
+      "forbidden_any": [],
+      "evaluation_set": "existing"
+    },
+    {
+      "id": "ppads_041",
+      "category": "ethical_advertising",
+      "query": "Can I show the AI model as a real customer giving a review?",
+      "expected_language": "english",
+      "required_groups": [
+        [
+          "No",
+          "do not"
+        ],
+        [
+          "AI person",
+          "AI model"
+        ],
+        [
+          "not a real customer"
+        ],
+        [
+          "fake review",
+          "testimonial"
+        ],
+        [
+          "product demo",
+          "UGC-style"
+        ]
+      ],
+      "forbidden_any": [
+        "pretend",
+        "real customer review"
+      ],
+      "evaluation_set": "existing"
+    },
+    {
+      "id": "ppads_042",
+      "category": "lesson_8",
+      "query": "What is the final ad workflow from Lesson 08?",
+      "expected_language": "english",
+      "required_groups": [
+        [
+          "Lesson 08",
+          "L08"
+        ],
+        [
+          "UGC hook"
+        ],
+        [
+          "product videos"
+        ],
+        [
+          "UGC"
+        ],
+        [
+          "end card"
+        ],
+        [
+          "price"
+        ],
+        [
+          "order"
+        ]
+      ],
+      "forbidden_any": [
+        "CapCut tutorial is fully taught"
+      ],
+      "evaluation_set": "existing"
+    }
+  ],
+  "conversation_tests": [
+    {
+      "id": "ppads_conv_001",
+      "category": "multi_turn_exact_prompt",
+      "turns": [
+        {
+          "user": "I am making a product sheet for a perfume bottle.",
+          "expected_language": "english",
+          "required_groups": [
+            [
+              "product sheet"
+            ],
+            [
+              "Lesson 02",
+              "L02"
+            ],
+            [
+              "perfume bottle"
+            ]
+          ]
+        },
+        {
+          "user": "Now give me the exact prompt for that.",
+          "expected_language": "english",
+          "required_groups": [
+            [
+              "perfume bottle"
+            ],
+            [
+              "front view"
+            ],
+            [
+              "top-down view"
+            ],
+            [
+              "side view"
+            ],
+            [
+              "three-quarter angle view"
+            ]
+          ],
+          "exact_required": [
+            "Create a clean product reference sheet on a plain white background",
+            "same shape, same colour, same details, same text and logo, do not redesign it"
+          ],
+          "forbidden_any": [
+            "[PRODUCT]"
+          ]
+        }
+      ],
+      "evaluation_set": "existing"
+    }
+  ]
+}

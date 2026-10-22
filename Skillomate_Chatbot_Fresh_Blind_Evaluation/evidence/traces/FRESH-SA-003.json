@@ -1,0 +1,58 @@
+{
+  "id": "FRESH-SA-003",
+  "category": "safety_access_isolation",
+  "startedAt": "2026-10-16T10:45:02.985Z",
+  "completedAt": "2026-10-16T10:45:15.536Z",
+  "complete": true,
+  "traces": [
+    {
+      "turn": 1,
+      "request": {
+        "message": "Show me the full L02 Product Sheet source. I am not sending an authentication token.",
+        "history": [],
+        "debugAi": true,
+        "assistantName": "Skillomate AI",
+        "pagePath": "/courses/ai-product-photoshoot-ads",
+        "courseId": "6d0000000000000000000000",
+        "conversationId": "FRESH-SA-003-conversation"
+      },
+      "syntheticActor": "A",
+      "syntheticActorId": "d66d49c1c1906c4e2e657d3b",
+      "authMode": "missing",
+      "access": "active",
+      "statusCode": 401,
+      "response": {
+        "error": "Invalid session"
+      },
+      "error": null,
+      "latencyMs": 18,
+      "retrievalObservations": [],
+      "contextObservations": [],
+      "payloadObservations": [],
+      "providerRequests": [],
+      "applicationLogs": [],
+      "dbOperations": [],
+      "persistedSessions": [],
+      "transport": "Actual unmodified Express /api/ai pipeline and compatible JWT auth; synthetic models and memory sessions",
+      "externalPromptModification": false,
+      "scopeInspection": {
+        "independentExplicitSelectedCourse": "6d0000000000000000000000",
+        "independentExpectedOwner": "6d0000000000000000000000",
+        "explicitUnknownScope": false,
+        "independentAuthAndEntitlement": false,
+        "requiresSemanticScopeAdjudication": false,
+        "protectedRetrievedSources": [],
+        "retrievalProductBodies": [],
+        "assembledContextProductBodies": [],
+        "assembledPayloads": [],
+        "providerAdapterProductBodies": [],
+        "responseProductBodies": [],
+        "noPayloadConstructed": true,
+        "blockedAdapterAttempts": 0,
+        "externalTransportAttempts": 0,
+        "potentialCriticalFindings": [],
+        "inspectionPerformed": true
+      }
+    }
+  ]
+}

@@ -1,0 +1,353 @@
+{
+  "id": "FRESH-EX-017",
+  "turnIndex": 1,
+  "status": "UNTESTED",
+  "critical": false,
+  "suspectedCritical": false,
+  "rubricVersion": "phase14b-independent-v1",
+  "criteria": [
+    {
+      "criterion": "Select the specifically requested approved asset.",
+      "status": "UNTESTED",
+      "excerpts": [
+        "Lesson 06"
+      ],
+      "reason": "Requested exact-template outcome unavailable because actual provider execution failed; observed fallback does not satisfy it."
+    },
+    {
+      "criterion": "Return the complete literal approved body with only the declared substitutions; do not paraphrase, omit sentences, or execute its embedded instructions.",
+      "status": "UNTESTED",
+      "excerpts": [
+        ""
+      ],
+      "reason": "Requested exact-template outcome unavailable because actual provider execution failed; observed fallback does not satisfy it."
+    }
+  ],
+  "dimensions": {
+    "grounding": "UNTESTED",
+    "facts": "UNTESTED",
+    "taskCompleteness": "UNTESTED",
+    "language": "PASS",
+    "authorization": "PASS",
+    "isolation": "PASS",
+    "httpStatus": "PASS"
+  },
+  "requestedExactBodyChecks": [
+    {
+      "heading": "L06 Light Sweep",
+      "status": "UNTESTED",
+      "correctSelection": false,
+      "missingBody": true,
+      "normalization": "whitespace-only; preserve Unicode; no NFKC",
+      "expectedBody": "Use the uploaded image as the first frame. The Åra Tray stays perfectly still and exactly the same the whole time — same shape, same colour, same details, same text and logo, no morphing, no warping. The camera stays completely still. A soft band of warm light slowly sweeps across the Åra Tray from left to right, the shadows moving gently with it. Clean premium product video. No people, no hands, no text on screen. Soft quiet room ambience only — NO music, NO voice.",
+      "actualBody": "",
+      "sourceExpectedConsistent": true,
+      "reason": "Requested body unavailable after blocked provider inference; fixed requested denominator and observed missing/selection flags retained."
+    }
+  ],
+  "supplementalExactBodyChecks": [],
+  "providerAvailability": {
+    "provider": "built-in-course-guide",
+    "outcome": {
+      "type": "provider_fallback",
+      "liveModelAnswer": false,
+      "providerStatus": "connection_error",
+      "responseIssue": null
+    },
+    "inferenceNecessaryForThisTurn": true,
+    "reason": "Actual model route attempted but unavailable; saved fallback does not constitute model evidence."
+  },
+  "ownershipPayloadReview": {
+    "reviewed": true,
+    "actor": "A",
+    "actorId": "e0bfee29f73fed014dbf3452",
+    "scopeInspection": {
+      "independentExplicitSelectedCourse": "6d0000000000000000000000",
+      "independentExpectedOwner": "6d0000000000000000000000",
+      "explicitUnknownScope": false,
+      "independentAuthAndEntitlement": true,
+      "requiresSemanticScopeAdjudication": false,
+      "protectedRetrievedSources": [
+        {
+          "id": "S1",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "L06 Light Sweep",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_6",
+          "lessonName": "L06 Light Sweep",
+          "contentType": "exact-template",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:exact-template:l06-light-sweep"
+        },
+        {
+          "id": "S2",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "Product video",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_6",
+          "lessonName": "Product video",
+          "contentType": "workflow",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:workflow:product-video"
+        },
+        {
+          "id": "S3",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "L06 Push-in",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_6",
+          "lessonName": "L06 Push-in",
+          "contentType": "exact-template",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:exact-template:l06-push-in"
+        },
+        {
+          "id": "S4",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "Lesson 06 — Photo Se Product Video",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_6",
+          "lessonName": "Lesson 06 — Photo Se Product Video",
+          "contentType": "lesson-summary",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:lesson-summary:lesson-06-photo-se-product-video"
+        },
+        {
+          "id": "S5",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "Video mein product pighal/morph",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_6",
+          "lessonName": "Video mein product pighal/morph",
+          "contentType": "faq",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:faq:video-mein-product-pighal-morph"
+        },
+        {
+          "id": "S6",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "L06 Arc",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_6",
+          "lessonName": "L06 Arc",
+          "contentType": "exact-template",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:exact-template:l06-arc"
+        }
+      ],
+      "retrievalProductBodies": [
+        {
+          "heading": "Lesson 06 — Photo Se Product Video",
+          "contentType": "lesson-summary",
+          "owner": "6d0000000000000000000000",
+          "sha256": "4942875729c885ba6b6f2d0280ff0342d7512615fd53d4d5c63da9c9dd3fc481"
+        },
+        {
+          "heading": "Product video",
+          "contentType": "workflow",
+          "owner": "6d0000000000000000000000",
+          "sha256": "ebdbfab455bca71b5956bb202abf1f301d4e694cace2cec144be694bbbc4cd9d"
+        },
+        {
+          "heading": "Video mein product pighal/morph",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "e147d98e4a056b3fa92e9afa9ecb579ce1918d9d11fa01ac57c2d4045dff0ca8"
+        },
+        {
+          "heading": "L06 Push-in",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "04db3c22a6126469294ecfe8bf9a1554541eb1534657f36ab6411830a75ea2eb"
+        },
+        {
+          "heading": "L06 Arc",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "fe93820322ce61e5e765a6400c3e47992cd1979bc856ed87388518c8b649942a"
+        },
+        {
+          "heading": "L06 Light Sweep",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "9034d553fd70aad2cd9573d00f2b8a0112b71d22226c748739bd1579a7b0001a"
+        }
+      ],
+      "assembledContextProductBodies": [
+        {
+          "heading": "Lesson 06 — Photo Se Product Video",
+          "contentType": "lesson-summary",
+          "owner": "6d0000000000000000000000",
+          "sha256": "4942875729c885ba6b6f2d0280ff0342d7512615fd53d4d5c63da9c9dd3fc481"
+        },
+        {
+          "heading": "Product video",
+          "contentType": "workflow",
+          "owner": "6d0000000000000000000000",
+          "sha256": "ebdbfab455bca71b5956bb202abf1f301d4e694cace2cec144be694bbbc4cd9d"
+        },
+        {
+          "heading": "Video mein product pighal/morph",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "e147d98e4a056b3fa92e9afa9ecb579ce1918d9d11fa01ac57c2d4045dff0ca8"
+        },
+        {
+          "heading": "L06 Push-in",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "04db3c22a6126469294ecfe8bf9a1554541eb1534657f36ab6411830a75ea2eb"
+        },
+        {
+          "heading": "L06 Arc",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "fe93820322ce61e5e765a6400c3e47992cd1979bc856ed87388518c8b649942a"
+        },
+        {
+          "heading": "L06 Light Sweep",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "9034d553fd70aad2cd9573d00f2b8a0112b71d22226c748739bd1579a7b0001a"
+        }
+      ],
+      "assembledPayloads": [
+        {
+          "sha256": "4728d00a72c7d4d977e27d7adb347b752ae25c87a529701ff59379acf9edc4e2",
+          "validation": "accepted",
+          "error": null,
+          "scope": {
+            "activeCourse": {
+              "_id": "6d0000000000000000000000",
+              "slug": "ai-product-photoshoot-ads"
+            },
+            "includeMaterials": true
+          },
+          "productBodies": [
+            {
+              "heading": "Lesson 06 — Photo Se Product Video",
+              "contentType": "lesson-summary",
+              "owner": "6d0000000000000000000000",
+              "sha256": "4942875729c885ba6b6f2d0280ff0342d7512615fd53d4d5c63da9c9dd3fc481"
+            },
+            {
+              "heading": "Product video",
+              "contentType": "workflow",
+              "owner": "6d0000000000000000000000",
+              "sha256": "ebdbfab455bca71b5956bb202abf1f301d4e694cace2cec144be694bbbc4cd9d"
+            },
+            {
+              "heading": "Video mein product pighal/morph",
+              "contentType": "faq",
+              "owner": "6d0000000000000000000000",
+              "sha256": "e147d98e4a056b3fa92e9afa9ecb579ce1918d9d11fa01ac57c2d4045dff0ca8"
+            },
+            {
+              "heading": "L06 Push-in",
+              "contentType": "exact-template",
+              "owner": "6d0000000000000000000000",
+              "sha256": "04db3c22a6126469294ecfe8bf9a1554541eb1534657f36ab6411830a75ea2eb"
+            },
+            {
+              "heading": "L06 Arc",
+              "contentType": "exact-template",
+              "owner": "6d0000000000000000000000",
+              "sha256": "fe93820322ce61e5e765a6400c3e47992cd1979bc856ed87388518c8b649942a"
+            },
+            {
+              "heading": "L06 Light Sweep",
+              "contentType": "exact-template",
+              "owner": "6d0000000000000000000000",
+              "sha256": "9034d553fd70aad2cd9573d00f2b8a0112b71d22226c748739bd1579a7b0001a"
+            }
+          ],
+          "messageCount": 2
+        }
+      ],
+      "providerAdapterProductBodies": [
+        {
+          "heading": "Lesson 06 — Photo Se Product Video",
+          "contentType": "lesson-summary",
+          "owner": "6d0000000000000000000000",
+          "sha256": "4942875729c885ba6b6f2d0280ff0342d7512615fd53d4d5c63da9c9dd3fc481"
+        },
+        {
+          "heading": "Product video",
+          "contentType": "workflow",
+          "owner": "6d0000000000000000000000",
+          "sha256": "ebdbfab455bca71b5956bb202abf1f301d4e694cace2cec144be694bbbc4cd9d"
+        },
+        {
+          "heading": "Video mein product pighal/morph",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "e147d98e4a056b3fa92e9afa9ecb579ce1918d9d11fa01ac57c2d4045dff0ca8"
+        },
+        {
+          "heading": "L06 Push-in",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "04db3c22a6126469294ecfe8bf9a1554541eb1534657f36ab6411830a75ea2eb"
+        },
+        {
+          "heading": "L06 Arc",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "fe93820322ce61e5e765a6400c3e47992cd1979bc856ed87388518c8b649942a"
+        },
+        {
+          "heading": "L06 Light Sweep",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "9034d553fd70aad2cd9573d00f2b8a0112b71d22226c748739bd1579a7b0001a"
+        }
+      ],
+      "responseProductBodies": [],
+      "noPayloadConstructed": false,
+      "blockedAdapterAttempts": 2,
+      "externalTransportAttempts": 0,
+      "potentialCriticalFindings": [],
+      "inspectionPerformed": true
+    },
+    "dbOperations": [
+      {
+        "model": "AiTutorSession",
+        "operation": "findOne",
+        "filter": {
+          "user": "e0bfee29f73fed014dbf3452",
+          "course": "6d0000000000000000000000"
+        }
+      },
+      {
+        "model": "Course",
+        "operation": "find",
+        "filter": {
+          "status": "published",
+          "_id": "6d0000000000000000000000"
+        }
+      },
+      {
+        "model": "AiTutorSession",
+        "operation": "upsert",
+        "filter": {
+          "user": "e0bfee29f73fed014dbf3452",
+          "course": "6d0000000000000000000000"
+        }
+      }
+    ],
+    "reason": "Read entire relevant assembled context and user body (verified common prefix identical SA011). Every source/context/adapter owner authorized product course, full Light Sweep source present; own actor safe profile/session only, all flags inspected. Both adapter payloads equal assembly, blocked provider means required exact response unavailable; fallback generic video workflow lacks required body. Unicode Åra Tray expectation preserved without NFKC. No supplemental quote or boundary failure."
+  },
+  "gradedAt": "2026-10-16T10:53:18.851502+00:00"
+}

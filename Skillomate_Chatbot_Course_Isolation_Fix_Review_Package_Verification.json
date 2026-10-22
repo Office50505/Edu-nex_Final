@@ -1,0 +1,27 @@
+{
+  "verifiedAt": "2026-10-16T10:32:47.074827+00:00",
+  "absoluteZipPath": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/Skillomate_Chatbot_Course_Isolation_Fix_Review.zip",
+  "zipSHA256": "8750ccdd4024717626ae3e46023efad66f379260b039f52a9e51352ac6a61689",
+  "zipBytes": 1522361,
+  "fileCount": 366,
+  "crcAndContentHashes": "PASS",
+  "newIsolationTests": "38/38",
+  "chatbotTests": "514/514",
+  "allBackend": {
+    "PASS": 1045,
+    "FAIL": 24,
+    "SKIP": 0,
+    "total": 1069
+  },
+  "allPython": {
+    "PASS": 167,
+    "FAIL": 0,
+    "SKIP": 0,
+    "total": 167
+  },
+  "phase12RecordedComparison": "40/40 byte-identical",
+  "originalFunctionalCases": "4/4, 5/5 full bodies",
+  "unexpectedPreservationChanges": 0,
+  "productionDeployment": false,
+  "externalProviderRequests": 0
+}

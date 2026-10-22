@@ -1,0 +1,31 @@
+{
+  "baseline": "Exact stopped Phase14A working tree",
+  "files": [
+    {
+      "path": "edunex-b/services/productTutorKnowledge.js",
+      "new": false,
+      "beforeSha256": "fa2d21429bb7c866c0c52519ebc9330065966bf665a32cf35cafee187da0bb87",
+      "afterSha256": "104b598b1ffd816356d9b4c27e270a80db597e624c30a0b3d7841b2b66377ae1",
+      "addedLines": 10,
+      "removedLines": 9
+    },
+    {
+      "path": "edunex-b/services/productTutorState.js",
+      "new": false,
+      "beforeSha256": "69baa608fbfbb81ff1d242c20e71b434e11ad327fd096ad2583d3908bf2e5027",
+      "afterSha256": "1b0148e1978a8067ea8cd337d0892ace9e8d2e1197ea140d72f334e6d1647eac",
+      "addedLines": 20,
+      "removedLines": 5
+    },
+    {
+      "path": "edunex-b/tests/product-tutor-unicode-safety.test.cjs",
+      "new": true,
+      "beforeSha256": null,
+      "afterSha256": "a59183f64a99d868727739f17359afb85c570cc7f5d5c22c276280d7c4a990a5",
+      "addedLines": 95,
+      "removedLines": 0
+    }
+  ],
+  "protectedExistingFiles": 523,
+  "unexpectedChangedFiles": []
+}

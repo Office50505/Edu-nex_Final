@@ -1,0 +1,1370 @@
+{
+  "suite": "Phase8_100_frozen_v5_application_cases",
+  "rubric_version": "product-tutor-v6.0",
+  "evaluation_scope": "end_to_end",
+  "method": "offline bounded multilingual concept/negation rubric plus complete-template comparison; no LLM judging or new provider calls",
+  "limitations": [
+    "Finite semantic rules require human adjudication for unfamiliar paraphrases; they do not establish unrestricted language understanding.",
+    "Provider-labelled application answers are saved evidence, not raw upstream response envelopes.",
+    "Regrading historical text does not measure the behavior of the newly changed tutor."
+  ],
+  "summary": {
+    "total": 30,
+    "passed": 30,
+    "failed": 0,
+    "skipped": 0,
+    "inconclusive": 0,
+    "provider_fallback": 0,
+    "provider_fallback_cases": 0,
+    "live_provider_turns": 0,
+    "local_quality_turns": 31,
+    "score_all_cases_pct": 100.0,
+    "score_executed_cases_pct": 100.0,
+    "dimension_turn_counts": {
+      "correctness": {
+        "passed": 31
+      },
+      "language": {
+        "passed": 31
+      },
+      "lesson_references": {
+        "passed": 31
+      },
+      "safety": {
+        "passed": 31
+      },
+      "prompt_accuracy": {
+        "passed": 31
+      },
+      "task_completion": {
+        "passed": 31
+      },
+      "context_retention": {
+        "passed": 1
+      }
+    }
+  },
+  "results": [
+    {
+      "id": "ppads_001",
+      "category": "course_understanding",
+      "status": "passed",
+      "turns": [
+        {
+          "query": "What does the AI Product Photoshoot & Ads course teach?",
+          "answer": "AI Product Photoshoot & Ads has 8 lessons: 01 Course Intro; 02 Phone Photo Se Studio Photo (phone photos, Product Sheet, white studio/lifestyle/dark premium); 03 Model Ke Saath Product (character and product references, model shots and hands); 04 Festive Shoot + Colour Variants (Diwali, wedding scenes and a sheet for each colour); 05 ChatGPT Se Ad Plan (buyers, problems, angles, hooks, script, caption and Flow prompts); 06 Photo Se Product Video (one movement with Ingredients); 07 UGC-Style Video (honest phone-style AI-presenter videos); 08 Finale (complete workflow, common mistakes, honesty and final project). You learn to create product photos, product videos and honest ads for your own products or clients. You need a phone, laptop and a product. Tools: Google Flow, ChatGPT and CapCut; a full CapCut editing tutorial is not taught. Course prompts are in lesson notes.",
+          "status": "passed",
+          "provider_outcome": "local_rule",
+          "live_model_answer": false,
+          "template_label": null,
+          "dimensions": {
+            "correctness": {
+              "status": "passed",
+              "reasons": []
+            },
+            "language": {
+              "status": "passed",
+              "reasons": []
+            },
+            "lesson_references": {
+              "status": "passed",
+              "reasons": []
+            },
+            "safety": {
+              "status": "passed",
+              "reasons": []
+            },
+            "prompt_accuracy": {
+              "status": "passed",
+              "reasons": []
+            },
+            "task_completion": {
+              "status": "passed",
+              "reasons": []
+            }
+          }
+        }
+      ],
+      "original_provider_status": null
+    },
+    {
+      "id": "ppads_002",
+      "category": "lesson_1",
+      "status": "passed",
+      "turns": [
+        {
+          "query": "In Lesson 01, what do I need before starting this product ad course?",
+          "answer": "Lesson 01\n\nAI Product Photoshoot & Ads has 8 lessons: 01 Course Intro; 02 Phone Photo Se Studio Photo (phone photos, Product Sheet, white studio/lifestyle/dark premium); 03 Model Ke Saath Product (character and product references, model shots and hands); 04 Festive Shoot + Colour Variants (Diwali, wedding scenes and a sheet for each colour); 05 ChatGPT Se Ad Plan (buyers, problems, angles, hooks, script, caption and Flow prompts); 06 Photo Se Product Video (one movement with Ingredients); 07 UGC-Style Video (honest phone-style AI-presenter videos); 08 Finale (complete workflow, common mistakes, honesty and final project). You learn to create product photos, product videos and honest ads for your own products or clients. You need a phone, laptop and a product. Tools: Google Flow, ChatGPT and CapCut; a full CapCut editing tutorial is not taught. Course prompts are in lesson notes.",
+          "status": "passed",
+          "provider_outcome": "local_rule",
+          "live_model_answer": false,
+          "template_label": null,
+          "dimensions": {
+            "correctness": {
+              "status": "passed",
+              "reasons": []
+            },
+            "language": {
+              "status": "passed",
+              "reasons": []
+            },
+            "lesson_references": {
+              "status": "passed",
+              "reasons": []
+            },
+            "safety": {
+              "status": "passed",
+              "reasons": []
+            },
+            "prompt_accuracy": {
+              "status": "passed",
+              "reasons": []
+            },
+            "task_completion": {
+              "status": "passed",
+              "reasons": []
+            }
+          }
+        }
+      ],
+      "original_provider_status": null
+    },
+    {
+      "id": "ppads_004",
+      "category": "lesson_2",
+      "status": "passed",
+      "turns": [
+        {
+          "query": "Give me the Lesson 02 workflow for making a product sheet from phone photos.",
+          "answer": "Lesson 02\n\nTake 5–7 clear phone photos from different angles in daylight, with flash off. In Google Flow choose New project → Image → Nano Banana Pro. Upload all photos as references and run the Product Sheet template. Review, regenerate if needed, and save the best sheet for later shots.",
+          "status": "passed",
+          "provider_outcome": "local_rule",
+          "live_model_answer": false,
+          "template_label": null,
+          "dimensions": {
+            "correctness": {
+              "status": "passed",
+              "reasons": []
+            },
+            "language": {
+              "status": "passed",
+              "reasons": []
+            },
+            "lesson_references": {
+              "status": "passed",
+              "reasons": []
+            },
+            "safety": {
+              "status": "passed",
+              "reasons": []
+            },
+            "prompt_accuracy": {
+              "status": "passed",
+              "reasons": []
+            },
+            "task_completion": {
+              "status": "passed",
+              "reasons": []
+            }
+          }
+        }
+      ],
+      "original_provider_status": null
+    },
+    {
+      "id": "ppads_005",
+      "category": "exact_prompt",
+      "status": "passed",
+      "turns": [
+        {
+          "query": "Give the exact L02 Product Sheet prompt for a perfume bottle.",
+          "answer": "L02 Product Sheet\n\n```text\nUse all the uploaded photos of this perfume bottle. Create a clean product reference sheet on a plain white background showing the exact same perfume bottle in four views arranged in a neat grid: front view, top-down view, side view and three-quarter angle view. Keep the perfume bottle exactly the same in every view — same shape, same colour, same details, same text and logo, do not redesign it. Even soft studio lighting, no extra objects, no text labels, realistic product photography.\n```",
+          "status": "passed",
+          "provider_outcome": "local_rule",
+          "live_model_answer": false,
+          "template_label": "L02 Product Sheet",
+          "dimensions": {
+            "correctness": {
+              "status": "passed",
+              "reasons": []
+            },
+            "language": {
+              "status": "passed",
+              "reasons": []
+            },
+            "lesson_references": {
+              "status": "passed",
+              "reasons": []
+            },
+            "safety": {
+              "status": "passed",
+              "reasons": []
+            },
+            "prompt_accuracy": {
+              "status": "passed",
+              "reasons": []
+            },
+            "task_completion": {
+              "status": "passed",
+              "reasons": []
+            }
+          }
+        }
+      ],
+      "original_provider_status": null
+    },
+    {
+      "id": "ppads_006",
+      "category": "exact_prompt",
+      "status": "passed",
+      "turns": [
+        {
+          "query": "Copy-paste the L02 White Studio prompt for a skincare jar.",
+          "answer": "L02 White Studio\n\n```text\nUse the uploaded product sheet as the reference. Keep the skincare jar exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a clean seamless white background, soft even studio lighting, a soft natural shadow under it, slight top-down angle, sharp focus, realistic product photography.\n```",
+          "status": "passed",
+          "provider_outcome": "local_rule",
+          "live_model_answer": false,
+          "template_label": "L02 White Studio",
+          "dimensions": {
+            "correctness": {
+              "status": "passed",
+              "reasons": []
+            },
+            "language": {
+              "status": "passed",
+              "reasons": []
+            },
+            "lesson_references": {
+              "status": "passed",
+              "reasons": []
+            },
+            "safety": {
+              "status": "passed",
+              "reasons": []
+            },
+            "prompt_accuracy": {
+              "status": "passed",
+              "reasons": []
+            },
+            "task_completion": {
+              "status": "passed",
+              "reasons": []
+            }
+          }
+        }
+      ],
+      "original_provider_status": null
+    },
+    {
+      "id": "ppads_007",
+      "category": "exact_prompt",
+      "status": "passed",
+      "turns": [
+        {
+          "query": "What is the exact L02 Lifestyle prompt for a water bottle?",
+          "answer": "L02 Lifestyle\n\n```text\nUse the uploaded product sheet as the reference. Keep the water bottle exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a warm wooden desk next to a white coffee mug and a small green plant, soft morning window light from the left, shallow depth of field, realistic lifestyle product photography.\n```",
+          "status": "passed",
+          "provider_outcome": "local_rule",
+          "live_model_answer": false,
+          "template_label": "L02 Lifestyle",
+          "dimensions": {
+            "correctness": {
+              "status": "passed",
+              "reasons": []
+            },
+            "language": {
+              "status": "passed",
+              "reasons": []
+            },
+            "lesson_references": {
+              "status": "passed",
+              "reasons": []
+            },
+            "safety": {
+              "status": "passed",
+              "reasons": []
+            },
+            "prompt_accuracy": {
+              "status": "passed",
+              "reasons": []
+            },
+            "task_completion": {
+              "status": "passed",
+              "reasons": []
+            }
+          }
+        }
+      ],
+      "original_provider_status": null
+    },
+    {
+      "id": "ppads_008",
+      "category": "exact_prompt",
+      "status": "passed",
+      "turns": [
+        {
+          "query": "Give me the exact L02 Dark Premium prompt for sunglasses.",
+          "answer": "L02 Dark Premium\n\n```text\nUse the uploaded product sheet as the reference. Keep the sunglasses exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a matte black surface against a dark background, a single soft rim light outlining its edges, a subtle reflection on the surface, premium moody look, realistic product photography.\n```",
+          "status": "passed",
+          "provider_outcome": "local_rule",
+          "live_model_answer": false,
+          "template_label": "L02 Dark Premium",
+          "dimensions": {
+            "correctness": {
+              "status": "passed",
+              "reasons": []
+            },
+            "language": {
+              "status": "passed",
+              "reasons": []
+            },
+            "lesson_references": {
+              "status": "passed",
+              "reasons": []
+            },
+            "safety": {
+              "status": "passed",
+              "reasons": []
+            },
+            "prompt_accuracy": {
+              "status": "passed",
+              "reasons": []
+            },
+            "task_completion": {
+              "status": "passed",
+              "reasons": []
+            }
+          }
+        }
+      ],
+      "original_provider_status": null
+    },
+    {
+      "id": "ppads_011",
+      "category": "lesson_3",
+      "status": "passed",
+      "turns": [
+        {
+          "query": "Explain the Lesson 03 model-shot workflow with product and character sheets.",
+          "answer": "Lesson 03\n\nAttach both the character sheet and product sheet. Match the model’s clothes and look to the character sheet, keep the same face, and include “natural hands with five fingers”. Generate 2–3 versions and check the result.",
+          "status": "passed",
+          "provider_outcome": "local_rule",
+          "live_model_answer": false,
+          "template_label": null,
+          "dimensions": {
+            "correctness": {
+              "status": "passed",
+              "reasons": []
+            },
+            "language": {
+              "status": "passed",
+              "reasons": []
+            },
+            "lesson_references": {
+              "status": "passed",
+              "reasons": []
+            },
+            "safety": {
+              "status": "passed",
+              "reasons": []
+            },
+            "prompt_accuracy": {
+              "status": "passed",
+              "reasons": []
+            },
+            "task_completion": {
+              "status": "passed",
+              "reasons": []
+            }
+          }
+        }
+      ],
+      "original_provider_status": null
+    },
+    {
+      "id": "ppads_012",
+      "category": "exact_prompt",
+      "status": "passed",
+      "turns": [
+        {
+          "query": "Give the exact L03 Character Sheet bonus prompt for a young Indian woman.",
+          "answer": "L03 Character Sheet (bonus)\n\n```text\nCreate a character reference sheet of one realistic young Indian woman, clearly adult, [hair, outfit details]. Show the exact same person in one image: a close-up of the face, and full-body front view, side view and back view on a plain light grey background. Same face, same hair, same outfit in every view. Soft even light, RAW realistic photo look, real skin texture, no text labels.\n```\n\nFields still in brackets need your details; I have not invented them.",
+          "status": "passed",
+          "provider_outcome": "local_rule",
+          "live_model_answer": false,
+          "template_label": "L03 Character Sheet (bonus)",
+          "dimensions": {
+            "correctness": {
+              "status": "passed",
+              "reasons": []
+            },
+            "language": {
+              "status": "passed",
+              "reasons": []
+            },
+            "lesson_references": {
+              "status": "passed",
+              "reasons": []
+            },
+            "safety": {
+              "status": "passed",
+              "reasons": []
+            },
+            "prompt_accuracy": {
+              "status": "passed",
+              "reasons": []
+            },
+            "task_completion": {
+              "status": "passed",
+              "reasons": []
+            }
+          }
+        }
+      ],
+      "original_provider_status": null
+    },
+    {
+      "id": "ppads_013",
+      "category": "exact_prompt",
+      "status": "passed",
+      "turns": [
+        {
+          "query": "Give exact L03 Hands close-up prompt for a coffee mug.",
+          "answer": "L03 Hands close-up\n\n```text\nUse the uploaded product sheet for the coffee mug and the uploaded character sheet for the [woman / man]. Keep the coffee mug exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Close-up of the [woman's] hands using the coffee mug on a wooden desk, [clothing that matches the character sheet, e.g. bare arms matching her blue tank top], natural hands with five fingers each, soft window light, shallow depth of field, realistic real-world scale, realistic lifestyle product photography.\n```\n\nFields still in brackets need your details; I have not invented them.",
+          "status": "passed",
+          "provider_outcome": "local_rule",
+          "live_model_answer": false,
+          "template_label": "L03 Hands close-up",
+          "dimensions": {
+            "correctness": {
+              "status": "passed",
+              "reasons": []
+            },
+            "language": {
+              "status": "passed",
+              "reasons": []
+            },
+            "lesson_references": {
+              "status": "passed",
+              "reasons": []
+            },
+            "safety": {
+              "status": "passed",
+              "reasons": []
+            },
+            "prompt_accuracy": {
+              "status": "passed",
+              "reasons": []
+            },
+            "task_completion": {
+              "status": "passed",
+              "reasons": []
+            }
+          }
+        }
+      ],
+      "original_provider_status": null
+    },
+    {
+      "id": "ppads_014",
+      "category": "exact_prompt",
+      "status": "passed",
+      "turns": [
+        {
+          "query": "Copy the L03 Desk prompt for a compact keyboard.",
+          "answer": "L03 Desk\n\n```text\nUse the uploaded product sheet for the compact keyboard and the uploaded character sheet for the [woman / man]. Keep the compact keyboard exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Keep the [woman's] face exactly the same as the character sheet. [She] sits at a clean desk using the compact keyboard, side three-quarter angle, natural hands with five fingers, bright natural daylight, realistic real-world scale, realistic lifestyle photography.\n```\n\nFields still in brackets need your details; I have not invented them.",
+          "status": "passed",
+          "provider_outcome": "local_rule",
+          "live_model_answer": false,
+          "template_label": "L03 Desk",
+          "dimensions": {
+            "correctness": {
+              "status": "passed",
+              "reasons": []
+            },
+            "language": {
+              "status": "passed",
+              "reasons": []
+            },
+            "lesson_references": {
+              "status": "passed",
+              "reasons": []
+            },
+            "safety": {
+              "status": "passed",
+              "reasons": []
+            },
+            "prompt_accuracy": {
+              "status": "passed",
+              "reasons": []
+            },
+            "task_completion": {
+              "status": "passed",
+              "reasons": []
+            }
+          }
+        }
+      ],
+      "original_provider_status": null
+    },
+    {
+      "id": "ppads_015",
+      "category": "exact_prompt",
+      "status": "passed",
+      "turns": [
+        {
+          "query": "What is the exact L03 Showing to camera prompt for a handmade soap box?",
+          "answer": "L03 Showing to camera\n\n```text\nUse the uploaded product sheet for the handmade soap box and the uploaded character sheet for the [woman / man]. Keep the handmade soap box exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Keep the [woman's] face exactly the same as the character sheet. [She] holds the handmade soap box with both hands in front of [her] chest, showing it to the camera with a small natural smile, plain light background, soft studio light, natural hands with five fingers, realistic real-world scale, realistic product photography.\n```\n\nFields still in brackets need your details; I have not invented them.",
+          "status": "passed",
+          "provider_outcome": "local_rule",
+          "live_model_answer": false,
+          "template_label": "L03 Showing to camera",
+          "dimensions": {
+            "correctness": {
+              "status": "passed",
+              "reasons": []
+            },
+            "language": {
+              "status": "passed",
+              "reasons": []
+            },
+            "lesson_references": {
+              "status": "passed",
+              "reasons": []
+            },
+            "safety": {
+              "status": "passed",
+              "reasons": []
+            },
+            "prompt_accuracy": {
+              "status": "passed",
+              "reasons": []
+            },
+            "task_completion": {
+              "status": "passed",
+              "reasons": []
+            }
+          }
+        }
+      ],
+      "original_provider_status": null
+    },
+    {
+      "id": "ppads_019",
+      "category": "exact_prompt",
+      "status": "passed",
+      "turns": [
+        {
+          "query": "Give exact L04 Diwali prompt for a chocolate gift box.",
+          "answer": "L04 Diwali\n\n```text\nUse the uploaded product sheet as the reference. Keep the chocolate gift box exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a wooden table during Diwali night, a few lit clay diyas and orange marigold flowers placed behind and beside it, soft warm fairy lights glowing out of focus in the background, the chocolate gift box sharp and clearly the hero in the foreground, warm golden light, realistic real-world scale, realistic festive product photography.\n```",
+          "status": "passed",
+          "provider_outcome": "local_rule",
+          "live_model_answer": false,
+          "template_label": "L04 Diwali",
+          "dimensions": {
+            "correctness": {
+              "status": "passed",
+              "reasons": []
+            },
+            "language": {
+              "status": "passed",
+              "reasons": []
+            },
+            "lesson_references": {
+              "status": "passed",
+              "reasons": []
+            },
+            "safety": {
+              "status": "passed",
+              "reasons": []
+            },
+            "prompt_accuracy": {
+              "status": "passed",
+              "reasons": []
+            },
+            "task_completion": {
+              "status": "passed",
+              "reasons": []
+            }
+          }
+        }
+      ],
+      "original_provider_status": null
+    },
+    {
+      "id": "ppads_020",
+      "category": "exact_prompt",
+      "status": "passed",
+      "turns": [
+        {
+          "query": "Give exact L04 Wedding Gift prompt for a jewellery box.",
+          "answer": "L04 Wedding Gift\n\n```text\nUse the uploaded product sheet as the reference. Keep the jewellery box exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a soft silk cloth next to an open premium gift box with gold ribbon and a few rose petals, elegant wedding gifting mood, soft warm light, jewellery box sharp in the foreground, realistic real-world scale, realistic festive product photography.\n```",
+          "status": "passed",
+          "provider_outcome": "local_rule",
+          "live_model_answer": false,
+          "template_label": "L04 Wedding Gift",
+          "dimensions": {
+            "correctness": {
+              "status": "passed",
+              "reasons": []
+            },
+            "language": {
+              "status": "passed",
+              "reasons": []
+            },
+            "lesson_references": {
+              "status": "passed",
+              "reasons": []
+            },
+            "safety": {
+              "status": "passed",
+              "reasons": []
+            },
+            "prompt_accuracy": {
+              "status": "passed",
+              "reasons": []
+            },
+            "task_completion": {
+              "status": "passed",
+              "reasons": []
+            }
+          }
+        }
+      ],
+      "original_provider_status": null
+    },
+    {
+      "id": "ppads_021",
+      "category": "exact_prompt",
+      "status": "passed",
+      "turns": [
+        {
+          "query": "Give exact L04 Colour Variant Sheet prompt for changing all bottle caps to matte black.",
+          "answer": "L04 Colour Variant Sheet\n\n```text\nUse the uploaded product sheet as the reference. Only change the colour of all bottle caps to matte black. Keep everything else exactly the same — same shape, same layout, same details, same text and logo, same four views, same background, same lighting. Output a full product sheet in the new colour.\n```",
+          "status": "passed",
+          "provider_outcome": "local_rule",
+          "live_model_answer": false,
+          "template_label": "L04 Colour Variant Sheet",
+          "dimensions": {
+            "correctness": {
+              "status": "passed",
+              "reasons": []
+            },
+            "language": {
+              "status": "passed",
+              "reasons": []
+            },
+            "lesson_references": {
+              "status": "passed",
+              "reasons": []
+            },
+            "safety": {
+              "status": "passed",
+              "reasons": []
+            },
+            "prompt_accuracy": {
+              "status": "passed",
+              "reasons": []
+            },
+            "task_completion": {
+              "status": "passed",
+              "reasons": []
+            }
+          }
+        }
+      ],
+      "original_provider_status": null
+    },
+    {
+      "id": "ppads_024",
+      "category": "lesson_5",
+      "status": "passed",
+      "turns": [
+        {
+          "query": "Teach me the Lesson 05 ad planning workflow in steps.",
+          "answer": "Lesson 05\n\nProvide real product details, price and where you sell. First ask for three buyer types, their problems and an ad angle for each. Choose one angle, then request 5 hooks, a 15-second script and an Instagram caption. Use only supplied features; add no unsupported claims. Next request 3 Google Flow image prompts and run them with the product sheet. Review and remove false or unproven claims.",
+          "status": "passed",
+          "provider_outcome": "local_rule",
+          "live_model_answer": false,
+          "template_label": null,
+          "dimensions": {
+            "correctness": {
+              "status": "passed",
+              "reasons": []
+            },
+            "language": {
+              "status": "passed",
+              "reasons": []
+            },
+            "lesson_references": {
+              "status": "passed",
+              "reasons": []
+            },
+            "safety": {
+              "status": "passed",
+              "reasons": []
+            },
+            "prompt_accuracy": {
+              "status": "passed",
+              "reasons": []
+            },
+            "task_completion": {
+              "status": "passed",
+              "reasons": []
+            }
+          }
+        }
+      ],
+      "original_provider_status": null
+    },
+    {
+      "id": "ppads_025",
+      "category": "exact_prompt",
+      "status": "passed",
+      "turns": [
+        {
+          "query": "Give the exact L05 Step 1 Brief prompt.",
+          "answer": "L05 Step 1 Brief\n\n```text\nI sell a [product with real details — size, colour, key features]. Price: [your price]. I sell on [Instagram / website / marketplace] in India. Tell me: 1. Three types of people who would buy this 2. What problem it solves for each of them 3. One ad angle for each buyer Keep it short and simple.\n```\n\nFields still in brackets need your details; I have not invented them.",
+          "status": "passed",
+          "provider_outcome": "local_rule",
+          "live_model_answer": false,
+          "template_label": "L05 Step 1 Brief",
+          "dimensions": {
+            "correctness": {
+              "status": "passed",
+              "reasons": []
+            },
+            "language": {
+              "status": "passed",
+              "reasons": []
+            },
+            "lesson_references": {
+              "status": "passed",
+              "reasons": []
+            },
+            "safety": {
+              "status": "passed",
+              "reasons": []
+            },
+            "prompt_accuracy": {
+              "status": "passed",
+              "reasons": []
+            },
+            "task_completion": {
+              "status": "passed",
+              "reasons": []
+            }
+          }
+        }
+      ],
+      "original_provider_status": null
+    },
+    {
+      "id": "ppads_026",
+      "category": "exact_prompt",
+      "status": "passed",
+      "turns": [
+        {
+          "query": "Give exact L05 Step 2 Hooks + Script prompt.",
+          "answer": "L05 Step 2 Hooks + Script\n\n```text\nPick angle [number]. Write 5 scroll-stopping hooks in natural Hinglish, like a friend talking — not cheesy, no fake claims. Then write a 15-second ad script: what to show on screen and what the voiceover says. Also write one Instagram caption. Use only the features I gave you, don't add anything new.\n```\n\nFields still in brackets need your details; I have not invented them.",
+          "status": "passed",
+          "provider_outcome": "local_rule",
+          "live_model_answer": false,
+          "template_label": "L05 Step 2 Hooks + Script",
+          "dimensions": {
+            "correctness": {
+              "status": "passed",
+              "reasons": []
+            },
+            "language": {
+              "status": "passed",
+              "reasons": []
+            },
+            "lesson_references": {
+              "status": "passed",
+              "reasons": []
+            },
+            "safety": {
+              "status": "passed",
+              "reasons": []
+            },
+            "prompt_accuracy": {
+              "status": "passed",
+              "reasons": []
+            },
+            "task_completion": {
+              "status": "passed",
+              "reasons": []
+            }
+          }
+        }
+      ],
+      "original_provider_status": null
+    },
+    {
+      "id": "ppads_027",
+      "category": "exact_prompt",
+      "status": "passed",
+      "turns": [
+        {
+          "query": "Give exact L05 Step 3 Flow prompts instruction.",
+          "answer": "L05 Step 3 Flow prompts\n\n```text\nNow write 3 image prompts for Google Flow (Nano Banana) for this ad. Each prompt must start with: \"Use the uploaded product sheet as the reference. Keep the [product] exactly the same — same shape, same colour, same details, same text and logo, do not redesign it.\" Then describe one scene for the ad.\n```\n\nFields still in brackets need your details; I have not invented them.",
+          "status": "passed",
+          "provider_outcome": "local_rule",
+          "live_model_answer": false,
+          "template_label": "L05 Step 3 Flow prompts",
+          "dimensions": {
+            "correctness": {
+              "status": "passed",
+              "reasons": []
+            },
+            "language": {
+              "status": "passed",
+              "reasons": []
+            },
+            "lesson_references": {
+              "status": "passed",
+              "reasons": []
+            },
+            "safety": {
+              "status": "passed",
+              "reasons": []
+            },
+            "prompt_accuracy": {
+              "status": "passed",
+              "reasons": []
+            },
+            "task_completion": {
+              "status": "passed",
+              "reasons": []
+            }
+          }
+        }
+      ],
+      "original_provider_status": null
+    },
+    {
+      "id": "ppads_030",
+      "category": "lesson_6",
+      "status": "passed",
+      "turns": [
+        {
+          "query": "What are the Lesson 06 Google Flow video settings?",
+          "answer": "Lesson 06\n\nIn Flow choose Video → Ingredients and attach the image. Recorded course settings: 16:9, Omni 1.1 Flash, 720p, 6 sec, x1. Choose one slow movement: push-in, arc or light sweep. Keep the product perfectly still with no morphing or warping. Add music later during editing.",
+          "status": "passed",
+          "provider_outcome": "local_rule",
+          "live_model_answer": false,
+          "template_label": null,
+          "dimensions": {
+            "correctness": {
+              "status": "passed",
+              "reasons": []
+            },
+            "language": {
+              "status": "passed",
+              "reasons": []
+            },
+            "lesson_references": {
+              "status": "passed",
+              "reasons": []
+            },
+            "safety": {
+              "status": "passed",
+              "reasons": []
+            },
+            "prompt_accuracy": {
+              "status": "passed",
+              "reasons": []
+            },
+            "task_completion": {
+              "status": "passed",
+              "reasons": []
+            }
+          }
+        }
+      ],
+      "original_provider_status": null
+    },
+    {
+      "id": "ppads_031",
+      "category": "exact_prompt",
+      "status": "passed",
+      "turns": [
+        {
+          "query": "Give exact L06 Push-in prompt for a face serum bottle.",
+          "answer": "L06 Push-in\n\n```text\nUse the uploaded image as the first frame. The face serum bottle stays perfectly still and exactly the same the whole time — same shape, same colour, same details, same text and logo, no morphing, no warping. The camera slowly and smoothly pushes in toward the face serum bottle. Soft natural window light, shallow depth of field, realistic product video. No people, no hands, no text on screen. Soft quiet room ambience only — NO music, NO voice.\n```",
+          "status": "passed",
+          "provider_outcome": "local_rule",
+          "live_model_answer": false,
+          "template_label": "L06 Push-in",
+          "dimensions": {
+            "correctness": {
+              "status": "passed",
+              "reasons": []
+            },
+            "language": {
+              "status": "passed",
+              "reasons": []
+            },
+            "lesson_references": {
+              "status": "passed",
+              "reasons": []
+            },
+            "safety": {
+              "status": "passed",
+              "reasons": []
+            },
+            "prompt_accuracy": {
+              "status": "passed",
+              "reasons": []
+            },
+            "task_completion": {
+              "status": "passed",
+              "reasons": []
+            }
+          }
+        }
+      ],
+      "original_provider_status": null
+    },
+    {
+      "id": "ppads_032",
+      "category": "exact_prompt",
+      "status": "passed",
+      "turns": [
+        {
+          "query": "Give exact L06 Arc prompt for a leather wallet.",
+          "answer": "L06 Arc\n\n```text\nUse the uploaded image as the first frame. The leather wallet stays perfectly still and exactly the same the whole time — same shape, same colour, same details, same text and logo, no morphing, no warping. The camera slowly arcs a little to the right around the leather wallet, smooth and steady, while the lights in the background glow softly. Moody cinematic look, realistic product video. No people, no hands, no text on screen. Soft quiet room ambience only — NO music, NO voice.\n```",
+          "status": "passed",
+          "provider_outcome": "local_rule",
+          "live_model_answer": false,
+          "template_label": "L06 Arc",
+          "dimensions": {
+            "correctness": {
+              "status": "passed",
+              "reasons": []
+            },
+            "language": {
+              "status": "passed",
+              "reasons": []
+            },
+            "lesson_references": {
+              "status": "passed",
+              "reasons": []
+            },
+            "safety": {
+              "status": "passed",
+              "reasons": []
+            },
+            "prompt_accuracy": {
+              "status": "passed",
+              "reasons": []
+            },
+            "task_completion": {
+              "status": "passed",
+              "reasons": []
+            }
+          }
+        }
+      ],
+      "original_provider_status": null
+    },
+    {
+      "id": "ppads_033",
+      "category": "exact_prompt",
+      "status": "passed",
+      "turns": [
+        {
+          "query": "Copy exact L06 Light Sweep prompt for a gold bracelet.",
+          "answer": "L06 Light Sweep\n\n```text\nUse the uploaded image as the first frame. The gold bracelet stays perfectly still and exactly the same the whole time — same shape, same colour, same details, same text and logo, no morphing, no warping. The camera stays completely still. A soft band of warm light slowly sweeps across the gold bracelet from left to right, the shadows moving gently with it. Clean premium product video. No people, no hands, no text on screen. Soft quiet room ambience only — NO music, NO voice.\n```",
+          "status": "passed",
+          "provider_outcome": "local_rule",
+          "live_model_answer": false,
+          "template_label": "L06 Light Sweep",
+          "dimensions": {
+            "correctness": {
+              "status": "passed",
+              "reasons": []
+            },
+            "language": {
+              "status": "passed",
+              "reasons": []
+            },
+            "lesson_references": {
+              "status": "passed",
+              "reasons": []
+            },
+            "safety": {
+              "status": "passed",
+              "reasons": []
+            },
+            "prompt_accuracy": {
+              "status": "passed",
+              "reasons": []
+            },
+            "task_completion": {
+              "status": "passed",
+              "reasons": []
+            }
+          }
+        }
+      ],
+      "original_provider_status": null
+    },
+    {
+      "id": "ppads_036",
+      "category": "lesson_7",
+      "status": "passed",
+      "turns": [
+        {
+          "query": "What settings and references does Lesson 07 use for UGC-style video?",
+          "answer": "Lesson 07\n\nIn Flow choose Video → Ingredients and attach the face, character sheet and product sheet. Recorded settings: 9:16, 720p, 8 sec. The camera itself is the phone: no phone should appear in the frame. Use a normal home room and short dialogue written in Hindi Devanagari, based on the L05 hook. Do not present an AI actor as a real reviewing customer.",
+          "status": "passed",
+          "provider_outcome": "local_rule",
+          "live_model_answer": false,
+          "template_label": null,
+          "dimensions": {
+            "correctness": {
+              "status": "passed",
+              "reasons": []
+            },
+            "language": {
+              "status": "passed",
+              "reasons": []
+            },
+            "lesson_references": {
+              "status": "passed",
+              "reasons": []
+            },
+            "safety": {
+              "status": "passed",
+              "reasons": []
+            },
+            "prompt_accuracy": {
+              "status": "passed",
+              "reasons": []
+            },
+            "task_completion": {
+              "status": "passed",
+              "reasons": []
+            }
+          }
+        }
+      ],
+      "original_provider_status": null
+    },
+    {
+      "id": "ppads_037",
+      "category": "exact_prompt",
+      "status": "passed",
+      "turns": [
+        {
+          "query": "Give exact L07 UGC 1 prompt for a protein shaker.",
+          "answer": "L07 UGC 1\n\n```text\nUse the uploaded character sheet for the [woman] and the uploaded product sheet for the protein shaker. Keep her face, hair and outfit exactly the same as the character sheet. Keep the protein shaker exactly the same — same shape, same colour, same details, same text and logo, no morphing. Selfie-style vertical video: the camera itself is her phone, held at arm's length, so we see her from the chest up looking straight into the lens. NO phone visible anywhere in the frame, no second camera, no screen. She sits at a desk in a normal home room, holding the protein shaker up near her chest to show it, casual and friendly. Handheld look with slight natural shake, natural window light, a real lived-in room, not a studio, not a polished ad. ONLY she speaks, one voice only, natural Hindi lip-sync, casual friendly tone. She says: \"[your hook line in Hindi]\" real skin, no filter, clearly adult, modest, natural hands with five fingers, no text on screen, no watermark. Clean natural audio only — NO background music.\n```\n\nFields still in brackets need your details; I have not invented them.",
+          "status": "passed",
+          "provider_outcome": "local_rule",
+          "live_model_answer": false,
+          "template_label": "L07 UGC 1",
+          "dimensions": {
+            "correctness": {
+              "status": "passed",
+              "reasons": []
+            },
+            "language": {
+              "status": "passed",
+              "reasons": []
+            },
+            "lesson_references": {
+              "status": "passed",
+              "reasons": []
+            },
+            "safety": {
+              "status": "passed",
+              "reasons": []
+            },
+            "prompt_accuracy": {
+              "status": "passed",
+              "reasons": []
+            },
+            "task_completion": {
+              "status": "passed",
+              "reasons": []
+            }
+          }
+        }
+      ],
+      "original_provider_status": null
+    },
+    {
+      "id": "ppads_038",
+      "category": "exact_prompt",
+      "status": "passed",
+      "turns": [
+        {
+          "query": "Give exact L07 UGC 2 prompt for a ceramic cup.",
+          "answer": "L07 UGC 2\n\n```text\nUse the uploaded character sheet for the [woman] and the uploaded product sheet for the ceramic cup. Keep her face, hair and outfit exactly the same as the character sheet. Keep the ceramic cup exactly the same — same shape, same colour, same details, same text and logo, no morphing. Vertical video shot from her own phone resting on the desk in front of her: the camera itself is the phone, so we see her and the ceramic cup from a low front angle. NO phone visible anywhere in the frame, no second camera, no screen facing us. She uses the ceramic cup for a moment, then looks up straight into the lens and talks, casual and natural. Natural window light, a real lived-in room, not a studio, not a polished ad. ONLY she speaks, one voice only, natural Hindi lip-sync, casual friendly tone. She says: \"[your second line in Hindi]\" real skin, no filter, clearly adult, modest, natural hands with five fingers, no text on screen, no watermark. Clean natural audio only — NO background music.\n```\n\nFields still in brackets need your details; I have not invented them.",
+          "status": "passed",
+          "provider_outcome": "local_rule",
+          "live_model_answer": false,
+          "template_label": "L07 UGC 2",
+          "dimensions": {
+            "correctness": {
+              "status": "passed",
+              "reasons": []
+            },
+            "language": {
+              "status": "passed",
+              "reasons": []
+            },
+            "lesson_references": {
+              "status": "passed",
+              "reasons": []
+            },
+            "safety": {
+              "status": "passed",
+              "reasons": []
+            },
+            "prompt_accuracy": {
+              "status": "passed",
+              "reasons": []
+            },
+            "task_completion": {
+              "status": "passed",
+              "reasons": []
+            }
+          }
+        }
+      ],
+      "original_provider_status": null
+    },
+    {
+      "id": "ppads_039",
+      "category": "troubleshooting",
+      "status": "passed",
+      "turns": [
+        {
+          "query": "My UGC video shows a phone in the frame. What exact fix should I add?",
+          "answer": "Lesson 07\n\nAdd the course FAQ instruction: “The camera itself is her phone. NO phone visible anywhere in the frame.”",
+          "status": "passed",
+          "provider_outcome": "local_rule",
+          "live_model_answer": false,
+          "template_label": null,
+          "dimensions": {
+            "correctness": {
+              "status": "passed",
+              "reasons": []
+            },
+            "language": {
+              "status": "passed",
+              "reasons": []
+            },
+            "lesson_references": {
+              "status": "passed",
+              "reasons": []
+            },
+            "safety": {
+              "status": "passed",
+              "reasons": []
+            },
+            "prompt_accuracy": {
+              "status": "passed",
+              "reasons": []
+            },
+            "task_completion": {
+              "status": "passed",
+              "reasons": []
+            }
+          }
+        }
+      ],
+      "original_provider_status": null
+    },
+    {
+      "id": "ppads_041",
+      "category": "ethical_advertising",
+      "status": "passed",
+      "turns": [
+        {
+          "query": "Can I show the AI model as a real customer giving a review?",
+          "answer": "Do not invent product benefits, customer experiences or earnings guarantees. An AI actor is not a real customer: do not use it as a genuine review or testimonial. Use an honest product demonstration or a clearly described UGC-style showcase, based only on the product facts you supplied.",
+          "status": "passed",
+          "provider_outcome": "local_rule",
+          "live_model_answer": false,
+          "template_label": null,
+          "dimensions": {
+            "correctness": {
+              "status": "passed",
+              "reasons": []
+            },
+            "language": {
+              "status": "passed",
+              "reasons": []
+            },
+            "lesson_references": {
+              "status": "passed",
+              "reasons": []
+            },
+            "safety": {
+              "status": "passed",
+              "reasons": []
+            },
+            "prompt_accuracy": {
+              "status": "passed",
+              "reasons": []
+            },
+            "task_completion": {
+              "status": "passed",
+              "reasons": []
+            }
+          }
+        }
+      ],
+      "original_provider_status": null
+    },
+    {
+      "id": "ppads_042",
+      "category": "lesson_8",
+      "status": "passed",
+      "turns": [
+        {
+          "query": "What is the final ad workflow from Lesson 08?",
+          "answer": "Lesson 08\n\nCapCut editing is not taught as a full tutorial in this course. The basic final-ad order is UGC hook → product videos → UGC → end card with the real price and how to order. Add text and price during editing, not with AI image generation.",
+          "status": "passed",
+          "provider_outcome": "local_rule",
+          "live_model_answer": false,
+          "template_label": null,
+          "dimensions": {
+            "correctness": {
+              "status": "passed",
+              "reasons": []
+            },
+            "language": {
+              "status": "passed",
+              "reasons": []
+            },
+            "lesson_references": {
+              "status": "passed",
+              "reasons": []
+            },
+            "safety": {
+              "status": "passed",
+              "reasons": []
+            },
+            "prompt_accuracy": {
+              "status": "passed",
+              "reasons": []
+            },
+            "task_completion": {
+              "status": "passed",
+              "reasons": []
+            }
+          }
+        }
+      ],
+      "original_provider_status": null
+    },
+    {
+      "id": "ppads_conv_001",
+      "category": "multi_turn_exact_prompt",
+      "status": "passed",
+      "turns": [
+        {
+          "query": "I am making a product sheet for a perfume bottle.",
+          "answer": "Lesson 02\n\nTake 5–7 clear phone photos from different angles in daylight, with flash off. In Google Flow choose New project → Image → Nano Banana Pro. Upload all photos as references and run the Product Sheet template. Review, regenerate if needed, and save the best sheet for later shots.",
+          "status": "passed",
+          "provider_outcome": "local_rule",
+          "live_model_answer": false,
+          "template_label": null,
+          "dimensions": {
+            "correctness": {
+              "status": "passed",
+              "reasons": []
+            },
+            "language": {
+              "status": "passed",
+              "reasons": []
+            },
+            "lesson_references": {
+              "status": "passed",
+              "reasons": []
+            },
+            "safety": {
+              "status": "passed",
+              "reasons": []
+            },
+            "prompt_accuracy": {
+              "status": "passed",
+              "reasons": []
+            },
+            "task_completion": {
+              "status": "passed",
+              "reasons": []
+            },
+            "context_retention": {
+              "status": "passed",
+              "reasons": []
+            }
+          },
+          "conversationEvidence": {
+            "knownUserProduct": "perfume bottle",
+            "verifiedByCompleteTemplateAtTurn": 2,
+            "interpretation": "An unnecessary name echo is omitted; the later complete source-body check proves retained identity."
+          }
+        },
+        {
+          "query": "Now give me the exact prompt for that.",
+          "answer": "L02 Product Sheet\n\n```text\nUse all the uploaded photos of this perfume bottle. Create a clean product reference sheet on a plain white background showing the exact same perfume bottle in four views arranged in a neat grid: front view, top-down view, side view and three-quarter angle view. Keep the perfume bottle exactly the same in every view — same shape, same colour, same details, same text and logo, do not redesign it. Even soft studio lighting, no extra objects, no text labels, realistic product photography.\n```",
+          "status": "passed",
+          "provider_outcome": "local_rule",
+          "live_model_answer": false,
+          "template_label": "L02 Product Sheet",
+          "dimensions": {
+            "correctness": {
+              "status": "passed",
+              "reasons": []
+            },
+            "language": {
+              "status": "passed",
+              "reasons": []
+            },
+            "lesson_references": {
+              "status": "passed",
+              "reasons": []
+            },
+            "safety": {
+              "status": "passed",
+              "reasons": []
+            },
+            "prompt_accuracy": {
+              "status": "passed",
+              "reasons": []
+            },
+            "task_completion": {
+              "status": "passed",
+              "reasons": []
+            }
+          }
+        }
+      ],
+      "original_provider_status": null
+    }
+  ],
+  "provenance": {
+    "tests": {
+      "path": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/reports/ai-product-photoshoot-ads-evaluation/phase10_live_20261015_101019/existing_definitions_frozen.json",
+      "sha256": "4104a276c37ea268dd2cc5303e50b69e6c5e1aef26f6e28a11a47d5de175d135"
+    },
+    "raw_results": {
+      "path": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/reports/ai-product-photoshoot-ads-evaluation/phase8_live_20261015_090954/application_raw_results.json",
+      "sha256": "9a573314e9d6be5dcdb98733623ecd382ae1f56bf9218470b78276d76f834c06"
+    },
+    "knowledge": {
+      "path": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/knowledge/ai-product-photoshoot-ads/training.txt",
+      "sha256": "96471b6991c3724f9b8315fc7b3d1bb73b409eb0272517432cbfdd98882127df"
+    },
+    "evaluator": {
+      "path": "/Users/arslanalimansoori/Desktop/hrhrhrrhrhr/Untitled/edunex-b/scripts/eval/grade_product_photoshoot_ads_results_v6.py",
+      "sha256": "161801b0462e3c276e05e82685ff9af6ba2e0cba912e49037de94bda00afac78"
+    }
+  }
+}

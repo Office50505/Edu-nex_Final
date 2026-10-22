@@ -1,0 +1,1825 @@
+{
+  "executedAt": "2026-10-16T09:21:59.949Z",
+  "method": "Direct current-module probes plus existing in-process backend fixture; not production DB or live model evaluation",
+  "probes": [
+    {
+      "id": "base",
+      "query": "My product is a cork reading stand. Price is 420. I sell on Etsy. Material is cork. Change the two side rails to sky blue. Give the exact L02 White Studio prompt.",
+      "previous": {},
+      "extractEntity": {
+        "product": "cork reading stand",
+        "evidence": "My product is a cork reading stand",
+        "span": [
+          0,
+          34
+        ]
+      },
+      "extraSlots": {
+        "price": "420",
+        "channel": "Etsy",
+        "part": "the two side rails",
+        "colour": "sky blue"
+      },
+      "slots": {
+        "product": "cork reading stand",
+        "part": "the two side rails",
+        "colour": "sky blue"
+      },
+      "facts": {
+        "attributes": [
+          "Material is cork"
+        ],
+        "product": "cork reading stand",
+        "part": "the two side rails",
+        "colour": "sky blue",
+        "price": "420",
+        "channel": "Etsy",
+        "requestedOutputs": [],
+        "lessonNumber": 2,
+        "topic": "product_photo",
+        "language": "english",
+        "schemaVersion": 2,
+        "courseId": "6d0000000000000000000000",
+        "conversationId": "phase13-probes",
+        "currentTask": {
+          "outputs": [],
+          "parts": [],
+          "request": "My product is a cork reading stand. Price is 420. I sell on Etsy. Material is cork. Change the two side rails to sky blue. Give the exact L02 White Studio prompt.",
+          "actorFree": false
+        },
+        "adAngles": [],
+        "evidence": {
+          "product": "My product is a cork reading stand. Price is 420. I sell on Etsy. Material is cork. Change the two side rails to sky blue. Give the exact L02 White Studio prompt.",
+          "part": "My product is a cork reading stand. Price is 420. I sell on Etsy. Material is cork. Change the two side rails to sky blue. Give the exact L02 White Studio prompt.",
+          "colour": "My product is a cork reading stand. Price is 420. I sell on Etsy. Material is cork. Change the two side rails to sky blue. Give the exact L02 White Studio prompt.",
+          "price": "My product is a cork reading stand. Price is 420. I sell on Etsy. Material is cork. Change the two side rails to sky blue. Give the exact L02 White Studio prompt.",
+          "channel": "My product is a cork reading stand. Price is 420. I sell on Etsy. Material is cork. Change the two side rails to sky blue. Give the exact L02 White Studio prompt."
+        }
+      },
+      "requestContext": {
+        "topic": "product_photo",
+        "lessonNumber": 2,
+        "explicitLesson": true,
+        "exact": true,
+        "carryLesson": false,
+        "compound": false,
+        "openReasoning": false,
+        "wholeJourney": false,
+        "troubleshooting": false,
+        "procedural": false,
+        "requestedOutputs": [],
+        "tasks": [],
+        "lessons": [
+          2
+        ]
+      },
+      "wantsTemplate": true,
+      "candidate": "L02 White Studio"
+    },
+    {
+      "id": "english-switch",
+      "query": "Replace the product with a ceramic incense holder. Give the entire approved L02 Dark Premium prompt.",
+      "previous": {
+        "attributes": [
+          "Material is cork"
+        ],
+        "product": "cork reading stand",
+        "part": "the two side rails",
+        "colour": "sky blue",
+        "price": "420",
+        "channel": "Etsy",
+        "requestedOutputs": [],
+        "lessonNumber": 2,
+        "topic": "product_photo",
+        "language": "english",
+        "schemaVersion": 2,
+        "courseId": "6d0000000000000000000000",
+        "conversationId": "phase13-probes",
+        "currentTask": {
+          "outputs": [],
+          "parts": [],
+          "request": "My product is a cork reading stand. Price is 420. I sell on Etsy. Material is cork. Change the two side rails to sky blue. Give the exact L02 White Studio prompt.",
+          "actorFree": false
+        },
+        "adAngles": [],
+        "evidence": {
+          "product": "My product is a cork reading stand. Price is 420. I sell on Etsy. Material is cork. Change the two side rails to sky blue. Give the exact L02 White Studio prompt.",
+          "part": "My product is a cork reading stand. Price is 420. I sell on Etsy. Material is cork. Change the two side rails to sky blue. Give the exact L02 White Studio prompt.",
+          "colour": "My product is a cork reading stand. Price is 420. I sell on Etsy. Material is cork. Change the two side rails to sky blue. Give the exact L02 White Studio prompt.",
+          "price": "My product is a cork reading stand. Price is 420. I sell on Etsy. Material is cork. Change the two side rails to sky blue. Give the exact L02 White Studio prompt.",
+          "channel": "My product is a cork reading stand. Price is 420. I sell on Etsy. Material is cork. Change the two side rails to sky blue. Give the exact L02 White Studio prompt."
+        }
+      },
+      "extractEntity": {
+        "product": "ceramic incense holder",
+        "evidence": "Replace the product with a ceramic incense holder",
+        "span": [
+          0,
+          49
+        ]
+      },
+      "extraSlots": {},
+      "slots": {
+        "product": "ceramic incense holder"
+      },
+      "facts": {
+        "product": "ceramic incense holder",
+        "attributes": [],
+        "requestedOutputs": [],
+        "lessonNumber": 2,
+        "topic": "product_photo",
+        "language": "english",
+        "schemaVersion": 2,
+        "courseId": "6d0000000000000000000000",
+        "conversationId": "phase13-probes",
+        "currentTask": {
+          "outputs": [],
+          "parts": [],
+          "request": "Replace the product with a ceramic incense holder. Give the entire approved L02 Dark Premium prompt.",
+          "actorFree": false
+        },
+        "adAngles": [],
+        "evidence": {
+          "product": "Replace the product with a ceramic incense holder. Give the entire approved L02 Dark Premium prompt."
+        }
+      },
+      "requestContext": {
+        "topic": "product_photo",
+        "lessonNumber": 2,
+        "explicitLesson": true,
+        "exact": true,
+        "carryLesson": false,
+        "compound": false,
+        "openReasoning": false,
+        "wholeJourney": false,
+        "troubleshooting": false,
+        "procedural": false,
+        "requestedOutputs": [],
+        "previousTask": "My product is a cork reading stand. Price is 420. I sell on Etsy. Material is cork. Change the two side rails to sky blue. Give the exact L02 White Studio prompt.",
+        "tasks": [],
+        "lessons": [
+          2
+        ]
+      },
+      "wantsTemplate": true,
+      "candidate": "L02 Dark Premium"
+    },
+    {
+      "id": "roman-hindi-switch",
+      "query": "Ab product ko ceramic incense holder se replace karo. L02 Dark Premium ka complete approved prompt do.",
+      "previous": {
+        "attributes": [
+          "Material is cork"
+        ],
+        "product": "cork reading stand",
+        "part": "the two side rails",
+        "colour": "sky blue",
+        "price": "420",
+        "channel": "Etsy",
+        "requestedOutputs": [],
+        "lessonNumber": 2,
+        "topic": "product_photo",
+        "language": "english",
+        "schemaVersion": 2,
+        "courseId": "6d0000000000000000000000",
+        "conversationId": "phase13-probes",
+        "currentTask": {
+          "outputs": [],
+          "parts": [],
+          "request": "My product is a cork reading stand. Price is 420. I sell on Etsy. Material is cork. Change the two side rails to sky blue. Give the exact L02 White Studio prompt.",
+          "actorFree": false
+        },
+        "adAngles": [],
+        "evidence": {
+          "product": "My product is a cork reading stand. Price is 420. I sell on Etsy. Material is cork. Change the two side rails to sky blue. Give the exact L02 White Studio prompt.",
+          "part": "My product is a cork reading stand. Price is 420. I sell on Etsy. Material is cork. Change the two side rails to sky blue. Give the exact L02 White Studio prompt.",
+          "colour": "My product is a cork reading stand. Price is 420. I sell on Etsy. Material is cork. Change the two side rails to sky blue. Give the exact L02 White Studio prompt.",
+          "price": "My product is a cork reading stand. Price is 420. I sell on Etsy. Material is cork. Change the two side rails to sky blue. Give the exact L02 White Studio prompt.",
+          "channel": "My product is a cork reading stand. Price is 420. I sell on Etsy. Material is cork. Change the two side rails to sky blue. Give the exact L02 White Studio prompt."
+        }
+      },
+      "extractEntity": {
+        "product": "ceramic incense holder",
+        "evidence": "product ko ceramic incense holder se replace karo",
+        "span": [
+          3,
+          52
+        ]
+      },
+      "extraSlots": {},
+      "slots": {
+        "product": "ceramic incense holder"
+      },
+      "facts": {
+        "product": "ceramic incense holder",
+        "attributes": [],
+        "requestedOutputs": [],
+        "lessonNumber": 2,
+        "topic": "product_photo",
+        "language": "hinglish",
+        "schemaVersion": 2,
+        "courseId": "6d0000000000000000000000",
+        "conversationId": "phase13-probes",
+        "currentTask": {
+          "outputs": [],
+          "parts": [],
+          "request": "Ab product ko ceramic incense holder se replace karo. L02 Dark Premium ka complete approved prompt do.",
+          "actorFree": false
+        },
+        "adAngles": [],
+        "evidence": {
+          "product": "Ab product ko ceramic incense holder se replace karo. L02 Dark Premium ka complete approved prompt do."
+        }
+      },
+      "requestContext": {
+        "topic": "product_photo",
+        "lessonNumber": 2,
+        "explicitLesson": true,
+        "exact": true,
+        "carryLesson": false,
+        "compound": false,
+        "openReasoning": false,
+        "wholeJourney": false,
+        "troubleshooting": false,
+        "procedural": false,
+        "requestedOutputs": [],
+        "previousTask": "My product is a cork reading stand. Price is 420. I sell on Etsy. Material is cork. Change the two side rails to sky blue. Give the exact L02 White Studio prompt.",
+        "tasks": [],
+        "lessons": [
+          2
+        ]
+      },
+      "wantsTemplate": true,
+      "candidate": "L02 Dark Premium"
+    },
+    {
+      "id": "explicit-reset",
+      "query": "Forget the previous product and start over. Give the exact L02 White Studio prompt.",
+      "previous": {
+        "attributes": [
+          "Material is cork"
+        ],
+        "product": "cork reading stand",
+        "part": "the two side rails",
+        "colour": "sky blue",
+        "price": "420",
+        "channel": "Etsy",
+        "requestedOutputs": [],
+        "lessonNumber": 2,
+        "topic": "product_photo",
+        "language": "english",
+        "schemaVersion": 2,
+        "courseId": "6d0000000000000000000000",
+        "conversationId": "phase13-probes",
+        "currentTask": {
+          "outputs": [],
+          "parts": [],
+          "request": "My product is a cork reading stand. Price is 420. I sell on Etsy. Material is cork. Change the two side rails to sky blue. Give the exact L02 White Studio prompt.",
+          "actorFree": false
+        },
+        "adAngles": [],
+        "evidence": {
+          "product": "My product is a cork reading stand. Price is 420. I sell on Etsy. Material is cork. Change the two side rails to sky blue. Give the exact L02 White Studio prompt.",
+          "part": "My product is a cork reading stand. Price is 420. I sell on Etsy. Material is cork. Change the two side rails to sky blue. Give the exact L02 White Studio prompt.",
+          "colour": "My product is a cork reading stand. Price is 420. I sell on Etsy. Material is cork. Change the two side rails to sky blue. Give the exact L02 White Studio prompt.",
+          "price": "My product is a cork reading stand. Price is 420. I sell on Etsy. Material is cork. Change the two side rails to sky blue. Give the exact L02 White Studio prompt.",
+          "channel": "My product is a cork reading stand. Price is 420. I sell on Etsy. Material is cork. Change the two side rails to sky blue. Give the exact L02 White Studio prompt."
+        }
+      },
+      "extractEntity": null,
+      "extraSlots": {},
+      "slots": {
+        "product": "cork reading stand",
+        "part": "the two side rails",
+        "colour": "sky blue"
+      },
+      "facts": {
+        "product": "cork reading stand",
+        "part": "the two side rails",
+        "colour": "sky blue",
+        "attributes": [
+          "Material is cork"
+        ],
+        "price": "420",
+        "channel": "Etsy",
+        "requestedOutputs": [],
+        "lessonNumber": 2,
+        "topic": "product_photo",
+        "language": "english",
+        "schemaVersion": 2,
+        "courseId": "6d0000000000000000000000",
+        "conversationId": "phase13-probes",
+        "currentTask": {
+          "outputs": [],
+          "parts": [],
+          "request": "Forget the previous product and start over. Give the exact L02 White Studio prompt.",
+          "actorFree": false
+        },
+        "adAngles": [],
+        "evidence": {
+          "product": "My product is a cork reading stand. Price is 420. I sell on Etsy. Material is cork. Change the two side rails to sky blue. Give the exact L02 White Studio prompt.",
+          "part": "My product is a cork reading stand. Price is 420. I sell on Etsy. Material is cork. Change the two side rails to sky blue. Give the exact L02 White Studio prompt.",
+          "colour": "My product is a cork reading stand. Price is 420. I sell on Etsy. Material is cork. Change the two side rails to sky blue. Give the exact L02 White Studio prompt.",
+          "price": "My product is a cork reading stand. Price is 420. I sell on Etsy. Material is cork. Change the two side rails to sky blue. Give the exact L02 White Studio prompt.",
+          "channel": "My product is a cork reading stand. Price is 420. I sell on Etsy. Material is cork. Change the two side rails to sky blue. Give the exact L02 White Studio prompt."
+        }
+      },
+      "requestContext": {
+        "topic": "product_photo",
+        "lessonNumber": 2,
+        "explicitLesson": true,
+        "exact": true,
+        "carryLesson": false,
+        "compound": false,
+        "openReasoning": false,
+        "wholeJourney": false,
+        "troubleshooting": false,
+        "procedural": false,
+        "requestedOutputs": [],
+        "previousTask": "My product is a cork reading stand. Price is 420. I sell on Etsy. Material is cork. Change the two side rails to sky blue. Give the exact L02 White Studio prompt.",
+        "tasks": [],
+        "lessons": [
+          2
+        ]
+      },
+      "wantsTemplate": true,
+      "candidate": "L02 White Studio"
+    },
+    {
+      "id": "english-correction",
+      "query": "Correction: price is 510. Give a caption.",
+      "previous": {
+        "attributes": [
+          "Material is cork"
+        ],
+        "product": "cork reading stand",
+        "part": "the two side rails",
+        "colour": "sky blue",
+        "price": "420",
+        "channel": "Etsy",
+        "requestedOutputs": [],
+        "lessonNumber": 2,
+        "topic": "product_photo",
+        "language": "english",
+        "schemaVersion": 2,
+        "courseId": "6d0000000000000000000000",
+        "conversationId": "phase13-probes",
+        "currentTask": {
+          "outputs": [],
+          "parts": [],
+          "request": "My product is a cork reading stand. Price is 420. I sell on Etsy. Material is cork. Change the two side rails to sky blue. Give the exact L02 White Studio prompt.",
+          "actorFree": false
+        },
+        "adAngles": [],
+        "evidence": {
+          "product": "My product is a cork reading stand. Price is 420. I sell on Etsy. Material is cork. Change the two side rails to sky blue. Give the exact L02 White Studio prompt.",
+          "part": "My product is a cork reading stand. Price is 420. I sell on Etsy. Material is cork. Change the two side rails to sky blue. Give the exact L02 White Studio prompt.",
+          "colour": "My product is a cork reading stand. Price is 420. I sell on Etsy. Material is cork. Change the two side rails to sky blue. Give the exact L02 White Studio prompt.",
+          "price": "My product is a cork reading stand. Price is 420. I sell on Etsy. Material is cork. Change the two side rails to sky blue. Give the exact L02 White Studio prompt.",
+          "channel": "My product is a cork reading stand. Price is 420. I sell on Etsy. Material is cork. Change the two side rails to sky blue. Give the exact L02 White Studio prompt."
+        }
+      },
+      "extractEntity": null,
+      "extraSlots": {
+        "price": "510"
+      },
+      "slots": {
+        "product": "cork reading stand",
+        "part": "the two side rails",
+        "colour": "sky blue"
+      },
+      "facts": {
+        "product": "cork reading stand",
+        "part": "the two side rails",
+        "colour": "sky blue",
+        "attributes": [
+          "Material is cork"
+        ],
+        "price": "510",
+        "channel": "Etsy",
+        "requestedOutputs": [
+          "caption"
+        ],
+        "lessonNumber": 5,
+        "topic": "ad_plan",
+        "language": "english",
+        "schemaVersion": 2,
+        "courseId": "6d0000000000000000000000",
+        "conversationId": "phase13-probes",
+        "currentTask": {
+          "outputs": [
+            "caption"
+          ],
+          "parts": [],
+          "request": "Correction: price is 510. Give a caption.",
+          "actorFree": false
+        },
+        "adAngles": [],
+        "evidence": {
+          "product": "My product is a cork reading stand. Price is 420. I sell on Etsy. Material is cork. Change the two side rails to sky blue. Give the exact L02 White Studio prompt.",
+          "part": "My product is a cork reading stand. Price is 420. I sell on Etsy. Material is cork. Change the two side rails to sky blue. Give the exact L02 White Studio prompt.",
+          "colour": "My product is a cork reading stand. Price is 420. I sell on Etsy. Material is cork. Change the two side rails to sky blue. Give the exact L02 White Studio prompt.",
+          "price": "Correction: price is 510. Give a caption.",
+          "channel": "My product is a cork reading stand. Price is 420. I sell on Etsy. Material is cork. Change the two side rails to sky blue. Give the exact L02 White Studio prompt."
+        }
+      },
+      "requestContext": {
+        "topic": "ad_plan",
+        "lessonNumber": 5,
+        "explicitLesson": false,
+        "exact": false,
+        "carryLesson": false,
+        "compound": false,
+        "openReasoning": false,
+        "wholeJourney": false,
+        "troubleshooting": false,
+        "procedural": false,
+        "requestedOutputs": [
+          "caption"
+        ],
+        "previousTask": "My product is a cork reading stand. Price is 420. I sell on Etsy. Material is cork. Change the two side rails to sky blue. Give the exact L02 White Studio prompt.",
+        "tasks": [],
+        "lessons": []
+      },
+      "wantsTemplate": false,
+      "candidate": null
+    },
+    {
+      "id": "hindi-material",
+      "query": "हमारा प्रोडक्ट मिट्टी का दीपक है। सामग्री: मिट्टी। रंग: हल्का नीला। केवल हाथ न दिखाएँ।",
+      "previous": {},
+      "extractEntity": {
+        "product": "मिट्टी का दीपक",
+        "evidence": "हमारा प्रोडक्ट मिट्टी का दीपक है",
+        "span": [
+          0,
+          32
+        ]
+      },
+      "extraSlots": {},
+      "slots": {
+        "product": "मिट्टी का दीपक"
+      },
+      "facts": {
+        "attributes": [],
+        "product": "मिट्टी का दीपक",
+        "requestedOutputs": [],
+        "lessonNumber": null,
+        "topic": "",
+        "language": "hindi",
+        "schemaVersion": 2,
+        "courseId": "6d0000000000000000000000",
+        "conversationId": "phase13-probes",
+        "currentTask": {
+          "outputs": [],
+          "parts": [],
+          "request": "हमारा प्रोडक्ट मिट्टी का दीपक है। सामग्री: मिट्टी। रंग: हल्का नीला। केवल हाथ न दिखाएँ।",
+          "actorFree": false
+        },
+        "adAngles": [],
+        "evidence": {
+          "product": "हमारा प्रोडक्ट मिट्टी का दीपक है। सामग्री: मिट्टी। रंग: हल्का नीला। केवल हाथ न दिखाएँ।"
+        }
+      },
+      "requestContext": {
+        "topic": "",
+        "lessonNumber": null,
+        "explicitLesson": false,
+        "exact": false,
+        "carryLesson": false,
+        "compound": false,
+        "openReasoning": false,
+        "wholeJourney": false,
+        "troubleshooting": false,
+        "procedural": false,
+        "requestedOutputs": [],
+        "tasks": [],
+        "lessons": []
+      },
+      "wantsTemplate": false,
+      "candidate": null
+    },
+    {
+      "id": "hindi-colour",
+      "query": "केवल बाहरी ढक्कन का रंग हल्का नीला करें। L04 Colour Variant Sheet का पूरा approved template दीजिए।",
+      "previous": {},
+      "extractEntity": null,
+      "extraSlots": {
+        "part": "बाहरी ढक्कन",
+        "colour": "हल्का नीला"
+      },
+      "slots": {
+        "part": "बाहरी ढक्कन",
+        "colour": "हल्का नीला"
+      },
+      "facts": {
+        "attributes": [],
+        "part": "बाहरी ढक्कन",
+        "colour": "हल्का नीला",
+        "requestedOutputs": [],
+        "lessonNumber": 4,
+        "topic": "colour",
+        "language": "hindi",
+        "schemaVersion": 2,
+        "courseId": "6d0000000000000000000000",
+        "conversationId": "phase13-probes",
+        "currentTask": {
+          "outputs": [],
+          "parts": [],
+          "request": "केवल बाहरी ढक्कन का रंग हल्का नीला करें। L04 Colour Variant Sheet का पूरा approved template दीजिए।",
+          "actorFree": false
+        },
+        "adAngles": [],
+        "evidence": {
+          "part": "केवल बाहरी ढक्कन का रंग हल्का नीला करें। L04 Colour Variant Sheet का पूरा approved template दीजिए।",
+          "colour": "केवल बाहरी ढक्कन का रंग हल्का नीला करें। L04 Colour Variant Sheet का पूरा approved template दीजिए।"
+        }
+      },
+      "requestContext": {
+        "topic": "colour",
+        "lessonNumber": 4,
+        "explicitLesson": true,
+        "exact": true,
+        "carryLesson": false,
+        "compound": false,
+        "openReasoning": false,
+        "wholeJourney": false,
+        "troubleshooting": false,
+        "procedural": false,
+        "requestedOutputs": [],
+        "tasks": [],
+        "lessons": [
+          4
+        ]
+      },
+      "wantsTemplate": true,
+      "candidate": "L04 Colour Variant Sheet"
+    },
+    {
+      "id": "english-passive",
+      "query": "Only the colour of the three corner clips should be changed to muted teal. Return the approved L04 Colour Variant Sheet template.",
+      "previous": {},
+      "extractEntity": null,
+      "extraSlots": {
+        "part": "the three corner clips",
+        "colour": "muted teal"
+      },
+      "slots": {
+        "part": "the three corner clips",
+        "colour": "muted teal"
+      },
+      "facts": {
+        "attributes": [],
+        "part": "the three corner clips",
+        "colour": "muted teal",
+        "requestedOutputs": [],
+        "lessonNumber": 4,
+        "topic": "colour",
+        "language": "english",
+        "schemaVersion": 2,
+        "courseId": "6d0000000000000000000000",
+        "conversationId": "phase13-probes",
+        "currentTask": {
+          "outputs": [],
+          "parts": [],
+          "request": "Only the colour of the three corner clips should be changed to muted teal. Return the approved L04 Colour Variant Sheet template.",
+          "actorFree": false
+        },
+        "adAngles": [],
+        "evidence": {
+          "part": "Only the colour of the three corner clips should be changed to muted teal. Return the approved L04 Colour Variant Sheet template.",
+          "colour": "Only the colour of the three corner clips should be changed to muted teal. Return the approved L04 Colour Variant Sheet template."
+        }
+      },
+      "requestContext": {
+        "topic": "colour",
+        "lessonNumber": 4,
+        "explicitLesson": true,
+        "exact": true,
+        "carryLesson": false,
+        "compound": false,
+        "openReasoning": false,
+        "wholeJourney": false,
+        "troubleshooting": false,
+        "procedural": false,
+        "requestedOutputs": [],
+        "tasks": [],
+        "lessons": [
+          4
+        ]
+      },
+      "wantsTemplate": true,
+      "candidate": "L04 Colour Variant Sheet"
+    },
+    {
+      "id": "english-active-control",
+      "query": "Change the three corner clips to muted teal. Return the approved L04 Colour Variant Sheet template.",
+      "previous": {},
+      "extractEntity": null,
+      "extraSlots": {
+        "part": "the three corner clips",
+        "colour": "muted teal"
+      },
+      "slots": {
+        "part": "the three corner clips",
+        "colour": "muted teal"
+      },
+      "facts": {
+        "attributes": [],
+        "part": "the three corner clips",
+        "colour": "muted teal",
+        "requestedOutputs": [],
+        "lessonNumber": 4,
+        "topic": "colour",
+        "language": "english",
+        "schemaVersion": 2,
+        "courseId": "6d0000000000000000000000",
+        "conversationId": "phase13-probes",
+        "currentTask": {
+          "outputs": [],
+          "parts": [],
+          "request": "Change the three corner clips to muted teal. Return the approved L04 Colour Variant Sheet template.",
+          "actorFree": false
+        },
+        "adAngles": [],
+        "evidence": {
+          "part": "Change the three corner clips to muted teal. Return the approved L04 Colour Variant Sheet template.",
+          "colour": "Change the three corner clips to muted teal. Return the approved L04 Colour Variant Sheet template."
+        }
+      },
+      "requestContext": {
+        "topic": "colour",
+        "lessonNumber": 4,
+        "explicitLesson": true,
+        "exact": true,
+        "carryLesson": false,
+        "compound": false,
+        "openReasoning": false,
+        "wholeJourney": false,
+        "troubleshooting": false,
+        "procedural": false,
+        "requestedOutputs": [],
+        "tasks": [],
+        "lessons": [
+          4
+        ]
+      },
+      "wantsTemplate": true,
+      "candidate": "L04 Colour Variant Sheet"
+    },
+    {
+      "id": "negated-template",
+      "query": "Explain the whole course in Hinglish; photo prompt mat dena.",
+      "previous": {},
+      "extractEntity": null,
+      "extraSlots": {},
+      "slots": {},
+      "facts": {
+        "attributes": [],
+        "requestedOutputs": [],
+        "lessonNumber": 1,
+        "topic": "overview",
+        "language": "hinglish",
+        "schemaVersion": 2,
+        "courseId": "6d0000000000000000000000",
+        "conversationId": "phase13-probes",
+        "currentTask": {
+          "outputs": [],
+          "parts": [],
+          "request": "Explain the whole course in Hinglish; photo prompt mat dena.",
+          "actorFree": false
+        },
+        "adAngles": [],
+        "evidence": {}
+      },
+      "requestContext": {
+        "topic": "overview",
+        "lessonNumber": 1,
+        "explicitLesson": false,
+        "exact": false,
+        "carryLesson": false,
+        "compound": false,
+        "openReasoning": false,
+        "wholeJourney": false,
+        "troubleshooting": false,
+        "procedural": false,
+        "requestedOutputs": [],
+        "tasks": [],
+        "lessons": []
+      },
+      "wantsTemplate": false,
+      "candidate": null
+    },
+    {
+      "id": "educational-heading",
+      "query": "Explain why L02 White Studio is useful.",
+      "previous": {},
+      "extractEntity": null,
+      "extraSlots": {},
+      "slots": {},
+      "facts": {
+        "attributes": [],
+        "requestedOutputs": [],
+        "lessonNumber": 2,
+        "topic": "product_photo",
+        "language": "english",
+        "schemaVersion": 2,
+        "courseId": "6d0000000000000000000000",
+        "conversationId": "phase13-probes",
+        "currentTask": {
+          "outputs": [],
+          "parts": [
+            "rationale"
+          ],
+          "request": "Explain why L02 White Studio is useful.",
+          "actorFree": false
+        },
+        "adAngles": [],
+        "evidence": {}
+      },
+      "requestContext": {
+        "topic": "product_photo",
+        "lessonNumber": 2,
+        "explicitLesson": true,
+        "exact": false,
+        "carryLesson": false,
+        "compound": false,
+        "openReasoning": true,
+        "wholeJourney": false,
+        "troubleshooting": false,
+        "procedural": false,
+        "requestedOutputs": [],
+        "tasks": [
+          "rationale"
+        ],
+        "lessons": [
+          2
+        ]
+      },
+      "wantsTemplate": false,
+      "candidate": "L02 White Studio"
+    },
+    {
+      "id": "open-image",
+      "query": "Create an original image prompt for my cork reading stand in a bright studio.",
+      "previous": {},
+      "extractEntity": {
+        "product": "cork reading stand",
+        "evidence": "for my cork reading stand",
+        "span": [
+          32,
+          57
+        ]
+      },
+      "extraSlots": {},
+      "slots": {
+        "product": "cork reading stand"
+      },
+      "facts": {
+        "attributes": [],
+        "product": "cork reading stand",
+        "requestedOutputs": [
+          "prompts"
+        ],
+        "lessonNumber": 5,
+        "topic": "ad_plan",
+        "language": "english",
+        "schemaVersion": 2,
+        "courseId": "6d0000000000000000000000",
+        "conversationId": "phase13-probes",
+        "currentTask": {
+          "outputs": [
+            "prompts"
+          ],
+          "parts": [],
+          "request": "Create an original image prompt for my cork reading stand in a bright studio.",
+          "actorFree": false
+        },
+        "adAngles": [],
+        "evidence": {
+          "product": "Create an original image prompt for my cork reading stand in a bright studio."
+        }
+      },
+      "requestContext": {
+        "topic": "ad_plan",
+        "lessonNumber": 5,
+        "explicitLesson": false,
+        "exact": false,
+        "carryLesson": false,
+        "compound": false,
+        "openReasoning": false,
+        "wholeJourney": false,
+        "troubleshooting": false,
+        "procedural": false,
+        "requestedOutputs": [
+          "prompts"
+        ],
+        "tasks": [],
+        "lessons": []
+      },
+      "wantsTemplate": false,
+      "candidate": null
+    },
+    {
+      "id": "repeat",
+      "query": "Again.",
+      "previous": {
+        "attributes": [
+          "Material is cork"
+        ],
+        "product": "cork reading stand",
+        "part": "the two side rails",
+        "colour": "sky blue",
+        "price": "420",
+        "channel": "Etsy",
+        "requestedOutputs": [],
+        "lessonNumber": 2,
+        "topic": "product_photo",
+        "language": "english",
+        "schemaVersion": 2,
+        "courseId": "6d0000000000000000000000",
+        "conversationId": "phase13-probes",
+        "currentTask": {
+          "outputs": [],
+          "parts": [],
+          "request": "My product is a cork reading stand. Price is 420. I sell on Etsy. Material is cork. Change the two side rails to sky blue. Give the exact L02 White Studio prompt.",
+          "actorFree": false
+        },
+        "adAngles": [],
+        "evidence": {
+          "product": "My product is a cork reading stand. Price is 420. I sell on Etsy. Material is cork. Change the two side rails to sky blue. Give the exact L02 White Studio prompt.",
+          "part": "My product is a cork reading stand. Price is 420. I sell on Etsy. Material is cork. Change the two side rails to sky blue. Give the exact L02 White Studio prompt.",
+          "colour": "My product is a cork reading stand. Price is 420. I sell on Etsy. Material is cork. Change the two side rails to sky blue. Give the exact L02 White Studio prompt.",
+          "price": "My product is a cork reading stand. Price is 420. I sell on Etsy. Material is cork. Change the two side rails to sky blue. Give the exact L02 White Studio prompt.",
+          "channel": "My product is a cork reading stand. Price is 420. I sell on Etsy. Material is cork. Change the two side rails to sky blue. Give the exact L02 White Studio prompt."
+        }
+      },
+      "extractEntity": null,
+      "extraSlots": {},
+      "slots": {
+        "product": "cork reading stand",
+        "part": "the two side rails",
+        "colour": "sky blue"
+      },
+      "facts": {
+        "product": "cork reading stand",
+        "part": "the two side rails",
+        "colour": "sky blue",
+        "attributes": [
+          "Material is cork"
+        ],
+        "price": "420",
+        "channel": "Etsy",
+        "requestedOutputs": [],
+        "lessonNumber": 2,
+        "topic": "product_photo",
+        "language": "english",
+        "schemaVersion": 2,
+        "courseId": "6d0000000000000000000000",
+        "conversationId": "phase13-probes",
+        "currentTask": {
+          "outputs": [],
+          "parts": [],
+          "request": "My product is a cork reading stand. Price is 420. I sell on Etsy. Material is cork. Change the two side rails to sky blue. Give the exact L02 White Studio prompt.",
+          "actorFree": false
+        },
+        "adAngles": [],
+        "evidence": {
+          "product": "My product is a cork reading stand. Price is 420. I sell on Etsy. Material is cork. Change the two side rails to sky blue. Give the exact L02 White Studio prompt.",
+          "part": "My product is a cork reading stand. Price is 420. I sell on Etsy. Material is cork. Change the two side rails to sky blue. Give the exact L02 White Studio prompt.",
+          "colour": "My product is a cork reading stand. Price is 420. I sell on Etsy. Material is cork. Change the two side rails to sky blue. Give the exact L02 White Studio prompt.",
+          "price": "My product is a cork reading stand. Price is 420. I sell on Etsy. Material is cork. Change the two side rails to sky blue. Give the exact L02 White Studio prompt.",
+          "channel": "My product is a cork reading stand. Price is 420. I sell on Etsy. Material is cork. Change the two side rails to sky blue. Give the exact L02 White Studio prompt."
+        }
+      },
+      "requestContext": {
+        "topic": "product_photo",
+        "lessonNumber": 2,
+        "explicitLesson": false,
+        "exact": false,
+        "carryLesson": true,
+        "compound": false,
+        "openReasoning": false,
+        "wholeJourney": false,
+        "troubleshooting": false,
+        "procedural": false,
+        "requestedOutputs": [],
+        "previousTask": "My product is a cork reading stand. Price is 420. I sell on Etsy. Material is cork. Change the two side rails to sky blue. Give the exact L02 White Studio prompt.",
+        "tasks": [],
+        "lessons": []
+      },
+      "wantsTemplate": false,
+      "candidate": null
+    },
+    {
+      "id": "hindi-identity-english",
+      "query": "हमारा प्रोडक्ट मिट्टी का दीपक है। Explain in English.",
+      "previous": {},
+      "extractEntity": {
+        "product": "मिट्टी का दीपक",
+        "evidence": "हमारा प्रोडक्ट मिट्टी का दीपक है",
+        "span": [
+          0,
+          32
+        ]
+      },
+      "extraSlots": {},
+      "slots": {
+        "product": "मिट्टी का दीपक"
+      },
+      "facts": {
+        "attributes": [],
+        "product": "मिट्टी का दीपक",
+        "requestedOutputs": [],
+        "lessonNumber": null,
+        "topic": "",
+        "language": "english",
+        "schemaVersion": 2,
+        "courseId": "6d0000000000000000000000",
+        "conversationId": "phase13-probes",
+        "currentTask": {
+          "outputs": [],
+          "parts": [],
+          "request": "हमारा प्रोडक्ट मिट्टी का दीपक है। Explain in English.",
+          "actorFree": false
+        },
+        "adAngles": [],
+        "evidence": {
+          "product": "हमारा प्रोडक्ट मिट्टी का दीपक है। Explain in English."
+        }
+      },
+      "requestContext": {
+        "topic": "",
+        "lessonNumber": null,
+        "explicitLesson": false,
+        "exact": false,
+        "carryLesson": false,
+        "compound": false,
+        "openReasoning": false,
+        "wholeJourney": false,
+        "troubleshooting": false,
+        "procedural": false,
+        "requestedOutputs": [],
+        "tasks": [],
+        "lessons": []
+      },
+      "wantsTemplate": false,
+      "candidate": null
+    }
+  ],
+  "routeStates": [
+    {
+      "id": "conversation-A",
+      "request": {
+        "message": "My product is a cork reading stand. Give the exact L02 White Studio prompt.",
+        "conversationId": "phase13-A"
+      },
+      "response": {
+        "result": {
+          "answer": "L02 White Studio\n\n```text\nUse the uploaded product sheet as the reference. Keep the cork reading stand exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a clean seamless white background, soft even studio lighting, a soft natural shadow under it, slight top-down angle, sharp focus, realistic product photography.\n```",
+          "reply": "L02 White Studio\n\n```text\nUse the uploaded product sheet as the reference. Keep the cork reading stand exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a clean seamless white background, soft even studio lighting, a soft natural shadow under it, slight top-down angle, sharp focus, realistic product photography.\n```",
+          "provider": "course-knowledge-rule",
+          "sources": [],
+          "messageId": "e7d5b7a5-3fa4-447a-9b8b-81552feccaf8",
+          "notice": null,
+          "outcome": {
+            "type": "local_rule",
+            "liveModelAnswer": false,
+            "providerStatus": "not_requested",
+            "responseIssue": null
+          },
+          "knowledge": "course-materials",
+          "debug": {
+            "conversation_id": "phase13-A",
+            "request_active_course_id": "6d0000000000000000000000",
+            "resolved_active_course_id": "6d0000000000000000000000",
+            "current_topic": "Product photos",
+            "current_intent": "exact_prompt",
+            "rewritten_retrieval_query": "My product is a cork reading stand. Give the exact L02 White Studio prompt.",
+            "retrieved_chunk_ids": [
+              "ai-product-photoshoot-ads:training:exact-template:l02-white-studio",
+              "ai-product-photoshoot-ads:training:workflow:product-photos",
+              "ai-product-photoshoot-ads:training:exact-template:l02-product-sheet",
+              "ai-product-photoshoot-ads:training:lesson-summary:lesson-02-phone-photo-se-studio-photo",
+              "ai-product-photoshoot-ads:training:exact-template:l02-lifestyle",
+              "ai-product-photoshoot-ads:training:faq:har-photo-mein-product-thoda-alag"
+            ],
+            "retrieved_chunk_hashes": [
+              "72fe6514bb03cf07250f440c8a4084fc7bd5243c1a8f5fd7a17f5759e500252a",
+              "cda5fab917790b32e1279a209aeef0f44b618ba75ca4c88c19264357539fae4d",
+              "1e76a13b224293da7aee0d7994b4d53e231ae3fca4613116d763c5719c0a492d",
+              "21582da9e3555afbf289672cf4d95cd09b1a1c240369ed1dc47895eeed208f95",
+              "508db83ae00763811db2d33e48f84cb80717bcfb36f4417120d5e5c5659f9706",
+              "9a8959739deebee30004ee75c9e9f8eea357ba859b480755d62a564e085597c6"
+            ],
+            "retrieved_source_hashes": [
+              "96471b6991c3724f9b8315fc7b3d1bb73b409eb0272517432cbfdd98882127df"
+            ],
+            "retrieved_translation_hashes": [
+              "",
+              "b6e099477a8df01b7d64e57e2c1783a08a57a8d6c891f33a1d452a3a25433b2e",
+              "",
+              "",
+              "",
+              "3bc811227273825cb6305cf07fa65a5932bd33ead96ce29deb4c23fc39fef564"
+            ],
+            "retrieved_course_ids": [
+              "6d0000000000000000000000"
+            ],
+            "retrieved_course_names": [
+              "AI Product Photoshoot & Ads"
+            ],
+            "scores_ranks": [
+              {
+                "rank": 1,
+                "score": "184.1387",
+                "course_id": "6d0000000000000000000000",
+                "section": "L02 White Studio"
+              },
+              {
+                "rank": 2,
+                "score": "87.7772",
+                "course_id": "6d0000000000000000000000",
+                "section": "Product photos"
+              },
+              {
+                "rank": 3,
+                "score": "34.6218",
+                "course_id": "6d0000000000000000000000",
+                "section": "L02 Product Sheet"
+              },
+              {
+                "rank": 4,
+                "score": "32.7796",
+                "course_id": "6d0000000000000000000000",
+                "section": "Lesson 02 — Phone Photo Se Studio Photo"
+              },
+              {
+                "rank": 5,
+                "score": "32.6122",
+                "course_id": "6d0000000000000000000000",
+                "section": "L02 Lifestyle"
+              },
+              {
+                "rank": 6,
+                "score": "31.7137",
+                "course_id": "6d0000000000000000000000",
+                "section": "Har photo mein product thoda alag"
+              }
+            ],
+            "selected_exact_prompt_template_id": "ai-product-photoshoot-ads:training:exact-template:l02-white-studio",
+            "provider_model_path": "course-knowledge-rule",
+            "response_selection": {
+              "mode": "exact_template",
+              "reason": "complete_authorized_asset"
+            },
+            "history_restored": false,
+            "provider": {
+              "status": "not_requested",
+              "attempts": []
+            },
+            "validation_repair": null
+          }
+        },
+        "statusCode": 200,
+        "headers": {}
+      },
+      "persisted": [
+        {
+          "conversationId": "phase13-A",
+          "productContext": {
+            "attributes": [],
+            "product": "cork reading stand",
+            "requestedOutputs": [],
+            "lessonNumber": 2,
+            "topic": "product_photo",
+            "language": "english",
+            "schemaVersion": 2,
+            "courseId": "6d0000000000000000000000",
+            "conversationId": "phase13-A",
+            "currentTask": {
+              "outputs": [],
+              "parts": [],
+              "request": "My product is a cork reading stand. Give the exact L02 White Studio prompt.",
+              "actorFree": false
+            },
+            "adAngles": [],
+            "evidence": {
+              "product": "My product is a cork reading stand. Give the exact L02 White Studio prompt."
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "conversation-B-fresh",
+      "request": {
+        "message": "Give the exact L02 White Studio prompt.",
+        "conversationId": "phase13-B"
+      },
+      "response": {
+        "result": {
+          "answer": "L02 White Studio\n\n```text\nUse the uploaded product sheet as the reference. Keep the [PRODUCT] exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a clean seamless white background, soft even studio lighting, a soft natural shadow under it, slight top-down angle, sharp focus, realistic product photography.\n```\n\nFields still in brackets need your details; I have not invented them.",
+          "reply": "L02 White Studio\n\n```text\nUse the uploaded product sheet as the reference. Keep the [PRODUCT] exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a clean seamless white background, soft even studio lighting, a soft natural shadow under it, slight top-down angle, sharp focus, realistic product photography.\n```\n\nFields still in brackets need your details; I have not invented them.",
+          "provider": "course-knowledge-rule",
+          "sources": [],
+          "messageId": "2a7aab72-41ad-41af-b71e-5bbe90b3adf3",
+          "notice": null,
+          "outcome": {
+            "type": "local_rule",
+            "liveModelAnswer": false,
+            "providerStatus": "not_requested",
+            "responseIssue": null
+          },
+          "knowledge": "course-materials",
+          "debug": {
+            "conversation_id": "phase13-B",
+            "request_active_course_id": "6d0000000000000000000000",
+            "resolved_active_course_id": "6d0000000000000000000000",
+            "current_topic": "Product photos",
+            "current_intent": "exact_prompt",
+            "rewritten_retrieval_query": "Give the exact L02 White Studio prompt.",
+            "retrieved_chunk_ids": [
+              "ai-product-photoshoot-ads:training:exact-template:l02-white-studio",
+              "ai-product-photoshoot-ads:training:workflow:product-photos",
+              "ai-product-photoshoot-ads:training:exact-template:l02-product-sheet",
+              "ai-product-photoshoot-ads:training:lesson-summary:lesson-02-phone-photo-se-studio-photo",
+              "ai-product-photoshoot-ads:training:exact-template:l02-lifestyle",
+              "ai-product-photoshoot-ads:training:exact-template:l02-dark-premium"
+            ],
+            "retrieved_chunk_hashes": [
+              "72fe6514bb03cf07250f440c8a4084fc7bd5243c1a8f5fd7a17f5759e500252a",
+              "cda5fab917790b32e1279a209aeef0f44b618ba75ca4c88c19264357539fae4d",
+              "1e76a13b224293da7aee0d7994b4d53e231ae3fca4613116d763c5719c0a492d",
+              "21582da9e3555afbf289672cf4d95cd09b1a1c240369ed1dc47895eeed208f95",
+              "508db83ae00763811db2d33e48f84cb80717bcfb36f4417120d5e5c5659f9706",
+              "f187754dabf74831c2447f233b1ae9f31fe764893f6e8388fac17451481c83da"
+            ],
+            "retrieved_source_hashes": [
+              "96471b6991c3724f9b8315fc7b3d1bb73b409eb0272517432cbfdd98882127df"
+            ],
+            "retrieved_translation_hashes": [
+              "",
+              "b6e099477a8df01b7d64e57e2c1783a08a57a8d6c891f33a1d452a3a25433b2e",
+              "",
+              "",
+              "",
+              ""
+            ],
+            "retrieved_course_ids": [
+              "6d0000000000000000000000"
+            ],
+            "retrieved_course_names": [
+              "AI Product Photoshoot & Ads"
+            ],
+            "scores_ranks": [
+              {
+                "rank": 1,
+                "score": "183.5239",
+                "course_id": "6d0000000000000000000000",
+                "section": "L02 White Studio"
+              },
+              {
+                "rank": 2,
+                "score": "87.0265",
+                "course_id": "6d0000000000000000000000",
+                "section": "Product photos"
+              },
+              {
+                "rank": 3,
+                "score": "33.8983",
+                "course_id": "6d0000000000000000000000",
+                "section": "L02 Product Sheet"
+              },
+              {
+                "rank": 4,
+                "score": "32.3836",
+                "course_id": "6d0000000000000000000000",
+                "section": "Lesson 02 — Phone Photo Se Studio Photo"
+              },
+              {
+                "rank": 5,
+                "score": "31.9981",
+                "course_id": "6d0000000000000000000000",
+                "section": "L02 Lifestyle"
+              },
+              {
+                "rank": 6,
+                "score": "30.9991",
+                "course_id": "6d0000000000000000000000",
+                "section": "L02 Dark Premium"
+              }
+            ],
+            "selected_exact_prompt_template_id": "ai-product-photoshoot-ads:training:exact-template:l02-white-studio",
+            "provider_model_path": "course-knowledge-rule",
+            "response_selection": {
+              "mode": "exact_template",
+              "reason": "complete_authorized_asset"
+            },
+            "history_restored": false,
+            "provider": {
+              "status": "not_requested",
+              "attempts": []
+            },
+            "validation_repair": null
+          }
+        },
+        "statusCode": 200,
+        "headers": {}
+      },
+      "persisted": [
+        {
+          "conversationId": "phase13-B",
+          "productContext": {
+            "attributes": [],
+            "requestedOutputs": [],
+            "lessonNumber": 2,
+            "topic": "product_photo",
+            "language": "english",
+            "schemaVersion": 2,
+            "courseId": "6d0000000000000000000000",
+            "conversationId": "phase13-B",
+            "currentTask": {
+              "outputs": [],
+              "parts": [],
+              "request": "Give the exact L02 White Studio prompt.",
+              "actorFree": false
+            },
+            "adAngles": [],
+            "evidence": {}
+          }
+        }
+      ]
+    },
+    {
+      "id": "conversation-A-after-B",
+      "request": {
+        "message": "Give the exact L02 White Studio prompt.",
+        "conversationId": "phase13-A"
+      },
+      "response": {
+        "result": {
+          "answer": "L02 White Studio\n\n```text\nUse the uploaded product sheet as the reference. Keep the [PRODUCT] exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a clean seamless white background, soft even studio lighting, a soft natural shadow under it, slight top-down angle, sharp focus, realistic product photography.\n```\n\nFields still in brackets need your details; I have not invented them.",
+          "reply": "L02 White Studio\n\n```text\nUse the uploaded product sheet as the reference. Keep the [PRODUCT] exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a clean seamless white background, soft even studio lighting, a soft natural shadow under it, slight top-down angle, sharp focus, realistic product photography.\n```\n\nFields still in brackets need your details; I have not invented them.",
+          "provider": "course-knowledge-rule",
+          "sources": [],
+          "messageId": "0d96b6c8-7dfd-4aa7-b2ff-882c083d750c",
+          "notice": null,
+          "outcome": {
+            "type": "local_rule",
+            "liveModelAnswer": false,
+            "providerStatus": "not_requested",
+            "responseIssue": null
+          },
+          "knowledge": "course-materials",
+          "debug": {
+            "conversation_id": "phase13-A",
+            "request_active_course_id": "6d0000000000000000000000",
+            "resolved_active_course_id": "6d0000000000000000000000",
+            "current_topic": "Product photos",
+            "current_intent": "exact_prompt",
+            "rewritten_retrieval_query": "Give the exact L02 White Studio prompt.",
+            "retrieved_chunk_ids": [
+              "ai-product-photoshoot-ads:training:exact-template:l02-white-studio",
+              "ai-product-photoshoot-ads:training:workflow:product-photos",
+              "ai-product-photoshoot-ads:training:exact-template:l02-product-sheet",
+              "ai-product-photoshoot-ads:training:lesson-summary:lesson-02-phone-photo-se-studio-photo",
+              "ai-product-photoshoot-ads:training:exact-template:l02-lifestyle",
+              "ai-product-photoshoot-ads:training:exact-template:l02-dark-premium"
+            ],
+            "retrieved_chunk_hashes": [
+              "72fe6514bb03cf07250f440c8a4084fc7bd5243c1a8f5fd7a17f5759e500252a",
+              "cda5fab917790b32e1279a209aeef0f44b618ba75ca4c88c19264357539fae4d",
+              "1e76a13b224293da7aee0d7994b4d53e231ae3fca4613116d763c5719c0a492d",
+              "21582da9e3555afbf289672cf4d95cd09b1a1c240369ed1dc47895eeed208f95",
+              "508db83ae00763811db2d33e48f84cb80717bcfb36f4417120d5e5c5659f9706",
+              "f187754dabf74831c2447f233b1ae9f31fe764893f6e8388fac17451481c83da"
+            ],
+            "retrieved_source_hashes": [
+              "96471b6991c3724f9b8315fc7b3d1bb73b409eb0272517432cbfdd98882127df"
+            ],
+            "retrieved_translation_hashes": [
+              "",
+              "b6e099477a8df01b7d64e57e2c1783a08a57a8d6c891f33a1d452a3a25433b2e",
+              "",
+              "",
+              "",
+              ""
+            ],
+            "retrieved_course_ids": [
+              "6d0000000000000000000000"
+            ],
+            "retrieved_course_names": [
+              "AI Product Photoshoot & Ads"
+            ],
+            "scores_ranks": [
+              {
+                "rank": 1,
+                "score": "183.5239",
+                "course_id": "6d0000000000000000000000",
+                "section": "L02 White Studio"
+              },
+              {
+                "rank": 2,
+                "score": "87.0265",
+                "course_id": "6d0000000000000000000000",
+                "section": "Product photos"
+              },
+              {
+                "rank": 3,
+                "score": "33.8983",
+                "course_id": "6d0000000000000000000000",
+                "section": "L02 Product Sheet"
+              },
+              {
+                "rank": 4,
+                "score": "32.3836",
+                "course_id": "6d0000000000000000000000",
+                "section": "Lesson 02 — Phone Photo Se Studio Photo"
+              },
+              {
+                "rank": 5,
+                "score": "31.9981",
+                "course_id": "6d0000000000000000000000",
+                "section": "L02 Lifestyle"
+              },
+              {
+                "rank": 6,
+                "score": "30.9991",
+                "course_id": "6d0000000000000000000000",
+                "section": "L02 Dark Premium"
+              }
+            ],
+            "selected_exact_prompt_template_id": "ai-product-photoshoot-ads:training:exact-template:l02-white-studio",
+            "provider_model_path": "course-knowledge-rule",
+            "response_selection": {
+              "mode": "exact_template",
+              "reason": "complete_authorized_asset"
+            },
+            "history_restored": false,
+            "provider": {
+              "status": "not_requested",
+              "attempts": []
+            },
+            "validation_repair": null
+          }
+        },
+        "statusCode": 200,
+        "headers": {}
+      },
+      "persisted": [
+        {
+          "conversationId": "phase13-A",
+          "productContext": {
+            "attributes": [],
+            "requestedOutputs": [],
+            "lessonNumber": 2,
+            "topic": "product_photo",
+            "language": "english",
+            "schemaVersion": 2,
+            "courseId": "6d0000000000000000000000",
+            "conversationId": "phase13-A",
+            "currentTask": {
+              "outputs": [],
+              "parts": [],
+              "request": "Give the exact L02 White Studio prompt.",
+              "actorFree": false
+            },
+            "adAngles": [],
+            "evidence": {}
+          }
+        }
+      ]
+    },
+    {
+      "id": "product-declared-again",
+      "request": {
+        "message": "My product is a cork reading stand. Give the exact L02 White Studio prompt.",
+        "conversationId": "phase13-A"
+      },
+      "response": {
+        "result": {
+          "answer": "L02 White Studio\n\n```text\nUse the uploaded product sheet as the reference. Keep the cork reading stand exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a clean seamless white background, soft even studio lighting, a soft natural shadow under it, slight top-down angle, sharp focus, realistic product photography.\n```",
+          "reply": "L02 White Studio\n\n```text\nUse the uploaded product sheet as the reference. Keep the cork reading stand exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a clean seamless white background, soft even studio lighting, a soft natural shadow under it, slight top-down angle, sharp focus, realistic product photography.\n```",
+          "provider": "course-knowledge-rule",
+          "sources": [],
+          "messageId": "e6a5439c-1206-40b4-9988-1b616a95a047",
+          "notice": null,
+          "outcome": {
+            "type": "local_rule",
+            "liveModelAnswer": false,
+            "providerStatus": "not_requested",
+            "responseIssue": null
+          },
+          "knowledge": "course-materials",
+          "debug": {
+            "conversation_id": "phase13-A",
+            "request_active_course_id": "6d0000000000000000000000",
+            "resolved_active_course_id": "6d0000000000000000000000",
+            "current_topic": "Product photos",
+            "current_intent": "exact_prompt",
+            "rewritten_retrieval_query": "My product is a cork reading stand. Give the exact L02 White Studio prompt.",
+            "retrieved_chunk_ids": [
+              "ai-product-photoshoot-ads:training:exact-template:l02-white-studio",
+              "ai-product-photoshoot-ads:training:workflow:product-photos",
+              "ai-product-photoshoot-ads:training:exact-template:l02-product-sheet",
+              "ai-product-photoshoot-ads:training:lesson-summary:lesson-02-phone-photo-se-studio-photo",
+              "ai-product-photoshoot-ads:training:exact-template:l02-lifestyle",
+              "ai-product-photoshoot-ads:training:faq:har-photo-mein-product-thoda-alag"
+            ],
+            "retrieved_chunk_hashes": [
+              "72fe6514bb03cf07250f440c8a4084fc7bd5243c1a8f5fd7a17f5759e500252a",
+              "cda5fab917790b32e1279a209aeef0f44b618ba75ca4c88c19264357539fae4d",
+              "1e76a13b224293da7aee0d7994b4d53e231ae3fca4613116d763c5719c0a492d",
+              "21582da9e3555afbf289672cf4d95cd09b1a1c240369ed1dc47895eeed208f95",
+              "508db83ae00763811db2d33e48f84cb80717bcfb36f4417120d5e5c5659f9706",
+              "9a8959739deebee30004ee75c9e9f8eea357ba859b480755d62a564e085597c6"
+            ],
+            "retrieved_source_hashes": [
+              "96471b6991c3724f9b8315fc7b3d1bb73b409eb0272517432cbfdd98882127df"
+            ],
+            "retrieved_translation_hashes": [
+              "",
+              "b6e099477a8df01b7d64e57e2c1783a08a57a8d6c891f33a1d452a3a25433b2e",
+              "",
+              "",
+              "",
+              "3bc811227273825cb6305cf07fa65a5932bd33ead96ce29deb4c23fc39fef564"
+            ],
+            "retrieved_course_ids": [
+              "6d0000000000000000000000"
+            ],
+            "retrieved_course_names": [
+              "AI Product Photoshoot & Ads"
+            ],
+            "scores_ranks": [
+              {
+                "rank": 1,
+                "score": "184.1387",
+                "course_id": "6d0000000000000000000000",
+                "section": "L02 White Studio"
+              },
+              {
+                "rank": 2,
+                "score": "87.7772",
+                "course_id": "6d0000000000000000000000",
+                "section": "Product photos"
+              },
+              {
+                "rank": 3,
+                "score": "34.6218",
+                "course_id": "6d0000000000000000000000",
+                "section": "L02 Product Sheet"
+              },
+              {
+                "rank": 4,
+                "score": "32.7796",
+                "course_id": "6d0000000000000000000000",
+                "section": "Lesson 02 — Phone Photo Se Studio Photo"
+              },
+              {
+                "rank": 5,
+                "score": "32.6122",
+                "course_id": "6d0000000000000000000000",
+                "section": "L02 Lifestyle"
+              },
+              {
+                "rank": 6,
+                "score": "31.7137",
+                "course_id": "6d0000000000000000000000",
+                "section": "Har photo mein product thoda alag"
+              }
+            ],
+            "selected_exact_prompt_template_id": "ai-product-photoshoot-ads:training:exact-template:l02-white-studio",
+            "provider_model_path": "course-knowledge-rule",
+            "response_selection": {
+              "mode": "exact_template",
+              "reason": "complete_authorized_asset"
+            },
+            "history_restored": true,
+            "provider": {
+              "status": "not_requested",
+              "attempts": []
+            },
+            "validation_repair": null
+          }
+        },
+        "statusCode": 200,
+        "headers": {}
+      },
+      "persisted": [
+        {
+          "conversationId": "phase13-A",
+          "productContext": {
+            "attributes": [],
+            "product": "cork reading stand",
+            "requestedOutputs": [],
+            "lessonNumber": 2,
+            "topic": "product_photo",
+            "language": "english",
+            "schemaVersion": 2,
+            "courseId": "6d0000000000000000000000",
+            "conversationId": "phase13-A",
+            "currentTask": {
+              "outputs": [],
+              "parts": [],
+              "request": "My product is a cork reading stand. Give the exact L02 White Studio prompt.",
+              "actorFree": false
+            },
+            "adAngles": [],
+            "evidence": {
+              "product": "My product is a cork reading stand. Give the exact L02 White Studio prompt."
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "explicit-reset-same-id",
+      "request": {
+        "message": "Forget the previous product and start over. Give the exact L02 White Studio prompt.",
+        "conversationId": "phase13-A"
+      },
+      "response": {
+        "result": {
+          "answer": "L02 White Studio\n\n```text\nUse the uploaded product sheet as the reference. Keep the cork reading stand exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a clean seamless white background, soft even studio lighting, a soft natural shadow under it, slight top-down angle, sharp focus, realistic product photography.\n```",
+          "reply": "L02 White Studio\n\n```text\nUse the uploaded product sheet as the reference. Keep the cork reading stand exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a clean seamless white background, soft even studio lighting, a soft natural shadow under it, slight top-down angle, sharp focus, realistic product photography.\n```",
+          "provider": "course-knowledge-rule",
+          "sources": [],
+          "messageId": "5b900959-9acc-427a-b452-260da9ed07a8",
+          "notice": null,
+          "outcome": {
+            "type": "local_rule",
+            "liveModelAnswer": false,
+            "providerStatus": "not_requested",
+            "responseIssue": null
+          },
+          "knowledge": "course-materials",
+          "debug": {
+            "conversation_id": "phase13-A",
+            "request_active_course_id": "6d0000000000000000000000",
+            "resolved_active_course_id": "6d0000000000000000000000",
+            "current_topic": "Product photos",
+            "current_intent": "exact_prompt",
+            "rewritten_retrieval_query": "Forget the previous product and start over. Give the exact L02 White Studio prompt.",
+            "retrieved_chunk_ids": [
+              "ai-product-photoshoot-ads:training:exact-template:l02-white-studio",
+              "ai-product-photoshoot-ads:training:workflow:product-photos",
+              "ai-product-photoshoot-ads:training:exact-template:l02-product-sheet",
+              "ai-product-photoshoot-ads:training:lesson-summary:lesson-02-phone-photo-se-studio-photo",
+              "ai-product-photoshoot-ads:training:faq:label-ke-akshar-keys-ke-letters",
+              "ai-product-photoshoot-ads:training:exact-template:l02-lifestyle"
+            ],
+            "retrieved_chunk_hashes": [
+              "72fe6514bb03cf07250f440c8a4084fc7bd5243c1a8f5fd7a17f5759e500252a",
+              "cda5fab917790b32e1279a209aeef0f44b618ba75ca4c88c19264357539fae4d",
+              "1e76a13b224293da7aee0d7994b4d53e231ae3fca4613116d763c5719c0a492d",
+              "21582da9e3555afbf289672cf4d95cd09b1a1c240369ed1dc47895eeed208f95",
+              "566a7b4772832b93a791f298b56c9b3e3c4280cf676ee275a69644183dd05d4e",
+              "508db83ae00763811db2d33e48f84cb80717bcfb36f4417120d5e5c5659f9706"
+            ],
+            "retrieved_source_hashes": [
+              "96471b6991c3724f9b8315fc7b3d1bb73b409eb0272517432cbfdd98882127df"
+            ],
+            "retrieved_translation_hashes": [
+              "",
+              "b6e099477a8df01b7d64e57e2c1783a08a57a8d6c891f33a1d452a3a25433b2e",
+              "",
+              "",
+              "86c9ce29d269012c0653570f2cf5cda2ee8261571c085b5e3f64ea86aab18d39",
+              ""
+            ],
+            "retrieved_course_ids": [
+              "6d0000000000000000000000"
+            ],
+            "retrieved_course_names": [
+              "AI Product Photoshoot & Ads"
+            ],
+            "scores_ranks": [
+              {
+                "rank": 1,
+                "score": "184.1387",
+                "course_id": "6d0000000000000000000000",
+                "section": "L02 White Studio"
+              },
+              {
+                "rank": 2,
+                "score": "89.0301",
+                "course_id": "6d0000000000000000000000",
+                "section": "Product photos"
+              },
+              {
+                "rank": 3,
+                "score": "34.6218",
+                "course_id": "6d0000000000000000000000",
+                "section": "L02 Product Sheet"
+              },
+              {
+                "rank": 4,
+                "score": "32.7796",
+                "course_id": "6d0000000000000000000000",
+                "section": "Lesson 02 — Phone Photo Se Studio Photo"
+              },
+              {
+                "rank": 5,
+                "score": "32.7195",
+                "course_id": "6d0000000000000000000000",
+                "section": "Label ke akshar / keys ke letters"
+              },
+              {
+                "rank": 6,
+                "score": "32.6122",
+                "course_id": "6d0000000000000000000000",
+                "section": "L02 Lifestyle"
+              }
+            ],
+            "selected_exact_prompt_template_id": "ai-product-photoshoot-ads:training:exact-template:l02-white-studio",
+            "provider_model_path": "course-knowledge-rule",
+            "response_selection": {
+              "mode": "exact_template",
+              "reason": "complete_authorized_asset"
+            },
+            "history_restored": true,
+            "provider": {
+              "status": "not_requested",
+              "attempts": []
+            },
+            "validation_repair": null
+          }
+        },
+        "statusCode": 200,
+        "headers": {}
+      },
+      "persisted": [
+        {
+          "conversationId": "phase13-A",
+          "productContext": {
+            "product": "cork reading stand",
+            "attributes": [],
+            "requestedOutputs": [],
+            "lessonNumber": 2,
+            "topic": "product_photo",
+            "language": "english",
+            "schemaVersion": 2,
+            "courseId": "6d0000000000000000000000",
+            "conversationId": "phase13-A",
+            "currentTask": {
+              "outputs": [],
+              "parts": [],
+              "request": "Forget the previous product and start over. Give the exact L02 White Studio prompt.",
+              "actorFree": false
+            },
+            "adAngles": [],
+            "evidence": {
+              "product": "My product is a cork reading stand. Give the exact L02 White Studio prompt."
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "missing-conversation-id",
+      "request": {
+        "message": "Give the exact L02 White Studio prompt."
+      },
+      "response": {
+        "result": {
+          "answer": "L02 White Studio\n\n```text\nUse the uploaded product sheet as the reference. Keep the cork reading stand exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a clean seamless white background, soft even studio lighting, a soft natural shadow under it, slight top-down angle, sharp focus, realistic product photography.\n```",
+          "reply": "L02 White Studio\n\n```text\nUse the uploaded product sheet as the reference. Keep the cork reading stand exactly the same — same shape, same colour, same details, same text and logo, do not redesign it. Place it on a clean seamless white background, soft even studio lighting, a soft natural shadow under it, slight top-down angle, sharp focus, realistic product photography.\n```",
+          "provider": "course-knowledge-rule",
+          "sources": [],
+          "messageId": "8ec96de0-3092-481a-ab26-a5cd9097c8d0",
+          "notice": null,
+          "outcome": {
+            "type": "local_rule",
+            "liveModelAnswer": false,
+            "providerStatus": "not_requested",
+            "responseIssue": null
+          },
+          "knowledge": "course-materials",
+          "debug": {
+            "conversation_id": "",
+            "request_active_course_id": "6d0000000000000000000000",
+            "resolved_active_course_id": "6d0000000000000000000000",
+            "current_topic": "Product photos",
+            "current_intent": "exact_prompt",
+            "rewritten_retrieval_query": "Give the exact L02 White Studio prompt.",
+            "retrieved_chunk_ids": [
+              "ai-product-photoshoot-ads:training:exact-template:l02-white-studio",
+              "ai-product-photoshoot-ads:training:workflow:product-photos",
+              "ai-product-photoshoot-ads:training:exact-template:l02-product-sheet",
+              "ai-product-photoshoot-ads:training:lesson-summary:lesson-02-phone-photo-se-studio-photo",
+              "ai-product-photoshoot-ads:training:exact-template:l02-lifestyle",
+              "ai-product-photoshoot-ads:training:exact-template:l02-dark-premium"
+            ],
+            "retrieved_chunk_hashes": [
+              "72fe6514bb03cf07250f440c8a4084fc7bd5243c1a8f5fd7a17f5759e500252a",
+              "cda5fab917790b32e1279a209aeef0f44b618ba75ca4c88c19264357539fae4d",
+              "1e76a13b224293da7aee0d7994b4d53e231ae3fca4613116d763c5719c0a492d",
+              "21582da9e3555afbf289672cf4d95cd09b1a1c240369ed1dc47895eeed208f95",
+              "508db83ae00763811db2d33e48f84cb80717bcfb36f4417120d5e5c5659f9706",
+              "f187754dabf74831c2447f233b1ae9f31fe764893f6e8388fac17451481c83da"
+            ],
+            "retrieved_source_hashes": [
+              "96471b6991c3724f9b8315fc7b3d1bb73b409eb0272517432cbfdd98882127df"
+            ],
+            "retrieved_translation_hashes": [
+              "",
+              "b6e099477a8df01b7d64e57e2c1783a08a57a8d6c891f33a1d452a3a25433b2e",
+              "",
+              "",
+              "",
+              ""
+            ],
+            "retrieved_course_ids": [
+              "6d0000000000000000000000"
+            ],
+            "retrieved_course_names": [
+              "AI Product Photoshoot & Ads"
+            ],
+            "scores_ranks": [
+              {
+                "rank": 1,
+                "score": "183.5239",
+                "course_id": "6d0000000000000000000000",
+                "section": "L02 White Studio"
+              },
+              {
+                "rank": 2,
+                "score": "87.0265",
+                "course_id": "6d0000000000000000000000",
+                "section": "Product photos"
+              },
+              {
+                "rank": 3,
+                "score": "33.8983",
+                "course_id": "6d0000000000000000000000",
+                "section": "L02 Product Sheet"
+              },
+              {
+                "rank": 4,
+                "score": "32.3836",
+                "course_id": "6d0000000000000000000000",
+                "section": "Lesson 02 — Phone Photo Se Studio Photo"
+              },
+              {
+                "rank": 5,
+                "score": "31.9981",
+                "course_id": "6d0000000000000000000000",
+                "section": "L02 Lifestyle"
+              },
+              {
+                "rank": 6,
+                "score": "30.9991",
+                "course_id": "6d0000000000000000000000",
+                "section": "L02 Dark Premium"
+              }
+            ],
+            "selected_exact_prompt_template_id": "ai-product-photoshoot-ads:training:exact-template:l02-white-studio",
+            "provider_model_path": "course-knowledge-rule",
+            "response_selection": {
+              "mode": "exact_template",
+              "reason": "complete_authorized_asset"
+            },
+            "history_restored": false,
+            "provider": {
+              "status": "not_requested",
+              "attempts": []
+            },
+            "validation_repair": null
+          }
+        },
+        "statusCode": 200,
+        "headers": {}
+      },
+      "persisted": [
+        {
+          "conversationId": "",
+          "productContext": {
+            "product": "cork reading stand",
+            "attributes": [],
+            "requestedOutputs": [],
+            "lessonNumber": 2,
+            "topic": "product_photo",
+            "language": "english",
+            "schemaVersion": 2,
+            "courseId": "6d0000000000000000000000",
+            "conversationId": "phase13-A",
+            "currentTask": {
+              "outputs": [],
+              "parts": [],
+              "request": "Give the exact L02 White Studio prompt.",
+              "actorFree": false
+            },
+            "adAngles": [],
+            "evidence": {
+              "product": "My product is a cork reading stand. Give the exact L02 White Studio prompt."
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "stubProviderCalls": 0,
+  "externalRequests": 0
+}

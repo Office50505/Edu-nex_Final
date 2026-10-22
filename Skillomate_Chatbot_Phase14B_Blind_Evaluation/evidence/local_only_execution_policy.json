@@ -1,0 +1,7 @@
+{
+  "at": "2026-10-16T09:54:41.668775+00:00",
+  "mode": "Actual local pipeline; all external networking blocked before transport; no model fixtures.",
+  "externalRequestsPermitted": 0,
+  "guardSHA256": "5b8c1aa319420e8ea52097d232998e63474e94156d5ce121a9278d1e4c63e569",
+  "infrastructureCorrection": "Initial guard rejected Node normalized loopback socket options; no candidate handler reached (zero db/log/provider operations). Original failed transport trace preserved under infrastructure_attempts. Guard now recognizes normalized argument arrays; cases/rubric/candidate/frozen harness unchanged."
+}

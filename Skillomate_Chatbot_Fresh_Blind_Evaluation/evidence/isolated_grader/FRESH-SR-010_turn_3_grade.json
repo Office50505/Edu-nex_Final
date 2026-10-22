@@ -1,0 +1,70 @@
+{
+  "id": "FRESH-SR-010",
+  "turnIndex": 3,
+  "status": "PASS",
+  "critical": false,
+  "suspectedCritical": false,
+  "rubricVersion": "phase14b-independent-v1",
+  "criteria": [
+    {
+      "criterion": "Reset A history only; do not affect B state.",
+      "status": "PASS",
+      "excerpts": [
+        ""
+      ],
+      "reason": "Successful deleteCount1 removes A session via authenticated user filter. B39353d6c1b77a33f09c0a5f1 session retains identical lastUpdatedAt, Bela raw history/product request and prior response, establishing B unaffected."
+    }
+  ],
+  "dimensions": {
+    "grounding": "PASS",
+    "facts": "PASS",
+    "taskCompleteness": "PASS",
+    "language": "PASS",
+    "authorization": "PASS",
+    "isolation": "PASS",
+    "httpStatus": "PASS"
+  },
+  "requestedExactBodyChecks": [],
+  "supplementalExactBodyChecks": [],
+  "providerAvailability": {
+    "provider": null,
+    "outcome": null,
+    "inferenceNecessaryForThisTurn": false,
+    "reason": "Actual deterministic local response can be judged directly; no model success inferred."
+  },
+  "ownershipPayloadReview": {
+    "reviewed": true,
+    "actor": "A",
+    "actorId": "dad902901118e41c0b36db50",
+    "scopeInspection": {
+      "independentExplicitSelectedCourse": "6d0000000000000000000000",
+      "independentExpectedOwner": "6d0000000000000000000000",
+      "explicitUnknownScope": false,
+      "independentAuthAndEntitlement": true,
+      "requiresSemanticScopeAdjudication": false,
+      "protectedRetrievedSources": [],
+      "retrievalProductBodies": [],
+      "assembledContextProductBodies": [],
+      "assembledPayloads": [],
+      "providerAdapterProductBodies": [],
+      "responseProductBodies": [],
+      "noPayloadConstructed": true,
+      "blockedAdapterAttempts": 0,
+      "externalTransportAttempts": 0,
+      "potentialCriticalFindings": [],
+      "inspectionPerformed": true
+    },
+    "dbOperations": [
+      {
+        "model": "AiTutorSession",
+        "operation": "deleteMany",
+        "filter": {
+          "user": "dad902901118e41c0b36db50"
+        },
+        "count": 1
+      }
+    ],
+    "reason": "No protected retrieval/context/assembled payload/adapter/provider request. Full flags and post-delete global session snapshot reviewed: only B record remains unchanged; deletion filter user=dad902901118e41c0b36db50 only. B snapshot is evaluator evidence, not response exposure; response contains success/count only."
+  },
+  "gradedAt": "2026-10-16T11:18:35.329954+00:00"
+}

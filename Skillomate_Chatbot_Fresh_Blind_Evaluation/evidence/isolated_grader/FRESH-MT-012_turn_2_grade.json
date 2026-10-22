@@ -1,0 +1,369 @@
+{
+  "id": "FRESH-MT-012",
+  "turnIndex": 2,
+  "status": "UNTESTED",
+  "critical": false,
+  "suspectedCritical": false,
+  "rubricVersion": "phase14b-independent-v1",
+  "criteria": [
+    {
+      "criterion": "Explain camera and product remain still while soft warm light sweeps left to right.",
+      "status": "UNTESTED",
+      "excerpts": [
+        "Lesson 06\n\nIn Flow choose Video → Ingredients and attach the image. Recorded course settings: 16:9, Omni 1.1 Flash, 720p, 6 sec, x1. Choose one slow movement: push-in, arc or light sweep. Keep the product perfectly still with no morphing or warping. Add music later during editing."
+      ],
+      "reason": "Fallback lists movement alternatives and product stillness but does not explain stationary camera with soft warm light sweeping left to right after the change of mind. Required actual semantic model response is unavailable. Necessary actual provider response absent for this essential requirement; no fallback/model pass inferred."
+    },
+    {
+      "criterion": "Do not combine push-in with light sweep.",
+      "status": "UNTESTED",
+      "excerpts": [
+        "Lesson 06\n\nIn Flow choose Video → Ingredients and attach the image. Recorded course settings: 16:9, Omni 1.1 Flash, 720p, 6 sec, x1. Choose one slow movement: push-in, arc or light sweep. Keep the product perfectly still with no morphing or warping. Add music later during editing."
+      ],
+      "reason": "Fallback lists movement alternatives and product stillness but does not explain stationary camera with soft warm light sweeping left to right after the change of mind. Required actual semantic model response is unavailable. Necessary actual provider response absent for this essential requirement; no fallback/model pass inferred."
+    }
+  ],
+  "dimensions": {
+    "grounding": "UNTESTED",
+    "facts": "UNTESTED",
+    "taskCompleteness": "UNTESTED",
+    "language": "UNTESTED",
+    "authorization": "PASS",
+    "isolation": "PASS",
+    "httpStatus": "PASS"
+  },
+  "requestedExactBodyChecks": [],
+  "supplementalExactBodyChecks": [],
+  "providerAvailability": {
+    "provider": "built-in-course-guide",
+    "outcome": {
+      "type": "provider_fallback",
+      "liveModelAnswer": false,
+      "providerStatus": "connection_error",
+      "responseIssue": null
+    },
+    "attempts": [
+      {
+        "index": 3,
+        "startedAt": "2026-10-16T11:06:39.011Z",
+        "requestSha256": "61931deb1059cadb2baef61b2679869ee72a329d66743f7ece50351a676fed52",
+        "promptModified": false,
+        "recordedFixture": false,
+        "error": {
+          "name": "Error",
+          "code": "PROVIDER_PAYLOAD_NOT_APPROVED"
+        },
+        "durationMs": 0,
+        "completedAt": "2026-10-16T11:06:39.011Z"
+      },
+      {
+        "index": 4,
+        "startedAt": "2026-10-16T11:06:39.111Z",
+        "requestSha256": "61931deb1059cadb2baef61b2679869ee72a329d66743f7ece50351a676fed52",
+        "promptModified": false,
+        "recordedFixture": false,
+        "error": {
+          "name": "Error",
+          "code": "PROVIDER_PAYLOAD_NOT_APPROVED"
+        },
+        "durationMs": 1,
+        "completedAt": "2026-10-16T11:06:39.112Z"
+      }
+    ],
+    "inferenceNecessaryForThisTurn": true,
+    "reason": "Actual configured provider requests blocked before external transport. No model/fixture response. Saved fallback cannot establish required semantic response."
+  },
+  "ownershipPayloadReview": {
+    "reviewed": true,
+    "actor": "A",
+    "actorId": "ea7ba8fc5539da959cf6dd9d",
+    "scopeInspection": {
+      "independentExplicitSelectedCourse": "6d0000000000000000000000",
+      "independentExpectedOwner": "6d0000000000000000000000",
+      "explicitUnknownScope": false,
+      "independentAuthAndEntitlement": true,
+      "requiresSemanticScopeAdjudication": false,
+      "protectedRetrievedSources": [
+        {
+          "id": "S1",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "Product video",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_6",
+          "lessonName": "Product video",
+          "contentType": "workflow",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:workflow:product-video"
+        },
+        {
+          "id": "S2",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "Lesson 06 — Photo Se Product Video",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_6",
+          "lessonName": "Lesson 06 — Photo Se Product Video",
+          "contentType": "lesson-summary",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:lesson-summary:lesson-06-photo-se-product-video"
+        },
+        {
+          "id": "S3",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "L06 Light Sweep",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_6",
+          "lessonName": "L06 Light Sweep",
+          "contentType": "exact-template",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:exact-template:l06-light-sweep"
+        },
+        {
+          "id": "S4",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "L05 Step 3 Flow prompts",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_5",
+          "lessonName": "L05 Step 3 Flow prompts",
+          "contentType": "exact-template",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:exact-template:l05-step-3-flow-prompts"
+        },
+        {
+          "id": "S5",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "Rang badla toh shape bhi badal gaya",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_4",
+          "lessonName": "Rang badla toh shape bhi badal gaya",
+          "contentType": "faq",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:faq:rang-badla-toh-shape-bhi-badal-gaya"
+        },
+        {
+          "id": "S6",
+          "title": "AI Product Photoshoot & Ads — Chatbot Transcript",
+          "section": "L06 Push-in",
+          "kind": "course-material",
+          "courseId": "6d0000000000000000000000",
+          "url": "/course-details.html?id=6d0000000000000000000000",
+          "lessonId": "lesson_6",
+          "lessonName": "L06 Push-in",
+          "contentType": "exact-template",
+          "sourceDocument": "training.txt",
+          "chunkId": "ai-product-photoshoot-ads:training:exact-template:l06-push-in"
+        }
+      ],
+      "retrievalProductBodies": [
+        {
+          "heading": "Lesson 06 — Photo Se Product Video",
+          "contentType": "lesson-summary",
+          "owner": "6d0000000000000000000000",
+          "sha256": "4942875729c885ba6b6f2d0280ff0342d7512615fd53d4d5c63da9c9dd3fc481"
+        },
+        {
+          "heading": "Product video",
+          "contentType": "workflow",
+          "owner": "6d0000000000000000000000",
+          "sha256": "ebdbfab455bca71b5956bb202abf1f301d4e694cace2cec144be694bbbc4cd9d"
+        },
+        {
+          "heading": "Rang badla toh shape bhi badal gaya",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "a5e24d7fd5cdb3b2b91614221e20162e67ed75cbf7837a6bce879690b9d8d703"
+        },
+        {
+          "heading": "L05 Step 3 Flow prompts",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "545a93a5584362765244d1b14aa9f7c49a66e19037c70c3547ac09d9d65f4321"
+        },
+        {
+          "heading": "L06 Push-in",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "04db3c22a6126469294ecfe8bf9a1554541eb1534657f36ab6411830a75ea2eb"
+        },
+        {
+          "heading": "L06 Light Sweep",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "9034d553fd70aad2cd9573d00f2b8a0112b71d22226c748739bd1579a7b0001a"
+        }
+      ],
+      "assembledContextProductBodies": [
+        {
+          "heading": "Lesson 06 — Photo Se Product Video",
+          "contentType": "lesson-summary",
+          "owner": "6d0000000000000000000000",
+          "sha256": "4942875729c885ba6b6f2d0280ff0342d7512615fd53d4d5c63da9c9dd3fc481"
+        },
+        {
+          "heading": "Product video",
+          "contentType": "workflow",
+          "owner": "6d0000000000000000000000",
+          "sha256": "ebdbfab455bca71b5956bb202abf1f301d4e694cace2cec144be694bbbc4cd9d"
+        },
+        {
+          "heading": "Rang badla toh shape bhi badal gaya",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "a5e24d7fd5cdb3b2b91614221e20162e67ed75cbf7837a6bce879690b9d8d703"
+        },
+        {
+          "heading": "L05 Step 3 Flow prompts",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "545a93a5584362765244d1b14aa9f7c49a66e19037c70c3547ac09d9d65f4321"
+        },
+        {
+          "heading": "L06 Push-in",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "04db3c22a6126469294ecfe8bf9a1554541eb1534657f36ab6411830a75ea2eb"
+        },
+        {
+          "heading": "L06 Light Sweep",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "9034d553fd70aad2cd9573d00f2b8a0112b71d22226c748739bd1579a7b0001a"
+        }
+      ],
+      "assembledPayloads": [
+        {
+          "sha256": "61931deb1059cadb2baef61b2679869ee72a329d66743f7ece50351a676fed52",
+          "validation": "accepted",
+          "error": null,
+          "scope": {
+            "activeCourse": {
+              "_id": "6d0000000000000000000000",
+              "slug": "ai-product-photoshoot-ads"
+            },
+            "includeMaterials": true
+          },
+          "productBodies": [
+            {
+              "heading": "Lesson 06 — Photo Se Product Video",
+              "contentType": "lesson-summary",
+              "owner": "6d0000000000000000000000",
+              "sha256": "4942875729c885ba6b6f2d0280ff0342d7512615fd53d4d5c63da9c9dd3fc481"
+            },
+            {
+              "heading": "Product video",
+              "contentType": "workflow",
+              "owner": "6d0000000000000000000000",
+              "sha256": "ebdbfab455bca71b5956bb202abf1f301d4e694cace2cec144be694bbbc4cd9d"
+            },
+            {
+              "heading": "Rang badla toh shape bhi badal gaya",
+              "contentType": "faq",
+              "owner": "6d0000000000000000000000",
+              "sha256": "a5e24d7fd5cdb3b2b91614221e20162e67ed75cbf7837a6bce879690b9d8d703"
+            },
+            {
+              "heading": "L05 Step 3 Flow prompts",
+              "contentType": "exact-template",
+              "owner": "6d0000000000000000000000",
+              "sha256": "545a93a5584362765244d1b14aa9f7c49a66e19037c70c3547ac09d9d65f4321"
+            },
+            {
+              "heading": "L06 Push-in",
+              "contentType": "exact-template",
+              "owner": "6d0000000000000000000000",
+              "sha256": "04db3c22a6126469294ecfe8bf9a1554541eb1534657f36ab6411830a75ea2eb"
+            },
+            {
+              "heading": "L06 Light Sweep",
+              "contentType": "exact-template",
+              "owner": "6d0000000000000000000000",
+              "sha256": "9034d553fd70aad2cd9573d00f2b8a0112b71d22226c748739bd1579a7b0001a"
+            }
+          ],
+          "messageCount": 4
+        }
+      ],
+      "providerAdapterProductBodies": [
+        {
+          "heading": "Lesson 06 — Photo Se Product Video",
+          "contentType": "lesson-summary",
+          "owner": "6d0000000000000000000000",
+          "sha256": "4942875729c885ba6b6f2d0280ff0342d7512615fd53d4d5c63da9c9dd3fc481"
+        },
+        {
+          "heading": "Product video",
+          "contentType": "workflow",
+          "owner": "6d0000000000000000000000",
+          "sha256": "ebdbfab455bca71b5956bb202abf1f301d4e694cace2cec144be694bbbc4cd9d"
+        },
+        {
+          "heading": "Rang badla toh shape bhi badal gaya",
+          "contentType": "faq",
+          "owner": "6d0000000000000000000000",
+          "sha256": "a5e24d7fd5cdb3b2b91614221e20162e67ed75cbf7837a6bce879690b9d8d703"
+        },
+        {
+          "heading": "L05 Step 3 Flow prompts",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "545a93a5584362765244d1b14aa9f7c49a66e19037c70c3547ac09d9d65f4321"
+        },
+        {
+          "heading": "L06 Push-in",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "04db3c22a6126469294ecfe8bf9a1554541eb1534657f36ab6411830a75ea2eb"
+        },
+        {
+          "heading": "L06 Light Sweep",
+          "contentType": "exact-template",
+          "owner": "6d0000000000000000000000",
+          "sha256": "9034d553fd70aad2cd9573d00f2b8a0112b71d22226c748739bd1579a7b0001a"
+        }
+      ],
+      "responseProductBodies": [],
+      "noPayloadConstructed": false,
+      "blockedAdapterAttempts": 2,
+      "externalTransportAttempts": 0,
+      "potentialCriticalFindings": [],
+      "inspectionPerformed": true
+    },
+    "dbOperations": [
+      {
+        "model": "AiTutorSession",
+        "operation": "findOne",
+        "filter": {
+          "user": "ea7ba8fc5539da959cf6dd9d",
+          "course": "6d0000000000000000000000"
+        }
+      },
+      {
+        "model": "Course",
+        "operation": "find",
+        "filter": {
+          "status": "published",
+          "_id": "6d0000000000000000000000"
+        }
+      },
+      {
+        "model": "AiTutorSession",
+        "operation": "upsert",
+        "filter": {
+          "user": "ea7ba8fc5539da959cf6dd9d",
+          "course": "6d0000000000000000000000"
+        }
+      }
+    ],
+    "reason": "All six source owners, context bodies and adapter bodies match entitled selected course 6d0000000000000000000000. Full assembly reviewed including exact prior blocks, own Mori history, current changed movement and safe access context; no foreign actor data or material. Actor ea7ba8fc5539da959cf6dd9d/course scoped DB operations. Both provider attempts equal reviewed assembly and stop before transport."
+  },
+  "gradedAt": "2026-10-16T11:06:50.605525+00:00"
+}

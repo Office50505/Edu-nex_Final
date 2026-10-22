@@ -1,0 +1,7 @@
+# Recommendation and rollback
+
+The confirmed local course-boundary failures are corrected and the relevant tests executed. A **new independent blind evaluation is reasonable after review**, using a newly frozen candidate, new independent questions and initial grading views that include retrieval/payload scope metadata. The old Phase14B questions are exposed evidence and must not be rebranded as blind. No new independent evaluation was started here.
+
+This is not production readiness or deployment approval. The full backend suite retains 24 pre-existing failures. Live-provider execution requires explicit approval for the course-text/derived-prompt payload to the configured destination; this review sent none. Production-like persistence, trial/purchase catalog resolution, UI integration and final end-to-end release verification remain later gates.
+
+Rollback is local only: use `baseline_source` and the exact phase-only patch. First compare each current hash with `changed_file_manifest.json` so subsequent user edits are not overwritten. Restore only the three production files and existing fixture from the baseline snapshots; remove the new regression file only if it still matches this review's hash and removal is intended. Do not reset/stash the working tree, use Git HEAD as the baseline, change course assets or touch unrelated changes. Review evidence and historical Phase14B archives should remain preserved. There is no production deployment, database migration, model retraining or production configuration change to roll back.

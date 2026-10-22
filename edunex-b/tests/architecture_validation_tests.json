@@ -127,18 +127,14 @@
       }
     },
     {
-      "id": "AV-11-missing-lesson-detail-fallback",
-      "category": "missing_course_detail",
-      "type": "directFilmmaking",
+      "id": "AV-11-filmmaking-l12-continuation-retrieval",
+      "category": "course_detail_retrieval",
+      "type": "retrieve",
       "activeCourse": "filmmaking",
-      "message": "Tell me the seven rules from Lesson 12",
-      "history": [
-        { "role": "user", "content": "Lesson 12 kya hai?" },
-        { "role": "assistant", "content": "Lesson 12 exists in the AI Filmmaking course map: B-roll & Cutaways. Detailed content is not available." }
-      ],
+      "message": "Tell me what Lesson 12 teaches about B-roll and cutaways",
       "expect": {
-        "contains": ["Lesson 12 exists", "B-roll & Cutaways"],
-        "matches": ["not available|available nahi"],
+        "contains": ["LESSON 12", "B-ROLL & CUTAWAYS", "Object/detail", "Reaction"],
+        "notMatches": ["not available|available nahi|Detailed content is not available"],
         "notContains": ["AI Influencer", "Original Reference Photo"]
       }
     },

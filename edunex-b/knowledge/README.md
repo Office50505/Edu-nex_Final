@@ -22,8 +22,13 @@ Keep this file limited to user-safe product knowledge. Do not put credentials, p
 `ai-filmmaking/` contains instructor-reviewed chatbot training material for the second course:
 
 - `training.txt`: lessons 1-8, tool guidance, prompt templates, and troubleshooting for the AI Filmmaking course.
+- `training-l9-15.txt`: continuation material for lessons 9-15 in the same AI Filmmaking course.
 
-These files are mapped only to explicitly configured published course slugs, currently `ai-influencer-course`/`ai-influencer` and `ai-filmmaking-course`/`ai-filmmaking`. Full document excerpts and lesson example prompts require the same active/trial subscription dates used by the content routes. All signed-in learners can still ask about course overviews or request general teaching examples. No subscription records are modified by this feature.
+`ai-product-photoshoot-ads/` contains the chatbot transcript for the third course:
+
+- `training.txt`: lessons 1-8, product sheet workflows, product/photo/video prompts, UGC guidance, limitations, ethical ad rules, and troubleshooting for AI Product Photoshoot & Ads.
+
+These files are mapped only to explicitly configured published course slugs/aliases, currently `ai-influencer-course`/`ai-influencer`, `ai-filmmaking-course`/`ai-filmmaking`/`ai_filmmaking`, and `ai-product-photoshoot-ads-course`/`ai-product-photoshoot-ads`/`ai-product-photoshoot-and-ads`/`ai-product-photoshoot`/`ai-product-ads`/`ai_product_photoshoot_ads`. Full document excerpts and lesson example prompts require the same active/trial subscription dates used by the content routes. All signed-in learners can still ask about course overviews or request general teaching examples. No subscription records are modified by this feature.
 
 References point to the course page and identify the source document/section. They are not video timestamps or verified transcript-to-video mappings. Model citations identify supplied excerpts, but still need correctness evaluation.
 

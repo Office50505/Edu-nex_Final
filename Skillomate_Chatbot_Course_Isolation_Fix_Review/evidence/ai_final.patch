@@ -1,0 +1,58 @@
+--- a/edunex-b/routes/ai.js
++++ b/edunex-b/routes/ai.js
+@@ -259,16 +259,20 @@
+     if (FAL_API_KEY || courseId) {
+       try {
+         if (!reply) knowledge = await buildContext(req.compatUser, courseId, message, history, { lessonId, learnerContext, savedState, conversationId:compactText(req.body?.conversationId||req.body?.conversation_id,120) });
+-        if(knowledge?.conversationHistory && !incomingHistoryLength){history=knowledge.conversationHistory;historyRestored=Boolean(history.length);}
++        if(Array.isArray(knowledge?.conversationHistory)){
++          history=knowledge.conversationHistory;
++          historyRestored=!incomingHistoryLength && Boolean(history.length);
++        }
+         const productRule = !reply && productTutorReply({ message, history, knowledge });
+         if (productRule) { reply = productRule.reply; selectedTemplateId = productRule.templateId; }
+-        if (!reply) reply = aiFilmmakingDirectReply({ message, courseId, knowledge, history });
++        if (!reply && knowledge?.materialsAvailable) reply = aiFilmmakingDirectReply({ message, courseId, knowledge, history });
+         if (reply) {
+           if (!provider.startsWith('skillomate-')) provider = 'course-knowledge-rule';
+           selectedTemplateId ||= aiFilmmakingTemplateIdForReply(reply);
+         } else if (FAL_API_KEY) {
+           const generationStarted=Date.now();
+           reply = await callFalOpenRouter({ context: knowledge.context, message, pagePath, assistantName, history, language:knowledge?.productContext?.language,
++            courseScope:{activeCourse:knowledge?.activeCourse ? {_id:knowledge.activeCourse.id,slug:knowledge.activeCourse.slug}:null,includeMaterials:Boolean(knowledge?.materialsAvailable)},
+             onDiagnostics: value => { providerDiagnostics = value; } });
+           provider = 'fal-openrouter';
+           let validation = validateProductReply({ reply, message, history, knowledge });
+@@ -277,17 +281,22 @@
+           if(validation.repairRequest && Date.now()-generationStarted<24800){
+             try {
+               const repaired=await callFalOpenRouter({context:knowledge.context,message,pagePath,assistantName,history,
++                courseScope:{activeCourse:knowledge?.activeCourse ? {_id:knowledge.activeCourse.id,slug:knowledge.activeCourse.slug}:null,includeMaterials:Boolean(knowledge?.materialsAvailable)},
+                 totalTimeoutMs:Math.max(1,25000-(Date.now()-generationStarted)),maxAttempts:1,repair:validation.repairRequest,language:validation.repairRequest.language,
+                 onDiagnostics:value=>{validationRepairDiagnostics=value;}});
+               const checked=validateProductReply({reply:repaired,message,history,knowledge});
+               if(!checked.repairRequest)validation={...checked,issue:checked.issue||('response_'+validation.repairRequest.kind+'_repaired')};
+-            }catch(error){ /* Keep the safe content-preserving unavailable-translation response. */ }
++            }catch(error){
++              if(error.code==='COURSE_KNOWLEDGE_SCOPE_VIOLATION')throw error;
++              /* Keep the safe content-preserving unavailable-translation response. */
++            }
+           }
+           reply = validation.reply;
+           responseIssue = validation.issue;
+           if (responseIssue) provider = 'course-response-policy';
+         }
+       } catch (error) {
++        if(error.code==='COURSE_KNOWLEDGE_SCOPE_VIOLATION')throw error;
+         console.warn(`Nex AI provider unavailable; using built-in course guide (${providerDiagnostics.status})`);
+       }
+     }
+@@ -295,7 +304,7 @@
+     if (!reply) {
+       provider = 'built-in-course-guide';
+       if (!knowledge && courseId && lessonId) knowledge = await buildContext(req.compatUser, courseId, message, history, { lessonId, learnerContext, savedState, conversationId:compactText(req.body?.conversationId||req.body?.conversation_id,120) });
+-      reply = aiFilmmakingDirectReply({ message, courseId, knowledge, history });
++      reply = knowledge?.materialsAvailable ? aiFilmmakingDirectReply({ message, courseId, knowledge, history }) : '';
+       if (reply) {
+         provider = 'course-knowledge-rule';
+         selectedTemplateId = aiFilmmakingTemplateIdForReply(reply);
