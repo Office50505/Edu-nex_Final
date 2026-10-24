@@ -114,27 +114,17 @@ it('normal payment links do not show the marketing ₹299 one-time checkout', as
   expect(window.location.pathname).toBe('/payment');
   expect(openRazorpay).toHaveBeenCalledTimes(1);
 });
-it('marketing checkout uses the one-time onboarding flow and retains its retry price', async () => {
+it('marketing checkout blocks retired one-time PhonePe configuration', async () => {
   localStorage.clear();
   sessionStorage.setItem('skillomateMarketingOnboardingToken', 'onboarding-token');
   window.history.replaceState(null, '', '/payment?flow=marketing-onboarding');
   const fetcher = mockApi({ gateway: 'phonepe', oneTimeAmountPaise: 29900, accessDays: 30 });
-  const original = fetcher.getMockImplementation();
-  fetcher.mockImplementation((url, options) => url === '/api/onboarding/checkout'
-    ? Promise.resolve(response({ error: 'Checkout unavailable.' }, 503))
-    : original(url, options));
   render(<PaymentPage />);
-  await screen.findByText('Checkout unavailable.');
-  expect(screen.getByRole('heading', { level: 2 }).textContent).toBe('₹299');
-  expect(screen.getByRole('button', { name: 'Try ₹299 once' })).toBeTruthy();
-  expect(screen.getByText(/does not renew automatically/)).toBeTruthy();
-  const checkoutCalls = fetcher.mock.calls.filter(([url]) => url === '/api/onboarding/checkout');
-  expect(checkoutCalls).toHaveLength(1);
-  expect(JSON.parse(checkoutCalls[0][1].body)).toMatchObject({ paymentType: 'one_time' });
-  expect(checkoutCalls[0][1].headers.Authorization).toBe('Bearer onboarding-token');
-  expect(fetcher.mock.calls.filter(([url]) => url.endsWith('/initiate-trial'))).toHaveLength(0);
+  await screen.findByText('PhonePe AutoPay is unavailable. Please retry later.');
+  expect(fetcher.mock.calls.filter(([url]) => url.endsWith('/checkout') || url.endsWith('/initiate-trial'))).toHaveLength(0);
   expect(openRazorpay).not.toHaveBeenCalled();
 });
+
 it('monthly unlock page shows ₹499 without one-time provider copy', async () => {
   window.history.replaceState(null, '', '/payment?plan=monthly');
   const fetcher = mockApi({ gateway: 'phonepe', oneTimeAmountPaise: 29900, subscriptionAmountPaise: 49900, accessDays: 30 });
@@ -174,7 +164,7 @@ it('resumes the same PhonePe checkout after the learner closes it', async () => 
   const fetcher = mockApi({ gateway: 'phonepe', autoRenewEnabled: true, subscriptionAmountPaise: 49900 }, false);
   const original = fetcher.getMockImplementation();
   fetcher.mockImplementation((url, options) => url.endsWith('/subscription-status')
-    ? Promise.resolve(response({ status: 'trial', accessGranted: true, autoRenewEnabled: false, pendingCheckout: true, mandateStatus: 'PENDING', trialEligible: false }))
+    ? Promise.resolve(response({ status: 'trial', accessGranted: true, autoRenewEnabled: false, pendingCheckout: true, checkoutResumable: true, mandateStatus: 'PENDING', trialEligible: false }))
     : url.endsWith('/initiate-trial')
       ? Promise.resolve(response({ error: 'Redirect stopped for test.' }, 503))
       : original(url, options));
