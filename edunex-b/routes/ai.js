@@ -22,6 +22,13 @@ const {
   skillomatePlanDirectReply,
   skillomatePlatformDirectReply,
   OUT_OF_SCOPE_REPLY,
+  productTutorReply,
+  productCourseDomain,
+  productAccessReply,
+  validateProductReply,
+  isProductKnowledge,
+  productFallbackNotice,
+  packFor, packDirectReply, validatePackReply,
 } = require('../services/aiTutorService');
 const {
   checkAiInput,
@@ -52,10 +59,12 @@ async function loadTutorState(req, courseId) {
   if (!userId) return null;
   if (typeof AiTutorSession.findOne !== 'function') return null;
   const course = mongoose.Types.ObjectId.isValid(courseId) ? courseId : null;
-  return AiTutorSession.findOne({ user: userId, course })
-    .select('activeCourseId currentTopic currentIntent lastWorkflow lastTemplateId')
+  const saved = await AiTutorSession.findOne({ user: userId, course })
+    .select('activeCourseId currentTopic currentIntent lastWorkflow lastTemplateId productContext courseContext conversationId messages')
     .lean()
     .catch(() => null);
+  const incoming=compactText(req.body?.conversationId || req.body?.conversation_id,120);
+  return incoming && saved?.conversationId && incoming!==saved.conversationId ? null : saved;
 }
 
 async function persistTutorChat(req, courseId, history, message, reply, state = {}) {
@@ -79,6 +88,8 @@ async function persistTutorChat(req, courseId, history, message, reply, state = 
       currentIntent: compactText(state.currentIntent, 80),
       lastWorkflow: compactText(state.lastWorkflow, 120),
       lastTemplateId: compactText(state.lastTemplateId, 160),
+      ...(state.productContext ? { productContext: state.productContext } : {}),
+      ...(state.courseContext ? {courseContext:state.courseContext} : {}),
       messages,
       lastUpdatedAt: new Date(),
     },
@@ -95,7 +106,10 @@ function aiDebugPayload({ req, requestedCourseId, resolvedCourseId, state, knowl
     current_topic: state?.currentTopic || '',
     current_intent: state?.currentIntent || '',
     rewritten_retrieval_query: knowledge?.retrievalQuery || compactText(req.body?.message, 220),
-    retrieved_chunk_ids: chunks.map(chunk => `${chunk.courseSlug || chunk.courseId}:${chunk.section}`).slice(0, 8),
+    retrieved_chunk_ids: chunks.map(chunk => chunk.chunkId || `${chunk.courseSlug || chunk.courseId}:${chunk.section}`).slice(0, 8),
+    retrieved_chunk_hashes: chunks.map(chunk => chunk.contentHash || ''),
+    retrieved_source_hashes: [...new Set(chunks.map(chunk => chunk.sourceHash).filter(Boolean))],
+    retrieved_translation_hashes: chunks.map(chunk => chunk.translationHash || ''),
     retrieved_course_ids: [...new Set(chunks.map(chunk => chunk.courseId).filter(Boolean))],
     retrieved_course_names: [...new Set(chunks.map(chunk => chunk.courseName).filter(Boolean))],
     scores_ranks: chunks.map(chunk => ({ rank: chunk.rank, score: Number(chunk.score || 0).toFixed(4), course_id: chunk.courseId, section: chunk.section })).slice(0, 8),
@@ -202,8 +216,8 @@ async function handleTutorChat(req, res) {
       120
     );
     const lessonId = compactText(req.body.lessonId, 120);
-    const history = sanitizeHistory(req.body.history);
-    const savedState = await loadTutorState(req, requestedCourseId);
+    let history = sanitizeHistory(req.body.history);
+    const savedState = await loadTutorState(req, resolveRequestedCourseScope({courseId:requestedCourseId}));
     const courseId = resolveRequestedCourseScope({
       courseId: req.body.courseId,
       activeCourseId: req.body.activeCourseId || req.body.active_course_id,
@@ -213,6 +227,9 @@ async function handleTutorChat(req, res) {
       savedState,
     });
 
+    const incomingHistoryLength=history.length;
+    let historyRestored=false;
+
     if (inputCheck.blocked) {
       return res.json({
         answer: inputCheck.reply,
@@ -220,6 +237,7 @@ async function handleTutorChat(req, res) {
         messageId: crypto.randomUUID(),
         provider: 'safety-filter',
         sources: [],
+        outcome: { type: 'local_rule', liveModelAnswer: false, providerStatus: 'not_requested' },
       });
     }
 
@@ -228,37 +246,79 @@ async function handleTutorChat(req, res) {
     let knowledge;
     let selectedTemplateId = '';
     let state = null;
+    let providerDiagnostics = { status: FAL_API_KEY ? 'not_requested' : 'not_configured', attempts: [] };
+    let responseIssue = null;
+    let validationRepairDiagnostics=null;
     const learnerContext = await loadLearnerContext(req.compatUser);
-    const learnerReply = learnerContextDirectReply(message, learnerContext);
-    const planReply = skillomatePlanDirectReply(message);
-    const platformReply = skillomatePlatformDirectReply(message);
-    if (learnerReply) {
-      provider = 'skillomate-learner-facts';
-      reply = learnerReply;
-    } else if (platformReply) {
-      provider = platformReply === planReply ? 'skillomate-plan-facts' : 'skillomate-platform-facts';
-      reply = platformReply;
-    }
-    if (FAL_API_KEY) {
+    // Resolve server-owned course context before disambiguating overlapping account words.
+    const chooseDirectReply = () => {
+      const domain=packFor(knowledge?.activeCourse)
+        ? (/\bSkillomate\b.*\b(?:plan|subscription|billing|refund|login|account)\b/i.test(message) ? 'platform' : 'course')
+        : isProductKnowledge(knowledge)?productCourseDomain(message):'';
+      if(domain==='platform'&&!knowledge.materialsAvailable&&/inactive|expired|restore|access|भुगतान|एक्सेस/iu.test(message)){reply=productAccessReply(message,knowledge);provider='course-knowledge-rule';return;}
+      const language=isProductKnowledge(knowledge)?knowledge.productContext?.language:'';
+      const learnerReply=domain==='course'?'':learnerContextDirectReply(message,learnerContext,language);
+      const planReply=domain==='course'?'':skillomatePlanDirectReply(message,language);
+      const platformReply=domain==='course'?'':skillomatePlatformDirectReply(message,language);
+      if(learnerReply){provider='skillomate-learner-facts';reply=learnerReply;}
+      else if(platformReply){provider=platformReply===planReply?'skillomate-plan-facts':'skillomate-platform-facts';reply=platformReply;}
+    };
+    if(!FAL_API_KEY&&!courseId)chooseDirectReply();
+    if (FAL_API_KEY || courseId) {
       try {
-        if (!reply) knowledge = await buildContext(req.compatUser, courseId, message, history, { lessonId, learnerContext });
-        if (!reply) reply = aiFilmmakingDirectReply({ message, courseId, knowledge, history });
+        if (!reply) knowledge = await buildContext(req.compatUser, courseId, message, history, { lessonId, learnerContext, savedState, conversationId:compactText(req.body?.conversationId||req.body?.conversation_id,120) });
+        chooseDirectReply();
+        if(Array.isArray(knowledge?.conversationHistory)){
+          history=knowledge.conversationHistory;
+          historyRestored=!incomingHistoryLength && Boolean(history.length);
+        }
+        const packRule = !reply && packDirectReply({message,history,knowledge});
+        if (packRule) { reply = packRule.reply; selectedTemplateId = packRule.templateId; }
+        const productRule = !reply && productTutorReply({ message, history, knowledge });
+        if (productRule) { reply = productRule.reply; selectedTemplateId = productRule.templateId; }
+        if (!reply && knowledge?.materialsAvailable) reply = aiFilmmakingDirectReply({ message, courseId, knowledge, history });
         if (reply) {
           if (!provider.startsWith('skillomate-')) provider = 'course-knowledge-rule';
-          selectedTemplateId = aiFilmmakingTemplateIdForReply(reply);
-        } else {
-          reply = await callFalOpenRouter({ context: knowledge.context, message, pagePath, assistantName, history });
+          selectedTemplateId ||= aiFilmmakingTemplateIdForReply(reply);
+        } else if (FAL_API_KEY) {
+          const generationStarted=Date.now();
+          reply = await callFalOpenRouter({ context: knowledge.context+(knowledge.requestPlan?'\nTransient learner request plan (not course facts): '+JSON.stringify(knowledge.requestPlan):''), message, pagePath, assistantName, history, language:knowledge?.courseContext?.language || knowledge?.productContext?.language,
+            courseScope:{activeCourse:knowledge?.activeCourse ? {_id:knowledge.activeCourse.id,slug:knowledge.activeCourse.slug}:null,includeMaterials:Boolean(knowledge?.materialsAvailable)},
+            onDiagnostics: value => { providerDiagnostics = value; } });
           provider = 'fal-openrouter';
+          let validation = validateProductReply({ reply, message, history, knowledge });
+          // One repair attempt shares the initial 25-second total budget. Failed
+          // translation never silently becomes an unrelated FAQ or a live answer.
+          if(validation.repairRequest && Date.now()-generationStarted<24800){
+            try {
+              const repaired=await callFalOpenRouter({context:knowledge.context,message,pagePath,assistantName,history,
+                courseScope:{activeCourse:knowledge?.activeCourse ? {_id:knowledge.activeCourse.id,slug:knowledge.activeCourse.slug}:null,includeMaterials:Boolean(knowledge?.materialsAvailable)},
+                totalTimeoutMs:Math.max(1,25000-(Date.now()-generationStarted)),maxAttempts:1,repair:validation.repairRequest,language:validation.repairRequest.language,
+                onDiagnostics:value=>{validationRepairDiagnostics=value;}});
+              const checked=validateProductReply({reply:repaired,message,history,knowledge});
+              if(!checked.repairRequest)validation={...checked,issue:checked.issue||('response_'+validation.repairRequest.kind+'_repaired')};
+            }catch(error){
+              if(error.code==='COURSE_KNOWLEDGE_SCOPE_VIOLATION')throw error;
+              /* Keep the safe content-preserving unavailable-translation response. */
+            }
+          }
+          reply = validation.reply;
+          responseIssue = validation.issue;
+          const packValidation = validatePackReply({reply,knowledge});
+          reply = packValidation.reply;
+          responseIssue ||= packValidation.issue;
+          if (responseIssue) provider = 'course-response-policy';
         }
       } catch (error) {
-        console.warn(`Nex AI provider unavailable; using built-in course guide (${error.name || 'provider-error'})`);
+        if(error.code==='COURSE_KNOWLEDGE_SCOPE_VIOLATION')throw error;
+        console.warn(`Nex AI provider unavailable; using built-in course guide (${providerDiagnostics.status})`);
       }
     }
 
     if (!reply) {
       provider = 'built-in-course-guide';
-      if (!knowledge && courseId && lessonId) knowledge = await buildContext(req.compatUser, courseId, message, history, { lessonId, learnerContext });
-      reply = aiFilmmakingDirectReply({ message, courseId, knowledge, history });
+      if (!knowledge && courseId && lessonId) knowledge = await buildContext(req.compatUser, courseId, message, history, { lessonId, learnerContext, savedState, conversationId:compactText(req.body?.conversationId||req.body?.conversation_id,120) });
+      reply = knowledge?.materialsAvailable ? aiFilmmakingDirectReply({ message, courseId, knowledge, history }) : '';
       if (reply) {
         provider = 'course-knowledge-rule';
         selectedTemplateId = aiFilmmakingTemplateIdForReply(reply);
@@ -272,15 +332,17 @@ async function handleTutorChat(req, res) {
       }
     }
     reply = sanitizeAiOutput(cleanLearnerReply(String(reply || '').trim().slice(0, 6000))) || OUT_OF_SCOPE_REPLY;
-    state = resolveConversationState({ message, history, knowledge, savedState, selectedTemplateId });
+    state = resolveConversationState({ message, history, knowledge, savedState, selectedTemplateId, reply });
     const debugPayload = aiDebugPayload({ req, requestedCourseId, resolvedCourseId: courseId, state, knowledge, selectedTemplateId, provider });
     logAiDebug(debugPayload);
     await persistTutorChat(req, courseId, history, message, reply, state).catch(() => {});
     const sources = [];
     res.json({ answer: reply, reply, provider, sources, messageId: crypto.randomUUID(),
-      notice: null,
+      notice: provider === 'built-in-course-guide' && isProductKnowledge(knowledge) ? productFallbackNotice(message) : null,
+      outcome: { type: provider === 'fal-openrouter' ? 'live_model' : provider === 'built-in-course-guide' ? 'provider_fallback' : responseIssue ? 'validated_local_replacement' : 'local_rule',
+        liveModelAnswer: provider === 'fal-openrouter', providerStatus: providerDiagnostics.status, responseIssue },
       knowledge: knowledge?.materialsAvailable ? 'course-materials' : 'course-overviews',
-      ...(req.body?.debugAi ? { debug: debugPayload } : {}),
+      ...(req.body?.debugAi ? { debug: { ...debugPayload, response_selection:knowledge?.responseSelection||null, history_restored:historyRestored, provider: providerDiagnostics, validation_repair:validationRepairDiagnostics } } : {}),
     });
   } catch (error) {
     res.status(502).json({ error: 'AI is unavailable right now. Please try again.' });

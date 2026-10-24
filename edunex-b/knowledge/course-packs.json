@@ -1,0 +1,12 @@
+[
+  {
+    "dir": "ai-local-business-ads",
+    "index": "index.json"
+  },
+  {
+    "dir": "ai-cartoon-series",
+    "index": "index.json",
+    "enabled": false,
+    "reason": "Awaiting verified published course ID and slug; never attach by title or a guessed alias."
+  }
+]

@@ -25,3 +25,13 @@ appcopyai/tmp/xcode-derived/
 output/pdf/
 tmp/pdfs/rendered-*/
 tmp/pdfs/generate_ios_build*_report.py
+
+# Local chatbot evaluation output and private authorization/runtime state
+edunex-b/reports/
+edunex-b/last_results.json
+**/provider_approval*.json
+**/runtime_location.txt
+**/pipeline_traces.jsonl
+__pycache__/
+*.py[cod]
+*.zip
