@@ -72,6 +72,7 @@ if (fs.existsSync(indexHtml) && fs.existsSync(legacyDir)) {
 
 // React-only operational pages have no legacy HTML source.
 if (fs.existsSync(indexHtml)) {
+  fs.copyFileSync(indexHtml, path.join(dist, "404.html"));
   const reactOnlyRoutes = [
     'account-deletion',
     'ai',

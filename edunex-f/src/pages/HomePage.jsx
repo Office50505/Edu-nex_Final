@@ -1551,7 +1551,7 @@ export function HomePage() {
         <section className="learning-hero" aria-labelledby="learningHeroTitle">
           <div className="learning-hero-copy">
             <div className="learning-hero-label">LEARN WITH AI. EARN WITH AI.</div>
-            <h1 id="learningHeroTitle">
+            <h1 id="learningHeroTitle" aria-label="Build skills that turn into opportunities.">
               <span>Build skills that turn</span>
               <span>into opportunities.</span>
             </h1>

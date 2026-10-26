@@ -41,7 +41,6 @@ import {
   Platform,
   Pressable,
   RefreshControl,
-  SafeAreaView,
   ScrollView,
   Share,
   StatusBar,
@@ -52,6 +51,7 @@ import {
   View,
 } from "react-native";
 import { WebView } from "react-native-webview";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { useEventListener } from "expo";
 import * as ScreenCapture from "expo-screen-capture";
 import Constants from "expo-constants";
@@ -4002,9 +4002,8 @@ function BottomNav({
     .filter(item => typeof item.fn === "function");
   const searchResults = searchTerms.length
     ? searchReferences.map((item, index) => {
-        const title = String(item.title || "").toLowerCase();
-        const haystack = `${item.title} ${item.subtitle} ${item.keywords}`.toLowerCase();
-        const matched = searchTerms.every(term => haystack.includes(term));
+        const title = normalizeSearchText(item.title);
+        const matched = matchesSearchQuery(item, searchTerms);
         if (!matched) return null;
         const firstTerm = searchTerms[0] || "";
         const score = title === normalizedSearch
@@ -4164,7 +4163,7 @@ function getCourseSearchText(course, lessonLimit = 24) {
     course?.summary,
     categoryName,
     lessonKeywords,
-    "course lesson lectures videos learn ai filmmaking film making cinema reels editing storytelling",
+    "course lesson lectures videos learn ai",
   ].filter(Boolean).join(" ");
 }
 
@@ -14533,7 +14532,7 @@ return StyleSheet.create({
     alignSelf: "center",
     paddingHorizontal: 24,
     // Match Android's login composition to the iPhone safe-area layout.
-    // React Native's built-in SafeAreaView only supplies the larger inset on iOS.
+    // Android already includes a compact status-bar offset in this layout.
     paddingTop: Platform.OS === "android" ? 87 : 24,
     paddingBottom: Platform.OS === "android" ? 44 : 8,
   },

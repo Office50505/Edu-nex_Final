@@ -286,6 +286,10 @@ export function CoursesPage() {
     const query = search.trim().toLowerCase();
     return orderCoursesForAccess(courses.filter((course) => !query || `${course.title} ${course.description} ${course.categoryName}`.toLowerCase().includes(query)));
   }, [courses, search]);
+  const filteredPlannedCourses = useMemo(() => {
+    const query = search.trim().toLowerCase();
+    return PLANNED_COURSES.filter((title) => !query || title.toLowerCase().includes(query));
+  }, [search]);
   const priorityCourseId = filteredCourses[0]?.id;
   const trialCourseId = primaryTrialCourseId(courses);
   const trialCourse = courses.find((course) => course.id === trialCourseId);
@@ -336,7 +340,7 @@ export function CoursesPage() {
   };
 
   const groupedCourseRows = useMemo(() => groupCourses(filteredCourses), [filteredCourses]);
-  const previewImage = filteredCourses[0]?.image || "";
+  const previewImage = filteredCourses[0]?.image || courses[0]?.image || "";
 
   const updateSearch = (value) => {
     setSearch(value);
@@ -545,7 +549,7 @@ export function CoursesPage() {
               </div>
             </div>
           ) : null}
-          {state === "ready" && !filteredCourses.length ? (
+          {state === "ready" && !filteredCourses.length && !filteredPlannedCourses.length ? (
             <div className="category-block">
               <div className="section-header">
                 <div className="section-header-left">
@@ -555,7 +559,7 @@ export function CoursesPage() {
               </div>
             </div>
           ) : null}
-          {state === "ready" ? groupedCourseRows.map(([group, rows], groupIndex) => (
+          {state === "ready" ? groupedCourseRows.map(([group, rows]) => (
             <div className="category-block" key={group}>
               <div className="section-header">
                 <div className="section-header-left">
@@ -666,24 +670,35 @@ export function CoursesPage() {
                     </div>
                   );
                 })}
-                {groupIndex === 0 ? (
-                  <>
-                    {PLANNED_COURSES.map((title, index) => (
-                      <PreviewCourseCard
-                        title={title}
-                        subtitle="New lessons are being prepared."
-                        badge={index < 5 ? "CREATIVE AI" : index < 8 ? "BUILD WITH AI" : index < 12 ? "AI CAREER" : "DAILY AI"}
-                        image={previewImage}
-                        variant="soon"
-                        onOpen={() => setPreviewModal("soon")}
-                        key={title}
-                      />
-                    ))}
-                  </>
-                ) : null}
               </div>
             </div>
           )) : null}
+          {state === "ready" && filteredPlannedCourses.length ? (
+            <div className="category-block">
+              <div className="section-header">
+                <div className="section-header-left">
+                  <h2>Coming Soon</h2>
+                  <p>New Skillomate courses currently in preparation</p>
+                </div>
+              </div>
+              <div className="courses-grid">
+                {filteredPlannedCourses.map((title) => {
+                  const index = PLANNED_COURSES.indexOf(title);
+                  return (
+                    <PreviewCourseCard
+                      title={title}
+                      subtitle="New lessons are being prepared."
+                      badge={index < 5 ? "CREATIVE AI" : index < 8 ? "BUILD WITH AI" : index < 12 ? "AI CAREER" : "DAILY AI"}
+                      image={previewImage}
+                      variant="soon"
+                      onOpen={() => setPreviewModal("soon")}
+                      key={title}
+                    />
+                  );
+                })}
+              </div>
+            </div>
+          ) : null}
         </div>
       </section>
 

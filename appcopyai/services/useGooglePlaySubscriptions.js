@@ -4,7 +4,6 @@ import {
   ErrorCode,
   fetchProducts as readProducts,
   getAvailablePurchases as readAvailablePurchases,
-  useIAP,
 } from "react-native-iap";
 import {
   GOOGLE_PLAY_SUBSCRIPTION_OFFER_IDS,
@@ -13,6 +12,7 @@ import {
   normalizeGooglePlaySubscriptionOffers,
 } from "./subscriptions";
 import { createGooglePlayBillingDiagnostics } from "./googlePlayBillingDiagnostics";
+import { useDeferredIapConnection } from "./useDeferredIapConnection";
 
 const GOOGLE_PLAY_CONNECTION_HELP = "Google Play is not ready. Open Play Store, sign in, then return and retry.";
 const GOOGLE_PLAY_PRODUCT_TIMEOUT_MS = 12_000;
@@ -137,7 +137,8 @@ export function useGooglePlaySubscriptions({ session, user, onEntitlementChanged
     }
   }, [checkoutContext, clearPurchaseLock, configuration?.productId, onEntitlementChanged, session, setWorking, userId]);
 
-  const iap = useIAP({
+  const iap = useDeferredIapConnection({
+    enabled: Boolean(userId),
     onPurchaseSuccess: purchase => { verifyAndFinish(purchase); },
     onPurchaseError: async purchaseError => {
       if (currentCheckoutContext.current !== checkoutContext) return;
@@ -171,26 +172,6 @@ export function useGooglePlaySubscriptions({ session, user, onEntitlementChanged
   });
   const iapRef = useRef(iap);
   iapRef.current = iap;
-
-  useEffect(() => {
-    if (!userId || iap.connected) return undefined;
-    let stopped = false;
-    let timer;
-    const delays = [1200, 3500, 8000];
-    const reconnectAt = index => {
-      if (index >= delays.length) return;
-      timer = setTimeout(async () => {
-        if (stopped || iapRef.current.connected) return;
-        const connected = await iapRef.current.reconnect().catch(() => false);
-        if (!connected && !stopped) reconnectAt(index + 1);
-      }, delays[index]);
-    };
-    reconnectAt(0);
-    return () => {
-      stopped = true;
-      clearTimeout(timer);
-    };
-  }, [iap.connected, userId]);
 
   const refresh = useCallback(async () => {
     if (Platform.OS !== "android" || !userId) return null;

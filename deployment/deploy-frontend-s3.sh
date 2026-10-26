@@ -74,6 +74,27 @@ fi
   --cache-control "$HTML_CACHE_CONTROL" \
   --only-show-errors
 
+# CloudFront uses the S3 REST origin, which does not resolve /courses to
+# /courses/index.html. Publish extensionless route objects so valid SPA routes
+# are served directly and a real missing route can retain HTTP 404 semantics.
+while IFS= read -r -d '' route_index; do
+  relative="${route_index#"$DIST_DIR/"}"
+  route_key="${relative%/index.html}"
+  if test "$route_key" = "$relative" || [[ "$route_key" == static-pages/* ]]; then
+    continue
+  fi
+  for key in "$route_key" "$route_key/"; do
+    "$AWS_COMMAND" s3api put-object \
+      --bucket "$bucket_name" \
+      --key "${object_prefix}${key}" \
+      --body "$route_index" \
+      --content-type "text/html; charset=utf-8" \
+      --cache-control "$HTML_CACHE_CONTROL" \
+      --server-side-encryption AES256 \
+      --output text >/dev/null
+  done
+done < <(find "$DIST_DIR" -mindepth 2 -name index.html -type f -print0)
+
 if test -f "$MARKETING_INDEX"; then
   "$AWS_COMMAND" s3api put-object \
     --bucket "$bucket_name" \
@@ -122,6 +143,23 @@ while IFS= read -r -d '' file; do
     immutable_count=$((immutable_count + 1))
   fi
 done < <(find "$DIST_DIR" -type f -print0)
+
+distribution_config="$(mktemp)"
+trap 'rm -f "$distribution_config"' EXIT
+distribution_etag="$($AWS_COMMAND cloudfront get-distribution-config \
+  --id "$DISTRIBUTION_ID" \
+  --query ETag \
+  --output text)"
+"$AWS_COMMAND" cloudfront get-distribution-config \
+  --id "$DISTRIBUTION_ID" \
+  --query DistributionConfig \
+  --output json >"$distribution_config"
+node "$SCRIPT_DIR/configure-frontend-cloudfront-errors.mjs" "$distribution_config"
+"$AWS_COMMAND" cloudfront update-distribution \
+  --id "$DISTRIBUTION_ID" \
+  --if-match "$distribution_etag" \
+  --distribution-config "file://$distribution_config" \
+  --output text >/dev/null
 
 "$AWS_COMMAND" cloudfront create-invalidation \
   --distribution-id "$DISTRIBUTION_ID" \

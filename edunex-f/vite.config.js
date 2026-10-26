@@ -120,6 +120,10 @@ export default defineConfig(({ mode }) => {
     build: {
       outDir: "dist",
       emptyOutDir: true,
+      // hls.js is intentionally isolated behind loadHlsJs() and is fetched only
+      // for browsers that need MSE playback. Keep the full build for captions,
+      // alternate tracks, and recovery support without flagging that lazy chunk.
+      chunkSizeWarningLimit: 650,
     },
     server: {
       proxy: {

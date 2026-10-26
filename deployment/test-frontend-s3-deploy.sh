@@ -6,8 +6,10 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 readonly TEMP_DIR="$(mktemp -d)"
 trap 'rm -rf "$TEMP_DIR"' EXIT
 
-mkdir -p "$TEMP_DIR/dist/assets" "$TEMP_DIR/dist/static-pages/skillomate-ai-influencer-courseweb"
+mkdir -p "$TEMP_DIR/dist/assets" "$TEMP_DIR/dist/courses" "$TEMP_DIR/dist/static-pages/skillomate-ai-influencer-courseweb"
 printf '<!doctype html><title>Skillomate</title>\n' >"$TEMP_DIR/dist/index.html"
+printf '<!doctype html><title>Not found</title>\n' >"$TEMP_DIR/dist/404.html"
+printf '<!doctype html><title>Courses</title>\n' >"$TEMP_DIR/dist/courses/index.html"
 printf '<!doctype html><title>Marketing</title><div class="premium-reel-stage"></div>\n' >"$TEMP_DIR/dist/static-pages/skillomate-ai-influencer-courseweb/index.html"
 printf 'console.log("app");\n' >"$TEMP_DIR/dist/assets/index-AbCd1234.js"
 printf 'logo\n' >"$TEMP_DIR/dist/assets/skillomate-logo-dark-v1.webp"
@@ -16,6 +18,13 @@ printf 'legacy\n' >"$TEMP_DIR/dist/assets/legacy.js"
 cat >"$TEMP_DIR/aws" <<'EOF'
 #!/usr/bin/env bash
 printf '%s\n' "$*" >>"$AWS_CALL_LOG"
+if test "${1:-}" = cloudfront && test "${2:-}" = get-distribution-config; then
+  if [[ " $* " == *" --query ETag "* ]]; then
+    printf 'TESTETAG\n'
+  else
+    printf '{"CallerReference":"test","Comment":"","Enabled":true,"CustomErrorResponses":{"Quantity":1,"Items":[{"ErrorCode":500,"ErrorCachingMinTTL":10}]}}\n'
+  fi
+fi
 EOF
 chmod +x "$TEMP_DIR/aws"
 
@@ -36,6 +45,9 @@ grep -Fq "s3api put-object --bucket skillomate-test --key static-pages/skillomat
 grep -Fq "s3api put-object --bucket skillomate-test --key static-pages/skillomate-ai-influencer-courseweb/ --body $TEMP_DIR/dist/static-pages/skillomate-ai-influencer-courseweb/index.html" "$TEMP_DIR/aws.log"
 grep -Fq "s3api put-object --bucket skillomate-test --key marketing-web --body $TEMP_DIR/dist/static-pages/skillomate-ai-influencer-courseweb/index.html" "$TEMP_DIR/aws.log"
 grep -Fq "s3api put-object --bucket skillomate-test --key marketing-web/ --body $TEMP_DIR/dist/static-pages/skillomate-ai-influencer-courseweb/index.html" "$TEMP_DIR/aws.log"
+grep -Fq "s3api put-object --bucket skillomate-test --key courses --body $TEMP_DIR/dist/courses/index.html" "$TEMP_DIR/aws.log"
+grep -Fq "s3api put-object --bucket skillomate-test --key courses/ --body $TEMP_DIR/dist/courses/index.html" "$TEMP_DIR/aws.log"
+grep -Fq 'cloudfront update-distribution --id TEST123 --if-match TESTETAG' "$TEMP_DIR/aws.log"
 grep -Fq 'cloudfront create-invalidation --distribution-id TEST123 --paths /*' "$TEMP_DIR/aws.log"
 
 printf '<!doctype html><meta name="skillomate-api-base-url" content="">\n' >"$TEMP_DIR/dist/static-pages/skillomate-ai-influencer-courseweb/index.html"
