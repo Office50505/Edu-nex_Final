@@ -8705,8 +8705,10 @@ function HomeScreen({
       setLoadError("");
       setCatalogCourses(homeCatalogCourses || []);
       try {
+        let catalogRequestError = null;
         const richResponse = await fetchApiJson("/api/courses/top?limit=24", [], homeAbort.signal).catch(error => {
           if (homeAbort.signal.aborted) throw error;
+          catalogRequestError = error;
           return [];
         });
         if (cancelled) return;
@@ -8714,6 +8716,7 @@ function HomeScreen({
         const richCourses = (Array.isArray(richResponse) ? richResponse : richResponse?.courses || []).filter(course => !course?.isMock);
         const fallbackResponse = await fetchApiJson("/api/courses", [], homeAbort.signal).catch(error => {
           if (homeAbort.signal.aborted) throw error;
+          catalogRequestError = error;
           return [];
         });
         const fallbackCourses = (Array.isArray(fallbackResponse) ? fallbackResponse : fallbackResponse?.courses || []).filter(course => !course?.isMock);
@@ -8742,6 +8745,7 @@ function HomeScreen({
         });
 
         if (!candidates.length) {
+          if (catalogRequestError) throw catalogRequestError;
           homeCatalogCourses = [];
           setCatalogCourses([]);
           setLoadError("No published course is available right now.");
