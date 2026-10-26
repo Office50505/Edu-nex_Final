@@ -19,6 +19,7 @@ tmp/pdfs/rendered-skillomate-k6-*/
 # Generated mobile release artifacts (APK, AAB, IPA, and Xcode archives)
 appcopyai/releases/
 appcopyai/tmp/xcode-derived/
+output/android/
 
 # Generated PDF reports and future PDF output
 *.pdf
