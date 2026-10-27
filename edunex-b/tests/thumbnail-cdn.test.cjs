@@ -190,6 +190,7 @@ test('failed replacement upload returns 503 before loading or saving the mutable
     sanitizeCourseVideos: (value) => value,
     applyCourseThumbnailToVideos: (value) => value,
     clearPublicCourseCaches: async () => {},
+    broadcastCourseChange: async () => ({ recipients: 0 }),
   }, 'patch');
   previous.save = async () => { saveCalls += 1; };
   const res = responseRecorder();
@@ -219,6 +220,7 @@ test('failed production upload prevents course construction and database persist
     sanitizeCourseThumbnailUrl: (value) => value,
     applyCourseThumbnailToVideos: (videos) => videos,
     clearPublicCourseCaches: async () => {},
+    broadcastCourseChange: async () => ({ recipients: 0 }),
   }, 'post');
   const res = responseRecorder();
   await handler({ body: { category: id, videos: [{}], thumbnailDataUrl: 'data:image/png;base64,...' } }, res);
@@ -267,6 +269,7 @@ test('blank vertical URL clears legacy storage while preserving the horizontal t
     sanitizeCourseVideos: (value) => value,
     applyCourseThumbnailToVideos: (value) => value,
     clearPublicCourseCaches: async () => {},
+    broadcastCourseChange: async () => ({ recipients: 0 }),
   }, 'patch');
   const res = responseRecorder();
   await handler({ params: { id }, body: { thumbnailVerticalUrl: '' } }, res);

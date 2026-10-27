@@ -19,6 +19,9 @@ function configuredOrigins(env = process.env) {
 function buildAllowedOrigins(env = process.env) {
   return new Set([
     ...DEFAULT_ALLOWED_ORIGINS,
+    ...(env.NODE_ENV === 'development'
+      ? ['http://localhost:3001', 'http://127.0.0.1:3001']
+      : []),
     ...configuredOrigins(env),
   ]);
 }

@@ -13,6 +13,10 @@ import {
 } from "./subscriptions";
 import { createGooglePlayBillingDiagnostics } from "./googlePlayBillingDiagnostics";
 import { useDeferredIapConnection } from "./useDeferredIapConnection";
+import { isMockPaymentEnabled } from "./mockPayments";
+import { useMockPayments } from "./useMockPayments";
+
+const MOCK_PAYMENTS = isMockPaymentEnabled(__DEV__, process.env.EXPO_PUBLIC_MOCK_PAYMENTS, Platform.OS);
 
 const GOOGLE_PLAY_CONNECTION_HELP = "Google Play is not ready. Open Play Store, sign in, then return and retry.";
 const GOOGLE_PLAY_PRODUCT_TIMEOUT_MS = 12_000;
@@ -41,7 +45,11 @@ const UNAVAILABLE_GOOGLE_PLAY_SUBSCRIPTION = {
   working: false,
 };
 
-export function useGooglePlaySubscriptions({ session, user, onEntitlementChanged }) {
+// This choice is fixed for the lifetime of the JS bundle. Mock mode never mounts
+// the real billing hook or its network, verification, and entitlement effects.
+export const useGooglePlaySubscriptions = MOCK_PAYMENTS ? useMockPayments : useRealGooglePlaySubscriptions;
+
+function useRealGooglePlaySubscriptions({ session, user, onEntitlementChanged }) {
   if (Platform.OS !== "android") return UNAVAILABLE_GOOGLE_PLAY_SUBSCRIPTION;
 
   const [configuration, setConfiguration] = useState(null);

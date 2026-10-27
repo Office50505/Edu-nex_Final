@@ -41,6 +41,7 @@ function controller({ pending = null, remotePlan = plan } = {}) {
     module, exports: module.exports, Date, Buffer,
     require(name) {
       if (name === 'node:crypto') return crypto;
+      if (name.includes('accountEntitlement')) return { loadAccountEntitlement: async () => ({ access: { active: false } }) };
       if (name.includes('paymentMode')) return { activeMode: async () => 'live' };
       if (name.includes('razorpayService')) return { ...rzp, config: () => c, requireConfig: () => c, api: async (route, method, body) => {
         if (route.startsWith('/plans/')) return remotePlan;

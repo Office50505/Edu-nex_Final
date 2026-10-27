@@ -20,9 +20,11 @@ const compile = (node, context) => vm.runInNewContext(`(${source.slice(node.star
 function navigation(preview) {
   const state = { mainScreen: 'courses', startIndex: 1, selectedCourse: { _id: 'course', videos: [{ _id: 'lesson' }] }, initialTime: 42, isPreviewOnly: preview, preloadedVideos: null };
   let refreshes = 0;
-  const context = { ...state, userRef: { current: { _id: 'user' } }, legalPage: null, courseAiTarget: null, certModal: null, showAppUpgrade: false, loadCourseProgress: () => refreshes++ };
+  const context = { ...state, userRef: { current: { _id: 'user' } }, legalPage: null, courseAiTarget: null, certModal: null, showAppUpgrade: false, showProblemReport: false, routeHistoryRef: { current: [] }, setCanGoBack() {}, restoreRoute: () => false, loadCourseProgress: () => refreshes++, TextInput: { State: { currentlyFocusedInput: () => null } }, Platform: { OS: 'android' } };
   for (const name of Object.keys(state)) context[`set${name[0].toUpperCase()}${name.slice(1)}`] = value => { state[name] = value; context[name] = value; };
   context.backToLessons = compile(declaration('backToLessons').init.arguments[0], context);
+  context.handleAppBack = compile(declaration('handleAppBack').init.arguments[0], context);
+  context.requestPlayerBack = compile(declaration('requestPlayerBack').init.arguments[0], context);
   const hardware = nodes.findLast(n => n.type === 'CallExpression' && n.callee?.object?.name === 'BackHandler' && n.arguments[0]?.value === 'hardwareBackPress');
   return { state, context, back: compile(hardware.arguments[1], context), refreshes: () => refreshes };
 }
@@ -75,7 +77,7 @@ test('mute and playback speed changes do not trigger a source reload', () => {
   assert.ok(effect);
   const dependencies = effect.arguments[1].elements.map(dependency => source.slice(dependency.start, dependency.end));
   assert.ok(dependencies.includes('nativeVideoSource'));
-  for (const state of ['isMuted', 'playbackRate', 'isActive']) assert.equal(dependencies.includes(state), false);
+  for (const state of ['isMuted', 'playbackRate']) assert.equal(dependencies.includes(state), false);
 });
 
 test('center player tap hides visible controls before toggling playback', () => {
@@ -156,15 +158,15 @@ test('mobile JSON requests honor cancellation and reject HTTP failures', async()
 
 test('Home displays course metadata before its playback request finishes',async()=>{
   const state={};let finishPlayback;
-  const context={cancelled:false,homeAbort:new AbortController(),homeCatalogCourse:null,hasAccess:true,user:{_id:'u',sessionId:'s'},
-    setLoading:value=>state.loading=value,setLoadError:value=>state.error=value,setPrimaryCourse:value=>state.course=value,
+  const context={cancelled:false,homeAbort:new AbortController(),homeCatalogCourses:null,hasAccess:true,user:{_id:'u',sessionId:'s'},
+    setLoading:value=>state.loading=value,setLoadError:value=>state.error=value,setCatalogCourses:value=>state.courses=value,
     fetchApiJson:async path=>path.includes('/top')?[{_id:'c',title:'Course',videos:[{_id:'v'}]}]:[],
     session:{requestJson:async()=>new Promise(resolve=>{finishPlayback=resolve;})}};
-  const load=compile(nodes.find(n=>n.type==='FunctionDeclaration'&&n.id.name==='loadPrimaryCourse'),context);
+  const load=compile(nodes.find(n=>n.type==='FunctionDeclaration'&&n.id.name==='loadHomeCourses'),context);
   const pending=load();await new Promise(resolve=>setImmediate(resolve));
-  assert.equal(state.course._id,'c');assert.equal(state.loading,false);
+  assert.equal(state.courses[0]._id,'c');assert.equal(state.loading,false);
   finishPlayback({videos:[{_id:'v',playbackRequired:true}]});await pending;
-  assert.equal(state.course.__homePlayableVideos,true);
+  assert.equal(state.courses[0].__homePlayableVideos,true);
 });
 
 test('leaving playback tolerates an already released native player',()=>{

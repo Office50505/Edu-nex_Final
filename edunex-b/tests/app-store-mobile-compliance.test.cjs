@@ -155,13 +155,13 @@ test('premium gate popup starts the platform store subscription and exposes requ
   assert.match(upgradeModalSource, /appleSubscriptionPriceCopy\(appleSubscription\)/);
   assert.match(upgradeModalSource, /ELIGIBLE NEW-SUBSCRIBER OFFER/);
   assert.match(upgradeModalSource, /Welcome to Skillomate/);
-  assert.match(upgradeModalSource, /const storeName = isIOS \? "App Store" : "Google Play"/);
+  assert.match(upgradeModalSource, /const storeName = appleSubscription\?\.isMock \? "Test payment" : isIOS \? "App Store" : "Google Play"/);
   assert.match(upgradeModalSource, /`Start Offer with \$\{storeName\}`/);
   assert.match(upgradeModalSource, /Then \{priceCopy\.recurring\} until cancelled/);
   assert.match(upgradeModalSource, /onPress=\{appleSubscription\?\.purchase\}/);
   assert.match(upgradeModalSource, /`Subscribe with \$\{storeName\}`/);
   assert.match(upgradeModalSource, /onPress=\{appleSubscription\?\.restore\}/);
-  assert.match(upgradeModalSource, />Restore Purchases</);
+  assert.match(upgradeModalSource, /"Test Restore" : "Restore Purchases"/);
   assert.match(upgradeModalSource, /renews automatically unless cancelled at least 24 hours/);
   assert.match(upgradeModalSource, /accessibilityLabel="Read subscription Terms of Use"/);
   assert.match(upgradeModalSource, /accessibilityLabel="Read subscription Privacy Policy"/);
@@ -271,7 +271,8 @@ test('Google Play client uses the eligible offer token and verifies before ackno
   assert.match(googlePlayHookSource, /ErrorCode\.UserCancelled/);
   assert.match(googlePlayHookSource, /ErrorCode\.Pending/);
   assert.match(googlePlayHookSource, /entitlementActive\) restored = true/);
-  assert.match(googlePlayHookSource, /const delays = \[1200, 3500, 8000\]/);
+  assert.match(googlePlayHookSource, /setError\(GOOGLE_PLAY_CONNECTION_HELP\)/);
+  assert.match(deferredIapSource, /initConnection\(\)/);
   assert.match(googlePlayHookSource, /expiresAt - Date\.now\(\) \+ 5000/);
   assert.match(googlePlayHookSource, /normalizeGooglePlaySubscriptionOffers\(product, configuredIntroductoryOfferId, configuredProductId\)/);
   assert.match(googlePlayHookSource, /iapRef\.current\.reconnect\(\)/);
@@ -380,8 +381,8 @@ test('root page swipe is bidirectional and disabled while search is open', () =>
   assert.match(pagerSource, /ROOT_TAB_ORDER\[activeIndex \+ direction\]/);
   assert.match(pagerSource, /onMoveShouldSetPanResponder: \(_, gesture\) => shouldClaimRootSwipe\(gesture\)/);
   assert.match(pagerSource, /onMoveShouldSetPanResponderCapture: \(_, gesture\) => shouldClaimRootSwipe\(gesture\)/);
-  assert.match(appSource, /const ROOT_TAB_CHROME_ENABLED = Platform\.OS === "android"/);
-  assert.match(appSource, /const ROOT_TAB_PAGE_GAP = Platform\.OS === "android" \? 8 : 0/);
+  assert.match(appSource, /const ROOT_TAB_CHROME_ENABLED = false/);
+  assert.match(appSource, /const ROOT_TAB_PAGE_GAP = 0/);
   assert.match(appSource, /const ROOT_TAB_SWIPE_THRESHOLD_RATIO = Platform\.OS === "android" \? 0\.13 : 0\.12/);
   assert.match(appSource, /const ROOT_TAB_SWIPE_SPRING = Platform\.OS === "android"\s+\? \{ tension: 88, friction: 12 \}\s+: \{ stiffness: 310, damping: 32, mass: 0\.86, overshootClamping: true \}/);
   assert.match(pagerSource, /Animated\.spring\(trackX,\s+\{\s+toValue: -activeIndex \* pageStride,\s+\.\.\.ROOT_TAB_SWIPE_SPRING/);
@@ -501,7 +502,7 @@ test('downloaded lecture player shows offline status inside the top lecture pill
 });
 
 test('course detail back returns to the courses page instead of home', () => {
-  assert.match(appSource, /if \(mainScreen === "courses" && selectedCourse\) \{\s+loadCourseProgress\(\);\s+setSelectedCourse\(null\);\s+setStartIndex\(null\);\s+setInitialTime\(0\);\s+setPreloadedVideos\(null\);\s+setIsPreviewOnly\(false\);\s+return true;\s+\}/);
+  assert.match(appSource, /if \(mainScreen === "courses" && selectedCourse\) \{\s+loadCourseProgress\(\);\s+setSelectedCourse\(null\);\s+setCourseOpenStatus\(\{ key: "", loading: false, error: "" \}\);\s+setStartIndex\(null\);\s+setInitialTime\(0\);\s+setPreloadedVideos\(null\);\s+setIsPreviewOnly\(false\);\s+return true;\s+\}/);
   const courseDetailStart = appSource.indexOf('if (mainScreen === "courses" && selectedCourse) {', appSource.indexOf('// ── Logged-in'));
   assert.notEqual(courseDetailStart, -1, 'course detail render route is present');
   const courseDetailEnd = appSource.indexOf('return withGlobalBackGesture((', courseDetailStart);
@@ -564,7 +565,8 @@ test('login and signup screens use larger tablet auth frames', () => {
 
 test('profile avatar picker keeps unique bundled choices and falls back from unknown legacy values', () => {
   assert.match(appSource, /const DEMO_AVATARS = Array\.from\(\{ length: 15 \}/);
-  assert.match(appSource, /const src = AVATAR_IMAGES\[avatarId\] \|\| AVATAR_IMAGES\.a1/);
+  assert.match(appSource, /const fallbackSource = AVATAR_IMAGES\.a1/);
+  assert.match(appSource, /const src = AVATAR_IMAGES\[avatarId\] \|\| fallbackSource/);
 });
 
 test('age policy rejects 12, accepts 13, and signup UIs have no fabricated default age', async () => {

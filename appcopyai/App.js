@@ -3150,7 +3150,7 @@ function Badge({ label, color }) {
 }
 
 function appleSubscriptionPriceCopy(appleSubscription) {
-  const storeName = Platform.OS === "ios" ? "App Store" : "Google Play";
+  const storeName = appleSubscription?.isMock ? "Test payment" : Platform.OS === "ios" ? "App Store" : "Google Play";
   const recurring = appleSubscription?.localizedPrice
     ? `${appleSubscription.localizedPrice} per ${appleSubscription.period || "month"}`
     : appleSubscription?.productLoadStatus === "loading"
@@ -3193,7 +3193,7 @@ function UpgradeModal({
     "Exclusive AI workshops",
   ];
   const isIOS = Platform.OS === "ios";
-  const storeName = isIOS ? "App Store" : "Google Play";
+  const storeName = appleSubscription?.isMock ? "Test payment" : isIOS ? "App Store" : "Google Play";
   const purchaseBusy = Boolean(appleSubscription?.working);
   const purchaseReady = appleSubscription?.purchaseReady ?? Boolean(
     appleSubscription?.product && appleSubscription?.entitlement?.appAccountToken
@@ -3265,7 +3265,9 @@ function UpgradeModal({
                   <ActivityIndicator color={C.primary} style={{ marginVertical: 8 }} />
                 ) : null}
                 <Text style={s.upgradePriceNote}>
-                  {isIOS
+                  {appleSubscription?.isMock
+                    ? "TEST PAYMENT · Sample price only. No money is charged and premium access stays unchanged."
+                    : isIOS
                     ? "Payment is charged to your Apple ID at confirmation. The subscription renews automatically unless cancelled at least 24 hours before the current period ends. Manage or cancel it in Apple ID settings."
                     : "Charged to your Google Play account. Renews automatically until cancelled in Google Play."
                   }
@@ -3318,7 +3320,7 @@ function UpgradeModal({
                   accessibilityState={{ disabled: purchaseBusy, busy: purchaseBusy }}
                 >
                   <Ionicons name="refresh" size={17} color={C.primary} />
-                  <Text style={s.upgradeRestoreBtnText}>Restore Purchases</Text>
+                  <Text style={s.upgradeRestoreBtnText}>{appleSubscription?.isMock ? "Test Restore" : "Restore Purchases"}</Text>
                 </TouchableOpacity>
 
                 <View style={s.upgradeLegalRow}>
@@ -9936,7 +9938,7 @@ function SubscriptionDetailsScreen({ user, onBack, session, appleSubscription, o
     ? subData.entitlementActive === true
     : hasActivePremiumEntitlement(user);
   const isIOS = Platform.OS === "ios";
-  const storeName = isIOS ? "App Store" : "Google Play";
+  const storeName = appleSubscription?.isMock ? "Test payment" : isIOS ? "App Store" : "Google Play";
   const entitlementSource = subData?.entitlementSource || user?.entitlementSource || "none";
   const sourceLabel = subscriptionSourceLabel(entitlementSource) || {
     apple: "App Store",
@@ -10053,7 +10055,9 @@ function SubscriptionDetailsScreen({ user, onBack, session, appleSubscription, o
             {!isActive && (
               <View style={s.iosMembershipPanel}>
                 <Text style={s.iosMembershipText}>
-                  {isIOS
+                  {appleSubscription?.isMock
+                    ? "TEST PAYMENT · Preview success, cancellation, and failure without Google Play. This does not charge money or unlock premium access."
+                    : isIOS
                     ? "Unlock all protected Skillomate courses, downloads, progress, certificates, and Nex AI course assistance. Payment is charged to your Apple ID. The monthly subscription renews automatically until cancelled in Apple ID settings."
                     : "Unlock all protected Skillomate courses, downloads, progress, certificates, and Nex AI course assistance. Payment is charged to your Google Play account. The monthly subscription renews automatically until cancelled in Google Play."
                   }
@@ -10119,7 +10123,7 @@ function SubscriptionDetailsScreen({ user, onBack, session, appleSubscription, o
               accessibilityLabel={`Restore ${storeName} purchases`}
             >
               <Ionicons name="refresh" size={17} color={C.primary} />
-              <Text style={[s.btnText, { color: C.primary }]}>Restore Purchases</Text>
+              <Text style={[s.btnText, { color: C.primary }]}>{appleSubscription?.isMock ? "Test Restore" : "Restore Purchases"}</Text>
             </TouchableOpacity>
             <TouchableOpacity
               onPress={() => Promise.all([loadSubscription(), appleSubscription.refresh().catch(() => null)])}

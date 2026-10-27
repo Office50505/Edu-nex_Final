@@ -27,12 +27,18 @@ for (const { directory: app, signingPrefix } of mobileApps) {
     assert.match(mainManifest, /android:fullBackupContent="@xml\/backup_rules"/);
     assert.match(mainManifest, /android:dataExtractionRules="@xml\/data_extraction_rules"/);
     assert.match(mainManifest, /android:usesCleartextTraffic="false"/);
-    assert.doesNotMatch(applicationManifest, /android\.intent\.action\.VIEW/);
+    const incomingLinks = [...applicationManifest.matchAll(/<intent-filter[^>]*>[\s\S]*?<\/intent-filter>/g)].map(match => match[0]).filter(filter => filter.includes('android.intent.action.VIEW'));
+    for (const filter of incomingLinks) {
+      assert.match(filter, /android:autoVerify="true"/);
+      assert.match(filter, /android:scheme="https" android:host="skillomate\.in" android:pathPrefix="\/videos"/);
+      assert.doesNotMatch(filter, /android:scheme="(?:http|skillomate)"/);
+    }
     assert.equal(Object.hasOwn(appConfig.expo, 'scheme'), false);
     assert.notEqual(appConfig.expo.ios?.infoPlist?.NSAppTransportSecurity?.NSAllowsLocalNetworking, true);
 
     assert.match(debugManifest, /SYSTEM_ALERT_WINDOW" tools:node="remove"/);
-    assert.doesNotMatch(debugManifest, /usesCleartextTraffic="true"/);
+    if (app === 'appcopyai') assert.match(debugManifest, /android:usesCleartextTraffic="true"/); // Metro HTTP is debug-only.
+    else assert.doesNotMatch(debugManifest, /usesCleartextTraffic="true"/);
     assert.match(backupRules, /<exclude domain="sharedpref" path="\."\/>/);
     assert.match(extractionRules, /<cloud-backup>[\s\S]*<exclude domain="sharedpref" path="\."\/>/);
     assert.match(extractionRules, /<device-transfer>[\s\S]*<exclude domain="sharedpref" path="\."\/>/);

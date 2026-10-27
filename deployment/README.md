@@ -132,3 +132,32 @@ cache, and Vite-hashed or explicitly versioned assets a one-year immutable
 cache. It then invalidates the CloudFront distribution so updated route shells
 are available immediately. Use `--skip-build` only when `edunex-f/dist` already
 contains the exact production build to upload.
+
+## Payment readiness after the October 2026 checkout update
+
+Marketing checkout uses the server's monthly PhonePe AutoPay contract. It requires
+an explicit recurring-payment consent and blocks OTP/payment submission while
+checkout configuration is unavailable. It no longer sends `paymentType: one_time`.
+
+For an isolated sandbox environment, provision the dedicated
+`PHONEPE_AUTOPAY_MERCHANT_ID`, `PHONEPE_AUTOPAY_CLIENT_ID`,
+`PHONEPE_AUTOPAY_CLIENT_SECRET`, client version, public HTTPS callback/redirect
+URLs, and webhook authentication through the deployment's secret configuration.
+Do not assume legacy PhonePe credentials are approved for AutoPay. Use
+`PHONEPE_AUTOPAY_MODE=sandbox` and the official pre-production API origin. Keep
+`PHONEPE_AUTOPAY_LIVE_RECURRING_ENABLED=false` and
+`PHONEPE_AUTOPAY_LIVE_TEST_ENABLED=false` while testing. Sandbox switches alone do
+not establish provider readiness or authorize any customer mandate.
+
+Set `NEXT_PUBLIC_API_BASE_URL` to the deployed API origin before building marketing
+for a nonstandard hostname. Local development on localhost/127.0.0.1 uses API port
+3000; backend CORS permits marketing port 3001 only in development. Production
+origins must remain explicitly configured. Provision a reachable `REDIS_URL` and
+verify `/api/ready` returns HTTP 200 with MongoDB and Redis connected. The local
+loopback Redis URL is not a production configuration.
+
+Before enabling live checkout, verify a real sandbox mandate approval, signed
+webhook processing, server-verified access activation, renewal, cancellation,
+pending/failure states, and duplicate-event handling. Browser API fixtures and
+unit tests do not replace provider testing. Google Play billing separately needs
+the registered Android package and a license tester signed into Play Store.

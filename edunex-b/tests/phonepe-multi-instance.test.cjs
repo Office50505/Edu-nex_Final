@@ -328,7 +328,8 @@ test('PhonePe amount mismatch never grants one-time access', async () => {
   } });
   const response = responseRecorder();
   await flow.handlers.paymentCallback({ query: { merchantTransactionId: 'merchant-1' } }, response);
-  assert.equal(response.statusCode, 503);
+  assert.equal(response.statusCode, 302);
+  assert.match(response.location, /confirmation=pending/);
   assert.equal(flow.order.status, 'pending');
   assert.equal(flow.counters.subscriptionUpdate, null);
 });
@@ -354,7 +355,8 @@ test('nonterminal callback state remains retryable for a later provider success 
   const res = responseRecorder();
   await flow.handlers.paymentCallback({ query: { merchantTransactionId: 'merchant-1' } }, res);
   const eventKey = claims.callbackEventIdentity('merchant-1');
-  assert.equal(res.statusCode, 503);
+  assert.equal(res.statusCode, 302);
+  assert.match(res.location, /confirmation=pending/);
   assert.equal(flow.claimStates.get(eventKey).status, 'failed');
   assert.equal(flow.counters.orderSave, 0);
 });

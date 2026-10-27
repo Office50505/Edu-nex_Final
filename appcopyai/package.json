@@ -1,7 +1,7 @@
 {
   "scripts": {
     "start": "expo start",
-    "android": "expo run:android",
+    "android": "expo run:android --app-id com.skillomate.app.debug",
     "ios": "expo run:ios",
     "testflight:build": "npx eas-cli@latest build --platform ios --profile testflight",
     "testflight:submit": "npx eas-cli@latest submit --platform ios --profile testflight --latest",
